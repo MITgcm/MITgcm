@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_archer,v 1.2 2015/05/04 17:58:25 dfer Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_archer,v 1.3 2015/10/30 09:25:24 dfer Exp $
 # $Name:  $
 
 # To be used with the suite of cray compilers (PrgEnv-cray).
@@ -27,10 +27,16 @@ NOOPTFLAGS='-O0'
 NOOPTFILES=''
 
 if test "x$IEEE" = x ; then   #- with optimisation:
-#   FOPTIM='-O3 -hfp0 -hflex_mp=intolerant'
-    FOPTIM='-O3 -hfp2'
+#   FOPTIM='-O2 -hfp3 -Oipa5' for less agressive optimization 
+#   Be aware not all experiments pass the restart test with optimization 
+    FOPTIM='-O3 -hfp3 -Oipa5'
 else
-    FOPTIM='-O0'
+    if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+      FOPTIM='-O0 -hfp0'
+    else                          #- development/check options:
+      FOPTIM='-O0 -hfp0'
+      FOPTIM="$FOPTIM -g -Rbc -rm -hmsgs -hnegmsgs"
+    fi
 fi
 
 #- For big executable, this could help:
