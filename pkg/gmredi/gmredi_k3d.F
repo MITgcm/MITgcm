@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.25 2015/10/14 20:03:59 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.26 2015/10/30 10:33:24 dfer Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -131,9 +131,8 @@ C     tfluxX   :: thickness flux in x direction
 C     tfluxY   :: thickness flux in y direction
 C     fCoriU   :: Coriolis parameter averaged to U points
 C     fCoriV   :: Coriolis parameter averaged to V points
-C     cori     :: Coriolis parameter forced to be finite near the equator
-C     coriU    :: As for cori, but, at U point
-C     coriV    :: As for cori, but, at V point
+C     coriU    :: As fCoriU, but limited
+C     coriV    :: As fCoriV, but limited
 C     surfkz   :: Depth of surface layer (in r units)
       _RL Rmid(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL KPV(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
@@ -145,7 +144,6 @@ C     surfkz   :: Depth of surface layer (in r units)
       _RL dSigmaDy(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL tfluxX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL tfluxY(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL cori(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL coriU(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL coriV(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL fCoriU(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -258,47 +256,38 @@ C     Gradient of Coriolis
        ENDDO
       ENDDO
 
-C     Coriolis at C points enforcing a minimum value so
+C     Coriolis at U and V points enforcing a minimum value so
 C     that it is defined at the equator
       DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        cori(i,j)  = SIGN( MAX( ABS(fCori(i,j,bi,bj)),GM_K3D_minCori ),
-     &                          fCori(i,j,bi,bj) )
-       ENDDO
-      ENDDO
-C     Coriolis at U and V points
-      DO j=1-Oly,sNy+Oly
        DO i=1-Olx+1,sNx+Olx
-C       Limited so that the inverse is defined at the equator
-        coriU(i,j) = op5*( cori(i,j)+cori(i-1,j) )
-        coriU(i,j) = SIGN( MAX( ABS(coriU(i,j)),GM_K3D_minCori ),
-     &       coriU(i,j) )
-
 C       Not limited
-        fCoriU(i,j) = op5*( fCori(i,j,bi,bj)+fCori(i-1,j,bi,bj) )
+        fCoriU(i,j)= op5*( fCori(i,j,bi,bj)+fCori(i-1,j,bi,bj) )
+C       Limited so that the inverse is defined at the equator
+        coriU(i,j) = SIGN( MAX( ABS(fCoriU(i,j)),GM_K3D_minCori ),
+     &                              fCoriU(i,j) )
        ENDDO
       ENDDO
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx,sNx+Olx
-C       Limited so that the inverse is defined at the equator
-        coriV(i,j) = op5*( cori(i,j)+cori(i,j-1) )
-        coriV(i,j) = SIGN( MAX( ABS(coriV(i,j)),GM_K3D_minCori ),
-     &       coriV(i,j) )
-
 C       Not limited
-        fCoriV(i,j) = op5*( fCori(i,j,bi,bj)+fCori(i,j-1,bi,bj) )
+        fCoriV(i,j)= op5*( fCori(i,j,bi,bj)+fCori(i,j-1,bi,bj) )
+C       Limited so that the inverse is defined at the equator
+        coriV(i,j) = SIGN( MAX( ABS(fCoriV(i,j)),GM_K3D_minCori ),
+     &                              fCoriV(i,j) )
        ENDDO
       ENDDO
 C     Some dummy values at the edges
       i=1-Olx
       DO j=1-Oly,sNy+Oly
-       coriU(i,j)=cori(i,j)
-       fCoriU(i,j)=fCori(i,j,bi,bj)
+       fCoriU(i,j)= fCori(i,j,bi,bj)
+       coriU(i,j) = SIGN( MAX( ABS(fCori(i,j,bi,bj)),GM_K3D_minCori ),
+     &                             fCori(i,j,bi,bj) )
       ENDDO
       j=1-Oly
       DO i=1-Olx,sNx+Olx
-       coriV(i,j)=cori(i,j)
-       fCoriV(i,j)=fCori(i,j,bi,bj)
+       fCoriV(i,j)= fCori(i,j,bi,bj)
+       coriV(i,j) = SIGN( MAX( ABS(fCori(i,j,bi,bj)),GM_K3D_minCori ),
+     &                             fCori(i,j,bi,bj) )
       ENDDO
 
 C     Zeroing some cumulative fields
@@ -376,7 +365,6 @@ C     This code does two things:
 C     1) go from C grid velocity points to A grid velocity points
 C     2) go from model grid directions to east/west directions
       DO k = 1,Nr
-
        DO i = 1-Olx,sNx+Olx
         j=sNy+Oly
         tmpU(i,j)=zeroRL
@@ -396,7 +384,6 @@ C     2) go from model grid directions to east/west directions
          tmpV(i,j) = tmpV(i,j) * maskC(i,j,k,bi,bj)
         ENDDO
        ENDDO
-
 C     Rotation
        DO j = 1-oly,sny+oly
         DO i = 1-olx,snx+olx
@@ -482,7 +469,6 @@ C       Calculate the Rossby Radius
       ENDIF
 
 C     Average dsigma/dx and dsigma/dy onto the centre points
-
       DO k=1,Nr
        DO j=1-Oly,sNy+Oly-1
         DO i=1-Olx,sNx+Olx-1
