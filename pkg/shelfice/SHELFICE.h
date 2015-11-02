@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.20 2015/04/22 21:33:58 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.21 2015/11/02 21:27:42 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -183,10 +183,12 @@ CEOP
       CHARACTER*(MAX_LEN_FNAM) SHELFICEmassFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICEtopoFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICEMassDynTendFile
+      CHARACTER*(MAX_LEN_FNAM) SHELFICETransCoeffTFile
       COMMON /SHELFICE_PARM_C/
      &     SHELFICEloadAnomalyFile,
      &     SHELFICEmassFile,
      &     SHELFICEtopoFile,
-     &     SHELFICEMassDynTendFile
+     &     SHELFICEMassDynTendFile,
+     &     SHELFICETransCoeffTFile
 
 #endif /* ALLOW_SHELFICE */

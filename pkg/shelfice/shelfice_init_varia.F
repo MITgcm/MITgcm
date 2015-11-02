@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.14 2015/01/20 14:54:36 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_varia.F,v 1.15 2015/11/02 21:27:42 dimitri Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -50,17 +50,33 @@ CEOP
        ENDDO
       ENDDO
       IF ( .NOT. SHELFICEuseGammaFrict ) THEN
-C     set coefficients to constant values
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j = 1-OLy, sNy+OLy
-          DO i = 1-OLx, sNx+OLx
-           shiTransCoeffT(i,j,bi,bj) = SHELFICEheatTransCoeff
-           shiTransCoeffS(i,j,bi,bj) = SHELFICEsaltTransCoeff
+       IF ( SHELFICETransCoeffTFile .NE. ' ' ) THEN
+        CALL READ_FLD_XY_RL( SHELFICETransCoeffTFile, ' ',
+     &                       shiTransCoeffT, 0, myThid )
+        _EXCH_XY_RL( shiTransCoeffT, myThid )
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j = 1-OLy, sNy+OLy
+           DO i = 1-OLx, sNx+OLx
+            shiTransCoeffS(i,j,bi,bj) = 5.05 _d -3 *
+     &                                  shiTransCoeffT(i,j,bi,bj)
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
-       ENDDO
+       ELSE
+C     set coefficients to constant values
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j = 1-OLy, sNy+OLy
+           DO i = 1-OLx, sNx+OLx
+            shiTransCoeffT(i,j,bi,bj) = SHELFICEheatTransCoeff
+            shiTransCoeffS(i,j,bi,bj) = SHELFICEsaltTransCoeff
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
       ENDIF
 
       DO bj = myByLo(myThid), myByHi(myThid)

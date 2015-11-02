@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.24 2015/04/22 21:33:58 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.25 2015/11/02 21:27:42 dimitri Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -58,7 +58,7 @@ CEOP
      &     SHELFICE_dump_mnc,
      &     SHELFICEtopoFile,
      &     SHELFICEmassFile, SHELFICEloadAnomalyFile,
-     &     SHELFICEMassDynTendFile,
+     &     SHELFICEMassDynTendFile, SHELFICETransCoeffTFile,
      &     SHELFICEDynMassOnly,
      &     SHELFICEadvDiffHeatFlux,
      &     SHELFICEuseGammaFrict,
@@ -98,6 +98,7 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEmassFile         = ' '
       SHELFICEloadAnomalyFile  = ' '
       SHELFICEMassDynTendFile  = ' '
+      SHELFICETransCoeffTFile  = ' '
       SHELFICElatentHeat       =  334.0 _d 3
       SHELFICEHeatCapacity_Cp  = 2000.0 _d 0
       rhoShelfIce              =  917.0 _d 0

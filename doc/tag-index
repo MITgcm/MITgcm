@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2194 2015/10/27 23:59:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2195 2015/11/02 21:27:41 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice:
+  - add SHELFICETransCoeffTFile for initializing spatially varying
+    heat and salt transfer coefficients
 o pkg/atm_compon_interf & ocn_compon_interf:
   - combine into 1 (new) S/R CPL_EXPORT_IMPORT_DATA the two previous
     S/R CPL_EXPORT_MY_DATA & CPL_IMPORT_EXTERNAL_DATA
