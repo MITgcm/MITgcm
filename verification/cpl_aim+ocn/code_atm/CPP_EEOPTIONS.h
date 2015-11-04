@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/code_atm/CPP_EEOPTIONS.h,v 1.10 2015/08/25 21:11:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/code_atm/CPP_EEOPTIONS.h,v 1.11 2015/11/04 17:09:20 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -120,7 +120,7 @@ C     assuming locally periodic subdomain)
 
 C--   Always cumulate tile local-sum in the same order by applying MPI allreduce
 C     to array of tiles ; can get slower with large number of tiles (big set-up)
-#undef GLOBAL_SUM_ORDER_TILES
+#define GLOBAL_SUM_ORDER_TILES
 
 C--   Alternative way of doing global sum without MPI allreduce call
 C     but instead, explicit MPI send & recv calls. Expected to be slower.
