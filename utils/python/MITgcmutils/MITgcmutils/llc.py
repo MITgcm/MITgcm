@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/llc.py,v 1.2 2014/08/08 07:08:48 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/llc.py,v 1.3 2015/11/04 15:58:53 mlosch Exp $
 # $Name:  $
 import sys
 import numpy as np
@@ -256,11 +256,19 @@ def faces(fld):
 
 
 def _sqCoord(a):
-    b = np.squeeze(a)
+    b = np.copy(np.squeeze(a))
     # it appears to be important, that here we do not mask the array
     # but reset zeros to NaN (only used for coordinate arrays!!!)
 #    b = np.ma.masked_where(b==0., b)
-    b[b==0.] = np.NaN
+#    b[b==0.] = np.NaN
+    return b
+
+def _sqData(a):
+    b = np.copy(np.squeeze(a))
+    # it appears to be important, that here we do not mask the array
+    # but reset zeros to NaN (only used for coordinate arrays!!!)
+    b = np.ma.masked_where(b==0., b)
+    b = np.ma.masked_where(np.isnan(b), b)
     return b
 
 def pcol(*arguments, **kwargs):
@@ -369,16 +377,15 @@ def pcol(*arguments, **kwargs):
     for t in [0,1,3,4]:
         if mapit: x, y = m(_sqCoord(f[0][t]), _sqCoord(f[1][t]))
         else:     x, y =   _sqCoord(f[0][t]), _sqCoord(f[1][t])
-        ph.append(plt.pcolormesh(x,y,f[2][t], **kwargs))
+        ph.append(plt.pcolormesh(x,y,_sqData(f[2][t]), **kwargs))
     # plot more lateral faces to be able to select the longitude range later
     f[0][3][i0] = f[0][3][i0]-360.
-    i0 = f[0][3]>0.
-    f[0][3][i0] = f[0][3][i0]-360.
+    f[0][3] = np.where(f[0][3]>0.,f[0][3]-360.,f[0][3])
     f[0][4] = f[0][4]+360.
     for t in [3,4]: 
         if mapit: x, y = m(_sqCoord(f[0][t]), _sqCoord(f[1][t]))
         else:     x, y =   _sqCoord(f[0][t]), _sqCoord(f[1][t])
-        ph.append(plt.pcolormesh(x,y,f[2][t], **kwargs))
+        ph.append(plt.pcolormesh(x,y,_sqData(f[2][t]), **kwargs))
 
     # Arctic face is special
     t = 2
@@ -386,11 +393,10 @@ def pcol(*arguments, **kwargs):
     xx = np.copy(f[0][t][:nn,:])
     yy = np.copy(f[1][t][:nn,:])
     zz = np.copy(f[2][t][:nn,:])
-    i0 = xx<0.
-    xx[i0] = xx[i0]+360.
+    xx = np.where(xx<0.,xx+360,xx)
     if mapit: x, y = m(_sqCoord(xx),_sqCoord(yy))
     else:     x, y =   _sqCoord(xx),_sqCoord(yy)
-    ph.append(plt.pcolormesh(x,y,zz, **kwargs))
+    ph.append(plt.pcolormesh(x,y,_sqData(zz), **kwargs))
     #
     nn = nx/2-1
     xx = np.copy(f[0][t][nn:,:])
@@ -401,15 +407,14 @@ def pcol(*arguments, **kwargs):
     #
     if mapit: x, y = m(_sqCoord(xx),_sqCoord(yy))
     else:     x, y =   _sqCoord(xx),_sqCoord(yy)
-    ph.append(plt.pcolormesh(x,y,zz, **kwargs))
-    # need to mask some zz-values so that there is no erroneous wrap-around
-    zz = np.copy(f[2][t][nn:,:])
-    zz = np.ma.masked_where(xx>=0.,zz)
-    i0 = xx<0.
-    xx[i0] = xx[i0]+360.
-    if mapit: x, y = m(_sqCoord(xx),_sqCoord(yy))
-    else:     x, y =   _sqCoord(xx),_sqCoord(yy)
-    ph.append(plt.pcolormesh(x,y,zz, **kwargs))
+    ph.append(plt.pcolormesh(x,y,_sqData(zz), **kwargs))
+#    # need to mask some zz-values so that there is no erroneous wrap-around
+#    zz = np.copy(f[2][t][nn:,:])
+#    zz = np.ma.masked_where(xx<0.,zz)
+#    xx = np.where(xx<0.,xx+360,xx)
+#    if mapit: x, y = m(_sqCoord(xx),_sqCoord(yy))
+#    else:     x, y =   _sqCoord(xx),_sqCoord(yy)
+#    ph.append(plt.pcolormesh(x,y,_sqData(zz), **kwargs))
 
     if not mapit:
         plt.xlim([-170,190])
