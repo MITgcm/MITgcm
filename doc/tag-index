@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2195 2015/11/02 21:27:41 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2196 2015/11/05 00:25:21 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp/inc:
+  - change the MPI-global-sum default (in CPP_EEOPTIONS.h) to:
+    #define GLOBAL_SUM_ORDER_TILES (only affects MPI built of global_sum_tile.F)
+    to always cumulate tile local-sum in the same order (still uses
+    MPI_Allreduce like standard code).
+  - in verification experiment code, remove local CPP_EEOPTIONS.h_mpi files
+    that are now identical to standard version (in eesupp/inc).
 o pkg/shelfice:
   - add SHELFICETransCoeffTFile for initializing spatially varying
     heat and salt transfer coefficients
