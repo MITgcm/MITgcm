@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/llc.py,v 1.3 2015/11/04 15:58:53 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/llc.py,v 1.4 2015/11/05 15:05:51 mlosch Exp $
 # $Name:  $
 import sys
 import numpy as np
@@ -303,6 +303,28 @@ def pcol(*arguments, **kwargs):
         mapit = True
         m = arguments[3]
 
+    if mapit:
+        # not all projections work, catch few of these here
+        if (m.projection == 'hammer') | \
+           (m.projection == 'robin')  | \
+           (m.projection == 'moll')   | \
+           (m.projection == 'cea'):
+            sys.exit("selected projection '"+m.projection
+                     +"' is not supported")
+
+        # these projections use simple code for the Arctic face; 
+        # all others require more complicted methods
+        stereographicProjection = (m.projection == 'npaeqd')  | \
+                                  (m.projection == 'spaeqd')  | \
+                                  (m.projection == 'nplaea')  | \
+                                  (m.projection == 'splaea')  | \
+                                  (m.projection == 'npstere') | \
+                                  (m.projection == 'spstere') | \
+                                  (m.projection == 'stere')
+    else:
+        stereographicProjection = False
+
+            
     xg = arguments[0]
     yg = arguments[1]
     data = arguments[2]
@@ -379,42 +401,52 @@ def pcol(*arguments, **kwargs):
         else:     x, y =   _sqCoord(f[0][t]), _sqCoord(f[1][t])
         ph.append(plt.pcolormesh(x,y,_sqData(f[2][t]), **kwargs))
     # plot more lateral faces to be able to select the longitude range later
-    f[0][3][i0] = f[0][3][i0]-360.
-    f[0][3] = np.where(f[0][3]>0.,f[0][3]-360.,f[0][3])
-    f[0][4] = f[0][4]+360.
-    for t in [3,4]: 
+    for t in [1,3,4]: 
+        f[0][t] = f[0][t]+ (-1)**t*360.
         if mapit: x, y = m(_sqCoord(f[0][t]), _sqCoord(f[1][t]))
         else:     x, y =   _sqCoord(f[0][t]), _sqCoord(f[1][t])
         ph.append(plt.pcolormesh(x,y,_sqData(f[2][t]), **kwargs))
 
-    # Arctic face is special
+    # Arctic face is special, because of the rotation of the grid by 
+    # rangle = 7deg (seems to be the default)
     t = 2
-    nn = nx/2
-    xx = np.copy(f[0][t][:nn,:])
-    yy = np.copy(f[1][t][:nn,:])
-    zz = np.copy(f[2][t][:nn,:])
-    xx = np.where(xx<0.,xx+360,xx)
-    if mapit: x, y = m(_sqCoord(xx),_sqCoord(yy))
-    else:     x, y =   _sqCoord(xx),_sqCoord(yy)
-    ph.append(plt.pcolormesh(x,y,_sqData(zz), **kwargs))
-    #
-    nn = nx/2-1
-    xx = np.copy(f[0][t][nn:,:])
-    yy = np.copy(f[1][t][nn:,:])
-    zz = np.copy(f[2][t][nn:,:])
-    # need to mask some zz-values so that there is no erroneous wrap-around
-    zz = np.ma.masked_where(xx>20.,zz)
-    #
-    if mapit: x, y = m(_sqCoord(xx),_sqCoord(yy))
-    else:     x, y =   _sqCoord(xx),_sqCoord(yy)
-    ph.append(plt.pcolormesh(x,y,_sqData(zz), **kwargs))
-#    # need to mask some zz-values so that there is no erroneous wrap-around
-#    zz = np.copy(f[2][t][nn:,:])
-#    zz = np.ma.masked_where(xx<0.,zz)
-#    xx = np.where(xx<0.,xx+360,xx)
-#    if mapit: x, y = m(_sqCoord(xx),_sqCoord(yy))
-#    else:     x, y =   _sqCoord(xx),_sqCoord(yy)
-#    ph.append(plt.pcolormesh(x,y,_sqData(zz), **kwargs))
+
+    if mapit & stereographicProjection:
+        x, y = m(_sqCoord(f[0][t]),_sqCoord(f[1][t]))
+        ph.append(plt.pcolormesh(x,y,_sqData(f[2][t]), **kwargs))
+    else:
+        rangle = 7.
+        # first half of Arctic tile
+        nn = nx/2+1
+        xx = np.copy(f[0][t][:nn,:])
+        yy = np.copy(f[1][t][:nn,:])
+        zz = np.copy(f[2][t][:nn,:])
+        xx = np.where(xx<rangle,xx+360,xx)
+        if mapit: x, y = m(_sqCoord(xx),_sqCoord(yy))
+        else:     x, y =   _sqCoord(xx),_sqCoord(yy)
+        ph.append(plt.pcolormesh(x,y,_sqData(zz), **kwargs))
+        # repeat for xx-360
+        xx = xx-360.
+        if mapit: x, y = m(_sqCoord(xx),_sqCoord(yy))
+        else:     x, y =   _sqCoord(xx),_sqCoord(yy)
+        ph.append(plt.pcolormesh(x,y,_sqData(zz), **kwargs))
+        # second half of Arctic tile
+        nn = nx/2-1
+        xx = np.copy(f[0][t][nn:,:])
+        yy = np.copy(f[1][t][nn:,:])
+        zz = np.copy(f[2][t][nn:,:])
+        # need to mask some zz-values so that there is no erroneous wrap-around
+        zz = np.ma.masked_where(xx>rangle,zz)
+#        xx = np.where(xx>rangle,np.nan,xx)
+        #
+        if mapit: x, y = m(_sqCoord(xx),_sqCoord(yy))
+        else:     x, y =   _sqCoord(xx),_sqCoord(yy)
+        ph.append(plt.pcolormesh(x,y,_sqData(zz), **kwargs))
+        # repeat for xx+360
+        xx = xx + 360.
+        if mapit: x, y = m(_sqCoord(xx),_sqCoord(yy))
+        else:     x, y =   _sqCoord(xx),_sqCoord(yy)
+        ph.append(plt.pcolormesh(x,y,_sqData(zz), **kwargs))
 
     if not mapit:
         plt.xlim([-170,190])
