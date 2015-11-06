@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mixing.F,v 1.14 2015/10/20 21:51:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_mixing.F,v 1.15 2015/11/06 16:27:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,7 +59,7 @@ CEOP
 #endif
 #if (defined (ALLOW_CTRL) && defined (ALLOW_GMREDI))
 # ifdef ALLOW_KAPGM_CONTROL
-            KapGM(i,j,k,bi,bj) = GM_background_K*
+            kapGM(i,j,k,bi,bj) = GM_background_K*
      &        GM_bolFac2d(i,j,bi,bj)*GM_bolFac1d(k)
 # endif
 # ifdef ALLOW_KAPREDI_CONTROL
@@ -79,9 +79,9 @@ CEOP
          DO j = 1-OLy, sNy+OLy
           DO i = 1-OLx, sNx+OLx
            BL79LatArray(i,j,bi,bj) = 0.0 _d 0
-           IF ( abs(YC(i,j,bi,bj)) .LT. BL79LatVary )
+           IF ( ABS(YC(i,j,bi,bj)) .LT. BL79LatVary )
      &          BL79LatArray(i,j,bi,bj) =
-     &          ( 1 + cos(YC(i,j,bi,bj)*pi/BL79LatVary) ) / 2
+     &          ( 1 + COS(YC(i,j,bi,bj)*pi/BL79LatVary) ) / 2
           ENDDO
          ENDDO
         ENDDO
@@ -90,18 +90,18 @@ CEOP
 
 #ifdef ALLOW_3D_DIFFKR
        IF ( diffKrFile .NE. ' ' ) THEN
-          CALL READ_FLD_XYZ_RL(diffKrFile,' ',diffKr,0,myThid)
-          _EXCH_XYZ_RL( diffKr, myThid )
+         CALL READ_FLD_XYZ_RL(diffKrFile,' ',diffKr,0,myThid)
+         _EXCH_XYZ_RL( diffKr, myThid )
        ENDIF
 #endif /* ALLOW_3D_DIFFKR */
 #ifdef ALLOW_CTRL
 # ifdef ALLOW_KAPGM_CONTROL
-      _EXCH_XYZ_RL( KapGM, myThid )
-       CALL WRITE_FLD_XYZ_RS( 'KapGM',' ',KapGM, 0,myThid)
+       _EXCH_XYZ_RL( kapGM, myThid )
+       CALL WRITE_FLD_XYZ_RL( 'KapGM', ' ', kapGM, 0, myThid )
 # endif
 # ifdef ALLOW_KAPREDI_CONTROL
-      _EXCH_XYZ_RL( kapRedi, myThid )
-       CALL WRITE_FLD_XYZ_RS( 'kapRedi',' ',kapRedi, 0,myThid)
+       _EXCH_XYZ_RL( kapRedi, myThid )
+       CALL WRITE_FLD_XYZ_RL( 'KapRedi', ' ', kapRedi, 0, myThid )
 # endif
 #endif /* ALLOW_CTRL */
       RETURN
