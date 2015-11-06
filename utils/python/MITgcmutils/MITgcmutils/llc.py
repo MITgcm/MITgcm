@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/llc.py,v 1.4 2015/11/05 15:05:51 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/llc.py,v 1.5 2015/11/06 15:38:42 mlosch Exp $
 # $Name:  $
 import sys
 import numpy as np
@@ -230,6 +230,55 @@ def mds(fld,center='Atlantic'):
     return mdsfld
 
 def faces(fld):
+    """convert mds multidimensional data into a list with 6 faces"""
+    
+    ndim = len(fld.shape)
+    if ndim == 2:
+        f = _faces2D(fld)
+    else:
+        # use list for dynamical memory allocation, because it is fast
+        if ndim == 3:
+            ff = []
+            nk = fld.shape[0]
+            for k in range(nk):
+                fld2D = fld[k,:,:]
+                f2D = _faces2D(fld2D)
+                ff.append(f2D)
+        elif ndim == 4:
+            ff = []
+            nk = fld.shape[1]
+            nl = fld.shape[0]
+            for l in range(nl):
+                for k in range(nk):
+                    fld2D = fld[l,k,:,:]
+                    f2D = _faces2D(fld2D)
+                    ff.append(f2D)
+        elif ndim == 5:
+            ff = []
+            nk = fld.shape[2]
+            nl = fld.shape[1]
+            nm = fld.shape[0]
+            for m in range(nm):
+                for l in range(nl):
+                    for k in range(nk):
+                        fld2D = fld[m,l,k,:,:]
+                        f2D = _faces2D(fld2D)
+                        ff.append(f2D)
+        # permute list indices so that face index is the first
+        ff = np.transpose(ff)
+        f  = []
+        for listIndex in range(len(ff)):
+            # for each face turn list into array, glue together and reshape
+            nx = ff[listIndex][0].shape[-1]
+            ny = ff[listIndex][0].shape[-2]
+            if   ndim == 3: rshp =       (nk,ny,nx)
+            elif ndim == 4: rshp =    (nl,nk,ny,nx)
+            elif ndim == 5: rshp = (nm,nl,nk,ny,nx)
+            f.append(np.concatenate(np.array(ff[listIndex])).reshape(rshp))
+
+    return f
+
+def _faces2D(fld):
     """convert mds 2D data into a list with 6 faces"""
     
     nx = fld.shape[-1]
