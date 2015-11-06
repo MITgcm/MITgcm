@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.93 2015/10/07 12:38:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.94 2015/11/06 22:30:25 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -85,23 +85,27 @@ C--   SEAICE needs forcing_In_AB FALSE
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 
+C-------------------------------------------------
+C--   Check seaice thermodynamics setting:
+      IF ( usePW79thermodynamics ) THEN
+
 C--   check ice cover fraction formula
-      IF ((SEAICE_areaGainFormula.LT.1).OR.
-     &    (SEAICE_areaGainFormula.GT.2)) THEN
+       IF ((SEAICE_areaGainFormula.LT.1).OR.
+     &     (SEAICE_areaGainFormula.GT.2)) THEN
          WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &         ' SEAICE_areaGainFormula must be between 1 and 2'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
-      IF ((SEAICE_areaLossFormula.LT.1).OR.
-     &    (SEAICE_areaLossFormula.GT.3)) THEN
+       ENDIF
+       IF ((SEAICE_areaLossFormula.LT.1).OR.
+     &     (SEAICE_areaLossFormula.GT.3)) THEN
          WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &         ' SEAICE_areaLossFormula must be between 1 and 2'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
+       ENDIF
 
-      IF ( (.NOT.useThSIce).AND.(.NOT.SEAICE_doOpenWaterGrowth)
+       IF ( (.NOT.SEAICE_doOpenWaterGrowth)
      &   .AND.( (SEAICE_areaGainFormula.NE.2).OR.
      &          (SEAICE_areaLossFormula.NE.3) ) ) THEN
         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
@@ -111,45 +115,44 @@ C--   check ice cover fraction formula
      &   'SEAICE_areaGainFormula.EQ.2 and SEAICE_areaLossFormula.EQ.3'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
+       ENDIF
 
 C--   check concistency of turbulent flux term etc. specification
 
-      SEAICE_mcphee_max=drF(kSurface)/SEAICE_deltaTtherm
-      IF ( usePW79thermodynamics .AND.
-     &     ( SEAICE_mcPheePiston .LT. 0. _d 0 .OR.
-     &       SEAICE_mcPheePiston .GT. SEAICE_mcphee_max ) ) THEN
-       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
-     &  ' SEAICE_mcPheePiston is out of bounds.'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
-     &  ' They must lie within 0. and drF(1)/SEAICE_deltaTtherm '
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
+       SEAICE_mcphee_max=drF(kSurface)/SEAICE_deltaTtherm
+       IF ( SEAICE_mcPheePiston .LT. 0. _d 0 .OR.
+     &      SEAICE_mcPheePiston .GT. SEAICE_mcphee_max ) THEN
+        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &   ' SEAICE_mcPheePiston is out of bounds.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &   ' They must lie within 0. and drF(1)/SEAICE_deltaTtherm'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+       ENDIF
 
-      IF ( ( SEAICE_frazilFrac .LT. 0. _d 0 ) .OR.
-     &     ( SEAICE_frazilFrac .GT. 1. _d 0 ) ) THEN
-       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
-     &  ' SEAICE_frazilFrac is out of bounds.'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
-     &  ' They must lie within 0. and 1. '
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
+       IF ( ( SEAICE_frazilFrac .LT. 0. _d 0 ) .OR.
+     &      ( SEAICE_frazilFrac .GT. 1. _d 0 ) ) THEN
+        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &   ' SEAICE_frazilFrac is out of bounds.'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
+     &   ' They must lie within 0. and 1. '
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+       ENDIF
 
-      IF ( ( SEAICE_mcPheeTaper .LT. 0. _d 0 ) .OR.
-     &     ( SEAICE_mcPheeTaper .GT. 1. _d 0 ) ) THEN
-         WRITE(msgBuf,'(2A)')
+       IF ( ( SEAICE_mcPheeTaper .LT. 0. _d 0 ) .OR.
+     &      ( SEAICE_mcPheeTaper .GT. 1. _d 0 ) ) THEN
+        WRITE(msgBuf,'(2A)')
      &      'SEAICE_mcPheeTaper cannot be specified  ',
      &      'outside of the [0. 1.] range'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
-      ENDIF
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+       ENDIF
 
-      IF ( (.NOT.useThSIce).AND.SEAICE_doOpenWaterMelt
-     &     .AND.(.NOT.SEAICE_doOpenWaterGrowth) ) THEN
+       IF ( SEAICE_doOpenWaterMelt .AND.
+     &      (.NOT.SEAICE_doOpenWaterGrowth) ) THEN
         WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
      &       'to use SEAICE_doOpenWaterMelt, you need to '
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -157,7 +160,12 @@ C--   check concistency of turbulent flux term etc. specification
      &   'also set SEAICE_doOpenWaterGrowth to .TRUE.'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+       ENDIF
+
+C--   end if usePW79thermodynamics
       ENDIF
+C--   Checking seaice thermodynamics setting: end
+C-------------------------------------------------
 
 C--   check specifications of new features for testing
 
@@ -565,7 +573,9 @@ C--   SEAICE_OLD_AND_BAD_DISCRETIZATION is obsolete: issue warning and stop.
 #endif /* SEAICE_OLD_AND_BAD_DISCRETIZATION */
 
 C--   pkg/seaice requires pkg/exf with following CPP options/
-      IF ( usePW79thermodynamics .OR. .NOT.useCheapAML ) THEN
+C jmc: strickly true for Thermodynamics parts since Dynamics can be used
+C      without EXF (assuming a simple scaling of wind-stress over ice)
+      IF ( usePW79thermodynamics ) THEN
 #ifndef ALLOW_EXF
          WRITE(msgBuf,'(A)')
      &        'need to define ALLOW_EXF'
@@ -658,6 +668,7 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
          ENDIF
 #endif
 #endif /* ALLOW_EXF */
+C     end if usePW79thermodynamics
       ENDIF
 
       IF ( OLx.LT.3 .OR. OLy.LT.3 ) THEN
@@ -701,10 +712,10 @@ C--   pkg/seaice requires pkg/exf with following CPP options/
       ENDIF
 #else
       IF ( SEAICEuseEVP ) THEN
-       WRITE(msgBuf,'(A)') 
+       WRITE(msgBuf,'(A)')
      &      'SEAICE_CHECK: SEAICEuseEVP = .TRUE., so EVP is turned on'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)') 
+       WRITE(msgBuf,'(A)')
      &      'SEAICE_CHECK: by setting appropriate runtime parameters,'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: but cpp-flag '//
@@ -936,7 +947,7 @@ C     If useThSice=.TRUE., do not reset it here, but issue a warning
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A)') '** WARNING ** SEAICE_CHECK: '//
-     &      'If you want the ITD code, set useThSice=.FALSE.'       
+     &      'If you want the ITD code, set useThSice=.FALSE.'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
