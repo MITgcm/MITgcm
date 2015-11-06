@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check.F,v 1.9 2015/07/29 00:48:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check.F,v 1.10 2015/11/06 22:32:52 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -44,8 +44,8 @@ CEOP
      &                     SQUEEZE_RIGHT, myThid )
 
 C--   Check parameter consistency:
-      IF ( .NOT.( useBulkForce .OR. useEXF .OR.
-     &            useAIM .OR. useCheapAML .OR. useATM2d ) ) THEN
+      IF ( .NOT.( thSIce_skipThermo .OR. useBulkForce .OR. useEXF
+     &       .OR. useAIM .OR. useCheapAML .OR. useATM2d ) ) THEN
 C-    need some form of ATM-surface pkg to provide Air-Ice surf fluxes
         WRITE(msgBuf,'(2A)')
      &   'THSICE_CHECK: needs some PKG (EXF,Bulk-Force,AIM,CheapAML)'
