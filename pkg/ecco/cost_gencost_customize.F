@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.17 2015/08/10 01:17:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.18 2015/11/08 03:14:04 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -138,10 +138,10 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
          elseif (gencost_barfile(k)(1:9).EQ.'m_vstress') then
            gencost_modfld(i,j,bi,bj,k) = 
      &      mertau(i,j,bi,bj)*maskC(i,j,1,bi,bj)
-         elseif (gencost_barfile(k)(1:9).EQ.'m_uwind') then
+         elseif (gencost_barfile(k)(1:7).EQ.'m_uwind') then
            gencost_modfld(i,j,bi,bj,k) =
      &      zonwind(i,j,bi,bj)*maskC(i,j,1,bi,bj)
-         elseif (gencost_barfile(k)(1:9).EQ.'m_vwind') then
+         elseif (gencost_barfile(k)(1:7).EQ.'m_vwind') then
            gencost_modfld(i,j,bi,bj,k) =
      &      merwind(i,j,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:7).EQ.'m_atemp') then
@@ -165,7 +165,7 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
 #endif
 #ifdef ALLOW_CTRL
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-         elseif (gencost_barfile(k)(1:15).EQ.'m_bottomdrag') then
+         elseif (gencost_barfile(k)(1:12).EQ.'m_bottomdrag') then
            gencost_modfld(i,j,bi,bj,k) =
      &      bottomDragFld(i,j,bi,bj)*maskC(i,j,1,bi,bj)
 #endif
@@ -199,13 +199,13 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
             gencost_mod3d(i,j,k2,bi,bj,kk) =
      &       salt(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
            enddo
-         elseif (gencost_barfile(k)(1:7).EQ.'m_UE') then
+         elseif (gencost_barfile(k)(1:4).EQ.'m_UE') then
            kk=gencost_pointer3d(k)
            do k2=1,nr
             gencost_mod3d(i,j,k2,bi,bj,kk) =
      &       m_UE(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
            enddo
-         elseif (gencost_barfile(k)(1:6).EQ.'m_VN') then
+         elseif (gencost_barfile(k)(1:4).EQ.'m_VN') then
            kk=gencost_pointer3d(k)
            do k2=1,nr
             gencost_mod3d(i,j,k2,bi,bj,kk) =
