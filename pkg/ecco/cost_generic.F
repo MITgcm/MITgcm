@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.36 2015/10/29 15:08:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.37 2015/11/08 03:12:56 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -240,7 +240,7 @@ c     == local variables ==
       integer il, k2
       integer localrec, obsrec
       integer nrecloop, nrecclim, k2smooth
-      logical domean, doanom, dovarwei, doclim, dosmooth
+      logical domean, doanom, dovarwei, doclim, dosmooth, dosumsq
 
       _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
 
@@ -280,6 +280,7 @@ CEOP
       call ecco_zero(localdifsum,Nr,zeroRL,myThid)
       call ecco_zero(localdifnum,Nr,zeroRL,myThid)
 
+      dosumsq=.TRUE.
       domean=.FALSE.
       doanom=.FALSE.
       dovarwei=.FALSE.
@@ -291,6 +292,7 @@ CEOP
           if (preproc(k2).EQ.'mean') domean=.TRUE.
           if (preproc(k2).EQ.'anom') doanom=.TRUE.
           if (preproc(k2).EQ.'variaweight') dovarwei=.TRUE.
+          if (preproc(k2).EQ.'nosumsq') dosumsq=.FALSE.
           if (posproc(k2).EQ.'smooth') then
             dosmooth=.TRUE.
             k2smooth=k2
@@ -372,11 +374,10 @@ c--     Compute masked model-data difference
 
 c--     Compute normalized model-obs cost function
         call ecco_addcost(
-     I                   localdif, localweight, difmask, nnzobs,
-     I                   objf_local, num_local,
-     I                   myThid
-     &                   )
-
+     I             localdif, localweight, difmask, nnzobs, dosumsq,
+     U             objf_local, num_local,
+     I             myThid
+     &             )
 c--     output model-data difference to disk
         if ( outlev.GT.0 ) then
           il=ilnblnk(outname)
@@ -401,8 +402,8 @@ c--   End of loop over obsfile records.
       if ( domean ) then
 c--     Compute normalized model-obs cost function
         call ecco_addcost(
-     I       localdifmeanOut, localweight, localdifmsk, nnzobs,
-     I       objf_local, num_local, myThid)
+     I      localdifmeanOut, localweight, localdifmsk, nnzobs, dosumsq,
+     U      objf_local, num_local, myThid)
 
 c--     output model-data difference to disk
         if ( outlev.GT.0 ) then

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.9 2015/05/26 17:09:29 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.10 2015/11/08 03:12:56 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -517,10 +517,10 @@ CBOP
 C     !ROUTINE: ecco_addcost
 C     !INTERFACE:
       subroutine ecco_addcost(
-     I                   localdif, localweight, difmask, nnzobs,
-     I                   objf_local, num_local,
-     I                   myThid
-     &                   )
+     I               localdif, localweight, difmask, nnzobs, dosumsq,
+     U               objf_local, num_local,
+     I               myThid
+     &               )
 
 C     !DESCRIPTION: \bv
 C     adds to a cost function term
@@ -548,6 +548,8 @@ c     == routine arguments ==
 
       _RL objf_local(nsx,nsy)
       _RL num_local(nsx,nsy)
+
+      logical dosumsq
 
 #ifdef ALLOW_ECCO
 
@@ -587,7 +589,11 @@ c--     Compute normalized model-obs cost function
                 localwww  = localweight(i,j,k,bi,bj)
      &                    * difmask(i,j,k,bi,bj)
                 junk      = localdif(i,j,k,bi,bj)
-                localcost = localcost + junk*junk*localwww
+                if(dosumsq) then
+                  localcost = localcost + junk*junk*localwww
+                else
+                  localcost = localcost + junk*localwww
+                endif
                 if ( localwww .ne. 0. )
      &               num_local(bi,bj) = num_local(bi,bj) + 1. _d 0
               enddo

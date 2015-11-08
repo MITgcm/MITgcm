@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.18 2015/10/29 00:52:33 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.19 2015/11/08 03:12:56 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -76,9 +76,10 @@ c old:heff -> model has excess of iceconc     -> new:exconc
       integer jmin,jmax
       integer imin,imax
       integer irec, jrec
-      integer  il
+      integer  il, k2
       integer localrec
       integer obsrec
+      logical dosumsq, dovarwei
 
       integer preproc_i(NGENPPROC)
       _RL preproc_r(NGENPPROC)
@@ -115,6 +116,7 @@ c     == end of interface ==
       imax = snx
 
 c=============== PART 0: initilization ===================
+
 c-- detect the relevant gencost indices
       igen_conc=0
       igen_deconc=0
@@ -169,10 +171,17 @@ c--   Initialise local variables.
       localperiod=gencost_period(igen_conc)
       nrecloc=gencost_nrec(igen_conc)
 
-      preproc(1)=gencost_preproc(1,igen_conc)
-      preproc_i(1)=gencost_preproc_i(1,igen_conc)
-      preproc_c(1)=gencost_preproc_c(1,igen_conc)
-      preproc_r(1)=gencost_preproc_r(1,igen_conc)
+c-- flag to add cost: true=(obs-mod)*(obs-mod)*weight
+      dosumsq=.TRUE.
+      dovarwei=.FALSE.
+      do k2 = 1, NGENPPROC
+        preproc(k2)=gencost_preproc(k2,igen_conc)
+        preproc_i(k2)=gencost_preproc_i(k2,igen_conc)
+        preproc_c(k2)=gencost_preproc_c(k2,igen_conc)
+        preproc_r(k2)=gencost_preproc_r(k2,igen_conc)
+        if (preproc(k2).EQ.'variaweight') dovarwei=.TRUE.
+        if (preproc(k2).EQ.'nosumsq') dosumsq=.FALSE.
+      enddo
 
 c-- initialize arrays, copy maskC to localmask
       call ecco_zero(localobs,1,spzeroloc,myThid)
@@ -191,7 +200,7 @@ c--------- PART 1.1 read weights --------------------
 c====================================================
         exst=.FALSE.
         jrec=1
-        if(preproc(1).EQ.'variaweight') jrec = irec
+        if( dovarwei ) jrec = irec
         call cost_gencal(areabarfile,gencost_errfile(igen_conc),
      &     jrec, localstartdate, localperiod, fname1,
      &     fname0w, localrec, obsrec, exst, mythid)
@@ -271,7 +280,7 @@ c compute obs minus bar (localdif) and mask (difmask)
 
 c---1.4.A area term:
         call ecco_addcost(
-     I     localdif,localweight,difmask,nnzsiv4,
+     I     localdif,localweight,difmask,nnzsiv4,dosumsq,
      O     objf_gencost(1,1,igen_conc),num_gencost(1,1,igen_conc),
      I     mythid)
 
@@ -288,7 +297,7 @@ c Add ice: model_A==0 but obs_A > 0, calc enthalpy E:
      O    localdif,difmask1,localtmp,
      I    myThid )
         call ecco_addcost(
-     I      localdif,localtmp,difmask1,nnzsiv4,
+     I      localdif,localtmp,difmask1,nnzsiv4,dosumsq,
      O      objf_gencost(1,1,igen_deconc),num_gencost(1,1,igen_deconc),
      I      mythid)
         endif
@@ -306,7 +315,7 @@ c Removing ice: model_A > 0 but obs_A==0, calc enthalpy E:
      O    localdif,difmask1,localtmp,
      I    myThid )
         call ecco_addcost(
-     I      localdif,localtmp,difmask1,nnzsiv4,
+     I      localdif,localtmp,difmask1,nnzsiv4,dosumsq,
      O      objf_gencost(1,1,igen_exconc),num_gencost(1,1,igen_exconc),
      I      mythid)
         endif
