@@ -20,6 +20,7 @@ cost_gencost_sstv4.f
 cost_gencost_seaicev4.f
 cost_gencost_bpv4.f
 cost_gencost_boxmean.f
+cost_gencost_transp.f
 cost_gencal.f
 cost_genread.f
 cost_gen_transport.f
