@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.3 2015/08/10 01:17:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.4 2015/11/10 08:05:06 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -134,6 +134,56 @@ c    &                       SQUEEZE_RIGHT, myThid )
       CALL ROTATE_UV2EN_RL(
      U          uVel, vVel, m_UE, m_VN,
      I          .TRUE., .TRUE., .FALSE., Nr, mythid )
+
+
+#ifdef ALLOW_GENCOST_TRANSPORT
+c--   trVol : volume flux    --- [m^3/sec] (order of 10^6 = 1 Sv)
+c--   trHeat: heat transport --- [Watt] (order of 1.E15 = PW)
+c--   trSalt: salt transport --- [kg/sec] (order 1.E9 equiv. 1 Sv in vol.)
+c--       convert from [ppt*m^3/sec] via rhoConst/1000.
+c--       ( 1ppt = 1000*[mass(salt)]/[mass(seawater)] )
+
+c-- init
+      call ecco_zero(trVolW,Nr,zeroRL,myThid)
+      call ecco_zero(trVolS,Nr,zeroRL,myThid)
+      call ecco_zero(trHeatW,Nr,zeroRL,myThid)
+      call ecco_zero(trHeatS,Nr,zeroRL,myThid)
+      call ecco_zero(trSaltW,Nr,zeroRL,myThid)
+      call ecco_zero(trSaltS,Nr,zeroRL,myThid)
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+          do k = 1,nr
+            do j = 1,sNy
+              do i =  1,sNx
+                trVolW(i,j,k,bi,bj) =
+     &                             uVel(i,j,k,bi,bj)*hFacW(i,j,k,bi,bj)
+     &                            *dyG(i,j,bi,bj)*drF(k)
+                trVolS(i,j,k,bi,bj) =
+     &                             vVel(i,j,k,bi,bj)*hFacS(i,j,k,bi,bj)
+     &                            *dxG(i,j,bi,bj)*drF(k)
+
+                trHeatW(i,j,k,bi,bj) = trVolW(i,j,k,bi,bj)
+     &                *(theta(i,j,k,bi,bj)+theta(i-1,j,k,bi,bj))*halfRL
+     &                *HeatCapacity_Cp*rhoConst
+                trHeatS(i,j,k,bi,bj) = trVolS(i,j,k,bi,bj)
+     &                *(theta(i,j,k,bi,bj)+theta(i,j-1,k,bi,bj))*halfRL
+     &                *HeatCapacity_Cp*rhoConst
+
+                trSaltW(i,j,k,bi,bj) = trVolW(i,j,k,bi,bj)
+     &                *(salt(i,j,k,bi,bj)+salt(i-1,j,k,bi,bj))*halfRL
+     &                *rhoConst/1000.
+                trSaltS(i,j,k,bi,bj) = trVolS(i,j,k,bi,bj)
+     &                *(salt(i,j,k,bi,bj)+salt(i,j-1,k,bi,bj))*halfRL
+     &                *rhoConst/1000.
+                
+              enddo
+            enddo
+          enddo
+        enddo
+      enddo
+
+#endif /* ALLOW_GENCOST_TRANSPORT */
 
       return
       end

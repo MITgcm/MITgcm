@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.12 2015/10/26 14:10:18 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.13 2015/11/10 08:05:06 atn Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -131,6 +131,11 @@ c                 the current model integration.
 
       common /ecco_r/
      &                    m_eta,m_UE,m_VN,
+#ifdef ALLOW_GENCOST_TRANSPORT
+     &                    trVolW,  trVolS,
+     &                    trHeatW, trHeatS,
+     &                    trSaltW, trSaltS,
+#endif /* ALLOW_GENCOST_TRANSPORT */
      &                    VOLsumGlob_0, VOLsumGlob,
      &                    RHOsumGlob_0, RHOsumGlob,
      &                    frame, cosphi
@@ -140,6 +145,14 @@ c                 the current model integration.
       _RL m_eta(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL m_UE (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL m_VN (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#ifdef ALLOW_GENCOST_TRANSPORT
+      _RL trVolW (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL trVolS (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL trHeatW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL trHeatS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL trSaltW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL trSaltS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif /* ALLOW_GENCOST_TRANSPORT */
 
 c     file precision and field type
       common /prec_type_cost/
@@ -211,6 +224,11 @@ c     objf_gencost - gencost user defined contribution
      &       gencost_barfld, gencost_modfld, gencost_weight,
 #ifdef ALLOW_GENCOST3D
      &       gencost_bar3d, gencost_mod3d, gencost_wei3d,
+#ifdef ALLOW_GENCOST_TRANSPORT
+     &       gencost_bar3dW,gencost_bar3dS,
+     &       gencost_mod3dW,gencost_mod3dS,
+     &       gencost_wei3dW,gencost_wei3dS,
+#endif
 #endif
      &       gencost_spmin, gencost_spmax, gencost_spzero,
      &       gencost_period, gencost_preproc_r, gencost_posproc_r
@@ -235,6 +253,20 @@ c     objf_gencost - gencost user defined contribution
      &       nr,nsx,nsy,NGENCOST3D)
       _RL  gencost_wei3d(1-olx:snx+olx,1-oly:sny+oly,
      &       nr,nsx,nsy,NGENCOST3D)
+#ifdef ALLOW_GENCOST_TRANSPORT
+      _RL  gencost_bar3dW(1-olx:snx+olx,1-oly:sny+oly,
+     &       nr,nsx,nsy)
+      _RL  gencost_bar3dS(1-olx:snx+olx,1-oly:sny+oly,
+     &       nr,nsx,nsy)
+      _RL  gencost_mod3dW(1-olx:snx+olx,1-oly:sny+oly,
+     &       nr,nsx,nsy)
+      _RL  gencost_mod3dS(1-olx:snx+olx,1-oly:sny+oly,
+     &       nr,nsx,nsy)
+      _RL  gencost_wei3dW(1-olx:snx+olx,1-oly:sny+oly,
+     &       nr,nsx,nsy)
+      _RL  gencost_wei3dS(1-olx:snx+olx,1-oly:sny+oly,
+     &       nr,nsx,nsy)
+#endif /* ALLOW_GENCOST_TRANSPORT */
 #endif
       _RL gencost_preproc_r(NGENPPROC,NGENCOST)
       _RL gencost_posproc_r(NGENPPROC,NGENCOST)

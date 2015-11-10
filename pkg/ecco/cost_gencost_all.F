@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.20 2015/10/23 14:26:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.21 2015/11/10 08:05:06 atn Exp $
 C $Name:  $
 #include "ECCO_OPTIONS.h"
 
@@ -92,6 +92,9 @@ c     == end of interface ==
 
       call cost_gencost_boxmean( mythid )
       call cost_gencost_bpv4( mythid )
+#ifdef ALLOW_GENCOST_TRANSPORT
+      call cost_gencost_transp( mythid )
+#endif
       IF (using_cost_altim) call cost_gencost_sshv4( mythid )
       IF (using_cost_sst) call cost_gencost_sstv4( mythid )
       IF (using_cost_seaice) call cost_gencost_seaicev4( mythid )

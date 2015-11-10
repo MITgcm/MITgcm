@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.53 2015/08/06 20:33:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.54 2015/11/10 08:05:06 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -106,6 +106,13 @@ c     == local variables ==
       integer sum1gen(NGENCOST)
       integer genrec(NGENCOST)
       integer kk
+#ifdef ALLOW_GENCOST_TRANSPORT
+c      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      character*(MAX_LEN_FNAM) tempbarfile
+      integer il
+      integer  ilnblnk
+      external ilnblnk
+#endif
 #endif
 #if (defined (ALLOW_CTRL) && \
      defined (ALLOW_GENTIM2D_CONTROL) && \
@@ -700,7 +707,10 @@ cmm   accumulate average
 #ifdef ALLOW_GENCOST3D
       else
         kk=gencost_pointer3d(k)
-        call cost_averagesgeneric(
+#ifdef ALLOW_GENCOST_TRANSPORT
+        if(.not. (gencost_name(k)(1:6).eq.'transp')) then
+#endif
+          call cost_averagesgeneric(
      &       gencost_barfile(k),
      &       gencost_bar3d(1-Olx,1-Oly,1,1,1,kk),
      &       gencost_mod3d(1-Olx,1-Oly,1,1,1,kk),
@@ -708,6 +718,33 @@ cmm   accumulate average
      &       first, last,
      &       startofgen(k), endofgen(k), ingen(k),
      &       sum1gen(k), genrec(k), nr, mythid )
+#ifdef ALLOW_GENCOST_TRANSPORT
+        else
+          il=ilnblnk(gencost_barfile(k))
+          write(tempbarfile(1:MAX_LEN_FNAM),'(2A)') 
+     &       gencost_barfile(k)(1:il),'W'
+          call cost_averagesgeneric(
+     &       tempbarfile,
+     &       gencost_bar3dW(1-Olx,1-Oly,1,1,1),
+     &       gencost_mod3dW(1-Olx,1-Oly,1,1,1),
+     &       gencost_dummy(k),
+     &       first, last,
+     &       startofgen(k), endofgen(k), ingen(k),
+     &       sum1gen(k), genrec(k), nr, mythid )
+
+          il=ilnblnk(gencost_barfile(k))
+          write(tempbarfile(1:MAX_LEN_FNAM),'(2A)') 
+     &       gencost_barfile(k)(1:il),'S'
+          call cost_averagesgeneric(
+     &       tempbarfile,
+     &       gencost_bar3dS(1-Olx,1-Oly,1,1,1),
+     &       gencost_mod3dS(1-Olx,1-Oly,1,1,1),
+     &       gencost_dummy(k),
+     &       first, last,
+     &       startofgen(k), endofgen(k), ingen(k),
+     &       sum1gen(k), genrec(k), nr, mythid )
+        endif
+#endif /* ALLOW_GENCOST_TRANSPORT */
 #endif
       endif
 
