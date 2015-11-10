@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.26 2015/10/27 02:37:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.27 2015/11/10 05:09:10 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -162,6 +162,165 @@ catn-- put stop statement if use old siv4 names:
            CALL PRINT_ERROR( msgBuf , myThid )
            STOP 'ABNORMAL END: S/R ECCO_CHECK'
          endif
+
+c-atn add another block for cost that do not need datafile but 
+c should have checks for other things:
+c here, separate into different gencost_flag block
+         else  !if ( gencost_datafile(k) .ne. ' ' ) then
+c---------------- block -1 ----------------------------
+c block -1: cost ssh-[mdt,lsc,amsre-lsc] do not need datafile
+c but need errfile. at the moment do not accomodate variaweight.
+          if(gencost_flag(k).eq. -1) then
+            if(gencost_errfile(k) .ne. ' ') then
+             il = ilnblnk(gencost_errfile(k))
+             inquire( file=gencost_errfile(k)(1:il), exist=exst )
+             if (.NOT.exst) then
+              using_gencost(k)=.FALSE.
+              il = ilnblnk(gencost_name(k))
+              WRITE(msgBuf,'(4A)')
+     &          '** WARNING ** ECCO_CHECK_FILES: missing error file',
+     &          ' so ',gencost_name(k)(1:il),' gets switched off'
+              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                   SQUEEZE_RIGHT , myThid)
+             endif
+            elseif(.not.(gencost_name(k).eq.'sshv4-gmsl')) then
+             using_gencost(k)=.FALSE.
+             il = ilnblnk(gencost_name(k))
+             WRITE(msgBuf,'(4A)')
+     &        '** WARNING ** ECCO_CHECK_FILES: error file not defined',
+     &        ' so ',gencost_name(k)(1:il),' gets switched off'
+             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                  SQUEEZE_RIGHT , myThid)
+            endif
+
+c---------------- block -3 ----------------------------
+c-- boxmean: require [err,bar]file, can have datafile, not checked here
+c-- also not checked for variwei at the moment
+          elseif(gencost_flag(k) .eq. -3 ) then
+           WRITE(msgBuf,'(A,i3,L5)')
+     &     'entering boxmean check,k,using_gencost(k): ,',
+     &     k,using_gencost(k)
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT , myThid)
+c-- check errfile
+           if ( gencost_errfile(k) .NE. ' ' ) then
+            il = ilnblnk(gencost_errfile(k))
+            inquire( file=gencost_errfile(k)(1:il), exist=exst )
+            if (.NOT.exst) then
+              using_gencost(k)=.FALSE.
+              il = ilnblnk(gencost_name(k))
+              WRITE(msgBuf,'(4A)')
+     &          '** WARNING ** ECCO_CHECK_FILES: missing error file',
+     &          ' so ',gencost_name(k)(1:il),' gets switched off'
+              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                   SQUEEZE_RIGHT , myThid)
+            endif
+           endif!errfile
+
+c-- check barfile, make sure character m_[theta,salt] match exactly
+c-- (upper/lower-case matters) in cost_gencost_customize
+           if (.not.( (gencost_barfile(k)(1:7).EQ.'m_theta').OR.
+     &                (gencost_barfile(k)(1:6).EQ.'m_salt') )) then
+            using_gencost(k)=.FALSE.
+            il=ilnblnk(gencost_barfile(k))
+            WRITE(msgBuf,'(3A)')
+     &      '** WARNING ** S/R ECCO_CHECK: barfile ',
+     &      gencost_barfile(k)(1:il),': has no matched model var.'
+            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
+            WRITE(msgBuf,'(A)') 'Edit cost_gencost_customize to fix. '
+            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
+            il = ilnblnk(gencost_name(k))
+          WRITE(msgBuf,'(2A)') gencost_name(k)(1:il),' is switched off'
+            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
+           endif !barfile
+
+#ifdef ALLOW_GENCOST_TRANSPORT
+c---------------- block -4 ----------------------------
+c-- transs: require [err,bar][W,S]file, can have datafile, but
+c-- not checked here. also not checked for variwei at the moment
+         elseif ( gencost_flag(k).eq. -4 ) then
+          WRITE(msgBuf,'(A,i3,L5)')
+     &     'entering gencost transp check,k,using_gencost(k): ,',
+     &     k,using_gencost(k)
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT , myThid)
+
+c-- check errfile[W,S]
+          if ( gencost_errfile(k) .NE. ' ' ) then
+c-- West
+           il = ilnblnk(gencost_errfile(k))
+           write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'W'
+           il = ilnblnk(tempfile)
+           write(msgBuf,'(2A)') 'checking file ',tempfile(1:il)
+           inquire( file=tempfile(1:il), exist=exst )
+           if (.NOT.exst) then
+             using_gencost(k)=.FALSE.
+             WRITE(msgBuf,'(2A)')
+     &         '** WARNING ** ECCO_CHECK_FILES: missing error file: ',
+     &         tempfile(1:il)
+             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                  SQUEEZE_RIGHT , myThid)
+             il = ilnblnk(gencost_name(k))
+             WRITE(msgBuf,'(3A)')
+     &         ' so ',gencost_name(k)(1:il),' gets switched off'
+             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                  SQUEEZE_RIGHT , myThid)
+           endif
+c-- South
+           il = ilnblnk(gencost_errfile(k))
+           write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'S'
+           il = ilnblnk(tempfile)
+           write(msgBuf,'(2A)') 'checking file ',tempfile(1:il)
+           inquire( file=tempfile(1:il), exist=exst )
+           if (.NOT.exst) then
+             using_gencost(k)=.FALSE.
+             WRITE(msgBuf,'(2A)')
+     &         '** WARNING ** ECCO_CHECK_FILES: missing error file: ',
+     &         tempfile(1:il)
+             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                  SQUEEZE_RIGHT , myThid)
+             il = ilnblnk(gencost_name(k))
+             WRITE(msgBuf,'(3A)')
+     &         ' so ',gencost_name(k)(1:il),' gets switched off'
+             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                  SQUEEZE_RIGHT , myThid)
+           endif
+          else
+           using_gencost(k)=.FALSE.
+           il=ilnblnk(gencost_name(k))
+           WRITE(msgBuf,'(4A)')
+     &     '** WARNING ** ECCO_CHECKD: errfile not defined',
+     &     ' so ',gencost_name(k)(1:il),' gets switched off'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &               SQUEEZE_RIGHT , myThid)
+
+          endif!errfile
+c-- check barfile, make sure character m_tr[Vol,Heat,Salt] match exactly
+c-- (upper/lower-case matters) in cost_gencost_customize
+          if(.not.( (gencost_barfile(k)(1:7).EQ.'m_trVol') .OR.
+     &              (gencost_barfile(k)(1:8).EQ.'m_trHeat').OR.
+     &              (gencost_barfile(k)(1:8).EQ.'m_trSalt') )) then
+           using_gencost(k)=.FALSE.
+           il=ilnblnk(gencost_barfile(k))
+           WRITE(msgBuf,'(3A)')
+     &     '** WARNING ** S/R ECCO_CHECK: barfile ',
+     &     gencost_barfile(k)(1:il),': has no matched model var.'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(A)') 'Edit cost_gencost_customize to fix. '
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           il = ilnblnk(gencost_name(k))
+           WRITE(msgBuf,'(2A)') gencost_name(k)(1:il),' is switched off'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+          endif !barfile
+#endif /* ALLOW_GENCOST_TRANSPORT */
+
+         endif  !gencost_flag
 
          endif !if ( gencost_datafile(k) .ne. ' ' ) then
       enddo
