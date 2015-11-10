@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.27 2015/11/10 05:09:10 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.28 2015/11/10 13:58:14 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -45,6 +45,9 @@ C     msgBuf      - Informational/error meesage buffer
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       INTEGER k, igen_etaday, il
       LOGICAL exst
+#ifdef ALLOW_GENCOST_TRANSPORT
+      CHARACTER*(128) tempfile
+#endif /* ALLOW_GENCOST_TRANSPORT */
 #endif
 
 c     == external functions ==
@@ -268,6 +271,10 @@ c-- West
      &         ' so ',gencost_name(k)(1:il),' gets switched off'
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
+           else
+c-- will move to init perhaps, but leave here for now
+             call ecco_zero(msktrVolW,Nr,zeroRL,mythid)
+             call ecco_readwei(tempfile,msktrVolW,1,Nr,mythid)
            endif
 c-- South
            il = ilnblnk(gencost_errfile(k))
@@ -287,6 +294,10 @@ c-- South
      &         ' so ',gencost_name(k)(1:il),' gets switched off'
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
+           else
+c-- will move to init perhaps, but leave here for now
+             call ecco_zero(msktrVolS,Nr,zeroRL,mythid)
+             call ecco_readwei(tempfile,msktrVolW,1,Nr,mythid)
            endif
           else
            using_gencost(k)=.FALSE.
@@ -319,7 +330,6 @@ c-- (upper/lower-case matters) in cost_gencost_customize
      &                         SQUEEZE_RIGHT, myThid )
           endif !barfile
 #endif /* ALLOW_GENCOST_TRANSPORT */
-
          endif  !gencost_flag
 
          endif !if ( gencost_datafile(k) .ne. ' ' ) then

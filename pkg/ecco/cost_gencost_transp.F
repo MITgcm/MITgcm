@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_transp.F,v 1.1 2015/11/10 08:08:42 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_transp.F,v 1.2 2015/11/10 13:58:14 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -43,20 +43,11 @@ c     == local variables ==
       integer nrecloc, localrec
       integer localstartdate(4)
 
-c      _RL modelmskS(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-c      _RL modelmskW(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL myobsS     (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL myobsW     (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL mybarS     (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL mybarW     (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL mymskS     (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL mymskW     (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL localdifW  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL localdifS  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL difmaskW   (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL difmaskS   (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL localweightS(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL localweightW(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL myobs     (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL mybar     (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL localdif  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL difmask   (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL localweight(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL localtmp   (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
       _RL dummy,fac
@@ -66,9 +57,8 @@ c      _RL modelmskW(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL tmpMeanTile(nSx,nSy),tmpNumTile(nSx,nSy)
       _RL tmpMeanGlo,tmpNumGlo
 
-      character*(MAX_LEN_FNAM) mybarfileW,mybarfileS
-      character*(MAX_LEN_FNAM) myobsfileW,myobsfileS
-      character*(MAX_LEN_FNAM) mymskfileW,mymskfileS
+      character*(MAX_LEN_FNAM) mybarfile
+      character*(MAX_LEN_FNAM) myobsfile
 
       integer kgen
       integer bi,bj
@@ -88,7 +78,7 @@ c      _RL modelmskW(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       logical doglobalread
       logical ladinit
       character*(MAX_LEN_MBUF) msgbuf
-      character*(128) fnameS,fnameW,fname0
+      character*(128) fname1, fname0
 
       logical exst
 
@@ -153,73 +143,26 @@ c-- only enters if there is at least 1 record
             if (.not.(preproc(k2).EQ.'nosumsq')) dosumsq=.TRUE.
           enddo
 
-c-- write some diagnostics of actual files opened here:
-c          write(msgbuf,'(A)') 'Inside cost_gencost_transp: '
-c          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-c     &                        SQUEEZE_RIGHT, myThid )
+c-- set mybarfile
+          mybarfile=gencost_barfile(kgen)
 
-c-- set barfile
-          il=ilnblnk(gencost_barfile(kgen))
-          write(mybarfileW(1:MAX_LEN_FNAM),'(2A)')
-     &        gencost_barfile(kgen)(1:il),'W'
-          write(mybarfileS(1:MAX_LEN_FNAM),'(2A)')
-     &        gencost_barfile(kgen)(1:il),'S'
+c-- write some diagnostics of actual files opened here:
+          write(msgbuf,'(A)') 'Inside cost_gencost_transp: '
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
 
 c-- set obsfile if defined
           doreadobs=.FALSE.
           if( .not. gencost_datafile(kgen).eq.' ') doreadobs=.TRUE.
-          if( doreadobs ) then
-            il=ilnblnk(gencost_datafile(kgen))
-            write(myobsfileW(1:MAX_LEN_FNAM),'(2A)')
-     &        gencost_datafile(kgen)(1:il),'W'
-            write(myobsfileS(1:MAX_LEN_FNAM),'(2A)')
-     &        gencost_datafile(kgen)(1:il),'S'
-          endif !doreadobs
-
-c-- store mask in errfile
-          il=ilnblnk(gencost_errfile(kgen))
-          write(mymskfileW(1:MAX_LEN_FNAM),'(2A)') 
-     &        gencost_errfile(kgen)(1:il),'W'
-          write(mymskfileS(1:MAX_LEN_FNAM),'(2A)') 
-     &        gencost_errfile(kgen)(1:il),'S'
-
-c initialize obs to zeros if not read in obs
-          if(.not. doreadobs) then
-            call ecco_zero(myobsW,Nr,zeroRL,myThid)
-            call ecco_zero(myobsS,Nr,zeroRL,myThid)
-          endif
 
 c model mask[W,S], 
 c note calc transp in ecco_phys have already include mask[W,S]
-c          call ecco_zero(modelmskW,Nr,zeroRL,myThid)
-c          call ecco_zero(modelmskS,Nr,zeroRL,myThid)
-c          call ecco_cprsrl(maskW,Nr,modelmskW,Nr,myThid)
-c          call ecco_cprsrl(maskS,Nr,modelmskS,Nr,myThid)
 
 c====================================================
 c--------- PART 0.1 read weights --------------------
 c====================================================
+c-- store mask in errfile, already stored in ecco.h under msktrVol[W,S]
 c-- for now, assume non-time-variable mask:
-          call ecco_zero(mymskW,1,zeroRL,myThid)
-          call ecco_zero(mymskS,1,zeroRL,myThid)
-          call ecco_readwei(mymskfileW,mymskW,1,Nr,myThid)
-          call ecco_readwei(mymskfileS,mymskS,1,Nr,myThid)
-
-c-- get a mask of where to count the data points
-c-- these two fields localweight[W,S] will be used in ecco_addcost
-c-- for the purpose of counting number of obs.  Right now they do
-c-- not have a real meaning as a transport per irec is 1 record,
-c-- but works for syntax in ecco_addcost: junk*localweight
-c-- localweight is binary 0/1
-          call ecco_zero(localtmp,Nr,zeroRL,myThid)
-          call ecco_zero(localweightW,Nr,zeroRL,myThid)
-          call ecco_addmask(localtmp,mymskW,Nr,localtmp,localweightW,
-     &                      Nr,myThid)
-
-          call ecco_zero(localtmp,Nr,zeroRL,myThid)
-          call ecco_zero(localweightS,Nr,zeroRL,myThid)
-          call ecco_addmask(localtmp,mymskS,Nr,localtmp,localweightS,
-     &                       Nr,myThid)
 
 c=============== PART 1: main loop ===================
           do irec = 1,nrecloc
@@ -227,51 +170,38 @@ c====================================================
 c--------- PART 1.1 read barfiles ------------------
 c====================================================
 c-- set all bars to zeros:
-            call ecco_zero(mybarW,Nr,zeroRL,myThid)
-            call ecco_zero(mybarS,Nr,zeroRL,myThid)
+            call ecco_zero(mybar,Nr,zeroRL,myThid)
 
-c-- 1.1.A West
-c mymskfileW and fname0 are dummy, get fnameW from mybarfileW
+c gencost_errfile and fname0 are dummy, get fname0 from mybarfile
+          write(msgbuf,'(A)') 'pre- read mybarfile'
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
             exst=.FALSE.
             call ecco_zero(localtmp,Nr,zeroRL,myThid)
-            call cost_gencal(mybarfileW,mymskfileW,
-     &       irec,localstartdate,localperiod,fnameW,
+            call cost_gencal(mybarfile,gencost_errfile(kgen),
+     &       irec,localstartdate,localperiod,fname1,
      &       fname0,localrec,obsrec,exst,mythid)
-            call cost_genread(fnameW,mybarW,localtmp,irec,nnzbar,
+          il=ilnblnk(fname1)
+          write(msgbuf,'(2A)') 'mybarfile:',fname1(1:il)
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+            call cost_genread(fname1,mybar,localtmp,irec,nnzbar,
      &       nrecloc,preproc,preproc_c,preproc_i,preproc_r,
      &       dummy,mythid)
-
-c-- 1.1.B South
-c mymskfileS and fname0 are dummy, get fnameS from mybarfileS
-            exst=.FALSE.
-            call ecco_zero(localtmp,Nr,zeroRL,myThid)
-            call cost_gencal(mybarfileS,mymskfileS,
-     &       irec,localstartdate,localperiod,fnameS,
-     &       fname0,localrec,obsrec,exst,mythid)
-            call cost_genread(fnameS,mybarS,localtmp,irec,nnzbar,
-     &       nrecloc,preproc,preproc_c,preproc_i,preproc_r,
-     &       dummy,mythid)
+          write(msgbuf,'(A)') 'post- read mybarfile'
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
 
 c====================================================
 c--------- PART 1.2 read data --------------------
 c====================================================
 c-- ignore for now, but use doreadobs flag if needed
+c            if(doreadobs) then
+            call ecco_zero(myobs,Nr,zeroRL,myThid)
+c            endif
 
 c====================================================
-c--------- PART 1.3 Transport Mask ---------------
-c====================================================
-c-- note that can take care of mask here or in ecco_addcost
-c-- however, if/when obs is avail to read in, best to take care here.
-c-- mybar[W,S] are updated on output
-            call ecco_multfield(mymskW,nnzbar,mybarW,mythid)
-            call ecco_multfield(mymskS,nnzbar,mybarS,mythid)
-            if(doreadobs) then
-              call ecco_multfield(mymskW,nnzbar,myobsW,mythid)
-              call ecco_multfield(mymskS,nnzbar,myobsS,mythid)
-            endif
-
-c====================================================
-c--------- PART 1.4 Cost calculation -------------
+c--------- PART 1.3 Cost calculation -------------
 c====================================================
 
 c-- keep total at each irec to print out for time-series
@@ -283,29 +213,20 @@ c-- keep total at each irec to print out for time-series
             ENDDO
 
 c compute obs minus bar (localdif) and mask (difmask) 
+c note localtmp is set to 1.
             call ecco_zero(localtmp,nnzobs,oneRL,mythid)
-            call ecco_zero(localdifW,nnzobs,zeroRL,mythid)
-            call ecco_zero(localdifS,nnzobs,zeroRL,mythid)
-            call ecco_zero(difmaskW,nnzobs,zeroRL,mythid)
-            call ecco_zero(difmaskS,nnzobs,zeroRL,mythid)
+            call ecco_zero(localdif,nnzobs,zeroRL,mythid)
+            call ecco_zero(difmask,nnzobs,zeroRL,mythid)
 
             call ecco_diffmsk(
-     I       mybarW, nnzbar, myobsW, nnzobs, localtmp,
+     I       mybar, nnzbar, myobs, nnzobs, localtmp,
      I       spminloc, spmaxloc, spzeroloc,
-     O       localdifW, difmaskW,
-     I       myThid )
-            call ecco_diffmsk(
-     I       mybarS, nnzbar, myobsS, nnzobs, localtmp,
-     I       spminloc, spmaxloc, spzeroloc,
-     O       localdifS, difmaskS,
+     O       localdif, difmask,
      I       myThid )
 
+            call ecco_zero(localtmp,nnzobs,oneRL,mythid)
             call ecco_addcost(
-     I       localdifW,localweightW,difmaskW,nnzobs,dosumsq,
-     O       tmpMeanTile,tmpNumTile,
-     I       mythid)
-            call ecco_addcost(
-     I       localdifS,localweightS,difmaskS,nnzobs,dosumsq,
+     I       localdif,localtmp,difmask,nnzobs,dosumsq,
      O       tmpMeanTile,tmpNumTile,
      I       mythid)
 
