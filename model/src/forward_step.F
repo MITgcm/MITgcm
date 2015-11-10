@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.235 2015/10/26 22:38:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.236 2015/11/10 17:54:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -237,9 +237,6 @@ C     == Global variables ==
 #endif
 #ifdef ALLOW_ZONAL_FILT
 # include "ZONAL_FILT.h"
-#endif
-#ifdef COMPONENT_MODULE
-# include "CPL_PARAMS.h"
 #endif
 
 #ifdef ALLOW_LONGSTEP
