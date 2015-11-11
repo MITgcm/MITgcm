@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.6 2015/11/11 21:43:45 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.7 2015/11/11 22:44:43 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -164,7 +164,7 @@ c-- init: if done with overlap, more efficient. But since overwritten
 c immediately afterward, init is probably not needed.
           do k = 1,nr
             do j = 1-OLy,sNy+Oly
-              do i = 1-OLx:sNx+OLx
+              do i = 1-OLx,sNx+OLx
                 trVolW(i,j,k)=0. _d 0
                 trVolS(i,j,k)=0. _d 0
                 trHeatW(i,j,k)=0. _d 0
