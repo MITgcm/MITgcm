@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.28 2015/11/10 13:58:14 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.29 2015/11/11 21:43:45 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -273,8 +273,8 @@ c-- West
      &                  SQUEEZE_RIGHT , myThid)
            else
 c-- will move to init perhaps, but leave here for now
-             call ecco_zero(msktrVolW,Nr,zeroRL,mythid)
-             call ecco_readwei(tempfile,msktrVolW,1,Nr,mythid)
+             call ecco_zero(msktrVolW,1,zeroRL,mythid)
+             call ecco_readwei(tempfile,msktrVolW,1,1,mythid)
            endif
 c-- South
            il = ilnblnk(gencost_errfile(k))
@@ -296,8 +296,8 @@ c-- South
      &                  SQUEEZE_RIGHT , myThid)
            else
 c-- will move to init perhaps, but leave here for now
-             call ecco_zero(msktrVolS,Nr,zeroRL,mythid)
-             call ecco_readwei(tempfile,msktrVolW,1,Nr,mythid)
+             call ecco_zero(msktrVolS,1,zeroRL,mythid)
+             call ecco_readwei(tempfile,msktrVolW,1,1,mythid)
            endif
           else
            using_gencost(k)=.FALSE.

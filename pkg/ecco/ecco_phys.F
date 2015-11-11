@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.5 2015/11/10 13:58:14 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.6 2015/11/11 21:43:45 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -40,6 +40,7 @@ c     == local variables ==
       integer imin,imax
 
 #ifdef ALLOW_GENCOST_TRANSPORT
+c- note defined with overlap here, not needed, but more efficient
       _RL trVolW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL trVolS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL trHeatW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -159,10 +160,11 @@ c-- init
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-c-- init
+c-- init: if done with overlap, more efficient. But since overwritten
+c immediately afterward, init is probably not needed.
           do k = 1,nr
-            do j = 1,sNy
-              do i =  1,sNx
+            do j = 1-OLy,sNy+Oly
+              do i = 1-OLx:sNx+OLx
                 trVolW(i,j,k)=0. _d 0
                 trVolS(i,j,k)=0. _d 0
                 trHeatW(i,j,k)=0. _d 0
@@ -177,10 +179,12 @@ c-- init
               do i =  1,sNx
                 trVolW(i,j,k) =
      &                 uVel(i,j,k,bi,bj)*hFacW(i,j,k,bi,bj)
-     &                *dyG(i,j,bi,bj)*drF(k)*msktrVolW(i,j,k,bi,bj)
+     &                *dyG(i,j,bi,bj)*drF(k)*msktrVolW(i,j,bi,bj)
+     &                *maskInW(i,j,bi,bj)
                 trVolS(i,j,k) =
      &                 vVel(i,j,k,bi,bj)*hFacS(i,j,k,bi,bj)
-     &                *dxG(i,j,bi,bj)*drF(k)*msktrVolS(i,j,k,bi,bj)
+     &                *dxG(i,j,bi,bj)*drF(k)*msktrVolS(i,j,bi,bj)
+     &                *maskInS(i,j,bi,bj)
 
                 trHeatW(i,j,k) = trVolW(i,j,k)
      &                *(theta(i,j,k,bi,bj)+theta(i-1,j,k,bi,bj))*halfRL
