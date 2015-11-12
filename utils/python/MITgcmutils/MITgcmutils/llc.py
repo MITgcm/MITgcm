@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/llc.py,v 1.7 2015/11/09 14:07:51 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/llc.py,v 1.8 2015/11/12 08:58:30 mlosch Exp $
 # $Name:  $
 import sys
 import numpy as np
@@ -160,11 +160,16 @@ def _flat2D(fld, center='Atlantic'):
                             tmp[0::n,:].transpose()))
     # Arctic face is special
     arctic  = fld[2*(n*nx):2*(n*nx)+nx,:]
-    arctice = np.concatenate((arctic[::-1,:nx/2].transpose(),
+    arctice = np.concatenate((np.triu(arctic[::-1,:nx/2].transpose()),
                               np.zeros((nx/2,nx))),axis=1)
-    arcticw = np.concatenate((arctic[:,nx:nx/2-1:-1].transpose(),
-                              np.zeros((nx/2,nx/2)),
-                              arctic[nx:nx/2-1:-1,nx/2-1::-1]),axis=1)
+    # arcticw = np.concatenate((arctic[:,nx:nx/2-1:-1].transpose(),
+    #                           np.zeros((nx/2,nx/2)),
+    #                           arctic[nx:nx/2-1:-1,nx/2-1::-1]),axis=1)
+    mskr = np.tri(nx/2)[::-1,:]
+    arcticw = np.concatenate((arctic[0:nx/2,nx:nx/2-1:-1].transpose(),
+                              arctic[nx/2:nx,nx:nx/2-1:-1].transpose()*mskr,
+                              np.triu(arctic[nx:nx/2-1:-1,nx:nx/2-1:-1]),
+                              arctic[nx:nx/2-1:-1,nx/2-1::-1]*mskr),axis=1)
     #
     if center == 'Pacific':
         gfld = np.concatenate( ( np.concatenate((eastern,arctice)),
@@ -316,8 +321,8 @@ def _sqData(a):
     b = np.copy(np.squeeze(a))
     # it appears to be important, that here we do not mask the array
     # but reset zeros to NaN (only used for coordinate arrays!!!)
-#    b = np.ma.masked_where(b==0., b)
-#    b = np.ma.masked_where(np.isnan(b), b)
+    b = np.ma.masked_where(b==0., b)
+    b = np.ma.masked_where(np.isnan(b), b)
     return b
 
 def pcol(*arguments, **kwargs):
