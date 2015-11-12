@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.33 2015/10/27 02:37:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.34 2015/11/12 12:11:20 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -87,6 +87,10 @@ c mapping to gencost
       _RL slaoffset_weight
 
 c local arrays
+      _RL num0array ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
+      _RL num0total
+      integer tempinteger
+
       _RL diagnosfld ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
 
       _RL mdtob(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -225,6 +229,9 @@ c switch for excluding global mean
 c minimum number of observations to consider re-referenced MDT
       num0=100
 c determine whether or not to re-reference
+c-- not only model period has to fall within the mdt period
+c-- but that there has to be at least 365 days of model run
+c-- so for short model run, this will always get set to FALSE
       doReference=.FALSE.
       if ((modelstartdate(1).GT.1992*10000).AND.
      &    (modelstartdate(1).LT.2011*10000).AND.
@@ -607,6 +614,8 @@ cgf =======================================================
 c--   END loop over records for the first time.
       enddo
 
+      call ecco_zero(num0array,1,oneRL,mythid)
+
         do bj = jtlo,jthi
           do bi = itlo,ithi
             do j = jmin,jmax
@@ -682,10 +691,12 @@ c--   END loop over records for the first time.
                   offset=offset+RA(i,j,bi,bj)
      &                  *( psmean(i,j,bi,bj) -mdtob(i,j,bi,bj) )
                   offset_sum=offset_sum+RA(i,j,bi,bj)
+                  num0array(i,j,bi,bj)=0. _d 0
                else
                   mean_slaobs_model(i,j,bi,bj) = 0.d0
                   mean_psMssh_all(i,j,bi,bj) = 0. _d 0
                   mean_psMssh_all_MSK(i,j,bi,bj) = 0. _d 0
+                  num0array(i,j,bi,bj)=0. _d 0
                endif
               enddo
             enddo
@@ -696,6 +707,34 @@ c--   END loop over records for the first time.
 c--   Do a global summation.
       _GLOBAL_SUM_RL( offset     , mythid )
       _GLOBAL_SUM_RL( offset_sum , mythid )
+
+catn--- add warning that written mean_slaobs_model is all zero
+c       due to having less data points that hardcoded num0
+      num0total=0. _d 0
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do j = jmin,jmax
+              do i = imin,imax
+                num0total=num0total+num0array(i,j,bi,bj)
+              enddo
+            enddo
+          enddo
+        enddo
+      if(num0total.lt.1. _d 0) then
+        write(msgbuf,'(A,i5,A)') 
+     &  '** WARNING ** S/R COST_GENCOST_SSHV4: There are <',num0,' pts'
+      call print_message( msgbuf, errormessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(A)') 
+     &  '                  at all grid points for combined tp+ers+gfo.'
+      call print_message( msgbuf, errormessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(A)') 
+     &  'So, all model slaob minus model sla2model_raw are set to 0.'
+      call print_message( msgbuf, errormessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      endif
+catn-------
 
       if (offset_sum .eq. 0.0) then
         if (gencost_outputlevel(igen_gmsl).GT.0) then
@@ -841,6 +880,28 @@ cgf =======================================================
 
       ndaysave=35
       ndaysaveRL=ndaysave
+
+catn add a warning if have less nrecday than the hardcoded 35days
+      tempinteger=ndaysrec-ndaysave+1
+      if(tempinteger.lt.1) then
+        write(msgbuf,'(A,i5)') 
+     &  '** WARNING ** S/R COST_GENCOST_SSHV4: There are < ',ndaysave
+      call print_message( msgbuf, errormessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(A)') 
+     &   '        days required to calculate running mean tp+ers+gfo.'
+      call print_message( msgbuf, errormessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(A)') 
+     &  'PART 4 in cost_gencost_sshv4 is skipped entirely, and there'
+      call print_message( msgbuf, errormessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(A)') 
+     &  'will be NO report of [tp,ers,gfo,lsc,gmsl] in costfunction.'
+      call print_message( msgbuf, errormessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      endif
+catn -----------
 
       do irec = 1, ndaysrec-ndaysave+1
 
