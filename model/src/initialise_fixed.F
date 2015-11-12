@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.56 2014/04/04 20:39:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.57 2015/11/12 01:09:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -30,6 +30,8 @@ C      |
 C      |-- INI_PARMS
 C      |
 C      |-- PACKAGES_BOOT
+C      |
+C      |-- CPL_IMPORT_CPLPARMS
 C      |
 C      |-- PACKAGES_READPARMS
 C      |  |- ${PKG}_READPARMS
@@ -116,6 +118,16 @@ C--   Configure packages
       IF (debugMode) CALL DEBUG_CALL('PACKAGES_BOOT',myThid)
 #endif
       CALL PACKAGES_BOOT( myThid )
+
+#ifdef COMPONENT_MODULE
+C--   Import coupling exchange parameters from coupler
+      IF ( useCoupler ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('CPL_IMPORT_CPLPARMS',myThid)
+# endif
+        CALL CPL_IMPORT_CPLPARMS( myThid )
+      ENDIF
+#endif /* COMPONENT_MODULE */
 
 C--   Read configuration parameters for packages
 #ifdef ALLOW_DEBUG
