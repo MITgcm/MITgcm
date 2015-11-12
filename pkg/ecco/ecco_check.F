@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.29 2015/11/11 21:43:45 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.30 2015/11/12 12:26:49 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -46,7 +46,8 @@ C     msgBuf      - Informational/error meesage buffer
       INTEGER k, igen_etaday, il
       LOGICAL exst
 #ifdef ALLOW_GENCOST_TRANSPORT
-      CHARACTER*(128) tempfile
+      CHARACTER*(128) tempfile,tempfile1
+      INTEGER icount_transp
 #endif /* ALLOW_GENCOST_TRANSPORT */
 #endif
 
@@ -98,6 +99,9 @@ c check for missing data files
 #endif
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
+#ifdef ALLOW_GENCOST_TRANSPORT
+      icount_transp=0
+#endif
       do k=1,NGENCOST
          if (gencost_pointer3d(k).GT.NGENCOST3D) then
            WRITE(msgBuf,'(2A)')
@@ -246,19 +250,21 @@ c-- transs: require [err,bar][W,S]file, can have datafile, but
 c-- not checked here. also not checked for variwei at the moment
          elseif ( gencost_flag(k).eq. -4 ) then
           WRITE(msgBuf,'(A,i3,L5)')
-     &     'entering gencost transp check,k,using_gencost(k): ,',
+     &     'ecco_check for gencost transp; k,using_gencost(k): ,',
      &     k,using_gencost(k)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
 
 c-- check errfile[W,S]
           if ( gencost_errfile(k) .NE. ' ' ) then
-c-- West
+c-- West ----------------------
            il = ilnblnk(gencost_errfile(k))
            write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'W'
            il = ilnblnk(tempfile)
-           write(msgBuf,'(2A)') 'checking file ',tempfile(1:il)
-           inquire( file=tempfile(1:il), exist=exst )
+           write(msgBuf,'(2A,L5)') 'ecco_check file, exst: ',
+     &       tempfile(1:il),exst
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                  SQUEEZE_RIGHT , myThid)
            if (.NOT.exst) then
              using_gencost(k)=.FALSE.
              WRITE(msgBuf,'(2A)')
@@ -272,16 +278,19 @@ c-- West
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
            else
-c-- will move to init perhaps, but leave here for now
+c-- will move to init perhaps, but leave here for now due to check exst
              call ecco_zero(msktrVolW,1,zeroRL,mythid)
-             call ecco_readwei(tempfile,msktrVolW,1,1,mythid)
+             call mdsreadfield(tempfile,32,'RL',1,msktrVolW,1,mythid)
            endif
-c-- South
+c-- South --------------------
            il = ilnblnk(gencost_errfile(k))
            write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'S'
            il = ilnblnk(tempfile)
-           write(msgBuf,'(2A)') 'checking file ',tempfile(1:il)
            inquire( file=tempfile(1:il), exist=exst )
+           write(msgBuf,'(2A,L5)') 'ecco_check file, exst: ',
+     &       tempfile(1:il),exst
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                  SQUEEZE_RIGHT , myThid)
            if (.NOT.exst) then
              using_gencost(k)=.FALSE.
              WRITE(msgBuf,'(2A)')
@@ -295,9 +304,9 @@ c-- South
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
            else
-c-- will move to init perhaps, but leave here for now
+c-- will move to init perhaps, but leave here for now due to check exst
              call ecco_zero(msktrVolS,1,zeroRL,mythid)
-             call ecco_readwei(tempfile,msktrVolW,1,1,mythid)
+             call mdsreadfield(tempfile,32,'RL',1,msktrVolS,1,mythid)
            endif
           else
            using_gencost(k)=.FALSE.
@@ -329,6 +338,15 @@ c-- (upper/lower-case matters) in cost_gencost_customize
            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
           endif !barfile
+c-- set using_cost_transp
+          if(using_gencost(k)) icount_transp=icount_transp+1
+          if(icount_transp.gt.0) using_cost_transp = .TRUE.
+c-- final report to make sure using_cost_transp is set correctly
+          WRITE(msgBuf,'(2A,i3,L5)')
+     &     'ecco_check: gencost transp; icount_transp,',
+     &     'using_cost_transp: ',icount_transp,using_cost_transp
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT , myThid)
 #endif /* ALLOW_GENCOST_TRANSPORT */
          endif  !gencost_flag
 
