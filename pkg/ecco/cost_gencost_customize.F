@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.20 2015/11/10 13:58:14 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.21 2015/11/12 13:22:14 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -211,7 +211,6 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
             gencost_mod3d(i,j,k2,bi,bj,kk) =
      &       m_VN(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
            enddo
-#ifdef ALLOW_GENCOST_TRANSPORT
          elseif (gencost_barfile(k)(1:7).EQ.'m_trVol') then
            kk=gencost_pointer3d(k)
            do k2=1,nr
@@ -227,7 +226,6 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
            do k2=1,nr
              gencost_mod3d(i,j,k2,bi,bj,kk) = trHeat(i,j,k2,bi,bj)
            enddo
-#endif /* ALLOW_GENCOST_TRANSPORT */
 #if (defined (ALLOW_3D_DIFFKR) || defined (ALLOW_DIFFKR_CONTROL))
          elseif (gencost_barfile(k)(1:8).EQ.'m_diffkr') then
            kk=gencost_pointer3d(k)

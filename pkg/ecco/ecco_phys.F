@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.7 2015/11/11 22:44:43 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.8 2015/11/12 13:22:14 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -39,7 +39,6 @@ c     == local variables ==
       integer jmin,jmax
       integer imin,imax
 
-#ifdef ALLOW_GENCOST_TRANSPORT
 c- note defined with overlap here, not needed, but more efficient
       _RL trVolW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL trVolS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -47,7 +46,6 @@ c- note defined with overlap here, not needed, but more efficient
       _RL trHeatS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL trSaltW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL trSaltS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-#endif /* ALLOW_GENCOST_TRANSPORT */
 
 #ifdef ALLOW_PSBAR_STERIC
       _RL RHOInSituLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -146,7 +144,6 @@ c    &                       SQUEEZE_RIGHT, myThid )
      I          .TRUE., .TRUE., .FALSE., Nr, mythid )
 
 
-#ifdef ALLOW_GENCOST_TRANSPORT 
 c--   trVol : volume flux    --- [m^3/sec] (order of 10^6 = 1 Sv)
 c--   trHeat: heat transport --- [Watt] (order of 1.E15 = PW)
 c--   trSalt: salt transport --- [kg/sec] (order 1.E9 equiv. 1 Sv in vol.)
@@ -209,7 +206,6 @@ c now summing
           enddo
         enddo
       enddo
-#endif /* ALLOW_GENCOST_TRANSPORT */
 
       return
       end

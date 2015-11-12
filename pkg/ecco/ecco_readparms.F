@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.86 2015/11/12 12:25:27 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.87 2015/11/12 13:22:14 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -78,9 +78,7 @@ c--   Read the namelist input.
      &                   using_cost_altim,
      &                   using_cost_bp, using_cost_scat, 
      &                   using_cost_sst, using_cost_seaice,
-#ifdef ALLOW_GENCOST_TRANSPORT
      &                   using_cost_transp,
-#endif
      &                   using_mdt, using_tpj, using_ers, using_gfo,
      &                   using_topex,
      &                   topexstartdate1, topexstartdate2,
@@ -227,10 +225,10 @@ c run time switches for main cost terms
 #else
       using_cost_seaice=.FALSE.
 #endif
-#ifdef ALLOW_GENCOST_TRANSPORT
+
 c- set default to false
       using_cost_transp=.FALSE.
-#endif
+
 #ifdef ALLOW_BP_COST_CONTRIBUTION
       using_cost_bp=.TRUE.
 #else
@@ -643,7 +641,6 @@ catn with and without requirements of datafile or errfile
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
 
-#ifdef ALLOW_GENCOST_TRANSPORT
 catn add cost global transport using gencost framework
          elseif ( gencost_name(k)(1:6).EQ.'transp' ) then
            gencost_flag(k)=-4
@@ -653,7 +650,6 @@ catn add cost global transport using gencost framework
      &     k,gencost_name(k)(1:il),': ',using_gencost(k)
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
-#endif /* ALLOW_GENCOST_TRANSPORT */
 
 c pre-specified generic cost terms that create their own barfile
          elseif ( 
@@ -674,9 +670,7 @@ c identified three dimensional variables
      &        (gencost_barfile(k)(1:8).EQ.'m_diffkr').OR.
      &        (gencost_barfile(k)(1:7).EQ.'m_kapgm').OR.
      &        (gencost_barfile(k)(1:9).EQ.'m_kapredi')
-#ifdef ALLOW_GENCOST_TRANSPORT 
      &    .OR.(gencost_barfile(k)(1:4).EQ.'m_tr')
-#endif /* ALLOW_GENCOST_TRANSPORT */
      &       )
      &        gencost_is3d(k)=.TRUE.
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.30 2015/11/12 12:26:49 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.31 2015/11/12 13:22:14 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -45,10 +45,8 @@ C     msgBuf      - Informational/error meesage buffer
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       INTEGER k, igen_etaday, il
       LOGICAL exst
-#ifdef ALLOW_GENCOST_TRANSPORT
       CHARACTER*(128) tempfile,tempfile1
       INTEGER icount_transp
-#endif /* ALLOW_GENCOST_TRANSPORT */
 #endif
 
 c     == external functions ==
@@ -99,9 +97,7 @@ c check for missing data files
 #endif
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-#ifdef ALLOW_GENCOST_TRANSPORT
       icount_transp=0
-#endif
       do k=1,NGENCOST
          if (gencost_pointer3d(k).GT.NGENCOST3D) then
            WRITE(msgBuf,'(2A)')
@@ -244,7 +240,6 @@ c-- (upper/lower-case matters) in cost_gencost_customize
      &                          SQUEEZE_RIGHT, myThid )
            endif !barfile
 
-#ifdef ALLOW_GENCOST_TRANSPORT
 c---------------- block -4 ----------------------------
 c-- transs: require [err,bar][W,S]file, can have datafile, but
 c-- not checked here. also not checked for variwei at the moment
@@ -347,7 +342,6 @@ c-- final report to make sure using_cost_transp is set correctly
      &     'using_cost_transp: ',icount_transp,using_cost_transp
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
-#endif /* ALLOW_GENCOST_TRANSPORT */
          endif  !gencost_flag
 
          endif !if ( gencost_datafile(k) .ne. ' ' ) then
