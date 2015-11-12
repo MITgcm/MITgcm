@@ -1,0 +1,27 @@
+# ATM+OCN Coupler package parameters:
+#     cpl_sequential   :: =0/1 : selects Synchronous/Sequential Coupling
+#-- cpl_exchange_[xxx] :: controls exchange of [xxx] fields with OCN & ATM components
+#                      ::  =0 : none ; =1,3 : exch [xxx] fields with OCN comp.
+#                      ::              =2,3 : exch [xxx] fileds with ATM comp.
+#     cpl_exchange_RunOff :: controls exchange of RunOff fields
+#     cpl_exchange1W_sIce :: controls 1-way exchange of seaice (step fwd in ATM)
+#     cpl_exchange2W_sIce :: controls 2-way exchange of ThSIce variables
+#     cpl_exchange_SaltPl :: controls exchange of Salt-Plume fields
+#     cpl_exchange_DIC    :: controls exchange of DIC variables
+#--
+#     runOffMapSize    :: Nb of connection in the runOff map (nROmap)
+#     runOffMapFile    :: File name for the runOff map (max_length= 80c)
+#-- IMPORTANT: Unlike other MITgcm parameter files, this namelist is read-in
+#    directly without prior removing of commented lines (i.e., starting with "#")
+#-------------
+ &COUPLER_PARAMS
+   runOffMapSize = 3644,
+   runOffMapFile = 'runOff_cs32_3644.bin',
+   cpl_sequential      = 0,
+   cpl_exchange_RunOff = 2,
+   cpl_exchange1W_sIce = 3,
+   cpl_exchange2W_sIce = 0,
+   cpl_exchange_SaltPl = 0,
+   cpl_exchange_DIC    = 0,
+ /
+
