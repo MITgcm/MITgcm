@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/coupler.F,v 1.4 2013/12/02 21:55:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/coupler.F,v 1.5 2015/11/12 00:49:04 jmc Exp $
 C $Name:  $
 
 CBOP 0
@@ -40,10 +40,12 @@ C     Initialise the coupler component
 C     Perform registration with other components
       CALL ACCEPT_COMPONENT_REGISTRATIONS
 
-C     Coordinate the transfer configuration information
-C     between components
-      CALL EXCH_COMPONENT_CONFIGS(
-     I                             msgUnit )
+C     Send Coupler-params to both components
+      CALL CPL_SEND_ATM_CPLPARMS( msgUnit )
+      CALL CPL_SEND_OCN_CPLPARMS( msgUnit )
+
+C     Coordinate the transfer configuration information between components
+      CALL EXCH_COMPONENT_CONFIGS( msgUnit )
 
       DO I=1,nCouplingSteps
 

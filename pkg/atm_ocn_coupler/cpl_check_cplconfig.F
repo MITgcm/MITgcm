@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_check_cplconfig.F,v 1.1 2013/12/02 23:25:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_check_cplconfig.F,v 1.2 2015/11/12 00:49:04 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -33,7 +33,7 @@ C     == Global variables ==
 C !INPUT/OUTPUT PARAMETERS:
 C     msgUnit  :: log-file I/O unit
 C     errFlag  :: logical flag to report an error
-C     errMsg   :: error message to print
+C     errMsg   :: error message to print to clog file
       INTEGER msgUnit
       LOGICAL errFlag
       CHARACTER*(*) errMsg
@@ -43,6 +43,14 @@ C !LOCAL VARIABLES:
       INTEGER ijo, ija
       LOGICAL tmpVar(Nx_atm,Ny_atm)
 CEOP
+
+C--   Report previously found errors
+      IF ( cplErrorCount.NE.0 ) THEN
+        errFlag = .TRUE.
+        WRITE(msgUnit,'(2A,I4,A)')
+     &    ' *** ERROR *** CPL_CHECK_CPLCONFIG: ',
+     &    ' cplErrorCount=', cplErrorCount, ' (from previous error)'
+      ENDIF
 
 C--   Define length of the run (number of coupler time-step)
       WRITE(msgUnit,'(2A,I9)') ' CPL_CHECK_CPLCONFIG: ',
@@ -90,17 +98,19 @@ C     b) and supply an ocean point
 C     c) check that all land-points are drained,
 C  note: would need to know ATM grid-cell area to check that
 C        RunOff Mapping conserve water.
-      DO j=1,Ny_atm
-       DO i=1,Nx_atm
-        IF ( tmpVar(i,j) ) THEN
-         WRITE(msgUnit,'(A,2I8,A)')
+      IF ( cplErrorCount.EQ.0 ) THEN
+       DO j=1,Ny_atm
+        DO i=1,Nx_atm
+         IF ( tmpVar(i,j) ) THEN
+          WRITE(msgUnit,'(A,2I8,A)')
      &    ' ** WARNING ** Land point: i,j=', i, j, ' not drained'
-        ENDIF
+         ENDIF
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 
       IF ( errFlag ) THEN
-        errMsg = 'in CPL_CHECK_CPLCONFIG'
+        errMsg = 'CPL_CHECK_CPLCONFIG: inconsistent CPL/ATM/OCN config'
       ELSE
         WRITE(msgUnit,'(2A)') ' CPL_CHECK_CPLCONFIG: ','done'
       ENDIF
