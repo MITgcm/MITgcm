@@ -1,21 +1,23 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_export_import_data.F,v 1.3 2015/11/12 20:04:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_export_data.F,v 1.1 2015/11/12 20:04:16 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: CPL_EXPORT_IMPORT_DATA
+C     !ROUTINE: OCN_EXPORT_DATA
 
 C     !INTERFACE:
-      SUBROUTINE CPL_EXPORT_IMPORT_DATA(
+      SUBROUTINE OCN_EXPORT_DATA(
      I                      myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE CPL_EXPORT_IMPORT_DATA
+C     | SUBROUTINE OCN_EXPORT_DATA
 C     | o Routine for controlling
-C     |   - export of coupling data to coupler layer AND
-C     |   - import of coupling data from coupler layer.
+C     |   - export of ocean coupling data to coupler layer
+C     |     but only if using Sequential coupling.
+C     |   - diagnostics of coupling fields (timeave pkg only),
+C     |     whether Synchronous or Sequential coupling.
 C     *==========================================================*
 C     | This version talks to the MIT Coupler. It uses the MIT
 C     | Coupler "checkpoint1" library calls.
@@ -49,9 +51,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Note MIT Coupler checkpoint1 does not allow asynchronous posting of
 C     data, so ordering has to be consistent with coupling layer ordering.
 C--------------------------------------------------------------------------
-C     Synchronous coupling: Send data to coupling layer
+C     Sequential coupling: Send data to coupling layer
 
-      IF ( .NOT.ocn_cplSequential ) THEN
+      IF ( ocn_cplSequential ) THEN
         IF ( debugMode ) THEN
          _BEGIN_MASTER( myThid )
          WRITE(msgBuf,'(A,I10)')
@@ -69,33 +71,12 @@ C     Synchronous coupling: Send data to coupling layer
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C-    Fetch data from coupling layer.
 
-      IF ( .TRUE. ) THEN
-        IF ( debugMode ) THEN
-         _BEGIN_MASTER( myThid )
-         WRITE(msgBuf,'(A,I10)')
-     &    '  Importing atmospheric surf fluxes at iter=', myIter
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-         _END_MASTER( myThid )
-        ENDIF
-
-        CALL OCN_IMPORT_FIELDS ( myThid )
-
+      IF ( cpl_taveFreq.GT.0. _d 0 ) THEN
+C--   note: will move this "if" inside OCN_CPL_DIAGS when other diags
+C           than time-ave are computed within OCN_CPL_DIAGS.
+        CALL OCN_CPL_DIAGS( myTime, myIter, myThid )
       ENDIF
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-#ifndef ALLOW_THSICE
-C     Sequential coupling: Send data to coupling layer
-C     call also OCN_CPL_DIAGS (to cumulate cpl time-ave) in both cases
-C      (Synchronous or Sequential coupling)
-      CALL OCN_EXPORT_DATA( myTime, myIter, myThid )
-#endif /* ndef ALLOW_THSICE */
-
-C     If compiling pkg/thsice, do it later by calling the same S/R
-C     directly from DO_OCEANIC_PHYS, just after SEAICE_MODEL call.
 
 #endif /* COMPONENT_MODULE */
 

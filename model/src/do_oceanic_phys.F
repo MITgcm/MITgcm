@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.146 2015/07/18 21:45:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.147 2015/11/12 20:05:21 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,6 +53,8 @@ C     DO_OCEANIC_PHYS
 C       |
 C       |-- OBCS_CALC
 C       |
+C       |-- OCN_APPLY_IMPORT
+C       |
 C       |-- FRAZIL_CALC_RHS
 C       |
 C       |-- THSICE_MAIN
@@ -61,6 +63,8 @@ C       |-- SEAICE_FAKE
 C       |-- SEAICE_MODEL
 C       |-- SEAICE_COST_SENSI
 C       |
+C       |-- OCN_EXPORT_DATA
+C       |
 C       |-- SHELFICE_THERMODYNAMICS
 C       |
 C       |-- ICEFRONT_THERMODYNAMICS
@@ -68,8 +72,6 @@ C       |
 C       |-- SALT_PLUME_DO_EXCH
 C       |
 C       |-- FREEZE_SURFACE
-C       |
-C       |-- OCN_APPLY_IMPORT
 C       |
 C       |-- EXTERNAL_FORCING_SURF
 C       |
@@ -200,6 +202,7 @@ C     rhoK, rhoKm1  :: Density at current level, and level above
 C     iMin, iMax    :: Ranges and sub-block indices on which calculations
 C     jMin, jMax       are applied.
 C     bi, bj        :: tile indices
+C     msgBuf        :: Temp. for building output string
 C     i,j,k         :: loop indices
       _RL rhoKp1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhoKm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -210,6 +213,7 @@ C     i,j,k         :: loop indices
       INTEGER jMin, jMax
       INTEGER bi, bj
       INTEGER i, j, k
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER doDiagsRho
       LOGICAL calcGMRedi, calcKPP, calcConvect
 #ifdef ALLOW_DIAGNOSTICS
@@ -270,6 +274,14 @@ CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
      I                 uVel, vVel, wVel, theta, salt, myThid )
       ENDIF
 #endif  /* ALLOW_OBCS */
+
+#ifdef ALLOW_OCN_COMPON_INTERF
+C--    Apply imported data (from coupled interface) to forcing fields
+C jmc: moved here before any freezing/seaice pkg adjustment of surf-fluxes
+      IF ( useCoupler ) THEN
+         CALL OCN_APPLY_IMPORT( .TRUE., myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_OCN_COMPON_INTERF */
 
 #ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_SALT_PLUME
@@ -467,6 +479,19 @@ CADJ &     kind = isbyte
       ENDIF
 #endif /* ALLOW_SEAICE */
 
+#if (defined ALLOW_OCN_COMPON_INTERF) && (defined ALLOW_THSICE)
+C--   After seaice-dyn and advection of pkg/thsice fields,
+C     Export ocean coupling fields to coupled interface (only with pkg/thsice)
+      IF ( useCoupler ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('OCN_EXPORT_DATA',myThid)
+# endif
+         CALL TIMER_START('OCN_EXPORT_DATA [DO_OCEANIC_PHYS]', myThid)
+         CALL OCN_EXPORT_DATA( myTime, myIter, myThid )
+         CALL TIMER_STOP ('OCN_EXPORT_DATA [DO_OCEANIC_PHYS]', myThid)
+      ENDIF
+#endif /* ALLOW_OCN_COMPON_INTERF & ALLOW_THSICE */
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE sst, sss           = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
@@ -555,14 +580,6 @@ CADJ &     kind = isbyte
 #endif
         CALL FREEZE_SURFACE( myTime, myIter, myThid )
       ENDIF
-
-#ifdef ALLOW_OCN_COMPON_INTERF
-C--    Apply imported data (from coupled interface) to forcing fields
-C jmc: do not know precisely where to put this call (bf or af thSIce ?)
-      IF ( useCoupler ) THEN
-         CALL OCN_APPLY_IMPORT( .TRUE., myTime, myIter, myThid )
-      ENDIF
-#endif /* ALLOW_OCN_COMPON_INTERF */
 
       iMin = 1-OLx
       iMax = sNx+OLx
@@ -800,7 +817,11 @@ C-    horizontally uniform (tRef) reference state
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_MSG('ENTERING UPWARD K LOOP',myThid)
+        IF (debugMode) THEN
+          WRITE(msgBuf,'(A,2(I4,A))')
+     &         'ENTERING UPWARD K LOOP (bi=', bi, ', bj=', bj,')'
+          CALL DEBUG_MSG(msgBuf(1:43),myThid)
+        ENDIF
 #endif
 
 C--     Start of diagnostic loop
