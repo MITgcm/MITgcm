@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.15 2015/11/11 21:43:45 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.16 2015/11/12 12:25:27 atn Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -100,6 +100,9 @@ c     using_ers - flag that indicates the use of ERS data
      &                         using_cost_sst,
      &                         using_cost_scat,
      &                         using_cost_seaice
+#ifdef ALLOW_GENCOST_TRANSPORT
+     &                        ,using_cost_transp
+#endif
       logical using_mdt
       logical using_tpj
       logical using_topex
@@ -110,6 +113,9 @@ c     using_ers - flag that indicates the use of ERS data
       logical using_cost_sst
       logical using_cost_scat
       logical using_cost_seaice
+#ifdef ALLOW_GENCOST_TRANSPORT
+      logical using_cost_transp
+#endif
 
 c     Record counters relevant for the cost function evaluation.
 c     ==========================================================
