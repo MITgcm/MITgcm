@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_write_pickup.F,v 1.4 2007/10/19 03:21:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_write_pickup.F,v 1.5 2015/11/12 01:02:48 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "ATM_CPL_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: CPL_WRITE_PICKUP
@@ -24,6 +24,7 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "CPL_PARAMS.h"
 #include "ATMIDS.h"
 #include "ATMCPL.h"
 
@@ -54,12 +55,6 @@ c     CALL WRITE_REC_3D_RL(fn,prec,1,tauX      , 3,myIter,myThid)
 c     CALL WRITE_REC_3D_RL(fn,prec,1,tauY      , 4,myIter,myThid)
 c     CALL WRITE_REC_3D_RL(fn,prec,1,EvMPrFlux , 5,myIter,myThid)
 c     CALL WRITE_REC_3D_RL(fn,prec,1,RunOffFlux, 6,myIter,myThid)
-c     CALL WRITE_REC_3D_RL(fn,prec,1,uVelGround, 7,myIter,myThid)
-c     CALL WRITE_REC_3D_RL(fn,prec,1,vVelGround, 8,myIter,myThid)
-c     CALL WRITE_REC_3D_RL(fn,prec,1,qLatent   , 9,myIter,myThid)
-c     CALL WRITE_REC_3D_RL(fn,prec,1,qSensible ,10,myIter,myThid)
-c     CALL WRITE_REC_3D_RL(fn,prec,1,qLongwave ,11,myIter,myThid)
-c     CALL WRITE_REC_3D_RL(fn,prec,1,qShortwave,12,myIter,myThid)
 
       CALL WRITE_REC_3D_RL( fn,prec,1, ocMxlD    ,  1, myIter,myThid )
       CALL WRITE_REC_3D_RL( fn,prec,1, SSTocn    ,  2, myIter,myThid )
@@ -77,7 +72,7 @@ c     CALL WRITE_REC_3D_RL(fn,prec,1,qShortwave,12,myIter,myThid)
       CALL WRITE_REC_3D_RL( fn,prec,1, iceSaltFlx, 13, myIter,myThid )
       CALL WRITE_REC_3D_RL( fn,prec,1, seaIceMass, 14, myIter,myThid )
 
-      IF ( atmCpl_exchange_DIC ) THEN
+      IF ( atm_cplExch_DIC ) THEN
        CALL WRITE_REC_3D_RL(fn,prec,1, flxCO2ocn , 15, myIter,myThid )
        CALL WRITE_REC_3D_RL(fn,prec,1, airCO2    , 16, myIter,myThid )
        CALL WRITE_REC_3D_RL(fn,prec,1, sWSpeed   , 17, myIter,myThid )

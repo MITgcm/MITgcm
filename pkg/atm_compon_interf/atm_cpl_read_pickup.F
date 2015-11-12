@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_cpl_read_pickup.F,v 1.4 2013/07/18 20:03:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_cpl_read_pickup.F,v 1.5 2015/11/12 01:02:47 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "ATM_CPL_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: ATM_CPL_READ_PICKUP
@@ -68,7 +68,7 @@ c     ENDIF
         CALL READ_REC_3D_RL( fn,prec,1, RunOffEnFx, 12, myIter,myThid )
         CALL READ_REC_3D_RL( fn,prec,1, iceSaltFlx, 13, myIter,myThid )
         CALL READ_REC_3D_RL( fn,prec,1, seaIceMass, 14, myIter,myThid )
-      IF ( atmCpl_exchange_DIC ) THEN
+      IF ( atm_cplExch_DIC ) THEN
         CALL READ_REC_3D_RL( fn,prec,1, flxCO2ocn , 15, myIter,myThid )
         CALL READ_REC_3D_RL( fn,prec,1, airCO2    , 16, myIter,myThid )
         CALL READ_REC_3D_RL( fn,prec,1, sWSpeed   , 17, myIter,myThid )

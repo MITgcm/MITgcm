@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_store_aim_fields.F,v 1.2 2013/09/28 00:15:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_store_aim_fields.F,v 1.3 2015/11/12 01:02:47 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "ATM_CPL_OPTIONS.h"
 #ifdef ALLOW_AIM
 # include "AIM_OPTIONS.h"
 #endif
@@ -75,7 +74,7 @@ C       that will be exported to the coupling layer.
        ENDDO
 
 #ifdef ALLOW_AIM_CO2
-c     IF ( atmCpl_exchange_DIC ) THEN
+c     IF ( atm_cplExch_DIC ) THEN
 C     o Accumulate atmospheric CO2 from Aim pkg that will be exported
 C       to the coupling layer.
        airCO2Time(bi,bj) = airCO2Time(bi,bj) + cplTimeFraction
