@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_import_fields.F,v 1.3 2009/12/25 19:45:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_import_fields.F,v 1.4 2015/11/12 00:58:25 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "OCN_CPL_OPTIONS.h"
 
 CBOP 0
 C !ROUTINE: OCN_IMPORT_FIELDS
@@ -25,6 +24,7 @@ C !USES:
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "CPL_PARAMS.h"
 #include "OCNIDS.h"
 #include "OCNCPL.h"
 
@@ -80,23 +80,23 @@ C-    Receive salt flux (sea-ice model) from coupling layer.
      O                       iceSaltFlx )
 
 C-    Receive sea-ice mass (sea-ice model) from coupling layer.
-      CALL COMPRECV_R8TILES( ocnSeaIceName,
+      CALL COMPRECV_R8TILES( ocnSIceMassName,
      I                       sNx, OLx, sNy, OLy, 1, nSx, nSy,
      O                       seaIceMass )
 
-      IF ( ocnCpl_exchange_DIC ) THEN
+      IF ( ocn_cplExch_DIC ) THEN
 C-      Receive atmos CO2 level from coupling layer.
         CALL COMPRECV_R8TILES( ocnAirCO2Name,
      I                       sNx, OLx, sNy, OLy, 1, nSx, nSy,
      O                       airCO2 )
 
 C-      Receive ground-level windspeed from coupling layer.
-        CALL COMPRECV_R8TILES( ocnWSpdName,
+        CALL COMPRECV_R8TILES( ocnWindSpdName,
      I                       sNx, OLx, sNy, OLy, 1, nSx, nSy,
      O                       surfWSpeed )
 
 C-      Receive seaice fraction from coupling layer.
-        CALL COMPRECV_R8TILES( ocnFIceName,
+        CALL COMPRECV_R8TILES( ocnSIceFracName,
      I                       sNx, OLx, sNy, OLy, 1, nSx, nSy,
      O                       fracIce )
       ENDIF
