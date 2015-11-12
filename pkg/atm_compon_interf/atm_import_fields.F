@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_import_fields.F,v 1.3 2009/12/25 19:44:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_import_fields.F,v 1.4 2015/11/12 01:03:32 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "ATM_CPL_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: ATM_IMPORT_FIELDS
@@ -25,6 +25,7 @@ C     !USES:
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "CPL_PARAMS.h"
 #include "ATMCPL.h"
 #include "ATMIDS.h"
 
@@ -62,8 +63,8 @@ C-    Receive ocean surface velocity square from coupling layer.
      I     sNx, OLx, sNy, OLy, 1, nSx, nSy, vSqocn )
 
 C-    Receive air-sea flux of CO2
-      IF ( atmCpl_exchange_DIC ) THEN
-        CALL COMPRECV_R8TILES( atmFCO2Name,
+      IF ( atm_cplExch_DIC ) THEN
+        CALL COMPRECV_R8TILES( atmCO2FluxName,
      I       sNx, OLx, sNy, OLy, 1, nSx, nSy, flxCO2ocn )
       ENDIF
 

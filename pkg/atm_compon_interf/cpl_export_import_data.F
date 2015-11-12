@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_export_import_data.F,v 1.1 2015/10/26 22:36:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_export_import_data.F,v 1.2 2015/11/12 01:03:32 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "ATM_CPL_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: CPL_EXPORT_IMPORT_DATA
@@ -48,17 +48,16 @@ C     msgBuf  :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C     Send data to coupling layer. Note MIT Coupler checkpoint1
-C     does not allow asynchronous posting of data, so ordering
-C     has to be consistent with coupling layer ordering.
+C     Note MIT Coupler checkpoint1 does not allow asynchronous posting of
+C     data, so ordering has to be consistent with coupling layer ordering.
+C--------------------------------------------------------------------------
+C     Send data to coupling layer
 
       IF ( MOD(myIter,cplSendFrq_iter).EQ.0 ) THEN
        _BEGIN_MASTER( myThid )
         IF ( debugMode .OR. countPrtExp.LT.maxNumberPrint ) THEN
-c        WRITE(0,'(A,I5,A,I10)') '  Exporting (pid=', myProcId,
-c    &             ' ) atmospheric fluxes at iter.', myIter
          WRITE(msgBuf,'(A,I10)')
-     &    '  Exporting atmospheric fluxes at iter.', myIter
+     &    '  Exporting atmospheric surf fluxes at iter=', myIter
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
          countPrtExp = countPrtExp + 1
@@ -92,37 +91,33 @@ C-    export Salt flux (related to sea-ice melting/freezing):
         CALL ATM_EXPORT_FLD( atmSaltFxName,
      U                       iceSaltFlx, saltFxTime, myThid )
 C-    export Sea-Ice Mass:
-        CALL ATM_EXPORT_FLD( atmSeaIceName,
+        CALL ATM_EXPORT_FLD( atmSIceMassName,
      U                       seaIceMass, seaIceTime, myThid )
 
-        IF ( atmCpl_exchange_DIC ) THEN
+        IF ( atm_cplExch_DIC ) THEN
 C-    export atmospheric CO2:
          CALL ATM_EXPORT_FLD( atmAirCO2Name,
      U                        airCO2, airCO2Time, myThid )
 
 C-    export surface wind speed:
-         CALL ATM_EXPORT_FLD( atmWSpdName,
+         CALL ATM_EXPORT_FLD( atmWindSpdName,
      U                        sWSpeed, sWSpeedTime, myThid )
 
 C-    export seaice fraction:
-         CALL ATM_EXPORT_FLD( atmFIceName,
+         CALL ATM_EXPORT_FLD( atmSIceFracName,
      U                        fracIce, fracIceTime, myThid )
         ENDIF
 
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C     Fetch data from coupling layer. Note MIT Coupler checkpoint1
-C     does not allow asynchronous extraction of data, so ordering
-C     has to be consistent with ordering coupling layer.
+C     Fetch data from coupling layer.
 
       IF ( MOD(myIter,cplSendFrq_iter).EQ.0 ) THEN
        _BEGIN_MASTER( myThid )
         IF ( debugMode .OR. countPrtImp.LT.maxNumberPrint ) THEN
-c        WRITE(0,'(A,I5,A,I10)') '  Importing (pid=', myProcId,
-c    &             ' ) oceanic fields at iteration', myIter
          WRITE(msgBuf,'(A,I10)')
-     &    '  Importing oceanic fields at iteration', myIter
+     &    '  Importing  oceanic surface fields at iter=', myIter
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
          countPrtImp = countPrtImp + 1
