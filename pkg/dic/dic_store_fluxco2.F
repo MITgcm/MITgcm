@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_store_fluxco2.F,v 1.2 2012/08/11 19:19:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_store_fluxco2.F,v 1.3 2015/11/12 01:00:19 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -25,9 +25,9 @@ C     == DIC variables
 #include "DIC_VARS.h"
 #ifdef COMPONENT_MODULE
 C     == Global variables for coupling interface ==
+#include "CPL_PARAMS.h"
 #include "OCNCPL.h"
 #include "OCNIDS.h"
-#include "CPL_PARAMS.h"
 #endif
 
 C     == Routine arguments ==
@@ -46,7 +46,7 @@ C     bi,bj  :: Tile index
       INTEGER i,j,bi,bj
 
 #ifdef USE_ATMOSCO2
-      IF ( ocnCpl_exchange_DIC ) THEN
+      IF ( ocn_cplExch_DIC ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1,sNy

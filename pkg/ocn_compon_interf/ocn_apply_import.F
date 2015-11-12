@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_apply_import.F,v 1.7 2009/04/28 18:44:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_apply_import.F,v 1.8 2015/11/12 00:57:41 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "OCN_CPL_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: OCN_APPLY_IMPORT
@@ -60,23 +59,23 @@ C--     Aplly import to all coupling fields (standard way)
 
 C-   Dynamical forcing
          IF ( useImportTau ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
               fu(i,j,bi,bj) = tauX(i,j,bi,bj)
               fv(i,j,bi,bj) = tauY(i,j,bi,bj)
             ENDDO
            ENDDO
          ENDIF
          IF ( useImportSLP ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
               pLoad(i,j,bi,bj) = atmSLPr(i,j,bi,bj)
             ENDDO
            ENDDO
          ENDIF
          IF ( useImportSIce ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
               sIceLoad(i,j,bi,bj) = seaIceMass(i,j,bi,bj)
             ENDDO
            ENDDO
@@ -84,15 +83,15 @@ C-   Dynamical forcing
 
 C-   Fresh-Water & Salinity forcing
          IF ( useImportFW ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
               EmPmR(i,j,bi,bj) = FWFlux    (i,j,bi,bj)
             ENDDO
            ENDDO
          ENDIF
          IF ( useImportFW ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
               saltFlux(i,j,bi,bj)= iceSaltFlx(i,j,bi,bj)
             ENDDO
            ENDDO
@@ -100,14 +99,14 @@ C-   Fresh-Water & Salinity forcing
 
 C-   Heat Flux forcing
          IF ( useImportHFlx ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
               Qnet(i,j,bi,bj)= HeatFlux  (i,j,bi,bj)
             ENDDO
            ENDDO
 #ifdef SHORTWAVE_HEATING
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              Qsw(i,j,bi,bj) = qShortWave(i,j,bi,bj)
             ENDDO
            ENDDO
@@ -117,22 +116,22 @@ C-   Heat Flux forcing
 #ifdef ALLOW_DIC
 C-   Carbon/DIC exchanges
          IF ( useImportFice ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              fice(i,j,bi,bj)= fracIce(i,j,bi,bj)
             ENDDO
            ENDDO
          ENDIF
          IF ( useImportCO2 ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              AtmospCO2(i,j,bi,bj)= airCO2(i,j,bi,bj)
             ENDDO
            ENDDO
          ENDIF
          IF ( useImportWSpd ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              wind(i,j,bi,bj)= surfWSpeed(i,j,bi,bj)
             ENDDO
            ENDDO
@@ -143,30 +142,30 @@ C--     Apply only to forcings relevant for eta/surf.press variations
         ELSE
 
          IF ( useImportSIce .AND. useImportSLP ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
               phi0surf(i,j,bi,bj) = atmSLPr(i,j,bi,bj)*recip_rhoConst
      &                 + gravity*seaIceMass(i,j,bi,bj)*recip_rhoConst
             ENDDO
            ENDDO
          ELSEIF ( useImportSIce ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
               phi0surf(i,j,bi,bj) = pLoad(i,j,bi,bj)*recip_rhoConst
      &                 + gravity*seaIceMass(i,j,bi,bj)*recip_rhoConst
             ENDDO
            ENDDO
          ELSEIF ( useImportSLP ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
               phi0surf(i,j,bi,bj) = atmSLPr(i,j,bi,bj)*recip_rhoConst
             ENDDO
            ENDDO
          ENDIF
 
          IF ( useImportFW ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
               EmPmR(i,j,bi,bj) = FWFlux    (i,j,bi,bj)
             ENDDO
            ENDDO
@@ -182,21 +181,21 @@ C--  end bi,bj loop
 C--  Fill in Halo region with valid values
 
 #ifdef ATMOSPHERIC_LOADING
-       IF ( useImportSLP . AND. 
-     &    ( ocnCpl_exchange_DIC .OR. apply2AllFields ) ) 
+      IF ( useImportSLP . AND.
+     &    ( ocn_cplExch_DIC .OR. apply2AllFields ) )
      &   _EXCH_XY_RS( pLoad,    myThid )
-       IF ( apply2AllFields ) THEN
+      IF ( apply2AllFields ) THEN
         IF ( useImportSIce)  _EXCH_XY_RS( sIceLoad, myThid )
-       ELSEIF ( useImportSLP .OR. useImportSIce ) THEN
+      ELSEIF ( useImportSLP .OR. useImportSIce ) THEN
          _EXCH_XY_RS( phi0surf, myThid )
-       ENDIF
+      ENDIF
 #else
-       IF ( useImportSLP . AND. ocnCpl_exchange_DIC) 
+      IF ( useImportSLP . AND. ocn_cplExch_DIC )
      &     _EXCH_XY_RS( pLoad,    myThid )
 #endif
 
-       IF ( useImportFW  ) _EXCH_XY_RS(EmPmR, myThid )
-       IF ( apply2AllFields ) THEN
+      IF ( useImportFW  ) _EXCH_XY_RS(EmPmR, myThid )
+      IF ( apply2AllFields ) THEN
         IF (useImportTau ) CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
         IF (useImportFW  ) _EXCH_XY_RS(saltFlux, myThid )
         IF (useImportHFlx) _EXCH_XY_RS(Qnet , myThid )

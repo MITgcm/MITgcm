@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_read_pickup.F,v 1.8 2013/07/18 20:02:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_read_pickup.F,v 1.9 2015/11/12 00:57:41 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "OCN_CPL_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: OCN_CPL_READ_PICKUP
@@ -68,7 +67,7 @@ c        CALL READ_REC_3D_RL( fn,prec,1,seaIceMass, 8,myIter,myThid )
 c        rec_ind=8
 c      ENDIF
 
-       IF ( ocnCpl_exchange_DIC ) THEN
+       IF ( ocn_cplExch_DIC ) THEN
 c        CALL READ_REC_3D_RL( fn,prec,1,airCO2    , 9,myIter,myThid )
 c        CALL READ_REC_3D_RL( fn,prec,1,surfWSpeed,10,myIter,myThid )
 c        CALL READ_REC_3D_RL( fn,prec,1,fracIce   ,11,myIter,myThid )
@@ -91,7 +90,7 @@ c        _EXCH_XY_RL( FWFlux    , myThid )
 c        _EXCH_XY_RL( iceSaltFlx, myThid )
 c        _EXCH_XY_RL( seaIceMass, myThid )
 c      ENDIF
-       IF ( ocnCpl_exchange_DIC ) THEN
+       IF ( ocn_cplExch_DIC ) THEN
 c        _EXCH_XY_RL( airCO2    , myThid )
 c        _EXCH_XY_RL( surfWSpeed, myThid )
 c        _EXCH_XY_RL( fracIce   , myThid )

@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_diags.F,v 1.4 2010/01/03 19:26:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_diags.F,v 1.5 2015/11/12 00:57:41 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "OCN_CPL_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: OCN_CPL_DIAGS
@@ -55,7 +54,7 @@ C           OCN_CPL_DIAGS call) to do other diags than time-ave.
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
 
-         DDTT = deltaTclock
+         DDTT = deltaTClock
          DO j=1,sNy
           DO i=1,sNx
             SLPtave(i,j,bi,bj)  = SLPtave(i,j,bi,bj)
@@ -64,16 +63,6 @@ C           OCN_CPL_DIAGS call) to do other diags than time-ave.
      &                   + DDTT * HeatFlux(i,j,bi,bj)
             QSWtave(i,j,bi,bj)  = QSWtave(i,j,bi,bj)
      &                   + DDTT * qShortWave(i,j,bi,bj)
-c           QLTtave(i,j,bi,bj)  = QLTtave(i,j,bi,bj)
-c    &                   + DDTT * qLatent(i,j,bi,bj)
-c           QSNtave(i,j,bi,bj)  = QSNtave(i,j,bi,bj)
-c    &                   + DDTT * qSensible(i,j,bi,bj)
-c           QLWtave(i,j,bi,bj)  = QLWtave(i,j,bi,bj)
-c    &                   + DDTT * qLongWave(i,j,bi,bj)
-c           UGtave(i,j,bi,bj)   = UGtave(i,j,bi,bj)
-c    &                   + DDTT * uVelGround(i,j,bi,bj)
-c           VGtave(i,j,bi,bj)   = VGtave(i,j,bi,bj)
-c    &                   + DDTT * vVelGround(i,j,bi,bj)
             TXtave(i,j,bi,bj)   = TXtave(i,j,bi,bj)
      &                   + DDTT * tauX(i,j,bi,bj)
             TYtave(i,j,bi,bj)   = TYtave(i,j,bi,bj)
@@ -92,7 +81,7 @@ c    &                   + DDTT * vVelGround(i,j,bi,bj)
      &                   + DDTT * SSSocn2cpl(i,j,bi,bj)
             vSqtave(i,j,bi,bj)  = vSqtave(i,j,bi,bj)
      &                   + DDTT * vSqocn2cpl(i,j,bi,bj)
-           IF ( ocnCpl_exchange_DIC ) THEN
+           IF ( ocn_cplExch_DIC ) THEN
             aCO2tave(i,j,bi,bj)  = aCO2tave(i,j,bi,bj)
      &                    + DDTT * airCO2(i,j,bi,bj)
             sWSpdtave(i,j,bi,bj) = sWSpdtave(i,j,bi,bj)

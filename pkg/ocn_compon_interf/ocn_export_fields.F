@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_export_fields.F,v 1.3 2009/12/25 19:45:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_export_fields.F,v 1.4 2015/11/12 00:57:41 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "OCN_CPL_OPTIONS.h"
 
 CBOP 0
 C !ROUTINE: OCN_EXPORT_FIELDS
@@ -25,6 +24,7 @@ C !USES:
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "CPL_PARAMS.h"
 #include "OCNIDS.h"
 #include "OCNCPL.h"
 
@@ -62,9 +62,9 @@ C-    Send ocean surface velocity square to coupling layer
       CALL COMPSEND_R8TILES( ocnSSVsqName,
      I     sNx, OLx, sNy, OLy, 1, nSx, nSy, vSqocn2cpl )
 
-      IF ( ocnCpl_exchange_DIC ) THEN
+      IF ( ocn_cplExch_DIC ) THEN
 C-    Send ocean CO2 flux to coupling layer
-        CALL COMPSEND_R8TILES( ocnFCO2Name,
+        CALL COMPSEND_R8TILES( ocnCO2FluxName,
      I     sNx, OLx, sNy, OLy, 1, nSx, nSy, fluxCO2cpl )
       ENDIF
 

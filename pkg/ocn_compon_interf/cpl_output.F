@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_output.F,v 1.2 2010/01/03 19:26:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_output.F,v 1.3 2015/11/12 00:57:41 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "OCN_CPL_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: CPL_OUTPUT
@@ -67,11 +66,6 @@ C       Normalize by integrated time
           CALL TIMEAVE_NORMALIZE(SLPtave,CPL_timeAve,1,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZE(HFtave ,CPL_timeAve,1,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZE(QSWtave,CPL_timeAve,1,bi,bj,myThid)
-c         CALL TIMEAVE_NORMALIZE(QLTtave,CPL_timeAve,1,bi,bj,myThid)
-c         CALL TIMEAVE_NORMALIZE(QSNtave,CPL_timeAve,1,bi,bj,myThid)
-c         CALL TIMEAVE_NORMALIZE(QLWtave,CPL_timeAve,1,bi,bj,myThid)
-c         CALL TIMEAVE_NORMALIZE(UGtave ,CPL_timeAve,1,bi,bj,myThid)
-c         CALL TIMEAVE_NORMALIZE(VGtave ,CPL_timeAve,1,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZE(TXtave ,CPL_timeAve,1,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZE(TYtave ,CPL_timeAve,1,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZE(FWtave ,CPL_timeAve,1,bi,bj,myThid)
@@ -81,7 +75,7 @@ c         CALL TIMEAVE_NORMALIZE(VGtave ,CPL_timeAve,1,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZE(SSTtave,CPL_timeAve,1,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZE(SSStave,CPL_timeAve,1,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZE(vSqtave,CPL_timeAve,1,bi,bj,myThid)
-          IF ( ocnCpl_exchange_DIC ) THEN
+          IF ( ocn_cplExch_DIC ) THEN
            CALL TIMEAVE_NORMALIZE(aCO2tave, CPL_timeAve,1,bi,bj,myThid)
            CALL TIMEAVE_NORMALIZE(sWSpdtave,CPL_timeAve,1,bi,bj,myThid)
            CALL TIMEAVE_NORMALIZE(iceftave, CPL_timeAve,1,bi,bj,myThid)
@@ -104,7 +98,7 @@ c         CALL TIMEAVE_NORMALIZE(VGtave ,CPL_timeAve,1,bi,bj,myThid)
           CALL WRITE_REC_XY_RL(  fn, SSTtave  , 10, myIter, myThid )
           CALL WRITE_REC_XY_RL(  fn, SSStave  , 11, myIter, myThid )
           CALL WRITE_REC_XY_RL(  fn, vSqtave  , 12, myIter, myThid )
-          IF ( ocnCpl_exchange_DIC ) THEN
+          IF ( ocn_cplExch_DIC ) THEN
            CALL WRITE_REC_XY_RL( fn, aCO2tave , 13, myIter, myThid )
            CALL WRITE_REC_XY_RL( fn, sWSpdtave, 14, myIter, myThid )
            CALL WRITE_REC_XY_RL( fn, iceftave , 15, myIter, myThid )
@@ -147,7 +141,7 @@ c         CALL TIMEAVE_NORMALIZE(VGtave ,CPL_timeAve,1,bi,bj,myThid)
      &         'SSStave',SSStave,myThid)
           CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'vSqtave',vSqtave,myThid)
-          IF ( ocnCpl_exchange_DIC ) THEN
+          IF ( ocn_cplExch_DIC ) THEN
             CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'aCO2tave',aCO2tave,myThid)
             CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
@@ -166,11 +160,6 @@ C       Reset diagnostic counters
             CALL TIMEAVE_RESET( SLPtave, 1, bi, bj, myThid )
             CALL TIMEAVE_RESET( HFtave , 1, bi, bj, myThid )
             CALL TIMEAVE_RESET( QSWtave, 1, bi, bj, myThid )
-c           CALL TIMEAVE_RESET( QLTtave, 1, bi, bj, myThid )
-c           CALL TIMEAVE_RESET( QSNtave, 1, bi, bj, myThid )
-c           CALL TIMEAVE_RESET( QLWtave, 1, bi, bj, myThid )
-c           CALL TIMEAVE_RESET( UGtave , 1, bi, bj, myThid )
-c           CALL TIMEAVE_RESET( VGtave , 1, bi, bj, myThid )
             CALL TIMEAVE_RESET( TXtave , 1, bi, bj, myThid )
             CALL TIMEAVE_RESET( TYtave , 1, bi, bj, myThid )
             CALL TIMEAVE_RESET( FWtave , 1, bi, bj, myThid )
@@ -180,7 +169,7 @@ c           CALL TIMEAVE_RESET( VGtave , 1, bi, bj, myThid )
             CALL TIMEAVE_RESET( SSTtave, 1, bi, bj, myThid )
             CALL TIMEAVE_RESET( SSStave, 1, bi, bj, myThid )
             CALL TIMEAVE_RESET( vSqtave, 1, bi, bj, myThid )
-            IF ( ocnCpl_exchange_DIC ) THEN
+            IF ( ocn_cplExch_DIC ) THEN
               CALL TIMEAVE_RESET( aCO2tave , 1, bi, bj, myThid )
               CALL TIMEAVE_RESET( sWSpdtave, 1, bi, bj, myThid )
               CALL TIMEAVE_RESET( iceftave , 1, bi, bj, myThid )

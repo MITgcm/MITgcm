@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_write_pickup.F,v 1.7 2013/11/27 21:09:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_write_pickup.F,v 1.8 2015/11/12 00:57:41 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "OCN_CPL_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: CPL_WRITE_PICKUP
@@ -59,11 +59,6 @@ c     IF ( .NOT. cpl_earlyExpImpCall ) THEN
 c       CALL WRITE_REC_3D_RL( fn,prec,1, atmSLPr   , 1, myIter, myThid )
 c       CALL WRITE_REC_3D_RL( fn,prec,1, HeatFlux  , 2, myIter, myThid )
 c       CALL WRITE_REC_3D_RL( fn,prec,1, qShortWave, 3, myIter, myThid )
-cc      CALL WRITE_REC_3D_RL( fn,prec,1, qLatent   , 3, myIter, myThid )
-cc      CALL WRITE_REC_3D_RL( fn,prec,1, qSensible , 3, myIter, myThid )
-cc      CALL WRITE_REC_3D_RL( fn,prec,1, qLongWave , 3, myIter, myThid )
-cc      CALL WRITE_REC_3D_RL( fn,prec,1, uVelGround, 3, myIter, myThid )
-cc      CALL WRITE_REC_3D_RL( fn,prec,1, vVelGround, 3, myIter, myThid )
 c       CALL WRITE_REC_3D_RL( fn,prec,1, tauX      , 4, myIter, myThid )
 c       CALL WRITE_REC_3D_RL( fn,prec,1, tauY      , 5, myIter, myThid )
 c       CALL WRITE_REC_3D_RL( fn,prec,1, FWFlux    , 6, myIter, myThid )
@@ -72,7 +67,7 @@ c       CALL WRITE_REC_3D_RL( fn,prec,1, seaIceMass, 8, myIter, myThid )
 c       rec_ind=8
 c     ENDIF
 
-      IF ( ocnCpl_exchange_DIC ) THEN
+      IF ( ocn_cplExch_DIC ) THEN
 c       CALL WRITE_REC_3D_RL( fn,prec,1,
 c    &                     airCO2    , rec_ind+1, myIter, myThid )
 c       CALL WRITE_REC_3D_RL( fn,prec,1,

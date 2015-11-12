@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_store_my_data.F,v 1.7 2015/10/26 14:41:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_store_my_data.F,v 1.8 2015/11/12 00:57:41 jmc Exp $
 C $Name:  $
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+
+#include "OCN_CPL_OPTIONS.h"
 
 C     !ROUTINE: OCN_STORE_MY_DATA
 C     !INTERFACE:
@@ -105,7 +105,7 @@ C--   bi,bj loop over my tiles
          ENDDO
 
 c#ifdef ALLOW_DIC
-c       IF ( ocnCpl_exchange_DIC ) THEN
+c       IF ( ocn_cplExch_DIC ) THEN
 c        DO j=1,sNy
 c         DO i=1,sNx
 c           fluxCO2cpl(i,j,bi,bj) = fluxCO2(i,j,bi,bj)
