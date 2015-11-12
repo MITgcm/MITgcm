@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_init_fixed.F,v 1.2 2013/11/27 21:10:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_init_fixed.F,v 1.3 2015/11/12 01:01:58 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "ATM_CPL_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP

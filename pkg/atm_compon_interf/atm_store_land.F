@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_store_land.F,v 1.1 2013/09/11 20:17:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_store_land.F,v 1.2 2015/11/12 01:01:57 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "ATM_CPL_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: ATM_STORE_LAND

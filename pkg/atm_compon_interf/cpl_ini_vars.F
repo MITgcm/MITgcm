@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_ini_vars.F,v 1.4 2007/06/18 21:28:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_ini_vars.F,v 1.5 2015/11/12 01:01:58 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "ATM_CPL_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: CPL_INI_VARS
@@ -41,48 +41,38 @@ CEOP
 
 #ifdef COMPONENT_MODULE
 C     == Local variables ==
-C     I,J,bi,bj :: Loop counters
-      INTEGER I,J,bi,bj
+C     i,j,bi,bj :: Loop counters
+      INTEGER i,j,bi,bj
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myByLo(myThid)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
 C-        Export field
-          atmSLPr(   I,J,bi,bj) = 0.
-          HeatFlux(  I,J,bi,bj) = 0.
-          qShortWave(I,J,bi,bj) = 0.
-c         qSensible( I,J,bi,bj) = 0.
-c         qLatent(   I,J,bi,bj) = 0.
-c         qLongWave( I,J,bi,bj) = 0.
-c         uVelGround(I,J,bi,bj) = 0.
-c         vVelGround(I,J,bi,bj) = 0.
-          tauX(      I,J,bi,bj) = 0.
-          tauY(      I,J,bi,bj) = 0.
-          EvMPrFlux( I,J,bi,bj) = 0.
-          RunOffFlux(I,J,bi,bj) = 0.
-          RunOffEnFx(I,J,bi,bj) = 0.
-          iceSaltFlx(I,J,bi,bj) = 0.
-          seaIceMass(I,J,bi,bj) = 0.
-          airCO2    (I,J,bi,bj) = 0.
-          sWSpeed   (I,J,bi,bj) = 0.
-          fracIce   (I,J,bi,bj) = 0.
+          atmSLPr(   i,j,bi,bj) = 0.
+          HeatFlux(  i,j,bi,bj) = 0.
+          qShortWave(i,j,bi,bj) = 0.
+          tauX(      i,j,bi,bj) = 0.
+          tauY(      i,j,bi,bj) = 0.
+          EvMPrFlux( i,j,bi,bj) = 0.
+          RunOffFlux(i,j,bi,bj) = 0.
+          RunOffEnFx(i,j,bi,bj) = 0.
+          iceSaltFlx(i,j,bi,bj) = 0.
+          seaIceMass(i,j,bi,bj) = 0.
+          airCO2    (i,j,bi,bj) = 0.
+          sWSpeed   (i,j,bi,bj) = 0.
+          fracIce   (i,j,bi,bj) = 0.
 C-        Import field
-c         ocMxlD   (I,J,bi,bj)  = 0.
-          SSTocn   (I,J,bi,bj)  = 0.
-          SSSocn   (I,J,bi,bj)  = 0.
-          vSqocn   (I,J,bi,bj)  = 0.
-          flxCO2ocn(I,J,bi,bj)  = 0.
+c         ocMxlD   (i,j,bi,bj)  = 0.
+          SSTocn   (i,j,bi,bj)  = 0.
+          SSSocn   (i,j,bi,bj)  = 0.
+          vSqocn   (i,j,bi,bj)  = 0.
+          flxCO2ocn(i,j,bi,bj)  = 0.
          ENDDO
         ENDDO
         atmSLPrTime(bi,bj)    = 0.
         HeatFluxTime(bi,bj)   = 0.
         qShortwaveTime(bi,bj) = 0.
-c       qSensibleTime(bi,bj)  = 0.
-c       qLatentTime(bi,bj)    = 0.
-c       qLongwaveTime(bi,bj)  = 0.
-c       uVelGroundTime(bi,bj) = 0.
-c       vVelGroundTime(bi,bj) = 0.
         tauXTime(bi,bj)       = 0.
         tauYTime(bi,bj)       = 0.
         EvMPrTime(bi,bj)      = 0.

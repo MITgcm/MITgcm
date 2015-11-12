@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_export_atmconfig.F,v 1.4 2013/12/02 22:13:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_export_atmconfig.F,v 1.5 2015/11/12 01:01:57 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "ATM_CPL_OPTIONS.h"
 
 CBOP 0
 C !ROUTINE: ATM_EXPORT_ATMCONFIG

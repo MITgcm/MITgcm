@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_get_atmconfig.F,v 1.1 2013/12/02 22:13:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_get_atmconfig.F,v 1.2 2015/11/12 01:01:57 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "ATM_CPL_OPTIONS.h"
 #ifdef ALLOW_AIM
 # include "AIM_OPTIONS.h"
 #endif
