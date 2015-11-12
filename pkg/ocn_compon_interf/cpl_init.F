@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_init.F,v 1.3 2013/12/02 21:42:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_init.F,v 1.4 2015/11/12 00:53:45 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "OCN_CPL_OPTIONS.h"
 
 CBOP 0
 C !ROUTINE: CPL_INIT

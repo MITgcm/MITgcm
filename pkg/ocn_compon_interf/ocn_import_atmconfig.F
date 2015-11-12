@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_import_atmconfig.F,v 1.3 2013/12/02 22:16:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_import_atmconfig.F,v 1.4 2015/11/12 00:53:46 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "OCN_CPL_OPTIONS.h"
 
 CBOP 0
 C !ROUTINE: OCN_IMPORT_ATMCONFIG
@@ -12,8 +12,8 @@ C !INTERFACE:
 C !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE OCN_IMPORT_ATMCONFIG
-C     | o Routine for importing atmos. config into ocean
-C     |   component.
+C     | o Routine for importing atmos. config
+C     |   into ocean component.
 C     *==========================================================*
 C     | This version talks to the MIT Coupler. It uses the
 C     | MIT Coupler "checkpoint 1" library calls.
@@ -33,13 +33,31 @@ C     myThid :: Thread number for this instance of the routine
       INTEGER myThid
 CEOP
 
-C     Receive atmos. model configuration info.
-C     o Import atmosphere model orography
+C !LOCAL VARIABLES:
+C     == Local variables ==
+C     i,j,bi,bj :: Loop counters
+      INTEGER i,j,bi,bj
+
+C-    Initialise land-mask
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myByLo(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          landMask(i,j,bi,bj) = 0.
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+C-    Receive atmos. model configuration info.
       _BARRIER
       _BEGIN_MASTER( myThid )
+
+C     o Import atmosphere model land-mask
       CALL COMPRECV_R8TILES(
      I              atmLandName, sNx, OLx, sNy, OLy, 1, nSx, nSy,
      O              landMask )
+
       _END_MASTER( myThid )
       _BARRIER
 

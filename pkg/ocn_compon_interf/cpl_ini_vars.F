@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_ini_vars.F,v 1.6 2010/01/03 19:26:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_ini_vars.F,v 1.7 2015/11/12 00:53:46 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "OCN_CPL_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: CPL_INI_VARS
@@ -42,36 +41,31 @@ CEOP
 #ifdef COMPONENT_MODULE
 
 C     !LOCAL VARIABLES:
-C     I,J,bi,bj :: Loop counters
-      INTEGER I,J,bi,bj
+C     i,j,bi,bj :: Loop counters
+      INTEGER i,j,bi,bj
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myByLo(myThid)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
 C.        Export fields
-          ocMxlD2cpl(I,J,bi,bj) = 0.
-          SSTocn2cpl(I,J,bi,bj) = 0.
-          SSSocn2cpl(I,J,bi,bj) = 0.
-          vSqocn2cpl(I,J,bi,bj) = 0.
-          fluxCO2cpl(I,J,bi,bj) = 0.
+          ocMxlD2cpl(i,j,bi,bj) = 0.
+          SSTocn2cpl(i,j,bi,bj) = 0.
+          SSSocn2cpl(i,j,bi,bj) = 0.
+          vSqocn2cpl(i,j,bi,bj) = 0.
+          fluxCO2cpl(i,j,bi,bj) = 0.
 C-        Import fields
-          atmSLPr   (I,J,bi,bj) = 0.
-          HeatFlux  (I,J,bi,bj) = 0.
-          qShortWave(I,J,bi,bj) = 0.
-c         qLatent   (I,J,bi,bj) = 0.
-c         qSensible (I,J,bi,bj) = 0.
-c         qLongWave (I,J,bi,bj) = 0.
-c         uVelGround(I,J,bi,bj) = 0.
-c         vVelGround(I,J,bi,bj) = 0.
-          tauX      (I,J,bi,bj) = 0.
-          tauY      (I,J,bi,bj) = 0.
-          FWflux    (I,J,bi,bj) = 0.
-          iceSaltFlx(I,J,bi,bj) = 0.
-          seaIceMass(I,J,bi,bj) = 0.
-          airCO2    (I,J,bi,bj) = 0.
-          surfWSpeed(I,J,bi,bj) = 0.
-          fracIce   (I,J,bi,bj) = 0.
+          atmSLPr   (i,j,bi,bj) = 0.
+          HeatFlux  (i,j,bi,bj) = 0.
+          qShortWave(i,j,bi,bj) = 0.
+          tauX      (i,j,bi,bj) = 0.
+          tauY      (i,j,bi,bj) = 0.
+          FWflux    (i,j,bi,bj) = 0.
+          iceSaltFlx(i,j,bi,bj) = 0.
+          seaIceMass(i,j,bi,bj) = 0.
+          airCO2    (i,j,bi,bj) = 0.
+          surfWSpeed(i,j,bi,bj) = 0.
+          fracIce   (i,j,bi,bj) = 0.
          ENDDO
         ENDDO
        ENDDO
@@ -90,11 +84,6 @@ C      i.e. not loaded from history file for now ).
          CALL TIMEAVE_RESET( SLPtave,  1, bi, bj, myThid )
          CALL TIMEAVE_RESET( HFtave ,  1, bi, bj, myThid )
          CALL TIMEAVE_RESET( QSWtave,  1, bi, bj, myThid )
-c        CALL TIMEAVE_RESET( QLTtave,  1, bi, bj, myThid )
-c        CALL TIMEAVE_RESET( QSNtave,  1, bi, bj, myThid )
-c        CALL TIMEAVE_RESET( QLWtave,  1, bi, bj, myThid )
-c        CALL TIMEAVE_RESET( UGtave ,  1, bi, bj, myThid )
-c        CALL TIMEAVE_RESET( VGtave ,  1, bi, bj, myThid )
          CALL TIMEAVE_RESET( TXtave ,  1, bi, bj, myThid )
          CALL TIMEAVE_RESET( TYtave ,  1, bi, bj, myThid )
          CALL TIMEAVE_RESET( FWtave ,  1, bi, bj, myThid )
