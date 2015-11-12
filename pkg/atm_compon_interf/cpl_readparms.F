@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_readparms.F,v 1.10 2013/12/02 21:46:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_readparms.F,v 1.11 2015/11/12 01:06:40 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "ATM_CPL_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: CPL_READPARMS
@@ -78,7 +78,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Open the data file
       WRITE(msgBuf,'(A)') ' CPL_READPARMS: opening data.cpl'
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1 )
 
       CALL OPEN_COPY_DATA_FILE( 'data.cpl', 'CPL_READPARMS',
      O                          iUnit, myThid )
@@ -90,11 +90,7 @@ C-    Set default value:
       useImportSST  = .TRUE.
       useImportSSS  = .TRUE.
       useImportVsq  = .TRUE.
-      IF ( atmCpl_exchange_DIC ) THEN
-        useImportFlxCO2 = .TRUE.
-      ELSE
-        useImportFlxCO2 = .FALSE.
-      ENDIF
+      useImportFlxCO2 = atm_cplExch_DIC
       cpl_atmSendFrq= deltaTClock
       maxNumberPrint= 100
       countPrtExp   = 0
@@ -107,7 +103,7 @@ C-    Parameters for coupling interface:
 
       WRITE(msgBuf,'(A)')
      &   ' CPL_READPARMS: finished reading data.cpl'
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1 )
 
 C--   Close the open data file
       CLOSE(iUnit)
@@ -121,15 +117,15 @@ C--   Check for retired parameters:
         WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
      &   '=> always call coupler early in sequence of calls'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CPL_READPARMS'
+        cplErrorCount = cplErrorCount + 1
       ENDIF
 
 C--   Check parameters and model configuration
-      IF ( useImportFlxCO2 .AND. .NOT.atmCpl_exchange_DIC ) THEN
+      IF ( useImportFlxCO2 .AND. .NOT.atm_cplExch_DIC ) THEN
         WRITE(msgBuf,'(2A)') 'CPL_READPARMS: useImportFlxCO2',
-     &    ' requires atmCpl_exchange_DIC TRUE'
+     &    ' requires atm_cplExch_DIC TRUE'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CPL_READPARMS'
+        cplErrorCount = cplErrorCount + 1
       ENDIF
       tmpLoc = NINT( cpl_atmSendFrq / deltaTClock )
       tmpLoc = ABS( tmpLoc - ( cpl_atmSendFrq / deltaTClock ) )
@@ -137,27 +133,59 @@ C--   Check parameters and model configuration
         WRITE(msgBuf,'(2A)') 'CPL_READPARMS: cpl_atmSendFrq',
      &    ' is not a multiple of deltaT'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CPL_READPARMS'
+        cplErrorCount = cplErrorCount + 1
       ENDIF
 
 C-    Derive other parameters:
       cplSendFrq_iter = NINT( cpl_atmSendFrq / deltaTClock )
-      IF ( cplSendFrq_iter .LT. 1) cplSendFrq_iter = 1
+      IF ( cplSendFrq_iter.LT.1 ) cplSendFrq_iter = 1
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C--   Print out parameter values :
+C--   Print out set-up summary
 
       iUnit = standardMessageUnit
       WRITE(msgBuf,'(A)') ' '
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
-      WRITE(msgBuf,'(A)') '// Coupling package parameters :'
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// Coupling set-up summary :'
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
 
-C- namelist CPL_ATM_PARAM:
+C-    o Print Coupler-Exchange config (set from params in coupler 'data.cpl')
+       WRITE(msgBuf,'(A)') '// -------'
+       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A)')
+     &        '// Coupler-exchange switch (received from coupler):'
+       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+
+       CALL WRITE_0D_L( atm_cplSequential, INDEX_NONE,
+     &                 'atm_cplSequential =',
+     &   ' /* use Sequential Coupling Exchange on/off flag */')
+       CALL WRITE_0D_L( atm_cplExch_RunOff, INDEX_NONE,
+     &                 'atm_cplExch_RunOff =',
+     &     ' /* exchange RunOff fields with coupler on/off */')
+       CALL WRITE_0D_L( atm_cplExch1W_sIce, INDEX_NONE,
+     &                 'atm_cplExch1W_sIce =',
+     &     ' /* 1-way exchange of seaice vars with coupler */')
+       CALL WRITE_0D_L( atm_cplExch2W_sIce, INDEX_NONE,
+     &                 'atm_cplExch2W_sIce =',
+     &     ' /* 2-way exchange of ThSIce vars with coupler */')
+       CALL WRITE_0D_L( atm_cplExch_SaltPl, INDEX_NONE,
+     &                 'atm_cplExch_SaltPl =',
+     &     ' /* exchange Salt-Plume fields with coupler */')
+       CALL WRITE_0D_L( atm_cplExch_DIC, INDEX_NONE,
+     &                 'atm_cplExch_DIC    =',
+     &     ' /* exchange DIC    fields with coupler on/off */')
+
+C-    print namelist parameter value:
+       WRITE(msgBuf,'(A)') '// -------'
+       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A)')
+     &        '// Coupler parameters (from local param file):'
+       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+
        CALL WRITE_0D_L( cpl_oldPickup , INDEX_NONE,
      &                 'cpl_oldPickup =',
      &   ' /* restart from old pickup on/off flag */')
@@ -183,6 +211,13 @@ C     cpl_atmSendFrq  :: Frequency^-1 for sending data to coupler (s)
      &  ' /* send data to coupler every "cplSendFrq" iter */')
        CALL WRITE_0D_I( maxNumberPrint, INDEX_NONE, 'maxNumberPrint =',
      &  ' /* max number of printed Exp/Imp messages */')
+
+      WRITE(msgBuf,'(A)') '// ==================================='
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// End of Coupling set-up summary'
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// ==================================='
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
