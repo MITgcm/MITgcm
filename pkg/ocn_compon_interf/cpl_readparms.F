@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.13 2013/07/18 20:02:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.14 2015/11/12 00:55:18 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "OCN_CPL_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: CPL_READPARMS
@@ -82,7 +81,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Open the data file
       WRITE(msgBuf,'(A)') ' CPL_READPARMS: opening data.cpl'
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1 )
 
       CALL OPEN_COPY_DATA_FILE( 'data.cpl', 'CPL_READPARMS',
      O                          iUnit, myThid )
@@ -94,15 +93,9 @@ C-    Set default value:
       useImportTau  = .TRUE.
       useImportSLP  = .TRUE.
       useImportSIce = .TRUE.
-      IF ( ocnCpl_exchange_DIC ) THEN
-        useImportFIce = .TRUE.
-        useImportCO2  = .TRUE.
-        useImportWSpd = .TRUE.
-      ELSE
-        useImportFIce = .FALSE.
-        useImportCO2  = .FALSE.
-        useImportWSpd = .FALSE.
-      ENDIF
+      useImportFIce = ocn_cplExch_DIC
+      useImportCO2  = ocn_cplExch_DIC
+      useImportWSpd = ocn_cplExch_DIC
       cpl_taveFreq  = taveFreq
 #ifdef ALLOW_MNC
       cpl_snapshot_mnc = snapshot_mnc
@@ -119,7 +112,7 @@ C-    Parameters for coupling interface:
 
       WRITE(msgBuf,'(A)')
      &   ' CPL_READPARMS: finished reading data.cpl'
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1 )
 
 C--   Close the open data file
       CLOSE(iUnit)
@@ -133,12 +126,12 @@ C--   Check for retired parameters:
         WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
      &   '=> always call coupler early in sequence of calls'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R CPL_READPARMS'
+        cplErrorCount = cplErrorCount + 1
       ENDIF
 
 C--   Check parameters and model configuration
 
-C-    If land_taveFreq is positive, then must compile the land-diagnostics code
+C-    If cpl_taveFreq is positive, then must compile the timeave pkg code
 #ifndef ALLOW_TIMEAVE
       IF (cpl_taveFreq.GT.0.) THEN
         WRITE(msgBuf,'(A)')
@@ -147,7 +140,7 @@ C-    If land_taveFreq is positive, then must compile the land-diagnostics code
         WRITE(msgBuf,'(A)')
      &  'Re-compile with pkg "timeave" in packages.conf'
         CALL PRINT_ERROR( msgBuf, myThid)
-        STOP 'ABNORMAL END: S/R CPL_READPARMS'
+        cplErrorCount = cplErrorCount + 1
       ENDIF
 #endif /* ALLOW_TIMEAVE */
 
@@ -156,16 +149,16 @@ C-    If land_taveFreq is positive, then must compile the land-diagnostics code
       IF ( useImportSLP ) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** CPL_READPARMS:',
      &                       ' useImportSLP is set but'
-        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+        CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
       ELSEIF ( useImportSIce ) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** CPL_READPARMS:',
      &                       ' useImportSIce is set but'
-        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+        CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
       ENDIF
       IF ( useImportSLP .OR. useImportSIce ) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** CPL_READPARMS:',
      &                       ' pressure loading code is not active.'
-        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+        CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
 C        WRITE(msgBuf,'(2A)') '** WARNING **',
 C     &              ' Re-compile with:  #define ATMOSPHERIC_LOADING'
 C        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
@@ -173,11 +166,11 @@ C        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
 #endif /* ATMOSPHERIC_LOADING */
 
       IF ( ( useImportFice.OR.useImportCO2.OR.useImportWSpd ) .AND.
-     &    (.NOT.ocnCpl_exchange_DIC) ) THEN
+     &    (.NOT.ocn_cplExch_DIC) ) THEN
         WRITE(msgBuf,'(2A)') 'CPL_READPARMS: useImport',
-     &    ' with DIC variables requires ocnCpl_exchange_DIC TRUE'
+     &    ' with DIC variables requires ocn_cplExch_DIC TRUE'
         CALL PRINT_ERROR( msgBuf, myThid)
-        STOP 'ABNORMAL END: S/R CPL_READPARMS'
+        cplErrorCount = cplErrorCount + 1
       ENDIF
 
 C     Set IO flags
@@ -195,19 +188,52 @@ C     Set IO flags
 C-    derive other parameters:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C--   Print out parameter values :
+C--   Print out set-up summary
 
       iUnit = standardMessageUnit
       WRITE(msgBuf,'(A)') ' '
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
-      WRITE(msgBuf,'(A)') '// Coupling package parameters :'
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// Coupling set-up summary :'
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
 
-C- namelist CPL_OCN_PARAM:
+C-    o Print Coupler-Exchange config (set from params in coupler 'data.cpl')
+       WRITE(msgBuf,'(A)') '// -------'
+       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A)')
+     &        '// Coupler-exchange switch (received from coupler):'
+       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+
+       CALL WRITE_0D_L( ocn_cplSequential, INDEX_NONE,
+     &                 'ocn_cplSequential =',
+     &   ' /* use Sequential Coupling Exchange on/off flag */')
+
+       CALL WRITE_0D_L( ocn_cplExch_RunOff, INDEX_NONE,
+     &                 'ocn_cplExch_RunOff =',
+     &     ' /* exchange RunOff fields with coupler on/off */')
+       CALL WRITE_0D_L( ocn_cplExch1W_sIce, INDEX_NONE,
+     &                 'ocn_cplExch1W_sIce =',
+     &     ' /* 1-way exchange of seaice vars with coupler */')
+       CALL WRITE_0D_L( ocn_cplExch2W_sIce, INDEX_NONE,
+     &                 'ocn_cplExch2W_sIce =',
+     &     ' /* 2-way exchange of ThSIce vars with coupler */')
+       CALL WRITE_0D_L( ocn_cplExch_SaltPl, INDEX_NONE,
+     &                 'ocn_cplExch_SaltPl =',
+     &     ' /* exchange Salt-Plume fields with coupler */')
+       CALL WRITE_0D_L( ocn_cplExch_DIC, INDEX_NONE,
+     &                 'ocn_cplExch_DIC    =',
+     &     ' /* exchange DIC    fields with coupler on/off */')
+
+C-    print namelist parameter value:
+       WRITE(msgBuf,'(A)') '// -------'
+       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A)')
+     &        '// Coupler parameters (from local param file):'
+       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+
        CALL WRITE_0D_L( useImportHFlx, INDEX_NONE,
      &                 'useImportHFlx=',
      &   ' /* use Imported Heat-Flx fr Coupler on/off flag */')
@@ -240,6 +266,13 @@ C- namelist CPL_OCN_PARAM:
        CALL WRITE_0D_L( cpl_timeave_mdsio , INDEX_NONE,
      &                 'cpl_timeave_mdsio =',
      &   ' /* write TimeAv to MDSIO file on/off flag */')
+
+      WRITE(msgBuf,'(A)') '// ==================================='
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// End of Coupling set-up summary'
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') '// ==================================='
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
