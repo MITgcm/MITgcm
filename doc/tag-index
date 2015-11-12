@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2197 2015/11/12 02:23:15 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2198 2015/11/12 20:07:13 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/atm_ocn_coupler + ocn_compon_interf:
+  - in prep for using pkg/seaice Dyn in coupled set-up, implement sequential
+    coupling option-1: ATM -(cpl)-> OCN and then OCN -(cpl)-> ATM ;
+    add corresponding call in DO_OCEANIC_PHYS.
 o coupler pkgs:
   Start a new way to set-up optionally-exchanged variables (previously, only
    there for exchange_DIC): switch on/off from 1 place, at run-time, in coupler
