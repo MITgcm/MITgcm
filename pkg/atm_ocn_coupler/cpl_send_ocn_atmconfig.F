@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_send_ocn_atmconfig.F,v 1.4 2013/12/02 23:21:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_send_ocn_atmconfig.F,v 1.5 2015/11/12 00:42:42 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -21,25 +21,26 @@ C     *==========================================================*
 C !USES:
       IMPLICIT NONE
 C     == Global variables ==
+c#include "CPL_PARAMS.h"
+#include "ATMIDS.h"
 #include "ATMSIZE.h"
 #include "ATMVARS.h"
-#include "ATMIDS.h"
+#include "OCNIDS.h"
 #include "OCNSIZE.h"
 #include "OCNVARS.h"
-#include "OCNIDS.h"
 
 C !INPUT/OUTPUT PARAMETERS:
 C !LOCAL VARIABLES:
 CEOP
 
-C     Map atmos. depth map onto ocean grid
+C-    Map atmos. land-mask onto ocean grid
       CALL ATM_TO_OCN_MAPXYR8(
      I     Nx_atm, Ny_atm,
      I     landMask_atm,
      I     Nx_ocn, Ny_ocn,
      O     landMask_ocn)
 
-C     Send atmos. config to ocean component
+C-    Send atmos. config to ocean component
       CALL COUPSEND_R8TILES( ocnCompName, atmLandName, Nx_ocn, Ny_ocn,
      &                       landMask_ocn )
 
