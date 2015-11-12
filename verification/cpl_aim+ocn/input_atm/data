@@ -29,6 +29,7 @@
  staggerTimeStep=.TRUE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
+ debugLevel=2,
  &
 
 # Elliptic solver parameters
