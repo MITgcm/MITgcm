@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/shared_code/ATMIDS.h,v 1.4 2013/12/02 23:32:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/shared_code/ATMIDS.h,v 1.5 2015/11/12 01:16:10 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -9,8 +9,12 @@ C     *==========================================================*
       CHARACTER*(8)  atmCompName
       PARAMETER( atmCompName         = 'UV-Atmos'       )
 
-      CHARACTER*(8)  atmLandName
-      PARAMETER( atmLandName         = 'ATM Land'       )
+      CHARACTER*(13) atmCplParamsName
+      PARAMETER( atmCplParamsName    = 'ATM CplParams'  )
+      INTEGER    atmParSize
+      PARAMETER( atmParSize = 6 )
+
+C--   fields sent from OCN to ATM:
       CHARACTER*(10) atmMxlDName
       PARAMETER( atmMxlDName         = 'ATM ocMxlD'     )
       CHARACTER*(7)  atmSSTName
@@ -19,25 +23,30 @@ C     *==========================================================*
       PARAMETER( atmSSSName          = 'ATM SSS'        )
       CHARACTER*(9)  atmSSVsqName
       PARAMETER( atmSSVsqName        = 'ATM SSVsq'      )
-      CHARACTER*(8)  atmFCO2Name
-      PARAMETER( atmFCO2Name         = 'ATM FCO2'       )
+      CHARACTER*(11) atmCO2FluxName
+      PARAMETER( atmCO2FluxName      = 'ATM CO2Flux'    )
 
+C--   fields that can be sent in both direction:
+      CHARACTER*(12) atmSIceFracName
+      PARAMETER( atmSIceFracName     = 'ATM sIceFrac'   )
+      CHARACTER*(13) atmSIceThickName
+      PARAMETER( atmSIceThickName    = 'ATM sIceThick'  )
+      CHARACTER*(13) atmSIceSnowName
+      PARAMETER( atmSIceSnowName     = 'ATM sIceSnowH'  )
+      CHARACTER*(10) atmSIceQ1Name
+      PARAMETER( atmSIceQ1Name       = 'ATM sIceQ1'     )
+      CHARACTER*(10) atmSIceQ2Name
+      PARAMETER( atmSIceQ2Name       = 'ATM sIceQ2'     )
+
+C--   fields sent from ATM to OCN:
+      CHARACTER*(8)  atmLandName
+      PARAMETER( atmLandName         = 'ATM Land'       )
       CHARACTER*(8)  atmSLPrName
       PARAMETER( atmSLPrName         = 'ATM SLPr'       )
       CHARACTER*(12) atmHeatFluxName
       PARAMETER( atmHeatFluxName     = 'ATM HeatFlux'   )
       CHARACTER*(14) atmQshortWaveName
       PARAMETER( atmQshortWaveName   = 'ATM Qshortwave' )
-c     CHARACTER*(13) atmQlongWaveName
-c     PARAMETER( atmQlongWaveName    = 'ATM Qlongwave'  )
-c     CHARACTER*(11) atmQlatentName
-c     PARAMETER( atmQlatentName      = 'ATM Qlatent'    )
-c     CHARACTER*(13) atmQsensibleName
-c     PARAMETER( atmQsensibleName    = 'ATM Qsensible'  )
-c     CHARACTER*(14) atmUvelgroundName
-c     PARAMETER( atmUvelgroundName   = 'ATM Uvelground' )
-c     CHARACTER*(14) atmVvelgroundName
-c     PARAMETER( atmVvelgroundName   = 'ATM Vvelground' )
       CHARACTER*(8)  atmTauXName
       PARAMETER( atmTauXName         = 'ATM tauX'       )
       CHARACTER*(8)  atmTauYName
@@ -50,16 +59,13 @@ c     PARAMETER( atmVvelgroundName   = 'ATM Vvelground' )
       PARAMETER( atmROEnFxName       = 'ATM RO.EnFlx'   )
       CHARACTER*(12) atmSaltFxName
       PARAMETER( atmSaltFxName       = 'ATM SaltFlux'   )
-      CHARACTER*(10) atmSeaIceName
-      PARAMETER( atmSeaIceName       = 'ATM SeaIce'     )
+      CHARACTER*(12) atmSIceMassName
+      PARAMETER( atmSIceMassName     = 'ATM sIceMass'   )
+      CHARACTER*(14) atmSaltPlmFlxName
+      PARAMETER( atmSaltPlmFlxName   = 'ATM SaltPlmFlx' )
       CHARACTER*(10) atmAirCO2Name
       PARAMETER( atmAirCO2Name       = 'ATM AirCO2'     )
-      CHARACTER*(8) atmWSpdName
-      PARAMETER( atmWSpdName         = 'ATM WSpd'       )
-      CHARACTER*(8) atmFIceName
-      PARAMETER( atmFIceName         = 'ATM FIce'       )
+      CHARACTER*(11) atmWindSpdName
+      PARAMETER( atmWindSpdName      = 'ATM WindSpd'    )
 
-C     Pass carbon/DIC variables only if flag set below
-      LOGICAL atmCpl_exchange_DIC
-      PARAMETER( atmCpl_exchange_DIC = .FALSE.)
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
