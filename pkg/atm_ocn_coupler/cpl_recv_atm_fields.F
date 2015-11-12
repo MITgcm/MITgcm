@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_recv_atm_fields.F,v 1.4 2007/06/18 21:20:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_recv_atm_fields.F,v 1.5 2015/11/12 00:43:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -22,6 +22,7 @@ C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ==
+#include "CPL_PARAMS.h"
 #include "ATMSIZE.h"
 #include "ATMVARS.h"
 #include "ATMIDS.h"
@@ -78,11 +79,11 @@ C-    Receive salt flux (<- sea-ice) from atmos. component
      O                       SaltFlx_atm )
 
 C-    Receive sea-ice mass from atmos. component
-      CALL COUPRECV_R8TILES( atmCompName, atmSeaIceName,
+      CALL COUPRECV_R8TILES( atmCompName, atmSIceMassName,
      I                       Nx_atm, Ny_atm,
      O                       sIceMass_atm )
 
-      IF ( atmCpl_exchange_DIC ) THEN
+      IF ( cpl_exchange_DIC.GE.2 ) THEN
 
 C-    Receive atmos CO2 from atmos. component
         CALL COUPRECV_R8TILES( atmCompName, atmAirCO2Name,
@@ -90,12 +91,12 @@ C-    Receive atmos CO2 from atmos. component
      O                         aCO2_atm )
 
 C-    Receive surface wind speed from atmos. component
-        CALL COUPRECV_R8TILES( atmCompName, atmWSpdName,
+        CALL COUPRECV_R8TILES( atmCompName, atmWindSpdName,
      I                         Nx_atm, Ny_atm,
      O                         wSpeed_atm )
 
 C-    Receive seaice fraction from atmos. component
-        CALL COUPRECV_R8TILES( atmCompName, atmFIceName,
+        CALL COUPRECV_R8TILES( atmCompName, atmSIceFracName,
      I                         Nx_atm, Ny_atm,
      O                         sIceFrac_atm )
 

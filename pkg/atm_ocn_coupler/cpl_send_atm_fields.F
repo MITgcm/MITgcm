@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_send_atm_fields.F,v 1.5 2007/08/01 00:53:37 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_send_atm_fields.F,v 1.6 2015/11/12 00:43:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -23,6 +23,7 @@ C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ==
+#include "CPL_PARAMS.h"
 #include "ATMSIZE.h"
 #include "ATMVARS.h"
 #include "ATMIDS.h"
@@ -67,13 +68,13 @@ C     Send ocean surface velocity square to atmos. component
       CALL COUPSEND_R8TILES( atmCompName, atmSSVsqName,
      I                       Nx_atm, Ny_atm, vSq_atm )
 
-      IF ( atmCpl_exchange_DIC ) THEN
+      IF ( cpl_exchange_DIC.GE.2 ) THEN
 C--   Map ocn->atm flux of CO2 onto atmos. grid
         CALL OCN_TO_ATM_MAPXYR8(
      I           Nx_ocn, Ny_ocn, fluxCO2_ocn, Nx_atm, Ny_atm,
      O                           fluxCO2_atm )
 C     Send ocn->atm flux of CO2 to atmos. component
-        CALL COUPSEND_R8TILES( atmCompName, atmFCO2Name,
+        CALL COUPSEND_R8TILES( atmCompName, atmCO2FluxName,
      I                         Nx_atm, Ny_atm, fluxCO2_atm )
       ENDIF
 
