@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.22 2015/09/18 19:50:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.23 2015/11/12 12:22:21 atn Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -794,6 +794,9 @@ c
          il = ilnblnk(gencost_datafile(k))
          write(msgbuf,'(a,a)') ' data file = ',gencost_datafile(k)(1:il)
          call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
+        endif
+catn: take gencost_nrec outside datafile block because some costs
+c do not need datafile.
          if (gencost_nrec(k).GT.1) then
           write(msgbuf,'(a)') '  starts and ends at : '
           call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
@@ -808,7 +811,7 @@ c
      &                            gencost_nrecperiod(k)
           call print_message( msgbuf, msgunit, SQUEEZE_RIGHT , mythid)
          endif
-        endif
+catn        endif
 c
          il = ilnblnk(gencost_barfile(k))
          write(msgbuf,'(a,a)') ' model file = ',gencost_barfile(k)(1:il)
