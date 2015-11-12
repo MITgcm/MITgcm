@@ -1,9 +1,45 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2196 2015/11/05 00:25:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2197 2015/11/12 02:23:15 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o coupler pkgs:
+  Start a new way to set-up optionally-exchanged variables (previously, only
+   there for exchange_DIC): switch on/off from 1 place, at run-time, in coupler
+   data.cpl (new) instead of at compile time in ATMIDS.h & OCNIDS.h ;
+   send switch to ATM & OCN compon before reading their own "data.cpl" (so that
+   compononent param default can be set accordingly).
+  Note: this new switch (cpl_exchange_[xxx]) is not a per variable switch
+   but rather applies to a group a fields (going both ways like for DIC)
+   and corresponds to an option of coupling config.
+  coupler (pkg/atm_ocn_coupler):
+  - change parameter file from "data" to "data.cpl" (in cpl_read_params.F),
+    and read namelist directly (without eessup S/R calls) instead of
+    in the very un-flexible old way, 1 param per line, in fixed order;
+  - add error-counter to track errors (e.g., missing "data.cpl") and to stop
+    cleanly in CPL_CHECK_CPLCONFIG
+  - add new coupling-exchange selectors (some not yet active) including
+    cpl_exchange_DIC (to set to 3 to replace atmCpl_exchange_DIC=T in ATMIDS.h
+                                         and ocnCpl_exchange_DIC=T in OCNIDS.h);
+  - add 2 new S/R (CPL_SEND_ATM/OCN_CPLPARMS) to send coupler-params to each
+    component ; called directly from coupler.F, after comp. registrations;
+  - rename few variable-ID names (in ATMIDS.h & OCNIDS.h):
+     atm/ocnSeaIceName --> atm/ocnSIceMassName ; atm/ocnFCO2Name ->
+      -> atm/ocnCO2FluxName ; atm/ocnWSpdName --> atm/ocnWindSpdName
+  components (pkg/atm_ & ocn_compon_interf):
+  - add ATM/OCN_CPL_OPTIONS.h in component pkgs and include the corresponding
+    CPP header file in all pkg source files.
+  - move checking of comp. configs out of cpl_exch_configs.F into new S/R
+    ATM/OCN_CHECK_CPLCONFIG;
+  - add error-counter to track errors (e.g., in "data.cpl") and to stop
+    cleanly in ATM/OCN_CHECK_CPLCONFIG;
+  - add new S/R CPL_IMPORT_CPLPARMS to import coupling-exchange selectors
+    from coupler ; called from initialise_fixed.F, after PACKAGES_BOOT and
+    before PACKAGES_READPARMS;
+  verification/cpl_aim+ocn/:
+  - update ATMIDS.h & OCNIDS.h (in shared_code) and use new parameter file
+    "data.cpl" for coupler (in input_cpl).
 o eesupp/inc:
   - change the MPI-global-sum default (in CPP_EEOPTIONS.h) to:
     #define GLOBAL_SUM_ORDER_TILES (only affects MPI built of global_sum_tile.F)
