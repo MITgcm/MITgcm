@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.178 2015/10/22 15:49:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.179 2015/11/16 22:58:41 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -566,7 +566,7 @@ c--     >>> Loop body start <<<
       nIter0 = NINT( (startTime-baseTime)/deltaTClock )
 C--   Reset the model iteration counter and the model time.
       myIter = nIter0 + (iloop-1)
-      myTime = startTime + float(iloop-1)*deltaTClock
+      myTime = startTime + deltaTClock*(iloop-1)
 # ifndef ALLOW_OPENAD
       ikey_dynamics = ilev_1
 # endif
@@ -593,7 +593,7 @@ c--     Accumulate in-situ time averages of theta, salt, and SSH.
 #ifdef ALLOW_AUTODIFF
 C--   Reset the model iteration counter and the model time.
         myIter = nIter0 + (iloop-1)
-        myTime = startTime + float(iloop-1)*deltaTClock
+        myTime = startTime + deltaTClock*(iloop-1)
 #endif
         CALL TIMER_START('PROFILES_INLOOP    [MAIN_DO_LOOP]', myThid)
         CALL PROFILES_INLOOP( myTime, myThid )
@@ -646,7 +646,7 @@ c--   Accumulate in-situ time averages of temperature, salinity, SSH.
         CALL PROFILES_INLOOP( endtime, myThid )
         CALL TIMER_STOP ('PROFILES_INLOOP    [THE_MAIN_LOOP]', myThid)
 c--   Compute all profiles cost function contributions.
-        CALL cost_profiles( myiter, mytime, mythid)
+        CALL COST_PROFILES( myIter, myTime, myThid )
       ENDIF
 #endif
 
