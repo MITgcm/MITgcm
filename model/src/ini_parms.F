@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.265 2015/07/03 21:32:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.266 2015/11/16 22:57:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -956,13 +956,13 @@ C     o set default value for start time & nIter0
         nIter0 = 0
       ELSEIF ( startTime.EQ.UNSET_RL ) THEN
 C     o set start time from nIter0
-         startTime = baseTime + deltaTClock*float(nIter0)
+         startTime = baseTime + deltaTClock*DFLOAT(nIter0)
       ELSEIF ( nIter0.EQ.-1 ) THEN
 C     o set nIter0 from start time
          nIter0 = NINT( (startTime-baseTime)/deltaTClock )
       ELSEIF ( baseTime.EQ.0. ) THEN
 C     o set base time from the 2 others
-         baseTime = startTime - deltaTClock*float(nIter0)
+         baseTime = startTime - deltaTClock*DFLOAT(nIter0)
       ENDIF
 
       nTimeSteps_l2 = 4
@@ -980,13 +980,13 @@ C     o nEndIter 2
      &     nEndIter = NINT((endTime-baseTime)/deltaTClock)
 C     o End Time 1
       IF ( endTime .EQ. 0. .AND. nTimeSteps .NE. 0 )
-     &     endTime = startTime + deltaTClock*float(nTimeSteps)
+     &     endTime = startTime + deltaTClock*DFLOAT(nTimeSteps)
 C     o End Time 2
       IF ( endTime .EQ. 0. .AND. nEndIter .NE. 0 )
-     &     endTime = baseTime + deltaTClock*float(nEndIter)
+     &     endTime = baseTime + deltaTClock*DFLOAT(nEndIter)
 
 C     o Consistent?
-      IF ( startTime .NE. baseTime+deltaTClock*float(nIter0) ) THEN
+      IF ( startTime .NE. baseTime+deltaTClock*DFLOAT(nIter0) ) THEN
        WRITE(msgBuf,'(A)')
      & 'S/R INI_PARMS: startTime, baseTime and nIter0 are inconsistent'
        CALL PRINT_ERROR( msgBuf, myThid )
