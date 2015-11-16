@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2198 2015/11/12 20:07:13 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2199 2015/11/16 23:32:58 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - fix wrong truncation (single prec) from "FLOAT" function in expressions
+    like: deltaT*FLOAT(myIter) when myIter is large:
+     a) replaced by DFLOAT (if not seen by TAF);
+     b) remove "FLOAT" and use implicit type conversion (if seen by TAF).
+o pkg/aim_v23:
+  - write/read the expected CO2 pickups (from S/R AIM_DO_CO2): fix reading
+    when pickupSuff is set ; do write rolling pickups + at the end of the run.
 o pkg/atm_ocn_coupler + ocn_compon_interf:
   - in prep for using pkg/seaice Dyn in coupled set-up, implement sequential
     coupling option-1: ATM -(cpl)-> OCN and then OCN -(cpl)-> ATM ;
