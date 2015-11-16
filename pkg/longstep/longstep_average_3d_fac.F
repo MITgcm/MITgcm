@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_average_3d_fac.F,v 1.2 2010/01/18 01:02:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_average_3d_fac.F,v 1.3 2015/11/16 23:11:21 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -51,8 +51,9 @@ CEOP
         DO k = 1,myNr
          DO j = 1-OLy,sNy+OLy
           DO i = 1-OLx,sNx+OLx
-           factor = FLOAT(lsCnt(bi,bj))*fac(i,j,k,bi,bj)
-           IF (factor.NE.0. _d 0) factor = 1. _d 0 / factor
+           factor = lsCnt(bi,bj)
+           factor = factor*fac(i,j,k,bi,bj)
+           IF (factor.NE.zeroRL) factor = 1. _d 0 / factor
            lsFld(i,j,k,bi,bj) = lsFld(i,j,k,bi,bj)*factor
           ENDDO
          ENDDO

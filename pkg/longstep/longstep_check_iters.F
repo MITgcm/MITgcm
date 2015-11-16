@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_check_iters.F,v 1.3 2009/06/29 18:51:26 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_check_iters.F,v 1.4 2015/11/16 23:11:21 jmc Exp $
 C $Name:  $
 
 #include "LONGSTEP_OPTIONS.h"
@@ -58,7 +58,7 @@ C       of a long time step, so that the pickup will be valid.
         extraIter = LS_nIter - MOD(nEndIter, LS_nIter)
         nEndIter = nEndIter + extraIter
         nTimeSteps = nEndIter - nIter0
-        endTime = baseTime + deltaTClock*float(nEndIter)
+        endTime = baseTime + deltaTClock*DFLOAT(nEndIter)
         WRITE(msgBuf,'(2A)') '**WARNING** ',
      &       ' LONGSTEP_CHECK_ITERS: adjusting to'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
