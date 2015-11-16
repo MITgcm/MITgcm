@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.8 2013/01/21 21:50:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.9 2015/11/16 21:55:03 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -21,6 +21,7 @@ C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "RESTART.h"
 #include "GRID.h"
 
 #include "AIM_CO2.h"
@@ -52,7 +53,8 @@ C     i,j    - loop counters
       INTEGER bi, bj, i, j
       _RL total_flux, atpco2_check
       _RL flxCO2tile(nSx,nSy)
-      LOGICAL permCheckPoint
+      LOGICAL modelEnd
+      LOGICAL permPickup, tempPickup
       INTEGER iUnit, iLo, iHi
       _RS dummyRS(1)
       _RL tmpco2(2)
@@ -97,14 +99,18 @@ C- First compute global mole flux at air-sea interface
 
         _BARRIER
         _BEGIN_MASTER(myThid)
-        IF ( startTime.EQ.baseTime .AND. myTime.EQ.0 ) THEN
+        IF ( myIter.EQ.0 ) THEN
 C- If  first iteration, use atmpCO2init as initial condition
           atm_pCO2 = atmpCO2init
           Atm_CO2_Moles = atm_pCO2 * total_atmos_moles
 
-        ELSEIF ( myTime .EQ. startTime ) THEN
+        ELSEIF ( myIter.EQ.nIter0 ) THEN
 C- If restart, read moles number from pickup
-          WRITE(fn,'(A,I10.10)') 'pickup_aimCo2.',nIter0
+          IF ( pickupSuff.EQ.' ' ) THEN
+            WRITE(fn,'(A,I10.10)') 'pickup_aimCo2.',nIter0
+          ELSE
+            WRITE(fn,'(A,A10)') 'pickup_aimCo2.', pickupSuff
+          ENDIF
           iUnit = 0
           CALL MDS_READVEC_LOC(  fn, precFloat64, iUnit, 'RL', 2,
      O                           tmpco2, dummyRS,
@@ -139,11 +145,22 @@ C- Calculate new atmos pCO2
         atm_pCO2 = Atm_CO2_Moles / total_atmos_moles
 
 C- Write out if time for a new pickup
-        permCheckPoint = myTime.NE.startTime
-        permCheckPoint = permCheckPoint .AND.
+        modelEnd = (myTime+deltaTClock).EQ.endTime
+     &        .OR. (myIter+1).EQ.nEndIter
+        permPickup = .FALSE.
+        tempPickup = .FALSE.
+        permPickup =
      &    DIFFERENT_MULTIPLE(pChkptFreq,myTime+deltaTClock,deltaTClock)
-        IF (permCheckPoint) THEN
-          WRITE(fn,'(A,I10.10)') 'pickup_aimCo2.',myIter+1
+        tempPickup =
+     &    DIFFERENT_MULTIPLE( chkptFreq,myTime+deltaTClock,deltaTClock)
+        IF ( (modelEnd.AND.writePickupAtEnd)
+     &       .OR. permPickup .OR. tempPickup ) THEN
+
+          IF ( permPickup ) THEN
+            WRITE(fn,'(A,I10.10)') 'pickup_aimCo2.',myIter+1
+          ELSE
+            WRITE(fn,'(A,A)') 'pickup_aimCo2.',checkPtSuff(nCheckLev)
+          ENDIF
 C- write values to new pickup
           tmpco2(1)= Atm_CO2_Moles
           tmpco2(2)= atm_pCO2
