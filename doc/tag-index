@@ -1,12 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2200 2015/11/17 14:37:12 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2201 2015/11/17 16:12:02 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice/seaice_evp.F
+o pkg/seaice/seaice_evp
   - fix residual computations so that they no longer affect the actual
     simulation code
+  - fix seaice_readparams to be able to actually set new parameters
+    SEAICEaEVPcStar and SEAICEaEVPalphaMin, also fix logic a little
 o model/src:
   - fix wrong truncation (single prec) from "FLOAT" function in expressions
     like: deltaT*FLOAT(myIter) when myIter is large:
