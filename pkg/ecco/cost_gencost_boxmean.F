@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.7 2015/03/23 21:10:04 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.8 2015/11/17 14:48:28 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -50,7 +50,7 @@ c     == local variables ==
 
       integer bi,bj
       integer i,j,k
-      integer irec,il
+      integer nrecloc,irec,il
       character*(80) myfname
       _RL mydummy
       logical doglobalread
@@ -70,7 +70,7 @@ c     == end of interface ==
 c-- detect the relevant gencost indices
       kgen=0
       do k=1,NGENCOST
-        if ( (gencost_name(k).EQ.'boxmean').AND.
+        if ( (gencost_name(k)(1:7).EQ.'boxmean').AND.
      &     (using_gencost(k)) ) kgen=k
       enddo
 
@@ -103,8 +103,10 @@ c initialize various things to 0
        ENDDO
       ENDDO
 
+      nrecloc=gencost_nrec(kgen)
+
 c initialize maximum mask for time series display
-      do irec = 1,nmonsrec
+      do irec = 1,nrecloc
         call mdsreadfield( gencost_errfile(kgen),
      &                     cost_iprec, cost_yftype,
      &                     nr, mymsk, irec, mythid)
@@ -113,7 +115,7 @@ c initialize maximum mask for time series display
         do k = 1,nr
          do j = 1,sNy
           do i =  1,sNx
-      tmpmsk(i,j,k,bi,bj)=mymsk(i,j,k,bi,bj)+mymsk(i,j,k,bi,bj)
+      tmpmsk(i,j,k,bi,bj)=tmpmsk(i,j,k,bi,bj)+mymsk(i,j,k,bi,bj)
           enddo
          enddo
         enddo
@@ -124,7 +126,7 @@ c initialize maximum mask for time series display
 c ========
 
 c main loop where cost is computed and time series is displayed
-      do irec = 1,nmonsrec
+      do irec = 1,nrecloc
 
 c read bar field
 #ifdef ALLOW_AUTODIFF
@@ -167,9 +169,9 @@ c sum that is actually be used in cost function
 
 c sum for display of time series
       tmpSumTile(bi,bj)=tmpSumTile(bi,bj)
-     &  +mybar(i,j,k,bi,bj)*tmpmsk(i,j,k,bi,bj)
+     &  +mybar(i,j,k,bi,bj)*mymsk(i,j,k,bi,bj)
       tmpVolTile(bi,bj)=tmpVolTile(bi,bj)
-     &  +tmpmsk(i,j,k,bi,bj)
+     &  +mymsk(i,j,k,bi,bj)
               enddo
             enddo
           enddo
@@ -183,8 +185,8 @@ c global sums for display of time series
       if ( tmpVolGlo.GT.0. _d 0) 
      &   tmpMeanGlo=tmpSumGlo/tmpVolGlo
 
-      WRITE(msgBuf,'(A,I3,1PE21.14,1PE21.14)')
-     &    'boxmean :',irec,tmpMeanGlo,tmpVolGlo
+      WRITE(msgBuf,'(A,I3,A,1PE21.14,A,1PE21.14,A)')
+     &    'boxmean :',irec,' ',tmpMeanGlo,' (',tmpVolGlo,')'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT, myThid )
 
@@ -202,8 +204,8 @@ c global sums for cost function
       if ( myVolGlo.GT.0. _d 0)
      &   myMeanGlo=mySumGlo/myVolGlo
 
-      WRITE(msgBuf,'(A,I3,1PE21.14,1PE21.14)') 
-     &    'boxmean fc :',irec,myMeanGlo,myVolGlo
+      WRITE(msgBuf,'(A,I3,A,1PE21.14,A,1PE21.14,A)') 
+     &    'boxmean fc :',irec,' ',myMeanGlo,' (',myVolGlo,')'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT, myThid )
 
