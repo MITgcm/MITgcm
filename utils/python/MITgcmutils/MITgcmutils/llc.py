@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/llc.py,v 1.8 2015/11/12 08:58:30 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/llc.py,v 1.9 2015/11/17 13:21:22 mlosch Exp $
 # $Name:  $
 import sys
 import numpy as np
@@ -283,6 +283,18 @@ def faces(fld):
 
     return f
 
+def faces2mds(ff):
+    """convert 6 faces to mds 2D data,
+    inverse opertation of llc.faces"""
+    
+    ndims = len(ff[0].shape)
+    shp = list(ff[0].shape)
+    shp[-2]=2*ff[0].shape[-2]
+    wd = np.concatenate( (ff[3],ff[4]),axis=-2 ).reshape(shp)
+    f  = np.concatenate( (ff[0],ff[1],ff[2],wd),axis=-2)
+
+    return f
+
 def _faces2D(fld):
     """convert mds 2D data into a list with 6 faces"""
     
@@ -296,13 +308,10 @@ def _faces2D(fld):
     f.append(fld[n*nx:2*(n*nx),:])
     # arctic face
     f.append(fld[2*(n*nx):2*(n*nx)+nx,:])
-    # western hemisphere (why is this so complicated?)
-    tmp = fld[2*(n*nx)+nx:,::-1]
-    wd = np.concatenate((tmp[2::n,:].transpose(),
-                         tmp[1::n,:].transpose(),
-                         tmp[0::n,:].transpose())).transpose()
-    f.append(wd[:nx,::-1])
-    f.append(wd[nx:,::-1])
+    # western hemisphere
+    wd = fld[2*(n*nx)+nx:,:].reshape(2*nx,n*nx)
+    f.append(wd[:nx,:])
+    f.append(wd[nx:,:])
     # pseudo-sixth face
     f.append(np.zeros((nx,nx)))
 
