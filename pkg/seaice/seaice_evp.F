@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.63 2015/10/22 15:51:16 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.64 2015/11/17 14:36:12 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -151,11 +151,11 @@ C     _RL zetaZ         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_SEAICE_EVP_RESIDUAL  
       _RL resTile(nSx,nSy)
       _RL resLoc
-      _RL uIcePm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL vIcePm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL sig11pm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL sig22pm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL sig12pm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL uIcePm1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vIcePm1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL sig11pm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL sig22pm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL sig12pm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       LOGICAL printResidual
 C     CHARACTER*(10) suff
@@ -345,11 +345,11 @@ C     save previous (p-1) iteration
           IF ( printResidual ) THEN
            DO j=1,sNy
             DO i=1,sNx
-             sig11Pm1(I,J)      = seaice_sigma1(I,J,bi,bj)
-             sig22Pm1(I,J)      = seaice_sigma2(I,J,bi,bj)
-             sig12Pm1(I,J)      = seaice_sigma12(I,J,bi,bj)
-             uIcePm1(I,J,bi,bj) = uIce(i,j,bi,bj)
-             vIcePm1(I,J,bi,bj) = vIce(i,j,bi,bj)
+             sig11Pm1(I,J,bi,bj) = seaice_sigma1(I,J,bi,bj)
+             sig22Pm1(I,J,bi,bj) = seaice_sigma2(I,J,bi,bj)
+             sig12Pm1(I,J,bi,bj) = seaice_sigma12(I,J,bi,bj)
+             uIcePm1 (I,J,bi,bj) = uIce(i,j,bi,bj)
+             vIcePm1 (I,J,bi,bj) = vIce(i,j,bi,bj)
             ENDDO
            ENDDO
           ENDIF
@@ -709,30 +709,36 @@ C
      &           ) * recip_rAs(I,J,bi,bj)
            ENDDO
           ENDDO
-#ifdef ALLOW_SEAICE_EVP_RESIDUAL  
-          IF ( printResidual ) THEN
-           resTile(bi,bj) = 0. _d 0
-           DO j=1,sNy
-            DO i=1,sNx
-             sig11Pm1(i,j)  = seaice_sigma1(i,j,bi,bj)-sig11pm1(i,j)
-             sig22Pm1(i,j)  = seaice_sigma2(i,j,bi,bj)-sig22pm1(i,j)
-             sig12Pm1(i,j)  = seaice_sigma12(i,j,bi,bj)-sig12Pm1(i,j)
-             sig11Pm1(i,j)  = evpAlphaC(I,J,bi,bj) * sig11Pm1(i,j)
-             sig22Pm1(i,j)  = evpAlphaC(I,J,bi,bj) * sig22Pm1(i,j)
-             sig12Pm1(i,j)  = evpAlphaZ(I,J,bi,bj) * sig12Pm1(i,j)
-             resTile(bi,bj) = resTile(bi,bj)
-     &            + sig11Pm1(i,j)*sig11Pm1(i,j)
-     &            + sig22Pm1(i,j)*sig22Pm1(i,j)
-     &            + sig12Pm1(i,j)*sig12Pm1(i,j)
-            ENDDO
-           ENDDO
-          ENDIF
-#endif /* ALLOW_SEAICE_EVP_RESIDUAL */
          ENDDO
         ENDDO
 
 #ifdef ALLOW_SEAICE_EVP_RESIDUAL  
         IF ( printResidual ) THEN
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           resTile(bi,bj) = 0. _d 0
+           DO j=1,sNy
+            DO i=1,sNx
+             sig11Pm1(i,j,bi,bj)  = 
+     &            seaice_sigma1(i,j,bi,bj)-sig11pm1(i,j,bi,bj)
+             sig22Pm1(i,j,bi,bj)  = 
+     &            seaice_sigma2(i,j,bi,bj)-sig22pm1(i,j,bi,bj)
+             sig12Pm1(i,j,bi,bj)  = 
+     &            seaice_sigma12(i,j,bi,bj)-sig12Pm1(i,j,bi,bj)
+             sig11Pm1(i,j,bi,bj)  = 
+     &            evpAlphaC(I,J,bi,bj) * sig11Pm1(i,j,bi,bj)
+             sig22Pm1(i,j,bi,bj)  = 
+     &            evpAlphaC(I,J,bi,bj) * sig22Pm1(i,j,bi,bj)
+             sig12Pm1(i,j,bi,bj)  = 
+     &            evpAlphaZ(I,J,bi,bj) * sig12Pm1(i,j,bi,bj)
+             resTile(bi,bj) = resTile(bi,bj)
+     &            + sig11Pm1(i,j,bi,bj)*sig11Pm1(i,j,bi,bj)
+     &            + sig22Pm1(i,j,bi,bj)*sig22Pm1(i,j,bi,bj)
+     &            + sig12Pm1(i,j,bi,bj)*sig12Pm1(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
          resloc = 0. _d 0
          CALL GLOBAL_SUM_TILE_RL( resTile, resloc, myThid )
          resloc = SQRT(resloc)
