@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.8 2015/11/17 14:48:28 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.9 2015/11/17 16:05:28 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -39,8 +39,6 @@ c     == local variables ==
 
       integer kgen
       _RL mybar(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL mymsk(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL tmpmsk(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
       _RL mySumTile(nSx,nSy),myVolTile(nSx,nSy)
       _RL mySumGlo,myVolGlo,myMeanGlo
@@ -93,35 +91,10 @@ c initialize various things to 0
           myVolTile(bi,bj)=0. _d 0
           mySumGlo=0. _d 0
           myVolGlo=0. _d 0
-          do k = 1,nr
-          do j = 1,sNy
-          do i =  1,sNx
-          tmpmsk(i,j,k,bi,bj)=0. _d 0
-          enddo
-          enddo
-          enddo
        ENDDO
       ENDDO
 
       nrecloc=gencost_nrec(kgen)
-
-c initialize maximum mask for time series display
-      do irec = 1,nrecloc
-        call mdsreadfield( gencost_errfile(kgen),
-     &                     cost_iprec, cost_yftype,
-     &                     nr, mymsk, irec, mythid)
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        do k = 1,nr
-         do j = 1,sNy
-          do i =  1,sNx
-      tmpmsk(i,j,k,bi,bj)=tmpmsk(i,j,k,bi,bj)+mymsk(i,j,k,bi,bj)
-          enddo
-         enddo
-        enddo
-       enddo
-      enddo
-      enddo
 
 c ========
 
@@ -138,11 +111,6 @@ c read bar field
         CALL READ_REC_XYZ_RL( myfname, mybar,
      &                        iRec, 1, myThid )
 #endif
-
-c read mask for averaging (3d, time series)
-        call mdsreadfield( gencost_errfile(kgen),
-     &                     cost_iprec, cost_yftype,
-     &                     nr, mymsk, irec, mythid)
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -161,17 +129,16 @@ c compute cost
               do i =  1,sNx
 c sum that is actually be used in cost function
       objf_gencost(bi,bj,kgen)=
-     &   objf_gencost(bi,bj,kgen)
-     &  +mybar(i,j,k,bi,bj)*mymsk(i,j,k,bi,bj)
-      num_gencost(1,1,kgen)=
-     &   num_gencost(1,1,kgen)
-     &  +mymsk(i,j,k,bi,bj)
+     &   objf_gencost(bi,bj,kgen)+mybar(i,j,k,bi,bj)
+     &   *maskC(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+      num_gencost(1,1,kgen)= num_gencost(1,1,kgen)
+     &   +maskC(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
 
 c sum for display of time series
-      tmpSumTile(bi,bj)=tmpSumTile(bi,bj)
-     &  +mybar(i,j,k,bi,bj)*mymsk(i,j,k,bi,bj)
+      tmpSumTile(bi,bj)=tmpSumTile(bi,bj)+mybar(i,j,k,bi,bj)
+     &   *maskC(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
       tmpVolTile(bi,bj)=tmpVolTile(bi,bj)
-     &  +mymsk(i,j,k,bi,bj)
+     &   +maskC(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
               enddo
             enddo
           enddo

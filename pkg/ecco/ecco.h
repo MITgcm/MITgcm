@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.17 2015/11/12 13:22:14 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.18 2015/11/17 16:05:28 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -134,9 +134,7 @@ c                 the current model integration.
       common /ecco_r/
      &                    m_eta,m_UE,m_VN,
      &                    msktrVolW,msktrVolS,
-     &                    trVol,
-     &                    trHeat, 
-     &                    trSalt,
+     &                    trVol, trHeat, trSalt,
      &                    VOLsumGlob_0, VOLsumGlob,
      &                    RHOsumGlob_0, RHOsumGlob,
      &                    frame, cosphi
@@ -220,6 +218,7 @@ c     objf_gencost - gencost user defined contribution
       common /ecco_gencost_r_1/
      &       objf_gencost, num_gencost, mult_gencost,
      &       gencost_barfld, gencost_modfld, gencost_weight,
+     &       gencost_mskCsurf, gencost_mskWsurf, gencost_mskSsurf,
 #ifdef ALLOW_GENCOST3D
      &       gencost_bar3d, gencost_mod3d, gencost_wei3d,
 #endif
@@ -238,6 +237,12 @@ c     objf_gencost - gencost user defined contribution
       _RL  gencost_modfld(1-olx:snx+olx,1-oly:sny+oly,
      &       nsx,nsy,NGENCOST)
       _RL  gencost_weight(1-olx:snx+olx,1-oly:sny+oly,
+     &       nsx,nsy,NGENCOST)
+      _RL  gencost_mskCsurf(1-olx:snx+olx,1-oly:sny+oly,
+     &       nsx,nsy,NGENCOST)
+      _RL  gencost_mskWsurf(1-olx:snx+olx,1-oly:sny+oly,
+     &       nsx,nsy,NGENCOST)
+      _RL  gencost_mskSsurf(1-olx:snx+olx,1-oly:sny+oly,
      &       nsx,nsy,NGENCOST)
 #ifdef ALLOW_GENCOST3D
       _RL  gencost_bar3d(1-olx:snx+olx,1-oly:sny+oly,

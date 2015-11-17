@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.31 2015/11/12 13:22:14 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.32 2015/11/17 16:05:28 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -206,6 +206,8 @@ c-- also not checked for variwei at the moment
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
 c-- check errfile
+           call ecco_zero(gencost_mskCsurf(1-olx,1-oly,1,1,k),
+     &          1,zeroRL,mythid)
            if ( gencost_errfile(k) .NE. ' ' ) then
             il = ilnblnk(gencost_errfile(k))
             inquire( file=gencost_errfile(k)(1:il), exist=exst )
@@ -217,12 +219,17 @@ c-- check errfile
      &          ' so ',gencost_name(k)(1:il),' gets switched off'
               CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                   SQUEEZE_RIGHT , myThid)
+            else
+             write(tempfile(1:128),'(A)') gencost_errfile(k)(1:il)
+             call mdsreadfield(tempfile,32,'RL',1,
+     &            gencost_mskCsurf(1-olx,1-oly,1,1,k),1,mythid)
             endif
            endif!errfile
 
 c-- check barfile, make sure character m_[theta,salt] match exactly
 c-- (upper/lower-case matters) in cost_gencost_customize
            if (.not.( (gencost_barfile(k)(1:7).EQ.'m_theta').OR.
+     &                (gencost_barfile(k)(1:5).EQ.'m_eta').OR.
      &                (gencost_barfile(k)(1:6).EQ.'m_salt') )) then
             using_gencost(k)=.FALSE.
             il=ilnblnk(gencost_barfile(k))
@@ -251,6 +258,10 @@ c-- not checked here. also not checked for variwei at the moment
      &                        SQUEEZE_RIGHT , myThid)
 
 c-- check errfile[W,S]
+          call ecco_zero(gencost_mskWsurf(1-olx,1-oly,1,1,k),
+     &         1,zeroRL,mythid)
+          call ecco_zero(gencost_mskSsurf(1-olx,1-oly,1,1,k),
+     &         1,zeroRL,mythid)
           if ( gencost_errfile(k) .NE. ' ' ) then
 c-- West ----------------------
            il = ilnblnk(gencost_errfile(k))
@@ -274,8 +285,16 @@ c-- West ----------------------
      &                  SQUEEZE_RIGHT , myThid)
            else
 c-- will move to init perhaps, but leave here for now due to check exst
+cgf (1) should indeed be moved to init_fixed
+cgf (2) generalization: read in a 1D vertical mask and do the product
+cgf     of e.g. gencost_mskWsurf*gencost_mskZ in ecco_phys.F?
+cgf (3) naming convention: m_heat_hadv rather than trHeat, etc?
+cgf     would help eventually distinguish, e.g., m_heat_hdif vs m_heat_vdif...
+cgf (4) generalization: specify type of transport (vol, heat, etc) via namelist?
              call ecco_zero(msktrVolW,1,zeroRL,mythid)
              call mdsreadfield(tempfile,32,'RL',1,msktrVolW,1,mythid)
+             call mdsreadfield(tempfile,32,'RL',1,
+     &            gencost_mskWsurf(1-olx,1-oly,1,1,k),1,mythid)
            endif
 c-- South --------------------
            il = ilnblnk(gencost_errfile(k))
@@ -302,6 +321,8 @@ c-- South --------------------
 c-- will move to init perhaps, but leave here for now due to check exst
              call ecco_zero(msktrVolS,1,zeroRL,mythid)
              call mdsreadfield(tempfile,32,'RL',1,msktrVolS,1,mythid)
+             call mdsreadfield(tempfile,32,'RL',1,
+     &            gencost_mskSsurf(1-olx,1-oly,1,1,k),1,mythid)
            endif
           else
            using_gencost(k)=.FALSE.
