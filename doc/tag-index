@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2199 2015/11/16 23:32:58 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2200 2015/11/17 14:37:12 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_evp.F
+  - fix residual computations so that they no longer affect the actual
+    simulation code
 o model/src:
   - fix wrong truncation (single prec) from "FLOAT" function in expressions
     like: deltaT*FLOAT(myIter) when myIter is large:
