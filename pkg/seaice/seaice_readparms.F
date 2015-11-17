@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.166 2015/10/07 12:06:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.167 2015/11/17 16:11:31 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -667,14 +667,18 @@ C     yet been tried nor thought through.
       ENDIF
       SEAICEuseEVP = .FALSE.
 #ifdef SEAICE_ALLOW_EVP
-C     There are three ways to turn on EVP
-      IF ( SEAICE_deltaTevp .NE. UNSET_RL ) SEAICEuseEVP = .TRUE.
-C     modified EVP
+C     There are four ways to turn on EVP
+C     1. original EVP (Hunke, 2001)
+      IF ( SEAICE_deltaTevp .NE. UNSET_RL )      SEAICEuseEVP = .TRUE.
+C     2. modified EVP (Lemieux et al., 2012) or revised EVP (Bouillon 
+C     et al., 2014) by setting alpha and beta
       IF ( SEAICE_evpAlpha  .NE. UNSET_RL
-     &  .OR. SEAICE_evpBeta .NE. UNSET_RL ) SEAICEuseEVP = .TRUE.
+     &  .OR. SEAICE_evpBeta .NE. UNSET_RL )  SEAICEuseEVPstar = .TRUE.
+C     3. adaptive EVP
+      IF ( SEAICEaEVPcoeff  .NE. UNSET_RL )  SEAICEuseEVPstar = .TRUE.
+C     4. modified EVP* (Lemieux et al., 2012) or revised EVP (Bouillon 
+C     et al., 2014) by explicitly setting up specific flags
       IF ( SEAICEuseEVPstar.OR.SEAICEuseEVPrev ) SEAICEuseEVP = .TRUE. 
-C     adaptive EVP
-      IF ( SEAICEaEVPcoeff  .NE. UNSET_RL ) SEAICEuseEVP = .TRUE.
 C     if EVP is turned on, a couple of parameters need to be computed
       IF ( SEAICEuseEVP ) THEN
        IF (    (SEAICE_deltaTdyn/SEAICE_deltaTevp) .NE.
@@ -709,9 +713,14 @@ C     derive other parameters
        ELSE
         SEAICE_evpTauRelax = 0.5 _d 0 *SEAICE_evpAlpha*SEAICE_deltaTevp
        ENDIF
+C     this turns on adaptive EVP
        IF ( SEAICEaEVPcoeff .NE. UNSET_RL ) THEN
-        SEAICEaEVPcStar    = 4. _d 0
-        SEAICEaEVPalphaMin = 5. _d 0
+        IF ( SEAICEaEVPcStar  .EQ.UNSET_RL) SEAICEaEVPcStar   =4. _d 0
+        IF (SEAICEaEVPalphaMin.EQ.UNSET_RL) SEAICEaEVPalphaMin=5. _d 0
+C     requires EVP* to work well, so make sure we set it here (commented out
+C     for now
+CML        SEAICEuseEVPstar   = .TRUE.
+CML        SEAICEuseEVPrev    = .TRUE.
        ENDIF
 C     Check if all parameters are set.
       ENDIF
