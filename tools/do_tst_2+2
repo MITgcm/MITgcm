@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.20 2015/10/23 23:11:50 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.21 2015/11/18 22:18:41 jmc Exp $
 # $Name:  $
 
 usage()
@@ -269,8 +269,8 @@ if test "x$ADDRESS" != xNONE -a "x$ADDRESS" != x ; then
       # if Send-Command is empty and mpack exist, then send email using mpack.
       if test -x $MPACK ; then SENDCMD=$MPACK
       else
-        echo "Warning: $MPACK is not executable => no email was sent"
         echo
+        echo "Warning: $MPACK is not executable => no email was sent"
       fi
     fi
     if test "x$SENDCMD" != x ; then
@@ -284,17 +284,17 @@ if test "x$ADDRESS" != xNONE -a "x$ADDRESS" != x ; then
             echo "Warning: The tar, gzip, & mpack step failed.  Please send email"
             echo "  to <MITgcm-support@mitgcm.org> for help.  You may copy the "
             echo "  summary of results from the directory \"$DRESULTS\"."
-            echo
         else
             echo
             echo "An email containing results was sent to the following address:"
             echo "  \"$ADDRESS\""
-            echo
         fi
         test -f ${SAVDIR}/${DRESULTS}".tar" &&  rm -f ${SAVDIR}/${DRESULTS}".tar"
         test -f ${SAVDIR}/${DRESULTS}".tar.gz" &&  rm -f ${SAVDIR}/${DRESULTS}".tar.gz"
     fi
 fi
+echo '' ; echo '=====  Summary (tst_2+2_out.txt):  ======'
+cat $SUMMARY
 
 # save output and remove output Dir (if no address was provided)
 # note: to keep the output Dir without sending email, use option "-a NONE"
