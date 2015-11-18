@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.8 2015/11/12 13:22:14 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.9 2015/11/18 15:30:17 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -38,6 +38,9 @@ c     == local variables ==
       integer i,j,k
       integer jmin,jmax
       integer imin,imax
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+      integer kgen
+#endif
 
 c- note defined with overlap here, not needed, but more efficient
       _RL trVolW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -206,6 +209,45 @@ c now summing
           enddo
         enddo
       enddo
+
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+      do kgen=1,NGENCOST
+
+      call ecco_zero(gencost_storefld(1-OLx,1-OLy,1,1,kgen),
+     &     1,zeroRL,myThid)
+
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
+        do j = 1,sNy
+         do i =  1,sNx
+
+         if (gencost_barfile(kgen)(1:15).EQ.'m_boxmean_theta') then
+          do k = 1,nr
+           gencost_storefld(i,j,bi,bj,kgen) =
+     &      gencost_storefld(i,j,bi,bj,kgen)+theta(i,j,k,bi,bj)
+     &      *maskC(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+          enddo
+         elseif (gencost_barfile(kgen)(1:14).EQ.'m_boxmean_salt') then
+          do k = 1,nr
+           gencost_storefld(i,j,bi,bj,kgen) =
+     &      gencost_storefld(i,j,bi,bj,kgen)+theta(i,j,k,bi,bj)
+     &      *maskC(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+          enddo
+         elseif (gencost_barfile(kgen)(1:13).EQ.'m_boxmean_eta') then
+           gencost_storefld(i,j,bi,bj,kgen) =
+     &      gencost_storefld(i,j,bi,bj,kgen)+m_eta(i,j,bi,bj)
+     &      *maskC(i,j,1,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+         endif
+
+         enddo
+        enddo
+       enddo
+      enddo
+
+      enddo
+
+#endif /* ALLOW_GENCOST_CONTRIBUTION */
+
 
       return
       end

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.18 2015/11/17 16:05:28 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.19 2015/11/18 15:30:17 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -216,7 +216,7 @@ c     objf_gencost - gencost user defined contribution
       _RL  gencost_dummy(NGENCOST)
 
       common /ecco_gencost_r_1/
-     &       objf_gencost, num_gencost, mult_gencost,
+     &       objf_gencost, num_gencost, mult_gencost, gencost_storefld,
      &       gencost_barfld, gencost_modfld, gencost_weight,
      &       gencost_mskCsurf, gencost_mskWsurf, gencost_mskSsurf,
 #ifdef ALLOW_GENCOST3D
@@ -232,6 +232,8 @@ c     objf_gencost - gencost user defined contribution
       _RL  gencost_spmax(NGENCOST)
       _RL  gencost_spzero(NGENCOST)
       _RL  gencost_period(NGENCOST)
+      _RL  gencost_storefld(1-olx:snx+olx,1-oly:sny+oly,
+     &       nsx,nsy,NGENCOST)
       _RL  gencost_barfld(1-olx:snx+olx,1-oly:sny+oly,
      &       nsx,nsy,NGENCOST)
       _RL  gencost_modfld(1-olx:snx+olx,1-oly:sny+oly,

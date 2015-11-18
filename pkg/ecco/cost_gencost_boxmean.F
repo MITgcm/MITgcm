@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.9 2015/11/17 16:05:28 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.10 2015/11/18 15:30:17 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -38,7 +38,7 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer kgen
-      _RL mybar(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL mybar(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       _RL mySumTile(nSx,nSy),myVolTile(nSx,nSy)
       _RL mySumGlo,myVolGlo,myMeanGlo
@@ -103,12 +103,12 @@ c main loop where cost is computed and time series is displayed
 
 c read bar field
 #ifdef ALLOW_AUTODIFF
-        call active_read_xyz( myfname, mybar, irec,
+        call active_read_xy( myfname, mybar, irec,
      &                        doglobalread, ladinit,
      &                        eccoiter, mythid,
      &                        mydummy )
 #else
-        CALL READ_REC_XYZ_RL( myfname, mybar,
+        CALL READ_REC_XY_RL( myfname, mybar,
      &                        iRec, 1, myThid )
 #endif
 
@@ -124,24 +124,22 @@ c read bar field
 c compute cost
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-          do k = 1,nr
             do j = 1,sNy
               do i =  1,sNx
 c sum that is actually be used in cost function
       objf_gencost(bi,bj,kgen)=
-     &   objf_gencost(bi,bj,kgen)+mybar(i,j,k,bi,bj)
-     &   *maskC(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+     &   objf_gencost(bi,bj,kgen)+mybar(i,j,bi,bj)
+cgf will need fixing:
       num_gencost(1,1,kgen)= num_gencost(1,1,kgen)
-     &   +maskC(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+     &   +maskC(i,j,1,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
 
 c sum for display of time series
-      tmpSumTile(bi,bj)=tmpSumTile(bi,bj)+mybar(i,j,k,bi,bj)
-     &   *maskC(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+      tmpSumTile(bi,bj)=tmpSumTile(bi,bj)+mybar(i,j,bi,bj)
+cgf will need fixing:
       tmpVolTile(bi,bj)=tmpVolTile(bi,bj)
-     &   +maskC(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+     &   +maskC(i,j,1,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
               enddo
             enddo
-          enddo
         enddo
       enddo
 
