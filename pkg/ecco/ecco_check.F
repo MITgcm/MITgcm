@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.34 2015/11/19 04:27:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.35 2015/11/19 20:32:32 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -44,10 +44,11 @@ C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      INTEGER igen_etaday, il
+      INTEGER igen_etaday, il, k2, ioUnit
       LOGICAL exst
       CHARACTER*(128) tempfile,tempfile1
       INTEGER icount_transp
+      _RS     dummyRS(1)
 #endif
 
       INTEGER bi, bj, i, j, k
@@ -223,23 +224,30 @@ c-- also not checked for variwei at the moment
      &                        SQUEEZE_RIGHT , myThid)
 c-- check errfile
            call ecco_zero(gencost_mskCsurf(1-olx,1-oly,1,1,k),
-     &          1,zeroRL,mythid)
+     &          1,oneRL,mythid)
+           do k2 = 1,nr
+            gencost_mskVertical(k2,k)= 1. _d 0
+           enddo
+
            if ( gencost_errfile(k) .NE. ' ' ) then
+c
             il = ilnblnk(gencost_errfile(k))
-            inquire( file=gencost_errfile(k)(1:il), exist=exst )
-            if (.NOT.exst) then
-              using_gencost(k)=.FALSE.
-              il = ilnblnk(gencost_name(k))
-              WRITE(msgBuf,'(4A)')
-     &          '** WARNING ** ECCO_CHECK_FILES: missing error file',
-     &          ' so ',gencost_name(k)(1:il),' gets switched off'
-              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                   SQUEEZE_RIGHT , myThid)
-            else
-             write(tempfile(1:128),'(A)') gencost_errfile(k)(1:il)
-             call mdsreadfield(tempfile,32,'RL',1,
+            write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'C'
+            inquire( file=tempfile(1:il+1), exist=exst )
+            if (exst) then
+             call mdsreadfield(tempfile,cost_iprec,'RL',1,
      &            gencost_mskCsurf(1-olx,1-oly,1,1,k),1,mythid)
             endif
+c
+            il = ilnblnk(gencost_errfile(k))
+            write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'K'
+            inquire( file=tempfile(1:il+1), exist=exst )
+            if (exst) then
+             ioUnit = 0
+             call MDS_READVEC_LOC(tempfile,cost_iprec,ioUnit,'RL',
+     &         nR, gencost_mskVertical(1,k), dummyRS, 0, 0, 1, myThid )
+            endif
+
            endif!errfile
 
 c-- check barfile, make sure character m_[theta,salt] match exactly
@@ -284,16 +292,16 @@ c-- check errfile[W,S]
 c-- West ----------------------
            il = ilnblnk(gencost_errfile(k))
            write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'W'
-           il = ilnblnk(tempfile)
+           inquire( file=tempfile(1:il+1), exist=exst )
            write(msgBuf,'(2A,L5)') 'ecco_check file, exst: ',
-     &       tempfile(1:il),exst
+     &       tempfile(1:il+1),exst
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
            if (.NOT.exst) then
              using_gencost(k)=.FALSE.
              WRITE(msgBuf,'(2A)')
      &         '** WARNING ** ECCO_CHECK_FILES: missing error file: ',
-     &         tempfile(1:il)
+     &         tempfile(1:il+1)
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
              il = ilnblnk(gencost_name(k))
@@ -310,24 +318,24 @@ cgf (3) naming convention: m_heat_hadv rather than trHeat, etc?
 cgf     would help eventually distinguish, e.g., m_heat_hdif vs m_heat_vdif...
 cgf (4) generalization: specify type of transport (vol, heat, etc) via namelist?
              call ecco_zero(msktrVolW,1,zeroRL,mythid)
-             call mdsreadfield(tempfile,32,'RL',1,msktrVolW,1,mythid)
-             call mdsreadfield(tempfile,32,'RL',1,
+             call mdsreadfield(tempfile,cost_iprec,'RL',1,
+     &            msktrVolW,1,mythid)
+             call mdsreadfield(tempfile,cost_iprec,'RL',1,
      &            gencost_mskWsurf(1-olx,1-oly,1,1,k),1,mythid)
            endif
 c-- South --------------------
            il = ilnblnk(gencost_errfile(k))
            write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'S'
-           il = ilnblnk(tempfile)
-           inquire( file=tempfile(1:il), exist=exst )
+           inquire( file=tempfile(1:il+1), exist=exst )
            write(msgBuf,'(2A,L5)') 'ecco_check file, exst: ',
-     &       tempfile(1:il),exst
+     &       tempfile(1:il+1),exst
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
            if (.NOT.exst) then
              using_gencost(k)=.FALSE.
              WRITE(msgBuf,'(2A)')
      &         '** WARNING ** ECCO_CHECK_FILES: missing error file: ',
-     &         tempfile(1:il)
+     &         tempfile(1:il+1)
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
              il = ilnblnk(gencost_name(k))
@@ -338,8 +346,9 @@ c-- South --------------------
            else
 c-- will move to init perhaps, but leave here for now due to check exst
              call ecco_zero(msktrVolS,1,zeroRL,mythid)
-             call mdsreadfield(tempfile,32,'RL',1,msktrVolS,1,mythid)
-             call mdsreadfield(tempfile,32,'RL',1,
+             call mdsreadfield(tempfile,cost_iprec,'RL',1,
+     &            msktrVolS,1,mythid)
+             call mdsreadfield(tempfile,cost_iprec,'RL',1,
      &            gencost_mskSsurf(1-olx,1-oly,1,1,k),1,mythid)
            endif
           else

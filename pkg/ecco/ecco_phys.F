@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.11 2015/11/19 13:59:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.12 2015/11/19 20:32:32 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -41,7 +41,7 @@ c     == local variables ==
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       integer kgen
       _RL areavolTile(nSx,nSy)
-      _RL areavolGlob, tmpmsk
+      _RL areavolGlob, tmpmsk, tmpmsk2
       _RL tmpVol(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
@@ -251,19 +251,25 @@ c now summing
 
          if (gencost_barfile(kgen)(1:15).EQ.'m_boxmean_theta') then
           do k = 1,nr
+           tmpmsk2=0. _d 0
+           if (gencost_mskVertical(k,kgen).NE.0. _d 0) tmpmsk2=1. _d 0
            gencost_storefld(i,j,bi,bj,kgen) =
      &      gencost_storefld(i,j,bi,bj,kgen)+theta(i,j,k,bi,bj)
      &      *tmpVol(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+     &      *gencost_mskVertical(k,kgen)
            areavolTile(bi,bj)=areavolTile(bi,bj)
-     &       +tmpmsk*eccoVol_0(i,j,k,bi,bj)
+     &       +tmpmsk*tmpmsk2*eccoVol_0(i,j,k,bi,bj)
           enddo
          elseif (gencost_barfile(kgen)(1:14).EQ.'m_boxmean_salt') then
           do k = 1,nr
+           tmpmsk2=0. _d 0
+           if (gencost_mskVertical(k,kgen).NE.0. _d 0) tmpmsk2=1. _d 0
            gencost_storefld(i,j,bi,bj,kgen) =
      &      gencost_storefld(i,j,bi,bj,kgen)+salt(i,j,k,bi,bj)
      &      *tmpVol(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+     &      *gencost_mskVertical(k,kgen)
            areavolTile(bi,bj)=areavolTile(bi,bj)
-     &       +tmpmsk*eccoVol_0(i,j,k,bi,bj)
+     &       +tmpmsk*tmpmsk2*eccoVol_0(i,j,k,bi,bj)
           enddo
          elseif (gencost_barfile(kgen)(1:13).EQ.'m_boxmean_eta') then
            gencost_storefld(i,j,bi,bj,kgen) =

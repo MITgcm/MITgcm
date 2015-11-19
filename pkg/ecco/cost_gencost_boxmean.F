@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.11 2015/11/19 04:27:16 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.12 2015/11/19 20:32:32 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -48,12 +48,17 @@ c     == local variables ==
 
       integer bi,bj
       integer i,j,k
-      integer nrecloc,irec,il
+      integer nrecloc,irec,il,ioUnit
       character*(80) myfname
       _RL mydummy
       logical doglobalread
       logical ladinit
       character*(MAX_LEN_MBUF) msgbuf
+
+      LOGICAL exst
+      CHARACTER*(128) tempfile
+      _RS     dummyRS(1)
+      _RL     gencost_mskTemporal
 
 c     == external functions ==
 
@@ -115,19 +120,35 @@ c read bar field
         enddo
       enddo
 
+      il = ilnblnk(gencost_errfile(kgen))
+      write(tempfile(1:128),'(2A)') gencost_errfile(kgen)(1:il),'T'
+      inquire( file=tempfile(1:il+1), exist=exst )
+      if ( (.NOT.exst).OR.(gencost_errfile(kgen).EQ.' ') ) then
+c       gencost_mskTemporal=nrecloc
+c       gencost_mskTemporal=1. _d 0 / gencost_mskTemporal
+       gencost_mskTemporal=1. _d 0
+      else
+       ioUnit = 0
+       call MDS_READVEC_LOC(tempfile,cost_iprec,ioUnit,'RL',
+     &      1, gencost_mskTemporal, dummyRS, 0, 0, iRec, myThid )
+c      gencost_mskTemporal=1. _d 0
+      endif
+
 c compute cost
+      IF ( myProcId .EQ. 0 ) num_gencost(1,1,kgen)=
+     &   num_gencost(1,1,kgen)+gencost_mskTemporal
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
             do j = 1,sNy
               do i =  1,sNx
 c sum that is actually be used in cost function
-      objf_gencost(bi,bj,kgen)=
-     &   objf_gencost(bi,bj,kgen)+mybar(i,j,bi,bj)
-      if (gencost_mskCsurf(i,j,bi,bj,kgen).NE.0. _d 0)
-     &   num_gencost(1,1,kgen)= num_gencost(1,1,kgen)+maskC(i,j,1,bi,bj)
+      objf_gencost(bi,bj,kgen)=objf_gencost(bi,bj,kgen)
+     &   +gencost_mskTemporal*mybar(i,j,bi,bj)
 
 c sum for display of time series
-      tmpSumTile(bi,bj)=tmpSumTile(bi,bj)+mybar(i,j,bi,bj)
+      tmpSumTile(bi,bj)=tmpSumTile(bi,bj)
+     &   +gencost_mskTemporal*mybar(i,j,bi,bj)
               enddo
             enddo
         enddo
