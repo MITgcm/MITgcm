@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.9 2015/11/18 15:30:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.10 2015/11/19 04:27:17 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -40,6 +40,9 @@ c     == local variables ==
       integer imin,imax
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       integer kgen
+      _RL areavolTile(nSx,nSy)
+      _RL areavolGlob, tmpmsk
+      _RL tmpVol(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
 c- note defined with overlap here, not needed, but more efficient
@@ -211,6 +214,20 @@ c now summing
       enddo
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+          do k = 1,nr
+            do j = 1-OLy,sNy+Oly
+              do i = 1-OLx,sNx+OLx
+                tmpVol(i,j,k,bi,bj)=
+     &          hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
+              enddo
+            enddo
+          enddo
+        enddo
+      enddo
+
       do kgen=1,NGENCOST
 
       call ecco_zero(gencost_storefld(1-OLx,1-OLy,1,1,kgen),
@@ -218,31 +235,53 @@ c now summing
 
       do bj=myByLo(myThid),myByHi(myThid)
        do bi=myBxLo(myThid),myBxHi(myThid)
+         areavolTile(bi,bj)=0. _d 0
+       enddo
+      enddo
+      areavolGlob=0. _d 0
+
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
         do j = 1,sNy
          do i =  1,sNx
+
+         tmpmsk=0. _d 0
+         if (gencost_mskCsurf(i,j,bi,bj,kgen).NE.0. _d 0)
+     &      tmpmsk=1. _d 0
 
          if (gencost_barfile(kgen)(1:15).EQ.'m_boxmean_theta') then
           do k = 1,nr
            gencost_storefld(i,j,bi,bj,kgen) =
      &      gencost_storefld(i,j,bi,bj,kgen)+theta(i,j,k,bi,bj)
      &      *maskC(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+           areavolTile(bi,bj)=areavolTile(bi,bj)
+     &       +tmpmsk*eccoVol_0(i,j,k,bi,bj)
           enddo
          elseif (gencost_barfile(kgen)(1:14).EQ.'m_boxmean_salt') then
           do k = 1,nr
            gencost_storefld(i,j,bi,bj,kgen) =
-     &      gencost_storefld(i,j,bi,bj,kgen)+theta(i,j,k,bi,bj)
+     &      gencost_storefld(i,j,bi,bj,kgen)+salt(i,j,k,bi,bj)
      &      *maskC(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+           areavolTile(bi,bj)=areavolTile(bi,bj)
+     &       +tmpmsk*eccoVol_0(i,j,k,bi,bj)
           enddo
          elseif (gencost_barfile(kgen)(1:13).EQ.'m_boxmean_eta') then
            gencost_storefld(i,j,bi,bj,kgen) =
      &      gencost_storefld(i,j,bi,bj,kgen)+m_eta(i,j,bi,bj)
      &      *maskC(i,j,1,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+c     &      *rA(i,j,bi,bj)
+           areavolTile(bi,bj)=areavolTile(bi,bj)
+     &       +tmpmsk*maskC(i,j,1,bi,bj)*rA(i,j,bi,bj)
          endif
 
          enddo
         enddo
        enddo
       enddo
+
+      CALL GLOBAL_SUM_TILE_RL( areavolTile, areavolGlob, myThid )
+c      CALL ecco_div( gencost_storefld(1-OLx,1-OLy,1,1,kgen),
+c     &     1, areavolGlob, myThid )
 
       enddo
 

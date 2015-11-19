@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.10 2015/11/18 15:30:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.11 2015/11/19 04:27:16 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -41,10 +41,10 @@ c     == local variables ==
       _RL mybar(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       _RL mySumTile(nSx,nSy),myVolTile(nSx,nSy)
-      _RL mySumGlo,myVolGlo,myMeanGlo
+      _RL mySumGlo,myVolGlo
 
-      _RL tmpSumTile(nSx,nSy),tmpVolTile(nSx,nSy)
-      _RL tmpSumGlo,tmpVolGlo,tmpMeanGlo
+      _RL tmpSumTile(nSx,nSy)
+      _RL tmpSumGlo
 
       integer bi,bj
       integer i,j,k
@@ -66,13 +66,9 @@ c     == external functions ==
 c     == end of interface ==
 
 c-- detect the relevant gencost indices
-      kgen=0
-      do k=1,NGENCOST
-        if ( (gencost_name(k)(1:7).EQ.'boxmean').AND.
-     &     (using_gencost(k)) ) kgen=k
-      enddo
-
-      if (kgen.NE.0) then
+      do kgen=1,NGENCOST
+        if ( (gencost_name(kgen)(1:7).EQ.'boxmean').AND.
+     &     (using_gencost(kgen)) ) then
 
 c ========
 
@@ -115,9 +111,7 @@ c read bar field
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
           tmpSumTile(bi,bj)=0. _d 0
-          tmpVolTile(bi,bj)=0. _d 0
           tmpSumGlo=0. _d 0
-          tmpVolGlo=0. _d 0
         enddo
       enddo
 
@@ -129,15 +123,11 @@ c compute cost
 c sum that is actually be used in cost function
       objf_gencost(bi,bj,kgen)=
      &   objf_gencost(bi,bj,kgen)+mybar(i,j,bi,bj)
-cgf will need fixing:
-      num_gencost(1,1,kgen)= num_gencost(1,1,kgen)
-     &   +maskC(i,j,1,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+      if (gencost_mskCsurf(i,j,bi,bj,kgen).NE.0. _d 0)
+     &   num_gencost(1,1,kgen)= num_gencost(1,1,kgen)+maskC(i,j,1,bi,bj)
 
 c sum for display of time series
       tmpSumTile(bi,bj)=tmpSumTile(bi,bj)+mybar(i,j,bi,bj)
-cgf will need fixing:
-      tmpVolTile(bi,bj)=tmpVolTile(bi,bj)
-     &   +maskC(i,j,1,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
               enddo
             enddo
         enddo
@@ -145,13 +135,9 @@ cgf will need fixing:
 
 c global sums for display of time series
       CALL GLOBAL_SUM_TILE_RL( tmpSumTile, tmpSumGlo, myThid )
-      CALL GLOBAL_SUM_TILE_RL( tmpVolTile, tmpVolGlo, myThid )
-      tmpMeanGlo=0. _d 0
-      if ( tmpVolGlo.GT.0. _d 0) 
-     &   tmpMeanGlo=tmpSumGlo/tmpVolGlo
 
-      WRITE(msgBuf,'(A,I3,A,1PE21.14,A,1PE21.14,A)')
-     &    'boxmean :',irec,' ',tmpMeanGlo,' (',tmpVolGlo,')'
+      WRITE(msgBuf,'(A,I3,A,1PE21.14)')
+     &    'boxmean :',irec,' ',tmpSumGlo
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT, myThid )
 
@@ -163,20 +149,15 @@ c ========
 c global sums for cost function
       CALL GLOBAL_SUM_TILE_RL( objf_gencost(1,1,kgen),
      &   mySumGlo, myThid )
-      CALL GLOBAL_SUM_TILE_RL( num_gencost(1,1,kgen),
-     &   myVolGlo, myThid )
-      myMeanGlo=0. _d 0
-      if ( myVolGlo.GT.0. _d 0)
-     &   myMeanGlo=mySumGlo/myVolGlo
 
-      WRITE(msgBuf,'(A,I3,A,1PE21.14,A,1PE21.14,A)') 
-     &    'boxmean fc :',irec,' ',myMeanGlo,' (',myVolGlo,')'
+      WRITE(msgBuf,'(A,1PE21.14)') 'boxmean fc :',mySumGlo
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT, myThid )
 
 c ========
 
-      endif !if (kgen].NE.0)
+      endif !if ( (gencost_name(kgen)(1:7).EQ.'boxmean').AND.
+      enddo !do kgen=1,NGENCOST
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.33 2015/11/18 15:30:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.34 2015/11/19 04:27:17 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -28,6 +28,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#include "GRID.h"
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
@@ -43,16 +44,31 @@ C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      INTEGER k, igen_etaday, il
+      INTEGER igen_etaday, il
       LOGICAL exst
       CHARACTER*(128) tempfile,tempfile1
       INTEGER icount_transp
 #endif
 
+      INTEGER bi, bj, i, j, k
+
 c     == external functions ==
 
       integer  ilnblnk
       external ilnblnk
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+          do k = 1,nr
+            do j = 1-OLy,sNy+Oly
+              do i = 1-OLx,sNx+OLx
+                eccoVol_0(i,j,k,bi,bj)=
+     &          hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
+              enddo
+            enddo
+          enddo
+        enddo
+      enddo
 
       _BEGIN_MASTER(myThid)
 
