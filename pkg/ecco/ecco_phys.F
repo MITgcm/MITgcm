@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.10 2015/11/19 04:27:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.11 2015/11/19 13:59:57 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -253,7 +253,7 @@ c now summing
           do k = 1,nr
            gencost_storefld(i,j,bi,bj,kgen) =
      &      gencost_storefld(i,j,bi,bj,kgen)+theta(i,j,k,bi,bj)
-     &      *maskC(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+     &      *tmpVol(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
            areavolTile(bi,bj)=areavolTile(bi,bj)
      &       +tmpmsk*eccoVol_0(i,j,k,bi,bj)
           enddo
@@ -261,7 +261,7 @@ c now summing
           do k = 1,nr
            gencost_storefld(i,j,bi,bj,kgen) =
      &      gencost_storefld(i,j,bi,bj,kgen)+salt(i,j,k,bi,bj)
-     &      *maskC(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+     &      *tmpVol(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
            areavolTile(bi,bj)=areavolTile(bi,bj)
      &       +tmpmsk*eccoVol_0(i,j,k,bi,bj)
           enddo
@@ -269,7 +269,7 @@ c now summing
            gencost_storefld(i,j,bi,bj,kgen) =
      &      gencost_storefld(i,j,bi,bj,kgen)+m_eta(i,j,bi,bj)
      &      *maskC(i,j,1,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
-c     &      *rA(i,j,bi,bj)
+     &      *rA(i,j,bi,bj)
            areavolTile(bi,bj)=areavolTile(bi,bj)
      &       +tmpmsk*maskC(i,j,1,bi,bj)*rA(i,j,bi,bj)
          endif
@@ -280,8 +280,8 @@ c     &      *rA(i,j,bi,bj)
       enddo
 
       CALL GLOBAL_SUM_TILE_RL( areavolTile, areavolGlob, myThid )
-c      CALL ecco_div( gencost_storefld(1-OLx,1-OLy,1,1,kgen),
-c     &     1, areavolGlob, myThid )
+      CALL ecco_div( gencost_storefld(1-OLx,1-OLy,1,1,kgen),
+     &     1, areavolGlob, myThid )
 
       enddo
 
