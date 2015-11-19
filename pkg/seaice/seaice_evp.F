@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.64 2015/11/17 14:36:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.65 2015/11/19 14:29:08 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -731,12 +731,29 @@ C
      &            evpAlphaC(I,J,bi,bj) * sig22Pm1(i,j,bi,bj)
              sig12Pm1(i,j,bi,bj)  = 
      &            evpAlphaZ(I,J,bi,bj) * sig12Pm1(i,j,bi,bj)
-             resTile(bi,bj) = resTile(bi,bj)
-     &            + sig11Pm1(i,j,bi,bj)*sig11Pm1(i,j,bi,bj)
-     &            + sig22Pm1(i,j,bi,bj)*sig22Pm1(i,j,bi,bj)
-     &            + sig12Pm1(i,j,bi,bj)*sig12Pm1(i,j,bi,bj)
             ENDDO
            ENDDO
+           IF ( .NOT. SEAICEscaleSurfStress ) THEN
+C     multiply with mask (concentration) to only count ice contributions 
+            DO j=1,sNy
+             DO i=1,sNx
+              resTile(bi,bj) = resTile(bi,bj) + AREA(i,j,bi,bj) *
+     &             ( sig11Pm1(i,j,bi,bj)*sig11Pm1(i,j,bi,bj)
+     &             + sig22Pm1(i,j,bi,bj)*sig22Pm1(i,j,bi,bj)
+     &             + sig12Pm1(i,j,bi,bj)*sig12Pm1(i,j,bi,bj) )
+             ENDDO
+            ENDDO
+           ELSE
+C     in this case the scaling with AREA is already done
+            DO j=1,sNy
+             DO i=1,sNx
+              resTile(bi,bj) = resTile(bi,bj)
+     &             + sig11Pm1(i,j,bi,bj)*sig11Pm1(i,j,bi,bj)
+     &             + sig22Pm1(i,j,bi,bj)*sig22Pm1(i,j,bi,bj)
+     &             + sig12Pm1(i,j,bi,bj)*sig12Pm1(i,j,bi,bj)
+             ENDDO
+            ENDDO
+           ENDIF
           ENDDO
          ENDDO
          resloc = 0. _d 0
@@ -910,12 +927,26 @@ CADJ STORE vIce = comlev1_evp, key = ikeyloc, byte = isbyte
              vIcePm1(I,J,bi,bj) = seaiceMaskV(I,J,bi,bj) *
      &            ( vIce(I,J,bi,bj)-vIcePm1(i,j,bi,bj) )
      &            * evpBetaV(I,J,bi,bj)
-
-             resTile(bi,bj) = resTile(bi,bj)
-     &            + uIcePm1(I,J,bi,bj)*uIcePm1(I,J,bi,bj)
-     &            + vIcePm1(I,J,bi,bj)*vIcePm1(I,J,bi,bj)
             ENDDO
            ENDDO
+           IF ( .NOT. SEAICEscaleSurfStress ) THEN
+C     multiply with mask (concentration) to only count ice contributions 
+            DO j=1,sNy
+             DO i=1,sNx
+              resTile(bi,bj) = resTile(bi,bj) + AREA(i,j,bi,bj) *
+     &             ( uIcePm1(I,J,bi,bj)*uIcePm1(I,J,bi,bj)
+     &             + vIcePm1(I,J,bi,bj)*vIcePm1(I,J,bi,bj) )
+             ENDDO
+            ENDDO
+           ELSE
+            DO j=1,sNy
+             DO i=1,sNx
+              resTile(bi,bj) = resTile(bi,bj)
+     &             + uIcePm1(I,J,bi,bj)*uIcePm1(I,J,bi,bj)
+     &             + vIcePm1(I,J,bi,bj)*vIcePm1(I,J,bi,bj)
+             ENDDO
+            ENDDO
+           ENDIF
           ENDDO
          ENDDO
          resloc = 0. _d 0
