@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2203 2015/11/19 14:29:30 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2204 2015/11/20 02:13:54 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp & genmake2:
+  - from Jinxuan Zhu: change etime fct call to S/R call (fix gfortran ETIME)
 o pkg/seaice/seaice_evp:
   - refine residual computation
 
