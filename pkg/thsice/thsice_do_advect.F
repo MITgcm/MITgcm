@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_do_advect.F,v 1.5 2013/04/04 00:42:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_do_advect.F,v 1.6 2015/11/20 22:56:52 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -127,10 +127,8 @@ C--     cumulate time-averaged fields and also fill-up flux diagnostics
 
        IF ( stressReduction.GT. 0. _d 0 )
      &   _EXCH_XY_RL( iceMask, myThid )
-#ifdef ATMOSPHERIC_LOADING
        IF ( useRealFreshWaterFlux )
      &  _EXCH_XY_RS( sIceLoad, myThid )
-#endif
 #endif /* ndef OLD_THSICE_CALL_SEQUENCE */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
