@@ -1,11 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2204 2015/11/20 02:13:54 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2205 2015/11/20 22:51:39 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/atm_compon_interf:
+  - change seaice fraction (use for OCN dic surf.flux) stored and sent to
+    coupler: use last time-step value instead of average over cplSendFrq_iter
+    time-step, similar to what is done for seaIceMass.
+    This will affect results (pkg/dic) of coupled ATM-OCN+dic set-up.
 o eesupp & genmake2:
-  - from Jinxuan Zhu: change etime fct call to S/R call (fix gfortran ETIME)
+  - from Jinxuan Zhu: change etime fct call to S/R call (fix gfortran ETIME);
+    <= remove until a fix is found for some ifort version on ia32 machine.
 o pkg/seaice/seaice_evp:
   - refine residual computation
 
