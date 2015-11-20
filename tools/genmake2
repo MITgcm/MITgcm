@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.273 2015/09/01 19:39:56 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.274 2015/11/20 01:22:36 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -1968,9 +1968,7 @@ printf "  Do we have the etime() command using $FC...  "
 cat > genmake_tcomp.$FS <<EOF
       program hello
       REAL*4 ACTUAL, TARRAY(2)
-      EXTERNAL ETIME
-      REAL*4 ETIME
-      actual = etime( tarray )
+      call etime( tarray, actual )
       print *, tarray
       end
 EOF
