@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.203 2015/04/07 15:30:41 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.204 2015/11/20 19:47:46 jmc Exp $
 #  $Name:  $
 #
 
@@ -1740,10 +1740,13 @@ for dir in $TESTDIRS ; do
 					 >> $DRESULTS/genmake_state
 		  rm -f tmp.tr_log
 		fi
-		echo -n "from '$gmkLog', " >> $DRESULTS/genmake_state
-		echo "get NETCDF & LAPACK settings:" >> $DRESULTS/genmake_state
-		sed -n '/set HAVE_NETCDF=/p' $gmkLog >> $DRESULTS/genmake_state
-		sed -n '/set HAVE_LAPACK=/p' $gmkLog >> $DRESULTS/genmake_state
+	    fi
+	    gmkLog=$dir/$builddir/genmake_state
+	    if test -r $gmkLog ; then
+		echo -n "from '$gmkLog', "      >> $DRESULTS/genmake_state
+		echo "get genmake settings:"    >> $DRESULTS/genmake_state
+		sed -n '/^HAVE_/p' $gmkLog | sed 's/^./ &/' \
+						>> $DRESULTS/genmake_state
 	    fi
 	fi
     fi
