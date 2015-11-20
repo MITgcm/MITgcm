@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.40 2014/08/21 23:18:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.41 2015/11/20 22:58:54 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -223,6 +223,15 @@ C-   end if not skipThermo / useCheapAML
      I                     snowPr, qPrcRn,
      I                     myTime, myIter, myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
+        ELSE
+C-    Compute sIceLoad (if not previously done)
+          DO j=1,sNy
+           DO i=1,sNx
+             sIceLoad(i,j,bi,bj) = ( snowHeight(i,j,bi,bj)*rhos
+     &                             + iceHeight(i,j,bi,bj)*rhoi
+     &                             )*iceMask(i,j,bi,bj)
+           ENDDO
+          ENDDO
         ENDIF
 #endif
 
@@ -252,21 +261,16 @@ C--   Exchange fields that are advected by seaice dynamics
         CALL THSICE_DO_EXCH( myThid )
       ENDIF
 #ifdef OLD_THSICE_CALL_SEQUENCE
-#ifdef ATMOSPHERIC_LOADING
       IF ( useRealFreshWaterFlux )
      &  _EXCH_XY_RS( sIceLoad, myThid )
-#endif
 #else /* OLD_THSICE_CALL_SEQUENCE */
-#ifdef ATMOSPHERIC_LOADING
-      IF ( useRealFreshWaterFlux .AND. thSIceAdvScheme.LE.0 )
-     &  _EXCH_XY_RS( sIceLoad, myThid )
-#endif
-
+      IF ( thSIceAdvScheme.GT.0 .AND. .NOT.useSEAICE ) THEN
 C-    when useSEAICE=.true., this S/R is called from SEAICE_MODEL;
 C     otherwise, call it from here, after thsice-thermodynamics is done
-      IF ( thSIceAdvScheme.GT.0 .AND. .NOT.useSEAICE ) THEN
          CALL THSICE_DO_ADVECT(
      I                          0, 0, myTime, myIter, myThid )
+      ELSEIF ( thSIceAdvScheme.LE.0 .AND. useRealFreshWaterFlux ) THEN
+        _EXCH_XY_RS( sIceLoad, myThid )
       ENDIF
 #endif /* OLD_THSICE_CALL_SEQUENCE */
 
