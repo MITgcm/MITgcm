@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.30 2014/01/19 14:33:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.31 2015/11/20 01:22:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -793,8 +793,8 @@ C     executable code below.
       external second, secondr
 # else
 #  ifdef HAVE_ETIME
-      Real*4 etime
-      EXTERNAL etime
+C     Real*4 etime
+C     EXTERNAL etime
       Real*4 actual, tarray(2)
 #  else
       Real*8 csystemtime, cusertime
@@ -825,7 +825,8 @@ CCE107 Fixed for AIX and UNICOS
       wallClockTime = SECONDR()
 # else
 #  ifdef HAVE_ETIME
-      actual = etime(tarray)
+C     actual = etime(tarray)
+      call etime(tarray,actual)
       userTime = tarray(1)
       systemTime = tarray(2)
 #  else
