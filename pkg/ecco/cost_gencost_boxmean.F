@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.12 2015/11/19 20:32:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.13 2015/11/21 18:24:00 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -124,14 +124,12 @@ c read bar field
       write(tempfile(1:128),'(2A)') gencost_errfile(kgen)(1:il),'T'
       inquire( file=tempfile(1:il+1), exist=exst )
       if ( (.NOT.exst).OR.(gencost_errfile(kgen).EQ.' ') ) then
-c       gencost_mskTemporal=nrecloc
-c       gencost_mskTemporal=1. _d 0 / gencost_mskTemporal
-       gencost_mskTemporal=1. _d 0
+       gencost_mskTemporal=nrecloc
+       gencost_mskTemporal=1. _d 0 / gencost_mskTemporal
       else
        ioUnit = 0
        call MDS_READVEC_LOC(tempfile,cost_iprec,ioUnit,'RL',
      &      1, gencost_mskTemporal, dummyRS, 0, 0, iRec, myThid )
-c      gencost_mskTemporal=1. _d 0
       endif
 
 c compute cost
