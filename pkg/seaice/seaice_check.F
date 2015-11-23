@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.94 2015/11/06 22:30:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.95 2015/11/23 17:12:06 gforget Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -490,21 +490,6 @@ C--   SEAICE_ALLOW_TD_IF is obsolete: issue warning and stop.
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif /* SEAICE_ALLOW_TD_IF */
 
-      IF ( usePW79thermodynamics ) THEN
-        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
-     &        'turbulent ice-ocn heat flux default changed.'
-        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
-     &        '   To recover the old default : set '
-        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
-     &        '   SEAICE_mcPheePiston to the first ocn level'
-        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
-     &        '   thickness divided by SEAICE_deltaTtherm.'
-        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      ENDIF
-
 C--   SEAICE_DO_OPEN_WATER_GROWTH is obsolete: issue warning and stop.
 #if defined(SEAICE_DO_OPEN_WATER_GROWTH) || \
       defined(SEAICE_DO_OPEN_WATER_MELT)
@@ -724,21 +709,6 @@ C     end if usePW79thermodynamics
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif
-
-      IF ( usePW79thermodynamics ) THEN
-        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
-     &        'variable freezing point is new default.'
-        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
-     &        '   To recover old constant freezing : '
-        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
-     &        '   set SEAICE_tempFrz0 = -1.96 and '
-        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
-     &        '   SEAICE_dTempFrz_dS = 0.'
-        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      ENDIF
 
 #ifndef SEAICE_GLOBAL_3DIAG_SOLVER
       IF ( SEAICEuseMultiTileSolver ) THEN
