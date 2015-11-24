@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.55 2015/11/10 13:58:14 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesfields.F,v 1.56 2015/11/24 21:26:31 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -756,12 +756,12 @@ cph   In the mean time increment ad hoc during day
        enddo
 #endif
 
-#ifdef ALLOW_COST_ATLANTIC
+c#ifdef ALLOW_COST_ATLANTIC
 c--   Compute meridional heat transport
-      call timer_start('cost_atlantic      [ECCO SPIN-DOWN]', mythid)
-      call cost_atlantic(  mytime, myiter,mythid )
-      call timer_stop ('cost_atlantic      [ECCO SPIN-DOWN]', mythid)
-#endif
+c     call timer_start('cost_atlantic      [ECCO SPIN-DOWN]', mythid)
+c     call cost_atlantic(  mytime, myiter,mythid )
+c     call timer_stop ('cost_atlantic      [ECCO SPIN-DOWN]', mythid)
+c#endif
 
 #endif /* ECCO_CTRL_DEPRECATED */
 

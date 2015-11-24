@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.80 2015/08/06 15:48:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.81 2015/11/24 21:26:31 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -1549,10 +1549,10 @@ C     only master thread of master CPU open and write to file
 
       ENDIF
 
-#ifdef ECCO_CTRL_DEPRECATED
-      call cost_trans_merid( mythid )
-      call cost_trans_zonal( mythid )
-#endif /* ECCO_CTRL_DEPRECATED */
+c#ifdef ECCO_CTRL_DEPRECATED
+c      call cost_trans_merid( mythid )
+c      call cost_trans_zonal( mythid )
+c#endif /* ECCO_CTRL_DEPRECATED */
 
 #ifdef ECCO_VERBOSE
       write(msgbuf,'(a,D22.15)')

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.35 2015/11/19 20:32:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.36 2015/11/24 21:26:31 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -52,6 +52,7 @@ C     msgBuf      - Informational/error meesage buffer
 #endif
 
       INTEGER bi, bj, i, j, k
+      integer nRetired
 
 c     == external functions ==
 
@@ -72,6 +73,153 @@ c     == external functions ==
       enddo
 
       _BEGIN_MASTER(myThid)
+
+        nRetired              =      0
+
+c-- check for retired compile options
+#ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_MEAN_HFLUX_COST_CONTRIBUTION has no',
+     &      'effect since cost_mean_heatflux has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_MEAN_HFLUX_COST_CONTRIBUTION has no',
+     &      'effect since cost_mean_saltflux has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_NEW_SSH_COST
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_NEW_SSH_COST has no',
+     &      'effect since cost_ssh_new has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_CURMTR_COST_CONTRIBUTION
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_CURMTR_COST_CONTRIBUTION has no',
+     &      'effect since cost_curmtr has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_DRIFTER_COST_CONTRIBUTION
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_DRIFTER_COST_CONTRIBUTION has no',
+     &      'effect since cost_drifter has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_SCAT_COST_CONTRIBUTION
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_SCAT_COST_CONTRIBUTION has no',
+     &      'effect since cost_scat etc has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_DAILYSCAT_COST_CONTRIBUTION
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_DAILYSCAT_COST_CONTRIBUTION has no',
+     &      'effect since cost_scat etc has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_DRIFT_COST_CONTRIBUTION
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_DRIFT_COST_CONTRIBUTION has no',
+     &      'effect since cost_drift has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_DRIFTW_COST_CONTRIBUTION
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_DRIFTW_COST_CONTRIBUTION has no',
+     &      'effect since cost_driftw has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_COST_INI_FIN
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_COST_INI_FIN has no',
+     &      'effect since cost_theta_ini_fin etc has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_COST_TRANSPORT
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_COST_TRANSPORT has no',
+     &      'effect since cost_trans_merid etc has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_COST_ATLANTIC
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_COST_ATLANTIC has no',
+     &      'effect since cost_atlantic has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_TRANSPORT_COST_CONTRIBUTION has no',
+     &      'effect since cost_gen_transport has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_EGM96_ERROR_COV
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_EGM96_ERROR_COV has no',
+     &      'effect since cost_geoid etc has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_IESTAU_COST_CONTRIBUTION
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_IESTAU_COST_CONTRIBUTION has no',
+     &      'effect since cost_ies etc has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_SIGMAR_COST_CONTRIBUTION has no',
+     &      'effect since cost_sigmar has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+#ifdef ALLOW_EDDYPSI_COST_CONTRIBUTION
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'ALLOW_EDDYPSI_COST_CONTRIBUTION has no',
+     &      'effect since cost_tau_eddy has been retired'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       nRetired = nRetired + 1
+#endif
+
+      IF ( nRetired .GT. 0 ) THEN
+       WRITE(msgBuf,'(2A)') 'S/R ECCO_CHECK: ',
+     &  '  retired compile-time options need to be undefined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R ECCO_CHECK'
+      ENDIF
 
 #if (defined (ALLOW_TRANSPORT_COST_CONTRIBUTION) || \
      defined (ALLOW_NEW_SSH_COST))

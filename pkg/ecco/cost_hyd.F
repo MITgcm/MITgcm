@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.41 2015/10/29 03:41:06 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.42 2015/11/24 21:26:31 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -343,19 +343,19 @@ cph      call cost_sss   ( myiter, mytime, mythid )
      &     myiter, mytime, mythid )
 #endif
 
-#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
-      write(msgbuf,'(a)') 'ph-cost call cost_sigmar'
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
-      call cost_sigmar  ( myiter, mytime, mythid )
-#endif
+c#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+c      write(msgbuf,'(a)') 'ph-cost call cost_sigmar'
+c      call print_message( msgbuf, standardmessageunit,
+c     &     SQUEEZE_RIGHT , mythid)
+c      call cost_sigmar  ( myiter, mytime, mythid )
+c#endif
 
-#ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
-      write(msgbuf,'(a)') 'ph-cost call cost_gen_transport'
-      call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
-      call cost_gen_transport  ( myiter, mytime, mythid )
-#endif
+c#ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
+c      write(msgbuf,'(a)') 'ph-cost call cost_gen_transport'
+c      call print_message( msgbuf, standardmessageunit,
+c     &     SQUEEZE_RIGHT , mythid)
+c      call cost_gen_transport  ( myiter, mytime, mythid )
+c#endif
 
 #ifdef ALLOW_ETAN0_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_etan0'
