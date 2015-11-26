@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2206 2015/11/24 21:28:41 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2207 2015/11/26 15:54:48 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_growth:
+  - catch potential division by zero in ITD code, does not change 
+    verification results
 o pkg/ecco:
   - retire old codes to the Attic. The calls to retired 
     functions are left in a commented form in case they
