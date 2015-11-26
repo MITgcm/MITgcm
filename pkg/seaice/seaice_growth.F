@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.209 2015/04/10 10:49:41 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.210 2015/11/26 15:54:27 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1885,16 +1885,25 @@ C       (areal growth, i.e. new ice formation, only occurrs in 1st category)
 C       when thickness is zero, area should be zero, too:
              AREAITD(I,J,IT,bi,bj)=ZERO
             ELSE
-C       actual ice thickness from before thermodynamic changes:
-             tmpscal1=HEFFITDpreTH(I,J,IT)/AREAITDpreTH(I,J,IT)
+C     tmpscal1 is the minimal ice concentration after lateral melt that will
+C     not lead to an unphysical increase of ice thickness by lateral melt;
+C     estimated as the concentration before thermodynamics scaled by the 
+C     ratio of new ice thickness and ice thickness before thermodynamics
+             IF ( HEFFITDpreTH(I,J,IT).LE.ZERO ) THEN
+              tmpscal1=0. _d 0
+             ELSE
+              tmpscal1=AREAITDpreTH(I,J,IT)*
+     &             HEFFITD(I,J,IT,bi,bj)/HEFFITDpreTH(I,J,IT)
+             ENDIF
 C       melt ice laterally based on an average floe sice
 C       following Steele (1992)
              AREAITD(I,J,IT,bi,bj) = AREAITD(I,J,IT,bi,bj)
      &                             * (ONE - latMeltFrac(I,J,IT))
-             AREAITD(I,J,IT,bi,bj) = max(ZERO,AREAITD(I,J,IT,bi,bj))
+CML   not necessary:
+CML          AREAITD(I,J,IT,bi,bj) = max(ZERO,AREAITD(I,J,IT,bi,bj))
 C       limit area reduction so that actual ice thickness does not increase
              AREAITD(I,J,IT,bi,bj) = max(AREAITD(I,J,IT,bi,bj),
-     &                                   HEFFITD(I,J,IT,bi,bj)/tmpscal1)
+     &                                   tmpscal1)
             ENDIF
 #ifdef ALLOW_SITRACER
             SItrAREA(I,J,bi,bj,3)=SItrAREA(I,J,bi,bj,3)
