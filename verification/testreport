@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.204 2015/11/20 19:47:46 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.205 2015/12/06 23:18:52 jmc Exp $
 #  $Name:  $
 #
 
@@ -1329,7 +1329,7 @@ if test "x$MPI" = x0 ; then
   if test "x$COMMAND" = x ; then COMMAND="./$EXECUTABLE > $OUTPUTFILE" ; fi
 else
   OUTPUTFILE="STDOUT.0000"
-  if test "x$COMMAND" = x ; then COMMAND="mpirun -v -np TR_NPROC ./$EXECUTABLE" ; fi
+  if test "x$COMMAND" = x ; then COMMAND="mpirun -np TR_NPROC ./$EXECUTABLE" ; fi
 fi
 
 echo "OK (COMMAND='$COMMAND')"
