@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_fixed.F,v 1.9 2015/10/25 16:30:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_fixed.F,v 1.10 2015/12/06 15:33:16 jmc Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -110,17 +110,17 @@ C     Report RBCS mask setting
       ENDIF
       IF ( useRBCuVel ) THEN
         IF ( relaxMaskUFile.EQ. ' ' ) THEN
-         WRITE(msgBuf,'(2A,I3,2A)') '** WARNING ** RBCS_INIT_FIXED:',
+         WRITE(msgBuf,'(2A)') '** WARNING ** RBCS_INIT_FIXED:',
      &     ' relaxMaskUFile unset ==> use Temp mask instead'
          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
-         WRITE(msgBuf,'(2A,I3,2A)') 'Warning:',
+         WRITE(msgBuf,'(2A)') 'Warning:',
      &     ' relaxMaskUFile unset ==> use Temp mask instead'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
         ELSE
          iLen = ILNBLNK(relaxMaskUFile)
-         WRITE(msgBuf,'(A,I3,3A)') 'Use relaxMaskUFile',
+         WRITE(msgBuf,'(A,3A)') 'Use relaxMaskUFile',
      &     ' = "', relaxMaskUFile(1:iLen), '"'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
@@ -132,17 +132,17 @@ C     Report RBCS mask setting
       ENDIF
       IF ( useRBCvVel ) THEN
         IF ( relaxMaskVFile.EQ. ' ' ) THEN
-         WRITE(msgBuf,'(2A,I3,2A)') '** WARNING ** RBCS_INIT_FIXED:',
+         WRITE(msgBuf,'(2A)') '** WARNING ** RBCS_INIT_FIXED:',
      &     ' relaxMaskVFile unset ==> use Temp mask instead'
          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
-         WRITE(msgBuf,'(2A,I3,2A)') 'Warning:',
+         WRITE(msgBuf,'(2A)') 'Warning:',
      &     ' relaxMaskVFile unset ==> use Temp mask instead'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
         ELSE
          iLen = ILNBLNK(relaxMaskVFile)
-         WRITE(msgBuf,'(A,I3,3A)') 'Use relaxMaskUFile',
+         WRITE(msgBuf,'(A,3A)') 'Use relaxMaskVFile',
      &     ' = "', relaxMaskVFile(1:iLen), '"'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
