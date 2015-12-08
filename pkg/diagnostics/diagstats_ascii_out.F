@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ascii_out.F,v 1.6 2014/07/14 23:26:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ascii_out.F,v 1.7 2015/12/08 19:18:31 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -40,7 +40,7 @@ CEOP
 C     !LOCAL VARIABLES:
       INTEGER im, ix, iv
       PARAMETER ( iv = nStats - 2 , im = nStats - 1 , ix = nStats )
-      INTEGER i, j, k, klev, nUnit
+      INTEGER i, j, k, kLev, nUnit
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -53,10 +53,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
 
        nUnit = diagSt_ioUnit(listId)
-       klev = kdiag(ndId)
+       kLev = kdiag(ndId)
 C-     single level field: Vertical Integral (k=0) & 1rst level are identical
 C      => write only 1 of the 2:
-       IF ( klev.EQ.1 ) kLev = 0
+       IF ( kLev.EQ.1 ) kLev = 0
+       kLev = MIN( kLev, nLev )
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO j=0,nRegions
         IF ( diagSt_region(j,listId).GE.1 ) THEN
@@ -71,7 +72,7 @@ c    &             ' --    min    -- |', ' --    max    -- |',' --  Vol'
          WRITE(nUnit,'(6A)') ' k |',
      &     ' --   Average    -- |', ' --   Std.Dev    -- |',
      &     ' --     min      -- |', ' --     max      -- |',' --    Vol'
-         DO k=0,klev
+         DO k=0,kLev
 C     full precision, do not write the volume:
 c         WRITE(nUnit,'(I3,1P4E20.12)') k,(statGlob(i,k,j),i=1,nStats)
 C     reduced precision + write the volume (usefull for testing):
