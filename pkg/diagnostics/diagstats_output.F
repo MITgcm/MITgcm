@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_output.F,v 1.11 2011/06/06 15:42:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_output.F,v 1.12 2015/12/08 19:24:40 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -25,12 +25,7 @@ C     !USES:
 #include "DIAGNOSTICS.h"
 
       INTEGER nLev
-#ifdef ALLOW_FIZHI
-#include "fizhi_SIZE.h"
-      PARAMETER (nLev = Nr+Nrphys)
-#else
-      PARAMETER (nLev = Nr)
-#endif
+      PARAMETER( nLev = numLevels )
 
 C     !INPUT PARAMETERS:
 C     listId  :: Diagnostics list number being written
@@ -104,8 +99,13 @@ C-          Check for empty Diag (= not filled or using empty mask)
      &       ' (#',m,' ) in outp.Stream: ',diagSt_Fname(listId)
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                           SQUEEZE_RIGHT, myThid)
-             WRITE(msgBuf,'(2A)') '- WARNING - has not been filled,',
-     &                            ' OR using empty mask/region'
+             IF ( kdiag(ndId).GT.nLev ) THEN
+              WRITE(msgBuf,'(2(A,I4))') '- WARNING - kdiag=',
+     &                     kdiag(ndId), ' exceeds local nLev=', nLev
+             ELSE
+              WRITE(msgBuf,'(2A)') '- WARNING - has not been filled,',
+     &                             ' OR using empty mask/region'
+             ENDIF
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                           SQUEEZE_RIGHT, myThid)
              WRITE(msgBuf,'(A)')
