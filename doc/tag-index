@@ -1,16 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2207 2015/11/26 15:54:48 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2208 2015/12/08 19:30:55 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics:
+  - simplify setting of local-array size in diagstats_output.F: uses "numLevels"
+    (from DIAGNOSTICS_SIZE.h) to allow to write out more than Nr levels.
+o testreport:
+  - remove "-v" (verbose option) in default mpirun command.
 o pkg/seaice/seaice_growth:
-  - catch potential division by zero in ITD code, does not change 
+  - catch potential division by zero in ITD code, does not change
     verification results
 o pkg/ecco:
-  - retire old codes to the Attic. The calls to retired 
-    functions are left in a commented form in case they
-    ever need to be re-activated.
+  - retire old codes to the Attic. The calls to retired functions are
+    left in a commented form in case they ever need to be re-activated.
   - ecco_check.F: issue warning if any old CPP option is
     defined that corresponds to retired codes -- then stop.
 o pkg/atm_compon_interf:
