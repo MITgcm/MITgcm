@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/GGL90.h,v 1.11 2015/02/26 16:45:23 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/GGL90.h,v 1.12 2015/12/09 10:41:39 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_GGL90
@@ -119,7 +119,7 @@ c-----------------------------------------------------------------------
       _RL IDEMIX_F_B(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL IDEMIX_F_S(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      COMMON /GGL90_IDEMIX_01/ IDEMIX_E,IDEMIX_v0,IDEMIX_tau_d
+      COMMON /GGL90_IDEMIX_01/ IDEMIX_E,IDEMIX_V0,IDEMIX_tau_d
      &     ,IDEMIX_F_b,IDEMIX_F_S
      &     ,IDEMIX_tau_v,IDEMIX_tau_h,IDEMIX_gamma,IDEMIX_jstar
      &     ,IDEMIX_mu0,IDEMIX_mixing_efficiency,IDEMIX_diff_max
