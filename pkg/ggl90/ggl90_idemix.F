@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_idemix.F,v 1.5 2015/02/26 16:45:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_idemix.F,v 1.6 2015/12/09 10:55:33 mlosch Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -143,7 +143,7 @@ c-----------------------------------------------------------------------
           cstar = bN0(i,j)/(pi*IDEMIX_jstar)
           c0(i,j,k)=max(0. _d 0,
      &             cstar*IDEMIX_gamma*IDEMIX_gofx2(fxa))
-          IDEMIX_v0(i,j,k,bi,bj)=max(0. _d 0,
+          IDEMIX_V0(i,j,k,bi,bj)=max(0. _d 0,
      &             cstar*IDEMIX_gamma*IDEMIX_hofx1(fxa))
           fxc = max( 1. _d 0 , fxa )
           fxc = log( fxc + sqrt( fxc*fxc -1.))
@@ -152,6 +152,21 @@ c-----------------------------------------------------------------------
         ENDDO
        ENDDO
       ENDDO
+      IF ( IDEMIX_tau_h .GT. 0. _d 0 ) THEN
+C     horizontal diffusion of IW energy can become unstable for long 
+C     time steps, so limit horizontal group velocity to satisfy simple
+C     CFL-like criterion:
+C     tau_h V0**2 *dt/dx**2 < 0.25 <=> V0 < sqrt( 0.25 * dx**2/(dt*tau_h) )
+       fxa = sqrt( 1. _d 0/( deltaTggl90 * IDEMIX_tau_h ) )
+       DO k=2,Nr
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          fxb = 0.5*min( _dxF(i,j,bi,bj), _dyF(i,j,bi,bj) )*fxa
+          IDEMIX_V0(i,j,k,bi,bj) = min( IDEMIX_V0(i,j,k,bi,bj), fxb )
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 c-----------------------------------------------------------------------
 c     forcing by mesoscale GM
 c-----------------------------------------------------------------------
@@ -433,7 +448,7 @@ c-----------------------------------------------------------------------
        ENDDO
        CALL DIAGNOSTICS_FILL( IDEMIX_E ,'IDEMIX_E',
      &                          0,Nr, 1, bi, bj, myThid )
-       CALL DIAGNOSTICS_FILL( IDEMIX_v0 ,'IDEMIX_v',
+       CALL DIAGNOSTICS_FILL( IDEMIX_V0 ,'IDEMIX_v',
      &                          0,Nr, 1, bi, bj, myThid )
        CALL DIAGNOSTICS_FILL( IDEMIX_tau_d ,'IDEMIX_t',
      &                          0,Nr, 1, bi, bj, myThid )
