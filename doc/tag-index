@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2208 2015/12/08 19:30:55 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2209 2015/12/09 10:56:01 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90: 
+  - within IDEMIX add upper limit for horizontal group velocity to
+    avoid instability problems in the explicit horizontal diffusion term for
+    long time steps or high resolution
 o pkg/diagnostics:
   - simplify setting of local-array size in diagstats_output.F: uses "numLevels"
     (from DIAGNOSTICS_SIZE.h) to allow to write out more than Nr levels.
