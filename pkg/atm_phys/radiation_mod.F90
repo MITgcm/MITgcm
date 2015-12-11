@@ -1,4 +1,4 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/radiation_mod.F90,v 1.3 2014/09/24 00:16:51 jmc Exp $
+! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/radiation_mod.F90,v 1.4 2015/12/11 21:21:28 jmc Exp $
 ! $Name:  $
 
 module radiation_mod
@@ -24,7 +24,7 @@ private
 
 ! version information
 
-character(len=128) :: version='$Id: radiation_mod.F90,v 1.3 2014/09/24 00:16:51 jmc Exp $'
+character(len=128) :: version='$Id: radiation_mod.F90,v 1.4 2015/12/11 21:21:28 jmc Exp $'
 character(len=128) :: tag='homemade'
 
 !==================================================================================
@@ -50,24 +50,32 @@ real    :: del_sw          = 0.0
 real    :: yearLength = 86400.*360.
 real    :: yearPhase  = 10./365.    ! winter solstice = 22.Dec.h00
 real    :: obliquity  = 23.45
-real    :: ir_tau_eq       = 6.0
-real    :: ir_tau_pole     = 1.5
-real    :: linear_tau      = 0.1
-real    :: ir_tau_co2      = 0.8678
-real    :: ir_tau_wv       = 1.9979e+3
 real    :: atm_abs         = 0.0
 real    :: sw_diff         = 0.0
 real    :: albedo_value    = 0.06
-real    :: window          = 0.0 ! spectral window transparent to LW
-real    :: wv_exponent     = 4.0
 real    :: solar_exponent  = 4.0
+real    :: sw_co2          = 0.0596
+real    :: wv_exponent     = 4.0
+! only used with wv_exponent > 0:
+real    :: ir_tau_eq       = 6.0
+real    :: ir_tau_pole     = 1.5
+real    :: linear_tau      = 0.1
+! only used with wv_exponent=-1 :
+real    :: ir_tau_co2_win  = 0.2150
+real    :: ir_tau_wv_win1  = 147.11
+real    :: ir_tau_wv_win2  = 1.0814e4
+! default value set later (according to wv_exponent):
+real    :: ir_tau_co2      = -999.
+real    :: ir_tau_wv       = -999.
+real    :: window          = -999.
 
 real, save :: pi, deg_to_rad , rad_to_deg
 
 namelist/radiation_nml/ select_incSW, solar_constant, del_sol, &
            ir_tau_eq, ir_tau_pole, linear_tau, ir_tau_co2, ir_tau_wv,   &
            atm_abs, sw_diff, del_sw, albedo_value, window, wv_exponent, &
-           solar_exponent, yearLength, yearPhase, obliquity
+           solar_exponent, yearLength, yearPhase, obliquity, sw_co2, &
+           ir_tau_co2_win, ir_tau_wv_win1, ir_tau_wv_win2
 
 !==================================================================================
 !-------------------- diagnostics fields -------------------------------
@@ -124,6 +132,18 @@ CHARACTER*(gcm_LEN_MBUF) :: msgBuf
 pi    = 4.0*atan(1.)
 deg_to_rad = 2.*pi/360.
 rad_to_deg = 360.0/2./pi
+
+if ( wv_exponent .eq. -1. ) then
+! default value for wv_exponent=-1:
+   if ( ir_tau_co2.eq. -999. ) ir_tau_co2 = 0.154925
+   if ( ir_tau_wv .eq. -999. ) ir_tau_wv  = 351.48
+   if ( window    .eq. -999. ) window     = 0.3732 ! spectral window for Water Vapour
+else
+! default value for wv_exponent= 0:
+   if ( ir_tau_co2.eq. -999. ) ir_tau_co2 = 0.8678
+   if ( ir_tau_wv .eq. -999. ) ir_tau_wv  = 1.9979e+3
+   if ( window    .eq. -999. ) window     = 0.0    ! spectral window transparent to LW
+endif
 
 initialized = .true.
 
@@ -184,9 +204,9 @@ end subroutine radiation_init
 ! ==================================================================================
 
 subroutine radiation_down (is, js, Time_diag, lat, p_half, t, q,      &
-!                          net_surf_sw_down, surf_lw_down)
                            net_surf_sw_down, surf_lw_down,            &
-                           albedo, dtrans, b, down, solar_down,       &
+                           albedo, dtrans, dtrans_win, b, b_win,      &
+                           down, solar_down,                          &
                            myThid )
 
 ! Begin the radiation calculation by computing downward fluxes.
@@ -196,12 +216,14 @@ integer, intent(in)                 :: is, js
 !type(time_type), intent(in)         :: Time_diag
 real, intent(in)                    :: Time_diag
 real, intent(in) , dimension(:,:)   :: lat
-real, intent(out) , dimension(:,:)   :: net_surf_sw_down
-real, intent(out) , dimension(:,:)   :: surf_lw_down
+real, intent(out), dimension(:,:)   :: net_surf_sw_down
+real, intent(out), dimension(:,:)   :: surf_lw_down
 real, intent(in) , dimension(:,:,:) :: t, q, p_half
 real, intent(out), dimension(:,:)   :: albedo
 real, intent(out), dimension(:,:,:) :: dtrans
+real, intent(out), dimension(:,:,:) :: dtrans_win
 real, intent(out), dimension(:,:,:) :: b
+real, intent(out), dimension(:,:,:) :: b_win
 real, intent(out), dimension(:,:,:) :: down
 real, intent(out), dimension(:,:,:) :: solar_down
 integer, intent(in)                 :: myThid
@@ -217,8 +239,9 @@ real    :: tYear, largeTan, cDecl, sDecl, tanDecl
 ! -------------------------------------------------------------------------
 !real, allocatable, dimension(:,:)   :: swin
 real, allocatable, dimension(:,:)   :: ss, solar, solar_tau_0, p2
-real, allocatable, dimension(:,:,:) :: solar_tau
-real, allocatable, dimension(:,:)   :: del_tau, tau_0, tau_km, tau_kp
+real, allocatable, dimension(:,:)   :: solar_tau_k, sw_wv, del_sol_tau, mag_fac
+real, allocatable, dimension(:,:,:) :: solar_tau, dtrans_sol, down_win
+real, allocatable, dimension(:,:)   :: del_tau, tau_0, tau_km, tau_kp, del_tau_win
 ! Variables for seasonal Incoming SW
 real, allocatable, dimension(:,:)   :: cLat, sLat, cos_H, HourAng
 ! -------------------------------------------------------------------------
@@ -231,8 +254,6 @@ jm = size(t,2)
 !allocate (swin             (im, jm))
 allocate (ss               (im, jm))
 allocate (solar            (im, jm))
-allocate (solar_tau_0      (im, jm))
-allocate (solar_tau        (im, jm, n+1))
 if ( select_incSW .eq. 0 ) then
   allocate (p2             (im, jm))
 elseif ( select_incSW .eq. 1 ) then
@@ -242,7 +263,21 @@ elseif ( select_incSW .eq. 1 ) then
   allocate (cos_H          (im, jm))
   allocate (HourAng        (im, jm))
 endif
-if ( wv_exponent .eq. 0. ) then
+if ( solar_exponent .eq. 0. ) then
+  allocate (solar_tau_k    (im, jm))
+  allocate (sw_wv          (im, jm))
+  allocate (del_sol_tau    (im, jm))
+  allocate (mag_fac        (im, jm))
+  allocate (dtrans_sol     (im, jm, n))
+else
+  allocate (solar_tau_0    (im, jm))
+  allocate (solar_tau      (im, jm, n+1))
+endif
+if ( wv_exponent .eq. -1. ) then
+  allocate (del_tau        (im, jm))
+  allocate (del_tau_win    (im, jm))
+  allocate (down_win       (im, jm, n+1))
+elseif ( wv_exponent .eq. 0. ) then
   allocate (del_tau        (im, jm))
 else
   allocate (tau_0          (im, jm))
@@ -295,17 +330,63 @@ else
   stop 'invalid select_incSW'
 endif
 
-solar_tau_0 = (1.0 - sw_diff*ss*ss)*atm_abs
-
 ! set a constant albedo for testing
 albedo(:,:) = albedo_value
 
-do k = 1, n+1
-  solar_tau(:,:,k) = solar_tau_0(:,:)                                         &
-                             *(p_half(:,:,k)/p_half(:,:,n+1))**solar_exponent
-end do
+if ( solar_exponent .eq. 0. ) then
+! (RG) scheme based on dtau/dsigma = bq + amu where b is a function of solar_tau
+! ref: Ruth Geen etal, GRL 2016 (supp. information).
+  solar_tau_k = 0.
+  mag_fac(:,:) = 1. ! 35.0 / sqrt(1224 * (cos(lat(:,:))) ** 2 + 1)
 
-if ( wv_exponent .eq. 0. ) then
+  do k = 1, n
+!   sw_wv = exp( 0.01887 / (solar_tau_k + 0.009522)                            &
+!              + 1.603 / ( (solar_tau_k + 0.5194)**2 ) )
+    sw_wv = solar_tau_k + 0.5194
+    sw_wv = exp( 0.01887 / (solar_tau_k + 0.009522)                            &
+                 + 1.603 / ( sw_wv*sw_wv ) )
+    del_sol_tau(:,:) = ( sw_co2 + sw_wv(:,:) * q(:,:,k) ) * mag_fac(:,:)       &
+                     * ( p_half(:,:,k+1) - p_half(:,:,k) ) / p_half(:,:,n+1)
+    dtrans_sol(:,:,k) = exp( - del_sol_tau(:,:) )
+    solar_tau_k = solar_tau_k + del_sol_tau(:,:)
+  end do
+
+  solar_down(:,:,1) = solar(:,:)
+  do k = 1,n
+    solar_down(:,:,k+1) = solar_down(:,:,k)*dtrans_sol(:,:,k)
+  end do
+
+else
+! tau proportional to p^solar_exponent, scaled by atm_abs
+
+  solar_tau_0 = (1.0 - sw_diff*ss*ss)*atm_abs
+
+  do k = 1, n+1
+    solar_tau(:,:,k) = solar_tau_0(:,:)                                        &
+                     *(p_half(:,:,k)/p_half(:,:,n+1))**solar_exponent
+  end do
+
+  do k = 1,n+1
+    solar_down(:,:,k) = solar(:,:)*exp(-solar_tau(:,:,k))
+  end do
+
+endif
+
+if ( wv_exponent .eq. -1. ) then
+! split LW in 2 bands: water-vapour window and remaining = non-window:
+! ref: Ruth Geen etal, GRL 2016 (supp. information).
+  do k = 1, n
+    del_tau    = ( ir_tau_co2 + ir_tau_wv*sqrt(q(:,:,k)) )                     &
+               * ( p_half(:,:,k+1)-p_half(:,:,k) ) / p_half(:,:,n+1)
+    dtrans(:,:,k) = exp( - del_tau )
+    del_tau_win   = ( ir_tau_co2_win + ir_tau_wv_win1*q(:,:,k)                 &
+                                     + ir_tau_wv_win2*q(:,:,k)*q(:,:,k) )      &
+                  * ( p_half(:,:,k+1)-p_half(:,:,k) ) / p_half(:,:,n+1)
+    dtrans_win(:,:,k) = exp( - del_tau_win )
+  end do
+
+elseif ( wv_exponent .eq. 0. ) then
+  dtrans_win = 1.
 ! longwave optical thickness function of specific humidity (M.Byrne & P.O'Gorman):
   do k = 1, n
     del_tau    = ( ir_tau_co2 + ir_tau_wv * q(:,:,k) )                         &
@@ -314,6 +395,7 @@ if ( wv_exponent .eq. 0. ) then
   end do
 
 else
+  dtrans_win = 1.
 ! longwave optical thickness function of latitude and pressure
   tau_0 = ir_tau_eq + (ir_tau_pole - ir_tau_eq)*ss*ss
 
@@ -334,16 +416,24 @@ else
 endif
 
 ! no radiation from spectral window
-b = (1.0-window)*stefan*t*t*t*t
+b = stefan*t*t*t*t
+b_win = window*b
+b = (1.0-window)*b
 
 down(:,:,1) = 0.0
 do k = 1,n
-  down(:,:,k+1) = down(:,:,k)*dtrans(:,:,k) + b(:,:,k)*(1.0 - dtrans(:,:,k))
+  down(:,:,k+1)     = down(:,:,k)*dtrans(:,:,k)                        &
+                    + b(:,:,k)*(1.0 - dtrans(:,:,k))
 end do
 
-do k = 1,n+1
-  solar_down(:,:,k) = solar(:,:)*exp(-solar_tau(:,:,k))
-end do
+if ( wv_exponent .eq. -1. ) then
+  down_win(:,:,1) = 0.0
+  do k = 1,n
+    down_win(:,:,k+1) = down_win(:,:,k)*dtrans_win(:,:,k)              &
+                      + b_win(:,:,k)*(1.0 - dtrans_win(:,:,k))
+  end do
+  down = down + down_win
+endif
 
 surf_lw_down     = down(:,:,n+1)
 net_surf_sw_down = solar_down(:,:,n+1)*(1. - albedo(:,:))
@@ -364,15 +454,21 @@ net_surf_sw_down = solar_down(:,:,n+1)*(1. - albedo(:,:))
 
 ! -------------------------------------------------------------------------
 !deallocate (swin)
-deallocate (solar_tau)
-deallocate (ss, solar, solar_tau_0)
+deallocate (ss, solar)
 if ( select_incSW .eq. 0 ) then
   deallocate (p2)
 elseif ( select_incSW .eq. 1 ) then
 ! Variables for seasonal Incoming SW
   deallocate (cLat, sLat, cos_H, HourAng)
 endif
-if ( wv_exponent .eq. 0. ) then
+if ( solar_exponent .eq. 0. ) then
+  deallocate (solar_tau_k, sw_wv, del_sol_tau, mag_fac, dtrans_sol)
+else
+  deallocate (solar_tau_0, solar_tau)
+endif
+if ( wv_exponent .eq. -1. ) then
+  deallocate (del_tau, del_tau_win, down_win)
+elseif ( wv_exponent .eq. 0. ) then
   deallocate (del_tau)
 else
   deallocate (tau_0, tau_km, tau_kp)
@@ -386,8 +482,9 @@ end subroutine radiation_down
 
 !subroutine radiation_up (is, js, Time_diag, lat, p_half, t_surf, t, tdt)
 subroutine radiation_up ( is, js, Time_diag, lat, p_half, t_surf, t, tdt,  &
-                          olr, tsr,  albedo, dtrans, b, down, solar_down,  &
-                           myThid )
+                          net, flux_sw, albedo, dtrans, dtrans_win,        &
+                          b, b_win, down, solar_down,                      &
+                          myThid )
 
 ! Now complete the radiation calculation by computing the upward and net fluxes.
 
@@ -398,11 +495,13 @@ real, intent(in) , dimension(:,:)   :: lat
 real, intent(in) , dimension(:,:)   :: t_surf
 real, intent(in) , dimension(:,:,:) :: t, p_half
 real, intent(inout), dimension(:,:,:) :: tdt
-real, intent(out), dimension(:,:)   :: olr
-real, intent(out), dimension(:,:)   :: tsr      ! net Top SW (+=down)
+real, intent(out), dimension(:,:,:) :: net
+real, intent(out), dimension(:,:,:) :: flux_sw
 real, intent(in),  dimension(:,:)   :: albedo
 real, intent(in),  dimension(:,:,:) :: dtrans
+real, intent(in),  dimension(:,:,:) :: dtrans_win
 real, intent(in),  dimension(:,:,:) :: b
+real, intent(in),  dimension(:,:,:) :: b_win
 real, intent(in),  dimension(:,:,:) :: down
 real, intent(in),  dimension(:,:,:) :: solar_down
 integer, intent(in)                 :: myThid
@@ -416,7 +515,7 @@ integer :: im, jm
 ! -------------------------------------------------------------------------
 real, allocatable, dimension(:,:)     :: b_surf
 real, allocatable, dimension(:,:,:)   :: tdt_rad, entrop_rad, tdt_sw
-real, allocatable, dimension(:,:,:) :: up, net, flux_rad, flux_sw
+real, allocatable, dimension(:,:,:) :: up, up_win, flux_rad
 ! -------------------------------------------------------------------------
 
 n = size(t,3)
@@ -428,9 +527,8 @@ allocate (tdt_rad          (im, jm, n))
 allocate (tdt_sw           (im, jm, n))
 allocate (entrop_rad       (im, jm, n))
 allocate (up               (im, jm, n+1))
-allocate (net              (im, jm, n+1))
+allocate (up_win           (im, jm, n+1))
 allocate (flux_rad         (im, jm, n+1))
-allocate (flux_sw          (im, jm, n+1))
 allocate (b_surf           (im, jm))
 ! -------------------------------------------------------------------------
 
@@ -439,14 +537,15 @@ b_surf = stefan*t_surf*t_surf*t_surf*t_surf
 
 ! first deal with non-window upward flux
 up(:,:,n+1) = b_surf*(1.0-window)
+up_win(:,:,n+1) = b_surf*window
 do k = n,1,-1
   up(:,:,k) = up(:,:,k+1)*dtrans(:,:,k) + b(:,:,k)*(1.0 - dtrans(:,:,k))
+  up_win(:,:,k) = up_win(:,:,k+1)*dtrans_win(:,:,k)            &
+                + b_win(:,:,k)*(1.0 - dtrans_win(:,:,k))
 end do
 
 ! add upward flux in spectral window
-do k = 1,n+1
-  up(:,:,k) = up(:,:,k) + b_surf(:,:)*window
-end do
+up = up + up_win
 
 do k = 1,n+1
   net(:,:,k) = up(:,:,k)-down(:,:,k)
@@ -455,15 +554,15 @@ do k = 1,n+1
 end do
 
 do k = 1,n
-  tdt_rad(:,:,k) = (net(:,:,k+1) - net(:,:,k) - solar_down(:,:,k+1) + solar_down(:,:,k))  &
+  tdt_rad(:,:,k) = (net(:,:,k+1) - net(:,:,k)                  &
+                 - solar_down(:,:,k+1) + solar_down(:,:,k))    &
              *grav/(cp_air*(p_half(:,:,k+1)-p_half(:,:,k)))
   tdt_sw(:,:,k) = (- solar_down(:,:,k+1) + solar_down(:,:,k))  &
              *grav/(cp_air*(p_half(:,:,k+1)-p_half(:,:,k)))
   tdt(:,:,k) = tdt(:,:,k) + tdt_rad(:,:,k)
 end do
 
-olr = up(:,:,1)
-tsr=-flux_sw(:,:,1)
+flux_sw = -flux_sw  ! change sign to get Net SW: +=down
 
 !------- outgoing lw flux toa (olr) -------
 !     if ( id_olr > 0 ) then
@@ -500,7 +599,7 @@ tsr=-flux_sw(:,:,1)
 
 ! -------------------------------------------------------------------------
 deallocate (tdt_rad, tdt_sw, entrop_rad)
-deallocate (up, net, flux_rad, flux_sw)
+deallocate (up, up_win, flux_rad)
 deallocate (b_surf)
 ! -------------------------------------------------------------------------
 
