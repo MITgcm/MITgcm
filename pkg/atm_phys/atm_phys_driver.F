@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.5 2015/01/06 21:20:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.6 2015/12/11 21:16:10 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -76,11 +76,16 @@ CEOP
 C-- radiation fields:
       _RL albedo_2d (sNx,sNy)
       _RL dtrans_3d (sNx,sNy,Nr)
+      _RL dtrans_win(sNx,sNy,Nr)
       _RL b_3d      (sNx,sNy,Nr)
+      _RL b_win     (sNx,sNy,Nr)
       _RL lw_down_3d(sNx,sNy,Nr+1)
       _RL sw_down_3d(sNx,sNy,Nr+1)
-      _RL olr_2d    (sNx,sNy)
-      _RL tsr_2d    (sNx,sNy)
+      _RL sw_net_3d (sNx,sNy,Nr+1)
+      _RL lw_net_3d (sNx,sNy,Nr+1)
+      _RL adj_lw_up (sNx,sNy)
+      _RL rad_dt_tg (sNx,sNy,Nr)
+
       LOGICAL coldT (sNx,sNy)
 C-- output from convection & LSC :
       _RL t3d_tmp    (sNx,sNy,Nr)
@@ -117,7 +122,6 @@ C-- Input for turb:
       _RL rough(sNx,sNy)
 C-- Output from turbulence driver:
       _RL  diff_t(sNx,sNy,Nr), diff_m(sNx,sNy,Nr)
-c     _RL  gust(sNx,sNy)
       _RL diff_dt_tg (sNx,sNy,Nr)
       _RL diff_dt_qg (sNx,sNy,Nr)
       _RL diss_heat  (sNx,sNy,Nr)
@@ -238,6 +242,8 @@ C-    store updated state to pass to LSC (addition from POG)
      &                           -1,Nr, 3, bi, bj, myThid )
            CALL DIAGNOSTICS_FILL( q_ref  , 'AtPh_Qrf',
      &                           -1,Nr, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( cond_dt_tg, 'AtPhdTcv',
+     &                           -1,Nr, 3, bi, bj, myThid )
 c          snow2d = snow2d / deltaT
 c          CALL DIAGNOSTICS_FILL( snow2d , 'SDIAG1  ',
 c    &                            0, 1, 3, bi, bj, myThid )
@@ -278,8 +284,8 @@ C     Re-use "q_ref" array to calculate Relative Humidity (in %)
         IF ( two_stream ) THEN
           CALL RADIATION_DOWN(
      I                   sNx,sNy, myTime, lat2d, pHalf3d, t3d, q3d,
-     O                   s_sw_dwn, s_lw_dwn,
-     O                   albedo_2d, dtrans_3d, b_3d,
+     O                   s_sw_dwn, s_lw_dwn, albedo_2d,
+     O                   dtrans_3d, dtrans_win, b_3d, b_win,
      O                   lw_down_3d, sw_down_3d, myThid )
 
 c         write(errorMessageUnit,'(A,I5,I3,4F9.3)')
@@ -313,16 +319,20 @@ c    &      lw_down_3d(1,1,15), lw_down_3d(1,sNy,15)
         ENDIF
 
         IF ( two_stream ) THEN
+          rad_dt_tg = tdt3d
           CALL RADIATION_UP(
      I                   sNx,sNy, myTime, lat2d, pHalf3d, t_surf, t3d,
-     U                   tdt3d, olr_2d, tsr_2d,
-     I                   albedo_2d, dtrans_3d, b_3d,
-     I                   lw_down_3d, sw_down_3d, myThid )
+     U                   tdt3d, lw_net_3d, sw_net_3d,
+     I                   albedo_2d, dtrans_3d, dtrans_win,
+     I                   b_3d, b_win, lw_down_3d, sw_down_3d, myThid )
 
 c         write(errorMessageUnit,'(A,I5,I3,4F9.3)')
 c    &      'it,bj,t,tdt:',myIter,bj,
 c    &      t3d(1,1,15), t3d(1,sNy,15),
 c    &      tdt3d(1,1,15)*86400., tdt3d(1,sNy,15)*86400.
+          rad_dt_tg = tdt3d - rad_dt_tg
+        ELSE
+          rad_dt_tg = 0.
         ENDIF
 
         IF (turb) THEN
@@ -384,8 +394,11 @@ c    &      tdt3d(1,1,15)*86400., tdt3d(1,sNy,15)*86400.
         diff_dt_tg = tdt3d - diff_dt_tg
         diff_dt_qg = qdt3d - diff_dt_qg
 
-C--- update OLR (assume adjustment of surf LW emission goes directly to space):
-        olr_2d = olr_2d + drdt_surf*delta_t_surf
+C-- update Upward LW (assuming adjustment of surf LW emission goes directly to space)
+        adj_lw_up = drdt_surf*delta_t_surf
+        DO k=1,Nr+1
+         lw_net_3d(:,:,k) = lw_net_3d(:,:,k) + adj_lw_up
+        ENDDO
 
         DO k=1,Nr
           kc = Nr-k+1
@@ -437,11 +450,21 @@ C-    surface wind-stress (+ = down) at grid cell center (A-grid):
      &                           -1, Nr, 3, bi, bj, myThid )
           CALL DIAGNOSTICS_FILL( diff_m , 'AtPhDifM',
      &                           -1, Nr, 3, bi, bj, myThid )
-          CALL DIAGNOSTICS_FILL( sw_down_3d,'AtPhInSR',
+          CALL DIAGNOSTICS_FILL( rad_dt_tg , 'AtPhdTrd',
+     &                           -1, Nr, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( sw_net_3d , 'AtPhNSR ',
+     &                           -1, Nr+1, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( lw_net_3d , 'AtPhNLR ',
+     &                           -1, Nr+1, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( sw_down_3d, 'AtPhDSR ',
+     &                           -1, Nr+1, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( lw_down_3d, 'AtPhDLR ',
+     &                           -1, Nr+1, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( sw_down_3d, 'AtPhInSR',
      &                           0, 1, 3, bi, bj, myThid )
-          CALL DIAGNOSTICS_FILL( tsr_2d ,'AtPhNTSR',
+          CALL DIAGNOSTICS_FILL( sw_net_3d , 'AtPhNTSR',
      &                           0, 1, 3, bi, bj, myThid )
-          CALL DIAGNOSTICS_FILL( olr_2d ,   'AtPhOLR ',
+          CALL DIAGNOSTICS_FILL( lw_net_3d , 'AtPhOLR ',
      &                           0, 1, 3, bi, bj, myThid )
           CALL DIAGNOSTICS_FILL( sw_down_3d(:,:,Nr+1),'AtPhDSSR',
      &                           0, 1, 3, bi, bj, myThid )
@@ -459,6 +482,8 @@ C-    surface wind-stress (+ = down) at grid cell center (A-grid):
      &                           0, 1, 3, bi, bj, myThid )
           CALL DIAGNOSTICS_FILL( flux_v , 'AtPhTauY',
      &                           0, 1, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( cond_dt_tg, 'AtPhdTlc',
+     &                           -1, Nr, 3, bi, bj, myThid )
           CALL DIAGNOSTICS_FILL( diff_dt_tg, 'AtPhdtTg',
      &                           -1, Nr, 3, bi, bj, myThid )
           CALL DIAGNOSTICS_FILL( diff_dt_qg, 'AtPhdtQg',

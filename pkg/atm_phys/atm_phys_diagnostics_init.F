@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_diagnostics_init.F,v 1.2 2014/04/03 00:28:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_diagnostics_init.F,v 1.3 2015/12/11 21:16:10 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -107,7 +107,48 @@ c     IF ( useDiagnotics ) THEN
         diagCode  = 'SM      L1      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhdTlc'
+        diagTitle = 'ATM_PHYS: lsc cond. tendency of Temp'
+        diagUnits = 'K/s             '
+        diagCode  = 'SMR     MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+C--     Radiation & Surface fluxes:
+        diagName  = 'AtPhdTrd'
+        diagTitle = 'ATM_PHYS: radiation tendency of Temp'
+        diagUnits = 'K/s             '
+        diagCode  = 'SMR     MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhNSR '
+        diagTitle = 'ATM_PHYS: Net Shortwave Radiation (3D,+=dw)'
+        diagUnits = 'W/m^2           '
+        diagCode  = 'SM      LX      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nr+1, myThid )
+        diagName  = 'AtPhNLR '
+        diagTitle = 'ATM_PHYS: Net Longwave  Radiation (3D,+=up)'
+        diagUnits = 'W/m^2           '
+        diagCode  = 'SM      LX      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nr+1, myThid )
+        diagName  = 'AtPhDSR '
+        diagTitle = 'ATM_PHYS: Downward Shortwave Radiation (3D,+=dw)'
+        diagUnits = 'W/m^2           '
+        diagCode  = 'SM P    LX      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nr+1, myThid )
+        diagName  = 'AtPhDLR '
+        diagTitle = 'ATM_PHYS: Downward Longwave  Radiation (3D,+=dw)'
+        diagUnits = 'W/m^2           '
+        diagCode  = 'SM P    LX      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        CALL DIAGNOSTICS_SETKLEV( diagName, Nr+1, myThid )
         diagName  = 'AtPhInSR'
         diagTitle = 'ATM_PHYS: Incoming Shortwave Radiation (+=dw)'
         diagUnits = 'W/m^2           '
@@ -150,7 +191,6 @@ c     IF ( useDiagnotics ) THEN
         diagCode  = 'SM P    L1      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
         diagName  = 'AtPhSens'
         diagTitle = 'ATM_PHYS: surface sensible heat flux (+=up)'
         diagUnits = 'W/m^2           '
@@ -226,9 +266,15 @@ C--     Dargan BettsMiller Convection:
         diagCode  = 'SM      MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+        diagName  = 'AtPhdTcv'
+        diagTitle = 'ATM_PHYS: convection tendency of Temp'
+        diagUnits = 'K/s             '
+        diagCode  = 'SMR     MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
         diagName  = 'AtPhdtTg'
-        diagTitle = 'ATM_PHYS: vertical diff. tendency of temp.'
+        diagTitle = 'ATM_PHYS: vertical diff. tendency of Temp.'
         diagUnits = 'K/s             '
         diagCode  = 'SMR     MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
