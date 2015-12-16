@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.59 2015/09/08 09:42:08 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.60 2015/12/16 14:00:06 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -220,7 +220,7 @@ C--   basic forcing by wind stress
            FORCEX0(I,J,bi,bj)=TAUX(I,J,bi,bj)
      &          * 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I-1,J,bi,bj))
            FORCEY0(I,J,bi,bj)=TAUY(I,J,bi,bj)
-     &          * 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-J,bi,bj))
+     &          * 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-1,bi,bj))
           ENDDO
          ENDDO
         ELSE

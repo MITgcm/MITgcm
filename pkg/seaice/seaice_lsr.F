@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.117 2015/09/10 15:57:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.118 2015/12/16 14:00:06 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -198,7 +198,7 @@ C     initialise fractional areas at velocity points
            areaW(I,J,bi,bj) =
      &          0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I-1,J,bi,bj))
            areaS(I,J,bi,bj) =
-     &          0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-J,bi,bj))
+     &          0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-1,bi,bj))
           ENDDO
          ENDDO
         ENDIF
@@ -1229,7 +1229,7 @@ C     backward difference extrapolation factor
          DO J=jMin,jMax
           DO I=iMin,iMax
            areaW(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I-1,J,bi,bj))
-           areaS(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-J,bi,bj))
+           areaS(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-1,bi,bj))
           ENDDO
          ENDDO
         ELSE
