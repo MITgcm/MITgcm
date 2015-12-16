@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_rhs.F,v 1.8 2015/09/08 09:42:08 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_rhs.F,v 1.9 2015/12/16 12:16:08 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -80,7 +80,7 @@ C     initialise fractional areas at velocity points
          DO J=1,sNy
           DO I=1,sNx
            areaW(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I-1,J,bi,bj))
-           areaS(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-J,bi,bj))
+           areaS(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-1,bi,bj))
           ENDDO
          ENDDO
         ENDIF
