@@ -1,11 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2211 2015/12/16 12:16:46 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2212 2015/12/16 14:28:12 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: fix a bug computing areaS in seaice_calc_lhs/rhs (J-J -> J-1)
-  that affects runs when SEAICEscaleSurfStress=.TRUE. (only for JFNK)
+o pkg/seaice: fix bug in tridiagonal solvers for SEAICE_OLx/y>0, this affects
+  the JFNK solver (offline.dyn_jfnk) and global_ocean.cs32x15.seaice 
+  -> updated 
+o pkg/seaice: fix a bug in computing areaS in (J-J -> J-1)
+  that affects runs when SEAICEscaleSurfStress=.TRUE.
 o pkg/atm_phys:
   - add diagnostics for 3-D, Nr+1 levels diagnostics of radiative fluxes
     (shortwave & longwave, net & downward) and diagnostics of temp. tendency
