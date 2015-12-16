@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2210 2015/12/11 21:22:31 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2211 2015/12/16 12:16:46 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: fix a bug computing areaS in seaice_calc_lhs/rhs (J-J -> J-1)
+  that affects runs when SEAICEscaleSurfStress=.TRUE. (only for JFNK)
 o pkg/atm_phys:
   - add diagnostics for 3-D, Nr+1 levels diagnostics of radiative fluxes
     (shortwave & longwave, net & downward) and diagnostics of temp. tendency
