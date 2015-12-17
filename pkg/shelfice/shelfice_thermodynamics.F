@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.46 2015/10/02 01:02:41 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.47 2015/12/17 01:52:05 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -87,8 +87,11 @@ C     drKp1, recip_drLoc
       _RL tLoc(1:sNx,1:sNy)
       _RL sLoc(1:sNx,1:sNy)
       _RL pLoc(1:sNx,1:sNy)
+#ifndef SHI_USTAR_WETPOINT
       _RL uLoc(1:sNx,1:sNy)
       _RL vLoc(1:sNx,1:sNy)
+#endif
+      _RL velSq(1:sNx,1:sNy)
       _RL thetaFreeze, saltFreeze, recip_Cp
       _RL freshWaterFlux, convertFW2SaltLoc
       _RL a0, a1, a2, b, c0
@@ -261,12 +264,29 @@ C--   underneath the ice
 c         pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*1. _d -4
           tLoc(I,J) = theta(I,J,K,bi,bj)
           sLoc(I,J) = MAX(salt(I,J,K,bi,bj), zeroRL)
+#ifdef SHI_USTAR_WETPOINT
+          velSq(I,J) = 0.
+          tmpFac = _hFacW(I,  J,K,bi,bj) + _hFacW(I+1,J,K,bi,bj)
+          IF ( tmpFac.GT.0. _d 0 )
+     &     velSq(I,J) = (
+     &     uVel( I, J,K,bi,bj)*uVel( I, J,K,bi,bj)*_hFacW( I, J,K,bi,bj)
+     &   + uVel(I+1,J,K,bi,bj)*uVel(I+1,J,K,bi,bj)*_hFacW(I+1,J,K,bi,bj)
+     &                  )/tmpFac
+          tmpFac = _hFacS(I,J,  K,bi,bj) + _hFacS(I,J+1,K,bi,bj)
+          IF ( tmpFac.GT.0. _d 0 )
+     &     velSq(I,J) = velSq(I,J) + (
+     &     vVel(I, J, K,bi,bj)*vVel(I, J, K,bi,bj)*_hFacS(I, J, K,bi,bj)
+     &   + vVel(I,J+1,K,bi,bj)*vVel(I,J+1,K,bi,bj)*_hFacS(I,J+1,K,bi,bj)
+     &                               )/tmpFac
+#else /* SHI_USTAR_WETPOINT */
           uLoc(I,J) = recip_hFacC(I,J,K,bi,bj) * halfRL *
      &         ( uVel(I,  J,K,bi,bj) * _hFacW(I,  J,K,bi,bj)
      &         + uVel(I+1,J,K,bi,bj) * _hFacW(I+1,J,K,bi,bj) )
           vLoc(I,J) = recip_hFacC(I,J,K,bi,bj) * halfRL *
      &         ( vVel(I,J,  K,bi,bj) * _hFacS(I,J,  K,bi,bj)
      &         + vVel(I,J+1,K,bi,bj) * _hFacS(I,J+1,K,bi,bj) )
+          velSq(I,J) = uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)
+#endif /* SHI_USTAR_WETPOINT */
          ENDDO
         ENDDO
         IF ( SHELFICEBoundaryLayer ) THEN
@@ -289,6 +309,7 @@ C--   lower cell may not be as thick as required
             sLoc(I,J) = ( sLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
      &           + MAX(salt(I,J,Kp1,bi,bj), zeroRL) * drKp1 )
      &           * recip_drLoc
+#ifndef SHI_USTAR_WETPOINT
             uLoc(I,J) = ( uLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
      &           + drKp1 * recip_hFacC(I,J,Kp1,bi,bj) * halfRL *
      &           ( uVel(I,  J,Kp1,bi,bj) * _hFacW(I,  J,Kp1,bi,bj)
@@ -299,6 +320,8 @@ C--   lower cell may not be as thick as required
      &           ( vVel(I,J,  Kp1,bi,bj) * _hFacS(I,J,  Kp1,bi,bj)
      &           + vVel(I,J+1,Kp1,bi,bj) * _hFacS(I,J+1,Kp1,bi,bj) )
      &           ) * recip_drLoc
+            velSq(I,J) = uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)
+#endif /* ndef SHI_USTAR_WETPOINT */
            ENDIF
           ENDDO
          ENDDO
@@ -322,8 +345,7 @@ C--   to the surface
           DO I = 1, sNx
            K = kTopC(I,J,bi,bj)
            IF ( K .NE. 0 .AND. pLoc(I,J) .GT. 0. _d 0 ) THEN
-            ustarSq = shiCdrag * MAX( 1.D-6,
-     &             (uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)) )
+            ustarSq = shiCdrag * MAX( 1.D-6, velSq(I,J) )
             ustar   = SQRT(ustarSq)
 #ifdef ALLOW_DIAGNOSTICS
             uStarDiag(I,J,bi,bj) = ustar
