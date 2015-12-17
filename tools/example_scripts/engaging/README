@@ -1,0 +1,27 @@
+Scripts for MITgcm testing on the engaging cluster.
+Put all in the same directory and run "./submit".
+Reference summary files can be placed in a subdirectory "ref"
+if an email with differences to a previous run is desired:
+
+ref/summary_gfortran.txt
+ref/summary_gfortran-mpi.txt
+ref/summary_gfortran-mpi-fast.txt
+ref/summary_darwin2_gfortran-mpi.txt
+ref/summary_darwin2_gfortran.txt
+ref/summary_darwin_gfortran.txt
+ref/summary_2+2_gfortran-mpi-fast.txt
+ref/summary_2+2_gfortran-mpi.txt
+ref/summary_2+2_darwin2_gfortran.txt
+ref/summary_2+2_darwin_gfortran.txt
+ref/summary_ifort-mpi-dvlp.txt
+ref/summary_ifort-mpi-fast.txt
+ref/summary_2+2_ifort-mpi-dvlp.txt
+ref/summary_2+2_ifort-mpi-fast.txt
+ref/summary_open64-dvlp.txt
+ref/summary_open64-mpi-dvlp.txt
+ref/summary_open64-mpi-fast.txt
+ref/summary_2+2_open64-mpi-dvlp.txt
+ref/summary_2+2_open64-mpi-fast.txt
+ref/summary_gfortran-openad.txt
+ref/summary_gfortran-openad-mpi.txt
+

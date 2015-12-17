@@ -1,0 +1,14 @@
+#!/bin/sh
+. /etc/profile.d/modules.sh
+module add slurm
+
+cvsjob=$( sbatch job_cvs.slurm | awk '/Submitted batch job/{print $4}' )
+
+if ! [ "$cvsjob" -ne 0 ]; then
+    exit
+fi
+
+for c in gfortran intel open64 openad_gfortran openad_gfortran-mpi; do
+    sbatch --dependency=afterok:$cvsjob job_$c.slurm
+done
+
