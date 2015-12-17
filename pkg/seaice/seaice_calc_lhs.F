@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.11 2015/12/16 12:16:08 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.12 2015/12/17 11:37:39 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -190,7 +190,7 @@ C                    + mass*f*uIce
      &       * 0.5 _d 0*( uIceLoc(I,J-1,bi,bj)+uIceLoc(I+1,J-1,bi,bj) )
      &           )
 C     ocean-ice drag terms: + Cdrag*(uIce*cosWat - vIce*sinWat)
-          uIceLHS(I,J,bi,bj) = uIceLHS(I,J,bi,bj) +
+          uIceLHS(I,J,bi,bj) = uIceLHS(I,J,bi,bj) + (
      &         0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
      &         COSWAT * uIceLoc(I,J,bi,bj)
      &         - SIGN(SINWAT, _fCori(I,J,bi,bj))* 0.5 _d 0 *
@@ -198,9 +198,9 @@ C     ocean-ice drag terms: + Cdrag*(uIce*cosWat - vIce*sinWat)
      &         (vIceLoc(I  ,J,bi,bj)+vIceLoc(I  ,J+1,bi,bj))
      &         +  DWATN(I-1,J,bi,bj) * 0.5 _d 0 *
      &         (vIceLoc(I-1,J,bi,bj)+vIceLoc(I-1,J+1,bi,bj))
-     &         )
+     &         ) ) * areaW(I,J)
 C                           + Cdrag*(vIce*cosWat + uIce*sinWat)
-          vIceLHS(I,J,bi,bj) = vIceLHS(I,J,bi,bj) +
+          vIceLHS(I,J,bi,bj) = vIceLHS(I,J,bi,bj) + (
      &         0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
      &         COSWAT * vIceLoc(I,J,bi,bj)
      &         + SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 *
@@ -208,7 +208,7 @@ C                           + Cdrag*(vIce*cosWat + uIce*sinWat)
      &         (uIceLoc(I,J  ,bi,bj)+uIceLoc(I+1,J  ,bi,bj))
      &         +  DWATN(I,J-1,bi,bj) * 0.5 _d 0 *
      &         (uIceLoc(I,J-1,bi,bj)+uIceLoc(I+1,J-1,bi,bj))
-     &         )
+     &         ) ) * areaS(I,J)
 C     apply masks for interior (important when we have open boundaries)
           uIceLHS(I,J,bi,bj) = uIceLHS(I,J,bi,bj)*maskinW(I,J,bi,bj)
           vIceLHS(I,J,bi,bj) = vIceLHS(I,J,bi,bj)*maskinS(I,J,bi,bj)
