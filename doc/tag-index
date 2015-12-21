@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2214 2015/12/21 13:38:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2215 2015/12/21 20:07:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/atm_phys:
+  - allow to provide 2-d map of albedo and mixed-layer depth from files (but
+    hold fixed in time).
 
 checkpoint65r (2015/12/21)
 o pkg/seaice:
