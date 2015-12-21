@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_init_fixed.F,v 1.2 2015/01/10 20:25:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_init_fixed.F,v 1.3 2015/12/21 20:04:57 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -43,11 +43,15 @@ C     iUnit      :: Work variable for IO unit number
       INTEGER iUnit
       INTEGER axes(4)
       INTEGER i,j,bi,bj
+      _RL cst_albedo, cst_mxlDepth
 
       namelist / atmosphere_nml /
      &   turb, ldry_convection, lwet_convection, do_virtual,
      &   two_stream, mixed_layer_bc,
      &   roughness_heat, roughness_moist, roughness_mom
+
+      cst_albedo   = 0.
+      cst_mxlDepth = 1.
 
       _BARRIER
       _BEGIN_MASTER(myThid)
@@ -95,7 +99,7 @@ C     Close the open data file
 
       CALL MIXED_LAYER_INIT ( 1, sNx, 1, sNy, Nr, axes,
 c    I                        lat2d, ocean_qflux,
-     I                        startTime, myThid )
+     &                        startTime, cst_mxlDepth, myThid )
       CALL GCM_VERT_DIFF_INIT ( sNx, sNy, Nr,
      I                         .true., myThid, do_virtual )
 
@@ -106,8 +110,8 @@ c    I                        lat2d, ocean_qflux,
       ENDIF
 
       IF( two_stream) THEN
-        CALL RADIATION_INIT( 1, sNx, 1, sNy, Nr, nSx,nSy,
-     &                     axes, startTime, myThid )
+        CALL RADIATION_INIT( 1, sNx, 1, sNy, Nr, nSx,nSy, axes,
+     &                       startTime, cst_albedo, myThid )
       ENDIF
 
       IF (turb) THEN
@@ -122,14 +126,26 @@ c    I                        lat2d, ocean_qflux,
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
             atmPhys_Qflx(i,j,bi,bj) = 0. _d 0
+            atmPhys_MxLD(i,j,bi,bj) = cst_mxlDepth
+            atmPhys_Albedo(i,j,bi,bj) = cst_albedo
           ENDDO
          ENDDO
        ENDDO
       ENDDO
-      IF ( atmPhys_QflxFile .NE. ' ' ) THEN
-        CALL READ_FLD_XY_RL( atmPhys_QflxFile,' ',
+      IF ( atmPhys_qFlxFile .NE. ' ' ) THEN
+        CALL READ_FLD_XY_RL( atmPhys_qFlxFile,' ',
      &                       atmPhys_Qflx, 0, myThid )
         CALL EXCH_XY_RL( atmPhys_Qflx, myThid )
+      ENDIF
+      IF ( atmPhys_mxldFile .NE. ' ' ) THEN
+        CALL READ_FLD_XY_RL( atmPhys_mxldFile,' ',
+     &                       atmPhys_MxLD, 0, myThid )
+        CALL EXCH_XY_RL( atmPhys_MxLD, myThid )
+      ENDIF
+      IF ( atmPhys_albedoFile .NE. ' ' ) THEN
+        CALL READ_FLD_XY_RL( atmPhys_albedoFile,' ',
+     &                       atmPhys_Albedo, 0, myThid )
+        CALL EXCH_XY_RL( atmPhys_Albedo, myThid )
       ENDIF
 
 #ifdef ALLOW_MNC

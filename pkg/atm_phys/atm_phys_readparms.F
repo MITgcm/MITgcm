@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_readparms.F,v 1.3 2014/05/27 23:41:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_readparms.F,v 1.4 2015/12/21 20:04:57 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -38,7 +38,8 @@ C     iUnit      :: Work variable for IO unit number
      &       atmPhys_addTendU, atmPhys_addTendV,
      &       atmPhys_tauDampUV, atmPhys_dampUVfac,
      &       atmPhys_stepSST,
-     &       atmPhys_SSTFile, atmPhys_QflxFile
+     &       atmPhys_sstFile,  atmPhys_qFlxFile,
+     &       atmPhys_mxldFile, atmPhys_albedoFile
 
       _BEGIN_MASTER(myThid)
 
@@ -63,8 +64,10 @@ C--   Default values for ATM_PHYS
       ENDDO
 C-    additional parameters:
       atmPhys_stepSST   = .FALSE.
-      atmPhys_SSTFile  = ' '
-      atmPhys_QflxFile = ' '
+      atmPhys_sstFile   = ' '
+      atmPhys_qFlxFile  = ' '
+      atmPhys_mxldFile  = ' '
+      atmPhys_albedoFile= ' '
 
       WRITE(msgBuf,'(A)') 'ATM_PHYS_READPARMS: opening data.atm_phys'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

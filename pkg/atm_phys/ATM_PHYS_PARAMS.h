@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/ATM_PHYS_PARAMS.h,v 1.2 2013/06/28 21:25:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/ATM_PHYS_PARAMS.h,v 1.3 2015/12/21 20:04:57 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_ATM_PHYS
@@ -22,10 +22,14 @@ C     atmPhys_dampUVfac :: damping coefficient for each level
       _RL     atmPhys_dampUVfac(Nr)
 
 C-    file names for initial conditions:
-C     atmPhys_SSTFile  :: name of initial SST [in K] file
-C     atmPhys_QflxFile :: name of Q-flux file
-      CHARACTER*(MAX_LEN_FNAM) atmPhys_SSTFile
-      CHARACTER*(MAX_LEN_FNAM) atmPhys_QflxFile
+C     atmPhys_sstFile  :: name of initial SST [in K] file
+C     atmPhys_qFlxFile :: name of Q-flux file
+C     atmPhys_mxldFile :: name of Mixed-Layer Depth file
+C     atmPhys_albedoFile :: name of Albedo file
+      CHARACTER*(MAX_LEN_FNAM) atmPhys_sstFile
+      CHARACTER*(MAX_LEN_FNAM) atmPhys_qFlxFile
+      CHARACTER*(MAX_LEN_FNAM) atmPhys_mxldFile
+      CHARACTER*(MAX_LEN_FNAM) atmPhys_albedoFile
 
       COMMON /ATM_PHYS_PARAMS_L/
      &       atmPhys_addTendT, atmPhys_addTendS,
@@ -34,7 +38,8 @@ C     atmPhys_QflxFile :: name of Q-flux file
       COMMON /ATM_PHYS_PARAMS_R/
      &       atmPhys_tauDampUV, atmPhys_dampUVfac
       COMMON /ATM_PHYS_PARAMS_C/
-     &       atmPhys_SSTFile, atmPhys_QflxFile
+     &       atmPhys_sstFile,  atmPhys_qFlxFile,
+     &       atmPhys_mxldFile, atmPhys_albedoFile
 
 C-- from driver-atmosphere module:
       logical  module_is_initialized

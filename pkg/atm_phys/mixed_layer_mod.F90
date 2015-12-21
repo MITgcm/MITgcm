@@ -1,4 +1,4 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/mixed_layer_mod.F90,v 1.1 2013/05/08 22:14:14 jmc Exp $
+! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/mixed_layer_mod.F90,v 1.2 2015/12/21 20:04:57 jmc Exp $
 ! $Name:  $
 
 module mixed_layer_mod
@@ -29,7 +29,7 @@ implicit none
 private
 !===================================================================================================
 
-character(len=128) :: version = '$Id: mixed_layer_mod.F90,v 1.1 2013/05/08 22:14:14 jmc Exp $'
+character(len=128) :: version = '$Id: mixed_layer_mod.F90,v 1.2 2015/12/21 20:04:57 jmc Exp $'
 character(len=128) :: tagname = '$Name:  $'
 character(len=128), parameter :: mod_name='mixed_layer'
 
@@ -90,22 +90,23 @@ contains
 !===================================================================================================
 
 !subroutine mixed_layer_init(is, ie, js, je, num_levels, t_surf, axes,  &
-subroutine mixed_layer_init( is, ie, js, je, num_levels,         axes,  &
 !                            rad_lat_2d, ocean_qflux,                   &
-                             Time, myThid )
+subroutine mixed_layer_init( is, ie, js, je, num_levels,         axes,  &
+                             Time, cst_mxlDepth, myThid )
 
-!type(time_type), intent(in)       :: Time
-real, intent(in)                   :: Time
+integer, intent(in) :: is, ie, js, je, num_levels
 !real, intent(inout), dimension(:,:) :: t_surf
 integer, intent(in), dimension(4) :: axes
-integer, intent(in) :: is, ie, js, je, num_levels
+!type(time_type), intent(in)       :: Time
+real, intent(in)                   :: Time
+real, intent(out)                  :: cst_mxlDepth
 integer, intent(in)                :: myThid
 !real, intent(in), dimension(:,:)  :: rad_lat_2d
 !real, intent(out), dimension(:,:) :: ocean_qflux
 
-integer :: j
-real    :: rad_qwidth
-integer:: ierr, io, unit
+!integer :: j
+!real    :: rad_qwidth
+!integer:: ierr, io, unit
 integer         :: iUnit
 CHARACTER*(gcm_LEN_MBUF) :: msgBuf
 
@@ -120,7 +121,7 @@ if(module_is_initialized) return
      WRITE(msgBuf,'(A)') 'MIXED_LAYER_INIT: opening data.atm_gray'
      CALL PRINT_MESSAGE( msgBuf, gcm_stdMsgUnit, gcm_SQZ_R, myThid )
      CALL OPEN_COPY_DATA_FILE(                                      &
-                           'data.atm_gray', 'MIXED_LAYER_INIT',       &
+                           'data.atm_gray', 'MIXED_LAYER_INIT',     &
                            iUnit,                                   &
                            myThid )
 !    Read parameters from open data file
@@ -171,6 +172,7 @@ module_is_initialized = .true.
 
      ENDIF
      CALL BARRIER(myThid)
+     cst_mxlDepth = depth
 
 !see if restart file exists for the surface temperature
 !
@@ -233,7 +235,7 @@ subroutine mixed_layer (                                &
      drdt_surf,                                         &
      dhdt_atm,                                          &
      dedq_atm,                                          &
-     ocean_qflux,                                       &
+     ocean_qflux, mixLayDepth,                          &
      delta_t_surf, &               ! Increment in surface temperature
      myThid )
 
@@ -254,6 +256,7 @@ real, intent(inout), dimension(:,:)  :: tri_surf_dtmass
 real, intent(inout), dimension(:,:)  :: tri_surf_dflux_t, tri_surf_dflux_q
 real, intent(inout), dimension(:,:)  :: tri_surf_delta_t, tri_surf_delta_q
 real, intent(in),    dimension(:,:)  :: ocean_qflux
+real, intent(in),    dimension(:,:)  :: mixLayDepth
 real, intent(out),   dimension(:,:)  :: delta_t_surf
 integer, intent(in) :: myThid
 
@@ -346,7 +349,8 @@ endif
 !
 ! Now update the mixed layer surface temperature using an implicit step
 !
-eff_heat_capacity = depth * RHO_CP + t_surf_dependence * dt
+!eff_heat_capacity = depth * RHO_CP + t_surf_dependence * dt
+eff_heat_capacity = mixLayDepth * RHO_CP + t_surf_dependence * dt
 
 if (any(eff_heat_capacity .eq. 0.0))  then
   write(*,*) 'mixed_layer: error', eff_heat_capacity
@@ -403,7 +407,7 @@ subroutine mixed_layer_end(t_surf,myThid)
 real, intent(inout), dimension(:,:) :: t_surf
 integer, intent(in)                :: myThid
 
-integer:: unit
+!integer:: unit
 
 if(.not.module_is_initialized) return
 

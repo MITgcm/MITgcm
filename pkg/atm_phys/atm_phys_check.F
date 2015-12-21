@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_check.F,v 1.2 2013/06/28 21:25:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_check.F,v 1.3 2015/12/21 20:04:57 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -29,7 +29,6 @@ CEOP
 C     !LOCAL VARIABLES:
 C     msgBuf   :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER k
 
       _BEGIN_MASTER(myThid)
 
@@ -60,10 +59,14 @@ C--  Print out some kee parameters :
      &  'atmPhys_dampUVfac =', ' /* U,V danping coefficient (1/s) */')
        ENDIF
 
-       CALL WRITE_0D_C( atmPhys_SSTFile, -1, INDEX_NONE,
-     &  'atmPhys_SSTFile =',' /* SST input file */')
+       CALL WRITE_0D_C( atmPhys_sstFile, -1, INDEX_NONE,
+     &  'atmPhys_sstFile =',' /* SST input file */')
        CALL WRITE_0D_C( atmPhys_QflxFile, -1, INDEX_NONE,
-     &  'atmPhys_QflxFile =',' /* Q-flux input file */')
+     &  'atmPhys_qFlxFile =',' /* Q-flux input file */')
+       CALL WRITE_0D_C( atmPhys_mxldFile, -1, INDEX_NONE,
+     &  'atmPhys_mxldFile =',' /* Mixed-Layer Depth inp. file */')
+       CALL WRITE_0D_C( atmPhys_albedoFile, -1, INDEX_NONE,
+     &  'atmPhys_albedoFile =',' /* Albedo input file */')
 
 C--  Check parameters:
 

@@ -1,4 +1,4 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/radiation_mod.F90,v 1.4 2015/12/11 21:21:28 jmc Exp $
+! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/radiation_mod.F90,v 1.5 2015/12/21 20:04:57 jmc Exp $
 ! $Name:  $
 
 module radiation_mod
@@ -24,7 +24,7 @@ private
 
 ! version information
 
-character(len=128) :: version='$Id: radiation_mod.F90,v 1.4 2015/12/11 21:21:28 jmc Exp $'
+character(len=128) :: version='$Id: radiation_mod.F90,v 1.5 2015/12/21 20:04:57 jmc Exp $'
 character(len=128) :: tag='homemade'
 
 !==================================================================================
@@ -93,14 +93,16 @@ contains
 ! ==================================================================================
 
 !subroutine radiation_init(is, ie, js, je, num_levels, axes, Time)
-subroutine radiation_init(is, ie, js, je, num_levels, nSx,nSy, axes, Time, myThid)
+subroutine radiation_init( is, ie, js, je, num_levels, nSx,nSy, axes,   &
+                           Time, cst_albedo, myThid )
 
 !-------------------------------------------------------------------------------------
+integer, intent(in)               :: is, ie, js, je, num_levels
+integer, intent(in)               :: nSx, nSy
 integer, intent(in), dimension(4) :: axes
 !type(time_type), intent(in)       :: Time
 real, intent(in)                  :: Time
-integer, intent(in)               :: is, ie, js, je, num_levels
-integer, intent(in)               :: nSx, nSy
+real, intent(out)                 :: cst_albedo
 integer, intent(in)               :: myThid
 !-------------------------------------------------------------------------------------
 !integer, dimension(3) :: half = (/1,2,4/)
@@ -149,6 +151,7 @@ initialized = .true.
 
      ENDIF
      CALL BARRIER(myThid)
+     cst_albedo = albedo_value
 
 !-----------------------------------------------------------------------
 !------------ initialize diagnostic fields ---------------
@@ -204,8 +207,8 @@ end subroutine radiation_init
 ! ==================================================================================
 
 subroutine radiation_down (is, js, Time_diag, lat, p_half, t, q,      &
-                           net_surf_sw_down, surf_lw_down,            &
-                           albedo, dtrans, dtrans_win, b, b_win,      &
+                           albedo, net_surf_sw_down, surf_lw_down,    &
+                           dtrans, dtrans_win, b, b_win,              &
                            down, solar_down,                          &
                            myThid )
 
@@ -219,7 +222,7 @@ real, intent(in) , dimension(:,:)   :: lat
 real, intent(out), dimension(:,:)   :: net_surf_sw_down
 real, intent(out), dimension(:,:)   :: surf_lw_down
 real, intent(in) , dimension(:,:,:) :: t, q, p_half
-real, intent(out), dimension(:,:)   :: albedo
+real, intent(in) , dimension(:,:)   :: albedo
 real, intent(out), dimension(:,:,:) :: dtrans
 real, intent(out), dimension(:,:,:) :: dtrans_win
 real, intent(out), dimension(:,:,:) :: b
@@ -331,7 +334,7 @@ else
 endif
 
 ! set a constant albedo for testing
-albedo(:,:) = albedo_value
+!albedo(:,:) = albedo_value
 
 if ( solar_exponent .eq. 0. ) then
 ! (RG) scheme based on dtau/dsigma = bq + amu where b is a function of solar_tau

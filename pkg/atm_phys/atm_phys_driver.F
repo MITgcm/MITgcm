@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.6 2015/12/11 21:16:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.7 2015/12/21 20:04:57 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -133,6 +133,7 @@ c     TYPE(surf_diff_type) :: tri_surf ! used by gcm_vert_diff
       _RL f_t_global(sNx,sNy,Nr-1), f_q_global(sNx,sNy,Nr-1)
 C-- Mixed Layer fields:
       _RL ocean_qflux(sNx,sNy)
+      _RL mixLayDepth(sNx,sNy)
       _RL delta_t_surf(sNx,sNy)
 C--
       _RL conv_T2theta
@@ -177,6 +178,8 @@ c    I                     'RL', sNx*sNy, t_surf, dummyRS,
 c    I                     bi, bj, 1, myIter, myThid )
 c       ENDIF
         ocean_qflux(:,:) = atmPhys_Qflx(1:sNx,1:sNy,bi,bj)
+        mixLayDepth(:,:) = atmPhys_MxLD(1:sNx,1:sNy,bi,bj)
+        albedo_2d(:,:) = atmPhys_Albedo(1:sNx,1:sNy,bi,bj)
 
 C--   Get grid and dynamical fields from main model common blocks
         CALL ATM_PHYS_DYN2PHYS(
@@ -284,7 +287,8 @@ C     Re-use "q_ref" array to calculate Relative Humidity (in %)
         IF ( two_stream ) THEN
           CALL RADIATION_DOWN(
      I                   sNx,sNy, myTime, lat2d, pHalf3d, t3d, q3d,
-     O                   s_sw_dwn, s_lw_dwn, albedo_2d,
+     I                   albedo_2d,
+     O                   s_sw_dwn, s_lw_dwn,
      O                   dtrans_3d, dtrans_win, b_3d, b_win,
      O                   lw_down_3d, sw_down_3d, myThid )
 
@@ -381,7 +385,7 @@ c    &      tdt3d(1,1,15)*86400., tdt3d(1,sNy,15)*86400.
      I                    drdt_surf(:,:),
      I                    dhdt_atm(:,:),
      I                    dedq_atm(:,:),
-     I                    ocean_qflux(:,:),
+     I                    ocean_qflux, mixLayDepth,
      O                    delta_t_surf(:,:),
      I                    myThid )
 
