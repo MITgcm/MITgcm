@@ -1,14 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2213 2015/12/17 11:39:20 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2214 2015/12/21 13:38:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: fix bug in tridiagonal solvers for SEAICE_OLx/y>0, this affects
-  the JFNK solver (offline.dyn_jfnk) and global_ocean.cs32x15.seaice 
-  -> updated 
-o pkg/seaice: 
-  - fix a bug in computing areaS in (J-J -> J-1) that affects runs 
+checkpoint65r (2015/12/21)
+o pkg/seaice:
+    fix bug in tridiagonal solvers for SEAICE_OLx/y>0, this affects the JFNK
+    solver (offline.dyn_jfnk) and global_ocean.cs32x15.seaice -> updated
+o pkg/seaice:
+  - fix a bug in computing areaS in (J-J -> J-1) that affects runs
     when SEAICEscaleSurfStress=.TRUE.,
   - apply areaW and areaS in S/R seaice_calc_lhs
 o pkg/atm_phys:
