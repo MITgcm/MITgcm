@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.126 2015/10/07 12:04:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.127 2015/12/22 17:00:09 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -347,6 +347,9 @@ C     SEAICE_strength    :: sea-ice strength Pstar
 C     SEAICE_cStar       :: sea-ice strength paramter C* (def: 20)
 C     SEAICE_tensilFac   :: sea-ice tensile strength factor, values in [0,1]
 C     SEAICE_tensilDepth :: crtical depth for sea-ice tensile strength (def 0.)
+C     SEAICEpressReplFac :: interpolator between PRESS0 and regularized PRESS
+C                           1. (default): pure pressure replace method (PRESS)
+C                           0.          : pure Hibler (1979) method (PRESS0)
 C     SEAICE_eccen       :: sea-ice eccentricity of the elliptical yield curve
 C     SEAICE_lhFusion    :: latent heat of fusion for ice and snow (J/kg)
 C     SEAICE_lhEvap      :: latent heat of evaporation for water (J/kg)
@@ -422,7 +425,7 @@ C
       _RL SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south
       _RL SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south
       _RL SEAICE_wetAlbTemp, SEAICE_waterAlbedo
-      _RL SEAICE_strength, SEAICE_cStar
+      _RL SEAICE_strength, SEAICE_cStar, SEAICEpressReplFac
       _RL SEAICE_tensilFac, SEAICE_tensilDepth, SEAICE_eccen
       _RL SEAICE_lhFusion, SEAICE_lhEvap
       _RL SEAICE_dalton
@@ -474,7 +477,7 @@ C
      &    SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
      &    SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
      &    SEAICE_strength, SEAICE_cStar, SEAICE_eccen,
-     &    SEAICE_tensilFac, SEAICE_tensilDepth, 
+     &    SEAICEpressReplFac, SEAICE_tensilFac, SEAICE_tensilDepth, 
      &    SEAICE_lhFusion, SEAICE_lhEvap,
      &    SEAICE_dalton, SEAICE_cpAir,
      &    SEAICE_iceConduct, SEAICE_snowConduct,

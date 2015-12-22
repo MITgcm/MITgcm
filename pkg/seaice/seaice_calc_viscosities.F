@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.34 2015/09/10 15:57:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.35 2015/12/22 17:00:09 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -166,7 +166,9 @@ C     set viscosities to zero at hEffM flow pts
           zeta (I,J,bi,bj) = zeta(I,J,bi,bj)*HEFFM(I,J,bi,bj)
           eta  (I,J,bi,bj) = recip_e2*zeta(I,J,bi,bj)
 C     "replacement pressure"
-          press(I,J,bi,bj) = TWO *zeta(I,J,bi,bj)*deltaC(I,J,bi,bj)
+          press(I,J,bi,bj) =TWO*zeta(I,J,bi,bj)*deltaC(I,J,bi,bj)
+     &         * SEAICEpressReplFac
+     &         + press0(I,J,bi,bj)*( 1. _d 0 - SEAICEpressReplFac )
      &         - 2. _d 0 * tensil(I,J,bi,bj)
          ENDDO
         ENDDO

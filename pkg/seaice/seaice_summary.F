@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.82 2015/10/07 12:35:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.83 2015/12/22 17:00:10 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -145,6 +145,8 @@ C--  Seaice-Dynamics parameters
      & 'SEAICE_strength   =', ' /* sea-ice strength Pstar */')
       CALL WRITE_0D_RL( SEAICE_cStar   ,INDEX_NONE,
      & 'SEAICE_cStar      =', ' /* sea-ice strength parameter cStar */')
+      CALL WRITE_0D_RL( SEAICEpressReplFac,INDEX_NONE,
+     & 'SEAICEpressReplFac=', ' /* press. replacement method factor */')
       CALL WRITE_0D_RL( SEAICE_tensilFac   ,INDEX_NONE,
      & 'SEAICE_tensilFac  =', ' /* sea-ice tensile strength factor */')
       CALL WRITE_0D_RL( SEAICE_tensilDepth ,INDEX_NONE,

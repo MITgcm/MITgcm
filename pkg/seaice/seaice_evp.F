@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.66 2015/12/16 14:00:06 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.67 2015/12/22 17:00:10 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -472,7 +472,8 @@ CML            deltaZreg  = SQRT(deltaSq + deltaMinSq)
             deltaZreg   = MAX(deltaZ(I,J),SEAICE_deltaMin)
 #endif /* SEAICE_DELTA_SMOOTHREG */
 C     modify pressure
-            pressZ      = (deltaZ(I,J)/deltaZreg) * sumNorm
+            pressZ      = sumNorm * ( ( 1. _d 0 - SEAICEpressReplFac )
+     &           + (deltaZ(I,J)/deltaZreg) * SEAICEpressReplFac )
      &         * ( PRESS0(I,J  ,bi,bj) + PRESS0(I-1,J  ,bi,bj)
      &           + PRESS0(I,J-1,bi,bj) + PRESS0(I-1,J-1,bi,bj) )
             zetaZ(I,J,bi,bj) = HALF/deltaZreg * pressZ
@@ -524,7 +525,9 @@ C     masked by boundaries/land points
 C     recompute pressure
           DO j=0,sNy+1
            DO i=0,sNx+1
-            pressC(I,J) = TWO*zetaC(I,J)*deltaC(I,J,bi,bj)
+            pressC(I,J) = press0(I,J,bi,bj)
+     &           * ( 1. _d 0 - SEAICEpressReplFac )
+     &           +TWO*zetaC(I,J)*deltaC(I,J,bi,bj)*SEAICEpressReplFac
      &           - 2. _d 0 * tensileStrength(I,J,bi,bj)
            ENDDO
           ENDDO

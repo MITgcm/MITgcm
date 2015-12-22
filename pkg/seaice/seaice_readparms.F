@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.167 2015/11/17 16:11:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.168 2015/12/22 17:00:10 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -134,7 +134,7 @@ C--   SEAICE parameters
      & SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
      & SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
      & SEAICE_strength, SEAICE_cStar, SEAICE_eccen,
-     & SEAICE_tensilFac, SEAICE_tensilDepth, 
+     & SEAICEpressReplFac, SEAICE_tensilFac, SEAICE_tensilDepth, 
      & SEAICE_lhFusion, SEAICE_lhEvap, SEAICE_dalton,
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      & SEAICE_salinity, SIsalFRAC, SIsal0,
@@ -363,6 +363,7 @@ C        c1=1.5/N, c2=42*c1, c3=3.3
 #endif /* SEAICE_EXTERNAL_FLUXES */
       SEAICE_strength    = 2.75   _d +04
       SEAICE_cStar       = 20.    _d 0
+      SEAICEpressReplFac = 1.     _d 0
       SEAICE_eccen       = 2.     _d 0
       SEAICE_tensilFac   = 0.     _d 0
       SEAICE_tensilDepth = 0.     _d 0
