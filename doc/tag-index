@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2215 2015/12/21 20:07:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2216 2015/12/22 17:01:15 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: add new parameter SEAICEpressReplFac to choose between
+  pressure replacement method (=1., default) or original Hibler (1979) (=0.)
+  value can be from domain [0,1] to average between the two methods
 o pkg/atm_phys:
   - allow to provide 2-d map of albedo and mixed-layer depth from files (but
     hold fixed in time).
