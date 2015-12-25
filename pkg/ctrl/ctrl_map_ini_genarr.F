@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.22 2015/10/29 17:03:38 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.23 2015/12/25 15:24:51 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -231,8 +231,12 @@ c--   Now, read the control vector.
       call mdsreadfield(xx_genarr2d_weight(iarr),ctrlprec,'RL',1,
      &     wgenarr2d(1-Olx,1-Oly,1,1,iarr),1,mythid)
 
+#ifdef ALLOW_AUTODIFF
       call active_read_xy( fnamegenIn, xx_gen, 1, doglobalread,
      & ladinit, optimcycle, mythid, xx_genarr2d_dummy(iarr) )
+#else
+      CALL READ_REC_XY_RL( fnamegenIn, xx_gen, 1, 1, myThid)
+#endif
 
 #ifdef ALLOW_SMOOTH
       IF (useSMOOTH) THEN
@@ -369,8 +373,12 @@ c--   Now, read the control vector.
       call mdsreadfield(xx_genarr3d_weight(iarr),ctrlprec,'RL',nR,
      &     wgenarr3d(1-Olx,1-Oly,1,1,1,iarr),1,mythid)
 
+#ifdef ALLOW_AUTODIFF
       call active_read_xyz( fnamegenIn, xx_gen, 1, doglobalread,
      & ladinit, optimcycle, mythid, xx_genarr3d_dummy(iarr) )
+#else
+      CALL READ_REC_XYZ_RL( fnamegenIn, xx_gen, 1, 1, myThid)
+#endif
 
 #ifdef ALLOW_SMOOTH
       IF (useSMOOTH) THEN

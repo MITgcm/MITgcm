@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.68 2015/10/29 17:03:38 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.69 2015/12/25 15:24:51 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -120,7 +120,11 @@ c
          enddo
       enddo
 
+#ifdef ALLOW_AUTODIFF
       call active_write_xyz( 'wunit', loctmp3d, 1, 0, mythid, dummy)
+#else
+      CALL WRITE_REC_XYZ_RL( 'wunit', loctmp3d, 1, 1, myThid )
+#endif
 
       _BARRIER
 
