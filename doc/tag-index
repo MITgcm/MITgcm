@@ -1,12 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2216 2015/12/22 17:01:15 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2217 2015/12/25 00:55:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic:
+  - fix bug (added on 2014/08/30) in dic_atmos.F for the case dic_int1= 2 or 3.
 o pkg/seaice: add new parameter SEAICEpressReplFac to choose between
-  pressure replacement method (=1., default) or original Hibler (1979) (=0.)
-  value can be from domain [0,1] to average between the two methods
+    pressure replacement method (=1., default) or original Hibler (1979) (=0.)
+    value can be from domain [0,1] to average between the two methods
 o pkg/atm_phys:
   - allow to provide 2-d map of albedo and mixed-layer depth from files (but
     hold fixed in time).
