@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.12 2015/11/19 20:32:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.13 2015/12/25 15:32:38 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -285,9 +285,11 @@ c now summing
        enddo
       enddo
 
+      if (gencost_barfile(kgen)(1:9).EQ.'m_boxmean') then
       CALL GLOBAL_SUM_TILE_RL( areavolTile, areavolGlob, myThid )
       CALL ecco_div( gencost_storefld(1-OLx,1-OLy,1,1,kgen),
      &     1, areavolGlob, myThid )
+      endif
 
       enddo
 

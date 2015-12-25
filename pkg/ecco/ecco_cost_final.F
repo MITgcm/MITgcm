@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.81 2015/11/24 21:26:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.82 2015/12/25 15:32:38 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -497,15 +497,6 @@ c--   Sum up all contributions.
 # ifdef ECCO_CTRL_DEPRECATED
      &         + mult_ageos   * objf_ageos(bi,bj)
 # endif
-#endif
-#ifdef ALLOW_PROFILES
-      do num_file=1,NFILESPROFMAX
-       do num_var=1,NVARMAX
-          tile_fc(bi,bj) = tile_fc(bi,bj)
-     &            + mult_profiles(num_file,num_var)
-     &            *objf_profiles(num_file,num_var,bi,bj)
-       enddo
-      enddo
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST

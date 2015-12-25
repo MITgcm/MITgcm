@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.13 2015/10/27 02:37:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.14 2015/12/25 15:32:38 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -290,12 +290,14 @@ c ----------------------------------------
      &     1,obs_sst,irec,1,mythid)
 #endif
 
-         call smooth_hetero2d(anom_sst,maskc,
+         if ( useSMOOTH )
+     &     call smooth_hetero2d(anom_sst,maskc,
      &     gencost_scalefile(kgen_lsc),
      &     gencost_smooth2Ddiffnbt(kgen_lsc),mythid)
 
 #ifdef ALLOW_GENCOST_SSTV4_OUTPUT
-         call smooth_hetero2d(obs_sst,maskc,
+         if ( useSMOOTH )
+     &     call smooth_hetero2d(obs_sst,maskc,
      &     gencost_scalefile(kgen_lsc),
      &     gencost_smooth2Ddiffnbt(kgen_lsc),mythid)
 
