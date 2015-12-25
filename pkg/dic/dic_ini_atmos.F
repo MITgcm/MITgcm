@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_atmos.F,v 1.2 2014/09/05 18:27:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_atmos.F,v 1.3 2015/12/25 00:48:45 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -39,12 +39,6 @@ C  myThid             :: my Thread Id number
 
 #ifdef ALLOW_DIC
 
-#ifdef USE_ATMOSCO2
-C if coupled to atmsopheric model, use the
-C CO2 value passed from the coupler
-
-#else /* USE_ATMOSCO2 */
-
 C !FUNCTIONS:       ====================================================
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -55,9 +49,7 @@ C   total_atmos_moles :: atmosphere total gas content (should be parameter)
       INTEGER bi, bj, i,j,k
       INTEGER ntim
 
-      _RL tile_flux  (nSx,nSy)
       _RL tile_carbon(nSx,nSy)
-      _RL total_flux
       _RL total_carbon
 
 C for carbon budget ouput
@@ -112,15 +104,7 @@ C for 278ppmv we need total_atmos_carbon=4.9206e+16
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         tile_flux(bi,bj)   = 0.
          tile_carbon(bi,bj) = 0.
-         DO j=1,sNy
-           DO i=1,sNx
-             tile_flux(bi,bj) = tile_flux(bi,bj)
-     &                        + FluxCO2(i,j,bi,bj)*rA(i,j,bi,bj)
-     &                         *maskC(i,j,1,bi,bj)*dTtracerLev(1)
-           ENDDO
-         ENDDO
          DO k=1,Nr
           DO j=1,sNy
            DO i=1,sNx
@@ -137,7 +121,6 @@ C for 278ppmv we need total_atmos_carbon=4.9206e+16
         ENDDO
        ENDDO
 
-       CALL GLOBAL_SUM_TILE_RL( tile_flux,   total_flux,   myThid )
        CALL GLOBAL_SUM_TILE_RL( tile_carbon, total_carbon, myThid )
 
 C use dic_pCO2 as initial atmospheric pCO2 (not restart case):
@@ -177,7 +160,7 @@ C print out budget:
         WRITE(ioUnit,*) 'QQ ocean C, current, old, diff',
      &         total_ocean_carbon, total_ocean_carbon_old, carbon_diff
         WRITE(ioUnit,*) 'QQ air-sea flux, addition diff',
-     &                     total_flux, carbon_diff-total_flux
+     &                     carbon_diff, carbon_diff
 
        _END_MASTER(myThid)
        _BARRIER
@@ -188,7 +171,7 @@ C print out budget:
 C end if dic_int1 = 0,1,2,or 3
       ENDIF
 
-C--   Set AtmospCO2 for next iteration:
+C--   Set initial AtmospCO2:
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
@@ -198,8 +181,6 @@ C--   Set AtmospCO2 for next iteration:
          ENDDO
        ENDDO
       ENDDO
-
-#endif /* ndef USE_ATMOSCO2 */
 
 #endif /* ALLOW_DIC */
 
