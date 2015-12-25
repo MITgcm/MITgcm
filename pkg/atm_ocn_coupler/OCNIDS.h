@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/OCNIDS.h,v 1.4 2015/11/12 00:43:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/OCNIDS.h,v 1.5 2015/12/25 16:39:51 jmc Exp $
 C $Name:  $
 
   These lines are here to deliberately cause a compile-time error.
@@ -74,6 +74,3 @@ C--   fields sent from ATM to OCN:
       PARAMETER( ocnWindSpdName      = 'OCN WindSpd'    )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C     Pass carbon/DIC variables only if flag set below
-      LOGICAL ocnCpl_exchange_DIC
-      PARAMETER( ocnCpl_exchange_DIC = .FALSE.)
