@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.15 2014/10/20 03:13:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.16 2015/12/25 15:28:29 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -222,7 +222,7 @@ C--   infer wind field from wind-speed & wind-stress direction
         DO j = 1,sNy
          DO i = 1,sNx
            do iarr = 1, maxCtrlTim2D
-           if (xx_gentim2d_file(iarr).EQ.'xxg_wspeed')
+           if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_wspeed')
      &       wspeed(i,j,bi,bj)=wspeed(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
            enddo
