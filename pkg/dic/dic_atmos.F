@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.17 2014/08/30 00:48:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.18 2015/12/25 00:39:37 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -189,7 +189,7 @@ C if end of forcing cycle, find total change in ocean carbon
       ENDIF
 
 #ifndef ALLOW_AUTODIFF
-      IF ( dic_int1.EQ.0 .OR. dic_int1.EQ.1 ) THEN
+      IF ( dic_int1.EQ.2 .OR. dic_int1.EQ.3 ) THEN
 #endif
 C--    Set AtmospCO2 for next iteration:
        DO bj=myByLo(myThid),myByHi(myThid)
