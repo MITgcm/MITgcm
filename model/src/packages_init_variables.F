@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.98 2014/11/02 21:22:00 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.99 2015/12/25 15:19:30 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -475,7 +475,9 @@ CADJ STORE diffkr = tapelev_init, key = 1
 
 C--   Initialise pkg/smooth
 #ifdef ALLOW_SMOOTH
-      CALL SMOOTH_INIT_VARIA(myThid)
+      IF (useSMOOTH) THEN
+        CALL SMOOTH_INIT_VARIA(myThid)
+      ENDIF
 #endif /* ALLOW_SMOOTH */
 
 C--   Initialise pkg/profiles

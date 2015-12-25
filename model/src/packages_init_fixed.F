@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.86 2015/03/07 11:33:48 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.87 2015/12/25 15:19:30 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -351,10 +351,12 @@ C--   in order to provide the weight files
 #endif
 
 #ifdef ALLOW_SMOOTH
+      IF (useSMOOTH) THEN
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('SMOOTH_INIT_FIXED',myThid)
 # endif
-      CALL SMOOTH_INIT_FIXED(myThid)
+        CALL SMOOTH_INIT_FIXED(myThid)
+      ENDIF
 #endif /* ALLOW_SMOOTH */
 
 #ifdef ALLOW_ECCO
