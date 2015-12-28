@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_init_varia.F,v 1.1 2012/07/04 20:29:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_init_varia.F,v 1.2 2015/12/28 17:00:13 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: AUTODIFF_INIT_VARIA
@@ -58,6 +61,7 @@ C-      3D arrays
         ENDDO
 #endif
 
+#if (defined (ALLOW_AUTODIFF_INIT_OLD) && defined (ECCO_CTRL_DEPRECATED))
 C-      2D arrays
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
@@ -71,6 +75,7 @@ cph       hDivFlow(i,j,bi,bj) = 0. _d 0
 #endif
          ENDDO
         ENDDO
+#endif
 
        ENDDO
       ENDDO
