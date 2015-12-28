@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/ECCO_CPPOPTIONS.h,v 1.11 2015/07/22 20:58:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/ECCO_CPPOPTIONS.h,v 1.12 2015/12/28 17:03:26 gforget Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -18,6 +18,9 @@ C ********************************************************************
 
 C allow use of legacy ecco/ctrl codes
 #define ECCO_CTRL_DEPRECATED
+
+C let autodiff_init_varia reset variables to 0
+#define ALLOW_AUTODIFF_INIT_OLD
 
 C o Include/exclude code in order to be able to automatically
 C   differentiate the MITgcmUV by using the Tangent Linear and
