@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.35 2014/09/09 22:34:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.36 2015/12/29 14:32:40 gforget Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -103,7 +103,7 @@ CEOP
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 #ifdef GMREDI_WITH_STABLE_ADJOINT
-      _RL slopeTmpSpec,slopeMaxSpec
+      _RL slopeSqTmp,slopeSqMax
 #endif
       _RL dSigmMod(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL SlopeMod(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -590,19 +590,20 @@ C-      Large, Danabasoglu and Doney, JPO 1997
 c special choice for adjoint/optimization of parameters
 c (~ strong clipping, reducing non linearity of kw=f(K))
 
-        slopeMaxSpec=2. _d -3
+        slopeSqMax=( 2. _d -3 )**2
 
 CADJ STORE SlopeX(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 CADJ STORE SlopeY(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
-        slopeTmpSpec=sqrt( SlopeX(i,j)*SlopeX(i,j)
-     &              +SlopeY(i,j)*SlopeY(i,j) )
-       IF ( slopeTmpSpec .GT. slopeMaxSpec ) then
-        SlopeX(i,j)=SlopeX(i,j)*slopeMaxSpec/slopeTmpSpec
-        SlopeY(i,j)=SlopeY(i,j)*slopeMaxSpec/slopeTmpSpec
-       ENDIF
+          slopeSqTmp=SlopeX(i,j)*SlopeX(i,j)
+     &            +SlopeY(i,j)*SlopeY(i,j)
+        
+          IF ( slopeSqTmp .GT. slopeSqMax ) then
+           SlopeX(i,j)=SlopeX(i,j)*sqrt(slopeSqMax/slopeSqTmp)
+           SlopeY(i,j)=SlopeY(i,j)*sqrt(slopeSqMax/slopeSqTmp)
+          ENDIF
           SlopeSqr(i,j) = SlopeX(i,j)*SlopeX(i,j)
      &                   +SlopeY(i,j)*SlopeY(i,j)
           taperFct(i,j) = 1. _d 0
