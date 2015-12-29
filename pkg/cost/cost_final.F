@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.35 2015/12/25 15:30:15 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.36 2015/12/29 14:30:32 gforget Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
@@ -160,6 +160,7 @@ c--   Sum up all contributions.
 #endif
 
 #ifdef ALLOW_PROFILES
+      if (.NOT.useECCO) then
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
           tile_fc(bi,bj) = tile_fc(bi,bj)
@@ -167,6 +168,7 @@ c--   Sum up all contributions.
      &            *objf_profiles(num_file,num_var,bi,bj)
        enddo
       enddo
+      endif
 #endif
 
          loc_fc = loc_fc + tile_fc(bi,bj)
