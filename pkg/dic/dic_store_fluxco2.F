@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_store_fluxco2.F,v 1.3 2015/11/12 01:00:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_store_fluxco2.F,v 1.4 2015/12/31 21:40:07 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -25,9 +25,8 @@ C     == DIC variables
 #include "DIC_VARS.h"
 #ifdef COMPONENT_MODULE
 C     == Global variables for coupling interface ==
-#include "CPL_PARAMS.h"
-#include "OCNCPL.h"
-#include "OCNIDS.h"
+# include "CPL_PARAMS.h"
+# include "OCNCPL.h"
 #endif
 
 C     == Routine arguments ==

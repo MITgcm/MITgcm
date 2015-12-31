@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_register.F,v 1.5 2015/11/12 00:53:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_register.F,v 1.6 2015/12/31 21:41:47 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -24,7 +24,6 @@ C !USES:
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "OCNIDS.h"
 #ifdef ALLOW_EXCH2
 # include "W2_EXCH2_SIZE.h"
 # include "W2_EXCH2_TOPOLOGY.h"
