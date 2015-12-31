@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_register.F,v 1.5 2015/11/12 01:01:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_register.F,v 1.6 2015/12/31 21:37:34 jmc Exp $
 C $Name:  $
 
 #include "ATM_CPL_OPTIONS.h"
@@ -24,7 +24,6 @@ C !USES:
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "ATMIDS.h"
 #ifdef ALLOW_EXCH2
 # include "W2_EXCH2_SIZE.h"
 # include "W2_EXCH2_TOPOLOGY.h"
