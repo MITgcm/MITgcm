@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_write_pickup.F,v 1.12 2014/08/30 00:56:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_write_pickup.F,v 1.13 2016/01/02 15:01:33 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -63,14 +63,13 @@ c     IF ( DIC_pickup_write_mdsio ) THEN
         IF ( dic_int1.EQ.3 ) THEN
           WRITE(fn,'(A,A)') 'pickup_dic_co2atm.',suff
           ioUnit = 0
-c#ifdef ALLOW_OPENAD
-C-  keep it (commented out) in case these 2 vars become again active
-c         tmpFld(1) = total_atmos_carbon%v
-c         tmpFld(2) = atpco2%v
-c#else /* ALLOW_OPENAD */
+#ifdef ALLOW_OPENAD
+          tmpFld(1) = total_atmos_carbon%v
+          tmpFld(2) = atpco2%v
+#else /* ALLOW_OPENAD */
           tmpFld(1) = total_atmos_carbon
           tmpFld(2) = atpco2
-c#endif /* ALLOW_OPENAD */
+#endif /* ALLOW_OPENAD */
 #ifdef ALLOW_MDSIO
           CALL MDS_WRITEVEC_LOC(
      I                         fn, prec, ioUnit,
