@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.18 2015/12/25 00:39:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.19 2016/01/02 02:57:15 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -107,6 +107,13 @@ C for 278ppmv we need total_atmos_carbon=4.9206e+16
         DO bi=myBxLo(myThid),myBxHi(myThid)
          tile_flux(bi,bj)   = 0.
          tile_carbon(bi,bj) = 0.
+         DO j=1,sNy
+           DO i=1,sNx
+             tile_flux(bi,bj) = tile_flux(bi,bj)
+     &                        + fluxCO2(i,j,bi,bj)*rA(i,j,bi,bj)
+     &                         *maskC(i,j,1,bi,bj)*dTtracerLev(1)
+           ENDDO
+         ENDDO
          DO k=1,Nr
           DO j=1,sNy
            DO i=1,sNx
