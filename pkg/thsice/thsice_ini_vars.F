@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.22 2013/05/02 20:03:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.23 2016/01/02 00:53:30 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -108,6 +108,10 @@ C         and this mask is used in thsice_advdiff and if coupled
       adjustFrW = 0. _d 0
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_OCN_COMPON_INTERF
+      IF ( useCoupler .AND. thSIce_skipThermo ) RETURN
+#endif /* ALLOW_OCN_COMPON_INTERF */
 
       IF ( startIceModel.LE.0 .AND.
      &     ( nIter0.NE.0  .OR. pickupSuff.NE.' ' )
