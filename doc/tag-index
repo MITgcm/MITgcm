@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2218 2015/12/25 04:40:29 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2219 2016/01/02 02:58:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic:
+  - fix an other bug (also from 2014/08/30) in dic_atmos.F, in dic_int1=3 code.
+o pkg/thsice:
+  - when coupled to ATM (useCoupler) with thSIce_skipThermo=T, skip reading
+    and writing of thsice pickup files.
+o pkg/atm_compon_interf:
+  - move all field individual export-call out of cpl_export_import_data.F
+    into new S/R ATM_EXPORT_FIELDS
 o pkg/atm_compon_interf:
   - store state variables (for now, only thSIce fields) just before beeing
     exported (in cpl_export_import_data.F, like on ocean side) instead of from
