@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_init_fixed.F,v 1.5 2015/11/12 00:53:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_init_fixed.F,v 1.6 2016/01/06 00:36:34 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -111,6 +111,12 @@ CEOP
 
       ENDIF
 #endif /* ALLOW_MNC */
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL CPL_DIAGNOSTICS_INIT( myThid )
+      ENDIF
+#endif
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_init_fixed.F,v 1.3 2015/11/12 01:01:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_init_fixed.F,v 1.4 2016/01/06 00:36:02 jmc Exp $
 C $Name:  $
 
 #include "ATM_CPL_OPTIONS.h"
@@ -27,6 +27,12 @@ CEOP
 C      IF (useMNC) THEN
 C      ENDIF
 #endif /* ALLOW_MNC */
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL CPL_DIAGNOSTICS_INIT( myThid )
+      ENDIF
+#endif
 
       RETURN
       END
