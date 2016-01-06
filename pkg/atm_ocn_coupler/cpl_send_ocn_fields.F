@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_send_ocn_fields.F,v 1.6 2015/11/12 00:43:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_send_ocn_fields.F,v 1.7 2016/01/06 00:32:11 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: CPL_SEND_OCN_FIELDS
 C     !INTERFACE:
-      SUBROUTINE CPL_SEND_OCN_FIELDS
+      SUBROUTINE CPL_SEND_OCN_FIELDS( msgUnit, iter )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -30,9 +30,12 @@ C     == Global variables ==
 #include "OCNIDS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
+C     msgUnit   :: log-file I/O unit
+C     iter      :: current iteration number
+      INTEGER msgUnit, iter
 
 C     !LOCAL VARIABLES:
-
+      _RL tmpFld(Nx_ocn,Ny_ocn)
 CEOP
 
 C--   Map Sea Level atmos. pressure onto ocean grid
@@ -47,11 +50,14 @@ C--   Map heatflux onto ocean grid
       CALL ATM_TO_OCN_MAPXYR8(
      I         Nx_atm, Ny_atm, HeatFlux_atm, Nx_ocn, Ny_ocn,
      O                         HeatFlux_ocn )
+      IF ( cpl_exchange_RunOff.GE.2 ) THEN
 C     Map Energy flux carried by RunOff onto ocean grid and substract it
 C       from previous (direct) FWFlux => total Heat-Flux = Qnet - EnRunOff
-      CALL ATM_TO_OCN_MAPRUNOFF(
-     I     ROEnFx_atm,
-     U     HeatFlux_ocn)
+        CALL ATM_TO_OCN_MAPRUNOFF(
+     I           ROEnFx_atm,
+     O           tmpFld,
+     U           HeatFlux_ocn )
+      ENDIF
 C     Send (net) heatflux. to ocean component
       CALL COUPSEND_R8TILES( ocnCompName, ocnHeatFluxName,
      I                       Nx_ocn, Ny_ocn, HeatFlux_ocn )
@@ -84,33 +90,53 @@ C--   Map atmos. fresh water flux onto ocean grid : Evap - Precip
       CALL ATM_TO_OCN_MAPXYR8(
      I         Nx_atm, Ny_atm, EvMPr_atm, Nx_ocn, Ny_ocn,
      O                         FWFlux_ocn )
+      IF ( cpl_exchange_RunOff.GE.2 ) THEN
 C     Map atmos. runOff from land onto ocean grid and substract it
 C       from previous (direct) FWFlux => total FWFlux = E-P-R
-      CALL ATM_TO_OCN_MAPRUNOFF(
-     I     RunOff_atm,
-     U     FWFlux_ocn)
+        CALL ATM_TO_OCN_MAPRUNOFF(
+     I           RunOff_atm,
+     O           RunOff_ocn,
+     U           FWFlux_ocn )
+      ENDIF
 C     Send E-P-R to ocean component
       CALL COUPSEND_R8TILES( ocnCompName, ocnFWFluxName,
      I                       Nx_ocn, Ny_ocn, FWFlux_ocn )
 
+      IF ( MOD(cpl_exchange1W_sIce,2).EQ.1 ) THEN
 C--   Map salt flux from sea-ice compon. onto ocean grid
-      CALL ATM_TO_OCN_MAPXYR8(
-     I         Nx_atm, Ny_atm, SaltFlx_atm, Nx_ocn, Ny_ocn,
+        CALL ATM_TO_OCN_MAPXYR8(
+     I           Nx_atm, Ny_atm, SaltFlx_atm, Nx_ocn, Ny_ocn,
      O                         SaltFlx_ocn )
 C     Send salt flux to ocean component
-      CALL COUPSEND_R8TILES( ocnCompName, ocnSaltFxName,
-     I                       Nx_ocn, Ny_ocn, SaltFlx_ocn )
+        CALL COUPSEND_R8TILES( ocnCompName, ocnSaltFxName,
+     I                         Nx_ocn, Ny_ocn, SaltFlx_ocn )
 
 C--   Map sea-ice mass onto ocean grid
-      CALL ATM_TO_OCN_MAPXYR8(
-     I         Nx_atm, Ny_atm, sIceMass_atm, Nx_ocn, Ny_ocn,
-     O                         sIceMass_ocn )
+        CALL ATM_TO_OCN_MAPXYR8(
+     I           Nx_atm, Ny_atm, sIceMass_atm, Nx_ocn, Ny_ocn,
+     O                           sIceMass_ocn )
 C     Send sea-ice mass to ocean component
-      CALL COUPSEND_R8TILES( ocnCompName, ocnSIceMassName,
-     I                       Nx_ocn, Ny_ocn, sIceMass_ocn )
+        CALL COUPSEND_R8TILES( ocnCompName, ocnSIceMassName,
+     I                         Nx_ocn, Ny_ocn, sIceMass_ocn )
+      ENDIF
+
+      IF ( MOD(cpl_exchange_SaltPl,2).EQ.1 ) THEN
+C--   Map Salt-Plume flux onto ocean grid
+        CALL ATM_TO_OCN_MAPXYR8(
+     I           Nx_atm, Ny_atm, saltPlmFlx_atm, Nx_ocn, Ny_ocn,
+     O                           saltPlmFlx_ocn )
+C     Send Salt-Plume flux to ocean component
+        CALL COUPSEND_R8TILES( ocnCompName, ocnSaltPlmFlxName,
+     I                         Nx_ocn, Ny_ocn, saltPlmFlx_ocn  )
+      ENDIF
+
+      IF ( MOD(cpl_exchange_RunOff,2).EQ.1 ) THEN
+C     Send Run-Off flux to ocean component
+        CALL COUPSEND_R8TILES( ocnCompName, ocnRunOffName,
+     I                         Nx_ocn, Ny_ocn, RunOff_ocn  )
+      ENDIF
 
       IF ( MOD(cpl_exchange_DIC,2).EQ.1 ) THEN
-
 C--   Map atmos CO2 onto ocean grid
         CALL ATM_TO_OCN_MAPXYR8(
      I           Nx_atm, Ny_atm, aCO2_atm, Nx_ocn, Ny_ocn,
@@ -119,22 +145,64 @@ C     Send atmos CO2 to ocean component
         CALL COUPSEND_R8TILES( ocnCompName, ocnAirCO2Name,
      I                         Nx_ocn, Ny_ocn, aCO2_ocn )
 
-C--   Map surf wind speed onto ocean grid
+C--   Map surface wind speed onto ocean grid
         CALL ATM_TO_OCN_MAPXYR8(
      I           Nx_atm, Ny_atm, wSpeed_atm, Nx_ocn, Ny_ocn,
      O                           wSpeed_ocn )
 C     Send surface windspeed to ocean component
         CALL COUPSEND_R8TILES( ocnCompName, ocnWindSpdName,
      I                         Nx_ocn, Ny_ocn, wSpeed_ocn )
+      ENDIF
 
-C--   Map seaice fraction from sea-ice compon. onto ocean grid
+      IF ( ( MOD(cpl_exchange1W_sIce,2).EQ.1
+     &     .AND.MOD(cpl_exchange_DIC,2).EQ.1 )
+     &  .OR. MOD(cpl_exchange2W_sIce,2).EQ.1 ) THEN
+C--   Map seaice fraction from atmos. compon. onto ocean grid
+       IF ( ( cpl_exchange1W_sIce.GE.2
+     &      .AND.cpl_exchange_DIC.GE.2 )
+     &   .OR. cpl_exchange2W_sIce.GE.2 ) THEN
         CALL ATM_TO_OCN_MAPXYR8(
      I           Nx_atm, Ny_atm, SIceFrac_atm, Nx_ocn, Ny_ocn,
      O                           SIceFrac_ocn )
+       ENDIF
 C     Send sea-ice fraction to ocean component
         CALL COUPSEND_R8TILES( ocnCompName, ocnSIceFracName,
      I                         Nx_ocn, Ny_ocn, SIceFrac_ocn )
+      ENDIF
 
+      IF ( cpl_exchange2W_sIce.EQ.3 ) THEN
+C--   Map other pkg/thsice fields onto ocean grid:
+C     Map seaice thickness
+        CALL ATM_TO_OCN_MAPXYR8(
+     I           Nx_atm, Ny_atm, sIceThick_atm, Nx_ocn, Ny_ocn,
+     O                           sIceThick_ocn )
+C     Map snow thickness
+        CALL ATM_TO_OCN_MAPXYR8(
+     I           Nx_atm, Ny_atm, sIceSnowH_atm, Nx_ocn, Ny_ocn,
+     O                           sIceSnowH_ocn )
+C     Map seaice enthalpy (layer 1)
+        CALL ATM_TO_OCN_MAPXYR8(
+     I           Nx_atm, Ny_atm, sIceQ1_atm, Nx_ocn, Ny_ocn,
+     O                           sIceQ1_ocn )
+C     Map seaice enthalpy (layer 2)
+        CALL ATM_TO_OCN_MAPXYR8(
+     I           Nx_atm, Ny_atm, sIceQ2_atm, Nx_ocn, Ny_ocn,
+     O                           sIceQ2_ocn )
+      ENDIF
+      IF ( MOD(cpl_exchange2W_sIce,2).EQ.1 ) THEN
+C--   Map other pkg/thsice fields to ocean component:
+C     Send seaice thickness
+        CALL COUPSEND_R8TILES( ocnCompName, ocnSIceThickName,
+     I                         Nx_ocn, Ny_ocn, sIceThick_ocn )
+C     Send snow thickness
+        CALL COUPSEND_R8TILES( ocnCompName, ocnSIceSnowName,
+     I                         Nx_ocn, Ny_ocn, sIceSnowH_ocn )
+C     Send seaice enthalpy (layer 1)
+        CALL COUPSEND_R8TILES( ocnCompName, ocnSIceQ1Name,
+     I                         Nx_ocn, Ny_ocn, sIceQ1_ocn )
+C     Send seaice enthalpy (layer 2)
+        CALL COUPSEND_R8TILES( ocnCompName, ocnSIceQ2Name,
+     I                         Nx_ocn, Ny_ocn, sIceQ2_ocn )
       ENDIF
 
       RETURN

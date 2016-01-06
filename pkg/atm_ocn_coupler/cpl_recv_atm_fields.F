@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_recv_atm_fields.F,v 1.5 2015/11/12 00:43:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_recv_atm_fields.F,v 1.6 2016/01/06 00:32:11 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: CPL_RECV_ATM_FIELDS
 C     !INTERFACE:
-      SUBROUTINE CPL_RECV_ATM_FIELDS
+      SUBROUTINE CPL_RECV_ATM_FIELDS( msgUnit, iter )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -28,9 +28,11 @@ C     == Global variables ==
 #include "ATMIDS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
+C     msgUnit   :: log-file I/O unit
+C     iter      :: current iteration number
+      INTEGER msgUnit, iter
 
 C     !LOCAL VARIABLES:
-
 CEOP
 
 C-    Receive Sea Level atmos. pressure from atmos. component
@@ -63,28 +65,38 @@ C-    Receive fresh water flux (=Evap-Precip) from atmos. component
      I                       Nx_atm, Ny_atm,
      O                       EvMPr_atm )
 
+      IF ( cpl_exchange_RunOff.GE.2 ) THEN
 C-    Receive fresh water flux (=RunOff) from atmos. component
-      CALL COUPRECV_R8TILES( atmCompName, atmRunOffName,
-     I                       Nx_atm, Ny_atm,
-     O                       RunOff_atm )
+        CALL COUPRECV_R8TILES( atmCompName, atmRunOffName,
+     I                         Nx_atm, Ny_atm,
+     O                         RunOff_atm )
 
 C-    Receive Energy carried by RunOff from atmos. component
-      CALL COUPRECV_R8TILES( atmCompName, atmROEnFxName,
-     I                       Nx_atm, Ny_atm,
-     O                       ROEnFx_atm )
+        CALL COUPRECV_R8TILES( atmCompName, atmROEnFxName,
+     I                         Nx_atm, Ny_atm,
+     O                         ROEnFx_atm )
+      ENDIF
 
+      IF ( cpl_exchange1W_sIce.GE.2 ) THEN
 C-    Receive salt flux (<- sea-ice) from atmos. component
-      CALL COUPRECV_R8TILES( atmCompName, atmSaltFxName,
-     I                       Nx_atm, Ny_atm,
-     O                       SaltFlx_atm )
+        CALL COUPRECV_R8TILES( atmCompName, atmSaltFxName,
+     I                         Nx_atm, Ny_atm,
+     O                         SaltFlx_atm )
 
 C-    Receive sea-ice mass from atmos. component
-      CALL COUPRECV_R8TILES( atmCompName, atmSIceMassName,
-     I                       Nx_atm, Ny_atm,
-     O                       sIceMass_atm )
+        CALL COUPRECV_R8TILES( atmCompName, atmSIceMassName,
+     I                         Nx_atm, Ny_atm,
+     O                         sIceMass_atm )
+      ENDIF
+
+      IF ( cpl_exchange_SaltPl.GE.2 ) THEN
+C-    Receive Salt-Plume flux from atmos. component
+        CALL COUPRECV_R8TILES( atmCompName, atmSaltPlmFlxName,
+     I                         Nx_atm, Ny_atm,
+     O                         saltPlmFlx_atm )
+      ENDIF
 
       IF ( cpl_exchange_DIC.GE.2 ) THEN
-
 C-    Receive atmos CO2 from atmos. component
         CALL COUPRECV_R8TILES( atmCompName, atmAirCO2Name,
      I                         Nx_atm, Ny_atm,
@@ -94,12 +106,37 @@ C-    Receive surface wind speed from atmos. component
         CALL COUPRECV_R8TILES( atmCompName, atmWindSpdName,
      I                         Nx_atm, Ny_atm,
      O                         wSpeed_atm )
+      ENDIF
 
+      IF ( ( cpl_exchange1W_sIce.GE.2
+     &     .AND.cpl_exchange_DIC.GE.2 )
+     &  .OR. cpl_exchange2W_sIce.GE.2 ) THEN
 C-    Receive seaice fraction from atmos. component
         CALL COUPRECV_R8TILES( atmCompName, atmSIceFracName,
      I                         Nx_atm, Ny_atm,
      O                         sIceFrac_atm )
+      ENDIF
 
+      IF ( cpl_exchange2W_sIce.GE.2 ) THEN
+C-    Receive seaice thickness from atmos. component
+        CALL COUPRECV_R8TILES( atmCompName, atmSIceThickName,
+     I                         Nx_atm, Ny_atm,
+     O                         sIceThick_atm )
+
+C-    Receive snow thickness from atmos. component
+        CALL COUPRECV_R8TILES( atmCompName, atmSIceSnowName,
+     I                         Nx_atm, Ny_atm,
+     O                         sIceSnowH_atm )
+
+C-    Receive seaice enthalpy (layer 1) from atmos. component
+        CALL COUPRECV_R8TILES( atmCompName, atmSIceQ1Name,
+     I                         Nx_atm, Ny_atm,
+     O                         sIceQ1_atm )
+
+C-    Receive seaice enthalpy (layer 2) from atmos. component
+        CALL COUPRECV_R8TILES( atmCompName, atmSIceQ2Name,
+     I                         Nx_atm, Ny_atm,
+     O                         sIceQ2_atm )
       ENDIF
 
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/coupler.F,v 1.6 2015/11/12 20:03:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/coupler.F,v 1.7 2016/01/06 00:32:11 jmc Exp $
 C $Name:  $
 
 CBOP 0
@@ -53,25 +53,25 @@ C     Coordinate the transfer configuration information between components
 C-     Sequential coupling
 
 C       Receive ATM updated state
-        CALL CPL_RECV_ATM_FIELDS
+        CALL CPL_RECV_ATM_FIELDS( msgUnit, I )
 C       Send out ATM fields to OCN
-        CALL CPL_SEND_OCN_FIELDS
+        CALL CPL_SEND_OCN_FIELDS( msgUnit, I )
 
 C       Receive OCN updated state
-        CALL CPL_RECV_OCN_FIELDS
+        CALL CPL_RECV_OCN_FIELDS( msgUnit, I )
 C       Send out OCN fields to ATM
-        CALL CPL_SEND_ATM_FIELDS
+        CALL CPL_SEND_ATM_FIELDS( msgUnit, I )
 
        ELSE
 C-     Synchronous coupling
 
 C       Receive updated state
-        CALL CPL_RECV_OCN_FIELDS
-        CALL CPL_RECV_ATM_FIELDS
+        CALL CPL_RECV_OCN_FIELDS( msgUnit, I )
+        CALL CPL_RECV_ATM_FIELDS( msgUnit, I )
 
 C       Send out fields
-        CALL CPL_SEND_ATM_FIELDS
-        CALL CPL_SEND_OCN_FIELDS
+        CALL CPL_SEND_ATM_FIELDS( msgUnit, I )
+        CALL CPL_SEND_OCN_FIELDS( msgUnit, I )
 
        ENDIF
 
