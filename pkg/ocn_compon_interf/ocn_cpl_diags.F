@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_diags.F,v 1.5 2015/11/12 00:57:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_diags.F,v 1.6 2016/01/06 00:58:23 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -23,7 +23,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
-#include "OCNIDS.h"
 #include "OCNCPL.h"
 #include "CPL_TAVE.h"
 
@@ -81,16 +80,18 @@ C           OCN_CPL_DIAGS call) to do other diags than time-ave.
      &                   + DDTT * SSSocn2cpl(i,j,bi,bj)
             vSqtave(i,j,bi,bj)  = vSqtave(i,j,bi,bj)
      &                   + DDTT * vSqocn2cpl(i,j,bi,bj)
+#ifdef ALLOW_DIC
            IF ( ocn_cplExch_DIC ) THEN
+            iceftave(i,j,bi,bj)  = iceftave(i,j,bi,bj)
+     &                    + DDTT * sIceFrac_cpl(i,j,bi,bj)
             aCO2tave(i,j,bi,bj)  = aCO2tave(i,j,bi,bj)
      &                    + DDTT * airCO2(i,j,bi,bj)
             sWSpdtave(i,j,bi,bj) = sWSpdtave(i,j,bi,bj)
      &                    + DDTT * surfWSpeed(i,j,bi,bj)
-            iceftave(i,j,bi,bj)  = iceftave(i,j,bi,bj)
-     &                    + DDTT * fracIce(i,j,bi,bj)
             fCO2tave(i,j,bi,bj)  = fCO2tave(i,j,bi,bj)
      &                    + DDTT * fluxCO2cpl(i,j,bi,bj)
            ENDIF
+#endif /* ALLOW_DIC */
           ENDDO
          ENDDO
 

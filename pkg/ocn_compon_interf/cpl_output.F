@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_output.F,v 1.3 2015/11/12 00:57:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_output.F,v 1.4 2016/01/06 00:58:23 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -24,7 +24,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
-#include "OCNIDS.h"
 #include "OCNCPL.h"
 #include "CPL_TAVE.h"
 
@@ -75,12 +74,14 @@ C       Normalize by integrated time
           CALL TIMEAVE_NORMALIZE(SSTtave,CPL_timeAve,1,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZE(SSStave,CPL_timeAve,1,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZE(vSqtave,CPL_timeAve,1,bi,bj,myThid)
+#ifdef ALLOW_DIC
           IF ( ocn_cplExch_DIC ) THEN
            CALL TIMEAVE_NORMALIZE(aCO2tave, CPL_timeAve,1,bi,bj,myThid)
            CALL TIMEAVE_NORMALIZE(sWSpdtave,CPL_timeAve,1,bi,bj,myThid)
            CALL TIMEAVE_NORMALIZE(iceftave, CPL_timeAve,1,bi,bj,myThid)
            CALL TIMEAVE_NORMALIZE(fCO2tave, CPL_timeAve,1,bi,bj,myThid)
           ENDIF
+#endif /* ALLOW_DIC */
          ENDDO
         ENDDO
 
@@ -98,12 +99,14 @@ C       Normalize by integrated time
           CALL WRITE_REC_XY_RL(  fn, SSTtave  , 10, myIter, myThid )
           CALL WRITE_REC_XY_RL(  fn, SSStave  , 11, myIter, myThid )
           CALL WRITE_REC_XY_RL(  fn, vSqtave  , 12, myIter, myThid )
+#ifdef ALLOW_DIC
           IF ( ocn_cplExch_DIC ) THEN
            CALL WRITE_REC_XY_RL( fn, aCO2tave , 13, myIter, myThid )
            CALL WRITE_REC_XY_RL( fn, sWSpdtave, 14, myIter, myThid )
            CALL WRITE_REC_XY_RL( fn, iceftave , 15, myIter, myThid )
            CALL WRITE_REC_XY_RL( fn, fCO2tave , 16, myIter, myThid )
           ENDIF
+#endif /* ALLOW_DIC */
         ENDIF
 
 #ifdef ALLOW_MNC
@@ -141,6 +144,7 @@ C       Normalize by integrated time
      &         'SSStave',SSStave,myThid)
           CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'vSqtave',vSqtave,myThid)
+#ifdef ALLOW_DIC
           IF ( ocn_cplExch_DIC ) THEN
             CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'aCO2tave',aCO2tave,myThid)
@@ -151,6 +155,7 @@ C       Normalize by integrated time
             CALL MNC_CW_RL_W(pf,'cpl_tave',0,0,
      &         'fCO2tave',fCO2tave,myThid)
           ENDIF
+#endif /* ALLOW_DIC */
         ENDIF
 #endif /*  ALLOW_MNC  */
 
@@ -169,12 +174,14 @@ C       Reset diagnostic counters
             CALL TIMEAVE_RESET( SSTtave, 1, bi, bj, myThid )
             CALL TIMEAVE_RESET( SSStave, 1, bi, bj, myThid )
             CALL TIMEAVE_RESET( vSqtave, 1, bi, bj, myThid )
+#ifdef ALLOW_DIC
             IF ( ocn_cplExch_DIC ) THEN
               CALL TIMEAVE_RESET( aCO2tave , 1, bi, bj, myThid )
               CALL TIMEAVE_RESET( sWSpdtave, 1, bi, bj, myThid )
               CALL TIMEAVE_RESET( iceftave , 1, bi, bj, myThid )
               CALL TIMEAVE_RESET( fCO2tave , 1, bi, bj, myThid )
             ENDIF
+#endif /* ALLOW_DIC */
             CPL_timeAve(bi,bj) = 0.
           ENDDO
         ENDDO
