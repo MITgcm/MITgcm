@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_import_fields.F,v 1.4 2015/11/12 00:58:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_import_fields.F,v 1.5 2016/01/06 01:02:28 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP 0
 C !ROUTINE: OCN_IMPORT_FIELDS
 
 C !INTERFACE:
-      SUBROUTINE OCN_IMPORT_FIELDS( myThid )
+      SUBROUTINE OCN_IMPORT_FIELDS( myIter, myThid )
 
 C !DESCRIPTION:
 C     *==========================================================*
@@ -30,7 +30,9 @@ C     == Global variables ==
 
 C !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid :: Thread number for this instance of the routine
+C     myIter  :: Current timestep number.
+C     myThid  :: Thread number for this instance of the routine
+      INTEGER myIter
       INTEGER myThid
 CEOP
 
@@ -74,32 +76,71 @@ C-    Receive fresh water flux from coupling layer.
      I                       sNx, OLx, sNy, OLy, 1, nSx, nSy,
      O                       FWFlux )
 
+      IF ( ocn_cplExch1W_sIce ) THEN
 C-    Receive salt flux (sea-ice model) from coupling layer.
-      CALL COMPRECV_R8TILES( ocnSaltFxName,
+        CALL COMPRECV_R8TILES( ocnSaltFxName,
      I                       sNx, OLx, sNy, OLy, 1, nSx, nSy,
      O                       iceSaltFlx )
 
 C-    Receive sea-ice mass (sea-ice model) from coupling layer.
-      CALL COMPRECV_R8TILES( ocnSIceMassName,
+        CALL COMPRECV_R8TILES( ocnSIceMassName,
      I                       sNx, OLx, sNy, OLy, 1, nSx, nSy,
      O                       seaIceMass )
+      ENDIF
 
+#ifdef ALLOW_SALT_PLUME
+      IF ( ocn_cplExch_SaltPl ) THEN
+C-      Receive salt-plume flux (for pkg/salt_plume) from coupling layer.
+        CALL COMPRECV_R8TILES( ocnSaltPlmFlxName,
+     I                       sNx, OLx, sNy, OLy, 1, nSx, nSy,
+     O                       saltPlmFlx_cpl )
+      ENDIF
+#endif
+#ifdef ALLOW_DIC
+      IF ( ocn_cplExch_RunOff ) THEN
+C-      Receive Run-Off from coupling layer.
+        CALL COMPRECV_R8TILES( ocnRunOffName,
+     I                       sNx, OLx, sNy, OLy, 1, nSx, nSy,
+     O                       RunOff_cpl )
+      ENDIF
       IF ( ocn_cplExch_DIC ) THEN
 C-      Receive atmos CO2 level from coupling layer.
         CALL COMPRECV_R8TILES( ocnAirCO2Name,
      I                       sNx, OLx, sNy, OLy, 1, nSx, nSy,
      O                       airCO2 )
 
-C-      Receive ground-level windspeed from coupling layer.
+C-      Receive surface windspeed from coupling layer.
         CALL COMPRECV_R8TILES( ocnWindSpdName,
      I                       sNx, OLx, sNy, OLy, 1, nSx, nSy,
      O                       surfWSpeed )
-
+      ENDIF
+#endif /* ALLOW_DIC */
+#if (defined ALLOW_DIC) || (defined ALLOW_THSICE)
+      IF ( ( ocn_cplExch1W_sIce.AND.ocn_cplExch_DIC )
+     &  .OR. ocn_cplExch2W_sIce ) THEN
 C-      Receive seaice fraction from coupling layer.
         CALL COMPRECV_R8TILES( ocnSIceFracName,
      I                       sNx, OLx, sNy, OLy, 1, nSx, nSy,
-     O                       fracIce )
+     O                       sIceFrac_cpl )
       ENDIF
+#endif /* ALLOW_DIC or ALLOW_THSICE */
+#ifdef ALLOW_THSICE
+      IF ( ocn_cplExch2W_sIce ) THEN
+C-      Receive thSIce state-vars from coupling layer.
+        CALL COMPRECV_R8TILES( ocnSIceThickName,
+     I                       sNx, OLx, sNy, OLy, 1, nSx, nSy,
+     O                       sIceThick_cpl )
+        CALL COMPRECV_R8TILES( ocnSIceSnowName,
+     I                       sNx, OLx, sNy, OLy, 1, nSx, nSy,
+     O                       sIceSnowH_cpl )
+        CALL COMPRECV_R8TILES( ocnSIceQ1Name,
+     I                       sNx, OLx, sNy, OLy, 1, nSx, nSy,
+     O                       sIceQ1_cpl )
+        CALL COMPRECV_R8TILES( ocnSIceQ2Name,
+     I                       sNx, OLx, sNy, OLy, 1, nSx, nSy,
+     O                       sIceQ2_cpl )
+      ENDIF
+#endif /* ALLOW_THSICE */
 
       _END_MASTER( myThid )
       _BARRIER

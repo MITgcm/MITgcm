@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_read_pickup.F,v 1.9 2015/11/12 00:57:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_read_pickup.F,v 1.10 2016/01/06 01:02:28 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -24,11 +24,10 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
-#include "OCNIDS.h"
 #include "OCNCPL.h"
 #ifdef ALLOW_PTRACERS
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS_PARAMS.h"
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS_PARAMS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -67,18 +66,15 @@ c        CALL READ_REC_3D_RL( fn,prec,1,seaIceMass, 8,myIter,myThid )
 c        rec_ind=8
 c      ENDIF
 
+#ifdef ALLOW_DIC
        IF ( ocn_cplExch_DIC ) THEN
-c        CALL READ_REC_3D_RL( fn,prec,1,airCO2    , 9,myIter,myThid )
-c        CALL READ_REC_3D_RL( fn,prec,1,surfWSpeed,10,myIter,myThid )
-c        CALL READ_REC_3D_RL( fn,prec,1,fracIce   ,11,myIter,myThid )
-#ifdef ALLOW_PTRACERS
          IF (nIter0.GT.PTRACERS_Iter0) THEN
           rec_ind = rec_ind+1
           CALL READ_REC_3D_RL( fn, prec, 1,
      &                         fluxCO2cpl, rec_ind, myIter, myThid )
          ENDIF
-#endif
        ENDIF
+#endif /* ALLOW_DIC */
 
 C--   Fill in the halo region:
 c      IF ( .NOT. cpl_earlyExpImpCall ) THEN
@@ -90,12 +86,11 @@ c        _EXCH_XY_RL( FWFlux    , myThid )
 c        _EXCH_XY_RL( iceSaltFlx, myThid )
 c        _EXCH_XY_RL( seaIceMass, myThid )
 c      ENDIF
+#ifdef ALLOW_DIC
        IF ( ocn_cplExch_DIC ) THEN
-c        _EXCH_XY_RL( airCO2    , myThid )
-c        _EXCH_XY_RL( surfWSpeed, myThid )
-c        _EXCH_XY_RL( fracIce   , myThid )
          _EXCH_XY_RL( fluxCO2cpl, myThid )
        ENDIF
+#endif /* ALLOW_DIC */
 
 #endif /* COMPONENT_MODULE */
 

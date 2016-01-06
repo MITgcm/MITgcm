@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_write_pickup.F,v 1.8 2015/11/12 00:57:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_write_pickup.F,v 1.9 2016/01/06 01:02:28 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -27,7 +27,6 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
-#include "OCNIDS.h"
 #include "OCNCPL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -67,16 +66,13 @@ c       CALL WRITE_REC_3D_RL( fn,prec,1, seaIceMass, 8, myIter, myThid )
 c       rec_ind=8
 c     ENDIF
 
+#ifdef ALLOW_DIC
       IF ( ocn_cplExch_DIC ) THEN
-c       CALL WRITE_REC_3D_RL( fn,prec,1,
-c    &                     airCO2    , rec_ind+1, myIter, myThid )
-c       CALL WRITE_REC_3D_RL( fn,prec,1,
-c    &                     surfWSpeed, rec_ind+2, myIter, myThid )
-c       CALL WRITE_REC_3D_RL( fn,prec,1,
-c    &                     fracIce   , rec_ind+3, myIter, myThid )
-        CALL WRITE_REC_3D_RL( fn,prec,1,
-     &                     fluxCO2cpl, rec_ind+1, myIter, myThid )
+        rec_ind = rec_ind + 1
+        CALL WRITE_REC_3D_RL( fn, prec, 1,
+     &                        fluxCO2cpl, rec_ind, myIter, myThid )
       ENDIF
+#endif /* ALLOW_DIC */
 
 #endif /* COMPONENT_MODULE */
 

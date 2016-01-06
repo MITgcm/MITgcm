@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_export_fields.F,v 1.4 2015/11/12 00:57:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_export_fields.F,v 1.5 2016/01/06 01:02:28 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP 0
 C !ROUTINE: OCN_EXPORT_FIELDS
 
 C !INTERFACE:
-      SUBROUTINE OCN_EXPORT_FIELDS( myThid )
+      SUBROUTINE OCN_EXPORT_FIELDS( myIter, myThid )
 
 C !DESCRIPTION:
 C     *==========================================================*
@@ -30,7 +30,9 @@ C     == Global variables ==
 
 C !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid :: Thread number for this instance of the routine
+C     myIter  :: Current timestep number.
+C     myThid  :: Thread number for this instance of the routine
+      INTEGER myIter
       INTEGER myThid
 CEOP
 
@@ -62,11 +64,28 @@ C-    Send ocean surface velocity square to coupling layer
       CALL COMPSEND_R8TILES( ocnSSVsqName,
      I     sNx, OLx, sNy, OLy, 1, nSx, nSy, vSqocn2cpl )
 
+#ifdef ALLOW_DIC
       IF ( ocn_cplExch_DIC ) THEN
 C-    Send ocean CO2 flux to coupling layer
         CALL COMPSEND_R8TILES( ocnCO2FluxName,
      I     sNx, OLx, sNy, OLy, 1, nSx, nSy, fluxCO2cpl )
       ENDIF
+#endif /* ALLOW_DIC */
+#ifdef ALLOW_THSICE
+      IF ( ocn_cplExch2W_sIce ) THEN
+C-    Send thSIce state-vars to coupling layer
+        CALL COMPSEND_R8TILES( ocnSIceFracName,
+     I     sNx, OLx, sNy, OLy, 1, nSx, nSy, sIceFrac_cpl )
+        CALL COMPSEND_R8TILES( ocnSIceThickName,
+     I     sNx, OLx, sNy, OLy, 1, nSx, nSy, sIceThick_cpl )
+        CALL COMPSEND_R8TILES( ocnSIceSnowName,
+     I     sNx, OLx, sNy, OLy, 1, nSx, nSy, sIceSnowH_cpl )
+        CALL COMPSEND_R8TILES( ocnSIceQ1Name,
+     I     sNx, OLx, sNy, OLy, 1, nSx, nSy, sIceQ1_cpl )
+        CALL COMPSEND_R8TILES( ocnSIceQ2Name,
+     I     sNx, OLx, sNy, OLy, 1, nSx, nSy, sIceQ2_cpl )
+      ENDIF
+#endif /* ALLOW_THSICE */
 
       _END_MASTER( myThid )
       _BARRIER
