@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_init_ocn_vars.F,v 1.1 2015/10/26 13:11:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_init_ocn_vars.F,v 1.2 2016/01/06 00:28:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -50,9 +50,15 @@ CEOP
           FWFlux_ocn     (i,j) = 0. _d 0
           SaltFlx_ocn    (i,j) = 0. _d 0
           sIceMass_ocn   (i,j) = 0. _d 0
+          saltPlmFlx_ocn (i,j) = 0. _d 0
+          RunOff_ocn     (i,j) = 0. _d 0
           aCO2_ocn       (i,j) = 0. _d 0
           wSpeed_ocn     (i,j) = 0. _d 0
           sIceFrac_ocn   (i,j) = 0. _d 0
+          sIceThick_ocn  (i,j) = 0. _d 0
+          sIceSnowH_ocn  (i,j) = 0. _d 0
+          sIceQ1_ocn     (i,j) = 0. _d 0
+          sIceQ2_ocn     (i,j) = 0. _d 0
         ENDDO
       ENDDO
 
