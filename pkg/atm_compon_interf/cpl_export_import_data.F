@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_export_import_data.F,v 1.4 2015/12/31 21:20:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_export_import_data.F,v 1.5 2016/01/06 00:52:25 jmc Exp $
 C $Name:  $
 
 #include "ATM_CPL_OPTIONS.h"
@@ -95,6 +95,9 @@ C-    Fetch data from coupling layer.
        _END_MASTER( myThid )
 
         CALL ATM_IMPORT_FIELDS( myIter, myThid )
+
+C     Fill diagnostics with updated coupling fields just received from Coupler
+        CALL CPL_DIAGNOSTICS_FILL( myTime, myIter, myThid )
 
       ENDIF
 
