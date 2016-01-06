@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_store_my_data.F,v 1.8 2015/11/12 00:57:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_store_my_data.F,v 1.9 2016/01/06 01:08:33 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -30,8 +30,10 @@ C     == Global variables ==
 #include "GRID.h"
 #include "SURFACE.h"
 #include "DYNVARS.h"
-#include "OCNIDS.h"
 #include "OCNCPL.h"
+#ifdef ALLOW_THSICE
+# include "THSICE_VARS.h"
+#endif
 c#ifdef ALLOW_DIC
 c# include "DIC_VARS.h"
 c#endif
@@ -103,6 +105,20 @@ C--   bi,bj loop over my tiles
      &              )*0.5 _d 0
           ENDDO
          ENDDO
+
+#ifdef ALLOW_THSICE
+        IF ( useThSIce .AND. ocn_cplExch2W_sIce  ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+            sIceFrac_cpl (i,j,bi,bj) = iceMask(i,j,bi,bj)
+            sIceThick_cpl(i,j,bi,bj) = iceHeight(i,j,bi,bj)
+            sIceSnowH_cpl(i,j,bi,bj) = snowHeight(i,j,bi,bj)
+            sIceQ1_cpl   (i,j,bi,bj) = Qice1(i,j,bi,bj)
+            sIceQ2_cpl   (i,j,bi,bj) = Qice2(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* ALLOW_THSICE */
 
 c#ifdef ALLOW_DIC
 c       IF ( ocn_cplExch_DIC ) THEN
