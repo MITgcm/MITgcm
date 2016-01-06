@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_apply_import.F,v 1.3 2015/11/12 01:01:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_apply_import.F,v 1.4 2016/01/06 00:48:36 jmc Exp $
 C $Name:  $
 
 #include "ATM_CPL_OPTIONS.h"
@@ -61,6 +61,24 @@ C     i,j    :: Loop counters
       INTEGER i,j
 
 #ifdef ALLOW_THSICE
+      IF ( useImportThSIce .AND. useThSIce ) THEN
+       IF ( MOD(myIter,cplSendFrq_iter).EQ.0 ) THEN
+C--   Put thSIce imported fields from the ocean component in thSIce common block
+        DO j=1,sNy
+         DO i=1,sNx
+           iceMask   (i,j,bi,bj) = sIceFrac_cpl (i,j,bi,bj)
+           iceHeight (i,j,bi,bj) = sIceThick_cpl(i,j,bi,bj)
+           snowHeight(i,j,bi,bj) = sIceSnowH_cpl(i,j,bi,bj)
+           Qice1     (i,j,bi,bj) = sIceQ1_cpl   (i,j,bi,bj)
+           Qice2     (i,j,bi,bj) = sIceQ2_cpl   (i,j,bi,bj)
+         ENDDO
+        ENDDO
+       ENDIF
+C--   end if useImportThSIce & useThSIce
+      ENDIF
+#endif /* ALLOW_THSICE */
+
+#ifdef ALLOW_THSICE
       IF ( useThSIce ) THEN
 C--   Put fields from the ocean component in Mixed-layer arrays:
 
@@ -109,7 +127,7 @@ C-    fill in v2ocMxL with surf. velocity^2  from the ocean component
        ENDIF
 
       ELSEIF ( useAtm_Phys ) THEN
-#else
+#else /* ALLOW_THSICE */
       IF ( useAtm_Phys ) THEN
 #endif /* ALLOW_THSICE */
 C--   supply imported fields to Atm_Phys pkg:
