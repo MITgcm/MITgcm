@@ -1,16 +1,28 @@
-# Coupling package parameters, OCN component: 
-#     useImportHFlx :: True => use the Imported HeatFlux from couler
-#     useImportFW   :: True => use the Imported Fresh Water flux fr cpl
-#     useImportTau  :: True => use the Imported Wind-Stress from couler
-#     useImportSLP  :: True => use the Imported Sea-level Atmos. Pressure
-#     useImportSIce :: True => use the Imported Sea-Ice loading
-#     cpl_taveFreq  :: Frequency^-1 for time-Aver. output (s)
+# Coupling package parameters, OCN component:
+#    useImportHFlx   :: True => use the Imported HeatFlux from couler
+#    useImportFW     :: True => use the Imported Fresh Water flux fr cpl
+#    useImportTau    :: True => use the Imported Wind-Stress from couler
+#    useImportSLP    :: True => use the Imported Sea-level Atmos. Pressure
+#    useImportRunOff :: True => use the Imported RunOff flux from coupler
+#    useImportSIce   :: True => use the Imported Sea-Ice mass as ice-loading
+#    useImportThSIce :: True => use the Imported thSIce state var from coupler
+#    useImportSltPlm :: True => use the Imported Salt-Plume flux from coupler
+#    useImportFice   :: True => use the Imported Seaice fraction (DIC-only)
+#    useImportCO2    :: True => use the Imported atmos. CO2 from coupler
+#    useImportWSpd   :: True => use the Imported surf. Wind speed from coupler
+#    cpl_taveFreq    :: Frequency^-1 for time-Aver. output (s)
  &CPL_OCN_PARAM
-# useImportHFlx=.FALSE.,
-# useImportFW  =.FALSE.,
-# useImportTau =.FALSE.,
-  useImportSLP =.FALSE.,
-# useImportSIce=.FALSE.,
+# useImportHFlx  =.FALSE.,
+# useImportFW    =.FALSE.,
+# useImportTau   =.FALSE.,
+  useImportSLP   =.FALSE.,
+# useImportRunOff=.FALSE.,
+# useImportSIce  =.FALSE.,
+# useImportThSIce=.FALSE.,
+# useImportSltPlm=.FALSE.,
+# useImportFice  =.FALSE.,
+# useImportCO2   =.FALSE.,
+# useImportWSpd  =.FALSE.,
 # cpl_taveFreq=2592000.,
   cpl_taveFreq=18000.,
  &

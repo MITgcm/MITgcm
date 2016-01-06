@@ -1,15 +1,20 @@
-# Coupling package parameters, ATM component: 
-#     cpl_oldPickup  :: restart from an old pickup (= until ckpt 59h)
-#     useImportMxlD  :: True => use Imported Mix.Layer Detph from coupler
-#     useImportSST   :: True => use the Imported SST from coupler
-#     useImportSSS   :: True => use the Imported SSS from coupler
-#     useImportVsq   :: True => use the Imported Surf. velocity^2
-#     cpl_atmSendFrq :: Frequency^-1 for sending data to coupler (s)
+# Coupling package parameters, ATM component:
+#    cpl_oldPickup   :: restart from an old pickup (= until ckpt 59h)
+#    useImportMxlD   :: True => use Imported Mix.Layer Detph from coupler
+#    useImportSST    :: True => use the Imported SST from coupler
+#    useImportSSS    :: True => use the Imported SSS from coupler
+#    useImportVsq    :: True => use the Imported Surf. velocity^2
+#    useImportThSIce :: True => use the Imported thSIce state var from coupler
+#    useImportFlxCO2 :: True => use the Imported air-sea CO2 flux from coupler
+#    cpl_atmSendFrq  :: Frequency^-1 for sending data to coupler (s)
+#    maxNumberPrint  :: max number of printed Exp/Imp messages
  &CPL_ATM_PARAM
-# cpl_oldPickup=.TRUE.,
-# useImportMxlD=.FALSE.,
-# useImportSST =.FALSE.,
-# useImportSSS =.FALSE.,
-# useImportVsq =.FALSE.,
-  cpl_atmSendFrq=3600.,
+# cpl_oldPickup  =.TRUE.,
+# useImportMxlD  =.FALSE.,
+# useImportSST   =.FALSE.,
+# useImportSSS   =.FALSE.,
+# useImportVsq   =.FALSE.,
+# useImportThSIce=.FALSE.,
+# useImportFlxCO2=.FALSE.,
+  cpl_atmSendFrq = 3600.,
  &
