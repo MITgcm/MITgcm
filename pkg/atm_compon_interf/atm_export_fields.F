@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_export_fields.F,v 1.1 2015/12/31 21:20:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_export_fields.F,v 1.2 2016/01/06 00:42:51 jmc Exp $
 C $Name:  $
 
 #include "ATM_CPL_OPTIONS.h"
@@ -67,19 +67,33 @@ C-    export surface wind stress, Zonal & Meridional components:
 C-    export Net fresh water flux (Evap - Precip):
       CALL ATM_EXPORT_FLD( atmEvMPrName,
      U                     EvMPrFlux, EvMPrTime, myThid )
+#ifdef ALLOW_LAND
+      IF ( atm_cplExch_RunOff ) THEN
 C-    export Run Off fresh water flux:
-      CALL ATM_EXPORT_FLD( atmRunOffName,
-     U                     RunOffFlux, RunOffTime, myThid )
+       CALL ATM_EXPORT_FLD( atmRunOffName,
+     U                      RunOffFlux, RunOffTime, myThid )
 C-    export Energy flux associated with Run Off:
-      CALL ATM_EXPORT_FLD( atmROEnFxName,
-     U                     RunOffEnFx, ROEnFxTime, myThid )
+       CALL ATM_EXPORT_FLD( atmROEnFxName,
+     U                      RunOffEnFx, ROEnFxTime, myThid )
+      ENDIF
+#endif /* ALLOW_LAND */
+#ifdef ALLOW_THSICE
+      IF ( atm_cplExch1W_sIce ) THEN
 C-    export Salt flux (related to sea-ice melting/freezing):
-      CALL ATM_EXPORT_FLD( atmSaltFxName,
-     U                     iceSaltFlx, saltFxTime, myThid )
+       CALL ATM_EXPORT_FLD( atmSaltFxName,
+     U                      iceSaltFlx, saltFxTime, myThid )
 C-    export Sea-Ice Mass:
-      CALL ATM_EXPORT_FLD( atmSIceMassName,
-     U                     seaIceMass, seaIceTime, myThid )
+       CALL ATM_EXPORT_FLD( atmSIceMassName,
+     U                      seaIceMass, sIceMassTime, myThid )
+      ENDIF
+      IF ( atm_cplExch_SaltPl ) THEN
+C-    export Salt-Plume flux:
+       CALL ATM_EXPORT_FLD( atmSaltPlmFlxName,
+     U                      saltPlmFlx_cpl, saltPlmFlxTime, myThid )
+      ENDIF
+#endif /* ALLOW_THSICE */
 
+#ifdef ALLOW_AIM
       IF ( atm_cplExch_DIC ) THEN
 C-    export atmospheric CO2:
        CALL ATM_EXPORT_FLD( atmAirCO2Name,
@@ -88,11 +102,31 @@ C-    export atmospheric CO2:
 C-    export surface wind speed:
        CALL ATM_EXPORT_FLD( atmWindSpdName,
      U                      sWSpeed, sWSpeedTime, myThid )
+      ENDIF
+#endif /* ALLOW_AIM */
 
+#ifdef ALLOW_THSICE
+      IF ( ( atm_cplExch1W_sIce.AND.atm_cplExch_DIC )
+     &  .OR. atm_cplExch2W_sIce ) THEN
 C-    export seaice fraction:
        CALL ATM_EXPORT_FLD( atmSIceFracName,
-     U                      fracIce, fracIceTime, myThid )
+     U                      sIceFrac_cpl, sIceFracTime, myThid )
       ENDIF
+      IF ( atm_cplExch2W_sIce ) THEN
+C-    export seaice thickness:
+       CALL ATM_EXPORT_FLD( atmSIceThickName,
+     U                      sIceThick_cpl, sIceThickTime, myThid )
+C-    export snow thickness:
+       CALL ATM_EXPORT_FLD( atmSIceSnowName,
+     U                      sIceSnowH_cpl, sIceSnowHTime, myThid )
+C-    export seaice enthalpy (layer 1):
+       CALL ATM_EXPORT_FLD( atmSIceQ1Name,
+     U                      sIceQ1_cpl, sIceQ1Time, myThid )
+C-    export seaice enthalpy (layer 2):
+       CALL ATM_EXPORT_FLD( atmSIceQ2Name,
+     U                      sIceQ2_cpl, sIceQ2Time, myThid )
+      ENDIF
+#endif /* ALLOW_THSICE */
 
 #endif /* COMPONENT_MODULE */
 

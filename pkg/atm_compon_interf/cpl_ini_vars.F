@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_ini_vars.F,v 1.5 2015/11/12 01:01:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_ini_vars.F,v 1.6 2016/01/06 00:42:51 jmc Exp $
 C $Name:  $
 
 #include "ATM_CPL_OPTIONS.h"
@@ -49,40 +49,68 @@ C     i,j,bi,bj :: Loop counters
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
 C-        Export field
-          atmSLPr(   i,j,bi,bj) = 0.
-          HeatFlux(  i,j,bi,bj) = 0.
-          qShortWave(i,j,bi,bj) = 0.
-          tauX(      i,j,bi,bj) = 0.
-          tauY(      i,j,bi,bj) = 0.
-          EvMPrFlux( i,j,bi,bj) = 0.
-          RunOffFlux(i,j,bi,bj) = 0.
-          RunOffEnFx(i,j,bi,bj) = 0.
-          iceSaltFlx(i,j,bi,bj) = 0.
-          seaIceMass(i,j,bi,bj) = 0.
-          airCO2    (i,j,bi,bj) = 0.
-          sWSpeed   (i,j,bi,bj) = 0.
-          fracIce   (i,j,bi,bj) = 0.
+          atmSLPr       (i,j,bi,bj) = 0.
+          HeatFlux      (i,j,bi,bj) = 0.
+          qShortWave    (i,j,bi,bj) = 0.
+          tauX          (i,j,bi,bj) = 0.
+          tauY          (i,j,bi,bj) = 0.
+          EvMPrFlux     (i,j,bi,bj) = 0.
+#ifdef ALLOW_LAND
+          RunOffFlux    (i,j,bi,bj) = 0.
+          RunOffEnFx    (i,j,bi,bj) = 0.
+#endif /* ALLOW_LAND */
+#ifdef ALLOW_THSICE
+          iceSaltFlx    (i,j,bi,bj) = 0.
+          seaIceMass    (i,j,bi,bj) = 0.
+          saltPlmFlx_cpl(i,j,bi,bj) = 0.
+#endif /* ALLOW_THSICE */
+#ifdef ALLOW_AIM
+          airCO2        (i,j,bi,bj) = 0.
+          sWSpeed       (i,j,bi,bj) = 0.
+#endif /* ALLOW_AIM */
+#ifdef ALLOW_THSICE
+          sIceFrac_cpl  (i,j,bi,bj) = 0.
+          sIceThick_cpl (i,j,bi,bj) = 0.
+          sIceSnowH_cpl (i,j,bi,bj) = 0.
+          sIceQ1_cpl    (i,j,bi,bj) = 0.
+          sIceQ2_cpl    (i,j,bi,bj) = 0.
+#endif /* ALLOW_THSICE */
 C-        Import field
-c         ocMxlD   (i,j,bi,bj)  = 0.
-          SSTocn   (i,j,bi,bj)  = 0.
-          SSSocn   (i,j,bi,bj)  = 0.
-          vSqocn   (i,j,bi,bj)  = 0.
-          flxCO2ocn(i,j,bi,bj)  = 0.
+c         ocMxlD        (i,j,bi,bj) = 0.
+          SSTocn        (i,j,bi,bj) = 0.
+          SSSocn        (i,j,bi,bj) = 0.
+          vSqocn        (i,j,bi,bj) = 0.
+#ifdef ALLOW_AIM
+          flxCO2ocn     (i,j,bi,bj) = 0.
+#endif /* ALLOW_AIM */
          ENDDO
         ENDDO
-        atmSLPrTime(bi,bj)    = 0.
-        HeatFluxTime(bi,bj)   = 0.
+        atmSLPrTime   (bi,bj) = 0.
+        HeatFluxTime  (bi,bj) = 0.
         qShortwaveTime(bi,bj) = 0.
-        tauXTime(bi,bj)       = 0.
-        tauYTime(bi,bj)       = 0.
-        EvMPrTime(bi,bj)      = 0.
-        RunOffTime(bi,bj)     = 0.
-        ROEnFxTime(bi,bj)     = 0.
-        saltFxTime(bi,bj)     = 0.
-        seaIceTime(bi,bj)     = 0.
-        airCO2Time(bi,bj)     = 0.
-        sWSpeedTime(bi,bj)    = 0.
-        fracIceTime(bi,bj)    = 0.
+        tauXTime      (bi,bj) = 0.
+        tauYTime      (bi,bj) = 0.
+        EvMPrTime     (bi,bj) = 0.
+#ifdef ALLOW_LAND
+        RunOffTime    (bi,bj) = 0.
+        ROEnFxTime    (bi,bj) = 0.
+#endif
+#ifdef ALLOW_THSICE
+        saltFxTime    (bi,bj) = 0.
+        sIceMassTime  (bi,bj) = 0.
+        saltPlmFlxTime(bi,bj) = 0.
+#endif
+#ifdef ALLOW_AIM
+        airCO2Time    (bi,bj) = 0.
+        sWSpeedTime   (bi,bj) = 0.
+#endif /* ALLOW_AIM */
+#ifdef ALLOW_THSICE
+        sIceFracTime  (bi,bj) = 0.
+        sIceThickTime (bi,bj) = 0.
+        sIceSnowHTime (bi,bj) = 0.
+        sIceQ1Time    (bi,bj) = 0.
+        sIceQ2Time    (bi,bj) = 0.
+#endif
        ENDDO
       ENDDO
 

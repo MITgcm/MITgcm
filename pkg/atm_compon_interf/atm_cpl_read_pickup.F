@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_cpl_read_pickup.F,v 1.6 2015/12/25 04:38:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_cpl_read_pickup.F,v 1.7 2016/01/06 00:42:51 jmc Exp $
 C $Name:  $
 
 #include "ATM_CPL_OPTIONS.h"
@@ -24,7 +24,6 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
-#include "ATMIDS.h"
 #include "ATMCPL.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -153,7 +152,7 @@ c        CALL READ_REC_3D_RL( fn,fp, 1, flxCO2ocn , 15, myIter,myThid )
          CALL READ_REC_3D_RL( fn,fp, 1, airCO2    , 16, myIter,myThid )
          CALL READ_REC_3D_RL( fn,fp, 1, sWSpeed   , 17, myIter,myThid )
 # ifdef ALLOW_THSICE
-c        CALL READ_REC_3D_RL( fn,fp, 1, fracIce   , 18, myIter,myThid )
+c        CALL READ_REC_3D_RL( fn,fp,1,sIceFrac_cpl, 18, myIter,myThid )
 # endif /* ALLOW_THSICE */
         ENDIF
 #endif /* ALLOW_AIM */
@@ -190,10 +189,10 @@ C---    read ATM_CPL 2-D fields for restart
          CALL READ_MFLDS_3D_RL('saltFlux', iceSaltFlx,
      &                                 nj, fp, 1 , myIter, myThid )
         ENDIF
-c       IF ( atm_cplExch_SaltPl ) THEN
-c        CALL READ_MFLDS_3D_RL('sltPlmFx', saltPlmFlx,
-c    &                                 nj, fp, 1 , myIter, myThid )
-c       ENDIF
+        IF ( atm_cplExch_SaltPl ) THEN
+         CALL READ_MFLDS_3D_RL('sltPlmFx', saltPlmFlx_cpl,
+     &                                 nj, fp, 1 , myIter, myThid )
+        ENDIF
 #endif /* ALLOW_THSICE */
 #ifdef ALLOW_AIM
         IF ( atm_cplExch_DIC ) THEN
