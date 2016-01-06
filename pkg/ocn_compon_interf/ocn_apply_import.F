@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_apply_import.F,v 1.8 2015/11/12 00:57:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_apply_import.F,v 1.9 2016/01/06 01:09:08 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -23,14 +23,17 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
-#include "OCNIDS.h"
-#include "OCNCPL.h"
-#include "FFIELDS.h"
-#include "SURFACE.h"
 c #include "GRID.h"
 c #include "DYNVARS.h"
+#include "SURFACE.h"
+#include "FFIELDS.h"
+#include "OCNCPL.h"
 #ifdef ALLOW_DIC
-#  include "DIC_VARS.h"
+# include "DIC_VARS.h"
+#endif
+#ifdef ALLOW_THSICE
+c# include "THSICE_PARAMS.h"
+# include "THSICE_VARS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -113,12 +116,26 @@ C-   Heat Flux forcing
 #endif
          ENDIF
 
+#ifdef ALLOW_THSICE
+         IF ( useImportThSIce .AND. useThSIce ) THEN
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             iceMask   (i,j,bi,bj) = sIceFrac_cpl (i,j,bi,bj)
+             iceHeight (i,j,bi,bj) = sIceThick_cpl(i,j,bi,bj)
+             snowHeight(i,j,bi,bj) = sIceSnowH_cpl(i,j,bi,bj)
+             Qice1     (i,j,bi,bj) = sIceQ1_cpl   (i,j,bi,bj)
+             Qice2     (i,j,bi,bj) = sIceQ2_cpl   (i,j,bi,bj)
+            ENDDO
+           ENDDO
+         ENDIF
+#endif /* ALLOW_THSICE */
+
 #ifdef ALLOW_DIC
 C-   Carbon/DIC exchanges
          IF ( useImportFice ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             fice(i,j,bi,bj)= fracIce(i,j,bi,bj)
+             fice(i,j,bi,bj)= sIceFrac_cpl(i,j,bi,bj)
             ENDDO
            ENDDO
          ENDIF
@@ -185,27 +202,36 @@ C--  Fill in Halo region with valid values
      &    ( ocn_cplExch_DIC .OR. apply2AllFields ) )
      &   _EXCH_XY_RS( pLoad,    myThid )
       IF ( apply2AllFields ) THEN
-        IF ( useImportSIce)  _EXCH_XY_RS( sIceLoad, myThid )
+        IF ( useImportSIce ) _EXCH_XY_RS( sIceLoad, myThid )
       ELSEIF ( useImportSLP .OR. useImportSIce ) THEN
          _EXCH_XY_RS( phi0surf, myThid )
       ENDIF
 #else
       IF ( useImportSLP . AND. ocn_cplExch_DIC )
-     &     _EXCH_XY_RS( pLoad,    myThid )
+     &   _EXCH_XY_RS( pLoad,    myThid )
 #endif
 
-      IF ( useImportFW  ) _EXCH_XY_RS(EmPmR, myThid )
+      IF ( useImportFW  ) _EXCH_XY_RS( EmPmR, myThid )
       IF ( apply2AllFields ) THEN
-        IF (useImportTau ) CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
-        IF (useImportFW  ) _EXCH_XY_RS(saltFlux, myThid )
-        IF (useImportHFlx) _EXCH_XY_RS(Qnet , myThid )
+        IF ( useImportTau  ) CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
+        IF ( useImportFW   ) _EXCH_XY_RS( saltFlux, myThid )
+        IF ( useImportHFlx ) _EXCH_XY_RS( Qnet , myThid )
 #ifdef SHORTWAVE_HEATING
-        IF (useImportHFlx) _EXCH_XY_RS(Qsw ,  myThid )
+        IF ( useImportHFlx ) _EXCH_XY_RS( Qsw ,  myThid )
 #endif
+#ifdef ALLOW_THSICE
+        IF ( useImportThSIce .AND. useThSIce ) THEN
+          _EXCH_XY_RL( iceMask   , myThid )
+          _EXCH_XY_RL( iceHeight , myThid )
+          _EXCH_XY_RL( snowHeight, myThid )
+          _EXCH_XY_RL( Qice1     , myThid )
+          _EXCH_XY_RL( Qice2     , myThid )
+        ENDIF
+#endif /* ALLOW_THSICE */
 #ifdef ALLOW_DIC
-        IF ( useImportFice ) _EXCH_XY_RL(fice ,  myThid )
-        IF ( useImportCO2 )  _EXCH_XY_RL(AtmospCO2 ,  myThid )
-        IF ( useImportWSpd ) _EXCH_XY_RL(wind ,  myThid )
+        IF ( useImportFice ) _EXCH_XY_RL( fice , myThid )
+        IF ( useImportCO2 )  _EXCH_XY_RL(AtmospCO2, myThid )
+        IF ( useImportWSpd ) _EXCH_XY_RL( wind , myThid )
 #endif
       ENDIF
 
