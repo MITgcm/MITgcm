@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_store_surfflux.F,v 1.2 2015/11/12 01:01:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_store_surfflux.F,v 1.3 2016/01/06 00:49:20 jmc Exp $
 C $Name:  $
 
 #include "ATM_CPL_OPTIONS.h"
@@ -82,6 +82,7 @@ C       that will be exported to the coupling layer.
         ENDDO
        ENDDO
 
+#ifdef ALLOW_THSICE
       IF ( useThSIce ) THEN
 C     o Accumulate SaltFlux from sea-ice (saltFlux, +=upward, g/m^2/s)
 C       that will be exported to the coupling layer.
@@ -93,6 +94,7 @@ C       that will be exported to the coupling layer.
         ENDDO
        ENDDO
       ENDIF
+#endif /* ALLOW_THSICE */
 
       IF ( useAtm_Phys ) THEN
 C     o Accumulate surface wind-stress
