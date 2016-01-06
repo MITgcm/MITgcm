@@ -1,9 +1,34 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2219 2016/01/02 02:58:37 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2220 2016/01/06 02:24:41 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o coupler pkgs:
+  Finish implementation of optionally-exchanged variable switches (started on
+   Nov 12) with addition of few more exchanged fields, including 2-way exchange
+   of pkg/thsice vars to allow to use seaice dynamics (from pkg/seaice) & seaice
+   advection in OCN component; this requires sequential coupling.
+  coupler (pkg/atm_ocn_coupler):
+  - add argument msgUnit and iter number to CPL_SEND/RECV_ATM/OCN_FIELDS
+    routines (useful for debug).
+  - only export/import optionally exchanged fields (RunOff, seaice, Salt-Plume
+     flux, DIC fields) if corresponding switch is ON.
+  - add option to export RunOff to OCN (to use for DIC river input)
+  - add 2-way thSIce vars exchange; check for consistent cpl_sequential setting.
+  components (pkg/atm_ & ocn_compon_interf):
+  - to save memory space in ATM & OCN comp: add some #ifdef ALLOW_${PKG} around
+    optionally exchanged fields; add a check & stop in cpl_readparms.F.
+    ATMCPL.h: ALLOW_LAND for RunOff, ALLOW_THSICE for seaice, ALLOW_AIM for CO2;
+    OCNCPL.h: ALLOW_SALT_PLUME, ALLOW_DIC for DIC, ALLOW_THSICE for 2-W thsice.
+  - rename:   fracIce     -> sIceFrac_cpl (<- match coupler var name)
+    + in ATM: fracIceTime -> sIceFracTime ; seaIceTime -> sIceMassTime.
+  - add 2-way thSIce vars exchange ; add Salt-Plume flux ; add RunOff in OCN.
+  - hold in common block coupler optionally-exchanged variable switch
+    and set default "useImportXXX" accordingly; + check & stop if inconsistent.
+  - add diagnostics for all imported fields from coupler (in both OCN & ATM);
+    this is intended to replace the OCN cplFldtave.* output files (not updated
+    to contain new additional exchanged fields).
 o pkg/dic:
   - fix an other bug (also from 2014/08/30) in dic_atmos.F, in dic_int1=3 code.
 o pkg/thsice:
