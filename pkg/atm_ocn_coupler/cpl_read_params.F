@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_read_params.F,v 1.5 2015/11/12 00:49:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_read_params.F,v 1.6 2016/01/06 00:32:44 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -64,6 +64,22 @@ C--   Read-in parameter file:
         cplErrorCount = 1
         WRITE(msgUnit,'(2A)') ' *** ERROR *** CPL_READ_PARAMS: ',
      &                'parameter file "data.cpl" not found'
+        WRITE(msgUnit,'(2A,I4,A)') ' *** ERROR *** CPL_READ_PARAMS: ',
+     &                '==> set ErrorCount=', cplErrorCount, ' (Fatal)'
+      ENDIF
+
+C--   Check parameter consistency:
+      IF ( cpl_exchange2W_sIce.EQ.3 .AND. cpl_sequential.EQ.0 ) THEN
+        cplErrorCount = cplErrorCount + 1
+        WRITE(msgUnit,'(2A)') ' *** ERROR *** CPL_READ_PARAMS: ',
+     &       'needs "cpl_sequential=1" to use: cpl_exchange2W_sIce=3'
+        WRITE(msgUnit,'(2A,I4,A)') ' *** ERROR *** CPL_READ_PARAMS: ',
+     &                '==> set ErrorCount=', cplErrorCount, ' (Fatal)'
+      ENDIF
+      IF ( cpl_exchange2W_sIce.EQ.1 .AND. cpl_sequential.EQ.1 ) THEN
+        cplErrorCount = cplErrorCount + 1
+        WRITE(msgUnit,'(2A)') ' *** ERROR *** CPL_READ_PARAMS: ',
+     &       'needs "cpl_sequential=0" to use: cpl_exchange2W_sIce=1'
         WRITE(msgUnit,'(2A,I4,A)') ' *** ERROR *** CPL_READ_PARAMS: ',
      &                '==> set ErrorCount=', cplErrorCount, ' (Fatal)'
       ENDIF
