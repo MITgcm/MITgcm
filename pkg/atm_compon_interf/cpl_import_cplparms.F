@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_import_cplparms.F,v 1.1 2015/11/12 01:06:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_import_cplparms.F,v 1.2 2016/01/06 00:45:23 jmc Exp $
 C $Name:  $
 
 #include "ATM_CPL_OPTIONS.h"
@@ -72,6 +72,12 @@ C-    o Set options for coupling exchange
         atm_cplExch2W_sIce = parBuf(4).GE.2
         atm_cplExch_SaltPl = parBuf(5).GE.2
         atm_cplExch_DIC    = parBuf(6).GE.2
+C-    save coupler parameter:
+        cpl_exchange_RunOff = parBuf(2)
+        cpl_exchange1W_sIce = parBuf(3)
+        cpl_exchange2W_sIce = parBuf(4)
+        cpl_exchange_SaltPl = parBuf(5)
+        cpl_exchange_DIC    = parBuf(6)
       ELSE
 C-    If not using an up-to-date ATMIDS.h with the wrong atmParSize
         cplErrorCount = cplErrorCount + 1

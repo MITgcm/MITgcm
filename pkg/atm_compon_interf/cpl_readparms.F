@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_readparms.F,v 1.11 2015/11/12 01:06:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_readparms.F,v 1.12 2016/01/06 00:45:23 jmc Exp $
 C $Name:  $
 
 #include "ATM_CPL_OPTIONS.h"
@@ -26,7 +26,6 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
-#include "ATMIDS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
@@ -56,19 +55,19 @@ c     INTEGER k, iL
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Coupling parameters:
-C     cpl_earlyExpImpCall :: call coupler early in the time stepping call sequence
 C     cpl_oldPickup  :: restart from an old pickup (= until checkpoint 59h)
 C     useImportMxlD  :: True => use Imported Mix.Layer Detph from coupler
 C     useImportSST   :: True => use the Imported SST from coupler
 C     useImportSSS   :: True => use the Imported SSS from coupler
 C     useImportVsq   :: True => use the Imported Surf. velocity^2
-C     useImportFlxCO2 :: True => use the Imported air-sea CO2 fluxes from coupler
+C     useImportThSIce :: True => use the Imported thSIce state vars from coupler
+C     useImportFlxCO2 :: True => use the Imported air-sea CO2 flux from coupler
 C     cpl_atmSendFrq :: Frequency^-1 for sending data to coupler (s)
       NAMELIST /CPL_ATM_PARAM/
      &    cpl_earlyExpImpCall,
      &    cpl_oldPickup,
      &    useImportMxlD, useImportSST, useImportSSS,
-     &    useImportVsq, useImportFlxCO2,
+     &    useImportVsq, useImportThSIce, useImportFlxCO2,
      &    cpl_atmSendFrq,
      &    maxNumberPrint
 
@@ -90,7 +89,8 @@ C-    Set default value:
       useImportSST  = .TRUE.
       useImportSSS  = .TRUE.
       useImportVsq  = .TRUE.
-      useImportFlxCO2 = atm_cplExch_DIC
+      useImportThSIce = cpl_exchange2W_sIce.EQ.3
+      useImportFlxCO2 =  cpl_exchange_DIC .EQ. 3
       cpl_atmSendFrq= deltaTClock
       maxNumberPrint= 100
       countPrtExp   = 0
@@ -121,9 +121,83 @@ C--   Check for retired parameters:
       ENDIF
 
 C--   Check parameters and model configuration
-      IF ( useImportFlxCO2 .AND. .NOT.atm_cplExch_DIC ) THEN
+
+#ifndef ALLOW_LAND
+      IF ( atm_cplExch_RunOff ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: needs',
+     &    ' to compile pkg/land to use: atm_cplExch_RunOff=T'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' (set from Coupler "data.cpl": cpl_exchange_RunOff > 1)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        cplErrorCount = cplErrorCount + 1
+      ENDIF
+#endif /* ndef ALLOW_LAND */
+#ifndef ALLOW_THSICE
+      IF ( atm_cplExch1W_sIce ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: needs',
+     &    ' to compile pkg/thsice to use: atm_cplExch1W_sIce=T'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' (set from Coupler "data.cpl": cpl_exchange1W_sIce > 1)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        cplErrorCount = cplErrorCount + 1
+      ENDIF
+      IF ( atm_cplExch2W_sIce ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: needs',
+     &    ' to compile pkg/thsice to use: atm_cplExch2W_sIce=T'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' (set from Coupler "data.cpl": cpl_exchange2W_sIce > 1)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        cplErrorCount = cplErrorCount + 1
+      ENDIF
+      IF ( atm_cplExch_SaltPl ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: needs',
+     &    ' to compile pkg/thsice to use: atm_cplExch_SaltPl=T'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' (set from Coupler "data.cpl": cpl_exchange_SaltPl > 1)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        cplErrorCount = cplErrorCount + 1
+      ENDIF
+#endif /* ndef ALLOW_THSICE */
+#ifndef ALLOW_AIM
+      IF ( atm_cplExch_DIC ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: needs',
+     &    ' to compile pkg/aim_v23 to use: atm_cplExch_DIC = T'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' (set from Coupler "data.cpl": cpl_exchange_DIC > 1)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        cplErrorCount = cplErrorCount + 1
+      ENDIF
+#endif /* ndef ALLOW_AIM */
+
+      IF ( useImportThSIce .AND. .NOT.atm_cplExch2W_sIce ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: useImportThSIce',
+     &    ' requires setting'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' cpl_exchange2W_sIce > 1 (in Coupler "data.cpl")'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        cplErrorCount = cplErrorCount + 1
+      ELSEIF ( useImportThSIce .AND. cpl_exchange2W_sIce.NE.3 ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** CPL_READPARMS: ',
+     &    'useImportThSIce useless without'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** CPL_READPARMS: ',
+     &    ' cpl_exchange2W_sIce = 3 (in Coupler "data.cpl")'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+      IF ( useImportFlxCO2 .AND. cpl_exchange_DIC.NE.3  ) THEN
         WRITE(msgBuf,'(2A)') 'CPL_READPARMS: useImportFlxCO2',
-     &    ' requires atm_cplExch_DIC TRUE'
+     &    ' requires setting'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' cpl_exchange_DIC = 3 (in Coupler "data.cpl")'
         CALL PRINT_ERROR( msgBuf, myThid )
         cplErrorCount = cplErrorCount + 1
       ENDIF
@@ -192,18 +266,21 @@ C-    print namelist parameter value:
        CALL WRITE_0D_L( useImportMxlD , INDEX_NONE,
      &                 'useImportMxlD =',
      &   ' /* use Imported MxL. Depth from Coupler flag */')
-       CALL WRITE_0D_L( useImportSST , INDEX_NONE,
-     &                 'useImportSST =',
+       CALL WRITE_0D_L( useImportSST  , INDEX_NONE,
+     &                 'useImportSST  =',
      &   ' /* use Imported SST from Coupler on/off flag */')
-       CALL WRITE_0D_L( useImportSSS , INDEX_NONE,
-     &                 'useImportSSS =',
+       CALL WRITE_0D_L( useImportSSS  , INDEX_NONE,
+     &                 'useImportSSS  =',
      &   ' /* use Imported SSS from Coupler on/off flag */')
-       CALL WRITE_0D_L( useImportVsq , INDEX_NONE,
-     &                 'useImportVsq =',
+       CALL WRITE_0D_L( useImportVsq  , INDEX_NONE,
+     &                 'useImportVsq  =',
      &   ' /* use Imported surf.Vel^2 from Coupler flag */')
-       CALL WRITE_0D_L( useImportFlxCO2 , INDEX_NONE,
-     &                 'useImportFlxCO2 =',
-     &   ' /* use Imported air-sea CO2 flux from Coupler flag */')
+       CALL WRITE_0D_L( useImportThSIce, INDEX_NONE,
+     &                 'useImportThSIce=',
+     &   ' /* use Imported thSIce state-var fr Cpl. flag */')
+       CALL WRITE_0D_L( useImportFlxCO2, INDEX_NONE,
+     &                 'useImportFlxCO2=',
+     &   ' /* use Imported air-sea CO2 flux fr Cpl.  flag */')
        CALL WRITE_0D_RL( cpl_atmSendFrq, INDEX_NONE, 'cpl_atmSendFrq =',
      &   ' /* Frequency^o-1 for sending data to Coupler (s) */')
 C     cpl_atmSendFrq  :: Frequency^-1 for sending data to coupler (s)
