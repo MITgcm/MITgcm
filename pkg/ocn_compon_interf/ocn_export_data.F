@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_export_data.F,v 1.1 2015/11/12 20:04:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_export_data.F,v 1.2 2016/01/06 01:04:05 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -66,7 +66,7 @@ C     Sequential coupling: Send data to coupling layer
         CALL OCN_STORE_MY_DATA(
      I           myTime, myIter, myThid )
 
-        CALL OCN_EXPORT_FIELDS ( myThid )
+        CALL OCN_EXPORT_FIELDS ( myIter, myThid )
 
       ENDIF
 

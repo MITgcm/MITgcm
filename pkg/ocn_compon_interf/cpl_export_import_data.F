@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_export_import_data.F,v 1.3 2015/11/12 20:04:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_export_import_data.F,v 1.4 2016/01/06 01:04:05 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -64,7 +64,7 @@ C     Synchronous coupling: Send data to coupling layer
         CALL OCN_STORE_MY_DATA(
      I           myTime, myIter, myThid )
 
-        CALL OCN_EXPORT_FIELDS ( myThid )
+        CALL OCN_EXPORT_FIELDS ( myIter, myThid )
 
       ENDIF
 
@@ -81,7 +81,10 @@ C-    Fetch data from coupling layer.
          _END_MASTER( myThid )
         ENDIF
 
-        CALL OCN_IMPORT_FIELDS ( myThid )
+        CALL OCN_IMPORT_FIELDS ( myIter, myThid )
+
+C     Fill diagnostics with updated coupling fields just received from Coupler
+        CALL CPL_DIAGNOSTICS_FILL( myTime, myIter, myThid )
 
       ENDIF
 
