@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_import_cplparms.F,v 1.1 2015/11/12 00:55:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_import_cplparms.F,v 1.2 2016/01/06 01:05:45 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -72,6 +72,12 @@ C-    o Set options for coupling exchange
         ocn_cplExch2W_sIce = MOD(parBuf(4),2).EQ.1
         ocn_cplExch_SaltPl = MOD(parBuf(5),2).EQ.1
         ocn_cplExch_DIC    = MOD(parBuf(6),2).EQ.1
+C-    save coupler parameter:
+        cpl_exchange_RunOff = parBuf(2)
+        cpl_exchange1W_sIce = parBuf(3)
+        cpl_exchange2W_sIce = parBuf(4)
+        cpl_exchange_SaltPl = parBuf(5)
+        cpl_exchange_DIC    = parBuf(6)
       ELSE
 C-    If not using an up-to-date OCNIDS.h with the wrong ocnParSize
         cplErrorCount = cplErrorCount + 1

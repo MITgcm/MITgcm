@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/CPL_PARAMS.h,v 1.7 2015/11/12 00:55:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/CPL_PARAMS.h,v 1.8 2016/01/06 01:05:45 jmc Exp $
 C $Name:  $
 
 #ifdef COMPONENT_MODULE
@@ -8,6 +8,24 @@ C     | o Header file for Coupling component interface
 C     *==========================================================*
 C     |   this version is specific to 1 component (ocean)
 C     *==========================================================*
+
+C--   COMMON /CPL_OCN_SWITCH/: from coupler, control switch
+C                              of optionnally exchanged fields;
+C     cpl_exchange_RunOff :: controls exchange of RunOff fields
+C     cpl_exchange1W_sIce :: controls 1-way exchange of seaice (step fwd in ATM)
+C     cpl_exchange2W_sIce :: controls 2-way exchange of ThSIce variables
+C     cpl_exchange_SaltPl :: controls exchange of Salt-Plume fields
+C     cpl_exchange_DIC    :: controls exchange of DIC variables
+      COMMON /CPL_OCN_SWITCH/
+     &     cpl_exchange_RunOff,
+     &     cpl_exchange1W_sIce, cpl_exchange2W_sIce,
+     &     cpl_exchange_SaltPl,
+     &     cpl_exchange_DIC
+      INTEGER cpl_exchange_RunOff
+      INTEGER cpl_exchange1W_sIce
+      INTEGER cpl_exchange2W_sIce
+      INTEGER cpl_exchange_SaltPl
+      INTEGER cpl_exchange_DIC
 
 C--   COMMON /CPL_OCN_PAR_L/: logical parameters
 C     ocn_cplSequential  :: use Sequential Coupling (instead of Synchronous)
@@ -20,10 +38,13 @@ C     useImportHFlx :: True => use the Imported HeatFlux from couler
 C     useImportFW   :: True => use the Imported Fresh Water flux fr cpl
 C     useImportTau  :: True => use the Imported Wind-Stress from couler
 C     useImportSLP  :: True => use the Imported Sea-level Pressure
-C     useImportSIce :: True => use the Imported Sea-Ice mass as ice-loading
-C     useImportFice :: True => use the Imported Seaice fraction fr cpl
-C     useImportCO2  :: True => use the Imported atmos. CO2 from coupler
-C     useImportWSpd :: True => use the Imported surface Wind speed fr cpl
+C     useImportRunOff :: True => use the Imported RunOff flux from coupler
+C     useImportSIce   :: True => use the Imported Sea-Ice mass as ice-loading
+C     useImportThSIce :: True => use the Imported thSIce state var from coupler
+C     useImportSltPlm :: True => use the Imported Salt-Plume flux from coupler
+C     useImportFice   :: True => use the Imported Seaice fraction (DIC-only)
+C     useImportCO2    :: True => use the Imported atmos. CO2 from coupler
+C     useImportWSpd   :: True => use the Imported surf. Wind speed from coupler
 
       COMMON /CPL_OCN_PAR_L/
      &  ocn_cplSequential,
@@ -31,8 +52,9 @@ C     useImportWSpd :: True => use the Imported surface Wind speed fr cpl
      &  ocn_cplExch1W_sIce, ocn_cplExch2W_sIce, ocn_cplExch_SaltPl,
      &  ocn_cplExch_DIC,
      &  useImportHFlx, useImportFW, useImportTau,
-     &  useImportSLP, useImportSIce, useImportFIce,
-     &  useImportCO2, useImportWSpd,
+     &  useImportSLP,  useImportRunOff,
+     &  useImportSIce, useImportThSIce, useImportSltPlm,
+     &  useImportFice, useImportCO2, useImportWSpd,
      &  cpl_snapshot_mdsio, cpl_snapshot_mnc,
      &  cpl_timeave_mdsio, cpl_timeave_mnc
 
@@ -46,8 +68,11 @@ C     useImportWSpd :: True => use the Imported surface Wind speed fr cpl
       LOGICAL useImportFW
       LOGICAL useImportTau
       LOGICAL useImportSLP
+      LOGICAL useImportRunOff
       LOGICAL useImportSIce
-      LOGICAL useImportFIce
+      LOGICAL useImportThSIce
+      LOGICAL useImportSltPlm
+      LOGICAL useImportFice
       LOGICAL useImportCO2
       LOGICAL useImportWSpd
       LOGICAL

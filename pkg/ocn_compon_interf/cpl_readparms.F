@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.14 2015/11/12 00:55:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.15 2016/01/06 01:05:45 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -26,7 +26,6 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
-#include "OCNIDS.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
@@ -58,21 +57,24 @@ c     INTEGER k, iL
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Coupling parameters:
-C     cpl_earlyExpImpCall :: call coupler early in the time stepping call sequence
 C     useImportHFlx :: True => use the Imported HeatFlux from couler
 C     useImportFW   :: True => use the Imported Fresh Water flux fr cpl
 C     useImportTau  :: True => use the Imported Wind-Stress from couler
 C     useImportSLP  :: True => use the Imported Sea-level Atmos. Pressure
-C     useImportSIce :: True => use the Imported Sea-Ice loading
-C     useImportFIce :: True => use the Imported Sea-Ice fraction (DIC-only)
-C     useImportCO2  :: True => use the Imported atmos. CO2 from coupler
-C     useImportWSpd :: True => use the Imported surface Wind speed fr cpl
+C     useImportRunOff :: True => use the Imported RunOff flux from coupler
+C     useImportSIce   :: True => use the Imported Sea-Ice loading from coupler
+C     useImportThSIce :: True => use the Imported thSIce state vars from coupler
+C     useImportSltPlm :: True => use the Imported Salt-Plume flux from coupler
+C     useImportFice   :: True => use the Imported Seaice fraction (DIC-only)
+C     useImportCO2    :: True => use the Imported atmos. CO2 from coupler
+C     useImportWSpd   :: True => use the Imported surf. Wind speed from coupler
 C     cpl_taveFreq  :: Frequency^-1 for time-Aver. output (s)
       NAMELIST /CPL_OCN_PARAM/
      &    cpl_earlyExpImpCall,
      &    useImportHFlx, useImportFW, useImportTau,
-     &    useImportSLP, useImportSIce, useImportFIce,
-     &    useImportCO2, useImportWSpd,
+     &    useImportSLP,  useImportRunOff,
+     &    useImportSIce, useImportThSIce, useImportSltPlm,
+     &    useImportFice, useImportCO2, useImportWSpd,
      &    cpl_taveFreq, cpl_snapshot_mnc, cpl_timeave_mnc
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -88,15 +90,20 @@ C--   Open the data file
 
 C-    Set default value:
       cpl_earlyExpImpCall = .TRUE.
-      useImportHFlx = .TRUE.
-      useImportFW   = .TRUE.
-      useImportTau  = .TRUE.
-      useImportSLP  = .TRUE.
-      useImportSIce = .TRUE.
-      useImportFIce = ocn_cplExch_DIC
-      useImportCO2  = ocn_cplExch_DIC
-      useImportWSpd = ocn_cplExch_DIC
-      cpl_taveFreq  = taveFreq
+      useImportHFlx   = .TRUE.
+      useImportFW     = .TRUE.
+      useImportTau    = .TRUE.
+      useImportSLP    = .TRUE.
+      useImportRunOff = cpl_exchange_RunOff.EQ.3
+      useImportSIce   = cpl_exchange1W_sIce.EQ.3
+      useImportThSIce = cpl_exchange2W_sIce.EQ.3
+      useImportSltPlm = cpl_exchange_SaltPl.EQ.3
+      useImportFice   =( cpl_exchange_DIC .EQ. 3 .AND.
+     &                  cpl_exchange1W_sIce.EQ.3 )
+c    &             .OR. cpl_exchange2W_sIce.EQ.3
+      useImportCO2    =  cpl_exchange_DIC .EQ. 3
+      useImportWSpd   =  cpl_exchange_DIC .EQ. 3
+      cpl_taveFreq    = taveFreq
 #ifdef ALLOW_MNC
       cpl_snapshot_mnc = snapshot_mnc
       cpl_timeave_mnc  = timeave_mnc
@@ -131,6 +138,51 @@ C--   Check for retired parameters:
 
 C--   Check parameters and model configuration
 
+#ifndef ALLOW_DIC
+      IF ( ocn_cplExch_RunOff ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: needs',
+     &    ' to compile pkg/dic to use: ocn_cplExch_RunOff=T'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' (set from Coupler "data.cpl": cpl_exchange_RunOff=1,3)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        cplErrorCount = cplErrorCount + 1
+      ENDIF
+#endif /* ndef ALLOW_DIC */
+#ifndef ALLOW_THSICE
+      IF ( ocn_cplExch2W_sIce ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: needs',
+     &    ' to compile pkg/thsice to use: ocn_cplExch2W_sIce=T'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' (set from Coupler "data.cpl": cpl_exchange2W_sIce=1,3)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        cplErrorCount = cplErrorCount + 1
+      ENDIF
+#endif /* ndef ALLOW_THSICE */
+#ifndef ALLOW_SALT_PLUME
+      IF ( ocn_cplExch_SaltPl ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: needs',
+     &    ' compiled pkg/salt_plume to use: ocn_cplExch_SaltPl=T'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' (set from Coupler "data.cpl": cpl_exchange_SaltPl=1,3)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        cplErrorCount = cplErrorCount + 1
+      ENDIF
+#endif /* ndef ALLOW_SALT_PLUME */
+#ifndef ALLOW_DIC
+      IF ( ocn_cplExch_DIC ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: needs',
+     &    ' to compile pkg/dic to use: ocn_cplExch_DIC = T'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' (set from Coupler "data.cpl": cpl_exchange_DIC = 1,3)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        cplErrorCount = cplErrorCount + 1
+      ENDIF
+#endif /* ndef ALLOW_DIC */
+
 C-    If cpl_taveFreq is positive, then must compile the timeave pkg code
 #ifndef ALLOW_TIMEAVE
       IF (cpl_taveFreq.GT.0.) THEN
@@ -142,7 +194,7 @@ C-    If cpl_taveFreq is positive, then must compile the timeave pkg code
         CALL PRINT_ERROR( msgBuf, myThid)
         cplErrorCount = cplErrorCount + 1
       ENDIF
-#endif /* ALLOW_TIMEAVE */
+#endif /* ndef ALLOW_TIMEAVE */
 
 #ifndef ATMOSPHERIC_LOADING
       iUnit = errorMessageUnit
@@ -165,10 +217,61 @@ C        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ENDIF
 #endif /* ATMOSPHERIC_LOADING */
 
-      IF ( ( useImportFice.OR.useImportCO2.OR.useImportWSpd ) .AND.
-     &    (.NOT.ocn_cplExch_DIC) ) THEN
+      IF ( useImportRunOff .AND. cpl_exchange_RunOff.NE.3 ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: useImportRunOff',
+     &    ' requires setting'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' cpl_exchange_RunOff = 3 (in Coupler "data.cpl")'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        cplErrorCount = cplErrorCount + 1
+      ENDIF
+      IF ( ( useImportSIce .OR.
+     &       useImportFice.AND.cpl_exchange2W_sIce.NE.3 )
+     &   .AND. cpl_exchange1W_sIce.NE.3 ) THEN
         WRITE(msgBuf,'(2A)') 'CPL_READPARMS: useImport',
-     &    ' with DIC variables requires ocn_cplExch_DIC TRUE'
+     &    ' SIce-Mass/Frac requires setting'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' cpl_exchange1W_sIce = 3 (in Coupler "data.cpl")'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        cplErrorCount = cplErrorCount + 1
+      ENDIF
+      IF ( useImportThSIce .AND. .NOT.ocn_cplExch2W_sIce ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: useImportThSIce',
+     &    ' requires setting'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' cpl_exchange2W_sIce=1,3 (in Coupler "data.cpl")'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        cplErrorCount = cplErrorCount + 1
+      ELSEIF ( useImportThSIce .AND. cpl_exchange2W_sIce.NE.3 ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** CPL_READPARMS: ',
+     &    'useImportThSIce useless without'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** CPL_READPARMS: ',
+     &    ' cpl_exchange2W_sIce = 3 (in Coupler "data.cpl")'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+      IF ( useImportSltPlm .AND. cpl_exchange_SaltPl.NE.3 ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: useImportSltPlm',
+     &    ' requires setting'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' cpl_exchange_SaltPl = 3 (in Coupler "data.cpl")'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        cplErrorCount = cplErrorCount + 1
+      ENDIF
+      IF ( ( useImportFice.AND.cpl_exchange2W_sIce.NE.3
+     &       .OR. useImportCO2 .OR. useImportWSpd )
+     &   .AND. cpl_exchange_DIC.NE.3 ) THEN
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: useImport',
+     &    ' with DIC variables requires setting'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        WRITE(msgBuf,'(2A)') 'CPL_READPARMS: ',
+     &    ' cpl_exchange_DIC = 3 (in Coupler "data.cpl")'
         CALL PRINT_ERROR( msgBuf, myThid)
         cplErrorCount = cplErrorCount + 1
       ENDIF
@@ -235,29 +338,39 @@ C-    print namelist parameter value:
        CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
 
        CALL WRITE_0D_L( useImportHFlx, INDEX_NONE,
-     &                 'useImportHFlx=',
+     &                 'useImportHFlx  =',
      &   ' /* use Imported Heat-Flx fr Coupler on/off flag */')
        CALL WRITE_0D_L( useImportFW  , INDEX_NONE,
-     &                 'useImportFW  =',
+     &                 'useImportFW    =',
      &   ' /* use Imported Fresh-Water fr Cpl. on/off flag */')
        CALL WRITE_0D_L( useImportTau , INDEX_NONE,
-     &                 'useImportTau =',
+     &                 'useImportTau   =',
      &   ' /* use Imported Wind-Stress fr Cpl. on/off flag */')
        CALL WRITE_0D_L( useImportSLP , INDEX_NONE,
-     &                 'useImportSLP =',
+     &                 'useImportSLP   =',
      &   ' /* use Imported Sea-level Atm Press on/off flag */')
+       CALL WRITE_0D_L( useImportRunOff , INDEX_NONE,
+     &                 'useImportRunOff=',
+     &   ' /* use Imported Run-Off fr Cpl. on/off flag */')
        CALL WRITE_0D_L( useImportSIce , INDEX_NONE,
-     &                 'useImportSIce=',
+     &                 'useImportSIce  =',
      &   ' /* use Imported Sea-Ice loading on/off flag */')
-       CALL WRITE_0D_L( useImportFIce , INDEX_NONE,
-     &                 'useImportFIce=',
-     &   ' /* use Imported Sea-Ice Fract fr Cpl. on/off flag */')
+       CALL WRITE_0D_L( useImportThSIce , INDEX_NONE,
+     &                 'useImportThSIce=',
+     &   ' /* use Imported thSIce state-var on/off flag */')
+       CALL WRITE_0D_L( useImportSltPlm , INDEX_NONE,
+     &                 'useImportSltPlm=',
+     &   ' /* use Imported Salt-Plume flux on/off flag */')
+       CALL WRITE_0D_L( useImportFice , INDEX_NONE,
+     &                 'useImportFice  =',
+     &   ' /* use Imported Seaice Frac (DIC-only) flag */')
        CALL WRITE_0D_L( useImportCO2  , INDEX_NONE,
-     &                 'useImportCO2 =',
+     &                 'useImportCO2   =',
      &   ' /* use Imported Atmos. CO2 fr Cpl. on/off flag */')
        CALL WRITE_0D_L( useImportWSpd , INDEX_NONE,
-     &                 'useImportWSpd =',
+     &                 'useImportWSpd  =',
      &   ' /* use Imported Windspeed fr Cpl. on/off flag */')
+
        CALL WRITE_0D_RL( cpl_taveFreq, INDEX_NONE, 'cpl_taveFreq =',
      &   ' /* Frequency^-1 for time-Aver. output (s) */')
        CALL WRITE_0D_L( cpl_timeave_mnc , INDEX_NONE,
