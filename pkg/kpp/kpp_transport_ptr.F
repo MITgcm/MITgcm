@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_ptr.F,v 1.17 2015/07/17 14:26:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_ptr.F,v 1.18 2016/01/07 19:28:42 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -49,8 +49,6 @@ c#include "PTRACERS_PARAMS.h"
 #endif
 #ifdef ALLOW_OFFLINE
 # include "OFFLINE_SWITCH.h"
-#else
-      LOGICAL offlineLoadKPP
 #endif
 
 C     == Routine arguments ==
@@ -76,6 +74,10 @@ C     == Local variables ==
 C     i, j      :: Loop counters
       INTEGER i, j
       _RL tmpFac
+#ifndef ALLOW_OFFLINE
+      LOGICAL offlineLoadKPP
+      offlineLoadKPP = .FALSE.
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
