@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.275 2015/11/20 18:12:50 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.276 2016/01/07 20:21:42 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -1964,26 +1964,39 @@ else
 fi
 rm -f genmake_tcomp*
 
-printf "  Do we have the etime() command using $FC...  "
+printf "  Do we have the etime() command using $FC... "
 cat > genmake_tcomp.$FS <<EOF
       program hello
-      REAL*4 ACTUAL, TARRAY(2)
-      EXTERNAL ETIME
-      REAL*4 ETIME
-      actual = etime( tarray )
-      print *, tarray
+      REAL*4 actual, tarray(2)
+      actual = -999.
+      call ETIME( tarray, actual )
+      if ( actual.ge.0. ) then
+        print *, 0, tarray, actual
+      else
+        print *, 1, tarray, actual
+      endif
       end
 EOF
 $FC $FFLAGS -o genmake_tcomp genmake_tcomp.$FS > genmake_tcomp.log 2>&1
 RETVAL=$?
 if test "x$RETVAL" = x0 ; then
+    echo -n 'c,'
+    ./genmake_tcomp > genmake_tcomp.out 2>&1
+    RETVAL=$?
+fi
+if test "x$RETVAL" = x0 ; then
+    echo -n 'r:'
+    RETVAL=`cat genmake_tcomp.out | $AWK '{print $1}'`
+fi
+if test "x$RETVAL" = x0 ; then
     HAVE_ETIME=t
     DEFINES="$DEFINES -DHAVE_ETIME"
-    echo "yes"
+    echo " yes"
 else
     HAVE_ETIME=
-    echo "no"
+    echo " no"
 fi
+#mkdir chk_etime ; cp -p -f genmake_tcomp* chk_etime
 rm -f genmake_tcomp*
 
 printf "  Can we call simple C routines (here, \"cloc()\") using $FC...  "
