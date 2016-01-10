@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.69 2015/12/25 15:19:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.70 2016/01/10 18:14:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -94,7 +94,7 @@ C       |-- MYPACKAGE_CHECK
 C       |
 C       |-- GAD_CHECK
 
-      !USES:
+C     !USES:
       IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
@@ -390,7 +390,7 @@ C---  Continue with standard packages (with standard usePKG flag)
 #endif
 
 #ifdef ALLOW_AUTODIFF
-      if (useAUTODIFF) CALL AUTODIFF_CHECK( myThid )
+      IF (useAUTODIFF) CALL AUTODIFF_CHECK( myThid )
 #endif
 
 #ifdef ALLOW_CTRL
