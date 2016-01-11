@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_read_co2_pickup.F,v 1.2 2011/03/14 01:38:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_read_co2_pickup.F,v 1.3 2016/01/11 21:46:55 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -20,12 +20,6 @@ C     myThid  :: my Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_DIC
-
-#ifdef USE_ATMOSCO2
-C if coupled to atmsopheric model, use the
-C CO2 value passed from the coupler
-
-#else /* USE_ATMOSCO2 */
 
 C     !FUNCTIONS
       INTEGER  MDS_RECLEN
@@ -81,8 +75,6 @@ C--   First check if pickup file exist
        _END_MASTER(myThid)
 c      _BARRIER
       ENDIF
-
-#endif /* ndef USE_ATMOSCO2 */
 
 #endif /*  ALLOW_DIC  */
 

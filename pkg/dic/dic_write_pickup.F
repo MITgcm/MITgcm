@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_write_pickup.F,v 1.13 2016/01/02 15:01:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_write_pickup.F,v 1.14 2016/01/11 21:46:55 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -41,11 +41,9 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER prec
-#ifndef USE_ATMOSCO2
       INTEGER ioUnit
       _RL tmpFld(2)
       _RS dummyRS(1)
-#endif
 #ifdef DIC_BIOTIC
       LOGICAL glf
       _RL     timList(1)
@@ -59,7 +57,6 @@ C     == Local variables ==
 c     IF ( DIC_pickup_write_mdsio ) THEN
         prec = precFloat64
 
-#ifndef USE_ATMOSCO2
         IF ( dic_int1.EQ.3 ) THEN
           WRITE(fn,'(A,A)') 'pickup_dic_co2atm.',suff
           ioUnit = 0
@@ -77,7 +74,6 @@ c     IF ( DIC_pickup_write_mdsio ) THEN
      I                         0, 0, 1, myIter, myThid )
 #endif
         ENDIF
-#endif /* ndef USE_ATMOSCO2 */
 
 #ifdef DIC_BIOTIC
         WRITE(fn,'(A,A)') 'pickup_dic.',suff

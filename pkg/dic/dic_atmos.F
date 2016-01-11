@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.19 2016/01/02 02:57:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.20 2016/01/11 21:46:55 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -38,12 +38,6 @@ C  myThid             :: my Thread Id number
       INTEGER myIter, myThid
 
 #ifdef ALLOW_DIC
-
-#ifdef USE_ATMOSCO2
-C if coupled to atmsopheric model, use the
-C CO2 value passed from the coupler
-
-#else /* USE_ATMOSCO2 */
 
 C !FUNCTIONS:       ====================================================
       LOGICAL  DIFFERENT_MULTIPLE
@@ -211,8 +205,6 @@ C--    Set AtmospCO2 for next iteration:
 #ifndef ALLOW_AUTODIFF
       ENDIF
 #endif
-
-#endif /* ndef USE_ATMOSCO2 */
 
 #endif /* ALLOW_DIC */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_store_fluxco2.F,v 1.4 2015/12/31 21:40:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_store_fluxco2.F,v 1.5 2016/01/11 21:46:55 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -44,7 +44,6 @@ C     i,j    :: Loop counters
 C     bi,bj  :: Tile index
       INTEGER i,j,bi,bj
 
-#ifdef USE_ATMOSCO2
       IF ( ocn_cplExch_DIC ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -56,7 +55,6 @@ C     bi,bj  :: Tile index
         ENDDO
        ENDDO
       ENDIF
-#endif
 
 #endif /* COMPONENT_MODULE */
 

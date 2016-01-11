@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_OPTIONS.h,v 1.13 2015/01/11 21:16:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_OPTIONS.h,v 1.14 2016/01/11 21:46:55 jmc Exp $
 C $Name:  $
 
 #ifndef DIC_OPTIONS_H
@@ -19,7 +19,6 @@ C     Package-specific Options & Macros go here
 C these all need to be defined for coupling to atmospheric model:
 #undef USE_QSW
 #undef USE_QSW_UNDERICE
-#undef USE_ATMOSCO2
 #undef USE_PLOAD
 
 C use surface salinity forcing (scaled by mean surf value) for DIC & ALK forcing

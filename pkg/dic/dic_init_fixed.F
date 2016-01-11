@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.12 2010/05/14 21:52:33 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.13 2016/01/11 21:46:55 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -64,8 +64,6 @@ C coefficients for determining saturation O2
 
 C     Set other constant/flag
 
-#ifndef USE_ATMOSCO2
-
       IF ( dic_int1.EQ.2 ) THEN
         CALL MDSFINDUNIT( iUnit, mythid )
         OPEN(UNIT=iUnit,FILE='co2atmos.dat',STATUS='old')
@@ -75,8 +73,6 @@ C     Set other constant/flag
         ENDDO
         CLOSE(iUnit)
       ENDIF
-
-#endif /* ndef USE_ATMOSCO2 */
 
 #ifdef DIC_BIOTIC
 #ifdef ALLOW_AUTODIFF
