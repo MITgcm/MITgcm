@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.12 2012/05/08 15:09:26 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.13 2016/01/11 20:46:05 jmc Exp $
 # $Name:  $
 
 rnp_loc()
@@ -140,7 +140,7 @@ then
   else
     iter=`echo $lastPick | awk '{print $1}'`
     sufx=`echo $lastPick | awk '{print $2}'`
-    echo "from previous run std.outp, lastPick='$lastPick' ; iter='$iter' ; sufx='$sufx'"
+    echo "from previous run $outpRun, lastPick='$lastPick' ; iter='$iter' ; sufx='$sufx'"
   fi
 else
   echo "no standard output file '$outpRun' from previous run"
@@ -417,8 +417,13 @@ do
    diff $dir1/$zz${xx}data $dir3
    out=$?
    if test $out != 0 ; then
-    echo 'Diff outp=' $out ' ==> stop'
-    exit 4
+    #-- refined check: exclude diff between +0 and -0
+    nbDif=`cmp -l  $dir1/$zz${xx}data $dir3/$zz${xx}data \
+           | sed -e '/ 0 200$/d' -e '/ 200   0$/d' | wc -l`
+    if test $nbDif != 0 ; then
+     echo "Diff outp= $out (nb-Diff= $nbDif ) ==> stop"
+     exit 4
+    fi
    fi
    if test $chkmeta = 'Y' -a -f $dir1/$zz${xx}meta ; then
     echo ' diff' $dir1/$zz${xx}meta $dir3
