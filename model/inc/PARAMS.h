@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.280 2015/07/03 21:32:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.281 2016/01/11 22:48:22 jmc Exp $
 C $Name:  $
 C
 
@@ -297,9 +297,9 @@ C     useJamartMomAdv :: Use wet-point method for V.I. non-linear term
 C     upwindVorticity :: bias interpolation of vorticity in the Coriolis term
 C     highOrderVorticity :: use 3rd/4th order interp. of vorticity (V.I., advection)
 C     useAbsVorticity :: work with f+zeta in Coriolis terms
-C     upwindShear        :: use 1rst order upwind interp. (V.I., vertical advection)
+C     upwindShear     :: use 1rst order upwind interp. (V.I., vertical advection)
 C     momStepping    :: Turns momentum equation time-stepping off
-C     calc_wVelocity :: Turns of vertical velocity calculation off
+C     calc_wVelocity :: Turns vertical velocity calculation off
 C- Temp. & Salt params:
 C     tempStepping   :: Turns temperature equation time-stepping on/off
 C     saltStepping   :: Turns salinity equation time-stepping on/off
@@ -337,6 +337,7 @@ C     nonHydrostatic   :: Using non-hydrostatic algorithm
 C     use3Dsolver      :: set to true to use 3-D pressure solver
 C     implicitIntGravWave :: treat Internal Gravity Wave implicitly
 C     staggerTimeStep   :: enable a Stagger time stepping U,V (& W) then T,S
+C     applyExchUV_early :: Apply EXCH to U,V earlier, just before integr_continuity
 C     doResetHFactors   :: Do reset thickness factors @ beginning of each time-step
 C     implicitDiffusion :: Turns implicit vertical diffusion on
 C     implicitViscosity :: Turns implicit vertical viscosity on
@@ -407,7 +408,8 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
      & uniformLin_PhiSurf, uniformFreeSurfLev,
      & exactConserv, linFSConserveTr, useRealFreshWaterFlux,
      & quasiHydrostatic, nonHydrostatic, use3Dsolver,
-     & implicitIntGravWave, staggerTimeStep, doResetHFactors,
+     & implicitIntGravWave, staggerTimeStep,
+     & applyExchUV_early, doResetHFactors,
      & implicitDiffusion, implicitViscosity, implBottomFriction,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
      & multiDimAdvection, useMultiDimAdvec,
@@ -493,6 +495,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL use3Dsolver
       LOGICAL implicitIntGravWave
       LOGICAL staggerTimeStep
+      LOGICAL applyExchUV_early
       LOGICAL doResetHFactors
       LOGICAL implicitDiffusion
       LOGICAL implicitViscosity

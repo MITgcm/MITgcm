@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.175 2015/07/03 21:32:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.176 2016/01/11 22:49:55 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -176,6 +176,7 @@ C-    viscosity and diffusivity default value:
       hFacMinDrDefault    = 0. _d 0
       implicitIntGravWave = .FALSE.
       staggerTimeStep     = .FALSE.
+      applyExchUV_early   = .FALSE.
       doResetHFactors     = .FALSE.
       momViscosity        = .TRUE.
       momAdvection        = .TRUE.

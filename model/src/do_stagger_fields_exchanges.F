@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_stagger_fields_exchanges.F,v 1.11 2014/08/07 17:32:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_stagger_fields_exchanges.F,v 1.12 2016/01/11 22:49:55 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -38,12 +38,12 @@ C-    Apply Exchanges on dynamics state variable, except in Off-Line mode
 C- note: use less common EXCH S/R here (instead of usual ones) to
 C        force TAF to also generate AD version for these rare ones
       IF ( staggerTimeStep ) THEN
-c       CALL EXCH_UV_XYZ_RL( uVel,vVel, .TRUE., myThid )
-        CALL EXCH_UV_3D_RL( uVel, vVel, .TRUE., Nr, myThid )
-c       IF ( .NOT.implicitIntGravWave )
-c    &  _EXCH_XYZ_RL( wVel, myThid )
+        IF ( .NOT.applyExchUV_early )
+     &   CALL EXCH_UV_3D_RL( uVel, vVel, .TRUE., Nr, myThid )
+c    &   CALL EXCH_UV_XYZ_RL( uVel,vVel, .TRUE., myThid )
         IF ( .NOT.implicitIntGravWave )
      &   CALL EXCH_3D_RL( wVel, Nr, myThid )
+c    &  _EXCH_XYZ_RL( wVel, myThid )
       ENDIF
 c #ifdef ALLOW_NONHYDROSTATIC
       IF ( implicitIntGravWave ) THEN
