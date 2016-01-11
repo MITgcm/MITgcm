@@ -1,9 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2220 2016/01/06 02:24:41 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2221 2016/01/11 22:56:33 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - to check restart test, add option to apply EXCH to U,V earlier, just before
+    integr_continuity; turned off by default.
+o pkg/dic:
+  - remove CPP option USE_ATMOSCO2 (not needed)
+o tools/tst_2+2:
+  - try to ignore difference between +0 and -0 in binary file, causing test
+    to fail for no good reason.
+o eesupp & genmake2:
+  - put back modif from Jinxuan Zhu - change etime fct call to S/R call -
+    but also check (in genmake2) that test runs and returns meaningful results.
 o coupler pkgs:
   Finish implementation of optionally-exchanged variable switches (started on
    Nov 12) with addition of few more exchanged fields, including 2-way exchange
