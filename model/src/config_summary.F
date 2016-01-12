@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.149 2015/04/27 15:44:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.150 2016/01/12 21:47:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -647,6 +647,9 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L( startFromPickupAB2, INDEX_NONE,
      & 'startFromPickupAB2=',' /* start from AB-2 pickup */')
 #endif
+      CALL WRITE_0D_L( applyExchUV_early, INDEX_NONE,
+     & 'applyExchUV_early =',
+     & ' /* Apply EXCH to U,V earlier in time-step */')
       IF (useCDscheme) THEN
       CALL WRITE_0D_RL( tauCD, INDEX_NONE,'tauCD =',
      &'   /* CD coupling time-scale ( s ) */')
