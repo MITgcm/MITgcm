@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.276 2016/01/07 20:21:42 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.277 2016/01/12 20:43:00 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -1965,7 +1965,23 @@ fi
 rm -f genmake_tcomp*
 
 printf "  Do we have the etime() command using $FC... "
-cat > genmake_tcomp.$FS <<EOF
+cat > genmake_tcomp_1.$FS <<EOF
+      program hello
+      REAL*4 actual, tarray(2)
+      EXTERNAL ETIME
+      REAL*4 ETIME
+      actual = ETIME( tarray )
+      print *, tarray
+      end
+EOF
+$FC $FFLAGS -o genmake_tcomp_1 genmake_tcomp_1.$FS > genmake_tcomp.log 2>&1
+RETVAL=$?
+if test "x$RETVAL" = x0 ; then
+    HAVE_ETIME='Fct'
+    DEFINES="$DEFINES -DHAVE_ETIME_FCT"
+    echo " yes (${HAVE_ETIME})"
+else
+  cat > genmake_tcomp_2.$FS <<EOF
       program hello
       REAL*4 actual, tarray(2)
       actual = -999.
@@ -1977,24 +1993,25 @@ cat > genmake_tcomp.$FS <<EOF
       endif
       end
 EOF
-$FC $FFLAGS -o genmake_tcomp genmake_tcomp.$FS > genmake_tcomp.log 2>&1
-RETVAL=$?
-if test "x$RETVAL" = x0 ; then
+  $FC $FFLAGS -o genmake_tcomp_2 genmake_tcomp_2.$FS >> genmake_tcomp.log 2>&1
+  RETVAL=$?
+  if test "x$RETVAL" = x0 ; then
     echo -n 'c,'
-    ./genmake_tcomp > genmake_tcomp.out 2>&1
+    ./genmake_tcomp_2 > genmake_tcomp_2.out 2>&1
     RETVAL=$?
-fi
-if test "x$RETVAL" = x0 ; then
+  fi
+  if test "x$RETVAL" = x0 ; then
     echo -n 'r:'
-    RETVAL=`cat genmake_tcomp.out | $AWK '{print $1}'`
-fi
-if test "x$RETVAL" = x0 ; then
-    HAVE_ETIME=t
-    DEFINES="$DEFINES -DHAVE_ETIME"
-    echo " yes"
-else
+    RETVAL=`cat genmake_tcomp_2.out | $AWK '{print $1}'`
+  fi
+  if test "x$RETVAL" = x0 ; then
+    HAVE_ETIME='SbR'
+    DEFINES="$DEFINES -DHAVE_ETIME_SBR"
+    echo " yes (${HAVE_ETIME})"
+  else
     HAVE_ETIME=
     echo " no"
+  fi
 fi
 #mkdir chk_etime ; cp -p -f genmake_tcomp* chk_etime
 rm -f genmake_tcomp*
