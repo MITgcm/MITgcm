@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2222 2016/01/13 00:47:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2223 2016/01/13 14:53:48 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint65s (2016/01/13)
 o eesupp & genmake2:
    - first check for Function ETIME and, if it fails, then check for subroutine
      ETIME and consistent output; use the appropriate version in timers.F
