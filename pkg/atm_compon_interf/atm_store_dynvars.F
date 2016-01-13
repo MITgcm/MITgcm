@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_store_dynvars.F,v 1.2 2015/11/12 01:01:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_store_dynvars.F,v 1.3 2016/01/13 21:36:26 jmc Exp $
 C $Name:  $
 
 #include "ATM_CPL_OPTIONS.h"
@@ -25,7 +25,6 @@ C     !USES:
 
 C     == Global variables ==
 #include "SIZE.h"
-
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
@@ -47,17 +46,19 @@ C     myThid    :: My Thread Id. number
 C     !LOCAL VARIABLES:
 C     i, j      :: Loop counters
       INTEGER i,j
-      _RL cplTimeFraction
+c     _RL cplTimeFraction
 CEOP
 
 C     o Accumulate Sea-level pressure anomaly from dynamical core
 C       to the coupling layer. Eta is in Pa
-       cplTimeFraction = 1. _d 0 / DFLOAT(cplSendFrq_iter)
-       atmSLPrTime(bi,bj) = atmSLPrTime(bi,bj) + cplTimeFraction
+c      cplTimeFraction = 1. _d 0 / DFLOAT(cplSendFrq_iter)
+c      atmSLPrTime(bi,bj) = atmSLPrTime(bi,bj) + cplTimeFraction
+       atmSLPrTime(bi,bj) = 1. _d 0
        DO j=1,sNy
         DO i=1,sNx
-          atmSLPr(i,j,bi,bj) = atmSLPr(i,j,bi,bj)
-     &                 + etaN(i,j,bi,bj)*cplTimeFraction
+c         atmSLPr(i,j,bi,bj) = atmSLPr(i,j,bi,bj)
+c    &                 + etaN(i,j,bi,bj)*cplTimeFraction
+          atmSLPr(i,j,bi,bj) = etaN(i,j,bi,bj)
         ENDDO
        ENDDO
 

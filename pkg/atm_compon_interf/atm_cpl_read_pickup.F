@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_cpl_read_pickup.F,v 1.7 2016/01/06 00:42:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_cpl_read_pickup.F,v 1.8 2016/01/13 21:36:26 jmc Exp $
 C $Name:  $
 
 #include "ATM_CPL_OPTIONS.h"
@@ -132,7 +132,7 @@ c       CALL READ_REC_3D_RL( fn, fp, 1, ocMxlD    ,  1, myIter,myThid )
 c       CALL READ_REC_3D_RL( fn, fp, 1, SSTocn    ,  2, myIter,myThid )
 c       CALL READ_REC_3D_RL( fn, fp, 1, SSSocn    ,  3, myIter,myThid )
 c       CALL READ_REC_3D_RL( fn, fp, 1, vSqocn    ,  4, myIter,myThid )
-        CALL READ_REC_3D_RL( fn, fp, 1, atmSLPr   ,  5, myIter,myThid )
+c       CALL READ_REC_3D_RL( fn, fp, 1, atmSLPr   ,  5, myIter,myThid )
         CALL READ_REC_3D_RL( fn, fp, 1, HeatFlux  ,  6, myIter,myThid )
         CALL READ_REC_3D_RL( fn, fp, 1, qShortWave,  7, myIter,myThid )
         CALL READ_REC_3D_RL( fn, fp, 1, tauX      ,  8, myIter,myThid )
@@ -164,8 +164,6 @@ C---    read ATM_CPL 3-D fields for restart
         nj = nj*Nr
 
 C---    read ATM_CPL 2-D fields for restart
-        CALL READ_MFLDS_3D_RL( 'SLPress ', atmSLPr,
-     &                                 nj, fp, 1 , myIter, myThid )
         CALL READ_MFLDS_3D_RL( 'qHeatFlx', HeatFlux,
      &                                 nj, fp, 1 , myIter, myThid )
         CALL READ_MFLDS_3D_RL( 'qShortW ', qShortWave,

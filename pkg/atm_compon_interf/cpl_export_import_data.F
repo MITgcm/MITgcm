@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_export_import_data.F,v 1.5 2016/01/06 00:52:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_export_import_data.F,v 1.6 2016/01/13 21:36:26 jmc Exp $
 C $Name:  $
 
 #include "ATM_CPL_OPTIONS.h"
@@ -68,7 +68,7 @@ C-    Send data to coupling layer
 C-    Store state variables (without averaging over cplSendFrq_iter time-steps)
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-c          CALL ATM_STORE_DYNVARS( bi, bj, myTime, myIter, myThid )
+           CALL ATM_STORE_DYNVARS( bi, bj, myTime, myIter, myThid )
            IF ( useThSIce ) THEN
             CALL ATM_STORE_THSICE( bi, bj, myTime, myIter, myThid )
            ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_write_pickup.F,v 1.8 2016/01/06 00:42:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_write_pickup.F,v 1.9 2016/01/13 21:36:26 jmc Exp $
 C $Name:  $
 
 #include "ATM_CPL_OPTIONS.h"
@@ -78,11 +78,6 @@ C-    Then switch to 2-D fields:
 c       nj = -j*Nr
 C     record number < 0 : a hack not to write meta files now:
 c       nj = nj-1
-        j = j + 1
-        CALL WRITE_REC_3D_RL( fn, fp, 1,
-     &                        atmSLPr   , -j, myIter, myThid )
-        IF (j.LE.listDim) wrFldList(j) = 'SLPress '
-
         j = j + 1
         CALL WRITE_REC_3D_RL( fn, fp, 1,
      &                        HeatFlux  , -j, myIter, myThid )
