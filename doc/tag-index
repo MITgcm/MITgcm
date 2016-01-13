@@ -1,8 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2223 2016/01/13 14:53:48 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2224 2016/01/13 23:15:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/atm_compon_interf:
+  - skip time-ave over cpl_atmSendFrq of Sea-Level Pressure (atmSLPr) and just 
+    pass last value, stored directly before export to CPL ;
+    Note: this affects results of Coupled set-up where OCN uses useImportSLP=T
+  - remove atmSLPr from pickup files (no longer needed for restart)
 
 checkpoint65s (2016/01/13)
 o eesupp & genmake2:
