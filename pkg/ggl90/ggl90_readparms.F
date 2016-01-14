@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.14 2015/02/19 15:44:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.15 2016/01/14 17:44:26 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -53,7 +53,7 @@ C--   GGL90 vertical mixing parameters
      &     GGL90TKEmin, GGL90TKEsurfMin, GGL90TKEbottom,
      &     GGL90mixingLengthMin, mxlMaxFlag, mxlSurfFlag,
      &     GGL90viscMax, GGL90diffMax, GGL90TKEFile,
-     &     GGL90_dirichlet, useIDEMIX
+     &     GGL90_dirichlet, calcMeanVertShear, useIDEMIX
 
 #ifdef ALLOW_GGL90_IDEMIX
 c-----------------------------------------------------------------------
@@ -112,6 +112,7 @@ C     Blanke and Delecluse (1993, JPO) use
       mxlSurfFlag          = .FALSE.
       GGL90TKEFile         = ' '
       GGL90_dirichlet      = .TRUE.
+      calcMeanVertShear    = .FALSE.
       useIDEMIX            = .FALSE.
 
 #ifdef ALLOW_GGL90_IDEMIX
@@ -126,7 +127,7 @@ C-----------------------------------------------------------------------
       IDEMIX_mixing_efficiency = 0.1666 _d 0
       IDEMIX_diff_max   = 1.0 _d 0
       IDEMIX_diff_min   = 1.0 _d -9
-      IDEMIX_frac_F_b   = 1.0 _d 0 
+      IDEMIX_frac_F_b   = 1.0 _d 0
       IDEMIX_frac_F_s   = 0.2 _d 0
 C     IDEMIX_tidal_file = 'tidal_energy.bin'
 C     IDEMIX_wind_file  = 'wind_energy.bin'
@@ -135,7 +136,6 @@ C     IDEMIX_wind_file  = 'wind_energy.bin'
       IDEMIX_include_GM = .FALSE.
       IDEMIX_include_GM_bottom = .FALSE.
 #endif /* ALLOW_GGL90_IDEMIX */
-
 
 C-----------------------------------------------------------------------
 C define some non-dimensional constants and
@@ -287,6 +287,9 @@ C--   print TKE vertical mixing parameters to stdout for better debugging
       CALL WRITE_0D_L(mxlSurfFlag,INDEX_NONE,
      &     'mxlSurfFlag =',
      &     '   /* GGL90 flag for near surface mixing. */')
+      CALL WRITE_0D_L( calcMeanVertShear, INDEX_NONE,
+     &     'calcMeanVertShear =',
+     &     ' /* calc Mean of Vert.Shear (vs shear of Mean flow) */')
       iL = MAX_LEN_MBUF - 22
       iL = MIN( iL, MAX(ILNBLNK(GGL90TKEFile),1) )
       WRITE(msgBuf,'(A,A)')'GGL90: GGL90TKEFile = ',GGL90TKEFile(1:iL)
@@ -297,9 +300,9 @@ C--   print TKE vertical mixing parameters to stdout for better debugging
 #ifdef ALLOW_GGL90_IDEMIX
 c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
-      CALL WRITE_0D_L(useIDEMIX,INDEX_NONE, 'useIDEMIX =', 
+      CALL WRITE_0D_L(useIDEMIX,INDEX_NONE, 'useIDEMIX =',
      &     '   /* turn on IDEMIX contribution. */')
-C     
+C
       IF ( useIDEMIX ) THEN
        CALL WRITE_0D_RL( IDEMIX_tau_v, INDEX_NONE,'IDEMIX_tau_v =',
      &     '   /* IDEMIX vertical group speed parameter. */')
@@ -327,9 +330,9 @@ C
        CALL WRITE_0D_L(IDEMIX_include_GM_bottom,INDEX_NONE,
      & 'IDEMIX_include_GM_bottom =', '   /* IDEMIX GM flag */')
 C
-       CALL WRITE_0D_C( IDEMIX_tidal_file, -1, INDEX_NONE, 
+       CALL WRITE_0D_C( IDEMIX_tidal_file, -1, INDEX_NONE,
      &  'IDEMIX_tidal_file =', ' /* file name of tidal energy field */')
-       CALL WRITE_0D_C( IDEMIX_wind_file, -1, INDEX_NONE, 
+       CALL WRITE_0D_C( IDEMIX_wind_file, -1, INDEX_NONE,
      &  'IDEMIX_wind_file  =', ' /* file name of wind energy field */')
       ENDIF
 #endif /* ALLOW_GGL90_IDEMIX */
