@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.33 2015/07/02 04:42:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.34 2016/01/14 17:50:25 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -91,7 +91,7 @@ c     _RL     SQRTTKE
       _RL     IDEMIX_RiNumber
 #endif
       _RL     TKEdissipation
-      _RL     tempU, tempV, prTemp
+      _RL     tempU, tempUp, tempV, tempVp, prTemp
       _RL     MaxLength, tmpmlx, tmpVisc
       _RL     TKEPrandtlNumber (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     GGL90mixingLength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -126,15 +126,16 @@ C     gTKE     :: right hand side of diffusion equation
 #endif /* ALLOW_GGL90_HORIZDIFF */
 #ifdef ALLOW_GGL90_SMOOTH
       _RL p4, p8, p16
-CEOP
-      p4=0.25 _d 0
-      p8=0.125 _d 0
-      p16=0.0625 _d 0
 #endif
-      iMin = 2-OLx
-      iMax = sNx+OLx-1
-      jMin = 2-OLy
-      jMax = sNy+OLy-1
+CEOP
+
+      PARAMETER( iMin = 2-OLx, iMax = sNx+OLx-1 )
+      PARAMETER( jMin = 2-OLy, jMax = sNy+OLy-1 )
+#ifdef ALLOW_GGL90_SMOOTH
+      p4  = 0.25   _d 0
+      p8  = 0.125  _d 0
+      p16 = 0.0625 _d 0
+#endif
 
 C     set separate time step (should be deltaTtracer)
       deltaTggl90 = dTtracerLev(1)
@@ -144,16 +145,16 @@ C     explicit/implicit timestepping weights for dissipation
       explDissFac = 0. _d 0
       implDissFac = 1. _d 0 - explDissFac
 
-C     For nonlinear free surface and especially with r*-coordinates, the 
+C     For nonlinear free surface and especially with r*-coordinates, the
 C     hFacs change every timestep, so we need to update them here in the
 C     case of using IDEMIX.
        DO K=1,Nr
         Km1 = MAX(K-1,1)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          hFac = 
+          hFac =
      &         MIN(.5 _d 0,_hFacC(i,j,km1,bi,bj) ) +
-     &         MIN(.5 _d 0,_hFacC(i,j,k  ,bi,bj) ) 
+     &         MIN(.5 _d 0,_hFacC(i,j,k  ,bi,bj) )
           recip_hFacI(I,J,K)=0. _d 0
           IF ( hFac .NE. 0. _d 0 )
      &         recip_hFacI(I,J,K)=1. _d 0/hFac
@@ -429,49 +430,67 @@ C              GGL9rdiffKr etc. is robust in case of smoothing (e.g. see OPA)
         ENDDO
        ENDDO
 
+C     compute vertical shear (dU/dz)^2+(dV/dz)^2
+       IF ( calcMeanVertShear ) THEN
+C     by averaging (@ grid-cell center) the 4 vertical shear compon @ U,V pos.
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          tempU  = ( uVel( i ,j,km1,bi,bj) - uVel( i ,j,k,bi,bj) )
+          tempUp = ( uVel(i+1,j,km1,bi,bj) - uVel(i+1,j,k,bi,bj) )
+          tempV  = ( vVel(i, j ,km1,bi,bj) - vVel(i, j ,k,bi,bj) )
+          tempVp = ( vVel(i,j+1,km1,bi,bj) - vVel(i,j+1,k,bi,bj) )
+          verticalShear(i,j) = (
+     &                 ( tempU*tempU + tempUp*tempUp )*halfRL
+     &               + ( tempV*tempV + tempVp*tempVp )*halfRL
+     &                         )*recip_drC(k)*recip_drC(k)
+         ENDDO
+        ENDDO
+       ELSE
+C     from the averaged flow at grid-cell center (2 compon x 2 pos.)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          tempU = ( ( uVel(i,j,km1,bi,bj) + uVel(i+1,j,km1,bi,bj) )
+     &             -( uVel(i,j,k  ,bi,bj) + uVel(i+1,j,k  ,bi,bj) )
+     &            )*halfRL*recip_drC(k)
+          tempV = ( ( vVel(i,j,km1,bi,bj) + vVel(i,j+1,km1,bi,bj) )
+     &             -( vVel(i,j,k  ,bi,bj) + vVel(i,j+1,k  ,bi,bj) )
+     &            )*halfRL*recip_drC(k)
+          verticalShear(i,j) = tempU*tempU + tempV*tempV
+         ENDDO
+        ENDDO
+       ENDIF
+
 C     compute Prandtl number (always greater than 0)
 #ifdef ALLOW_GGL90_IDEMIX
        IF ( useIDEMIX ) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-C     vertical shear term (dU/dz)^2+(dV/dz)^2
-         tempU= .5 _d 0*( uVel(i,j,km1,bi,bj)+uVel(i+1,j,km1,bi,bj)
-     &                 -( uVel(i,j,k  ,bi,bj)+uVel(i+1,j,k  ,bi,bj)) )
-     &        *recip_drC(k)*recip_hFacI(i,j,k)
-         tempV= .5 _d 0*( vVel(i,j,km1,bi,bj)+vVel(i,j+1,km1,bi,bj)
-     &                 -( vVel(i,j,k  ,bi,bj)+vVel(i,j+1,k  ,bi,bj)) )
-     &        *recip_drC(k)*recip_hFacI(i,j,k)
-         verticalShear(i,j) = tempU*tempU + tempV*tempV
-         RiNumber = MAX(Nsquare(i,j,k),0. _d 0)
-     &        /(verticalShear(i,j)+GGL90eps)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+C     account for partical cell factor in vertical shear:
+          verticalShear(i,j) = verticalShear(i,j)
+     &                       * recip_hFacI(i,j,k)*recip_hFacI(i,j,k)
+          RiNumber = MAX(Nsquare(i,j,k),0. _d 0)
+     &         /(verticalShear(i,j)+GGL90eps)
 CML         IDEMIX_RiNumber = 1./GGL90eps
-         IDEMIX_RiNumber = MAX( KappaM(i,j)*Nsquare(i,j,k), 0. _d 0)/
-     &    (GGL90eps+IDEMIX_tau_d(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)**2)
-         prTemp         = MIN(5.*RiNumber, 6.6 _d 0*IDEMIX_RiNumber)
-         TKEPrandtlNumber(i,j,k) = MIN(10. _d 0,prTemp)
-         TKEPrandtlNumber(i,j,k) = MAX( 1. _d 0,TKEPrandtlNumber(i,j,k))
+          IDEMIX_RiNumber = MAX( KappaM(i,j)*Nsquare(i,j,k), 0. _d 0)/
+     &     (GGL90eps+IDEMIX_tau_d(i,j,k,bi,bj)*IDEMIX_E(i,j,k,bi,bj)**2)
+          prTemp         = MIN(5.*RiNumber, 6.6 _d 0*IDEMIX_RiNumber)
+          TKEPrandtlNumber(i,j,k) = MIN(10. _d 0,prTemp)
+          TKEPrandtlNumber(i,j,k) = MAX( 1. _d 0,TKEPrandtlNumber(i,j,k))
+         ENDDO
         ENDDO
-       ENDDO
        ELSE
 #else /* ndef ALLOW_GGL90_IDEMIX */
        IF (.TRUE.) THEN
 #endif /* ALLOW_GGL90_IDEMIX */
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         tempU= .5 _d 0*( uVel(i,j,km1,bi,bj)+uVel(i+1,j,km1,bi,bj)
-     &                 -( uVel(i,j,k  ,bi,bj)+uVel(i+1,j,k  ,bi,bj)) )
-     &        *recip_drC(k)
-         tempV= .5 _d 0*( vVel(i,j,km1,bi,bj)+vVel(i,j+1,km1,bi,bj)
-     &                 -( vVel(i,j,k  ,bi,bj)+vVel(i,j+1,k  ,bi,bj)) )
-     &        *recip_drC(k)
-         verticalShear(i,j) = tempU*tempU + tempV*tempV
-         RiNumber = MAX(Nsquare(i,j,k),0. _d 0)
-     &        /(verticalShear(i,j)+GGL90eps)
-         prTemp = 1. _d 0
-         IF ( RiNumber .GE. 0.2 _d 0 ) prTemp = 5. _d 0 * RiNumber
-         TKEPrandtlNumber(i,j,k) = MIN(10. _d 0,prTemp)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          RiNumber = MAX(Nsquare(i,j,k),0. _d 0)
+     &         /(verticalShear(i,j)+GGL90eps)
+          prTemp = 1. _d 0
+          IF ( RiNumber .GE. 0.2 _d 0 ) prTemp = 5. _d 0 * RiNumber
+          TKEPrandtlNumber(i,j,k) = MIN(10. _d 0,prTemp)
+         ENDDO
         ENDDO
-       ENDDO
        ENDIF
 
        DO j=jMin,jMax
@@ -662,28 +681,27 @@ C     ===============================
        DO j=1,sNy
         DO i=1,sNx
 #ifdef ALLOW_GGL90_SMOOTH
-         tmpVisc=
-     &  (
-     &   p4 *  GGL90visctmp(i  ,j  ,k) * mskCor(i  ,j  ,bi,bj)
-     &  +p8 *( GGL90visctmp(i-1,j  ,k) * mskCor(i-1,j  ,bi,bj)
-     &       + GGL90visctmp(i  ,j-1,k) * mskCor(i  ,j-1,bi,bj)
-     &       + GGL90visctmp(i+1,j  ,k) * mskCor(i+1,j  ,bi,bj)
-     &       + GGL90visctmp(i  ,j+1,k) * mskCor(i  ,j+1,bi,bj))
-     &  +p16*( GGL90visctmp(i+1,j+1,k) * mskCor(i+1,j+1,bi,bj)
-     &       + GGL90visctmp(i+1,j-1,k) * mskCor(i+1,j-1,bi,bj)
-     &       + GGL90visctmp(i-1,j+1,k) * mskCor(i-1,j+1,bi,bj)
-     &       + GGL90visctmp(i-1,j-1,k) * mskCor(i-1,j-1,bi,bj))
-     &  )
-     & /(p4
-     &  +p8 *(       maskC(i-1,j  ,k,bi,bj) * mskCor(i-1,j  ,bi,bj)
-     &       +       maskC(i  ,j-1,k,bi,bj) * mskCor(i  ,j-1,bi,bj)
-     &       +       maskC(i+1,j  ,k,bi,bj) * mskCor(i+1,j  ,bi,bj)
-     &       +       maskC(i  ,j+1,k,bi,bj) * mskCor(i  ,j+1,bi,bj))
-     &  +p16*(       maskC(i+1,j+1,k,bi,bj) * mskCor(i+1,j+1,bi,bj)
-     &       +       maskC(i+1,j-1,k,bi,bj) * mskCor(i+1,j-1,bi,bj)
-     &       +       maskC(i-1,j+1,k,bi,bj) * mskCor(i-1,j+1,bi,bj)
-     &       +       maskC(i-1,j-1,k,bi,bj) * mskCor(i-1,j-1,bi,bj))
-     &  )*maskC(i,j,k,bi,bj)*mskCor(i,j,bi,bj)
+         tmpVisc = (
+     &     p4 *    GGL90visctmp(i  ,j  ,k)*mskCor(i  ,j  ,bi,bj)
+     &    +p8 *( ( GGL90visctmp(i-1,j  ,k)*mskCor(i-1,j  ,bi,bj)
+     &           + GGL90visctmp(i+1,j  ,k)*mskCor(i+1,j  ,bi,bj) )
+     &         + ( GGL90visctmp(i  ,j-1,k)*mskCor(i  ,j-1,bi,bj)
+     &           + GGL90visctmp(i  ,j+1,k)*mskCor(i  ,j+1,bi,bj) ) )
+     &    +p16*( ( GGL90visctmp(i+1,j+1,k)*mskCor(i+1,j+1,bi,bj)
+     &           + GGL90visctmp(i-1,j-1,k)*mskCor(i-1,j-1,bi,bj) )
+     &         + ( GGL90visctmp(i+1,j-1,k)*mskCor(i+1,j-1,bi,bj)
+     &           + GGL90visctmp(i-1,j+1,k)*mskCor(i-1,j+1,bi,bj) ) )
+     &             )/(
+     &     p4
+     &    +p8 *( (  maskC(i-1,j  ,k,bi,bj)*mskCor(i-1,j  ,bi,bj)
+     &           +  maskC(i+1,j  ,k,bi,bj)*mskCor(i+1,j  ,bi,bj) )
+     &         + (  maskC(i  ,j-1,k,bi,bj)*mskCor(i  ,j-1,bi,bj)
+     &           +  maskC(i  ,j+1,k,bi,bj)*mskCor(i  ,j+1,bi,bj) ) )
+     &    +p16*( (  maskC(i+1,j+1,k,bi,bj)* mskCor(i+1,j+1,bi,bj)
+     &           +  maskC(i-1,j-1,k,bi,bj)*mskCor(i-1,j-1,bi,bj) )
+     &         + (  maskC(i+1,j-1,k,bi,bj)*mskCor(i+1,j-1,bi,bj)
+     &           +  maskC(i-1,j+1,k,bi,bj)*mskCor(i-1,j+1,bi,bj) ) )
+     &               )*maskC(i,j,k,bi,bj)*mskCor(i,j,bi,bj)
 #else
          tmpVisc = GGL90visctmp(i,j,k)
 #endif
@@ -697,31 +715,28 @@ C     ===============================
        DO j=1,sNy
         DO i=1,sNx+1
 #ifdef ALLOW_GGL90_SMOOTH
-        tmpVisc =
-     & (
-     &   p4 *(GGL90visctmp(i  ,j  ,k) * mskCor(i  ,j  ,bi,bj)
-     &       +GGL90visctmp(i-1,j  ,k) * mskCor(i-1,j  ,bi,bj))
-     &  +p8 *(GGL90visctmp(i-1,j-1,k) * mskCor(i-1,j-1,bi,bj)
-     &       +GGL90visctmp(i-1,j+1,k) * mskCor(i-1,j+1,bi,bj)
-     &       +GGL90visctmp(i  ,j-1,k) * mskCor(i  ,j-1,bi,bj)
-     &       +GGL90visctmp(i  ,j+1,k) * mskCor(i  ,j+1,bi,bj))
-     &  )
-     & /(p4 * 2. _d 0
-     &  +p8 *(      maskC(i-1,j-1,k,bi,bj) * mskCor(i-1,j-1,bi,bj)
-     &       +      maskC(i-1,j+1,k,bi,bj) * mskCor(i-1,j+1,bi,bj)
-     &       +      maskC(i  ,j-1,k,bi,bj) * mskCor(i  ,j-1,bi,bj)
-     &       +      maskC(i  ,j+1,k,bi,bj) * mskCor(i  ,j+1,bi,bj))
-     &  )
-     &  *maskC(i  ,j,k,bi,bj)*mskCor(i  ,j,bi,bj)
-     &  *maskC(i-1,j,k,bi,bj)*mskCor(i-1,j,bi,bj)
+         tmpVisc = (
+     &     p4 *(   GGL90visctmp(i-1,j  ,k)*mskCor(i-1,j  ,bi,bj)
+     &           + GGL90visctmp(i  ,j  ,k)*mskCor(i  ,j  ,bi,bj) )
+     &    +p8 *( ( GGL90visctmp(i-1,j-1,k)*mskCor(i-1,j-1,bi,bj)
+     &           + GGL90visctmp(i  ,j-1,k)*mskCor(i  ,j-1,bi,bj) )
+     &         + ( GGL90visctmp(i-1,j+1,k)*mskCor(i-1,j+1,bi,bj)
+     &           + GGL90visctmp(i  ,j+1,k)*mskCor(i  ,j+1,bi,bj) ) )
+     &             )/(
+     &     p4 * 2. _d 0
+     &    +p8 *( (  maskC(i-1,j-1,k,bi,bj)*mskCor(i-1,j-1,bi,bj)
+     &           +  maskC(i  ,j-1,k,bi,bj)*mskCor(i  ,j-1,bi,bj) )
+     &         + (  maskC(i-1,j+1,k,bi,bj)*mskCor(i-1,j+1,bi,bj)
+     &           +  maskC(i  ,j+1,k,bi,bj)*mskCor(i  ,j+1,bi,bj) ) )
+     &               )*maskC(i-1,j,k,bi,bj)*mskCor(i-1,j,bi,bj)
+     &                *maskC(i  ,j,k,bi,bj)*mskCor(i  ,j,bi,bj)
 #else
-        tmpVisc = _maskW(i,j,k,bi,bj) *
-     &                   (.5 _d 0*(GGL90visctmp(i,j,k)
-     &                            +GGL90visctmp(i-1,j,k))
-     &                   )
+         tmpVisc = _maskW(i,j,k,bi,bj) * halfRL
+     &          *( GGL90visctmp(i-1,j,k)
+     &           + GGL90visctmp(i,j,k) )
 #endif
-        tmpVisc = MIN( tmpVisc , GGL90viscMax )
-        GGL90viscArU(i,j,k,bi,bj) = MAX( tmpVisc, viscArNr(k) )
+         tmpVisc = MIN( tmpVisc , GGL90viscMax )
+         GGL90viscArU(i,j,k,bi,bj) = MAX( tmpVisc, viscArNr(k) )
         ENDDO
        ENDDO
       ENDDO
@@ -730,32 +745,28 @@ C     ===============================
        DO j=1,sNy+1
         DO i=1,sNx
 #ifdef ALLOW_GGL90_SMOOTH
-        tmpVisc =
-     & (
-     &   p4 *(GGL90visctmp(i  ,j  ,k) * mskCor(i  ,j  ,bi,bj)
-     &       +GGL90visctmp(i  ,j-1,k) * mskCor(i  ,j-1,bi,bj))
-     &  +p8 *(GGL90visctmp(i-1,j  ,k) * mskCor(i-1,j  ,bi,bj)
-     &       +GGL90visctmp(i-1,j-1,k) * mskCor(i-1,j-1,bi,bj)
-     &       +GGL90visctmp(i+1,j  ,k) * mskCor(i+1,j  ,bi,bj)
-     &       +GGL90visctmp(i+1,j-1,k) * mskCor(i+1,j-1,bi,bj))
-     &  )
-     & /(p4 * 2. _d 0
-     &  +p8 *(      maskC(i-1,j  ,k,bi,bj) * mskCor(i-1,j  ,bi,bj)
-     &       +      maskC(i-1,j-1,k,bi,bj) * mskCor(i-1,j-1,bi,bj)
-     &       +      maskC(i+1,j  ,k,bi,bj) * mskCor(i+1,j  ,bi,bj)
-     &       +      maskC(i+1,j-1,k,bi,bj) * mskCor(i+1,j-1,bi,bj))
-     &  )
-     &   *maskC(i,j  ,k,bi,bj)*mskCor(i,j  ,bi,bj)
-     &   *maskC(i,j-1,k,bi,bj)*mskCor(i,j-1,bi,bj)
+         tmpVisc = (
+     &     p4 *(   GGL90visctmp(i  ,j-1,k)*mskCor(i  ,j-1,bi,bj)
+     &           + GGL90visctmp(i  ,j  ,k)*mskCor(i  ,j  ,bi,bj) )
+     &    +p8 *( ( GGL90visctmp(i-1,j-1,k)*mskCor(i-1,j-1,bi,bj)
+     &           + GGL90visctmp(i-1,j  ,k)*mskCor(i-1,j  ,bi,bj) )
+     &         + ( GGL90visctmp(i+1,j-1,k)*mskCor(i+1,j-1,bi,bj)
+     &           + GGL90visctmp(i+1,j  ,k)*mskCor(i+1,j  ,bi,bj) ) )
+     &             )/(
+     &     p4 * 2. _d 0
+     &    +p8 *( (  maskC(i-1,j-1,k,bi,bj)*mskCor(i-1,j-1,bi,bj)
+     &           +  maskC(i-1,j  ,k,bi,bj)*mskCor(i-1,j  ,bi,bj) )
+     &         + (  maskC(i+1,j-1,k,bi,bj)*mskCor(i+1,j-1,bi,bj)
+     &           +  maskC(i+1,j  ,k,bi,bj)*mskCor(i+1,j  ,bi,bj) ) )
+     &               )*maskC(i,j-1,k,bi,bj)*mskCor(i,j-1,bi,bj)
+     &                *maskC(i,j  ,k,bi,bj)*mskCor(i,j  ,bi,bj)
 #else
-        tmpVisc = _maskS(i,j,k,bi,bj) *
-     &                   (.5 _d 0*(GGL90visctmp(i,j,k)
-     &                            +GGL90visctmp(i,j-1,k))
-     &                   )
-
+         tmpVisc = _maskS(i,j,k,bi,bj) * halfRL
+     &          *( GGL90visctmp(i,j-1,k)
+     &           + GGL90visctmp(i,j,k) )
 #endif
-        tmpVisc = MIN( tmpVisc , GGL90viscMax )
-        GGL90viscArV(i,j,k,bi,bj) = MAX( tmpVisc, viscArNr(k) )
+         tmpVisc = MIN( tmpVisc , GGL90viscMax )
+         GGL90viscArV(i,j,k,bi,bj) = MAX( tmpVisc, viscArNr(k) )
         ENDDO
        ENDDO
       ENDDO
