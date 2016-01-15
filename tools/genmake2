@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.277 2016/01/12 20:43:00 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.278 2016/01/15 22:08:17 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -32,8 +32,7 @@ Usage: "$0" [OPTIONS]
 	  "tools/adjoint_options/adjoint_oad" (for OpenAD built) or
 	  "tools/adjoint_options/adjoint_default" will be used.
 
-    -nooptfile | --nooptfile
-      -optfile NAME | --optfile NAME | -of NAME | --of NAME
+    -optfile NAME | --optfile NAME | -of NAME | --of NAME
       -optfile=NAME | --optfile=NAME | -of=NAME | --of=NAME
 	  Use "NAME" as the optfile.  By default, an attempt will be
 	  made to find an appropriate "standard" optfile in the
@@ -1408,8 +1407,6 @@ for ac_option in "$@" ; do
 	-help | --help | -h | --h)
 	    usage ;;
 
-	-nooptfile | --nooptfile)
-	    OPTFILE="NONE" ;;
 	-optfile | --optfile | -of | --of)
 	    ac_prev=OPTFILE ;;
 	-optfile=* | --optfile=* | -of=* | --of=*)
