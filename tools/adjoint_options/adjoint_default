@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.37 2014/01/03 17:11:06 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.38 2016/01/15 18:36:15 jmc Exp $
 #  $Name:  $
 
 #  This AD option-file contains the default settings for the adjoint
@@ -21,6 +21,17 @@ SVD_TAMC_FLAGS="-reverse -forward -pure -i4 -r4 -l tamc_svd.log $SVD_TAMC_FLAGS"
 AD_TAF_FLAGS="-reverse -i4 -r4 -intrinsic system,flush -l taf_ad.log $AD_TAF_FLAGS"
 FTL_TAF_FLAGS="-forward -i4 -r4 -intrinsic system,flush -l taf_ftl.log $FTL_TAF_FLAGS"
 SVD_TAF_FLAGS="-reverse -forward -pure -i4 -r4 -intrinsic system,flush -l taf_svd.log $SVD_TAF_FLAGS"
+
+#- after Jan 14, 2016, TAF default is "-f95"
+if test "x$ALWAYS_USE_F90" = "x1" ; then
+  AD_TAF_FLAGS="-f90 $AD_TAF_FLAGS"
+  FTL_TAF_FLAGS="-f90 $FTL_TAF_FLAGS"
+  SVD_TAF_FLAGS="-f90 $SVD_TAF_FLAGS"
+else
+  AD_TAF_FLAGS="-f77 $AD_TAF_FLAGS"
+  FTL_TAF_FLAGS="-f77 $FTL_TAF_FLAGS"
+  SVD_TAF_FLAGS="-f77 $SVD_TAF_FLAGS"
+fi
 
 #- switch to fastopt.net TAF server (instead of default fastopt.de):
 AD_TAF_FLAGS="-server fastopt.net $AD_TAF_FLAGS"
