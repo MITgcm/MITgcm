@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.205 2015/12/06 23:18:52 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.206 2016/01/15 22:10:33 jmc Exp $
 #  $Name:  $
 #
 
@@ -1317,10 +1317,6 @@ do
 done
 if test $count = 1 ; then echo "" ; echo -n " ... " ; fi
 #echo 'TESTDIRS='${TESTDIRS}'<'
-
-if test "x$OPTFILE" = xNONE -a "x$MITGCM_OF" != x ; then
-    OPTFILE=$MITGCM_OF
-fi
 
 LOC_MFILE='tr_mpi_mfile'
 RUNLOG="run.tr_log"
