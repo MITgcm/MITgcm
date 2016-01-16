@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_apply_import.F,v 1.9 2016/01/06 01:09:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_apply_import.F,v 1.10 2016/01/16 22:02:32 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -23,16 +23,10 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
-c #include "GRID.h"
-c #include "DYNVARS.h"
 #include "SURFACE.h"
 #include "FFIELDS.h"
 #include "OCNCPL.h"
-#ifdef ALLOW_DIC
-# include "DIC_VARS.h"
-#endif
 #ifdef ALLOW_THSICE
-c# include "THSICE_PARAMS.h"
 # include "THSICE_VARS.h"
 #endif
 
@@ -130,31 +124,6 @@ C-   Heat Flux forcing
          ENDIF
 #endif /* ALLOW_THSICE */
 
-#ifdef ALLOW_DIC
-C-   Carbon/DIC exchanges
-         IF ( useImportFice ) THEN
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             fice(i,j,bi,bj)= sIceFrac_cpl(i,j,bi,bj)
-            ENDDO
-           ENDDO
-         ENDIF
-         IF ( useImportCO2 ) THEN
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             AtmospCO2(i,j,bi,bj)= airCO2(i,j,bi,bj)
-            ENDDO
-           ENDDO
-         ENDIF
-         IF ( useImportWSpd ) THEN
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             wind(i,j,bi,bj)= surfWSpeed(i,j,bi,bj)
-            ENDDO
-           ENDDO
-         ENDIF
-#endif /* ALLOW_DIC */
-
 C--     Apply only to forcings relevant for eta/surf.press variations
         ELSE
 
@@ -228,11 +197,6 @@ C--  Fill in Halo region with valid values
           _EXCH_XY_RL( Qice2     , myThid )
         ENDIF
 #endif /* ALLOW_THSICE */
-#ifdef ALLOW_DIC
-        IF ( useImportFice ) _EXCH_XY_RL( fice , myThid )
-        IF ( useImportCO2 )  _EXCH_XY_RL(AtmospCO2, myThid )
-        IF ( useImportWSpd ) _EXCH_XY_RL( wind , myThid )
-#endif
       ENDIF
 
       RETURN
