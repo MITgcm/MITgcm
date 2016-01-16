@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.35 2014/11/04 17:16:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.36 2016/01/16 21:57:12 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -21,13 +21,6 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "DIC_VARS.h"
 #include "DIC_LOAD.h"
-#ifdef ALLOW_THSICE
-# include "THSICE_VARS.h"
-#endif
-#ifdef ALLOW_SEAICE
-# include "SEAICE_SIZE.h"
-# include "SEAICE.h"
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myIter               :: current timestep
@@ -209,7 +202,7 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
          IF ( DIC_iceFile .NE. ' '  ) THEN
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             FIce(i,j,bi,bj) = bWght*ice0(i,j,bi,bj)
+             fIce(i,j,bi,bj) = bWght*ice0(i,j,bi,bj)
      &                       + aWght*ice1(i,j,bi,bj)
             ENDDO
            ENDDO
@@ -255,29 +248,6 @@ c          pisvel(i,j,bi,bj)  =0.337*wind(i,j,bi,bj)**2/3.6d5    !QQQQ
 
 C endif for DIC_forcingCycle
       ENDIF
-
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-#ifdef ALLOW_SEAICE
-         IF ( useSEAICE ) THEN
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             FIce(i,j,bi,bj) = AREA(i,j,bi,bj)
-            ENDDO
-           ENDDO
-         ENDIF
-#endif
-#ifdef ALLOW_THSICE
-         IF ( useThSIce ) THEN
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             FIce(i,j,bi,bj) = iceMask(i,j,bi,bj)
-            ENDDO
-           ENDDO
-         ENDIF
-#endif
-       ENDDO
-      ENDDO
 
 #endif /* ALLOW_DIC */
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.31 2014/12/08 22:59:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_forcing.F,v 1.32 2016/01/16 21:57:12 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -114,6 +114,14 @@ CEOP
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('DIC_BIOTIC_FORCING',myThid)
 #endif
+
+      IF ( useThSIce .OR. useSEAICE .OR. useCoupler ) THEN
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('DIC_FIELDS_UPDATE',myThid)
+#endif
+        CALL DIC_FIELDS_UPDATE(
+     I                    bi, bj, myTime, myIter, myThid )
+      ENDIF
 
        DO k=1,Nr
          DO j=1-OLy,sNy+OLy
