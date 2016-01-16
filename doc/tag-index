@@ -1,11 +1,26 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2224 2016/01/13 23:15:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2225 2016/01/16 22:05:05 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic:
+  - use the updated seaice fraction (from seaice pkgs) for DIC forcing
+    instead of the previous time-step value ; done in new S/R DIC_FIELDS_UPDATE
+    called from the top of dic_biotic_forcing.F (instead of in DIC_FIELDS_LOAD);
+  - move also update with values from ATM-OCN Coupler in the same new S/R
+    (previously done in ocn_apply_import.F).
+o tools/adjoint_options:
+  - specify explicitly "-f77" or "-f90" in default ad-optfile since TAF (default)
+    has been changed on Jan 14, 2016.
+o pkg/ggl90:
+  - add alternative discretisation of vertical shear (off by default), to
+    compute the mean (@ grid-cell center) of vertical shear compon instead of
+    vertical shear of mean flow (@ grid-cell center).
+  - add correct parenthesis in ALLOW_GGL90_SMOOTH code to get the same truncated
+    results on adjacent faces of cubed-sphere grids; this fix the restart.
 o pkg/atm_compon_interf:
-  - skip time-ave over cpl_atmSendFrq of Sea-Level Pressure (atmSLPr) and just 
+  - skip time-ave over cpl_atmSendFrq of Sea-Level Pressure (atmSLPr) and just
     pass last value, stored directly before export to CPL ;
     Note: this affects results of Coupled set-up where OCN uses useImportSLP=T
   - remove atmSLPr from pickup files (no longer needed for restart)
