@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.43 2013/06/11 01:34:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.44 2016/01/19 01:12:06 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -385,15 +385,15 @@ C--    Net fluxes : (only non-zero contribution where frzmltMxL > 0 )
        ENDDO
       ENDDO
 
-#ifdef ALLOW_SALT_PLUME
-      IF ( useSALT_PLUME ) THEN
+#if defined(ALLOW_SALT_PLUME) || defined(ALLOW_ATM_COMPON_INTERF)
+      IF ( useSALT_PLUME .OR. useCoupler ) THEN
         CALL THSICE_SALT_PLUME(
      I          sOceMxL(1-OLx,1-OLy,bi,bj),
      I          frzSeaWat,
      I          iMin,iMax, jMin,jMax, bi, bj,
      I          myTime, myIter, myThid )
       ENDIF
-#endif /* ALLOW_SALT_PLUME */
+#endif /* ALLOW_SALT_PLUME or ALLOW_ATM_COMPON_INTERF */
 
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE snowHeight(:,:,bi,bj) =
