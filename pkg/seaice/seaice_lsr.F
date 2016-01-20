@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.119 2015/12/16 14:12:58 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.120 2016/01/20 14:02:53 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -91,6 +91,7 @@ C     i,j,bi,bj  :: Loop counters
       _RL WFAU, WFAV, WFAU2, WFAV2
       _RL S1, S2, S1A, S2A
       _RL eplus, eminus
+      _RL recip_deltaT
 
 C     diagonals of coefficient matrices
       _RL AU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -160,6 +161,8 @@ C     extra overlap for (restricted) additive Schwarz method
       jMax = sNy + SEAICE_OLy
       iMin = 1   - SEAICE_OLx
       iMax = sNx + SEAICE_OLx
+C     
+      recip_deltaT = 1. _d 0 / SEAICE_deltaTdyn
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph break artificial dependencies
@@ -387,10 +390,10 @@ C      this is the rhs contribution of the time derivative
         DO j=jMin,jMax
          DO i=iMin,iMax
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
-     &         +seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
+     &         +seaiceMassU(I,J,bi,bj)*recip_deltaT
      &         *uIceNm1(i,j,bi,bj)
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
-     &         +seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
+     &         +seaiceMassV(I,J,bi,bj)*recip_deltaT
      &         *vIceNm1(i,j,bi,bj)
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)* seaiceMaskU(I,J,bi,bj)
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)* seaiceMaskV(I,J,bi,bj)
@@ -496,13 +499,13 @@ C--   Calculate initial residual of the linearised system
            DO i=iMin,iMax
             uIce_fd(i,j,bi,bj) = FORCEX(i,j,bi,bj)
      &         / ( 1. _d 0 - seaiceMaskU(i,j,bi,bj)
-     &           + seaiceMassU(i,j,bi,bj)/SEAICE_deltaTdyn
+     &           + seaiceMassU(i,j,bi,bj)*recip_deltaT
      &           + HALF*( DWATN(i,j,bi,bj) + DWATN(i-1,j,bi,bj) )*COSWAT
      &                 * areaW(i,j,bi,bj)
      &           )
             vIce_fd(i,j,bi,bj) = FORCEY(i,j,bi,bj)
      &         / ( 1. _d 0 - seaiceMaskV(i,j,bi,bj)
-     &           + seaiceMassV(i,j,bi,bj)/SEAICE_deltaTdyn
+     &           + seaiceMassV(i,j,bi,bj)*recip_deltaT
      &           + HALF*( DWATN(i,j,bi,bj) + DWATN(i,j-1,bi,bj) )*COSWAT
      &                 * areaS(i,j,bi,bj)
      &           )
@@ -1183,8 +1186,8 @@ C     i,j,bi,bj  :: Loop counters
 
       INTEGER i, j, bi, bj
       _RL hFacM, hFacP
-C     backward difference extrapolation factor
-      _RL bdfAlpha
+C     backward difference extrapolation factor (includes 1/deltaT)
+      _RL bdfAlphaOverDt
 C     strongly implicit coupling factor
       _RL strImpCplFac
 
@@ -1211,15 +1214,17 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   turning angles
       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
 C     backward difference extrapolation factor
-      bdfAlpha = 1. _d 0
+      bdfAlphaOverDt = 1. _d 0
       IF ( SEAICEuseBDF2 ) THEN
        IF ( myIter.EQ.nIter0 .AND. SEAICEmomStartBDF.EQ.0 ) THEN
-        bdfAlpha = 1. _d 0
+        bdfAlphaOverDt = 1. _d 0
        ELSE
-        bdfAlpha = 1.5 _d 0
+        bdfAlphaOverDt = 1.5 _d 0
        ENDIF
       ENDIF
-
+C
+      bdfAlphaOverDt = bdfAlphaOverDt / SEAICE_deltaTdyn
+C
       strImpCplFac = 0. _d 0
       IF ( SEAICEuseStrImpCpl ) strImpCplFac = 1. _d 0
 
@@ -1335,11 +1340,12 @@ C     now we need to normalize everything by the grid cell area
          DO I=iMin,iMax
           AU(I,J,bi,bj)   = AU(I,J,bi,bj)   * recip_rAw(I,J,bi,bj)
           CU(I,J,bi,bj)   = CU(I,J,bi,bj)   * recip_rAw(I,J,bi,bj)
-C     here we need ad in the contribution from the time derivative
-C     and the symmetric drag term; must be done after normalizing
+C     here we need to add the contribution from the time derivative (in 
+C     bdfAlphaOverDt) and the symmetric drag term; must be done after 
+C     normalizing
           BU(I,J,bi,bj)    = BU(I,J,bi,bj)  * recip_rAw(I,J,bi,bj)
      &         + seaiceMaskU(I,J,bi,bj) *
-     &         ( bdfAlpha*seaiceMassU(I,J,bi,bj)/SEAICE_deltaTdyn
+     &         ( bdfAlphaOverDt*seaiceMassU(I,J,bi,bj)
      &         + 0.5 _d 0 * ( dwatnLoc(I,  J,bi,bj) 
      &                      + dwatnLoc(I-1,J,bi,bj) )*areaW(I,J)
      &         * COSWAT )
@@ -1397,11 +1403,12 @@ C     now we need to normalize everything by the grid cell area
          DO I=iMin,iMax
           AV(I,J,bi,bj)   = AV(I,J,bi,bj)   * recip_rAs(I,J,bi,bj)
           CV(I,J,bi,bj)   = CV(I,J,bi,bj)   * recip_rAs(I,J,bi,bj)
-C     here we need ad in the contribution from the time derivative
-C     and the symmetric drag term; must be done after normalizing
+C     here we need add the contribution from the time derivative (in
+C     bdfAlphaOverDt) and the symmetric drag term; must be done after 
+C     normalizing
           BV(I,J,bi,bj)   = BV(I,J,bi,bj)   * recip_rAs(I,J,bi,bj)
      &         + seaiceMaskV(I,J,bi,bj) *
-     &         ( bdfAlpha*seaiceMassV(I,J,bi,bj)/SEAICE_deltaTdyn
+     &         ( bdfAlphaOverDt*seaiceMassV(I,J,bi,bj)
      &         + 0.5 _d 0 * ( dwatnLoc(I,J,  bi,bj) 
      &                      + dwatnLoc(I,J-1,bi,bj) )*areaS(I,J)
      &         * COSWAT )
