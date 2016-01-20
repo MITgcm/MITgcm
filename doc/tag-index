@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2225 2016/01/16 22:05:05 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2226 2016/01/20 00:11:25 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/salt_plume & pkg/thsice:
+  - for coupled  set-up with pkg/thsice in ATM and pkg/salt_plume in OCN,
+    connect salt_plume flux to ATM-OCN coupling pkgs interface:
+   a) in ATM: also cumulate salt-plume flux in S/R THSICE_SALT_PLUME (for
+     export to coupler interface) even without compiling pkg/salt_plume ;
+   b) in OCN: apply coupler salt-plume flux to pkg/salt_plume field
+     (saltPlumeFlux) just before exch call, in S/R SALT_PLUME_DO_EXCH.
 o pkg/dic:
   - use the updated seaice fraction (from seaice pkgs) for DIC forcing
     instead of the previous time-step value ; done in new S/R DIC_FIELDS_UPDATE
