@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.127 2015/12/22 17:00:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.128 2016/01/21 16:31:05 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -26,6 +26,12 @@ C     SEAICEuseEVPpickup :: Set to false in order to start EVP solver with
 C                          non-EVP pickup files.  Default is true.
 C                          Applied only if SEAICEuseEVP=.TRUE.
 C     SEAICEuseMultiTileSolver :: in LSR, use full domain tri-diagonal solver
+C     SEAICEuseLSR      :: If true, use default Picard solver with Line-
+C                          Successive(-over)-Relaxation, can also be true
+C                          if LSR is used as a preconditioner for the 
+C                          non-linear JFNK solver
+C     SEAICEusePicardAsPrecon :: If true, allow SEAICEuseLSR = .TRUE. as a 
+C                          preconditioner for non-linear JFNK problem (def. = F)
 C     SEAICEuseJFNK     :: If true, use Jacobi-free Newton-Krylov solver
 C                          instead of LSR (default: false)
 C     SEAICEuseIMEX     :: use IMplicit/EXplicit scheme with JFNK
@@ -99,7 +105,8 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
      &     SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,
-     &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
+     &     SEAICEuseLSR, SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
+     &     SEAICEusePicardAsPrecon,
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
      &     SEAICE_no_slip, SEAICE_maskRHS, SEAICEscaleSurfStress,
@@ -120,7 +127,8 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
      &     SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,
-     &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2, 
+     &     SEAICEuseLSR, SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2, 
+     &     SEAICEusePicardAsPrecon,
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
      &     SEAICE_no_slip, SEAICE_maskRHS, SEAICEscaleSurfStress,

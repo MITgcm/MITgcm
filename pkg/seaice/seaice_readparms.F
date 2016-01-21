@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.168 2015/12/22 17:00:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.169 2016/01/21 16:31:05 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -110,7 +110,7 @@ C--   SEAICE parameters
      & SEAICE_evpDampC, SEAICEnEVPstarSteps, 
      & SEAICE_evpAlpha, SEAICE_evpBeta,
      & SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin,
-     & SEAICE_zetaMin, SEAICE_zetaMaxFac,
+     & SEAICE_zetaMin, SEAICE_zetaMaxFac, SEAICEusePicardAsPrecon,
      & SEAICEuseJFNK, SEAICEnewtonIterMax, SEAICEkrylovIterMax,
      & SEAICE_JFNK_lsIter, SEAICE_JFNK_tolIter, JFNKres_t,JFNKres_tFac,
      & JFNKgamma_nonlin,JFNKgamma_lin_min,JFNKgamma_lin_max,
@@ -450,6 +450,8 @@ c     SEAICE_dTempFrz_dS = 0. _d 0
       IMAX_TICE  = 10
       postSolvTempIter = 2
 C     LSR parameters
+      SEAICEuseLSR = .TRUE.
+      SEAICEusePicardAsPrecon = .FALSE.
       SEAICE_LSRrelaxU = 0.95 _d 0
       SEAICE_LSRrelaxV = 0.95 _d 0
       SOLV_MAX_ITERS = UNSET_I
@@ -753,6 +755,13 @@ C     Check if all parameters are set.
      &                    SQUEEZE_RIGHT , myThid)
       ENDIF
 #endif /* SEAICE_ITD */
+
+C     reset default SEAICEuseLSR according to parameters from namelist
+      SEAICEuseLSR = .NOT.SEAICEuseFREEDRIFT .AND. .NOT.SEAICEuseEVP
+     &     .AND. .NOT.SEAICEuseJFNK 
+C     allow SEAICEuseLSR = .TRUE. if used as a preconditioner for non-linear
+C     JFNK problem
+      IF ( SEAICEuseJFNK) SEAICEuseLSR = SEAICEusePicardAsPrecon
 
 C     Make sure that we have least two pseudo time steps
       NPSEUDOTIMESTEPS = MAX(NPSEUDOTIMESTEPS,2)
