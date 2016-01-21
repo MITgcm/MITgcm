@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2226 2016/01/20 00:11:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2227 2016/01/21 16:04:00 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice/seaice_lsr.F: replace 1./SEAICE_deltaTdyn with recip_deltaT,
+  affects some experiments at truncation level: 
+  - global_ocean.cs32x15.icedyn (11 digits), 
+  - global_ocean.cs32x15.seaice (11 digits), 
+  - seaice_itd (12 digits), seaice_itd.lipscomb07 (12 digits) -> update
+  - also update global_ocean.cs32x15 adjoint and tangent-linear results
 o pkg/salt_plume & pkg/thsice:
   - for coupled  set-up with pkg/thsice in ATM and pkg/salt_plume in OCN,
     connect salt_plume flux to ATM-OCN coupling pkgs interface:
