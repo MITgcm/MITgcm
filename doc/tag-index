@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2227 2016/01/21 16:04:00 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2228 2016/01/21 16:57:50 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: add two new parameters
+  - SEAICEuseLSR to simplify the logic in seaice_dynsolver (this 
+    parameter is not in any namelist)
+  - SEAICEusrPicardAsPrecon to allow s/r seaice_lsr to be used as 
+    a preconditioner for the non-linear Newton iteration of the JFNK 
+    solver
 o pkg/seaice/seaice_lsr.F: replace 1./SEAICE_deltaTdyn with recip_deltaT,
   affects some experiments at truncation level: 
   - global_ocean.cs32x15.icedyn (11 digits), 
