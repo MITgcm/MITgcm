@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_inadmode_unset_ad.F,v 1.13 2015/06/18 16:58:51 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_inadmode_unset_ad.F,v 1.14 2016/01/22 15:33:21 mlosch Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -43,6 +43,7 @@ C     myThid :: my Thread Id number
 #ifdef ALLOW_SEAICE
       IF ( SEAICEuseFREEDRIFTswitchInAd ) THEN
         SEAICEuseFREEDRIFT = SEAICEuseFREEDRIFTinFwdMode
+        SEAICEuseLSR       = .NOT.SEAICEuseFREEDRIFT
       ENDIF
       IF ( SEAICEuseDYNAMICSswitchInAd ) THEN
         SEAICEuseDYNAMICS  = SEAICEuseDYNAMICSinFwdMode
@@ -91,6 +92,10 @@ C     myThid :: my Thread Id number
        IF ( SEAICEuseFREEDRIFTswitchInAd ) THEN
          WRITE(msgBuf,'(2A,L5)') 'S/R ADAUTODIFF_INADMODE_UNSET: ',
      &        'SEAICEuseFREEDRIFT =', SEAICEuseFREEDRIFT
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, myThid )
+         WRITE(msgBuf,'(2A,L5)') 'S/R ADAUTODIFF_INADMODE_UNSET: ',
+     &        'SEAICEuseLSR       =', SEAICEuseLSR
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
        ENDIF
