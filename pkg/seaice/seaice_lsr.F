@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.120 2016/01/20 14:02:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.121 2016/01/25 10:49:27 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1539,7 +1539,7 @@ C     we do not have to add any metric terms, because they cancel.
        DO J=jMin,jMax+1
         DO I=iMin,iMax
          hFacM = seaiceMaskV(I,J,bi,bj) - seaiceMaskV(I-1,J,bi,bj)
-         sig12(I,J) = sig12(I,J) - zetaZ(I,J,bi,bj) * (
+         sig12(I,J) = sig12(I,J) - zetaZloc(I,J,bi,bj) * (
      &        ( uIceC(I,J,bi,bj) - uIceC(I,J-1,bi,bj) )
      &        * _recip_dyU(I,J,bi,bj)
      &        )
@@ -1549,7 +1549,7 @@ C     free slip conditions (sig12=0) are taken care of by masking sig12
 C     no slip boundary conditions (u(j-1)=-u(j))
 C     u(j)+u(j-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with u(j)-u(j-1)
-     &        - zetaZ(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
+     &        - zetaZloc(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
      &        * ( uIceC(I,J,bi,bj) + uIceC(I,J-1,bi,bj) )
      &        * hFacM * 2. _d 0
         ENDDO
@@ -1671,7 +1671,7 @@ C     we do not have to add any metric terms, because they cancel.
        DO J=jMin,jMax
         DO I=iMin,iMax+1
          hFacM = seaiceMaskU(i,j,bi,bj) - seaiceMaskU(i,j-1,bi,bj)
-         sig12(I,J) = sig12(I,J) - zetaZ(I,J,bi,bj) * (
+         sig12(I,J) = sig12(I,J) - zetaZloc(I,J,bi,bj) * (
      &        ( vIceC(I,J,bi,bj) - vIceC(I-1,J,bi,bj) )
      &        * _recip_dxV(I,J,bi,bj)
      &        )
@@ -1681,7 +1681,7 @@ C     free slip conditions (sig12=0) are taken care of by masking sig12
 C     no slip boundary conditions (v(i-1)=-v(i))
 C     v(i)+v(i-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with v(i)-v(i-1)
-     &        - zetaZ(I,J,bi,bj) * _recip_dxV(I,J,bi,bj)
+     &        - zetaZloc(I,J,bi,bj) * _recip_dxV(I,J,bi,bj)
      &        * ( vIceC(I,J,bi,bj) + vIceC(I-1,J,bi,bj) )
      &        * hFacM * 2. _d 0
         ENDDO
