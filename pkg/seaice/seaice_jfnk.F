@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.28 2014/12/01 12:31:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.29 2016/01/27 14:03:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -63,12 +63,18 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     i,j,bi,bj :: loop indices
-      INTEGER i,j,bi,bj
+C     i,j,k,bi,bj :: loop indices
+      INTEGER i,j,k,bi,bj
 C     loop indices
       INTEGER newtonIter
       INTEGER krylovIter, krylovFails
       INTEGER totalKrylovItersLoc, totalNewtonItersLoc
+C     FGMRES parameters
+C     im      :: size of Krylov space
+C     ifgmres :: interation counter
+      INTEGER im
+      PARAMETER ( im = 50 )
+      INTEGER ifgmres
 C     FGMRES flag that determines amount of output messages of fgmres
       INTEGER iOutFGMRES
 C     FGMRES flag that indicates what fgmres wants us to do next
@@ -103,6 +109,10 @@ C     zeta, eta, and DWATN, press
       _RL etaPre  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL etaZPre (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dwatPre (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     work arrays
+      _RL rhs(nVec,nSx,nSy), sol(nVec,nSx,nSy)
+      _RL vv(nVec,im+1,nSx,nSy), w(nVec,im,nSx,nSy)
+      _RL wk1(nVec,nSx,nSy), wk2(nVec,nSx,nSy)
 CEOP
 
 C     Initialise
@@ -227,16 +237,36 @@ C     start Krylov iteration (FGMRES)
 
         krylovConverged = .FALSE.
         FGMRESeps = JFNKgamma_lin * JFNKresidual
+C     map first guess sol; it is zero because the solution is a correction
+       CALL SEAICE_MAP2VEC(nVec,duIce,dvIce,sol,.TRUE.,myThid)
+C     map rhs and change its sign because we are solving J*u = -F
+        CALL SEAICE_MAP2VEC(nVec,-uIceRes,-vIceRes,rhs,.TRUE.,myThid)
         DO WHILE ( .NOT.krylovConverged )
 C     solution vector sol = du/vIce
 C     residual vector (rhs) Fu = u/vIceRes
 C     output work vectors wk1, -> input work vector wk2
 
-         CALL SEAICE_FGMRES_DRIVER(
-     I        uIceRes, vIceRes,
-     U        duIce, dvIce, iCode,
-     I        FGMRESeps, iOutFGMRES,
-     I        newtonIter, krylovIter, myTime, myIter, myThid )
+C     map preconditioner results or Jacobian times vector,
+C     stored in du/vIce to wk2, for iCode=0, wk2 is set to zero,
+C     because du/vIce = 0
+         CALL SEAICE_MAP2VEC(nVec,duIce,dvIce,wk2,.TRUE.,myThid)
+C
+         CALL SEAICE_FGMRES (nVec,im,rhs,sol,ifgmres,krylovIter,
+     U        vv,w,wk1,wk2,
+     I        FGMRESeps,SEAICEkrylovIterMax,iOutFGMRES,
+     U        iCode,
+     I        myThid)
+C     
+         IF ( iCode .EQ. 0 ) THEN
+C     map sol(ution) vector to du/vIce
+          CALL SEAICE_MAP2VEC(nVec,duIce,dvIce,sol,.FALSE.,myThid)
+         ELSE
+C     map work vector to du/vIce to either compute a preconditioner
+C     solution (wk1=rhs) or a Jacobian times wk1
+          CALL SEAICE_MAP2VEC(nVec,duIce,dvIce,wk1,.FALSE.,myThid)
+         ENDIF
+C     Fill overlaps in updated fields
+         CALL EXCH_UV_XY_RL( duIce, dvIce,.TRUE.,myThid)
 C     FGMRES returns iCode either asking for an new preconditioned vector
 C     or product of matrix (Jacobian) times vector. For iCode = 0, terminate
 C     iteration
