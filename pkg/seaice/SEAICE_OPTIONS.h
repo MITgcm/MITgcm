@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.77 2015/07/01 12:26:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.78 2016/01/27 14:06:07 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -95,6 +95,8 @@ C--   Only for the C-grid version it is possible to
 #ifdef SEAICE_CGRID
 C     enable JFNK code by defining the following flag
 # define SEAICE_ALLOW_JFNK
+C     enable Krylov code by defining the following flag
+# define SEAICE_ALLOW_KRYLOV
 C     enable LSR to use global (multi-tile) tri-diagonal solver
 # undef SEAICE_GLOBAL_3DIAG_SOLVER
 C     enable EVP code by defining the following flag

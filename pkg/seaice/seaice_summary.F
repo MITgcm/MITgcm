@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.84 2016/01/21 16:31:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.85 2016/01/27 14:06:07 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -124,9 +124,13 @@ C--  Seaice-Dynamics parameters
       CALL WRITE_0D_L ( SEAICEusePicardAsPrecon, INDEX_NONE,
      & 'SEAICEusePicardAsPrecon =', ' /* Picard as preconditioner */')
       CALL WRITE_0D_L ( SEAICEuseLSR, INDEX_NONE,
-     & 'SEAICEuseLSR      =', ' /* use default LSR solver */')
+     & 'SEAICEuseLSR      =', ' /* use default Picard-LSR solver */')
+      CALL WRITE_0D_L ( SEAICEuseKrylov, INDEX_NONE,
+     & 'SEAICEuseKrylov   =', ' /* use Picard-Krylov solver */')
       CALL WRITE_0D_L ( SEAICEuseEVP, INDEX_NONE,
      & 'SEAICEuseEVP      =', ' /* use EVP solver rather than LSR */')
+      CALL WRITE_0D_L ( SEAICEuseJFNK, INDEX_NONE,
+     & 'SEAICEuseJFNK     =', ' /* use JFNK solver */')
 #ifdef SEAICE_ALLOW_FREEDRIFT
       CALL WRITE_0D_L ( SEAICEuseFREEDRIFT, INDEX_NONE,
      & 'SEAICEuseFREEDRIFT =', ' /* use free drift solution */')

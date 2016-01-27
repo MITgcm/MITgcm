@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.128 2016/01/21 16:31:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.129 2016/01/27 14:06:07 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -32,6 +32,8 @@ C                          if LSR is used as a preconditioner for the
 C                          non-linear JFNK solver
 C     SEAICEusePicardAsPrecon :: If true, allow SEAICEuseLSR = .TRUE. as a 
 C                          preconditioner for non-linear JFNK problem (def. = F)
+C     SEAICEuseKrylov   :: If true, use matrix-free Krylov solver with Picard
+C                          solver instead of LSR (default: false)
 C     SEAICEuseJFNK     :: If true, use Jacobi-free Newton-Krylov solver
 C                          instead of LSR (default: false)
 C     SEAICEuseIMEX     :: use IMplicit/EXplicit scheme with JFNK
@@ -105,7 +107,8 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
      &     SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,
-     &     SEAICEuseLSR, SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
+     &     SEAICEuseLSR, SEAICEuseKrylov,
+     &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
      &     SEAICEusePicardAsPrecon,
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
@@ -127,7 +130,8 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseEVP, SEAICEuseEVPstar, SEAICEuseEVPrev,
      &     SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,
-     &     SEAICEuseLSR, SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2, 
+     &     SEAICEuseLSR, SEAICEuseKrylov,
+     &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2, 
      &     SEAICEusePicardAsPrecon,
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.169 2016/01/21 16:31:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.170 2016/01/27 14:06:07 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -111,6 +111,7 @@ C--   SEAICE parameters
      & SEAICE_evpAlpha, SEAICE_evpBeta,
      & SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin,
      & SEAICE_zetaMin, SEAICE_zetaMaxFac, SEAICEusePicardAsPrecon,
+     & SEAICEuseKrylov,
      & SEAICEuseJFNK, SEAICEnewtonIterMax, SEAICEkrylovIterMax,
      & SEAICE_JFNK_lsIter, SEAICE_JFNK_tolIter, JFNKres_t,JFNKres_tFac,
      & JFNKgamma_nonlin,JFNKgamma_lin_min,JFNKgamma_lin_max,
@@ -284,6 +285,7 @@ c     DIFF1      = .004 _d 0
       SEAICE_deltaTdyn   = dTtracerLev(1)
       SEAICE_deltaTevp   = UNSET_RL
       SEAICEuseBDF2      = .FALSE.
+      SEAICEuseKrylov    = .FALSE.
 C     JFNK stuff
       SEAICEuseJFNK       = .FALSE.
       SEAICEuseIMEX       = .FALSE.
@@ -758,23 +760,26 @@ C     Check if all parameters are set.
 
 C     reset default SEAICEuseLSR according to parameters from namelist
       SEAICEuseLSR = .NOT.SEAICEuseFREEDRIFT .AND. .NOT.SEAICEuseEVP
-     &     .AND. .NOT.SEAICEuseJFNK 
+     &     .AND. .NOT.SEAICEuseJFNK .AND. .NOT. SEAICEuseKrylov
 C     allow SEAICEuseLSR = .TRUE. if used as a preconditioner for non-linear
-C     JFNK problem
-      IF ( SEAICEuseJFNK) SEAICEuseLSR = SEAICEusePicardAsPrecon
-
+C     JFNK problem (and Krylov solver is not used)
+      IF ( SEAICEuseJFNK .AND. SEAICEusePicardAsPrecon .AND.
+     &     .NOT. SEAICEuseKrylov ) SEAICEuseLSR = .TRUE.
+      IF ( SEAICEuseJFNK .AND. .NOT. SEAICEusePicardAsPrecon )
+     &     SEAICEuseKrylov = .FALSE.
+      
 C     Make sure that we have least two pseudo time steps
       NPSEUDOTIMESTEPS = MAX(NPSEUDOTIMESTEPS,2)
 
-C     So far we use the restrictive additive Schwartz method only for JFNK
-C     by default
+C     So far we use the restrictive additive Schwartz method only in
+C     the preconditioner for the Krylov methods by default
       IF ( SEAICE_OLx.EQ.UNSET_I ) THEN
        SEAICE_OLx = 0
-       IF ( SEAICEuseJFNK ) SEAICE_OLx = OLx-2
+       IF ( SEAICEuseJFNK .OR. SEAICEuseKrylov ) SEAICE_OLx = OLx-2
       ENDIF
       IF ( SEAICE_OLy.EQ.UNSET_I ) THEN
        SEAICE_OLy = 0
-       IF ( SEAICEuseJFNK ) SEAICE_OLy = OLy-2
+       IF ( SEAICEuseJFNK .OR. SEAICEuseKrylov ) SEAICE_OLy = OLy-2
       ENDIF
 
 C-    limit preconditioner steps
