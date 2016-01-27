@@ -1,152 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.17 2013/04/04 07:02:51 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.18 2016/01/27 14:03:55 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 
 C--   File seaice_fgmres.F: seaice fgmres dynamical (linear) solver S/R:
 C--   Contents
-C--   o SEAICE_FGMRES_DRIVER
 C--   o SEAICE_MAP2VEC
 C--   o SEAICE_MAP_RS2VEC
 C--   o SEAICE_FGMRES
 C--   o SEAICE_SCALPROD
 
-CBOP
-C     !ROUTINE: SEAICE_FGMRES_DRIVER
-C     !INTERFACE:
-
-      SUBROUTINE SEAICE_FGMRES_DRIVER(
-     I     uIceRes, vIceRes,
-     U     duIce, dvIce,
-     U     iCode,
-     I     FGMRESeps, iOutFGMRES,
-     I     newtonIter,
-     U     krylovIter,
-     I     myTime, myIter, myThid )
-
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE SEAICE_FGMRES_DRIVER
-C     | o driver routine for fgmres
-C     | o does the conversion between 2D fields and 1D vector
-C     |   back and forth
-C     *==========================================================*
-C     | written by Martin Losch, Oct 2012
-C     *==========================================================*
-C     \ev
-
-C     !USES:
-      IMPLICIT NONE
-
-C     === Global variables ===
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "SEAICE_SIZE.h"
-#include "SEAICE_PARAMS.h"
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
-C     myTime :: Simulation time
-C     myIter :: Simulation timestep number
-C     myThid :: my Thread Id. number
-C     newtonIter :: current iterate of Newton iteration (for diagnostics)
-C     krylovIter :: current iterate of Newton iteration (updated)
-C     iCode      :: FGMRES parameter to determine next step
-C     iOutFGMRES :: control output of fgmres
-      _RL     myTime
-      INTEGER myIter
-      INTEGER myThid
-      INTEGER newtonIter
-      INTEGER krylovIter
-      INTEGER iOutFGMRES
-      INTEGER iCode
-C     FGMRESeps :: tolerance for FGMRES
-      _RL FGMRESeps
-C     du/vIce   :: solution vector
-      _RL duIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL dvIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C     u/vIceRes :: residual F(u)
-      _RL uIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL vIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-#ifdef SEAICE_ALLOW_JFNK
-C     Local variables:
-C     k :: loop indices
-      INTEGER k, bi, bj
-C     FGMRES parameters
-C     nVec    :: size of the input vector(s)
-C     im      :: size of Krylov space
-C     ifgmres :: interation counter
-      INTEGER nVec
-      PARAMETER ( nVec  = 2*sNx*sNy )
-      INTEGER im
-      PARAMETER ( im = 50 )
-      INTEGER ifgmres
-C     work arrays
-      _RL rhs(nVec,nSx,nSy), sol(nVec,nSx,nSy)
-      _RL vv(nVec,im+1,nSx,nSy), w(nVec,im,nSx,nSy)
-      _RL wk1(nVec,nSx,nSy), wk2(nVec,nSx,nSy)
-C     need to store some of the fgmres parameters and fields so that
-C     they are not forgotten between Krylov iterations
-      COMMON /FGMRES_I/ ifgmres
-      COMMON /FGMRES_RL/ sol, rhs, vv, w
-CEOP
-
-      IF ( iCode .EQ. 0 ) THEN
-C     The first guess is zero because it is a correction, but this
-C     is implemented by setting du/vIce=0 outside of this routine;
-C     this make it possible to restart FGMRES with a nonzero sol
-       CALL SEAICE_MAP2VEC(nVec,duIce,dvIce,sol,.TRUE.,myThid)
-C     wk2 needs to be reset for iCode = 0, because it may contain
-C     remains of the previous Krylov iteration
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO k=1,nVec
-          wk2(k,bi,bj) = 0. _d 0
-         ENDDO
-        ENDDO
-       ENDDO
-      ELSEIF ( iCode .EQ. 3 ) THEN
-       CALL SEAICE_MAP2VEC(nVec,uIceRes,vIceRes,rhs,.TRUE.,myThid)
-C     change sign of rhs because we are solving J*u = -F
-C     wk2 needs to be initialised for iCode = 3, because it may contain
-C     garbage
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO k=1,nVec
-          rhs(k,bi,bj) = -rhs(k,bi,bj)
-          wk2(k,bi,bj) = 0. _d 0
-         ENDDO
-        ENDDO
-       ENDDO
-      ELSE
-C     map preconditioner results or Jacobian times vector,
-C     stored in du/vIce to wk2
-       CALL SEAICE_MAP2VEC(nVec,duIce,dvIce,wk2,.TRUE.,myThid)
-      ENDIF
-C
-      CALL SEAICE_FGMRES (nVec,im,rhs,sol,ifgmres,krylovIter,
-     U     vv,w,wk1,wk2,
-     I     FGMRESeps,SEAICEkrylovIterMax,iOutFGMRES,
-     U     iCode,
-     I     myThid)
-C
-      IF ( iCode .EQ. 0 ) THEN
-C     map sol(ution) vector to du/vIce
-       CALL SEAICE_MAP2VEC(nVec,duIce,dvIce,sol,.FALSE.,myThid)
-      ELSE
-C     map work vector to du/vIce to either compute a preconditioner
-C     solution (wk1=rhs) or a Jacobian times wk1
-       CALL SEAICE_MAP2VEC(nVec,duIce,dvIce,wk1,.FALSE.,myThid)
-      ENDIF
-
-C     Fill overlaps in updated fields
-      CALL EXCH_UV_XY_RL( duIce, dvIce,.TRUE.,myThid)
-
-      RETURN
-      END
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: SEAICE_MAP2VEC
 C     !INTERFACE:
@@ -179,6 +42,7 @@ C     === Routine arguments ===
       _RL xfld2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL yfld2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vector (n,nSx,nSy)
+#if (defined SEAICE_ALLOW_JFNK) || (defined SEAICE_ALLOW_KRYLOV)
 C     === local variables ===
       INTEGER I, J, bi, bj
       INTEGER ii, jj, m
@@ -233,6 +97,7 @@ C     bi,bj-loops
        ENDDO
       ENDDO
 
+#endif /* SEAICE_ALLOW_JFNK or SEAICE_ALLOW_KRYLOV */
       RETURN
       END
 
@@ -269,6 +134,7 @@ C     === Routine arguments ===
       _RS xfld2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS yfld2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vector (n,nSx,nSy)
+#if (defined SEAICE_ALLOW_JFNK) || (defined SEAICE_ALLOW_KRYLOV)
 C     === local variables ===
       INTEGER I, J, bi, bj
       INTEGER ii, jj, m
@@ -323,6 +189,7 @@ C     bi,bj-loops
        ENDDO
       ENDDO
 
+#endif /* SEAICE_ALLOW_JFNK or SEAICE_ALLOW_KRYLOV */
       RETURN
       END
 
@@ -369,7 +236,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 CML   implicit double precision (a-h,o-z) !jfl modification
       integer myThid
-      integer n, im, its, maxits, iout, icode
+      integer i, n, im, its, maxits, iout, icode
       _RL rhs(n,nSx,nSy), sol(n,nSx,nSy)
       _RL vv(n,im+1,nSx,nSy), w(n,im,nSx,nSy)
       _RL wk1(n,nSx,nSy), wk2(n,nSx,nSy), eps
@@ -463,6 +330,7 @@ C         comment: typically fgmres must be implemented in a loop
 C         with fgmres being called as long icode is returned with
 C         a value .ne. 0.
 C-----------------------------------------------------------------------
+#if (defined SEAICE_ALLOW_JFNK) || (defined SEAICE_ALLOW_KRYLOV)
 C     local variables -- !jfl modif
       integer imax
       parameter ( imax = 50 )
@@ -471,7 +339,7 @@ C     local variables -- !jfl modif
 C-------------------------------------------------------------
 C     arnoldi size should not exceed 50 in this version..
 C-------------------------------------------------------------
-      integer i, i1, ii, j, jj, k, k1!, n1
+      integer i1, ii, j, jj, k, k1!, n1
       integer bi, bj
       _RL r0, gam, epsmac, eps1
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -740,6 +608,7 @@ C
 
  199  format(' SEAICE_FGMRES: its =', i4, ' res. norm =', d26.16)
 C
+#endif /* SEAICE_ALLOW_JFNK or SEAICE_ALLOW_KRYLOV */
       RETURN
 C-----end-of-fgmres-----------------------------------------------------
 C-----------------------------------------------------------------------
@@ -767,6 +636,7 @@ C     ML: code stolen from BLAS-ddot and adapted for parallel applications
       _RL dx(n,im,nSx,nSy),dy(n,im,nSx,nSy)
       _RL t
       integer myThid
+#if (defined SEAICE_ALLOW_JFNK) || (defined SEAICE_ALLOW_KRYLOV)
 C     local arrays
       _RL dtemp(nSx,nSy)
       integer i,m,mp1,bi,bj
@@ -807,7 +677,6 @@ c60   continue
       enddo
       CALL GLOBAL_SUM_TILE_RL( dtemp,t,myThid )
 
-#endif /* SEAICE_ALLOW_JFNK */
-
+#endif /* SEAICE_ALLOW_JFNK or SEAICE_ALLOW_KRYLOV */
       RETURN
       END
