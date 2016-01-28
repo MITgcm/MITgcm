@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.61 2016/01/21 16:31:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.62 2016/01/28 13:26:17 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -295,19 +295,30 @@ C     Elastic-Viscous-Plastic solver, following Hunke (2001)
 #endif /* SEAICE_ALLOW_EVP */
 
        IF ( SEAICEuseLSR ) THEN
-C     LSR scheme (Zhang-J/Hibler 1997), ported to a C-grid
+C     Picard solver with LSR scheme (Zhang-J/Hibler 1997), ported to a C-grid
         CALL SEAICE_LSR( myTime, myIter, myThid )
        ENDIF
 
-#ifdef SEAICE_ALLOW_JFNK
-       IF ( SEAICEuseJFNK ) THEN
+#ifdef SEAICE_ALLOW_KRYLOV
 # ifdef ALLOW_AUTODIFF_TAMC
-        STOP 'Adjoint does not work with JFNK solver.'
+       STOP 'Adjoint does not work with Picard-Krylov solver.'
 # else
+       IF ( SEAICEuseKrylov ) THEN
+C     Picard solver with Matrix-free Krylov solver (Lemieux et al. 2008)
+        CALL SEAICE_KRYLOV( myTime, myIter, myThid )
+       ENDIF
+# endif /*  ALLOW_AUTODIFF_TAMC */
+#endif /* SEAICE_ALLOW_KRYLOV */
+
+#ifdef SEAICE_ALLOW_JFNK
+# ifdef ALLOW_AUTODIFF_TAMC
+       STOP 'Adjoint does not work with JFNK solver.'
+# else
+       IF ( SEAICEuseJFNK ) THEN
 C     Jacobian-free Newton Krylov solver (Lemieux et al. 2010, 2012)
         CALL SEAICE_JFNK( myTime, myIter, myThid )
-# endif /*  ALLOW_AUTODIFF_TAMC */
        ENDIF
+# endif /*  ALLOW_AUTODIFF_TAMC */
 #endif /* SEAICE_ALLOW_JFNK */
 
 C End of IF (SEAICEuseDYNAMICS ...
