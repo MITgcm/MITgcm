@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.18 2016/01/27 14:03:55 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.19 2016/01/28 16:16:38 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -545,7 +545,10 @@ C
      &      SQUEEZE_RIGHT, myThid )
        _END_MASTER( myThid )
       endif
-      if (i .lt. im .and. (ro .gt. eps1))  goto 4
+CML   The original code uses only im as the maximum allowed iterations, but
+CML   I want no more than maxits iterations, so we change the code here.
+CML      if (i .lt. im .and. (ro .gt. eps1))  goto 4
+      if (i .lt. im .and. its .lt. maxits .and. (ro .gt. eps1)) goto 4
 C
 C     now compute solution. first solve upper triangular system.
 C
