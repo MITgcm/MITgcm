@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.85 2016/01/27 14:06:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.86 2016/01/28 12:54:12 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -194,8 +194,6 @@ C--  Seaice-Dynamics parameters
        CALL WRITE_0D_I ( LSR_mixIniGuess, INDEX_NONE,
      & 'LSR_mixIniGuess =',
      & ' /* mix free-drift sol. into LSR initial Guess */')
-       CALL WRITE_0D_I ( SOLV_MAX_ITERS,    INDEX_NONE,
-     & 'SOLV_MAX_ITERS    =', ' /* max. number of LSR solver steps */')
        CALL WRITE_0D_RL( SEAICE_LSRrelaxU  ,INDEX_NONE,
      & 'SEAICE_LSRrelaxU  =', ' /* LSR solver: relaxation parameter */')
        CALL WRITE_0D_RL( SEAICE_LSRrelaxV  ,INDEX_NONE,
@@ -204,8 +202,6 @@ C--  Seaice-Dynamics parameters
      & 'LSR_ERROR         =', ' /* sets accuracy of LSR solver */')
        CALL WRITE_0D_I ( SOLV_NCHECK,       INDEX_NONE,
      & 'SOLV_NCHECK       =', ' /* test interval for LSR solver */')
-       CALL WRITE_0D_I ( NPSEUDOTIMESTEPS,  INDEX_NONE,
-     & 'NPSEUDOTIMESTEPS  =', ' /* num. of extra pseudo time steps */')
        CALL WRITE_0D_L ( SEAICEuseMultiTileSolver, INDEX_NONE,
      & 'SEAICEuseMultiTileSolver =',
      & ' /* use full domain tri-diag solver */')
@@ -213,20 +209,30 @@ C--  Seaice-Dynamics parameters
      & 'SEAICE_OLx =', ' /* overlap for LSR/preconditioner */')
        CALL WRITE_0D_I ( SEAICE_OLy,  INDEX_NONE,
      & 'SEAICE_OLy =', ' /* overlap for LSR/preconditioner */')
-#ifdef SEAICE_ALLOW_JFNK
-       IF ( SEAICEuseJFNK ) THEN
+       CALL WRITE_0D_I ( SEAICEnonLinIterMax,  INDEX_NONE,
+     & 'SEAICEnonLinIterMax =', 
+     & ' /* max. number of nonlinear solver steps */')
+       CALL WRITE_0D_I ( SEAICElinearIterMax,  INDEX_NONE,
+     & 'SEAICElinearIterMax =', 
+     & ' /* max. number of linear solver steps */')
+       CALL WRITE_0D_RL( SEAICEnonLinTol  ,INDEX_NONE,
+     & 'SEAICEnonLinTol     =', ' /* non-linear solver tolerance */')
+#if (defined SEAICE_ALLOW_JFNK) || (defined SEAICE_ALLOW_KRYLOV)
+       IF ( SEAICEuseJFNK.OR.SEAICEuseKrylov ) THEN
+        CALL WRITE_0D_I ( SEAICEpreconLinIter,  INDEX_NONE,
+     & 'SEAICEpreconLinIter =', 
+     & ' /* number of linear preconditioner steps */')
+        CALL WRITE_0D_I ( SEAICEpreconNL_Iter,  INDEX_NONE,
+     & 'SEAICEpreconNL_Iter =', 
+     & ' /* number of non-linear preconditioner steps */')
         CALL WRITE_0D_L ( SEAICEuseIMEX, INDEX_NONE,
-     &   'SEAICEuseIMEX  =', ' /* IMEX scheme with JFNK-solver */')
-        CALL WRITE_0D_I ( SEAICEnewtonIterMax,  INDEX_NONE,
-     & 'SEAICEnewtonIterMax =', ' /* num. of JFNK Newton steps */')
-        CALL WRITE_0D_I ( SEAICEkrylovIterMax,  INDEX_NONE,
-     & 'SEAICEkrylovIterMax =', ' /* num. of JFNK Krylov steps */')
+     &  'SEAICEuseIMEX  =', ' /* IMEX scheme with JFNK-solver */')
+       ENDIF
+       IF ( SEAICEuseJFNK ) THEN
         CALL WRITE_0D_I ( SEAICE_JFNK_lsIter,  INDEX_NONE,
      & 'SEAICE_JFNK_lsIter =', ' /* start of line search */')
         CALL WRITE_0D_I ( SEAICE_JFNK_tolIter,  INDEX_NONE,
      & 'SEAICE_JFNK_tolIter =', ' /* tol. is relaxed after this */')
-        CALL WRITE_0D_RL( JFNKgamma_nonlin  ,INDEX_NONE,
-     & 'JFNKgamma_nonlin=', ' /* JFNK tolerance */')
         CALL WRITE_0D_RL( JFNKres_t  ,INDEX_NONE,
      & 'JFNKres_t=', ' /* JFNK parameter */')
         CALL WRITE_0D_RL( JFNKres_tFac  ,INDEX_NONE,
@@ -238,7 +244,7 @@ C--  Seaice-Dynamics parameters
         CALL WRITE_0D_RL( SEAICE_JFNKalpha, INDEX_NONE,
      &  'SEAICE_JFNKalpha =', ' /* JFNK: inexact Newtow parameter */')
        ENDIF
-#endif /* SEAICE_ALLOW_JFNK */
+#endif /* SEAICE_ALLOW_JFNK or SEAICE_ALLOW_KRYLOV */
 #ifdef SEAICE_ALLOW_EVP
       ELSE
        CALL WRITE_0D_RL( SEAICE_elasticParm  ,INDEX_NONE,

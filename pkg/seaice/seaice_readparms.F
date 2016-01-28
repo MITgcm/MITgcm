@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.170 2016/01/27 14:06:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.171 2016/01/28 12:54:12 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -80,6 +80,9 @@ C     SEAICE_freeze     :: FREEZING TEMP. OF SEA WATER
       _RL areaMin, areaMax, A22, hiceMin, MAX_TICE
       LOGICAL SEAICEadvAge
       INTEGER SEAICEadvSchAge, LAD, SEAICEturbFluxFormula
+      INTEGER NPSEUDOTIMESTEPS, SOLV_MAX_ITERS
+      INTEGER SEAICEnewtonIterMax, SEAICEkrylovIterMax
+      _RL JFNKgamma_nonlin
       _RL SEAICEdiffKhAge
       CHARACTER*(MAX_LEN_MBUF) IceAgeFile, IceAgeTrFile(4)
       _RL SEAICE_abEps
@@ -111,10 +114,12 @@ C--   SEAICE parameters
      & SEAICE_evpAlpha, SEAICE_evpBeta,
      & SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin,
      & SEAICE_zetaMin, SEAICE_zetaMaxFac, SEAICEusePicardAsPrecon,
-     & SEAICEuseKrylov,
-     & SEAICEuseJFNK, SEAICEnewtonIterMax, SEAICEkrylovIterMax,
+     & SEAICEuseKrylov, SEAICEuseJFNK, 
+     & SEAICEnonLinIterMax, SEAICElinearIterMax, SEAICEnonLinTol,
+     & SEAICEnewtonIterMax, SEAICEkrylovIterMax, JFNKgamma_nonlin,
+     & SEAICEpreconNL_Iter, SEAICEpreconLinIter,
      & SEAICE_JFNK_lsIter, SEAICE_JFNK_tolIter, JFNKres_t,JFNKres_tFac,
-     & JFNKgamma_nonlin,JFNKgamma_lin_min,JFNKgamma_lin_max,
+     & JFNKgamma_lin_min,JFNKgamma_lin_max,
      & SEAICE_JFNKepsilon, SEAICE_OLx, SEAICE_OLy,
      & SEAICE_JFNKphi, SEAICE_JFNKalpha, SEAICEuseIMEX, SEAICEuseBDF2,
      & useHibler79IceStrength, SEAICEpartFunc, SEAICEredistFunc,
@@ -289,8 +294,6 @@ c     DIFF1      = .004 _d 0
 C     JFNK stuff
       SEAICEuseJFNK       = .FALSE.
       SEAICEuseIMEX       = .FALSE.
-      SEAICEnewtonIterMax = 10
-      SEAICEkrylovIterMax = 10
       SEAICE_JFNK_lsIter  = UNSET_I
       SEAICE_JFNK_tolIter = 100
 C     This should be the default for both JFNK and for LSR but in order
@@ -456,11 +459,11 @@ C     LSR parameters
       SEAICEusePicardAsPrecon = .FALSE.
       SEAICE_LSRrelaxU = 0.95 _d 0
       SEAICE_LSRrelaxV = 0.95 _d 0
-      SOLV_MAX_ITERS = UNSET_I
       SOLV_NCHECK= 2
-C     two pseudo time steps correspond to the original modified
-C     Euler time stepping scheme of Zhang+Hibler (1997)
-      NPSEUDOTIMESTEPS = 2
+      SEAICEnonLinIterMax = UNSET_I
+      SEAICElinearIterMax = UNSET_I
+      SEAICEpreconNL_Iter =  0
+      SEAICEpreconLinIter = 10
 #ifdef SEAICE_ALLOW_FREEDRIFT
       LSR_mixIniGuess =  0
 #else
@@ -502,6 +505,11 @@ C     Euler time stepping scheme of Zhang+Hibler (1997)
 C-    Retired parameters:
 c     LAD        = 2
       LAD        = UNSET_I
+      NPSEUDOTIMESTEPS   = UNSET_I
+      SOLV_MAX_ITERS     = UNSET_I
+      SEAICEnewtonIterMax= UNSET_I
+      SEAICEkrylovIterMax= UNSET_I
+      JFNKgamma_nonlin   = UNSET_RL
 c     SEAICE_sensHeat    = 1.75 _d -03 * 1004 * 1.3
 c     SEAICE_sensHeat    = 2.284  _d +00
       SEAICE_sensHeat    = UNSET_RL
@@ -768,8 +776,31 @@ C     JFNK problem (and Krylov solver is not used)
       IF ( SEAICEuseJFNK .AND. .NOT. SEAICEusePicardAsPrecon )
      &     SEAICEuseKrylov = .FALSE.
       
-C     Make sure that we have least two pseudo time steps
-      NPSEUDOTIMESTEPS = MAX(NPSEUDOTIMESTEPS,2)
+C     Set different defaults for different solvers
+      IF ( SEAICEnonLinIterMax .EQ. UNSET_I ) THEN
+C     two nonlinear iterations correspond to the original modified
+C     Euler time stepping scheme of Zhang+Hibler (1997)
+       IF ( SEAICEuseLSR ) SEAICEnonLinIterMax = 2
+       IF ( SEAICEuseJFNK.OR.SEAICEuseKrylov ) SEAICEnonLinIterMax = 10
+      ENDIF
+C     Make sure that we have least two pseudo time steps for Picard-LSR
+      IF ( SEAICEuseLSR .AND. .NOT. SEAICEusePicardAsPrecon )
+     &     SEAICEnonLinIterMax = MAX(SEAICEnonLinIterMax,2)
+
+C-    different default for different linear solvers
+      IF ( SEAICElinearIterMax .EQ. UNSET_I ) THEN
+C     maximum number of LSOR steps in default Picard solver
+       SEAICElinearIterMax = 1500
+C     maximum number of 50 is hard coded in S/R SEAICE_FGMRES and this
+C     number does not have an impact on that (that is a bug and needs to
+C     be fixed)
+       IF ( SEAICEuseJFNK.OR.SEAICEuseKrylov ) SEAICElinearIterMax = 10
+      ENDIF
+
+C     Turn line search with JFNK solver off by default by making this
+C     number much larger than the maximum allowed Newton iterations
+      IF ( SEAICE_JFNK_lsIter .EQ. UNSET_I )
+     &     SEAICE_JFNK_lsIter  = 2*SEAICEnewtonIterMax
 
 C     So far we use the restrictive additive Schwartz method only in
 C     the preconditioner for the Krylov methods by default
@@ -781,18 +812,6 @@ C     the preconditioner for the Krylov methods by default
        SEAICE_OLy = 0
        IF ( SEAICEuseJFNK .OR. SEAICEuseKrylov ) SEAICE_OLy = OLy-2
       ENDIF
-
-C-    limit preconditioner steps
-      IF ( SOLV_MAX_ITERS .EQ. UNSET_I ) THEN
-C     maximum number of LSOR steps in default Picard solver
-       SOLV_MAX_ITERS = 1500
-C     maximum number of LSOR steps as preconditioner in JFNK solver
-       IF ( SEAICEuseJFNK ) SOLV_MAX_ITERS = 10
-      ENDIF
-C     Turn line search with JFNK solver off by default by making this
-C     number much larger than the maximum allowed Newton iterations
-      IF ( SEAICE_JFNK_lsIter .EQ. UNSET_I )
-     &     SEAICE_JFNK_lsIter  = 2*SEAICEnewtonIterMax
 
 C-    The old ways of specifying mcPheeTaper, mcPheePiston & frazilFrac:
 C     a) prevent multiple specification of the same coeff;
@@ -913,6 +932,56 @@ C     Set diffusivity to some sensible values if not done in data.seaice
      &     SEAICE_EPS_SQ = SEAICE_EPS * SEAICE_EPS
 
 C-    Retired parameters
+      IF ( SEAICEnewtonIterMax .NE. UNSET_I ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "SEAICEnewtonIterMax" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'S/R SEAICE_READPARMS: use "SEAICEnonLinIterMax" instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( SEAICEkrylovIterMax .NE. UNSET_I ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "SEAICEkrylovIterMax" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'S/R SEAICE_READPARMS: use "SEAICElinearIterMax" instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( NPSEUDOTIMESTEPS    .NE. UNSET_I ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "NPSEUDOTIMESTEPS" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'S/R SEAICE_READPARMS: use "SEAICEnonLinIterMax" instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( SOLV_MAX_ITERS .NE. UNSET_I ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "SOLV_MAX_ITERS" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'S/R SEAICE_READPARMS: use "SEAICElinearIterMax" instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( JFNKgamma_nonlin   .NE. UNSET_RL ) THEN
+       nRetired = nRetired + 1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R SEAICE_READPARMS: "JFNKgamma_nonlin" ',
+     &  'is no longer allowed in file "data.seaice"'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'S/R SEAICE_READPARMS: use "SEAICEnonLinTol" instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
       IF ( SEAICE_sensHeat    .NE. UNSET_RL ) THEN
        nRetired = nRetired + 1
        WRITE(msgBuf,'(A,A)')

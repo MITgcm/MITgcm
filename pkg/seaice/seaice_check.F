@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.96 2015/12/22 17:00:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.97 2016/01/28 12:54:12 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -406,13 +406,13 @@ C     Avoid using both type of diffusion scheme (DIFF1 & SEAICEdiffKh)
 
 C--
 #ifdef ALLOW_AUTODIFF_TAMC
-      IF ( NPSEUDOTIMESTEPS .GT. MPSEUDOTIMESTEPS ) THEN
+      IF ( SEAICEnonLinIterMax .GT. MPSEUDOTIMESTEPS ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &  ' need to increase MPSEUDOTIMESTEPS in SEAICE_PARAMS.h'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(2A,2I4)') 'SEAICE_CHECK:',
-     &  ' MPSEUDOTIMESTEPS, NPSEUDOTIMESTEPS = ',
-     &  MPSEUDOTIMESTEPS, NPSEUDOTIMESTEPS
+     &  ' MPSEUDOTIMESTEPS, SEAICEnonLinIterMax = ',
+     &  MPSEUDOTIMESTEPS, SEAICEnonLinIterMax
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF

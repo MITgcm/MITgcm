@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.121 2016/01/25 10:49:27 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.122 2016/01/28 12:54:12 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -82,7 +82,7 @@ C     i,j,bi,bj  :: Loop counters
       INTEGER ipass, ipass0
       INTEGER i, j, m, bi, bj
       INTEGER iMin, iMax, jMin, jMax
-      INTEGER ICOUNT1, ICOUNT2
+      INTEGER ICOUNT1, ICOUNT2, linearIterLoc, nonLinIterLoc
       INTEGER kSrf
       INTEGER SOLV_MAX_TMP
       LOGICAL doIterate4u, doIterate4v
@@ -162,6 +162,13 @@ C     extra overlap for (restricted) additive Schwarz method
       iMin = 1   - SEAICE_OLx
       iMax = sNx + SEAICE_OLx
 C     
+      linearIterLoc = SEAICElinearIterMax
+      nonLinIterLoc = SEAICEnonLinIterMax
+      IF ( SEAICEusePicardAsPrecon ) THEN
+       linearIterLoc = SEAICEpreconlinIter
+       nonLinIterLoc = SEAICEpreconNL_Iter
+      ENDIF
+C     
       recip_deltaT = 1. _d 0 / SEAICE_deltaTdyn
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -211,12 +218,12 @@ C     initialise fractional areas at velocity points
       ipass0 = 2
 C     modify time stepping a little if more than the default 
 C     modified Eulerian time step is used.
-      IF ( NPSEUDOTIMESTEPS.GT.2 ) ipass0 = 1
+      IF ( nonLinIterLoc.GT.2 ) ipass0 = 1
 #ifdef ALLOW_AUTODIFF_TAMC
       DO ipass=1,MPSEUDOTIMESTEPS
        itmpkey = (ikey_dynamics-1)*MPSEUDOTIMESTEPS + ipass
 #else
-      DO ipass=1,NPSEUDOTIMESTEPS
+      DO ipass=1,nonLinIterLoc
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -230,7 +237,7 @@ CADJ STORE utmp,vtmp = comlev1_dynsol, kind=isbyte,
 CADJ &     key = itmpkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-      IF ( ipass .LE. NPSEUDOTIMESTEPS ) THEN
+      IF ( ipass .LE. nonLinIterLoc ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice = comlev1_dynsol, kind=isbyte,
 CADJ &     key = itmpkey
@@ -600,10 +607,10 @@ CML#endif /* ALLOW_AUTODIFF_TAMC */
       IF ( inAdMode ) THEN
         SOLV_MAX_TMP = SOLV_MAX_FIXED
       ELSE
-        SOLV_MAX_TMP = SOLV_MAX_ITERS
+        SOLV_MAX_TMP = linearIterLoc
       ENDIF
 #else
-      SOLV_MAX_TMP = SOLV_MAX_ITERS
+      SOLV_MAX_TMP = linearIterLoc
 #endif
 
       ICOUNT1 = SOLV_MAX_TMP

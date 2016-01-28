@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.35 2014/10/20 03:20:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.36 2016/01/28 12:54:12 mlosch Exp $
 C $Name:  $
 
 #ifndef SEAICE_LSRBNEW
@@ -159,8 +159,8 @@ C SET SOME VALUES
       WFAU=WFAU1
       WFAV=WFAV1
 
-      ICOUNT1=SOLV_MAX_ITERS
-      ICOUNT2=SOLV_MAX_ITERS
+      ICOUNT1=SEAICElinearIterMax
+      ICOUNT2=SEAICElinearIterMax
 
       ECM2= 1. _d 0/(SEAICE_eccen**2)
 
@@ -478,7 +478,7 @@ C NOW DO ITERATION
 
 C ITERATION START -----------------------------------------------------
 
-      DO m = 1, SOLV_MAX_ITERS
+      DO m = 1, SEAICElinearIterMax
        IF ( doIterate4u .OR. doIterate4v ) THEN
 
         IF ( useCubedSphereExchange ) THEN
@@ -852,7 +852,7 @@ C ITERATION START -----------------------------------------------------
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ LOOP = iteration uice
 #endif /* ALLOW_AUTODIFF_TAMC */
-      DO M=1, solv_max_iters
+      DO M=1, SEAICElinearIterMax
       IF ( phexit .EQ. -1 ) THEN
 
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -1086,7 +1086,7 @@ C ITERATION START -----------------------------------------------------
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ LOOP = iteration vice
 #endif /* ALLOW_AUTODIFF_TAMC */
-      DO M=1, solv_max_iters
+      DO M=1, SEAICElinearIterMax
       IF ( phexit .EQ. -1 ) THEN
 
 C NOW SET U(3)=U(1)

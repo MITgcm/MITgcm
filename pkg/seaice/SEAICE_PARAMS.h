@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.129 2016/01/27 14:06:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.130 2016/01/28 12:54:12 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -158,16 +158,16 @@ C                         0 = none, i.e., from last iter
 C                         1 = use linearized approx (consistent with tsurf 
 C                             finding)
 C                         2 = full non-lin form
-C     SOLV_MAX_ITERS    :: maximum number of allowed LSR-solver iterations
-C     SOLV_NCHECK       :: iteration interval for solver convergence test
-C     NPSEUDOTIMESTEPS  :: number of extra pseudo time steps (>= 2)
+C     SOLV_NCHECK         :: iteration interval for LSR-solver convergence test
+C     SEAICEnonLinIterMax :: number of allowed non-linear solver iterations
+C                            for implicit solvers (JFNK and Picard) (>= 2)
+C     SEAICElinearIterMax :: number of allowed linear solver iterations for
+C                            for implicit solvers (JFNK and Picard) C
+C     SEAICEpreconNL_Iter :: number non-linear iterations in preconditioner
+C     SEAICEpreconLinIter :: number linear iterations in preconditioner
 C     SEAICEnEVPstarSteps :: number of evp*-steps
 C     SEAICEmomStartBDF   :: number of previous u/vIce time levels available
 C                          to start (or restart) BDF2 scheme.
-C     SEAICEnewtonIterMax :: maximum number of allowed Newton iterations
-C                          in JFNK-solver
-C     SEAICEkrylovIterMax :: maximum number of allowed Krylov iterations
-C                          in JFNK-solver
 C     SEAICE_JFNK_lsIter  :: number of Newton iterations after which the
 C                            line search is started
 C     SEAICE_JFNK_tolIter :: number of Newton iterations after which the
@@ -218,12 +218,12 @@ C     SEAICE_debugPointI :: I,J index for seaice-specific debuggin
 C     SEAICE_debugPointJ
 C
       INTEGER IMAX_TICE, postSolvTempIter
-      INTEGER SOLV_MAX_ITERS, SOLV_NCHECK
-      INTEGER NPSEUDOTIMESTEPS
+      INTEGER SOLV_NCHECK
+      INTEGER SEAICEnonLinIterMax, SEAICElinearIterMax
+      INTEGER SEAICEpreconLinIter, SEAICEpreconNL_Iter
       INTEGER LSR_mixIniGuess
       INTEGER SEAICEnEVPstarSteps
       INTEGER SEAICEmomStartBDF
-      INTEGER SEAICEnewtonIterMax, SEAICEkrylovIterMax
       INTEGER SEAICE_JFNK_lsIter, SEAICE_JFNK_tolIter
       INTEGER SEAICE_OLx, SEAICE_OLy
       INTEGER SEAICEadvScheme
@@ -242,13 +242,12 @@ C
       INTEGER SEAICEpartFunc, SEAICEredistFunc
       INTEGER SEAICEridgingIterMax
       COMMON /SEAICE_PARM_I/
-     &     IMAX_TICE, postSolvTempIter,
-     &     SOLV_MAX_ITERS, SOLV_NCHECK,
-     &     NPSEUDOTIMESTEPS,
+     &     IMAX_TICE, postSolvTempIter, SOLV_NCHECK,
+     &     SEAICEnonLinIterMax, SEAICElinearIterMax,
+     &     SEAICEpreconLinIter, SEAICEpreconNL_Iter,
      &     LSR_mixIniGuess,
      &     SEAICEnEVPstarSteps,
      &     SEAICEmomStartBDF,
-     &     SEAICEnewtonIterMax, SEAICEkrylovIterMax,
      &     SEAICE_JFNK_lsIter, SEAICE_OLx, SEAICE_OLy,
      &     SEAICE_JFNK_tolIter,
      &     SEAICEpresPow0, SEAICEpresPow1,
@@ -305,7 +304,7 @@ C     SEAICEaEVPcStar    :: multiple of stabilty factor: alpha*beta=cstar*gamma
 C     SEAICEaEVPalphaMin :: lower limit of alpha and beta, regularisation
 C                           to prevent singularities of system matrix, 
 C                           e.g. when ice concentration is too low.
-C     JFNKgamma_nonlin   :: non-linear tolerance parameter for JFNK solver
+C     SEAICEnonLinTol    :: non-linear tolerance parameter for implicit solvers
 C     JFNKgamma_lin_min/max :: tolerance parameters for linear JFNK solver
 C     JFNKres_t          :: tolerance parameter for FGMRES residual
 C     JFNKres_tFac       :: if set, JFNKres_t=JFNKres_tFac*(initial residual)
@@ -452,7 +451,7 @@ C
       _RL SEAICE_tempFrz0, SEAICE_dTempFrz_dS
       _RL SEAICE_PDF(nITD)
       _RL OCEAN_drag, LSR_ERROR, DIFF1
-      _RL JFNKgamma_nonlin, JFNKres_t, JFNKres_tFac
+      _RL SEAICEnonLinTol, JFNKres_t, JFNKres_tFac
       _RL JFNKgamma_lin_min, JFNKgamma_lin_max, SEAICE_JFNKepsilon
       _RL SEAICE_JFNKphi, SEAICE_JFNKalpha
       _RL SEAICE_deltaMin
@@ -502,7 +501,7 @@ C
      &    facOpenGrow, facOpenMelt,
      &    SEAICE_tempFrz0, SEAICE_dTempFrz_dS, SEAICE_PDF,
      &    OCEAN_drag, LSR_ERROR, DIFF1,
-     &    JFNKgamma_nonlin, JFNKres_t, JFNKres_tFac,
+     &    SEAICEnonLinTol, JFNKres_t, JFNKres_tFac,
      &    JFNKgamma_lin_min, JFNKgamma_lin_max, SEAICE_JFNKepsilon,
      &    SEAICE_JFNKphi, SEAICE_JFNKalpha,
      &    SEAICE_deltaMin, SEAICE_area_reg, SEAICE_hice_reg,
