@@ -27,7 +27,7 @@
  SEAICE_waterDrag   = 5.3508,
  SEAICEuseDYNAMICS  =.FALSE.,
  LSR_ERROR          = 1.E-12,
- SOLV_MAX_ITERS     = 1500,
+ SEAICElinearIterMax= 1500,
  LSR_mixIniGuess    = 1,
  SEAICEadvScheme    = 77,
  SEAICEadvSnow      = .TRUE.,
