@@ -1,10 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2229 2016/01/28 15:48:06 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2230 2016/01/28 16:17:39 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/seaice:
+  - change the termination criterion so that maxits (SEAICElinearIterMax)
+    has an effect
   - unify iteration parameters for implicit solvers (JFNK and Picard)
     SEAICEnonLinIterMax replaces SEAICEnewtonIterMax/NPSEUDOTIMESTEPS
     SEAICElinearIterMax replaces SEAICEkrylovIterMax/SOLV_MAX_ITER
