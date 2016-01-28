@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/SEAICE_OPTIONS.h,v 1.25 2015/06/15 15:42:17 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/SEAICE_OPTIONS.h,v 1.26 2016/01/28 16:18:53 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -74,6 +74,8 @@ C--   Only for the C-grid version it is possible to
 #ifdef SEAICE_CGRID
 C     enable JFNK code by defining the following flag
 # define SEAICE_ALLOW_JFNK
+C     enable Krylov code by defining the following flag
+# define SEAICE_ALLOW_KRYLOV
 C     enable this flag to reproduce old verification results for JFNK
 # define SEAICE_PRECOND_EXTRA_EXCHANGE
 C     enable LSR to use global (multi-tile) tri-diagonal solver
