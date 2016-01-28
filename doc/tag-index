@@ -1,9 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2228 2016/01/21 16:57:50 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2229 2016/01/28 15:48:06 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - unify iteration parameters for implicit solvers (JFNK and Picard)
+    SEAICEnonLinIterMax replaces SEAICEnewtonIterMax/NPSEUDOTIMESTEPS
+    SEAICElinearIterMax replaces SEAICEkrylovIterMax/SOLV_MAX_ITER
+    SEAICEpreLinIterMax replaces SOLV_MAX_ITER in preconditioner
+    SEAICEpreNL_IterMax replaces NPSEUDOTIMESTEPS in preconditioner
+    SEAICEnonLinTol     replaces JFNKgamma_nonlin
+  - remove S/R SEAICE_FGMRES_DRIVER and put content into S/R SEAICE_JFKN
+  - add new Picard-Krylov solver, compile with SEAICE_ALLOW_KRYLOV and
+    use with SEAICEuseKrylov
+o pkg/seaice/seaice_lsr.F
+  fix small bug: replace zetaZ by zetaZloc in S/R seaice_lsr_rhsu/v; only
+  relevant if SEAICEuseStrImpCpl=T, and even then it does not seem to have
+  an effect.
 o pkg/seaice: add two new parameters
   - SEAICEuseLSR to simplify the logic in seaice_dynsolver (this 
     parameter is not in any namelist)
