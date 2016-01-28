@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.171 2016/01/28 12:54:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.172 2016/01/28 16:17:05 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -787,13 +787,14 @@ C     Make sure that we have least two pseudo time steps for Picard-LSR
       IF ( SEAICEuseLSR .AND. .NOT. SEAICEusePicardAsPrecon )
      &     SEAICEnonLinIterMax = MAX(SEAICEnonLinIterMax,2)
 
-C-    different default for different linear solvers
+C-    different defaults for different linear solvers
       IF ( SEAICElinearIterMax .EQ. UNSET_I ) THEN
-C     maximum number of LSOR steps in default Picard solver
+C     maximum number of LSOR steps in default Picard solver 
+C     (=previous default for retired SOLV_MAX_ITERS)
        SEAICElinearIterMax = 1500
-C     maximum number of 50 is hard coded in S/R SEAICE_FGMRES and this
-C     number does not have an impact on that (that is a bug and needs to
-C     be fixed)
+C     the maximum number of Krylov dimensions of 50 is hard coded in 
+C     S/R SEAICE_FGMRES, so that more than 50 linear iterations will
+C     restart GMRES
        IF ( SEAICEuseJFNK.OR.SEAICEuseKrylov ) SEAICElinearIterMax = 10
       ENDIF
 
