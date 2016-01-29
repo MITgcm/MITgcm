@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.21 2014/07/19 15:16:24 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.22 2016/01/29 14:15:28 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu
 #  Linux machines.
@@ -89,6 +89,11 @@ do
 
   echo "================================================================"
   typ=`echo $tt | sed 's/+rs//'`
+  #- define list of additional experiences to test:
+  addExp=''
+  if test $typ = 'mp2' -o $typ = 'ifc' ; then
+    addExp='offline_cheapaml atm_gray'
+  fi
   #- check day and time:
   curDay=`date +%d` ; curHour=`date +%H`
   if [ $curDay -ne $TODAY ] ; then
@@ -133,6 +138,12 @@ do
       mkdir $new_dir
       pushd $new_dir
       cp -ra ../MITgcm/* .
+      #-- download additional experience from Contrib:
+      for exp2add in $addExp ; do
+        echo " add dir: $exp2add (from Contrib:verification_other)"
+        ( cd verification ;  $cmdCVS co -P -d $exp2add \
+             MITgcm_contrib/verification_other/$exp2add > /dev/null )
+      done
     fi
   else
     pushd MITgcm
