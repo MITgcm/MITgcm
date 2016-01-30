@@ -1,9 +1,14 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.22 2016/01/29 14:15:28 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.23 2016/01/30 15:55:45 jmc Exp $
 
-#  Test script for MITgcm that should work on most of the csail.mit.edu
-#  Linux machines.
+#  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
+
+tst_grp=0 ; if test $# = 1 ; then tst_grp=$1 ; fi
+if test $tst_grp != 'a' -a $tst_grp != 'b' ; then
+  echo "missing or invalid argument (expect: 'a' or 'b') ==> exit"
+  exit 1
+fi
 
 # defaults
 #export PATH="$PATH:/usr/local/bin"
@@ -32,17 +37,21 @@ cmdCVS='cvs -d /u/gcmpack'
 dInWeek=`date +%a`
 outDir=`hostname -s`
 TESTDIR="/scratch/jmc/test_${outDir}"
+outDir="${outDir}-${tst_grp}"
 MC=13
-checkOut=2
 sepDir=1
 option=
 #tst_list='g7a adm mpa g77 gfo+rs mth mp2+rs mpi ifc'
 #if test "x$dInWeek" = xSun ; then tst_list="$tst_list tlm oad" ; fi
-outDir="${outDir}-a"
-tst_list='g7a mpa mth mp2+rs mpi oad'
-#outDir="${outDir}-b"
-#tst_list='adm g77 gfo+rs ifc'
-#if test "x$dInWeek" = xSun ; then tst_list="$tst_list tlm" ; fi
+if test $tst_grp = 'a' ; then
+ checkOut=2
+ tst_list='g7a mpa mth mp2+rs mpi oad'
+else
+ checkOut=3
+ tst_list='adm g77 gfo+rs ifc'
+ if test "x$dInWeek" = xSun ; then tst_list="$tst_list tlm" ; fi
+fi
+echo " test: $outDir ; list='$tst_list'"
 
 #option="-nc" ; checkOut=1
 #option="-q"  ; checkOut=1
