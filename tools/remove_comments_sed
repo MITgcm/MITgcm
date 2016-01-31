@@ -27,9 +27,14 @@
 /^Crg/d
 /^cgg/d
 
-# This is a growing list of which comments lines to remove from a file 
-# in order to reduce the file size of ad_input_code.f. The first one is 
-# for empty lines. 
+# This is a growing list of which comments lines to remove from a file
+# in order to reduce the file size of ad_input_code.f. The first one is
+# for empty lines.
 # We want to remove all comments (=lines starting with C,c,*), but
-# compiler directives also start with a C, in particular CADJ/cadj/Cadj/cADJ, 
+# compiler directives also start with a C, in particular CADJ/cadj/Cadj/cADJ,
 # and absolutely must remain in the file.
+
+#- A hack for recent OpenMPI (v1.8.8, shipped with FC.23) version of 'mpif.h'
+#  which now contains a new header file: mpif-sizeof.h that relies on module
+#  "iso_fortran_env", causing TAF to panic ; try to comment out this header file
+s/^      include 'mpif-sizeof.h'$/c     include 'mpif-sizeof.h'/
