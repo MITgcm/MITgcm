@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2231 2016/01/31 23:53:08 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2232 2016/02/04 01:26:54 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - fix vertical inter/extra-polation of density factor rhoFacF (for anelastic)
+    for the case setCenterDr=T (delRc set from "data"); add output of rhoFacC&F.
+    Update output of exp. deep_anelastic (changes at truncation level).
 o tools:
   - add a hack in "remove_comments_sed" (used only with TAF) for recent
     version of OpenMPI (shipped with FC.23): comment out the new header
