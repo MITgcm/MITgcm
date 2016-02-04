@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_ref_state.F,v 1.6 2014/05/12 01:27:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_ref_state.F,v 1.7 2016/02/04 01:16:03 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -293,11 +293,14 @@ C       rhoFac(k) = density ratio between layer k and top interface
           rhoFacC(k) = rho1Ref(k)/rhoConst
         ENDDO
         DO k=2,Nr
-          rhoFacF(k) = (rhoFacC(k-1)*drF(k)+rhoFacC(k)*drF(k-1))
-     &               / (drF(k)+drF(k-1))
+C       since rkSign=-1, recip_drC(k) = 1./(rC(k-1)-rC(k))
+          rhoFacF(k) = ( rhoFacC(k-1)*(rF(k)-rC(k))
+     &                 + rhoFacC(k)*(rC(k-1)-rF(k)) )*recip_drC(k)
         ENDDO
 C       extrapolate down to the bottom:
-        rhoFacF(Nr+1)= 2. _d 0*rhoFacC(Nr) - rhoFacF(Nr)
+        rhoFacF(Nr+1) = ( rhoFacC(Nr)*(rF(Nr+1)-rF(Nr))
+     &                  + rhoFacF(Nr)*(rC(Nr)-rF(Nr+1))
+     &                  ) / (rC(Nr)-rF(Nr))
 C-      set reciprocal rho-factor:
         DO k=1,Nr
           recip_rhoFacC(k) = 1. _d 0/rhoFacC(k)
@@ -326,8 +329,13 @@ C--   Write to check :
         CALL PRINT_MESSAGE(msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )
        ENDDO
       ELSE
-C--   Write reference density to binary file :
-        CALL WRITE_GLVEC_RL( 'RhoRef',' ',rhoRef, Nr, -1, myThid )
+C-    Write reference density to binary file :
+        CALL WRITE_GLVEC_RL( 'RhoRef', ' ', rhoRef, Nr, -1, myThid )
+      ENDIF
+      IF ( usingZCoords .AND. rhoRefFile .NE. ' ' ) THEN
+C-    Write Anelastic density factor to binary file :
+        CALL WRITE_GLVEC_RL( 'RhoFacC',' ',rhoFacC, Nr ,  -1, myThid )
+        CALL WRITE_GLVEC_RL( 'RhoFacF',' ',rhoFacF, Nr+1, -1, myThid )
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
