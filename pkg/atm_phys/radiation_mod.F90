@@ -1,4 +1,4 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/radiation_mod.F90,v 1.5 2015/12/21 20:04:57 jmc Exp $
+! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/radiation_mod.F90,v 1.6 2016/02/09 23:24:21 jmc Exp $
 ! $Name:  $
 
 module radiation_mod
@@ -24,7 +24,7 @@ private
 
 ! version information
 
-character(len=128) :: version='$Id: radiation_mod.F90,v 1.5 2015/12/21 20:04:57 jmc Exp $'
+character(len=128) :: version='$Id: radiation_mod.F90,v 1.6 2016/02/09 23:24:21 jmc Exp $'
 character(len=128) :: tag='homemade'
 
 !==================================================================================
@@ -68,6 +68,8 @@ real    :: ir_tau_wv_win2  = 1.0814e4
 real    :: ir_tau_co2      = -999.
 real    :: ir_tau_wv       = -999.
 real    :: window          = -999.
+!RG: added carbon dioxide concentration to namelist
+real    :: carbon_conc     = 360.0
 
 real, save :: pi, deg_to_rad , rad_to_deg
 
@@ -75,7 +77,7 @@ namelist/radiation_nml/ select_incSW, solar_constant, del_sol, &
            ir_tau_eq, ir_tau_pole, linear_tau, ir_tau_co2, ir_tau_wv,   &
            atm_abs, sw_diff, del_sw, albedo_value, window, wv_exponent, &
            solar_exponent, yearLength, yearPhase, obliquity, sw_co2, &
-           ir_tau_co2_win, ir_tau_wv_win1, ir_tau_wv_win2
+           ir_tau_co2_win, ir_tau_wv_win1, ir_tau_wv_win2, carbon_conc
 
 !==================================================================================
 !-------------------- diagnostics fields -------------------------------
@@ -236,6 +238,7 @@ integer :: k, n
 integer :: im, jm
 ! Variables for seasonal Incoming SW
 real    :: tYear, largeTan, cDecl, sDecl, tanDecl
+real    :: lgCO2conc
 
 !logical :: used
 
@@ -333,12 +336,16 @@ else
   stop 'invalid select_incSW'
 endif
 
+! set the log of CO2 concentration
+lgCO2conc = log(carbon_conc/360.)
+
 ! set a constant albedo for testing
 !albedo(:,:) = albedo_value
 
 if ( solar_exponent .eq. 0. ) then
 ! (RG) scheme based on dtau/dsigma = bq + amu where b is a function of solar_tau
 ! ref: Ruth Geen etal, GRL 2016 (supp. information).
+! RG: added carbon dioxide log function
   solar_tau_k = 0.
   mag_fac(:,:) = 1. ! 35.0 / sqrt(1224 * (cos(lat(:,:))) ** 2 + 1)
 
@@ -348,7 +355,8 @@ if ( solar_exponent .eq. 0. ) then
     sw_wv = solar_tau_k + 0.5194
     sw_wv = exp( 0.01887 / (solar_tau_k + 0.009522)                            &
                  + 1.603 / ( sw_wv*sw_wv ) )
-    del_sol_tau(:,:) = ( sw_co2 + sw_wv(:,:) * q(:,:,k) ) * mag_fac(:,:)       &
+    del_sol_tau(:,:) = ( sw_co2 + 0.0029 * lgCO2conc                           &
+                                + sw_wv(:,:) * q(:,:,k) ) * mag_fac(:,:)       &
                      * ( p_half(:,:,k+1) - p_half(:,:,k) ) / p_half(:,:,n+1)
     dtrans_sol(:,:,k) = exp( - del_sol_tau(:,:) )
     solar_tau_k = solar_tau_k + del_sol_tau(:,:)
@@ -378,11 +386,14 @@ endif
 if ( wv_exponent .eq. -1. ) then
 ! split LW in 2 bands: water-vapour window and remaining = non-window:
 ! ref: Ruth Geen etal, GRL 2016 (supp. information).
+! RG: added carbon dioxide log function
   do k = 1, n
-    del_tau    = ( ir_tau_co2 + ir_tau_wv*sqrt(q(:,:,k)) )                     &
+    del_tau    = ( ir_tau_co2 + 0.2023 * lgCO2conc                             &
+                    + ir_tau_wv*sqrt(q(:,:,k)) )                               &
                * ( p_half(:,:,k+1)-p_half(:,:,k) ) / p_half(:,:,n+1)
     dtrans(:,:,k) = exp( - del_tau )
-    del_tau_win   = ( ir_tau_co2_win + ir_tau_wv_win1*q(:,:,k)                 &
+    del_tau_win   = ( ir_tau_co2_win + 0.0954 * lgCO2conc                      &
+                                     + ir_tau_wv_win1*q(:,:,k)                 &
                                      + ir_tau_wv_win2*q(:,:,k)*q(:,:,k) )      &
                   * ( p_half(:,:,k+1)-p_half(:,:,k) ) / p_half(:,:,n+1)
     dtrans_win(:,:,k) = exp( - del_tau_win )
