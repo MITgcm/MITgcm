@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/apply_forcing.F,v 1.7 2015/01/21 14:35:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/apply_forcing.F,v 1.8 2016/02/14 00:08:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -109,21 +109,21 @@ C--   Forcing term
       IF ( useAIM ) CALL AIM_TENDENCY_APPLY_U(
      U                       gU_arr,
      I                       iMin,iMax,jMin,jMax, k, bi,bj,
-     I                       myTime, 0, myThid )
+     I                       myTime, myIter, myThid )
 #endif /* ALLOW_AIM */
 
 #ifdef ALLOW_ATM_PHYS
       IF ( useAtm_Phys ) CALL ATM_PHYS_TENDENCY_APPLY_U(
      U                       gU_arr,
      I                       iMin,iMax,jMin,jMax, k, bi,bj,
-     I                       myTime, 0, myThid )
+     I                       myTime, myIter, myThid )
 #endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_U(
      U                       gU_arr,
      I                       iMin,iMax,jMin,jMax, k, bi,bj,
-     I                       myTime, 0, myThid )
+     I                       myTime, myIter, myThid )
 #endif /* ALLOW_FIZHI */
 
 C     Ocean: Add momentum surface forcing (e.g., wind-stress) in surface level
@@ -153,7 +153,7 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy
          CALL TAUEDDY_TENDENCY_APPLY_U(
      U                 gU_arr,
      I                 iMin,iMax,jMin,jMax, k, bi,bj,
-     I                 myTime, 0, myThid )
+     I                 myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_RBCS
@@ -161,7 +161,7 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy
         CALL RBCS_ADD_TENDENCY(
      U                 gU_arr,
      I                 k, bi, bj, -1,
-     I                 myTime, 0, myThid )
+     I                 myTime, myIter, myThid )
 
       ENDIF
 #endif /* ALLOW_RBCS */
@@ -171,7 +171,7 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy
         CALL OBCS_SPONGE_U(
      U                   gU_arr,
      I                   iMin,iMax,jMin,jMax, k, bi,bj,
-     I                   myTime, 0, myThid )
+     I                   myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_OBCS */
 
@@ -180,7 +180,7 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNy
         CALL MYPACKAGE_TENDENCY_APPLY_U(
      U                 gU_arr,
      I                 iMin,iMax,jMin,jMax, k, bi,bj,
-     I                 myTime, 0, myThid )
+     I                 myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
 
@@ -287,21 +287,21 @@ C--   Forcing term
       IF ( useAIM ) CALL AIM_TENDENCY_APPLY_V(
      U                       gV_arr,
      I                       iMin,iMax,jMin,jMax, k, bi,bj,
-     I                       myTime, 0, myThid )
+     I                       myTime, myIter, myThid )
 #endif /* ALLOW_AIM */
 
 #ifdef ALLOW_ATM_PHYS
       IF ( useAtm_Phys ) CALL ATM_PHYS_TENDENCY_APPLY_V(
      U                       gV_arr,
      I                       iMin,iMax,jMin,jMax, k, bi,bj,
-     I                       myTime, 0, myThid )
+     I                       myTime, myIter, myThid )
 #endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_V(
      U                       gV_arr,
      I                       iMin,iMax,jMin,jMax, k, bi,bj,
-     I                       myTime, 0, myThid )
+     I                       myTime, myIter, myThid )
 #endif /* ALLOW_FIZHI */
 
 C     Ocean: Add momentum surface forcing (e.g., wind-stress) in surface level
@@ -331,7 +331,7 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx
          CALL TAUEDDY_TENDENCY_APPLY_V(
      U                 gV_arr,
      I                 iMin,iMax,jMin,jMax, k, bi,bj,
-     I                 myTime, 0, myThid )
+     I                 myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_RBCS
@@ -339,7 +339,7 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx
         CALL RBCS_ADD_TENDENCY(
      U                 gV_arr,
      I                 k, bi, bj, -2,
-     I                 myTime, 0, myThid )
+     I                 myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_RBCS */
 
@@ -348,7 +348,7 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx
         CALL OBCS_SPONGE_V(
      U                   gV_arr,
      I                   iMin,iMax,jMin,jMax, k, bi,bj,
-     I                   myTime, 0, myThid )
+     I                   myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_OBCS */
 
@@ -357,7 +357,7 @@ C-jmc: Without CD-scheme, this is OK ; but with CD-scheme, needs to cover [0:sNx
         CALL MYPACKAGE_TENDENCY_APPLY_V(
      U                 gV_arr,
      I                 iMin,iMax,jMin,jMax, k, bi,bj,
-     I                 myTime, 0, myThid )
+     I                 myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
 
@@ -469,21 +469,21 @@ C--   Forcing term
       IF ( useAIM ) CALL AIM_TENDENCY_APPLY_T(
      U                       gT_arr,
      I                       iMin,iMax,jMin,jMax, k, bi,bj,
-     I                       myTime, 0, myThid )
+     I                       myTime, myIter, myThid )
 #endif /* ALLOW_AIM */
 
 #ifdef ALLOW_ATM_PHYS
       IF ( useAtm_Phys ) CALL ATM_PHYS_TENDENCY_APPLY_T(
      U                       gT_arr,
      I                       iMin,iMax,jMin,jMax, k, bi,bj,
-     I                       myTime, 0, myThid )
+     I                       myTime, myIter, myThid )
 #endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_T(
      U                       gT_arr,
      I                       iMin,iMax,jMin,jMax, k, bi,bj,
-     I                       myTime, 0, myThid )
+     I                       myTime, myIter, myThid )
 #endif /* ALLOW_FIZHI */
 
 #ifdef ALLOW_ADDFLUID
@@ -677,7 +677,7 @@ c     ENDIF
      &     CALL FRAZIL_TENDENCY_APPLY_T(
      U                 gT_arr,
      I                 iMin,iMax,jMin,jMax, k, bi,bj,
-     I                 myTime, 0, myThid )
+     I                 myTime, myIter, myThid )
 #endif /* ALLOW_FRAZIL */
 
 #ifdef ALLOW_SHELFICE
@@ -685,14 +685,14 @@ c     ENDIF
      &     CALL SHELFICE_FORCING_T(
      U                   gT_arr,
      I                   iMin,iMax,jMin,jMax, k, bi,bj,
-     I                   myTime, 0, myThid )
+     I                   myTime, myIter, myThid )
 #endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_ICEFRONT
       IF ( useICEFRONT )
      &     CALL ICEFRONT_TENDENCY_APPLY_T(
      U                   gT_arr,
-     I                   k, bi, bj, myTime, 0, myThid )
+     I                   k, bi, bj, myTime, myIter, myThid )
 #endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_SALT_PLUME
@@ -700,7 +700,7 @@ c     ENDIF
      &     CALL SALT_PLUME_TENDENCY_APPLY_T(
      U                     gT_arr,
      I                     iMin,iMax,jMin,jMax, k, bi,bj,
-     I                     myTime, 0, myThid )
+     I                     myTime, myIter, myThid )
 #endif /* ALLOW_SALT_PLUME */
 
 #ifdef ALLOW_RBCS
@@ -708,7 +708,7 @@ c     ENDIF
         CALL RBCS_ADD_TENDENCY(
      U                 gT_arr,
      I                 k, bi, bj, 1,
-     I                 myTime, 0, myThid )
+     I                 myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_RBCS */
 
@@ -717,7 +717,7 @@ c     ENDIF
         CALL OBCS_SPONGE_T(
      U                   gT_arr,
      I                   iMin,iMax,jMin,jMax, k, bi,bj,
-     I                   myTime, 0, myThid )
+     I                   myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_OBCS */
 
@@ -725,7 +725,7 @@ c     ENDIF
       IF ( useBBL ) CALL BBL_TENDENCY_APPLY_T(
      U                       gT_arr,
      I                       iMin,iMax,jMin,jMax, k, bi,bj,
-     I                       myTime, 0, myThid )
+     I                       myTime, myIter, myThid )
 #endif /* ALLOW_BBL */
 
 #ifdef ALLOW_MYPACKAGE
@@ -733,7 +733,7 @@ c     ENDIF
         CALL MYPACKAGE_TENDENCY_APPLY_T(
      U                 gT_arr,
      I                 iMin,iMax,jMin,jMax, k, bi,bj,
-     I                 myTime, 0, myThid )
+     I                 myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
 
@@ -834,21 +834,21 @@ C--   Forcing term
       IF ( useAIM ) CALL AIM_TENDENCY_APPLY_S(
      U                       gS_arr,
      I                       iMin,iMax,jMin,jMax, k, bi,bj,
-     I                       myTime, 0, myThid )
+     I                       myTime, myIter, myThid )
 #endif /* ALLOW_AIM */
 
 #ifdef ALLOW_ATM_PHYS
       IF ( useAtm_Phys ) CALL ATM_PHYS_TENDENCY_APPLY_S(
      U                       gS_arr,
      I                       iMin,iMax,jMin,jMax, k, bi,bj,
-     I                       myTime, 0, myThid )
+     I                       myTime, myIter, myThid )
 #endif /* ALLOW_ATM_PHYS */
 
 #ifdef ALLOW_FIZHI
       IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_S(
      U                       gS_arr,
      I                       iMin,iMax,jMin,jMax, k, bi,bj,
-     I                       myTime, 0, myThid )
+     I                       myTime, myIter, myThid )
 #endif /* ALLOW_FIZHI */
 
 #ifdef ALLOW_ADDFLUID
@@ -917,14 +917,14 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
      &     CALL SHELFICE_FORCING_S(
      U                   gS_arr,
      I                   iMin,iMax,jMin,jMax, k, bi,bj,
-     I                   myTime, 0, myThid )
+     I                   myTime, myIter, myThid )
 #endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_ICEFRONT
       IF ( useICEFRONT )
      &     CALL ICEFRONT_TENDENCY_APPLY_S(
      U                   gS_arr,
-     I                   k, bi, bj, myTime, 0, myThid )
+     I                   k, bi, bj, myTime, myIter, myThid )
 #endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_SALT_PLUME
@@ -932,7 +932,7 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
      &     CALL SALT_PLUME_TENDENCY_APPLY_S(
      U                     gS_arr,
      I                     iMin,iMax,jMin,jMax, k, bi,bj,
-     I                     myTime, 0, myThid )
+     I                     myTime, myIter, myThid )
 #endif /* ALLOW_SALT_PLUME */
 
 #ifdef ALLOW_RBCS
@@ -940,7 +940,7 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
         CALL RBCS_ADD_TENDENCY(
      U                 gS_arr,
      I                 k, bi, bj, 2,
-     I                 myTime, 0, myThid )
+     I                 myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_RBCS */
 
@@ -949,7 +949,7 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
         CALL OBCS_SPONGE_S(
      U                   gS_arr,
      I                   iMin,iMax,jMin,jMax, k, bi,bj,
-     I                   myTime, 0, myThid )
+     I                   myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_OBCS */
 
@@ -957,7 +957,7 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
       IF ( useBBL ) CALL BBL_TENDENCY_APPLY_S(
      U                       gS_arr,
      I                       iMin,iMax,jMin,jMax, k, bi,bj,
-     I                       myTime, 0, myThid )
+     I                       myTime, myIter, myThid )
 #endif /* ALLOW_BBL */
 
 #ifdef ALLOW_MYPACKAGE
@@ -965,7 +965,7 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
         CALL MYPACKAGE_TENDENCY_APPLY_S(
      U                 gS_arr,
      I                 iMin,iMax,jMin,jMax, k, bi,bj,
-     I                 myTime, 0, myThid )
+     I                 myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_MYPACKAGE */
 
