@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.82 2015/09/10 18:10:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.83 2016/02/15 17:59:40 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -411,6 +411,20 @@ C     Overlaps cannot be larger than interior tile except for special cases
       ENDIF
 #endif /* ndef DISCONNECTED_TILES */
 
+C--   Gravity vertical profile limitations:
+      IF ( usingPCoords .AND. gravityFile .NE. ' ' ) THEN
+        WRITE(msgBuf,'(A,A)') 'CONFIG_CHECK: Variable gravity',
+     &  ' not yet implemented for P-coordinate'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( select_rStar.NE.0 .AND. gravityFile .NE. ' ' ) THEN
+        WRITE(msgBuf,'(A,A)') 'CONFIG_CHECK: Variable gravity',
+     &  ' not yet implemented with rStar'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+
 C--   Deep-Atmosphere & Anelastic limitations:
       IF ( deepAtmosphere .AND.
      &     useRealFreshWaterFlux .AND. usingPCoords ) THEN
@@ -638,16 +652,16 @@ c     ENDIF
 
 C--   Pressure calculation and pressure gradient:
 #ifndef INCLUDE_PHIHYD_CALCULATION_CODE
-      IF ( momPressureForcing .OR. useDynP_inEos_Zc ) THEN
+      IF ( momPressureForcing .OR. storePhiHyd4Phys ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
      &   'missing code to calculate pressure (totPhiHyd)'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
 #endif /* INCLUDE_PHIHYD_CALCULATION_CODE */
-      IF ( useDynP_inEos_Zc .AND. .NOT.momStepping ) THEN
+      IF ( storePhiHyd4Phys .AND. .NOT.momStepping ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
-     &   'useDynP_inEos_Zc = TRUE but pressure is not computed'
+     &   'storePhiHyd4Phys = TRUE but pressure is not computed'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF

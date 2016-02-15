@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.23 2015/11/16 22:57:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.24 2016/02/15 17:59:40 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -225,16 +225,42 @@ C--   Dynamically Active Tracers : set flags
         IF ( sBeta .EQ.0. ) saltIsActiveTr = .FALSE.
       ENDIF
 
+      IF ( usingZCoords ) THEN
+C--   Select which pressure to use in EOS:
+C     set default according to EOS type (as it was until chkpt65t)
+        IF ( selectP_inEOS_Zc.EQ.UNSET_I ) THEN
+          IF ( eosType .EQ. 'JMD95P' .OR.  eosType .EQ. 'UNESCO'
+     &    .OR. eosType .EQ. 'MDJWF'  .OR.  eosType .EQ. 'TEOS10'
+     &       ) THEN
+           selectP_inEOS_Zc = 2
+          ELSE
+           selectP_inEOS_Zc = 0
+          ENDIF
+        ELSEIF ( selectP_inEOS_Zc.LT.0
+     &      .OR. selectP_inEOS_Zc.GT.3 ) THEN
+          WRITE(msgBuf,'(A,I9,A)') 'SET_PARAMS: selectP_inEOS_Zc=',
+     &                  selectP_inEOS_Zc, ' : invalid selection'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R SET_PARAMS'
+        ELSEIF ( .NOT.nonHydrostatic ) THEN
+          selectP_inEOS_Zc = MIN( selectP_inEOS_Zc, 2 )
+        ENDIF
+        IF ( ( eosType .EQ. 'LINEAR' .OR.  eosType .EQ. 'POLY3 ' )
+     &      .AND. selectP_inEOS_Zc.NE.0  ) THEN
+          WRITE(msgBuf,'(2A,I2,3A)') '** WARNING ** SET_PARMS: ',
+     &     'ignores selectP_inEOS_Zc=', selectP_inEOS_Zc,
+     &     ' with eosType=', eosType
+          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+        ENDIF
+      ELSE
+        selectP_inEOS_Zc = -1
+      ENDIF
 C--   When using the dynamical pressure in EOS (with Z-coord.),
 C     needs to activate specific part of the code (restart & exchange)
-c     useDynP_inEos_Zc = .FALSE.
-      useDynP_inEos_Zc = ( fluidIsWater .AND. usingZCoords
-     &              .AND. ( eosType .EQ. 'JMD95P' .OR.
-     &                      eosType .EQ. 'UNESCO' .OR.
-     &                      eosType .EQ. 'MDJWF'  .OR.
-     &                      eosType .EQ. 'TEOS10'      )  )
+      storePhiHyd4Phys = selectP_inEOS_Zc.GE.2
 C-    pkg/atm_phys uses main-model geopotential:
-      useDynP_inEos_Zc = useDynP_inEos_Zc .OR. useAtm_Phys
+      storePhiHyd4Phys = storePhiHyd4Phys .OR. useAtm_Phys
 
 C--   Adjust parameters related to length of the simulation
 

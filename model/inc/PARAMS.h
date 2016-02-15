@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.281 2016/01/11 22:48:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.282 2016/02/15 17:59:02 jmc Exp $
 C $Name:  $
 C
 
@@ -38,6 +38,7 @@ C                        must exist before the model starts.
 C     tRefFile      :: File containing reference Potential Temperat.  tRef (1.D)
 C     sRefFile      :: File containing reference salinity/spec.humid. sRef (1.D)
 C     rhoRefFile    :: File containing reference density profile rhoRef (1.D)
+C     gravityFile   :: File containing gravity vertical profile (1.D)
 C     delRFile      :: File containing vertical grid spacing delR  (1.D array)
 C     delRcFile     :: File containing vertical grid spacing delRc (1.D array)
 C     hybSigmFile   :: File containing hybrid-sigma vertical coord. coeff. (2x 1.D)
@@ -84,7 +85,7 @@ C     the_run_name    :: string identifying the name of the model "run"
       COMMON /PARM_C/
      &                buoyancyRelation, eosType,
      &                pickupSuff, mdsioLocalDir, adTapeDir,
-     &                tRefFile, sRefFile, rhoRefFile,
+     &                tRefFile, sRefFile, rhoRefFile, gravityFile,
      &                delRFile, delRcFile, hybSigmFile,
      &                delXFile, delYFile, horizGridFile,
      &                bathyFile, topoFile, addWwallFile, addSwallFile,
@@ -108,6 +109,7 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) tRefFile
       CHARACTER*(MAX_LEN_FNAM) sRefFile
       CHARACTER*(MAX_LEN_FNAM) rhoRefFile
+      CHARACTER*(MAX_LEN_FNAM) gravityFile
       CHARACTER*(MAX_LEN_FNAM) delRFile
       CHARACTER*(MAX_LEN_FNAM) delRcFile
       CHARACTER*(MAX_LEN_FNAM) hybSigmFile
@@ -175,6 +177,11 @@ C     select_rStar        :: option related to r* vertical coordinate
 C                           =0 (default) use r coord. ; > 0 use r*
 C     selectNHfreeSurf    :: option for Non-Hydrostatic (free-)Surface formulation:
 C                           =0 (default) hydrostatic surf. ; > 0 add NH effects.
+C     selectP_inEOS_Zc    :: select which pressure to use in EOS (for z-coords)
+C                           =0: simply: -g*rhoConst*z
+C                           =1: use pRef = integral{-g*rho(Tref,Sref,pRef)*dz}
+C                           =2: use hydrostatic dynamical pressure
+C                           =3: use full (Hyd+NH) dynamical pressure
 C     selectAddFluid      :: option to add mass source/sink of fluid in the interior
 C                            (3-D generalisation of oceanic real-fresh water flux)
 C                           =0 off ; =1 add fluid ; =-1 virtual flux (no mass added)
@@ -208,7 +215,7 @@ C                            and statistics ; higher -> more writing
      &        selectCoriMap,
      &        selectSigmaCoord,
      &        nonlinFreeSurf, select_rStar,
-     &        selectNHfreeSurf,
+     &        selectNHfreeSurf, selectP_inEOS_Zc,
      &        selectAddFluid,
      &        momForcingOutAB, tracForcingOutAB,
      &        tempAdvScheme, tempVertAdvScheme,
@@ -235,6 +242,7 @@ C                            and statistics ; higher -> more writing
       INTEGER nonlinFreeSurf
       INTEGER select_rStar
       INTEGER selectNHfreeSurf
+      INTEGER selectP_inEOS_Zc
       INTEGER selectAddFluid
       INTEGER momForcingOutAB, tracForcingOutAB
       INTEGER tempAdvScheme, tempVertAdvScheme
@@ -255,8 +263,6 @@ C     usingPCoords     :: Set to indicate that we are working in a pressure
 C                         type coordinate (p or p*).
 C     usingZCoords     :: Set to indicate that we are working in a height
 C                         type coordinate (z or z*)
-C     useDynP_inEos_Zc :: use the dynamical pressure in EOS (with Z-coord.)
-C                         this requires specific code for restart & exchange
 C     usingCartesianGrid :: If TRUE grid generation will be in a cartesian
 C                           coordinate frame.
 C     usingSphericalPolarGrid :: If TRUE grid generation will be in a
@@ -332,6 +338,8 @@ C                            at the surface due to Linear Free Surface
 C     useRealFreshWaterFlux :: if True (=Natural BCS), treats P+R-E flux
 C                         as a real Fresh Water (=> changes the Sea Level)
 C                         if F, converts P+R-E to salt flux (no SL effect)
+C     storePhiHyd4Phys :: store hydrostatic potential for use in Physics/EOS
+C                         this requires specific code for restart & exchange
 C     quasiHydrostatic :: Using non-hydrostatic terms in hydrostatic algorithm
 C     nonHydrostatic   :: Using non-hydrostatic algorithm
 C     use3Dsolver      :: set to true to use 3-D pressure solver
@@ -385,7 +393,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
 
       COMMON /PARM_L/
      & fluidIsAir, fluidIsWater,
-     & usingPCoords, usingZCoords, useDynP_inEos_Zc,
+     & usingPCoords, usingZCoords,
      & usingCartesianGrid, usingSphericalPolarGrid, rotateGrid,
      & usingCylindricalGrid, usingCurvilinearGrid, hasWetCSCorners,
      & deepAtmosphere, setInterFDr, setCenterDr,
@@ -407,8 +415,8 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
      & rigidLid, implicitFreeSurface,
      & uniformLin_PhiSurf, uniformFreeSurfLev,
      & exactConserv, linFSConserveTr, useRealFreshWaterFlux,
-     & quasiHydrostatic, nonHydrostatic, use3Dsolver,
-     & implicitIntGravWave, staggerTimeStep,
+     & storePhiHyd4Phys, quasiHydrostatic, nonHydrostatic,
+     & use3Dsolver, implicitIntGravWave, staggerTimeStep,
      & applyExchUV_early, doResetHFactors,
      & implicitDiffusion, implicitViscosity, implBottomFriction,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
@@ -431,7 +439,6 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL fluidIsWater
       LOGICAL usingPCoords
       LOGICAL usingZCoords
-      LOGICAL useDynP_inEos_Zc
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid, rotateGrid
       LOGICAL usingCylindricalGrid
@@ -490,6 +497,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL exactConserv
       LOGICAL linFSConserveTr
       LOGICAL useRealFreshWaterFlux
+      LOGICAL storePhiHyd4Phys
       LOGICAL quasiHydrostatic
       LOGICAL nonHydrostatic
       LOGICAL use3Dsolver
@@ -557,19 +565,26 @@ C                :: most cell face (Lat-Lon grid) (Note: this is an "inert"
 C                :: parameter but it makes geographical references simple.)
 C     ygOrigin   :: Origin of the Y-axis (Cartesian Grid) / Latitude of Southern
 C                :: most face (Lat-Lon grid).
-C     gravity    :: Accel. due to gravity ( m/s^2 )
-C     recip_gravity and its inverse
+C     Ro_SeaLevel :: Origin of the vertical R-coords axis (often at sea-level)
+C                 :: corresponding to rF(k=1)
+C     rSigmaBnd  :: vertical position (in r-unit) of r/sigma transition (Hybrid-Sigma)
+C     gravity    :: Acceleration due to constant gravity ( m/s^2 )
+C     recip_gravity :: Reciprocal gravity acceleration ( s^2/m )
 C     gBaro      :: Accel. due to gravity used in barotropic equation ( m/s^2 )
+C     gravFacC   :: gravity factor (vs surf. gravity) vert. profile at cell-Center
+C     gravFacF   :: gravity factor (vs surf. gravity) vert. profile at cell-interF
 C     rhoNil     :: Reference density for the linear equation of state
 C     rhoConst   :: Vertically constant reference density (Boussinesq)
-C     thetaConst :: Constant reference for potential temperature
+C     rho1Ref    :: reference vertical profile for density (anelastic)
 C     rhoFacC    :: normalized (by rhoConst) reference density at cell-Center
 C     rhoFacF    :: normalized (by rhoConst) reference density at cell-interFace
 C     rhoConstFresh :: Constant reference density for fresh water (rain)
-C     rho1Ref    :: reference vertical profile for density
+C     thetaConst :: Constant reference for potential temperature
 C     tRef       :: reference vertical profile for potential temperature
 C     sRef       :: reference vertical profile for salinity/specific humidity
-C     phiRef     :: reference potential (pressure/rho, geopotential) profile
+C     pRef4EOS   :: reference pressure used in EOS (case selectP_inEOS_Zc=1)
+C     phiRef     :: reference potential (press/rho, geopot) profile (m^2/s^2)
+C     phi0Ref    :: reference [pressure/geo] potential at origin r = rF(1)
 C     dBdrRef    :: vertical gradient of reference buoyancy  [(m/s/r)^2]:
 C                :: z-coord: = N^2_ref = Brunt-Vaissala frequency [s^-2]
 C                :: p-coord: = -(d.alpha/dp)_ref          [(m^2.s/kg)^2]
@@ -588,7 +603,7 @@ C                :: from vertical r-coordinate unit to mass per unit area [kg/m2
 C                :: z-coord: = rhoConst  ( [m] * rho = [kg/m2] ) ;
 C                :: p-coord: = 1/gravity ( [Pa] /  g = [kg/m2] ) ;
 C     rSphere    :: Radius of sphere for a spherical polar grid ( m ).
-C     recip_rSphere  :: Reciprocal radius of sphere ( m ).
+C     recip_rSphere :: Reciprocal radius of sphere ( m^-1 ).
 C     radius_fromHorizGrid :: sphere Radius of input horiz. grid (Curvilinear Grid)
 C     f0         :: Reference coriolis parameter ( 1/s )
 C                   ( Southern edge f for beta plane )
@@ -741,9 +756,6 @@ C     hMixCriteria:: criteria for mixed-layer diagnostic
 C     dRhoSmall   :: parameter for mixed-layer diagnostic
 C     hMixSmooth  :: Smoothing parameter for mixed-layer diag (default=0=no smoothing)
 C     ivdc_kappa  :: implicit vertical diffusivity for convection [m^2/s]
-C     Ro_SeaLevel :: standard position of Sea-Level in "R" coordinate, used as
-C                    starting value (k=1) for vertical coordinate (rf(1)=Ro_SeaLevel)
-C     rSigmaBnd   :: vertical position (in r-unit) of r/sigma transition (Hybrid-Sigma)
 C     sideDragFactor     :: side-drag scaling factor (used only if no_slip_sides)
 C                           (default=2: full drag ; =1: gives half-slip BC)
 C     bottomDragLinear    :: Linear    bottom-drag coefficient (units of [r]/s)
@@ -761,7 +773,7 @@ C     thetaEuler    :: Euler angle, rotation about new x-axis
 C     psiEuler      :: Euler angle, rotation about new z-axis
       COMMON /PARM_R/ cg2dTargetResidual, cg2dTargetResWunit,
      & cg2dpcOffDFac, cg3dTargetResidual,
-     & delR, delRc, xgOrigin, ygOrigin,
+     & delR, delRc, xgOrigin, ygOrigin, Ro_SeaLevel, rSigmaBnd,
      & deltaT, deltaTMom, dTtracerLev, deltaTFreeSurf, deltaTClock,
      & abEps, alph_AB, beta_AB,
      & rSphere, recip_rSphere, radius_fromHorizGrid,
@@ -784,9 +796,10 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & freeSurfFac, implicSurfPress, implicDiv2Dflow, implicitNHPress,
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
      & gravity, recip_gravity, gBaro,
-     & rhoNil, rhoConst, recip_rhoConst, thetaConst,
-     & rhoFacC, recip_rhoFacC, rhoFacF, recip_rhoFacF,
-     & rhoConstFresh, rho1Ref, tRef, sRef, phiRef, dBdrRef,
+     & gravFacC, recip_gravFacC, gravFacF, recip_gravFacF,
+     & rhoNil, rhoConst, recip_rhoConst, rho1Ref,
+     & rhoFacC, recip_rhoFacC, rhoFacF, recip_rhoFacF, rhoConstFresh,
+     & thetaConst, tRef, sRef, pRef4EOS, phiRef, phi0Ref, dBdrRef,
      & rVel2wUnit, wUnit2rVel, mass2rUnit, rUnit2mass,
      & baseTime, startTime, endTime,
      & chkPtFreq, pChkPtFreq, dumpFreq, adjDumpFreq,
@@ -798,7 +811,6 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & convertFW2Salt, temp_EvPrRn, salt_EvPrRn,
      & temp_addMass, salt_addMass, hFacMinDr, hFacMinDp,
      & ivdc_kappa, hMixCriteria, dRhoSmall, hMixSmooth,
-     & Ro_SeaLevel, rSigmaBnd,
      & sideDragFactor, bottomDragLinear, bottomDragQuadratic, nh_Am2,
      & smoothAbsFuncRange,
      & tCylIn, tCylOut,
@@ -812,6 +824,8 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL delRc(Nr+1)
       _RL xgOrigin
       _RL ygOrigin
+      _RL Ro_SeaLevel
+      _RL rSigmaBnd
       _RL deltaT
       _RL deltaTClock
       _RL deltaTMom
@@ -877,19 +891,22 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL diffKrBLEQscl
       _RL diffKrBLEQHo
       _RL tauCD, rCD, epsAB_CD
-      _RL gravity
-      _RL recip_gravity
+      _RL gravity,       recip_gravity
       _RL gBaro
+      _RL gravFacC(Nr),   recip_gravFacC(Nr)
+      _RL gravFacF(Nr+1), recip_gravFacF(Nr+1)
       _RL rhoNil
       _RL rhoConst,      recip_rhoConst
-      _RL thetaConst
+      _RL rho1Ref(Nr)
       _RL rhoFacC(Nr),   recip_rhoFacC(Nr)
       _RL rhoFacF(Nr+1), recip_rhoFacF(Nr+1)
       _RL rhoConstFresh
-      _RL rho1Ref(Nr)
+      _RL thetaConst
       _RL tRef(Nr)
       _RL sRef(Nr)
+      _RL pRef4EOS(Nr)
       _RL phiRef(2*Nr+1)
+      _RL phi0Ref
       _RL dBdrRef(Nr)
       _RL rVel2wUnit(Nr+1), wUnit2rVel(Nr+1)
       _RL mass2rUnit, rUnit2mass
@@ -927,8 +944,6 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL hMixCriteria
       _RL dRhoSmall
       _RL hMixSmooth
-      _RL Ro_SeaLevel
-      _RL rSigmaBnd
       _RL sideDragFactor
       _RL bottomDragLinear
       _RL bottomDragQuadratic

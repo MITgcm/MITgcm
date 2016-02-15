@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_ref_files.F,v 1.3 2014/05/06 15:47:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_ref_files.F,v 1.4 2016/02/15 17:59:40 jmc Exp $
 C $Name:  $
 
 c #include "PACKAGES_CONFIG.h"
@@ -22,7 +22,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-c #include "GRID.h"
+#include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -58,8 +58,8 @@ C-    set default vertical profile for temperature: tRef
 C-    check for multiple definitions:
         DO k=1,Nr
          IF (tRef(k).NE.UNSET_RL) THEN
-          WRITE(msgBuf,'(2A,I4,A)') 'S/R LOAD_REF_FILES:',
-     &      ' Cannot set both tRef(k=', k, ') and tRefFile'
+          WRITE(msgBuf,'(2A,I4,A)') 'S/R LOAD_REF_FILES: ',
+     &      'Cannot set both tRef(k=', k, ') and tRefFile'
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R INI_PARMS'
          ENDIF
@@ -69,10 +69,10 @@ C-    read from file:
       IF ( tRefFile .NE. ' ' ) THEN
         kLen = ILNBLNK(tRefFile)
         CALL READ_GLVEC_RL( tRefFile, ' ', tRef, Nr, 1, myThid )
-        WRITE(msgBuf,'(3A)') 'S/R LOAD_REF_FILES:',
-     &    ' tRef loaded from file: ', tRefFile(1:kLen)
+        WRITE(msgBuf,'(3A)') 'S/R LOAD_REF_FILES: ',
+     &    'tRef loaded from file: ', tRefFile(1:kLen)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid )
+     &                      SQUEEZE_RIGHT, myThid )
       ENDIF
       IF ( thetaConst.EQ.UNSET_RL ) thetaConst = tRef(1)
 
@@ -89,8 +89,8 @@ C-    set default vertical profile for salinity/water-vapour: sRef
 C-    check for multiple definitions:
         DO k=1,Nr
          IF (sRef(k).NE.UNSET_RL) THEN
-          WRITE(msgBuf,'(2A,I4,A)') 'S/R LOAD_REF_FILES:',
-     &      ' Cannot set both sRef(k=', k, ') and sRefFile'
+          WRITE(msgBuf,'(2A,I4,A)') 'S/R LOAD_REF_FILES: ',
+     &      'Cannot set both sRef(k=', k, ') and sRefFile'
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R INI_PARMS'
          ENDIF
@@ -100,10 +100,10 @@ C-    read from file:
       IF ( sRefFile .NE. ' ' ) THEN
         kLen = ILNBLNK(sRefFile)
         CALL READ_GLVEC_RL( sRefFile, ' ', sRef, Nr, 1, myThid )
-        WRITE(msgBuf,'(3A)') 'S/R LOAD_REF_FILES:',
-     &    ' sRef loaded from file: ', sRefFile(1:kLen)
+        WRITE(msgBuf,'(3A)') 'S/R LOAD_REF_FILES: ',
+     &    'sRef loaded from file: ', sRefFile(1:kLen)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid )
+     &                      SQUEEZE_RIGHT, myThid )
       ENDIF
 
 C--   Set reference Density
@@ -111,10 +111,60 @@ C--   Set reference Density
         kLen = ILNBLNK(rhoRefFile)
 C-    read from file:
         CALL READ_GLVEC_RL( rhoRefFile, ' ', rho1Ref, Nr, 1, myThid )
-        WRITE(msgBuf,'(3A)') 'S/R LOAD_REF_FILES:',
-     &    ' rho1Ref loaded from file: ', rhoRefFile(1:kLen)
+        WRITE(msgBuf,'(3A)') 'S/R LOAD_REF_FILES: ',
+     &    'rho1Ref loaded from file: ', rhoRefFile(1:kLen)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid)
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   Set gravity vertical profile
+      IF ( gravityFile .NE. ' ' ) THEN
+        kLen = ILNBLNK(gravityFile)
+C-    read from file and store, for now, in gravFacC:
+        CALL READ_GLVEC_RL( gravityFile, ' ', gravFacC, Nr, 1, myThid )
+        WRITE(msgBuf,'(3A)') 'S/R LOAD_REF_FILES: ',
+     &    'gravity vert. prof. loaded from file: ', gravityFile(1:kLen)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+
+C-    Set gravity vertical profile factor: assume surface-interface
+C     density-factor to be 1 (grav. acceleration @ rF(1) = gravity)
+C- Note: done here (instead of in set_ref_state.F) since gravity fac 
+C       might be needed to initialise EOS coeffs (in ini_eos.F)
+        gravFacF(1)   = 1. _d 0
+C       gravFac(k) = gravity ratio between layer k and top interface
+        DO k=1,Nr
+          gravFacC(k) = gravFacC(k)*recip_gravity
+        ENDDO
+        DO k=2,Nr
+C       since rkSign=-1, recip_drC(k) = 1./(rC(k-1)-rC(k))
+          gravFacF(k) = ( gravFacC(k-1)*(rF(k)-rC(k))
+     &                  + gravFacC(k)*(rC(k-1)-rF(k)) )*recip_drC(k)
+        ENDDO
+C       extrapolate down to the bottom:
+        gravFacF(Nr+1) = ( gravFacC(Nr)*(rF(Nr+1)-rF(Nr))
+     &                   + gravFacF(Nr)*(rC(Nr)-rF(Nr+1))
+     &                   ) / (rC(Nr)-rF(Nr))
+C-      set reciprocal gravity-factor:
+        DO k=1,Nr
+          recip_gravFacC(k) = 1. _d 0/gravFacC(k)
+        ENDDO
+        DO k=1,Nr+1
+          recip_gravFacF(k) = 1. _d 0/gravFacF(k)
+        ENDDO
+
+      ELSE
+C-    Initialise gravity vertical profile factor:
+        DO k=1,Nr
+          gravFacC(k) = 1. _d 0
+          recip_gravFacC(k) = 1. _d 0
+        ENDDO
+        DO k=1,Nr+1
+          gravFacF(k) = 1. _d 0
+          recip_gravFacF(k) = 1. _d 0
+        ENDDO
       ENDIF
 
       _END_MASTER(myThid)

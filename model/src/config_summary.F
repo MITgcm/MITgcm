@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.150 2016/01/12 21:47:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.151 2016/02/15 17:59:40 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -244,6 +244,7 @@ C-    Vertical viscosity parameters:
      & '  /* Parameter for mixed-layer diagnostic */')
       CALL WRITE_0D_RL( hMixSmooth, INDEX_NONE,'hMixSmooth=',
      & '  /* Smoothing parameter for mixed-layer diagnostic */')
+C------------
       CALL WRITE_0D_C( eosType, 0, INDEX_NONE, 'eosType =',
      & '  /* Type of Equation of State */')
       IF ( eosType .EQ. 'LINEAR' ) THEN
@@ -266,6 +267,21 @@ C-    Vertical viscosity parameters:
         WRITE(msgBuf,'(A)') '    ;'
         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       ENDIF
+      IF ( usingZCoords ) THEN
+       WRITE(msgBuf,'(2A)') 'selectP_inEOS_Zc =',
+     &      ' /* select pressure to use in EOS (0,1,2,3) */'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       buffI(1) = selectP_inEOS_Zc
+       CALL PRINT_LIST_I( buffI, 1, 1, INDEX_NONE,
+     &                   .FALSE., .TRUE., ioUnit )
+       WRITE(msgBuf,'(2A)') '    0= -g*rhoConst*z ; ',
+     &      '1= pRef (from tRef,sRef); 2= Hyd P ; 3= Hyd+NH P'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
+      ENDIF
+      CALL WRITE_0D_RL( phi0Ref, INDEX_NONE, 'phi0Ref =',
+     &  ' /* reference (P,geo) potential at origin rF(1) (m^2/s^2) */')
+C------------
       IF ( fluidIsWater ) THEN
        CALL WRITE_0D_RL( HeatCapacity_Cp, INDEX_NONE,
      &   'HeatCapacity_Cp =',
@@ -304,6 +320,10 @@ C-    Vertical viscosity parameters:
      &'   /* Gravitational acceleration ( m/s^2 ) */')
       CALL WRITE_0D_RL( gBaro,   INDEX_NONE,'gBaro =',
      &'   /* Barotropic gravity ( m/s^2 ) */')
+      CALL WRITE_1D_RL( gravFacC, Nr,   INDEX_K, 'gravFacC = ',
+     &  ' /* gravity factor (vs surf.) @ cell-Center (-) */')
+      CALL WRITE_1D_RL( gravFacF, Nr+1, INDEX_K, 'gravFacF = ',
+     &  ' /* gravity factor (vs surf.) @ W-Interface (-) */')
       CALL WRITE_0D_RL(rotationPeriod,INDEX_NONE,'rotationPeriod =',
      &'   /* Rotation Period ( s ) */')
       CALL WRITE_0D_RL( omega,   INDEX_NONE,'omega =',
