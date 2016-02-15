@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_pressure.F,v 1.15 2013/08/14 18:10:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_pressure.F,v 1.16 2016/02/15 18:00:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -78,7 +78,7 @@ CEOP
        ENDDO
       ENDDO
 
-      IF ( useDynP_inEos_Zc ) THEN
+      IF ( storePhiHyd4Phys ) THEN
 
 #ifndef ALLOW_AUTODIFF
 cph-- deal with this iterative loop for AD once it will
@@ -185,7 +185,7 @@ C     print some diagnostics
 
 #endif /* ALLOW_AUTODIFF */
 
-c-- else of if useDynP_inEos_Zc
+c-- else of if storePhiHyd4Phys
       ELSE
 C     print a message and DO nothing
        _BEGIN_MASTER( myThid )

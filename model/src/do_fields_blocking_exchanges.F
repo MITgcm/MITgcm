@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.31 2016/01/11 22:49:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.32 2016/02/15 18:00:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -85,7 +85,7 @@ c     ENDIF
 #ifdef ALLOW_CD_CODE
       CALL EXCH_UV_DGRID_3D_RL( uVelD,vVelD, .TRUE., Nr, myThid )
 #endif
-      IF ( useDynP_inEos_Zc )
+      IF ( storePhiHyd4Phys )
      & _EXCH_XYZ_RL( totPhiHyd , myThid )
 C-    if not useOffLine: end
       ENDIF

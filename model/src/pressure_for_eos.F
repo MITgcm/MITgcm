@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/pressure_for_eos.F,v 1.4 2008/08/16 02:44:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/pressure_for_eos.F,v 1.5 2016/02/15 18:00:26 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -48,14 +48,14 @@ C     provide the pressure for use in the equation of state
 C
       IF ( usingZCoords ) THEN
 C     in Z coordinates the pressure is rho0 * (hydrostatic) Potential
-        IF ( useDynP_inEos_Zc ) THEN
+        IF ( storePhiHyd4Phys ) THEN
 C----------
 C     NOTE: For now, totPhiHyd only contains the Potential anomaly
 C           since PhiRef is not available for Atmos and has not (yet)
 C           been added in S/R DIAGS_PHI_HYD
 C----------
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             locPres(i,j) = rhoConst*(
      &                   totPhiHyd(i,j,k,bi,bj)
      &                  -rC(k)*gravity )
@@ -63,8 +63,8 @@ c    &                             *maskC(i,j,k,bi,bj)
           ENDDO
          ENDDO
        ELSE
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             locPres(i,j) = -rhoConst*rC(k)*gravity
 c    &                              *maskC(i,j,k,bi,bj)
           ENDDO
@@ -73,8 +73,8 @@ c    &                              *maskC(i,j,k,bi,bj)
       ELSEIF ( usingPCoords ) THEN
 C     in P coordinates the pressure is just the coordinate of
 C     the tracer point
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             locPres(i,j) = rC(k)
 c    &                   * maskC(i,j,k,bi,bj)
           ENDDO

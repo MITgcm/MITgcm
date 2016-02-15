@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.12 2015/01/20 20:46:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.13 2016/02/15 18:00:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -236,7 +236,7 @@ c         CALL READ_REC_3D_RL( fn, fp, Nr, gS,   11, myIter,myThid )
 #endif
         ENDIF
 
-        IF ( useDynP_inEos_Zc ) THEN
+        IF ( storePhiHyd4Phys ) THEN
           WRITE(fn,'(A,A10)') 'pickup_ph.',suff
           CALL READ_REC_3D_RL( fn, fp, Nr, totPhiHyd,1,myIter,myThid )
          ENDIF
@@ -385,7 +385,7 @@ C--     Salinity
 #endif /*  ALLOW_ADAMSBASHFORTH_3 */
 
 C-      read Full Pressure for EOS in pressure:
-        IF ( useDynP_inEos_Zc ) THEN
+        IF ( storePhiHyd4Phys ) THEN
           CALL READ_MFLDS_3D_RL( 'PhiHyd  ', totPhiHyd,
      &                                     nj, fp, Nr, myIter, myThid )
         ENDIF
@@ -497,7 +497,7 @@ c         CALL MNC_CW_RL_R('D',fn,0,0,'gW', gW, myThid)
 #endif
         ENDIF
 #endif
-        IF ( useDynP_inEos_Zc ) THEN
+        IF ( storePhiHyd4Phys ) THEN
           CALL MNC_CW_RL_R('D',fn,0,0,'phiHyd',totPhiHyd,myThid)
         ENDIF
       ENDIF
@@ -534,7 +534,7 @@ C     Fill in edge regions
       CALL EXCH_XY_RL( detaHdt, myThid )
 #endif
 
-      IF ( useDynP_inEos_Zc )
+      IF ( storePhiHyd4Phys )
      &  CALL EXCH_3D_RL( totPhiHyd, Nr, myThid )
 
 #ifdef ALLOW_NONHYDROSTATIC
