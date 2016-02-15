@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.176 2016/01/11 22:49:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.177 2016/02/15 18:01:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -58,11 +58,13 @@ C-    vertical profile
       tRefFile            = ' '
       sRefFile            = ' '
       rhoRefFile          = ' '
+      gravityFile         = ' '
       thetaConst          = UNSET_RL
       DO k=1,Nr
        tRef(k)            = UNSET_RL
        sRef(k)            = UNSET_RL
       ENDDO
+      phi0Ref             = 0.
 
 C-    Horizontal gridding
       delXFile            = ' '
@@ -171,6 +173,7 @@ C-    viscosity and diffusivity default value:
       HeatCapacity_Cp     = 3994. _d 0
       eosType             = 'LINEAR'
       buoyancyRelation    = 'OCEANIC'
+      selectP_inEOS_Zc    = UNSET_I
       smoothAbsFuncRange  = 0. _d 0
       hFacMin             = 1. _d 0
       hFacMinDrDefault    = 0. _d 0
