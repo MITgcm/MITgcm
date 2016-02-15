@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2234 2016/02/11 00:50:27 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2235 2016/02/15 18:16:52 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o model/src:
+  - rename internal parameter "useDynP_inEos_Zc" to "storePhiHyd4Phys" (since
+    it's also used with pkg/atm_phys) and add few more parameters (but still
+    inactive, src code yet to come)
 
 checkpoint65t (2016/02/10)
 o pkg/atm_phys:
