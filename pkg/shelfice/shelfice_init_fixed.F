@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.16 2015/02/15 00:23:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.17 2016/02/15 18:02:37 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -140,7 +140,7 @@ c--   use weight as mask
 
 c     IF ( SHELFICEloadAnomalyFile .EQ. ' ' ) THEN
 C-   In case we need shelficeLoadAnomaly in phi0surf for initial pressure
-C    calculation when useDynP_inEos_Zc
+C    calculation (if using selectP_inEOS_Zc=2 or 3)
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j = 1-OLy, sNy+OLy
