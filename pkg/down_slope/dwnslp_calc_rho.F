@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_calc_rho.F,v 1.3 2010/04/23 13:19:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_calc_rho.F,v 1.4 2016/02/15 15:27:32 jmc Exp $
 C $Name:  $
 
 #include "DWNSLP_OPTIONS.h"
@@ -43,7 +43,7 @@ C     myIter    :: Current time-step number
 C     myThid    :: my Thread Id number
       _RL     tFld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL     sFld     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL     rhoLoc   (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL     rhoLoc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER k, bi, bj
       _RL     myTime
       INTEGER myIter, myThid
@@ -59,7 +59,7 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C--   make a local copy of Temp & salt :
+C--   make a local copy of Temp & salt, copying bottom values further down
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
 c        kl = k
@@ -71,13 +71,6 @@ C-    same as above, using min,max:
          kl = MIN( MAX(k,kSurfC(i,j,bi,bj)), MAX(kLowC(i,j,bi,bj),1) )
          tLoc(i,j) = tFld(i,j,kl,bi,bj)
          sLoc(i,j) = sFld(i,j,kl,bi,bj)
-C---- This is a hack to get the right full pressure (from calc_phi_hyd)
-C     in EOS when using useDynP_inEos_Zc ; the way to go arround would
-C     be to store rhoInSitu in a common block and use it in calc_phi_hyd
-C     (would also save one 3-D EOS computation + T & S storage for TAF).
-c         tFld(i,j,k,bi,bj) = tLoc(i,j)
-c         sFld(i,j,k,bi,bj) = sLoc(i,j)
-C----
        ENDDO
       ENDDO
 
