@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_printerror.F,v 1.7 2012/04/05 22:01:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_printerror.F,v 1.8 2016/02/18 20:30:39 heimbach Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -355,7 +355,7 @@ C     Error in cal_CheckDate
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
          WRITE(msgBuf,'(A)')
-     &    '               --> This only means that the format is ok!'
+     &    '   This only means that the format is ok'
          CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
          CALL PRINT_ERROR( msgBuf , 1)
         else if (nerrcode .eq. 1) then
