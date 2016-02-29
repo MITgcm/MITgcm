@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.33 2014/06/05 19:33:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.34 2016/02/29 22:13:14 gforget Exp $
 C $Name:  $
 C
 C     ==================================================================
@@ -47,6 +47,7 @@ C                           instead of _YEAR for useExfYearlyFields
 C    useOBCSYearlyFields :: when reading Open-Boundary values, assume yearly
 C                           climatology (def=false)
 C     readStressOnAgrid  :: read wind-streess located on model-grid, A-grid position
+C     rotateStressOnAgrid  :: rotate from zonal/meridional components to U/V components  
 C     readStressOnCgrid  :: read wind-streess located on model-grid, C-grid position
 C     stressIsOnCgrid    :: ustress & vstress are positioned on Arakawa C-grid
 C     useStabilityFct_overIce :: over sea-ice, compute turbulent transfert
@@ -72,6 +73,7 @@ C     exf_monFreq        :: Monitor Frequency (s) for EXF
       logical useExfYearlyFields, twoDigitYear
       logical useOBCSYearlyFields
       logical readStressOnAgrid
+      logical rotateStressOnAgrid
       logical readStressOnCgrid
       logical stressIsOnCgrid
       logical useStabilityFct_overIce
@@ -405,7 +407,9 @@ c     File names.
      &       useExfZenAlbedo, useExfZenIncoming,
      &       readStressOnAgrid, readStressOnCgrid,
      &       stressIsOnCgrid, useStabilityFct_overIce,
-     &       useAtmWind, useRelativeWind, noNegativeEvap
+     &       useAtmWind, useRelativeWind, noNegativeEvap,
+     &       rotateStressOnAgrid
+
       COMMON /EXF_PARAM_I/
      &       select_ZenAlbedo,  exf_debugLev,
      &       hfluxstartdate1,   hfluxstartdate2,

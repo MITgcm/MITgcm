@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.81 2014/06/05 19:33:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.82 2016/02/29 22:13:14 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -85,7 +85,7 @@ C     Surface flux data.
      &      exf_verbose  ,   exf_debugLev    , exf_monFreq,
      & useExfYearlyFields,  twoDigitYear,
      & useStabilityFct_overIce, readStressOnAgrid, readStressOnCgrid,
-     & useAtmWind, useRelativeWind, noNegativeEvap,
+     & rotateStressOnAgrid, useAtmWind, useRelativeWind, noNegativeEvap,
      & select_ZenAlbedo, useExfZenIncoming,
      & hu, ht, umin, atmrho, atmcp, cen2kel, gravity_mks,
      & cdrag_1, cdrag_2, cdrag_3, cstanton_1, cstanton_2, cdalton,
@@ -282,6 +282,7 @@ c     exf_verbose        = debugMode
       select_ZenAlbedo   = 0
       useExfZenIncoming  = .FALSE.
       readStressOnAgrid  = .FALSE.
+      rotateStressOnAgrid = .FALSE.
       readStressOnCgrid  = .FALSE.
 #ifdef ALLOW_ATM_WIND
       useAtmWind         = .TRUE.

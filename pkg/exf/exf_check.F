@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.22 2014/01/06 14:52:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.23 2016/02/29 22:13:14 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -218,8 +218,16 @@ C-    stop if one expects interp+rotation (Curvilin-G) which will not happen
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R EXF_CHECK'
        ENDIF
+       IF (rotateStressOnAgrid.AND..NOT.readStressOnAgrid) THEN
+        WRITE(msgBuf,'(2A)') 'S/R EXF_CHECK: rotateStressOnAgrid ',
+     & 'only applies to cases readStressOnAgrid is true'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R EXF_CHECK'
+       ENDIF
+
       ELSE
-       IF ( readStressOnAgrid .OR. readStressOnCgrid ) THEN
+       IF ( readStressOnAgrid .OR. readStressOnCgrid .OR. 
+     &      rotateStressOnAgrid) THEN
         WRITE(msgBuf,'(A)')
      &       'S/R EXF_CHECK: wind-stress position irrelevant'
         CALL PRINT_ERROR( msgBuf, myThid )

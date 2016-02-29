@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.30 2015/10/13 22:07:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.31 2016/02/29 22:13:14 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -88,17 +88,22 @@ C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(128) uvecfile0, uvecfile1
       CHARACTER*(128) vvecfile0, vvecfile1
+#ifdef ALLOW_EXF_OUTPUT_INTERP
+      CHARACTER*(128) outuvecfile0, outuvecfile1
+      CHARACTER*(128) outvvecfile0, outvvecfile1
+#endif
       LOGICAL first, changed
       _RL     fac
 #ifdef EXF_USE_OLD_VEC_ROTATION
       _RL     x1, x2, x3, x4, y1, y2, y3, y4, dx, dy
 #endif
-      _RL     tmp_u (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL     tmp_v (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER count0, count1
-      INTEGER i, j, bi, bj
       INTEGER year0, year1
 #endif /* USE_EXF_INTERPOLATION */
+
+      INTEGER i, j, bi, bj
+      _RL     tmp_u (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     tmp_v (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C     == end of interface ==
 
@@ -206,6 +211,17 @@ C-    scalar interpolation to (xC,yC) locations
      I             vvec_nlon, vvec_nlat, v_interp_method,
      I             myIter, myThid )
           ENDIF
+
+#ifdef ALLOW_EXF_OUTPUT_INTERP
+           CALL exf_filter_rl( tmp_u, 'c', myThid )
+           CALL exf_filter_rl( tmp_v, 'c', myThid )
+           j = ILNBLNK(uvecfile0)
+           WRITE(outuvecfile0,'(2A)') 'out_',uvecfile0(1:j)
+           CALL WRITE_REC_XY_RL(outuvecfile0,tmp_u,count0,myIter,myThid)
+           j = ILNBLNK(vvecfile0)
+           WRITE(outvvecfile0,'(2A)') 'out_',vvecfile0(1:j)
+           CALL WRITE_REC_XY_RL(outvvecfile0,tmp_v,count0,myIter,myThid)
+#endif
 
 C-    vector rotation
           IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
@@ -333,6 +349,17 @@ C-    scalar interpolation to (xC,yC) locations
      I             myIter, myThid )
           ENDIF
 
+#ifdef ALLOW_EXF_OUTPUT_INTERP
+           CALL exf_filter_rl( tmp_u, 'c', myThid )
+           CALL exf_filter_rl( tmp_v, 'c', myThid )
+           j = ILNBLNK(uvecfile1)
+           WRITE(outuvecfile1,'(2A)') 'out_',uvecfile1(1:j)
+           CALL WRITE_REC_XY_RL(outuvecfile1,tmp_u,count1,myIter,myThid)
+           j = ILNBLNK(vvecfile1)
+           WRITE(outvvecfile1,'(2A)') 'out_',vvecfile1(1:j)
+           CALL WRITE_REC_XY_RL(outvvecfile1,tmp_v,count1,myIter,myThid)
+#endif
+
 C-    vector rotation
           IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
             DO bj = myByLo(myThid),myByHi(myThid)
@@ -443,6 +470,34 @@ C     or ( .NOT.usingCurvilinearGrid & .NOT.rotateGrid & .NOT.uvInterp )
      &      vvec_nlon, vvec_nlat, xC, yC, v_interp_method,
 #endif /* USE_EXF_INTERPOLATION */
      &      myTime, myIter, myThid )
+
+C-    vector rotation
+          IF ( rotateStressOnAgrid ) THEN
+            DO bj = myByLo(myThid),myByHi(myThid)
+             DO bi = myBxLo(myThid),myBxHi(myThid)
+              DO j = 1,sNy
+               DO i = 1,sNx
+                 tmp_u(i,j,bi,bj) = uvec(i,j,bi,bj)
+                 tmp_v(i,j,bi,bj) = vvec(i,j,bi,bj)
+               ENDDO
+              ENDDO
+             ENDDO
+            ENDDO
+            DO bj = myByLo(myThid),myByHi(myThid)
+             DO bi = myBxLo(myThid),myBxHi(myThid)
+              DO j = 1,sNy
+               DO i = 1,sNx
+                 uvec(i,j,bi,bj) =
+     &                      angleCosC(i,j,bi,bj)*tmp_u(i,j,bi,bj)
+     &                     +angleSinC(i,j,bi,bj)*tmp_v(i,j,bi,bj)
+                 vvec(i,j,bi,bj) =
+     &                     -angleSinC(i,j,bi,bj)*tmp_u(i,j,bi,bj)
+     &                     +angleCosC(i,j,bi,bj)*tmp_v(i,j,bi,bj)
+               ENDDO
+              ENDDO
+             ENDDO
+            ENDDO
+          ENDIF
 
       ENDIF
 
