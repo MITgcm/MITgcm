@@ -1,8 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2235 2016/02/15 18:16:52 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2236 2016/02/29 22:22:25 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/exf:
+  - add ALLOW_EXF_OUTPUT_INTERP cpp switch to output the result
+   of exf interpolation (before any rescaling, rotation or interpolation
+   to velocity point) for each field that gets loaded from file. This option
+   identically mimics the input file organization (e.g. record numbers in year
+   by year input files) besides the change in horizontal grid.
+  - add rotateStressOnAgrid run-time switch so that wind stress fields
+   can be provided on the A-grid in zonal/meridional direction and
+   rotated on the fly. This only applies to the case when the exf 
+   interpolation is off and rotateStressOnAgrid is false by default.
 
 o model/src:
   - rename internal parameter "useDynP_inEos_Zc" to "storePhiHyd4Phys" (since
