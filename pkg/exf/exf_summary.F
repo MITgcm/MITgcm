@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.34 2014/06/05 15:37:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.35 2016/03/01 15:23:23 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -111,6 +111,9 @@ C--   Print general parameters:
      &  ' /* Maximum absolute windstress [ Pa ] */')
       CALL WRITE_0D_L( stressIsOnCgrid,INDEX_NONE,'stressIsOnCgrid =',
      &  ' /* set u,v_stress on Arakawa C-grid */')
+      CALL WRITE_0D_L( rotateStressOnAgrid,INDEX_NONE,
+     &  'rotateStressOnAgrid =',
+     &  ' /* rotate u,v_stress on Arakawa A-grid */')
       CALL WRITE_0D_RL( cen2kel, INDEX_NONE, 'cen2kel =',
      &  ' /* conversion of deg. Centigrade to Kelvin [K] */')
       CALL WRITE_0D_RL( gravity_mks, INDEX_NONE, 'gravity_mks=',
