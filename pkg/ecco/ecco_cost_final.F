@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.83 2015/12/29 14:30:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.84 2016/03/01 23:05:15 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -1182,15 +1182,17 @@ c--   Do global summation for each part of the cost function
 # endif
 #endif
 #ifdef ALLOW_PROFILES
+      if (usePROFILES) then
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
-        if (profilesfiles(num_file).NE.' ') then
+        if ( no_profiles(num_file,num_var).GT.zeroRL ) then
          write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
      &     ' --> f_profiles =',f_profiles(num_file,num_var),
      &      num_file, num_var
         endif
        enddo
       enddo
+      endif
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
@@ -1476,9 +1478,10 @@ C     only master thread of master CPU open and write to file
 # endif
 #endif
 #ifdef ALLOW_PROFILES
+      if (usePROFILES) then
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
-        if (profilesfiles(num_file).NE.' ') then
+        if ( no_profiles(num_file,num_var).GT.zeroRL ) then
          IL  = ILNBLNK( profilesfiles(num_file) )
          IL  = max (IL,30)
          write(ifc,'(4A,2D22.15)')
@@ -1489,6 +1492,7 @@ C     only master thread of master CPU open and write to file
         endif
        enddo
       enddo
+      endif
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST

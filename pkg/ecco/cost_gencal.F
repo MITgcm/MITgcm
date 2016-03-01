@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencal.F,v 1.3 2015/07/28 18:54:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencal.F,v 1.4 2016/03/01 23:05:15 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -93,13 +93,13 @@ c-- assume daily fields
            dayiter = hoursperday*(irec-1) + modeliter0
            call cal_getdate( dayiter, daytime, daydate, mythid )
            call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
-           ymod = localstartdate(1)/10000
+           ymod = modelstartdate(1)/10000
            do k=1,4
               middate(k)=0
            enddo
            tempDate_1 = yday*10000+100+1
            if ( ymod .GE. yday ) then
-              call cal_FullDate( localstartdate(1), 0, middate, mythid)
+              call cal_FullDate( modelstartdate(1), 0, middate, mythid)
            else
               call cal_FullDate( tempDate_1, 0, middate, mythid)
            endif
@@ -109,13 +109,7 @@ c           localrec = floor(diffsecs/localperiod) + 1
            localrec = int(diffsecs/localperiod) + 1
         else
 c-- assume monthly fields
-           beginlocal = localstartdate(1)/10000
-           beginmodel = modelstartdate(1)/10000
-           obsrec =
-     &           ( beginmodel - beginlocal )*nmonthyear
-     &         + ( mod(modelstartdate(1)/100,100)
-     &            -mod(localstartdate(1)/100,100) )
-     &         + irec
+           obsrec = irec
            mody   = modelstartdate(1)/10000
            modm   = modelstartdate(1)/100 - mody*100
            yday   = mody + INT((modm-1+irec-1)/12)
@@ -126,14 +120,10 @@ c-- assume monthly fields
         write(fname2(1:128),'(2a,i4)')
      &       localobsfile(1:il), '_', yday
         inquire( file=fname2, exist=exst )
-        if ( (.NOT. exst).AND.( localperiod .NE. 86400. ) ) then
+        if (.NOT. exst) then
+c          assume that the data set is cyclic
            write(fname2(1:128),'(a)') localobsfile(1:il)
            inquire( file=fname2, exist=exst )
-c at this point we are treating a climatology except if ...
-#ifndef COST_GENERIC_ASSUME_CYCLIC
-c ... when we are treating one big (multiyear monthly) file
-           localrec = obsrec
-#endif
         endif
 
 #endif /* ALLOW_ECCO */
