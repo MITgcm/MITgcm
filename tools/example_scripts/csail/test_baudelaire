@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.23 2016/01/30 15:55:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.24 2016/03/02 14:23:17 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
@@ -101,7 +101,10 @@ do
   #- define list of additional experiences to test:
   addExp=''
   if test $typ = 'mp2' -o $typ = 'ifc' ; then
-    addExp='offline_cheapaml atm_gray'
+    addExp="offline_cheapaml atm_gray"
+  fi
+  if test $typ = 'gfo' -o $typ = 'ifc' ; then
+    addExp="$addExp shelfice_remeshing"
   fi
   #- check day and time:
   curDay=`date +%d` ; curHour=`date +%H`
