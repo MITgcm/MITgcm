@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.34 2015/08/16 14:48:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.35 2016/03/02 20:40:46 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -517,6 +517,7 @@ c interpolation information consistent (self and with grid)
           CALL PRINT_ERROR( msgBuf, myThid)
           stopGenericGrid=1
        endif
+#ifdef ALLOW_PROFILES_EXCLUDE_CORNERS
        if ( tmp_weights(k,q) .NE. 0. _d 0) then
        if ( ((tmp_i(k,q).EQ.0).AND.(tmp_j(k,q).EQ.0))
      & .OR.((tmp_i(k,q).EQ.sNx+1).AND.(tmp_j(k,q).EQ.sNy+1))
@@ -530,6 +531,7 @@ c interpolation information consistent (self and with grid)
           stopGenericGrid=1
        endif
        endif
+#endif /* ALLOW_PROFILES_EXCLUDE_CORNERS */
        if ( (tmp_weights(k,q).LT.0. _d 0).OR.
      &    (tmp_weights(k,q).GT.1. _d 0) ) then
           WRITE(msgBuf,'(4A)')
