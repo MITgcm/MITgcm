@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_p_ground.F,v 1.9 2010/09/11 21:24:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_p_ground.F,v 1.10 2016/03/10 20:52:43 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -59,7 +59,7 @@ C     recip_kappa :: 1/kappa = Cp/R
 C     PiLoc, zLoc, dzLoc, yLatLoc, phiLoc :: hold on temporary values
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER bi,bj,i,j,K, Ks
+      INTEGER bi,bj,i,j,k, ks
       _RL Po_surf
       _RL hRef(2*Nr+1), rHalf(2*Nr+1)
       LOGICAL findPoSurf
@@ -81,21 +81,21 @@ CEOP
         WRITE(msgBuf,'(A,I2,A)')
      &   'INI_P_GROUND: selectFindRoSurf =', selectFindRoSurf,
      &        ' <== bad value !'
-        CALL PRINT_ERROR( msgBuf , myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'INI_P_GROUND'
       ENDIF
 
-      DO K=1,Nr
-        rHalf(2*K-1) = rF(K)
-        rHalf(2*K)   = rC(K)
+      DO k=1,Nr
+        rHalf(2*k-1) = rF(k)
+        rHalf(2*k)   = rC(k)
       ENDDO
        rHalf(2*Nr+1) = rF(Nr+1)
 
 C- Reference Geopotential at Half levels :
-C    Tracer level: hRef(2K)  ;  Interface_W level: hRef(2K+1)
+C    Tracer level: hRef(2k)  ;  Interface_W level: hRef(2k+1)
 C- Convert phiRef to Z unit :
-      DO K=1,2*Nr+1
-        hRef(K) = phiRef(K)*recip_gravity
+      DO k=1,2*Nr+1
+        hRef(k) = phiRef(k)*recip_gravity
       ENDDO
 
       IF (selectFindRoSurf.EQ.0 .AND. selectMode .GT. 0 ) THEN
@@ -104,12 +104,12 @@ C- Find Po_surf : Linear between 2 half levels :
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-           Ks = 1
-           DO K=1,2*Nr
-             IF (Hfld(i,j,bi,bj).GE.hRef(K)) Ks = K
+           ks = 1
+           DO k=1,2*Nr
+             IF (Hfld(i,j,bi,bj).GE.hRef(k)) ks = k
            ENDDO
-           Po_surf = rHalf(Ks) + (rHalf(Ks+1)-rHalf(Ks))*
-     &       (Hfld(i,j,bi,bj)-hRef(Ks))/(hRef(Ks+1)-hRef(Ks))
+           Po_surf = rHalf(ks) + (rHalf(ks+1)-rHalf(ks))*
+     &       (Hfld(i,j,bi,bj)-hRef(ks))/(hRef(ks+1)-hRef(ks))
 
 c          IF (Hfld(i,j,bi,bj).LT.hRef(1)) Po_surf= rHalf(1)
 c          IF (Hfld(i,j,bi,bj).GT.hRef(2*Nr+1)) Po_surf=rHalf(2*Nr+1)
@@ -133,7 +133,7 @@ C-- define high resolution Pressure discretization:
         pLevHvR(1)= Ro_SeaLevel/atm_Po
         PiHvR(1) = atm_Cp*(pLevHvR(1)**atm_kappa)
       DO k=1,nLevHvR
-        pLevHvR(k+1)= pLevHvR(1) - float(k)*dpHvR
+        pLevHvR(k+1)= pLevHvR(1) - k*dpHvR
         PiHvR(k+1)  = atm_Cp*(pLevHvR(k+1)**atm_kappa)
         pMidHvR(k)= (pLevHvR(k)+pLevHvR(k+1))*0.5 _d 0
         dPiHvR(k) = PiHvR(k) - PiHvR(k+1)
@@ -149,17 +149,17 @@ C       (Integr_GeoPot=2 & Tracer Point at middle between 2 interfaces)
       ENDDO
 
 #ifdef CHECK_ANALYLIC_THETA
-      _BEGIN_MASTER( mythid )
+      _BEGIN_MASTER( myThid )
       DO j=1,61
         yLatLoc =-90.+(j-1)*3.
-        CALL ANALYLIC_THETA( yLatLoc , pMidHvR,
-     &                       tmpVar(1,j), nLevHvR, mythid)
+        CALL ANALYLIC_THETA( yLatLoc, pMidHvR,
+     &                       tmpVar(1,j), nLevHvR, myThid )
       ENDDO
       OPEN(88,FILE='analytic_theta',
      &      STATUS='unknown',FORM='unformatted')
       WRITE(88) tmpVar
       CLOSE(88)
-      _END_MASTER( mythid )
+      _END_MASTER( myThid )
       STOP 'CHECK_ANALYLIC_THETA'
 #endif /* CHECK_ANALYLIC_THETA */
 
@@ -176,25 +176,26 @@ C- start bi,bj loop:
 
         DO j=1,sNy
          DO i=1,sNx
-          IF ( Hfld(i,j,bi,bj) .LE. 0. _d 0) THEN
+          phiLoc = Hfld(i,j,bi,bj) - hRef(1)
+          IF ( phiLoc .LE. 0. _d 0 ) THEN
            Pfld(i,j,bi,bj) = Ro_SeaLevel
           ELSE
            yLatLoc  = yC(i,j,bi,bj)
-           CALL ANALYLIC_THETA( yLatLoc , pMidHvR,
-     &                       thetaHvR, nLevHvR, mythid)
+           CALL ANALYLIC_THETA( yLatLoc, pMidHvR,
+     &                          thetaHvR, nLevHvR, myThid )
            zLoc = 0.
            DO k=1,nLevHvR
             IF (zLoc.GE.0.) THEN
 C-    compute  phi/g corresponding to next p_level:
              dzLoc = dPiHvR(k)*thetaHvR(k)*recip_gravity
-             IF ( Hfld(i,j,bi,bj) .LE. zLoc+dzLoc ) THEN
+             IF ( phiLoc .LE. zLoc+dzLoc ) THEN
 C-    compute the normalized surf. Pressure psNorm
                PiLoc = PiHvR(k)
-     &               - gravity*(Hfld(i,j,bi,bj)-zLoc)/thetaHvR(k)
+     &               - gravity*( phiLoc - zLoc )/thetaHvR(k)
                psNorm = (PiLoc/atm_Cp)**recip_kappa
 C- use linear interpolation:
 c              psNorm = pLevHvR(k)
-c    &                - dpHvR*(Hfld(i,j,bi,bj)-zLoc)/dzLoc
+c    &                - dpHvR*( phiLoc - zLoc )/dzLoc
                zLoc = -1.
              ELSE
                zLoc = zLoc + dzLoc
@@ -205,11 +206,11 @@ c    &                - dpHvR*(Hfld(i,j,bi,bj)-zLoc)/dzLoc
              WRITE(msgBuf,'(2A)')
      &        'INI_P_GROUND: FAIL in trying to find Pfld:',
      &        ' selectMode,i,j,bi,bj=',selectMode,i,j,bi,bj
-             CALL PRINT_ERROR( msgBuf , myThid)
+             CALL PRINT_ERROR( msgBuf, myThid )
              WRITE(msgBuf,'(A,F7.1,2A,F6.4,A,F8.0)')
      &        'INI_P_GROUND: Hfld=', Hfld(i,j,bi,bj), ' exceeds',
      &        ' Zloc(lowest P=', pLevHvR(1+nLevHvR),' )=',zLoc
-             CALL PRINT_ERROR( msgBuf , myThid)
+             CALL PRINT_ERROR( msgBuf, myThid )
              STOP 'ABNORMAL END: S/R INI_P_GROUND'
            ELSE
              Pfld(i,j,bi,bj) = psNorm*atm_Po
@@ -303,7 +304,7 @@ C-----
 C--   Compute Hfld from g*Hfld = Phi[Po_surf,theta(yLat,p)]:
          DO j=1,sNy
           DO i=1,sNx
-           zLoc = 0.
+           zLoc = hRef(1)
            IF ( Pfld(i,j,bi,bj) .LT. Ro_SeaLevel) THEN
             Po_surf = Pfld(i,j,bi,bj)
 C---------
@@ -328,8 +329,8 @@ C---------
             psNorm = Po_surf/atm_Po
             kLev = 1 + INT( (pLevHvR(1)-psNorm)/dpHvR )
             yLatLoc  = yC(i,j,bi,bj)
-            CALL ANALYLIC_THETA( yLatLoc , pMidHvR,
-     &                        thetaHvR, kLev, mythid)
+            CALL ANALYLIC_THETA( yLatLoc, pMidHvR,
+     &                           thetaHvR, kLev, myThid )
 C-    compute height at level pLev(kLev) just below Pfld:
             DO k=1,kLev-1
               dzLoc = dPiHvR(k)*thetaHvR(k)*recip_gravity
@@ -364,7 +365,7 @@ C     !SUBROUTINE: ANALYLIC_THETA
 C     !INTERFACE:
       SUBROUTINE ANALYLIC_THETA( yLat, pNlev,
      O                           thetaLev,
-     I                           kSize,myThid)
+     I                           kSize, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -407,7 +408,6 @@ C     == Local variables ==
       _RL  yAtmp, yBtmp, yCtmp, yDtmp
       _RL  ttp2y, ttp4y, a1tmp
       _RL  ppl, ppm, pph, ppr
-
 CEOP
 
       DATA yyA ,    yyB ,     yyC ,     yyAd ,   yyBd ,   yyCd
