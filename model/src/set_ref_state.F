@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_ref_state.F,v 1.7 2016/02/04 01:16:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_ref_state.F,v 1.8 2016/03/10 20:54:57 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -39,10 +39,13 @@ C     == Local variables ==
 C     msgBuf :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER k, ks, stdUnit
-      _RL rHalf(2*Nr+1)
+      _RL rHalf(2*Nr+1), pRefLocF(Nr+1)
       _RL rhoRef(Nr), tLoc(Nr)
       _RL pLoc, rhoUp, rhoDw, rhoLoc
       _RL ddPI, conv_theta2T, thetaLoc
+C--
+      _RL     maxResid
+      INTEGER maxIterNb, belowCritNb
 CEOP
 
       _BEGIN_MASTER( myThid )
@@ -56,6 +59,7 @@ C--   Initialise:
       DO k=1,Nr
         rhoRef(k)  = 0.
         dBdrRef(k) = 0.
+        pRef4EOS(k)  = 0.
         rHalf(2*k-1) = rF(k)
         rHalf(2*k)   = rC(k)
       ENDDO
@@ -66,7 +70,7 @@ C--   Initialise:
         wUnit2rVel(k) = 1. _d 0
       ENDDO
 
-C--   Initialise density factor for anelastic formulation:
+C-    Initialise density factor for anelastic formulation:
       DO k=1,Nr
         rhoFacC(k) = 1. _d 0
         recip_rhoFacC(k) = 1. _d 0
@@ -75,6 +79,55 @@ C--   Initialise density factor for anelastic formulation:
         rhoFacF(k) = 1. _d 0
         recip_rhoFacF(k) = 1. _d 0
       ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Oceanic: define reference pressure/geo-potential vertical scale:
+      IF ( buoyancyRelation.EQ.'OCEANIC' ) THEN
+        phiRef(1)   = phi0Ref
+        pRefLocF(1) = rhoConst*phi0Ref
+        IF ( gravityFile.EQ.' ' ) THEN
+         DO k=1,Nr
+          phiRef(2*k)   = phi0Ref + (rC(k) - rF(1))*gravity*gravitySign
+          phiRef(2*k+1) = phi0Ref + (rF(k+1)-rF(1))*gravity*gravitySign
+c         pRef4EOS(k)   = rhoConst*phiRef(2*k)
+c         pRefLocF(k+1) = rhoConst*phiRef(2*k+1)
+C note: just to get the same previous machine truncation:
+          pRef4EOS(k)   = rhoConst*phi0Ref
+     &                  + rhoConst*(rC(k) - rF(1))*gravity*gravitySign
+          pRefLocF(k+1) = rhoConst*phi0Ref
+     &                  + rhoConst*(rF(k+1)-rF(1))*gravity*gravitySign
+         ENDDO
+        ELSEIF ( integr_GeoPot.EQ.1 ) THEN
+         DO k=1,Nr
+          phiRef(2*k)   = phiRef(2*k-1)
+     &                           + halfRL*drF(k)*gravity*gravFacC(k)
+          phiRef(2*k+1) = phiRef(2*k-1) + drF(k)*gravity*gravFacC(k)
+          pRef4EOS(k)   = rhoConst*phiRef(2*k)
+          pRefLocF(k+1) = rhoConst*phiRef(2*k+1)
+         ENDDO
+        ELSE
+         phiRef(2)   = phi0Ref + drC(1)*gravity*gravFacF(1)
+         DO k=2,Nr
+          phiRef(2*k-1) = phiRef(2*k-2)
+     &                           + halfRL*drC(k)*gravity*gravFacF(k)
+          phiRef(2*k)   = phiRef(2*k-2) + drC(k)*gravity*gravFacF(k)
+         ENDDO
+         k = Nr
+         phiRef(2*k+1) = phiRef(2*k) + drC(k+1)*gravity*gravFacF(k+1)
+         DO k=1,Nr
+          pRef4EOS(k)   = rhoConst*phiRef(2*k)
+          pRefLocF(k+1) = rhoConst*phiRef(2*k+1)
+         ENDDO
+        ENDIF
+      ELSEIF ( buoyancyRelation.EQ.'OCEANICP' ) THEN
+        phiRef(1) = phi0Ref
+        DO k=1,Nr
+          phiRef(2*k)   = phi0Ref - recip_rhoConst*(rC(k) - rF(1))
+          phiRef(2*k+1) = phi0Ref - recip_rhoConst*(rF(k+1)-rF(1))
+        ENDDO
+c     ELSEIF (buoyancyRelation .EQ. 'ATMOSPHERIC') THEN
+C     phiRef is computed later (see below)
+      ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( eosType.EQ.'POLY3' ) THEN
@@ -87,7 +140,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          CALL PRINT_ERROR( msgBuf , myThid )
          STOP 'ABNORMAL END: S/R SET_REF_STATE'
        ELSEIF ( nonHydrostatic .AND.
-     &          buoyancyRelation .EQ. 'OCEANICP' ) THEN
+     &          buoyancyRelation.EQ.'OCEANICP' ) THEN
          WRITE(msgBuf,'(2A)') 'SET_REF_STATE:',
      &    ' need to compute reference density for Non-Hyd'
          CALL PRINT_ERROR( msgBuf , myThid )
@@ -106,20 +159,32 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                       SQUEEZE_RIGHT , myThid)
        ENDIF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      ELSEIF (buoyancyRelation .EQ. 'OCEANIC') THEN
+      ELSEIF ( buoyancyRelation.EQ.'OCEANIC' ) THEN
 
-C--   Compute reference density profile and reference stratification
+C--   Compute reference density profile
         DO k=1,Nr
-          pLoc = -rhoConst*rC(k)*gravity
+          pLoc = pRef4EOS(k)
           CALL FIND_RHO_SCALAR(
      I                          tRef(k), sRef(k), pLoc,
      O                          rhoRef(k), myThid )
         ENDDO
 
+        IF ( selectP_inEOS_Zc.EQ.1 ) THEN
+C--   Find reference pressure in hydrostatic balance with updated ref density
+          maxResid = rhoConst* 1. _d -14
+          belowCritNb = 5
+          maxIterNb = 10*Nr
+          CALL FIND_HYD_PRESS_1D(
+     O                            pRef4EOS, pRefLocF,
+     U                            rhoRef,
+     I                            tRef, sRef, maxResid,
+     I                            belowCritNb, maxIterNb, myThid )
+        ENDIF
+
 C--   Compute reference stratification: N^2 = -(g/rho_c) * d.rho/dz @ const. p
         dBdrRef(1) = 0. _d 0
         DO k=2,Nr
-          pLoc = -rhoConst*rF(k)*gravity
+          pLoc = pRefLocF(k)
           CALL FIND_RHO_SCALAR(
      I                          tRef(k-1), sRef(k-1), pLoc,
      O                          rhoUp, myThid )
@@ -127,18 +192,18 @@ C--   Compute reference stratification: N^2 = -(g/rho_c) * d.rho/dz @ const. p
      I                          tRef(k), sRef(k), pLoc,
      O                          rhoDw, myThid )
           dBdrRef(k) = (rhoDw - rhoUp)*recip_drC(k)
-     &               *recip_rhoConst*gravity
-          IF (eosType .EQ. 'LINEAR') THEN
+     &               *recip_rhoConst*gravity*gravFacF(k)
+          IF ( eosType.EQ.'LINEAR' ) THEN
 C- get more precise values (differences from above are due to machine round-off)
             dBdrRef(k) = ( sBeta *(sRef(k)-sRef(k-1))
      &                    -tAlpha*(tRef(k)-tRef(k-1))
      &                   )*recip_drC(k)
-     &                 *rhoNil*recip_rhoConst*gravity
+     &                 *rhoNil*recip_rhoConst*gravity*gravFacF(k)
           ENDIF
         ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      ELSEIF (buoyancyRelation .EQ. 'OCEANICP') THEN
+      ELSEIF ( buoyancyRelation.EQ.'OCEANICP' ) THEN
 
 C--   Compute reference density profile
         DO k=1,Nr
@@ -176,7 +241,7 @@ C     note: wUnit2rVel & rVel2wUnit replace horiVertRatio & recip_horiVertRatio
         ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      ELSEIF (buoyancyRelation .EQ. 'ATMOSPHERIC') THEN
+      ELSEIF ( buoyancyRelation.EQ.'ATMOSPHERIC' ) THEN
 
 C--   Compute reference stratification: -d.alpha/dp @ constant p
         dBdrRef(1) = 0. _d 0
@@ -214,7 +279,7 @@ C     note: wUnit2rVel & rVel2wUnit replace horiVertRatio & recip_horiVertRatio
 C-    Compute Reference Geopotential at Half levels :
 C      Tracer level k: phiRef(2k)  ;  Interface_W level k: phiRef(2k-1)
 
-       phiRef(1) = 0. _d 0
+       phiRef(1) = phi0Ref
        IF ( select_rStar.GE.1 .OR. selectSigmaCoord.GE.1 ) THEN
 C-      isothermal (theta=const) reference state
         DO k=1,Nr
@@ -263,25 +328,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   endif buoyancyRelation
       ENDIF
 
-C--   fill-in phiRef array (presently not used)
-      IF ( buoyancyRelation.EQ.'OCEANIC' ) THEN
-c       phiRef(1) = gravitySign*gravity*(rF(1)-Ro_SeaLevel)
-        phiRef(1) = 0. _d 0
-        DO k=1,Nr
-          phiRef(2*k)   = gravitySign*gravity*(rC(k) - Ro_SeaLevel)
-          phiRef(2*k+1) = gravitySign*gravity*(rF(k+1)-Ro_SeaLevel)
-        ENDDO
-      ELSEIF ( buoyancyRelation.EQ.'OCEANICP' ) THEN
-C     should be : phiRef = phi_Origin - (rC - Ro_SeaLevel)/rhoConst
-C-    but since the reference geopotential "phi_Origin" @ p = rF(k=1)
-C     is not currently stored, we only get a relative geopotential:
-        phiRef(1) = -recip_rhoConst*rF(1)
-        DO k=1,Nr
-          phiRef(2*k)   = -recip_rhoConst*rC(k)
-          phiRef(2*k+1) = -recip_rhoConst*rF(k+1)
-        ENDDO
-      ENDIF
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( usingZCoords .AND. rhoRefFile .NE. ' ' ) THEN
@@ -291,6 +337,7 @@ C       surface-interface rho-factor has to be 1:
 C       rhoFac(k) = density ratio between layer k and top interface
         DO k=1,Nr
           rhoFacC(k) = rho1Ref(k)/rhoConst
+c         rhoFacC(k) = rho1Ref(k)*recip_rhoConst
         ENDDO
         DO k=2,Nr
 C       since rkSign=-1, recip_drC(k) = 1./(rC(k-1)-rC(k))
@@ -313,7 +360,17 @@ C-      set reciprocal rho-factor:
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Write to check :
-      IF (buoyancyRelation .EQ. 'ATMOSPHERIC') THEN
+      IF ( gravityFile .NE. ' ' ) THEN
+C-    write gravity vertical profile factor to binary file:
+        CALL WRITE_GLVEC_RL( 'GravFacC',' ',gravFacC, Nr, -1, myThid )
+        CALL WRITE_GLVEC_RL( 'GravFacF',' ',gravFacF,Nr+1,-1, myThid )
+      ENDIF
+      IF ( selectP_inEOS_Zc.EQ.1 ) THEN
+C-    write (to binary file) Hyd-Pressure used in EOS:
+        CALL WRITE_GLVEC_RL( 'PRef4EOS',' ',pRef4EOS, Nr, -1, myThid )
+c       CALL WRITE_GLVEC_RL( 'PRefLocF',' ',pRefLocF,Nr+1,-1, myThid )
+      ENDIF
+      IF ( buoyancyRelation.EQ.'ATMOSPHERIC' ) THEN
        WRITE(msgBuf,'(A)') ' '
        CALL PRINT_MESSAGE( msgBuf, stdUnit, SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A)')
