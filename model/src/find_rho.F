@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.42 2014/04/04 20:56:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.43 2016/03/10 20:36:31 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -65,6 +65,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j
       _RL refTemp,refSalt,sigRef,tP,sP,deltaSig,dRho
+      _RL oneMinusKap, facPres, theta_v
       _RL locPres(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhoP0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL bulkMod(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -235,7 +236,27 @@ c#endif /* ALLOW_AUTODIFF_TAMC */
          ENDDO
 
       ELSEIF( equationOfState .EQ. 'IDEALG' ) THEN
-C
+
+         CALL PRESSURE_FOR_EOS(
+     I             bi, bj, iMin, iMax, jMin, jMax, kRef,
+     O             locPres,
+     I             myThid )
+
+         oneMinusKap = oneRL - atm_kappa
+C        rho = P/(R*T_v) = Po/(R*theta_v)*(P/Po)^(1-kappa)
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           IF ( locPres(i,j).GT.zeroRL .AND. tFld(i,j).GT.zeroRL ) THEN
+            facPres = ( locPres(i,j)/atm_Po )**oneMinusKap
+            theta_v = tFld(i,j)*( sFld(i,j)*atm_Rq + oneRL )
+            rhoLoc(i,j) = atm_Po*facPres
+     &                 /( atm_Rd*theta_v ) - rhoConst
+           ELSE
+            rhoLoc(i,j) = zeroRL
+           ENDIF
+          ENDDO
+         ENDDO
+
       ELSE
        WRITE(msgBuf,'(3a)')
      &      ' FIND_RHO_2D: equationOfState = "',equationOfState,'"'
@@ -842,6 +863,7 @@ C     == Local variables ==
       _RL rfresh, rsalt, rhoP0
       _RL bMfresh, bMsalt, bMpres, BulkMod
       _RL rhoNum, rhoDen, den, epsln
+      _RL oneMinusKap, facPres, theta_v
       PARAMETER ( epsln = 0. _d 0 )
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef USE_FACTORIZED_EOS
@@ -1138,7 +1160,13 @@ C     density of sea water at pressure p
        rhoLoc = rhoNum*rhoDen
 
       ELSEIF( equationOfState .EQ. 'IDEALG' ) THEN
-C
+
+         oneMinusKap = oneRL - atm_kappa
+C        rho = P/(R*T_v) = Po/(R*theta_v)*(P/Po)^(1-kappa)
+         facPres = ( pLoc/atm_Po )**oneMinusKap
+         theta_v = tLoc*( sLoc*atm_Rq + oneRL )
+         rhoLoc = atm_Po*facPres /( atm_Rd*theta_v )
+
       ELSE
        WRITE(msgBuf,'(3A)')
      &        ' FIND_RHO_SCALAR : equationOfState = "',
