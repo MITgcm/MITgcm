@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.267 2016/01/12 21:47:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.268 2016/03/10 20:50:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -174,7 +174,7 @@ C-
 C--   Continuous equation parameters
       NAMELIST /PARM01/
      & gravitySign, nh_Am2,
-     & gravity, gBaro, rhonil, tAlpha, sBeta,
+     & gravity, gBaro, gravityFile, rhonil, tAlpha, sBeta,
      & selectCoriMap, f0, beta, fPrime, omega, rotationPeriod,
      & viscAh, viscAhW, viscAhMax,
      & viscAhGrid, viscAhGridMax, viscAhGridMin,
@@ -189,7 +189,7 @@ C--   Continuous equation parameters
      & cosPower, viscAstrain, viscAtension,
      & diffKhT, diffK4T, diffKhS, diffK4S,
      & tRef, sRef, tRefFile, sRefFile, rhoRefFile,
-     & eosType, integr_GeoPot, selectFindRoSurf,
+     & eosType, selectP_inEOS_Zc, integr_GeoPot, selectFindRoSurf,
      & HeatCapacity_Cp, celsius2K, atm_Cp, atm_Rd, atm_Rq, atm_Po,
      & no_slip_sides, sideDragFactor,
      & no_slip_bottom, bottomVisc_pCell,
@@ -268,7 +268,7 @@ C--   Gridding parameters
      & xgOrigin, ygOrigin, dxSpacing, dySpacing,
      & delX, delY, delXFile, delYFile, horizGridFile,
      & phiEuler, thetaEuler, psiEuler,
-     & rSphere, radius_fromHorizGrid, deepAtmosphere,
+     & rSphere, radius_fromHorizGrid, deepAtmosphere, phi0Ref,
      & selectSigmaCoord, rSigmaBnd, hybSigmFile,
      & Ro_SeaLevel, delZ, delP, delR, delRc, delRFile, delRcFile,
      & rkFac, groundAtK1, thetaMin, phiMin
@@ -1220,6 +1220,15 @@ C     note: done later (once domain size is known) if using CartesianGrid
       IF ( latBandClimRelax .EQ. UNSET_RL) THEN
         IF ( usingSphericalPolarGrid ) latBandClimRelax= 180. _d 0
         IF ( usingCurvilinearGrid )    latBandClimRelax= 180. _d 0
+      ENDIF
+
+C--   Set default reference [pressure/geo] potential at r = Ro_SeaLevel
+      IF ( phi0Ref.EQ.UNSET_RL ) THEN
+        IF ( buoyancyRelation.EQ.'OCEANICP') THEN
+         phi0Ref = -recip_rhoConst*Ro_SeaLevel
+        ELSE
+         phi0Ref = 0.
+        ENDIF
       ENDIF
 C--   set cell Center depth and put Interface at the middle between 2 C
       setCenterDr = .FALSE.
