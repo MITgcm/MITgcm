@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.46 2014/08/06 23:12:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.47 2016/03/10 20:55:56 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -229,9 +229,11 @@ C           conserve KE+PE exactly even though it is more natural
          DO j=jMin,jMax
           DO i=iMin,iMax
             phiHydC(i,j) = phiHydF(i,j)
-     &          + halfRL*drF(k)*gravity*alphaRho(i,j)*recip_rhoConst
+     &              + halfRL*drF(k)*gravFacC(k)*gravity
+     &                             *alphaRho(i,j)*recip_rhoConst
             phiHydF(i,j) = phiHydF(i,j)
-     &                 + drF(k)*gravity*alphaRho(i,j)*recip_rhoConst
+     &                     + drF(k)*gravFacC(k)*gravity
+     &                             *alphaRho(i,j)*recip_rhoConst
           ENDDO
          ENDDO
         ELSE
@@ -242,13 +244,16 @@ C           conserve KE+PE exactly even though it is more natural
 #ifdef NONLIN_FRSURF
             ddRloc = ddRloc + surfPhiFac*etaH(i,j,bi,bj)
 #endif
-            phiHydC(i,j) = ddRloc*gravity*alphaRho(i,j)*recip_rhoConst
+            phiHydC(i,j) = ddRloc*gravFacC(k)*gravity
+     &                           *alphaRho(i,j)*recip_rhoConst
            ELSE
             phiHydC(i,j) = phiHydF(i,j)
-     &            + halfRL*drF(k)*gravity*alphaRho(i,j)*recip_rhoConst
+     &              + halfRL*drF(k)*gravFacC(k)*gravity
+     &                             *alphaRho(i,j)*recip_rhoConst
            ENDIF
-            phiHydF(i,j) = phiHydC(i,j)
-     &            + halfRL*drF(k)*gravity*alphaRho(i,j)*recip_rhoConst
+           phiHydF(i,j) = phiHydC(i,j)
+     &              + halfRL*drF(k)*gravFacC(k)*gravity
+     &                             *alphaRho(i,j)*recip_rhoConst
           ENDDO
          ENDDO
         ENDIF
@@ -259,20 +264,20 @@ C  --  Finite Difference Form
 C---------- This discretization is the "energy conserving" form
 C           which has been used since at least Adcroft et al., MWR 1997
 
-        dRlocM = halfRL*drC(k)
-        IF (k.EQ.1) dRlocM=rF(k)-rC(k)
+        dRlocM = halfRL*drC(k)*gravFacF(k)
+        IF (k.EQ.1) dRlocM = (rF(k)-rC(k))*gravFacF(k)
         IF (k.EQ.Nr) THEN
-          dRlocP=rC(k)-rF(k+1)
+          dRlocP = (rC(k)-rF(k+1))*gravFacF(k+1)
         ELSE
-          dRlocP=halfRL*drC(k+1)
+          dRlocP = halfRL*drC(k+1)*gravFacF(k+1)
         ENDIF
         IF ( uniformFreeSurfLev ) THEN
          DO j=jMin,jMax
           DO i=iMin,iMax
             phiHydC(i,j) = phiHydF(i,j)
-     &        +dRlocM*gravity*alphaRho(i,j)*recip_rhoConst
+     &             + dRlocM*gravity*alphaRho(i,j)*recip_rhoConst
             phiHydF(i,j) = phiHydC(i,j)
-     &        +dRlocP*gravity*alphaRho(i,j)*recip_rhoConst
+     &             + dRlocP*gravity*alphaRho(i,j)*recip_rhoConst
           ENDDO
          ENDDO
         ELSE
@@ -290,10 +295,10 @@ C           which has been used since at least Adcroft et al., MWR 1997
      &                    )*gravity*alphaRho(i,j)*recip_rhoConst
            ELSE
             phiHydC(i,j) = phiHydF(i,j)
-     &        +dRlocM*gravity*alphaRho(i,j)*recip_rhoConst
+     &             + dRlocM*gravity*alphaRho(i,j)*recip_rhoConst
            ENDIF
-            phiHydF(i,j) = phiHydC(i,j)
-     &        +dRlocP*gravity*alphaRho(i,j)*recip_rhoConst
+           phiHydF(i,j) = phiHydC(i,j)
+     &             + dRlocP*gravity*alphaRho(i,j)*recip_rhoConst
           ENDDO
          ENDDO
         ENDIF

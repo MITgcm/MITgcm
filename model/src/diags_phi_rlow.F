@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.11 2014/05/02 16:57:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.12 2016/03/10 20:55:56 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -88,7 +88,7 @@ C  --  Finite Volume Form
            IF ( k .EQ. kLowC(i,j,bi,bj) ) THEN
              ddRloc = rC(k)-R_low(i,j,bi,bj)
              phiHydLow(i,j,bi,bj) = phiHydC(i,j)
-     &            + ddRloc*gravity*alphRho(i,j)*recip_rhoConst
+     &        + ddRloc*gravFacC(k)*gravity*alphRho(i,j)*recip_rhoConst
            ENDIF
           ENDDO
          ENDDO
@@ -100,6 +100,8 @@ C  --  Finite Difference Form
          ratioRp = oneRL
          IF (k.GT.1 ) ratioRm = halfRL*drC(k)/(rF(k)-rC(k))
          IF (k.LT.Nr) ratioRp = halfRL*drC(k+1)/(rC(k)-rF(k+1))
+         ratioRm = ratioRm*gravFacF(k)
+         ratioRp = ratioRp*gravFacF(k+1)
 
          DO j=jMin,jMax
           DO i=iMin,iMax
