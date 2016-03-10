@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.24 2016/02/15 17:59:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.25 2016/03/10 20:52:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -247,11 +247,10 @@ C     set default according to EOS type (as it was until chkpt65t)
         ENDIF
         IF ( ( eosType .EQ. 'LINEAR' .OR.  eosType .EQ. 'POLY3 ' )
      &      .AND. selectP_inEOS_Zc.NE.0  ) THEN
-          WRITE(msgBuf,'(2A,I2,3A)') '** WARNING ** SET_PARMS: ',
-     &     'ignores selectP_inEOS_Zc=', selectP_inEOS_Zc,
-     &     ' with eosType=', eosType
-          CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                        SQUEEZE_RIGHT, myThid )
+          WRITE(msgBuf,'(A,I9,A)') 'SET_PARAMS: selectP_inEOS_Zc=',
+     &     selectP_inEOS_Zc, ' : invalid with eosType=', eosType
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R SET_PARAMS'
         ENDIF
       ELSE
         selectP_inEOS_Zc = -1
