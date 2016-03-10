@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_calc.F,v 1.13 2016/02/15 18:01:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_calc.F,v 1.14 2016/03/10 20:57:11 jmc Exp $
 C $Name:  $
 
 #include "OPPS_OPTIONS.h"
@@ -457,6 +457,9 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_NONHYDROSTATIC
+# include "NH_VARS.h"
+#endif /* ALLOW_NONHYDROSTATIC */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -474,22 +477,33 @@ CML      pLoc = ABS(rC(kRef))*mtoSI
 
       IF ( usingZCoords ) THEN
 C     in Z coordinates the pressure is rho0 * (hydrostatic) Potential
-c      IF ( selectP_inEOS_Zc.GE.2 ) THEN
-       IF ( storePhiHyd4Phys ) THEN
+#ifdef ALLOW_NONHYDROSTATIC
+       IF ( selectP_inEOS_Zc.EQ.3 ) THEN
+        pLoc = rhoConst*( totPhiHyd(i,j,kRef,bi,bj)
+     &                  + phi_nh(i,j,kRef,bi,bj)
+     &                  + phiRef(2*kRef)
+     &                  )*maskC(i,j,kRef,bi,bj)
+       ELSEIF ( selectP_inEOS_Zc.EQ.2 ) THEN
+#else /* ALLOW_NONHYDROSTATIC */
+       IF     ( selectP_inEOS_Zc.EQ.2 ) THEN
+#endif /* ALLOW_NONHYDROSTATIC */
 C----------
 C     NOTE: For now, totPhiHyd only contains the Potential anomaly
-C           since PhiRef is not available for Atmos and has not (yet)
-C           been added in S/R DIAGS_PHI_HYD
+C           since PhiRef has not (yet) been added in S/R DIAGS_PHI_HYD
 C----------
         pLoc = rhoConst*( totPhiHyd(i,j,kRef,bi,bj)
-     &                   -rC(kRef)*gravity
-     &                   )*maskC(i,j,kRef,bi,bj)
+     &                  + phiRef(2*kRef)
+     &                  )*maskC(i,j,kRef,bi,bj)
+c      ELSEIF ( selectP_inEOS_Zc.EQ.1 ) THEN
+C note: for the case selectP_inEOS_Zc=0, also use pRef4EOS (set to
+C       rhoConst*phiRef(2*k) ) to reproduce same previous machine truncation
+       ELSEIF ( selectP_inEOS_Zc.LE.1 ) THEN
+        pLoc = pRef4EOS(kRef)*maskC(i,j,kRef,bi,bj)
        ELSE
-        pLoc = -rhoConst*rC(kRef)*gravity*maskC(i,j,kRef,bi,bj)
+        pLoc = rhoConst*phiRef(2*kRef)*maskC(i,j,kRef,bi,bj)
        ENDIF
       ELSEIF ( usingPCoords ) THEN
-C     in P coordinates the pressure is just the coordinate of
-C     the tracer point
+C     in P coordinates the pressure is just the coordinate of the tracer point
        pLoc = rC(kRef)* maskC(i,j,kRef,bi,bj)
       ENDIF
 
