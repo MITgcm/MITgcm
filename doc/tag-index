@@ -1,20 +1,29 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2236 2016/02/29 22:22:25 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2237 2016/03/11 01:07:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - add parameter "phi0Ref" to specify reference [pressure/geo] potential at
+    origin r = rF(1);
+  - add options (parameter selectP_inEOS_Zc) to select which pressure to use
+    in EOS for height coordinate: enable to include NH Pressure or to use
+    more accurate pressure vertical profile; options not linked to EOS type
+    (as previously, e.g., JMD95P/JMD95Z) but set default according to EOS type;
+  - start to implement variable gravity (along vertical): for now, only with
+    z-coords (not even z*).
+  - add Ideal Gas equation of state for height coordinate.
 o pkg/exf:
   - add ALLOW_EXF_OUTPUT_INTERP cpp switch to output the result
-   of exf interpolation (before any rescaling, rotation or interpolation
-   to velocity point) for each field that gets loaded from file. This option
-   identically mimics the input file organization (e.g. record numbers in year
-   by year input files) besides the change in horizontal grid.
+    of exf interpolation (before any rescaling, rotation or interpolation
+    to velocity point) for each field that gets loaded from file. This option
+    identically mimics the input file organization (e.g. record numbers in year
+    by year input files) besides the change in horizontal grid.
   - add rotateStressOnAgrid run-time switch so that wind stress fields
-   can be provided on the A-grid in zonal/meridional direction and
-   rotated on the fly. This only applies to the case when the exf 
-   interpolation is off and rotateStressOnAgrid is false by default.
-
+    can be provided on the A-grid in zonal/meridional direction and
+    rotated on the fly. This only applies to the case when the exf
+    interpolation is off and rotateStressOnAgrid is false by default.
 o model/src:
   - rename internal parameter "useDynP_inEos_Zc" to "storePhiHyd4Phys" (since
     it's also used with pkg/atm_phys) and add few more parameters (but still
