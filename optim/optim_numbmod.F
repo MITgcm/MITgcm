@@ -75,13 +75,12 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-cdfer#include "ecco.h"
 #include "ctrl.h"
 #include "optim.h"
 #include "minimization.h"
+#include "CTRL_OBCS.h"
 #ifndef ECCO_CTRL_DEPRECATED
 # include "ctrl_local_params.h"
-# include "CTRL_OBCS.h"
 #endif
 
 c     == routine arguments ==
