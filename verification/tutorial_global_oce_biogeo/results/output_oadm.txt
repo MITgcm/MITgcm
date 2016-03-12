@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint65g
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint65t
 (PID.TID 0000.0001) // Build user:        jmc
 (PID.TID 0000.0001) // Build host:        baudelaire
-(PID.TID 0000.0001) // Build date:        Sat Dec  6 13:12:40 EST 2014
+(PID.TID 0000.0001) // Build date:        Fri Mar 11 11:54:22 EST 2016
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -226,6 +226,7 @@
 (PID.TID 0000.0001)  PACKAGES_BOOT: On/Off package Summary
  --------  pkgs with a standard "usePKG" On/Off switch in "data.pkg":  --------
  pkg/gmredi               compiled   and   used ( useGMRedi                = T )
+ pkg/autodiff             compiled   and   used ( useAUTODIFF              = T )
  pkg/grdchk               compiled   and   used ( useGrdchk                = T )
  pkg/ctrl                 compiled   and   used ( useCTRL                  = T )
  pkg/ptracers             compiled   and   used ( usePTRACERS              = T )
@@ -463,7 +464,7 @@
 (PID.TID 0000.0001)                 1.000000000000000E-02
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) fesedflux_pcm = /* Sediment Fe flux = fesedflux_pcm*pflux+FeIntSec */
-(PID.TID 0000.0001)                 7.208000000000001E-02
+(PID.TID 0000.0001)                 6.415094339622642E-06
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) FeIntSec = /* Sediment Fe flux = fesedflux_pcm * pflux + FeIntSec */
 (PID.TID 0000.0001)                 5.787037037037037E-12
@@ -1265,11 +1266,17 @@
 (PID.TID 0000.0001) no_slip_bottom =  /* Viscous BCs: No-slip bottom */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) bottomVisc_pCell = /* Partial-cell in bottom Visc. BC */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) bottomDragLinear = /* linear bottom-drag coefficient ( m/s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) bottomDragQuadratic = /* quadratic bottom-drag coefficient (-) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) selectBotDragQuadr = /* select quadratic bottom drag options */
+(PID.TID 0000.0001)                      -1
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) diffKhT =   /* Laplacian diffusion of heat laterally ( m^2/s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
@@ -1316,6 +1323,13 @@
 (PID.TID 0000.0001) eosType =  /* Type of Equation of State */
 (PID.TID 0000.0001)               'JMD95Z'
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) selectP_inEOS_Zc = /* select pressure to use in EOS (0,1,2,3) */
+(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)     0= -g*rhoConst*z ; 1= pRef (from tRef,sRef); 2= Hyd P ; 3= Hyd+NH P
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) phi0Ref = /* reference (P,geo) potential at origin rF(1) (m^2/s^2) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) HeatCapacity_Cp =  /* Specific heat capacity ( J/kg/K ) */
 (PID.TID 0000.0001)                 3.994000000000000E+03
 (PID.TID 0000.0001)     ;
@@ -1339,6 +1353,12 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) gBaro =   /* Barotropic gravity ( m/s^2 ) */
 (PID.TID 0000.0001)                 9.810000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) gravFacC = /* gravity factor (vs surf.) @ cell-Center (-) */
+(PID.TID 0000.0001)    15 @  1.000000000000000E+00              /* K =  1: 15 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) gravFacF = /* gravity factor (vs surf.) @ W-Interface (-) */
+(PID.TID 0000.0001)    16 @  1.000000000000000E+00              /* K =  1: 16 */
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) rotationPeriod =   /* Rotation Period ( s ) */
 (PID.TID 0000.0001)                 8.616400000000000E+04
@@ -1460,6 +1480,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) implicitViscosity = /* Implicit viscosity on/off flag */
 (PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) implBottomFriction= /* Implicit bottom friction on/off flag */
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) metricTerms =  /* metric-Terms on/off flag */
 (PID.TID 0000.0001)                   T
@@ -1656,6 +1679,9 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) abEps =   /* Adams-Bashforth-2 stabilizing weight */
 (PID.TID 0000.0001)                 1.000000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) applyExchUV_early = /* Apply EXCH to U,V earlier in time-step */
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tauCD =   /* CD coupling time-scale ( s ) */
 (PID.TID 0000.0001)                 3.214280000000000E+05
@@ -2831,6 +2857,7 @@
 (PID.TID 0000.0001) PTRACERS_ioLabel = /* tracer IO Label */
 (PID.TID 0000.0001)               '04'
 (PID.TID 0000.0001)     ;
+OAD: TIMING: stamp 0: 1457716247.446383
 (PID.TID 0000.0001) PTRACERS_advScheme = /* Advection Scheme */
 (PID.TID 0000.0001)                      30
 (PID.TID 0000.0001)     ;
@@ -2861,7 +2888,6 @@
 (PID.TID 0000.0001) PTRACERS_useGMRedi = /* apply GM-Redi */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
-OAD: TIMING: stamp 0: 1417890420.715868
 (PID.TID 0000.0001) PTRACERS_useDWNSLP = /* apply DOWN-SLOPE Flow */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
@@ -2952,6 +2978,7 @@ OAD: TIMING: stamp 0: 1417890420.715868
 (PID.TID 0000.0001) // CONFIG_CHECK : Normal End
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
+ OAD: IT+      1048576
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords = 123 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   2 , dims:
@@ -2970,7 +2997,6 @@ OAD: TIMING: stamp 0: 1417890420.715868
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "GsNm1   ", #   8 in fldList, rec=   8
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "EtaN    ", #   9 in fldList, rec= 121
 (PID.TID 0000.0001) READ_MFLDS_CHECK: - normal end ; reset MFLDS file-name: pickup.0005184000
- OAD: IT+      1048576
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords =   5 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   3 , dims:
@@ -2979,6 +3005,12 @@ OAD: TIMING: stamp 0: 1417890420.715868
 (PID.TID 0000.0001)    3:  15   1  15
 (PID.TID 0000.0001)     nFlds =   5 , nFl3D =   0 , fields:
 (PID.TID 0000.0001)  >pTr01   < >pTr02   < >pTr03   < >pTr04   < >pTr05   <
+OAD: TIMING: stamp 1: 1457716301.261531
+OAD: TIMING: delta stamps 1-0: 53.815148
+OAD: TIMING: stamp 2: 1457716346.692663
+OAD: TIMING: delta stamps 2-1: 45.431132
+OAD: TIMING: delta stamps 2-0: 99.246280
+OAD: TIMING: ratio stamps (2-1)/(1-0): 4.543113e+07/5.381515e+07=8.442071e-01
 (PID.TID 0000.0001) missingVal=  1.00000000000000E+00 ; nTimRec =   0 , timeList:
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr01   ", #   1 in fldList, rec=   1
 (PID.TID 0000.0001) READ_MFLDS_3D_RL: read field: "pTr02   ", #   2 in fldList, rec=   2
@@ -2995,18 +3027,12 @@ OAD: TIMING: stamp 0: 1417890420.715868
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
- cg2d: Sum(rhs),rhsMax =  -3.18101136542737E-07  7.68315975271975E+00
- DIC_COST: iter,totcost =  5184001 -1.510938947300254E+11
- cg2d: Sum(rhs),rhsMax =  -3.16617381201922E-07  7.71913792121489E+00
- DIC_COST: iter,totcost =  5184002 -3.062707121048397E+11
-OAD: TIMING: stamp 1: 1417890467.894043
-OAD: TIMING: delta stamps 1-0: 47.178175
-OAD: TIMING: stamp 2: 1417890494.030805
-OAD: TIMING: delta stamps 2-1: 26.136762
-OAD: TIMING: delta stamps 2-0: 73.314937
-OAD: TIMING: ratio stamps (2-1)/(1-0): 2.613676e+07/4.717818e+07=5.540011e-01
- cg2d: Sum(rhs),rhsMax =  -3.05217469076524E-07  8.00744854083963E+00
- DIC_COST: iter,totcost =  5184003 -4.608697184244316E+11
+ cg2d: Sum(rhs),rhsMax =  -3.18101193386156E-07  7.68315975271975E+00
+ DIC_COST: iter,totcost =  5184001 -1.510938947300251E+11
+ cg2d: Sum(rhs),rhsMax =  -3.16617523310470E-07  7.71913792121489E+00
+ DIC_COST: iter,totcost =  5184002 -3.062707121048417E+11
+ cg2d: Sum(rhs),rhsMax =  -3.05217451312956E-07  8.00744854083963E+00
+ DIC_COST: iter,totcost =  5184003 -4.608697184244337E+11
  OAD: IT+     17825792
  OAD: DT+      1048576
  OAD: IT+     34603008
@@ -3018,7 +3044,7 @@ OAD: TIMING: ratio stamps (2-1)/(1-0): 2.613676e+07/4.717818e+07=5.540011e-01
  OAD: IT+    101711872
  OAD: IT+    118489088
  OAD: DT+     51380224
- cg2d: Sum(rhs),rhsMax =  -2.97132473292550E-07  8.22531990387176E+00
+ cg2d: Sum(rhs),rhsMax =  -2.97132839222058E-07  8.22531990387176E+00
  OAD: IT+    135266304
  OAD: IT+    152043520
  OAD: IT+    168820736
@@ -3028,8 +3054,8 @@ OAD: TIMING: ratio stamps (2-1)/(1-0): 2.613676e+07/4.717818e+07=5.540011e-01
  OAD: DT+     84934656
  OAD: IT+    219152384
  OAD: IT+    235929600
- OAD: DT+    101711872
  OAD: IT+    252706816
+ OAD: DT+    101711872
  OAD: IT+    269484032
  OAD: IT+    286261248
  OAD: DT+    118489088
@@ -3037,28 +3063,28 @@ OAD: TIMING: ratio stamps (2-1)/(1-0): 2.613676e+07/4.717818e+07=5.540011e-01
  OAD: IT+    319815680
  OAD: DT+    135266304
  OAD: IT+    336592896
- DIC_COST: iter,totcost =  5184004 -6.161762700636895E+11
+ DIC_COST: iter,totcost =  5184004 -6.161762700636949E+11
 (PID.TID 0000.0001) %CHECKPOINT   5184004 ckptA
   early fc =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
- global fc = -0.616176270063689D+12
- cg2d: Sum(rhs),rhsMax =  -9.99200722162641E-16  4.83095689425808E+03
- cg2d: Sum(rhs),rhsMax =  -3.05217490392806E-07  8.00744854083964E+00
- DIC_COST: iter,totcost =  5184003 -4.608697184244155E+11
- cg2d: Sum(rhs),rhsMax =  -1.89848137210902E-14  3.01596181003146E+04
- cg2d: Sum(rhs),rhsMax =  -3.16617715157008E-07  7.71913792121489E+00
- DIC_COST: iter,totcost =  5184002 -3.062707121048325E+11
- cg2d: Sum(rhs),rhsMax =  -1.00364161426114E-13  1.90826024549946E+04
+ global fc = -0.616176270063695D+12
+ cg2d: Sum(rhs),rhsMax =  -2.10942374678780E-15  4.83095689425845E+03
+ cg2d: Sum(rhs),rhsMax =  -3.05216993012891E-07  8.00744854083964E+00
+ DIC_COST: iter,totcost =  5184003 -4.608697184244186E+11
+ cg2d: Sum(rhs),rhsMax =  -1.86517468137026E-14  3.01596181003147E+04
+ cg2d: Sum(rhs),rhsMax =  -3.16618091744658E-07  7.71913792121489E+00
+ DIC_COST: iter,totcost =  5184002 -3.062707121048345E+11
+ cg2d: Sum(rhs),rhsMax =  -9.54791801177635E-14  1.90826024549946E+04
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
- cg2d: Sum(rhs),rhsMax =  -3.18100873641924E-07  7.68315975271974E+00
- DIC_COST: iter,totcost =  5184001 -1.510938947300233E+11
- cg2d: Sum(rhs),rhsMax =  -3.97459842815806E-14  2.75224112753836E+04
+ cg2d: Sum(rhs),rhsMax =  -3.18101150753591E-07  7.68315975271974E+00
+ DIC_COST: iter,totcost =  5184001 -1.510938947300250E+11
+ cg2d: Sum(rhs),rhsMax =  -4.24105195406810E-14  2.75224112753834E+04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient-check starts (grdchk_main)
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) grdchk reference fc: fcref       = -6.16176270063689E+11
+(PID.TID 0000.0001) grdchk reference fc: fcref       = -6.16176270063695E+11
 grad-res -------------------------------
  grad-res  proc    #    i    j    k   bi   bj iobc       fc ref            fc + eps           fc - eps
  grad-res  proc    #    i    j    k   bi   bj iobc      adj grad            fd grad          1 - fd/adj
@@ -3109,19 +3135,19 @@ grad-res -------------------------------
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
- cg2d: Sum(rhs),rhsMax =  -3.18101136542737E-07  7.68315975271975E+00
- DIC_COST: iter,totcost =  5184001 -1.510938947997137E+11
- cg2d: Sum(rhs),rhsMax =  -3.16617441598055E-07  7.71913792121489E+00
- DIC_COST: iter,totcost =  5184002 -3.062707121900471E+11
- cg2d: Sum(rhs),rhsMax =  -3.05217465523810E-07  8.00744854083963E+00
- DIC_COST: iter,totcost =  5184003 -4.608697185207228E+11
- cg2d: Sum(rhs),rhsMax =  -2.97132256577015E-07  8.22531990387176E+00
- DIC_COST: iter,totcost =  5184004 -6.161762701515531E+11
+ cg2d: Sum(rhs),rhsMax =  -3.18101193386156E-07  7.68315975271975E+00
+ DIC_COST: iter,totcost =  5184001 -1.510938947997147E+11
+ cg2d: Sum(rhs),rhsMax =  -3.16617683182585E-07  7.71913792121489E+00
+ DIC_COST: iter,totcost =  5184002 -3.062707121900492E+11
+ cg2d: Sum(rhs),rhsMax =  -3.05217618290499E-07  8.00744854083964E+00
+ DIC_COST: iter,totcost =  5184003 -4.608697185207272E+11
+ cg2d: Sum(rhs),rhsMax =  -2.97132835669345E-07  8.22531990387176E+00
+ DIC_COST: iter,totcost =  5184004 -6.161762701515593E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
   early fc =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
- global fc = -0.616176270151553D+12
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  = -6.16176270151553E+11
+ global fc = -0.616176270151559D+12
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  = -6.16176270151559E+11
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords = 123 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   2 , dims:
@@ -3164,25 +3190,25 @@ grad-res -------------------------------
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
- cg2d: Sum(rhs),rhsMax =  -3.18101136542737E-07  7.68315975271975E+00
- DIC_COST: iter,totcost =  5184001 -1.510938946603397E+11
- cg2d: Sum(rhs),rhsMax =  -3.16617185802670E-07  7.71913792121489E+00
- DIC_COST: iter,totcost =  5184002 -3.062707120196388E+11
- cg2d: Sum(rhs),rhsMax =  -3.05217572105221E-07  8.00744854083964E+00
- DIC_COST: iter,totcost =  5184003 -4.608697183281480E+11
- cg2d: Sum(rhs),rhsMax =  -2.97132366711139E-07  8.22531990387176E+00
- DIC_COST: iter,totcost =  5184004 -6.161762699758682E+11
+ cg2d: Sum(rhs),rhsMax =  -3.18101193386156E-07  7.68315975271975E+00
+ DIC_COST: iter,totcost =  5184001 -1.510938946603408E+11
+ cg2d: Sum(rhs),rhsMax =  -3.16617377649209E-07  7.71913792121489E+00
+ DIC_COST: iter,totcost =  5184002 -3.062707120196402E+11
+ cg2d: Sum(rhs),rhsMax =  -3.05217703555627E-07  8.00744854083964E+00
+ DIC_COST: iter,totcost =  5184003 -4.608697183281497E+11
+ cg2d: Sum(rhs),rhsMax =  -2.97133034621311E-07  8.22531990387176E+00
+ DIC_COST: iter,totcost =  5184004 -6.161762699758721E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
   early fc =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
- global fc = -0.616176269975868D+12
-(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus = -6.16176269975868E+11
+ global fc = -0.616176269975872D+12
+(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus = -6.16176269975872E+11
 grad-res -------------------------------
  grad-res     0    1   61    5    1    1    1    1  -6.16176270064E+11 -6.16176270152E+11 -6.16176269976E+11
- grad-res     0    1    1    1    0    1    1    1  -8.78420094963E+06 -8.78424682617E+06 -5.22261985525E-06
-(PID.TID 0000.0001)  ADM  ref_cost_function      = -6.16176270063689E+11
-(PID.TID 0000.0001)  ADM  adjoint_gradient       = -8.78420094962958E+06
-(PID.TID 0000.0001)  ADM  finite-diff_grad       = -8.78424682617188E+06
+ grad-res     0    1    1    1    0    1    1    1  -8.78420094963E+06 -8.78436279297E+06 -1.84243667720E-05
+(PID.TID 0000.0001)  ADM  ref_cost_function      = -6.16176270063695E+11
+(PID.TID 0000.0001)  ADM  adjoint_gradient       = -8.78420094962865E+06
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -8.78436279296875E+06
 (PID.TID 0000.0001) ====== End of gradient-check number   1 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   2 (=ichknum) =======
  ph-test icomp, ncvarcomp, ichknum            2       55673           2
@@ -3231,19 +3257,19 @@ grad-res -------------------------------
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
- cg2d: Sum(rhs),rhsMax =  -3.18101136542737E-07  7.68315975271975E+00
- DIC_COST: iter,totcost =  5184001 -1.510938948327117E+11
- cg2d: Sum(rhs),rhsMax =  -3.16617288831367E-07  7.71913792121489E+00
- DIC_COST: iter,totcost =  5184002 -3.062707122639228E+11
- cg2d: Sum(rhs),rhsMax =  -3.05217390916823E-07  8.00744854083963E+00
- DIC_COST: iter,totcost =  5184003 -4.608697186498088E+11
- cg2d: Sum(rhs),rhsMax =  -2.97132633164665E-07  8.22531990387176E+00
- DIC_COST: iter,totcost =  5184004 -6.161762703429507E+11
+ cg2d: Sum(rhs),rhsMax =  -3.18101193386156E-07  7.68315975271975E+00
+ DIC_COST: iter,totcost =  5184001 -1.510938948327125E+11
+ cg2d: Sum(rhs),rhsMax =  -3.16617644102735E-07  7.71913792121489E+00
+ DIC_COST: iter,totcost =  5184002 -3.062707122639255E+11
+ cg2d: Sum(rhs),rhsMax =  -3.05217550788939E-07  8.00744854083963E+00
+ DIC_COST: iter,totcost =  5184003 -4.608697186498118E+11
+ cg2d: Sum(rhs),rhsMax =  -2.97132658033661E-07  8.22531990387176E+00
+ DIC_COST: iter,totcost =  5184004 -6.161762703429594E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
   early fc =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
- global fc = -0.616176270342951D+12
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  = -6.16176270342951E+11
+ global fc = -0.616176270342959D+12
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  = -6.16176270342959E+11
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords = 123 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   2 , dims:
@@ -3286,25 +3312,25 @@ grad-res -------------------------------
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
- cg2d: Sum(rhs),rhsMax =  -3.18101136542737E-07  7.68315975271975E+00
- DIC_COST: iter,totcost =  5184001 -1.510938946273385E+11
- cg2d: Sum(rhs),rhsMax =  -3.16617512652329E-07  7.71913792121489E+00
- DIC_COST: iter,totcost =  5184002 -3.062707119457569E+11
- cg2d: Sum(rhs),rhsMax =  -3.05217319862550E-07  8.00744854083964E+00
- DIC_COST: iter,totcost =  5184003 -4.608697181990547E+11
- cg2d: Sum(rhs),rhsMax =  -2.97132125126609E-07  8.22531990387176E+00
- DIC_COST: iter,totcost =  5184004 -6.161762697844592E+11
+ cg2d: Sum(rhs),rhsMax =  -3.18101193386156E-07  7.68315975271975E+00
+ DIC_COST: iter,totcost =  5184001 -1.510938946273392E+11
+ cg2d: Sum(rhs),rhsMax =  -3.16617398965491E-07  7.71913792121489E+00
+ DIC_COST: iter,totcost =  5184002 -3.062707119457580E+11
+ cg2d: Sum(rhs),rhsMax =  -3.05217493945520E-07  8.00744854083963E+00
+ DIC_COST: iter,totcost =  5184003 -4.608697181990563E+11
+ cg2d: Sum(rhs),rhsMax =  -2.97132590532101E-07  8.22531990387176E+00
+ DIC_COST: iter,totcost =  5184004 -6.161762697844636E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
   early fc =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
- global fc = -0.616176269784459D+12
-(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus = -6.16176269784459E+11
+ global fc = -0.616176269784464D+12
+(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus = -6.16176269784464E+11
 grad-res -------------------------------
  grad-res     0    2   62    5    1    1    1    1  -6.16176270064E+11 -6.16176270343E+11 -6.16176269784E+11
- grad-res     0    2    2    2    0    1    1    1  -2.79248284513E+07 -2.79245727539E+07  9.15663078882E-06
-(PID.TID 0000.0001)  ADM  ref_cost_function      = -6.16176270063689E+11
-(PID.TID 0000.0001)  ADM  adjoint_gradient       = -2.79248284512502E+07
-(PID.TID 0000.0001)  ADM  finite-diff_grad       = -2.79245727539062E+07
+ grad-res     0    2    2    2    0    1    1    1  -2.79248284513E+07 -2.79247863770E+07  1.50669850107E-06
+(PID.TID 0000.0001)  ADM  ref_cost_function      = -6.16176270063695E+11
+(PID.TID 0000.0001)  ADM  adjoint_gradient       = -2.79248284512503E+07
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -2.79247863769531E+07
 (PID.TID 0000.0001) ====== End of gradient-check number   2 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   3 (=ichknum) =======
  ph-test icomp, ncvarcomp, ichknum            3       55673           3
@@ -3353,19 +3379,19 @@ grad-res -------------------------------
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
- cg2d: Sum(rhs),rhsMax =  -3.18101136542737E-07  7.68315975271975E+00
- DIC_COST: iter,totcost =  5184001 -1.510938948323737E+11
- cg2d: Sum(rhs),rhsMax =  -3.16617487783333E-07  7.71913792121489E+00
- DIC_COST: iter,totcost =  5184002 -3.062707122670187E+11
- cg2d: Sum(rhs),rhsMax =  -3.05217358942400E-07  8.00744854083964E+00
- DIC_COST: iter,totcost =  5184003 -4.608697186586732E+11
- cg2d: Sum(rhs),rhsMax =  -2.97132491056118E-07  8.22531990387176E+00
- DIC_COST: iter,totcost =  5184004 -6.161762703602719E+11
+ cg2d: Sum(rhs),rhsMax =  -3.18101193386156E-07  7.68315975271975E+00
+ DIC_COST: iter,totcost =  5184001 -1.510938948323743E+11
+ cg2d: Sum(rhs),rhsMax =  -3.16617445150769E-07  7.71913792121489E+00
+ DIC_COST: iter,totcost =  5184002 -3.062707122670203E+11
+ cg2d: Sum(rhs),rhsMax =  -3.05217778162614E-07  8.00744854083963E+00
+ DIC_COST: iter,totcost =  5184003 -4.608697186586752E+11
+ cg2d: Sum(rhs),rhsMax =  -2.97132601190242E-07  8.22531990387176E+00
+ DIC_COST: iter,totcost =  5184004 -6.161762703602770E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
   early fc =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
- global fc = -0.616176270360272D+12
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  = -6.16176270360272E+11
+ global fc = -0.616176270360277D+12
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  = -6.16176270360277E+11
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords = 123 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   2 , dims:
@@ -3408,25 +3434,25 @@ grad-res -------------------------------
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
- cg2d: Sum(rhs),rhsMax =  -3.18101136542737E-07  7.68315975271975E+00
- DIC_COST: iter,totcost =  5184001 -1.510938946276760E+11
- cg2d: Sum(rhs),rhsMax =  -3.16617324358504E-07  7.71913792121489E+00
- DIC_COST: iter,totcost =  5184002 -3.062707119426608E+11
- cg2d: Sum(rhs),rhsMax =  -3.05217373153255E-07  8.00744854083963E+00
- DIC_COST: iter,totcost =  5184003 -4.608697181901888E+11
- cg2d: Sum(rhs),rhsMax =  -2.97132174864601E-07  8.22531990387175E+00
- DIC_COST: iter,totcost =  5184004 -6.161762697671339E+11
+ cg2d: Sum(rhs),rhsMax =  -3.18101193386156E-07  7.68315975271975E+00
+ DIC_COST: iter,totcost =  5184001 -1.510938946276773E+11
+ cg2d: Sum(rhs),rhsMax =  -3.16617501994187E-07  7.71913792121489E+00
+ DIC_COST: iter,totcost =  5184002 -3.062707119426636E+11
+ cg2d: Sum(rhs),rhsMax =  -3.05217589868789E-07  8.00744854083964E+00
+ DIC_COST: iter,totcost =  5184003 -4.608697181901938E+11
+ cg2d: Sum(rhs),rhsMax =  -2.97133009752315E-07  8.22531990387176E+00
+ DIC_COST: iter,totcost =  5184004 -6.161762697671414E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
   early fc =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
- global fc = -0.616176269767134D+12
-(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus = -6.16176269767134E+11
+ global fc = -0.616176269767141D+12
+(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus = -6.16176269767141E+11
 grad-res -------------------------------
  grad-res     0    3   63    5    1    1    1    1  -6.16176270064E+11 -6.16176270360E+11 -6.16176269767E+11
- grad-res     0    3    3    3    0    1    1    1  -2.96567896320E+07 -2.96568969727E+07 -3.61943035232E-06
-(PID.TID 0000.0001)  ADM  ref_cost_function      = -6.16176270063689E+11
-(PID.TID 0000.0001)  ADM  adjoint_gradient       = -2.96567896319717E+07
-(PID.TID 0000.0001)  ADM  finite-diff_grad       = -2.96568969726562E+07
+ grad-res     0    3    3    3    0    1    1    1  -2.96567896320E+07 -2.96567810059E+07  2.90864672348E-07
+(PID.TID 0000.0001)  ADM  ref_cost_function      = -6.16176270063695E+11
+(PID.TID 0000.0001)  ADM  adjoint_gradient       = -2.96567896319718E+07
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -2.96567810058594E+07
 (PID.TID 0000.0001) ====== End of gradient-check number   3 (ierr=  0) =======
 (PID.TID 0000.0001) ====== Starts gradient-check number   4 (=ichknum) =======
  ph-test icomp, ncvarcomp, ichknum            4       55673           4
@@ -3475,19 +3501,19 @@ grad-res -------------------------------
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
- cg2d: Sum(rhs),rhsMax =  -3.18101193386156E-07  7.68315975271975E+00
- DIC_COST: iter,totcost =  5184001 -1.510938948589065E+11
- cg2d: Sum(rhs),rhsMax =  -3.16617217777093E-07  7.71913792121489E+00
- DIC_COST: iter,totcost =  5184002 -3.062707123132200E+11
- cg2d: Sum(rhs),rhsMax =  -3.05217437102101E-07  8.00744854083963E+00
- DIC_COST: iter,totcost =  5184003 -4.608697187307611E+11
- cg2d: Sum(rhs),rhsMax =  -2.97132505266973E-07  8.22531990387176E+00
- DIC_COST: iter,totcost =  5184004 -6.161762704586599E+11
+ cg2d: Sum(rhs),rhsMax =  -3.18101079699318E-07  7.68315975271975E+00
+ DIC_COST: iter,totcost =  5184001 -1.510938948589076E+11
+ cg2d: Sum(rhs),rhsMax =  -3.16617558837606E-07  7.71913792121489E+00
+ DIC_COST: iter,totcost =  5184002 -3.062707123132220E+11
+ cg2d: Sum(rhs),rhsMax =  -3.05217589868789E-07  8.00744854083963E+00
+ DIC_COST: iter,totcost =  5184003 -4.608697187307662E+11
+ cg2d: Sum(rhs),rhsMax =  -2.97132956461610E-07  8.22531990387176E+00
+ DIC_COST: iter,totcost =  5184004 -6.161762704586680E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
   early fc =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
- global fc = -0.616176270458660D+12
-(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  = -6.16176270458660E+11
+ global fc = -0.616176270458668D+12
+(PID.TID 0000.0001) grdchk perturb(+)fc: fcpertplus  = -6.16176270458668E+11
 (PID.TID 0000.0001)  simulName=>Tutorial Biogeo<
 (PID.TID 0000.0001)  nRecords = 123 ; filePrec =  64 ; fileIter =   5184000
 (PID.TID 0000.0001)     nDims =   2 , dims:
@@ -3530,25 +3556,25 @@ grad-res -------------------------------
  EXTERNAL_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
  DIC_FIELDS_LOAD, it=   5184000 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
 (PID.TID 0000.0001) SOLVE_FOR_PRESSURE: putPmEinXvector =    F
- cg2d: Sum(rhs),rhsMax =  -3.18101079699318E-07  7.68315975271975E+00
- DIC_COST: iter,totcost =  5184001 -1.510938946011427E+11
- cg2d: Sum(rhs),rhsMax =  -3.16617182249956E-07  7.71913792121489E+00
- DIC_COST: iter,totcost =  5184002 -3.062707118964608E+11
- cg2d: Sum(rhs),rhsMax =  -3.05217412233105E-07  8.00744854083963E+00
- DIC_COST: iter,totcost =  5184003 -4.608697181181010E+11
- cg2d: Sum(rhs),rhsMax =  -2.97132494608832E-07  8.22531990387176E+00
- DIC_COST: iter,totcost =  5184004 -6.161762696687449E+11
+ cg2d: Sum(rhs),rhsMax =  -3.18101136542737E-07  7.68315975271975E+00
+ DIC_COST: iter,totcost =  5184001 -1.510938946011438E+11
+ cg2d: Sum(rhs),rhsMax =  -3.16617438045341E-07  7.71913792121489E+00
+ DIC_COST: iter,totcost =  5184002 -3.062707118964633E+11
+ cg2d: Sum(rhs),rhsMax =  -3.05217486840093E-07  8.00744854083964E+00
+ DIC_COST: iter,totcost =  5184003 -4.608697181181042E+11
+ cg2d: Sum(rhs),rhsMax =  -2.97132810800349E-07  8.22531990387176E+00
+ DIC_COST: iter,totcost =  5184004 -6.161762696687510E+11
 (PID.TID 0000.0001) Did not write pickup because writePickupAtEnd = FALSE
   early fc =  0.000000000000000D+00
   local fc =  0.000000000000000D+00
- global fc = -0.616176269668745D+12
-(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus = -6.16176269668745E+11
+ global fc = -0.616176269668751D+12
+(PID.TID 0000.0001) grdchk perturb(-)fc: fcpertminus = -6.16176269668751E+11
 grad-res -------------------------------
  grad-res     0    4   64    5    1    1    1    1  -6.16176270064E+11 -6.16176270459E+11 -6.16176269669E+11
- grad-res     0    4    4    4    0    1    1    1  -3.94956983398E+07 -3.94957519531E+07 -1.35744749730E-06
-(PID.TID 0000.0001)  ADM  ref_cost_function      = -6.16176270063689E+11
+ grad-res     0    4    4    4    0    1    1    1  -3.94956983398E+07 -3.94958496094E+07 -3.83002689541E-06
+(PID.TID 0000.0001)  ADM  ref_cost_function      = -6.16176270063695E+11
 (PID.TID 0000.0001)  ADM  adjoint_gradient       = -3.94956983397881E+07
-(PID.TID 0000.0001)  ADM  finite-diff_grad       = -3.94957519531250E+07
+(PID.TID 0000.0001)  ADM  finite-diff_grad       = -3.94958496093750E+07
 (PID.TID 0000.0001) ====== End of gradient-check number   4 (ierr=  0) =======
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
@@ -3562,181 +3588,181 @@ grad-res -------------------------------
 (PID.TID 0000.0001) grdchk output h.g:  Id     FC1-FC2/(2*EPS)      ADJ GRAD(FC)         1-FDGRD/ADGRD
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   1    61     5     1    1    1   0.000000000E+00 -1.000000000E-05
-(PID.TID 0000.0001) grdchk output (c):   1 -6.1617627006369E+11 -6.1617627015155E+11 -6.1617626997587E+11
-(PID.TID 0000.0001) grdchk output (g):   1    -8.7842468261719E+06 -8.7842009496296E+06 -5.2226198552496E-06
+(PID.TID 0000.0001) grdchk output (c):   1 -6.1617627006369E+11 -6.1617627015156E+11 -6.1617626997587E+11
+(PID.TID 0000.0001) grdchk output (g):   1    -8.7843627929688E+06 -8.7842009496287E+06 -1.8424366772019E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   2    62     5     1    1    1   0.000000000E+00 -1.000000000E-05
-(PID.TID 0000.0001) grdchk output (c):   2 -6.1617627006369E+11 -6.1617627034295E+11 -6.1617626978446E+11
-(PID.TID 0000.0001) grdchk output (g):   2    -2.7924572753906E+07 -2.7924828451250E+07  9.1566307888202E-06
+(PID.TID 0000.0001) grdchk output (c):   2 -6.1617627006369E+11 -6.1617627034296E+11 -6.1617626978446E+11
+(PID.TID 0000.0001) grdchk output (g):   2    -2.7924786376953E+07 -2.7924828451250E+07  1.5066985010748E-06
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   3    63     5     1    1    1   0.000000000E+00 -1.000000000E-05
-(PID.TID 0000.0001) grdchk output (c):   3 -6.1617627006369E+11 -6.1617627036027E+11 -6.1617626976713E+11
-(PID.TID 0000.0001) grdchk output (g):   3    -2.9656896972656E+07 -2.9656789631972E+07 -3.6194303523196E-06
+(PID.TID 0000.0001) grdchk output (c):   3 -6.1617627006369E+11 -6.1617627036028E+11 -6.1617626976714E+11
+(PID.TID 0000.0001) grdchk output (g):   3    -2.9656781005859E+07 -2.9656789631972E+07  2.9086467234762E-07
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output (p):   4    64     5     1    1    1   0.000000000E+00 -1.000000000E-05
-(PID.TID 0000.0001) grdchk output (c):   4 -6.1617627006369E+11 -6.1617627045866E+11 -6.1617626966874E+11
-(PID.TID 0000.0001) grdchk output (g):   4    -3.9495751953125E+07 -3.9495698339788E+07 -1.3574474972966E-06
+(PID.TID 0000.0001) grdchk output (c):   4 -6.1617627006369E+11 -6.1617627045867E+11 -6.1617626966875E+11
+(PID.TID 0000.0001) grdchk output (g):   4    -3.9495849609375E+07 -3.9495698339788E+07 -3.8300268954128E-06
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) grdchk  summary  :  RMS of    4 ratios =  5.6138797933877E-06
+(PID.TID 0000.0001) grdchk  summary  :  RMS of    4 ratios =  9.4403540664560E-06
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient check results  >>> END <<<
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   115.18000000000001
-(PID.TID 0000.0001)         System time:   19.250000000000000
-(PID.TID 0000.0001)     Wall clock time:   134.99424195289612
+(PID.TID 0000.0001)           User time:   210.22303652251139
+(PID.TID 0000.0001)         System time:   17.617322823032737
+(PID.TID 0000.0001)     Wall clock time:   228.64028811454773
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.28999999999999998
-(PID.TID 0000.0001)         System time:  2.99999999999999989E-002
-(PID.TID 0000.0001)     Wall clock time:  0.33122301101684570
+(PID.TID 0000.0001)           User time:  0.41993599617853761
+(PID.TID 0000.0001)         System time:  2.99959983676671982E-002
+(PID.TID 0000.0001)     Wall clock time:  0.47501683235168457
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP (F)      [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   27.780000000000001
-(PID.TID 0000.0001)         System time:   19.070000000000000
-(PID.TID 0000.0001)     Wall clock time:   47.178164958953857
+(PID.TID 0000.0001)           User time:   35.992526948451996
+(PID.TID 0000.0001)         System time:   17.446347057819366
+(PID.TID 0000.0001)     Wall clock time:   53.815138101577759
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   2.8400000000000034
-(PID.TID 0000.0001)         System time:  0.21000000000000085
-(PID.TID 0000.0001)     Wall clock time:   3.2291014194488525
+(PID.TID 0000.0001)           User time:   4.5593176484107971
+(PID.TID 0000.0001)         System time:  0.28495618700981140
+(PID.TID 0000.0001)     Wall clock time:   5.0708594322204590
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   85.779999999999959
-(PID.TID 0000.0001)         System time:   18.930000000000000
-(PID.TID 0000.0001)     Wall clock time:   105.01543164253235
+(PID.TID 0000.0001)           User time:   159.65073096752167
+(PID.TID 0000.0001)         System time:   17.228382676839828
+(PID.TID 0000.0001)     Wall clock time:   177.32300281524658
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "MAIN_DO_LOOP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   85.779999999999959
-(PID.TID 0000.0001)         System time:   18.930000000000000
-(PID.TID 0000.0001)     Wall clock time:   105.01480722427368
+(PID.TID 0000.0001)           User time:   159.65073096752167
+(PID.TID 0000.0001)         System time:   17.228382676839828
+(PID.TID 0000.0001)     Wall clock time:   177.32240104675293
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.14000000000000057
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.17437195777893066
+(PID.TID 0000.0001)           User time:  0.25993275642395020
+(PID.TID 0000.0001)         System time:  9.00113582611083984E-003
+(PID.TID 0000.0001)     Wall clock time:  0.27888393402099609
 (PID.TID 0000.0001)          No. starts:          39
 (PID.TID 0000.0001)           No. stops:          39
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  0.10000000000000853
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.11803102493286133
+(PID.TID 0000.0001)           User time:  0.17197823524475098
+(PID.TID 0000.0001)         System time:  6.00212812423706055E-003
+(PID.TID 0000.0001)     Wall clock time:  0.18403220176696777
 (PID.TID 0000.0001)          No. starts:          39
 (PID.TID 0000.0001)           No. stops:          39
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.13999999999998636
-(PID.TID 0000.0001)         System time:  7.00000000000002842E-002
-(PID.TID 0000.0001)     Wall clock time:  0.18878078460693359
+(PID.TID 0000.0001)           User time:  0.16000878810882568
+(PID.TID 0000.0001)         System time:  7.49880075454711914E-002
+(PID.TID 0000.0001)     Wall clock time:  0.23601245880126953
 (PID.TID 0000.0001)          No. starts:          39
 (PID.TID 0000.0001)           No. stops:          39
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   8.2900000000000063
-(PID.TID 0000.0001)         System time:  0.39000000000000057
-(PID.TID 0000.0001)     Wall clock time:   8.7048695087432861
+(PID.TID 0000.0001)           User time:   14.363806962966919
+(PID.TID 0000.0001)         System time:  0.40093848109245300
+(PID.TID 0000.0001)     Wall clock time:   14.797030210494995
 (PID.TID 0000.0001)          No. starts:          39
 (PID.TID 0000.0001)           No. stops:          39
 (PID.TID 0000.0001)   Seconds in section "GCHEM_CALC_TENDENCY [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.54051589965820313E-004
+(PID.TID 0000.0001)     Wall clock time:  3.68118286132812500E-004
 (PID.TID 0000.0001)          No. starts:          39
 (PID.TID 0000.0001)           No. stops:          39
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   28.049999999999997
-(PID.TID 0000.0001)         System time:   2.3500000000000014
-(PID.TID 0000.0001)     Wall clock time:   30.485128164291382
+(PID.TID 0000.0001)           User time:   50.082371115684509
+(PID.TID 0000.0001)         System time:   2.2826530039310455
+(PID.TID 0000.0001)     Wall clock time:   52.499757528305054
 (PID.TID 0000.0001)          No. starts:          39
 (PID.TID 0000.0001)           No. stops:          39
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   1.5199999999999818
-(PID.TID 0000.0001)         System time:  1.00000000000015632E-002
-(PID.TID 0000.0001)     Wall clock time:   1.5612483024597168
+(PID.TID 0000.0001)           User time:   4.1774120330810547
+(PID.TID 0000.0001)         System time:  7.99894332885742188E-003
+(PID.TID 0000.0001)     Wall clock time:   4.1928925514221191
 (PID.TID 0000.0001)          No. starts:          39
 (PID.TID 0000.0001)           No. stops:          39
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.31000000000000227
-(PID.TID 0000.0001)         System time:  1.00000000000015632E-002
-(PID.TID 0000.0001)     Wall clock time:  0.29500055313110352
+(PID.TID 0000.0001)           User time:  0.66387915611267090
+(PID.TID 0000.0001)         System time:  3.99899482727050781E-003
+(PID.TID 0000.0001)     Wall clock time:  0.66594147682189941
 (PID.TID 0000.0001)          No. starts:          39
 (PID.TID 0000.0001)           No. stops:          39
 (PID.TID 0000.0001)   Seconds in section "INTEGR_CONTINUITY   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.43999999999999773
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.43821215629577637
+(PID.TID 0000.0001)           User time:   1.4887475967407227
+(PID.TID 0000.0001)         System time:  0.45393109321594238
+(PID.TID 0000.0001)     Wall clock time:   1.9512760639190674
 (PID.TID 0000.0001)          No. starts:          39
 (PID.TID 0000.0001)           No. stops:          39
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.80999999999998806
+(PID.TID 0000.0001)           User time:   1.4267838001251221
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.87555694580078125
+(PID.TID 0000.0001)     Wall clock time:   1.4269623756408691
 (PID.TID 0000.0001)          No. starts:          78
 (PID.TID 0000.0001)           No. stops:          78
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   51.829999999999956
-(PID.TID 0000.0001)         System time:   14.550000000000004
-(PID.TID 0000.0001)     Wall clock time:   66.564333200454712
+(PID.TID 0000.0001)           User time:   98.028112888336182
+(PID.TID 0000.0001)         System time:   13.698917299509048
+(PID.TID 0000.0001)     Wall clock time:   111.98306441307068
 (PID.TID 0000.0001)          No. starts:          39
 (PID.TID 0000.0001)           No. stops:          39
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.74794006347656250E-004
+(PID.TID 0000.0001)     Wall clock time:  4.15086746215820313E-004
 (PID.TID 0000.0001)          No. starts:          39
 (PID.TID 0000.0001)           No. stops:          39
 (PID.TID 0000.0001)   Seconds in section "GCHEM_FORCING_SEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   4.8300000000000267
-(PID.TID 0000.0001)         System time:   1.3100000000000023
-(PID.TID 0000.0001)     Wall clock time:   6.1043367385864258
+(PID.TID 0000.0001)           User time:   6.9079618453979492
+(PID.TID 0000.0001)         System time:  3.09948027133941650E-002
+(PID.TID 0000.0001)     Wall clock time:   6.9682481288909912
 (PID.TID 0000.0001)          No. starts:          39
 (PID.TID 0000.0001)           No. stops:          39
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.91483306884765625E-004
+(PID.TID 0000.0001)     Wall clock time:  4.19378280639648438E-004
 (PID.TID 0000.0001)          No. starts:          39
 (PID.TID 0000.0001)           No. stops:          39
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.32000000000000739
-(PID.TID 0000.0001)         System time:  1.99999999999995737E-002
-(PID.TID 0000.0001)     Wall clock time:  0.33628463745117188
+(PID.TID 0000.0001)           User time:  0.40091371536254883
+(PID.TID 0000.0001)         System time:  3.39954495429992676E-002
+(PID.TID 0000.0001)     Wall clock time:  0.43645572662353516
 (PID.TID 0000.0001)          No. starts:          39
 (PID.TID 0000.0001)           No. stops:          39
 (PID.TID 0000.0001)   Seconds in section "PTRACERS_RESET      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   0.0000000000000000
-(PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  4.31299209594726563E-004
+(PID.TID 0000.0001)           User time:  0.13302564620971680
+(PID.TID 0000.0001)         System time:  5.99899888038635254E-003
+(PID.TID 0000.0001)     Wall clock time:  0.14287400245666504
 (PID.TID 0000.0001)          No. starts:          39
 (PID.TID 0000.0001)           No. stops:          39
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.10999999999999943
-(PID.TID 0000.0001)         System time:  1.99999999999995737E-002
-(PID.TID 0000.0001)     Wall clock time:  0.12531161308288574
+(PID.TID 0000.0001)           User time:  0.13896942138671875
+(PID.TID 0000.0001)         System time:  1.59969329833984375E-002
+(PID.TID 0000.0001)     Wall clock time:  0.15477085113525391
 (PID.TID 0000.0001)          No. starts:          39
 (PID.TID 0000.0001)           No. stops:          39
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.78847122192382813E-004
+(PID.TID 0000.0001)     Wall clock time:  3.43084335327148438E-004
 (PID.TID 0000.0001)          No. starts:           9
 (PID.TID 0000.0001)           No. stops:           9
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP (A)      [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   26.030000000000001
-(PID.TID 0000.0001)         System time:  7.00000000000002842E-002
-(PID.TID 0000.0001)     Wall clock time:   26.170153141021729
+(PID.TID 0000.0001)           User time:   45.269115447998047
+(PID.TID 0000.0001)         System time:  6.19907379150390625E-002
+(PID.TID 0000.0001)     Wall clock time:   45.434641122817993
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   61.080000000000005
-(PID.TID 0000.0001)         System time:  7.99999999999982947E-002
-(PID.TID 0000.0001)     Wall clock time:   61.314647197723389
+(PID.TID 0000.0001)           User time:   128.54145812988281
+(PID.TID 0000.0001)         System time:  7.89890289306640625E-002
+(PID.TID 0000.0001)     Wall clock time:   128.91542911529541
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001) // ======================================================
@@ -3787,9 +3813,9 @@ grad-res -------------------------------
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =           8282
+(PID.TID 0000.0001) //            No. barriers =           8206
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =           8282
+(PID.TID 0000.0001) //     Total barrier spins =           8206
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
 PROGRAM MAIN: Execution ended Normally
