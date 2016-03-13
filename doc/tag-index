@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2237 2016/03/11 01:07:17 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2238 2016/03/13 02:41:59 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/generic_advdiff:
+  - from Darren: add PPM and PQM advection schemes (number 40-42 and 50-52)
+    with 2 types of limiter (see: Engwirda & Kelley, submit. to JCP);
+    Note (from Darren): unlimited PPM/PQM scheme (40 & 50) are just for
+    testing and not for actual use.
 o model/src:
   - add parameter "phi0Ref" to specify reference [pressure/geo] potential at
     origin r = rF(1);
@@ -14,6 +19,8 @@ o model/src:
   - start to implement variable gravity (along vertical): for now, only with
     z-coords (not even z*).
   - add Ideal Gas equation of state for height coordinate.
+  - update OpenAD output (affected at machine truncation level) of exp:
+    global_ocean.90x40x15, OpenAD (std) and tutorial_global_oce_biogeo.
 o pkg/exf:
   - add ALLOW_EXF_OUTPUT_INTERP cpp switch to output the result
     of exf interpolation (before any rescaling, rotation or interpolation
