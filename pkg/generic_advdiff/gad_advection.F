@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.76 2015/06/03 13:39:22 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.77 2016/03/13 01:44:02 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -107,6 +107,8 @@ C  xA,yA         :: areas of X and Y face of tracer cells
 C  uTrans,vTrans :: 2-D arrays of volume transports at U,V points
 C  rTrans        :: 2-D arrays of volume transports at W points
 C  rTransKp      :: vertical volume transport at interface k+1
+C  rTran3d       :: 3-D array of volume transport at W points
+C  afr           :: 3-D array of vertical advective flux
 C  af            :: 2-D array for horizontal advective flux
 C  afx           :: 2-D array for horizontal advective flux, x direction
 C  afy           :: 2-D array for horizontal advective flux, y direction
@@ -135,6 +137,8 @@ c     _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTransKp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rTran3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL afr     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL af      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afx     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afy     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -418,7 +422,19 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
           CALL GAD_OS7MP_ADV_X(     bi,bj,k, .TRUE., deltaTLev(k),
      I             uTrans, uFld(1-OLx,1-OLy,k), maskLocW, localTij,
      O             af, myThid )
-#endif
+        ELSEIF (advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
+     &          advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
+     &          advectionScheme.EQ.ENUM_PPM_WENO_LIMIT) THEN
+          CALL GAD_PPM_ADV_X( advectionScheme, bi, bj, k , .TRUE.,
+     I             deltaTLev(k), uFld(1-OLx,1-OLy,k), uTrans, localTij,
+     O             af, myThid )
+        ELSEIF (advectionScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
+     &          advectionScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
+     &          advectionScheme.EQ.ENUM_PQM_WENO_LIMIT) THEN
+          CALL GAD_PQM_ADV_X( advectionScheme, bi, bj, k , .TRUE.,
+     I             deltaTLev(k), uFld(1-OLx,1-OLy,k), uTrans, localTij,
+     O             af, myThid )
+#endif /* ndef ALLOW_AUTODIFF */
         ELSE
          STOP 'GAD_ADVECTION: adv. scheme incompatibale with multi-dim'
         ENDIF
@@ -615,7 +631,19 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
           CALL GAD_OS7MP_ADV_Y(     bi,bj,k, .TRUE., deltaTLev(k),
      I             vTrans, vFld(1-OLx,1-OLy,k), maskLocS, localTij,
      O             af, myThid )
-#endif
+        ELSEIF (advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
+     &          advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
+     &          advectionScheme.EQ.ENUM_PPM_WENO_LIMIT) THEN
+          CALL GAD_PPM_ADV_Y(advectionScheme, bi, bj, k , .TRUE.,
+     I             deltaTLev(k), vFld(1-OLX,1-OLy,k), vTrans, localTij,
+     O             af, myThid )
+        ELSEIF (advectionScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
+     &          advectionScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
+     &          advectionScheme.EQ.ENUM_PQM_WENO_LIMIT) THEN
+          CALL GAD_PQM_ADV_Y(advectionScheme, bi, bj, k , .TRUE.,
+     I             deltaTLev(k), vFld(1-OLX,1-OLy,k), vTrans, localTij,
+     O             af, myThid )
+#endif /* ndef ALLOW_AUTODIFF */
         ELSE
          STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
         ENDIF
@@ -805,6 +833,67 @@ C--   End of K loop for horizontal fluxes
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( .NOT.implicitAdvection ) THEN
+
+#ifndef ALLOW_AUTODIFF
+       IF (vertAdvecScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
+     &     vertAdvecScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
+     &     vertAdvecScheme.EQ.ENUM_PPM_WENO_LIMIT) THEN
+C-- PPM-style vertical advection
+        DO k=1,Nr
+         IF (k.EQ.1) THEN
+C-- vertical transport:  surface
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            rTran3d(i,j,k) = 0. _d 0
+           ENDDO
+          ENDDO
+         ELSE
+C-- vertical transport: interior
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            rTran3d(i,j,k) = wFld(i,j,k)*rA(i,j,bi,bj)
+     &                      *deepFac2F(k)*rhoFacF(k)
+     &                      *maskC(i,j,k-1,bi,bj)
+           ENDDO
+          ENDDO
+         ENDIF
+        ENDDO
+C-- calc. PPM vertical flux data
+        CALL GAD_PPM_ADV_R( vertAdvecScheme, bi, bj,
+     I               deltaTLev, wFld, rTran3d, localT3d,
+     O               afr, myThid )
+       ENDIF
+
+       IF (vertAdvecScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
+     &     vertAdvecScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
+     &     vertAdvecScheme.EQ.ENUM_PQM_WENO_LIMIT) THEN
+C-- PQM-style vertical advection
+        DO k=1,Nr
+        IF (k.EQ.1) THEN
+C-- vertical transport:  surface
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           rTran3d(i,j,k) = 0. _d 0
+          ENDDO
+         ENDDO
+        ELSE
+C-- vertical transport: interior
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           rTran3d(i,j,k) = wFld(i,j,k)*rA(i,j,bi,bj)
+     &                 *deepFac2F(k)*rhoFacF(k)
+     &                 *maskC(i,j,k-1,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+        ENDDO
+C-- calc. PQM vertical flux data
+        CALL GAD_PQM_ADV_R( vertAdvecScheme, bi, bj,
+     I               deltaTLev, wFld, rTran3d, localT3d,
+     O               afr, myThid )
+       ENDIF
+#endif /* ndef ALLOW_AUTODIFF */
+
 C--   Start of k loop for vertical flux
        DO k=Nr,1,-1
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -884,7 +973,19 @@ C-    Compute vertical advective flux in the interior:
            CALL GAD_OS7MP_ADV_R(     bi,bj,k, deltaTLev(k),
      I              rTrans, wFld(1-OLx,1-OLy,k), localT3d,
      O              fVerT(1-OLx,1-OLy,kUp), myThid )
-#endif
+         ELSEIF (vertAdvecScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
+     &           vertAdvecScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
+     &           vertAdvecScheme.EQ.ENUM_PPM_WENO_LIMIT  .OR.
+     &           vertAdvecScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
+     &           vertAdvecScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
+     &           vertAdvecScheme.EQ.ENUM_PQM_WENO_LIMIT) THEN
+C- copy level from 3d flux data
+           DO j = 1-OLy,sNy+OLy
+            DO i = 1-OLx,sNx+OLx
+             fVerT(i,j,kUp) = afr(i,j,k)
+            ENDDO
+           ENDDO
+#endif /* ndef ALLOW_AUTODIFF */
          ELSE
           STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
          ENDIF
