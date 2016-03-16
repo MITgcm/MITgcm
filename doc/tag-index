@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2239 2016/03/14 13:31:47 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2240 2016/03/16 15:25:45 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice/seaice_evp.F
+  - simplify computation of deltaZ and zetaZ to simple averaging following
+    Bouillon et al. (2013). This removes a lot of code, but also changes
+    verification experiment lab_sea.hb87 -> updated
 
 checkpoint65u (2016/03/14)
 o pkg/generic_advdiff:
