@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.67 2015/12/22 17:00:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.68 2016/03/16 15:16:12 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -436,50 +436,6 @@ CML   divide by mass?
             ENDDO
            ENDDO
           ENDIF
-          IF (.TRUE.) THEN
-C     compute deltaZ and zetaZ separately
-          DO j=1,sNy+1
-           DO i=1,sNx+1
-            sumNorm = 0.25 _d 0
-CML            sumNorm = 1.0 _d 0
-CML     &           / MAX(1.D0,maskC(I,  J,  kSrf,bi,bj)
-CML     &           +          maskC(I-1,J,  kSrf,bi,bj)
-CML     &           +          maskC(I,  J-1,kSrf,bi,bj)
-CML     &           +          maskC(I-1,J-1,kSrf,bi,bj) )
-C     average strain rates to Z points
-C     Averaging the squares gives more accurate viscous-plastic behavior
-C     than squaring the averages
-            deltaSq = sumNorm *
-     &           ( ep(I,J  )**2 + ep(I-1,J  )**2
-     &           + ep(I,J-1)**2 + ep(I-1,J-1)**2
-     &           +(em(I,J  )**2 + em(I-1,J  )**2
-     &            +em(I,J-1)**2 + em(I-1,J-1)**2)*recip_ecc2
-     &           )
-     &           + 4. _d 0*recip_ecc2*e12(I,J,bi,bj)**2
-#ifdef ALLOW_AUTODIFF_TAMC
-C     avoid sqrt of 0
-            IF ( deltaSq .GT. 0. _d 0 )
-     &           deltaZ(I,J) = SQRT(deltaSq)
-#else
-            deltaZ(I,J)       = SQRT(deltaSq)
-#endif /* ALLOW_AUTODIFF_TAMC */
-#ifdef SEAICE_DELTA_SMOOTHREG
-C     smooth regularization (without max-function) of delta for
-C     better differentiability
-CML            deltaZreg  = SQRT(deltaSq + deltaMinSq)
-            deltaZreg  = deltaZ(I,J) + SEAICE_deltaMin
-#else
-            deltaZreg   = MAX(deltaZ(I,J),SEAICE_deltaMin)
-#endif /* SEAICE_DELTA_SMOOTHREG */
-C     modify pressure
-            pressZ      = sumNorm * ( ( 1. _d 0 - SEAICEpressReplFac )
-     &           + (deltaZ(I,J)/deltaZreg) * SEAICEpressReplFac )
-     &         * ( PRESS0(I,J  ,bi,bj) + PRESS0(I-1,J  ,bi,bj)
-     &           + PRESS0(I,J-1,bi,bj) + PRESS0(I-1,J-1,bi,bj) )
-            zetaZ(I,J,bi,bj) = HALF/deltaZreg * pressZ
-           ENDDO
-          ENDDO
-          ELSE
 C     compute zetaZ and deltaZ by simple averaging (following 
 C     Bouillon et al., 2013)
           DO J=1,sNy+1
@@ -495,7 +451,6 @@ C     Bouillon et al., 2013)
      &           + deltaC(I-1,J,bi,bj) + deltaC(I,  J-1,bi,bj) )
            ENDDO
           ENDDO
-          ENDIF
 #ifdef SEAICE_ALLOW_CLIPZETA
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE zetac            = comlev1_bibj_evp,
