@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_visc_beta_hybrid.F,v 1.8 2015/09/08 15:21:23 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_visc_beta_hybrid.F,v 1.9 2016/03/17 20:15:43 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -44,10 +44,18 @@ C     LOCAL VARIABLES
       _RL ux, uy, vx, vy, exx, eyy, exy, unorm, second_inv
       _RL ub, vb, fb, mean_u_shear, mean_v_shear, umid, vmid
       _RL omega_temp (Nr+1), u_shear(Nr+1), v_shear(Nr+1)
+#ifdef STREAMICE_FLOWLINE_BUTTRESS
+      _RL buttr_param, pwr
+#endif
 
       _RL STREAMICE_BSTRESS_EXP
 !       _RL total_vol_out
       external STREAMICE_BSTRESS_EXP
+
+#ifdef STREAMICE_FLOWLINE_BUTTRESS
+      buttr_param = 5**(1./3.) / (streamice_buttr_width/2.)**(4./3.)
+      pwr = 1./n_glen
+#endif
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -226,6 +234,16 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
            tau_beta_eff_streamice(i,j,bi,bj) =
      &       fb /
      &       (1+fb*streamice_omega(i,j,bi,bj)/H_streamice(i,j,bi,bj))
+#ifdef STREAMICE_FLOWLINE_BUTTRESS
+           if (usestreamiceflowlineButtr) then
+           tau_beta_eff_streamice(i,j,bi,bj) = 
+     &      tau_beta_eff_streamice(i,j,bi,bj) + 
+     &      buttr_param*B_glen(i,j,bi,bj)**2 * 
+     &      STREAMICE_BSTRESS_EXP (unorm,pwr)*
+     &      H_streamice(i,j,bi,bj)
+          endif
+#endif
+
 
           ENDIF
          ENDDO

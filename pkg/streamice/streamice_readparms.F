@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.13 2015/06/30 11:20:05 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.14 2016/03/17 20:15:43 dgoldberg Exp $
 C $Name:  $
 
 C this needs changes
@@ -98,6 +98,10 @@ C     iUnit      :: Work variable for IO unit number
      &     STREAMICE_ADV_SCHEME, streamice_forcing_period,
      &     STREAMICE_chkfixedptconvergence,
      &     STREAMICE_chkresidconvergence,
+#ifdef STREAMICE_FLOWLINE_BUTTRESS
+     &     streamice_buttr_width,
+     &     useStreamiceFlowlineButtr,
+#endif
      &     STREAMICE_allow_cpl
 
 #ifdef ALLOW_STREAMICE_2DTRACER
@@ -224,6 +228,9 @@ C--   Default values for STREAMICE
       streamice_adot_uniform = 0.0
       streamice_forcing_period = 0
       streamice_firn_correction = 0.
+#ifdef STREAMICE_FLOWLINE_BUTTRESS
+      streamice_buttr_width = 1000000000.
+#endif
       STREAMICE_apply_firn_correction = .false.
       
       STREAMICEthickInit = 'FILE'
@@ -295,6 +302,9 @@ C--   Default values for STREAMICE
 !      STREAMICE_construct_matrix = .TRUE.
       STREAMICE_lower_cg_tol = .FALSE.
       STREAMICE_diagnostic_only = .FALSE.
+#ifdef STREAMICE_FLOWLINE_BUTTRESS
+      useStreamiceFlowlineButtr=.FALSE.
+#endif
       STREAMICE_ppm_driving_stress = .FALSE.
       STREAMICE_chkfixedptconvergence = .true.
       STREAMICE_chkresidconvergence = .true.

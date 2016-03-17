@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_visc_beta.F,v 1.2 2014/04/24 12:01:50 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_visc_beta.F,v 1.3 2016/03/17 20:15:43 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -89,7 +89,6 @@ C     LOCAL VARIABLES
 
            second_inv = 
      &      sqrt(exx**2+eyy**2+exx*eyy+exy**2+eps_glen_min**2)
-              
 
 
            visc_streamice(i,j,bi,bj) = 

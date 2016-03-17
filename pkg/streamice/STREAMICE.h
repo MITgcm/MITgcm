@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE.h,v 1.18 2015/06/30 11:20:05 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/STREAMICE.h,v 1.1 2016/01/22 
 C $Name:  $
 
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -26,6 +26,9 @@ C     & A_glen_isothermal, n_glen, eps_glen_min, eps_u_min,
      & streamice_addl_backstress,
      & streamice_smooth_gl_width,
      & streamice_adot_uniform,
+#ifdef STREAMICE_FLOWLINE_BUTTRESS
+     & streamice_buttr_width,
+#endif
      & streamice_firn_correction, streamice_density_firn,
      & streamice_forcing_period
 
@@ -52,6 +55,9 @@ C      _RL A_glen_isothermal, n_glen, eps_glen_min, eps_u_min
       _RL streamice_smooth_gl_width
       _RL streamice_adot_uniform
       _RL streamice_forcing_period
+#ifdef STREAMICE_FLOWLINE_BUTTRESS
+      _RL streamice_buttr_width
+#endif
       _RL streamice_firn_correction
       _RL streamice_density_firn
 
@@ -243,6 +249,9 @@ C     -------------------------- LOGICAL PARAMS --------------------------------
       LOGICAL STREAMICE_OAD_petsc_reuse
 #endif
 #endif
+#ifdef STREAMICE_FLOWLINE_BUTTRESS
+      LOGICAL useStreamiceFlowlineButtr
+#endif
       
 
 C     The following parameters specify periodic boundary conditions.
@@ -269,6 +278,9 @@ C      LOGICAL STREAMICE_hybrid_stress
      & STREAMICE_chkfixedptconvergence,
      & STREAMICE_chkresidconvergence,
      & STREAMICE_allow_cpl, streamice_use_petsc,
+#ifdef STREAMICE_FLOWLINE_BUTTRESS
+     & useStreamiceFlowlineButtr,
+#endif
      & STREAMICE_apply_firn_correction
 
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
