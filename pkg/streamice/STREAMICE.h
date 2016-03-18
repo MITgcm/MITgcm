@@ -13,7 +13,7 @@ C     & A_glen_isothermal, n_glen, eps_glen_min, eps_u_min,
      & B_glen_isothermal, n_glen, eps_glen_min, eps_u_min,
      & C_basal_fric_const, n_basal_friction, streamice_input_flux_unif,
      & streamice_vel_update, streamice_cg_tol, streamice_nonlin_tol,
-     & streamice_nonlin_tol_fp,
+     & streamice_nonlin_tol_fp, streamice_err_norm,
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
      & streamice_nonlin_tol_adjoint,
 #endif
@@ -41,6 +41,13 @@ C      _RL A_glen_isothermal, n_glen, eps_glen_min, eps_u_min
       _RL streamice_vel_update
       _RL streamice_cg_tol, streamice_nonlin_tol
       _RL streamice_nonlin_tol_fp
+      _RL streamice_err_norm      
+
+C  |  streamice_err_norm: the p-norm to find the error of the residual
+C  |  or difference in the nonlin iteration
+C  |  if less than 1, the sup-norm is used
+
+      
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
       _RL streamice_nonlin_tol_adjoint
 #endif
@@ -623,10 +630,6 @@ C        velocity initial guess, so they are kept
 #endif
 
 #if (defined (ALLOW_STREAMICE_OAD_FP))
-      COMMON /STREAMICE_OPENAD_PARMS/
-     &      streamice_oad_nonlin_tol_fp
-      _RL streamice_oad_nonlin_tol_fp
-
       COMMON /STREAMICE_PHISTAGE_ARRS/
      &      U_streamice_dvals,
      &      V_streamice_dvals     

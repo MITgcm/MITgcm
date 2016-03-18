@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_vel_resid_err.F,v 1.3 2015/02/16 16:46:45 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_vel_resid_err.F,v 1.4 2016/03/18 19:18:29 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -33,6 +33,8 @@ C     !INPUT/OUTPUT ARGUMENTS
       INTEGER ikey_nl
       _RL err_tempu, err_tempv
       _RL max_vel, tempu, tempv, err_lastchange, cgtol
+      _RL err_sum
+      _RL err_sum_tile (nSx,nSy)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 !#ifdef ALLOW_AUTODIFF_TAMC
@@ -41,6 +43,13 @@ C     !INPUT/OUTPUT ARGUMENTS
 !#endif
 
         err_max = 0. _d 0
+        err_sum = 0. _d 0
+
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          err_sum_tile(bi,bj) = 0. _d 0  
+         ENDDO
+        ENDDO
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -76,6 +85,8 @@ C     !INPUT/OUTPUT ARGUMENTS
 !!$TAF STORE V_streamice = comlev1_stream_nl, key=ikey_nl
 !#endif
 
+       IF (streamice_err_norm .LT. 1.0) then 
+
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1,sNy
@@ -104,6 +115,35 @@ C     !INPUT/OUTPUT ARGUMENTS
 !#ifdef ALLOW_AUTODIFF_TAMC
 !!$TAF STORE err_max = comlev1_stream_nl, key=ikey_dynamics
 !#endif
+
+       ELSE
+
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1,sNy
+           DO i=1,sNx
+
+            IF (STREAMICE_umask(i,j,bi,bj).eq.1) THEN
+             err_sum_tile(bi,bj) = err_sum_tile(bi,bj) + 
+     &        (ABS (Au_SI(i,j,bi,bj)+0*ubd_SI(i,j,bi,bj) -
+     &            taudx_SI(i,j,bi,bj))) ** streamice_err_norm
+            ENDIF
+            IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
+             err_sum_tile(bi,bj) = err_sum_tile(bi,bj) + 
+     &        (ABS (Av_SI(i,j,bi,bj)+0*vbd_SI(i,j,bi,bj) -
+     &            taudy_SI(i,j,bi,bj))) ** streamice_err_norm
+            ENDIF
+            
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+
+        CALL GLOBAL_SUM_TILE_RL( err_sum_tile, err_sum, myThid )
+
+        err_max = err_sum ** (1./streamice_err_norm)
+
+       ENDIF
 
 #endif
       RETURN

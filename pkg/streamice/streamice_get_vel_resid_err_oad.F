@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_vel_resid_err_oad.F,v 1.2 2015/03/23 14:07:16 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_vel_resid_err_oad.F,v 1.3 2016/03/18 19:18:29 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -31,6 +31,8 @@ C     !INPUT/OUTPUT ARGUMENTS
       INTEGER myThid
       Real*8 u_dummy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       Real*8 v_dummy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL err_sum
+      _RL err_sum_tile (nSx,nSy)
 
 #ifdef ALLOW_STREAMICE
 #if (defined (ALLOW_STREAMICE_OAD_FP))
@@ -44,7 +46,14 @@ C     !INPUT/OUTPUT ARGUMENTS
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL isTape
 
-      err_max = 0. _d 0
+       err_max = 0. _d 0
+       err_sum = 0. _d 0
+
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         err_sum_tile(bi,bj) = 0. _d 0  
+        ENDDO
+       ENDDO
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)

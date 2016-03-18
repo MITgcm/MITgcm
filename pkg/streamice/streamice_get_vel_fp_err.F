@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_vel_fp_err.F,v 1.6 2015/03/23 14:07:16 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_vel_fp_err.F,v 1.7 2016/03/18 19:18:29 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -34,9 +34,21 @@ C     !INPUT/OUTPUT ARGUMENTS
       INTEGER ikey_nl
       _RL err_tempu, err_tempv
       _RL max_vel, tempu, tempv, err_lastchange, cgtol
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+      _RL err_sum
+      _RL err_sum_tile (nSx,nSy)
+      
 
        err_max = 0. _d 0
+       err_sum = 0. _d 0
+
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         err_sum_tile(bi,bj) = 0. _d 0  
+        ENDDO
+       ENDDO
+
+       if (streamice_err_norm .lt. 1.0) then
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -67,6 +79,43 @@ C     !INPUT/OUTPUT ARGUMENTS
        ENDDO
 
        CALL GLOBAL_MAX_R8 (err_max, myThid)
+
+       ELSE
+
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           IF (STREAMICE_umask(i,j,bi,bj).eq.1) THEN
+            err_sum_tile(bi,bj) = err_sum_tile(bi,bj) + 
+#ifdef ALLOW_STREAMICE_OAD_FP
+     &       (ABS(U_streamice(i,j,bi,bj)-
+     &              u_new_SI(i,j,bi,bj)))**streamice_err_norm
+#else
+     &       (ABS(U_streamice(i,j,bi,bj)-
+     &               u_old_SI(i,j,bi,bj)))**streamice_err_norm
+#endif
+           ENDIF
+           IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
+            err_sum_tile(bi,bj) = err_sum_tile(bi,bj) + 
+#ifdef ALLOW_STREAMICE_OAD_FP
+     &       (ABS(v_streamice(i,j,bi,bj)-
+     &              v_new_SI(i,j,bi,bj)))**streamice_err_norm
+#else
+     &       (ABS(v_streamice(i,j,bi,bj)-
+     &               v_old_SI(i,j,bi,bj)))**streamice_err_norm
+#endif
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+       CALL GLOBAL_SUM_TILE_RL( err_sum_tile, err_sum, myThid )
+
+       err_max = err_sum ** (1./streamice_err_norm)
+
+       ENDIF
 
 #endif
       RETURN

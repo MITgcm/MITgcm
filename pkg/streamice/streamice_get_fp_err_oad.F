@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_fp_err_oad.F,v 1.2 2015/03/25 17:36:42 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_get_fp_err_oad.F,v 1.3 2016/03/18 19:18:29 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -35,8 +35,20 @@ C     !INPUT/OUTPUT ARGUMENTS
       _RL err_tempu, err_tempv
       _RL max_vel, tempu, tempv, err_lastchange, cgtol
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RL err_sum, conj_norm
+      _RL err_sum_tile (nSx,nSy)
 
        err_max = 0. _d 0
+       err_sum = 0. _d 0
+       conj_norm = 0. _d 0 
+
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         err_sum_tile(bi,bj) = 0. _d 0  
+        ENDDO
+       ENDDO
+       
+
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
