@@ -27,7 +27,14 @@
        endif
             
 
-      err_max = 0. _d 0
+       err_max = 0. _d 0       
+       err_sum = 0. _d 0
+
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         err_sum_tile(bi,bj) = 0. _d 0  
+        ENDDO
+       ENDDO
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -56,6 +63,8 @@
      I    0, sNx+1, 0, sNy+1 )
 
 
+       IF (streamice_err_norm .LT. 1.0) then 
+
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1,sNy
@@ -81,6 +90,35 @@
         ENDDO
 
         CALL GLOBAL_MAX_R8 (err_max, myThid)
+
+       ELSE
+
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1,sNy
+           DO i=1,sNx
+
+            IF (STREAMICE_umask(i,j,bi,bj).eq.1) THEN
+             err_sum_tile(bi,bj) = err_sum_tile(bi,bj) + 
+     &        (ABS (Au_SI(i,j,bi,bj)+0*ubd_SI(i,j,bi,bj)%v -
+     &            taudx_SI(i,j,bi,bj)%v)) ** streamice_err_norm
+            ENDIF
+            IF (STREAMICE_vmask(i,j,bi,bj).eq.1) THEN
+             err_sum_tile(bi,bj) = err_sum_tile(bi,bj) + 
+     &        (ABS (Av_SI(i,j,bi,bj)+0*vbd_SI(i,j,bi,bj)%v -
+     &            taudy_SI(i,j,bi,bj)%v)) ** streamice_err_norm
+            ENDIF
+            
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+
+        CALL GLOBAL_SUM_TILE_RL( err_sum_tile, err_sum, myThid )
+
+        err_max = err_sum ** (1./streamice_err_norm)
+
+       ENDIF
 
        if (testTape.eq.1) then
         our_rev_mode%plain=.false.
