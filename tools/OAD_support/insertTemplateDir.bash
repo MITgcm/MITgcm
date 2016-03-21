@@ -15,6 +15,9 @@ do
         echo "c\$openad XXX Template ad_template.regular.f" >> temp.sed
       fi
       ;;
+    "OpenAD_streamice_cg_make_a" )
+      echo "c\$openad XXX Template ad_template.split_non_anonymous.f" >> temp.sed
+      ;;
     "OpenAD_inner_do_loop" )
       echo "c\$openad XXX Template ad_template.revolve.f" >> temp.sed
       ;;
