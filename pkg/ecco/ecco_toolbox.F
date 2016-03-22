@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.11 2015/11/10 08:06:48 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.12 2016/03/22 22:29:25 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -17,6 +17,8 @@ C--   o ecco_subtract
 C--   o ecco_addmask
 C--   o ecco_div
 C--   o ecco_divfield
+C--   o ecco_mult
+C--   o ecco_multfield
 C--   o ecco_readbar
 C--   o ecco_readwei
 
@@ -953,6 +955,68 @@ CEOP
                 else 
                  fld(i,j,k,bi,bj) = 0. _d 0
                 endif
+              enddo
+             enddo
+            enddo
+          enddo
+        enddo
+
+#endif /* ALLOW_ECCO */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ecco_mult
+C     !INTERFACE:
+      subroutine ecco_mult( fld, nnzloc, multloc, myThid )
+C     !DESCRIPTION: \bv
+C     multiply a field with RL constant
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+
+c     == routine arguments ==
+
+      INTEGER myThid
+      INTEGER nnzloc
+      _RL multloc
+      _RL fld   (1-olx:snx+olx,1-oly:sny+oly,nnzloc,nsx,nsy)
+
+#ifdef ALLOW_ECCO
+
+c     == local variables ==
+
+      integer bi,bj
+      integer i,j,k
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+
+CEOP
+
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
+      jmin = 1-oly
+      jmax = sny+oly
+      imin = 1-olx
+      imax = snx+olx
+
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nnzloc
+             do j = jmin,jmax
+              do i = imin,imax
+                fld(i,j,k,bi,bj) = fld(i,j,k,bi,bj)*multloc
               enddo
              enddo
             enddo

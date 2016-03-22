@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.38 2016/03/01 23:05:15 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_generic.F,v 1.39 2016/03/22 22:29:25 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -255,6 +255,8 @@ c     == local variables ==
       _RL localdifsum   (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
       _RL localdifnum   (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
 
+      _RL fac
+
       character*(128) fname1, fname2, fname3
       character*200 msgbuf
 
@@ -288,6 +290,8 @@ CEOP
       k2smooth=1
       doclim=.FALSE.
       nrecclim=nrecloc
+      fac=oneRL
+
       do k2 = 1, NGENPPROC
           if (preproc(k2).EQ.'mean') domean=.TRUE.
           if (preproc(k2).EQ.'anom') doanom=.TRUE.
@@ -300,6 +304,9 @@ CEOP
           if (preproc(k2).EQ.'clim') then
             doclim=.TRUE.
             nrecclim=preproc_i(k2)
+          endif
+          if (preproc(k2).EQ.'factor') then
+            fac=preproc_r(k2)
           endif
       enddo
 
@@ -345,6 +352,7 @@ c--     load model average and observed average
         call cost_genread( fname1, localbar, localtmp, irec, nnzbar,
      &       nrecloc, preproc, preproc_c, preproc_i, preproc_r, 
      &       dummy, mythid )
+        call ecco_mult(localbar,nnzbar,fac,myThid)
 
         call ecco_zero(localobs,nnzobs,spzeroloc,myThid)
         if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) )
