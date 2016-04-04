@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.268 2016/03/10 20:50:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.269 2016/04/04 21:29:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -27,6 +27,8 @@ C     !USES:
 #endif /* ALLOW_EXCH2 */
 #include "EOS.h"
 #include "SET_GRID.h"
+C- needed to save, in rF(1), half retired param Ro_SeaLevel value:
+#include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid :: Number of this instance of INI_PARMS
@@ -141,6 +143,8 @@ C     tauThetaClimRelax3Dim :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
 C     tauSaltClimRelax3Dim  :: replaced by pkg/rbcs (3.D Relaxation B.Cs)
 C     calendarDumps  :: moved to package "cal" (calendar)
 C Namelist PARM04:
+C     Ro_SeaLevel :: origin of the vertical R-coords axis ;
+C                 :: replaced by top_Pres or seaLev_Z setting
 C     groundAtK1 :: put the surface(k=1) at the ground (replaced by usingPCoords)
 C     rkFac      :: removed from namelist ; replaced by -rkSign
 C     thetaMin   :: unfortunate variable name ; replaced by xgOrigin
@@ -155,7 +159,8 @@ C     dQdTfile     :: File containing thermal relaxation coefficient
       LOGICAL tempDiffusion, saltDiffusion
       INTEGER tracerAdvScheme
       _RL trac_EvPrRn
-      _RL zonal_filt_lat, gravitySign
+      _RL zonal_filt_lat
+c     _RL gravitySign
       _RL viscAstrain, viscAtension
       LOGICAL useAnisotropicViscAgridMax
       LOGICAL usePickupBeforeC35
@@ -166,6 +171,7 @@ C-
       LOGICAL calendarDumps
 C-
       LOGICAL groundAtK1
+      _RL Ro_SeaLevel
       _RL rkFac
       _RL thetaMin, phiMin
       CHARACTER*(MAX_LEN_FNAM) shelfIceFile
@@ -268,10 +274,10 @@ C--   Gridding parameters
      & xgOrigin, ygOrigin, dxSpacing, dySpacing,
      & delX, delY, delXFile, delYFile, horizGridFile,
      & phiEuler, thetaEuler, psiEuler,
-     & rSphere, radius_fromHorizGrid, deepAtmosphere, phi0Ref,
+     & rSphere, radius_fromHorizGrid, deepAtmosphere, seaLev_Z,
+     & top_Pres, delZ, delP, delR, delRc, delRFile, delRcFile,
      & selectSigmaCoord, rSigmaBnd, hybSigmFile,
-     & Ro_SeaLevel, delZ, delP, delR, delRc, delRFile, delRcFile,
-     & rkFac, groundAtK1, thetaMin, phiMin
+     & Ro_SeaLevel, rkFac, groundAtK1, thetaMin, phiMin
 
 C--   Input files
       NAMELIST /PARM05/
@@ -334,6 +340,7 @@ C--   Initialise retired parameters to unlikely value
       tauThetaClimRelax3Dim = UNSET_RL
       tauSaltClimRelax3Dim  = UNSET_RL
       calendarDumps   = .FALSE.
+      Ro_SeaLevel     = UNSET_RL
       rkFac           = UNSET_RL
       groundAtK1      = .FALSE.
       thetaMin        = UNSET_RL
@@ -1062,6 +1069,27 @@ C     In spherical polar distances are in degrees
       ENDIF
 
 C     Check for retired parameters still being used
+      IF ( Ro_SeaLevel .NE. UNSET_RL ) THEN
+c      nRetired = nRetired+1
+       IF ( usingPCoords ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** INI_PARMS: ',
+     &   '"Ro_SeaLevel" (P @ bottom) depreciated (backward compat'
+       ELSEIF ( usingZCoords ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** INI_PARMS: ',
+     &   '"Ro_SeaLevel" (Z @ top) depreciated (backward compat'
+       ENDIF
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       IF ( usingPCoords ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** INI_PARMS: ',
+     &   ' only). To set vert. axis, use instead "top_Pres".'
+       ELSEIF ( usingZCoords ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** INI_PARMS: ',
+     &   ' only). To set vert. axis, use instead "seaLev_Z".'
+       ENDIF
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
       IF ( rkFac .NE. UNSET_RL ) THEN
        nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)')
@@ -1165,6 +1193,26 @@ C-    Radius of the Planet:
       ELSE
        recip_rSphere = 0.
       ENDIF
+C--   Default vertical axis origin
+      IF ( Ro_SeaLevel .NE. UNSET_RL ) THEN
+       IF ( usingPCoords .AND. top_Pres.NE.UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** INI_PARMS: ',
+     &   'instead use "top_Pres" to set vert. axis'
+          WRITE(msgBuf,'(A)')
+     &    'S/R INI_PARMS: found no coordinate system to set ygOrigin'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          errCount = errCount + 1
+       ENDIF
+       IF ( usingZCoords .AND. seaLev_Z.NE.UNSET_RL ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** INI_PARMS: ',
+     &   'instead use "seaLev_Z" to set vert. axis'
+       ENDIF
+       rF(1) = Ro_SeaLevel
+      ELSE
+       rF(1) = UNSET_RS
+      ENDIF
+      IF ( top_Pres.EQ.UNSET_RL ) top_Pres = 0.
+      IF ( seaLev_Z.EQ.UNSET_RL ) seaLev_Z = 0.
 C--   Default origin for  X & Y axis (longitude & latitude origin):
       IF ( xgOrigin .EQ. UNSET_RL ) xgOrigin = 0.
       IF ( ygOrigin .EQ. UNSET_RL ) THEN
@@ -1222,14 +1270,6 @@ C     note: done later (once domain size is known) if using CartesianGrid
         IF ( usingCurvilinearGrid )    latBandClimRelax= 180. _d 0
       ENDIF
 
-C--   Set default reference [pressure/geo] potential at r = Ro_SeaLevel
-      IF ( phi0Ref.EQ.UNSET_RL ) THEN
-        IF ( buoyancyRelation.EQ.'OCEANICP') THEN
-         phi0Ref = -recip_rhoConst*Ro_SeaLevel
-        ELSE
-         phi0Ref = 0.
-        ENDIF
-      ENDIF
 C--   set cell Center depth and put Interface at the middle between 2 C
       setCenterDr = .FALSE.
       DO k=1,Nr+1

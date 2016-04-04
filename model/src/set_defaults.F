@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.178 2016/03/10 20:50:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.179 2016/04/04 21:29:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,8 +45,8 @@ C-    Vertical gridding
       delRFile            = ' '
       delRcFile           = ' '
       hybSigmFile         = ' '
-      Ro_SeaLevel         = 0.
-      phi0Ref             = UNSET_RL
+      seaLev_Z            = UNSET_RL
+      top_Pres            = UNSET_RL
       rSigmaBnd           = UNSET_RL
       selectSigmaCoord    = 0
       DO k=1,Nr

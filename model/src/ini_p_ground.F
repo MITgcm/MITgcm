@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_p_ground.F,v 1.10 2016/03/10 20:52:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_p_ground.F,v 1.11 2016/04/04 21:29:00 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -130,7 +130,7 @@ C-- define high resolution Pressure discretization:
       plowHvR = 0.4 _d 0
       dpHvR = nLevHvR
       dpHvR = (1. - plowHvR) / dpHvR
-        pLevHvR(1)= Ro_SeaLevel/atm_Po
+        pLevHvR(1)= rF(1)/atm_Po
         PiHvR(1) = atm_Cp*(pLevHvR(1)**atm_kappa)
       DO k=1,nLevHvR
         pLevHvR(k+1)= pLevHvR(1) - k*dpHvR
@@ -178,7 +178,7 @@ C- start bi,bj loop:
          DO i=1,sNx
           phiLoc = Hfld(i,j,bi,bj) - hRef(1)
           IF ( phiLoc .LE. 0. _d 0 ) THEN
-           Pfld(i,j,bi,bj) = Ro_SeaLevel
+           Pfld(i,j,bi,bj) = rF(1)
           ELSE
            yLatLoc  = yC(i,j,bi,bj)
            CALL ANALYLIC_THETA( yLatLoc, pMidHvR,
@@ -305,7 +305,7 @@ C--   Compute Hfld from g*Hfld = Phi[Po_surf,theta(yLat,p)]:
          DO j=1,sNy
           DO i=1,sNx
            zLoc = hRef(1)
-           IF ( Pfld(i,j,bi,bj) .LT. Ro_SeaLevel) THEN
+           IF ( Pfld(i,j,bi,bj) .LT. rF(1) ) THEN
             Po_surf = Pfld(i,j,bi,bj)
 C---------
 C     Modify pressure to account for non fully linear relation between

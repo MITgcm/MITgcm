@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_hyd_press_1d.F,v 1.1 2016/03/10 20:54:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_hyd_press_1d.F,v 1.2 2016/04/04 21:29:00 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -79,7 +79,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
-      pInt(1)  = rhoConst*phi0Ref
+      pInt(1)  = top_Pres
       searchForP = .TRUE.
       nUnderCrit = 0
       DO n=1,maxIterNb

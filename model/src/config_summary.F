@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.151 2016/02/15 17:59:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.152 2016/04/04 21:29:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -279,8 +279,6 @@ C------------
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
        CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
       ENDIF
-      CALL WRITE_0D_RL( phi0Ref, INDEX_NONE, 'phi0Ref =',
-     &  ' /* reference (P,geo) potential at origin rF(1) (m^2/s^2) */')
 C------------
       IF ( fluidIsWater ) THEN
        CALL WRITE_0D_RL( HeatCapacity_Cp, INDEX_NONE,
@@ -769,25 +767,29 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_I( selectSigmaCoord, INDEX_NONE,
      & 'selectSigmaCoord =',
      & ' /* Hybrid-Sigma Vert. Coordinate option */')
-      CALL WRITE_0D_RL( Ro_SeaLevel, INDEX_NONE,'Ro_SeaLevel =',
-     & ' /* r(1) ( units of r == '//rUnits//' ) */')
       CALL WRITE_0D_RL( rSigmaBnd, INDEX_NONE, 'rSigmaBnd =',
-     & ' /* r/sigma transition ( units of r == '//rUnits//' ) */')
+     &  ' /* r/sigma transition ( units of r == '//rUnits//' ) */')
       CALL WRITE_0D_RL( rkSign, INDEX_NONE,'rkSign =',
      &'   /* index orientation relative to vertical coordinate */')
       CALL WRITE_0D_RL( gravitySign, INDEX_NONE,'gravitySign =',
      &  ' /* gravity orientation relative to vertical coordinate */')
+      CALL WRITE_0D_RL( seaLev_Z, INDEX_NONE, 'seaLev_Z =',
+     & '  /* reference height of sea-level [m] */')
       IF ( usingZCoords ) THEN
+       CALL WRITE_0D_RL( top_Pres, INDEX_NONE, 'top_Pres =',
+     & '  /* reference pressure at the top [Pa] */')
        CALL WRITE_0D_RL( mass2rUnit, INDEX_NONE,'mass2rUnit =',
-     & ' /* convert mass per unit area [kg/m2] to r-units [m] */')
+     &  ' /* convert mass per unit area [kg/m2] to r-units [m] */')
        CALL WRITE_0D_RL( rUnit2mass, INDEX_NONE,'rUnit2mass =',
-     & ' /* convert r-units [m] to mass per unit area [kg/m2] */')
+     &  ' /* convert r-units [m] to mass per unit area [kg/m2] */')
       ENDIF
       IF ( usingPCoords ) THEN
+       CALL WRITE_0D_RL( top_Pres, INDEX_NONE, 'top_Pres =',
+     & '  /* pressure at the top (r-axis origin) [Pa] */')
        CALL WRITE_0D_RL( mass2rUnit, INDEX_NONE,'mass2rUnit =',
-     & ' /* convert mass per unit area [kg/m2] to r-units [Pa] */')
+     &  ' /* convert mass per unit area [kg/m2] to r-units [Pa] */')
        CALL WRITE_0D_RL( rUnit2mass, INDEX_NONE,'rUnit2mass =',
-     & ' /* convert r-units [Pa] to mass per unit area [kg/m2] */')
+     &  ' /* convert r-units [Pa] to mass per unit area [kg/m2] */')
       ENDIF
       CALL WRITE_COPY1D_RS( bufRL, drC,Nr+1,INDEX_K, 'drC = ',
      &'   /* C spacing ( units of r ) */')

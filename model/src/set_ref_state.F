@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_ref_state.F,v 1.8 2016/03/10 20:54:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_ref_state.F,v 1.9 2016/04/04 21:29:00 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -83,18 +83,20 @@ C-    Initialise density factor for anelastic formulation:
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Oceanic: define reference pressure/geo-potential vertical scale:
       IF ( buoyancyRelation.EQ.'OCEANIC' ) THEN
-        phiRef(1)   = phi0Ref
-        pRefLocF(1) = rhoConst*phi0Ref
+        phiRef(1)   = top_Pres*recip_rhoConst
+        pRefLocF(1) = top_Pres
         IF ( gravityFile.EQ.' ' ) THEN
          DO k=1,Nr
-          phiRef(2*k)   = phi0Ref + (rC(k) - rF(1))*gravity*gravitySign
-          phiRef(2*k+1) = phi0Ref + (rF(k+1)-rF(1))*gravity*gravitySign
+          phiRef(2*k)   = phiRef(1)
+     &                  + (rC(k) - rF(1))*gravity*gravitySign
+          phiRef(2*k+1) = phiRef(1)
+     &                  + (rF(k+1)-rF(1))*gravity*gravitySign
 c         pRef4EOS(k)   = rhoConst*phiRef(2*k)
 c         pRefLocF(k+1) = rhoConst*phiRef(2*k+1)
 C note: just to get the same previous machine truncation:
-          pRef4EOS(k)   = rhoConst*phi0Ref
+          pRef4EOS(k)   = pRefLocF(1)
      &                  + rhoConst*(rC(k) - rF(1))*gravity*gravitySign
-          pRefLocF(k+1) = rhoConst*phi0Ref
+          pRefLocF(k+1) = pRefLocF(1)
      &                  + rhoConst*(rF(k+1)-rF(1))*gravity*gravitySign
          ENDDO
         ELSEIF ( integr_GeoPot.EQ.1 ) THEN
@@ -106,7 +108,7 @@ C note: just to get the same previous machine truncation:
           pRefLocF(k+1) = rhoConst*phiRef(2*k+1)
          ENDDO
         ELSE
-         phiRef(2)   = phi0Ref + drC(1)*gravity*gravFacF(1)
+         phiRef(2)   = phiRef(1) + drC(1)*gravity*gravFacF(1)
          DO k=2,Nr
           phiRef(2*k-1) = phiRef(2*k-2)
      &                           + halfRL*drC(k)*gravity*gravFacF(k)
@@ -120,10 +122,12 @@ C note: just to get the same previous machine truncation:
          ENDDO
         ENDIF
       ELSEIF ( buoyancyRelation.EQ.'OCEANICP' ) THEN
-        phiRef(1) = phi0Ref
+        phiRef(2*Nr+1) = seaLev_Z*gravity
         DO k=1,Nr
-          phiRef(2*k)   = phi0Ref - recip_rhoConst*(rC(k) - rF(1))
-          phiRef(2*k+1) = phi0Ref - recip_rhoConst*(rF(k+1)-rF(1))
+          phiRef(2*k)   = phiRef(2*Nr+1)
+     &                  - recip_rhoConst*( rC(k) - rF(Nr+1) )
+          phiRef(2*k-1) = phiRef(2*Nr+1)
+     &                  - recip_rhoConst*( rF(k) - rF(Nr+1) )
         ENDDO
 c     ELSEIF (buoyancyRelation .EQ. 'ATMOSPHERIC') THEN
 C     phiRef is computed later (see below)
@@ -279,7 +283,7 @@ C     note: wUnit2rVel & rVel2wUnit replace horiVertRatio & recip_horiVertRatio
 C-    Compute Reference Geopotential at Half levels :
 C      Tracer level k: phiRef(2k)  ;  Interface_W level k: phiRef(2k-1)
 
-       phiRef(1) = phi0Ref
+       phiRef(1) = seaLev_Z*gravity
        IF ( select_rStar.GE.1 .OR. selectSigmaCoord.GE.1 ) THEN
 C-      isothermal (theta=const) reference state
         DO k=1,Nr

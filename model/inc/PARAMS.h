@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.282 2016/02/15 17:59:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.283 2016/04/04 21:29:42 jmc Exp $
 C $Name:  $
 C
 
@@ -565,8 +565,11 @@ C                :: most cell face (Lat-Lon grid) (Note: this is an "inert"
 C                :: parameter but it makes geographical references simple.)
 C     ygOrigin   :: Origin of the Y-axis (Cartesian Grid) / Latitude of Southern
 C                :: most face (Lat-Lon grid).
-C     Ro_SeaLevel :: Origin of the vertical R-coords axis (often at sea-level)
-C                 :: corresponding to rF(k=1)
+C     rSphere    :: Radius of sphere for a spherical polar grid ( m ).
+C     recip_rSphere :: Reciprocal radius of sphere ( m^-1 ).
+C     radius_fromHorizGrid :: sphere Radius of input horiz. grid (Curvilinear Grid)
+C     seaLev_Z   :: the reference height of sea-level (usually zero)
+C     top_Pres   :: pressure (P-Coords) or reference pressure (Z-Coords) at the top
 C     rSigmaBnd  :: vertical position (in r-unit) of r/sigma transition (Hybrid-Sigma)
 C     gravity    :: Acceleration due to constant gravity ( m/s^2 )
 C     recip_gravity :: Reciprocal gravity acceleration ( s^2/m )
@@ -584,7 +587,6 @@ C     tRef       :: reference vertical profile for potential temperature
 C     sRef       :: reference vertical profile for salinity/specific humidity
 C     pRef4EOS   :: reference pressure used in EOS (case selectP_inEOS_Zc=1)
 C     phiRef     :: reference potential (press/rho, geopot) profile (m^2/s^2)
-C     phi0Ref    :: reference [pressure/geo] potential at origin r = rF(1)
 C     dBdrRef    :: vertical gradient of reference buoyancy  [(m/s/r)^2]:
 C                :: z-coord: = N^2_ref = Brunt-Vaissala frequency [s^-2]
 C                :: p-coord: = -(d.alpha/dp)_ref          [(m^2.s/kg)^2]
@@ -602,9 +604,6 @@ C     rUnit2mass :: units conversion factor (surface forcing),
 C                :: from vertical r-coordinate unit to mass per unit area [kg/m2].
 C                :: z-coord: = rhoConst  ( [m] * rho = [kg/m2] ) ;
 C                :: p-coord: = 1/gravity ( [Pa] /  g = [kg/m2] ) ;
-C     rSphere    :: Radius of sphere for a spherical polar grid ( m ).
-C     recip_rSphere :: Reciprocal radius of sphere ( m^-1 ).
-C     radius_fromHorizGrid :: sphere Radius of input horiz. grid (Curvilinear Grid)
 C     f0         :: Reference coriolis parameter ( 1/s )
 C                   ( Southern edge f for beta plane )
 C     beta       :: df/dy ( s^-1.m^-1 )
@@ -773,10 +772,10 @@ C     thetaEuler    :: Euler angle, rotation about new x-axis
 C     psiEuler      :: Euler angle, rotation about new z-axis
       COMMON /PARM_R/ cg2dTargetResidual, cg2dTargetResWunit,
      & cg2dpcOffDFac, cg3dTargetResidual,
-     & delR, delRc, xgOrigin, ygOrigin, Ro_SeaLevel, rSigmaBnd,
+     & delR, delRc, xgOrigin, ygOrigin, rSphere, recip_rSphere,
+     & radius_fromHorizGrid, seaLev_Z, top_Pres, rSigmaBnd,
      & deltaT, deltaTMom, dTtracerLev, deltaTFreeSurf, deltaTClock,
      & abEps, alph_AB, beta_AB,
-     & rSphere, recip_rSphere, radius_fromHorizGrid,
      & f0, beta, fPrime, omega, rotationPeriod,
      & viscFacAdj, viscAh, viscAhW, smag3D_coeff,
      & viscAhMax, viscAhGrid, viscAhGridMax, viscAhGridMin,
@@ -799,7 +798,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & gravFacC, recip_gravFacC, gravFacF, recip_gravFacF,
      & rhoNil, rhoConst, recip_rhoConst, rho1Ref,
      & rhoFacC, recip_rhoFacC, rhoFacF, recip_rhoFacF, rhoConstFresh,
-     & thetaConst, tRef, sRef, pRef4EOS, phiRef, phi0Ref, dBdrRef,
+     & thetaConst, tRef, sRef, pRef4EOS, phiRef, dBdrRef,
      & rVel2wUnit, wUnit2rVel, mass2rUnit, rUnit2mass,
      & baseTime, startTime, endTime,
      & chkPtFreq, pChkPtFreq, dumpFreq, adjDumpFreq,
@@ -824,7 +823,11 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL delRc(Nr+1)
       _RL xgOrigin
       _RL ygOrigin
-      _RL Ro_SeaLevel
+      _RL rSphere
+      _RL recip_rSphere
+      _RL radius_fromHorizGrid
+      _RL seaLev_Z
+      _RL top_Pres
       _RL rSigmaBnd
       _RL deltaT
       _RL deltaTClock
@@ -832,9 +835,6 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL dTtracerLev(Nr)
       _RL deltaTFreeSurf
       _RL abEps, alph_AB, beta_AB
-      _RL rSphere
-      _RL recip_rSphere
-      _RL radius_fromHorizGrid
       _RL f0
       _RL beta
       _RL fPrime
@@ -906,7 +906,6 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL sRef(Nr)
       _RL pRef4EOS(Nr)
       _RL phiRef(2*Nr+1)
-      _RL phi0Ref
       _RL dBdrRef(Nr)
       _RL rVel2wUnit(Nr+1), wUnit2rVel(Nr+1)
       _RL mass2rUnit, rUnit2mass

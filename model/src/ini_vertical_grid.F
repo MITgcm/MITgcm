@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.22 2013/07/26 14:22:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.23 2016/04/04 21:29:00 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -131,14 +131,44 @@ C     assume Center at middle between 2 Interfaces
       ENDIF
 
 C---  Set r-position of  interFace (rF) and cell-Center (rC):
-      rF(1)    = Ro_SeaLevel
-      DO k=1,Nr
-       rF(k+1) = rF(k)  + rkSign*drF(k)
-      ENDDO
-      rC(1)   = rF(1)   + rkSign*drC(1)
-      DO k=2,Nr
-        rC(k) = rC(k-1) + rkSign*drC(k)
-      ENDDO
+C --  Use top_Pres or seaLev_Z to set vertical axis position:
+C OCN in Z: top_Pres(Ref) (= rhoConst*PhiRef(1)), seaLev_Z (=rF(1), @ the top)
+C ATM in Z: top_Pres(Ref) (= rhoConst*PhiRef(1)), seaLev_Z (=rF(Nr+1), @ bottom)
+C OCN in P: top_Pres (=rF(Nr+1)), seaLev_Z (<-> PhiRef(Nr+1)/g, @ the top)
+C ATM in P: top_Pres (=rF(Nr+1)), seaLev_Z (<-> PhiRef(1)/g, @ the bottom)
+      IF ( rF(1).EQ.UNSET_RS .AND.
+     &     usingZCoords.AND.fluidIsWater ) THEN
+        rF(1) = seaLev_Z
+      ENDIF
+      IF ( rF(1).NE.UNSET_RS ) THEN
+        DO k=1,Nr
+          rF(k+1) = rF(k) + rkSign*drF(k)
+        ENDDO
+        rC(1)   = rF(1)   + rkSign*drC(1)
+        DO k=2,Nr
+          rC(k) = rC(k-1) + rkSign*drC(k)
+        ENDDO
+c       IF ( usingPCoords ) THEN
+c         top_Pres = rF(Nr+1)
+c       ELSEIF ( fluidIsWater ) THEN
+c         seaLev_Z = rF(1)
+c       ELSE
+c         seaLev_Z = rF(Nr+1)
+c       ENDIF
+      ELSE
+        IF ( usingPCoords ) THEN
+          rF(Nr+1) = top_Pres
+        ELSE
+          rF(Nr+1) = seaLev_Z
+        ENDIF
+        DO k=Nr,1,-1
+          rF(k) = rF(k+1) - rkSign*drF(k)
+        ENDDO
+        rC(Nr) = rF(Nr+1) - rkSign*drC(Nr+1)
+        DO k=Nr,2,-1
+          rC(k-1) = rC(k) - rkSign*drC(k)
+        ENDDO
+      ENDIF
 
 C---  Check vertical discretization :
       checkRatio2 = 100.
