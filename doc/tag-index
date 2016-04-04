@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2240 2016/03/16 15:25:45 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2241 2016/04/04 21:31:33 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - new parameters "top_Pres" & "seaLev_Z" (replacing Ro_SeaLevel and recently
+    added phi0Ref) to set vertical axis origin and phiRef origin;
+    keep Ro_SeaLevel for backward compatibility (with a warning).
+   According to coordinate and fluid type:
+    OCN in Z: top_Pres(Ref) (=rhoConst*PhiRef(1)), seaLev_Z (=rF(1), @ the top)
+    ATM in Z: top_Pres(Ref) (=rhoConst*PhiRef(1)), seaLev_Z (=rF(Nr+1) @ bottom)
+    OCN in P: top_Pres (=rF(Nr+1)), seaLev_Z (= PhiRef(Nr+1)/g, @ the top)
+    ATM in P: top_Pres (=rF(Nr+1)), seaLev_Z (= PhiRef(1)/g, @ the bottom)
 o pkg/seaice/seaice_evp.F
   - simplify computation of deltaZ and zetaZ to simple averaging following
     Bouillon et al. (2013). This removes a lot of code, but also changes
