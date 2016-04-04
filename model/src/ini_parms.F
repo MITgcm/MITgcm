@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.269 2016/04/04 21:29:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.270 2016/04/04 22:05:51 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -26,9 +26,9 @@ C     !USES:
 # include "W2_EXCH2_TOPOLOGY.h"
 #endif /* ALLOW_EXCH2 */
 #include "EOS.h"
-#include "SET_GRID.h"
-C- needed to save, in rF(1), half retired param Ro_SeaLevel value:
+C- need GRID.h to save, in rF(1), half retired param Ro_SeaLevel value:
 #include "GRID.h"
+#include "SET_GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid :: Number of this instance of INI_PARMS
