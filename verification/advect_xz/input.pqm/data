@@ -1,0 +1,52 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ tAlpha=0.,
+ sBeta= 0.,
+ momStepping=.FALSE.,
+ hFacMin=0.1,
+ tempAdvScheme=51,
+ saltAdvScheme=52,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=100,
+ cg2dTargetResidual=1.E-13,
+ &
+
+# Time stepping parameters
+ &PARM03
+ startTime=0.,
+ endTime=240000.,
+ deltaT=1200.,
+ abEps=0.1,
+ pChkptFreq=0.,
+ chkptFreq= 0.,
+ dumpFreq =24000.,
+ monitorSelect=1,
+ monitorFreq=12000.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ delR=20*100.,
+ dXspacing=10.E3,
+ dYspacing=10.E3,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile='bathy_slope.bin',
+ uVelInitFile='Uvel.bin',
+ hydrogThetaFile='Tini_G.bin',
+ hydrogSaltFile ='Tini_G.bin',
+ &
