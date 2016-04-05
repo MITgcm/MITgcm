@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2241 2016/04/04 21:31:33 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2242 2016/04/05 23:37:25 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/advect_xz:
+  - increase overlap size from 3 to 4 and add new secondary test for PQM
+    advection scheme (with mono & wino limiter).
+  - change main exp. to test PPM (with weno limiter) adv.scheme on Temp.
 o model/src:
   - new parameters "top_Pres" & "seaLev_Z" (replacing Ro_SeaLevel and recently
     added phi0Ref) to set vertical axis origin and phiRef origin;
@@ -13,6 +17,9 @@ o model/src:
     ATM in Z: top_Pres(Ref) (=rhoConst*PhiRef(1)), seaLev_Z (=rF(Nr+1) @ bottom)
     OCN in P: top_Pres (=rF(Nr+1)), seaLev_Z (= PhiRef(Nr+1)/g, @ the top)
     ATM in P: top_Pres (=rF(Nr+1)), seaLev_Z (= PhiRef(1)/g, @ the bottom)
+  - remove Ro_SeaLevel from ATM experiment parameter files;
+  - in tutorial_global_oce_in_p, remove Ro_SeaLevel and set top_Pres to the
+    complement; update output.txt (changes at machine truncation level).
 o pkg/seaice/seaice_evp.F
   - simplify computation of deltaZ and zetaZ to simple averaging following
     Bouillon et al. (2013). This removes a lot of code, but also changes
