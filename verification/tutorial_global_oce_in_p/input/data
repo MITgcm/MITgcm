@@ -17,6 +17,7 @@
  diffKhS=1.E3,
  diffKrS=5.154525811125000e3,
 #diffKzS=0.5E-4,
+ cosPower=0.5,
  implicitDiffusion=.TRUE.,
  ivdc_kappa=1.030905162225000e9,
 #ivdc_kappa=10.0,
@@ -37,7 +38,6 @@
 #useRealFreshWaterFlux=.TRUE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
- cosPower=0.5,
  &
 
 # Elliptic solver parameters
@@ -72,7 +72,8 @@
  usingSphericalPolarGrid=.TRUE.,
  dxSpacing=4.,
  dySpacing=4.,
- Ro_SeaLevel=53023122.566084,
+#Ro_SeaLevel=53023122.566084,
+ top_Pres=1.E-6,
  delR=7103300.720021, 6570548.440790, 6041670.010249,
       5516436.666057, 4994602.034410, 4475903.435290,
       3960063.245801, 3446790.312651, 2935781.405664,
