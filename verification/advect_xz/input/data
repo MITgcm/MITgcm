@@ -10,7 +10,7 @@
  sBeta= 0.,
  momStepping=.FALSE.,
  hFacMin=0.1,
- tempAdvScheme=77,
+ tempAdvScheme=42,
  saltAdvScheme=81,
  readBinaryPrec=64,
  writeBinaryPrec=64,
