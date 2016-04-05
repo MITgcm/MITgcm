@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.270 2016/04/04 22:05:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.271 2016/04/05 20:36:41 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1196,16 +1196,16 @@ C-    Radius of the Planet:
 C--   Default vertical axis origin
       IF ( Ro_SeaLevel .NE. UNSET_RL ) THEN
        IF ( usingPCoords .AND. top_Pres.NE.UNSET_RL ) THEN
-        WRITE(msgBuf,'(2A)') '** WARNING ** INI_PARMS: ',
-     &   'instead use "top_Pres" to set vert. axis'
-          WRITE(msgBuf,'(A)')
-     &    'S/R INI_PARMS: found no coordinate system to set ygOrigin'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          errCount = errCount + 1
+        WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: ',
+     &       'Cannot set both "Ro_SeaLevel" and "top_Pres"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
        ENDIF
        IF ( usingZCoords .AND. seaLev_Z.NE.UNSET_RL ) THEN
-        WRITE(msgBuf,'(2A)') '** WARNING ** INI_PARMS: ',
-     &   'instead use "seaLev_Z" to set vert. axis'
+        WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: ',
+     &       'Cannot set both "Ro_SeaLevel" and "seaLev_Z"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
        ENDIF
        rF(1) = Ro_SeaLevel
       ELSE
