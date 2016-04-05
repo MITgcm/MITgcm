@@ -18,9 +18,9 @@
 #uniformLin_PhiSurf=.FALSE.,
  rhoConst=1.0,
  staggerTimeStep=.TRUE.,
+ hFacMin=1.0,
  readBinaryPrec=64,
  writeBinaryPrec=64,
- hFacMin=1.0,
  &
 
 # Elliptic solver parameters
@@ -31,7 +31,7 @@
 
 # Time stepping parameters
  &PARM03
- niter0=0,
+ nIter0=0,
  nTimeSteps=10,
 #endTime=31104000.,
  deltaT=450.0,
@@ -51,7 +51,6 @@
  delX=128*2.8125,
  delY=64*2.8125,
  delR=100.E2, 250.E2, 300.E2, 200.E2, 150.E2,
- Ro_SeaLevel=1.E5,
  ygOrigin=-90.,
  rSphere=6370.E3,
  &

@@ -14,18 +14,17 @@
  buoyancyRelation='ATMOSPHERIC',
  eosType='IDEALG',
  gravity=9.81,
- rhonil=1.0,
  rhoConst=1.0,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
- readBinaryPrec=64,
- writeBinaryPrec=64,
  momAdvection=.FALSE.,
  useCoriolis=.FALSE.,
  tempStepping=.FALSE.,
  saltStepping=.FALSE.,
 #implicSurfPress=0.5,
 #implicDiv2DFlow=0.5,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
  &
 
 # Elliptic solver parameters
@@ -36,7 +35,7 @@
 
 # Time stepping parameters
  &PARM03
- niter0=0,
+ nIter0=0,
  nTimeSteps=24,
  abEps=0.1,
  deltaT=450.0,
@@ -53,7 +52,6 @@
  delX=128*2.8125,
  delY=64*2.8125,
  delR=1.E5,
- Ro_SeaLevel=1.E5,
  ygOrigin=-90.,
  &
 

@@ -14,7 +14,6 @@
 #atm_Rq=0.6078E-3,
  rotationPeriod=86400.,
  gravity=9.81,
- rhonil=1.0,
  rhoConst=1.0,
  rhoConstFresh=1000.,
  implicitFreeSurface=.TRUE.,
@@ -58,7 +57,6 @@
  delX=128*2.8125,
  delY=23*2.8125,
  delR=100.E2, 250.E2, 300.E2, 200.E2, 150.E2,
- Ro_SeaLevel=1.E5,
  ygOrigin=-32.34375,
  rSphere=6370.E3,
  &

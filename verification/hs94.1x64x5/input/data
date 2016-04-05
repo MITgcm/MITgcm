@@ -40,7 +40,7 @@
 
 # Time stepping parameters
  &PARM03
- niter0=0,
+ nIter0=0,
  nTimeSteps=10,
  abEps=0.1,
  deltaT=1200.0,
@@ -57,7 +57,6 @@
  delX=1*2.8125,
  delY=64*2.8125,
  delR=100.E2, 250.E2, 300.E2, 200.E2, 150.E2,
- Ro_SeaLevel=1.E5,
  ygOrigin=-90.,
  &
 

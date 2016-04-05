@@ -11,7 +11,7 @@
  buoyancyRelation='ATMOSPHERIC',
  eosType='IDEALG',
  atm_Rq=0.6078E-3,
- Integr_GeoPot=2,
+ integr_GeoPot=2,
  selectFindRoSurf=1,
  gravity=9.81,
  rhoConstFresh=1000.,
@@ -61,7 +61,6 @@
  usingCurvilinearGrid=.TRUE.,
  radius_fromHorizGrid=6370.E3,
  delR=100.E2, 250.E2, 300.E2, 200.E2, 150.E2,
- Ro_SeaLevel=1.E5,
  &
 
 # Input datasets

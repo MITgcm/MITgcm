@@ -12,11 +12,11 @@
  diffKrS=0.,
  diffKhS=0.,
  diffK4S=0.,
- readBinaryPrec=64,
- writeBinaryPrec=64,
  momStepping=.FALSE.,
  tempAdvScheme=33,
  saltAdvScheme=80,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
  &
 
 # Elliptic solver parameters
@@ -27,7 +27,7 @@
 
 # Time stepping parameters
  &PARM03
- niter0=0,
+ nIter0=0,
  endTime=518400.,
 #- to simulate 1 rotation period:
 #endTime=1036800.,
@@ -45,7 +45,6 @@
  usingCurvilinearGrid=.TRUE.,
  horizGridFile='grid_cs32',
  delR=1.E5,
- Ro_SeaLevel=1.E5,
  &
 
 # Input datasets

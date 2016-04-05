@@ -27,14 +27,12 @@
  buoyancyRelation='ATMOSPHERIC',
  eosType='IDEALG',
  atm_Rq=0.6078,
-#Integr_GeoPot=2,
+#integr_GeoPot=2,
  gravity=9.81,
  implicitFreeSurface=.TRUE.,
  exactConserv=.TRUE.,
  uniformLin_PhiSurf=.FALSE.,
  staggerTimeStep=.TRUE.,
- readBinaryPrec=64,
- writeBinaryPrec=64,
  hFacMin=0.5,
  nonlinFreeSurf=4,
  select_rStar=2,
@@ -44,6 +42,9 @@
  useAbsVorticity=.TRUE.,
  SadournyCoriolis=.TRUE.,
  selectKEscheme=3,
+#-
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
  &
 
 # Elliptic solver parameters
@@ -79,9 +80,7 @@
  horizGridFile='dxC1_dXYa',
  radius_fromHorizGrid=6370.E3,
 #delR=40*25.325E2,
-#Ro_SeaLevel=1013.E2,
  delR=40*25.E2,
- Ro_SeaLevel=1.E5,
  &
 
 # Input datasets
