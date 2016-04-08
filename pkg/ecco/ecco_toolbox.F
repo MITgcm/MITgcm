@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.12 2016/03/22 22:29:25 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.13 2016/04/08 00:23:44 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -877,10 +877,10 @@ CEOP
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -939,10 +939,10 @@ CEOP
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -1006,10 +1006,10 @@ CEOP
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -1068,10 +1068,10 @@ CEOP
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -1222,18 +1222,18 @@ CEOP
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
 
       call mdsreadfield( localerr_file, cost_iprec,
      &  cost_yftype, nnzbar, localweight, iRec, mythid )
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j = 1-Oly,sNy+Oly
-         DO i = 1-Olx,sNx+Olx
+        DO j = jmin,jmax
+         DO i = imin,imax
           DO k = 1,nnzbar
 c--        Test for missing values.
            if (localweight(i,j,k,bi,bj) .lt. -9900.) then
