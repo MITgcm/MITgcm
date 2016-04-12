@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2243 2016/04/08 19:03:16 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2244 2016/04/12 16:59:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o verification/halfpipe_streamice:
+  - update both TAF and OpenAD adm output (machine truncation differences)
 
 checkpoint65v (2016/04/08)
 o verification/advect_xz:
