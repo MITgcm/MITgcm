@@ -1,22 +1,23 @@
-function [U,V,ub,vb] = uvcube2latlon(LON,LAT,u,v,xc,yc,cosalpha,sinalpha)
-% [ui,vi]=cube2latlon(x,y,u,v,xi,yi);
+function [U,V,ub,vb] = uvcube2latlon(xc,yc,u,v,xi,yi,cosalpha,sinalpha)
+% [ui,vi]=cube2latlon(xc,yc,u,v,xi,yi,cosalpha,sinalpha);
 %
 % Re-grids model output on expanded spherical cube to lat-lon grid.
-%  x,y   are 2-D arrays of the cell-centered coordinates 
+%  xc,yc are 2-D arrays of the cell-centered coordinates on cube-sphere
 %  u,v   is a 2-D or 3-D horizontal components of model flow fields.
 %  xi,yi are vectors of the new regular lat-lon grid to interpolate to.
-%  ui,vi are the flow fields with dimensions of size(xi) x size(yi) size(u,3).
+%  cosalpha, sinalpha (optional) : cos and sin of rotation angle (or read TUV.mat)
+%  ui,vi are the flow fields with dimensions of size(xi) x size(yi) x size(u,3).
 %
 % e.g.
-% >> x=rdmds('XC');
-% >> y=rdmds('YC');
-% >> u=rdmds('uVeltave.0000513360');
-% >> v=rdmds('vVeltave.0000513360');
+% >> xc=rdmds('XC');
+% >> yc=rdmds('YC');
+% >> u =rdmds('uVeltave.0000513360');
+% >> v =rdmds('vVeltave.0000513360');
 % >> xi=-179:2:180;yi=-89:2:90;
-% >> [ui,vi]=uvcube2latlon(x,y,u,v,xi,yi);
+% >> [ui,vi]=uvcube2latlon(xc,yc,u,v,xi,yi);
 %
 % Written by adcroft@.mit.edu, 2001.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/uvcube2latlon.m,v 1.2 2007/08/28 16:16:16 molod Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/uvcube2latlon.m,v 1.3 2016/04/20 18:04:47 dfer Exp $
 % $Name:  $
 
 NN=size(u);
@@ -72,8 +73,8 @@ end
 ub=reshape(U,[nnx NN(2:end)]);
 vb=reshape(V,[nnx NN(2:end)]);
 
-%U=cube2latlon(LON,LAT,U,xc,yc);
-%V=cube2latlon(LON,LAT,V,xc,yc);
-del=cube2latlon_preprocess(LON,LAT,xc,yc);
+%U=cube2latlon(xc,yc,U,xi,yi);
+%V=cube2latlon(xc,yc,V,xi,yi);
+del=cube2latlon_preprocess(xc,yc,xi,yi);
 U=cube2latlon_fast(del,ub);
 V=cube2latlon_fast(del,vb);
