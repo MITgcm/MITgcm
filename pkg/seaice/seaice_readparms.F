@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.172 2016/01/28 16:17:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.173 2016/04/22 08:41:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -138,7 +138,8 @@ C--   SEAICE parameters
      & SEAICE_drag_south, SEAICE_waterDrag_south,
      & SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
      & SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
-     & SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
+     & SEAICE_cBasalStar, SEAICEbasalDragU0, SEAICEbasalDragK1,
+     & SEAICEbasalDragK2, SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
      & SEAICE_strength, SEAICE_cStar, SEAICE_eccen,
      & SEAICEpressReplFac, SEAICE_tensilFac, SEAICE_tensilDepth, 
      & SEAICE_lhFusion, SEAICE_lhEvap, SEAICE_dalton,
@@ -360,6 +361,13 @@ C        c1=1.5/N, c2=42*c1, c3=3.3
       SEAICE_drySnowAlb_south = UNSET_RL
       SEAICE_wetSnowAlb_south = UNSET_RL
       HO_south                = UNSET_RL
+C     basal drag parameters following Lemieux et al. (2015)
+      SEAICE_cBasalStar = UNSET_RL
+      SEAICEbasalDragU0 =  5. _d -05
+      SEAICEbasalDragK1 =  8. _d 0
+      SEAICEbasalDragK2 =  0. _d 0
+C     Lemieux et al. (2015) recommend: SEAICEbasalDragK2 = 15. _d 0
+C     
       SEAICE_wetAlbTemp  = -1. _d -3
 #ifdef SEAICE_EXTERNAL_FLUXES
       SEAICE_waterAlbedo = UNSET_RL
@@ -661,6 +669,9 @@ C--   If no PDF was prescribed use the default uniform pdf
      &    SEAICE_wetSnowAlb_south = SEAICE_wetSnowAlb
       IF (HO_south                .EQ. UNSET_RL)
      &    HO_south                = HO
+C     Basal drag parameter
+      IF (SEAICE_cBasalStar .EQ. UNSET_RL)
+     &     SEAICE_cBasalStar = SEAICE_cStar
 
 C     Check that requested time step size is supported.  The combination
 C     below is the only one that is supported at this time.  Does not

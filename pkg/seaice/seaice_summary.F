@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.86 2016/01/28 12:54:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.87 2016/04/22 08:41:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -145,6 +145,18 @@ C--  Seaice-Dynamics parameters
      & 'SEAICE_waterDrag  =', ' /* water-ice drag * density */')
       CALL WRITE_0D_RL( SEAICE_waterDrag_south  ,INDEX_NONE,
      & 'SEAICE_waterDrag_south =', ' /* Southern Ocean waterDrag */')
+#ifdef SEAICE_ALLOW_BOTTOMDRAG
+      IF ( SEAICEbasalDragK2 .NE. 0. _d 0 ) THEN
+       CALL WRITE_0D_RL( SEAICE_cBasalStar ,INDEX_NONE,
+     &      'SEAICE_cBasalStar =', ' /* Basal drag parameter */')
+       CALL WRITE_0D_RL( SEAICEbasalDragU0 ,INDEX_NONE,
+     &      'SEAICEbasalDragU0 =', ' /* Basal drag parameter */')
+       CALL WRITE_0D_RL( SEAICEbasalDragK1 ,INDEX_NONE,
+     &      'SEAICEbasalDragK1 =', ' /* Basal drag parameter */')
+      ENDIF
+      CALL WRITE_0D_RL( SEAICEbasalDragK2 ,INDEX_NONE,
+     &     'SEAICEbasalDragK2 =', ' /* Basal drag parameter */')
+#endif /* SEAICE_ALLOW_BOTTOMDRAG */
       CALL WRITE_0D_L ( SEAICEuseTilt, INDEX_NONE,
      & 'SEAICEuseTilt     =', ' /* include surface tilt in dyna. */')
       CALL WRITE_0D_L ( SEAICEuseTEM, INDEX_NONE,

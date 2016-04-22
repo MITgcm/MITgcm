@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.130 2016/01/28 12:54:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.131 2016/04/22 08:41:42 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -352,6 +352,14 @@ C     SEAICE_drySnowAlb_south :: Southern Ocean SEAICE_drySnowAlb
 C     SEAICE_wetSnowAlb_south :: Southern Ocean SEAICE_wetSnowAlb
 C     HO_south                :: Southern Ocean HO
 C
+C     Parameters for basal drag of grounded ice following 
+C     Lemieux et al. (2015), doi:10.1002/2014JC010678
+C     SEAICE_cBasalStar (default = SEAICE_cStar)
+C     SEAICEbasalDragU0 (default = 5e-5)
+C     SEAICEbasalDragK1 (default = 8)
+C     SEAICEbasalDragK2  :: if > 0, turns on basal drag 
+C                           (default = 0, Lemieux suggests 15)
+C
 C     SEAICE_wetAlbTemp  :: Temp (deg.C) above which wet-albedo values are used
 C     SEAICE_waterAlbedo :: water albedo
 C     SEAICE_strength    :: sea-ice strength Pstar
@@ -435,6 +443,8 @@ C
       _RL SEAICE_drag_south, SEAICE_waterDrag_south
       _RL SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south
       _RL SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south
+      _RL SEAICE_cBasalStar, SEAICEbasalDragU0
+      _RL SEAICEbasalDragK1, SEAICEbasalDragK2
       _RL SEAICE_wetAlbTemp, SEAICE_waterAlbedo
       _RL SEAICE_strength, SEAICE_cStar, SEAICEpressReplFac
       _RL SEAICE_tensilFac, SEAICE_tensilDepth, SEAICE_eccen
@@ -486,6 +496,8 @@ C
      &    SEAICE_drag_south, SEAICE_waterDrag_south,
      &    SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
      &    SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
+     &    SEAICE_cBasalStar, SEAICEbasalDragU0,
+     &    SEAICEbasalDragK1, SEAICEbasalDragK2,
      &    SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
      &    SEAICE_strength, SEAICE_cStar, SEAICE_eccen,
      &    SEAICEpressReplFac, SEAICE_tensilFac, SEAICE_tensilDepth, 
