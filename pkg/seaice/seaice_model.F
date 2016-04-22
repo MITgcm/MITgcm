@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.114 2014/10/20 03:20:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.115 2016/04/22 08:52:15 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -116,6 +116,9 @@ cphCADJ STORE eta   = comlev1, key=ikey_dynamics, kind=isbyte
 cphCADJ STORE zeta  = comlev1, key=ikey_dynamics, kind=isbyte
 cph(
 CADJ STORE dwatn    = comlev1, key=ikey_dynamics, kind=isbyte
+#ifdef SEAICE_ALLOW_BOTTOMDRAG
+CADJ STORE cbotc    = comlev1, key=ikey_dynamics, kind=isbyte
+#endif /* SEAICE_ALLOW_BOTTOMDRAG */
 cccCADJ STORE press0   = comlev1, key=ikey_dynamics, kind=isbyte
 cccCADJ STORE taux   = comlev1, key=ikey_dynamics, kind=isbyte
 cccCADJ STORE tauy  = comlev1, key=ikey_dynamics, kind=isbyte

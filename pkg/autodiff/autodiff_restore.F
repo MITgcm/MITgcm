@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.29 2014/10/09 00:47:12 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.30 2016/04/22 08:52:15 mlosch Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -469,6 +469,9 @@ cph          TICES(I,J,bi,bj)     = StoreSEAICE(I,J,bi,bj,6)
           ETA(I,J,bi,bj)       = StoreSEAICE(I,J,bi,bj,10)
 #  ifdef SEAICE_CGRID
           dwatn(I,J,bi,bj)          = StoreSEAICE(I,J,bi,bj,11)
+#   ifdef SEAICE_ALLOW_BOTTOMDRAG
+          cbotc(I,J,bi,bj)          = StoreSEAICE(I,J,bi,bj,12)
+#   endif /* SEAICE_ALLOW_BOTTOMDRAG */
 CML          seaicemasku(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,12)
 CML          seaicemaskv(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,13)
 #  endif /* SEAICE_CGRID */

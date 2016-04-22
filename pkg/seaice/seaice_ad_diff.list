@@ -42,3 +42,4 @@ seaice_oceandrag_coeffs.f
 seaice_map_thsice.f
 seaice_calc_ice_strength.f
 seaice_reg_ridge.f
+seaice_bottomdrag_coeffs.f
