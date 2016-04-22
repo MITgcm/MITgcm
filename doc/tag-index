@@ -1,9 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2244 2016/04/12 16:59:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2245 2016/04/22 09:11:45 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: 
+  - add basal stress as parameterisation for grounding ice
+    following Lemieux et al. (2015)
+  - turn on by setting new parameter SEAICEbasalDragK2 to a value 
+    larger than 0. Lemieux et al. (2015) recommend 15. 
+  - The adjoint complains with extra recomputations so there is also a
+    new cpp-flag SEAICE_ALLOW_BOTTOMDRAG that is undefined by default in
+    order to postpone the problem
+  - compile the new code in lab_sea
 o verification/halfpipe_streamice:
   - update both TAF and OpenAD adm output (machine truncation differences)
 
