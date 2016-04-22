@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.68 2016/03/16 15:16:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.69 2016/04/22 08:50:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -740,6 +740,17 @@ C
      I       uIce, vIce,
      O       DWATN,
      I       iEVPstep, myTime, myIter, myThid )
+#ifdef SEAICE_ALLOW_BOTTOMDRAG
+      IF (SEAICEbasalDragK2.GT.0. _d 0) CALL SEAICE_BOTTOMDRAG_COEFFS(
+     I       uIce, vIce,
+#ifdef SEAICE_ITD
+     I       HEFFITD, AREAITD, AREA,
+#else
+     I       HEFF, AREA,
+#endif      
+     O       CbotC,
+     I       iEVPstep, myTime, myIter, myThid )
+#endif /* SEAICE_ALLOW_BOTTOMDRAG */
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -827,6 +838,12 @@ C     compute and adjust parameters that are constant otherwise
             denomV = seaiceMassV(I,J,bi,bj)*betaFacP1V
      &           + 0.5 _d 0*( DWATN(I,J,bi,bj) + DWATN(I,J-1,bi,bj) )
      &           * COSWAT * areaS(I,J,bi,bj)
+#ifdef SEAICE_ALLOW_BOTTOMDRAG
+            denomU = denomU + areaW(I,J,bi,bj)
+     &           * 0.5 _d 0*( CbotC(I,J,bi,bj) + CbotC(I-1,J,bi,bj) )
+            denomV = denomV + areaS(I,J,bi,bj)
+     &           * 0.5 _d 0*( CbotC(I,J,bi,bj) + CbotC(I,J-1,bi,bj) )
+#endif /* SEAICE_ALLOW_BOTTOMDRAG */
             IF ( denomU .EQ. 0. _d 0 ) denomU = 1. _d 0
             IF ( denomV .EQ. 0. _d 0 ) denomV = 1. _d 0
             uIce(I,J,bi,bj) = seaiceMaskU(I,J,bi,bj) *

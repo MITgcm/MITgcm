@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_krylov.F,v 1.1 2016/01/28 13:25:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_krylov.F,v 1.2 2016/04/22 08:50:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -205,6 +205,17 @@ C     the Krylov iteration)
      I      uIceLin, vIceLin,
      O      DWATN,
      I      0, myTime, myIter, myThid )
+#ifdef SEAICE_ALLOW_BOTTOMDRAG
+       IF (SEAICEbasalDragK2.GT.0. _d 0) CALL SEAICE_BOTTOMDRAG_COEFFS(
+     I      uIceLin, vIceLin,
+#ifdef SEAICE_ITD
+     I      HEFFITD, AREAITD, AREA,
+#else
+     I      HEFF, AREA,
+#endif      
+     O      CbotC,
+     I      0, myTime, myIter, myThid )
+#endif /* SEAICE_ALLOW_BOTTOMDRAG */
        CALL SEAICE_CALC_STRAINRATES(
      I      uIceLin, vIceLin,
      O      e11, e22, e12,

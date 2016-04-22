@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.90 2015/09/10 15:50:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.91 2016/04/22 08:50:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -299,6 +299,9 @@ C
           GWATY(i,j,bi,bj)  = 0. _d 0
 #endif /* SEAICE_CGRID */
           DWATN(i,j,bi,bj)  = 0. _d 0
+#ifdef SEAICE_ALLOW_BOTTOMDRAG
+          CbotC(i,j,bi,bj)  = 0. _d 0
+#endif /* SEAICE_ALLOW_BOTTOMDRAG */
           PRESS0(i,j,bi,bj) = 0. _d 0
           FORCEX0(i,j,bi,bj)= 0. _d 0
           FORCEY0(i,j,bi,bj)= 0. _d 0

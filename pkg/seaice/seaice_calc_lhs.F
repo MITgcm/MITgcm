@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.12 2015/12/17 11:37:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.13 2016/04/22 08:50:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -82,6 +82,8 @@ C     components of symmetric stress tensor
       _RL sig11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig22(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C     symmetric drag coefficient
+      _RL dragSym(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     fractional area at velocity points
       _RL areaW(1:sNx,1:sNy)
       _RL areaS(1:sNx,1:sNy)
@@ -112,6 +114,15 @@ C     initialise fractional areas at velocity points
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+C     symmetric drag coefficient may include bottomdrag for grounded ice
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          dragSym(I,J) = DWATN(I,J,bi,bj)*COSWAT
+#ifdef SEAICE_ALLOW_BOTTOMDRAG
+     &         +CbotC(I,J,bi,bj)
+#endif /* SEAICE_ALLOW_BOTTOMDRAG */
+         ENDDO
+        ENDDO
 C     compute components of stress tensor from current velocity field
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -189,20 +200,20 @@ C                    + mass*f*uIce
      &       + seaiceMassC(I,J-1,bi,bj) * _fCori(I,J-1,bi,bj)
      &       * 0.5 _d 0*( uIceLoc(I,J-1,bi,bj)+uIceLoc(I+1,J-1,bi,bj) )
      &           )
-C     ocean-ice drag terms: + Cdrag*(uIce*cosWat - vIce*sinWat)
+C     ocean-ice and bottom drag terms: + (Cdrag*cosWat+Cb)*uIce - vIce*sinWat)
           uIceLHS(I,J,bi,bj) = uIceLHS(I,J,bi,bj) + (
-     &         0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
-     &         COSWAT * uIceLoc(I,J,bi,bj)
+     &         0.5 _d 0 * ( dragSym(I,J)+dragSym(I-1,J) )
+     &         * uIceLoc(I,J,bi,bj)
      &         - SIGN(SINWAT, _fCori(I,J,bi,bj))* 0.5 _d 0 *
      &         (  DWATN(I  ,J,bi,bj) * 0.5 _d 0 *
      &         (vIceLoc(I  ,J,bi,bj)+vIceLoc(I  ,J+1,bi,bj))
      &         +  DWATN(I-1,J,bi,bj) * 0.5 _d 0 *
      &         (vIceLoc(I-1,J,bi,bj)+vIceLoc(I-1,J+1,bi,bj))
      &         ) ) * areaW(I,J)
-C                           + Cdrag*(vIce*cosWat + uIce*sinWat)
+C                                      + (Cdrag*cosWat+Cb)*uIce + uIce*sinWat)
           vIceLHS(I,J,bi,bj) = vIceLHS(I,J,bi,bj) + (
-     &         0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
-     &         COSWAT * vIceLoc(I,J,bi,bj)
+     &         0.5 _d 0 * ( dragSym(I,J)+dragSym(I,J-1) )
+     &         * vIceLoc(I,J,bi,bj)
      &         + SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 *
      &         (  DWATN(I,J  ,bi,bj) * 0.5 _d 0 *
      &         (uIceLoc(I,J  ,bi,bj)+uIceLoc(I+1,J  ,bi,bj))

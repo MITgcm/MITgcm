@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jacvec.F,v 1.6 2013/04/23 08:33:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jacvec.F,v 1.7 2016/04/22 08:50:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -73,6 +73,7 @@ C     vector operations:
 C
 C     1. make small_f
 C     2. cat seaice_calc_residual.f seaice_oceandrag_coeffs.f \
+C        seaice_bottomdrag_coeffs.f \
 C        seaice_calc_strainrates.f seaice_calc_viscosities.f \
 C        seaice_calc_rhs.f seaice_calc_lhs.f > taf_input.f
 C     3. staf -v1 -forward -toplevel seaice_calc_residual \
@@ -85,6 +86,7 @@ C     starting with version 2.0):
 C
 C     1. make small_f
 C     2. files="seaice_calc_residual.f seaice_oceandrag_coeffs.f \
+C               seaice_bottomdrag_coeffs.f \
 C               seaice_calc_strainrates.f seaice_calc_viscosities.f \
 C               seaice_calc_rhs.f seaice_calc_lhs.f"
 C     3. staf -forward -toplevel seaice_calc_residual \

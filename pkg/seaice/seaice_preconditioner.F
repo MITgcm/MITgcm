@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.32 2016/01/28 12:54:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.33 2016/04/22 08:50:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -108,6 +108,8 @@ C     coefficients for lateral points, v(i+/-1)
 C     abbreviations
       _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     symmetric drag coefficient
+      _RL dragSym(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     auxillary fields
       _RL uTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -156,6 +158,8 @@ C
 C     first guess for the increment is 0.
           duIce(I,J,bi,bj) = 0. _d 0
           dvIce(I,J,bi,bj) = 0. _d 0
+C     this is only the symmetric part of the drag
+          dragSym(I,J,bi,bj) = dwatPre(I,J,bi,bj)*COSWAT
          ENDDO
         ENDDO
        ENDDO
@@ -178,7 +182,7 @@ C     calculate coefficients of tridiagonal matrices for both u- and
 C     v-equations
 C
       CALL SEAICE_LSR_CALC_COEFFS(
-     I     etaPlusZeta, zetaMinusEta, etaZpre, zetaZpre, dwatPre,
+     I     etaPlusZeta, zetaMinusEta, etaZpre, zetaZpre, dragSym,
      O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
      I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
 

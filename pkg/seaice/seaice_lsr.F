@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.122 2016/01/28 12:54:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.123 2016/04/22 08:50:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -119,6 +119,8 @@ C     coefficients for lateral points, v(i+/-1)
 C     abbreviations
       _RL etaPlusZeta (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     symmetric drag coefficient
+      _RL dragSym     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     contribution of sigma on righ hand side
       _RL sig11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig22(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -331,6 +333,18 @@ CADJ STORE vice = comlev1_dynsol, kind=isbyte, key = itmpkey
      I     uIceC, vIceC,
      O     DWATN,
      I     ipass, myTime, myIter, myThid )
+
+#ifdef SEAICE_ALLOW_BOTTOMDRAG
+      IF (SEAICEbasalDragK2.GT.0. _d 0) CALL SEAICE_BOTTOMDRAG_COEFFS(
+     I     uIceC, vIceC,
+#ifdef SEAICE_ITD
+     I     HEFFITD, AREAITD, AREA,
+#else
+     I     HEFF, AREA,
+#endif      
+     O     CbotC,
+     I     ipass, myTime, myIter, myThid )
+#endif /* SEAICE_ALLOW_BOTTOMDRAG */
 C
 C     some abbreviations
 C
@@ -340,6 +354,14 @@ C
          DO I=iMin-1,iMax
           etaPlusZeta (I,J,bi,bj) = ETA (I,J,bi,bj)+ZETA(I,J,bi,bj)
           zetaMinusEta(I,J,bi,bj) = ZETA(I,J,bi,bj)-ETA (I,J,bi,bj)
+         ENDDO
+        ENDDO
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
+          dragSym(I,J,bi,bj) = DWATN(I,J,bi,bj)*COSWAT
+#ifdef SEAICE_ALLOW_BOTTOMDRAG
+     &         +CbotC(I,J,bi,bj)
+#endif /* SEAICE_ALLOW_BOTTOMDRAG */
          ENDDO
         ENDDO
        ENDDO
@@ -444,7 +466,7 @@ C     calculate coefficients of tridiagonal matrices for both u- and
 C     v-equations
 C
       CALL SEAICE_LSR_CALC_COEFFS( 
-     I     etaPlusZeta, zetaMinusEta, etaZ, zetaZ, dwatn,
+     I     etaPlusZeta, zetaMinusEta, etaZ, zetaZ, dragSym,
      O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
      I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
 
@@ -507,13 +529,13 @@ C--   Calculate initial residual of the linearised system
             uIce_fd(i,j,bi,bj) = FORCEX(i,j,bi,bj)
      &         / ( 1. _d 0 - seaiceMaskU(i,j,bi,bj)
      &           + seaiceMassU(i,j,bi,bj)*recip_deltaT
-     &           + HALF*( DWATN(i,j,bi,bj) + DWATN(i-1,j,bi,bj) )*COSWAT
+     &           + HALF*( dragSym(i,j,bi,bj) + dragSym(i-1,j,bi,bj) )
      &                 * areaW(i,j,bi,bj)
      &           )
             vIce_fd(i,j,bi,bj) = FORCEY(i,j,bi,bj)
      &         / ( 1. _d 0 - seaiceMaskV(i,j,bi,bj)
      &           + seaiceMassV(i,j,bi,bj)*recip_deltaT
-     &           + HALF*( DWATN(i,j,bi,bj) + DWATN(i,j-1,bi,bj) )*COSWAT
+     &           + HALF*( dragSym(i,j,bi,bj) + dragSym(i,j-1,bi,bj) )
      &                 * areaS(i,j,bi,bj)
      &           )
            ENDDO
@@ -1127,7 +1149,7 @@ CBOP
 C     !ROUTINE: SEAICE_LSR_CALC_COEFFS
 C     !INTERFACE:
       SUBROUTINE SEAICE_LSR_CALC_COEFFS( 
-     I     etaPlusZeta, zetaMinusEta, etaZloc, zetaZloc, dwatnLoc,
+     I     etaPlusZeta, zetaMinusEta, etaZloc, zetaZloc, dragSym,
      O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
      I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
 
@@ -1166,8 +1188,8 @@ C     abbreviations
 C     shear and bulk viscosity at Z points
       _RL  etaZloc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL zetaZloc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C     ice-ocean stress coefficient
-      _RL dwatnLoc    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     symmetric ice-ocean stress coefficient
+      _RL dragSym     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     coefficients of ice velocities in coefficient matrix
 C     for both U and V-equation
 C     diagonals of coefficient matrices
@@ -1215,11 +1237,8 @@ C     YM: metric term with derivative in Y
       _RL VYY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL VXM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL VYM  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL COSWAT
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C--   turning angles
-      COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
 C     backward difference extrapolation factor
       bdfAlphaOverDt = 1. _d 0
       IF ( SEAICEuseBDF2 ) THEN
@@ -1353,9 +1372,9 @@ C     normalizing
           BU(I,J,bi,bj)    = BU(I,J,bi,bj)  * recip_rAw(I,J,bi,bj)
      &         + seaiceMaskU(I,J,bi,bj) *
      &         ( bdfAlphaOverDt*seaiceMassU(I,J,bi,bj)
-     &         + 0.5 _d 0 * ( dwatnLoc(I,  J,bi,bj) 
-     &                      + dwatnLoc(I-1,J,bi,bj) )*areaW(I,J)
-     &         * COSWAT )
+     &         + 0.5 _d 0 * ( dragSym(I,  J,bi,bj) 
+     &                      + dragSym(I-1,J,bi,bj) )*areaW(I,J)
+     &         )
           uRt1(I,J,bi,bj) = uRt1(I,J,bi,bj) * recip_rAw(I,J,bi,bj)
           uRt2(I,J,bi,bj) = uRt2(I,J,bi,bj) * recip_rAw(I,J,bi,bj)
          ENDDO
@@ -1416,9 +1435,9 @@ C     normalizing
           BV(I,J,bi,bj)   = BV(I,J,bi,bj)   * recip_rAs(I,J,bi,bj)
      &         + seaiceMaskV(I,J,bi,bj) *
      &         ( bdfAlphaOverDt*seaiceMassV(I,J,bi,bj)
-     &         + 0.5 _d 0 * ( dwatnLoc(I,J,  bi,bj) 
-     &                      + dwatnLoc(I,J-1,bi,bj) )*areaS(I,J)
-     &         * COSWAT )
+     &         + 0.5 _d 0 * ( dragSym(I,J,  bi,bj) 
+     &                      + dragSym(I,J-1,bi,bj) )*areaS(I,J)
+     &         )
           vRt1(I,J,bi,bj) = vRt1(I,J,bi,bj) * recip_rAs(I,J,bi,bj)
           vRt2(I,J,bi,bj) = vRt2(I,J,bi,bj) * recip_rAs(I,J,bi,bj)
          ENDDO

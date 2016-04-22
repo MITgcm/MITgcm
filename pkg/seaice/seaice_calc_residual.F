@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_residual.F,v 1.7 2015/09/10 15:57:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_residual.F,v 1.8 2016/04/22 08:50:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -28,6 +28,9 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "SEAICE_SIZE.h"
+#ifdef SEAICE_ALLOW_BOTTOMDRAG
+#include "SEAICE_PARAMS.h"
+#endif /* SEAICE_ALLOW_BOTTOMDRAG */ 
 #include "SEAICE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -80,6 +83,17 @@ C     viscosities are required
      I     uIceLoc, vIceLoc,
      O     DWATN,
      I     krylovIter, myTime, myIter, myThid )
+#ifdef SEAICE_ALLOW_BOTTOMDRAG
+      IF (SEAICEbasalDragK2.GT.0. _d 0) CALL SEAICE_BOTTOMDRAG_COEFFS(
+     I     uIceLoc, vIceLoc,
+#ifdef SEAICE_ITD
+     I     HEFFITD, AREAITD, AREA,
+#else
+     I     HEFF, AREA,
+#endif      
+     O     CbotC,
+     I     krylovIter, myTime, myIter, myThid )
+#endif /* SEAICE_ALLOW_BOTTOMDRAG */
       CALL SEAICE_CALC_STRAINRATES(
      I     uIceLoc, vIceLoc,
      O     e11, e22, e12,
@@ -104,6 +118,7 @@ C     + Cdrag*(uVel*cosWat - vVel*sinWat)/(vVel*cosWat + uVel*sinWat)
 C     Left-hand side contributions:
 C     + mass*(u/vIce)/deltaT
 C     + Cdrag*(uIce*cosWat - vIce*sinWat)/(vIce*cosWat + uIce*sinWat)
+C     + CdragBot*uIce/vIce
 C     - mass*f*vIce/+mass*f*uIce
 C     - dsigma/dx / -dsigma/dy, eta and zeta are only computed once per
 C     Newton iterate
