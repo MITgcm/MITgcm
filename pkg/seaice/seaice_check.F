@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.97 2016/01/28 12:54:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.98 2016/04/26 11:10:18 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -868,6 +868,17 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif /* SEAICE_ALLOW_JFNK */
+#ifndef SEAICE_ALLOW_KRYLOV
+      IF ( SEAICEuseKrylov ) THEN
+        WRITE(msgBuf,'(A)')
+     &      'SEAICE_CHECK: SEAICEuseKRYLOV = .TRUE. but cpp-flag'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: '//
+     &   'SEAICE_ALLOW_KRYLOV is undef in SEAICE_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif /* SEAICE_ALLOW_KRYLOV */
 
       IF ( SEAICEuseDynamics .AND. .NOT.SEAICEuseJFNK ) THEN
        IF ( SEAICEuseBDF2 ) THEN
@@ -910,6 +921,18 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
+
+#ifndef SEAICE_ALLOW_BOTTOMDRAG
+      IF ( SEAICEbasalDragK2 .GT. 0. _d 0 ) THEN
+       WRITE(msgBuf,'(A,I2)')
+     &      'SEAICE_CHECK: SEAICEbasalDragK2 = ', SEAICEbasalDragK2
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: is greater than 0, '//
+     &      'but SEAICE_ALLOW_BOTTOMDRAG is not defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif /* SEAICE_ALLOW_BOTTOMDRAG */
 
 #ifdef SEAICE_ITD
 C     The ice thickness distribution (ITD) module can only be used with
