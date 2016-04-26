@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2245 2016/04/22 09:11:45 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2246 2016/04/26 11:10:45 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - add missing checks for SEAICE_ALLOW_KRYLOV and SEAICE_ALLOW_BOTTOMDRAG
 o pkg/seaice: 
   - add basal stress as parameterisation for grounding ice
     following Lemieux et al. (2015)
