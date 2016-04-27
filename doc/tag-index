@@ -1,16 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2246 2016/04/26 11:10:45 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2247 2016/04/27 22:12:20 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - fix missing dPhiNH in pressure_for_eos.F (case: selectP_inEOS_Zc=3)
 o pkg/seaice:
   - add missing checks for SEAICE_ALLOW_KRYLOV and SEAICE_ALLOW_BOTTOMDRAG
-o pkg/seaice: 
+o pkg/seaice:
   - add basal stress as parameterisation for grounding ice
     following Lemieux et al. (2015)
-  - turn on by setting new parameter SEAICEbasalDragK2 to a value 
-    larger than 0. Lemieux et al. (2015) recommend 15. 
+  - turn on by setting new parameter SEAICEbasalDragK2 to a value
+    larger than 0. Lemieux et al. (2015) recommend 15.
   - The adjoint complains with extra recomputations so there is also a
     new cpp-flag SEAICE_ALLOW_BOTTOMDRAG that is undefined by default in
     order to postpone the problem
@@ -216,7 +218,7 @@ o pkg/atm_phys:
   - add diagnostics for 3-D, Nr+1 levels diagnostics of radiative fluxes
     (shortwave & longwave, net & downward) and diagnostics of temp. tendency
     for individual contribution (convection, LSC cond, radiation)
-  - add Ruth Geen etal, GRL 2016, radiation optionis (see paper supp.
+  - add Ruth Geen etal, GRL 2016, radiation options (see paper supp.
     information); activated with: solar_exponent=0. and wv_exponent=-1.
 o pkg/ggl90:
   - within IDEMIX add upper limit for horizontal group velocity to
