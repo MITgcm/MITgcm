@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/pressure_for_eos.F,v 1.6 2016/03/10 20:54:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/pressure_for_eos.F,v 1.7 2016/04/27 22:09:13 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -58,7 +58,7 @@ C-     use full (hydrostatic+non-hydrostatic) dynamical pressure:
           DO i=1-OLx,sNx+OLx
             locPres(i,j) = rhoConst*(
      &                   totPhiHyd(i,j,k,bi,bj)
-     &                 + phi_nh(i,j,k,bi,bj)
+     &                 +( phi_nh(i,j,k,bi,bj) - dPhiNH(i,j,bi,bj) )
      &                 + phiRef(2*k) )
 c    &                             *maskC(i,j,k,bi,bj)
           ENDDO
