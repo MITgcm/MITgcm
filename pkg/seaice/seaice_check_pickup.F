@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.14 2014/05/23 20:00:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check_pickup.F,v 1.15 2016/04/28 15:42:03 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -204,7 +204,10 @@ C-    end nj loop
          IF ( useAvgFldsForITD ) THEN
           WRITE(msgBuf,'(3A)') '** WARNING ** SEAICE_CHECK_PICKUP:',
      &     ' no ITD fields available, restart from single category',
-     &     ' fields, i.e. AREA -> AREAITD, HEFF -> HEFFITD, etc.'
+     &     ' fields,'
+          CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK_PICKUP:',
+     &     ' i.e. AREA -> AREAITD, HEFF -> HEFFITD, etc.'
           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           CALL SEAICE_ITD_PICKUP( myIter, myThid )
          ENDIF
