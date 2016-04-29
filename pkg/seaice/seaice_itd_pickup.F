@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_itd_pickup.F,v 1.4 2014/10/20 03:20:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_itd_pickup.F,v 1.5 2016/04/29 14:28:38 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -101,20 +101,34 @@ C     flag for pickup scheme
       dummyTime = 1.0
 
 C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     reset ITD variables to zero for safety
+      DO k = 1, nITD
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           AREAITD(i,j,k,bi,bj)  = 0. _d 0
+           HEFFITD(i,j,k,bi,bj)  = 0. _d 0
+           HSNOWITD(i,j,k,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
       IF (simpleSchemeFlag) THEN
 C--      Put all ice into one bin:
 C
-         DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             AREAITD(i,j,1,bi,bj)  = AREA(i,j,bi,bj)
-             HEFFITD(i,j,1,bi,bj)  = HEFF(i,j,bi,bj)
-             HSNOWITD(i,j,1,bi,bj) = HSNOW(i,j,bi,bj)
-            ENDDO
-           ENDDO
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           AREAITD(i,j,1,bi,bj)  = AREA(i,j,bi,bj)
+           HEFFITD(i,j,1,bi,bj)  = HEFF(i,j,bi,bj)
+           HSNOWITD(i,j,1,bi,bj) = HSNOW(i,j,bi,bj)
           ENDDO
          ENDDO
+        ENDDO
+       ENDDO
 
 C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ELSE
