@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2247 2016/04/27 22:12:20 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2248 2016/04/29 14:29:04 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: ITD code
+  - fix picking up from a single category model by initialising 
+    heff/area/hsnowITD = 0. in seaice_itd_pickup.F
+  - split a long warning message in seaice_check_pickup.F into two lines,
+    because NEC SX-ACE cannot deal with the long line.
 o model/src:
   - fix missing dPhiNH in pressure_for_eos.F (case: selectP_inEOS_Zc=3)
 o pkg/seaice:
