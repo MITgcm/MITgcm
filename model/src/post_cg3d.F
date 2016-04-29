@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/post_cg3d.F,v 1.4 2012/04/11 15:49:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/post_cg3d.F,v 1.5 2016/04/29 18:13:30 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -104,13 +104,13 @@ C        rStar : take vertical average of P_NH as Hyd.Surf.Press adjustment
          IF ( selectNHfreeSurf.GE.1 ) THEN
           DO j=1,sNy
            DO i=1,sNx
-             tmpSurf = deltaTMom*deltaTfreesurf
+             tmpSurf = deltaTMom*deltaTFreeSurf
      &                *Bo_surf(i,j,bi,bj)*recip_drC(1)
      &                *implicitNHPress*implicDiv2DFlow
              dPhiNH(i,j,bi,bj) = ( tmpSurf*dPhiNH(i,j,bi,bj)
      &           + Bo_surf(i,j,bi,bj)*
      &                  ( etaH(i,j,bi,bj)-etaN(i,j,bi,bj)
-     &                   +implicDiv2DFlow*deltaTfreesurf
+     &                   +implicDiv2DFlow*deltaTFreeSurf
 c    &                                   *(wVel(i,j,1,bi,bj)+PmE)
      &                                   *wVel(i,j,1,bi,bj)
      &                  )        )/(1. _d 0 + tmpSurf )
@@ -147,6 +147,7 @@ C--   Update surface pressure (account for NH-p @ surface level) and NH pressure
           DO i=1-OLx,sNx+OLx
             etaN(i,j,bi,bj) = etaN(i,j,bi,bj)
      &                      + recip_Bo(i,j,bi,bj)*dPhiNH(i,j,bi,bj)
+            dPhiNH(i,j,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
 
