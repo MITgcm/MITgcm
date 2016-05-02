@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/post_cg3d.F,v 1.5 2016/04/29 18:13:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/post_cg3d.F,v 1.6 2016/05/02 17:59:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -120,7 +120,7 @@ c    &                                   *(wVel(i,j,1,bi,bj)+PmE)
         ENDDO
        ENDDO
        IF ( selectNHfreeSurf.GE.1 .AND.
-     &      implicitNHPress.LT.1. _d 0 ) THEN
+     &  ( implicitNHPress.LT.oneRL .OR. selectP_inEOS_Zc.EQ.3 ) ) THEN
          CALL EXCH_XY_RL( dPhiNH, myThid )
        ENDIF
       ENDIF
