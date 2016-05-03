@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.83 2016/02/15 17:59:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.84 2016/05/03 23:25:40 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -573,7 +573,7 @@ c     ENDIF
       ENDIF
 
       IF ( useRealFreshWaterFlux .AND. exactConserv
-     &     .AND. implicDiv2Dflow.EQ.0. _d 0
+     &     .AND. implicDiv2DFlow.EQ.0. _d 0
      &     .AND. startTime.NE.baseTime .AND. usePickupBeforeC54 ) THEN
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: RealFreshWaterFlux+implicSurfP=0+exactConserv:'
@@ -585,9 +585,9 @@ c     ENDIF
       ENDIF
 
       IF ( useRealFreshWaterFlux .AND. .NOT.exactConserv
-     &     .AND. implicDiv2Dflow.NE.1. ) THEN
+     &     .AND. implicDiv2DFlow.NE.1. ) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** CONFIG_CHECK: ',
-     &   'RealFreshWater & implicDiv2Dflow < 1'
+     &   'RealFreshWater & implicDiv2DFlow < 1'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(2A)') '** WARNING ** works better',
@@ -677,7 +677,7 @@ C--   Non-hydrostatic and 3-D solver related limitations:
         errCount = errCount + 1
       ENDIF
 
-      IF ( implicitNHPress*implicSurfPress*implicDiv2Dflow.NE.1.
+      IF ( implicitNHPress*implicSurfPress*implicDiv2DFlow.NE.1.
      &     .AND. implicitIntGravWave ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: implicitIntGravWave',
      &    ' NOT SAFE with non-fully implicit solver'
@@ -687,10 +687,20 @@ C--   Non-hydrostatic and 3-D solver related limitations:
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
+      IF ( implicitNHPress*implicSurfPress*implicDiv2DFlow.EQ.0.
+     &     .AND. nonHydrostatic ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &   'Needs non-zero implicit factors (i.e., implicitNHPress,'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &   ' implicSurfPress & implicDiv2DFlow) to run nonHydrostatic'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
       IF ( nonHydrostatic .AND. .NOT.exactConserv
-     &     .AND. implicDiv2Dflow.NE.1. ) THEN
+     &     .AND. implicDiv2DFlow.NE.1. ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: Needs exactConserv=T',
-     &               ' for nonHydrostatic with implicDiv2Dflow < 1'
+     &               ' for nonHydrostatic with implicDiv2DFlow < 1'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
