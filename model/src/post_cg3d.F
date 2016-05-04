@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/post_cg3d.F,v 1.6 2016/05/02 17:59:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/post_cg3d.F,v 1.7 2016/05/04 22:10:37 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -51,7 +51,7 @@ C     == Local variables ==
       INTEGER ks
       CHARACTER*10 sufx
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL     tmpSurf
+      _RL     locGamma
 CEOP
 
 C--   Separate the Hydrostatic Surface Pressure adjusment (=> put it in dPhiNH)
@@ -59,14 +59,33 @@ C     from the Non-hydrostatic pressure (since cg3d_x contains both contribution
       IF ( nonHydrostatic .AND. exactConserv ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         IF ( select_rStar.EQ.0 .AND. uniformFreeSurfLev ) THEN
+
+         IF ( selectNHfreeSurf.GE.1 ) THEN
+          DO j=1,sNy
+           DO i=1,sNx
+            locGamma = drC(1)*recip_Bo(i,j,bi,bj)
+     &               /( deltaTMom*deltaTFreeSurf
+     &                 *implicitNHPress*implicDiv2DFlow )
+            ks = 1
+c           ks = kSurfC(i,j,bi,bj)
+c           IF ( ks.LE.Nr ) THEN
+             dPhiNH(i,j,bi,bj) = ( phi_nh(i,j,ks,bi,bj)
+     &           + locGamma*Bo_surf(i,j,bi,bj)
+     &                     *implicDiv2DFlow*deltaTFreeSurf
+c    &                     *( wVel(i,j,ks,bi,bj) - wSurfP2d(i,j) )
+     &                     *( wVel(i,j,ks,bi,bj) - dPhiNH(i,j,bi,bj) )
+     &                           )/(1. _d 0 + locGamma )
+c           ENDIF
+           ENDDO
+          ENDDO
+         ELSEIF ( uniformFreeSurfLev ) THEN
 C-       Z coordinate: assume surface @ level k=1
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
              dPhiNH(i,j,bi,bj) = phi_nh(i,j,1,bi,bj)
            ENDDO
           ENDDO
-         ELSEIF ( select_rStar.EQ.0 ) THEN
+         ELSE
 C-       Other than Z coordinate: no assumption on surface level index
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
@@ -78,45 +97,8 @@ C-       Other than Z coordinate: no assumption on surface level index
             ENDIF
            ENDDO
           ENDDO
-#ifdef NONLIN_FRSURF
-         ELSE
-C        rStar : take vertical average of P_NH as Hyd.Surf.Press adjustment
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-             dPhiNH(i,j,bi,bj) = 0.
-           ENDDO
-          ENDDO
-          DO k=1,Nr
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             dPhiNH(i,j,bi,bj) = dPhiNH(i,j,bi,bj)
-     &         + phi_nh(i,j,k,bi,bj)*drF(k)*h0FacC(i,j,k,bi,bj)
-            ENDDO
-           ENDDO
-          ENDDO
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-             dPhiNH(i,j,bi,bj) = dPhiNH(i,j,bi,bj)*recip_Rcol(i,j,bi,bj)
-           ENDDO
-          ENDDO
-#endif /* NONLIN_FRSURF */
          ENDIF
-         IF ( selectNHfreeSurf.GE.1 ) THEN
-          DO j=1,sNy
-           DO i=1,sNx
-             tmpSurf = deltaTMom*deltaTFreeSurf
-     &                *Bo_surf(i,j,bi,bj)*recip_drC(1)
-     &                *implicitNHPress*implicDiv2DFlow
-             dPhiNH(i,j,bi,bj) = ( tmpSurf*dPhiNH(i,j,bi,bj)
-     &           + Bo_surf(i,j,bi,bj)*
-     &                  ( etaH(i,j,bi,bj)-etaN(i,j,bi,bj)
-     &                   +implicDiv2DFlow*deltaTFreeSurf
-c    &                                   *(wVel(i,j,1,bi,bj)+PmE)
-     &                                   *wVel(i,j,1,bi,bj)
-     &                  )        )/(1. _d 0 + tmpSurf )
-           ENDDO
-          ENDDO
-         ENDIF
+
         ENDDO
        ENDDO
        IF ( selectNHfreeSurf.GE.1 .AND.

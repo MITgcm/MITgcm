@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/pre_cg3d.F,v 1.5 2012/04/11 15:49:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/pre_cg3d.F,v 1.6 2016/05/04 22:10:37 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,17 +53,16 @@ C     myThid          :: My Thread Id number
 #ifdef ALLOW_NONHYDROSTATIC
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     wSurfP2d :: surface vertical velocity after 2-D solver
       INTEGER i,j,k,bi,bj
       INTEGER ks, kp1
 c     CHARACTER*10 sufx
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL     tmpFac, tmpSurf
+      _RL     locGamma, surfFac, tmpFac
       _RL     wFacKm, wFacKp
       _RL     uf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     vf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#ifdef NONLIN_FRSURF
-      _RL     tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif
+      _RL     wSurfP2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
 c     IF ( use3Dsolver ) THEN
@@ -73,83 +72,93 @@ C     see CG3D.h for the interface to this routine.
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
 
-C--   Add EmPmR contribution to top level cg3d_b:
-C      (has been done for cg2d_b ; and addMass was added by CALC_DIV_GHAT)
-        IF ( useRealFreshWaterFlux.AND.fluidIsWater ) THEN
-          tmpFac = freeSurfFac*mass2rUnit*implicDiv2DFlow
-          ks = 1
-          IF ( usingPCoords ) ks = Nr
-          DO j=1,sNy
-           DO i=1,sNx
-            cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
-     &        + tmpFac*_rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)/deltaTMom
-     &                               *maskInC(i,j,bi,bj)
+C--   Calculate updated (after 2-D solver) vertical velocity at the surface
+         IF ( oldFreeSurfTerm .OR. implicDiv2DFlow.EQ.zeroRL ) THEN
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              wSurfP2d(i,j) = 0. _d 0
+            ENDDO
            ENDDO
-          ENDDO
-        ENDIF
+         ELSE
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+               wSurfP2d(i,j) = ( etaN(i,j,bi,bj)-etaH(i,j,bi,bj) )
+     &                       / ( implicDiv2DFlow*deltaTFreeSurf )
+            ENDDO
+           ENDDO
+         ENDIF
+
+C--   Add EmPmR contribution to top level cg3d_b or to wSurfP2d:
+C      (has been done for cg2d_b ; and addMass was added by CALC_DIV_GHAT)
+         IF ( useRealFreshWaterFlux.AND.fluidIsWater ) THEN
+          IF ( oldFreeSurfTerm .OR. usingPCoords ) THEN
+           tmpFac = freeSurfFac*mass2rUnit*implicDiv2DFlow/deltaTMom
+           ks = 1
+           IF ( usingPCoords ) ks = Nr
+           DO j=1,sNy
+            DO i=1,sNx
+              cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
+     &          + tmpFac*_rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)
+     &                                 *maskInC(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ELSE
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              wSurfP2d(i,j) = wSurfP2d(i,j)
+     &                      + EmPmR(i,j,bi,bj)*mass2rUnit
+     &                                 *maskInC(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDIF
+         ENDIF
 
 C--   Update or Add free-surface contribution to cg3d_b:
-         IF ( select_rStar.EQ.0 .AND. .NOT.oldFreeSurfTerm ) THEN
-           tmpFac = 0.
+         surfFac = 0.
+         IF ( selectNHfreeSurf.GE.1 ) THEN
+           tmpFac = freeSurfFac*implicDiv2DFlow/deltaTMom
            DO j=1,sNy
             DO i=1,sNx
-              IF ( selectNHfreeSurf.GE.1 ) THEN
-               tmpSurf = deltaTMom*deltaTfreesurf
-     &                  *Bo_surf(i,j,bi,bj)*recip_drC(1)
-     &                  *implicitNHPress*implicDiv2DFlow
-               tmpSurf = ( tmpSurf*( etaN(i,j,bi,bj)-etaH(i,j,bi,bj) )
-     &                    +implicDiv2DFlow*deltaTfreesurf
-c    &                                    *(wVel(i,j,1,bi,bj)+PmE)
-     &                                    *wVel(i,j,1,bi,bj)
-     &                   )/(1. _d 0 + tmpSurf )
-              ELSE
-               tmpSurf = etaN(i,j,bi,bj)-etaH(i,j,bi,bj)
-              ENDIF
+              locGamma = drC(1)*recip_Bo(i,j,bi,bj)
+     &                 /( deltaTMom*deltaTFreeSurf
+     &                   *implicitNHPress*implicDiv2DFlow )
+              ks = 1
+c             ks = kSurfC(i,j,bi,bj)
+c             IF ( ks.LE.Nr ) THEN
+               cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
+     &                      + tmpFac*( wSurfP2d(i,j)
+     &                               + locGamma*wVel(i,j,ks,bi,bj) )
+     &                              /( 1. _d 0 + locGamma )
+     &                              *_rA(i,j,bi,bj)*deepFac2F(ks)
+c             ENDIF
+C-    Save wSurfP2d (used in POST_CG3D) into dPhiNH :
+              dPhiNH(i,j,bi,bj) = wSurfP2d(i,j)
+            ENDDO
+           ENDDO
+         ELSEIF ( .NOT.oldFreeSurfTerm ) THEN
+           tmpFac = freeSurfFac*implicDiv2DFlow/deltaTMom
+           DO j=1,sNy
+            DO i=1,sNx
               ks = kSurfC(i,j,bi,bj)
               IF ( ks.LE.Nr ) THEN
                cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
-     &                  +freeSurfFac*tmpSurf
-c    &                  +freeSurfFac*(etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
+     &                      + tmpFac*wSurfP2d(i,j)
      &                              *_rA(i,j,bi,bj)*deepFac2F(ks)
-     &                              /deltaTMom/deltaTfreesurf
               ENDIF
             ENDDO
            ENDDO
-#ifdef NONLIN_FRSURF
-         ELSEIF ( select_rStar.NE.0 ) THEN
-           tmpFac = 0.
-           DO j=1,sNy
-            DO i=1,sNx
-              ks = kSurfC(i,j,bi,bj)
-              tmpVar(i,j) = freeSurfFac
-     &                    *( etaN(i,j,bi,bj) - etaH(i,j,bi,bj) )
-     &                    *_rA(i,j,bi,bj)*deepFac2F(ks)
-     &                    /deltaTMom/deltaTfreesurf
-     &                    *recip_Rcol(i,j,bi,bj)
-            ENDDO
-           ENDDO
-           DO k=1,Nr
-            DO j=1,sNy
-             DO i=1,sNx
-              cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
-     &          + tmpVar(i,j)*drF(k)*h0FacC(i,j,k,bi,bj)
-             ENDDO
-            ENDDO
-           ENDDO
-#endif /* NONLIN_FRSURF */
          ELSEIF ( uniformFreeSurfLev ) THEN
 C-       Z coordinate: assume surface @ level k=1
-           tmpFac = freeSurfFac*deepFac2F(1)
+           surfFac = freeSurfFac*deepFac2F(1)
          ELSE
 C-       Other than Z coordinate: no assumption on surface level index
-           tmpFac = 0.
            DO j=1,sNy
             DO i=1,sNx
               ks = kSurfC(i,j,bi,bj)
               IF ( ks.LE.Nr ) THEN
                cg3d_b(i,j,ks,bi,bj) = cg3d_b(i,j,ks,bi,bj)
-     &              +freeSurfFac*etaN(i,j,bi,bj)/deltaTfreesurf
-     &                  *_rA(i,j,bi,bj)*deepFac2F(ks)/deltaTmom
+     &              +freeSurfFac*etaN(i,j,bi,bj)/deltaTFreeSurf
+     &                  *_rA(i,j,bi,bj)*deepFac2F(ks)/deltaTMom
               ENDIF
             ENDDO
            ENDDO
@@ -190,9 +199,9 @@ C       always recomputed from continuity eq (like eta when exactConserv=T)
      &       -drF(k)*dyG( i ,j,bi,bj)*_hFacW( i ,j,k,bi,bj)*uf( i ,j)
      &       +drF(k)*dxG(i,j+1,bi,bj)*_hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
      &       -drF(k)*dxG(i, j ,bi,bj)*_hFacS(i, j ,k,bi,bj)*vf(i, j )
-     &       +( tmpFac*etaN(i,j,bi,bj)/deltaTfreesurf
+     &       +( surfFac*etaN(i,j,bi,bj)/deltaTFreeSurf
      &         -wVel(i,j,kp1,bi,bj)*wFacKp
-     &        )*_rA(i,j,bi,bj)/deltaTmom
+     &        )*_rA(i,j,bi,bj)/deltaTMom
           ENDDO
          ENDDO
          DO k=2,Nr
@@ -211,7 +220,7 @@ C        both appear in wVel term, but at 2 different levels
      &       -drF(k)*dxG(i, j ,bi,bj)*_hFacS(i, j ,k,bi,bj)*vf(i, j )
      &       +( wVel(i,j, k ,bi,bj)*wFacKm*maskC(i,j,k-1,bi,bj)
      &         -wVel(i,j,kp1,bi,bj)*wFacKp
-     &        )*_rA(i,j,bi,bj)/deltaTmom
+     &        )*_rA(i,j,bi,bj)/deltaTMom
            ENDDO
           ENDDO
          ENDDO
