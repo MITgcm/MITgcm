@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.28 2011/06/08 01:21:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.29 2016/05/04 22:09:54 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -50,7 +50,7 @@ C     myNorm   :: Work variable used in clculating normalisation factor
       _RL     theRecip_Dr
       _RL     aU, aL, aW, aE, aN, aS
       _RL     tmpFac, nh_Fac, igwFac
-      _RL     tmpSurf
+      _RL     locGamma
 CEOP
 
 CcnhDebugStarts
@@ -205,22 +205,30 @@ C-    Set solver main diagonal term
          ENDDO
         ENDDO
 C-    Add free-surface source term
-        IF ( select_rStar .EQ. 0 ) THEN
+        IF ( selectNHfreeSurf.GE.1 ) THEN
          DO j=1,sNy
           DO i=1,sNx
-           tmpSurf = 1.
-           IF ( selectNHfreeSurf.GE.1 ) THEN
-             tmpSurf = deltaTMom*deltaTfreesurf
-     &                *Bo_surf(i,j,bi,bj)*recip_drC(1)
-     &                *implicitNHPress*implicDiv2DFlow
-             tmpSurf = tmpSurf / (1. _d 0 + tmpSurf )
-           ENDIF
+           locGamma = drC(1)*recip_Bo(i,j,bi,bj)
+     &              /( deltaTMom*deltaTFreeSurf
+     &                *implicitNHPress*implicDiv2DFlow )
+           ks = 1
+c          ks = kSurfC(i,j,bi,bj)
+c          IF ( ks.LE.Nr ) THEN
+             aC3d(i,j,ks,bi,bj) = aC3d(i,j,ks,bi,bj)
+     &         - freeSurfFac*recip_Bo(i,j,bi,bj)
+     &          *rA(i,j,bi,bj)*deepFac2F(ks)/deltaTMom/deltaTFreeSurf
+     &          / (1. _d 0 + locGamma )
+c          ENDIF
+          ENDDO
+         ENDDO
+        ELSE
+         DO j=1,sNy
+          DO i=1,sNx
            ks = kSurfC(i,j,bi,bj)
            IF ( ks.LE.Nr ) THEN
              aC3d(i,j,ks,bi,bj) = aC3d(i,j,ks,bi,bj)
      &         - freeSurfFac*recip_Bo(i,j,bi,bj)
-     &          *rA(i,j,bi,bj)*deepFac2F(ks)/deltaTMom/deltaTfreesurf
-     &          *tmpSurf
+     &          *rA(i,j,bi,bj)*deepFac2F(ks)/deltaTMom/deltaTFreeSurf
            ENDIF
           ENDDO
          ENDDO
