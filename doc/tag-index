@@ -1,11 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2248 2016/04/29 14:29:04 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2249 2016/05/04 23:20:38 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src (non-hydrostatic free-surface):
+  - More "natural" expression of NH free-surface term (case selectNHfreeSurf=1):
+    was: tmpSurf/(1+tmpSurf); changed to: 1/(1+Gamma) with Gamma=1/tmpSurf.
+  - Calculate surface vertical velocity after 2-D solver adjustment (accounts
+    for EmPmR if RealFreshWaterFlux); used in RHS (cg3d_b) if exactConserv
+    and used to compute dPhiNH (in post_cg3d.F) if selectNHfreeSurf=1.
+    This fixes EmPmR contribution when selectNHfreeSurf=1 & RealFreshWaterFlux.
+  - Update output (changes at machine truncation level) of verification exp:
+    exp4 (11 digits for cg2d), global_ocean.cs32x15.viscA4 (11.d),
+    short_surf_wave (13.d) and tutorial_deep_convection.smag3d (12.d).
 o pkg/seaice: ITD code
-  - fix picking up from a single category model by initialising 
+  - fix picking up from a single category model by initialising
     heff/area/hsnowITD = 0. in seaice_itd_pickup.F
   - split a long warning message in seaice_check_pickup.F into two lines,
     because NEC SX-ACE cannot deal with the long line.
