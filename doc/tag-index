@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2249 2016/05/04 23:20:38 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2250 2016/05/08 19:15:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/global_ocean.cs32x15:
+  - change secondary test "viscA4" to also test "selectP_inEOS_Zc=3"
+    with "selectNHfreeSurf=1".
 o model/src (non-hydrostatic free-surface):
   - More "natural" expression of NH free-surface term (case selectNHfreeSurf=1):
     was: tmpSurf/(1+tmpSurf); changed to: 1/(1+Gamma) with Gamma=1/tmpSurf.
