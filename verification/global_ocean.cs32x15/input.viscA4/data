@@ -26,7 +26,9 @@
  vectorInvariantMomentum=.TRUE.,
  implicitFreeSurface=.TRUE.,
  exactConserv=.TRUE.,
+ selectP_inEOS_Zc=3,
  nonHydrostatic=.TRUE.,
+ selectNHfreeSurf=1,
  useNHMTerms=.TRUE.,
  hFacInf=0.2,
  hFacSup=2.0,
@@ -35,6 +37,7 @@
  hFacMin=.1,
  hFacMinDr=20.,
  readBinaryPrec=64,
+#writeBinaryPrec=64,
  useSingleCpuIO=.TRUE.,
  &
 
@@ -56,7 +59,6 @@
  forcing_In_AB=.FALSE.,
  pickupStrictlyMatch=.FALSE.,
  pChkptFreq  =31104000.,
-#chkptFreq   =311040000.,
  taveFreq    =31104000.,
  dumpFreq    =31104000.,
  monitorFreq =86400.,
