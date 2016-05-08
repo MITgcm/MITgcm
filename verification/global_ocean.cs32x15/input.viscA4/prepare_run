@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/input.viscA4/prepare_run,v 1.1 2006/07/16 03:41:25 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/input.viscA4/prepare_run,v 1.2 2016/05/08 18:32:09 jmc Exp $
 #  $Name:  $
- 
+
 #- in order to save disc space, un-gzip files
 #- from this dir:
 fromDir="../input.viscA4"
@@ -11,28 +11,32 @@ fileList=`( cd $fromDir ; echo *.gz | sed 's/\.gz//g' )`
 
 #echo 'fileList=' $fileList
 
-#- copy the gz file in the current directory and unzip 
+#- copy the gz file in the current directory and unzip
 #   (if the file does not already exist)
 if test -d $fromDir ; then
-  lnkList='files:'
+  lnkList=''
   for xx in $fileList
   do
-    if test -r ${xx}.gz ; then 
-      if test ! -r $xx ; then 
+    if test -r ${xx}.gz ; then
+      if test ! -r $xx -o $xx -ot ${xx}.gz ; then
+        # file does not exist or is older than compressed version:
         lnkList=${lnkList}" "$xx
         gunzip -f ${xx}.gz
       fi
     fi
   done
+  if test "x$lnkList" != 'x' ; then
+    echo -n " unzip files:$lnkList " ; lnkList=';'
+  fi
 #-- a trick to rename pickup by making a symbolic link in the current directory
       xx='pickup.0000086400'
       yy='pickup.0000072000'
-      if test ! -r $xx ; then 
-        lnkList=${lnkList}" "$xx
+      if test ! -r $xx ; then
+        lnkList="$lnkList +link $yy to $xx"
         ln -sf $yy $xx
       fi
+  echo "$lnkList"
 #------
-  echo ' unzip' $lnkList
 else
   echo " Error:" $fromDir "not a directory"
 fi
