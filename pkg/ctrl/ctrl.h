@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.78 2015/10/26 03:21:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl.h,v 1.79 2016/05/09 11:39:00 mlosch Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -307,7 +307,7 @@ C
       common /controlvars_r_openad/
      &        xx_place_holder
 # ifdef ECCO_CTRL_DEPRECATED
-     &        xx_theta
+     &      , xx_theta
      &      , xx_salt
      &      , xx_uvel
      &      , xx_vvel
