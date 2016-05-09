@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2250 2016/05/08 19:15:17 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2251 2016/05/09 11:41:02 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl/ctrl.h: fix a comma in common block list, so that code compiles
+     with ECCO_CTRL_DEPRECATED defined
 o verification/global_ocean.cs32x15:
   - change secondary test "viscA4" to also test "selectP_inEOS_Zc=3"
     with "selectNHfreeSurf=1".
