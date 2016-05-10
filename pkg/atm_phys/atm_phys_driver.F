@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.7 2015/12/21 20:04:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.8 2016/05/10 22:51:59 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -370,21 +370,15 @@ c    &      tdt3d(1,1,15)*86400., tdt3d(1,sNy,15)*86400.
         CALL MIXED_LAYER(
      I                    myTime,
      U                    t_surf(:,:),
-     I                    flux_t(:,:),
-     I                    flux_q(:,:),
-     I                    flux_r(:,:),
+     U                    flux_t(:,:), flux_q(:,:), flux_r(:,:),
      I                    deltaT,
-     I                    s_sw_dwn(:,:),
-     I                    s_lw_dwn(:,:),
+     I                    s_sw_dwn(:,:), s_lw_dwn(:,:),
      U                    tri_surf_dtmass,
      U                    tri_surf_dflux_t, tri_surf_dflux_q,
      U                    tri_surf_delta_t, tri_surf_delta_q,
-     I                    dhdt_surf(:,:),
-     I                    dedt_surf(:,:),
-     I                    dedq_surf(:,:),
-     I                    drdt_surf(:,:),
-     I                    dhdt_atm(:,:),
-     I                    dedq_atm(:,:),
+     I                    dhdt_surf(:,:), dedt_surf(:,:),
+     I                    dedq_surf(:,:), drdt_surf(:,:),
+     I                    dhdt_atm(:,:),  dedq_atm(:,:),
      I                    ocean_qflux, mixLayDepth,
      O                    delta_t_surf(:,:),
      I                    myThid )
