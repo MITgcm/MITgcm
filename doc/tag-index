@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2251 2016/05/09 11:41:02 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2252 2016/05/12 14:42:46 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint65w (2016/05/12)
 o pkg/ctrl/ctrl.h: fix a comma in common block list, so that code compiles
      with ECCO_CTRL_DEPRECATED defined
 o verification/global_ocean.cs32x15:
