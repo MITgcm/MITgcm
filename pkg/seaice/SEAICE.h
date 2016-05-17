@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.83 2016/04/22 08:41:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.84 2016/05/17 15:26:46 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -120,23 +120,23 @@ C--   Dynamical variables
       _RL vIceC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #else
       COMMON/SEAICE_DYNVARS_CGRID/
-     &     seaiceMassC, seaiceMassU, seaiceMassV, tensileStrength
-      _RL seaiceMassC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL seaiceMassU    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL seaiceMassV    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C     the maximal tensile stress that ice able to withstand, 
-C     in analogy to the maximal compressive stress PRESS0
-      _RL tensileStrength(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+     &     seaiceMassC, seaiceMassU, seaiceMassV
+      _RL seaiceMassC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL seaiceMassU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL seaiceMassV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
       COMMON/SEAICE_DYNVARS_4/
-     &     DWATN, PRESS0, FORCEX0, FORCEY0, ZMAX, ZMIN
+     &     DWATN, PRESS0, FORCEX0, FORCEY0, ZMAX, ZMIN, tensileStrFac
       _RL DWATN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL PRESS0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL FORCEX0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL FORCEY0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ZMAX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ZMIN       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     factor k to compute the maximal tensile stress from k*PRESS0,
+C     in analogy to the maximal compressive stress PRESS0
+      _RL tensileStrFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
       COMMON/SEAICE_BOTTOMDRAG/ CbotC
       _RL CbotC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

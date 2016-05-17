@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.91 2016/04/22 08:50:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.92 2016/05/17 15:26:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -49,6 +49,7 @@ C     i,j,k,bi,bj :: Loop counters
 #ifdef OBCS_UVICE_OLD
       INTEGER I_obc, J_obc
 #endif /* ALLOW_OBCS */
+      _RL recip_tensilDepth
 
       IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
        kSurface = Nr
@@ -280,7 +281,6 @@ C
           seaiceMassC(i,j,bi,bj)=0. _d 0
           seaiceMassU(i,j,bi,bj)=0. _d 0
           seaiceMassV(i,j,bi,bj)=0. _d 0
-          tensileStrength  (i,j,bi,bj) = 0. _d 0
           stressDivergenceX(i,j,bi,bj) = 0. _d 0
           stressDivergenceY(i,j,bi,bj) = 0. _d 0
 # ifdef SEAICE_ALLOW_EVP
@@ -308,6 +308,7 @@ C
           ZMAX(i,j,bi,bj)   = 0. _d 0
           ZMIN(i,j,bi,bj)   = 0. _d 0
           HSNOW(i,j,bi,bj)  = 0. _d 0
+          tensileStrFac(i,j,bi,bj) = 0. _d 0
 CToM<<<
 #ifdef SEAICE_ITD
           DO k=1,nITD
@@ -691,6 +692,26 @@ C---  Complete initialization
         ENDIF
        ENDDO
       ENDDO
+#ifdef SEAICE_CGRID
+C     compute tensile strength factor k: tensileStrength = k*PRESS
+C     can be done in initialisation phase as long as it depends only 
+C     on depth
+      IF ( SEAICE_tensilFac .NE. 0. _d 0 ) THEN
+       recip_tensilDepth = 0. _d 0
+       IF ( SEAICE_tensilDepth .GT. 0. _d 0 ) 
+     &      recip_tensilDepth = 1. _d 0 / SEAICE_tensilDepth
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           tensileStrFac(i,j,bi,bj) = SEAICE_tensilFac*HEFFM(i,j,bi,bj)
+     &          *exp(-ABS(R_low(i,j,bi,bj))*recip_tensilDepth)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* SEAICE_CGRID */
 
       RETURN
       END

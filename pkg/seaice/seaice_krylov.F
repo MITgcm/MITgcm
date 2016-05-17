@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_krylov.F,v 1.2 2016/04/22 08:50:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_krylov.F,v 1.3 2016/05/17 15:26:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -221,7 +221,7 @@ C     the Krylov iteration)
      O      e11, e22, e12,
      I      0, myTime, myIter, myThid )
        CALL SEAICE_CALC_VISCOSITIES(
-     I      e11, e22, e12, zMin, zMax, hEffM, press0, tensileStrength,
+     I      e11, e22, e12, zMin, zMax, hEffM, press0, tensileStrFac,
      O      eta, etaZ, zeta, zetaZ, press, deltaC,
      I      0, myTime, myIter, myThid )
 C     compute rhs that does not change during Krylov iteration

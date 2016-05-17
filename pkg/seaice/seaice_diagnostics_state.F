@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.32 2015/09/10 15:56:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.33 2016/05/17 15:26:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -127,8 +127,30 @@ C     division by zero is not possible
        CALL DIAGNOSTICS_FILL(press  ,'SIpress ',0,1 ,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(deltaC ,'SIdelta ',0,1 ,0,1,1,myThid)
 #ifdef SEAICE_CGRID
-       CALL DIAGNOSTICS_FILL(tensileStrength,
-     &                               'SItensil',0,1 ,0,1,1,myThid)
+       IF ( DIAGNOSTICS_IS_ON('SItensil',myThid) ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+C     use tIce as a temporary field
+          DO j=1,sNy
+           DO i=1,sNx
+            IF ( tensileStrFac(I,J,bi,bj) .EQ. 1. _d 0) THEN
+C     This special case of tensile strength equal to compressive strength
+C     is not very physical and should actually not happen but you never know;
+C     in this case, press = P-T = P*(1-k) = 0. and we have to use press0 to
+C     get something
+             tIce(I,J,bi,bj) = press0(I,J,bi,bj)
+            ELSE
+C     This is more complicated than you think because press = P-T = P*(1-k),
+C     but we are looking for T = k*P = k*press/(1-k)
+             tIce(I,J,bi,bj) = tensileStrFac(I,J,bi,bj)
+     &            *press(I,J,bi,bj)/(1. _d 0 - tensileStrFac(I,J,bi,bj))
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL DIAGNOSTICS_FILL(tIce,'SItensil',0,1 ,0,1,1,myThid)
+       ENDIF
        IF ( DIAGNOSTICS_IS_ON('SIsigI  ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIsigII ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIshear ',myThid) ) THEN

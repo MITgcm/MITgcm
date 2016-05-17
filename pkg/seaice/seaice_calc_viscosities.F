@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.35 2015/12/22 17:00:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_viscosities.F,v 1.36 2016/05/17 15:26:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -9,7 +9,7 @@ C $Name:  $
 CBOP
 CStartOfInterface
       SUBROUTINE SEAICE_CALC_VISCOSITIES(
-     I     e11, e22, e12, zMin, zMax, hEffM, press0, tensil,
+     I     e11, e22, e12, zMin, zMax, hEffM, press0, tnsFac,
      O     eta, etaZ, zeta, zetaZ, press, deltaC,
      I     iStep, myTime, myIter, myThid )
 C     *==========================================================*
@@ -52,7 +52,8 @@ C
       _RL press (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C
       _RL deltaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL tensil(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     factor k to compute tensile strength from k*press0
+      _RL tnsFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     bulk viscosity
       _RL  eta  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  etaZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -156,7 +157,7 @@ C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
      &         *(1. _d 0 - argTmp)/(1. _d 0 + argTmp)
 #else
           zeta (I,J,bi,bj) = HALF*( press0(I,J,bi,bj) 
-     &         + tensil(I,J,bi,bj) 
+     &         * ( 1. _d 0 + tnsFac(I,J,bi,bj) )
      &         )/deltaCreg
 C     put min and max viscosities in
           zeta (I,J,bi,bj) = MIN(ZMAX(I,J,bi,bj),zeta(I,J,bi,bj))
@@ -166,10 +167,15 @@ C     set viscosities to zero at hEffM flow pts
           zeta (I,J,bi,bj) = zeta(I,J,bi,bj)*HEFFM(I,J,bi,bj)
           eta  (I,J,bi,bj) = recip_e2*zeta(I,J,bi,bj)
 C     "replacement pressure"
-          press(I,J,bi,bj) =TWO*zeta(I,J,bi,bj)*deltaC(I,J,bi,bj)
-     &         * SEAICEpressReplFac
-     &         + press0(I,J,bi,bj)*( 1. _d 0 - SEAICEpressReplFac )
-     &         - 2. _d 0 * tensil(I,J,bi,bj)
+          press(I,J,bi,bj) =
+     &         ( press0(I,J,bi,bj)*( 1. _d 0 - SEAICEpressReplFac )
+     &         + TWO*zeta(I,J,bi,bj)*deltaC(I,J,bi,bj)
+     &         * SEAICEpressReplFac/( 1. _d 0 + tnsFac(I,J,bi,bj) )
+     &         ) * ( 1. _d 0 - tnsFac(I,J,bi,bj) )
+CML          press(I,J,bi,bj) = press0(I,J,bi,bj) *
+CML     &         ( 1. _d 0 + SEAICEpressReplFac
+CML     &                  * ( deltaC(I,J,bi,bj)/deltaCreg - 1. _d 0 )
+CML     &         ) * ( 1. _d 0 - tnsFac(I,J,bi,bj) )
          ENDDO
         ENDDO
 #ifdef SEAICE_ALLOW_TEM
