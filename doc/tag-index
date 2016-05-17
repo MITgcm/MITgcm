@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2252 2016/05/12 14:42:46 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2253 2016/05/17 15:27:06 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice: fix tensile stength computation
+  - replace global field tensileStrength by tensileStrFac
+  - tensileStrFac can be computed once in S/R seaice_init_varia
+  - fortunately that does not affect any verification results
 
 checkpoint65w (2016/05/12)
 o pkg/ctrl/ctrl.h: fix a comma in common block list, so that code compiles
