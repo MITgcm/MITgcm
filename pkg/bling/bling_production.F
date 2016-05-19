@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.1 2016/05/19 20:29:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.2 2016/05/19 21:06:26 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -189,6 +189,9 @@ c  Initialize output and diagnostics
               N_den_benthic(i,j,k)= 0. _d 0
               P_uptake(i,j,k)     = 0. _d 0
               Fe_uptake(i,j,k)    = 0. _d 0
+              N_dvm(i,j,k)        = 0. _d 0
+              P_dvm(i,j,k)        = 0. _d 0
+              Fe_dvm(i,j,k)       = 0. _d 0
               CaCO3_uptake(i,j,k) = 0. _d 0
               DON_prod(i,j,k)     = 0. _d 0
               DOP_prod(i,j,k)     = 0. _d 0
