@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2253 2016/05/17 15:27:06 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2254 2016/05/19 20:31:27 mmazloff Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o added pkg/bling:
+  - intermediate complexity biogeochemical model 
+  - see bling_description.txt for details
+  - verification experiment is global_oce_biogeo_bling
 
 o pkg/seaice: fix tensile stength computation
   - replace global field tensileStrength by tensileStrFac
