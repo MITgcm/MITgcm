@@ -1,0 +1,32 @@
+The "BLING" package is adapted from the Biogeochemistry with Light, Iron, Nutrient and Gas version two (BLINGv2) model developed at GFDL by Eric Galbraith and collaborators. Several subroutines, such as air-sea exchange and carbonate chemistry, are adapted from the "DIC" package. It is compatible with the MITgcm adjoint.
+
+The original BLING model, described in Galbraith et al (2010), simulates a simplified ecosystem and the cycling of phosphorus, iron, carbon, and oxygen. Version two adds nitrogen cycling and more complexity to the ecosystem. It includes 3 phytoplankton classes.
+
+
+For more information see:
+
+Galbraith, E.D., Gnanadesikan, A., Dunne, J. and Hiscock, M. 2010. Regional impacts of iron-light colimitation in a global biogeochemical model. Biogeosciences, 7, 1043-1064.
+
+http://www.gfdl.noaa.gov/simplified-ocean-biogeochemistry-bling
+
+https://sites.google.com/site/blingmodel/
+
+
+
+Below are the notes from the original file generic_BLING.v2.F90:
+
+Biogeochemistry with Light, Iron, Nutrient and Gas version two (BLINGv2) includes an implicit ecological model of growth limitation by light, temperature, nitrogen, phosphorus and iron, and simulates organic and O2 pools.
+
+BLINGv2 differs from blingv0 by including a nitrogen cycle (with N2 fixation and denitrification) and flexible N:P stoichiometry. The iron limitation is now treated slightly differently, in order to be consistent with P. In addition, the phytoplankton biomass is now treated as a non-advected tracer (i.e. a diagnostic tracer in GFDL parlance) for the purpose of calculating uptake, which relaxes the strict assumption of balanced growth. There is also a subgridscale sediment parameterization, to capture fine-scale bathymetric features in particle remineralization, and a diel vertical migrator (DVM) parameterization for export and remineralization. In addition, there are numerous small changes and re-tunings. 
+
+Food web processing in the euphotic zone is handled following the empirical relationships discussed by Dunne et al. (2005). O2 equilibria and gas exchange follow OCMIP2 protocols.
+
+BLING is a biogeochemistry tool, with ecosystem-like behaviour, rather than a full-complexity ecosystem model. It takes certain computational shortcuts in order to represent well-known features of ecosystems, but without having to resolve the ecosystem components explicitly. Most importantly, living and particulate organic matter is not subject to advection and mixing due to ocean circulation. Particular caution should be applied when interpreting small-scale behaviour (scales of advection per week) and the detailed timing of growth in dynamic environments, such as during spring blooms.
+
+This model is available for public use. The current version is blingv2. The version number refers to the core model behaviour; additional tracers exist in different iterations of the module. There is not yet a publication. blingv0 can be referenced as:
+Galbraith, E.D., Gnanadesikan, A., Dunne, J. and Hiscock, M. 2010. Regional impacts of iron-light colimitation in a global biogeochemical model. Biogeosciences, 7, 1043-1064.
+
+All parameter values are as described in this paper. Note that this reference is only for the core model components, and does not include any of the additional functionalities, which remain undocumented. Please contact Eric Galbraith (eric.galbraith@mcgill.ca) for more information.
+
+
+
