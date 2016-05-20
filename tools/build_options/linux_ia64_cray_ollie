@@ -1,0 +1,80 @@
+#!/bin/bash
+#
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_ollie,v 1.1 2016/05/20 14:32:13 mlosch Exp $
+# $Name:  $
+
+# Tested on cray XC30 ollie.awi.de 
+# with these settings
+# module load craype-haswell
+# module load PrgEnv-cray
+# module load cray-libsci
+# module swap mvapich2_cce cray-impi
+# module load intel/impi-5.1.3
+# module load netcdf
+# export LD_LIBRARY_PATH=$CRAY_LD_LIBRARY_PATH:$LD_LIBRARY_PATH:
+
+FC='ftn'
+CC='cc'
+
+# so far netcdf libraries do noe seem to be available on the compute 
+# nodes, so turn this feature off
+SKIP_NETCDF_CHECK=TRUE
+
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X)  X ## _"
+DEFINES='-DWORDLENGTH=4 '
+CPP='cpp -traditional -P'
+EXTENDED_SRC_FLAG='-Mextend'
+#OMPFLAG=''
+GET_FC_VERSION="-V"
+RMFILES='*.lst'
+
+NOOPTFLAGS="-O0"
+NOOPTFILES=''
+
+FFLAGS="$FFLAGS -h byteswapio -hnoomp" 
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8" ???
+#FFLAGS="$FFLAGS -Wl,--whole-archive,-lhugetlbfs,--no-whole-archive -Wl,-Ttext-segment=0x20000000,-zmax-page-size=0x20000000 "
+
+if test "x$IEEE" = x ; then     #- with optimisation:
+# this is the default
+#   FOPTIM='-O2'
+# more aggressive
+    FOPTIM="-O ipa3 -hfp3 -O3 "
+else
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    FOPTIM="-O0 -hfp0"
+   # -fltconsistency
+  else                          #- development/check options:
+    FOPTIM="-O0 -hfp0"
+    FOPTIM="$FOPTIM -g -hfp0 -Rbc"
+    # -r[list_ opt] produces a source listing file *.lst, -rm produces a 
+    # listing with loopmark information and much more, not needed
+    # for simple tests
+    # -hmsgs -hnegmsgs writes a lot of optimisation messages to stderr
+    #FOPTIM="$FOPTIM -rm -hmsgs -hnegmsgs"
+  fi
+fi
+
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+CFLAGS="-O0 $MCMODEL"
+
+# after "module load netcdf" the following should be available
+if test "x$SKIP_NETCDF_CHECK" = x ; then
+    INCLUDES="$INCLUDES -I$NETCDF_INC"
+    LIBS="$LIBS -L$NETCDF_LIB -lnetcdf -lnetcdff -lcurl -lgfortran -lhdf5 -lhdf5_hl"
+fi
+# after "module load intel/impi-5.1.3", I_MPI_ROOT should be available
+#MPI_INC_DIR=" -I/opt/cray/mvapich2_cce/1.9/CRAY/83/include"
+#MPI_INC_DIR="-I${INCLUDE_PATH_X86_64}"
+MPI_INC_DIR=${I_MPI_ROOT}/include64
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
+    # LIBS="$LIBS -lmpich"
+    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
+    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
+    #- used for parallel (MPI) DIVA
+    # MPIINCLUDEDIR="$MPI_INC_DIR"
+    # MPI_HEADER_FILES='mpif.h mpiof.h'
+fi
+
