@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.25 2016/05/10 14:41:00 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.26 2016/05/20 19:16:00 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
@@ -102,6 +102,9 @@ do
   addExp=''
   if test $typ = 'mp2' -o $typ = 'ifc' ; then
     addExp="offline_cheapaml atm_gray"
+  fi
+  if test $typ = 'gfo' ; then
+    addExp="$addExp global_oce_biogeo_bling"
   fi
   if test $typ = 'gfo' ; then
     addExp="$addExp shelfice_remeshing"
