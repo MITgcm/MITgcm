@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_fixed.F,v 1.11 2009/06/30 16:43:00 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_fixed.F,v 1.12 2016/05/23 13:09:31 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -29,29 +29,34 @@ C     !LOCAL VARIABLES:
 C jmc: simpler to put MASTER thread directive within individual S/R :
 C      that leave the choice, for each S/R, to do either single (master)
 C      thread tasks or Multi-threaded tasks.
-c        _BEGIN_MASTER( mythid )
+c        _BEGIN_MASTER( myThid )
 ccccccccccccccccccccccccccc
 c initialize parameters   c
 ccccccccccccccccccccccccccc
-#ifdef ALLOW_DIC
-      IF ( useDIC ) THEN
-          print*,'QQ load dic parameters, initial fixed'
-          CALL DIC_INIT_FIXED( myThid )
-      ENDIF
-#endif /* ALLOW_DIC */
 #ifdef ALLOW_CFC
       IF ( useCFC ) THEN
-          print*,'QQ start cfc params'
-          CALL CFC_PARAM( myThid )
-          print*,'QQ read cfc atmos data'
-          CALL CFC_ATMOS( myThid )
+         print*,'QQ start cfc params'
+         CALL CFC_PARAM( myThid )
+         print*,'QQ read cfc atmos data'
+         CALL CFC_ATMOS( myThid )
       ENDIF
 #endif /* ALLOW_CFC */
-c         _END_MASTER( mythid )
+#ifdef ALLOW_DIC
+      IF ( useDIC ) THEN
+         print*,'QQ load dic parameters, initial fixed'
+         CALL DIC_INIT_FIXED( myThid )
+      ENDIF
+#endif /* ALLOW_DIC */
+#ifdef ALLOW_BLING
+      IF ( useBLING ) THEN
+         CALL BLING_INIT_FIXED( myThid )
+      ENDIF
+#endif /* ALLOW_BLING */
+c         _END_MASTER( myThid )
 
 #ifdef ALLOW_DARWIN
       IF ( useDARWIN ) THEN
-         call DARWIN_INIT_FIXED(myThid)
+         CALL DARWIN_INIT_FIXED(myThid)
       ENDIF
 #endif
 

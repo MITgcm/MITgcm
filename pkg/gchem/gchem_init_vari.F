@@ -1,9 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_vari.F,v 1.14 2014/08/23 16:29:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_vari.F,v 1.15 2016/05/23 13:09:31 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
+#ifdef ALLOW_BLING
+# include "BLING_OPTIONS.h"
+#endif
 #ifdef ALLOW_DARWIN
-#include "DARWIN_OPTIONS.h"
+# include "DARWIN_OPTIONS.h"
 #endif
 
 C !INTERFACE: ==========================================================
@@ -51,6 +54,18 @@ ccccccccccccccccccccccccccc
       ENDIF
 # endif
 #endif /* ALLOW_DIC */
+
+#ifdef ALLOW_BLING
+# ifndef ALLOW_AUTODIFF_TAMC
+      IF ( useBLING ) THEN
+# endif
+         CALL BLING_INIT_VARIA(myThid)
+         CALL BLING_INI_FORCING(myThid)
+         CALL BLING_CARBONATE_INIT(myThid)
+# ifndef ALLOW_AUTODIFF_TAMC
+      ENDIF
+# endif
+#endif /* ALLOW_BLING */
 
 #ifdef ALLOW_DARWIN
       IF ( useDARWIN ) THEN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_write_pickup.F,v 1.2 2009/06/30 16:43:00 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_write_pickup.F,v 1.3 2016/05/23 13:09:31 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -47,6 +47,13 @@ C     !LOCAL VARIABLES:
      I                         myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_DIC */
+
+#ifdef ALLOW_BLING
+      IF ( useBLING ) THEN
+        CALL BLING_WRITE_PICKUP( permPickup, suff,
+     I                         myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_BLING */
 
 #ifdef ALLOW_DARWIN
       IF ( useDARWIN ) THEN

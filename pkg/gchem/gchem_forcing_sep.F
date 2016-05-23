@@ -1,12 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.41 2015/07/18 21:42:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.42 2016/05/23 13:09:31 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
 #ifdef ALLOW_DIC
-#include "DIC_OPTIONS.h"
+# include "DIC_OPTIONS.h"
+#endif
+#ifdef ALLOW_BLING
+# include "BLING_OPTIONS.h"
 #endif
 #ifdef ALLOW_DARWIN
-#include "DARWIN_OPTIONS.h"
+# include "DARWIN_OPTIONS.h"
 #endif
 
 CBOP
@@ -33,11 +36,14 @@ C !USES: ===============================================================
 #include "PTRACERS_FIELDS.h"
 #include "GCHEM.h"
 #ifdef ALLOW_DIC
-#include "DIC_VARS.h"
+# include "DIC_VARS.h"
 #endif /* ALLOW_DIC */
+#ifdef ALLOW_BLING
+# include "BLING_VARS.h"
+#endif /* ALLOW_BLING */
 #ifdef ALLOW_DARWIN
-#include "DARWIN_FLUX.h"
-#include "DARWIN_SIZE.h"
+# include "DARWIN_FLUX.h"
+# include "DARWIN_SIZE.h"
 #endif
 
 C !INPUT PARAMETERS: ===================================================
@@ -136,7 +142,6 @@ C$taf loop = parallel
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
-
 #ifdef ALLOW_DIC
 # ifdef ALLOW_AUTODIFF
         IF (.NOT.useDIC) STOP 'ABNORMAL END: S/R GCHEM_FORCING_SEP (2)'
@@ -178,6 +183,24 @@ ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
 # endif /* ALLOW_AUTODIFF */
 #endif /* ALLOW_DIC */
 cccccccccccccccccccccccccc END DIC cccccccccccccccccccccccccccccccccc
+
+ccccccccccccccccccccccccccc BLING cccccccccccccccccccccccccccccccc
+#ifdef ALLOW_BLING
+          CALL BLING_MAIN( pTracer(1-OLx,1-OLy,1,bi,bj,1),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,2),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,3),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,4),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,5),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,6),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,7),
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,8),
+# ifdef ADVECT_PHYTO
+     &                          pTracer(1-OLx,1-OLy,1,bi,bj,9),
+# endif
+     &                          bi, bj, iMin, iMax, jMin, jMax,
+     &                          myIter, myTime, myThid )
+#endif /* ALLOW_BLING */
+cccccccccccccccccccccccccc END BLING cccccccccccccccccccccccccccccccccc
 
 #ifdef ALLOW_DARWIN
         IF ( useDARWIN ) THEN
@@ -261,6 +284,12 @@ C       tendency multiplied by maskInC)
       ENDIF
 # endif /* ALLOW_AUTODIFF */
 #endif /* ALLOW_DIC */
+
+#ifdef ALLOW_BLING
+# ifdef ALLOW_BLING_COST
+       CALL BLING_COST( myTime, myIter, myThid )
+# endif /* ALLOW_BLING_COST */
+#endif /* ALLOW_BLING */
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('GCHEM_FORCING_SEP',myThid)

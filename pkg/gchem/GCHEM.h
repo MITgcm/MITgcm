@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/GCHEM.h,v 1.13 2009/06/30 16:43:00 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/GCHEM.h,v 1.14 2016/05/23 13:09:31 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_GCHEM
@@ -12,8 +12,9 @@ C Contains tracer parameters and input files for chemical tracers.
 C These can be read in from data.gchem
 C
 C--   COMMON /GCHEM_PARM_L/ Logical valued parameters used by GCHEM pkg.
-C     useDIC    :: flag to turn on/off DIC pkg
 C     useCFC    :: flag to turn on/off CFC pkg
+C     useDIC    :: flag to turn on/off DIC pkg
+C     useBLING  :: flag to turn on/off BLING pkg
 C     useDARWIN :: flag to turn on/off darwin pkg
 C
 C--   COMMON /GCHEM_PARAMS/
@@ -28,11 +29,12 @@ C  gchem_ForcingCycle  :: periodic forcing parameter specific for gchem (seconds
 CEOP
 
       COMMON /GCHEM_PARM_L/
-     &              useDIC,
      &              useCFC,
+     &              useDIC,
+     &              useBLING,
      &              useDARWIN
 
-      LOGICAL useDIC, useCFC, useDARWIN
+      LOGICAL useCFC, useDIC, useBLING, useDARWIN
 
       COMMON /GCHEM_PARAMS/
      &                   Filename1,
