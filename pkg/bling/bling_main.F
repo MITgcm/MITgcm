@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_main.F,v 1.1 2016/05/19 20:29:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_main.F,v 1.2 2016/05/23 13:32:36 jmc Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
 
 CBOP
-      subroutine BLING_MAIN( PTR_DIC, PTR_ALK, PTR_O2, PTR_NO3, 
-     &                      PTR_PO4, PTR_FE, PTR_DON, PTR_DOP, 
+      subroutine BLING_MAIN( PTR_DIC, PTR_ALK, PTR_O2, PTR_NO3,
+     &                      PTR_PO4, PTR_FE, PTR_DON, PTR_DOP,
 #ifdef ADVECT_PHYTO
      &                      PTR_PHY,
 #endif
-     &                      bi, bj, imin, imax, jmin, jmax, 
+     &                      bi, bj, imin, imax, jmin, jmax,
      &                      myIter, myTime, myThid)
 
 C     ==========================================================
@@ -19,7 +19,7 @@ C     |   biological production, and remineralization.
 C     ==========================================================
 
       implicit none
-      
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -66,7 +66,7 @@ C     PTR_PHY       :: total phytoplankton biomass
       _RL  PTR_DOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ADVECT_PHYTO
       _RL  PTR_PHY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-#endif 
+#endif
 
 C     === Local variables ===
 C     i,j,k                :: loop indices
@@ -127,13 +127,13 @@ cxx        DO k=1,PTRACERS_num
         mld(i,j)             = 0. _d 0
        ENDDO
       ENDDO
-       
+
 c-----------------------------------------------------------
 c  carbon and oxygen air-sea interaction
-       CALL BLING_AIRSEAFLUX( 
-     I                       PTR_DIC, PTR_ALK, PTR_O2,  
-     I                       PTR_NO3, PTR_PO4, 
-     U                       surf_DIC, surf_O2, 
+       CALL BLING_AIRSEAFLUX(
+     I                       PTR_DIC, PTR_ALK, PTR_O2,
+     I                       PTR_NO3, PTR_PO4,
+     U                       surf_DIC, surf_O2,
      I                       bi, bj, imin, imax, jmin, jmax,
      I                       myIter, myTime, myThid)
 
@@ -148,18 +148,17 @@ c  determine calcite saturation for remineralization
      I                         myIter, myTime, myThid)
 
 C-----------------------------------------------------------
-C  biological activity 
-       CALL BLING_PROD( 
-     I                 PTR_NO3, PTR_PO4, PTR_FE, 
+C  biological activity
+       CALL BLING_PROD(
+     I                 PTR_NO3, PTR_PO4, PTR_FE,
      I                 PTR_O2, PTR_DON, PTR_DOP,
 #ifdef ADVECT_PHYTO
                        PTR_PHY,
 #endif
-     U                 G_NO3, G_PO4, G_FE, 
-     U                 G_O2, G_DON, G_DOP, G_CACO3,             
-     I                 bi, bj, imin, imax, jmin, jmax, 
+     U                 G_NO3, G_PO4, G_FE,
+     U                 G_O2, G_DON, G_DOP, G_CACO3,
+     I                 bi, bj, imin, imax, jmin, jmax,
      I                 myIter, myTime, myThid)
-
 
 C-----------------------------------------------------------
 C  Calculate river runoff source
@@ -170,7 +169,7 @@ cxx      DO k=1,PTRACERS_num
       DO k=1,8
        DO j=jmin,jmax
         DO i=imin,imax
-          
+
 c#ifdef ALLOW_EXF
 c         runoff_bgc(i,j,k) = river_conc_trac(k)*runoff(i,j,bi,bj)
 c     &                       *recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
@@ -178,14 +177,11 @@ c#else
 c         runoff_bgc(i,j,k) = 0. _d 0
 c#endif
 
-        ENDDO 
+        ENDDO
        ENDDO
       ENDDO
-     
-
 
 c ---------------------------------------------------------------------
-
 
 c  Carbon system
 cxx check
@@ -195,24 +191,21 @@ cxx check
         DO k=1,Nr
 
          IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
-           
+
               G_ALK(i,j,k) = - G_NO3(i,j,k)
-     &              + 2. _d 0*G_CaCO3(i,j,k) 
+     &              + 2. _d 0*G_CaCO3(i,j,k)
 
-              G_DIC(i,j,k) = CtoN * G_NO3(i,j,k) 
+              G_DIC(i,j,k) = CtoN * G_NO3(i,j,k)
      &                   + G_CaCO3(i,j,k)
-
 
 c  For diagnostics
               bio_DIC(i,j,k) = G_DIC(i,j,k)
 
          ENDIF
-          
-        ENDDO 
-       ENDDO 
-      ENDDO 
 
-
+        ENDDO
+       ENDDO
+      ENDDO
 
 C-----------------------------------------------------------
 C   adding surface tendencies due to air-sea exchange
@@ -229,7 +222,7 @@ C   adding aeolian iron source
                G_FE(i,j,1)  = G_FE(i,j,1)  + runoff_bgc(i,j,5)
      &                    + alpfe*InputFe(i,j,bi,bj)*recip_drF(1)
      &                    * recip_hFacC(i,j,1,bi,bj)
-               G_O2(i,j,1)  = G_O2(i,j,1)  + runoff_bgc(i,j,6) 
+               G_O2(i,j,1)  = G_O2(i,j,1)  + runoff_bgc(i,j,6)
      &                    + surf_O2(i,j)
                G_DON(i,j,1) = G_DON(i,j,1) + runoff_bgc(i,j,7)
                G_DOP(i,j,1) = G_DOP(i,j,1) + runoff_bgc(i,j,8)
@@ -271,6 +264,3 @@ C-----------------------------------------------------------
 
        RETURN
        END
-
-
-
