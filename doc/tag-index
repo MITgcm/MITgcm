@@ -1,14 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2254 2016/05/19 20:31:27 mmazloff Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2255 2016/05/23 18:48:40 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o added pkg/bling:
-  - intermediate complexity biogeochemical model 
+  - intermediate complexity biogeochemical model
   - see bling_description.txt for details
-  - verification experiment is global_oce_biogeo_bling
-
+  - verification experiment is global_oce_biogeo_bling (for now, in
+    Contrib/verification_other/); tested daily on baudelaire with gfortran.
+  - add entry point in pkg/gchem for new pkg "bling".
 o pkg/seaice: fix tensile stength computation
   - replace global field tensileStrength by tensileStrFac
   - tensileStrFac can be computed once in S/R seaice_init_varia
@@ -772,7 +773,7 @@ o model/src & mom pkgs:
     just copy level Nr value to level Nr+1.
 o doc:
   - add notes form Abhisek Chakraborty on how to close Heat & Salt budgets.
-o pkg/streamice:
+o pkg/shelfice:
   - shelfice_init_varia.F, shelfice_init_fixed.F, shelfice_readparms.F,
     SHELFICE.h: move array shelficemass to init_varia, initialise
     from array shelficemassinit, which is set in init_fixed and
