@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.20 2015/07/04 17:58:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/main_do_loop.F,v 1.21 2016/05/23 13:12:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -101,6 +101,12 @@ c**************************************
 #  include "DIC_ATMOS.h"
 #  include "DIC_CTRL.h"
 #  include "DIC_COST.h"
+# endif
+# ifdef ALLOW_BLING
+#  include "BLING_VARS.h"
+#  include "BLING_LOAD.h"
+#  include "BLING_CTRL.h"
+#  include "BLING_COST.h"
 # endif
 # ifdef ALLOW_OBCS
 #  include "OBCS_PARAMS.h"

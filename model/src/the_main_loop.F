@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.179 2015/11/16 22:58:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.180 2016/05/23 13:12:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -101,19 +101,25 @@ c They provide the fields to be stored.
 #   include "PTRACERS_FIELDS.h"
 #   include "PTRACERS_START.h"
 #  endif
-# ifdef ALLOW_GCHEM
-#  include "GCHEM_FIELDS.h"
-# endif
-# ifdef ALLOW_CFC
-#  include "CFC.h"
-# endif
-# ifdef ALLOW_DIC
-#  include "DIC_VARS.h"
-#  include "DIC_LOAD.h"
-#  include "DIC_ATMOS.h"
-#  include "DIC_CTRL.h"
-#  include "DIC_COST.h"
-# endif
+#  ifdef ALLOW_GCHEM
+#   include "GCHEM_FIELDS.h"
+#  endif
+#  ifdef ALLOW_CFC
+#   include "CFC.h"
+#  endif
+#  ifdef ALLOW_DIC
+#   include "DIC_VARS.h"
+#   include "DIC_LOAD.h"
+#   include "DIC_ATMOS.h"
+#   include "DIC_CTRL.h"
+#   include "DIC_COST.h"
+#  endif
+#  ifdef ALLOW_BLING
+#   include "BLING_VARS.h"
+#   include "BLING_LOAD.h"
+#   include "BLING_CTRL.h"
+#   include "BLING_COST.h"
+#  endif
 #  ifdef ALLOW_OBCS
 #   include "OBCS_PARAMS.h"
 #   include "OBCS_FIELDS.h"
