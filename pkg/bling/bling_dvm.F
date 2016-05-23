@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_dvm.F,v 1.2 2016/05/23 15:09:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_dvm.F,v 1.3 2016/05/23 21:47:56 jmc Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -285,6 +285,7 @@ C        ! Initialize the working variables to zero
         temp_upper = 0.
         temp_lower = 0.
         z_dvm_regr = 0.
+        z_dvm     = 0.
         frac_migr = 0.
         fdvm_migr = 0.
         fdvm_stat = 0.
@@ -300,7 +301,8 @@ C        ! Initialize the working variables to zero
 
         depth_l=-rF(k+1)
 
-        ! Average temperature and oxygen over upper 35 m, and 140-515m. Also convert O2 to mmol m-3.
+        ! Average temperature and oxygen over upper 35 m, and 140-515m.
+        ! Also convert O2 to mmol m-3.
 
           if ( abs(depth_l) .lt. 35.) then
             dz_upper = dz_upper + drf(k)
@@ -322,12 +324,13 @@ C        ! Initialize the working variables to zero
         o2_lower = o2_lower / (epsln + dz_lower)
         temp_lower = temp_lower / (epsln + dz_lower)
 
-        ! Calculate the regression, using the constants given in Bianchi et al. (2013).
-        ! The variable values are bounded to lie within reasonable ranges:
-        ! O2 gradient   : [-10,300] mmol/m3
-        ! Log10 Chl     : [-1.8,0.85] log10(mg/m3)
-        ! mld           : [0,500] m
-        ! T gradient    : [-3,20] C
+        ! Calculate the regression, using the constants given
+        ! in Bianchi et al. (2013).
+        ! The variable values are bounded to lie within reasonable
+        ! ranges: O2 gradient   : [-10,300] mmol/m3
+        !         Log10 Chl     : [-1.8,0.85] log10(mg/m3)
+        !         mld           : [0,500] m
+        !         T gradient    : [-3,20] C
 
 C!! I am replacing hblt_depth(i,j) with mld... not sure what hblt_depth is
 
@@ -379,24 +382,26 @@ c!! what is grid_mkt??
 
 #endif
 
-        ! Calculate the fraction of migratory respiration that occurs during upwards
-        ! and downwards swimming. The remainder is respired near the stationary depth.
-        ! Constants for swimming speed and resting time are hard-coded after Bianchi
-        ! et al, Nature Geoscience 2013.
+        ! Calculate the fraction of migratory respiration that occurs
+        ! during upwards and downwards swimming. The remainder is
+        ! respired near the stationary depth.
+        ! Constants for swimming speed and resting time are hard-coded
+        ! after Bianchi et al, Nature Geoscience 2013.
 
         frac_migr = max( 0.0 _d 0, min( 1.0 _d 0, (2.0 _d 0 * z_dvm) /
      &        (epsln + 0.05 _d 0 * 0.5 _d 0 * 86400. _d 0)))
 
-        ! Calculate the vertical profile shapes of DVM fluxes. These are given as
-        ! the downward organic flux due to migratory DVM remineralization, defined at
-        ! the bottom of each layer k.
+        ! Calculate the vertical profile shapes of DVM fluxes.
+        ! These are given as the downward organic flux due to migratory
+        ! DVM remineralization, defined at the bottom of each layer k.
 
         tmp = 0
         DO k=1,Nr
 
          IF ( (hFacC(i,j,k,bi,bj).gt.0. _d 0) .and. (tmp.eq.0)) THEN
 
-          ! First, calculate the part due to active migration above the stationary depth.
+          ! First, calculate the part due to active migration above
+          ! the stationary depth.
           if (-rf(k+1) .lt. z_dvm) then
             fdvm_migr = frac_migr / (epsln + z_dvm - (-rf(2))) *
      &            (z_dvm - (-rf(k+1)) )
