@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.42 2016/05/23 13:09:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.43 2016/05/26 03:41:58 mmazloff Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -186,6 +186,7 @@ cccccccccccccccccccccccccc END DIC cccccccccccccccccccccccccccccccccc
 
 ccccccccccccccccccccccccccc BLING cccccccccccccccccccccccccccccccc
 #ifdef ALLOW_BLING
+        IF ( useBLING ) THEN
           CALL BLING_MAIN( pTracer(1-OLx,1-OLy,1,bi,bj,1),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,2),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,3),
@@ -199,6 +200,7 @@ ccccccccccccccccccccccccccc BLING cccccccccccccccccccccccccccccccc
 # endif
      &                          bi, bj, iMin, iMax, jMin, jMax,
      &                          myIter, myTime, myThid )
+        ENDIF
 #endif /* ALLOW_BLING */
 cccccccccccccccccccccccccc END BLING cccccccccccccccccccccccccccccccccc
 
