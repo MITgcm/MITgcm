@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_fields_load.F,v 1.9 2013/06/10 02:58:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_fields_load.F,v 1.10 2016/05/27 23:35:45 mmazloff Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -36,6 +36,12 @@ cccccccccccccccccccccccccc
 #ifdef ALLOW_DIC
       IF ( useDIC ) THEN
        CALL DIC_FIELDS_LOAD (myIter,myTime,myThid)
+      ENDIF
+#endif
+
+#ifdef ALLOW_BLING
+      IF ( useBLING ) THEN
+       CALL BLING_FIELDS_LOAD (myIter,myTime,myThid)
       ENDIF
 #endif
 
