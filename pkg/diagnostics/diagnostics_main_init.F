@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.51 2015/01/20 20:50:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.52 2016/05/28 23:24:47 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -556,6 +556,13 @@ c     diagTitle = 'Square of ocean bottom pressure / top. geo-Potential'
      I                           //pTitle//' Anomaly', myThid )
       diagUnits = 'm^4/s^4         '
       diagCode  = 'SM P    M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'PHI_SURF'
+      diagTitle = DIAGS_MK_TITLE('Surface Dynamical '//pTitle,myThid)
+      diagUnits = 'm^2/s^2         '
+      diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
