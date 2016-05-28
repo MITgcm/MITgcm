@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.81 2012/12/22 00:38:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.82 2016/05/28 23:25:55 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -39,6 +39,10 @@ C     == Global variables
 C     === Functions ====
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif /* ALLOW_DIAGNOSTICS */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -66,6 +70,10 @@ C     == Local variables ==
 #else
       _RL     cg3d_b(1)
 #endif
+#ifdef ALLOW_DIAGNOSTICS
+      CHARACTER*8 diagName
+      _RL tmpVar (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
 #ifdef ALLOW_NONHYDROSTATIC
@@ -333,6 +341,29 @@ C- dump CG2D output at monitorFreq (to reduce size of STD-OUTPUT files) :
         _END_MASTER( myThid )
        ENDIF
       ENDIF
+
+#ifdef ALLOW_DIAGNOSTICS
+C--   Fill diagnostics
+      IF ( useDiagnostics .AND. implicSurfPress.NE.oneRL ) THEN
+        diagName = 'PHI_SURF'
+        IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             tmpVar(i,j) = implicSurfPress * cg2d_x(i,j,bi,bj)
+     &          + (oneRL - implicSurfPress)* Bo_surf(i,j,bi,bj)
+     &                                     * etaN(i,j,bi,bj)
+            ENDDO
+           ENDDO
+           CALL DIAGNOSTICS_FILL( tmpVar,diagName,1,1,2,bi,bj,myThid )
+          ENDDO
+         ENDDO
+        ENDIF
+      ELSEIF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL( cg2d_x,'PHI_SURF', 0,1, 0,1,1, myThid )
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C--   Transfert the 2D-solution to "etaN" :
       DO bj=myByLo(myThid),myByHi(myThid)
