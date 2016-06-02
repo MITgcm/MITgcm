@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_ifort_ollie,v 1.1 2016/05/27 15:25:57 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort_ollie,v 1.1 2016/06/02 07:29:26 mlosch Exp $
 #  $Name:  $
 #
 # derived from linux_amd64_ifort, tested on ollie.awi.de (CRAY CS400)
