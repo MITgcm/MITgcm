@@ -1,10 +1,15 @@
-retv=1
+retvg=1
+retvc=1
 if test "x$OPTFILE" != x ; then
-  basename $OPTFILE | grep gfortran > /dev/null 2>&1 ; retv=$? ;
+  basename $OPTFILE | grep gfortran > /dev/null 2>&1 ; retvg=$? ;
+  basename $OPTFILE | grep cray > /dev/null 2>&1 ; retvc=$? ;
 fi
-if test $retv = 0 ; then
+if test $retvg = 0 ; then
   FFLAGS='-fdefault-real-8 -fdefault-double-8'
   echo "    local gfortran setting: FFLAGS='$FFLAGS'"
+elif test $retvc = 0 ; then
+  FFLAGS='-s real64'
+  echo "    local cce setting: FFLAGS='$FFLAGS'"
 else
   FFLAGS='-r8'
   echo "    local default setting: FFLAGS='$FFLAGS'"
