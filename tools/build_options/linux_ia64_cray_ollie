@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_ollie,v 1.4 2016/06/02 08:57:20 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_ollie,v 1.5 2016/06/06 19:31:12 mlosch Exp $
 # $Name:  $
 
 # Tested on cray CS400 ollie.awi.de 
@@ -28,7 +28,7 @@ FFLAGS="$FFLAGS -h byteswapio"
 if test "$OMP" = true ; then 
   # for some reason this solves a problem with an unexpected 
   # "expectStatus=20" when using OpenMP with hyperthreads
-  NOOPTFILES="${NOOPTFILES} diagnostics_switch_onoff.F"
+  NOOPTFILES="${NOOPTFILES} diagnostics_switch_onoff.F mon_init.F mon_set_iounit.F"
 else
   FFLAGS="$FFLAGS -hnoomp"
 fi
