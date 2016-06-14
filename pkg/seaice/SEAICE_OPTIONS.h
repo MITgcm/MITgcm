@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.79 2016/04/26 11:09:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.80 2016/06/14 20:36:07 jmc Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -34,6 +34,10 @@ C     in a separate external package, for example, pkg/exf, and then
 C     modified for sea-ice effects by pkg/seaice.
 #define SEAICE_EXTERNAL_FLUXES
 
+C--   Exclude Wind-Stress common block (in SEAICE.h). This option
+C     should ALWAYS been left undef (just listed here for the record)
+#undef SEAICE_EXCLUDE_WIND_STRESS
+
 C--   This CPP flag has been retired.  The number of ice categories
 C     used to solve for seaice flux is now specified by run-time
 C     parameter SEAICE_multDim.
@@ -66,12 +70,12 @@ C--   To try avoid 'spontaneous generation' of tracer maxima by advdiff.
 #endif
 
 C--   Enable grease ice parameterization
-C     The grease ice parameterization delays formation of solid 
-C     sea ice from frazil ice by a time constant and provides a 
-C     dynamic calculation of the initial solid sea ice thickness 
-C     HO as a function of winds, currents and available grease ice 
-C     volume. Grease ice does not significantly reduce heat loss 
-C     from the ocean in winter and area covered by grease is thus 
+C     The grease ice parameterization delays formation of solid
+C     sea ice from frazil ice by a time constant and provides a
+C     dynamic calculation of the initial solid sea ice thickness
+C     HO as a function of winds, currents and available grease ice
+C     volume. Grease ice does not significantly reduce heat loss
+C     from the ocean in winter and area covered by grease is thus
 C     handled like open water.
 C     (For details see Smedsrud and Martin, 2014, Ann.Glac.)
 C     Set SItrName(1) = 'grease' in namelist SEAICE_PARM03 in data.seaice

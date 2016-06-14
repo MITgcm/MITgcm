@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.84 2016/05/17 15:26:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.85 2016/06/14 20:36:07 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -96,7 +96,7 @@ C     strain rate tensor
       _RL e11        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL e22        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL e12        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C     deformation rate tensor invariant, for viscous plastic sea ice = 
+C     deformation rate tensor invariant, for viscous plastic sea ice =
 C     sqrt[(e11**2+e22**2)*(1+1/e**2)+ 4./e**2*e12C**2 + 2*e11*e22*(1-1/e**2))
       _RL deltaC     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C
@@ -108,7 +108,7 @@ C
 #if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
 C--   Dynamical variables
       COMMON/SEAICE_DYNVARS_COST/ AREAforAtmFW, frWtrAtm
-      _RL AREAforAtmFW (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)   
+      _RL AREAforAtmFW (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL frWtrAtm     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
@@ -147,7 +147,7 @@ C     The change of mean ice thickness due to out-of-bounds values following
 C     sea ice dynamics and advection
       _RL d_HEFFbyNEG (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL d_HSNWbyNEG (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C     
+C
 #ifdef EXF_SEAICE_FRACTION
       COMMON/SEAICE_RELAX/d_AREAbyRLX,d_HEFFbyRLX
 C     ICE/SNOW stocks tendency associated with relaxation towards observation
@@ -202,11 +202,13 @@ C     stressDivergenceX/Y - divergence of stress tensor
       _RL stressDivergenceY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* SEAICE_CGRID */
 
+#ifndef SEAICE_EXCLUDE_WIND_STRESS
       COMMON/WIND_STRESS_ICE/TAUX,TAUY
 C     TAUX   - zonal      wind stress over ice at U point
 C     TAUY   - meridional wind stress over ice at V point
       _RL TAUX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL TAUY       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* SEAICE_EXCLUDE_WIND_STRESS */
 
 #ifndef SEAICE_CGRID
       COMMON/WIND_STRESS_OCE/WINDX,WINDY
