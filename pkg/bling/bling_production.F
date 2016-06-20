@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.2 2016/05/19 21:06:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.3 2016/06/20 23:10:51 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -117,7 +117,7 @@ C
       _RL Pc_m
       _RL Pc_m_diaz
       _RL theta_Fe_max       
-      _RL theta_Fe
+      _RL theta_Fe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL irrk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)  
       _RL irr_inst(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL irr_eff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -404,8 +404,8 @@ c  Fe-limitation.
           theta_Fe_max = theta_Fe_max_lo+
      &                  (theta_Fe_max_hi-theta_Fe_max_lo)*Fe_lim(i,j,k)
      
-          theta_Fe = theta_Fe_max/(1. _d 0 + alpha_photo*theta_Fe_max
-     &                  *irr_mem(i,j,k,bi,bj)/(epsln + 2. _d 0*Pc_m))
+          theta_Fe(i,j,k) = theta_Fe_max/(1. _d 0 + alpha_photo*
+     &        theta_Fe_max*irr_mem(i,j,k,bi,bj)/(epsln + 2. _d 0*Pc_m))
 
 c ---------------------------------------------------------------------
 c  Nutrient-limited efficiency of algal photosystems, irrk, is calculated 
@@ -473,9 +473,9 @@ c          expkT = exp(kappa_eppley * theta(i,j,k,bi,bj))
          IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
           
 c  use the diagnostic biomass to calculate the chl concentration
-          chl(i,j,k,bi,bj) = max(chl_min, CtoN * 12.01 * theta_Fe *
-     &           (P_lg(i,j,k,bi,bj) + P_sm(i,j,k,bi,bj)
-     &           + P_diaz(i,j,k,bi,bj)))
+          chl(i,j,k,bi,bj) = max(chl_min, CtoN * 12.01 * 
+     &           theta_Fe(i,j,k) * ( P_lg(i,j,k,bi,bj) 
+     &           + P_sm(i,j,k,bi,bj) + P_diaz(i,j,k,bi,bj) ) )
 
 c  stoichiometry
           PtoN(i,j,k) = PtoN_min + (PtoN_max - PtoN_min) * 

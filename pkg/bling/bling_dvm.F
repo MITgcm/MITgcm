@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_dvm.F,v 1.3 2016/05/23 21:47:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_dvm.F,v 1.4 2016/06/20 23:10:51 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -87,8 +87,6 @@ C     PO4_lim       :: phosphate limitation
 C     Fe_lim        :: iron limitation for phytoplankton
 C     Fe_lim_diaz   :: iron limitation for diazotrophs
 C     alpha_Fe      :: initial slope of the P-I curve
-C     theta_Fe      :: Chl:C ratio
-C     theta_Fe_max  :: Fe-replete maximum Chl:C ratio
 C     irrk          :: nut-limited efficiency of algal photosystems
 C     Pc_m          :: light-saturated max photosynthesis rate for phyt
 C     Pc_m_diaz     :: light-saturated max photosynthesis rate for diaz
@@ -124,8 +122,6 @@ c xxx to be completed
       _RL expkT
       _RL Pc_m
       _RL Pc_m_diaz
-      _RL theta_Fe_max
-      _RL theta_Fe
       _RL irrk
       _RL mu(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL mu_diaz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
