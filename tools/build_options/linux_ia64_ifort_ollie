@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort_ollie,v 1.1 2016/06/02 07:29:26 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort_ollie,v 1.2 2016/06/21 13:29:22 mlosch Exp $
 #  $Name:  $
 #
 # derived from linux_amd64_ifort, tested on ollie.awi.de (CRAY CS400)
@@ -41,7 +41,7 @@ EXTENDED_SRC_FLAG='-132'
 GET_FC_VERSION="--version"
 OMPFLAG='-openmp'
 
-NOOPTFLAGS='-O0 -g'
+NOOPTFLAGS='-O0'
 NOOPTFILES=''
 
 FFLAGS="$FFLAGS -W0 -WB -convert big_endian -assume byterecl"
@@ -56,6 +56,9 @@ if test "x$IEEE" = x ; then     #- with optimisation:
 # so we spell it out (-ipo makes linking very slow, so we will skip that, too)
 #    FOPTIM='-ipo -align -O3 -no-prec-div -fp-model fast=2 -xHost'
     FOPTIM='-align -O3 -no-prec-div -fp-model fast=2 -xHost'
+# reduce optimization level a little for some files
+    NOOPTFLAGS='-align -O1 -no-prec-div -fp-model fast=2 -xHost'
+    NOOPTFILES='obcs_init_fixed.F'
 else
   if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
     # "-mp" is for ieee "maintain precision"
