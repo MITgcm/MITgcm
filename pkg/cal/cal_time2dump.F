@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_time2dump.F,v 1.3 2012/06/08 14:59:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_time2dump.F,v 1.4 2016/06/30 22:53:21 jmc Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -31,7 +31,12 @@ c     == local variables ==
       _RL posFreq
       _RL shTime, prTime
 
-      IF ( calendarDumps ) THEN
+      IF ( calendarDumps .AND. freq .NE. 0. ) THEN
+C-     Same as in FCT DIFF_PHASE_MULTIPLE:
+c      IF ( myTime+step .GE. phase+baseTime ) THEN
+C-     should compare to phase+baseTime (above), but would need PARAMS.h ;
+C      choose to disable this condition for negative time:
+       IF ( myTime+step.GE.phase .OR. myTime.LT.0. ) THEN
         posFreq = ABS(freq)
 C-    First determine calendar dates for this and previous time step.
         shTime = myTime - phase
@@ -48,6 +53,7 @@ C-    Yearly  Freq:
            time2write = .FALSE.
            IF ( (thisdate(1)-prevdate(1)).GT.5000 ) time2write=.TRUE.
         ENDIF
+       ENDIF
       ENDIF
 
       RETURN
