@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_balance_flow.F,v 1.7 2012/09/17 22:03:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_balance_flow.F,v 1.8 2016/07/06 22:48:56 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -356,7 +356,7 @@ C--   Add correction:
 #endif /* ALLOW_OBCS_WEST */
 
 #ifdef ALLOW_OBCS_NORTH
-      IF ( OBCS_balanceFacW.NE.0. ) THEN
+      IF ( OBCS_balanceFacN.NE.0. ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          IF ( tileHasOBN(bi,bj) ) THEN
