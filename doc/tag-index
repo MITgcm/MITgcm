@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2257 2016/06/14 20:51:15 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2258 2016/07/06 23:22:23 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  - fix bug in OBCS_BALANCE_FLOW (OBCS_balanceFacN misspelled OBCS_balanceFacW)
 o pkg/dic & seaice:
   - fix compilation of ocean component for coupled atm+ocn model with
     seaice dynamics & dic.
