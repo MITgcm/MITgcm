@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.27 2016/06/29 16:27:23 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.28 2016/07/07 17:36:29 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
@@ -85,6 +85,15 @@ if test $checkOut = 2 ; then
   cd $tdir
   $cmdCVS co -P MITgcm > /dev/null
   echo "  done"
+  if test -d other_input ; then
+    list_dirs=`(cd other_input ; ls 2> /dev/null )`
+    echo -n "Updating other_input extra dirs: "
+    for exd in $list_dirs ; do
+      echo -n $exd
+      ( cd other_input/$exd ; $cmdCVS update -P -d )
+    done
+    echo "  done"
+  fi
 else
   cd $tdir
 fi
@@ -163,8 +172,13 @@ do
              MITgcm_contrib/verification_other/$exp2add > /dev/null )
         if test $exp2add = 'global_oce_cs32' ; then
           echo " link dir 'other_input/gael_oce_cs32_input' to 'input_fields'"
-          ( cd verification/global_oce_cs32
+          ( cd verification/${exp2add}
             ln -s ../../../other_input/gael_oce_cs32_input input_fields )
+        fi
+        if test $exp2add = 'shelfice_remeshing' ; then
+          echo " link dir 'other_input/remeshing_code' to 'extra_code'"
+          ( cd verification/${exp2add}
+            ln -s ../../../other_input/remeshing_code extra_code )
         fi
       done
     fi
