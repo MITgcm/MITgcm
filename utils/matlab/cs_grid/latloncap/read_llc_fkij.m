@@ -44,24 +44,32 @@ end
 fid=fopen(fnam,'r','ieee-be');
 
 switch prec
- case {'int8','integer*1'}
+ case {'integer*1'}
+  prec='int8';
+ case {'integer*2'}
+  prec='int16';
+ case {'integer*4'}
+  prec='int32';
+ case {'real*4','float32'}
+  prec='single';
+ case {'integer*8'}
+  prec='int64';
+ case {'real*8','float64'}
+  prec='double';
+end
+
+switch prec
+ case {'int8'}
   preclength=1;
- case {'int16','integer*2','uint16','integer*2'}
+ case {'int16','uint16'}
   preclength=2;
- case {'int32','integer*4','uint32','single','real*4','float32'}
+ case {'int32','uint32','single'}
   preclength=4;
- case {'int64','integer*8','uint64','double','real*8','float64'}
+ case {'int64','uint64','double'}
   preclength=8;
 end
 
-if preclength<=4
-    % if input is single precision,
-    % output single precision to save space
-    fld=zeros(length(ix),length(jx),length(kx),'single');
-    prec=[prec '=>' prec];
-else
-    fld=zeros(length(ix),length(jx),length(kx));
-end
+fld=zeros(length(ix),length(jx),length(kx),prec);
 
 for k=1:length(kx)
     skip=(kx(k)-1)*nx*nx*13; % numbers to skip to reach vertical level kx(k)    

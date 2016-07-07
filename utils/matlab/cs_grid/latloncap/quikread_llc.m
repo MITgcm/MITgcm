@@ -55,30 +55,34 @@ if nargin < 2, nx=270; end
 if nargin < 1, error('please specify input file name'); end
 
 switch prec
- case {'int8','integer*1'}
+ case {'integer*1'}
+  prec='int8';
+ case {'integer*2'}
+  prec='int16';
+ case {'integer*4'}
+  prec='int32';
+ case {'real*4','float32'}
+  prec='single';
+ case {'integer*8'}
+  prec='int64';
+ case {'real*8','float64'}
+  prec='double';
+end
+
+switch prec
+ case {'int8'}
   preclength=1;
- case {'int16','integer*2','uint16','integer*2'}
+ case {'int16','uint16'}
   preclength=2;
- case {'int32','integer*4','uint32','single','real*4','float32'}
+ case {'int32','uint32','single'}
   preclength=4;
- case {'int64','integer*8','uint64','double','real*8','float64'}
+ case {'int64','uint64','double'}
   preclength=8;
 end
 
 if nargin < 6
-    if preclength <= 4
-        % if input is single precision,
-        % output single precision to save space
-        fld=zeros(nx,nx*13,length(kx),'single');
-    else
-        fld=zeros(nx,nx*13,length(kx));
-    end
+    fld=zeros(nx,nx*13,length(kx),prec);
     fid=fopen(fnam,'r','ieee-be');
-    if preclength <= 4
-        % if input is single precision,
-        % read single precision to save space
-        prec=[prec '=>' prec];
-    end    
     for k=1:length(kx)
         if kx(k) > 1
             skip=(kx(k)-1)*nx*nx*13;
@@ -118,13 +122,7 @@ else
             fc=[fc f];
             ix{f}=min(i):max(i);
             jx{f}=min(j):max(j);
-            if preclength <= 4
-                % if input is single precision,
-                % output single precision to save space
-                fld{f}=zeros(length(ix{f}),length(jx{f}),length(kx),'single');
-            else
-                fld{f}=zeros(length(ix{f}),length(jx{f}),length(kx));
-            end
+            fld{f}=zeros(length(ix{f}),length(jx{f}),length(kx),prec);
             for k=1:length(kx)
                 fld{f}(:,:,k)=read_llc_fkij(fnam,nx,f,kx(k),ix{f},jx{f},prec);
             end
