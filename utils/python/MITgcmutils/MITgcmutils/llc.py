@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/llc.py,v 1.9 2015/11/17 13:21:22 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/llc.py,v 1.10 2016/07/08 09:30:56 mlosch Exp $
 # $Name:  $
 import sys
 import numpy as np
@@ -123,7 +123,7 @@ def flat(fld, **kwargs):
 
     ndims = len(fld.shape)
     if ndims == 2: 
-        gfld = _flat2D(fld)
+        gfld = _flat2D(fld, **kwargs)
     elif ndims == 3: 
         gfld = [ _flat2D(fld[a,:,:], **kwargs) 
                  for a in range(fld.shape[0]) ] 
@@ -212,7 +212,7 @@ def mds(fld,center='Atlantic'):
 
     ndims = len(fld.shape)
     if ndims == 2: 
-        mdsfld = _mds2D(fld)
+        mdsfld = _mds2D(fld, **kwargs)
     elif ndims == 3: 
         mdsfld = [ _mds2D(fld[a,:,:], **kwargs) 
                  for a in range(fld.shape[0]) ] 
