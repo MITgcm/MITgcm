@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.28 2016/07/07 17:36:29 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.29 2016/07/10 14:30:24 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
@@ -87,12 +87,13 @@ if test $checkOut = 2 ; then
   echo "  done"
   if test -d other_input ; then
     list_dirs=`(cd other_input ; ls 2> /dev/null )`
-    echo -n "Updating other_input extra dirs: "
+    echo "Updating ( $cmdCVS update -P -d ) 'other_input' extra dirs:"
     for exd in $list_dirs ; do
-      echo -n $exd
+     if test -d other_input/$exd/CVS ; then echo "  $exd"
       ( cd other_input/$exd ; $cmdCVS update -P -d )
+     fi
     done
-    echo "  done"
+    echo " <-- update of 'other_input' dirs done"
   fi
 else
   cd $tdir
@@ -114,12 +115,10 @@ do
   fi
   if test $typ = 'gfo' -o $typ = 'ifc' ; then
     addExp="$addExp global_oce_biogeo_bling"
+    addExp="$addExp shelfice_remeshing"
   fi
   if test $typ = 'mpi' ; then
     addExp="$addExp global_oce_cs32"
-  fi
-  if test $typ = 'gfo' ; then
-    addExp="$addExp shelfice_remeshing"
   fi
   #- check day and time:
   curDay=`date +%d` ; curHour=`date +%H`
