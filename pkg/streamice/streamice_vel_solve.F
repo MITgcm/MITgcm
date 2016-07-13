@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.11 2015/04/20 14:22:13 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.12 2016/07/13 09:32:45 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -123,8 +123,12 @@ C     LOCAL VARIABLES
       _EXCH_XY_RL( tau_beta_eff_streamice , myThid )
       _EXCH_XY_RL( visc_streamice , myThid )
 
+! to stop ifort complaining
+        err_init = 0. _d 0
+
       if (STREAMICE_chkresidconvergence .or.
      &    (streamice_maxnliter_cpl.eq.0 .and. myIter.eq.0)) then
+
 
         CALL STREAMICE_GET_VEL_RESID_ERR ( err_init, myThid )
 
