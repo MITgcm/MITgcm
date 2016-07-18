@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.158 2015/06/03 13:39:22 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.159 2016/07/18 16:46:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -79,6 +79,12 @@ C     myThid :: Thread number for this instance of the routine.
       INTEGER myThid
 
 #ifdef ALLOW_GENERIC_ADVDIFF
+# ifdef ALLOW_MONITOR
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+# endif /* ALLOW_MONITOR */
+
 C     !LOCAL VARIABLES:
 C     == Local variables
 C     uFld,vFld,wFld :: Local copy of velocity field (3 components)
@@ -86,7 +92,6 @@ C     kappaRk        :: Total diffusion in vertical, all levels, 1 tracer
 C     recip_hFacNew  :: reciprocal of futur time-step hFacC
 C     bi, bj         :: Tile indices
 C     i, j, k        :: loop indices
-C     iterNb         :: iteration number when this time-step started
       _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL vFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL wFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -94,15 +99,26 @@ C     iterNb         :: iteration number when this time-step started
       _RS recip_hFacNew(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER bi, bj
       INTEGER i, j, k
-      INTEGER iterNb
+# ifdef ALLOW_MONITOR
+      LOGICAL monOutputCFL
+      _RL wrTime
+      _RL trAdvCFL(3,nSx,nSy)
+# endif /* ALLOW_MONITOR */
 CEOP
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('THERMODYNAMICS',myThid)
 #endif
 
-      iterNb = myIter
-      IF (staggerTimeStep) iterNb = myIter - 1
+# ifdef ALLOW_MONITOR
+      monOutputCFL = .FALSE.
+      IF ( monitorSelect.GE.2 ) THEN
+        wrTime = myTime
+        IF ( .NOT.staggerTimeStep ) wrTime = myTime + deltaTClock
+        monOutputCFL =
+     &       DIFFERENT_MULTIPLE( monitorFreq, wrTime, deltaTClock )
+      ENDIF
+# endif /* ALLOW_MONITOR */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   dummy statement to end declaration part
@@ -133,7 +149,6 @@ CADJ STORE theta,salt,wvel = comlev1, key = ikey_dynamics, byte=isbyte
      &                     myTime, myIter, myThid )
        ENDIF
 #endif /* ALLOW_LAYERS */
-
 
 #ifdef DO_PTRACERS_HERE
       IF ( PTRACERS_calcSurfCor ) THEN
@@ -241,11 +256,22 @@ C-    just do a local copy:
 #ifdef ALLOW_GMREDI
 C-    add Bolus velocity to Eulerian-mean velocity:
         IF (useGMRedi) THEN
-          CALL  GMREDI_RESIDUAL_FLOW(
+          CALL GMREDI_RESIDUAL_FLOW(
      U                  uFld, vFld, wFld,
      I                  bi, bj, myIter, myThid )
         ENDIF
 #endif /* ALLOW_GMREDI */
+#ifdef ALLOW_MONITOR
+        IF ( monOutputCFL  ) THEN
+          CALL MON_CALC_ADVCFL_TILE( Nr, bi, bj,
+     I                         uFld, vFld, wFld, dTtracerLev,
+     O                         trAdvCFL(1,bi,bj),
+     I                         myIter, myThid )
+c        WRITE(standardMessageUnit,'(A,I8,2I3,A,1P3E14.6)')
+c    &     ' trAdv_CFL: it,bi,bj=', myIter,bi,bj,
+c    &     ' , CFL =', (trAdvCFL(i,bi,bj),i=1,3)
+        ENDIF
+#endif /* ALLOW_MONITOR */
 
 C-    Apply AB on T,S : moved inside TEMP/SALT_INTEGRATE
 
@@ -346,6 +372,13 @@ C-    Reset frictionHeating to zero
 C--   end bi,bj loops.
        ENDDO
       ENDDO
+
+#ifdef ALLOW_MONITOR
+      IF ( monOutputCFL ) THEN
+        CALL MON_CALC_ADVCFL_GLOB(
+     I                       trAdvCFL, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_MONITOR */
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel.GE.debLevD ) THEN
