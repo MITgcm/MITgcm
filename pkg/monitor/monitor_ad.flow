@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.flow,v 1.8 2010/04/19 15:08:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.flow,v 1.9 2016/07/18 16:45:21 jmc Exp $
 C $Name:  $
 
 C----------------------------------------
@@ -24,3 +24,15 @@ C subroutine  MON_PRINTSTATS_RS
 C----------------------------------------
 CADJ SUBROUTINE MON_PRINTSTATS_RS INPUT  = 1,2,3,4
 CADJ SUBROUTINE MON_PRINTSTATS_RS OUTPUT =
+
+C----------------------------------------
+C subroutine  MON_CALC_ADVCFL_TILE
+C----------------------------------------
+CADJ SUBROUTINE MON_CALC_ADVCFL_TILE INPUT  = 1,2,3,4,6,7,  9,10
+CADJ SUBROUTINE MON_CALC_ADVCFL_TILE OUTPUT = 8
+
+C----------------------------------------
+C subroutine  MON_CALC_ADVCFL_GLOB
+C----------------------------------------
+CADJ SUBROUTINE MON_CALC_ADVCFL_GLOB INPUT  = 1,2,3
+CADJ SUBROUTINE MON_CALC_ADVCFL_GLOB OUTPUT =

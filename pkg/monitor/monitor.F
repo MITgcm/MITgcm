@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.50 2013/07/11 23:24:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.51 2016/07/18 16:45:21 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -146,6 +146,14 @@ C       Print the basic statistics of external forcing
      &            maskInW, maskInW, rAw, drF, dummyRL, myThid )
          CALL MON_WRITESTATS_RS( 1, fv ,  '_fv',
      &            maskInS, maskInS, rAs, drF, dummyRL, myThid )
+        ENDIF
+
+C       Print numerical stablility parameters for lastest tracer advection
+        IF ( monitorSelect.GE.2 ) THEN
+         CALL MON_SET_PREF( 'trAdv_CFL', myThid )
+         CALL MON_OUT_RL( '_u', mon_trAdvCFL(1), mon_foot_max,myThid )
+         CALL MON_OUT_RL( '_v', mon_trAdvCFL(2), mon_foot_max,myThid )
+         CALL MON_OUT_RL( '_w', mon_trAdvCFL(3), mon_foot_max,myThid )
         ENDIF
 
 C       Print the numerical stablility parameters for current state

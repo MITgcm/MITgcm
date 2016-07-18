@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/MONITOR.h,v 1.10 2012/12/21 01:00:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/MONITOR.h,v 1.11 2016/07/18 16:45:21 jmc Exp $
 C $Name:  $
 C
 
@@ -57,8 +57,10 @@ C     mon_pref   :: Prefix used for monitor output
 
 C--   COMMON /MON_R/ Monitor real variables
 C     monSolutionMaxRange :: Maximum allowed Range for solution
-      COMMON /MON_R/ monSolutionMaxRange
+C     mon_trAdvCFL :: Max CFL value (in 3 directions) for tracer advection
+      COMMON /MON_R/ monSolutionMaxRange, mon_trAdvCFL
       _RL  monSolutionMaxRange
+      _RL  mon_trAdvCFL(3)
 
 C--   COMMON /MON_L/ Monitor logical variables
 C     mon_overrideStop :: Allow code to continue even if model state is

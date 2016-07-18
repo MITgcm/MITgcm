@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.12 2012/12/21 01:00:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.13 2016/07/18 16:45:21 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -37,13 +37,19 @@ C     and prefix monitor "variables" with mon by default.
       CALL MON_SET_PREF  ( mon_string_none    , myThid )
 
       _BEGIN_MASTER(myThid)
+
 C     Internal parameter for continuing when monitor_solution would
 C     otherwise decide to stop the code.
 c     mon_overrideStop=.FALSE.
       monSolutionMaxRange = 1. _d +4
       IF ( fluidIsWater ) monSolutionMaxRange = 1. _d +3
+
       mon_output_AM = fluidIsAir .AND. useCoriolis
      &                           .AND. selectCoriMap.GE.2
+      mon_trAdvCFL(1) = 0.
+      mon_trAdvCFL(2) = 0.
+      mon_trAdvCFL(3) = 0.
+
       _END_MASTER(myThid)
 
       _BARRIER
