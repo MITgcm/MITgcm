@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_calc_advcfl.F,v 1.1 2016/07/18 16:45:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_calc_advcfl.F,v 1.2 2016/07/22 14:21:20 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -52,11 +52,10 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER i,j,k
-      _RL tmpVal, recVol_dT
-      _RL uTrans  (1:sNx+1,1:sNy+1)
-      _RL vTrans  (1:sNx+1,1:sNy+1)
-      _RL rTrans  (1:sNx,1:sNy)
-      _RL rTransKp(1:sNx,1:sNy)
+      _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rTransKp1, tmpVal, recVol_dT
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -64,9 +63,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       maxCFL(2) = 0.
       maxCFL(3) = 0.
 
-      DO j=1,sNy
-        DO i=1,sNx
-          rTransKp(i,j) = 0.
+      DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+          rTrans(i,j) = 0.
         ENDDO
       ENDDO
 
@@ -104,6 +103,7 @@ C--   compute vert. transport and time-step divided by volume
 C     (without grid-cell area "rA" since it cancels)
         DO j=1,sNy
          DO i=1,sNx
+           rTransKp1 = rTrans(i,j)
            rTrans(i,j) = wFld(i,j,k)
      &                 *deepFac2F(k)*rhoFacF(k)
            recVol_dT = dT_lev(k)
@@ -111,10 +111,9 @@ C     (without grid-cell area "rA" since it cancels)
      &             *recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
            tmpVal = (
      &          + MAX( rTrans(i,j), zeroRL )
-     &          - MIN( rTransKp(i,j), zeroRL )
+     &          - MIN( rTransKp1, zeroRL )
      &              )*recVol_dT
            maxCFL(3) = MAX( maxCFL(3), tmpVal )
-           rTransKp(i,j) = rTrans(i,j)
          ENDDO
         ENDDO
 
