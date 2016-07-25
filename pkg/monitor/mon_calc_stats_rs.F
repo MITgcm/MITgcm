@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_calc_stats_rs.F,v 1.1 2009/12/21 00:03:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_calc_stats_rs.F,v 1.2 2016/07/25 21:48:56 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -34,18 +34,19 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER bi,bj,i,j,k
-      INTEGER numPnts
       LOGICAL noPnts
       _RL tmpVal
       _RL tmpMask
       _RL tmpVol
       _RL ddx, ddy
       _RL theVar
+      _RL theNbPt
       _RL tileMean(nSx,nSy)
       _RL tileVar (nSx,nSy)
       _RL tileSD  (nSx,nSy)
       _RL tileDel2(nSx,nSy)
       _RL tileVol (nSx,nSy)
+      _RL tileNbPt(nSx,nSy)
 
       theMin = 0.
       theMax = 0.
@@ -54,11 +55,12 @@ C     !LOCAL VARIABLES:
       theVar = 0.
       theDel2= 0.
       theVol = 0.
-      numPnts= 0
+      theNbPt= 0.
       noPnts = .TRUE.
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+        tileNbPt(bi,bj) = 0.
         tileDel2(bi,bj) = 0.
         tileVol (bi,bj) = 0.
         tileMean(bi,bj) = 0.
@@ -97,7 +99,7 @@ C--   New form:
             ENDIF
             tileDel2(bi,bj) = tileDel2(bi,bj) + ddx*ddx + ddy*ddy
 
-            numPnts=numPnts+1
+            tileNbPt(bi,bj) = tileNbPt(bi,bj) + oneRL
             tmpVol = arrArea(i,j,bi,bj)*arrDr(k)*tmpMask
             tileVol (bi,bj) = tileVol (bi,bj) + tmpVol
             tileMean(bi,bj) = tileMean(bi,bj) + tmpVol*tmpVal
@@ -109,17 +111,15 @@ C--   New form:
        ENDDO
       ENDDO
 
+      CALL GLOBAL_SUM_TILE_RL( tileNbPt, theNbPt, myThid )
       CALL GLOBAL_SUM_TILE_RL( tileDel2, theDel2, myThid )
       CALL GLOBAL_SUM_TILE_RL( tileVol , theVol , myThid )
       CALL GLOBAL_SUM_TILE_RL( tileMean, theMean, myThid )
 c     CALL GLOBAL_SUM_TILE_RL( tileVar , theVar , myThid )
 
-      CALL GLOBAL_SUM_INT( numPnts, myThid )
-
-      IF ( numPnts.GT.0 ) THEN
-       tmpVal   = FLOAT(numPnts)
-c      theDel2  = theDel2/tmpVal
-       theDel2  = SQRT(theDel2)/tmpVal
+      IF ( theNbPt.GT.zeroRL ) THEN
+c      theDel2  = theDel2/theNbPt
+       theDel2  = SQRT(theDel2)/theNbPt
       ENDIF
 
       IF ( theVol.GT.0. _d 0 ) THEN
