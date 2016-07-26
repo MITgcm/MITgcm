@@ -1,10 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2259 2016/07/18 16:48:34 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2260 2016/07/26 16:25:01 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/debug (stats):
+  - change GLOBAL_SUM to GLOBAL_SUM_TILE (result independent of tile to
+    proc/thread mapping);
+  - fix Min & Max for case where 1 thread has only empty tiles;
+  - use RL variable to count number of wet grid points (with big domain,
+    can be too large to fit into integer*4).
 o pkg/monitor:
+  - use RL variable to count number of wet grid points (but used only for del2)
   - add new routine to compute Advective CFL within tracer time-stepping with
     writing delayed until next monitor output.
 o pkg/obcs:
