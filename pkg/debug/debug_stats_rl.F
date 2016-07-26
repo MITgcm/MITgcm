@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_stats_rl.F,v 1.5 2005/02/09 21:15:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_stats_rl.F,v 1.6 2016/07/26 16:23:52 jmc Exp $
 C $Name:  $
 
 #include "DEBUG_OPTIONS.h"
@@ -6,14 +6,13 @@ C $Name:  $
       SUBROUTINE DEBUG_STATS_RL(
      I                myNr, arr, arrName,
      I                myThid )
-C     /==========================================================\
+C     *==========================================================*
 C     | SUBROUTINE DEBUG_STATS_RL                                |
 C     | o Prints to STDOUT the bare statistics of global array   |
 C     |   "_RL arr" with label "arrName"                         |
-C     | o This is an exact copy of MON_PRINTSTATS_RL but with    |
+C     | o This routine is similar to MON_WRITESTATS_RL but with  |
 C     |   a different label at left of screen                    |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
       IMPLICIT NONE
 
 C     === Global data ===
@@ -33,8 +32,8 @@ C     === Local variables ====
       _RL theSD
 
       CALL DEBUG_FLD_STATS_RL(
-     I                myNr, arr,
-     O                theMin,theMax,theMean,theSD,
+     I                myNr, arr, zeroRL,
+     O                theMin, theMax, theMean, theSD,
      I                myThid )
 
       _BEGIN_MASTER( myThid )
