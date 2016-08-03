@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.208 2016/05/20 19:34:38 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.209 2016/08/03 19:42:31 jmc Exp $
 #  $Name:  $
 #
 
@@ -352,6 +352,7 @@ testoutput_run()
 	  else allargs="$allargs $yy"
 	  fi
 	done
+	echo 1>&2
 
 	nbVar=`echo $listVar | awk '{print NF}'`
 	if [ $nbVar -lt $LEN_CHECK_LIST ] ; then
@@ -550,7 +551,7 @@ makemodel()
 		    echo successful
 		fi
 	    fi
-	    printf 'make ... '
+	    printf "make $TARG ... "
 	    $MAKE_CMD $TARG >> make.tr_log 2>&1
 	    RETVAL=$?
 	    if test "x$RETVAL" != x0 ; then
@@ -1674,7 +1675,6 @@ for dir in $TESTDIRS ; do
     #echo "results='$results'"
 
 	fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
-	echo 1>&2
 	echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
 	echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
 
@@ -1696,8 +1696,8 @@ for dir in $TESTDIRS ; do
 	    linkdata $dir/$pfxdir.$ex $inputdir.$ex $inputdir
 	    runmodel $dir/$pfxdir.$ex && run=Y \
 	    && results=`testoutput_run $dir $pfxdir.$ex $refExOut`
+
 	    fres=`formatresults $dir.$ex ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
-	    echo 1>&2
 	    echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
 	    echo "fresults='$fres'" | sed 's/ 99/ --/g' >> $locDIR"/summary.txt"
 	    if test "x$POSTCLEAN" = x2 ; then
