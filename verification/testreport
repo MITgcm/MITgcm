@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.209 2016/08/03 19:42:31 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.210 2016/08/04 17:59:15 jmc Exp $
 #  $Name:  $
 #
 
@@ -352,7 +352,6 @@ testoutput_run()
 	  else allargs="$allargs $yy"
 	  fi
 	done
-	echo 1>&2
 
 	nbVar=`echo $listVar | awk '{print NF}'`
 	if [ $nbVar -lt $LEN_CHECK_LIST ] ; then
@@ -1661,6 +1660,7 @@ for dir in $TESTDIRS ; do
 	    && symlink_mpifiles $dir $code_dir $builddir \
 	    && makedependmodel $dir/$builddir && makedepend=Y \
 	    && makemodel $dir/$builddir && make=Y
+	    echo
     else
 	genmakemodel $dir/$builddir && genmake=Y \
 	    && makeclean $dir/$builddir \
@@ -1671,6 +1671,7 @@ for dir in $TESTDIRS ; do
 	    && linkdata $dir/$rundir $inputdir \
 	    && runmodel $dir/$rundir && run=Y \
 	    && results=`testoutput_run $dir $rundir $ref_outp`
+	    echo 1>&2
     fi
     #echo "results='$results'"
 
@@ -1696,6 +1697,7 @@ for dir in $TESTDIRS ; do
 	    linkdata $dir/$pfxdir.$ex $inputdir.$ex $inputdir
 	    runmodel $dir/$pfxdir.$ex && run=Y \
 	    && results=`testoutput_run $dir $pfxdir.$ex $refExOut`
+	    echo 1>&2
 
 	    fres=`formatresults $dir.$ex ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	    echo "$fres" | sed 's/ 99/ --/g' | sed 's/  > />/' | sed 's/  < /</' >> $SUMMARY
