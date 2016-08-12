@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.147 2015/11/12 20:05:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.148 2016/08/12 14:15:58 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -316,6 +316,8 @@ C jmc: moved here before any freezing/seaice pkg adjustment of surf-fluxes
 #ifdef ALLOW_FRAZIL
       IF ( useFRAZIL ) THEN
 C--   Freeze water in the ocean interior and let it rise to the surface
+CADJ STORE theta = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE salt  = comlev1, key=ikey_dynamics, kind=isbyte
        CALL FRAZIL_CALC_RHS( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_FRAZIL */
@@ -532,13 +534,15 @@ C       and modify forcing terms including effects from ice
 #endif /* OLD_THSICE_CALL_SEQUENCE */
 
 #ifdef ALLOW_SHELFICE
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE salt, theta = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-# endif
       IF ( useShelfIce .AND. fluidIsWater ) THEN
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('SHELFICE_THERMODYNAMICS',myThid)
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE salt, theta = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE uvel, vvel = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #endif
 C     compute temperature and (virtual) salt flux at the
 C     shelf-ice ocean interface
