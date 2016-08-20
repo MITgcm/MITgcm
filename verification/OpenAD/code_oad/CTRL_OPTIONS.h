@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad/CTRL_OPTIONS.h,v 1.2 2014/10/16 20:06:47 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad/CTRL_OPTIONS.h,v 1.3 2016/08/20 03:11:40 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -39,10 +39,10 @@ C       >>> Initial values.
 #define ALLOW_THETA0_CONTROL
 #define ALLOW_SALT0_CONTROL
 #undef ALLOW_TR10_CONTROL
-#undef ALLOW_TAUU0_CONTROL
-#undef ALLOW_TAUV0_CONTROL
-#undef ALLOW_SFLUX0_CONTROL
-#undef ALLOW_HFLUX0_CONTROL
+#define ALLOW_TAUU0_CONTROL
+#define ALLOW_TAUV0_CONTROL
+#define ALLOW_SFLUX0_CONTROL
+#define ALLOW_HFLUX0_CONTROL
 #undef ALLOW_SSS0_CONTROL
 #undef ALLOW_SST0_CONTROL
 #define DISABLE_CTRL_THETA_LIMIT

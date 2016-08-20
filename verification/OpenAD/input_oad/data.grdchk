@@ -4,8 +4,10 @@
 # *******************
  &GRDCHK_NML
  grdchk_eps       = 1.d-2,
- iGloPos          = 71,
- jGloPos          = 39,
+ iGloTile         = 2,
+ jGloTile         = 2,
+ iGloPos          = 26,
+ jGloPos          = 19,
  kGloPos          = 1,
 ### nbeg             = 1,
  nstep            = 1,
