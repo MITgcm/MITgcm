@@ -1,8 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/externalDummies.F,v 1.8 2015/02/18 20:24:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/externalDummies.F,v 1.9 2016/08/20 03:10:02 heimbach Exp $
 C $Name:  $
 
 #include "OPENAD_OPTIONS.h"
 
+C ###########################################################
+      SUBROUTINE DUMMY_IN_STEPPING( myTime, myIter, myThid )
+
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "DYNVARS.h"
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
+C dummy self dependence (nontrivial so mfef90 doesn't kill it)
+      theta(1,1,1,1,1)=2*theta(1,1,1,1,1)
+      end subroutine
 C ###########################################################
       SUBROUTINE EXCH1_RL(
      U                 array,

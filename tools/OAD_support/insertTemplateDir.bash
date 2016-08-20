@@ -36,6 +36,9 @@ do
     "OpenAD_active_write_xy" )
       echo "c\$openad XXX Template ad_template.active_write_xy.f" >> temp.sed
       ;;
+    "OpenAD_dummy_in_stepping" )
+      echo "c\$openad XXX Template ad_template.dummy_in_stepping.f" >> temp.sed
+      ;;
     "OpenAD_streamice_vel_phistage" )
       echo "c\$openad XXX Template ad_template.streamice_vel_phistage.f" >> temp.sed
       ;;

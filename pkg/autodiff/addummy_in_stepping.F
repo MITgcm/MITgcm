@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.63 2015/10/23 02:22:20 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.64 2016/08/20 03:10:02 heimbach Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
+#ifdef ALLOW_OPENAD
+# include "OPENAD_OPTIONS.h"
+#endif
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
@@ -30,18 +33,30 @@ C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ===
+#ifdef ALLOW_OPENAD
+      use OAD_active
+      use OAD_rev
+      use OAD_tape
+      use OAD_cp
+#endif
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_OPENAD
+# include "DYNVARS.h"
+# include "FFIELDS.h"
+#endif
 #include "AUTODIFF_PARAMS.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
 c#include "GRID.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
-# include "adcommon.h"
 # include "AUTODIFF.h"
-#endif
+# ifndef ALLOW_OPENAD
+#  include "adcommon.h"
+# endif /* ALLOW_OPENAD */
+#endif /* ALLOW_AUTODIFF_MONITOR */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -65,6 +80,8 @@ C     suff    :: Hold suffix part of a filename
 C     msgBuf  :: Error message buffer
       CHARACTER*(MAX_LEN_FNAM) suff
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RL foo3D(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL foo2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL var2Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL var2Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL var3Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -168,6 +185,10 @@ C ==>>  is very very very nasty !!!
 c       writeBinaryPrec = writeStatePrec
 C <<==  If you really want to mess-up with this at your own risk,
 C <<==  uncomment the line above
+
+C-----------------------------------------------------------------------
+#ifndef ALLOW_OPENAD
+C-----------------------------------------------------------------------
 
         IF ( ( dumpAdVarExch.NE.2 ).AND.(.NOT.dumpAdByRec) ) THEN
           CALL WRITE_FLD_XYZ_RL( 'ADJtheta.', suff,
@@ -422,6 +443,312 @@ C       case dumpAdVarExch = 2
 C       end if dumpAdVarExch = 2
         ENDIF
 
+C-----------------------------------------------------------------------
+#else /* ndef ALLOW_OPENAD */
+C-----------------------------------------------------------------------
+
+        IF ( ( dumpAdVarExch.NE.2 ).AND.(.NOT.dumpAdByRec) ) THEN
+          foo3D = theta%d
+          CALL WRITE_FLD_XYZ_RL( 'ADJtheta.', suff,
+     &                           foo3D, myIter, myThid )
+          foo3D = salt%d
+          CALL WRITE_FLD_XYZ_RL( 'ADJsalt.', suff,
+     &                           foo3D, myIter, myThid )
+          foo3D = uvel%d
+          CALL WRITE_FLD_XYZ_RL( 'ADJuvel.', suff,
+     &                           foo3D, myIter, myThid )
+          foo3D = vvel%d
+          CALL WRITE_FLD_XYZ_RL( 'ADJvvel.', suff,
+     &                           foo3D, myIter, myThid )
+          foo3D = wvel%d
+          CALL WRITE_FLD_XYZ_RL( 'ADJwvel.', suff,
+     &                           foo3D, myIter, myThid )
+          foo2D = etaN%d
+          CALL WRITE_FLD_XY_RL ( 'ADJetan.', suff,
+     &                           foo2D, myIter, myThid )
+
+          IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
+           foo2D = Fu%d
+           CALL WRITE_FLD_XY_RS('ADJtaux.',suff, foo2d, myIter, myThid )
+           foo2D = Fv%d
+           CALL WRITE_FLD_XY_RS('ADJtauy.',suff, foo2d, myIter, myThid )
+           foo2D = Qnet%d
+           CALL WRITE_FLD_XY_RS('ADJqnet.',suff, foo2d,myIter,myThid )
+           foo2D = EmPmR%d
+           CALL WRITE_FLD_XY_RS('ADJempr.',suff,foo2d,myIter,myThid )
+#ifdef SHORTWAVE_HEATING
+cc           foo2D = Qsw%d
+cc           CALL WRITE_FLD_XY_RS('ADJqsw.', suff, foo2d,myIter, myThid )
+#endif
+          ENDIF
+
+#ifdef ALLOW_GGL90
+c         CALL WRITE_FLD_XYZ_RL ( 'ADJggl90diffkr.',suff,
+c    &                             adGGL90DiffKr, myIter, myThid )
+cc          foo3D = GGL90TKE%d
+cc          CALL WRITE_FLD_XYZ_RL( 'ADJggl90tke.', suff,
+cc     &                           foo3d, myIter, myThid )
+#endif
+#ifdef ALLOW_DIFFKR_CONTROL
+          foo3D = DiffKr%d
+          CALL WRITE_FLD_XYZ_RL( 'ADJdiffkr.', suff,
+     &                           foo3d, myIter, myThid )
+#endif
+#ifdef ALLOW_KAPGM_CONTROL
+          foo3D = KapGM%d
+          CALL WRITE_FLD_XYZ_RL( 'ADJkapgm.', suff,
+     &                           foo3d, myIter, myThid )
+#endif
+#ifdef ALLOW_KAPREDI_CONTROL
+          foo3D = KapRedi%d
+          CALL WRITE_FLD_XYZ_RL( 'ADJkapredi.', suff,
+     &                           foo3d, myIter, myThid )
+#endif
+#ifdef ALLOW_EDDYPSI_CONTROL
+          foo3D = EddyPsiX%d
+          CALL WRITE_FLD_XYZ_RS( 'ADJeddypsix.', suff,
+     &                           foo3d, myIter, myThid )
+          foo3D = EddyPsiY%d
+          CALL WRITE_FLD_XYZ_RS( 'ADJeddypsiy.', suff,
+     &                           foo3d, myIter, myThid )
+#endif
+#ifdef ALLOW_SST0_CONTROL
+          foo2D = sst%d
+          CALL WRITE_FLD_XY_RS( 'ADJsst.',suff, adSST, myIter, myThid )
+#endif
+#ifdef ALLOW_SSS0_CONTROL
+          foo2D = sss%d
+          CALL WRITE_FLD_XY_RS( 'ADJsss.',suff, adSSS, myIter, myThid )
+#endif
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+          foo2D = BottomDragFld%d
+          CALL WRITE_FLD_XY_RL ( 'ADJbottomdrag.', suff,
+     &                           adBottomDragFld, myIter, myThid )
+#endif
+
+        ELSEIF ( ( dumpAdVarExch.NE.2 ).AND.(dumpAdByRec) ) THEN
+
+          foo3D = theta%d
+          CALL WRITE_REC_XYZ_RL( 'ADJtheta',
+     &                           foo3d, dumpAdRecMn, myIter,myThid )
+          foo3D = salt%d
+          CALL WRITE_REC_XYZ_RL( 'ADJsalt',
+     &                           foo3d, dumpAdRecMn, myIter, myThid )
+          foo3D = uvel%d
+          CALL WRITE_REC_XYZ_RL( 'ADJuvel',
+     &                           foo3d, dumpAdRecMn, myIter, myThid )
+          foo3D = vvel%d
+          CALL WRITE_REC_XYZ_RL( 'ADJvvel',
+     &                           foo3d, dumpAdRecMn, myIter, myThid )
+          foo3D = wvel%d
+          CALL WRITE_REC_XYZ_RL( 'ADJwvel',
+     &                           foo3d, dumpAdRecMn, myIter, myThid )
+          foo2D = etan%d
+          CALL WRITE_REC_XY_RL ( 'ADJetan',
+     &                           foo2d, dumpAdRecMn, myIter, myThid )
+
+          IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
+           foo2D = fu%d
+           CALL WRITE_REC_XY_RS('ADJtaux',
+     &          foo2d, dumpAdRecMn, myIter, myThid )
+           foo2D = fv%d
+           CALL WRITE_REC_XY_RS('ADJtauy',
+     &          foo2d, dumpAdRecMn, myIter, myThid )
+           foo2D = Qnet%d
+           CALL WRITE_REC_XY_RS('ADJqnet',
+     &          foo2d,dumpAdRecMn, myIter,myThid )
+           foo2D = EmPmR%d
+           CALL WRITE_REC_XY_RS('ADJempr',
+     &          foo2d,dumpAdRecMn, myIter,myThid )
+#ifdef SHORTWAVE_HEATING
+cc           foo2D = Qsw%d
+cc           CALL WRITE_REC_XY_RS('ADJqsw',
+cc     &          foo2d,dumpAdRecMn, myIter, myThid )
+#endif
+          ENDIF
+
+#ifdef ALLOW_GGL90
+c         CALL WRITE_REC_XYZ_RL ( 'ADJggl90diffkr',
+c    &         adGGL90DiffKr, dumpAdRecMn, myIter, myThid )
+cc          foo3D = GGL90TKE%d
+cc          CALL WRITE_REC_XYZ_RL( 'ADJggl90tke',
+cc     &         foo3d, dumpAdRecMn, myIter, myThid )
+#endif
+#ifdef ALLOW_DIFFKR_CONTROL
+          foo3D = Diffkr%d
+          CALL WRITE_REC_XYZ_RL( 'ADJdiffkr',
+     &         foo3d, dumpAdRecMn, myIter, myThid )
+#endif
+#ifdef ALLOW_KAPGM_CONTROL
+          foo3D = KapGM%d
+          CALL WRITE_REC_XYZ_RL( 'ADJkapgm',
+     &         foo3d, dumpAdRecMn, myIter, myThid )
+#endif
+#ifdef ALLOW_KAPREDI_CONTROL
+          foo3D = KapRedi%d
+          CALL WRITE_REC_XYZ_RL( 'ADJkapredi',
+     &         foo3d, dumpAdRecMn, myIter, myThid )
+#endif
+#ifdef ALLOW_EDDYPSI_CONTROL
+          foo3D = EddyPsiX%d
+          CALL WRITE_REC_XYZ_RS( 'ADJeddypsix',
+     &         foo3d, dumpAdRecMn, myIter, myThid )
+          foo3D = EddyPsiY%d
+          CALL WRITE_REC_XYZ_RS( 'ADJeddypsiy',
+     &         foo3d, dumpAdRecMn, myIter, myThid )
+#endif
+#ifdef ALLOW_SST0_CONTROL
+          foo2D = sst%d
+          CALL WRITE_REC_XY_RS( 'ADJsst',
+     &         foo2d, dumpAdRecMn, myIter, myThid )
+#endif
+#ifdef ALLOW_SSS0_CONTROL
+          foo2D = sss%d
+          CALL WRITE_REC_XY_RS( 'ADJsss',
+     &         foo2d, dumpAdRecMn, myIter, myThid )
+#endif
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+          foo2D = BottomDragFld%d
+          CALL WRITE_REC_XY_RL ( 'ADJbottomdrag',
+     &         foo2d, dumpAdRecMn, myIter, myThid )
+#endif
+
+        ELSE
+C       case dumpAdVarExch = 2
+
+          CALL COPY_ADVAR_OUTP( dumRS, theta%d,var3Du, Nr, 12, myThid )
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJtheta.',
+     &                           suff, var3Du, myIter, myThid )
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJtheta',
+     &                           var3Du, dumpAdRecMn, myIter, myThid )
+          CALL COPY_ADVAR_OUTP( dumRS, salt%d, var3Du, Nr, 12, myThid )
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJsalt.',
+     &                           suff, var3Du, myIter, myThid )
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJsalt',
+     &                           var3Du, dumpAdRecMn, myIter, myThid )
+          CALL COPY_AD_UV_OUTP( dumRS, dumRS, uVel%d, vVel%d,
+     &                                 var3Du, var3Dv, Nr, 34, myThid )
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJuvel.',
+     &                           suff, var3Du, myIter, myThid )
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJuvel',
+     &                           var3Du, dumpAdRecMn, myIter, myThid )
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJvvel.',
+     &                           suff, var3Dv, myIter, myThid )
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJvvel',
+     &                           var3Dv, dumpAdRecMn, myIter, myThid )
+          CALL COPY_ADVAR_OUTP( dumRS, wVel%d, var3Du, Nr, 12, myThid )
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJwvel.',
+     &                           suff, var3Du, myIter, myThid )
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJwvel',
+     &                           var3Du, dumpAdRecMn, myIter, myThid )
+          CALL COPY_ADVAR_OUTP( dumRS, EtaN%d, var2Du, 1 , 12, myThid )
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL(  'ADJetan.',
+     &                           suff, var2Du, myIter, myThid )
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL(  'ADJetan',
+     &                           var2Du, dumpAdRecMn, myIter, myThid )
+
+          IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
+           CALL COPY_AD_UV_OUTP( Fu%d, Fv%d, dumRL, dumRL,
+     &                                  var2Du, var2Dv, 1, 33, myThid )
+           IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJtaux.',
+     &                           suff,var2Du,myIter,myThid )
+           IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJtaux',
+     &                           var2Du,dumpAdRecMn, myIter,myThid )
+           IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJtauy.',
+     &                           suff,var2Dv,myIter,myThid )
+           IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJtauy',
+     &                           var2Dv,dumpAdRecMn, myIter,myThid )
+           CALL COPY_ADVAR_OUTP( Qnet%d, dumRL, var2Du, 1, 11, myThid )
+           IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJqnet.',
+     &                           suff,var2Du,myIter,myThid )
+           IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJqnet',
+     &                           var2Du,dumpAdRecMn, myIter,myThid )
+           CALL COPY_ADVAR_OUTP( EmPmR%d,dumRL, var2Du, 1, 11, myThid )
+           IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJempr.',
+     &                           suff,var2Du,myIter,myThid )
+           IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJempr',
+     &                           var2Du,dumpAdRecMn, myIter,myThid )
+#ifdef SHORTWAVE_HEATING
+cc           CALL COPY_ADVAR_OUTP( Qsw%d,  dumRL, var2Du, 1, 11, myThid )
+cc           IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJqsw.',
+cc     &                           suff,var2Du,myIter,myThid )
+cc           IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJqsw',
+cc     &                           var2Du,dumpAdRecMn, myIter,myThid )
+#endif
+          ENDIF
+#ifdef ALLOW_GGL90
+cc          CALL COPY_ADVAR_OUTP( dumRS,GGL90TKE%d,var3Du,Nr, 12,myThid )
+cc          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJggl90tke.',
+cc     &                           suff, var3Du, myIter, myThid )
+cc          IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJggl90tke',
+cc     &                           var3Du, dumpAdRecMn, myIter, myThid )
+#endif
+#ifdef ALLOW_DIFFKR_CONTROL
+          CALL COPY_ADVAR_OUTP( dumRS, DiffKr%d,var3Du, Nr, 12,myThid )
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJdiffkr.',
+     &                           suff, var3Du, myIter, myThid )
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJdiffkr',
+     &                           var3Du, dumpAdRecMn, myIter, myThid )
+#endif
+#ifdef ALLOW_KAPGM_CONTROL
+          CALL COPY_ADVAR_OUTP( dumRS, KapGM%d, var3Du, Nr, 12,myThid )
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJkapgm.',
+     &                           suff, var3Du, myIter, myThid )
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJkapgm',
+     &                           var3Du, dumpAdRecMn, myIter, myThid )
+#endif
+#ifdef ALLOW_KAPREDI_CONTROL
+          CALL COPY_ADVAR_OUTP( dumRS,KapRedi%d,var3Du, Nr, 12,myThid )
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJkapredi.',
+     &                           suff, var3Du, myIter, myThid )
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJkapredi',
+     &                           var3Du, dumpAdRecMn, myIter, myThid )
+#endif
+#ifdef ALLOW_EDDYPSI_CONTROL
+          CALL COPY_AD_UV_OUTP( EddyPsiX%d, EddyPsiY%d, dumRL, dumRL,
+     &                                 var3Du, var3Dv, Nr, 33, myThid )
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJeddypsix.',
+     &                           suff, var3Du, myIter, myThid )
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJeddypsix',
+     &                           var3Du, dumpAdRecMn, myIter, myThid )
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XYZ_RL( 'ADJeddypsiy.',
+     &                           suff, var3Dv, myIter, myThid )
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJeddypsiy',
+     &                           var3Dv, dumpAdRecMn, myIter, myThid )
+#endif
+#ifdef ALLOW_SST0_CONTROL
+          CALL COPY_ADVAR_OUTP( SST%d, dumRL, var2Du, 1, 11, myThid )
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJsst.',
+     &                           suff,var2Du,myIter,myThid )
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJsst',
+     &                           var2Du,dumpAdRecMn, myIter,myThid )
+#endif
+#ifdef ALLOW_SSS0_CONTROL
+          CALL COPY_ADVAR_OUTP( SSS%d, dumRL, var2Du, 1, 11, myThid )
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJsss.',
+     &                           suff,var2Du,myIter,myThid )
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJsss',
+     &                           var2Du,dumpAdRecMn, myIter,myThid )
+#endif
+#ifdef ALLOW_BOTTOMDRAG_CONTROL
+          CALL COPY_ADVAR_OUTP( dumRS, BottomDragFld%d,
+     &                                        var2Du, 1, 12, myThid )
+          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJbottomdrag.',
+     &                           suff, var2Du, myIter, myThid )
+          IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJbottomdrag',
+     &                           var2Du, dumpAdRecMn, myIter, myThid )
+#endif
+ 
+C       end if dumpAdVarExch = 2
+        ENDIF
+
+C-----------------------------------------------------------------------
+#endif /* ndef ALLOW_OPENAD */
+C-----------------------------------------------------------------------
+
+C-- NOW NMC output
+
+#ifndef ALLOW_OPENAD
 #ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
          CALL MNC_CW_SET_UDIM('adstate', -1, myThid)
@@ -523,6 +850,7 @@ C     dumpAdVarExch.NE.2
 C     endif mnc
         ENDIF
 #endif /* ALLOW_MNC */
+#endif /* ALLOW_OPENAD */
 
 #ifdef ALLOW_EXF
 cph        IF ( useEXF ) CALL EXF_AD_DUMP( myTime, myIter, myThid )
