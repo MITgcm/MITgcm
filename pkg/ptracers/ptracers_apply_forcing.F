@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_apply_forcing.F,v 1.1 2014/07/09 16:54:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_apply_forcing.F,v 1.2 2016/08/22 14:38:08 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -23,6 +23,9 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS_PARAMS.h"
+#include "PTRACERS_FIELDS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  gPtracer             :: the tendency array
@@ -81,6 +84,18 @@ C     because it is needed by KPP_TRANSPORT_PTR.
      &                   *recip_drF(k)*recip_hFacC(i,j,k,bi,bj)
          ENDDO
         ENDDO
+      ENDIF
+
+      IF (PTRACERS_calcSurfCor) THEN
+        IF (k .EQ. kSurface) THEN
+          DO j=0,sNy+1
+           DO i=0,sNx+1
+            gPtracer(i,j) = gPtracer(i,j)
+     &           +totSurfCorPTr(iTracer)*recip_drF(k)
+     &           *_recip_hFacC(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
       ENDIF
 
 #ifdef ALLOW_RBCS

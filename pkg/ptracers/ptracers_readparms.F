@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.47 2014/09/09 22:48:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.48 2016/08/22 14:38:08 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -78,7 +78,8 @@ C     tauTr1ClimRelax :: old parameter (will be removed 1 day)
      &     PTRACERS_snapshot_mnc,
      &     PTRACERS_monitor_mnc,
      &     PTRACERS_pickup_write_mnc,
-     &     PTRACERS_pickup_read_mnc
+     &     PTRACERS_pickup_read_mnc,
+     &     PTRACERS_calcSurfCor
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -132,6 +133,9 @@ C     Set defaults values for parameters in PTRACERS.h
       PTRACERS_doAB_onGpTr      = doAB_onGtGs
       PTRACERS_addSrelax2EmP    = .FALSE.
       PTRACERS_useRecords       = .FALSE.
+C     Whether to compute linear surface correction (analogue of
+C     linFSConserveTr for theta and salt, so default to linFSConservTr)
+      PTRACERS_calcSurfCor      = linFSConserveTr
 #ifdef ALLOW_MNC
       PTRACERS_timeave_mnc      = useMNC .AND. timeave_mnc
       PTRACERS_snapshot_mnc     = useMNC .AND. snapshot_mnc
@@ -230,9 +234,6 @@ C     Set flag to check when each tracer starts
         STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
       ENDIF
 #endif /* ALLOW_AUTODIFF */
-
-C     Whether to compute linear surface correction (set by other packages)
-      PTRACERS_calcSurfCor = .FALSE.
 
 #ifdef ALLOW_MNC
       PTRACERS_timeave_mnc      = useMNC .AND. PTRACERS_timeave_mnc

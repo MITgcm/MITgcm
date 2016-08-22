@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_calc_wsurf_tr.F,v 1.1 2014/05/07 15:23:04 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_calc_wsurf_tr.F,v 1.2 2016/08/22 14:38:08 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -74,6 +74,14 @@ C-- sum over tiles
        CALL GLOBAL_SUM_TILE_RL( wT_Tile(1,1,itr), totSurfCorPTr(iTr),
      &                          myThid )
       ENDDO
+
+      IF ( globalArea.GT.0. ) THEN
+       _BEGIN_MASTER( myThid )
+       DO itr=1,PTRACERS_numInUse
+        totSurfCorPTr(iTr) = totSurfCorPTr(iTr) / globalArea
+       ENDDO
+       _END_MASTER( myThid )
+      ENDIF
 
       _BARRIER
 
