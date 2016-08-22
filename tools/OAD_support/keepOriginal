@@ -5,9 +5,13 @@ exch_uv_3d_rs.F
 exch_uv_agrid_3d_rl.F
 exch_uv_dgrid_3d_rl.F
 exch_uv_xyz_rl.F
+exch_uv_xyz_rs.F
 exch_xy_rl.F
 exch_xy_rs.F
 exch_xyz_rl.F
+exch_xyz_rs.F
 read_rec.F
 read_fld_xy_rl.F
 read_fld_xy_rs.F
+read_fld_xyz_rl.F
+read_fld_xyz_rs.F
