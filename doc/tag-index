@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2261 2016/07/29 19:49:59 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2262 2016/08/22 14:38:37 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/ptracers: add Bruno Deremble's code to complete the linear surface 
+  correction for tracer conservation
 
 checkpoint65y (2016/07/29)
 o pkg/debug (stats):
