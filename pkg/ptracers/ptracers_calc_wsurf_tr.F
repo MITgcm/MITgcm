@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_calc_wsurf_tr.F,v 1.3 2016/08/23 12:25:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_calc_wsurf_tr.F,v 1.4 2016/08/23 18:29:49 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -51,8 +51,9 @@ C     !LOCAL VARIABLES:
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       DO itr=1,PTRACERS_numInUse
-       totSurfCorPTr(iTr) = 0.0 _d 0
-       wT_mean(iTr)       = 0.0 _d 0
+       totSurfCorPTr(iTr)  = 0.0 _d 0
+       meanSurfCorPTr(iTr) = 0.0 _d 0
+       wT_mean(iTr)        = 0.0 _d 0
       ENDDO
 
 C-- compute per-tile sums
@@ -78,12 +79,13 @@ C-- sum over tiles
       DO itr=1,PTRACERS_numInUse
        CALL GLOBAL_SUM_TILE_RL( wT_Tile(1,1,itr), wT_Mean(iTr),
      &                          myThid )
+       totSurfCorPTr(iTr) = wT_Mean(iTr)
       ENDDO
 
       IF ( globalArea.GT.0. ) THEN
        _BEGIN_MASTER( myThid )
        DO itr=1,PTRACERS_numInUse
-        totSurfCorPTr(iTr) = wT_Mean(iTr) / globalArea
+        meanSurfCorPTr(iTr) = wT_Mean(iTr) / globalArea
        ENDDO
        _END_MASTER( myThid )
       ENDIF

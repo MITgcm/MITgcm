@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.48 2016/08/22 14:38:08 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.49 2016/08/23 18:29:49 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -79,7 +79,7 @@ C     tauTr1ClimRelax :: old parameter (will be removed 1 day)
      &     PTRACERS_monitor_mnc,
      &     PTRACERS_pickup_write_mnc,
      &     PTRACERS_pickup_read_mnc,
-     &     PTRACERS_calcSurfCor
+     &     PTRACERS_linFSConserve
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -124,6 +124,7 @@ C     Set defaults values for parameters in PTRACERS.h
         PTRACERS_useDWNSLP(iTracer)=useDOWN_SLOPE
         PTRACERS_useKPP(iTracer)   =useKPP
         PTRACERS_initialFile(iTracer)=' '
+        PTRACERS_linFSConserve(iTracer)=.FALSE.
         DO ic = 1,MAX_LEN_FNAM
           PTRACERS_names(iTracer)(ic:ic) = ' '
           PTRACERS_long_names(iTracer)(ic:ic) = ' '
@@ -133,9 +134,6 @@ C     Set defaults values for parameters in PTRACERS.h
       PTRACERS_doAB_onGpTr      = doAB_onGtGs
       PTRACERS_addSrelax2EmP    = .FALSE.
       PTRACERS_useRecords       = .FALSE.
-C     Whether to compute linear surface correction (analogue of
-C     linFSConserveTr for theta and salt, so default to linFSConservTr)
-      PTRACERS_calcSurfCor      = linFSConserveTr
 #ifdef ALLOW_MNC
       PTRACERS_timeave_mnc      = useMNC .AND. timeave_mnc
       PTRACERS_snapshot_mnc     = useMNC .AND. snapshot_mnc
@@ -234,6 +232,13 @@ C     Set flag to check when each tracer starts
         STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
       ENDIF
 #endif /* ALLOW_AUTODIFF */
+
+C     Whether to compute linear surface correction
+C     (this may also be enabled elsewhere)
+      PTRACERS_calcSurfCor = .FALSE.
+      DO iTracer=1,PTRACERS_num
+        IF (PTRACERS_linFSConserve(iTracer)) PTRACERS_calcSurfCor=.TRUE.
+      ENDDO
 
 #ifdef ALLOW_MNC
       PTRACERS_timeave_mnc      = useMNC .AND. PTRACERS_timeave_mnc

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_apply_forcing.F,v 1.2 2016/08/22 14:38:08 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_apply_forcing.F,v 1.3 2016/08/23 18:29:49 jahn Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -86,12 +86,12 @@ C     because it is needed by KPP_TRANSPORT_PTR.
         ENDDO
       ENDIF
 
-      IF (PTRACERS_calcSurfCor) THEN
+      IF (PTRACERS_linFSConserve(iTracer)) THEN
         IF (k .EQ. kSurface) THEN
           DO j=0,sNy+1
            DO i=0,sNx+1
             gPtracer(i,j) = gPtracer(i,j)
-     &           +totSurfCorPTr(iTracer)*recip_drF(k)
+     &           +meanSurfCorPTr(iTracer)*recip_drF(k)
      &           *_recip_hFacC(i,j,k,bi,bj)
            ENDDO
           ENDDO

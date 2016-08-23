@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2262 2016/08/22 14:38:37 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2263 2016/08/23 18:30:43 jahn Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -6,6 +6,7 @@ $Name:  $
 
 o pkg/ptracers: add Bruno Deremble's code to complete the linear surface 
   correction for tracer conservation
+  - enabled for individual ptracers by PTRACERS_linFSConserve(iTr)=.TRUE.
 
 checkpoint65y (2016/07/29)
 o pkg/debug (stats):
