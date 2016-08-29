@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_ollie,v 1.5 2016/06/06 19:31:12 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_ollie,v 1.6 2016/08/29 14:39:28 mlosch Exp $
 # $Name:  $
 
 # Tested on cray CS400 ollie.awi.de 
@@ -61,15 +61,21 @@ F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
 CFLAGS="-O0 $MCMODEL"
 
-# after "module load intel/impi-5.1.3", I_MPI_ROOT should be available
-#MPI_INC_DIR=" -I/opt/cray/mvapich2_cce/1.9/CRAY/83/include"
-#MPI_INC_DIR="-I${INCLUDE_PATH_X86_64}"
-MPI_INC_DIR=${I_MPI_ROOT}/include64
-if test -n ${MPI_INC_DIR} ; then
+if [ -n "$MPI_ROOT" -a -z "$MPI_INC_DIR" ]; then
+    MPI_INC_DIR=${MPI_ROOT}/include
+fi
+if [ -n "$MPI_HOME" -a -z "$MPI_INC_DIR" ]; then
+    MPI_INC_DIR="$MPI_HOME/include"
+fi
+# MPI_INC_DIR needs to be set properly
+if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
     INCLUDES="$INCLUDES -I$MPI_INC_DIR"
     INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
     #- used for parallel (MPI) DIVA
     # MPIINCLUDEDIR="$MPI_INC_DIR"
     # MPI_HEADER_FILES='mpif.h mpiof.h'
+else
+   echo "MPI_INC_DIR needs to point to the correct directory, so that"
+   echo "\$MPI_INC_DIR/mpif.h is available"
 fi
 
