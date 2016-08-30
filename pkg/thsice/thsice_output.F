@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.14 2013/05/02 20:01:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.15 2016/08/30 21:50:15 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -228,7 +228,6 @@ c    &                    'snowPr_ave',ice_snowPr_Ave,myThid)
        ENDIF
 #endif
 
-
 C--    Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -262,7 +261,10 @@ C     Dump a snap-shot of main state variables:
      &                             myTime.EQ.startTime  )
      &   ) THEN
 
-        IF ( thSIce_snapshot_mdsio ) THEN
+        IF ( thSIce_snapshot_mdsio .AND.
+     &       ( myTime.NE.startTime .OR. .NOT.thSIce_skipThermo
+     &                             .OR. .NOT.useCoupler )
+     &     ) THEN
 
           WRITE(suff,'(I10.10)') myIter
 
