@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.16 2013/05/25 16:19:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.17 2016/08/30 21:52:19 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -101,12 +101,14 @@ CEOP
 #endif /* SEAICE_CGRID and SEAICE_ALLOW_EVP */
             CALL MNC_CW_RL_W(pf,'sice',0,0,'si_UICE',uIce,myThid)
             CALL MNC_CW_RL_W(pf,'sice',0,0,'si_VICE',vIce,myThid)
-            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_HEFF',hEff,myThid)
-            CALL MNC_CW_RL_W(pf,'sice',0,0,'si_AREA',area,myThid)
+            IF ( .NOT.useThSIce ) THEN
+             CALL MNC_CW_RL_W(pf,'sice',0,0,'si_HEFF',hEff,myThid)
+             CALL MNC_CW_RL_W(pf,'sice',0,0,'si_AREA',area,myThid)
 #ifdef SEAICE_ITD
 c           CALL MNC_CW_RL_W(pf,'sice',0,0,'si_HEFFITD',HEFFITD,myThid)
 c           CALL MNC_CW_RL_W(pf,'sice',0,0,'si_AREAITD',AREAITD,myThid)
 #endif
+            ENDIF
 #ifdef ALLOW_EXF
             CALL MNC_CW_RL_W(pf,'sice',0,0,'si_UWIND',uwind,myThid)
             CALL MNC_CW_RL_W(pf,'sice',0,0,'si_VWIND',vwind,myThid)
@@ -133,29 +135,31 @@ c           CALL MNC_CW_RL_W(pf,'sice',0,0,'si_AREAITD',AREAITD,myThid)
             ENDIF
             CALL WRITE_FLD_XY_RL( 'UICE.',suff,uIce,myIter,myThid)
             CALL WRITE_FLD_XY_RL( 'VICE.',suff,vIce,myIter,myThid)
-            CALL WRITE_FLD_XY_RL( 'HEFF.',suff,hEff,myIter,myThid)
-            CALL WRITE_FLD_XY_RL( 'AREA.',suff,area,myIter,myThid)
-            CALL WRITE_FLD_XY_RL( 'HSNOW.',suff,HSNOW,myIter,myThid)
+            IF ( .NOT.useThSIce ) THEN
+             CALL WRITE_FLD_XY_RL( 'HEFF.',suff,hEff,myIter,myThid)
+             CALL WRITE_FLD_XY_RL( 'AREA.',suff,area,myIter,myThid)
+             CALL WRITE_FLD_XY_RL( 'HSNOW.',suff,HSNOW,myIter,myThid)
 #ifdef SEAICE_ITD
-            CALL WRITE_FLD_3D_RL( 'HEFFITD.', suff, nITD, HEFFITD,
-     &                            myIter, myThid )
-            CALL WRITE_FLD_3D_RL( 'AREAITD.', suff, nITD, AREAITD,
-     &                            myIter, myThid )
-            CALL WRITE_FLD_3D_RL('HSNOWITD.', suff, nITD, HSNOWITD,
-     &                            myIter, myThid )
+             CALL WRITE_FLD_3D_RL( 'HEFFITD.', suff, nITD, HEFFITD,
+     &                             myIter, myThid )
+             CALL WRITE_FLD_3D_RL( 'AREAITD.', suff, nITD, AREAITD,
+     &                             myIter, myThid )
+             CALL WRITE_FLD_3D_RL('HSNOWITD.', suff, nITD, HSNOWITD,
+     &                             myIter, myThid )
 #endif
 #ifdef SEAICE_VARIABLE_SALINITY
-            CALL WRITE_FLD_XY_RL( 'HSALT.',suff,HSALT,myIter,myThid)
+             CALL WRITE_FLD_XY_RL( 'HSALT.',suff,HSALT,myIter,myThid)
 #endif
 #ifdef ALLOW_SITRACER
-            DO iTracer = 1, SItrNumInUse
-             WRITE(pref,'(A8,I2.2,A1)') 'SITRACER', iTracer, '.'
-             CALL WRITE_FLD_XY_RL(
-     &            pref,suff,
-     &            SItracer(1-OLx,1-OLy,1,1,iTracer),
-     &            myIter,myThid)
-            ENDDO
+             DO iTracer = 1, SItrNumInUse
+              WRITE(pref,'(A8,I2.2,A1)') 'SITRACER', iTracer, '.'
+              CALL WRITE_FLD_XY_RL(
+     &             pref,suff,
+     &             SItracer(1-OLx,1-OLy,1,1,iTracer),
+     &             myIter, myThid )
+             ENDDO
 #endif
+            ENDIF
 #if ( defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP) )
             IF ( SEAICEuseEVP ) THEN
              CALL WRITE_FLD_XY_RL('SIGMA1.',suff,seaice_sigma1,
