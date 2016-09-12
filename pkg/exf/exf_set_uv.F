@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.31 2016/02/29 22:13:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.32 2016/09/12 23:44:27 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -83,15 +83,15 @@ C     == Functions ==
       EXTERNAL ILNBLNK
 
 C     == local variables ==
+      INTEGER i, j, bi, bj
+      _RL     tmp_u (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     tmp_v (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef USE_EXF_INTERPOLATION
 C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(128) uvecfile0, uvecfile1
       CHARACTER*(128) vvecfile0, vvecfile1
-#ifdef ALLOW_EXF_OUTPUT_INTERP
-      CHARACTER*(128) outuvecfile0, outuvecfile1
-      CHARACTER*(128) outvvecfile0, outvvecfile1
-#endif
+      CHARACTER*(MAX_LEN_FNAM) out_uVecfile, out_vVecfile
       LOGICAL first, changed
       _RL     fac
 #ifdef EXF_USE_OLD_VEC_ROTATION
@@ -100,11 +100,6 @@ C     msgBuf     :: Informational/error message buffer
       INTEGER count0, count1
       INTEGER year0, year1
 #endif /* USE_EXF_INTERPOLATION */
-
-      INTEGER i, j, bi, bj
-      _RL     tmp_u (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL     tmp_v (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
 C     == end of interface ==
 
 #ifdef USE_EXF_INTERPOLATION
@@ -212,21 +207,33 @@ C-    scalar interpolation to (xC,yC) locations
      I             myIter, myThid )
           ENDIF
 
-#ifdef ALLOW_EXF_OUTPUT_INTERP
-           CALL exf_filter_rl( tmp_u, 'c', myThid )
-           CALL exf_filter_rl( tmp_v, 'c', myThid )
-           j = ILNBLNK(uvecfile0)
-           WRITE(outuvecfile0,'(2A)') 'out_',uvecfile0(1:j)
-           CALL WRITE_REC_XY_RL(outuvecfile0,tmp_u,count0,myIter,myThid)
-           j = ILNBLNK(vvecfile0)
-           WRITE(outvvecfile0,'(2A)') 'out_',vvecfile0(1:j)
-           CALL WRITE_REC_XY_RL(outvvecfile0,tmp_v,count0,myIter,myThid)
-#endif
+C-    apply mask: Note: done after applying scaling factor and rotation
+c         CALL EXF_FILTER_RL( tmp_u, uvecmask, myThid )
+c         CALL EXF_FILTER_RL( tmp_v, vvecmask, myThid )
 
-C-    vector rotation
+          IF ( exf_output_interp ) THEN
+           j = ILNBLNK(uvecfile0)
+           WRITE(out_uVecfile,'(2A)') uvecfile0(1:j), '_out'
+           IF ( count0.NE.1 )
+     &     CALL WRITE_REC_XY_RL(out_uVecfile,tmp_u,1,myIter,myThid)
+           CALL WRITE_REC_XY_RL(out_uVecfile,tmp_u,count0,myIter,myThid)
+           j = ILNBLNK(vvecfile0)
+           WRITE(out_vVecfile,'(2A)') vvecfile0(1:j), '_out'
+           IF ( count0.NE.1 )
+     &     CALL WRITE_REC_XY_RL(out_vVecfile,tmp_v,1,myIter,myThid)
+           CALL WRITE_REC_XY_RL(out_vVecfile,tmp_v,count0,myIter,myThid)
+          ENDIF
+
+C-    scaling factor and vector rotation
           IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
             DO bj = myByLo(myThid),myByHi(myThid)
              DO bi = myBxLo(myThid),myBxHi(myThid)
+              DO j = 1,sNy
+               DO i = 1,sNx
+                 tmp_u(i,j,bi,bj) = exf_inscal_uvec*tmp_u(i,j,bi,bj)
+                 tmp_v(i,j,bi,bj) = exf_inscal_vvec*tmp_v(i,j,bi,bj)
+               ENDDO
+              ENDDO
               DO j = 1,sNy
                DO i = 1,sNx
 #ifdef EXF_USE_OLD_VEC_ROTATION
@@ -277,16 +284,18 @@ C-    vector rotation
              DO bi = myBxLo(myThid),myBxHi(myThid)
               DO j = 1,sNy
                DO i = 1,sNx
-                 uvec1(i,j,bi,bj) = tmp_u(i,j,bi,bj)
-                 vvec1(i,j,bi,bj) = tmp_v(i,j,bi,bj)
+                 uvec1(i,j,bi,bj) = exf_inscal_uvec*tmp_u(i,j,bi,bj)
+                 vvec1(i,j,bi,bj) = exf_inscal_vvec*tmp_v(i,j,bi,bj)
                ENDDO
               ENDDO
              ENDDO
             ENDDO
           ENDIF
-C-    apply mask
+C-    apply mask (after scaling factor and rotation)
           CALL EXF_FILTER_RL( uvec1, uvecmask, myThid )
           CALL EXF_FILTER_RL( vvec1, vvecmask, myThid )
+
+C-    end if ( first ) block
         ENDIF
 
         IF (  first .OR. changed ) THEN
@@ -349,21 +358,29 @@ C-    scalar interpolation to (xC,yC) locations
      I             myIter, myThid )
           ENDIF
 
-#ifdef ALLOW_EXF_OUTPUT_INTERP
-           CALL exf_filter_rl( tmp_u, 'c', myThid )
-           CALL exf_filter_rl( tmp_v, 'c', myThid )
-           j = ILNBLNK(uvecfile1)
-           WRITE(outuvecfile1,'(2A)') 'out_',uvecfile1(1:j)
-           CALL WRITE_REC_XY_RL(outuvecfile1,tmp_u,count1,myIter,myThid)
-           j = ILNBLNK(vvecfile1)
-           WRITE(outvvecfile1,'(2A)') 'out_',vvecfile1(1:j)
-           CALL WRITE_REC_XY_RL(outvvecfile1,tmp_v,count1,myIter,myThid)
-#endif
+C-    apply mask: Note: done after applying scaling factor and rotation
+c         CALL EXF_FILTER_RL( tmp_u, uvecmask, myThid )
+c         CALL EXF_FILTER_RL( tmp_v, vvecmask, myThid )
 
-C-    vector rotation
+          IF ( exf_output_interp ) THEN
+           j = ILNBLNK(uvecfile1)
+           WRITE(out_uVecfile,'(2A)') uvecfile1(1:j), '_out'
+           CALL WRITE_REC_XY_RL(out_uVecfile,tmp_u,count1,myIter,myThid)
+           j = ILNBLNK(vvecfile1)
+           WRITE(out_vVecfile,'(2A)') vvecfile1(1:j), '_out'
+           CALL WRITE_REC_XY_RL(out_vVecfile,tmp_v,count1,myIter,myThid)
+          ENDIF
+
+C-    scaling factor and vector rotation
           IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
             DO bj = myByLo(myThid),myByHi(myThid)
              DO bi = myBxLo(myThid),myBxHi(myThid)
+              DO j = 1,sNy
+               DO i = 1,sNx
+                 tmp_u(i,j,bi,bj) = exf_inscal_uvec*tmp_u(i,j,bi,bj)
+                 tmp_v(i,j,bi,bj) = exf_inscal_vvec*tmp_v(i,j,bi,bj)
+               ENDDO
+              ENDDO
               DO j = 1,sNy
                DO i = 1,sNx
 #ifdef EXF_USE_OLD_VEC_ROTATION
@@ -414,16 +431,18 @@ C-    vector rotation
              DO bi = myBxLo(myThid),myBxHi(myThid)
               DO j = 1,sNy
                DO i = 1,sNx
-                 uvec1(i,j,bi,bj) = tmp_u(i,j,bi,bj)
-                 vvec1(i,j,bi,bj) = tmp_v(i,j,bi,bj)
+                 uvec1(i,j,bi,bj) = exf_inscal_uvec*tmp_u(i,j,bi,bj)
+                 vvec1(i,j,bi,bj) = exf_inscal_vvec*tmp_v(i,j,bi,bj)
                ENDDO
               ENDDO
              ENDDO
             ENDDO
           ENDIF
-C-    apply mask
+C-    apply mask (after scaling factor and rotation)
           CALL EXF_FILTER_RL( uvec1, uvecmask, myThid )
           CALL EXF_FILTER_RL( vvec1, vvecmask, myThid )
+
+C-    end if ( first or changed ) block
         ENDIF
 
 C--   Interpolate linearly onto the current time.
@@ -431,12 +450,10 @@ C--   Interpolate linearly onto the current time.
           DO bi = myBxLo(myThid),myBxHi(myThid)
             DO j = 1,sNy
               DO i = 1,sNx
-                uvec(i,j,bi,bj) = exf_inscal_uvec * (
-     &                fac * uvec0(i,j,bi,bj) +
-     &                (exf_one - fac) * uvec1(i,j,bi,bj) )
-                vvec(i,j,bi,bj) = exf_inscal_vvec * (
-     &                fac * vvec0(i,j,bi,bj) +
-     &                (exf_one - fac) * vvec1(i,j,bi,bj) )
+                uvec(i,j,bi,bj) = fac * uvec0(i,j,bi,bj)
+     &               + (exf_one - fac)* uvec1(i,j,bi,bj)
+                vvec(i,j,bi,bj) = fac * vvec0(i,j,bi,bj)
+     &               + (exf_one - fac)* vvec1(i,j,bi,bj)
               ENDDO
             ENDDO
           ENDDO
