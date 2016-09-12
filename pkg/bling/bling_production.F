@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.4 2016/09/12 20:00:28 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.5 2016/09/12 23:43:06 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -429,7 +429,7 @@ c  Light-saturated maximal photosynthesis rate
 c  (Pc_m and Pc_m_diaz crash adjoint if get too small)
 #ifdef BLING_ADJOINT_SAFE
           Pc_m      = max(Pc_m     ,maskC(i,j,k,bi,bj)*1. _d -15)
-          Pc_m_diaz = max(Pc_m     ,maskC(i,j,k,bi,bj)*1. _d -15)
+          Pc_m_diaz = max(Pc_m_diaz,maskC(i,j,k,bi,bj)*1. _d -15)
 #endif
 
 
