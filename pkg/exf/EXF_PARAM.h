@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.34 2016/02/29 22:13:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.35 2016/09/12 23:43:00 jmc Exp $
 C $Name:  $
 C
 C     ==================================================================
@@ -47,7 +47,7 @@ C                           instead of _YEAR for useExfYearlyFields
 C    useOBCSYearlyFields :: when reading Open-Boundary values, assume yearly
 C                           climatology (def=false)
 C     readStressOnAgrid  :: read wind-streess located on model-grid, A-grid position
-C     rotateStressOnAgrid  :: rotate from zonal/meridional components to U/V components  
+C     rotateStressOnAgrid  :: rotate from zonal/meridional components to U/V components
 C     readStressOnCgrid  :: read wind-streess located on model-grid, C-grid position
 C     stressIsOnCgrid    :: ustress & vstress are positioned on Arakawa C-grid
 C     useStabilityFct_overIce :: over sea-ice, compute turbulent transfert
@@ -705,7 +705,10 @@ C  {inputField}_nlat    :: input filed 2nd  dim, latitudinal  direction
 C  {inputField}_interpMethod :: interpolation method: =0 : no interpolation ;
 C                            :: =1,11,21 : bilinear ; =2,12,22 : bicubic ;
 C                            :: =1,2 for tracer ; =11,12 for U ; =21,22 for V.
-C-  For 2 components vector field:
+C-  Global parameters (for all fields):
+C    exf_output_interp  :: output directly interpolation result (before
+C                          rescaling, rotation or time-interp)
+C-  Internal parameters, for 2 components vector field:
 C    uvInterp_stress    :: interpolate wind-stress u & v components together
 C    uvInterp_wind      :: interpolate wind        u & v components together
 C    uvInterp_climstr   :: interpolate clim stress u & v components together
@@ -767,10 +770,12 @@ C    uvInterp_climstr   :: interpolate clim stress u & v components together
       _RL areamask_lat0,areamask_lat_inc(MAX_LAT_INC)
       INTEGER areamask_nlon,areamask_nlat,areamask_interpMethod
 
+      LOGICAL exf_output_interp
       LOGICAL uvInterp_stress
       LOGICAL uvInterp_wind
       LOGICAL uvInterp_climstr
       COMMON /EXF_INTERPOLATION_L/
+     & exf_output_interp,
      & uvInterp_stress, uvInterp_wind, uvInterp_climstr
 
       COMMON /EXF_INTERPOLATION_RL/

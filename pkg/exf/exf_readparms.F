@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.82 2016/02/29 22:13:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.83 2016/09/12 23:43:00 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -225,7 +225,8 @@ C     Surface flux data.
      & climustr_lon0, climustr_lon_inc, climustr_lat0, climustr_lat_inc,
      & climustr_nlon, climustr_nlat, climustr_interpMethod,
      & climvstr_lon0, climvstr_lon_inc, climvstr_lat0, climvstr_lat_inc,
-     & climvstr_nlon, climvstr_nlat, climvstr_interpMethod
+     & climvstr_nlon, climvstr_nlat, climvstr_interpMethod,
+     & exf_output_interp
 #endif /* USE_EXF_INTERPOLATION */
 
 #ifdef ALLOW_ICEFRONT
@@ -836,6 +837,7 @@ C     model grid cell-center position (leading to trivial interpolation)
       climustr_interpMethod  = 12
       climvstr_interpMethod  = 22
 
+      exf_output_interp = .FALSE.
 #endif /* USE_EXF_INTERPOLATION */
 
 C     Next, read the forcing data file.
