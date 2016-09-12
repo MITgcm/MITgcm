@@ -1,14 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2265 2016/09/12 20:10:47 mmazloff Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2266 2016/09/12 23:46:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - replace CPP option ALLOW_EXF_OUTPUT_INTERP with run-time parameter
+    "exf_output_interp" (in namelist: EXF_NML_04); change output file name
+    (add suffix "_out" instead of a prefix); keep same record number as in
+    input file but always write record 1 first (to avoid a STOP in I/O S/R).
+    Change output file content by writing interpolated field before applying
+    land-sea mask (helpful for debug).
+  - 2 compon. vector interpolation with rotation: apply scaling factor on
+    each compon. (Eastward and Northward) just before rotation.
 o pkg/bling:
-  - Cleaned package. Removed not needed code and comments. 
-  - adjoint example now works 
+  - Cleaned package. Removed not needed code and comments.
+  - adjoint example now works
     (MITgcm_contrib/verification_other/global_oce_biogeo_bling/code_ad)
-
 o pkg/ptracers:
   - add Bruno Deremble's code to complete the linear surface correction
     for tracer conservation;
