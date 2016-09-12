@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.3 2016/06/20 23:10:51 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.4 2016/09/12 20:00:28 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -7,6 +7,9 @@ CBOP
       subroutine BLING_PROD( 
      I           PTR_NO3, PTR_PO4, PTR_FE, 
      I           PTR_O2, PTR_DON, PTR_DOP,
+#ifdef ADVECT_PHYTO
+     I           PTR_PHY,
+#endif 
      O           G_NO3, G_PO4, G_FE, 
      O           G_O2, G_DON, G_DOP, G_CACO3,           
      I           bi, bj, imin, imax, jmin, jmax,
@@ -15,18 +18,20 @@ CBOP
 C     =================================================================
 C     | subroutine bling_prod
 C     | o Nutrient uptake and partitioning between organic pools.
-C     | - Phytoplankton biomass-specific growth rate is calculated 
+C     | - Phytoplankton specific growth rate is calculated 
 C     |   as a function of light, nutrient limitation, and  
 C     |   temperature. 
-C     | - Biomass growth xxx
+C     | - Population growth is calculated as a function of the local 
+C     |   phytoplankton biomass.
 C     =================================================================
 
       implicit none
       
 C     === Global variables ===
-C     P_sm          :: Small phytoplankton biomass
-C     P_lg          :: Large phytoplankton biomass
-C     P_diaz        :: Diazotroph phytoplankton biomass
+C     phyto_sm     :: Small phytoplankton biomass 
+C     phyto_lg     :: Large phytoplankton biomass
+C     phyto_diaz   :: Diazotroph phytoplankton biomass
+C *** if ADVECT_PHYTO, these are fraction of total biomass instead ***
 
 #include "SIZE.h"
 #include "DYNVARS.h"
@@ -58,12 +63,17 @@ C     PTR_FE        :: iron concentration
 C     PTR_DON       :: dissolved organic nitrogen concentration
 C     PTR_DOP       :: dissolved organic phosphorus concentration
 C     PTR_O2        :: oxygen concentration
+C     PTR_PHYTO     :: total phytoplankton biomass
       _RL     PTR_NO3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     PTR_FE (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     PTR_O2 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     PTR_DON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     PTR_DOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#ifdef ADVECT_PHYTO
+      _RL     PTR_PHY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#endif
+
 C     === Output ===
 C     G_xxx         :: Tendency of xxx
       _RL     G_NO3     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -73,11 +83,13 @@ C     G_xxx         :: Tendency of xxx
       _RL     G_DON     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     G_DOP     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     G_CACO3   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
- 
+
 #ifdef ALLOW_BLING
 C     === Local variables ===
-C     i,j,k         :: loop indicesi
-C     irr_eff       :: effective irradiance
+C     i,j,k         :: loop indices
+C     Phy_lg_local  :: biomass in large phytoplankton 
+C     Phy_sm_local  :: biomass in small phytoplankton 
+C     Phy_diaz_local:: biomass in diazotroph phytoplankton 
 C     NO3_lim       :: nitrate limitation 
 C     PO4_lim       :: phosphate limitation           
 C     Fe_lim        :: iron limitation for phytoplankton    
@@ -87,7 +99,7 @@ C     theta_Fe      :: Chl:C ratio
 C     theta_Fe_max  :: Fe-replete maximum Chl:C ratio  
 C     irrk          :: nut-limited efficiency of algal photosystems
 C     irr_inst      :: instantaneous light
-C     irr_eff       :: available light
+C     irr_eff       :: effective irradiance
 C     mld           :: mixed layer depth
 C     Pc_m          :: light-saturated max photosynthesis rate for phyt
 C     Pc_m_diaz     :: light-saturated max photosynthesis rate for diaz
@@ -95,20 +107,45 @@ C     Pc_tot        :: carbon-specific photosynthesis rate
 C     expkT         :: temperature function
 C     mu            :: net carbon-specific growth rate for phyt
 C     mu_diaz       :: net carbon-specific growth rate for diaz
+C     PtoN          :: variable ratio of phosphorus to nitrogen
+C     FetoN         :: variable ratio of iron to nitrogen
 C     N_uptake      :: NO3 utilization by phytoplankton
 C     N_fix         :: Nitrogen fixation by diazotrophs
+C     N_den_pelag   :: Pelagic denitrification
+C     N_den_benthic :: Benthic denitrification
 C     P_uptake      :: PO4 utilization by phytoplankton
 C     Fe_uptake     :: dissolved Fe utilization by phytoplankton
 C     CaCO3_uptake  :: Calcium carbonate uptake for shell formation
+C     CaCO3_diss    :: Calcium carbonate dissolution
 C     DON_prod      :: production of dissolved organic nitrogen
+C     DON_remin     :: remineralization of dissolved organic nitrogen
 C     DOP_prod      :: production of dissolved organic phosphorus
+C     DOP_remin     :: remineralization of dissolved organic phosphorus
 C     O2_prod       :: production of oxygen
+C     frac_exp      :: fraction of sinking particulate organic matter
+C     N_spm         :: particulate sinking of nitrogen
+C     P_spm         :: particulate sinking of phosphorus
+C     Fe_spm        :: particulate sinking of iron
+C     N_dvm         :: vertical transport of nitrogen by DVM
+C     P_dvm         :: vertical transport of phosphorus by DVM
+C     Fe_dvm        :: vertical transport of iron by DVM
+C     N_recycle     :: recycling of newly-produced organic nitrogen
+C     P_recycle     :: recycling of newly-produced organic phosphorus
+C     Fe_recycle    :: recycling of newly-produced organic iron
+C     N_reminp      :: remineralization of particulate organic nitrogen
+C     P_reminp      :: remineralization of particulate organic nitrogen
+C     Fe_reminsum   :: iron remineralization and adsorption
+C     N_remindvm    :: nitrogen remineralization due to diel vertical migration
+C     P_remindvm    :: phosphorus remineralization due to diel vertical migration
+C     Fe_remindvm   :: iron remineralization due to diel vertical migration
+C     POC_flux      :: particulate organic carbon flux
+C     NPP           :: net primary production
+C     NCP           :: net community production
 C
       INTEGER i,j,k        
-      INTEGER tmp
-      _RL th1
-      _RL th2
-      _RL th3
+      _RL Phy_lg_local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL Phy_sm_local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL Phy_diaz_local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL NO3_lim(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL PO4_lim(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL Fe_lim(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -165,8 +202,7 @@ C
       _RL tmp_ML
 #endif
 CEOP
-  
-c ---------------------------------------------------------------------
+
 c  Initialize output and diagnostics
         DO j=jmin,jmax
           DO i=imin,imax
@@ -222,21 +258,48 @@ c  avoid negative nutrient concentrations that can result from
 c  advection when low concentrations
 
 #ifdef BLING_NO_NEG
-      CALL TRACER_MIN_VAL( PTR_NO3, 1. _d -7)
-      CALL TRACER_MIN_VAL( PTR_PO4, 1. _d -8)
-      CALL TRACER_MIN_VAL( PTR_FE, 1. _d -11)
-      CALL TRACER_MIN_VAL( PTR_O2,  1. _d -11)
-      CALL TRACER_MIN_VAL( PTR_DON, 1. _d -11)
-      CALL TRACER_MIN_VAL( PTR_DOP, 1. _d -11)
+      CALL BLING_MIN_VAL( PTR_NO3, 1. _d -7 ,bi ,bj)
+      CALL BLING_MIN_VAL( PTR_PO4, 1. _d -8 ,bi ,bj)
+      CALL BLING_MIN_VAL( PTR_FE,  1. _d -11 ,bi ,bj)
+      CALL BLING_MIN_VAL( PTR_O2,  1. _d -11 ,bi ,bj)
+      CALL BLING_MIN_VAL( PTR_DON, 1. _d -11 ,bi ,bj)
+      CALL BLING_MIN_VAL( PTR_DOP, 1. _d -11 ,bi ,bj)
 #endif
 
 c-----------------------------------------------------------
-c  mixed layer depth calculation for light and dvm
+c  Phytoplankton size classes
 c
+       DO k=1,Nr
+        DO j=jmin,jmax
+         DO i=imin,imax
+#ifdef ADVECT_PHYTO
+          Phy_lg_local(i,j,k)   = PTR_PHY(i,j,k)*phyto_lg(i,j,k,bi,bj)
+          Phy_sm_local(i,j,k)   = PTR_PHY(i,j,k)*phyto_sm(i,j,k,bi,bj)
+          Phy_diaz_local(i,j,k) = PTR_PHY(i,j,k)*phyto_diaz(i,j,k,bi,bj)
+#else
+          Phy_lg_local(i,j,k)   = phyto_lg(i,j,k,bi,bj)
+          Phy_sm_local(i,j,k)   = phyto_sm(i,j,k,bi,bj)
+          Phy_diaz_local(i,j,k) = phyto_diaz(i,j,k,bi,bj)
+#endif
+         ENDDO
+        ENDDO
+       ENDDO
+
+c-----------------------------------------------------------
+c  mixed layer depth calculation for light, phytoplankton and dvm
+c  do not need to calculate if not using ML_MEAN_LIGHT, ML_MEAN_PHYTO
+c  and not using ML calculation in bling_dvm
+c  (with BLING_ADJOINT_SAFE flag, MLD is assumed constant in bling_dvm)
+
+#if ( defined (ML_MEAN_LIGHT) || \
+      defined (ML_MEAN_PHYTO) || \
+      !(defined (FIXED_MLD_DVM)) )
        CALL BLING_MIXEDLAYER(
      U                         mld, 
      I                         bi, bj, imin, imax, jmin, jmax,
      I                         myIter, myTime, myThid)
+#endif
+
 
 c  Phytoplankton mixing
 c  The mixed layer is assumed to homogenize vertical gradients of phytoplankton.
@@ -259,11 +322,11 @@ c  taken with its interpretation.
          IF (hFacC(i,j,k,bi,bj).gt.0. _d 0) THEN
          IF ((-rf(k+1) .le. mld(i,j)).and.
      &               (-rf(k+1).lt.200. _d 0)) THEN
-          tmp_p_sm_ML = tmp_p_sm_ML+P_sm(i,j,k,bi,bj)*drF(k)
+          tmp_p_sm_ML = tmp_p_sm_ML+Phy_sm_local(i,j,k)*drF(k)
      &                  *hFacC(i,j,k,bi,bj)
-          tmp_p_lg_ML = tmp_p_lg_ML+P_lg(i,j,k,bi,bj)*drF(k)
+          tmp_p_lg_ML = tmp_p_lg_ML+Phy_lg_local(i,j,k)*drF(k)
      &                  *hFacC(i,j,k,bi,bj)
-          tmp_p_diaz_ML = tmp_p_diaz_ML+P_diaz(i,j,k,bi,bj)*drF(k)
+          tmp_p_diaz_ML = tmp_p_diaz_ML+Phy_diaz_local(i,j,k)*drF(k)
      &                  *hFacC(i,j,k,bi,bj)
           tmp_ML = tmp_ML + drF(k)
          ENDIF
@@ -277,9 +340,9 @@ c  taken with its interpretation.
          IF ((-rf(k+1) .le. mld(i,j)).and.
      &               (-rf(k+1).lt.200. _d 0)) THEN
 
-          P_sm(i,j,k,bi,bj) = max(1. _d -8,tmp_p_sm_ML/tmp_ML)
-          P_lg(i,j,k,bi,bj) = max(1. _d -8,tmp_p_lg_ML/tmp_ML)
-          P_diaz(i,j,k,bi,bj) = max(1. _d -8,tmp_p_diaz_ML/tmp_ML)
+          Phy_lg_local(i,j,k)   = max(1. _d -8,tmp_p_lg_ML/tmp_ML)
+          Phy_sm_local(i,j,k)   = max(1. _d -8,tmp_p_sm_ML/tmp_ML)
+          Phy_diaz_local(i,j,k) = max(1. _d -8,tmp_p_diaz_ML/tmp_ML)
 
          ENDIF
          ENDIF
@@ -351,30 +414,8 @@ c Taking the square root, to provide the geometric mean.
 
           expkT(i,j,k) = exp(kappa_eppley * theta(i,j,k,bi,bj))   
  
+
 c  Light-saturated maximal photosynthesis rate   
-
-#ifdef BLING_ADJOINT_SAFE_tmp_xxxxxxxxxxxxxxxxxx_needs_testing
-          th1 = tanh( (NO3_lim(i,j,k)-PO4_lim(i,j,k))*1. _d 6 )
-          nut_lim = ( 1. _d 0 - th1 ) * NO3_lim(i,j,k) * 0.5 _d 0
-     &         +    ( 1. _d 0 + th1 ) * PO4_lim(i,j,k) * 0.5 _d 0
-
-          th2 = tanh( (nut_lim-Fe_lim(i,j,k))*1. _d 6 )
-          tot_lim = ( 1. _d 0 - th2 ) * nut_lim * 0.5 _d 0
-     &         +    ( 1. _d 0 + th2 ) * Fe_lim(i,j,k) * 0.5 _d 0
-
-          th3 = tanh( (PO4_lim(i,j,k)-Fe_lim(i,j,k))*1. _d 6 )
-          diaz_lim = ( 1. _d 0 - th3 ) * PO4_lim(i,j,k) * 0.5 _d 0
-     &         +     ( 1. _d 0 + th3 ) * Fe_lim(i,j,k) * 0.5 _d 0
-
-
-          Pc_m = Pc_0 * expkT(i,j,k) * tot_lim
-     &           * maskC(i,j,k,bi,bj)
-
-          Pc_m_diaz = Pc_0_diaz
-     &           * exp(kappa_eppley_diaz * theta(i,j,k,bi,bj))
-     &           * diaz_lim * maskC(i,j,k,bi,bj)
-
-#else
 
           Pc_m = Pc_0 * expkT(i,j,k)
      &           * min(NO3_lim(i,j,k), PO4_lim(i,j,k), Fe_lim(i,j,k))
@@ -385,12 +426,10 @@ c  Light-saturated maximal photosynthesis rate
      &           * min(PO4_lim(i,j,k), Fe_lim_diaz(i,j,k))
      &           * maskC(i,j,k,bi,bj)
 
-CMM( Pc_m and Pc_m_diaz crash adjoint if get too small
+c  (Pc_m and Pc_m_diaz crash adjoint if get too small)
 #ifdef BLING_ADJOINT_SAFE
-          Pc_m      = MAX(Pc_m     ,maskC(i,j,k,bi,bj)*1. _d -15)
-          Pc_m_diaz = MAX(Pc_m_diaz,maskC(i,j,k,bi,bj)*1. _d -15)
-#endif
-CMM)
+          Pc_m      = max(Pc_m     ,maskC(i,j,k,bi,bj)*1. _d -15)
+          Pc_m_diaz = max(Pc_m     ,maskC(i,j,k,bi,bj)*1. _d -15)
 #endif
 
 
@@ -404,8 +443,9 @@ c  Fe-limitation.
           theta_Fe_max = theta_Fe_max_lo+
      &                  (theta_Fe_max_hi-theta_Fe_max_lo)*Fe_lim(i,j,k)
      
-          theta_Fe(i,j,k) = theta_Fe_max/(1. _d 0 + alpha_photo*
-     &        theta_Fe_max*irr_mem(i,j,k,bi,bj)/(epsln + 2. _d 0*Pc_m))
+          theta_Fe(i,j,k) = theta_Fe_max/(1. _d 0 + alpha_photo
+     &                  *theta_Fe_max
+     &                  *irr_mem(i,j,k,bi,bj)/(epsln + 2. _d 0*Pc_m))
 
 c ---------------------------------------------------------------------
 c  Nutrient-limited efficiency of algal photosystems, irrk, is calculated 
@@ -433,9 +473,15 @@ c  Instantaneous nutrient concentration in phyto biomass
 c  Separate loop so adjoint stuff above can be outside loop 
 c  (fix for recomputations)
 CMM(
-CADJ STORE P_sm = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE P_lg = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE P_diaz = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE phyto_sm = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE phyto_lg = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE phyto_diaz  = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE Phy_sm_local = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE Phy_lg_local = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE Phy_diaz_local  = comlev1, key = ikey_dynamics, kind=isbyte
+#ifdef ADVECT_PHYTO
+CADJ STORE PTR_PHY  = comlev1, key = ikey_dynamics, kind=isbyte
+#endif
 CMM)
       DO k=1,Nr
        DO j=jmin,jmax
@@ -443,28 +489,58 @@ CMM)
 
          IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
 
-c          expkT = exp(kappa_eppley * theta(i,j,k,bi,bj))   
-
-          P_lg(i,j,k,bi,bj) = P_lg(i,j,k,bi,bj) + 
-     &                P_lg(i,j,k,bi,bj)*(mu(i,j,k) - lambda_0
+          Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) + 
+     &                Phy_lg_local(i,j,k)*(mu(i,j,k) - lambda_0
      &                *expkT(i,j,k) * 
-     &        (P_lg(i,j,k,bi,bj)/pivotal)**(1. / 3.)) 
+     &                (Phy_lg_local(i,j,k)/pivotal)**(1. / 3.)) 
      &                * PTRACERS_dTLev(k)
 
-          P_sm(i,j,k,bi,bj) = P_sm(i,j,k,bi,bj) + 
-     &                P_sm(i,j,k,bi,bj)*(mu(i,j,k) - lambda_0
-     &                *expkT(i,j,k) * (P_sm(i,j,k,bi,bj)/pivotal) ) 
+          Phy_sm_local(i,j,k) = Phy_sm_local(i,j,k) + 
+     &                Phy_sm_local(i,j,k)*(mu(i,j,k) - lambda_0
+     &                *expkT(i,j,k) * (Phy_sm_local(i,j,k)/pivotal) ) 
      &                * PTRACERS_dTLev(k)
      
-          P_diaz(i,j,k,bi,bj) = P_diaz(i,j,k,bi,bj) + 
-     &                P_diaz(i,j,k,bi,bj)*(mu_diaz(i,j,k) - lambda_0
-     &                *expkT(i,j,k) * (P_diaz(i,j,k,bi,bj)/pivotal) ) 
+          Phy_diaz_local(i,j,k) = Phy_diaz_local(i,j,k) + 
+     &                Phy_diaz_local(i,j,k)*(mu_diaz(i,j,k) - lambda_0
+     &                *expkT(i,j,k) * (Phy_diaz_local(i,j,k)/pivotal) ) 
      &                * PTRACERS_dTLev(k)
+
+#ifdef ADVECT_PHYTO
+c  update tracer here
+         PTR_PHY(i,j,k) = Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k) 
+     &                     + Phy_diaz_local(i,j,k)
+c  update fractional abundance
+         phyto_lg(i,j,k,bi,bj) = Phy_lg_local(i,j,k)/PTR_PHY(i,j,k)
+         phyto_sm(i,j,k,bi,bj) = Phy_sm_local(i,j,k)/PTR_PHY(i,j,k)
+         phyto_diaz(i,j,k,bi,bj)  = Phy_diaz_local(i,j,k)/PTR_PHY(i,j,k) 
+#else
+c  update biomass
+         phyto_lg(i,j,k,bi,bj) = Phy_lg_local(i,j,k)
+         phyto_sm(i,j,k,bi,bj) = Phy_sm_local(i,j,k)
+         phyto_diaz(i,j,k,bi,bj) = Phy_diaz_local(i,j,k)
+
+#endif
 
          ENDIF
         ENDDO
        ENDDO
       ENDDO
+
+
+
+CMM(
+CADJ STORE phyto_sm = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE phyto_lg = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE phyto_diaz  = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE Phy_sm_local = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE Phy_lg_local = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE Phy_diaz_local  = comlev1, key = ikey_dynamics, kind=isbyte
+#ifdef ADVECT_PHYTO
+CADJ STORE PTR_PHY  = comlev1, key = ikey_dynamics, kind=isbyte
+#endif
+CMM)
+
+
 
       DO k=1,Nr
        DO j=jmin,jmax
@@ -474,8 +550,9 @@ c          expkT = exp(kappa_eppley * theta(i,j,k,bi,bj))
           
 c  use the diagnostic biomass to calculate the chl concentration
           chl(i,j,k,bi,bj) = max(chl_min, CtoN * 12.01 * 
-     &           theta_Fe(i,j,k) * ( P_lg(i,j,k,bi,bj) 
-     &           + P_sm(i,j,k,bi,bj) + P_diaz(i,j,k,bi,bj) ) )
+     &           theta_Fe(i,j,k) *
+     &           (Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k) 
+     &           + Phy_diaz_local(i,j,k)))
 
 c  stoichiometry
           PtoN(i,j,k) = PtoN_min + (PtoN_max - PtoN_min) * 
@@ -485,26 +562,26 @@ c  stoichiometry
      &                   PTR_FE(i,j,k) / (k_FetoN + PTR_FE(i,j,k))
               
 c  Nutrient uptake
-          N_uptake(i,j,k) = mu(i,j,k)*(P_sm(i,j,k,bi,bj) 
-     &                      + P_lg(i,j,k,bi,bj))
+          N_uptake(i,j,k) = mu(i,j,k)*(Phy_sm_local(i,j,k) 
+     &                      + Phy_lg_local(i,j,k))
 
-          N_fix(i,j,k) = mu_diaz(i,j,k) * P_diaz(i,j,k,bi,bj)
+          N_fix(i,j,k) = mu_diaz(i,j,k) * Phy_diaz_local(i,j,k)
              
           P_uptake(i,j,k) = (N_uptake(i,j,k) +
      &                      N_fix(i,j,k)) * PtoN(i,j,k) 
                   
           Fe_uptake(i,j,k) = (N_uptake(i,j,k) + 
      &                       N_fix(i,j,k)) * FetoN(i,j,k) 
-          
+
 c ---------------------------------------------------------------------
 c   Alkalinity is consumed through the production of CaCO3. Here, this is
 c   simply a linear function of the implied growth rate of small
 c   phytoplankton, which gave a reasonably good fit to the global 
 c   observational synthesis of Dunne (2009). This is consistent
-c   with the findings of Jin et al. (GBC,2006).
-    
-          CaCO3_uptake(i,j,k) = P_sm(i,j,k,bi,bj) * phi_sm *expkT(i,j,k)
-     &                          * mu(i,j,k) * CatoN
+c   with the findings of Jin et al. (GBC,2006). 
+
+          CaCO3_uptake(i,j,k) = Phy_sm_local(i,j,k) * phi_sm 
+     &                          * expkT(i,j,k) * mu(i,j,k) * CatoN
      
 c ---------------------------------------------------------------------
 c  Partitioning between organic pools
@@ -526,8 +603,6 @@ c  instantaneously in the second step (i.e. there is no dissolved organic
 c  iron pool).
   
 c  sinking fraction: particulate organic matter 
-
-c          expkT(i,j,k) = exp(kappa_eppley * theta(i,j,k,bi,bj))   
 
           frac_exp = (phi_sm + phi_lg * (mu(i,j,k)/
      &           (epsln + lambda_0*expkT(i,j,k)))**2.)/  
@@ -604,10 +679,10 @@ c-----------------------------------------------------------
 c  sub grid scale sediments
 #ifdef USE_SGS_SED  
        CALL BLING_SGS(
-     I                 xxx,
-     O                 xxx,
+c     I                 xxx,
+c     O                 xxx,
      I                 bi, bj, imin, imax, jmin, jmax, 
-     I                 myIter, myTime, myThid)#endif
+     I                 myIter, myTime, myThid)
 #endif
 
 
@@ -619,7 +694,6 @@ c
         DO i=imin,imax  
 
          IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
-
 
 c  Dissolved organic matter slow remineralization
 
@@ -638,8 +712,6 @@ c  Dissolved organic matter slow remineralization
       
 c  Pelagic denitrification    
 c  If anoxic  
-cxx          IF (PTR_O2(i,j,k) .lt. 0. _d 0) THEN 
-
           IF (PTR_O2(i,j,k) .lt. oxic_min) THEN 
            IF (PTR_NO3(i,j,k) .gt. oxic_min) THEN
             N_den_pelag(i,j,k) = max(epsln, (NO3toN *        
@@ -684,7 +756,6 @@ c  Oxic
      &                   + DON_remin(i,j,k)
           ENDIF    
 
-cxxxx check
           NCP(i,j,k) = (-G_NO3(i,j,k) + N_fix(i,j,k)) * CtoN
 
 c  Iron
@@ -705,14 +776,14 @@ c  A fraction of POM remineralization goes into dissolved pools.
      &                   (P_reminp(i,j,k) + P_remindvm(i,j,k)) 
      &                   - DOP_remin(i,j,k)
 
-c Oxygen:
-c Assuming constant O2:N ratio in terms of oxidant required per mol of organic N.
-c This implies a constant stoichiometry of C:N and H:N (where H is reduced, organic H).
-c Because the N provided by N2 fixation is reduced from N2, rather than NO3-, the
-c o2_2_n_fix is slightly less than the NO3- based ratio (by 1.25 mol O2/ mol N).
-c Account for the organic matter respired through benthic denitrification by
-c subtracting 5/4 times the benthic denitrification NO3 utilization rate from
-c the overall oxygen consumption.
+c  Oxygen:
+c  Assuming constant O2:N ratio in terms of oxidant required per mol of 
+c  organic N. This implies a constant stoichiometry of C:N and H:N (where H is 
+c  reduced, organic H). Because the N provided by N2 fixation is reduced from 
+c  N2, rather than NO3-, the o2_2_n_fix is slightly less than the NO3- based 
+c  ratio (by 1.25 mol O2/ mol N). Account for the organic matter respired 
+c  through benthic denitrification by subtracting 5/4 times the benthic 
+c  denitrification NO3 utilization rate from the overall oxygen consumption.
 
           G_O2(i,j,k) = O2_prod(i,j,k) 
 c  If oxic
@@ -747,9 +818,9 @@ c ---------------------------------------------------------------------
       IF ( useDiagnostics ) THEN
 
 c 3d global variables
-        CALL DIAGNOSTICS_FILL(P_sm,   'BLGPSM  ',0,Nr,1,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(P_lg,   'BLGPLG  ',0,Nr,1,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(P_diaz, 'BLGPDIA ',0,Nr,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(phyto_sm,'BLGPSM  ',0,Nr,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(phyto_lg,'BLGPLG  ',0,Nr,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(phyto_diaz,'BLGPDIA ',0,Nr,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(chl,    'BLGCHL  ',0,Nr,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(irr_mem,'BLGIMEM ',0,Nr,1,bi,bj,myThid)
 c 3d local variables
@@ -757,6 +828,7 @@ c 3d local variables
         CALL DIAGNOSTICS_FILL(irr_eff, 'BLGIEFF ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(Fe_lim,  'BLGFELIM',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(NO3_lim, 'BLGNLIM ',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(PO4_lim, 'BLGPLIM ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(POC_flux,'BLGPOCF ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(NPP,     'BLGNPP  ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(NCP,     'BLGNCP  ',0,Nr,2,bi,bj,myThid)
@@ -780,6 +852,7 @@ c        CALL DIAGNOSTICS_FILL(Fe_reminp,'BLGFEREM',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(N_dvm,    'BLGNDVM ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(N_fix,    'BLGNFIX ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(DON_prod, 'BLGDONP ',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(DON_remin,'BLGDONR ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(N_spm,    'BLGNSPM ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(N_recycle,'BLGNREC ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(N_remindvm,'BLGNRD  ',0,Nr,2,bi,bj,myThid)
@@ -792,7 +865,6 @@ c        CALL DIAGNOSTICS_FILL(Fe_reminp,'BLGFEREM',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(P_remindvm,'BLGPRD  ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(P_reminp, 'BLGPREM ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(P_uptake, 'BLGPUP  ',0,Nr,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(dvm,'BLGDVM  ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(mu,       'BLGMU   ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(mu_diaz,  'BLGMUDIA',0,Nr,2,bi,bj,myThid)
 c 2d local variables
@@ -816,7 +888,6 @@ c        CALL DIAGNOSTICS_FILL(theta_Fe,'BLGTHETA',0,Nr,2,bi,bj,myThid)
 c        CALL DIAGNOSTICS_FILL(theta_Fe_max,'BLGTHETM',0,Nr,2,bi,bj,myThid)
 c        CALL DIAGNOSTICS_FILL(wsink,'BLGWSINK',0,Nr,2,bi,bj,myThid)
 c        CALL DIAGNOSTICS_FILL(zremin,'BLGZREM ',0,Nr,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(z_dvm,'BLGZDVM ',0,Nr,2,bi,bj,myThid)
 
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_carbonate_init.F,v 1.1 2016/05/19 20:29:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_carbonate_init.F,v 1.2 2016/09/12 20:00:28 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -8,9 +8,9 @@ CBOP
       subroutine BLING_CARBONATE_INIT( myThid )
 
 C     ==========================================================
-C     | subroutine bling_surfforcing_init
+C     | subroutine bling_carbonate_init
 C     | o Calculate first guess of pH
-C     |   Adapted from pkg/dic/dic_surfforcing_init
+C     |   Adapted from pkg/dic/dic_surfforcing_init.F
 C     ==========================================================
 
       implicit none

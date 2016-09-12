@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_diagnostics_init.F,v 1.2 2016/05/19 21:06:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_diagnostics_init.F,v 1.3 2016/09/12 20:00:28 mmazloff Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -8,7 +8,7 @@ CBOP
 
 C     =================================================================
 C     | subroutine bling_diagnostics_init
-C     | o define diagnostics for bling pkg
+C     | o Define diagnostics for bling pkg
 C     =================================================================
 
       implicit none
@@ -221,6 +221,13 @@ C     Define diagnostics Names :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'BLGDONR '
+      diagTitle = 'Dissolved Organic Nitrogen Remineralization'
+      diagUnits = 'mol N/m3/s      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'BLGNSPM '
       diagTitle = 'Nitrogen sinking particle flux'
       diagUnits = 'mol N/m3/s      '
@@ -306,7 +313,7 @@ C     Define diagnostics Names :
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'BLGPCM  '
-      diagTitle = 'xxx'
+      diagTitle = 'Maxximum photosynthesis rate'
       diagUnits = '1/s      '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -326,59 +333,61 @@ C     Define diagnostics Names :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-
-
       diagName  = 'BLGQSW  '
       diagTitle = 'Effective irradiance'
-      diagUnits = '?      '
+      diagUnits = 'W/m2   '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'BLGIRRIS'
       diagTitle = 'Effective irradiance'
-      diagUnits = '?      '
+      diagUnits = 'W/m2   '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'BLGIEFF '
       diagTitle = 'Effective irradiance'
-      diagUnits = '?      '
+      diagUnits = 'W/m2   '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'BLGIMEM '
       diagTitle = 'Irradiance memory'
-      diagUnits = '?      '
+      diagUnits = 'W/m2   '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'BLGIRRK '
-      diagTitle = 'xxx'
-      diagUnits = '?      '
+      diagTitle = 'Nutrient-limited photosynthesis efficiency'
+      diagUnits = 'W/m2   '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'BLGNLIM '
       diagTitle = 'N limitation'
-      diagUnits = '?      '
+      diagUnits = '-      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGPLIM '
+      diagTitle = 'P limitation'
+      diagUnits = '-      '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'BLGFELIM'
       diagTitle = 'Fe limitation'
-      diagUnits = '?      '
+      diagUnits = '-      '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-
-
 
       diagName  = 'BLGNSED '
       diagTitle = 'Nitrogen flux in/out of sediments'

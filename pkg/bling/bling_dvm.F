@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_dvm.F,v 1.4 2016/06/20 23:10:51 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_dvm.F,v 1.5 2016/09/12 20:00:28 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -12,25 +12,13 @@ CBOP
      I           myIter, myTime, myThid )
 
 C     =================================================================
-C     | subroutine bling_prod
-C     | o Nutrient uptake and partitioning between organic pools.
-C     | - Phytoplankton biomass-specific growth rate is calculated
-C     |   as a function of light, nutrient limitation, and
-C     |   temperature.
-C     | - Biomass growth xxx
-C     | o Organic matter export, remineralization, and recycling.
-C     | - Sinking particulate flux and diel migration contribute to
-C     |   export.
-C     | - Denitrification xxx
+C     | subroutine bling_dvm
+C     | o Diel Vertical Migration
 C     =================================================================
 
       implicit none
 
 C     === Global variables ===
-C     P_sm          :: Small phytoplankton biomass
-C     P_lg          :: Large phytoplankton biomass
-C     P_diaz        :: Diazotroph phytoplankton biomass
-C     irr_mem       :: Phyto irradiance memory
 
 #include "SIZE.h"
 #include "DYNVARS.h"
@@ -56,125 +44,31 @@ C     myThid        :: thread Id. number
       INTEGER myIter
       INTEGER myThid
 C     === Input ===
-C     PTR_NO3       :: nitrate concentration
-C     PTR_PO4       :: phosphate concentration
-C     PTR_FE        :: iron concentration
-C     PTR_DON       :: dissolved organic nitrogen concentration
-C     PTR_DOP       :: dissolved organic phosphorus concentration
-C     PTR_O2        :: oxygen concentration
-      _RL     PTR_NO3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     PTR_FE (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     PTR_DON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     PTR_DOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     PTR_O2 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+C     N_dvm         :: vertical transport of nitrogen by DVM
+C     P_dvm         :: vertical transport of phosphorus by DVM
+C     Fe_dvm        :: vertical transport of iron by DVM
+C     PTR_O2        :: nitrate concentration
+C     mld           :: mixed layer depth
+      _RL     N_dvm (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     P_dvm (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     Fe_dvm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     PTR_O2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     mld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      
 C     === Output ===
-C     G_xxx         :: Tendency of xxx
-      _RL     G_NO3     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     G_PO4     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     G_FE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     G_O2      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     G_DON     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     G_DOP     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL     G_CACO3   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+C     N_remindvm    :: nitrogen remineralization due to diel vertical migration
+C     P_remindvm    :: phosphorus remineralization due to diel vertical migration
+C     Fe_remindvm   :: iron remineralization due to diel vertical migration
+      _RL     N_remindvm     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     P_remindvm     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL     Fe_remindvm     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 #ifdef ALLOW_BLING
 C     === Local variables ===
 C     i,j,k         :: loop indices
-C     irr_eff       :: effective irradiance
-C     NO3_lim       :: nitrate limitation
-C     PO4_lim       :: phosphate limitation
-C     Fe_lim        :: iron limitation for phytoplankton
-C     Fe_lim_diaz   :: iron limitation for diazotrophs
-C     alpha_Fe      :: initial slope of the P-I curve
-C     irrk          :: nut-limited efficiency of algal photosystems
-C     Pc_m          :: light-saturated max photosynthesis rate for phyt
-C     Pc_m_diaz     :: light-saturated max photosynthesis rate for diaz
-C     Pc_tot        :: carbon-specific photosynthesis rate
-C     expkT         :: temperature function
-C     mu            :: net carbon-specific growth rate for phyt
-C     mu_diaz       :: net carbon-specific growth rate for diaz
-C     biomass_sm    :: nitrogen concentration in small phyto biomass
-C     biomass_lg    :: nitrogen concentration in large phyto biomass
-C     N_uptake      :: nitrogen uptake
-C     N_fix         :: nitrogen fixation
-C     P_uptake      :: phosphorus uptake
-C     POC_flux      :: carbon export flux 3d field
-C     PtoN          :: variable ratio of phosphorus to nitrogen
-C     FetoN         :: variable ratio of iron to nitrogen
-C     N_spm         :: particulate sinking of nitrogen
-C     P_spm         :: particulate sinking of phosphorus
-C     Fe_spm        :: particulate sinking of iron
-C     N_dvm         :: vertical transport of nitrogen by DVM
-C     P_dvm         :: vertical transport of phosphorus by DVM
-C     Fe_dvm        :: vertical transport of iron by DVM
-C     N_recycle     :: recycling of newly-produced organic nitrogen
-C     P_recycle     :: recycling of newly-produced organic phosphorus
-C     Fe_recycle    :: recycling of newly-produced organic iron
-c xxx to be completed
       INTEGER i,j,k
       INTEGER tmp
-      _RL irr_eff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL NO3_lim
-      _RL PO4_lim
-      _RL Fe_lim
-      _RL Fe_lim_diaz
-      _RL expkT
-      _RL Pc_m
-      _RL Pc_m_diaz
-      _RL irrk
-      _RL mu(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL mu_diaz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL PtoN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL FetoN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL N_uptake(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL N_fix(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL P_uptake(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL Fe_uptake(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL frac_exp
-      _RL N_spm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL P_spm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL Fe_spm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL N_dvm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL P_dvm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL Fe_dvm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL DON_prod(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL DOP_prod(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL N_recycle(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL P_recycle(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL Fe_recycle(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL POC_flux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL NPP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL NCP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL CaCO3_prod(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL PONflux_u
-      _RL POPflux_u
-      _RL PFEflux_u
-      _RL CaCO3flux_u
-      _RL PONflux_l
-      _RL POPflux_l
-      _RL PFEflux_l
-      _RL CaCO3flux_l
       _RL depth_l
-      _RL zremin
-      _RL zremin_caco3
-      _RL wsink
-      _RL POC_sed
-      _RL Fe_sed(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL NO3_sed(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL PO4_sed(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL O2_sed(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL lig_stability
-      _RL FreeFe
-      _RL Fe_ads_inorg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL Fe_ads_org(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL N_den_pelag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL N_den_benthic(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL log_btm_flx
-      _RL N_reminp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL P_reminp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL Fe_reminp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL CacO3_diss(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL o2_upper
       _RL o2_lower
       _RL dz_upper
@@ -189,14 +83,9 @@ c xxx to be completed
       _RL fdvmp_vint
       _RL fdvmfe_vint
       _RL z_dvm
-      _RL N_remindvm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL P_remindvm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL Fe_remindvm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL dvm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL mld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Fe_burial(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL x_erfcc,z_erfcc,t_erfcc,erfcc
-cxx order
 CEOP
 
 c ---------------------------------------------------------------------
@@ -204,59 +93,15 @@ c  Initialize output and diagnostics
        DO k=1,Nr
         DO j=jmin,jmax
           DO i=imin,imax
-              G_NO3(i,j,k)        = 0. _d 0
-              G_PO4(i,j,k)        = 0. _d 0
-              G_FE(i,j,k)         = 0. _d 0
-              G_O2(i,j,k)         = 0. _d 0
-              G_DON(i,j,k)        = 0. _d 0
-              G_DOP(i,j,k)        = 0. _d 0
-              G_CaCO3(i,j,k)      = 0. _d 0
-              N_uptake(i,j,k)     = 0. _d 0
-              P_uptake(i,j,k)     = 0. _d 0
-              Fe_uptake(i,j,k)    = 0. _d 0
-              Fe_ads_org(i,j,k)   = 0. _d 0
-              Fe_ads_inorg(i,j,k) = 0. _d 0
-              mu(i,j,k)           = 0. _d 0
-              mu_diaz(i,j,k)      = 0. _d 0
-              irr_eff(i,j,k)      = 0. _d 0
-              PtoN(i,j,k)         = 0. _d 0
-              FetoN(i,j,k)        = 0. _d 0
-              N_fix(i,j,k)        = 0. _d 0
-              N_spm(i,j,k)        = 0. _d 0
-              P_spm(i,j,k)        = 0. _d 0
-              Fe_spm(i,j,k)       = 0. _d 0
-              dvm(i,j,k)          = 0. _d 0
-              N_reminp(i,j,k)     = 0. _d 0
-              P_reminp(i,j,k)     = 0. _d 0
-              Fe_reminp(i,j,k)    = 0. _d 0
-              N_recycle(i,j,k)    = 0. _d 0
-              P_recycle(i,j,k)    = 0. _d 0
-              Fe_recycle(i,j,k)   = 0. _d 0
-              N_remindvm(i,j,k)   = 0. _d 0
-              P_remindvm(i,j,k)   = 0. _d 0
-              Fe_remindvm(i,j,k)  = 0. _d 0
-              N_den_benthic(i,j,k)= 0. _d 0
-              N_den_pelag(i,j,k)  = 0. _d 0
-              DON_prod(i,j,k)     = 0. _d 0
-              DOP_prod(i,j,k)     = 0. _d 0
-              CaCO3_prod(i,j,k)   = 0. _d 0
-              CaCO3_diss(i,j,k)   = 0. _d 0
-              POC_flux(i,j,k)     = 0. _d 0
-              NPP(i,j,k)          = 0. _d 0
-              NCP(i,j,k)          = 0. _d 0
+              N_remindvm(i,j,k)        = 0. _d 0
+              P_remindvm(i,j,k)        = 0. _d 0
+              Fe_remindvm(i,j,k)       = 0. _d 0
+              dvm(i,j,k)               = 0. _d 0
           ENDDO
+          Fe_burial(i,j)               = 0. _d 0
         ENDDO
        ENDDO
-        DO j=jmin,jmax
-          DO i=imin,imax
-              Fe_burial(i,j)       = 0. _d 0
-              NO3_sed(i,j)         = 0. _d 0
-              PO4_sed(i,j)         = 0. _d 0
-              O2_sed(i,j)          = 0. _d 0
-          ENDDO
-        ENDDO
-cxx order
-
+       
 C  ---------------------------------------------------------------------
 c DIEL VERTICAL MIGRATOR EXPORT
 c The effect of vertically-migrating animals on the export flux of organic
@@ -273,7 +118,7 @@ C$TAF LOOP = parallel
 C$TAF LOOP = parallel
        DO i=imin,imax
 
-C        ! Initialize the working variables to zero
+c  Initialize 
         o2_upper = 0.
         o2_lower = 0.
         dz_upper = 0.
@@ -293,12 +138,12 @@ C        ! Initialize the working variables to zero
 
          IF ( hFacC(i,j,k,bi,bj).gt.0. _d 0 ) THEN
 
-      ! Calculate the depth of migration based on linear regression.
+c  Calculate the depth of migration based on linear regression.
 
         depth_l=-rF(k+1)
 
-        ! Average temperature and oxygen over upper 35 m, and 140-515m.
-        ! Also convert O2 to mmol m-3.
+c  Average temperature and oxygen over upper 35 m, and 140-515m.
+c  Also convert O2 to mmol m-3.
 
           if ( abs(depth_l) .lt. 35.) then
             dz_upper = dz_upper + drf(k)
@@ -320,17 +165,17 @@ C        ! Initialize the working variables to zero
         o2_lower = o2_lower / (epsln + dz_lower)
         temp_lower = temp_lower / (epsln + dz_lower)
 
-        ! Calculate the regression, using the constants given
-        ! in Bianchi et al. (2013).
-        ! The variable values are bounded to lie within reasonable
-        ! ranges: O2 gradient   : [-10,300] mmol/m3
-        !         Log10 Chl     : [-1.8,0.85] log10(mg/m3)
-        !         mld           : [0,500] m
-        !         T gradient    : [-3,20] C
+c  Calculate the regression, using the constants given in Bianchi et al. (2013).
+c  The variable values are bounded to lie within reasonable ranges: 
+c         O2 gradient   : [-10,300] mmol/m3
+c         Log10 Chl     : [-1.8,0.85] log10(mg/m3)
+c         mld           : [0,500] m
+c         T gradient    : [-3,20] C
 
-C!! I am replacing hblt_depth(i,j) with mld... not sure what hblt_depth is
+c!! replacing hblt_depth(i,j) with mld... 
 
 #ifdef BLING_ADJOINT_SAFE
+
         z_dvm = 300. _d 0
 
 #else
@@ -338,24 +183,26 @@ C!! I am replacing hblt_depth(i,j) with mld... not sure what hblt_depth is
         z_dvm_regr = 398. _d 0
      &   - 0.56 _d 0*min(300. _d 0,max(-10. _d 0,(o2_upper - o2_lower)))
      &   - 115. _d 0*min(0.85 _d 0,max(-1.80 _d 0,
-     &                            log10(max(chl(i,j,1,bi,bj),chl_min))))
+     &   log10(max(chl(i,j,1,bi,bj),chl_min))))
      &   + 0.36 _d 0*min(500. _d 0,max(epsln,mld(i,j)))
      &   - 2.40 _d 0*min(20. _d 0,max(-3. _d 0,(temp_upper-temp_lower)))
 
-c        ! Limit the depth of migration in polar winter.
-c        ! Use irr_mem since this is averaged over multiple days, dampening the diurnal cycle.
-c        ! Tapers Z_DVM to the minimum when surface irradince is below a given threshold (here 10 W/m2).
+c  Limit the depth of migration in polar winter.
+c  Use irr_mem since this is averaged over multiple days, dampening the 
+c  diurnal cycle.
+c  Tapers Z_DVM to the minimum when surface irradince is below a given  
+c  threshold (here 10 W/m2).
 
         if ( irr_mem(i,j,1,bi,bj) .lt. 10. ) then
           z_dvm_regr = 150. _d 0 + (z_dvm_regr - 150. _d 0) *
      &       irr_mem(i,j,1,bi,bj) / 10. _d 0
         endif
 
-C Check for suboxic water within the column. If found, set dvm
-C stationary depth to 2 layers above it. This is not meant to
-C represent a cessation of downward migration, but rather the
-C requirement for aerobic DVM respiration to occur above the suboxic
-C water, where O2 is available.
+c  Check for suboxic water within the column. If found, set dvm
+c  stationary depth to 2 layers above it. This is not meant to
+c  represent a cessation of downward migration, but rather the
+c  requirement for aerobic DVM respiration to occur above the suboxic
+c  water, where O2 is available.
 
         tmp = 0
         DO k=1,Nr-2
@@ -369,27 +216,27 @@ C water, where O2 is available.
 
         enddo
 
-C The stationary depth is constrained between 150 and 700, above any
-C anoxic waters found, and above the bottom.
+c  The stationary depth is constrained between 150 and 700, above any
+c  anoxic waters found, and above the bottom.
 
         z_dvm = min(700. _d 0,max(150. _d 0,z_dvm_regr),z_dvm,-rf(k+1))
 c!!           bling%zbot(i,j,grid_kmt(i,j))) * grid_tmask(i,j,1)
-c!! what is grid_mkt??
+c!! what is grid_kmt?
 
 #endif
 
-        ! Calculate the fraction of migratory respiration that occurs
-        ! during upwards and downwards swimming. The remainder is
-        ! respired near the stationary depth.
-        ! Constants for swimming speed and resting time are hard-coded
-        ! after Bianchi et al, Nature Geoscience 2013.
+c  Calculate the fraction of migratory respiration that occurs
+c  during upwards and downwards swimming. The remainder is
+c  respired near the stationary depth.
+c  Constants for swimming speed and resting time are hard-coded
+c  after Bianchi et al, Nature Geoscience 2013.
 
         frac_migr = max( 0.0 _d 0, min( 1.0 _d 0, (2.0 _d 0 * z_dvm) /
      &        (epsln + 0.05 _d 0 * 0.5 _d 0 * 86400. _d 0)))
 
-        ! Calculate the vertical profile shapes of DVM fluxes.
-        ! These are given as the downward organic flux due to migratory
-        ! DVM remineralization, defined at the bottom of each layer k.
+c  Calculate the vertical profile shapes of DVM fluxes.
+c  These are given as the downward organic flux due to migratory
+c  DVM remineralization, defined at the bottom of each layer k.
 
         tmp = 0
         DO k=1,Nr
@@ -405,14 +252,12 @@ c!! what is grid_mkt??
             fdvm_migr  = 0.0
           endif
 
-          ! Then, calculate the part at the stationary depth.
-c          fdvm_stat = (1. - frac_migr) / 2. * erfcc((-rf(k) - z_dvm) /
-c     &        ( (epsln + 2. * sigma_dvm**2.)**0.5))
+c  Then, calculate the part at the stationary depth.
 
-c  ! Approximation of the complementary error function
-c  ! From Numerical Recipes (F90, Ch. 6, p. 216)
-c  ! Returns the complementary error function erfc(x)
-c    with fractional error everywhere less than 1.2e-7
+c  Approximation of the complementary error function
+c  From Numerical Recipes (F90, Ch. 6, p. 216)
+c  Returns the complementary error function erfc(x)
+c  with fractional error everywhere less than 1.2e-7
            x_erfcc = (-rf(k) - z_dvm) /
      &        ( (epsln + 2. _d 0 * sigma_dvm**2. _d 0)**0.5)
 
@@ -432,11 +277,11 @@ c    with fractional error everywhere less than 1.2e-7
 
           fdvm_stat = (1. _d 0 - frac_migr) / 2. _d 0 * erfcc
 
-C Add the shapes, resulting in the 3-d DVM flux operator. If the
-C current layer is the bottom layer, or the layer beneath the
-C underlying layer is suboxic, all fluxes at and below the current
-C layer remain at the initialized value of zero. This will cause all
-C remaining DVM remineralization to occur in this layer.
+c  Add the shapes, resulting in the 3-d DVM flux operator. If the
+c  current layer is the bottom layer, or the layer beneath the
+c  underlying layer is suboxic, all fluxes at and below the current
+c  layer remain at the initialized value of zero. This will cause all
+c  remaining DVM remineralization to occur in this layer.
           IF (k.LT.NR-1) THEN
             if (PTR_O2(i,j,k+2) .lt. (5. _d 0*oxic_min)) tmp = 1
           ENDIF
@@ -447,7 +292,7 @@ c!!          if (k .eq. grid_kmt(i,j)) exit
 
         enddo
 
-c Sum up the total organic flux to be transported by DVM
+c  Sum up the total organic flux to be transported by DVM
 
         do k = 1, nr
           fdvmn_vint  = fdvmn_vint  + N_dvm(i,j,k)  * drf(k)
@@ -455,7 +300,7 @@ c Sum up the total organic flux to be transported by DVM
           fdvmfe_vint = fdvmfe_vint + Fe_dvm(i,j,k) * drf(k)
         enddo
 
-c Calculate the remineralization terms as the divergence of the flux
+c  Calculate the remineralization terms as the divergence of the flux
 
         N_remindvm(i,j,1)  = fdvmn_vint *  (1 - dvm(i,j,1)) /
      &     (epsln + drf(1))

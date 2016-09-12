@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_airseaflux.F,v 1.1 2016/05/19 20:29:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_airseaflux.F,v 1.2 2016/09/12 20:00:28 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -14,11 +14,12 @@ CBOP
 C     =================================================================
 C     | subroutine bling_airseaflux
 C     | o Calculate the carbon and oxygen air-sea flux terms
-C     |   Adapted from pkg/dic/
+C     |   Adapted from pkg/dic/dic_surfforcing.F
 C     | - Get atmospheric pCO2 value
 C     |   Option 1: constant value, default 268.d-6, can be changed in 
 C     |             data.bling
 C     |   Option 2: read 2D field using EXF pkg
+C     | - Update pCO2 and pH
 C     =================================================================
 
       implicit none
@@ -131,7 +132,6 @@ C FOR NON-INTERACTIVE Si
        DO j=jmin,jmax
         DO i=imin,imax
 C Compute Kwexch_Pre which is re-used for flux of O2
-caxx Atmos pressure is assumed to be 1 atm
 
 c   Read EXF winds instead of value from file:
 #ifdef ALLOW_EXF
@@ -198,10 +198,13 @@ C First determine local saturation pCO2
               pCO2sat(i,j) = bling_pCO2
 #endif
 
-#ifndef BLING_ADJOINT_SAFE
 c Correct for atmospheric pressure
+#ifdef USE_EXF_ATMPRES
+C Atm pressure in N/m2, convert to bars
+              pCO2sat(i,j) = pCO2sat(i,j)*(apressure(i,j,bi,bj)*0.00001)
+#else
               pCO2sat(i,j) = pCO2sat(i,j)*AtmosP(i,j,bi,bj)
-#endif 
+#endif
 
 C then account for Schmidt number
               Kwexch(i,j) = Kwexch_Pre(i,j)
@@ -278,9 +281,16 @@ c Convert from ml/l to mol/m^3
               O2sat(i,j) = o2s/22391.6 _d 0 * 1. _d 3
 
 C Determine flux, inc. correction for local atmos surface pressure
+#ifdef USE_EXF_ATMPRES
+C Atm pressure in N/m2, convert to bars
+              FluxO2(i,j) = Kwexch_o2(i,j)*(
+     &                     (apressure(i,j,bi,bj)*0.00001)
+     &                      *O2sat(i,j) - PTR_O2(i,j,1) )
+#else
               FluxO2(i,j) = Kwexch_o2(i,j)*
      &                     (AtmosP(i,j,bi,bj)*O2sat(i,j)
      &                      - PTR_O2(i,j,1))
+#endif
             ELSE
               FluxO2(i,j) = 0. _d 0
             ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_remineralization.F,v 1.3 2016/06/20 23:10:51 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_remineralization.F,v 1.4 2016/09/12 20:00:28 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -14,11 +14,12 @@ CBOP
 
 C     =================================================================
 C     | subroutine bling_remin
-C     | o Organic matter export and remineralization
+C     | o Organic matter export and remineralization.
 C     | - Sinking particulate flux and diel migration contribute to
 C     |   export.
-C     | - Denitrification xxx
-C     | o Sediments
+C     | - Benthic denitrification
+C     | - Iron source from sediments
+C     | - Iron scavenging
 C     =================================================================
 
       implicit none
@@ -60,8 +61,13 @@ C     PTR_O2        :: oxygen concentration
       _RL     P_spm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     Fe_spm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     CaCO3_uptake(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      
 C     === Output ===
-C
+C     N_reminp      :: remineralization of particulate organic nitrogen
+C     N_den_benthic :: Benthic denitrification
+C     P_reminp      :: remineralization of particulate organic nitrogen
+C     Fe_reminsum   :: iron remineralization and adsorption
+C     CaCO3_diss    :: Calcium carbonate dissolution
       _RL     N_reminp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     N_den_benthic(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     P_reminp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -71,47 +77,16 @@ C
 #ifdef ALLOW_BLING
 C     === Local variables ===
 C     i,j,k         :: loop indices
-C     irr_eff       :: effective irradiance
-C     NO3_lim       :: nitrate limitation
-C     PO4_lim       :: phosphate limitation
-C     Fe_lim        :: iron limitation for phytoplankton
-C     Fe_lim_diaz   :: iron limitation for diazotrophs
-C     alpha_Fe      :: initial slope of the P-I curve
-C     irrk          :: nut-limited efficiency of algal photosystems
-C     Pc_m          :: light-saturated max photosynthesis rate for phyt
-C     Pc_m_diaz     :: light-saturated max photosynthesis rate for diaz
-C     Pc_tot        :: carbon-specific photosynthesis rate
-C     expkT         :: temperature function
-C     mu            :: net carbon-specific growth rate for phyt
-C     mu_diaz       :: net carbon-specific growth rate for diaz
-C     biomass_sm    :: nitrogen concentration in small phyto biomass
-C     biomass_lg    :: nitrogen concentration in large phyto biomass
-C     N_uptake      :: nitrogen uptake
-C     N_fix         :: nitrogen fixation
-C     P_uptake      :: phosphorus uptake
-C     POC_flux      :: carbon export flux 3d field
-C     chl           :: chlorophyll diagnostic
-C     PtoN          :: variable ratio of phosphorus to nitrogen
-C     FetoN         :: variable ratio of iron to nitrogen
-C     N_spm         :: particulate sinking of nitrogen
-C     P_spm         :: particulate sinking of phosphorus
-C     Fe_spm        :: particulate sinking of iron
-C     N_dvm         :: vertical transport of nitrogen by DVM
-C     P_dvm         :: vertical transport of phosphorus by DVM
-C     Fe_dvm        :: vertical transport of iron by DVM
-C     N_recycle     :: recycling of newly-produced organic nitrogen
-C     P_recycle     :: recycling of newly-produced organic phosphorus
-C     Fe_recycle    :: recycling of newly-produced organic iron
-c xxx to be completed
+      
       INTEGER i,j,k
       INTEGER bttmlyr
       _RL PONflux_u
-      _RL POPflux_u
-      _RL PFEflux_u
-      _RL CaCO3flux_u
       _RL PONflux_l
+      _RL POPflux_u
       _RL POPflux_l
+      _RL PFEflux_u
       _RL PFEflux_l
+      _RL CaCO3flux_u
       _RL CaCO3flux_l
       _RL depth_l
       _RL zremin
@@ -125,31 +100,10 @@ c xxx to be completed
       _RL lig_stability
       _RL FreeFe
       _RL Fe_ads_inorg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL Fe_ads_org
+      _RL Fe_ads_org(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL log_btm_flx
       _RL Fe_reminp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL o2_upper
-      _RL o2_lower
-      _RL dz_upper
-      _RL dz_lower
-      _RL temp_upper
-      _RL temp_lower
-      _RL z_dvm_regr
-      _RL frac_migr
-      _RL fdvm_migr
-      _RL fdvm_stat
-      _RL fdvmn_vint
-      _RL fdvmp_vint
-      _RL fdvmfe_vint
-      _RL z_dvm
-      _RL N_remindvm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL P_remindvm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL Fe_remindvm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL dvm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL mld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Fe_burial(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL x_erfcc,z_erfcc,t_erfcc,erfcc
-cxx order
 CEOP
 
 c ---------------------------------------------------------------------
@@ -158,14 +112,12 @@ c  Initialize output and diagnostics
        DO k=1,Nr
         DO j=jmin,jmax
           DO i=imin,imax
+              Fe_ads_org(i,j,k)   = 0. _d 0
               Fe_ads_inorg(i,j,k) = 0. _d 0
               N_reminp(i,j,k)     = 0. _d 0
               P_reminp(i,j,k)     = 0. _d 0
               Fe_reminp(i,j,k)    = 0. _d 0
               Fe_reminsum(i,j,k)  = 0. _d 0
-              N_remindvm(i,j,k)   = 0. _d 0
-              P_remindvm(i,j,k)   = 0. _d 0
-              Fe_remindvm(i,j,k)  = 0. _d 0
               N_den_benthic(i,j,k)= 0. _d 0
               CaCO3_diss(i,j,k)   = 0. _d 0
           ENDDO
@@ -195,8 +147,6 @@ C  Initialize upper flux
         CaCO3flux_u          = 0. _d 0
 
         DO k=1,Nr
-
-         Fe_ads_org   = 0. _d 0
 
 C ARE WE ON THE BOTTOM
          bttmlyr = 1
@@ -230,18 +180,15 @@ C  POM flux leaving the cell
           PONflux_l = (PONflux_u+N_spm(i,j,k)*drF(k)
      &           *hFacC(i,j,k,bi,bj))/(1+zremin*drF(k)
      &           *hFacC(i,j,k,bi,bj))
-C!! multiply by intercept_frac ???
 
           POPflux_l = (POPflux_u+P_spm(i,j,k)*drF(k)
      &           *hFacC(i,j,k,bi,bj))/(1+zremin*drF(k)
      &           *hFacC(i,j,k,bi,bj))
-C!! multiply by intercept_frac ???
 
 C  CaCO3 flux leaving the cell
           CaCO3flux_l = (caco3flux_u+CaCO3_uptake(i,j,k)*drF(k)
      &           *hFacC(i,j,k,bi,bj))/(1+zremin_caco3*drF(k)
      &           *hFacC(i,j,k,bi,bj))
-C!! multiply by intercept_frac ???
 
 C  Start with cells that are not the deepest cells
           IF (bttmlyr.EQ.0) THEN
@@ -284,10 +231,6 @@ C  Maximum value added for numerical stability.
            Fe_sed(i,j,k) = min(1. _d -11,
      &            max(epsln, FetoC_sed * POC_sed * recip_drF(k)
      &            *recip_hFacC(i,j,k,bi,bj)))
-
-#ifdef BLING_ADJOINT_SAFE
-           Fe_sed(i,j,k) = 0. _d 0
-#endif
 
 cav temporary until I figure out why this is problematic for adjoint
 #ifndef BLING_ADJOINT_SAFE
@@ -400,11 +343,11 @@ c     &           min(0.5/PTRACERS_dTLev(1), kFE_org*(POMflux_l
 c     &           *CtoP/NUTfac*12.01/wsink)**(0.58)*FreeFe
 
 #ifndef BLING_ADJOINT_SAFE
-            Fe_ads_org =
+            Fe_ads_org(i,j,k) =
      &           kFE_org*(PONflux_l/(epsln + wsink)
      &             * MasstoN)**(0.58)*FreeFe
 #else
-            Fe_ads_org =
+            Fe_ads_org(i,j,k) =
      &           kFE_org*(PONflux_l/(epsln + wsink0)
      &             * MasstoN)**(0.58)*FreeFe
 #endif
@@ -415,25 +358,25 @@ C  it is completely remineralized (fe 2+ is soluble, but unstable
 C  in oxidizing environments).
 
            PFEflux_l = (PFEflux_u+(Fe_spm(i,j,k)+Fe_ads_inorg(i,j,k)
-     &            +Fe_ads_org)*drF(k)
+     &            +Fe_ads_org(i,j,k))*drF(k)
      &            *hFacC(i,j,k,bi,bj))/(1+zremin*drF(k)
      &            *hFacC(i,j,k,bi,bj))
 
-c Added the burial flux of sinking particulate iron here as a
-c diagnostic, needed to calculate mass balance of iron.
-c this is calculated last for the deepest cell
+c  Added the burial flux of sinking particulate iron here as a
+c  diagnostic, needed to calculate mass balance of iron.
+c  this is calculated last for the deepest cell
 
            Fe_burial(i,j) = PFeflux_l
 
 #ifndef BLING_ADJOINT_SAFE
            IF ( PTR_O2(i,j,k) .LT. oxic_min ) THEN
-            pfeflux_l = 0
+            PFEflux_l = 0
            ENDIF
 #endif
 
            Fe_reminp(i,j,k) = (pfeflux_u+(Fe_spm(i,j,k)
      &            +Fe_ads_inorg(i,j,k)
-     &            +Fe_ads_org)*drF(k)
+     &            +Fe_ads_org(i,j,k))*drF(k)
      &            *hFacC(i,j,k,bi,bj)-pfeflux_l)*recip_drF(k)
      &            *recip_hFacC(i,j,k,bi,bj)
 C!! there is an intercept_frac here... need to add
@@ -446,12 +389,9 @@ C  Prepare the tracers for the next layer down
 
 c
           Fe_reminsum(i,j,k) = Fe_reminp(i,j,k) + Fe_sed(i,j,k)
-     &                       - Fe_ads_org - Fe_ads_inorg(i,j,k)
-cc             Fe_reminsum(i,j,k) = 0. _d 0
+     &                 - Fe_ads_org(i,j,k) - Fe_ads_inorg(i,j,k)
 
          ENDIF
-
-         Fe_ads_org   = 0. _d 0
 
         ENDDO
        ENDDO
@@ -464,13 +404,12 @@ c ---------------------------------------------------------------------
 
 c 3d local variables
 c        CALL DIAGNOSTICS_FILL(POC_flux,'BLGPOCF ',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(Fe_ads_org,   'BLGFEAO ',0,Nr,2,bi,bj,
+     &       myThid)
         CALL DIAGNOSTICS_FILL(Fe_ads_inorg, 'BLGFEAI ',0,Nr,2,bi,bj,
      &       myThid)
         CALL DIAGNOSTICS_FILL(Fe_sed,   'BLGFESED',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(Fe_reminp,'BLGFEREM',0,Nr,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(N_den_benthic,'BLGNDENB',0,Nr,2,bi,bj,
-     &       myThid)
-c        CALL DIAGNOSTICS_FILL(N_den_pelag,'BLGNDENP',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(N_reminp, 'BLGNREM ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(P_reminp, 'BLGPREM ',0,Nr,2,bi,bj,myThid)
 c 2d local variables

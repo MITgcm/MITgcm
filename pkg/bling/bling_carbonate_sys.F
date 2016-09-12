@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_carbonate_sys.F,v 1.1 2016/05/19 20:29:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_carbonate_sys.F,v 1.2 2016/09/12 20:00:28 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -152,7 +152,7 @@ C  saturation state
 
            else
 
-             pH(i,j,k,bi,bj) = 8. _d 0
+             pH(i,j,k,bi,bj) = 0. _d 0
              omegaC(i,j,k,bi,bj)  = 0. _d 0
              omegaAr(i,j,k,bi,bj) = 0. _d 0
 

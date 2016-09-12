@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_OPTIONS.h,v 1.1 2016/05/19 20:29:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_OPTIONS.h,v 1.2 2016/09/12 20:00:27 mmazloff Exp $
 C $Name:  $
 
 #ifndef BLING_OPTIONS_H
@@ -9,30 +9,45 @@ C $Name:  $
 #ifdef ALLOW_BLING
 C     Package-specific Options & Macros go here
 
+c Active tracer for total phytoplankton biomass
+#define ADVECT_PHYTO
+
 c Prevents negative values in nutrient fields
 #define BLING_NO_NEG
 
 c Assume that phytoplankton in the mixed layer experience
 c the average light over the mixed layer
 c (as in original BLING model)
-#define ML_MEAN_LIGHT
+#undef ML_MEAN_LIGHT
 
 c Assume that phytoplankton are homogenized in the mixed layer
-#define ML_MEAN_PHYTO
+#undef ML_MEAN_PHYTO
 
 c Determine PAR from shortwave radiation from EXF package
-#undef  USE_EXFQSW
+#define USE_EXFQSW
+
+c Use local atmospheric pressure from EXF package for fugacity factor
+#define USE_EXF_ATMPRES
 
 c Sub grid scale sediments
 #undef  USE_SGS_SED
 
 c Read atmospheric pCO2 values from EXF package
-c *** to be specified in EXF_OPTIONS.h ***
-c #undef  USE_EXFCO2
+c *** to be specified in ECCO_CPPOPTIONS.h ***
+c #define USE_EXFCO2
+
+c In the DVM routine, assume fixed mixed layer depth 
+c (so no need to calc MLD in bling_production)
+#define FIXED_MLD_DVM
 
 c Simplify some parts of the code that are problematic 
 c when using the adjoint
-#undef  BLING_ADJOINT_SAFE
+#define BLING_ADJOINT_SAFE
+
+c For adjoint safe, use constant MLD in bling_dvm
+#ifdef BLING_ADJOINT_SAFE
+#define FIXED_MLD_DVM
+#endif
 
 #endif /* ALLOW_BLING */
 #endif /* BLING_OPTIONS_H */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_main.F,v 1.2 2016/05/23 13:32:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_main.F,v 1.3 2016/09/12 20:00:28 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -12,11 +12,14 @@ CBOP
      &                      bi, bj, imin, imax, jmin, jmax,
      &                      myIter, myTime, myThid)
 
-C     ==========================================================
+C     ==================================================================
 C     | subroutine bling_main
-C     | o updates all the tracers for the effects of air-sea exchange,
+C     | o Updates all the tracers for the effects of air-sea exchange,
 C     |   biological production, and remineralization.
-C     ==========================================================
+C     | - The basic model includes 8 tracers
+C     | - There is an optional tracer for phytoplankton biomass 
+C     | - River runoff is included here
+C     ==================================================================
 
       implicit none
 
@@ -85,14 +88,10 @@ C     runoff_bgc           :: tendency due to river runoff
       _RL  G_DON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  G_DOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  G_CaCO3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-#ifdef ADVECT_PHYTO
-      _RL  G_PHY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-#endif
       _RL  bio_DIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  surf_DIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  surf_O2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  irr_eff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL  mld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 cxx      _RL  runoff_bgc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,PTRACERS_num)
       _RL  runoff_bgc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,8)
 CEOP
@@ -112,9 +111,6 @@ c  Initialize local variables
          G_DON(i,j,k)        = 0. _d 0
          G_DOP(i,j,k)        = 0. _d 0
          G_CaCO3(i,j,k)      = 0. _d 0
-#ifdef ADVECT_PHYTO
-         G_PHY(i,j,k)        = 0. _d 0
-#endif
          irr_eff(i,j,k)      = 0. _d 0
         ENDDO
 cxx        DO k=1,PTRACERS_num
@@ -124,7 +120,6 @@ cxx        DO k=1,PTRACERS_num
         bio_DIC(i,j,k)       = 0. _d 0
         surf_DIC(i,j)        = 0. _d 0
         surf_O2(i,j)         = 0. _d 0
-        mld(i,j)             = 0. _d 0
        ENDDO
       ENDDO
 
@@ -153,7 +148,7 @@ C  biological activity
      I                 PTR_NO3, PTR_PO4, PTR_FE,
      I                 PTR_O2, PTR_DON, PTR_DOP,
 #ifdef ADVECT_PHYTO
-                       PTR_PHY,
+     I                 PTR_PHY, 
 #endif
      U                 G_NO3, G_PO4, G_FE,
      U                 G_O2, G_DON, G_DOP, G_CACO3,
@@ -184,7 +179,6 @@ c#endif
 c ---------------------------------------------------------------------
 
 c  Carbon system
-cxx check
 
       DO j=jmin,jmax
        DO i=imin,imax
@@ -242,9 +236,6 @@ C update
            PTR_O2 (i,j,k)=PTR_O2 (i,j,k)+G_O2 (i,j,k)*PTRACERS_dTLev(k)
            PTR_DON(i,j,k)=PTR_DON(i,j,k)+G_DON(i,j,k)*PTRACERS_dTLev(k)
            PTR_DOP(i,j,k)=PTR_DOP(i,j,k)+G_DOP(i,j,k)*PTRACERS_dTLev(k)
-#ifdef ADVECT_PHYTO
-           PTR_PHY(i,j,k)=PTR_PHY(i,j,k)+G_PHY(i,j,k)*PTRACERS_dTLev(k)
-#endif
           ENDDO
          ENDDO
        ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_write_pickup.F,v 1.2 2016/05/25 03:53:41 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_write_pickup.F,v 1.3 2016/09/12 20:00:28 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -73,15 +73,18 @@ C       record number < 0 : a hack not to write meta files now:
         IF (j.LE.listDim) wrFldList(j) = 'BLG_chl '
 
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, prec, Nr, P_sm, -j, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, prec, Nr, phyto_sm, -j, myIter, 
+     & myThid )
         IF (j.LE.listDim) wrFldList(j) = 'BLG_Psm '
 
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, prec, Nr, P_lg, -j, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, prec, Nr, phyto_lg, -j, myIter, 
+     & myThid )
         IF (j.LE.listDim) wrFldList(j) = 'BLG_Plg '
 
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, prec, Nr, P_diaz, -j, myIter, myThid )
+        CALL WRITE_REC_3D_RL( fn, prec, Nr, phyto_diaz, -j, myIter, 
+     & myThid )
         IF (j.LE.listDim) wrFldList(j) = 'BLG_Pdia'
 
 C--------------------------

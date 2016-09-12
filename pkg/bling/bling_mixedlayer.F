@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_mixedlayer.F,v 1.1 2016/05/19 20:29:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_mixedlayer.F,v 1.2 2016/09/12 20:00:28 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -11,11 +11,7 @@ CBOP
      
 C     =================================================================
 C     | subroutine bling_mixedlayer
-C     | o 
-C     | - irr_mix is the same as irr_inst, but averaged throughout   
-C     |   the mixed layer. This quantity is intended to represent the 
-C     |   light to which phytoplankton subject to turbulent transport in 
-C     |   the mixed-layer would be exposed.
+C     | o Calculate mixed layer depth based on density criterion 
 C     =================================================================
 
       implicit none

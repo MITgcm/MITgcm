@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_init_varia.F,v 1.1 2016/05/19 20:29:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_init_varia.F,v 1.2 2016/09/12 20:00:28 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -44,9 +44,9 @@ C--   Initialise global variables
             omegaAr(i,j,k,bi,bj)    = 0. _d 0
             irr_mem(i,j,k,bi,bj)    = 1. _d 0
             chl(i,j,k,bi,bj)        = 0. _d 0
-            P_sm(i,j,k,bi,bj)       = 4. _d -7 / permil
-            P_lg(i,j,k,bi,bj)       = 4. _d -7 / permil
-            P_diaz(i,j,k,bi,bj)     = 4. _d -7 / permil
+            phyto_sm(i,j,k,bi,bj)   = 4. _d -7 / permil
+            phyto_lg(i,j,k,bi,bj)   = 4. _d -7 / permil
+            phyto_diaz(i,j,k,bi,bj) = 4. _d -7 / permil
           ENDDO
          ENDDO
         ENDDO

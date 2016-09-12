@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/Attic/bling_cost.F,v 1.1 2016/05/19 20:29:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/Attic/bling_cost.F,v 1.2 2016/09/12 20:00:28 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -9,7 +9,7 @@ CBOP
 
 C     =================================================================
 C     | subroutine bling_cost
-C     | o
+C     | o Define cost contribution from bling variables
 C     =================================================================
 
       implicit none

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_ad.flow,v 1.1 2016/05/19 20:29:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_ad.flow,v 1.2 2016/09/12 20:00:27 mmazloff Exp $
 C $Name:  $
 
 C----------------------------------------
@@ -8,8 +8,8 @@ CADJ SUBROUTINE BLING_READ_PICKUP  INPUT  = 1,2,3
 CADJ SUBROUTINE BLING_READ_PICKUP  OUTPUT = 1
 
 C----------------------------------------
-C subroutine TRACER_MIN_VAL
+C subroutine BLING_MIN_VAL
 C----------------------------------------
-CADJ SUBROUTINE TRACER_MIN_VAL  INPUT  = 1,2
-CADJ SUBROUTINE TRACER_MIN_VAL  OUTPUT = 
+CADJ SUBROUTINE BLING_MIN_VAL  INPUT  = 1,2,3,4
+CADJ SUBROUTINE BLING_MIN_VAL  OUTPUT = 
 
