@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_uv.F,v 1.2 2014/06/05 15:37:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_uv.F,v 1.3 2016/09/12 22:31:29 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -387,7 +387,7 @@ C-      Check that we found the right lat. index
      &      ', nLoop=', nLoop
             CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(A)')
-     &      'EXF_INTERP_UV: did not found Latitude index for grid-pt:'
+     &      'EXF_INTERP_UV: did not find Latitude index for grid-pt:'
             CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(A,2I8,2I6,A,1PE16.8)')
      &      'EXF_INTERP_UV: i,j,bi,bj=',i,j,bi,bj,' , yG=',yG(i,j,bi,bj)
@@ -415,7 +415,7 @@ C--   Do interpolation using lon & lat index mapping
         CALL EXF_INTERPOLATE(
      I                inFileU, irecord, methodU,
      I                nxIn, nyIn, x_in, y_in,
-     O                arrUin,
+     I                arrUin,
      O                arrUout,
      I                xG, yG,
      I                w_ind, s_ind,
@@ -423,7 +423,7 @@ C--   Do interpolation using lon & lat index mapping
         CALL EXF_INTERPOLATE(
      I                inFileV, irecord, methodV,
      I                nxIn, nyIn, x_in, y_in,
-     O                arrVin,
+     I                arrVin,
      O                arrVout,
      I                xG, yG,
      I                w_ind, s_ind,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.33 2015/04/16 16:13:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.34 2016/09/12 22:31:29 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -398,7 +398,7 @@ C--   Do interpolation using lon & lat index mapping
         CALL EXF_INTERPOLATE(
      I                inFile, irecord, method,
      I                nxIn, nyIn, x_in, y_in,
-     O                arrayin,
+     I                arrayin,
      O                arrayout,
      I                xG, yG,
      I                w_ind, s_ind,
