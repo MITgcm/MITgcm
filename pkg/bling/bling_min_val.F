@@ -1,23 +1,27 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/Attic/tracer_min_val.F,v 1.1 2016/05/19 20:29:27 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_min_val.F,v 1.1 2016/09/12 20:12:53 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
 
 CBOP
-      subroutine TRACER_MIN_VAL(
-     I                          PTR, min_val )
+      subroutine BLING_MIN_VAL(
+     I                          PTR, min_val, bi, bj )
 
 C     =================================================================
-C     | subroutine tracer_min_val
-C     | 
+C     | subroutine bling_min_val
+C     | o replaces tracer values that are too small or negative
+C     |   (in a separate routine so can be hidden from adjoint) 
 C     =================================================================
 
       implicit none
       
 C     === Global variables ===
 #include "SIZE.h"
+#include "GRID.h"
 
 C     === Routine arguments ===
+      INTEGER bi, bj
+C     === Input ===
       _RL     PTR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     min_val
 CEOP
@@ -28,7 +32,7 @@ C     == Local variables ==
        DO k=1,Nr
          DO i=1,sNx
           DO j=1,sNy
-           PTR(i,j,k) = max( min_val, PTR(i,j,k) )
+           PTR(i,j,k) = max( min_val*maskC(i,j,k,bi,bj), PTR(i,j,k) )
           ENDDO
          ENDDO
        ENDDO
