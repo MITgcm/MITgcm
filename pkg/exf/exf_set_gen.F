@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.33 2016/02/29 22:13:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.34 2016/09/12 23:43:53 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -91,17 +91,11 @@ C     msgBuf     :: Informational/error message buffer
       INTEGER bi, bj, i, j
       _RL     fac
       CHARACTER*(128) genfile0, genfile1
-#ifdef ALLOW_EXF_OUTPUT_INTERP
-      CHARACTER*(128) outfile0, outfile1
-#endif
+      CHARACTER*(MAX_LEN_FNAM) out_file
 
 C     == end of interface ==
 
       IF ( genfile .NE. ' ' .AND. genperiod .NE. 0. ) THEN
-
-cph(
-cph-exf-print         if (genfile .EQ. hfluxfile)  year0 = 3000
-cph)
 
          IF ( genperiod .EQ. -12. ) THEN
 C-    genperiod=-12 means input file contains 12 monthly means
@@ -178,13 +172,20 @@ C-    get record numbers and interpolation factor for gen
             ENDIF
 #endif /* USE_EXF_INTERPOLATION */
 
-            CALL exf_filter_rl( gen1, genmask, myThid )
+#ifdef USE_EXF_INTERPOLATION
+            IF ( exf_output_interp ) THEN
+             j = ILNBLNK(genfile0)
+             WRITE(out_file,'(2A)') genfile0(1:j), '_out'
+             IF ( count0.NE.1 )
+     &       CALL WRITE_REC_XY_RL( out_file, gen1, 1, myIter, myThid )
+             CALL WRITE_REC_XY_RL( out_file,gen1,count0,myIter,myThid )
+            ENDIF
+#endif /* USE_EXF_INTERPOLATION */
 
-#ifdef ALLOW_EXF_OUTPUT_INTERP
-           j = ILNBLNK(genfile0)
-           WRITE(outfile0,'(2A)') 'out_',genfile0(1:j)
-           CALL WRITE_REC_XY_RL(outfile0,gen1,count0,myIter,myThid)
-#endif
+C-    apply mask
+            CALL EXF_FILTER_RL( gen1, genmask, myThid )
+
+C-    end if ( first ) block
          ENDIF
 
          IF ( first .OR. changed ) THEN
@@ -222,13 +223,18 @@ C-    get record numbers and interpolation factor for gen
             ENDIF
 #endif /* USE_EXF_INTERPOLATION */
 
-            CALL exf_filter_rl( gen1, genmask, myThid )
+#ifdef USE_EXF_INTERPOLATION
+            IF ( exf_output_interp ) THEN
+             j = ILNBLNK(genfile1)
+             WRITE(out_file,'(2A)') genfile1(1:j), '_out'
+             CALL WRITE_REC_XY_RL( out_file,gen1,count1,myIter,myThid )
+            ENDIF
+#endif /* USE_EXF_INTERPOLATION */
 
-#ifdef ALLOW_EXF_OUTPUT_INTERP
-           j = ILNBLNK(genfile1)
-           WRITE(outfile1,'(2A)') 'out_',genfile1(1:j)
-           CALL WRITE_REC_XY_RL(outfile1,gen1,count1,myIter,myThid)
-#endif
+C-    apply mask
+            CALL EXF_FILTER_RL( gen1, genmask, myThid )
+
+C-    end if ( first or changed ) block
          ENDIF
 
 C     Loop over tiles.
@@ -361,7 +367,8 @@ C     == end of interface ==
          ENDIF
 #endif /* USE_EXF_INTERPOLATION */
 
-         CALL exf_filter_rl( genfld, genmask, myThid )
+C-    apply mask
+         CALL EXF_FILTER_RL( genfld, genmask, myThid )
 
 C     Loop over tiles and scale genfld
          DO bj = myByLo(myThid),myByHi(myThid)
