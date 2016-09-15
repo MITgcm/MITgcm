@@ -15,7 +15,7 @@
  useOBCSprescribe = .TRUE.,
  OBCS_u1_adv_T = 1,
  OBCS_u1_adv_S = 1,
- OBCS_u1_adv_Tr(1:5) = 1,
+ OBCS_u1_adv_Tr(1:5) = 5*1,
  OBWuFile = 'U_obW.bin',
  OBEuFile = 'U_obE.bin',
  OBNuFile = 'U_obN.bin',
