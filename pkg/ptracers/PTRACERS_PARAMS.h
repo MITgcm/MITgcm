@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.13 2016/08/23 18:29:49 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.14 2016/09/15 14:39:49 jahn Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -120,6 +120,7 @@ C     PTRACERS_useRecords    :: snap-shot output: put all pTracers in one file
      &     PTRACERS_useGMRedi,
      &     PTRACERS_useDWNSLP,
      &     PTRACERS_useKPP,
+     &     PTRACERS_linFSConserve,
      &     PTRACERS_doAB_onGpTr,
      &     PTRACERS_addSrelax2EmP,
      &     PTRACERS_startAllTrc,
