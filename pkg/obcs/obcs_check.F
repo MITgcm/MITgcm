@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.31 2012/11/15 15:55:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.32 2016/09/15 18:50:37 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -24,6 +24,11 @@ C     === Global variables ===
 #include "OBCS_PARAMS.h"
 #include "OBCS_GRID.h"
 #include "OBCS_SEAICE.h"
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS_PARAMS.h"
+# include "OBCS_PTRACERS.h"
+#endif /* ALLOW_PTRACERS */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -86,6 +91,12 @@ C--   Print OBCS set-up summary:
      &   'OBCS_u1_adv_T =', ' /* Temp uses upwind adv-scheme @ OB */')
       CALL WRITE_0D_I( OBCS_u1_adv_S, INDEX_NONE,
      &   'OBCS_u1_adv_S =', ' /* Salt uses upwind adv-scheme @ OB */')
+#ifdef ALLOW_PTRACERS
+      IF ( usePTRACERS ) THEN
+       CALL WRITE_1D_I( OBCS_u1_adv_Tr, PTRACERS_numInUse, INDEX_NONE,
+     &   'OBCS_u1_adv_Tr =', ' /* pTr uses upwind adv-scheme @ OB */')
+      ENDIF
+#endif /* ALLOW_PTRACERS */
       CALL WRITE_0D_RL( OBCS_monitorFreq, INDEX_NONE,
      &   'OBCS_monitorFreq =', ' /* monitor output frequency [s] */')
       CALL WRITE_0D_I( OBCS_monSelect, INDEX_NONE, 'OBCS_monSelect =',
@@ -462,7 +473,7 @@ C-    Eastern boundary
           ENDIF
           DO i=1,sNx+1
            IF ( maskInC(i-1,j,bi,bj).GT.maskInC(i,j,bi,bj)
-     &          .AND.ksurfW(i,j,bi,bj).LE.Nr
+     &          .AND.kSurfW(i,j,bi,bj).LE.Nr
      &          .AND. i.NE.OB_Ie(j,bi,bj) ) THEN
             IF ( errCount.EQ.0 ) CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(2(A,I3),2(A,I5))')
@@ -486,7 +497,7 @@ C-    Western boundary
           ENDIF
           DO i=1,sNx+1
            IF ( maskInC(i-1,j,bi,bj).LT.maskInC(i,j,bi,bj)
-     &          .AND.ksurfW(i,j,bi,bj).LE.Nr
+     &          .AND.kSurfW(i,j,bi,bj).LE.Nr
      &          .AND. i.NE.OB_Iw(j,bi,bj)+1 ) THEN
             IF ( errCount.EQ.0 ) CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(2(A,I3),2(A,I5))')
@@ -513,7 +524,7 @@ C-    Northern boundary
           ENDIF
           DO j=1,sNy+1
            IF ( maskInC(i,j-1,bi,bj).GT.maskInC(i,j,bi,bj)
-     &          .AND.ksurfS(i,j,bi,bj).LE.Nr
+     &          .AND.kSurfS(i,j,bi,bj).LE.Nr
      &          .AND. j.NE.OB_Jn(i,bi,bj) ) THEN
             IF ( errCount.EQ.0 ) CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(2(A,I3),2(A,I5))')
@@ -537,7 +548,7 @@ C-    Southern boundary
           ENDIF
           DO j=1,sNy+1
            IF ( maskInC(i,j-1,bi,bj).LT.maskInC(i,j,bi,bj)
-     &          .AND.ksurfS(i,j,bi,bj).LE.Nr
+     &          .AND.kSurfS(i,j,bi,bj).LE.Nr
      &          .AND. j.NE.OB_Js(i,bi,bj)+1 ) THEN
             IF ( errCount.EQ.0 ) CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(2(A,I3),2(A,I5))')
