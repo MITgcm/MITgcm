@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.13 2016/09/15 00:16:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.14 2016/09/15 01:06:50 jmc Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -48,7 +48,7 @@ CEOP
 #ifdef ALLOW_EXF
       NAMELIST /ICEFRONT_EXF_PARM02/
      &     SGRunOffstartdate1, SGRunOffstartdate2,
-     &     SGRunOffperiod,
+     &     SGRunOffperiod,     SGRunOffFile,
      &     SGRunOffconst,      SGRunOff_inscal,
      &     SGRunOff_remov_intercept, SGRunOff_remov_slope
 #endif /* ALLOW_EXF */
