@@ -15,7 +15,7 @@
 % mit_meridflux
 % mit_plotmeandrift
 
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/mit_loadglobal.m,v 1.4 2016/09/15 22:12:09 heimbach Exp $
+% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/mit_loadglobal.m,v 1.5 2016/09/15 23:06:25 heimbach Exp $
 % $Name:  $
 
 % read in all grid files, etc. This has to be done at the very beginning!
@@ -435,10 +435,14 @@ fname(in) = [];
 fn = gcf;
 if meanfields
   fname = [fname '.ps'];
-  f0 = fn-7;
+% change required by newer Matlab versions
+%  f0 = fn-7;
+  f0=fn.Number-7;
 else
   fname = [fname '_snap.ps'];
-  f0 = fn-4;
+% change required by newer Matlab versions
+%  f0 = fn-4;
+  f0=fn.Number-4;
 end
 print(f0,'-dpsc',fname);
 for k = f0+1:fn
