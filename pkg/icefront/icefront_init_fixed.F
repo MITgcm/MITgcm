@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_fixed.F,v 1.5 2011/12/28 20:45:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_fixed.F,v 1.6 2016/09/15 00:16:03 jmc Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif /* ALLOW_EXF */
 #undef ALLOW_ICEFRONT_DEBUG
 
       SUBROUTINE ICEFRONT_INIT_FIXED( myThid )
@@ -19,6 +22,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "ICEFRONT.h"
+#ifdef ALLOW_EXF
+# include "EXF_PARAM.h"
+#endif /* ALLOW_EXF */
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance of ICEFRONT_INIT_FIXED
@@ -32,6 +38,22 @@ C     I,J,K,bi,bj - Loop counters
       INTEGER ISinterface
 #endif
 
+#ifdef ALLOW_EXF
+      IF ( useEXF .AND. SGRunOffFile .NE. ' '
+     &            .AND. SGRunOffperiod .GT. 0. ) THEN
+       _BEGIN_MASTER( myThid )
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START SGRunOff',myThid)
+# endif
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          SGRunOffstartdate1, SGRunOffstartdate2,
+     O                          SGRunOffstartdate,
+     I                          myThid )
+       _END_MASTER( myThid )
+       _BARRIER
+      ENDIF
+#endif /* ALLOW_EXF */
+
       IF ( ICEFRONTlengthFile .NE. ' ' ) THEN
        CALL READ_FLD_XY_RS( ICEFRONTlengthFile, ' ',
      &      icefrontlength, 0, myThid )
@@ -39,7 +61,6 @@ C     I,J,K,bi,bj - Loop counters
       ENDIF
 
       IF ( ICEFRONTdepthFile .NE. ' ' ) THEN
-       _BARRIER
        CALL READ_FLD_XY_RS( ICEFRONTdepthFile, ' ',
      &      R_icefront, 0, myThid )
        _EXCH_XY_RS( R_icefront, myThid )
@@ -78,7 +99,7 @@ C     Make sure that R_icefront is positive
 C           IsInterface=0
            IF (ICEFRONTlength(I,J,bi,bj) .GT. 0. _d 0) THEN
 C              print*, 'IsInterface=', '2' , ',xuyun'
-              IsInterface=Isinterface + K_icefront(I,J,bi,bj) 
+              IsInterface=Isinterface + K_icefront(I,J,bi,bj)
            ENDIF
           ENDDO
          ENDDO

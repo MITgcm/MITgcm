@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.35 2016/09/12 23:43:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.36 2016/09/15 00:13:09 jmc Exp $
 C $Name:  $
 C
 C     ==================================================================
@@ -323,18 +323,6 @@ c     Calendar data.
       _RL     climvstr_exfremo_slope
       character*1 climvstrmask
 
-c     the following variables are used in conjunction
-c     with pkg/icefront to specify sub-glacial runoff
-      integer sgrunoffstartdate1
-      integer sgrunoffstartdate2
-      _RL     sgrunoffstartdate
-      _RL     sgrunoffperiod
-      _RL     sgrunoffconst
-      _RL     sgrunoff_exfremo_intercept
-      _RL     sgrunoff_exfremo_slope
-      _RL     exf_inscal_sgrunoff
-      character*1 sgrunoffmask
-
 c     the following variables are used in conjunction with pkg/obcs
 c     to describe S/T/U/V open boundary condition files
       integer obcsNstartdate1
@@ -418,7 +406,6 @@ c     File names.
      &       sfluxstartdate1,   sfluxstartdate2,
      &       evapstartdate1,    evapstartdate2,
      &       runoffstartdate1,  runoffstartdate2,
-     &       sgrunoffstartdate1,sgrunoffstartdate2,
      &       precipstartdate1,  precipstartdate2,
      &       snowprecipstartdate1, snowprecipstartdate2,
      &       ustressstartdate1, ustressstartdate2,
@@ -452,7 +439,6 @@ c     File names.
      &       precipperiod,      precipstartdate,
      &       snowprecipperiod,  snowprecipstartdate,
      &       runoffperiod,      runoffstartdate,
-     &       sgrunoffperiod,    sgrunoffstartdate,
      &       ustressperiod,     ustressstartdate,
      &       vstressperiod,     vstressstartdate,
      &       uwindperiod,       uwindstartdate,
@@ -481,7 +467,6 @@ c     File names.
      &       snowprecipconst,
      &       runoffconst,
      &       runoftempconst,
-     &       sgrunoffconst,
      &       ustressconst,
      &       vstressconst,
      &       uwindconst,
@@ -505,7 +490,6 @@ c     File names.
      &       snowprecip_exfremo_intercept,
      &       runoff_exfremo_intercept,
      &       runoftemp_exfremo_intercept,
-     &       sgrunoff_exfremo_intercept,
      &       ustress_exfremo_intercept,
      &       vstress_exfremo_intercept,
      &       uwind_exfremo_intercept,
@@ -526,7 +510,6 @@ c     File names.
      &       snowprecip_exfremo_slope,
      &       runoff_exfremo_slope,
      &       runoftemp_exfremo_slope,
-     &       sgrunoff_exfremo_slope,
      &       ustress_exfremo_slope,
      &       vstress_exfremo_slope,
      &       uwind_exfremo_slope,
@@ -559,8 +542,7 @@ c     File names.
      &       swdownfile,    swdownmask,
      &       lwdownfile,    lwdownmask,
      &       apressurefile, apressuremask,
-     &       areamaskfile,  areamaskmask,
-     &                      sgrunoffmask
+     &       areamaskfile,  areamaskmask
 
       COMMON /EXF_CLIM_I/
      &       climsststartdate1,  climsststartdate2,
@@ -664,7 +646,6 @@ c     exf_outscale_*    output scaling factors
      &                    , exf_inscal_apressure
      &                    , exf_inscal_runoff
      &                    , exf_inscal_runoftemp
-     &                    , exf_inscal_sgrunoff
      &                    , exf_inscal_swdown
      &                    , exf_inscal_lwdown
      &                    , exf_inscal_areamask

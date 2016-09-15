@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.12 2014/05/27 23:41:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.13 2016/09/15 00:16:03 jmc Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -45,6 +45,14 @@ CEOP
      &     applyIcefrontTendT,applyIcefrontTendS,
      &     ICEFRONTdepthFile, ICEFRONTlengthFile
 
+#ifdef ALLOW_EXF
+      NAMELIST /ICEFRONT_EXF_PARM02/
+     &     SGRunOffstartdate1, SGRunOffstartdate2,
+     &     SGRunOffperiod,
+     &     SGRunOffconst,      SGRunOff_inscal,
+     &     SGRunOff_remov_intercept, SGRunOff_remov_slope
+#endif /* ALLOW_EXF */
+
       IF ( .NOT.useICEFRONT ) THEN
 C-    pkg ICEFRONT is not used
         _BEGIN_MASTER(myThid)
@@ -88,21 +96,49 @@ C Default values when SHELFICE is not used
       ICEFRONTdepthFile        = ' '
       applyIcefrontTendS       = .TRUE.
       applyIcefrontTendT       = .TRUE.
-      SGrunoffFile             = ' '
+
+#ifdef ALLOW_EXF
+      SGRunOffstartdate1       = 0
+      SGRunOffstartdate2       = 0
+      SGRunOffperiod           = 0.0 _d 0
+      SGRunOffconst            = 0.0 _d 0
+      SGRunOff_remov_intercept = 0.0 _d 0
+      SGRunOff_remov_slope     = 0.0 _d 0
+      SGRunOff_inscal          = 1.0 _d 0
+      SGRunOffFile             = ' '
+C-    internal parameters (not in namelist):
+      SGRunOffmask             = 'c'
+      SGRunOffstartdate        = 0.
+#endif /* ALLOW_EXF */
 
 C Open and read the data.icefront file
       WRITE(msgBuf,'(A)') ' ICEFRONT_READPARMS: opening data.icefront'
-      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
-     &                   SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       CALL OPEN_COPY_DATA_FILE(
      I                   'data.icefront', 'ICEFRONT_READPARMS',
      O                   iUnit,
      I                   myThid )
+
+      WRITE(msgBuf,'(A)') ' ICEFRONT_READPARMS: reading ICEFRONT_PARM01'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       READ(UNIT=iUnit,NML=ICEFRONT_PARM01)
+
+#ifdef ALLOW_EXF
+      IF ( useEXF ) THEN
+       WRITE(msgBuf,'(A)')
+     &     ' ICEFRONT_READPARMS: reading ICEFRONT_EXF_PARM02'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       READ( UNIT=iUnit, NML=ICEFRONT_EXF_PARM02 )
+      ENDIF
+#endif /* ALLOW_EXF */
+
       WRITE(msgBuf,'(A)')
      &  ' ICEFRONT_READPARMS: finished reading data.icefront'
-      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
-     &                   SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
 C Close the open data file
       CLOSE(iUnit)

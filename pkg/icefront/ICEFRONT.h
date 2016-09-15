@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.13 2013/11/10 02:58:34 yunx Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.14 2016/09/15 00:16:03 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_ICEFRONT
@@ -12,11 +12,10 @@ C     | ICEFRONT.h                                               |
 C     | o Basic header thermodnynamic shelf ice package.         |
 C     |   Contains all ICEFRONT field declarations.              |
 C     *==========================================================*
+C \ev
 
 C-----------------------------------------------------------------------
-C
-C--   Constants that can be set in data.icefront
-C-    Namelist /ICEFRONT_PARM01/
+C--   Constants that can be set in data.icefront, namelist /ICEFRONT_PARM01/
 C     ICEFRONTdepthFile        - name of icefront depth file (m)
 C                                2D file containing depth of the ice front
 C                                at each model grid cell
@@ -35,20 +34,20 @@ C                                the bottom
 C     ICEFRONTlatentHeat       - latent heat of fusion (J/kg)
 C     applyIcefrontTendT/S     -
 C
-C     K_icefront             - # of icefront model levels at every horizontal location (2D)
-C     R_icefront             - icefront depth [m] (2D)
-C     icefrontlength         - icefront horizontal length divided by grid cell area [m/m^2] (2D)
-C     icefront_TendT         - temperature tendency (Kelvin/s)
-C     icefront_TendS         - salinity tendency (psu/s)
+C     K_icefront          - # of icefront model levels at every horizontal location (2D)
+C     R_icefront          - icefront depth [m] (2D)
+C     icefrontlength      - icefront horizontal length divided
+C                           by grid cell area [m/m^2] (2D)
+C     icefront_TendT      - temperature tendency (Kelvin/s)
+C     icefront_TendS      - salinity tendency (psu/s)
 C
-C     SGrunoffFile           - name of subglacial runoff file (kg/s)
+C--   Constants that can be set in data.icefront, namelist /ICEFRONT_EXF_PARM02/
+C     SGRunOffFile           - name of subglacial runoff file (kg/s)
 C                              2D file containing mass of subglacial runoff
 C                              added at bottom of model ocean
-C     SGrunoff               - subglacial runoff (kg/s)
+C     SGRunOff               - subglacial runoff (kg/s)
 C     Arrays *0 and *1 below are used for temporal interpolation.
-C
 C-----------------------------------------------------------------------
-C \ev
 CEOP
 
       COMMON /ICEFRONT_PARMS_I/  K_icefront
@@ -88,10 +87,32 @@ CEOP
 
       CHARACTER*(MAX_LEN_FNAM) ICEFRONTlengthFile
       CHARACTER*(MAX_LEN_FNAM) ICEFRONTdepthFile
-      CHARACTER*(MAX_LEN_FNAM) SGrunoffFile
       COMMON /ICEFRONT_PARM_C/
      &     ICEFRONTlengthFile,
-     &     ICEFRONTdepthFile,
-     &     SGrunoffFile
+     &     ICEFRONTdepthFile
+
+#ifdef ALLOW_EXF
+C     the following variables are used in conjunction
+C     with pkg/exf to specify sub-glacial runoff
+      INTEGER SGRunOffstartdate1
+      INTEGER SGRunOffstartdate2
+      _RL     SGRunOffstartdate
+      _RL     SGRunOffperiod
+      _RL     SGRunOffconst
+      _RL     SGRunOff_inscal
+      _RL     SGRunOff_remov_intercept
+      _RL     SGRunOff_remov_slope
+      CHARACTER*(MAX_LEN_FNAM) SGRunOffFile
+      CHARACTER*1 SGRunOffmask
+
+      COMMON /ICEFRONT_EXF_PAR_I/
+     &       SGRunOffstartdate1, SGRunOffstartdate2
+      COMMON /ICEFRONT_EXF_PAR_R/
+     &       SGRunOffstartdate,  SGRunOffperiod,
+     &       SGRunOffconst,      SGRunOff_inscal,
+     &       SGRunOff_remov_intercept, SGRunOff_remov_slope
+      COMMON /ICEFRONT_EXF_PAR_C/
+     &       SGRunOffFile,  SGRunOffmask
+#endif /* ALLOW_EXF */
 
 #endif /* ALLOW_ICEFRONT */
