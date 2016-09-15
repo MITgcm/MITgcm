@@ -1,10 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.26 2013/10/05 19:36:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.27 2016/09/15 00:12:36 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
-#ifdef ALLOW_ICEFRONT
-# include "ICEFRONT_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: EXF_INIT_FIXED
@@ -27,9 +24,6 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
-#ifdef ALLOW_ICEFRONT
-# include "ICEFRONT.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -79,7 +73,6 @@ C     ' ' = no masking; 'c' = centered mask; 'w' = western mask; 's' = southern
       climsssmask  = 'c'
       climustrmask = 'w'
       climvstrmask = 's'
-      sgrunoffmask = 'c'
 
       IF ( useSEAICE ) THEN
 C     Avoid masking of vector fields with pkg/seaice (for B/C-grid interp.)
@@ -107,7 +100,6 @@ c      climsstmask  = ' '
 c      climsssmask  = ' '
        climustrmask = ' '
        climvstrmask = ' '
-c      sgrunoffmask = ' '
       ENDIF
 
 C--   Complete the start date specifications for the forcing
@@ -272,18 +264,6 @@ C     from the beginning of the year.
      I                          myThid )
       ENDIF
 #endif /* ALLOW_RUNOFF */
-
-#ifdef ALLOW_ICEFRONT
-      IF ( sgrunofffile .NE. ' ' .AND. sgrunoffperiod .GT. 0. ) THEN
-# ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START sgrunoff',myThid)
-# endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          sgrunoffstartdate1, sgrunoffstartdate2,
-     O                          sgrunoffstartdate,
-     I                          myThid )
-      ENDIF
-#endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_DOWNWARD_RADIATION
       IF ( swdownfile .NE. ' ' .AND. swdownperiod .GT. 0. ) THEN
@@ -457,7 +437,6 @@ C     from the beginning of the year.
 #ifdef USE_EXF_INTERPOLATION
 C--   For vector fields, set flag to interpolate the 2 components together
 C-    wind-stress:
-      IF ( .NOT.useAtmWind ) THEN
       uvInterp_stress = ustressfile.NE.' ' .AND. vstressfile.NE.' '
      &  .AND. ustress_interpMethod.GE.1 .AND. vstress_interpMethod.GE.1
       uvInterp_stress = uvInterp_stress
@@ -475,9 +454,7 @@ C-    wind-stress:
      &     .AND. ustress_lat_inc(j) .EQ. vstress_lat_inc(j)
         ENDDO
       ENDIF
-      ENDIF
 C-    wind:
-      IF ( useAtmWind ) THEN
       uvInterp_wind = uwindfile.NE.' ' .AND. vwindfile.NE.' '
      &  .AND. uwind_interpMethod.GE.1 .AND. vwind_interpMethod.GE.1
       uvInterp_wind = uvInterp_wind
@@ -494,7 +471,6 @@ C-    wind:
           uvInterp_wind = uvInterp_wind
      &     .AND. uwind_lat_inc(j) .EQ. vwind_lat_inc(j)
         ENDDO
-      ENDIF
       ENDIF
 C-    clim wind-stress:
       uvInterp_climstr = climustrfile.NE.' ' .AND. climvstrfile.NE.' '
