@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.35 2015/10/25 21:04:54 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adcommon.h,v 1.36 2016/09/17 19:26:55 heimbach Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -14,7 +14,7 @@ C--   heimbach@mit.edu 11-Jan-2001
      &                     adetan,
      &                     aduvel, advvel, adwvel,
      &                     adtheta, adsalt,
-     &                     adgu, adgv, adgt, adgs,
+     &                     adgu, adgv, 
 #ifdef ALLOW_ADAMSBASHFORTH_3
      &                     adgunm, adgvnm, adgtnm, adgsnm
 #else
