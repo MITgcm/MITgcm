@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.63 2014/05/21 21:48:32 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.64 2016/09/17 17:00:05 mmazloff Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -158,6 +158,9 @@ C--   passive tracer surface forcing:
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE surfaceForcingS = comlev1, key = ikey_dynamics,
 CADJ &    kind = isbyte
+#ifdef ALLOW_BLING
+CADJ STORE EmPmR = comlev1, key = ikey_dynamics,  kind = isbyte
+#endif
 #endif
       IF ( usePTRACERS ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
