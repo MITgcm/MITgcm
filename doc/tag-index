@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2267 2016/09/15 00:36:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2268 2016/09/19 18:56:46 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - interpolation near South Pole: fix criteria on input field latitude.
 o pkg/icefront & pkg/exf:
   - move setting of icefront Sub-Glacial RunOff forcing (currently unused)
     from pkg/exf (read from data.exf) to pkg/icefront (read from data.icefront)
