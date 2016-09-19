@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.34 2016/09/12 22:31:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.35 2016/09/19 18:55:42 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -141,14 +141,14 @@ C-    Add 2 row @ southern end; if one is beyond S.pole, put one @ S.pole
        j = 0
        IF ( ABS(y_in(j+1)).LT.yPole .AND. ABS(y_in(j)).GT.yPole ) THEN
          y_in(j) = -yPole
-         y_in(j-1) = -2.*yPole - y_in(1)
+         y_in(j-1) = -2.*yPole - y_in(j+1)
 #ifdef ALLOW_DEBUG
          prtPole(j)   = 1.
          prtPole(j-1) = 2.
 #endif
        ENDIF
        j = -1
-       IF ( ABS(y_in(j+1)).GT.yPole .AND. ABS(y_in(j)).GT.yPole ) THEN
+       IF ( ABS(y_in(j+1)).LT.yPole .AND. ABS(y_in(j)).GT.yPole ) THEN
          y_in(j) = -yPole
 #ifdef ALLOW_DEBUG
          prtPole(j)   = 1.
