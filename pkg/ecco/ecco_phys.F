@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.13 2015/12/25 15:32:38 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.14 2016/09/20 13:29:11 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -53,6 +53,9 @@ c- note defined with overlap here, not needed, but more efficient
       _RL trSaltW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL trSaltS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
+#ifdef ATMOSPHERIC_LOADING
+      _RL sIceLoadFac
+#endif
 #ifdef ALLOW_PSBAR_STERIC
       _RL RHOInSituLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL VOLsumTile(nSx,nSy),RHOsumTile(nSx,nSy)
@@ -116,6 +119,10 @@ c    &                       SQUEEZE_RIGHT, myThid )
 
 #endif
 
+#ifdef ATMOSPHERIC_LOADING
+      sIceLoadFac=zeroRL
+      IF ( useRealFreshWaterFlux ) sIceLoadFac=recip_rhoConst
+#endif
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -123,7 +130,9 @@ c    &                       SQUEEZE_RIGHT, myThid )
               do i =  imin,imax
                 m_eta(i,j,bi,bj)=
      &                 etan(i,j,bi,bj)
-     &                +sIceLoad(i,j,bi,bj)*recip_rhoConst
+#ifdef ATMOSPHERIC_LOADING
+     &                +sIceLoad(i,j,bi,bj)*sIceLoadFac
+#endif
 #ifdef ALLOW_PSBAR_STERIC
      &                +sterGloH
 #endif
@@ -278,6 +287,18 @@ c now summing
      &      *rA(i,j,bi,bj)
            areavolTile(bi,bj)=areavolTile(bi,bj)
      &       +tmpmsk*maskC(i,j,1,bi,bj)*rA(i,j,bi,bj)
+
+         elseif (gencost_barfile(kgen)(1:13).EQ.'m_horflux_vol') then
+          do k = 1,nr
+           gencost_storefld(i,j,bi,bj,kgen) =
+     &      gencost_storefld(i,j,bi,bj,kgen)
+     &      +uVel(i,j,k,bi,bj)*hFacW(i,j,k,bi,bj)*dyG(i,j,bi,bj)*drF(k)
+     &           *gencost_mskWsurf(i,j,bi,bj,kgen)
+     &           *gencost_mskVertical(k,kgen)
+     &      +vVel(i,j,k,bi,bj)*hFacS(i,j,k,bi,bj)*dxG(i,j,bi,bj)*drF(k)
+     &           *gencost_mskSsurf(i,j,bi,bj,kgen)
+     &           *gencost_mskVertical(k,kgen)
+          enddo
          endif
 
          enddo

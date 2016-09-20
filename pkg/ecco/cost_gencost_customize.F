@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.23 2015/11/18 15:30:17 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.24 2016/09/20 13:29:10 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -118,6 +118,9 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
            gencost_modfld(i,j,bi,bj,k) = 
      &      m_eta(i,j,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:9).EQ.'m_boxmean') then
+           gencost_modfld(i,j,bi,bj,k) = 
+     &      gencost_storefld(i,j,bi,bj,k)
+         elseif (gencost_barfile(k)(1:9).EQ.'m_horflux') then
            gencost_modfld(i,j,bi,bj,k) = 
      &      gencost_storefld(i,j,bi,bj,k)
          elseif (gencost_barfile(k)(1:5).EQ.'m_sst') then

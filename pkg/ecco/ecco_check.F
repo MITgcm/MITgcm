@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.36 2015/11/24 21:26:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.37 2016/09/20 13:29:11 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -366,44 +366,18 @@ c-- boxmean: require [err,bar]file, can have datafile, not checked here
 c-- also not checked for variwei at the moment
           elseif(gencost_flag(k) .eq. -3 ) then
            WRITE(msgBuf,'(A,i3,L5)')
-     &     'entering boxmean check,k,using_gencost(k): ,',
+     &     'entering boxmean/horflux check,k,using_gencost(k): ,',
      &     k,using_gencost(k)
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
-c-- check errfile
-           call ecco_zero(gencost_mskCsurf(1-olx,1-oly,1,1,k),
-     &          1,oneRL,mythid)
-           do k2 = 1,nr
-            gencost_mskVertical(k2,k)= 1. _d 0
-           enddo
-
-           if ( gencost_errfile(k) .NE. ' ' ) then
-c
-            il = ilnblnk(gencost_errfile(k))
-            write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'C'
-            inquire( file=tempfile(1:il+1), exist=exst )
-            if (exst) then
-             call mdsreadfield(tempfile,cost_iprec,'RL',1,
-     &            gencost_mskCsurf(1-olx,1-oly,1,1,k),1,mythid)
-            endif
-c
-            il = ilnblnk(gencost_errfile(k))
-            write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'K'
-            inquire( file=tempfile(1:il+1), exist=exst )
-            if (exst) then
-             ioUnit = 0
-             call MDS_READVEC_LOC(tempfile,cost_iprec,ioUnit,'RL',
-     &         nR, gencost_mskVertical(1,k), dummyRS, 0, 0, 1, myThid )
-            endif
-
-           endif!errfile
 
 c-- check barfile, make sure character m_[theta,salt] match exactly
 c-- (upper/lower-case matters) in cost_gencost_customize
            if (.not.( 
      &          (gencost_barfile(k)(1:15).EQ.'m_boxmean_theta').OR.
      &          (gencost_barfile(k)(1:13).EQ.'m_boxmean_eta').OR.
-     &          (gencost_barfile(k)(1:14).EQ.'m_boxmean_salt') 
+     &          (gencost_barfile(k)(1:14).EQ.'m_boxmean_salt').OR.
+     &          (gencost_barfile(k)(1:14).EQ.'m_horflux_vol')
      &        )) then
             using_gencost(k)=.FALSE.
             il=ilnblnk(gencost_barfile(k))
@@ -431,11 +405,6 @@ c-- not checked here. also not checked for variwei at the moment
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
 
-c-- check errfile[W,S]
-          call ecco_zero(gencost_mskWsurf(1-olx,1-oly,1,1,k),
-     &         1,zeroRL,mythid)
-          call ecco_zero(gencost_mskSsurf(1-olx,1-oly,1,1,k),
-     &         1,zeroRL,mythid)
           if ( gencost_errfile(k) .NE. ' ' ) then
 c-- West ----------------------
            il = ilnblnk(gencost_errfile(k))

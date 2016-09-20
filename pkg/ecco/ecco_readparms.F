@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.87 2015/11/12 13:22:14 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.88 2016/09/20 13:29:11 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -50,7 +50,10 @@ C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER k, k2, iUnit, num_file, num_var
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      INTEGER IL, gencost_k3d
+      INTEGER IL, gencost_k3d, ioUnit
+      CHARACTER*(128) tempfile
+      LOGICAL exst
+      _RS     dummyRS(1)
 #endif
 
 Catn-- retired parameters
@@ -546,14 +549,14 @@ c     =========================
 
       _BEGIN_MASTER( myThid )
       do k2=1,NGENPPROC
-       no_preproc(k2)   = ' '
-       no_preproc_c(k2) = ' '
-       no_preproc_i(k2) = 0
-       no_preproc_r(k2) = 0. _d 0
-       no_posproc(k2)   = ' '
-       no_posproc_c(k2) = ' '
-       no_posproc_i(k2) = 0
-       no_posproc_r(k2) = 0. _d 0
+       no_preproc(k2)     = ' '
+       no_preproc_c(k2)   = ' '
+       no_preproc_i(k2)   = 0
+       no_preproc_r(k2)   = 0. _d 0
+       no_posproc(k2)     = ' '
+       no_posproc_c(k2)   = ' '
+       no_posproc_i(k2)   = 0
+       no_posproc_r(k2)   = 0. _d 0
        clim_preproc(k2)   = ' '
        clim_preproc_i(k2) = 0
        anom_preproc(k2)   = ' '
@@ -572,7 +575,6 @@ c--   Set default values.
          using_gencost(k)      = .FALSE.
          gencost_flag(k)       = 0
          gencost_avgperiod(k)  = '     '
-         gencost_nrecperiod(k) = 0
          gencost_startdate1(k) = 0
          gencost_startdate2(k) = 0
          gencost_enddate1(k) = 0
@@ -590,7 +592,6 @@ c--   Set default values.
           gencost_posproc_r(k2,k) = 0. _d 0
          enddo
          gencost_outputlevel(k)= 0
-         gencost_scalefile(k)  = ' '
          gencost_errfile(k)    = ' '
          gencost_mask(k)       = 'c'
          gencost_barfile(k)    = ' '
@@ -598,10 +599,23 @@ c--   Set default values.
          gencost_spmax(k)      = 0. _d 0
          gencost_spzero(k)     = 9876. _d 0
          mult_gencost(k)       = 1. _d 0
-         gencost_smooth2Ddiffnbt(k) = 300
          gencost_is3d(k)       = .FALSE.
-         gencost_pointer3d(k)=0
-         gencost_timevaryweight(k) = .FALSE.
+         gencost_pointer3d(k)  = 0
+c boxmean/horflux masks
+         call ecco_zero(gencost_mskCsurf(1-olx,1-oly,1,1,k),
+     &          1,oneRL,mythid)
+         call ecco_zero(gencost_mskWsurf(1-olx,1-oly,1,1,k),
+     &          1,oneRL,mythid)
+         call ecco_zero(gencost_mskSsurf(1-olx,1-oly,1,1,k),
+     &          1,oneRL,mythid)
+         do k2 = 1,nr
+          gencost_mskVertical(k2,k)= 1. _d 0
+         enddo  
+c deprecated:
+        gencost_nrecperiod(k) = 0
+        gencost_scalefile(k)  = ' '
+        gencost_smooth2Ddiffnbt(k) = 300
+        gencost_timevaryweight(k)  = .FALSE.
       enddo
 
       READ(  iUnit, nml = ecco_gencost_nml )
@@ -631,13 +645,13 @@ c pre-specified generic cost terms using otherwise created barfiles
 catn move boxmean outside -1 to have its own check
 catn preserve -2 for potential separate group above into cost
 catn with and without requirements of datafile or errfile
-         elseif (gencost_name(k)(1:7).EQ.'boxmean') then
-           WRITE(msgBuf,'(A)') 'kboxmean'
+         elseif ( (gencost_barfile(k)(1:9).EQ.'m_boxmean').OR.
+     &            (gencost_barfile(k)(1:9).EQ.'m_horflux') ) then
            gencost_flag(k)=-3
            using_gencost(k)=.TRUE.
            il=ilnblnk(gencost_name(k))
-           WRITE(msgBuf,'(A,I3,2A,L5)') 'gencost k_boxmean=',
-     &     k,gencost_name(k)(1:il),': ',using_gencost(k)
+           WRITE(msgBuf,'(A,I3,3A,L5)') 'gencost k_boxmean/horflux=',
+     &     k,' ',gencost_name(k)(1:il),': ',using_gencost(k)
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
 
@@ -646,8 +660,8 @@ catn add cost global transport using gencost framework
            gencost_flag(k)=-4
            using_gencost(k)=.TRUE.
            il=ilnblnk(gencost_name(k))
-           WRITE(msgBuf,'(A,i2,2A,L5)') 'gencost k_transp=',
-     &     k,gencost_name(k)(1:il),': ',using_gencost(k)
+           WRITE(msgBuf,'(A,i3,3A,L5)') 'gencost k_transp=',
+     &     k,' ',gencost_name(k)(1:il),': ',using_gencost(k)
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
 
@@ -669,8 +683,10 @@ c identified three dimensional variables
      &        (gencost_barfile(k)(1:6).EQ.'m_salt').OR.
      &        (gencost_barfile(k)(1:8).EQ.'m_diffkr').OR.
      &        (gencost_barfile(k)(1:7).EQ.'m_kapgm').OR.
-     &        (gencost_barfile(k)(1:9).EQ.'m_kapredi')
-     &    .OR.(gencost_barfile(k)(1:4).EQ.'m_tr')
+     &        (gencost_barfile(k)(1:9).EQ.'m_kapredi').OR.
+     &        (gencost_barfile(k)(1:7).EQ.'m_trVol').OR.
+     &        (gencost_barfile(k)(1:9).EQ.'m_trHeat').OR.
+     &        (gencost_barfile(k)(1:9).EQ.'m_trSalt')
      &       )
      &        gencost_is3d(k)=.TRUE.
 
@@ -680,6 +696,47 @@ c assign a 3D storage array, then increment 3D variables counter
            gencost_k3d=gencost_k3d+1
          endif
 
+      enddo
+
+C--   load masks if needed:
+      do k=1,NGENCOST
+           if ( ( gencost_errfile(k) .NE. ' ' ).AND.
+     &          (gencost_flag(k).EQ.-3) ) then
+c
+            il = ilnblnk(gencost_errfile(k))
+            write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'C'
+            inquire( file=tempfile(1:il+1), exist=exst )
+            if (exst) then
+             call mdsreadfield(tempfile,cost_iprec,'RL',1,
+     &            gencost_mskCsurf(1-olx,1-oly,1,1,k),1,mythid)
+            endif
+c
+            il = ilnblnk(gencost_errfile(k))
+            write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'W'
+            inquire( file=tempfile(1:il+1), exist=exst )
+            if (exst) then
+             call mdsreadfield(tempfile,cost_iprec,'RL',1,
+     &            gencost_mskWsurf(1-olx,1-oly,1,1,k),1,mythid)
+            endif
+c
+            il = ilnblnk(gencost_errfile(k))
+            write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'S'
+            inquire( file=tempfile(1:il+1), exist=exst )
+            if (exst) then
+             call mdsreadfield(tempfile,cost_iprec,'RL',1,
+     &            gencost_mskSsurf(1-olx,1-oly,1,1,k),1,mythid)
+            endif
+c
+            il = ilnblnk(gencost_errfile(k))
+            write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'K'
+            inquire( file=tempfile(1:il+1), exist=exst )
+            if (exst) then
+             ioUnit = 0
+             call MDS_READVEC_LOC(tempfile,cost_iprec,ioUnit,'RL',
+     &         nR, gencost_mskVertical(1,k), dummyRS, 0, 0, 1, myThid )
+            endif
+c
+           endif!errfile
       enddo
 
 C--   Check parameters:
