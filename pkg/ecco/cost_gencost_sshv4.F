@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.34 2015/11/12 12:11:20 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.35 2016/09/20 15:27:54 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -156,6 +156,8 @@ c for PART 4/5: compute smooth/raw anomalies
       integer ndaysave
       _RL ndaysaveRL
 
+      integer k2, k2_mdt, k2_lsc
+
       character*(80) fname
       character*(80) fname4test
       character*(MAX_LEN_MBUF) msgbuf
@@ -196,6 +198,12 @@ c-- detect the relevant gencost indices
         if (gencost_name(k).EQ.'sshv4-gmsl') igen_gmsl=k
       enddo
 
+      k2_mdt=0
+      k2_lsc=0
+      do k2 = 1, NGENPPROC
+        if (gencost_posproc(k2,igen_mdt).EQ.'smooth') k2_mdt=k2
+        if (gencost_posproc(k2,igen_lsc).EQ.'smooth') k2_lsc=k2
+      enddo
 
       call ecco_zero(gencost_weight(:,:,1,1,igen_mdt),1,zeroRL,myThid)
       call ecco_zero(gencost_weight(:,:,1,1,igen_lsc),1,zeroRL,myThid)
@@ -459,10 +467,10 @@ c--   smooth mean_slaobs_mdt:
       endif
 
 #ifdef ALLOW_SMOOTH
-      if ( useSMOOTH )
+      if ( useSMOOTH.AND.(k2_mdt.GT.0) )
      &  call smooth_hetero2d(mean_slaobs_mdt,maskc,
-     &     gencost_scalefile(igen_mdt),
-     &     gencost_smooth2Ddiffnbt(igen_mdt),mythid)
+     &     gencost_posproc_c(k2_mdt,igen_mdt),
+     &     gencost_posproc_i(k2_mdt,igen_mdt),mythid)
 #endif
 
       if (gencost_outputlevel(igen_mdt).GT.0) then
@@ -803,10 +811,10 @@ c--    smooth mean_psMssh_all
       endif
 
 #ifdef ALLOW_SMOOTH
-      if ( useSMOOTH )
+      if ( useSMOOTH.AND.(k2_mdt.GT.0) )
      &  call smooth_hetero2d(mean_psMssh_all,maskc,
-     &     gencost_scalefile(igen_mdt),
-     &     gencost_smooth2Ddiffnbt(igen_mdt),mythid)
+     &     gencost_posproc_c(k2_mdt,igen_mdt),
+     &     gencost_posproc_i(k2_mdt,igen_mdt),mythid)
 #endif
 
       if (gencost_outputlevel(igen_mdt).GT.0) then
@@ -822,10 +830,10 @@ c--    smooth mean_psMssh_all
       endif
 
 #ifdef ALLOW_SMOOTH
-      if ( useSMOOTH )
+      if ( useSMOOTH.AND.(k2_mdt.GT.0) )
      &  call smooth_hetero2d(mean_slaobs_model,maskc,
-     &     gencost_scalefile(igen_mdt),
-     &     gencost_smooth2Ddiffnbt(igen_mdt),mythid)
+     &     gencost_posproc_c(k2_mdt,igen_mdt),
+     &     gencost_posproc_i(k2_mdt,igen_mdt),mythid)
 #endif
 
       if (gencost_outputlevel(igen_mdt).GT.0) then
@@ -1128,18 +1136,18 @@ c ----------------------------------------
       endif
 
 #ifdef ALLOW_SMOOTH
-      if ( useSMOOTH )
+      if ( useSMOOTH.AND.(k2_lsc.GT.0) )
      &  call smooth_hetero2d(anom_psMslaobs,maskc,
-     &     gencost_scalefile(igen_lsc),
-     &     gencost_smooth2Ddiffnbt(igen_lsc),mythid)
+     &     gencost_posproc_c(k2_lsc,igen_lsc),
+     &     gencost_posproc_i(k2_lsc,igen_lsc),mythid)
 #endif
 
       if (gencost_outputlevel(igen_lsc).GT.0) then
 #ifdef ALLOW_SMOOTH
-      if ( useSMOOTH )
+      if ( useSMOOTH.AND.(k2_lsc.GT.0) )
      &  call smooth_hetero2d(anom_slaobs,maskc,
-     &     gencost_scalefile(igen_lsc),
-     &     gencost_smooth2Ddiffnbt(igen_lsc),mythid)
+     &     gencost_posproc_c(k2_lsc,igen_lsc),
+     &     gencost_posproc_i(k2_lsc,igen_lsc),mythid)
 #endif
 c
       write(fname4test(1:80),'(1a)') 'sladiff_smooth'

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.14 2015/12/25 15:32:38 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sstv4.F,v 1.15 2016/09/20 15:27:54 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -74,6 +74,8 @@ c     == local variables ==
       integer ndaysave
       _RL ndaysaveRL
 
+      integer k2, k2_lsc
+
       character*(80) fname
       character*(80) fname2
 
@@ -120,9 +122,15 @@ c     == end of interface ==
 c-- detect the relevant gencost indices
       kgen=0
       kgen_lsc=0
+      k2_lsc=0
       do k=1,NGENCOST
-        if (gencost_name(k).EQ.'sstv4-amsre') kgen=k
-        if (gencost_name(k).EQ.'sstv4-amsre-lsc') kgen_lsc=k
+       if (gencost_name(k).EQ.'sstv4-amsre') kgen=k
+       if (gencost_name(k).EQ.'sstv4-amsre-lsc') then
+        kgen_lsc=k
+        do k2 = 1, NGENPPROC
+         if (gencost_posproc(k2,kgen_lsc).EQ.'smooth') k2_lsc=k2
+        enddo
+       endif
       enddo
 
       if (kgen.NE.0) then
@@ -290,16 +298,16 @@ c ----------------------------------------
      &     1,obs_sst,irec,1,mythid)
 #endif
 
-         if ( useSMOOTH )
+         if ( useSMOOTH.AND.(k2_lsc.GT.0) )
      &     call smooth_hetero2d(anom_sst,maskc,
-     &     gencost_scalefile(kgen_lsc),
-     &     gencost_smooth2Ddiffnbt(kgen_lsc),mythid)
+     &     gencost_posproc_c(k2_lsc,kgen_lsc),
+     &     gencost_posproc_i(k2_lsc,kgen_lsc),mythid)
 
 #ifdef ALLOW_GENCOST_SSTV4_OUTPUT
-         if ( useSMOOTH )
+         if ( useSMOOTH.AND.(k2_lsc.GT.0) )
      &     call smooth_hetero2d(obs_sst,maskc,
-     &     gencost_scalefile(kgen_lsc),
-     &     gencost_smooth2Ddiffnbt(kgen_lsc),mythid)
+     &     gencost_posproc_c(k2_lsc,kgen_lsc),
+     &     gencost_posproc_i(k2_lsc,kgen_lsc),mythid)
 
          write(fname2(1:80),'(1a)') 'sstdiff_smooth'
          call mdswritefield(fname2,32,.false.,'RL',
