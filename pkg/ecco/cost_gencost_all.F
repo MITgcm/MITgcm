@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.23 2015/11/12 13:22:44 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.24 2016/09/20 17:15:13 gforget Exp $
 C $Name:  $
 #include "ECCO_OPTIONS.h"
 
@@ -70,7 +70,7 @@ c     == end of interface ==
          endif
 
          nrecloc= gencost_nrec(k)
-         nrecperiodloc= gencost_nrecperiod(k)
+         nrecperiodloc= gencost_nrec(k)
 
          call cost_generic(
      &     nnzbar, gencost_barfile(k), gencost_dummy(k),

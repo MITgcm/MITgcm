@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.45 2015/10/27 02:37:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.46 2016/09/20 17:15:13 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -206,8 +206,6 @@ c--    set time averaging parameters
            STOP
      &      'ecco_cost_init_fixed: gencost_avgperiod wrongly specified'
          endif
-         if ( gencost_nrecperiod(k).EQ.0)
-     &     gencost_nrecperiod(k)=gencost_nrec(k)
        endif
 
 c--    set observation start/enddate

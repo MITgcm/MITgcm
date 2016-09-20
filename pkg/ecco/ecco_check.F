@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.37 2016/09/20 13:29:11 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.38 2016/09/20 17:15:13 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -74,9 +74,10 @@ c     == external functions ==
 
       _BEGIN_MASTER(myThid)
 
+c ============ retired compile option checks
+
         nRetired              =      0
 
-c-- check for retired compile options
 #ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
            WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
      &      'ALLOW_MEAN_HFLUX_COST_CONTRIBUTION has no',
@@ -221,26 +222,62 @@ c-- check for retired compile options
        STOP 'ABNORMAL END: S/R ECCO_CHECK'
       ENDIF
 
-#if (defined (ALLOW_TRANSPORT_COST_CONTRIBUTION) || \
-     defined (ALLOW_NEW_SSH_COST))
-      IF ( ndaysrec .GT. maxNumDays ) THEN
-       WRITE(msgBuf,'(2A,2I10)')
-     &        'ECCO_CHECK: for ALLOW_TRANSPORT_COST_CONTRIBUTION: ',
-     &        'ndaysrec > maxNumDays in ecco_cost.h ',
-     &        ndaysrec, maxNumDays
-       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+c ============ retired run-time parameter checks
+
+        nRetired              =      0
+
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+      do k=1,NGENCOST
+       IF (gencost_scalefile(k).NE.' ') THEN
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'gencost_scalefile has been retired; ',
+     &      'gencost_posproc_c should now be used instead'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
-       CALL PRINT_ERROR( msgBuf , myThid )
-       STOP 'ABNORMAL END: S/R ECCO_CHECK'
-      ENDIF
+           nRetired = nRetired + 1
+       ENDIF
+       IF (gencost_smooth2Ddiffnbt(k).NE.0) THEN
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'gencost_smooth2Ddiffnbt has been retired; ',
+     &      'gencost_posproc_i should now be used instead'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+           nRetired = nRetired + 1
+       ENDIF
+       IF (gencost_timevaryweight(k)) THEN
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'gencost_timevaryweight has been retired; ',
+     &      'gencost_posproc should now be used instead'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+           nRetired = nRetired + 1
+       ENDIF
+       IF (gencost_nrecperiod(k).NE.0) THEN
+           WRITE(msgBuf,'(3A)') '** WARNING ** ECCO_CHECK:',
+     &      'gencost_nrecperiod has been retired; ',
+     &      'gencost_posproc clim should now be used instead'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+           nRetired = nRetired + 1
+       ENDIF
+
+      ENDDO
 #endif
 
-cgf next line is only for backward compatibility
+      IF ( nRetired .GT. 0 ) THEN
+       WRITE(msgBuf,'(2A)') 'S/R ECCO_CHECK: ',
+     &  '  retired run-time options were found in data.ecco'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R ECCO_CHECK'
+      ENDIF
+
+c ============ backward compatibility checks
       IF ( (using_topex).AND.(.NOT.using_tpj) ) using_tpj=.TRUE.
 
       _END_MASTER(myThid)
 
-c check for missing data files
+c ============ check for missing data files
+
 #ifdef ALLOW_BP_COST_CONTRIBUTION
       CALL ECCO_CHECK_FILES( using_cost_bp,'bp',
      & bpdatfile, bpstartdate(1), myThid )
@@ -260,6 +297,24 @@ c check for missing data files
       CALL ECCO_CHECK_FILES( using_cost_scat,'scat',
      & scatydatfile, scatystartdate(1), myThid )
 #endif
+
+c ============ deprecated codes related checks
+
+#if (defined (ALLOW_TRANSPORT_COST_CONTRIBUTION) || \
+     defined (ALLOW_NEW_SSH_COST))
+      IF ( ndaysrec .GT. maxNumDays ) THEN
+       WRITE(msgBuf,'(2A,2I10)')
+     &        'ECCO_CHECK: for ALLOW_TRANSPORT_COST_CONTRIBUTION: ',
+     &        'ndaysrec > maxNumDays in ecco_cost.h ',
+     &        ndaysrec, maxNumDays
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+       CALL PRINT_ERROR( msgBuf , myThid )
+       STOP 'ABNORMAL END: S/R ECCO_CHECK'
+      ENDIF
+#endif
+
+c ============ generic cost function related checks
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       icount_transp=0
@@ -299,6 +354,7 @@ c--
            endif
 
 c altimetry related checks
+
          if (gencost_name(k).EQ.'sshv4-tp') using_tpj=using_gencost(k)
          if (gencost_name(k).EQ.'sshv4-ers') using_ers=using_gencost(k)
          if (gencost_name(k).EQ.'sshv4-gfo') using_gfo=using_gencost(k)

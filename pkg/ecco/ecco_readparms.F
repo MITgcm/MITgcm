@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.88 2016/09/20 13:29:11 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.89 2016/09/20 17:15:13 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -614,7 +614,7 @@ c boxmean/horflux masks
 c deprecated:
         gencost_nrecperiod(k) = 0
         gencost_scalefile(k)  = ' '
-        gencost_smooth2Ddiffnbt(k) = 300
+        gencost_smooth2Ddiffnbt(k) = 0
         gencost_timevaryweight(k)  = .FALSE.
       enddo
 
