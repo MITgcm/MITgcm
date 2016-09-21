@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort_ollie,v 1.2 2016/06/21 13:29:22 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort_ollie,v 1.3 2016/09/21 14:05:43 mlosch Exp $
 #  $Name:  $
 #
 # derived from linux_amd64_ifort, tested on ollie.awi.de (CRAY CS400)
@@ -39,7 +39,7 @@ CPP='cpp -traditional -P'
 F90FIXEDFORMAT='-fixed -Tf'
 EXTENDED_SRC_FLAG='-132'
 GET_FC_VERSION="--version"
-OMPFLAG='-openmp'
+OMPFLAG='-qopenmp'
 
 NOOPTFLAGS='-O0'
 NOOPTFILES=''
