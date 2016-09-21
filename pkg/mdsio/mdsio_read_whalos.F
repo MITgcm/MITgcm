@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_whalos.F,v 1.7 2011/06/23 22:11:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_whalos.F,v 1.8 2016/09/21 01:52:20 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -90,6 +90,17 @@ C     gloNyWh :: global sum of sNyWh
       integer i,j,k,bi,bj,ii
       integer dUnit, irec2d
       LOGICAL iAmDoingIO
+cph(
+#ifdef INTEL_COMMITQQ
+cph   Fix on Pleiades following model crashes on disk /nobackupnfs2/
+cph   reported by Yoshihiro.Nakayama@jpl.nasa.gov
+cph forrtl: Device or resource busy
+cph forrtl: severe (39): error during read, unit 1001, file
+cph   Workaround by NAS engineer Sherry.Chang@nasa.gov
+      logical results, commitqq
+#endif
+cph)
+
 
       _RL fld2d(1:sNxWh,1:sNyWh,nSx,nSy)
 
@@ -138,6 +149,12 @@ c get the unit and open file
       ENDIF
       ENDIF
 
+cph(
+cph   NAS Pleiades fix here:
+#ifdef INTEL_COMMITQQ
+      results = commitqq(dUnit)
+#endif
+cph)
 
       do i2d=1,n2d
 
