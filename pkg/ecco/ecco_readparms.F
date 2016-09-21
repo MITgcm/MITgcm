@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.89 2016/09/20 17:15:13 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.90 2016/09/21 12:55:31 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -593,7 +593,7 @@ c--   Set default values.
          enddo
          gencost_outputlevel(k)= 0
          gencost_errfile(k)    = ' '
-         gencost_mask(k)       = 'c'
+         gencost_mask(k)       = ' '
          gencost_barfile(k)    = ' '
          gencost_spmin(k)      = 0. _d 0
          gencost_spmax(k)      = 0. _d 0
@@ -603,11 +603,11 @@ c--   Set default values.
          gencost_pointer3d(k)  = 0
 c boxmean/horflux masks
          call ecco_zero(gencost_mskCsurf(1-olx,1-oly,1,1,k),
-     &          1,oneRL,mythid)
+     &          1,zeroRL,mythid)
          call ecco_zero(gencost_mskWsurf(1-olx,1-oly,1,1,k),
-     &          1,oneRL,mythid)
+     &          1,zeroRL,mythid)
          call ecco_zero(gencost_mskSsurf(1-olx,1-oly,1,1,k),
-     &          1,oneRL,mythid)
+     &          1,zeroRL,mythid)
          do k2 = 1,nr
           gencost_mskVertical(k2,k)= 1. _d 0
          enddo  
@@ -700,35 +700,35 @@ c assign a 3D storage array, then increment 3D variables counter
 
 C--   load masks if needed:
       do k=1,NGENCOST
-           if ( ( gencost_errfile(k) .NE. ' ' ).AND.
+           if ( ( gencost_mask(k) .NE. ' ' ).AND.
      &          (gencost_flag(k).EQ.-3) ) then
 c
-            il = ilnblnk(gencost_errfile(k))
-            write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'C'
+            il = ilnblnk(gencost_mask(k))
+            write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'C'
             inquire( file=tempfile(1:il+1), exist=exst )
             if (exst) then
              call mdsreadfield(tempfile,cost_iprec,'RL',1,
      &            gencost_mskCsurf(1-olx,1-oly,1,1,k),1,mythid)
             endif
 c
-            il = ilnblnk(gencost_errfile(k))
-            write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'W'
+            il = ilnblnk(gencost_mask(k))
+            write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'W'
             inquire( file=tempfile(1:il+1), exist=exst )
             if (exst) then
              call mdsreadfield(tempfile,cost_iprec,'RL',1,
      &            gencost_mskWsurf(1-olx,1-oly,1,1,k),1,mythid)
             endif
 c
-            il = ilnblnk(gencost_errfile(k))
-            write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'S'
+            il = ilnblnk(gencost_mask(k))
+            write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'S'
             inquire( file=tempfile(1:il+1), exist=exst )
             if (exst) then
              call mdsreadfield(tempfile,cost_iprec,'RL',1,
      &            gencost_mskSsurf(1-olx,1-oly,1,1,k),1,mythid)
             endif
 c
-            il = ilnblnk(gencost_errfile(k))
-            write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'K'
+            il = ilnblnk(gencost_mask(k))
+            write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'K'
             inquire( file=tempfile(1:il+1), exist=exst )
             if (exst) then
              ioUnit = 0

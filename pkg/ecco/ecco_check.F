@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.38 2016/09/20 17:15:13 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.39 2016/09/21 12:55:31 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -426,6 +426,70 @@ c-- also not checked for variwei at the moment
      &     k,using_gencost(k)
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
+
+            if(gencost_errfile(k) .ne. ' ') then
+              WRITE(msgBuf,'(3A)') 'S/R ECCO_CHECK: boxmean now ',
+     &          ' uses gencost_mask instead of gencost_errfile --',
+     &          ' please update data.ecco accordingly'
+              CALL PRINT_ERROR( msgBuf, myThid )
+              STOP 'ABNORMAL END: S/R ECCO_CHECK'
+            endif
+
+            if(gencost_mask(k) .eq. ' ') then
+              using_gencost(k)=.FALSE.
+              il = ilnblnk(gencost_name(k))
+              WRITE(msgBuf,'(4A)')
+     &          '** WARNING ** ECCO_CHECK_FILES: gencost_mask is',
+     &          ' undefined so ',gencost_name(k)(1:il),
+     &          ' gets switched off'
+              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                   SQUEEZE_RIGHT , myThid)
+            endif
+
+            if ((gencost_mask(k) .ne. ' ').AND.
+     &          (gencost_barfile(k)(1:9).EQ.'m_boxmean')) then
+             il = ilnblnk(gencost_mask(k))
+             write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'C'
+             inquire( file=tempfile(1:il+1), exist=exst )
+             if (.NOT.exst) then
+               using_gencost(k)=.FALSE.
+               il = ilnblnk(gencost_name(k))
+               WRITE(msgBuf,'(4A)')
+     &           '** WARNING ** ECCO_CHECK_FILES: missing mask C file',
+     &           ' so ',gencost_name(k)(1:il),' gets switched off'
+               CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+             endif
+            endif
+
+            if ((gencost_mask(k) .ne. ' ').AND.
+     &          (gencost_barfile(k)(1:9).EQ.'m_horflux')) then
+             il = ilnblnk(gencost_mask(k))
+             write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'W'
+             inquire( file=tempfile(1:il+1), exist=exst )
+             if (.NOT.exst) then
+               using_gencost(k)=.FALSE.
+               il = ilnblnk(gencost_name(k))
+               WRITE(msgBuf,'(4A)')
+     &           '** WARNING ** ECCO_CHECK_FILES: missing mask W file',
+     &           ' so ',gencost_name(k)(1:il),' gets switched off'
+               CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+             endif
+c
+             il = ilnblnk(gencost_mask(k))
+             write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'S'
+             inquire( file=tempfile(1:il+1), exist=exst )
+             if (.NOT.exst) then
+               using_gencost(k)=.FALSE.
+               il = ilnblnk(gencost_name(k))
+               WRITE(msgBuf,'(4A)')
+     &           '** WARNING ** ECCO_CHECK_FILES: missing mask S file',
+     &           ' so ',gencost_name(k)(1:il),' gets switched off'
+               CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)
+             endif
+            endif
 
 c-- check barfile, make sure character m_[theta,salt] match exactly
 c-- (upper/lower-case matters) in cost_gencost_customize

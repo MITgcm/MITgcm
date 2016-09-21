@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.14 2016/09/20 13:29:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.15 2016/09/21 12:55:31 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -119,10 +119,10 @@ c read bar field
         enddo
       enddo
 
-      il = ilnblnk(gencost_errfile(kgen))
-      write(tempfile(1:128),'(2A)') gencost_errfile(kgen)(1:il),'T'
+      il = ilnblnk(gencost_mask(kgen))
+      write(tempfile(1:128),'(2A)') gencost_mask(kgen)(1:il),'T'
       inquire( file=tempfile(1:il+1), exist=exst )
-      if ( (.NOT.exst).OR.(gencost_errfile(kgen).EQ.' ') ) then
+      if ( (.NOT.exst).OR.(gencost_mask(kgen).EQ.' ') ) then
        gencost_mskTemporal=nrecloc
        gencost_mskTemporal=1. _d 0 / gencost_mskTemporal
       else

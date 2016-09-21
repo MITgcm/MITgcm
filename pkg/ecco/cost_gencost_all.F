@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.24 2016/09/20 17:15:13 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.25 2016/09/21 12:55:31 gforget Exp $
 C $Name:  $
 #include "ECCO_OPTIONS.h"
 
@@ -76,7 +76,7 @@ c     == end of interface ==
      &     nnzbar, gencost_barfile(k), gencost_dummy(k),
      &     nnzobs, gencost_datafile(k), gencost_errfile(k),
      &     mult_gencost(k), nrecloc, nrecperiodloc,
-     &     gencost_startdate(1,k), gencost_period(k), gencost_mask(k),
+     &     gencost_startdate(1,k), gencost_period(k), 'c',
      &     gencost_spmin(k), gencost_spmax(k), gencost_spzero(k),
      &     gencost_preproc(1,k), gencost_preproc_c(1,k),
      &     gencost_preproc_i(1,k), gencost_preproc_r(1,k),

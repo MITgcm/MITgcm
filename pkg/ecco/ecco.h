@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.21 2015/11/19 20:32:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.22 2016/09/21 12:55:31 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -314,7 +314,7 @@ c     objf_gencost - gencost user defined contribution
       character*(MAX_LEN_FNAM) gencost_posproc_c(NGENPPROC,NGENCOST)
       character*(MAX_LEN_FNAM) gencost_posproc(NGENPPROC,NGENCOST)
       character*(MAX_LEN_FNAM) gencost_preproc_c(NGENPPROC,NGENCOST)
-      character*(1)            gencost_mask(NGENCOST)
+      character*(MAX_LEN_FNAM) gencost_mask(NGENCOST)
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
