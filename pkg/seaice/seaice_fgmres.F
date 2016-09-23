@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.19 2016/01/28 16:16:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.20 2016/09/23 07:15:09 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -334,23 +334,25 @@ C-----------------------------------------------------------------------
 C     local variables -- !jfl modif
       integer imax
       parameter ( imax = 50 )
-      _RL hh(4*imax+1,4*imax),c(4*imax),s(4*imax)
-      _RL rs(4*imax+1),t,ro
+      _RL hh(4*imax+1,4*imax,nSx,nSy)
+      _RL c(4*imax,nSx,nSy),s(4*imax,nSx,nSy)
+      _RL rs(4*imax+1,nSx,nSy),t,ro
+      _RL rsAux(nSx,nSy)
 C-------------------------------------------------------------
 C     arnoldi size should not exceed 50 in this version..
 C-------------------------------------------------------------
       integer i1, ii, j, jj, k, k1!, n1
       integer bi, bj
-      _RL r0, gam, epsmac, eps1
+      _RL r0, gam, eps1
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 CEOP
 CML      save
 C     local common block to replace the save statement
       COMMON /SEAICE_FMRES_LOC_I/ i1
-      COMMON /SEAICE_FMRES_LOC_RL/ 
-     &     hh, c, s, rs, t, ro, r0, gam, epsmac, eps1
-      data epsmac/1.d-16/
+      COMMON /SEAICE_FMRES_LOC_RL/ hh, c, s, rs, eps1
+      _RL epsmac
+      parameter ( epsmac =  1.d-16 )
 C
 C     computed goto
 C
@@ -408,7 +410,11 @@ C           print *,'chau',its, ro !write(iout, 199) its, ro
 C
 C     initialize 1-st term  of rhs of hessenberg system..
 C
-      rs(1) = ro
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
+        rs(1,bi,bj) = ro
+       enddo
+      enddo
       i = 0
  4    continue
       i=i+1
@@ -469,13 +475,17 @@ C
       do j=1, i
 CML    t = ddot(n, vv(1,j), 1, vv(1,i1), 1) !jfl modification
        call SEAICE_SCALPROD(n, im+1, j, i1, vv, vv, t, myThid)
-       hh(j,i) = t
+       do bj=myByLo(myThid),myByHi(myThid)
+        do bi=myBxLo(myThid),myBxHi(myThid)
+         hh(j,i,bi,bj) = t
+CML        enddo
+CML       enddo
 CML    call daxpy(n, -t, vv(1,j), 1, vv(1,i1), 1) !jfl modification
 CML   enddo
 CML   do j=1, i
-CML    t = hh(j,i)
-       do bj=myByLo(myThid),myByHi(myThid)
-        do bi=myBxLo(myThid),myBxHi(myThid)
+CML       do bj=myByLo(myThid),myByHi(myThid)
+CML        do bi=myBxLo(myThid),myBxHi(myThid)
+CML    t = hh(j,i,bi,bj)
          do k=1,n
           vv(k,i1,bi,bj) = vv(k,i1,bi,bj) - t*vv(k,j,bi,bj)
          enddo
@@ -485,7 +495,11 @@ CML    t = hh(j,i)
 CML   t = sqrt(ddot(n, vv(1,i1), 1, vv(1,i1), 1)) !jfl modification
       call SEAICE_SCALPROD(n, im+1, i1, i1, vv, vv, t, myThid)
       t = sqrt(t)
-      hh(i1,i) = t
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
+        hh(i1,i,bi,bj) = t
+       enddo
+      enddo
       if (t .ne. 0.0 _d 0) then
        t = 1.0 _d 0 / t
        do bj=myByLo(myThid),myByHi(myThid)
@@ -497,47 +511,63 @@ CML   t = sqrt(ddot(n, vv(1,i1), 1, vv(1,i1), 1)) !jfl modification
        enddo
       endif
 C
-C     done with modified gram schimd and arnoldi step.
+C     done with modified gram schmidt and arnoldi step.
 C     now  update factorization of hh
 C
-      if (i .ne. 1) then
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
+        if (i .ne. 1) then
 C
 C     perfrom previous transformations  on i-th column of h
 C
-       do k=2,i
-        k1 = k-1
-        t = hh(k1,i)
-        hh(k1,i) = c(k1)*t + s(k1)*hh(k,i)
-        hh(k,i) = -s(k1)*t + c(k1)*hh(k,i)
-       enddo
-      endif
-      gam = sqrt(hh(i,i)**2 + hh(i1,i)**2)
-      if (gam .eq. 0.0 _d 0) gam = epsmac
+         do k=2,i
+          k1 = k-1
+          t = hh(k1,i,bi,bj)
+          hh(k1,i,bi,bj) = c(k1,bi,bj)*t+s(k1,bi,bj)*hh(k,i,bi,bj)
+          hh(k,i,bi,bj) = -s(k1,bi,bj)*t+c(k1,bi,bj)*hh(k,i,bi,bj)
+         enddo
+        endif
+        gam = sqrt(hh(i,i,bi,bj)**2 + hh(i1,i,bi,bj)**2)
+        if (gam .eq. 0.0 _d 0) gam = epsmac
 C-----------#determine next plane rotation  #-------------------
-      c(i)   = hh(i,i)/gam
-      s(i)   = hh(i1,i)/gam
+        c(i,bi,bj)   = hh(i, i,bi,bj)/gam
+        s(i,bi,bj)   = hh(i1,i,bi,bj)/gam
 C     numerically more stable Givens rotation, but the results
 C     are not better
-CML      c(i)=1. _d 0
-CML      s(i)=0. _d 0
-CML      if ( abs(hh(i1,i)) .gt. 0.0 _d 0) then
-CML       if ( abs(hh(i1,i)) .gt. abs(hh(i,i)) ) then
-CML        gam = hh(i,i)/hh(i1,i)
-CML        s(i) = 1./sqrt(1.+gam*gam)
-CML        c(i) = s(i)*gam
-CML       else
-CML        gam = hh(i1,i)/hh(i,i)
-CML        c(i) = 1./sqrt(1.+gam*gam)
-CML        s(i) = c(i)*gam
-CML       endif
-CML      endif
-      rs(i1) = -s(i)*rs(i)
-      rs(i)  =  c(i)*rs(i)
+CML        c(i,bi,bj)=1. _d 0
+CML        s(i,bi,bj)=0. _d 0
+CML        if ( abs(hh(i1(bi,bj,bi,bj),i)) .gt. 0.0 _d 0) then
+CML         if ( abs(hh(i1,i,bi,bj)) .gt. abs(hh(i,i,bi,bj)) ) then
+CML          gam = hh(i,i,bi,bj)/hh(i1,i,bi,bj)
+CML          s(i,bi,bj) = 1./sqrt(1.+gam*gam)
+CML          c(i,bi,bj) = s(i,bi,bj)*gam
+CML         else
+CML          gam = hh(i1,i,bi,bj)/hh(i,i,bi,bj)
+CML          c(i,bi,bj) = 1./sqrt(1.+gam*gam)
+CML          s(i,bi,bj) = c(i,bi,bj)*gam
+CML         endif
+CML        endif
+        rs(i1,bi,bj) = -s(i,bi,bj)*rs(i,bi,bj)
+        rs(i ,bi,bj) =  c(i,bi,bj)*rs(i,bi,bj)
 C
 C     determine res. norm. and test for convergence
 C
-      hh(i,i) = c(i)*hh(i,i) + s(i)*hh(i1,i)
-      ro = abs(rs(i1))
+        hh(i,i,bi,bj) = c(i,bi,bj)*hh(i, i,bi,bj) 
+     &       +          s(i,bi,bj)*hh(i1,i,bi,bj)
+       enddo
+      enddo
+CML   replacing
+CML   ro = abs(rs(i1))
+C     need to copy rs(i1,:,:) to 2D array because global_sum_tile_rl
+C     cannot take anything else.
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
+        rsAux(bi,bj) = rs(i1,bi,bj)
+       enddo
+      enddo
+      CALL GLOBAL_SUM_TILE_RL( rsAux,ro,myThid )
+C     I am not sure, if this is correct, but it produces the correct results
+      ro = abs(ro/(nSy*nPy*nSx*nPx))
       if (iout .gt. 0) then
        _BEGIN_MASTER( myThid )
        write(msgBuf, 199) its, ro
@@ -552,27 +582,30 @@ CML      if (i .lt. im .and. (ro .gt. eps1))  goto 4
 C
 C     now compute solution. first solve upper triangular system.
 C
-      rs(i) = rs(i)/hh(i,i)
-      do ii=2,i
-       k=i-ii+1
-       k1 = k+1
-       t=rs(k)
-       do j=k1,i
-        t = t-hh(k,j)*rs(j)
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
+        rs(i,bi,bj) = rs(i,bi,bj)/hh(i,i,bi,bj)
+        do ii=2,i
+         k=i-ii+1
+         k1 = k+1
+         t=rs(k,bi,bj)
+         do j=k1,i
+          t = t-hh(k,j,bi,bj)*rs(j,bi,bj)
+         enddo
+         rs(k,bi,bj) = t/hh(k,k,bi,bj)
+        enddo
        enddo
-       rs(k) = t/hh(k,k)
       enddo
 C
 C     done with back substitution..
 C     now form linear combination to get solution
 C
       do j=1, i
-       t = rs(j)
 CML    call daxpy(n, t, w(1,j), 1, sol,1) !jfl modification
        do bj=myByLo(myThid),myByHi(myThid)
         do bi=myBxLo(myThid),myBxHi(myThid)
          do k=1,n
-          sol(k,bi,bj) = sol(k,bi,bj) + t*w(k,j,bi,bj)
+          sol(k,bi,bj) = sol(k,bi,bj) + rs(j,bi,bj)*w(k,j,bi,bj)
          enddo
         enddo
        enddo
@@ -586,17 +619,17 @@ C     else compute residual vector and continue..
 C
 C       goto 10
 
-      do j=1,i
-       jj = i1-j+1
-       rs(jj-1) = -s(jj-1)*rs(jj)
-       rs(jj) = c(jj-1)*rs(jj)
-      enddo
-      do j=1,i1
-       t = rs(j)
-       if (j .eq. 1)  t = t-1.0 _d 0
+      do bj=myByLo(myThid),myByHi(myThid)
+       do bi=myBxLo(myThid),myBxHi(myThid)
+        do j=1,i
+         jj = i1-j+1
+         rs(jj-1,bi,bj) = -s(jj-1,bi,bj)*rs(jj,bi,bj)
+         rs(jj  ,bi,bj) =  c(jj-1,bi,bj)*rs(jj,bi,bj)
+        enddo
+        do j=1,i1
+         t = rs(j,bi,bj)
+         if (j .eq. 1)  t = t - 1.0 _d 0
 CML    call daxpy (n, t, vv(1,j), 1,  vv, 1)
-       do bj=myByLo(myThid),myByHi(myThid)
-        do bi=myBxLo(myThid),myBxHi(myThid)
          do k=1,n
           vv(k,1,bi,bj) = vv(k,1,bi,bj) + t*vv(k,j,bi,bj)
          enddo
