@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2271 2016/09/23 18:51:43 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2272 2016/09/26 08:22:16 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: fix multithreading for seaice_fgmres.F 
+  - remove unecessary variables from common blocks
+  - use extra dimension MAX_NO_THREADS for all variables of the Krylov
+    space basis, that are stored in commom blocks (including integer
+    variable i1)
+  - clean up code a little by removing commented lines that refer to 
+    original code
 o MITgcm manual:
  - add uptodate pkg/ecco documentation to the manual (section 8.1; 
    ecco.tex), preliminary documentation for generic controls (8.3;
