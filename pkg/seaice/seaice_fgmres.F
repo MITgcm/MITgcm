@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.21 2016/09/26 08:20:41 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.22 2016/09/27 05:34:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -342,7 +342,7 @@ C-------------------------------------------------------------
       integer i1Thid(MAX_NO_THREADS)
       integer i1, ii, j, jj, k, k1!, n1
       integer bi, bj
-      _RL r0, gam, eps1
+      _RL r0, gam, eps1(MAX_NO_THREADS)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 CEOP
@@ -391,7 +391,7 @@ C 10   continue
         enddo
        enddo
       enddo
-      if (its .eq. 0) eps1=eps
+      if (its .eq. 0) eps1(myThid)=eps
 C     not sure what this is, r0 is never used again
       if (its .eq. 0) r0 = ro
       if (iout .gt. 0) then
@@ -538,8 +538,9 @@ C
       endif
 CML   The original code uses only im as the maximum allowed iterations, but
 CML   I want no more than maxits iterations, so we change the code here.
-CML      if (i .lt. im .and. (ro .gt. eps1))  goto 4
-      if (i .lt. im .and. its .lt. maxits .and. (ro .gt. eps1)) goto 4
+CML      if (i .lt. im .and. (ro .gt. eps1(myThid)))  goto 4
+      if (i .lt. im .and. its .lt. maxits 
+     &     .and. (ro .gt. eps1(myThid))) goto 4
 C
 C     now compute solution. first solve upper triangular system.
 C
@@ -570,7 +571,7 @@ C
 C
 C     test for return
 C
-      if (ro .le. eps1 .or. its .ge. maxits) goto 999
+      if (ro .le. eps1(myThid) .or. its .ge. maxits) goto 999
 C
 C     else compute residual vector and continue..
 C
