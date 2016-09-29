@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_pentadiagonal.F,v 1.11 2014/08/14 16:49:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_pentadiagonal.F,v 1.12 2016/09/29 13:02:13 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -71,7 +71,6 @@ C     == Local variables ==
       _RL d5d_prime(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL e5d_prime(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL y5d_prime(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL y5d_update(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 # endif
 #endif /* SOLVE_DIAGONAL_LOWMEMORY */
 CEOP
@@ -168,18 +167,15 @@ C-      end if k= .. ; end of k loop
 
 #else /* ndef SOLVE_DIAGONAL_LOWMEMORY */
 
+#ifdef SOLVE_DIAGONAL_KINNER
 C--   Temporary array
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-c      DO j=jMin,jMax
-c       DO i=iMin,iMax
          y5d_m1(i,j,k) = y5d(i,j,k)
         ENDDO
        ENDDO
       ENDDO
-
-#ifdef SOLVE_DIAGONAL_KINNER
 
 C--   Main loop
       DO j=1-OLy,sNy+OLy
@@ -260,45 +256,42 @@ C--   Update array
          y5d(i,j,k) = y5d_update(k)
         ENDDO
 
-C-- i,j loop
+C-    end i,j loop
        ENDDO
       ENDDO
 
 #else  /* ndef SOLVE_DIAGONAL_KINNER */
 
-C--   Init.
+C--   Init. + copy to temp. array
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-c      DO j=jMin,jMax
-c       DO i=iMin,iMax
          c5d_prime(i,j,k) = 0. _d 0
          d5d_prime(i,j,k) = 0. _d 0
          e5d_prime(i,j,k) = 0. _d 0
          y5d_prime(i,j,k) = 0. _d 0
-         y5d_update(i,j,k) = 0. _d 0
+         y5d_m1(i,j,k) = y5d(i,j,k)
         ENDDO
        ENDDO
       ENDDO
 
 CADJ loop = sequential
       DO k=1,Nr
-C--   forward sweep (starting from top)
+C--   Forward sweep (starting from top)
 
-C--   Main loop
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
 c      DO j=jMin,jMax
 c       DO i=iMin,iMax
 
           IF (k.EQ.1) THEN
-c just copy terms
+C-    just copy terms
            c5d_prime(i,j,k) = c5d(i,j,k)
            d5d_prime(i,j,k) = d5d(i,j,k)
            e5d_prime(i,j,k) = e5d(i,j,k)
            y5d_prime(i,j,k) = y5d_m1(i,j,k)
           ELSEIF (k.EQ.2) THEN
-c subtract one term
+C-    subtract one term
            c5d_prime(i,j,k) = c5d(i,j,k)
      &      -b5d(i,j,k)*d5d_prime(i,j,k-1)
            d5d_prime(i,j,k) = d5d(i,j,k)
@@ -307,7 +300,7 @@ c subtract one term
            y5d_prime(i,j,k) = y5d_m1(i,j,k)
      &      -b5d(i,j,k)*y5d_prime(i,j,k-1)
           ELSE
-c subtract two terms
+C-    subtract two terms
            c5d_prime(i,j,k) = c5d(i,j,k)
      &      -a5d(i,j,k)*e5d_prime(i,j,k-2)
      &      -(b5d(i,j,k)-a5d(i,j,k)*d5d_prime(i,j,k-2))
@@ -322,7 +315,7 @@ c subtract two terms
      &      *y5d_prime(i,j,k-1)
           ENDIF
 
-c normalization
+C-    normalization
           tmpVar = c5d_prime(i,j,k)
           IF ( tmpVar.NE.0. _d 0 ) THEN
            recVar = 1. _d 0 / tmpVar
@@ -339,7 +332,7 @@ c normalization
         ENDDO
        ENDDO
 
-c-- k-loop
+C-    end k-loop
       ENDDO
 
 CADJ loop = sequential
@@ -350,29 +343,18 @@ C--   Backward sweep (starting from bottom)
 c      DO j=jMin,jMax
 c       DO i=iMin,iMax
          IF (k.EQ.Nr) THEN
-          y5d_update(i,j,k) =   y5d_prime(i,j,k)
+          y5d(i,j,k) =    y5d_prime(i,j,k)
          ELSEIF (k.EQ.Nr-1) THEN
-          y5d_update(i,j,k) =   y5d_prime(i,j,k)
-     &     - y5d_update(i,j,k+1)*d5d_prime(i,j,k)
+          y5d(i,j,k) =    y5d_prime(i,j,k)
+     &     - y5d(i,j,k+1)*d5d_prime(i,j,k)
          ELSE
-          y5d_update(i,j,k) =   y5d_prime(i,j,k)
-     &     - y5d_update(i,j,k+1)*d5d_prime(i,j,k)
-     &     - y5d_update(i,j,k+2)*e5d_prime(i,j,k)
+          y5d(i,j,k) =    y5d_prime(i,j,k)
+     &     - y5d(i,j,k+1)*d5d_prime(i,j,k)
+     &     - y5d(i,j,k+2)*e5d_prime(i,j,k)
          ENDIF
         ENDDO
        ENDDO
-c-- k-loop
-      ENDDO
-
-C--   Update array
-      DO k=1,Nr
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-c      DO j=jMin,jMax
-c       DO i=iMin,iMax
-         y5d(i,j,k) = y5d_update(i,j,k)
-        ENDDO
-       ENDDO
+C-    end k-loop
       ENDDO
 
 #endif /* SOLVE_DIAGONAL_KINNER */
