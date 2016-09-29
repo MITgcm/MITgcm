@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.30 2016/09/27 20:34:31 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.31 2016/09/29 20:52:10 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
@@ -170,9 +170,6 @@ do
         ( cd verification ;  $cmdCVS co -P -d $exp2add \
              MITgcm_contrib/verification_other/$exp2add > /dev/null )
         if test $exp2add = 'global_oce_cs32' ; then
-          echo " link dir 'other_input/gael_oce_cs32_input' to 'input_fields'"
-          ( cd verification/${exp2add}
-            ln -s ../../../other_input/gael_oce_cs32_input input_fields )
           echo " link dir 'other_input/core2_cnyf' in here"
           ( cd verification/${exp2add}
             ln -s ../../../other_input/core2_cnyf . )
