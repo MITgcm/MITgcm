@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_remineralization.F,v 1.4 2016/09/12 20:00:28 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_remineralization.F,v 1.5 2016/10/03 03:11:21 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -140,13 +140,14 @@ C$TAF LOOP = parallel
 C$TAF LOOP = parallel
         DO i=imin,imax
 
+        DO k=1,Nr
+
 C  Initialize upper flux
         PONflux_u            = 0. _d 0
         POPflux_u            = 0. _d 0
         PFEflux_u            = 0. _d 0
         CaCO3flux_u          = 0. _d 0
-
-        DO k=1,Nr
+        Fe_ads_org(i,j,k)    = 0. _d 0
 
 C ARE WE ON THE BOTTOM
          bttmlyr = 1
