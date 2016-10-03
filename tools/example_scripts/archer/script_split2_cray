@@ -1,0 +1,99 @@
+#PBS -S /bin/csh
+#PBS -N Report_2C
+#PBS -l select=1
+#PBS -l walltime=03:00:00
+##PBS -l walltime=00:20:00
+##PBS -A n02-NEK016083
+#PBS -A n02-ncas
+#PBS -V
+
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/archer/script_split2_cray,v 1.1 2016/10/03 20:12:05 dfer Exp $
+# $Name:  $
+
+#- to get case insensitive "ls" (and order of tested experiments)
+setenv LC_ALL "en_US.UTF-8"
+
+set date_str=`date +%Y%m%d`"_0"
+#set date_str="test_1"
+
+cd /work/n02/n02/dfer/MITgcm/verification
+
+module load cray-hdf5-parallel/1.8.13
+module load cray-netcdf-hdf5parallel/4.3.2
+module list
+
+set tsb1=2
+
+##### NO MPI + IEEE
+if ( $tsb1 == 1 ) then
+
+./testreport -of='../tools/build_options/linux_ia64_cray_archer' -match 10 -runonly -t global_ocean.gm_k3d
+../tools/do_tst_2+2
+
+set tdir0=`ls -dt1 tr_mom* | grep -v tr_out | head -1`
+set tdir1=tr_archer_$date_str
+mv $tdir0 $tdir1
+mv tst_2+2_out.txt $tdir1/
+set tdir2=$tdir1.tar.gz
+tar -czf $tdir2 $tdir1
+#../tools/mpack-1.6/bin/mpack -s MITgcm-test -m 3555000 $tdir2 dfer@mit.edu 
+
+../tools/do_tst_2+2 -clean
+./testreport -clean
+
+sed "s/ tst1=1/ tst1=0/" script_split1_cray > script_split1.tmp
+mv -f script_split1.tmp script_split1_cray
+qsub script_split1_cray
+
+##### MPI + IEEE
+else if ( $tsb1 == 2 ) then
+
+./testreport -of='../tools/build_options/linux_ia64_cray_archer' -MPI 24 -command='aprun -n TR_NPROC ./mitgcmuv' -runonly -skd "fizhi-*"
+../tools/do_tst_2+2 -mpi -exe 'aprun -n TR_NPROC ./mitgcmuv' -a NONE -o archer
+
+set tdir0=`ls -dt1 tr_mom* | grep -v tr_out | head -1`
+set tdir1=tr_archer_$date_str
+mv $tdir0 $tdir1
+mv tst_2+2_out.txt $tdir1/
+set tdir2=$tdir1.tar.gz
+tar -czf $tdir2 $tdir1
+#../tools/mpack-1.6/bin/mpack -s MITgcm-test -m 3555000 $tdir2 jmc@mitgcm.org
+
+set tdir0=`ls -dt1 rs_* | grep -v tr_out | head -1`
+set tdir2=$tdir0.tar.gz
+tar -czf $tdir2 $tdir0
+#../tools/mpack-1.6/bin/mpack -s MITgcm-test -m 3555000 $tdir2 jmc@mitgcm.org
+
+../tools/do_tst_2+2 -clean
+./testreport -clean
+
+sed "s/ tst2=1/ tst2=0/" script_split1_cray > script_split1.tmp
+mv -f script_split1.tmp script_split1_cray
+qsub script_split1_cray
+
+#####  MPI + NO IEEE
+else if ( $tsb1 == 3 ) then
+
+./testreport -of='../tools/build_options/linux_ia64_cray_archer' -MPI 24 -command='aprun -n TR_NPROC ./mitgcmuv' -runonly -skd "fizhi-*" -fast
+../tools/do_tst_2+2 -mpi -exe 'aprun -n TR_NPROC ./mitgcmuv' -a NONE -o archer-fast
+
+set tdir0=`ls -dt1 tr_mom* | grep -v tr_out | head -1`
+set tdir1=tr_archer-fast_$date_str
+mv $tdir0 $tdir1
+mv tst_2+2_out.txt $tdir1/
+set tdir2=$tdir1.tar.gz
+tar -czf $tdir2 $tdir1
+#../tools/mpack-1.6/bin/mpack -s MITgcm-test -m 3555000 $tdir2 jmc@mitgcm.org
+
+set tdir0=`ls -dt1 rs_* | grep -v tr_out | head -1`
+set tdir2=$tdir0.tar.gz
+tar -czf $tdir2 $tdir0
+#../tools/mpack-1.6/bin/mpack -s MITgcm-test -m 3555000 $tdir2 jmc@mitgcm.org
+
+../tools/do_tst_2+2 -clean
+./testreport -clean
+
+endif
+
+exit
+

@@ -1,0 +1,58 @@
+#PBS -S /bin/csh
+#PBS -N Report_1C
+#PBS -l select=serial=true:ncpus=1
+#PBS -l walltime=08:00:00
+##PBS -l walltime=00:30:00
+#PBS -A n02-ncas
+#PBS -V
+
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/archer/script_split1_cray,v 1.1 2016/10/03 20:11:34 dfer Exp $
+# $Name:  $
+
+### script to run testreport, tar the result, and send it to jmc@mitgcm.org
+
+#- to get case insensitive "ls" (and order of tested experiments)
+setenv LC_ALL "en_US.UTF-8"
+
+cd /work/n02/n02/dfer/MITgcm/verification
+
+module load cray-hdf5-parallel/1.8.14
+module load cray-netcdf-hdf5parallel/4.3.3.1
+module list
+
+### set to 1 to run test
+set tst1=0           # test without MPI, but with optimization
+set tst2=1           # test with MPI, no optimization
+set tst3=0           # test with MPI, with optimization
+
+##### NO MPI
+if ( $tst1 == 1 ) then
+
+./testreport -of='../tools/build_options/linux_ia64_cray_archer' -norun -j 4 -makedepend makedepend -devel
+
+sed "s/ tsb1=./ tsb1=1/" script_split2_cray > script_split2.tmp
+mv -f script_split2.tmp script_split2_cray
+#qsub script_split2_cray
+
+##### MPI + IEEE
+else if ( $tst2 == 1 ) then
+
+./testreport -of='../tools/build_options/linux_ia64_cray_archer' -MPI 24 -command='aprun -n TR_NPROC ./mitgcmuv' -norun -j 4 -makedepend makedepend -skd "fizhi-*"
+
+sed "s/ tsb1=./ tsb1=2/" script_split2_cray > script_split2.tmp
+mv -f script_split2.tmp script_split2_cray
+qsub script_split2_cray
+
+#####  MPI + NO IEEE
+else if ( $tst3 == 1 ) then
+
+./testreport -of='../tools/build_options/linux_ia64_cray_archer' -MPI 24 -command='aprun -n TR_NPROC ./mitgcmuv' -norun -j 4 -makedepend makedepend -skd "fizhi-*" -fast
+
+sed "s/ tsb1=./ tsb1=3/" script_split2_cray > script_split2.tmp
+mv -f script_split2.tmp script_split2_cray
+qsub script_split2_cray
+
+endif
+
+exit
+
