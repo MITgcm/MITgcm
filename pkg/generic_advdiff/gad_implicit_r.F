@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.23 2015/06/03 13:39:22 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.24 2016/10/05 00:36:02 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -70,7 +70,7 @@ C c5d       :: main diagonal       of the pentadiagonal matrix
 C d5d       :: 1rst upper diagonal of the pentadiagonal matrix
 C e5d       :: 2nd  upper diagonal of the pentadiagonal matrix
 C rTrans    :: vertical volume transport at interface k
-C localTijk :: local copy of tracer (for Non-Lin Adv.Scheme)
+C localTr   :: local copy of tracer (for Non-Lin Adv.Scheme)
 C diagonalNumber :: number of non-zero diagonals in the matrix
 C errCode   :: > 0 if singular matrix
       INTEGER iMin,iMax,jMin,jMax
@@ -83,8 +83,8 @@ C errCode   :: > 0 if singular matrix
       _RL c5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL d5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL e5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL rTrans   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL localTijk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL rTrans (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL localTr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
       CHARACTER*4 diagSufx
@@ -114,28 +114,6 @@ C--   Initialise
       ENDDO
       diagonalNumber = 1
 
-C--   Non-Linear Advection scheme: keep a local copy of tracer field
-      IF ( advectionScheme.EQ.ENUM_FLUX_LIMIT .OR.
-     &     advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-        IF ( multiDimAdvection ) THEN
-         DO k=1,Nr
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            localTijk(i,j,k) = gTracer(i,j,k)
-           ENDDO
-          ENDDO
-         ENDDO
-        ELSE
-         DO k=1,Nr
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            localTijk(i,j,k) = tracer(i,j,k)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDIF
-      ENDIF
-
       IF (implicitDiffusion) THEN
 C--   set the tri-diagonal matrix to solve the implicit diffusion problem
        diagonalNumber = 3
@@ -145,7 +123,9 @@ C-     1rst lower diagonal :
          DO i=iMin,iMax
            b5d(i,j,k) = -deltaTLev(k)*maskC(i,j,k-1,bi,bj)
      &                  *recip_hFac(i,j,k)*recip_drF(k)
+     &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
      &                  *kappaRX(i,j, k )*recip_drC( k )
+     &                  *deepFac2F( k )*rhoFacF( k )
          ENDDO
         ENDDO
        ENDDO
@@ -154,8 +134,10 @@ C-     1rst upper diagonal :
         DO j=jMin,jMax
          DO i=iMin,iMax
            d5d(i,j,k) = -deltaTLev(k)*maskC(i,j,k+1,bi,bj)
-     &                 *recip_hFac(i,j,k)*recip_drF(k)
-     &                 *KappaRX(i,j,k+1)*recip_drC(k+1)
+     &                  *recip_hFac(i,j,k)*recip_drF(k)
+     &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
+     &                  *kappaRX(i,j,k+1)*recip_drC(k+1)
+     &                  *deepFac2F(k+1)*rhoFacF(k+1)
          ENDDO
         ENDDO
        ENDDO
@@ -173,6 +155,28 @@ C--   end if implicitDiffusion
 
       IF (implicitAdvection) THEN
 
+C--   Non-Linear Advection scheme: keep a local copy of tracer field
+       IF ( advectionScheme.EQ.ENUM_FLUX_LIMIT .OR.
+     &      advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+        IF ( multiDimAdvection ) THEN
+         DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            localTr(i,j,k) = gTracer(i,j,k)
+           ENDDO
+          ENDDO
+         ENDDO
+        ELSE
+         DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            localTr(i,j,k) = tracer(i,j,k)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
+       ENDIF
+
        DO k=Nr,1,-1
 
 C--    Compute transport
@@ -186,6 +190,7 @@ C--    Compute transport
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
             rTrans(i,j) = wFld(i,j,k)*rA(i,j,bi,bj)
+     &                               *deepFac2F(k)*rhoFacF(k)
      &                               *maskC(i,j,k-1,bi,bj)
           ENDDO
          ENDDO
@@ -217,7 +222,7 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
          ELSEIF ( advectionScheme.EQ.ENUM_FLUX_LIMIT ) THEN
           diagonalNumber = 3
           CALL GAD_FLUXLIMIT_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
-     I                        deltaTLev, rTrans, recip_hFac, localTijk,
+     I                        deltaTLev, rTrans, recip_hFac, localTr,
      U                        b5d, c5d, d5d,
      I                        myThid )
          ELSEIF ( advectionScheme.EQ.ENUM_UPWIND_3RD
@@ -232,7 +237,7 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
          ELSEIF ( advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
           diagonalNumber = 5
           CALL GAD_DST3FL_IMPL_R( bi,bj,k, iMin,iMax,jMin,jMax,
-     I                        deltaTLev, rTrans, recip_hFac, localTijk,
+     I                        deltaTLev, rTrans, recip_hFac, localTr,
      U                        a5d, b5d, c5d, d5d, e5d,
      I                        myThid )
          ELSE
@@ -296,9 +301,9 @@ C--   Set diagnostic suffix for the current tracer
 cc#ifdef ALLOW_AUTODIFF_OPENAD
 cc     &             -rA(i,j,bi,bj)%v
 cc#else
-     &             -rA(i,j,bi,bj)
+     &             -rA(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
 cc#endif
-     &            * KappaRX(i,j,k)*recip_drC(k)*rkSign
+     &            * kappaRX(i,j,k)*recip_drC(k)*rkSign
      &            * (gTracer(i,j,k) - gTracer(i,j,k-1))
      &            * maskC(i,j,k,bi,bj)
      &            * maskC(i,j,k-1,bi,bj)
@@ -394,7 +399,8 @@ C--    use current hFac (consistent with solver matrix)
 cc#ifdef ALLOW_AUTODIFF_OPENAD
 cc     &                - rkSign*div(i,j)*rA(i,j,bi,bj)%v/deltaTLev(k)
 cc#else
-     &                - rkSign*div(i,j)*rA(i,j,bi,bj)/deltaTLev(k)
+     &                - rkSign*div(i,j)*rA(i,j,bi,bj)
+     &                        *deepFac2C(k)*rhoFacC(k)/deltaTLev(k)
 cc#endif
               af(i,j) = flx(i,j) - df(i,j)
             ENDDO
