@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_impl_r.F,v 1.4 2011/12/01 14:14:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_impl_r.F,v 1.5 2016/10/05 18:43:36 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -101,6 +101,7 @@ C       lowFac & highFac are set such as Psi*Rj = lowFac*Rj + highFac*Rjh
          DO i=iMin,iMax
            wCFL = deltaTcfl*ABS(rTrans(i,j))
      &           *recip_rA(i,j,bi,bj)*recip_drC(k)
+     &           *recip_deepFac2F(k)*recip_rhoFacF(k)
            cL1 = (2. _d 0 -wCFL)*(1. _d 0 -wCFL)*oneSixth
            cH3 = (1. _d 0 -wCFL*wCFL)*oneSixth
 c          cM2 = (1. _d 0 - wCFL)/( wCFL +1. _d -20)
@@ -152,34 +153,42 @@ C--    Add centered & upwind contributions
      &                  + rC4km
      &                   *deltaTarg(k)
      &                   *recip_hFac(i,j,k)*recip_drF(k)
+     &                   *recip_deepFac2C(k)*recip_rhoFacC(k)
            b5d(i,j,k)   = b5d(i,j,k)
      &                  - ( (rCenter+rUpwind) + rC4km )
      &                   *deltaTarg(k)
      &                   *recip_hFac(i,j,k)*recip_drF(k)
+     &                   *recip_deepFac2C(k)*recip_rhoFacC(k)
            c5d(i,j,k)   = c5d(i,j,k)
      &                  - ( (rCenter-rUpwind) + rC4kp )
      &                   *deltaTarg(k)
      &                   *recip_hFac(i,j,k)*recip_drF(k)
+     &                   *recip_deepFac2C(k)*recip_rhoFacC(k)
            d5d(i,j,k)   = d5d(i,j,k)
      &                  + rC4kp
      &                   *deltaTarg(k)
      &                   *recip_hFac(i,j,k)*recip_drF(k)
+     &                   *recip_deepFac2C(k)*recip_rhoFacC(k)
            b5d(i,j,k-1) = b5d(i,j,k-1)
      &                  - rC4km
      &                   *deltaTarg(k-1)
      &                   *recip_hFac(i,j,k-1)*recip_drF(k-1)
+     &                   *recip_deepFac2C(k-1)*recip_rhoFacC(k-1)
            c5d(i,j,k-1) = c5d(i,j,k-1)
      &                  + ( (rCenter+rUpwind) + rC4km )
      &                   *deltaTarg(k-1)
      &                   *recip_hFac(i,j,k-1)*recip_drF(k-1)
+     &                   *recip_deepFac2C(k-1)*recip_rhoFacC(k-1)
            d5d(i,j,k-1) = d5d(i,j,k-1)
      &                  + ( (rCenter-rUpwind) + rC4kp )
      &                   *deltaTarg(k-1)
      &                   *recip_hFac(i,j,k-1)*recip_drF(k-1)
+     &                   *recip_deepFac2C(k-1)*recip_rhoFacC(k-1)
            e5d(i,j,k-1) = e5d(i,j,k-1)
      &                  - rC4kp
      &                   *deltaTarg(k-1)
-     &                   *recip_hFacC(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                   *recip_hFac(i,j,k-1)*recip_drF(k-1)
+     &                   *recip_deepFac2C(k-1)*recip_rhoFacC(k-1)
          ENDDO
        ENDDO
 

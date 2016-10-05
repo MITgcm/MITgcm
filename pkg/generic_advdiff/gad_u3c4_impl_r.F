@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3c4_impl_r.F,v 1.11 2014/04/04 20:29:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3c4_impl_r.F,v 1.12 2016/10/05 18:43:36 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -109,7 +109,8 @@ C--    Add centered, upwind and high-order contributions
           rC4kp2D  (i,j) = oneSixth*rCenter*mskP
          ELSEIF ( advectionScheme.EQ.ENUM_DST3 ) THEN
           wCFL = deltaTcfl*ABS(rTrans(i,j))
-     &         *recip_rA(i,j,bi,bj)*recip_drC(k)
+     &            *recip_rA(i,j,bi,bj)*recip_drC(k)
+     &            *recip_deepFac2F(k)*recip_rhoFacF(k)
           rHigh  = (1. _d 0 -wCFL*wCFL)*oneSixth
 c         rUpwind2D(i,j) = (2. _d 0*rHigh - wCFL)*ABS(rCenter)
           rUpwind2D(i,j) = (2. _d 0*rHigh )*ABS(rCenter)
@@ -141,6 +142,7 @@ c         rUpwind2D(i,j) = (2. _d 0*rHigh - wCFL)*ABS(rCenter)
            ELSEIF ( advectionScheme.EQ.ENUM_DST3 ) THEN
             wCFL = deltaTcfl*ABS(rTrans(i,j))
      &            *recip_rA(i,j,bi,bj)*recip_drC(k)
+     &            *recip_deepFac2F(k)*recip_rhoFacF(k)
             rHigh  = (1. _d 0 -wCFL*wCFL)*oneSixth
 c           rUpwind= (2. _d 0*rHigh - wCFL)*ABS(rCenter)
             rUpwind= (2. _d 0*rHigh )*ABS(rCenter)
@@ -156,34 +158,42 @@ c           rUpwind= (2. _d 0*rHigh - wCFL)*ABS(rCenter)
      &                  + rC4km
      &                   *deltaTarg(k)
      &                   *recip_hFac(i,j,k)*recip_drF(k)
+     &                   *recip_deepFac2C(k)*recip_rhoFacC(k)
            b5d(i,j,k)   = b5d(i,j,k)
      &                  - ( (rCenter+rUpwind) + rC4km )
      &                   *deltaTarg(k)
      &                   *recip_hFac(i,j,k)*recip_drF(k)
+     &                   *recip_deepFac2C(k)*recip_rhoFacC(k)
            c5d(i,j,k)   = c5d(i,j,k)
      &                  - ( (rCenter-rUpwind) + rC4kp )
      &                   *deltaTarg(k)
      &                   *recip_hFac(i,j,k)*recip_drF(k)
+     &                   *recip_deepFac2C(k)*recip_rhoFacC(k)
            d5d(i,j,k)   = d5d(i,j,k)
      &                  + rC4kp
      &                   *deltaTarg(k)
      &                   *recip_hFac(i,j,k)*recip_drF(k)
+     &                   *recip_deepFac2C(k)*recip_rhoFacC(k)
            b5d(i,j,k-1) = b5d(i,j,k-1)
      &                  - rC4km
      &                   *deltaTarg(k-1)
      &                   *recip_hFac(i,j,k-1)*recip_drF(k-1)
+     &                   *recip_deepFac2C(k-1)*recip_rhoFacC(k-1)
            c5d(i,j,k-1) = c5d(i,j,k-1)
      &                  + ( (rCenter+rUpwind) + rC4km )
      &                   *deltaTarg(k-1)
      &                   *recip_hFac(i,j,k-1)*recip_drF(k-1)
+     &                   *recip_deepFac2C(k-1)*recip_rhoFacC(k-1)
            d5d(i,j,k-1) = d5d(i,j,k-1)
      &                  + ( (rCenter-rUpwind) + rC4kp )
      &                   *deltaTarg(k-1)
      &                   *recip_hFac(i,j,k-1)*recip_drF(k-1)
+     &                   *recip_deepFac2C(k-1)*recip_rhoFacC(k-1)
            e5d(i,j,k-1) = e5d(i,j,k-1)
      &                  - rC4kp
      &                   *deltaTarg(k-1)
      &                   *recip_hFac(i,j,k-1)*recip_drF(k-1)
+     &                   *recip_deepFac2C(k-1)*recip_rhoFacC(k-1)
          ENDDO
        ENDDO
 
