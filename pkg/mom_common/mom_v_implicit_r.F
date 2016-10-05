@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_implicit_r.F,v 1.5 2014/08/14 16:44:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_implicit_r.F,v 1.6 2016/10/05 00:04:31 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -36,7 +36,19 @@ C     == Routine Arguments ==
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+C iMin,iMax,jMin,jMax :: computational domain
+C i,j,k     :: loop indices
+C a5d       :: 2nd  lower diagonal of the pentadiagonal matrix
+C b5d       :: 1rst lower diagonal of the pentadiagonal matrix
+C c5d       :: main diagonal       of the pentadiagonal matrix
+C d5d       :: 1rst upper diagonal of the pentadiagonal matrix
+C e5d       :: 2nd  upper diagonal of the pentadiagonal matrix
+C rTrans    :: vertical volume transport at interface k
+C diagonalNumber :: number of non-zero diagonals in the matrix
+C errCode   :: > 0 if singular matrix
       INTEGER iMin,iMax,jMin,jMax
+      PARAMETER( iMin = 1, iMax = sNx )
+      PARAMETER( jMin = 1, jMax = sNy+1 )
       INTEGER i,j,k
       INTEGER diagonalNumber, errCode
 c     _RL a5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -59,10 +71,6 @@ C     Solve for V-component :
 C----------------------------
 
 C--   Initialise
-      iMin = 1
-      jMin = 1
-      iMax = sNx
-      jMax = sNy+1
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
@@ -84,10 +92,13 @@ C-     1rst lower diagonal :
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
-          IF (maskS(i,j,k-1,bi,bj).EQ.1.)
+          IF (maskS(i,j,k-1,bi,bj).EQ.oneRS)
      &     b5d(i,j,k) = -deltaTMom
      &                  *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
      &                  *kappaRV(i,j, k )*recip_drC( k )
+     &                  *deepFac2F( k )*rhoFacF( k )
+
          ENDDO
         ENDDO
        ENDDO
@@ -95,10 +106,12 @@ C-     1rst upper diagonal :
        DO k=1,Nr-1
         DO j=jMin,jMax
          DO i=iMin,iMax
-          IF (maskS(i,j,k+1,bi,bj).EQ.1.)
+          IF (maskS(i,j,k+1,bi,bj).EQ.oneRS)
      &     d5d(i,j,k) = -deltaTMom
-     &                 *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-     &                 *KappaRV(i,j,k+1)*recip_drC(k+1)
+     &                  *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
+     &                  *kappaRV(i,j,k+1)*recip_drC(k+1)
+     &                  *deepFac2F(k+1)*rhoFacF(k+1)
          ENDDO
         ENDDO
        ENDDO
@@ -106,7 +119,7 @@ C-     Main diagonal :
        DO k=1,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
-           c5d(i,j,k) = 1. _d 0 - b5d(i,j,k) - d5d(i,j,k)
+           c5d(i,j,k) = 1. _d 0 - ( b5d(i,j,k) + d5d(i,j,k) )
          ENDDO
         ENDDO
        ENDDO
@@ -126,7 +139,7 @@ C--   end if implicitDiffusion
      &                                 *maskC(i, j ,k-1,bi,bj)
      &              + wVel(i,j-1,k,bi,bj)*rA(i,j-1,bi,bj)
      &                                 *maskC(i,j-1,k-1,bi,bj)
-     &                               )
+     &                               )*deepFac2F(k)*rhoFacF(k)
            ENDDO
           ENDDO
 
@@ -145,15 +158,19 @@ C-          space Centered/Upwind advection scheme, Advective form:
               b5d(i,j,k) = b5d(i,j,k)
      &                   - (rCenter+rUpwind)
      &                     *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &                     *recip_deepFac2C(k)*recip_rhoFacC(k)
               c5d(i,j,k) = c5d(i,j,k)
      &                   + (rCenter+rUpwind)
      &                     *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &                     *recip_deepFac2C(k)*recip_rhoFacC(k)
               c5d(i,j,k-1) = c5d(i,j,k-1)
      &                   - (rCenter-rUpwind)
      &                     *_recip_hFacS(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                     *recip_deepFac2C(k-1)*recip_rhoFacC(k-1)
               d5d(i,j,k-1) = d5d(i,j,k-1)
      &                   + (rCenter-rUpwind)
      &                     *_recip_hFacS(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                     *recip_deepFac2C(k-1)*recip_rhoFacC(k-1)
              ENDDO
             ENDDO
           ELSE
@@ -164,12 +181,16 @@ C-          space Centered advection scheme, Flux form:
      &                           *recip_rAs(i,j,bi,bj)*rkSign
               b5d(i,j,k) = b5d(i,j,k)
      &            - rCenter*_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &                     *recip_deepFac2C(k)*recip_rhoFacC(k)
               c5d(i,j,k) = c5d(i,j,k)
      &            - rCenter*_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &                     *recip_deepFac2C(k)*recip_rhoFacC(k)
               c5d(i,j,k-1) = c5d(i,j,k-1)
      &            + rCenter*_recip_hFacS(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                     *recip_deepFac2C(k-1)*recip_rhoFacC(k-1)
               d5d(i,j,k-1) = d5d(i,j,k-1)
      &            + rCenter*_recip_hFacS(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                     *recip_deepFac2C(k-1)*recip_rhoFacC(k-1)
              ENDDO
             ENDDO
             STOP 'MOM_IMPLICIT_R: Flux Form not yet finished.'
@@ -212,9 +233,9 @@ C         otherwise counter is not incremented !!
           ELSE
             DO j=jMin,jMax
              DO i=iMin,iMax
-               vf(i,j) =
-     &             -KappaRV(i,j,k)*rAs(i,j,bi,bj)*recip_drC(k)
-     &            * (gV(i,j,k,bi,bj) - gV(i,j,k-1,bi,bj))*rkSign
+               vf(i,j) = -rAs(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
+     &            * kappaRV(i,j,k)*recip_drC(k)*rkSign
+     &            * (gV(i,j,k,bi,bj) - gV(i,j,k-1,bi,bj))
      &            *_maskS(i,j,k,bi,bj)
      &            *_maskS(i,j,k-1,bi,bj)
              ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_implicit_r.F,v 1.5 2014/08/14 16:44:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_implicit_r.F,v 1.6 2016/10/05 00:04:31 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -29,28 +29,40 @@ C     == Global data ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-      _RL kappaRU(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL kappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER bi, bj
       _RL myTime
       INTEGER myIter, myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+C iMin,iMax,jMin,jMax :: computational domain
+C i,j,k     :: loop indices
+C a5d       :: 2nd  lower diagonal of the pentadiagonal matrix
+C b5d       :: 1rst lower diagonal of the pentadiagonal matrix
+C c5d       :: main diagonal       of the pentadiagonal matrix
+C d5d       :: 1rst upper diagonal of the pentadiagonal matrix
+C e5d       :: 2nd  upper diagonal of the pentadiagonal matrix
+C rTrans    :: vertical volume transport at interface k
+C diagonalNumber :: number of non-zero diagonals in the matrix
+C errCode   :: > 0 if singular matrix
       INTEGER iMin,iMax,jMin,jMax
+      PARAMETER( iMin = 1, iMax = sNx+1 )
+      PARAMETER( jMin = 1, jMax = sNy )
       INTEGER i,j,k
       INTEGER diagonalNumber, errCode
-c     _RL a5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL b5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL c5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL d5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-c     _RL e5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL rTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+c     _RL a5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL b5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL c5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL d5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+c     _RL e5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rCenter, rUpwind, upwindFac
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
       LOGICAL     DIAGNOSTICS_IS_ON
       EXTERNAL    DIAGNOSTICS_IS_ON
-      _RL vf (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL vf (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 CEOP
 
@@ -59,13 +71,9 @@ C     Solve for U-component :
 C----------------------------
 
 C--   Initialise
-      iMin = 1
-      jMin = 1
-      iMax = sNx+1
-      jMax = sNy
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
 c        a5d(i,j,k) = 0. _d 0
          b5d(i,j,k) = 0. _d 0
          c5d(i,j,k) = 1. _d 0
@@ -84,10 +92,12 @@ C-     1rst lower diagonal :
        DO k=2,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
-          IF (maskW(i,j,k-1,bi,bj).EQ.1.)
-     &     b5d(i,j,k) = -deltaTmom
+          IF (maskW(i,j,k-1,bi,bj).EQ.oneRS)
+     &     b5d(i,j,k) = -deltaTMom
      &                  *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
      &                  *kappaRU(i,j, k )*recip_drC( k )
+     &                  *deepFac2F( k )*rhoFacF( k )
          ENDDO
         ENDDO
        ENDDO
@@ -95,10 +105,12 @@ C-     1rst upper diagonal :
        DO k=1,Nr-1
         DO j=jMin,jMax
          DO i=iMin,iMax
-          IF (maskW(i,j,k+1,bi,bj).EQ.1.)
-     &     d5d(i,j,k) = -deltaTmom
-     &                 *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
-     &                 *KappaRU(i,j,k+1)*recip_drC(k+1)
+          IF (maskW(i,j,k+1,bi,bj).EQ.oneRS)
+     &     d5d(i,j,k) = -deltaTMom
+     &                  *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
+     &                  *kappaRU(i,j,k+1)*recip_drC(k+1)
+     &                  *deepFac2F(k+1)*rhoFacF(k+1)
          ENDDO
         ENDDO
        ENDDO
@@ -106,7 +118,7 @@ C-     Main diagonal :
        DO k=1,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
-           c5d(i,j,k) = 1. _d 0 - b5d(i,j,k) - d5d(i,j,k)
+           c5d(i,j,k) = 1. _d 0 - ( b5d(i,j,k) + d5d(i,j,k) )
          ENDDO
         ENDDO
        ENDDO
@@ -126,7 +138,7 @@ C--   end if implicitDiffusion
      &                                 *maskC( i ,j,k-1,bi,bj)
      &              + wVel(i-1,j,k,bi,bj)*rA(i-1,j,bi,bj)
      &                                 *maskC(i-1,j,k-1,bi,bj)
-     &                               )
+     &                               )*deepFac2F(k)*rhoFacF(k)
            ENDDO
           ENDDO
 
@@ -139,37 +151,45 @@ C-          space Centered/Upwind advection scheme, Advective form:
             ENDIF
             DO j=jMin,jMax
              DO i=iMin,iMax
-              rCenter = 0.5 _d 0 *deltaTmom*rTrans(i,j)
+              rCenter = 0.5 _d 0 *deltaTMom*rTrans(i,j)
      &                           *recip_rAw(i,j,bi,bj)*rkSign
               rUpwind = ABS(rCenter)*upwindFac
               b5d(i,j,k) = b5d(i,j,k)
      &                   - (rCenter+rUpwind)
      &                     *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &                     *recip_deepFac2C(k)*recip_rhoFacC(k)
               c5d(i,j,k) = c5d(i,j,k)
      &                   + (rCenter+rUpwind)
      &                     *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &                     *recip_deepFac2C(k)*recip_rhoFacC(k)
               c5d(i,j,k-1) = c5d(i,j,k-1)
      &                   - (rCenter-rUpwind)
      &                     *_recip_hFacW(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                     *recip_deepFac2C(k-1)*recip_rhoFacC(k-1)
               d5d(i,j,k-1) = d5d(i,j,k-1)
      &                   + (rCenter-rUpwind)
      &                     *_recip_hFacW(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                     *recip_deepFac2C(k-1)*recip_rhoFacC(k-1)
              ENDDO
             ENDDO
           ELSE
 C-          space Centered advection scheme, Flux form:
             DO j=jMin,jMax
              DO i=iMin,iMax
-              rCenter = 0.5 _d 0 *deltaTmom*rTrans(i,j)
+              rCenter = 0.5 _d 0 *deltaTMom*rTrans(i,j)
      &                           *recip_rAw(i,j,bi,bj)*rkSign
               b5d(i,j,k) = b5d(i,j,k)
      &            - rCenter*_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &                     *recip_deepFac2C(k)*recip_rhoFacC(k)
               c5d(i,j,k) = c5d(i,j,k)
      &            - rCenter*_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &                     *recip_deepFac2C(k)*recip_rhoFacC(k)
               c5d(i,j,k-1) = c5d(i,j,k-1)
      &            + rCenter*_recip_hFacW(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                     *recip_deepFac2C(k-1)*recip_rhoFacC(k-1)
               d5d(i,j,k-1) = d5d(i,j,k-1)
      &            + rCenter*_recip_hFacW(i,j,k-1,bi,bj)*recip_drF(k-1)
+     &                     *recip_deepFac2C(k-1)*recip_rhoFacC(k-1)
              ENDDO
             ENDDO
             STOP 'MOM_IMPLICIT_R: Flux Form not yet finished.'
@@ -212,9 +232,9 @@ C         otherwise counter is not incremented !!
           ELSE
             DO j=jMin,jMax
              DO i=iMin,iMax
-               vf(i,j) =
-     &             -KappaRU(i,j,k)*rAw(i,j,bi,bj)*recip_drC(k)
-     &            * (gU(i,j,k,bi,bj) - gU(i,j,k-1,bi,bj))*rkSign
+               vf(i,j) = -rAw(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
+     &            * kappaRU(i,j,k)*recip_drC(k)*rkSign
+     &            * (gU(i,j,k,bi,bj) - gU(i,j,k-1,bi,bj))
      &            *_maskW(i,j,k,bi,bj)
      &            *_maskW(i,j,k-1,bi,bj)
              ENDDO
