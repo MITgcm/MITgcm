@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.24 2016/10/05 00:36:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.25 2016/10/06 14:21:25 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -145,7 +145,9 @@ C-     Main diagonal :
        DO k=1,Nr
         DO j=jMin,jMax
          DO i=iMin,iMax
-           c5d(i,j,k) = 1. _d 0 - b5d(i,j,k) - d5d(i,j,k)
+           c5d(i,j,k) = 1. _d 0 - ( b5d(i,j,k) + d5d(i,j,k) )
+C      to recover older (prior to 2016-10-05) results:
+c          c5d(i,j,k) = 1. _d 0 - b5d(i,j,k) - d5d(i,j,k)
          ENDDO
         ENDDO
        ENDDO
