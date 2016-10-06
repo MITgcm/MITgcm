@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2273 2016/09/28 15:17:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2274 2016/10/06 00:50:19 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/mom_commom & generic_advdiff:
+  - add deep atmosphere and anelastic scaling factor in implicit vertical
+    advection routines (mom_u,v_implicit_r.F & gad*_impl*_r.F).
+o model/src:
+  - remove few unnecessary temp array copies in solve_tridiagonal.F
+    & solve_pentadiagonal.F
 
 checkpoint65z (2016/09/28)
 o pkg/seaice: fix multithreading for seaice_fgmres.F
@@ -13,23 +20,23 @@ o pkg/seaice: fix multithreading for seaice_fgmres.F
     original code
   - turn on multi-threaded test for experiment offline_exf_seaice.dyn_jfnk.
 o MITgcm manual:
- - add uptodate pkg/ecco documentation to the manual (section 8.1; ecco.tex),
-   preliminary documentation for generic controls (8.3; ctrl.tex),
-   a placeholder for smooth (8.4; smooth.tex), and comment out the deprecated
-   ecco_costfunction.tex
+  - add uptodate pkg/ecco documentation to the manual (section 8.1; ecco.tex),
+    preliminary documentation for generic controls (8.3; ctrl.tex),
+    a placeholder for smooth (8.4; smooth.tex), and comment out the deprecated
+    ecco_costfunction.tex
 o pkg/ecco:
- - update and cleanup list of CCP options
- - re-assign gencost_mask to specify masks rather than gencost_errfile; 'c'
-   is now always passed to cost_generic; gencost_mask is now MAX_LEN_FNAM
- - add checks that retired run-time options are not used, and in relation
-   to gencost_mask and gencost_errfile
- - finish deprecating gencost_scalefile, gencost_smooth2Ddiffnbt, and
-   gencost_nrecperiod
- - fix m_eta computation for virtual salt flux case
- - add m_horflux_vol case (selected via gencost_barfile) that computes
-   transports via cost_gencost_boxmean (gencost_flag=-3)
- - use gencost_flag more systematically (i.e., avoid using gencost_name)
-   for code switches (aside from physical variable selection)
+  - update and cleanup list of CCP options
+  - re-assign gencost_mask to specify masks rather than gencost_errfile; 'c'
+    is now always passed to cost_generic; gencost_mask is now MAX_LEN_FNAM
+  - add checks that retired run-time options are not used, and in relation
+    to gencost_mask and gencost_errfile
+  - finish deprecating gencost_scalefile, gencost_smooth2Ddiffnbt, and
+    gencost_nrecperiod
+  - fix m_eta computation for virtual salt flux case
+  - add m_horflux_vol case (selected via gencost_barfile) that computes
+    transports via cost_gencost_boxmean (gencost_flag=-3)
+  - use gencost_flag more systematically (i.e., avoid using gencost_name)
+    for code switches (aside from physical variable selection)
 o pkg/seaice: make seaice_fgmres.F fit for multithreading; this first
   attempt appears to be a bit of a hack and my need some repair down the road
 o pkg/exf:
