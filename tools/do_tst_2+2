@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.21 2015/11/18 22:18:41 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.22 2016/10/07 17:03:49 jmc Exp $
 # $Name:  $
 
 usage()
@@ -288,9 +288,9 @@ if test "x$ADDRESS" != xNONE -a "x$ADDRESS" != x ; then
             echo
             echo "An email containing results was sent to the following address:"
             echo "  \"$ADDRESS\""
+            test -f ${SAVDIR}/${DRESULTS}".tar" &&  rm -f ${SAVDIR}/${DRESULTS}".tar"
+            test -f ${SAVDIR}/${DRESULTS}".tar.gz" &&  rm -f ${SAVDIR}/${DRESULTS}".tar.gz"
         fi
-        test -f ${SAVDIR}/${DRESULTS}".tar" &&  rm -f ${SAVDIR}/${DRESULTS}".tar"
-        test -f ${SAVDIR}/${DRESULTS}".tar.gz" &&  rm -f ${SAVDIR}/${DRESULTS}".tar.gz"
     fi
 fi
 echo '' ; echo '=====  Summary (tst_2+2_out.txt):  ======'
