@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2274 2016/10/06 00:50:19 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2275 2016/10/07 04:14:35 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src & generic_advdiff:
+  - add parenthesis in main diagonal calculation of implicit vertical
+    diffusion matrix (impldiff.F & gad_implicit_r.F).
+    This affects results at machine truncation level; update output of many
+    verification experiments (31 fwd ; 10 adm ; 8 tlm ; 3 oad).
 o pkg/mom_commom & generic_advdiff:
   - add deep atmosphere and anelastic scaling factor in implicit vertical
     advection routines (mom_u,v_implicit_r.F & gad*_impl*_r.F).
