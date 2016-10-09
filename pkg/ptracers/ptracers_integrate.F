@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.65 2015/06/02 20:09:22 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.66 2016/10/09 18:14:44 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -436,7 +436,9 @@ CADJ &     key=iptrkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef INCLUDE_IMPLVERTADV_CODE
-        IF ( PTRACERS_ImplVertAdv(iTracer) ) THEN
+        IF ( PTRACERS_ImplVertAdv(iTracer) .OR. implicitDiffusion ) THEN
+C      to recover older (prior to 2016-10-05) results:
+c       IF ( PTRACERS_ImplVertAdv(iTracer) ) THEN
           CALL GAD_IMPLICIT_R(
      I         PTRACERS_ImplVertAdv(iTracer),
      I         PTRACERS_advScheme(iTracer), GAD_TR,
