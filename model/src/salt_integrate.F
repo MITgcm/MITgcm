@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/salt_integrate.F,v 1.17 2014/09/05 21:07:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/salt_integrate.F,v 1.18 2016/10/09 18:13:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -473,7 +473,9 @@ C-    Integrate forward in time, storing in gS_loc:  gS <= S + dt*gS
 C--   Implicit vertical advection & diffusion
 
 #ifdef INCLUDE_IMPLVERTADV_CODE
-      IF ( saltImplVertAdv ) THEN
+      IF ( saltImplVertAdv .OR. implicitDiffusion ) THEN
+C     to recover older (prior to 2016-10-05) results:
+c     IF ( saltImplVertAdv ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE kappaRk(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE gS_loc(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
