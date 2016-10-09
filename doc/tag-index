@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2275 2016/10/07 04:14:35 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2276 2016/10/09 18:45:15 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src & pkg/ptracers:
+  - with INCLUDE_IMPLVERTADV_CODE defined, also call MOM_U,V_IMPLICIT_R &
+    GAD_IMPLICIT_R (instead of IMPLDIFF) when just implicitViscosity and
+    implicitDiffusion (respectively) are used (even without momImplVertAdv
+    or temp,salt,PTRACERS_ImplVertAdv).
 o model/src & generic_advdiff:
   - add parenthesis in main diagonal calculation of implicit vertical
     diffusion matrix (impldiff.F & gad_implicit_r.F).
