@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_carbonate_sys.F,v 1.2 2016/09/12 20:00:28 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_carbonate_sys.F,v 1.3 2016/10/12 22:34:27 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -65,8 +65,8 @@ C     silicaDEEP        :: subsurface silica concentration
        _RL silicaDEEP
 
 
-       _RL ttmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-       _RL stmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+       _RL ttmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+       _RL stmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
        INTEGER CO3ITER
        INTEGER CO3ITERmax
@@ -89,8 +89,8 @@ C$TAF LOOP = parallel
 
           DO j=jMin,jMax
             DO i=iMin,iMax
-             ttmp(i,j,k) = theta(i,j,k,bi,bj)
-             stmp(i,j,k) = salt(i,j,k,bi,bj)
+             ttmp(i,j) = theta(i,j,k,bi,bj)
+             stmp(i,j) = salt(i,j,k,bi,bj)
             ENDDO
           ENDDO
 
@@ -128,7 +128,7 @@ c             DO CO3iter = 1, CO3itermax
 C--------------------------------------------------
 
                CALL CALC_PCO2_APPROX(
-     I          ttmp(i,j,k),stmp(i,j,k),
+     I          ttmp(i,j),stmp(i,j),
      I          diclocal, po4local,
      I          silicaDEEP,alklocal,
      I          ak1(i,j,bi,bj),ak2(i,j,bi,bj),

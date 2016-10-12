@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_airseaflux.F,v 1.2 2016/09/12 20:00:28 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_airseaflux.F,v 1.3 2016/10/12 22:34:27 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -7,7 +7,7 @@ C $Name:  $
 CBOP
       subroutine BLING_AIRSEAFLUX( 
      I           PTR_DIC, PTR_ALK, PTR_O2, PTR_NO3, PTR_PO4, 
-     O           SGDIC, SGO2, 
+     O           SGDIC, SGO2, FluxO2, 
      I           bi, bj, imin, imax, jmin, jmax,
      I           myIter, myTime, myThid)
 
@@ -59,10 +59,13 @@ C     PTR_O2           :: oxygen tracer field
       _RL  PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  PTR_O2 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 C     === Output ===
-C     SGDIC            :: tendency of DIC due to air-sea exchange 
-C     SGO2             :: tendency od O2 due to air-sea exchange 
+C     SGDIC            :: surface tendency of DIC due to air-sea exchange 
+C     SGO2             :: surface tendency of O2 due to air-sea exchange 
+C     FluxO2           :: air-sea flux of O2 
+C     (FluxCO2 is a global variable) 
       _RL  SGDIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  SGO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  FluxO2      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 
 #ifdef ALLOW_PTRACERS
@@ -89,7 +92,6 @@ C o2 solubility relation coefficients
       _RL SchmidtNoO2 (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL O2sat       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Kwexch_o2   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL FluxO2      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL aTT
       _RL aTK
       _RL aTS

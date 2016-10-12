@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_main.F,v 1.3 2016/09/12 20:00:28 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_main.F,v 1.4 2016/10/12 22:34:27 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -91,8 +91,8 @@ C     runoff_bgc           :: tendency due to river runoff
       _RL  bio_DIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  surf_DIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  surf_O2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  FluxO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  irr_eff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-cxx      _RL  runoff_bgc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,PTRACERS_num)
       _RL  runoff_bgc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,8)
 CEOP
 
@@ -113,13 +113,13 @@ c  Initialize local variables
          G_CaCO3(i,j,k)      = 0. _d 0
          irr_eff(i,j,k)      = 0. _d 0
         ENDDO
-cxx        DO k=1,PTRACERS_num
         DO k=1,8
          runoff_bgc(i,j,k)   = 0. _d 0
         ENDDO
         bio_DIC(i,j,k)       = 0. _d 0
         surf_DIC(i,j)        = 0. _d 0
         surf_O2(i,j)         = 0. _d 0
+        fluxO2(i,j)          = 0. _d 0
        ENDDO
       ENDDO
 
@@ -128,7 +128,7 @@ c  carbon and oxygen air-sea interaction
        CALL BLING_AIRSEAFLUX(
      I                       PTR_DIC, PTR_ALK, PTR_O2,
      I                       PTR_NO3, PTR_PO4,
-     U                       surf_DIC, surf_O2,
+     U                       surf_DIC, surf_O2, fluxO2,
      I                       bi, bj, imin, imax, jmin, jmax,
      I                       myIter, myTime, myThid)
 
@@ -160,21 +160,18 @@ C  Calculate river runoff source
 C  Tracers are already diluted by freswater input, P-E+R
 C  This accounts for tracer concentration in river runoff
 
-cxx      DO k=1,PTRACERS_num
-      DO k=1,8
-       DO j=jmin,jmax
-        DO i=imin,imax
-
+c      DO k=1,8
+c       DO j=jmin,jmax
+c        DO i=imin,imax
 c#ifdef ALLOW_EXF
 c         runoff_bgc(i,j,k) = river_conc_trac(k)*runoff(i,j,bi,bj)
 c     &                       *recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
 c#else
 c         runoff_bgc(i,j,k) = 0. _d 0
 c#endif
-
-        ENDDO
-       ENDDO
-      ENDDO
+c        ENDDO
+c       ENDDO
+c      ENDDO
 
 c ---------------------------------------------------------------------
 
@@ -248,8 +245,7 @@ C-----------------------------------------------------------
         CALL DIAGNOSTICS_FILL(OmegaAr ,'BLGOMAR ',0,Nr,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(pCO2    ,'BLGPCO2 ',0,1 ,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(fluxCO2 ,'BLGCFLX ',0,1 ,1,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(surf_DIC,'BLGTFLX ',0,1 ,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(surf_O2 ,'BLGOFLX ',0,1 ,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(fluxO2  ,'BLGOFLX ',0,1 ,2,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
