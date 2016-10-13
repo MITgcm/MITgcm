@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2276 2016/10/09 18:45:15 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2277 2016/10/13 20:28:13 mmazloff Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - EXF package will now load in atmospheric pCO2 file for use with BGC packages. 
+    Enable with #define USE_EXFCO2 in EXF_OPTIONS.h 
 o model/src & pkg/ptracers:
   - with INCLUDE_IMPLVERTADV_CODE defined, also call MOM_U,V_IMPLICIT_R &
     GAD_IMPLICIT_R (instead of IMPLDIFF) when just implicitViscosity and
