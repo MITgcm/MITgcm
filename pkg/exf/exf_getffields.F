@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.62 2015/10/25 23:23:06 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.63 2016/10/13 20:28:57 mmazloff Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -390,6 +390,20 @@ C     Runoff temperature
 #endif
      &     myTime, myIter, myThid )
 #endif /* ALLOW_RUNOFTEMP */
+
+#ifdef USE_EXFCO2
+c     Atmospheric carbon dioxide concentration
+      call EXF_SET_GEN  (
+     &     apco2file, apco2startdate, apco2period,
+     &     exf_inscal_apco2,
+     &     apco2_exfremo_intercept, apco2_exfremo_slope,
+     &     apco2, apco20, apco21, apco2mask,
+# ifdef USE_EXF_INTERPOLATION
+     &     apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
+     &     apco2_nlon, apco2_nlat, xC, yC, apco2_interpMethod,
+# endif
+     &     mytime, myiter, mythid )
+#endif
 
 #ifdef ALLOW_ROTATE_UV_CONTROLS
       if ( useCTRL ) then

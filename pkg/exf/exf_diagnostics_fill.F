@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_fill.F,v 1.15 2013/04/23 19:04:33 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_fill.F,v 1.16 2016/10/13 20:28:57 mmazloff Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -65,6 +65,9 @@ C     == local variables ==
 #endif
 #ifdef ALLOW_RUNOFTEMP
          CALL DIAGNOSTICS_FILL(runoftemp,  'EXFroft ',0,1,0,1,1,myThid)
+#endif
+#ifdef USE_EXFCO2
+         CALL DIAGNOSTICS_FILL(apco2,      'EXFapco2',0,1,0,1,1,myThid)
 #endif
 
       ENDIF

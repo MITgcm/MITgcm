@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.27 2016/09/15 00:12:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.28 2016/10/13 20:28:57 mmazloff Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -73,6 +73,9 @@ C     ' ' = no masking; 'c' = centered mask; 'w' = western mask; 's' = southern
       climsssmask  = 'c'
       climustrmask = 'w'
       climvstrmask = 's'
+#ifdef USE_EXFCO2
+      apco2mask = 'c'
+#endif
 
       IF ( useSEAICE ) THEN
 C     Avoid masking of vector fields with pkg/seaice (for B/C-grid interp.)
@@ -100,6 +103,9 @@ c      climsstmask  = ' '
 c      climsssmask  = ' '
        climustrmask = ' '
        climvstrmask = ' '
+#ifdef USE_EXFCO2
+       apco2mask = ' '
+#endif
       ENDIF
 
 C--   Complete the start date specifications for the forcing

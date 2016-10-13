@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.27 2013/10/05 19:36:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.28 2016/10/13 20:28:57 mmazloff Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -199,6 +199,12 @@ C       Print some statistics about input forcing fields
 #ifdef EXF_SEAICE_FRACTION
         IF ( areamaskfile .NE. ' ' ) THEN
           CALL MON_WRITESTATS_RL( 1, areamask,'_areamask',
+     &             maskInC, maskInC, rA , drF, dummyRL, myThid )
+        ENDIF
+#endif
+#ifdef USE_EXFCO2
+        IF ( apco2file .NE. ' ' ) THEN
+          CALL MON_WRITESTATS_RL( 1, apco2, '_apco2',
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )
         ENDIF
 #endif

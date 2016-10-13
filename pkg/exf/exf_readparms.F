@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.84 2016/09/15 00:13:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.85 2016/10/13 20:28:57 mmazloff Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -128,6 +128,10 @@ C     Surface flux data.
      & climvstrstartdate1, climvstrstartdate2,climvstrperiod,
      &   areamaskTauRelax,    climsstTauRelax, climsssTauRelax,
      &   climustrTauRelax,climvstrTauRelax
+#ifdef USE_EXFCO2
+     &  ,apco2file
+     &  ,apco2startdate1,   apco2startdate2,  apco2period
+#endif
 
       NAMELIST /EXF_NML_03/
      &   exf_inscal_hflux,  exf_inscal_sflux,      exf_inscal_evap,
@@ -176,6 +180,10 @@ C     Surface flux data.
      &     climsss_exfremo_intercept, climsss_exfremo_slope,
      &     climustr_exfremo_intercept, climustr_exfremo_slope,
      &     climvstr_exfremo_intercept, climvstr_exfremo_slope
+#ifdef USE_EXFCO2
+     &    ,exf_inscal_apco2, exf_outscal_apco2, apco2const,
+     &     apco2_exfremo_intercept, apco2_exfremo_slope
+#endif
 
 #ifdef USE_EXF_INTERPOLATION
       NAMELIST /EXF_NML_04/
@@ -227,6 +235,10 @@ C     Surface flux data.
      & climvstr_lon0, climvstr_lon_inc, climvstr_lat0, climvstr_lat_inc,
      & climvstr_nlon, climvstr_nlat, climvstr_interpMethod,
      & exf_output_interp
+# ifdef USE_EXFCO2
+     & ,apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
+     & apco2_nlon, apco2_nlat, apco2_interpMethod
+# endif
 #endif /* USE_EXF_INTERPOLATION */
 
 #ifdef ALLOW_OBCS
@@ -459,6 +471,15 @@ C     Calendar data.
       apressure_exfremo_intercept = 0.0 _d 0
       apressure_exfremo_slope = 0.0 _d 0
 
+#ifdef USE_EXFCO2
+      apco2startdate1   = 0
+      apco2startdate2   = 0
+      apco2period       = 0.0 _d 0
+      apco2const        = 0.0 _d 0
+      apco2_exfremo_intercept = 0.0 _d 0
+      apco2_exfremo_slope = 0.0 _d 0
+#endif
+
       areamaskstartdate1    = 0
       areamaskstartdate2    = 0
       areamaskperiod        = 0.0 _d 0
@@ -559,6 +580,9 @@ C     Data files.
       climsssfile        = ' '
       climustrfile       = ' '
       climvstrfile       = ' '
+#ifdef USE_EXFCO2        
+      apco2file          = ' '
+#endif
 
 C     Start dates.
       hfluxstartdate     = 0.
@@ -592,6 +616,9 @@ C     Start dates.
       climsssstartdate   = 0.
       climustrstartdate  = 0.
       climvstrstartdate  = 0.
+#ifdef USE_EXFCO2      
+      apco2startdate     = 0.
+#endif
 
 C     Initialise file type and field precision
       exf_iprec            = 32
@@ -628,6 +655,9 @@ C     Input scaling factors.
       exf_inscal_climustr  =  1. _d 0
       exf_inscal_climvstr  =  1. _d 0
       exf_inscal_areamask  =  1. _d 0
+#ifdef USE_EXFCO2
+      exf_inscal_apco2     =  1. _d 0
+#endif
 
 C     Output scaling factors.
       exf_outscal_hflux    =  1. _d 0
@@ -639,6 +669,9 @@ C     Output scaling factors.
       exf_outscal_sss      =  1. _d 0
       exf_outscal_apressure=  1. _d 0
       exf_outscal_areamask =  1. _d 0
+#ifdef USE_EXFCO2
+      exf_outscal_apco2    =  1. _d 0
+#endif
 
 #ifdef USE_EXF_INTERPOLATION
 C--   set default input location to match (in case of simple Lat-Lonp grid)
@@ -743,6 +776,13 @@ C     model grid cell-center position (leading to trivial interpolation)
       lwdown_lon_inc    = inp_dLon
       apressure_lon_inc = inp_dLon
       areamask_lon_inc  = inp_dLon
+#ifdef USE_EXFCO2
+      apco2_lon0     = inp_lon0
+      apco2_lat0     = inp_lat0
+      apco2_nlon     = gridNx
+      apco2_nlat     = gridNy
+      apco2_lon_inc  = inp_dLon
+#endif
 
       climsst_lon0    = inp_lon0
       climsss_lon0    = inp_lon0
@@ -794,6 +834,9 @@ C     model grid cell-center position (leading to trivial interpolation)
         climsss_lat_inc(j)   = inp_dLat
         climustr_lat_inc(j)  = inp_dLat
         climvstr_lat_inc(j)  = inp_dLat
+#ifdef USE_EXFCO2
+        apco2_lat_inc(j) = inp_dLat
+#endif
       ENDDO
 
       ustress_interpMethod   = 12

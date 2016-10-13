@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_init.F,v 1.8 2013/04/23 19:04:33 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_init.F,v 1.9 2016/10/13 20:28:57 mmazloff Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -200,6 +200,15 @@ C--   surface fluxes:
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#ifdef USE_EXFCO2
+      diagName  = 'EXFapco2 '
+      diagTitle = 'Atmospheric partial pressure of CO2'
+      diagUnits = '10^-6 ppm       '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
 
 #endif /* ALLOW_DIAGNOSTICS */
 

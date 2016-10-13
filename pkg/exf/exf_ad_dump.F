@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_dump.F,v 1.7 2015/10/25 23:24:20 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_dump.F,v 1.8 2016/10/13 20:28:57 mmazloff Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -145,6 +145,11 @@ cph     &        adswflux, 1, myIter, myThid )
 cph        CALL WRITE_REC_3D_RL(
 cph     &       'ADJevap.'//suff, writeBinaryPrec, 1,
 cph     &        adevap, 1, myIter, myThid )
+# endif
+# ifdef USE_EXFCO2
+        CALL WRITE_REC_3D_RL(
+     &       'ADJapco2.'//suff, writeBinaryPrec, 1,
+     &        adapco2, 1, myIter, myThid )
 # endif
 
       ENDIF
