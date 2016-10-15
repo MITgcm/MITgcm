@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.18 2016/10/13 20:28:57 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.19 2016/10/15 21:25:45 mmazloff Exp $
 C $Name:  $
 c
 c
@@ -315,12 +315,5 @@ C     zen_fsol_daily     :: incoming solar radiation (daily mean)
       _RL climvstr       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL climvstr0      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL climvstr1      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-
-#ifdef USE_EXFCO2
-      COMMON /exf_atm_pco2/ apco2, apco20, apco21
-      _RL apco2      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL apco20     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL apco21     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 

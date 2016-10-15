@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_check_lev3_dir.h,v 1.20 2016/10/13 20:28:57 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_check_lev3_dir.h,v 1.21 2016/10/15 21:25:46 mmazloff Exp $
 C $Name:  $
 
 #ifdef ALLOW_EXF
@@ -10,11 +10,6 @@ CADJ STORE StoreCTRLS1  = tapelev3, key = ilev_3
 # ifdef EXF_SEAICE_FRACTION
 CADJ STORE areamask0    = tapelev3, key = ilev_3
 CADJ STORE areamask1    = tapelev3, key = ilev_3
-# endif
-
-# ifdef USE_EXFCO2
-CADJ STORE apco20        = tapelev3, key = ilev_3
-CADJ STORE apco21        = tapelev3, key = ilev_3
 # endif
 
 # ifdef ALLOW_HFLUX_CONTROL

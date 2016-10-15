@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.34 2016/10/13 20:28:57 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.35 2016/10/15 21:25:46 mmazloff Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -319,18 +319,6 @@ C      will be over-written at first time-step when calling EXF_SET_UV.
      &     myThid )
 # endif /* ALLOW_RUNOFTEMP */
 #endif /* ALLOW_RUNOFF */
-
-#ifdef USE_EXFCO2
-      call exf_init_gen (
-     &     apco2file, apco2period, exf_inscal_apco2, apco2mask,
-     &     apco2const, apco2, apco20, apco21,
-# ifdef USE_EXF_INTERPOLATION
-     &     apco2_lon0, apco2_lon_inc,
-     &     apco2_lat0, apco2_lat_inc,
-     &     apco2_nlon, apco2_nlat, xC, yC, apco2_interpMethod,
-# endif
-     &     mythid )
-#endif
 
 #ifdef ALLOW_CLIMSST_RELAXATION
       CALL EXF_INIT_GEN (

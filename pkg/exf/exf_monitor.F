@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.28 2016/10/13 20:28:57 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.29 2016/10/15 21:25:46 mmazloff Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -27,6 +27,10 @@ C     !USES:
 #endif
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
+#endif
+#ifdef ALLOW_BLING
+# include "BLING_OPTIONS.h"
+# include "BLING_VARS.h"
 #endif
 
 C     !INPUT PARAMETERS:

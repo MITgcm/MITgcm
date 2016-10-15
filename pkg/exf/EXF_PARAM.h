@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.37 2016/10/13 20:28:57 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.38 2016/10/15 21:25:45 mmazloff Exp $
 C $Name:  $
 C
 C     ==================================================================
@@ -272,17 +272,6 @@ C           fieldperiod=-12 means input file contains 12 monthly means
       _RL     apressure_exfremo_slope
       character*1 apressuremask
 
-#ifdef USE_EXFCO2
-      integer apco2startdate1
-      integer apco2startdate2
-      _RL     apco2startdate
-      _RL     apco2period
-      _RL     apco2const
-      _RL     apco2_exfremo_intercept
-      _RL     apco2_exfremo_slope
-      character*1 apco2mask
-#endif
-
       integer areamaskstartdate1
       integer areamaskstartdate2
       _RL     areamaskstartdate
@@ -398,9 +387,6 @@ c     File names.
       character*(128) climsssfile
       character*(128) climustrfile
       character*(128) climvstrfile
-#ifdef USE_EXFCO2
-      character*(128) apco2file
-#endif
 
       COMMON /EXF_PARAM_L/
      &       useExfCheckRange,
@@ -441,9 +427,6 @@ c     File names.
      &       siobWstartdate1,   siobWstartdate2,
      &       apressurestartdate1,apressurestartdate2,
      &       areamaskstartdate1,areamaskstartdate2
-#ifdef USE_EXFCO2
-     &      ,apco2startdate1,apco2startdate2
-#endif
 
       COMMON /EXF_PARAM_R/
      &       repeatPeriod,      exf_monFreq,
@@ -475,9 +458,6 @@ c     File names.
      &       siobWperiod,       siobWstartdate,
      &       apressureperiod,   apressurestartdate,
      &       areamaskperiod,   areamaskstartdate,
-#ifdef USE_EXFCO2
-     &       apco2period,      apco2startdate,
-#endif
      &       hfluxconst,
      &       atempconst,
      &       aqhconst,
@@ -499,9 +479,6 @@ c     File names.
      &       apressureconst,
      &       areamaskTauRelax,
      &       areamaskconst
-#ifdef USE_EXFCO2
-     &      ,apco2const
-#endif
 
       COMMON /EXF_PARAM_TREND_REMOVAL/
      &       hflux_exfremo_intercept,
@@ -524,9 +501,6 @@ c     File names.
      &       lwdown_exfremo_intercept,
      &       apressure_exfremo_intercept,
      &       areamask_exfremo_intercept,
-#ifdef USE_EXFCO2
-     &       apco2_exfremo_intercept,
-#endif 
      &       hflux_exfremo_slope,
      &       atemp_exfremo_slope,
      &       aqh_exfremo_slope,
@@ -547,9 +521,6 @@ c     File names.
      &       lwdown_exfremo_slope,
      &       apressure_exfremo_slope,
      &       areamask_exfremo_slope
-#ifdef USE_EXFCO2
-     &       ,apco2_exfremo_slope
-#endif   
 
       COMMON /EXF_PARAM_C/
      &       hfluxfile,     hfluxmask,
@@ -572,9 +543,6 @@ c     File names.
      &       lwdownfile,    lwdownmask,
      &       apressurefile, apressuremask,
      &       areamaskfile,  areamaskmask
-#ifdef USE_EXFCO2
-     &      ,apco2file, apco2mask
-#endif
 
       COMMON /EXF_CLIM_I/
      &       climsststartdate1,  climsststartdate2,
@@ -646,9 +614,6 @@ c     exf_outscale_*    output scaling factors
       _RL     exf_inscal_climustr
       _RL     exf_inscal_climvstr
       _RL     exf_inscal_areamask
-#ifdef USE_EXFCO2
-      _RL     exf_inscal_apco2
-#endif
 
       _RL     exf_outscal_hflux
       _RL     exf_outscal_sflux
@@ -659,9 +624,6 @@ c     exf_outscale_*    output scaling factors
       _RL     exf_outscal_sss
       _RL     exf_outscal_apressure
       _RL     exf_outscal_areamask
-#ifdef USE_EXFCO2
-      _RL     exf_outscal_apco2
-#endif
 
       COMMON /EXF_PARAM_SCAL/
      &                      exf_inscal_hflux
@@ -696,10 +658,6 @@ c     exf_outscale_*    output scaling factors
      &                    , exf_outscal_sss
      &                    , exf_outscal_apressure
      &                    , exf_outscal_areamask
-#ifdef USE_EXFCO2
-     &                    , exf_inscal_apco2
-     &                    , exf_outscal_apco2
-#endif
 
 #ifndef USE_EXF_INTERPOLATION
 c-- set dummy dimension 1
@@ -792,11 +750,6 @@ C    uvInterp_climstr   :: interpolate clim stress u & v components together
       _RL areamask_lon0,areamask_lon_inc
       _RL areamask_lat0,areamask_lat_inc(MAX_LAT_INC)
       INTEGER areamask_nlon,areamask_nlat,areamask_interpMethod
-#ifdef USE_EXFCO2
-      _RL apco2_lon0, apco2_lon_inc
-      _RL apco2_lat0, apco2_lat_inc(MAX_LAT_INC)
-      INTEGER apco2_nlon, apco2_nlat, apco2_interpMethod
-#endif
 
       LOGICAL exf_output_interp
       LOGICAL uvInterp_stress
@@ -845,10 +798,6 @@ C    uvInterp_climstr   :: interpolate clim stress u & v components together
      & apressure_lat0,apressure_lat_inc,
      & areamask_lon0,areamask_lon_inc,
      & areamask_lat0,areamask_lat_inc
-#ifdef USE_EXFCO2
-     & ,apco2_lon0, apco2_lon_inc,
-     & apco2_lat0, apco2_lat_inc
-#endif
 
       COMMON /EXF_INTERPOLATION_I/
      & ustress_nlon, ustress_nlat, ustress_interpMethod,
@@ -870,9 +819,6 @@ C    uvInterp_climstr   :: interpolate clim stress u & v components together
      & lwdown_nlon, lwdown_nlat, lwdown_interpMethod,
      & apressure_nlon,apressure_nlat,apressure_interpMethod,
      & areamask_nlon,areamask_nlat,areamask_interpMethod
-#ifdef USE_EXFCO2
-     & ,apco2_nlon, apco2_nlat,apco2_interpMethod
-#endif
 
       _RL climsst_lon0, climsst_lon_inc
       _RL climsst_lat0, climsst_lat_inc(MAX_LAT_INC)

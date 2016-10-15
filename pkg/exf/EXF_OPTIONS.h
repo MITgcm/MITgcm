@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.33 2016/10/13 20:28:57 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.34 2016/10/15 21:25:45 mmazloff Exp $
 C $Name:  $
 
 CBOP
@@ -175,9 +175,6 @@ C   unless to reproduce old results (obtained with inconsistent old code)
 #ifdef ALLOW_DOWNWARD_RADIATION
 # define EXF_LWDOWN_WITH_EMISSIVITY
 #endif
-
-C Use EXF package to prescribe atmopsheric pCO2 for use in BGC packages
-#undef  USE_EXFCO2
 
 C   Relaxation to monthly climatologies.
 #define ALLOW_CLIMSST_RELAXATION
