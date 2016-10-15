@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_main.F,v 1.4 2016/10/12 22:34:27 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_main.F,v 1.5 2016/10/15 21:30:43 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -28,15 +28,17 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "BLING_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+# include "EXF_PARAM.h"
 # include "EXF_FIELDS.h"
 #endif
 #ifdef ALLOW_AUTODIFF
 # include "tamc.h"
 #endif
+#include "BLING_VARS.h"
 
 C     === Routine arguments ===
 C     bi,bj         :: tile indices
@@ -122,6 +124,23 @@ c  Initialize local variables
         fluxO2(i,j)          = 0. _d 0
        ENDDO
       ENDDO
+c-----------------------------------------------------------
+c Get Atmospheric carbon dioxide concentration from EXF 
+c if decide to use exf for multiple input fields should put this
+c in subroutine
+#ifdef USE_EXFCO2
+c     Atmospheric carbon dioxide concentration
+      call EXF_SET_GEN  (
+     &     apco2file, apco2startdate, apco2period,
+     &     exf_inscal_apco2,
+     &     apco2_exfremo_intercept, apco2_exfremo_slope,
+     &     apco2, apco20, apco21, apco2mask,
+# ifdef USE_EXF_INTERPOLATION
+     &     apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
+     &     apco2_nlon, apco2_nlat, xC, yC, apco2_interpMethod,
+# endif
+     &     mytime, myiter, mythid )
+#endif
 
 c-----------------------------------------------------------
 c  carbon and oxygen air-sea interaction
@@ -246,6 +265,9 @@ C-----------------------------------------------------------
         CALL DIAGNOSTICS_FILL(pCO2    ,'BLGPCO2 ',0,1 ,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(fluxCO2 ,'BLGCFLX ',0,1 ,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(fluxO2  ,'BLGOFLX ',0,1 ,2,bi,bj,myThid)
+#ifdef USE_EXFCO2
+         CALL DIAGNOSTICS_FILL(apco2  ,'BLGapco2',0,1,0,1,1,myThid)
+#endif
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 

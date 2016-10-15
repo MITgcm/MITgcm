@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_diagnostics_init.F,v 1.4 2016/10/12 22:34:27 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_diagnostics_init.F,v 1.5 2016/10/15 21:30:43 mmazloff Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -410,6 +410,14 @@ C     Define diagnostics Names :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+#ifdef USE_EXFCO2
+      diagName  = 'EXFapco2 '
+      diagTitle = 'Atmospheric partial pressure of CO2'
+      diagUnits = '10^-6 ppm       '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
 
 #endif /* ALLOW_DIAGNOSTICS */
 

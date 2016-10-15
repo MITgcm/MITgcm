@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_airseaflux.F,v 1.3 2016/10/12 22:34:27 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_airseaflux.F,v 1.4 2016/10/15 21:30:43 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -31,10 +31,11 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "BLING_VARS.h"
 #ifdef ALLOW_EXF
+# include "EXF_PARAM.h"
 # include "EXF_FIELDS.h"
 #endif
+#include "BLING_VARS.h"
 #ifdef ALLOW_AUTODIFF
 # include "tamc.h"
 #endif

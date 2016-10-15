@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_VARS.h,v 1.2 2016/09/12 20:00:27 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_VARS.h,v 1.3 2016/10/15 21:30:43 mmazloff Exp $
 C $Name:  $
 
 
@@ -9,6 +9,9 @@ C ==========================================================
        COMMON /CARBON_NEEDS/
      &                      AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
      &                      wind, FIce, Silica
+#ifdef USE_EXFCO2
+     &                      ,apco2, apco20, apco21
+#endif      
       _RL  AtmospCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  pH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -17,7 +20,11 @@ C ==========================================================
       _RL  wind(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  FIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Silica(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
+#ifdef USE_EXFCO2
+      _RL apco2      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL apco20     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL apco21     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif 
 
 C ==========================================================
 C   Carbon and oxygen chemistry parameters
@@ -78,6 +85,16 @@ C      Schmidt number coefficients
       _RL  sca1,sca2,sca3,sca4
       _RL  sox1,sox2,sox3,sox4
 
+#ifdef USE_EXFCO2
+      integer apco2startdate1
+      integer apco2startdate2
+      _RL     apco2startdate
+      _RL     apco2period
+      _RL     apco2const
+      _RL     apco2_exfremo_intercept
+      _RL     apco2_exfremo_slope
+      character*1 apco2mask
+#endif
 
 C ==========================================================
 C   Bling inputs (specified in data.bling)
@@ -89,6 +106,14 @@ C ==========================================================
      &        bling_forcingPeriod, bling_forcingCycle,
      &        bling_pCO2, 
      &        river_conc_trac
+#ifdef USE_EXFCO2
+     &       ,apco2startdate1,apco2startdate2,
+     &        apco2period,      apco2startdate,
+     &        apco2const,
+     &        apco2_exfremo_intercept,
+     &        apco2_exfremo_slope,
+     &        apco2file, apco2mask
+#endif
 
 C      bling_windFile      :: file name of wind speeds
 C      bling_atmospFile    :: file name of atmospheric pressure
@@ -99,18 +124,48 @@ C      bling_forcingPeriod :: period of forcing for biogeochemistry (seconds)
 C      bling_forcingCycle  :: periodic forcing parameter for biogeochemistry 
 C      bling_pCO2          :: Atmospheric pCO2 to be read in data.bling
 C      river_conc_trac     :: River concentration, bgc tracers
+C      apco2               :: Atmospheric pCO2 to be read in with exf pkg
 
       CHARACTER*(MAX_LEN_FNAM) bling_windFile
       CHARACTER*(MAX_LEN_FNAM) bling_atmospFile
       CHARACTER*(MAX_LEN_FNAM) bling_iceFile
       CHARACTER*(MAX_LEN_FNAM) bling_ironFile
       CHARACTER*(MAX_LEN_FNAM) bling_silicaFile
+#ifdef USE_EXFCO2
+      CHARACTER*(MAX_LEN_FNAM) apco2file
+#endif
       _RL     bling_forcingPeriod
       _RL     bling_forcingCycle
       _RL     bling_pCO2
 c      _RL     river_conc_trac(PTRACERS_num)
       _RL     river_conc_trac(8)
 
+C ==========================================================
+C   EXF input/output scaling factors for unit conversion if needed
+C ==========================================================
+#ifdef USE_EXFCO2
+      _RL     exf_inscal_apco2
+      _RL     exf_outscal_apco2
+      COMMON /BLG_PARAM_SCAL/
+     &                    exf_inscal_apco2,
+     &                    exf_outscal_apco2
+#endif
+
+C ==========================================================
+C   EXF interpolation needs 
+C ==========================================================
+#ifdef USE_EXFCO2
+#ifdef USE_EXF_INTERPOLATION
+      _RL apco2_lon0, apco2_lon_inc
+      _RL apco2_lat0, apco2_lat_inc(MAX_LAT_INC)
+      INTEGER apco2_nlon, apco2_nlat, apco2_interpMethod
+
+      COMMON /BLG_EXF_INTERPOLATION/
+     &        apco2_lon0, apco2_lon_inc,
+     &        apco2_lat0, apco2_lat_inc,
+     &        apco2_nlon, apco2_nlat,apco2_interpMethod
+#endif
+#endif
 
 C ==========================================================
 C   Ecosystem variables and parameters

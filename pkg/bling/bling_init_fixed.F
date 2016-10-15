@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_init_fixed.F,v 1.1 2016/05/19 20:29:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_init_fixed.F,v 1.2 2016/10/15 21:30:43 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -60,6 +60,13 @@ C coefficients for determining saturation O2
       oB2= -1.03410 _d -2
       oB3= -8.17083 _d -3
       oC0= -4.88682 _d -7
+
+#ifdef USE_EXFCO2
+      apco2mask = 'c'
+      IF ( useSEAICE ) THEN
+       apco2mask = ' '
+      ENDIF
+#endif
 
 C     Set other constant/flag
 

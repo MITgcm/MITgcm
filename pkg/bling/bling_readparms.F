@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_readparms.F,v 1.1 2016/05/19 20:29:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_readparms.F,v 1.2 2016/10/15 21:30:43 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -17,6 +17,16 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "EXF_OPTIONS.h"
+#ifdef USE_EXF_INTERPOLATION
+# ifdef ALLOW_EXCH2
+# include "W2_EXCH2_SIZE.h"
+# include "W2_EXCH2_TOPOLOGY.h"
+# endif /* ALLOW_EXCH2 */
+# include "SET_GRID.h"
+#endif /* USE_EXF_INTERPOLATION */
+#include "EXF_PARAM.h"
+#include "EXF_CONSTANTS.h"
 #include "BLING_VARS.h"
 
 C     === Routine arguments ===
@@ -110,6 +120,16 @@ C ==========================================================
      &          bling_ironFile, bling_silicaFile, 
      &          bling_forcingPeriod, bling_forcingCycle,
      &          bling_pCO2, river_conc_trac
+#ifdef USE_EXFCO2
+     &          ,apco2file
+     &          ,apco2startdate1,   apco2startdate2,  apco2period
+     &          ,exf_inscal_apco2, exf_outscal_apco2, apco2const,
+     &          apco2_exfremo_intercept, apco2_exfremo_slope
+#ifdef USE_EXF_INTERPOLATION
+     &          ,apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
+     &          apco2_nlon, apco2_nlat, apco2_interpMethod
+#endif /* USE_EXF_INTERPOLATION */
+#endif
 
 C ==========================================================
 C     permil   :: set carbon mol/m3 <---> mol/kg conversion factor
@@ -167,6 +187,11 @@ C     epsln           :: a very small number
 C     secperday       :: seconds in a day = 24*60*60
       _RL secperday
       integer k
+#ifdef USE_EXF_INTERPOLATION
+      INTEGER gridNx, gridNy
+      INTEGER j
+      _RL inp_lon0, inp_lat0, inp_dLon, inp_dLat
+#endif
 
       _BEGIN_MASTER(myThid)
 
@@ -248,6 +273,40 @@ cav      k_PO4                = 1. _d -8 / permil
        river_conc_trac(k) = 0. _d 0
       ENDDO
 
+#ifdef USE_EXFCO2
+      apco2startdate1   = 0
+      apco2startdate2   = 0
+      apco2period       = 0.0 _d 0
+      apco2const        = 0.0 _d 0
+      apco2_exfremo_intercept = 0.0 _d 0
+      apco2_exfremo_slope = 0.0 _d 0
+      apco2file          = ' '
+      apco2startdate     = 0.
+      exf_inscal_apco2     =  1. _d 0
+      exf_outscal_apco2    =  1. _d 0
+#ifdef USE_EXF_INTERPOLATION
+C--   set default input location to match (in case of simple Lat-Lonp
+Cgrid)
+C     model grid cell-center position (leading to trivial interpolation)
+      inp_lon0 = xgOrigin + delX(1)*exf_half
+      inp_lat0 = ygOrigin + delY(1)*exf_half
+      inp_dLon = delX(1)
+      inp_dLat = delY(1)
+      apco2_lon0     = inp_lon0
+      apco2_lat0     = inp_lat0
+      apco2_nlon     = gridNx
+      apco2_nlat     = gridNy
+      apco2_lon_inc  = inp_dLon
+      DO j=1,MAX_LAT_INC
+        IF (j.LT.gridNy) THEN
+          inp_dLat = (delY(j) + delY(j+1))*exf_half
+        ELSE
+          inp_dLat = 0.
+        ENDIF
+        apco2_lat_inc(j) = inp_dLat
+      ENDDO
+#endif /* USE_EXF_INTERPOLATION */
+#endif
 
 c default periodic forcing to same as for physics
        bling_forcingPeriod = externForcingPeriod
