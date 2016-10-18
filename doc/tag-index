@@ -1,12 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2278 2016/10/15 21:27:43 mmazloff Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2279 2016/10/18 23:36:38 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint66a (2016/10/18)
 o pkg/bling:
-  - BLING package now loads in atmospheric pCO2 file using exf package routines 
-    Enable with #define USE_EXFCO2 in BLING_OPTIONS.h 
+  - BLING package now loads in atmospheric pCO2 file using exf package routines
+    Enable with #define USE_EXFCO2 in BLING_OPTIONS.h
 o model/src & pkg/ptracers:
   - with INCLUDE_IMPLVERTADV_CODE defined, also call MOM_U,V_IMPLICIT_R &
     GAD_IMPLICIT_R (instead of IMPLDIFF) when just implicitViscosity and
