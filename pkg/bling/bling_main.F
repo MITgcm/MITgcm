@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_main.F,v 1.5 2016/10/15 21:30:43 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_main.F,v 1.6 2016/10/19 21:41:02 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -90,6 +90,7 @@ C     runoff_bgc           :: tendency due to river runoff
       _RL  G_DON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  G_DOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  G_CaCO3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  NCP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  bio_DIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  surf_DIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  surf_O2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -113,6 +114,7 @@ c  Initialize local variables
          G_DON(i,j,k)        = 0. _d 0
          G_DOP(i,j,k)        = 0. _d 0
          G_CaCO3(i,j,k)      = 0. _d 0
+         NCP(i,j,k)          = 0. _d 0
          irr_eff(i,j,k)      = 0. _d 0
         ENDDO
         DO k=1,8
@@ -170,7 +172,8 @@ C  biological activity
      I                 PTR_PHY, 
 #endif
      U                 G_NO3, G_PO4, G_FE,
-     U                 G_O2, G_DON, G_DOP, G_CACO3,
+     U                 G_O2, G_DON, G_DOP, 
+     U                 G_CACO3, NCP,
      I                 bi, bj, imin, imax, jmin, jmax,
      I                 myIter, myTime, myThid)
 
@@ -205,8 +208,7 @@ c  Carbon system
               G_ALK(i,j,k) = - G_NO3(i,j,k)
      &              + 2. _d 0*G_CaCO3(i,j,k)
 
-              G_DIC(i,j,k) = CtoN * G_NO3(i,j,k)
-     &                   + G_CaCO3(i,j,k)
+              G_DIC(i,j,k) = -NCP(i,j,k) + G_CaCO3(i,j,k)
 
 c  For diagnostics
               bio_DIC(i,j,k) = G_DIC(i,j,k)

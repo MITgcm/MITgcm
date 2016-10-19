@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.5 2016/09/12 23:43:06 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.6 2016/10/19 21:41:02 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -11,7 +11,8 @@ CBOP
      I           PTR_PHY,
 #endif 
      O           G_NO3, G_PO4, G_FE, 
-     O           G_O2, G_DON, G_DOP, G_CACO3,           
+     O           G_O2, G_DON, G_DOP, 
+     O           G_CACO3, NCP,
      I           bi, bj, imin, imax, jmin, jmax,
      I           myIter, myTime, myThid )
 
@@ -756,7 +757,10 @@ c  Oxic
      &                   + DON_remin(i,j,k)
           ENDIF    
 
-          NCP(i,j,k) = (-G_NO3(i,j,k) + N_fix(i,j,k)) * CtoN
+          NCP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)-
+     &                   - N_recycle(i,j,k) - (1. _d 0 - phi_DOM) *
+     &                   (N_reminp(i,j,k) - N_remindvm(i,j,k))
+     &                   - DON_remin(i,j,k) ) * CtoN
 
 c  Iron
 c  remineralization, sediments and adsorption are all bundled into 
