@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_readparms.F,v 1.2 2016/10/15 21:30:43 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_readparms.F,v 1.3 2016/10/20 15:32:34 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -17,6 +17,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef USE_EXFCO2
 #include "EXF_OPTIONS.h"
 #ifdef USE_EXF_INTERPOLATION
 # ifdef ALLOW_EXCH2
@@ -27,6 +28,7 @@ C     === Global variables ===
 #endif /* USE_EXF_INTERPOLATION */
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
+#endif
 #include "BLING_VARS.h"
 
 C     === Routine arguments ===

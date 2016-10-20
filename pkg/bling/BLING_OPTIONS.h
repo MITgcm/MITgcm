@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_OPTIONS.h,v 1.3 2016/09/12 22:11:44 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_OPTIONS.h,v 1.4 2016/10/20 15:32:34 mmazloff Exp $
 C $Name:  $
 
 #ifndef BLING_OPTIONS_H
@@ -23,17 +23,24 @@ c (as in original BLING model)
 c Assume that phytoplankton are homogenized in the mixed layer
 #undef ML_MEAN_PHYTO
 
+c Sub grid scale sediments
+#undef  USE_SGS_SED
+
 c Determine PAR from shortwave radiation from EXF package
 #define USE_EXFQSW
 
 c Use local atmospheric pressure from EXF package for fugacity factor
 #undef USE_EXF_ATMPRES
 
-c Sub grid scale sediments
-#undef  USE_SGS_SED
-
 c Read atmospheric pCO2 values from EXF package
 #undef USE_EXFCO2
+
+c For exf undefined cannot use exf fields
+#ifndef ALLOW_EXF
+#undef USE_EXFCO2
+#undef USE_EXF_ATMPRES
+c  this one ok. In FFIELDS.h. #undef USE_EXFQSW
+#endif
 
 c In the DVM routine, assume fixed mixed layer depth 
 c (so no need to calc MLD in bling_production)
