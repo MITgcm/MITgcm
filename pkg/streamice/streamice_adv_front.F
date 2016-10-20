@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_adv_front.F,v 1.3 2014/09/09 23:09:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_adv_front.F,v 1.4 2016/10/20 15:24:24 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -147,7 +147,8 @@ CADJ STORE streamice_hmask(i,j,bi,bj)
 CADJ &     = comlev1_stream_ij, key = ikey_1
 #endif
 
-            IF (.not. STREAMICE_calve_to_mask .OR.
+!            IF (.not. STREAMICE_calve_to_mask .OR.
+             IF(
      &       STREAMICE_calve_mask (i,j,bi,bj) .eq. 1.0) THEN
 
             IF ((Gi .ge. 1) .and. (Gi .le. Nx) .and.
