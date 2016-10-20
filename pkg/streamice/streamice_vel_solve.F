@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.12 2016/07/13 09:32:45 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_solve.F,v 1.13 2016/10/20 15:22:53 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -60,7 +60,9 @@ C     LOCAL VARIABLES
 !       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 !       _RL taudy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      IF (STREAMICE_ppm_driving_stress) THEN
+      IF (STREAMICE_alt_driving_stress) THEN
+       CALL STREAMICE_DRIVING_STRESS_FD (myThid)
+      ELSEIF (STREAMICE_ppm_driving_stress) THEN
        CALL STREAMICE_DRIVING_STRESS_PPM (myThid)
       ELSE
        CALL STREAMICE_DRIVING_STRESS (myThid)

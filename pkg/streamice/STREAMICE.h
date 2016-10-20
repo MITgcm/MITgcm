@@ -249,6 +249,7 @@ C     -------------------------- LOGICAL PARAMS --------------------------------
       LOGICAL STREAMICE_allow_cpl
       LOGICAL STREAMICE_use_petsc
       LOGICAL STREAMICE_apply_firn_correction
+      LOGICAL STREAMICE_alt_driving_stress
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
 #ifdef ALLOW_PETSC
       LOGICAL STREAMICE_need2createmat

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.15 2016/03/18 19:18:29 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.16 2016/10/20 15:22:53 dgoldberg Exp $
 C $Name:  $
 
 C this needs changes
@@ -98,6 +98,7 @@ C     iUnit      :: Work variable for IO unit number
      &     STREAMICE_ADV_SCHEME, streamice_forcing_period,
      &     STREAMICE_chkfixedptconvergence,
      &     STREAMICE_chkresidconvergence,
+     &     STREAMICE_alt_driving_stress,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      &     streamice_buttr_width,
      &     useStreamiceFlowlineButtr,
@@ -309,6 +310,7 @@ C--   Default values for STREAMICE
       STREAMICE_ppm_driving_stress = .FALSE.
       STREAMICE_chkfixedptconvergence = .true.
       STREAMICE_chkresidconvergence = .true.
+      STREAMICE_alt_driving_stress = .FALSE.
       STREAMICE_h_ctrl_const_surf = .FALSE.
       STREAMICE_allow_cpl = .false.
 !       STREAMICE_hybrid_stress= .FALSE.
