@@ -4,16 +4,15 @@
 #   sed -n '1,/^# \$Header:/ p' crontab_aces.bak > crontab_aces
 #   ( echo '' ; crontab -l ) >> crontab_aces
 #-
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/crontab_aces,v 1.4 2014/05/07 16:16:04 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/crontab_aces,v 1.5 2016/10/22 17:42:16 jmc Exp $
 
 MAILTO=jmc@ocean.mit.edu
 
 #-- using scripts and putting log files in HOME dir:
-05 00  * * * cd /mit/jm_c/test_acesgrid/MITgcm_tools && cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d
-10 00  * * * /mit/jm_c/test_acesgrid/MITgcm_tools/example_scripts/ACESgrid/test_submit_aces
-#10 00  * * * /mit/jm_c/test_acesgrid/temp/test_submit_aces
+03 00  * * * cd /mit/jm_c/test_acesgrid/MITgcm_tools && cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d
+16 00  * * * /mit/jm_c/test_acesgrid/MITgcm_tools/example_scripts/ACESgrid/test_submit_aces
+#16 00  * * * /mit/jm_c/test_acesgrid/temp/test_submit_aces
 
 #-- other options:
 #10 00  * * * /mit/jm_c/test_acesgrid/MITgcm_tools/example_scripts/ACESgrid/test_submit_aces gnu mp2 pgi path mth op64 tuv
-#10 00  * * * /mit/jm_c/test_acesgrid/temp/test_submit_aces
 
