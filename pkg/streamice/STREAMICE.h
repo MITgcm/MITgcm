@@ -286,6 +286,7 @@ C      LOGICAL STREAMICE_hybrid_stress
      & STREAMICE_chkfixedptconvergence,
      & STREAMICE_chkresidconvergence,
      & STREAMICE_allow_cpl, streamice_use_petsc,
+     & STREAMICE_alt_driving_stress,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      & useStreamiceFlowlineButtr,
 #endif
