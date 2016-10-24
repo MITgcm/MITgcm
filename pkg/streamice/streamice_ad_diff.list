@@ -3,6 +3,7 @@ streamice_adv_front.f
 streamice_advect_thickness.f
 streamice_bstress_exponent.f
 streamice_cg_functions.f
+streamice_driving_stress_fd.f
 streamice_driving_stress.f
 streamice_driving_stress_ppm.f
 streamice_init_varia.f
