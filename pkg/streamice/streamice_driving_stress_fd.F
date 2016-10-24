@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_driving_stress_fd.F,v 1.1 2016/10/20 15:22:53 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_driving_stress_fd.F,v 1.2 2016/10/24 14:14:19 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -61,8 +61,8 @@ C     LOCAL VARIABLES
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-OLy+1,sNy+OLy-1
-         DO i=1-OLx+1,sNx+OLx-1
+        DO j=1,sNy
+         DO i=1,sNx
 
           IF (streamice_hmask(i,j,bi,bj) .eq. 1) THEN
 
