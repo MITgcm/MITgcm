@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.25 2016/10/06 14:21:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.26 2016/10/26 00:46:00 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -256,6 +256,7 @@ C--   end if implicitAdvection
 
       IF ( diagonalNumber .EQ. 3 ) THEN
 C--   Solve tri-diagonal system :
+        errCode = -1
         CALL SOLVE_TRIDIAGONAL( iMin,iMax, jMin,jMax,
      I                          b5d, c5d, d5d,
      U                          gTracer,
@@ -266,6 +267,7 @@ C--   Solve tri-diagonal system :
         ENDIF
       ELSEIF ( diagonalNumber .EQ. 5 ) THEN
 C--   Solve penta-diagonal system :
+        errCode = -1
         CALL SOLVE_PENTADIAGONAL( iMin,iMax, jMin,jMax,
      I                            a5d, b5d, c5d, d5d, e5d,
      U                            gTracer,
