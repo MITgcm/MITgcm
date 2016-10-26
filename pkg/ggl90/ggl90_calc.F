@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.34 2016/01/14 17:50:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.35 2016/10/26 00:49:04 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -658,6 +658,7 @@ C      Dirichlet bottom boundary condition for TKE = GGL90TKEbottom
       ENDIF
 
 C     solve tri-diagonal system
+      errCode = -1
       CALL SOLVE_TRIDIAGONAL( iMin,iMax, jMin,jMax,
      I                        a3d, b3d, c3d,
      U                        GGL90TKE(1-OLx,1-OLy,1,bi,bj),

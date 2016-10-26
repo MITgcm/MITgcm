@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_implicit_r.F,v 1.6 2016/10/05 00:04:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_implicit_r.F,v 1.7 2016/10/26 00:49:05 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -204,6 +204,7 @@ C--   end if momImplVertAdv
 
       IF ( diagonalNumber .EQ. 3 ) THEN
 C--   Solve tri-diagonal system :
+        errCode = -1
         CALL SOLVE_TRIDIAGONAL( iMin,iMax, jMin,jMax,
      I                          b5d, c5d, d5d,
      U                          gV(1-OLx,1-OLy,1,bi,bj),
