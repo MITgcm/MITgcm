@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.26 2016/10/26 00:46:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.27 2016/10/26 21:36:03 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -73,6 +73,7 @@ C rTrans    :: vertical volume transport at interface k
 C localTr   :: local copy of tracer (for Non-Lin Adv.Scheme)
 C diagonalNumber :: number of non-zero diagonals in the matrix
 C errCode   :: > 0 if singular matrix
+C msgBuf    :: Informational/error message buffer
       INTEGER iMin,iMax,jMin,jMax
       PARAMETER( iMin = 1, iMax = sNx )
       PARAMETER( jMin = 1, jMax = sNy )
@@ -94,7 +95,10 @@ C errCode   :: > 0 if singular matrix
       _RL af (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL div(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL flx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif
+# ifdef SOLVE_DIAGONAL_LOWMEMORY
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+# endif /* SOLVE_DIAGONAL_LOWMEMORY */
+#endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
 C--   no need to solve anything with only 1 level:
@@ -297,7 +301,9 @@ C--   Set diagnostic suffix for the current tracer
             flx(i,j) = 0. _d 0
           ENDDO
          ENDDO
+C--      start diagnostics k loop
          DO k= Nr,1,-1
+
           IF ( implicitDiffusion .AND. k.GE.2 ) THEN
             DO j=jMin,jMax
              DO i=iMin,iMax
@@ -320,6 +326,7 @@ cc#endif
              ENDDO
             ENDDO
           ENDIF
+
 C-  Note: Needs to explicitly increment counter (call DIAGNOSTICS_COUNT)
 C         since skipping k=1 DIAGNOSTICS_FILL call.
           IF ( diagDif .AND. k.GE.2 ) THEN
@@ -333,7 +340,20 @@ C         since skipping k=1 DIAGNOSTICS_FILL call.
            ENDIF
 #endif /* ALLOW_LAYERS */
           ENDIF
+
           IF ( diagAdv ) THEN
+#ifdef SOLVE_DIAGONAL_LOWMEMORY
+           diagName = 'ADVr'//diagSufx
+           WRITE(msgBuf,'(4A)') 'GAD_IMPLICIT_R: ',
+     &      'unable to compute Diagnostic "', diagName, '" with'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(4A)') 'GAD_IMPLICIT_R: ',
+     &      '#define SOLVE_DIAGONAL_LOWMEMORY (in CPP_OPTIONS.h)'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           STOP 'ABNORMAL END: S/R GAD_IMPLICIT_R'
+#endif /* SOLVE_DIAGONAL_LOWMEMORY */
            km1=MAX(1,k-1)
            km2=MAX(1,k-2)
            kp1=MIN(Nr,k+1)
@@ -418,6 +438,8 @@ cc#endif
            ENDIF
 #endif /* ALLOW_LAYERS */
           ENDIF
+
+C--      end diagnostics k loop
          ENDDO
         ENDIF
       ENDIF
