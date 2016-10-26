@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2279 2016/10/18 23:36:38 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2280 2016/10/26 00:54:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o model/src:
+  - modify SOLVE_DIAGONAL_LOWMEMORY version of solve_tridiagonal.F
+    & solve_pentadiagonal.F to enable to re-used inverse matrix for solving
+    similar A.X'=Y' system (with same matrix A) in subsequent calls;
+    switch based on errCode (In/Out) argument value; in calling routines,
+    initialise errCode before first call.
 
 checkpoint66a (2016/10/18)
 o pkg/bling:
