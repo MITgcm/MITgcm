@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_remineralization.F,v 1.6 2016/10/03 16:45:38 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_remineralization.F,v 1.7 2016/10/27 17:55:31 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -231,7 +231,7 @@ C  Maximum value added for numerical stability.
 
            POC_sed = PONflux_l * CtoN
 
-           Fe_sed(i,j,k) = min(1. _d -11,
+           Fe_sed(i,j,k) = min(1. _d -13,
      &            max(epsln, FetoC_sed * POC_sed * recip_drF(k)
      &            *recip_hFacC(i,j,k,bi,bj)))
 

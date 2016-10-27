@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_main.F,v 1.6 2016/10/19 21:41:02 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_main.F,v 1.7 2016/10/27 17:55:31 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -126,24 +126,6 @@ c  Initialize local variables
         fluxO2(i,j)          = 0. _d 0
        ENDDO
       ENDDO
-c-----------------------------------------------------------
-c Get Atmospheric carbon dioxide concentration from EXF 
-c if decide to use exf for multiple input fields should put this
-c in subroutine
-#ifdef USE_EXFCO2
-c     Atmospheric carbon dioxide concentration
-      call EXF_SET_GEN  (
-     &     apco2file, apco2startdate, apco2period,
-     &     exf_inscal_apco2,
-     &     apco2_exfremo_intercept, apco2_exfremo_slope,
-     &     apco2, apco20, apco21, apco2mask,
-# ifdef USE_EXF_INTERPOLATION
-     &     apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
-     &     apco2_nlon, apco2_nlat, xC, yC, apco2_interpMethod,
-# endif
-     &     mytime, myiter, mythid )
-#endif
-
 c-----------------------------------------------------------
 c  carbon and oxygen air-sea interaction
        CALL BLING_AIRSEAFLUX(

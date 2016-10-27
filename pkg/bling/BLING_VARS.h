@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_VARS.h,v 1.3 2016/10/15 21:30:43 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_VARS.h,v 1.4 2016/10/27 17:55:31 mmazloff Exp $
 C $Name:  $
 
 
@@ -102,7 +102,8 @@ C ==========================================================
 
        COMMON /BLING_INPUTS/
      &        bling_windFile, bling_atmospFile, bling_iceFile,
-     &        bling_ironFile, bling_silicaFile, 
+     &        bling_ironFile, bling_silicaFile,
+     &        bling_psmFile, bling_plgFile, bling_pdiazFile, 
      &        bling_forcingPeriod, bling_forcingCycle,
      &        bling_pCO2, 
      &        river_conc_trac
@@ -120,6 +121,9 @@ C      bling_atmospFile    :: file name of atmospheric pressure
 C      bling_iceFile       :: file name of sea ice fraction
 C      bling_ironFile      :: file name of aeolian iron flux
 C      bling_silicaFile    :: file name of surface silica
+C      bling_psmFile       :: file name of init small phyto biomass
+C      bling_plgFile       :: file name of init lg phyto biomass
+C      bling_pdiazFile     :: file name of init diaz biomass
 C      bling_forcingPeriod :: period of forcing for biogeochemistry (seconds)
 C      bling_forcingCycle  :: periodic forcing parameter for biogeochemistry 
 C      bling_pCO2          :: Atmospheric pCO2 to be read in data.bling
@@ -131,6 +135,9 @@ C      apco2               :: Atmospheric pCO2 to be read in with exf pkg
       CHARACTER*(MAX_LEN_FNAM) bling_iceFile
       CHARACTER*(MAX_LEN_FNAM) bling_ironFile
       CHARACTER*(MAX_LEN_FNAM) bling_silicaFile
+      CHARACTER*(MAX_LEN_FNAM) bling_psmFile
+      CHARACTER*(MAX_LEN_FNAM) bling_plgFile
+      CHARACTER*(MAX_LEN_FNAM) bling_pdiazFile
 #ifdef USE_EXFCO2
       CHARACTER*(MAX_LEN_FNAM) apco2file
 #endif

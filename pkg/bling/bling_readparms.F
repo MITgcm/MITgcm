@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_readparms.F,v 1.3 2016/10/20 15:32:34 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_readparms.F,v 1.4 2016/10/27 17:55:31 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -119,7 +119,8 @@ C ==========================================================
 
       NAMELIST /BLING_FORCING/
      &          bling_windFile, bling_atmospFile, bling_iceFile,
-     &          bling_ironFile, bling_silicaFile, 
+     &          bling_ironFile, bling_silicaFile,
+     &          bling_psmFile, bling_plgFile, bling_PdiazFile,
      &          bling_forcingPeriod, bling_forcingCycle,
      &          bling_pCO2, river_conc_trac
 #ifdef USE_EXFCO2
@@ -270,6 +271,9 @@ cav      k_PO4                = 1. _d -8 / permil
       bling_iceFile   = ' '
       bling_ironFile  = ' '
       bling_silicaFile= ' '
+      bling_psmFile= ' '
+      bling_plgFile= ' '
+      bling_pdiazFile= ' '
       bling_pCO2    = 278. _d -6
       DO k=1,8
        river_conc_trac(k) = 0. _d 0
