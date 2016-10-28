@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_fields_load.F,v 1.2 2016/10/15 22:57:35 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_fields_load.F,v 1.3 2016/10/28 01:57:12 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -130,25 +130,6 @@ C     data for the period ahead and the period behind myTime.
      &       myIter,myThid )
         ENDIF
 
-C GET CORRECT FIRST RECORD
-c-----------------------------------------------------------
-c Get Atmospheric carbon dioxide concentration from EXF 
-c if decide to use exf for multiple input fields should put this
-c in subroutine
-#ifdef USE_EXFCO2
-c     Atmospheric carbon dioxide concentration
-      call EXF_SET_GEN  (
-     &     apco2file, apco2startdate, apco2period,
-     &     exf_inscal_apco2,
-     &     apco2_exfremo_intercept, apco2_exfremo_slope,
-     &     apco2, apco20, apco21, apco2mask,
-# ifdef USE_EXF_INTERPOLATION
-     &     apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
-     &     apco2_nlon, apco2_nlat, xC, yC, apco2_interpMethod,
-# endif
-     &     mytime, myiter, mythid )
-#endif
-
 C--   fill-in overlap after loading temp arrays:
         _EXCH_XY_RS(dicwind0, myThid )
         _EXCH_XY_RS(dicwind1, myThid )
@@ -244,6 +225,22 @@ C endif for BLING_forcingCycle
 #endif
        ENDDO
       ENDDO
+
+c-----------------------------------------------------------
+c Get Atmospheric carbon dioxide concentration from PKG/EXF 
+#ifdef USE_EXFCO2
+c     Atmospheric carbon dioxide concentration
+      call EXF_SET_GEN  (
+     &     apco2file, apco2startdate, apco2period,
+     &     exf_inscal_apco2,
+     &     apco2_exfremo_intercept, apco2_exfremo_slope,
+     &     apco2, apco20, apco21, apco2mask,
+# ifdef USE_EXF_INTERPOLATION
+     &     apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
+     &     apco2_nlon, apco2_nlat, xC, yC, apco2_interpMethod,
+# endif
+     &     mytime, myiter, mythid )
+#endif
 
 #endif /* ALLOW_BLING */
       RETURN
