@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_dvm.F,v 1.5 2016/09/12 20:00:28 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_dvm.F,v 1.6 2016/11/16 16:41:50 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -320,19 +320,6 @@ c  Calculate the remineralization terms as the divergence of the flux
 
        enddo
       enddo
-
-c ---------------------------------------------------------------------
-
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
-
-        CALL DIAGNOSTICS_FILL(Fe_dvm,'BLGFEDVM',0,Nr,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(N_dvm,'BLGNDVM ',0,Nr,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(P_dvm,'BLGPDVM ',0,Nr,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(dvm,'BLGDVM  ',0,Nr,2,bi,bj,myThid)
-
-      ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_BLING */
 

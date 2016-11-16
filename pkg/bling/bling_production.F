@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.7 2016/10/20 21:37:06 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.8 2016/11/16 16:41:50 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -465,6 +465,11 @@ c  Carbon-specific photosynthesis rate
           mu_diaz(i,j,k) = Pc_m_diaz * ( 1. _d 0 - exp(-irr_eff(i,j,k)
      &               /(epsln + irrk(i,j,k))))
 
+c  Temperature threshold for diazotrophs                                                                                               
+          IF (theta(i,j,k,bi,bj) .lt. 14) THEN
+           mu_diaz(i,j,k) = 0. _d 0
+          ENDIF
+
          ENDIF
         ENDDO
        ENDDO
@@ -668,12 +673,14 @@ c  remineralization of sinking organic matter
 
 c-----------------------------------------------------------
 c  remineralization from diel vertical migration
+#ifdef USE_BLING_DVM
        CALL BLING_DVM(
      I                 N_dvm,P_dvm,Fe_dvm,
      I                 PTR_O2, mld,
      O                 N_remindvm, P_remindvm, Fe_remindvm,
      I                 bi, bj, imin, imax, jmin, jmax, 
      I                 myIter, myTime, myThid)
+#endif
      
      
 c-----------------------------------------------------------
@@ -722,11 +729,6 @@ c  If anoxic
            ENDIF
           ENDIF
           
-c  Carbon flux diagnostic
-          POC_flux(i,j,k) = CtoN * N_spm(i,j,k)
-
-          NPP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)) * CtoN  
-          
 c  oxygen production through photosynthesis
           O2_prod(i,j,k) = O2toN * N_uptake(i,j,k)               
      &                     + (O2toN - 1.25 _d 0) * N_fix(i,j,k)
@@ -756,11 +758,6 @@ c  Oxic
      &                   (N_reminp(i,j,k) + N_remindvm(i,j,k))
      &                   + DON_remin(i,j,k)
           ENDIF    
-
-          NCP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)
-     &                   - N_recycle(i,j,k) - (1. _d 0 - phi_DOM) *
-     &                   (N_reminp(i,j,k) - N_remindvm(i,j,k))
-     &                   - DON_remin(i,j,k) ) * CtoN
 
 c  Iron
 c  remineralization, sediments and adsorption are all bundled into 
@@ -808,6 +805,17 @@ c  (generate negative O2; proxy for HS-).
 
           G_CaCO3(i,j,k) = CaCO3_diss(i,j,k) - CaCO3_uptake(i,j,k)
 cxx sediments not accounted for
+
+
+c  Carbon flux diagnostic
+          POC_flux(i,j,k) = CtoN * N_spm(i,j,k)
+
+          NPP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)) * CtoN
+
+          NCP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)
+     &                   - N_recycle(i,j,k) - (1. _d 0 - phi_DOM) *
+     &                   (N_reminp(i,j,k) + N_remindvm(i,j,k))
+     &                   - DON_remin(i,j,k) ) * CtoN
 
          ENDIF
 
