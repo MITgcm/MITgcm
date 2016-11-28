@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_cg2d.F,v 1.10 2012/06/17 13:13:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_cg2d.F,v 1.11 2016/11/28 23:05:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,6 +29,9 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SURFACE.h"
 #include "CG2D.h"
+#ifdef ALLOW_SOLVE4_PS_AND_DRAG
+# include "DYNVARS.h"
+#endif /* ALLOW_SOLVE4_PS_AND_DRAG */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -75,21 +78,44 @@ C     aS2d: integral in Z Ay/dY
 #endif /* ALLOW_AUTODIFF */
          ENDDO
         ENDDO
-        DO k=1,Nr
-         DO j=1,sNy+1
-          DO i=1,sNx+1
-C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
-           faceArea = _dyG(i,j,bi,bj)*drF(k)
-     &               *_hFacW(i,j,k,bi,bj)
-           aW2d(i,j,bi,bj) = aW2d(i,j,bi,bj)
-     &              + faceArea*recip_dxC(i,j,bi,bj)
-           faceArea = _dxG(i,j,bi,bj)*drF(k)
-     &               *_hFacS(i,j,k,bi,bj)
-           aS2d(i,j,bi,bj) = aS2d(i,j,bi,bj)
-     &              + faceArea*recip_dyC(i,j,bi,bj)
+#ifdef ALLOW_SOLVE4_PS_AND_DRAG
+        IF ( selectImplicitDrag.EQ.2 ) THEN
+         DO k=1,Nr
+          DO j=1,sNy+1
+           DO i=1,sNx+1
+            faceArea = _dyG(i,j,bi,bj)*drF(k)*deepFacC(k)*rhoFacC(k)
+     &                *_hFacW(i,j,k,bi,bj)
+            aW2d(i,j,bi,bj) = aW2d(i,j,bi,bj)
+     &               + faceArea*dU_psFacX(i,j,k,bi,bj)
+     &                         *recip_dxC(i,j,bi,bj)
+            faceArea = _dxG(i,j,bi,bj)*drF(k)*deepFacC(k)*rhoFacC(k)
+     &                *_hFacS(i,j,k,bi,bj)
+            aS2d(i,j,bi,bj) = aS2d(i,j,bi,bj)
+     &               + faceArea*dV_psFacY(i,j,k,bi,bj)
+     &                         *recip_dyC(i,j,bi,bj)
+           ENDDO
           ENDDO
          ENDDO
-        ENDDO
+        ELSE
+#endif /* ALLOW_SOLVE4_PS_AND_DRAG */
+         DO k=1,Nr
+          DO j=1,sNy+1
+           DO i=1,sNx+1
+C  deep-model: *deepFacC (faceArea), /deepFacC (recip_dx,y): => no net effect
+            faceArea = _dyG(i,j,bi,bj)*drF(k)
+     &                *_hFacW(i,j,k,bi,bj)
+            aW2d(i,j,bi,bj) = aW2d(i,j,bi,bj)
+     &               + faceArea*recip_dxC(i,j,bi,bj)
+            faceArea = _dxG(i,j,bi,bj)*drF(k)
+     &                *_hFacS(i,j,k,bi,bj)
+            aS2d(i,j,bi,bj) = aS2d(i,j,bi,bj)
+     &               + faceArea*recip_dyC(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+#ifdef ALLOW_SOLVE4_PS_AND_DRAG
+        ENDIF
+#endif /* ALLOW_SOLVE4_PS_AND_DRAG */
         DO j=1,sNy+1
          DO i=1,sNx+1
           aW2d(i,j,bi,bj) = aW2d(i,j,bi,bj)*cg2dNorm
@@ -113,7 +139,7 @@ C--   compute matrix main diagonal :
      &       aW2d(i,j,bi,bj) + aW2d(i+1, j ,bi,bj)
      &      +aS2d(i,j,bi,bj) + aS2d( i ,j+1,bi,bj)
      &      +freeSurfFac*cg2dNorm*recip_Bo(i,j,bi,bj)*deepFac2F(ks)
-     &                  *rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
+     &                  *rA(i,j,bi,bj)/deltaTMom/deltaTFreeSurf
      &                        )
           ENDDO
          ENDDO
@@ -124,7 +150,7 @@ C--   compute matrix main diagonal :
      &       aW2d(i,j,bi,bj) + aW2d(i+1, j ,bi,bj)
      &      +aS2d(i,j,bi,bj) + aS2d( i ,j+1,bi,bj)
      &      +freeSurfFac*cg2dNorm*recip_Bo(i,j,bi,bj)
-     &                  *rA(i,j,bi,bj)/deltaTMom/deltaTfreesurf
+     &                  *rA(i,j,bi,bj)/deltaTMom/deltaTFreeSurf
      &                        )
           ENDDO
          ENDDO

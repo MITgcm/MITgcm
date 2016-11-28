@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.27 2015/01/20 20:46:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.28 2016/11/28 23:05:05 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -25,6 +25,9 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_SOLVE4_PS_AND_DRAG
+#include "GRID.h"
+#endif /* ALLOW_SOLVE4_PS_AND_DRAG */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -78,6 +81,10 @@ C-      3D arrays
            totPhiHyd (i,j,k,bi,bj) = 0. _d 0
            rhoInSitu (i,j,k,bi,bj) = 0. _d 0
            IVDConvCount(i,j,k,bi,bj) = 0. _d 0
+#ifdef ALLOW_SOLVE4_PS_AND_DRAG
+           dU_psFacX (i,j,k,bi,bj) = 0. _d 0
+           dV_psFacY (i,j,k,bi,bj) = 0. _d 0
+#endif /* ALLOW_SOLVE4_PS_AND_DRAG */
           ENDDO
          ENDDO
         ENDDO
@@ -91,6 +98,20 @@ C-      2D arrays
           hMixLayer(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
+
+#ifdef ALLOW_SOLVE4_PS_AND_DRAG
+C--   Put some constant values (if not part of S/R INI_FIELDS):
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           dU_psFacX(i,j,k,bi,bj) = maskW(i,j,k,bi,bj)
+     &                             *recip_deepFacC(k)*recip_rhoFacC(k)
+           dV_psFacY(i,j,k,bi,bj) = maskS(i,j,k,bi,bj)
+     &                             *recip_deepFacC(k)*recip_rhoFacC(k)
+          ENDDO
+         ENDDO
+        ENDDO
+#endif /* ALLOW_SOLVE4_PS_AND_DRAG */
 
        ENDDO
       ENDDO

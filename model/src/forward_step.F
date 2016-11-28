@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.238 2016/05/23 13:12:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.239 2016/11/28 23:05:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -843,7 +843,7 @@ C     Load new Offline fields and update state-variable
 C--   Update geometric factors:
 #ifdef NONLIN_FRSURF
 C-    update hfacC,W,S and recip_hFac according to etaH(n+1) :
-       IF ( select_rStar.GT.0 ) THEN
+      IF ( select_rStar.GT.0 ) THEN
 # ifndef DISABLE_RSTAR_CODE
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE rStarFacC, rStarFacS, rStarFacW =
@@ -853,11 +853,11 @@ CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
         CALL UPDATE_R_STAR( .TRUE., myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_R_STAR       [FORWARD_STEP]',myThid)
 # endif /* DISABLE_RSTAR_CODE */
-       ELSEIF ( selectSigmaCoord.NE.0 ) THEN
+      ELSEIF ( selectSigmaCoord.NE.0 ) THEN
 # ifndef DISABLE_SIGMA_CODE
         CALL UPDATE_SIGMA( etaH, myTime, myIter, myThid )
 # endif /* DISABLE_RSTAR_CODE */
-       ELSE
+      ELSE
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hFac_surfC, hFac_surfS, hFac_surfW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
@@ -865,7 +865,7 @@ CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
         CALL TIMER_START('UPDATE_SURF_DR      [FORWARD_STEP]',myThid)
         CALL UPDATE_SURF_DR( .TRUE., myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_SURF_DR      [FORWARD_STEP]',myThid)
-       ENDIF
+      ENDIF
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hFacC, hFacS, hFacW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
@@ -878,13 +878,17 @@ CADJ STORE pC, pS, pW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 #  endif
 # endif
-C-    update also CG2D matrix (and preconditioner)
-      IF ( momStepping .AND. nonlinFreeSurf.GT.2 ) THEN
+#endif /* NONLIN_FRSURF */
+
+#if ( defined NONLIN_FRSURF || defined ALLOW_SOLVE4_PS_AND_DRAG )
+C-    update CG2D matrix (and preconditioner)
+      IF ( momStepping .AND.
+     &     ( nonlinFreeSurf.GT.2 .OR. selectImplicitDrag.EQ.2 ) ) THEN
         CALL TIMER_START('UPDATE_CG2D         [FORWARD_STEP]',myThid)
         CALL UPDATE_CG2D( myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_CG2D         [FORWARD_STEP]',myThid)
       ENDIF
-#endif /* NONLIN_FRSURF */
+#endif /* NONLIN_FRSURF or ALLOW_SOLVE4_PS_AND_DRAG */
 
 C--   Apply Filters to u*,v* before SOLVE_FOR_PRESSURE
 #ifdef ALLOW_SHAP_FILT

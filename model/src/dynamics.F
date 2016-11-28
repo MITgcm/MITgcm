@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.177 2016/10/09 18:13:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.178 2016/11/28 23:05:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -578,7 +578,8 @@ C--     end of dynamics k loop (1:Nr)
 C--     Implicit Vertical advection & viscosity
 #if (defined (INCLUDE_IMPLVERTADV_CODE) && \
      defined (ALLOW_MOM_COMMON) && !(defined ALLOW_AUTODIFF))
-        IF ( momImplVertAdv .OR. implicitViscosity ) THEN
+        IF ( momImplVertAdv .OR. implicitViscosity
+     &                      .OR. selectImplicitDrag.GE.1 ) THEN
 C      to recover older (prior to 2016-10-05) results:
 c       IF ( momImplVertAdv ) THEN
           CALL MOM_U_IMPLICIT_R( kappaRU,
