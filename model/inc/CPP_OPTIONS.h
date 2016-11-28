@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.53 2014/08/07 21:00:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.54 2016/11/28 22:55:00 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -42,6 +42,9 @@ C o Allow latitudinally varying BryanLewis79 vertical diffusivity
 
 C o Include/exclude Implicit vertical advection code
 #define INCLUDE_IMPLVERTADV_CODE
+
+C o Include/exclude combined Surf.Pressure and Drag Implicit solver code
+#undef ALLOW_SOLVE4_PS_AND_DRAG
 
 C o Include/exclude AdamsBashforth-3rd-Order code
 #undef ALLOW_ADAMSBASHFORTH_3

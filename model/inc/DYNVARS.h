@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.49 2015/01/20 20:43:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.50 2016/11/28 22:55:00 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -108,12 +108,24 @@ C                     (for diagnostic + used GMRedi "fm07")
 C     IVDConvCount :: Impl.Vert.Diffusion convection counter:
 C                     = 0 (not convecting) or 1 (convecting)
       COMMON /DYNVARS_DIAG/
-     &                       phiHydLow, totPhiHyd,
-     &                       rhoInSitu,
-     &                       hMixLayer, IVDConvCount
+     &                phiHydLow, totPhiHyd,
+     &                rhoInSitu,
+     &                hMixLayer, IVDConvCount
       _RL  phiHydLow(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  totPhiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  rhoInSitu(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  hMixLayer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  IVDConvCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
+#ifdef ALLOW_SOLVE4_PS_AND_DRAG
+C     Variables for Implicit friction (& vert. visc) in 2-D pressure solver
+C     dU_psFacX    :: zonal velocity increment factor from (implicit) surf.
+C                     pressure gradient in X (no Units)
+C     dV_psFacY    :: merid velocity increment factor from (implicit) surf.
+C                     pressure gradient in Y (no Units)
+
+      COMMON /DYNVARS_DRAG_IN_PS/
+     &                dU_psFacX, dV_psFacY
+      _RL  dU_psFacX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  dV_psFacY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif /* ALLOW_SOLVE4_PS_AND_DRAG */
