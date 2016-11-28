@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.173 2016/04/22 08:41:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.174 2016/11/28 15:48:33 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -122,6 +122,7 @@ C--   SEAICE parameters
      & JFNKgamma_lin_min,JFNKgamma_lin_max,
      & SEAICE_JFNKepsilon, SEAICE_OLx, SEAICE_OLy,
      & SEAICE_JFNKphi, SEAICE_JFNKalpha, SEAICEuseIMEX, SEAICEuseBDF2,
+     & SEAICEuseLinRemapITD, 
      & useHibler79IceStrength, SEAICEpartFunc, SEAICEredistFunc,
      & SEAICEridgingIterMax, SEAICEsimpleRidging, SEAICEsnowFracRidge,
      & SEAICEgStar, SEAICEhStar, SEAICEaStar, SEAICEshearParm,
@@ -259,6 +260,7 @@ C     correspond to        hStar = 25, 50, 75, 100
       SEAICEmuRidging       = 3. _d 0
       SEAICEmaxRaft         = 1. _d 0
       SEAICEsnowFracRidge   = 0.5 _d 0
+      SEAICEuseLinRemapITD  = .TRUE.
 C     end ridging parampeters
       useMaykutSatVapPoly = .FALSE.
       SEAICEuseFluxForm  = .TRUE.

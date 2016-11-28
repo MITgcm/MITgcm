@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.87 2016/04/22 08:41:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.88 2016/11/28 15:48:34 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -483,6 +483,9 @@ c
 #ifdef SEAICE_ITD
       CALL WRITE_0D_I (SEAICE_multDim,INDEX_NONE,'nITD              ='
      & , ' /* number of ice thickness categories */')
+      CALL WRITE_0D_L ( SEAICEuseLinRemapITD, INDEX_NONE,
+     & 'SEAICEuseLinRemapITD  =',
+     & ' /* select linear remapping scheme for ITD */')
       CALL WRITE_0D_L ( useHibler79IceStrength, INDEX_NONE,
      & 'useHibler79IceStrength  =',
      & ' /* select ice strength parameterizationd */')

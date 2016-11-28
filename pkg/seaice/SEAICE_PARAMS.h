@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.131 2016/04/22 08:41:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.132 2016/11/28 15:48:33 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -60,6 +60,8 @@ C     SEAICEscaleSurfStress :: if TRUE, scale ice-ocean and ice-atmosphere
 C                          stress on ice by concenration (AREA) following
 C                          Connolley et al. (2004), JPO. (default = .false.)
 C     SEAICEsimpleRidging :: use Hibler(1979) ridging (default=.true.)
+C     SEAICEuseLinRemapITD :: use linear remapping (Lipscomb et al. 2001)
+C                             .TRUE. by default
 C - advection:
 C     SEAICEuseFluxForm :: use flux form for advection and diffusion
 C                          of seaice
@@ -111,6 +113,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
      &     SEAICEusePicardAsPrecon,
      &     useHibler79IceStrength, SEAICEsimpleRidging,
+     &     SEAICEuseLinRemapITD,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
      &     SEAICE_no_slip, SEAICE_maskRHS, SEAICEscaleSurfStress,
      &     SEAICE_clipVelocities, useHB87stressCoupling,
@@ -134,6 +137,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2, 
      &     SEAICEusePicardAsPrecon,
      &     useHibler79IceStrength, SEAICEsimpleRidging,
+     &     SEAICEuseLinRemapITD,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
      &     SEAICE_no_slip, SEAICE_maskRHS, SEAICEscaleSurfStress,
      &     SEAICE_clipVelocities, useHB87stressCoupling,
