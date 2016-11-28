@@ -1,6 +1,7 @@
 # SEAICE parameters
  &SEAICE_PARM01
 #usePW79thermodynamics=.FALSE.,
+ SEAICEuseLinRemapITD =.FALSE.,
  SEAICErestoreUnderIce=.TRUE.,
  SEAICE_no_Slip     = .FALSE.,
  LSR_ERROR          = 1.E-12,
