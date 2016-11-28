@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2280 2016/10/26 00:54:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2281 2016/11/28 15:53:11 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: add linear remapping scheme (Lipscomb 2001) to ITD model
+  - this is a first version that includes many regularisations that may
+    not all be necessary, to be sorted out,
+  - turned on by runtime parameter SEAICEuseLinRemapITD (true by default)
+  - change one verification experiment in seaice_itd to use and test new code
+  - seaice_growth: catch a case where the argument of log can be zero 
+    or smaller (important for code stability)
 o model/src:
   - modify SOLVE_DIAGONAL_LOWMEMORY version of solve_tridiagonal.F
     & solve_pentadiagonal.F to enable to re-used inverse matrix for solving
