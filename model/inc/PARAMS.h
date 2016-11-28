@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.283 2016/04/04 21:29:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.284 2016/11/28 22:47:42 jmc Exp $
 C $Name:  $
 C
 
@@ -185,6 +185,11 @@ C                           =3: use full (Hyd+NH) dynamical pressure
 C     selectAddFluid      :: option to add mass source/sink of fluid in the interior
 C                            (3-D generalisation of oceanic real-fresh water flux)
 C                           =0 off ; =1 add fluid ; =-1 virtual flux (no mass added)
+C     selectImplicitDrag  :: select Implicit treatment of bottom/top drag
+C                           = 0: fully explicit
+C                           = 1: implicit on provisional velocity
+C                                (i.e., before grad.Eta increment)
+C                           = 2: fully implicit (combined with Impl Surf.Press)
 C     momForcingOutAB     :: =1: take momentum forcing contribution
 C                            out of (=0: in) Adams-Bashforth time stepping.
 C     tracForcingOutAB    :: =1: take tracer (Temp,Salt,pTracers) forcing contribution
@@ -216,7 +221,7 @@ C                            and statistics ; higher -> more writing
      &        selectSigmaCoord,
      &        nonlinFreeSurf, select_rStar,
      &        selectNHfreeSurf, selectP_inEOS_Zc,
-     &        selectAddFluid,
+     &        selectAddFluid, selectImplicitDrag,
      &        momForcingOutAB, tracForcingOutAB,
      &        tempAdvScheme, tempVertAdvScheme,
      &        saltAdvScheme, saltVertAdvScheme,
@@ -244,6 +249,7 @@ C                            and statistics ; higher -> more writing
       INTEGER selectNHfreeSurf
       INTEGER selectP_inEOS_Zc
       INTEGER selectAddFluid
+      INTEGER selectImplicitDrag
       INTEGER momForcingOutAB, tracForcingOutAB
       INTEGER tempAdvScheme, tempVertAdvScheme
       INTEGER saltAdvScheme, saltVertAdvScheme
@@ -349,7 +355,6 @@ C     applyExchUV_early :: Apply EXCH to U,V earlier, just before integr_continu
 C     doResetHFactors   :: Do reset thickness factors @ beginning of each time-step
 C     implicitDiffusion :: Turns implicit vertical diffusion on
 C     implicitViscosity :: Turns implicit vertical viscosity on
-C     implBottomFriction :: Turns on implicit bottom friction (drag & no-slip BC)
 C     tempImplVertAdv   :: Turns on implicit vertical advection for Temperature
 C     saltImplVertAdv   :: Turns on implicit vertical advection for Salinity
 C     momImplVertAdv    :: Turns on implicit vertical advection for Momentum
@@ -418,7 +423,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
      & storePhiHyd4Phys, quasiHydrostatic, nonHydrostatic,
      & use3Dsolver, implicitIntGravWave, staggerTimeStep,
      & applyExchUV_early, doResetHFactors,
-     & implicitDiffusion, implicitViscosity, implBottomFriction,
+     & implicitDiffusion, implicitViscosity,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
      & multiDimAdvection, useMultiDimAdvec,
      & momDissip_In_AB, doAB_onGtGs,
@@ -507,7 +512,6 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL doResetHFactors
       LOGICAL implicitDiffusion
       LOGICAL implicitViscosity
-      LOGICAL implBottomFriction
       LOGICAL tempImplVertAdv
       LOGICAL saltImplVertAdv
       LOGICAL momImplVertAdv
@@ -698,7 +702,7 @@ C     alph_AB      :: Adams-Bashforth-3 primary factor
 C     beta_AB      :: Adams-Bashforth-3 secondary factor
 C     implicSurfPress :: parameter of the Crank-Nickelson time stepping :
 C                     Implicit part of Surface Pressure Gradient ( 0-1 )
-C     implicDiv2Dflow :: parameter of the Crank-Nickelson time stepping :
+C     implicDiv2DFlow :: parameter of the Crank-Nickelson time stepping :
 C                     Implicit part of barotropic flow Divergence ( 0-1 )
 C     implicitNHPress :: parameter of the Crank-Nickelson time stepping :
 C                     Implicit part of Non-Hydrostatic Pressure Gradient ( 0-1 )
@@ -792,7 +796,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & BL79LatVary,
      & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
      & tauCD, rCD, epsAB_CD,
-     & freeSurfFac, implicSurfPress, implicDiv2Dflow, implicitNHPress,
+     & freeSurfFac, implicSurfPress, implicDiv2DFlow, implicitNHPress,
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
      & gravity, recip_gravity, gBaro,
      & gravFacC, recip_gravFacC, gravFacF, recip_gravFacF,
@@ -842,7 +846,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL rotationPeriod
       _RL freeSurfFac
       _RL implicSurfPress
-      _RL implicDiv2Dflow
+      _RL implicDiv2DFlow
       _RL implicitNHPress
       _RL hFacMin
       _RL hFacMinDz
