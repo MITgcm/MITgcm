@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_implicit_r.F,v 1.7 2016/10/26 00:49:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_implicit_r.F,v 1.8 2016/11/28 23:09:12 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -126,6 +126,21 @@ C-     Main diagonal :
 C--   end if implicitDiffusion
       ENDIF
 
+#ifdef ALLOW_SOLVE4_PS_AND_DRAG
+C- Note: Should remove this #ifdef once selectImplicitDrag=1 is implemented
+      IF ( selectImplicitDrag.GE.1 ) THEN
+       IF ( no_slip_bottom .OR. selectBotDragQuadr.GE.0
+     &                     .OR. bottomDragLinear.NE.0. ) THEN
+        CALL MOM_U_BOTDRAG_IMPL(
+     I                     uVel(1-OLx,1-OLy,1,bi,bj),
+     I                     vVel(1-OLx,1-OLy,1,bi,bj),
+     I                     kappaRU,
+     U                     c5d,
+     I                     bi, bj, myIter, myThid )
+       ENDIF
+      ENDIF
+#endif /* ALLOW_SOLVE4_PS_AND_DRAG */
+
       IF ( momImplVertAdv .AND. Nr.GT.1 ) THEN
 
         diagonalNumber = 3
@@ -201,7 +216,29 @@ C--     end k loop
 C--   end if momImplVertAdv
       ENDIF
 
-      IF ( diagonalNumber .EQ. 3 ) THEN
+      IF ( diagonalNumber .EQ. 1 ) THEN
+        errCode = 0
+        DO k=1,Nr
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+            IF ( c5d(i,j,k).NE.zeroRL ) THEN
+             c5d(i,j,k) = 1. _d 0 / c5d(i,j,k)
+            ELSE
+             c5d(i,j,k) = 0. _d 0
+             errCode = 1
+            ENDIF
+          ENDDO
+         ENDDO
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+            gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)*c5d(i,j,k)
+          ENDDO
+         ENDDO
+        ENDDO
+        IF (errCode.GE.1) THEN
+          STOP 'MOM_IMPLICIT_R: error when solving 1-Diag problem.'
+        ENDIF
+      ELSEIF ( diagonalNumber .EQ. 3 ) THEN
 C--   Solve tri-diagonal system :
         errCode = -1
         CALL SOLVE_TRIDIAGONAL( iMin,iMax, jMin,jMax,
@@ -212,9 +249,37 @@ C--   Solve tri-diagonal system :
         IF (errCode.GE.1) THEN
           STOP 'MOM_IMPLICIT_R: error when solving 3-Diag problem.'
         ENDIF
-      ELSEIF ( diagonalNumber .NE. 1 ) THEN
+      ELSE
         STOP 'MOM_IMPLICIT_R: no solver available.'
       ENDIF
+
+#ifdef ALLOW_SOLVE4_PS_AND_DRAG
+      IF ( selectImplicitDrag.EQ.2 ) THEN
+       DO k=1,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+           dU_psFacX(i,j,k,bi,bj) = maskW(i,j,k,bi,bj)
+     &                             *recip_deepFacC(k)*recip_rhoFacC(k)
+         ENDDO
+        ENDDO
+       ENDDO
+       IF ( diagonalNumber .EQ. 1 ) THEN
+        DO k=1,Nr
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           dU_psFacX(i,j,k,bi,bj) = dU_psFacX(i,j,k,bi,bj)*c5d(i,j,k)
+          ENDDO
+         ENDDO
+        ENDDO
+       ELSEIF ( diagonalNumber .EQ. 3 ) THEN
+        CALL SOLVE_TRIDIAGONAL( iMin,iMax, jMin,jMax,
+     I                          b5d, c5d, d5d,
+     U                          dU_psFacX(1-OLx,1-OLy,1,bi,bj),
+     O                          errCode,
+     I                          bi, bj, myThid )
+       ENDIF
+      ENDIF
+#endif /* ALLOW_SOLVE4_PS_AND_DRAG */
 
 #ifdef ALLOW_DIAGNOSTICS
 C--   Diagnostics of vertical viscous flux:
