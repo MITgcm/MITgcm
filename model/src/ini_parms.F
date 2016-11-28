@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.271 2016/04/05 20:36:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.272 2016/11/28 22:57:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -205,7 +205,7 @@ C--   Continuous equation parameters
      & momPressureForcing, metricTerms, vectorInvariantMomentum,
      & tempDiffusion, tempAdvection, tempForcing, addFrictionHeating,
      & saltDiffusion, saltAdvection, saltForcing,
-     & implicSurfPress, implicDiv2Dflow, implicitNHPress,
+     & implicSurfPress, implicDiv2DFlow, implicitNHPress,
      & implicitFreeSurface, rigidLid, freeSurfFac,
      & hFacMin, hFacMinDz, hFacMinDp, hFacMinDr,
      & exactConserv, linFSConserveTr, uniformLin_PhiSurf,
@@ -213,7 +213,7 @@ C--   Continuous equation parameters
      & nonHydrostatic, selectNHfreeSurf, quasiHydrostatic,
      & implicitIntGravWave, staggerTimeStep, doResetHFactors,
      & tempStepping, saltStepping, momStepping,
-     & implicitDiffusion, implicitViscosity, implBottomFriction,
+     & implicitDiffusion, implicitViscosity, selectImplicitDrag,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
      & viscAz, diffKzT, diffKzS, viscAp, diffKpT, diffKpS,
      & viscAr, diffKrT, diffKrS, viscArNr, diffKrNrT, diffKrNrS,

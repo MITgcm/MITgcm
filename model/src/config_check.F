@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.84 2016/05/03 23:25:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.85 2016/11/28 22:57:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -149,12 +149,42 @@ C       code is being compiled
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
+      IF ( selectImplicitDrag.GT.0 ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &   'Needs to compile with #define INCLUDE_IMPLVERTADV_CODE'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK:  to use selectImplicitDrag > 0 ==> STOP here'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif
+
+#ifndef ALLOW_SOLVE4_PS_AND_DRAG
+      IF ( selectImplicitDrag.EQ.2 ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &   'Needs to compile with #define ALLOW_SOLVE4_PS_AND_DRAG'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK:  to use selectImplicitDrag = 2 ==> STOP here'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
 #endif
 
 #ifdef ALLOW_AUTODIFF
       IF ( momImplVertAdv ) THEN
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: momImplVertAdv is not yet'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: supported in adjoint mode'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( selectImplicitDrag.GT.0 ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: selectImplicitDrag is not yet'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: supported in adjoint mode'
@@ -707,13 +737,20 @@ C--   Non-hydrostatic and 3-D solver related limitations:
       IF ( nonHydrostatic .AND.
      &     implicitNHPress.NE.implicSurfPress ) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** CONFIG_CHECK: ',
-     &               ' nonHydrostatic might cause problems with'
+     &               'nonHydrostatic might cause problems with'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(2A)') '** WARNING ** CONFIG_CHECK: ',
      &               'different implicitNHPress & implicSurfPress'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+
+      IF ( selectImplicitDrag.EQ.2 .AND. use3Dsolver ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: selectImplicitDrag=2',
+     &               ' not compatible with 3-D Press. solver'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
       ENDIF
 
       IF ( implicitViscosity .AND. use3Dsolver ) THEN
@@ -817,6 +854,18 @@ C- jmc: but ultimately, this block can/will be removed.
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
+      IF ( useCDscheme .AND. momImplVertAdv ) THEN
+        WRITE(msgBuf,'(2A)')'CONFIG_CHECK: ',
+     &   'Implicit Vert. Advect. not coded for CD-scheme velocity'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( useCDscheme .AND. selectImplicitDrag.GT.0 ) THEN
+        WRITE(msgBuf,'(2A)')'CONFIG_CHECK: ',
+     &   'Implicit (bottom) drag not coded for CD-scheme velocity'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
 
 C--   Time-stepping limitations
       IF ( implicitIntGravWave .AND. staggerTimeStep ) THEN
@@ -843,9 +892,15 @@ C--   Time-stepping limitations
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
-      IF ( implBottomFriction ) THEN
-        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: implBottomFriction',
-     &  ' not yet coded.'
+      IF ( selectImplicitDrag.LT.0 .OR. selectImplicitDrag.GT.2 ) THEN
+        WRITE(msgBuf,'(2A,I4)') 'CONFIG_CHECK: ',
+     &    'Invalid option: selectImplicitDrag=',  selectImplicitDrag
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( selectImplicitDrag.EQ.1 ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: selectImplicitDrag=1',
+     &  ' not yet available'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF

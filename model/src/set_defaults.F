@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.179 2016/04/04 21:29:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.180 2016/11/28 22:57:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -203,7 +203,7 @@ C-    viscosity and diffusivity default value:
       useStrainTensionVisc= .FALSE.
       implicitDiffusion   = .FALSE.
       implicitViscosity   = .FALSE.
-      implBottomFriction  = .FALSE.
+      selectImplicitDrag  = 0
       momImplVertAdv      = .FALSE.
       tempImplVertAdv     = .FALSE.
       saltImplVertAdv     = .FALSE.
@@ -245,7 +245,7 @@ C--   Set (free)surface-related parameters
       implicitFreeSurface = .FALSE.
       rigidLid            = .FALSE.
       implicSurfPress     = 1. _d 0
-      implicDiv2Dflow     = 1. _d 0
+      implicDiv2DFlow     = 1. _d 0
       exactConserv        = .FALSE.
       linFSConserveTr     = .FALSE.
       uniformLin_PhiSurf  = .TRUE.

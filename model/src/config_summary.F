@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.152 2016/04/04 21:29:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.153 2016/11/28 22:57:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -342,8 +342,8 @@ C------------
       CALL WRITE_0D_RL( implicSurfPress, INDEX_NONE,
      & 'implicSurfPress =',
      & '  /* Surface Pressure implicit factor (0-1)*/')
-      CALL WRITE_0D_RL( implicDiv2Dflow, INDEX_NONE,
-     & 'implicDiv2Dflow =',
+      CALL WRITE_0D_RL( implicDiv2DFlow, INDEX_NONE,
+     & 'implicDiv2DFlow =',
      & '  /* Barot. Flow Div. implicit factor (0-1)*/')
       CALL WRITE_0D_L( uniformLin_PhiSurf, INDEX_NONE,
      & 'uniformLin_PhiSurf =',
@@ -432,9 +432,21 @@ C------------
      &                ' /* Momentum implicit vert. advection on/off*/')
       CALL WRITE_0D_L( implicitViscosity, INDEX_NONE,
      & 'implicitViscosity =', ' /* Implicit viscosity on/off flag */')
-      CALL WRITE_0D_L( implBottomFriction, INDEX_NONE,
-     & 'implBottomFriction=',
-     & ' /* Implicit bottom friction on/off flag */')
+c------------
+c     CALL WRITE_0D_L( selectImplicitDrag, INDEX_NONE,
+c    & 'selectImplicitDrag=',
+c    & ' /* Implicit bottom friction on/off flag */')
+      WRITE(msgBuf,'(2A)')
+     & 'selectImplicitDrag=', ' /* Implicit bot Drag options (0,1,2)*/'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      buffI(1) = selectImplicitDrag
+      CALL PRINT_LIST_I( buffI, 1, 1, INDEX_NONE,
+     &                   .FALSE., .TRUE., ioUnit )
+      WRITE(msgBuf,'(2A)') '    0= Expl. ; 1= Impl. on provis. Vel ;',
+     &  ' 2= Fully Impl (with surf.P)'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
+c------------
       CALL WRITE_0D_L( metricTerms,  INDEX_NONE, 'metricTerms =',
      &                '  /* metric-Terms on/off flag */')
       CALL WRITE_0D_L( useNHMTerms,  INDEX_NONE, 'useNHMTerms =',
