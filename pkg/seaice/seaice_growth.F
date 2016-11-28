@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.210 2015/11/26 15:54:27 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.211 2016/11/28 15:52:11 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1095,7 +1095,9 @@ C     following the idea of SEAICE_areaLossFormula == 1:
 C     lateral melt rate as suggested by Perovich, 1983 (PhD thesis)
 C           latMeltRate(i,j,it) = 1.6 _d -6 * tmpscal1**1.36
 C     The following for does the same, but is faster
-            latMeltRate(i,j,it) = 1.6 _d -6 * exp(1.36*log(tmpscal1))
+            latMeltRate(i,j,it) = ZERO
+            IF (tmpscal1 .GT. ZERO) 
+     &         latMeltRate(i,j,it) = 1.6 _d -6 * exp(1.36*log(tmpscal1))
 C     lateral melt rate as suggested by Maykut and Perovich, 1987
 C     (JGR 92(C7)), Equ. 24
 c           latMeltRate(i,j,it) = 13.5 _d -6 * tmpscal2 * tmpscal1**1.3
@@ -1940,6 +1942,9 @@ C            AREA(I,J,bi,bj) = 0.1 _d 0 * HEFF(I,J,bi,bj)
 #endif
 #ifdef SEAICE_ITD
 C check categories for consistency with limits after growth/melt ...
+        IF ( SEAICEuseLinRemapITD ) CALL SEAICE_ITD_REMAP(
+     I     heffitdPreTH, areaitdPreTH,
+     I     bi, bj, myTime, myIter, myThid )
         CALL SEAICE_ITD_REDIST(bi, bj, myTime, myIter, myThid)
 C ... and update total AREA, HEFF, HSNOW
 C     (the updated HEFF is used below for ice salinity increments)
