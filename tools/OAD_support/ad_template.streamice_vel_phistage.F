@@ -26,6 +26,9 @@
 #ifdef STREAMICE_ALLOW_BGLEN_CONTROL
       Real*8 B_glen_dummy_d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
+#ifdef STREAMICE_ALLOW_DEPTH_CONTROL
+      Real*8 R_low_si_dummy_d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
       Real*8 H_streamice_dummy_d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       Real*8 taudx_dummy_d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       Real*8 taudy_dummy_d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -435,6 +438,10 @@
                   b_glen_dummy_d(INT(I),INT(J),INT(BI),INT(BJ)) =
      +B_glen(INT(I),INT(J),INT(BI),INT(BJ))%d
 #endif
+#ifdef STREAMICE_ALLOW_DEPTH_CONTROL
+                  R_low_si_dummy_d(INT(I),INT(J),INT(BI),INT(BJ)) =
+     +R_low_si(INT(I),INT(J),INT(BI),INT(BJ))%d
+#endif
                   H_streamice_dummy_d(INT(I),INT(J),INT(BI),INT(BJ)) =
      +H_streamice(INT(I),INT(J),INT(BI),INT(BJ))%d
                   taudx_dummy_d(INT(I),INT(J),INT(BI),INT(BJ)) =
@@ -588,6 +595,10 @@
 #ifdef STREAMICE_ALLOW_BGLEN_CONTROL
                   b_glen(INT(I),INT(J),INT(BI),INT(BJ))%d =
      +B_glen_dummy_d(INT(I),INT(J),INT(BI),INT(BJ))
+#endif
+#ifdef STREAMICE_ALLOW_DEPTH_CONTROL
+                  R_low_si(INT(I),INT(J),INT(BI),INT(BJ))%d =
+     +R_low_si_dummy_d(INT(I),INT(J),INT(BI),INT(BJ))
 #endif
                   H_streamice(INT(I),INT(J),INT(BI),INT(BJ))%d =
      +H_streamice_dummy_d(INT(I),INT(J),INT(BI),INT(BJ))
