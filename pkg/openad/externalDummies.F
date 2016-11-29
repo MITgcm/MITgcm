@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/externalDummies.F,v 1.9 2016/08/20 03:10:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/externalDummies.F,v 1.10 2016/11/29 12:08:42 dgoldberg Exp $
 C $Name:  $
 
 #include "OPENAD_OPTIONS.h"
+#ifdef ALLOW_STREAMICE
+#include "STREAMICE_OPTIONS.h"
+#endif
 
 C ###########################################################
       SUBROUTINE DUMMY_IN_STEPPING( myTime, myIter, myThid )
@@ -171,6 +174,68 @@ C ###########################################################
 
       cg_Vin(1,1,1,1) = A_uu(1,1,1,1,1,1) + A_uv(1,1,1,1,1,1) + 
      & A_vu(1,1,1,1,1,1) + A_vv(1,1,1,1,1,1) + cg_Bv(1,1,1,1)  
+
+      end subroutine
+#endif /* ALLOW_STREAMICE */
+C ###########################################################
+#ifdef ALLOW_STREAMICE
+       SUBROUTINE STREAMICE_INVERT_SURF_FORTHICK (
+     O            H,
+     I            s,
+     I            R,
+     I            delta,
+     I            myThid)
+
+#include "SIZE.h"
+#include "GRID.h"
+#include "SET_GRID.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "STREAMICE.h"
+
+      _RL H(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL S(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL R(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL DELTA
+      INTEGER myThid
+#ifdef STREAMICE_ALLOW_DEPTH_CONTROL
+      H(1,1,1,1) = s(1,1,1,1) + 
+     &  R(1,1,1,1)  
+#endif
+
+      end subroutine
+#endif /* ALLOW_STREAMICE */
+C ###########################################################
+#ifdef ALLOW_STREAMICE
+       SUBROUTINE STREAMICE_SMOOTH_ADJOINT_FIELD (
+     O            X,
+     I            myThid)
+
+#include "SIZE.h"
+#include "GRID.h"
+#include "EEPARAMS.h"
+
+      _RL X(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER myThid
+
+      INTEGER i, j, bi, bj, k
+      _RL q_int1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL q_int2 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+
+          q_int1(i,j,bi,bj) = 0.0
+          q_int2(i,j,bi,bj) = 0.0
+          X(i,j,bi,bj) = X(i,j,bi,bj) * 1.0
+          k=0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
 
       end subroutine
 #endif /* ALLOW_STREAMICE */
