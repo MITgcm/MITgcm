@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.64 2016/10/15 21:25:46 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.65 2016/11/29 13:21:36 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -602,21 +602,25 @@ cdm #endif
         DO j = 1,sNy
          DO i = 1,sNx
            do iarr = 1, maxCtrlTim2D
+#ifdef ALLOW_ATM_TEMP
            if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_atemp')
      &       atemp(i,j,bi,bj)=atemp(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
            if (xx_gentim2d_file(iarr)(1:6).EQ.'xx_aqh')
      &       aqh(i,j,bi,bj)=aqh(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_precip')
+     &       precip(i,j,bi,bj)=precip(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+#endif
+#ifdef ALLOW_DOWNWARD_RADIATION
            if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_swdown')
      &       swdown(i,j,bi,bj)=swdown(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
            if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_lwdown')
      &       lwdown(i,j,bi,bj)=lwdown(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
-           if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_precip')
-     &       precip(i,j,bi,bj)=precip(i,j,bi,bj)+
-     &                         xx_gentim2d(i,j,bi,bj,iarr)
+#endif
            if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_runoff')
      &       runoff(i,j,bi,bj)=runoff(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
