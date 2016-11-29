@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.11 2015/04/20 14:26:38 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_advect_thickness.F,v 1.12 2016/11/29 14:22:20 dgoldberg Exp $
 C $Name:  $
 
 #include "STREAMICE_OPTIONS.h"
@@ -38,7 +38,7 @@ C     === Global variables ===
 
 #ifdef ALLOW_STREAMICE
 
-      INTEGER i, j, bi, bj, Gi, Gj
+      INTEGER i, j, bi, bj, Gi, Gj, k
       _RL thick_bd, uflux, vflux, max_icfl, loc_icfl
       _RL time_step_full, time_step_rem
       _RL sec_per_year, time_step_loc, MR, SMB, TMB, irho
@@ -68,6 +68,15 @@ C     === Global variables ===
 CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
 #endif
 
+#ifdef ALLOW_OPENAD
+      DO k=1,streamice_smooth_thick_adjoint
+      CALL STREAMICE_SMOOTH_ADJOINT_FIELD (
+     O            H_streamice,
+     I            myThid)
+      ENDDO
+#endif
+
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy+1
@@ -78,8 +87,10 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
 
           hflux_x_SI (i,j,bi,bj) = 0. _d 0
           hflux_y_SI (i,j,bi,bj) = 0. _d 0
-          h_after_uflux_SI(i,j,bi,bj) = H_streamice(i,j,bi,bj)
-          h_after_vflux_SI(i,j,bi,bj) = H_streamice(i,j,bi,bj)
+!          h_after_uflux_SI(i,j,bi,bj) = H_streamice(i,j,bi,bj)
+!          h_after_vflux_SI(i,j,bi,bj) = H_streamice(i,j,bi,bj)
+          h_after_uflux_SI(i,j,bi,bj) = 0. _d 0
+          h_after_vflux_SI(i,j,bi,bj) = 0. _d 0
 
           IF (STREAMICE_ufacemask(i,j,bi,bj).eq.3.0) THEN
            BCMASKX(i,j,bi,bj) = 3.0

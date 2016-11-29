@@ -100,11 +100,17 @@ C     -------------------------- INT PARAMS ------------------------------------
      &     streamice_max_cg_iter, streamice_max_nl_iter,
      &     streamice_vel_upd_counter, streamice_nstep_velocity,
      &     streamice_maxcgiter_cpl, streamice_maxnliter_cpl
+#ifdef ALLOW_OPENAD
+     &     ,streamice_smooth_thick_adjoint
+#endif
 !     &     streamice_n_sub_regularize
 
       INTEGER streamice_max_cg_iter, streamice_max_nl_iter
       INTEGER streamice_vel_upd_counter, streamice_nstep_velocity
       INTEGER streamice_maxcgiter_cpl, streamice_maxnliter_cpl
+#ifdef ALLOW_OPENAD
+      INTEGER streamice_smooth_thick_adjoint
+#endif
 !      INTEGER streamice_n_sub_regularize
 
 #if (defined (ALLOW_STREAMICE_OAD_FP))
