@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.153 2016/11/28 22:57:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.154 2016/11/29 00:11:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -432,10 +432,7 @@ C------------
      &                ' /* Momentum implicit vert. advection on/off*/')
       CALL WRITE_0D_L( implicitViscosity, INDEX_NONE,
      & 'implicitViscosity =', ' /* Implicit viscosity on/off flag */')
-c------------
-c     CALL WRITE_0D_L( selectImplicitDrag, INDEX_NONE,
-c    & 'selectImplicitDrag=',
-c    & ' /* Implicit bottom friction on/off flag */')
+C------------
       WRITE(msgBuf,'(2A)')
      & 'selectImplicitDrag=', ' /* Implicit bot Drag options (0,1,2)*/'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -446,12 +443,12 @@ c    & ' /* Implicit bottom friction on/off flag */')
      &  ' 2= Fully Impl (with surf.P)'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
-c------------
+C------------
       CALL WRITE_0D_L( metricTerms,  INDEX_NONE, 'metricTerms =',
      &                '  /* metric-Terms on/off flag */')
       CALL WRITE_0D_L( useNHMTerms,  INDEX_NONE, 'useNHMTerms =',
      &              ' /* Non-Hydrostatic Metric-Terms on/off */')
-c------------
+C------------
       WRITE(msgBuf,'(2A)')
      & 'selectCoriMap =', ' /* Coriolis Map options (0,1,2,3)*/'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -462,7 +459,7 @@ c------------
      &  ' 2= Spherical ; 3= read from file'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
-c------------
+C------------
       CALL WRITE_0D_L( use3dCoriolis,  INDEX_NONE,
      & 'use3dCoriolis =', ' /* 3-D Coriolis on/off flag */')
       CALL WRITE_0D_L( useCoriolis,  INDEX_NONE,
