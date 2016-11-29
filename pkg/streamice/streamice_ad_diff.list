@@ -20,7 +20,7 @@ streamice_cg_solve_matfree.f
 streamice_taub.f
 streamice_cost_surf_accum.f
 eta_gl_streamice.f
-eta_gl_streamice_prime.f
+eta_gl_prime_streamice.f
 phi_gl_streamice.f
 streamice_invert_surf_forthick.f
 streamice_adv_flux_fl_x.f
