@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_invert_surf_forthick.F,v 1.3 2013/06/21 20:49:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_invert_surf_forthick.F,v 1.4 2016/11/29 12:38:43 dgoldberg Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -13,6 +13,7 @@ C $Name:  $
 
 !      This S/R finds a thickness (H) that gives surf elev S with bed R
 
+
 #include "SIZE.h"
 #include "GRID.h"
 #include "SET_GRID.h"
@@ -20,19 +21,33 @@ C $Name:  $
 #include "PARAMS.h"
 #include "STREAMICE.h"
 
+#ifdef ALLOW_OPENAD
+      use OAD_tape
+      use OAD_rev
+      use OAD_cp
+#endif
+
       _RL H(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL S(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL R(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL DELTA
       INTEGER myThid
+#ifdef ALLOW_OPENAD
+      type(active) :: ETA_GL_STREAMICE
+      type(active) :: X,Y0
+      type(modeType) :: our_orig_mode
+#endif
+      
 
 #ifdef ALLOW_STREAMICE
 
       _RL resid, f, fp, hf, htmp
       INTEGER  i, j, bi, bj, ITER
+      _RL ETA_GL_PRIME_STREAMICE
+#ifndef ALLOW_OPENAD
       _RL ETA_GL_STREAMICE
       EXTERNAL ETA_GL_STREAMICE
-      _RL ETA_GL_STREAMICE_PRIME
+#endif
 !      EXTERNAL PHI_GL_STREAMICE_PRIME
 
         DO bj=myByLo(myThid), myByHi(myThid)
@@ -66,14 +81,39 @@ C $Name:  $
                  htmp = S(i,j,bi,bj)/delta
                 ENDIF
 
+#ifdef ALLOW_OPENAD
+
+                our_orig_mode = our_rev_mode
+                our_rev_mode%arg_store=.FALSE.
+                our_rev_mode%arg_restore=.FALSE.
+                our_rev_mode%plain=.TRUE.
+                our_rev_mode%tape=.FALSE.
+                our_rev_mode%adjoint=.FALSE.
+
+                X%v = htmp-HF
+                Y0%v = delta*HF
+
+                CALL OpenAD_oad_s_eta_gl_streamice(
+     &             X,
+     &             delta,
+     &             1. _d 0,
+     &             Y0,
+     &             streamice_smooth_gl_width,
+     &             ETA_GL_STREAMICE)
+
+                RESID = ETA_GL_STREAMICE%v
+                our_rev_mode = our_orig_mode
+
+#else
                 RESID = ETA_GL_STREAMICE (
      &             htmp-HF,
      &             delta,
      &             1. _d 0,
      &             delta*HF,
      &             streamice_smooth_gl_width)
+#endif
                 RESID = RESID - S(i,j,bi,bj)
-                FP = ETA_GL_STREAMICE_PRIME (
+                FP = ETA_GL_PRIME_STREAMICE (
      &             htmp-HF,
      &             delta,
      &             1. _d 0,
