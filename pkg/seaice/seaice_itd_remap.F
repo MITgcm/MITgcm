@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_itd_remap.F,v 1.1 2016/11/28 15:52:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_itd_remap.F,v 1.2 2016/11/29 22:04:08 jmc Exp $
 C $Name:  $
 
 C     contains:
@@ -80,12 +80,12 @@ C
 CMU      _RL oneMinusEps
       _RL third
       PARAMETER ( third = 0.333333333333333333333333333 _d 0 )
-C      
+C
       _RL dhActual    (1:sNx,1:sNy,1:nITD)
       _RL hActual     (1:sNx,1:sNy,1:nITD)
       _RL hActualPre  (1:sNx,1:sNy,1:nITD)
       _RL dheff, darea, dhsnw
-C     
+C
       _RL hLimitNew   (1:sNx,1:sNy,0:nITD)
 C     coefficients for represent g(h)
 C     g0 :: constant coefficient in g(h)
@@ -98,7 +98,7 @@ C     hL :: right end of range over which g(h) > 0
       _RL hR (1:sNx,1:sNy,0:nITD)
 C     local copy of AREAITD
       _RL aLoc(1:sNx,1:sNy)
-C     
+C
       LOGICAL doRemapping (1:sNx,1:sNy)
 CEOP
 C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -114,7 +114,7 @@ C     initialisation
         IF ( HEFFM(i,j,bi,bj) .NE. 0. _d 0 ) doRemapping(i,j) = .TRUE.
        ENDDO
       ENDDO
-C     do not compute regularized hActual as in seaice_growth, because 
+C     do not compute regularized hActual as in seaice_growth, because
 C     with regularization, hActual deviates too much from the actual
 C     category boundaries and the boundary computation fails too often.
       DO k=1,nITD
@@ -127,12 +127,12 @@ C     category boundaries and the boundary computation fails too often.
           IF ( areaitdPre(i,j,k) .GT. 0. _d 0 ) THEN
            hActualPre(i,j,k) = heffitdPre(i,j,k)
      &         /SQRT( areaitdPre(i,j,k)**2 + area_reg_sq )
-CML           hActualPre(i,j,k) = SQRT( hActualPre(i,j,k)**2 + hice_reg_sq ) 
+CML           hActualPre(i,j,k) = SQRT( hActualPre(i,j,k)**2 + hice_reg_sq )
           ENDIF
           IF ( AREAITD(i,j,k,bi,bj) .GT. 0. _d 0 ) THEN
            hActual(i,j,k) = HEFFITD(i,j,k,bi,bj)
      &         /SQRT( AREAITD(i,j,k,bi,bj)**2 + area_reg_sq )
-CML           hActual(i,j,k) = SQRT( hActual(i,j,k)**2 + hice_reg_sq ) 
+CML           hActual(i,j,k) = SQRT( hActual(i,j,k)**2 + hice_reg_sq )
           ENDIF
           dhActual(i,j,k) = hActual(i,j,k) - hActualPre(i,j,k)
          ELSE
@@ -147,9 +147,9 @@ CML           hActual(i,j,k) = SQRT( hActual(i,j,k)**2 + hice_reg_sq )
         ENDDO
        ENDDO
       ENDDO
-C     
+C
 C     compute new category boundaries
-C     
+C
       DO j=1,sNy
        DO i=1,sNx
         hLimitNew(i,j,0) = hLimit(0)
@@ -160,7 +160,7 @@ C
         DO i=1,sNx
          IF ( hActualPre(i,j,k)  .GT.SEAICE_eps .AND.
      &        hActualPre(i,j,k+1).GT.SEAICE_eps ) THEN
-          slope = ( dhActual(i,j,k+1) - dhActual(i,j,k) ) 
+          slope = ( dhActual(i,j,k+1) - dhActual(i,j,k) )
      &         /( hActualPre(i,j,k+1) - hActualPre(i,j,k) )
           hLimitNew(i,j,k) =   hLimit(k) + dhActual(i,j,k)
      &         +     slope * ( hLimit(k) - hActualPre(i,j,k) )
@@ -176,7 +176,7 @@ C     (1) if it is between two adjacent thicknesses
          IF ( ( AREAITD(i,j,k,bi,bj).GT.SEAICE_area_reg .AND.
      &          hActual(i,j,k) .GE. hLimitNew(i,j,k) ) .OR.
      &        ( AREAITD(i,j,k+1,bi,bj).GT.SEAICE_area_reg .AND.
-     &          hActual(i,j,k+1) .LE. hLimitNew(i,j,k) ) ) 
+     &          hActual(i,j,k+1) .LE. hLimitNew(i,j,k) ) )
      &        doRemapping(i,j) = .FALSE.
 C     (2) that it is been the old boudnaries k-1 and k+1
 C     (Note from CICE: we could allow this, but would make the code
@@ -206,11 +206,11 @@ C     any checks and can be computed now
      &       - 2. _d 0 * hLimitNew(i,j,k-1), hLimit(k-1) )
        ENDDO
       ENDDO
-C     
-C     end of limit computation, now compute the coefficients of the 
+C
+C     end of limit computation, now compute the coefficients of the
 C     linear approximations of g(h) => g(eta) = g0 + g1*eta
-C     
-C     CICE does something specical for the first category. 
+C
+C     CICE does something specical for the first category.
 C     compute coefficients for 1st category
       k = 1
       DO j=1,sNy
@@ -218,16 +218,16 @@ C     compute coefficients for 1st category
 C     initialisation
         aLoc(i,j) = AREAITD(i,j,k,bi,bj)
 C     initialise hL and hR
-C     this single line is different from the code that follows below 
+C     this single line is different from the code that follows below
 C     for all categories
         hL(i,j,k) = hLimitNew(i,j,k-1)
         hR(i,j,k) = hLimit(k)
        ENDDO
       ENDDO
       CALL SEAICE_ITD_REMAP_LINEAR(
-     O     g0(1,1,k), g1(1,1,k), 
+     O     g0(1,1,k), g1(1,1,k),
      U     hL(1,1,k), hR(1,1,k),
-     I     hActual(1,1,k), aLoc, 
+     I     hActual(1,1,k), aLoc,
      I     SEAICE_area_reg, SEAICE_eps, doRemapping,
      I     myTime, myIter, myThid )
 C
@@ -235,7 +235,7 @@ C     Find area lost due to melting of thin (category 1) ice
 C
       DO j=1,sNy
        DO i=1,sNx
-        IF ( doRemapping(i,j) .AND. 
+        IF ( doRemapping(i,j) .AND.
      &       AREAITD(i,j,k,bi,bj) .GT. SEAICE_area_reg ) THEN
 CMU if melting of ice in category 1
          IF ( dhActual(i,j,k) .LT. 0. _d 0 ) THEN
@@ -281,13 +281,13 @@ C     initialise hL and hR
         ENDDO
        ENDDO
        CALL SEAICE_ITD_REMAP_LINEAR(
-     O      g0(1,1,k), g1(1,1,k), 
+     O      g0(1,1,k), g1(1,1,k),
      U      hL(1,1,k), hR(1,1,k),
      I      hActual(1,1,k), aLoc,
      I      SEAICE_area_reg, SEAICE_eps, doRemapping,
      I      myTime, myIter, myThid )
       ENDDO
-C     
+C
       DO k=1,nITD-1
        DO j=1,sNy
         DO i=1,sNx
@@ -341,7 +341,7 @@ C     snow scaled by area (why not volume?), CICE also does it in this way
            dhsnw = darea/AREAITD(i,j,kDonor,bi,bj)
      &          * HSNOWITD(i,j,kDonor,bi,bj)
 CMU          IF ( HEFFITD(i,j,kDonor,bi,bj) .GT. SEAICE_hice_reg ) THEN
-CMU           dhsnw = dheff/HEFFITD(i,j,kDonor,bi,bj) 
+CMU           dhsnw = dheff/HEFFITD(i,j,kDonor,bi,bj)
 CMU     &         * HSNOWITD(i,j,kDonor,bi,bj)
           ELSE
            dhsnw = HSNOWITD(i,j,kDonor,bi,bj)
@@ -371,14 +371,14 @@ C !INTERFACE: ==========================================================
       SUBROUTINE SEAICE_ITD_REMAP_LINEAR(
      O     g0, g1,
      U     hL, hR,
-     I     hActual, area, 
+     I     hActual, area,
      I     SEAICE_area_reg, SEAICE_eps, doRemapping,
      I     myTime, myIter, myThid )
 
 C !DESCRIPTION: \bv
 C     *===========================================================*
 C     | SUBROUTINE SEAICE_ITD_REMAP_LINEAR
-C     | o compute coefficients g0, g1 for piece-wise linear fit 
+C     | o compute coefficients g0, g1 for piece-wise linear fit
 C     |    g(h) = g0 + g1*h
 C     | o compute range boundaries hL, hR for this linear fit
 C     |
@@ -399,7 +399,7 @@ C     myThid    :: Thread no. that called this routine.
       _RL myTime
       INTEGER myIter
       INTEGER myThid
-C     
+C
 C     OUTPUT: coefficients for representing g(h)
 C     g0 :: constant coefficient in g(h)
 C     g1 :: linear  coefficient in g(h)
@@ -436,7 +436,7 @@ C     etaNoR   :: ratio of distance to lower limit over etaR
       PARAMETER ( third = 0.333333333333333333333333333 _d 0 )
       PARAMETER ( sixth = 0.666666666666666666666666666 _d 0 )
 CEOP
-C     
+C
 C     initialisation of hL, hR is done outside this routine
 C
       DO j=1,sNy
@@ -520,7 +520,7 @@ C     hActual :: ice thickness of current category
 C     hLimitNew :: new "advected" category boundaries after seaice_growth
       _RL hLimitNew (1:sNx,1:sNy,0:nITD)
 C     AREAITD :: ice concentration of current category
-      _RL AREAITD   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nITD,nSx,nSy)
+      _RL AREAITD   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
 C     doRemapping :: mask where can be done, excludes points where
 C                    new category limits are outside certain bounds
       LOGICAL doRemapping (1:sNx,1:sNy)
@@ -534,12 +534,12 @@ C
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(39) tmpBuf
 CEOP
-     
+
        DO j=1,sNy
         DO i=1,sNx
          IF (.NOT.doRemapping(i,j) ) THEN
           DO k=1,nITD-1
-           WRITE(tmpBuf,'(A,2I5,A,I10)') 
+           WRITE(tmpBuf,'(A,2I5,A,I10)')
      &          ' at (', i, j, ') in timestep ', myIter
            IF ( AREAITD(i,j,k,bi,bj).GT.SEAICE_area_reg .AND.
      &          hActual(i,j,k) .GE. hLimitNew(i,j,k) ) THEN
@@ -548,17 +548,17 @@ CEOP
      &           'for category ', k, tmpBuf
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &           SQUEEZE_RIGHT, myThid )
-CML            print *, hActual(i,j,k),
+CML            PRINT *, hActual(i,j,k),
 CML     &           hLimitNew(i,j,k), hLimit(k)
            ENDIF
            IF ( AREAITD(i,j,k+1,bi,bj).GT.SEAICE_area_reg .AND.
      &          hActual(i,j,k+1) .LE. hLimitNew(i,j,k) ) THEN
-            WRITE(msgBuf,'(A,I3,A)') 
+            WRITE(msgBuf,'(A,I3,A)')
      &           'SEAICE_ITD_REMAP: hActual(k+1) <= hLimitNew(k) '//
      &           'for category ', k, tmpBuf
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &           SQUEEZE_RIGHT, myThid )
-            print '(8(1X,ES10.4))', 
+            PRINT '(8(1X,E10.4))',
      &           AREAITD(i,j,k+1,bi,bj), hActual(i,j,k+1),
      &           hActualPre(i,j,k+1),
      &           AREAITD(i,j,k,bi,bj), hActual(i,j,k),
@@ -566,14 +566,14 @@ CML     &           hLimitNew(i,j,k), hLimit(k)
      &           hLimitNew(i,j,k), hLimit(k)
            ENDIF
            IF ( hLimitNew(i,j,k) .GT. hLimit(k+1) ) THEN
-            WRITE(msgBuf,'(A,I3,A)') 
+            WRITE(msgBuf,'(A,I3,A)')
      &           'SEAICE_ITD_REMAP: hLimitNew(k) > hLimitNew(k+1) '//
      &           'for category ', k, tmpBuf
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &           SQUEEZE_RIGHT, myThid )
            ENDIF
            IF ( hLimitNew(i,j,k) .LT. hLimit(k-1) ) THEN
-            WRITE(msgBuf,'(A,I3,A)') 
+            WRITE(msgBuf,'(A,I3,A)')
      &           'SEAICE_ITD_REMAP: hLimitNew(k) < hLimitNew(k-1) '//
      &           'for category ', k, tmpBuf
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
