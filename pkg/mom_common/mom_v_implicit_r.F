@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_implicit_r.F,v 1.8 2016/11/28 23:09:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_implicit_r.F,v 1.9 2016/11/30 19:41:30 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -29,7 +29,7 @@ C     == Global data ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-      _RL kappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL kappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
       INTEGER bi, bj
       _RL myTime
       INTEGER myIter, myThid
@@ -126,8 +126,6 @@ C-     Main diagonal :
 C--   end if implicitDiffusion
       ENDIF
 
-#ifdef ALLOW_SOLVE4_PS_AND_DRAG
-C- Note: Should remove this #ifdef once selectImplicitDrag=1 is implemented
       IF ( selectImplicitDrag.GE.1 ) THEN
        IF ( no_slip_bottom .OR. selectBotDragQuadr.GE.0
      &                     .OR. bottomDragLinear.NE.0. ) THEN
@@ -139,7 +137,6 @@ C- Note: Should remove this #ifdef once selectImplicitDrag=1 is implemented
      I                     bi, bj, myIter, myThid )
        ENDIF
       ENDIF
-#endif /* ALLOW_SOLVE4_PS_AND_DRAG */
 
       IF ( momImplVertAdv .AND. Nr.GT.1 ) THEN
 
