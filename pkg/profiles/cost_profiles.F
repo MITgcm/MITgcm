@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.27 2015/08/16 14:48:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.28 2016/11/30 00:15:10 jmc Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -44,7 +44,6 @@ c     == routine arguments ==
 C     ========= Local variables =======================
       integer K,num_file,num_var,prof_num
       integer bi,bj,iG,jG,fid
-      _RL tmp_lon
       _RL prof_traj1D(NLEVELMAX), prof_traj1D_mean(NLEVELMAX)
       _RL prof_data1D(NLEVELMAX), prof_weights1D(NLEVELMAX)
 #ifndef ALLOW_CTRL
@@ -165,7 +164,7 @@ c          enddo
      &      ProfNo(num_file,bi,bj),num_var
            call print_message(
      &      msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
-           write(msgbuf,'(a,D22.15,D22.15)') 
+           write(msgbuf,'(a,D22.15,D22.15)')
      &      prof_names(num_file,num_var),
      &      objf_profiles(num_file,num_var,bi,bj),
      &      num_profiles(num_file,num_var,bi,bj)
@@ -212,7 +211,6 @@ c
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf,
      &  standardmessageunit,SQUEEZE_RIGHT , mythid)
-
 
 c     call profiles_make_ncfile(mythid)
 

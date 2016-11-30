@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.35 2016/03/02 20:40:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.36 2016/11/30 00:15:10 jmc Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -49,7 +49,7 @@ C ==================== Routine Variables ==========================
       integer tmpdate(4),tmpdiff(4),profIsInRunTime
       _RL  tmp_lon, tmp_lon2(1000), tmp_lat2(1000), lon_cur, lat_cur
       _RL lon_1, lon_2, lat_1, lat_2
-      _RL lon_tmp1, lon_tmp2, lat_tmp1, lat_tmp2
+      _RL lon_tmp1, lon_tmp2
       _RL lat_fac, lon_fac
       integer prof_i, prof_j
       integer vec_start(2), vec_count(2), profno_div1000, kk
@@ -78,7 +78,6 @@ c     == external functions ==
 
 c--   == end of interface ==
 
-
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
@@ -98,7 +97,6 @@ c--   == end of interface ==
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-
       stopProfiles=0
       stopGenericGrid=0
 
@@ -112,7 +110,6 @@ c--   == end of interface ==
         CALL PRINT_ERROR( msgBuf , myThid )
         STOP 'ABNORMAL END: S/R PROFILES_INIT_FIXED'
       ENDIF
-
 
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
@@ -135,7 +132,6 @@ c--   == end of interface ==
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-
 
       _BEGIN_MASTER( mythid )
       DO bj=1,nSy
@@ -265,7 +261,6 @@ c3) read interpolattion information (grid points, coeffs, etc.)
       endif
       endif
 
-
 c4) default values
       do k=1,NOBSGLOB
       prof_time(num_file,k,bi,bj)=-999. _d 0
@@ -282,7 +277,6 @@ c4) default values
       prof_interp_xCNINJ(num_file,k,bi,bj)=-999. _d 0
       prof_interp_yCNINJ(num_file,k,bi,bj)=-999. _d 0
       enddo
-
 
 c5) main loop: look for profiles in this tile
       length_for_tile=0
@@ -708,7 +702,6 @@ C===========================================================
 
            endif
 
-
 C===========================================================
       else
       ProfNo(num_file,bi,bj)=0
@@ -819,7 +812,6 @@ c2) stop after other kind of errors
              STOP 'ABNORMAL END: S/R PROFILES_INIT_FIXED'
       endif
 
-
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
@@ -838,7 +830,6 @@ c2) stop after other kind of errors
       write(msgbuf,'(a)') ' '
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-
 
 #endif
 
