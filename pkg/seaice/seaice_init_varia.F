@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.92 2016/05/17 15:26:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.93 2016/11/30 00:17:16 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -49,7 +49,9 @@ C     i,j,k,bi,bj :: Loop counters
 #ifdef OBCS_UVICE_OLD
       INTEGER I_obc, J_obc
 #endif /* ALLOW_OBCS */
+#ifdef SEAICE_CGRID
       _RL recip_tensilDepth
+#endif
 
       IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
        kSurface = Nr
@@ -246,7 +248,6 @@ C--   Choose a proxy level for geostrophic velocity,
        ENDDO
       ENDDO
 #endif /* SEAICE_CGRID */
-
 
 C--   Initialise all variables in common blocks:
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -694,11 +695,11 @@ C---  Complete initialization
       ENDDO
 #ifdef SEAICE_CGRID
 C     compute tensile strength factor k: tensileStrength = k*PRESS
-C     can be done in initialisation phase as long as it depends only 
+C     can be done in initialisation phase as long as it depends only
 C     on depth
       IF ( SEAICE_tensilFac .NE. 0. _d 0 ) THEN
        recip_tensilDepth = 0. _d 0
-       IF ( SEAICE_tensilDepth .GT. 0. _d 0 ) 
+       IF ( SEAICE_tensilDepth .GT. 0. _d 0 )
      &      recip_tensilDepth = 1. _d 0 / SEAICE_tensilDepth
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)

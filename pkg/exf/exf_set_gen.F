@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.34 2016/09/12 23:43:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.35 2016/11/30 00:13:25 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -91,7 +91,9 @@ C     msgBuf     :: Informational/error message buffer
       INTEGER bi, bj, i, j
       _RL     fac
       CHARACTER*(128) genfile0, genfile1
+#ifdef USE_EXF_INTERPOLATION
       CHARACTER*(MAX_LEN_FNAM) out_file
+#endif
 
 C     == end of interface ==
 
