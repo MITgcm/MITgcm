@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2282 2016/11/29 00:08:29 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2283 2016/11/30 00:47:40 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -14,6 +14,8 @@ o model & momentum pkgs:
     surf. press) corresponding to selectImplicitDrag=1 should be applicable
     to NH formulation but not available until we solve for surf. pressure
     increment (instead of full etaN).
+  - change exp. global_ocean.cs32x15.thsice to test implicit bottom drag
+    with implicit vertical viscosity.
 o pkg/seaice: add linear remapping scheme (Lipscomb 2001) to ITD model
   - this is a first version that includes many regularisations that may
     not all be necessary, to be sorted out,
