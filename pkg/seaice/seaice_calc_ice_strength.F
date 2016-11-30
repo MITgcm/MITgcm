@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_ice_strength.F,v 1.11 2016/05/17 15:26:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_ice_strength.F,v 1.12 2016/11/30 00:16:48 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -76,7 +76,7 @@ C     hActual    :: HEFFITD/AREAITD
 #endif /* SEAICE_ITD */
 #ifdef SEAICE_CGRID
 C     compute tensile strength
-      _RL recip_tensilDepth
+c     _RL recip_tensilDepth
 #endif /* SEAICE_CGRID */
 CEOP
 
@@ -144,7 +144,7 @@ C     small number
            IF ( partFunc(i,j,k) .GT. 0. _d 0 )
      &          PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)
      &          + partFunc(i,j,k) * ( - hActual(i,j,k)**2
-     &          + ( hrMax(i,j,k)**2 + hrMin(i,j,k)**2 
+     &          + ( hrMax(i,j,k)**2 + hrMin(i,j,k)**2
      &          + hrMax(i,j,k)*hrMin(i,j,k) )*tmpscal1
      &          / ridgeRatio(i,j,k) )
           ENDDO
@@ -181,11 +181,11 @@ C
 
 CML#ifdef SEAICE_CGRID
 CMLC     compute tensile strength factor k: tensileStrength = k*PRESS
-CMLC     can be done in initialisation phase as long as it depends only 
+CMLC     can be done in initialisation phase as long as it depends only
 CMLC     on depth
 CML      IF ( SEAICE_tensilFac .NE. 0. _d 0 ) THEN
 CML       recip_tensilDepth = 0. _d 0
-CML       IF ( SEAICE_tensilDepth .GT. 0. _d 0 ) 
+CML       IF ( SEAICE_tensilDepth .GT. 0. _d 0 )
 CML     &      recip_tensilDepth = 1. _d 0 / SEAICE_tensilDepth
 CML       DO j=jMin,jMax
 CML        DO i=iMin,iMax

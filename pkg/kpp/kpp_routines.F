@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.56 2016/09/27 12:15:55 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.57 2016/11/30 00:14:14 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -152,7 +152,7 @@ c     Rib    (imt,Nr      ) - bulk Richardson number
       _RL sigma  (imt         )
       _RL Rib    (imt,Nr      )
 
-      integer i, k, md, kl
+      integer i, k, md
 
 c-----------------------------------------------------------------------
 c compute interior mixing coefficients everywhere, due to constant
