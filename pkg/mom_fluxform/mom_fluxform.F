@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.54 2015/01/03 23:57:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.55 2016/11/30 00:11:22 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -252,9 +252,10 @@ C       vorticity at a no-slip boundary by a factor of 2 = sideDragFactor
         sideMaskFac = 0. _d 0
       ENDIF
 
-      IF (     no_slip_bottom
+      IF ( selectImplicitDrag.EQ.0 .AND.
+     &      (  no_slip_bottom
      &    .OR. selectBotDragQuadr.GE.0
-     &    .OR. bottomDragLinear.NE.0.) THEN
+     &    .OR. bottomDragLinear.NE.0. ) ) THEN
        bottomDragTerms=.TRUE.
       ELSE
        bottomDragTerms=.FALSE.

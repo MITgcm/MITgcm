@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.77 2015/09/10 18:08:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.78 2016/11/30 00:11:22 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -229,9 +229,10 @@ C       vorticity at a no-slip boundary by a factor of 2 = sideDragFactor
         sideMaskFac = 0. _d 0
       ENDIF
 
-      IF (     no_slip_bottom
+      IF ( selectImplicitDrag.EQ.0 .AND.
+     &      (  no_slip_bottom
      &    .OR. selectBotDragQuadr.GE.0
-     &    .OR. bottomDragLinear.NE.0.) THEN
+     &    .OR. bottomDragLinear.NE.0. ) ) THEN
        bottomDragTerms=.TRUE.
       ELSE
        bottomDragTerms=.FALSE.
