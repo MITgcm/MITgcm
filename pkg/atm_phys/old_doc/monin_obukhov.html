@@ -1,0 +1,554 @@
+<HTML>
+<TITLE>module monin_obukhov</TITLE>
+<BODY BGCOLOR="#AABBCC" TEXT="#332211" >
+
+<DIV ALIGN="CENTER"> <FONT SIZE=1>
+<A HREF="#INTERFACE">PUBLIC INTERFACE</A> / 
+<A HREF="#ROUTINES">ROUTINES</A> / 
+<A HREF="#NAMELIST">NAMELIST</A> / 
+<A HREF="#CHANGES">CHANGES</A> / 
+<A HREF="#ERRORS">ERRORS</A> / 
+<A HREF="#REFERENCES">REFERENCES</A> / 
+<A HREF="#NOTES">NOTES</A> 
+</FONT>
+<BR><BR></DIV><HR>
+
+
+<H2>module monin_obukhov</H2>
+<A NAME="HEADER">
+<PRE>
+     <B>Contact:</B>   Isaac Held
+     <B>Reviewers:</B>
+
+     <B><A HREF=".doc.log#monin_obukhov.f90">Tags/Status</A></B>
+</PRE>
+</A><!-- END HEADER -->
+<!--------------------------------------------------------------------->
+<A NAME="OVERVIEW">
+<HR>
+<H4>OVERVIEW</H4>
+<!-- BEGIN OVERVIEW -->
+<PRE>
+
+      Routines for computing surface drag coefficients from
+      data at the lowest model level using Monin-Obukhov scaling,
+      for estimating the wind, temperature, and buoyancy profiles
+      between the lowest model level and surface, and for computing
+      diffusivities consistent these profiles
+
+</PRE>
+</A><!-- END OVERVIEW -->
+<!--------------------------------------------------------------------->
+<A NAME="DESCRIPTION">
+<!-- BEGIN DESCRIPTION -->
+<PRE>
+
+  Monin-Obukhov similarity (MOS) theory is the standard method 
+  for computing  surface fluxes from the lowest level winds, 
+  temperatures, and tracer mixing ratios in GCMs.  The lowest level 
+  is assumed to lie within the "surface layer" in which turbulent 
+  fluxes have negligible vertical variation, and in which MOS assumes 
+  that the wind and buoyancy profiles are a function only of the 
+  surface stress, the surface buoyancy flux, and the height z. 
+  A good reference is Garratt, J. R. "The Atmospheric Boundary Layer", 
+  Cambridge University Press, 1992.  For a  discussion of the detailed 
+  form of the similarity theory used in this module, see  
+  <A HREF="monin_obukhov.tech.ps">monin_obukhov.tech.ps</A>
+
+  The particular form of the monin-obukhov similarity theory utilized
+  is defined by the similarity functions phi_m and phi_t chosen, where
+          du/dzeta  = phi_m * u_star/( vonkarm * zeta )
+	  db/dzeta( = phi_t * b_star/( vonkarm * zeta )
+	    (where b = buoyancy or specific humidity, 
+	           vonkarm = Von Karman's constant
+		   u_star = friction velocity (stress = density*u_star**2)
+		   b_star = buoyancy scale (flux = density*u_star*b_star)
+		   zeta = z/L
+		   z = height of lowest model level
+		   L = monin_obukhov length )
+  We use:
+     on the unstable side 
+             phi_m = (1 - 16.0*zeta)**(-0.25)
+             phi_t = (1 - 16.0*zeta)**(-0.5)
+
+     on the stable side -- phi_t = phi_m
+       there are two options
+       
+       option_1: phi =  1.0 + zeta*(5.0 + b_stab*zeta)/(1.0 + zeta)
+              where b_stab = 1/rich_crit 
+              (rich_crit is a namelist parameter)
+	      
+       option_2: phi = 1 + 5.0*zeta (zeta < zeta_trans)
+                     = 1.0 + (5.0 - b_stab)*zeta_trans + b_stab*zeta
+              (zeta_trans also a namelist parameter)
+	      
+  In order to change these similarity functions, one would need to 
+     1) modify the defintion of phi_m and phi_t in the internal
+        subroutines mo_derivative_m and mo_derivative_t
+     2) provide analytical versions of the integral similarity
+        functions  (PHI_m = int(zeta_0 to zeta) of phi/zeta)
+	(see notes) in the subroutines mo_integral_m and mo_integral_tq
+     3) modify stable_mix to be consistent with the new similarity functions
+        (see notes) (mod_diff will take care of itself)
+
+
+</PRE>
+</A><!-- END DESCRIPTION -->
+<!--------------------------------------------------------------------->
+<A NAME="MODULES_USED">
+<HR>
+<H4>OTHER MODULES USED</H4>
+<!-- BEGIN MODULES_USED -->
+<PRE>
+
+    This modules uses 
+       constants_mod, only : grav, vonkarm
+       utilities_mod, only : error_mesg, FATAL, file_exist,   &
+                             check_nml_error, open_file,      &
+                             get_my_pe, close_file
+
+
+</PRE>
+</A><!-- END MODULES_USED -->
+<!--------------------------------------------------------------------->
+<A NAME="INTERFACE">
+<HR>
+<H4>PUBLIC INTERFACE</H4>
+<!-- BEGIN INTERFACE -->
+<PRE>
+
+    use monin_obukhov_mod [,only: mo_drag    , &
+                                  mo_profile , &
+                                  mo_diff    , &
+				  stable_mix   ]
+
+    mo_drag   : computes the drag coefficients for momentum, heat, and moisture;
+                also returns u_star (the friction velocity) and
+                b_star (the buoyancy scale)
+
+    mo_profile :  provides the profile of momentum, temperature, and 
+                  specific humidity in the constant flux layer 
+		  -- useful when one needs
+                  model output at a standard level below the lowest
+                  model level.  For example, the term "surface wind" 
+		  in meteorology often refers to 
+                  the wind 10 meters above the surface.
+
+    mo_diff : computes the difusivity that, acting in isolation,
+              would produce the correct profiles in ths surface layer
+	     
+    stable_mix : returns f(Ri) under stable conditions where Ri is the 
+             local Richardson's number,  from which on can compute the 
+	     diffusivity that  produces the correct profile in the constant 
+	     flux layer from D = l**2 |dv\dz| F(Ri) where l = vonkarm*z .
+	     Useful for matching a local Ri-dependent diffusivity in the free 
+	     atmosphere under stable conditions o that implied by the 
+	     surface layer profile
+
+
+
+  Notes:
+
+       all of the interfaces can be called with either 2d, 1d or 0d in/output.  
+       The base routines for mo_drag and mo_profile are 1d, while 
+       those for mo_diff and stable_mix are 2d, as these are the 
+       versions called within our GCMs.  (mo_drag and mo_profile are
+       called from the exchange_grid, which is 1d).  Other versions call these
+       base routines -- they are included for convenience -- the presumption is
+       that efficiency is not of particular importance for these alternative
+       versions)  
+
+
+
+
+</PRE>
+</A><!-- END INTERFACE -->
+<!--------------------------------------------------------------------->
+<A NAME="ROUTINES">
+<HR>
+<H4>PUBLIC ROUTINES</H4>
+<!-- BEGIN ROUTINES -->
+<PRE>
+
+==========================================================================
+
+ call  mo_drag (pt, pt0, z, z0, zt, zq, speed, drag_m, drag_t, drag_q, &
+                u_star, b_star, [mask])
+
+   input: 
+
+      pt,  real, dimension(:) 
+         virtual potential temperature at lowest model level
+         degrees Kelvin
+
+      pt0, real, dimension(:)
+         virtual potential temperature at surface
+         degrees Kelvin
+
+      z, real, dimension(:) 
+         height above surface of lowest model layer 
+         meters
+
+      z0, real, dimension(:)
+          surface roughness for momentum 
+          meters
+
+      zt, real, dimension(:)
+          surface roughness for temperature
+          meters
+
+      zq, real, dimension(:) 
+          surface roughness for moisture
+          meters
+
+      speed, real, dimension(:) 
+          wind speed at lowest model level with respect to surface 
+             (any "gustiness" factor should be included in speed)
+          meters/sec
+
+   output:
+
+        drag_m, real, dimension(:) 
+              non-dimensional drag coefficient for momentum
+           
+        drag_t, real, dimension(:) 
+              non-dimensional drag coefficient for temperature
+           
+        drag_q, real, dimension(:) 
+              non-dimensional drag coefficient for specific humidity
+
+        u_star, real, dimension(:) 
+           friction velocity 
+           meters/sec
+
+        b_star, real, dimension(:) 
+           buoyancy scale 
+           (meters/sec)**2
+
+
+            The magnitude of the wind stress is 
+                 density*(ustar**2)
+            The drag coefficient for momentum is 
+                 (u_star/speed)**2
+            The buoyancy flux is
+                 density*ustar*bstar
+            The drag coefficient for heat etc is
+                 (u_star/speed)*(b_star/delta_b)
+                 where delta_b is the buoyancy difference between
+                  the surface and the lowest model level
+            The buoyancy == grav*(p0 - p)/p0
+
+      
+    optional:
+       mask    : logical, dimension(:) 
+                   computation performed only where mask = .true.
+		   
+		  
+  Also:
+  
+     can be called with all 1d arrays replaced by 2d arrays or by 0d scalars
+     NOTE:  in the 0d and 2d cases, there is no avail optional argument
+==========================================================================
+
+ subroutine mo_profile(zref_m, zref_t, z, z0, zt, zq, &
+      u_star, b_star, q_star, del_m, del_t, del_q, [mask])
+
+  input:
+
+     zref_m, real
+             height above surface to which interpolation is requested
+	     for horizontal components of momentum
+             meters
+	   
+     zref_t, real
+             height above surface to which interpolation is requested
+	     for temperature and specific humidity
+             meters
+
+     z, real, dimension(:) 
+        height of lowest model layer above surface
+        meters
+
+     z0, real, dimension(:)
+         surface roughness for momentum 
+         meters
+
+     zt, real, dimension(:) 
+         surface roughness for temperature
+         meters
+
+     zq, real, dimension(:) 
+         surface roughness for moisture
+         meters
+
+     u_star, real, dimension(:) 
+             friction velocity 
+             meters/sec
+
+     b_star, real, dimension(:) 
+             buoyancy scale
+             (meters/sec)**2
+
+     q_star, real, dimension(:)
+             moisture scale
+             kg/kg
+
+          (Note:  u_star and b_star are output from mo_drag,
+                  q_star = flux_q/(u_star * density)
+
+    optional input:
+
+       mask, logical, dimension(:) 
+                   computation performed only where mask = .true.
+
+
+    output:
+
+       del_m, real, dimension(:)
+              dimensionless ratio, as defined below, for momentum
+
+       del_t, real, dimension(:)
+              dimensionless ratio, as defined below, for temperature
+
+       del_q, real, dimension(:) o
+              dimensionless ratio, as defined below, for specific humidity
+
+          Ratios are  (f(zref) - f_surf)/(f(z) - f_surf)
+	  
+  Also:
+  
+     can be called with all 1d arrays replaced by 2d arrays or by 0d scalars
+     NOTE:  in the 0d and 2d cases, there is no avail optional argument
+     
+     in addition, this routine can be called with the interface 
+     
+     subroutine mo_profile(zref, z, z0, zt, zq, &
+           u_star, b_star, q_star, del_m, del_h, del_q)
+	   
+      in which zref is a 1d array of the heights at which the profiles
+        are requested, and all other input is 0d, 1d, or 2d as above,
+	while the output del_m, del_h, del_q is dimensioned
+	in the 0d case:  dimension (size(zref))
+	in the 1d case:  dimension (size(input), size(zref))
+	in the 2d case:  dimension (size(input,1), size(input,2), size(zref))
+	(note that the two inputs zref_m and zref_h and here replaced by
+	the input vector zref)
+
+==========================================================================
+               
+  subroutine mo_diff(z, u_star, b_star, k_m, k_h)
+
+    input: 
+
+        u_star, real, dimension(:,:) -- 2d horizontal array
+                surface friction velocity
+                (meters/sec)
+
+        b_star, real, dimension(:,:) -- 2d horizontal array
+                buoyancy scale 
+                (meters/sec**2)
+
+          (Note:  u_star and b_star are output from mo_drag)
+	  
+	z, real, dimension(:,:,:)  
+	        (first two dimensions conform to u_star, b_star)
+                height above surface at which diffusivities 
+                are desired -- i.e., diffusivities returned at 
+		z(i,j,:) for each point (i,j) 
+                (meters)
+
+    output:
+
+        k_m   : real, dimension(:,:,:) conforms to z
+                kinematic diffusivity for momentum 
+                (meters**2/sec)
+
+        k_h   : real, dimension(:,:,:)
+                kinematic diffusivity for temperature
+                (meters**2/sec)
+
+Also 0d and 1d versions available
+  0d:  u_star, b_star = scalars; 
+       z, k_m, k_h = dimension(:)
+  1d   u_star, b_star = dimension(:), 
+       z, k_m, k_h = dimension(size(u_star), :)
+       
+Also, can be called so as to return diffusivities at one level 
+       (the height of this level can still vary from column to column)
+  0d:  u_star, b_star, z, k_m, k_h  = scalars
+  1d:  u_star, b_star, z, k_m, k_h  = dimension(:)
+  2d   u_star, b_star, z, k_m, k_h  = dimension(:,:)
+  
+==========================================================================
+               
+  subroutine stable_mix(rich, mix)
+
+    input: 
+
+        rich, real, dimension(:,:,:) 
+	      local Richardson's number
+                (none)
+
+    output:
+
+        mix,  real, dimension(:,:,:)
+	      dimensional factor that produces the diffusivity
+	      consistent with the similarity profile
+	      under stable conditions when multiplied by 
+	      (L**2) * |dv/dz| where v is the vector horizontal wind
+	      and L = vonkarm*z
+
+Also 0d, 1d, and 2d versions vailable
+
+</PRE>
+</A><!-- END ROUTINES -->
+<!--------------------------------------------------------------------->
+<A NAME="NAMELIST">
+<HR>
+<H4>NAMELIST</H4>
+<!-- BEGIN NAMELIST -->
+<PRE>
+
+   (default values provided)
+   
+   logical :: neutral    = .false.
+
+      If set to .true., all stability dependence is suppressed and 
+       neutral logarithmic profiles are used for all calculations;
+       all other namelist parameters ignored
+       
+   real  :: drag_min   = 1.e-05   (non-dimensional)
+
+       The drag coefficients (for both momentum and temperature) 
+       are not allowed to fall below drag_min
+
+   
+   integer :: stable_option = 1
+   
+       must equal either 1 or 2
+       two version for the similarity functions on the stable side
+
+   real :: rich_crit  = 2.0      (non-dimensional)
+
+       The first step in applying the similarity theory is computing
+       the bulk Richardson's  number Ri between the lowest model level
+       and the surface. If Ri is greater than rich_crit, the drag 
+       coefficients are set to drag_min. 
+       
+       This value also affects the drag coefficients under stable conditions
+       for either choice of stable_option, as the drag is arranged to
+       becomes very small as rich_crit is approached
+       
+   real :: zeta_trans = 0.5 (non-dimensional)
+    
+       A parameter in the stable-option = 2 piecewise linear similarity
+       function for the stable side.  Increasing zeta_trans reduces
+       the drag and the implied diffusivities
+         
+
+</PRE>
+</A><!-- END NAMELIST -->
+<!--------------------------------------------------------------------->
+<A NAME="CHANGES">
+<HR>
+<H4>CHANGE HISTORY</H4>
+<!-- BEGIN CHANGES -->
+<PRE>
+<B><A HREF=".doc.log#monin_obukhov.f90">Revision history</A></B>
+
+<b>changes</b> (10/4/1999)
+
+     MPP version created. Minor changes for open_file, error_mesg,
+     and Fortran write statements. Answers should reproduce the
+     previous version.
+
+<b>more changes</b>  (10/01)
+
+    -- time smoothing option removed
+    -- second optional similarity function on stable side added
+    -- stable_mix interface added
+    -- code rearranged substantially for clarity, removing initial
+       aggregation of points into unstable and stable sets
+    -- answers reproduce for stable_option = 1 except in the very 
+       rare instance of points that are very close to neutral.  
+       These need to be treated separately to avoid a divide by sero.  
+       In this version, the drag coefficients at these points are simply 
+       set to the neutral value
+
+</PRE>
+</A><!-- END CHANGES -->
+<!--------------------------------------------------------------------->
+<A NAME="ERRORS">
+<HR>
+<H4>ERROR MESSAGES</H4>
+<!-- BEGIN ERRORS -->
+<PRE>
+
+FATAL ERRORS in MONIN_OBUKHOV_INIT in MONIN_OBUKHOV_MOD
+
+    -- rich_crit in monin_obukhov_mod must be > 0.25
+
+    -- drag_min in monin_obukhov_mod must be >= 0.0
+    
+    -- the only allowable values of stable_option are 1 and 2
+    
+    -- zeta_trans must be positive
+    
+
+FATAL ERROR in solve_zeta in monin_obukhov_mod
+
+    -- surface drag iteration did not converge
+
+</PRE>
+</A><!-- END ERRORS -->
+<!--------------------------------------------------------------------->
+<A NAME="REFERENCES">
+<HR>
+<H4>REFERENCES</H4>
+<!-- BEGIN REFERENCES -->
+<PRE>
+
+</PRE>
+</A><!-- END REFERENCES -->
+<!--------------------------------------------------------------------->
+<A NAME="BUGS">
+<HR>
+<H4>KNOWN BUGS</H4>
+<!-- BEGIN BUGS -->
+<PRE>
+None known
+</PRE>
+</A><!-- END BUGS -->
+<!--------------------------------------------------------------------->
+<A NAME="NOTES">
+<HR>
+<H4>NOTES</H4>
+<!-- BEGIN NOTES -->
+<PRE>
+
+If iteration convergence is ever a problem, one can consider
+precomputation and table interpolation
+
+It would be convenient if changing the derivative similarity functions
+automatically modified the integral functions and stable_mix
+(this would presumably require numerical integration and table look-ups 
+as opposed to analytical expressions)
+
+
+</PRE>
+</A><!-- END NOTES -->
+<!--------------------------------------------------------------------->
+<A NAME="PLANS">
+<HR>
+<H4>FUTURE PLANS</H4>
+<!-- BEGIN PLANS -->
+<PRE>
+
+
+</PRE>
+</A><!-- END PLANS -->
+<!--------------------------------------------------------------------->
+
+<HR>
+</BODY>
+</HTML>

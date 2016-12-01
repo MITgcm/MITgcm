@@ -1,0 +1,195 @@
+<!--
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!                                                                   !!
+!!                   GNU General Public License                      !!
+!!                                                                   !!
+!! This file is part of the Flexible Modeling System (FMS).          !!
+!!                                                                   !!
+!! FMS is free software; you can redistribute it and/or modify       !!
+!! it and are expected to follow the terms of the GNU General Public !!
+!! License as published by the Free Software Foundation.             !!
+!!                                                                   !!
+!! FMS is distributed in the hope that it will be useful,            !!
+!! but WITHOUT ANY WARRANTY; without even the implied warranty of    !!
+!! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     !!
+!! GNU General Public License for more details.                      !!
+!!                                                                   !!
+!! You should have received a copy of the GNU General Public License !!
+!! along with FMS; if not, write to:                                 !!
+!!          Free Software Foundation, Inc.                           !!
+!!          59 Temple Place, Suite 330                               !!
+!!          Boston, MA  02111-1307  USA                              !!
+!! or see:                                                           !!
+!!          http://www.gnu.org/licenses/gpl.txt                      !!
+!!                                                                   !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+-->
+<HTML>
+<TITLE>module atmosphere_mod</TITLE>
+<BODY BGCOLOR="#AABBCC" TEXT="#332211" >
+
+<DIV ALIGN="CENTER"> <FONT SIZE=1>
+<A HREF="#INTERFACE">PUBLIC INTERFACE</A> / 
+<A HREF="#DATA_TYPES">DATA</A> / 
+<A HREF="#ROUTINES">ROUTINES</A> / 
+<A HREF="#NAMELIST">NAMELIST</A> / 
+<A HREF="#CHANGES">CHANGES</A> / 
+<A HREF="#ERRORS">ERRORS</A> / 
+</FONT>
+<BR><BR></DIV><HR>
+
+
+<H2>module atmosphere_mod</H2>
+<A NAME="HEADER">
+<!-- BEGIN HEADER -->
+<PRE>
+     <B>Contact:</B> Isaac Held,  Peter Phillipps
+     <B>Reviewers:</B>
+
+</PRE>
+<!-- END HEADER --></A>
+<!--------------------------------------------------------------------->
+<A NAME="OVERVIEW">
+<HR>
+<H4>OVERVIEW</H4>
+<!-- BEGIN OVERVIEW -->
+<PRE>
+
+     Atmospheric driver for the spectral dynamics 
+     using forcing from the Held-Suarez benchmark.
+
+</PRE>
+<!-- END OVERVIEW --></A>
+<!--------------------------------------------------------------------->
+<A NAME="DESCRIPTION">
+<!-- BEGIN DESCRIPTION -->
+<PRE>
+
+     This module provides a standard interface to the
+     spectral dynamical core and interface to the
+     Held Suarez physics.
+
+</PRE>
+<!-- END DESCRIPTION --></A>
+<!--------------------------------------------------------------------->
+<A NAME="MODULES_USED">
+<HR>
+<H4>OTHER MODULES USED</H4>
+<!-- BEGIN MODULES_USED -->
+<PRE>
+
+                    fms_mod
+              constants_mod
+             transforms_mod
+           time_manager_mod
+       press_and_geopot_mod
+      spectral_dynamics_mod
+            tracer_type_mod
+             hs_forcing_mod
+                    mpp_mod
+          field_manager_mod
+         tracer_manager_mod
+
+</PRE>
+<!-- END MODULES_USED --></A>
+<!--------------------------------------------------------------------->
+<A NAME="INTERFACE">
+<HR>
+<H4>PUBLIC INTERFACE</H4>
+<!-- BEGIN INTERFACE -->
+<PRE>
+
+  use atmosphere_mod [,only: atmosphere_init,
+                             atmosphere,
+			     atmosphere_end ]
+
+  Notes:
+
+      Namelist interface <b>&atmosphere_nml</b> must
+      exist in file <b>input.nml</b>.
+
+</PRE>
+<!-- END INTERFACE --></A>
+<!--------------------------------------------------------------------->
+<A NAME="DATA_TYPES">
+<HR>
+<H4>PUBLIC DATA</H4>
+<!-- BEGIN DATA_TYPES -->
+<PRE>
+
+     There are no public defined data types.
+
+</PRE>
+<!-- END DATA_TYPES --></A>
+<!--------------------------------------------------------------------->
+<A NAME="ROUTINES">
+<HR>
+<H4>PUBLIC ROUTINES</H4>
+<!-- BEGIN ROUTINES -->
+<PRE>
+
+call atmosphere_init (Time_init, Time, Time_step)
+
+input
+
+    Time        current time [time_type]
+
+    Time_step   time step [time_type]
+
+---------------------------------------------------------------------
+
+call atmosphere_end
+
+   No calling arguments
+
+---------------------------------------------------------------------
+
+call atmosphere (Time)
+
+input
+
+    Time        current time [time_type]
+
+</PRE>
+<!-- END ROUTINES --></A>
+<!--------------------------------------------------------------------->
+<A NAME="NAMELIST">
+<HR>
+<H4>NAMELIST</H4>
+<!-- BEGIN NAMELIST -->
+<PRE>
+
+  There is no namelist
+
+</PRE>
+<!-- END NAMELIST --></A>
+<!--------------------------------------------------------------------->
+<A NAME="CHANGES">
+<HR>
+<H4>CHANGE HISTORY</H4>
+<PRE>
+
+</PRE>
+<!-- END CHANGES --></A>
+<!--------------------------------------------------------------------->
+<A NAME="ERRORS">
+<HR>
+<H4>ERROR MESSAGES</H4>
+<!-- BEGIN ERRORS -->
+<PRE>
+
+<b>FATAL error messages are followed by an explanation in italics</b>
+
+<b>atmosphere module is not initialized</b>
+   <i>subroutine atmosphere_init must be called prior to calling subroutine atmosphere</i>
+
+
+</PRE>
+<!-- END ERRORS --></A>
+<!--------------------------------------------------------------------->
+
+<HR>
+</BODY>
+</HTML>

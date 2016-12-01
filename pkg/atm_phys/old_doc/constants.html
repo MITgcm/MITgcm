@@ -1,0 +1,384 @@
+<!--
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!                                                                   !!
+!!                   GNU General Public License                      !!
+!!                                                                   !!
+!! This file is part of the Flexible Modeling System (FMS).          !!
+!!                                                                   !!
+!! FMS is free software; you can redistribute it and/or modify       !!
+!! it and are expected to follow the terms of the GNU General Public !!
+!! License as published by the Free Software Foundation.             !!
+!!                                                                   !!
+!! FMS is distributed in the hope that it will be useful,            !!
+!! but WITHOUT ANY WARRANTY; without even the implied warranty of    !!
+!! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the     !!
+!! GNU General Public License for more details.                      !!
+!!                                                                   !!
+!! You should have received a copy of the GNU General Public License !!
+!! along with FMS; if not, write to:                                 !!
+!!          Free Software Foundation, Inc.                           !!
+!!          59 Temple Place, Suite 330                               !!
+!!          Boston, MA  02111-1307  USA                              !!
+!! or see:                                                           !!
+!!          http://www.gnu.org/licenses/gpl.txt                      !!
+!!                                                                   !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+-->
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=EUC-JP">
+<title>Module constants_mod</title>
+<link type="text/css" href="http://www.gfdl.noaa.gov/~fms/style/doc.css" rel="stylesheet">
+<STYLE TYPE="text/css">
+          .fixed {
+            font-size:medium;
+            font-family:monospace;
+            border-style:none;
+            border-width:0.1em;
+            padding:0.1em;
+            color:#663366;
+          }
+        </STYLE>
+</head>
+<body>
+<a name="TOP"></a><font class="header" size="1"><a href="#PUBLIC INTERFACE">PUBLIC INTERFACE </a>~
+          <a href="#PUBLIC DATA">PUBLIC DATA </a>~
+          <a href="#PUBLIC ROUTINES">PUBLIC ROUTINES </a>~
+          <a href="#NAMELIST">NAMELIST </a>~
+          <a href="#DIAGNOSTIC FIELDS">DIAGNOSTIC FIELDS </a>~
+          <a href="#ERROR MESSAGES">ERROR MESSAGES </a>~
+          <a href="#REFERENCES">REFERENCES </a>~ 
+          <a href="#NOTES">NOTES</a></font>
+<hr>
+<h2>Module constants_mod</h2>
+<a name="HEADER"></a>
+<!-- BEGIN HEADER -->
+<div>
+<b>Contact:&nbsp;</b><a href="mailto:Bruce.Wyman@noaa.gov">   Bruce Wyman </a>
+<br>
+<b>Reviewers:&nbsp;</b>
+<br>
+<b>Change History:&nbsp;</b><a href="http://www.gfdl.noaa.gov/fms-cgi-bin/cvsweb.cgi/FMS/shared/constants">WebCVS Log</a>
+<br>
+<br>
+</div>
+<!-- END HEADER -->
+<a name="OVERVIEW"></a>
+<hr>
+<h4>OVERVIEW</h4>
+<!-- BEGIN OVERVIEW -->
+<p class="text">   Defines useful constants for Earth. </p>
+<!-- END OVERVIEW -->
+<a name="DESCRIPTION"></a>
+<!-- BEGIN DESCRIPTION -->
+<div>   Constants are defined as real parameters, 
+   except for PI and RADIAN, which are calculated in constants_init to promote
+   consistency and accuracy among various compilers.
+   <br>
+<br>
+   Constants are accessed through the "use" statement. </div>
+<br>
+<!-- END DESCRIPTION -->
+<a name="OTHER MODULES USED"></a>
+<hr>
+<h4>OTHER MODULES USED</h4>
+<!-- BEGIN OTHER MODULES USED -->
+<div>
+<pre>fms_mod</pre>
+</div>
+<!-- END OTHER MODULES USED -->
+<!-- BEGIN PUBLIC INTERFACE -->
+<a name="PUBLIC INTERFACE"></a>
+<hr>
+<h4>PUBLIC INTERFACE</h4>
+<div>
+<dl>
+<dt>
+<a href="#constants_init">constants_init</a>:</dt>
+<dd>   Initialization routine. The purpose of this routine 
+   is initialize the value of PI and RADIAN, and to write the 
+   version and tag name information to the log file. </dd>
+</dl>
+</div>
+<br>
+<!-- END PUBLIC INTERFACE -->
+<a name="PUBLIC DATA"></a>
+<hr>
+<h4>PUBLIC DATA</h4>
+<!-- BEGIN PUBLIC DATA -->
+<div>
+<table align="center" cellspacing="2" CELLPADDING="2" BORDER="2">
+<tr>
+<th> Name  </th><th> Type  </th><th> Value  </th><th> Units  </th><th> Description  </th>
+</tr>
+<tr>
+<td> RADIUS  </td><td> real  </td><td> 6371.e3  </td><td> m  </td><td>    radius of the earth   </td>
+</tr>
+<tr>
+<td> OMEGA  </td><td> real  </td><td> 7.292e-5  </td><td> 1/s  </td><td>    rotation rate of the planet (earth)   </td>
+</tr>
+<tr>
+<td> GRAV  </td><td> real  </td><td> 9.80  </td><td> m/s^2  </td><td>    acceleration due to gravity   </td>
+</tr>
+<tr>
+<td> RDGAS  </td><td> real  </td><td> 287.04  </td><td> J/kg/deg  </td><td>    gas constant for dry air   </td>
+</tr>
+<tr>
+<td> KAPPA  </td><td> real  </td><td> 2./7.  </td><td> ---  </td><td>    RDGAS / CP_AIR   </td>
+</tr>
+<tr>
+<td> CP_AIR  </td><td> real  </td><td> RDGAS/KAPPA  </td><td> J/kg/deg  </td><td>    specific heat capacity of dry air at constant pressure   </td>
+</tr>
+<tr>
+<td> CP_OCEAN  </td><td> real  </td><td> 3989.24495292815  </td><td> J/kg/deg  </td><td>    specific heat capacity taken from McDougall (2002) "Potential Enthalpy ..."   </td>
+</tr>
+<tr>
+<td> RHO0  </td><td> real  </td><td> 1.035e3  </td><td> kg/m^3  </td><td>    average density of sea water   </td>
+</tr>
+<tr>
+<td> RHO0R  </td><td> real  </td><td> 1.0/RHO0  </td><td> m^3/kg  </td><td>    reciprocal of average density of sea water   </td>
+</tr>
+<tr>
+<td> RHO_CP  </td><td> real  </td><td> RHO0*CP_OCEAN  </td><td> J/m^3/deg  </td><td>    (kg/m^3)*(cal/kg/deg C)(joules/cal) = (joules/m^3/deg C)   </td>
+</tr>
+<tr>
+<td> RVGAS  </td><td> real  </td><td> 461.50  </td><td> J/kg/deg  </td><td>    gas constant for water vapor   </td>
+</tr>
+<tr>
+<td> DENS_H2O  </td><td> real  </td><td> 1000.  </td><td> kg/m^3  </td><td>    density of liquid water   </td>
+</tr>
+<tr>
+<td> HLV  </td><td> real  </td><td> 2.500e6  </td><td> J/kg  </td><td>    latent heat of evaporation   </td>
+</tr>
+<tr>
+<td> HLF  </td><td> real  </td><td> 3.34e5  </td><td> J/kg  </td><td>    latent heat of fusion   </td>
+</tr>
+<tr>
+<td> HLS  </td><td> real  </td><td> 2.834e6  </td><td> J/kg  </td><td>    latent heat of sublimation   </td>
+</tr>
+<tr>
+<td> TFREEZE  </td><td> real  </td><td> 273.16  </td><td> degK  </td><td>    temp where fresh water freezes   </td>
+</tr>
+<tr>
+<td> WTMAIR  </td><td> real  </td><td> 2.896440E+01  </td><td> AMU  </td><td>    molecular weight of air   </td>
+</tr>
+<tr>
+<td> WTMH2O  </td><td> real  </td><td> 1.801534E+01  </td><td> AMU  </td><td>    molecular weight of water   </td>
+</tr>
+<tr>
+<td> WTMO3  </td><td> real  </td><td> 47.99820E+01  </td><td> AMU  </td><td>    molecular weight of ozone   </td>
+</tr>
+<tr>
+<td> DIFFAC  </td><td> real  </td><td> 1.660000E+00  </td><td> ---  </td><td>    diffusivity factor   </td>
+</tr>
+<tr>
+<td> SECONDS_PER_DAY  </td><td> real  </td><td> 8.640000E+04  </td><td> seconds  </td><td>    seconds in a day   </td>
+</tr>
+<tr>
+<td> AVOGNO  </td><td> real  </td><td> 6.023000E+23  </td><td> atoms/mole  </td><td>    Avogadro's number   </td>
+</tr>
+<tr>
+<td> PSTD  </td><td> real  </td><td> 1.013250E+06  </td><td> dynes/cm^2  </td><td>    mean sea level pressure   </td>
+</tr>
+<tr>
+<td> PSTD_MKS  </td><td> real  </td><td> 101325.0  </td><td> Newtons/m^2  </td><td>    mean sea level pressure   </td>
+</tr>
+<tr>
+<td> REARTH  </td><td> real  </td><td> 6.356766E+08  </td><td> cm  </td><td>    radius of the earth   </td>
+</tr>
+<tr>
+<td> RADCON  </td><td> real  </td><td> ((1.0E+02*GRAV)/(1.0E+04*CP_AIR))*SECONDS_PER_DAY  </td><td> deg sec/(cm day)  </td><td>    factor used to convert flux divergence to heating rate in degrees per day   </td>
+</tr>
+<tr>
+<td> RADCON_MKS  </td><td> real  </td><td> (GRAV/CP_AIR)*SECONDS_PER_DAY  </td><td> deg sec/(m day)  </td><td>    factor used to convert flux divergence to heating rate in degrees per day   </td>
+</tr>
+<tr>
+<td> O2MIXRAT  </td><td> real  </td><td> 2.0953E-01  </td><td> ---  </td><td>    mixing ratio of molecular oxygen in air   </td>
+</tr>
+<tr>
+<td> RHOAIR  </td><td> real  </td><td> 1.292269  </td><td> kg/m^3  </td><td>    reference atmospheric density   </td>
+</tr>
+<tr>
+<td> ALOGMIN  </td><td> real  </td><td> -50.0  </td><td> ---  </td><td>    minimum value allowed as argument to log function   </td>
+</tr>
+<tr>
+<td> FREZDK  </td><td> real  </td><td> 273.16  </td><td> deg K  </td><td>    melting point of water   </td>
+</tr>
+<tr>
+<td> STEFAN  </td><td> real  </td><td> 5.6734e-8  </td><td> W/m^2/deg^4  </td><td>    Stefan-Boltzmann constant   </td>
+</tr>
+<tr>
+<td> VONKARM  </td><td> real  </td><td> 0.40  </td><td> ---  </td><td>    Von Karman constant   </td>
+</tr>
+<tr>
+<td> PI  </td><td> real  </td><td> 4.0*ATAN(1.0)  </td><td> ---  </td><td>    ratio of circle circumference to diameter   </td>
+</tr>
+<tr>
+<td> RADIAN  </td><td> real  </td><td> 180.0/PI  </td><td> ---  </td><td>    degrees per radian   </td>
+</tr>
+<tr>
+<td> C2DBARS  </td><td> real  </td><td> 1.e-4  </td><td> dbars  </td><td>    converts rho*g*z (in mks) to dbars: 1dbar = 10^4 (kg/m^3)(m/s^2)m   </td>
+</tr>
+<tr>
+<td> KELVIN  </td><td> real  </td><td> 273.15  </td><td> ---  </td><td>    degrees Kelvin at zero Celsius   </td>
+</tr>
+<tr>
+<td> EPSLN  </td><td> real  </td><td> 1.0e-40  </td><td> ---  </td><td>    a small number to prevent divide by zero exceptions   </td>
+</tr>
+</table>
+<br>
+</div>
+<!-- END PUBLIC DATA -->
+<a name="PUBLIC ROUTINES"></a>
+<hr>
+<h4>PUBLIC ROUTINES</h4>
+<!-- BEGIN PUBLIC ROUTINES -->
+<ol type="a">
+<li>
+<a name="constants_init"></a>
+<h4>constants_init</h4>
+<pre>
+<b>call constants_init </b>
+</pre>
+<dl>
+<dt>
+<b>DESCRIPTION</b>
+</dt>
+<dd>   If this routine is called more than once or called
+   from other than the root PE it will return silently.
+   There are no arguments. </dd>
+<br>
+<br>
+</dl>
+</li>
+</ol>
+<!-- END PUBLIC ROUTINES -->
+<a name="PUBLIC TYPES"></a>
+<!-- BEGIN PUBLIC TYPES -->
+<!-- END PUBLIC TYPES --><a name="NAMELIST"></a>
+<!-- BEGIN NAMELIST -->
+<!-- END NAMELIST --><a name="DIAGNOSTIC FIELDS"></a>
+<!-- BEGIN DIAGNOSTIC FIELDS -->
+<!-- END DIAGNOSTIC FIELDS --><a name="DATA SETS"></a>
+<!-- BEGIN DATA SETS -->
+<hr>
+<h4>DATA SETS</h4>
+<div>None.<br>
+<br>
+</div>
+<!-- END DATA SETS -->
+<a name="PUBLIC CODE"></a>
+<!-- BEGIN PUBLIC CODE -->
+<!-- END PUBLIC CODE --><a name="ERROR MESSAGES"></a>
+<!-- BEGIN ERROR MESSAGES -->
+<hr>
+<h4>ERROR MESSAGES</h4>
+<div>None.<br>
+<br>
+</div>
+<!-- END ERROR MESSAGES -->
+<a name="REFERENCES"></a>
+<hr>
+<h4>REFERENCES</h4>
+<!-- BEGIN REFERENCES -->
+<div>
+        None.
+      </div>
+<br>
+<!-- END REFERENCES -->
+<a name="COMPILER SPECIFICS"></a>
+<hr>
+<h4>COMPILER SPECIFICS</h4>
+<!-- BEGIN COMPILER SPECIFICS -->
+<div>
+        None.
+      </div>
+<br>
+<!-- END COMPILER SPECIFICS -->
+<a name="PRECOMPILER OPTIONS"></a>
+<hr>
+<h4>PRECOMPILER OPTIONS</h4>
+<!-- BEGIN PRECOMPILER OPTIONS -->
+<div>
+        None.
+      </div>
+<br>
+<!-- END PRECOMPILER OPTIONS -->
+<a name="LOADER OPTIONS"></a>
+<hr>
+<h4>LOADER OPTIONS</h4>
+<!-- BEGIN LOADER -->
+<div>None.<br>
+<br>
+</div>
+<!-- END LOADER OPTIONS -->
+<a name="TEST PROGRAM"></a>
+<hr>
+<h4>TEST PROGRAM</h4>
+<!-- BEGIN TEST PROGRAM -->
+<div>None.<br>
+</div>
+<br>
+<!-- END TEST PROGRAM -->
+<a name="KNOWN BUGS"></a>
+<hr>
+<h4>KNOWN BUGS</h4>
+<!-- BEGIN KNOWN BUGS -->
+<div>
+        None.
+      </div>
+<br>
+<!-- END KNOWN BUGS -->
+<a name="NOTES"></a>
+<hr>
+<h4>NOTES</h4>
+<!-- BEGIN NOTES -->
+<div>   Constants have been declared as type REAL, PARAMETER.
+   <br>
+<br>
+   The value a constant can not be changed in a users program.
+   New constants can be defined in terms of values from the
+   constants module using a parameter statement.&lt;br&gt;&lt;br&gt;
+   <br>
+<br>
+   The name given to a particular constant may be changed.&lt;br&gt;&lt;br&gt;
+   <br>
+<br>
+   Constants can be used on the right side on an assignment statement
+   (their value can not be reassigned). 
+   <br>
+<br>
+   As PI is calculated, it cannot be a parameter variable.
+   Do not assign a new value to PI.  
+   <br>
+<br> 
+<dl>
+<dt>EXAMPLE</dt>
+<dd> 
+<pre>    use constants_mod, only:  TFREEZE, grav_new =&gt; GRAV
+    real, parameter :: grav_inv = 1.0 / grav_new
+    tempc(:,:,:) = tempk(:,:,:) - TFREEZE
+    geopotential(:,:) = height(:,:) * grav_new</pre> 
+</dd>
+</dl> 
+</div>
+<br>
+<!-- END NOTES -->
+<a name="FUTURE PLANS"></a>
+<hr>
+<h4>FUTURE PLANS</h4>
+<!-- BEGIN FUTURE PLANS -->
+<div>
+<p>   1.  Renaming of constants. </p>
+<p>   2.  Additional constants. </p>
+</div>
+<br>
+<!-- END FUTURE PLANS -->
+<hr>
+<div align="right">
+<font size="-1"><a href="#TOP">top</a></font>
+</div>
+</body>
+</html>

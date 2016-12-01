@@ -1,0 +1,287 @@
+<HTML>
+<TITLE>module shallow_conv_mod</TITLE>
+<BODY BGCOLOR="#AABBCC" TEXT="#332211" >
+
+<DIV ALIGN="CENTER"> <FONT SIZE=1>
+<A HREF="#INTERFACE">PUBLIC INTERFACE</A> / 
+<A HREF="#ROUTINES">ROUTINES</A> / 
+<A HREF="#NAMELIST">NAMELIST</A> / 
+<A HREF="#CHANGES">CHANGES</A> / 
+<A HREF="#ERRORS">ERRORS</A> / 
+<A HREF="#REFERENCES">REFERENCES</A> / 
+<A HREF="#NOTES">NOTES</A> 
+</FONT>
+<BR><BR></DIV><HR>
+
+
+<H2>Module shallow_conv_mod</H2>
+<A NAME="HEADER">
+<PRE>
+     <B>Contact:</B>   Joe Sirutis, Tony Gordon
+     <B>Reviewers:</B>
+
+     <B><A HREF=".doc.log#shallow_conv.f90">Tags/Status</A></B>
+</PRE>
+</A><!-- END HEADER -->
+<!--------------------------------------------------------------------->
+<A NAME="OVERVIEW">
+<HR>
+<H4>OVERVIEW</H4>
+<!-- BEGIN OVERVIEW -->
+<PRE>
+
+     Shallow Convection Module
+
+     A parameterization of the turbulent vertical transports of 
+     heat and moisture by shallow non-precipitating cumuli.
+
+</PRE>
+</A><!-- END OVERVIEW -->
+<!--------------------------------------------------------------------->
+<A NAME="DESCRIPTION">
+<!-- BEGIN DESCRIPTION -->
+<PRE>
+
+     Given temperature and moisture profiles at the model's pressure
+     levels, this module returns mixing coefficients for temperature
+     and moisture which can be added to the mixing coefficients
+     produced by the Mellor/Yamada level 2.5 scheme.
+
+     This parameterization is based on that of Tiedke ( see references),
+     with local modifications by Tony Gordon.
+
+</PRE>
+</A><!-- END DESCRIPTION -->
+<!--------------------------------------------------------------------->
+<A NAME="MODULES_USED">
+<HR>
+<H4>OTHER MODULES USED</H4>
+<!-- BEGIN MODULES_USED -->
+<PRE>
+
+     sat_vapor_pres_mod
+          utilities_mod
+          constants_mod
+
+</PRE>
+</A><!-- END MODULES_USED -->
+<!--------------------------------------------------------------------->
+<A NAME="INTERFACE">
+<HR>
+<H4>PUBLIC INTERFACE</H4>
+<!-- BEGIN INTERFACE -->
+<PRE>
+
+use shallow_conv_mod [,only: shallow_conv_init, shallow_conv, mylcl]
+
+shallow_conv_init  - Called once to initialize shallow_conv. Also reads namelist.
+                     Must be called before shallow_conv.
+
+shallow_conv       - Does shallow convection parameterization
+
+mylcl              - Computes lifted condensation level
+
+Notes:
+ * A namelist interface ( &shallow_conv_nml ) controls runtime options.
+
+
+</PRE>
+</A><!-- END INTERFACE -->
+<!--------------------------------------------------------------------->
+<A NAME="ROUTINES">
+<HR>
+<H4>PUBLIC ROUTINES</H4>
+<!-- BEGIN ROUTINES -->
+<PRE>
+
+ <b>call shallow_conv_init</b>( kx )
+
+input
+
+    kx           Number of levels in vertical                     [integer]
+
+---------------------------------------------------------------------
+
+  <b>call shallow_conv</b>( Temp, qmix0, pfull, phalf, akhsc, kbot )
+
+input
+
+    Temp      Temperature [deg k] at full model levels,
+              [real, dimension(:,:,nlev)]
+
+    qmix0     Specific humidity of water vapor [kg/kg] at full model levels,
+              [real, dimension(:,:,nlev)]
+
+    pfull     Pressure at full levels in pascals
+              [real, dimension(:,:,nlev)]
+
+    phalf     Pressure at half levels in pascals
+              [real, dimension(:,:,nlev+1)]
+
+output
+
+    akhsc     Mixing coefficient for heat and moisture
+              due to shallow convection [m^2/sec]
+              [real, dimension(:,:,nlev)]
+
+input (optional) - for use with the step-mountain (eta) vertical coordinate
+
+    kbot      Index of the lowest model level
+              [integer, dimension(:,:)]
+
+---------------------------------------------------------------------
+
+  <b>call mylcl</b> ( tlparc, qlparc, plparc, phalf, plcl, kbase )
+
+input
+
+    tlparc    Initial parcel temperature [deg K]
+              [real, dimension(:,:)]
+
+    qlparc    Initial parcel mixing ratio [kg/kg] 
+              [real, dimension(:,:)]
+
+    plparc    Initial parcel pressure [pascals] 
+              [real, dimension(:,:)]
+
+    phalf     Pressure at half levels in pascals
+              [real, dimension(:,:,nlev+1)]
+
+output
+
+    plcl      Pressure at LCL [pascals] 
+              [real, dimension(:,:)]
+
+    kbase     Index of LCL in column
+              [integer, dimension(:,:)]
+
+
+</PRE>
+</A><!-- END ROUTINES -->
+<!--------------------------------------------------------------------->
+<A NAME="NAMELIST">
+<HR>
+<H4>NAMELIST</H4>
+<!-- BEGIN NAMELIST -->
+<PRE>
+
+<b>&shallow_conv_nml </b>
+
+   lipps      If true, use Frank Lipps' formulation for buoyancy, 
+              else buoyancy computed from equivalent potential temperature.
+              [logical, default: lipps = .false. ]
+
+   ldetran    If true, do enhanced detrainment through inversion.
+              [logical, default: ldetran = .true. ]
+
+   theqvcr    Critical lapse rate for buoyancy test in deg K /100m.
+              ( Only if lipps = f )
+              [real, default: theqvcr = 0.0 ]
+
+   pshalow    Shallow convection done below p = pshalow.
+              [real, default: pshalow = 750.0E2 pascals ]
+
+   akhsc0     Base value for mixing coefficient.
+              [real, default: akhsc0 = 5.0 m^2/sec ]
+
+   kctop      No clouds expected for K < kctop
+              [integer, default: kctop = 3 ]
+
+   crthum     Critical value for humidity.
+              [real, default: crthum = 0.85 ]
+
+   hc         Condensation criterion.
+              [real, default: crthum = 1.0 ]
+
+</PRE>
+</A><!-- END NAMELIST -->
+<!--------------------------------------------------------------------->
+<A NAME="CHANGES">
+<HR>
+<H4>CHANGE HISTORY</H4>
+<!-- BEGIN CHANGES -->
+<PRE>
+<B><A HREF=".doc.log#shallow_conv.f90">Revision history</A></B>
+
+<b>prior changes</b> (10/4/99)
+
+     MPP version created. Minor changes for open_file, error_mesg,
+     and Fortran write statements. Answers should reproduce the
+     previous version.
+
+</PRE>
+</A><!-- END CHANGES -->
+<!--------------------------------------------------------------------->
+<A NAME="ERRORS">
+<HR>
+<H4>ERROR MESSAGES</H4>
+<!-- BEGIN ERRORS -->
+<PRE>
+
+<b>Fatal errors in mylcl:</b>
+
+    <b>ITERATION LOOP FOR LCL FAILED</b>
+       Iteration loop for temperature at LCL failed. 
+       Check input data.
+
+</PRE>
+</A><!-- END ERRORS -->
+<!--------------------------------------------------------------------->
+<A NAME="REFERENCES">
+<HR>
+<H4>REFERENCES</H4>
+<!-- BEGIN REFERENCES -->
+<PRE>
+
+     Tiedke, M., 1988: Parameterization of cumulus convection in large
+           scale models. Physically-based modeling and simulation of
+           climate and climate change. Ed. M. Schlesinger, D. Reidel,
+           Hingham, Mass. 375-431.
+
+</PRE>
+</A><!-- END REFERENCES -->
+<!--------------------------------------------------------------------->
+<A NAME="BUGS">
+<HR>
+<H4>KNOWN BUGS</H4>
+<!-- BEGIN BUGS -->
+<PRE>
+
+     There are no known bugs.
+
+</PRE>
+</A><!-- END BUGS -->
+<!--------------------------------------------------------------------->
+<A NAME="NOTES">
+<HR>
+<H4>NOTES</H4>
+<!-- BEGIN NOTES -->
+<PRE>
+
+   When the fatal error "ITERATION LOOP FOR LCL FAILED" occurs the
+   program does not terminate by calling the standard error handler
+   (instead STOP is called).
+
+</PRE>
+</A><!-- END NOTES -->
+<!--------------------------------------------------------------------->
+<A NAME="PLANS">
+<HR>
+<H4>FUTURE PLANS</H4>
+<!-- BEGIN PLANS -->
+<PRE>
+
+     1) A check to see if shallow_conv_init has been called will be added.
+        Currently there is none.
+
+     2) Interface will be changed so that constants are set via
+        use constants_mod, rather than via argument list in 
+        shallow_conv_init.
+
+</PRE>
+</A><!-- END PLANS -->
+<!--------------------------------------------------------------------->
+
+<HR>
+</BODY>
+</HTML>

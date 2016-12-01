@@ -1,0 +1,256 @@
+<HTML>
+<TITLE>module lscale_cond</TITLE>
+<BODY BGCOLOR="#AABBCC" TEXT="#332211" >
+
+<DIV ALIGN="CENTER"> <FONT SIZE=1>
+<A HREF="#INTERFACE">PUBLIC INTERFACE</A> / 
+<A HREF="#ROUTINES">ROUTINES</A> / 
+<A HREF="#NAMELIST">NAMELIST</A> / 
+<A HREF="#CHANGES">CHANGES</A> / 
+<A HREF="#ERRORS">ERRORS</A> / 
+<A HREF="#REFERENCES">REFERENCES</A> / 
+<A HREF="#NOTES">NOTES</A> 
+</FONT>
+<BR><BR></DIV><HR>
+
+
+<H2>module lscale_cond</H2>
+<A NAME="HEADER">
+<PRE>
+     <B>Contact:</B> 
+     <B>Reviewers:</B>
+
+     <B><A HREF=".doc.log#lscale_cond.f90">Tags/Status</A></B>
+</PRE>
+</A><!-- END HEADER -->
+<!--------------------------------------------------------------------->
+<A NAME="OVERVIEW">
+<HR>
+<H4>OVERVIEW</H4>
+<!-- BEGIN OVERVIEW -->
+<PRE>
+
+    Computes large-scale condensation and precipitation.
+
+    Temperature and specific humidity adjustments are computed in model layers
+    where the relative humidity exceeds a threshold relative humidity.
+
+</PRE>
+</A><!-- END OVERVIEW -->
+<!--------------------------------------------------------------------->
+<A NAME="DESCRIPTION">
+<!-- BEGIN DESCRIPTION -->
+<PRE>
+
+   The features include:
+
+    1) option for the re-evaporation of falling precipitation
+    2) energetically consistent adjustment with precipitation type
+
+    Reference: Manabe, S., (1969). Mon. Wea. Rev. 97, 739-798.
+
+</PRE>
+</A><!-- END DESCRIPTION -->
+<!--------------------------------------------------------------------->
+<A NAME="MODULES_USED">
+<HR>
+<H4>OTHER MODULES USED</H4>
+<!-- BEGIN MODULES_USED -->
+<PRE>
+
+    sat_vapor_pres_mod
+         utilities_mod
+         constants_mod
+
+</PRE>
+</A><!-- END MODULES_USED -->
+<!--------------------------------------------------------------------->
+<A NAME="INTERFACE">
+<HR>
+<H4>PUBLIC INTERFACE</H4>
+<!-- BEGIN INTERFACE -->
+<PRE>
+
+use lscale_cond_mod [, only: lscale_cond_init, lscale_cond ]
+
+   lscale_cond_init:  Must be called before lscale_cond to initialize
+                      the module, namelist, and constants.
+
+   lscale_cond:  Computes the large-scale condensation adjustments for
+                 temperature and specific humidity, and returns the
+                 mass of rain and snow that reach the ground (in an
+                 energetically consistent way).
+
+</PRE>
+</A><!-- END INTERFACE -->
+<!--------------------------------------------------------------------->
+<A NAME="ROUTINES">
+<HR>
+<H4>PUBLIC ROUTINES</H4>
+<!-- BEGIN ROUTINES -->
+<PRE>
+
+<b>call lscale_cond_init</b> ( )
+
+   There are no arguments.
+
+----------------------------------------------------
+
+<b>call lscale_cond</b> ( tin, qin, pfull, phalf, coldt,
+                   rain, snow, tdel, qdel, mask, conv )
+
+  Input
+
+     tin      temperature (deg k) at full model levels
+                 [real, dimension(:,:,nlev)]
+
+     qin      specific humidity of water vapor at full model levels
+                 [real, dimension(:,:,nlev)]
+
+     pfull    pressure (pascals) at full model levels
+                 [real, dimension(:,:,nlev)]
+
+     phalf    pressure (pascals) at half (interface) model levels
+                 [real, dimension(:,:,nlev+1)]
+
+     coldt    should precipitation be snow at this point?
+                 [logical, dimension(:,:)]
+
+  Input (optional)
+
+     mask     optional mask (0 or 1.)
+                 [real, dimension(:,:,nlev)]
+
+     conv     logical flag; if true then no large-scale adjustment
+              is performed at that grid-point's level
+                 [real, dimension(:,:,nlev)]
+
+  Output
+
+     rain     liquid precipitation (kg/m2)
+                 [real, dimension(:,:)]
+
+     snow     frozen precipitation (kg/m2)
+                 [real, dimension(:,:)]
+
+     tdel     temperature tendency at full model levels
+                 [real, dimension(:,:,nlev)]
+
+     qdel     specific humidity tendency (of water vapor) at
+                full model levels
+                 [real, dimension(:,:,nlev)]
+
+</PRE>
+</A><!-- END ROUTINES -->
+<!--------------------------------------------------------------------->
+<A NAME="NAMELIST">
+<HR>
+<H4>NAMELIST</H4>
+<!-- BEGIN NAMELIST -->
+<PRE>
+
+<b>&lscale_cond_nml</b>
+
+   hc         relative humidity at which large scale condensation
+              occurs, where 0 <= hc <= 1
+                 [real, default: hc=1.]
+ 
+   do_evap    flag for the re-evaporation of moisture in
+              sub-saturated layers below, if do_evap=.true. then
+              re-evaporation is performed
+                 [logical, default: do_evap=.false.]
+
+</PRE>
+</A><!-- END NAMELIST -->
+<!--------------------------------------------------------------------->
+<A NAME="CHANGES">
+<HR>
+<H4>CHANGE HISTORY</H4>
+<!-- BEGIN CHANGES -->
+<PRE>
+<B><A HREF=".doc.log#lscale_cond.f90">Revision history</A></B>
+
+<b>Prior changes</b>
+
+     MPP version created. Minor changes for open_file, error_mesg,
+     and Fortran write statements. Answers should reproduce the
+     previous version.
+
+<b>Prior changes</b>
+
+  * logical input argument added that specifies whether frozen
+    precipitation should be computed for the column
+    (note: the adjustment is now done energetically consistent
+     for the type of precip)
+
+  * output arguments for column integrated rain and snow replace
+    the argument for total precip
+
+</PRE>
+</A><!-- END CHANGES -->
+<!--------------------------------------------------------------------->
+<A NAME="ERRORS">
+<HR>
+<H4>ERROR MESSAGES</H4>
+<!-- BEGIN ERRORS -->
+<PRE>
+
+<b>Fatal Error in lscale_cond</b>
+
+    <b>lscale_cond_init has not been called</b>
+        The initialization for this module must be called before
+        calling routine lscale_cond.
+
+</PRE>
+</A><!-- END ERRORS -->
+<!--------------------------------------------------------------------->
+<A NAME="REFERENCES">
+<HR>
+<H4>REFERENCES</H4>
+<!-- BEGIN REFERENCES -->
+<PRE>
+
+     Manabe, S., (1969). Mon. Wea. Rev. 97, 739-798.
+
+</PRE>
+</A><!-- END REFERENCES -->
+<!--------------------------------------------------------------------->
+<A NAME="BUGS">
+<HR>
+<H4>KNOWN BUGS</H4>
+<!-- BEGIN BUGS -->
+<PRE>
+
+     None.
+
+</PRE>
+</A><!-- END BUGS -->
+<!--------------------------------------------------------------------->
+<A NAME="NOTES">
+<HR>
+<H4>NOTES</H4>
+<!-- BEGIN NOTES -->
+<PRE>
+
+     None.
+
+</PRE>
+</A><!-- END NOTES -->
+<!--------------------------------------------------------------------->
+<A NAME="PLANS">
+<HR>
+<H4>FUTURE PLANS</H4>
+<!-- BEGIN PLANS -->
+<PRE>
+
+     Routine lscale_cond_init could be called automatically by the
+     main routine lscale_cond. This would remove the current fatal error
+     that would occur.
+
+</PRE>
+</A><!-- END PLANS -->
+<!--------------------------------------------------------------------->
+
+<HR>
+</BODY>
+</HTML>
