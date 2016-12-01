@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2283 2016/11/30 00:47:40 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2284 2016/12/01 17:11:59 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint66b (2016/12/01)
 o model & momentum pkgs:
   - implement fully implicit bottom friction combined with implicit surf.
     pressure, for now, only in hydrostic formulation:
