@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.47 2014/10/20 03:13:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.48 2016/12/09 21:43:15 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -267,9 +267,10 @@ C     Get values of the surface flux anomalies.
 # endif
 #endif
 
-#ifdef SHORTWAVE_HEATING
+#ifdef ALLOW_ATM_TEMP
+# ifdef SHORTWAVE_HEATING
 C     Treatment of qnet
-C     The location of te summation of Qnet in exf_mapfields is unfortunate.
+C     The location of the summation of Qnet in exf_mapfields is unfortunate:
 C     For backward compatibility issues we want it to happen after
 C     applying control variables, but before exf_diagnostics_fill.
 C     Therefore, we DO it exactly here:
@@ -282,7 +283,8 @@ C     Therefore, we DO it exactly here:
         ENDDO
        ENDDO
       ENDDO
-#endif
+# endif /* SHORTWAVE_HEATING */
+#endif /* ALLOW_ATM_TEMP */
 
 C     Diagnostics output
       CALL exf_diagnostics_fill( myTime, myIter, myThid )
