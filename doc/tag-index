@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2284 2016/12/01 17:11:59 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2285 2016/12/09 21:44:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/exf:
+  - change definition of "hflux" input file to always include Short-Wave;
+    this is now consistent with hflux computation (if using bulk-formulae) 
+    and hflux diagnostic & documentation (in EXF_FIELDS.h).
 
 checkpoint66b (2016/12/01)
 o model & momentum pkgs:
