@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_gnu.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_gnu.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mpi,v 1.24 2016/10/24 13:58:32 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_gnu_mpi,v 1.25 2016/12/12 22:53:24 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -130,7 +130,7 @@ else
 fi
 
 echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
-  -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+  -send \"$SEND\" -sd $SavD -a jmc@dev.mitgcm.org
 ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
-  -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+  -send "$SEND" -sd $SavD -a jmc@dev.mitgcm.org
 

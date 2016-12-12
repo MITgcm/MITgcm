@@ -6,7 +6,7 @@
 #PBS -e /mit/jm_c/test_acesgrid/output/tst_op64.stderr
 #PBS -o /mit/jm_c/test_acesgrid/output/tst_op64.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_op64_mpi,v 1.16 2015/01/16 21:57:33 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ACESgrid/Attic/test_aces_op64_mpi,v 1.17 2016/12/12 22:53:24 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -131,13 +131,13 @@ else
 fi
 
 echo ./testreport $options -of $OPTFILE -command \"$EXE\" -odir ${dNam}-$sfx \
-  -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+  -send \"$SEND\" -sd $SavD -a jmc@dev.mitgcm.org
 ./testreport $options -of $OPTFILE -command "$EXE" -odir ${dNam}-$sfx \
-  -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+  -send "$SEND" -sd $SavD -a jmc@dev.mitgcm.org
 
 echo ''
 echo ../tools/do_tst_2+2 -mpi -exe \"$EXE\" -o ${dNam}-$sfx \
-  -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+  -send \"$SEND\" -sd $SavD -a jmc@dev.mitgcm.org
 ../tools/do_tst_2+2 -mpi -exe "$EXE" -o ${dNam}-$sfx \
-  -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+  -send "$SEND" -sd $SavD -a jmc@dev.mitgcm.org
 
