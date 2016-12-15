@@ -1,5 +1,6 @@
-# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/llc.py,v 1.10 2016/07/08 09:30:56 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/llc.py,v 1.11 2016/12/15 17:10:43 jahn Exp $
 # $Name:  $
+from __future__ import print_function
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
@@ -47,16 +48,16 @@ def contourf(*arguments, **kwargs):
         elif arglen == 4:
             h = plt.tricontourf(triang, data, arguments[3], **kwargs)
         else:
-            print "wrong number of arguments"
-            print "need at least 3 or 4 arguments"
+            print("wrong number of arguments")
+            print("need at least 3 or 4 arguments")
             sys.exit(__doc__)
 
         # show the triangles for debugging
         #plt.triplot(triang, color='0.7')
 
     else:
-        print "wrong number of arguments"
-        print "need at least x,y,fld"
+        print("wrong number of arguments")
+        print("need at least x,y,fld")
         sys.exit(__doc__)
 
     return h
@@ -103,16 +104,16 @@ def contour(*arguments, **kwargs):
         elif arglen == 4:
             h = plt.tricontour(triang, data, arguments[3], **kwargs)
         else:
-            print "wrong number of arguments"
-            print "need at least 3 or 4 arguments"
+            print("wrong number of arguments")
+            print("need at least 3 or 4 arguments")
             sys.exit(__doc__)
         
         # show the triangles for debugging
         #plt.triplot(triang, color='0.7')
 
     else:
-        print "wrong number of arguments"
-        print "need at least x,y,fld"
+        print("wrong number of arguments")
+        print("need at least x,y,fld")
         sys.exit(__doc__)
 
     return h
@@ -137,8 +138,8 @@ def flat(fld, **kwargs):
                    for b in range(fld.shape[1]) ]
                  for a in range(fld.shape[0]) ]
     else:
-        print "wrong number of dimensions"
-        print "only 2 to 5 dimensions are allowed"
+        print("wrong number of dimensions")
+        print("only 2 to 5 dimensions are allowed")
         sys.exit(__doc__)
 
     gfld = np.array(gfld)
@@ -226,8 +227,8 @@ def mds(fld,center='Atlantic'):
                    for b in range(fld.shape[1]) ]
                  for a in range(fld.shape[0]) ]
     else:
-        print "wrong number of dimensions"
-        print "only 2 to 5 dimensions are allowed"
+        print("wrong number of dimensions")
+        print("only 2 to 5 dimensions are allowed")
         sys.exit(__doc__)
 
     mdsfld = np.array(mdsfld)
@@ -359,8 +360,8 @@ def pcol(*arguments, **kwargs):
     h = []
     mapit = False
     if arglen < 3:
-        print "wrong number of arguments"
-        print "need at least x,y,fld"
+        print("wrong number of arguments")
+        print("need at least x,y,fld")
         sys.exit(__doc__)
     elif arglen > 3:
         mapit = True
