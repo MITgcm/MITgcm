@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_hetero2d.F,v 1.2 2015/01/23 18:58:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_hetero2d.F,v 1.3 2016/12/20 03:13:39 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -38,8 +38,8 @@ c#include "tamc.h"
 
       smooth2DtotTime=nbt_in*smooth2DdelTime
 
-      call mdsreadfield( dist_file,
-     &    32, 'RL', 1, dist_in, 1, mythid)
+      CALL READ_REC_3D_RL(dist_file,smoothprec,
+     &           1,dist_in,1,1,mythid)
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
