@@ -1,10 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_ad_check_lev3_dir.h,v 1.4 2011/05/20 00:45:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_ad_check_lev3_dir.h,v 1.5 2016/12/28 22:03:15 heimbach Exp $
 C $Name:  $
 
 CADJ STORE rbct0 = tapelev3, key = ilev_3
 CADJ STORE rbct1 = tapelev3, key = ilev_3
 CADJ STORE rbcs0 = tapelev3, key = ilev_3
 CADJ STORE rbcs1 = tapelev3, key = ilev_3
+CADJ STORE rbcsldrec = tapelev3, key = ilev_3
 
 #ifndef DISABLE_RBCS_MOM
 CADJ STORE rbcu0 = tapelev3, key = ilev_3
