@@ -34,6 +34,9 @@ endif
 if ( ${fileName} == 'MOM_VISC' ) then
   echo '#include "MOM_COMMON_OPTIONS.h"'    >> ${fileName}_temp
 endif
+if ( ${fileName} == 'RBCS' ) then
+  echo '#include "RBCS_OPTIONS.h"'    >> ${fileName}_temp
+endif
 if ( ${fileName} == 'SHAP_FILT' ) then
   echo '#include "SHAP_FILT_OPTIONS.h"'    >> ${fileName}_temp
 endif
@@ -59,6 +62,9 @@ if ( ${fileName} == 'PTRACERS_FIELDS' || ${fileName} == 'PTRACERS_PARAMS' || \
      ${fileName} == 'PTRACERS_START' || ${fileName} == 'PTRACERS_TAVE' || \
      ${fileName} == 'GCHEM_FIELDS' ) then
   echo '      use PTRACERS_SIZE_mod' >> ${fileName}_temp
+endif
+if ( ${fileName} == 'RBCS_FIELDS' ) then
+  echo '      use RBCS_SIZE_mod' >> ${fileName}_temp
 endif
 #echo awk -f ${awkScript} ${fileName}.h   
 awk -f ${awkScript} ${fileName}.h | grep -v mpif.h   >> ${fileName}_temp
