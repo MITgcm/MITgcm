@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 #
-# $Header: /u/gcmpack/MITgcm/tools/xmakedepend,v 1.12 2013/08/22 20:49:59 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/xmakedepend,v 1.13 2016/12/30 23:56:52 jmc Exp $
 # $Name:  $
 #
 # $TOG: mdepend.cpp /main/13 1997/06/20 21:12:18 kaleb $
@@ -52,7 +52,7 @@ rm -f $TMP
 CPPCMD=${TMP}a
 DEPENDLINES=${TMP}b
 TMPMAKEFILE=${TMP}c
-MAGICLINE=${TMP}d
+HEAD_MKFILE=${TMP}d
 ARGS=${TMP}e
 
 trap "rm -f ${TMP}*; exit 1" 1 2 15
@@ -243,11 +243,21 @@ then
 $magic_string
 
 END_OF_APPEND
+# ed -h > /dev/null 2>&1
+  which ed > /dev/null 2>&1
+  RETVAL=$?
+  if test x"$RETVAL" = x0 ; then
+    if [ $verbose = y ]; then echo ' using line editor "ed"' ; fi
     ed $silent $makefile << END_OF_ED_SCRIPT
 /^$magic_string/+1,\$d
 w
 q
 END_OF_ED_SCRIPT
+  else
+    if [ $verbose = y ]; then echo ' using sed command' ; fi
+    sed -n "1,/^$magic_string/p" $makefile > $HEAD_MKFILE
+    mv $HEAD_MKFILE $makefile
+  fi
     echo '' >>$makefile
 fi
 
