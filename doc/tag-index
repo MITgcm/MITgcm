@@ -1,12 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2285 2016/12/09 21:44:17 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2286 2016/12/31 00:06:36 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/xmakedepend:
+  - In case line editor "ed" is missing, switch to "sed" command to clean-up
+    Makefile from previous dependencies (anything after "# DO NOT DELETE" line).
 o pkg/exf:
   - change definition of "hflux" input file to always include Short-Wave;
-    this is now consistent with hflux computation (if using bulk-formulae) 
+    this is now consistent with hflux computation (if using bulk-formulae)
     and hflux diagnostic & documentation (in EXF_FIELDS.h).
 
 checkpoint66b (2016/12/01)
