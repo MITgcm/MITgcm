@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.38 2016/10/15 21:25:46 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.39 2017/01/04 02:33:51 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -892,6 +892,7 @@ C     data. This can be changed in a later version to an arbitrary
 C     number of intervals during a given year.
 
 #ifdef ALLOW_CLIMSST_RELAXATION
+      IF ( climsstfile .NE. ' ' ) THEN
 C     Relaxation to SST climatology.
       il = ilnblnk(climsstfile)
       write(msgbuf,'(a)')
@@ -921,9 +922,15 @@ C     Relaxation to SST climatology.
      & climsst_lon0, climsst_lon_inc, climsst_lat0, climsst_lat_inc,
      & climsst_nlon, climsst_nlat, climsst_interpMethod, myThid )
 #endif
+      ELSE
+        write(msgbuf,'(a)') 'climsst relaxation is NOT used '
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
 #endif /* ALLOW_CLIMSST_RELAXATION */
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
+      IF ( climsssfile .NE. ' ' ) THEN
 C     Relaxation to SSS climatology.
       il = ilnblnk(climsssfile)
       write(msgbuf,'(a)')
@@ -953,6 +960,11 @@ C     Relaxation to SSS climatology.
      & climsss_lon0, climsss_lon_inc, climsss_lat0, climsss_lat_inc,
      & climsss_nlon, climsss_nlat, climsss_interpMethod, myThid )
 #endif
+      ELSE
+        write(msgbuf,'(a)') 'climsss relaxation is NOT used '
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
 #endif /* ALLOW_CLIMSSS_RELAXATION */
 
       write(msgbuf,'(a)') ' '

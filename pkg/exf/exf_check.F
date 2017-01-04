@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.23 2016/02/29 22:13:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.24 2017/01/04 02:33:51 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -129,10 +129,30 @@ c     check for consistency
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R EXF_CHECK'
        ENDIF
+       IF ( (climsst_interpMethod.GT.0).AND.
+     &      (climsst_lon_inc.EQ.UNSET_RL) ) THEN
+        WRITE(msgBuf,'(2A)') 'S/R EXF_CHECK: either ',
+     &    'climsst_interpMethod must be set to 0 (no interpolation)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'S/R EXF_CHECK: or climsst_lon_inc, etc. ',
+     &    'must be defined explicitely in data.exf'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R EXF_CHECK'
+       ENDIF
       ENDIF
       IF ( climsssfile .NE. ' ' ) THEN
        IF ( climsss_nlat .GT. MAX_LAT_INC ) THEN
         WRITE(msgBuf,'(A)') 'S/R EXF_CHECK: climsss_nlat > MAX_LAT_INC'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R EXF_CHECK'
+       ENDIF
+       IF ( (climsss_interpMethod.GT.0).AND.
+     &      (climsss_lon_inc.EQ.UNSET_RL) ) THEN
+        WRITE(msgBuf,'(2A)') 'S/R EXF_CHECK: either ',
+     &    'climsss_interpMethod must be set to 0 (no interpolation)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'S/R EXF_CHECK: or climsss_lon_inc, etc. ',
+     &    'must be defined explicitely in data.exf'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R EXF_CHECK'
        ENDIF
