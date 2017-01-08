@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.25 2017/01/06 21:54:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.26 2017/01/08 20:32:28 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -149,39 +149,58 @@ C     check for consistency
        errCount = errCount + 1
       ENDIF
 
-      IF ( climsst_interpMethod.GE.1 .AND. climsstfile.NE.' ' ) THEN
-       IF ( climsst_nlat .GT. MAX_LAT_INC ) THEN
-        WRITE(msgBuf,'(A)') 'S/R EXF_CHECK: climsst_nlat > MAX_LAT_INC'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-       ENDIF
-       IF ( climsst_lon_inc.GT.500. ) THEN
-        WRITE(msgBuf,'(2A,1PE16.8)') 'S/R EXF_CHECK: ',
-     &    'Invalid value for: climsst_lon_inc =', climsst_lon_inc
-c    &    'Invalid value for: snowprecip_lon_inc =', snowprecip_lon_inc
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)') 'S/R EXF_CHECK: Fix it ',
-     &    'or Turn off climsst-interp (interpMethod=0)'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-       ENDIF
-      ENDIF
-      IF ( climsss_interpMethod.GE.1 .AND. climsssfile.NE.' ' ) THEN
-       IF ( climsss_nlat .GT. MAX_LAT_INC ) THEN
-        WRITE(msgBuf,'(A)') 'S/R EXF_CHECK: climsss_nlat > MAX_LAT_INC'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-       ENDIF
-       IF ( climsss_lon_inc.GT.500. ) THEN
-        WRITE(msgBuf,'(2A,1PE16.8)') 'S/R EXF_CHECK: ',
-     &    'Invalid value for: climsss_lon_inc =', climsss_lon_inc
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)') 'S/R EXF_CHECK: Fix it ',
-     &    'or Turn off climsst-interp (interpMethod=0)'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-       ENDIF
-      ENDIF
+
+      CALL EXF_CHECK_INTERP('ustress',ustressfile,ustress_interpMethod,
+     &     ustress_nlat,ustress_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('vstress',vstressfile,vstress_interpMethod,
+     &     vstress_nlat,vstress_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('hflux',hfluxfile,hflux_interpMethod,
+     &     hflux_nlat,hflux_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('sflux',sfluxfile,sflux_interpMethod,
+     &     sflux_nlat,sflux_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('swflux',swfluxfile,swflux_interpMethod,
+     &     swflux_nlat,swflux_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('runoff',runofffile,runoff_interpMethod,
+     &     runoff_nlat,runoff_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('atemp',atempfile,atemp_interpMethod,
+     &     atemp_nlat,atemp_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('aqh',aqhfile,aqh_interpMethod,
+     &     aqh_nlat,aqh_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('evap',evapfile,evap_interpMethod,
+     &     evap_nlat,evap_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('precip',precipfile,precip_interpMethod,
+     &     precip_nlat,precip_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('snowprecip',
+     &     snowprecipfile,snowprecip_interpMethod,
+     &     snowprecip_nlat,snowprecip_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('uwind',uwindfile,uwind_interpMethod,
+     &     uwind_nlat,uwind_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('vwind',vwindfile,vwind_interpMethod,
+     &     vwind_nlat,vwind_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('wspeed',wspeedfile,wspeed_interpMethod,
+     &     wspeed_nlat,wspeed_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('lwflux',lwfluxfile,lwflux_interpMethod,
+     &     lwflux_nlat,lwflux_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('swdown',swdownfile,swdown_interpMethod,
+     &     swdown_nlat,swdown_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('lwdown',lwdownfile,lwdown_interpMethod,
+     &     lwdown_nlat,lwdown_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('apressure',
+     &     apressurefile,apressure_interpMethod,
+     &     apressure_nlat,apressure_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('areamask',
+     &     areamaskfile,areamask_interpMethod,
+     &     areamask_nlat,areamask_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('climsst',climsstfile,climsst_interpMethod,
+     &     climsst_nlat,climsst_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('climsss',climsssfile,climsss_interpMethod,
+     &     climsss_nlat,climsss_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('climustr',
+     &     climustrfile,climustr_interpMethod,
+     &     climustr_nlat,climustr_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('climvstr',
+     &     climvstrfile,climvstr_interpMethod,
+     &     climvstr_nlat,climvstr_lon_inc,errCount,myThid)
 
 C-    some restrictions on 2-component vector field (might be relaxed later on)
       IF ( ( uwind_interpMethod.GE.1 .AND. uwindfile.NE.' ' ) .OR.
@@ -344,3 +363,65 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C     !ROUTINE: EXF_CHECK_INTERP
+C     !INTERFACE:
+
+      SUBROUTINE EXF_CHECK_INTERP( 
+     &          loc_name, loc_file, loc_interpMethod,
+     &          loc_nlat, loc_lon_inc, errCount, myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R EXF_CHECK_INTERP
+C     | o Check parameters for one of the pkg/exf variable
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == Global variables ===
+#include "EEPARAMS.h"
+#include "EXF_PARAM.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     myThid   :: my Thread Id number
+      INTEGER myThid
+      INTEGER errCount
+      character*(*) loc_name
+      character*(*) loc_file
+      INTEGER loc_nlat
+      INTEGER loc_interpMethod
+      _RL loc_lon_inc
+
+C     !LOCAL VARIABLES:
+C     msgBuf   :: Informational/error message buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+CEOP
+
+      IF ( loc_interpMethod.GE.1 .AND. loc_file.NE.' ' ) THEN
+       IF ( loc_nlat .GT. MAX_LAT_INC ) THEN
+        WRITE(msgBuf,'(3A)') 'S/R EXF_CHECK_INTERP: ',loc_name,
+     &                      '_nlat > MAX_LAT_INC'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+       IF ( loc_lon_inc.GT.500. ) THEN
+        WRITE(msgBuf,'(4A,1PE16.8)') 'S/R EXF_CHECK_INTERP: ',
+     &    'Invalid value for: ',loc_name,'_lon_inc =', loc_lon_inc
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(4A)') 'S/R EXF_CHECK_INTERP: Fix it ',
+     &    'or Turn off ',loc_name,'-interp (interpMethod=0)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+      ENDIF
+
+      RETURN
+      END
+
+
