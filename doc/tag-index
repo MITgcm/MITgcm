@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2287 2017/01/08 21:57:46 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2288 2017/01/09 19:28:21 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -6,6 +6,8 @@ $Name:  $
 
 o pkg/exf:
   - check: count errors and stop cleanly at the end (call to ALL_PROC_DIE);
+    issue error message when climsst_interpMethod.GT.0 and climsst_lon_inc.EQ.UNSET_RL;
+    generalize tests on interpMethod, nlat, and lon_inc to all exf variables.
   - summary: skip detailed field report if not used (empty file-name).
 o tools/xmakedepend:
   - In case line editor "ed" is missing, switch to "sed" command to clean-up
