@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.38 2013/10/02 21:33:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.39 2017/01/10 23:02:51 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -226,7 +226,9 @@ C     writing scratchFile1 before opening it
         CALL MPI_BARRIER( MPI_COMM_MODEL, mpiRC )
       ENDIF
 # endif
+#ifdef HAVE_SYSTEM
       CALL SYSTEM('sleep 1')
+#endif
       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='OLD')
 #endif /* SINGLE_DISK_IO */
 
