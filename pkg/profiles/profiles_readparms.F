@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.22 2015/08/16 14:48:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.23 2017/01/10 15:40:59 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -139,6 +139,7 @@ c--     Next, read the cost data file.
              WRITE(errorMessageUnit,'(2A)')
      &         'ERROR in PROFILES_READPARMS: inconsistent ',
      &         'prof_names and prof_namesmod'
+             CALL ALL_PROC_DIE( myThid )
              STOP 'ABNORMAL END: S/R PROFILES_READPARMS'
             endif
           enddo

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.15 2015/08/19 13:04:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.16 2017/01/10 15:40:59 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -151,8 +151,9 @@ c case 3: between two grid centers
           enddo
           if (kcur.EQ.0) then
             WRITE(errorMessageUnit,'(A)')
-     & 'ERROR in PROFILES_INTERP: unexpected case 1'
-             STOP 'ABNORMAL END: S/R PROFILES_INTERP'
+     &        'ERROR in PROFILES_INTERP: unexpected case 1'
+            CALL ALL_PROC_DIE( myThid )
+            STOP 'ABNORMAL END: S/R PROFILES_INTERP'
           endif
           if (mask_cur(kcur+1).EQ.1.) then
 c  subcase 1: 2 wet points=>linear interpolation
@@ -163,8 +164,9 @@ c  subcase 1: 2 wet points=>linear interpolation
             prof_mask1D_cur(kk,bi,bj)=1
             if (mask_cur(kcur).EQ.0.) then
             WRITE(errorMessageUnit,'(A)')
-     & 'ERROR in PROFILES_INTERP: unexpected case 2'
-             STOP 'ABNORMAL END: S/R PROFILES_INTERP'
+     &        'ERROR in PROFILES_INTERP: unexpected case 2'
+            CALL ALL_PROC_DIE( myThid )
+            STOP 'ABNORMAL END: S/R PROFILES_INTERP'
             endif
           elseif (prof_depth(file_cur,kk,bi,bj).LT.-rF(kcur+1)) then
 c  subcase 2: only 1 wet point just above=>upper cell value

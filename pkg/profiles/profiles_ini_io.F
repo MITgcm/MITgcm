@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_ini_io.F,v 1.2 2015/08/06 15:48:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_ini_io.F,v 1.3 2017/01/10 15:40:59 gforget Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -11,11 +11,10 @@ C     !INTERFACE:
       SUBROUTINE PROFILES_INI_IO( myThid )
 
 C     !DESCRIPTION: \bv
-C     autodiff_ini_model_io() is where run-time/experiment specific data are
-C     passed to any I/O packages ready that will be used for I/O of model state
-C     variables.
-C     This is specifically for setting up once only information such as
-C     shape/size of variables, units, etc... and is only for state variables.
+C     *==================================================================
+C     | S/R PROFILES_INI_IO
+C     | o create directory for profiles output if needed
+C     *==================================================================
 C     \ev
 
       IMPLICIT NONE
@@ -35,13 +34,16 @@ C     !FUNCTIONS
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_FNAM) namBuf
       INTEGER iL, pIL
 CEOP
 
+      _BEGIN_MASTER( myThid )
+
       IF ( profilesDir .NE. ' ' ) THEN
        iL = ILNBLNK( profilesDir )
-C      append "/", if necessay
+C      append "/", if necessary
        IF ( iL.LT.MAX_LEN_FNAM .AND. profilesDir(iL:iL).NE.'/' ) THEN
         namBuf(1:iL) = profilesDir(1:iL)
         WRITE(profilesDir(1:iL+1),'(2A)') namBuf(1:iL),'/'
@@ -50,10 +52,14 @@ C      create directory
        iL = ILNBLNK( profilesDir ) -1
        WRITE(namBuf,'(2A)') ' mkdir -p ', profilesDir(1:iL)
        pIL = 1 + ILNBLNK( namBuf )
-       WRITE(standardMessageUnit,'(3A)')
-     & '==> SYSTEM CALL (from INI_MODEL_IO): >',namBuf(1:pIL),'<'
+       WRITE(msgBuf,'(3A)')
+     & '==> SYSTEM CALL (from PROFILES_INI_IO): >',namBuf(1:pIL),'<'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
        CALL SYSTEM( namBuf(1:pIL) )
       ENDIF
+
+      _END_MASTER( myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
