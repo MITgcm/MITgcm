@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.23 2010/01/21 01:48:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.24 2017/01/10 15:44:07 gforget Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -61,7 +61,8 @@ C     Functions
         lenm = ILNBLNK(msgbuf)
         print *, msgbuf(1:lenm)
         CALL print_error(msgbuf(1:lenm), mythid)
-        stop 'ABNORMAL END: package MNC'
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R MNC_HANDLE_ERR'
       ENDIF
       RETURN
       END
