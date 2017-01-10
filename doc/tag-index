@@ -1,13 +1,26 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2288 2017/01/09 19:28:21 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2289 2017/01/10 15:51:00 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mnc:
+  - mnc_utils.F: call ALL_PROC_DIE before 'stop', edit stop message
+o pkg/autodiff:
+  - autodiff_ini_model_io.F: PRINT_MESSAGE, clean-up comments, add _*_MASTER
+o pkg/profiles:
+  - profiles_findunit.F, profiles_init_fixed.F, profiles_interp.F, 
+    profiles_readparms.F: call ALL_PROC_DIE before 'stop'
+  - profiles_ini_io.F: use PRINT_MESSAGE, clean-up comments, add _*_MASTER
+o pkg/smooth:
+  - smooth_filtervar2d.F, smooth_filtervar3d.F: call ALL_PROC_DIE before 'stop'
+  - smooth_init2d.F, smooth_init3d.F: move print statements to readparms
+  - smooth_readparms.F: add cleaner print statements from smooth_init?d.F
 o pkg/exf:
   - check: count errors and stop cleanly at the end (call to ALL_PROC_DIE);
-    issue error message when climsst_interpMethod.GT.0 and climsst_lon_inc.EQ.UNSET_RL;
-    generalize tests on interpMethod, nlat, and lon_inc to all exf variables.
+    issue error message when climsst_interpMethod.GT.0 and climsst_lon_inc
+    .EQ.UNSET_RL; generalize tests on interpMethod, nlat, and lon_inc to 
+    all exf variables.
   - summary: skip detailed field report if not used (empty file-name).
 o tools/xmakedepend:
   - In case line editor "ed" is missing, switch to "sed" command to clean-up
