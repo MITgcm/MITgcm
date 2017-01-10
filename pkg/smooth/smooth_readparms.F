@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_readparms.F,v 1.6 2015/10/20 21:53:41 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_readparms.F,v 1.7 2017/01/10 15:37:49 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -66,49 +66,98 @@ C     print a (weak) warning if data.smooth is found
 
       _BEGIN_MASTER( myThid )
 
-c--     Set default values.
+c--   Set default values.
       DO smoothOpNb=1,smoothOpNbMax
+        smooth2Dnbt(smoothOpNb)=0
+        smooth2D_Lx0(smoothOpNb)=0. _d 0
+        smooth2D_Ly0(smoothOpNb)=0. _d 0
+        smooth2Dtype(smoothOpNb)=0
+        smooth2Dsize(smoothOpNb)=0
+        smooth2Dfilter(smoothOpNb)=0
 
-      smooth2Dnbt(smoothOpNb)=0
-      smooth2D_Lx0(smoothOpNb)=0. _d 0
-      smooth2D_Ly0(smoothOpNb)=0. _d 0
-      smooth2Dtype(smoothOpNb)=0
-      smooth2Dsize(smoothOpNb)=0
-      smooth2Dfilter(smoothOpNb)=0
-
-      smooth3Dnbt(smoothOpNb)=0
-      smooth3D_Lx0(smoothOpNb)=0. _d 0
-      smooth3D_Ly0(smoothOpNb)=0. _d 0
-      smooth3D_Lz0(smoothOpNb)=0. _d 0
-      smooth3DtypeH(smoothOpNb)=0
-      smooth3DsizeH(smoothOpNb)=0
-      smooth3DtypeZ(smoothOpNb)=0
-      smooth3DsizeZ(smoothOpNb)=0
-      smooth3Dfilter(smoothOpNb)=0
-
+        smooth3Dnbt(smoothOpNb)=0
+        smooth3D_Lx0(smoothOpNb)=0. _d 0
+        smooth3D_Ly0(smoothOpNb)=0. _d 0
+        smooth3D_Lz0(smoothOpNb)=0. _d 0
+        smooth3DtypeH(smoothOpNb)=0
+        smooth3DsizeH(smoothOpNb)=0
+        smooth3DtypeZ(smoothOpNb)=0
+        smooth3DsizeZ(smoothOpNb)=0
+        smooth3Dfilter(smoothOpNb)=0
       ENDDO
 
-c--     Next, read the cost data file.
-        WRITE(msgBuf,'(A)') 'SMOOTH_READPARMS: opening data.smooth'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+C--   Read settings from model parameter file "data.smooth".
+      WRITE(msgBuf,'(A)') 'SMOOTH_READPARMS: opening data.smooth'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
-        CALL OPEN_COPY_DATA_FILE(
+      CALL OPEN_COPY_DATA_FILE(
      I                          'data.smooth', 'SMOOTH_READPARMS',
      O                          iUnit,
      I                          myThid )
 
-        READ(  iUnit, nml = smooth_nml )
+      READ(  iUnit, nml = smooth_nml )
 
-        WRITE(msgBuf,'(2A)') 'SMOOTH_READPARMS: ',
+      WRITE(msgBuf,'(2A)') 'SMOOTH_READPARMS: ',
      &       'finished reading data.smooth'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                  SQUEEZE_RIGHT , 1)
 
-        CLOSE( iUnit )
+      CLOSE( iUnit )
+
+C--   Print pkg/smooth settings to standard output:
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)') '// pkg/smooth configuration'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &  SQUEEZE_RIGHT , 1)
+
+      DO smoothOpNb=1,smoothOpNbMax
+        IF (smooth2Dtype(smoothOpNb).NE.0) THEN
+          WRITE(msgBuf,'(A,I2,I6,2f6.0)') 'smooth 2D parameters: ',
+     &       smoothOpNb,smooth2Dnbt(smoothOpNb),
+     &       smooth2D_Lx0(smoothOpNb),smooth2D_Ly0(smoothOpNb)
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT , 1)
+        ENDIF
+      ENDDO
+
+      DO smoothOpNb=1,smoothOpNbMax
+        IF ((smooth3DtypeZ(smoothOpNb).NE.0).OR.
+     &      (smooth3DtypeH(smoothOpNb).NE.0)) then
+          WRITE(msgBuf,'(A,I2,I6,3f6.0)') 'smooth 3D parameters: ',
+     &       smoothOpNb,smooth3Dnbt(smoothOpNb),
+     &       smooth3D_Lx0(smoothOpNb),smooth3D_Ly0(smoothOpNb),
+     &       smooth3D_Lz0(smoothOpNb)
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT , 1)
+        ENDIF
+      ENDDO
+
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)') '// End of pkg/smooth config. summary'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &  SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &  SQUEEZE_RIGHT , 1)
 
       _END_MASTER( myThid )
 
+C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
 
       RETURN

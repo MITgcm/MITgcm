@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_filtervar2d.F,v 1.3 2015/01/23 18:58:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_filtervar2d.F,v 1.4 2017/01/10 15:37:48 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -104,7 +104,8 @@ c adjoint:
       WRITE(errorMessageUnit,'(A,/,A)' )
      & "you need to have adsmooth_diff2D compiled and then:",
      & "uncomment the line below and comment the stop"
-             STOP 'ABNORMAL END: S/R smooth_filtervar2D'
+      CALL ALL_PROC_DIE( myThid )
+      STOP 'ABNORMAL END: S/R smooth_filtervar2D'
 c      call adsmooth_diff2D(smoothTmpFld,maskc,nbt_in,mythid)
 
 c division by sqrt(area)*sqrt(area) [1 to end adj, 1 to begin fwd]

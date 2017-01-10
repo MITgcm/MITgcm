@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_init2d.F,v 1.3 2015/01/23 18:58:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_init2d.F,v 1.4 2017/01/10 15:37:49 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -73,11 +73,6 @@ cgf the choices of smooth2Dtype and smooth2Dsize need comments...
 
       CALL EXCH_XY_RL ( smooth2D_Kux , myThid )
       CALL EXCH_XY_RL ( smooth2D_Kvy , myThid )
-
-            WRITE(standardMessageUnit,'(A,I4,2f12.0)')
-     & 'smooth 2D default parameters: ',
-     & smooth2Dnbt(smoothOpNb),
-     & smooth2D_Lx0(smoothOpNb),smooth2D_Ly0(smoothOpNb)
 
 c write diffusion operator to file
       write(fnamegeneric(1:80),'(1a,i3.3)')

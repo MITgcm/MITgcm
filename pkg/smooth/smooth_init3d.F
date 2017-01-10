@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_init3d.F,v 1.4 2015/01/23 18:58:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_init3d.F,v 1.5 2017/01/10 15:37:49 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -41,13 +41,6 @@ cgf for now I focus on the simpler smooth3DtypeH=1 case
       ithi = mybxhi(mythid)
 
       smooth3DtotTime=smooth3Dnbt(smoothOpNb)*smooth3DdelTime
-
-            WRITE(standardMessageUnit,'(A,I4,3f12.0)')
-     & 'smooth 3D default parameters: ',
-     & smooth3Dnbt(smoothOpNb),
-     & smooth3D_Lx0(smoothOpNb),smooth3D_Ly0(smoothOpNb),
-     & smooth3D_Lz0(smoothOpNb)
-
 
 c vertical smoothing:
 
