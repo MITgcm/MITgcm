@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.43 2012/03/27 15:48:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.44 2017/01/11 03:44:08 gforget Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -37,6 +37,7 @@ C***********************************************************************
 c Diagnostic Common
 c -----------------
 #ifdef ALLOW_DIAGNOSTICS
+#include "EEPARAMS.h"
 #include "SIZE.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
