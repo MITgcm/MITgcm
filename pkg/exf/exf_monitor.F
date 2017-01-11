@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.29 2016/10/15 21:25:46 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.30 2017/01/11 03:45:34 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -199,6 +199,12 @@ C       Print some statistics about input forcing fields
      &             maskInC, maskInC, rA , drF, dummyRL, myThid )
         ENDIF
 # endif
+#endif
+#ifdef EXF_SALTFLX
+        IF ( saltflxfile .NE. ' ' ) THEN
+          CALL MON_WRITESTATS_RL( 1, saltflx,'_saltflx',
+     &             maskInC, maskInC, rA , drF, dummyRL, myThid )
+        ENDIF
 #endif
 #ifdef EXF_SEAICE_FRACTION
         IF ( areamaskfile .NE. ' ' ) THEN

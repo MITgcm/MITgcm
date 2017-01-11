@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.35 2016/10/15 21:25:46 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.36 2017/01/11 03:45:34 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -319,6 +319,20 @@ C      will be over-written at first time-step when calling EXF_SET_UV.
      &     myThid )
 # endif /* ALLOW_RUNOFTEMP */
 #endif /* ALLOW_RUNOFF */
+
+#ifdef ALLOW_SALTFLX
+      CALL EXF_INIT_GEN (
+     &     saltflxfile, saltflxperiod,
+     &     exf_inscal_saltflx, saltflxmask,
+     &     saltflxconst, saltflx, saltflx0, saltflx1,
+#ifdef USE_EXF_INTERPOLATION
+     &     saltflx_lon0, saltflx_lon_inc,
+     &     saltflx_lat0, saltflx_lat_inc,
+     &     saltflx_nlon, saltflx_nlat, xC, yC,
+     &     saltflx_interpMethod,
+#endif
+     &     myThid )
+#endif /* ALLOW_SALTFLX */
 
 #ifdef ALLOW_CLIMSST_RELAXATION
       CALL EXF_INIT_GEN (

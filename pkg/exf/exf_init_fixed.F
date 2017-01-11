@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.29 2016/10/15 21:25:46 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.30 2017/01/11 03:45:34 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -53,6 +53,7 @@ C     ' ' = no masking; 'c' = centered mask; 'w' = western mask; 's' = southern
       precipmask   = 'c'
       snowprecipmask='c'
       runoffmask   = 'c'
+      saltflxmask  = 'c'
       IF ( stressIsOnCgrid ) THEN
        ustressmask = 'w'
        vstressmask = 's'
@@ -85,6 +86,7 @@ c      evapmask     = ' '
 c      precipmask   = ' '
 c      snowprecipmask=' '
 c      runoffmask   = ' '
+c      saltflxmask  = ' '
        ustressmask  = ' '
        vstressmask  = ' '
        uwindmask    = ' '
@@ -264,6 +266,19 @@ C     from the beginning of the year.
      I                          myThid )
       ENDIF
 #endif /* ALLOW_RUNOFF */
+
+#ifdef ALLOW_SALTFLX
+      IF ( saltflxfile .NE. ' ' .AND. saltflxperiod .GT. 0. ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode)
+     &    CALL DEBUG_CALL('GETFIELD_START saltflx',myThid)
+# endif
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                   saltflxstartdate1, saltflxstartdate2,
+     O                   saltflxstartdate,
+     I                          myThid )
+      ENDIF
+#endif /* ALLOW_SALTFLX */
 
 #ifdef ALLOW_DOWNWARD_RADIATION
       IF ( swdownfile .NE. ' ' .AND. swdownperiod .GT. 0. ) THEN

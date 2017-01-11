@@ -1,8 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.26 2017/01/08 20:32:28 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.27 2017/01/11 03:45:34 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
+C--  File exf_check.F: Routines to check EXF settings
+C--   Contents
+C--   o EXF_CHECK
+C--   o EXF_CHECK_INTERP
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: EXF_CHECK
 C     !INTERFACE:
@@ -89,6 +95,17 @@ C     check for consistency
        ENDIF
       ENDIF
 
+#ifdef ALLOW_SALTFLX
+      IF ( useSEAICE .OR. useThSIce )  THEN
+       IF ( saltflxfile .NE. ' ' ) THEN
+        WRITE(msgBuf,'(2A)') 'S/R EXF_CHECK: exf salt flux is not',
+     &       ' allowed when using either pkg/seaice or pkg/thsice'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+      ENDIF
+#endif
+
 #ifndef ALLOW_ZENITHANGLE
       IF ( useExfZenAlbedo .OR. useExfZenIncoming .OR.
      &     select_ZenAlbedo .NE. 0 ) THEN
@@ -162,6 +179,8 @@ C     check for consistency
      &     swflux_nlat,swflux_lon_inc,errCount,myThid)
       CALL EXF_CHECK_INTERP('runoff',runofffile,runoff_interpMethod,
      &     runoff_nlat,runoff_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP('saltflx',saltflxfile,saltflx_interpMethod,
+     &     saltflx_nlat,saltflx_lon_inc,errCount,myThid)
       CALL EXF_CHECK_INTERP('atemp',atempfile,atemp_interpMethod,
      &     atemp_nlat,atemp_lon_inc,errCount,myThid)
       CALL EXF_CHECK_INTERP('aqh',aqhfile,aqh_interpMethod,

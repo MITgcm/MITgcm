@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.31 2014/10/20 03:13:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.32 2017/01/11 03:45:34 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -121,7 +121,7 @@ C     Heat flux.
            ENDDO
           ENDIF
 
-C     Salt flux.
+C     Freshwater flux.
           DO j = jmin,jmax
             DO i = imin,imax
              EmPmR(i,j,bi,bj)= exf_outscal_sflux*sflux(i,j,bi,bj)
@@ -324,6 +324,14 @@ C             Short wave radiative flux.
           DO j = jmin,jmax
             DO i = imin,imax
              pLoad(i,j,bi,bj)=exf_outscal_apressure*apressure(i,j,bi,bj)
+            ENDDO
+          ENDDO
+#endif
+
+#ifdef ALLOW_SALTFLX
+          DO j = jmin,jmax
+            DO i = imin,imax
+              saltFlux(I,J,bi,bj) = saltflx(I,J,bi,bj)
             ENDDO
           ENDDO
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.34 2016/10/15 21:25:45 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.35 2017/01/11 03:45:34 gforget Exp $
 C $Name:  $
 
 CBOP
@@ -59,6 +59,9 @@ C       computed from atmospheric state.
 C
 C   >>> ALLOW_RUNOFF <<<
 C       If defined, river and glacier runoff can be read-in from files.
+C
+C   >>> ALLOW_SALTFLX <<<
+C       If defined, upward salt flux can be read-in from files.
 C
 C   >>> ALLOW_RUNOFTEMP <<<
 C       If defined, river and glacier runoff temperature
@@ -157,6 +160,7 @@ C   Bulk formulae related flags.
 #define  ALLOW_DOWNWARD_RADIATION
 #define  ALLOW_RUNOFF
 #undef   ALLOW_RUNOFTEMP
+#undef   ALLOW_SALTFLX
 #if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
 # define ALLOW_BULKFORMULAE
 # undef  ALLOW_BULK_LARGEYEAGER04

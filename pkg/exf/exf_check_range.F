@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.31 2013/04/23 19:04:33 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.32 2017/01/11 03:45:34 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -85,7 +85,7 @@ c     Heat flux.
            exferr = 1
           endif
 c
-c     Salt flux.
+c     Freshwater flux.
           if ( ABS(sflux(i,j,bi,bj)) .GT. 1.E-6 .AND.
      &         maskC(i,j,1,bi,bj) .NE. 0. ) then
            write(standardmessageunit,'(A,5(1X,I6),2X,D22.15)')

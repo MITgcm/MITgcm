@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.65 2016/11/29 13:21:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.66 2017/01/11 03:45:34 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -177,7 +177,7 @@ C     Atmospheric heat flux.
 #endif
      &     myTime, myIter, myThid )
 
-C     Salt flux.
+C     Freshwater flux.
       CALL EXF_SET_GEN  (
      &     sfluxfile, sfluxstartdate, sfluxperiod,
      &     exf_inscal_sflux,
@@ -390,6 +390,21 @@ C     Runoff temperature
 #endif
      &     myTime, myIter, myThid )
 #endif /* ALLOW_RUNOFTEMP */
+
+#ifdef ALLOW_SALTFLX
+C     Salt flux
+      CALL EXF_SET_GEN  (
+     &     saltflxfile, saltflxstartdate, saltflxperiod,
+     &     exf_inscal_saltflx,
+     &     saltflx_exfremo_intercept, saltflx_exfremo_slope,
+     &     saltflx, saltflx0, saltflx1, saltflxmask,
+#ifdef USE_EXF_INTERPOLATION
+     &     saltflx_lon0, saltflx_lon_inc,
+     &     saltflx_lat0, saltflx_lat_inc,
+     &     saltflx_nlon, saltflx_nlat, xC, yC, saltflx_interpMethod,
+#endif
+     &     myTime, myIter, myThid )
+#endif
 
 #ifdef ALLOW_ROTATE_UV_CONTROLS
       if ( useCTRL ) then

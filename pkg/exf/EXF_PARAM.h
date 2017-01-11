@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.38 2016/10/15 21:25:45 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.39 2017/01/11 03:45:34 gforget Exp $
 C $Name:  $
 C
 C     ==================================================================
@@ -181,6 +181,15 @@ C           fieldperiod=-12 means input file contains 12 monthly means
       _RL     runoftempconst
       _RL     runoftemp_exfremo_intercept
       _RL     runoftemp_exfremo_slope
+
+      integer saltflxstartdate1
+      integer saltflxstartdate2
+      _RL     saltflxstartdate
+      _RL     saltflxperiod
+      _RL     saltflxconst
+      _RL     saltflx_exfremo_intercept
+      _RL     saltflx_exfremo_slope
+      character*1 saltflxmask
 
       integer ustressstartdate1
       integer ustressstartdate2
@@ -372,6 +381,7 @@ c     File names.
       character*(128) sfluxfile
       character*(128) runofffile
       character*(128) runoftempfile
+      character*(128) saltflxfile
       character*(128) ustressfile
       character*(128) vstressfile
       character*(128) uwindfile
@@ -406,6 +416,7 @@ c     File names.
      &       sfluxstartdate1,   sfluxstartdate2,
      &       evapstartdate1,    evapstartdate2,
      &       runoffstartdate1,  runoffstartdate2,
+     &       saltflxstartdate1, saltflxstartdate2,
      &       precipstartdate1,  precipstartdate2,
      &       snowprecipstartdate1, snowprecipstartdate2,
      &       ustressstartdate1, ustressstartdate2,
@@ -439,6 +450,7 @@ c     File names.
      &       precipperiod,      precipstartdate,
      &       snowprecipperiod,  snowprecipstartdate,
      &       runoffperiod,      runoffstartdate,
+     &       saltflxperiod,     saltflxstartdate,
      &       ustressperiod,     ustressstartdate,
      &       vstressperiod,     vstressstartdate,
      &       uwindperiod,       uwindstartdate,
@@ -467,6 +479,7 @@ c     File names.
      &       snowprecipconst,
      &       runoffconst,
      &       runoftempconst,
+     &       saltflxconst,
      &       ustressconst,
      &       vstressconst,
      &       uwindconst,
@@ -490,6 +503,7 @@ c     File names.
      &       snowprecip_exfremo_intercept,
      &       runoff_exfremo_intercept,
      &       runoftemp_exfremo_intercept,
+     &       saltflx_exfremo_intercept,
      &       ustress_exfremo_intercept,
      &       vstress_exfremo_intercept,
      &       uwind_exfremo_intercept,
@@ -510,6 +524,7 @@ c     File names.
      &       snowprecip_exfremo_slope,
      &       runoff_exfremo_slope,
      &       runoftemp_exfremo_slope,
+     &       saltflx_exfremo_slope,
      &       ustress_exfremo_slope,
      &       vstress_exfremo_slope,
      &       uwind_exfremo_slope,
@@ -532,6 +547,7 @@ c     File names.
      &       snowprecipfile,snowprecipmask,
      &       runofffile,    runoffmask,
      &       runoftempfile,
+     &       saltflxfile,   saltflxmask,
      &       ustressfile,   ustressmask,
      &       vstressfile,   vstressmask,
      &       uwindfile,     uwindmask,
@@ -607,6 +623,7 @@ c     exf_outscale_*    output scaling factors
       _RL     exf_inscal_apressure
       _RL     exf_inscal_runoff
       _RL     exf_inscal_runoftemp
+      _RL     exf_inscal_saltflx
       _RL     exf_inscal_swdown
       _RL     exf_inscal_lwdown
       _RL     exf_inscal_climsst
@@ -646,6 +663,7 @@ c     exf_outscale_*    output scaling factors
      &                    , exf_inscal_apressure
      &                    , exf_inscal_runoff
      &                    , exf_inscal_runoftemp
+     &                    , exf_inscal_saltflx
      &                    , exf_inscal_swdown
      &                    , exf_inscal_lwdown
      &                    , exf_inscal_areamask
@@ -711,6 +729,9 @@ C    uvInterp_climstr   :: interpolate clim stress u & v components together
       _RL runoff_lon0, runoff_lon_inc
       _RL runoff_lat0, runoff_lat_inc(MAX_LAT_INC)
       INTEGER runoff_nlon, runoff_nlat, runoff_interpMethod
+      _RL saltflx_lon0, saltflx_lon_inc
+      _RL saltflx_lat0, saltflx_lat_inc(MAX_LAT_INC)
+      INTEGER saltflx_nlon, saltflx_nlat, saltflx_interpMethod
       _RL atemp_lon0, atemp_lon_inc
       _RL atemp_lat0, atemp_lat_inc(MAX_LAT_INC)
       INTEGER atemp_nlon, atemp_nlat, atemp_interpMethod
@@ -772,6 +793,8 @@ C    uvInterp_climstr   :: interpolate clim stress u & v components together
      & swflux_lat0, swflux_lat_inc,
      & runoff_lon0, runoff_lon_inc,
      & runoff_lat0, runoff_lat_inc,
+     & saltflx_lon0, saltflx_lon_inc,
+     & saltflx_lat0, saltflx_lat_inc,
      & atemp_lon0, atemp_lon_inc,
      & atemp_lat0, atemp_lat_inc,
      & aqh_lon0, aqh_lon_inc,
@@ -806,6 +829,7 @@ C    uvInterp_climstr   :: interpolate clim stress u & v components together
      & sflux_nlon, sflux_nlat, sflux_interpMethod,
      & swflux_nlon, swflux_nlat, swflux_interpMethod,
      & runoff_nlon, runoff_nlat, runoff_interpMethod,
+     & saltflx_nlon, saltflx_nlat, saltflx_interpMethod,
      & atemp_nlon, atemp_nlat, atemp_interpMethod,
      & aqh_nlon, aqh_nlat, aqh_interpMethod,
      & evap_nlon, evap_nlat, evap_interpMethod,
