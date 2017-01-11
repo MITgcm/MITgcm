@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2291 2017/01/11 03:53:23 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2292 2017/01/11 20:39:02 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -7,7 +7,7 @@ $Name:  $
 o pkg/exf:
   - add saltflx :: Net upward salt flux in psu.kg/m^2/s
 o pkg/diagnostics:
-  - add run-time variable diagMdsDir to specify a subdirectory for 
+  - add run-time variable diagMdsDir to specify a subdirectory for
     diagnostic output when mds is being used and mdsioLocalDir is not.
 o pkg/mnc:
   - mnc_utils.F: edit stop message
@@ -15,7 +15,7 @@ o pkg/autodiff:
   - autodiff_ini_model_io.F: PRINT_MESSAGE, clean-up comments, add _*_MASTER,
     add HAVE_SYSTEM bracket around system call to mkdir
 o pkg/profiles:
-  - profiles_findunit.F, profiles_init_fixed.F, profiles_interp.F, 
+  - profiles_findunit.F, profiles_init_fixed.F, profiles_interp.F,
     profiles_readparms.F: call ALL_PROC_DIE before 'stop'
   - profiles_ini_io.F: use PRINT_MESSAGE, clean-up comments, add _*_MASTER,
     add HAVE_SYSTEM bracket around system call to mkdir
@@ -25,9 +25,8 @@ o pkg/smooth:
   - smooth_readparms.F: add cleaner print statements from smooth_init?d.F
 o pkg/exf:
   - check: count errors and stop cleanly at the end (call to ALL_PROC_DIE);
-    issue error message when climsst_interpMethod.GT.0 and climsst_lon_inc
-    .EQ.UNSET_RL; generalize tests on interpMethod, nlat, and lon_inc to 
-    all exf variables.
+    issue error message when climsst_interpMethod.GT.0 and climsst_lon_inc > 500
+    generalize tests on interpMethod, nlat, and lon_inc to all exf variables.
   - summary: skip detailed field report if not used (empty file-name).
 o tools/xmakedepend:
   - In case line editor "ed" is missing, switch to "sed" command to clean-up
