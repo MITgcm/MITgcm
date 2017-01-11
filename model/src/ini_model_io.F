@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.48 2015/03/23 21:00:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.49 2017/01/11 00:24:01 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -212,9 +212,11 @@ C       belonging to the core dynamical model
 #endif
 
 #ifdef ALLOW_PROFILES
-      IF ( usePROFILES ) THEN
-        CALL PROFILES_INI_IO( myThid )
-      ENDIF
+      IF ( usePROFILES ) CALL PROFILES_INI_IO( myThid )
+#endif
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) CALL DIAGNOSTICS_INI_IO( myThid )
 #endif
 
 #ifdef ALLOW_MONITOR
