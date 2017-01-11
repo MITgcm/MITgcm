@@ -1,17 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2290 2017/01/10 20:57:55 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2291 2017/01/11 03:53:23 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - add saltflx :: Net upward salt flux in psu.kg/m^2/s
+o pkg/diagnostics:
+  - add run-time variable diagMdsDir to specify a subdirectory for 
+    diagnostic output when mds is being used and mdsioLocalDir is not.
 o pkg/mnc:
   - mnc_utils.F: edit stop message
 o pkg/autodiff:
-  - autodiff_ini_model_io.F: PRINT_MESSAGE, clean-up comments, add _*_MASTER
+  - autodiff_ini_model_io.F: PRINT_MESSAGE, clean-up comments, add _*_MASTER,
+    add HAVE_SYSTEM bracket around system call to mkdir
 o pkg/profiles:
   - profiles_findunit.F, profiles_init_fixed.F, profiles_interp.F, 
     profiles_readparms.F: call ALL_PROC_DIE before 'stop'
-  - profiles_ini_io.F: use PRINT_MESSAGE, clean-up comments, add _*_MASTER
+  - profiles_ini_io.F: use PRINT_MESSAGE, clean-up comments, add _*_MASTER,
+    add HAVE_SYSTEM bracket around system call to mkdir
 o pkg/smooth:
   - smooth_filtervar2d.F, smooth_filtervar3d.F: call ALL_PROC_DIE before 'stop'
   - smooth_init2d.F, smooth_init3d.F: move print statements to readparms
