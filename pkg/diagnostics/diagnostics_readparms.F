@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.39 2017/01/11 00:22:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.40 2017/01/11 20:49:30 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -510,9 +510,9 @@ C     Echo History List Data Structure
       CALL WRITE_0D_L( diag_mnc,   INDEX_NONE,
      & ' diag_mnc =', '   /* write NetCDF output files */')
       IF ( diag_mdsio.AND.(diagMdsDir.NE.' ') ) THEN
-        CALL WRITE_0D_C( diagMdsDir, -1, INDEX_NONE,
+       CALL WRITE_0D_C( diagMdsDir, -1, INDEX_NONE,
      &   'diagMdsDir =', ' /* directory for mds diagnostics output */')
-      CALL WRITE_0D_L( diagMdsDirCreate, INDEX_NONE,
+       CALL WRITE_0D_L( diagMdsDirCreate, INDEX_NONE,
      & ' diagMdsDirCreate =', ' /* call mkdir to create diagMdsDir */')
       ENDIF
       CALL WRITE_0D_L( useMissingValue, INDEX_NONE,

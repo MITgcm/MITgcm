@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.21 2017/01/11 00:22:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.22 2017/01/11 20:49:30 jmc Exp $
 C $Name:  $
 
 C ======================================================================
@@ -146,7 +146,7 @@ C    diagMdsDirCreate :: system call to mkdir to create diagMdsDir
       LOGICAL diag_pickup_read,        diag_pickup_write
       LOGICAL diag_pickup_read_mdsio,  diag_pickup_write_mdsio
       LOGICAL diag_pickup_read_mnc,    diag_pickup_write_mnc
-      character*(MAX_LEN_FNAM) diagMdsDir
+      CHARACTER*(MAX_LEN_FNAM) diagMdsDir
 
       COMMON / DIAG_PARAMS_I /
      &     diagLoc_ioUnit

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_ini_io.F,v 1.1 2017/01/11 00:22:35 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_ini_io.F,v 1.2 2017/01/11 20:49:30 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -42,7 +42,7 @@ C     == Local variables ==
       _BEGIN_MASTER( myThid )
 
       IF ( diag_mdsio.AND.(diagMdsDir.NE.' ').AND.
-     &     diagMdsDirCreate.AND.(mdsioLocalDir.EQ.' ') ) THEN 
+     &     diagMdsDirCreate.AND.(mdsioLocalDir.EQ.' ') ) THEN
 #ifdef HAVE_SYSTEM
        iL = ILNBLNK( diagMdsDir )
 C      append "/", if necessary
@@ -52,13 +52,14 @@ C      append "/", if necessary
        ENDIF
 C      create directory
        iL = ILNBLNK( diagMdsDir ) -1
-       WRITE(namBuf,'(2A)') ' mkdir -p ', diagMdsDir(1:iL)
+       WRITE(namBuf,'(3A)') ' mkdir -p ', diagMdsDir(1:iL), ' '
        pIL = 1 + ILNBLNK( namBuf )
-       WRITE(msgBuf,'(3A)')
+       WRITE(standardMessageUnit,'(3A)')
      & '==> SYSTEM CALL (from DIAGNOSTICS_INI_IO): >',namBuf(1:pIL),'<'
+       CALL SYSTEM( namBuf(1:pIL) )
+       WRITE(msgBuf,'(A)') ' '
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
-       CALL SYSTEM( namBuf(1:pIL) )
 #else
         WRITE(msgBuf,'(2A)') 'S/R DIAGNOSTICS_INI_IO: cannot call ',
      &       'mkdir -> please create diagMdsDir manually'
