@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.49 2017/01/11 00:24:01 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.50 2017/01/11 20:38:44 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -148,12 +148,26 @@ C     after adding file-name: set a limit to half MAX_LEN_FNAM
      &       'localDir: >',mdsioLocalDir(1:IL),'<'
           STOP 'ABNORMAL END: S/R INI_MODEL_IO (mdsioLocalDir)'
         ENDIF
-        WRITE(namBuf,'(3A)')
-     &         ' mkdir -p ', mdsioLocalDir(1:iL),myProcessStr(1:4)
+        WRITE(namBuf,'(4A)')
+     &         ' mkdir -p ', mdsioLocalDir(1:iL),myProcessStr(1:4),' '
         pIL = 1 + ILNBLNK( namBuf )
+#ifdef HAVE_SYSTEM
         WRITE(standardMessageUnit,'(3A)')
      &  '==> SYSTEM CALL (from INI_MODEL_IO): >',namBuf(1:pIL),'<'
         CALL SYSTEM( namBuf(1:pIL) )
+#else
+        WRITE(msgBuf,'(3A)') '** WARNING ** INI_MODEL_IO: ',
+     &   'SYSTEM call missing (HAVE_SYSTEM undef) for mdsioLocalDir'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(errorMessageUnit,'(4A)') '** WARNING ** INI_MODEL_IO: ',
+     &   'Skip command: >',namBuf(1:pIL),'<'
+#endif
+        WRITE(msgBuf,'(A)') ' '
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
         namBuf(1:iL) = mdsioLocalDir(1:iL)
         WRITE(mdsioLocalDir,'(3A)') namBuf(1:iL),myProcessStr(1:4),'/'
       ENDIF
@@ -208,7 +222,7 @@ C       belonging to the core dynamical model
 #endif /* ALLOW_MNC */
 
 #ifdef ALLOW_AUTODIFF
-        if (useAUTODIFF) CALL AUTODIFF_INI_MODEL_IO( myThid )
+      IF ( useAUTODIFF ) CALL AUTODIFF_INI_MODEL_IO( myThid )
 #endif
 
 #ifdef ALLOW_PROFILES
