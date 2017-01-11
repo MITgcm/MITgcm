@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.210 2016/08/04 17:59:15 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.211 2017/01/11 23:21:21 jmc Exp $
 #  $Name:  $
 #
 
@@ -63,6 +63,8 @@ usage()
     echo "  (-clean)                 *ONLY* run \"make CLEAN\" & clean run-dir"
     echo "  (-norun|-nr)             skip the \"runmodel\" stage (stop after make)"
     echo "  (-obj)                   only produces objects (=norun & no executable)"
+    echo "  (-src)                   only produces small '*.f' src files (not even obj)"
+    echo "                            + with: '-adm/-tlm', also makes taf outp src code"
     echo "  (-runonly|-ro)           *ONLY* run stage (=\"-quick\" without make)"
     echo "  (-quick|-q)              same as \"-nogenmake -noclean -nodepend\""
     echo "  (-nogenmake|-ng)         skip the genmake stage"
@@ -1170,6 +1172,7 @@ for ac_option ; do
 
 	-norun | --norun | -nr | --nr) NORUN=t ;;
 	-obj | --obj ) TARG='obj' ; NORUN=t ;;
+	-src | --src ) TARG='small_f' ; NORUN=t ;;
 	-runonly | --runonly | -ro | --ro) QUICK=t ; NOMAKE=t ;;
 	-quick | --quick | -q | --q) QUICK=t ;;
 	-nogenmake | --nogenmake | -ng | --ng) NOGENMAKE=t ;;
@@ -1255,13 +1258,15 @@ fi
 
 #- setting for forward or ADM testing
 if test $KIND = 1 ; then
-    TARG=ftlall
+    if test "x$TARG" = xsmall_f ; then TARG=ftltaf ; else TARG=ftlall ; fi
     code_dir=code_ad
     inputdir=input_ad
     ref_outp="output_tlm.txt"
     EXECUTABLE="mitgcmuv_ftl"
 elif test $KIND = 2 ; then
-    if test "x$TARG" = xobj ; then TARG=adobj ; else TARG=adall ; fi
+    if test "x$TARG" = x        ; then TARG=adall ; fi
+    if test "x$TARG" = xobj     ; then TARG=adobj ; fi
+    if test "x$TARG" = xsmall_f ; then TARG=adtaf ; fi
     code_dir=code_ad
     inputdir=input_ad
     ref_outp="output_adm.txt"
