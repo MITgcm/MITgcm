@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_ini_io.F,v 1.3 2017/01/10 15:40:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_ini_io.F,v 1.4 2017/01/11 03:47:26 gforget Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -48,6 +48,7 @@ C      append "/", if necessary
         namBuf(1:iL) = profilesDir(1:iL)
         WRITE(profilesDir(1:iL+1),'(2A)') namBuf(1:iL),'/'
        ENDIF
+#ifdef HAVE_SYSTEM
 C      create directory
        iL = ILNBLNK( profilesDir ) -1
        WRITE(namBuf,'(2A)') ' mkdir -p ', profilesDir(1:iL)
@@ -57,6 +58,12 @@ C      create directory
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        CALL SYSTEM( namBuf(1:pIL) )
+#else
+       WRITE(msgBuf,'(2A)') '** WARNING ** PROFILES_INI_IO: cannot ',
+     &       'call mkdir -> please create profilesDir manually'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+#endif
       ENDIF
 
       _END_MASTER( myThid )

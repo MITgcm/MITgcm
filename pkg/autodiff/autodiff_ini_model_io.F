@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.30 2017/01/10 15:42:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.31 2017/01/11 03:47:24 gforget Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -69,6 +69,7 @@ C      append "/", if necessary
         namBuf(1:iL) = adTapeDir(1:iL)
         WRITE(adTapeDir(1:iL+1),'(2A)') namBuf(1:iL),'/'
        ENDIF
+#ifdef HAVE_SYSTEM
 C      create directory
        iL = ILNBLNK( adTapeDir ) -1
        WRITE(namBuf,'(2A)') ' mkdir -p ', adTapeDir(1:iL)
@@ -79,6 +80,12 @@ C      create directory
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        CALL SYSTEM( namBuf(1:pIL) )
+#else
+       WRITE(msgBuf,'(2A)') '** WARNING ** AUTODIFF_INI_MODEL_IO: ',
+     &       'cannot call mkdir -> please create adTapeDir manually'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+#endif
       ENDIF
 
       _END_MASTER( myThid )
