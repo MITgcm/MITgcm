@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.38 2015/06/02 20:58:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.39 2017/01/11 00:22:48 gforget Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -95,7 +95,8 @@ C--   full level output:
      &     diagCG_maxIters, diagCG_resTarget,
      &     diagCG_pcOffDFac, diagCG_prtResFrq, xPsi0, yPsi0,
      &     diag_pickup_read,     diag_pickup_write,
-     &     diag_pickup_read_mnc, diag_pickup_write_mnc
+     &     diag_pickup_read_mnc, diag_pickup_write_mnc,
+     &     diagMdsDir, diagMdsDirCreate
 
 C--   per level statistics output:
       NAMELIST / DIAG_STATIS_PARMS /
@@ -153,6 +154,8 @@ c       missing_value(l)     = UNSET_RL
       diag_pickup_write     = .FALSE.
       diag_pickup_read_mnc  = .FALSE.
       diag_pickup_write_mnc = .FALSE.
+      diagMdsDir = ' '
+      diagMdsDirCreate = .TRUE.
 
       prtFirstCall     = .TRUE.
       diagCG_maxIters  = cg2dMaxIters
@@ -506,6 +509,12 @@ C     Echo History List Data Structure
      & ' dumpAtLast =',' /* always write time-ave diags at the end */')
       CALL WRITE_0D_L( diag_mnc,   INDEX_NONE,
      & ' diag_mnc =', '   /* write NetCDF output files */')
+      IF ( diag_mdsio.AND.(diagMdsDir.NE.' ') ) THEN
+        CALL WRITE_0D_C( diagMdsDir, -1, INDEX_NONE,
+     &   'diagMdsDir =', ' /* directory for mds diagnostics output */')
+      CALL WRITE_0D_L( diagMdsDirCreate, INDEX_NONE,
+     & ' diagMdsDirCreate =', ' /* call mkdir to create diagMdsDir */')
+      ENDIF
       CALL WRITE_0D_L( useMissingValue, INDEX_NONE,
      & ' useMissingValue =', ' /* put MissingValue where mask = 0 */')
       CALL WRITE_0D_I( diagCG_maxIters, INDEX_NONE,

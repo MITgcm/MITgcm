@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.20 2013/08/14 00:54:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.21 2017/01/11 00:22:48 gforget Exp $
 C $Name:  $
 
 C ======================================================================
@@ -139,19 +139,24 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C  - DIAG_PARAMS common block:
 C    diagLoc_ioUnit :: internal parameter: I/O unit for local diagnostics output
 C    dumpAtLast :: always write time-ave (freq>0) diagnostics at the end of the run
+C    diagMdsDir :: directory where diagnostics will be written when using mds
+C    diagMdsDirCreate :: system call to mkdir to create diagMdsDir
       INTEGER diagLoc_ioUnit
-      LOGICAL dumpAtLast
+      LOGICAL dumpAtLast,              diagMdsDirCreate
       LOGICAL diag_pickup_read,        diag_pickup_write
       LOGICAL diag_pickup_read_mdsio,  diag_pickup_write_mdsio
       LOGICAL diag_pickup_read_mnc,    diag_pickup_write_mnc
+      character*(MAX_LEN_FNAM) diagMdsDir
 
       COMMON / DIAG_PARAMS_I /
      &     diagLoc_ioUnit
       COMMON / DIAG_PARAMS_L /
-     &     dumpAtLast,
+     &     dumpAtLast,              diagMdsDirCreate,
      &     diag_pickup_read,        diag_pickup_write,
      &     diag_pickup_read_mdsio,  diag_pickup_write_mdsio,
      &     diag_pickup_read_mnc,    diag_pickup_write_mnc
+      COMMON / DIAG_PARAMS_C /
+     &     diagMdsDir
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

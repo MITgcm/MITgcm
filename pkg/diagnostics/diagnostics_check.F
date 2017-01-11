@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_check.F,v 1.9 2011/06/27 22:23:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_check.F,v 1.10 2017/01/11 00:22:48 gforget Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -43,6 +43,25 @@ C     Check diagnostics parameter consistency
      &            'ignore "useMissingValue" since "diag_mnc" is off'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT , myThid )
+      ENDIF
+
+      IF ( diag_mnc.AND.(diagMdsDir.NE.' ') ) THEN
+        WRITE(msgBuf,'(A,A)') 'S/R DIAGNOSTICS_CHECK: diagMdsDir ',
+     &       'and pkg/mnc cannot be used together'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
+      ENDIF
+
+      IF ( (mdsioLocalDir.NE.' ').AND.(diagMdsDir.NE.' ') ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'S/R DIAGNOSTICS_CHECK: mdsioLocalDir and diagMdsDir cannot be'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &   'S/R DIAGNOSTICS_CHECK: specified at the same time'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
       ENDIF
 
 #ifdef DIAGNOSTICS_HAS_PICKUP

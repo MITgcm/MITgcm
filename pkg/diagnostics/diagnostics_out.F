@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.61 2013/02/06 21:25:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.62 2017/01/11 00:22:48 gforget Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -74,7 +74,7 @@ c     COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
       _RL undefRL
       INTEGER nLevOutp, kLev
 
-      INTEGER iLen
+      INTEGER iLen,jLen
       INTEGER ioUnit
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) suff
@@ -98,6 +98,11 @@ C---  set file properties
       WRITE(suff,'(I10.10)') myIter
       iLen = ILNBLNK(fnames(listId))
       WRITE( fn, '(A,A,A)' ) fnames(listId)(1:iLen),'.',suff(1:10)
+      IF ( diag_mdsio.AND.(diagMdsDir.NE.' ') ) THEN
+        jLen = ILNBLNK(diagMdsDir)
+        WRITE( fn, '(5A)' ) diagMdsDir(1:jLen),'/',
+     &    fnames(listId)(1:iLen),'.',suff(1:10)
+      ENDIF
 C-    for now, if integrate vertically, output field has just 1 level:
       nLevOutp = nlevels(listId)
       IF ( fflags(listId)(2:2).EQ.'I' ) nLevOutp = 1
