@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.29 2016/04/22 08:52:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.30 2017/01/18 21:56:32 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -228,6 +228,13 @@ C-      2D arrays
 # else
           StoreEXF1(I,J,bi,bj,20) = 0.0
           StoreEXF1(I,J,bi,bj,21) = 0.0
+# endif
+# ifdef ALLOW_SALTFLX
+          StoreEXF1(I,J,bi,bj,22) = saltflx0(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,23) = saltflx1(I,J,bi,bj)
+# else
+          StoreEXF1(I,J,bi,bj,22) = 0.0
+          StoreEXF1(I,J,bi,bj,23) = 0.0
 # endif
          ENDDO
         ENDDO

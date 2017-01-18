@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.30 2016/04/22 08:52:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.31 2017/01/18 21:56:32 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -202,6 +202,10 @@ C-      2D arrays
 # ifdef ALLOW_CLIMSST_RELAXATION
           climsst0(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,20)
           climsst1(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,21)
+# endif
+# ifdef ALLOW_SALTFLX
+          saltflx0(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,22)
+          saltflx1(I,J,bi,bj)          = StoreEXF1(I,J,bi,bj,23)
 # endif
          ENDDO
         ENDDO
