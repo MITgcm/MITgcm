@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2293 2017/01/12 00:08:24 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2294 2017/01/19 18:39:10 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint66c (2017/01/19)
 o verification:
   - add new option "-src" to testreport to only produce source code (*.f),
     including taf output src code (if using '-adm'/'-tlm' option).
