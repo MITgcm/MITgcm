@@ -1,8 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2294 2017/01/19 18:39:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2295 2017/01/20 21:02:55 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/ecco:
+  - cost_gencost_customize.F,ecco.h,ecco_phys.F,ecco_readparms.F, and 
+    ecco_summary.F: add passive tracer cost functions to gencost; 
+    m_ptracer and m_boxmean_ptracer
+o pkg/ctrl:
+  - ctrl_map_forcing.F: pass myIter and myTime to ctrl_map_forcing as input 
+    parameters; move myIter .EQ. nIter0 inside ctrl_map_forcing; add to list
+    of implemented gentim2d contol parameters: xx_qnet, xx_empmr, xx_qsw,
+    xx_sst, xx_sss, xx_pload, xx_saltflux, xx_fu, xx_fv, xx_fe, xx_fn
+o model/src:
+  - forward_step.F: pass myIter and myTime to ctrl_map_forcing as input 
+    parameters; move myIter .EQ. nIter0 inside ctrl_map_forcing
+o pkg/exf:
+  - exf_getffields.F: add to list of implemented gentim2d contol parameters: 
+    xx_lwflux, xx_swflux, xx_evap, xx_apressure, xx_areamask
 
 checkpoint66c (2017/01/19)
 o verification:
