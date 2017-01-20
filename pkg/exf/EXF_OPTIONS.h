@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.36 2017/01/12 18:18:33 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.37 2017/01/20 21:24:18 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -136,7 +136,8 @@ C         |     |     |     |     | runoff.  Compute hflux and sflux.
 C         |     |     |     |     |
 C     def | def |  -  |  -  | def | Read-in uwind, vwind, atemp, aqh,
 C         |     |     |     |     | swflux, lwflux, precip, runoff,
-C         |     |     |     |     | and evap.
+C         |     |     |     |     | and evap. Compute EmPmR but zero
+C         |     |     |     |     | outp all other ocean surf. forcing
 C         |     |     |     |     |
 C     def | def |  -  | def |  -  | Read-in uwind, vwind, atemp, aqh,
 C         |     |     |     |     | swflux, lwflux, precip, and runoff.
@@ -145,7 +146,8 @@ C         |     |     |     |     | hflux, swflux, and evap.
 C         |     |     |     |     |
 C     def | def | def |  -  | def | Read-in uwind, vwind, atemp, aqh,
 C         |     |     |     |     | swdown, lwdown, precip, runoff,
-C         |     |     |     |     | and evap.
+C         |     |     |     |     | and evap. Compute EmPmR but zero
+C         |     |     |     |     | out all other surf. ocean forcing
 C         |     |     |     |     |
 C     def | def | def | def |  -  | Read-in uwind, vwind, atemp, aqh,
 C         |     |     |     |     | swdown, lwdown, precip, and runoff.
