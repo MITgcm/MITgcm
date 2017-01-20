@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.90 2016/09/21 12:55:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.91 2017/01/20 20:55:56 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -177,6 +177,7 @@ c--   Read the namelist input.
      &         gencost_name,
      &         gencost_scalefile,
      &         gencost_errfile,
+     &         gencost_itracer,
      &         gencost_preproc,
      &         gencost_preproc_c,
      &         gencost_preproc_i,
@@ -593,6 +594,7 @@ c--   Set default values.
          enddo
          gencost_outputlevel(k)= 0
          gencost_errfile(k)    = ' '
+         gencost_itracer(k)    = 1
          gencost_mask(k)       = ' '
          gencost_barfile(k)    = ' '
          gencost_spmin(k)      = 0. _d 0

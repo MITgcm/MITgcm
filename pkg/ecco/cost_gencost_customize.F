@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.25 2016/11/29 13:22:21 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.26 2017/01/20 20:55:55 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -44,6 +44,10 @@ c     == global variables ==
 #ifdef ALLOW_CTRL
 # include "CTRL_FIELDS.h"
 #endif
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS_FIELDS.h"
+#endif
 
 c     == routine arguments ==
 
@@ -56,6 +60,7 @@ c     == local variables ==
       integer i,j,k
 #ifdef ALLOW_GENCOST3D
       integer k2,kk
+      integer itr
 #endif
 #ifdef ALLOW_EXF
       _RL uBarC, vBarC
@@ -109,6 +114,7 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
 #endif
 
       do k=1,NGENCOST
+      itr=gencost_itracer(k)
       do bj = jtlo,jthi
        do bi = itlo,ithi
         do j = jmin,jmax
@@ -209,6 +215,14 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
             gencost_mod3d(i,j,k2,bi,bj,kk) =
      &       salt(i,j,k2,bi,bj)*maskC(i,j,k2,bi,bj)
            enddo
+#ifdef ALLOW_PTRACERS
+         elseif (gencost_barfile(k)(1:9).EQ.'m_ptracer') then
+           kk=gencost_pointer3d(k)
+           do k2=1,nr
+            gencost_mod3d(i,j,k2,bi,bj,kk) =
+     &       pTracer(i,j,k2,bi,bj,itr)*maskC(i,j,k2,bi,bj)
+           enddo
+#endif
          elseif (gencost_barfile(k)(1:4).EQ.'m_UE') then
            kk=gencost_pointer3d(k)
            do k2=1,nr
