@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.8 2016/11/16 16:41:50 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.9 2017/01/20 00:31:49 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -389,7 +389,7 @@ c ---------------------------------------------------------------------
 c  First, calculate the limitation terms for NUT and Fe, and the 
 c  Fe-limited Chl:C maximum. The light-saturated maximal photosynthesis 
 c  rate term (Pc_m) is simply the product of a prescribed maximal 
-c  photosynthesis rate (Pc_0), the Eppley temperature dependence, and a 
+c  photosynthesis rate (Pc_0/Pc_2d), the Eppley temperature dependence, and a 
 c  resource limitation term. The iron limitation term has a lower limit 
 c  of Fe_lim_min and is scaled by (k_Fe2P + Fe2P_max) / Fe2P_max so that 
 c  it approaches 1 as Fe approaches infinity. Thus, it is of comparable 
@@ -402,9 +402,11 @@ c  Macro-nutrient limitation
 
 c  Iron limitation
 
-          Fe_lim(i,j,k) = PTR_FE(i,j,k) / (PTR_FE(i,j,k)+k_Fe)
+          Fe_lim(i,j,k) = PTR_FE(i,j,k) 
+     &                    / (PTR_FE(i,j,k)+k_Fe2d(i,j,bi,bj))
          
-          Fe_lim_diaz(i,j,k) = PTR_FE(i,j,k) / (PTR_FE(i,j,k)+k_Fe_diaz)
+          Fe_lim_diaz(i,j,k) = PTR_FE(i,j,k) 
+     &                         / (PTR_FE(i,j,k)+k_Fe_diaz2d(i,j,bi,bj))
 
 c ---------------------------------------------------------------------
 c Diazotrophs are assumed to be more strongly temperature sensitive,
@@ -418,11 +420,11 @@ c Taking the square root, to provide the geometric mean.
 
 c  Light-saturated maximal photosynthesis rate   
 
-          Pc_m = Pc_0 * expkT(i,j,k)
+          Pc_m = Pc_2d(i,j,bi,bj) * expkT(i,j,k)
      &           * min(NO3_lim(i,j,k), PO4_lim(i,j,k), Fe_lim(i,j,k))
      &           * maskC(i,j,k,bi,bj)
 
-          Pc_m_diaz = Pc_0_diaz
+          Pc_m_diaz = Pc_2d_diaz(i,j,bi,bj)
      &           * exp(kappa_eppley_diaz * theta(i,j,k,bi,bj))
      &           * min(PO4_lim(i,j,k), Fe_lim_diaz(i,j,k))
      &           * maskC(i,j,k,bi,bj)
@@ -444,7 +446,8 @@ c  Fe-limitation.
           theta_Fe_max = theta_Fe_max_lo+
      &                  (theta_Fe_max_hi-theta_Fe_max_lo)*Fe_lim(i,j,k)
      
-          theta_Fe(i,j,k) = theta_Fe_max/(1. _d 0 + alpha_photo
+          theta_Fe(i,j,k) = theta_Fe_max
+     &                  / (1. _d 0 + alpha_photo2d(i,j,bi,bj)
      &                  *theta_Fe_max
      &                  *irr_mem(i,j,k,bi,bj)/(epsln + 2. _d 0*Pc_m))
 
@@ -455,8 +458,9 @@ c  theta_Fe_max to represent the importance of Fe in forming chlorophyll
 c  accessory antennae, which do not affect the Chl:C but still affect the
 c  phytoplankton ability to use light (eg Stzrepek & Harrison, Nature 2004).
 
-          irrk(i,j,k) = Pc_m/(epsln + alpha_photo*theta_Fe_max) +
-     &              irr_mem(i,j,k,bi,bj)/2. _d 0
+          irrk(i,j,k) = Pc_m
+     &             /(epsln + alpha_photo2d(i,j,bi,bj)*theta_Fe_max) 
+     &             + irr_mem(i,j,k,bi,bj)/2. _d 0
      
 c  Carbon-specific photosynthesis rate     
           mu(i,j,k) = Pc_m * ( 1. _d 0 - exp(-irr_eff(i,j,k)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_VARS.h,v 1.4 2016/10/27 17:55:31 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_VARS.h,v 1.5 2017/01/20 00:31:49 mmazloff Exp $
 C $Name:  $
 
 
@@ -106,7 +106,10 @@ C ==========================================================
      &        bling_psmFile, bling_plgFile, bling_pdiazFile, 
      &        bling_forcingPeriod, bling_forcingCycle,
      &        bling_pCO2, 
-     &        river_conc_trac
+     &        river_conc_trac,
+     &        bling_Pc_2dFile, bling_Pc_2d_diazFile,
+     &        bling_alpha_photo2dFile,
+     &        bling_k_Fe2dFile, bling_k_Fe_diaz2dFile
 #ifdef USE_EXFCO2
      &       ,apco2startdate1,apco2startdate2,
      &        apco2period,      apco2startdate,
@@ -138,6 +141,11 @@ C      apco2               :: Atmospheric pCO2 to be read in with exf pkg
       CHARACTER*(MAX_LEN_FNAM) bling_psmFile
       CHARACTER*(MAX_LEN_FNAM) bling_plgFile
       CHARACTER*(MAX_LEN_FNAM) bling_pdiazFile
+      CHARACTER*(MAX_LEN_FNAM) bling_Pc_2dFile 
+      CHARACTER*(MAX_LEN_FNAM) bling_Pc_2d_diazFile
+      CHARACTER*(MAX_LEN_FNAM) bling_alpha_photo2dFile
+      CHARACTER*(MAX_LEN_FNAM) bling_k_Fe2dFile
+      CHARACTER*(MAX_LEN_FNAM) bling_k_Fe_diaz2dFile
 #ifdef USE_EXFCO2
       CHARACTER*(MAX_LEN_FNAM) apco2file
 #endif
@@ -190,6 +198,8 @@ C ==========================================================
      &                     pivotal,
      &                     Pc_0,
      &                     Pc_0_diaz,
+     &                     Pc_2d,
+     &                     Pc_2d_diaz,
      &                     lambda_0,
      &                     chl_min,
      &                     CtoN,
@@ -199,6 +209,7 @@ C ==========================================================
      &                     CatoN,
      &                     masstoN,
      &                     alpha_photo,
+     &                     alpha_photo2d,
      &                     theta_Fe_max_hi,
      &                     theta_Fe_max_lo,
      &                     gamma_irr_mem,
@@ -207,6 +218,8 @@ C ==========================================================
      &                     gamma_POM,
      &                     k_Fe,
      &                     k_Fe_diaz,
+     &                     k_Fe2d,
+     &                     k_Fe_diaz2d,
      &                     k_O2,
      &                     k_NO3,
      &                     k_PO4,
@@ -252,6 +265,11 @@ C ==========================================================
       _RL phyto_sm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL phyto_diaz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL chl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL Pc_2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL Pc_2d_diaz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL alpha_photo2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL k_Fe2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL k_Fe_diaz2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL pivotal
       _RL Pc_0
       _RL Pc_0_diaz

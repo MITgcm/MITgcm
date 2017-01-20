@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_readparms.F,v 1.4 2016/10/27 17:55:31 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_readparms.F,v 1.5 2017/01/20 00:31:49 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -122,7 +122,10 @@ C ==========================================================
      &          bling_ironFile, bling_silicaFile,
      &          bling_psmFile, bling_plgFile, bling_PdiazFile,
      &          bling_forcingPeriod, bling_forcingCycle,
-     &          bling_pCO2, river_conc_trac
+     &          bling_pCO2, river_conc_trac,
+     &          bling_Pc_2dFile, bling_Pc_2d_diazFile,
+     &          bling_alpha_photo2dFile,
+     &          bling_k_Fe2dFile, bling_k_Fe_diaz2dFile
 #ifdef USE_EXFCO2
      &          ,apco2file
      &          ,apco2startdate1,   apco2startdate2,  apco2period
@@ -271,13 +274,18 @@ cav      k_PO4                = 1. _d -8 / permil
       bling_iceFile   = ' '
       bling_ironFile  = ' '
       bling_silicaFile= ' '
-      bling_psmFile= ' '
-      bling_plgFile= ' '
-      bling_pdiazFile= ' '
-      bling_pCO2    = 278. _d -6
+      bling_psmFile   = ' '
+      bling_plgFile   = ' '
+      bling_pdiazFile = ' '
+      bling_pCO2      = 278. _d -6
       DO k=1,8
        river_conc_trac(k) = 0. _d 0
       ENDDO
+      bling_Pc_2dFile        = ' '
+      bling_Pc_2d_diazFile   = ' '
+      bling_alpha_photo2dFile= ' '
+      bling_k_Fe2dFile       = ' '
+      bling_k_Fe_diaz2dFile  = ' '
 
 #ifdef USE_EXFCO2
       apco2startdate1   = 0

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_init_varia.F,v 1.3 2016/10/27 17:55:31 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_init_varia.F,v 1.4 2017/01/20 00:31:49 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -39,9 +39,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Initialise global variables
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO k = 1, Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          DO k = 1, Nr
             omegaC(i,j,k,bi,bj)     = 0. _d 0
             omegaAr(i,j,k,bi,bj)    = 0. _d 0
             irr_mem(i,j,k,bi,bj)    = 1. _d 0
@@ -50,10 +50,41 @@ C--   Initialise global variables
             phyto_lg(i,j,k,bi,bj)   = 4. _d -7 / permil
             phyto_diaz(i,j,k,bi,bj) = 4. _d -7 / permil
           ENDDO
+          Pc_2d(i,j,bi,bj)         = Pc_0
+          Pc_2d_diaz(i,j,bi,bj)    = Pc_0_diaz
+          alpha_photo2d(i,j,bi,bj) = alpha_photo
+          k_Fe2d(i,j,bi,bj)        = k_Fe
+          k_Fe_diaz2d(i,j,bi,bj)   = k_Fe_diaz
          ENDDO
         ENDDO
        ENDDO
       ENDDO
+
+C Read in 2d bio related variables
+        IF ( bling_Pc_2dFile .NE. ' ' ) THEN
+           CALL READ_FLD_XY_RL( bling_Pc_2dFile, ' ', Pc_2d, 0, myThid )
+        _EXCH_XY_RL(Pc_2d,myThid)
+        ENDIF
+        IF ( bling_Pc_2d_diazFile .NE. ' ' ) THEN
+           CALL READ_FLD_XY_RL( bling_Pc_2d_diazFile,' ', 
+     &                          Pc_2d_diaz, 0, myThid)
+        _EXCH_XY_RL(Pc_2d_diaz,myThid)
+        ENDIF
+        IF (   bling_alpha_photo2dFile .NE. ' ' ) THEN
+           CALL READ_FLD_XY_RL( bling_alpha_photo2dFile, ' ',
+     &                          alpha_photo2d, 0, myThid )
+        _EXCH_XY_RL(alpha_photo2d,myThid)
+        ENDIF
+        IF ( bling_k_Fe2dFile .NE. ' ' ) THEN
+           CALL READ_FLD_XY_RL( bling_k_Fe2dFile, ' ', 
+     &                          k_Fe2d, 0, myThid )
+        _EXCH_XY_RL(k_Fe2d,myThid)
+        ENDIF
+        IF ( bling_k_Fe_diaz2dFile .NE. ' ' ) THEN
+           CALL READ_FLD_XY_RL( bling_k_Fe_diaz2dFile, ' ',
+     &                          k_Fe_diaz2d, 0, myThid )
+        _EXCH_XY_RL(k_Fe_diaz2d,myThid)
+        ENDIF
 
 C     Now read phyto plankton abundance ICs and exchange
       IF (nIter0.EQ.PTRACERS_Iter0) THEN
