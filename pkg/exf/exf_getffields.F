@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.66 2017/01/11 03:45:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.67 2017/01/20 20:45:58 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -627,6 +627,14 @@ cdm #endif
            if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_precip')
      &       precip(i,j,bi,bj)=precip(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_lwflux')
+     &       lwflux(i,j,bi,bj)=lwflux(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+#endif
+#if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
+           if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_swflux')
+     &       swflux(i,j,bi,bj)=swflux(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
 #endif
 #ifdef ALLOW_DOWNWARD_RADIATION
            if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_swdown')
@@ -636,9 +644,26 @@ cdm #endif
      &       lwdown(i,j,bi,bj)=lwdown(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
 #endif
+#ifdef ALLOW_RUNOFF
            if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_runoff')
      &       runoff(i,j,bi,bj)=runoff(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
+#endif
+#ifdef EXF_READ_EVAP
+           if (xx_gentim2d_file(iarr)(1:7).EQ.'xx_evap')
+     &       evap(i,j,bi,bj)=evap(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+#endif
+#ifdef ATMOSPHERIC_LOADING
+           if (xx_gentim2d_file(iarr)(1:12).EQ.'xx_apressure')
+     &       apressure(i,j,bi,bj)=apressure(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+#endif
+#ifdef EXF_SEAICE_FRACTION
+           if (xx_gentim2d_file(iarr)(1:11).EQ.'xx_areamask')
+     &       areamask(i,j,bi,bj)=areamask(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+#endif
 #ifndef ALLOW_ROTATE_UV_CONTROLS
            if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_uwind')
      &       uwind(i,j,bi,bj)=uwind(i,j,bi,bj)+
@@ -653,7 +678,6 @@ cdm #endif
            if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_vwind')
      &       tmpVN(i,j,bi,bj)=tmpVN(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
-
 #endif
            enddo
          ENDDO
