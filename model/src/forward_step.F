@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.239 2016/11/28 23:05:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.240 2017/01/20 20:48:09 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -524,8 +524,11 @@ C-    calculate qnet (and wind stress)
 
 #ifdef ALLOW_CTRL
 C--   Add control vector for forcing and parameter fields
-      IF ( ( useCTRL ).AND.( myIter .EQ. nIter0 ) )
-     &     CALL CTRL_MAP_FORCING (myThid)
+      IF ( useCTRL ) THEN
+       CALL TIMER_START('CTRL_MAP_FORCING  [FORWARD_STEP]',myThid)
+       CALL CTRL_MAP_FORCING( myTime, myIter, myThid )
+       CALL TIMER_STOP ('CTRL_MAP_FORCING  [FORWARD_STEP]',myThid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_AUTODIFF_MONITOR
