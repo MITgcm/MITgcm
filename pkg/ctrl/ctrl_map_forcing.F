@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_forcing.F,v 1.19 2014/04/04 21:16:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_forcing.F,v 1.20 2017/01/20 20:51:35 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: CTRL_MAP_FORCING
 C     !INTERFACE:
-      SUBROUTINE CTRL_MAP_FORCING(myThid)
+      SUBROUTINE CTRL_MAP_FORCING( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 c     *=================================================================
@@ -38,20 +38,36 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myThid - Thread number for this instance of the routine.
+C     myTime :: time counter for this thread
+C     myIter :: iteration counter for this thread
+C     myThid :: thread number for this instance of the routine.
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       integer bi,bj
-      integer i,j,k
+      integer i,j
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-      integer il
+#ifndef ALLOW_OPENAD
+#ifdef ALLOW_GENTIM2D_CONTROL
+      integer iarr
+      _RL     tmpUE(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     tmpVN(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     tmpUX(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     tmpVY(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+#endif
 
-      logical equal
+#if (defined ALLOW_TAUU0_CONTROL) || (defined ALLOW_TAUV0_CONTROL) ||\
+    (defined ALLOW_SFLUX0_CONTROL) || (defined ALLOW_HFLUX0_CONTROL) ||\
+    (defined ALLOW_SSS_CONTROL) || (defined ALLOW_SST_CONTROL) ||\
+    (defined ALLOW_HFLUXM_CONTROL)
+      integer il
       logical doglobalread
       logical ladinit
 
@@ -68,6 +84,7 @@ cHFLUXM_CONTROL
 c     == external ==
       integer  ilnblnk
       external ilnblnk
+#endif
 
 c     == end of interface ==
 CEOP
@@ -81,8 +98,15 @@ CEOP
       imin = 1
       imax = snx
 
+#if (defined ALLOW_TAUU0_CONTROL) || (defined ALLOW_TAUV0_CONTROL) ||\
+    (defined ALLOW_SFLUX0_CONTROL) || (defined ALLOW_HFLUX0_CONTROL) ||\
+    (defined ALLOW_SSS_CONTROL) || (defined ALLOW_SST_CONTROL) ||\
+    (defined ALLOW_HFLUXM_CONTROL)
+
       doglobalread = .false.
       ladinit      = .false.
+
+      IF ( myIter .EQ. nIter0 ) THEN
 
 #ifdef ALLOW_TAUU0_CONTROL
 c--   tauu0.
@@ -266,4 +290,90 @@ c--   hfluxm.
        _EXCH_XY_RS(Qnetm, myThid )
 #endif
 
+      ENDIF !IF ( myIter .EQ. nIter0 ) THEN
+
+#endif
+
+#ifndef ALLOW_OPENAD
+#ifdef ALLOW_GENTIM2D_CONTROL
+      IF ( ctrlUseGen ) THEN
+
+      do bj = mybylo(mythid),mybyhi(mythid)
+       do bi = mybxlo(mythid),mybxhi(mythid)
+        do j = 1-oly,sny+oly
+         do i = 1-olx,snx+olx
+           tmpUE(i,j,bi,bj) = 0. _d 0
+           tmpVN(i,j,bi,bj) = 0. _d 0
+           tmpUX(i,j,bi,bj) = 0. _d 0
+           tmpVY(i,j,bi,bj) = 0. _d 0
+         enddo
+        enddo
+       enddo
+      enddo
+
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid),mybxhi(myThid)
+        DO j = 1,sNy
+         DO i = 1,sNx
+          DO iarr = 1, maxCtrlTim2D
+           if (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fe') tmpUE
+     &      (i,j,bi,bj)=tmpUE(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fn') tmpVN
+     &       (i,j,bi,bj)=tmpVN(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+      _EXCH_XY_RL(tmpUE,myThid)
+      _EXCH_XY_RL(tmpVN,myThid)
+      CALL rotate_uv2en_rl(tmpUX,tmpVY,tmpUE,tmpVN,
+     &     .FALSE.,.TRUE.,.TRUE.,1,mythid)
+
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid),mybxhi(myThid)
+        DO j = 1,sny
+         DO i = 1,snx
+          fu(i,j,bi,bj)=fu(i,j,bi,bj)+tmpUX(i,j,bi,bj)
+          fv(i,j,bi,bj)=fv(i,j,bi,bj)+tmpVY(i,j,bi,bj)
+          DO iarr = 1, maxCtrlTim2D
+           if (xx_gentim2d_file(iarr)(1:7).EQ.'xx_qnet') Qnet
+     &      (i,j,bi,bj)=Qnet(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_empmr') EmPmR
+     &      (i,j,bi,bj)=EmPmR(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr)(1:6).EQ.'xx_qsw') Qsw
+     &      (i,j,bi,bj)=Qsw(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr)(1:6).EQ.'xx_sst') SST
+     &      (i,j,bi,bj)=SST(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr)(1:6).EQ.'xx_sss') SSS
+     &      (i,j,bi,bj)=SSS(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_pload') pLoad
+     &      (i,j,bi,bj)=pLoad(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr)(1:11).EQ.'xx_saltflux') saltFlux
+     &      (i,j,bi,bj)=saltFlux(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fu') fu
+     &      (i,j,bi,bj)=fu(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr)(1:5).EQ.'xx_fv') fv
+     &      (i,j,bi,bj)=fv(i,j,bi,bj)+xx_gentim2d(i,j,bi,bj,iarr)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+      CALL EXCH_XY_RS( Qnet , myThid )
+      CALL EXCH_XY_RS( EmPmR , myThid )
+      CALL EXCH_XY_RS( Qsw , myThid )
+      CALL EXCH_XY_RS( SST , myThid )
+      CALL EXCH_XY_RS( SSS , myThid )
+      CALL EXCH_XY_RS( pLoad , myThid )
+      CALL EXCH_XY_RS( saltFlux , myThid )
+      CALL EXCH_UV_XY_RS( fu, fv, .TRUE., myThid )
+
+      ENDIF !IF (ctrlUseGen) then
+#endif
+#endif
+
+      RETURN
       END
