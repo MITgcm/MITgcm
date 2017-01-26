@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+impi,v 1.1 2015/07/15 20:05:31 jahn Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+impi,v 1.2 2017/01/26 20:22:21 jahn Exp $
 # $Name:  $
 #
 #  Build options for ifort with impi on Linux AMD64 platform
@@ -106,6 +106,10 @@ elif test -f /usr/local/include/netcdf.inc ; then
     INCLUDEDIRS='/usr/local/include'
     INCLUDES='-I/usr/local/include'
     LIBS='-L/usr/local/lib64 -L/usr/local/lib'
+fi
+
+if [ -n "$I_MPI_ROOT" -a -z "$MPI_INC_DIR" ]; then
+    MPI_INC_DIR="$I_MPI_ROOT/intel64/include"
 fi
 
 if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
