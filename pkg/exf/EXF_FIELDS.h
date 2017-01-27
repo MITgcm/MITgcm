@@ -1,153 +1,153 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.20 2017/01/11 03:45:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.21 2017/01/27 17:12:08 jmc Exp $
 C $Name:  $
-c
-c
+
+
 C     ==================================================================
 C     HEADER exf_fields
 C     ==================================================================
-c
+C
 C     o Header file for the surface flux data.
-c
+C
 C     started: Ralf.Giering@FastOpt.de 25-Mai-2000
 C     changed: field swap in adj. mode; heimbach@mit.edu 10-Jan-2002
 C     included runoff D. Stammer, Nov. 25, 2001
 C     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
-c
+C
 C     ==================================================================
 C     HEADER exf_fields
 C     ==================================================================
-c
-c
+
+
 C     Field definitions, units, and sign conventions:
 C     ===============================================
-c
+C
 C     ustress   :: Zonal surface wind stress in N/m^2
 C                  > 0 for increase in uVel, which is west to
 C                      east for cartesian and spherical polar grids
 C                  Typical range: -0.5 < ustress < 0.5
 C                  Input field
-c
+C
 C     vstress   :: Meridional surface wind stress in N/m^2
 C                  > 0 for increase in vVel, which is south to
 C                      north for cartesian and spherical polar grids
 C                  Typical range: -0.5 < vstress < 0.5
 C                  Input field
-c
+C
 C     hflux     :: Net upward surface heat flux including shortwave in W/m^2
 C                  hflux = latent + sensible + lwflux + swflux
 C                  > 0 for decrease in theta (ocean cooling)
 C                  Typical range: -250 < hflux < 600
 C                  Input field
-c
+C
 C     sflux     :: Net upward freshwater flux in m/s
 C                  sflux = evap - precip - runoff
 C                  > 0 for increase in salt (ocean salinity)
 C                  Typical range: -1e-7 < sflux < 1e-7
 C                  Input field
-c
+C
 C     swflux    :: Net upward shortwave radiation in W/m^2
 C                  swflux = - ( swdown - ice and snow absorption - reflected )
 C                  > 0 for decrease in theta (ocean cooling)
 C                  Typical range: -350 < swflux < 0
 C                  Input field
-c
+C
 C     uwind     :: Surface (10-m) zonal wind velocity in m/s
 C                  > 0 for increase in uVel, which is west to
 C                      east for cartesian and spherical polar grids
 C                  Typical range: -10 < uwind < 10
 C                  Input or input/output field
-c
+C
 C     vwind     :: Surface (10-m) meridional wind velocity in m/s
 C                  > 0 for increase in vVel, which is south to
 C                      north for cartesian and spherical polar grids
 C                  Typical range: -10 < vwind < 10
 C                  Input or input/output field
-c
+C
 C     wspeed    :: Surface (10-m) wind speed in m/s
 C                  >= 0 sqrt(u^2+v^2)
 C                  Typical range: 0 < wspeed < 10
 C                  Input or input/output field
-c
+C
 C     atemp     :: Surface (2-m) air temperature in deg K
 C                  Typical range: 200 < atemp < 300
 C                  Input or input/output field
-c
+C
 C     aqh       :: Surface (2m) specific humidity in kg/kg
 C                  Typical range: 0 < aqh < 0.02
 C                  Input or input/output field
-c
+C
 C     lwflux    :: Net upward longwave radiation in W/m^2
 C                  lwflux = - ( lwdown - ice and snow absorption - emitted )
 C                  > 0 for decrease in theta (ocean cooling)
 C                  Typical range: -20 < lwflux < 170
 C                  Input field
-c
+C
 C     evap      :: Evaporation in m/s
 C                  > 0 for increase in salt (ocean salinity)
 C                  Typical range: 0 < evap < 2.5e-7
 C                  Input, input/output, or output field
-c
+C
 C     precip    :: Total Precipitation (rain+snow) in m/s of liquid water
 C                  > 0 for decrease in salt (ocean salinity)
 C                  Typical range: 0 < precip < 5e-7
 C                  Input or input/output field
-c
+C
 C     snowprecip :: snow precipitation in m/s of equivalent liquid water
 C                  > 0 for decrease in salt (ocean salinity)
 C                  Typical range: 0 < precip < 5e-7
 C                  Input or input/output field
-c
+C
 C     runoff    :: River and glacier runoff in m/s
 C                  > 0 for decrease in salt (ocean salinity)
 C                  Typical range: 0 < runoff < ????
 C                  Input or input/output field
-c
+C
 C     runoftemp :: Temperature of runoff in deg C
-c
+C
 C     saltflx   :: Net upward salt flux in psu.kg/m^2/s
 C                  > 0 for decrease in SSS.
 C                  Typical origin: salty sea-ice formation / melting.
 C                  Units: when salinity (unit= psu) is expressed
 C                       in g/kg, saltflx unit becomes g/m^2/s.
-c
+C
 C     swdown    :: Downward shortwave radiation in W/m^2
 C                  > 0 for increase in theta (ocean warming)
 C                  Typical range: 0 < swdown < 450
 C                  Input/output field
-c
+C
 C     lwdown    :: Downward longwave radiation in W/m^2
 C                  > 0 for increase in theta (ocean warming)
 C                  Typical range: 50 < lwdown < 450
 C                  Input/output field
-c
+C
 C     apressure :: Atmospheric pressure field in N/m^2
 C                  > 0 for ????
 C                  Typical range: ???? < apressure < ????
 C                  Input field
-c
+C
 C     hs        :: sensible heat flux into ocean in W/m^2
 C                  > 0 for increase in theta (ocean warming)
-c
+C
 C     hl        :: latent   heat flux into ocean in W/m^2
 C                  > 0 for increase in theta (ocean warming)
-c
-c
+C
+
 C     NOTES:
 C     ======
-c
+C
 C     By default all surface forcing fields are defined at the center
 C     of each grid (the rVel location in model/inc/GRID.h) unless
 C     flags readStressOnAgrid or readStressOnCgrid are set.
-c
+C
 C     Input and output units and sign conventions can be customized
 C     using variables exf_inscal_* and exf_outscal_*, which are set
 C     by exf_readparms.F
-c
+C
 C     Output fields fu, fv, Qnet, Qsw, and EmPmR are
 C     defined in FFIELDS.h
-c
+C
 C     Arrays *0 and *1 below are used for temporal interpolation.
-c
+C
 
       COMMON /exf_stress_r/ ustress, vstress
       _RL ustress   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -175,7 +175,7 @@ c
       _RL vwind0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vwind1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      COMMON /exf_hsflux_r/ hflux, sflux
+      COMMON /exf_netflux_r/ hflux, sflux
       _RL hflux     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL sflux     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       COMMON /exfl_hflux_r/ hflux0, hflux1
@@ -186,9 +186,12 @@ c
       _RL sflux1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_ATM_TEMP
-      COMMON /exf_atm_temp_r/ atemp, aqh, lwflux, precip, snowprecip
+      COMMON /exf_atm_temp_r/ atemp, aqh, hs, hl, lwflux,
+     &                        precip, snowprecip
       _RL atemp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL aqh       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL hs        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL hl        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL lwflux    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL precip    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL snowprecip (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -207,10 +210,14 @@ c
       COMMON /exfl_snowprecip_r/ snowprecip0, snowprecip1
       _RL snowprecip0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL snowprecip1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      COMMON /exfl_turb_r/ hs, hl
-      _RL hs        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL hl        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
+# ifdef ALLOW_READ_TURBFLUXES
+      COMMON /exfl_turb_r/ hs0, hs1, hl0, hl1
+      _RL hs0       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL hs1       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL hl0       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL hl1       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+# endif
+#endif /* ALLOW_ATM_TEMP */
 
 C     wStress   :: wind-stress magnitude [Pa=N/m^2], @ grid-cell center
 C     sh        :: wind-speed [m/s] (always larger than uMin)

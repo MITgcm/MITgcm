@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.36 2017/01/11 03:45:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.37 2017/01/27 17:12:08 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -188,6 +188,30 @@ C      will be over-written at first time-step when calling EXF_SET_UV.
 #endif
      &     myThid )
 
+# ifdef ALLOW_READ_TURBFLUXES
+
+      CALL EXF_INIT_GEN (
+     &     hs_file, hs_period, exf_inscal_hs, hs_mask,
+     &     hs_const, hs, hs0, hs1,
+#  ifdef USE_EXF_INTERPOLATION
+     &     hs_lon0, hs_lon_inc,
+     &     hs_lat0, hs_lat_inc,
+     &     hs_nlon, hs_nlat, xC, yC, hs_interpMethod,
+#  endif
+     &     myThid )
+
+      CALL EXF_INIT_GEN (
+     &     hl_file, hl_period, exf_inscal_hl, hl_mask,
+     &     hl_const, hl, hl0, hl1,
+#  ifdef USE_EXF_INTERPOLATION
+     &     hl_lon0, hl_lon_inc,
+     &     hl_lat0, hl_lat_inc,
+     &     hl_nlon, hl_nlat, xC, yC, hl_interpMethod,
+#  endif
+     &     myThid )
+
+# endif /* ALLOW_READ_TURBFLUXES */
+
       CALL EXF_INIT_GEN (
      &     lwfluxfile, lwfluxperiod, exf_inscal_lwflux, lwfluxmask,
      &     lwfluxconst, lwflux, lwflux0, lwflux1,
@@ -234,7 +258,7 @@ C      will be over-written at first time-step when calling EXF_SET_UV.
      &     myThid )
 #endif /* defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING) */
 
-#if defined(ALLOW_ATM_TEMP) || defined(EXF_READ_EVAP)
+#ifdef EXF_READ_EVAP
       CALL EXF_INIT_GEN (
      &     evapfile, evapperiod, exf_inscal_evap, evapmask,
      &     evapconst, evap, evap0, evap1,
@@ -244,7 +268,7 @@ C      will be over-written at first time-step when calling EXF_SET_UV.
      &     evap_nlon, evap_nlat, xC, yC, evap_interpMethod,
 #endif
      &     myThid )
-#endif /* defined(ALLOW_ATM_TEMP) || defined(EXF_READ_EVAP) */
+#endif /* EXF_READ_EVAP */
 
 #ifdef ALLOW_DOWNWARD_RADIATION
 
@@ -397,24 +421,24 @@ C      will be over-written at first time-step when calling EXF_SET_UV.
          DO j=1-oLy,sNy+oLy
           DO i=1-oLx,sNx+oLx
 # ifdef ALLOW_CLIMSST_RELAXATION
-           if ( climsstfile .NE. ' ' .AND.
+           IF ( climsstfile .NE. ' ' .AND.
      &          climsstperiod .EQ. 0. )
      &          theta(i,j,1,bi,bj) = climsst(i,j,bi,bj)
 # endif
 # ifdef ALLOW_CLIMSSS_RELAXATION
-           if ( climsssfile .NE. ' ' .AND.
+           IF ( climsssfile .NE. ' ' .AND.
      &          climsssperiod .EQ. 0. )
      &          salt(i,j,1,bi,bj) = climsss(i,j,bi,bj)
 # endif
 # ifdef ALLOW_CLIMSTRESS_RELAXATION
-           if ( climustrfile .NE. ' ' .AND.
+           IF ( climustrfile .NE. ' ' .AND.
      &          climustrperiod .EQ. 0. )
      &          uvel(i,j,1,bi,bj) = climustr(i,j,bi,bj)
-           if ( climvstrfile .NE. ' ' .AND.
+           IF ( climvstrfile .NE. ' ' .AND.
      &          climvstrperiod .EQ. 0. )
      &          vvel(i,j,1,bi,bj) = climvstr(i,j,bi,bj)
 # endif
-           if ( maskC(i,j,1,bi,bj) .NE. 0. .AND.
+           IF ( maskC(i,j,1,bi,bj) .NE. 0. .AND.
      &             theta(i,j,1,bi,bj) .EQ. 0. ) then
                 print *, 'ph-warn-exf-init ', i, j, theta(i,j,1,bi,bj)
 cph                STOP 'in exf_init'

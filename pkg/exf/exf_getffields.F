@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.67 2017/01/20 20:45:58 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.68 2017/01/27 17:12:08 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -74,7 +74,7 @@ C--   read forcing fields from files and temporal interpolation
 
 C     Zonal and meridional wind stress.
       IF ( .NOT.useAtmWind ) THEN
-      CALL EXF_SET_UV(
+       CALL EXF_SET_UV(
      I     ustressfile, ustressstartdate, ustressperiod,
      I     exf_inscal_ustress,
      I     ustress_exfremo_intercept, ustress_exfremo_slope,
@@ -119,7 +119,7 @@ C--   wind speed
 
 C     Zonal and meridional wind.
       IF ( useAtmWind ) THEN
-      CALL EXF_SET_UV(
+       CALL EXF_SET_UV(
      I     uwindfile, uwindstartdate, uwindperiod,
      I     exf_inscal_uwind,
      I     uwind_exfremo_intercept, uwind_exfremo_slope,
@@ -136,21 +136,21 @@ C     Zonal and meridional wind.
 #endif /* USE_EXF_INTERPOLATION */
      I     myTime, myIter, myThid )
 
-      if (useRelativeWind) then
+       IF (useRelativeWind) THEN
 C     Subtract UVEL and VVEL from UWIND and VWIND.
-       DO bj = myByLo(myThid),myByHi(myThid)
-        DO bi = myBxLo(myThid),mybxhi(myThid)
-         DO j = 1,sNy
-          DO i = 1,sNx
-           uwind(i,j,bi,bj) = uwind(i,j,bi,bj) - 0.5 _d 0 *
-     &          (uVel(i,j,1,bi,bj)+uVel(i+1,j,1,bi,bj))
-           vwind(i,j,bi,bj) = vwind(i,j,bi,bj) - 0.5 _d 0 *
-     &          (vVel(i,j,1,bi,bj)+vVel(i,j+1,1,bi,bj))
+        DO bj = myByLo(myThid),myByHi(myThid)
+         DO bi = myBxLo(myThid),mybxhi(myThid)
+          DO j = 1,sNy
+           DO i = 1,sNx
+            uwind(i,j,bi,bj) = uwind(i,j,bi,bj) - 0.5 _d 0
+     &         * (uVel(i,j,1,bi,bj)+uVel(i+1,j,1,bi,bj))
+            vwind(i,j,bi,bj) = vwind(i,j,bi,bj) - 0.5 _d 0
+     &         * (vVel(i,j,1,bi,bj)+vVel(i,j+1,1,bi,bj))
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
-       ENDDO
-      endif
+       ENDIF
 
       ELSE
        DO bj = myByLo(myThid),myByHi(myThid)
@@ -223,6 +223,34 @@ C     Atmospheric humidity.
      &     aqh_nlon, aqh_nlat, xC, yC, aqh_interpMethod,
 #endif
      &     myTime, myIter, myThid )
+
+# ifdef ALLOW_READ_TURBFLUXES
+
+C     Sensible Heat flux
+      CALL EXF_SET_GEN(
+     &     hs_file, hs_startdate, hs_period,
+     &     exf_inscal_hs,
+     &     hs_exfremo_intercept, hs_exfremo_slope,
+     &     hs, hs0, hs1, hs_mask,
+#  ifdef USE_EXF_INTERPOLATION
+     &     hs_lon0, hs_lon_inc, hs_lat0, hs_lat_inc,
+     &     hs_nlon, hs_nlat, xC, yC, hs_interpMethod,
+#  endif
+     &     myTime, myIter, myThid )
+
+C     Latent Heat flux
+      CALL EXF_SET_GEN(
+     &     hl_file, hl_startdate, hl_period,
+     &     exf_inscal_hl,
+     &     hl_exfremo_intercept, hl_exfremo_slope,
+     &     hl, hl0, hl1, hl_mask,
+#  ifdef USE_EXF_INTERPOLATION
+     &     hl_lon0, hl_lon_inc, hl_lat0, hl_lat_inc,
+     &     hl_nlon, hl_nlat, xC, yC, hl_interpMethod,
+#  endif
+     &     myTime, myIter, myThid )
+
+# endif /* ALLOW_READ_TURBFLUXES */
 
 C     Net long wave radiative flux.
       CALL EXF_SET_GEN(
@@ -303,7 +331,7 @@ C     Evaporation
      &     evap_nlon, evap_nlat, xC, yC, evap_interpMethod,
 #endif
      &     myTime, myIter, myThid )
-#endif
+#endif /* EXF_READ_EVAP */
 
 #ifdef ALLOW_DOWNWARD_RADIATION
 
@@ -331,7 +359,7 @@ C     Downward longwave radiation.
 #endif
      &     myTime, myIter, myThid )
 
-#endif
+#endif /* ALLOW_DOWNWARD_RADIATION */
 
 #ifdef ATMOSPHERIC_LOADING
 C     Atmos. pressure forcing
@@ -407,7 +435,7 @@ C     Salt flux
 #endif
 
 #ifdef ALLOW_ROTATE_UV_CONTROLS
-      if ( useCTRL ) then
+      IF ( useCTRL ) THEN
         DO bj = myByLo(myThid),myByHi(myThid)
          DO bi = myBxLo(myThid),mybxhi(myThid)
           DO j = 1-OLy,sNy+OLy
@@ -420,14 +448,14 @@ C     Salt flux
           ENDDO
          ENDDO
         ENDDO
-      endif
+      ENDIF
 #endif
 
 # if (!defined (ALLOW_ECCO) || defined (ECCO_CTRL_DEPRECATED))
 
 C-- Control variables for atmos. state
 #ifdef ALLOW_CTRL
-      if (.NOT.ctrlUseGen) then
+      IF (.NOT.ctrlUseGen) THEN
 
 #ifdef ALLOW_ATEMP_CONTROL
       CALL CTRL_GET_GEN (
@@ -469,7 +497,7 @@ C-- Control variables for atmos. state
      &     wlwdown, myTime, myIter, myThid )
 #endif
 
-      endif !if (.NOT.ctrlUseGen) then
+      ENDIF !if (.NOT.ctrlUseGen) then
 
 #ifdef ALLOW_SWFLUX_CONTROL
       CALL CTRL_GET_GEN (
@@ -611,82 +639,82 @@ cdm #endif
 #endif /* undef ALLOW_ECCO) || def ECCO_CTRL_DEPRECATED */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_GENTIM2D_CONTROL))
-      if ( useCTRL.AND.ctrlUseGen ) then
-      DO bj = myByLo(myThid),myByHi(myThid)
+      IF ( useCTRL.AND.ctrlUseGen ) THEN
+       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),mybxhi(myThid)
         DO j = 1,sNy
          DO i = 1,sNx
-           do iarr = 1, maxCtrlTim2D
+          DO iarr = 1, maxCtrlTim2D
 #ifdef ALLOW_ATM_TEMP
-           if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_atemp')
+           IF (xx_gentim2d_file(iarr)(1:8).EQ.'xx_atemp')
      &       atemp(i,j,bi,bj)=atemp(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
-           if (xx_gentim2d_file(iarr)(1:6).EQ.'xx_aqh')
+           IF (xx_gentim2d_file(iarr)(1:6).EQ.'xx_aqh')
      &       aqh(i,j,bi,bj)=aqh(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
-           if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_precip')
+           IF (xx_gentim2d_file(iarr)(1:9).EQ.'xx_precip')
      &       precip(i,j,bi,bj)=precip(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
-           if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_lwflux')
+           IF (xx_gentim2d_file(iarr)(1:9).EQ.'xx_lwflux')
      &       lwflux(i,j,bi,bj)=lwflux(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
 #endif
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
-           if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_swflux')
+           IF (xx_gentim2d_file(iarr)(1:9).EQ.'xx_swflux')
      &       swflux(i,j,bi,bj)=swflux(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
 #endif
 #ifdef ALLOW_DOWNWARD_RADIATION
-           if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_swdown')
+           IF (xx_gentim2d_file(iarr)(1:9).EQ.'xx_swdown')
      &       swdown(i,j,bi,bj)=swdown(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
-           if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_lwdown')
+           IF (xx_gentim2d_file(iarr)(1:9).EQ.'xx_lwdown')
      &       lwdown(i,j,bi,bj)=lwdown(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
 #endif
 #ifdef ALLOW_RUNOFF
-           if (xx_gentim2d_file(iarr)(1:9).EQ.'xx_runoff')
+           IF (xx_gentim2d_file(iarr)(1:9).EQ.'xx_runoff')
      &       runoff(i,j,bi,bj)=runoff(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
 #endif
 #ifdef EXF_READ_EVAP
-           if (xx_gentim2d_file(iarr)(1:7).EQ.'xx_evap')
+           IF (xx_gentim2d_file(iarr)(1:7).EQ.'xx_evap')
      &       evap(i,j,bi,bj)=evap(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
 #endif
 #ifdef ATMOSPHERIC_LOADING
-           if (xx_gentim2d_file(iarr)(1:12).EQ.'xx_apressure')
+           IF (xx_gentim2d_file(iarr)(1:12).EQ.'xx_apressure')
      &       apressure(i,j,bi,bj)=apressure(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
 #endif
 #ifdef EXF_SEAICE_FRACTION
-           if (xx_gentim2d_file(iarr)(1:11).EQ.'xx_areamask')
+           IF (xx_gentim2d_file(iarr)(1:11).EQ.'xx_areamask')
      &       areamask(i,j,bi,bj)=areamask(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
 #endif
 #ifndef ALLOW_ROTATE_UV_CONTROLS
-           if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_uwind')
+           IF (xx_gentim2d_file(iarr)(1:8).EQ.'xx_uwind')
      &       uwind(i,j,bi,bj)=uwind(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
-           if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_vwind')
+           IF (xx_gentim2d_file(iarr)(1:8).EQ.'xx_vwind')
      &       vwind(i,j,bi,bj)=vwind(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
 #else
-           if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_uwind')
+           IF (xx_gentim2d_file(iarr)(1:8).EQ.'xx_uwind')
      &       tmpUE(i,j,bi,bj)=tmpUE(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
-           if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_vwind')
+           IF (xx_gentim2d_file(iarr)(1:8).EQ.'xx_vwind')
      &       tmpVN(i,j,bi,bj)=tmpVN(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
 #endif
-           enddo
+          ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
+       ENDDO
 #ifdef ALLOW_ROTATE_UV_CONTROLS
-      CALL ROTATE_UV2EN_RL(tmpUX,tmpVY,tmpUE,tmpVN,
-     &     .FALSE.,.FALSE.,.TRUE.,1,myThid)
+       CALL ROTATE_UV2EN_RL(tmpUX,tmpVY,tmpUE,tmpVN,
+     &      .FALSE.,.FALSE.,.TRUE.,1,myThid)
 
        DO bj = myByLo(myThid),myByHi(myThid)
          DO bi = myBxLo(myThid),mybxhi(myThid)
@@ -700,7 +728,7 @@ cdm #endif
        ENDDO
 #endif /* ALLOW_ROTATE_UV_CONTROLS */
 
-      endif !if (ctrlUseGen) then
+      ENDIF !if (ctrlUseGen) then
 #endif
 
       RETURN

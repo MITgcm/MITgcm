@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.27 2017/01/11 03:45:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.28 2017/01/27 17:12:08 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -75,7 +75,6 @@ C     check for consistency
        errCount = errCount + 1
       ENDIF
 
-#ifdef ALLOW_BULKFORMULAE
       IF ( useAtmWind ) THEN
        IF ( ustressfile .NE. ' ' .OR. vstressfile .NE. ' ' ) THEN
         WRITE(msgBuf,'(A)')
@@ -84,7 +83,6 @@ C     check for consistency
         errCount = errCount + 1
        ENDIF
       ENDIF
-#endif
 
       IF ( .NOT.useAtmWind ) THEN
        IF ( uwindfile .NE. ' ' .OR. vwindfile .NE. ' ' ) THEN
@@ -104,7 +102,7 @@ C     check for consistency
         errCount = errCount + 1
        ENDIF
       ENDIF
-#endif
+#endif /* ALLOW_SALTFLX */
 
 #ifndef ALLOW_ZENITHANGLE
       IF ( useExfZenAlbedo .OR. useExfZenIncoming .OR.
@@ -114,7 +112,7 @@ C     check for consistency
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
-#endif
+#endif /* ndef ALLOW_ZENITHANGLE */
 
 #ifdef ALLOW_ZENITHANGLE
       IF ( usingCartesianGrid .OR. usingCylindricalGrid ) THEN
@@ -150,7 +148,7 @@ C     check for consistency
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_ZENITHANGLE */
 
 #ifdef USE_EXF_INTERPOLATION
       IF ( usingCartesianGrid ) THEN
@@ -165,7 +163,6 @@ C     check for consistency
        CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1
       ENDIF
-
 
       CALL EXF_CHECK_INTERP('ustress',ustressfile,ustress_interpMethod,
      &     ustress_nlat,ustress_lon_inc,errCount,myThid)
@@ -185,6 +182,10 @@ C     check for consistency
      &     atemp_nlat,atemp_lon_inc,errCount,myThid)
       CALL EXF_CHECK_INTERP('aqh',aqhfile,aqh_interpMethod,
      &     aqh_nlat,aqh_lon_inc,errCount,myThid)
+      CALL EXF_CHECK_INTERP( 'hs', hs_file, hs_interpMethod,
+     &     hs_nlat, hs_lon_inc, errCount, myThid )
+      CALL EXF_CHECK_INTERP( 'hl', hl_file, hl_interpMethod,
+     &     hl_nlat, hl_lon_inc, errCount, myThid )
       CALL EXF_CHECK_INTERP('evap',evapfile,evap_interpMethod,
      &     evap_nlat,evap_lon_inc,errCount,myThid)
       CALL EXF_CHECK_INTERP('precip',precipfile,precip_interpMethod,
@@ -323,14 +324,14 @@ C-    stop if one expects interp+rotation (Curvilin-G) which will not happen
      &     'ALLOW_CLIMTEMP_RELAXATION no longer supported. Use pkg/rbcs'
       CALL PRINT_ERROR( msgBuf, myThid )
       errCount = errCount + 1
-#endif
+#endif /* ALLOW_CLIMTEMP_RELAXATION */
 
 #ifdef ALLOW_CLIMSALT_RELAXATION
       WRITE(msgBuf,'(A,A)') 'S/R EXF_CHECK: ',
      &     'ALLOW_CLIMSALT_RELAXATION no longer supported. Use pkg/rbcs'
       CALL PRINT_ERROR( msgBuf, myThid )
       errCount = errCount + 1
-#endif
+#endif /* ALLOW_CLIMSALT_RELAXATION */
 
       IF ( climsstTauRelax.NE.0. ) THEN
 #ifndef ALLOW_CLIMSST_RELAXATION
@@ -340,7 +341,7 @@ C-    stop if one expects interp+rotation (Curvilin-G) which will not happen
      &      'S/R EXF_CHECK: but ALLOW_CLIMSST_RELAXATION is not defined'
        CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1
-#endif
+#endif /* ndef ALLOW_CLIMSST_RELAXATION */
        IF ( climsstfile.EQ.' ' ) THEN
         WRITE(msgBuf,'(A)') 'S/R EXF_CHECK: climsstTauRelax > 0 but'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -358,7 +359,7 @@ C-    stop if one expects interp+rotation (Curvilin-G) which will not happen
      &      'S/R EXF_CHECK: but ALLOW_CLIMSSS_RELAXATION is not defined'
        CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1
-#endif
+#endif /* ALLOW_CLIMSSS_RELAXATION */
        IF ( climsssfile.EQ.' ' ) THEN
         WRITE(msgBuf,'(A)') 'S/R EXF_CHECK: climsssTauRelax > 0 but'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -389,9 +390,11 @@ CBOP
 C     !ROUTINE: EXF_CHECK_INTERP
 C     !INTERFACE:
 
-      SUBROUTINE EXF_CHECK_INTERP( 
-     &          loc_name, loc_file, loc_interpMethod,
-     &          loc_nlat, loc_lon_inc, errCount, myThid )
+      SUBROUTINE EXF_CHECK_INTERP(
+     I               loc_name, loc_file,
+     I               loc_interpMethod, loc_nlat, loc_lon_inc,
+     U               errCount,
+     I               myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -409,13 +412,13 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid   :: my Thread Id number
-      INTEGER myThid
-      INTEGER errCount
-      character*(*) loc_name
-      character*(*) loc_file
-      INTEGER loc_nlat
+      CHARACTER*(*) loc_name
+      CHARACTER*(*) loc_file
       INTEGER loc_interpMethod
+      INTEGER loc_nlat
       _RL loc_lon_inc
+      INTEGER errCount
+      INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     msgBuf   :: Informational/error message buffer
@@ -442,5 +445,3 @@ CEOP
 
       RETURN
       END
-
-

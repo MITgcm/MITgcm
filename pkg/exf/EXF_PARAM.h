@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.39 2017/01/11 03:45:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.40 2017/01/27 17:12:08 jmc Exp $
 C $Name:  $
 C
 C     ==================================================================
@@ -132,6 +132,24 @@ C           fieldperiod=-12 means input file contains 12 monthly means
       _RL     aqh_exfremo_intercept
       _RL     aqh_exfremo_slope
       character*1 aqhmask
+
+      integer hs_startdate1
+      integer hs_startdate2
+      _RL     hs_startdate
+      _RL     hs_period
+      _RL     hs_const
+      _RL     hs_exfremo_intercept
+      _RL     hs_exfremo_slope
+      character*1 hs_mask
+
+      integer hl_startdate1
+      integer hl_startdate2
+      _RL     hl_startdate
+      _RL     hl_period
+      _RL     hl_const
+      _RL     hl_exfremo_intercept
+      _RL     hl_exfremo_slope
+      character*1 hl_mask
 
       integer sfluxstartdate1
       integer sfluxstartdate2
@@ -375,6 +393,8 @@ c     File names.
       character*(128) hfluxfile
       character*(128) atempfile
       character*(128) aqhfile
+      character*(128) hs_file
+      character*(128) hl_file
       character*(128) evapfile
       character*(128) precipfile
       character*(128) snowprecipfile
@@ -413,6 +433,8 @@ c     File names.
      &       hfluxstartdate1,   hfluxstartdate2,
      &       atempstartdate1,   atempstartdate2,
      &       aqhstartdate1,     aqhstartdate2,
+     &       hs_startdate1,     hs_startdate2,
+     &       hl_startdate1,     hl_startdate2,
      &       sfluxstartdate1,   sfluxstartdate2,
      &       evapstartdate1,    evapstartdate2,
      &       runoffstartdate1,  runoffstartdate2,
@@ -445,6 +467,8 @@ c     File names.
      &       hfluxperiod,       hfluxstartdate,
      &       atempperiod,       atempstartdate,
      &       aqhperiod,         aqhstartdate,
+     &       hs_period,         hs_startdate,
+     &       hl_period,         hl_startdate,
      &       sfluxperiod,       sfluxstartdate,
      &       evapperiod,        evapstartdate,
      &       precipperiod,      precipstartdate,
@@ -473,6 +497,7 @@ c     File names.
      &       hfluxconst,
      &       atempconst,
      &       aqhconst,
+     &       hs_const, hl_const,
      &       sfluxconst,
      &       evapconst,
      &       precipconst,
@@ -497,6 +522,8 @@ c     File names.
      &       hflux_exfremo_intercept,
      &       atemp_exfremo_intercept,
      &       aqh_exfremo_intercept,
+     &       hs_exfremo_intercept,
+     &       hl_exfremo_intercept,
      &       sflux_exfremo_intercept,
      &       evap_exfremo_intercept,
      &       precip_exfremo_intercept,
@@ -518,6 +545,8 @@ c     File names.
      &       hflux_exfremo_slope,
      &       atemp_exfremo_slope,
      &       aqh_exfremo_slope,
+     &       hs_exfremo_slope,
+     &       hl_exfremo_slope,
      &       sflux_exfremo_slope,
      &       evap_exfremo_slope,
      &       precip_exfremo_slope,
@@ -541,6 +570,8 @@ c     File names.
      &       hfluxfile,     hfluxmask,
      &       atempfile,     atempmask,
      &       aqhfile,       aqhmask,
+     &       hs_file,       hs_mask,
+     &       hl_file,       hl_mask,
      &       sfluxfile,     sfluxmask,
      &       evapfile,      evapmask,
      &       precipfile,    precipmask,
@@ -616,9 +647,10 @@ c     exf_outscale_*    output scaling factors
       _RL     exf_inscal_snowprecip
       _RL     exf_inscal_sst
       _RL     exf_inscal_sss
-      _RL     exf_inscal_atemp
-      _RL     exf_offset_atemp
+      _RL     exf_inscal_atemp, exf_offset_atemp
       _RL     exf_inscal_aqh
+      _RL     exf_inscal_hs
+      _RL     exf_inscal_hl
       _RL     exf_inscal_evap
       _RL     exf_inscal_apressure
       _RL     exf_inscal_runoff
@@ -643,39 +675,40 @@ c     exf_outscale_*    output scaling factors
       _RL     exf_outscal_areamask
 
       COMMON /EXF_PARAM_SCAL/
-     &                      exf_inscal_hflux
-     &                    , exf_inscal_sflux
-     &                    , exf_inscal_ustress
-     &                    , exf_inscal_vstress
-     &                    , exf_inscal_uwind
-     &                    , exf_inscal_vwind
-     &                    , exf_inscal_wspeed
-     &                    , exf_inscal_swflux
-     &                    , exf_inscal_lwflux
-     &                    , exf_inscal_precip
-     &                    , exf_inscal_snowprecip
-     &                    , exf_inscal_sst
-     &                    , exf_inscal_sss
-     &                    , exf_inscal_atemp
-     &                    , exf_offset_atemp
-     &                    , exf_inscal_aqh
-     &                    , exf_inscal_evap
-     &                    , exf_inscal_apressure
-     &                    , exf_inscal_runoff
-     &                    , exf_inscal_runoftemp
-     &                    , exf_inscal_saltflx
-     &                    , exf_inscal_swdown
-     &                    , exf_inscal_lwdown
-     &                    , exf_inscal_areamask
-     &                    , exf_outscal_hflux
-     &                    , exf_outscal_sflux
-     &                    , exf_outscal_ustress
-     &                    , exf_outscal_vstress
-     &                    , exf_outscal_swflux
-     &                    , exf_outscal_sst
-     &                    , exf_outscal_sss
-     &                    , exf_outscal_apressure
-     &                    , exf_outscal_areamask
+     &                      exf_inscal_hflux,
+     &                      exf_inscal_sflux,
+     &                      exf_inscal_ustress,
+     &                      exf_inscal_vstress,
+     &                      exf_inscal_uwind,
+     &                      exf_inscal_vwind,
+     &                      exf_inscal_wspeed,
+     &                      exf_inscal_swflux,
+     &                      exf_inscal_lwflux,
+     &                      exf_inscal_precip,
+     &                      exf_inscal_snowprecip,
+     &                      exf_inscal_sst,
+     &                      exf_inscal_sss,
+     &                      exf_inscal_atemp, exf_offset_atemp,
+     &                      exf_inscal_aqh,
+     &                      exf_inscal_hs,
+     &                      exf_inscal_hl,
+     &                      exf_inscal_evap,
+     &                      exf_inscal_apressure,
+     &                      exf_inscal_runoff,
+     &                      exf_inscal_runoftemp,
+     &                      exf_inscal_saltflx,
+     &                      exf_inscal_swdown,
+     &                      exf_inscal_lwdown,
+     &                      exf_inscal_areamask,
+     &                      exf_outscal_hflux,
+     &                      exf_outscal_sflux,
+     &                      exf_outscal_ustress,
+     &                      exf_outscal_vstress,
+     &                      exf_outscal_swflux,
+     &                      exf_outscal_sst,
+     &                      exf_outscal_sss,
+     &                      exf_outscal_apressure,
+     &                      exf_outscal_areamask
 
 #ifndef USE_EXF_INTERPOLATION
 c-- set dummy dimension 1
@@ -738,6 +771,12 @@ C    uvInterp_climstr   :: interpolate clim stress u & v components together
       _RL aqh_lon0, aqh_lon_inc
       _RL aqh_lat0, aqh_lat_inc(MAX_LAT_INC)
       INTEGER aqh_nlon, aqh_nlat, aqh_interpMethod
+      _RL hs_lon0, hs_lon_inc
+      _RL hs_lat0, hs_lat_inc(MAX_LAT_INC)
+      INTEGER hs_nlon, hs_nlat, hs_interpMethod
+      _RL hl_lon0, hl_lon_inc
+      _RL hl_lat0, hl_lat_inc(MAX_LAT_INC)
+      INTEGER hl_nlon, hl_nlat, hl_interpMethod
       _RL evap_lon0, evap_lon_inc
       _RL evap_lat0, evap_lat_inc(MAX_LAT_INC)
       INTEGER evap_nlon, evap_nlat, evap_interpMethod
@@ -799,6 +838,10 @@ C    uvInterp_climstr   :: interpolate clim stress u & v components together
      & atemp_lat0, atemp_lat_inc,
      & aqh_lon0, aqh_lon_inc,
      & aqh_lat0, aqh_lat_inc,
+     & hs_lon0, hs_lon_inc,
+     & hs_lat0, hs_lat_inc,
+     & hl_lon0, hl_lon_inc,
+     & hl_lat0, hl_lat_inc,
      & evap_lon0, evap_lon_inc,
      & evap_lat0, evap_lat_inc,
      & precip_lon0, precip_lon_inc,
@@ -832,6 +875,8 @@ C    uvInterp_climstr   :: interpolate clim stress u & v components together
      & saltflx_nlon, saltflx_nlat, saltflx_interpMethod,
      & atemp_nlon, atemp_nlat, atemp_interpMethod,
      & aqh_nlon, aqh_nlat, aqh_interpMethod,
+     & hs_nlon, hs_nlat, hs_interpMethod,
+     & hl_nlon, hl_nlat, hl_interpMethod,
      & evap_nlon, evap_nlat, evap_interpMethod,
      & precip_nlon, precip_nlat, precip_interpMethod,
      & snowprecip_nlon, snowprecip_nlat, snowprecip_interpMethod,

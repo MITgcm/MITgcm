@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.87 2017/01/11 03:45:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.88 2017/01/27 17:12:08 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -95,17 +95,20 @@ C     Surface flux data.
 
       NAMELIST /EXF_NML_02/
      &          hfluxfile,          atempfile,       aqhfile,
-     &          sfluxfile,         precipfile,    runofffile,
-     &                          runoftempfile,   saltflxfile,
-     &        ustressfile,        vstressfile,      evapfile,
-     &     snowprecipfile,          uwindfile,     vwindfile,
-     &         wspeedfile,         swfluxfile,    lwfluxfile,
-     &      apressurefile,         swdownfile,    lwdownfile,
-     &       areamaskfile,        climsstfile,   climsssfile,
-     &                           climustrfile,  climvstrfile,
+     &                                hs_file,       hl_file,
+     &          sfluxfile,           evapfile,    precipfile,
+     &     snowprecipfile,         runofffile, runoftempfile,
+     &        saltflxfile,        ustressfile,   vstressfile,
+     &          uwindfile,          vwindfile,    wspeedfile,
+     &         swfluxfile,         lwfluxfile,    swdownfile,
+     &         lwdownfile,      apressurefile,  areamaskfile,
+     &        climsstfile,        climsssfile,
+     &       climustrfile,       climvstrfile,
      &    hfluxstartdate1,    hfluxstartdate2,   hfluxperiod,
      &    atempstartdate1,    atempstartdate2,   atempperiod,
      &      aqhstartdate1,      aqhstartdate2,     aqhperiod,
+     &      hs_startdate1,      hs_startdate2,     hs_period,
+     &      hl_startdate1,      hl_startdate2,     hl_period,
      &    sfluxstartdate1,    sfluxstartdate2,   sfluxperiod,
      &     evapstartdate1,     evapstartdate2,    evapperiod,
      &   precipstartdate1,   precipstartdate2,  precipperiod,
@@ -131,10 +134,11 @@ C     Surface flux data.
      &   climustrTauRelax,climvstrTauRelax
 
       NAMELIST /EXF_NML_03/
-     &   exf_inscal_hflux,  exf_inscal_sflux,      exf_inscal_evap,
+     &   exf_inscal_hflux,  exf_inscal_sflux,    exf_inscal_evap,
      & exf_inscal_ustress,  exf_inscal_vstress,
      &   exf_inscal_uwind,  exf_inscal_vwind,    exf_inscal_wspeed,
-     &   exf_inscal_atemp,  exf_offset_atemp,       exf_inscal_aqh,
+     &   exf_inscal_atemp,  exf_offset_atemp,
+     &   exf_inscal_aqh,    exf_inscal_hs,       exf_inscal_hl,
      &     exf_inscal_sst,  exf_inscal_sss,
      &  exf_inscal_swflux,  exf_inscal_lwflux,   exf_inscal_precip,
      &  exf_inscal_runoff,  exf_inscal_apressure, exf_inscal_snowprecip,
@@ -146,9 +150,9 @@ C     Surface flux data.
      & exf_outscal_swflux,  exf_outscal_sst,     exf_outscal_sss,
      &  exf_outscal_sflux,  exf_outscal_apressure,
      & exf_inscal_areamask, exf_outscal_areamask,
-     &  hfluxconst, atempconst, aqhconst, sfluxconst, evapconst,
-     &  precipconst, snowprecipconst, runoffconst, ustressconst,
-     &  runoftempconst, saltflxconst,
+     &  hfluxconst, atempconst, aqhconst, hs_const, hl_const,
+     &  sfluxconst, evapconst, precipconst, snowprecipconst,
+     &  runoffconst, runoftempconst, saltflxconst, ustressconst,
      &  vstressconst, uwindconst, vwindconst, wspeedconst, swfluxconst,
      &  lwfluxconst, swdownconst, lwdownconst, apressureconst,
      &  areamaskconst, climsstconst,   climsssconst,
@@ -156,6 +160,8 @@ C     Surface flux data.
      &     hflux_exfremo_intercept, hflux_exfremo_slope,
      &     atemp_exfremo_intercept, atemp_exfremo_slope,
      &     aqh_exfremo_intercept, aqh_exfremo_slope,
+     &     hs_exfremo_intercept,  hs_exfremo_slope,
+     &     hl_exfremo_intercept,  hl_exfremo_slope,
      &     sflux_exfremo_intercept, sflux_exfremo_slope,
      &     evap_exfremo_intercept, evap_exfremo_slope,
      &     precip_exfremo_intercept, precip_exfremo_slope,
@@ -195,8 +201,12 @@ C     Surface flux data.
      & lwflux_nlon, lwflux_nlat, lwflux_interpMethod,
      & atemp_lon0, atemp_lon_inc, atemp_lat0, atemp_lat_inc,
      & atemp_nlon, atemp_nlat, atemp_interpMethod,
-     & aqh_lon0, aqh_lon_inc, aqh_lat0,aqh_lat_inc,
+     & aqh_lon0, aqh_lon_inc, aqh_lat0, aqh_lat_inc,
      & aqh_nlon, aqh_nlat, aqh_interpMethod,
+     & hs_lon0, hs_lon_inc, hs_lat0, hs_lat_inc,
+     & hs_nlon, hs_nlat, hs_interpMethod,
+     & hl_lon0, hl_lon_inc, hl_lat0, hl_lat_inc,
+     & hl_nlon, hl_nlat, hl_interpMethod,
      & evap_lon0, evap_lon_inc, evap_lat0, evap_lat_inc,
      & evap_nlon, evap_nlat, evap_interpMethod,
      & precip_lon0, precip_lon_inc, precip_lat0, precip_lat_inc,
@@ -353,7 +363,21 @@ C     Calendar data.
       aqhperiod          = 0.0 _d 0
       aqhconst           = 0.0 _d 0
       aqh_exfremo_intercept = 0.0 _d 0
-      aqh_exfremo_slope = 0.0 _d 0
+      aqh_exfremo_slope  = 0.0 _d 0
+
+      hs_startdate1      = 0
+      hs_startdate2      = 0
+      hs_period          = 0.0 _d 0
+      hs_const           = 0.0 _d 0
+      hs_exfremo_intercept = 0.0 _d 0
+      hs_exfremo_slope   = 0.0 _d 0
+
+      hl_startdate1      = 0
+      hl_startdate2      = 0
+      hl_period          = 0.0 _d 0
+      hl_const           = 0.0 _d 0
+      hl_exfremo_intercept = 0.0 _d 0
+      hl_exfremo_slope   = 0.0 _d 0
 
       sfluxstartdate1    = 0
       sfluxstartdate2    = 0
@@ -550,6 +574,8 @@ C     Data files.
       hfluxfile          = ' '
       atempfile          = ' '
       aqhfile            = ' '
+      hs_file            = ' '
+      hl_file            = ' '
       evapfile           = ' '
       precipfile         = ' '
       snowprecipfile     = ' '
@@ -577,6 +603,8 @@ C     Start dates.
       hfluxstartdate     = 0.
       atempstartdate     = 0.
       aqhstartdate       = 0.
+      hs_startdate       = 0.
+      hl_startdate       = 0.
       evapstartdate      = 0.
       precipstartdate    = 0.
       snowprecipstartdate= 0.
@@ -631,6 +659,8 @@ C     Input scaling factors.
       exf_inscal_atemp     =  1. _d 0
       exf_offset_atemp     =  0. _d 0
       exf_inscal_aqh       =  1. _d 0
+      exf_inscal_hs        =  1. _d 0
+      exf_inscal_hl        =  1. _d 0
       exf_inscal_evap      =  1. _d 0
       exf_inscal_apressure =  1. _d 0
       exf_inscal_runoff    =  1. _d 0
@@ -673,6 +703,8 @@ C     model grid cell-center position (leading to trivial interpolation)
       saltflx_lon0   = inp_lon0
       atemp_lon0     = inp_lon0
       aqh_lon0       = inp_lon0
+      hs_lon0        = inp_lon0
+      hl_lon0        = inp_lon0
       evap_lon0      = inp_lon0
       precip_lon0    = inp_lon0
       snowprecip_lon0= inp_lon0
@@ -694,6 +726,8 @@ C     model grid cell-center position (leading to trivial interpolation)
       swflux_lat0    = inp_lat0
       atemp_lat0     = inp_lat0
       aqh_lat0       = inp_lat0
+      hs_lat0        = inp_lat0
+      hl_lat0        = inp_lat0
       evap_lat0      = inp_lat0
       precip_lat0    = inp_lat0
       snowprecip_lat0= inp_lat0
@@ -721,6 +755,10 @@ C     model grid cell-center position (leading to trivial interpolation)
       atemp_nlat     = gridNy
       aqh_nlon       = gridNx
       aqh_nlat       = gridNy
+      hs_nlon        = gridNx
+      hs_nlat        = gridNy
+      hl_nlon        = gridNx
+      hl_nlat        = gridNy
       evap_nlon      = gridNx
       evap_nlat      = gridNy
       precip_nlon    = gridNx
@@ -752,6 +790,8 @@ C     model grid cell-center position (leading to trivial interpolation)
       saltflx_lon_inc   = inp_dLon
       atemp_lon_inc     = inp_dLon
       aqh_lon_inc       = inp_dLon
+      hs_lon_inc        = inp_dLon
+      hl_lon_inc        = inp_dLon
       evap_lon_inc      = inp_dLon
       precip_lon_inc    = inp_dLon
       snowprecip_lon_inc= inp_dLon
@@ -800,6 +840,8 @@ C     model grid cell-center position (leading to trivial interpolation)
         saltflx_lat_inc(j)   = inp_dLat
         atemp_lat_inc(j)     = inp_dLat
         aqh_lat_inc(j)       = inp_dLat
+        hs_lat_inc(j)        = inp_dLat
+        hl_lat_inc(j)        = inp_dLat
         evap_lat_inc(j)      = inp_dLat
         precip_lat_inc(j)    = inp_dLat
         snowprecip_lat_inc(j)= inp_dLat
@@ -826,6 +868,8 @@ C     model grid cell-center position (leading to trivial interpolation)
       saltflx_interpMethod   =  1
       atemp_interpMethod     =  1
       aqh_interpMethod       =  1
+      hs_interpMethod        =  1
+      hl_interpMethod        =  1
       evap_interpMethod      =  1
       precip_interpMethod    =  1
       snowprecip_interpMethod=  1
