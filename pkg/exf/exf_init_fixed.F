@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.30 2017/01/11 03:45:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.31 2017/01/27 17:14:28 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -49,6 +49,8 @@ C     ' ' = no masking; 'c' = centered mask; 'w' = western mask; 's' = southern
       sfluxmask    = 'c'
       atempmask    = 'c'
       aqhmask      = 'c'
+      hs_mask      = 'c'
+      hl_mask      = 'c'
       evapmask     = 'c'
       precipmask   = 'c'
       snowprecipmask='c'
@@ -82,6 +84,8 @@ C     but keep it for fields that might involve calculation using SST on land
        sfluxmask    = ' '
 c      atempmask    = ' '
 c      aqhmask      = ' '
+c      hs_mask      = ' '
+c      hl_mask      = ' '
 c      evapmask     = ' '
 c      precipmask   = ' '
 c      snowprecipmask=' '
@@ -112,24 +116,24 @@ C     beginning of the model integration or, if useYearlyFields,
 C     from the beginning of the year.
 
       IF ( useAtmWind ) THEN
-      IF ( uwindfile .NE. ' ' .AND. uwindperiod .GT. 0. ) THEN
+       IF ( uwindfile .NE. ' ' .AND. uwindperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START uwind',myThid)
+        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START uwind',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          uwindstartdate1, uwindstartdate2,
-     O                          uwindstartdate,
-     I                          myThid )
-      ENDIF
-      IF ( vwindfile .NE. ' ' .AND. vwindperiod .GT. 0. ) THEN
+        CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                           uwindstartdate1, uwindstartdate2,
+     O                           uwindstartdate,
+     I                           myThid )
+       ENDIF
+       IF ( vwindfile .NE. ' ' .AND. vwindperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START vwind',myThid)
+        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START vwind',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          vwindstartdate1, vwindstartdate2,
-     O                          vwindstartdate,
-     I                          myThid )
-      ENDIF
+        CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                           vwindstartdate1, vwindstartdate2,
+     O                           vwindstartdate,
+     I                           myThid )
+       ENDIF
       ENDIF
 
       IF ( wspeedfile .NE. ' ' .AND. wspeedperiod .GT. 0. ) THEN
@@ -143,25 +147,56 @@ C     from the beginning of the year.
       ENDIF
 
       IF ( .NOT.useAtmWind ) THEN
-      IF ( ustressfile .NE. ' ' .AND. ustressperiod .GT. 0. ) THEN
+       IF ( ustressfile .NE. ' ' .AND. ustressperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START ustress',myThid)
+        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START ustress',myThid)
+# endif
+        CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                           ustressstartdate1, ustressstartdate2,
+     O                           ustressstartdate,
+     I                           myThid )
+       ENDIF
+       IF ( vstressfile .NE. ' ' .AND. vstressperiod .GT. 0. ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START vstress',myThid)
+# endif
+        CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                           vstressstartdate1, vstressstartdate2,
+     O                           vstressstartdate,
+     I                           myThid )
+       ENDIF
+      ENDIF
+
+      IF ( hfluxfile .NE. ' ' .AND. hfluxperiod .GT. 0. ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START hflux',myThid)
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          ustressstartdate1, ustressstartdate2,
-     O                          ustressstartdate,
+     I                          hfluxstartdate1, hfluxstartdate2,
+     O                          hfluxstartdate,
      I                          myThid )
       ENDIF
-      IF ( vstressfile .NE. ' ' .AND. vstressperiod .GT. 0. ) THEN
+      IF ( sfluxfile .NE. ' ' .AND. sfluxperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START vstress',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START sflux',myThid)
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          vstressstartdate1, vstressstartdate2,
-     O                          vstressstartdate,
+     I                          sfluxstartdate1, sfluxstartdate2,
+     O                          sfluxstartdate,
      I                          myThid )
       ENDIF
+
+#if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
+      IF ( swfluxfile .NE. ' ' .AND. swfluxperiod .GT. 0. ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START swflux',myThid)
+# endif
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          swfluxstartdate1, swfluxstartdate2,
+     O                          swfluxstartdate,
+     I                          myThid )
       ENDIF
+#endif /* defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING) */
 
 #ifdef ALLOW_ATM_TEMP
       IF ( atempfile .NE. ' ' .AND. atempperiod .GT. 0. ) THEN
@@ -182,6 +217,26 @@ C     from the beginning of the year.
      O                          aqhstartdate,
      I                          myThid )
       ENDIF
+# ifdef ALLOW_READ_TURBFLUXES
+      IF ( hs_file .NE. ' ' .AND. hs_period .GT. 0. ) THEN
+#  ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START hs ',myThid)
+#  endif
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          hs_startdate1, hs_startdate2,
+     O                          hs_startdate,
+     I                          myThid )
+      ENDIF
+      IF ( hl_file .NE. ' ' .AND. hl_period .GT. 0. ) THEN
+#  ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START hs ',myThid)
+#  endif
+       CALL EXF_GETFIELD_START( useExfYearlyFields,
+     I                          hl_startdate1, hl_startdate2,
+     O                          hl_startdate,
+     I                          myThid )
+      ENDIF
+# endif /* ALLOW_READ_TURBFLUXES */
       IF ( lwfluxfile .NE. ' ' .AND. lwfluxperiod .GT. 0. ) THEN
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START lwflux',myThid)
@@ -210,38 +265,7 @@ C     from the beginning of the year.
      O                   snowprecipstartdate,
      I                          myThid )
       ENDIF
-#else /* ifndef ALLOW_ATM_TEMP */
-      IF ( hfluxfile .NE. ' ' .AND. hfluxperiod .GT. 0. ) THEN
-# ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START hflux',myThid)
-# endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          hfluxstartdate1, hfluxstartdate2,
-     O                          hfluxstartdate,
-     I                          myThid )
-      ENDIF
-      IF ( sfluxfile .NE. ' ' .AND. sfluxperiod .GT. 0. ) THEN
-# ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START sflux',myThid)
-# endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          sfluxstartdate1, sfluxstartdate2,
-     O                          sfluxstartdate,
-     I                          myThid )
-      ENDIF
 #endif /* ALLOW_ATM_TEMP */
-
-#if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
-      IF ( swfluxfile .NE. ' ' .AND. swfluxperiod .GT. 0. ) THEN
-# ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START swflux',myThid)
-# endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          swfluxstartdate1, swfluxstartdate2,
-     O                          swfluxstartdate,
-     I                          myThid )
-      ENDIF
-#endif /* defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING) */
 
 #ifdef EXF_READ_EVAP
       IF ( evapfile .NE. ' ' .AND. evapperiod .GT. 0. ) THEN
