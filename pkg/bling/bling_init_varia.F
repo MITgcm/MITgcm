@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_init_varia.F,v 1.4 2017/01/20 00:31:49 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_init_varia.F,v 1.5 2017/01/27 23:11:31 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -55,6 +55,11 @@ C--   Initialise global variables
           alpha_photo2d(i,j,bi,bj) = alpha_photo
           k_Fe2d(i,j,bi,bj)        = k_Fe
           k_Fe_diaz2d(i,j,bi,bj)   = k_Fe_diaz
+          gamma_POM2d(i,j,bi,bj)   = gamma_POM
+          wsink0_2d(i,j,bi,bj)     = wsink0 
+          phi_DOM2d(i,j,bi,bj)     = phi_DOM
+          phi_sm2d(i,j,bi,bj)      = phi_sm
+          phi_lg2d(i,j,bi,bj)      = phi_lg
          ENDDO
         ENDDO
        ENDDO
@@ -84,6 +89,31 @@ C Read in 2d bio related variables
            CALL READ_FLD_XY_RL( bling_k_Fe_diaz2dFile, ' ',
      &                          k_Fe_diaz2d, 0, myThid )
         _EXCH_XY_RL(k_Fe_diaz2d,myThid)
+        ENDIF
+        IF ( bling_gamma_POM2dFile .NE. ' ' ) THEN
+           CALL READ_FLD_XY_RL( bling_gamma_POM2dFile, ' ',
+     &                          gamma_POM2d, 0, myThid )
+        _EXCH_XY_RL(gamma_POM2d,myThid)
+        ENDIF
+        IF ( bling_wsink0_2dFile .NE. ' ' ) THEN
+           CALL READ_FLD_XY_RL( bling_wsink0_2dFile, ' ',
+     &                          wsink0_2d, 0, myThid )
+        _EXCH_XY_RL(wsink0_2d,myThid)
+        ENDIF
+        IF ( bling_phi_DOM2dFile .NE. ' ' ) THEN
+           CALL READ_FLD_XY_RL( bling_phi_DOM2dFile, ' ',
+     &                          phi_DOM2d, 0, myThid )
+        _EXCH_XY_RL(phi_DOM2d,myThid)
+        ENDIF
+        IF ( bling_phi_sm2dFile .NE. ' ' ) THEN
+           CALL READ_FLD_XY_RL( bling_phi_sm2dFile, ' ',
+     &                          phi_sm2d, 0, myThid )
+        _EXCH_XY_RL(phi_sm2d,myThid)
+        ENDIF
+        IF ( bling_phi_lg2dFile .NE. ' ' ) THEN
+           CALL READ_FLD_XY_RL( bling_phi_lg2dFile, ' ',
+     &                          phi_lg2d, 0, myThid )
+        _EXCH_XY_RL(phi_lg2d,myThid)
         ENDIF
 
 C     Now read phyto plankton abundance ICs and exchange

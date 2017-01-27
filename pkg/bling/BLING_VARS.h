@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_VARS.h,v 1.5 2017/01/20 00:31:49 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_VARS.h,v 1.6 2017/01/27 23:11:31 mmazloff Exp $
 C $Name:  $
 
 
@@ -108,8 +108,10 @@ C ==========================================================
      &        bling_pCO2, 
      &        river_conc_trac,
      &        bling_Pc_2dFile, bling_Pc_2d_diazFile,
-     &        bling_alpha_photo2dFile,
-     &        bling_k_Fe2dFile, bling_k_Fe_diaz2dFile
+     &        bling_alpha_photo2dFile,bling_phi_DOM2dFile,
+     &        bling_k_Fe2dFile, bling_k_Fe_diaz2dFile,
+     &        bling_gamma_POM2dFile, bling_wsink0_2dFile,
+     &        bling_phi_lg2dFile, bling_phi_sm2dFile
 #ifdef USE_EXFCO2
      &       ,apco2startdate1,apco2startdate2,
      &        apco2period,      apco2startdate,
@@ -146,6 +148,11 @@ C      apco2               :: Atmospheric pCO2 to be read in with exf pkg
       CHARACTER*(MAX_LEN_FNAM) bling_alpha_photo2dFile
       CHARACTER*(MAX_LEN_FNAM) bling_k_Fe2dFile
       CHARACTER*(MAX_LEN_FNAM) bling_k_Fe_diaz2dFile
+      CHARACTER*(MAX_LEN_FNAM) bling_gamma_POM2dFile
+      CHARACTER*(MAX_LEN_FNAM) bling_wsink0_2dFile
+      CHARACTER*(MAX_LEN_FNAM) bling_phi_DOM2dFile
+      CHARACTER*(MAX_LEN_FNAM) bling_phi_lg2dFile
+      CHARACTER*(MAX_LEN_FNAM) bling_phi_sm2dFile
 #ifdef USE_EXFCO2
       CHARACTER*(MAX_LEN_FNAM) apco2file
 #endif
@@ -216,6 +223,7 @@ C ==========================================================
      &                     gamma_DON,
      &                     gamma_DOP,
      &                     gamma_POM,
+     &                     gamma_POM2d,
      &                     k_Fe,
      &                     k_Fe_diaz,
      &                     k_Fe2d,
@@ -246,10 +254,14 @@ C ==========================================================
      &                     phi_DOM,
      &                     phi_sm,
      &                     phi_lg,
+     &                     phi_DOM2d,
+     &                     phi_sm2d,
+     &                     phi_lg2d,
      &                     phi_dvm,
      &                     sigma_dvm,
      &                     wsink0z,
      &                     wsink0,
+     &                     wsink0_2d,
      &                     wsinkacc,
      &                     parfrac,
      &                     alpfe,
@@ -270,6 +282,11 @@ C ==========================================================
       _RL alpha_photo2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL k_Fe2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL k_Fe_diaz2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL wsink0_2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gamma_POM2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL phi_DOM2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL phi_sm2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL phi_lg2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL pivotal
       _RL Pc_0
       _RL Pc_0_diaz

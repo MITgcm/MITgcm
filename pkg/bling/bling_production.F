@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.9 2017/01/20 00:31:49 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.10 2017/01/27 23:11:31 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -522,7 +522,7 @@ c  update tracer here
 c  update fractional abundance
          phyto_lg(i,j,k,bi,bj) = Phy_lg_local(i,j,k)/PTR_PHY(i,j,k)
          phyto_sm(i,j,k,bi,bj) = Phy_sm_local(i,j,k)/PTR_PHY(i,j,k)
-         phyto_diaz(i,j,k,bi,bj)  = Phy_diaz_local(i,j,k)/PTR_PHY(i,j,k) 
+         phyto_diaz(i,j,k,bi,bj)  = Phy_diaz_local(i,j,k)/PTR_PHY(i,j,k)
 #else
 c  update biomass
          phyto_lg(i,j,k,bi,bj) = Phy_lg_local(i,j,k)
@@ -590,7 +590,7 @@ c   phytoplankton, which gave a reasonably good fit to the global
 c   observational synthesis of Dunne (2009). This is consistent
 c   with the findings of Jin et al. (GBC,2006). 
 
-          CaCO3_uptake(i,j,k) = Phy_sm_local(i,j,k) * phi_sm 
+          CaCO3_uptake(i,j,k) =Phy_sm_local(i,j,k) * phi_sm2d(i,j,bi,bj)
      &                          * expkT(i,j,k) * mu(i,j,k) * CatoN
      
 c ---------------------------------------------------------------------
@@ -614,8 +614,8 @@ c  iron pool).
   
 c  sinking fraction: particulate organic matter 
 
-          frac_exp = (phi_sm + phi_lg * (mu(i,j,k)/
-     &           (epsln + lambda_0*expkT(i,j,k)))**2.)/  
+          frac_exp = (phi_sm2d(i,j,bi,bj) + phi_lg2d(i,j,bi,bj) * 
+     &           (mu(i,j,k)/(epsln + lambda_0*expkT(i,j,k)))**2.)/  
      &           (1. + (mu(i,j,k)/(epsln + lambda_0*expkT(i,j,k)))**2.)*
      &           exp(kappa_remin * theta(i,j,k,bi,bj))
 
@@ -640,11 +640,11 @@ c  sinking fraction: particulate organic matter
 c  the remainder is divided between instantaneously recycled and
 c  long-lived dissolved organic matter. 
     
-          DON_prod(i,j,k) = phi_DOM*(N_uptake(i,j,k) 
+          DON_prod(i,j,k) = phi_DOM2d(i,j,bi,bj)*(N_uptake(i,j,k) 
      &                      + N_fix(i,j,k) - N_spm(i,j,k) 
      &                      - N_dvm(i,j,k))
 
-          DOP_prod(i,j,k) = phi_DOM*(P_uptake(i,j,k) 
+          DOP_prod(i,j,k) = phi_DOM2d(i,j,bi,bj)*(P_uptake(i,j,k) 
      &                      - P_spm(i,j,k) - P_dvm(i,j,k))
                   
           N_recycle(i,j,k) = N_uptake(i,j,k) + N_fix(i,j,k)
@@ -727,9 +727,10 @@ c  If anoxic
           IF (PTR_O2(i,j,k) .lt. oxic_min) THEN 
            IF (PTR_NO3(i,j,k) .gt. oxic_min) THEN
             N_den_pelag(i,j,k) = max(epsln, (NO3toN *        
-     &                    ((1. _d 0 - phi_DOM) * (N_reminp(i,j,k) 
-     &                    + N_remindvm(i,j,k)) + DON_remin(i,j,k) + 
-     &                    N_recycle(i,j,k))) - N_den_benthic(i,j,k)) 
+     &                    ((1. _d 0 - phi_DOM2d(i,j,bi,bj)) * 
+     &                    (N_reminp(i,j,k)   +
+     &                     N_remindvm(i,j,k)) + DON_remin(i,j,k) + 
+     &                     N_recycle(i,j,k))) - N_den_benthic(i,j,k)) 
            ENDIF
           ENDIF
           
@@ -747,7 +748,8 @@ c  Sum of fast recycling, decay of sinking POM, and decay of DOM,
 c  less uptake, (less denitrification).
 
           G_PO4(i,j,k) = -P_uptake(i,j,k) + P_recycle(i,j,k) 
-     &                   + (1. _d 0 - phi_DOM) * (P_reminp(i,j,k) 
+     &                   + (1. _d 0 - phi_DOM2d(i,j,bi,bj)) 
+     &                   * (P_reminp(i,j,k) 
      &                   + P_remindvm(i,j,k)) + DOP_remin(i,j,k)
           
           G_NO3(i,j,k) = -N_uptake(i,j,k) 
@@ -758,8 +760,9 @@ c  Anoxic
           ELSE
 c  Oxic
            G_NO3(i,j,k) = G_NO3(i,j,k) 
-     &                   + N_recycle(i,j,k) + (1. _d 0 - phi_DOM) * 
-     &                   (N_reminp(i,j,k) + N_remindvm(i,j,k))
+     &                   + N_recycle(i,j,k) 
+     &                   + (1. _d 0 - phi_DOM2d(i,j,bi,bj)) 
+     &                   * (N_reminp(i,j,k) + N_remindvm(i,j,k))
      &                   + DON_remin(i,j,k)
           ENDIF    
 
@@ -773,11 +776,11 @@ c  Fe_reminsum
 c  Dissolved Organic Matter
 c  A fraction of POM remineralization goes into dissolved pools.
 
-          G_DON(i,j,k) = DON_prod(i,j,k) + phi_DOM * 
-     &                   (N_reminp(i,j,k) + N_remindvm(i,j,k)) 
+          G_DON(i,j,k) = DON_prod(i,j,k) + phi_DOM2d(i,j,bi,bj) 
+     &                   * (N_reminp(i,j,k) + N_remindvm(i,j,k)) 
      &                   - DON_remin(i,j,k)
 
-          G_DOP(i,j,k) = DOP_prod(i,j,k) + phi_DOM * 
+          G_DOP(i,j,k) = DOP_prod(i,j,k) + phi_DOM2d(i,j,bi,bj) * 
      &                   (P_reminp(i,j,k) + P_remindvm(i,j,k)) 
      &                   - DOP_remin(i,j,k)
 
@@ -794,15 +797,15 @@ c  denitrification NO3 utilization rate from the overall oxygen consumption.
 c  If oxic
           IF (PTR_O2(i,j,k) .gt. oxic_min) THEN 
           G_O2(i,j,k) = G_O2(i,j,k) 
-     &                  -O2toN * ((1. _d 0 - phi_DOM) * 
-     &                  (N_reminp(i,j,k) + N_remindvm(i,j,k))           
+     &                  -O2toN * ((1. _d 0 - phi_DOM2d(i,j,bi,bj)) 
+     &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))       
      &                  + DON_remin(i,j,k) +  N_recycle(i,j,k))
 c  If anoxic but NO3 concentration is very low
 c  (generate negative O2; proxy for HS-).
           ELSEIF (PTR_NO3(i,j,k) .lt. oxic_min) THEN
           G_O2(i,j,k) = G_O2(i,j,k) 
-     &                  -O2toN * ((1. _d 0 - phi_DOM) * 
-     &                  (N_reminp(i,j,k) + N_remindvm(i,j,k))           
+     &                  -O2toN * ((1. _d 0 - phi_DOM2d(i,j,bi,bj))
+     &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))      
      &                  + DON_remin(i,j,k) +  N_recycle(i,j,k))
      &                  + N_den_benthic(i,j,k) * 1.25 _d 0
           ENDIF
@@ -817,8 +820,9 @@ c  Carbon flux diagnostic
           NPP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)) * CtoN
 
           NCP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)
-     &                   - N_recycle(i,j,k) - (1. _d 0 - phi_DOM) *
-     &                   (N_reminp(i,j,k) + N_remindvm(i,j,k))
+     &                   - N_recycle(i,j,k) 
+     &                   - (1. _d 0 - phi_DOM2d(i,j,bi,bj)) 
+     &                   * (N_reminp(i,j,k) + N_remindvm(i,j,k))
      &                   - DON_remin(i,j,k) ) * CtoN
 
          ENDIF
