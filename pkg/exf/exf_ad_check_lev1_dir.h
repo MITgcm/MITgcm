@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_check_lev1_dir.h,v 1.23 2017/01/18 21:56:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_check_lev1_dir.h,v 1.24 2017/01/27 17:24:08 jmc Exp $
 C $Name:  $
 
 c
@@ -60,7 +60,7 @@ CADJ STORE uwind1    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vwind0    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vwind1    = comlev1, key=ikey_dynamics, kind=isbyte
 
-# ifdef ALLOW_BULKFORMULAE
+# if (defined ALLOW_BULKFORMULAE) || (defined ALLOW_DOWNWARD_RADIATION)
 CADJ STORE theta     = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 # ifdef ALLOW_CLIMSSS_RELAXATION
