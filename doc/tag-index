@@ -1,23 +1,33 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2295 2017/01/20 21:02:55 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2296 2017/01/27 21:20:53 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - add option ALLOW_READ_TURBFLUXES (and corresponding set of parameters)
+    to allow to read-in Sensible & Latent Heat flux ;
+  - simplify pkg/exf main options:
+    1) move small piece of code (case ALLOW_ATM_TEMP undef) out of
+       exf_bulkformulae.F into exf_wind.F so that exf_bulkformulae.F is
+       compiled only when both ALLOW_ATM_TEMP & ALLOW_BULKFORMULAE are defined;
+    2) make call to EXF_RADIATION and to EXF_WIND independent of CPP option
+       ALLOW_BULKFORMULAE which now only applies to S/R EXF_BULKFORMULAE ;
+    3) improve options documentation in EXF_OPTIONS.h.
 o pkg/ecco:
-  - cost_gencost_customize.F,ecco.h,ecco_phys.F,ecco_readparms.F, and 
-    ecco_summary.F: add passive tracer cost functions to gencost; 
+  - cost_gencost_customize.F,ecco.h,ecco_phys.F,ecco_readparms.F, and
+    ecco_summary.F: add passive tracer cost functions to gencost;
     m_ptracer and m_boxmean_ptracer
 o pkg/ctrl:
-  - ctrl_map_forcing.F: pass myIter and myTime to ctrl_map_forcing as input 
+  - ctrl_map_forcing.F: pass myIter and myTime to ctrl_map_forcing as input
     parameters; move myIter .EQ. nIter0 inside ctrl_map_forcing; add to list
     of implemented gentim2d contol parameters: xx_qnet, xx_empmr, xx_qsw,
     xx_sst, xx_sss, xx_pload, xx_saltflux, xx_fu, xx_fv, xx_fe, xx_fn
 o model/src:
-  - forward_step.F: pass myIter and myTime to ctrl_map_forcing as input 
+  - forward_step.F: pass myIter and myTime to ctrl_map_forcing as input
     parameters; move myIter .EQ. nIter0 inside ctrl_map_forcing
 o pkg/exf:
-  - exf_getffields.F: add to list of implemented gentim2d contol parameters: 
+  - exf_getffields.F: add to list of implemented gentim2d contol parameters:
     xx_lwflux, xx_swflux, xx_evap, xx_apressure, xx_areamask
 
 checkpoint66c (2017/01/19)
