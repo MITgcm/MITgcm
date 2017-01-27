@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_radiation.F,v 1.11 2014/10/20 03:13:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_radiation.F,v 1.12 2017/01/27 17:22:55 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 # include "AUTODIFF_OPTIONS.h"
 #endif
 
-      SUBROUTINE EXF_RADIATION(myTime, myIter, myThid)
+      SUBROUTINE EXF_RADIATION( myTime, myIter, myThid )
 
 C     ==================================================================
 C     SUBROUTINE exf_radiation
@@ -155,25 +155,28 @@ c     ENDIF
        ENDDO
 #endif
       ENDIF
-#endif
+#endif /* ALLOW_ZENITHANGLE */
        DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)
-         DO j = 1,sNy
-          DO i = 1,sNx
 #ifdef ALLOW_ZENITHANGLE
-      IF ( useExfZenAlbedo ) THEN
-           swflux(i,j,bi,bj) = - swdown(i,j,bi,bj) *
-     &                         (1.0-zen_albedo(i,j,bi,bj))
-      ELSE
-           swflux(i,j,bi,bj) = - swdown(i,j,bi,bj) *
-     &                         (1.0-exf_albedo)
-      ENDIF
-#else
-           swflux(i,j,bi,bj) = - swdown(i,j,bi,bj) *
-     &                         (1.0-exf_albedo)
-#endif
+         IF ( useExfZenAlbedo ) THEN
+          DO j = 1,sNy
+           DO i = 1,sNx
+            swflux(i,j,bi,bj) = - swdown(i,j,bi,bj)
+     &                        * (1.0-zen_albedo(i,j,bi,bj))
+           ENDDO
           ENDDO
-         ENDDO
+         ELSE
+#endif /* ALLOW_ZENITHANGLE */
+          DO j = 1,sNy
+           DO i = 1,sNx
+            swflux(i,j,bi,bj) = - swdown(i,j,bi,bj)
+     &                        * (1.0-exf_albedo)
+           ENDDO
+          ENDDO
+#ifdef ALLOW_ZENITHANGLE
+         ENDIF
+#endif
         ENDDO
        ENDDO
       ENDIF
@@ -189,7 +192,7 @@ c        ENDDO
 c       ENDDO
 c      ENDDO
 c     ENDIF
-#endif
+#endif /* ALLOW_ATM_TEMP or SHORTWAVE_HEATING */
 
 #endif /* ALLOW_DOWNWARD_RADIATION */
 

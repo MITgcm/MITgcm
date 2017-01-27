@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.48 2016/12/09 21:43:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.49 2017/01/27 17:22:55 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -26,16 +26,16 @@ C * A list of EXF variables and units is in EXF_FIELDS.h
 C
 C     !CALLING SEQUENCE:
 C ...
-C  exf_getforcing (TOP LEVEL ROUTINE)
+C  EXF_GETFORCING (TOP LEVEL ROUTINE)
 C  |
-C  |-- exf_getclim (get climatological fields used e.g. for relax.)
+C  |-- EXF_GETCLIM (get climatological fields used e.g. for relax.)
 C  |   |--- exf_set_climtemp (relax. to 3-D temperature field)
 C  |   |--- exf_set_climsalt (relax. to 3-D salinity field)
 C  |   |--- exf_set_climsst  (relax. to 2-D SST field)
 C  |   |--- exf_set_climsss  (relax. to 2-D SSS field)
 C  |   o
 C  |
-C  |-- exf_getffields <- this one does almost everything
+C  |-- EXF_GETFFIELDS <- this one does almost everything
 C  |   |   1. reads in fields, either flux or atmos. state,
 C  |   |      depending on CPP options (for each variable two fields
 C  |   |      consecutive in time are read in and interpolated onto
@@ -50,53 +50,44 @@ C  |   |      If forcing and control are fluxes, then
 C  |   |      controls are added later.
 C  |   o
 C  |
-C  |-- exf_check_range
-C  |   |   1. Check whether read fields are within assumed range
-C  |   |      (may capture mismatches in units)
+C  |-- EXF_CHECK_RANGE
+C  |   |   Check whether read fields are within assumed range
+C  |   |   (may capture mismatches in units)
 C  |   o
 C  |
-C  |-- exf_bulkformulae
-C  |   |   1. Compute net or downwelling radiative fluxes via
-C  |   |      Stefan-Boltzmann law in case only one is known.
-C  |   |   2. Compute air-sea momentum and buoyancy fluxes from
-C  |   |      atmospheric state following Large and Pond, JPO, 1981/82
+C  |-- EXF_RADIATION
+C  |   |   Compute net or downwelling radiative fluxes via
+C  |   |   Stefan-Boltzmann law in case only one is known.
+C  |-- EXF_WIND
+C  |   |   Compute air-sea wind-stress from winds (or the other way)
+C  |-- EXF_BULKFORMULAE
+C  |   |   Compute air-sea buoyancy fluxes from atmospheric
+C  |   |   state following Large and Pond, JPO, 1981/82
 C  |   o
 C  |
 C  |-- < add time-mean river runoff here, if available >
 C  |
 C  |-- < update tile edges here >
 C  |
-C  |-- exf_getsurfacefluxes
-C  |   |   1. If forcing and control are fluxes, then
-C  |   |      controls are added here.
+C  |-- EXF_GETSURFACEFLUXES
+C  |   |   If forcing and control are fluxes, then
+C  |   |   control vector anomalies are added here.
+C  |   |--- ctrl_get_gen
 C  |   o
 C  |
 C  |-- < treatment of hflux w.r.t. swflux >
 C  |
-C  |-- exf_diagnostics_fill
-C  |   |   1. Do EXF-related diagnostics output here.
+C  |-- EXF_DIAGNOSTICS_FILL
+C  |   |   Do EXF-related diagnostics output here.
+C  |-- EXF_MONITOR
+C  |   |   Monitor EXF-forcing fields
 C  |   o
 C  |
-C  |-- exf_mapfields
-C  |   |   1. Map the EXF variables onto the core MITgcm
-C  |   |      forcing fields.
+C  |-- EXF_MAPFIELDS
+C  |   |   Forcing fields from exf package are mapped onto
+C  |   |   mitgcm forcing arrays.
+C  |   |   Mapping enables a runtime rescaling of fields
 C  |   o
-C  |
-C  |-- exf_bulkformulae
-C  |   If ALLOW_BULKFORMULAE, compute fluxes via bulkformulae
-C  |
-C  |-- exf_getsurfacefluxes
-C  |   If forcing and control is flux, then the
-C  |   control vector anomalies are read here
-C  |      * ctrl_getheatflux
-C  |      * ctrl_getsaltflux
-C  |      * ctrl_getzonstress
-C  |      * CALL ctrl_getmerstress
-C  |
-C  |-- exf_mapfields
-C  |   Forcing fields from exf package are mapped onto
-C  |   mitgcm forcing arrays.
-C  |   Mapping enables a runtime rescaling of fields
 C
 C \ev
 CEOI
@@ -156,7 +147,7 @@ C     == end of interface ==
 CEOP
 
 C     Get values of climatological fields.
-      CALL exf_getclim( myTime, myIter, myThid )
+      CALL EXF_GETCLIM( myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_ATM_TEMP
@@ -167,10 +158,10 @@ CADJ STORE snowprecip1 = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 #endif
 C     Get the surface forcing fields.
-      CALL exf_getffields( myTime, myIter, myThid )
+      CALL EXF_GETFFIELDS( myTime, myIter, myThid )
       IF ( .NOT.useAtmWind ) THEN
-      IF ( stressIsOnCgrid .AND. ustressfile.NE.' '
-     &                     .AND. vstressfile.NE.' ' )
+       IF ( stressIsOnCgrid .AND. ustressfile.NE.' '
+     &                      .AND. vstressfile.NE.' ' )
      &  CALL EXCH_UV_XY_RL( ustress, vstress, .TRUE., myThid )
       ENDIF
 
@@ -180,37 +171,42 @@ C     Get the surface forcing fields.
 # endif
 #endif
 
-#ifdef ALLOW_BULKFORMULAE
+#ifdef ALLOW_DOWNWARD_RADIATION
 C     Set radiative fluxes
-      CALL exf_radiation( myTime, myIter, myThid )
-
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ustress      = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE vstress      = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE uwind        = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE vwind        = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE wspeed       = comlev1, key=ikey_dynamics, kind=isbyte
-# endif
-C     Set wind fields
-      CALL exf_wind( myTime, myIter, myThid )
-# ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ustress      = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE vstress      = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE uwind        = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE vwind        = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE wspeed       = comlev1, key=ikey_dynamics, kind=isbyte
-# endif
-C     Compute turbulent fluxes (and surface stress) from bulk formulae
-      CALL exf_bulkformulae( myTime, myIter, myThid )
+      CALL EXF_RADIATION( myTime, myIter, myThid )
 #endif
 
-C     Apply runoff, masks and exchanges
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ustress      = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vstress      = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE uwind        = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vwind        = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE wspeed       = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
+C     Set wind fields
+      CALL EXF_WIND( myTime, myIter, myThid )
+
+#ifdef ALLOW_ATM_TEMP
+# ifdef ALLOW_BULKFORMULAE
+#  ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ustress      = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vstress      = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE uwind        = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vwind        = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE wspeed       = comlev1, key=ikey_dynamics, kind=isbyte
+#  endif
+C     Compute turbulent fluxes (and surface stress) from bulk formulae
+      CALL EXF_BULKFORMULAE( myTime, myIter, myThid )
+# endif /* ALLOW_BULKFORMULAE */
+#endif /* ALLOW_ATM_TEMP */
+
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-          k = 1
+
+#ifdef ALLOW_ATM_TEMP
+C     compute hflux & sflux from multiple components
           DO j = 1,sNy
             DO i = 1,sNx
-#ifdef ALLOW_ATM_TEMP
 C             Net surface heat flux.
               hflux(i,j,bi,bj) =
      &              - hs(i,j,bi,bj)
@@ -221,15 +217,22 @@ C             Net surface heat flux.
 #endif
 C             fresh-water flux from Precipitation and Evaporation.
               sflux(i,j,bi,bj) = evap(i,j,bi,bj) - precip(i,j,bi,bj)
+            ENDDO
+          ENDDO
 #endif /* ALLOW_ATM_TEMP */
+
+C     Apply runoff, masks and exchanges
+          k = 1
+          DO j = 1,sNy
+            DO i = 1,sNx
 #ifdef ALLOW_RUNOFF
               sflux(i,j,bi,bj) = sflux(i,j,bi,bj) - runoff(i,j,bi,bj)
 #endif
-
-              hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskC(i,j,1,bi,bj)
-              sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+              hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskC(i,j,k,bi,bj)
+              sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskC(i,j,k,bi,bj)
             ENDDO
           ENDDO
+
         ENDDO
       ENDDO
 
@@ -254,18 +257,18 @@ c     _EXCH_XY_RL(areamask, myThid)
 #endif
 
 C     Get values of the surface flux anomalies.
-      CALL exf_getsurfacefluxes( myTime, myIter, myThid )
+      CALL EXF_GETSURFACEFLUXES( myTime, myIter, myThid )
 
       IF ( useExfCheckRange .AND.
      &     ( myIter.EQ.nIter0 .OR. exf_debugLev.GE.debLevC ) ) THEN
-         CALL exf_check_range( myTime, myIter, myThid )
+         CALL EXF_CHECK_RANGE( myTime, myIter, myThid )
       ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_AUTODIFF_MONITOR
         CALL EXF_ADJOINT_SNAPSHOTS( 1, myTime, myIter, myThid )
 # endif
-#endif
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_ATM_TEMP
 # ifdef SHORTWAVE_HEATING
@@ -287,20 +290,20 @@ C     Therefore, we DO it exactly here:
 #endif /* ALLOW_ATM_TEMP */
 
 C     Diagnostics output
-      CALL exf_diagnostics_fill( myTime, myIter, myThid )
+      CALL EXF_DIAGNOSTICS_FILL( myTime, myIter, myThid )
 
 C     Monitor output
-      CALL exf_monitor( myTime, myIter, myThid )
+      CALL EXF_MONITOR( myTime, myIter, myThid )
 
 C     Map the forcing fields onto the corresponding model fields.
-      CALL exf_mapfields( myTime, myIter, myThid )
+      CALL EXF_MAPFIELDS( myTime, myIter, myThid )
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_AUTODIFF_MONITOR
       IF ( .NOT. useSEAICE )
      &     CALL EXF_ADJOINT_SNAPSHOTS( 3, myTime, myIter, myThid )
 # endif
-#endif
+#endif /* ALLOW_AUTODIFF */
 
       RETURN
       END

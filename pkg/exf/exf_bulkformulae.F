@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.31 2014/10/20 03:13:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.32 2017/01/27 17:22:55 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -169,6 +169,7 @@ C     output:
 CEOP
 
 #ifdef ALLOW_BULKFORMULAE
+#ifdef ALLOW_ATM_TEMP
 C     == external Functions
 
 C     == Local variables ==
@@ -222,21 +223,21 @@ C     solve4Stress :: if F, by-pass momentum turb. flux (wind-stress) calculatio
       _RL windStress            ! surface wind-stress (@ grid cell center)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      integer ikey_1
-      integer ikey_2
+      INTEGER ikey_1
+      INTEGER ikey_2
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      if ( useAtmWind ) then
+      IF ( useAtmWind ) THEN
         solve4Stress = .TRUE.
-      else
+      ELSE
 #ifdef ALLOW_BULK_LARGEYEAGER04
         solve4Stress = wspeedfile .NE. ' '
 #else
         solve4Stress = .FALSE.
 #endif
-      endif
+      ENDIF
 
 C-- Set surface parameters :
       zwln = LOG(hu/zref)
@@ -278,9 +279,7 @@ CHPF$  INDEPENDENT
      &         + sNx*sNy*max1*max2*max3*act4
 #endif
 
-#ifdef ALLOW_ATM_TEMP
-
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
           deltap(i,j) = 0. _d 0
           delq(i,j)   = 0. _d 0
 #endif
@@ -328,12 +327,12 @@ C--   Wind speed
             rdn(i,j)   = 0. _d 0
             windStress = wStress(i,j,bi,bj)
 #ifdef EXF_CALC_ATMRHO
-            ustar(i,j) = sqrt(windStress/atmrho_loc(i,j))
-            tau(i,j)   = sqrt(windStress*atmrho_loc(i,j))
+            ustar(i,j) = SQRT(windStress/atmrho_loc(i,j))
+            tau(i,j)   = SQRT(windStress*atmrho_loc(i,j))
 #else
-            ustar(i,j) = sqrt(windStress/atmrho)
+            ustar(i,j) = SQRT(windStress/atmrho)
 c           tau(i,j)   = windStress/ustar(i,j)
-            tau(i,j)   = sqrt(windStress*atmrho)
+            tau(i,j)   = SQRT(windStress*atmrho)
 #endif
            ENDIF
 
@@ -399,7 +398,7 @@ C--   Large&Yeager04:
              xsq    = SQRT( ABS(exf_one - huol*16. _d 0) )
 #else
 C--   Large&Pond1981:
-             xsq    = max(sqrt(abs(exf_one - 16.*huol)),exf_one)
+             xsq    = MAX(SQRT(ABS(exf_one - 16.*huol)),exf_one)
 #endif /* ALLOW_BULK_LARGEYEAGER04 */
              x      = SQRT(xsq)
              psimh  = -psim_fac*huol*stable
@@ -415,7 +414,7 @@ C--   Large&Yeager04:
             xsq   = SQRT( ABS(exf_one - htol*16. _d 0) )
 #else
 C--   Large&Pond1981:
-            xsq   = max(sqrt(abs(exf_one - 16.*htol)),exf_one)
+            xsq   = MAX(SQRT(ABS(exf_one - 16.*htol)),exf_one)
 #endif /* ALLOW_BULK_LARGEYEAGER04 */
             psixh = -psim_fac*htol*stable + (exf_one-stable)*
      &               ( exf_two*LOG(exf_half*(exf_one+xsq)) )
@@ -499,45 +498,35 @@ c          evap(i,j,bi,bj) = -recip_rhonil*tau(i,j)*qstar(i,j)
 C   but older version was using rhonil instead:
 c           evap(i,j,bi,bj) = -recip_rhonil*tau(i,j)*qstar(i,j)
 #endif
-           if ( useAtmWind ) then
-c       ustress(i,j,bi,bj) = tau(i,j)*rd(i,j)*ws*cw(i,j,bi,bj)
-c       vstress(i,j,bi,bj) = tau(i,j)*rd(i,j)*ws*sw(i,j,bi,bj)
+           IF ( useAtmWind ) THEN
+c           ustress(i,j,bi,bj) = tau(i,j)*rd(i,j)*ws*cw(i,j,bi,bj)
+c           vstress(i,j,bi,bj) = tau(i,j)*rd(i,j)*ws*sw(i,j,bi,bj)
 C- jmc: below is how it should be written ; different from above when
 C       both wind-speed & 2 compon. of the wind are specified, and in
 C-      this case, formula below is better.
-           tmpbulk =  tau(i,j)*rd(i,j)
-           ustress(i,j,bi,bj) = tmpbulk*uwind(i,j,bi,bj)
-           vstress(i,j,bi,bj) = tmpbulk*vwind(i,j,bi,bj)
-           endif
+            tmpbulk =  tau(i,j)*rd(i,j)
+            ustress(i,j,bi,bj) = tmpbulk*uwind(i,j,bi,bj)
+            vstress(i,j,bi,bj) = tmpbulk*vwind(i,j,bi,bj)
+           ENDIF
 
 c IF ( ATEMP(i,j,bi,bj) .NE. 0. )
-          else
-           if ( useAtmWind ) ustress(i,j,bi,bj) = 0. _d 0
-           if ( useAtmWind ) vstress(i,j,bi,bj) = 0. _d 0
+          ELSE
+           IF ( useAtmWind ) ustress(i,j,bi,bj) = 0. _d 0
+           IF ( useAtmWind ) vstress(i,j,bi,bj) = 0. _d 0
            hflux  (i,j,bi,bj) = 0. _d 0
            evap   (i,j,bi,bj) = 0. _d 0
            hs     (i,j,bi,bj) = 0. _d 0
            hl     (i,j,bi,bj) = 0. _d 0
 
 c IF ( ATEMP(i,j,bi,bj) .NE. 0. )
-          endif
+          ENDIF
 
-#else  /* ifndef ALLOW_ATM_TEMP */
-          if ( useAtmWind ) then
-          wsm     = sh(i,j,bi,bj)
-          tmpbulk = exf_scal_BulkCdn *
-     &         ( cdrag_1/wsm + cdrag_2 + cdrag_3*wsm )
-          ustress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)*
-     &                         uwind(i,j,bi,bj)
-          vstress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)*
-     &                         vwind(i,j,bi,bj)
-          endif
-#endif /* ifndef ALLOW_ATM_TEMP */
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 
+#endif /* ALLOW_ATM_TEMP */
 #endif /* ALLOW_BULKFORMULAE */
 
       RETURN

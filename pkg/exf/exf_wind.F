@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.16 2015/12/25 15:28:29 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.17 2017/01/27 17:22:55 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -37,8 +37,7 @@ C     == global variables ==
 #include "tamc.h"
 #include "tamc_keys.h"
 #endif
-#if (defined (ALLOW_CTRL) && \
-     defined (ALLOW_GENTIM2D_CONTROL))
+#ifdef ALLOW_GENTIM2D_CONTROL
 # include "ctrl.h"
 # include "optim.h"
 # include "CTRL_SIZE.h"
@@ -59,12 +58,18 @@ C     == local variables ==
       INTEGER i,j
       _RL     wsLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     wsSq
+#ifdef ALLOW_BULKFORMULAE
       _RL     usSq, recip_sqrtRhoA, ustar
       _RL     tmp1, tmp2, tmp3, tmp4
+#endif /* ALLOW_BULKFORMULAE */
       _RL     oneThirdRL
       PARAMETER ( oneThirdRL = 1.d0 / 3.d0 )
-#if (defined (ALLOW_CTRL) && \
-     defined (ALLOW_GENTIM2D_CONTROL))
+#if !(defined ALLOW_BULKFORMULAE) || !(defined ALLOW_ATM_TEMP)
+# ifdef ALLOW_ATM_WIND
+      _RL wsm, tmpbulk
+# endif
+#endif
+#ifdef ALLOW_GENTIM2D_CONTROL
       INTEGER iarr
 #endif
 C     == end of interface ==
@@ -108,10 +113,10 @@ CADJ STORE wspeed(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
         IF ( useAtmWind ) THEN
 
 C--   Wind speed and direction.
-        DO j = 1,sNy
-         DO i = 1,sNx
+         DO j = 1,sNy
+          DO i = 1,sNx
            wsSq = uwind(i,j,bi,bj)*uwind(i,j,bi,bj)
-     &         + vwind(i,j,bi,bj)*vwind(i,j,bi,bj)
+     &          + vwind(i,j,bi,bj)*vwind(i,j,bi,bj)
            IF ( wsSq .NE. 0. _d 0 ) THEN
              wsLoc(i,j) = SQRT(wsSq)
              cw(i,j,bi,bj) = uwind(i,j,bi,bj)/wsLoc(i,j)
@@ -121,22 +126,24 @@ C--   Wind speed and direction.
              cw(i,j,bi,bj) = 0. _d 0
              sw(i,j,bi,bj) = 0. _d 0
            ENDIF
+          ENDDO
          ENDDO
-        ENDDO
-        IF ( wspeedfile .EQ. ' ' ) THEN
+         IF ( wspeedfile .EQ. ' ' ) THEN
 C-    wind-speed is not loaded from file: save local array into common block
           DO j = 1,sNy
            DO i = 1,sNx
              wspeed(i,j,bi,bj) = wsLoc(i,j)
            ENDDO
           ENDDO
-        ENDIF
+         ENDIF
 
+#ifdef ALLOW_BULKFORMULAE
         ELSE
+C--     case useAtmWind=F
 
 C--   Wind stress and direction.
-        DO j = 1,sNy
-         DO i = 1,sNx
+         DO j = 1,sNy
+          DO i = 1,sNx
            IF ( stressIsOnCgrid ) THEN
              usSq = ( ustress(i,  j,bi,bj)*ustress(i  ,j,bi,bj)
      &               +ustress(i+1,j,bi,bj)*ustress(i+1,j,bi,bj)
@@ -157,10 +164,10 @@ c            ustar = SQRT(usSq/atmrho)
              cw(i,j,bi,bj)      = 0. _d 0
              sw(i,j,bi,bj)      = 0. _d 0
            ENDIF
+          ENDDO
          ENDDO
-        ENDDO
 
-        IF ( wspeedfile .EQ. ' ' ) THEN
+         IF ( wspeedfile .EQ. ' ' ) THEN
 C--   wspeed is not loaded ; derive wind-speed by inversion of
 C     wind-stress=fct(wind-speed) relation:
 C             The variables us, sh and rdn have to be computed from
@@ -168,9 +175,9 @@ C             given wind stresses inverting relationship for neutral
 C             drag coeff. cdn.
 C             The inversion is based on linear and quadratic form of
 C             cdn(umps); ustar can be directly computed from stress;
-         recip_sqrtRhoA = 1. _d 0 / SQRT(atmrho)
-         DO j = 1,sNy
-          DO i = 1,sNx
+          recip_sqrtRhoA = 1. _d 0 / SQRT(atmrho)
+          DO j = 1,sNy
+           DO i = 1,sNx
             ustar = wStress(i,j,bi,bj)*recip_sqrtRhoA
             IF ( ustar .EQ. 0. _d 0 ) THEN
              wsLoc(i,j) = 0. _d 0
@@ -190,15 +197,16 @@ C             cdn(umps); ustar can be directly computed from stress;
 c            wsLoc(i,j) = (tmp2 + tmp3)**oneThirdRL +
 c    &            tmp1*tmp1 * (tmp2 + tmp3)**(-oneThirdRL) - tmp1
             ENDIF
+           ENDDO
           ENDDO
-         ENDDO
 C-    save local array wind-speed to common block
-         DO j = 1,sNy
-          DO i = 1,sNx
+          DO j = 1,sNy
+           DO i = 1,sNx
             wspeed(i,j,bi,bj) = wsLoc(i,j)
+           ENDDO
           ENDDO
-         ENDDO
-        ENDIF
+C-    end if wspeedfile = empty
+         ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE wspeed(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
@@ -209,16 +217,18 @@ CADJ STORE sw    (:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 #endif
 
 C--   infer wind field from wind-speed & wind-stress direction
-        DO j = 1,sNy
-         DO i = 1,sNx
+         DO j = 1,sNy
+          DO i = 1,sNx
            uwind(i,j,bi,bj) = wspeed(i,j,bi,bj)*cw(i,j,bi,bj)
            vwind(i,j,bi,bj) = wspeed(i,j,bi,bj)*sw(i,j,bi,bj)
+          ENDDO
          ENDDO
-        ENDDO
+
+#endif /* ALLOW_BULKFORMULAE */
+C--   end if/else useAtmWind
         ENDIF
 
-#if (defined (ALLOW_CTRL) && \
-     defined (ALLOW_GENTIM2D_CONTROL))
+#ifdef ALLOW_GENTIM2D_CONTROL
         DO j = 1,sNy
          DO i = 1,sNx
            do iarr = 1, maxCtrlTim2D
@@ -240,6 +250,30 @@ C--   set wind-speed lower limit
            sh(i,j,bi,bj) = MAX(wspeed(i,j,bi,bj),uMin)
          ENDDO
         ENDDO
+
+#if !(defined ALLOW_BULKFORMULAE) || !(defined ALLOW_ATM_TEMP)
+C     Note: In case ALLOW_BULKFORMULAE and ALLOW_ATM_TEMP are defined,
+C     wind-stress is computed (if needed) within S/R EXF_BULKFORMULAE
+        IF ( useAtmWind ) THEN
+#ifdef ALLOW_ATM_WIND
+C--   Computes wind-stress:
+         DO j = 1,sNy
+          DO i = 1,sNx
+           wsm     = sh(i,j,bi,bj)
+           tmpbulk = exf_scal_BulkCdn
+     &             * ( cdrag_1/wsm + cdrag_2 + cdrag_3*wsm )
+           ustress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)
+     &                        * uwind(i,j,bi,bj)
+           vstress(i,j,bi,bj) = atmrho*tmpbulk*wspeed(i,j,bi,bj)
+     &                        * vwind(i,j,bi,bj)
+          ENDDO
+         ENDDO
+#else /* ALLOW_ATM_WIND */
+         STOP 'ABNORMAL END: S/R EXF_WIND: missing code for useAtmWind'
+#endif /* ALLOW_ATM_WIND */
+C--   end if useAtmWind
+        ENDIF
+#endif /* ndef ALLOW_BULKFORMULAE or ndef ALLOW_ATM_TEMP */
 
 C--   end bi,bj loops
        ENDDO
