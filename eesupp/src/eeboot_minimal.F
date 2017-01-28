@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.28 2014/05/16 18:31:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.29 2017/01/28 18:39:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,7 +8,7 @@ CBOP
 C     !ROUTINE: EEBOOT_MINIMAL
 
 C     !INTERFACE:
-      SUBROUTINE EEBOOT_MINIMAL
+      SUBROUTINE EEBOOT_MINIMAL( myComm )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -36,6 +36,12 @@ C     == Global data ==
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 
+C     !ROUTINE ARGUMENTS
+C     == Routine arguments ==
+C     myComm     :: Communicator that is passed down from
+C                   upper level driver (if there is one).
+      INTEGER myComm
+
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     myThid     :: Temp. dummy thread number.
@@ -47,6 +53,7 @@ C     msgBuf     :: Used to build messages for printing.
 #ifdef ALLOW_USE_MPI
 C     mpiRC      :: Error code reporting variable used with MPI.
       INTEGER mpiRC
+      INTEGER mpiIsInitialized
       LOGICAL doReport
 #ifdef COMPONENT_MODULE
       INTEGER mpiMyWid
@@ -89,24 +96,34 @@ c       OPEN(standardMessageUnit,FILE=fNam,STATUS='unknown')
 C--   MPI style multiple-process initialisation
 C--   =========================================
 
-C--    Initialise MPI multi-process parallel environment.
-C      On some systems program forks at this point. Others have already
-C      forked within mpirun - now thats an open standard!
-       CALL MPI_INIT( mpiRC )
-       IF ( mpiRC .NE. MPI_SUCCESS ) THEN
-        eeBootError = .TRUE.
-        WRITE(msgBuf,'(A,I5)')
+       CALL MPI_Initialized( mpiIsInitialized, mpiRC )
+
+       IF ( mpiIsInitialized .EQ. 0 ) THEN
+C--     Initialise MPI multi-process parallel environment.
+C       On some systems program forks at this point. Others have already
+C       forked within mpirun - now thats an open standard!
+        CALL MPI_INIT( mpiRC )
+        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
+         eeBootError = .TRUE.
+         WRITE(msgBuf,'(A,I5)')
      &        'EEBOOT_MINIMAL: MPI_INIT return code', mpiRC
-        CALL PRINT_ERROR( msgBuf, myThid )
-        GOTO 999
+         CALL PRINT_ERROR( msgBuf, myThid )
+         GOTO 999
+        ENDIF
+
+C--     MPI has now been initialized ; now we need to either
+C       ask for a communicator or pretend that we have:
+C       Pretend that we have asked for a communicator
+        MPI_COMM_MODEL = MPI_COMM_WORLD
+
+       ELSE
+C--     MPI was already initialized and communicator has been passed
+C       down from upper level driver
+        MPI_COMM_MODEL = myComm
+
        ENDIF
 
-C--    MPI has now been initialized but now we need to either
-C      ask for a communicator or pretend that we have:
-C      Pretend that we have asked for a communicator
-       MPI_COMM_MODEL = MPI_COMM_WORLD
        doReport = .FALSE.
-
 #ifdef ALLOW_OASIS
 C      add a 1rst preliminary call EESET_PARAMS to set useOASIS
 C      (needed to decide either to call OASIS_INIT or not)
