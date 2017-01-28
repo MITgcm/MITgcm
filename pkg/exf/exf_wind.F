@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.17 2017/01/27 17:22:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.18 2017/01/28 18:29:11 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -65,9 +65,7 @@ C     == local variables ==
       _RL     oneThirdRL
       PARAMETER ( oneThirdRL = 1.d0 / 3.d0 )
 #if !(defined ALLOW_BULKFORMULAE) || !(defined ALLOW_ATM_TEMP)
-# ifdef ALLOW_ATM_WIND
       _RL wsm, tmpbulk
-# endif
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
       INTEGER iarr
@@ -255,7 +253,7 @@ C--   set wind-speed lower limit
 C     Note: In case ALLOW_BULKFORMULAE and ALLOW_ATM_TEMP are defined,
 C     wind-stress is computed (if needed) within S/R EXF_BULKFORMULAE
         IF ( useAtmWind ) THEN
-#ifdef ALLOW_ATM_WIND
+c#ifdef ALLOW_ATM_WIND
 C--   Computes wind-stress:
          DO j = 1,sNy
           DO i = 1,sNx
@@ -268,9 +266,9 @@ C--   Computes wind-stress:
      &                        * vwind(i,j,bi,bj)
           ENDDO
          ENDDO
-#else /* ALLOW_ATM_WIND */
-         STOP 'ABNORMAL END: S/R EXF_WIND: missing code for useAtmWind'
-#endif /* ALLOW_ATM_WIND */
+c#else /* ALLOW_ATM_WIND */
+c        STOP 'ABNORMAL END: S/R EXF_WIND: missing code for useAtmWind'
+c#endif /* ALLOW_ATM_WIND */
 C--   end if useAtmWind
         ENDIF
 #endif /* ndef ALLOW_BULKFORMULAE or ndef ALLOW_ATM_TEMP */
