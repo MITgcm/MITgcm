@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.278 2016/01/15 22:08:17 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.279 2017/01/28 18:37:21 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -1717,6 +1717,12 @@ if test "x${AD_OPTFILE}" != xNONE ; then
 fi
 
 #====================================================================
+# Initialize INCLUDEDIRSMK from and optfile INCLUDEDIRS
+if test "x${INCLUDEDIRS}" != "x" ; then
+ INCLUDEDIRSMK=${INCLUDEDIRS}
+fi
+
+#====================================================================
 #  Set default values if not set by the optfile
 #
 #  Check that FC, CC, LINK, CPP, S64, LN, and MAKE are defined.  If not,
@@ -2105,6 +2111,8 @@ for d in $MODS ; do
 	printf "$d "
 	SOURCEDIRS="$SOURCEDIRS $d"
 	INCLUDEDIRS="$INCLUDEDIRS $d"
+	SOURCEDIRSMK="$SOURCEDIRSMK $d"
+	INCLUDEDIRSMK="$INCLUDEDIRSMK $d"
     fi
 done
 echo
@@ -2128,6 +2136,9 @@ fi
 
 if test "x${TOOLSDIR}" = x ; then
     TOOLSDIR="$ROOTDIR/tools"
+    TOOLSDIRMK='$(ROOTDIR)'"/tools"
+else
+    TOOLSDIRMK=${TOOLSDIR}
 fi
 if test ! -d ${TOOLSDIR} ; then
     echo "Error: the specified TOOLSDIR (\"$TOOLSDIR\") does not exist!"
@@ -2493,9 +2504,12 @@ if  test "x${PKG_DEPEND}" != x ; then
 fi
 for i in $PACKAGES ; do
     adr="$ROOTDIR/pkg/$i"
+    adrmk='$(ROOTDIR)'"/pkg/$i"
     if test -d $adr ; then
 	SOURCEDIRS="$SOURCEDIRS $adr"
 	INCLUDEDIRS="$INCLUDEDIRS $adr"
+	SOURCEDIRSMK="$SOURCEDIRSMK $adrmk"
+	INCLUDEDIRSMK="$INCLUDEDIRSMK $adrmk"
 	if test "x$i" = xautodiff ; then
 	    AUTODIFF_PKG_USED=t
 	fi
@@ -2551,20 +2565,24 @@ BUILDDIR=${BUILDDIR:-.}
 if test "x$STANDARDDIRS" != x ; then
     for d in $STANDARDDIRS ; do
 	adr="$ROOTDIR/$d/src"
+        adrmk='$(ROOTDIR)/'"$d/src"
 	if test ! -d $adr ; then
 	    echo "Error:  directory $adr not found -- please check that ROOTDIR=\"$ROOTDIR\""
 	    echo "  is correct and that you correctly specified the STANDARDDIRS option"
 	    exit 1
 	else
 	    SOURCEDIRS="$SOURCEDIRS $adr"
+	    SOURCEDIRSMK="$SOURCEDIRSMK $adrmk"
 	fi
 	adr="$ROOTDIR/$d/inc"
+        adrmk='$(ROOTDIR)/'"$d/inc"
 	if test ! -d $adr ; then
 	    echo "Error:  directory $adr not found -- please check that ROOTDIR=\"$ROOTDIR\""
 	    echo "  is correct and that you correctly specified the STANDARDDIRS option"
 	    exit 1
 	else
 	    INCLUDEDIRS="$INCLUDEDIRS $adr"
+	    INCLUDEDIRSMK="$INCLUDEDIRSMK $adrmk"
 	fi
     done
 fi
@@ -2664,6 +2682,7 @@ if test "x$OPENAD" != x ; then
     OAD_KEEP_ORIGINAL="/dev/null"
     OAD_CB2M_FILES="/dev/null"
     OADTOOLS="$TOOLSDIR/OAD_support"
+    OADTOOLSMK='$(TOOLSDIR)/OAD_support'
     echo "  looking for dontCompile file:  "
     for i in "." $MODS $OADTOOLS ; do
 	if test -r $i"/dontCompile" ; then
@@ -2708,7 +2727,11 @@ printf 'F90_SRC_FILES = ' > $TMP.F90srclist
 printf 'H_SRC_FILES = '   > $TMP.hsrclist
 printf 'AD_FLOW_FILES = ' > $TMP.ad_flow_files
 alldirs="$SOURCEDIRS $INCLUDEDIRS ."
+alldirsmk=(${SOURCEDIRSMK} ${INCLUDEDIRSMK} ".")
+nd=0
 for d in $alldirs ; do
+    dmk=${alldirsmk[${nd}]}
+    nd=$((${nd}+1))
     deplist=
     sfiles=`( cd $d; echo *.[h,c,F] *.flow )`
     sfiles=`( echo $sfiles; cd $d; echo *.F90 )`
@@ -2811,12 +2834,12 @@ for d in $alldirs ; do
     if test "x$deplist" != x ; then
       if test "$d" != "." ; then
 	echo "" >> $TMP.srclinks
-	echo "#  These files are linked from $d" >> $TMP.srclinks
+	echo "#  These files are linked from $dmk ( aka $d )" >> $TMP.srclinks
 	echo "$deplist :" >> $TMP.srclinks
 # We need to make sure that the link isn't already there.
 # This may happen when make thinks that a header file has to be "remade"
 # because a module it depends on has changed.  In this case we do nothing.
-	printf "\tif [ ! -L \$@ ]; then \$(LN) %s/\$@ \$@; fi\n" $d >> $TMP.srclinks
+	printf "\tif [ ! -L \$@ ]; then \$(LN) %s/\$@ \$@; fi\n" $dmk >> $TMP.srclinks
       fi
     fi
 done
@@ -2873,15 +2896,15 @@ cat >>$MAKEFILE <<EOF
 
 ROOTDIR     = ${ROOTDIR}
 BUILDDIR    = ${BUILDDIR}
-SOURCEDIRS  = ${SOURCEDIRS}
-INCLUDEDIRS = ${INCLUDEDIRS}
+SOURCEDIRS  = ${SOURCEDIRSMK}
+INCLUDEDIRS = ${INCLUDEDIRSMK}
 EXEDIR      = ${EXEDIR}
 EXECUTABLE  = \$(EXEDIR)/${EXECUTABLE}
-TOOLSDIR    = ${TOOLSDIR}
-OADTOOLS    = ${OADTOOLS}
+TOOLSDIR    = ${TOOLSDIRMK}
+OADTOOLS    = ${OADTOOLSMK}
 
 #eh3  new defines for the adjoint work
-AUTODIFF    = ${ROOTDIR}/pkg/autodiff
+AUTODIFF    = \$(ROOTDIR)/pkg/autodiff
 EXE_AD      = ${EXE_AD}
 EXE_FTL     = ${EXE_FTL}
 EXE_SVD     = ${EXE_SVD}
@@ -2995,7 +3018,7 @@ depend:
 
 lib: libmitgcmuv.a
 
-libmitgcmuv.a: \$(OBJFILES)
+libmitgcmuv.a: \$(SPECIAL_FILES) \$(OBJFILES)
 	ar rcv libmitgcmuv.a \$(OBJFILES)
 	ar d   libmitgcmuv.a main.o
 
@@ -3471,16 +3494,16 @@ AD_OBJ_FILES_S2=\$(AD_OBJ_FILES_S1) \$(NON_AD_F77_SRC_FILES:.F=_cb2m.o) \$(C_SRC
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(AD_OBJ_FILES_S2) \$(LIBS)
 
 # create sources files modules from header files containing common blocks
-%_mod.FF90 : %.h \${OADTOOLS}/cb2mGetModules.csh \${OADTOOLS}/cb2mGetModules.awk
-	\${OADTOOLS}/cb2mGetModules.csh $< \${OADTOOLS}/cb2mGetModules.awk
+%_mod.FF90 : %.h \$(OADTOOLS)/cb2mGetModules.csh \$(OADTOOLS)/cb2mGetModules.awk
+	\$(OADTOOLS)/cb2mGetModules.csh $< \$(OADTOOLS)/cb2mGetModules.awk
 
 # create new header files with USE statements for the new modules made above
-%_mod.h : %.h \${OADTOOLS}/cb2mGetHeaders.csh \${OADTOOLS}/cb2mGetHeaders.awk
-	\${OADTOOLS}/cb2mGetHeaders.csh $< \${OADTOOLS}/cb2mGetHeaders.awk \$(CB2M_F90_SRC_NAMES)
+%_mod.h : %.h \$(OADTOOLS)/cb2mGetHeaders.csh \$(OADTOOLS)/cb2mGetHeaders.awk
+	\$(OADTOOLS)/cb2mGetHeaders.csh $< \$(OADTOOLS)/cb2mGetHeaders.awk \$(CB2M_F90_SRC_NAMES)
 
 # change the include directives of everybody to refer to  the new header files with the USE statements
-%_cb2m.FF90 : %.F \${OADTOOLS}/cb2mUseModules.bash
-	\${OADTOOLS}/cb2mUseModules.bash $< ${MPI}
+%_cb2m.FF90 : %.F \$(OADTOOLS)/cb2mUseModules.bash
+	\$(OADTOOLS)/cb2mUseModules.bash $< ${MPI}
 
 # makefile debug rule
 small_f: \$(CB2M_F90_PP_SRC_FILES)
@@ -3495,7 +3518,7 @@ ad_input_code_sf.pre.f90 : \$(CB2M_AD_FILES)
 
 # replace stop statements (to avoid the implied unstructured control flow)  with print statements
 ad_input_code_sf.pre.s2p.f90 : ad_input_code_sf.pre.f90
-	cat \$< | sed -f \${OADTOOLS}/stop2print.sed > ad_input_code_sf.pre.s2p.f90
+	cat \$< | sed -f \$(OADTOOLS)/stop2print.sed > ad_input_code_sf.pre.s2p.f90
 
 # F -> WHIRL
 ad_input_code_sf.pre.s2p.B: ad_input_code_sf.pre.s2p.f90
@@ -3518,10 +3541,10 @@ ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.B
 	\${OPEN64ROOT}/whirl2f/whirl2f -FLIST:ftn_file=\$@ -openad \$<
 
 # insert template directives
-ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90 \${OADTOOLS}/insertTemplateDir.bash
-	\${OADTOOLS}/insertTemplateDir.bash \$< \$@
+ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90: ad_input_code_sf.pre.s2p.xb.x2w.w2f.f$FS90 \$(OADTOOLS)/insertTemplateDir.bash
+	\$(OADTOOLS)/insertTemplateDir.bash \$< \$@
 
-PPEXTRAS=\$(notdir \$(wildcard \${OADTOOLS}/ad_template.*.F)) ad_inline.F
+PPEXTRAS=\$(notdir \$(wildcard \$(OADTOOLS)/ad_template.*.F)) ad_inline.F
 # postprocess F'
 postProcess.tag: ad_input_code_sf.pre.s2p.xb.x2w.w2f.td.f$FS90 \$(PPEXTRAS:.F=.f) | w2f__types.f90
 	\${OPENADFORTTK_BASE}/tools/SourceProcessing/postProcess.py --progress --timing --infoUnitFile w2f__types.f90 --outputFormat=fixed --separateOutput --pathSuffix "" --filenameSuffix "_oad" -m r -i ad_inline.f \$<
@@ -3536,7 +3559,7 @@ OAD_intrinsics_oad.f \$(CB2M_AD_FILES:.f$FS90=_oad.f): postProcess.tag
 
 # link the support files:
 \$(OPENAD_SUPPORT_F90_SRC_FILES) \$(OPENAD_SUPPORT_C_SRC_FILES) \$(PPEXTRAS):
-	\$(LN) \${OADTOOLS}/\$@ .
+	\$(LN) \$(OADTOOLS)/\$@ .
 
 AD_CLEAN += *_mod.h *_mod.F90 *.FF90 *.mod-whirl temp.sed oad_cp.* postProcess.tag
 
