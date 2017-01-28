@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.31 2017/01/18 21:56:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.32 2017/01/28 18:28:26 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -15,7 +15,7 @@ C $Name:  $
 # include "EXF_OPTIONS.h"
 #endif
 
-      subroutine autodiff_restore( myThid )
+      SUBROUTINE AUTODIFF_RESTORE( myThid )
 
 c     ==================================================================
 c     SUBROUTINE autodiff_restore
@@ -73,13 +73,13 @@ c           arguments. Although this is fiddly it saves the need to
 c           impose additional synchronisation points when they are
 c           updated.
 c     myThid - thread number for this instance of the routine.
-      integer myThid
+      INTEGER myThid
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c     == local variables ==
 
-      integer bi,bj
-      integer I,J,K
+      INTEGER bi,bj
+      INTEGER I,J,K
 
 c--   == end of interface ==
 
@@ -212,14 +212,13 @@ C-      2D arrays
        ENDDO
       ENDDO
 
-# ifdef ALLOW_BULKFORMULAE
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 C-      2D arrays
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
-#  ifdef ALLOW_ATM_TEMP
+# ifdef ALLOW_ATM_TEMP
           aqh0(I,J,bi,bj)            = StoreEXF2(I,J,bi,bj,1)
           aqh1(I,J,bi,bj)            = StoreEXF2(I,J,bi,bj,2)
           atemp0(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,3)
@@ -230,19 +229,19 @@ C-      2D arrays
           lwflux1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,8)
           snowprecip0(I,J,bi,bj)     = StoreEXF2(I,J,bi,bj,9)
           snowprecip1(I,J,bi,bj)     = StoreEXF2(I,J,bi,bj,10)
-#   ifdef EXF_READ_EVAP
+#  ifdef EXF_READ_EVAP
           evap0(I,J,bi,bj)           = StoreEXF2(I,J,bi,bj,11)
           evap1(I,J,bi,bj)           = StoreEXF2(I,J,bi,bj,12)
-#   else
+#  else
           evap(I,J,bi,bj)            = StoreEXF2(I,J,bi,bj,11)
-#   endif /* EXF_READ_EVAP */
-#   ifdef ALLOW_DOWNWARD_RADIATION
+#  endif /* EXF_READ_EVAP */
+#  ifdef ALLOW_DOWNWARD_RADIATION
           swdown0(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,13)
           swdown1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,14)
           lwdown0(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,15)
           lwdown1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,16)
-#   endif
-#  endif /* ALLOW_ATM_TEMP */
+#  endif
+# endif /* ALLOW_ATM_TEMP */
           uwind0(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,17)
           uwind1(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,18)
           vwind0(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,19)
@@ -251,7 +250,6 @@ C-      2D arrays
         ENDDO
        ENDDO
       ENDDO
-# endif /* ALLOW_ATM_TEMP */
 
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -262,43 +260,43 @@ C-      2D arrays
 # ifdef ALLOW_UWIND_CONTROL
           xx_uwind0(I,J,bi,bj)     = StoreCTRLS1(I,J,bi,bj,1)
           xx_uwind1(I,J,bi,bj)     = StoreCTRLS1(I,J,bi,bj,2)
-#  endif
+# endif
 # ifdef ALLOW_VWIND_CONTROL
           xx_vwind0(I,J,bi,bj)     = StoreCTRLS1(I,J,bi,bj,3)
           xx_vwind1(I,J,bi,bj)     = StoreCTRLS1(I,J,bi,bj,4)
-#  endif
+# endif
 # ifdef ALLOW_ATEMP_CONTROL
           xx_atemp0(I,J,bi,bj)     = StoreCTRLS1(I,J,bi,bj,5)
           xx_atemp1(I,J,bi,bj)     = StoreCTRLS1(I,J,bi,bj,6)
-#  endif
+# endif
 # ifdef ALLOW_AQH_CONTROL
           xx_aqh0(I,J,bi,bj)       = StoreCTRLS1(I,J,bi,bj,7)
           xx_aqh1(I,J,bi,bj)       = StoreCTRLS1(I,J,bi,bj,8)
-#  endif
+# endif
 # ifdef ALLOW_PRECIP_CONTROL
           xx_precip0(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,9)
           xx_precip1(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,10)
-#  endif
+# endif
 # ifdef ALLOW_SNOWPRECIP_CONTROL
           xx_snowprecip0(I,J,bi,bj)= StoreCTRLS1(I,J,bi,bj,11)
           xx_snowprecip1(I,J,bi,bj)= StoreCTRLS1(I,J,bi,bj,12)
-#  endif
+# endif
 # ifdef ALLOW_SWFLUX_CONTROL
           xx_swflux0(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,13)
           xx_swflux1(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,14)
-#  endif
+# endif
 # ifdef ALLOW_SWDOWN_CONTROL
           xx_swdown0(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,15)
           xx_swdown1(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,16)
-#  endif
-#  ifdef ALLOW_LWDOWN_CONTROL
+# endif
+# ifdef ALLOW_LWDOWN_CONTROL
           xx_lwdown0(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,17)
           xx_lwdown1(I,J,bi,bj)    = StoreCTRLS1(I,J,bi,bj,18)
-#  endif
-#  ifdef ALLOW_APRESSURE_CONTROL
+# endif
+# ifdef ALLOW_APRESSURE_CONTROL
           xx_apressure0(I,J,bi,bj) = StoreCTRLS1(I,J,bi,bj,19)
           xx_apressure1(I,J,bi,bj) = StoreCTRLS1(I,J,bi,bj,20)
-#  endif
+# endif
          ENDDO
         ENDDO
        ENDDO
@@ -471,19 +469,19 @@ cph          TICES(I,J,bi,bj)     = StoreSEAICE(I,J,bi,bj,6)
           VICE(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,8)
           ZETA(I,J,bi,bj)      = StoreSEAICE(I,J,bi,bj,9)
           ETA(I,J,bi,bj)       = StoreSEAICE(I,J,bi,bj,10)
-#  ifdef SEAICE_CGRID
+# ifdef SEAICE_CGRID
           dwatn(I,J,bi,bj)          = StoreSEAICE(I,J,bi,bj,11)
-#   ifdef SEAICE_ALLOW_BOTTOMDRAG
+#  ifdef SEAICE_ALLOW_BOTTOMDRAG
           cbotc(I,J,bi,bj)          = StoreSEAICE(I,J,bi,bj,12)
-#   endif /* SEAICE_ALLOW_BOTTOMDRAG */
+#  endif /* SEAICE_ALLOW_BOTTOMDRAG */
 CML          seaicemasku(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,12)
 CML          seaicemaskv(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,13)
-#  endif /* SEAICE_CGRID */
-#  ifdef SEAICE_ALLOW_EVP
+# endif /* SEAICE_CGRID */
+# ifdef SEAICE_ALLOW_EVP
           seaice_sigma1(I,J,bi,bj)  = StoreSEAICE(I,J,bi,bj,16)
           seaice_sigma2(I,J,bi,bj)  = StoreSEAICE(I,J,bi,bj,17)
           seaice_sigma12(I,J,bi,bj) = StoreSEAICE(I,J,bi,bj,18)
-#  endif /* SEAICE_ALLOW_EVP */
+# endif /* SEAICE_ALLOW_EVP */
 # ifdef SEAICE_VARIABLE_SALINITY
           HSALT(I,J,bi,bj)          = StoreSEAICE(I,J,bi,bj,19)
 # endif
@@ -500,5 +498,5 @@ CML          seaicemaskv(I,J,bi,bj)    = StoreSEAICE(I,J,bi,bj,13)
 #endif /* ALLOW_AUTODIFF_TAMC */
 c**************************************
 
-      return
-      end
+      RETURN
+      END
