@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.39 2016/09/21 12:55:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.40 2017/01/30 20:25:14 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -497,6 +497,7 @@ c-- (upper/lower-case matters) in cost_gencost_customize
      &          (gencost_barfile(k)(1:15).EQ.'m_boxmean_theta').OR.
      &          (gencost_barfile(k)(1:13).EQ.'m_boxmean_eta').OR.
      &          (gencost_barfile(k)(1:14).EQ.'m_boxmean_salt').OR.
+     &          (gencost_barfile(k)(1:17).EQ.'m_boxmean_ptracer').OR.
      &          (gencost_barfile(k)(1:14).EQ.'m_horflux_vol')
      &        )) then
             using_gencost(k)=.FALSE.
