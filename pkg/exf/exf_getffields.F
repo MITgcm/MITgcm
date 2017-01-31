@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.68 2017/01/27 17:12:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.69 2017/01/31 18:59:14 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -75,11 +75,11 @@ C--   read forcing fields from files and temporal interpolation
 C     Zonal and meridional wind stress.
       IF ( .NOT.useAtmWind ) THEN
        CALL EXF_SET_UV(
-     I     ustressfile, ustressstartdate, ustressperiod,
+     I     ustressfile, ustressStartTime, ustressperiod,
      I     exf_inscal_ustress,
      I     ustress_exfremo_intercept, ustress_exfremo_slope,
      U     ustress, ustress0, ustress1, ustressmask,
-     I     vstressfile, vstressstartdate, vstressperiod,
+     I     vstressfile, vstressStartTime, vstressperiod,
      I     exf_inscal_vstress,
      I     vstress_exfremo_intercept, vstress_exfremo_slope,
      U     vstress, vstress0, vstress1, vstressmask,
@@ -106,7 +106,7 @@ C     Zonal and meridional wind stress.
 
 C--   wind speed
       CALL EXF_SET_GEN(
-     &     wspeedfile, wspeedstartdate, wspeedperiod,
+     &     wspeedfile, wspeedStartTime, wspeedperiod,
      &     exf_inscal_wspeed,
      &     wspeed_exfremo_intercept, wspeed_exfremo_slope,
      &     wspeed, wspeed0, wspeed1, wspeedmask,
@@ -120,11 +120,11 @@ C--   wind speed
 C     Zonal and meridional wind.
       IF ( useAtmWind ) THEN
        CALL EXF_SET_UV(
-     I     uwindfile, uwindstartdate, uwindperiod,
+     I     uwindfile, uwindStartTime, uwindperiod,
      I     exf_inscal_uwind,
      I     uwind_exfremo_intercept, uwind_exfremo_slope,
      U     uwind, uwind0, uwind1, uwindmask,
-     I     vwindfile, vwindstartdate, vwindperiod,
+     I     vwindfile, vwindStartTime, vwindperiod,
      I     exf_inscal_vwind,
      I     vwind_exfremo_intercept, vwind_exfremo_slope,
      U     vwind, vwind0, vwind1, vwindmask,
@@ -167,7 +167,7 @@ C     Subtract UVEL and VVEL from UWIND and VWIND.
 
 C     Atmospheric heat flux.
       CALL EXF_SET_GEN  (
-     &     hfluxfile, hfluxstartdate, hfluxperiod,
+     &     hfluxfile, hfluxStartTime, hfluxperiod,
      &     exf_inscal_hflux,
      &     hflux_exfremo_intercept, hflux_exfremo_slope,
      &     hflux, hflux0, hflux1, hfluxmask,
@@ -179,7 +179,7 @@ C     Atmospheric heat flux.
 
 C     Freshwater flux.
       CALL EXF_SET_GEN  (
-     &     sfluxfile, sfluxstartdate, sfluxperiod,
+     &     sfluxfile, sfluxStartTime, sfluxperiod,
      &     exf_inscal_sflux,
      &     sflux_exfremo_intercept, sflux_exfremo_slope,
      &     sflux, sflux0, sflux1, sfluxmask,
@@ -193,7 +193,7 @@ C     Freshwater flux.
 
 C     Atmospheric temperature.
       CALL EXF_SET_GEN(
-     &     atempfile, atempstartdate, atempperiod,
+     &     atempfile, atempStartTime, atempperiod,
      &     exf_inscal_atemp,
      &     atemp_exfremo_intercept, atemp_exfremo_slope,
      &     atemp, atemp0, atemp1, atempmask,
@@ -214,7 +214,7 @@ C     Atmospheric temperature.
 
 C     Atmospheric humidity.
       CALL EXF_SET_GEN(
-     &     aqhfile, aqhstartdate, aqhperiod,
+     &     aqhfile, aqhStartTime, aqhperiod,
      &     exf_inscal_aqh,
      &     aqh_exfremo_intercept, aqh_exfremo_slope,
      &     aqh, aqh0, aqh1, aqhmask,
@@ -228,7 +228,7 @@ C     Atmospheric humidity.
 
 C     Sensible Heat flux
       CALL EXF_SET_GEN(
-     &     hs_file, hs_startdate, hs_period,
+     &     hs_file, hs_StartTime, hs_period,
      &     exf_inscal_hs,
      &     hs_exfremo_intercept, hs_exfremo_slope,
      &     hs, hs0, hs1, hs_mask,
@@ -240,7 +240,7 @@ C     Sensible Heat flux
 
 C     Latent Heat flux
       CALL EXF_SET_GEN(
-     &     hl_file, hl_startdate, hl_period,
+     &     hl_file, hl_StartTime, hl_period,
      &     exf_inscal_hl,
      &     hl_exfremo_intercept, hl_exfremo_slope,
      &     hl, hl0, hl1, hl_mask,
@@ -254,7 +254,7 @@ C     Latent Heat flux
 
 C     Net long wave radiative flux.
       CALL EXF_SET_GEN(
-     &     lwfluxfile, lwfluxstartdate, lwfluxperiod,
+     &     lwfluxfile, lwfluxStartTime, lwfluxperiod,
      &     exf_inscal_lwflux,
      &     lwflux_exfremo_intercept, lwflux_exfremo_slope,
      &     lwflux, lwflux0, lwflux1, lwfluxmask,
@@ -266,7 +266,7 @@ C     Net long wave radiative flux.
 
 C     Precipitation.
       CALL EXF_SET_GEN(
-     &     precipfile, precipstartdate, precipperiod,
+     &     precipfile, precipStartTime, precipperiod,
      &     exf_inscal_precip,
      &     precip_exfremo_intercept, precip_exfremo_slope,
      &     precip, precip0, precip1, precipmask,
@@ -278,7 +278,7 @@ C     Precipitation.
 
 C     Snow.
       CALL EXF_SET_GEN(
-     &     snowprecipfile, snowprecipstartdate, snowprecipperiod,
+     &     snowprecipfile, snowprecipStartTime, snowprecipperiod,
      &     exf_inscal_snowprecip,
      &     snowprecip_exfremo_intercept, snowprecip_exfremo_slope,
      &     snowprecip, snowprecip0, snowprecip1, snowprecipmask,
@@ -308,7 +308,7 @@ C     Take care of case where total precip is not defined
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
 C     Net short wave radiative flux.
       CALL EXF_SET_GEN  (
-     &     swfluxfile, swfluxstartdate, swfluxperiod,
+     &     swfluxfile, swfluxStartTime, swfluxperiod,
      &     exf_inscal_swflux,
      &     swflux_exfremo_intercept, swflux_exfremo_slope,
      &     swflux, swflux0, swflux1, swfluxmask,
@@ -322,7 +322,7 @@ C     Net short wave radiative flux.
 #ifdef EXF_READ_EVAP
 C     Evaporation
       CALL EXF_SET_GEN  (
-     &     evapfile, evapstartdate, evapperiod,
+     &     evapfile, evapStartTime, evapperiod,
      &     exf_inscal_evap,
      &     evap_exfremo_intercept, evap_exfremo_slope,
      &     evap, evap0, evap1, evapmask,
@@ -337,7 +337,7 @@ C     Evaporation
 
 C     Downward shortwave radiation.
       CALL EXF_SET_GEN  (
-     &     swdownfile, swdownstartdate, swdownperiod,
+     &     swdownfile, swdownStartTime, swdownperiod,
      &     exf_inscal_swdown,
      &     swdown_exfremo_intercept, swdown_exfremo_slope,
      &     swdown, swdown0, swdown1, swdownmask,
@@ -349,7 +349,7 @@ C     Downward shortwave radiation.
 
 C     Downward longwave radiation.
       CALL EXF_SET_GEN  (
-     &     lwdownfile, lwdownstartdate, lwdownperiod,
+     &     lwdownfile, lwdownStartTime, lwdownperiod,
      &     exf_inscal_lwdown,
      &     lwdown_exfremo_intercept, lwdown_exfremo_slope,
      &     lwdown, lwdown0, lwdown1, lwdownmask,
@@ -364,7 +364,7 @@ C     Downward longwave radiation.
 #ifdef ATMOSPHERIC_LOADING
 C     Atmos. pressure forcing
       CALL EXF_SET_GEN  (
-     &     apressurefile, apressurestartdate, apressureperiod,
+     &     apressurefile, apressureStartTime, apressureperiod,
      &     exf_inscal_apressure,
      &     apressure_exfremo_intercept, apressure_exfremo_slope,
      &     apressure, apressure0, apressure1, apressuremask,
@@ -379,7 +379,7 @@ C     Atmos. pressure forcing
 #ifdef EXF_SEAICE_FRACTION
 C     fractional ice-covered area MASK
       CALL EXF_SET_GEN  (
-     &     areamaskfile, areamaskstartdate, areamaskperiod,
+     &     areamaskfile, areamaskStartTime, areamaskperiod,
      &     exf_inscal_areamask,
      &     areamask_exfremo_intercept, areamask_exfremo_slope,
      &     areamask, areamask0, areamask1, areamaskmask,
@@ -394,7 +394,7 @@ C     fractional ice-covered area MASK
 #ifdef ALLOW_RUNOFF
 C     Runoff
       CALL EXF_SET_GEN  (
-     &     runofffile, runoffstartdate, runoffperiod,
+     &     runofffile, runoffStartTime, runoffperiod,
      &     exf_inscal_runoff,
      &     runoff_exfremo_intercept, runoff_exfremo_slope,
      &     runoff, runoff0, runoff1, runoffmask,
@@ -408,7 +408,7 @@ C     Runoff
 #ifdef ALLOW_RUNOFTEMP
 C     Runoff temperature
       CALL EXF_SET_GEN  (
-     &     runoftempfile, runoffstartdate, runoffperiod,
+     &     runoftempfile, runoffStartTime, runoffperiod,
      &     exf_inscal_runoftemp,
      &     runoftemp_exfremo_intercept, runoftemp_exfremo_slope,
      &     runoftemp, runoftemp0, runoftemp1, runoffmask,
@@ -422,7 +422,7 @@ C     Runoff temperature
 #ifdef ALLOW_SALTFLX
 C     Salt flux
       CALL EXF_SET_GEN  (
-     &     saltflxfile, saltflxstartdate, saltflxperiod,
+     &     saltflxfile, saltflxStartTime, saltflxperiod,
      &     exf_inscal_saltflx,
      &     saltflx_exfremo_intercept, saltflx_exfremo_slope,
      &     saltflx, saltflx0, saltflx1, saltflxmask,

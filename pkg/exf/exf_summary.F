@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.41 2017/01/27 17:15:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.42 2017/01/31 18:59:14 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -286,7 +286,7 @@ C--   Zonal wind stress.
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Zonal wind stress forcing starts at         ',
-     &     ustressstartdate
+     &     ustressStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -317,7 +317,7 @@ C--   Meridional wind stress.
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Meridional wind stress forcing starts at    ',
-     &     vstressstartdate
+     &     vstressStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -352,7 +352,7 @@ C--   Heat flux.
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Heat flux forcing starts at                 ',
-     &     hfluxstartdate
+     &     hfluxStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -383,7 +383,7 @@ C--   Fresh-Water flux.
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Salt flux forcing starts at                 ',
-     &     sfluxstartdate
+     &     sfluxStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -415,7 +415,7 @@ C--   Net shortwave.
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Net shortwave flux forcing starts at      ',
-     &     swfluxstartdate
+     &     swfluxStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -447,7 +447,7 @@ C--   Zonal wind.
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Zonal wind forcing starts at                ',
-     &     uwindstartdate
+     &     uwindStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -478,7 +478,7 @@ C--   Meridional wind.
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Meridional wind forcing starts at           ',
-     &     vwindstartdate
+     &     vwindStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -514,7 +514,7 @@ C--   Atmospheric temperature.
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Atmospheric temperature starts at           ',
-     &     atempstartdate
+     &     atempStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -545,7 +545,7 @@ C--   Atmospheric specific humidity.
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Atmospheric specific humidity starts at     ',
-     &     aqhstartdate
+     &     aqhStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -588,7 +588,7 @@ C--   Sensible heat flux
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Sensible heat flux (+=down) starts at       ',
-     &     hs_startdate
+     &     hs_StartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -619,7 +619,7 @@ C--   Latent heat flux
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Latent heat flux (+=down) starts at         ',
-     &     hl_startdate
+     &     hl_StartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -657,7 +657,7 @@ C--   Net longwave.
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Net longwave flux forcing starts at       ',
-     &     lwfluxstartdate
+     &     lwfluxStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -699,7 +699,7 @@ c      CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
 c    &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Evaporation starts at     ',
-     &     evapstartdate
+     &     evapStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -737,7 +737,7 @@ C--   Precipitation.
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Precipitation data starts at                ',
-     &     precipstartdate
+     &     precipStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -768,7 +768,7 @@ C--   Snow Precipitation
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Snow Precipitation data starts at           ',
-     &     snowprecipstartdate
+     &     snowprecipStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -811,7 +811,7 @@ c      CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
 c    &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Runoff starts at     ',
-     &     runoffstartdate
+     &     runoffStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -888,7 +888,7 @@ C--   Salt-Flux
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Net upward Salt-Flux forcing starts at      ',
-     &     saltflxstartdate
+     &     saltflxStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -926,7 +926,7 @@ C--   Downward shortwave.
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Downward shortwave flux forcing starts at      ',
-     &     swdownstartdate
+     &     swdownStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -957,7 +957,7 @@ C--   Downward longwave.
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Downward longwave flux forcing starts at       ',
-     &     lwdownstartdate
+     &     lwdownStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -990,7 +990,7 @@ C--   Atmospheric pressure.
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Atmospheric pressure forcing starts at      ',
-     &     apressurestartdate
+     &     apressureStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -1023,7 +1023,7 @@ C--   fractional ice-covered area MASK.
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   fractional ice-covered area MASK starts at      ',
-     &     areamaskstartdate
+     &     areamaskStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -1087,7 +1087,7 @@ c      CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
 c    &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Climatological SST starts at         ',
-     &     climsststartdate
+     &     climsstStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
@@ -1139,7 +1139,7 @@ c      CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
 c    &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')
      & '   Climatological SSS starts at         ',
-     &     climsssstartdate
+     &     climsssStartTime
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,F12.0)')

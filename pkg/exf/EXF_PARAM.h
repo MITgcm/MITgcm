@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.40 2017/01/27 17:12:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.41 2017/01/31 18:59:14 jmc Exp $
 C $Name:  $
 C
 C     ==================================================================
@@ -108,7 +108,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer hfluxstartdate1
       integer hfluxstartdate2
-      _RL     hfluxstartdate
+      _RL     hfluxStartTime
       _RL     hfluxperiod
       _RL     hfluxconst
       _RL     hflux_exfremo_intercept
@@ -117,7 +117,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer atempstartdate1
       integer atempstartdate2
-      _RL     atempstartdate
+      _RL     atempStartTime
       _RL     atempperiod
       _RL     atempconst
       _RL     atemp_exfremo_intercept
@@ -126,7 +126,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer aqhstartdate1
       integer aqhstartdate2
-      _RL     aqhstartdate
+      _RL     aqhStartTime
       _RL     aqhperiod
       _RL     aqhconst
       _RL     aqh_exfremo_intercept
@@ -135,7 +135,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer hs_startdate1
       integer hs_startdate2
-      _RL     hs_startdate
+      _RL     hs_StartTime
       _RL     hs_period
       _RL     hs_const
       _RL     hs_exfremo_intercept
@@ -144,7 +144,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer hl_startdate1
       integer hl_startdate2
-      _RL     hl_startdate
+      _RL     hl_StartTime
       _RL     hl_period
       _RL     hl_const
       _RL     hl_exfremo_intercept
@@ -153,7 +153,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer sfluxstartdate1
       integer sfluxstartdate2
-      _RL     sfluxstartdate
+      _RL     sfluxStartTime
       _RL     sfluxperiod
       _RL     sfluxconst
       _RL     sflux_exfremo_intercept
@@ -162,7 +162,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer evapstartdate1
       integer evapstartdate2
-      _RL     evapstartdate
+      _RL     evapStartTime
       _RL     evapperiod
       _RL     evapconst
       _RL     evap_exfremo_intercept
@@ -171,7 +171,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer precipstartdate1
       integer precipstartdate2
-      _RL     precipstartdate
+      _RL     precipStartTime
       _RL     precipperiod
       _RL     precipconst
       _RL     precip_exfremo_intercept
@@ -180,7 +180,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer snowprecipstartdate1
       integer snowprecipstartdate2
-      _RL     snowprecipstartdate
+      _RL     snowprecipStartTime
       _RL     snowprecipperiod
       _RL     snowprecipconst
       _RL     snowprecip_exfremo_intercept
@@ -189,7 +189,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer runoffstartdate1
       integer runoffstartdate2
-      _RL     runoffstartdate
+      _RL     runoffStartTime
       _RL     runoffperiod
       _RL     runoffconst
       _RL     runoff_exfremo_intercept
@@ -202,7 +202,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer saltflxstartdate1
       integer saltflxstartdate2
-      _RL     saltflxstartdate
+      _RL     saltflxStartTime
       _RL     saltflxperiod
       _RL     saltflxconst
       _RL     saltflx_exfremo_intercept
@@ -211,7 +211,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer ustressstartdate1
       integer ustressstartdate2
-      _RL     ustressstartdate
+      _RL     ustressStartTime
       _RL     ustressperiod
       _RL     ustressconst
       _RL     ustress_exfremo_intercept
@@ -220,7 +220,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer vstressstartdate1
       integer vstressstartdate2
-      _RL     vstressstartdate
+      _RL     vstressStartTime
       _RL     vstressperiod
       _RL     vstressconst
       _RL     vstress_exfremo_intercept
@@ -229,7 +229,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer uwindstartdate1
       integer uwindstartdate2
-      _RL     uwindstartdate
+      _RL     uwindStartTime
       _RL     uwindperiod
       _RL     uwindconst
       _RL     uwind_exfremo_intercept
@@ -238,7 +238,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer vwindstartdate1
       integer vwindstartdate2
-      _RL     vwindstartdate
+      _RL     vwindStartTime
       _RL     vwindperiod
       _RL     vwindconst
       _RL     vwind_exfremo_intercept
@@ -247,7 +247,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer wspeedstartdate1
       integer wspeedstartdate2
-      _RL     wspeedstartdate
+      _RL     wspeedStartTime
       _RL     wspeedperiod
       _RL     wspeedconst
       _RL     wspeed_exfremo_intercept
@@ -256,7 +256,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer swfluxstartdate1
       integer swfluxstartdate2
-      _RL     swfluxstartdate
+      _RL     swfluxStartTime
       _RL     swfluxperiod
       _RL     swfluxconst
       _RL     swflux_exfremo_intercept
@@ -265,7 +265,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer lwfluxstartdate1
       integer lwfluxstartdate2
-      _RL     lwfluxstartdate
+      _RL     lwfluxStartTime
       _RL     lwfluxperiod
       _RL     lwfluxconst
       _RL     lwflux_exfremo_intercept
@@ -274,7 +274,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer swdownstartdate1
       integer swdownstartdate2
-      _RL     swdownstartdate
+      _RL     swdownStartTime
       _RL     swdownperiod
       _RL     swdownconst
       _RL     swdown_exfremo_intercept
@@ -283,7 +283,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer lwdownstartdate1
       integer lwdownstartdate2
-      _RL     lwdownstartdate
+      _RL     lwdownStartTime
       _RL     lwdownperiod
       _RL     lwdownconst
       _RL     lwdown_exfremo_intercept
@@ -292,7 +292,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer apressurestartdate1
       integer apressurestartdate2
-      _RL     apressurestartdate
+      _RL     apressureStartTime
       _RL     apressureperiod
       _RL     apressureconst
       _RL     apressure_exfremo_intercept
@@ -301,7 +301,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 
       integer areamaskstartdate1
       integer areamaskstartdate2
-      _RL     areamaskstartdate
+      _RL     areamaskStartTime
       _RL     areamaskperiod
       _RL     areamaskTauRelax
       _RL     areamaskconst
@@ -312,7 +312,7 @@ C           fieldperiod=-12 means input file contains 12 monthly means
 c     Calendar data.
       integer climsststartdate1
       integer climsststartdate2
-      _RL     climsststartdate
+      _RL     climsstStartTime
       _RL     climsstperiod
       _RL     climsstTauRelax
       _RL     climsstconst
@@ -322,7 +322,7 @@ c     Calendar data.
 
       integer climsssstartdate1
       integer climsssstartdate2
-      _RL     climsssstartdate
+      _RL     climsssStartTime
       _RL     climsssperiod
       _RL     climsssTauRelax
       _RL     climsssconst
@@ -332,7 +332,7 @@ c     Calendar data.
 
       integer climustrstartdate1
       integer climustrstartdate2
-      _RL     climustrstartdate
+      _RL     climustrStartTime
       _RL     climustrperiod
       _RL     climustrTauRelax
       _RL     climustrconst
@@ -342,7 +342,7 @@ c     Calendar data.
 
       integer climvstrstartdate1
       integer climvstrstartdate2
-      _RL     climvstrstartdate
+      _RL     climvstrStartTime
       _RL     climvstrperiod
       _RL     climvstrTauRelax
       _RL     climvstrconst
@@ -360,13 +360,13 @@ c     to describe S/T/U/V open boundary condition files
       integer obcsEstartdate2
       integer obcsWstartdate1
       integer obcsWstartdate2
-      _RL     obcsNstartdate
+      _RL     obcsNStartTime
       _RL     obcsNperiod
-      _RL     obcsSstartdate
+      _RL     obcsSStartTime
       _RL     obcsSperiod
-      _RL     obcsEstartdate
+      _RL     obcsEStartTime
       _RL     obcsEperiod
-      _RL     obcsWstartdate
+      _RL     obcsWStartTime
       _RL     obcsWperiod
 
 c     the following variables are used in conjunction with pkg/obcs
@@ -380,13 +380,13 @@ c     and vice open boundary condition files
       integer siobEstartdate2
       integer siobWstartdate1
       integer siobWstartdate2
-      _RL     siobNstartdate
+      _RL     siobNStartTime
       _RL     siobNperiod
-      _RL     siobSstartdate
+      _RL     siobSStartTime
       _RL     siobSperiod
-      _RL     siobEstartdate
+      _RL     siobEStartTime
       _RL     siobEperiod
-      _RL     siobWstartdate
+      _RL     siobWStartTime
       _RL     siobWperiod
 
 c     File names.
@@ -464,36 +464,36 @@ c     File names.
       COMMON /EXF_PARAM_R/
      &       repeatPeriod,      exf_monFreq,
      &       exf_scal_BulkCdn,  windstressmax,
-     &       hfluxperiod,       hfluxstartdate,
-     &       atempperiod,       atempstartdate,
-     &       aqhperiod,         aqhstartdate,
-     &       hs_period,         hs_startdate,
-     &       hl_period,         hl_startdate,
-     &       sfluxperiod,       sfluxstartdate,
-     &       evapperiod,        evapstartdate,
-     &       precipperiod,      precipstartdate,
-     &       snowprecipperiod,  snowprecipstartdate,
-     &       runoffperiod,      runoffstartdate,
-     &       saltflxperiod,     saltflxstartdate,
-     &       ustressperiod,     ustressstartdate,
-     &       vstressperiod,     vstressstartdate,
-     &       uwindperiod,       uwindstartdate,
-     &       vwindperiod,       vwindstartdate,
-     &       wspeedperiod,      wspeedstartdate,
-     &       swfluxperiod,      swfluxstartdate,
-     &       lwfluxperiod,      lwfluxstartdate,
-     &       swdownperiod,      swdownstartdate,
-     &       lwdownperiod,      lwdownstartdate,
-     &       obcsNperiod,       obcsNstartdate,
-     &       obcsSperiod,       obcsSstartdate,
-     &       obcsEperiod,       obcsEstartdate,
-     &       obcsWperiod,       obcsWstartdate,
-     &       siobNperiod,       siobNstartdate,
-     &       siobSperiod,       siobSstartdate,
-     &       siobEperiod,       siobEstartdate,
-     &       siobWperiod,       siobWstartdate,
-     &       apressureperiod,   apressurestartdate,
-     &       areamaskperiod,   areamaskstartdate,
+     &       hfluxperiod,       hfluxStartTime,
+     &       atempperiod,       atempStartTime,
+     &       aqhperiod,         aqhStartTime,
+     &       hs_period,         hs_StartTime,
+     &       hl_period,         hl_StartTime,
+     &       sfluxperiod,       sfluxStartTime,
+     &       evapperiod,        evapStartTime,
+     &       precipperiod,      precipStartTime,
+     &       snowprecipperiod,  snowprecipStartTime,
+     &       runoffperiod,      runoffStartTime,
+     &       saltflxperiod,     saltflxStartTime,
+     &       ustressperiod,     ustressStartTime,
+     &       vstressperiod,     vstressStartTime,
+     &       uwindperiod,       uwindStartTime,
+     &       vwindperiod,       vwindStartTime,
+     &       wspeedperiod,      wspeedStartTime,
+     &       swfluxperiod,      swfluxStartTime,
+     &       lwfluxperiod,      lwfluxStartTime,
+     &       swdownperiod,      swdownStartTime,
+     &       lwdownperiod,      lwdownStartTime,
+     &       obcsNperiod,       obcsNStartTime,
+     &       obcsSperiod,       obcsSStartTime,
+     &       obcsEperiod,       obcsEStartTime,
+     &       obcsWperiod,       obcsWStartTime,
+     &       siobNperiod,       siobNStartTime,
+     &       siobSperiod,       siobSStartTime,
+     &       siobEperiod,       siobEStartTime,
+     &       siobWperiod,       siobWStartTime,
+     &       apressureperiod,   apressureStartTime,
+     &       areamaskperiod,   areamaskStartTime,
      &       hfluxconst,
      &       atempconst,
      &       aqhconst,
@@ -605,10 +605,10 @@ c     File names.
 
       COMMON /EXF_CLIM_R/
      &       climtempfreeze,
-     &       climsstperiod,      climsststartdate,
-     &       climsssperiod,      climsssstartdate,
-     &       climustrperiod,     climustrstartdate,
-     &       climvstrperiod,     climvstrstartdate,
+     &       climsstperiod,      climsstStartTime,
+     &       climsssperiod,      climsssStartTime,
+     &       climustrperiod,     climustrStartTime,
+     &       climvstrperiod,     climvstrStartTime,
      &       climsstTauRelax,    climsssTauRelax,
      &       climustrTauRelax,   climvstrTauRelax,
      &       climsstconst,       climsssconst,

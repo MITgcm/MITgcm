@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.28 2017/01/27 17:12:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.29 2017/01/31 18:59:14 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -234,13 +234,13 @@ C-    stop if one expects interp+rotation (Curvilin-G) which will not happen
          CALL PRINT_ERROR( msgBuf, myThid )
          errCount = errCount + 1
         ENDIF
-        IF ( uwindstartdate .NE. vwindstartdate .OR.
+        IF ( uwindStartTime .NE. vwindStartTime .OR.
      &       uwindperiod    .NE. vwindperiod   ) THEN
          WRITE(msgBuf,'(A,A)') 'S/R EXF_CHECK: ',
      &        'For CurvilinearGrid/RotatedGrid, the u and v wind '
          CALL PRINT_ERROR( msgBuf, myThid )
          WRITE(msgBuf,'(A,A,A)') 'S/R EXF_CHECK: ',
-     &        'files have to have the same startdate and period, ',
+     &        'files have to have the same StartTime and period, ',
      &        'because S/R EXF_SET_UV assumes that.'
          CALL PRINT_ERROR( msgBuf, myThid )
          errCount = errCount + 1
@@ -265,13 +265,13 @@ C-    stop if one expects interp+rotation (Curvilin-G) which will not happen
          CALL PRINT_ERROR( msgBuf, myThid )
          errCount = errCount + 1
         ENDIF
-        IF ( ustressstartdate .NE. vstressstartdate .OR.
+        IF ( ustressStartTime .NE. vstressStartTime .OR.
      &       ustressperiod    .NE. vstressperiod   ) THEN
          WRITE(msgBuf,'(A,A)') 'S/R EXF_CHECK: ',
      &    'For CurvilinearGrid/RotatedGrid, the u and v wind stress '
          CALL PRINT_ERROR( msgBuf, myThid )
          WRITE(msgBuf,'(A,A,A)') 'S/R EXF_CHECK: ',
-     &        'files have to have the same startdate and period, ',
+     &        'files have to have the same StartTime and period, ',
      &        'because S/R EXF_SET_UV assumes that.'
          CALL PRINT_ERROR( msgBuf, myThid )
          errCount = errCount + 1

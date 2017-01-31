@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.25 2014/11/02 21:23:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.26 2017/01/31 18:59:14 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -9,11 +9,8 @@ C $Name:  $
 # include "ECCO_OPTIONS.h"
 #endif
 
-      subroutine exf_getclim(
-     I                        mytime,
-     I                        myiter,
-     I                        mythid
-     &                      )
+      SUBROUTINE EXF_GETCLIM(
+     I                        myTime, myIter, myThid )
 
 c     ==================================================================
 c     SUBROUTINE exf_getclim
@@ -37,7 +34,7 @@ c     ==================================================================
 c     SUBROUTINE exf_getclim
 c     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 c     == global variables ==
 #include "EEPARAMS.h"
@@ -61,22 +58,22 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-c     mythid - thread number for this instance of the routine.
+c     myThid - thread number for this instance of the routine.
 
-      _RL     mytime
-      integer myiter
-      integer mythid
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 c     == local variables ==
 
-      integer bi, bj, i, j
+      INTEGER bi, bj, i, j
 
 c     == end of interface ==
 
 #ifdef ALLOW_CLIMSST_RELAXATION
 c     Get values of climatological sst fields.
-      call exf_set_gen  (
-     &     climsstfile, climsststartdate, climsstperiod,
+      CALL EXF_SET_GEN (
+     &     climsstfile, climsstStartTime, climsstperiod,
      &     exf_inscal_climsst,
      &     climsst_exfremo_intercept, climsst_exfremo_slope,
      &     climsst, climsst0, climsst1, climsstmask,
@@ -84,38 +81,38 @@ c     Get values of climatological sst fields.
      &     climsst_lon0, climsst_lon_inc, climsst_lat0, climsst_lat_inc,
      &     climsst_nlon, climsst_nlat, xC, yC, climsst_interpMethod,
 #endif
-     &     mytime, myiter, mythid )
+     &     myTime, myIter, myThid )
 
-      do bj = mybylo(mythid),mybyhi(mythid)
-       do bi = mybxlo(mythid),mybxhi(mythid)
-        do j = 1,sny
-         do i = 1,snx
-            if (climsst(i,j,bi,bj) .lt. climtempfreeze) then
+      DO bj = myByLo(myThid),myByHi(myThid)
+       DO bi = myBxLo(myThid),mybxhi(myThid)
+        DO j = 1,sNy
+         DO i = 1,sNx
+            IF (climsst(i,j,bi,bj) .LT. climtempfreeze) THEN
                climsst(i,j,bi,bj) = climtempfreeze
-            endif
-         enddo
-        enddo
-       enddo
-      enddo
+            ENDIF
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 c--   Update the tile edges.
-      _EXCH_XY_RL(climsst, mythid)
+      _EXCH_XY_RL(climsst, myThid)
 #endif
 
 #if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
 # ifdef ALLOW_SST_CONTROL
-      call CTRL_GET_GEN (
+      CALL CTRL_GET_GEN (
      &     xx_sst_file, xx_sststartdate, xx_sstperiod,
      &     maskc, climsst, xx_sst0, xx_sst1, xx_sst_dummy,
      &     xx_sst_remo_intercept, xx_sst_remo_slope,
-     &     wsst, mytime, myiter, mythid )
+     &     wsst, myTime, myIter, myThid )
 # endif
 #endif
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
 c     Get values of climatological sss fields.
-      call exf_set_gen  (
-     &     climsssfile, climsssstartdate, climsssperiod,
+      CALL EXF_SET_GEN (
+     &     climsssfile, climsssStartTime, climsssperiod,
      &     exf_inscal_climsss,
      &     climsss_exfremo_intercept, climsss_exfremo_slope,
      &     climsss, climsss0, climsss1, climsssmask,
@@ -123,30 +120,30 @@ c     Get values of climatological sss fields.
      &     climsss_lon0, climsss_lon_inc, climsss_lat0, climsss_lat_inc,
      &     climsss_nlon, climsss_nlat, xC, yC, climsss_interpMethod,
 #endif
-     &     mytime, myiter, mythid )
+     &     myTime, myIter, myThid )
 
 c--   Update the tile edges.
-      _EXCH_XY_RL(climsss, mythid)
+      _EXCH_XY_RL(climsss, myThid)
 #endif
 
 #if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
 # ifdef ALLOW_SSS_CONTROL
-      call CTRL_GET_GEN (
+      CALL CTRL_GET_GEN (
      &     xx_sss_file, xx_sssstartdate, xx_sssperiod,
      &     maskc, climsss, xx_sss0, xx_sss1, xx_sss_dummy,
      &     xx_sss_remo_intercept, xx_sss_remo_slope,
-     &     wsss, mytime, myiter, mythid )
+     &     wsss, myTime, myIter, myThid )
 # endif
 #endif
 
 #ifdef ALLOW_CLIMSTRESS_RELAXATION
 c     Get values of climatological ustr fields.
-      call exf_set_uv (
-     I     climustrfile, climustrstartdate, climustrperiod,
+      CALL EXF_SET_UV (
+     I     climustrfile, climustrStartTime, climustrperiod,
      I     exf_inscal_climustr,
      I     climustr_exfremo_intercept, climustr_exfremo_slope,
      U     climustr, climustr0, climustr1, climustrmask,
-     I     climvstrfile, climvstrstartdate, climvstrperiod,
+     I     climvstrfile, climvstrStartTime, climvstrperiod,
      I     exf_inscal_climvstr,
      I     climvstr_exfremo_intercept, climvstr_exfremo_slope,
      U     climvstr, climvstr0, climvstr1, climvstrmask,
@@ -159,7 +156,7 @@ c     Get values of climatological ustr fields.
      I     climvstr_nlon, climvstr_nlat, climvstr_interpMethod,
      I     uvInterp_climstr,
 #endif
-     I     mytime, myiter, mythid )
+     I     myTime, myIter, myThid )
 
       CALL EXCH_UV_XY_RL( climustr, climvstr, .TRUE., myThid )
 #endif /* CLIMSTRESS_RELAXATION */
@@ -167,33 +164,33 @@ c     Get values of climatological ustr fields.
 #ifdef ALLOW_BULK_OFFLINE
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-oLy,sNy+oLy
-          DO i=1-oLx,sNx+oLx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
 # ifdef ALLOW_CLIMSST_RELAXATION
-           if ( climsstfile .NE. ' ' .AND.
+           IF ( climsstfile .NE. ' ' .AND.
      &          climsstperiod .NE. 0. )
      &          theta(i,j,1,bi,bj) = climsst(i,j,bi,bj)
 # endif
 # ifdef ALLOW_CLIMSSS_RELAXATION
-           if ( climsssfile .NE. ' ' .AND.
+           IF ( climsssfile .NE. ' ' .AND.
      &          climsssperiod .NE. 0. )
      &          salt(i,j,1,bi,bj) = climsss(i,j,bi,bj)
 # endif
 # ifdef ALLOW_CLIMSTRESS_RELAXATION
-           if ( climustrfile .NE. ' ' .AND.
+           IF ( climustrfile .NE. ' ' .AND.
      &          climustrperiod .NE. 0. )
      &          uvel(i,j,1,bi,bj) = climustr(i,j,bi,bj)
-           if ( climvstrfile .NE. ' ' .AND.
+           IF ( climvstrfile .NE. ' ' .AND.
      &          climvstrperiod .NE. 0. )
      &          vvel(i,j,1,bi,bj) = climvstr(i,j,bi,bj)
 # endif
-           if ( myiter .EQ. niter0 ) then
-              if ( maskC(i,j,1,bi,bj) .NE. 0. .AND.
-     &             theta(i,j,1,bi,bj) .EQ. 0. ) then
+           IF ( myIter .EQ. niter0 ) THEN
+              IF ( maskC(i,j,1,bi,bj) .NE. 0. .AND.
+     &             theta(i,j,1,bi,bj) .EQ. 0. ) THEN
                 print *, 'ph-warn-exf-clim ', i, j, theta(i,j,1,bi,bj)
 cph                STOP 'in exf_getclim'
-              endif
-           endif
+              ENDIF
+           ENDIF
           ENDDO
          ENDDO
        ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.88 2017/01/27 17:12:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.89 2017/01/31 18:59:14 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -600,40 +600,40 @@ C     Data files.
       climvstrfile       = ' '
 
 C     Start dates.
-      hfluxstartdate     = 0.
-      atempstartdate     = 0.
-      aqhstartdate       = 0.
-      hs_startdate       = 0.
-      hl_startdate       = 0.
-      evapstartdate      = 0.
-      precipstartdate    = 0.
-      snowprecipstartdate= 0.
-      sfluxstartdate     = 0.
-      runoffstartdate    = 0.
-      saltflxstartdate   = 0.
-      ustressstartdate   = 0.
-      vstressstartdate   = 0.
-      uwindstartdate     = 0.
-      vwindstartdate     = 0.
-      wspeedstartdate    = 0.
-      swfluxstartdate    = 0.
-      lwfluxstartdate    = 0.
-      swdownstartdate    = 0.
-      lwdownstartdate    = 0.
-      obcsNstartdate     = 0.
-      obcsSstartdate     = 0.
-      obcsEstartdate     = 0.
-      obcsWstartdate     = 0.
-      siobNstartdate     = 0.
-      siobSstartdate     = 0.
-      siobEstartdate     = 0.
-      siobWstartdate     = 0.
-      apressurestartdate = 0.
-      areamaskstartdate  = 0.
-      climsststartdate   = 0.
-      climsssstartdate   = 0.
-      climustrstartdate  = 0.
-      climvstrstartdate  = 0.
+      hfluxStartTime     = 0.
+      atempStartTime     = 0.
+      aqhStartTime       = 0.
+      hs_StartTime       = 0.
+      hl_StartTime       = 0.
+      evapStartTime      = 0.
+      precipStartTime    = 0.
+      snowprecipStartTime= 0.
+      sfluxStartTime     = 0.
+      runoffStartTime    = 0.
+      saltflxStartTime   = 0.
+      ustressStartTime   = 0.
+      vstressStartTime   = 0.
+      uwindStartTime     = 0.
+      vwindStartTime     = 0.
+      wspeedStartTime    = 0.
+      swfluxStartTime    = 0.
+      lwfluxStartTime    = 0.
+      swdownStartTime    = 0.
+      lwdownStartTime    = 0.
+      obcsNStartTime     = 0.
+      obcsSStartTime     = 0.
+      obcsEStartTime     = 0.
+      obcsWStartTime     = 0.
+      siobNStartTime     = 0.
+      siobSStartTime     = 0.
+      siobEStartTime     = 0.
+      siobWStartTime     = 0.
+      apressureStartTime = 0.
+      areamaskStartTime  = 0.
+      climsstStartTime   = 0.
+      climsssStartTime   = 0.
+      climustrStartTime  = 0.
+      climvstrStartTime  = 0.
 
 C     Initialise file type and field precision
       exf_iprec            = 32

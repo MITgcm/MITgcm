@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_exf_load.F,v 1.6 2014/06/07 17:51:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_exf_load.F,v 1.7 2017/01/31 19:00:39 jmc Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -58,7 +58,7 @@ C     == end of interface ==
 
 #  ifdef ALLOW_OBCS_NORTH
       CALL OBCS_EXF_READ_XZ (
-     I     obcsNstartdate, obcsNperiod,
+     I     obcsNStartTime, obcsNperiod,
      I     useOBCSYearlyFields,
      U     OBNu,   OBNu0,   OBNu1,   OBNufile,
      U     OBNv,   OBNv0,   OBNv1,   OBNvfile,
@@ -68,7 +68,7 @@ C     == end of interface ==
      U     OBNeta, OBNeta0, OBNeta1, OBNetafile,
 #   endif
 #   ifdef ALLOW_SEAICE
-     I     siobNstartdate, siobNperiod,
+     I     siobNStartTime, siobNperiod,
      U     OBNa,   OBNa0,   OBNa1,   OBNafile,
      U     OBNh,   OBNh0,   OBNh1,   OBNhfile,
      U     OBNsl,  OBNsl0,  OBNsl1,  OBNslfile,
@@ -84,7 +84,7 @@ C     == end of interface ==
 
 #  ifdef ALLOW_OBCS_SOUTH
       CALL OBCS_EXF_READ_XZ (
-     I     obcsSstartdate, obcsSperiod,
+     I     obcsSStartTime, obcsSperiod,
      I     useOBCSYearlyFields,
      U     OBSu,   OBSu0,   OBSu1,   OBSufile,
      U     OBSv,   OBSv0,   OBSv1,   OBSvfile,
@@ -94,7 +94,7 @@ C     == end of interface ==
      U     OBSeta, OBSeta0, OBSeta1, OBSetafile,
 #   endif
 #   ifdef ALLOW_SEAICE
-     I     siobSstartdate, siobSperiod,
+     I     siobSStartTime, siobSperiod,
      U     OBSa,   OBSa0,   OBSa1,   OBSafile,
      U     OBSh,   OBSh0,   OBSh1,   OBShfile,
      U     OBSsl,  OBSsl0,  OBSsl1,  OBSslfile,
@@ -110,7 +110,7 @@ C     == end of interface ==
 
 #  ifdef ALLOW_OBCS_EAST
       CALL OBCS_EXF_READ_YZ (
-     I     obcsEstartdate, obcsEperiod,
+     I     obcsEStartTime, obcsEperiod,
      I     useOBCSYearlyFields,
      U     OBEu,   OBEu0,   OBEu1,   OBEufile,
      U     OBEv,   OBEv0,   OBEv1,   OBEvfile,
@@ -120,7 +120,7 @@ C     == end of interface ==
      U     OBEeta, OBEeta0, OBEeta1, OBEetafile,
 #   endif
 #   ifdef ALLOW_SEAICE
-     I     siobEstartdate, siobEperiod,
+     I     siobEStartTime, siobEperiod,
      U     OBEa,   OBEa0,   OBEa1,   OBEafile,
      U     OBEh,   OBEh0,   OBEh1,   OBEhfile,
      U     OBEsl,  OBEsl0,  OBEsl1,  OBEslfile,
@@ -136,7 +136,7 @@ C     == end of interface ==
 
 #  ifdef ALLOW_OBCS_WEST
       CALL OBCS_EXF_READ_YZ (
-     I     obcsWstartdate, obcsWperiod,
+     I     obcsWStartTime, obcsWperiod,
      I     useOBCSYearlyFields,
      U     OBWu,   OBWu0,   OBWu1,   OBWufile,
      U     OBWv,   OBWv0,   OBWv1,   OBWvfile,
@@ -146,7 +146,7 @@ C     == end of interface ==
      U     OBWeta, OBWeta0, OBWeta1, OBWetafile,
 #   endif
 #   ifdef ALLOW_SEAICE
-     I     siobWstartdate, siobWperiod,
+     I     siobWStartTime, siobWperiod,
      U     OBWa,   OBWa0,   OBWa1,   OBWafile,
      U     OBWh,   OBWh0,   OBWh1,   OBWhfile,
      U     OBWsl,  OBWsl0,  OBWsl1,  OBWslfile,
@@ -171,7 +171,7 @@ CBOP
 C     !ROUTINE: OBCS_EXF_READ_XZ
 C     !INTERFACE:
       SUBROUTINE OBCS_EXF_READ_XZ (
-     I     obcsstartdate, obcsperiod,
+     I     obcsStartTime, obcsperiod,
      I     useYearlyFields,
      U     OBu,   OBu0,   OBu1,   OBufile,
      U     OBv,   OBv0,   OBv1,   OBvfile,
@@ -181,7 +181,7 @@ C     !INTERFACE:
      U     OBeta, OBeta0, OBeta1, OBetafile,
 #endif
 #ifdef ALLOW_SEAICE
-     I     siobstartdate, siobperiod,
+     I     siobStartTime, siobperiod,
      U     OBa,   OBa0,   OBa1,   OBafile,
      U     OBh,   OBh0,   OBh1,   OBhfile,
      U     OBsl,  OBsl0,  OBsl1,  OBslfile,
@@ -218,7 +218,7 @@ C     == Global variables ==
 #endif /* ALLOW_PTRACERS */
 
 C     !INPUT/OUTPUT PARAMETERS:
-      _RL     obcsstartdate
+      _RL     obcsStartTime
       _RL     obcsperiod
       LOGICAL useYearlyFields
       _RL OBu     (1-OLx:sNx+OLx,Nr,nSx,nSy)
@@ -241,7 +241,7 @@ C     !INPUT/OUTPUT PARAMETERS:
       CHARACTER*(MAX_LEN_FNAM) OBetaFile
 #endif
 #ifdef ALLOW_SEAICE
-      _RL     siobstartdate
+      _RL     siobStartTime
       _RL     siobperiod
       _RL OBa     (1-OLx:sNx+OLx,nSx,nSy)
       _RL OBh     (1-OLx:sNx+OLx,nSx,nSy)
@@ -306,7 +306,7 @@ C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
       ELSE
 C     get record numbers and interpolation factor
         CALL exf_GetFFieldRec(
-     I              obcsstartdate, obcsperiod,
+     I              obcsStartTime, obcsperiod,
      I              useYearlyFields,
      O              fac, first, changed,
      O              count0, count1, year0, year1,
@@ -352,8 +352,8 @@ C     get record numbers and interpolation factor
      I                     , myTime, myIter, myThid )
 # endif /* NONLIN_FRSURF */
 # ifdef ALLOW_PTRACERS
-      if ( usePTRACERS ) then
-       do iTracer = 1, PTRACERS_numInUse
+      IF ( usePTRACERS ) THEN
+       DO iTracer = 1, PTRACERS_numInUse
         CALL EXF_SET_OBCS_XZ(  OBptr (1-OLx,1,1,1,iTracer)
      I                       , OBptr0(1-OLx,1,1,1,iTracer)
      I                       , OBptr1(1-OLx,1,1,1,iTracer)
@@ -361,8 +361,8 @@ C     get record numbers and interpolation factor
      I                       , fac, first, changed, useYearlyFields
      I                       , obcsperiod, count0, count1, year0, year1
      I                       , myTime, myIter, myThid )
-       enddo
-      endif
+       ENDDO
+      ENDIF
 # endif /* ALLOW_PTRACERS */
 
 # ifdef ALLOW_SEAICE
@@ -383,7 +383,7 @@ C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
        ELSE
 c     get record numbers and interpolation factor
         CALL exf_GetFFieldRec(
-     I              siobstartdate, siobperiod,
+     I              siobStartTime, siobperiod,
      I              useYearlyFields,
      O              fac, first, changed,
      O              count0, count1, year0, year1,
@@ -443,7 +443,7 @@ CBOP
 C     !ROUTINE: OBCS_EXF_READ_YZ
 C     !INTERFACE:
       SUBROUTINE OBCS_EXF_READ_YZ (
-     I     obcsstartdate, obcsperiod,
+     I     obcsStartTime, obcsperiod,
      I     useYearlyFields,
      U     OBu,   OBu0,   OBu1,   OBufile,
      U     OBv,   OBv0,   OBv1,   OBvfile,
@@ -453,7 +453,7 @@ C     !INTERFACE:
      U     OBeta, OBeta0, OBeta1, OBetafile,
 #endif
 #ifdef ALLOW_SEAICE
-     I     siobstartdate, siobperiod,
+     I     siobStartTime, siobperiod,
      U     OBa,   OBa0,   OBa1,   OBafile,
      U     OBh,   OBh0,   OBh1,   OBhfile,
      U     OBsl,  OBsl0,  OBsl1,  OBslfile,
@@ -490,7 +490,7 @@ C     == Global variables ==
 #endif /* ALLOW_PTRACERS */
 
 C     !INPUT/OUTPUT PARAMETERS:
-      _RL     obcsstartdate
+      _RL     obcsStartTime
       _RL     obcsperiod
       LOGICAL useYearlyFields
       _RL OBu     (1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -513,7 +513,7 @@ C     !INPUT/OUTPUT PARAMETERS:
       CHARACTER*(MAX_LEN_FNAM) OBetaFile
 #endif
 #ifdef ALLOW_SEAICE
-      _RL     siobstartdate
+      _RL     siobStartTime
       _RL     siobperiod
       _RL OBa     (1-OLy:sNy+OLy,nSx,nSy)
       _RL OBh     (1-OLy:sNy+OLy,nSx,nSy)
@@ -579,7 +579,7 @@ C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
       ELSE
 C     get record numbers and interpolation factor
         CALL exf_GetFFieldRec(
-     I              obcsstartdate, obcsperiod,
+     I              obcsStartTime, obcsperiod,
      I              useYearlyFields,
      O              fac, first, changed,
      O              count0, count1, year0, year1,
@@ -625,8 +625,8 @@ C     get record numbers and interpolation factor
      I                     , myTime, myIter, myThid )
 # endif /* NONLIN_FRSURF */
 # ifdef ALLOW_PTRACERS
-      if ( usePTRACERS ) then
-       do iTracer = 1, PTRACERS_numInUse
+      IF ( usePTRACERS ) THEN
+       DO iTracer = 1, PTRACERS_numInUse
         CALL EXF_SET_OBCS_YZ(  OBptr (1-OLx,1,1,1,iTracer)
      I                       , OBptr0(1-OLx,1,1,1,iTracer)
      I                       , OBptr1(1-OLx,1,1,1,iTracer)
@@ -634,8 +634,8 @@ C     get record numbers and interpolation factor
      I                       , fac, first, changed, useYearlyFields
      I                       , obcsperiod, count0, count1, year0, year1
      I                       , myTime, myIter, myThid )
-       enddo
-      endif
+       ENDDO
+      ENDIF
 # endif /* ALLOW_PTRACERS */
 
 # ifdef ALLOW_SEAICE
@@ -656,7 +656,7 @@ C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
        ELSE
 c     get record numbers and interpolation factor
         CALL exf_GetFFieldRec(
-     I              siobstartdate, siobperiod,
+     I              siobStartTime, siobperiod,
      I              useYearlyFields,
      O              fac, first, changed,
      O              count0, count1, year0, year1,

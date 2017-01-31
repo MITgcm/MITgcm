@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.31 2017/01/27 17:14:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.32 2017/01/31 18:59:14 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -110,7 +110,7 @@ c      climsssmask  = ' '
 
 C--   Complete the start date specifications for the forcing
 C     fields to get a complete calendar date array.
-C     FLDstartdate, for FLD = { uwind, vwind, wspeed, etc. },
+C     FLDStartTime, for FLD = { uwind, vwind, wspeed, etc. },
 C     returns time in seconds of first FLD record from the
 C     beginning of the model integration or, if useYearlyFields,
 C     from the beginning of the year.
@@ -122,7 +122,7 @@ C     from the beginning of the year.
 # endif
         CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                           uwindstartdate1, uwindstartdate2,
-     O                           uwindstartdate,
+     O                           uwindStartTime,
      I                           myThid )
        ENDIF
        IF ( vwindfile .NE. ' ' .AND. vwindperiod .GT. 0. ) THEN
@@ -131,7 +131,7 @@ C     from the beginning of the year.
 # endif
         CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                           vwindstartdate1, vwindstartdate2,
-     O                           vwindstartdate,
+     O                           vwindStartTime,
      I                           myThid )
        ENDIF
       ENDIF
@@ -142,7 +142,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          wspeedstartdate1, wspeedstartdate2,
-     O                          wspeedstartdate,
+     O                          wspeedStartTime,
      I                          myThid )
       ENDIF
 
@@ -153,7 +153,7 @@ C     from the beginning of the year.
 # endif
         CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                           ustressstartdate1, ustressstartdate2,
-     O                           ustressstartdate,
+     O                           ustressStartTime,
      I                           myThid )
        ENDIF
        IF ( vstressfile .NE. ' ' .AND. vstressperiod .GT. 0. ) THEN
@@ -162,7 +162,7 @@ C     from the beginning of the year.
 # endif
         CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                           vstressstartdate1, vstressstartdate2,
-     O                           vstressstartdate,
+     O                           vstressStartTime,
      I                           myThid )
        ENDIF
       ENDIF
@@ -173,7 +173,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          hfluxstartdate1, hfluxstartdate2,
-     O                          hfluxstartdate,
+     O                          hfluxStartTime,
      I                          myThid )
       ENDIF
       IF ( sfluxfile .NE. ' ' .AND. sfluxperiod .GT. 0. ) THEN
@@ -182,7 +182,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          sfluxstartdate1, sfluxstartdate2,
-     O                          sfluxstartdate,
+     O                          sfluxStartTime,
      I                          myThid )
       ENDIF
 
@@ -193,7 +193,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          swfluxstartdate1, swfluxstartdate2,
-     O                          swfluxstartdate,
+     O                          swfluxStartTime,
      I                          myThid )
       ENDIF
 #endif /* defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING) */
@@ -205,7 +205,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          atempstartdate1, atempstartdate2,
-     O                          atempstartdate,
+     O                          atempStartTime,
      I                          myThid )
       ENDIF
       IF ( aqhfile .NE. ' ' .AND. aqhperiod .GT. 0. ) THEN
@@ -214,7 +214,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          aqhstartdate1, aqhstartdate2,
-     O                          aqhstartdate,
+     O                          aqhStartTime,
      I                          myThid )
       ENDIF
 # ifdef ALLOW_READ_TURBFLUXES
@@ -224,7 +224,7 @@ C     from the beginning of the year.
 #  endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          hs_startdate1, hs_startdate2,
-     O                          hs_startdate,
+     O                          hs_StartTime,
      I                          myThid )
       ENDIF
       IF ( hl_file .NE. ' ' .AND. hl_period .GT. 0. ) THEN
@@ -233,7 +233,7 @@ C     from the beginning of the year.
 #  endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          hl_startdate1, hl_startdate2,
-     O                          hl_startdate,
+     O                          hl_StartTime,
      I                          myThid )
       ENDIF
 # endif /* ALLOW_READ_TURBFLUXES */
@@ -243,7 +243,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          lwfluxstartdate1, lwfluxstartdate2,
-     O                          lwfluxstartdate,
+     O                          lwfluxStartTime,
      I                          myThid )
       ENDIF
       IF ( precipfile .NE. ' ' .AND. precipperiod .GT. 0. ) THEN
@@ -252,7 +252,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          precipstartdate1, precipstartdate2,
-     O                          precipstartdate,
+     O                          precipStartTime,
      I                          myThid )
       ENDIF
       IF ( snowprecipfile .NE. ' ' .AND. snowprecipperiod .GT. 0. ) THEN
@@ -262,7 +262,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                   snowprecipstartdate1, snowprecipstartdate2,
-     O                   snowprecipstartdate,
+     O                   snowprecipStartTime,
      I                          myThid )
       ENDIF
 #endif /* ALLOW_ATM_TEMP */
@@ -274,7 +274,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          evapstartdate1, evapstartdate2,
-     O                          evapstartdate,
+     O                          evapStartTime,
      I                          myThid )
       ENDIF
 #endif /* EXF_READ_EVAP */
@@ -286,7 +286,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          runoffstartdate1, runoffstartdate2,
-     O                          runoffstartdate,
+     O                          runoffStartTime,
      I                          myThid )
       ENDIF
 #endif /* ALLOW_RUNOFF */
@@ -299,7 +299,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                   saltflxstartdate1, saltflxstartdate2,
-     O                   saltflxstartdate,
+     O                   saltflxStartTime,
      I                          myThid )
       ENDIF
 #endif /* ALLOW_SALTFLX */
@@ -311,7 +311,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          swdownstartdate1, swdownstartdate2,
-     O                          swdownstartdate,
+     O                          swdownStartTime,
      I                          myThid )
       ENDIF
       IF ( lwdownfile .NE. ' ' .AND. lwdownperiod .GT. 0. ) THEN
@@ -320,7 +320,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          lwdownstartdate1, lwdownstartdate2,
-     O                          lwdownstartdate,
+     O                          lwdownStartTime,
      I                          myThid )
       ENDIF
 #endif /* ALLOW_DOWNWARD_RADIATION */
@@ -333,7 +333,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                   apressurestartdate1, apressurestartdate2,
-     O                   apressurestartdate,
+     O                   apressureStartTime,
      I                          myThid )
       ENDIF
 #endif /* ATMOSPHERIC_LOADING */
@@ -345,7 +345,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          areamaskstartdate1, areamaskstartdate2,
-     O                          areamaskstartdate,
+     O                          areamaskStartTime,
      I                          myThid )
       ENDIF
 #endif /* EXF_SEAICE_FRACTION */
@@ -357,7 +357,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useOBCSYearlyFields,
      I                          obcsNstartdate1, obcsNstartdate2,
-     O                          obcsNstartdate,
+     O                          obcsNStartTime,
      I                          myThid )
       ENDIF
       IF ( obcsSperiod .GT. 0. ) THEN
@@ -366,7 +366,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useOBCSYearlyFields,
      I                          obcsSstartdate1, obcsSstartdate2,
-     O                          obcsSstartdate,
+     O                          obcsSStartTime,
      I                          myThid )
       ENDIF
       IF ( obcsEperiod .GT. 0. ) THEN
@@ -375,7 +375,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useOBCSYearlyFields,
      I                          obcsEstartdate1, obcsEstartdate2,
-     O                          obcsEstartdate,
+     O                          obcsEStartTime,
      I                          myThid )
       ENDIF
       IF ( obcsWperiod .GT. 0. ) THEN
@@ -384,7 +384,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useOBCSYearlyFields,
      I                          obcsWstartdate1, obcsWstartdate2,
-     O                          obcsWstartdate,
+     O                          obcsWStartTime,
      I                          myThid )
       ENDIF
 # ifdef ALLOW_SEAICE
@@ -394,7 +394,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useOBCSYearlyFields,
      I                          siobNstartdate1, siobNstartdate2,
-     O                          siobNstartdate,
+     O                          siobNStartTime,
      I                          myThid )
       ENDIF
       IF ( siobSperiod .GT. 0. ) THEN
@@ -403,7 +403,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useOBCSYearlyFields,
      I                          siobSstartdate1, siobSstartdate2,
-     O                          siobSstartdate,
+     O                          siobSStartTime,
      I                          myThid )
       ENDIF
       IF ( siobEperiod .GT. 0. ) THEN
@@ -412,7 +412,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useOBCSYearlyFields,
      I                          siobEstartdate1, siobEstartdate2,
-     O                          siobEstartdate,
+     O                          siobEStartTime,
      I                          myThid )
       ENDIF
       IF ( siobWperiod .GT. 0. ) THEN
@@ -421,7 +421,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useOBCSYearlyFields,
      I                          siobWstartdate1, siobWstartdate2,
-     O                          siobWstartdate,
+     O                          siobWStartTime,
      I                          myThid )
       ENDIF
 # endif /* ALLOW_SEAICE */
@@ -434,7 +434,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          climsststartdate1, climsststartdate2,
-     O                          climsststartdate,
+     O                          climsstStartTime,
      I                          myThid )
       ENDIF
 #endif /* ALLOW_CLIMSST_RELAXATION */
@@ -446,7 +446,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          climsssstartdate1, climsssstartdate2,
-     O                          climsssstartdate,
+     O                          climsssStartTime,
      I                          myThid )
       ENDIF
 #endif /* ALLOW_CLIMSSS_RELAXATION */
@@ -458,7 +458,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          climustrstartdate1, climustrstartdate2,
-     O                          climustrstartdate,
+     O                          climustrStartTime,
      I                          myThid )
       ENDIF
 
@@ -468,7 +468,7 @@ C     from the beginning of the year.
 # endif
        CALL EXF_GETFIELD_START( useExfYearlyFields,
      I                          climvstrstartdate1, climvstrstartdate2,
-     O                          climvstrstartdate,
+     O                          climvstrStartTime,
      I                          myThid )
       ENDIF
 #endif /* ALLOW_CLIMSTRESS_RELAXATION */
@@ -479,7 +479,7 @@ C-    wind-stress:
       uvInterp_stress = ustressfile.NE.' ' .AND. vstressfile.NE.' '
      &  .AND. ustress_interpMethod.GE.1 .AND. vstress_interpMethod.GE.1
       uvInterp_stress = uvInterp_stress
-     &  .AND. ustressstartdate .EQ. vstressstartdate
+     &  .AND. ustressStartTime .EQ. vstressStartTime
      &  .AND. ustressperiod    .EQ. vstressperiod
       uvInterp_stress = uvInterp_stress
      &  .AND. ustress_nlon .EQ. vstress_nlon
@@ -497,7 +497,7 @@ C-    wind:
       uvInterp_wind = uwindfile.NE.' ' .AND. vwindfile.NE.' '
      &  .AND. uwind_interpMethod.GE.1 .AND. vwind_interpMethod.GE.1
       uvInterp_wind = uvInterp_wind
-     &  .AND. uwindstartdate .EQ. vwindstartdate
+     &  .AND. uwindStartTime .EQ. vwindStartTime
      &  .AND. uwindperiod    .EQ. vwindperiod
       uvInterp_wind = uvInterp_wind
      &  .AND. uwind_nlon .EQ. vwind_nlon
@@ -515,7 +515,7 @@ C-    clim wind-stress:
       uvInterp_climstr = climustrfile.NE.' ' .AND. climvstrfile.NE.' '
      &  .AND.climustr_interpMethod.GE.1 .AND.climvstr_interpMethod.GE.1
       uvInterp_climstr = uvInterp_climstr
-     &  .AND. climustrstartdate .EQ. climvstrstartdate
+     &  .AND. climustrStartTime .EQ. climvstrStartTime
      &  .AND. climustrperiod    .EQ. climvstrperiod
       uvInterp_climstr = uvInterp_climstr
      &  .AND. climustr_nlon .EQ. climvstr_nlon
