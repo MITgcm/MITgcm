@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.26 2014/06/07 17:50:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.27 2017/01/31 18:58:22 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
       SUBROUTINE EXF_GetFFieldRec(
-     I                             fldstartdate, fldperiod,
+     I                             fldStartTime, fldperiod,
      I                             usefldyearlyfields,
      O                             fac,
      O                             first, changed,
@@ -26,7 +26,7 @@ c cal: modelstart, modelstep
 #include "EXF_PARAM.h"
 
 c     == input arguments ==
-c     fldstartdate       :: time in seconds of first fld record from the
+c     fldStartTime       :: time in seconds of first fld record from the
 c                           beginning of the model integration or, if
 c                           usefldyearlyfields, from the beginning of year
 c     fldperiod          :: period between forcing field records
@@ -35,7 +35,7 @@ c     myTime             :: current time in simulation
 c     myIter             :: current iteration number in simulation
 c     myThid             :: my thread identification number
 
-      _RL     fldstartdate, fldperiod
+      _RL     fldStartTime, fldperiod
       logical usefldyearlyfields
       _RL     myTime
       INTEGER myIter, myThid
@@ -57,7 +57,7 @@ c     == local variables ==
 c     mydate        :: model date of current time step
 c     yearStartDate :: start of year date for flux record just before mydate
 c     difftime      :: time difference between yearStartDate and mydate
-c     fldsectot     :: time in seconds from fldstartdate to mydate
+c     fldsectot     :: time in seconds from fldStartTime to mydate
 c     fldsecs       :: time from start of current forcing period to mydate
 c     fldsecs0      :: time from start of repeat period to mydate
 c     fldsecs1      :: time from end of current forcing period to mydate
@@ -102,7 +102,7 @@ c     fldperiod .ne. 0
 
 c     Determine offset in seconds from beginning of input data
 c     to current date.
-       fldsectot = myTime - fldstartdate
+       fldsectot = myTime - fldStartTime
 
 c     Determine the flux records just before and after mycurrentdate.
        if ( repeatPeriod .eq. 0. _d 0 ) then
@@ -147,7 +147,7 @@ c     Determine seconds from beginning of year to model current time.
        CALL cal_ToSeconds (difftime,myDateSeconds,myThid)
 
 c     Determine the flux year just before mycurrentdate.
-        if ( myDateSeconds .lt. fldstartdate ) year0 = year0 - 1
+        if ( myDateSeconds .lt. fldStartTime ) year0 = year0 - 1
 
 c     Determine seconds in the flux year just before mycurrentdate.
         secondsInYear = ndaysnoleap * secondsperday
@@ -155,15 +155,15 @@ c     Determine seconds in the flux year just before mycurrentdate.
      &       secondsInYear = ndaysleap * secondsperday
 
 c     Determine the record just before mycurrentdate.
-        if ( myDateSeconds .lt. fldstartdate )
+        if ( myDateSeconds .lt. fldStartTime )
      &       myDateSeconds = myDateSeconds + secondsInYear
-        fldsectot = myDateSeconds - fldstartdate
+        fldsectot = myDateSeconds - fldStartTime
         count0    = int((fldsectot+0.5)/fldperiod) + 1
 
 c     Determine the flux year and record just after mycurrentdate.
         year1  = year0
         count1 = count0 + 1
-        if ( (fldstartdate+count0*fldperiod) .ge. secondsInYear ) then
+        if ( (fldStartTime+count0*fldperiod) .ge. secondsInYear ) then
          year1  = year0 + 1
          count1 = 1
         endif

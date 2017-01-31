@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.33 2017/01/26 21:05:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.34 2017/01/31 18:58:22 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
       SUBROUTINE EXF_SET_UV(
-     I     uvecfile, uvecstartdate, uvecperiod,
+     I     uvecfile, uvecStartTime, uvecperiod,
      I     exf_inscal_uvec, uvec_remove_intercept, uvec_remove_slope,
      U     uvec, uvec0, uvec1, uvecmask,
-     I     vvecfile, vvecstartdate, vvecperiod,
+     I     vvecfile, vvecStartTime, vvecperiod,
      I     exf_inscal_vvec, vvec_remove_intercept, vvec_remove_slope,
      U     vvec, vvec0, vvec1, vvecmask,
 #ifdef USE_EXF_INTERPOLATION
@@ -50,7 +50,7 @@ C     *vec_lon_inc         :: scalar x-grid increment for *vec
 C     *vec_lat_inc         :: vector y-grid increments for *vec
 
       CHARACTER*(128) uvecfile
-      _RL     uvecstartdate, uvecperiod
+      _RL     uvecStartTime, uvecperiod
       _RL     exf_inscal_uvec
       _RL     uvec_remove_intercept, uvec_remove_slope
       _RL     uvec  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -58,7 +58,7 @@ C     *vec_lat_inc         :: vector y-grid increments for *vec
       _RL     uvec1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       CHARACTER*1 uvecmask
       CHARACTER*(128) vvecfile
-      _RL     vvecstartdate, vvecperiod
+      _RL     vvecStartTime, vvecperiod
       _RL     exf_inscal_vvec
       _RL     vvec_remove_intercept, vvec_remove_slope
       _RL     vvec  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -135,7 +135,7 @@ C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
         ELSE
 C-    get record numbers and interpolation factor
           CALL exf_GetFFieldRec(
-     I             uvecstartdate, uvecperiod,
+     I             uvecStartTime, uvecperiod,
      I             useExfYearlyFields,
      O             fac, first, changed,
      O             count0, count1, year0, year1,
@@ -471,7 +471,7 @@ C     or ( .NOT.usingCurvilinearGrid & .NOT.rotateGrid & .NOT.uvInterp )
 #endif /* USE_EXF_INTERPOLATION */
 
         CALL EXF_SET_GEN(
-     &      uvecfile, uvecstartdate, uvecperiod,
+     &      uvecfile, uvecStartTime, uvecperiod,
      &      exf_inscal_uvec,
      &      uvec_remove_intercept, uvec_remove_slope,
      &      uvec, uvec0, uvec1, uvecmask,
@@ -482,7 +482,7 @@ C     or ( .NOT.usingCurvilinearGrid & .NOT.rotateGrid & .NOT.uvInterp )
      &      myTime, myIter, myThid )
 
         CALL EXF_SET_GEN(
-     &      vvecfile, vvecstartdate, vvecperiod,
+     &      vvecfile, vvecStartTime, vvecperiod,
      &      exf_inscal_vvec,
      &      vvec_remove_intercept, vvec_remove_slope,
      &      vvec, vvec0, vvec1, vvecmask,
