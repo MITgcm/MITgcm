@@ -1,20 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_fields_load.F,v 1.3 2016/10/28 01:57:12 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_fields_load.F,v 1.4 2017/01/31 20:56:47 jmc Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
 
 CBOP
-      subroutine BLING_FIELDS_LOAD (
+      SUBROUTINE BLING_FIELDS_LOAD (
      I           myIter,myTime,myThid)
 
-C     ==========================================================
+C     *========================================================*
 C     | subroutine bling_fields_load
-C     | o Read in fields needed for CO2, O2 flux terms, silica 
+C     | o Read in fields needed for CO2, O2 flux terms, silica
 C     |   for pH calculation
-C     ==========================================================
+C     *========================================================*
 
       implicit none
-      
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -45,7 +45,7 @@ C  myTime               :: current time
 
 #ifdef ALLOW_BLING
 
-c !LOCAL VARIABLES: ===================================================
+C !LOCAL VARIABLES: ===================================================
       INTEGER bi, bj, i, j
       INTEGER intimeP, intime0, intime1
       _RL aWght,bWght
@@ -57,7 +57,7 @@ C--   Now calculate whether it is time to update the forcing arrays
        CALL GET_PERIODIC_INTERVAL(
      O                   intimeP, intime0, intime1, bWght, aWght,
      I                   BLING_forcingCycle, BLING_forcingPeriod,
-     I                   deltaTclock, myTime, myThid )
+     I                   deltaTClock, myTime, myThid )
 
        bi = myBxLo(myThid)
        bj = myByLo(myThid)
@@ -226,12 +226,12 @@ C endif for BLING_forcingCycle
        ENDDO
       ENDDO
 
-c-----------------------------------------------------------
-c Get Atmospheric carbon dioxide concentration from PKG/EXF 
+C-----------------------------------------------------------
+C Get Atmospheric carbon dioxide concentration from PKG/EXF
 #ifdef USE_EXFCO2
-c     Atmospheric carbon dioxide concentration
-      call EXF_SET_GEN  (
-     &     apco2file, apco2startdate, apco2period,
+C     Atmospheric carbon dioxide concentration
+      CALL EXF_SET_GEN  (
+     &     apco2file, apco2StartTime, apco2period,
      &     exf_inscal_apco2,
      &     apco2_exfremo_intercept, apco2_exfremo_slope,
      &     apco2, apco20, apco21, apco2mask,
@@ -239,8 +239,8 @@ c     Atmospheric carbon dioxide concentration
      &     apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
      &     apco2_nlon, apco2_nlat, xC, yC, apco2_interpMethod,
 # endif
-     &     mytime, myiter, mythid )
-#endif
+     &     myTime, myIter, myThid )
+#endif /* USE_EXFCO2 */
 
 #endif /* ALLOW_BLING */
       RETURN

@@ -1,6 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_VARS.h,v 1.6 2017/01/27 23:11:31 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_VARS.h,v 1.7 2017/01/31 20:56:47 jmc Exp $
 C $Name:  $
-
 
 C ==========================================================
 C   Carbon chemistry variables
@@ -11,7 +10,7 @@ C ==========================================================
      &                      wind, FIce, Silica
 #ifdef USE_EXFCO2
      &                      ,apco2, apco20, apco21
-#endif      
+#endif
       _RL  AtmospCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  pH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -24,7 +23,7 @@ C ==========================================================
       _RL apco2      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL apco20     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL apco21     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif 
+#endif
 
 C ==========================================================
 C   Carbon and oxygen chemistry parameters
@@ -32,8 +31,8 @@ C ==========================================================
 
        COMMON /CARBON_CHEM/
      &                     ak0,ak1,ak2,akw,akb,aks,akf,
-     &                     ak1p,ak2p,ak3p,aksi, fugf, 
-     &                     ff,ft,st,bt, 
+     &                     ak1p,ak2p,ak3p,aksi, fugf,
+     &                     ff,ft,st,bt,
      &                     Ksp_TP_Calc,Ksp_TP_Arag
       _RL  ak0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ak1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -54,7 +53,6 @@ C ==========================================================
       _RL  Ksp_TP_Calc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Ksp_TP_Arag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-
        COMMON /OXYGEN_CHEM/
      &                     oA0,oA1,oA2,oA3,oA4,oA5,
      &                     oB0,oB1,oB2,oB3,
@@ -62,7 +60,6 @@ C ==========================================================
       _RL oA0,oA1,oA2,oA3,oA4,oA5
       _RL oB0,oB1,oB2,oB3
       _RL oC0
-
 
        COMMON /GLOBAL_SURF_MEAN/
      &                          permil,Pa2Atm
@@ -74,7 +71,6 @@ C               when coming from atmospheric model
 
       _RL  permil
       _RL  Pa2Atm
-
 
        COMMON /SCHMIDT_NO/
      &                    sca1, sca2, sca3, sca4,
@@ -88,7 +84,7 @@ C      Schmidt number coefficients
 #ifdef USE_EXFCO2
       integer apco2startdate1
       integer apco2startdate2
-      _RL     apco2startdate
+      _RL     apco2StartTime
       _RL     apco2period
       _RL     apco2const
       _RL     apco2_exfremo_intercept
@@ -103,9 +99,9 @@ C ==========================================================
        COMMON /BLING_INPUTS/
      &        bling_windFile, bling_atmospFile, bling_iceFile,
      &        bling_ironFile, bling_silicaFile,
-     &        bling_psmFile, bling_plgFile, bling_pdiazFile, 
+     &        bling_psmFile, bling_plgFile, bling_pdiazFile,
      &        bling_forcingPeriod, bling_forcingCycle,
-     &        bling_pCO2, 
+     &        bling_pCO2,
      &        river_conc_trac,
      &        bling_Pc_2dFile, bling_Pc_2d_diazFile,
      &        bling_alpha_photo2dFile,bling_phi_DOM2dFile,
@@ -114,7 +110,7 @@ C ==========================================================
      &        bling_phi_lg2dFile, bling_phi_sm2dFile
 #ifdef USE_EXFCO2
      &       ,apco2startdate1,apco2startdate2,
-     &        apco2period,      apco2startdate,
+     &        apco2period,      apco2StartTime,
      &        apco2const,
      &        apco2_exfremo_intercept,
      &        apco2_exfremo_slope,
@@ -130,7 +126,7 @@ C      bling_psmFile       :: file name of init small phyto biomass
 C      bling_plgFile       :: file name of init lg phyto biomass
 C      bling_pdiazFile     :: file name of init diaz biomass
 C      bling_forcingPeriod :: period of forcing for biogeochemistry (seconds)
-C      bling_forcingCycle  :: periodic forcing parameter for biogeochemistry 
+C      bling_forcingCycle  :: periodic forcing parameter for biogeochemistry
 C      bling_pCO2          :: Atmospheric pCO2 to be read in data.bling
 C      river_conc_trac     :: River concentration, bgc tracers
 C      apco2               :: Atmospheric pCO2 to be read in with exf pkg
@@ -143,7 +139,7 @@ C      apco2               :: Atmospheric pCO2 to be read in with exf pkg
       CHARACTER*(MAX_LEN_FNAM) bling_psmFile
       CHARACTER*(MAX_LEN_FNAM) bling_plgFile
       CHARACTER*(MAX_LEN_FNAM) bling_pdiazFile
-      CHARACTER*(MAX_LEN_FNAM) bling_Pc_2dFile 
+      CHARACTER*(MAX_LEN_FNAM) bling_Pc_2dFile
       CHARACTER*(MAX_LEN_FNAM) bling_Pc_2d_diazFile
       CHARACTER*(MAX_LEN_FNAM) bling_alpha_photo2dFile
       CHARACTER*(MAX_LEN_FNAM) bling_k_Fe2dFile
@@ -174,7 +170,7 @@ C ==========================================================
 #endif
 
 C ==========================================================
-C   EXF interpolation needs 
+C   EXF interpolation needs
 C ==========================================================
 #ifdef USE_EXFCO2
 #ifdef USE_EXF_INTERPOLATION
@@ -195,8 +191,8 @@ C ==========================================================
 
       COMMON /BIOTIC_NEEDS/
      &                     InputFe,
-     &                     omegaC, 
-     &                     omegaAr, 
+     &                     omegaC,
+     &                     omegaAr,
      &                     irr_mem,
      &                     phyto_lg,
      &                     phyto_sm,
@@ -236,7 +232,7 @@ C ==========================================================
      &                     kFe_eq_lig_max,
      &                     kFe_eq_lig_min,
      &                     kFe_eq_lig_Femin,
-     &                     kFe_eq_lig_irr,    
+     &                     kFe_eq_lig_irr,
      &                     kFe_org,
      &                     kFe_inorg,
      &                     PtoN_min,
@@ -296,8 +292,8 @@ C ==========================================================
       _RL NO3toN
       _RL HtoC
       _RL O2toN
-      _RL CatoN 
-      _RL masstoN 
+      _RL CatoN
+      _RL masstoN
       _RL alpha_photo
       _RL theta_Fe_max_hi
       _RL theta_Fe_max_lo
@@ -315,7 +311,7 @@ C ==========================================================
       _RL kFe_eq_lig_max
       _RL kFe_eq_lig_min
       _RL kFe_eq_lig_Femin
-      _RL kFe_eq_lig_irr    
+      _RL kFe_eq_lig_irr
       _RL kFe_org
       _RL kFe_inorg
       _RL PtoN_min
@@ -343,7 +339,6 @@ C ==========================================================
       _RL k0
       _RL epsln
       LOGICAL QSW_underice
-
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
