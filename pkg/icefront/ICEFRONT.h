@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.14 2016/09/15 00:16:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.15 2017/01/31 20:37:43 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_ICEFRONT
@@ -96,7 +96,7 @@ C     the following variables are used in conjunction
 C     with pkg/exf to specify sub-glacial runoff
       INTEGER SGRunOffstartdate1
       INTEGER SGRunOffstartdate2
-      _RL     SGRunOffstartdate
+      _RL     SGRunOffStartTime
       _RL     SGRunOffperiod
       _RL     SGRunOffconst
       _RL     SGRunOff_inscal
@@ -108,7 +108,7 @@ C     with pkg/exf to specify sub-glacial runoff
       COMMON /ICEFRONT_EXF_PAR_I/
      &       SGRunOffstartdate1, SGRunOffstartdate2
       COMMON /ICEFRONT_EXF_PAR_R/
-     &       SGRunOffstartdate,  SGRunOffperiod,
+     &       SGRunOffStartTime,  SGRunOffperiod,
      &       SGRunOffconst,      SGRunOff_inscal,
      &       SGRunOff_remov_intercept, SGRunOff_remov_slope
       COMMON /ICEFRONT_EXF_PAR_C/

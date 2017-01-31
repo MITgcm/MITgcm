@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.14 2016/09/15 01:06:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.15 2017/01/31 20:37:43 jmc Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -23,7 +23,7 @@ C !USES: ===============================================================
 #endif
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
+C  myThid               :: my thread Id number
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -108,7 +108,7 @@ C Default values when SHELFICE is not used
       SGRunOffFile             = ' '
 C-    internal parameters (not in namelist):
       SGRunOffmask             = 'c'
-      SGRunOffstartdate        = 0.
+      SGRunOffStartTime        = 0.
 #endif /* ALLOW_EXF */
 
 C Open and read the data.icefront file
@@ -146,6 +146,7 @@ C Close the open data file
 C Now set-up any remaining parameters that result from the input parameters
       IF ( ICEFRONTlatentHeat .NE. 0. _d 0 )
      &     recip_ICEFRONTlatentHeat = 1. _d 0/ICEFRONTlatentHeat
+
       _END_MASTER(myThid)
 C Everyone else must wait for the parameters to be loaded
       _BARRIER
