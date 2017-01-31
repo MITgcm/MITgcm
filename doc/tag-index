@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2296 2017/01/27 21:20:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2297 2017/01/31 21:31:26 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - In preparation for additin to NAMELIST, rename internal (_RL) parameter
+     {FIELD}startdate to {FIELD}StartTime
+    Note: new name also fit better the content, i.e, a start time in second.
 o pkg/exf:
   - add option ALLOW_READ_TURBFLUXES (and corresponding set of parameters)
     to allow to read-in Sensible & Latent Heat flux ;
