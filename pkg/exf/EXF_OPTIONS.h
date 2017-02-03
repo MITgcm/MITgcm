@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.38 2017/01/27 17:22:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.39 2017/02/03 01:57:05 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -29,24 +29,27 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 
 C-- Package-specific Options & Macros go here
 
-C   pkg/exf CPP options:
 C   --------------------
-C
+C   pkg/exf CPP options:
+C   (see also table below on how to combine options)
+
 C   > ( EXF_VERBOSE ) < replaced with run-time integer parameter "exf_debugLev"
 C
 C   >>> ALLOW_ATM_WIND <<<
-C       If defined, 10-m wind fields can be read-in from files.
+C       If defined, set default value of run-time param. "useAtmWind" to True.
+C       If useAtmWind=True, read-in and use wind vector (uwind/vwind)
+C       to compute surface wind stress.
 C
 C   >>> ALLOW_ATM_TEMP <<<
-C       This is the main EXF option controling air-sea boyancy fluxes:
-C      When undefined, net heat flux (Qnet) and net fresh water flux
+C       This is the main EXF option controlling air-sea buoyancy fluxes:
+C      If undefined, net heat flux (Qnet) and net fresh water flux
 C       (EmP or EmPmR) are set according to hfluxfile & sfluxfile setting.
-C      When defined, net heat flux and net fresh water flux are computed
+C      If defined, net heat flux and net fresh water flux are computed
 C       from sum of various components (radiative SW,LW + turbulent heat
 C       fluxes SH,LH ; Evap, Precip and optionally RunOff) thus ignoring
 C       hfluxfile & sfluxfile.
 C      In addition, it allows to read-in from files atmospheric temperature
-C       and specific humidity, net radiative fluxes, and also precip.
+C       and specific humidity, net radiative fluxes, and precip.
 C       Also enable to read-in Evap (if EXF_READ_EVAP is defined) or
 C       turbulent heat fluxes (if ALLOW_READ_TURBFLUXES is defined).
 C
@@ -68,12 +71,13 @@ C       and pressure
 C
 C   >>> EXF_READ_EVAP <<<
 C       If defined, evaporation field is read-in from file;
-C       if using BULKFORMULAE, evap that was computed from atmospheric state
-C       will be replaced by read-in one but computed latent heat flux is kept.
+C     Note: if ALLOW_BULKFORMULAE is defined, evap that is computed from
+C       atmospheric state will be replaced by read-in evap but computed
+C       latent heat flux will be kept.
 C
 C   >>> ALLOW_READ_TURBFLUXES <<<
-C       Enable to read-in Sensible and Latent Heat fluxes from files
-C       (but overwritten if ALLOW_BULKFORMULAE is defined).
+C       If defined, turbulent heat fluxes (sensible and latent) can be read-in
+C       from files (but overwritten if ALLOW_BULKFORMULAE is defined).
 C
 C   >>> ALLOW_RUNOFF <<<
 C       If defined, river and glacier runoff can be read-in from files.
@@ -88,7 +92,7 @@ C
 C   >>> ATMOSPHERIC_LOADING <<<
 C       If defined, atmospheric pressure can be read-in from files.
 C   WARNING: this flag is set (define/undef) in CPP_OPTIONS.h
-C            and cannot be changed here (in EXF_OPTIONS)
+C            and cannot be changed here (in EXF_OPTIONS.h)
 C
 C   >>> EXF_SEAICE_FRACTION <<<
 C       If defined, seaice fraction can be read-in from files (areaMaskFile)
@@ -102,35 +106,39 @@ C       Allow the relaxation to a monthly climatology of sea surface
 C       salinity, e.g. the Levitus climatology.
 C
 C   >>> USE_EXF_INTERPOLATION <<<
-C       Allows specification of arbitrary Lat-Lon input grids.
+C       Allows to provide input field on arbitrary Lat-Lon input grid
+C       (as specified in EXF_NML_04) and to interpolate to model grid.
+C     Note: default is to interpolate unless {FLD}_interpMethod is set to 0
 C
 C   ====================================================================
 C
 C    The following CPP options:
-C       ALLOW_ATM_WIND              (WIND)
-C       ALLOW_ATM_TEMP              (TEMP)
-C       ALLOW_DOWNWARD_RADIATION    (DOWN)
-C       ALLOW_BULKFORMULAE          (BULK)
-C       EXF_READ_EVAP               (EVAP)
-C       ALLOW_READ_TURBFLUXES       (TURB)
+C       ALLOW_ATM_WIND / useAtmWind (useWind)
+C       ALLOW_ATM_TEMP               (TEMP)
+C       ALLOW_DOWNWARD_RADIATION     (DOWN)
+C       ALLOW_BULKFORMULAE           (BULK)
+C       EXF_READ_EVAP                (EVAP)
+C       ALLOW_READ_TURBFLUXES        (TURB)
 C
-C    permit the ocean-model forcing configurations listed in the 2 tables
-C    below. The first configuration is the standard, flux-forced, ocean
-C    model. Configurations A2 with B3 or B4 are stand-alone configurations
-C    that use pkg/exf, open-water bulk formulae to compute the missing
-C    surface fluxes from atmospheric variables.
+C    permit all ocean-model forcing configurations listed in the 2 tables below.
+C    The first configuration (A1,B1) is the flux-forced, ocean model.
+C    Configurations A2,B3 and A2,B4 use pkg/exf open-water bulk formulae
+C    to compute, from atmospheric variables, the missing surface fluxes.
 C    The forcing fields in the rightmost column are defined in EXF_FIELDS.h
+C    (ocean-model surface forcing field are defined in model/inc/FFIELDS.h)
 C
-C     A) Surface momentum flux options
+C    (A) Surface momentum flux: [model: fu,fv ; exf: ustress,vstress]
 C
-C    # |WIND |            actions
-C   ---|-----|-------------------------------------------------------------
-C   (1)|  -  | Read-in ustress, vstress (if needed in B, compute wind-speed)
-C      |     |
-C   (2)| def | Read-in uwind, vwind ; compute ustress, vstress.
-C   ---|-----|-------------------------------------------------------------
+C    # |useWind|        actions
+C   ---|-------|-------------------------------------------------------------
+C   (1)| False | Read-in ustress,vstress (if needed in B, compute wind-speed)
+C      |       |
+C   (2)| True  | Read-in uwind,vwind ; compute wind stress ustress,vstress.
+C   ---|-------|-------------------------------------------------------------
 C
-C     B) Surface boyancy flux options
+C    (B) Surface buoyancy flux:
+C        [ net heat flux: Qnet (exf: hflux), net short-wave: Qsw (exf: swflux)
+C          fresh-water flux: EmPmR (exf: sflux) and saltFlux (exf: saltflx) ]
 C
 C    # |TEMP |DOWN |BULK |EVAP |TURB |            actions
 C   ---|-----|-----|-----|-----|-----|-------------------------------------
@@ -158,9 +166,9 @@ C
 C   =======================================================================
 
 C-  Bulk formulae related flags.
-#define  ALLOW_ATM_TEMP
-#define  ALLOW_ATM_WIND
-#define  ALLOW_DOWNWARD_RADIATION
+#define ALLOW_ATM_TEMP
+#define ALLOW_ATM_WIND
+#define ALLOW_DOWNWARD_RADIATION
 #ifdef ALLOW_ATM_TEMP
 C Note: To use ALLOW_BULKFORMULAE, ALLOW_ATM_TEMP needs to be defined
 # define ALLOW_BULKFORMULAE
@@ -174,9 +182,9 @@ C        be defined but ALLOW_BULKFORMULAE needs to be undef
 #endif /* ALLOW_ATM_TEMP */
 
 C-  Other forcing fields
-#define  ALLOW_RUNOFF
-#undef   ALLOW_RUNOFTEMP
-#define  ALLOW_SALTFLX
+#define ALLOW_RUNOFF
+#undef  ALLOW_RUNOFTEMP
+#define ALLOW_SALTFLX
 
 #if (defined (ALLOW_BULKFORMULAE) && defined (ATMOSPHERIC_LOADING))
 C Note: To use EXF_CALC_ATMRHO, both ALLOW_BULKFORMULAE
