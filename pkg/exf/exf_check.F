@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.29 2017/01/31 18:59:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.30 2017/02/03 02:05:33 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -104,20 +104,11 @@ C     check for consistency
       ENDIF
 #endif /* ALLOW_SALTFLX */
 
-#ifndef ALLOW_ZENITHANGLE
-      IF ( useExfZenAlbedo .OR. useExfZenIncoming .OR.
-     &     select_ZenAlbedo .NE. 0 ) THEN
-        WRITE(msgBuf,'(A,A)') 'S/R EXF_CHECK: unsupported option',
-     &        ' when ALLOW_ZENITHANGLE is not defined'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-      ENDIF
-#endif /* ndef ALLOW_ZENITHANGLE */
-
 #ifdef ALLOW_ZENITHANGLE
-      IF ( usingCartesianGrid .OR. usingCylindricalGrid ) THEN
-       WRITE(msgBuf,'(A,A)') 'S/R EXF_CHECK: ALLOW_ZENITHANGLE does ',
-     &      'not work for carthesian and cylindrical grids'
+      IF ( ( useExfZenIncoming .OR. select_ZenAlbedo.NE.0 ) .AND.
+     &     ( usingCartesianGrid .OR. usingCylindricalGrid ) ) THEN
+       WRITE(msgBuf,'(A,A)') 'S/R EXF_CHECK: ZENITHANGLE code ',
+     &      'does not work for cartesian and cylindrical grids'
        CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1
       ENDIF
@@ -127,26 +118,33 @@ C     check for consistency
        CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1
       ENDIF
-      IF ( select_ZenAlbedo.EQ.2 .) THEN
+      IF ( select_ZenAlbedo.EQ.2 ) THEN
        WRITE(msgBuf,'(A,A)')
      &      'S/R EXF_CHECK: *** WARNING *** for daily mean albedo, ',
      &      'it is advised to use select_ZenAlbedo.EQ.1 instead of 2'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
-      IF ( select_ZenAlbedo.GT.2 .AND. swdownperiod.GT. 21600 ) THEN
+      IF ( select_ZenAlbedo.EQ.3 .AND. swdownperiod.GT.21600. ) THEN
        WRITE(msgBuf,'(A,A)') 'S/R EXF_CHECK: using diurnal albedo ',
      &        'formula requires diurnal downward shortwave forcing'
        CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1
       ENDIF
-      IF ( select_ZenAlbedo.GT.2 .AND. swdownperiod.GT. 3600 ) then
+      IF ( select_ZenAlbedo.EQ.3 .AND. swdownperiod.GT.3600. ) THEN
        WRITE(msgBuf,'(A,A,A)')
      &      'S/R EXF_CHECK: *** WARNING *** ',
      &      'the diurnal albedo formula is likely not safe for such ',
      &      'coarse temporal resolution downward shortwave forcing'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
+#else /* ALLOW_ZENITHANGLE */
+      IF ( useExfZenIncoming .OR. select_ZenAlbedo.NE.0 ) THEN
+        WRITE(msgBuf,'(A,A)') 'S/R EXF_CHECK: unsupported option',
+     &        ' when ALLOW_ZENITHANGLE is not defined'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
       ENDIF
 #endif /* ALLOW_ZENITHANGLE */
 
@@ -281,7 +279,7 @@ C-    stop if one expects interp+rotation (Curvilin-G) which will not happen
 
       IF ( (ustress_interpMethod.EQ.0 .AND. ustressfile.NE.' ') .OR.
      &     (vstress_interpMethod.EQ.0 .AND. vstressfile.NE.' ') ) THEN
-#else /* ifndef USE_EXF_INTERPOLATION */
+#else /* ndef USE_EXF_INTERPOLATION */
       IF     ( ustressfile .NE. ' ' .OR. vstressfile .NE. ' ' ) THEN
 #endif /* USE_EXF_INTERPOLATION */
        IF (     (readStressOnAgrid.AND.readStressOnCgrid) .OR.
