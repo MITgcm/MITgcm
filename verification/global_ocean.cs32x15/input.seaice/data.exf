@@ -22,59 +22,59 @@
 # *********************
  &EXF_NML_02
 #
- atempstartdate1   = 00010115,
+ atempstartdate1   = 00010116,
 #atempstartdate2   = 180000,
  atempperiod       = 2592000.0,
 #
- aqhstartdate1     = 00010115,
+ aqhstartdate1     = 00010116,
 #aqhstartdate2     = 180000,
  aqhperiod         = 2592000.0,
 #
- precipstartdate1  = 00010115,
+ precipstartdate1  = 00010116,
 #precipstartdate2  = 180000,
  precipperiod      = 2592000.0,
 #
- snowprecipstartdate1= 00010115,
+ snowprecipstartdate1= 00010116,
 #snowprecipstartdate2= 180000,
  snowprecipperiod    = 2592000.,
 #
- runoffstartdate1  = 00010115,
+ runoffstartdate1  = 00010116,
 #runoffstartdate2  = 180000,
  runoffperiod      = 2592000.0,
 #
- uwindstartdate1   = 00010115,
+ uwindstartdate1   = 00010116,
 #uwindstartdate2   = 180000,
  uwindperiod       = 2592000.0,
 #
- vwindstartdate1   = 00010115,
+ vwindstartdate1   = 00010116,
 #vwindstartdate2   = 180000,
  vwindperiod       = 2592000.0,
 #
- ustressstartdate1 = 00010115,
+ ustressstartdate1 = 00010116,
 #ustressstartdate2 = 180000,
  ustressperiod     = 2592000.0,
 #
- vstressstartdate1 = 00010115,
+ vstressstartdate1 = 00010116,
 #vstressstartdate2 = 180000,
  vstressperiod     = 2592000.0,
 #
- wspeedstartdate1  = 00010115,
+ wspeedstartdate1  = 00010116,
 #wspeedstartdate2  = 180000,
  wspeedperiod      = 2592000.0,
 #
- swdownstartdate1  = 00010115,
+ swdownstartdate1  = 00010116,
 #swdownstartdate2  = 180000,
  swdownperiod      = 2592000.0,
 #
- lwdownstartdate1  = 00010115,
+ lwdownstartdate1  = 00010116,
 #lwdownstartdate2  = 180000,
  lwdownperiod      = 2592000.0,
 #
- climsssstartdate1  = 00010115,
+ climsssstartdate1  = 00010116,
 #climsssstartdate2  = 180000,
  climsssperiod      = 2592000.0,
 #
- climsststartdate1  = 00010115,
+ climsststartdate1  = 00010116,
 #climsststartdate2  = 180000,
  climsstperiod      = 2592000.0,
 #
