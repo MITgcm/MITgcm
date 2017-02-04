@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.32 2017/01/31 18:59:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.33 2017/02/04 23:02:46 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -114,6 +114,7 @@ C     FLDStartTime, for FLD = { uwind, vwind, wspeed, etc. },
 C     returns time in seconds of first FLD record from the
 C     beginning of the model integration or, if useYearlyFields,
 C     from the beginning of the year.
+      IF ( useCAL ) THEN
 
       IF ( useAtmWind ) THEN
        IF ( uwindfile .NE. ' ' .AND. uwindperiod .GT. 0. ) THEN
@@ -472,6 +473,9 @@ C     from the beginning of the year.
      I                          myThid )
       ENDIF
 #endif /* ALLOW_CLIMSTRESS_RELAXATION */
+
+C--   end if useCAL
+      ENDIF
 
 #ifdef USE_EXF_INTERPOLATION
 C--   For vector fields, set flag to interpolate the 2 components together

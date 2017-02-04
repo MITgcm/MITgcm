@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.89 2017/01/31 18:59:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.90 2017/02/04 23:02:46 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -94,44 +94,61 @@ C     Surface flux data.
      & humid_fac, gamma_blk, saltsat, sstExtrapol, psim_fac
 
       NAMELIST /EXF_NML_02/
-     &          hfluxfile,          atempfile,       aqhfile,
-     &                                hs_file,       hl_file,
-     &          sfluxfile,           evapfile,    precipfile,
-     &     snowprecipfile,         runofffile, runoftempfile,
-     &        saltflxfile,        ustressfile,   vstressfile,
-     &          uwindfile,          vwindfile,    wspeedfile,
-     &         swfluxfile,         lwfluxfile,    swdownfile,
-     &         lwdownfile,      apressurefile,  areamaskfile,
-     &        climsstfile,        climsssfile,
-     &       climustrfile,       climvstrfile,
-     &    hfluxstartdate1,    hfluxstartdate2,   hfluxperiod,
-     &    atempstartdate1,    atempstartdate2,   atempperiod,
-     &      aqhstartdate1,      aqhstartdate2,     aqhperiod,
-     &      hs_startdate1,      hs_startdate2,     hs_period,
-     &      hl_startdate1,      hl_startdate2,     hl_period,
-     &    sfluxstartdate1,    sfluxstartdate2,   sfluxperiod,
-     &     evapstartdate1,     evapstartdate2,    evapperiod,
-     &   precipstartdate1,   precipstartdate2,  precipperiod,
-     & snowprecipstartdate1, snowprecipstartdate2, snowprecipperiod,
-     &   runoffstartdate1,   runoffstartdate2,  runoffperiod,
-     &   saltflxstartdate1, saltflxstartdate2, saltflxperiod,
-     &  ustressstartdate1,  ustressstartdate2, ustressperiod,
-     &  vstressstartdate1,  vstressstartdate2, vstressperiod,
-     &    uwindstartdate1,    uwindstartdate2,   uwindperiod,
-     &    vwindstartdate1,    vwindstartdate2,   vwindperiod,
-     &   wspeedstartdate1,   wspeedstartdate2,  wspeedperiod,
-     &   swfluxstartdate1,   swfluxstartdate2,  swfluxperiod,
-     &   lwfluxstartdate1,   lwfluxstartdate2,  lwfluxperiod,
-     &   swdownstartdate1,   swdownstartdate2,  swdownperiod,
-     &   lwdownstartdate1,   lwdownstartdate2,  lwdownperiod,
-     &apressurestartdate1,apressurestartdate2,apressureperiod,
-     &  areamaskstartdate1,areamaskstartdate2,areamaskperiod,
-     &  climsststartdate1,  climsststartdate2, climsstperiod,
-     &  climsssstartdate1,  climsssstartdate2, climsssperiod,
-     & climustrstartdate1, climustrstartdate2,climustrperiod,
-     & climvstrstartdate1, climvstrstartdate2,climvstrperiod,
-     &   areamaskTauRelax,    climsstTauRelax, climsssTauRelax,
-     &   climustrTauRelax,climvstrTauRelax
+     &          hfluxfile,      hfluxperiod,      hfluxStartTime,
+     &                      hfluxstartdate1,      hfluxstartdate2,
+     &          atempfile,      atempperiod,      atempStartTime,
+     &                      atempstartdate1,      atempstartdate2,
+     &            aqhfile,        aqhperiod,        aqhStartTime,
+     &                        aqhstartdate1,        aqhstartdate2,
+     &            hs_file,        hs_period,        hs_StartTime,
+     &                        hs_startdate1,        hs_startdate2,
+     &            hl_file,        hl_period,        hl_StartTime,
+     &                        hl_startdate1,        hl_startdate2,
+     &          sfluxfile,      sfluxperiod,      sfluxStartTime,
+     &                      sfluxstartdate1,      sfluxstartdate2,
+     &           evapfile,       evapperiod,       evapStartTime,
+     &                       evapstartdate1,       evapstartdate2,
+     &         precipfile,     precipperiod,     precipStartTime,
+     &                     precipstartdate1,     precipstartdate2,
+     &     snowprecipfile, snowprecipperiod, snowprecipStartTime,
+     &                 snowprecipstartdate1, snowprecipstartdate2,
+     &         runofffile,     runoffperiod,     runoffStartTime,
+     &                     runoffstartdate1,     runoffstartdate2,
+     &      runoftempfile,
+     &        saltflxfile,    saltflxperiod,    saltflxStartTime,
+     &                    saltflxstartdate1,    saltflxstartdate2,
+     &        ustressfile,    ustressperiod,    ustressStartTime,
+     &                    ustressstartdate1,    ustressstartdate2,
+     &        vstressfile,    vstressperiod,    vstressStartTime,
+     &                    vstressstartdate1,    vstressstartdate2,
+     &          uwindfile,      uwindperiod,      uwindStartTime,
+     &                      uwindstartdate1,      uwindstartdate2,
+     &          vwindfile,      vwindperiod,      vwindStartTime,
+     &                      vwindstartdate1,      vwindstartdate2,
+     &         wspeedfile,     wspeedperiod,     wspeedStartTime,
+     &                     wspeedstartdate1,     wspeedstartdate2,
+     &         swfluxfile,     swfluxperiod,     swfluxStartTime,
+     &                     swfluxstartdate1,     swfluxstartdate2,
+     &         lwfluxfile,     lwfluxperiod,     lwfluxStartTime,
+     &                     lwfluxstartdate1,     lwfluxstartdate2,
+     &         swdownfile,     swdownperiod,     swdownStartTime,
+     &                     swdownstartdate1,     swdownstartdate2,
+     &         lwdownfile,     lwdownperiod,     lwdownStartTime,
+     &                     lwdownstartdate1,     lwdownstartdate2,
+     &      apressurefile,  apressureperiod,  apressureStartTime,
+     &                  apressurestartdate1,  apressurestartdate2,
+     &       areamaskfile,   areamaskperiod,   areamaskStartTime,
+     &                   areamaskstartdate1,   areamaskstartdate2,
+     &        climsstfile,    climsstperiod,    climsstStartTime,
+     &                    climsststartdate1,    climsststartdate2,
+     &        climsssfile,    climsssperiod,    climsssStartTime,
+     &                    climsssstartdate1,    climsssstartdate2,
+     &       climustrfile,   climustrperiod,   climustrStartTime,
+     &                   climustrstartdate1,   climustrstartdate2,
+     &       climvstrfile,   climvstrperiod,   climvstrStartTime,
+     &                   climvstrstartdate1,   climvstrstartdate2,
+     &   areamaskTauRelax,  climsstTauRelax,    climsssTauRelax,
+     &                      climustrTauRelax,   climvstrTauRelax
 
       NAMELIST /EXF_NML_03/
      &   exf_inscal_hflux,  exf_inscal_sflux,    exf_inscal_evap,
@@ -286,7 +303,6 @@ c     exf_verbose        = debugMode
       exf_debugLev       = debugLevel
       exf_monFreq        = monitorFreq
       useExfCheckRange   = .TRUE.
-      useExfZenAlbedo    = .FALSE.
       select_ZenAlbedo   = 0
       useExfZenIncoming  = .FALSE.
       readStressOnAgrid  = .FALSE.
@@ -599,7 +615,7 @@ C     Data files.
       climustrfile       = ' '
       climvstrfile       = ' '
 
-C     Start dates.
+C     Start Time.
       hfluxStartTime     = 0.
       atempStartTime     = 0.
       aqhStartTime       = 0.
@@ -971,9 +987,8 @@ C--   Derive other parameters:
      &   stressIsOnCgrid = .FALSE.
 #endif /* USE_EXF_INTERPOLATION */
 
-      IF ( select_ZenAlbedo.GT.0 ) THEN
-           useExfZenAlbedo=.TRUE.
-      ENDIf
+      useExfZenAlbedo = select_ZenAlbedo.GE.1
+     &            .AND. select_ZenAlbedo.LE.3
 
 C--   Overwrite tauThetaClimRelax but stop if already set.
 C- Note: need this, even if EXF option ALLOW_CLIMSST_RELAXATION is undef;

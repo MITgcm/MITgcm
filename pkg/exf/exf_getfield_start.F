@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getfield_start.F,v 1.1 2012/04/07 20:06:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getfield_start.F,v 1.2 2017/02/04 23:02:46 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -41,6 +41,8 @@ C     myThid          :: My Thread Id number
       _RL fld_start_time
       INTEGER myThid
 
+#ifdef ALLOW_CAL
+
 C !FUNCTIONS:
 
 C !LOCAL VARIABLES:
@@ -72,6 +74,8 @@ C--   with "PARAMS.h" header file:
         CALL cal_ToSeconds ( difftime, fld_start_time, myThid)
         fld_start_time = startTime  + fld_start_time
       ENDIF
+
+#endif /* ALLOW_CAL */
 
       RETURN
       END
