@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_exf_load.F,v 1.7 2017/01/31 19:00:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_exf_load.F,v 1.8 2017/02/04 23:04:56 jmc Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -18,15 +18,14 @@ C     !INTERFACE:
      I                           myTime, myIter, myThid )
 
 C     !DESCRIPTION:
-C     *==================================================================*
+C     *==============================================================*
 C     | SUBROUTINE OBCS_EXF_LOAD
-C     *==================================================================*
+C     *==============================================================*
 C     | read open boundary conditions from file
 C     | N.B.: * uses exf and cal routines for file/record handling
 C     |       * uses ctrl routines for control variable handling
-C     *==================================================================*
+C     *==============================================================*
 
-C     !DESCRIPTION:
 C     !USES:
       IMPLICIT NONE
 C     == Global variables ==
@@ -171,7 +170,7 @@ CBOP
 C     !ROUTINE: OBCS_EXF_READ_XZ
 C     !INTERFACE:
       SUBROUTINE OBCS_EXF_READ_XZ (
-     I     obcsStartTime, obcsperiod,
+     I     obcsStartTime, obcsPeriod,
      I     useYearlyFields,
      U     OBu,   OBu0,   OBu1,   OBufile,
      U     OBv,   OBv0,   OBv1,   OBvfile,
@@ -181,7 +180,7 @@ C     !INTERFACE:
      U     OBeta, OBeta0, OBeta1, OBetafile,
 #endif
 #ifdef ALLOW_SEAICE
-     I     siobStartTime, siobperiod,
+     I     siobStartTime, siobPeriod,
      U     OBa,   OBa0,   OBa1,   OBafile,
      U     OBh,   OBh0,   OBh1,   OBhfile,
      U     OBsl,  OBsl0,  OBsl1,  OBslfile,
@@ -195,13 +194,13 @@ C     !INTERFACE:
      I     myTime, myIter, myThid )
 
 C     !DESCRIPTION:
-C     *==================================================================*
+C     *==============================================================*
 C     | SUBROUTINE OBCS_EXF_READ_XZ
-C     *==================================================================*
+C     *==============================================================*
 C     | read open boundary conditions from file
 C     | N.B.: * uses exf and cal routines for file/record handling
 C     |       * uses ctrl routines for control variable handling
-C     *==================================================================*
+C     *==============================================================*
 
 C     !USES:
       IMPLICIT NONE
@@ -219,7 +218,7 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
       _RL     obcsStartTime
-      _RL     obcsperiod
+      _RL     obcsPeriod
       LOGICAL useYearlyFields
       _RL OBu     (1-OLx:sNx+OLx,Nr,nSx,nSy)
       _RL OBv     (1-OLx:sNx+OLx,Nr,nSx,nSy)
@@ -242,7 +241,7 @@ C     !INPUT/OUTPUT PARAMETERS:
 #endif
 #ifdef ALLOW_SEAICE
       _RL     siobStartTime
-      _RL     siobperiod
+      _RL     siobPeriod
       _RL OBa     (1-OLx:sNx+OLx,nSx,nSy)
       _RL OBh     (1-OLx:sNx+OLx,nSx,nSy)
       _RL OBa0    (1-OLx:sNx+OLx,nSx,nSy)
@@ -281,32 +280,34 @@ CEOP
 C     !LOCAL VARIABLES:
 C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      logical first, changed
-      integer count0, count1
-      integer year0, year1
+      LOGICAL first, changed
+      INTEGER count0, count1
+      INTEGER year0, year1
       _RL     fac
 # ifdef ALLOW_PTRACERS
-      integer iTracer
+      INTEGER iTracer
 # endif /* ALLOW_PTRACERS */
 C     == end of interface ==
 
-      IF ( obcsperiod .EQ. -12. _d 0 ) THEN
-C-    obcsperiod=-12 means input file contains 12 monthly means
+      IF ( useCAL .AND. obcsPeriod .EQ. -12. _d 0 ) THEN
+# ifdef ALLOW_CAL
+C-    obcsPeriod=-12 means input file contains 12 monthly means
 C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
         CALL cal_GetMonthsRec(
      O              fac, first, changed,
      O              count0, count1,
      I              myTime, myIter, myThid )
-      ELSEIF ( obcsperiod .LT. 0. _d 0 ) THEN
+# endif /* ALLOW_CAL */
+      ELSEIF ( obcsPeriod .LT. 0. _d 0 ) THEN
         WRITE(msgBuf,'(A,1PE16.8,2A)')
-     &     'OBCS_EXF_READ_XZ: Invalid obcsperiod=', obcsperiod,
+     &     'OBCS_EXF_READ_XZ: Invalid obcsPeriod=', obcsPeriod,
      &     ' for OBCS files'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_EXF_READ_XZ'
       ELSE
 C     get record numbers and interpolation factor
         CALL exf_GetFFieldRec(
-     I              obcsStartTime, obcsperiod,
+     I              obcsStartTime, obcsPeriod,
      I              useYearlyFields,
      O              fac, first, changed,
      O              count0, count1, year0, year1,
@@ -331,24 +332,24 @@ C     get record numbers and interpolation factor
 
       CALL EXF_SET_OBCS_XZ(  OBu, OBu0, OBu1, OBufile, 'u', Nr
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , obcsPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
       CALL EXF_SET_OBCS_XZ(  OBv, OBv0, OBv1, OBvfile, 'v', Nr
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , obcsPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
       CALL EXF_SET_OBCS_XZ(  OBt, OBt0, OBt1, OBtfile, 's', Nr
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , obcsPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
       CALL EXF_SET_OBCS_XZ(  OBs, OBs0, OBs1, OBsfile, 's', Nr
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , obcsPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
 # ifdef NONLIN_FRSURF
        CALL EXF_SET_OBCS_XZ( OBeta, OBeta0, OBeta1, OBetaFile, 's', 1
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , obcsPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
 # endif /* NONLIN_FRSURF */
 # ifdef ALLOW_PTRACERS
@@ -359,7 +360,7 @@ C     get record numbers and interpolation factor
      I                       , OBptr1(1-OLx,1,1,1,iTracer)
      I                       , OBptrFile(iTracer), 's', Nr
      I                       , fac, first, changed, useYearlyFields
-     I                       , obcsperiod, count0, count1, year0, year1
+     I                       , obcsPeriod, count0, count1, year0, year1
      I                       , myTime, myIter, myThid )
        ENDDO
       ENDIF
@@ -367,23 +368,25 @@ C     get record numbers and interpolation factor
 
 # ifdef ALLOW_SEAICE
       IF (useSEAICE) THEN
-       IF ( siobperiod .EQ. -12. _d 0 ) THEN
-C-    obcsperiod=-12 means input file contains 12 monthly means
+       IF ( useCAL .AND. siobPeriod .EQ. -12. _d 0 ) THEN
+#  ifdef ALLOW_CAL
+C-    obcsPeriod=-12 means input file contains 12 monthly means
 C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
         CALL cal_GetMonthsRec(
      O              fac, first, changed,
      O              count0, count1,
      I              myTime, myIter, myThid )
-       ELSEIF ( siobperiod .LT. 0. _d 0 ) THEN
+#  endif /* ALLOW_CAL */
+       ELSEIF ( siobPeriod .LT. 0. _d 0 ) THEN
         WRITE(msgBuf,'(A,1PE16.8,2A)')
-     &     'OBCS_EXF_READ_XZ: Invalid siobperiod=', siobperiod,
+     &     'OBCS_EXF_READ_XZ: Invalid siobPeriod=', siobPeriod,
      &     ' for OBCS files'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_EXF_READ_XZ'
        ELSE
 c     get record numbers and interpolation factor
         CALL exf_GetFFieldRec(
-     I              siobStartTime, siobperiod,
+     I              siobStartTime, siobPeriod,
      I              useYearlyFields,
      O              fac, first, changed,
      O              count0, count1, year0, year1,
@@ -408,27 +411,27 @@ c     get record numbers and interpolation factor
 
        CALL EXF_SET_OBCS_XZ(  OBa, OBa0, OBa1, OBafile, 's', 1
      I                     , fac, first, changed, useYearlyFields
-     I                     , siobperiod, count0, count1, year0, year1
+     I                     , siobPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
        CALL EXF_SET_OBCS_XZ(  OBh, OBh0, OBh1, OBhfile, 's', 1
      I                     , fac, first, changed, useYearlyFields
-     I                     , siobperiod, count0, count1, year0, year1
+     I                     , siobPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
        CALL EXF_SET_OBCS_XZ(  OBsl, OBsl0, OBsl1, OBslfile, 's', 1
      I                     , fac, first, changed, useYearlyFields
-     I                     , siobperiod, count0, count1, year0, year1
+     I                     , siobPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
        CALL EXF_SET_OBCS_XZ(  OBsn, OBsn0, OBsn1, OBsnfile, 's', 1
      I                     , fac, first, changed, useYearlyFields
-     I                     , siobperiod, count0, count1, year0, year1
+     I                     , siobPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
        CALL EXF_SET_OBCS_XZ( OBuice,OBuice0,OBuice1,OBuicefile,'u', 1
      I                     , fac, first, changed, useYearlyFields
-     I                     , siobperiod, count0, count1, year0, year1
+     I                     , siobPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
        CALL EXF_SET_OBCS_XZ( OBvice,OBvice0,OBvice1,OBvicefile,'v', 1
      I                     , fac, first, changed, useYearlyFields
-     I                     , siobperiod, count0, count1, year0, year1
+     I                     , siobPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
       ENDIF
 # endif /* ALLOW_SEAICE */
@@ -443,7 +446,7 @@ CBOP
 C     !ROUTINE: OBCS_EXF_READ_YZ
 C     !INTERFACE:
       SUBROUTINE OBCS_EXF_READ_YZ (
-     I     obcsStartTime, obcsperiod,
+     I     obcsStartTime, obcsPeriod,
      I     useYearlyFields,
      U     OBu,   OBu0,   OBu1,   OBufile,
      U     OBv,   OBv0,   OBv1,   OBvfile,
@@ -453,7 +456,7 @@ C     !INTERFACE:
      U     OBeta, OBeta0, OBeta1, OBetafile,
 #endif
 #ifdef ALLOW_SEAICE
-     I     siobStartTime, siobperiod,
+     I     siobStartTime, siobPeriod,
      U     OBa,   OBa0,   OBa1,   OBafile,
      U     OBh,   OBh0,   OBh1,   OBhfile,
      U     OBsl,  OBsl0,  OBsl1,  OBslfile,
@@ -467,13 +470,13 @@ C     !INTERFACE:
      I     myTime, myIter, myThid )
 
 C     !DESCRIPTION:
-C     *==================================================================*
+C     *==============================================================*
 C     | SUBROUTINE OBCS_EXF_READ_YZ
-C     *==================================================================*
+C     *==============================================================*
 C     | read open boundary conditions from file
 C     | N.B.: * uses exf and cal routines for file/record handling
 C     |       * uses ctrl routines for control variable handling
-C     *==================================================================*
+C     *==============================================================*
 
 C     !USES:
       IMPLICIT NONE
@@ -491,7 +494,7 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
       _RL     obcsStartTime
-      _RL     obcsperiod
+      _RL     obcsPeriod
       LOGICAL useYearlyFields
       _RL OBu     (1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL OBv     (1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -514,7 +517,7 @@ C     !INPUT/OUTPUT PARAMETERS:
 #endif
 #ifdef ALLOW_SEAICE
       _RL     siobStartTime
-      _RL     siobperiod
+      _RL     siobPeriod
       _RL OBa     (1-OLy:sNy+OLy,nSx,nSy)
       _RL OBh     (1-OLy:sNy+OLy,nSx,nSy)
       _RL OBa0    (1-OLy:sNy+OLy,nSx,nSy)
@@ -553,33 +556,34 @@ CEOP
 C     !LOCAL VARIABLES:
 C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      logical first, changed
-      integer count0, count1
-      integer year0, year1
+      LOGICAL first, changed
+      INTEGER count0, count1
+      INTEGER year0, year1
       _RL     fac
 # ifdef ALLOW_PTRACERS
-      integer iTracer
+      INTEGER iTracer
 # endif /* ALLOW_PTRACERS */
+C     == end of interface ==
 
-c     == end of interface ==
-
-      IF ( obcsperiod .EQ. -12. _d 0 ) THEN
-C-    obcsperiod=-12 means input file contains 12 monthly means
+      IF ( useCAL .AND. obcsPeriod .EQ. -12. _d 0 ) THEN
+# ifdef ALLOW_CAL
+C-    obcsPeriod=-12 means input file contains 12 monthly means
 C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
         CALL cal_GetMonthsRec(
      O              fac, first, changed,
      O              count0, count1,
      I              myTime, myIter, myThid )
-      ELSEIF ( obcsperiod .LT. 0. _d 0 ) THEN
+# endif /* ALLOW_CAL */
+      ELSEIF ( obcsPeriod .LT. 0. _d 0 ) THEN
         WRITE(msgBuf,'(A,1PE16.8,2A)')
-     &     'OBCS_EXF_READ_YZ: Invalid obcsperiod=', obcsperiod,
+     &     'OBCS_EXF_READ_YZ: Invalid obcsPeriod=', obcsPeriod,
      &     ' for OBCS files'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_EXF_READ_YZ'
       ELSE
 C     get record numbers and interpolation factor
         CALL exf_GetFFieldRec(
-     I              obcsStartTime, obcsperiod,
+     I              obcsStartTime, obcsPeriod,
      I              useYearlyFields,
      O              fac, first, changed,
      O              count0, count1, year0, year1,
@@ -604,24 +608,24 @@ C     get record numbers and interpolation factor
 
       CALL EXF_SET_OBCS_YZ(  OBu, OBu0, OBu1, OBufile, 'u', Nr
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , obcsPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
       CALL EXF_SET_OBCS_YZ(  OBv, OBv0, OBv1, OBvfile, 'v', Nr
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , obcsPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
       CALL EXF_SET_OBCS_YZ(  OBt, OBt0, OBt1, OBtfile, 's', Nr
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , obcsPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
       CALL EXF_SET_OBCS_YZ(  OBs, OBs0, OBs1, OBsfile, 's', Nr
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , obcsPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
 # ifdef NONLIN_FRSURF
        CALL EXF_SET_OBCS_YZ( OBeta, OBeta0, OBeta1, OBetaFile, 's', 1
      I                     , fac, first, changed, useYearlyFields
-     I                     , obcsperiod, count0, count1, year0, year1
+     I                     , obcsPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
 # endif /* NONLIN_FRSURF */
 # ifdef ALLOW_PTRACERS
@@ -632,7 +636,7 @@ C     get record numbers and interpolation factor
      I                       , OBptr1(1-OLx,1,1,1,iTracer)
      I                       , OBptrFile(iTracer), 's', Nr
      I                       , fac, first, changed, useYearlyFields
-     I                       , obcsperiod, count0, count1, year0, year1
+     I                       , obcsPeriod, count0, count1, year0, year1
      I                       , myTime, myIter, myThid )
        ENDDO
       ENDIF
@@ -640,23 +644,25 @@ C     get record numbers and interpolation factor
 
 # ifdef ALLOW_SEAICE
       IF (useSEAICE) THEN
-       IF ( siobperiod .EQ. -12. _d 0 ) THEN
-C-    obcsperiod=-12 means input file contains 12 monthly means
+       IF ( useCAL .AND. siobPeriod .EQ. -12. _d 0 ) THEN
+#  ifdef ALLOW_CAL
+C-    obcsPeriod=-12 means input file contains 12 monthly means
 C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
         CALL cal_GetMonthsRec(
      O              fac, first, changed,
      O              count0, count1,
      I              myTime, myIter, myThid )
-       ELSEIF ( siobperiod .LT. 0. _d 0 ) THEN
+#  endif /* ALLOW_CAL */
+       ELSEIF ( siobPeriod .LT. 0. _d 0 ) THEN
         WRITE(msgBuf,'(A,1PE16.8,2A)')
-     &     'OBCS_EXF_READ_YZ: Invalid siobperiod=', siobperiod,
+     &     'OBCS_EXF_READ_YZ: Invalid siobPeriod=', siobPeriod,
      &     ' for OBCS files'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R OBCS_EXF_READ_YZ'
        ELSE
 c     get record numbers and interpolation factor
         CALL exf_GetFFieldRec(
-     I              siobStartTime, siobperiod,
+     I              siobStartTime, siobPeriod,
      I              useYearlyFields,
      O              fac, first, changed,
      O              count0, count1, year0, year1,
@@ -681,27 +687,27 @@ c     get record numbers and interpolation factor
 
        CALL EXF_SET_OBCS_YZ(  OBa, OBa0, OBa1, OBafile, 's', 1
      I                     , fac, first, changed, useYearlyFields
-     I                     , siobperiod, count0, count1, year0, year1
+     I                     , siobPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
        CALL EXF_SET_OBCS_YZ(  OBh, OBh0, OBh1, OBhfile, 's', 1
      I                     , fac, first, changed, useYearlyFields
-     I                     , siobperiod, count0, count1, year0, year1
+     I                     , siobPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
        CALL EXF_SET_OBCS_YZ(  OBsl, OBsl0, OBsl1, OBslfile, 's', 1
      I                     , fac, first, changed, useYearlyFields
-     I                     , siobperiod, count0, count1, year0, year1
+     I                     , siobPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
        CALL EXF_SET_OBCS_YZ(  OBsn, OBsn0, OBsn1, OBsnfile, 's', 1
      I                     , fac, first, changed, useYearlyFields
-     I                     , siobperiod, count0, count1, year0, year1
+     I                     , siobPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
        CALL EXF_SET_OBCS_YZ( OBuice,OBuice0,OBuice1,OBuicefile,'u', 1
      I                     , fac, first, changed, useYearlyFields
-     I                     , siobperiod, count0, count1, year0, year1
+     I                     , siobPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
        CALL EXF_SET_OBCS_YZ( OBvice,OBvice0,OBvice1,OBvicefile,'v', 1
      I                     , fac, first, changed, useYearlyFields
-     I                     , siobperiod, count0, count1, year0, year1
+     I                     , siobPeriod, count0, count1, year0, year1
      I                     , myTime, myIter, myThid )
       ENDIF
 # endif /* ALLOW_SEAICE */
