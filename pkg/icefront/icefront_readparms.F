@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.15 2017/01/31 20:37:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.16 2017/02/07 00:18:59 jmc Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -47,8 +47,8 @@ CEOP
 
 #ifdef ALLOW_EXF
       NAMELIST /ICEFRONT_EXF_PARM02/
+     &     SGRunOffFile,   SGRunOffperiod,   SGRunOffStartTime,
      &     SGRunOffstartdate1, SGRunOffstartdate2,
-     &     SGRunOffperiod,     SGRunOffFile,
      &     SGRunOffconst,      SGRunOff_inscal,
      &     SGRunOff_remov_intercept, SGRunOff_remov_slope
 #endif /* ALLOW_EXF */
@@ -100,6 +100,7 @@ C Default values when SHELFICE is not used
 #ifdef ALLOW_EXF
       SGRunOffstartdate1       = 0
       SGRunOffstartdate2       = 0
+      SGRunOffStartTime        = UNSET_RL
       SGRunOffperiod           = 0.0 _d 0
       SGRunOffconst            = 0.0 _d 0
       SGRunOff_remov_intercept = 0.0 _d 0
@@ -108,7 +109,6 @@ C Default values when SHELFICE is not used
       SGRunOffFile             = ' '
 C-    internal parameters (not in namelist):
       SGRunOffmask             = 'c'
-      SGRunOffStartTime        = 0.
 #endif /* ALLOW_EXF */
 
 C Open and read the data.icefront file

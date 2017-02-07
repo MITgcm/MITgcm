@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_fixed.F,v 1.7 2017/01/31 20:37:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_fixed.F,v 1.8 2017/02/07 00:18:59 jmc Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -27,28 +27,38 @@ C     === Global variables ===
 #endif /* ALLOW_EXF */
 
 C     === Routine arguments ===
-C     myThid -  Number of this instance of ICEFRONT_INIT_FIXED
+C     myThid        :: my Thread Id Number
       INTEGER myThid
 
 #ifdef ALLOW_ICEFRONT
 C     === Local variables ===
-C     I,J,K,bi,bj - Loop counters
+C     I,J,K,bi,bj   :: Loop counters
+C     errCount      :: error counter
       INTEGER I, J, K, bi, bj
+      INTEGER errCount
 #ifdef ALLOW_ICEFRONT_DEBUG
       INTEGER ISinterface
 #endif
 
 #ifdef ALLOW_EXF
-      IF ( useEXF .AND. SGRunOffFile .NE. ' '
-     &            .AND. SGRunOffperiod .GT. 0. ) THEN
+      IF ( useEXF .AND. SGRunOffFile .NE. ' ' ) THEN
        _BEGIN_MASTER( myThid )
+       errCount = 0
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START SGRunOff',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          SGRunOffstartdate1, SGRunOffstartdate2,
-     O                          SGRunOffStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'icefront', 'SGRunOff', SGRunOffperiod,
+     I                    SGRunOffstartdate1, SGRunOffstartdate2,
+     U                    SGRunOffStartTime, errCount,
+     I                    myThid )
+       IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &     'ICEFRONT_INIT_FIXED: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R ICEFRONT_INIT_FIXED'
+       ENDIF
        _END_MASTER( myThid )
        _BARRIER
       ENDIF
@@ -113,6 +123,7 @@ C              print*, 'IsInterface=', '2' , ',xuyun'
        CALL ICEFRONT_DIAGNOSTICS_INIT( myThid )
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
+
 #endif /* ALLOW_ICEFRONT */
 
       RETURN
