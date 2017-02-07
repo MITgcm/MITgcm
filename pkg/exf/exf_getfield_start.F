@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getfield_start.F,v 1.2 2017/02/04 23:02:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getfield_start.F,v 1.3 2017/02/07 00:15:29 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -17,8 +17,11 @@ C     !INTERFACE:
 C !DESCRIPTION: \bv
 C  *==========================================================*
 C  | SUBROUTINE EXF_GETFIELD_START
-C  | o get forcing-field starting-time (in secs);
-C  |   distinguish between using Yearly-Fields or not.
+C  | o old version of current S/R EXF_GETFFIELD_START
+C  |   - with fewer arguments
+C  |   - does not check if parameters are consistent with
+C  |     useCAL setting
+C  | o kept to allow to compile and use old piece of code
 C  *==========================================================*
 C \ev
 
@@ -27,7 +30,6 @@ C !USES:
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-c#include "cal.h"
 #include "PARAMS.h"
 
 C !INPUT/OUTPUT PARAMETERS:
@@ -41,41 +43,27 @@ C     myThid          :: My Thread Id number
       _RL fld_start_time
       INTEGER myThid
 
-#ifdef ALLOW_CAL
-
-C !FUNCTIONS:
-
 C !LOCAL VARIABLES:
 C     msgBuf          :: Informational/error message buffer
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER date_array(4), difftime(4), yearStartDate(4)
-      INTEGER gcm_startdate(4)
+      CHARACTER*(3) pkg_name
+      CHARACTER*(7) fld_name
+      _RL fld_period
+      INTEGER errCount
 CEOP
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-      CALL CAL_FULLDATE( fld_startdate1, fld_startdate2,
-     &                   date_array, myThid )
-      IF ( useYearlyFields ) THEN
-        yearStartDate(1) = INT(date_array(1)/10000.) * 10000 + 101
-        yearStartDate(2) = 0
-        yearStartDate(3) = date_array(3)
-        yearStartDate(4) = date_array(4)
-        CALL cal_TimePassed( yearStartDate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime, fld_start_time, myThid)
-      ELSE
-C--   with "cal.h" header file:
-c       CALL cal_TimePassed(modelstartdate,date_array,difftime,myThid)
-c       CALL cal_ToSeconds ( difftime, fld_start_time, myThid)
-c       fld_start_time = modelstart + fld_start_time
-C--   with "PARAMS.h" header file:
-        CALL cal_getdate( nIter0, startTime, gcm_startdate, myThid )
-        CALL cal_TimePassed( gcm_startdate,date_array,difftime,myThid)
-        CALL cal_ToSeconds ( difftime, fld_start_time, myThid)
-        fld_start_time = startTime  + fld_start_time
+      IF ( useCAL ) THEN
+        pkg_name   = 'xxx'
+        fld_name   = 'exf_gen'
+        fld_period = oneRL
+        fld_start_time = UNSET_RL
+        errCount   = 0
+        CALL EXF_GETFFIELD_START( useYearlyFields,
+     I                     pkg_name, fld_name, fld_period,
+     I                     fld_startdate1, fld_startdate2,
+     U                     fld_start_time, errCount,
+     I                     myThid )
       ENDIF
-
-#endif /* ALLOW_CAL */
 
       RETURN
       END
