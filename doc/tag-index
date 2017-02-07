@@ -1,9 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2298 2017/02/04 23:11:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2299 2017/02/07 00:31:56 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - new S/R EXF_GETFFIELD_START replacing EXF_GETFIELD_START, but with more
+    arguments, allowing to check (and stop) if parameter setting of
+     {FLD}startdate1 & date2 and of {FLD}StartTime are consistent with
+    useCAL= T or F. For now, kept a simplified version of EXF_GETFIELD_START
+    for backward compatibility.
+  - change accordingly calls in exf_init_fixed.F + default {FLD}StartTime in
+    exf_readparms.F ; apply same changes to pkg/icefront (for SGRunOff field).
+o pkg/bling (USE_EXFCO2 code):
+  - fix missing setting of apco2StartTime according to apco2startdate1 & date2
+    by adding a call to S/R EXF_GETFFIELD_START.
 o pkg/exf:
   - allows to compile without pkg/cal (but disabled by current dependency
     rules, i.e., default "pkg/pkg_depend"). Minimal changes to enable to
