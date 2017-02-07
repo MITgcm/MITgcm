@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.90 2017/02/04 23:02:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.91 2017/02/07 00:17:21 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -616,40 +616,40 @@ C     Data files.
       climvstrfile       = ' '
 
 C     Start Time.
-      hfluxStartTime     = 0.
-      atempStartTime     = 0.
-      aqhStartTime       = 0.
-      hs_StartTime       = 0.
-      hl_StartTime       = 0.
-      evapStartTime      = 0.
-      precipStartTime    = 0.
-      snowprecipStartTime= 0.
-      sfluxStartTime     = 0.
-      runoffStartTime    = 0.
-      saltflxStartTime   = 0.
-      ustressStartTime   = 0.
-      vstressStartTime   = 0.
-      uwindStartTime     = 0.
-      vwindStartTime     = 0.
-      wspeedStartTime    = 0.
-      swfluxStartTime    = 0.
-      lwfluxStartTime    = 0.
-      swdownStartTime    = 0.
-      lwdownStartTime    = 0.
-      obcsNStartTime     = 0.
-      obcsSStartTime     = 0.
-      obcsEStartTime     = 0.
-      obcsWStartTime     = 0.
-      siobNStartTime     = 0.
-      siobSStartTime     = 0.
-      siobEStartTime     = 0.
-      siobWStartTime     = 0.
-      apressureStartTime = 0.
-      areamaskStartTime  = 0.
-      climsstStartTime   = 0.
-      climsssStartTime   = 0.
-      climustrStartTime  = 0.
-      climvstrStartTime  = 0.
+      hfluxStartTime     = UNSET_RL
+      atempStartTime     = UNSET_RL
+      aqhStartTime       = UNSET_RL
+      hs_StartTime       = UNSET_RL
+      hl_StartTime       = UNSET_RL
+      evapStartTime      = UNSET_RL
+      precipStartTime    = UNSET_RL
+      snowprecipStartTime= UNSET_RL
+      sfluxStartTime     = UNSET_RL
+      runoffStartTime    = UNSET_RL
+      saltflxStartTime   = UNSET_RL
+      ustressStartTime   = UNSET_RL
+      vstressStartTime   = UNSET_RL
+      uwindStartTime     = UNSET_RL
+      vwindStartTime     = UNSET_RL
+      wspeedStartTime    = UNSET_RL
+      swfluxStartTime    = UNSET_RL
+      lwfluxStartTime    = UNSET_RL
+      swdownStartTime    = UNSET_RL
+      lwdownStartTime    = UNSET_RL
+      obcsNStartTime     = UNSET_RL
+      obcsSStartTime     = UNSET_RL
+      obcsEStartTime     = UNSET_RL
+      obcsWStartTime     = UNSET_RL
+      siobNStartTime     = UNSET_RL
+      siobSStartTime     = UNSET_RL
+      siobEStartTime     = UNSET_RL
+      siobWStartTime     = UNSET_RL
+      apressureStartTime = UNSET_RL
+      areamaskStartTime  = UNSET_RL
+      climsstStartTime   = UNSET_RL
+      climsssStartTime   = UNSET_RL
+      climustrStartTime  = UNSET_RL
+      climvstrStartTime  = UNSET_RL
 
 C     Initialise file type and field precision
       exf_iprec            = 32
@@ -908,7 +908,7 @@ C     model grid cell-center position (leading to trivial interpolation)
 C     Next, read the forcing data file.
       WRITE(msgBuf,'(A)') 'EXF_READPARMS: opening data.exf'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
       CALL OPEN_COPY_DATA_FILE(
      I                          'data.exf', 'EXF_READPARMS',
@@ -918,23 +918,23 @@ C     Next, read the forcing data file.
       WRITE(msgBuf,'(A)')
      &     'EXF_READPARMS: reading EXF_NML_01'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
       READ(  iUnit, nml = EXF_NML_01 )
       WRITE(msgBuf,'(A)')
      &     'EXF_READPARMS: reading EXF_NML_02'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
       READ(  iUnit, nml = EXF_NML_02 )
       WRITE(msgBuf,'(A)')
      &     'EXF_READPARMS: reading EXF_NML_03'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
       READ(  iUnit, nml = EXF_NML_03 )
 #ifdef USE_EXF_INTERPOLATION
       WRITE(msgBuf,'(A)')
      &     'EXF_READPARMS: reading EXF_NML_04'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
       READ(  iUnit, nml = EXF_NML_04 )
 #endif /* USE_EXF_INTERPOLATION */
 
@@ -943,7 +943,7 @@ C     Next, read the forcing data file.
        WRITE(msgBuf,'(A)')
      &      'EXF_READPARMS: reading EXF_NML_OBCS'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &      SQUEEZE_RIGHT , 1)
+     &                     SQUEEZE_RIGHT, myThid )
        READ(  iUnit, nml = EXF_NML_OBCS )
       ENDIF
        IF(siobNstartdate1.EQ.UNSET_I ) siobNstartdate1=obcsNstartdate1
@@ -965,7 +965,7 @@ C     Next, read the forcing data file.
       WRITE(msgBuf,'(A)')
      &     'EXF_READPARMS: finished reading data.exf'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
       CLOSE( iUnit )
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.33 2017/02/04 23:02:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.34 2017/02/07 00:17:21 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -27,12 +27,16 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid ::  my Thread Id number
+C     myThid    ::  my Thread Id number
       INTEGER myThid
 CEOP
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
+C     msgBuf    :: Informational/error message buffer
+C     errCount  :: error counter
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER errCount
 #ifdef USE_EXF_INTERPOLATION
       INTEGER j
 #endif
@@ -42,6 +46,7 @@ C     === Local variables ===
 #endif
 
       _BEGIN_MASTER( myThid )
+      errCount = 0
 
 C--   Set mask for each input field
 C     ' ' = no masking; 'c' = centered mask; 'w' = western mask; 's' = southern
@@ -114,368 +119,393 @@ C     FLDStartTime, for FLD = { uwind, vwind, wspeed, etc. },
 C     returns time in seconds of first FLD record from the
 C     beginning of the model integration or, if useYearlyFields,
 C     from the beginning of the year.
-      IF ( useCAL ) THEN
 
       IF ( useAtmWind ) THEN
-       IF ( uwindfile .NE. ' ' .AND. uwindperiod .GT. 0. ) THEN
+       IF ( uwindfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START uwind',myThid)
+        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START uwind',myThid)
 # endif
-        CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                           uwindstartdate1, uwindstartdate2,
-     O                           uwindStartTime,
-     I                           myThid )
+        CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                     'exf', 'uwind', uwindperiod,
+     I                     uwindstartdate1, uwindstartdate2,
+     U                     uwindStartTime, errCount,
+     I                     myThid )
        ENDIF
-       IF ( vwindfile .NE. ' ' .AND. vwindperiod .GT. 0. ) THEN
+       IF ( vwindfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START vwind',myThid)
+        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START vwind',myThid)
 # endif
-        CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                           vwindstartdate1, vwindstartdate2,
-     O                           vwindStartTime,
-     I                           myThid )
+        CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                     'exf', 'vwind', vwindperiod,
+     I                     vwindstartdate1, vwindstartdate2,
+     U                     vwindStartTime, errCount,
+     I                     myThid )
        ENDIF
       ENDIF
 
-      IF ( wspeedfile .NE. ' ' .AND. wspeedperiod .GT. 0. ) THEN
+      IF ( wspeedfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START wspeed',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START wspeed',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          wspeedstartdate1, wspeedstartdate2,
-     O                          wspeedStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'wspeed', wspeedperiod,
+     I                    wspeedstartdate1, wspeedstartdate2,
+     U                    wspeedStartTime, errCount,
+     I                    myThid )
       ENDIF
 
       IF ( .NOT.useAtmWind ) THEN
-       IF ( ustressfile .NE. ' ' .AND. ustressperiod .GT. 0. ) THEN
+       IF ( ustressfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START ustress',myThid)
+        IF (debugMode)
+     &     CALL DEBUG_CALL('GETFFIELD_START ustress',myThid)
 # endif
-        CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                           ustressstartdate1, ustressstartdate2,
-     O                           ustressStartTime,
-     I                           myThid )
+        CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                     'exf', 'ustress', ustressperiod,
+     I                     ustressstartdate1, ustressstartdate2,
+     U                     ustressStartTime, errCount,
+     I                     myThid )
        ENDIF
-       IF ( vstressfile .NE. ' ' .AND. vstressperiod .GT. 0. ) THEN
+       IF ( vstressfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('GETFIELD_START vstress',myThid)
+        IF (debugMode)
+     &     CALL DEBUG_CALL('GETFFIELD_START vstress',myThid)
 # endif
-        CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                           vstressstartdate1, vstressstartdate2,
-     O                           vstressStartTime,
-     I                           myThid )
+        CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                     'exf', 'vstress', vstressperiod,
+     I                     vstressstartdate1, vstressstartdate2,
+     U                     vstressStartTime, errCount,
+     I                     myThid )
        ENDIF
       ENDIF
 
-      IF ( hfluxfile .NE. ' ' .AND. hfluxperiod .GT. 0. ) THEN
+      IF ( hfluxfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START hflux',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START hflux',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          hfluxstartdate1, hfluxstartdate2,
-     O                          hfluxStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'hflux', hfluxperiod,
+     I                    hfluxstartdate1, hfluxstartdate2,
+     U                    hfluxStartTime, errCount,
+     I                    myThid )
       ENDIF
-      IF ( sfluxfile .NE. ' ' .AND. sfluxperiod .GT. 0. ) THEN
+      IF ( sfluxfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START sflux',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START sflux',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          sfluxstartdate1, sfluxstartdate2,
-     O                          sfluxStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'sflux', sfluxperiod,
+     I                    sfluxstartdate1, sfluxstartdate2,
+     U                    sfluxStartTime, errCount,
+     I                    myThid )
       ENDIF
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
-      IF ( swfluxfile .NE. ' ' .AND. swfluxperiod .GT. 0. ) THEN
+      IF ( swfluxfile .NE. ' '  ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START swflux',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START swflux',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          swfluxstartdate1, swfluxstartdate2,
-     O                          swfluxStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'swflux', swfluxperiod,
+     I                    swfluxstartdate1, swfluxstartdate2,
+     U                    swfluxStartTime, errCount,
+     I                    myThid )
       ENDIF
 #endif /* defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING) */
 
 #ifdef ALLOW_ATM_TEMP
-      IF ( atempfile .NE. ' ' .AND. atempperiod .GT. 0. ) THEN
+      IF ( atempfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START atemp',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START atemp',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          atempstartdate1, atempstartdate2,
-     O                          atempStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'atemp', atempperiod,
+     I                    atempstartdate1, atempstartdate2,
+     U                    atempStartTime, errCount,
+     I                    myThid )
       ENDIF
-      IF ( aqhfile .NE. ' ' .AND. aqhperiod .GT. 0. ) THEN
+      IF ( aqhfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START aqh',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START aqh',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          aqhstartdate1, aqhstartdate2,
-     O                          aqhStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'aqh', aqhperiod,
+     I                    aqhstartdate1, aqhstartdate2,
+     U                    aqhStartTime, errCount,
+     I                    myThid )
       ENDIF
 # ifdef ALLOW_READ_TURBFLUXES
-      IF ( hs_file .NE. ' ' .AND. hs_period .GT. 0. ) THEN
+      IF ( hs_file .NE. ' ' ) THEN
 #  ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START hs ',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START hs ',myThid)
 #  endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          hs_startdate1, hs_startdate2,
-     O                          hs_StartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'hs_', hs_period,
+     I                    hs_startdate1, hs_startdate2,
+     U                    hs_StartTime, errCount,
+     I                    myThid )
       ENDIF
-      IF ( hl_file .NE. ' ' .AND. hl_period .GT. 0. ) THEN
+      IF ( hl_file .NE. ' ' ) THEN
 #  ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START hs ',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START hl ',myThid)
 #  endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          hl_startdate1, hl_startdate2,
-     O                          hl_StartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'hl_', hl_period,
+     I                    hl_startdate1, hl_startdate2,
+     U                    hl_StartTime, errCount,
+     I                    myThid )
       ENDIF
 # endif /* ALLOW_READ_TURBFLUXES */
-      IF ( lwfluxfile .NE. ' ' .AND. lwfluxperiod .GT. 0. ) THEN
+      IF ( lwfluxfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START lwflux',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START lwflux',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          lwfluxstartdate1, lwfluxstartdate2,
-     O                          lwfluxStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'lwflux', lwfluxperiod,
+     I                    lwfluxstartdate1, lwfluxstartdate2,
+     U                    lwfluxStartTime, errCount,
+     I                    myThid )
       ENDIF
-      IF ( precipfile .NE. ' ' .AND. precipperiod .GT. 0. ) THEN
+      IF ( precipfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START precip',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START precip',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          precipstartdate1, precipstartdate2,
-     O                          precipStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'precip', precipperiod,
+     I                    precipstartdate1, precipstartdate2,
+     U                    precipStartTime, errCount,
+     I                    myThid )
       ENDIF
-      IF ( snowprecipfile .NE. ' ' .AND. snowprecipperiod .GT. 0. ) THEN
+      IF ( snowprecipfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
        IF (debugMode)
-     &    CALL DEBUG_CALL('GETFIELD_START snowprecip',myThid)
+     &    CALL DEBUG_CALL('GETFFIELD_START snowprecip',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                   snowprecipstartdate1, snowprecipstartdate2,
-     O                   snowprecipStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'snowprecip', snowprecipperiod,
+     I                    snowprecipstartdate1, snowprecipstartdate2,
+     U                    snowprecipStartTime, errCount,
+     I                    myThid )
       ENDIF
 #endif /* ALLOW_ATM_TEMP */
 
 #ifdef EXF_READ_EVAP
-      IF ( evapfile .NE. ' ' .AND. evapperiod .GT. 0. ) THEN
+      IF ( evapfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START evap',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START evap',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          evapstartdate1, evapstartdate2,
-     O                          evapStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'evap', evapperiod,
+     I                    evapstartdate1, evapstartdate2,
+     U                    evapStartTime, errCount,
+     I                    myThid )
       ENDIF
 #endif /* EXF_READ_EVAP */
 
 #ifdef ALLOW_RUNOFF
-      IF ( runofffile .NE. ' ' .AND. runoffperiod .GT. 0. ) THEN
+      IF ( runofffile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START runoff',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START runoff',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          runoffstartdate1, runoffstartdate2,
-     O                          runoffStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'runoff', runoffperiod,
+     I                    runoffstartdate1, runoffstartdate2,
+     U                    runoffStartTime, errCount,
+     I                    myThid )
       ENDIF
 #endif /* ALLOW_RUNOFF */
 
 #ifdef ALLOW_SALTFLX
-      IF ( saltflxfile .NE. ' ' .AND. saltflxperiod .GT. 0. ) THEN
+      IF ( saltflxfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
        IF (debugMode)
-     &    CALL DEBUG_CALL('GETFIELD_START saltflx',myThid)
+     &    CALL DEBUG_CALL('GETFFIELD_START saltflx',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                   saltflxstartdate1, saltflxstartdate2,
-     O                   saltflxStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'saltflx', saltflxperiod,
+     I                    saltflxstartdate1, saltflxstartdate2,
+     U                    saltflxStartTime, errCount,
+     I                    myThid )
       ENDIF
 #endif /* ALLOW_SALTFLX */
 
 #ifdef ALLOW_DOWNWARD_RADIATION
-      IF ( swdownfile .NE. ' ' .AND. swdownperiod .GT. 0. ) THEN
+      IF ( swdownfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START swdown',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START swdown',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          swdownstartdate1, swdownstartdate2,
-     O                          swdownStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'swdown', swdownperiod,
+     I                    swdownstartdate1, swdownstartdate2,
+     U                    swdownStartTime, errCount,
+     I                    myThid )
       ENDIF
-      IF ( lwdownfile .NE. ' ' .AND. lwdownperiod .GT. 0. ) THEN
+      IF ( lwdownfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START lwdown',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START lwdown',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          lwdownstartdate1, lwdownstartdate2,
-     O                          lwdownStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'lwdown', lwdownperiod,
+     I                    lwdownstartdate1, lwdownstartdate2,
+     U                    lwdownStartTime, errCount,
+     I                    myThid )
       ENDIF
 #endif /* ALLOW_DOWNWARD_RADIATION */
 
 #ifdef ATMOSPHERIC_LOADING
-      IF ( apressurefile .NE. ' ' .AND. apressureperiod .GT. 0. ) THEN
+      IF ( apressurefile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
        IF (debugMode)
-     &    CALL DEBUG_CALL('GETFIELD_START apressure',myThid)
+     &    CALL DEBUG_CALL('GETFFIELD_START apressure',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                   apressurestartdate1, apressurestartdate2,
-     O                   apressureStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'apressure', apressureperiod,
+     I                    apressurestartdate1, apressurestartdate2,
+     U                    apressureStartTime, errCount,
+     I                    myThid )
       ENDIF
 #endif /* ATMOSPHERIC_LOADING */
 
 #ifdef EXF_SEAICE_FRACTION
-      IF ( areamaskfile .NE. ' ' .AND. areamaskperiod .GT. 0. ) THEN
+      IF ( areamaskfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START areamask',myThid)
+       IF (debugMode)
+     &    CALL DEBUG_CALL('GETFFIELD_START areamask',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          areamaskstartdate1, areamaskstartdate2,
-     O                          areamaskStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'areamask', areamaskperiod,
+     I                    areamaskstartdate1, areamaskstartdate2,
+     U                    areamaskStartTime, errCount,
+     I                    myThid )
       ENDIF
 #endif /* EXF_SEAICE_FRACTION */
 
 #ifdef ALLOW_OBCS
-      IF ( obcsNperiod .GT. 0. ) THEN
+      IF ( useOBCS ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START obcsN',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START obcsN',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useOBCSYearlyFields,
-     I                          obcsNstartdate1, obcsNstartdate2,
-     O                          obcsNStartTime,
-     I                          myThid )
-      ENDIF
-      IF ( obcsSperiod .GT. 0. ) THEN
+       CALL EXF_GETFFIELD_START( useOBCSYearlyFields,
+     I                    'exf', 'obcsN', obcsNperiod,
+     I                    obcsNstartdate1, obcsNstartdate2,
+     U                    obcsNStartTime, errCount,
+     I                    myThid )
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START obcsS',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START obcsS',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useOBCSYearlyFields,
-     I                          obcsSstartdate1, obcsSstartdate2,
-     O                          obcsSStartTime,
-     I                          myThid )
-      ENDIF
-      IF ( obcsEperiod .GT. 0. ) THEN
+       CALL EXF_GETFFIELD_START( useOBCSYearlyFields,
+     I                    'exf', 'obcsS', obcsSperiod,
+     I                    obcsSstartdate1, obcsSstartdate2,
+     U                    obcsSStartTime, errCount,
+     I                    myThid )
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START obcsE',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START obcsE',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useOBCSYearlyFields,
-     I                          obcsEstartdate1, obcsEstartdate2,
-     O                          obcsEStartTime,
-     I                          myThid )
-      ENDIF
-      IF ( obcsWperiod .GT. 0. ) THEN
+       CALL EXF_GETFFIELD_START( useOBCSYearlyFields,
+     I                    'exf', 'obcsE', obcsEperiod,
+     I                    obcsEstartdate1, obcsEstartdate2,
+     U                    obcsEStartTime, errCount,
+     I                    myThid )
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START obcsW',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START obcsW',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useOBCSYearlyFields,
-     I                          obcsWstartdate1, obcsWstartdate2,
-     O                          obcsWStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useOBCSYearlyFields,
+     I                    'exf', 'obcsW', obcsWperiod,
+     I                    obcsWstartdate1, obcsWstartdate2,
+     U                    obcsWStartTime, errCount,
+     I                    myThid )
       ENDIF
 # ifdef ALLOW_SEAICE
-      IF ( siobNperiod .GT. 0. ) THEN
+      IF ( useOBCS .AND. useSEAICE ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START siobN',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START siobN',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useOBCSYearlyFields,
-     I                          siobNstartdate1, siobNstartdate2,
-     O                          siobNStartTime,
-     I                          myThid )
-      ENDIF
-      IF ( siobSperiod .GT. 0. ) THEN
+       CALL EXF_GETFFIELD_START( useOBCSYearlyFields,
+     I                    'exf', 'siobN', siobNperiod,
+     I                    siobNstartdate1, siobNstartdate2,
+     U                    siobNStartTime, errCount,
+     I                    myThid )
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START siobS',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START siobS',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useOBCSYearlyFields,
-     I                          siobSstartdate1, siobSstartdate2,
-     O                          siobSStartTime,
-     I                          myThid )
-      ENDIF
-      IF ( siobEperiod .GT. 0. ) THEN
+       CALL EXF_GETFFIELD_START( useOBCSYearlyFields,
+     I                    'exf', 'siobS', siobSperiod,
+     I                    siobSstartdate1, siobSstartdate2,
+     U                    siobSStartTime, errCount,
+     I                    myThid )
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START siobE',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START siobE',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useOBCSYearlyFields,
-     I                          siobEstartdate1, siobEstartdate2,
-     O                          siobEStartTime,
-     I                          myThid )
-      ENDIF
-      IF ( siobWperiod .GT. 0. ) THEN
+       CALL EXF_GETFFIELD_START( useOBCSYearlyFields,
+     I                    'exf', 'siobE', siobEperiod,
+     I                    siobEstartdate1, siobEstartdate2,
+     U                    siobEStartTime, errCount,
+     I                    myThid )
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START siobW',myThid)
+       IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START siobW',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useOBCSYearlyFields,
-     I                          siobWstartdate1, siobWstartdate2,
-     O                          siobWStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useOBCSYearlyFields,
+     I                    'exf', 'siobW', siobWperiod,
+     I                    siobWstartdate1, siobWstartdate2,
+     U                    siobWStartTime, errCount,
+     I                    myThid )
       ENDIF
 # endif /* ALLOW_SEAICE */
 #endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_CLIMSST_RELAXATION
-      IF ( climsstfile .NE. ' ' .AND. climsstperiod .GT. 0. ) THEN
+      IF ( climsstfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START climsst',myThid)
+       IF (debugMode)
+     &    CALL DEBUG_CALL('GETFFIELD_START climsst',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          climsststartdate1, climsststartdate2,
-     O                          climsstStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'climsst', climsstperiod,
+     I                    climsststartdate1, climsststartdate2,
+     U                    climsstStartTime, errCount,
+     I                    myThid )
       ENDIF
 #endif /* ALLOW_CLIMSST_RELAXATION */
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
-      IF ( climsssfile .NE. ' ' .AND. climsssperiod .GT. 0. ) THEN
+      IF ( climsssfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START climsss',myThid)
+       IF (debugMode)
+     &    CALL DEBUG_CALL('GETFFIELD_START climsss',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          climsssstartdate1, climsssstartdate2,
-     O                          climsssStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'climsss', climsssperiod,
+     I                    climsssstartdate1, climsssstartdate2,
+     U                    climsssStartTime, errCount,
+     I                    myThid )
       ENDIF
 #endif /* ALLOW_CLIMSSS_RELAXATION */
 
 #ifdef ALLOW_CLIMSTRESS_RELAXATION
-      IF ( climustrfile .NE. ' ' .AND. climustrperiod .GT. 0. ) THEN
+      IF ( climustrfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START climustr',myThid)
+       IF (debugMode)
+     &    CALL DEBUG_CALL('GETFFIELD_START climustr',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          climustrstartdate1, climustrstartdate2,
-     O                          climustrStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'climustr', climustrperiod,
+     I                    climustrstartdate1, climustrstartdate2,
+     U                    climustrStartTime, errCount,
+     I                    myThid )
       ENDIF
 
-      IF ( climvstrfile .NE. ' ' .AND. climvstrperiod .GT. 0. ) THEN
+      IF ( climvstrfile .NE. ' ' ) THEN
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('GETFIELD_START climvstr',myThid)
+       IF (debugMode)
+     &    CALL DEBUG_CALL('GETFFIELD_START climvstr',myThid)
 # endif
-       CALL EXF_GETFIELD_START( useExfYearlyFields,
-     I                          climvstrstartdate1, climvstrstartdate2,
-     O                          climvstrStartTime,
-     I                          myThid )
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'climvstr', climvstrperiod,
+     I                    climvstrstartdate1, climvstrstartdate2,
+     U                    climvstrStartTime, errCount,
+     I                    myThid )
       ENDIF
 #endif /* ALLOW_CLIMSTRESS_RELAXATION */
-
-C--   end if useCAL
-      ENDIF
 
 #ifdef USE_EXF_INTERPOLATION
 C--   For vector fields, set flag to interpolate the 2 components together
@@ -539,6 +569,14 @@ C-    clim wind-stress:
       uvInterp_climstr= .FALSE.
 # endif
 #endif  /* USE_EXF_INTERPOLATION */
+
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &       'EXF_INIT_FIXED: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R EXF_INIT_FIXED'
+      ENDIF
 
       _END_MASTER( myThid )
       _BARRIER
