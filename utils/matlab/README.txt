@@ -1,4 +1,4 @@
-% $Header: /u/gcmpack/MITgcm/utils/matlab/README.txt,v 1.3 2012/10/04 14:02:42 jmc Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/README.txt,v 1.4 2017/02/07 17:02:10 dimitri Exp $
 % $Name:  $
 
 The following utilities are available in this directory:
@@ -29,8 +29,15 @@ The following utilities are available in this directory:
   test_nc_add.m             :: script to help use cube and netcdf
 
 
-And more complete directions for each script are:
+Subdirectories:
 
+  Graphix                   :: cubed-sphere data manipulation and plotting package
+  cs_grid                   :: cubed-sphere and lat-lon-cap routines
+  gmt                       :: general MITgcm tiles/topologies
+  ocean_basin               :: basin mask generation routines
+
+
+And more complete directions for each script are:
 
 ===  mnc_assembly.m  ===
 
