@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_readparms.F,v 1.7 2017/01/31 20:56:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_readparms.F,v 1.8 2017/02/07 00:25:54 jmc Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -40,8 +40,10 @@ CEOP
 
 C     === Local variables ===
 C     msgBuf    :: Informational/error message buffer
+C     errCount  :: error counter
 C     iUnit     :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER errCount
       INTEGER iUnit
 
 C ==========================================================
@@ -128,12 +130,12 @@ C ==========================================================
      &          bling_gamma_POM2dFile, bling_wsink0_2dFile,
      &          bling_phi_sm2dFile,bling_phi_lg2dFile
 #ifdef USE_EXFCO2
-     &          ,apco2file
-     &          ,apco2startdate1,   apco2startdate2,  apco2period
-     &          ,exf_inscal_apco2, exf_outscal_apco2, apco2const,
+     &        , apco2file, apco2period, apco2StartTime,
+     &          apco2startdate1,   apco2startdate2,
+     &          exf_inscal_apco2, exf_outscal_apco2, apco2const,
      &          apco2_exfremo_intercept, apco2_exfremo_slope
 #ifdef USE_EXF_INTERPOLATION
-     &          ,apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
+     &        , apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
      &          apco2_nlon, apco2_nlat, apco2_interpMethod
 #endif /* USE_EXF_INTERPOLATION */
 #endif
@@ -201,6 +203,7 @@ C     secperday       :: seconds in a day = 24*60*60
 #endif
 
       _BEGIN_MASTER(myThid)
+      errCount = 0
 
 C ==========================================================
 C     Default values
@@ -296,17 +299,16 @@ cav      k_PO4                = 1. _d -8 / permil
 #ifdef USE_EXFCO2
       apco2startdate1   = 0
       apco2startdate2   = 0
+      apco2StartTime    = UNSET_RL
       apco2period       = 0.0 _d 0
       apco2const        = 0.0 _d 0
       apco2_exfremo_intercept = 0.0 _d 0
       apco2_exfremo_slope = 0.0 _d 0
-      apco2file          = ' '
-      apco2StartTime     = 0.
-      exf_inscal_apco2     =  1. _d 0
-      exf_outscal_apco2    =  1. _d 0
+      apco2file         = ' '
+      exf_inscal_apco2  =  1. _d 0
+      exf_outscal_apco2 =  1. _d 0
 #ifdef USE_EXF_INTERPOLATION
-C--   set default input location to match (in case of simple Lat-Lonp
-Cgrid)
+C--   set default input location to match (in case of simple Lat-Long grid)
 C     model grid cell-center position (leading to trivial interpolation)
       inp_lon0 = xgOrigin + delX(1)*exf_half
       inp_lat0 = ygOrigin + delY(1)*exf_half
@@ -369,6 +371,23 @@ C taken into account
        IF ( useSEAICE ) QSW_underice = .TRUE.
        IF ( useThSIce ) QSW_underice = .TRUE.
 #endif
+
+#ifdef USE_EXFCO2
+      IF ( useEXF .AND. apco2file .NE. ' ' ) THEN
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'bling', 'apco2', apco2period,
+     I                    apco2startdate1, apco2startdate2,
+     U                    apco2StartTime, errCount,
+     I                    myThid )
+      ENDIF
+#endif /* USE_EXFCO2 */
+      IF ( errCount.GE.1 ) THEN
+       WRITE(msgBuf,'(A,I3,A)')
+     &     'BLING_READPARMS: detected', errCount,' fatal error(s)'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       CALL ALL_PROC_DIE( 0 )
+       STOP 'ABNORMAL END: S/R BLING_READPARMS'
+      ENDIF
 
       _END_MASTER(myThid)
 
