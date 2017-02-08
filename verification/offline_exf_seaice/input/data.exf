@@ -15,54 +15,22 @@
 # *********************
  &EXF_NML_02
 #
-#ustressstartdate1 = 19781216,
-#ustressstartdate2 = 180000,
-#ustressperiod     = 0.0,
-#
-#vstressstartdate1 = 19781216,
-#vstressstartdate2 = 180000,
-#vstressperiod     = 0.0,
-#
- atempstartdate1   = 19781216,
- atempstartdate2   = 180000,
  atempperiod       = 0.0,
-#
- aqhstartdate1     = 19781216,
- aqhstartdate2     = 180000,
  aqhperiod         = 0.0,
 #
- precipstartdate1  = 19781216,
- precipstartdate2  = 180000,
- precipperiod      = 0.0,
-#
- uwindstartdate1   = 19781216,
- uwindstartdate2   = 180000,
  uwindperiod       = 0.0,
-#
- vwindstartdate1   = 19781216,
- vwindstartdate2   = 180000,
  vwindperiod       = 0.0,
 #
- swdownstartdate1  = 19781216,
- swdownstartdate2  = 180000,
+ precipperiod      = 0.0,
  swdownperiod      = 0.0,
-#
- lwdownstartdate1  = 19781216,
- lwdownstartdate2  = 180000,
  lwdownperiod      = 0.0,
 #
- climsststartdate1  = 19781216,
- climsststartdate2  = 180000,
  climsstperiod      = 0.0,
  climsstTauRelax    = 2592000.,
 #
- climsssstartdate1  = 19781216,
- climsssstartdate2  = 180000,
  climsssperiod      = 0.0,
 #climsssTauRelax    = 2592000.,
 #
- ustressfile       = ' ',
- vstressfile       = ' ',
  atempfile         = 'tair_4x.bin',
  aqhfile           = 'qa70_4x.bin',
  uwindfile         = 'windx.bin',
