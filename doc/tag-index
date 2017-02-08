@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2300 2017/02/07 17:02:10 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2301 2017/02/08 23:15:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/genmake2 & pkg/pkg_depend:
+  - define new type of pkg dependency rule ("=pkg_x"), less strict than
+    the "+" rule, that add the dependent pkg (pkg_x) unless it's disabled
+    (-pkg_x in packages.conf).
+  - change pkg/exf dependency rule from "exf +cal" to "exf =cal";
+  - add "+cal" to dependency list of pkg/ecco (needed to compile).
+  - simplify FWD experiment "offline_exf_seaice" by removing pkg/cal.
 o utils/matlab:
   - adding ocean_basin routines for defining basin masks.
 o pkg/exf:
