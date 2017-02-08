@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.279 2017/01/28 18:37:21 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.280 2017/02/08 22:31:33 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -697,6 +697,7 @@ get_pdepend_list()  {
       echo "Error: unable to parse package dependencies -- please check PKG_DEPEND=\"$1\""
       exit 1
     fi
+    #echo "---- content of tmp file '.pd_tmp' :" ; cat .pd_tmp ; echo "---- end of file"
     . ./.pd_tmp
     rm -f ./.pd_tmp
 }
@@ -2449,18 +2450,19 @@ if  test "x${PKG_DEPEND}" != x ; then
 	    if test "x$p" = "x$pname" ; then pin="t" ; fi
 	done
 
-	#  Is the DNAME entry a (+) or (-) rule ?
+	#  Is the DNAME entry a (=), (+) or (-) rule ?
 	tmp="dname=\"\$DNAME_$i\""
 	eval $tmp
-	plus="-"
+	plus="a"
 	echo $dname | grep '^+' > /dev/null 2>&1
 	RETVAL=$?
-	if test "x$RETVAL" = x0 ; then
-	    plus="+"
-	fi
+	if test "x$RETVAL" = x0 ; then plus="+" ; fi
+	echo $dname | grep '^-' > /dev/null 2>&1
+	RETVAL=$?
+	if test "x$RETVAL" = x0 ; then plus="-" ; fi
 
 	#  Is $dname in the current $PACKAGES list?
-	dname=`echo $dname | sed -e 's/^[+-]//'`
+	dname=`echo $dname | sed -e 's/^[=+-]//'`
 	din="f"
 	for p in $PACKAGES ; do
 	    if test "x$p" = "x$dname" ; then
@@ -2469,7 +2471,7 @@ if  test "x${PKG_DEPEND}" != x ; then
 	done
 
 	#  Do we need to add $dname according to the dependency rules?
-	if test "x$pin" = xt -a "x$plus" = "x+" -a "x$din" = xf ; then
+	if test "x$pin" = xt -a "x$plus" != "x-" -a "x$din" = xf ; then
 	    #echo "   " $pname ": need to add :" $dname
 	    in_dis="f"
 	    for dis in $DISABLE ; do
@@ -2478,10 +2480,17 @@ if  test "x${PKG_DEPEND}" != x ; then
 		fi
 	    done
 	    if test "x$in_dis" = xt ; then
-		echo "Error: can't satisfy package dependencies:"
-		echo "  \"$dname\" is required by the dependency rules"
-		echo "  but is disallowed by the DISABLE settings"
-		exit 1
+		if test "x$plus" = "x+" ; then
+		    echo "Error: can't satisfy package dependencies:"
+		    echo "  \"$dname\" is required with pkg \"$pname\" (dependency rules)"
+		    echo "  but is disallowed by the DISABLE settings"
+		    exit 1
+		elif test "x$ck" = xt ; then
+		#- (=) is a weaker dependency rule: warning but no stop
+		    echo    "Warning: pkg \"$dname\" is set DISABLE (from: \"$PKG_LIST\")"
+		    echo -n "     but is recommended with pkg \"$pname\" (dependency rules)"
+		    echo " <- ignores recommendation"
+		fi
 	    else
 		PACKAGES="$PACKAGES $dname"
 		ck=
@@ -2491,8 +2500,8 @@ if  test "x${PKG_DEPEND}" != x ; then
 	#  Do we need to get rid of $dname according to the dependency rules?
 	if test "x$pin" = xt -a "x$plus" = "x-" -a "x$din" = xt; then
 	    echo "Error: can't satisfy package dependencies:"
-	    echo "  \"$pname\" was requested but is disallowed by"
-	    echo "  the dependency rules for \"$dname\""
+	    echo "  \"$dname\" was requested but is disallowed by"
+	    echo "  the dependency rules for \"$pname\""
 	    exit 1
 	fi
 	i=`echo "$i + 1" | bc -l`
