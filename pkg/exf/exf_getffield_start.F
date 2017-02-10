@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffield_start.F,v 1.1 2017/02/07 00:15:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffield_start.F,v 1.2 2017/02/10 01:27:39 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -67,21 +67,20 @@ C--   Set default start_time (in case not using Calendar)
         fld_start_time = 0.
       ELSEIF ( useCAL ) THEN
 C-    Report inconsistent setting:
-        WRITE(msgBuf,'(8A)') 'S/R EXF_GETFFIELD_START:',
-     &   ' start-time for ', pkg_name, '-field "', fld_name,
+        WRITE(msgBuf,'(8A)') 'S/R EXF_GETFFIELD_START: ',
+     &   'start-time for ', pkg_name, '-field "', fld_name,
      &    '" = ', fld_name, 'StartTime'
         CALL PRINT_ERROR( msgBuf, myThid )
-c       WRITE(msgBuf,'(5A)') 'S/R EXF_GETFFIELD_START:',
-        WRITE(msgBuf,'(5A)') '   ',
-     &   ' is computed (useCAL) from startdate1 & date2',
+c       WRITE(msgBuf,'(5A)') 'S/R EXF_GETFFIELD_START: ',
+        WRITE(msgBuf,'(5A)') '    ',
+     &   'is computed (useCAL) from startdate1 & date2',
      &   ' and cannot be set (in data.', pkg_name, ')'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
 
 C--   Convert start-date to start_time (case using Calendar)
-      IF ( fld_period.GT.0. ) THEN
-       IF ( useCAL ) THEN
+      IF ( useCAL .AND. fld_period.GT.0. ) THEN
 #ifdef ALLOW_CAL
         CALL CAL_FULLDATE( fld_startdate1, fld_startdate2,
      &                     date_array, myThid )
@@ -106,25 +105,40 @@ C--   with "PARAMS.h" header file:
           fld_start_time = startTime  + fld_start_time
         ENDIF
 #endif /* ALLOW_CAL */
+      ELSEIF ( .NOT.useCAL ) THEN
 
-       ELSEIF ( fld_startdate1.NE.0 .OR. fld_startdate2.NE.0 ) THEN
+       IF ( ( fld_startdate1.NE.0 .OR. fld_startdate2.NE.0 )
+     &      .AND. fld_period.GT.0. ) THEN
 C-    Report inconsistent setting:
         IF ( fld_startdate1.NE.0 ) THEN
-         WRITE(msgBuf,'(8A)') 'S/R EXF_GETFFIELD_START:',
-     &   ' start-date for ', pkg_name, '-field "', fld_name,
-     &    '" = ', fld_name, 'startdate1'
+         WRITE(msgBuf,'(8A)') 'S/R EXF_GETFFIELD_START: ',
+     &   'start-date for ', pkg_name, '-field "', fld_name,
+     &   '" = ', fld_name, 'startdate1'
          CALL PRINT_ERROR( msgBuf, myThid )
         ENDIF
         IF ( fld_startdate2.NE.0 ) THEN
-         WRITE(msgBuf,'(8A)') 'S/R EXF_GETFFIELD_START:',
-     &   ' start-date for ', pkg_name, '-field "', fld_name,
-     &    '" = ', fld_name, 'startdate2'
+         WRITE(msgBuf,'(8A)') 'S/R EXF_GETFFIELD_START: ',
+     &   'start-date for ', pkg_name, '-field "', fld_name,
+     &   '" = ', fld_name, 'startdate2'
          CALL PRINT_ERROR( msgBuf, myThid )
         ENDIF
-c       WRITE(msgBuf,'(5A)') 'S/R EXF_GETFFIELD_START:',
-        WRITE(msgBuf,'(5A)') '   ',
-     &   ' is not allowed (in data.', pkg_name, ')',
+c       WRITE(msgBuf,'(5A)') 'S/R EXF_GETFFIELD_START: ',
+        WRITE(msgBuf,'(5A)') '    ',
+     &   'is not allowed (in data.', pkg_name, ')',
      &   ' when pkg/cal is not used (useCAL=F)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+
+       IF ( fld_period.LT.0. ) THEN
+        WRITE(msgBuf,'(6A)') 'S/R EXF_GETFFIELD_START: ',
+     &   'Invalid record period for ', pkg_name, '-field "',
+     &   fld_name, '":'
+        CALL PRINT_ERROR( msgBuf, myThid )
+c       WRITE(msgBuf,'(3A,F14.2,A)') 'S/R EXF_GETFFIELD_START: ',
+        WRITE(msgBuf,'(3A,F14.2,A)') '    ',
+     &   fld_name, 'period =', fld_period,
+     &   ' but should be >= 0 when useCAL=F'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
