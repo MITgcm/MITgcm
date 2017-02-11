@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch2_recv_get_vec.F,v 1.4 2013/10/02 23:31:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/exch2_recv_get_vec.F,v 1.5 2017/02/11 21:07:13 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,6 +37,9 @@ C     == Global variables ==
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #endif
+#ifdef DEVEL_FLT_EXCH2
+# include "FLT_SIZE.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     arrayE        :: buffer array to collect Eastern Neighbour values
@@ -67,6 +70,13 @@ C     theSize       :: Variables used in message building
       INTEGER theProc, theTag, theType, theSize
       INTEGER wHandle
       INTEGER mpiStatus(MPI_STATUS_SIZE,4), mpiRc
+#ifdef DEVEL_FLT_EXCH2
+      INTEGER imax, imax2
+      PARAMETER(imax=9)
+      PARAMETER(imax2=imax*max_npart_exch)
+      INTEGER pi(2), pj(2), oi, oj, ip, itb, jtb, isb, jsb
+      _RL itc,jtc, itmp, jtmp
+#endif
 
 C--   Under a "put" scenario we
 C--     i. set completetion signal for buffer we put into.
@@ -108,6 +118,48 @@ C- loop over neighboring tiles
            CALL MPI_Recv( array(1,bi,bj,dir), theSize, theType,
      &                    theProc, theTag, MPI_COMM_MODEL,
      &                    mpiStatus, mpiRc )
+
+#ifdef DEVEL_FLT_EXCH2
+C- apply exch2_pij to rotate or shift indices
+           itb = exch2_tBasex(tgT)
+           jtb = exch2_tBasey(tgT)
+           isb = exch2_tBasex(thisTile)
+           jsb = exch2_tBasey(thisTile)
+           pi(1)=exch2_pij(1,nN,thisTile)
+           pi(2)=exch2_pij(2,nN,thisTile)
+           pj(1)=exch2_pij(3,nN,thisTile)
+           pj(2)=exch2_pij(4,nN,thisTile)
+           oi  = exch2_oi(nN,thisTile)
+           oj  = exch2_oj(nN,thisTile)
+
+#ifdef DBUG_EXCH_VEC
+           DO ip=1,max_npart_exch
+            IF (array(imax*(ip-1)+1,bi,bj,dir).NE.0.) THEN
+             itc=array(imax*(ip-1)+3,bi,bj,dir)+itb
+             jtc=array(imax*(ip-1)+4,bi,bj,dir)+jtb
+             itmp = pi(1)*itc+pi(2)*jtc+oi-isb
+             jtmp = pj(1)*itc+pj(2)*jtc+oj-jsb          
+             write(ioUnit,'(A,3I6)') 'LOC,1 :',thisTile,tgT,dir
+             write(ioUnit,'(A,8F10.3)') 'LOC,2 :',
+     &       array(imax*(ip-1)+1,bi,bj,dir),
+     &       array(imax*(ip-1)+2,bi,bj,dir),
+     &       array(imax*(ip-1)+3,bi,bj,dir),
+     &       array(imax*(ip-1)+4,bi,bj,dir),
+     &       itc,jtc,itmp,jtmp
+            ENDIF
+           ENDDO
+#endif
+
+           DO ip=1,max_npart_exch
+            IF (array(imax*(ip-1)+1,bi,bj,dir).NE.0.) THEN
+             itc=array(imax*(ip-1)+3,bi,bj,dir)+itb
+             jtc=array(imax*(ip-1)+4,bi,bj,dir)+jtb
+             array(imax*(ip-1)+3,bi,bj,dir) = pi(1)*itc+pi(2)*jtc+oi-isb
+             array(imax*(ip-1)+4,bi,bj,dir) = pj(1)*itc+pj(2)*jtc+oj-jsb
+            ENDIF
+           ENDDO
+#endif
+
           ENDIF
 #ifdef DBUG_EXCH_VEC
           write(ioUnit,'(A,5I6)') 'RECV,1 :',myProcId,bi,bj
