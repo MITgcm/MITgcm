@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.39 2017/02/03 01:57:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.40 2017/02/12 00:55:40 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -170,7 +170,7 @@ C-  Bulk formulae related flags.
 #define ALLOW_ATM_WIND
 #define ALLOW_DOWNWARD_RADIATION
 #ifdef ALLOW_ATM_TEMP
-C Note: To use ALLOW_BULKFORMULAE, ALLOW_ATM_TEMP needs to be defined
+C Note: To use ALLOW_BULKFORMULAE or EXF_READ_EVAP, needs #define ALLOW_ATM_TEMP
 # define ALLOW_BULKFORMULAE
 # undef  ALLOW_BULK_LARGEYEAGER04
 # undef  EXF_READ_EVAP
