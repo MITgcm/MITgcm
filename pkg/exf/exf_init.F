@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.37 2017/01/27 17:12:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.38 2017/02/12 00:55:12 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -222,6 +222,18 @@ C      will be over-written at first time-step when calling EXF_SET_UV.
 #endif
      &     myThid )
 
+#ifdef EXF_READ_EVAP
+      CALL EXF_INIT_GEN (
+     &     evapfile, evapperiod, exf_inscal_evap, evapmask,
+     &     evapconst, evap, evap0, evap1,
+#ifdef USE_EXF_INTERPOLATION
+     &     evap_lon0, evap_lon_inc,
+     &     evap_lat0, evap_lat_inc,
+     &     evap_nlon, evap_nlat, xC, yC, evap_interpMethod,
+#endif
+     &     myThid )
+#endif /* EXF_READ_EVAP */
+
       CALL EXF_INIT_GEN (
      &     precipfile, precipperiod, exf_inscal_precip, precipmask,
      &     precipconst, precip, precip0, precip1,
@@ -257,18 +269,6 @@ C      will be over-written at first time-step when calling EXF_SET_UV.
 #endif
      &     myThid )
 #endif /* defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING) */
-
-#ifdef EXF_READ_EVAP
-      CALL EXF_INIT_GEN (
-     &     evapfile, evapperiod, exf_inscal_evap, evapmask,
-     &     evapconst, evap, evap0, evap1,
-#ifdef USE_EXF_INTERPOLATION
-     &     evap_lon0, evap_lon_inc,
-     &     evap_lat0, evap_lat_inc,
-     &     evap_nlon, evap_nlat, xC, yC, evap_interpMethod,
-#endif
-     &     myThid )
-#endif /* EXF_READ_EVAP */
 
 #ifdef ALLOW_DOWNWARD_RADIATION
 

@@ -1,6 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.21 2017/01/27 17:12:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_FIELDS.h,v 1.22 2017/02/12 00:55:12 jmc Exp $
 C $Name:  $
-
 
 C     ==================================================================
 C     HEADER exf_fields
@@ -16,7 +15,6 @@ C
 C     ==================================================================
 C     HEADER exf_fields
 C     ==================================================================
-
 
 C     Field definitions, units, and sign conventions:
 C     ===============================================
@@ -187,12 +185,13 @@ C
 
 #ifdef ALLOW_ATM_TEMP
       COMMON /exf_atm_temp_r/ atemp, aqh, hs, hl, lwflux,
-     &                        precip, snowprecip
+     &                        evap, precip, snowprecip
       _RL atemp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL aqh       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL hs        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL hl        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL lwflux    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL evap      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL precip    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL snowprecip (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       COMMON /exfl_atemp_r/ atemp0, atemp1
@@ -204,6 +203,11 @@ C
       COMMON /exfl_lwflux_r/ lwflux0, lwflux1
       _RL lwflux0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL lwflux1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef EXF_READ_EVAP
+      COMMON /exfl_evap_r/ evap0, evap1
+      _RL evap0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL evap1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
       COMMON /exfl_precip_r/ precip0, precip1
       _RL precip0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL precip1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -235,14 +239,6 @@ C     sh        :: wind-speed [m/s] (always larger than uMin)
       _RL swflux1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
-#if defined(ALLOW_ATM_TEMP) || defined(EXF_READ_EVAP)
-      COMMON /exf_evap/ evap
-      _RL evap      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      COMMON /exfl_evap_r/ evap0, evap1
-      _RL evap0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL evap1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-
 #ifdef ALLOW_DOWNWARD_RADIATION
       COMMON /exf_rad_down_r/
      &     swdown, lwdown, swdown0, swdown1, lwdown0, lwdown1
@@ -268,7 +264,7 @@ C     zen_fsol_daily     :: incoming solar radiation (daily mean)
       _RL zen_fsol_diurnal (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL zen_fsol_daily (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
-#endif
+#endif /* ALLOW_DOWNWARD_RADIATION */
 
 #ifdef ATMOSPHERIC_LOADING
       COMMON /exf_apressure_r/ apressure, apressure0, apressure1

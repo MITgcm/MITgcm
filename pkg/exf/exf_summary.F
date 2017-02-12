@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.42 2017/01/31 18:59:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.43 2017/02/12 00:55:12 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -693,6 +693,7 @@ C--   Evaporation.
      &'// EXF_READ_EVAP:                      defined'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
+# ifdef ALLOW_ATM_TEMP
       IF ( evapfile.NE.' ' ) THEN
        il = ILNBLNK(evapfile)
 c      CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
@@ -722,6 +723,7 @@ c    &                     SQUEEZE_RIGHT, myThid )
 #endif
        prtBlkLn = .TRUE.
       ENDIF
+# endif /* ALLOW_ATM_TEMP */
 #else /* EXF_READ_EVAP */
       WRITE(msgBuf,'(A)')
      &'// EXF_READ_EVAP:                  NOT defined'
