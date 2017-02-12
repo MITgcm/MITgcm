@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.148 2016/08/12 14:15:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.149 2017/02/12 20:18:24 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1181,10 +1181,6 @@ C---  if fluid Is Water: end
       IF ( useDiagnostics )
      &      CALL SALT_PLUME_DIAGNOSTICS_FILL(bi,bj,myThid)
 #endif
-#endif
-
-#ifdef ALLOW_ECCO
-      IF ( useECCO ) CALL ECCO_PHYS( myThid )
 #endif
 
 #ifdef ALLOW_DEBUG

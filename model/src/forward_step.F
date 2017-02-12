@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.240 2017/01/20 20:48:09 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.241 2017/02/12 20:18:24 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1179,6 +1179,11 @@ C--     this is done after exchanges to allow interpolation
       CALL TIMER_START('COST_TILE           [FORWARD_STEP]',myThid)
       CALL COST_TILE  ( myTime, myIter, myThid )
       CALL TIMER_STOP ('COST_TILE           [FORWARD_STEP]',myThid)
+#endif
+
+#ifdef ALLOW_ECCO
+C--   Diagnoze variables for pkg/ecco averaging and cost function purposes
+      IF ( useECCO ) CALL ECCO_PHYS( myThid )
 #endif
 
 C--   Check if it has reached the end of simulation
