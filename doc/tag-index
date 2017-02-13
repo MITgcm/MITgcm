@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2303 2017/02/13 14:07:35 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2304 2017/02/13 19:45:57 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint66d (2017/02/13)
+o pkg/exf:
+  - remove setting of useCAL=T when using pkg/exf (useEXF=T); add warning
+    early on (in packages_boot.F) to stress this change in pkg setting.
+  - In (most) verification exp. that use pkg/exf, add useCAL=.TRUE. to data.pkg
 o model/src:
   - move call to ecco_phys to end of time step; this may induce minor
     cost function changes by shifting time averages by one time step
