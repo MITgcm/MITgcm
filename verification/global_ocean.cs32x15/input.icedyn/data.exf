@@ -17,65 +17,65 @@
  exf_monFreq       = 0.,
  repeatPeriod      = 31104000.,
  exf_iprec         = 64,
+#exf_debugLev      = 4,
  &
 
 # *********************
  &EXF_NML_02
-#
- atempstartdate1   = 00010116,
-#atempstartdate2   = 180000,
+#atempstartdate1   = 00010116,
+ atempStartTime    = 1296000.,
  atempperiod       = 2592000.0,
 #
- aqhstartdate1     = 00010116,
-#aqhstartdate2     = 180000,
+#aqhstartdate1     = 00010116,
+ aqhStartTime      = 1296000.,
  aqhperiod         = 2592000.0,
 #
- precipstartdate1  = 00010116,
-#precipstartdate2  = 180000,
+#precipstartdate1  = 00010116,
+ precipStartTime   = 1296000.,
  precipperiod      = 2592000.0,
 #
- snowprecipstartdate1= 00010116,
-#snowprecipstartdate2= 180000,
+#snowprecipstartdate1= 00010116,
+ snowprecipStartTime = 1296000.,
  snowprecipperiod    = 2592000.,
 #
- runoffstartdate1  = 00010116,
-#runoffstartdate2  = 180000,
+#runoffstartdate1  = 00010116,
+ runoffStartTime   = 1296000.,
  runoffperiod      = 2592000.0,
 #
- uwindstartdate1   = 00010116,
-#uwindstartdate2   = 180000,
+#uwindstartdate1   = 00010116,
+ uwindStartTime    = 1296000.,
  uwindperiod       = 2592000.0,
 #
- vwindstartdate1   = 00010116,
-#vwindstartdate2   = 180000,
+#vwindstartdate1   = 00010116,
+ vwindStartTime    = 1296000.,
  vwindperiod       = 2592000.0,
 #
- ustressstartdate1 = 00010116,
-#ustressstartdate2 = 180000,
+#ustressstartdate1 = 00010116,
+ ustressStartTime  = 1296000.,
  ustressperiod     = 2592000.0,
 #
- vstressstartdate1 = 00010116,
-#vstressstartdate2 = 180000,
+#vstressstartdate1 = 00010116,
+ vstressStartTime  = 1296000.,
  vstressperiod     = 2592000.0,
 #
- wspeedstartdate1  = 00010116,
-#wspeedstartdate2  = 180000,
+#wspeedstartdate1  = 00010116,
+ wspeedStartTime   = 1296000.,
  wspeedperiod      = 2592000.0,
 #
- swdownstartdate1  = 00010116,
-#swdownstartdate2  = 180000,
+#swdownstartdate1  = 00010116,
+ swdownStartTime   = 1296000.,
  swdownperiod      = 2592000.0,
 #
- lwdownstartdate1  = 00010116,
-#lwdownstartdate2  = 180000,
+#lwdownstartdate1  = 00010116,
+ lwdownStartTime   = 1296000.,
  lwdownperiod      = 2592000.0,
 #
- climsssstartdate1  = 00010116,
-#climsssstartdate2  = 180000,
+ climsssStartTime   = 1296000.,
+#climsssstartdate1  = 00010116,
  climsssperiod      = 2592000.0,
 #
- climsststartdate1  = 00010116,
-#climsststartdate2  = 180000,
+#climsststartdate1  = 00010116,
+ climsstStartTime   = 1296000.,
  climsstperiod      = 2592000.0,
 #
  atempfile         = 'core_t_Air_cs32.bin',

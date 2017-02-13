@@ -2,7 +2,7 @@
  &PACKAGES
  useGMRedi=.TRUE.,
  useEXF   =.TRUE.,
- useCAL   =.TRUE.,
+#useCAL   =.TRUE.,
  useSEAICE=.TRUE.,
  useThSIce=.TRUE.,
  useDiagnostics=.TRUE.,
