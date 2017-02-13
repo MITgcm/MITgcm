@@ -1,24 +1,28 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2302 2017/02/12 20:24:16 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2303 2017/02/13 14:07:35 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o model/src: 
+o model/src:
   - move call to ecco_phys to end of time step; this may induce minor
     cost function changes by shifting time averages by one time step
     for some variables; this revision resulted in changed adjoint results
     in MITgcm_contrib/verification_other/global_oce_cs32
-o pkg/flt/flt_init_varia.F: 
-  - use pickupSuff if specified
-o pkg/flt: ifdef DEVEL_FLT_EXCH2 then add code and test case as a first, 
-  intermediate, step towards completing pkg/exch2 support within pkg/flt; 
-  ifdef DEVEL_FLT_EXCH2 then:
-  - flt_init_fixed.F: comment out stop
-  - flt_exch2.F: conserve ipart, jpart (grid coordinates)
-  - exch2_recv_get_vec.F: transform ipart, jpart (grid coordinates)
-  - flt_mapping.F: attempt to fix longitude diagnostic near date-line
-  - flt_init_varia.F: hack initialization (for testing purposes w. LLC90)
+o pkg/exf:
+  - Change EXF_READ_EVAP to only activate code within #ifdef ALLOW_ATM_TEMP ;
+    this prevents to read evap when ALLOW_ATM_TEMP is undef and other fields,
+    e.g. precip, are not available.
+o pkg/flt:
+  - flt_init_varia.F: use pickupSuff if specified
+  - add code (within #ifdef DEVEL_FLT_EXCH2) and test case as a first,
+    intermediate, step towards completing pkg/exch2 support within pkg/flt;
+    ifdef DEVEL_FLT_EXCH2 then:
+    - flt_init_fixed.F: comment out stop
+    - flt_exch2.F: conserve ipart, jpart (grid coordinates)
+    - exch2_recv_get_vec.F: transform ipart, jpart (grid coordinates)
+    - flt_mapping.F: attempt to fix longitude diagnostic near date-line
+    - flt_init_varia.F: hack initialization (for testing purposes w. LLC90)
 o tools/genmake2 & pkg/pkg_depend:
   - define new type of pkg dependency rule ("=pkg_x"), less strict than
     the "+" rule, that add the dependent pkg (pkg_x) unless it's disabled
