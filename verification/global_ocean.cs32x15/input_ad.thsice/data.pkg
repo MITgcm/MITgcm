@@ -2,6 +2,7 @@
  &PACKAGES
  useGMRedi = .TRUE.,
  useEXF    = .TRUE.,
+ useCAL    = .TRUE.,
  useTHSICE = .TRUE.,
 #useDiagnostics=.TRUE.,
 #useMNC=.TRUE.,

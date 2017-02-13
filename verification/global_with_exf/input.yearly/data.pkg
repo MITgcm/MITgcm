@@ -1,9 +1,9 @@
 # Packages
  &PACKAGES
   useEXF         = .TRUE.,
+  useCAL         = .TRUE.,
   useGMRedi      = .TRUE.,
   useFRAZIL      = .TRUE.,
   useBBL         = .TRUE.,
   useDiagnostics = .TRUE.,
  &
-

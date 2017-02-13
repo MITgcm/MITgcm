@@ -3,6 +3,7 @@
   useGMRedi = .TRUE.,
   useKPP    = .TRUE.,
   useEXF    = .TRUE.,
+  useCAL    = .TRUE.,
   useSEAICE = .TRUE.,
   useSALT_PLUME  = .TRUE.,
  &

@@ -2,9 +2,9 @@
  &PACKAGES
  useGMRedi=.TRUE.,
  useEXF   =.TRUE.,
+ useCAL   =.TRUE.,
  useSEAICE=.TRUE.,
  useThSIce=.TRUE.,
-#useBulkforce=.TRUE.,
  useDiagnostics=.TRUE.,
 #useMNC = .TRUE.,
  &

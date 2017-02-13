@@ -1,6 +1,7 @@
 # Packages
  &PACKAGES
   useEXF    = .TRUE.,
+  useCAL    = .TRUE.,
   useSEAICE = .TRUE.,
 # useThSIce = .TRUE.,
   useDiagnostics=.TRUE.,
