@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.69 2015/03/23 21:00:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.70 2017/02/13 19:32:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -184,10 +184,6 @@ C--   Close the open data file
       CLOSE(iUnit)
 
 C--   packages with hard-coded switch
-#ifdef ALLOW_CAL
-      IF (useEXF) useCAL = .TRUE.
-#endif
-
 #ifndef HAVE_NETCDF
       IF (usePROFILES) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** pkg/profiles uses NetCDF',
@@ -206,11 +202,8 @@ C--   packages with hard-coded switch
       ENDIF
 #endif
 
-#ifdef ALLOW_PROFILES
+#ifdef ALLOW_CAL
       IF (usePROFILES) useCAL = .TRUE.
-#endif
-
-#ifdef ALLOW_ECCO
       IF (useECCO) useCAL = .TRUE.
 #endif
 
@@ -220,6 +213,33 @@ C--   packages with hard-coded switch
 
 C--   packages with an implied switch
       useGAD = tempStepping .OR. saltStepping .OR. usePTRACERS
+
+#ifdef ALLOW_CAL
+c     IF (useEXF) useCAL = .TRUE.
+C--   Double warning (StdErr & StdOut) after changing useCAL setting
+      IF ( useEXF .AND. .NOT. useCAL ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** PACKAGES_BOOT: ',
+     &    'useCAL no longer set to T when using EXF (useEXF=T)'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** PACKAGES_BOOT: ',
+     &    ' as it used to be before checkpoint66d (2017/02/13)'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** PACKAGES_BOOT: ',
+     &    'To continue to use pkg/cal with EXF, need to add:'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** PACKAGES_BOOT: ',
+     &    '> useCAL=.TRUE., < in file "data.pkg"'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+#endif /* ALLOW_CAL */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Short summary of which package is compiled and used
