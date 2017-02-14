@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2304 2017/02/13 19:45:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2305 2017/02/14 15:44:05 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o verification/global_ocean.cs32x15:
+  - turn off pkg/cal (useCAL=F) in secondary FWD exp. "icedyn".
+    Note: exf setting (data.exf) can be compared to other exf secondary exp
+    "seaice" (kept with useCAL=T) which has same time dependent forcing.
 
 checkpoint66d (2017/02/13)
 o pkg/exf:
