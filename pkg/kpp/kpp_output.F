@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_output.F,v 1.6 2012/08/06 16:56:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_output.F,v 1.7 2017/02/15 20:57:19 jahn Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -56,6 +56,9 @@ C     !USES:
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
 #endif
+#ifdef ALLOW_OFFLINE
+# include "OFFLINE_SWITCH.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myTime :: my time in simulation ( s )
@@ -99,6 +102,12 @@ C     local variable:
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_OFFLINE
+      IF ( .NOT.(useOffLine.AND.offlineLoadKPP) ) THEN
+#else
+      IF ( .TRUE. ) THEN
+#endif
 
 C     Initialize record numbers in KPP_TAVE
       IF ( myIter.EQ.nIter0 ) THEN
@@ -396,6 +405,9 @@ C     do not fill during call from INITIALISE_VARIA
 #endif /* ALLOW_SALT_PLUME */
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
+
+C--   end if useOffLine
+      ENDIF
 
 #endif /* ALLOW_KPP */
 

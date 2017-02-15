@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.66 2014/09/04 22:30:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.67 2017/02/15 20:57:19 jahn Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -163,7 +163,7 @@ C     Do GMRedi output.
 
 #ifdef ALLOW_KPP
 C     Do KPP diagnostics.
-      IF ( useKPP .AND. .NOT.useOffLine )
+      IF ( useKPP )
      &     CALL KPP_OUTPUT( myTime, myIter, myThid )
 #endif
 
