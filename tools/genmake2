@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.280 2017/02/08 22:31:33 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.281 2017/02/16 23:27:08 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -2504,8 +2504,8 @@ if  test "x${PKG_DEPEND}" != x ; then
 	    echo "  the dependency rules for \"$pname\""
 	    exit 1
 	fi
-	i=`echo "$i + 1" | bc -l`
-	#i=$(( $i + 1 ))
+	i=`expr $i + 1`
+	#i=`echo "$i + 1" | bc -l`
     done
     ck=$ck"t"
   done
