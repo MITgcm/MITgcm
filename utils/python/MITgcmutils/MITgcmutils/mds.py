@@ -263,6 +263,7 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
         a = rdmds('diags',2880,rec=0)[0, [0,1,5,6,7], ...]  # same, but less efficient
         a = rdmds('diags',2880)[0, 0, [0,1,5,6,7], ...]     # even less efficient
     """
+    import functools
     usememmap = usememmap or mm
     if usememmap:
         readdata = np.memmap
@@ -345,7 +346,7 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
                 size = np.dtype(tp).itemsize
                 if astype is None: astype = tp
                 recshape = tuple( ie-i0 for i0,ie in zip(i0s,ies) )
-                count = reduce(mul, recshape)
+                count = functools.reduce(mul, recshape)
                 nrecords, = meta['nrecords']
                 tileshape = (nrecords,) + recshape
                 if allrec:
