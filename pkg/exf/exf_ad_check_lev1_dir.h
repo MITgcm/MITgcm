@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_check_lev1_dir.h,v 1.24 2017/01/27 17:24:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_check_lev1_dir.h,v 1.25 2017/02/18 19:39:10 gforget Exp $
 C $Name:  $
 
 c
@@ -80,6 +80,12 @@ cphCADJ STORE climsalt1  = comlev1, key=ikey_dynamics, kind=isbyte
 cph not used so far
 cphCADJ STORE climtemp0  = comlev1, key=ikey_dynamics, kind=isbyte
 cphCADJ STORE climtemp1  = comlev1, key=ikey_dynamics, kind=isbyte
+# endif
+# ifdef ALLOW_READ_TURBFLUXES
+CADJ STORE hs0   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE hs1   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE hl0   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE hl1   = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 # ifdef ATMOSPHERIC_LOADING
 CADJ STORE apressure0    = comlev1, key=ikey_dynamics, kind=isbyte

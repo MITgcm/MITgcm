@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.31 2017/01/28 18:28:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.32 2017/02/18 19:39:50 gforget Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -281,6 +281,18 @@ C-      2D arrays
           StoreEXF2(I,J,bi,bj,18) = uwind1(I,J,bi,bj)
           StoreEXF2(I,J,bi,bj,19) = vwind0(I,J,bi,bj)
           StoreEXF2(I,J,bi,bj,20) = vwind1(I,J,bi,bj)
+# ifdef ALLOW_READ_TURBFLUXES
+          StoreEXF2(I,J,bi,bj,21) = hs0(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,22) = hs1(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,23) = hl0(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,24) = hl1(I,J,bi,bj)
+#  else
+          StoreEXF2(I,J,bi,bj,21) = 0.0
+          StoreEXF2(I,J,bi,bj,22) = 0.0
+          StoreEXF2(I,J,bi,bj,23) = 0.0
+          StoreEXF2(I,J,bi,bj,24) = 0.0
+# endif
+
          ENDDO
         ENDDO
        ENDDO
