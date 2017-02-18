@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.31 2017/01/11 03:47:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.32 2017/02/18 16:12:36 gforget Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -74,11 +74,9 @@ C      create directory
        iL = ILNBLNK( adTapeDir ) -1
        WRITE(namBuf,'(2A)') ' mkdir -p ', adTapeDir(1:iL)
        pIL = 1 + ILNBLNK( namBuf )
-       WRITE(msgBuf,'(3A)')
+       WRITE(standardMessageUnit,'(3A)')
      &  '==> SYSTEM CALL (from AUTODIFF_INI_MODEL_IO): >',
      &                                 namBuf(1:pIL), '<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
        CALL SYSTEM( namBuf(1:pIL) )
 #else
        WRITE(msgBuf,'(2A)') '** WARNING ** AUTODIFF_INI_MODEL_IO: ',
