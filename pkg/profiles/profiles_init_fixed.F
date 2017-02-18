@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.37 2017/01/10 15:40:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.38 2017/02/18 16:11:37 gforget Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -38,7 +38,7 @@ C ==================== Routine Variables ==========================
 
 #ifdef ALLOW_PROFILES
 
-      integer i,j,k,l,m,bi,bj,iG,jG,num_file,length_for_tile
+      integer i,j,k,l,m,bi,bj,iG,jG,num_file,ProfNo_tile
       integer stopProfiles
       integer fid, dimid, varid1, varid1a, varid1b
       integer varid2,varid3
@@ -68,6 +68,7 @@ C ==================== Routine Variables ==========================
       integer stopGenericGrid
       Real*8 xy_buffer_r8(0:sNx+1,0:sNy+1)
       integer vec_start2(2), vec_count2(2)
+      integer hh, ProfNo_hh
 
 c     == external functions ==
       integer ILNBLNK
@@ -156,6 +157,8 @@ c--   == end of interface ==
 
         do num_file=1,NFILESPROFMAX
 
+      ProfNo_hh=0
+
       profilesfile=' '
       IL  = ILNBLNK( profilesfiles(num_file) )
       if (IL.NE.0) then
@@ -165,7 +168,7 @@ c--   == end of interface ==
         call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a,i3,a,a)')
-     &     'profiles file ',num_file,' is ', profilesfile(1:80)
+     &     'profiles file #',num_file,' is ', profilesfile(1:IL)
         call print_message(
      &     msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
       endif
@@ -196,16 +199,19 @@ c1)  read the number of profiles :
         iINTERP=NUM_INTERP_POINTS
       endif
 
-      write(msgbuf,'(a,i3,a,i3)')
-     &   '  local tile is bi=', bi,' bj=',bj
-      call print_message(
-     &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i5)')
-     &   '  # of depth levels     =',ProfDepthNo(num_file,bi,bj)
+      write(msgbuf,'(a,i4,a,i4)')
+     &   '  current tile is bi,bj                      =',
+     &   bi,',',bj
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,i9)')
-     &   '  total # of profiles   =', ProfNo(num_file,bi,bj)
+     &   '  # of depth levels in file                  =',
+     &   ProfDepthNo(num_file,bi,bj)
+      call print_message(
+     &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9)')
+     &   '  # of profiles in file                      =',
+     &   ProfNo(num_file,bi,bj)
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
 
@@ -281,7 +287,7 @@ c4) default values
       enddo
 
 c5) main loop: look for profiles in this tile
-      length_for_tile=0
+      ProfNo_tile=0
       profno_div1000=max(0,int(ProfNo(num_file,bi,bj)/1000))
 
       do kk=1,profno_div1000+1
@@ -355,20 +361,28 @@ c5.2) loop through this chunk
 
       profIsInRunTime=1
 
-      if (( ( tmpyymmdd(k).GT.yymmddMin ).OR.(( tmpyymmdd(k).EQ.
+      IF (( ( tmpyymmdd(k).GT.yymmddMin ).OR.(( tmpyymmdd(k).EQ.
      &        yymmddMin ).AND.( tmphhmmss(k).GT.hhmmssMin ))).AND.
      &    ( ( tmpyymmdd(k).LT.yymmddMax ).OR.(( tmpyymmdd(k).EQ.
-     &        yymmddMax ).AND.( tmphhmmss(k).LT.hhmmssMax ))) ) then
-        profIsInRunTime=1
-        call cal_FullDate( int(tmpyymmdd(k)),int(tmphhmmss(k)),
-     &   tmpdate,mythid )
-        call cal_TimePassed( modelstartdate,tmpdate,tmpdiff,mythid )
-        call cal_ToSeconds (tmpdiff,diffsecs,mythid)
-        diffsecs=diffsecs+nIter0*deltaTclock
-      else
+     &        yymmddMax ).AND.( tmphhmmss(k).LT.hhmmssMax ))) ) THEN
+        hh = int(tmphhmmss(k))/10000
+        IF ( hh.LT.hoursPerDay ) THEN
+          profIsInRunTime=1
+          call cal_FullDate( int(tmpyymmdd(k)),int(tmphhmmss(k)),
+     &     tmpdate,mythid )
+          call cal_TimePassed( modelstartdate,tmpdate,tmpdiff,mythid )
+          call cal_ToSeconds (tmpdiff,diffsecs,mythid)
+          diffsecs=diffsecs+nIter0*deltaTclock
+        ELSE
+c if tmphhmmss is out of range then disregard profile
+          profIsInRunTime=0
+          diffsecs=-deltaTclock
+          ProfNo_hh=ProfNo_hh+1
+        ENDIF
+      ELSE
         profIsInRunTime=0
         diffsecs=-deltaTclock
-      endif
+      ENDIF
 
 c ==============================================================================
 
@@ -445,30 +459,30 @@ c value of i, west of the data point:
 
       if (profIsInRunTime.EQ.1) then
 c if yes then store prof_time and longitude and latitude:
-        length_for_tile=length_for_tile+1
-        prof_time(num_file,length_for_tile,bi,bj)=diffsecs
-        prof_lon(num_file,length_for_tile,bi,bj)=lon_cur
-        prof_lat(num_file,length_for_tile,bi,bj)=lat_cur
-        prof_ind_glob(num_file,length_for_tile,bi,bj)=k+1000*(kk-1)
+        ProfNo_tile=ProfNo_tile+1
+        prof_time(num_file,ProfNo_tile,bi,bj)=diffsecs
+        prof_lon(num_file,ProfNo_tile,bi,bj)=lon_cur
+        prof_lat(num_file,ProfNo_tile,bi,bj)=lat_cur
+        prof_ind_glob(num_file,ProfNo_tile,bi,bj)=k+1000*(kk-1)
 c then store interpolation coeffs and indices
         lon_fac=(lon_cur-lon_1)/(lon_2-lon_1)
         lat_fac=(lat_cur-lat_1)/(lat_2-lat_1)
-        prof_interp_weights(num_file,length_for_tile,1,bi,bj)=
+        prof_interp_weights(num_file,ProfNo_tile,1,bi,bj)=
      &     (1-lon_fac)*(1-lat_fac)
-        prof_interp_i(num_file,length_for_tile,1,bi,bj)=prof_i
-        prof_interp_j(num_file,length_for_tile,1,bi,bj)=prof_j
-        prof_interp_weights(num_file,length_for_tile,2,bi,bj)=
+        prof_interp_i(num_file,ProfNo_tile,1,bi,bj)=prof_i
+        prof_interp_j(num_file,ProfNo_tile,1,bi,bj)=prof_j
+        prof_interp_weights(num_file,ProfNo_tile,2,bi,bj)=
      &     lon_fac*(1-lat_fac)
-        prof_interp_i(num_file,length_for_tile,2,bi,bj)=prof_i+1
-        prof_interp_j(num_file,length_for_tile,2,bi,bj)=prof_j
-        prof_interp_weights(num_file,length_for_tile,3,bi,bj)=
+        prof_interp_i(num_file,ProfNo_tile,2,bi,bj)=prof_i+1
+        prof_interp_j(num_file,ProfNo_tile,2,bi,bj)=prof_j
+        prof_interp_weights(num_file,ProfNo_tile,3,bi,bj)=
      &     (1-lon_fac)*lat_fac
-        prof_interp_i(num_file,length_for_tile,3,bi,bj)=prof_i
-        prof_interp_j(num_file,length_for_tile,3,bi,bj)=prof_j+1
-        prof_interp_weights(num_file,length_for_tile,4,bi,bj)=
+        prof_interp_i(num_file,ProfNo_tile,3,bi,bj)=prof_i
+        prof_interp_j(num_file,ProfNo_tile,3,bi,bj)=prof_j+1
+        prof_interp_weights(num_file,ProfNo_tile,4,bi,bj)=
      &     lon_fac*lat_fac
-        prof_interp_i(num_file,length_for_tile,4,bi,bj)=prof_i+1
-        prof_interp_j(num_file,length_for_tile,4,bi,bj)=prof_j+1
+        prof_interp_i(num_file,ProfNo_tile,4,bi,bj)=prof_i+1
+        prof_interp_j(num_file,ProfNo_tile,4,bi,bj)=prof_j+1
 
       endif
 
@@ -487,19 +501,19 @@ c 5.2a) determine whether profiles is in current tile domain (generic grid case)
      & .AND.(profIsInRunTime.EQ.1)) then
 
 c if yes then store prof_time and interpolation coeffs and indices:
-       length_for_tile=length_for_tile+1
-       prof_time(num_file,length_for_tile,bi,bj)=diffsecs
-       prof_interp_xC11(num_file,length_for_tile,bi,bj)=tmp_xC11(k)
-       prof_interp_yC11(num_file,length_for_tile,bi,bj)=tmp_yC11(k)
-       prof_interp_xCNINJ(num_file,length_for_tile,bi,bj)=tmp_xCNINJ(k)
-       prof_interp_yCNINJ(num_file,length_for_tile,bi,bj)=tmp_yCNINJ(k)
+       ProfNo_tile=ProfNo_tile+1
+       prof_time(num_file,ProfNo_tile,bi,bj)=diffsecs
+       prof_interp_xC11(num_file,ProfNo_tile,bi,bj)=tmp_xC11(k)
+       prof_interp_yC11(num_file,ProfNo_tile,bi,bj)=tmp_yC11(k)
+       prof_interp_xCNINJ(num_file,ProfNo_tile,bi,bj)=tmp_xCNINJ(k)
+       prof_interp_yCNINJ(num_file,ProfNo_tile,bi,bj)=tmp_yCNINJ(k)
        tmp_sum_weights=0. _d 0
         do q = 1,iINTERP
-             prof_interp_weights(num_file,length_for_tile,q,bi,bj)
+             prof_interp_weights(num_file,ProfNo_tile,q,bi,bj)
      &       =tmp_weights(k,q)
-             prof_interp_i(num_file,length_for_tile,q,bi,bj)
+             prof_interp_i(num_file,ProfNo_tile,q,bi,bj)
      &       =tmp_i(k,q)
-             prof_interp_j(num_file,length_for_tile,q,bi,bj)
+             prof_interp_j(num_file,ProfNo_tile,q,bi,bj)
      &       =tmp_j(k,q)
              tmp_sum_weights=tmp_sum_weights+tmp_weights(k,q)
 c more test of the inputs: is the offline-computed
@@ -549,7 +563,7 @@ c interpolation information consistent (self and with grid)
           stopGenericGrid=1
        endif
 
-         prof_ind_glob(num_file,length_for_tile,bi,bj)=k+1000*(kk-1)
+         prof_ind_glob(num_file,ProfNo_tile,bi,bj)=k+1000*(kk-1)
 
        endif
        endif
@@ -558,7 +572,7 @@ c interpolation information consistent (self and with grid)
 c ==============================================================================
 
 c check that maximum size was not reached:
-       if (length_for_tile.GE.NOBSGLOB) then
+       if (ProfNo_tile.GE.NOBSGLOB) then
          WRITE(msgBuf,'(3A)')
      &    'PROFILES_INIT_FIXED: file ', profilesfile(1:IL),
      &    '.nc was not read properly (increase NOBSGLOB).'
@@ -571,10 +585,17 @@ c check that maximum size was not reached:
       endif    !if (min(ProfNo(num_file,bi,bj), 1000...
       enddo    !do kk=1,profno_div1000+1
 
-      ProfNo(num_file,bi,bj)=length_for_tile
+      ProfNo(num_file,bi,bj)=ProfNo_tile
 
       write(msgbuf,'(a,i9)')
-     &   '  local # of profiles   =', ProfNo(num_file,bi,bj)
+     &   '  # of profiles with erroneous HHMMSS values =',
+     &   ProfNo_hh
+      call print_message(
+     &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
+
+      write(msgbuf,'(a,i9)')
+     &   '  # of profiles within tile and time period  =',
+     &   ProfNo(num_file,bi,bj)
       call print_message(
      &   msgbuf, standardmessageunit, SQUEEZE_RIGHT , mythid)
 
@@ -609,7 +630,8 @@ c6) available variablesin the data set
      & prof_namesmod(num_file,k)(1:JL),' #',
      & prof_itracer(num_file,k)
           else
-      write(msgbuf,'(a,I3,4a)') '  variable #',k,' is ' ,
+      write(msgbuf,'(a,I3,4a)') '  variable #',k,
+     & ' is            ' ,
      & prof_names(num_file,k)(1:KL),' and ',
      & prof_namesmod(num_file,k)(1:JL)
           endif
