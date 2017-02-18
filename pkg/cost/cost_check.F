@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_check.F,v 1.8 2012/08/10 19:36:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_check.F,v 1.9 2017/02/18 16:20:12 gforget Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
@@ -24,7 +24,7 @@ C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      WRITE(msgBuf,'(A)') 'COST_CHECK: cost package'
+      WRITE(msgBuf,'(A)') 'COST_CHECK: #define ALLOW_COST'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
 #ifdef ALLOW_ECCO

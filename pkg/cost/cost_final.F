@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.36 2015/12/29 14:30:32 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.37 2017/02/18 16:20:12 gforget Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
@@ -51,6 +51,7 @@ c     == local variables ==
 #ifdef ALLOW_PROFILES
       integer num_file,num_var
 #endif
+      character*(MAX_LEN_MBUF) msgBuf
 
 c     == end of interface ==
 
@@ -103,7 +104,9 @@ cgf : to compile previous line user is expected to provide cost_hflux.F
 cgf : to compile previous line user is expected to provide cost_temp.F
 #endif
 
-      write(standardmessageunit,'(A,D22.15)') '  early fc = ', fc
+      write(msgBuf,'(A,D22.15)') '  early fc = ', fc
+      call print_message( msgBuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
 
 c--   Sum up all contributions.
       loc_fc = 0.
@@ -176,7 +179,9 @@ c--   Sum up all contributions.
        ENDDO
       ENDDO
 
-      write(standardmessageunit,'(A,D22.15)') '  local fc = ', loc_fc
+      write(msgBuf,'(A,D22.15)') '  local fc = ', loc_fc
+      call print_message( msgBuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
 
 c--   Do global summation.
       CALL GLOBAL_SUM_TILE_RL( tile_fc, glob_fc, myThid )
@@ -194,7 +199,9 @@ cph-- quickly for testing
       fc = totcost
 #endif
 
-      write(standardmessageunit,'(A,D22.15)') ' global fc = ', fc
+      write(msgBuf,'(A,D22.15)') ' global fc = ', fc
+      call print_message( msgBuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
 
 c--   to avoid re-write of output in reverse checkpointing loops,
 c--   switch off output flag :
