@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_check.F,v 1.5 2009/11/14 16:22:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_check.F,v 1.6 2017/02/18 16:21:54 gforget Exp $
 C $Name:  $
 #include "GGL90_OPTIONS.h"
 
@@ -42,7 +42,7 @@ C     convective adjustment might be needed even with ggl90
       IF ( cAdjFreq.NE.0. .OR. ivdc_kappa.NE.0. ) THEN
          WRITE(msgBuf,'(A)')
      &  'GGL90_CHECK: Some form of convection has been enabled'
-         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
       ENDIF
 
