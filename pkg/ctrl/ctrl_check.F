@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.18 2015/06/09 21:21:27 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_check.F,v 1.19 2017/02/18 16:20:44 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -41,7 +41,7 @@ C     msgBuf      - Informational/error message buffer
 #endif
 #endif
 
-      WRITE(msgBuf,'(A)') 'CTRL_CHECK: ctrl package'
+      WRITE(msgBuf,'(A)') 'CTRL_CHECK: #define ALLOW_CTRL'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
