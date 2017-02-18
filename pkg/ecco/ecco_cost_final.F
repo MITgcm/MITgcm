@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.84 2016/03/01 23:05:15 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.85 2017/02/18 16:18:34 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -167,9 +167,7 @@ c the adjoint, pkg/autodiff most likely require cost though.
 #endif
 
       character*20 cfname
-#ifdef ECCO_VERBOSE
-      character*(MAX_LEN_MBUF) msgbuf
-#endif
+      character*(MAX_LEN_MBUF) msgBuf
 
       INTEGER IL
 C Functions
@@ -1186,9 +1184,11 @@ c--   Do global summation for each part of the cost function
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
         if ( no_profiles(num_file,num_var).GT.zeroRL ) then
-         write(standardmessageunit,'(A,D22.15,i2.0,i2.0)')
+         write(msgBuf,'(A,D22.15,i2.0,i2.0)')
      &     ' --> f_profiles =',f_profiles(num_file,num_var),
      &      num_file, num_var
+         call print_message( msgBuf, standardmessageunit,
+     &                       SQUEEZE_RIGHT , mythid)
         endif
        enddo
       enddo
@@ -1197,36 +1197,44 @@ c--   Do global summation for each part of the cost function
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
         if (no_gencost(num_var).GT.0) then
-         write(standardmessageunit,'(A,D22.15,i2.0)')
+         write(msgBuf,'(A,D22.15,i2.0)')
      &     ' --> f_gencost =',f_gencost(num_var),
      &      num_var
+         call print_message( msgBuf, standardmessageunit,
+     &                       SQUEEZE_RIGHT , mythid)
         endif
        enddo
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
        do num_var=1,maxCtrlTim2D
         if (no_gentim2d(num_var).GT.0. _d 0) then
-         write(standardmessageunit,'(A,D22.15,i2.0)')
+         write(msgBuf,'(A,D22.15,i2.0)')
      &     ' --> f_gentim2d =',f_gentim2d(num_var),
      &      num_var
+         call print_message( msgBuf, standardmessageunit,
+     &                       SQUEEZE_RIGHT , mythid)
         endif
        enddo
 #endif
 #ifdef ALLOW_GENARR2D_CONTROL
        do num_var=1,maxCtrlArr2D
         if (no_genarr2d(num_var).GT.0. _d 0) then
-         write(standardmessageunit,'(A,D22.15,i2.0)')
+         write(msgBuf,'(A,D22.15,i2.0)')
      &     ' --> f_genarr2d =',f_genarr2d(num_var),
      &      num_var
+         call print_message( msgBuf, standardmessageunit,
+     &                       SQUEEZE_RIGHT , mythid)
         endif
        enddo
 #endif
 #ifdef ALLOW_GENARR3D_CONTROL
        do num_var=1,maxCtrlArr3D
         if (no_genarr3d(num_var).GT.0. _d 0) then
-         write(standardmessageunit,'(A,D22.15,i2.0)')
+         write(msgBuf,'(A,D22.15,i2.0)')
      &     ' --> f_genarr3d =',f_genarr3d(num_var),
      &      num_var
+         call print_message( msgBuf, standardmessageunit,
+     &                       SQUEEZE_RIGHT , mythid)
         endif
        enddo
 #endif
@@ -1559,19 +1567,19 @@ c      call cost_trans_zonal( mythid )
 c#endif /* ECCO_CTRL_DEPRECATED */
 
 #ifdef ECCO_VERBOSE
-      write(msgbuf,'(a,D22.15)')
+      write(msgBuf,'(a,D22.15)')
      &  ' cost_Final: final cost function = ',locfc
-      call print_message( msgbuf, standardmessageunit,
+      call print_message( msgBuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
+      write(msgBuf,'(a)') ' '
+      call print_message( msgBuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)')
+      write(msgBuf,'(a)')
      &  '             cost function evaluation finished.'
-      call print_message( msgbuf, standardmessageunit,
+      call print_message( msgBuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
+      write(msgBuf,'(a)') ' '
+      call print_message( msgBuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 

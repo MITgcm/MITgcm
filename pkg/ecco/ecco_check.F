@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.40 2017/01/30 20:25:14 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.41 2017/02/18 16:18:34 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -643,7 +643,7 @@ c check that one of the used gencost term defines etaday (needed in sshv4)
      &       (using_gencost(k)) )  igen_etaday=k
       enddo
 
-      if (igen_etaday.EQ.0) then
+      if ((igen_etaday.EQ.0).AND.(using_cost_altim)) then
 c warn user as we override using_cost_altim
         using_cost_altim = .FALSE.
         WRITE(msgBuf,'(2A)')
