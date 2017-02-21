@@ -1,9 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2305 2017/02/14 15:44:05 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2306 2017/02/21 01:33:12 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - rename S/R EXF_INIT to EXF_INIT_VARIA ;
+  - add arguments: fldName (for debug msg) and fldRepeatCycle (set to
+    repeatPeriod) to S/R EXF_SET_UV and to S/R EXF_SET_GEN (renamed EXF_SET_FLD)
+    and update calls in pkg/exf calling S/R (exf_getffields.F & exf_getclim.F) ;
+  - add argument: fldName (for debug msg) to S/R EXF_INIT_GEN (renamed
+    EXF_INIT_FLD) and update calls in exf_init_varia.F
+  - For now, for backward compatibility, keep a simplified version of S/Rs
+    EXF_SET_GEN & EXF_INIT_GEN in file exf_set_gen.F
+  - add and pass new arguments: fldName (for debug msg) and fldRepeatCycle
+    to S/R EXF_GetFFieldRec ; update calls in pkg/obcs/obcs_exf_load.F
+o tools/genmake2:
+  - replace "bc -l" (only used once) by "expr" (already used).
 o verification/global_ocean.cs32x15:
   - turn off pkg/cal (useCAL=F) in secondary FWD exp. "icedyn".
     Note: exf setting (data.exf) can be compared to other exf secondary exp
