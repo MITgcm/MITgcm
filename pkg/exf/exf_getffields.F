@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.70 2017/02/12 00:55:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.71 2017/02/21 01:04:26 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -58,10 +58,10 @@ C     == routine arguments ==
 C     == local variables ==
       INTEGER i, j, bi, bj
 #ifdef ALLOW_ROTATE_UV_CONTROLS
-      _RL     tmpUE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nsx,nsy)
-      _RL     tmpVN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nsx,nsy)
-      _RL     tmpUX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nsx,nsy)
-      _RL     tmpVY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nsx,nsy)
+      _RL     tmpUE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     tmpVN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     tmpUX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     tmpVY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 #if (defined (ALLOW_CTRL) && \
      defined (ALLOW_GENTIM2D_CONTROL))
@@ -72,17 +72,19 @@ C     == end of interface ==
 
 C--   read forcing fields from files and temporal interpolation
 
-C     Zonal and meridional wind stress.
+C-    Zonal and meridional wind stress.
       IF ( .NOT.useAtmWind ) THEN
        CALL EXF_SET_UV(
-     I     ustressfile, ustressStartTime, ustressperiod,
+     I     'ustress', ustressfile, ustressmask,
+     I     ustressStartTime, ustressperiod, repeatPeriod,
      I     exf_inscal_ustress,
      I     ustress_exfremo_intercept, ustress_exfremo_slope,
-     U     ustress, ustress0, ustress1, ustressmask,
-     I     vstressfile, vstressStartTime, vstressperiod,
+     U     ustress, ustress0, ustress1,
+     I     'vstress', vstressfile, vstressmask,
+     I     vstressStartTime, vstressperiod, repeatPeriod,
      I     exf_inscal_vstress,
      I     vstress_exfremo_intercept, vstress_exfremo_slope,
-     U     vstress, vstress0, vstress1, vstressmask,
+     U     vstress, vstress0, vstress1,
 #ifdef USE_EXF_INTERPOLATION
      I     ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
      I     ustress_nlon, ustress_nlat, ustress_interpMethod,
@@ -104,30 +106,33 @@ C     Zonal and meridional wind stress.
        ENDDO
       ENDIF
 
-C--   wind speed
-      CALL EXF_SET_GEN(
-     &     wspeedfile, wspeedStartTime, wspeedperiod,
-     &     exf_inscal_wspeed,
-     &     wspeed_exfremo_intercept, wspeed_exfremo_slope,
-     &     wspeed, wspeed0, wspeed1, wspeedmask,
+C-    Wind speed
+      CALL EXF_SET_FLD(
+     I     'wspeed', wspeedfile, wspeedmask,
+     I     wspeedStartTime, wspeedperiod, repeatPeriod,
+     I     exf_inscal_wspeed,
+     I     wspeed_exfremo_intercept, wspeed_exfremo_slope,
+     U     wspeed, wspeed0, wspeed1,
 #ifdef USE_EXF_INTERPOLATION
-     &     wspeed_lon0, wspeed_lon_inc,
-     &     wspeed_lat0, wspeed_lat_inc,
-     &     wspeed_nlon, wspeed_nlat, xC, yC, wspeed_interpMethod,
+     I     wspeed_lon0, wspeed_lon_inc,
+     I     wspeed_lat0, wspeed_lat_inc,
+     I     wspeed_nlon, wspeed_nlat, xC, yC, wspeed_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 
-C     Zonal and meridional wind.
+C-    Zonal and meridional wind.
       IF ( useAtmWind ) THEN
        CALL EXF_SET_UV(
-     I     uwindfile, uwindStartTime, uwindperiod,
+     I     'uwind', uwindfile, uwindmask,
+     I     uwindStartTime, uwindperiod, repeatPeriod,
      I     exf_inscal_uwind,
      I     uwind_exfremo_intercept, uwind_exfremo_slope,
-     U     uwind, uwind0, uwind1, uwindmask,
-     I     vwindfile, vwindStartTime, vwindperiod,
+     U     uwind, uwind0, uwind1,
+     I     'vwind', vwindfile, vwindmask,
+     I     vwindStartTime, vwindperiod, repeatPeriod,
      I     exf_inscal_vwind,
      I     vwind_exfremo_intercept, vwind_exfremo_slope,
-     U     vwind, vwind0, vwind1, vwindmask,
+     U     vwind, vwind0, vwind1,
 #ifdef USE_EXF_INTERPOLATION
      I     uwind_lon0, uwind_lon_inc, uwind_lat0, uwind_lat_inc,
      I     uwind_nlon, uwind_nlat, uwind_interpMethod,
@@ -165,43 +170,46 @@ C     Subtract UVEL and VVEL from UWIND and VWIND.
        ENDDO
       ENDIF
 
-C     Atmospheric heat flux.
-      CALL EXF_SET_GEN  (
-     &     hfluxfile, hfluxStartTime, hfluxperiod,
-     &     exf_inscal_hflux,
-     &     hflux_exfremo_intercept, hflux_exfremo_slope,
-     &     hflux, hflux0, hflux1, hfluxmask,
+C-    Atmospheric heat flux.
+      CALL EXF_SET_FLD(
+     I     'hflux', hfluxfile, hfluxmask,
+     I     hfluxStartTime, hfluxperiod, repeatPeriod,
+     I     exf_inscal_hflux,
+     I     hflux_exfremo_intercept, hflux_exfremo_slope,
+     U     hflux, hflux0, hflux1,
 #ifdef USE_EXF_INTERPOLATION
-     &     hflux_lon0, hflux_lon_inc, hflux_lat0, hflux_lat_inc,
-     &     hflux_nlon, hflux_nlat, xC, yC, hflux_interpMethod,
+     I     hflux_lon0, hflux_lon_inc, hflux_lat0, hflux_lat_inc,
+     I     hflux_nlon, hflux_nlat, xC, yC, hflux_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 
-C     Freshwater flux.
-      CALL EXF_SET_GEN  (
-     &     sfluxfile, sfluxStartTime, sfluxperiod,
-     &     exf_inscal_sflux,
-     &     sflux_exfremo_intercept, sflux_exfremo_slope,
-     &     sflux, sflux0, sflux1, sfluxmask,
+C-    Freshwater flux.
+      CALL EXF_SET_FLD(
+     I     'sflux', sfluxfile, sfluxmask,
+     I     sfluxStartTime, sfluxperiod, repeatPeriod,
+     I     exf_inscal_sflux,
+     I     sflux_exfremo_intercept, sflux_exfremo_slope,
+     U     sflux, sflux0, sflux1,
 #ifdef USE_EXF_INTERPOLATION
-     &     sflux_lon0, sflux_lon_inc, sflux_lat0, sflux_lat_inc,
-     &     sflux_nlon, sflux_nlat, xC, yC, sflux_interpMethod,
+     I     sflux_lon0, sflux_lon_inc, sflux_lat0, sflux_lat_inc,
+     I     sflux_nlon, sflux_nlat, xC, yC, sflux_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 
 #ifdef ALLOW_ATM_TEMP
 
-C     Atmospheric temperature.
-      CALL EXF_SET_GEN(
-     &     atempfile, atempStartTime, atempperiod,
-     &     exf_inscal_atemp,
-     &     atemp_exfremo_intercept, atemp_exfremo_slope,
-     &     atemp, atemp0, atemp1, atempmask,
+C-    Atmospheric temperature.
+      CALL EXF_SET_FLD(
+     I     'atemp', atempfile, atempmask,
+     I     atempStartTime, atempperiod, repeatPeriod,
+     I     exf_inscal_atemp,
+     I     atemp_exfremo_intercept, atemp_exfremo_slope,
+     U     atemp, atemp0, atemp1,
 #ifdef USE_EXF_INTERPOLATION
-     &     atemp_lon0, atemp_lon_inc, atemp_lat0, atemp_lat_inc,
-     &     atemp_nlon, atemp_nlat, xC, yC, atemp_interpMethod,
+     I     atemp_lon0, atemp_lon_inc, atemp_lat0, atemp_lat_inc,
+     I     atemp_nlon, atemp_nlat, xC, yC, atemp_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),mybxhi(myThid)
         DO j = 1,sNy
@@ -212,97 +220,104 @@ C     Atmospheric temperature.
        ENDDO
       ENDDO
 
-C     Atmospheric humidity.
-      CALL EXF_SET_GEN(
-     &     aqhfile, aqhStartTime, aqhperiod,
-     &     exf_inscal_aqh,
-     &     aqh_exfremo_intercept, aqh_exfremo_slope,
-     &     aqh, aqh0, aqh1, aqhmask,
+C-    Atmospheric humidity.
+      CALL EXF_SET_FLD(
+     I     'aqh', aqhfile, aqhmask,
+     I     aqhStartTime, aqhperiod, repeatPeriod,
+     I     exf_inscal_aqh,
+     I     aqh_exfremo_intercept, aqh_exfremo_slope,
+     U     aqh, aqh0, aqh1,
 #ifdef USE_EXF_INTERPOLATION
-     &     aqh_lon0, aqh_lon_inc, aqh_lat0, aqh_lat_inc,
-     &     aqh_nlon, aqh_nlat, xC, yC, aqh_interpMethod,
+     I     aqh_lon0, aqh_lon_inc, aqh_lat0, aqh_lat_inc,
+     I     aqh_nlon, aqh_nlat, xC, yC, aqh_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 
 # ifdef ALLOW_READ_TURBFLUXES
 
-C     Sensible Heat flux
-      CALL EXF_SET_GEN(
-     &     hs_file, hs_StartTime, hs_period,
-     &     exf_inscal_hs,
-     &     hs_exfremo_intercept, hs_exfremo_slope,
-     &     hs, hs0, hs1, hs_mask,
+C-    Sensible Heat flux
+      CALL EXF_SET_FLD(
+     I     'hs', hs_file, hs_mask,
+     I     hs_StartTime, hs_period, repeatPeriod,
+     I     exf_inscal_hs,
+     I     hs_exfremo_intercept, hs_exfremo_slope,
+     U     hs, hs0, hs1,
 #  ifdef USE_EXF_INTERPOLATION
-     &     hs_lon0, hs_lon_inc, hs_lat0, hs_lat_inc,
-     &     hs_nlon, hs_nlat, xC, yC, hs_interpMethod,
+     I     hs_lon0, hs_lon_inc, hs_lat0, hs_lat_inc,
+     I     hs_nlon, hs_nlat, xC, yC, hs_interpMethod,
 #  endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 
-C     Latent Heat flux
-      CALL EXF_SET_GEN(
-     &     hl_file, hl_StartTime, hl_period,
-     &     exf_inscal_hl,
-     &     hl_exfremo_intercept, hl_exfremo_slope,
-     &     hl, hl0, hl1, hl_mask,
+C-    Latent Heat flux
+      CALL EXF_SET_FLD(
+     I     'hl', hl_file, hl_mask,
+     I     hl_StartTime, hl_period, repeatPeriod,
+     I     exf_inscal_hl,
+     I     hl_exfremo_intercept, hl_exfremo_slope,
+     U     hl, hl0, hl1,
 #  ifdef USE_EXF_INTERPOLATION
-     &     hl_lon0, hl_lon_inc, hl_lat0, hl_lat_inc,
-     &     hl_nlon, hl_nlat, xC, yC, hl_interpMethod,
+     I     hl_lon0, hl_lon_inc, hl_lat0, hl_lat_inc,
+     I     hl_nlon, hl_nlat, xC, yC, hl_interpMethod,
 #  endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 
 # endif /* ALLOW_READ_TURBFLUXES */
 
-C     Net long wave radiative flux.
-      CALL EXF_SET_GEN(
-     &     lwfluxfile, lwfluxStartTime, lwfluxperiod,
-     &     exf_inscal_lwflux,
-     &     lwflux_exfremo_intercept, lwflux_exfremo_slope,
-     &     lwflux, lwflux0, lwflux1, lwfluxmask,
+C-    Net long wave radiative flux.
+      CALL EXF_SET_FLD(
+     I     'lwflux', lwfluxfile, lwfluxmask,
+     I     lwfluxStartTime, lwfluxperiod, repeatPeriod,
+     I     exf_inscal_lwflux,
+     I     lwflux_exfremo_intercept, lwflux_exfremo_slope,
+     U     lwflux, lwflux0, lwflux1,
 #ifdef USE_EXF_INTERPOLATION
-     &     lwflux_lon0, lwflux_lon_inc, lwflux_lat0, lwflux_lat_inc,
-     &     lwflux_nlon, lwflux_nlat, xC, yC, lwflux_interpMethod,
+     I     lwflux_lon0, lwflux_lon_inc, lwflux_lat0, lwflux_lat_inc,
+     I     lwflux_nlon, lwflux_nlat, xC, yC, lwflux_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 
 #ifdef EXF_READ_EVAP
-C     Evaporation
-      CALL EXF_SET_GEN  (
-     &     evapfile, evapStartTime, evapperiod,
-     &     exf_inscal_evap,
-     &     evap_exfremo_intercept, evap_exfremo_slope,
-     &     evap, evap0, evap1, evapmask,
+C-    Evaporation
+      CALL EXF_SET_FLD(
+     I     'evap', evapfile, evapmask,
+     I     evapStartTime, evapperiod, repeatPeriod,
+     I     exf_inscal_evap,
+     I     evap_exfremo_intercept, evap_exfremo_slope,
+     U     evap, evap0, evap1,
 #ifdef USE_EXF_INTERPOLATION
-     &     evap_lon0, evap_lon_inc, evap_lat0, evap_lat_inc,
-     &     evap_nlon, evap_nlat, xC, yC, evap_interpMethod,
+     I     evap_lon0, evap_lon_inc, evap_lat0, evap_lat_inc,
+     I     evap_nlon, evap_nlat, xC, yC, evap_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 #endif /* EXF_READ_EVAP */
 
-C     Precipitation.
-      CALL EXF_SET_GEN(
-     &     precipfile, precipStartTime, precipperiod,
-     &     exf_inscal_precip,
-     &     precip_exfremo_intercept, precip_exfremo_slope,
-     &     precip, precip0, precip1, precipmask,
+C-    Precipitation.
+      CALL EXF_SET_FLD(
+     I     'precip', precipfile, precipmask,
+     I     precipStartTime, precipperiod, repeatPeriod,
+     I     exf_inscal_precip,
+     I     precip_exfremo_intercept, precip_exfremo_slope,
+     U     precip, precip0, precip1,
 #ifdef USE_EXF_INTERPOLATION
-     &     precip_lon0, precip_lon_inc, precip_lat0, precip_lat_inc,
-     &     precip_nlon, precip_nlat, xC, yC, precip_interpMethod,
+     I     precip_lon0, precip_lon_inc, precip_lat0, precip_lat_inc,
+     I     precip_nlon, precip_nlat, xC, yC, precip_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 
-C     Snow.
-      CALL EXF_SET_GEN(
-     &     snowprecipfile, snowprecipStartTime, snowprecipperiod,
-     &     exf_inscal_snowprecip,
-     &     snowprecip_exfremo_intercept, snowprecip_exfremo_slope,
-     &     snowprecip, snowprecip0, snowprecip1, snowprecipmask,
+C-    Snow.
+      CALL EXF_SET_FLD(
+     I     'snowprecip', snowprecipfile, snowprecipmask,
+     I     snowprecipStartTime, snowprecipperiod, repeatPeriod,
+     I     exf_inscal_snowprecip,
+     I     snowprecip_exfremo_intercept, snowprecip_exfremo_slope,
+     U     snowprecip, snowprecip0, snowprecip1,
 #ifdef USE_EXF_INTERPOLATION
-     &     snowprecip_lon0, snowprecip_lon_inc,
-     &     snowprecip_lat0, snowprecip_lat_inc,
-     &     snowprecip_nlon, snowprecip_nlat, xC, yC,
-     &     snowprecip_interpMethod,
+     I     snowprecip_lon0, snowprecip_lon_inc,
+     I     snowprecip_lat0, snowprecip_lat_inc,
+     I     snowprecip_nlon, snowprecip_nlat, xC, yC,
+     I     snowprecip_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 C     Take care of case where total precip is not defined
       IF ( snowPrecipFile .NE. ' ' ) THEN
        DO bj = myByLo(myThid),myByHi(myThid)
@@ -310,7 +325,7 @@ C     Take care of case where total precip is not defined
          DO j = 1,sNy
           DO i = 1,sNx
            precip(i,j,bi,bj) =
-     &          max( precip(i,j,bi,bj), snowPrecip(i,j,bi,bj) )
+     &          MAX( precip(i,j,bi,bj), snowPrecip(i,j,bi,bj) )
           ENDDO
          ENDDO
         ENDDO
@@ -320,118 +335,126 @@ C     Take care of case where total precip is not defined
 #endif /* ALLOW_ATM_TEMP */
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
-C     Net short wave radiative flux.
-      CALL EXF_SET_GEN  (
-     &     swfluxfile, swfluxStartTime, swfluxperiod,
-     &     exf_inscal_swflux,
-     &     swflux_exfremo_intercept, swflux_exfremo_slope,
-     &     swflux, swflux0, swflux1, swfluxmask,
+C-    Net short wave radiative flux.
+      CALL EXF_SET_FLD(
+     I     'swflux', swfluxfile, swfluxmask,
+     I     swfluxStartTime, swfluxperiod, repeatPeriod,
+     I     exf_inscal_swflux,
+     I     swflux_exfremo_intercept, swflux_exfremo_slope,
+     U     swflux, swflux0, swflux1,
 #ifdef USE_EXF_INTERPOLATION
-     &     swflux_lon0, swflux_lon_inc, swflux_lat0, swflux_lat_inc,
-     &     swflux_nlon, swflux_nlat, xC, yC, swflux_interpMethod,
+     I     swflux_lon0, swflux_lon_inc, swflux_lat0, swflux_lat_inc,
+     I     swflux_nlon, swflux_nlat, xC, yC, swflux_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_DOWNWARD_RADIATION
 
-C     Downward shortwave radiation.
-      CALL EXF_SET_GEN  (
-     &     swdownfile, swdownStartTime, swdownperiod,
-     &     exf_inscal_swdown,
-     &     swdown_exfremo_intercept, swdown_exfremo_slope,
-     &     swdown, swdown0, swdown1, swdownmask,
+C-    Downward shortwave radiation.
+      CALL EXF_SET_FLD(
+     I     'swdown', swdownfile, swdownmask,
+     I     swdownStartTime, swdownperiod, repeatPeriod,
+     I     exf_inscal_swdown,
+     I     swdown_exfremo_intercept, swdown_exfremo_slope,
+     U     swdown, swdown0, swdown1,
 #ifdef USE_EXF_INTERPOLATION
-     &     swdown_lon0, swdown_lon_inc, swdown_lat0, swdown_lat_inc,
-     &     swdown_nlon, swdown_nlat, xC, yC, swdown_interpMethod,
+     I     swdown_lon0, swdown_lon_inc, swdown_lat0, swdown_lat_inc,
+     I     swdown_nlon, swdown_nlat, xC, yC, swdown_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 
-C     Downward longwave radiation.
-      CALL EXF_SET_GEN  (
-     &     lwdownfile, lwdownStartTime, lwdownperiod,
-     &     exf_inscal_lwdown,
-     &     lwdown_exfremo_intercept, lwdown_exfremo_slope,
-     &     lwdown, lwdown0, lwdown1, lwdownmask,
+C-    Downward longwave radiation.
+      CALL EXF_SET_FLD(
+     I     'lwdown', lwdownfile, lwdownmask,
+     I     lwdownStartTime, lwdownperiod, repeatPeriod,
+     I     exf_inscal_lwdown,
+     I     lwdown_exfremo_intercept, lwdown_exfremo_slope,
+     U     lwdown, lwdown0, lwdown1,
 #ifdef USE_EXF_INTERPOLATION
-     &     lwdown_lon0, lwdown_lon_inc, lwdown_lat0, lwdown_lat_inc,
-     &     lwdown_nlon, lwdown_nlat, xC, yC, lwdown_interpMethod,
+     I     lwdown_lon0, lwdown_lon_inc, lwdown_lat0, lwdown_lat_inc,
+     I     lwdown_nlon, lwdown_nlat, xC, yC, lwdown_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 
 #endif /* ALLOW_DOWNWARD_RADIATION */
 
 #ifdef ATMOSPHERIC_LOADING
-C     Atmos. pressure forcing
-      CALL EXF_SET_GEN  (
-     &     apressurefile, apressureStartTime, apressureperiod,
-     &     exf_inscal_apressure,
-     &     apressure_exfremo_intercept, apressure_exfremo_slope,
-     &     apressure, apressure0, apressure1, apressuremask,
+C-    Atmos. pressure forcing
+      CALL EXF_SET_FLD(
+     I     'apressure', apressurefile, apressuremask,
+     I     apressureStartTime, apressureperiod, repeatPeriod,
+     I     exf_inscal_apressure,
+     I     apressure_exfremo_intercept, apressure_exfremo_slope,
+     U     apressure, apressure0, apressure1,
 #ifdef USE_EXF_INTERPOLATION
-     &     apressure_lon0, apressure_lon_inc,
-     &     apressure_lat0, apressure_lat_inc,
-     &     apressure_nlon,apressure_nlat,xC,yC, apressure_interpMethod,
+     I     apressure_lon0, apressure_lon_inc,
+     I     apressure_lat0, apressure_lat_inc,
+     I     apressure_nlon,apressure_nlat,xC,yC, apressure_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 #endif
 
 #ifdef EXF_SEAICE_FRACTION
-C     fractional ice-covered area MASK
-      CALL EXF_SET_GEN  (
-     &     areamaskfile, areamaskStartTime, areamaskperiod,
-     &     exf_inscal_areamask,
-     &     areamask_exfremo_intercept, areamask_exfremo_slope,
-     &     areamask, areamask0, areamask1, areamaskmask,
+C-    fractional ice-covered area mask
+      CALL EXF_SET_FLD(
+     I     'areamask', areamaskfile, areamaskmask,
+     I     areamaskStartTime, areamaskperiod, repeatPeriod,
+     I     exf_inscal_areamask,
+     I     areamask_exfremo_intercept, areamask_exfremo_slope,
+     U     areamask, areamask0, areamask1,
 #ifdef USE_EXF_INTERPOLATION
-     &     areamask_lon0, areamask_lon_inc,
-     &     areamask_lat0, areamask_lat_inc,
-     &     areamask_nlon, areamask_nlat, xC, yC, areamask_interpMethod,
+     I     areamask_lon0, areamask_lon_inc,
+     I     areamask_lat0, areamask_lat_inc,
+     I     areamask_nlon, areamask_nlat, xC, yC, areamask_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_RUNOFF
-C     Runoff
-      CALL EXF_SET_GEN  (
-     &     runofffile, runoffStartTime, runoffperiod,
-     &     exf_inscal_runoff,
-     &     runoff_exfremo_intercept, runoff_exfremo_slope,
-     &     runoff, runoff0, runoff1, runoffmask,
+C-    Runoff
+      CALL EXF_SET_FLD(
+     I     'runoff', runofffile, runoffmask,
+     I     runoffStartTime, runoffperiod, repeatPeriod,
+     I     exf_inscal_runoff,
+     I     runoff_exfremo_intercept, runoff_exfremo_slope,
+     U     runoff, runoff0, runoff1,
 #ifdef USE_EXF_INTERPOLATION
-     &     runoff_lon0, runoff_lon_inc, runoff_lat0, runoff_lat_inc,
-     &     runoff_nlon, runoff_nlat, xC, yC, runoff_interpMethod,
+     I     runoff_lon0, runoff_lon_inc, runoff_lat0, runoff_lat_inc,
+     I     runoff_nlon, runoff_nlat, xC, yC, runoff_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 #endif /* ALLOW_RUNOFF */
 
 #ifdef ALLOW_RUNOFTEMP
-C     Runoff temperature
-      CALL EXF_SET_GEN  (
-     &     runoftempfile, runoffStartTime, runoffperiod,
-     &     exf_inscal_runoftemp,
-     &     runoftemp_exfremo_intercept, runoftemp_exfremo_slope,
-     &     runoftemp, runoftemp0, runoftemp1, runoffmask,
+C-    Runoff temperature
+      CALL EXF_SET_FLD(
+     I     'runoftemp', runoftempfile, runoffmask,
+     I     runoffStartTime, runoffperiod, repeatPeriod,
+     I     exf_inscal_runoftemp,
+     I     runoftemp_exfremo_intercept, runoftemp_exfremo_slope,
+     U     runoftemp, runoftemp0, runoftemp1,
 #ifdef USE_EXF_INTERPOLATION
-     &     runoff_lon0, runoff_lon_inc, runoff_lat0, runoff_lat_inc,
-     &     runoff_nlon, runoff_nlat, xC, yC, runoff_interpMethod,
+     I     runoff_lon0, runoff_lon_inc, runoff_lat0, runoff_lat_inc,
+     I     runoff_nlon, runoff_nlat, xC, yC, runoff_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 #endif /* ALLOW_RUNOFTEMP */
 
 #ifdef ALLOW_SALTFLX
-C     Salt flux
-      CALL EXF_SET_GEN  (
-     &     saltflxfile, saltflxStartTime, saltflxperiod,
-     &     exf_inscal_saltflx,
-     &     saltflx_exfremo_intercept, saltflx_exfremo_slope,
-     &     saltflx, saltflx0, saltflx1, saltflxmask,
+C-    Salt flux
+      CALL EXF_SET_FLD(
+     I     'saltflx', saltflxfile, saltflxmask,
+     I     saltflxStartTime, saltflxperiod, repeatPeriod,
+     I     exf_inscal_saltflx,
+     I     saltflx_exfremo_intercept, saltflx_exfremo_slope,
+     U     saltflx, saltflx0, saltflx1,
 #ifdef USE_EXF_INTERPOLATION
-     &     saltflx_lon0, saltflx_lon_inc,
-     &     saltflx_lat0, saltflx_lat_inc,
-     &     saltflx_nlon, saltflx_nlat, xC, yC, saltflx_interpMethod,
+     I     saltflx_lon0, saltflx_lon_inc,
+     I     saltflx_lat0, saltflx_lat_inc,
+     I     saltflx_nlon, saltflx_nlat, xC, yC, saltflx_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_ROTATE_UV_CONTROLS

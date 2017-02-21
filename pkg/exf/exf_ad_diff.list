@@ -1,4 +1,5 @@
-exf_init.f
+exf_init_varia.f
+exf_init_fld.f
 exf_bulkformulae.f
 exf_filter_rl.f
 exf_getclim.f
@@ -12,6 +13,7 @@ exf_interp_uv.f
 exf_interpolate.f
 exf_mapfields.f
 exf_radiation.f
+exf_set_fld.f
 exf_set_gen.f
 exf_set_obcs.f
 exf_set_uv.f

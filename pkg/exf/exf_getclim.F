@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.26 2017/01/31 18:59:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.27 2017/02/21 01:04:26 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -72,16 +72,17 @@ c     == end of interface ==
 
 #ifdef ALLOW_CLIMSST_RELAXATION
 c     Get values of climatological sst fields.
-      CALL EXF_SET_GEN (
-     &     climsstfile, climsstStartTime, climsstperiod,
-     &     exf_inscal_climsst,
-     &     climsst_exfremo_intercept, climsst_exfremo_slope,
-     &     climsst, climsst0, climsst1, climsstmask,
+      CALL EXF_SET_FLD(
+     I     'climsst', climsstfile, climsstmask,
+     I     climsstStartTime, climsstperiod, repeatPeriod,
+     I     exf_inscal_climsst,
+     I     climsst_exfremo_intercept, climsst_exfremo_slope,
+     U     climsst, climsst0, climsst1,
 #ifdef USE_EXF_INTERPOLATION
-     &     climsst_lon0, climsst_lon_inc, climsst_lat0, climsst_lat_inc,
-     &     climsst_nlon, climsst_nlat, xC, yC, climsst_interpMethod,
+     I     climsst_lon0, climsst_lon_inc, climsst_lat0, climsst_lat_inc,
+     I     climsst_nlon, climsst_nlat, xC, yC, climsst_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 
       DO bj = myByLo(myThid),myByHi(myThid)
        DO bi = myBxLo(myThid),mybxhi(myThid)
@@ -111,16 +112,17 @@ c--   Update the tile edges.
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
 c     Get values of climatological sss fields.
-      CALL EXF_SET_GEN (
-     &     climsssfile, climsssStartTime, climsssperiod,
-     &     exf_inscal_climsss,
-     &     climsss_exfremo_intercept, climsss_exfremo_slope,
-     &     climsss, climsss0, climsss1, climsssmask,
+      CALL EXF_SET_FLD(
+     I     'climsss', climsssfile, climsssmask,
+     I     climsssStartTime, climsssperiod, repeatPeriod,
+     I     exf_inscal_climsss,
+     I     climsss_exfremo_intercept, climsss_exfremo_slope,
+     U     climsss, climsss0, climsss1,
 #ifdef USE_EXF_INTERPOLATION
-     &     climsss_lon0, climsss_lon_inc, climsss_lat0, climsss_lat_inc,
-     &     climsss_nlon, climsss_nlat, xC, yC, climsss_interpMethod,
+     I     climsss_lon0, climsss_lon_inc, climsss_lat0, climsss_lat_inc,
+     I     climsss_nlon, climsss_nlat, xC, yC, climsss_interpMethod,
 #endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 
 c--   Update the tile edges.
       _EXCH_XY_RL(climsss, myThid)
@@ -139,14 +141,16 @@ c--   Update the tile edges.
 #ifdef ALLOW_CLIMSTRESS_RELAXATION
 c     Get values of climatological ustr fields.
       CALL EXF_SET_UV (
-     I     climustrfile, climustrStartTime, climustrperiod,
+     I     'climustr', climustrfile, climustrmask,
+     I     climustrStartTime, climustrperiod, repeatPeriod,
      I     exf_inscal_climustr,
      I     climustr_exfremo_intercept, climustr_exfremo_slope,
-     U     climustr, climustr0, climustr1, climustrmask,
-     I     climvstrfile, climvstrStartTime, climvstrperiod,
+     U     climustr, climustr0, climustr1,
+     I     'climvstr', climvstrfile, climvstrmask,
+     I     climvstrStartTime, climvstrperiod, repeatPeriod,
      I     exf_inscal_climvstr,
      I     climvstr_exfremo_intercept, climvstr_exfremo_slope,
-     U     climvstr, climvstr0, climvstr1, climvstrmask,
+     U     climvstr, climvstr0, climvstr1,
 #ifdef USE_EXF_INTERPOLATION
      I     climustr_lon0, climustr_lon_inc,
      I     climustr_lat0, climustr_lat_inc,

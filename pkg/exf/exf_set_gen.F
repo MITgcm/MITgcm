@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.38 2017/02/03 02:35:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.39 2017/02/21 01:04:26 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -20,43 +20,27 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
      &     myTime, myIter, myThid )
 
-C     ==================================================================
-C     SUBROUTINE EXF_SET_GEN
-C     ==================================================================
-C
-C     o set external forcing gen
-C
-C     started: Ralf.Giering@FastOpt.de 25-Mai-2000
-C     changed: heimbach@mit.edu 10-Jan-2002
-C              20-Dec-2002: mods for pkg/seaice, menemenlis@jpl.nasa.gov
-C              heimbach@mit.edu: totally re-organized exf_set_...
-C              replaced all routines by one generic routine
-C              5-Aug-2003: added USE_EXF_INTERPOLATION for arbitrary
-C                          input grid capability
-C     11-Dec-2006 added time-mean and monthly-mean climatology options
-C        genperiod=0 means input file is one time-constant field
-C        genperiod=-12 means input file contains 12 monthly means
-
-C     ==================================================================
-C     SUBROUTINE EXF_SET_GEN
-C     ==================================================================
+C  *=================================================================*
+C  | SUBROUTINE EXF_SET_GEN
+C  *=================================================================*
+C  | o old version of current S/R EXF_SET_FLD, with fewer arguments
+C  | o kept to allow to compile and use old piece of code
+C  *=================================================================*
 
       IMPLICIT NONE
 
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "PARAMS.h"
 #include "EXF_PARAM.h"
-#include "EXF_CONSTANTS.h"
 
 C     == routine arguments ==
       _RL genStartTime, genperiod
       _RL exf_inscal_gen
       _RL genremove_intercept, genremove_slope
-      _RL genfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL gen0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL gen1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL genfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gen0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gen1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       CHARACTER*1 genmask
       CHARACTER*(128) genfile
       _RL     myTime
@@ -78,193 +62,23 @@ C     gen_xout, gen_yout   :: coordinates for output grid
       INTEGER interp_method
 #endif /* USE_EXF_INTERPOLATION */
 
-C     == Functions ==
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     == local variables ==
 C     msgBuf     :: Informational/error message buffer
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      LOGICAL first, changed
-      INTEGER count0, count1
-      INTEGER year0, year1
-      INTEGER bi, bj, i, j
-      _RL     fac
-      CHARACTER*(128) genfile0, genfile1
-#ifdef USE_EXF_INTERPOLATION
-      CHARACTER*(MAX_LEN_FNAM) out_file
-#endif
-
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(7) gen_name
 C     == end of interface ==
 
-      IF ( genfile .NE. ' ' .AND. genperiod .NE. 0. ) THEN
-
-         IF ( exf_debugLev.GE.debLevD ) THEN
-           _BEGIN_MASTER( myThid )
-           j = ILNBLNK(genfile)
-           WRITE(msgBuf,'(3A)') ' EXF_SET_GEN: ',
-     &       'processing file: ', genfile(1:j)
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                         SQUEEZE_RIGHT, myThid )
-           _END_MASTER( myThid )
-         ENDIF
-
-         IF ( useCAL .AND. genperiod .EQ. -12. ) THEN
-#ifdef ALLOW_CAL
-C-    genperiod=-12 means input file contains 12 monthly means
-C     records, corresponding to Jan. (rec=1) through Dec. (rec=12)
-            CALL cal_GetMonthsRec(
-     O           fac, first, changed,
-     O           count0, count1,
-     I           myTime, myIter, myThid )
-#endif /* ALLOW_CAL */
-         ELSEIF ( genperiod .LT. 0. ) THEN
-           j = ILNBLNK(genfile)
-           WRITE(msgBuf,'(A,1PE16.8,2A)')
-     &        'EXF_SET_GEN: Invalid genperiod=', genperiod,
-     &        ' for file: ', genfile(1:j)
-           CALL PRINT_ERROR( msgBuf, myThid )
-           STOP 'ABNORMAL END: S/R EXF_SET_GEN'
-         ELSE
-C-    get record numbers and interpolation factor for gen
-            CALL exf_GetFFieldRec(
-     I           genStartTime, genperiod,
-     I           useExfYearlyFields,
-     O           fac, first, changed,
-     O           count0, count1, year0, year1,
-     I           myTime, myIter, myThid )
-
-         ENDIF
-         IF ( exf_debugLev.GE.debLevD ) THEN
-           _BEGIN_MASTER( myThid )
-           WRITE(msgBuf,'(2A,I10,2I7)') ' EXF_SET_GEN: ',
-     &       ' myIter, count0, count1:', myIter, count0, count1
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                         SQUEEZE_RIGHT, myThid )
-           WRITE(msgBuf,'(2A,2(L2,2X),E16.9)') ' EXF_SET_GEN: ',
-     &       ' first, changed, fac:  ', first, changed, fac
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                         SQUEEZE_RIGHT, myThid )
-           _END_MASTER( myThid )
-         ENDIF
-
-         IF ( first ) THEN
-            CALL exf_GetYearlyFieldName(
-     I         useExfYearlyFields, twoDigitYear, genperiod, year0,
-     I         genfile,
-     O         genfile0,
-     I         myTime, myIter, myThid )
-            IF ( exf_debugLev.GE.debLevC ) THEN
-              _BEGIN_MASTER(myThid)
-              j = ILNBLNK(genfile0)
-              WRITE(msgBuf,'(A,I10,A,I6,2A)')
-     &        ' EXF_SET_GEN: it=', myIter, ' loading rec=', count0,
-     &        ' from: ', genfile0(1:j)
-              CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                            SQUEEZE_RIGHT, myThid )
-              _END_MASTER(myThid)
-            ENDIF
-
+      gen_name   = 'exf_gen'
+      CALL EXF_SET_FLD(
+     I     gen_name, genfile, genmask,
+     I     genStartTime, genperiod, repeatPeriod,
+     I     exf_inscal_gen, genremove_intercept, genremove_slope,
+     U     genfld, gen0, gen1,
 #ifdef USE_EXF_INTERPOLATION
-            IF ( interp_method.GE.1 ) THEN
-              CALL EXF_INTERP(
-     I             genfile0, exf_iprec,
-     O             gen1,
-     I             count0, gen_xout, gen_yout,
-     I             gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
-     I             gen_nlon, gen_nlat, interp_method, myIter, myThid )
-            ELSE
-#endif /* USE_EXF_INTERPOLATION */
-              CALL READ_REC_3D_RL( genfile0, exf_iprec, 1,
-     &                             gen1, count0, myIter, myThid )
-#ifdef USE_EXF_INTERPOLATION
-            ENDIF
-#endif /* USE_EXF_INTERPOLATION */
-
-#ifdef USE_EXF_INTERPOLATION
-            IF ( exf_output_interp ) THEN
-             j = ILNBLNK(genfile0)
-             WRITE(out_file,'(2A)') genfile0(1:j), '_out'
-             IF ( count0.NE.1 )
-     &       CALL WRITE_REC_XY_RL( out_file, gen1, 1, myIter, myThid )
-             CALL WRITE_REC_XY_RL( out_file,gen1,count0,myIter,myThid )
-            ENDIF
-#endif /* USE_EXF_INTERPOLATION */
-
-C-    apply mask
-            CALL EXF_FILTER_RL( gen1, genmask, myThid )
-
-C-    end if ( first ) block
-         ENDIF
-
-         IF ( first .OR. changed ) THEN
-            CALL exf_SwapFFields( gen0, gen1, myThid )
-
-            CALL exf_GetYearlyFieldName(
-     I         useExfYearlyFields, twoDigitYear, genperiod, year1,
-     I         genfile,
-     O         genfile1,
-     I         myTime, myIter, myThid )
-            IF ( exf_debugLev.GE.debLevC ) THEN
-              _BEGIN_MASTER(myThid)
-              j = ILNBLNK(genfile1)
-              WRITE(msgBuf,'(A,I10,A,I6,2A)')
-     &        ' EXF_SET_GEN: it=', myIter, ' loading rec=', count1,
-     &        ' from: ', genfile1(1:j)
-              CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                            SQUEEZE_RIGHT, myThid )
-              _END_MASTER(myThid)
-            ENDIF
-
-#ifdef USE_EXF_INTERPOLATION
-            IF ( interp_method.GE.1 ) THEN
-              CALL EXF_INTERP(
-     I             genfile1, exf_iprec,
-     O             gen1,
-     I             count1, gen_xout, gen_yout,
-     I             gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
-     I             gen_nlon, gen_nlat, interp_method, myIter, myThid )
-            ELSE
-#endif /* USE_EXF_INTERPOLATION */
-              CALL READ_REC_3D_RL( genfile1, exf_iprec, 1,
-     &                             gen1, count1, myIter, myThid )
-#ifdef USE_EXF_INTERPOLATION
-            ENDIF
-#endif /* USE_EXF_INTERPOLATION */
-
-#ifdef USE_EXF_INTERPOLATION
-            IF ( exf_output_interp ) THEN
-             j = ILNBLNK(genfile1)
-             WRITE(out_file,'(2A)') genfile1(1:j), '_out'
-             CALL WRITE_REC_XY_RL( out_file,gen1,count1,myIter,myThid )
-            ENDIF
-#endif /* USE_EXF_INTERPOLATION */
-
-C-    apply mask
-            CALL EXF_FILTER_RL( gen1, genmask, myThid )
-
-C-    end if ( first or changed ) block
-         ENDIF
-
-C     Loop over tiles.
-         DO bj = myByLo(myThid),myByHi(myThid)
-          DO bi = myBxLo(myThid),mybxhi(myThid)
-           DO j = 1,sny
-            DO i = 1,snx
-C     Interpolate linearly onto the  time.
-             genfld(i,j,bi,bj) = exf_inscal_gen * (
-     &                          fac * gen0(i,j,bi,bj) +
-     &              (exf_one - fac) * gen1(i,j,bi,bj) )
-             genfld(i,j,bi,bj) =
-     &            genfld(i,j,bi,bj) -
-     &            exf_inscal_gen * ( genremove_intercept +
-     &            genremove_slope*(myTime-startTime) )
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-
-      ENDIF
+     I     gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
+     I     gen_nlon, gen_nlat, gen_xout, gen_yout, interp_method,
+#endif
+     I     myTime, myIter, myThid )
 
       RETURN
       END
@@ -280,18 +94,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
      &     myThid )
 
-C     ==================================================================
-C     SUBROUTINE EXF_INIT_GEN
-C     ==================================================================
-C
-C     started: Ralf.Giering@FastOpt.de 25-Mai-2000
-C     changed: heimbach@mit.edu 10-Jan-2002
-C              heimbach@mit.edu: totally re-organized exf_set_...
-C              replaced all routines by one generic routine
-C
-C     ==================================================================
-C     SUBROUTINE EXF_INIT_GEN
-C     ==================================================================
+C  *=================================================================*
+C  | SUBROUTINE EXF_INIT_GEN
+C  *=================================================================*
+C  | o old version of current S/R EXF_INIT_FLD, with fewer arguments
+C  | o kept to allow to compile and use old piece of code
+C  *=================================================================*
 
       IMPLICIT NONE
 
@@ -302,9 +110,9 @@ C     == global variables ==
 
 C     == routine arguments ==
       _RL genperiod, exf_inscal_gen, genconst
-      _RL genfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL gen0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL gen1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL genfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gen0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL gen1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       CHARACTER*1 genmask
       CHARACTER*(128) genfile
       INTEGER myThid
@@ -324,73 +132,22 @@ C     gen_xout, gen_yout   :: coordinates for output grid
       INTEGER interp_method
 #endif /* USE_EXF_INTERPOLATION */
 
-C     == Functions ==
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     == local variables ==
 C     msgBuf     :: Informational/error message buffer
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER bi, bj, i, j, count
-
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(7) gen_name
 C     == end of interface ==
 
-      DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), mybxhi(myThid)
-          DO j = 1-oly, sny+oly
-            DO i = 1-olx, snx+olx
-              genfld(i,j,bi,bj)  = genconst
-              gen0(i,j,bi,bj)    = genconst
-              gen1(i,j,bi,bj)    = genconst
-            ENDDO
-          ENDDO
-        ENDDO
-      ENDDO
-
-      IF ( genfile .NE. ' ' .AND. genperiod .EQ. 0. ) THEN
-         count = 1
-         IF ( exf_debugLev.GE.debLevC ) THEN
-           _BEGIN_MASTER(myThid)
-           j = ILNBLNK(genfile)
-           WRITE(msgBuf,'(A,I10,A,I6,2A)')
-     &        ' EXF_INIT_GEN: it=', -1, ' loading rec=', count,
-     &        ' from: ', genfile(1:j)
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                         SQUEEZE_RIGHT, myThid )
-           _END_MASTER(myThid)
-         ENDIF
-
+      gen_name   = 'exf_gen'
+      CALL EXF_INIT_FLD (
+     I     gen_name, genfile, genmask,
+     I     genperiod, exf_inscal_gen, genconst,
+     U     genfld, gen0, gen1,
 #ifdef USE_EXF_INTERPOLATION
-         IF ( interp_method.GE.1 ) THEN
-              CALL EXF_INTERP(
-     I             genfile, exf_iprec,
-     O             genfld,
-     I             count, gen_xout, gen_yout,
-     I             gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
-     I             gen_nlon, gen_nlat, interp_method, 0, myThid )
-         ELSE
-#endif /* USE_EXF_INTERPOLATION */
-            CALL READ_REC_3D_RL( genfile, exf_iprec, 1,
-     &                             genfld, count, 0, myThid )
-#ifdef USE_EXF_INTERPOLATION
-         ENDIF
-#endif /* USE_EXF_INTERPOLATION */
-
-C-    apply mask
-         CALL EXF_FILTER_RL( genfld, genmask, myThid )
-
-C     Loop over tiles and scale genfld
-         DO bj = myByLo(myThid),myByHi(myThid)
-          DO bi = myBxLo(myThid),mybxhi(myThid)
-           DO j = 1,sNy
-            DO i = 1,sNx
-              genfld(i,j,bi,bj) = exf_inscal_gen*genfld(i,j,bi,bj)
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-
-      ENDIF
+     I     gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
+     I     gen_nlon, gen_nlat, gen_xout, gen_yout, interp_method,
+#endif
+     I     myThid )
 
       RETURN
       END
