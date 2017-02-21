@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_check_lev1_dir.h,v 1.25 2017/02/18 19:39:10 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_check_lev1_dir.h,v 1.26 2017/02/21 04:01:03 jmc Exp $
 C $Name:  $
 
 c
@@ -31,8 +31,14 @@ CADJ STORE lwflux0   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE lwflux1   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE swflux0   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE swflux1   = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE snowprecip0   = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE snowprecip1   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE snowprecip0 = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE snowprecip1 = comlev1, key=ikey_dynamics, kind=isbyte
+#  ifdef ALLOW_READ_TURBFLUXES
+CADJ STORE hs0   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE hs1   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE hl0   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE hl1   = comlev1, key=ikey_dynamics, kind=isbyte
+#  endif /* ALLOW_READ_TURBFLUXES */
 #  ifdef EXF_READ_EVAP
 CADJ STORE evap0     = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE evap1     = comlev1, key=ikey_dynamics, kind=isbyte
@@ -80,12 +86,6 @@ cphCADJ STORE climsalt1  = comlev1, key=ikey_dynamics, kind=isbyte
 cph not used so far
 cphCADJ STORE climtemp0  = comlev1, key=ikey_dynamics, kind=isbyte
 cphCADJ STORE climtemp1  = comlev1, key=ikey_dynamics, kind=isbyte
-# endif
-# ifdef ALLOW_READ_TURBFLUXES
-CADJ STORE hs0   = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE hs1   = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE hl0   = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE hl1   = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 # ifdef ATMOSPHERIC_LOADING
 CADJ STORE apressure0    = comlev1, key=ikey_dynamics, kind=isbyte

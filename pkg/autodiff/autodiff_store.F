@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.32 2017/02/18 19:39:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_store.F,v 1.33 2017/02/21 04:00:39 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -175,22 +175,21 @@ C-      3D arrays
       ENDDO
 
 #ifdef ALLOW_EXF
-
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 C-      2D arrays
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
-          StoreEXF1(I,J,bi,bj,1) = hflux0(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,2) = hflux1(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,3) = sflux0(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,4) = sflux1(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,5) = ustress0(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,6) = ustress1(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,7) = vstress0(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,8) = vstress1(I,J,bi,bj)
-          StoreEXF1(I,J,bi,bj,9) = wspeed0(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,1)  = hflux0(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,2)  = hflux1(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,3)  = sflux0(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,4)  = sflux1(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,5)  = ustress0(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,6)  = ustress1(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,7)  = vstress0(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,8)  = vstress1(I,J,bi,bj)
+          StoreEXF1(I,J,bi,bj,9)  = wspeed0(I,J,bi,bj)
           StoreEXF1(I,J,bi,bj,10) = wspeed1(I,J,bi,bj)
 # ifdef SHORTWAVE_HEATING
           StoreEXF1(I,J,bi,bj,11) = swflux0(I,J,bi,bj)
@@ -258,41 +257,40 @@ C-      2D arrays
           StoreEXF2(I,J,bi,bj,8) = lwflux1(I,J,bi,bj)
           StoreEXF2(I,J,bi,bj,9)  = snowprecip0(I,J,bi,bj)
           StoreEXF2(I,J,bi,bj,10) = snowprecip1(I,J,bi,bj)
-#  ifdef EXF_READ_EVAP
-          StoreEXF2(I,J,bi,bj,11) = evap0(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,12) = evap1(I,J,bi,bj)
+#  ifdef ALLOW_READ_TURBFLUXES
+          StoreEXF2(I,J,bi,bj,11) = hs0(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,12) = hs1(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,13) = hl0(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,14) = hl1(I,J,bi,bj)
 #  else
-          StoreEXF2(I,J,bi,bj,11) = evap(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,11) = 0.0
           StoreEXF2(I,J,bi,bj,12) = 0.0
-#  endif /* EXF_READ_EVAP */
-#  ifdef ALLOW_DOWNWARD_RADIATION
-          StoreEXF2(I,J,bi,bj,13) = swdown0(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,14) = swdown1(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,15) = lwdown0(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,16) = lwdown1(I,J,bi,bj)
-#  else
           StoreEXF2(I,J,bi,bj,13) = 0.0
           StoreEXF2(I,J,bi,bj,14) = 0.0
-          StoreEXF2(I,J,bi,bj,15) = 0.0
+#  endif
+#  ifdef EXF_READ_EVAP
+          StoreEXF2(I,J,bi,bj,15) = evap0(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,16) = evap1(I,J,bi,bj)
+#  else
+          StoreEXF2(I,J,bi,bj,15) = evap(I,J,bi,bj)
           StoreEXF2(I,J,bi,bj,16) = 0.0
+#  endif /* EXF_READ_EVAP */
+#  ifdef ALLOW_DOWNWARD_RADIATION
+          StoreEXF2(I,J,bi,bj,17) = swdown0(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,18) = swdown1(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,19) = lwdown0(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,20) = lwdown1(I,J,bi,bj)
+#  else
+          StoreEXF2(I,J,bi,bj,17) = 0.0
+          StoreEXF2(I,J,bi,bj,18) = 0.0
+          StoreEXF2(I,J,bi,bj,19) = 0.0
+          StoreEXF2(I,J,bi,bj,20) = 0.0
 #  endif
 # endif /* ALLOW_ATM_TEMP */
-          StoreEXF2(I,J,bi,bj,17) = uwind0(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,18) = uwind1(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,19) = vwind0(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,20) = vwind1(I,J,bi,bj)
-# ifdef ALLOW_READ_TURBFLUXES
-          StoreEXF2(I,J,bi,bj,21) = hs0(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,22) = hs1(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,23) = hl0(I,J,bi,bj)
-          StoreEXF2(I,J,bi,bj,24) = hl1(I,J,bi,bj)
-#  else
-          StoreEXF2(I,J,bi,bj,21) = 0.0
-          StoreEXF2(I,J,bi,bj,22) = 0.0
-          StoreEXF2(I,J,bi,bj,23) = 0.0
-          StoreEXF2(I,J,bi,bj,24) = 0.0
-# endif
-
+          StoreEXF2(I,J,bi,bj,21) = uwind0(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,22) = uwind1(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,23) = vwind0(I,J,bi,bj)
+          StoreEXF2(I,J,bi,bj,24) = vwind1(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO

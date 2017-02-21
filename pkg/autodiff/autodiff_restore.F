@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.33 2017/02/18 19:39:50 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.34 2017/02/21 04:00:39 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -165,7 +165,6 @@ C-      3D arrays
       ENDDO
 
 #ifdef ALLOW_EXF
-
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -229,29 +228,29 @@ C-      2D arrays
           lwflux1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,8)
           snowprecip0(I,J,bi,bj)     = StoreEXF2(I,J,bi,bj,9)
           snowprecip1(I,J,bi,bj)     = StoreEXF2(I,J,bi,bj,10)
+#  ifdef ALLOW_READ_TURBFLUXES
+          hs0(I,J,bi,bj)             = StoreEXF2(I,J,bi,bj,11)
+          hs1(I,J,bi,bj)             = StoreEXF2(I,J,bi,bj,12)
+          hl0(I,J,bi,bj)             = StoreEXF2(I,J,bi,bj,13)
+          hl1(I,J,bi,bj)             = StoreEXF2(I,J,bi,bj,14)
+#  endif /* ALLOW_READ_TURBFLUXES */
 #  ifdef EXF_READ_EVAP
-          evap0(I,J,bi,bj)           = StoreEXF2(I,J,bi,bj,11)
-          evap1(I,J,bi,bj)           = StoreEXF2(I,J,bi,bj,12)
+          evap0(I,J,bi,bj)           = StoreEXF2(I,J,bi,bj,15)
+          evap1(I,J,bi,bj)           = StoreEXF2(I,J,bi,bj,16)
 #  else
-          evap(I,J,bi,bj)            = StoreEXF2(I,J,bi,bj,11)
+          evap(I,J,bi,bj)            = StoreEXF2(I,J,bi,bj,15)
 #  endif /* EXF_READ_EVAP */
 #  ifdef ALLOW_DOWNWARD_RADIATION
-          swdown0(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,13)
-          swdown1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,14)
-          lwdown0(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,15)
-          lwdown1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,16)
+          swdown0(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,17)
+          swdown1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,18)
+          lwdown0(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,19)
+          lwdown1(I,J,bi,bj)         = StoreEXF2(I,J,bi,bj,20)
 #  endif
 # endif /* ALLOW_ATM_TEMP */
-          uwind0(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,17)
-          uwind1(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,18)
-          vwind0(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,19)
-          vwind1(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,20)
-# ifdef ALLOW_READ_TURBFLUXES
-          hs0(I,J,bi,bj)             = StoreEXF2(I,J,bi,bj,21)
-          hs1(I,J,bi,bj)             = StoreEXF2(I,J,bi,bj,22)
-          hl0(I,J,bi,bj)             = StoreEXF2(I,J,bi,bj,23)
-          hl1(I,J,bi,bj)             = StoreEXF2(I,J,bi,bj,24)
-# endif
+          uwind0(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,21)
+          uwind1(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,22)
+          vwind0(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,23)
+          vwind1(I,J,bi,bj)          = StoreEXF2(I,J,bi,bj,24)
          ENDDO
         ENDDO
        ENDDO
