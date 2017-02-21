@@ -1,27 +1,28 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.38 2017/02/12 00:55:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_varia.F,v 1.1 2017/02/21 00:57:04 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
 
-      SUBROUTINE EXF_INIT( myThid )
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C     ==================================================================
-C     SUBROUTINE exf_init
-C     ==================================================================
-C
-C     o This routine initialises the forcing
-C
-C     started: Ralf.Giering@FastOpt.de 25-Mai-20000
-C     mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
-C
-C     ==================================================================
-C     SUBROUTINE exf_init
-C     ==================================================================
+CBOP
+C     !ROUTINE: EXF_INIT_VARIA
+C     !INTERFACE:
+      SUBROUTINE EXF_INIT_VARIA( myThid )
 
+C !DESCRIPTION: \bv
+C  *=================================================================*
+C  | SUBROUTINE EXF_INIT_VARIA
+C  | o This routine initialises the forcing
+C  *=================================================================*
+C  |  started: Ralf.Giering@FastOpt.de 25-Mai-20000
+C  |  mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
+C  *=================================================================*
+C \ev
+
+C !USES:
       IMPLICIT NONE
-
 C     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
@@ -32,13 +33,13 @@ C     == global variables ==
 # include "DYNVARS.h"
 #endif
 
-C     == routine arguments ==
+C !INPUT/OUTPUT PARAMETERS:
+C     myThid         :: My Thread Id number
       INTEGER myThid
 
-C     == local variables ==
+C !LOCAL VARIABLES:
       INTEGER i,j,bi,bj
-
-C     == end of interface ==
+CEOP
 
 C--   Initialise to zero intermediate fields (in common block)
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -405,6 +406,7 @@ C      will be over-written at first time-step when calling EXF_SET_UV.
 #endif /* CLIMSTRESS_RELAXATION */
 
 #ifdef ALLOW_BULK_OFFLINE
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 # ifdef ALLOW_CLIMSST_RELAXATION
       _EXCH_XY_RL(climsst, myThid)
@@ -415,7 +417,6 @@ C      will be over-written at first time-step when calling EXF_SET_UV.
 # ifdef ALLOW_CLIMSTRESS_RELAXATION
       CALL EXCH_UV_XY_RL( climustr, climvstr, .TRUE., myThid )
 # endif
-
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-oLy,sNy+oLy
@@ -448,6 +449,7 @@ cph                STOP 'in exf_init'
        ENDDO
       ENDDO
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_BULK_OFFLINE */
 
       RETURN
