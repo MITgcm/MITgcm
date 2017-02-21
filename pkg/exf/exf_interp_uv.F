@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_uv.F,v 1.4 2016/09/19 18:55:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_uv.F,v 1.5 2017/02/21 00:56:02 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -284,15 +284,15 @@ C     prtPole(l)=0 : extended, =1 : changed to pole, =2 : changed to symetric
       IF ( debugFlag ) THEN
         l = ILNBLNK(inFileU)
         WRITE(msgBuf,'(3A,I6,A,2L5)')
-     &   'EXF_INTERP_UV: fileU="',inFileU(1:l),'", rec=', irecord,
+     &   ' EXF_INTERP_UV: fileU="',inFileU(1:l),'", rec=', irecord,
      &   ' , x-Per,P.Sym=', xIsPeriodic, poleSymmetry
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A,3F4.1,A,3F12.6)') 'S.edge (j=-1,0,1) :',
+        WRITE(msgBuf,'(2A,3F4.1,A,3F12.6)') ' S.edge (j=-1,0,1) :',
      &   ' proc=', (prtPole(j),j=-1,1), ', yIn=', (y_in(j),j=-1,1)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A,3F4.1,A,3F12.6)') 'N.edge (j=+0,+1,+2)',
+        WRITE(msgBuf,'(2A,3F4.1,A,3F12.6)') ' N.edge (j=+0,+1,+2)',
      &   ' proc=', (prtPole(j),j=2,4), ', yIn=',(y_in(j),j=nyIn,nyIn+2)
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
