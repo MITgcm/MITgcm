@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_main.F,v 1.7 2016/10/27 17:55:31 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_main.F,v 1.8 2017/02/22 04:04:01 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -211,13 +211,13 @@ C   adding aeolian iron source
                G_DIC(i,j,1) = G_DIC(i,j,1) + runoff_bgc(i,j,1)
      &                    + surf_DIC(i,j)
                G_ALK(i,j,1) = G_ALK(i,j,1) + runoff_bgc(i,j,2)
-               G_NO3(i,j,1) = G_NO3(i,j,1) + runoff_bgc(i,j,3)
-               G_PO4(i,j,1) = G_PO4(i,j,1) + runoff_bgc(i,j,4)
-               G_FE(i,j,1)  = G_FE(i,j,1)  + runoff_bgc(i,j,5)
+               G_O2(i,j,1)  = G_O2(i,j,1)  + runoff_bgc(i,j,3)
+     &                    + surf_O2(i,j)
+               G_NO3(i,j,1) = G_NO3(i,j,1) + runoff_bgc(i,j,4)
+               G_PO4(i,j,1) = G_PO4(i,j,1) + runoff_bgc(i,j,5)
+               G_FE(i,j,1)  = G_FE(i,j,1)  + runoff_bgc(i,j,6)
      &                    + alpfe*InputFe(i,j,bi,bj)*recip_drF(1)
      &                    * recip_hFacC(i,j,1,bi,bj)
-               G_O2(i,j,1)  = G_O2(i,j,1)  + runoff_bgc(i,j,6)
-     &                    + surf_O2(i,j)
                G_DON(i,j,1) = G_DON(i,j,1) + runoff_bgc(i,j,7)
                G_DOP(i,j,1) = G_DOP(i,j,1) + runoff_bgc(i,j,8)
           ENDDO
