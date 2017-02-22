@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_filtervar3d.F,v 1.4 2017/01/10 15:37:49 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_filtervar3d.F,v 1.5 2017/02/22 23:15:28 jmc Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -13,7 +13,6 @@ C     |   a 3D spatial correlation operator (smooth_correld3D.F)
 C     |   See Weaver and Courtier 01 for details.
 C     *==========================================================*
 
-
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -23,6 +22,9 @@ C     *==========================================================*
 
       integer smoothOpNb, myThid
 
+      Real*8   port_rand, port_rand_norm
+      EXTERNAL PORT_RAND, PORT_RAND_NORM
+
       integer i,j,k, bi, bj, ii, jj, kk
       integer itlo,ithi, jtlo,jthi
       integer diLoc, djLoc,  dkLoc
@@ -31,7 +33,6 @@ C     *==========================================================*
       _RL smoothTmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL smoothTmpMean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL smoothTmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL port_rand, port_rand_norm
 
       jtlo = mybylo(myThid)
       jthi = mybyhi(myThid)
@@ -184,7 +185,6 @@ c convert variance to normalization factor:
       ENDDO      !DO jj=1,djLoc
       ENDDO      !DO kk=1,dkLoc
 
-
       ELSEIF (smooth3Dfilter(smoothOpNb).EQ.1) then
 c compute the normalization matrix using the approximate method
 
@@ -202,7 +202,7 @@ c compute the normalization matrix using the approximate method
       ENDDO
 
 c initialize random number generator
-      smoothTmpFld(1,1,1,1,1)=port_rand(1)
+      smoothTmpFld(1,1,1,1,1)=port_rand(1.d0)
       nbRand=1000
 
       DO ii=1,nbRand

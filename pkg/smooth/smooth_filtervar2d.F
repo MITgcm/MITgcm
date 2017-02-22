@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_filtervar2d.F,v 1.4 2017/01/10 15:37:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_filtervar2d.F,v 1.5 2017/02/22 23:15:28 jmc Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -20,16 +20,19 @@ C     *==========================================================*
 #include "GRID.h"
 #include "SMOOTH.h"
 
+      integer smoothOpNb, myThid
+
+      Real*8   port_rand, port_rand_norm
+      EXTERNAL PORT_RAND, PORT_RAND_NORM
+
       integer i,j,k, bi, bj, ii, jj, kk
       integer itlo,ithi,jtlo,jthi
       integer diLoc,djLoc,dkLoc
-      integer myThid, nbRand
+      integer nbRand, nbt_in
       character*( 80) fnamegeneric
       _RL smoothTmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL smoothTmpVar (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL smoothTmpMean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL port_rand,port_rand_norm
-      integer nbt_in,smoothOpNb
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -145,8 +148,6 @@ c convert variance to normalization factor:
       ENDDO      !DO ii=1,diLoc
       ENDDO      !DO jj=1,djLoc
 
-
-
       ELSEIF (smooth2Dfilter(smoothOpNb).EQ.1) then
 c compute the normalization matrix using the approximate method
 
@@ -162,7 +163,7 @@ c compute the normalization matrix using the approximate method
       ENDDO
 
 c initialize random number generator
-      smoothTmpFld(1,1,1,1)=port_rand(1)
+      smoothTmpFld(1,1,1,1)=port_rand(1.d0)
       nbRand=1000
 
          DO ii=1,nbRand
