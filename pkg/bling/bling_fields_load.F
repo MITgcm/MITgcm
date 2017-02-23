@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_fields_load.F,v 1.4 2017/01/31 20:56:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_fields_load.F,v 1.5 2017/02/23 20:48:56 jmc Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 CBOP
       SUBROUTINE BLING_FIELDS_LOAD (
@@ -21,7 +24,6 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
 # include "EXF_PARAM.h"
 # include "EXF_FIELDS.h"
 #endif
@@ -230,16 +232,17 @@ C-----------------------------------------------------------
 C Get Atmospheric carbon dioxide concentration from PKG/EXF
 #ifdef USE_EXFCO2
 C     Atmospheric carbon dioxide concentration
-      CALL EXF_SET_GEN  (
-     &     apco2file, apco2StartTime, apco2period,
-     &     exf_inscal_apco2,
-     &     apco2_exfremo_intercept, apco2_exfremo_slope,
-     &     apco2, apco20, apco21, apco2mask,
+      CALL EXF_SET_FLD(
+     I     'apco2', apco2file, apco2mask,
+     I     apco2StartTime, apco2period, apco2RepCycle,
+     I     exf_inscal_apco2,
+     I     apco2_exfremo_intercept, apco2_exfremo_slope,
+     U     apco2, apco20, apco21,
 # ifdef USE_EXF_INTERPOLATION
-     &     apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
-     &     apco2_nlon, apco2_nlat, xC, yC, apco2_interpMethod,
+     I     apco2_lon0, apco2_lon_inc, apco2_lat0, apco2_lat_inc,
+     I     apco2_nlon, apco2_nlat, xC, yC, apco2_interpMethod,
 # endif
-     &     myTime, myIter, myThid )
+     I     myTime, myIter, myThid )
 #endif /* USE_EXFCO2 */
 
 #endif /* ALLOW_BLING */

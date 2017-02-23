@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_ini_forcing.F,v 1.2 2016/10/15 21:30:43 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_ini_forcing.F,v 1.3 2017/02/23 20:48:56 jmc Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 CBOP
       subroutine BLING_INI_FORCING( myThid )
@@ -12,14 +15,13 @@ C     | o Initialize forcing fields
 C     ==========================================================
 
       implicit none
-      
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef USE_EXFCO2
-# include "EXF_OPTIONS.h"
 # include "EXF_PARAM.h"
 #endif
 #include "BLING_VARS.h"
@@ -72,8 +74,8 @@ C First call requires that we initialize everything to zero for safety
 c set reasonable values to those that need at least something
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
              WIND(i,j,bi,bj)   = 5. _d 0*maskC(i,j,1,bi,bj)
              AtmosP(i,j,bi,bj) = 1. _d 0*maskC(i,j,1,bi,bj)
              SILICA(i,j,bi,bj) = 7.6838 _d -3*maskC(i,j,1,bi,bj)
@@ -88,15 +90,16 @@ c set reasonable values to those that need at least something
 c       total_atmos_carbon = 0. _d 0
 
 #ifdef USE_EXFCO2
-      call exf_init_gen (
-     &     apco2file, apco2period, exf_inscal_apco2, apco2mask,
-     &     apco2const, apco2, apco20, apco21,
+      CALL EXF_INIT_FLD(
+     I     'apco2', apco2file, apco2mask,
+     I     apco2period, exf_inscal_apco2, apco2const,
+     O     apco2, apco20, apco21,
 # ifdef USE_EXF_INTERPOLATION
-     &     apco2_lon0, apco2_lon_inc,
-     &     apco2_lat0, apco2_lat_inc,
-     &     apco2_nlon, apco2_nlat, xC, yC, apco2_interpMethod,
+     I     apco2_lon0, apco2_lon_inc,
+     I     apco2_lat0, apco2_lat_inc,
+     I     apco2_nlon, apco2_nlat, xC, yC, apco2_interpMethod,
 # endif
-     &     mythid )
+     I     myThid )
 #endif
 
 #endif /* ALLOW_BLING */
