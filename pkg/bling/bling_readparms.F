@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_readparms.F,v 1.8 2017/02/07 00:25:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_readparms.F,v 1.9 2017/02/23 20:48:13 jmc Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 CBOP
       SUBROUTINE BLING_READPARMS( myThid )
@@ -18,17 +21,16 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef USE_EXFCO2
-#include "EXF_OPTIONS.h"
-#ifdef USE_EXF_INTERPOLATION
-# ifdef ALLOW_EXCH2
-# include "W2_EXCH2_SIZE.h"
-# include "W2_EXCH2_TOPOLOGY.h"
-# endif /* ALLOW_EXCH2 */
-# include "SET_GRID.h"
-#endif /* USE_EXF_INTERPOLATION */
-#include "EXF_PARAM.h"
-#include "EXF_CONSTANTS.h"
-#endif
+# ifdef USE_EXF_INTERPOLATION
+#  ifdef ALLOW_EXCH2
+#   include "W2_EXCH2_SIZE.h"
+#   include "W2_EXCH2_TOPOLOGY.h"
+#  endif /* ALLOW_EXCH2 */
+#  include "SET_GRID.h"
+# endif /* USE_EXF_INTERPOLATION */
+# include "EXF_PARAM.h"
+# include "EXF_CONSTANTS.h"
+#endif /* USE_EXFCO2 */
 #include "BLING_VARS.h"
 
 C     === Routine arguments ===
@@ -130,8 +132,8 @@ C ==========================================================
      &          bling_gamma_POM2dFile, bling_wsink0_2dFile,
      &          bling_phi_sm2dFile,bling_phi_lg2dFile
 #ifdef USE_EXFCO2
-     &        , apco2file, apco2period, apco2StartTime,
-     &          apco2startdate1,   apco2startdate2,
+     &        , apco2file, apco2startdate1, apco2startdate2,
+     &          apco2RepCycle, apco2period, apco2StartTime,
      &          exf_inscal_apco2, exf_outscal_apco2, apco2const,
      &          apco2_exfremo_intercept, apco2_exfremo_slope
 #ifdef USE_EXF_INTERPOLATION
@@ -301,6 +303,7 @@ cav      k_PO4                = 1. _d -8 / permil
       apco2startdate2   = 0
       apco2StartTime    = UNSET_RL
       apco2period       = 0.0 _d 0
+      apco2RepCycle     = repeatPeriod
       apco2const        = 0.0 _d 0
       apco2_exfremo_intercept = 0.0 _d 0
       apco2_exfremo_slope = 0.0 _d 0

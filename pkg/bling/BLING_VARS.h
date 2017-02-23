@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_VARS.h,v 1.7 2017/01/31 20:56:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_VARS.h,v 1.8 2017/02/23 20:48:13 jmc Exp $
 C $Name:  $
 
 C ==========================================================
@@ -86,6 +86,7 @@ C      Schmidt number coefficients
       integer apco2startdate2
       _RL     apco2StartTime
       _RL     apco2period
+      _RL     apco2RepCycle
       _RL     apco2const
       _RL     apco2_exfremo_intercept
       _RL     apco2_exfremo_slope
@@ -110,7 +111,7 @@ C ==========================================================
      &        bling_phi_lg2dFile, bling_phi_sm2dFile
 #ifdef USE_EXFCO2
      &       ,apco2startdate1,apco2startdate2,
-     &        apco2period,      apco2StartTime,
+     &        apco2StartTime, apco2period, apco2RepCycle,
      &        apco2const,
      &        apco2_exfremo_intercept,
      &        apco2_exfremo_slope,
