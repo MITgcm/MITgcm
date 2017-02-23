@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2306 2017/02/21 01:33:12 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2307 2017/02/23 20:50:12 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/bling, USE_EXFCO2 code:
+  - add parameter "apco2RepCycle" (set to pkg/exf "repeatPeriod" by default);
+  - update calls to EXF S/R (use new version: EXF_INIT_FLD & EXF_SET_FLD).
 o pkg/exf:
   - rename S/R EXF_INIT to EXF_INIT_VARIA ;
   - add arguments: fldName (for debug msg) and fldRepeatCycle (set to
