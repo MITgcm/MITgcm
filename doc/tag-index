@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2308 2017/02/28 23:19:52 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2309 2017/03/02 11:52:31 dimitri Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -6,6 +6,7 @@ $Name:  $
 
 o pkg/exf:
   - fix bug in exf_zenithangle.F for cases select_ZenAlbedo > 0 with useCAL=T.
+  - exf_check: MAX_LAT_INC need only be "loc_nlat-1", not equal to loc_nlat
 o pkg/bling, USE_EXFCO2 code:
   - add parameter "apco2RepCycle" (set to pkg/exf "repeatPeriod" by default);
   - update calls to EXF S/R (use new version: EXF_INIT_FLD & EXF_SET_FLD).

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.31 2017/02/12 00:50:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.32 2017/03/02 11:52:32 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -446,9 +446,9 @@ C     msgBuf   :: Informational/error message buffer
 CEOP
 
       IF ( loc_interpMethod.GE.1 .AND. loc_file.NE.' ' ) THEN
-       IF ( loc_nlat .GT. MAX_LAT_INC ) THEN
+       IF ( loc_nlat .GT. (MAX_LAT_INC+1) ) THEN
         WRITE(msgBuf,'(3A)') 'S/R EXF_CHECK_INTERP: ',loc_name,
-     &                      '_nlat > MAX_LAT_INC'
+     &                      '_nlat > (MAX_LAT_INC+1)'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
        ENDIF
