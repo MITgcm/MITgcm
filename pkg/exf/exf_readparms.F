@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.91 2017/02/07 00:17:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.92 2017/03/03 00:57:00 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -94,61 +94,61 @@ C     Surface flux data.
      & humid_fac, gamma_blk, saltsat, sstExtrapol, psim_fac
 
       NAMELIST /EXF_NML_02/
-     &          hfluxfile,      hfluxperiod,      hfluxStartTime,
-     &                      hfluxstartdate1,      hfluxstartdate2,
-     &          atempfile,      atempperiod,      atempStartTime,
-     &                      atempstartdate1,      atempstartdate2,
-     &            aqhfile,        aqhperiod,        aqhStartTime,
-     &                        aqhstartdate1,        aqhstartdate2,
-     &            hs_file,        hs_period,        hs_StartTime,
-     &                        hs_startdate1,        hs_startdate2,
-     &            hl_file,        hl_period,        hl_StartTime,
-     &                        hl_startdate1,        hl_startdate2,
-     &          sfluxfile,      sfluxperiod,      sfluxStartTime,
-     &                      sfluxstartdate1,      sfluxstartdate2,
-     &           evapfile,       evapperiod,       evapStartTime,
-     &                       evapstartdate1,       evapstartdate2,
-     &         precipfile,     precipperiod,     precipStartTime,
-     &                     precipstartdate1,     precipstartdate2,
-     &     snowprecipfile, snowprecipperiod, snowprecipStartTime,
-     &                 snowprecipstartdate1, snowprecipstartdate2,
-     &         runofffile,     runoffperiod,     runoffStartTime,
-     &                     runoffstartdate1,     runoffstartdate2,
+     &          hfluxfile,     hfluxstartdate1,     hfluxstartdate2,
+     &          hfluxRepCycle,     hfluxperiod,     hfluxStartTime,
+     &          atempfile,     atempstartdate1,     atempstartdate2,
+     &          atempRepCycle,     atempperiod,     atempStartTime,
+     &            aqhfile,       aqhstartdate1,       aqhstartdate2,
+     &            aqhRepCycle,       aqhperiod,       aqhStartTime,
+     &            hs_file,       hs_startdate1,       hs_startdate2,
+     &            hs_RepCycle,       hs_period,       hs_StartTime,
+     &            hl_file,       hl_startdate1,       hl_startdate2,
+     &            hl_RepCycle,       hl_period,       hl_StartTime,
+     &          sfluxfile,     sfluxstartdate1,     sfluxstartdate2,
+     &          sfluxRepCycle,     sfluxperiod,     sfluxStartTime,
+     &           evapfile,      evapstartdate1,      evapstartdate2,
+     &           evapRepCycle,      evapperiod,      evapStartTime,
+     &         precipfile,    precipstartdate1,    precipstartdate2,
+     &         precipRepCycle,    precipperiod,    precipStartTime,
+     &     snowprecipfile, snowprecipstartdate1, snowprecipstartdate2,
+     &     snowprecipRepCycle, snowprecipperiod, snowprecipStartTime,
+     &         runofffile,    runoffstartdate1,    runoffstartdate2,
+     &         runoffRepCycle,    runoffperiod,    runoffStartTime,
      &      runoftempfile,
-     &        saltflxfile,    saltflxperiod,    saltflxStartTime,
-     &                    saltflxstartdate1,    saltflxstartdate2,
-     &        ustressfile,    ustressperiod,    ustressStartTime,
-     &                    ustressstartdate1,    ustressstartdate2,
-     &        vstressfile,    vstressperiod,    vstressStartTime,
-     &                    vstressstartdate1,    vstressstartdate2,
-     &          uwindfile,      uwindperiod,      uwindStartTime,
-     &                      uwindstartdate1,      uwindstartdate2,
-     &          vwindfile,      vwindperiod,      vwindStartTime,
-     &                      vwindstartdate1,      vwindstartdate2,
-     &         wspeedfile,     wspeedperiod,     wspeedStartTime,
-     &                     wspeedstartdate1,     wspeedstartdate2,
-     &         swfluxfile,     swfluxperiod,     swfluxStartTime,
-     &                     swfluxstartdate1,     swfluxstartdate2,
-     &         lwfluxfile,     lwfluxperiod,     lwfluxStartTime,
-     &                     lwfluxstartdate1,     lwfluxstartdate2,
-     &         swdownfile,     swdownperiod,     swdownStartTime,
-     &                     swdownstartdate1,     swdownstartdate2,
-     &         lwdownfile,     lwdownperiod,     lwdownStartTime,
-     &                     lwdownstartdate1,     lwdownstartdate2,
-     &      apressurefile,  apressureperiod,  apressureStartTime,
-     &                  apressurestartdate1,  apressurestartdate2,
-     &       areamaskfile,   areamaskperiod,   areamaskStartTime,
-     &                   areamaskstartdate1,   areamaskstartdate2,
-     &        climsstfile,    climsstperiod,    climsstStartTime,
-     &                    climsststartdate1,    climsststartdate2,
-     &        climsssfile,    climsssperiod,    climsssStartTime,
-     &                    climsssstartdate1,    climsssstartdate2,
-     &       climustrfile,   climustrperiod,   climustrStartTime,
-     &                   climustrstartdate1,   climustrstartdate2,
-     &       climvstrfile,   climvstrperiod,   climvstrStartTime,
-     &                   climvstrstartdate1,   climvstrstartdate2,
-     &   areamaskTauRelax,  climsstTauRelax,    climsssTauRelax,
-     &                      climustrTauRelax,   climvstrTauRelax
+     &        saltflxfile,   saltflxstartdate1,   saltflxstartdate2,
+     &        saltflxRepCycle,   saltflxperiod,   saltflxStartTime,
+     &        ustressfile,   ustressstartdate1,   ustressstartdate2,
+     &        ustressRepCycle,   ustressperiod,   ustressStartTime,
+     &        vstressfile,   vstressstartdate1,   vstressstartdate2,
+     &        vstressRepCycle,   vstressperiod,   vstressStartTime,
+     &          uwindfile,     uwindstartdate1,     uwindstartdate2,
+     &          uwindRepCycle,     uwindperiod,     uwindStartTime,
+     &          vwindfile,     vwindstartdate1,     vwindstartdate2,
+     &          vwindRepCycle,     vwindperiod,     vwindStartTime,
+     &         wspeedfile,    wspeedstartdate1,    wspeedstartdate2,
+     &         wspeedRepCycle,    wspeedperiod,    wspeedStartTime,
+     &         swfluxfile,    swfluxstartdate1,    swfluxstartdate2,
+     &         swfluxRepCycle,    swfluxperiod,    swfluxStartTime,
+     &         lwfluxfile,    lwfluxstartdate1,    lwfluxstartdate2,
+     &         lwfluxRepCycle,    lwfluxperiod,    lwfluxStartTime,
+     &         swdownfile,    swdownstartdate1,    swdownstartdate2,
+     &         swdownRepCycle,    swdownperiod,    swdownStartTime,
+     &         lwdownfile,    lwdownstartdate1,    lwdownstartdate2,
+     &         lwdownRepCycle,    lwdownperiod,    lwdownStartTime,
+     &      apressurefile, apressurestartdate1, apressurestartdate2,
+     &      apressureRepCycle, apressureperiod, apressureStartTime,
+     &       areamaskfile,  areamaskstartdate1,  areamaskstartdate2,
+     &       areamaskRepCycle,  areamaskperiod,  areamaskStartTime,
+     &        climsstfile,   climsststartdate1,   climsststartdate2,
+     &        climsstRepCycle,   climsstperiod,   climsstStartTime,
+     &        climsssfile,   climsssstartdate1,   climsssstartdate2,
+     &        climsssRepCycle,   climsssperiod,   climsssStartTime,
+     &       climustrfile,  climustrstartdate1,  climustrstartdate2,
+     &       climustrRepCycle,  climustrperiod,  climustrStartTime,
+     &       climvstrfile,  climvstrstartdate1,  climvstrstartdate2,
+     &       climvstrRepCycle,  climvstrperiod,  climvstrStartTime,
+     &     areamaskTauRelax,  climsstTauRelax,    climsssTauRelax,
+     &                       climustrTauRelax,   climvstrTauRelax
 
       NAMELIST /EXF_NML_03/
      &   exf_inscal_hflux,  exf_inscal_sflux,    exf_inscal_evap,
@@ -246,8 +246,9 @@ C     Surface flux data.
      & swdown_nlon, swdown_nlat, swdown_interpMethod,
      & lwdown_lon0, lwdown_lon_inc, lwdown_lat0, lwdown_lat_inc,
      & lwdown_nlon, lwdown_nlat, lwdown_interpMethod,
-     & apressure_lon0,apressure_lon_inc,apressure_lat0,apressure_lat_inc
-     & , apressure_nlon, apressure_nlat, apressure_interpMethod,
+     & apressure_lon0, apressure_lon_inc,
+     & apressure_lat0, apressure_lat_inc,
+     & apressure_nlon, apressure_nlat, apressure_interpMethod,
      & areamask_lon0, areamask_lon_inc, areamask_lat0, areamask_lat_inc,
      & areamask_nlon, areamask_nlat, areamask_interpMethod,
      & climsst_lon0, climsst_lon_inc, climsst_lat0, climsst_lat_inc,
@@ -264,14 +265,22 @@ C     Surface flux data.
 #ifdef ALLOW_OBCS
       NAMELIST /EXF_NML_OBCS/
      &    useOBCSYearlyFields,
-     &    obcsNstartdate1,    obcsNstartdate2,   obcsNperiod,
-     &    obcsSstartdate1,    obcsSstartdate2,   obcsSperiod,
-     &    obcsEstartdate1,    obcsEstartdate2,   obcsEperiod,
-     &    obcsWstartdate1,    obcsWstartdate2,   obcsWperiod,
-     &    siobNstartdate1,    siobNstartdate2,   siobNperiod,
-     &    siobSstartdate1,    siobSstartdate2,   siobSperiod,
-     &    siobEstartdate1,    siobEstartdate2,   siobEperiod,
-     &    siobWstartdate1,    siobWstartdate2,   siobWperiod
+     &    obcsNstartdate1,   obcsNstartdate2,   obcsNstartTime,
+     &        obcsNperiod,   obcsNrepCycle,
+     &    obcsSstartdate1,   obcsSstartdate2,   obcsSstartTime,
+     &        obcsSperiod,   obcsSrepCycle,
+     &    obcsEstartdate1,   obcsEstartdate2,   obcsEstartTime,
+     &        obcsEperiod,   obcsErepCycle,
+     &    obcsWstartdate1,   obcsWstartdate2,   obcsWstartTime,
+     &        obcsWperiod,   obcsWrepCycle,
+     &    siobNstartdate1,   siobNstartdate2,   siobNstartTime,
+     &        siobNperiod,   siobNrepCycle,
+     &    siobSstartdate1,   siobSstartdate2,   siobSstartTime,
+     &        siobSperiod,   siobSrepCycle,
+     &    siobEstartdate1,   siobEstartdate2,   siobEstartTime,
+     &        siobEperiod,   siobErepCycle,
+     &    siobWstartdate1,   siobWstartdate2,   siobWstartTime,
+     &        siobWperiod,   siobWrepCycle
 #endif /* ALLOW_OBCS */
 
 #ifdef USE_EXF_INTERPOLATION
@@ -636,20 +645,20 @@ C     Start Time.
       lwfluxStartTime    = UNSET_RL
       swdownStartTime    = UNSET_RL
       lwdownStartTime    = UNSET_RL
-      obcsNStartTime     = UNSET_RL
-      obcsSStartTime     = UNSET_RL
-      obcsEStartTime     = UNSET_RL
-      obcsWStartTime     = UNSET_RL
-      siobNStartTime     = UNSET_RL
-      siobSStartTime     = UNSET_RL
-      siobEStartTime     = UNSET_RL
-      siobWStartTime     = UNSET_RL
       apressureStartTime = UNSET_RL
       areamaskStartTime  = UNSET_RL
       climsstStartTime   = UNSET_RL
       climsssStartTime   = UNSET_RL
       climustrStartTime  = UNSET_RL
       climvstrStartTime  = UNSET_RL
+      obcsNstartTime     = UNSET_RL
+      obcsSstartTime     = UNSET_RL
+      obcsEstartTime     = UNSET_RL
+      obcsWstartTime     = UNSET_RL
+      siobNstartTime     = UNSET_RL
+      siobSstartTime     = UNSET_RL
+      siobEstartTime     = UNSET_RL
+      siobWstartTime     = UNSET_RL
 
 C     Initialise file type and field precision
       exf_iprec            = 32
@@ -905,7 +914,7 @@ C     model grid cell-center position (leading to trivial interpolation)
       exf_output_interp = .FALSE.
 #endif /* USE_EXF_INTERPOLATION */
 
-C     Next, read the forcing data file.
+C--   Next, read pkg/exf parameter file.
       WRITE(msgBuf,'(A)') 'EXF_READPARMS: opening data.exf'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
@@ -920,6 +929,43 @@ C     Next, read the forcing data file.
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       READ(  iUnit, nml = EXF_NML_01 )
+C-    Set default fldRepeatCycle to repeatPeriod
+      hfluxRepCycle      = repeatPeriod
+      atempRepCycle      = repeatPeriod
+      aqhRepCycle        = repeatPeriod
+      hs_RepCycle        = repeatPeriod
+      hl_RepCycle        = repeatPeriod
+      evapRepCycle       = repeatPeriod
+      precipRepCycle     = repeatPeriod
+      snowprecipRepCycle = repeatPeriod
+      sfluxRepCycle      = repeatPeriod
+      runoffRepCycle     = repeatPeriod
+      saltflxRepCycle    = repeatPeriod
+      ustressRepCycle    = repeatPeriod
+      vstressRepCycle    = repeatPeriod
+      uwindRepCycle      = repeatPeriod
+      vwindRepCycle      = repeatPeriod
+      wspeedRepCycle     = repeatPeriod
+      swfluxRepCycle     = repeatPeriod
+      lwfluxRepCycle     = repeatPeriod
+      swdownRepCycle     = repeatPeriod
+      lwdownRepCycle     = repeatPeriod
+      apressureRepCycle  = repeatPeriod
+      areamaskRepCycle   = repeatPeriod
+      climsstRepCycle    = repeatPeriod
+      climsssRepCycle    = repeatPeriod
+      climustrRepCycle   = repeatPeriod
+      climvstrRepCycle   = repeatPeriod
+C-
+      obcsNrepCycle      = repeatPeriod
+      obcsSrepCycle      = repeatPeriod
+      obcsErepCycle      = repeatPeriod
+      obcsWrepCycle      = repeatPeriod
+      siobNrepCycle      = UNSET_RL
+      siobSrepCycle      = UNSET_RL
+      siobErepCycle      = UNSET_RL
+      siobWrepCycle      = UNSET_RL
+
       WRITE(msgBuf,'(A)')
      &     'EXF_READPARMS: reading EXF_NML_02'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -949,15 +995,19 @@ C     Next, read the forcing data file.
        IF(siobNstartdate1.EQ.UNSET_I ) siobNstartdate1=obcsNstartdate1
        IF(siobNstartdate2.EQ.UNSET_I ) siobNstartdate2=obcsNstartdate2
        IF(siobNperiod    .EQ.UNSET_RL) siobNperiod    =obcsNperiod
+       IF(siobNrepCycle  .EQ.UNSET_RL) siobNrepCycle  =obcsNrepCycle
        IF(siobSstartdate1.EQ.UNSET_I ) siobSstartdate1=obcsSstartdate1
        IF(siobSstartdate2.EQ.UNSET_I ) siobSstartdate2=obcsSstartdate2
        IF(siobSperiod    .EQ.UNSET_RL) siobSperiod    =obcsSperiod
+       IF(siobSrepCycle  .EQ.UNSET_RL) siobSrepCycle  =obcsSrepCycle
        IF(siobEstartdate1.EQ.UNSET_I ) siobEstartdate1=obcsEstartdate1
        IF(siobEstartdate2.EQ.UNSET_I ) siobEstartdate2=obcsEstartdate2
        IF(siobEperiod    .EQ.UNSET_RL) siobEperiod    =obcsEperiod
+       IF(siobErepCycle  .EQ.UNSET_RL) siobErepCycle  =obcsErepCycle
        IF(siobWstartdate1.EQ.UNSET_I ) siobWstartdate1=obcsWstartdate1
        IF(siobWstartdate2.EQ.UNSET_I ) siobWstartdate2=obcsWstartdate2
        IF(siobWperiod    .EQ.UNSET_RL) siobWperiod    =obcsWperiod
+       IF(siobWrepCycle  .EQ.UNSET_RL) siobWrepCycle  =obcsWrepCycle
 
        IF(exf_iprec_obcs .EQ. UNSET_I) exf_iprec_obcs =exf_iprec
 #endif /* ALLOW_OBCS */

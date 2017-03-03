@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.71 2017/02/21 01:04:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.72 2017/03/03 00:57:00 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -76,12 +76,12 @@ C-    Zonal and meridional wind stress.
       IF ( .NOT.useAtmWind ) THEN
        CALL EXF_SET_UV(
      I     'ustress', ustressfile, ustressmask,
-     I     ustressStartTime, ustressperiod, repeatPeriod,
+     I     ustressStartTime, ustressperiod, ustressRepCycle,
      I     exf_inscal_ustress,
      I     ustress_exfremo_intercept, ustress_exfremo_slope,
      U     ustress, ustress0, ustress1,
      I     'vstress', vstressfile, vstressmask,
-     I     vstressStartTime, vstressperiod, repeatPeriod,
+     I     vstressStartTime, vstressperiod, vstressRepCycle,
      I     exf_inscal_vstress,
      I     vstress_exfremo_intercept, vstress_exfremo_slope,
      U     vstress, vstress0, vstress1,
@@ -109,7 +109,7 @@ C-    Zonal and meridional wind stress.
 C-    Wind speed
       CALL EXF_SET_FLD(
      I     'wspeed', wspeedfile, wspeedmask,
-     I     wspeedStartTime, wspeedperiod, repeatPeriod,
+     I     wspeedStartTime, wspeedperiod, wspeedRepCycle,
      I     exf_inscal_wspeed,
      I     wspeed_exfremo_intercept, wspeed_exfremo_slope,
      U     wspeed, wspeed0, wspeed1,
@@ -124,12 +124,12 @@ C-    Zonal and meridional wind.
       IF ( useAtmWind ) THEN
        CALL EXF_SET_UV(
      I     'uwind', uwindfile, uwindmask,
-     I     uwindStartTime, uwindperiod, repeatPeriod,
+     I     uwindStartTime, uwindperiod, uwindRepCycle,
      I     exf_inscal_uwind,
      I     uwind_exfremo_intercept, uwind_exfremo_slope,
      U     uwind, uwind0, uwind1,
      I     'vwind', vwindfile, vwindmask,
-     I     vwindStartTime, vwindperiod, repeatPeriod,
+     I     vwindStartTime, vwindperiod, vwindRepCycle,
      I     exf_inscal_vwind,
      I     vwind_exfremo_intercept, vwind_exfremo_slope,
      U     vwind, vwind0, vwind1,
@@ -173,7 +173,7 @@ C     Subtract UVEL and VVEL from UWIND and VWIND.
 C-    Atmospheric heat flux.
       CALL EXF_SET_FLD(
      I     'hflux', hfluxfile, hfluxmask,
-     I     hfluxStartTime, hfluxperiod, repeatPeriod,
+     I     hfluxStartTime, hfluxperiod, hfluxRepCycle,
      I     exf_inscal_hflux,
      I     hflux_exfremo_intercept, hflux_exfremo_slope,
      U     hflux, hflux0, hflux1,
@@ -186,7 +186,7 @@ C-    Atmospheric heat flux.
 C-    Freshwater flux.
       CALL EXF_SET_FLD(
      I     'sflux', sfluxfile, sfluxmask,
-     I     sfluxStartTime, sfluxperiod, repeatPeriod,
+     I     sfluxStartTime, sfluxperiod, sfluxRepCycle,
      I     exf_inscal_sflux,
      I     sflux_exfremo_intercept, sflux_exfremo_slope,
      U     sflux, sflux0, sflux1,
@@ -201,7 +201,7 @@ C-    Freshwater flux.
 C-    Atmospheric temperature.
       CALL EXF_SET_FLD(
      I     'atemp', atempfile, atempmask,
-     I     atempStartTime, atempperiod, repeatPeriod,
+     I     atempStartTime, atempperiod, atempRepCycle,
      I     exf_inscal_atemp,
      I     atemp_exfremo_intercept, atemp_exfremo_slope,
      U     atemp, atemp0, atemp1,
@@ -223,7 +223,7 @@ C-    Atmospheric temperature.
 C-    Atmospheric humidity.
       CALL EXF_SET_FLD(
      I     'aqh', aqhfile, aqhmask,
-     I     aqhStartTime, aqhperiod, repeatPeriod,
+     I     aqhStartTime, aqhperiod, aqhRepCycle,
      I     exf_inscal_aqh,
      I     aqh_exfremo_intercept, aqh_exfremo_slope,
      U     aqh, aqh0, aqh1,
@@ -238,7 +238,7 @@ C-    Atmospheric humidity.
 C-    Sensible Heat flux
       CALL EXF_SET_FLD(
      I     'hs', hs_file, hs_mask,
-     I     hs_StartTime, hs_period, repeatPeriod,
+     I     hs_StartTime, hs_period, hs_RepCycle,
      I     exf_inscal_hs,
      I     hs_exfremo_intercept, hs_exfremo_slope,
      U     hs, hs0, hs1,
@@ -251,7 +251,7 @@ C-    Sensible Heat flux
 C-    Latent Heat flux
       CALL EXF_SET_FLD(
      I     'hl', hl_file, hl_mask,
-     I     hl_StartTime, hl_period, repeatPeriod,
+     I     hl_StartTime, hl_period, hl_RepCycle,
      I     exf_inscal_hl,
      I     hl_exfremo_intercept, hl_exfremo_slope,
      U     hl, hl0, hl1,
@@ -266,7 +266,7 @@ C-    Latent Heat flux
 C-    Net long wave radiative flux.
       CALL EXF_SET_FLD(
      I     'lwflux', lwfluxfile, lwfluxmask,
-     I     lwfluxStartTime, lwfluxperiod, repeatPeriod,
+     I     lwfluxStartTime, lwfluxperiod, lwfluxRepCycle,
      I     exf_inscal_lwflux,
      I     lwflux_exfremo_intercept, lwflux_exfremo_slope,
      U     lwflux, lwflux0, lwflux1,
@@ -280,7 +280,7 @@ C-    Net long wave radiative flux.
 C-    Evaporation
       CALL EXF_SET_FLD(
      I     'evap', evapfile, evapmask,
-     I     evapStartTime, evapperiod, repeatPeriod,
+     I     evapStartTime, evapperiod, evapRepCycle,
      I     exf_inscal_evap,
      I     evap_exfremo_intercept, evap_exfremo_slope,
      U     evap, evap0, evap1,
@@ -294,7 +294,7 @@ C-    Evaporation
 C-    Precipitation.
       CALL EXF_SET_FLD(
      I     'precip', precipfile, precipmask,
-     I     precipStartTime, precipperiod, repeatPeriod,
+     I     precipStartTime, precipperiod, precipRepCycle,
      I     exf_inscal_precip,
      I     precip_exfremo_intercept, precip_exfremo_slope,
      U     precip, precip0, precip1,
@@ -307,7 +307,7 @@ C-    Precipitation.
 C-    Snow.
       CALL EXF_SET_FLD(
      I     'snowprecip', snowprecipfile, snowprecipmask,
-     I     snowprecipStartTime, snowprecipperiod, repeatPeriod,
+     I     snowprecipStartTime, snowprecipperiod, snowprecipRepCycle,
      I     exf_inscal_snowprecip,
      I     snowprecip_exfremo_intercept, snowprecip_exfremo_slope,
      U     snowprecip, snowprecip0, snowprecip1,
@@ -338,7 +338,7 @@ C     Take care of case where total precip is not defined
 C-    Net short wave radiative flux.
       CALL EXF_SET_FLD(
      I     'swflux', swfluxfile, swfluxmask,
-     I     swfluxStartTime, swfluxperiod, repeatPeriod,
+     I     swfluxStartTime, swfluxperiod, swfluxRepCycle,
      I     exf_inscal_swflux,
      I     swflux_exfremo_intercept, swflux_exfremo_slope,
      U     swflux, swflux0, swflux1,
@@ -354,7 +354,7 @@ C-    Net short wave radiative flux.
 C-    Downward shortwave radiation.
       CALL EXF_SET_FLD(
      I     'swdown', swdownfile, swdownmask,
-     I     swdownStartTime, swdownperiod, repeatPeriod,
+     I     swdownStartTime, swdownperiod, swdownRepCycle,
      I     exf_inscal_swdown,
      I     swdown_exfremo_intercept, swdown_exfremo_slope,
      U     swdown, swdown0, swdown1,
@@ -367,7 +367,7 @@ C-    Downward shortwave radiation.
 C-    Downward longwave radiation.
       CALL EXF_SET_FLD(
      I     'lwdown', lwdownfile, lwdownmask,
-     I     lwdownStartTime, lwdownperiod, repeatPeriod,
+     I     lwdownStartTime, lwdownperiod, lwdownRepCycle,
      I     exf_inscal_lwdown,
      I     lwdown_exfremo_intercept, lwdown_exfremo_slope,
      U     lwdown, lwdown0, lwdown1,
@@ -383,7 +383,7 @@ C-    Downward longwave radiation.
 C-    Atmos. pressure forcing
       CALL EXF_SET_FLD(
      I     'apressure', apressurefile, apressuremask,
-     I     apressureStartTime, apressureperiod, repeatPeriod,
+     I     apressureStartTime, apressureperiod, apressureRepCycle,
      I     exf_inscal_apressure,
      I     apressure_exfremo_intercept, apressure_exfremo_slope,
      U     apressure, apressure0, apressure1,
@@ -399,7 +399,7 @@ C-    Atmos. pressure forcing
 C-    fractional ice-covered area mask
       CALL EXF_SET_FLD(
      I     'areamask', areamaskfile, areamaskmask,
-     I     areamaskStartTime, areamaskperiod, repeatPeriod,
+     I     areamaskStartTime, areamaskperiod, areamaskRepCycle,
      I     exf_inscal_areamask,
      I     areamask_exfremo_intercept, areamask_exfremo_slope,
      U     areamask, areamask0, areamask1,
@@ -415,7 +415,7 @@ C-    fractional ice-covered area mask
 C-    Runoff
       CALL EXF_SET_FLD(
      I     'runoff', runofffile, runoffmask,
-     I     runoffStartTime, runoffperiod, repeatPeriod,
+     I     runoffStartTime, runoffperiod, runoffRepCycle,
      I     exf_inscal_runoff,
      I     runoff_exfremo_intercept, runoff_exfremo_slope,
      U     runoff, runoff0, runoff1,
@@ -430,7 +430,7 @@ C-    Runoff
 C-    Runoff temperature
       CALL EXF_SET_FLD(
      I     'runoftemp', runoftempfile, runoffmask,
-     I     runoffStartTime, runoffperiod, repeatPeriod,
+     I     runoffStartTime, runoffperiod, runoffRepCycle,
      I     exf_inscal_runoftemp,
      I     runoftemp_exfremo_intercept, runoftemp_exfremo_slope,
      U     runoftemp, runoftemp0, runoftemp1,
@@ -445,7 +445,7 @@ C-    Runoff temperature
 C-    Salt flux
       CALL EXF_SET_FLD(
      I     'saltflx', saltflxfile, saltflxmask,
-     I     saltflxStartTime, saltflxperiod, repeatPeriod,
+     I     saltflxStartTime, saltflxperiod, saltflxRepCycle,
      I     exf_inscal_saltflx,
      I     saltflx_exfremo_intercept, saltflx_exfremo_slope,
      U     saltflx, saltflx0, saltflx1,

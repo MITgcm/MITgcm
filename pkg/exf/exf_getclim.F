@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.27 2017/02/21 01:04:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.28 2017/03/03 00:57:00 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -74,7 +74,7 @@ c     == end of interface ==
 c     Get values of climatological sst fields.
       CALL EXF_SET_FLD(
      I     'climsst', climsstfile, climsstmask,
-     I     climsstStartTime, climsstperiod, repeatPeriod,
+     I     climsstStartTime, climsstperiod, climsstRepCycle,
      I     exf_inscal_climsst,
      I     climsst_exfremo_intercept, climsst_exfremo_slope,
      U     climsst, climsst0, climsst1,
@@ -114,7 +114,7 @@ c--   Update the tile edges.
 c     Get values of climatological sss fields.
       CALL EXF_SET_FLD(
      I     'climsss', climsssfile, climsssmask,
-     I     climsssStartTime, climsssperiod, repeatPeriod,
+     I     climsssStartTime, climsssperiod, climsssRepCycle,
      I     exf_inscal_climsss,
      I     climsss_exfremo_intercept, climsss_exfremo_slope,
      U     climsss, climsss0, climsss1,
@@ -142,12 +142,12 @@ c--   Update the tile edges.
 c     Get values of climatological ustr fields.
       CALL EXF_SET_UV (
      I     'climustr', climustrfile, climustrmask,
-     I     climustrStartTime, climustrperiod, repeatPeriod,
+     I     climustrStartTime, climustrperiod, climustrRepCycle,
      I     exf_inscal_climustr,
      I     climustr_exfremo_intercept, climustr_exfremo_slope,
      U     climustr, climustr0, climustr1,
      I     'climvstr', climvstrfile, climvstrmask,
-     I     climvstrStartTime, climvstrperiod, repeatPeriod,
+     I     climvstrStartTime, climvstrperiod, climvstrRepCycle,
      I     exf_inscal_climvstr,
      I     climvstr_exfremo_intercept, climvstr_exfremo_slope,
      U     climvstr, climvstr0, climvstr1,

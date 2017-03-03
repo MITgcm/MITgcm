@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.41 2017/01/31 18:59:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.42 2017/03/03 00:57:00 jmc Exp $
 C $Name:  $
 C
 C     ==================================================================
@@ -69,21 +69,21 @@ C     useExfZenIncoming  :: compute incoming solar radiation along with zenith a
 C     exf_debugLev       :: select message printing to STDOUT (e.g., when read rec)
 C     exf_monFreq        :: Monitor Frequency (s) for EXF
 
-      logical useExfCheckRange
-      logical useExfYearlyFields, twoDigitYear
-      logical useOBCSYearlyFields
-      logical readStressOnAgrid
-      logical rotateStressOnAgrid
-      logical readStressOnCgrid
-      logical stressIsOnCgrid
-      logical useStabilityFct_overIce
-      logical useRelativeWind
-      logical noNegativeEvap
-      logical useAtmWind
+      LOGICAL useExfCheckRange
+      LOGICAL useExfYearlyFields, twoDigitYear
+      LOGICAL useOBCSYearlyFields
+      LOGICAL readStressOnAgrid
+      LOGICAL rotateStressOnAgrid
+      LOGICAL readStressOnCgrid
+      LOGICAL stressIsOnCgrid
+      LOGICAL useStabilityFct_overIce
+      LOGICAL useRelativeWind
+      LOGICAL noNegativeEvap
+      LOGICAL useAtmWind
 
-      logical useExfZenAlbedo
-      integer select_ZenAlbedo
-      logical useExfZenIncoming
+      LOGICAL useExfZenAlbedo
+      INTEGER select_ZenAlbedo
+      LOGICAL useExfZenIncoming
 
       INTEGER exf_debugLev
       _RL     exf_monFreq
@@ -106,91 +106,101 @@ C     Description of contents of surface boundary condition files
 C     Note: fieldperiod=0 means input file is one time-constant field
 C           fieldperiod=-12 means input file contains 12 monthly means
 
-      integer hfluxstartdate1
-      integer hfluxstartdate2
+      INTEGER hfluxstartdate1
+      INTEGER hfluxstartdate2
       _RL     hfluxStartTime
       _RL     hfluxperiod
+      _RL     hfluxRepCycle
       _RL     hfluxconst
       _RL     hflux_exfremo_intercept
       _RL     hflux_exfremo_slope
       character*1 hfluxmask
 
-      integer atempstartdate1
-      integer atempstartdate2
+      INTEGER atempstartdate1
+      INTEGER atempstartdate2
       _RL     atempStartTime
       _RL     atempperiod
+      _RL     atempRepCycle
       _RL     atempconst
       _RL     atemp_exfremo_intercept
       _RL     atemp_exfremo_slope
       character*1 atempmask
 
-      integer aqhstartdate1
-      integer aqhstartdate2
+      INTEGER aqhstartdate1
+      INTEGER aqhstartdate2
       _RL     aqhStartTime
       _RL     aqhperiod
+      _RL     aqhRepCycle
       _RL     aqhconst
       _RL     aqh_exfremo_intercept
       _RL     aqh_exfremo_slope
       character*1 aqhmask
 
-      integer hs_startdate1
-      integer hs_startdate2
+      INTEGER hs_startdate1
+      INTEGER hs_startdate2
       _RL     hs_StartTime
       _RL     hs_period
+      _RL     hs_RepCycle
       _RL     hs_const
       _RL     hs_exfremo_intercept
       _RL     hs_exfremo_slope
       character*1 hs_mask
 
-      integer hl_startdate1
-      integer hl_startdate2
+      INTEGER hl_startdate1
+      INTEGER hl_startdate2
       _RL     hl_StartTime
       _RL     hl_period
+      _RL     hl_RepCycle
       _RL     hl_const
       _RL     hl_exfremo_intercept
       _RL     hl_exfremo_slope
       character*1 hl_mask
 
-      integer sfluxstartdate1
-      integer sfluxstartdate2
+      INTEGER sfluxstartdate1
+      INTEGER sfluxstartdate2
       _RL     sfluxStartTime
       _RL     sfluxperiod
+      _RL     sfluxRepCycle
       _RL     sfluxconst
       _RL     sflux_exfremo_intercept
       _RL     sflux_exfremo_slope
       character*1 sfluxmask
 
-      integer evapstartdate1
-      integer evapstartdate2
+      INTEGER evapstartdate1
+      INTEGER evapstartdate2
       _RL     evapStartTime
       _RL     evapperiod
+      _RL     evapRepCycle
       _RL     evapconst
       _RL     evap_exfremo_intercept
       _RL     evap_exfremo_slope
       character*1 evapmask
 
-      integer precipstartdate1
-      integer precipstartdate2
+      INTEGER precipstartdate1
+      INTEGER precipstartdate2
       _RL     precipStartTime
       _RL     precipperiod
+      _RL     precipRepCycle
       _RL     precipconst
       _RL     precip_exfremo_intercept
       _RL     precip_exfremo_slope
       character*1 precipmask
 
-      integer snowprecipstartdate1
-      integer snowprecipstartdate2
+      INTEGER snowprecipstartdate1
+      INTEGER snowprecipstartdate2
       _RL     snowprecipStartTime
       _RL     snowprecipperiod
+      _RL     snowprecipRepCycle
       _RL     snowprecipconst
       _RL     snowprecip_exfremo_intercept
       _RL     snowprecip_exfremo_slope
       character*1 snowprecipmask
 
-      integer runoffstartdate1
-      integer runoffstartdate2
+      INTEGER runoffstartdate1
+      INTEGER runoffstartdate2
       _RL     runoffStartTime
       _RL     runoffperiod
+      _RL     runoffRepCycle
       _RL     runoffconst
       _RL     runoff_exfremo_intercept
       _RL     runoff_exfremo_slope
@@ -200,196 +210,220 @@ C           fieldperiod=-12 means input file contains 12 monthly means
       _RL     runoftemp_exfremo_intercept
       _RL     runoftemp_exfremo_slope
 
-      integer saltflxstartdate1
-      integer saltflxstartdate2
+      INTEGER saltflxstartdate1
+      INTEGER saltflxstartdate2
       _RL     saltflxStartTime
       _RL     saltflxperiod
+      _RL     saltflxRepCycle
       _RL     saltflxconst
       _RL     saltflx_exfremo_intercept
       _RL     saltflx_exfremo_slope
       character*1 saltflxmask
 
-      integer ustressstartdate1
-      integer ustressstartdate2
+      INTEGER ustressstartdate1
+      INTEGER ustressstartdate2
       _RL     ustressStartTime
       _RL     ustressperiod
+      _RL     ustressRepCycle
       _RL     ustressconst
       _RL     ustress_exfremo_intercept
       _RL     ustress_exfremo_slope
       character*1 ustressmask
 
-      integer vstressstartdate1
-      integer vstressstartdate2
+      INTEGER vstressstartdate1
+      INTEGER vstressstartdate2
       _RL     vstressStartTime
       _RL     vstressperiod
+      _RL     vstressRepCycle
       _RL     vstressconst
       _RL     vstress_exfremo_intercept
       _RL     vstress_exfremo_slope
       character*1 vstressmask
 
-      integer uwindstartdate1
-      integer uwindstartdate2
+      INTEGER uwindstartdate1
+      INTEGER uwindstartdate2
       _RL     uwindStartTime
       _RL     uwindperiod
+      _RL     uwindRepCycle
       _RL     uwindconst
       _RL     uwind_exfremo_intercept
       _RL     uwind_exfremo_slope
       character*1 uwindmask
 
-      integer vwindstartdate1
-      integer vwindstartdate2
+      INTEGER vwindstartdate1
+      INTEGER vwindstartdate2
       _RL     vwindStartTime
       _RL     vwindperiod
+      _RL     vwindRepCycle
       _RL     vwindconst
       _RL     vwind_exfremo_intercept
       _RL     vwind_exfremo_slope
       character*1 vwindmask
 
-      integer wspeedstartdate1
-      integer wspeedstartdate2
+      INTEGER wspeedstartdate1
+      INTEGER wspeedstartdate2
       _RL     wspeedStartTime
       _RL     wspeedperiod
+      _RL     wspeedRepCycle
       _RL     wspeedconst
       _RL     wspeed_exfremo_intercept
       _RL     wspeed_exfremo_slope
       character*1 wspeedmask
 
-      integer swfluxstartdate1
-      integer swfluxstartdate2
+      INTEGER swfluxstartdate1
+      INTEGER swfluxstartdate2
       _RL     swfluxStartTime
       _RL     swfluxperiod
+      _RL     swfluxRepCycle
       _RL     swfluxconst
       _RL     swflux_exfremo_intercept
       _RL     swflux_exfremo_slope
       character*1 swfluxmask
 
-      integer lwfluxstartdate1
-      integer lwfluxstartdate2
+      INTEGER lwfluxstartdate1
+      INTEGER lwfluxstartdate2
       _RL     lwfluxStartTime
       _RL     lwfluxperiod
+      _RL     lwfluxRepCycle
       _RL     lwfluxconst
       _RL     lwflux_exfremo_intercept
       _RL     lwflux_exfremo_slope
       character*1 lwfluxmask
 
-      integer swdownstartdate1
-      integer swdownstartdate2
+      INTEGER swdownstartdate1
+      INTEGER swdownstartdate2
       _RL     swdownStartTime
       _RL     swdownperiod
+      _RL     swdownRepCycle
       _RL     swdownconst
       _RL     swdown_exfremo_intercept
       _RL     swdown_exfremo_slope
       character*1 swdownmask
 
-      integer lwdownstartdate1
-      integer lwdownstartdate2
+      INTEGER lwdownstartdate1
+      INTEGER lwdownstartdate2
       _RL     lwdownStartTime
       _RL     lwdownperiod
+      _RL     lwdownRepCycle
       _RL     lwdownconst
       _RL     lwdown_exfremo_intercept
       _RL     lwdown_exfremo_slope
       character*1 lwdownmask
 
-      integer apressurestartdate1
-      integer apressurestartdate2
+      INTEGER apressurestartdate1
+      INTEGER apressurestartdate2
       _RL     apressureStartTime
       _RL     apressureperiod
+      _RL     apressureRepCycle
       _RL     apressureconst
       _RL     apressure_exfremo_intercept
       _RL     apressure_exfremo_slope
       character*1 apressuremask
 
-      integer areamaskstartdate1
-      integer areamaskstartdate2
+      INTEGER areamaskstartdate1
+      INTEGER areamaskstartdate2
       _RL     areamaskStartTime
       _RL     areamaskperiod
+      _RL     areamaskRepCycle
       _RL     areamaskTauRelax
       _RL     areamaskconst
       _RL     areamask_exfremo_intercept
       _RL     areamask_exfremo_slope
       character*1 areamaskmask
 
-c     Calendar data.
-      integer climsststartdate1
-      integer climsststartdate2
+C     Calendar data.
+      INTEGER climsststartdate1
+      INTEGER climsststartdate2
       _RL     climsstStartTime
       _RL     climsstperiod
+      _RL     climsstRepCycle
       _RL     climsstTauRelax
       _RL     climsstconst
       _RL     climsst_exfremo_intercept
       _RL     climsst_exfremo_slope
       character*1 climsstmask
 
-      integer climsssstartdate1
-      integer climsssstartdate2
+      INTEGER climsssstartdate1
+      INTEGER climsssstartdate2
       _RL     climsssStartTime
       _RL     climsssperiod
+      _RL     climsssRepCycle
       _RL     climsssTauRelax
       _RL     climsssconst
       _RL     climsss_exfremo_intercept
       _RL     climsss_exfremo_slope
       character*1 climsssmask
 
-      integer climustrstartdate1
-      integer climustrstartdate2
+      INTEGER climustrstartdate1
+      INTEGER climustrstartdate2
       _RL     climustrStartTime
       _RL     climustrperiod
+      _RL     climustrRepCycle
       _RL     climustrTauRelax
       _RL     climustrconst
       _RL     climustr_exfremo_intercept
       _RL     climustr_exfremo_slope
       character*1 climustrmask
 
-      integer climvstrstartdate1
-      integer climvstrstartdate2
+      INTEGER climvstrstartdate1
+      INTEGER climvstrstartdate2
       _RL     climvstrStartTime
       _RL     climvstrperiod
+      _RL     climvstrRepCycle
       _RL     climvstrTauRelax
       _RL     climvstrconst
       _RL     climvstr_exfremo_intercept
       _RL     climvstr_exfremo_slope
       character*1 climvstrmask
 
-c     the following variables are used in conjunction with pkg/obcs
-c     to describe S/T/U/V open boundary condition files
-      integer obcsNstartdate1
-      integer obcsNstartdate2
-      integer obcsSstartdate1
-      integer obcsSstartdate2
-      integer obcsEstartdate1
-      integer obcsEstartdate2
-      integer obcsWstartdate1
-      integer obcsWstartdate2
-      _RL     obcsNStartTime
+C     the following variables are used in conjunction with pkg/obcs
+C     to describe S/T/U/V open boundary condition files
+      INTEGER obcsNstartdate1
+      INTEGER obcsNstartdate2
+      INTEGER obcsSstartdate1
+      INTEGER obcsSstartdate2
+      INTEGER obcsEstartdate1
+      INTEGER obcsEstartdate2
+      INTEGER obcsWstartdate1
+      INTEGER obcsWstartdate2
+      _RL     obcsNstartTime
       _RL     obcsNperiod
-      _RL     obcsSStartTime
+      _RL     obcsNrepCycle
+      _RL     obcsSstartTime
       _RL     obcsSperiod
-      _RL     obcsEStartTime
+      _RL     obcsSrepCycle
+      _RL     obcsEstartTime
       _RL     obcsEperiod
-      _RL     obcsWStartTime
+      _RL     obcsErepCycle
+      _RL     obcsWstartTime
       _RL     obcsWperiod
+      _RL     obcsWrepCycle
 
-c     the following variables are used in conjunction with pkg/obcs
-c     and pkg/seaice to describe area, heff, hsnow, hsalt, uice,
-c     and vice open boundary condition files
-      integer siobNstartdate1
-      integer siobNstartdate2
-      integer siobSstartdate1
-      integer siobSstartdate2
-      integer siobEstartdate1
-      integer siobEstartdate2
-      integer siobWstartdate1
-      integer siobWstartdate2
-      _RL     siobNStartTime
+C     the following variables are used in conjunction with pkg/obcs
+C     and pkg/seaice to describe area, heff, hsnow, hsalt, uice,
+C     and vice open boundary condition files
+      INTEGER siobNstartdate1
+      INTEGER siobNstartdate2
+      INTEGER siobSstartdate1
+      INTEGER siobSstartdate2
+      INTEGER siobEstartdate1
+      INTEGER siobEstartdate2
+      INTEGER siobWstartdate1
+      INTEGER siobWstartdate2
+      _RL     siobNstartTime
       _RL     siobNperiod
-      _RL     siobSStartTime
+      _RL     siobNrepCycle
+      _RL     siobSstartTime
       _RL     siobSperiod
-      _RL     siobEStartTime
+      _RL     siobSrepCycle
+      _RL     siobEstartTime
       _RL     siobEperiod
-      _RL     siobWStartTime
+      _RL     siobErepCycle
+      _RL     siobWstartTime
       _RL     siobWperiod
+      _RL     siobWrepCycle
 
-c     File names.
+C     File names.
       character*(128) hfluxfile
       character*(128) atempfile
       character*(128) aqhfile
@@ -450,6 +484,8 @@ c     File names.
      &       lwfluxstartdate1,  lwfluxstartdate2,
      &       swdownstartdate1,  swdownstartdate2,
      &       lwdownstartdate1,  lwdownstartdate2,
+     &       apressurestartdate1, apressurestartdate2,
+     &       areamaskstartdate1,  areamaskstartdate2,
      &       obcsNstartdate1,   obcsNstartdate2,
      &       obcsSstartdate1,   obcsSstartdate2,
      &       obcsEstartdate1,   obcsEstartdate2,
@@ -457,66 +493,64 @@ c     File names.
      &       siobNstartdate1,   siobNstartdate2,
      &       siobSstartdate1,   siobSstartdate2,
      &       siobEstartdate1,   siobEstartdate2,
-     &       siobWstartdate1,   siobWstartdate2,
-     &       apressurestartdate1,apressurestartdate2,
-     &       areamaskstartdate1,areamaskstartdate2
+     &       siobWstartdate1,   siobWstartdate2
 
       COMMON /EXF_PARAM_R/
      &       repeatPeriod,      exf_monFreq,
      &       exf_scal_BulkCdn,  windstressmax,
+     &       hfluxconst,        hfluxRepCycle,
      &       hfluxperiod,       hfluxStartTime,
+     &       atempconst,        atempRepCycle,
      &       atempperiod,       atempStartTime,
+     &       aqhconst,          aqhRepCycle,
      &       aqhperiod,         aqhStartTime,
+     &       hs_const,          hs_RepCycle,
      &       hs_period,         hs_StartTime,
+     &       hl_const,          hl_RepCycle,
      &       hl_period,         hl_StartTime,
+     &       sfluxconst,        sfluxRepCycle,
      &       sfluxperiod,       sfluxStartTime,
+     &       evapconst,         evapRepCycle,
      &       evapperiod,        evapStartTime,
+     &       precipconst,       precipRepCycle,
      &       precipperiod,      precipStartTime,
+     &       snowprecipconst,   snowprecipRepCycle,
      &       snowprecipperiod,  snowprecipStartTime,
+     &       runoffconst,       runoffRepCycle,
      &       runoffperiod,      runoffStartTime,
-     &       saltflxperiod,     saltflxStartTime,
-     &       ustressperiod,     ustressStartTime,
-     &       vstressperiod,     vstressStartTime,
-     &       uwindperiod,       uwindStartTime,
-     &       vwindperiod,       vwindStartTime,
-     &       wspeedperiod,      wspeedStartTime,
-     &       swfluxperiod,      swfluxStartTime,
-     &       lwfluxperiod,      lwfluxStartTime,
-     &       swdownperiod,      swdownStartTime,
-     &       lwdownperiod,      lwdownStartTime,
-     &       obcsNperiod,       obcsNStartTime,
-     &       obcsSperiod,       obcsSStartTime,
-     &       obcsEperiod,       obcsEStartTime,
-     &       obcsWperiod,       obcsWStartTime,
-     &       siobNperiod,       siobNStartTime,
-     &       siobSperiod,       siobSStartTime,
-     &       siobEperiod,       siobEStartTime,
-     &       siobWperiod,       siobWStartTime,
-     &       apressureperiod,   apressureStartTime,
-     &       areamaskperiod,   areamaskStartTime,
-     &       hfluxconst,
-     &       atempconst,
-     &       aqhconst,
-     &       hs_const, hl_const,
-     &       sfluxconst,
-     &       evapconst,
-     &       precipconst,
-     &       snowprecipconst,
-     &       runoffconst,
      &       runoftempconst,
-     &       saltflxconst,
-     &       ustressconst,
-     &       vstressconst,
-     &       uwindconst,
-     &       vwindconst,
-     &       wspeedconst,
-     &       swfluxconst,
-     &       lwfluxconst,
-     &       swdownconst,
-     &       lwdownconst,
-     &       apressureconst,
-     &       areamaskTauRelax,
-     &       areamaskconst
+     &       saltflxconst,      saltflxRepCycle,
+     &       saltflxperiod,     saltflxStartTime,
+     &       ustressconst,      ustressRepCycle,
+     &       ustressperiod,     ustressStartTime,
+     &       vstressconst,      vstressRepCycle,
+     &       vstressperiod,     vstressStartTime,
+     &       uwindconst,        uwindRepCycle,
+     &       uwindperiod,       uwindStartTime,
+     &       vwindconst,        vwindRepCycle,
+     &       vwindperiod,       vwindStartTime,
+     &       wspeedconst,       wspeedRepCycle,
+     &       wspeedperiod,      wspeedStartTime,
+     &       swfluxconst,       swfluxRepCycle,
+     &       swfluxperiod,      swfluxStartTime,
+     &       lwfluxconst,       lwfluxRepCycle,
+     &       lwfluxperiod,      lwfluxStartTime,
+     &       swdownconst,       swdownRepCycle,
+     &       swdownperiod,      swdownStartTime,
+     &       lwdownconst,       lwdownRepCycle,
+     &       lwdownperiod,      lwdownStartTime,
+     &       apressureconst,    apressureRepCycle,
+     &       apressureperiod,   apressureStartTime,
+     &       areamaskconst,     areamaskRepCycle,
+     &       areamaskperiod,    areamaskStartTime,
+     &       obcsNrepCycle,     obcsNperiod,     obcsNstartTime,
+     &       obcsSrepCycle,     obcsSperiod,     obcsSstartTime,
+     &       obcsErepCycle,     obcsEperiod,     obcsEstartTime,
+     &       obcsWrepCycle,     obcsWperiod,     obcsWstartTime,
+     &       siobNrepCycle,     siobNperiod,     siobNstartTime,
+     &       siobSrepCycle,     siobSperiod,     siobSstartTime,
+     &       siobErepCycle,     siobEperiod,     siobEstartTime,
+     &       siobWrepCycle,     siobWperiod,     siobWstartTime
 
       COMMON /EXF_PARAM_TREND_REMOVAL/
      &       hflux_exfremo_intercept,
@@ -605,14 +639,17 @@ c     File names.
 
       COMMON /EXF_CLIM_R/
      &       climtempfreeze,
+     &       climsstconst,       climsstRepCycle,
      &       climsstperiod,      climsstStartTime,
+     &       climsssconst,       climsssRepCycle,
      &       climsssperiod,      climsssStartTime,
+     &       climustrconst,      climustrRepCycle,
      &       climustrperiod,     climustrStartTime,
+     &       climvstrconst,      climvstrRepCycle,
      &       climvstrperiod,     climvstrStartTime,
      &       climsstTauRelax,    climsssTauRelax,
      &       climustrTauRelax,   climvstrTauRelax,
-     &       climsstconst,       climsssconst,
-     &       climustrconst,      climvstrconst,
+     &       areamaskTauRelax,
      &       climsst_exfremo_intercept, climsst_exfremo_slope,
      &       climsss_exfremo_intercept, climsss_exfremo_slope,
      &       climustr_exfremo_intercept, climustr_exfremo_slope,
@@ -620,19 +657,19 @@ c     File names.
      &       exf_inscal_climsst, exf_inscal_climsss,
      &       exf_inscal_climustr, exf_inscal_climvstr
 
-c     file precision and field type
+C     file precision and field type
 
       COMMON /EXF_PARAM_TYPE/
      &       exf_iprec,
      &       exf_iprec_obcs
 
-      integer exf_iprec
-      integer exf_iprec_obcs
+      INTEGER exf_iprec
+      INTEGER exf_iprec_obcs
 
-c     exf_inscal_*      input scaling factors
-c     exf_offset_atemp  input air temperature offset
-c                       (for conversion from C to K, if needed)
-c     exf_outscale_*    output scaling factors
+C     exf_inscal_*      input scaling factors
+C     exf_offset_atemp  input air temperature offset
+C                       (for conversion from C to K, if needed)
+C     exf_outscale_*    output scaling factors
 
       _RL     exf_inscal_hflux
       _RL     exf_inscal_sflux
@@ -711,7 +748,7 @@ c     exf_outscale_*    output scaling factors
      &                      exf_outscal_areamask
 
 #ifndef USE_EXF_INTERPOLATION
-c-- set dummy dimension 1
+C-- set dummy dimension 1
       INTEGER    exf_interp_bufferSize
       PARAMETER( exf_interp_bufferSize = 1 )
       INTEGER MAX_LAT_INC
@@ -722,8 +759,8 @@ C  buffer size currently set to 65000 (allows to read-in a 1x1 global data set)
 C  Increase to 140000 to accommodate for ECMWF-INTERIM
       INTEGER    exf_interp_bufferSize
       PARAMETER( exf_interp_bufferSize = 140000 )
-c for lat interpolation, arraysize currently set to 1279 max data values
-c to accomodate ECMWF operational analysis
+C for lat interpolation, arraysize currently set to 1279 max data values
+C to accomodate ECMWF operational analysis
       INTEGER MAX_LAT_INC
       PARAMETER(MAX_LAT_INC = 1279)
 
