@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_exf_load.F,v 1.9 2017/02/21 01:05:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_exf_load.F,v 1.10 2017/03/03 01:01:12 jmc Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -51,29 +51,12 @@ C     !INPUT/OUTPUT PARAMETERS:
 
 #if ( defined ALLOW_EXF ) && ( defined ALLOW_OBCS_PRESCRIBE )
 C     !LOCAL VARIABLES:
-      _RL obcsNrepeatCycle, obcsSrepeatCycle
-      _RL obcsErepeatCycle, obcsWrepeatCycle
-# ifdef ALLOW_SEAICE
-      _RL siobNrepeatCycle, siobSrepeatCycle
-      _RL siobErepeatCycle, siobWrepeatCycle
-# endif
 CEOP
-
-      obcsNrepeatCycle = repeatPeriod
-      obcsSrepeatCycle = repeatPeriod
-      obcsErepeatCycle = repeatPeriod
-      obcsWrepeatCycle = repeatPeriod
-# ifdef ALLOW_SEAICE
-      siobNrepeatCycle = repeatPeriod
-      siobSrepeatCycle = repeatPeriod
-      siobErepeatCycle = repeatPeriod
-      siobWrepeatCycle = repeatPeriod
-# endif
 
 # ifdef ALLOW_OBCS_NORTH
       CALL OBCS_EXF_READ_XZ (
      I     'N', useOBCSYearlyFields,
-     I     obcsNStartTime, obcsNperiod, obcsNrepeatCycle,
+     I     obcsNstartTime, obcsNperiod, obcsNrepCycle,
      U     OBNu,   OBNu0,   OBNu1,   OBNufile,
      U     OBNv,   OBNv0,   OBNv1,   OBNvfile,
      U     OBNt,   OBNt0,   OBNt1,   OBNtfile,
@@ -82,7 +65,7 @@ CEOP
      U     OBNeta, OBNeta0, OBNeta1, OBNetafile,
 #  endif
 #  ifdef ALLOW_SEAICE
-     I     siobNStartTime, siobNperiod, siobNrepeatCycle,
+     I     siobNstartTime, siobNperiod, siobNrepCycle,
      U     OBNa,   OBNa0,   OBNa1,   OBNafile,
      U     OBNh,   OBNh0,   OBNh1,   OBNhfile,
      U     OBNsl,  OBNsl0,  OBNsl1,  OBNslfile,
@@ -99,7 +82,7 @@ CEOP
 # ifdef ALLOW_OBCS_SOUTH
       CALL OBCS_EXF_READ_XZ (
      I     'S', useOBCSYearlyFields,
-     I     obcsSStartTime, obcsSperiod, obcsSrepeatCycle,
+     I     obcsSstartTime, obcsSperiod, obcsSrepCycle,
      U     OBSu,   OBSu0,   OBSu1,   OBSufile,
      U     OBSv,   OBSv0,   OBSv1,   OBSvfile,
      U     OBSt,   OBSt0,   OBSt1,   OBStfile,
@@ -108,7 +91,7 @@ CEOP
      U     OBSeta, OBSeta0, OBSeta1, OBSetafile,
 #  endif
 #  ifdef ALLOW_SEAICE
-     I     siobSStartTime, siobSperiod, siobSrepeatCycle,
+     I     siobSstartTime, siobSperiod, siobSrepCycle,
      U     OBSa,   OBSa0,   OBSa1,   OBSafile,
      U     OBSh,   OBSh0,   OBSh1,   OBShfile,
      U     OBSsl,  OBSsl0,  OBSsl1,  OBSslfile,
@@ -125,7 +108,7 @@ CEOP
 # ifdef ALLOW_OBCS_EAST
       CALL OBCS_EXF_READ_YZ (
      I     'E', useOBCSYearlyFields,
-     I     obcsEStartTime, obcsEperiod, obcsErepeatCycle,
+     I     obcsEstartTime, obcsEperiod, obcsErepCycle,
      U     OBEu,   OBEu0,   OBEu1,   OBEufile,
      U     OBEv,   OBEv0,   OBEv1,   OBEvfile,
      U     OBEt,   OBEt0,   OBEt1,   OBEtfile,
@@ -134,7 +117,7 @@ CEOP
      U     OBEeta, OBEeta0, OBEeta1, OBEetafile,
 #  endif
 #  ifdef ALLOW_SEAICE
-     I     siobEStartTime, siobEperiod, siobErepeatCycle,
+     I     siobEstartTime, siobEperiod, siobErepCycle,
      U     OBEa,   OBEa0,   OBEa1,   OBEafile,
      U     OBEh,   OBEh0,   OBEh1,   OBEhfile,
      U     OBEsl,  OBEsl0,  OBEsl1,  OBEslfile,
@@ -151,7 +134,7 @@ CEOP
 # ifdef ALLOW_OBCS_WEST
       CALL OBCS_EXF_READ_YZ (
      I     'W', useOBCSYearlyFields,
-     I     obcsWStartTime, obcsWperiod, obcsWrepeatCycle,
+     I     obcsWstartTime, obcsWperiod, obcsWrepCycle,
      U     OBWu,   OBWu0,   OBWu1,   OBWufile,
      U     OBWv,   OBWv0,   OBWv1,   OBWvfile,
      U     OBWt,   OBWt0,   OBWt1,   OBWtfile,
@@ -160,7 +143,7 @@ CEOP
      U     OBWeta, OBWeta0, OBWeta1, OBWetafile,
 #  endif
 #  ifdef ALLOW_SEAICE
-     I     siobWStartTime, siobWperiod, siobWrepeatCycle,
+     I     siobWstartTime, siobWperiod, siobWrepCycle,
      U     OBWa,   OBWa0,   OBWa1,   OBWafile,
      U     OBWh,   OBWh0,   OBWh1,   OBWhfile,
      U     OBWsl,  OBWsl0,  OBWsl1,  OBWslfile,
