@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.34 2017/02/07 00:17:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.35 2017/03/03 01:03:38 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -388,7 +388,7 @@ C     from the beginning of the year.
        CALL EXF_GETFFIELD_START( useOBCSYearlyFields,
      I                    'exf', 'obcsN', obcsNperiod,
      I                    obcsNstartdate1, obcsNstartdate2,
-     U                    obcsNStartTime, errCount,
+     U                    obcsNstartTime, errCount,
      I                    myThid )
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START obcsS',myThid)
@@ -396,7 +396,7 @@ C     from the beginning of the year.
        CALL EXF_GETFFIELD_START( useOBCSYearlyFields,
      I                    'exf', 'obcsS', obcsSperiod,
      I                    obcsSstartdate1, obcsSstartdate2,
-     U                    obcsSStartTime, errCount,
+     U                    obcsSstartTime, errCount,
      I                    myThid )
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START obcsE',myThid)
@@ -404,7 +404,7 @@ C     from the beginning of the year.
        CALL EXF_GETFFIELD_START( useOBCSYearlyFields,
      I                    'exf', 'obcsE', obcsEperiod,
      I                    obcsEstartdate1, obcsEstartdate2,
-     U                    obcsEStartTime, errCount,
+     U                    obcsEstartTime, errCount,
      I                    myThid )
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START obcsW',myThid)
@@ -412,7 +412,7 @@ C     from the beginning of the year.
        CALL EXF_GETFFIELD_START( useOBCSYearlyFields,
      I                    'exf', 'obcsW', obcsWperiod,
      I                    obcsWstartdate1, obcsWstartdate2,
-     U                    obcsWStartTime, errCount,
+     U                    obcsWstartTime, errCount,
      I                    myThid )
       ENDIF
 # ifdef ALLOW_SEAICE
@@ -423,7 +423,7 @@ C     from the beginning of the year.
        CALL EXF_GETFFIELD_START( useOBCSYearlyFields,
      I                    'exf', 'siobN', siobNperiod,
      I                    siobNstartdate1, siobNstartdate2,
-     U                    siobNStartTime, errCount,
+     U                    siobNstartTime, errCount,
      I                    myThid )
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START siobS',myThid)
@@ -431,7 +431,7 @@ C     from the beginning of the year.
        CALL EXF_GETFFIELD_START( useOBCSYearlyFields,
      I                    'exf', 'siobS', siobSperiod,
      I                    siobSstartdate1, siobSstartdate2,
-     U                    siobSStartTime, errCount,
+     U                    siobSstartTime, errCount,
      I                    myThid )
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START siobE',myThid)
@@ -439,7 +439,7 @@ C     from the beginning of the year.
        CALL EXF_GETFFIELD_START( useOBCSYearlyFields,
      I                    'exf', 'siobE', siobEperiod,
      I                    siobEstartdate1, siobEstartdate2,
-     U                    siobEStartTime, errCount,
+     U                    siobEstartTime, errCount,
      I                    myThid )
 # ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL('GETFFIELD_START siobW',myThid)
@@ -447,7 +447,7 @@ C     from the beginning of the year.
        CALL EXF_GETFFIELD_START( useOBCSYearlyFields,
      I                    'exf', 'siobW', siobWperiod,
      I                    siobWstartdate1, siobWstartdate2,
-     U                    siobWStartTime, errCount,
+     U                    siobWstartTime, errCount,
      I                    myThid )
       ENDIF
 # endif /* ALLOW_SEAICE */
