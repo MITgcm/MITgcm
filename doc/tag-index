@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2309 2017/03/02 11:52:31 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2310 2017/03/03 01:07:06 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - for each input field, enable to specify a field specific repeat-cycle
+    ({FLD}RepCycle) which defaults to pkg/exf main "repeatPeriod".
+o verification/lab_sea:
+  - update AD results of primary test and noseaicedyn test after switching
+    to new version of TAF (5.3.13 vs 5.3.2 before); agreement with gradient
+    check stays about the same.
 o pkg/exf:
   - fix bug in exf_zenithangle.F for cases select_ZenAlbedo > 0 with useCAL=T.
   - exf_check: MAX_LAT_INC need only be "loc_nlat-1", not equal to loc_nlat
