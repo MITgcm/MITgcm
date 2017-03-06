@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.23 2015/12/25 15:24:51 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.24 2017/03/06 20:03:46 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -199,6 +199,16 @@ c--   Now, read the control vector.
       doglobalread = .false.
       ladinit      = .false.
 
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
+          xx_gen(i,j,bi,bj)=0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
       dosmooth=.false.
       dowc01  = .false.
       doscaling=.true.
@@ -341,6 +351,18 @@ c--   Now, read the control vector.
       doglobalread = .false.
       ladinit      = .false.
 
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nr
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+           xx_gen(i,j,k,bi,bj)=0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
       dosmooth=.false.
       dowc01  = .false.
       doscaling=.true.
@@ -382,7 +404,7 @@ c--   Now, read the control vector.
 
 #ifdef ALLOW_SMOOTH
       IF (useSMOOTH) THEN
-       IF (dowc01) call smooth_correl3D(xx_gen,numsmo,mythid)
+       IF (dowc01) call smooth_correl3d(xx_gen,numsmo,mythid)
        IF (dosmooth) call smooth3d(xx_gen,numsmo,mythid)
       ENDIF
 #endif

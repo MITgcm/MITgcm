@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.24 2015/03/23 21:07:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gen.F,v 1.25 2017/03/06 20:03:46 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -98,6 +98,19 @@ c--   only do interior, and exchange outside
       doglobalread = .false.
       ladinit      = .false.
 
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nr
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+           xxFld3d(i,j,k,bi,bj)=0. _d 0
+           wFld3d(i,j,k,bi,bj)=0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
       call mdsreadfield(wFileCur,ctrlprec,'RL',nR,wFld3d,1,mythid)
       _EXCH_XYZ_RL( wFld3d, mythid )
 
@@ -164,7 +177,7 @@ c avoid xx larger than boundsVec(5) X uncertainty
 #ifdef ALLOW_SMOOTH
 c apply Weaver And Courtier correlation operator
       if ( paramSmooth.NE.0 .AND. useSMOOTH ) then
-       call smooth_correl3D(xxFld3d,paramSmooth,mythid)
+       call smooth_correl3d(xxFld3d,paramSmooth,mythid)
       endif
 #endif
 
@@ -296,6 +309,17 @@ c--   only do interior, and exchange outside
 
       doglobalread = .false.
       ladinit      = .false.
+
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
+           xxFld2d(i,j,bi,bj)=0. _d 0
+           wFld2d(i,j,bi,bj)=0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
       call mdsreadfield(wFileCur,ctrlprec,'RL',1,wFld2d,1,mythid)
       _EXCH_XY_RL( wFld2d, mythid )

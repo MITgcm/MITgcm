@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.14 2015/10/29 17:03:38 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.15 2017/03/06 20:03:46 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -81,6 +81,16 @@ CEOP
 c--   Now, read the control vector.
       doglobalread = .false.
       ladinit      = .false.
+
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
+          xx_gen(i,j,bi,bj)=0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 C--   generic 2D control variables
       DO iarr = 1, maxCtrlTim2D
@@ -301,7 +311,7 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 
 #ifdef ALLOW_SMOOTH
          IF (useSMOOTH) THEN
-          IF (dowc01) call smooth_correl2D(xx_gen,maskC,numsmo,mythid)
+          IF (dowc01) call smooth_correl2d(xx_gen,maskC,numsmo,mythid)
           IF (dosmooth) call smooth2d(xx_gen,maskC,numsmo,mythid)
          ENDIF
 #endif /* ALLOW_SMOOTH */
