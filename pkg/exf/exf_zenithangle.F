@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_zenithangle.F,v 1.7 2017/02/28 23:19:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_zenithangle.F,v 1.8 2017/03/06 22:38:03 gforget Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -143,7 +143,7 @@ C     This is not the case for select_ZenAlbedo.GT.1 (see comments below).
               iLat2=181
               wLat2=0.5  _d 0
             ELSE
-              iLat1= zen_albedo_pointer(i,j,bi,bj)
+              iLat1= INT(zen_albedo_pointer(i,j,bi,bj))
               wLat1= 1. _d 0 + iLat1 - zen_albedo_pointer(i,j,bi,bj)
               iLat2= iLat1 + 1
               wLat2= 1. _d 0 - wLat1
