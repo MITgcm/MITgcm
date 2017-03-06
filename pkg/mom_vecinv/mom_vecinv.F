@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.78 2016/11/30 00:11:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.79 2017/03/06 20:05:36 gforget Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -249,6 +249,21 @@ C     Make local copies of horizontal flow field
        ENDDO
       ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ufld(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE vfld(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE hFacZ(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE r_hFacZ(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE fverukm(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE fvervkm(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
+
 C note (jmc) : Dissipation and Vort3 advection do not necesary
 C              use the same maskZ (and hFacZ)  => needs 2 call(s)
 c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
@@ -256,6 +271,15 @@ c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
       CALL MOM_CALC_KE(bi,bj,k,selectKEscheme,uFld,vFld,KE,myThid)
 
       CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ke(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE vort3(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE vort3bc(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
 
 C-    mask vort3 and account for no-slip / free-slip BC in vort3BC:
       DO j=1-OLy,sNy+OLy
@@ -267,6 +291,13 @@ C-    mask vort3 and account for no-slip / free-slip BC in vort3BC:
          ENDIF
        ENDDO
       ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE vort3(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE vort3bc(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
 
       IF (momViscosity) THEN
 C--    For viscous term, compute horizontal divergence, tension & strain
@@ -289,6 +320,13 @@ C      and mask relative vorticity (free-slip case):
        ENDIF
 #endif /* NONLIN_FRSURF */
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE h0FacZ(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE hFacZ(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
+
        CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
 
        IF ( useVariableVisc .OR. useStrainTensionVisc ) THEN
@@ -305,6 +343,17 @@ C-    mask strain and account for no-slip / free-slip BC in strainBC:
          ENDDO
         ENDDO
        ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hdiv(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE tension(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE strain(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE strainbc(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
 
 C--    Calculate Lateral Viscosities
        DO j=1-OLy,sNy+OLy
@@ -323,15 +372,52 @@ C-     uses vort3BC & strainBC which account for no-slip / free-slip BC
      I            myThid )
        ENDIF
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE viscAh_Z(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE viscAh_D(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE viscA4_Z(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE viscA4_D(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE hDiv(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE vort3(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE hFacZ(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
+
 C      Calculate del^2 u and del^2 v for bi-harmonic term
        IF (useBiharmonicVisc) THEN
          CALL MOM_VI_DEL2UV(bi,bj,k,hDiv,vort3,hFacZ,
      O                      del2u,del2v,
      I                      myThid)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE del2u(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE del2v(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
          CALL MOM_CALC_HDIV(bi,bj,k,2,del2u,del2v,dStar,myThid)
          CALL MOM_CALC_RELVORT3(bi,bj,k,
      &                          del2u,del2v,hFacZ,zStar,myThid)
        ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE del2u(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE del2v(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE dStar(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE zStar(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
 
 C---   Calculate dissipation terms for U and V equations
 
@@ -366,6 +452,12 @@ C     Combine fluxes
          fVerUkp(i,j) = ArDudrFac*vrF(i,j)
         ENDDO
        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE fVerUkp(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
+
 C--   Tendency is minus divergence of the fluxes
 C     vert.visc.flx is scaled by deepFac2F (deep-atmos) and rhoFac (anelastic)
        DO j=jMin,jMax
@@ -433,6 +525,10 @@ C     Combine fluxes -> fVerV
          fVerVkp(i,j) = ArDvdrFac*vrF(i,j)
         ENDDO
        ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE fVerVkp(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
 C--   Tendency is minus divergence of the fluxes
 C     vert.visc.flx is scaled by deepFac2F (deep-atmos) and rhoFac (anelastic)
        DO j=jMin,jMax
@@ -501,6 +597,11 @@ C-    calculate absolute vorticity
       IF (useAbsVorticity)
      &  CALL MOM_CALC_ABSVORT3(bi,bj,k,vort3,omega3,myThid)
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE omega3(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
+
 C--   Horizontal Coriolis terms
 c     IF (useCoriolis .AND. .NOT.useCDscheme
 c    &    .AND. .NOT. useAbsVorticity) THEN
@@ -552,6 +653,13 @@ C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvecti
        ENDDO
       ENDIF
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ucf(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE vcf(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
+
       IF (momAdvection) THEN
 C--   Horizontal advection of relative (or absolute) vorticity
        IF ( (highOrderVorticity.OR.upwindVorticity)
@@ -592,6 +700,13 @@ C--   Horizontal advection of relative (or absolute) vorticity
          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
         ENDDO
        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ucf(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE vcf(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
 
        IF ( writeDiag ) THEN
          IF (snapshot_mdsio) THEN
