@@ -8,4 +8,8 @@ setup(name='MITgcmutils',
       url='http://mitgcm.org/',
       packages=['MITgcmutils', 'MITgcmutils.cs'],
       scripts=['scripts/gluemncbig'],
-      )
+      install_requires=['numpy'],
+      extras_require={
+        'plot':  ['matplotlib'],
+      }
+)
