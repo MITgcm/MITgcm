@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_diff3d.F,v 1.10 2015/01/23 18:58:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_diff3d.F,v 1.11 2017/03/06 19:55:48 gforget Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -28,10 +28,10 @@ C     *==========================================================*
       integer itlo,ithi, jtlo,jthi
       integer myThid, myIter(nSx,nSy)
       integer mykkey, smoothkey
-      _RL fld_in(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL fld_tmp(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL gT_in(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL gTm1_in(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL fld_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fld_tmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL gT_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL gTm1_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL gt_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       integer nbt_in
       integer ii, jj, kk
@@ -55,8 +55,8 @@ c       in order not to overwrite the same tape
       DO bj=jtlo,jthi
        DO bi=itlo,ithi
         DO k=1,Nr
-         DO j=1,sNy
-          DO i=1,sNx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            gT_in(i,j,k,bi,bj)   = 0. _d 0
            gTm1_in(i,j,k,bi,bj)   = 0. _d 0
           ENDDO
