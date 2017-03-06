@@ -380,7 +380,7 @@ class netcdf_file(object):
 
             # Sort variables non-recs first, then recs. We use a DSU
             # since some people use pupynere with Python 2.3.x.
-            deco = [(v._shape and not v.isrec, k) for (k, v) in self.variables.items()]
+            deco = [(bool(v._shape) and not v.isrec, k) for (k, v) in self.variables.items()]
             deco.sort()
             variables = [k for (unused, k) in deco][::-1]
 

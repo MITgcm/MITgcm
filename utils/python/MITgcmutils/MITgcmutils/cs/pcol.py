@@ -12,9 +12,6 @@ def pcol( x, y, data, projection=None, vmin=None, vmax=None, **kwargs):
     of the points one half grid cell to the left and bottom, that is
     vorticity points for tracers, etc. 
     
-    The optional flag 'sphere' results in a 3D visualization on the sphere
-    without any specific projection. Good for debugging.
-    
     If present, 'projection' (a basemap instance) is used to transform 
     coordinates. Unfortunatly, cylindrical and conic maps are limited to 
     the [-180 180] range. 
@@ -94,7 +91,7 @@ def pcol( x, y, data, projection=None, vmin=None, vmax=None, **kwargs):
         mycolmap = colmap(N) #cm.jet(N)
 
     ph=np.array([])
-    jc=x.shape[0]/2
+    jc=x.shape[0]//2
     xxf=np.empty((jc+1,jc+1,4))
     yyf=xxf
     ffld=np.empty((jc,jc,4))
@@ -116,10 +113,10 @@ def pcol( x, y, data, projection=None, vmin=None, vmax=None, **kwargs):
 
     # loop over tiles
     for k in range(0,6):
-        kodd  = 2*(k/2)
+        kodd  = 2*(k//2)
         kodd2 = kodd
         if kodd==4: kodd2=kodd-6
-        keven  = 2*(k/2)
+        keven  = 2*(k//2)
         keven2 = keven
         if keven==4: keven2=keven-6
         fld = fldf[k]

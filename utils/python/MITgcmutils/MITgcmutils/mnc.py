@@ -85,7 +85,7 @@ class MNC:
         self._attributes['bi'] = 1
         self._attributes['bj'] = 1
         haveexch2 = False
-        for k in self._attributes.keys():
+        for k in list(self._attributes):
             if k.startswith('exch2_'):
                 del self._attributes[k]
                 haveexch2 = True

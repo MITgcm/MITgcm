@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/llc.py,v 1.11 2016/12/15 17:10:43 jahn Exp $
+# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/llc.py,v 1.12 2017/03/06 17:21:26 jahn Exp $
 # $Name:  $
 from __future__ import print_function
 import sys
@@ -151,7 +151,7 @@ def _flat2D(fld, center='Atlantic'):
 
     nx = fld.shape[1]
     ny = fld.shape[0]
-    n = ny/nx/4
+    n = ny//nx//4
     
     # eastern and western hemispheres
     eastern=np.concatenate((fld[:n*nx,:],fld[n*nx:2*(n*nx)]),axis=1)
@@ -161,16 +161,16 @@ def _flat2D(fld, center='Atlantic'):
                             tmp[0::n,:].transpose()))
     # Arctic face is special
     arctic  = fld[2*(n*nx):2*(n*nx)+nx,:]
-    arctice = np.concatenate((np.triu(arctic[::-1,:nx/2].transpose()),
-                              np.zeros((nx/2,nx))),axis=1)
-    # arcticw = np.concatenate((arctic[:,nx:nx/2-1:-1].transpose(),
-    #                           np.zeros((nx/2,nx/2)),
-    #                           arctic[nx:nx/2-1:-1,nx/2-1::-1]),axis=1)
-    mskr = np.tri(nx/2)[::-1,:]
-    arcticw = np.concatenate((arctic[0:nx/2,nx:nx/2-1:-1].transpose(),
-                              arctic[nx/2:nx,nx:nx/2-1:-1].transpose()*mskr,
-                              np.triu(arctic[nx:nx/2-1:-1,nx:nx/2-1:-1]),
-                              arctic[nx:nx/2-1:-1,nx/2-1::-1]*mskr),axis=1)
+    arctice = np.concatenate((np.triu(arctic[::-1,:nx//2].transpose()),
+                              np.zeros((nx//2,nx))),axis=1)
+    # arcticw = np.concatenate((arctic[:,nx:nx//2-1:-1].transpose(),
+    #                           np.zeros((nx//2,nx//2)),
+    #                           arctic[nx:nx//2-1:-1,nx//2-1::-1]),axis=1)
+    mskr = np.tri(nx//2)[::-1,:]
+    arcticw = np.concatenate((arctic[0:nx//2,nx:nx//2-1:-1].transpose(),
+                              arctic[nx//2:nx,nx:nx//2-1:-1].transpose()*mskr,
+                              np.triu(arctic[nx:nx//2-1:-1,nx:nx//2-1:-1]),
+                              arctic[nx:nx//2-1:-1,nx//2-1::-1]*mskr),axis=1)
     #
     if center == 'Pacific':
         gfld = np.concatenate( ( np.concatenate((eastern,arctice)),
@@ -186,9 +186,9 @@ def _mds2D(fld,center='Atlantic'):
     
     ni = fld.shape[-1]
     nj = fld.shape[-2]
-    nx = ni/4
+    nx = ni//4
     ny = nx*(3*4+1)
-    n = ny/nx/4
+    n = ny//nx//4
 
     # arctic face
     arcticw = fld[n*nx:,:nx]
@@ -301,7 +301,7 @@ def _faces2D(fld):
     
     nx = fld.shape[-1]
     ny = fld.shape[-2]
-    n = ny/nx/4
+    n = ny//nx//4
     
     # divide into faces
     f = []
@@ -395,7 +395,7 @@ def pcol(*arguments, **kwargs):
 
     nx = data.shape[-1]
     ny = data.shape[-2]
-    n = ny/nx/4
+    n = ny//nx//4
     
     # color range
     cax = [data.min(),data.max()]
@@ -437,7 +437,7 @@ def pcol(*arguments, **kwargs):
     f  = np.copy(f0)
     # fill some gaps at the face boundaries
     for t in [0,2,4]:
-        tp = 2*(t/2)
+        tp = 2*(t//2)
         tpp = tp
         if tp==4: tpp = tp-6
         for k in [0,1,2]:
@@ -448,7 +448,7 @@ def pcol(*arguments, **kwargs):
             f[k][t] = np.concatenate((f[k][t],tmp),axis=0)
 
     for t in [1,3]:
-        tp = 2*(t/2)
+        tp = 2*(t//2)
         for k in [0,1,2]:
             f[k][t] = np.concatenate((f0[k][t],f0[k][2+tp][:1,:]),axis=0)
             if k==2: tmp = np.atleast_2d(np.append(f0[k][3+tp][:1,::-1],fe[k]))
@@ -487,7 +487,7 @@ def pcol(*arguments, **kwargs):
     else:
         rangle = 7.
         # first half of Arctic tile
-        nn = nx/2+1
+        nn = nx//2+1
         xx = np.copy(f[0][t][:nn,:])
         yy = np.copy(f[1][t][:nn,:])
         zz = np.copy(f[2][t][:nn,:])
@@ -501,7 +501,7 @@ def pcol(*arguments, **kwargs):
         else:     x, y =   _sqCoord(xx),_sqCoord(yy)
         ph.append(plt.pcolormesh(x,y,_sqData(zz), **kwargs))
         # second half of Arctic tile
-        nn = nx/2-1
+        nn = nx//2-1
         xx = np.copy(f[0][t][nn:,:])
         yy = np.copy(f[1][t][nn:,:])
         zz = np.copy(f[2][t][nn:,:])
