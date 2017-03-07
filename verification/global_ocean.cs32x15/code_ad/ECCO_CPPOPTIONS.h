@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/ECCO_CPPOPTIONS.h,v 1.12 2015/12/28 17:03:26 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/ECCO_CPPOPTIONS.h,v 1.13 2017/03/07 18:02:38 jmc Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -89,15 +89,18 @@ C ***             External forcing Package                         ***
 C ********************************************************************
 
 C   Bulk formulae related flags.
-#define  ALLOW_ATM_TEMP
-#undef   ALLOW_ATM_WIND
-#define  ALLOW_DOWNWARD_RADIATION
-#define  ALLOW_RUNOFF
-#if (defined (ALLOW_ATM_TEMP) || \
-     defined (ALLOW_ATM_WIND))
+#define ALLOW_ATM_TEMP
+#undef  ALLOW_ATM_WIND
+#define ALLOW_DOWNWARD_RADIATION
+#ifdef ALLOW_ATM_TEMP
 # define ALLOW_BULKFORMULAE
 # undef  ALLOW_BULK_LARGEYEAGER04
 #endif
+
+C-  Other forcing fields
+#define ALLOW_RUNOFF
+#undef  ALLOW_RUNOFTEMP
+#undef  ALLOW_SALTFLX
 
 C   Use ocean_emissivity*lwdwon in lwFlux. This flag should be define
 C   unless to reproduce old results (obtained with inconsistent old code)
@@ -113,16 +116,16 @@ C   Use spatial interpolation to interpolate
 C   forcing files from input grid to model grid.
 #undef USE_EXF_INTERPOLATION
 
-#define EXF_INTERP_USE_DYNALLOC
+#undef EXF_INTERP_USE_DYNALLOC
 #if ( defined (EXF_INTERP_USE_DYNALLOC) & defined (USING_THREADS) )
 # define EXF_IREAD_USE_GLOBAL_POINTER
 #endif
 
 C >>> No Open boundaries
-#undef  ALLOW_OBCSN_CONTROL
-#undef  ALLOW_OBCSS_CONTROL
-#undef  ALLOW_OBCSW_CONTROL
-#undef  ALLOW_OBCSE_CONTROL
+#undef ALLOW_OBCSN_CONTROL
+#undef ALLOW_OBCSS_CONTROL
+#undef ALLOW_OBCSW_CONTROL
+#undef ALLOW_OBCSE_CONTROL
 
 C ********************************************************************
 #endif /* ECCO_CPPOPTIONS_H */

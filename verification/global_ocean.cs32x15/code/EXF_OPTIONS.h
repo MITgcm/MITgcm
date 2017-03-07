@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/EXF_OPTIONS.h,v 1.10 2017/02/03 02:01:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/EXF_OPTIONS.h,v 1.11 2017/03/07 18:01:50 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -170,7 +170,7 @@ C-  Bulk formulae related flags.
 #undef  ALLOW_ATM_WIND
 #define ALLOW_DOWNWARD_RADIATION
 #ifdef ALLOW_ATM_TEMP
-C Note: To use ALLOW_BULKFORMULAE, ALLOW_ATM_TEMP needs to be defined
+C Note: To use ALLOW_BULKFORMULAE or EXF_READ_EVAP, needs #define ALLOW_ATM_TEMP
 # define ALLOW_BULKFORMULAE
 # define ALLOW_BULK_LARGEYEAGER04
 # undef  EXF_READ_EVAP
@@ -220,7 +220,7 @@ C   for interpolation around N & S pole, use the old formulation
 C   (no pole symmetry, single vector-comp interp, reset to 0 zonal-comp @ N.pole)
 #undef EXF_USE_OLD_INTERP_POLE
 
-#define EXF_INTERP_USE_DYNALLOC
+#undef EXF_INTERP_USE_DYNALLOC
 #if ( defined (EXF_INTERP_USE_DYNALLOC) && defined (USING_THREADS) )
 # define EXF_IREAD_USE_GLOBAL_POINTER
 #endif
