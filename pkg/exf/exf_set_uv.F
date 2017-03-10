@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.36 2017/02/21 01:04:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.37 2017/03/10 00:16:11 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -41,9 +41,10 @@ C     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "EXF_INTERP_SIZE.h"
 #include "EXF_PARAM.h"
-#include "EXF_FIELDS.h"
 #include "EXF_CONSTANTS.h"
+#include "EXF_FIELDS.h"
 
 C !INPUT/OUTPUT PARAMETERS:
 C     *VecName        :: vector compon. short name (to print mesg)
@@ -61,6 +62,7 @@ C     *Vec1           :: field array holding next     reccord
 C     *vec_lon0, *vec_lat0 :: longitude and latitude of SouthWest
 C                          :: corner of global input grid for *vec
 C     *vec_nlon, *vec_nlat :: input x-grid and y-grid size for *vec
+C     *_interp_method      :: select interpolation method for *vec
 C     *vec_lon_inc         :: scalar x-grid increment for *vec
 C     *vec_lat_inc         :: vector y-grid increments for *vec
 #endif /* USE_EXF_INTERPOLATION */
@@ -119,6 +121,10 @@ C     msgBuf     :: Informational/error message buffer
 #endif
       INTEGER count0, count1
       INTEGER year0, year1
+# ifndef EXF_INTERP_USE_DYNALLOC
+      _RL     bufArr1( exf_interp_bufferSize )
+      _RL     bufArr2( exf_interp_bufferSize )
+# endif
 #endif /* USE_EXF_INTERPOLATION */
 CEOP
 
@@ -217,21 +223,33 @@ C-    vector interpolation to (xC,yC) locations
      I             uVecFile0, vVecFile0, exf_iprec, count0,
      I             uVec_nlon, uVec_nlat,
      I             uVec_lon0, uVec_lon_inc, uVec_lat0, uVec_lat_inc,
+#ifdef EXF_INTERP_USE_DYNALLOC
      O             tmp_u, tmp_v,
+#else
+     O             tmp_u, tmp_v, bufArr1, bufArr2,
+#endif
      I             xC, yC,
      I             u_interp_method, v_interp_method, myIter, myThid )
           ELSE
 C-    scalar interpolation to (xC,yC) locations
            CALL EXF_INTERP(
      I             uVecFile0, exf_iprec,
+#ifdef EXF_INTERP_USE_DYNALLOC
      O             tmp_u,
+#else
+     O             tmp_u, bufArr1,
+#endif
      I             count0, xC, yC,
      I             uVec_lon0, uVec_lon_inc, uVec_lat0, uVec_lat_inc,
      I             uVec_nlon, uVec_nlat, u_interp_method,
      I             myIter, myThid )
            CALL EXF_INTERP(
      I             vVecFile0, exf_iprec,
+#ifdef EXF_INTERP_USE_DYNALLOC
      O             tmp_v,
+#else
+     O             tmp_v, bufArr2,
+#endif
      I             count0, xC, yC,
      I             vVec_lon0, vVec_lon_inc, vVec_lat0, vVec_lat_inc,
      I             vVec_nlon, vVec_nlat, v_interp_method,
@@ -370,21 +388,33 @@ C-    vector interpolation to (xC,yC) locations
      I             uVecFile1, vVecFile1, exf_iprec, count1,
      I             uVec_nlon, uVec_nlat,
      I             uVec_lon0, uVec_lon_inc, uVec_lat0, uVec_lat_inc,
+#ifdef EXF_INTERP_USE_DYNALLOC
      O             tmp_u, tmp_v,
+#else
+     O             tmp_u, tmp_v, bufArr1, bufArr2,
+#endif
      I             xC, yC,
      I             u_interp_method, v_interp_method, myIter, myThid )
           ELSE
 C-    scalar interpolation to (xC,yC) locations
           CALL EXF_INTERP(
      I             uVecFile1, exf_iprec,
+#ifdef EXF_INTERP_USE_DYNALLOC
      O             tmp_u,
+#else
+     O             tmp_u, bufArr1,
+#endif
      I             count1, xC, yC,
      I             uVec_lon0, uVec_lon_inc, uVec_lat0, uVec_lat_inc,
      I             uVec_nlon, uVec_nlat, u_interp_method,
      I             myIter, myThid )
           CALL EXF_INTERP(
      I             vVecFile1, exf_iprec,
+#ifdef EXF_INTERP_USE_DYNALLOC
      O             tmp_v,
+#else
+     O             tmp_v, bufArr2,
+#endif
      I             count1, xC, yC,
      I             vVec_lon0, vVec_lon_inc, vVec_lat0, vVec_lat_inc,
      I             vVec_nlon, vVec_nlat, v_interp_method,

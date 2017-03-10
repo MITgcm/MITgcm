@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_uv.F,v 1.5 2017/02/21 00:56:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_uv.F,v 1.6 2017/03/10 00:16:11 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -12,7 +12,11 @@ C     !INTERFACE:
      I                inFileU, inFileV, filePrec, irecord,
      I                nxIn, nyIn,
      I                lon_0, lon_inc, lat_0, lat_inc,
+#ifdef EXF_INTERP_USE_DYNALLOC
      O                arrUout, arrVout,
+#else
+     O                arrUout, arrVout, arrUin, arrVin,
+#endif
      I                xG_in, yG,
      I                methodU, methodV, myIter, myThid )
 
@@ -31,6 +35,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "EXF_INTERP_SIZE.h"
 #ifdef ALLOW_DEBUG
 # include "EXF_PARAM.h"
 #endif
@@ -46,19 +51,26 @@ C   lon_inc              :: scalar x-grid increment
 C   lat_inc              :: vector y-grid increments
 C  arrUout     ( _RL )   :: 1rst component (U) output array
 C  arrVout     ( _RL )   :: 2nd  component (V) output array
+#ifndef EXF_INTERP_USE_DYNALLOC
+C  arrUin      ( _RL )   :: 1rst component input field array (loaded from file)
+C  arrVin      ( _RL )   :: 2nd  component input field array (loaded from file)
+#endif
 C   xG_in,  yG           :: coordinates for output grid to interpolate to
 C  methodU, methodV      :: 1,11,21 for bilinear; 2,12,22 for bicubic
 C                        :: 1,2 for tracer; 11,12 for U; 21,22 for V
 C  myIter      (integer) :: current iteration number
 C  myThid      (integer) :: My Thread Id number
-
       CHARACTER*(*) inFileU
       CHARACTER*(*) inFileV
       INTEGER       filePrec, irecord, nxIn, nyIn
       _RL           arrUout(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL           arrVout(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS           xG_in   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS           yG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifndef EXF_INTERP_USE_DYNALLOC
+      _RL           arrUin ( -1:nxIn+2, -1:nyIn+2 )
+      _RL           arrVin ( -1:nxIn+2, -1:nyIn+2 )
+#endif
+      _RS           xG_in  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS           yG     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL           lon_0, lon_inc
 c     _RL           lat_0, lat_inc(nyIn-1)
       _RL           lat_0, lat_inc(*)
@@ -71,8 +83,6 @@ C !FUNCTIONS:
 #endif
 
 C !LOCAL VARIABLES:
-C     arrUin      :: 1rst component input field array (loaded from file)
-C     arrVin      :: 2nd  component input field array (loaded from file)
 C     x_in        :: longitude vector defining input field grid
 C     y_in        :: latitude  vector defining input field grid
 C     w_ind       :: input field longitudinal index, on western side of model grid pt
@@ -80,9 +90,17 @@ C     s_ind       :: input field latitudinal index, on southern side of model gr
 C     bi, bj      :: tile indices
 C     i, j, k, l  :: loop indices
 C     msgBuf      :: Informational/error message buffer
+#ifdef EXF_INTERP_USE_DYNALLOC
+C     arrUin      :: 1rst component input field array (loaded from file)
+C     arrVin      :: 2nd  component input field array (loaded from file)
       _RL      arrUin( -1:nxIn+2, -1:nyIn+2 )
       _RL      arrVin( -1:nxIn+2, -1:nyIn+2 )
-      _RL      x_in(-1:nxIn+2), y_in(-1:nyIn+2)
+      _RL      csLon(-1:nxIn+2), snLon(-1:nxIn+2)
+      _RL      x_in (-1:nxIn+2), y_in (-1:nyIn+2)
+#else /* EXF_INTERP_USE_DYNALLOC */
+      _RL      csLon(-1:exf_max_nLon+2), snLon(-1:exf_max_nLon+2)
+      _RL      x_in (-1:exf_max_nLon+2), y_in (-1:exf_max_nLat+2)
+#endif /* EXF_INTERP_USE_DYNALLOC */
       INTEGER  w_ind(sNx,sNy), s_ind(sNx,sNy)
       INTEGER  bi, bj
       INTEGER  i, j, k, l
@@ -91,7 +109,6 @@ C     msgBuf      :: Informational/error message buffer
       _RS      xG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS      threeSixtyRS
       _RL      yPole, symSign, poleU, poleV
-      _RL      csLon(-1:nxIn+2), snLon(-1:nxIn+2)
       _RL      csdLon, sndLon
       LOGICAL  calcLonCS
       PARAMETER ( threeSixtyRS = 360. )
@@ -104,6 +121,19 @@ C     msgBuf      :: Informational/error message buffer
       _RS      prtPole(-1:4)
 #endif
 CEOP
+
+#ifndef EXF_INTERP_USE_DYNALLOC
+C--   Check size declaration:
+      IF ( nxIn.GT.exf_max_nLon ) THEN
+       STOP 'EXF_INTERP_UV: exf_max_nLon too small'
+      ENDIF
+      IF ( nyIn.GT.exf_max_nLat ) THEN
+       STOP 'EXF_INTERP_UV: exf_max_nLat too small'
+      ENDIF
+      IF ( (nxIn+4)*(nyIn+4).GT.exf_interp_bufferSize ) THEN
+       STOP 'EXF_INTERP_UV: exf_interp_bufferSize too small'
+      ENDIF
+#endif /* ndef EXF_INTERP_USE_DYNALLOC */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  Load inut field

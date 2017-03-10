@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.36 2017/02/21 00:56:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.37 2017/03/10 00:16:11 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -10,7 +10,11 @@ C     !ROUTINE: EXF_INTERP
 C     !INTERFACE:
        SUBROUTINE EXF_INTERP(
      I                inFile, filePrec,
+#ifdef EXF_INTERP_USE_DYNALLOC
      O                arrayout,
+#else
+     O                arrayout, arrayin,
+#endif
      I                irecord, xG_in, yG,
      I                lon_0, lon_inc, lat_0, lat_inc,
      I                nxIn, nyIn, method, myIter, myThid )
@@ -29,6 +33,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "EXF_INTERP_SIZE.h"
 #ifdef ALLOW_DEBUG
 # include "EXF_PARAM.h"
 #endif
@@ -37,6 +42,9 @@ C !INPUT/OUTPUT PARAMETERS:
 C  inFile      (string)  :: name of the binary input file (direct access)
 C  filePrec    (integer) :: number of bits per word in file (32 or 64)
 C  arrayout    ( _RL )   :: output array
+#ifndef EXF_INTERP_USE_DYNALLOC
+C  arrayin     ( _RL )   :: input field array (loaded from file)
+#endif
 C  irecord     (integer) :: record number to read
 C     xG_in,yG           :: coordinates for output grid to interpolate to
 C     lon_0, lat_0       :: lon and lat of sw corner of global input grid
@@ -47,10 +55,12 @@ C     method             :: 1,11,21 for bilinear; 2,12,22 for bicubic
 C                        :: 1,2 for tracer; 11,12 for U; 21,22 for V
 C  myIter      (integer) :: current iteration number
 C  myThid      (integer) :: My Thread Id number
-
       CHARACTER*(*) inFile
       INTEGER       filePrec, irecord, nxIn, nyIn
       _RL           arrayout(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifndef EXF_INTERP_USE_DYNALLOC
+      _RL           arrayin ( -1:nxIn+2, -1:nyIn+2 )
+#endif
       _RS           xG_in   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS           yG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL           lon_0, lon_inc
@@ -65,7 +75,6 @@ C !FUNCTIONS:
 #endif
 
 C !LOCAL VARIABLES:
-C     arrayin     :: input field array (loaded from file)
 C     x_in        :: longitude vector defining input field grid
 C     y_in        :: latitude  vector defining input field grid
 C     w_ind       :: input field longitudinal index, on western side of model grid pt
@@ -73,8 +82,13 @@ C     s_ind       :: input field latitudinal index, on southern side of model gr
 C     bi, bj      :: tile indices
 C     i, j, k, l  :: loop indices
 C     msgBuf      :: Informational/error message buffer
+#ifdef EXF_INTERP_USE_DYNALLOC
+C     arrayin     :: input field array (loaded from file)
       _RL      arrayin( -1:nxIn+2, -1:nyIn+2 )
       _RL      x_in(-1:nxIn+2), y_in(-1:nyIn+2)
+#else /* EXF_INTERP_USE_DYNALLOC */
+      _RL      x_in(-1:exf_max_nLon+2), y_in(-1:exf_max_nLat+2)
+#endif /* EXF_INTERP_USE_DYNALLOC */
       INTEGER  w_ind(sNx,sNy), s_ind(sNx,sNy)
       INTEGER  bi, bj
       INTEGER  i, j, k, l
@@ -93,6 +107,19 @@ C     msgBuf      :: Informational/error message buffer
       _RS      prtPole(-1:4)
 #endif
 CEOP
+
+#ifndef EXF_INTERP_USE_DYNALLOC
+C--   Check size declaration:
+      IF ( nxIn.GT.exf_max_nLon ) THEN
+       STOP 'EXF_INTERP: exf_max_nLon too small'
+      ENDIF
+      IF ( nyIn.GT.exf_max_nLat ) THEN
+       STOP 'EXF_INTERP: exf_max_nLat too small'
+      ENDIF
+      IF ( (nxIn+4)*(nyIn+4).GT.exf_interp_bufferSize ) THEN
+       STOP 'EXF_INTERP: exf_interp_bufferSize too small'
+      ENDIF
+#endif /* ndef EXF_INTERP_USE_DYNALLOC */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  Load inut field

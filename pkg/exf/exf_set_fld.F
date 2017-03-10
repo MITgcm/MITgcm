@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_fld.F,v 1.1 2017/02/21 01:04:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_fld.F,v 1.2 2017/03/10 00:16:11 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -42,6 +42,7 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#include "EXF_INTERP_SIZE.h"
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
 
@@ -64,6 +65,8 @@ C     fld_nlon, fld_nlat   :: input x-grid and y-grid size
 C     fld_lon_inc          :: scalar x-grid increment
 C     fld_lat_inc          :: vector y-grid increments
 C     fld_xout, fld_yout   :: coordinates for output grid
+C     fld_xout, fld_yout   :: coordinates for output grid
+C     interp_method        :: select interpolation method (integer)
 #endif /* USE_EXF_INTERPOLATION */
 C     myTime         :: Current time (in sec) in simulation
 C     myIter         :: Current iteration number
@@ -104,7 +107,10 @@ C     msgBuf     :: Informational/error message buffer
       CHARACTER*(128) locFile0, locFile1
 #ifdef USE_EXF_INTERPOLATION
       CHARACTER*(MAX_LEN_FNAM) out_file
-#endif
+# ifndef EXF_INTERP_USE_DYNALLOC
+      _RL     bufArr( exf_interp_bufferSize )
+# endif
+#endif /* USE_EXF_INTERPOLATION */
 CEOP
 
       IF ( fldFile .NE. ' ' .AND. fldPeriod .NE. 0. ) THEN
@@ -183,7 +189,11 @@ C-    get record numbers and interpolation factor for this field
             IF ( interp_method.GE.1 ) THEN
               CALL EXF_INTERP(
      I             locFile0, exf_iprec,
+#ifdef EXF_INTERP_USE_DYNALLOC
      O             fld1,
+#else
+     O             fld1, bufArr,
+#endif
      I             count0, fld_xout, fld_yout,
      I             fld_lon0, fld_lon_inc, fld_lat0, fld_lat_inc,
      I             fld_nlon, fld_nlat, interp_method, myIter, myThid )
@@ -238,7 +248,11 @@ C-    end if ( first ) block
             IF ( interp_method.GE.1 ) THEN
               CALL EXF_INTERP(
      I             locFile1, exf_iprec,
+#ifdef EXF_INTERP_USE_DYNALLOC
      O             fld1,
+#else
+     O             fld1, bufArr,
+#endif
      I             count1, fld_xout, fld_yout,
      I             fld_lon0, fld_lon_inc, fld_lat0, fld_lat_inc,
      I             fld_nlon, fld_nlat, interp_method, myIter, myThid )
