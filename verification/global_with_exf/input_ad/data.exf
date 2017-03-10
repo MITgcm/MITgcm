@@ -4,7 +4,7 @@
  &EXF_NML_01
  exf_iprec         = 32,
  exf_debugLev      = 3,
- readStressOnAgrid = .TRUE.,
+#readStressOnAgrid = .TRUE.,
  &
 
 # *********************
@@ -66,7 +66,7 @@
  sflux_nlon    = 90,
  sflux_nlat    = 40,
 #
- ustress_lon0    = 0.,
+ ustress_lon0    = 2.,
  ustress_lon_inc = 4.,
  ustress_lat0    = -78.,
  ustress_lat_inc = 39*4.,
@@ -75,11 +75,12 @@
 #
  vstress_lon0    = 2.,
  vstress_lon_inc = 4.,
- vstress_lat0    = -80.,
+ vstress_lat0    = -78.,
  vstress_lat_inc = 39*4.,
  vstress_nlon    = 90,
  vstress_nlat    = 40,
 #
+ climsst_interpMethod = 1,
  climsst_lon0    = 2.,
  climsst_lon_inc = 4.,
  climsst_lat0    = -78.,
@@ -87,6 +88,7 @@
  climsst_nlon    = 90,
  climsst_nlat    = 40,
 #
+ climsss_interpMethod = 1,
  climsss_lon0    = 2.,
  climsss_lon_inc = 4.,
  climsss_lat0    = -78.,
