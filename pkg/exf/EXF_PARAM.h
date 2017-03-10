@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.42 2017/03/03 00:57:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.43 2017/03/10 00:14:27 jmc Exp $
 C $Name:  $
 C
 C     ==================================================================
@@ -105,6 +105,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Description of contents of surface boundary condition files
 C     Note: fieldperiod=0 means input file is one time-constant field
 C           fieldperiod=-12 means input file contains 12 monthly means
+C-    for each field:
+C     {fld}file       :: file-name for this field
+C     {fld}startdate1 :: field starting date (YYYYMMDD)
+C     {fld}startdate1 :: field starting date (YYYYMMDD)
+C     {fld}startdate2 :: field starting date (HHMMSS)
+C     {fld}StartTime  :: corresponding starting time (in sec) for this field
+C     {fld}period     :: time period (in sec) between 2 reccords
+C     {fld}RepCycle   :: time duration of a repeating cycle
+C     {fld}const      :: uniform default field value
 
       INTEGER hfluxstartdate1
       INTEGER hfluxstartdate2
@@ -376,7 +385,7 @@ C     Calendar data.
       _RL     climvstr_exfremo_slope
       character*1 climvstrmask
 
-C     the following variables are used in conjunction with pkg/obcs
+C-    The following variables are used in conjunction with pkg/obcs
 C     to describe S/T/U/V open boundary condition files
       INTEGER obcsNstartdate1
       INTEGER obcsNstartdate2
@@ -399,7 +408,7 @@ C     to describe S/T/U/V open boundary condition files
       _RL     obcsWperiod
       _RL     obcsWrepCycle
 
-C     the following variables are used in conjunction with pkg/obcs
+C-    The following variables are used in conjunction with pkg/obcs
 C     and pkg/seaice to describe area, heff, hsnow, hsalt, uice,
 C     and vice open boundary condition files
       INTEGER siobNstartdate1
@@ -423,7 +432,7 @@ C     and vice open boundary condition files
       _RL     siobWperiod
       _RL     siobWrepCycle
 
-C     File names.
+C-    File names.
       character*(128) hfluxfile
       character*(128) atempfile
       character*(128) aqhfile
@@ -666,10 +675,11 @@ C     file precision and field type
       INTEGER exf_iprec
       INTEGER exf_iprec_obcs
 
-C     exf_inscal_*      input scaling factors
-C     exf_offset_atemp  input air temperature offset
-C                       (for conversion from C to K, if needed)
-C     exf_outscale_*    output scaling factors
+C-    Scaling factors:
+C     exf_inscal_{fld}   :: input scaling factors
+C     exf_offset_atemp   :: input air temperature offset
+C                        :: (for conversion from C to K, if needed)
+C     exf_outscale_{fld} :: output scaling factors
 
       _RL     exf_inscal_hflux
       _RL     exf_inscal_sflux
@@ -748,39 +758,37 @@ C     exf_outscale_*    output scaling factors
      &                      exf_outscal_areamask
 
 #ifndef USE_EXF_INTERPOLATION
-C-- set dummy dimension 1
-      INTEGER    exf_interp_bufferSize
-      PARAMETER( exf_interp_bufferSize = 1 )
+C-  Set dummy dimension to 1
       INTEGER MAX_LAT_INC
       PARAMETER(MAX_LAT_INC = 1)
 #else /* USE_EXF_INTERPOLATION */
-C  To read input data without dynamical allocation (EXF_INTERP_USE_DYNALLOC undef),
-C  buffer size currently set to 65000 (allows to read-in a 1x1 global data set)
-C  Increase to 140000 to accommodate for ECMWF-INTERIM
-      INTEGER    exf_interp_bufferSize
-      PARAMETER( exf_interp_bufferSize = 140000 )
-C for lat interpolation, arraysize currently set to 1279 max data values
-C to accomodate ECMWF operational analysis
+C-  To read input data without dynamical allocation (INTERP_USE_DYNALLOC undef):
+C   Note: exf_interp_bufferSize has been moved to EXF_INTERP_SIZE.h
+c     INTEGER    exf_interp_bufferSize
+c     PARAMETER( exf_interp_bufferSize = 140000 )
+
+C-- For lat interpolation, arraysize currently set to 1279 max data values
+C   to accomodate ECMWF operational analysis
       INTEGER MAX_LAT_INC
       PARAMETER(MAX_LAT_INC = 1279)
 
 C-- Interpolation parameters (for each input field):
-C  {inputField}_lon0    :: longitude of the 1rst point (South-East corner)
-C  {inputField}_lon_inc :: longitude increment (uniform)
-C  {inputField}_lat0    :: latitude  of the 1rst point (South-East corner)
-C  {inputField}_lat_inc :: latitude  increment (vector, fct of latitude only)
-C  {inputField}_nlon    :: input filed 1rst dim, longitudinal direction
-C  {inputField}_nlat    :: input filed 2nd  dim, latitudinal  direction
-C  {inputField}_interpMethod :: interpolation method: =0 : no interpolation ;
-C                            :: =1,11,21 : bilinear ; =2,12,22 : bicubic ;
-C                            :: =1,2 for tracer ; =11,12 for U ; =21,22 for V.
+C   {inputField}_lon0    :: longitude of the 1rst point (South-East corner)
+C   {inputField}_lon_inc :: longitude increment (uniform)
+C   {inputField}_lat0    :: latitude  of the 1rst point (South-East corner)
+C   {inputField}_lat_inc :: latitude  increment (vector, fct of latitude only)
+C   {inputField}_nlon    :: input filed 1rst dim, longitudinal direction
+C   {inputField}_nlat    :: input filed 2nd  dim, latitudinal  direction
+C   {inputField}_interpMethod :: interpolation method: =0 : no interpolation ;
+C                             :: =1,11,21 : bilinear ; =2,12,22 : bicubic ;
+C                             :: =1,2 for tracer ; =11,12 for U ; =21,22 for V.
 C-  Global parameters (for all fields):
-C    exf_output_interp  :: output directly interpolation result (before
-C                          rescaling, rotation or time-interp)
+C    exf_output_interp   :: output directly interpolation result (before
+C                           rescaling, rotation or time-interp)
 C-  Internal parameters, for 2 components vector field:
-C    uvInterp_stress    :: interpolate wind-stress u & v components together
-C    uvInterp_wind      :: interpolate wind        u & v components together
-C    uvInterp_climstr   :: interpolate clim stress u & v components together
+C    uvInterp_stress     :: interpolate wind-stress u & v components together
+C    uvInterp_wind       :: interpolate wind        u & v components together
+C    uvInterp_climstr    :: interpolate clim stress u & v components together
       _RL ustress_lon0, ustress_lon_inc
       _RL ustress_lat0, ustress_lat_inc(MAX_LAT_INC)
       INTEGER ustress_nlon, ustress_nlat, ustress_interpMethod
