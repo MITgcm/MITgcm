@@ -1,14 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2311 2017/03/07 15:31:59 gforget Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2312 2017/03/10 01:35:02 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - interpolation with #undef EXF_INTERP_USE_DYNALLOC: move buffer size
+    definition outside EXF_PARAM.h in new header file: EXF_INTERP_SIZE.h;
+    use fixed size buffer (passed to S/R EXF_INTERP & EXF_INTERP_UV) to
+    avoid any dynamic allocation ; to be done: update of exf_check.F
+o verification/global_with_exf:
+  - switch on exf interpolation in AD test (just like the forward test)
 o pkg/mom_vecinv:
   - add storage directives to avoid recomputations within mom_vecinv.F
-    which were generating seg. fault with gfortran -devel 
+    which were generating seg. fault with gfortran -devel
 o pkg/ctrl, pkg/smooth:
-  - initialize array halos which were generating seg. fault with 
+  - initialize array halos which were generating seg. fault with
     gfortran -devel in adjoint mode
 o pkg/exf:
   - for each input field, enable to specify a field specific repeat-cycle
