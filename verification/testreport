@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.211 2017/01/11 23:21:21 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.212 2017/03/12 16:34:11 jmc Exp $
 #  $Name:  $
 #
 
@@ -1782,16 +1782,18 @@ if test "x$ADDRESSES" = xNONE -o "x$ADDRESSES" = x ; then
     echo "No results email was sent."
 else
     if test "x$SENDCMD" != x ; then
+	SendOpt='' ; headCMD=`echo $SENDCMD | awk '{print $1}'`
+	if test $headCMD != 'scp' ; then SendOpt='-s MITgcm-test -m 3555000' ; fi
 	if [ $verbose -gt 1 ]; then
-	   echo " run: $SENDCMD -s MITgcm-test -m 3555000 ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES"
+	   echo " run: $SENDCMD $SendOpt ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES"
 	fi
 	tar -cf ${SAVDIR}/${DRESULTS}".tar" $DRESULTS > /dev/null 2>&1 \
 	    && gzip ${SAVDIR}/${DRESULTS}".tar" \
-	    && $SENDCMD -s MITgcm-test -m 3555000 ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES
+	    && $SENDCMD $SendOpt ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
 	    echo
-	    echo "Warning: The tar, gzip, & mpack step failed.  Please send email"
+	    echo "Warning: The tar, gzip, & $SENDCMD step failed.  Please send email"
 	    echo "  to <MITgcm-support@mitgcm.org> for help.  You may copy the "
 	    echo "  summary of results from the directory \"$DRESULTS\"."
 	    echo
