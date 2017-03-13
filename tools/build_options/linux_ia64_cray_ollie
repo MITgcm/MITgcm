@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_ollie,v 1.6 2016/08/29 14:39:28 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_ollie,v 1.7 2017/03/13 09:28:07 mlosch Exp $
 # $Name:  $
 
 # Tested on cray CS400 ollie.awi.de 
@@ -60,6 +60,23 @@ fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
 CFLAGS="-O0 $MCMODEL"
+
+
+if [ "x$NETCDF_ROOT" != x ] ; then
+    INCLUDEDIRS="${NETCDF_ROOT}/include"
+    INCLUDES="-I${NETCDF_ROOT}/include"
+    LIBS="-L${NETCDF_ROOT}/lib"
+elif [ "x$NETCDF_HOME" != x ]; then
+    INCLUDEDIRS="${NETCDF_HOME}/include"
+    INCLUDES="-I${NETCDF_HOME}/include"
+    LIBS="-L${NETCDF_HOME}/lib"
+elif [ "x$NETCDF_INC" != x -a "x$NETCDF_LIB" != x ]; then
+    NETCDF_INC=`echo $NETCDF_INC | sed 's/-I//g'`
+    NETCDF_LIB=`echo $NETCDF_LIB | sed 's/-L//g'`
+    INCLUDEDIRS="${NETCDF_INC}"
+    INCLUDES="-I${NETCDF_INC}"
+    LIBS="-L${NETCDF_LIB}"
+fi
 
 if [ -n "$MPI_ROOT" -a -z "$MPI_INC_DIR" ]; then
     MPI_INC_DIR=${MPI_ROOT}/include
