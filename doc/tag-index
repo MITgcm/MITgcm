@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2312 2017/03/10 01:35:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2313 2017/03/13 23:15:19 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -8,7 +8,11 @@ o pkg/exf:
   - interpolation with #undef EXF_INTERP_USE_DYNALLOC: move buffer size
     definition outside EXF_PARAM.h in new header file: EXF_INTERP_SIZE.h;
     use fixed size buffer (passed to S/R EXF_INTERP & EXF_INTERP_UV) to
-    avoid any dynamic allocation ; to be done: update of exf_check.F
+    avoid any dynamic allocation ;
+  - S/R EXF_CHECK: add new check & stop when file-name is defined but not
+    read-in ; add warning when file is read-in but not used within pkg/exf ;
+    + check for buffer-size (if #undef EXF_INTERP_USE_DYNALLOC).
+  - update exf_summary.F (print {FLD}RepCycle).
 o verification/global_with_exf:
   - switch on exf interpolation in AD test (just like the forward test)
 o pkg/mom_vecinv:
