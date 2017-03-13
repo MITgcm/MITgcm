@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.43 2017/02/12 00:55:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.44 2017/03/13 23:13:01 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -6,6 +6,7 @@ C $Name:  $
 C--  File exf_summary.F: Routines to print out EXF settings
 C--   Contents
 C--   o EXF_SUMMARY
+C--   o EXF_FLD_SUMMARY
 C--   o EXF_PRINT_INTERP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -58,7 +59,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
       INTEGER il
-      LOGICAL prtBlkLn
+      LOGICAL prtBlkLn, addBlkLn
       CHARACTER*1 blkLin
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -278,30 +279,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   For each data set used the summary prints the calendar data
 C     and the corresponding file from which the data will be read.
       prtBlkLn = .FALSE.
+      addBlkLn = .TRUE.
 
 C--   Zonal wind stress.
       IF ( .NOT.useAtmWind .AND. ustressfile.NE.' ' ) THEN
-       il = ILNBLNK(ustressfile)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Zonal wind stress forcing starts at         ',
-     &     ustressStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Zonal wind stress forcing period is         ',
-     &     ustressperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Zonal wind stress forcing is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', ustressfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Zonal wind stress forcing',
+     I      ustressfile, ustressRepCycle, ustressperiod,
+     I      ustressStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'ustress',
      &  ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
@@ -312,27 +296,9 @@ C--   Zonal wind stress.
 
 C--   Meridional wind stress.
       IF ( .NOT.useAtmWind .AND. vstressfile.NE.' ' ) THEN
-       il = ILNBLNK(vstressfile)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Meridional wind stress forcing starts at    ',
-     &     vstressStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Meridional wind stress forcing period is    ',
-     &     vstressperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Meridional wind stress forcing is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', vstressfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Meridional wind stress forcing',
+     I      vstressfile, vstressRepCycle, vstressperiod,
+     I      vstressStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'vstress',
      &  vstress_lon0, vstress_lon_inc, vstress_lat0, vstress_lat_inc,
@@ -347,27 +313,9 @@ C--   Meridional wind stress.
 
 C--   Heat flux.
       IF ( hfluxfile.NE.' ' ) THEN
-       il = ILNBLNK(hfluxfile)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Heat flux forcing starts at                 ',
-     &     hfluxStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Heat flux forcing period is                 ',
-     &     hfluxperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Heat flux forcing is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', hfluxfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Heat flux forcing',
+     I      hfluxfile, hfluxRepCycle, hfluxperiod,
+     I      hfluxStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'hflux',
      &  hflux_lon0, hflux_lon_inc, hflux_lat0, hflux_lat_inc,
@@ -378,27 +326,9 @@ C--   Heat flux.
 
 C--   Fresh-Water flux.
       IF ( sfluxfile.NE.' ' ) THEN
-       il = ILNBLNK(sfluxfile)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Salt flux forcing starts at                 ',
-     &     sfluxStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Salt flux forcing period is                 ',
-     &     sfluxperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Salt flux forcing is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', sfluxfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Fresh-Water flux forcing',
+     I      sfluxfile, sfluxRepCycle, sfluxperiod,
+     I      sfluxStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'sflux',
      &  sflux_lon0, sflux_lon_inc, sflux_lat0, sflux_lat_inc,
@@ -410,27 +340,9 @@ C--   Fresh-Water flux.
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
 C--   Net shortwave.
       IF ( swfluxfile.NE.' ' ) THEN
-       il = ILNBLNK(swfluxfile)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Net shortwave flux forcing starts at      ',
-     &     swfluxStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Net shortwave flux forcing period is      ',
-     &     swfluxperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Net shortwave flux forcing is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', swfluxfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Net shortwave flux forcing',
+     I      swfluxfile, swfluxRepCycle, swfluxperiod,
+     I      swfluxStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'swflux',
      &  swflux_lon0, swflux_lon_inc, swflux_lat0, swflux_lat_inc,
@@ -442,27 +354,9 @@ C--   Net shortwave.
 
 C--   Zonal wind.
       IF ( useAtmWind .AND. uwindfile.NE.' ' ) THEN
-       il = ILNBLNK(uwindfile)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Zonal wind forcing starts at                ',
-     &     uwindStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Zonal wind forcing period is                ',
-     &     uwindperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Zonal wind forcing is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', uwindfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Zonal wind forcing',
+     I      uwindfile, uwindRepCycle, uwindperiod,
+     I      uwindStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'uwind',
      &  uwind_lon0, uwind_lon_inc, uwind_lat0, uwind_lat_inc,
@@ -473,27 +367,9 @@ C--   Zonal wind.
 
 C--   Meridional wind.
       IF ( useAtmWind .AND. vwindfile.NE.' ' ) THEN
-       il = ILNBLNK(vwindfile)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Meridional wind forcing starts at           ',
-     &     vwindStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Meridional wind forcing period is           ',
-     &     vwindperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Meridional wind forcing is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', vwindfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Meridional wind forcing',
+     I      vwindfile, vwindRepCycle, vwindperiod,
+     I      vwindStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'vwind',
      &  vwind_lon0, vwind_lon_inc, vwind_lat0, vwind_lat_inc,
@@ -509,27 +385,9 @@ C--   Meridional wind.
 #ifdef ALLOW_ATM_TEMP
 C--   Atmospheric temperature.
       IF ( atempfile.NE.' ' ) THEN
-       il = ILNBLNK(atempfile)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Atmospheric temperature starts at           ',
-     &     atempStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Atmospheric temperature period is           ',
-     &     atempperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Atmospheric temperature is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', atempfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Atmospheric temperature',
+     I      atempfile, atempRepCycle, atempperiod,
+     I      atempStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'atemp',
      &  atemp_lon0, atemp_lon_inc, atemp_lat0, atemp_lat_inc,
@@ -540,27 +398,9 @@ C--   Atmospheric temperature.
 
 C--   Atmospheric specific humidity.
       IF ( aqhfile.NE.' ' ) THEN
-       il = ILNBLNK(aqhfile)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Atmospheric specific humidity starts at     ',
-     &     aqhStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Atmospheric specific humidity period is     ',
-     &     aqhperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Atmospheric specific humidity is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', aqhfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Atmospheric specific humidity',
+     I      aqhfile, aqhRepCycle, aqhperiod,
+     I      aqhStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'aqh',
      &  aqh_lon0, aqh_lon_inc, aqh_lat0, aqh_lat_inc,
@@ -583,27 +423,9 @@ C--   Turbulent heat flues
 
 C--   Sensible heat flux
       IF ( hs_file.NE.' ' ) THEN
-       il = ILNBLNK(hs_file)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Sensible heat flux (+=down) starts at       ',
-     &     hs_StartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Sensible heat flux (+=down) period is       ',
-     &     hs_period
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Sensible heat flux (+=down) is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', hs_file(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Sensible heat flux (+=down)',
+     I      hs_file, hs_RepCycle, hs_period,
+     I      hs_StartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'hs',
      &  hs_lon0, hs_lon_inc, hs_lat0, hs_lat_inc,
@@ -614,27 +436,9 @@ C--   Sensible heat flux
 
 C--   Latent heat flux
       IF ( hl_file.NE.' ' ) THEN
-       il = ILNBLNK(hl_file)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Latent heat flux (+=down) starts at         ',
-     &     hl_StartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Latent heat flux (+=down) period is         ',
-     &     hl_period
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Latent heat flux (+=down) is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', hl_file(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Latent heat flux (+=down)',
+     I      hl_file, hl_RepCycle, hl_period,
+     I      hl_StartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'hl',
      &  hl_lon0, hl_lon_inc, hl_lat0, hl_lat_inc,
@@ -652,27 +456,9 @@ C--   Latent heat flux
 
 C--   Net longwave.
       IF ( lwfluxfile.NE.' ' ) THEN
-       il = ILNBLNK(lwfluxfile)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Net longwave flux forcing starts at       ',
-     &     lwfluxStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Net longwave flux forcing period is       ',
-     &     lwfluxperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     &'   Net longwave flux forcing is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', lwfluxfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Net longwave flux forcing',
+     I      lwfluxfile, lwfluxRepCycle, lwfluxperiod,
+     I      lwfluxStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'lwflux',
      &  lwflux_lon0, lwflux_lon_inc, lwflux_lat0, lwflux_lat_inc,
@@ -695,27 +481,11 @@ C--   Evaporation.
      &                    SQUEEZE_RIGHT, myThid )
 # ifdef ALLOW_ATM_TEMP
       IF ( evapfile.NE.' ' ) THEN
-       il = ILNBLNK(evapfile)
-c      CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-c    &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Evaporation starts at     ',
-     &     evapStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Evaporation period is     ',
-     &     evapperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Evaporation is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', evapfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       addBlkLn = .FALSE.
+       CALL EXF_FLD_SUMMARY( 'Evaporation',
+     I      evapfile, evapRepCycle, evapperiod,
+     I      evapStartTime, useExfYearlyFields, addBlkLn, myThid )
+       addBlkLn = .TRUE.
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'evap',
      &  evap_lon0, evap_lon_inc, evap_lat0, evap_lat_inc,
@@ -734,27 +504,9 @@ c    &                     SQUEEZE_RIGHT, myThid )
 #ifdef ALLOW_ATM_TEMP
 C--   Precipitation.
       IF ( precipfile.NE.' ' ) THEN
-       il = ILNBLNK(precipfile)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Precipitation data starts at                ',
-     &     precipStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Precipitation data period is                ',
-     &     precipperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Precipitation data is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', precipfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Precipitation data',
+     I      precipfile, precipRepCycle, precipperiod,
+     I      precipStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'precip',
      &  precip_lon0, precip_lon_inc, precip_lat0, precip_lat_inc,
@@ -765,27 +517,9 @@ C--   Precipitation.
 
 C--   Snow Precipitation
       IF ( snowprecipfile.NE.' ' ) THEN
-       il = ILNBLNK(snowprecipfile)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Snow Precipitation data starts at           ',
-     &     snowprecipStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Snow Precipitation data period is           ',
-     &     snowprecipperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Snow Precipitation data is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', snowprecipfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Snow Precipitation data',
+     I      snowprecipfile, snowprecipRepCycle, snowprecipperiod,
+     I      snowprecipStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'snowprecip',
      &  snowprecip_lon0, snowprecip_lon_inc, snowprecip_lat0,
@@ -808,27 +542,11 @@ C--   Runoff.
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       IF ( runofffile.NE.' ' ) THEN
-       il = ILNBLNK(runofffile)
-c      CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-c    &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Runoff starts at     ',
-     &     runoffStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Runoff period is     ',
-     &     runoffperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Runoff is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', runofffile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       addBlkLn = .FALSE.
+       CALL EXF_FLD_SUMMARY( 'Runoff data',
+     I      runofffile, runoffRepCycle, runoffperiod,
+     I      runoffStartTime, useExfYearlyFields, addBlkLn, myThid )
+       addBlkLn = .TRUE.
 # ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'runoff',
      &  runoff_lon0, runoff_lon_inc, runoff_lat0, runoff_lat_inc,
@@ -843,19 +561,21 @@ c    &                     SQUEEZE_RIGHT, myThid )
       ENDIF
 # ifdef ALLOW_RUNOFTEMP
       WRITE(msgBuf,'(A)')
-     &'// ALLOW_RUNOFTEMP:                   defined'
+     &'// ALLOW_RUNOFTEMP:                    defined'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       IF ( runoftempfile.NE.' ' ) THEN
+c      addBlkLn = .FALSE.
+c      CALL EXF_FLD_SUMMARY( 'Runoff temp.',
+c    I      runoftempfile, runoffRepCycle, runoffperiod,
+c    I      runoffStartTime, useExfYearlyFields, addBlkLn, myThid )
+c      addBlkLn = .TRUE.
        il = ILNBLNK(runoftempfile)
-c      CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-c    &                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A)')
      & '   Runoff temp. is read from file:'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', runoftempfile(1:il), ' <<'
+       WRITE(msgBuf,'(3A)') '   >> ', runoftempfile(1:il), ' <<'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        prtBlkLn = .TRUE.
@@ -885,27 +605,9 @@ C--   Salt-Flux
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       IF ( saltflxfile.NE.' ' ) THEN
-       il = ILNBLNK(saltflxfile)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Net upward Salt-Flux forcing starts at      ',
-     &     saltflxStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Net upward Salt-Flux forcing period is      ',
-     &     saltflxperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Net upward Salt-Flux forcing is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', saltflxfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Net upward Salt-Flux forcing',
+     I      saltflxfile, saltflxRepCycle, saltflxperiod,
+     I      saltflxStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'saltflx',
      &  saltflx_lon0, saltflx_lon_inc, saltflx_lat0, saltflx_lat_inc,
@@ -923,27 +625,9 @@ C--   Salt-Flux
 #ifdef ALLOW_DOWNWARD_RADIATION
 C--   Downward shortwave.
       IF ( swdownfile.NE.' ' ) THEN
-       il = ILNBLNK(swdownfile)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Downward shortwave flux forcing starts at      ',
-     &     swdownStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Downward shortwave flux forcing period is      ',
-     &     swdownperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Downward shortwave flux forcing is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', swdownfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Downward shortwave flux',
+     I      swdownfile, swdownRepCycle, swdownperiod,
+     I      swdownStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'swdown',
      &  swdown_lon0, swdown_lon_inc, swdown_lat0, swdown_lat_inc,
@@ -954,27 +638,9 @@ C--   Downward shortwave.
 
 C--   Downward longwave.
       IF ( lwdownfile.NE.' ' ) THEN
-       il = ILNBLNK(lwdownfile)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Downward longwave flux forcing starts at       ',
-     &     lwdownStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Downward longwave flux forcing period is       ',
-     &     lwdownperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Downward longwave flux forcing is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', lwdownfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Downward longwave flux',
+     I      lwdownfile, lwdownRepCycle, lwdownperiod,
+     I      lwdownStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'lwdown',
      &  lwdown_lon0, lwdown_lon_inc, lwdown_lat0, lwdown_lat_inc,
@@ -987,27 +653,9 @@ C--   Downward longwave.
 #ifdef ATMOSPHERIC_LOADING
 C--   Atmospheric pressure.
       IF ( apressurefile.NE.' ' ) THEN
-       il = ILNBLNK(apressurefile)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Atmospheric pressure forcing starts at      ',
-     &     apressureStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Atmospheric pressure forcing period is      ',
-     &     apressureperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Atmospheric pressureforcing is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', apressurefile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Atmospheric pressure forcing',
+     I      apressurefile, apressureRepCycle, apressureperiod,
+     I      apressureStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'apressure', apressure_lon0,
      &  apressure_lon_inc, apressure_lat0, apressure_lat_inc,
@@ -1018,29 +666,11 @@ C--   Atmospheric pressure.
 #endif /* ATMOSPHERIC_LOADING */
 
 #ifdef EXF_SEAICE_FRACTION
-C--   fractional ice-covered area MASK.
+C--   Fractional ice-covered area
       IF ( areamaskfile.NE.' ' ) THEN
-       il = ILNBLNK(areamaskfile)
-       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   fractional ice-covered area MASK starts at      ',
-     &     areamaskStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   fractional ice-covered area MASK period is      ',
-     &     areamaskperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   fractional ice-covered area MASK is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', areamaskfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Fractional ice-covered area',
+     I      areamaskfile, areamaskRepCycle, areamaskperiod,
+     I      areamaskStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'areamask', areamask_lon0,
      &  areamask_lon_inc, areamask_lat0, areamask_lat_inc,
@@ -1069,6 +699,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       prtBlkLn = .FALSE.
+      addBlkLn = .FALSE.
 
 C     For each data set used the summary prints the calendar data
 C     and the corresponding file from which the data will be read.
@@ -1084,27 +715,9 @@ C     number of intervals during a given year.
      &                    SQUEEZE_RIGHT, myThid )
 C     Relaxation to SST climatology.
       IF ( climsstfile .NE. ' ' ) THEN
-       il = ILNBLNK(climsstfile)
-c      CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-c    &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Climatological SST starts at         ',
-     &     climsstStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Climatological SST period is         ',
-     &     climsstperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Climatological SST is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', climsstfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Climatological SST',
+     I      climsstfile, climsstRepCycle, climsstperiod,
+     I      climsstStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'climsst',
      &  climsst_lon0, climsst_lon_inc, climsst_lat0, climsst_lat_inc,
@@ -1136,27 +749,9 @@ c     ENDIF
      &                    SQUEEZE_RIGHT, myThid )
 C     Relaxation to SSS climatology.
       IF ( climsssfile .NE. ' ' ) THEN
-       il = ILNBLNK(climsssfile)
-c      CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
-c    &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Climatological SSS starts at         ',
-     &     climsssStartTime
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F12.0)')
-     & '   Climatological SSS period is         ',
-     &     climsssperiod
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A)')
-     & '   Climatological SSS is read from file:'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,A)')
-     & '   >> ', climsssfile(1:il), ' <<'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+       CALL EXF_FLD_SUMMARY( 'Climatological SSS',
+     I      climsssfile, climsssRepCycle, climsssperiod,
+     I      climsssStartTime, useExfYearlyFields, addBlkLn, myThid )
 #ifdef USE_EXF_INTERPOLATION
        CALL EXF_PRINT_INTERP( 'climsss',
      &  climsss_lon0, climsss_lon_inc, climsss_lat0, climsss_lat_inc,
@@ -1198,8 +793,92 @@ c    &                     SQUEEZE_RIGHT, myThid )
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef USE_EXF_INTERPOLATION
+CBOP
+C     !ROUTINE: EXF_FLD_SUMMARY
+C     !INTERFACE:
+      SUBROUTINE EXF_FLD_SUMMARY(
+     I               fld_fullName, fld_file,
+     I               fld_repeatCycle, fld_period, fld_start_time,
+     I               useYearlyFields, addBlkLn, myThid )
 
+C     !DESCRIPTION:
+C     Print EXF timing parameters for one EXF input field
+
+C     !USES:
+      IMPLICIT NONE
+
+#include "EEPARAMS.h"
+
+C     !INPUT PARAMETERS:
+C     fld_fullName    :: field full name description (shorter than 32c)
+C     fld_file        :: file-name for this field
+C     fld_repeatCycle :: time duration of a repeating cycle
+C     fld_period      :: time period (in sec) between 2 reccords
+C     fld_start_time  :: corresponding starting time (in sec) for this field
+C     useYearlyFields :: select if using EXF Yearly-fields or not
+C     addBlkLn        :: print blank line before parameter summary
+C     myThid          :: My Thread Id number
+      CHARACTER*(*) fld_fullName
+      CHARACTER*(*) fld_file
+      _RL fld_repeatCycle
+      _RL fld_period
+      _RL fld_start_time
+      LOGICAL useYearlyFields
+      LOGICAL addBlkLn
+      INTEGER myThid
+
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+      INTEGER iL, jL
+      CHARACTER*(MAX_LEN_MBUF) tmpBuf, msgBuf
+      CHARACTER*1 blkLin
+CEOP
+
+      blkLin = ' '
+      jL = 47
+
+      IF ( addBlkLn ) THEN
+       CALL PRINT_MESSAGE( blkLin, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
+      IF ( fld_period.GT.0. ) THEN
+       WRITE(tmpBuf,'(3A)') '   ', fld_fullName, ' starts at'
+       WRITE(msgBuf,'(A,F12.0)') tmpBuf(1:jL), fld_start_time
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
+       WRITE(tmpBuf,'(3A)') '   ', fld_fullName, ' period is'
+       WRITE(msgBuf,'(A,F12.0)') tmpBuf(1:jL), fld_period
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+c     IF ( fld_period.GT.0. .AND. .NOT.useYearlyFields ) THEN
+      IF ( fld_period.GT.0. ) THEN
+       iL = ILNBLNK(fld_fullName)
+       IF ( iL.LT.28 ) THEN
+         WRITE(tmpBuf,'(3A)') '   ', fld_fullName, ' repeat-cycle is'
+       ELSE
+         WRITE(tmpBuf,'(3A)') '   ', fld_fullName, ' rep-cycle is'
+       ENDIF
+       WRITE(msgBuf,'(A,F12.0)') tmpBuf(1:jL), fld_repeatCycle
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
+       WRITE(msgBuf,'(3A)') '   ', fld_fullName, ' is read from file:'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       iL = ILNBLNK(fld_file)
+       WRITE(msgBuf,'(3A)') '   >> ', fld_file(1:iL), ' <<'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+
+      RETURN
+      END
+
+#ifdef USE_EXF_INTERPOLATION
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: EXF_PRINT_INTERP
 C     !INTERFACE:
