@@ -1,8 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2314 2017/03/14 15:35:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2315 2017/03/16 17:11:23 mmazloff Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/bling:
+  - Many small changes intended to clean the code. 
+    Unnecessary ADJOINT_SAFEs removed
+    removed BLING_COST.h BLING_CTRL.h bling_cost.F 
+    diagnostics added
 
 checkpoint66e (2017/03/14)
 o pkg/exf:
