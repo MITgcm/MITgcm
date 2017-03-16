@@ -84,18 +84,11 @@ Assume that phytoplankton in the mixed layer experience the average light over t
 ML_MEAN_PHYTO
 Assume that phytoplankton are homogenized in the mixed layer
 
-FIXED_MLD_DVM
-For calculation of remineralization/export from diel vertical migration, assume fixed mixed layer depth (so no need to calculate MLD in bling_production, which speeds up the run)
-
 ADVECT_PHYTO
 Adds a tracer for total phytoplankton biomass
 
-USE_SGS_SED
-Sub grid scale sediments, not implemented yet  
-
 BLING_ADJOINT_SAFE
 Simplify some parts of the code that are problematic when using the adjoint
-(Note that ML_FOR_DVM is undefined when BLING_ADJOINT_SAFE is defined)
 
 USE_EXFQSW
 Determine PAR from shortwave radiation from EXF package (instead of from an input file or from location & time)
@@ -116,7 +109,7 @@ Notes on BLING_ADJOINT SAFE:
 - FreeFe and pfeflux_l are not set to 0 when anoxic
 - using fixed wsink0 rather than variable wsink in organic Fe adsorption calculation
 - no benthic denitrification
-- fixed MLD in DVM calculation
+- no DVM 
 
 
 
@@ -169,6 +162,7 @@ C     =================================================================
 C     =================================================================
 C     | subroutine bling_dvm
 C     | o Diel Vertical Migration
+C     | {note: implemented precariously. Has not been tested.}
 C     =================================================================
 
 C     ==========================================================
@@ -184,12 +178,12 @@ C     ==========================================================
 
 C     ==========================================================
 C     | subroutine bling_init_fixed
-C     | o Initialize fixed quantities
+C     | o Initialize fixed parameters
 C     ==========================================================
 
 C     ==========================================================
 C     | subroutine bling_init_varia
-C     | o Initialize variable quantities
+C     | o Initialize variable parameters
 C     ==========================================================
 
 C     =================================================================
@@ -250,11 +244,6 @@ C     |   export.
 C     | - Benthic denitrification
 C     | - Iron source from sediments
 C     | - Iron scavenging
-C     =================================================================
-
-C     =================================================================
-C     | subroutine bling_sgs
-C     | o Placeholder for sub-grid scale sediment stuff 
 C     =================================================================
 
 C     =================================================================

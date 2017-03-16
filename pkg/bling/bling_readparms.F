@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_readparms.F,v 1.9 2017/02/23 20:48:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_readparms.F,v 1.10 2017/03/16 17:03:26 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -143,59 +143,69 @@ C ==========================================================
 #endif
 
 C ==========================================================
-C     permil   :: set carbon mol/m3 <---> mol/kg conversion factor
-C                 default permil = 1024.5 kg/m3
-C     Pa2Atm   :: Conversion factor for atmospheric pressure pLoad
-C                 (when coupled to atmospheric model) into Atm.
-C                 Default assumes pLoad in Pascal
-C                 1 Atm = 1.01325e5 Pa = 1013.25 mb
-C
-C     CtoP            :: Carbon to phosphorus ratio in organic matter
-C     NtoP            :: Nitrogen to phosphorus ratio in organic matter
-C     O2toP           :: Oxygen to phosphorus for biological activity
-C     CatoP           :: Calcium to phosphorus uptake by small phyto
-C     NUTfac          :: If using nitrogen as macro-nutrient instead of ,
-C                        phosphate, NUTfac is stoichiometric ratio N:P,
-C                        otherwise equal to 1.
-C     Pstar           :: Pivotal phytoplankton biomass
-C     Pc_0            :: Maximum carbon-specific growth rate at 0C
-C     lambda_0        :: Carbon-specific phytoplankton mortality rate
-C     chl_min         :: minimum chlorophyll concentration
-C     theta_Fe_max_hi :: Maximum Chl:c ratio, abundant iron
-C     theta_Fe_max_lo :: Maximum Chl:c ratio, extreme iron limitation
-C     gamma_irr_mem   :: Photoadaptation time scale
-C     gamma_DOM       :: Decay timescale of DOM
-C     gamma_POM       :: Remineralization rate of sinking POM
-C     k_Fe            :: Dissolved Fe uptake half-saturation constant
-C     k_O2            :: Half-saturation constant for aerobic respiration
-C     k_NUT           :: Macro-nutrient uptake half-saturation constant
-C     k_FetoN         :: Half-saturation cellular Fe:N
-C     FetoP_max       :: Maximum Fe:P uptake ratio
-C     FetoP_sed       :: Fe:P in sediments
-C     KFeLeq_max      :: Maximum Fe-ligand stability constant
-C     KFeLeq_min      :: Minimum Fe-ligand stability constant
-C     Fe_min          :: Constant having to do with photodissociation
-C     IFeL            :: Iron ligand stability constant
-C     kFe_org         :: Organic-matter dependent scavenging rate
-C     kFe_inorg       :: Inorganic scavenging rate
-C     remin_min       :: Minimum anaerobic respiration rate
-C     O2_min          :: Minimum O2 concentration for aerobic respiration
-C     Ligand          :: Ligand concentration
-C     kappa_eppley    :: Temperature dependence of growth
-C     kappa_remin     :: Temperature dependence of remineralization
-C     ca_remin_depth  :: CaCO3 remineralization lengthscale
-C     phi_DOM         :: Fraction of non-sinking production to DOM
-C     phi_sm          :: Fraction of small phytoplankton biomass converted to detritus
-C     phi_lg          :: Fraction of large phytoplankton biomass converted to detritus
-C     wsink0z         :: Depth at which sinking rate starts increasing
-C     wsink0          :: Initial sinking rate
-C     wsinkacc        :: Acceleration rate of sinking with depth
-C     parfrac         :: fraction of Qsw avail for photosynthesis
-C     alpfe           :: solubility of aeolian iron
-C     k0              :: Light attentuation coefficient
-C     epsln           :: a very small number
-
-C     secperday       :: seconds in a day = 24*60*60
+C   secperday        :: seconds in a day = 24*60*60
+C   permil           :: set carbon mol/m3 <---> mol/kg conversion factor
+C                       default permil = 1024.5 kg/m3
+C   Pa2Atm           :: Conversion factor for atmospheric pressure pLoad 
+C                       (when coupled to atmospheric model) into Atm.  
+C                       Default assumes pLoad in Pascal
+C                       1 Atm = 1.01325e5 Pa = 1013.25 mb
+C   pivotal          :: Pivotal phytoplankton biomass
+C   Pc_0             :: Maximum phytoplankton carbon-specific growth rate at 0C
+C   Pc_0_diaz        :: Maximum diazotroph carbon-specific growth rate at 0C
+C   lambda_0         :: Carbon-specific phytoplankton mortality rate
+C   chl_min          :: minimum chlorophyll concentration [ug kg-1]
+C   CtoN             :: Carbon to nitrogen ratio in organic matter 
+C   NO3toN           ::
+C   HtoC             ::
+C   O2toN            :: Oxygen to nitrogen for biological activity 
+C   CatoN            :: Calcium to nitrogen uptake by small phyto
+C   masstoN          :: 
+C   alpha_photo      :: [g C g Chl-1 m2 W-1 s-1]
+C   theta_Fe_max_hi  :: Maximum Chl:c ratio, abundant iron 
+C   theta_Fe_max_lo  :: Maximum Chl:c ratio, extreme iron limitation 
+C   gamma_irr_mem    :: Photoadaptation time scale 
+C   gamma_DON        :: Decay timescale of DON 
+C   gamma_DOP        :: Decay timescale of DOP
+C   gamma_POM        :: 
+C   k_Fe             :: Dissolved Fe uptake half-saturation constant 
+C   k_Fe_diaz        :: Dissolved Fe uptake half-saturation constant for diazotrophs
+C   k_O2             :: Half-saturation constant for aerobic respiration
+C   k_NO3            :: Nitrate uptake half-saturation constant
+C   k_PO4            :: Phosphate uptake half-saturation constant
+C   k_PtoN           :: Half-saturation cellular P:N
+C   k_FetoN          :: Half-saturation cellular Fe:N
+C   kFe_eq_lig_max   :: Maximum Fe-ligand stability constant
+C   kFe_eq_lig_min   :: Minimum Fe-ligand stability constant
+C   kFe_eq_lig_Femin :: Constant having to do with photodissociation
+C   kFe_eq_lig_irr   :: Iron ligand stability constant  
+C   kFe_org          :: Organic-matter dependent scavenging rate 
+C   kFe_inorg        :: Inorganic scavenging rate 
+C   PtoN_min         :: Minimum P:N uptake ratio 
+C   PtoN_max         :: Maximum P:N uptake ratio 
+C   FetoN_min        :: Minimum Fe:N uptake ratio 
+C   FetoN_max        :: Maximum Fe:N uptake ratio 
+C   FetoC_sed        :: Fe:P in sediments
+C   remin_min        :: Minimum anaerobic respiration rate 
+C   oxic_min         :: Minimum O2 concentration for aerobic respiration 
+C   ligand           :: Ligand concentration 
+C   kappa_eppley     :: Temperature dependence of growth 
+C   kappa_eppley_diaz:: Temperature dependence of growth for diazotrophs
+C   kappa_remin      :: Temperature dependence of remineralization
+C   ca_remin_depth   :: CaCO3 remineralization lengthscale
+C   phi_DOM          :: Fraction of non-sinking production to DOM 
+C   phi_sm           :: Fraction of small phytoplankton biomass converted to detritus
+C   phi_lg           :: Fraction of large phytoplankton biomass converted to detritus
+C   phi_dvm          ::
+C   sigma_dvm        ::
+C   wsink0z          :: Depth at which sinking rate starts increasing   
+C   wsink0           :: Initial sinking rate 
+C   wsinkacc         :: Acceleration rate of sinking with depth 
+C   parfrac          :: fraction of Qsw avail for photosynthesis
+C   alpfe            :: solubility of aeolian iron
+C   k0               :: Light attentuation coefficient 
+C   epsln            :: a very small number
+     
       _RL secperday
       integer k
 #ifdef USE_EXF_INTERPOLATION
@@ -226,22 +236,18 @@ C     Default values
       Pc_0_diaz            = 0.01 _d -5
       lambda_0             = 0.19 _d 0 / secperday
       chl_min              = 1. _d -5
-Cxxx chl_min in ug kg-1
       alpha_photo          = 0.7 _d -5 * 2.77 _d 18 / 6.022 _d 17
-Cxxx alpha_photo in g C g Chl-1 m2 W-1 s-1
       theta_Fe_max_hi      = 0.04 _d 0
       theta_Fe_max_lo      = 0.01 _d 0
       gamma_irr_mem        = 1. _d 0 / secperday
       gamma_DON            = 0.25 _d 0 / (365.25 _d 0 * secperday)
       gamma_DOP            = 0.5 _d 0 / (365.25 _d 0 * secperday)
       gamma_POM            = 0.12 _d 0 / secperday
-cav      k_Fe                 = 1.6 _d -10 / permil
-      k_Fe                 = 8. _d -10 / permil
+      k_Fe                 = 1.6 _d -10 / permil
       k_Fe_diaz            = 7. _d -10 / permil
       k_O2                 = 20. _d -6 / permil
       k_NO3                = 2. _d -6 / permil
-cav      k_PO4                = 1. _d -8 / permil
-      k_PO4                = 1. _d -7 / permil
+      k_PO4                = 1. _d -8 / permil
       k_PtoN               = 1.5 _d -6 / permil
       k_FetoN              = 8. _d -10 / permil
       PtoN_min             = 1. / 28.
@@ -375,15 +381,6 @@ C taken into account
        IF ( useThSIce ) QSW_underice = .TRUE.
 #endif
 
-#ifdef USE_EXFCO2
-      IF ( useEXF .AND. apco2file .NE. ' ' ) THEN
-       CALL EXF_GETFFIELD_START( useExfYearlyFields,
-     I                    'bling', 'apco2', apco2period,
-     I                    apco2startdate1, apco2startdate2,
-     U                    apco2StartTime, errCount,
-     I                    myThid )
-      ENDIF
-#endif /* USE_EXFCO2 */
       IF ( errCount.GE.1 ) THEN
        WRITE(msgBuf,'(A,I3,A)')
      &     'BLING_READPARMS: detected', errCount,' fatal error(s)'

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_diagnostics_init.F,v 1.5 2016/10/15 21:30:43 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_diagnostics_init.F,v 1.6 2017/03/16 17:03:26 mmazloff Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -32,40 +32,7 @@ C     !LOCAL VARIABLES:
 
 C     Define diagnostics Names :
 
-      diagName  = 'BLGPH3D '
-      diagTitle = 'pH'
-      diagUnits = 'dimensionless   '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'BLGOMAR '
-      diagTitle = 'Aragonite saturation'
-      diagUnits = 'dimensionless   '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'BLGPCO2 '
-      diagTitle = 'Surface ocean partial pressure of CO2'
-      diagUnits = 'atm             '
-      diagCode  = 'SM P    M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'BLGCFLX '
-      diagTitle = 'Flux of CO2 due to air-sea exch (mol/m2/s)'
-      diagUnits = 'mol/m2/sec      '
-      diagCode  = 'SM P    L1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'BLGOFLX '
-      diagTitle = 'Flux of O2 due to air-sea exch (mol/m2/s)'
-      diagUnits = 'mol/m2/sec   '
-      diagCode  = 'SM P    L1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+c biology
 
       diagName  = 'BLGPSM  '
       diagTitle = 'Small phytoplankton biomass (mol C/m3/s)'
@@ -116,6 +83,126 @@ C     Define diagnostics Names :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'BLGPCM  '
+      diagTitle = 'Maximum photosynthesis rate'
+      diagUnits = '1/s      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGMU   '
+      diagTitle = 'Phytoplankton growth rate'
+      diagUnits = '1/s      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGMUDIA'
+      diagTitle = 'Diazotroph growth rate'
+      diagUnits = '1/s      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGIRRK '
+      diagTitle = 'Nutrient-limited photosynthesis efficiency'
+      diagUnits = 'W/m2   '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGLLIM '
+      diagTitle = 'Light limitation'
+      diagUnits = '-      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGNLIM '
+      diagTitle = 'N limitation'
+      diagUnits = '-      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGPLIM '
+      diagTitle = 'P limitation'
+      diagUnits = '-      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGFELIM'
+      diagTitle = 'Fe limitation'
+      diagUnits = '-      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+c carbon system
+
+      diagName  = 'BLGPCO2 '
+      diagTitle = 'Surface ocean partial pressure of CO2'
+      diagUnits = 'atm             '
+      diagCode  = 'SM P    M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGPH3D '
+      diagTitle = 'pH'
+      diagUnits = 'dimensionless   '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGOMAR '
+      diagTitle = 'Aragonite saturation'
+      diagUnits = 'dimensionless   '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGCFLX '
+      diagTitle = 'Flux of CO2 due to air-sea exch (mol/m2/s)'
+      diagUnits = 'mol/m2/sec      '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#ifdef USE_EXFCO2
+      diagName  = 'EXFapco2 '
+      diagTitle = 'Atmospheric partial pressure of CO2'
+      diagUnits = '10^-6 ppm       '
+      diagCode  = 'SM      U1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
+
+c oxygen
+
+      diagName  = 'BLGOFLX '
+      diagTitle = 'Flux of O2 due to air-sea exch (mol/m2/s)'
+      diagUnits = 'mol/m2/sec   '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+c iron
+
+      diagName  = 'BLGSURFE'
+      diagTitle = 'Surface deposition of Fe (mol/m2/s)'
+      diagUnits = 'mol/m2/sec   '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGFEUP '
+      diagTitle = 'Iron uptake by bio'
+      diagUnits = 'mol Fe/m3/s     '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'BLGFESPM'
       diagTitle = 'Iron sinking particle flux'
       diagUnits = 'mol Fe/m3/s     '
@@ -123,8 +210,8 @@ C     Define diagnostics Names :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'BLGFEREC'
-      diagTitle = 'Iron recycling'
+      diagName  = 'BLGFEREM'
+      diagTitle = 'Iron remin of sinking organic matter'
       diagUnits = 'mol Fe/m3/s     '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -132,6 +219,13 @@ C     Define diagnostics Names :
 
       diagName  = 'BLGFERD '
       diagTitle = 'Iron remin from Diel Vertical Migration'
+      diagUnits = 'mol Fe/m3/s     '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGFEREC'
+      diagTitle = 'Iron recycling'
       diagUnits = 'mol Fe/m3/s     '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -151,13 +245,6 @@ C     Define diagnostics Names :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'BLGFEREM'
-      diagTitle = 'Iron remin of sinking organic matter'
-      diagUnits = 'mol Fe/m3/s     '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
       diagName  = 'BLGFESED'
       diagTitle = 'Iron sediment source'
       diagUnits = 'mol Fe/m3/s     '
@@ -172,9 +259,53 @@ C     Define diagnostics Names :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'BLGFEUP '
-      diagTitle = 'Iron uptake by bio'
-      diagUnits = 'mol Fe/m3/s     '
+c nitrogen
+
+      diagName  = 'BLGNUP  '
+      diagTitle = 'Nitrogen uptake by bio'
+      diagUnits = 'mol N/m3/s      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGNFIX '
+      diagTitle = 'Nitrogen fixation'
+      diagUnits = 'mol N/m3/s      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGNSPM '
+      diagTitle = 'Nitrogen sinking particle flux'
+      diagUnits = 'mol N/m3/s      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGNREM '
+      diagTitle = 'Nitrogen remin of sinking org matter'
+      diagUnits = 'mol N/m3/s      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGNDVM '
+      diagTitle = 'Nitrogen vertical flux due to DVM'
+      diagUnits = 'mol N/m3/s      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGNRD  '
+      diagTitle = 'Nitrogen remin by Diel Vertical Migration'
+      diagUnits = 'mol N/m3/s      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGNREC '
+      diagTitle = 'Nitrogen recycling'
+      diagUnits = 'mol N/m3/s      '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -188,20 +319,6 @@ C     Define diagnostics Names :
 
       diagName  = 'BLGNDENP'
       diagTitle = 'Pelagic denitrification'
-      diagUnits = 'mol N/m3/s      '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'BLGNDVM '
-      diagTitle = 'Nitrogen remin by Diel Vertical Migration'
-      diagUnits = 'mol N/m3/s      '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'BLGNFIX '
-      diagTitle = 'Nitrogen fixation'
       diagUnits = 'mol N/m3/s      '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -221,50 +338,10 @@ C     Define diagnostics Names :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'BLGNSPM '
-      diagTitle = 'Nitrogen sinking particle flux'
-      diagUnits = 'mol N/m3/s      '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+c phosphorus 
 
-      diagName  = 'BLGNREC '
-      diagTitle = 'Nitrogen recycling'
-      diagUnits = 'mol N/m3/s      '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'BLGNRD  '
-      diagTitle = 'Nitrogen remin by DVM'
-      diagUnits = 'mol N/m3/s      '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'BLGNREM '
-      diagTitle = 'Nitrogen remin of sinking org matter'
-      diagUnits = 'mol N/m3/s      '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'BLGNUP  '
-      diagTitle = 'Nitrogen uptake by bio'
-      diagUnits = 'mol N/m3/s      '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'BLGPDVM '
-      diagTitle = 'Phosphorus remin by Diel Vertical Migration'
-      diagUnits = 'mol P/m3/s      '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'BLGDOPP '
-      diagTitle = 'Dissolved Organic Phosphorus Production'
+      diagName  = 'BLGPUP  '
+      diagTitle = 'Phosphorus uptake by bio'
       diagUnits = 'mol P/m3/s      '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -277,20 +354,6 @@ C     Define diagnostics Names :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'BLGPREC '
-      diagTitle = 'Phosphorus recycling'
-      diagUnits = 'mol P/m3/s      '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'BLGPRD  '
-      diagTitle = 'Phosphorus remin by DVM'
-      diagUnits = 'mol P/m3/s      '
-      diagCode  = 'SM P    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
       diagName  = 'BLGPREM '
       diagTitle = 'Phosphorus remin of sinking org matter'
       diagUnits = 'mol P/m3/s      '
@@ -298,33 +361,35 @@ C     Define diagnostics Names :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'BLGPUP  '
-      diagTitle = 'Phosphorus uptake by bio'
+      diagName  = 'BLGPDVM '
+      diagTitle = 'Phosphorus vertical flux due to DVM'
       diagUnits = 'mol P/m3/s      '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'BLGPCM  '
-      diagTitle = 'Maxximum photosynthesis rate'
-      diagUnits = '1/s      '
+      diagName  = 'BLGPRD  '
+      diagTitle = 'Phosphorus remin by Diel Vertical Migration'
+      diagUnits = 'mol P/m3/s      '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'BLGMU   '
-      diagTitle = 'Phytoplankton growth rate'
-      diagUnits = '1/s      '
+      diagName  = 'BLGPREC '
+      diagTitle = 'Phosphorus recycling'
+      diagUnits = 'mol P/m3/s      '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'BLGMUDIA'
-      diagTitle = 'Diazotroph growth rate'
-      diagUnits = '1/s      '
+      diagName  = 'BLGDOPP '
+      diagTitle = 'Dissolved Organic Phosphorus Production'
+      diagUnits = 'mol P/m3/s      '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+c light
 
       diagName  = 'BLGQSW  '
       diagTitle = 'Effective irradiance'
@@ -354,31 +419,47 @@ C     Define diagnostics Names :
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'BLGIRRK '
-      diagTitle = 'Nutrient-limited photosynthesis efficiency'
-      diagUnits = 'W/m2   '
-      diagCode  = 'SM P    MR      '
+c bgc
+
+      diagName  = 'BLGBIOC '
+      diagTitle = 'Tendency of DIC due to biology (mol C/m3/s)'
+      diagUnits = 'mol C/m3/sec    '
+      diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'BLGNLIM '
-      diagTitle = 'N limitation'
-      diagUnits = '-      '
-      diagCode  = 'SM P    MR      '
+      diagName  = 'BLGBIOAL'
+      diagTitle = 'Tendency of alkalinity due to biology (mol alk/m3/s)'
+      diagUnits = 'mol alk/m3/sec    '
+      diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'BLGPLIM '
-      diagTitle = 'P limitation'
-      diagUnits = '-      '
-      diagCode  = 'SM P    MR      '
+      diagName  = 'BLGBIOO2'
+      diagTitle = 'Tendency of oxygen due to biology (mol O/m3/s)'
+      diagUnits = 'mol O/m3/sec    '
+      diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'BLGFELIM'
-      diagTitle = 'Fe limitation'
-      diagUnits = '-      '
-      diagCode  = 'SM P    MR      '
+      diagName  = 'BLGBION '
+      diagTitle = 'Tendency of nitrate due to biology (mol N/m3/s)'
+      diagUnits = 'mol N/m3/sec    '
+      diagCode  = 'SMRP    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGBIOP '
+      diagTitle = 'Tendency of phosphate due to biology (mol P/m3/s)'
+      diagUnits = 'mol P/m3/sec    '
+      diagCode  = 'SMRP    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGBIOFE'
+      diagTitle = 'Tendency of iron due to biology (mol Fe/m3/s)'
+      diagUnits = 'mol Fe/m3/sec    '
+      diagCode  = 'SMRP    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
@@ -402,22 +483,6 @@ C     Define diagnostics Names :
       diagCode  = 'SM P    M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'BLGBIOA '
-      diagTitle = 'Tendency of carbon due to bio prod (mol C/m3/s)'
-      diagUnits = 'mol C/m3/sec    '
-      diagCode  = 'SMRP    MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-#ifdef USE_EXFCO2
-      diagName  = 'EXFapco2 '
-      diagTitle = 'Atmospheric partial pressure of CO2'
-      diagUnits = '10^-6 ppm       '
-      diagCode  = 'SM      U1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-#endif
 
 #endif /* ALLOW_DIAGNOSTICS */
 

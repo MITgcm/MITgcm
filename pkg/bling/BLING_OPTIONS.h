@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_OPTIONS.h,v 1.5 2016/11/16 16:41:50 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_OPTIONS.h,v 1.6 2017/03/16 17:03:26 mmazloff Exp $
 C $Name:  $
 
 #ifndef BLING_OPTIONS_H
@@ -23,8 +23,8 @@ c (as in original BLING model)
 c Assume that phytoplankton are homogenized in the mixed layer
 #undef ML_MEAN_PHYTO
 
-c Sub grid scale sediments
-#undef  USE_SGS_SED
+c Sub grid scale sediments - NOT IMPLEMENTED YET
+c #undef  USE_SGS_SED
 
 c Determine PAR from shortwave radiation from EXF package
 #define USE_EXFQSW
@@ -44,17 +44,14 @@ c  this one ok. In FFIELDS.h. #undef USE_EXFQSW
 
 c  apply remineralization from diel vertical migration
 #undef USE_BLING_DVM
-c In the DVM routine, assume fixed mixed layer depth
-c (so no need to calc MLD in bling_production)
-#define FIXED_MLD_DVM
 
 c Simplify some parts of the code that are problematic 
 c when using the adjoint
 #define BLING_ADJOINT_SAFE
 
-c For adjoint safe, use constant MLD in bling_dvm
+c For adjoint safe, do not call bling_dvm
 #ifdef BLING_ADJOINT_SAFE
-#define FIXED_MLD_DVM
+#undef USE_BLING_DVM
 #endif
 
 #endif /* ALLOW_BLING */

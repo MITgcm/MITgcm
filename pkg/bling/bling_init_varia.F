@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_init_varia.F,v 1.5 2017/01/27 23:11:31 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_init_varia.F,v 1.6 2017/03/16 17:03:26 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -8,7 +8,7 @@ CBOP
 
 C     ==========================================================
 C     | subroutine bling_init_varia
-C     | o Initialize variable quantities
+C     | o Initialize variable parameters
 C     ==========================================================
 
       implicit none

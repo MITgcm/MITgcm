@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_remineralization.F,v 1.8 2017/01/27 23:11:31 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_remineralization.F,v 1.9 2017/03/16 17:03:26 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -106,8 +106,8 @@ C     i,j,k         :: loop indices
       _RL Fe_burial(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
-c ---------------------------------------------------------------------
-c  Initialize output and diagnostics
+C ---------------------------------------------------------------------
+C  Initialize output and diagnostics
 
        DO k=1,Nr
         DO j=jmin,jmax
@@ -132,8 +132,8 @@ c  Initialize output and diagnostics
           ENDDO
         ENDDO
 
-c ---------------------------------------------------------------------
-c  Remineralization
+C ---------------------------------------------------------------------
+C  Remineralization
 
 C$TAF LOOP = parallel
        DO j=jmin,jmax
@@ -209,7 +209,7 @@ C  (Since not deepest cell: hFacC=1)
      &                    *drF(k) - CaCO3flux_l)*recip_drF(k)
 
            Fe_sed(i,j,k) = 0. _d 0
-C NOW DO BOTTOM LAYER
+C  NOW DO BOTTOM LAYER
           ELSE
 C  If this layer is adjacent to bottom topography or it is the deepest
 C  cell of the domain, then remineralize/dissolve in this grid cell
@@ -224,34 +224,28 @@ C  i.e. do not subtract off lower boundary fluxes when calculating remin
            CaCO3_diss(i,j,k) = CaCO3flux_u*recip_drF(k)
      &                  *recip_hFacC(i,j,k,bi,bj) + CaCO3_uptake(i,j,k)
 
-c  Efflux Fed out of sediments
+C  Efflux Fed out of sediments
 C  The phosphate flux hitting the bottom boundary
 C  is used to scale the return of iron to the water column.
 C  Maximum value added for numerical stability.
 
            POC_sed = PONflux_l * CtoN
 
-           Fe_sed(i,j,k) = min(1. _d -13,
-     &            max(epsln, FetoC_sed * POC_sed * recip_drF(k)
-     &            *recip_hFacC(i,j,k,bi,bj)))
+           Fe_sed(i,j,k) = max(epsln, FetoC_sed * POC_sed * recip_drF(k)
+     &            *recip_hFacC(i,j,k,bi,bj))
 
-cav temporary until I figure out why this is problematic for adjoint
-#ifndef BLING_ADJOINT_SAFE
-
-#ifndef USE_SGS_SED
-c Calculate benthic denitrification and Fe efflux here, if the subgridscale sediment module is not being used.
+cav           log_btm_flx = 0. _d 0
+           log_btm_flx = 1. _d -20
 
            IF (POC_sed .gt. 0. _d 0) THEN
 
-            log_btm_flx = 0. _d 0
-
-c Convert from mol N m-2 s-1 to umol C cm-2 d-1 and take the log
+C  Convert from mol N m-2 s-1 to umol C cm-2 d-1 and take the log
 
             log_btm_flx = log10(min(43.0 _d 0, POC_sed *
      &           86400. _d 0 * 100.0 _d 0))
 
-c Metamodel gives units of umol C cm-2 d-1, convert to mol N m-2 s-1 and multiply by
-c no3_2_n to give NO3 consumption rate
+C  Metamodel gives units of umol C cm-2 d-1, convert to mol N m-2 s-1 and 
+C  multiply by no3_2_n to give NO3 consumption rate
 
              N_den_benthic(i,j,k) = min (POC_sed * NO3toN / CtoN,
      &         (10 _d 0)**(-0.9543 _d 0 + 0.7662 _d 0 *
@@ -260,36 +254,35 @@ c no3_2_n to give NO3 consumption rate
      &         PTR_NO3(i,j,k) / (k_no3 + PTR_NO3(i,j,k)) ) *
      &         recip_drF(k)
 
-          endif
+          ENDIF
 
-#endif
+C  ---------------------------------------------------------------------
+C  Calculate external bottom fluxes for tracer_vertdiff. Positive fluxes 
+C  are into the water column from the seafloor. For P, the bottom flux puts 
+C  the sinking flux reaching the bottom cell into the water column through 
+C  diffusion. For iron, the sinking flux disappears into the sediments if 
+C  bottom waters are oxic (assumed adsorbed as oxides). If bottom waters are 
+C  anoxic, the sinking flux of Fe is returned to the water column.
+C
+C  For oxygen, the consumption of oxidant required to respire the settling flux 
+C  of organic matter (in support of the no3 bottom flux) diffuses from the 
+C  bottom water into the sediment.
 
-#endif
-
-c ---------------------------------------------------------------------
-c Calculate external bottom fluxes for tracer_vertdiff. Positive fluxes are into the water
-c column from the seafloor. For P, the bottom flux puts the sinking flux reaching the bottom
-c cell into the water column through diffusion. For iron, the sinking flux disappears into the
-c sediments if bottom waters are oxic (assumed adsorbed as oxides). If bottom waters are anoxic,
-c the sinking flux of Fe is returned to the water column.
-c
-c For oxygen, the consumption of oxidant required to respire
-c the settling flux of organic matter (in support of the
-c no3 bottom flux) diffuses from the bottom water into the sediment.
-
-c Assume all NO3 for benthic denitrification is supplied from the bottom water, and that
-c all organic N is also consumed under denitrification (Complete Denitrification, sensu
-c Paulmier, Biogeosciences 2009). Therefore, no NO3 is regenerated from organic matter
-c respired by benthic denitrification (necessitating the second term in b_no3).
+C  Assume all NO3 for benthic denitrification is supplied from the bottom water, 
+C  and that all organic N is also consumed under denitrification (Complete   
+C  Denitrification, sensu Paulmier, Biogeosciences 2009). Therefore, no NO3 is 
+C  regenerated from organic matter respired by benthic denitrification 
+C  (necessitating the second term in b_no3).
 
           NO3_sed(i,j) = PONflux_l*drF(k)*hFacC(i,j,k,bi,bj)
      &                   - N_den_benthic(i,j,k) / NO3toN
 
           PO4_sed(i,j) = POPflux_l*drF(k)*hFacC(i,j,k,bi,bj)
 
-c Oxygen flux into sediments is that required to support non-denitrification respiration,
-c assuming a 4/5 oxidant ratio of O2 to NO3. Oxygen consumption is allowed to continue
-c at negative oxygen concentrations, representing sulphate reduction.
+C  Oxygen flux into sediments is that required to support non-denitrification 
+C  respiration, assuming a 4/5 oxidant ratio of O2 to NO3. Oxygen consumption 
+C  is allowed to continue at negative oxygen concentrations, representing 
+C  sulphate reduction.
 
           O2_sed(i,j) = -(O2toN * PONflux_l*drF(k)*hFacC(i,j,k,bi,bj)
      &                  - N_den_benthic(i,j,k)* 1.25)
@@ -318,42 +311,23 @@ C  Iron scavenging does not occur in anoxic water (Fe2+ is soluble), so set
 C  FreeFe = 0 when anoxic.  FreeFe should be interpreted the free iron that
 C  participates in scavenging.
 
-#ifndef BLING_ADJOINT_SAFE
           IF (PTR_O2(i,j,k) .LT. oxic_min)  THEN
            FreeFe = 0. _d 0
           ENDIF
-#endif
 
-c  Two mechanisms for iron uptake, in addition to biological production:
-c  colloidal scavenging and scavenging by organic matter.
-
-c  Colloidal scavenging:
-c  Minimum function for numerical stability
-c           Fe_uptake(i,j,k) = Fe_uptake(i,j,k)+
-c     &       min(0.5/PTRACERS_dTLev(1), kFe_inorg*FreeFe**(0.5))*FreeFe
+C  Two mechanisms for iron uptake, in addition to biological production:
+C  colloidal scavenging and scavenging by organic matter.
 
            Fe_ads_inorg(i,j,k) =
      &       kFe_inorg*(max(1. _d -8,FreeFe))**(1.5)
 
 C  Scavenging of iron by organic matter:
-c  The POM value used is the bottom boundary flux. This does not occur in
-c  oxic waters, but FreeFe is set to 0 in such waters earlier.
+C  The POM value used is the bottom boundary flux. This does not occur in
+C  oxic waters, but FreeFe is set to 0 in such waters earlier.
            IF ( PONflux_l .GT. 0. _d 0 ) THEN
-
-c  Minimum function for numerical stability
-c            Fe_uptake(i,j,k) = Fe_uptake(i,j,k)+
-c     &           min(0.5/PTRACERS_dTLev(1), kFE_org*(POMflux_l
-c     &           *CtoP/NUTfac*12.01/wsink)**(0.58)*FreeFe
-
-#ifndef BLING_ADJOINT_SAFE
             Fe_ads_org(i,j,k) =
      &           kFE_org*(PONflux_l/(epsln + wsink)
      &             * MasstoN)**(0.58)*FreeFe
-#else
-            Fe_ads_org(i,j,k) =
-     &           kFE_org*(PONflux_l/(epsln + wsink0_2d(i,j,bi,bj))
-     &             * MasstoN)**(0.58)*FreeFe
-#endif
            ENDIF
 
 C  If water is oxic then the iron is remineralized normally. Otherwise
@@ -365,24 +339,21 @@ C  in oxidizing environments).
      &            *hFacC(i,j,k,bi,bj))/(1+zremin*drF(k)
      &            *hFacC(i,j,k,bi,bj))
 
-c  Added the burial flux of sinking particulate iron here as a
-c  diagnostic, needed to calculate mass balance of iron.
-c  this is calculated last for the deepest cell
+C  Added the burial flux of sinking particulate iron here as a
+C  diagnostic, needed to calculate mass balance of iron.
+C  this is calculated last for the deepest cell
 
-           Fe_burial(i,j) = PFeflux_l
+           Fe_burial(i,j) = PFEflux_l
 
-#ifndef BLING_ADJOINT_SAFE
            IF ( PTR_O2(i,j,k) .LT. oxic_min ) THEN
-            PFEflux_l = 0
+            PFEflux_l = 0. _d 0
            ENDIF
-#endif
 
-           Fe_reminp(i,j,k) = (pfeflux_u+(Fe_spm(i,j,k)
+           Fe_reminp(i,j,k) = (PFEflux_u+(Fe_spm(i,j,k)
      &            +Fe_ads_inorg(i,j,k)
      &            +Fe_ads_org(i,j,k))*drF(k)
-     &            *hFacC(i,j,k,bi,bj)-pfeflux_l)*recip_drF(k)
+     &            *hFacC(i,j,k,bi,bj)-PFEflux_l)*recip_drF(k)
      &            *recip_hFacC(i,j,k,bi,bj)
-C!! there is an intercept_frac here... need to add
 
 C  Prepare the tracers for the next layer down
           PONflux_u   = PONflux_l
@@ -390,7 +361,6 @@ C  Prepare the tracers for the next layer down
           PFEflux_u   = PFEflux_l
           CaCO3flux_u = CaCO3flux_l
 
-c
           Fe_reminsum(i,j,k) = Fe_reminp(i,j,k) + Fe_sed(i,j,k)
      &                 - Fe_ads_org(i,j,k) - Fe_ads_inorg(i,j,k)
 
@@ -406,7 +376,6 @@ c ---------------------------------------------------------------------
       IF ( useDiagnostics ) THEN
 
 c 3d local variables
-c        CALL DIAGNOSTICS_FILL(POC_flux,'BLGPOCF ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(Fe_ads_org,   'BLGFEAO ',0,Nr,2,bi,bj,
      &       myThid)
         CALL DIAGNOSTICS_FILL(Fe_ads_inorg, 'BLGFEAI ',0,Nr,2,bi,bj,
@@ -420,9 +389,6 @@ c 2d local variables
         CALL DIAGNOSTICS_FILL(NO3_sed,  'BLGNSED ',0,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(PO4_sed,  'BLGPSED ',0,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(O2_sed,   'BLGO2SED',0,1,2,bi,bj,myThid)
-c these variables are currently 1d, could be 3d for diagnostics
-c (or diag_fill could be called inside loop - which is faster?)
-c        CALL DIAGNOSTICS_FILL(zremin,'BLGZREM ',0,Nr,2,bi,bj,myThid)
 
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.10 2017/01/27 23:11:31 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.11 2017/03/16 17:03:26 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -151,6 +151,7 @@ C
       _RL PO4_lim(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL Fe_lim(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL Fe_lim_diaz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL light_lim(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL expkT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL Pc_m
       _RL Pc_m_diaz
@@ -241,6 +242,7 @@ c  Initialize output and diagnostics
               PO4_lim(i,j,k)      = 0. _d 0
               Fe_lim(i,j,k)       = 0. _d 0
               Fe_lim_diaz(i,j,k)  = 0. _d 0
+              light_lim(i,j,k)    = 0. _d 0
               PtoN(i,j,k)         = 0. _d 0
               FetoN(i,j,k)        = 0. _d 0
               NPP(i,j,k)          = 0. _d 0
@@ -288,13 +290,13 @@ c
 
 c-----------------------------------------------------------
 c  mixed layer depth calculation for light, phytoplankton and dvm
-c  do not need to calculate if not using ML_MEAN_LIGHT, ML_MEAN_PHYTO
-c  and not using ML calculation in bling_dvm
-c  (with BLING_ADJOINT_SAFE flag, MLD is assumed constant in bling_dvm)
+c  do not need to calculate if not using ML_MEAN_LIGHT, ML_MEAN_PHYTO,
+c  and USE_BLING_DVM
+c  (with BLING_ADJOINT_SAFE flag, USE_BLING_DVM is undefined)
 
 #if ( defined (ML_MEAN_LIGHT) || \
       defined (ML_MEAN_PHYTO) || \
-      !(defined (FIXED_MLD_DVM)) )
+      defined (USE_BLING_DVM) )
        CALL BLING_MIXEDLAYER(
      U                         mld, 
      I                         bi, bj, imin, imax, jmin, jmax,
@@ -469,6 +471,10 @@ c  Carbon-specific photosynthesis rate
           mu_diaz(i,j,k) = Pc_m_diaz * ( 1. _d 0 - exp(-irr_eff(i,j,k)
      &               /(epsln + irrk(i,j,k))))
 
+          light_lim(i,j,k) = ( 1. _d 0 - exp(-irr_eff(i,j,k)
+     &               /(epsln + irrk(i,j,k))))
+
+
 c  Temperature threshold for diazotrophs                                                                                               
           IF (theta(i,j,k,bi,bj) .lt. 14) THEN
            mu_diaz(i,j,k) = 0. _d 0
@@ -531,6 +537,12 @@ c  update biomass
 
 #endif
 
+c  for diagnostics: convert to mol C/m3
+
+         Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) * CtoN
+         Phy_sm_local(i,j,k) = Phy_sm_local(i,j,k) * CtoN
+         Phy_diaz_local(i,j,k) = Phy_diaz_local(i,j,k) * CtoN
+
          ENDIF
         ENDDO
        ENDDO
@@ -590,7 +602,7 @@ c   phytoplankton, which gave a reasonably good fit to the global
 c   observational synthesis of Dunne (2009). This is consistent
 c   with the findings of Jin et al. (GBC,2006). 
 
-          CaCO3_uptake(i,j,k) =Phy_sm_local(i,j,k) * phi_sm2d(i,j,bi,bj)
+          CaCO3_uptake(i,j,k) = Phy_sm_local(i,j,k)*phi_sm2d(i,j,bi,bj)
      &                          * expkT(i,j,k) * mu(i,j,k) * CatoN
      
 c ---------------------------------------------------------------------
@@ -615,7 +627,7 @@ c  iron pool).
 c  sinking fraction: particulate organic matter 
 
           frac_exp = (phi_sm2d(i,j,bi,bj) + phi_lg2d(i,j,bi,bj) * 
-     &           (mu(i,j,k)/(epsln + lambda_0*expkT(i,j,k)))**2.)/  
+     &           (mu(i,j,k)/(epsln + lambda_0*expkT(i,j,k)))**2.)/
      &           (1. + (mu(i,j,k)/(epsln + lambda_0*expkT(i,j,k)))**2.)*
      &           exp(kappa_remin * theta(i,j,k,bi,bj))
 
@@ -675,6 +687,7 @@ c  remineralization of sinking organic matter
      I                 bi, bj, imin, imax, jmin, jmax, 
      I                 myIter, myTime, myThid)
 
+
 c-----------------------------------------------------------
 c  remineralization from diel vertical migration
 #ifdef USE_BLING_DVM
@@ -685,18 +698,6 @@ c  remineralization from diel vertical migration
      I                 bi, bj, imin, imax, jmin, jmax, 
      I                 myIter, myTime, myThid)
 #endif
-     
-     
-c-----------------------------------------------------------
-c  sub grid scale sediments
-#ifdef USE_SGS_SED  
-       CALL BLING_SGS(
-c     I                 xxx,
-c     O                 xxx,
-     I                 bi, bj, imin, imax, jmin, jmax, 
-     I                 myIter, myTime, myThid)
-#endif
-
 
 c-----------------------------------------------------------
 c  
@@ -727,10 +728,10 @@ c  If anoxic
           IF (PTR_O2(i,j,k) .lt. oxic_min) THEN 
            IF (PTR_NO3(i,j,k) .gt. oxic_min) THEN
             N_den_pelag(i,j,k) = max(epsln, (NO3toN *        
-     &                    ((1. _d 0 - phi_DOM2d(i,j,bi,bj)) * 
-     &                    (N_reminp(i,j,k)   +
-     &                     N_remindvm(i,j,k)) + DON_remin(i,j,k) + 
-     &                     N_recycle(i,j,k))) - N_den_benthic(i,j,k)) 
+     &                    ((1. _d 0 - phi_DOM2d(i,j,bi,bj))
+     &                    * (N_reminp(i,j,k) 
+     &                    + N_remindvm(i,j,k)) + DON_remin(i,j,k) + 
+     &                    N_recycle(i,j,k))) - N_den_benthic(i,j,k)) 
            ENDIF
           ENDIF
           
@@ -760,8 +761,8 @@ c  Anoxic
           ELSE
 c  Oxic
            G_NO3(i,j,k) = G_NO3(i,j,k) 
-     &                   + N_recycle(i,j,k) 
-     &                   + (1. _d 0 - phi_DOM2d(i,j,bi,bj)) 
+     &                   + N_recycle(i,j,k)
+     &                   + (1. _d 0 - phi_DOM2d(i,j,bi,bj))
      &                   * (N_reminp(i,j,k) + N_remindvm(i,j,k))
      &                   + DON_remin(i,j,k)
           ENDIF    
@@ -776,12 +777,12 @@ c  Fe_reminsum
 c  Dissolved Organic Matter
 c  A fraction of POM remineralization goes into dissolved pools.
 
-          G_DON(i,j,k) = DON_prod(i,j,k) + phi_DOM2d(i,j,bi,bj) 
+          G_DON(i,j,k) = DON_prod(i,j,k) + phi_DOM2d(i,j,bi,bj)
      &                   * (N_reminp(i,j,k) + N_remindvm(i,j,k)) 
      &                   - DON_remin(i,j,k)
 
-          G_DOP(i,j,k) = DOP_prod(i,j,k) + phi_DOM2d(i,j,bi,bj) * 
-     &                   (P_reminp(i,j,k) + P_remindvm(i,j,k)) 
+          G_DOP(i,j,k) = DOP_prod(i,j,k) + phi_DOM2d(i,j,bi,bj) 
+     &                   * (P_reminp(i,j,k) + P_remindvm(i,j,k)) 
      &                   - DOP_remin(i,j,k)
 
 c  Oxygen:
@@ -798,20 +799,19 @@ c  If oxic
           IF (PTR_O2(i,j,k) .gt. oxic_min) THEN 
           G_O2(i,j,k) = G_O2(i,j,k) 
      &                  -O2toN * ((1. _d 0 - phi_DOM2d(i,j,bi,bj)) 
-     &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))       
+     &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))           
      &                  + DON_remin(i,j,k) +  N_recycle(i,j,k))
 c  If anoxic but NO3 concentration is very low
 c  (generate negative O2; proxy for HS-).
           ELSEIF (PTR_NO3(i,j,k) .lt. oxic_min) THEN
           G_O2(i,j,k) = G_O2(i,j,k) 
-     &                  -O2toN * ((1. _d 0 - phi_DOM2d(i,j,bi,bj))
-     &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))      
+     &                  -O2toN * ((1. _d 0 - phi_DOM2d(i,j,bi,bj)) 
+     &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))           
      &                  + DON_remin(i,j,k) +  N_recycle(i,j,k))
      &                  + N_den_benthic(i,j,k) * 1.25 _d 0
           ENDIF
 
           G_CaCO3(i,j,k) = CaCO3_diss(i,j,k) - CaCO3_uptake(i,j,k)
-cxx sediments not accounted for
 
 
 c  Carbon flux diagnostic
@@ -838,9 +838,12 @@ c ---------------------------------------------------------------------
       IF ( useDiagnostics ) THEN
 
 c 3d global variables
-        CALL DIAGNOSTICS_FILL(phyto_sm,'BLGPSM  ',0,Nr,1,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(phyto_lg,'BLGPLG  ',0,Nr,1,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(phyto_diaz,'BLGPDIA ',0,Nr,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(Phy_sm_local,'BLGPSM  ',0,Nr,1,bi,bj,
+     &       myThid)
+        CALL DIAGNOSTICS_FILL(Phy_lg_local,'BLGPLG  ',0,Nr,1,bi,bj,
+     &       myThid)
+        CALL DIAGNOSTICS_FILL(Phy_diaz_local,'BLGPDIA ',0,Nr,1,bi,bj,
+     &       myThid)
         CALL DIAGNOSTICS_FILL(chl,    'BLGCHL  ',0,Nr,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(irr_mem,'BLGIMEM ',0,Nr,1,bi,bj,myThid)
 c 3d local variables
@@ -849,19 +852,16 @@ c 3d local variables
         CALL DIAGNOSTICS_FILL(Fe_lim,  'BLGFELIM',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(NO3_lim, 'BLGNLIM ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(PO4_lim, 'BLGPLIM ',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(light_lim,'BLGLLIM ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(POC_flux,'BLGPOCF ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(NPP,     'BLGNPP  ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(NCP,     'BLGNCP  ',0,Nr,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(Fe_ads_inorg,'BLGFEAI',0,Nr,2,bi,bj,
-c     &       myThid)
-c        CALL DIAGNOSTICS_FILL(Fe_dvm,'BLGFEDVM',0,Nr,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(Fe_sed,'BLGFESED',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(Fe_dvm,  'BLGFEDVM',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(Fe_spm,  'BLGFESPM',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(Fe_recycle,  'BLGFEREC',0,Nr,2,bi,bj,
      &       myThid)
         CALL DIAGNOSTICS_FILL(Fe_remindvm, 'BLGFERD ',0,Nr,2,bi,bj,
      &       myThid)
-c        CALL DIAGNOSTICS_FILL(Fe_reminp,'BLGFEREM',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(Fe_reminsum, 'BLGFEREM',0,Nr,2,bi,bj,
      &       myThid)
         CALL DIAGNOSTICS_FILL(Fe_uptake,'BLGFEUP ',0,Nr,2,bi,bj,myThid)
@@ -887,27 +887,6 @@ c        CALL DIAGNOSTICS_FILL(Fe_reminp,'BLGFEREM',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(P_uptake, 'BLGPUP  ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(mu,       'BLGMU   ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(mu_diaz,  'BLGMUDIA',0,Nr,2,bi,bj,myThid)
-c 2d local variables
-c        CALL DIAGNOSTICS_FILL(Fe_burial,'BLGFEBUR',0,1,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(NO3_sed,'BLGNSED ',0,1,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(PO4_sed,'BLGPSED ',0,1,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(O2_sed,'BLGO2SED',0,1,2,bi,bj,myThid)
-c these variables are currently 1d, could be 3d for diagnostics
-c (or diag_fill could be called inside loop - which is faster?)
-c        CALL DIAGNOSTICS_FILL(frac_exp,'BLGFEXP ',0,Nr,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(irr_mix,'BLGIRRM ',0,Nr,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(irrk,'BLGIRRK ',0,Nr,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(kFe_eq_lig,'BLGPUP  ',0,Nr,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(mu,'BLGMU  ',0,Nr,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(mu_diaz,'BLGMUDIA',0,Nr,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(PtoN,'BLGP2N ',0,Nr,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(FetoN,'BLGFE2N ',0,Nr,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(Pc_m,'BLGPCM ',0,Nr,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(Pc_m_diaz,'BLGPCMD',0,Nr,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(theta_Fe,'BLGTHETA',0,Nr,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(theta_Fe_max,'BLGTHETM',0,Nr,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(wsink,'BLGWSINK',0,Nr,2,bi,bj,myThid)
-c        CALL DIAGNOSTICS_FILL(zremin,'BLGZREM ',0,Nr,2,bi,bj,myThid)
 
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */

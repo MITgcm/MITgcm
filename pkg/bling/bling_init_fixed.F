@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_init_fixed.F,v 1.2 2016/10/15 21:30:43 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_init_fixed.F,v 1.3 2017/03/16 17:03:26 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -8,7 +8,7 @@ CBOP
 
 C     ==========================================================
 C     | subroutine bling_init_fixed
-C     | o Initialize fixed quantities
+C     | o Initialize fixed parameters
 C     ==========================================================
 
       implicit none

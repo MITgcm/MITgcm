@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_dvm.F,v 1.6 2016/11/16 16:41:50 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_dvm.F,v 1.7 2017/03/16 17:03:26 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -172,14 +172,6 @@ c         Log10 Chl     : [-1.8,0.85] log10(mg/m3)
 c         mld           : [0,500] m
 c         T gradient    : [-3,20] C
 
-c!! replacing hblt_depth(i,j) with mld... 
-
-#ifdef BLING_ADJOINT_SAFE
-
-        z_dvm = 300. _d 0
-
-#else
-
         z_dvm_regr = 398. _d 0
      &   - 0.56 _d 0*min(300. _d 0,max(-10. _d 0,(o2_upper - o2_lower)))
      &   - 115. _d 0*min(0.85 _d 0,max(-1.80 _d 0,
@@ -220,10 +212,6 @@ c  The stationary depth is constrained between 150 and 700, above any
 c  anoxic waters found, and above the bottom.
 
         z_dvm = min(700. _d 0,max(150. _d 0,z_dvm_regr),z_dvm,-rf(k+1))
-c!!           bling%zbot(i,j,grid_kmt(i,j))) * grid_tmask(i,j,1)
-c!! what is grid_kmt?
-
-#endif
 
 c  Calculate the fraction of migratory respiration that occurs
 c  during upwards and downwards swimming. The remainder is

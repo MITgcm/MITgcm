@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_main.F,v 1.8 2017/02/22 04:04:01 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_main.F,v 1.9 2017/03/16 17:03:26 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -92,8 +92,14 @@ C     runoff_bgc           :: tendency due to river runoff
       _RL  G_CaCO3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  NCP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  bio_DIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  bio_ALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  bio_O2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  bio_NO3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  bio_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL  bio_Fe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  surf_DIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  surf_O2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  surf_Fe(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  FluxO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  irr_eff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  runoff_bgc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,8)
@@ -116,13 +122,19 @@ c  Initialize local variables
          G_CaCO3(i,j,k)      = 0. _d 0
          NCP(i,j,k)          = 0. _d 0
          irr_eff(i,j,k)      = 0. _d 0
+         bio_DIC(i,j,k)      = 0. _d 0
+         bio_ALK(i,j,k)      = 0. _d 0
+         bio_O2(i,j,k)       = 0. _d 0
+         bio_NO3(i,j,k)      = 0. _d 0
+         bio_PO4(i,j,k)      = 0. _d 0
+         bio_Fe(i,j,k)       = 0. _d 0
         ENDDO
         DO k=1,8
          runoff_bgc(i,j,k)   = 0. _d 0
         ENDDO
-        bio_DIC(i,j,k)       = 0. _d 0
         surf_DIC(i,j)        = 0. _d 0
         surf_O2(i,j)         = 0. _d 0
+        surf_Fe(i,j)         = 0. _d 0
         fluxO2(i,j)          = 0. _d 0
        ENDDO
       ENDDO
@@ -194,6 +206,11 @@ c  Carbon system
 
 c  For diagnostics
               bio_DIC(i,j,k) = G_DIC(i,j,k)
+              bio_ALK(i,j,k) = G_ALK(i,j,k)
+              bio_O2(i,j,k)  = G_O2(i,j,k)
+              bio_NO3(i,j,k) = G_NO3(i,j,k)
+              bio_PO4(i,j,k) = G_PO4(i,j,k)
+              bio_Fe(i,j,k)  = G_Fe(i,j,k)
 
          ENDIF
 
@@ -215,11 +232,14 @@ C   adding aeolian iron source
      &                    + surf_O2(i,j)
                G_NO3(i,j,1) = G_NO3(i,j,1) + runoff_bgc(i,j,4)
                G_PO4(i,j,1) = G_PO4(i,j,1) + runoff_bgc(i,j,5)
+               surf_Fe(i,j) = alpfe*InputFe(i,j,bi,bj)*recip_drF(1)
+     &                    * recip_hFacC(i,j,1,bi,bj)
                G_FE(i,j,1)  = G_FE(i,j,1)  + runoff_bgc(i,j,6)
      &                    + alpfe*InputFe(i,j,bi,bj)*recip_drF(1)
      &                    * recip_hFacC(i,j,1,bi,bj)
                G_DON(i,j,1) = G_DON(i,j,1) + runoff_bgc(i,j,7)
                G_DOP(i,j,1) = G_DOP(i,j,1) + runoff_bgc(i,j,8)
+
           ENDDO
          ENDDO
 
@@ -230,10 +250,10 @@ C update
           DO i=imin,imax
            PTR_DIC(i,j,k)=PTR_DIC(i,j,k)+G_DIC(i,j,k)*PTRACERS_dTLev(k)
            PTR_ALK(i,j,k)=PTR_ALK(i,j,k)+G_ALK(i,j,k)*PTRACERS_dTLev(k)
+           PTR_O2 (i,j,k)=PTR_O2 (i,j,k)+G_O2 (i,j,k)*PTRACERS_dTLev(k)
            PTR_NO3(i,j,k)=PTR_NO3(i,j,k)+G_NO3(i,j,k)*PTRACERS_dTLev(k)
            PTR_PO4(i,j,k)=PTR_PO4(i,j,k)+G_PO4(i,j,k)*PTRACERS_dTLev(k)
            PTR_FE (i,j,k)=PTR_FE (i,j,k)+G_FE (i,j,k)*PTRACERS_dTLev(k)
-           PTR_O2 (i,j,k)=PTR_O2 (i,j,k)+G_O2 (i,j,k)*PTRACERS_dTLev(k)
            PTR_DON(i,j,k)=PTR_DON(i,j,k)+G_DON(i,j,k)*PTRACERS_dTLev(k)
            PTR_DOP(i,j,k)=PTR_DOP(i,j,k)+G_DOP(i,j,k)*PTRACERS_dTLev(k)
           ENDDO
@@ -243,7 +263,13 @@ C update
 C-----------------------------------------------------------
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-        CALL DIAGNOSTICS_FILL(bio_DIC ,'BLGBIOA ',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(bio_DIC ,'BLGBIOC ',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(bio_ALK ,'BLGBIOAL',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(bio_O2  ,'BLGBIOO2',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(bio_NO3 ,'BLGBION ',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(bio_PO4 ,'BLGBIOP ',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(bio_Fe  ,'BLGBIOFE',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(surf_Fe ,'BLGSURFE',0,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(pH      ,'BLGPH3D ',0,Nr,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(OmegaAr ,'BLGOMAR ',0,Nr,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(pCO2    ,'BLGPCO2 ',0,1 ,1,bi,bj,myThid)
