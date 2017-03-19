@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.92 2017/03/19 15:16:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.93 2017/03/19 19:40:28 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -50,7 +50,7 @@ C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER k, k2, iUnit, num_file, num_var
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      INTEGER IL, gencost_k3d, gencost_msk_k3d, ioUnit
+      INTEGER IL, kk, gencost_k3d, gencost_msk_k3d, ioUnit
       CHARACTER*(128) tempfile
       LOGICAL exst
       _RS     dummyRS(1)
@@ -723,6 +723,7 @@ c assign a 3D storage array, then increment 3D variables counter
 
 C--   load masks if needed:
       do k=1,NGENCOST
+           kk=gencost_msk_pointer3d(k)
            if ( ( gencost_mask(k) .NE. ' ' ).AND.
      &          (gencost_flag(k).EQ.-3) ) then
 c
@@ -736,7 +737,7 @@ c
             elseif (exst.AND.(gencost_msk_pointer3d(k).LE.
      &                        NGENCOST3D)) then
              call mdsreadfield(tempfile,cost_iprec,'RL',Nr,
-     &            gencost_mskC(1-olx,1-oly,1,1,1,k),1,mythid)
+     &            gencost_mskC(1-olx,1-oly,1,1,1,kk),1,mythid)
 #endif
             endif
 c
@@ -750,7 +751,7 @@ c
             elseif (exst.AND.(gencost_msk_pointer3d(k).LE.
      &                        NGENCOST3D)) then
              call mdsreadfield(tempfile,cost_iprec,'RL',Nr,
-     &            gencost_mskW(1-olx,1-oly,1,1,1,k),1,mythid)
+     &            gencost_mskW(1-olx,1-oly,1,1,1,kk),1,mythid)
 #endif
             endif
 c
@@ -764,7 +765,7 @@ c
             elseif (exst.AND.(gencost_msk_pointer3d(k).LE.
      &                        NGENCOST3D)) then
              call mdsreadfield(tempfile,cost_iprec,'RL',Nr,
-     &            gencost_mskS(1-olx,1-oly,1,1,1,k),1,mythid)
+     &            gencost_mskS(1-olx,1-oly,1,1,1,kk),1,mythid)
 #endif
             endif
 c

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.16 2017/03/19 15:16:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.17 2017/03/19 19:40:28 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -258,7 +258,6 @@ c
               tmpmsk=gencost_mskC(i,j,k,bi,bj,kgen3d)
 #endif
             endif
-            tmpmsk2=0. _d 0
 c
             tmpfld=0. _d 0
             tmpmsk2=0. _d 0
@@ -294,7 +293,7 @@ c---------
           endif
 c
           gencost_storefld(i,j,bi,bj,kgen) =
-     &        gencost_storefld(i,j,bi,bj,kgen)+m_eta(i,j,bi,bj)
+     &        gencost_storefld(i,j,bi,bj,kgen)
      &        +tmpmsk*tmpfld*rA(i,j,bi,bj)
           areavolTile(bi,bj)=areavolTile(bi,bj)
      &        +tmpmsk2*rA(i,j,bi,bj)
