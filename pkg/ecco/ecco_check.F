@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.41 2017/02/18 16:18:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.42 2017/03/19 15:16:45 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -319,9 +319,20 @@ c ============ generic cost function related checks
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       icount_transp=0
       do k=1,NGENCOST
+
          if (gencost_pointer3d(k).GT.NGENCOST3D) then
            WRITE(msgBuf,'(2A)')
      &      'ECCO_CHECK: too many 3D cost terms; please',
+     &      'increase NGENCOST3D and recompile.'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT , myThid )
+           CALL PRINT_ERROR( msgBuf , myThid )
+           STOP 'ABNORMAL END: S/R ECCO_CHECK'
+         endif
+
+         if (gencost_msk_pointer3d(k).GT.NGENCOST3D) then
+           WRITE(msgBuf,'(2A)')
+     &      'ECCO_CHECK: too many 3D msk terms; please',
      &      'increase NGENCOST3D and recompile.'
            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )

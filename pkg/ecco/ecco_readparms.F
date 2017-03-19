@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.91 2017/01/20 20:55:56 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.92 2017/03/19 15:16:45 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -50,7 +50,7 @@ C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER k, k2, iUnit, num_file, num_var
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      INTEGER IL, gencost_k3d, ioUnit
+      INTEGER IL, gencost_k3d, gencost_msk_k3d, ioUnit
       CHARACTER*(128) tempfile
       LOGICAL exst
       _RS     dummyRS(1)
@@ -199,6 +199,7 @@ c--   Read the namelist input.
      &         gencost_enddate2,
      &         gencost_smooth2Ddiffnbt,
      &         gencost_is3d,
+     &         gencost_msk_is3d,
      &         gencost_timevaryweight,
      &         mult_gencost
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
@@ -603,6 +604,8 @@ c--   Set default values.
          mult_gencost(k)       = 1. _d 0
          gencost_is3d(k)       = .FALSE.
          gencost_pointer3d(k)  = 0
+         gencost_msk_is3d      = .FALSE.
+         gencost_msk_pointer3d(k)  = 0
 c boxmean/horflux masks
          call ecco_zero(gencost_mskCsurf(1-olx,1-oly,1,1,k),
      &          1,zeroRL,mythid)
@@ -620,6 +623,18 @@ c deprecated:
         gencost_timevaryweight(k)  = .FALSE.
       enddo
 
+#ifdef ALLOW_GENCOST3D
+      do k=1,NGENCOST3D
+c boxmean/horflux masks
+         call ecco_zero(gencost_mskC(1-olx,1-oly,1,1,1,k),
+     &          Nr,zeroRL,mythid)
+         call ecco_zero(gencost_mskW(1-olx,1-oly,1,1,1,k),
+     &          Nr,zeroRL,mythid)
+         call ecco_zero(gencost_mskS(1-olx,1-oly,1,1,1,k),
+     &          Nr,zeroRL,mythid)
+      enddo
+#endif
+
       READ(  iUnit, nml = ecco_gencost_nml )
 
       WRITE(msgBuf,'(A)')
@@ -628,6 +643,7 @@ c deprecated:
      &     SQUEEZE_RIGHT , 1)
 
       gencost_k3d=1
+      gencost_msk_k3d=1
 
       do k=1,NGENCOST
 
@@ -656,6 +672,11 @@ catn with and without requirements of datafile or errfile
      &     k,' ',gencost_name(k)(1:il),': ',using_gencost(k)
            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
+
+           if ( gencost_msk_is3d(k) ) then
+             gencost_msk_pointer3d(k)=gencost_msk_k3d
+             gencost_msk_k3d=gencost_msk_k3d+1
+           endif
 
 catn add cost global transport using gencost framework
          elseif ( gencost_name(k)(1:6).EQ.'transp' ) then
@@ -708,25 +729,43 @@ c
             il = ilnblnk(gencost_mask(k))
             write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'C'
             inquire( file=tempfile(1:il+1), exist=exst )
-            if (exst) then
+            if (exst.AND.(.NOT.gencost_msk_is3d(k))) then
              call mdsreadfield(tempfile,cost_iprec,'RL',1,
      &            gencost_mskCsurf(1-olx,1-oly,1,1,k),1,mythid)
+#ifdef ALLOW_GENCOST3D
+            elseif (exst.AND.(gencost_msk_pointer3d(k).LE.
+     &                        NGENCOST3D)) then
+             call mdsreadfield(tempfile,cost_iprec,'RL',Nr,
+     &            gencost_mskC(1-olx,1-oly,1,1,1,k),1,mythid)
+#endif
             endif
 c
             il = ilnblnk(gencost_mask(k))
             write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'W'
             inquire( file=tempfile(1:il+1), exist=exst )
-            if (exst) then
+            if (exst.AND.(.NOT.gencost_msk_is3d(k))) then
              call mdsreadfield(tempfile,cost_iprec,'RL',1,
      &            gencost_mskWsurf(1-olx,1-oly,1,1,k),1,mythid)
+#ifdef ALLOW_GENCOST3D
+            elseif (exst.AND.(gencost_msk_pointer3d(k).LE.
+     &                        NGENCOST3D)) then
+             call mdsreadfield(tempfile,cost_iprec,'RL',Nr,
+     &            gencost_mskW(1-olx,1-oly,1,1,1,k),1,mythid)
+#endif
             endif
 c
             il = ilnblnk(gencost_mask(k))
             write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'S'
             inquire( file=tempfile(1:il+1), exist=exst )
-            if (exst) then
+            if (exst.AND.(.NOT.gencost_msk_is3d(k))) then
              call mdsreadfield(tempfile,cost_iprec,'RL',1,
      &            gencost_mskSsurf(1-olx,1-oly,1,1,k),1,mythid)
+#ifdef ALLOW_GENCOST3D
+            elseif (exst.AND.(gencost_msk_pointer3d(k).LE.
+     &                        NGENCOST3D)) then
+             call mdsreadfield(tempfile,cost_iprec,'RL',Nr,
+     &            gencost_mskS(1-olx,1-oly,1,1,1,k),1,mythid)
+#endif
             endif
 c
             il = ilnblnk(gencost_mask(k))

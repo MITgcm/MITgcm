@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.15 2017/01/20 20:55:56 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.16 2017/03/19 15:16:45 gforget Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -42,10 +42,9 @@ c     == local variables ==
       integer jmin,jmax
       integer imin,imax
 #ifdef ALLOW_GENCOST_CONTRIBUTION
-      integer kgen, itr
-      _RL areavolTile(nSx,nSy)
-      _RL areavolGlob, tmpmsk, tmpmsk2
-      _RL tmpVol(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      integer kgen, kgen3d, itr
+      _RL areavolTile(nSx,nSy), areavolGlob
+      _RL tmpfld, tmpvol, tmpmsk, tmpmsk2, tmpmskW, tmpmskS
 #endif
 
 c- note defined with overlap here, not needed, but more efficient
@@ -227,19 +226,6 @@ c now summing
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-          do k = 1,nr
-            do j = 1-OLy,sNy+Oly
-              do i = 1-OLx,sNx+OLx
-                tmpVol(i,j,k,bi,bj)=
-     &          hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-
       do kgen=1,NGENCOST
 
       itr = gencost_itracer(kgen)
@@ -258,77 +244,97 @@ c now summing
        do bi=myBxLo(myThid),myBxHi(myThid)
         do j = 1,sNy
          do i =  1,sNx
-
-         tmpmsk=0. _d 0
-         if (gencost_mskCsurf(i,j,bi,bj,kgen).NE.0. _d 0)
-     &      tmpmsk=1. _d 0
-
-         if (gencost_barfile(kgen)(1:15).EQ.'m_boxmean_theta') then
+c---------
           do k = 1,nr
-           tmpmsk2=0. _d 0
-           if (gencost_mskVertical(k,kgen).NE.0. _d 0) tmpmsk2=1. _d 0
-           gencost_storefld(i,j,bi,bj,kgen) =
-     &      gencost_storefld(i,j,bi,bj,kgen)+theta(i,j,k,bi,bj)
-     &      *tmpVol(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
-     &      *gencost_mskVertical(k,kgen)
-           areavolTile(bi,bj)=areavolTile(bi,bj)
-     &       +tmpmsk*tmpmsk2*eccoVol_0(i,j,k,bi,bj)
-          enddo
-         elseif (gencost_barfile(kgen)(1:14).EQ.'m_boxmean_salt') then
-          do k = 1,nr
-           tmpmsk2=0. _d 0
-           if (gencost_mskVertical(k,kgen).NE.0. _d 0) tmpmsk2=1. _d 0
-           gencost_storefld(i,j,bi,bj,kgen) =
-     &      gencost_storefld(i,j,bi,bj,kgen)+salt(i,j,k,bi,bj)
-     &      *tmpVol(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
-     &      *gencost_mskVertical(k,kgen)
-           areavolTile(bi,bj)=areavolTile(bi,bj)
-     &       +tmpmsk*tmpmsk2*eccoVol_0(i,j,k,bi,bj)
-          enddo
-#ifdef ALLOW_PTRACERS
-         elseif (gencost_barfile(kgen)(1:17).EQ.'m_boxmean_ptracer') 
-     &    then
-          do k = 1,nr
-           tmpmsk2=0. _d 0
-           if (gencost_mskVertical(k,kgen).NE.0. _d 0) tmpmsk2=1. _d 0
-           gencost_storefld(i,j,bi,bj,kgen) =
-     &      gencost_storefld(i,j,bi,bj,kgen)+pTracer(i,j,k,bi,bj,itr)
-     &      *tmpVol(i,j,k,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
-     &      *gencost_mskVertical(k,kgen)
-           areavolTile(bi,bj)=areavolTile(bi,bj)
-     &       +tmpmsk*tmpmsk2*eccoVol_0(i,j,k,bi,bj)
-          enddo
+            tmpvol=hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
+c
+            tmpmsk=0. _d 0
+            if (.NOT.gencost_msk_is3d(kgen)) then
+              tmpmsk=gencost_mskCsurf(i,j,bi,bj,kgen)*
+     &               gencost_mskVertical(k,kgen)
+#ifdef ALLOW_GENCOST3D
+            else
+              kgen3d=gencost_msk_pointer3d(kgen)
+              tmpmsk=gencost_mskC(i,j,k,bi,bj,kgen3d)
 #endif
-         elseif (gencost_barfile(kgen)(1:13).EQ.'m_boxmean_eta') then
-           gencost_storefld(i,j,bi,bj,kgen) =
-     &      gencost_storefld(i,j,bi,bj,kgen)+m_eta(i,j,bi,bj)
-     &      *maskC(i,j,1,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
-     &      *rA(i,j,bi,bj)
-           areavolTile(bi,bj)=areavolTile(bi,bj)
-     &       +tmpmsk*maskC(i,j,1,bi,bj)*rA(i,j,bi,bj)
-
-         elseif (gencost_barfile(kgen)(1:13).EQ.'m_horflux_vol') then
-          do k = 1,nr
-           gencost_storefld(i,j,bi,bj,kgen) =
-     &      gencost_storefld(i,j,bi,bj,kgen)
-     &      +uVel(i,j,k,bi,bj)*hFacW(i,j,k,bi,bj)*dyG(i,j,bi,bj)*drF(k)
-     &           *gencost_mskWsurf(i,j,bi,bj,kgen)
-     &           *gencost_mskVertical(k,kgen)
-     &      +vVel(i,j,k,bi,bj)*hFacS(i,j,k,bi,bj)*dxG(i,j,bi,bj)*drF(k)
-     &           *gencost_mskSsurf(i,j,bi,bj,kgen)
-     &           *gencost_mskVertical(k,kgen)
+            endif
+            tmpmsk2=0. _d 0
+c
+            tmpfld=0. _d 0
+            tmpmsk2=0. _d 0
+            if (gencost_barfile(kgen)(1:15).EQ.'m_boxmean_theta') then
+              tmpfld=theta(i,j,k,bi,bj)
+              if (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
+            elseif (gencost_barfile(kgen)(1:14).EQ.'m_boxmean_salt')
+     &        then
+              tmpfld=salt(i,j,k,bi,bj)
+              if (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
+#ifdef ALLOW_PTRACERS
+            elseif (gencost_barfile(kgen)(1:17).EQ.'m_boxmean_ptracer')
+     &        then
+              tmpfld=pTracer(i,j,k,bi,bj,itr)
+              if (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
+#endif
+            endif
+c
+            gencost_storefld(i,j,bi,bj,kgen) =
+     &          gencost_storefld(i,j,bi,bj,kgen)
+     &          +tmpmsk*tmpfld*tmpvol
+            areavolTile(bi,bj)=areavolTile(bi,bj)
+     &          +tmpmsk2*eccoVol_0(i,j,k,bi,bj)
+c
           enddo
-         endif
-
+c---------
+          tmpmsk=maskC(i,j,1,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+          tmpfld=0. _d 0
+          tmpmsk2=0. _d 0
+          if (gencost_barfile(kgen)(1:13).EQ.'m_boxmean_eta') then
+            tmpfld=m_eta(i,j,bi,bj)
+            if (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
+          endif
+c
+          gencost_storefld(i,j,bi,bj,kgen) =
+     &        gencost_storefld(i,j,bi,bj,kgen)+m_eta(i,j,bi,bj)
+     &        +tmpmsk*tmpfld*rA(i,j,bi,bj)
+          areavolTile(bi,bj)=areavolTile(bi,bj)
+     &        +tmpmsk2*rA(i,j,bi,bj)
+c---------
+          do k = 1,nr
+c
+            tmpmskW=0. _d 0
+            tmpmskS=0. _d 0
+            if (.NOT.gencost_msk_is3d(kgen)) then
+              tmpmskW=gencost_mskWsurf(i,j,bi,bj,kgen)
+     &          *gencost_mskVertical(k,kgen)
+              tmpmskS=gencost_mskSsurf(i,j,bi,bj,kgen)
+     &          *gencost_mskVertical(k,kgen)
+#ifdef ALLOW_GENCOST3D
+            else
+              kgen3d=gencost_msk_pointer3d(kgen)
+              tmpmskW=gencost_mskW(i,j,k,bi,bj,kgen3d)
+              tmpmskS=gencost_mskS(i,j,k,bi,bj,kgen3d)
+#endif
+            endif
+            tmpmskW=tmpmskW*hFacW(i,j,k,bi,bj)*dyG(i,j,bi,bj)*drF(k)
+            tmpmskS=tmpmskS*hFacS(i,j,k,bi,bj)*dxG(i,j,bi,bj)*drF(k)
+c
+            if (gencost_barfile(kgen)(1:13).EQ.'m_horflux_vol') then
+              gencost_storefld(i,j,bi,bj,kgen) =
+     &          gencost_storefld(i,j,bi,bj,kgen)
+     &          +uVel(i,j,k,bi,bj)*tmpmskW
+     &          +vVel(i,j,k,bi,bj)*tmpmskS
+            endif
+          enddo
+c---------
          enddo
         enddo
        enddo
       enddo
 
       if (gencost_barfile(kgen)(1:9).EQ.'m_boxmean') then
-      CALL GLOBAL_SUM_TILE_RL( areavolTile, areavolGlob, myThid )
-      CALL ecco_div( gencost_storefld(1-OLx,1-OLy,1,1,kgen),
-     &     1, areavolGlob, myThid )
+        CALL GLOBAL_SUM_TILE_RL( areavolTile, areavolGlob, myThid )
+        CALL ecco_div( gencost_storefld(1-OLx,1-OLy,1,1,kgen),
+     &                 1, areavolGlob, myThid )
       endif
 
       enddo

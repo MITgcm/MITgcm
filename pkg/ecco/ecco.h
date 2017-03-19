@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.23 2017/01/20 20:55:55 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.24 2017/03/19 15:16:45 gforget Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -223,6 +223,7 @@ c     objf_gencost - gencost user defined contribution
      &       gencost_mskVertical,
 #ifdef ALLOW_GENCOST3D
      &       gencost_bar3d, gencost_mod3d, gencost_wei3d,
+     &       gencost_mskC, gencost_mskW, gencost_mskS,
 #endif
      &       gencost_spmin, gencost_spmax, gencost_spzero,
      &       gencost_period, gencost_preproc_r, gencost_posproc_r
@@ -256,6 +257,12 @@ c     objf_gencost - gencost user defined contribution
      &       nr,nsx,nsy,NGENCOST3D)
       _RL  gencost_wei3d(1-olx:snx+olx,1-oly:sny+oly,
      &       nr,nsx,nsy,NGENCOST3D)
+      _RL  gencost_mskC(1-olx:snx+olx,1-oly:sny+oly,
+     &       nr,nsx,nsy,NGENCOST3D)
+      _RL  gencost_mskW(1-olx:snx+olx,1-oly:sny+oly,
+     &       nr,nsx,nsy,NGENCOST3D)
+      _RL  gencost_mskS(1-olx:snx+olx,1-oly:sny+oly,
+     &       nr,nsx,nsy,NGENCOST3D)
 #endif
       _RL gencost_preproc_r(NGENPPROC,NGENCOST)
       _RL gencost_posproc_r(NGENPPROC,NGENCOST)
@@ -268,7 +275,7 @@ c     objf_gencost - gencost user defined contribution
      &       gencost_startdate, gencost_enddate,
      &       gencost_pointer3d, gencost_smooth2Ddiffnbt,
      &       gencost_preproc_i, gencost_posproc_i,
-     &       gencost_itracer
+     &       gencost_msk_pointer3d, gencost_itracer
 
       integer gencost_nrec(NGENCOST)
       integer gencost_nrecperiod(NGENCOST)
@@ -284,13 +291,15 @@ c     objf_gencost - gencost user defined contribution
       integer  gencost_smooth2Ddiffnbt(NGENCOST)
       integer gencost_preproc_i(NGENPPROC,NGENCOST)
       integer gencost_posproc_i(NGENPPROC,NGENCOST)
+      integer gencost_msk_pointer3d(NGENCOST)
       integer gencost_itracer(NGENCOST)
 
       common /ecco_gencost_l_1/
      &       gencost_timevaryweight, gencost_barskip,
-     &       using_gencost, gencost_is3d
+     &       using_gencost, gencost_is3d, gencost_msk_is3d
       LOGICAL using_gencost(NGENCOST)
       LOGICAL gencost_is3d(NGENCOST)
+      LOGICAL gencost_msk_is3d(NGENCOST)
       LOGICAL gencost_timevaryweight(NGENCOST)
       LOGICAL gencost_barskip(NGENCOST)
 
