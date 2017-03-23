@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_coriolis_c4.F,v 1.13 2011/05/13 00:56:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_coriolis_c4.F,v 1.14 2017/03/23 01:47:50 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -188,8 +188,8 @@ c       DO i=2-Olx,sNx+Olx
           Rjm =   vort3r(i, j ) - vort3r(i,j-1)
 #endif
           Rj  =   vort3r(i,j+1) - vort3r(i, j )
-          Rjp = vort3r(i,j+1) -oneSixth*( Rjp+Rj )
-          Rjm = vort3r(i, j ) +oneSixth*( Rj+Rjm )
+          Rjp = vort3r(i,j+1) -oneSixth*( Rjp-Rj )
+          Rjm = vort3r(i, j ) -oneSixth*( Rj-Rjm )
 c         Rjp = vort3r(i,j+1) -oneSixth*( vort3r(i,j+2)-vort3r(i, j ) )
 c         Rjm = vort3r(i, j ) +oneSixth*( vort3r(i,j+1)-vort3r(i,j-1) )
           vort3u=0.5*( vBarXm*Rjm + vBarXp*Rjp )
