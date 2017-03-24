@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/rw_ad.flow,v 1.15 2014/03/30 16:21:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/rw_ad.flow,v 1.16 2017/03/24 22:03:37 jmc Exp $
 C $Name:  $
 
 C----------------------------------------
@@ -187,3 +187,8 @@ C----------------------------------------
 CADJ SUBROUTINE READ_MFLDS_RENAME  INPUT  = 1,2,  4
 CADJ SUBROUTINE READ_MFLDS_RENAME  OUTPUT =     3
 
+C----------------------------------------
+C subroutine  RW_GET_SUFFIX
+C----------------------------------------
+CADJ SUBROUTINE RW_GET_SUFFIX  INPUT  =   2,3,4
+CADJ SUBROUTINE RW_GET_SUFFIX  OUTPUT = 1
