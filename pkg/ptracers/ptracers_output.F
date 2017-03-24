@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_output.F,v 1.5 2013/03/19 22:02:22 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_output.F,v 1.6 2017/03/24 23:47:43 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -35,13 +35,15 @@ CEOP
 C     !LOCAL VARIABLES:
 
 C     Write snapshot output
-      CALL PTRACERS_WRITE_STATE( myIter, myTime, myThid )
+      CALL PTRACERS_WRITE_STATE( myTime, myIter, myThid )
+
 #ifdef ALLOW_TIMEAVE
 C     Write time average output
       IF ( PTRACERS_taveFreq.GT.0. .AND. myIter.NE.nIter0 ) THEN
        CALL PTRACERS_WRITE_TIMEAVE( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_TIMEAVE */
+
 #ifdef ALLOW_MONITOR
 C     Compute and print monitor statistics
       CALL PTRACERS_MONITOR( myIter, myTime, myThid )

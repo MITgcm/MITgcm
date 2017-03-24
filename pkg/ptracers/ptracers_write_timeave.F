@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_timeave.F,v 1.10 2010/01/02 23:45:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_timeave.F,v 1.11 2017/03/24 23:47:43 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -41,7 +41,8 @@ CEOP
 
 C     !LOCAL VARIABLES:
 C     suff    ::  Hold suffix part of a filename
-      CHARACTER*(MAX_LEN_FNAM) suff
+      CHARACTER*(10) suff
+      CHARACTER*(MAX_LEN_FNAM) prefix
       INTEGER bi, bj, iTr
       INTEGER beginIOErrCount
       INTEGER endIOErrCount
@@ -65,10 +66,10 @@ C     Final Time Averages and Dump Files if needed
 C--         Normalize by integrated time
             DO iTr=1,PTRACERS_numInUse
               CALL TIMEAVE_NORMALIZE(
-     &                     ptracerFluxtave(1-Olx,1-Oly,  1,1,iTr),
+     &                     ptracerFluxtave(1-OLx,1-OLy,  1,1,iTr),
      &                     ptracer_full,  1, bi, bj, myThid )
               CALL TIMEAVE_NORMALIZE(
-     &                     ptracertave    (1-Olx,1-Oly,1,1,1,iTr),
+     &                     ptracertave    (1-OLx,1-OLy,1,1,1,iTr),
      &                     ptracer_half, Nr, bi, bj, myThid )
             ENDDO
           ENDDO
@@ -99,11 +100,11 @@ C--     Write to files
             CALL MNC_CW_RL_W(pf,'ptr_tave',0,0,PTRACERS_names(iTr),
      &           ptracertave(1-OLx,1-OLy,1,1,1,iTr),myThid)
             DO jj = 1,MAX_LEN_FNAM
-              suff(jj:jj) = ' '
+              prefix(jj:jj) = ' '
             ENDDO
             ilnb = ILNBLNK(PTRACERS_names(iTr))
-            WRITE(suff,'(A,A)') 'surf_',PTRACERS_names(iTr)(1:ilnb)
-            CALL MNC_CW_RL_W(pf,'ptr_flux_tave',0,0,suff,
+            WRITE(prefix,'(A,A)') 'surf_',PTRACERS_names(iTr)(1:ilnb)
+            CALL MNC_CW_RL_W(pf,'ptr_flux_tave',0,0, prefix,
      &           ptracerFluxtave(1-OLx,1-OLy,1,1,iTr),myThid)
           ENDDO
         ENDIF
@@ -114,16 +115,20 @@ C--     Write to files
 C         Read IO error counter
           beginIOErrCount = IO_ERRCOUNT(myThid)
 
+          IF ( rwSuffixType.EQ.0 ) THEN
+            WRITE(suff,'(I10.10)') myIter
+          ELSE
+            CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+          ENDIF
+
           DO iTr=1,PTRACERS_numInUse
-            WRITE(suff,'(A7,I2.2,A1,I10.10)') 'PtrFluxtave',
-     &                                         iTr, '.', myIter
-            CALL WRITE_FLD_XY_RL ( suff, ' ',
-     &                 ptracerFluxtave(1-Olx,1-Oly,  1,1,iTr),
+            WRITE(prefix,'(A11,I2.2,A1)') 'PtrFluxtave', iTr, '.'
+            CALL WRITE_FLD_XY_RL ( prefix, suff,
+     &                 ptracerFluxtave(1-OLx,1-OLy,  1,1,iTr),
      &                 myIter, myThid )
-            WRITE(suff,'(A7,I2.2,A1,I10.10)') 'PTRtave',
-     &                                         iTr, '.', myIter
-            CALL WRITE_FLD_XYZ_RL( suff, ' ',
-     &                 ptracertave    (1-Olx,1-Oly,1,1,1,iTr),
+            WRITE(prefix,'(A7, I2.2,A1)') 'PTRtave', iTr, '.'
+            CALL WRITE_FLD_XYZ_RL( prefix, suff,
+     &                 ptracertave    (1-OLx,1-OLy,1,1,1,iTr),
      &                 myIter, myThid )
           ENDDO
 
