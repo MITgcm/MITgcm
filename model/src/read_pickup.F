@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.13 2016/02/15 18:00:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/read_pickup.F,v 1.14 2017/03/24 23:26:36 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -84,11 +84,12 @@ C     msgBuf      :: Informational/error message buffer
 #endif
 
 C     Suffix for pickup files
-      DO j = 1,MAX_LEN_FNAM
-        fn(j:j) = ' '
-      ENDDO
       IF (pickupSuff .EQ. ' ') THEN
-        WRITE(suff,'(I10.10)') myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(suff,'(I10.10)') myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
+        ENDIF
       ELSE
         WRITE(suff,'(A10)') pickupSuff
       ENDIF

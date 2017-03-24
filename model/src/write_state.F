@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.65 2016/02/15 18:00:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.66 2017/03/24 23:26:36 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -87,7 +87,7 @@ CEOP
         IF ( dumpFreq .EQ. 0.0 ) THEN
           iRec = 1
         ELSE
-          iRec = int ( (myTime-startTime) / dumpFreq +1.5 )
+          iRec = 1 + NINT( (myTime-startTime) / dumpFreq )
         ENDIF
 
 C       Going to really do some IO. Make everyone except master thread wait.
@@ -123,7 +123,11 @@ c         CALL WRITE_REC_XYZ_RS('hFacS.',hFacS,iRec,myIter,myThid)
 C         Write each snap-shot as a new file (original and default
 C         method) -- creates many files but for large configurations is
 C         easier to transfer analyse a particular snap-shots
-          WRITE(suff,'(I10.10)') myIter
+          IF ( rwSuffixType.EQ.0 ) THEN
+            WRITE(suff,'(I10.10)') myIter
+          ELSE
+            CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+          ENDIF
 
 #ifdef ALLOW_OPENAD
 # ifndef ALLOW_STREAMICE
