@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_varia.F,v 1.12 2017/02/11 21:07:13 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_varia.F,v 1.13 2017/03/24 23:38:56 jmc Exp $
 C $Name:  $
 
 #include "FLT_OPTIONS.h"
@@ -90,9 +90,13 @@ C read floats initial condition from file
       IF ( nIter0.EQ.FLT_Iter0 ) THEN
         fn = flt_file
         fp = readBinaryPrec
-      ELSEIF (nIter0.GT.FLT_Iter0) THEN
-        IF (pickupSuff .EQ. ' ') THEN
-          WRITE(suff,'(I10.10)') nIter0
+      ELSEIF ( nIter0.GT.FLT_Iter0 ) THEN
+        IF ( pickupSuff .EQ. ' ' ) THEN
+          IF ( rwSuffixType.EQ.0 ) THEN
+            WRITE(suff,'(I10.10)') nIter0
+          ELSE
+            CALL RW_GET_SUFFIX( suff, startTime, nIter0, myThid )
+          ENDIF
         ELSE
           WRITE(suff,'(A10)') pickupSuff
         ENDIF

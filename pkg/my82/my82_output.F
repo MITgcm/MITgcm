@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_output.F,v 1.3 2013/08/12 00:05:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_output.F,v 1.4 2017/03/24 23:38:56 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -67,7 +67,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(10) suff
 #ifdef ALLOW_TIMEAVE
       INTEGER bi, bj
       _RL DDTT
@@ -91,7 +91,11 @@ C----------------------------------------------------------------
 C       Write each snap-shot as a new file
 C       - creates many files but for large configurations is easier to
 C         transfer analyse a particular snap-shots
-        WRITE(suff,'(I10.10)') myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(suff,'(I10.10)') myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+        ENDIF
         CALL WRITE_FLD_XYZ_RL('MYviscAr.',suff,MYviscAr,
      &       myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('MYdiffKr.',suff,MYdiffKr,
@@ -142,7 +146,7 @@ C     Initialize averages to zero
 
        ELSE
 C     Cumulate MY82 fields (for Time Average)
-        DDTT=deltaTclock
+        DDTT = deltaTClock
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           CALL TIMEAVE_CUMULATE( MYviscArtave, MYviscAr,
@@ -176,7 +180,11 @@ C     Normalize by integrated time
 
         IF (MYwriteState .AND. timeave_mdsio) THEN
 C     Write each snap-shot as a new file
-         WRITE(suff,'(I10.10)') myIter
+         IF ( rwSuffixType.EQ.0 ) THEN
+           WRITE(suff,'(I10.10)') myIter
+         ELSE
+           CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+         ENDIF
          CALL WRITE_FLD_XYZ_RL('MYviscAr-T.', suff,
      &                          MYviscArTave, myIter, myThid )
          CALL WRITE_FLD_XYZ_RL('MYdiffKr-T.', suff,

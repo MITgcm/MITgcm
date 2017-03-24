@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ini_io.F,v 1.4 2008/02/05 15:31:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ini_io.F,v 1.5 2017/03/24 23:34:13 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -21,32 +21,28 @@ C     !USES:
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 #include "PARAMS.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     myThid - Thread number for this instance of the routine.
+C     myThid   :: my Thread Id number
       INTEGER myThid
-CEOP
 
-C     !LOCAL VARIABLES:
-C     == Local variables ==
-      INTEGER m, n, j, iL, nUnit
-      CHARACTER*(MAX_LEN_FNAM) dataFName
-      CHARACTER*(MAX_LEN_MBUF) msgBuf, tmpBuf
+C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
+C     !LOCAL VARIABLES:
+      INTEGER m, n, j, iL, nUnit
+      CHARACTER*(10) suff
+      CHARACTER*(MAX_LEN_FNAM) dataFName
+      CHARACTER*(MAX_LEN_MBUF) msgBuf, tmpBuf
+CEOP
+
       _BEGIN_MASTER( myThid)
 
-#ifdef ALLOW_USE_MPI
-      IF ( diagSt_Ascii .AND. mpiMyId.EQ.0 ) THEN
-#else
-      IF ( diagSt_Ascii ) THEN
-#endif
+      IF ( diagSt_Ascii .AND. myProcId.EQ.0 ) THEN
 
         DO n=1,diagSt_nbLists
 
@@ -54,15 +50,23 @@ C-      get a free unit number as the I/O channel for this routine
           CALL MDSFINDUNIT( nUnit, myThid )
           diagSt_ioUnit(n) = nUnit
 
+C-      set file name
+          IF ( rwSuffixType.EQ.0 ) THEN
+            WRITE(suff,'(I10.10)') nIter0
+          ELSE
+            CALL RW_GET_SUFFIX( suff, startTime, nIter0, myThid )
+          ENDIF
           iL = ILNBLNK(diagSt_Fname(n))
-          WRITE(dataFName,'(2A,I10.10,A)')
-     &          diagSt_Fname(n)(1:iL), '.', nIter0, '.txt'
+          WRITE(dataFName,'(4A)')
+     &          diagSt_Fname(n)(1:iL), '.', suff, '.txt'
+
+C-      open file with corresponding file unit
           OPEN( nUnit, FILE=dataFName, STATUS='unknown' )
 
           WRITE(msgBuf,'(4A,I6)') 'DIAGSTATS_INI_IO: ',
      &         'open file: ',dataFName(1:iL+15), ' , unit=', nUnit
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT , myThid)
+     &                        SQUEEZE_RIGHT, myThid )
 
 C-      write a kind of header:
           WRITE(nUnit,'(2A)')      '# header of file: ',

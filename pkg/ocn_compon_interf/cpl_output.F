@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_output.F,v 1.4 2016/01/06 00:58:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_output.F,v 1.5 2017/03/24 23:38:57 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -49,6 +49,7 @@ C     == Local variables ==
 C     bi,bj  :: Tile index
 C     fn     :: File name suffix
       INTEGER bi,bj
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn
 #ifdef ALLOW_MNC
       CHARACTER*(1) pf
@@ -86,7 +87,12 @@ C       Normalize by integrated time
         ENDDO
 
         IF ( cpl_timeave_mdsio ) THEN
-          WRITE(fn,'(A,I10.10)') 'cplFldtave.', myIter
+          IF ( rwSuffixType.EQ.0 ) THEN
+            WRITE(fn,'(A,I10.10)') 'cplFldtave.', myIter
+          ELSE
+            CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+            WRITE(fn,'(A,A)') 'cplFldtave.', suff
+          ENDIF
           CALL WRITE_REC_XY_RL(  fn, SLPtave  ,  1, myIter, myThid )
           CALL WRITE_REC_XY_RL(  fn, HFtave   ,  2, myIter, myThid )
           CALL WRITE_REC_XY_RL(  fn, QSWtave  ,  3, myIter, myThid )

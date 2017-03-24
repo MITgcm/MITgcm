@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_close_io.F,v 1.4 2011/07/01 18:28:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_close_io.F,v 1.5 2017/03/24 23:34:13 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -26,18 +26,19 @@ C     == Global variables ===
 #include "DIAGNOSTICS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     myThid  :: my Thread Id number
+C     myThid   :: my Thread Id number
       INTEGER myThid
-CEOP
 
-C     !LOCAL VARIABLES:
-C     == Local variables ==
-      INTEGER  n, iL, nUnit
-      CHARACTER*(MAX_LEN_FNAM) dataFName
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+      INTEGER  n, iL, nUnit
+      CHARACTER*(10) suff
+      CHARACTER*(MAX_LEN_FNAM) dataFName
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+CEOP
 
       _BEGIN_MASTER( myThid)
 
@@ -51,13 +52,18 @@ C-      write a conclusion & close the file:
           WRITE(nUnit,'(A)') '# records End here.'
           CLOSE(nUnit)
 
+          IF ( rwSuffixType.EQ.0 ) THEN
+            WRITE(suff,'(I10.10)') nIter0
+          ELSE
+            CALL RW_GET_SUFFIX( suff, startTime, nIter0, myThid )
+          ENDIF
           iL = ILNBLNK(diagSt_Fname(n))
-          WRITE(dataFName,'(2A,I10.10,A)')
-     &          diagSt_Fname(n)(1:iL), '.', nIter0, '.txt'
+          WRITE(dataFName,'(4A)')
+     &          diagSt_Fname(n)(1:iL), '.', suff, '.txt'
           WRITE(msgBuf,'(4A,I6)') 'DIAGSTATS_CLOSE_IO: ',
      &         'close file: ',dataFName(1:iL+15), ' , unit=', nUnit
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                        SQUEEZE_RIGHT , myThid)
+     &                        SQUEEZE_RIGHT, myThid )
 
         ENDDO
 

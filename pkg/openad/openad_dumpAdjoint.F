@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/openad_dumpAdjoint.F,v 1.8 2015/07/05 15:35:54 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/openad/openad_dumpAdjoint.F,v 1.9 2017/03/24 23:38:57 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -24,7 +24,7 @@ c#endif
 
 C start with a copy of THE_MAIN_LOOP
 C and remove some the obvious extras
-      SUBROUTINE openad_dumpAdjoint(myTime, myIter, myThid )
+      SUBROUTINE openad_dumpAdjoint( myTime, myIter, myThid )
       IMPLICIT NONE
 
 C     == Global variables ==
@@ -88,17 +88,20 @@ c They provide the fields to be stored.
 
 #endif /* ALLOW_AUTODIFF */
 
-      INTEGER myThid
-      INTEGER myIter
       _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
-      double precision foo5(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      double precision foo4(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-
+      _RL     foo4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     foo5(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       CHARACTER*(10) suff
 
-      if (Mod(myIter,360).eq.0) then
-         WRITE(suff,'(I10.10)') myIter
+      IF ( MOD(myIter,360).EQ.0 ) THEN
+         IF ( rwSuffixType.EQ.0 ) THEN
+           WRITE(suff,'(I10.10)') myIter
+         ELSE
+           CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+         ENDIF
 # ifndef ALLOW_STREAMICE
          foo5=theta%d
          call write_fld_xyz_rl('adjtheta.',suff,foo5,myIter,1)
@@ -137,6 +140,7 @@ c They provide the fields to be stored.
          foo4=qnetm%d
          call write_fld_xy_rl('adjhfluxm.',suff,foo4,myIter,1)
 #endif
-      endif
-      END
+      ENDIF
 
+      RETURN
+      END

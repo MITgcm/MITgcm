@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_read_pickup.F,v 1.1 2013/07/11 14:33:23 m_bates Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_read_pickup.F,v 1.2 2017/03/24 23:38:56 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -45,19 +45,25 @@ C     msgBuf      :: Informational/error message buffer
       INTEGER missFldDim, nMissing
       INTEGER i,j,k,n,nm,ioUnit,bi,bj
       PARAMETER( missFldDim = 12 )
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(8) missFldList(missFldDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL vec(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL vec(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       CHARACTER*(8) fieldname
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
        IF ( pickupSuff.EQ.' ' ) THEN
-        WRITE(fn,'(A,I10.10)') 'pickup_gmredi.',myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(fn,'(A,I10.10)') 'pickup_gmredi.', myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
+          WRITE(fn,'(A,A)') 'pickup_gmredi.', suff
+        ENDIF
        ELSE
-        WRITE(fn,'(A,A10)')    'pickup_gmredi.',pickupSuff
+        WRITE(fn,'(A,A10)') 'pickup_gmredi.', pickupSuff
        ENDIF
        fp = precFloat64
 
@@ -137,8 +143,8 @@ C       Centre mode
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO k=1,Nr
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
              modesC(1,i,j,k,bi,bj) = vec(i,j,k,bi,bj)
             ENDDO
            ENDDO
@@ -155,8 +161,8 @@ C      Western Mode
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO k=1,Nr
-            DO j=1-Oly,sNy+Oly
-             DO i=1-Olx,sNx+Olx
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
               modesW(n,i,j,k,bi,bj) = vec(i,j,k,bi,bj)
              ENDDO
             ENDDO
@@ -174,8 +180,8 @@ C      Southern Mode
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO k=1,Nr
-            DO j=1-Oly,sNy+Oly
-             DO i=1-Olx,sNx+Olx
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
               modesS(n,i,j,k,bi,bj) = vec(i,j,k,bi,bj)
              ENDDO
             ENDDO
@@ -195,7 +201,6 @@ C       Deformation radius
 
 C--   end: new way to read pickup file
       ENDIF
-      
 
 C--    Check for missing fields:
       nMissing = missFldDim

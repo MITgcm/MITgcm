@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_read_pickup.F,v 1.3 2007/08/17 19:38:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_read_pickup.F,v 1.4 2017/03/24 23:34:13 jmc Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -36,10 +36,14 @@ C     !LOCAL VARIABLES:
       INTEGER prec
 
 C     Suffix for pickup files
-      IF (pickupSuff.EQ.' ') THEN
-         WRITE(suff,'(I10.10)') myIter
+      IF ( pickupSuff.EQ.' ' ) THEN
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(suff,'(I10.10)') myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
+        ENDIF
       ELSE
-         WRITE(suff,'(A10)') pickupSuff
+        WRITE(suff,'(A10)') pickupSuff
       ENDIF
       prec = precFloat64
 

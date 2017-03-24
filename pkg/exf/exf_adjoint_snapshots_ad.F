@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.12 2015/10/25 23:24:20 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.13 2017/03/24 23:34:13 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -10,7 +10,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: adexf_adjoint_snapshots
 C     !INTERFACE:
-      subroutine adexf_adjoint_snapshots(
+      SUBROUTINE adexf_adjoint_snapshots(
      &     iwhen, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
@@ -68,7 +68,7 @@ C     !LOCAL VARIABLES:
 c     == local variables ==
 C     suff   :: Hold suffix part of a filename
 C     msgBuf :: Error message buffer
-      CHARACTER*(MAX_LEN_FNAM) suff
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER dumpAdRecEx
 CEOP
@@ -80,7 +80,11 @@ CEOP
      & ) THEN
 
 C--     Set suffix for this set of data files.
-        WRITE(suff,'(I10.10)') myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(suff,'(I10.10)') myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+        ENDIF
 C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
 C ==>>  is very very very nasty !!!
 c       writeBinaryPrec = writeStatePrec

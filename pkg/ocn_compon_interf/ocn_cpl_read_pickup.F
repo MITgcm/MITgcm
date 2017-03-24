@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_read_pickup.F,v 1.10 2016/01/06 01:02:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_read_pickup.F,v 1.11 2017/03/24 23:38:57 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -42,12 +42,18 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER prec, rec_ind
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
        IF ( pickupSuff.EQ.' ' ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup_cpl.',myIter
+         IF ( rwSuffixType.EQ.0 ) THEN
+           WRITE(fn,'(A,I10.10)') 'pickup_cpl.', myIter
+         ELSE
+           CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
+           WRITE(fn,'(A,A)') 'pickup_cpl.', suff
+         ENDIF
        ELSE
          WRITE(fn,'(A,A10)') 'pickup_cpl.', pickupSuff
        ENDIF

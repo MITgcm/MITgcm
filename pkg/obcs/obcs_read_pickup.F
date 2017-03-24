@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_read_pickup.F,v 1.5 2011/12/02 15:27:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_read_pickup.F,v 1.6 2017/03/24 23:38:57 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -41,7 +41,11 @@ C     !LOCAL VARIABLES:
       INTEGER prec
 
       IF ( pickupSuff.EQ.' ' ) THEN
-        WRITE(suff,'(I10.10)') myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(suff,'(I10.10)') myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
+        ENDIF
       ELSE
         suff = pickupSuff
       ENDIF

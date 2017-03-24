@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_read_pickup.F,v 1.5 2012/12/23 20:18:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_read_pickup.F,v 1.6 2017/03/24 23:34:13 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -46,6 +46,7 @@ C     msgBuf      :: Informational/error message buffer
       INTEGER missFldDim, nMissing, warnCnts
       INTEGER j, nj, ioUnit
       PARAMETER( missFldDim = 12 )
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(8) missFldList(missFldDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -56,9 +57,14 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
        IF ( pickupSuff.EQ.' ' ) THEN
-        WRITE(fn,'(A,I10.10)') 'pickup_cheapaml.',myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(fn,'(A,I10.10)') 'pickup_cheapaml.', myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
+          WRITE(fn,'(A,A)') 'pickup_cheapaml.', myIter
+        ENDIF
        ELSE
-        WRITE(fn,'(A,A10)')    'pickup_cheapaml.',pickupSuff
+        WRITE(fn,'(A,A10)') 'pickup_cheapaml.', pickupSuff
        ENDIF
        fp = precFloat64
 

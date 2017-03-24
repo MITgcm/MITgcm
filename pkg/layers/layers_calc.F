@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.31 2015/06/16 21:43:10 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.32 2017/03/24 23:38:56 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -85,7 +85,8 @@ C     i,j      :: horizontal indices
 C     iLa      :: layer-type index
 C     k        :: vertical index for model grid
       INTEGER bi, bj, iLa
-      CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(10) sufx
+      CHARACTER*(13) suff
 
 #ifdef LAYERS_THERMODYNAMICS
       INTEGER iTracer
@@ -228,7 +229,12 @@ C--   Direct Snap-shot output
      &    .AND. layers_num(iLa).NE.0 ) THEN
 
         IF ( layers_MDSIO ) THEN
-          WRITE(suff,'(I2.2,A1,I10.10)') iLa, '.', myIter
+          IF ( rwSuffixType.EQ.0 ) THEN
+            WRITE(suff,'(I2.2,A1,I10.10)') iLa, '.', myIter
+          ELSE
+            CALL RW_GET_SUFFIX( sufx, myTime, myIter, myThid )
+            WRITE(suff,'(I2.2,A1,A)') iLa, '.', sufx
+          ENDIF
 #ifdef LAYERS_UFLUX
           CALL WRITE_FLD_3D_RL( 'layers_UH.', suff, Nlayers,
      &                           layers_UH, myIter, myThid )
@@ -398,28 +404,28 @@ C --- The tile loops
 
 #ifdef LAYERS_UFLUX
           CALL TIMEAVE_CUMULATE( layers_UH_T, layers_UH, Nlayers,
-     &                           deltaTclock, bi, bj, myThid )
+     &                           deltaTClock, bi, bj, myThid )
 #ifdef LAYERS_THICKNESS
           CALL TIMEAVE_CUMULATE( layers_Hw_T, layers_Hw, Nlayers,
-     &                           deltaTclock, bi, bj, myThid )
+     &                           deltaTClock, bi, bj, myThid )
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_UFLUX */
 #ifdef LAYERS_VFLUX
           CALL TIMEAVE_CUMULATE( layers_VH_T, layers_VH, Nlayers,
-     &                           deltaTclock, bi, bj, myThid )
+     &                           deltaTClock, bi, bj, myThid )
 #ifdef LAYERS_THICKNESS
           CALL TIMEAVE_CUMULATE( layers_Hs_T, layers_Hs, Nlayers,
-     &                           deltaTclock, bi, bj, myThid )
+     &                           deltaTClock, bi, bj, myThid )
 #endif /* LAYERS_THICKNESS */
 #endif /* LAYERS_VFLUX */
 
 #ifdef LAYERS_PRHO_REF
           IF ( layers_num(iLa) .EQ. 3 )
      &    CALL TIMEAVE_CUMULATE( prho_tave, prho, Nr,
-     &                           deltaTclock, bi, bj, myThid )
+     &                           deltaTClock, bi, bj, myThid )
 #endif /* LAYERS_PRHO_REF */
 
-          layers_TimeAve(bi,bj)=layers_TimeAve(bi,bj)+deltaTclock
+          layers_TimeAve(bi,bj)=layers_TimeAve(bi,bj)+deltaTClock
 
 C --- End bi,bj loop
          ENDDO
@@ -428,7 +434,6 @@ C --- End bi,bj loop
 #endif /* ALLOW_TIMEAVE */
 
       ENDDO !DO iLa=1,layers_maxNum
-
 
 #ifdef LAYERS_THERMODYNAMICS
 C--   Reset temporary flux arrays to zero
@@ -460,7 +465,6 @@ C--   Reset temporary flux arrays to zero
        ENDDO
       ENDDO
 #endif /* LAYERS_THERMODYNAMICS */
-
 
 #endif /* ALLOW_LAYERS */
 

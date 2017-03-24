@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_read_pickup.F,v 1.1 2015/07/02 04:42:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_read_pickup.F,v 1.2 2017/03/24 23:38:56 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -40,9 +40,13 @@ CEOP
 
 C--   Suffix for pickup files
       IF (pickupSuff.EQ.' ') THEN
-         WRITE(suff,'(I10.10)') myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(suff,'(I10.10)') myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
+        ENDIF
       ELSE
-         WRITE(suff,'(A10)') pickupSuff
+        WRITE(suff,'(A10)') pickupSuff
       ENDIF
 
       _BARRIER
@@ -51,8 +55,6 @@ C--   Suffix for pickup files
 
       WRITE(fn,'(A,A10)') 'pickup_ggl90.',suff
       CALL READ_REC_3D_RL( fn, prec, Nr, GGL90TKE, 1, myIter, myThid )
-
-c     _BARRIER
 
       _EXCH_XYZ_RL( GGL90TKE, myThid )
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_output.F,v 1.2 2010/01/03 19:15:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_output.F,v 1.3 2017/03/24 23:38:57 jmc Exp $
 C $Name:  $
 
 #include "OPPS_OPTIONS.h"
@@ -65,7 +65,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(10) suff
       INTEGER bi, bj
       _RL DDTT
 #endif /* ALLOW_TIMEAVE */
@@ -108,7 +108,7 @@ C     Initialize averages to zero
 
        ELSE
 C     Cumulate OPPS fields (for Time Average)
-        DDTT=deltaTclock
+        DDTT = deltaTClock
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           CALL TIMEAVE_CUMULATE( OPPSconvCountTave, OPPSconvectCount,
@@ -133,7 +133,11 @@ C     Normalize by integrated time
         ENDDO
 
 C     Write each snap-shot as a new file
-        WRITE(suff,'(I10.10)') myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(suff,'(I10.10)') myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+        ENDIF
         CALL WRITE_FLD_XYZ_RL('OPPSconvtave.',suff,OPPSconvCountTave,
      &      myIter,myThid)
 

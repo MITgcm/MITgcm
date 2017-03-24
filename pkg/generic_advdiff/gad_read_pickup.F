@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_read_pickup.F,v 1.4 2011/03/14 01:37:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_read_pickup.F,v 1.5 2017/03/24 23:38:56 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -38,6 +38,7 @@ C     iRec    :: record number
 C     fn      :: character buffer for creating filename
 C     prec    :: precision of pickup files
       INTEGER n, prec, iRec
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn, filNam
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER ioUnit
@@ -71,7 +72,12 @@ c     IF ( pickup_read_mdsio .AND. tempSOM_Advection ) THEN
 C--   Pot. Temp. 2nd.Order moments
 
         IF (pickupSuff .EQ. ' ') THEN
-          WRITE(fn,'(A,I10.10)') 'pickup_somT.', myIter
+          IF ( rwSuffixType.EQ.0 ) THEN
+            WRITE(fn,'(A,I10.10)') 'pickup_somT.', myIter
+          ELSE
+            CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
+            WRITE(fn,'(A,A)') 'pickup_somT.', suff
+          ENDIF
         ELSE
           WRITE(fn,'(A,A10)') 'pickup_somT.', pickupSuff
         ENDIF
@@ -93,7 +99,7 @@ C-      Read 2nd Order moments as consecutive records
           DO n=1,nSOM
             iRec = n
             CALL READ_REC_3D_RL( fn, prec, Nr,
-     O                som_T(1-Olx,1-Oly,1,1,1,n),
+     O                som_T(1-OLx,1-OLy,1,1,1,n),
      I                iRec, myIter, myThid )
           ENDDO
         ELSE
@@ -117,7 +123,12 @@ c     IF ( pickup_read_mdsio .AND. saltSOM_Advection ) THEN
 C--   Salinity 2nd.Order moments
 
         IF (pickupSuff .EQ. ' ') THEN
-          WRITE(fn,'(A,I10.10)') 'pickup_somS.', myIter
+          IF ( rwSuffixType.EQ.0 ) THEN
+            WRITE(fn,'(A,I10.10)') 'pickup_somS.', myIter
+          ELSE
+            CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
+            WRITE(fn,'(A,A)') 'pickup_somS.', suff
+          ENDIF
         ELSE
           WRITE(fn,'(A,A10)') 'pickup_somS.', pickupSuff
         ENDIF
@@ -139,7 +150,7 @@ C-      Read 2nd Order moments as consecutive records
           DO n=1,nSOM
             iRec = n
             CALL READ_REC_3D_RL( fn, prec, Nr,
-     O                som_S(1-Olx,1-Oly,1,1,1,n),
+     O                som_S(1-OLx,1-OLy,1,1,1,n),
      I                iRec, myIter, myThid )
           ENDDO
         ELSE

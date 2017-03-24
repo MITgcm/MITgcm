@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_output.F,v 1.7 2017/02/15 20:57:19 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_output.F,v 1.8 2017/03/24 23:38:56 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -83,7 +83,7 @@ C     kpp_drctrec  :: next record to dump for KPP files
       INTEGER kpp_drctrec
       COMMON / KPP_RECORDNUM1 / kpp_drctrec
 C     local variable:
-      CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(10) suff
 #if (defined ALLOW_TIMEAVE) || (defined ALLOW_DIAGNOSTICS)
       INTEGER bi, bj
       INTEGER i, j, k
@@ -152,7 +152,11 @@ C--     Increment record counter
 C         Write each snap-shot as a new file - creates many files but
 C         for large configurations is easier to transfer
 C         NOTE: file size and number problems are *SOLVED* by MNC
-          WRITE(suff,'(I10.10)') myIter
+          IF ( rwSuffixType.EQ.0 ) THEN
+            WRITE(suff,'(I10.10)') myIter
+          ELSE
+            CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+          ENDIF
           CALL WRITE_FLD_XYZ_RL('KPPviscAz.',suff,KPPviscAz,
      &         myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('KPPdiffKzT.',suff,KPPdiffKzT,
@@ -215,7 +219,7 @@ C     Initialize averages to zero
        ELSE
 
 C     Time Average KPP fields
-        DDTT=deltaTclock
+        DDTT = deltaTClock
         IF ( useGMRedi .AND. KPP_ghatUseTotalDiffus ) THEN
           tmpFac = 1. _d 0
         ELSE
@@ -306,7 +310,11 @@ C--       Increment record counter
 C         Write each tave output as a new file - creates many files but for
 C         large configurations is easier to transfer
 C         NOTE: file size and number problems are *SOLVED* by MNC
-          WRITE(suff,'(I10.10)') myIter
+          IF ( rwSuffixType.EQ.0 ) THEN
+            WRITE(suff,'(I10.10)') myIter
+          ELSE
+            CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+          ENDIF
           CALL WRITE_FLD_XYZ_RL('KPPviscAz-T.',suff,KPPviscAztave,
      &         myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('KPPdiffKzT-T.',suff,KPPdiffKzTtave,

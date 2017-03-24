@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.62 2017/01/11 00:22:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.63 2017/03/24 23:34:13 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -9,10 +9,7 @@ C     !ROUTINE: DIAGNOSTICS_OUT
 
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_OUT(
-     I     listId,
-     I     myTime,
-     I     myIter,
-     I     myThid )
+     I                       listId, myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     Write output for diagnostics fields.
@@ -77,7 +74,7 @@ c     COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
       INTEGER iLen,jLen
       INTEGER ioUnit
       CHARACTER*(MAX_LEN_FNAM) fn
-      CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER prec, nRec, nTimRec
       _RL     timeRec(2)
@@ -95,14 +92,19 @@ C---  set file properties
       ioUnit= standardMessageUnit
       undefRL = misValFlt(listId)
 
-      WRITE(suff,'(I10.10)') myIter
+      IF ( rwSuffixType.EQ.0 ) THEN
+        WRITE(suff,'(I10.10)') myIter
+      ELSE
+        CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+      ENDIF
       iLen = ILNBLNK(fnames(listId))
-      WRITE( fn, '(A,A,A)' ) fnames(listId)(1:iLen),'.',suff(1:10)
+      WRITE( fn, '(A,A,A)' ) fnames(listId)(1:iLen),'.',suff
       IF ( diag_mdsio.AND.(diagMdsDir.NE.' ') ) THEN
         jLen = ILNBLNK(diagMdsDir)
         WRITE( fn, '(5A)' ) diagMdsDir(1:jLen),'/',
-     &    fnames(listId)(1:iLen),'.',suff(1:10)
+     &                       fnames(listId)(1:iLen),'.',suff
       ENDIF
+
 C-    for now, if integrate vertically, output field has just 1 level:
       nLevOutp = nlevels(listId)
       IF ( fflags(listId)(2:2).EQ.'I' ) nLevOutp = 1

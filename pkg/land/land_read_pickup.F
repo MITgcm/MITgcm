@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_read_pickup.F,v 1.6 2009/08/27 18:00:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_read_pickup.F,v 1.7 2017/03/24 23:38:56 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -38,6 +38,7 @@ C     fn      :: character buffer for creating filename
 C     prec    :: precision of pickup files
 C     k       :: loop index
       INTEGER prec, k
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn
 CEOP
 
@@ -45,32 +46,37 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( .NOT.land_pickup_read_mnc ) THEN
 
-      WRITE(fn,'(A,I10.10)') 'pickup_land.',myIter
-      prec = precFloat64
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(fn,'(A,I10.10)') 'pickup_land.',myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
+          WRITE(fn,'(A,A10)') 'pickup_land.',suff
+        ENDIF
+        prec = precFloat64
 
-      IF ( land_oldPickup ) THEN
+        IF ( land_oldPickup ) THEN
 C-    Read fields as consecutive records
-        CALL READ_REC_3D_RL( fn, prec, land_nLev,
-     &                       land_groundT, 1, myIter, myThid )
-        CALL READ_REC_3D_RL( fn, prec, land_nLev,
-     &                       land_groundW, 2, myIter, myThid )
+          CALL READ_REC_3D_RL( fn, prec, land_nLev,
+     &                         land_groundT, 1, myIter, myThid )
+          CALL READ_REC_3D_RL( fn, prec, land_nLev,
+     &                         land_groundW, 2, myIter, myThid )
 
       ELSE
 
 C-    Read fields as consecutive records
-        CALL READ_REC_3D_RL( fn, prec, land_nLev,
-     &                       land_enthalp, 1, myIter, myThid )
-        CALL READ_REC_3D_RL( fn, prec, land_nLev,
-     &                       land_groundW, 2, myIter, myThid )
-        k=2*land_nLev
-        CALL READ_REC_3D_RL( fn, prec, 1,
-     &                       land_skinT,  k+1, myIter, myThid )
-        CALL READ_REC_3D_RL( fn, prec, 1,
-     &                       land_hSnow,  k+2, myIter, myThid )
-        CALL READ_REC_3D_RL( fn, prec, 1,
-     &                       land_snowAge,k+3, myIter, myThid )
+          CALL READ_REC_3D_RL( fn, prec, land_nLev,
+     &                         land_enthalp, 1, myIter, myThid )
+          CALL READ_REC_3D_RL( fn, prec, land_nLev,
+     &                         land_groundW, 2, myIter, myThid )
+          k=2*land_nLev
+          CALL READ_REC_3D_RL( fn, prec, 1,
+     &                         land_skinT,  k+1, myIter, myThid )
+          CALL READ_REC_3D_RL( fn, prec, 1,
+     &                         land_hSnow,  k+2, myIter, myThid )
+          CALL READ_REC_3D_RL( fn, prec, 1,
+     &                         land_snowAge,k+3, myIter, myThid )
 
-      ENDIF
+        ENDIF
 
       ENDIF
 

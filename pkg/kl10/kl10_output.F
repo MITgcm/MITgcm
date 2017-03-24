@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_output.F,v 1.1 2014/07/30 03:28:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_output.F,v 1.2 2017/03/24 23:38:56 jmc Exp $
 C $Name:  $
 
 #include "KL10_OPTIONS.h"
@@ -64,7 +64,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(10) suff
 #ifdef ALLOW_TIMEAVE
       INTEGER bi, bj
       _RL DDTT
@@ -84,7 +84,11 @@ C----------------------------------------------------------------
 
        IF (KLwriteState) THEN
 C       Write each snap-shot as a new file
-        WRITE(suff,'(I10.10)') myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(suff,'(I10.10)') myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+        ENDIF
         CALL WRITE_FLD_XYZ_RL('KLviscAr.',suff,KLviscAr,
      &       myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('KLeps.',suff,KLeps,
@@ -141,7 +145,11 @@ C     Normalize by integrated time
         ENDDO
 
 C     Write each snap-shot as a new file
-        WRITE(suff,'(I10.10)') myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(suff,'(I10.10)') myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+        ENDIF
         CALL WRITE_FLD_XYZ_RL( 'KLviscAr-T.', suff,
      &                          KLviscArTave, myIter, myThid )
         CALL WRITE_FLD_XYZ_RL( 'KLeps-T.', suff,

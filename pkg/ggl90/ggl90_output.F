@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_output.F,v 1.3 2010/08/06 18:37:05 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_output.F,v 1.4 2017/03/24 23:38:56 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -64,7 +64,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(10) suff
 #ifdef ALLOW_TIMEAVE
       INTEGER bi, bj
       _RL DDTT
@@ -81,7 +81,11 @@ C----------------------------------------------------------------
 
        IF (GGL90writeState) THEN
 C       Write each snap-shot as a new file
-        WRITE(suff,'(I10.10)') myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(suff,'(I10.10)') myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+        ENDIF
         IF ( myIter.NE.nIter0 ) THEN
          CALL WRITE_FLD_XYZ_RL( 'GGL90viscArU.', suff,
      &                           GGL90viscArU, myIter, myThid )
@@ -117,7 +121,7 @@ C     Initialize averages to zero
 
        ELSE
 C     Cumulate GGL90 fields (for Time Average)
-        DDTT=deltaTclock
+        DDTT = deltaTClock
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           CALL TIMEAVE_CUMULATE( GGL90viscArUtave, GGL90viscArU,
@@ -154,7 +158,11 @@ C     Normalize by integrated time
         ENDDO
 
 C     Write each snap-shot as a new file
-        WRITE(suff,'(I10.10)') myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(suff,'(I10.10)') myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+        ENDIF
         CALL WRITE_FLD_XYZ_RL( 'GGL90viscArU-T.', suff,
      &                          GGL90viscArUtave, myIter, myThid )
         CALL WRITE_FLD_XYZ_RL( 'GGL90viscArV-T.', suff,

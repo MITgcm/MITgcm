@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_output.F,v 1.7 2010/01/20 01:20:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_output.F,v 1.8 2017/03/24 23:38:56 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -47,7 +47,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 #if ( defined (ALLOW_TIMEAVE) || \
       defined (GM_NON_UNITY_DIAGONAL) || defined (GM_EXTRA_DIAGONAL) )
-      CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(10) suff
 #endif
 #ifdef ALLOW_TIMEAVE
       INTEGER bi, bj
@@ -62,7 +62,11 @@ C     == Local variables ==
      &   ) THEN
 
         IF ( GM_MDSIO ) THEN
-          WRITE(suff,'(I10.10)') myIter
+          IF ( rwSuffixType.EQ.0 ) THEN
+            WRITE(suff,'(I10.10)') myIter
+          ELSE
+            CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+          ENDIF
 #ifdef GM_NON_UNITY_DIAGONAL
           CALL WRITE_FLD_XYZ_RL( 'GM_Kux.',suff,Kux,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL( 'GM_Kvy.',suff,Kvy,myIter,myThid)
@@ -103,7 +107,6 @@ C     == Local variables ==
 
 #endif /* GM_NON_UNITY_DIAGONAL || GM_EXTRA_DIAGONAL */
 
-
 #ifdef ALLOW_TIMEAVE
 C     Dump files and restart average computation if needed
       IF ( DIFFERENT_MULTIPLE( taveFreq, myTime, deltaTClock )
@@ -135,7 +138,11 @@ C      Normalize by integrated time
        ENDDO
 
        IF ( GM_MDSIO ) THEN
-         WRITE(suff,'(I10.10)') myIter
+         IF ( rwSuffixType.EQ.0 ) THEN
+           WRITE(suff,'(I10.10)') myIter
+         ELSE
+           CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+         ENDIF
          CALL WRITE_FLD_XYZ_RL('GM_Kwx-T.',suff,GM_Kwx_T,myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('GM_Kwy-T.',suff,GM_Kwy_T,myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('GM_Kwz-T.',suff,GM_Kwz_T,myIter,myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.17 2012/06/02 20:42:11 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.18 2017/03/24 23:34:13 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -19,7 +19,6 @@ C     === Global variables ===
 #include "DIC_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-c#include "PTRACERS_FIELDS.h"
 
 C     == Routine arguments ==
 C     myTime - Current time of simulation ( s )
@@ -37,7 +36,7 @@ C     == Local variables ==
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER bi, bj
-      CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(10) suff
 #ifdef ALLOW_MNC
       CHARACTER*(1) pf
 #endif
@@ -74,7 +73,11 @@ C      Normalize by integrated time
        ENDDO
 
        IF ( PTRACERS_timeave_mdsio )  THEN
-         WRITE(suff,'(I10.10)') myIter
+         IF ( rwSuffixType.EQ.0 ) THEN
+           WRITE(suff,'(I10.10)') myIter
+         ELSE
+           CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+         ENDIF
          CALL WRITE_FLD_XYZ_RL('DIC_Biotave.',suff,BIOave,
      &        myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('DIC_Cartave.',suff,CARave,

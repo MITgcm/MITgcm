@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.12 2012/10/19 18:01:45 rpa Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.13 2017/03/24 23:38:56 jmc Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -44,7 +44,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
-      CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(10) suff
       INTEGER iLa
       INTEGER bi, bj
 
@@ -118,7 +118,11 @@ C      Normalize by integrated time
         ENDDO
 
         IF ( layers_MDSIO ) THEN
-         WRITE(suff,'(I10.10)') myIter
+         IF ( rwSuffixType.EQ.0 ) THEN
+           WRITE(suff,'(I10.10)') myIter
+         ELSE
+           CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+         ENDIF
 #ifdef LAYERS_UFLUX
          CALL WRITE_FLD_3D_RL( 'layers_UH-tave.', suff, Nlayers,
      &                          layers_UH_T, myIter, myThid )

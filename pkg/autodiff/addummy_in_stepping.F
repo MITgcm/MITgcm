@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.64 2016/08/20 03:10:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.65 2017/03/24 23:34:13 jmc Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -78,14 +78,14 @@ C     !LOCAL VARIABLES:
 c     == local variables ==
 C     suff    :: Hold suffix part of a filename
 C     msgBuf  :: Error message buffer
-      CHARACTER*(MAX_LEN_FNAM) suff
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      _RL foo3D(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL foo2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL var2Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL var2Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL foo2D (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL var3Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL var3Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL foo3D (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS dumRS(1)
       _RL dumRL(1)
 CEOP
@@ -179,7 +179,11 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
         ENDIF
 
 C--     Set suffix for this set of data files.
-        WRITE(suff,'(I10.10)') myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(suff,'(I10.10)') myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+        ENDIF
 C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
 C ==>>  is very very very nasty !!!
 c       writeBinaryPrec = writeStatePrec
@@ -738,7 +742,7 @@ cc     &                           var3Du, dumpAdRecMn, myIter, myThid )
           IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJbottomdrag',
      &                           var2Du, dumpAdRecMn, myIter, myThid )
 #endif
- 
+
 C       end if dumpAdVarExch = 2
         ENDIF
 

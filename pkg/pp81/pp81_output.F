@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_output.F,v 1.4 2013/08/12 00:05:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_output.F,v 1.5 2017/03/24 23:38:57 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
@@ -64,7 +64,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(10) suff
 #ifdef ALLOW_TIMEAVE
       INTEGER bi, bj
       _RL DDTT
@@ -81,7 +81,11 @@ C----------------------------------------------------------------
 
        IF (PPwriteState) THEN
 C       Write each snap-shot as a new file
-        WRITE(suff,'(I10.10)') myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(suff,'(I10.10)') myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+        ENDIF
         CALL WRITE_FLD_XYZ_RL('PPviscAr.',suff,PPviscAr,
      &       myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('PPdiffKr.',suff,PPdiffKr,
@@ -109,7 +113,7 @@ C     Initialize averages to zero
 
        ELSE
 C     Cumulate PP fields (for Time Average)
-        DDTT=deltaTclock
+        DDTT = deltaTClock
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           CALL TIMEAVE_CUMULATE( PPviscArtave, PPviscAr,
@@ -138,7 +142,11 @@ C     Normalize by integrated time
         ENDDO
 
 C     Write each snap-shot as a new file
-        WRITE(suff,'(I10.10)') myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(suff,'(I10.10)') myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+        ENDIF
         CALL WRITE_FLD_XYZ_RL( 'PPviscAr-T.', suff,
      &                          PPviscArTave, myIter, myThid )
         CALL WRITE_FLD_XYZ_RL( 'PPdiffKr-T.', suff,

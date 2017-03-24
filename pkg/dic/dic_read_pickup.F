@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_read_pickup.F,v 1.8 2011/03/14 01:38:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_read_pickup.F,v 1.9 2017/03/24 23:34:13 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -26,7 +26,7 @@ C     myThid  :: my Thread Id number
 C     !FUNCTIONS
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn, filNam
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL useCurrentDir, fileExist
@@ -38,7 +38,12 @@ CEOP
 
 C--   pickup file name :
       IF (pickupSuff.EQ.' ') THEN
-        WRITE(fn,'(A,I10.10)') 'pickup_dic.', myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(fn,'(A,I10.10)') 'pickup_dic.', myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
+          WRITE(fn,'(A,A)') 'pickup_dic.', suff
+        ENDIF
       ELSE
         WRITE(fn,'(A,A10)') 'pickup_dic.', pickupSuff
       ENDIF

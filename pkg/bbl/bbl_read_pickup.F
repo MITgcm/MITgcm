@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_read_pickup.F,v 1.1 2011/08/06 03:13:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_read_pickup.F,v 1.2 2017/03/24 23:34:13 jmc Exp $
 C $Name:  $
 
 #include "BBL_OPTIONS.h"
@@ -45,6 +45,7 @@ C     msgBuf      :: Informational/error message buffer
       INTEGER missFldDim, nMissing
       INTEGER j, nj, ioUnit
       PARAMETER( missFldDim = 3 )
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(8) missFldList(missFldDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -53,9 +54,14 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
        IF ( pickupSuff.EQ.' ' ) THEN
-        WRITE(fn,'(A,I10.10)') 'pickup_bbl.',myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(fn,'(A,I10.10)') 'pickup_bbl.', myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
+          WRITE(fn,'(A,A)') 'pickup_bbl.', suff
+        ENDIF
        ELSE
-        WRITE(fn,'(A,A10)')    'pickup_bbl.',pickupSuff
+        WRITE(fn,'(A,A10)') 'pickup_bbl.', pickupSuff
        ENDIF
        fp = precFloat64
 
