@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.9 2015/11/16 21:55:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.10 2017/03/24 23:31:41 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -58,6 +58,7 @@ C     i,j    - loop counters
       INTEGER iUnit, iLo, iHi
       _RS dummyRS(1)
       _RL tmpco2(2)
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -107,7 +108,12 @@ C- If  first iteration, use atmpCO2init as initial condition
         ELSEIF ( myIter.EQ.nIter0 ) THEN
 C- If restart, read moles number from pickup
           IF ( pickupSuff.EQ.' ' ) THEN
-            WRITE(fn,'(A,I10.10)') 'pickup_aimCo2.',nIter0
+            IF ( rwSuffixType.EQ.0 ) THEN
+              WRITE(fn,'(A,I10.10)') 'pickup_aimCo2.', myIter
+            ELSE
+              CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+              WRITE(fn,'(A,A)') 'pickup_aimCo2.', suff
+            ENDIF
           ELSE
             WRITE(fn,'(A,A10)') 'pickup_aimCo2.', pickupSuff
           ENDIF
@@ -157,9 +163,15 @@ C- Write out if time for a new pickup
      &       .OR. permPickup .OR. tempPickup ) THEN
 
           IF ( permPickup ) THEN
-            WRITE(fn,'(A,I10.10)') 'pickup_aimCo2.',myIter+1
+            IF ( rwSuffixType.EQ.0 ) THEN
+              WRITE(fn,'(A,I10.10)') 'pickup_aimCo2.', myIter+1
+            ELSE
+              CALL RW_GET_SUFFIX( suff,
+     &                    myTime+deltaTClock, myIter+1, myThid )
+              WRITE(fn,'(A,A)') 'pickup_aimCo2.', suff
+            ENDIF
           ELSE
-            WRITE(fn,'(A,A)') 'pickup_aimCo2.',checkPtSuff(nCheckLev)
+            WRITE(fn,'(A,A)') 'pickup_aimCo2.', checkPtSuff(nCheckLev)
           ENDIF
 C- write values to new pickup
           tmpco2(1)= Atm_CO2_Moles

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_write_tave.F,v 1.13 2009/12/29 23:02:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_write_tave.F,v 1.14 2017/03/24 23:31:41 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -34,6 +34,7 @@ C     myThid :: Number of this instance of the routine
       INTEGER myThid
 CEOP
 #ifdef ALLOW_AIM
+#ifdef ALLOW_AIM_TAVE
 
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
@@ -49,8 +50,6 @@ C     == Local variables ==
       CHARACTER*(8) mncfn
       CHARACTER*(1) pf
 #endif
-
-#ifdef ALLOW_AIM_TAVE
 
       IF (aim_taveFreq.LE.0.) RETURN
 
@@ -160,8 +159,13 @@ c      _END_MASTER( myThid )
 #endif /*  ALLOW_MNC  */
 
        IF (aim_timeave_mdsio) THEN
+         IF ( rwSuffixType.EQ.0 ) THEN
+           WRITE(suff,'(I10.10)') myIter
+         ELSE
+           CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+         ENDIF
 
-         WRITE(fn,'(A,I10.10)') 'aimPhytave.',myIter
+         WRITE(fn,'(A,A)') 'aimPhytave.', suff
          CALL WRITE_REC_XY_RL( fn, USTRtave,    1, myIter, myThid )
          CALL WRITE_REC_XY_RL( fn, VSTRtave,    2, myIter, myThid )
          CALL WRITE_REC_XY_RL( fn, TSRtave ,    3, myIter, myThid )
@@ -183,9 +187,8 @@ c      _END_MASTER( myThid )
          CALL WRITE_REC_XY_RL( fn, albedotave, 19, myIter, myThid )
          CALL WRITE_REC_XY_RL( fn, dTsurftave, 20, myIter, myThid )
 
-         WRITE(suff,'(I10.10)') myIter
-         CALL WRITE_FLD_XYZ_RL('aim_RHtave.',suff,aimRHtave,
-     &        myIter,myThid)
+         CALL WRITE_FLD_XYZ_RL( 'aim_RHtave.', suff, aimRHtave,
+     &                          myIter, myThid )
 
          WRITE(msgBuf,'(A,I10)')
      &        '// AIM Time-average  written, t-step', myIter
@@ -228,7 +231,6 @@ C      Reset averages to zero
       ENDIF
 
 #endif /* ALLOW_AIM_TAVE */
-
 #endif /* ALLOW_AIM */
 
       RETURN

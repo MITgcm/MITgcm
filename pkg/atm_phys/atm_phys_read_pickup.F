@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_read_pickup.F,v 1.2 2014/09/25 19:45:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_read_pickup.F,v 1.3 2017/03/24 23:31:41 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -46,6 +46,7 @@ C     msgBuf      :: Informational/error message buffer
       INTEGER missFldDim, nMissing
       INTEGER j, nj, ioUnit
       PARAMETER( missFldDim = 12 )
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(8) missFldList(missFldDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -57,9 +58,14 @@ C-    for now, only needs pickup if stepping forward SST
       IF ( .NOT.atmPhys_stepSST ) RETURN
 
        IF ( pickupSuff.EQ.' ' ) THEN
-        WRITE(fn,'(A,I10.10)') 'pickup_atmPhys.',myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(fn,'(A,I10.10)') 'pickup_atmPhys.', myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
+          WRITE(fn,'(A,A)') 'pickup_atmPhys.', suff
+        ENDIF
        ELSE
-        WRITE(fn,'(A,A10)')    'pickup_atmPhys.',pickupSuff
+        WRITE(fn,'(A,A10)') 'pickup_atmPhys.', pickupSuff
        ENDIF
        fp = precFloat64
 

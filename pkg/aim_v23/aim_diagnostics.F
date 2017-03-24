@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.24 2013/01/21 21:45:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.25 2017/03/24 23:31:41 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -56,7 +56,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER I,J,K, I2,Katm
       _RL DDTT
-      CHARACTER*(80) suff
+      CHARACTER*(10) suff
 #ifdef ALLOW_DIAGNOSTICS
       _RL tmpVar(NGP)
 #endif
@@ -76,37 +76,42 @@ c    &                      + fMask1(J,2,myThid)*dTsurf(J,2,myThid)
          dTsurf(J,1,myThid) = ABS(dTsurf(J,1,myThid))
       ENDDO
 
-      IF ( DIFFERENT_MULTIPLE(aim_tendFreq,
-     &                        myTime+deltaTClock,deltaTClock)
+      IF ( DIFFERENT_MULTIPLE( aim_tendFreq,
+     &                         myTime+deltaTClock, deltaTClock )
      &   ) THEN
 C---  Write Tendencies to files :
 
        IF ( aim_snapshot_mdsio ) THEN
 C-    using MDSIO based S/R
-         WRITE(suff,'(A1,I10.10)') '.', myIter+1
+         IF ( rwSuffixType.EQ.0 ) THEN
+           WRITE(suff,'(I10.10)') myIter+1
+         ELSE
+           CALL RW_GET_SUFFIX( suff,
+     &                 myTime+deltaTClock, myIter+1, myThid )
+         ENDIF
 
-         CALL AIM_WRITE_PHYS( 'aim_dT_RSW', suff, Nr, TT_RSW,
+         CALL AIM_WRITE_PHYS( 'aim_dT_RSW.', suff, Nr, TT_RSW,
      &                         0, bi, bj, 1, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aim_dT_RLW', suff, Nr, TT_RLW,
+         CALL AIM_WRITE_PHYS( 'aim_dT_RLW.', suff, Nr, TT_RLW,
      &                         0, bi, bj, 1, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aim_dT_CNV', suff, Nr, TT_CNV,
+         CALL AIM_WRITE_PHYS( 'aim_dT_CNV.', suff, Nr, TT_CNV,
      &                         0, bi, bj, 1, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aim_dT_PBL', suff, Nr, TT_PBL,
+         CALL AIM_WRITE_PHYS( 'aim_dT_PBL.', suff, Nr, TT_PBL,
      &                         0, bi, bj, 1, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aim_dT_LSC', suff, Nr, TT_LSC,
+         CALL AIM_WRITE_PHYS( 'aim_dT_LSC.', suff, Nr, TT_LSC,
      &                         0, bi, bj, 1, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aim_dQ_CNV', suff, Nr, QT_CNV,
+         CALL AIM_WRITE_PHYS( 'aim_dQ_CNV.', suff, Nr, QT_CNV,
      &                         0, bi, bj, 1, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aim_dQ_PBL', suff, Nr, QT_PBL,
+         CALL AIM_WRITE_PHYS( 'aim_dQ_PBL.', suff, Nr, QT_PBL,
      &                         0, bi, bj, 1, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aim_dQ_LSC', suff, Nr, QT_LSC,
+         CALL AIM_WRITE_PHYS( 'aim_dQ_LSC.', suff, Nr, QT_LSC,
      &                         0, bi, bj, 1, myIter, myThid )
 #ifdef ALLOW_CLR_SKY_DIAG
 C-    write clear-sky tendencies to files :
          IF ( aim_clrSkyDiag ) THEN
-          CALL AIM_WRITE_PHYS( 'aim_dT_clskySW', suff, Nr, TT_SWclr,
+          CALL AIM_WRITE_PHYS( 'aim_dT_clskySW.', suff, Nr, TT_SWclr,
      &                         0, bi, bj, 1, myIter, myThid )
-          CALL AIM_WRITE_PHYS( 'aim_dT_clskyLW', suff, Nr, TT_LWclr,
+          CALL AIM_WRITE_PHYS( 'aim_dT_clskyLW.', suff, Nr, TT_LWclr,
      &                         0, bi, bj, 1, myIter, myThid )
          ENDIF
 #endif /* ALLOW_CLR_SKY_DIAG */
@@ -158,60 +163,64 @@ C---  Write Physics Fields
 
        IF ( aim_snapshot_mdsio ) THEN
 C-    using MDSIO based S/R
-
-         WRITE(suff,'(A1,I10.10)') '.', myIter+1
+         IF ( rwSuffixType.EQ.0 ) THEN
+           WRITE(suff,'(I10.10)') myIter+1
+         ELSE
+           CALL RW_GET_SUFFIX( suff,
+     &                 myTime+deltaTClock, myIter+1, myThid )
+         ENDIF
 
 C--   Write Relative Humidity :
-         CALL AIM_WRITE_PHYS( 'aim_RelHum', suff, Nr, RH,
+         CALL AIM_WRITE_PHYS( 'aim_RelHum.', suff, Nr, RH,
      &                         0, bi, bj, 1, myIter, myThid )
 
 C--   Write AIM Physics diagnostics (2D, all in 1 file) :
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 4, DRAG,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 4, DRAG,
      &                         1, bi, bj, 1, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, SPEED0,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 1, SPEED0,
      &                         1, bi, bj, 2, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, TSR,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 1, TSR,
      &                         1, bi, bj, 3, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, OLR,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 1, OLR,
      &                         1, bi, bj, 4, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 4, SSR,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 4, SSR,
      &                         1, bi, bj, 5, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 4, SLR,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 4, SLR,
      &                         1, bi, bj, 6, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 4, SHF,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 4, SHF,
      &                         1, bi, bj, 7, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 4, EVAP,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 4, EVAP,
      &                         1, bi, bj, 8, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, PRECNV,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 1, PRECNV,
      &                         1, bi, bj, 9, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, PRECLS,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 1, PRECLS,
      &                         1, bi, bj,10, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, CLOUDC,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 1, CLOUDC,
      &                         1, bi, bj,11, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, CLTOP,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 1, CLTOP,
      &                         1, bi, bj,12, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, CBMF,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 1, CBMF,
      &                         1, bi, bj,13, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, T0,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 1, T0,
      &                         1, bi, bj,14, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, Q0,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 1, Q0,
      &                         1, bi, bj,15, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 1, EnPrec,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 1, EnPrec,
      &                         1, bi, bj,16, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 4, alb1,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 4, alb1,
      &                         1, bi, bj,17, myIter, myThid )
-         CALL AIM_WRITE_PHYS( 'aimPhyDiag', suff, 3, dTsurf,
+         CALL AIM_WRITE_PHYS( 'aimPhyDiag.', suff, 3, dTsurf,
      &                         1, bi, bj,18, myIter, myThid )
 #ifdef ALLOW_CLR_SKY_DIAG
 C--   write clear-sky radiative fluxes to files :
          IF ( aim_clrSkyDiag ) THEN
-          CALL AIM_WRITE_PHYS('aimPhyDiag', suff, 1, TSWclr,
+          CALL AIM_WRITE_PHYS('aimPhyDiag.', suff, 1, TSWclr,
      &                         1, bi, bj,19, myIter, myThid )
-          CALL AIM_WRITE_PHYS('aimPhyDiag', suff, 1, OLWclr,
+          CALL AIM_WRITE_PHYS('aimPhyDiag.', suff, 1, OLWclr,
      &                         1, bi, bj,20, myIter, myThid )
-          CALL AIM_WRITE_PHYS('aimPhyDiag', suff, 1, SSWclr,
+          CALL AIM_WRITE_PHYS('aimPhyDiag.', suff, 1, SSWclr,
      &                         1, bi, bj,21, myIter, myThid )
-          CALL AIM_WRITE_PHYS('aimPhyDiag', suff, 1, SLWclr,
+          CALL AIM_WRITE_PHYS('aimPhyDiag.', suff, 1, SLWclr,
      &                         1, bi, bj,22, myIter, myThid )
          ENDIF
 #endif /* ALLOW_CLR_SKY_DIAG */
@@ -298,12 +307,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   cloud-top pressure: multiplied by cloud fraction before averaging:
       DO J=1,NGP
-        CLTOP(J,myThid)=CLTOP(J,mythid)*CLOUDC(J,myThid)
+        CLTOP(J,myThid)=CLTOP(J,myThid)*CLOUDC(J,myThid)
       ENDDO
 
 #ifdef ALLOW_AIM_TAVE
 
-      IF (aim_taveFreq.GT.0.) THEN
+      IF ( aim_taveFreq.GT.0. ) THEN
 
         DDTT = deltaTClock
 
@@ -373,7 +382,7 @@ C-    Keep record of how much time has been integrated over
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DIAGNOSTICS
-       IF (useDiagnostics) THEN
+       IF ( useDiagnostics ) THEN
         CALL DIAGNOSTICS_FILL( TT_RSW(1,1,myThid),
      &                        'RADSW   ',-1, Nr, 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( TT_RLW(1,1,myThid),
