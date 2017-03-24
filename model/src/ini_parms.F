@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.272 2016/11/28 22:57:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.273 2017/03/24 21:56:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -221,7 +221,7 @@ C--   Continuous equation parameters
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
      & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
      & rhoConst, thetaConst, rhoConstFresh, buoyancyRelation,
-     & writeBinaryPrec, readBinaryPrec, writeStatePrec,
+     & readBinaryPrec, writeBinaryPrec, writeStatePrec,
      & globalFiles, useSingleCpuIO, useSingleCpuInput,
      & allowFreezing, allowInteriorFreezing, useOldFreezing, ivdc_kappa,
      & hMixCriteria, dRhoSmall, hMixSmooth,
@@ -261,7 +261,7 @@ C--   Time stepping parammeters
      & writePickupAtEnd,
      & dumpFreq, dumpInitAndLast, adjDumpFreq, taveFreq, tave_lastIter,
      & diagFreq, monitorFreq, adjMonitorFreq, monitorSelect,
-     & outputTypesInclusive,
+     & outputTypesInclusive, rwSuffixType,
      & tauThetaClimRelax, tauSaltClimRelax, latBandClimRelax,
      & tauThetaClimRelax3Dim, tauSaltClimRelax3Dim,
      & periodicExternalForcing, externForcingPeriod, externForcingCycle,

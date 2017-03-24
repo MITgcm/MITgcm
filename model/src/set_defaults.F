@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.180 2016/11/28 22:57:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.181 2017/03/24 21:56:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -299,8 +299,6 @@ C--   Time stepping parameters
       baseTime          = 0. _d 0
       nIter0            = -1
       startTime         = UNSET_RL
-      pickupSuff        = ' '
-      pickupStrictlyMatch = .TRUE.
       nTimeSteps        = 0
       nTimeSteps_l2     = 0
       nEndIter          = 0
@@ -319,6 +317,18 @@ C--   Time stepping parameters
       beta_AB           = UNSET_RL
       startFromPickupAB2= .TRUE.
 #endif
+      cAdjFreq          =  0. _d 0
+      tauCD             =  0. _d 0
+      tauThetaClimRelax =  0. _d 0
+      tauSaltClimRelax  =  0. _d 0
+      periodicExternalForcing = .FALSE.
+      externForcingPeriod     = 0.
+      externForcingCycle      = 0.
+      tCylIn            = 0.
+      tCylOut           = 20.
+C-    I/O params:
+      pickupSuff        = ' '
+      pickupStrictlyMatch = .TRUE.
       pChkPtFreq        = deltaT*0
       chkPtFreq         = deltaT*0
       outputTypesInclusive = .FALSE.
@@ -338,18 +348,10 @@ C--   Time stepping parameters
       taveFreq          = deltaT*0
       timeave_mdsio     = .TRUE.
       tave_lastIter     = 0.5 _d 0
-      writeStatePrec    = precFloat64
-      writeBinaryPrec   = precFloat32
       readBinaryPrec    = precFloat32
-      cAdjFreq          =  0. _d 0
-      tauCD             =  0. _d 0
-      tauThetaClimRelax =  0. _d 0
-      tauSaltClimRelax  =  0. _d 0
-      periodicExternalForcing = .FALSE.
-      externForcingPeriod     = 0.
-      externForcingCycle      = 0.
-      tCylIn             = 0.
-      tCylOut            = 20.
+      writeBinaryPrec   = precFloat32
+      writeStatePrec    = precFloat64
+      rwSuffixType      = 0
 
 C--   Input files
       bathyFile       = ' '

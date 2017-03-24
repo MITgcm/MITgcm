@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.154 2016/11/29 00:11:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.155 2017/03/24 21:56:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -581,6 +581,25 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      &  ' /* Precision used for reading binary files */')
       CALL WRITE_0D_I(writeBinaryPrec, INDEX_NONE, 'writeBinaryPrec =',
      &  ' /* Precision used for writing binary files */')
+C---
+c     CALL WRITE_0D_I(rwSuffixType, INDEX_NONE, 'rwSuffixType =',
+c    &  ' /* Select format of mds file suffix */')
+      WRITE(msgBuf,'(2A)') ' rwSuffixType =  ',
+     &             ' /* select format of mds file suffix */'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      buffI(1) = rwSuffixType
+      CALL PRINT_LIST_I( buffI, 1, 1, INDEX_NONE,
+     &                   .FALSE., .TRUE., ioUnit )
+      WRITE(msgBuf,'(2A)') '   = 0 : myIter (I10.10) ;',
+     &                     '   = 1 : 100*myTime (100th sec) ;'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(2A)') '   = 2 : myTime (seconds);',
+     &                     '   = 3 : myTime/360 (10th of hr);'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(2A)') '   = 4 : myTime/3600 (hours)'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
+C---
       CALL WRITE_0D_L( globalFiles,  INDEX_NONE,
      & ' globalFiles =',' /* write "global" (=not per tile) files */')
       CALL WRITE_0D_L( useSingleCpuIO,  INDEX_NONE,
