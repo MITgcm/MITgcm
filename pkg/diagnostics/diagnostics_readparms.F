@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.40 2017/01/11 20:49:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.41 2017/03/24 21:51:43 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -77,6 +77,7 @@ C     stat_fName  :: List of statistics output Filename
       CHARACTER*8 fileFlags(ldimLoc)
       CHARACTER*8 blk8c
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_FNAM) namBuf
       CHARACTER*12 suffix
       INTEGER stat_region(rdimLoc,ldimLoc)
       INTEGER set_regMask(rdimLoc)
@@ -264,6 +265,13 @@ C     Fill Diagnostics Common Block with Namelist Info
       diag_pickup_write_mdsio = diag_pickup_write .AND.
      &     ((.NOT. diag_pickup_write_mnc) .OR. outputTypesInclusive)
       diagSt_ascii = (.NOT. diagSt_mnc) .OR. outputTypesInclusive
+
+C     remove trailing "/":
+      iLen = ILNBLNK( diagMdsDir )
+      IF ( iLen.GE.2 .AND. diagMdsDir(iLen:iLen).EQ.'/' ) THEN
+         namBuf = diagMdsDir
+         WRITE(diagMdsDir,'(A)') namBuf(1:iLen-1)
+      ENDIF
 
       DO l = 1,ldimLoc
        iLen = ILNBLNK(fileName(l))
@@ -511,7 +519,7 @@ C     Echo History List Data Structure
      & ' diag_mnc =', '   /* write NetCDF output files */')
       IF ( diag_mdsio.AND.(diagMdsDir.NE.' ') ) THEN
        CALL WRITE_0D_C( diagMdsDir, -1, INDEX_NONE,
-     &   'diagMdsDir =', ' /* directory for mds diagnostics output */')
+     & ' diagMdsDir =', ' /* directory for mds diagnostics output */')
        CALL WRITE_0D_L( diagMdsDirCreate, INDEX_NONE,
      & ' diagMdsDirCreate =', ' /* call mkdir to create diagMdsDir */')
       ENDIF

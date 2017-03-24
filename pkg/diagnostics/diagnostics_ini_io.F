@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_ini_io.F,v 1.2 2017/01/11 20:49:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_ini_io.F,v 1.3 2017/03/24 21:51:43 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -41,31 +41,26 @@ C     == Local variables ==
 
       _BEGIN_MASTER( myThid )
 
-      IF ( diag_mdsio.AND.(diagMdsDir.NE.' ').AND.
-     &     diagMdsDirCreate.AND.(mdsioLocalDir.EQ.' ') ) THEN
+      IF ( diag_mdsio .AND. (diagMdsDir.NE.' ') .AND.
+     &     diagMdsDirCreate .AND. (mdsioLocalDir.EQ.' ') ) THEN
 #ifdef HAVE_SYSTEM
-       iL = ILNBLNK( diagMdsDir )
-C      append "/", if necessary
-       IF ( iL.LT.MAX_LEN_FNAM .AND. diagMdsDir(iL:iL).NE.'/' ) THEN
-        namBuf(1:iL) = diagMdsDir(1:iL)
-        WRITE(diagMdsDir(1:iL+1),'(2A)') namBuf(1:iL),'/'
-       ENDIF
 C      create directory
-       iL = ILNBLNK( diagMdsDir ) -1
-       WRITE(namBuf,'(3A)') ' mkdir -p ', diagMdsDir(1:iL), ' '
-       pIL = 1 + ILNBLNK( namBuf )
-       WRITE(standardMessageUnit,'(3A)')
-     & '==> SYSTEM CALL (from DIAGNOSTICS_INI_IO): >',namBuf(1:pIL),'<'
-       CALL SYSTEM( namBuf(1:pIL) )
-       WRITE(msgBuf,'(A)') ' '
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
+        iL = ILNBLNK( diagMdsDir )
+        WRITE(namBuf,'(3A)') ' mkdir -p ', diagMdsDir(1:iL), ' '
+        pIL = 1 + ILNBLNK( namBuf )
+        WRITE(standardMessageUnit,'(4A)')
+     &       ' ==> SYSTEM CALL (from DIAGNOSTICS_INI_IO): ',
+     &       '>', namBuf(1:pIL), '<'
+        CALL SYSTEM( namBuf(1:pIL) )
+        WRITE(msgBuf,'(A)') ' '
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
 #else
-        WRITE(msgBuf,'(2A)') 'S/R DIAGNOSTICS_INI_IO: cannot call ',
-     &       'mkdir -> please create diagMdsDir manually'
+        WRITE(msgBuf,'(2A)') 'S/R DIAGNOSTICS_INI_IO: ',
+     &       'cannot call mkdir -> please create diagMdsDir manually'
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A,A)') 'S/R DIAGNOSTICS_INI_IO: and ',
-     &       'set diagMdsDirCreate=.FALSE. in data.diagnostics'
+        WRITE(msgBuf,'(2A)') 'S/R DIAGNOSTICS_INI_IO: ',
+     &       'and set diagMdsDirCreate=.FALSE. in data.diagnostics'
         CALL PRINT_ERROR( msgBuf, myThid )
         CALL ALL_PROC_DIE( 0 )
         STOP 'ABNORMAL END: S/R DIAGNOSTICS_INI_IO'
