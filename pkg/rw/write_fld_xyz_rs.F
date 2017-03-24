@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_fld_xyz_rs.F,v 1.5 2009/09/01 19:28:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rw/write_fld_xyz_rs.F,v 1.6 2017/03/24 15:38:01 jmc Exp $
 C $Name:  $
 
 #include "RW_OPTIONS.h"
@@ -37,6 +37,8 @@ C     e.g. U.0000000100
       s1Hi = ILNBLNK(pref)
       IF ( suff .EQ. ' ' ) THEN
        WRITE( fullName, '(A)' ) pref(s1Lo:s1Hi)
+      ELSEIF ( suff .EQ. 'I10' ) THEN
+       WRITE( fullName, '(A,A,I10.10)' ) pref(s1Lo:s1Hi),'.',myIter
       ELSE
        s2Lo = IFNBLNK(suff)
        s2Hi = ILNBLNK(suff)
