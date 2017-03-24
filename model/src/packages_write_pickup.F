@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.44 2015/01/20 15:00:55 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.45 2017/03/24 23:26:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -12,7 +12,7 @@ C     !ROUTINE: PACKAGES_WRITE_PICKUP
 
 C     !INTERFACE:
       SUBROUTINE PACKAGES_WRITE_PICKUP(
-     I                    permPickup,
+     I                    permPickup, suffix,
      I                    myTime, myIter, myThid )
 
 C     !DESCRIPTION:
@@ -73,30 +73,22 @@ C     !USES:
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     permPickup :: Is or is not a permanent pickup.
+C     suffix     :: pickup-name suffix
 C     myTime     :: Current time of simulation ( s )
 C     myIter     :: Iteration number
 C     myThid     :: Thread number for this instance of the routine.
       LOGICAL permPickup
+      CHARACTER*(*) suffix
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
-C     suffix :: pickup-name suffix
-      CHARACTER*(10) suffix
 CEOP
 
 C     Going to really do some IO. Make everyone except master thread wait.
 C     this is done within IO routines => no longer needed
 c     _BARRIER
-
-C     Create suffix to pass on to package pickup routines
-      IF ( permPickup ) THEN
-        WRITE(suffix,'(I10.10)') myIter
-      ELSE
-        WRITE(suffix,'(A)') checkPtSuff(nCheckLev)
-      ENDIF
 
 #ifdef ALLOW_GENERIC_ADVDIFF
 C     Write restart file for 2nd-Order moment (active) Tracers

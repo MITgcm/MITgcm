@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_write_pickup.F,v 1.9 2013/08/20 20:22:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_write_pickup.F,v 1.10 2017/03/24 23:26:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,10 +52,10 @@ C     permPickup :: Flag indicating whether a permanent pickup will
 C                       be written.
 C     tempPickup :: Flag indicating if it is time to write a non-permanent
 C                       pickup (that will be permanent if permPickup=T)
-C     fn         :: Temp. for building file name string.
+C     suffix     :: pickup-name suffix
 C     msgBuf     :: message buffer
       LOGICAL permPickup, tempPickup
-      CHARACTER*(MAX_LEN_FNAM) fn
+      CHARACTER*(10) suffix
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       permPickup = .FALSE.
@@ -78,30 +78,32 @@ C     msgBuf     :: message buffer
 
       IF ( (modelEnd.AND.writePickupAtEnd)
      &     .OR. permPickup .OR. tempPickup ) THEN
-C--   this is time to write pickup files
+C--   This is time to write pickup files
 
-C-    write a pickup for each package which need it to restart
+C-    Create suffix to pass on to main & package pickup routines
+        IF ( permPickup .AND. rwSuffixType.EQ.0 ) THEN
+          WRITE(suffix,'(I10.10)') myIter
+        ELSEIF ( permPickup ) THEN
+          CALL RW_GET_SUFFIX( suffix, myTime, myIter, myThid )
+        ELSE
+          WRITE(suffix,'(A)') checkPtSuff(nCheckLev)
+        ENDIF
+
+C-    Write a pickup for each package which need it to restart
         CALL PACKAGES_WRITE_PICKUP(
-     I                permPickup, myTime, myIter, myThid )
+     I                permPickup, suffix, myTime, myIter, myThid )
 
-C-    write main model pickup
+C-    Write main model pickup
         IF ( .NOT.useOffLine .OR. nonlinFreeSurf.GT.0 ) THEN
            CALL WRITE_PICKUP(
-     I                permPickup, myTime, myIter, myThid )
+     I                permPickup, suffix, myTime, myIter, myThid )
         ENDIF
 
         _BEGIN_MASTER(myThid)
-C-    Write suffix for stdout information
-        IF ( permPickup ) THEN
-          WRITE(fn,'(I10.10)') myIter
-        ELSE
-          WRITE(fn,'(A)') checkPtSuff(nCheckLev)
-        ENDIF
-
 C-    Write information to stdout so there is a record that
 C     writing the pickup was completed
         WRITE(msgBuf,'(A11,I10,1X,A10)')
-     &     "%CHECKPOINT ",myIter,fn
+     &     "%CHECKPOINT ", myIter, suffix
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
