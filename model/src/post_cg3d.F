@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/post_cg3d.F,v 1.7 2016/05/04 22:10:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/post_cg3d.F,v 1.8 2017/03/24 15:41:19 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -49,7 +49,6 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k,bi,bj
       INTEGER ks
-      CHARACTER*10 sufx
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL     locGamma
 CEOP
@@ -110,8 +109,7 @@ C-       Other than Z coordinate: no assumption on surface level index
 C--   Update surface pressure (account for NH-p @ surface level) and NH pressure:
       IF ( zeroPsNH .OR. zeroMeanPnh ) THEN
        IF ( DIFFERENT_MULTIPLE( diagFreq, myTime, deltaTClock) ) THEN
-        WRITE(sufx,'(I10.10)') myIter
-        CALL WRITE_FLD_XYZ_RL( 'cg3d_x.',sufx, phi_nh, myIter, myThid )
+        CALL WRITE_FLD_XYZ_RL( 'cg3d_x','I10', phi_nh, myIter, myThid )
        ENDIF
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
