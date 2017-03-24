@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.284 2016/11/28 22:47:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.285 2017/03/24 21:55:35 jmc Exp $
 C $Name:  $
 C
 
@@ -33,8 +33,6 @@ C                        (+ 4 digits Processor-Rank) instead of current dir.
 C     adTapeDir       :: read-write checkpointing tape files from/to this
 C                        directory name instead of current dir. Conflicts
 C                        mdsioLocalDir, so only one of the two can be set.
-C                        In contrast to mdsioLocalDir, if specified adTapeDir
-C                        must exist before the model starts.
 C     tRefFile      :: File containing reference Potential Temperat.  tRef (1.D)
 C     sRefFile      :: File containing reference salinity/spec.humid. sRef (1.D)
 C     rhoRefFile    :: File containing reference density profile rhoRef (1.D)
@@ -162,9 +160,6 @@ C     printResidualFreq   :: Frequency for printing residual in CG iterations
 C     nIter0              :: Start time-step number of for this run
 C     nTimeSteps          :: Number of timesteps to execute
 C     nTimeSteps_l2       :: Number of inner timesteps to execute per timestep
-C     writeStatePrec      :: Precision used for writing model state.
-C     writeBinaryPrec     :: Precision used for writing binary files
-C     readBinaryPrec      :: Precision used for reading binary files
 C     selectCoriMap       :: select setting of Coriolis parameter map:
 C                           =0 f-Plane (Constant Coriolis, = f0)
 C                           =1 Beta-Plane Coriolis (= f0 + beta.y)
@@ -204,6 +199,13 @@ C     selectBotDragQuadr  :: quadratic bottom drag discretisation option:
 C                           =0: average KE from grid center to U & V location
 C                           =1: use local velocity norm @ U & V location
 C                           =2: same with wet-point averaging of other component
+C     readBinaryPrec      :: Precision used for reading binary files
+C     writeStatePrec      :: Precision used for writing model state.
+C     writeBinaryPrec     :: Precision used for writing binary files
+C     rwSuffixType        :: controls the format of the mds file suffix.
+C                          =0 (default): use iteration number (myIter, I10.10);
+C                          =1: 100*myTime (100th sec); =2: myTime (seconds);
+C                          =3: myTime/360 (10th of hr); =4: myTime/3600 (hours).
 C     monitorSelect       :: select group of variables to monitor
 C                            =1 : dynvars ; =2 : + vort ; =3 : + surface
 C-    debugLevel          :: controls printing of algorithm intermediate results
@@ -215,8 +217,6 @@ C                            and statistics ; higher -> more writing
      &        cg3dMaxIters, cg3dChkResFreq,
      &        printResidualFreq,
      &        nIter0, nTimeSteps, nTimeSteps_l2, nEndIter,
-     &        writeStatePrec,
-     &        writeBinaryPrec, readBinaryPrec,
      &        selectCoriMap,
      &        selectSigmaCoord,
      &        nonlinFreeSurf, select_rStar,
@@ -227,7 +227,8 @@ C                            and statistics ; higher -> more writing
      &        saltAdvScheme, saltVertAdvScheme,
      &        selectKEscheme, selectVortScheme,
      &        selectBotDragQuadr,
-     &        monitorSelect, debugLevel
+     &        readBinaryPrec, writeBinaryPrec, writeStatePrec,
+     &        rwSuffixType, monitorSelect, debugLevel
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
       INTEGER cg2dPreCondFreq
@@ -239,9 +240,6 @@ C                            and statistics ; higher -> more writing
       INTEGER nTimeSteps
       INTEGER nTimeSteps_l2
       INTEGER nEndIter
-      INTEGER writeStatePrec
-      INTEGER writeBinaryPrec
-      INTEGER readBinaryPrec
       INTEGER selectCoriMap
       INTEGER selectSigmaCoord
       INTEGER nonlinFreeSurf
@@ -256,6 +254,10 @@ C                            and statistics ; higher -> more writing
       INTEGER selectKEscheme
       INTEGER selectVortScheme
       INTEGER selectBotDragQuadr
+      INTEGER readBinaryPrec
+      INTEGER writeStatePrec
+      INTEGER writeBinaryPrec
+      INTEGER rwSuffixType
       INTEGER monitorSelect
       INTEGER debugLevel
 
