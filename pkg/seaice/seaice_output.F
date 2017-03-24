@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.17 2016/08/30 21:52:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_output.F,v 1.18 2017/03/24 23:51:14 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -121,7 +121,11 @@ c           CALL MNC_CW_RL_W(pf,'sice',0,0,'si_AREAITD',AREAITD,myThid)
           ENDIF
 #endif /* ALLOW_MNC */
           IF (SEAICE_dump_mdsio) THEN
-            WRITE(suff,'(I10.10)') myIter
+            IF ( rwSuffixType.EQ.0 ) THEN
+              WRITE(suff,'(I10.10)') myIter
+            ELSE
+              CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+            ENDIF
             IF ( myIter.NE.nIter0 ) THEN
 #ifdef ALLOW_EXF
              CALL WRITE_FLD_XY_RL('UWIND.',suff,uwind,myIter,myThid)
@@ -190,23 +194,23 @@ C--   Time-cumulations
           DO i=1,sNx
 C- note(jmc): surf.Fluxes have not yet been computed when called @ nIter0
            FUtave(i,j,bi,bj)   =
-     &         FUtave(i,j,bi,bj)   +FU(i,j,bi,bj)    *deltaTclock
+     &         FUtave(i,j,bi,bj)   +FU(i,j,bi,bj)    *deltaTClock
            FVtave(i,j,bi,bj)   =
-     &         FVtave(i,j,bi,bj)   +FV(i,j,bi,bj)    *deltaTclock
+     &         FVtave(i,j,bi,bj)   +FV(i,j,bi,bj)    *deltaTClock
            EmPmRtave(i,j,bi,bj)=
-     &         EmPmRtave(i,j,bi,bj)+EmPmR(i,j,bi,bj) *deltaTclock
+     &         EmPmRtave(i,j,bi,bj)+EmPmR(i,j,bi,bj) *deltaTClock
            QNETtave(i,j,bi,bj) =
-     &         QNETtave(i,j,bi,bj) +QNET(i,j,bi,bj)  *deltaTclock
+     &         QNETtave(i,j,bi,bj) +QNET(i,j,bi,bj)  *deltaTClock
            QSWtave(i,j,bi,bj)  =
-     &         QSWtave(i,j,bi,bj)  +QSW(i,j,bi,bj)   *deltaTclock
+     &         QSWtave(i,j,bi,bj)  +QSW(i,j,bi,bj)   *deltaTClock
            UICEtave(i,j,bi,bj) =
-     &         UICEtave(i,j,bi,bj) +UICE(i,j,bi,bj)*deltaTclock
+     &         UICEtave(i,j,bi,bj) +UICE(i,j,bi,bj)*deltaTClock
            VICEtave(i,j,bi,bj) =
-     &         VICEtave(i,j,bi,bj) +VICE(i,j,bi,bj)*deltaTclock
+     &         VICEtave(i,j,bi,bj) +VICE(i,j,bi,bj)*deltaTClock
            HEFFtave(i,j,bi,bj) =
-     &         HEFFtave(i,j,bi,bj) +HEFF(i,j,bi,bj)*deltaTclock
+     &         HEFFtave(i,j,bi,bj) +HEFF(i,j,bi,bj)*deltaTClock
            AREAtave(i,j,bi,bj) =
-     &         AREAtave(i,j,bi,bj) +AREA(i,j,bi,bj)*deltaTclock
+     &         AREAtave(i,j,bi,bj) +AREA(i,j,bi,bj)*deltaTClock
           ENDDO
          ENDDO
 #ifdef SEAICE_ITD
@@ -214,14 +218,14 @@ C- note(jmc): surf.Fluxes have not yet been computed when called @ nIter0
           DO j=1,sNy
            DO i=1,sNx
             HEFFITDtave(i,j,k,bi,bj) =
-     &        HEFFITDtave(i,j,k,bi,bj) +HEFFITD(i,j,k,bi,bj)*deltaTclock
+     &        HEFFITDtave(i,j,k,bi,bj) +HEFFITD(i,j,k,bi,bj)*deltaTClock
             AREAITDtave(i,j,k,bi,bj) =
-     &        AREAITDtave(i,j,k,bi,bj) +AREAITD(i,j,k,bi,bj)*deltaTclock
+     &        AREAITDtave(i,j,k,bi,bj) +AREAITD(i,j,k,bi,bj)*deltaTClock
            ENDDO
           ENDDO
          ENDDO
 #endif
-         SEAICE_timeAve(bi,bj) = SEAICE_timeAve(bi,bj)+deltaTclock
+         SEAICE_timeAve(bi,bj) = SEAICE_timeAve(bi,bj)+deltaTClock
         ENDDO
        ENDDO
 
@@ -305,7 +309,11 @@ C    &        myTime,myThid)
         ENDIF
 #endif
         IF (SEAICE_tave_mdsio) THEN
-         WRITE(suff,'(I10.10)') myIter
+         IF ( rwSuffixType.EQ.0 ) THEN
+           WRITE(suff,'(I10.10)') myIter
+         ELSE
+           CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+         ENDIF
          CALL WRITE_FLD_XY_RL('FUtave.'   ,suff,FUtave   ,myIter,myThid)
          CALL WRITE_FLD_XY_RL('FVtave.'   ,suff,FVtave   ,myIter,myThid)
          CALL WRITE_FLD_XY_RL('EmPmRtave.',suff,EmPmRtave,myIter,myThid)

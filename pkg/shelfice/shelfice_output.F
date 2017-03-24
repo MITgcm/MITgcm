@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_output.F,v 1.4 2012/08/06 16:56:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_output.F,v 1.5 2017/03/24 23:51:14 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -41,7 +41,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(10) suff
 #ifdef ALLOW_TIMEAVE
       INTEGER i, j, bi, bj
       LOGICAL dumpFiles
@@ -78,7 +78,11 @@ C- note: surf.Fluxes have not yet been computed when called @ nIter0
         ENDIF
 #endif
         IF (SHELFICE_dump_mdsio) THEN
-         WRITE(suff,'(I10.10)') myIter
+         IF ( rwSuffixType.EQ.0 ) THEN
+           WRITE(suff,'(I10.10)') myIter
+         ELSE
+           CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+         ENDIF
          CALL WRITE_FLD_XY_RS( 'SHICE_fwFlux.',suff,
      &        shelficeFreshWaterFlux,myIter,myThid)
          CALL WRITE_FLD_XY_RS( 'SHICE_heatFlux.',suff,
@@ -113,13 +117,13 @@ C- note: surf.Fluxes have not yet been computed when called @ nIter0
            DO i=1,sNx
             shelfice_FrshFluxtave(i,j,1,bi,bj)=
      &         shelfice_frshFluxtave(i,j,1,bi,bj)
-     &         + shelficeFreshWaterFlux(i,j,bi,bj) *deltaTclock
+     &         + shelficeFreshWaterFlux(i,j,bi,bj) *deltaTClock
             shelfice_heatFluxtave(i,j,1,bi,bj) =
      &         shelfice_heatFluxtave(i,j,1,bi,bj)
-     &         + shelficeHeatFlux(i,j,bi,bj)  *deltaTclock
+     &         + shelficeHeatFlux(i,j,bi,bj)  *deltaTClock
            ENDDO
           ENDDO
-          SHELFICE_timeAve(bi,bj) = SHELFICE_timeAve(bi,bj)+deltaTclock
+          SHELFICE_timeAve(bi,bj) = SHELFICE_timeAve(bi,bj)+deltaTClock
          ENDDO
         ENDDO
        ENDIF
@@ -171,7 +175,11 @@ C     &                      'model_time', myTime, myThid )
         ENDIF
 #endif
         IF (SHELFICE_tave_mdsio) THEN
-         WRITE(suff,'(I10.10)') myIter
+         IF ( rwSuffixType.EQ.0 ) THEN
+           WRITE(suff,'(I10.10)') myIter
+         ELSE
+           CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+         ENDIF
          CALL WRITE_FLD_XY_RL( 'SHICE_fwFluxtave.', suff,
      &                         shelfice_frshFluxtave, myIter, myThid )
          CALL WRITE_FLD_XY_RL( 'SHICE_heatFluxtave.', suff,

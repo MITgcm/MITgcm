@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.21 2014/04/04 19:34:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.22 2017/03/24 23:48:33 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -8,7 +8,7 @@ C     !ROUTINE: PTRACERS_WRITE_STATE
 
 C     !INTERFACE:
       SUBROUTINE PTRACERS_WRITE_STATE(
-     I     myIter, myTime, myThid )
+     I                    myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     dump to files current passive tracer state
@@ -23,17 +23,17 @@ C     !USES:
 #include "PTRACERS_FIELDS.h"
 
 C     !INPUT PARAMETERS:
-C     myIter    :: time-step number
 C     myTime    :: model time
+C     myIter    :: time-step number
 C     myThid    :: thread number
-      INTEGER myIter
       _RL myTime
+      INTEGER myIter
       INTEGER myThid
 CEOP
 
 #ifdef ALLOW_PTRACERS
 
-C     === Functions ====
+C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER  IO_ERRCOUNT
@@ -44,6 +44,7 @@ C     iTracer   :: loop indices
 C     pref      :: character buffer for creating prefix in filename
 C     iRec      :: record number
       INTEGER iTracer
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) pref
       INTEGER iRec
 #ifdef ALLOW_MNC
@@ -97,14 +98,19 @@ C     Write each passive tracer in its own file
 #else
 C     Write each snap-shot as a new file with a 10-digit suffix to
 C     indicate time-step number
+         IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(suff,'(I10.10)') myIter
+         ELSE
+          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+         ENDIF
          IF (PTRACERS_useRecords) THEN
 C     Write each passive tracer as a record
-          WRITE(pref,'(A,I10.10)') 'PTRACERS.',myIter
+          WRITE(pref,'(A,A)') 'PTRACERS.', suff
           iRec=iTracer
          ELSE
 C     Write each passive tracer in its own file
-          WRITE(pref,'(3A,I10.10)')
-     &         'PTRACER',PTRACERS_ioLabel(iTracer),'.',myIter
+          WRITE(pref,'(3A,A)')
+     &         'PTRACER', PTRACERS_ioLabel(iTracer), '.', suff
           iRec=1
          ENDIF
 #endif /* MULTIPLE_RECORD_STATE_FILES */
@@ -114,7 +120,7 @@ C     Write each passive tracer in its own file
      &        pTracer(:,:,:,:,:,iTracer)%v,iRec,myIter,myThid)
 #else
          CALL WRITE_REC_XYZ_RL(pref,
-     &        pTracer(1-Olx,1-Oly,1,1,1,iTracer),iRec,myIter,myThid)
+     &        pTracer(1-OLx,1-OLy,1,1,1,iTracer),iRec,myIter,myThid)
 #endif
 
 C     End of tracer loop

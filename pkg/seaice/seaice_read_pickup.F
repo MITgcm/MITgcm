@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.25 2014/05/27 15:24:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.26 2017/03/24 23:51:14 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -47,6 +47,7 @@ C     msgBuf      :: Informational/error message buffer
 C     i,j,k       :: loop indices
 C     bi,bj       :: tile indices
       INTEGER fp
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER filePrec, nbFields
       INTEGER missFldDim, nMissing
@@ -62,11 +63,15 @@ C     bi,bj       :: tile indices
 #endif
 CEOP
 
-C--
-      IF (pickupSuff .EQ. ' ') THEN
-        WRITE(fn,'(A,I10.10)') 'pickup_seaice.',nIter0
+      IF ( pickupSuff .EQ. ' ' ) THEN
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(fn,'(A,I10.10)') 'pickup_seaice.', nIter0
+        ELSE
+          CALL RW_GET_SUFFIX( suff, startTime, nIter0, myThid )
+          WRITE(fn,'(A,A)') 'pickup_seaice.', suff
+        ENDIF
       ELSE
-        WRITE(fn,'(A,A10)') 'pickup_seaice.',pickupSuff
+        WRITE(fn,'(A,A10)') 'pickup_seaice.', pickupSuff
       ENDIF
       fp = precFloat64
       doMapTice = .FALSE.

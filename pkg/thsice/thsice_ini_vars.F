@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.23 2016/01/02 00:53:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.24 2017/03/24 23:51:14 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -44,7 +44,6 @@ C     bi,bj  :: Loop counters
 C     i,j    :: Loop counters
       INTEGER bi, bj
       INTEGER i, j
-      INTEGER prec
 c     CHARACTER*(MAX_LEN_FNAM) fn
       _RL v2Loc
       _RL Tf
@@ -117,8 +116,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &     ( nIter0.NE.0  .OR. pickupSuff.NE.' ' )
      &   ) THEN
 C--     Read ice pickup fields
-        prec=precFloat64
-        CALL THSICE_READ_PICKUP( prec, nIter0, myThid )
+        CALL THSICE_READ_PICKUP( nIter0, myThid )
 
       ELSE
 C--     Read initial conditions:

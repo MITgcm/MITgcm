@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_output.F,v 1.4 2014/05/30 17:10:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_output.F,v 1.5 2017/03/24 23:51:14 jmc Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
@@ -42,6 +42,7 @@ C                  model time (s), xoamc, yoamc, zoamc,
 C                  xoamp, yoamp, zoamp, mass, xcom, ycom, zcom
 C     fName     :: output file name
 C     msgBuf    :: Informational/error message buffer
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fName
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER narr
@@ -88,7 +89,12 @@ C-----------------------------------------------------------------
 #ifdef ALLOW_MDSIO
       _BEGIN_MASTER(myThid)
 C-    multi-threaded: only write it once (by master thread)
-       WRITE(fName,'(A,I10.10)') 'SBO_global.', nIter0
+       IF ( rwSuffixType.EQ.0 ) THEN
+         WRITE(fName,'(A,I10.10)') 'SBO_global.', nIter0
+       ELSE
+         CALL RW_GET_SUFFIX( suff, startTime, nIter0, myThid )
+         WRITE(fName,'(A,A)') 'SBO_global.', suff
+       ENDIF
        ioUnit  = 0
        CALL MDS_WRITEVEC_LOC(
      I           fName, precFloat64, ioUnit,

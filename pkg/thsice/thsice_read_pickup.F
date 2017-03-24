@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_read_pickup.F,v 1.5 2007/10/19 03:22:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_read_pickup.F,v 1.6 2017/03/24 23:51:14 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: THSICE_READ_PICKUP
 C     !INTERFACE:
-      SUBROUTINE THSICE_READ_PICKUP( prec, myIter, myThid )
+      SUBROUTINE THSICE_READ_PICKUP( myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -27,7 +27,6 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-      INTEGER prec
       INTEGER myIter
       INTEGER myThid
 CEOP
@@ -35,14 +34,22 @@ CEOP
 #ifdef ALLOW_THSICE
 
 C     == Local variables ==
+      INTEGER prec
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn
-      
+
       IF ( .NOT. thSIce_pickup_write_mnc ) THEN
 
-        IF (pickupSuff .EQ. ' ') THEN
-          WRITE(fn,'(A,I10.10)') 'pickup_ic.',myIter
+        prec = precFloat64
+        IF ( pickupSuff.EQ.' ' ) THEN
+          IF ( rwSuffixType.EQ.0 ) THEN
+            WRITE(fn,'(A,I10.10)') 'pickup_ic.', myIter
+          ELSE
+            CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
+            WRITE(fn,'(A,A)') 'pickup_ic.', suff
+          ENDIF
         ELSE
-          WRITE(fn,'(A,A10)')    'pickup_ic.',pickupSuff
+          WRITE(fn,'(A,A10)')    'pickup_ic.', pickupSuff
         ENDIF
         CALL READ_REC_3D_RL( fn, prec, 1, iceMask,  1, myIter,myThid )
         CALL READ_REC_3D_RL( fn, prec, 1, iceHeight,2, myIter,myThid )

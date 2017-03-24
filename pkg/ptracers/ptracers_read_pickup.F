@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.17 2014/08/18 14:34:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_read_pickup.F,v 1.18 2017/03/24 23:48:33 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -53,6 +53,7 @@ C     msgBuf      :: Informational/error message buffer
       INTEGER missFldDim, nMissing
       INTEGER nj, ioUnit
       PARAMETER( missFldDim = 2*PTRACERS_num )
+      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(8) fldName, missFldList(missFldDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -104,9 +105,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( PTRACERS_pickup_read_mdsio ) THEN
 
        IF ( pickupSuff.EQ.' ' ) THEN
-        WRITE(fn,'(A,I10.10)') 'pickup_ptracers.',myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(fn,'(A,I10.10)') 'pickup_ptracers.', myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
+          WRITE(fn,'(A,A)') 'pickup_ptracers.', suff
+        ENDIF
        ELSE
-        WRITE(fn,'(A,A10)')    'pickup_ptracers.',pickupSuff
+        WRITE(fn,'(A,A10)') 'pickup_ptracers.', pickupSuff
        ENDIF
        prec = precFloat64
 
@@ -275,9 +281,15 @@ C--   Read pickup file with 2nd.Order moment fields
        DO iTracer = 1, PTRACERS_numInUse
         IF ( PTRACERS_SOM_Advection(iTracer) ) THEN
 
-         IF (pickupSuff .EQ. ' ') THEN
-           WRITE(fn,'(3A,I10.10)') 'pickup_somTRAC',
+         IF ( pickupSuff.EQ.' ' ) THEN
+           IF ( rwSuffixType.EQ.0 ) THEN
+             WRITE(fn,'(3A,I10.10)') 'pickup_somTRAC',
      &                     PTRACERS_ioLabel(iTracer),'.', myIter
+           ELSE
+             CALL RW_GET_SUFFIX( suff, startTime, myIter, myThid )
+             WRITE(fn,'(3A,A)') 'pickup_somTRAC',
+     &                     PTRACERS_ioLabel(iTracer),'.', suff
+           ENDIF
          ELSE
            WRITE(fn,'(3A,A10)') 'pickup_somTRAC',
      &                     PTRACERS_ioLabel(iTracer),'.', pickupSuff

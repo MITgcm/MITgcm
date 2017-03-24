@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.15 2016/08/30 21:50:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.16 2017/03/24 23:51:14 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -46,7 +46,7 @@ C     !FUNCTIONS:
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
-      CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(10) suff
 #ifdef ALLOW_TIMEAVE
       CHARACTER*(MAX_LEN_MBUF) fn
       INTEGER bi, bj, kl
@@ -148,7 +148,12 @@ C--    Write all time-average variables in 1 file :
 
        IF ( thSIce_tave_mdsio ) THEN
 
-         WRITE(fn,'(A,I10.10)') 'thSIce_tave.', myIter
+         IF ( rwSuffixType.EQ.0 ) THEN
+           WRITE(fn,'(A,I10.10)') 'thSIce_tave.', myIter
+         ELSE
+           CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+           WRITE(fn,'(A,A)') 'thSIce_tave.', suff
+         ENDIF
 
          CALL WRITE_REC_XY_RL( fn, ice_fract_Ave,  1, myIter, myThid )
          CALL WRITE_REC_XY_RL( fn, ice_iceH_Ave,   2, myIter, myThid )
@@ -266,7 +271,11 @@ C     Dump a snap-shot of main state variables:
      &                             .OR. .NOT.useCoupler )
      &     ) THEN
 
-          WRITE(suff,'(I10.10)') myIter
+          IF ( rwSuffixType.EQ.0 ) THEN
+            WRITE(suff,'(I10.10)') myIter
+          ELSE
+            CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+          ENDIF
 
           CALL WRITE_FLD_XY_RL('ice_fract.',  suff,iceMask,
      &         myIter,myThid)

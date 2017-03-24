@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.13 2014/11/28 14:17:13 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.14 2017/03/24 23:51:14 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -10,7 +10,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: seaice_ad_dump
 C     !INTERFACE:
-      subroutine seaice_ad_dump( myTime, myIter, myThid )
+      SUBROUTINE seaice_ad_dump( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -65,7 +65,7 @@ C     !LOCAL VARIABLES:
 c     == local variables ==
 C     suff   :: Hold suffix part of a filename
 C     msgBuf :: Error message buffer
-      CHARACTER*(MAX_LEN_FNAM) suff
+      CHARACTER*(10) suff
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL var2Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL var2Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -86,7 +86,11 @@ c      IF ( debugMode ) print*,'dumpAdRecSi',dumpAdRecSi
 c#endif
 
 C--     Set suffix for this set of data files.
-        WRITE(suff,'(I10.10)') myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(suff,'(I10.10)') myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+        ENDIF
 C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
 C ==>>  is very very very nasty !!!
 c       writeBinaryPrec = writeStatePrec
@@ -179,7 +183,7 @@ C       case dumpAdVarExch = 2
 
 #ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
-         
+
          CALL MNC_CW_SET_UDIM('adseaice', -1, myThid)
          CALL MNC_CW_RL_W_S('D','adseaice',0,0,'T',myTime,myThid)
          CALL MNC_CW_SET_UDIM('adseaice', 0, myThid)

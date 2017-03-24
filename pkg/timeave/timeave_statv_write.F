@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.43 2012/08/06 16:56:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.44 2017/03/24 23:51:14 jmc Exp $
 C $Name:  $
 
 #include "TIMEAVE_OPTIONS.h"
@@ -46,8 +46,8 @@ C     suff         :: Hold suffix part of a filename
 C     TimeAve      :: total time over average
 C     useVariableK :: T when vertical diffusion is not constant
       LOGICAL useVariableK
-      CHARACTER*(MAX_LEN_FNAM) suff
-      INTEGER bi,bj
+      CHARACTER*(10) suff
+      INTEGER bi, bj
       INTEGER beginIOErrCount
       INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -71,7 +71,11 @@ C     Final Time Averages and Dump Files if needed
       IF (dumpFiles) THEN
         useVariableK = useKPP .OR. usePP81 .OR. useMY82 .OR. useGGL90
      &      .OR. useGMredi .OR. ivdc_kappa.NE.0.
-        WRITE(suff,'(I10.10)') myIter
+        IF ( rwSuffixType.EQ.0 ) THEN
+          WRITE(suff,'(I10.10)') myIter
+        ELSE
+          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
+        ENDIF
 
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
