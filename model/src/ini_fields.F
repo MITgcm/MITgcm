@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.26 2013/08/20 20:22:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.27 2017/03/25 01:28:26 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -39,12 +39,6 @@ C     Set model variables to initial/restart conditions
 #endif
       ELSEIF ( .NOT.useOffLine .OR. nonlinFreeSurf.GT.0 ) THEN
         CALL READ_PICKUP( nIter0, myThid )
-
-c       IF (pickup_write_immed) THEN
-c         CALL WRITE_PICKUP(
-c    I                       .TRUE., startTime, nIter0, myThid )
-c       ENDIF
-
       ENDIF
 
 #ifdef ALLOW_NONHYDROSTATIC
