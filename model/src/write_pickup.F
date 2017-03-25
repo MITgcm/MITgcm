@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.19 2017/03/24 23:26:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.20 2017/03/25 16:03:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -48,7 +48,7 @@ C     myTime          :: Current time of simulation ( s )
 C     myIter          :: Iteration number
 C     myThid          :: Thread number for this instance of the routine.
       LOGICAL permPickup
-      CHARACTER(*) suffix
+      CHARACTER*(*) suffix
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
