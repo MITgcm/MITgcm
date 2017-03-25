@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.41 2017/03/24 21:51:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.42 2017/03/25 15:16:46 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -268,9 +268,11 @@ C     Fill Diagnostics Common Block with Namelist Info
 
 C     remove trailing "/":
       iLen = ILNBLNK( diagMdsDir )
-      IF ( iLen.GE.2 .AND. diagMdsDir(iLen:iLen).EQ.'/' ) THEN
+      IF ( iLen.GE.2 ) THEN
+       IF ( diagMdsDir(iLen:iLen).EQ.'/' ) THEN
          namBuf = diagMdsDir
          WRITE(diagMdsDir,'(A)') namBuf(1:iLen-1)
+       ENDIF
       ENDIF
 
       DO l = 1,ldimLoc
