@@ -1,9 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2316 2017/03/23 01:49:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2317 2017/03/25 16:54:36 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  - clean-up "checkpoint.flow"
+o pkg/rw (Contribution from Jody Klymak):
+    option to set mds file suffix as function of time in simulation:
+    *) new input parameter "rwSuffixType" (read from PARM03 namelist)
+       to select file suffix format; by default (=0), use iteration number;
+    *) add simple routine to return file suffix according to rwSuffixType;
+    *) in model/src and in most pkgs (except: atm2d, fizhi, regrid & streamice),
+       use new S/R to get file suffix, except for debug output file (diagFreq)
+       and pkgs offline & rbcs input files.
+o pkg/rw:
+  - uniform processing of "I10" suffix across writing fld routines; used to
+    simplify debug writing of cg2/3d_b/x in solve_for_pressure.F & post_cg3d.F
+    (similar to cg3d.F, cg3d_ex0.F)
 o pkg/mom_vecinv:
   - highOrderVorticity in selectVortScheme=2 case: fix c4 coeff in splitted
     vorticity flux (keep same sum in case vBarXm=vBaXp, uBarYm=uBarYp).
