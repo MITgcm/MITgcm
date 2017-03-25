@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.155 2017/03/24 21:56:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.156 2017/03/25 01:24:56 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -738,8 +738,8 @@ C---
       CALL WRITE_0D_L(pickup_read_mnc,INDEX_NONE,
      &     'pickup_read_mnc =', '   /* Model IO flag. */')
 #endif
-      CALL WRITE_0D_L(pickup_write_immed,INDEX_NONE,
-     &     'pickup_write_immed =','   /* Model IO flag. */')
+c     CALL WRITE_0D_L(pickup_write_immed,INDEX_NONE,
+c    &     'pickup_write_immed =','   /* Model IO flag. */')
       CALL WRITE_0D_L(writePickupAtEnd,INDEX_NONE,
      &     'writePickupAtEnd =','   /* Model IO flag. */')
       CALL WRITE_0D_RL( dumpFreq, INDEX_NONE,'dumpFreq =',
