@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.43 2016/05/26 03:41:58 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.44 2017/03/29 15:46:27 mmazloff Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -286,12 +286,6 @@ C       tendency multiplied by maskInC)
       ENDIF
 # endif /* ALLOW_AUTODIFF */
 #endif /* ALLOW_DIC */
-
-#ifdef ALLOW_BLING
-# ifdef ALLOW_BLING_COST
-       CALL BLING_COST( myTime, myIter, myThid )
-# endif /* ALLOW_BLING_COST */
-#endif /* ALLOW_BLING */
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('GCHEM_FORCING_SEP',myThid)
