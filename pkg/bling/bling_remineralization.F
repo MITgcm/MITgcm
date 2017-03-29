@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_remineralization.F,v 1.9 2017/03/16 17:03:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_remineralization.F,v 1.10 2017/03/29 15:51:19 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -237,6 +237,8 @@ C  Maximum value added for numerical stability.
 cav           log_btm_flx = 0. _d 0
            log_btm_flx = 1. _d -20
 
+CMM: this is causing instability in the adjoint. Needs debugging
+#ifndef BLING_ADJOINT_SAFE
            IF (POC_sed .gt. 0. _d 0) THEN
 
 C  Convert from mol N m-2 s-1 to umol C cm-2 d-1 and take the log
@@ -255,6 +257,7 @@ C  multiply by no3_2_n to give NO3 consumption rate
      &         recip_drF(k)
 
           ENDIF
+#endif
 
 C  ---------------------------------------------------------------------
 C  Calculate external bottom fluxes for tracer_vertdiff. Positive fluxes 
