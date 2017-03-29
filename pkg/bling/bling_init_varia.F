@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_init_varia.F,v 1.6 2017/03/16 17:03:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_init_varia.F,v 1.7 2017/03/29 15:47:49 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -21,9 +21,7 @@ C     === Global variables ===
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #include "BLING_VARS.h"
-#ifdef ALLOW_BLING_COST
-# include "BLING_COST.h"
-#endif
+
 C     !INPUT PARAMETERS:
 C     myThid               :: thread number
       INTEGER myThid
@@ -156,10 +154,6 @@ C     &    (nIter0.EQ.PTRACERS_Iter0 .AND. pickupSuff.NE.' ')
 C IF ABOVE TRUE phyto READ FROM PICKUP AND OVERWRITES IC READ
 C PICKUP CALLED FROM bling_carbonate_init.F
 C
-
-# ifdef ALLOW_BLING_COST
-      totcost =  0. _d 0
-# endif
 
 #endif /* ALLOW_BLING */
 
