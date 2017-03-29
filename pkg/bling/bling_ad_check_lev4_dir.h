@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_ad_check_lev4_dir.h,v 1.4 2016/10/15 21:30:43 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_ad_check_lev4_dir.h,v 1.5 2017/03/29 16:16:15 mmazloff Exp $
 C $Name:  $
 
 #ifdef ALLOW_BLING
@@ -29,10 +29,6 @@ CADJ STORE dicwind1       = tapelev4, key = ilev_4
 CADJ STORE apco20        = tapelev4, key = ilev_4
 CADJ STORE apco21        = tapelev4, key = ilev_4
 # endif
-
-#ifdef ALLOW_BLING_COST
-CADJ STORE totcost  = tapelev4, key = ilev_4
-#endif
 
 #endif /* ALLOW_BLING */
 
