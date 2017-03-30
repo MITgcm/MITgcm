@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.281 2017/02/16 23:27:08 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.282 2017/03/30 18:06:38 jmc Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -145,7 +145,7 @@ Usage: "$0" [OPTIONS]
 	  from \$PATH/lib and use binaries from \$PATH/bin.
 
     -omp | --omp
-	  Activate OpenMP code + use Compiler option OMPFLAG
+	  Activate OpenMP code
     -omp=OMPFLAG | --omp=OMPFLAG
 	  Activate OpenMP code + use Compiler option OMPFLAG
 
