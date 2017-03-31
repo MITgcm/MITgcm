@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.11 2017/03/16 17:03:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.12 2017/03/31 19:36:59 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -537,12 +537,6 @@ c  update biomass
 
 #endif
 
-c  for diagnostics: convert to mol C/m3
-
-         Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) * CtoN
-         Phy_sm_local(i,j,k) = Phy_sm_local(i,j,k) * CtoN
-         Phy_diaz_local(i,j,k) = Phy_diaz_local(i,j,k) * CtoN
-
          ENDIF
         ENDDO
        ENDDO
@@ -824,6 +818,12 @@ c  Carbon flux diagnostic
      &                   - (1. _d 0 - phi_DOM2d(i,j,bi,bj)) 
      &                   * (N_reminp(i,j,k) + N_remindvm(i,j,k))
      &                   - DON_remin(i,j,k) ) * CtoN
+
+c  for diagnostics: convert to mol C/m3
+
+         Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) * CtoN
+         Phy_sm_local(i,j,k) = Phy_sm_local(i,j,k) * CtoN
+         Phy_diaz_local(i,j,k) = Phy_diaz_local(i,j,k) * CtoN
 
          ENDIF
 
