@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2317 2017/03/25 16:54:36 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2318 2017/03/31 17:31:14 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - add back recomputation of rSurfW & S to ensure consistent column thickness
+    (needed for rStar) between Sum_k(hFac*drF) and rSurf-rLow, for now only
+    when using pkg/shelfice; was initially added on 2012/06/01 (ini_masks_etc.F
+    revision 1.51) but was removed accidentally on 2014/02/08 (v1.53).
 o pkg/autodiff:
   - clean-up "checkpoint.flow"
 o pkg/rw (Contribution from Jody Klymak):
