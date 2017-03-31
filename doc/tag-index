@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2318 2017/03/31 17:31:14 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2319 2017/03/31 19:43:05 mmazloff Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/bling
+  - Bug fix in bling_production regarding unit conversion for diagnostics
+    being put in the wrong place
 o model/src:
   - add back recomputation of rSurfW & S to ensure consistent column thickness
     (needed for rStar) between Sum_k(hFac*drF) and rSurf-rLow, for now only
