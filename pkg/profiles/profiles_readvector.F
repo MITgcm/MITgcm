@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readvector.F,v 1.12 2015/08/06 15:48:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readvector.F,v 1.13 2017/04/03 23:16:38 ou.wang Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -34,6 +34,9 @@ C ==================== Routine Variables ==========================
 
       integer vec_start(2),vec_count(2)
       _RL vec_tmp1(1000*NLEVELMAX),vec_tmp2(1000*NLEVELMAX)
+#ifdef ALLOW_PROFILES_CLIMMASK
+      _RL vec_tmp3(1000*NLEVELMAX)
+#endif
       character*(max_len_mbuf) msgbuf
 
 c--   == end of interface ==
@@ -86,6 +89,12 @@ c implies that a forward loop is calling
      & , varid1 )
       err = NF_GET_VARA_DOUBLE(fiddata(fNb,bi,bj), varid1 , vec_start,
      & vec_count, vec_tmp2)
+#ifdef ALLOW_PROFILES_CLIMMASK
+      err = NF_INQ_VARID(fiddata(fNb,bi,bj),prof_namesclim(fNb,kkk)
+     & , varid1 )
+      err = NF_GET_VARA_DOUBLE(fiddata(fNb,bi,bj), varid1 , vec_start,
+     & vec_count, vec_tmp3)
+#endif
 
       if (err.NE.NF_NOERR) then
             WRITE(errorMessageUnit,'(A)')
@@ -97,6 +106,10 @@ c implies that a forward loop is calling
       profiles_data_buff(k,kk,kkk,bi,bj)=vec_tmp1((kk-1)*vec_count(1)+k)
       profiles_weight_buff(k,kk,kkk,bi,bj)=vec_tmp2((kk-1)*vec_count(1)
      & +k)
+#ifdef ALLOW_PROFILES_CLIMMASK
+      if(vec_tmp3((kk-1)*vec_count(1)+k).LE.-990. _d 0)
+     &    profiles_weight_buff(k,kk,kkk,bi,bj) = 0. _d 0
+#endif
       enddo
       enddo
       endif

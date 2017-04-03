@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.19 2015/08/06 15:48:20 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.h,v 1.20 2017/04/03 23:16:38 ou.wang Exp $
 C $Name:  $
 
 C===========================================================
@@ -38,6 +38,9 @@ C===========================================================
       character*(8) prof_namesmod(NFILESPROFMAX,NVARMAX)
       character*(12) prof_namesmask(NFILESPROFMAX,NVARMAX)
       character*(14) prof_namesweight(NFILESPROFMAX,NVARMAX)
+#ifdef ALLOW_PROFILES_CLIMMASK
+      character*(12) prof_namesclim(NFILESPROFMAX,NVARMAX)
+#endif
       integer prof_itracer(NFILESPROFMAX,NVARMAX)
 
       _RL profiles_data_buff(NLEVELMAX,1000,NVARMAX,nsx,nsy)
@@ -50,6 +53,25 @@ C===========================================================
       integer prof_num_var_tot(NFILESPROFMAX,nsx,nsy)
       integer prof_num_var_cur(NFILESPROFMAX,NVARMAX,nsx,nsy)
 
+#ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+      integer prof_ind_avgbin(NFILESPROFMAX,NOBSGLOB,nsx,nsy)
+      integer NLEVELCOMB, NAVGBIN
+      _RL NLEVELCOMBRL, NAVGBINRL
+C number of independent samples
+      integer profiles_mean_indsamples(NVARMAX)
+      _RL prof_depth_comb(NLEVELCOMBMAX,nsx,nsy)
+      integer prof_lev_comb(NLEVELMAX,NFILESPROFMAX,nsx,nsy)
+      integer avgbinglbsum(NAVGBINMAX)
+      _RL prof_data1D_all_mean(NAVGBINMAX,NLEVELCOMBMAX,
+     &NVARMAX)
+      _RL prof_traj1D_all_mean(NAVGBINMAX,NLEVELCOMBMAX,
+     &NVARMAX)
+      _RL prof_weights1D_all_mean(NAVGBINMAX,NLEVELCOMBMAX,
+     &NVARMAX)
+      _RL prof_count1D_all_mean(NAVGBINMAX,NLEVELCOMBMAX,
+     &NVARMAX)
+#endif
+
 C===========================================================
 C Common Blocks
 C===========================================================
@@ -57,12 +79,30 @@ C===========================================================
       COMMON /profiles_r/ prof_time, prof_lon, prof_lat,
      & prof_depth, prof_mask1D_cur, 
      & prof_etan_mean, prof_theta_mean, prof_salt_mean
+#ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+     &,prof_depth_comb
+     &,prof_data1D_all_mean
+     &,prof_traj1D_all_mean
+     &,prof_weights1D_all_mean
+     &,prof_count1D_all_mean
+     &,NLEVELCOMBRL, NAVGBINRL
+#endif
       COMMON /profiles_i/ prof_ind_glob, profNo, profDepthNo,
      & fidforward, fidadjoint, fidtangent, fiddata,
      & prof_num_var_tot, prof_num_var_cur, prof_itracer
+#ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+     &,prof_ind_avgbin, NLEVELCOMB, NAVGBIN
+     &,prof_lev_comb
+     &,avgbinglbsum
+     &,profiles_mean_indsamples
+#endif
+
       COMMON /profiles_l/ vec_quantities, profilesDoNcOutput, 
      & profilesDoGenGrid
       COMMON /profiles_c/ prof_names, prof_namesmask,
+#ifdef ALLOW_PROFILES_CLIMMASK
+     & prof_namesclim,
+#endif
      & prof_namesweight, prof_namesmod
 
       COMMON /profiles_GenericGrid_r/ prof_interp_weights,
@@ -81,10 +121,17 @@ C===========================================================
      &                num_profiles,
      &                mult_profiles,
      &                prof_facmod
+     &               ,objf_profiles_mean,
+     &                num_profiles_mean,
+     &                mult_profiles_mean
+
       _RL  objf_profiles(NFILESPROFMAX,NVARMAX,nsx,nsy)
       _RL  num_profiles(NFILESPROFMAX,NVARMAX,nsx,nsy)
       _RL  mult_profiles(NFILESPROFMAX,NVARMAX)
       _RL  prof_facmod(NFILESPROFMAX,NVARMAX)
+      _RL  objf_profiles_mean(NVARMAX,nsx,nsy)
+      _RL  num_profiles_mean(NVARMAX,nsx,nsy)
+      _RL  mult_profiles_mean(NVARMAX)
 
       COMMON /profiles_cost_c/
      &        profilesDir, profilesfiles

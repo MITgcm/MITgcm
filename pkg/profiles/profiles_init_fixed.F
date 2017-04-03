@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.38 2017/02/18 16:11:37 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.39 2017/04/03 23:16:38 ou.wang Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -69,6 +69,10 @@ C ==================== Routine Variables ==========================
       Real*8 xy_buffer_r8(0:sNx+1,0:sNy+1)
       integer vec_start2(2), vec_count2(2)
       integer hh, ProfNo_hh
+#ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+      integer varid4
+      _RL tmp_avgbin(1000)
+#endif
 
 c     == external functions ==
       integer ILNBLNK
@@ -240,6 +244,9 @@ c       if neither is found, then stop
       err = NF_INQ_VARID(fid,'prof_HHMMSS', varid1b )
       err = NF_INQ_VARID(fid,'prof_lon', varid2 )
       err = NF_INQ_VARID(fid,'prof_lat', varid3 )
+#ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+      err = NF_INQ_VARID(fid,'prof_bin_id_a', varid4 )
+#endif
 
       if (err.NE.NF_NOERR) then
         IL  = ILNBLNK( profilesfile )
@@ -275,6 +282,9 @@ c4) default values
       prof_lon(num_file,k,bi,bj)=-999. _d 0
       prof_lat(num_file,k,bi,bj)=-999. _d 0
       prof_ind_glob(num_file,k,bi,bj)=0
+#ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+      prof_ind_avgbin(num_file,k,bi,bj)=-999
+#endif
       do q = 1,NUM_INTERP_POINTS
          prof_interp_i(num_file,k,q,bi,bj) = 1
          prof_interp_j(num_file,k,q,bi,bj) = 1
@@ -321,6 +331,10 @@ c5.1) read a chunk
      & vec_count(2), tmp_lon2)
       err = NF_GET_VARA_DOUBLE(fid,varid3,vec_start(2),
      & vec_count(2), tmp_lat2)
+#ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+      err = NF_GET_VARA_DOUBLE(fid,varid4,vec_start(2),
+     & vec_count(2), tmp_avgbin)
+#endif
 
       if (err.NE.NF_NOERR) then
         WRITE(msgBuf,'(3A)')
@@ -464,6 +478,9 @@ c if yes then store prof_time and longitude and latitude:
         prof_lon(num_file,ProfNo_tile,bi,bj)=lon_cur
         prof_lat(num_file,ProfNo_tile,bi,bj)=lat_cur
         prof_ind_glob(num_file,ProfNo_tile,bi,bj)=k+1000*(kk-1)
+#ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+        prof_ind_avgbin(num_file,ProfNo_tile,bi,bj)=tmp_avgbin(k)
+#endif
 c then store interpolation coeffs and indices
         lon_fac=(lon_cur-lon_1)/(lon_2-lon_1)
         lat_fac=(lat_cur-lat_1)/(lat_2-lat_1)
@@ -503,6 +520,9 @@ c 5.2a) determine whether profiles is in current tile domain (generic grid case)
 c if yes then store prof_time and interpolation coeffs and indices:
        ProfNo_tile=ProfNo_tile+1
        prof_time(num_file,ProfNo_tile,bi,bj)=diffsecs
+#ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+         prof_ind_avgbin(num_file,ProfNo_tile,bi,bj)=tmp_avgbin(k)
+#endif
        prof_interp_xC11(num_file,ProfNo_tile,bi,bj)=tmp_xC11(k)
        prof_interp_yC11(num_file,ProfNo_tile,bi,bj)=tmp_yC11(k)
        prof_interp_xCNINJ(num_file,ProfNo_tile,bi,bj)=tmp_xCNINJ(k)
@@ -739,6 +759,9 @@ C===========================================================
       prof_lon(num_file,k,bi,bj)=-999. _d 0
       prof_lat(num_file,k,bi,bj)=-999. _d 0
       prof_ind_glob(num_file,k,bi,bj)=0
+#ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+      prof_ind_avgbin(num_file,k,bi,bj)=-999
+#endif
       do q = 1,NUM_INTERP_POINTS
          prof_interp_i(num_file,k,q,bi,bj) = 1
          prof_interp_j(num_file,k,q,bi,bj) = 1
@@ -752,6 +775,95 @@ C===========================================================
 
       endif !if (IL.NE.0) then
       enddo !      do num_file=1,NFILESPROFMAX
+
+#ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+C Find the unique depth levels from all profile datasets   
+C initialize prof_depth_comb
+      if(bi.EQ.1.and.bj.EQ.1)then
+         NLEVELCOMB = 0
+         NLEVELCOMBRL = NLEVELCOMB
+      endif
+      do m=1,NLEVELCOMBMAX
+         prof_depth_comb(m,bi,bj)=-999. _d 0
+      enddo
+
+      m = 1
+      do num_file=1,NFILESPROFMAX
+       do K=1,ProfDepthNo(num_file,bi,bj)
+
+          if(m.EQ.1) then
+           prof_depth_comb(m,bi,bj) = prof_depth(num_file, k,bi,bj)
+           m = m + 1
+          else
+C sort
+           do l=1,NLEVELCOMBMAX-1
+            if(prof_depth_comb(l,bi,bj) .ne. -999. _d 0) then
+
+              if(prof_depth(num_file, k,bi,bj).lt.
+     &           prof_depth_comb(l,bi,bj).and.
+     &           l.EQ.1)  then
+                 prof_depth_comb(NLEVELCOMBMAX,bi,bj) =
+     &            prof_depth_comb(l,bi,bj)
+                 prof_depth_comb(l,bi,bj)=
+     &            prof_depth(num_file, k,bi,bj)
+                 do il = NLEVELCOMBMAX-1, l+2,-1
+                    prof_depth_comb(il,bi,bj)=
+     &            prof_depth_comb(il-1,bi,bj)
+                 enddo
+                 prof_depth_comb(l+1,bi,bj)=
+     &            prof_depth_comb(NLEVELCOMBMAX,bi,bj)
+              else if(prof_depth(num_file, k,bi,bj).gt.
+     &           prof_depth_comb(l,bi,bj).and.
+     &           prof_depth(num_file, k,bi,bj).lt.
+     &           prof_depth_comb(l+1,bi,bj))  then
+
+                 prof_depth_comb(NLEVELCOMBMAX,bi,bj) =
+     &            prof_depth_comb(l+1,bi,bj)
+                 prof_depth_comb(l+1,bi,bj)=
+     &            prof_depth(num_file, k,bi,bj)
+                 do il = NLEVELCOMBMAX-1, l+3,-1
+                    prof_depth_comb(il,bi,bj)=
+     &            prof_depth_comb(il-1,bi,bj)
+                 enddo
+                 prof_depth_comb(l+2,bi,bj)=
+     &            prof_depth_comb(NLEVELCOMBMAX,bi,bj)
+              else if ( prof_depth(num_file, k,bi,bj).gt.
+     &           prof_depth_comb(l,bi,bj).and.
+     &           prof_depth_comb(l+1,bi,bj).eq.-999. _d 0)  then
+                 prof_depth_comb(l+1,bi,bj) =
+     &              prof_depth(num_file, k,bi,bj)
+              endif
+             endif
+           enddo
+
+          endif
+          if(m.GE.NLEVELCOMBMAX-2)then
+            WRITE(msgBuf,'(A)')
+     &      'increase NLEVELCOMBMAX'
+            CALL PRINT_ERROR( msgBuf, myThid)
+           endif
+       enddo ! do K=1,ProfDepthNo(num_file,bi,bj)
+      enddo ! do num_file=1,NFILESPROFMAX
+      prof_depth_comb(NLEVELCOMBMAX,bi,bj) = -999. _d 0
+
+C diagnostics output
+      do m=1,NLEVELCOMBMAX
+         if(prof_depth_comb(m,bi,bj) .GE. 0. _d 0
+     &     .AND. NLEVELCOMB.LT.m)then
+           NLEVELCOMB = m
+           if(m.GE.NLEVELCOMBMAX-2)then
+            WRITE(msgBuf,'(A,2i6)')
+     &      'increase NLEVELCOMBMAX: m,NLEVELCOMBMA  ',
+     &      m, NLEVELCOMBMAX
+            CALL PRINT_ERROR( msgBuf, myThid)
+           endif
+         endif
+      enddo
+      WRITE(msgBuf,'(A, i6,d20.5)')
+     &      'NLEVELCOMB = ', NLEVELCOMB
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif
 
 C===========================================================
 C error cases:
@@ -821,6 +933,12 @@ cgf YC grid
 
       ENDDO
       ENDDO
+
+#ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+      NLEVELCOMBRL = NLEVELCOMB
+      _GLOBAL_MAX_RL( NLEVELCOMBRL, myThid )
+      NLEVELCOMB = NLEVELCOMBRL
+#endif
 
       _END_MASTER( mythid )
       _BARRIER

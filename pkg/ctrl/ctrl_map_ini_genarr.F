@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.24 2017/03/06 20:03:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.25 2017/04/03 23:16:38 ou.wang Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -56,6 +56,9 @@ C     == local variables ==
 #ifdef ALLOW_GENARR3D_CONTROL
       integer igen_theta0, igen_salt0
       integer igen_kapgm, igen_kapredi, igen_diffkr
+#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
+      integer igen_uvel0, igen_vvel0
+#endif
 #endif /* ALLOW_GENARR3D_CONTROL */
 CEOP
 
@@ -77,8 +80,10 @@ C--   generic 2D control variables
       endif
       ENDDO
 
-      if (igen_etan.GT.0)
-     &      call ctrl_map_genarr2d(etaN,igen_etan,myThid)
+      if (igen_etan.GT.0) then
+            call ctrl_map_genarr2d(etaN,igen_etan,myThid)
+            call ctrl_map_genarr2d(etaH,igen_etan,myThid)
+      endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
       if (igen_bdrag.GT.0)
      &  call ctrl_map_genarr2d(bottomDragFld,igen_bdrag,myThid)
@@ -111,6 +116,12 @@ C--   generic 3D control variables
      &     igen_kapredi=iarr
         if (xx_genarr3d_file(iarr)(1:9).EQ.'xx_diffkr') 
      &     igen_diffkr=iarr
+#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
+        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_uvel') 
+     &     igen_uvel0=iarr
+        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_vvel') 
+     &     igen_vvel0=iarr
+#endif
       endif
       ENDDO
 
@@ -129,6 +140,13 @@ C--   generic 3D control variables
 #ifdef ALLOW_3D_DIFFKR
       if (igen_diffkr.GT.0)
      &   call ctrl_map_genarr3d(diffkr,igen_diffkr,myThid)
+#endif
+#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
+      if (igen_uvel0.GT.0 .and. igen_vvel0.GT.0) then
+         call ctrl_map_genarr3d(uvel,igen_uvel0,myThid)
+         call ctrl_map_genarr3d(vvel,igen_vvel0,myThid)
+         CALL EXCH_UV_XYZ_RL(uvel,vvel,.TRUE.,myThid)
+      endif
 #endif
 
 #endif /* ALLOW_GENARR3D_CONTROL */
@@ -345,6 +363,7 @@ C     == local variables ==
       integer ilgen
       logical doglobalread
       logical ladinit
+      _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 CEOP
 
 c--   Now, read the control vector.
@@ -409,6 +428,16 @@ c--   Now, read the control vector.
       ENDIF
 #endif
 
+c--   set local mask 
+      call ecco_zero(localmask,Nr,zeroRL,myThid)
+      if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_uvel') then
+        call ecco_cprsrl(maskW,nr,localmask,nr,myThid)
+      else if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_vvel') then
+        call ecco_cprsrl(maskS,nr,localmask,nr,myThid)
+      else 
+        call ecco_cprsrl(maskC,nr,localmask,nr,myThid)
+      endif
+
       DO bj=myByLo(myThid), myByHi(myThid)
         DO bi=myBxLo(myThid), myBxHi(myThid)
           do k = 1,nr
@@ -416,7 +445,7 @@ c--   Now, read the control vector.
               DO i = 1,sNx
 c scale param adjustment
                 IF (doscaling) then
-                if ( (maskC(i,j,k,bi,bj).NE.0.).AND.
+                if ( (localmask(i,j,k,bi,bj).NE.0.).AND.
      &               (wgenarr3d(i,j,k,bi,bj,iarr).GT.0.) ) then
                   xx_gen(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
      &                     /sqrt( wgenarr3d(i,j,k,bi,bj,iarr) )
@@ -433,9 +462,15 @@ c add to model parameter
       enddo
 
 c avoid param out of [boundsVec(1) boundsVec(4)]
-      CALL CTRL_BOUND_3D(fld,maskC,xx_genarr3d_bounds(1,iarr),myThid)
+      CALL CTRL_BOUND_3D(fld,localmask,
+     &     xx_genarr3d_bounds(1,iarr),myThid)
 
-      CALL EXCH_XYZ_RL( fld, mythid )
+C The tile exchange for xx_uvel and xx_vvel will be 
+C  done in CTRL_MAP_INI_GENARR.F when both 
+C  xx_uvel and xx_vvel are read in. 
+      if (xx_genarr3d_file(iarr)(1:7).NE.'xx_uvel'.AND.
+     &    xx_genarr3d_file(iarr)(1:7).NE.'xx_vvel') 
+     &    CALL EXCH_XYZ_RL( fld, mythid )
 
       CALL mdswritefield(fnamegenOut,ctrlprec,.FALSE.,'RL',
      &    nr, fld, 1, optimcycle, mythid)

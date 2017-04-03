@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.17 2017/03/19 19:40:28 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.18 2017/04/03 23:16:38 ou.wang Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -61,7 +61,6 @@ c- note defined with overlap here, not needed, but more efficient
 #ifdef ALLOW_PSBAR_STERIC
       _RL RHOInSituLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL VOLsumTile(nSx,nSy),RHOsumTile(nSx,nSy)
-      _RL sterGloH
 #endif
 
 c need to include halos for find_rho_2d

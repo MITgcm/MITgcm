@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_bpv4.F,v 1.8 2016/03/02 04:18:13 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_bpv4.F,v 1.9 2017/04/03 23:16:38 ou.wang Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -91,6 +91,7 @@ c     == end of interface ==
       kgen=0
       do k=1,NGENCOST
         if ( (gencost_name(k).EQ.'bpv4-grace').AND.
+     &       (.NOT.gencost_is1d(k)).AND.
      &       (using_gencost(k)) ) kgen=k
       enddo
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.25 2016/09/21 12:55:31 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_all.F,v 1.26 2017/04/03 23:16:38 ou.wang Exp $
 C $Name:  $
 #include "ECCO_OPTIONS.h"
 
@@ -51,7 +51,9 @@ c     == end of interface ==
 
       do k = 1, NGENCOST
 
-         if ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 ) ) then
+         if ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 ) 
+     &   .AND.( .NOT.gencost_is1d(k) ) ) then
+
 
 #ifdef ALLOW_DEBUG
          IF ( debugLevel .GE. debLevD ) THEN
@@ -90,6 +92,7 @@ c     == end of interface ==
 
       end do
 
+      call cost_gencost_glbmean( mythid )
       call cost_gencost_boxmean( mythid )
       call cost_gencost_bpv4( mythid )
       IF (using_cost_transp) call cost_gencost_transp( mythid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.23 2017/01/10 15:40:59 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.24 2017/04/03 23:16:38 ou.wang Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -51,9 +51,17 @@ c--   Read the namelist input.
      &                   profilesDir,
      &                   profilesfiles,
      &                   mult_profiles,
+     &                   mult_profiles_mean,
+#ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+C number of independent samples
+     &                   profiles_mean_indsamples,
+#endif
      &                   prof_facmod,
      &                   prof_names,
      &                   prof_namesmod,
+#ifdef ALLOW_PROFILES_CLIMMASK
+     &                   prof_namesclim,
+#endif
      &                   prof_itracer,
      &                   profilesDoNcOutput,
      &                   profilesDoGenGrid
@@ -73,6 +81,8 @@ C     print a (weak) warning if data.profiles is found
 c--     Set default values.
       profilesDir=' '
 
+
+
       do num_file=1,NFILESPROFMAX
           profilesfiles(num_file)      =    ' '
       enddo
@@ -84,7 +94,16 @@ c--     Set default values.
         prof_names(num_file,num_var)='empty'
         prof_itracer(num_file,num_var)=1
         prof_namesmod(num_file,num_var)='empty'
+#ifdef ALLOW_PROFILES_CLIMMASK
+        prof_namesclim(num_file,num_var)='empty'
+#endif
        enddo
+      enddo
+      do num_var=1,NVARMAX
+         mult_profiles_mean(num_var) = 1. _d 0
+#ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
+         profiles_mean_indsamples(num_var) = 1
+#endif
       enddo
 
       profilesDoNcOutput=.false.
@@ -127,6 +146,10 @@ c--     Next, read the cost data file.
             prof_names(num_file,2)='prof_S'
             prof_namesmod(num_file,1)='theta'
             prof_namesmod(num_file,2)='salt'
+#ifdef ALLOW_PROFILES_CLIMMASK
+            prof_namesclim(num_file,1)='prof_Tclim'
+            prof_namesclim(num_file,2)='prof_Sclim'
+#endif
           endif
 
           do num_var=1,NVARMAX
@@ -150,6 +173,10 @@ c--     Next, read the cost data file.
      &        prof_names(num_file,num_var)(1:IL),'mask'
             WRITE(prof_namesweight(num_file,num_var),'(2A)')
      &        prof_names(num_file,num_var)(1:IL),'weight'
+#ifdef ALLOW_PROFILES_CLIMMASK
+            WRITE(prof_namesclim(num_file,num_var),'(2A)')
+     &        prof_names(num_file,num_var)(1:IL),'clim'
+#endif
           enddo
 
           if ( profilesfiles(num_file) .NE. ' ' ) then

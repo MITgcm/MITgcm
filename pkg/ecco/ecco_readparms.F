@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.93 2017/03/19 19:40:28 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.94 2017/04/03 23:16:38 ou.wang Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -191,6 +191,7 @@ c--   Read the namelist input.
      &         gencost_spmin,
      &         gencost_spmax,
      &         gencost_spzero,
+     &         gencost_wei1d,
      &         gencost_avgperiod,
      &         gencost_nrecperiod,
      &         gencost_startdate1,
@@ -198,6 +199,7 @@ c--   Read the namelist input.
      &         gencost_enddate1,
      &         gencost_enddate2,
      &         gencost_smooth2Ddiffnbt,
+     &         gencost_is1d,
      &         gencost_is3d,
      &         gencost_msk_is3d,
      &         gencost_timevaryweight,
@@ -601,7 +603,9 @@ c--   Set default values.
          gencost_spmin(k)      = 0. _d 0
          gencost_spmax(k)      = 0. _d 0
          gencost_spzero(k)     = 9876. _d 0
+         gencost_wei1d(k)      = 0. _d 0
          mult_gencost(k)       = 1. _d 0
+         gencost_is1d(k)       = .FALSE.
          gencost_is3d(k)       = .FALSE.
          gencost_pointer3d(k)  = 0
          gencost_msk_is3d      = .FALSE.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.24 2017/03/19 15:16:45 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco.h,v 1.25 2017/04/03 23:16:38 ou.wang Exp $
 C $Name:  $
 
 c     ==================================================================
@@ -133,6 +133,9 @@ c                 the current model integration.
 
       common /ecco_r/
      &                    m_eta,m_UE,m_VN,
+#ifdef ALLOW_PSBAR_STERIC
+     &                    sterGloH,
+#endif
      &                    msktrVolW,msktrVolS,
      &                    trVol, trHeat, trSalt,
      &                    VOLsumGlob_0, VOLsumGlob,
@@ -142,6 +145,9 @@ c                 the current model integration.
       _RL frame   (1-olx:snx+olx,1-oly:sny+oly           )
       _RL cosphi  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL m_eta(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+#ifdef ALLOW_PSBAR_STERIC
+      _RL sterGloH
+#endif
       _RL m_UE (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL m_VN (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL msktrVolW (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
@@ -167,11 +173,11 @@ c     =============================
 c     Number of Generic Cost terms:
 c     =============================
       INTEGER NGENCOST
-      PARAMETER ( NGENCOST=20 )
+      PARAMETER ( NGENCOST=30 )
 
       INTEGER NGENCOST3D
 #ifdef ALLOW_GENCOST3D
-      PARAMETER ( NGENCOST3D=4 )
+      PARAMETER ( NGENCOST3D=6 )
 #else
       PARAMETER ( NGENCOST3D=0 )
 #endif
@@ -179,6 +185,8 @@ c     =============================
       INTEGER NGENPPROC
       PARAMETER ( NGENPPROC=10 )
 
+      INTEGER N1DDATA
+      PARAMETER ( N1DDATA=300 )
 
 c     empty pre/post-processing :
 c     =========================
@@ -226,7 +234,8 @@ c     objf_gencost - gencost user defined contribution
      &       gencost_mskC, gencost_mskW, gencost_mskS,
 #endif
      &       gencost_spmin, gencost_spmax, gencost_spzero,
-     &       gencost_period, gencost_preproc_r, gencost_posproc_r
+     &       gencost_period, gencost_preproc_r, gencost_posproc_r,
+     &       gencost_wei1d, gencost_1ddata
 
       _RL  objf_gencost(nsx,nsy,NGENCOST)
       _RL  num_gencost(nsx,nsy,NGENCOST)
@@ -266,6 +275,8 @@ c     objf_gencost - gencost user defined contribution
 #endif
       _RL gencost_preproc_r(NGENPPROC,NGENCOST)
       _RL gencost_posproc_r(NGENPPROC,NGENCOST)
+      _RL gencost_wei1d(NGENCOST)
+      _RL gencost_1ddata(N1DDATA, NGENCOST)
 
       common /ecco_gencost_i_1/
      &       gencost_nrec, gencost_nrecperiod,
@@ -296,9 +307,11 @@ c     objf_gencost - gencost user defined contribution
 
       common /ecco_gencost_l_1/
      &       gencost_timevaryweight, gencost_barskip,
-     &       using_gencost, gencost_is3d, gencost_msk_is3d
+     &       using_gencost, gencost_is3d, gencost_msk_is3d,
+     &       gencost_is1d
       LOGICAL using_gencost(NGENCOST)
       LOGICAL gencost_is3d(NGENCOST)
+      LOGICAL gencost_is1d(NGENCOST)
       LOGICAL gencost_msk_is3d(NGENCOST)
       LOGICAL gencost_timevaryweight(NGENCOST)
       LOGICAL gencost_barskip(NGENCOST)

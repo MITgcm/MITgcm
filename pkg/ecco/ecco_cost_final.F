@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.86 2017/02/18 16:25:42 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.87 2017/04/03 23:16:38 ou.wang Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -115,6 +115,7 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL f_obcsn, f_obcss, f_obcsw, f_obcse
 #ifdef ALLOW_PROFILES
       _RL f_profiles(NFILESPROFMAX,NVARMAX)
+      _RL f_profiles_mean(NVARMAX)
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
       _RL f_gentim2d(maxCtrlTim2D)
@@ -155,6 +156,7 @@ c the adjoint, pkg/autodiff most likely require cost though.
       _RL no_obcsn, no_obcss, no_obcsw, no_obcse
 #ifdef ALLOW_PROFILES
       _RL no_profiles(NFILESPROFMAX,NVARMAX)
+      _RL no_profiles_mean(NVARMAX)
 #endif
 #ifdef ALLOW_GENTIM2D_CONTROL
       _RL no_gentim2d(maxCtrlTim2D)
@@ -282,6 +284,9 @@ c     == end of interface ==
         f_profiles(num_file,num_var)= 0. _d 0
        enddo
       enddo
+      do num_var=1,NVARMAX
+       f_profiles_mean(num_var)= 0. _d 0
+      enddo
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
@@ -385,6 +390,9 @@ c     == end of interface ==
        do num_var=1,NVARMAX
         no_profiles(num_file,num_var)= 0. _d 0
        enddo
+      enddo
+      do num_var=1,NVARMAX
+       no_profiles_mean(num_var)= 0. _d 0
       enddo
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
@@ -503,6 +511,11 @@ c--   Sum up all contributions.
      &            + mult_profiles(num_file,num_var)
      &            *objf_profiles(num_file,num_var,bi,bj)
        enddo
+      enddo
+      do num_var=1,NVARMAX
+         tile_fc(bi,bj) = tile_fc(bi,bj)
+     &           + mult_profiles_mean(num_var)
+     &           *objf_profiles_mean(num_var,bi,bj)
       enddo
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
@@ -634,6 +647,10 @@ c--   Sum up all contributions.
      &            +objf_profiles(num_file,num_var,bi,bj)
        enddo
       enddo
+      do num_var=1,NVARMAX
+         f_profiles_mean(num_var)=f_profiles_mean(num_var)
+     &           +objf_profiles_mean(num_var,bi,bj)
+      enddo
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
@@ -742,6 +759,10 @@ c--   Sum up all contributions.
           no_profiles(num_file,num_var)=no_profiles(num_file,num_var)
      &            +num_profiles(num_file,num_var,bi,bj)
        enddo
+      enddo
+      do num_var=1,NVARMAX
+         no_profiles_mean(num_var)=no_profiles_mean(num_var)
+     &           +num_profiles_mean(num_var,bi,bj)
       enddo
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
@@ -879,6 +900,9 @@ c--   Do global summation for each part of the cost function
         _GLOBAL_SUM_RL(f_profiles(num_file,num_var), myThid )
        enddo
       enddo
+      do num_var=1,NVARMAX
+       _GLOBAL_SUM_RL(f_profiles_mean(num_var), myThid )
+      enddo
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
        do num_var=1,NGENCOST
@@ -981,6 +1005,9 @@ c--   Do global summation for each part of the cost function
        do num_var=1,NVARMAX
         _GLOBAL_SUM_RL(no_profiles(num_file,num_var), myThid )
        enddo
+      enddo
+      do num_var=1,NVARMAX
+       _GLOBAL_SUM_RL(no_profiles_mean(num_var), myThid )
       enddo
 #endif
 #ifdef ALLOW_GENCOST_CONTRIBUTION
@@ -1191,6 +1218,15 @@ c--   Do global summation for each part of the cost function
      &                       SQUEEZE_RIGHT , mythid)
         endif
        enddo
+      enddo
+      do num_var=1,NVARMAX
+        if ( no_profiles_mean(num_var).GT.zeroRL ) then
+         write(msgBuf,'(A,D22.15,i2.0,i2.0)')
+     &     ' --> f_profiles_mean =',f_profiles_mean(num_var),
+     &      num_var
+         call print_message( msgBuf, standardmessageunit,
+     &                       SQUEEZE_RIGHT , mythid)
+        endif
       enddo
       endif
 #endif
@@ -1501,6 +1537,15 @@ C     only master thread of master CPU open and write to file
      &    no_profiles(num_file,num_var)
         endif
        enddo
+      enddo
+      do num_var=1,NVARMAX
+        if ( no_profiles_mean(num_var).GT.zeroRL ) then
+         write(ifc,'(3A,2D22.15)')
+     &    'profile_mean ',
+     &    prof_names(1,num_var), ' = ',
+     &    f_profiles_mean(num_var),
+     &    no_profiles_mean(num_var)
+        endif
       enddo
       endif
 #endif

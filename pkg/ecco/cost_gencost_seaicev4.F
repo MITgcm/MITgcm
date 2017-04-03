@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.19 2015/11/08 03:12:56 atn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.20 2017/04/03 23:16:38 ou.wang Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -205,12 +205,21 @@ c====================================================
      &     jrec, localstartdate, localperiod, fname1,
      &     fname0w, localrec, obsrec, exst, mythid)
         call ecco_zero(localweight,nnzsiv4,zeroRL,myThid)
+#ifdef SEAICECOST_JPL
+       fname0w=gencost_errfile(igen_conc)
+       call ecco_readwei(fname0w,localweight,localrec,nnzsiv4,mythid)
+       call ecco_readwei(gencost_errfile(igen_deconc),
+     &      gencost_weight(1,1,1,1,igen_deconc),localrec,nnzsiv4,mythid)
+       call ecco_readwei(gencost_errfile(igen_exconc),
+     &      gencost_weight(1,1,1,1,igen_exconc),localrec,nnzsiv4,mythid)
+#else
         if ( (localrec. GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
           call ecco_readwei(fname0w,localweight,localrec,nnzsiv4,mythid)
         else
           WRITE(standardMessageUnit,'(A)')
      &     'siv4cost WARNING: ALL WEIGHTS ZEROS! NO CONTRIBUTION'
         endif
+#endif
 
 c====================================================
 c--------- PART 1.2 read barfiles ------------------
@@ -296,6 +305,10 @@ c Add ice: model_A==0 but obs_A > 0, calc enthalpy E:
      I    difmask,'de',
      O    localdif,difmask1,localtmp,
      I    myThid )
+#ifdef SEAICECOST_JPL
+        call ecco_cp(gencost_weight(1,1,1,1,igen_deconc),nnzsiv4,
+     O       localtmp,nnzsiv4,myThid)
+#endif
         call ecco_addcost(
      I      localdif,localtmp,difmask1,nnzsiv4,dosumsq,
      O      objf_gencost(1,1,igen_deconc),num_gencost(1,1,igen_deconc),
@@ -314,6 +327,10 @@ c Removing ice: model_A > 0 but obs_A==0, calc enthalpy E:
      I    difmask,'ex',
      O    localdif,difmask1,localtmp,
      I    myThid )
+#ifdef SEAICECOST_JPL
+        call ecco_cp(gencost_weight(1,1,1,1,igen_exconc),nnzsiv4,
+     O       localtmp,nnzsiv4,myThid)
+#endif
         call ecco_addcost(
      I      localdif,localtmp,difmask1,nnzsiv4,dosumsq,
      O      objf_gencost(1,1,igen_exconc),num_gencost(1,1,igen_exconc),
@@ -407,7 +424,11 @@ CEOP
 
       SEAICE_freeze  = -1.96  _d 0
       epsilonTemp = 0.0001 _d 0
+#ifdef SEAICECOST_JPL
+      epsilonHEFF = 0.3 _d 0
+#else
       epsilonHEFF = 0.01 _d 0
+#endif
       localnorm = 1. _d -07
       localnormsq=localnorm*localnorm
 
@@ -448,8 +469,10 @@ c cost=(Model-data)^2
      &               (localobs(i,j,k,bi,bj) .GT. 0.) ) then
 
                localfldmsk(i,j,k,bi,bj) = localmask(i,j,k,bi,bj)
-               localfldweight(i,j,k,bi,bj) = localnormsq
 
+#ifndef SEAICECOST_JPL
+               localfldweight(i,j,k,bi,bj) = localnormsq
+#endif
                localfld(i,j,k,bi,bj) =
      &          (deconcbar(i,j,k,bi,bj)-SEAICE_freeze)*const1
      &               - (-1. _d 0 *epsilonHEFF*const2)
@@ -482,11 +505,17 @@ c cost(Model-data)^2
      &        (exconcbar(i,j,k,bi,bj) .GT. SEAICE_cutoff_heff)) then
 
                localfldmsk(i,j,k,bi,bj) = localmask(i,j,k,bi,bj)
+#ifndef SEAICECOST_JPL
                localfldweight(i,j,k,bi,bj) = localnormsq
-     
+#endif
                localfld(i,j,k,bi,bj) = 
      &        ( (deconcbar(i,j,k,bi,bj)-SEAICE_freeze)*const1
-     &         - exconcbar(i,j,k,bi,bj)*const2 ) - (epsilonTemp*const1)
+#ifdef SEAICECOST_JPL
+     &         - max(exconcbar(i,j,k,bi,bj),epsilonHEFF)*
+#else 
+     &         - exconcbar(i,j,k,bi,bj)*
+#endif
+     &           const2 ) - (epsilonTemp*const1)
               endif
              enddo
             enddo
