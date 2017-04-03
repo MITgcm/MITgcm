@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.115 2016/04/22 08:52:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.116 2017/04/03 16:10:33 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -106,6 +106,7 @@ CADJ STORE heffm = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE area  = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef SEAICE_ALLOW_DYNAMICS
 #  ifdef SEAICE_CGRID
+CADJ STORE hsnow = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE seaicemasku = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE seaicemaskv = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE fu    = comlev1, key=ikey_dynamics, kind=isbyte
