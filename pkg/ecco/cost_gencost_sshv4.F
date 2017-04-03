@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.35 2016/09/20 15:27:54 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.36 2017/04/03 17:20:58 ou.wang Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -991,7 +991,7 @@ c ------------------------------------------------------
      &        tpob(i,j,bi,bj)
            anom_psMslaobs_NUM(i,j,bi,bj)=
      &        anom_psMslaobs_NUM(i,j,bi,bj)+1. _d 0
-           if ( (2*jrec.EQ.ndaysave).OR.(2*jrec+1.EQ.ndaysave) ) 
+           if ( (2*jrec.EQ.ndaysave).OR.(2*jrec-1.EQ.ndaysave) ) 
      &        anom_psMslaobs_MSK(i,j,bi,bj)  = 1. _d 0
       endif
       if ( ersma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj)
@@ -1003,7 +1003,7 @@ c ------------------------------------------------------
      &        ersob(i,j,bi,bj)
            anom_psMslaobs_NUM(i,j,bi,bj)=
      &        anom_psMslaobs_NUM(i,j,bi,bj)+1. _d 0
-           if ( (2*jrec.EQ.ndaysave).OR.(2*jrec+1.EQ.ndaysave) )
+           if ( (2*jrec.EQ.ndaysave).OR.(2*jrec-1.EQ.ndaysave) )
      &        anom_psMslaobs_MSK(i,j,bi,bj)  = 1. _d 0
       endif
       if ( gfoma(i,j,bi,bj)*mean_psMslaobs_MSK(i,j,bi,bj)
@@ -1015,7 +1015,7 @@ c ------------------------------------------------------
      &        gfoob(i,j,bi,bj)
            anom_psMslaobs_NUM(i,j,bi,bj)=
      &        anom_psMslaobs_NUM(i,j,bi,bj)+1. _d 0
-           if ( (2*jrec.EQ.ndaysave).OR.(2*jrec+1.EQ.ndaysave) )
+           if ( (2*jrec.EQ.ndaysave).OR.(2*jrec-1.EQ.ndaysave) )
      &        anom_psMslaobs_MSK(i,j,bi,bj)  = 1. _d 0
       endif
           enddo
