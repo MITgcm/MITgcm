@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2319 2017/03/31 19:43:05 mmazloff Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2320 2017/04/03 16:11:14 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: 
+  - add flag to add snow mass to seaiceMassC/U/V, the default is
+    SEAICEaddSnowMass=.FALSE., not to change previous results
 o pkg/bling
   - Bug fix in bling_production regarding unit conversion for diagnostics
     being put in the wrong place
