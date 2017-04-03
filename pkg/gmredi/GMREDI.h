@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.33 2015/10/12 20:41:26 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.34 2017/04/03 17:09:01 ou.wang Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -66,15 +66,21 @@ C     GM_iso2dFile :: input file for 2.D horiz scaling of Isopycnal diffusivity
 C     GM_iso1dFile :: input file for 1.D vert. scaling of Isopycnal diffusivity
 C     GM_bol2dFile :: input file for 2.D horiz scaling of Thickness diffusivity
 C     GM_bol1dFile :: input file for 1.D vert. scaling of Thickness diffusivity
+C     GM_isopycK3dFile :: input file for 3.D GM_isopycK
+C     GM_background_K3dFile :: input file for 3.D GM_background_K
+
       CHARACTER*(40) GM_taper_scheme
       CHARACTER*(MAX_LEN_FNAM) GM_iso2dFile
       CHARACTER*(MAX_LEN_FNAM) GM_iso1dFile
       CHARACTER*(MAX_LEN_FNAM) GM_bol2dFile
       CHARACTER*(MAX_LEN_FNAM) GM_bol1dFile
+      CHARACTER*(MAX_LEN_FNAM) GM_isopycK3dFile
+      CHARACTER*(MAX_LEN_FNAM) GM_background_K3dFile
       COMMON /GM_PARAMS_C/
      &                   GM_taper_scheme,
      &                   GM_iso2dFile, GM_iso1dFile,
-     &                   GM_bol2dFile, GM_bol1dFile
+     &                   GM_bol2dFile, GM_bol1dFile,
+     &                   GM_isopycK3dFile, GM_background_K3dFile
 
 C--   COMMON /GM_PARAMS_R/ GM/Redi real-type parameters
 C     GM_isopycK       :: Isopycnal diffusivity [m^2/s] (Redi-tensor)
