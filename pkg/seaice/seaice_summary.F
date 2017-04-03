@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.88 2016/11/28 15:48:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.89 2017/04/03 16:09:41 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -202,6 +202,8 @@ C--  Seaice-Dynamics parameters
      & ' /* scale atm. and ocean-surface stress with AREA */')
       CALL WRITE_0D_L ( SEAICE_maskRHS, INDEX_NONE,
      & 'SEAICE_maskRHS    =', ' /* mask RHS of solver */')
+      CALL WRITE_0D_L ( SEAICEaddSnowMass, INDEX_NONE,
+     & 'SEAICEaddSnowMass =', ' /* add snow mass to seaiceMassC/U/V */')
       IF (.NOT.SEAICEuseEVP) THEN
        CALL WRITE_0D_I ( LSR_mixIniGuess, INDEX_NONE,
      & 'LSR_mixIniGuess =',

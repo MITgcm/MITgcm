@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.174 2016/11/28 15:48:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.175 2017/04/03 16:09:41 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -97,7 +97,7 @@ C--   SEAICE parameters
      & SEAICErestoreUnderIce, SEAICE_growMeltByConv,
      & SEAICE_salinityTracer, SEAICE_ageTracer,
      & SEAICEadvHeff, SEAICEadvArea, SEAICEadvSnow,
-     & SEAICEadvSalt, SEAICEadvAge,
+     & SEAICEadvSalt, SEAICEadvAge, SEAICEaddSnowMass,
      & SEAICE_clipVelocities, SEAICE_maskRHS, SEAICE_no_slip,
      & SEAICEetaZmethod, LAD, IMAX_TICE, postSolvTempIter,
      & SEAICEuseFluxForm, SEAICEadvScheme, SEAICEadvSchArea,
@@ -230,6 +230,7 @@ C--   set default sea ice parameters
       SEAICE_ageTracer      = .FALSE.
       useHB87stressCoupling = .FALSE.
       SEAICEscaleSurfStress = .FALSE.
+      SEAICEaddSnowMass     = .FALSE.
       usePW79thermodynamics = .TRUE.
 C     start of ridging parameters
       useHibler79IceStrength= .TRUE.

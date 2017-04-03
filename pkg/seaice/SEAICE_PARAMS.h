@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.132 2016/11/28 15:48:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.133 2017/04/03 16:09:41 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -45,6 +45,8 @@ C                          (default = .true. )
 C     SEAICE_no_slip    :: apply no slip boundary conditions to seaice velocity
 C     SEAICE_maskRHS    :: mask the RHS of the solver where there is no ice
 C     SEAICE_clipVelocities :: clip velocities to +/- 40cm/s
+C     SEAICEaddSnowMass :: in computing seaiceMass, add snow contribution
+C                          default is .FALSE. for historical reasons
 C     useHB87stressCoupling :: use an intergral over ice and ocean surface
 C                          layer to define surface stresses on ocean
 C                          following Hibler and Bryan (1987, JPO)
@@ -116,7 +118,8 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseLinRemapITD,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
      &     SEAICE_no_slip, SEAICE_maskRHS, SEAICEscaleSurfStress,
-     &     SEAICE_clipVelocities, useHB87stressCoupling,
+     &     SEAICE_clipVelocities, useHB87stressCoupling, 
+     &     SEAICEaddSnowMass,
      &     SEAICEuseFluxForm, SEAICEadvHeff, SEAICEadvArea,
      &     SEAICEadvSnow, SEAICEadvSalt,
      &     usePW79thermodynamics,
@@ -141,6 +144,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
      &     SEAICE_no_slip, SEAICE_maskRHS, SEAICEscaleSurfStress,
      &     SEAICE_clipVelocities, useHB87stressCoupling,
+     &     SEAICEaddSnowMass,
      &     SEAICEuseFluxForm, SEAICEadvHeff, SEAICEadvArea,
      &     SEAICEadvSnow, SEAICEadvSalt,
      &     usePW79thermodynamics,

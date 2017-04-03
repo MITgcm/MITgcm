@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.63 2016/04/22 08:52:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.64 2017/04/03 16:09:41 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -120,6 +120,21 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
      &          HEFF(i,j,bi,bj) + HEFF(i  ,j-1,bi,bj) )
          ENDDO
         ENDDO
+        IF ( SEAICEaddSnowMass ) THEN
+         DO j=1-OLy+1,sNy+OLy
+          DO i=1-OLx+1,sNx+OLx
+           seaiceMassC(I,J,bi,bj)=seaiceMassC(I,J,bi,bj)
+     &          +                 SEAICE_rhoSnow*HSNOW(i,j,bi,bj)
+           seaiceMassU(I,J,bi,bj)=seaiceMassU(I,J,bi,bj)
+     &         +                  SEAICE_rhoSnow*HALF*(
+     &          HSNOW(i,j,bi,bj) + HSNOW(i-1,j  ,bi,bj) )
+
+           seaiceMassV(I,J,bi,bj)=seaiceMassV(I,J,bi,bj)
+     &         +                  SEAICE_rhoSnow*HALF*(
+     &          HSNOW(i,j,bi,bj) + HSNOW(i  ,j-1,bi,bj) )
+          ENDDO
+         ENDDO
+        ENDIF
        ENDDO
       ENDDO
 
