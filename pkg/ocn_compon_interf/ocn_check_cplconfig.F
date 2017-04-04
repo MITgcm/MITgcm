@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_check_cplconfig.F,v 1.1 2015/11/12 00:55:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_check_cplconfig.F,v 1.2 2017/04/04 23:31:27 jmc Exp $
 C $Name:  $
 
 #include "OCN_CPL_OPTIONS.h"
@@ -52,7 +52,7 @@ C     o Plot atmosphere land-mask
       IF ( debugLevel.GE.debLevB ) THEN
         CALL WRITE_FLD_XY_RL( 'Atm_Land', ' ', landMask, 0, myThid )
       ENDIF
-      IF ( debugLevel.GE.debLevC ) THEN
+      IF ( plotLevel.GE.debLevC ) THEN
         CALL PLOT_FIELD_XYRL( landMask,
      &                  'Atmosphere land/sea mask on ocean grid',
      &                  1, myThid )

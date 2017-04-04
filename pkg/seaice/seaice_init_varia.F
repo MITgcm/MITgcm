@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.93 2016/11/30 00:17:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_varia.F,v 1.94 2017/04/04 23:31:27 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -445,7 +445,7 @@ C--   Update overlap regions
 #endif
 
 C--   Now lets look at all these beasts
-      IF ( debugLevel .GE. debLevC ) THEN
+      IF ( plotLevel.GE.debLevC ) THEN
          CALL PLOT_FIELD_XYRL( HEFFM   , 'Current HEFFM   ' ,
      &        nIter0, myThid )
 #ifdef SEAICE_CGRID

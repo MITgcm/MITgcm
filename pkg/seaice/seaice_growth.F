@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.211 2016/11/28 15:52:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_growth.F,v 1.212 2017/04/04 23:31:27 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -1096,7 +1096,7 @@ C     lateral melt rate as suggested by Perovich, 1983 (PhD thesis)
 C           latMeltRate(i,j,it) = 1.6 _d -6 * tmpscal1**1.36
 C     The following for does the same, but is faster
             latMeltRate(i,j,it) = ZERO
-            IF (tmpscal1 .GT. ZERO) 
+            IF (tmpscal1 .GT. ZERO)
      &         latMeltRate(i,j,it) = 1.6 _d -6 * exp(1.36*log(tmpscal1))
 C     lateral melt rate as suggested by Maykut and Perovich, 1987
 C     (JGR 92(C7)), Equ. 24
@@ -1889,7 +1889,7 @@ C       when thickness is zero, area should be zero, too:
             ELSE
 C     tmpscal1 is the minimal ice concentration after lateral melt that will
 C     not lead to an unphysical increase of ice thickness by lateral melt;
-C     estimated as the concentration before thermodynamics scaled by the 
+C     estimated as the concentration before thermodynamics scaled by the
 C     ratio of new ice thickness and ice thickness before thermodynamics
              IF ( HEFFITDpreTH(I,J,IT).LE.ZERO ) THEN
               tmpscal1=0. _d 0
@@ -2436,9 +2436,11 @@ C--
 #endif /* ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION */
 
 #ifdef SEAICE_DEBUG
+       IF ( plotLevel.GE.debLevC ) THEN
         CALL PLOT_FIELD_XYRL( QSW,'Current QSW ', myIter, myThid )
         CALL PLOT_FIELD_XYRL( QNET,'Current QNET ', myIter, myThid )
         CALL PLOT_FIELD_XYRL( EmPmR,'Current EmPmR ', myIter, myThid )
+       ENDIF
 #endif /* SEAICE_DEBUG */
 
 C Sea Ice Load on the sea surface.

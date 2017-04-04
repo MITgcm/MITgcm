@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_check_cplconfig.F,v 1.1 2015/11/12 01:06:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_check_cplconfig.F,v 1.2 2017/04/04 23:31:27 jmc Exp $
 C $Name:  $
 
 c#include "PACKAGES_CONFIG.h"
@@ -55,7 +55,7 @@ C     o Plot ocean depths
       IF ( debugLevel.GE.debLevB ) THEN
         CALL WRITE_FLD_XY_RL( 'Ocn_MxlD', ' ', ocMxlD, 0, myThid )
       ENDIF
-      IF ( debugLevel.GE.debLevC ) THEN
+      IF ( plotLevel.GE.debLevC ) THEN
         CALL PLOT_FIELD_XYRL( ocMxlD,
      &                  'Ocean mixed-layer depth on atmos grid',
      &                  1, myThid )
