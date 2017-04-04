@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.156 2017/03/25 01:24:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.157 2017/04/04 23:21:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -629,6 +629,8 @@ C---
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_I( debugLevel, INDEX_NONE,
      &   'debugLevel =', '  /* select debug printing level */')
+      CALL WRITE_0D_I( plotLevel, INDEX_NONE,
+     &   ' plotLevel =', '  /* select PLOT_FIELD printing level */')
 
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )

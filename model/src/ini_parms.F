@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.273 2017/03/24 21:56:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.274 2017/04/04 23:21:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -221,11 +221,11 @@ C--   Continuous equation parameters
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
      & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
      & rhoConst, thetaConst, rhoConstFresh, buoyancyRelation,
-     & readBinaryPrec, writeBinaryPrec, writeStatePrec,
-     & globalFiles, useSingleCpuIO, useSingleCpuInput,
+     & readBinaryPrec, writeBinaryPrec, writeStatePrec, globalFiles,
+     & useSingleCpuIO, useSingleCpuInput, usePickupBeforeC54,
+     & usePickupBeforeC35, debugMode, debugLevel, plotLevel,
      & allowFreezing, allowInteriorFreezing, useOldFreezing, ivdc_kappa,
      & hMixCriteria, dRhoSmall, hMixSmooth,
-     & usePickupBeforeC35, usePickupBeforeC54, debugMode, debugLevel,
      & tempAdvScheme, tempVertAdvScheme,
      & saltAdvScheme, saltVertAdvScheme, tracerAdvScheme,
      & multiDimAdvection, useEnergyConservingCoriolis,
@@ -385,6 +385,7 @@ C--   Set default "physical" parameters
       implicitNHPress   = UNSET_RL
       tempVertAdvScheme = 0
       saltVertAdvScheme = 0
+      plotLevel         = UNSET_I
 C--   z,p,r coord input switching.
       WRITE(msgBuf,'(A)') ' INI_PARMS ; starts to read PARM01'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
@@ -663,6 +664,7 @@ C--   for backward compatibility :
 C-    set default printResidualFreq according to debugLevel
       printResidualFreq = 0
       IF ( debugLevel.GE.debLevE ) printResidualFreq = 1
+      IF ( plotLevel.EQ.UNSET_I ) plotLevel = debugLevel
 
 C-    set useSingleCpuInput=.TRUE. if useSingleCpuIO==.TRUE.
       IF ( useSingleCpuIO ) useSingleCpuInput=.TRUE.

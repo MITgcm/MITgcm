@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.54 2017/03/31 17:29:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.55 2017/04/04 23:21:46 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -173,7 +173,7 @@ C-    end bi,bj loops.
        ENDDO
       ENDDO
 
-      IF ( printDomain ) THEN
+      IF ( plotLevel.GE.debLevB ) THEN
 c       CALL PLOT_FIELD_XYRS( tmpfld,
 c    &           'Model Depths K Index' , -1, myThid )
         CALL PLOT_FIELD_XYRS(R_low,
@@ -325,7 +325,7 @@ c     CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
 c     CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW,0,myThid)
 c     CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS,0,myThid)
 
-      IF ( printDomain ) THEN
+      IF ( plotLevel.GE.debLevB ) THEN
         CALL PLOT_FIELD_XYZRS( hFacC, 'hFacC' , Nr, 0, myThid )
         CALL PLOT_FIELD_XYZRS( hFacW, 'hFacW' , Nr, 0, myThid )
         CALL PLOT_FIELD_XYZRS( hFacS, 'hFacS' , Nr, 0, myThid )

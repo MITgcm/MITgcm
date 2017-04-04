@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.285 2017/03/24 21:55:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.286 2017/04/04 23:19:33 jmc Exp $
 C $Name:  $
 C
 
@@ -210,6 +210,7 @@ C     monitorSelect       :: select group of variables to monitor
 C                            =1 : dynvars ; =2 : + vort ; =3 : + surface
 C-    debugLevel          :: controls printing of algorithm intermediate results
 C                            and statistics ; higher -> more writing
+C-    plotLevel           :: controls printing of field maps ; higher -> more flds
 
       COMMON /PARM_I/
      &        cg2dMaxIters, cg2dChkResFreq,
@@ -228,7 +229,7 @@ C                            and statistics ; higher -> more writing
      &        selectKEscheme, selectVortScheme,
      &        selectBotDragQuadr,
      &        readBinaryPrec, writeBinaryPrec, writeStatePrec,
-     &        rwSuffixType, monitorSelect, debugLevel
+     &        rwSuffixType, monitorSelect, debugLevel, plotLevel
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
       INTEGER cg2dPreCondFreq
@@ -260,6 +261,7 @@ C                            and statistics ; higher -> more writing
       INTEGER rwSuffixType
       INTEGER monitorSelect
       INTEGER debugLevel
+      INTEGER plotLevel
 
 C--   COMMON /PARM_L/ Logical valued parameters used by the model.
 C- Coordinate + Grid params:
@@ -396,7 +398,6 @@ C     snapshot_mdsio     :: use mdsio for "snapshot" (dumpfreq/diagfreq) output
 C     monitor_stdio      :: use stdio for monitor output
 C     dumpInitAndLast :: dumps model state to files at Initial (nIter0)
 C                        & Last iteration, in addition multiple of dumpFreq iter.
-C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
 
       COMMON /PARM_L/
      & fluidIsAir, fluidIsWater,
@@ -439,8 +440,7 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
      & pickup_read_mdsio, pickup_write_mdsio, pickup_write_immed,
      & writePickupAtEnd,
      & timeave_mdsio, snapshot_mdsio, monitor_stdio,
-     & outputTypesInclusive, dumpInitAndLast,
-     & printDomain
+     & outputTypesInclusive, dumpInitAndLast
 
       LOGICAL fluidIsAir
       LOGICAL fluidIsWater
@@ -539,7 +539,6 @@ C     printDomain     :: controls printing of domain fields (bathy, hFac ...).
       LOGICAL timeave_mdsio, snapshot_mdsio, monitor_stdio
       LOGICAL outputTypesInclusive
       LOGICAL dumpInitAndLast
-      LOGICAL printDomain
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
