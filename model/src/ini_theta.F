@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.30 2014/08/26 06:15:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.31 2017/04/04 23:22:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -149,7 +149,7 @@ c     ELSEIF ( allowFreezing ) THEN
 c      CALL FREEZE_SURFACE( startTime, nIter0, myThid )
       ENDIF
 
-      IF ( debugLevel.GE.debLevC ) THEN
+      IF ( plotLevel.GE.debLevC ) THEN
         CALL PLOT_FIELD_XYZRL( theta, 'Initial Temperature',
      &                         Nr, 1, myThid )
       ENDIF

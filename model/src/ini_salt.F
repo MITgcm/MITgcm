@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.24 2011/06/08 01:27:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.25 2017/04/04 23:22:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -56,8 +56,8 @@ C--   Initialise salinity field to the vertical reference profile
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            salt(i,j,k,bi,bj) = sRef(k)
           ENDDO
          ENDDO
@@ -89,8 +89,8 @@ C--   Apply mask and test consistency
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k=1,Nr
          IF ( maskIniSalt ) THEN
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
             IF (maskC(i,j,k,bi,bj).EQ.0.) salt(i,j,k,bi,bj) = 0.
            ENDDO
           ENDDO
@@ -128,7 +128,7 @@ C--   Apply mask and test consistency
        ENDIF
       ENDIF
 
-      IF ( debugLevel.GE.debLevC ) THEN
+      IF ( plotLevel.GE.debLevC ) THEN
         CALL PLOT_FIELD_XYZRL( salt, 'Initial Salinity',
      &                         Nr, 1, myThid )
       ENDIF

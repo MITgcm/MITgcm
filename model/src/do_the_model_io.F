@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.67 2017/02/15 20:57:19 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.68 2017/04/04 23:22:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -103,7 +103,7 @@ CEOP
 
 C     Generaly only thread 1 does IO here. It can not start until
 C     all threads fields are ready.
-      IF (debugMode) THEN
+      IF ( plotLevel.GE.debLevD ) THEN
         IF ( DIFFERENT_MULTIPLE(dumpFreq,myTime,deltaTClock)
      &     ) THEN
 

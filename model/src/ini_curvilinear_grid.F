@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.53 2016/11/24 10:48:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.54 2017/04/04 23:22:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -423,7 +423,7 @@ c     CALL WRITE_FULLARRAY_RL('xG' ,xG ,1,0,0,1,0,myThid)
 c     CALL WRITE_FULLARRAY_RL('yG' ,yG ,1,0,0,1,0,myThid)
 
 C--   Now let us look at all these beasts
-      IF ( debugLevel .GE. debLevC ) THEN
+      IF ( plotLevel.GE.debLevC ) THEN
         CALL PLOT_FIELD_XYRS( xC      , 'Current xC      ', 0, myThid )
         CALL PLOT_FIELD_XYRS( yC      , 'Current yC      ', 0, myThid )
         CALL PLOT_FIELD_XYRS( dxF     , 'Current dxF     ', 0, myThid )

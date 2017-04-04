@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.50 2011/07/19 22:33:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.51 2017/04/04 23:22:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -74,8 +74,8 @@ C   0) Initialize R_low and Ro_surf (define an empty domain)
 C------
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           R_low(i,j,bi,bj)   = 0. _d 0
           Ro_surf(i,j,bi,bj) = 0. _d 0
           topoZ(i,j,bi,bj)   = 0. _d 0
@@ -131,14 +131,13 @@ c    &                     'RS', 1, R_low, 1, myThid )
         ENDIF
 #endif /*  ALLOW_MNC  */
 
-
       ENDIF
 C- end setup R_low in the interior
 
 C- fill in the overlap (+ BARRIER):
       _EXCH_XY_RS(R_low, myThid )
 
-      IF ( debugLevel.GE.debLevC ) THEN
+      IF ( plotLevel.GE.debLevC ) THEN
 c      PRINT *, ' Calling plot field', myThid
        CALL PLOT_FIELD_XYRS( R_low, 'Bottom depths (ini_depths)',
      &                       -1, myThid )
@@ -228,8 +227,8 @@ C------
       IF (usingPCoords) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            iG = myXGlobalLo-1+(bi-1)*sNx+i
            jG = myYGlobalLo-1+(bj-1)*sNy+j
 C          Test for eastern edge
@@ -250,8 +249,8 @@ c    &       Ro_surf(i,j,bi,bj) = rF(Nr+1)
       ELSE
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            iG = myXGlobalLo-1+(bi-1)*sNx+i
            jG = myYGlobalLo-1+(bj-1)*sNy+j
 C          Test for eastern edge
@@ -271,7 +270,7 @@ c    &       R_low(i,j,bi,bj) = rF(1)
        ENDDO
       ENDIF
 
-      IF ( debugLevel.GE.debLevC ) THEN
+      IF ( plotLevel.GE.debLevC ) THEN
        _BARRIER
        CALL PLOT_FIELD_XYRS( Ro_surf,
      &           'Surface reference r-position (ini_depths)',
