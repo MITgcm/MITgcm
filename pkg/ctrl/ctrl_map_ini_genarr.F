@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.26 2017/04/05 03:31:59 ou.wang Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.27 2017/04/05 23:02:53 ou.wang Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -82,7 +82,6 @@ C--   generic 2D control variables
 
       if (igen_etan.GT.0) then
             call ctrl_map_genarr2d(etaN,igen_etan,myThid)
-            call ctrl_map_genarr2d(etaH,igen_etan,myThid)
       endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
       if (igen_bdrag.GT.0)
