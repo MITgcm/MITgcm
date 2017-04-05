@@ -1,10 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2320 2017/04/03 16:11:14 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2321 2017/04/05 03:49:11 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: 
+o model/src:
+  - add specific run-time param to select level of printed plot-field-maps,
+    set by default to debugLevel. Remove internal param "printDomain".
+o pkg/seaice:
   - add flag to add snow mass to seaiceMassC/U/V, the default is
     SEAICEaddSnowMass=.FALSE., not to change previous results
 o pkg/bling
