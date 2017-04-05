@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.29 2017/04/03 23:16:38 ou.wang Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.30 2017/04/05 03:30:06 ou.wang Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -499,13 +499,13 @@ C end of #ifndef ALLOW_PROFILES_SAMPLESPLIT_COST
      &             *(prof_traj1D(K)-prof_data1D(K)-prof_traj1D_mean(K)
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
      &               + prof_data1D_mean(K)
-     &              )
 #endif
+     &              )
      &             *(prof_traj1D(K)-prof_data1D(K)-prof_traj1D_mean(K)
 #ifdef ALLOW_PROFILES_SAMPLESPLIT_COST
      &               + prof_data1D_mean(K)
-     &              )
 #endif
+     &              )
                  num_profiles(num_file,num_var,bi,bj)=
      &               num_profiles(num_file,num_var,bi,bj)
      &               +prof_mask1D_cur(K,bi,bj)
