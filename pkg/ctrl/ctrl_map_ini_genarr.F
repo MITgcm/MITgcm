@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.25 2017/04/03 23:16:38 ou.wang Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.26 2017/04/05 03:31:59 ou.wang Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -363,7 +363,9 @@ C     == local variables ==
       integer ilgen
       logical doglobalread
       logical ladinit
+#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
       _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
 CEOP
 
 c--   Now, read the control vector.
@@ -428,6 +430,7 @@ c--   Now, read the control vector.
       ENDIF
 #endif
 
+#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
 c--   set local mask 
       call ecco_zero(localmask,Nr,zeroRL,myThid)
       if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_uvel') then
@@ -437,6 +440,7 @@ c--   set local mask
       else 
         call ecco_cprsrl(maskC,nr,localmask,nr,myThid)
       endif
+#endif
 
       DO bj=myByLo(myThid), myByHi(myThid)
         DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -445,7 +449,11 @@ c--   set local mask
               DO i = 1,sNx
 c scale param adjustment
                 IF (doscaling) then
+#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
                 if ( (localmask(i,j,k,bi,bj).NE.0.).AND.
+#else
+                if ( (maskC(i,j,k,bi,bj).NE.0.).AND.
+#endif
      &               (wgenarr3d(i,j,k,bi,bj,iarr).GT.0.) ) then
                   xx_gen(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
      &                     /sqrt( wgenarr3d(i,j,k,bi,bj,iarr) )
@@ -462,8 +470,12 @@ c add to model parameter
       enddo
 
 c avoid param out of [boundsVec(1) boundsVec(4)]
+#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
       CALL CTRL_BOUND_3D(fld,localmask,
      &     xx_genarr3d_bounds(1,iarr),myThid)
+#else
+      CALL CTRL_BOUND_3D(fld,maskC,xx_genarr3d_bounds(1,iarr),myThid)
+#endif
 
 C The tile exchange for xx_uvel and xx_vvel will be 
 C  done in CTRL_MAP_INI_GENARR.F when both 
