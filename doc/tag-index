@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2322 2017/04/06 16:29:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2323 2017/04/07 16:10:24 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o model/src:
+  - move call to CTRL_INIT & CTRL_ADMTLM from the middle to the bottom of
+    packages_init_fixed.F to allow other pkgs to set mask and weight fields.
 
 checkpoint66f (2017/04/06)
 o model/src:
