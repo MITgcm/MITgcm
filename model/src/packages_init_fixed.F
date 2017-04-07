@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.87 2015/12/25 15:19:30 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.88 2017/04/07 16:09:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -68,9 +68,6 @@ C       |-- ECCO_COST_INIT_FIXED
 C       |
 C       |-- PROFILES_INIT_FIXED
 C       |
-C       |-- CTRL_INIT
-C       |-- CTRL_ADMTLM
-C       |
 C       |-- FLT_INIT_FIXED
 C       |
 C       |-- LONGSTEP_INIT_FIXED
@@ -120,6 +117,9 @@ C       |
 C       |-- EMBED_FILES_INIT
 C       |
 C       |-- MYPACKAGE_INIT_FIXED
+C       |
+C       |-- CTRL_INIT
+C       |-- CTRL_ADMTLM
 C       |
 C       |-- DIAGNOSTICS_INIT_FIXED
 
@@ -361,9 +361,8 @@ C--   in order to provide the weight files
 
 #ifdef ALLOW_ECCO
       IF (useECCO) THEN
-C--   Initialise ecco-specific cost function.
-C--   This needs to preceed the call ctrl_init
-C--   in order to provide the weight files
+C--   Initialise ecco-specific cost function. This needs to preceed 
+C     the call ctrl_init in order to provide the weight files
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('ECCO_COST_INIT_FIXED',myThid)
 # endif
@@ -380,27 +379,7 @@ C--   in order to provide the weight files
       ENDIF
 #endif
 
-#ifdef ALLOW_CTRL
-      IF (useCTRL) THEN
-C--   Initialise the control variables
-# ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('CTRL_INIT',myThid)
-# endif
-        CALL CTRL_INIT( myThid )
-      ENDIF
-#endif
-
-#ifdef ALLOW_ADMTLM
-#ifdef ALLOW_CTRL
-      IF (useCTRL) THEN
-C--   Initialise ADMTLM
-# ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('CTRL_ADMTLM',myThid)
-# endif
-        CALL CTRL_ADMTLM( myThid )
-      ENDIF
-#endif
-#endif
+C--   Old place where CTRL_INIT & CTRL_ADMTLM used to be called
 
 #ifdef ALLOW_FLT
 C--   Initialise fixed array for Float pkg
@@ -638,6 +617,27 @@ C--   needs to be called after the OASIS_INIT
         CALL MYPACKAGE_INIT_FIXED(myThid)
       ENDIF
 #endif
+
+#ifdef ALLOW_CTRL
+      IF (useCTRL) THEN
+C--   Initialise the control variables. Moved to the end of this S/R 
+C     to allow other pkgs to set mask and weight fields.
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('CTRL_INIT',myThid)
+# endif
+        CALL CTRL_INIT( myThid )
+      ENDIF
+
+# ifdef ALLOW_ADMTLM
+      IF (useCTRL) THEN
+C--   Initialise ADMTLM
+#  ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('CTRL_ADMTLM',myThid)
+#  endif
+        CALL CTRL_ADMTLM( myThid )
+      ENDIF
+# endif /* ALLOW_ADMTLM */
+#endif /* ALLOW_CTRL */
 
 #ifdef ALLOW_DIAGNOSTICS
 C-    needs to call DIAGNOSTICS_INIT_FIXED after all package-diag-init calls
