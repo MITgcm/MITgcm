@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.55 2017/04/04 23:21:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.56 2017/04/10 23:52:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -41,8 +41,8 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     bi,bj   :: tile indices
 C     i,j,k   :: Loop counters
-C     tmpfld  :: Temporary array used to compute & write Total Depth
-      _RS tmpfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     tmpFld  :: Temporary array used to compute & write Total Depth
+      _RS tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER bi, bj
       INTEGER i, j, k
       _RL hFacCtmp
@@ -50,6 +50,15 @@ C     tmpfld  :: Temporary array used to compute & write Total Depth
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_SHELFICE
+      IF ( useShelfIce ) THEN
+C--   Modify  ocean upper boundary position according to ice-shelf topography
+       CALL SHELFICE_INIT_DEPTHS(
+     U               R_low, Ro_surf,
+     I               myThid )
+      ENDIF
+#endif /* ALLOW_SHELFICE */
 
       IF ( selectSigmaCoord.EQ.0 ) THEN
 C---  r-coordinate with partial-cell or full cell mask
@@ -65,7 +74,7 @@ C     taking into account the lower_R Boundary (Bathymetrie / Top of Atmos)
 C      o Non-dimensional distance between grid bound. and domain lower_R bound.
            hFacCtmp = (rF(k)-R_low(i,j,bi,bj))*recip_drF(k)
 C      o Select between, closed, open or partial (0,1,0-1)
-           hFacCtmp=MIN( MAX( hFacCtmp, zeroRL ) , oneRL )
+           hFacCtmp = MIN( MAX( hFacCtmp, zeroRL ) , oneRL )
 C      o Impose minimum fraction and/or size (dimensional)
            IF ( hFacCtmp.LT.hFacMnSz ) THEN
             IF ( hFacCtmp.LT.hFacMnSz*0.5 ) THEN
@@ -128,16 +137,16 @@ C      o Impose minimum fraction and/or size (dimensional)
        ENDDO
       ENDDO
 
-#ifdef ALLOW_SHELFICE
-      IF ( useShelfIce ) THEN
+c#ifdef ALLOW_SHELFICE
+c     IF ( useShelfIce ) THEN
 C--   Modify lopping factor hFacC : Remove part outside of the domain
 C     taking into account the Reference (=at rest) Surface Position Ro_shelfIce
-       CALL SHELFICE_UPDATE_MASKS(
-     I     rF, recip_drF,
-     U     hFacC,
-     I     myThid )
-      ENDIF
-#endif /* ALLOW_SHELFICE */
+c      CALL SHELFICE_UPDATE_MASKS(
+c    I     rF, recip_drF,
+c    U     hFacC,
+c    I     myThid )
+c     ENDIF
+c#endif /* ALLOW_SHELFICE */
 
 C-    Re-calculate Reference surface position, taking into account hFacC
 C     initialize Total column fluid thickness and surface k index
@@ -146,17 +155,15 @@ C       Note: if no fluid (continent) ==> kSurf = Nr+1
        DO bi=myBxLo(myThid), myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          tmpfld(i,j,bi,bj) = 0.
+          tmpFld(i,j,bi,bj) = 0.
           kSurfC(i,j,bi,bj) = Nr+1
-c         maskH(i,j,bi,bj)  = 0.
           Ro_surf(i,j,bi,bj) = R_low(i,j,bi,bj)
           DO k=Nr,1,-1
            Ro_surf(i,j,bi,bj) = Ro_surf(i,j,bi,bj)
      &                        + drF(k)*hFacC(i,j,k,bi,bj)
            IF ( hFacC(i,j,k,bi,bj).NE.zeroRS ) THEN
             kSurfC(i,j,bi,bj) = k
-c           maskH(i,j,bi,bj)  = 1.
-            tmpfld(i,j,bi,bj) = tmpfld(i,j,bi,bj) + 1.
+            tmpFld(i,j,bi,bj) = tmpFld(i,j,bi,bj) + 1.
            ENDIF
           ENDDO
           kLowC(i,j,bi,bj) = 0
@@ -174,7 +181,7 @@ C-    end bi,bj loops.
       ENDDO
 
       IF ( plotLevel.GE.debLevB ) THEN
-c       CALL PLOT_FIELD_XYRS( tmpfld,
+c       CALL PLOT_FIELD_XYRS( tmpFld,
 c    &           'Model Depths K Index' , -1, myThid )
         CALL PLOT_FIELD_XYRS(R_low,
      &           'Model R_low (ini_masks_etc)', -1, myThid )
@@ -188,13 +195,12 @@ C--   Calculate quantities derived from XY depth map
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
 C         Total fluid column thickness (r_unit) :
-c         Rcolumn(i,j,bi,bj)= Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
-          tmpfld(i,j,bi,bj) = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
+          tmpFld(i,j,bi,bj) = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
 C         Inverse of fluid column thickness (1/r_unit)
-          IF ( tmpfld(i,j,bi,bj) .LE. zeroRS ) THEN
+          IF ( tmpFld(i,j,bi,bj) .LE. zeroRS ) THEN
            recip_Rcol(i,j,bi,bj) = 0.
           ELSE
-           recip_Rcol(i,j,bi,bj) = 1. _d 0 / tmpfld(i,j,bi,bj)
+           recip_Rcol(i,j,bi,bj) = 1. _d 0 / tmpFld(i,j,bi,bj)
           ENDIF
          ENDDO
         ENDDO
@@ -248,7 +254,7 @@ C--   hFacW and hFacS (at U and V points)
          DO i=1-OLx,sNx+OLx
            hFacS(i,1-OLy,k,bi,bj) = 0.
          ENDDO
-         DO j=2-OLy,sNy+oly
+         DO j=2-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            hFacS(i,j,k,bi,bj) =
      &       MIN( hFacC(i,j,k,bi,bj), hFacC(i,j-1,k,bi,bj) )
@@ -282,7 +288,7 @@ C-    end bi,bj loops.
       ENDDO
       CALL EXCH_UV_XYZ_RS( hFacW,  hFacS, .FALSE., myThid )
       CALL EXCH_UV_XY_RS( rSurfW, rSurfS, .FALSE., myThid )
-      CALL EXCH_UV_XY_RS( rLowW,  rLowS,  .FALSE., myThid )
+      CALL EXCH_UV_XY_RS(  rLowW,  rLowS, .FALSE., myThid )
 
 C--   Addtional closing of Western and Southern grid-cell edges: for example,
 C     a) might add some "thin walls" in specific location
@@ -320,7 +326,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Write to disk: Total Column Thickness & hFac(C,W,S):
 C     This I/O is now done in write_grid.F
-c     CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpfld,0,myThid)
+c     CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpFld,0,myThid)
 c     CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
 c     CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW,0,myThid)
 c     CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS,0,myThid)
