@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2323 2017/04/07 16:10:24 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2324 2017/04/10 23:57:17 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice:
+  - ALLOW_SHIFWFLX_CONTROL: move setting of maskSHI from shelfice_update_masks.F
+    to shelfice_init_fixed.F
+  - change S/R SHELFICE_UPDATE_MASKS to SHELFICE_INIT_DEPTHS (still called from
+    ini_masks_etc.F for now) to update ocean upper boundary position according
+    to ice-shelf topography (instead of directly updating hFacC).
 o model/src:
   - move call to CTRL_INIT & CTRL_ADMTLM from the middle to the bottom of
     packages_init_fixed.F to allow other pkgs to set mask and weight fields.
