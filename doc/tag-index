@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2324 2017/04/10 23:57:17 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2325 2017/04/12 18:50:25 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - more robust ordering of column thickness integral (=Sum_k(drF*hFac) )
+    to get same expression (regarding machine truncation) in different places
+    in ini_masks_etc.F (e.g., rSurfC,W,S is now exactly zero when it should).
+    Update forward output of experiments: global_ocean.cs32x15 (all 5 except
+    viscA4), isomip (x3), tutorial_global_oce_in_p & tutorial_plume_on_slope.
 o pkg/shelfice:
   - ALLOW_SHIFWFLX_CONTROL: move setting of maskSHI from shelfice_update_masks.F
     to shelfice_init_fixed.F
