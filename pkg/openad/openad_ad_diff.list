@@ -1,6 +1,17 @@
+add_walls2masks.f
 calc_oce_mxlayer.f
 do_the_model_io.f
 externalDummies.f
+ini_cartesian_grid.f
+ini_cori.f	
+ini_curvilinear_grid.f
+ini_cylinder_grid.f
+ini_grid.f	
+ini_linear_phisurf.f
+ini_masks_etc.f	
+ini_sigma_hfac.f
+ini_spherical_polar_grid.f
+ini_vertical_grid.f
 initialise_fixed.f
 inner_do_loop.f
 set_ref_state.f
