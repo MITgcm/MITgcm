@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.40 2017/02/12 00:55:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.41 2017/04/14 23:14:48 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -221,7 +221,7 @@ C   (no pole symmetry, single vector-comp interp, reset to 0 zonal-comp @ N.pole
 #undef EXF_USE_OLD_INTERP_POLE
 
 #define EXF_INTERP_USE_DYNALLOC
-#if ( defined (EXF_INTERP_USE_DYNALLOC) && defined (USING_THREADS) )
+#if ( defined USE_EXF_INTERPOLATION && defined EXF_INTERP_USE_DYNALLOC && defined USING_THREADS )
 # define EXF_IREAD_USE_GLOBAL_POINTER
 #endif
 
