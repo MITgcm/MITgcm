@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ref_machine/test_newRef,v 1.1 2017/04/18 20:03:40 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ref_machine/test_newRef,v 1.2 2017/04/19 13:15:49 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
@@ -35,7 +35,7 @@ TESTDIR="/home/jm_c/test_${dNam}"
 #outDir=`hostname -s`
 #outDir="${outDir}-${tst_grp}"
 outDir="charles-B"
-MC=10
+MC=11
 sepDir=1
 option=
 
