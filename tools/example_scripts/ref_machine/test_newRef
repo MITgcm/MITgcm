@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ref_machine/test_newRef,v 1.2 2017/04/19 13:15:49 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ref_machine/test_newRef,v 1.3 2017/04/20 16:43:26 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
@@ -42,7 +42,7 @@ option=
 if test $tst_grp = 'a' ; then
  checkOut=2
 #tst_list='g7a mpa mth mp2+rs mpi oad'
- tst_list='mpa adm mpi gfo+rs mth'
+ tst_list='mpa adm mpi gfo+rs mth+rs'
 else
  checkOut=3
  tst_list='adm g77 gfo+rs ifc'
@@ -237,7 +237,7 @@ do
    'ifc')		comm="$comm -devel"
 			OPTFILE='../tools/build_options/linux_amd64_ifort11' ;;
    'pgi')		OPTFILE='../tools/build_options/linux_amd64_pgf77' ;;
-   'mpa'|'mpi'|'mp2')	comm="$comm -match $MC -devel" ; MPI=6
+   'mpa'|'mpi'|'mp2')	comm="$comm -match $MC -devel" ; MPI=8
 			OPTFILE='../tools/build_options/linux_amd64_gfortran' ;;
        *)		OPTFILE= ;;
   esac
