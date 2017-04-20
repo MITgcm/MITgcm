@@ -1,0 +1,212 @@
+#PBS -S /bin/bash
+#PBS -N tst_fast
+#PBS -l select=1:ncpus=6:mpiprocs=6:model=san
+#PBS -l walltime=12:00:00
+#PBS -V
+#PBS -e /u/jcampin/test_pleiades/output/tst_fast.stderr
+#PBS -o /u/jcampin/test_pleiades/output/tst_fast.stdout
+
+if test -f /etc/profile.d/modules.sh ; then
+    . /etc/profile.d/modules.sh
+fi
+# Note: added "ulimit -s unlimited" in file "~/.bashrc"
+# to pass big test (the 2 fizhi-cs-* test & adjoint tests) with MPI
+
+umask 0022
+#- to get case insensitive "ls" (and order of tested experiments)
+export LC_ALL="en_US.UTF-8"
+echo " running on: "`hostname`
+
+dNam='pleiades'
+HERE="$HOME/test_$dNam"
+OUTP="$HERE/output"; SavD="$HERE/send"
+SEND="ssh pfe $SavD/mpack"
+TST_DISK="/nobackupp2/jcampin"
+TST_DIR="$TST_DISK/test_${dNam}"
+
+cd $TST_DISK ; pwd
+if test -d $TST_DIR ; then
+  echo "start from TST_DIR='$TST_DIR' at: "`date`
+else
+  echo "ERROR: missing directory \"$TST_DIR\""
+  exit 1
+fi
+
+#sfx='ifc'
+#sfx='ieee'
+sfx='fast'
+
+ typ='' ; addExp=''
+#addExp='global_ocean.gm_k3d global_ocean.gm_res'
+ module purge
+ module load comp-intel/2016.2.181 mpi-sgi/mpt.2.14r19 netcdf/4.0
+ module list
+
+ OPTFILE="../tools/build_options/linux_amd64_ifort+mpi_ice_nas"
+ options="-j 2 $typ -MPI 6"
+ mpiCMD='mpiexec_mpt -np TR_NPROC ./mitgcmuv'
+#- need this to get "staf":
+#export PATH="$PATH:$HOME/bin"
+
+dInWeek=`date +%a`
+#if test "x$dInWeek" = xSun ; then options="$options -fast" ; fi
+ if test $sfx = 'fast' ; then options="$options -fast" ; fi
+
+checkOut=2
+#options="$options -nc" ; checkOut=1
+#options="$options -q"  ; checkOut=0
+
+#- keep a copy of MPI_MFILE:
+#cp -p $PBS_NODEFILE $OUTP"/mf_"$sfx
+
+cmdCVS='cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack -q'
+gcmDIR="MITgcm_$sfx"
+cd $TST_DIR
+
+if [ $checkOut -eq 1 ] ; then
+  if test -d $gcmDIR/CVS ; then
+#- remove previous output tar files and tar & remove previous output-dir
+    /bin/rm -f $gcmDIR/verification/??_${dNam}-${sfx}_????????_?.tar.gz
+    ( cd $gcmDIR/verification
+      listD=`ls -1 -d ??_${dNam}-${sfx}_????????_? 2> /dev/null`
+      for dd in $listD
+      do
+        if test -d $dd ; then
+          tar -cf ${dd}".tar" $dd > /dev/null 2>&1 && gzip ${dd}".tar" && /bin/rm -rf $dd
+          RETVAL=$?
+          if test "x$RETVAL" != x0 ; then
+             echo "ERROR in tar+gzip prev outp-dir: $dd"
+             echo " on '"`hostname`"' (return val=$RETVAL) but continue"
+          fi
+        fi
+      done )
+    echo "clean tst_2+2 + testreport output (+ Makefile_syntax files)"
+    ( cd $gcmDIR/verification ; ../tools/do_tst_2+2 -clean )
+    ( cd $gcmDIR/verification ; ./testreport $typ -clean )
+#   ( cd $gcmDIR/verification ; rm -f */build/Makefile_syntax )
+#   ( cd $gcmDIR/verification ; rm -f */build/port_rand.i */build/ptracers_set_iolabel.i )
+    echo "cvs update of dir $gcmDIR :"
+    ( cd $gcmDIR ; $cmdCVS update -P -d ) 2>&1
+    RETVAL=$?
+    if test "x$RETVAL" != x0 ; then
+       echo "cvs update on '"`hostname`"' fail (return val=$RETVAL) => exit"
+       exit
+    fi
+  else
+    echo "no dir: $gcmDIR/CVS => try a fresh check-out"
+    checkOut=2
+  fi
+fi
+if [ $checkOut -eq 2 ] ; then
+  if test -e $gcmDIR ; then
+    echo -n "Removing working copy: $gcmDIR ..."
+    rm -rf $gcmDIR
+    echo "  done"
+  fi
+ #echo "Downloading using '$cmdCVS co -P -d $gcmDIR MITgcm' ..."
+ #$cmdCVS co -P -d $gcmDIR MITgcm > /dev/null
+ #RETVAL=$?
+ #if test "x$RETVAL" != x0 ; then
+ #    echo "cvs co on '"`hostname`"' fail (return val=$RETVAL) => exit"
+ #    exit
+ #fi
+ #if test -d $gcmDIR/verification ; then
+ #  /usr/bin/find $gcmDIR -type d | xargs chmod g+rxs
+ #  /usr/bin/find $gcmDIR -type f | xargs chmod g+r
+ #fi
+#- make a local copy (instead of using CVS):
+  today=`date +%Y%m%d`
+  nCount=0; updFile='updated_code'
+  updDate=0 ; test -f $updFile && updDate=`cat $updFile`
+  while [ $today -gt $updDate ] ; do
+   nCount=`expr $nCount + 1`
+   if [ $nCount -gt 40 ] ; then
+     echo " waiting too long (nCount=$nCount) for updated code"
+     echo " today=$today , updDate=$updDate "
+     ls -l $updFile
+     exit
+   fi
+   sleep 60
+   updDate=0 ; test -f $updFile && updDate=`cat $updFile`
+  done
+  ls -l $updFile
+  echo " waited nCount=$nCount for updated code ($updDate) to copy"
+  if test -d MITgcm ; then
+    echo -n "Make local copy of dir 'MITgcm' to: $gcmDIR ..."
+    cp -pra MITgcm $gcmDIR
+    echo "  done"
+  else echo " dir: MITgcm missing => exit" ; exit ; fi
+fi
+
+#- change dir to $gcmDIR/verification dir:
+if test -e $gcmDIR/verification ; then
+  if [ $checkOut -lt 2 ] ; then
+    echo " dir $gcmDIR/verification exist" ; fi
+  cd $gcmDIR/verification
+#------------
+  for exp2add in $addExp ; do
+    if test -d ${exp2add}/CVS ; then
+      echo "  assumes dir: $exp2add has been updated"
+    else
+      test -r $exp2add && /bin/rm -rf $exp2add
+      echo " add dir: $exp2add (from Contrib:verification_other)"
+      ( $cmdCVS co -P -d $exp2add \
+                     MITgcm_contrib/verification_other/$exp2add > /dev/null )
+      if test $exp2add = 'global_oce_cs32' ; then
+        echo "  link dir 'other_input/core2_cnyf' in here"
+        ( cd ${exp2add} ; ln -s ../../../other_input/core2_cnyf . )
+      fi
+      if test $exp2add = 'global_oce_llc90' ; then
+        echo "  link dir 'other_input/gael_oce_llc90_input' to 'input_fields'"
+        ( cd ${exp2add} ; ln -s  ../../../other_input/gael_oce_llc90_input input_fields )
+        echo "  link dirs: 'core2_cnyf' & 'global_oce_input_fields/*' in input_verifs"
+        ( test ! -e ${exp2add}/input_verifs && mkdir ${exp2add}/input_verifs
+          cd ${exp2add}/input_verifs
+          ln -s ../../../../other_input/core2_cnyf .
+          ln -s ../../../../other_input/global_oce_input_fields/* . )
+      fi
+      /usr/bin/find $exp2add -type d | xargs chmod g+rxs
+      /usr/bin/find $exp2add -type f | xargs chmod g+r
+    fi
+  done
+else
+  echo "no dir: $gcmDIR/verification => exit"
+  exit
+fi
+
+dInWeek='Sun'
+if test "x$dInWeek" = xSun ; then
+ #options="$options -fast"
+
+  echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
+    -command \"$mpiCMD\" -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+  ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
+    -command "$mpiCMD" -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+
+  echo ''
+  echo ../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
+    -exe \"$mpiCMD\" -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+  ../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
+    -exe "$mpiCMD" -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+
+else
+  options="$options -devel"
+
+  echo ./testreport $options -of $OPTFILE \
+    -repl_mk do_make_syntax.sh -obj -dd
+  ./testreport $options -of $OPTFILE \
+    -repl_mk do_make_syntax.sh -obj -dd 2>&1
+
+  echo ''
+  echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
+    -q -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+  ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
+    -q -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+
+  echo ''
+  echo ../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
+    -send \"$SEND\" -sd $SavD -a jmc@mitgcm.org
+  ../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
+    -send "$SEND" -sd $SavD -a jmc@mitgcm.org
+
+fi
