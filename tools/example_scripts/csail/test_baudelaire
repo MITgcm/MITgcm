@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.32 2016/12/12 22:55:12 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.33 2017/04/22 14:52:51 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
@@ -154,7 +154,10 @@ do
       if test -d prev ; then
       #-- save previous summary:
         oldS=`ls -t ${new_dir}/verification/tr_${outDir}_*/summary.txt 2> /dev/null | head -1`
-        if test "x$oldS" != x ; then cp -p -f $oldS prev/tr_out.$typ ; fi
+        if test "x$oldS" != x ; then
+          cat $oldS | sed '/^[YN] [YN] [YN] [YN]/ s/ \. //g' > prev/tr_out.$typ
+          touch -r $oldS prev/tr_out.$typ
+        fi
        if test $tt != $typ ; then
         oldS=`ls -t ${new_dir}/verification/rs_${outDir}_*/summary.txt 2> /dev/null | head -1`
         if test "x$oldS" != x ; then cp -p -f $oldS prev/rs_out.$typ ; fi
