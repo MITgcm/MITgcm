@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2325 2017/04/12 18:50:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2326 2017/04/24 12:43:21 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint66g (2017/04/24)
 o model/src:
   - more robust ordering of column thickness integral (=Sum_k(drF*hFac) )
     to get same expression (regarding machine truncation) in different places
