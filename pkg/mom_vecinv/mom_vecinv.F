@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.79 2017/03/06 20:05:36 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.80 2017/04/28 17:17:14 mlosch Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -664,16 +664,22 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 C--   Horizontal advection of relative (or absolute) vorticity
        IF ( (highOrderVorticity.OR.upwindVorticity)
      &     .AND.useAbsVorticity ) THEN
-        CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,vFld,omega3,r_hFacZ,
+        CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,selectVortScheme, 
+     &                         highOrderVorticity,upwindVorticity,
+     &                         vFld,omega3,r_hFacZ,
      &                         uCf,myThid)
        ELSEIF ( (highOrderVorticity.OR.upwindVorticity) ) THEN
-        CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,vFld,vort3, r_hFacZ,
+        CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,selectVortScheme, 
+     &                         highOrderVorticity, upwindVorticity,
+     &                         vFld,vort3, r_hFacZ,
      &                         uCf,myThid)
        ELSEIF ( useAbsVorticity ) THEN
-        CALL MOM_VI_U_CORIOLIS(bi,bj,k,vFld,omega3,hFacZ,r_hFacZ,
+        CALL MOM_VI_U_CORIOLIS(bi,bj,k,selectVortScheme,useJamartMomAdv,
+     &                         vFld,omega3,hFacZ,r_hFacZ,
      &                         uCf,myThid)
        ELSE
-        CALL MOM_VI_U_CORIOLIS(bi,bj,k,vFld,vort3, hFacZ,r_hFacZ,
+        CALL MOM_VI_U_CORIOLIS(bi,bj,k,selectVortScheme,useJamartMomAdv,
+     &                         vFld,vort3, hFacZ,r_hFacZ,
      &                         uCf,myThid)
        ENDIF
        DO j=jMin,jMax
@@ -683,16 +689,22 @@ C--   Horizontal advection of relative (or absolute) vorticity
        ENDDO
        IF ( (highOrderVorticity.OR.upwindVorticity)
      &     .AND.useAbsVorticity ) THEN
-        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,k,uFld,omega3,r_hFacZ,
+        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,k,selectVortScheme, 
+     &                         highOrderVorticity, upwindVorticity,
+     &                         uFld,omega3,r_hFacZ,
      &                         vCf,myThid)
        ELSEIF ( (highOrderVorticity.OR.upwindVorticity) ) THEN
-        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,k,uFld,vort3, r_hFacZ,
+        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,k,selectVortScheme, 
+     &                         highOrderVorticity, upwindVorticity,
+     &                         uFld,vort3, r_hFacZ,
      &                         vCf,myThid)
        ELSEIF ( useAbsVorticity ) THEN
-        CALL MOM_VI_V_CORIOLIS(bi,bj,k,uFld,omega3,hFacZ,r_hFacZ,
+        CALL MOM_VI_V_CORIOLIS(bi,bj,k,selectVortScheme,useJamartMomAdv,
+     &                         uFld,omega3,hFacZ,r_hFacZ,
      &                         vCf,myThid)
        ELSE
-        CALL MOM_VI_V_CORIOLIS(bi,bj,k,uFld,vort3, hFacZ,r_hFacZ,
+        CALL MOM_VI_V_CORIOLIS(bi,bj,k,selectVortScheme,useJamartMomAdv,
+     &                         uFld,vort3, hFacZ,r_hFacZ,
      &                         vCf,myThid)
        ENDIF
        DO j=jMin,jMax
