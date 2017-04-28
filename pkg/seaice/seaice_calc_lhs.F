@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.13 2016/04/22 08:50:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.14 2017/04/28 17:21:15 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -87,6 +87,11 @@ C     symmetric drag coefficient
 C     fractional area at velocity points
       _RL areaW(1:sNx,1:sNy)
       _RL areaS(1:sNx,1:sNy)
+#ifdef SEAICE_ALLOW_MOM_ADVECTION
+C     tendency due to advection of momentum
+      _RL gUmom(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL gVmom(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif /*  SEAICE_ALLOW_MOM_ADVECTION */
 CEOP
 
       k=1
@@ -225,6 +230,27 @@ C     apply masks for interior (important when we have open boundaries)
           vIceLHS(I,J,bi,bj) = vIceLHS(I,J,bi,bj)*maskinS(I,J,bi,bj)
          ENDDO
         ENDDO
+#ifdef SEAICE_ALLOW_MOM_ADVECTION
+        IF ( SEAICEmomAdvection ) THEN 
+         DO J=1-Oly,sNy+Oly
+          DO I=1-Olx,sNx+Olx
+           gUmom(I,J) = 0. _d 0
+           gVmom(I,J) = 0. _d 0
+          ENDDO
+         ENDDO
+         CALL SEAICE_MOM_ADVECTION(
+     I        bi,bj,1,sNx,1,sNy,
+     I        uIceLoc, vIceLoc,
+     O        gUmom, gVmom,
+     I        myTime, myIter, myThid )
+         DO J=1,sNy
+          DO I=1,sNx
+           uIceLHS(I,J,bi,bj) = uIceLHS(I,J,bi,bj) + gUmom(I,J)
+           vIceLHS(I,J,bi,bj) = vIceLHS(I,J,bi,bj) + gVmom(I,J)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* SEAICE_ALLOW_MOM_ADVECTION */
        ENDDO
       ENDDO
 

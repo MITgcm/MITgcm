@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.71 2016/11/30 00:16:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.72 2017/04/28 17:21:15 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -128,6 +128,11 @@ C     auxilliary variables
       _RL zetaC         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL deltaZ        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     _RL zetaZ         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef SEAICE_ALLOW_MOM_ADVECTION
+C     tendency due to advection of momentum
+      _RL gUmom         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL gVmom         (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif /*  SEAICE_ALLOW_MOM_ADVECTION */
       _RL deltaCreg, deltaSq, deltaMinSq, tmp
 #ifdef SEAICE_ALLOW_TEM
       _RL etaDenC, zetaMaxC, etaDenZ, zetaMaxZ
@@ -811,6 +816,27 @@ C     coriols terms
      &           )
            ENDDO
           ENDDO
+#ifdef SEAICE_ALLOW_MOM_ADVECTION
+          IF ( SEAICEmomAdvection ) THEN 
+           DO J=1-Oly,sNy+Oly
+            DO I=1-Olx,sNx+Olx
+             gUmom(I,J) = 0. _d 0
+             gVmom(I,J) = 0. _d 0
+            ENDDO
+           ENDDO
+           CALL SEAICE_MOM_ADVECTION(
+     I          bi,bj,1,sNx,1,sNy,
+     I          uIce, vIce,
+     O          gUmom, gVmom,
+     I          myTime, myIter, myThid )
+           DO J=1,sNy
+            DO I=1,sNx
+             FORCEX(I,J,bi,bj) = FORCEX(I,J,bi,bj) - gUmom(I,J)
+             FORCEY(I,J,bi,bj) = FORCEY(I,J,bi,bj) - gVmom(I,J)
+            ENDDO
+           ENDDO
+          ENDIF
+#endif /* SEAICE_ALLOW_MOM_ADVECTION */
 C
 C     step momentum equations with ice-ocean stress term treated implicitly
 C

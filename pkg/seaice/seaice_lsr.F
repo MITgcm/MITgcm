@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.124 2016/05/17 15:26:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.125 2017/04/28 17:21:15 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -134,6 +134,11 @@ C     auxillary fields
 C     fractional area at velocity points
       _RL areaW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL areaS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef SEAICE_ALLOW_MOM_ADVECTION
+C     tendency due to advection of momentum
+      _RL gUmom(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL gVmom(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif /*  SEAICE_ALLOW_MOM_ADVECTION */
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER itmpkey, itmpkey2, itmpkey3
 #endif
@@ -455,6 +460,28 @@ C
      I       uIceC, vIceC, 
      U       rhsV,
      I       iMin, iMax, jMin, jMax, bi, bj, myThid )
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#ifdef SEAICE_ALLOW_MOM_ADVECTION
+        IF ( SEAICEmomAdvection ) THEN 
+         DO J=1-Oly,sNy+Oly
+          DO I=1-Olx,sNx+Olx
+           gUmom(I,J) = 0. _d 0
+           gVmom(I,J) = 0. _d 0
+          ENDDO
+         ENDDO
+         CALL SEAICE_MOM_ADVECTION(
+     I        bi,bj,iMin,iMax,jMin,jMax,
+     I        uIceC, vIceC,
+     O        gUmom, gVmom,
+     I        myTime, myIter, myThid )
+         DO J=jMin,jMax
+          DO I=jMin,jMax
+           rhsU(I,J,bi,bj) = rhsU(I,J,bi,bj) - gUmom(I,J)
+           rhsV(I,J,bi,bj) = rhsV(I,J,bi,bj) - gVmom(I,J)
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* SEAICE_ALLOW_MOM_ADVECTION */
        ENDDO
       ENDDO
 C
