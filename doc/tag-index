@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2326 2017/04/24 12:43:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2327 2017/04/28 17:23:16 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/seaice: add momemtum advection, off by default, still in test phase
+  most of the momentum advection code is adapted and reused from mom_vecinv
+o pkg/mom_vecinv: pass these runtime flags as formal parameters to 
+  s/r mom_vi_u/v_coriolis, mom_vi_u/v_coriolis_c4, so that these routines
+  can also be used in pkg/seaice:
+  selectVortScheme, highOrderVorticity, upwindVorticity, useJamartMomAdv
 
 checkpoint66g (2017/04/24)
 o model/src:
