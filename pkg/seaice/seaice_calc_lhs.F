@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.14 2017/04/28 17:21:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.15 2017/04/28 20:04:57 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -243,10 +243,12 @@ C     apply masks for interior (important when we have open boundaries)
      I        uIceLoc, vIceLoc,
      O        gUmom, gVmom,
      I        myTime, myIter, myThid )
+C     Beware of sign! gU/Vmom is computed for the rhs of the equation;
+C     therefore, we need to substract gU/Vmom from the left hand side
          DO J=1,sNy
           DO I=1,sNx
-           uIceLHS(I,J,bi,bj) = uIceLHS(I,J,bi,bj) + gUmom(I,J)
-           vIceLHS(I,J,bi,bj) = vIceLHS(I,J,bi,bj) + gVmom(I,J)
+           uIceLHS(I,J,bi,bj) = uIceLHS(I,J,bi,bj) - gUmom(I,J)
+           vIceLHS(I,J,bi,bj) = vIceLHS(I,J,bi,bj) - gVmom(I,J)
           ENDDO
          ENDDO
         ENDIF

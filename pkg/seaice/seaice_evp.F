@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.72 2017/04/28 17:21:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_evp.F,v 1.73 2017/04/28 20:04:57 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -831,8 +831,8 @@ C     coriols terms
      I          myTime, myIter, myThid )
            DO J=1,sNy
             DO I=1,sNx
-             FORCEX(I,J,bi,bj) = FORCEX(I,J,bi,bj) - gUmom(I,J)
-             FORCEY(I,J,bi,bj) = FORCEY(I,J,bi,bj) - gVmom(I,J)
+             FORCEX(I,J,bi,bj) = FORCEX(I,J,bi,bj) + gUmom(I,J)
+             FORCEY(I,J,bi,bj) = FORCEY(I,J,bi,bj) + gVmom(I,J)
             ENDDO
            ENDDO
           ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.125 2017/04/28 17:21:15 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_lsr.F,v 1.126 2017/04/28 20:04:57 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -476,8 +476,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I        myTime, myIter, myThid )
          DO J=jMin,jMax
           DO I=jMin,jMax
-           rhsU(I,J,bi,bj) = rhsU(I,J,bi,bj) - gUmom(I,J)
-           rhsV(I,J,bi,bj) = rhsV(I,J,bi,bj) - gVmom(I,J)
+           rhsU(I,J,bi,bj) = rhsU(I,J,bi,bj) + gUmom(I,J)
+           rhsV(I,J,bi,bj) = rhsV(I,J,bi,bj) + gVmom(I,J)
           ENDDO
          ENDDO
         ENDIF
