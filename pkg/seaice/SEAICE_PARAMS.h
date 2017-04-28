@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.133 2017/04/03 16:09:41 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.134 2017/04/28 17:20:33 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -75,6 +75,11 @@ C     SEAICEadvSnow     :: turn on advection of snow (does not work with
 C                          non-default Leap-frog scheme for advection)
 C     SEAICEadvSalt     :: turn on advection of salt (does not work with
 C                          non-default Leap-frog scheme for advection)
+C     SEAICEmomAdvection:: turn on advection of momentum (default = .false.)
+C     SEAICEhighOrderVorticity :: momentum advection parameters analogous to
+C     SEAICEupwindVorticity    :: highOrderVorticity, upwindVorticity,
+C     SEAICEuseAbsVorticity    :: useAbsVorticity, useJamartMomAdv for vector
+C     SEAICEuseJamartMomAdv    :: invariant momentum in the ocean
 C - thermodynamics:
 C     usePW79thermodynamics :: use "0-layer" thermodynamics as described in
 C                           Parkinson and Washington (1979) and Hibler (1979)
@@ -121,7 +126,9 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_clipVelocities, useHB87stressCoupling, 
      &     SEAICEaddSnowMass,
      &     SEAICEuseFluxForm, SEAICEadvHeff, SEAICEadvArea,
-     &     SEAICEadvSnow, SEAICEadvSalt,
+     &     SEAICEadvSnow, SEAICEadvSalt, SEAICEmomAdvection,
+     &     SEAICEhighOrderVorticity, SEAICEupwindVorticity,
+     &     SEAICEuseAbsVorticity, SEAICEuseJamartMomAdv,
      &     usePW79thermodynamics,
      &     SEAICE_useMultDimSnow, SEAICEuseFlooding, SEAICEheatConsFix,
      &     useMaykutSatVapPoly, SEAICE_mcPheeStepFunc,
@@ -146,7 +153,9 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_clipVelocities, useHB87stressCoupling,
      &     SEAICEaddSnowMass,
      &     SEAICEuseFluxForm, SEAICEadvHeff, SEAICEadvArea,
-     &     SEAICEadvSnow, SEAICEadvSalt,
+     &     SEAICEadvSnow, SEAICEadvSalt, SEAICEmomAdvection,
+     &     SEAICEhighOrderVorticity, SEAICEupwindVorticity,
+     &     SEAICEuseAbsVorticity, SEAICEuseJamartMomAdv,
      &     usePW79thermodynamics,
      &     SEAICE_useMultDimSnow, SEAICEuseFlooding, SEAICEheatConsFix,
      &     useMaykutSatVapPoly, SEAICE_mcPheeStepFunc,
@@ -201,6 +210,8 @@ C                             distributed following an exponentially
 C                             decaying function
 C     SEAICEridgingIterMax :: maximum number of ridging iterations
 C     end ridging parameters
+C     SEAICEselectKEscheme   :: momentum advection parameters analogous
+C     SEAICEselectVortScheme :: to selectKEscheme and selectVortScheme
 C     SEAICEadvScheme   :: sets the advection scheme for thickness and area
 C     SEAICEadvSchArea  :: sets the advection scheme for area
 C     SEAICEadvSchHeff  :: sets the advection scheme for effective thickness
@@ -234,6 +245,7 @@ C
       INTEGER SEAICEmomStartBDF
       INTEGER SEAICE_JFNK_lsIter, SEAICE_JFNK_tolIter
       INTEGER SEAICE_OLx, SEAICE_OLy
+      INTEGER SEAICEselectKEscheme, SEAICEselectVortScheme
       INTEGER SEAICEadvScheme
       INTEGER SEAICEadvSchArea
       INTEGER SEAICEadvSchHeff
@@ -260,6 +272,7 @@ C
      &     SEAICE_JFNK_tolIter,
      &     SEAICEpresPow0, SEAICEpresPow1,
      &     SEAICEpartFunc, SEAICEredistFunc, SEAICEridgingIterMax, 
+     &     SEAICEselectKEscheme, SEAICEselectVortScheme,
      &     SEAICEadvScheme,
      &     SEAICEadvSchArea,
      &     SEAICEadvSchHeff,

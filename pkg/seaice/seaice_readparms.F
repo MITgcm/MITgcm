@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.175 2017/04/03 16:09:41 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.176 2017/04/28 17:20:33 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -98,6 +98,9 @@ C--   SEAICE parameters
      & SEAICE_salinityTracer, SEAICE_ageTracer,
      & SEAICEadvHeff, SEAICEadvArea, SEAICEadvSnow,
      & SEAICEadvSalt, SEAICEadvAge, SEAICEaddSnowMass,
+     & SEAICEmomAdvection, SEAICEselectKEscheme, SEAICEselectVortScheme,
+     & SEAICEhighOrderVorticity, SEAICEupwindVorticity,
+     & SEAICEuseAbsVorticity, SEAICEuseJamartMomAdv,
      & SEAICE_clipVelocities, SEAICE_maskRHS, SEAICE_no_slip,
      & SEAICEetaZmethod, LAD, IMAX_TICE, postSolvTempIter,
      & SEAICEuseFluxForm, SEAICEadvScheme, SEAICEadvSchArea,
@@ -273,6 +276,13 @@ C     end ridging parampeters
 #else
       SEAICEadvSalt      = .FALSE.
 #endif
+      SEAICEmomAdvection       = .FALSE.
+      SEAICEselectKEscheme     = 1
+      SEAICEselectVortScheme   = 2
+      SEAICEhighOrderVorticity = .FALSE.
+      SEAICEupwindVorticity    = .FALSE.
+      SEAICEuseAbsVorticity    = .FALSE.
+      SEAICEuseJamartMomAdv    = .FALSE.
       SEAICEuseFlooding  = .TRUE.
       SEAICE_no_slip     = .FALSE.
       SEAICE_clipVelocities = .FALSE.

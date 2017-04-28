@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.80 2016/06/14 20:36:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.81 2017/04/28 17:20:33 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -97,6 +97,8 @@ C     (not thoroughly) test version on a C-grid
 
 C--   Only for the C-grid version it is possible to
 #ifdef SEAICE_CGRID
+C     enable advection of sea ice momentum
+# undef SEAICE_ALLOW_MOM_ADVECTION
 C     enable JFNK code by defining the following flag
 # define SEAICE_ALLOW_JFNK
 C     enable Krylov code by defining the following flag

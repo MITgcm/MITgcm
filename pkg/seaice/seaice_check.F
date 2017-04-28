@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.98 2016/04/26 11:10:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.99 2017/04/28 17:20:33 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -439,6 +439,15 @@ C--   SEAICE_ALLOW_DYNAMICS and SEAICEuseDYNAMICS
      &        'SEAICE_ALLOW_DYNAMICS needed for SEAICEuseDYNAMICS'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif
+
+#ifndef SEAICE_ALLOW_MOM_ADVECTION
+      IF ( SEAICEmomAdvection ) THEN 
+       WRITE(msgBuf,'(A)')
+     &   'SEAICE_ALLOW_MOM_ADVECTION needed for SEAICEmomAdvection'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif
 

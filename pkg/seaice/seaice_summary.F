@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.89 2017/04/03 16:09:41 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.90 2017/04/28 17:20:33 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -309,6 +309,30 @@ C     end if SEAICEuseDYNAMICS bloc
      &                    SQUEEZE_RIGHT, myThid )
       ELSE
 
+      CALL WRITE_0D_L ( SEAICEmomAdvection, INDEX_NONE,
+     & 'SEAICEmomAdvection =', ' /* advect sea ice momentum */')
+#ifdef SEAICE_ALLOW_MOM_ADVECTION
+      IF ( SEAICEmomAdvection ) THEN
+      CALL WRITE_0D_I( SEAICEselectKEscheme, INDEX_NONE,
+     & 'SEAICEselectKEscheme=',
+     &              ' /* V.I Kinetic Energy scheme selector */')
+      CALL WRITE_0D_I( SEAICEselectKEscheme, INDEX_NONE,
+     & 'SEAICEselectVortscheme=',
+     &              ' /* V.I Vorticity scheme selector */')
+      CALL WRITE_0D_L ( SEAICEhighOrderVorticity, INDEX_NONE,
+     & 'SEAICEhighOrderVorticity =', 
+     &              ' /* V.I Scheme selector for Vorticity-Term */')
+      CALL WRITE_0D_L ( SEAICEupwindVorticity, INDEX_NONE,
+     & 'SEAICEupwindVorticity =', 
+     &             ' /* V.I High order vort. advect. flag */')
+      CALL WRITE_0D_L ( SEAICEuseAbsVorticity, INDEX_NONE,
+     & 'SEAICEuseAbsVorticity =', 
+     &              ' /* V.I Works with f+zeta in Coriolis */')
+      CALL WRITE_0D_L ( SEAICEuseJamartMomAdv, INDEX_NONE,
+     & 'SEAICEuseJamartMomAdv =', 
+     &              ' /* V.I Non-linear terms Jamart flag */')
+      ENDIF
+#endif
       CALL WRITE_0D_L ( SEAICEadvHeff, INDEX_NONE,
      & 'SEAICEadvHeff =', ' /* advect effective ice thickness */')
       CALL WRITE_0D_L ( SEAICEadvArea, INDEX_NONE,
