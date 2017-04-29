@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.80 2017/04/28 17:17:14 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.81 2017/04/29 16:11:38 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -610,9 +610,11 @@ C- jmc: change it to keep the Coriolis terms when useAbsVorticity=T & momAdvecti
      &     .NOT.( useCDscheme .OR. useAbsVorticity.AND.momAdvection )
      &   ) THEN
        IF (useAbsVorticity) THEN
-        CALL MOM_VI_U_CORIOLIS(bi,bj,k,vFld,omega3,hFacZ,r_hFacZ,
+        CALL MOM_VI_U_CORIOLIS(bi,bj,k,selectVortScheme,useJamartMomAdv,
+     &                         vFld,omega3,hFacZ,r_hFacZ,
      &                         uCf,myThid)
-        CALL MOM_VI_V_CORIOLIS(bi,bj,k,uFld,omega3,hFacZ,r_hFacZ,
+        CALL MOM_VI_V_CORIOLIS(bi,bj,k,selectVortScheme,useJamartMomAdv,
+     &                         uFld,omega3,hFacZ,r_hFacZ,
      &                         vCf,myThid)
        ELSE
         CALL MOM_VI_CORIOLIS(bi,bj,k,uFld,vFld,hFacZ,r_hFacZ,
