@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.57 2017/04/11 18:07:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.58 2017/05/02 18:12:03 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -37,12 +37,10 @@ C     myThid    ::  my Thread Id number
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     useMin4hFacEdges :: use method-1 (see below) for setting hFacW,hFacS
 C     bi, bj    :: tile indices
 C     i, j, k   :: Loop counters
 C     tmpFld    :: Temporary array used to compute & write Total Depth
 C     tmpVar*   :: Temporary array used to integrate column thickness
-      LOGICAL useMin4hFacEdges
       INTEGER bi, bj
       INTEGER i, j, k
       _RS tmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -51,12 +49,6 @@ C     tmpVar*   :: Temporary array used to integrate column thickness
       _RL hFacMnSz, hFacCtmp
       _RL hFac1tmp, hFac2tmp
 CEOP
-
-C-    Method-1: compute hFacW,S as minimum of adjacent hFacC factor
-      useMin4hFacEdges = .TRUE.
-C-    Method-2: compute hFacW,S from rSurfW,S and rLowW,S
-C               by applying same rules as for hFacC
-c     useMin4hFacEdges = .FALSE.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -249,6 +241,14 @@ C         Inverse of fluid column thickness (1/r_unit)
          ENDDO
         ENDDO
 
+C- Method-1 (useMin4hFacEdges = T):
+C    compute hFacW,hFacS as minimum of adjacent hFacC factor
+C- Method-2 (useMin4hFacEdges = F):
+C    compute hFacW,hFacS from rSurfW,S and rLowW,S by applying
+C    same rules as for hFacC
+C Note: Currently, no difference between methods except when useShelfIce=T and
+C       if, in adjacent columns, ice-draft and bathy are within the same level k
+
         IF ( useMin4hFacEdges ) THEN
 C--   hFacW and hFacS (at U and V points):
 C-    Method-1: use simply minimum of adjacent hFacC factor
@@ -273,12 +273,9 @@ C-    Method-1: use simply minimum of adjacent hFacC factor
          ENDDO
 
         ELSE
-
 C--   hFacW and hFacS (at U and V points):
 C-    Method-2: compute new hFacW,S from rSurfW,S and rLowW,S
 C               by applying same rules as for hFacC
-C Note: Currently, no difference between methods except when useShelfIce=T and
-C       if, in adjacent columns, ice-draft and bathy are within the same level k
 
          DO k=1, Nr
           hFacMnSz = MAX( hFacMin, MIN(hFacMinDr*recip_drF(k),oneRL) )
@@ -358,7 +355,7 @@ C     integrated level thickness ( =Sum_k(drF*hFac) )
          ENDDO
         ENDDO
 
-        IF ( useShelfIce ) THEN
+c       IF ( useShelfIce ) THEN
 C--   Adjust rLow & reference rSurf at Western & Southern edges (U & V pts)
 C     to get consistent column thickness from Sum_k(hFac*drF) and rSurf-rLow
 
@@ -417,7 +414,7 @@ C     Adjust rSurfS and rLowS:
          ENDIF
 
 C-    end if useShelfIce
-        ENDIF
+c       ENDIF
 
 C-    end bi,bj loops.
        ENDDO
