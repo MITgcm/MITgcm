@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.181 2017/03/24 21:56:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.182 2017/05/02 18:13:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -55,6 +55,7 @@ C-    Vertical gridding
       DO k=1,Nr+1
        delRc(k)           = UNSET_RL
       ENDDO
+      useMin4hFacEdges    = .FALSE.
 C-    vertical profile
       tRefFile            = ' '
       sRefFile            = ' '

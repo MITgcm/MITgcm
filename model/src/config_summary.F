@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.157 2017/04/04 23:21:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.158 2017/05/02 18:13:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -794,6 +794,9 @@ c    &     'pickup_write_immed =','   /* Model IO flag. */')
       CALL WRITE_0D_L( usingCurvilinearGrid, INDEX_NONE,
      & 'usingCurvilinearGrid =',
      & ' /* Curvilinear coordinates flag ( True/False ) */')
+      CALL WRITE_0D_L( useMin4hFacEdges, INDEX_NONE,
+     & 'useMin4hFacEdges =',
+     & ' /* set hFacW,S as minimum of adjacent hFacC factor */')
       CALL WRITE_0D_I( selectSigmaCoord, INDEX_NONE,
      & 'selectSigmaCoord =',
      & ' /* Hybrid-Sigma Vert. Coordinate option */')

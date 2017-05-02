@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.286 2017/04/04 23:19:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.287 2017/05/02 18:11:05 jmc Exp $
 C $Name:  $
 C
 
@@ -285,6 +285,7 @@ C     hasWetCSCorners :: domain contains CS-type corners where dynamics is solve
 C     deepAtmosphere :: deep model (drop the shallow-atmosphere approximation)
 C     setInterFDr    :: set Interface depth (put cell-Center at the middle)
 C     setCenterDr    :: set cell-Center depth (put Interface at the middle)
+C     useMin4hFacEdges :: set hFacW,hFacS as minimum of adjacent hFacC factor
 C- Momentum params:
 C     no_slip_sides  :: Impose "no-slip" at lateral boundaries.
 C     no_slip_bottom :: Impose "no-slip" at bottom boundary.
@@ -404,7 +405,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & usingPCoords, usingZCoords,
      & usingCartesianGrid, usingSphericalPolarGrid, rotateGrid,
      & usingCylindricalGrid, usingCurvilinearGrid, hasWetCSCorners,
-     & deepAtmosphere, setInterFDr, setCenterDr,
+     & deepAtmosphere, setInterFDr, setCenterDr, useMin4hFacEdges,
      & no_slip_sides, no_slip_bottom, bottomVisc_pCell, useSmag3D,
      & useFullLeith, useStrainTensionVisc, useAreaViscLength,
      & momViscosity, momAdvection, momForcing,
@@ -453,6 +454,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL deepAtmosphere
       LOGICAL setInterFDr
       LOGICAL setCenterDr
+      LOGICAL useMin4hFacEdges
 
       LOGICAL no_slip_sides
       LOGICAL no_slip_bottom

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.274 2017/04/04 23:21:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.275 2017/05/02 18:13:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -276,7 +276,7 @@ C--   Gridding parameters
      & phiEuler, thetaEuler, psiEuler,
      & rSphere, radius_fromHorizGrid, deepAtmosphere, seaLev_Z,
      & top_Pres, delZ, delP, delR, delRc, delRFile, delRcFile,
-     & selectSigmaCoord, rSigmaBnd, hybSigmFile,
+     & useMin4hFacEdges, selectSigmaCoord, rSigmaBnd, hybSigmFile,
      & Ro_SeaLevel, rkFac, groundAtK1, thetaMin, phiMin
 
 C--   Input files
