@@ -1,22 +1,28 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2329 2017/05/06 03:48:38 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2330 2017/05/09 03:25:45 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-
+o pkg/seaice:
+  - remove (comment out) diagnostics SIuwind,SIvwind,SIfu,SIfv (duplicate of
+    EXFuwind,EXFvwind,oceTAUX,oceTAUY) and point them to their equivalent.
+  - add diagnostics of wind-stress over seaice (SItaux,SItauy) and seaice
+    fraction weighted wind stress over ocean+seaice (SIatmTx,SIatmTy).
+o pkg/diagnostics:
+  - small piece of code to rename (old) diagnostics, when namelist is processed.
 o model/src:
   - new run-time param (useMin4hFacEdges) to select method for setting hFacW,S:
     originally, set as minimum of adjacent hFacC factor ; now (new default)
     computed from rSurfW,S and rLowW,S by applying same rules as for hFacC.
     Only matters when useShelfIce=T with particular ice-shelf cavity geometry.
-o pkg/seaice: 
+o pkg/seaice:
   - add momemtum advection, off by default, still in test phase
     most of the momentum advection code is adapted and reused from mom_vecinv
-o pkg/mom_vecinv: 
-  - pass these runtime flags: 
+o pkg/mom_vecinv:
+  - pass these runtime flags:
     selectVortScheme, highOrderVorticity, upwindVorticity, useJamartMomAdv
-    as formal parameters to s/r mom_vi_u/v_coriolis, mom_vi_u/v_coriolis_c4, 
+    as formal parameters to s/r mom_vi_u/v_coriolis, mom_vi_u/v_coriolis_c4,
     so that these routines can also be used in pkg/seaice.
 
 checkpoint66g (2017/04/24)
