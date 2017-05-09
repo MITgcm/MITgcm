@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.16 2013/06/03 23:09:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_get_dynforcing.F,v 1.17 2017/05/09 02:54:16 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -10,7 +10,7 @@ CBOP
 C     !ROUTINE: SEAICE_GET_DYNFORCING
 C     !INTERFACE:
       SUBROUTINE SEAICE_GET_DYNFORCING(
-     I     uIce, vIce,
+     I     uIce, vIce, icFrac,
      O     taux, tauy,
      I     myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
@@ -38,18 +38,26 @@ C     === Global variables ===
 # include "EXF_PARAM.h"
 #endif
 
+#ifdef ALLOW_DIAGNOSTICS
+C     !FUNCTIONS:
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif /* ALLOW_DIAGNOSTICS */
+
 C     !INPUT/OUTPUT PARAMETERS:
 C   uIce   (inp) :: zonal      ice velocity (input)
 C   vIce   (inp) :: meridional ice velocity (input)
+C   icFrac (inp) :: seaice fraction (input)
 C   taux   (out) :: zonal      wind stress over ice at U point
 C   tauy   (out) :: meridional wind stress over ice at V point
 C   myTime (inp) :: current time in simulation
 C   myIter (inp) :: iteration number in simulation
 C   myThid (inp) :: my Thread Id. number
-      _RL uIce    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL vIce    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL taux    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL tauy    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL uIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL icFrac (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL taux   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL tauy   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -69,11 +77,15 @@ C     ks        :: vertical index of surface layer
 C     CDAIR   :: local wind stress coefficient (used twice)
 C     oceTauX :: wind-stress over open-ocean (on Arakawa A-grid), X direction
 C     oceTauY :: wind-stress over open-ocean (on Arakawa A-grid), Y direction
-      _RL CDAIR   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL CDAIR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifndef SEAICE_EXTERNAL_FLUXES
-      _RL oceTauX (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL oceTauY (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL oceTauX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL oceTauY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
+#ifdef ALLOW_DIAGNOSTICS
+      _RL locVar (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL locFrac
+#endif /* ALLOW_DIAGNOSTICS */
 
 C--   surface level
       ks = 1
@@ -264,6 +276,43 @@ C now ice surface stress
 C--   end bi,bj loops
        ENDDO
       ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       CALL DIAGNOSTICS_FILL( taux, 'SItaux  ', 0,1, 0,1,1, myThid )
+       CALL DIAGNOSTICS_FILL( tauy, 'SItauy  ', 0,1, 0,1,1, myThid )
+       IF ( DIAGNOSTICS_IS_ON( 'SIatmTx ', myThid ) ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j=2-OLy,sNy+OLy
+            DO i=2-OLx,sNx+OLx
+              locFrac = ( icFrac( i, j,bi,bj)
+     &                  + icFrac(i-1,j,bi,bj) )*halfRL
+              locVar(i,j) = taux(i,j,bi,bj)*locFrac
+     &                      + fu(i,j,bi,bj)*(oneRL-locFrac)
+            ENDDO
+           ENDDO
+           CALL DIAGNOSTICS_FILL(locVar,'SIatmTx ',0,1,2,bi,bj,myThid)
+         ENDDO
+        ENDDO
+       ENDIF
+       IF ( DIAGNOSTICS_IS_ON( 'SIatmTy ', myThid ) ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j=2-OLy,sNy+OLy
+            DO i=2-OLx,sNx+OLx
+              locFrac = ( icFrac(i, j, bi,bj)
+     &                  + icFrac(i,j-1,bi,bj) )*halfRL
+              locVar(i,j) = tauy(i,j,bi,bj)*locFrac
+     &                      + fv(i,j,bi,bj)*(oneRL-locFrac)
+            ENDDO
+           ENDDO
+           CALL DIAGNOSTICS_FILL(locVar,'SIatmTy ',0,1,2,bi,bj,myThid)
+         ENDDO
+        ENDDO
+       ENDIF
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* SEAICE_CGRID */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.64 2017/04/03 16:09:41 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_dynsolver.F,v 1.65 2017/05/09 02:54:16 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -196,7 +196,7 @@ CADJ STORE vice = comlev1, key=ikey_dynamics, kind=isbyte
 # endif /* ALLOW_AUTODIFF_TAMC */
 C--   interface of dynamics with atmopheric forcing fields (wind/stress)
       CALL SEAICE_GET_DYNFORCING (
-     I     uIce, vIce,
+     I     uIce, vIce, AREA,
      O     TAUX, TAUY,
      I     myTime, myIter, myThid )
 
