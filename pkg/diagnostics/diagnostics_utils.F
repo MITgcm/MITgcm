@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.33 2014/07/18 22:04:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.34 2017/05/09 02:49:34 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -12,6 +12,7 @@ C--    o DIAGNOSTICS_SETKLEV
 C--    o DIAGS_GET_PARMS_I (Function)
 C--    o DIAGS_MK_UNITS (Function)
 C--    o DIAGS_MK_TITLE (Function)
+C--    o DIAGS_RENAMED (Function)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -603,6 +604,67 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &   'DIAGS_MK_TITLE: input=', diagTitleInPieces
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &       SQUEEZE_RIGHT , myThid)
+      ENDIF
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP 0
+C     !ROUTINE: DIAGS_RENAMED
+
+C     !INTERFACE:
+      CHARACTER*8 FUNCTION DIAGS_RENAMED(
+     I                           diagName, myThid )
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | FUNCTION DIAGS_RENAMED
+C     | o In case of an old diagnostics name,
+C     |   provides the corresponding new name
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#include "DIAGNOSTICS_SIZE.h"
+#include "DIAGNOSTICS.h"
+
+C     !INPUT PARAMETERS:
+C     diagName  :: name of diagnostic to rename (or not)
+C     myThid    :: my Thread Id number
+      CHARACTER*8 diagName
+      INTEGER myThid
+CEOP
+
+C     !LOCAL VARIABLES:
+      CHARACTER*8 newName
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      newName = blkName
+
+      IF ( useSEAICE ) THEN
+       IF ( diagName .EQ. 'SIfu    ' ) newName = 'oceTAUX '
+       IF ( diagName .EQ. 'SIfv    ' ) newName = 'oceTAUY '
+       IF ( diagName .EQ. 'SIuwind ' ) newName = 'EXFuwind'
+       IF ( diagName .EQ. 'SIvwind ' ) newName = 'EXFvwind'
+      ENDIF
+
+      IF ( newName.EQ.blkName ) THEN
+        DIAGS_RENAMED = diagName
+      ELSE
+        DIAGS_RENAMED = newName
+        WRITE(msgBuf,'(6A)') '** WARNING ** (DIAGS_RENAMED):',
+     &    ' diagnostics "', diagName, '" replaced by "', newName, '"'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid )
       ENDIF
 
       RETURN

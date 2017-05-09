@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.42 2017/03/25 15:16:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.43 2017/05/09 02:49:34 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -30,6 +30,8 @@ CEOP
 C     !FUNCTIONS:
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
+      CHARACTER*(8) DIAGS_RENAMED
+      EXTERNAL DIAGS_RENAMED
 #ifdef ALLOW_FIZHI
       _RL      getcon
       EXTERNAL getcon
@@ -75,7 +77,7 @@ C     stat_fName  :: List of statistics output Filename
       CHARACTER*80 fileName(ldimLoc), blkFilName
       CHARACTER*80 stat_fname(ldimLoc)
       CHARACTER*8 fileFlags(ldimLoc)
-      CHARACTER*8 blk8c
+      CHARACTER*8 blk8c, diagName
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_FNAM) namBuf
       CHARACTER*12 suffix
@@ -340,16 +342,17 @@ C-       will set levels later, once the Nb of levels of each diag is known
          ENDIF
          nfields(n) = 0
          DO m=1,fdimLoc
-           IF ( fields(m,l).NE.blkName .AND.
+           diagName = DIAGS_RENAMED( fields(m,l), myThid )
+           IF ( diagName.NE.blkName .AND.
      &          nfields(n).LT.numperList ) THEN
              nfields(n) = nfields(n) + 1
-             flds(nfields(n),n) = fields(m,l)
-           ELSEIF ( fields(m,l).NE.blkName ) THEN
+             flds(nfields(n),n) = diagName
+           ELSEIF ( diagName.NE.blkName ) THEN
              WRITE(msgBuf,'(2A,I4)') 'DIAGNOSTICS_READPARMS: ',
      &        'Exceed Max.Num. of Fields/list numperList=', numperList
              CALL PRINT_ERROR( msgBuf , myThid )
              WRITE(msgBuf,'(2A,I4,3A,I4,2A)') 'DIAGNOSTICS_READPARMS: ',
-     &        'when trying to add field (m=', m, ' ): ',fields(m,l)
+     &        'when trying to add field (m=', m, ' ): ', diagName
              CALL PRINT_ERROR( msgBuf , myThid )
              WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_READPARMS: ',
      &        ' in list l=', l, ', fileName: ', fileName(l)
@@ -475,17 +478,17 @@ C-       no region selected => default is Global statistics (region Id: 0)
          ENDIF
          diagSt_nbFlds(n) = 0
          DO m=1,fdimLoc
-           IF ( stat_fields(m,l).NE.blkName .AND.
+           diagName = DIAGS_RENAMED( stat_fields(m,l), myThid )
+           IF ( diagName.NE.blkName .AND.
      &          diagSt_nbFlds(n).LT.numperList ) THEN
              diagSt_nbFlds(n) = diagSt_nbFlds(n) + 1
-             diagSt_Flds(diagSt_nbFlds(n),n) = stat_fields(m,l)
-           ELSEIF ( stat_fields(m,l).NE.blkName ) THEN
+             diagSt_Flds(diagSt_nbFlds(n),n) = diagName
+           ELSEIF ( diagName.NE.blkName ) THEN
              WRITE(msgBuf,'(2A,I4)') 'DIAGNOSTICS_READPARMS: ',
      &        'Exceed Max.Num. of Fields/list numperList=', numperList
              CALL PRINT_ERROR( msgBuf , myThid )
              WRITE(msgBuf,'(2A,I4,3A,I4,2A)') 'DIAGNOSTICS_READPARMS: ',
-     &        'when trying to add stat_field (m=', m,
-     &        ' ): ',stat_fields(m,l)
+     &        'when trying to add stat_field (m=', m, ' ): ', diagName
              CALL PRINT_ERROR( msgBuf , myThid )
              WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_READPARMS: ',
      &        ' in list l=', l, ', stat_fname: ', stat_fname(l)
