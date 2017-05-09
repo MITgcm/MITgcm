@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.41 2015/09/10 15:56:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.42 2017/05/09 02:57:08 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -222,41 +222,73 @@ C     pkg/diagnostics SIfu and oceTAUX, dumpfreq FU, and tavefreq FUtave
 C     are identical but they differ from pkg/diagnostics EXFtaux, which
 C     is stress before impact of ice.  Also when using exf bulk
 C     formulae, EXFtaux is defined on tracer rather than uvel points.
-      diagName  = 'SIfu    '
-      diagTitle = 'SEAICE zonal surface wind stress, >0 increases uVel '
+c     diagName  = 'SIfu    '
+c     diagTitle = 'SEAICE zonal surface wind stress, >0 increases uVel '
+c     diagUnits = 'N/m^2           '
+c     diagCode  = 'UU      U1      '
+c     diagMate  = diagNum + 2
+c     CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+c    I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+C     pkg/diagnostics SIfv and oceTAUY, dumpfreq FV, and tavefreq FVtave
+C     are identical but they differ from pkg/diagnostics EXFtauy, which
+C     is stress before impact of ice.  Also when using exf bulk
+C     formulae, EXFtauy is defined on tracer rather than vvel points.
+c     diagName  = 'SIfv    '
+c     diagTitle = 'SEAICE merid. surface wind stress, >0 increases vVel'
+c     diagUnits = 'N/m^2           '
+c     diagCode  = 'VV      U1      '
+c     diagMate  = diagNum
+c     CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+c    I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'SItaux  '
+      diagTitle = 'SEAICE zonal surface wind stress, >0 increases uIce'
       diagUnits = 'N/m^2           '
       diagCode  = 'UU      U1      '
       diagMate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-C     pkg/diagnostics SIfv and oceTAUY, dumpfreq FV, and tavefreq FVtave
-C     are identical but they differ from pkg/diagnostics EXFtauy, which
-C     is stress before impact of ice.  Also when using exf bulk
-C     formulae, EXFtauy is defined on tracer rather than vvel points.
-      diagName  = 'SIfv    '
-      diagTitle = 'SEAICE merid. surface wind stress, >0 increases vVel'
+      diagName  = 'SItauy  '
+      diagTitle = 'SEAICE merid. surface wind stress, >0 increases uIce'
       diagUnits = 'N/m^2           '
       diagCode  = 'VV      U1      '
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-      diagName  = 'SIuwind '
-      diagTitle = 'SEAICE zonal 10-m wind speed, >0 increases uVel'
-      diagUnits = 'm/s             '
-      diagCode  = 'UM      U1      '
+      diagName  = 'SIatmTx '
+      diagTitle = 'Zonal surface wind stress over Ocean+SeaIce'
+      diagUnits = 'N/m^2           '
+      diagCode  = 'UU      U1      '
       diagMate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
-      diagName  = 'SIvwind '
-      diagTitle = 'SEAICE meridional 10-m wind speed, >0 increases uVel'
-      diagUnits = 'm/s             '
-      diagCode  = 'VM      U1      '
+      diagName  = 'SIatmTy '
+      diagTitle = 'Merid. surface wind stress over Ocean+SeaIce'
+      diagUnits = 'N/m^2           '
+      diagCode  = 'VV      U1      '
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+c     diagName  = 'SIuwind '
+c     diagTitle = 'SEAICE zonal 10-m wind speed, >0 increases uVel'
+c     diagUnits = 'm/s             '
+c     diagCode  = 'UM      U1      '
+c     diagMate  = diagNum + 2
+c     CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+c    I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+c     diagName  = 'SIvwind '
+c     diagTitle = 'SEAICE meridional 10-m wind speed, >0 increases uVel'
+c     diagUnits = 'm/s             '
+c     diagCode  = 'VM      U1      '
+c     diagMate  = diagNum
+c     CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+c    I     diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
 C     SIqnet, Qnet, and QNETtave are identical.
 C     With #undef NONLIN_FRSURF SIqnet is identical to -(TFLUX-TRELAX).
