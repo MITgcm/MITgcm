@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/crontab_jmc,v 1.7 2016/01/30 15:55:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/crontab_jmc,v 1.8 2017/05/11 14:53:49 jmc Exp $
 
 ------------------------------------
 #-from: jmc@baudelaire.csail.mit.edu
@@ -6,7 +6,7 @@
 MAILTO=jmc@ocean.mit.edu
 
 05 00 * * * /u/u2/jmc/testing/csail/test_baudelaire a
-15 00 * * * /u/u2/jmc/testing/csail/test_baudelaire b
+25 00 * * * /u/u2/jmc/testing/csail/test_baudelaire b
 
 ------------------------------------
 # and the update of ~jmc/testing/csail/ dir is part of the script
