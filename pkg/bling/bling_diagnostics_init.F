@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_diagnostics_init.F,v 1.6 2017/03/16 17:03:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_diagnostics_init.F,v 1.7 2017/05/11 13:32:24 mmazloff Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -183,6 +183,13 @@ c oxygen
       diagName  = 'BLGOFLX '
       diagTitle = 'Flux of O2 due to air-sea exch (mol/m2/s)'
       diagUnits = 'mol/m2/sec   '
+      diagCode  = 'SM P    L1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGO2SAT'
+      diagTitle = 'surface O2 saturation (percent)'
+      diagUnits = 'percent      '
       diagCode  = 'SM P    L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )

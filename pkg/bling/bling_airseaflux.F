@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_airseaflux.F,v 1.4 2016/10/15 21:30:43 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_airseaflux.F,v 1.5 2017/05/11 13:32:24 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -66,8 +66,7 @@ C     FluxO2           :: air-sea flux of O2
 C     (FluxCO2 is a global variable) 
       _RL  SGDIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  SGO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL  FluxO2      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-
+      _RL  FluxO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 #ifdef ALLOW_PTRACERS
 
@@ -76,23 +75,24 @@ C     i,j              :: Loop counters
       INTEGER i,j,klev
 C Number of iterations for pCO2 solvers
       _RL co3dummy
-      _RL Kwexch_Pre  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Kwexch_Pre   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C Solubility relation coefficients
-      _RL SchmidtNoDIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL pCO2sat     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL Kwexch      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL pisvel      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL SchmidtNoDIC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL pCO2sat      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Kwexch       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL pisvel       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C local variables for carbon chem
-      _RL surfalk     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL surfphos    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL surfsi      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL surftemp    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL surfsalt    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL surfdic     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL surfalk      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL surfphos     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL surfsi       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL surftemp     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL surfsalt     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL surfdic      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C o2 solubility relation coefficients
-      _RL SchmidtNoO2 (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL O2sat       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL Kwexch_o2   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL SchmidtNoO2  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL O2sat        (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL O2sat_percent(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Kwexch_o2    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL aTT
       _RL aTK
       _RL aTS
@@ -283,6 +283,9 @@ C using Garcia and Gordon (1992), L&O (mistake in original ?)
 c Convert from ml/l to mol/m^3
               O2sat(i,j) = o2s/22391.6 _d 0 * 1. _d 3
 
+cav
+              O2sat_percent(i,j) = PTR_O2(i,j,1)/O2sat(i,j)*100
+
 C Determine flux, inc. correction for local atmos surface pressure
 #ifdef USE_EXF_ATMPRES
 C Atm pressure in N/m2, convert to bars
@@ -311,6 +314,13 @@ C update surface tendencies
 
         _EXCH_XY_RL( pCO2, mythid)
         _EXCH_XYZ_RL( pH, mythid)
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL(O2sat_percent,'BLGO2SAT',0,1,2,bi,bj,
+     &       myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_PTRACER */
 
