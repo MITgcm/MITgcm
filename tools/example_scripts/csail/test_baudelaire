@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.33 2017/04/22 14:52:51 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.34 2017/05/13 16:22:16 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
@@ -35,12 +35,14 @@ cmdCVS='cvs -d /u/gcmpack'
 #   =1 : update code       (if no existing code -> swith to 2)
 #   =0 : use existing code (if no existing code -> swith to 2)
 dInWeek=`date +%a`
+
+dNam=`hostname -s | tr '[:upper:]' '[:lower:]'`
+TESTDIR="/scratch/jmc/test_${dName}"
 outDir=`hostname -s`
-TESTDIR="/scratch/jmc/test_${outDir}"
-outDir="${outDir}-${tst_grp}"
 MC=13
 sepDir=1
 option=
+
 #tst_list='g7a adm mpa g77 gfo+rs mth mp2+rs mpi ifc'
 #if test "x$dInWeek" = xSun ; then tst_list="$tst_list tlm oad" ; fi
 if test $tst_grp = 'a' ; then
@@ -58,14 +60,20 @@ echo " test: $outDir ; list='$tst_list'"
 
 TODAY=`date +%d`
 tdir=$TESTDIR
+updFile='updated_code' ; today=`date +%Y%m%d`
 if test $checkOut != 2 ; then
   if test -e $tdir/MITgcm/CVS ; then
     echo $tdir/MITgcm/CVS 'exist'
     if test $sepDir = 0 -a $checkOut = 1 ; then
+      #- remove date/lock-file:
+      if test -f $tdir/$updFile ; then rm -f $tdir/$updFile ; sleep 2 ; fi
       echo -n "Update the MITgcm code using: $cmdCVS ..."
       cd $tdir/MITgcm
       $cmdCVS update -P -d
       echo "  done"
+      #- update date/lock-file:
+      ( cd $tdir ; echo $today > $updFile
+        sleep 2 ; ls -l $updFile )
     fi
   else
     echo -n $tdir/MITgcm 'missing ; '
@@ -81,8 +89,10 @@ if test $checkOut = 2 ; then
     mkdir $tdir
   fi
   echo "  done"
-  echo -n "Downloading the MITgcm code using: $cmdCVS ..."
   cd $tdir
+  #- remove date/lock-file:
+  if test -f $updFile ; then rm -f $updFile ; sleep 2 ; fi
+  echo -n "Downloading the MITgcm code using: $cmdCVS ..."
   $cmdCVS co -P MITgcm > /dev/null
   echo "  done"
   if test -d other_input ; then
@@ -95,6 +105,8 @@ if test $checkOut = 2 ; then
     done
     echo " <-- update of 'other_input' dirs done"
   fi
+  #- update date/lock-file:
+  echo $today > $updFile ; sleep 2 ; ls -l $updFile
 else
   cd $tdir
 fi
@@ -141,7 +153,7 @@ do
     new_dir="MITgcm_$typ"
     reUse=1 ; if [ $checkOut -ge 2 ] ; then reUse=0 ; fi
     if test -d $new_dir/CVS -a $reUse = 1 ; then
-      pushd $new_dir
+      cd $tdir/$new_dir
       if test $tt != $typ ; then
         ( cd verification ; ../tools/do_tst_2+2 -clean )
       fi
@@ -165,8 +177,44 @@ do
       fi
       test -e $new_dir  &&  rm -rf $new_dir
       mkdir $new_dir
-      pushd $new_dir
-      cp -ra ../MITgcm/* .
+    #- before making a copy, check that code has been updated
+      nCount=0; today=`date +%Y%m%d`
+      updDate=0 ; test -f $updFile && updDate=`cat $updFile`
+      while [ $today -gt $updDate ] ; do
+       nCount=`expr $nCount + 1`
+       if [ $nCount -gt 40 ] ; then
+         echo " waiting too long (nCount=$nCount) for updated code"
+         echo " today=$today , updDate=$updDate "
+         ls -l $updFile
+         exit
+       fi
+       sleep 60
+       updDate=0 ; test -f $updFile && updDate=`cat $updFile`
+      done
+      ls -l $updFile					| tee -a $tdir/output_$tt
+      echo " waited nCount=$nCount for updated code ($updDate) to copy"	| tee -a $tdir/output_$tt
+    #-----------------------------
+      if test -d MITgcm -a -d $new_dir ; then
+        echo " copy main code from MITgcm to $new_dir"  | tee -a $tdir/output_$tt
+        cp -ra MITgcm/* $new_dir 2>&1   | tee -a $tdir/output_$tt
+      else
+        if test -d MITgcm ; then
+         echo " missing dir $new_dir --> end test $tt"  | tee -a $tdir/output_$tt
+        else
+         echo " missing dir MITgcm --> end test $tt"    | tee -a $tdir/output_$tt
+        fi
+        continue
+      fi
+      echo -n " cd $tdir/$new_dir "     | tee -a $tdir/output_$tt
+      cd $tdir/$new_dir
+      retVal=$?
+      ( echo "(retVal= $retVal )" ; pwd )       | tee -a $tdir/output_$tt
+      if test -d verification ; then
+        echo " check: dir verification exist"   | tee -a $tdir/output_$tt
+      else
+        echo " missing dir verification --> end test $tt"       | tee -a $tdir/output_$tt
+        continue
+      fi
       #-- download additional experience from Contrib:
       for exp2add in $addExp ; do
         echo " add dir: $exp2add (from Contrib:verification_other)"
@@ -185,7 +233,7 @@ do
       done
     fi
   else
-    pushd MITgcm
+    cd $tdir/MITgcm
   fi
   cd verification
 
@@ -306,6 +354,6 @@ do
     echo "======================"
     echo
   fi
-  popd
+  cd $tdir
 
 done
