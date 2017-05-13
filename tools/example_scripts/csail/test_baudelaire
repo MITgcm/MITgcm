@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.34 2017/05/13 16:22:16 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.35 2017/05/13 16:53:46 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
@@ -38,7 +38,8 @@ dInWeek=`date +%a`
 
 dNam=`hostname -s | tr '[:upper:]' '[:lower:]'`
 TESTDIR="/scratch/jmc/test_${dName}"
-outDir=`hostname -s`
+outDir="${dNam}-${tst_grp}"
+#outDir=`hostname -s`
 MC=13
 sepDir=1
 option=
