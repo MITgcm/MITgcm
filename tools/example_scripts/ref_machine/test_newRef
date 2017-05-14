@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ref_machine/test_newRef,v 1.4 2017/05/09 00:56:07 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ref_machine/test_newRef,v 1.5 2017/05/14 16:00:41 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
@@ -32,8 +32,7 @@ dInWeek=`date +%a`
 dNam=`hostname -s | tr '[:upper:]' '[:lower:]'`
 #TESTDIR="/scratch/jmc/test_${dNam}"
 TESTDIR="/home/jm_c/test_${dNam}"
-#outDir=`hostname -s`
-#outDir="${outDir}-${tst_grp}"
+#outDir="${dNam}-${tst_grp}"
 outDir="charles-B"
 MC=11
 sepDir=1
@@ -56,14 +55,20 @@ echo " test: $outDir ; list='$tst_list'"
 
 TODAY=`date +%d`
 tdir=$TESTDIR
+updFile='updated_code' ; today=`date +%Y%m%d`
 if test $checkOut != 2 ; then
   if test -e $tdir/MITgcm/CVS ; then
     echo $tdir/MITgcm/CVS 'exist'
     if test $sepDir = 0 -a $checkOut = 1 ; then
+      #- remove date/lock-file:
+      if test -f $tdir/$updFile ; then rm -f $tdir/$updFile ; sleep 2 ; fi
       echo -n "Update the MITgcm code using: $cmdCVS ..."
       cd $tdir/MITgcm
       $cmdCVS update -P -d
       echo "  done"
+      #- update date/lock-file:
+      ( cd $tdir ; echo $today > $updFile
+        sleep 2 ; ls -l $updFile )
     fi
   else
     echo -n $tdir/MITgcm 'missing ; '
@@ -79,8 +84,10 @@ if test $checkOut = 2 ; then
     mkdir $tdir
   fi
   echo "  done"
-  echo -n "Downloading the MITgcm code using: $cmdCVS ..."
   cd $tdir
+  #- remove date/lock-file:
+  if test -f $updFile ; then rm -f $updFile ; sleep 2 ; fi
+  echo -n "Downloading the MITgcm code using: $cmdCVS ..."
   $cmdCVS co -P MITgcm > /dev/null
   echo "  done"
   if test -d other_input ; then
@@ -93,6 +100,8 @@ if test $checkOut = 2 ; then
     done
     echo " <-- update of 'other_input' dirs done"
   fi
+  #- update date/lock-file:
+  echo $today > $updFile ; sleep 2 ; ls -l $updFile
 else
   cd $tdir
 fi
@@ -170,6 +179,23 @@ do
       echo " remove dir: $new_dir and make new one"	>> $tdir/output_$tt
       test -e $new_dir  &&  rm -rf $new_dir
       mkdir $new_dir
+    #- before making a copy, check that code has been updated
+      nCount=0; today=`date +%Y%m%d`
+      updDate=0 ; test -f $updFile && updDate=`cat $updFile`
+      while [ $today -gt $updDate ] ; do
+       nCount=`expr $nCount + 1`
+       if [ $nCount -gt 40 ] ; then
+         echo " waiting too long (nCount=$nCount) for updated code"
+         echo " today=$today , updDate=$updDate "
+         ls -l $updFile
+         exit
+       fi
+       sleep 60
+       updDate=0 ; test -f $updFile && updDate=`cat $updFile`
+      done
+      ls -l $updFile                                    | tee -a $tdir/output_$tt
+      echo " waited nCount=$nCount for updated code ($updDate) to copy" | tee -a $tdir/output_$tt
+    #-----------------------------
       if test -d MITgcm -a -d $new_dir ; then
         echo " copy main code from MITgcm to $new_dir"	| tee -a $tdir/output_$tt
         cp -ra MITgcm/* $new_dir 2>&1	| tee -a $tdir/output_$tt
