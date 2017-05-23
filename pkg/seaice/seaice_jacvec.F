@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jacvec.F,v 1.7 2016/04/22 08:50:34 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jacvec.F,v 1.8 2017/05/23 16:24:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -69,11 +69,19 @@ C     i,j,bi,bj :: loop indices
       _RL epsilon, reps
 CEOP
 C     Instructions for using TAF or TAMC to generate exact Jacobian times
-C     vector operations:
+C     vector operations (if SEAICE_ALLOW_MOM_ADVECTION is defined, the
+C     file list also needs to include seaice_mom_advection.f, 
+C     mom_calc_hfacz.f, mom_calc_ke.f, mom_calc_relvort3.f, 
+C     mom_vi_u_coriolis.f, mom_vi_u_coriolis_c4.f, mom_vi_u_grad_ke.f,
+C     mom_vi_v_coriolis.f, mom_vi_v_coriolis_c4.f, mom_vi_v_grad_ke.f
+C     plus flow information for diagnostics_fill.f:
+CCCCCCCADJ SUBROUTINE DIAGNOSTICS_FILL INPUT  = 1,2,3,4,5,6,7,8
+CCCCCCCADJ SUBROUTINE DIAGNOSTICS_FILL OUTPUT =
+C     )
 C
 C     1. make small_f
 C     2. cat seaice_calc_residual.f seaice_oceandrag_coeffs.f \
-C        seaice_bottomdrag_coeffs.f \
+C        seaice_bottomdrag_coeffs.f seaice_calc_stressdiv.f \
 C        seaice_calc_strainrates.f seaice_calc_viscosities.f \
 C        seaice_calc_rhs.f seaice_calc_lhs.f > taf_input.f
 C     3. staf -v1 -forward -toplevel seaice_calc_residual \
@@ -86,7 +94,7 @@ C     starting with version 2.0):
 C
 C     1. make small_f
 C     2. files="seaice_calc_residual.f seaice_oceandrag_coeffs.f \
-C               seaice_bottomdrag_coeffs.f \
+C               seaice_bottomdrag_coeffs.f seaice_calc_stressdiv.f \
 C               seaice_calc_strainrates.f seaice_calc_viscosities.f \
 C               seaice_calc_rhs.f seaice_calc_lhs.f"
 C     3. staf -forward -toplevel seaice_calc_residual \
