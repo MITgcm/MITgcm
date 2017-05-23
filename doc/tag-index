@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2331 2017/05/12 00:10:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2332 2017/05/23 16:25:47 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: 
+  - add new routines to compute stress tensor components and stress tensor 
+    divergence to be reused in s/r seaice_lsr and s/r seaice_calc_lhs
+  - change names of diagnostics SIsigI/II (commonly used for invariants)
+    to SIsig1/sig2 (more common for principal components) to avoid confusion
 o pkf/exf:
   - add a stop if useRelativeWind with un-updated uwind/vwind (e.g., constant);
     similarly, stop if rotateStressOnAgrid with constant wind-stress.
