@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.15 2017/04/28 20:04:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_lhs.F,v 1.16 2017/05/23 16:22:45 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -78,10 +78,6 @@ C     i,j,bi,bj,k :: loop indices
       _RL     COSWAT, recip_deltaT, eplus, eminus
 C     backward difference extrapolation factor
       _RL bdfAlpha
-C     components of symmetric stress tensor
-      _RL sig11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL sig22(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     symmetric drag coefficient
       _RL dragSym(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     fractional area at velocity points
@@ -128,50 +124,14 @@ C     symmetric drag coefficient may include bottomdrag for grounded ice
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
          ENDDO
         ENDDO
+C     
 C     compute components of stress tensor from current velocity field
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          sig11(I,J) = 0. _d 0
-          sig22(I,J) = 0. _d 0
-          sig12(I,J) = 0. _d 0
-         ENDDO
-        ENDDO
-
-        DO j=0,sNy
-         DO i=0,sNx
-          eplus = e11(I,J,bi,bj) + e22(I,J,bi,bj)
-          eminus= e11(I,J,bi,bj) - e22(I,J,bi,bj)
-          sig11(I,J) = zeta(I,J,bi,bj)*eplus + eta(I,J,bi,bj)*eminus
-     &         - 0.5 _d 0 * PRESS(I,J,bi,bj)
-          sig22(I,J) = zeta(I,J,bi,bj)*eplus - eta(I,J,bi,bj)*eminus
-     &         - 0.5 _d 0 * PRESS(I,J,bi,bj)
-         ENDDO
-        ENDDO
-
-        DO j=1,sNy+1
-         DO i=1,sNx+1
-          sig12(I,J) = 2. _d 0 * e12(I,J,bi,bj) * etaZ(I,J,bi,bj)
-         ENDDO
-        ENDDO
+C     and compute divergence of stress tensor
 C
-C     compute divergence of stress tensor
-C
-        DO J=1,sNy
-         DO I=1,sNx
-          stressDivergenceX(I,J,bi,bj) =
-     &         ( sig11(I  ,J  ) * _dyF(I  ,J,bi,bj)
-     &         - sig11(I-1,J  ) * _dyF(I-1,J,bi,bj)
-     &         + sig12(I  ,J+1) * _dxV(I,J+1,bi,bj)
-     &         - sig12(I  ,J  ) * _dxV(I,J  ,bi,bj)
-     &         ) * recip_rAw(I,J,bi,bj)
-          stressDivergenceY(I,J,bi,bj) =
-     &         ( sig22(I  ,J  ) * _dxF(I,J  ,bi,bj)
-     &         - sig22(I  ,J-1) * _dxF(I,J-1,bi,bj)
-     &         + sig12(I+1,J  ) * _dyU(I+1,J,bi,bj)
-     &         - sig12(I  ,J  ) * _dyU(I  ,J,bi,bj)
-     &         ) * recip_rAs(I,J,bi,bj)
-         ENDDO
-        ENDDO
+        CALL SEAICE_CALC_STRESSDIV( 
+     I       e11, e22, e12, press, zeta, eta, etaZ,
+     O       stressDivergenceX, stressDivergenceY,
+     I       bi, bj, myTime, myIter, myThid )
 C     compute lhs side of momentum equations
         IF ( SEAICEscaleSurfStress ) THEN
          DO J=1,sNy
