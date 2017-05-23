@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.33 2016/05/17 15:26:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_state.F,v 1.34 2017/05/23 16:23:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -43,9 +43,12 @@ C     == Local variables ==
       INTEGER i,j,bi,bj
       _RL tIce (1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
 #ifdef SEAICE_CGRID
-      _RL sigI (1-oLx:sNx+oLx,1-oLy:sNy+oLy)
-      _RL sigII(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
-      _RL sig1, sig2, sig12, sigTmp, recip_prs
+      _RL sig1(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
+      _RL sig2(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
+      _RL sig11(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
+      _RL sig22(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
+      _RL sig12(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
+      _RL sigp, sigm, sigTmp, recip_prs
 #endif
       INTEGER k
       _RL recip_multDim
@@ -151,8 +154,8 @@ C     but we are looking for T = k*P = k*press/(1-k)
         ENDDO
         CALL DIAGNOSTICS_FILL(tIce,'SItensil',0,1 ,0,1,1,myThid)
        ENDIF
-       IF ( DIAGNOSTICS_IS_ON('SIsigI  ',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIsigII ',myThid) .OR.
+       IF ( DIAGNOSTICS_IS_ON('SIsig1  ',myThid) .OR.
+     &      DIAGNOSTICS_IS_ON('SIsig2  ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIshear ',myThid) ) THEN
 #ifdef SEAICE_ALLOW_EVP
         IF ( SEAICEuseEVP ) THEN
@@ -163,23 +166,23 @@ C     PRESS = PRESS(n-1), n = number of sub-cycling steps
           DO bi = myBxLo(myThid), myBxHi(myThid)
            DO j=1,sNy
             DO i=1,sNx
-             sig1 = seaice_sigma1(I,J,bi,bj)
-             sig2 = seaice_sigma2(I,J,bi,bj)
-             sig12 = 0.25 _d 0 *
+             sigp = seaice_sigma1(I,J,bi,bj)
+             sigm = seaice_sigma2(I,J,bi,bj)
+             sig12(I,J) = 0.25 _d 0 *
      &            ( seaice_sigma12(I,  J,  bi,bj)
      &            + seaice_sigma12(I+1,J,  bi,bj)
      &            + seaice_sigma12(I+1,J+1,bi,bj)
      &            + seaice_sigma12(I  ,J+1,bi,bj) )
-             sigTmp = SQRT( sig2*sig2 + 4. _d 0*sig12*sig12 )
+             sigTmp = SQRT( sigm*sigm + 4. _d 0*sig12(I,J)*sig12(I,J) )
              recip_prs = 0. _d 0
-             IF ( press(I,J,bi,bj) .GT. 1. _d -13 )
-     &            recip_prs = 1./press(I,J,bi,bj)
-             sigI (I,J) = 0.5*(sig1 + sigTmp)*recip_prs
-             sigII(I,J) = 0.5*(sig1 - sigTmp)*recip_prs
+             IF ( press0(I,J,bi,bj) .GT. 1. _d -13 )
+     &            recip_prs = 1./press0(I,J,bi,bj)
+             sig1(I,J) = 0.5*(sigp + sigTmp)*recip_prs
+             sig2(I,J) = 0.5*(sigp - sigTmp)*recip_prs
             ENDDO
            ENDDO
-           CALL DIAGNOSTICS_FILL(sigI ,'SIsigI  ',0,1,2,bi,bj,myThid)
-           CALL DIAGNOSTICS_FILL(sigII,'SIsigII ',0,1,2,bi,bj,myThid)
+           CALL DIAGNOSTICS_FILL(sig1,'SIsig1  ',0,1,2,bi,bj,myThid)
+           CALL DIAGNOSTICS_FILL(sig2,'SIsig2  ',0,1,2,bi,bj,myThid)
           ENDDO
          ENDDO
         ELSE
@@ -191,30 +194,43 @@ C     recompute strainrates from up-to-date velocities
      I        uIce, vIce,
      O        e11, e22, e12,
      I        0, myTime, myIter, myThid )
+CML      CALL SEAICE_CALC_VISCOSITIES(
+CML     I     e11, e22, e12, zMin, zMax, hEffM, press0, tensileStrFac,
+CML     O     eta, etaZ, zeta, zetaZ, press, deltaC,
+CML     I     0, myTime, myIter, myThid )
 C     but use old viscosities and pressure for the
 C     principle stress components
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
+           CALL SEAICE_CALC_STRESS(
+     I          e11, e22, e12, press, zeta, eta, etaZ,
+     O          sig11, sig22, sig12,
+     I          bi, bj, myTime, myIter, myThid )
            DO j=1,sNy
             DO i=1,sNx
-             sig1  = 2.*zeta(I,J,bi,bj)
-     &            * (e11(I,J,bi,bj) + e22(I,J,bi,bj))
-     &            - press(I,J,bi,bj)
-             sig2  = 2.* eta(I,J,bi,bj)
-     &            * (e11(I,J,bi,bj) - e22(I,J,bi,bj))
-             sig12 = 2.*eta(I,J,bi,bj) * 0.25 _d 0 *
-     &            ( e12(I  ,J  ,bi,bj) + e12(I+1,J  ,bi,bj)
-     &            + e12(I  ,J+1,bi,bj) + e12(I+1,J+1,bi,bj) )
-             sigTmp = SQRT( sig2*sig2 + 4. _d 0*sig12*sig12 )
+             sigp   = sig11(I,J) + sig22(I,J)
+             sigm   = sig11(I,J) - sig22(I,J)
+C     This should be the way of computing sig12 at C-points, 
+C            sigTmp = 0.25 _d 0 *
+C    &            ( sig12(I  ,J  ) + sig12(I+1,J  )
+C    &            + sig12(I  ,J+1) + sig12(I+1,J+1) )
+C     but sig12 = 2*etaZ*e12, and because of strong gradients in eta, 
+C     etaZ can be very large for a cell with small eta and the straightforward
+C     way of averaging mixes large etaZ with small press0, so we have to do it
+C     in different way to get meaningfull sig12C (=sigTmp):
+             sigTmp = 2.*eta(I,J,bi,bj) * 0.25 _d 0 *
+     &            (e12(I,J,bi,bj) + e12(I+1,J,bi,bj)
+     &            +e12(I,J+1,bi,bj)+e12(I+1,J+1,bi,bj))
+             sigTmp = SQRT( sigm*sigm + 4.*sigTmp*sigTmp )
              recip_prs = 0. _d 0
-             IF ( press(I,J,bi,bj) .GT. 1. _d -13 )
-     &            recip_prs = 1./press(I,J,bi,bj)
-             sigI (I,J) = 0.5*(sig1 + sigTmp)*recip_prs
-             sigII(I,J) = 0.5*(sig1 - sigTmp)*recip_prs
+             IF ( press0(I,J,bi,bj) .GT. 1. _d -13 )
+     &            recip_prs = 1./press0(I,J,bi,bj)
+             sig1(I,J) = 0.5*(sigp + sigTmp)*recip_prs
+             sig2(I,J) = 0.5*(sigp - sigTmp)*recip_prs
             ENDDO
            ENDDO
-           CALL DIAGNOSTICS_FILL(sigI ,'SIsigI  ',0,1,2,bi,bj,myThid)
-           CALL DIAGNOSTICS_FILL(sigII,'SIsigII ',0,1,2,bi,bj,myThid)
+           CALL DIAGNOSTICS_FILL(sig1,'SIsig1  ',0,1,2,bi,bj,myThid)
+           CALL DIAGNOSTICS_FILL(sig2,'SIsig2  ',0,1,2,bi,bj,myThid)
           ENDDO
          ENDDO
 C     endif SEAICEuseEVP
@@ -223,20 +239,19 @@ C     endif SEAICEuseEVP
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1,sNy
            DO i=1,sNx
-            sig1 = e11(I,J,bi,bj)
-            sig2 = e22(I,J,bi,bj)
-            sig12 = 
+            sigm = e11(I,J,bi,bj) - e22(I,J,bi,bj)
+            sigTmp = 
      &           ( e12(I,  J,  bi,bj)**2 + e12(I+1,J,  bi,bj)**2
      &           + e12(I+1,J+1,bi,bj)**2 + e12(I  ,J+1,bi,bj)**2 )
 C     shear deformation as sqrt((e11-e22)**2 + 4*e12**2); the 4 pulled into
 C     the average
-            sigI(I,J) = sqrt((sig1-sig2)*(sig1-sig2) + sig12)
+            sig1(I,J) = sqrt(sigm*sigm + sigTmp)
            ENDDO
           ENDDO
-          CALL DIAGNOSTICS_FILL(sigI ,'SIshear ',0,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(sig1,'SIshear ',0,1,2,bi,bj,myThid)
          ENDDO
         ENDDO
-C     endif DIAGNOSTICS_IS_ON(SIsigI/II)
+C     endif DIAGNOSTICS_IS_ON(SIsig1/2)
        ENDIF
 #endif /* SEAICE_CGRID */
 C     abuse press as a temporary field

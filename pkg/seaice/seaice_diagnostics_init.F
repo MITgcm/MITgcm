@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.44 2017/05/10 18:10:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.45 2017/05/23 16:23:46 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -722,14 +722,14 @@ C=============== dynamics ============
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIsigI  '
+      diagName  = 'SIsig1  '
       diagTitle = 'SEAICE normalized principle stress, component one'
       diagUnits = 'no units        '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIsigII '
+      diagName  = 'SIsig2  '
       diagTitle = 'SEAICE normalized principle stress, component two'
       diagUnits = 'no units        '
       diagCode  = 'SM      M1      '
