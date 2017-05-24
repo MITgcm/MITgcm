@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_remineralization.F,v 1.10 2017/03/29 15:51:19 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_remineralization.F,v 1.11 2017/05/24 17:21:15 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -379,9 +379,9 @@ c ---------------------------------------------------------------------
       IF ( useDiagnostics ) THEN
 
 c 3d local variables
-        CALL DIAGNOSTICS_FILL(Fe_ads_org,   'BLGFEAO ',0,Nr,2,bi,bj,
+        CALL DIAGNOSTICS_FILL(Fe_ads_org,   'BLGFEADO',0,Nr,2,bi,bj,
      &       myThid)
-        CALL DIAGNOSTICS_FILL(Fe_ads_inorg, 'BLGFEAI ',0,Nr,2,bi,bj,
+        CALL DIAGNOSTICS_FILL(Fe_ads_inorg, 'BLGFEADI',0,Nr,2,bi,bj,
      &       myThid)
         CALL DIAGNOSTICS_FILL(Fe_sed,   'BLGFESED',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(Fe_reminp,'BLGFEREM',0,Nr,2,bi,bj,myThid)

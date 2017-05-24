@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.12 2017/03/31 19:36:59 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.13 2017/05/24 17:21:15 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -625,6 +625,7 @@ c  sinking fraction: particulate organic matter
      &           (1. + (mu(i,j,k)/(epsln + lambda_0*expkT(i,j,k)))**2.)*
      &           exp(kappa_remin * theta(i,j,k,bi,bj))
 
+#ifdef USE_BLING_DVM
           N_spm(i,j,k) = frac_exp * (1.0 - phi_dvm) *  
      &                 (N_uptake(i,j,k) + N_fix(i,j,k))
 
@@ -642,6 +643,15 @@ c  sinking fraction: particulate organic matter
 
           Fe_dvm(i,j,k) = frac_exp * Fe_uptake(i,j,k) -  
      &                    Fe_spm(i,j,k)
+#else
+          N_spm(i,j,k) = frac_exp * (N_uptake(i,j,k) + N_fix(i,j,k))
+          P_spm(i,j,k) = frac_exp *P_uptake(i,j,k)
+          Fe_spm(i,j,k) = frac_exp * Fe_uptake(i,j,k)
+
+          N_dvm(i,j,k) = 0
+          P_dvm(i,j,k) = 0
+          Fe_dvm(i,j,k) = 0
+#endif
         
 c  the remainder is divided between instantaneously recycled and
 c  long-lived dissolved organic matter. 
@@ -861,8 +871,6 @@ c 3d local variables
         CALL DIAGNOSTICS_FILL(Fe_recycle,  'BLGFEREC',0,Nr,2,bi,bj,
      &       myThid)
         CALL DIAGNOSTICS_FILL(Fe_remindvm, 'BLGFERD ',0,Nr,2,bi,bj,
-     &       myThid)
-        CALL DIAGNOSTICS_FILL(Fe_reminsum, 'BLGFEREM',0,Nr,2,bi,bj,
      &       myThid)
         CALL DIAGNOSTICS_FILL(Fe_uptake,'BLGFEUP ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(N_den_benthic,'BLGNDENB',0,Nr,2,bi,bj,
