@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.34 2017/05/09 02:49:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.35 2017/05/26 08:33:03 mlosch Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -653,6 +653,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        IF ( diagName .EQ. 'SIfv    ' ) newName = 'oceTAUY '
        IF ( diagName .EQ. 'SIuwind ' ) newName = 'EXFuwind'
        IF ( diagName .EQ. 'SIvwind ' ) newName = 'EXFvwind'
+       IF ( diagName .EQ. 'SIsigI  ' ) newName = 'SIsig1  '
+       IF ( diagName .EQ. 'SIsigII ' ) newName = 'SIsig2  '
       ENDIF
 
       IF ( newName.EQ.blkName ) THEN
