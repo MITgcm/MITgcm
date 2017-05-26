@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.21 2014/10/20 03:20:57 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.22 2017/05/26 09:08:32 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -165,7 +165,6 @@ c$$$     &         - hFacV * k1AtZ(i,j,bi,bj) * vave(i,j)
 c$$$     &         - hFacU * k2AtZ(i,j,bi,bj) * uave(i,j)
          ENDDO
         ENDDO
-
        ENDDO
       ENDDO
 
