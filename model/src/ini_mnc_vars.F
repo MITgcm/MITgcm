@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.12 2013/07/26 14:22:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.13 2017/06/01 20:50:56 mlosch Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -208,11 +208,11 @@ C     Create MNC definitions for DYNVARS.h variables  ----------------
 #ifdef ALLOW_CAL
       IF ( useCAL ) THEN
        CALL CAL_GETDATE( -1, startTime, locDate, myThid )
-C     format: seconds since 1992-01-01, 00:00:00
+C     format: seconds since 1992-01-01 00:00:00
        WRITE(timeUnits,'(A,I4.4,5(A,I2.2))')
      &      'seconds since ', locDate(1)/10000,       '-',
      &      (locDate(1) - locDate(1)/10000*10000)/100,'-',
-     &      (locDate(1) - locDate(1)/100*100),        ', ',
+     &      (locDate(1) - locDate(1)/100*100),        ' ',
      &       locDate(2)/10000,                        ':',
      &      (locDate(2) - locDate(2)/10000*10000)/100,':',
      &      (locDate(2) - locDate(2)/100*100)
