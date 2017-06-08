@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.134 2017/04/28 17:20:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.135 2017/06/08 15:10:05 mlosch Exp $
 C $Name:  $
 
 C     *==========================================================*
@@ -43,6 +43,8 @@ C     SEAICEuseTilt     :: If true then include surface tilt term in dynamics
 C     SEAICEuseMetricTerms :: use metric terms for dynamics solver
 C                          (default = .true. )
 C     SEAICE_no_slip    :: apply no slip boundary conditions to seaice velocity
+C     SEAICE_2ndOrderBC :: apply 2nd order no slip boundary conditions (works
+C                          only with EVP, JFNK or KRYLOV solver, default=F)
 C     SEAICE_maskRHS    :: mask the RHS of the solver where there is no ice
 C     SEAICE_clipVelocities :: clip velocities to +/- 40cm/s
 C     SEAICEaddSnowMass :: in computing seaiceMass, add snow contribution
@@ -122,7 +124,8 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseLinRemapITD,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
-     &     SEAICE_no_slip, SEAICE_maskRHS, SEAICEscaleSurfStress,
+     &     SEAICE_no_slip, SEAICE_2ndOrderBC, 
+     &     SEAICE_maskRHS, SEAICEscaleSurfStress,
      &     SEAICE_clipVelocities, useHB87stressCoupling, 
      &     SEAICEaddSnowMass,
      &     SEAICEuseFluxForm, SEAICEadvHeff, SEAICEadvArea,
@@ -149,7 +152,8 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseLinRemapITD,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
-     &     SEAICE_no_slip, SEAICE_maskRHS, SEAICEscaleSurfStress,
+     &     SEAICE_no_slip, SEAICE_2ndOrderBC,
+     &     SEAICE_maskRHS, SEAICEscaleSurfStress,
      &     SEAICE_clipVelocities, useHB87stressCoupling,
      &     SEAICEaddSnowMass,
      &     SEAICEuseFluxForm, SEAICEadvHeff, SEAICEadvArea,

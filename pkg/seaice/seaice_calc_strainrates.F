@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.22 2017/05/26 09:08:32 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_strainrates.F,v 1.23 2017/06/08 15:10:05 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -75,6 +75,8 @@ C     i,j,bi,bj :: Loop counters
 C     hFacU, hFacV :: determine the no-slip boundary condition
       INTEGER k
       _RS hFacU, hFacV, noSlipFac
+      _RL third
+      PARAMETER ( third = 0.333333333333333333333333333 _d 0 )
 C     auxillary variables that help writing code that
 C     vectorizes even after TAFization
       _RL dudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -165,6 +167,38 @@ c$$$     &         - hFacV * k1AtZ(i,j,bi,bj) * vave(i,j)
 c$$$     &         - hFacU * k2AtZ(i,j,bi,bj) * uave(i,j)
          ENDDO
         ENDDO
+        IF ( SEAICE_no_slip .AND. SEAICE_2ndOrderBC ) THEN
+         DO j=1-OLy+2,sNy+OLy-1
+          DO i=1-OLx+2,sNx+OLx-1
+           hFacU = (_maskW(i,j,k,bi,bj) - _maskW(i,j-1,k,bi,bj))*third
+           hFacV = (_maskS(i,j,k,bi,bj) - _maskS(i-1,j,k,bi,bj))*third
+           hFacU = hFacU*( _maskW(i,j-2,k,bi,bj)*_maskW(i,j-1,k,bi,bj)
+     &                   + _maskW(i,j+1,k,bi,bj)*_maskW(i,j,  k,bi,bj) )
+           hFacV = hFacV*( _maskS(i-2,j,k,bi,bj)*_maskS(i-1,j,k,bi,bj)
+     &                   + _maskS(i+1,j,k,bi,bj)*_maskS(i  ,j,k,bi,bj) )
+C     right hand sided dv/dx = (9*v(i,j)-v(i+1,j))/(4*dxv(i,j)-dxv(i+1,j))
+C     according to a Taylor expansion to 2nd order. We assume that dxv 
+C     varies very slowly, so that the denominator simplifies to 3*dxv(i,j),
+C     then dv/dx = (6*v(i,j)+3*v(i,j)-v(i+1,j))/(3*dxv(i,j))
+C                = 2*v(i,j)/dxv(i,j) + (3*v(i,j)-v(i+1,j))/(3*dxv(i,j))
+C     the left hand sided dv/dx is analogously
+C                = - 2*v(i-1,j)/dxv(i,j) - (3*v(i-1,j)-v(i-2,j))/(3*dxv(i,j))
+C     the first term is the first order part, which is already added.
+C     For e12 we only need 0.5 of this gradient and vave = is either 
+C     0.5*v(i,j) or 0.5*v(i-1,j) near the boundary so that we need an
+C     extra factor of 2. This explains the six. du/dy is analogous.
+C     The masking is ugly, but hopefully effective.
+           e12Loc(i,j,bi,bj) = e12Loc(i,j,bi,bj) + 0.5 _d 0 * (
+     &            _recip_dyU(i,j,bi,bj) * ( 6.0 _d 0 * uave(i,j) 
+     &          - uFld(i,j-2,bi,bj)*_maskW(i,j-1,k,bi,bj)
+     &          - uFld(i,j+1,bi,bj)*_maskW(i,j  ,k,bi,bj) ) * hFacU
+     &          + _recip_dxV(i,j,bi,bj) * ( 6.0 _d 0 * vave(i,j)
+     &          - vFld(i-2,j,bi,bj)*_maskS(i-1,j,k,bi,bj)
+     &          - vFld(i+1,j,bi,bj)*_maskS(i  ,j,k,bi,bj) ) * hFacV
+     &          )
+          ENDDO
+         ENDDO
+        ENDIF
        ENDDO
       ENDDO
 

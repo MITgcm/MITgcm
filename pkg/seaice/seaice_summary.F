@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.90 2017/04/28 17:20:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.91 2017/06/08 15:10:05 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -193,6 +193,9 @@ C--  Seaice-Dynamics parameters
      & 'SEAICEuseMetricTerms =', ' /* use metric terms */')
       CALL WRITE_0D_L ( SEAICE_no_slip, INDEX_NONE,
      & 'SEAICE_no_slip    =', ' /* no slip boundary conditions */')
+      CALL WRITE_0D_L ( SEAICE_2ndOrderBC, INDEX_NONE,
+     & 'SEAICE_2ndOrderBC =', 
+     & ' /* 2nd order no slip boundary conditions */')
       CALL WRITE_0D_L ( SEAICE_clipVelocities, INDEX_NONE,
      & 'SEAICE_clipVeloctities =', ' /* impose max. vels. */')
       CALL WRITE_0D_L ( useHB87stressCoupling, INDEX_NONE,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.176 2017/04/28 17:20:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.177 2017/06/08 15:10:05 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -101,7 +101,8 @@ C--   SEAICE parameters
      & SEAICEmomAdvection, SEAICEselectKEscheme, SEAICEselectVortScheme,
      & SEAICEhighOrderVorticity, SEAICEupwindVorticity,
      & SEAICEuseAbsVorticity, SEAICEuseJamartMomAdv,
-     & SEAICE_clipVelocities, SEAICE_maskRHS, SEAICE_no_slip,
+     & SEAICE_clipVelocities, SEAICE_maskRHS, 
+     & SEAICE_no_slip, SEAICE_2ndOrderBC,
      & SEAICEetaZmethod, LAD, IMAX_TICE, postSolvTempIter,
      & SEAICEuseFluxForm, SEAICEadvScheme, SEAICEadvSchArea,
      & SEAICEadvSchHeff, SEAICEadvSchSnow,
@@ -285,6 +286,7 @@ C     end ridging parampeters
       SEAICEuseJamartMomAdv    = .FALSE.
       SEAICEuseFlooding  = .TRUE.
       SEAICE_no_slip     = .FALSE.
+      SEAICE_2ndOrderBC  = .FALSE.
       SEAICE_clipVelocities = .FALSE.
       SEAICE_maskRHS     = .FALSE.
       SEAICEetaZmethod   = 0
@@ -837,6 +839,11 @@ C     the preconditioner for the Krylov methods by default
        SEAICE_OLy = 0
        IF ( SEAICEuseJFNK .OR. SEAICEuseKrylov ) SEAICE_OLy = OLy-2
       ENDIF
+
+C     2nd order boundary conditions only possible for no_slip,
+C     and EVP, JFNK, and Krylov solvers
+      IF ( .NOT. SEAICE_no_slip ) SEAICE_2ndOrderBC = .FALSE.
+      IF ( SEAICEuseLSR ) SEAICE_2ndOrderBC = .FALSE.
 
 C-    The old ways of specifying mcPheeTaper, mcPheePiston & frazilFrac:
 C     a) prevent multiple specification of the same coeff;
