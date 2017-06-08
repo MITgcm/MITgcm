@@ -1,14 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2334 2017/06/08 15:10:15 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2335 2017/06/08 15:35:52 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: add the option to compute no-slip du/dy, dv/dx (i.e. 
-  the offdiagonal strain rate e12) by a second order approximation 
-  on the boundary; works only with JFNK, KRYLOV, or EVP solvers, because 
-  it is too messy to implement for the implicit LSR matrix. 
-  SEAICE_2ndOrderBC = .FALSE. by default
+o pkg/seaice: 
+  - prevent JFNK and KRYLOV solvers from trying to reduce a residual of 0
+  - add the option to compute no-slip du/dy, dv/dx (i.e. 
+    the offdiagonal strain rate e12) by a second order approximation 
+    on the boundary; works only with JFNK, KRYLOV, or EVP solvers, because 
+    it is too messy to implement for the implicit LSR matrix. 
+    SEAICE_2ndOrderBC = .FALSE. by default
 
 checkpoint66h (2017/06/02)
 o pkg/seaice:
