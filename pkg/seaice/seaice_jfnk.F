@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.30 2016/01/28 12:54:12 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_jfnk.F,v 1.31 2017/06/08 15:33:50 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -228,6 +228,7 @@ C     in that routine
        iCode         = 0
 
        JFNKconverged = JFNKresidual.LT.JFNKtol
+     &      .OR.JFNKresidual.EQ.0. _d 0
 
 C     do Krylov loop only if convergence is not reached
 

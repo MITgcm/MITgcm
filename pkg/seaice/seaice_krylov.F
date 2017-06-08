@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_krylov.F,v 1.3 2016/05/17 15:26:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_krylov.F,v 1.4 2017/06/08 15:33:50 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -290,6 +290,7 @@ C     in that routine
        iCode         = 0
 
        picardConverged = picardResidual.LT.picardTol
+     &      .OR.picardResidual.EQ.0. _d 0
 
 C     do Krylov loop only if convergence is not reached
 
