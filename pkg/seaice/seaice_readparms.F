@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.177 2017/06/08 15:10:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.178 2017/06/09 13:17:42 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -829,21 +829,29 @@ C     number much larger than the maximum allowed Newton iterations
       IF ( SEAICE_JFNK_lsIter .EQ. UNSET_I )
      &     SEAICE_JFNK_lsIter  = 2*SEAICEnewtonIterMax
 
-C     So far we use the restrictive additive Schwartz method only in
-C     the preconditioner for the Krylov methods by default
-      IF ( SEAICE_OLx.EQ.UNSET_I ) THEN
-       SEAICE_OLx = 0
-       IF ( SEAICEuseJFNK .OR. SEAICEuseKrylov ) SEAICE_OLx = OLx-2
-      ENDIF
-      IF ( SEAICE_OLy.EQ.UNSET_I ) THEN
-       SEAICE_OLy = 0
-       IF ( SEAICEuseJFNK .OR. SEAICEuseKrylov ) SEAICE_OLy = OLy-2
-      ENDIF
-
 C     2nd order boundary conditions only possible for no_slip,
 C     and EVP, JFNK, and Krylov solvers
       IF ( .NOT. SEAICE_no_slip ) SEAICE_2ndOrderBC = .FALSE.
       IF ( SEAICEuseLSR ) SEAICE_2ndOrderBC = .FALSE.
+
+C     So far we use the restrictive additive Schwartz method only in
+C     the preconditioner for the Krylov methods by default
+      IF ( SEAICE_OLx.EQ.UNSET_I ) THEN
+       SEAICE_OLx = 0
+       IF ( SEAICEuseJFNK .OR. SEAICEuseKrylov ) THEN
+        SEAICE_OLx = OLx-2
+C     2nd order boundary conditions require one more row of overlap
+        IF ( SEAICE_2ndOrderBC ) SEAICE_OLx = OLx-3
+       ENDIF
+      ENDIF
+      IF ( SEAICE_OLy.EQ.UNSET_I ) THEN
+       SEAICE_OLy = 0
+       IF ( SEAICEuseJFNK .OR. SEAICEuseKrylov ) THEN
+        SEAICE_OLy = OLy-2
+C     2nd order boundary conditions require one more row of overlap
+        IF ( SEAICE_2ndOrderBC ) SEAICE_OLy = OLy-3
+       ENDIF
+      ENDIF
 
 C-    The old ways of specifying mcPheeTaper, mcPheePiston & frazilFrac:
 C     a) prevent multiple specification of the same coeff;
