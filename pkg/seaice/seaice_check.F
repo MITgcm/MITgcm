@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.99 2017/04/28 17:20:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.100 2017/06/09 13:18:16 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -665,13 +665,58 @@ C      without EXF (assuming a simple scaling of wind-stress over ice)
 C     end if usePW79thermodynamics
       ENDIF
 
-      IF ( OLx.LT.3 .OR. OLy.LT.3 ) THEN
-        WRITE(msgBuf,'(A,A)')
-     &  'SEAICE_CHECK: cannot use EVP nor LSR solver with',
-     &  ' overlap (OLx,OLy) smaller than 3'
+#ifdef SEAICE_ALLOW_DYNAMICS
+      IF ( SEAICEuseDynamics ) THEN
+       IF ( SEAICEuseJFNK ) THEN
+        IF ( OLx.LT.3 .OR. OLy.LT.3 ) THEN
+         WRITE(msgBuf,'(A,A)')
+     &        'SEAICE_CHECK: cannot use JFNK-solver with',
+     &        ' overlap (OLx,OLy) smaller than 3'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+        ENDIF
+       ELSE
+        IF ( OLx.LT.2 .OR. OLy.LT.2 ) THEN
+         WRITE(msgBuf,'(A,A)')
+     &        'SEAICE_CHECK: cannot use dynamics solver with',
+     &        ' overlap (OLx,OLy) smaller than 2'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+        ENDIF
+       ENDIF
+       IF ( SEAICE_OLx .GT. OLx-2 .OR. SEAICE_OLy .GT. OLy-2 .OR.
+     &      SEAICE_OLx .LT. 0     .OR. SEAICE_OLy .LT. 0 ) THEN
+        WRITE(msgBuf,'(A,I2,A,I2)') 'S/R SEAICE_CHECK: SEAICE_OLx/y = ',
+     &       SEAICE_OLx, '/', SEAICE_OLy
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A,I2,A,I2)')
+     &       'S/R SEAICE_CHECK: SEAICE_OLx/y cannot be smaller than 0 ',
+     &       'or larger than OLx/y-2 = ', OLx-2, '/', OLy-2
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+       ENDIF
+       IF ( SEAICE_2ndOrderBC ) THEN
+        IF ( OLx.LT.3 .OR. OLy.LT.3 ) THEN
+         WRITE(msgBuf,'(A,A)')
+     &   'SEAICE_CHECK: SEAICE_2ndOrderBC = .TRUE. requires',
+     &   ' an overlap (OLx,OLy) of at least 3'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+        ENDIF
+        IF ( SEAICE_OLx .GT. OLx-3 .OR. SEAICE_OLy .GT. OLy-3 ) THEN
+         WRITE(msgBuf,'(A,I2,A,I2)')
+     &        'S/R SEAICE_CHECK: SEAICE_OLx/y = ', 
+     &        SEAICE_OLx, '/', SEAICE_OLy
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(2A,I2,A,I2)')
+     &        'S/R SEAICE_CHECK: with SEAICE_2ndOrderBC, SEAICE_OLx/y', 
+     &        ' cannot be larger than OLx/y-3 = ', OLx-3, '/', OLy-3
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+        ENDIF
+       ENDIF
       ENDIF
+#endif /* SEAICE_ALLOW_DYNAMICS */
 
 #ifdef SEAICE_ALLOW_EVP
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -822,20 +867,6 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif /* SEAICE_VARIABLE_SALINITY */
-
-      IF ( SEAICEuseDynamics ) THEN
-       IF ( SEAICE_OLx .GT. OLx-2 .OR. SEAICE_OLy .GT. OLy-2 .OR.
-     &      SEAICE_OLx .LT. 0     .OR. SEAICE_OLy .LT. 0 ) THEN
-        WRITE(msgBuf,'(A,I2,A,I2)') 'S/R SEAICE_CHECK: SEAICE_OLx/y = ',
-     &       SEAICE_OLx, '/', SEAICE_OLy
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A,I2,A,I2)')
-     &       'S/R SEAICE_CHECK: SEAICE_OLx/y cannot be smaller than 0 ',
-     &       'or larger than OLx/y-2 = ', OLx-2, '/', OLy-2
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-       ENDIF
-      ENDIF
 
 #ifdef SEAICE_ALLOW_JFNK
       IF ( SEAICEuseJFNK ) THEN
