@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_add_tides.F,v 1.2 2012/11/15 20:46:52 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_add_tides.F,v 1.3 2017/06/11 01:36:56 dimitri Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -14,6 +14,9 @@ C     !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE OBCS_ADD_TIDES
 C     | o Modify OB normal flow to add tidal forcing
+C     |   NOTE that at the moment tidal forcing is applied
+C     |   only to "normal" flow.  Code below should eventually
+C     |   be augmented to also specify flow parallel to boundary.      
 C     *==========================================================*
 
 C     !USES:

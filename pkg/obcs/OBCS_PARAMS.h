@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_PARAMS.h,v 1.6 2014/11/25 01:07:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_PARAMS.h,v 1.7 2017/06/11 01:36:56 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -68,6 +68,8 @@ C
 C useOBCSbalance   :: balance the volume flux through boundary
 C                     at every time step
 C useOBCStides     :: modify OB normal flow to add tidal forcing
+C                     NOTE that at the moment tidal forcing is applied
+C                     only to "normal" flow.                                                     
 C useOBCSprescribe :: read boundary conditions from a file
 C                      (overrides Orlanski and other boundary values)
 C OBCSprintDiags   :: print boundary values to STDOUT (def=true)
