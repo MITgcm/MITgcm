@@ -1,15 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2335 2017/06/08 15:35:52 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2336 2017/06/14 13:05:36 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice: 
+o pkg/exf:
+  - interpolation of vector fields (exf_interp_uv.F): fix bug in calculation
+    of South-Pole mean value.	
+o pkg/seaice:
   - prevent JFNK and KRYLOV solvers from trying to reduce a residual of 0
-  - add the option to compute no-slip du/dy, dv/dx (i.e. 
-    the offdiagonal strain rate e12) by a second order approximation 
-    on the boundary; works only with JFNK, KRYLOV, or EVP solvers, because 
-    it is too messy to implement for the implicit LSR matrix. 
+  - add the option to compute no-slip du/dy, dv/dx (i.e.
+    the offdiagonal strain rate e12) by a second order approximation
+    on the boundary; works only with JFNK, KRYLOV, or EVP solvers, because
+    it is too messy to implement for the implicit LSR matrix.
     SEAICE_2ndOrderBC = .FALSE. by default
 
 checkpoint66h (2017/06/02)
