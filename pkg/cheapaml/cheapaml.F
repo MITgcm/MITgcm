@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.27 2014/08/14 16:40:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.28 2017/06/15 09:05:52 bderembl Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -522,7 +522,8 @@ C net long wave (see Josey et al. JGR 1997)
 C coef lambda replaced by 0.5+lat/230
 C convert spec humidity in water vapor pressure (mbar) using coef 1000/0.622=1607.7
              xlwnet = 0.98 _d 0*stefan*(theta(i,j,1,bi,bj)+celsius2K)**4
-     &        *(0.39 _d 0 - 0.05 _d 0*SQRT(qair(i,j,bi,bj)*1607.7 _d 0))
+     &          *(0.39 _d 0 - 0.05 _d 0*SQRT(ABS(qair(i,j,bi,bj))
+     &          *     1607.7 _d 0))
      &        *( oneRL - (halfRL+ABS(yG(i,j,bi,bj))/230. _d 0)
      &                   *cheapclouds(i,j,bi,bj)**2 )
      &        + 4.0*0.98 _d 0*stefan*(theta(i,j,1,bi,bj)+celsius2K)**3
@@ -554,33 +555,36 @@ c    &                         +xolw
 
 C need to precip?
            IF (useFreshWaterFlux) THEN
-            q=q100(i,j)
+             q=q100(i,j)
 C compute saturation specific humidity at atmospheric
 C layer top
 C first, what is the pressure there?
 C ts is surface atmospheric temperature
             ts=Tair(i,j,bi,bj)+gamma_blk*zt+celsius2K
             pt=p0*(1-gamma_blk*CheapHgrid(i,j,bi,bj)/ts)
-     &         **(gravity/gamma_blk/gasR)
+     &          **(gravity/gamma_blk/gasR)
 
+             IF (.NOT.usePrecip) THEN
 C factor to compute rainfall from specific humidity
-            dm=100.*(p0-pt)*recip_gravity
+              dm=100.*(p0-pt)*recip_gravity
 C     Large scale precip
-            precip = 0.
-            IF ( wWind(i,j,bi,bj).GT.0. .AND.
-     &           q.GT.ssqt(i,j)*0.7 _d 0 ) THEN
-              precip = precip
+              precip = 0.
+              IF ( wWind(i,j,bi,bj).GT.0. .AND.
+     &             q.GT.ssqt(i,j)*0.7 _d 0 ) THEN
+                precip = precip
      &               + ( (q-ssqt(i,j)*0.7 _d 0)*dm/cheap_pr2 )
      &                 *(wWind(i,j,bi,bj)/0.75 _d -5)**2
-            ENDIF
+              ENDIF
 
 C     Convective precip
-            IF (q.GT.0.0214 _d 0 .AND. q.GT.ssqt(i,j)*0.9 _d 0) THEN
-              precip = precip + ((q-ssqt(i,j)*0.9 _d 0)*dm/cheap_pr1)
-            ENDIF
+              IF (q.GT.0.0214 _d 0 .AND. q.GT.ssqt(i,j)*0.9 _d 0) THEN
+                precip = precip + ((q-ssqt(i,j)*0.9 _d 0)*dm/cheap_pr1)
+              ENDIF
 
-            cheapPrecip(i,j,bi,bj) = precip*1200/CheapHgrid(i,j,bi,bj)
-            entrain = cdq(i,j)*q*0.25
+              cheapPrecip(i,j,bi,bj) = precip*1200/CheapHgrid(i,j,bi,bj)
+            ENDIF
+              
+              entrain = cdq(i,j)*q*0.25
 
 c           gqair(i,j,bi,bj)=(evp-precip-entrain)/CheapHgrid(i,j,bi,bj)
             gqair(i,j,bi,bj) = (evp(i,j)-entrain)/CheapHgrid(i,j,bi,bj)

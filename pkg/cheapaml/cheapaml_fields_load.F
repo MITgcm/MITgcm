@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.22 2013/05/25 18:08:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.23 2017/06/15 09:05:52 bderembl Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -55,7 +55,11 @@ C     CheaptracerR[01] :: Relaxation profile for passive tracer
      &         wavesh0,  wavesh1,
      &         wavesp0,  wavesp1,
 c    &         rair0,    rair1,
-     &         CheaptracerR0, CheaptracerR1
+     &         CheaptracerR0, CheaptracerR1,
+     &         cheaph0, cheaph1,
+     &         cheapcl0, cheapcl1,  
+     &         cheaplw0, cheaplw1,  
+     &         cheappr0, cheappr1  
 
       _RL  trair0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  trair1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -79,7 +83,16 @@ c     _RL  rair0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 c     _RL  rair1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  CheaptracerR0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  CheaptracerR1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  cheaph0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  cheaph1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  cheapcl0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  cheapcl1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  cheaplw0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  cheaplw1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  cheappr0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  cheappr1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+      
 C     === Local arrays ===
 C     cheaph[01]  ::
 C     cheapcl[01] ::
@@ -88,12 +101,6 @@ C     aWght,bWght :: Interpolation weights
 C     xsolph :: phase of year, assuming time zero is mid winter
 C     xinxx  :: cos ( xsolph )
 
-      _RL  cheaph0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  cheaph1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  cheapcl0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  cheapcl1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  cheaplw0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  cheaplw1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL aWght, bWght
       _RL xsolph, xinxx
 
@@ -114,92 +121,11 @@ C keys off of solardata.  if a solar data file exists, the model will
 C assume there are files to be read and interpolated between, as is standard
 C for the MITgcm.
 
-C!BD bug a corriger:
-       IF ( SolarFile .EQ. ' '  ) THEN
         IF ( useStressOption ) THEN
           WRITE(*,*)' stress option is turned on.  this is not ',
-     &    'consistent with the default time dependent forcing option'
+     &       'consistent with the default time dependent forcing option'
           STOP
         ENDIF
-        IF ( myIter .EQ. nIter0 ) THEN
-         WRITE(*,*)
-     &  'S/R  Assuming Standard Annually Varying Solar Forcing'
-        ENDIF
-         xsolph = myTime*2. _d 0*PI/365. _d 0/86400. _d 0
-         xinxx = COS( xsolph+xphaseinit+PI )
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j=1,sNy
-            DO i=1,sNx
-              jG = myYGlobalLo-1+(bj-1)*sNy+j
-              local = 225. _d 0 + dsolms*xinxx
-     &              - (jG-1)*recipNym1*(37.5 _d 0-dsolmn*xinxx)
-              Solar(i,j,bi,bj) = local
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-         _EXCH_XY_RL( solar, myThid )
-C relaxation temperature in radiative equilibrium
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j=1,sNy
-            DO i=1,sNx
-              local = solar(i,j,bi,bj)
-              local = (2. _d 0*local/stefan)**(0.25 _d 0)-celsius2K
-              TR(i,j,bi,bj) = local
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-         _EXCH_XY_RL( TR, myThid )
-C default specific humidity profile to 80% relative humidity
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j=1,sNy
-            DO i=1,sNx
-              local = Tr(i,j,bi,bj)+celsius2K
-              ssqa = ssq0*EXP( lath*(ssq1-ssq2/local)) / p0
-              qr(i,j,bi,bj) = 0.8 _d 0*ssqa
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-         _EXCH_XY_RL( qr, myThid )
-C u wind and v wind field
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j=1,sNy
-            DO i=1,sNx
-              jG = myYGlobalLo-1+(bj-1)*sNy+j
-              local = -5. _d 0*COS( 2. _d 0*PI*(jG-1)*recipNym1 )
-              uWind(i,j,bi,bj) = local
-            ENDDO
-           ENDDO
-           DO j=1,sNy
-            DO i=1,sNx
-              vWind(i,j,bi,bj) = 0. _d 0
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-         CALL EXCH_UV_XY_RL( uWind, vWind, .TRUE., myThid )
-C Tracer field
-         IF ( useCheapTracer ) THEN
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j=1,sNy
-            DO i=1,sNx
-              CheaptracerR(i,j,bi,bj) = 290. _d 0
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-         ENDIF
-          _EXCH_XY_RL( CheaptracerR, myThid )
-
-C else (case solarFile is not empty)
-       ELSE
 
 C here for usual interpolative forcings
 C First call requires that we initialize everything to zero for safety
@@ -224,6 +150,8 @@ C First call requires that we initialize everything to zero for safety
              cheapcl1(i,j,bi,bj) = 0.5
              cheaplw0(i,j,bi,bj) = 0.
              cheaplw1(i,j,bi,bj) = 0.
+             cheappr0(i,j,bi,bj) = 0.
+             cheappr1(i,j,bi,bj) = 0.
              ustress0(i,j,bi,bj) = 0.
              ustress1(i,j,bi,bj) = 0.
              vstress0(i,j,bi,bj) = 0.
@@ -258,31 +186,98 @@ C      data for the period ahead and the period behind myTime.
      &                         myIter, myThid )
           CALL READ_REC_XY_RL( SolarFile,solar1,intime1,
      &                         myIter, myThid )
-         ENDIF
+        ELSE
+          DO bj = myByLo(myThid), myByHi(myThid)
+            DO bi = myBxLo(myThid), myBxHi(myThid)
+              DO j=1,sNy
+                DO i=1,sNx
+                  Solar(i,j,bi,bj) = 0.0 _d 0
+                ENDDO
+              ENDDO
+            ENDDO
+         ENDDO
+         _EXCH_XY_RL( solar, myThid )
+
+        ENDIF
          IF ( TrFile .NE. ' ' ) THEN
           CALL READ_REC_XY_RL( TRFile,trair0,intime0,
      &                         myIter, myThid )
           CALL READ_REC_XY_RL( TRFile,trair1,intime1,
      &                         myIter, myThid )
-         ENDIF
+        ELSE
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+              TR(i,j,bi,bj) = 0.0 _d 0
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         _EXCH_XY_RL( TR, myThid )
+
+        ENDIF
          IF ( QrFile .NE. ' ' ) THEN
           CALL READ_REC_XY_RL( QrFile,qrair0,intime0,
      &                         myIter, myThid )
           CALL READ_REC_XY_RL( QrFile,qrair1,intime1,
      &                         myIter, myThid )
-         ENDIF
-         IF ( UWindFile .NE. ' ' ) THEN
+        ELSE
+          DO bj = myByLo(myThid), myByHi(myThid)
+            DO bi = myBxLo(myThid), myBxHi(myThid)
+              DO j=1,sNy
+                DO i=1,sNx
+                  qr(i,j,bi,bj) = 0.0 _d 0
+                ENDDO
+              ENDDO
+            ENDDO
+          ENDDO
+         _EXCH_XY_RL( qr, myThid )
+
+        ENDIF
+        IF ( UWindFile .NE. ' ' ) THEN
           CALL READ_REC_XY_RL( UWindFile,uWind0,intime0,
-     &                         myIter, myThid )
+     &       myIter, myThid )
           CALL READ_REC_XY_RL( UWindFile,uWind1,intime1,
-     &                         myIter, myThid )
-         ENDIF
+     &       myIter, myThid )
+        ELSE
+          DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+              uWind(i,j,bi,bj) = 0.0 _d 0
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+
+         _EXCH_XY_RL( uWind, myThid )
+!         CALL EXCH_UV_XY_RL( uWind, vWind, .TRUE., myThid )
+
+          
+       ENDIF
+       
          IF ( VWindFile .NE. ' ' ) THEN
           CALL READ_REC_XY_RL( VWindFile,vWind0,intime0,
      &                         myIter, myThid )
           CALL READ_REC_XY_RL( VWindFile,vWind1,intime1,
      &                         myIter, myThid )
-         ENDIF
+        ELSE
+          DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+              vWind(i,j,bi,bj) = 0. _d 0
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+
+
+         _EXCH_XY_RL( vWind, myThid )
+!         CALL EXCH_UV_XY_RL( uWind, vWind, .TRUE., myThid )
+         
+        ENDIF
          IF ( useTimeVarBLH .AND. cheap_hFile .NE. ' ' ) THEN
           CALL READ_REC_XY_RL( cheap_hFile,cheaph0,intime0,
      &                         myIter, myThid )
@@ -299,6 +294,12 @@ C      data for the period ahead and the period behind myTime.
           CALL READ_REC_XY_RL( cheap_dlwFile,cheaplw0,intime0,
      &                         myIter, myThid )
           CALL READ_REC_XY_RL( cheap_dlwFile,cheaplw1,intime1,
+     &                         myIter, myThid )
+         ENDIF
+         IF ( (usePrecip) .AND. cheap_prFile .NE. ' ' ) THEN
+          CALL READ_REC_XY_RL( cheap_prFile,cheappr0,intime0,
+     &                         myIter, myThid )
+          CALL READ_REC_XY_RL( cheap_prFile,cheappr1,intime1,
      &                         myIter, myThid )
          ENDIF
          IF ( useStressOption .AND. UStressFile .NE. ' ' ) THEN
@@ -330,6 +331,19 @@ C      data for the period ahead and the period behind myTime.
      &                         myIter, myThid )
            CALL READ_REC_XY_RL( TracerRFile,CheaptracerR1,intime1,
      &                         myIter, myThid )
+         ELSEIF( useCheapTracer ) THEN
+           DO bj = myByLo(myThid), myByHi(myThid)
+             DO bi = myBxLo(myThid), myBxHi(myThid)
+               DO j=1,sNy
+                 DO i=1,sNx
+                   CheaptracerR(i,j,bi,bj) = 0. _d 0
+                 ENDDO
+               ENDDO
+             ENDDO
+           ENDDO
+          _EXCH_XY_RL( CheaptracerR, myThid )
+
+
          ENDIF
          _EXCH_XY_RL( trair0 , myThid )
          _EXCH_XY_RL( trair1 , myThid )
@@ -350,6 +364,10 @@ C      data for the period ahead and the period behind myTime.
          IF ( useDLongWave ) THEN
          _EXCH_XY_RL( cheaplw0, myThid )
          _EXCH_XY_RL( cheaplw1 , myThid )
+         ENDIF
+         IF ( usePrecip ) THEN
+         _EXCH_XY_RL( cheappr0, myThid )
+         _EXCH_XY_RL( cheappr1 , myThid )
          ENDIF
          IF ( useStressOption ) THEN
          CALL EXCH_UV_AGRID_3D_RL(ustress0,vstress0, .TRUE.,1,myThid )
@@ -402,6 +420,10 @@ C--   Interpolate TR, QR, SOLAR
              cheapdlongwave(i,j,bi,bj) = bWght*cheaplw0(i,j,bi,bj)
      &                                 + aWght*cheaplw1(i,j,bi,bj)
             ENDIF
+            IF ( usePrecip ) THEN
+             cheapPrecip(i,j,bi,bj) = bWght*cheappr0(i,j,bi,bj)
+     &                                 + aWght*cheappr1(i,j,bi,bj)
+            ENDIF
             IF ( useCheapTracer ) THEN
              CheaptracerR(i,j,bi,bj) = bWght*CheaptracerR0(i,j,bi,bj)
      &                               + aWght*CheaptracerR1(i,j,bi,bj)
@@ -425,9 +447,6 @@ C--   Interpolate TR, QR, SOLAR
           ENDDO
          ENDDO
         ENDDO
-
-C end if/else solarFile is empty
-       ENDIF
 
 C end of periodic forcing options, on to steady option
       ELSE
@@ -605,6 +624,24 @@ C     BL height is done in cheapaml_ini_varia
           STOP
          ENDIF
          _EXCH_XY_RL( Cheapdlongwave, myThid )
+        ENDIF
+
+        IF ( usePrecip ) THEN
+         IF ( cheap_prFile .NE. ' ' ) THEN
+          CALL READ_FLD_XY_RL(cheap_prFile,' ',CheapPrecip,0,myThid)
+         ELSE
+          DO bj = myByLo(myThid), myByHi(myThid)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO j=1,sNy
+             DO i=1,sNx
+               CheapPrecip(i,j,bi,bj)=0.0
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+
+        ENDIF
+         _EXCH_XY_RL( CheapPrecip, myThid )
         ENDIF
 
 C--    endif myIter = nIter0

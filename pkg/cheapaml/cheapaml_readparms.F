@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.13 2014/05/27 23:41:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.14 2017/06/15 09:05:52 bderembl Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -63,7 +63,8 @@ C--   Bulk Formula parameter
      &         useCheapTracer ,
      &         useTimeVarBLH,
      &         useClouds,
-     &         useDLongWave
+     &         useDLongWave,
+     &         usePrecip
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -184,6 +185,9 @@ C-    turn off clouds option by default
 C-    use imported downward longwave
       useDLongWave=.FALSE.
 
+C-    use imported precip
+      usePrecip=.FALSE.
+
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=CHEAPAML_CONST)
       WRITE(msgBuf,'(A)') ' CHEAPAML_READPARMS: read CHEAPAML_CONST'
@@ -230,6 +234,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       WRITE(iUnit,*) 'Caml: useTimeVarBLH      =',useTimeVarBLH
       WRITE(iUnit,*) 'Caml: useClouds          =',useClouds
       WRITE(iUnit,*) 'Caml: useDlongwave       =',useDLongWave
+      WRITE(iUnit,*) 'Caml: usePrecip          =',usePrecip
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _END_MASTER(myThid)
