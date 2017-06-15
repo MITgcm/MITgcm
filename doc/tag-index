@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2336 2017/06/14 13:05:36 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2337 2017/06/15 23:11:10 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
@@ -7,6 +7,10 @@ $Name:  $
 o pkg/exf:
   - interpolation of vector fields (exf_interp_uv.F): fix bug in calculation
     of South-Pole mean value.	
+  - interpolation near the poles, case where second additional row is at the 
+    pole (or beyond the pole and moved to the pole): change first addition row
+    value to a linear interpolation between pole and 1rst (S.pole)/last (N.pole) 
+    row (instead of just a copy of it).
 o pkg/seaice:
   - prevent JFNK and KRYLOV solvers from trying to reduce a residual of 0
   - add the option to compute no-slip du/dy, dv/dx (i.e.
