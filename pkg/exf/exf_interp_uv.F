@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_uv.F,v 1.7 2017/06/14 13:03:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_uv.F,v 1.8 2017/06/15 23:10:30 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -110,6 +110,7 @@ C     arrVin      :: 2nd  component input field array (loaded from file)
       _RS      threeSixtyRS
       _RL      yPole, symSign, poleU, poleV
       _RL      csdLon, sndLon, pSign
+      _RL      edgeFac, poleFac
       LOGICAL  calcLonCS
       PARAMETER ( threeSixtyRS = 360. )
       PARAMETER ( yPole = 90. )
@@ -241,6 +242,8 @@ C-    fill-in added column from nearest column
        IF ( l.GE.1 ) j = nyIn+l
        k = MAX(1,MIN(j,nyIn))
        IF ( poleSymmetry .AND. ABS(y_in(j)).GT.yPole ) THEN
+        IF ( nyIn.GE.3 .AND. ABS(y_in(k)).EQ.yPole )
+     &    k = MAX(2,MIN(j,nyIn-1))
 C-    fill-in added row assuming pole-symmetry
         DO i=-1,nxd2
          arrUin(i,j) = symSign*arrUin(i+nxd2,k)
@@ -305,6 +308,26 @@ C     put back zonal-mean value but locally orientated
           ENDDO
 #ifdef ALLOW_DEBUG
           prtPole(l) = prtPole(l) + 0.1
+#endif
+        ENDIF
+       ENDDO
+C-    change first additional row from simple copy to linear interpolation
+C     between nearest column values and pole value
+       DO l=0,1
+        k = l*(nyIn+3) -1
+        IF ( ABS(y_in(k)).EQ.yPole ) THEN
+         j = l*(nyIn+1)
+         i = l*(nyIn-1) +1
+         edgeFac = (y_in(j) - y_in(k)) / (y_in(i) - y_in(k))
+         poleFac = (y_in(i) - y_in(j)) / (y_in(i) - y_in(k))
+         DO i=-1,nxIn+2
+           arrUin(i,j) = arrUin(i,j) * edgeFac
+     &                 + arrUin(i,k) * poleFac
+           arrVin(i,j) = arrVin(i,j) * edgeFac
+     &                 + arrVin(i,k) * poleFac
+         ENDDO
+#ifdef ALLOW_DEBUG
+         prtPole(3*l) = prtPole(3*l) + 0.3
 #endif
         ENDIF
        ENDDO
