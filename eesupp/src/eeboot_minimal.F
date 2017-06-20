@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.29 2017/01/28 18:39:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.30 2017/06/20 11:32:11 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -48,7 +48,11 @@ C     myThid     :: Temp. dummy thread number.
 C     fNam       :: Used to build file name for standard and error output.
 C     msgBuf     :: Used to build messages for printing.
       INTEGER myThid
+#ifdef USE_PDAF
+      CHARACTER*18 fNam
+#else
       CHARACTER*13 fNam
+#endif /* USE_PDAF */
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_USE_MPI
 C     mpiRC      :: Error code reporting variable used with MPI.
@@ -61,6 +65,9 @@ C     mpiRC      :: Error code reporting variable used with MPI.
 #if defined(ALLOW_NEST_PARENT) || defined(ALLOW_NEST_CHILD)
       INTEGER mpiMyWid, color
 #endif
+#ifdef USE_PDAF
+      INTEGER mpi_task_id
+#endif /* USE_PDAF */
 #endif /* ALLOW_USE_MPI */
 CEOP
 
@@ -124,6 +131,13 @@ C       down from upper level driver
        ENDIF
 
        doReport = .FALSE.
+#ifdef USE_PDAF
+C     initialize PDAF
+C     for more output increase second parameter from 1 to 2
+       CALL INIT_PARALLEL_PDAF(0, 1, MPI_COMM_MODEL, MPI_COMM_MODEL,
+     &      mpi_task_id)
+#endif /* USE_PDAF */
+
 #ifdef ALLOW_OASIS
 C      add a 1rst preliminary call EESET_PARAMS to set useOASIS
 C      (needed to decide either to call OASIS_INIT or not)
@@ -169,7 +183,11 @@ C--    Get my process number
         GOTO 999
        ENDIF
        myProcId = mpiMyId
+#ifdef USE_PDAF
+       WRITE(myProcessStr,'(I4.4,A1,I4.4)') mpi_task_id,'.',myProcId
+#else
        WRITE(myProcessStr,'(I4.4)') myProcId
+#endif /* USE_PDAF */
        mpiPidIo = myProcId
        pidIO    = mpiPidIo
        IF ( mpiPidIo .EQ. myProcId ) THEN
@@ -177,8 +195,14 @@ C--    Get my process number
         IF( myProcId .EQ. 0 ) THEN
 #endif
          WRITE(fNam,'(A,A)') 'STDERR.', myProcessStr(1:4)
+#ifdef USE_PDAF
+         WRITE(fNam,'(A,A)') 'STDERR.', myProcessStr(1:9)
+#endif
          OPEN(errorMessageUnit,FILE=fNam,STATUS='unknown')
          WRITE(fNam,'(A,A)') 'STDOUT.', myProcessStr(1:4)
+#ifdef USE_PDAF
+         WRITE(fNam,'(A,A)') 'STDOUT.', myProcessStr(1:9)
+#endif
          OPEN(standardMessageUnit,FILE=fNam,STATUS='unknown')
 #ifdef SINGLE_DISK_IO
         ELSE

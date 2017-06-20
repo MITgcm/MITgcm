@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.181 2017/03/20 19:38:16 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.182 2017/06/20 11:32:33 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -340,6 +340,13 @@ c--   Do the model integration.
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+#ifdef USE_PDAF
+c     Initialize PDAF
+      CALL TIMER_START('INIT_PDAF           [THE_MAIN_LOOP]', myThid)
+      CALL INIT_PDAF( nIter0, myTime, myIter, myThid )
+      CALL TIMER_STOP ('INIT_PDAF           [THE_MAIN_LOOP]', myThid)
+#endif
+
 c++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #ifndef ALLOW_OPENAD
 # ifdef ALLOW_AUTODIFF
@@ -608,6 +615,13 @@ C--   Reset the model iteration counter and the model time.
       CALL TIMER_START('MAIN_DO_LOOP        [THE_MAIN_LOOP]', myThid)
       CALL MAIN_DO_LOOP( iloop, myTime, myIter, myThid )
       CALL TIMER_STOP ('MAIN_DO_LOOP        [THE_MAIN_LOOP]', myThid)
+
+#ifdef USE_PDAF
+C     PDAF analysis step
+      CALL TIMER_START('ASSIMILATE_PDAF     [THE_MAIN_LOOP]', myThid)
+      CALL ASSIMILATE_PDAF( myTime, myIter, myThid )
+      CALL TIMER_STOP ('ASSIMILATE_PDAF     [THE_MAIN_LOOP]', myThid)
+#endif
 
 c--     >>> Loop body end <<<
 #ifndef ALLOW_OPENAD
