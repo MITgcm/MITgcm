@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2337 2017/06/15 23:11:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2338 2017/06/20 11:33:15 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add hooks for the Parallel Data Assimilation Framework PDAF
+  (http://pdaf.awi.de/) in eeboot_minimal.F and the_main_loop.F;
+  to use set CPP-flag USE_PDAF in CPP_EEOPTIONS.h
 o pkg/exf:
   - interpolation of vector fields (exf_interp_uv.F): fix bug in calculation
     of South-Pole mean value.	
