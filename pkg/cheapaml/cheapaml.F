@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.28 2017/06/15 09:05:52 bderembl Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.29 2017/06/27 14:16:16 bderembl Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -411,27 +411,53 @@ C     now continue with diabatic forcing
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-         DO j = 1-OLy, sNy+OLy
-          DO i = 1-OLx, sNx+OLx
-            surfDrag(i,j,bi,bj) = 0.
-            uRelWind(i,j) = uWind(i,j,bi,bj)-uVel(i,j,1,bi,bj)
-            vRelWind(i,j) = vWind(i,j,bi,bj)-vVel(i,j,1,bi,bj)
-          ENDDO
-         ENDDO
-         DO j = jMin,jMax
-          DO i = iMin,iMax
-            windSq(i,j) = ( uRelWind( i ,j)*uRelWind( i ,j)
-     &                    + uRelWind(i+1,j)*uRelWind(i+1,j)
-     &                    + vRelWind(i, j )*vRelWind(i, j )
-     &                    + vRelWind(i,j+1)*vRelWind(i,j+1)
-     &                    )*0.5 _d 0
-#ifdef INCONSISTENT_WIND_LOCATION
-            windSq(i,j) = uRelWind(i,j)*uRelWind(i,j)
-     &                  + vRelWind(i,j)*vRelWind(i,j)
-#endif
-          ENDDO
-         ENDDO
+           DO j = 1-OLy, sNy+OLy
+             DO i = 1-OLx, sNx+OLx
+               surfDrag(i,j,bi,bj) = 0.
+             ENDDO
+           ENDDO
 
+         
+         IF (useRelativeWind) THEN
+           DO j = 1-OLy, sNy+OLy
+             DO i = 1-OLx, sNx+OLx
+               uRelWind(i,j) = uWind(i,j,bi,bj)-uVel(i,j,1,bi,bj)
+               vRelWind(i,j) = vWind(i,j,bi,bj)-vVel(i,j,1,bi,bj)
+             ENDDO
+           ENDDO
+
+           DO j = jMin,jMax
+             DO i = iMin,iMax
+               windSq(i,j) = ( uRelWind( i ,j)*uRelWind( i ,j)
+     &            + uRelWind(i+1,j)*uRelWind(i+1,j)
+     &            + vRelWind(i, j )*vRelWind(i, j )
+     &            + vRelWind(i,j+1)*vRelWind(i,j+1)
+     &            )*0.5 _d 0
+#ifdef INCONSISTENT_WIND_LOCATION
+               windSq(i,j) = uRelWind(i,j)*uRelWind(i,j)
+     &            + vRelWind(i,j)*vRelWind(i,j)
+#endif
+             ENDDO
+           ENDDO
+         ELSE
+           DO j = jMin,jMax
+             DO i = iMin,iMax
+               windSq(i,j) = ( uWind( i ,j,bi,bj)*uWind( i ,j,bi,bj)
+     &            + uWind(i+1,j,bi,bj)*uWind(i+1,j,bi,bj)
+     &            + vWind(i, j ,bi,bj)*vWind(i, j,bi,bj )
+     &            + vWind(i,j+1,bi,bj)*vWind(i,j+1,bi,bj)
+     &            )*0.5 _d 0
+#ifdef INCONSISTENT_WIND_LOCATION
+               windSq(i,j) = uWind(i,j,bi,bj)*uWind(i,j,bi,bj)
+     &            + vWind(i,j,bi,bj)*vWind(i,j,bi,bj)
+#endif
+             ENDDO
+           ENDDO
+
+         ENDIF           
+
+
+           
          IF ( useThSIce ) THEN
            CALL CHEAPAML_SEAICE(
      I                    solar(1-OLx,1-OLy,bi,bj),
@@ -714,7 +740,9 @@ c     CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
         IF ( .NOT.useStressOption .AND. FluxFormula.EQ.'COARE3' ) THEN
-         DO j = 1-OLy+1,sNy+OLy
+          IF (useRelativeWind) THEN
+            
+          DO j = 1-OLy+1,sNy+OLy
           DO i = 1-OLx+1,sNx+OLx
             fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)*0.5 _d 0
      &          *( surfDrag(i-1,j,bi,bj) + surfDrag(i,j,bi,bj) )
@@ -744,7 +772,42 @@ c     CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
           ENDDO
          ENDDO
 #endif /* INCONSISTENT_WIND_LOCATION */
-        ELSE
+       ELSE ! relative wind
+
+          DO j = 1-OLy+1,sNy+OLy
+          DO i = 1-OLx+1,sNx+OLx
+            fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)*0.5 _d 0
+     &          *( surfDrag(i-1,j,bi,bj) + surfDrag(i,j,bi,bj) )
+     &          *uWind(i,j,bi,bj)
+            fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)*0.5 _d 0
+     &          *( surfDrag(i,j-1,bi,bj) + surfDrag(i,j,bi,bj) )
+     &          *vWind(i,j,bi,bj)
+          ENDDO
+         ENDDO
+#ifdef INCONSISTENT_WIND_LOCATION
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx+1,sNx+OLx
+            fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)*0.5 _d 0
+     &          *( surfDrag(i-1,j,bi,bj)
+     &             *uWind(i-1,j,bi,bj)
+     &           + surfDrag(i,j,bi,bj)
+     &             *uWind(i,j,bi,bj))
+          ENDDO
+         ENDDO
+         DO j = 1-OLy+1,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+            fv(i,j,bi,bj) = maskS(i,j,1,bi,bj)*0.5 _d 0
+     &          *( surfDrag(i,j-1,bi,bj)
+     &             *vWind(i,j-1,bi,bj)
+     &           + surfDrag(i,j,bi,bj)
+     &             *vWind(i,j,bi,bj))
+          ENDDO
+         ENDDO
+#endif /* INCONSISTENT_WIND_LOCATION */
+         ENDIF !relative wind
+
+         
+       ELSE
 Cswd move wind stresses to u and v points
          DO j = 1-OLy,sNy+OLy
           DO i = 1-OLx+1,sNx+OLx

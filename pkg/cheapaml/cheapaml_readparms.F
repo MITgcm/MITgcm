@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.14 2017/06/15 09:05:52 bderembl Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.15 2017/06/27 14:16:16 bderembl Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -64,7 +64,8 @@ C--   Bulk Formula parameter
      &         useTimeVarBLH,
      &         useClouds,
      &         useDLongWave,
-     &         usePrecip
+     &         usePrecip,
+     &         useRelativeWind
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -187,6 +188,9 @@ C-    use imported downward longwave
 
 C-    use imported precip
       usePrecip=.FALSE.
+
+C-    use relative wind
+      useRelativeWind=.FALSE.
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=CHEAPAML_CONST)

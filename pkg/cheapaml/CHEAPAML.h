@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.13 2017/06/15 09:05:52 bderembl Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.14 2017/06/27 14:16:16 bderembl Exp $
 C $Name:  $
 
 c #ifdef ALLOW_CHEAPAML
@@ -128,6 +128,7 @@ C     useTimeVarBLH     :: use time varying BL height option (off by default)
 C     useClouds         :: use clouds option              (off by default)
 C     useDLongWave      :: use imported downward longwave  (off by default)
 C     usePrecip         :: use imported precipitation (off by default)
+C     useRelativeWind   :: use relative wind (off by default)
       COMMON /CHEAPAML_PARMS_L/
      &       cheapamlXperiodic,
      &       cheapamlYperiodic,
@@ -140,7 +141,8 @@ C     usePrecip         :: use imported precipitation (off by default)
      &       useTimeVarBLH,
      &       useClouds,
      &       useDLongWave,
-     &       usePrecip
+     &       usePrecip,
+     &       useRelativeWind
       LOGICAL cheapamlXperiodic
       LOGICAL cheapamlYperiodic
       LOGICAL useFreshWaterFlux
@@ -153,6 +155,7 @@ C     usePrecip         :: use imported precipitation (off by default)
       LOGICAL useClouds
       LOGICAL useDLongWave
       LOGICAL usePrecip
+      LOGICAL useRelativeWind
 
       COMMON /CHEAPAML_PARMS_C/
      &       AirTempFile, AirQFile, SolarFile,
