@@ -12,5 +12,6 @@
  &CHEAPAML_PARM02
   useFreshWaterFlux=.TRUE.,
   useFluxLimit=.TRUE.,
-  FluxFormula='COARE3'
+  FluxFormula='COARE3',
+  useRelativeWind=.TRUE.
  &
