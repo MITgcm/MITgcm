@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.29 2017/06/27 14:16:16 bderembl Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.30 2017/06/27 15:01:50 bderembl Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -91,27 +91,6 @@ C     surfDrag   :: surface drag coeff (for wind stress)
 C temp var
         _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-C variables for htflux
-#ifdef ALLOW_SEAGER
-        integer iperx
-        integer lsm(snx,sny)
-
-        real slat, salt_fixed,tstep
-        real dyd_htf(sny),dxd_htf(snx,sny)
-        real sst_htf(snx,sny)
-        real cldfr_htf(snx,sny),wspd_htf(snx,sny),u_htf(snx,sny)
-        real v_htf(snx,sny)
-        real q_htf(snx,sny),t_htf(snx,sny),rlh(snx,sny)
-        real sh(snx,sny),qlw(snx,sny)
-        real qsw_htf(snx,sny),ppo(snx,sny),qa(snx,sny),th(snx,sny)
-        real rh(snx,sny)
-        real qisw(snx,sny),ppi(snx,sny),hice(snx,sny),cice(snx,sny)
-        real thice(snx,sny),tsnw(snx,sny),qios(snx,sny),brne(snx,sny)
-        real rlhi(snx,sny),shi(snx,sny),qlwi(snx,sny),qswi(snx,sny)
-        real albedo(snx,sny)
-        _RL SH_sauv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-        _RL LH_sauv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif /*  ALLOW_SEAGER */
 
 C useful values
 C inverse of time step
@@ -133,98 +112,6 @@ C--   fill-in diagnostics for cheapAML state variables:
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
-#ifdef ALLOW_SEAGER
-
-C initialize array for the seager computation
-        slat = ygOrigin
-        salt_fixed = 35.0
-        iperx = 0
-        tstep = deltaT
-
-        DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-            DO j = 1,sny
-              DO i = 1,snx
-C     inputs
-                lsm (i,j) = 1-maskC(i,j,1,bi,bj)
-                lsm(1,j)   = 1.0
-                lsm(snx,j) = 1.0
-                lsm(i,1)   = 1.0
-                lsm(i,sny) = 1.0
-c                if (i.le.100) lsm(i,j) = 1.0
-
-                dyd_htf(j) = delY(j)
-                dxd_htf(i,j) = delX(i)
-                sst_htf(i,j) = theta(i,j,1,bi,bj) + celsius2K
-                cldfr_htf(i,j) = 0.0 _d 0
-                u_htf(i,j) = uwind(i,j,bi,bj)
-                v_htf(i,j) = vwind(i,j,bi,bj)
-                q_htf(i,j) = qair(i,j,bi,bj)
-                t_htf(i,j) = Tair(i,j,bi,bj) + celsius2K
-                qisw(i,j) = solar(i,j,bi,bj)
-                ppi(i,j) = 0.0 _d 0
-                wspd_htf(i,j) = sqrt(uwind(i,j,bi,bj)**2
-     &             + vwind(i,j,bi,bj)**2)
-
-                cice(i,j) = 0.0 _d 0
-C je met la temperature de la glace la dedans
-                tsnw(i,j) = 0.0 _d 0 + celsius2K
-
-C     outputs
-C                rlh(snx,sny)
-C                sh(snx,sny)
-C                qlw(snx,sny)
-C                qsw_htf(snx,sny)
-C                ppo(snx,sny)
-C                qa(snx,sny)
-C                th(snx,sny)
-C                rh(snx,sny)
-C                hice(snx,sny)
-C                thice(snx,sny)
-C                qios(snx,sny)
-C                brne(snx,sny)
-C                rlhi(snx,sny)
-C                shi(snx,sny)
-C                qlwi(snx,sny)
-C                qswi(snx,sny)
-C                albedo(snx,sny) = 0. _d 0
-              ENDDO
-            ENDDO
-
-C     close bi, bj loops
-          ENDDO
-        ENDDO
-
-CALL HTFLUX
-      call htfluxice(snx,sny,lsm,dxd_htf,dyd_htf,tstep,
-     +  sst_htf,cldfr_htf,wspd_htf,u_htf,v_htf,q_htf,t_htf
-     $     ,rlh,sh,qlw,qsw_htf,ppo,qa,th,rh,
-     +  qisw,ppi,hice,cice,thice,tsnw,qios,brne,rlhi,shi,qlwi,qswi,
-     +  iperx,salt_fixed,albedo,slat)
-
-        DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-            DO j = 1,sny
-              DO i = 1,snx
-C     OUTPUT
-                if (lsm(i,j).eq.0) then
-                qair(i,j,bi,bj) = qa(i,j)
-                Tair(i,j,bi,bj) = th(i,j) - celsius2K
-                SH_sauv(i,j,bi,bj) = sh(i,j)
-                LH_sauv(i,j,bi,bj) = rlh(i,j)
-                else
-                qair(i,j,bi,bj) = qr(i,j,bi,bj)
-                Tair(i,j,bi,bj) = tr(i,j,bi,bj)
-              endif
-
-              ENDDO
-            ENDDO
-
-C     close bi, bj loops
-          ENDDO
-        ENDDO
-
-#else /*  ALLOW_SEAGER */
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -827,7 +714,6 @@ C--   end bi,bj loops
        ENDDO
       ENDDO
 
-#endif /*  ALLOW_SEAGER */
 
 #ifdef ALLOW_DIAGNOSTICS
 C- note: with thSIce, CH_QNET and CH_EmP correspond to the fluxes over the
