@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifort+oad+mpi,v 1.5 2012/08/30 20:13:50 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_ia32_ifort+oad+mpi,v 1.1 2017/06/28 18:56:04 jmc Exp $
 # $Name:  $
 
 # These are the build options used with the Intel compiler together with OpenAD and MPI
