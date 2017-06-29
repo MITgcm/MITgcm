@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia64_ifort+mpi_altix_gfdl,v 1.6 2013/07/22 18:40:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_ia64_ifort+mpi_altix_gfdl,v 1.1 2017/06/29 00:09:43 jmc Exp $
 # $Name:  $
 
 #  Ed Hill

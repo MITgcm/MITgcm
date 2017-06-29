@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sp4-64bit,v 1.5 2013/07/22 18:40:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/sp4-64bit,v 1.1 2017/06/29 00:09:43 jmc Exp $
 # $Name:  $
 
 #  tested on bluesky, ce107 Dec 2005
