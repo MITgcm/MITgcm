@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.27 2017/04/03 23:16:38 ou.wang Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.28 2017/07/05 18:27:39 ou.wang Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -137,11 +137,11 @@ c    &     .TRUE.,.TRUE.,.TRUE.,1,myThid)
      &      SALT(i,j,1,bi,bj)*maskC(i,j,1,bi,bj)
          elseif (gencost_barfile(k)(1:4).EQ.'m_bp') then
            gencost_modfld(i,j,bi,bj,k) = 
-     &      (phiHydLow(i,j,bi,bj)+
+     &      (phiHydLow(i,j,bi,bj)
 #ifdef ALLOW_PSBAR_STERIC
 C add back the correction due to the global mean steric ssh change, 
 C     i.e. sterGloH computed in ecco_phys.F (units converted from m to m2/s2)
-     &       sterGloH * gravity
+     &       + sterGloH * gravity
 #endif
      &      )*maskC(i,j,1,bi,bj)
 
