@@ -4,12 +4,11 @@
 #   sed -n '1,/^# \$Header:/ p' crontab_jmc.bak > crontab_jmc
 #   ( echo '' ; crontab -l ) >> crontab_jmc
 #-
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/nasa_ames/crontab_jmc,v 1.3 2017/05/17 16:27:32 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/nasa_ames/crontab_jmc,v 1.4 2017/07/10 19:05:07 jmc Exp $
 
 MAILTO=jmc@ocean.mit.edu
 
 55 23 1,16 * * cd /u/jcampin/test_pleiades/nasa_ames && cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d
-05 00 2,17 * * /u/jcampin/test_pleiades/nasa_ames/test_submit_pleiades
 05 00 2,17 * * /u/jcampin/test_pleiades/nasa_ames/test_submit_pleiades
 #05 12 3,18 * * /u/jcampin/test_pleiades/nasa_ames/test_clean_pleiades
 #37 10 20 * * /u/jcampin/test_pleiades/temp/test_submit_pleiades fast
