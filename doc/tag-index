@@ -1,18 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2338 2017/06/20 11:33:15 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2339 2017/07/18 19:41:27 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint66i (2017/07/18)
+o pkg/cheapaml:
+  - add parameter "useRelativeWind", default set to False; this change the
+    previous setting which was always using relative wind.
 o add hooks for the Parallel Data Assimilation Framework PDAF
-  (http://pdaf.awi.de/) in eeboot_minimal.F and the_main_loop.F;
-  to use set CPP-flag USE_PDAF in CPP_EEOPTIONS.h
+    (http://pdaf.awi.de/) in eeboot_minimal.F and the_main_loop.F;
+    to use set CPP-flag USE_PDAF in CPP_EEOPTIONS.h
 o pkg/exf:
   - interpolation of vector fields (exf_interp_uv.F): fix bug in calculation
     of South-Pole mean value.	
-  - interpolation near the poles, case where second additional row is at the 
+  - interpolation near the poles, case where second additional row is at the
     pole (or beyond the pole and moved to the pole): change first addition row
-    value to a linear interpolation between pole and 1rst (S.pole)/last (N.pole) 
+    value to a linear interpolation between pole and 1rst (S.pole)/last (N.pole)
     row (instead of just a copy of it).
 o pkg/seaice:
   - prevent JFNK and KRYLOV solvers from trying to reduce a residual of 0
