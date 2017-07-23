@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.12 2010/01/03 00:42:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.13 2017/07/23 00:24:18 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -88,7 +88,7 @@ C we are trying to fill a valid diagnostic
       DO n=1,nlists
        DO m=1,nActive(n)
         IF ( chardiag.EQ.flds(m,n) .AND. idiag(m,n).GT.0 ) THEN
-         ndiagnum = jdiag(m,n)
+         ndiagnum = ABS(jdiag(m,n))
          ipointer = idiag(m,n)
          IF ( ndiagnum.NE.0 .AND. ndiag(ipointer,1,1).GE.0 ) THEN
 C--   do the filling: start here:

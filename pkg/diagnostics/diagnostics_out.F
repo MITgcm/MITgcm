@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.63 2017/03/24 23:34:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.64 2017/07/23 00:24:18 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -167,7 +167,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
        isComputed = 0
        DO md = 1,nfields(listId)
-        ndId = jdiag(md,listId)
+        ndId = ABS(jdiag(md,listId))
         gcode = gdiag(ndId)(1:10)
         mate = 0
         mVec = 0

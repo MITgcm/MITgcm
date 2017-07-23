@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_check.F,v 1.10 2017/01/11 00:22:48 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_check.F,v 1.11 2017/07/23 00:24:18 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -176,7 +176,7 @@ C-    p^kappa interpolation: meaningfull only if Atmosphere & P-coordiante
         IF (select_rStar.GT.0) THEN
 C-    If nonlinear free surf is active, need averaged pressures
          DO md = 1,nfields(ld)
-          nd = jdiag(md,ld)
+          nd = ABS(jdiag(md,ld))
           CALL DIAGNOSTICS_GET_POINTERS( 'RSURF   ', ld,
      &                                   jpoint1, ipoint1, myThid )
           IF ( useFIZHI .AND.

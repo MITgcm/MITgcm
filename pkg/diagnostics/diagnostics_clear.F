@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_clear.F,v 1.3 2011/06/29 21:59:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_clear.F,v 1.4 2017/07/23 00:24:18 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -33,7 +33,7 @@ C     !LOCAL VARIABLES:
 
       DO m=1,nActive(listId)
        IF ( idiag(m,listId).GT.0 ) THEN
-         ndId  = jdiag(m,listId)
+         ndId  = ABS(jdiag(m,listId))
          ipt   = idiag(m,listId)
          nLev  = kdiag(ndId)*averageCycle(listId)
 c        WRITE(0,'(2(A,I3),2A,2(A,I5))') 'CLRDIAG (listId=',listId,
@@ -97,7 +97,6 @@ C **********************************************************************
         ENDDO
        ENDDO
       ENDDO
-
 
       RETURN
       END

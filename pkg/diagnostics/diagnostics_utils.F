@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.35 2017/05/26 08:33:03 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.36 2017/07/23 00:24:18 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -71,7 +71,7 @@ C     to increment (needs to be a valid & active diagnostic-counter)
         IF ( diagName.EQ.flds(m,n) .AND. idiag(m,n).GT.0 ) THEN
          ipt = idiag(m,n)
          IF (ndiag(ipt,bi,bj).GE.0) THEN
-          ndId = jdiag(m,n)
+          ndId = ABS(jdiag(m,n))
           ipt = ipt + pdiag(n,bi,bj)*kdiag(ndId)
 C-    Increment the counter for the diagnostic
           IF ( biArg.EQ.0 .AND. bjArg.EQ.0 ) THEN
@@ -260,7 +260,7 @@ C-    search for this diag. in the active 2D/3D diagnostics list
            IF ( ip.EQ.0 .AND. diagName.EQ.flds(m,n)
      &                  .AND. idiag(m,n).NE.0 ) THEN
             ip   = ABS(idiag(m,n))
-            ndId = jdiag(m,n)
+            ndId = ABS(jdiag(m,n))
            ENDIF
          ENDDO
         ENDDO
@@ -281,14 +281,14 @@ C-    search for this diag. in the active 2D/3D diagnostics list
            IF ( ip.EQ.0 .AND. diagName.EQ.flds(m,n)
      &                  .AND. idiag(m,n).NE.0 ) THEN
             ip   = ABS(idiag(m,n))
-            ndId = jdiag(m,n)
+            ndId = ABS(jdiag(m,n))
            ENDIF
           ENDDO
          ELSEIF ( ip.EQ.0 ) THEN
           DO m=1,nActive(n)
            IF ( ip.EQ.0 .AND. diagName.EQ.flds(m,n)
      &                  .AND. idiag(m,n).NE.0 ) THEN
-            ndId = jdiag(m,n)
+            ndId = ABS(jdiag(m,n))
            ENDIF
           ENDDO
          ENDIF
