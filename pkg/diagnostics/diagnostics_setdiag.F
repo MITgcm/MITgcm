@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_setdiag.F,v 1.9 2011/07/01 18:26:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_setdiag.F,v 1.10 2017/07/23 00:32:33 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -46,8 +46,8 @@ CEOP
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER stdUnit, errUnit
-      INTEGER nn, k, l
-      LOGICAL diagIsPP, flagD, flagP, flagM
+      INTEGER nn, k, l, no_hFac
+      LOGICAL diagIsPP, flagD, flagP, flagM, use_hFac
 
       CHARACTER*10 gcode
       CHARACTER*12 tmpMsg
@@ -63,6 +63,18 @@ C **********************************************************************
 C-    Case of Post-Procesed diag, not filled up but computed from other diags:
       diagIsPP = gdiag(ndId)(5:5).EQ.'P'
 
+C-    Register negative "jdiag" when cumulating thickness (hFac) weighted field
+      no_hFac = 1
+      IF ( fflags(listId)(3:3).EQ.'h' ) THEN
+        gcode = gdiag(ndId)(1:10)
+        use_hFac = ( gcode(2:2).EQ.'U' .OR. gcode(2:2).EQ.'V'
+     &                                 .OR. gcode(2:2).EQ.'M' )
+        use_hFac = use_hFac .AND. gcode(9:10).EQ.'MR'
+     &                      .AND. gcode(3:3).EQ.'R'
+     &                      .AND. gcode(5:5).EQ.' '
+        IF ( use_hFac ) no_hFac = -1
+      ENDIF
+
 C---  Seach for the same diag (with same freq) to see if already set
 C     do it recursively on Post-Processed diag dependance (=mate)
 C     until we find either one already set or a non Post-Processed diag
@@ -77,8 +89,8 @@ C     until we find either one already set or a non Post-Processed diag
      &             .AND. averagePhase(l).EQ.averagePhase(listId)
      &             .AND. averageCycle(l).EQ.averageCycle(listId) ) THEN
           DO k=1,MIN(nActive(l),numperList)
-           IF (flagD .AND. jdiag(k,l).GT.0) THEN
-            IF ( cdiag(nn).EQ.cdiag(jdiag(k,l)) ) THEN
+           IF ( flagD .AND. no_hFac*jdiag(k,l).GT.0 ) THEN
+            IF ( cdiag(nn).EQ.cdiag(ABS(jdiag(k,l))) ) THEN
 C-    diagnostics already set ; use the same slot:
              flagD = .FALSE.
              idiag(mId,listId) = -ABS(idiag(k,l))
@@ -91,6 +103,7 @@ C-    diagnostics already set ; use the same slot:
         flagP = flagD .AND. gdiag(nn)(5:5).EQ.'P'
         IF ( flagP ) nn = hdiag(nn)
       ENDDO
+      jdiag(mId,listId) = no_hFac*ndId
 
 C---  Set pointer if not already set, otherwise just print a message
 
