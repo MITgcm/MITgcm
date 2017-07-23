@@ -1,8 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2339 2017/07/18 19:41:27 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2340 2017/07/23 01:00:13 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o pkg/diagnostics:
+  - new option to allow to cumulate thickness-factor (hFac) weighted field
+    (if field permitted); implemented by changing sign of "jdiag" pointer
+    (> 0: cumlulate field, < 0: cumulate hFac weighted field).
+    a) restricted to 3-d (Nr levels), level centered diagnostics at U,V or Cell
+       center position (gcode(2)='U','V','M' & gcode(3,5,9:10)='R',' ','MR')
+    b) for now, activated by setting fileFlags 3rd character to 'h'.
 
 checkpoint66i (2017/07/18)
 o pkg/cheapaml:
