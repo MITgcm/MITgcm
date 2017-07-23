@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_sum_levels.F,v 1.2 2010/01/13 01:20:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_sum_levels.F,v 1.3 2017/07/23 00:41:59 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -61,12 +61,14 @@ C     i,j,k :: loop indices
       _RL     tmpFac, hFacLoc
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(10) gcode
+      LOGICAL wFac
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF (fflags(listId)(2:2).EQ.'I') THEN
+      IF ( fflags(listId)(2:2).EQ.'I' ) THEN
 
         gcode = gdiag(ndId)(1:10)
+        wFac = jdiag(md,listId).LT.0
 
 C--   start loops on tile indices bi,bj:
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -95,7 +97,8 @@ C--   Cumulate levels directly:
               ENDDO
              ENDDO
 
-          ELSEIF ( gcode(3:3).EQ.'r' ) THEN
+          ELSEIF ( gcode(3:3).EQ.'r' .OR.
+     &            (gcode(3:3).EQ.'R' .AND. wFac) ) THEN
 C--   Cumulate the level-thickness product:
 
              DO k = 1,nlevels(listId)
