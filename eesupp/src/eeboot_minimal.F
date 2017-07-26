@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.30 2017/06/20 11:32:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.31 2017/07/26 21:23:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,7 +59,7 @@ C     mpiRC      :: Error code reporting variable used with MPI.
       INTEGER mpiRC
       INTEGER mpiIsInitialized
       LOGICAL doReport
-#ifdef COMPONENT_MODULE
+#if defined(ALLOW_OASIS) || defined(COMPONENT_MODULE)
       INTEGER mpiMyWid
 #endif
 #if defined(ALLOW_NEST_PARENT) || defined(ALLOW_NEST_CHILD)
@@ -141,7 +141,8 @@ C     for more output increase second parameter from 1 to 2
 #ifdef ALLOW_OASIS
 C      add a 1rst preliminary call EESET_PARAMS to set useOASIS
 C      (needed to decide either to call OASIS_INIT or not)
-       CALL EESET_PARMS ( doReport )
+       CALL MPI_COMM_RANK( MPI_COMM_WORLD, mpiMyWId, mpiRC )
+       CALL EESET_PARMS ( mpiMyWId, doReport )
        IF ( useOASIS ) CALL OASIS_INIT(MPI_COMM_MODEL)
 #endif /* ALLOW_OASIS */
 
@@ -153,7 +154,7 @@ C--    Set the running directory
 C- jmc: test:
 C      add a 1rst preliminary call EESET_PARAMS to set useCoupler
 C      (needed to decide either to call CPL_INIT or not)
-       CALL EESET_PARMS ( doReport )
+       CALL EESET_PARMS ( mpiMyWId, doReport )
 C- jmc: test end ; otherwise, uncomment next line:
 c      useCoupler = .TRUE.
 

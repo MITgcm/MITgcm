@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.24 2017/01/28 18:39:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.25 2017/07/26 21:23:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -122,7 +122,7 @@ C--   Now we can write a startup message
 
 C--   Initialise parameters associated with execution environment.
       doReport = .TRUE.
-      CALL EESET_PARMS ( doReport )
+      CALL EESET_PARMS ( myProcId, doReport )
       IF ( eeBootError ) GOTO 999
 
 C--   Write summary of execution environment configuration for this run

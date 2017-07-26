@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.39 2017/01/10 23:02:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.40 2017/07/26 21:23:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: EESET_PARMS
 
 C     !INTERFACE:
-      SUBROUTINE EESET_PARMS ( doReport )
+      SUBROUTINE EESET_PARMS ( procId, doReport )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -31,7 +31,9 @@ C     == Global variables ==
 #include "EXCH.h"
 
 C     !INPUT PARAMETERS:
+C     procId   :: this process id. number (either in World or in Model)
 C     doReport :: if false, skip error stop and any report to std-out/err
+      INTEGER  procId
       LOGICAL  doReport
 
 C     !FUNCTIONS:
@@ -145,8 +147,8 @@ C     Stop if called from eeboot_minimal.F before myProcId is set
       ENDIF
 #else /* ifndef SINGLE_DISK_IO */
 # if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
-      WRITE(scratchFile1,'(A,I4.4)') 'scratch1.', myProcId
-      WRITE(scratchFile2,'(A,I4.4)') 'scratch2.', myProcId
+      WRITE(scratchFile1,'(A,I4.4)') 'scratch1.', procId
+      WRITE(scratchFile2,'(A,I4.4)') 'scratch2.', procId
       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
       OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
 # else
