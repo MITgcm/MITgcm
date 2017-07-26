@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2340 2017/07/23 01:00:13 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2341 2017/07/26 07:40:51 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/streamice:
+  - remove blank between _EXCH_XY_RL and "()", which my Apple Xcode
+    preprocessor /usr/bin/cpp cannot interpret; 3 instances in total in
+    streamice_driving_stress_fd.F and streamice_advect_2dtracer.F
 o pkg/diagnostics:
   - new option to allow to cumulate thickness-factor (hFac) weighted field
     (if field permitted); implemented by changing sign of "jdiag" pointer
