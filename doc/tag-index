@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2341 2017/07/26 07:40:51 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2342 2017/07/26 21:24:31 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp/src:
+  - add argument "procId" to S/R EESET_PARMS to fix  scratchFile1 & 2 setting
+    (case TARGET_BGL or TARGET_CRAYXT) for early call (from eeboot_minimal.F):
+    called with myProcId in eeboot.F and with mpiMyWId in eeboot_minimal.F
 o pkg/streamice:
   - remove blank between _EXCH_XY_RL and "()", which my Apple Xcode
     preprocessor /usr/bin/cpp cannot interpret; 3 instances in total in
