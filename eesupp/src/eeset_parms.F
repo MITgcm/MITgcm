@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.40 2017/07/26 21:23:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.41 2017/07/27 15:25:56 mlosch Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -215,7 +215,7 @@ C--   Report contents of parameter file
        WRITE(msgBuf,'(A)') ' '
        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit, SQUEEZE_RIGHT, 1)
       ENDIF
-      CLOSE(iUnit)
+      CLOSE(iUnit,STATUS='DELETE')
 
 #ifdef SINGLE_DISK_IO
       CALL FLUSH(scrUnit1)
@@ -252,7 +252,7 @@ C--   Read namelist
    4  CONTINUE
 
 C--   Execution Environment parameter file read
-      CLOSE(iUnit)
+      CLOSE(iUnit,STATUS='DELETE')
 
 #ifdef ALLOW_USE_MPI
 #ifdef ALWAYS_USE_MPI
