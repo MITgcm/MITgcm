@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ref_machine/test_newRef,v 1.5 2017/05/14 16:00:41 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ref_machine/test_newRef,v 1.6 2017/07/28 16:41:58 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
@@ -254,7 +254,7 @@ do
   else
     comm="$comm -md cyrus-makedepend"
   fi
-  comm="$comm -odir $outDir -a jmc@mitgcm.org"
+  comm="$comm -odir $outDir -a jmc@dev.mitgcm.org"
 #-- set the optfile (+ mpi & match-precision)
   MPI=0
   case $typ in
