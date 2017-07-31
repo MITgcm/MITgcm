@@ -1,4 +1,4 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/surface_flux_mod.F90,v 1.1 2013/05/08 22:14:15 jmc Exp $
+! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/surface_flux_mod.F90,v 1.2 2017/07/31 16:07:05 jmc Exp $
 ! $Name:  $
 
 ! ============================================================================
@@ -30,7 +30,7 @@ end interface
 
 !-----------------------------------------------------------------------
 
-character(len=*), parameter :: version = '$Id: surface_flux_mod.F90,v 1.1 2013/05/08 22:14:15 jmc Exp $'
+character(len=*), parameter :: version = '$Id: surface_flux_mod.F90,v 1.2 2017/07/31 16:07:05 jmc Exp $'
 character(len=*), parameter :: tagname = '$Name:  $'
 
 logical :: do_init = .true.
@@ -302,12 +302,15 @@ subroutine surface_flux_0d (                                                 &
   z_atm(1)       = z_atm_0
   p_surf(1)      = p_surf_0
   t_surf(1)      = t_surf_0
+  t_ca(1)        = t_ca_0
+  q_surf(1)      = q_surf_0
   u_surf(1)      = u_surf_0
   v_surf(1)      = v_surf_0
   rough_mom(1)   = rough_mom_0
   rough_heat(1)  = rough_heat_0
   rough_moist(1) = rough_moist_0
   gust(1)        = gust_0
+  land(1)        = land_0
 
   call surface_flux_1d (                                           &
        t_atm,     q_atm,      u_atm,     v_atm,     p_atm,     z_atm,    &
@@ -326,21 +329,21 @@ subroutine surface_flux_0d (                                                 &
   flux_r_0     = flux_r(1)
   flux_u_0     = flux_u(1)
   flux_v_0     = flux_v(1)
-  dhdt_surf_0  = dhdt_surf(1)
-  dedt_surf_0  = dedt_surf(1)
-  drdt_surf_0  = drdt_surf(1)
-  dedq_surf_0  = dedq_surf(1)
-  dhdt_atm_0   = dhdt_atm(1)
-  dedq_atm_0   = dedq_atm(1)
-  dtaudv_atm_0 = dtaudv_atm(1)
+  cd_m_0       = cd_m(1)
+  cd_t_0       = cd_t(1)
+  cd_q_0       = cd_q(1)
   w_atm_0      = w_atm(1)
   u_star_0     = u_star(1)
   b_star_0     = b_star(1)
   q_star_0     = q_star(1)
   q_surf_0     = q_surf(1)
-  cd_m_0       = cd_m(1)
-  cd_t_0       = cd_t(1)
-  cd_q_0       = cd_q(1)
+  dhdt_surf_0  = dhdt_surf(1)
+  dedt_surf_0  = dedt_surf(1)
+  dedq_surf_0  = dedq_surf(1)
+  drdt_surf_0  = drdt_surf(1)
+  dhdt_atm_0   = dhdt_atm(1)
+  dedq_atm_0   = dedq_atm(1)
+  dtaudv_atm_0 = dtaudv_atm(1)
 
 end subroutine surface_flux_0d
 
