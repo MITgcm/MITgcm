@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2342 2017/07/26 21:24:31 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2343 2017/07/31 16:08:38 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/atm_phys:
+  - fix unset arguments in (unused) S/R surface_flux_0d.
 o eesupp/src:
   - add argument "procId" to S/R EESET_PARMS to fix  scratchFile1 & 2 setting
     (case TARGET_BGL or TARGET_CRAYXT) for early call (from eeboot_minimal.F):
