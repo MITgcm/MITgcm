@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ref_machine/test_newRef,v 1.6 2017/07/28 16:41:58 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ref_machine/test_newRef,v 1.7 2017/08/03 12:14:44 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
@@ -324,7 +324,7 @@ do
   if test $tt != $typ
   then
     echo "testing restart using:"	| tee -a $tdir/output_$tt
-    comm="../tools/do_tst_2+2 -o $outDir -a jmc@mitgcm.org"
+    comm="../tools/do_tst_2+2 -o $outDir -a jmc@dev.mitgcm.org"
     if test $MPI = 0 ; then
       echo "  \"$comm\""		| tee -a $tdir/output_$tt
       echo "======================"
