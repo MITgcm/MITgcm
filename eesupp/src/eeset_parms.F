@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.43 2017/08/04 15:05:42 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.44 2017/08/04 15:08:52 mlosch Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -164,7 +164,7 @@ C     After opening regular files here, they are closed with STATUS='DELETE'
 #endif /* SINGLE_DISK_IO */
 
 #ifdef SINGLE_DISK_IO
-      IF( myProcId .EQ. 0 ) THEN
+      IF( procId .EQ. 0 ) THEN
 #endif
 
       OPEN(UNIT=eeDataUnit,FILE='eedata',STATUS='OLD',
