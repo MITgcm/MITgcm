@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2343 2017/07/31 16:08:38 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2344 2017/08/04 12:40:58 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp/src/eeset_parms.F:
+  - change default for opening scratch files to avoid STATUS='SCRATCH'
+  - close scratch files with STATUS='DELELTE'
+  - you can revert to old default by setting USE_FORTRAN_SCRATCH_FILES 
+    in CPP_EEOPTIONS.h
 o pkg/atm_phys:
   - fix unset arguments in (unused) S/R surface_flux_0d.
 o eesupp/src:
