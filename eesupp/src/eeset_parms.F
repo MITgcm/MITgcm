@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.42 2017/08/04 12:40:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.43 2017/08/04 15:05:42 mlosch Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -54,7 +54,7 @@ C     record :: Temp. for textual I/O
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_PREC) record
-# ifndef USE_FORTRAN_SCRATCH_FILES
+# if !defined(USE_FORTRAN_SCRATCH_FILES) || defined(SINGLE_DISK_IO)
       CHARACTER*(MAX_LEN_FNAM) scratchFile1
       CHARACTER*(MAX_LEN_FNAM) scratchFile2
 #endif
@@ -136,14 +136,14 @@ C     package - but we have not written it yet.
 
 C     Make scratch copies of input data file with and without comments
 #ifdef SINGLE_DISK_IO
-C     Stop if called from eeboot_minimal.F before myProcId is set
+C     Stop if called from eeboot_minimal.F before procId is set
       IF ( .NOT.doReport )
-     &     STOP 'ABNORMAL END: S/R EESET_PARMS: myProcId unset'
       WRITE(scratchFile1,'(A)') 'scratch1'
       WRITE(scratchFile2,'(A)') 'scratch2'
-      IF( myProcId .EQ. 0 ) THEN
-         OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
-         OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
+     &     STOP 'ABNORMAL END: S/R EESET_PARMS: procId unset'
+      IF( procId .EQ. 0 ) THEN
+       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
+       OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
       ENDIF
 #else /* ifndef SINGLE_DISK_IO */
 # ifdef USE_FORTRAN_SCRATCH_FILES
@@ -152,21 +152,14 @@ C     multi-node/multi-processor systems
       OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
       OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
 # else
-      IF ( .NOT.doReport ) THEN
-C     called from eeboot_minimal.F before myProcId is set, so we have to
-C     use scratch files and keep our fingers crossed
-       OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
-       OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
-      ELSE
 C     this definition will go into CPP_EEMACROS.h, once this method is
 C     properly established
 #define FMT_PROC_ID 'I9.9'
 C     After opening regular files here, they are closed with STATUS='DELETE'
-       WRITE(scratchFile1,'(A,'//FMT_PROC_ID//')') 'scratch1.', procId
-       WRITE(scratchFile2,'(A,'//FMT_PROC_ID//')') 'scratch2.', procId
-       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
-       OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
-      ENDIF
+      WRITE(scratchFile1,'(A,'//FMT_PROC_ID//')') 'scratch1.', procId
+      WRITE(scratchFile2,'(A,'//FMT_PROC_ID//')') 'scratch2.', procId
+      OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
+      OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
 # endif
 #endif /* SINGLE_DISK_IO */
 
