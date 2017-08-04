@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.41 2017/07/27 15:25:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.42 2017/08/04 12:40:19 mlosch Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -54,7 +54,7 @@ C     record :: Temp. for textual I/O
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_PREC) record
-#if defined (TARGET_BGL) || defined (TARGET_CRAYXT) || defined (SINGLE_DISK_IO)
+# ifndef USE_FORTRAN_SCRATCH_FILES
       CHARACTER*(MAX_LEN_FNAM) scratchFile1
       CHARACTER*(MAX_LEN_FNAM) scratchFile2
 #endif
@@ -146,14 +146,27 @@ C     Stop if called from eeboot_minimal.F before myProcId is set
          OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
       ENDIF
 #else /* ifndef SINGLE_DISK_IO */
-# if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
-      WRITE(scratchFile1,'(A,I4.4)') 'scratch1.', procId
-      WRITE(scratchFile2,'(A,I4.4)') 'scratch2.', procId
-      OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
-      OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
-# else
+# ifdef USE_FORTRAN_SCRATCH_FILES
+C     this is the old default, which can cause filename conflicts on some
+C     multi-node/multi-processor systems
       OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
       OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
+# else
+      IF ( .NOT.doReport ) THEN
+C     called from eeboot_minimal.F before myProcId is set, so we have to
+C     use scratch files and keep our fingers crossed
+       OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
+       OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
+      ELSE
+C     this definition will go into CPP_EEMACROS.h, once this method is
+C     properly established
+#define FMT_PROC_ID 'I9.9'
+C     After opening regular files here, they are closed with STATUS='DELETE'
+       WRITE(scratchFile1,'(A,'//FMT_PROC_ID//')') 'scratch1.', procId
+       WRITE(scratchFile2,'(A,'//FMT_PROC_ID//')') 'scratch2.', procId
+       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
+       OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
+      ENDIF
 # endif
 #endif /* SINGLE_DISK_IO */
 
