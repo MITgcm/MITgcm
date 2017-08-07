@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.44 2017/08/04 15:08:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.45 2017/08/07 13:28:23 mlosch Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -138,9 +138,9 @@ C     Make scratch copies of input data file with and without comments
 #ifdef SINGLE_DISK_IO
 C     Stop if called from eeboot_minimal.F before procId is set
       IF ( .NOT.doReport )
+     &     STOP 'ABNORMAL END: S/R EESET_PARMS: procId unset'
       WRITE(scratchFile1,'(A)') 'scratch1'
       WRITE(scratchFile2,'(A)') 'scratch2'
-     &     STOP 'ABNORMAL END: S/R EESET_PARMS: procId unset'
       IF( procId .EQ. 0 ) THEN
        OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
        OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
