@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.45 2017/08/07 13:28:23 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.46 2017/08/07 22:31:18 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -136,12 +136,12 @@ C     package - but we have not written it yet.
 
 C     Make scratch copies of input data file with and without comments
 #ifdef SINGLE_DISK_IO
-C     Stop if called from eeboot_minimal.F before procId is set
+C     Stop if called from eeboot_minimal.F before myProcId is set
       IF ( .NOT.doReport )
-     &     STOP 'ABNORMAL END: S/R EESET_PARMS: procId unset'
+     &     STOP 'ABNORMAL END: S/R EESET_PARMS: myProcId unset'
       WRITE(scratchFile1,'(A)') 'scratch1'
       WRITE(scratchFile2,'(A)') 'scratch2'
-      IF( procId .EQ. 0 ) THEN
+      IF( myProcId .EQ. 0 ) THEN
        OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
        OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
       ENDIF
@@ -164,7 +164,7 @@ C     After opening regular files here, they are closed with STATUS='DELETE'
 #endif /* SINGLE_DISK_IO */
 
 #ifdef SINGLE_DISK_IO
-      IF( procId .EQ. 0 ) THEN
+      IF( myProcId .EQ. 0 ) THEN
 #endif
 
       OPEN(UNIT=eeDataUnit,FILE='eedata',STATUS='OLD',
