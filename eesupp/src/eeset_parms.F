@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.46 2017/08/07 22:31:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.47 2017/08/08 15:42:43 mlosch Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -258,7 +258,11 @@ C--   Read namelist
    4  CONTINUE
 
 C--   Execution Environment parameter file read
+#ifdef SINGLE_DISK_IO
+      CLOSE(scrUnit1)
+#else
       CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 #ifdef ALLOW_USE_MPI
 #ifdef ALWAYS_USE_MPI
