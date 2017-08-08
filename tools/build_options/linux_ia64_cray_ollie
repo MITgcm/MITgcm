@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_ollie,v 1.7 2017/03/13 09:28:07 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_ollie,v 1.8 2017/08/08 12:24:53 mlosch Exp $
 # $Name:  $
 
 # Tested on cray CS400 ollie.awi.de 
@@ -25,11 +25,17 @@ NOOPTFLAGS="-O1"
 NOOPTFILES=''
 
 FFLAGS="$FFLAGS -h byteswapio" 
-if test "$OMP" = true ; then 
+if test "x$OMP" = xtrue ; then 
+  # alternative if-statement: if test ! "x$OMP" = x ; then
+  # this flag does not have the right name, but it does the right thing:
+  # write namelists into real files on the disk 
+  # (in open_copy_data_file and eeset_parm)
+  # DEFINES="$DEFINES -DTARGET_CRAYXT"
   # for some reason this solves a problem with an unexpected 
   # "expectStatus=20" when using OpenMP with hyperthreads
   NOOPTFILES="${NOOPTFILES} diagnostics_switch_onoff.F mon_init.F mon_set_iounit.F"
 else
+  # be default the cray compiler uses omp, turn it off here
   FFLAGS="$FFLAGS -hnoomp"
 fi
 # source file listing with compiler messages:
@@ -57,6 +63,12 @@ else
   fi
 fi
 
+if test "x$OMP" = xtrue ; then 
+# this is a necessary hack to have -homp after the optimization flags,
+# because -O0 overrides the default to have -homp
+  FOPTIM="$FOPTIM $OMPFLAG"
+  OMPFLAG=" "
+fi
 F90FLAGS=$FFLAGS
 F90OPTIM=$FOPTIM
 CFLAGS="-O0 $MCMODEL"
