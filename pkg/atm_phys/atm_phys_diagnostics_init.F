@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_diagnostics_init.F,v 1.4 2017/07/12 00:21:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_diagnostics_init.F,v 1.5 2017/08/08 20:45:19 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -205,14 +205,14 @@ C--     Radiation & Surface fluxes:
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
         diagName  = 'AtPhTauX'
         diagTitle = 'ATM_PHYS: Zonal comp of surface stress'
-        diagUnits = 'unit            '
+        diagUnits = 'N/m^2           '
         diagCode  = 'UM      L1      '
         diagMate  = diagNum + 2
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
         diagName  = 'AtPhTauY'
         diagTitle = 'ATM_PHYS: Meridional comp of surface stress'
-        diagUnits = 'unit            '
+        diagUnits = 'N/m^2           '
         diagCode  = 'VM      L1      '
         diagMate  = diagNum
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
