@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/CPP_EEOPTIONS.h,v 1.3 2015/08/25 21:11:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/CPP_EEOPTIONS.h,v 1.4 2017/08/08 15:35:53 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -138,6 +138,9 @@ C     (calling S/R STOP_IF_ERROR) before stopping.
 C--   Control use of communication with other component:
 C     allow to import and export from/to Coupler interface.
 #undef COMPONENT_MODULE
+
+C--   Test old method of opening temporary files
+#define USE_FORTRAN_SCRATCH_FILES
 
 #endif /* _CPP_EEOPTIONS_H_ */
 
