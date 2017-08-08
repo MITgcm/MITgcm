@@ -1,7 +1,9 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.23 2015/10/26 21:04:35 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.24 2017/08/08 20:21:19 jmc Exp $
 # $Name:  $
+
+bdPfx='build'; # build-dir prefix
 
 #- default:
  Npr=3 ; NpOc=1 ;
@@ -43,21 +45,23 @@ dir=`pwd`
 if test $kpr = 0
 then
  rm -f pr_group std_outp comp_res.{ocn,atm,land,sice}
- rm -f build_???/TTT.*make.* build_???/TTT.mkdepend.*
+ rm -f ${bdPfx}_???/TTT.*make.* ${bdPfx}_???/TTT.mkdepend.*
  /bin/rm -r -f rank_? rank_1? rank_2?
- if test -f build_cpl/Makefile ; then cd build_cpl ; make Clean ; cd .. ; fi
- if test -f build_ocn/Makefile ; then cd build_ocn ; make Clean ; cd .. ; fi
- if test -f build_atm/Makefile ; then cd build_atm ; make Clean ; cd .. ; fi
+ if test -f ${bdPfx}_cpl/Makefile ; then cd ${bdPfx}_cpl ; make Clean ; cd .. ; fi
+ if test -f ${bdPfx}_ocn/Makefile ; then cd ${bdPfx}_ocn ; make Clean ; cd .. ; fi
+ if test -f ${bdPfx}_atm/Makefile ; then cd ${bdPfx}_atm ; make Clean ; cd .. ; fi
 fi
 if test $kpr = 5
 then
  echo 'remove output files in rank_0,1,2 dir.'
  rm -f pr_group std_outp comp_res.{ocn,atm,land,sice}
- if test -d rank_0 ; then cd rank_0 ; rm -f Coupler.0000.clog ; cd .. ; fi
- if test -d rank_$rnkO
- then cd rank_$rnkO ; rm -f *.data *.meta STD???.0000 UV-*.0001.clog ; cd .. ; fi
- if test -d rank_$rnkA
- then cd rank_$rnkA ; rm -f *.data *.meta STD???.0000 UV-*.0001.clog ; cd .. ; fi
+ test -f rank_0/Coupler.0000.clog && rm -f rank_0/Coupler.0000.clog
+ if test -d rank_$rnkO ; then
+   ( cd rank_$rnkO ; rm -f *.data *.meta *.txt *.log STD???.00?? UV-*.00??.clog )
+ fi
+ if test -d rank_$rnkA ; then
+   ( cd rank_$rnkA ; rm -f *.data *.meta *.txt *.log STD???.00?? UV-*.00??.clog )
+ fi
 fi
 
 if test $kpr = 1
@@ -86,7 +90,7 @@ then
  if test $zz = 0 ; then OPTFILE="../$OPTFILE" ; fi
 #---
  echo '==== compile coupler:'
- cd build_cpl
+ cd ${bdPfx}_cpl
  echo ' --- genmake2 (cpl):'
  ../../../tools/genmake2 -of $OPTFILE -mpi $GMKopt >  TTT.genmake.$$ 2>&1
  RetVal=$? ; tail -5 TTT.genmake.$$
@@ -109,7 +113,7 @@ then
  echo ' ' ; cd $dir
 
  echo '==== compile OGCM:'
- cd build_ocn
+ cd ${bdPfx}_ocn
  echo ' --- genmake2 (ocn):'
  ../../../tools/genmake2 -of $OPTFILE -mpi $MTHo $GMKopt >  TTT.genmake.$$ 2>&1
  RetVal=$? ; tail -5 TTT.genmake.$$
@@ -132,7 +136,7 @@ then
  echo ' ' ; cd $dir
 
  echo '==== compile AGCM:'
- cd build_atm
+ cd ${bdPfx}_atm
  echo ' --- genmake2 (atm):'
  ../../../tools/genmake2 -of $OPTFILE -mpi $MTHa $GMKopt >  TTT.genmake.$$ 2>&1
  RetVal=$? ; tail -5 TTT.genmake.$$
@@ -154,7 +158,7 @@ then
  fi
  echo ' ' ; cd $dir
 
- ls -l build_???/mitgcmuv
+ ls -l ${bdPfx}_???/mitgcmuv
 
 fi
 
@@ -233,15 +237,15 @@ then
   rm -f pr_group ; touch pr_group
   for xx in $list
   do
-    echo $xx $nn $dir/build_$dd1/mitgcmuv >> pr_group
+    echo $xx $nn $dir/${bdPfx}_$dd1/mitgcmuv >> pr_group
     nc=`expr $nc + 1`
     if [ $nc -le $NpOc ] ; then dd1=ocn ; else dd1=atm ; fi
     nn=1
   done
   NpAt=`expr $Npr - 1 - $NpOc`
-  RunOpt="-np 1 ./build_cpl/mitgcmuv"
-  RunOpt="$RunOpt : -np $NpOc ./build_ocn/mitgcmuv"
-  RunOpt="$RunOpt : -np $NpAt ./build_atm/mitgcmuv"
+  RunOpt="-np 1 ./${bdPfx}_cpl/mitgcmuv"
+  RunOpt="$RunOpt : -np $NpOc ./${bdPfx}_ocn/mitgcmuv"
+  RunOpt="$RunOpt : -np $NpAt ./${bdPfx}_atm/mitgcmuv"
 
   cd $ROOTDIR
   if test "x$MTH" != x ; then
@@ -264,14 +268,14 @@ then
   echo $mpich | grep 'openmpi' > /dev/null 2>&1
   opnmpi=$?
   if test $mpich1 == 0 ; then
-  # /usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpirun.ch_gm -pg pr_group -wd $ROOTDIR --gm-kill 5 -v  ./build_cpl/mitgcmuv > std_outp 2>&1
+  # /usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpirun.ch_gm -pg pr_group -wd $ROOTDIR --gm-kill 5 -v  ./${bdPfx}_cpl/mitgcmuv > std_outp 2>&1
   #- with mpich-1 (on danton, old aces: ao, geo, itrda):
-    echo "execute 'mpirun -p4pg pr_group -v ./build_cpl/mitgcmuv' :"
-    mpirun -p4pg pr_group -v ./build_cpl/mitgcmuv > std_outp 2>&1
+    echo "execute 'mpirun -p4pg pr_group -v ./${bdPfx}_cpl/mitgcmuv' :"
+    mpirun -p4pg pr_group -v ./${bdPfx}_cpl/mitgcmuv > std_outp 2>&1
   elif test $mpichmx == 0 ; then
   #- with mpich-mx (on beagle):
-    echo "execute 'mpirun -pg pr_group -v ./build_cpl/mitgcmuv' :"
-    mpirun -pg pr_group -v ./build_cpl/mitgcmuv > std_outp 2>&1
+    echo "execute 'mpirun -pg pr_group -v ./${bdPfx}_cpl/mitgcmuv' :"
+    mpirun -pg pr_group -v ./${bdPfx}_cpl/mitgcmuv > std_outp 2>&1
   elif test $mpich2 == 0 -o $opnmpi == 0 ; then
   #- with Hydra mpich2 (on baudelaire) or with openmpi:
     echo "execute 'mpirun $RunOpt' :"
