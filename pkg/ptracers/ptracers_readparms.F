@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.49 2016/08/23 18:29:49 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.50 2017/08/09 15:23:36 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -171,7 +171,11 @@ C     Open and read the data.ptracers file
      &                    SQUEEZE_RIGHT , myThid )
 
 C     Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C     Check for retired parameters:
 C     Tracer 1 climatology relaxation time scale (<- but the code is gone !)

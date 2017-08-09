@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_readparms.F,v 1.7 2017/01/10 15:37:49 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_readparms.F,v 1.8 2017/08/09 15:23:36 mlosch Exp $
 C $Name:  $
 
 #include "SMOOTH_OPTIONS.h"
@@ -103,7 +103,11 @@ C--   Read settings from model parameter file "data.smooth".
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                  SQUEEZE_RIGHT , 1)
 
-      CLOSE( iUnit )
+#ifdef SINGLE_DISK_IO
+      CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C--   Print pkg/smooth settings to standard output:
       WRITE(msgBuf,'(A)')

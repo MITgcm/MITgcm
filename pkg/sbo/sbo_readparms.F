@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_readparms.F,v 1.7 2014/05/27 23:41:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_readparms.F,v 1.8 2017/08/09 15:23:36 mlosch Exp $
 C $Name:  $
 
 #include "SBO_OPTIONS.h"
@@ -80,7 +80,11 @@ C--   Read settings from model parameter file "data.sbo".
       READ(UNIT=iUnit,NML=SBO_PARM01)
 
 C     Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
       WRITE(msgBuf,'(A)') ' SBO_READPARMS: finished reading data.sbo'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.24 2017/04/03 23:16:38 ou.wang Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.25 2017/08/09 15:23:36 mlosch Exp $
 C $Name:  $
 
 #include "PROFILES_OPTIONS.h"
@@ -131,7 +131,11 @@ c--     Next, read the cost data file.
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                  SQUEEZE_RIGHT , 1)
 
-        CLOSE( iUnit )
+#ifdef SINGLE_DISK_IO
+        CLOSE(iUnit)
+#else
+        CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
         do num_file=1,NFILESPROFMAX
 

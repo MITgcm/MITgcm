@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/runclock/runclock_readparms.F,v 1.3 2014/05/28 00:13:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/runclock/runclock_readparms.F,v 1.4 2017/08/09 15:23:36 mlosch Exp $
 C $Name:  $
 
 #include "RUNCLOCK_OPTIONS.h"
@@ -70,7 +70,11 @@ C--   Read parameters from open data file
      &                    SQUEEZE_RIGHT , 1)
 
 C--   Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
       IF (RC_maxtime_hr.LT.0) THEN
       WRITE(msgBuf,'(A)') ' RUNCLOCK_READPARMS: ERR! RC_maxtime_hr<0'

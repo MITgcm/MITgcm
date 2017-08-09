@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_readparms.F,v 1.10 2015/06/12 16:21:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_readparms.F,v 1.11 2017/08/09 15:23:37 mlosch Exp $
 C $Name:  $
 
 #include "LAYERS_OPTIONS.h"
@@ -94,7 +94,11 @@ C     Read parameters from open data file
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , 1)
 C     Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C--   Process old params setting (single averaging tracer)
       IF ( LAYER_nb.LT.0 .OR. LAYER_nb.GT.3 ) THEN

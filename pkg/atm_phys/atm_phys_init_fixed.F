@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_init_fixed.F,v 1.3 2015/12/21 20:04:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_init_fixed.F,v 1.4 2017/08/09 15:23:39 mlosch Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -55,32 +55,36 @@ C     iUnit      :: Work variable for IO unit number
 
       _BARRIER
       _BEGIN_MASTER(myThid)
-        module_is_initialized =.false.
-        turb = .false.
-        ldry_convection = .false.
-        lwet_convection = .false.
-        do_virtual = .false. ! whether virtual temp used in gcm_vert_diff
-        two_stream = .true.
-        mixed_layer_bc = .false.
-        roughness_heat = 0.05
-        roughness_moist = 0.05
-        roughness_mom = 0.05
-       WRITE(msgBuf,'(A)') 'ATM_PHYS_INIT_FIXED: opening data.atm_gray'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT , 1)
-       CALL OPEN_COPY_DATA_FILE(
-     I                      'data.atm_gray', 'ATM_PHYS_INIT_FIXED',
-     O                      iUnit,
-     I                      myThid )
+      module_is_initialized =.false.
+      turb = .false.
+      ldry_convection = .false.
+      lwet_convection = .false.
+      do_virtual = .false.      ! whether virtual temp used in gcm_vert_diff
+      two_stream = .true.
+      mixed_layer_bc = .false.
+      roughness_heat = 0.05
+      roughness_moist = 0.05
+      roughness_mom = 0.05
+      WRITE(msgBuf,'(A)') 'ATM_PHYS_INIT_FIXED: opening data.atm_gray'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+      CALL OPEN_COPY_DATA_FILE(
+     I                     'data.atm_gray', 'ATM_PHYS_INIT_FIXED',
+     O                     iUnit,
+     I                     myThid )
 
 C      Read parameters from open data file
-       READ(UNIT=iUnit,NML=atmosphere_nml)
-       WRITE(msgBuf,'(A)')
+      READ(UNIT=iUnit,NML=atmosphere_nml)
+      WRITE(msgBuf,'(A)')
      &     'ATM_PHYS_INIT_FIXED: finished reading data.atm_gray'
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
 C     Close the open data file
-       CLOSE(iUnit)
+#ifdef SINGLE_DISK_IO
+      CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
       CALL GCM_PARAMS_INIT(
      I         UNSET_RS, UNSET_RL, UNSET_I,

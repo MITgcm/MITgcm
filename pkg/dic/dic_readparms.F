@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.15 2016/11/04 20:23:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.16 2017/08/09 15:23:38 mlosch Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -175,7 +175,11 @@ C-    forcing filenames and parameters
      I                    SQUEEZE_RIGHT, myThid )
 
 C--   Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    derive other parameters:

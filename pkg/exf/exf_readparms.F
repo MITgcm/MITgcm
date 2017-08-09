@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.92 2017/03/03 00:57:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.93 2017/08/09 15:23:38 mlosch Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -1017,7 +1017,11 @@ C-
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
-      CLOSE( iUnit )
+#ifdef SINGLE_DISK_IO
+      CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C--   Retired parameters
       IF ( exf_yftype.NE.'RL' ) THEN

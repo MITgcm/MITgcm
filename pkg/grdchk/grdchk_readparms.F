@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.17 2014/05/28 00:16:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.18 2017/08/09 15:23:37 mlosch Exp $
 C $Name:  $
 
 #include "GRDCHK_OPTIONS.h"
@@ -137,7 +137,11 @@ c       Next, read the calendar data file.
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                SQUEEZE_RIGHT , 1)
 
-        CLOSE( iUnit )
+#ifdef SINGLE_DISK_IO
+        CLOSE(iUnit)
+#else
+        CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
         IF ( iGloPos .GT. sNx .OR. jGloPos .GT. sNy ) THEN
            WRITE(msgBuf,'(A)') 'i/j GloPos must be <= sNx/y'

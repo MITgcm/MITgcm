@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.48 2014/11/25 01:07:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.49 2017/08/09 15:23:37 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -419,7 +419,11 @@ C     seaice sponge layer is turned off by default
      &                    SQUEEZE_RIGHT , myThid )
 
 C--   Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C-    retired parameter
       IF ( nRetired .GT. 0 ) THEN

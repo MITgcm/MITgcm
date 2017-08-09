@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.16 2017/02/07 00:18:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.17 2017/08/09 15:23:37 mlosch Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -141,7 +141,11 @@ C Open and read the data.icefront file
      &                    SQUEEZE_RIGHT, myThid )
 
 C Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C Now set-up any remaining parameters that result from the input parameters
       IF ( ICEFRONTlatentHeat .NE. 0. _d 0 )

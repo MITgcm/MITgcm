@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_readparms.F,v 1.3 2014/05/27 23:41:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_readparms.F,v 1.4 2017/08/09 15:23:36 mlosch Exp $
 C $Name:  $
 
 #include "ZONAL_FILT_OPTIONS.h"
@@ -80,7 +80,11 @@ c    &    Shap_funct, nShapT, nShapUV, nShapTrPhys, nShapUVPhys
 c     write(*,*) 'Shap_Trtau,Shap_uvtau=',Shap_Trtau,Shap_uvtau
 
 C--   Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
       _END_MASTER(myThid)
 
 C--   Everyone else must wait for the parameters to be loaded

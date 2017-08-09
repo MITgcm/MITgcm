@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.16 2012/08/10 19:36:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.17 2017/08/09 15:23:38 mlosch Exp $
 C $Name:  $
 
 #include "COST_OPTIONS.h"
@@ -93,7 +93,11 @@ c--     Next, read the cost data file.
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                  SQUEEZE_RIGHT , 1)
 
-        CLOSE( iUnit )
+#ifdef SINGLE_DISK_IO
+        CLOSE(iUnit)
+#else
+        CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
         IF ( MOD(lastinterval,deltaTclock) .GT. 0. )
      &       lastinterval = MAX(

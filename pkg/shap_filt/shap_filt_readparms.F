@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.16 2014/05/27 23:41:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.17 2017/08/09 15:23:36 mlosch Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -99,7 +99,11 @@ C--   Read parameters from open data file
      &                    SQUEEZE_RIGHT , 1)
 
 C--   Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C     for backward compatibility:
       IF (nShapS.EQ.-1) nShapS = nShapT

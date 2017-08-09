@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_readparms.F,v 1.10 2017/03/16 17:03:26 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_readparms.F,v 1.11 2017/08/09 15:23:39 mlosch Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -367,7 +367,11 @@ C-    forcing filenames and parameters
      I                    SQUEEZE_RIGHT, myThid )
 
 C--   Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C-    derive other parameters:
 

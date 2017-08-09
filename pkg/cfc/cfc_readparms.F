@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_readparms.F,v 1.3 2013/06/10 02:51:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_readparms.F,v 1.4 2017/08/09 15:23:38 mlosch Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -84,7 +84,11 @@ C-    forcing filenames and parameters
      I                    SQUEEZE_RIGHT, myThid )
 
 C--   Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
       IF ( atmCFC_timeOffset .EQ. UNSET_RL ) THEN
 C-    Assume that cfcTime=0 corresponds to the beginning of the 1rst record

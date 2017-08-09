@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_readparms.F,v 1.8 2014/05/27 23:41:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_readparms.F,v 1.9 2017/08/09 15:23:36 mlosch Exp $
 C $Name:  $
 
 #include "SALT_PLUME_OPTIONS.h"
@@ -97,21 +97,25 @@ C     Read parameters from open data file
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , 1)
 C     Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
-       IF ( SaltPlumeCriterion .EQ. UNSET_RL ) THEN
-          IF ( CriterionType .EQ. 1 ) THEN
-             SaltPlumeCriterion  = 0.4 _d 0
-          ELSEIF ( CriterionType .EQ. 2 ) THEN
-             SaltPlumeCriterion  = 0.005 _d 0
-          ELSE
-             WRITE(msgBuf,'(A)') 'S/R SALT_PLUME_READPARMS'
-             CALL PRINT_ERROR( msgBuf, myThid )
-             WRITE(msgBuf,'(A)') 'Invalid CriterionType'
-             CALL PRINT_ERROR( msgBuf, myThid )
-             STOP 'ABNORMAL END: S/R SALT_PLUME_READPARMS'
-          ENDIF
+      IF ( SaltPlumeCriterion .EQ. UNSET_RL ) THEN
+       IF ( CriterionType .EQ. 1 ) THEN
+        SaltPlumeCriterion  = 0.4 _d 0
+       ELSEIF ( CriterionType .EQ. 2 ) THEN
+        SaltPlumeCriterion  = 0.005 _d 0
+       ELSE
+        WRITE(msgBuf,'(A)') 'S/R SALT_PLUME_READPARMS'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)') 'Invalid CriterionType'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SALT_PLUME_READPARMS'
        ENDIF
+      ENDIF
 
       _END_MASTER(myThid)
 

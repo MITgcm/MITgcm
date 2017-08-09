@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_readparms.F,v 1.3 2014/05/27 23:41:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_readparms.F,v 1.4 2017/08/09 15:23:37 mlosch Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -87,7 +87,11 @@ C Open and read the data.pp file
      &                   SQUEEZE_RIGHT , 1)
 
 C Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
       _END_MASTER(myThid)
 
 C Everyone else must wait for the parameters to be loaded

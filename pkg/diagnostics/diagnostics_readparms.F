@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.44 2017/07/23 00:42:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.45 2017/08/09 15:23:38 mlosch Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -51,8 +51,6 @@ C     missing_value_int :: missing value for integers in output (not used)
 C     levels    :: List Output Levels
 C     fields    :: List Output Fields
 C     fileName  :: List Output Filename
-C     fileFlags :: List Ouput file options (file precision, integral/interp.
-C                  vertically, hFac weighted option)
 C--   for regional-statistics
 C     set_regMask(n) :: region-mask set-index that define the region "n"
 C     val_regMask(n) :: corresponding mask value of region "n" in the region-mask
@@ -223,7 +221,11 @@ C-    set default for statistics output according to the main flag
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
-      CLOSE (ku)
+#ifdef SINGLE_DISK_IO
+      CLOSE(ku)
+#else
+      CLOSE(ku,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C     Initialise DIAG_SELECT common block (except pointers)
       nlists = 0

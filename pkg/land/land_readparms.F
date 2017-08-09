@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.14 2014/05/28 21:59:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.15 2017/08/09 15:23:37 mlosch Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -186,7 +186,11 @@ C-    Physical Constants for Land package
      I                    SQUEEZE_RIGHT, myThid )
 
 C--   Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Derive other parameters:

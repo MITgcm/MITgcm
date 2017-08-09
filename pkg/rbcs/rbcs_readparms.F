@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_readparms.F,v 1.12 2014/05/27 23:41:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_readparms.F,v 1.13 2017/08/09 15:23:36 mlosch Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -147,7 +147,11 @@ C--   Open and read the data.rbcs file
      &                   SQUEEZE_RIGHT , 1)
 
 C--   Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C---  Check RBCS config and params:
 #ifdef DISABLE_RBCS_MOM

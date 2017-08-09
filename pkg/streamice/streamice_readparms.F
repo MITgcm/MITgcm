@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.17 2016/11/29 14:22:20 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.18 2017/08/09 15:23:36 mlosch Exp $
 C $Name:  $
 
 C this needs changes
@@ -417,7 +417,11 @@ C     Read parameters from open data file
      &    'STREAMICE_READPARMS: read third param block'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , 1)
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 !#ifdef ALLOW_STREAMICE_FLUX_CONTROL
 !
@@ -431,7 +435,11 @@ C     Read parameters from open data file
 !     &    'STREAMICE_READPARMS: read flux_ctrl param block'
 !      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
 !     &    SQUEEZE_RIGHT , 1)
+!#ifdef SINGLE_DISK_IO
 !      CLOSE(iUnit)
+!#else
+!      CLOSE(iUnit,STATUS='DELETE')
+!#endif /* SINGLE_DISK_IO */
 !#endif
 
       streamice_nstep_velocity = NINT (streamice_vel_update / deltaT)

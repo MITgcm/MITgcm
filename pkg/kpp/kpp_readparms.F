@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.22 2014/05/27 23:41:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.23 2017/08/09 15:23:37 mlosch Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -166,7 +166,11 @@ C      CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R KPP_INIT'
       ENDIF
 
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
       WRITE(msgBuf,'(A)') ' KPP_INIT: finished reading data.kpp'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

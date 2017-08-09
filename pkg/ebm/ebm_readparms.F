@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_readparms.F,v 1.4 2014/05/27 23:56:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_readparms.F,v 1.5 2017/08/09 15:23:38 mlosch Exp $
 C $Name:  $
 #include "EBM_OPTIONS.h"
 
@@ -89,7 +89,11 @@ C      CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R EBM_READPARMS'
       ENDIF
 C     Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
       WRITE(msgBuf,'(A)') ' EBM_READPARMS: finished reading data.ebm'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

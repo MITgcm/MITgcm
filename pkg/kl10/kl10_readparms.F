@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_readparms.F,v 1.1 2014/07/30 03:28:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_readparms.F,v 1.2 2017/08/09 15:23:37 mlosch Exp $
 C $Name:  $
 
 #include "KL10_OPTIONS.h"
@@ -79,7 +79,11 @@ C Open and read the data.kl10 file
      &                   SQUEEZE_RIGHT , 1)
 
 C Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
       _END_MASTER(myThid)
 
 C Everyone else must wait for the parameters to be loaded

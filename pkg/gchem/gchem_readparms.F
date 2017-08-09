@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.21 2016/05/23 13:09:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.22 2017/08/09 15:23:37 mlosch Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -113,7 +113,11 @@ C Open and read the data.gchem file
      &                   SQUEEZE_RIGHT , 1)
 
 C Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C- Check for retired parameters:
       IF ( tIter0 .NE. UNSET_I ) THEN

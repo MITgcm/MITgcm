@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_readparms.F,v 1.4 2015/12/21 20:04:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_readparms.F,v 1.5 2017/08/09 15:23:39 mlosch Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -84,7 +84,11 @@ C     Read parameters from open data file
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 C     Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
       IF ( atmPhys_tauDampUV.LE.zeroRL ) THEN
        DO k=1,Nr

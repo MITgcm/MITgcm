@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_readparms.F,v 1.5 2014/05/27 23:41:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_readparms.F,v 1.6 2017/08/09 15:23:37 mlosch Exp $
 C $Name:  $
 
 #include "MYPACKAGE_OPTIONS.h"
@@ -97,7 +97,11 @@ C     Read parameters from open data file
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &    SQUEEZE_RIGHT , 1)
 C     Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C     Make sure that we locally honor the global MNC on/off flag
       myPa_MNC = myPa_MNC .AND. useMNC

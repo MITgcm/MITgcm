@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.15 2016/01/14 17:44:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.16 2017/08/09 15:23:37 mlosch Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -182,7 +182,11 @@ C      CALL MODELDATA_EXAMPLE( myThid )
       ENDIF
 #endif /* ALLOW_GGL90_IDEMIX */
 
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
       WRITE(msgBuf,'(A)')
      &     ' GGL90_READPARMS: finished reading data.ggl90'

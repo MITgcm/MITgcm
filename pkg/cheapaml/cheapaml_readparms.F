@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.15 2017/06/27 14:16:16 bderembl Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.16 2017/08/09 15:23:38 mlosch Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -211,7 +211,11 @@ C--   Read parameters from open data file
      &                    SQUEEZE_RIGHT, myThid )
 
 C--   Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 C compute derivative values
 C energy flux conversion factor
         xef=1. _d 0 /rhoa/cpair

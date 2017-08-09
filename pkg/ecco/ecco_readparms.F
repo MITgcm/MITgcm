@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.94 2017/04/03 23:16:38 ou.wang Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.95 2017/08/09 15:23:38 mlosch Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -893,7 +893,11 @@ catn -- checking boxmean and transp
 
       _BEGIN_MASTER( myThid )
 
-      CLOSE( iUnit )
+#ifdef SINGLE_DISK_IO
+      CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
       _END_MASTER( myThid )
 

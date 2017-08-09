@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.19 2014/05/27 23:56:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.20 2017/08/09 15:23:38 mlosch Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -71,7 +71,11 @@ C     Read Fizhi Namelist
       CALL OPEN_COPY_DATA_FILE('data.fizhi', 'FIZHI_READPARMS',
      &     ku,myThid )
       read  (ku,NML=fizhi_list)
-      close (ku)
+#ifdef SINGLE_DISK_IO
+      CLOSE(ku)
+#else
+      CLOSE(ku,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C     Read Supplemental Ascii File with Current Time Info
       CALL MDSFINDUNIT( ku2, myThid )

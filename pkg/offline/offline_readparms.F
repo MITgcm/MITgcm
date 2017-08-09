@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_readparms.F,v 1.12 2015/07/16 21:21:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_readparms.F,v 1.13 2017/08/09 15:23:37 mlosch Exp $
 C $Name:  $
 
 #include "OFFLINE_OPTIONS.h"
@@ -105,7 +105,11 @@ C--   Read parameters from open data file
      &                    SQUEEZE_RIGHT, myThid )
 
 C--   Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 C--   Check for retired parameters still being used
       IF ( KPP_ghatFile .NE.
