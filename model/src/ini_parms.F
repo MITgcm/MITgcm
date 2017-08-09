@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.275 2017/05/02 18:13:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.276 2017/08/09 15:22:56 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1455,7 +1455,11 @@ C      use the solver minimum residual solution (cg2dUseMinResSol=1).
       ENDIF
 
 C--   Close the open data file
+#ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
+#else
+      CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
       WRITE(msgBuf,'(A)') ' INI_PARMS: finished reading file "data"'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
