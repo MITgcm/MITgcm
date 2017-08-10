@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.24 2012/09/19 20:46:03 utke Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.25 2017/08/10 14:06:59 mlosch Exp $
 C $Name:  $
 
 CBOP
@@ -209,5 +209,10 @@ C     precision when they see .Dnn which runs very slowly!
 #ifndef REAL_D0_IS_16BYTES
 #define _F64( a ) DFLOAT( a )
 #endif
+
+C--   Set the format for writing processor IDs, e.g. in S/R eeset_parms
+C     and S/R open_copy_data_file. The default of I9.9 should work for
+C     a long time (until we will use 10e10 processors and more)
+#define FMT_PROC_ID 'I9.9'
 
 #endif /* _CPP_EEMACROS_H_ */
