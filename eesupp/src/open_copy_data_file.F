@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/open_copy_data_file.F,v 1.10 2017/01/10 23:02:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/open_copy_data_file.F,v 1.11 2017/08/10 15:31:02 mlosch Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -47,7 +47,7 @@ C     === Local variables ===
 C     msgBuf    :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_PREC) record
-#if defined (TARGET_BGL) || defined (TARGET_CRAYXT) || defined (SINGLE_DISK_IO)
+#if !defined(USE_FORTRAN_SCRATCH_FILES) || defined(SINGLE_DISK_IO)
       CHARACTER*(MAX_LEN_FNAM) scratchFile1
       CHARACTER*(MAX_LEN_FNAM) scratchFile2
 #endif
@@ -86,15 +86,18 @@ C     Make scratch copies of eedata with and without comments
        OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
       ENDIF
 #else /* ifndef SINGLE_DISK_IO */
-# if defined (TARGET_BGL) || defined (TARGET_CRAYXT)
-      WRITE(scratchFile1,'(A,I4.4)') 'scratch1.', myProcId
-      WRITE(scratchFile2,'(A,I4.4)') 'scratch2.', myProcId
-      OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
-      OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
-# else
+#ifdef USE_FORTRAN_SCRATCH_FILES
+C     this is the old default, which can cause filename conflicts on some
+C     multi-node/multi-processor systems
       OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
       OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
-# endif
+#else
+C     After opening regular files here, they are closed with STATUS='DELETE'
+      WRITE(scratchFile1,'(A,'//FMT_PROC_ID//')') 'scratch1.', myProcId
+      WRITE(scratchFile2,'(A,'//FMT_PROC_ID//')') 'scratch2.', myProcId
+      OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
+      OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
+#endif /* USE_FORTRAN_SCRATCH_FILES */
 #endif /* SINGLE_DISK_IO */
 
 #ifdef SINGLE_DISK_IO
@@ -147,7 +150,7 @@ C--   Report contents of model parameter file
      &                     SQUEEZE_RIGHT, myThid )
       ENDDO
  2001 CONTINUE
-      CLOSE(iUnit)
+      CLOSE(iUnit,STATUS='DELETE')
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
