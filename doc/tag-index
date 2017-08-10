@@ -1,12 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2345 2017/08/08 15:43:14 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2346 2017/08/10 15:32:44 mlosch Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o eesupp/src/eeset_parms.F:
+o eesupp/src:
   - change default for opening scratch files to avoid STATUS='SCRATCH'
   - close scratch files with STATUS='DELELTE'
+  - changes affect eeset_parms.F and open_copy_data_file.F and many routines
+    that read namelists (because they close the scratch files)
   - you can revert to old default by setting USE_FORTRAN_SCRATCH_FILES 
     in CPP_EEOPTIONS.h (tested in lab_sea/code_ad)
 o pkg/atm_phys:
