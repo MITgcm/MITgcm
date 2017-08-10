@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.47 2017/08/08 15:42:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.48 2017/08/10 15:30:19 mlosch Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -154,7 +154,6 @@ C     multi-node/multi-processor systems
 # else
 C     this definition will go into CPP_EEMACROS.h, once this method is
 C     properly established
-#define FMT_PROC_ID 'I9.9'
 C     After opening regular files here, they are closed with STATUS='DELETE'
       WRITE(scratchFile1,'(A,'//FMT_PROC_ID//')') 'scratch1.', procId
       WRITE(scratchFile2,'(A,'//FMT_PROC_ID//')') 'scratch2.', procId
@@ -259,7 +258,7 @@ C--   Read namelist
 
 C--   Execution Environment parameter file read
 #ifdef SINGLE_DISK_IO
-      CLOSE(scrUnit1)
+      CLOSE(iUnit)
 #else
       CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
