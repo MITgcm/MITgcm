@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/ideal_2D_oce/code/CPP_EEOPTIONS.h,v 1.5 2015/08/25 21:11:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/ideal_2D_oce/code/CPP_EEOPTIONS.h,v 1.6 2017/08/11 21:25:58 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -82,6 +82,12 @@ C--   Flag to turn off the writing of error message to ioUnit zero
 C--   Alternative formulation of BYTESWAP, faster than
 C     compiler flag -byteswapio on the Altix.
 #undef FAST_BYTESWAP
+
+C--   Flag to turn on old default of opening scratch files with the
+C     STATUS='SCRATCH' option. This method, while perfectly FORTRAN-standard,
+C     caused filename conflicts on some multi-node/multi-processor platforms
+C     in the past and has been replace by something (hopefully) more robust.
+#define USE_FORTRAN_SCRATCH_FILES
 
 C--   Flag defined for eeboot_minimal.F, eeset_parms.F and open_copy_data_file.F
 C     to write STDOUT, STDERR and scratch files from process 0 only.
