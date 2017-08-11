@@ -1,8 +1,7 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/monin_obukhov_mod.F90,v 1.1 2013/05/08 22:14:14 jmc Exp $
+! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/monin_obukhov_mod.F90,v 1.2 2017/08/11 20:48:51 jmc Exp $
 ! $Name:  $
 
 module monin_obukhov_mod
-
 
 !=======================================================================
 !
@@ -15,7 +14,6 @@ module monin_obukhov_mod
 !                  using Monin-Obukhov scaling
 !
 !=======================================================================
-
 
 use gcm_params_mod, only: gcm_LEN_MBUF, gcm_SQZ_R, gcm_stdMsgUnit
 use constants_mod, only : grav, vonkarm
@@ -38,7 +36,6 @@ interface mo_drag
     module procedure  mo_drag_0d, mo_drag_1d, mo_drag_2d
 end interface
 
-
 interface mo_profile
     module procedure  mo_profile_0d,   mo_profile_1d,   mo_profile_2d, &
                       mo_profile_0d_n, mo_profile_1d_n, mo_profile_2d_n
@@ -55,10 +52,9 @@ interface stable_mix
                       stable_mix_2d, stable_mix_3d
 end interface
 
-
 !--------------------- version number ---------------------------------
 
-character(len=128) :: version = '$Id: monin_obukhov_mod.F90,v 1.1 2013/05/08 22:14:14 jmc Exp $'
+character(len=128) :: version = '$Id: monin_obukhov_mod.F90,v 1.2 2017/08/11 20:48:51 jmc Exp $'
 character(len=128) :: tagname = '$Name:  $'
 
 !=======================================================================
@@ -71,7 +67,6 @@ logical :: neutral        = .false.
 integer :: stable_option  = 1
 real    :: zeta_trans     = 0.5
 
-
 namelist /monin_obukhov_nml/ rich_crit, neutral, drag_min, &
                              stable_option, zeta_trans
 
@@ -82,7 +77,6 @@ namelist /monin_obukhov_nml/ rich_crit, neutral, drag_min, &
 real, parameter    :: small  = 1.e-04
 real               :: b_stab, r_crit, sqrt_drag_min, lambda, rich_trans
 logical            :: init = .false.
-
 
 contains
 
@@ -116,7 +110,11 @@ CHARACTER*(gcm_LEN_MBUF) :: msgBuf
           'MONIN_OBUKHOV_INIT: finished reading data.atm_gray'
      CALL PRINT_MESSAGE( msgBuf, gcm_stdMsgUnit, gcm_SQZ_R, myThid )
 !    Close the open data file
+#ifdef SINGLE_DISK_IO
      CLOSE(iUnit)
+#else
+     CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 !      if (file_exist('input.nml')) then
 !         unit = open_namelist_file ()
@@ -200,7 +198,6 @@ real   , dimension(size(pt)) :: delta_b, us, bs, qs
 
 if(.not.init) call monin_obukhov_init(myThid)
 
-
 mask = .true.
 if(present(avail)) mask = avail
 
@@ -260,7 +257,6 @@ end if
 
 return
 end subroutine mo_drag_1d
-
 
 !=======================================================================
 
@@ -426,7 +422,6 @@ logical, intent(in) , dimension(:) :: mask
 real   , intent(out), dimension(:) :: f_m, f_t, f_q
 integer, intent(in)                :: myThid
 
-
 real, parameter    :: error    = 1.e-04
 real, parameter    :: zeta_min = 1.e-06
 integer, parameter :: max_iter = 20
@@ -441,7 +436,6 @@ real, dimension(size(rich)) ::   &
           zeta_0, zeta_t, zeta_q, df_m, df_t
 
 logical, dimension(size(rich)) :: mask_1
-
 
 z_z0 = z/z0
 z_zt = z/zt
@@ -751,13 +745,11 @@ end if
 return
 end subroutine mo_integral_m
 
-
 !=======================================================================
 ! The following routines allow the public interfaces to be used
 ! with different dimensions of the input and output
 !
 !=======================================================================
-
 
 subroutine mo_drag_2d &
     (pt, pt0, z, z0, zt, zq, speed, drag_m, drag_t, drag_q, u_star, b_star, myThid)
@@ -774,7 +766,6 @@ do j = 1, size(pt,2)
                    speed(:,j), drag_m(:,j), drag_t(:,j), drag_q(:,j), &
                    u_star(:,j), b_star(:,j), myThid )
 end do
-
 
 return
 end subroutine mo_drag_2d
@@ -858,7 +849,6 @@ call mo_profile_1d (zref, zref_t, z_1, z0_1, zt_1, zq_1, &
 del_m = del_m_1(1)
 del_h = del_h_1(1)
 del_q = del_q_1(1)
-
 
 return
 end subroutine mo_profile_0d
@@ -949,7 +939,6 @@ k_h = k_h_n(:,:,1)
 return
 end subroutine mo_diff_2d_1
 
-
 !=======================================================================
 
 subroutine mo_diff_1d_1(z, u_star, b_star, k_m, k_h, myThid)
@@ -984,7 +973,6 @@ integer, intent(in)               :: myThid
 
 real, dimension(size(z,1),1)            :: u_star2, b_star2
 real, dimension(size(z,1),size(z,2), 1) :: z2, k_m2, k_h2
-
 
 z2   (:,:,1) = z
 u_star2(:,1) = u_star
@@ -1063,7 +1051,6 @@ mix = mix_3d(:,:,1)
 
 return
 end subroutine stable_mix_2d
-
 
 !=======================================================================
 

@@ -1,4 +1,4 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/vert_turb_driver_mod.F90,v 1.1 2013/05/08 22:14:15 jmc Exp $
+! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/vert_turb_driver_mod.F90,v 1.2 2017/08/11 20:48:51 jmc Exp $
 ! $Name:  $
 
 module vert_turb_driver_mod
@@ -13,7 +13,6 @@ module vert_turb_driver_mod
 !
 !-----------------------------------------------------------------------
 !---------------- modules ---------------------
-
 
 use      my25_turb_mod, only: my25_turb_init, my25_turb_end,  &
                               my25_turb, tke_surf, tke
@@ -41,11 +40,10 @@ private
 
 public   vert_turb_driver_init, vert_turb_driver_end, vert_turb_driver
 
-
 !-----------------------------------------------------------------------
 !--------------------- version number ----------------------------------
 
-character(len=128) :: version = '$Id: vert_turb_driver_mod.F90,v 1.1 2013/05/08 22:14:15 jmc Exp $'
+character(len=128) :: version = '$Id: vert_turb_driver_mod.F90,v 1.2 2017/08/11 20:48:51 jmc Exp $'
 character(len=128) :: tag = '$Name:  $'
 
 !-----------------------------------------------------------------------
@@ -286,7 +284,6 @@ end if
 !        used = send_data ( id_gust, gust, Time_next, is, js )
       endif
 
-
 !------- output diffusion coefficients ---------
 
   if ( id_diff_t > 0 .or. id_diff_m > 0 .or. id_diff_sc > 0 ) then
@@ -397,7 +394,11 @@ CHARACTER*(gcm_LEN_MBUF) :: msgBuf
           'VERT_TURB_DRIVER_INIT: finished reading data.atm_gray'
      CALL PRINT_MESSAGE( msgBuf, gcm_stdMsgUnit, gcm_SQZ_R, myThid )
 !    Close the open data file
+#ifdef SINGLE_DISK_IO
      CLOSE(iUnit)
+#else
+     CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 !     if (file_exist('input.nml')) then
 !        unit = open_namelist_file ()
@@ -521,7 +522,6 @@ endif
 !-----------------------------------------------------------------------
 
 end subroutine vert_turb_driver_init
-
 
 !#######################################################################
 

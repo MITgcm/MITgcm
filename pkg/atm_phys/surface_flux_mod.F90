@@ -1,4 +1,4 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/surface_flux_mod.F90,v 1.2 2017/07/31 16:07:05 jmc Exp $
+! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/surface_flux_mod.F90,v 1.3 2017/08/11 20:48:51 jmc Exp $
 ! $Name:  $
 
 ! ============================================================================
@@ -21,7 +21,6 @@ private
 public  surface_flux
 ! ==== end of public interface ===============================================
 
-
 interface surface_flux
 !    module procedure surface_flux_0d
 !    module procedure surface_flux_1d
@@ -30,7 +29,7 @@ end interface
 
 !-----------------------------------------------------------------------
 
-character(len=*), parameter :: version = '$Id: surface_flux_mod.F90,v 1.2 2017/07/31 16:07:05 jmc Exp $'
+character(len=*), parameter :: version = '$Id: surface_flux_mod.F90,v 1.3 2017/08/11 20:48:51 jmc Exp $'
 character(len=*), parameter :: tagname = '$Name:  $'
 
 logical :: do_init = .true.
@@ -43,7 +42,6 @@ real, parameter :: kappa  = rdgas/cp_air
 real            :: d608   = d378/d622
       ! d608 set to zero at initialization if the use of
       ! virtual temperatures is turned off in namelist
-
 
 ! ---- namelist with default values ------------------------------------------
 logical :: no_neg_q         = .false.  ! for backwards compatibility
@@ -58,10 +56,7 @@ namelist /surface_flux_nml/ no_neg_q,         &
                             gust_const,       &
                             use_mixing_ratio
 
-
-
 contains
-
 
 ! ============================================================================
 subroutine surface_flux_1d (                                           &
@@ -109,7 +104,6 @@ subroutine surface_flux_1d (                                           &
        q_atm,    q_surf0
 
   integer :: i, nbad
-
 
   if (do_init) call surface_flux_init(myThid)
 
@@ -178,7 +172,6 @@ subroutine surface_flux_1d (                                           &
   call mo_drag (thv_atm, thv_surf, z_atm,                  &
        rough_mom, rough_heat, rough_moist, w_atm,          &
        cd_m, cd_t, cd_q, u_star, b_star, myThid, avail     )
-
 
   where (avail)
      ! surface layer drag coefficients
@@ -291,7 +284,6 @@ subroutine surface_flux_0d (                                                 &
        cd_m,      cd_t,       cd_q
   real, dimension(1) :: q_surf
 
-
   avail = .true.
 
   t_atm(1)       = t_atm_0
@@ -393,7 +385,6 @@ subroutine surface_flux_2d (                                           &
   end do
 end subroutine surface_flux_2d
 
-
 ! ============================================================================
 subroutine surface_flux_init (myThid)
 ! ============================================================================
@@ -424,7 +415,11 @@ subroutine surface_flux_init (myThid)
           'SURFACE_FLUX_INIT: finished reading data.atm_gray'
      CALL PRINT_MESSAGE( msgBuf, gcm_stdMsgUnit, gcm_SQZ_R, myThid )
 !    Close the open data file
+#ifdef SINGLE_DISK_IO
      CLOSE(iUnit)
+#else
+     CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 !  if ( file_exist('input.nml')) then
 !     unit = open_namelist_file ()
@@ -441,7 +436,6 @@ subroutine surface_flux_init (myThid)
 
 !  if ( mpp_pe() == mpp_root_pe() ) write (stdlog(), nml=surface_flux_nml)
 
-
 !  if(.not. use_virtual_temp) d608 = 0.0
 
     do_init = .false.
@@ -450,6 +444,5 @@ subroutine surface_flux_init (myThid)
     CALL BARRIER (myThid)
 
 end subroutine surface_flux_init
-
 
 end module surface_flux_mod

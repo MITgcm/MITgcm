@@ -1,4 +1,4 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/radiation_mod.F90,v 1.6 2016/02/09 23:24:21 jmc Exp $
+! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/radiation_mod.F90,v 1.7 2017/08/11 20:48:51 jmc Exp $
 ! $Name:  $
 
 module radiation_mod
@@ -24,7 +24,7 @@ private
 
 ! version information
 
-character(len=128) :: version='$Id: radiation_mod.F90,v 1.6 2016/02/09 23:24:21 jmc Exp $'
+character(len=128) :: version='$Id: radiation_mod.F90,v 1.7 2017/08/11 20:48:51 jmc Exp $'
 character(len=128) :: tag='homemade'
 
 !==================================================================================
@@ -131,7 +131,11 @@ CHARACTER*(gcm_LEN_MBUF) :: msgBuf
           'RADIATION_INIT: finished reading data.atm_gray'
      CALL PRINT_MESSAGE( msgBuf, gcm_stdMsgUnit, gcm_SQZ_R, myThid )
 !    Close the open data file
+#ifdef SINGLE_DISK_IO
      CLOSE(iUnit)
+#else
+     CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 pi    = 4.0*atan(1.)
 deg_to_rad = 2.*pi/360.

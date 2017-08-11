@@ -1,4 +1,4 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/dargan_bettsmiller_mod.F90,v 1.2 2014/05/14 21:39:18 jmc Exp $
+! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/dargan_bettsmiller_mod.F90,v 1.3 2017/08/11 20:48:50 jmc Exp $
 ! $Name:  $
 
 module dargan_bettsmiller_mod
@@ -36,7 +36,7 @@ private
 !-----------------------------------------------------------------------
 !   ---- version number ----
 
- character(len=128) :: version = '$Id: dargan_bettsmiller_mod.F90,v 1.2 2014/05/14 21:39:18 jmc Exp $'
+ character(len=128) :: version = '$Id: dargan_bettsmiller_mod.F90,v 1.3 2017/08/11 20:48:50 jmc Exp $'
  character(len=128) :: tag = '$Name:  $'
 
 !-----------------------------------------------------------------------
@@ -839,7 +839,11 @@ CHARACTER*(gcm_LEN_MBUF) :: msgBuf
           'DARGAB_BETTSMILLER_INIT: finished reading data.atm_gray'
      CALL PRINT_MESSAGE( msgBuf, gcm_stdMsgUnit, gcm_SQZ_R, myThid )
 !    Close the open data file
+#ifdef SINGLE_DISK_IO
      CLOSE(iUnit)
+#else
+     CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
      ENDIF
      CALL BARRIER(myThid)

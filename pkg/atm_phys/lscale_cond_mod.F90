@@ -1,4 +1,4 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/lscale_cond_mod.F90,v 1.1 2013/05/08 22:14:14 jmc Exp $
+! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/lscale_cond_mod.F90,v 1.2 2017/08/11 20:48:51 jmc Exp $
 ! $Name:  $
 
 module lscale_cond_mod
@@ -22,7 +22,7 @@ private
 !-----------------------------------------------------------------------
 !   ---- version number ----
 
- character(len=128) :: version = '$Id: lscale_cond_mod.F90,v 1.1 2013/05/08 22:14:14 jmc Exp $'
+ character(len=128) :: version = '$Id: lscale_cond_mod.F90,v 1.2 2017/08/11 20:48:51 jmc Exp $'
  character(len=128) :: tag = '$Name:  $'
 
 !-----------------------------------------------------------------------
@@ -62,7 +62,6 @@ contains
 subroutine lscale_cond (tin, qin, pfull, phalf, coldT, &
                         rain, snow, tdel, qdel, qsat,  &
                         myThid, mask, conv )
-
 
 !-----------------------------------------------------------------------
 !
@@ -128,7 +127,6 @@ integer  k, kx
       call  escomp (tin,esat)
       call descomp (tin,desat)
 
-
       esat(:,:,:)=esat(:,:,:)*hc
 
    where (pfull(:,:,:) > d378*esat(:,:,:))
@@ -167,7 +165,6 @@ integer  k, kx
       tdel(:,:,k)=0.0
    endwhere
    end do
-
 
 !------------ pressure mass of each layer ------------------------------
 
@@ -273,7 +270,6 @@ subroutine precip_evap (pmass, tin, qin, qsat, dqsat, hlcp, &
   integer         :: iUnit
   CHARACTER*(gcm_LEN_MBUF) :: msgBuf
 
-
 !----------- read namelist ---------------------------------------------
 
 !    _BARRIER
@@ -293,7 +289,11 @@ subroutine precip_evap (pmass, tin, qin, qsat, dqsat, hlcp, &
           'LSCALE_COND_INIT: finished reading data.atm_gray'
      CALL PRINT_MESSAGE( msgBuf, gcm_stdMsgUnit, gcm_SQZ_R, myThid )
 !    Close the open data file
+#ifdef SINGLE_DISK_IO
      CLOSE(iUnit)
+#else
+     CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 !      if (file_exist('input.nml')) then
 !         unit = open_file (file='input.nml', action='read')

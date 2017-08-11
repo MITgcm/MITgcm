@@ -1,4 +1,4 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/mixed_layer_mod.F90,v 1.2 2015/12/21 20:04:57 jmc Exp $
+! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/mixed_layer_mod.F90,v 1.3 2017/08/11 20:48:51 jmc Exp $
 ! $Name:  $
 
 module mixed_layer_mod
@@ -29,7 +29,7 @@ implicit none
 private
 !===================================================================================================
 
-character(len=128) :: version = '$Id: mixed_layer_mod.F90,v 1.2 2015/12/21 20:04:57 jmc Exp $'
+character(len=128) :: version = '$Id: mixed_layer_mod.F90,v 1.3 2017/08/11 20:48:51 jmc Exp $'
 character(len=128) :: tagname = '$Name:  $'
 character(len=128), parameter :: mod_name='mixed_layer'
 
@@ -130,7 +130,11 @@ if(module_is_initialized) return
           'MIXED_LAYER_INIT: finished reading data.atm_gray'
      CALL PRINT_MESSAGE( msgBuf, gcm_stdMsgUnit, gcm_SQZ_R, myThid )
 !    Close the open data file
+#ifdef SINGLE_DISK_IO
      CLOSE(iUnit)
+#else
+     CLOSE(iUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
 
 !call write_version_number(version, tagname)
 
@@ -339,7 +343,6 @@ beta_lw = drdt_surf
 !
 corrected_flux = - net_surf_sw_down - surf_lw_down + alpha_t * CP_AIR + alpha_lw + ocean_qflux
 t_surf_dependence = beta_t * CP_AIR + beta_lw
-
 
 if (evaporation) then
   corrected_flux = corrected_flux + alpha_q * HLV
