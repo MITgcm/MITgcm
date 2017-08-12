@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.8 2016/05/10 22:51:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.9 2017/08/12 16:47:51 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -440,10 +440,14 @@ C-    surface wind-stress (+ = down) at grid cell center (A-grid):
      &                           0, Nr, 1, bi, bj, myThid )
           CALL DIAGNOSTICS_FILL( atmPhys_dQ , 'AtPhdQdt',
      &                           0, Nr, 1, bi, bj, myThid )
-          CALL DIAGNOSTICS_FILL( atmPhys_dU , 'AtPhdUdt',
-     &                           0, Nr, 1, bi, bj, myThid )
-          CALL DIAGNOSTICS_FILL( atmPhys_dV , 'AtPhdVdt',
-     &                           0, Nr, 1, bi, bj, myThid )
+c         CALL DIAGNOSTICS_FILL( atmPhys_dU , 'AtPhdUdt',
+c    &                           0, Nr, 1, bi, bj, myThid )
+c         CALL DIAGNOSTICS_FILL( atmPhys_dV , 'AtPhdVdt',
+c    &                           0, Nr, 1, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( udt3d , 'AtPhdUdt',
+     &                           -1, Nr, 3, bi, bj, myThid )
+          CALL DIAGNOSTICS_FILL( vdt3d , 'AtPhdVdt',
+     &                           -1, Nr, 3, bi, bj, myThid )
           CALL DIAGNOSTICS_FILL( diff_t , 'AtPhDifT',
      &                           -1, Nr, 3, bi, bj, myThid )
           CALL DIAGNOSTICS_FILL( diff_m , 'AtPhDifM',
