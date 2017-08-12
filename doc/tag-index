@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2347 2017/08/11 21:39:13 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2348 2017/08/12 23:50:09 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ptracers:
+  - fix surface forcing under ice-shelf (useShelfIce=T).
+o pkg/atm_phys:
+  - use hFac weighted average when applying A-grid atm-phys momentum tendency
+    to C-grid dynamics; this ensures wind-stress match mom tendency.
 o eesupp/src:
   - change default for opening scratch files to avoid STATUS='SCRATCH'
   - close scratch files with STATUS='DELETE'
