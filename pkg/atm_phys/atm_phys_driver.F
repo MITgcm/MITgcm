@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.9 2017/08/12 16:47:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_driver.F,v 1.10 2017/08/12 22:12:48 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -136,6 +136,7 @@ C-- Mixed Layer fields:
       _RL mixLayDepth(sNx,sNy)
       _RL delta_t_surf(sNx,sNy)
 C--
+      _RL dpFac(sNx,sNy)
       _RL conv_T2theta
       INTEGER k, kc
 c     INTEGER ioUnit
@@ -413,8 +414,12 @@ C-- update Upward LW (assuming adjustment of surf LW emission goes directly to s
      &                   * conv_T2theta
           ENDIF
           atmPhys_dQ(1:sNx,1:sNy,kc,bi,bj)  = qdt3d(:,:,k)
-          atmPhys_dU (1:sNx,1:sNy,kc,bi,bj) = udt3d(:,:,k)
-          atmPhys_dV (1:sNx,1:sNy,kc,bi,bj) = vdt3d(:,:,k)
+C-    Note: multiply A-grid tend. by hFacC (<-> dpFac) here and
+C     C-grid average will be divided by hFacW,S when applied to Dynamics
+          dpFac(:,:) = ( pHalf3d(:,:,k+1) - pHalf3d(:,:,k)
+     &                 )*recip_drF(kc)
+          atmPhys_dU(1:sNx,1:sNy,kc,bi,bj) = udt3d(:,:,k)*dpFac(:,:)
+          atmPhys_dV(1:sNx,1:sNy,kc,bi,bj) = vdt3d(:,:,k)*dpFac(:,:)
         ENDDO
 
 C--   Update SST

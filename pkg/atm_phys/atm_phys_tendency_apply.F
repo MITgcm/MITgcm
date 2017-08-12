@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_tendency_apply.F,v 1.5 2015/01/21 19:24:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_tendency_apply.F,v 1.6 2017/08/12 22:12:48 jmc Exp $
 C $Name:  $
 
 #include "ATM_PHYS_OPTIONS.h"
@@ -61,9 +61,10 @@ C--   Assume Agrid position:
         DO j=jMin,jMax
          DO i=iMin,iMax
           gU_arr(i,j) = gU_arr(i,j)
-     &     + maskW(i,j,k,bi,bj)*( atmPhys_dU(i-1,j,k,bi,bj)
-     &                           +atmPhys_dU( i ,j,k,bi,bj)
-     &                          )*0.5 _d 0
+     &      + halfRL *( atmPhys_dU(i-1,j,k,bi,bj)
+     &                + atmPhys_dU( i ,j,k,bi,bj)
+     &                )*recip_hFacW(i,j,k,bi,bj)
+c    &                )*maskW(i,j,k,bi,bj)
          ENDDO
         ENDDO
 
@@ -148,9 +149,10 @@ C--   Assume Agrid position:
         DO j=jMin,jMax
          DO i=iMin,iMax
           gV_arr(i,j) = gV_arr(i,j)
-     &     + maskS(i,j,k,bi,bj)*( atmPhys_dV(i,j-1,k,bi,bj)
-     &                           +atmPhys_dV(i, j ,k,bi,bj)
-     &                          )*0.5 _d 0
+     &      + halfRL *( atmPhys_dV(i,j-1,k,bi,bj)
+     &                + atmPhys_dV(i, j ,k,bi,bj)
+     &                )*recip_hFacS(i,j,k,bi,bj)
+c    &                )*maskS(i,j,k,bi,bj)
          ENDDO
         ENDDO
 
