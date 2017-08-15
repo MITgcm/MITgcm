@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2348 2017/08/12 23:50:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2349 2017/08/15 15:43:41 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint66j (2017/08/15)
 o pkg/ptracers:
   - fix surface forcing under ice-shelf (useShelfIce=T).
 o pkg/atm_phys:
