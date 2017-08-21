@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.11 2016/01/11 22:49:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.12 2017/08/21 18:34:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -44,7 +44,6 @@ C     == Global variables ===
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     myTime :: Current time in simulation
 C     myIter :: Current iteration number in simulation
 C     myThid :: my Thread Id. number
@@ -53,52 +52,49 @@ C     myThid :: my Thread Id. number
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables
       _RL phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER iMin,iMax
-      INTEGER jMin,jMax
-      INTEGER bi,bj
-      INTEGER k,i,j
+      INTEGER iMin, iMax
+      INTEGER jMin, jMax
+      INTEGER bi, bj
+      INTEGER i, j
 CEOP
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
+        IF ( momStepping ) THEN
 C--     Set up work arrays that need valid initial values
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          phiSurfX(i,j)=0.
-          phiSurfY(i,j)=0.
-         ENDDO
-        ENDDO
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            phiSurfX(i,j) = 0.
+            phiSurfY(i,j) = 0.
+           ENDDO
+          ENDDO
 
 C       Loop range: Gradients of Eta are evaluated so valid
 C       range is all but first row and column in overlaps.
-        iMin = 1-OLx+1
-        iMax = sNx+OLx
-        jMin = 1-OLy+1
-        jMax = sNy+OLy
+          iMin = 1-OLx+1
+          iMax = sNx+OLx
+          jMin = 1-OLy+1
+          jMax = sNy+OLy
 
 C-      Calculate gradient of surface Potentiel
-        CALL CALC_GRAD_PHI_SURF(
-     I       bi,bj,iMin,iMax,jMin,jMax,
-     I       etaN,
-     O       phiSurfX,phiSurfY,
-     I       myThid )
+          CALL CALC_GRAD_PHI_SURF(
+     I         bi, bj, iMin, iMax, jMin, jMax,
+     I         etaN,
+     O         phiSurfX, phiSurfY,
+     I         myThid )
 
-        IF (momStepping) THEN
-C--       Loop over all layers, top to bottom
-          DO k=1,Nr
-C-        Update velocity fields:  V(n) = V** - dt * grad Eta
-            CALL CORRECTION_STEP(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,
-     I         phiSurfX,phiSurfY,myTime,myThid )
-          ENDDO
+C-      Update velocity fields:  V(n) = V** - dt * grad Eta
+          CALL CORRECTION_STEP(
+     I         bi, bj, iMin, iMax, jMin, jMax,
+     I         phiSurfX, phiSurfY,
+     I         myTime, myIter, myThid )
         ENDIF
 
 #ifdef ALLOW_OBCS
-        IF (useOBCS) THEN
+        IF ( useOBCS ) THEN
           CALL OBCS_APPLY_UV( bi, bj, 0, uVel, vVel, myThid )
         ENDIF
 #endif /* ALLOW_OBCS */
@@ -111,7 +107,7 @@ C--- 2nd Part : Adjustment.
 
 C--   Filter (and exchange)
 #ifdef ALLOW_SHAP_FILT
-      IF (useSHAP_FILT) THEN
+      IF ( useSHAP_FILT ) THEN
        IF ( .NOT.shap_filt_uvStar ) THEN
         CALL TIMER_START('SHAP_FILT_UV       [MOM_CORR_STEP]',myThid)
         CALL SHAP_FILT_APPLY_UV( uVel, vVel, myTime, myIter, myThid )
@@ -120,7 +116,7 @@ C--   Filter (and exchange)
       ENDIF
 #endif
 #ifdef ALLOW_ZONAL_FILT
-      IF (useZONAL_FILT) THEN
+      IF ( useZONAL_FILT ) THEN
        IF ( .NOT.zonal_filt_uvStar ) THEN
         CALL TIMER_START('ZONAL_FILT_UV      [MOM_CORR_STEP]',myThid)
         CALL ZONAL_FILT_APPLY_UV( uVel, vVel, myThid )
