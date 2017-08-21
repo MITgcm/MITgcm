@@ -18,6 +18,7 @@
  diffK4S=0.E4,
  diffKhS=1.E-2,
  diffKzS=1.E-5,
+ tempAdvScheme=33,
  f0=0.e-4,
  beta=0.E-11,
  eosType='LINEAR',
@@ -30,7 +31,7 @@
  readBinaryPrec=64,
 #- not safe to use globalFiles in multi-processors runs
 #globalFiles=.TRUE.,
- tempAdvScheme=33,
+ plotLevel=0,
  &
 
 # Elliptic solver parameters
