@@ -31,6 +31,7 @@
  hFacMinDr=20.,
  readBinaryPrec=64,
 #writeBinaryPrec=64,
+ plotLevel=0,
  &
 
 # Elliptic solver parameters

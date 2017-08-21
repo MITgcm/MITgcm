@@ -30,6 +30,7 @@
  hFacMinDr=20.,
  readBinaryPrec=64,
  useSingleCpuIO=.TRUE.,
+ plotLevel=0,
  &
 
 # Elliptic solver parameters

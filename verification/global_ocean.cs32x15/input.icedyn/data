@@ -35,6 +35,7 @@
  writeBinaryPrec=64,
  useSingleCpuIO=.TRUE.,
 #debugLevel = 2,
+ plotLevel=0,
  &
 
 # Elliptic solver parameters
