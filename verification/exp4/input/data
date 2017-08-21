@@ -32,6 +32,7 @@
 #- not safe to use globalFiles in multi-processors runs
 #globalFiles=.TRUE.,
 #useSingleCpuIO=.TRUE.,
+ plotLevel=0,
  &
 
 # Elliptic solver parameters
