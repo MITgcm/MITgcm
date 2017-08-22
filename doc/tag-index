@@ -1,8 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2349 2017/08/15 15:43:41 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2350 2017/08/22 03:02:30 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o model/src:
+  - move k loop inside correction_step.F (+ update calling S/R)
+  - collect implicit pressure gradient tendencies in local 2-D array;
+    affect results (at machine truncation level) when using 3-D solver; update
+    output of exp.: exp4 (x1), global_ocean.cs32x15 (x2),hs94.cs-32x32x5.impIGW,
+                    rotating_tank, short_surf_wave,tutorial_deep_convection (x2)
+                    & tutorial_plume_on_slope.
 
 checkpoint66j (2017/08/15)
 o pkg/ptracers:
