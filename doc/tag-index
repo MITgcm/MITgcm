@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2350 2017/08/22 03:02:30 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2351 2017/09/02 22:25:46 mmazloff Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/bling:
+  - bling_production: Fix typo in calcium carbonate uptake. Also rearranging and cleaning
 o model/src:
   - move k loop inside correction_step.F (+ update calling S/R)
   - collect implicit pressure gradient tendencies in local 2-D array;
