@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.13 2017/05/24 17:21:15 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.14 2017/09/02 22:22:34 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -480,25 +480,40 @@ c  Temperature threshold for diazotrophs
            mu_diaz(i,j,k) = 0. _d 0
           ENDIF
 
+c  Stoichiometry
+          PtoN(i,j,k) = PtoN_min + (PtoN_max - PtoN_min) *
+     &                  PTR_PO4(i,j,k) / (k_PtoN + PTR_PO4(i,j,k))
+
+          FetoN(i,j,k) = FetoN_min + (FetoN_max - FetoN_min) *
+     &                   PTR_FE(i,j,k) / (k_FetoN + PTR_FE(i,j,k))
+
+c  Nutrient uptake
+          N_uptake(i,j,k) = mu(i,j,k)*(Phy_sm_local(i,j,k)
+     &                      + Phy_lg_local(i,j,k))
+
+          N_fix(i,j,k) = mu_diaz(i,j,k) * Phy_diaz_local(i,j,k)
+
+          P_uptake(i,j,k) = (N_uptake(i,j,k) +
+     &                      N_fix(i,j,k)) * PtoN(i,j,k)
+
+          Fe_uptake(i,j,k) = (N_uptake(i,j,k) +
+     &                       N_fix(i,j,k)) * FetoN(i,j,k)
+
+c ---------------------------------------------------------------------
+c   Alkalinity is consumed through the production of CaCO3. Here, thi
+c   is simply a linear function of the implied growth rate of small
+c   phytoplankton, which gave a reasonably good fit to the global 
+c   observational synthesis of Dunne (2009). This is consistent
+c   with the findings of Jin et al. (GBC,2006). 
+
+          CaCO3_uptake(i,j,k) = Phy_sm_local(i,j,k)*phi_sm2d(i,j,bi,bj)
+     &                          * mu(i,j,k) * CatoN
+
          ENDIF
         ENDDO
        ENDDO
       ENDDO
 
-c  Instantaneous nutrient concentration in phyto biomass
-c  Separate loop so adjoint stuff above can be outside loop 
-c  (fix for recomputations)
-CMM(
-CADJ STORE phyto_sm = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE phyto_lg = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE phyto_diaz  = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE Phy_sm_local = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE Phy_lg_local = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE Phy_diaz_local  = comlev1, key = ikey_dynamics, kind=isbyte
-#ifdef ADVECT_PHYTO
-CADJ STORE PTR_PHY  = comlev1, key = ikey_dynamics, kind=isbyte
-#endif
-CMM)
       DO k=1,Nr
        DO j=jmin,jmax
         DO i=imin,imax
@@ -521,6 +536,22 @@ CMM)
      &                *expkT(i,j,k) * (Phy_diaz_local(i,j,k)/pivotal) ) 
      &                * PTRACERS_dTLev(k)
 
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDDO
+
+c  Separate loop for adjoint stores
+CADJ STORE Phy_sm_local = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE Phy_lg_local = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE Phy_diaz_local  = comlev1, key = ikey_dynamics, kind=isbyte
+
+      DO k=1,Nr
+       DO j=jmin,jmax
+        DO i=imin,imax
+
+         IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
+
 #ifdef ADVECT_PHYTO
 c  update tracer here
          PTR_PHY(i,j,k) = Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k) 
@@ -537,26 +568,17 @@ c  update biomass
 
 #endif
 
+c  use the diagnostic biomass to calculate the chl concentration
+c  in mg/m3 (carbon = 12.01 g/mol)
+          chl(i,j,k,bi,bj) = max(chl_min, CtoN * 12.01 * 0.001 * 
+     &           theta_Fe(i,j,k) *
+     &           (Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k)
+     &           + Phy_diaz_local(i,j,k)))
+
          ENDIF
         ENDDO
        ENDDO
       ENDDO
-
-
-
-CMM(
-CADJ STORE phyto_sm = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE phyto_lg = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE phyto_diaz  = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE Phy_sm_local = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE Phy_lg_local = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE Phy_diaz_local  = comlev1, key = ikey_dynamics, kind=isbyte
-#ifdef ADVECT_PHYTO
-CADJ STORE PTR_PHY  = comlev1, key = ikey_dynamics, kind=isbyte
-#endif
-CMM)
-
-
 
       DO k=1,Nr
        DO j=jmin,jmax
@@ -564,41 +586,6 @@ CMM)
 
          IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
           
-c  use the diagnostic biomass to calculate the chl concentration
-          chl(i,j,k,bi,bj) = max(chl_min, CtoN * 12.01 * 
-     &           theta_Fe(i,j,k) *
-     &           (Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k) 
-     &           + Phy_diaz_local(i,j,k)))
-
-c  stoichiometry
-          PtoN(i,j,k) = PtoN_min + (PtoN_max - PtoN_min) * 
-     &                  PTR_PO4(i,j,k) / (k_PtoN + PTR_PO4(i,j,k))
-
-          FetoN(i,j,k) = FetoN_min + (FetoN_max - FetoN_min) *
-     &                   PTR_FE(i,j,k) / (k_FetoN + PTR_FE(i,j,k))
-              
-c  Nutrient uptake
-          N_uptake(i,j,k) = mu(i,j,k)*(Phy_sm_local(i,j,k) 
-     &                      + Phy_lg_local(i,j,k))
-
-          N_fix(i,j,k) = mu_diaz(i,j,k) * Phy_diaz_local(i,j,k)
-             
-          P_uptake(i,j,k) = (N_uptake(i,j,k) +
-     &                      N_fix(i,j,k)) * PtoN(i,j,k) 
-                  
-          Fe_uptake(i,j,k) = (N_uptake(i,j,k) + 
-     &                       N_fix(i,j,k)) * FetoN(i,j,k) 
-
-c ---------------------------------------------------------------------
-c   Alkalinity is consumed through the production of CaCO3. Here, this is
-c   simply a linear function of the implied growth rate of small
-c   phytoplankton, which gave a reasonably good fit to the global 
-c   observational synthesis of Dunne (2009). This is consistent
-c   with the findings of Jin et al. (GBC,2006). 
-
-          CaCO3_uptake(i,j,k) = Phy_sm_local(i,j,k)*phi_sm2d(i,j,bi,bj)
-     &                          * expkT(i,j,k) * mu(i,j,k) * CatoN
-     
 c ---------------------------------------------------------------------
 c  Partitioning between organic pools
 
