@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.20 2015/07/18 21:45:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.21 2017/09/08 14:42:28 bderembl Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -157,7 +157,6 @@ C--   Call external CheapAML forcing package
       ENDIF
 #endif /*ALLOW_CHEAPAML */
 
-      IF ( .NOT.useCheapAML ) THEN
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('EXTERNAL_FIELDS_LOAD',myThid)
 #endif
@@ -171,7 +170,6 @@ CADJ STORE SSS    = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE Qsw    = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif
-      ENDIF
 
 #ifdef ALLOW_GCHEM
       IF ( useGCHEM ) THEN
