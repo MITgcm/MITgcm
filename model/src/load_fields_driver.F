@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.21 2017/09/08 14:42:28 bderembl Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.22 2017/09/10 15:19:17 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -157,12 +157,18 @@ C--   Call external CheapAML forcing package
       ENDIF
 #endif /*ALLOW_CHEAPAML */
 
+#ifdef ALLOW_AUTODIFF
+       IF ( .NOT. useEXF ) THEN
+#endif /* ALLOW_AUTODIFF */
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('EXTERNAL_FIELDS_LOAD',myThid)
 #endif
         CALL TIMER_START('EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]',myThid)
         CALL EXTERNAL_FIELDS_LOAD( myTime, myIter, myThid )
         CALL TIMER_STOP ('EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]',myThid)
+#ifdef ALLOW_AUTODIFF
+       ENDIF
+#endif /* ALLOW_AUTODIFF */
 #ifdef NONLIN_FRSURF
 CADJ STORE SST    = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE SSS    = comlev1, key = ikey_dynamics, kind = isbyte
