@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.25 2017/08/10 14:06:59 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.26 2017/09/13 22:12:35 jmc Exp $
 C $Name:  $
 
 CBOP
 C     !ROUTINE: CPP_EEMACROS.h
 C     !INTERFACE:
-C     include "CPP_EEMACROS.h "
+C     include "CPP_EEMACROS.h"
 C     !DESCRIPTION:
 C     *==========================================================*
 C     | CPP_EEMACROS.h
@@ -129,7 +129,7 @@ C  enable to call the corresponding R4 or R8 S/R.
 #define _GLOBAL_MAX_RS(a,b) CALL GLOBAL_MAX_R8 ( a, b )
 #define _MPI_TYPE_RS MPI_DOUBLE_PRECISION
 #ifdef USE_OLD_MACROS_R4R8toRSRL
-#define _GLOBAL_SUM_R4(a,b) CALL GLOBAL_SUM_R8 ( a, b ) 
+#define _GLOBAL_SUM_R4(a,b) CALL GLOBAL_SUM_R8 ( a, b )
 #define _GLOBAL_MAX_R4(a,b) CALL GLOBAL_MAX_R8 ( a, b )
 #endif
 #else
@@ -140,7 +140,7 @@ C  enable to call the corresponding R4 or R8 S/R.
 #define _MPI_TYPE_RS MPI_REAL
 #ifdef USE_OLD_MACROS_R4R8toRSRL
 cph Needed for some backward compatibility with broken packages
-#define _GLOBAL_SUM_R4(a,b) CALL GLOBAL_SUM_R4 ( a, b ) 
+#define _GLOBAL_SUM_R4(a,b) CALL GLOBAL_SUM_R4 ( a, b )
 #define _GLOBAL_MAX_R4(a,b) CALL GLOBAL_MAX_R4 ( a, b )
 #endif
 #endif
