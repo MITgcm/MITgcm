@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.42 2017/08/09 15:18:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.43 2017/09/14 19:47:35 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -153,6 +153,9 @@ C     (calling S/R STOP_IF_ERROR) before stopping.
 C--   Control use of communication with other component:
 C     allow to import and export from/to Coupler interface.
 #undef COMPONENT_MODULE
+
+C--   Activate some pieces of code for coupling to GEOS AGCM
+#undef HACK_FOR_GMAO_CPL
 
 #endif /* _CPP_EEOPTIONS_H_ */
 

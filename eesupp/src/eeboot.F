@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.25 2017/07/26 21:23:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.26 2017/09/14 19:47:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -92,12 +92,20 @@ C                     the threads are running.
        ioErrorCount(I)              = 0
       ENDDO
       standardMessageUnit = 6
+#ifdef HACK_FOR_GMAO_CPL
+      scrUnit1            = 31
+      scrUnit2            = 32
+      eeDataUnit          = 33
+      modelDataUnit       = 34
+      errorMessageUnit    = 35
+#else
       scrUnit1            = 11
       scrUnit2            = 12
       eeDataUnit          = 13
       modelDataUnit       = 14
       errorMessageUnit    = 15
 cph   errorMessageUnit = 0 is not allowed on some platforms, e.g. SP3
+#endif
 
 C--   Start minimal environment so that we can do I/O to report errors.
 C     Notes
