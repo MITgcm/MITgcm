@@ -1,11 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2351 2017/09/02 22:25:46 mmazloff Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2352 2017/09/14 22:41:01 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp:
+  - add CPP option to activate some pieces of code for coupling to GEOS AGCM;
+  - shift commonly used IO unit (in eeboot.F) for coupling to GEOS AGCM.
 o pkg/bling:
-  - bling_production: Fix typo in calcium carbonate uptake. Also rearranging and cleaning
+  - bling_production: Fix typo in calcium carbonate uptake. Also rearranging
+    and cleaning
 o model/src:
   - move k loop inside correction_step.F (+ update calling S/R)
   - collect implicit pressure gradient tendencies in local 2-D array;
