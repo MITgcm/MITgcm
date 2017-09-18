@@ -1,9 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2352 2017/09/14 22:41:01 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2353 2017/09/18 18:11:20 gforget Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o model:
+  - add missing CPP brackets (ALLOW_COST, ALLOW_CTRL in load_fields_driver.F
+    and the_model_main.F)
+o ctrl:
+  - use zeroRL in place of fc when ALLOW_COST is not compiled (in ctrl_pack.F)
+  - call MDS_READ_FIELD / MDS_WRITE_FIELD instead of deprecated 
+    mdsreadfield / mdswritefield (in ctrl_get_gen.F, ctrl_map_ini_gen.F,
+    ctrl_map_ini_genarr.F, and ctrl_map_ini_gentim2d.F )
 o eesupp:
   - add CPP option to activate some pieces of code for coupling to GEOS AGCM;
   - shift commonly used IO unit (in eeboot.F) for coupling to GEOS AGCM.
