@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.58 2014/12/03 16:47:46 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.59 2017/09/18 15:19:25 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -195,10 +195,14 @@ c     >>> Initialise control vector for optimcycle=0 <<<
 c     >>> Write gradient vector <<<
           lxxadxx   = .FALSE.
           ictrlgrad = 2
-#ifdef ALLOW_OPENAD
+#ifdef ALLOW_COST
+# ifdef ALLOW_OPENAD
           fcloc     = fc%v
-#else
+# else
           fcloc     = fc
+# endif
+#else
+          fcloc     = zeroRL
 #endif
           write(cfile(1:128),'(4a,i4.4)')
      &         costname(1:9),'_',yctrlid(1:10),
@@ -220,7 +224,11 @@ c--       Header information.
           write(cunit) nvarlength
           write(cunit) yctrlid
           write(cunit) optimCycle
+#ifdef ALLOW_COST
           write(cunit) fc
+#else
+          write(cunit) zeroRL
+#endif
 C     place holder of obsolete variable iG
           write(cunit) 1
 C     place holder of obsolete variable jG
