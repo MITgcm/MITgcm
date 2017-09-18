@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.23 2017/09/11 17:29:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/load_fields_driver.F,v 1.24 2017/09/18 16:44:16 gforget Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -56,10 +56,14 @@ C     == Global variables ==
 
 #ifdef ALLOW_AUTODIFF
 # include "tamc.h"
-# include "CTRL_SIZE.h"
-# include "ctrl.h"
-# include "ctrl_dummy.h"
-# include "cost.h"
+# ifdef ALLOW_CTRL
+#  include "CTRL_SIZE.h"
+#  include "ctrl.h"
+#  include "ctrl_dummy.h"
+# endif
+# ifdef ALLOW_COST
+#  include "cost.h"
+# endif
 # include "EOS.h"
 # ifdef ALLOW_EXF
 #  include "EXF_FIELDS.h"

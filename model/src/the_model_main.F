@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.122 2015/01/20 15:00:55 dgoldberg Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.123 2017/09/18 16:44:16 gforget Exp $
 C $Name:  $
 
 CBOI
@@ -635,6 +635,7 @@ C--   Set model configuration (fixed arrays)
 
 #elif ( defined (ALLOW_AUTODIFF))
 
+# ifdef ALLOW_CTRL
 # ifndef EXCLUDE_CTRL_PACK
       IF ( useCTRL ) THEN
          inquire( file='costfinal', exist=exst )
@@ -648,6 +649,7 @@ C--   Set model configuration (fixed arrays)
          ENDIF
        ENDIF
 # endif /* EXCLUDE_CTRL_PACK */
+# endif
 
 # ifdef ALLOW_COST
       CALL COST_DEPENDENT_INIT ( myThid )
@@ -707,6 +709,7 @@ C--   Call time stepping loop of full model
 
 # endif /* forward run only within AD setting */
 
+# ifdef ALLOW_CTRL
 # ifndef EXCLUDE_CTRL_PACK
       IF ( useCTRL ) THEN
       IF ( lastdiva .AND. doMainPack ) THEN
@@ -722,6 +725,7 @@ C--   Call time stepping loop of full model
       ENDIF
       ENDIF
 # endif /* EXCLUDE_CTRL_PACK */
+# endif
 
 # ifdef ALLOW_GRDCHK
       IF ( useGrdchk .AND. lastdiva ) THEN
