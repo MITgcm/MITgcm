@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.37 2017/04/03 23:16:38 ou.wang Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.38 2017/09/18 15:16:52 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -84,6 +84,11 @@ c     == local variables ==
       logical ladinit
 
       character*(80) fnamegen
+#ifdef ALLOW_SMOOTH
+#ifdef ALLOW_SMOOTH_CTRL2D
+      _RS dummyRS(1)
+#endif
+#endif
 
 c     == external functions ==
 
@@ -158,8 +163,8 @@ cc#endif /* ALLOW_OPENAD */
       if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xx_gen_file(1:ilgen),'.smooth.',optimcycle
-      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
-     & 1, xx_gen1, gencount1, optimcycle, mythid)
+      CALL MDS_WRITE_FIELD(fnamegeneric,ctrlprec,.FALSE.,.FALSE.,
+     & 'RL',1,1,1,xx_gen1,dummyRS,gencount1,optimcycle,mythid)
 #endif /* ALLOW_SMOOTH_CTRL2D */
 #endif /* ALLOW_SMOOTH */
 
@@ -194,8 +199,8 @@ cc#endif /* ALLOW_OPENAD */
       if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xx_gen_file(1:ilgen),'.smooth.',optimcycle
-      call mdswritefield(fnamegeneric,ctrlprec,.FALSE.,'RL',
-     & 1, xx_gen1, gencount0, optimcycle, mythid)
+      CALL MDS_WRITE_FIELD(fnamegeneric,ctrlprec,.FALSE.,.FALSE.,
+     & 'RL',1,1,1,xx_gen1,dummyRS,gencount0,optimcycle,mythid)
 #endif /* ALLOW_SMOOTH_CTRL2D */
 #endif /* ALLOW_SMOOTH */
 

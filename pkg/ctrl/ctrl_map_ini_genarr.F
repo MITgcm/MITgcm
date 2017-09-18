@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.27 2017/04/05 23:02:53 ou.wang Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.28 2017/09/18 15:16:52 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -202,6 +202,7 @@ C     == local variables ==
       logical dosmooth
       logical doscaling
       _RL xx_gen  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RS dummyRS(1)
       character*(80) fnamegenIn
       character*(80) fnamegenOut
       character*(80) fnamebase
@@ -255,8 +256,8 @@ c--   Now, read the control vector.
       write(fnamegenOut(1:80),'(2a,i10.10)')
      &       fnamebase(1:ilgen),'.effective.',optimcycle
 
-      call mdsreadfield(xx_genarr2d_weight(iarr),ctrlprec,'RL',1,
-     &     wgenarr2d(1-Olx,1-Oly,1,1,iarr),1,mythid)
+      CALL MDS_READ_FIELD(xx_genarr2d_weight(iarr),ctrlprec,.FALSE.,
+     & 'RL',1,1,1,wgenarr2d(1-Olx,1-Oly,1,1,iarr),dummyRS,1,mythid)
 
 #ifdef ALLOW_AUTODIFF
       call active_read_xy( fnamegenIn, xx_gen, 1, doglobalread,
@@ -298,8 +299,8 @@ c avoid param out of [boundsVec(1) boundsVec(4)]
 
       CALL EXCH_XY_RL( fld, mythid )
 
-      CALL mdswritefield(fnamegenOut,ctrlprec,.FALSE.,'RL',
-     &    1, fld, 1, optimcycle, mythid)
+      CALL MDS_WRITE_FIELD(fnamegenOut,ctrlprec,.FALSE.,.FALSE.,
+     & 'RL',1,1,1,fld,dummyRS,1,optimcycle,mythid)
 
 
 #endif /* ALLOW_GENARR2D_CONTROL */
@@ -354,6 +355,7 @@ C     == local variables ==
       logical dosmooth
       logical doscaling
       _RL xx_gen  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RS dummyRS(1)
       character*(80) fnamegenIn
       character*(80) fnamegenOut
       character*(80) fnamebase
@@ -412,8 +414,8 @@ c--   Now, read the control vector.
       write(fnamegenOut(1:80),'(2a,i10.10)')
      &       fnamebase(1:ilgen),'.effective.',optimcycle
 
-      call mdsreadfield(xx_genarr3d_weight(iarr),ctrlprec,'RL',nR,
-     &     wgenarr3d(1-Olx,1-Oly,1,1,1,iarr),1,mythid)
+      CALL MDS_READ_FIELD(xx_genarr3d_weight(iarr),ctrlprec,.FALSE.,
+     & 'RL',nR,1,nR,wgenarr3d(1-Olx,1-Oly,1,1,1,iarr),dummyRS,1,mythid)
 
 #ifdef ALLOW_AUTODIFF
       call active_read_xyz( fnamegenIn, xx_gen, 1, doglobalread,
@@ -483,8 +485,8 @@ C  xx_uvel and xx_vvel are read in.
      &    xx_genarr3d_file(iarr)(1:7).NE.'xx_vvel') 
      &    CALL EXCH_XYZ_RL( fld, mythid )
 
-      CALL mdswritefield(fnamegenOut,ctrlprec,.FALSE.,'RL',
-     &    nr, fld, 1, optimcycle, mythid)
+      CALL MDS_WRITE_FIELD(fnamegenOut,ctrlprec,.FALSE.,.FALSE.,
+     & 'RL',nr,1,nr,fld,dummyRS,1,optimcycle,mythid)
 
 #endif /* ALLOW_GENARR3D_CONTROL */
 

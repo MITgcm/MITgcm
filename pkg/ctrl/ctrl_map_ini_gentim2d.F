@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.15 2017/03/06 20:03:46 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_gentim2d.F,v 1.16 2017/09/18 15:16:52 gforget Exp $
 C $Name:  $
 
 #include "CTRL_OPTIONS.h"
@@ -66,6 +66,7 @@ C     == local variables ==
       logical dosmooth
       logical doscaling
       _RL     xx_gen(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RS dummyRS(1)
 #ifdef ALLOW_ECCO
       _RL     xx_gen_tmp(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       integer nyearsINT
@@ -306,8 +307,9 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
          do k2 = 1, maxCtrlProc
           if (xx_gentim2d_preproc(k2,iarr).EQ.'variaweight') jrec=irec
          enddo
-         call mdsreadfield( xx_gentim2d_weight(iarr), ctrlprec, 'RL',
-     &     1, wgentim2d(1-Olx,1-Oly,1,1,iarr), jrec, myThid )
+         CALL MDS_READ_FIELD( xx_gentim2d_weight(iarr),ctrlprec,
+     &    .FALSE.,'RL',1,1,1,wgentim2d(1-Olx,1-Oly,1,1,iarr),
+     &    dummyRS,jrec,myThid )
 
 #ifdef ALLOW_SMOOTH
          IF (useSMOOTH) THEN
