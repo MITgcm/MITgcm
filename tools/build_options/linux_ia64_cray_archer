@@ -1,12 +1,13 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_archer,v 1.4 2016/03/13 18:30:34 dfer Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_archer,v 1.5 2017/09/19 17:03:16 dfer Exp $
 # $Name:  $
 
 # To be used with the suite of cray compilers (PrgEnv-cray).
 # To get netcdf, add:
-# module load cray-hdf5-parallel/1.8.14
-# module load cray-netcdf-hdf5parallel/4.3.3.1
+# module load cray-hdf5-parallel/1.10.0.1
+# module load cray-netcdf-hdf5parallel/4.4.1.1
+
 
 CC='cc'
 FC='ftn'
@@ -18,8 +19,8 @@ EXTENDED_SRC_FLAG='-Mextend'
 GET_FC_VERSION="-V"
 CHECK_FOR_LAPACK=t
 
-INCLUDES='-I/opt/cray/netcdf-hdf5parallel/4.3.3.1/cray/83/include -I/opt/cray/mpt/7.2.6/gni/mpich-cray/83/include'
-LIBS='-L/opt/cray/netcdf-hdf5parallel/4.3.3.1/cray/83/lib -L/opt/cray/mpt/7.2.6/gni/mpich-cray/83/lib'
+INCLUDES='-I/opt/cray/netcdf-hdf5parallel/4.4.1.1/cray/83/include -I/opt/cray/mpt/7.5.5/gni/mpich-cray/84/include'
+LIBS='-L/opt/cray/netcdf-hdf5parallel/4.4.1.1/cray/83/lib -L/opt/cray/mpt/7.5.5/gni/mpich-cray/84/lib'
 
 NOOPTFLAGS='-O0'
 NOOPTFILES=''
