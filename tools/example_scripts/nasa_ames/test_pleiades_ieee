@@ -6,7 +6,7 @@
 #PBS -e /u/jcampin/test_pleiades/output/tst_ieee.stderr
 #PBS -o /u/jcampin/test_pleiades/output/tst_ieee.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/nasa_ames/test_pleiades_ieee,v 1.4 2017/07/28 16:46:31 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/nasa_ames/test_pleiades_ieee,v 1.5 2017/09/19 18:11:58 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -24,6 +24,7 @@ dNam='pleiades'
 HERE="$HOME/test_$dNam"
 OUTP="$HERE/output"; SavD="$HERE/send"
 SEND="ssh pfe $SavD/mpack"
+ADDR='jmc@dev.mitgcm.org'
 TST_DISK="/nobackupp2/jcampin"
 TST_DIR="$TST_DISK/test_${dNam}"
 
@@ -42,7 +43,8 @@ sfx='ieee'
  typ='' ; addExp=''
 #addExp='global_ocean.gm_k3d global_ocean.gm_res'
  module purge
- module load comp-intel/2016.2.181 mpi-sgi/mpt.2.14r19 netcdf/4.4.1.1_serial
+ module load comp-intel/2016.2.181 mpi-sgi/mpt.2.14r19
+ module load hdf4/4.2.12 hdf5/1.8.18_mpt netcdf/4.4.1.1_mpt
  module list
 
  OPTFILE="../tools/build_options/linux_amd64_ifort+mpi_ice_nas"
@@ -182,16 +184,9 @@ if test "x$dInWeek" = xSun ; then
  #options="$options -fast"
 
   echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
-    -command \"$mpiCMD\" -send \"$SEND\" -sd $SavD -a jmc@dev.mitgcm.org
+    -command \"$mpiCMD\" -send \"$SEND\" -sd $SavD -a $ADDR
   ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
-    -command "$mpiCMD" -send "$SEND" -sd $SavD -a jmc@dev.mitgcm.org
-
-  echo ''
-  echo ../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
-    -exe \"$mpiCMD\" -send \"$SEND\" -sd $SavD -a jmc@dev.mitgcm.org
-  ../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
-    -exe "$mpiCMD" -send "$SEND" -sd $SavD -a jmc@dev.mitgcm.org
-
+    -command "$mpiCMD" -send "$SEND" -sd $SavD -a $ADDR
 else
   options="$options -devel"
 
@@ -202,14 +197,13 @@ else
 
   echo ''
   echo ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
-    -q -send \"$SEND\" -sd $SavD -a jmc@dev.mitgcm.org
+    -q -send \"$SEND\" -sd $SavD -a $ADDR
   ./testreport $options -of $OPTFILE -odir ${dNam}-$sfx \
-    -q -send "$SEND" -sd $SavD -a jmc@dev.mitgcm.org
+    -q -send "$SEND" -sd $SavD -a $ADDR
+fi
 
   echo ''
   echo ../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
-    -send \"$SEND\" -sd $SavD -a jmc@dev.mitgcm.org
+    -exe \"$mpiCMD\" -send \"$SEND\" -sd $SavD -a $ADDR
   ../tools/do_tst_2+2 -mpi -o ${dNam}-$sfx \
-    -send "$SEND" -sd $SavD -a jmc@dev.mitgcm.org
-
-fi
+    -exe "$mpiCMD" -send "$SEND" -sd $SavD -a $ADDR
