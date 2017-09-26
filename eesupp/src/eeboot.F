@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.26 2017/09/14 19:47:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.27 2017/09/26 15:52:52 dimitri Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -98,6 +98,7 @@ C                     the threads are running.
       eeDataUnit          = 33
       modelDataUnit       = 34
       errorMessageUnit    = 35
+      standardMessageUnit = 36
 #else
       scrUnit1            = 11
       scrUnit2            = 12

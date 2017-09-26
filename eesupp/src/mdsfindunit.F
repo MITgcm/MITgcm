@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/mdsfindunit.F,v 1.3 2012/11/26 00:13:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/mdsfindunit.F,v 1.4 2017/09/26 15:52:52 dimitri Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -29,7 +29,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C Sweep through a valid range of unit numbers
       ioUnit=-1
+#ifdef HACK_FOR_GMAO_CPL
+      DO ii=31,999
+#else /* HACK_FOR_GMAO_CPL */
       DO ii=9,999
+#endif /* HACK_FOR_GMAO_CPL */
        IF ( ioUnit.EQ.-1 ) THEN
 C- skip reserved unit numbers
         IF (       ii.NE.errorMessageUnit
