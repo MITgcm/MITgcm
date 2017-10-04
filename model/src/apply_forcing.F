@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/apply_forcing.F,v 1.8 2016/02/14 00:08:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/apply_forcing.F,v 1.9 2017/10/04 20:40:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -125,6 +125,18 @@ C--   Forcing term
      I                       iMin,iMax,jMin,jMax, k, bi,bj,
      I                       myTime, myIter, myThid )
 #endif /* ALLOW_FIZHI */
+
+C     Add Tidal momentum forcing from 2-d geopotential anomaly
+      IF ( momTidalForcing ) THEN
+       DO j=0,sNy+1
+        DO i=1,sNx+1
+          gU_arr(i,j) = gU_arr(i,j)
+     &      - recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+     &      * ( phiTide2d(i,j,bi,bj) - phiTide2d(i-1,j,bi,bj) )
+     &      *_maskW(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
 
 C     Ocean: Add momentum surface forcing (e.g., wind-stress) in surface level
       IF ( k .EQ. kSurface ) THEN
@@ -303,6 +315,18 @@ C--   Forcing term
      I                       iMin,iMax,jMin,jMax, k, bi,bj,
      I                       myTime, myIter, myThid )
 #endif /* ALLOW_FIZHI */
+
+C     Add Tidal momentum forcing from 2-d geopotential anomaly
+      IF ( momTidalForcing ) THEN
+       DO j=1,sNy+1
+        DO i=0,sNx+1
+          gV_arr(i,j) = gV_arr(i,j)
+     &      - recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
+     &      *( phiTide2d(i,j,bi,bj) - phiTide2d(i,j-1,bi,bj) )
+     &      *_maskS(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
 
 C     Ocean: Add momentum surface forcing (e.g., wind-stress) in surface level
       IF ( k .EQ. kSurface ) THEN
