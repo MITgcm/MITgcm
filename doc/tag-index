@@ -1,10 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2355 2017/09/26 15:52:52 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2356 2017/10/04 20:43:58 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o eesupp:
+o model:
+  - add new 2-d forcing field for time-dependent geopotential anomaly (e.g.,
+    tidal forcing), in m^2/s^2 ; add run-time param to allow to turn it off.
+o eesupp/src:
   - shift standardMessageUnit in eeboot.F and I/O units in mdsfindunit.F
     for coupling to GEOS AGCM: HACK_FOR_GMAO_CPL option in CPP_EEOPTIONS.h
 
