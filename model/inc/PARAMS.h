@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.287 2017/05/02 18:11:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.288 2017/10/04 20:30:04 jmc Exp $
 C $Name:  $
 C
 
@@ -298,8 +298,8 @@ C     useAreaViscLength :: Set to true to use old scaling for viscous lengths,
 C                          e.g., L2=Raz.  May be preferable for cube sphere.
 C     momViscosity  :: Flag which turns momentum friction terms on and off.
 C     momAdvection  :: Flag which turns advection of momentum on and off.
-C     momForcing    :: Flag which turns external forcing of momentum on
-C                      and off.
+C     momForcing    :: Flag which turns external forcing of momentum on and off.
+C     momTidalForcing    :: Flag which turns tidal forcing on and off.
 C     momPressureForcing :: Flag which turns pressure term in momentum equation
 C                          on and off.
 C     metricTerms   :: Flag which turns metric terms on or off.
@@ -408,7 +408,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & deepAtmosphere, setInterFDr, setCenterDr, useMin4hFacEdges,
      & no_slip_sides, no_slip_bottom, bottomVisc_pCell, useSmag3D,
      & useFullLeith, useStrainTensionVisc, useAreaViscLength,
-     & momViscosity, momAdvection, momForcing,
+     & momViscosity, momAdvection, momForcing, momTidalForcing,
      & momPressureForcing, metricTerms, useNHMTerms,
      & useCoriolis, use3dCoriolis,
      & useCDscheme, vectorInvariantMomentum,
@@ -466,6 +466,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL momViscosity
       LOGICAL momAdvection
       LOGICAL momForcing
+      LOGICAL momTidalForcing
       LOGICAL momPressureForcing
       LOGICAL metricTerms
       LOGICAL useNHMTerms

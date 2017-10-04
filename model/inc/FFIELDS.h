@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.47 2015/01/20 20:43:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.48 2017/10/04 20:30:04 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h
@@ -67,6 +67,8 @@ C     lambdaThetaClimRelax :: Inverse time scale for relaxation ( 1/s ).
 C
 C     lambdaSaltClimRelax :: Inverse time scale for relaxation ( 1/s ).
 
+C     phiTide2d :: vertically uniform (2d-map), time-dependent geopotential
+C                  anomaly (e.g., tidal forcing); Units are m^2/s^2
 C     pLoad :: for the ocean:      atmospheric pressure at z=eta
 C                Units are           Pa=N/m^2
 C              for the atmosphere: geopotential of the orography
@@ -94,6 +96,7 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       COMMON /FFIELDS_SSS/ SSS
       COMMON /FFIELDS_lambdaThetaClimRelax/ lambdaThetaClimRelax
       COMMON /FFIELDS_lambdaSaltClimRelax/ lambdaSaltClimRelax
+      COMMON /FFIELDS_phiTide/ phiTide2d
       COMMON /FFIELDS_pLoad/ pLoad
       COMMON /FFIELDS_sIceLoad/ sIceLoad
 
@@ -107,6 +110,7 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       _RS  SSS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  lambdaThetaClimRelax(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  lambdaSaltClimRelax(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  phiTide2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  pLoad    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  sIceLoad (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
