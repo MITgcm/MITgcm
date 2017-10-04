@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.25 2016/03/10 20:52:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.26 2017/10/04 20:34:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -56,12 +56,13 @@ C-    For off-line calculation, switch off Momentum and Active-tracers (=T,S):
 C--   On/Off flags for each terms of the momentum equation
       nonHydrostatic   = momStepping .AND. nonHydrostatic
       quasiHydrostatic = momStepping .AND. quasiHydrostatic
-      momAdvection = momStepping .AND. momAdvection
-      momViscosity = momStepping .AND. momViscosity
-      momForcing   = momStepping .AND. momForcing
-      useCoriolis  = momStepping .AND. useCoriolis
-      use3dCoriolis= useCoriolis .AND. use3dCoriolis
-      useCDscheme  = momStepping .AND. useCDscheme
+      momAdvection     = momStepping .AND. momAdvection
+      momViscosity     = momStepping .AND. momViscosity
+      momForcing       = momStepping .AND. momForcing
+      momTidalForcing  = momForcing  .AND. momTidalForcing
+      useCoriolis      = momStepping .AND. useCoriolis
+      use3dCoriolis    = useCoriolis .AND. use3dCoriolis
+      useCDscheme      = momStepping .AND. useCDscheme
       momPressureForcing= momStepping .AND. momPressureForcing
       implicitIntGravWave=momPressureForcing .AND. implicitIntGravWave
       momImplVertAdv   = momAdvection .AND. momImplVertAdv

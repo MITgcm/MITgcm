@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.85 2016/11/28 22:57:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.86 2017/10/04 20:34:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -313,9 +313,19 @@ C       code is being compiled
       ENDIF
 #endif
 
+      IF ( geothermalFile.NE.' ' ) THEN
+C     o Need to use S/R APPLY_FORCING_T to get Geothermal forcing
+#ifdef USE_OLD_EXTERNAL_FORCING
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &  'geothermalFile is set but Geothermal-Flux code'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)')' is missing.',
+     &  ' Re-compile with "#undef USE_OLD_EXTERNAL_FORCING"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+#endif /* USE_OLD_EXTERNAL_FORCING */
 C     o Need to define ALLOW_GEOTHERMAL_FLUX to use geothermalFile forcing
 #ifndef ALLOW_GEOTHERMAL_FLUX
-      IF ( geothermalFile.NE.' ' ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
      &  'geothermalFile is set but Geothermal-Flux code'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -323,8 +333,21 @@ C     o Need to define ALLOW_GEOTHERMAL_FLUX to use geothermalFile forcing
      &  ' Re-compile with "#define ALLOW_GEOTHERMAL_FLUX"'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
-      ENDIF
 #endif /* ALLOW_GEOTHERMAL_FLUX */
+      ENDIF
+
+C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
+#ifdef USE_OLD_EXTERNAL_FORCING
+      IF ( momTidalForcing ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &  'momTidalForcing is set but Tidal forcing code'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)')' is missing.',
+     &  ' Re-compile with "#undef USE_OLD_EXTERNAL_FORCING"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* USE_OLD_EXTERNAL_FORCING */
 
 #ifndef ALLOW_FRICTION_HEATING
       IF ( addFrictionHeating ) THEN

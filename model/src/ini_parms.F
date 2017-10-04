@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.276 2017/08/09 15:22:56 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.277 2017/10/04 20:37:19 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -197,12 +197,12 @@ C--   Continuous equation parameters
      & tRef, sRef, tRefFile, sRefFile, rhoRefFile,
      & eosType, selectP_inEOS_Zc, integr_GeoPot, selectFindRoSurf,
      & HeatCapacity_Cp, celsius2K, atm_Cp, atm_Rd, atm_Rq, atm_Po,
-     & no_slip_sides, sideDragFactor,
-     & no_slip_bottom, bottomVisc_pCell,
+     & no_slip_sides, sideDragFactor, no_slip_bottom, bottomVisc_pCell,
      & bottomDragLinear, bottomDragQuadratic, selectBotDragQuadr,
-     & momViscosity,  momAdvection, momForcing, useCoriolis,
-     & useConstantF, useBetaPlaneF, useSphereF, use3dCoriolis,
-     & momPressureForcing, metricTerms, vectorInvariantMomentum,
+     & momViscosity,  momAdvection, momForcing, momTidalForcing,
+     & useCoriolis, useConstantF, useBetaPlaneF, useSphereF,
+     & use3dCoriolis, momPressureForcing,
+     & metricTerms, vectorInvariantMomentum,
      & tempDiffusion, tempAdvection, tempForcing, addFrictionHeating,
      & saltDiffusion, saltAdvection, saltForcing,
      & implicSurfPress, implicDiv2DFlow, implicitNHPress,

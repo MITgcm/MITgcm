@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.182 2017/05/02 18:13:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.183 2017/10/04 20:34:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -185,6 +185,7 @@ C-    viscosity and diffusivity default value:
       momViscosity        = .TRUE.
       momAdvection        = .TRUE.
       momForcing          = .TRUE.
+      momTidalForcing     = .TRUE.
       useCoriolis         = .TRUE.
       momPressureForcing  = .TRUE.
       momStepping         = .TRUE.

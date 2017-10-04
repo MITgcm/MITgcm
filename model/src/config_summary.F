@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.158 2017/05/02 18:13:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.159 2017/10/04 20:34:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -511,6 +511,9 @@ c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
      & 'selectKEscheme=',' /* V.I Kinetic Energy scheme selector */')
       CALL WRITE_0D_L( momForcing,   INDEX_NONE,
      & 'momForcing =', '  /* Momentum forcing on/off flag */')
+      IF ( momForcing )
+     & CALL WRITE_0D_L( momTidalForcing, INDEX_NONE,
+     & 'momTidalForcing =',' /* Momentum Tidal forcing on/off flag */')
       CALL WRITE_0D_L( momPressureForcing, INDEX_NONE,
      & 'momPressureForcing =',
      & '  /* Momentum pressure term on/off flag */')
