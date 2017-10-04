@@ -11,6 +11,7 @@
  buoyancyRelation='ATMOSPHERIC',
  eosType='IDEALG',
  useEnergyConservingCoriolis=.TRUE.,
+ momTidalForcing=.FALSE.,
  gravity=9.81,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
