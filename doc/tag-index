@@ -1,9 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2356 2017/10/04 20:43:58 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2357 2017/10/06 00:15:13 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - add specific forcing field for tides to feed model new geopotential anomaly
+    forcing, for now within #ifdef EXF_ALLOW_TIDES.
+  - remove from common block unused params: exf_inscal_sst & exf_inscal_sss.
 o model:
   - add new 2-d forcing field for time-dependent geopotential anomaly (e.g.,
     tidal forcing), in m^2/s^2 ; add run-time param to allow to turn it off.
