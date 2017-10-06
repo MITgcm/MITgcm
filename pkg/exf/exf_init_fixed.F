@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.35 2017/03/03 01:03:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.36 2017/10/06 00:03:56 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -76,6 +76,7 @@ C     ' ' = no masking; 'c' = centered mask; 'w' = western mask; 's' = southern
       swdownmask   = 'c'
       lwdownmask   = 'c'
       apressuremask= 'c'
+      tidePotmask  = 'c'
       areamaskmask = 'c'
       climsstmask  = 'c'
       climsssmask  = 'c'
@@ -106,6 +107,7 @@ c      saltflxmask  = ' '
 c      lwfluxmask   = ' '
 c      lwdownmask   = ' '
        apressuremask= ' '
+c      tidePotmask  = ' '
 c      areamaskmask = ' '
 c      climsstmask  = ' '
 c      climsssmask  = ' '
@@ -365,6 +367,20 @@ C     from the beginning of the year.
      I                    myThid )
       ENDIF
 #endif /* ATMOSPHERIC_LOADING */
+
+#ifdef EXF_ALLOW_TIDES
+      IF ( tidePotFile .NE. ' ' ) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode)
+     &    CALL DEBUG_CALL('GETFFIELD_START tidePot',myThid)
+# endif
+       CALL EXF_GETFFIELD_START( useExfYearlyFields,
+     I                    'exf', 'tidePot', tidePotPeriod,
+     I                    tidePotStartdate1, tidePotStartdate2,
+     U                    tidePotStartTime, errCount,
+     I                    myThid )
+      ENDIF
+#endif /* EXF_ALLOW_TIDES */
 
 #ifdef EXF_SEAICE_FRACTION
       IF ( areamaskfile .NE. ' ' ) THEN

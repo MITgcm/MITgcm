@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.43 2017/03/10 00:14:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.44 2017/10/06 00:03:56 jmc Exp $
 C $Name:  $
 C
 C     ==================================================================
@@ -329,6 +329,16 @@ C     {fld}const      :: uniform default field value
       _RL     apressure_exfremo_slope
       character*1 apressuremask
 
+      INTEGER tidePotStartdate1
+      INTEGER tidePotStartdate2
+      _RL     tidePotStartTime
+      _RL     tidePotPeriod
+      _RL     tidePotRepCycle
+      _RL     tidePotConst
+      _RL     tidePot_exfremo_intercept
+      _RL     tidePot_exfremo_slope
+      CHARACTER*1 tidePotMask
+
       INTEGER areamaskstartdate1
       INTEGER areamaskstartdate2
       _RL     areamaskStartTime
@@ -455,6 +465,7 @@ C-    File names.
       character*(128) swdownfile
       character*(128) lwdownfile
       character*(128) apressurefile
+      character*(128) tidePotFile
       character*(128) areamaskfile
       character*(128) climsstfile
       character*(128) climsssfile
@@ -494,6 +505,7 @@ C-    File names.
      &       swdownstartdate1,  swdownstartdate2,
      &       lwdownstartdate1,  lwdownstartdate2,
      &       apressurestartdate1, apressurestartdate2,
+     &       tidePotStartdate1, tidePotStartdate2,
      &       areamaskstartdate1,  areamaskstartdate2,
      &       obcsNstartdate1,   obcsNstartdate2,
      &       obcsSstartdate1,   obcsSstartdate2,
@@ -550,6 +562,8 @@ C-    File names.
      &       lwdownperiod,      lwdownStartTime,
      &       apressureconst,    apressureRepCycle,
      &       apressureperiod,   apressureStartTime,
+     &       tidePotConst,      tidePotRepCycle,
+     &       tidePotPeriod,     tidePotStartTime,
      &       areamaskconst,     areamaskRepCycle,
      &       areamaskperiod,    areamaskStartTime,
      &       obcsNrepCycle,     obcsNperiod,     obcsNstartTime,
@@ -584,6 +598,7 @@ C-    File names.
      &       swdown_exfremo_intercept,
      &       lwdown_exfremo_intercept,
      &       apressure_exfremo_intercept,
+     &       tidePot_exfremo_intercept,
      &       areamask_exfremo_intercept,
      &       hflux_exfremo_slope,
      &       atemp_exfremo_slope,
@@ -607,6 +622,7 @@ C-    File names.
      &       swdown_exfremo_slope,
      &       lwdown_exfremo_slope,
      &       apressure_exfremo_slope,
+     &       tidePot_exfremo_slope,
      &       areamask_exfremo_slope
 
       COMMON /EXF_PARAM_C/
@@ -632,6 +648,7 @@ C-    File names.
      &       swdownfile,    swdownmask,
      &       lwdownfile,    lwdownmask,
      &       apressurefile, apressuremask,
+     &       tidePotFile,   tidePotMask,
      &       areamaskfile,  areamaskmask
 
       COMMON /EXF_CLIM_I/
@@ -692,8 +709,8 @@ C     exf_outscale_{fld} :: output scaling factors
       _RL     exf_inscal_lwflux
       _RL     exf_inscal_precip
       _RL     exf_inscal_snowprecip
-      _RL     exf_inscal_sst
-      _RL     exf_inscal_sss
+c     _RL     exf_inscal_sst
+c     _RL     exf_inscal_sss
       _RL     exf_inscal_atemp, exf_offset_atemp
       _RL     exf_inscal_aqh
       _RL     exf_inscal_hs
@@ -705,11 +722,12 @@ C     exf_outscale_{fld} :: output scaling factors
       _RL     exf_inscal_saltflx
       _RL     exf_inscal_swdown
       _RL     exf_inscal_lwdown
+      _RL     exf_inscal_tidePot
+      _RL     exf_inscal_areamask
       _RL     exf_inscal_climsst
       _RL     exf_inscal_climsss
       _RL     exf_inscal_climustr
       _RL     exf_inscal_climvstr
-      _RL     exf_inscal_areamask
 
       _RL     exf_outscal_hflux
       _RL     exf_outscal_sflux
@@ -719,6 +737,7 @@ C     exf_outscale_{fld} :: output scaling factors
       _RL     exf_outscal_sst
       _RL     exf_outscal_sss
       _RL     exf_outscal_apressure
+      _RL     exf_outscal_tidePot
       _RL     exf_outscal_areamask
 
       COMMON /EXF_PARAM_SCAL/
@@ -733,8 +752,8 @@ C     exf_outscale_{fld} :: output scaling factors
      &                      exf_inscal_lwflux,
      &                      exf_inscal_precip,
      &                      exf_inscal_snowprecip,
-     &                      exf_inscal_sst,
-     &                      exf_inscal_sss,
+c    &                      exf_inscal_sst,
+c    &                      exf_inscal_sss,
      &                      exf_inscal_atemp, exf_offset_atemp,
      &                      exf_inscal_aqh,
      &                      exf_inscal_hs,
@@ -746,6 +765,7 @@ C     exf_outscale_{fld} :: output scaling factors
      &                      exf_inscal_saltflx,
      &                      exf_inscal_swdown,
      &                      exf_inscal_lwdown,
+     &                      exf_inscal_tidePot,
      &                      exf_inscal_areamask,
      &                      exf_outscal_hflux,
      &                      exf_outscal_sflux,
@@ -755,6 +775,7 @@ C     exf_outscale_{fld} :: output scaling factors
      &                      exf_outscal_sst,
      &                      exf_outscal_sss,
      &                      exf_outscal_apressure,
+     &                      exf_outscal_tidePot,
      &                      exf_outscal_areamask
 
 #ifndef USE_EXF_INTERPOLATION
@@ -852,6 +873,9 @@ C    uvInterp_climstr    :: interpolate clim stress u & v components together
       _RL apressure_lon0,apressure_lon_inc
       _RL apressure_lat0,apressure_lat_inc(MAX_LAT_INC)
       INTEGER apressure_nlon,apressure_nlat,apressure_interpMethod
+      _RL tidePot_lon0,tidePot_lon_inc
+      _RL tidePot_lat0,tidePot_lat_inc(MAX_LAT_INC)
+      INTEGER tidePot_nlon,tidePot_nlat,tidePot_interpMethod
       _RL areamask_lon0,areamask_lon_inc
       _RL areamask_lat0,areamask_lat_inc(MAX_LAT_INC)
       INTEGER areamask_nlon,areamask_nlat,areamask_interpMethod
@@ -905,10 +929,12 @@ C    uvInterp_climstr    :: interpolate clim stress u & v components together
      & swdown_lat0, swdown_lat_inc,
      & lwdown_lon0, lwdown_lon_inc,
      & lwdown_lat0, lwdown_lat_inc,
-     & apressure_lon0,apressure_lon_inc,
-     & apressure_lat0,apressure_lat_inc,
-     & areamask_lon0,areamask_lon_inc,
-     & areamask_lat0,areamask_lat_inc
+     & apressure_lon0, apressure_lon_inc,
+     & apressure_lat0, apressure_lat_inc,
+     & tidePot_lon0, tidePot_lon_inc,
+     & tidePot_lat0, tidePot_lat_inc,
+     & areamask_lon0, areamask_lon_inc,
+     & areamask_lat0, areamask_lat_inc
 
       COMMON /EXF_INTERPOLATION_I/
      & ustress_nlon, ustress_nlat, ustress_interpMethod,
@@ -931,8 +957,9 @@ C    uvInterp_climstr    :: interpolate clim stress u & v components together
      & lwflux_nlon, lwflux_nlat, lwflux_interpMethod,
      & swdown_nlon, swdown_nlat, swdown_interpMethod,
      & lwdown_nlon, lwdown_nlat, lwdown_interpMethod,
-     & apressure_nlon,apressure_nlat,apressure_interpMethod,
-     & areamask_nlon,areamask_nlat,areamask_interpMethod
+     & apressure_nlon, apressure_nlat, apressure_interpMethod,
+     & tidePot_nlon, tidePot_nlat, tidePot_interpMethod,
+     & areamask_nlon, areamask_nlat, areamask_interpMethod
 
       _RL climsst_lon0, climsst_lon_inc
       _RL climsst_lat0, climsst_lat_inc(MAX_LAT_INC)

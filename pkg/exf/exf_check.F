@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.34 2017/05/12 00:09:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check.F,v 1.35 2017/10/06 00:03:56 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -308,6 +308,15 @@ c     ENDIF
       ENDIF
 #endif /* ndef ATMOSPHERIC_LOADING */
 
+#ifndef EXF_ALLOW_TIDES
+      IF ( tidePotFile.NE.' ' ) THEN
+        WRITE(msgBuf,'(3A)') 'EXF_CHECK: Cannot read-in field ',
+     &    '"tidePot" with #undef EXF_ALLOW_TIDES'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* ndef EXF_SEAICE_FRACTION */
+
 #ifndef EXF_SEAICE_FRACTION
       IF ( areamaskfile.NE.' ' ) THEN
         WRITE(msgBuf,'(3A)') 'EXF_CHECK: Cannot read-in field ',
@@ -462,6 +471,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       CALL EXF_CHECK_INTERP( 'apressure', apressurefile,
      &         apressure_interpMethod, apressure_nlat,
      &         apressure_nlon, apressure_lon_inc, errCount, myThid )
+      CALL EXF_CHECK_INTERP( 'tidePot', tidePotFile,
+     &         tidePot_interpMethod, tidePot_nlat,
+     &         tidePot_nlon, tidePot_lon_inc, errCount, myThid )
       CALL EXF_CHECK_INTERP( 'areamask', areamaskfile,
      &         areamask_interpMethod, areamask_nlat,
      &         areamask_nlon, areamask_lon_inc, errCount, myThid )

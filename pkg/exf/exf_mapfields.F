@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.32 2017/01/11 03:45:34 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.33 2017/10/06 00:03:56 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -328,6 +328,14 @@ C             Short wave radiative flux.
           ENDDO
 #endif
 
+#ifdef EXF_ALLOW_TIDES
+          DO j = jmin,jmax
+            DO i = imin,imax
+             phiTide2d(i,j,bi,bj)=exf_outscal_tidePot*tidePot(i,j,bi,bj)
+            ENDDO
+          ENDDO
+#endif /* EXF_ALLOW_TIDES */
+
 #ifdef ALLOW_SALTFLX
           DO j = jmin,jmax
             DO i = imin,imax
@@ -367,6 +375,9 @@ C     Qsw used in SHORTWAVE_HEATING code & for diagnostics (<- EXCH not needed)
 #endif
 #ifdef ATMOSPHERIC_LOADING
       _EXCH_XY_RS( pLoad, myThid )
+#endif
+#ifdef EXF_ALLOW_TIDES
+      _EXCH_XY_RS( phiTide2d, myThid )
 #endif
 #ifdef EXF_SEAICE_FRACTION
       _EXCH_XY_RS( exf_iceFraction, myThid )

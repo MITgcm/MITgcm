@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.72 2017/03/03 00:57:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.73 2017/10/06 00:03:56 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -394,6 +394,22 @@ C-    Atmos. pressure forcing
 #endif
      I     myTime, myIter, myThid )
 #endif
+
+#ifdef EXF_ALLOW_TIDES
+C-    Tidal geopotential
+      CALL EXF_SET_FLD(
+     I     'tidePot', tidePotFile, tidePotMask,
+     I     tidePotStartTime, tidePotPeriod, tidePotRepCycle,
+     I     exf_inscal_tidePot,
+     I     tidePot_exfremo_intercept, tidePot_exfremo_slope,
+     U     tidePot, tidePot0, tidePot1,
+#ifdef USE_EXF_INTERPOLATION
+     I     tidePot_lon0, tidePot_lon_inc,
+     I     tidePot_lat0, tidePot_lat_inc,
+     I     tidePot_nlon, tidePot_nlat, xC, yC, tidePot_interpMethod,
+#endif
+     I     myTime, myIter, myThid )
+#endif /* EXF_ALLOW_TIDES */
 
 #ifdef EXF_SEAICE_FRACTION
 C-    fractional ice-covered area mask

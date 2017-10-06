@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_varia.F,v 1.2 2017/02/21 01:11:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_varia.F,v 1.3 2017/10/06 00:03:56 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -325,6 +325,19 @@ C      will be over-written at first time-step when calling EXF_SET_UV.
 #endif
      I     myThid )
 #endif /* ATMOSPHERIC_LOADING */
+
+#ifdef EXF_ALLOW_TIDES
+      CALL EXF_INIT_FLD(
+     I     'tidePot', tidePotFile, tidePotMask,
+     I     tidePotPeriod, exf_inscal_tidePot, tidePotconst,
+     O     tidePot, tidePot0, tidePot1,
+#ifdef USE_EXF_INTERPOLATION
+     I     tidePot_lon0, tidePot_lon_inc,
+     I     tidePot_lat0, tidePot_lat_inc,
+     I     tidePot_nlon, tidePot_nlat, xC, yC, tidePot_interpMethod,
+#endif
+     I     myThid )
+#endif /* EXF_ALLOW_TIDES */
 
 #ifdef EXF_SEAICE_FRACTION
       CALL EXF_INIT_FLD(

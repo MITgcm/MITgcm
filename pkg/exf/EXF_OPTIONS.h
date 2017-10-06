@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.41 2017/04/14 23:14:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.42 2017/10/06 00:03:56 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -93,6 +93,9 @@ C   >>> ATMOSPHERIC_LOADING <<<
 C       If defined, atmospheric pressure can be read-in from files.
 C   WARNING: this flag is set (define/undef) in CPP_OPTIONS.h
 C            and cannot be changed here (in EXF_OPTIONS.h)
+C
+C   >>> EXF_ALLOW_TIDES <<<
+C       If defined, 2-D tidal geopotential can be read-in from files
 C
 C   >>> EXF_SEAICE_FRACTION <<<
 C       If defined, seaice fraction can be read-in from files (areaMaskFile)
@@ -206,6 +209,9 @@ C   unless to reproduce old results (obtained with inconsistent old code)
 C-  Relaxation to monthly climatologies.
 #define ALLOW_CLIMSST_RELAXATION
 #define ALLOW_CLIMSSS_RELAXATION
+
+C-  Allows to read-in (2-d) tidal geopotential forcing
+#undef EXF_ALLOW_TIDES
 
 C-  Allows to read-in seaice fraction from files (areaMaskFile)
 #undef EXF_SEAICE_FRACTION

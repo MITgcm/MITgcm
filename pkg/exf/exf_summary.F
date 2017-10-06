@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.45 2017/05/12 00:01:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.46 2017/10/06 00:03:56 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -677,6 +677,21 @@ C--   Atmospheric pressure.
        prtBlkLn = .TRUE.
       ENDIF
 #endif /* ATMOSPHERIC_LOADING */
+
+#ifdef EXF_ALLOW_TIDES
+C--   Tidal geopotential
+      IF ( tidePotFile.NE.' ' ) THEN
+       CALL EXF_FLD_SUMMARY( 'Tidal geopotential',
+     I      tidePotFile, tidePotRepCycle, tidePotPeriod,
+     I      tidePotStartTime, useExfYearlyFields, addBlkLn, myThid )
+#ifdef USE_EXF_INTERPOLATION
+       CALL EXF_PRINT_INTERP( 'tidePot', tidePot_lon0,
+     &  tidePot_lon_inc, tidePot_lat0, tidePot_lat_inc,
+     &  tidePot_nlon, tidePot_nlat, tidePot_interpMethod, myThid )
+#endif
+       prtBlkLn = .TRUE.
+      ENDIF
+#endif /* EXF_ALLOW_TIDES */
 
 #ifdef EXF_SEAICE_FRACTION
 C--   Fractional ice-covered area

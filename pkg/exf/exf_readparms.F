@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.93 2017/08/09 15:23:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.94 2017/10/06 00:03:56 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -73,6 +73,7 @@ C     == local variables ==
       LOGICAL exf_verbose
       CHARACTER*(2) exf_yftype
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RL     exf_inscal_sst, exf_inscal_sss
 C     == end of interface ==
 
 C     Surface flux data.
@@ -137,6 +138,8 @@ C     Surface flux data.
      &         lwdownRepCycle,    lwdownperiod,    lwdownStartTime,
      &      apressurefile, apressurestartdate1, apressurestartdate2,
      &      apressureRepCycle, apressureperiod, apressureStartTime,
+     &        tidePotFile,   tidePotStartdate1,   tidePotStartdate2,
+     &        tidePotRepCycle,   tidePotPeriod,   tidePotStartTime,
      &       areamaskfile,  areamaskstartdate1,  areamaskstartdate2,
      &       areamaskRepCycle,  areamaskperiod,  areamaskStartTime,
      &        climsstfile,   climsststartdate1,   climsststartdate2,
@@ -166,13 +169,14 @@ C     Surface flux data.
      &  exf_outscal_hflux,  exf_outscal_ustress, exf_outscal_vstress,
      & exf_outscal_swflux,  exf_outscal_sst,     exf_outscal_sss,
      &  exf_outscal_sflux,  exf_outscal_apressure,
+     & exf_inscal_tidePot,  exf_outscal_tidePot,
      & exf_inscal_areamask, exf_outscal_areamask,
      &  hfluxconst, atempconst, aqhconst, hs_const, hl_const,
      &  sfluxconst, evapconst, precipconst, snowprecipconst,
      &  runoffconst, runoftempconst, saltflxconst, ustressconst,
      &  vstressconst, uwindconst, vwindconst, wspeedconst, swfluxconst,
      &  lwfluxconst, swdownconst, lwdownconst, apressureconst,
-     &  areamaskconst, climsstconst,   climsssconst,
+     &  tidePotConst, areamaskconst, climsstconst, climsssconst,
      &  climustrconst, climvstrconst,
      &     hflux_exfremo_intercept, hflux_exfremo_slope,
      &     atemp_exfremo_intercept, atemp_exfremo_slope,
@@ -196,6 +200,7 @@ C     Surface flux data.
      &     swdown_exfremo_intercept, swdown_exfremo_slope,
      &     lwdown_exfremo_intercept, lwdown_exfremo_slope,
      &     apressure_exfremo_intercept, apressure_exfremo_slope,
+     &     tidePot_exfremo_intercept, tidePot_exfremo_slope,
      &     areamask_exfremo_intercept, areamask_exfremo_slope,
      &     climsst_exfremo_intercept, climsst_exfremo_slope,
      &     climsss_exfremo_intercept, climsss_exfremo_slope,
@@ -249,6 +254,8 @@ C     Surface flux data.
      & apressure_lon0, apressure_lon_inc,
      & apressure_lat0, apressure_lat_inc,
      & apressure_nlon, apressure_nlat, apressure_interpMethod,
+     & tidePot_lon0, tidePot_lon_inc, tidePot_lat0, tidePot_lat_inc,
+     & tidePot_nlon, tidePot_nlat, tidePot_interpMethod,
      & areamask_lon0, areamask_lon_inc, areamask_lat0, areamask_lat_inc,
      & areamask_nlon, areamask_nlat, areamask_interpMethod,
      & climsst_lon0, climsst_lon_inc, climsst_lat0, climsst_lat_inc,
@@ -520,11 +527,18 @@ C     Calendar data.
       apressure_exfremo_intercept = 0.0 _d 0
       apressure_exfremo_slope = 0.0 _d 0
 
-      areamaskstartdate1    = 0
-      areamaskstartdate2    = 0
-      areamaskperiod        = 0.0 _d 0
-      areamaskTauRelax      = 0.0 _d 0
-      areamaskconst         = 0.0 _d 0
+      tidePotStartdate1  = 0
+      tidePotStartdate2  = 0
+      tidePotPeriod      = 0.0 _d 0
+      tidePotConst       = 0.0 _d 0
+      tidePot_exfremo_intercept = 0. _d 0
+      tidePot_exfremo_slope = 0. _d 0
+
+      areamaskstartdate1 = 0
+      areamaskstartdate2 = 0
+      areamaskperiod     = 0.0 _d 0
+      areamaskTauRelax   = 0.0 _d 0
+      areamaskconst      = 0.0 _d 0
       areamask_exfremo_intercept = 0. _d 0
       areamask_exfremo_slope = 0. _d 0
 
@@ -532,7 +546,7 @@ C     Calendar data.
       climsststartdate2  = 0
       climsstperiod      = 0
       climsstTauRelax    = 0.0 _d 0
-      climsstconst         = 0.0 _d 0
+      climsstconst       = 0.0 _d 0
       climsst_exfremo_intercept = 0.0 _d 0
       climsst_exfremo_slope = 0.0 _d 0
 
@@ -540,7 +554,7 @@ C     Calendar data.
       climsssstartdate2  = 0
       climsssperiod      = 0
       climsssTauRelax    = 0.0 _d 0
-      climsssconst         = 0.0 _d 0
+      climsssconst       = 0.0 _d 0
       climsss_exfremo_intercept = 0.0 _d 0
       climsss_exfremo_slope = 0.0 _d 0
 
@@ -548,7 +562,7 @@ C     Calendar data.
       climustrstartdate2  = 0
       climustrperiod      = 0
       climustrTauRelax    = 0.0 _d 0
-      climustrconst         = 0.0 _d 0
+      climustrconst       = 0.0 _d 0
       climustr_exfremo_intercept = 0.0 _d 0
       climustr_exfremo_slope = 0.0 _d 0
 
@@ -556,7 +570,7 @@ C     Calendar data.
       climvstrstartdate2  = 0
       climvstrperiod      = 0
       climvstrTauRelax    = 0.0 _d 0
-      climvstrconst         = 0.0 _d 0
+      climvstrconst       = 0.0 _d 0
       climvstr_exfremo_intercept = 0.0 _d 0
       climvstr_exfremo_slope = 0.0 _d 0
 
@@ -618,6 +632,7 @@ C     Data files.
       swdownfile         = ' '
       lwdownfile         = ' '
       apressurefile      = ' '
+      tidePotFile        = ' '
       areamaskfile       = ' '
       climsstfile        = ' '
       climsssfile        = ' '
@@ -646,6 +661,7 @@ C     Start Time.
       swdownStartTime    = UNSET_RL
       lwdownStartTime    = UNSET_RL
       apressureStartTime = UNSET_RL
+      tidePotStartTime   = UNSET_RL
       areamaskStartTime  = UNSET_RL
       climsstStartTime   = UNSET_RL
       climsssStartTime   = UNSET_RL
@@ -679,8 +695,8 @@ C     Input scaling factors.
       exf_inscal_lwflux    =  1. _d 0
       exf_inscal_precip    =  1. _d 0
       exf_inscal_snowprecip=  1. _d 0
-      exf_inscal_sst       =  1. _d 0
-      exf_inscal_sss       =  1. _d 0
+c     exf_inscal_sst       =  1. _d 0
+c     exf_inscal_sss       =  1. _d 0
       exf_inscal_atemp     =  1. _d 0
       exf_offset_atemp     =  0. _d 0
       exf_inscal_aqh       =  1. _d 0
@@ -697,6 +713,7 @@ C     Input scaling factors.
       exf_inscal_climsss   =  1. _d 0
       exf_inscal_climustr  =  1. _d 0
       exf_inscal_climvstr  =  1. _d 0
+      exf_inscal_tidePot   =  1. _d 0
       exf_inscal_areamask  =  1. _d 0
 
 C     Output scaling factors.
@@ -708,6 +725,7 @@ C     Output scaling factors.
       exf_outscal_sst      =  1. _d 0
       exf_outscal_sss      =  1. _d 0
       exf_outscal_apressure=  1. _d 0
+      exf_outscal_tidePot  =  1. _d 0
       exf_outscal_areamask =  1. _d 0
 
 #ifdef USE_EXF_INTERPOLATION
@@ -739,6 +757,7 @@ C     model grid cell-center position (leading to trivial interpolation)
       swdown_lon0    = inp_lon0
       lwdown_lon0    = inp_lon0
       apressure_lon0 = inp_lon0
+      tidePot_lon0   = inp_lon0
       areamask_lon0  = inp_lon0
       vstress_lat0   = inp_lat0
       vwind_lat0     = inp_lat0
@@ -761,6 +780,7 @@ C     model grid cell-center position (leading to trivial interpolation)
       swdown_lat0    = inp_lat0
       lwdown_lat0    = inp_lat0
       apressure_lat0 = inp_lat0
+      tidePot_lat0   = inp_lat0
       areamask_lat0  = inp_lat0
       ustress_nlon   = gridNx
       ustress_nlat   = gridNy
@@ -804,6 +824,8 @@ C     model grid cell-center position (leading to trivial interpolation)
       lwdown_nlat    = gridNy
       apressure_nlon = gridNx
       apressure_nlat = gridNy
+      tidePot_nlon   = gridNx
+      tidePot_nlat   = gridNy
       areamask_nlon  = gridNx
       areamask_nlat  = gridNy
       ustress_lon_inc   = inp_dLon
@@ -827,6 +849,7 @@ C     model grid cell-center position (leading to trivial interpolation)
       swdown_lon_inc    = inp_dLon
       lwdown_lon_inc    = inp_dLon
       apressure_lon_inc = inp_dLon
+      tidePot_lon_inc   = inp_dLon
       areamask_lon_inc  = inp_dLon
 
       climsst_lon0    = inp_lon0
@@ -877,6 +900,7 @@ C     model grid cell-center position (leading to trivial interpolation)
         swdown_lat_inc(j)    = inp_dLat
         lwdown_lat_inc(j)    = inp_dLat
         apressure_lat_inc(j) = inp_dLat
+        tidePot_lat_inc(j)   = inp_dLat
         areamask_lat_inc(j)  = inp_dLat
         climsst_lat_inc(j)   = inp_dLat
         climsss_lat_inc(j)   = inp_dLat
@@ -905,6 +929,7 @@ C     model grid cell-center position (leading to trivial interpolation)
       swdown_interpMethod    =  1
       lwdown_interpMethod    =  1
       apressure_interpMethod =  1
+      tidePot_interpMethod   =  1
       areamask_interpMethod  =  1
       climsst_interpMethod   =  2
       climsss_interpMethod   =  2
@@ -951,6 +976,7 @@ C-    Set default fldRepeatCycle to repeatPeriod
       swdownRepCycle     = repeatPeriod
       lwdownRepCycle     = repeatPeriod
       apressureRepCycle  = repeatPeriod
+      tidePotRepCycle    = repeatPeriod
       areamaskRepCycle   = repeatPeriod
       climsstRepCycle    = repeatPeriod
       climsssRepCycle    = repeatPeriod
