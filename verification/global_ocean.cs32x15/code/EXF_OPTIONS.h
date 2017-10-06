@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/EXF_OPTIONS.h,v 1.11 2017/03/07 18:01:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/EXF_OPTIONS.h,v 1.12 2017/10/06 00:13:56 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -93,6 +93,9 @@ C   >>> ATMOSPHERIC_LOADING <<<
 C       If defined, atmospheric pressure can be read-in from files.
 C   WARNING: this flag is set (define/undef) in CPP_OPTIONS.h
 C            and cannot be changed here (in EXF_OPTIONS.h)
+C
+C   >>> EXF_ALLOW_TIDES <<<
+C       If defined, 2-D tidal geopotential can be read-in from files
 C
 C   >>> EXF_SEAICE_FRACTION <<<
 C       If defined, seaice fraction can be read-in from files (areaMaskFile)
@@ -207,6 +210,9 @@ C-  Relaxation to monthly climatologies.
 #define ALLOW_CLIMSST_RELAXATION
 #define ALLOW_CLIMSSS_RELAXATION
 
+C-  Allows to read-in (2-d) tidal geopotential forcing
+#define EXF_ALLOW_TIDES
+
 C-  Allows to read-in seaice fraction from files (areaMaskFile)
 #undef EXF_SEAICE_FRACTION
 
@@ -221,7 +227,7 @@ C   (no pole symmetry, single vector-comp interp, reset to 0 zonal-comp @ N.pole
 #undef EXF_USE_OLD_INTERP_POLE
 
 #undef EXF_INTERP_USE_DYNALLOC
-#if ( defined (EXF_INTERP_USE_DYNALLOC) && defined (USING_THREADS) )
+#if ( defined USE_EXF_INTERPOLATION && defined EXF_INTERP_USE_DYNALLOC && defined USING_THREADS )
 # define EXF_IREAD_USE_GLOBAL_POINTER
 #endif
 
