@@ -13,5 +13,5 @@
   useFreshWaterFlux=.TRUE.,
   useFluxLimit=.TRUE.,
   FluxFormula='COARE3',
-  useRelativeWind=.TRUE.
+  useRelativeWind=.TRUE.,
  &
