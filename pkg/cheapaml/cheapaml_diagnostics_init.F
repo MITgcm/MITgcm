@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_diagnostics_init.F,v 1.7 2013/06/11 01:42:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_diagnostics_init.F,v 1.8 2017/10/12 15:25:34 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -48,7 +48,6 @@ C     diagTitle :: local string (80c): description of field in diagnostic
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-
       diagName  = 'CH_TAIR '
       diagTitle = 'cheapAML Surface Air Temp'
       diagUnits = 'degres C        '
@@ -79,7 +78,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       diagName  = 'CH_Trace'
       diagTitle = 'cheapAML Passive Tracer  '
-      diagUnits = 'Depend on Tracer '
+      diagUnits = 'Depend on Tracer'
       diagCode  = 'SM      L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
