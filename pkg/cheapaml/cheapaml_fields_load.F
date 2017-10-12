@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.23 2017/06/15 09:05:52 bderembl Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_fields_load.F,v 1.24 2017/10/12 15:26:12 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
-
 
 C     !ROUTINE: CHEAPAML_FIELDS_LOAD
 C     !INTERFACE:
@@ -57,9 +56,9 @@ C     CheaptracerR[01] :: Relaxation profile for passive tracer
 c    &         rair0,    rair1,
      &         CheaptracerR0, CheaptracerR1,
      &         cheaph0, cheaph1,
-     &         cheapcl0, cheapcl1,  
-     &         cheaplw0, cheaplw1,  
-     &         cheappr0, cheappr1  
+     &         cheapcl0, cheapcl1,
+     &         cheaplw0, cheaplw1,
+     &         cheappr0, cheappr1
 
       _RL  trair0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  trair1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -92,17 +91,13 @@ c     _RL  rair1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cheappr0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cheappr1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      
 C     === Local arrays ===
 C     cheaph[01]  ::
 C     cheapcl[01] ::
 C     cheaplw[01] ::
 C     aWght,bWght :: Interpolation weights
-C     xsolph :: phase of year, assuming time zero is mid winter
-C     xinxx  :: cos ( xsolph )
 
       _RL aWght, bWght
-      _RL xsolph, xinxx
 
       INTEGER bi, bj
       INTEGER i, j, iG, jG
@@ -254,9 +249,8 @@ C      data for the period ahead and the period behind myTime.
          _EXCH_XY_RL( uWind, myThid )
 !         CALL EXCH_UV_XY_RL( uWind, vWind, .TRUE., myThid )
 
-          
        ENDIF
-       
+
          IF ( VWindFile .NE. ' ' ) THEN
           CALL READ_REC_XY_RL( VWindFile,vWind0,intime0,
      &                         myIter, myThid )
@@ -273,10 +267,9 @@ C      data for the period ahead and the period behind myTime.
           ENDDO
          ENDDO
 
-
          _EXCH_XY_RL( vWind, myThid )
 !         CALL EXCH_UV_XY_RL( uWind, vWind, .TRUE., myThid )
-         
+
         ENDIF
          IF ( useTimeVarBLH .AND. cheap_hFile .NE. ' ' ) THEN
           CALL READ_REC_XY_RL( cheap_hFile,cheaph0,intime0,
@@ -342,7 +335,6 @@ C      data for the period ahead and the period behind myTime.
              ENDDO
            ENDDO
           _EXCH_XY_RL( CheaptracerR, myThid )
-
 
          ENDIF
          _EXCH_XY_RL( trair0 , myThid )
