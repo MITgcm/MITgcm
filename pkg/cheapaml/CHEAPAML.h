@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.14 2017/06/27 14:16:16 bderembl Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.15 2017/10/12 15:40:07 jmc Exp $
 C $Name:  $
 
 c #ifdef ALLOW_CHEAPAML
@@ -18,7 +18,6 @@ C     vWind :: meridional wind comp at grid-cell Southern edge (vVel location)
 C     solar :: short wave insolation (+=dw) [W/m2]
 C     ustress :: zonal wind stress component at grid-cell center (A-grid) [N/m2]
 C     vstress :: meridional wind stress comp at grid-cell center (A-grid) [N/m2]
-C     Cheapmask :: open boundary condition relaxation mask
 C     Cheaptracer :: passive tracer
 C     CheaptracerR :: Relaxation profile for passive tracer
 C     gCheaptracerm :: passive tracer tendency
@@ -31,11 +30,11 @@ C     cheapPrecip   :: precipitation (+=dw) [kg/m2/s]
      &       uWind, vWind, solar,
      &       wWind,
      &       ustress, vstress,
-     &       wavesh, wavesp, Cheapmask, CheapHgrid,
+     &       wavesh, wavesp, xrelf, CheapHgrid,
      &       Cheapclouds, Cheapdlongwave,
      &       Cheaptracer, CheaptracerR, gCheaptracerm,
-c    &       Cheapprgrid,
-     &       xgs, xrelf, cheapPrecip
+c    &       cheapPrGrid,
+     &       cheapPrecip
 
       _RL    Tr     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    qr     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -51,12 +50,10 @@ c    &       Cheapprgrid,
       _RL    vstress(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    wavesh (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    wavesp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL    Cheapmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL    xgs     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    xrelf   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    cheapPrecip(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    CheapHgrid (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-c     _RL    Cheapprgrid(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     _RL    cheapPrGrid(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    Cheapclouds(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    Cheapdlongwave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    Cheaptracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
