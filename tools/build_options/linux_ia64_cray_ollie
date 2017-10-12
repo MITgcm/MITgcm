@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_ollie,v 1.8 2017/08/08 12:24:53 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_ollie,v 1.9 2017/10/12 12:01:51 mlosch Exp $
 # $Name:  $
 
 # Tested on cray CS400 ollie.awi.de 
@@ -15,6 +15,8 @@ CC='cc'
 
 FC_NAMEMANGLE="#define FC_NAMEMANGLE(X)  X ## _"
 DEFINES='-DWORDLENGTH=4 '
+# in some cases
+DEFINES="$DEFINES -DTARGET_CRAYXT"
 CPP='cpp -traditional -P'
 EXTENDED_SRC_FLAG='-Mextend'
 OMPFLAG='-homp'
@@ -22,15 +24,14 @@ GET_FC_VERSION="-V"
 RMFILES='*.lst'
 
 NOOPTFLAGS="-O1"
-NOOPTFILES=''
+# under some circumstances, the high optimization of floating point operations
+# with -fhp3 lead to wrong results of MOD(a,b) in the following function, so
+# we need to use a lower (default) value of -hfp2 implicit in the NOOPTFLAGS
+NOOPTFILES="exf_getffieldrec.F"
 
 FFLAGS="$FFLAGS -h byteswapio" 
 if test "x$OMP" = xtrue ; then 
   # alternative if-statement: if test ! "x$OMP" = x ; then
-  # this flag does not have the right name, but it does the right thing:
-  # write namelists into real files on the disk 
-  # (in open_copy_data_file and eeset_parm)
-  # DEFINES="$DEFINES -DTARGET_CRAYXT"
   # for some reason this solves a problem with an unexpected 
   # "expectStatus=20" when using OpenMP with hyperthreads
   NOOPTFILES="${NOOPTFILES} diagnostics_switch_onoff.F mon_init.F mon_set_iounit.F"
