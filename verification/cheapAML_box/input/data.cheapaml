@@ -2,7 +2,7 @@
 #--------------------
  &CHEAPAML_CONST
   cheapaml_ntim = 5,
-  cheapaml_mask_width=5,
+  cheapaml_mask_width=4,
   cheapaml_h = 1000.,
  &
 
