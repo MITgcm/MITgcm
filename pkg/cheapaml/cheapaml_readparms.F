@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.16 2017/08/09 15:23:38 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.17 2017/10/13 17:45:58 jmc Exp $
 C $Name:  $
 
 #include "CHEAPAML_OPTIONS.h"
@@ -24,18 +24,23 @@ C     msgBuf      :: Informational/error message buffer
 C     iUnit       :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
+C-    retired parameters:
+C     nRetired    :: Count number of "retired" parameters found in namelist.
+      INTEGER nRetired
+      _RL cheapaml_taurelax, cheapaml_taurelaxocean
 
 C--   Bulk Formula parameter
       NAMELIST /CHEAPAML_CONST/
      &  cheapaml_ntim, cheapaml_mask_width,
      &  cheapaml_h, cheapaml_kdiff,
-     &  cheapaml_taurelax,
-     &  cheapaml_taurelaxocean,
+     &  cheap_tauRelax, cheap_tauRelaxOce,
      &  cdrag_1,cdrag_2,cdrag_3,
      &  rhoa, cpair, stefan, gasR, xkar,
      &   dsolms,dsolmn,zu,zt,zq,
      &   xphaseinit,gamma_blk,humid_fac,p0,
-     &   cheap_pr1,cheap_pr2
+     &   cheap_pr1, cheap_pr2,
+     &  cheapaml_taurelax, cheapaml_taurelaxocean
+
       NAMELIST /CHEAPAML_PARM01/
      &         periodicExternalForcing_cheap,
      &         externForcingPeriod_cheap,
@@ -53,6 +58,7 @@ C--   Bulk Formula parameter
      &         cheapMaskFile,cheap_hFile,
      &         cheap_clFile,cheap_dlwFile,
      &         cheap_prFile
+
       NAMELIST /CHEAPAML_PARM02/
      &         cheapamlXperiodic,
      &         cheapamlYperiodic,
@@ -101,8 +107,8 @@ C-    Physical constant :
       cheapaml_ntim = 5
       cheapaml_h=1000. _d 0
       cheapaml_kdiff=1. _d 4
-      cheapaml_taurelax = .1 _d 0
-      cheapaml_taurelaxocean = .0 _d 0
+      cheap_tauRelax    = 8640. _d 0
+      cheap_tauRelaxOce = 0. _d 0
       cheapaml_mask_width = 0
       rhoa   = 1.3 _d 0
       cpair  = 1004. _d 0
@@ -136,6 +142,11 @@ C periodic forcing
 C precipitation time constant
       cheap_pr1 = 2*3600.0 _d 0
       cheap_pr2 = 36*3600.0 _d 0
+
+C-    Retired parameters: initialised to unlikely value:
+      nRetired = 0
+      cheapaml_taurelax = UNSET_RL
+      cheapaml_taurelaxocean = UNSET_RL
 
 C-    Input data files names :
       AirTempFile=' '
@@ -228,8 +239,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       WRITE(iUnit,*) 'Caml: mask_w   =',cheapaml_mask_width
       WRITE(iUnit,*) 'Caml: h        =',cheapaml_h
       WRITE(iUnit,*) 'Caml: kdiff    =',cheapaml_kdiff
-      WRITE(iUnit,*) 'Caml: taurelax =',cheapaml_taurelax, ' (days)'
-      WRITE(iUnit,*) 'Caml: trelaxoce=',cheapaml_taurelaxocean,' (days)'
+      WRITE(iUnit,*) 'Caml: tauRelax =', cheap_tauRelax, ' (s)'
+      WRITE(iUnit,*) 'Caml: tRelaxOce=', cheap_tauRelaxOce,' (s)'
       WRITE(iUnit,*) 'Caml: rhoa     =',rhoa
       WRITE(iUnit,*) 'Caml: cpair    =',cpair
       WRITE(iUnit,*) 'Caml: stefan   =',stefan
@@ -244,6 +255,37 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       WRITE(iUnit,*) 'Caml: useDlongwave       =',useDLongWave
       WRITE(iUnit,*) 'Caml: usePrecip          =',usePrecip
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( cheapaml_taurelax .NE. UNSET_RL ) THEN
+        nRetired = nRetired + 1
+        WRITE(msgBuf,'(2A)')
+     &   'S/R CHEAPAML_READPARMS: "cheapaml_taurelax" no longer'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)')
+     &   'S/R CHEAPAML_READPARMS:  allowed in file "data.cheapaml"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+      IF ( cheapaml_taurelaxocean .NE. UNSET_RL ) THEN
+        nRetired = nRetired + 1
+        WRITE(msgBuf,'(2A)')
+     &   'S/R CHEAPAML_READPARMS: "cheapaml_taurelaxocean" no longer'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)')
+     &   'S/R CHEAPAML_READPARMS:  allowed in file "data.cheapaml"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
+
+      IF ( nRetired .GT. 0 ) THEN
+       WRITE(msgBuf,'(2A)') 'S/R CHEAPAML_READPARMS: ',
+     &  'Error reading file "data.cheapaml":'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(I4,A)') nRetired,
+     &      ' out-of-date parameters were found in the namelist(s)'
+       CALL PRINT_ERROR( msgBuf, myThid )
+c      errCount = errCount + 1
+       CALL ALL_PROC_DIE( 0 )
+       STOP 'ABNORMAL END: S/R CHEAPAML_READPARMS'
+      ENDIF
 
       _END_MASTER(myThid)
 

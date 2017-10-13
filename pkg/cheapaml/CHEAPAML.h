@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.15 2017/10/12 15:40:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.16 2017/10/13 17:45:58 jmc Exp $
 C $Name:  $
 
 c #ifdef ALLOW_CHEAPAML
@@ -60,6 +60,10 @@ c     _RL    cheapPrGrid(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    CheaptracerR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    gCheaptracerm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+C     cheap_tauRelax    :: main relaxation time-scale (in sec) for atm T & Q
+C                          used with cheapMask (if provided) or over land
+C     cheap_tauRelaxOce :: relaxation time-scale (in sec) for atm T & Q,
+C                          used over ocean if cheapMask is not provided
 C     lath      :: latent heat (J/kg)
 C     xkar      :: von Karman constant
 C     gasR      :: gas constant
@@ -76,8 +80,7 @@ C     cheap_pr2 :: precipitation time constant
       COMMON /CHEAPAML_PARMS_R/
      &       cheapaml_h,
      &       cheapaml_kdiff,
-     &       cheapaml_taurelax,
-     &       cheapaml_taurelaxocean,
+     &       cheap_tauRelax, cheap_tauRelaxOce,
      &       rhoa, cpair, stefan,
      &       lath, xkar, gasR,
      &       dsolms, dsolmn,
@@ -91,8 +94,7 @@ C     cheap_pr2 :: precipitation time constant
      &       cheap_pr1, cheap_pr2
       _RL    cheapaml_h
       _RL    cheapaml_kdiff
-      _RL    cheapaml_taurelax
-      _RL    cheapaml_taurelaxocean
+      _RL    cheap_tauRelax, cheap_tauRelaxOce
       _RL    rhoa, cpair, stefan
       _RL    lath, xkar, gasR
       _RL    dsolms, dsolmn
