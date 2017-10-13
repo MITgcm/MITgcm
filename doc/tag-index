@@ -1,9 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2357 2017/10/06 00:15:13 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2358 2017/10/13 18:19:49 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cheapaml: major changes to relaxation coefficient setting:
+  - rename parameters cheapaml_taurelax & cheapaml_taurelaxocean (in days)
+    to cheap_tauRelax & cheap_tauRelaxOce (now in seconds);
+  - if using cheapMaskFile, set relaxation coeff to: cheapMask/tauRelax
+    (instead of 1/cheapMask over ocean and 1/tauRelax over land);
+  - with cheapMaskFile unset: set relaxation coeff according to land/ocean mask
+    (unchanged) but skip increase near domain edges for periodic domain (in X 
+    or Y dir) when cheapamlX/Yperiodic=T ; also fix linear increase (over
+    Cheapaml_mask_width grid points) of coeff towards domain edges (previously
+    was increasing away from edges). Update output of experiment "cheapAML_box".
+o pkg/cheapaml:
+  - move setting of (fixed in time) relaxation coefficient
+    from cheapaml_init_varia.F to cheapaml_init_fixed.F
 o pkg/exf:
   - add specific forcing field for tides to feed model new geopotential anomaly
     forcing, for now within #ifdef EXF_ALLOW_TIDES.
