@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.61 2015/10/22 16:02:58 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.62 2017/10/17 21:38:29 jmc Exp $
 C $Name:  $
 
 #include "ECCO_OPTIONS.h"
@@ -61,7 +61,7 @@ c     == local variables ==
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-      integer gwunit
+      integer gwUnit
       integer irec,nnz
       integer ilo,ihi
       integer iobcs
@@ -277,29 +277,33 @@ cds     &                            frame(i,j)
 
 c--   Read error information and set up weight matrices.
       _BEGIN_MASTER(myThid)
-        ilo = ifnblnk(data_errfile)
-        ihi = ilnblnk(data_errfile)
+      ilo = ifnblnk(data_errfile)
+      ihi = ilnblnk(data_errfile)
 
-        inquire( file=data_errfile, exist=exst )
-        if (exst) then
+      inquire( file=data_errfile, exist=exst )
+      if (exst) then
         CALL OPEN_COPY_DATA_FILE(
      I                          data_errfile(ilo:ihi),
      I                          'ECCO_COST_WEIGHTS',
-     O                          gwunit,
+     O                          gwUnit,
      I                          myThid )
 
-        read(gwunit,*) ratio
+        read(gwUnit,*) ratio
 #if (defined (ALLOW_OBCS_COST_CONTRIBUTION) || defined (ALLOW_OBCS_CONTROL))
      &       , wbaro
 #endif
         do k = 1,nr
-          read(gwunit,*) wti(k), wsi(k)
+          read(gwUnit,*) wti(k), wsi(k)
 #if (defined (ALLOW_OBCS_COST_CONTRIBUTION) || defined (ALLOW_OBCS_CONTROL))
      &               , wvi(k)
 #endif
         end do
-        close(gwunit)
-        endif
+#ifdef SINGLE_DISK_IO
+        CLOSE(gwUnit)
+#else
+        CLOSE(gwUnit,STATUS='DELETE')
+#endif /* SINGLE_DISK_IO */
+      endif
 
       _END_MASTER(myThid)
 
@@ -873,7 +877,7 @@ c--   Read zonal wind stress variance.
 
       nnz   =   1
       irec  =   1
-      if ( scatx_errfile .NE. ' ' ) 
+      if ( scatx_errfile .NE. ' ' )
      &call mdsreadfield( scatx_errfile, cost_iprec, cost_yftype, nnz,
      &                   wscatx, irec, mythid )
       if ( scaty_errfile .NE. ' ' )
@@ -1142,7 +1146,6 @@ c--           Data are in units of W/m**2?? should be in degC or degK
           enddo
         enddo
       enddo
-
 
 #endif
 
@@ -2129,7 +2132,6 @@ c#endif
       call active_write_xy_loc( 'wbottomdrag', wbottomdrag
      & , 1, 0, mythid, dummy)
 #endif
-
 
 #endif /* ALLOW_ECCO and ECCO_CTRL_DEPRECATED */
 
