@@ -1,16 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2358 2017/10/13 18:19:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2359 2017/10/19 00:35:45 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/kpp, ggl90 & ebm:
+  - read namelist without IOSTAT=errIO to force to stop if there is an error
+    in the parameter file namelist.
 o pkg/cheapaml: major changes to relaxation coefficient setting:
   - rename parameters cheapaml_taurelax & cheapaml_taurelaxocean (in days)
     to cheap_tauRelax & cheap_tauRelaxOce (now in seconds);
   - if using cheapMaskFile, set relaxation coeff to: cheapMask/tauRelax
     (instead of 1/cheapMask over ocean and 1/tauRelax over land);
   - with cheapMaskFile unset: set relaxation coeff according to land/ocean mask
-    (unchanged) but skip increase near domain edges for periodic domain (in X 
+    (unchanged) but skip increase near domain edges for periodic domain (in X
     or Y dir) when cheapamlX/Yperiodic=T ; also fix linear increase (over
     Cheapaml_mask_width grid points) of coeff towards domain edges (previously
     was increasing away from edges). Update output of experiment "cheapAML_box".
