@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.16 2017/08/09 15:23:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_readparms.F,v 1.17 2017/10/19 00:32:52 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -83,8 +83,8 @@ C     print a (weak) warning if data.ggl90 is found
 
       WRITE(msgBuf,'(A)') ' GGL90_READPARMS: opening data.ggl90'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-
+     &                    SQUEEZE_RIGHT, myThid )
+      errIO = 0
       CALL OPEN_COPY_DATA_FILE(
      I                          'data.ggl90', 'GGL90_READPARMS',
      O                          iUnit,
@@ -143,7 +143,12 @@ C the vertical mixing coefficients in m-k-s units
 C-----------------------------------------------------------------------
 
 C--   Read settings from model parameter file "data.ggl90".
-      READ(UNIT=iUnit,NML=GGL90_PARM01,IOSTAT=errIO)
+      WRITE(msgBuf,'(A)')
+     &  ' GGL90_READPARMS ; starts to read GGL90_PARM01'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
+      READ( UNIT=iUnit, NML=GGL90_PARM01 )
+c     READ( UNIT=iUnit, NML=GGL90_PARM01, IOSTAT=errIO )
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R GGL90_READPARMS'
@@ -157,13 +162,21 @@ C--   Read settings from model parameter file "data.ggl90".
        WRITE(msgBuf,'(A)')
      &  'Problem in namelist GGL90_PARM01'
        CALL PRINT_ERROR( msgBuf , 1)
-C      CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R GGL90_READPARMS'
       ENDIF
+      WRITE(msgBuf,'(A)')
+     &     ' GGL90_READPARMS: read GGL90_PARM01 : OK'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
 #ifdef ALLOW_GGL90_IDEMIX
       IF (useIDEMIX) THEN
-       READ(Unit=iUnit,NML=GGL90_PARM02,IOSTAT=errIO)
+       WRITE(msgBuf,'(A)')
+     &  ' GGL90_READPARMS ; starts to read GGL90_PARM02'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       READ( UNIT=iUnit, NML=GGL90_PARM02 )
+c      READ( UNIT=iUnit, NML=GGL90_PARM02, IOSTAT=errIO )
        IF ( errIO .LT. 0 ) THEN
         WRITE(msgBuf,'(A)')
      &   'S/R GGL90_READPARMS'
@@ -179,6 +192,10 @@ C      CALL MODELDATA_EXAMPLE( myThid )
         CALL PRINT_ERROR( msgBuf , 1)
         STOP 'ABNORMAL END: S/R GGL90_READPARMS'
        ENDIF
+       WRITE(msgBuf,'(A)')
+     &     ' GGL90_READPARMS: read GGL90_PARM02 : OK'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
       ENDIF
 #endif /* ALLOW_GGL90_IDEMIX */
 
@@ -191,7 +208,7 @@ C      CALL MODELDATA_EXAMPLE( myThid )
       WRITE(msgBuf,'(A)')
      &     ' GGL90_READPARMS: finished reading data.ggl90'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
 #ifdef ALLOW_GGL90_IDEMIX
       IF ( useIDEMIX ) THEN
@@ -244,14 +261,14 @@ C--   print TKE vertical mixing parameters to stdout for better debugging
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '// GGL90 configuration'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &  SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
       CALL WRITE_0D_RL( GGL90dumpFreq, INDEX_NONE,'GGL90dumpFreq =',
      &'   /* GGL90 state write out interval ( s ). */')
@@ -298,7 +315,7 @@ C--   print TKE vertical mixing parameters to stdout for better debugging
       iL = MIN( iL, MAX(ILNBLNK(GGL90TKEFile),1) )
       WRITE(msgBuf,'(A,A)')'GGL90: GGL90TKEFile = ',GGL90TKEFile(1:iL)
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L(GGL90_dirichlet,INDEX_NONE,
      & 'GGL90writeState =', '   /* GGL90 Boundary condition flag. */')
 #ifdef ALLOW_GGL90_IDEMIX
@@ -343,17 +360,17 @@ C
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '// End of GGL90 config. summary'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &  SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &  SQUEEZE_RIGHT , 1)
+     &                    SQUEEZE_RIGHT, myThid )
 
       _END_MASTER(myThid)
 
