@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.277 2017/10/04 20:37:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.278 2017/10/19 00:30:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1056,7 +1056,7 @@ C     In spherical polar distances are in degrees
       WRITE(msgBuf,'(A)') ' INI_PARMS ; starts to read PARM04'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
-      READ(UNIT=iUnit,NML=PARM04,IOSTAT=errIO)
+      READ(UNIT=iUnit,NML=PARM04) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: Error reading model parameter file "data"'
