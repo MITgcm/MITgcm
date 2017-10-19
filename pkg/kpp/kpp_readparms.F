@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.24 2017/10/19 00:34:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.25 2017/10/19 13:17:17 jmc Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -72,7 +72,7 @@ C     print a (weak) warning if data.kpp is found
       WRITE(msgBuf,'(A)') ' KPP_READPARMS: opening data.kpp'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
-
+      errIO = 0
       CALL OPEN_COPY_DATA_FILE(
      I                          'data.kpp', 'KPP_READPARMS',
      O                          iUnit,
