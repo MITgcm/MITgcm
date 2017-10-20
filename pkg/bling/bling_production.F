@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.14 2017/09/02 22:22:34 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.15 2017/10/20 19:22:08 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -570,7 +570,7 @@ c  update biomass
 
 c  use the diagnostic biomass to calculate the chl concentration
 c  in mg/m3 (carbon = 12.01 g/mol)
-          chl(i,j,k,bi,bj) = max(chl_min, CtoN * 12.01 * 0.001 * 
+          chl(i,j,k,bi,bj) = max(chl_min, CtoN * 12.01 * 1. _d 3 * 
      &           theta_Fe(i,j,k) *
      &           (Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k)
      &           + Phy_diaz_local(i,j,k)))
