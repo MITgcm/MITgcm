@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2359 2017/10/19 00:35:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2360 2017/10/24 20:50:43 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint66l (2017/10/24)
 o pkg/kpp, ggl90 & ebm:
   - read namelist without IOSTAT=errIO to force to stop if there is an error
     in the parameter file namelist.
