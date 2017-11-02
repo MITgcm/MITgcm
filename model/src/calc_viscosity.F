@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_viscosity.F,v 1.11 2014/12/24 19:09:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_viscosity.F,v 1.12 2017/11/02 18:00:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -46,6 +46,11 @@ C     == Local variables ==
 C     i, j, k :: Loop counters
       INTEGER i,j,k
       INTEGER ki
+#ifndef EXCLUDE_PCELL_MIX_CODE
+      INTEGER km, mixSurf, mixBott
+      _RL pC_kFac
+      _RL tmpFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
 CEOP
 
       DO k = 1,Nr+1
@@ -116,6 +121,230 @@ CEOP
 
 C--   end of k loop
       ENDDO
+
+#ifndef EXCLUDE_PCELL_MIX_CODE
+      IF ( interViscAr_pCell ) THEN
+C--   This is a hack: alter vertical viscosity (instead of changing many S/R)
+C     in order to account for missing hFac in viscous term
+       DO k = 2,Nr
+         km = k - 1
+C-    account for true distance (including hFac) in vertical gradient
+         DO j = 2-OLy, sNy+OLy
+          DO i = 2-OLx, sNx+OLx
+           IF ( k.GT.kSurfW(i,j,bi,bj) .AND.
+     &          k.LE.MIN( kLowC(i,j,bi,bj), kLowC(i-1,j,bi,bj) )
+     &        ) THEN
+             kappaRU(i,j,k) = kappaRU(i,j,k)
+     &                *twoRL/(hFacW(i,j,km,bi,bj)+hFacW(i,j,k,bi,bj))
+           ENDIF
+          ENDDO
+         ENDDO
+         DO j = 2-OLy, sNy+OLy
+          DO i = 2-OLx, sNx+OLx
+           IF ( k.GT.kSurfS(i,j,bi,bj) .AND.
+     &          k.LE.MIN( kLowC(i,j,bi,bj), kLowC(i,j-1,bi,bj) )
+     &        ) THEN
+             kappaRV(i,j,k) = kappaRV(i,j,k)
+     &                *twoRL/(hFacS(i,j,km,bi,bj)+hFacS(i,j,k,bi,bj))
+           ENDIF
+          ENDDO
+         ENDDO
+       ENDDO
+      ENDIF
+
+      IF ( pCellMix_select.GT.0 ) THEN
+C--   This is a hack: alter vertical viscosity (instead of changing many S/R)
+C     in order to to increase mixing for too thin surface/bottom partial cell
+       mixSurf = pCellMix_select/10
+       mixBott = MOD(pCellMix_select,10)
+       DO k = 2,Nr
+         km = k - 1
+         pC_kFac = 1.
+         IF ( pCellMix_delR.LT.drF(k) )
+     &     pC_kFac = pCellMix_delR*recip_drF(k)
+
+C-    Increase KappaRU above bottom level:
+         IF ( mixBott.GE.1 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = 0. _d 0
+             IF ( k.EQ.MIN( kLowC(i,j,bi,bj), kLowC(i-1,j,bi,bj) )
+     &        .AND. k.GT.kSurfW(i,j,bi,bj) ) THEN
+               tmpFac(i,j) = pC_kFac*_recip_hFacW(i,j,k,bi,bj)
+             ENDIF
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( mixBott.EQ.2 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ELSEIF ( mixBott.EQ.3 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ELSEIF ( mixBott.EQ.4 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
+     &                    *tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( mixBott.GE.1 ) THEN
+C-    increase mixing above bottom (by ~(1/hFac)^mixBott) if too thin p-cell
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = MIN( tmpFac(i,j), pCellMix_maxFac )
+             kappaRU(i,j,k) = MAX( kappaRU(i,j,k),
+     &                             pCellMix_viscAr(k)*tmpFac(i,j) )
+           ENDDO
+          ENDDO
+         ENDIF
+
+C-    Increase KappaRV above bottom level:
+         IF ( mixBott.GE.1 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = 0. _d 0
+             IF ( k.EQ.MIN( kLowC(i,j,bi,bj), kLowC(i,j-1,bi,bj) )
+     &        .AND. k.GT.kSurfS(i,j,bi,bj) ) THEN
+               tmpFac(i,j) = pC_kFac*_recip_hFacS(i,j,k,bi,bj)
+             ENDIF
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( mixBott.EQ.2 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ELSEIF ( mixBott.EQ.3 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ELSEIF ( mixBott.EQ.4 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
+     &                    *tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( mixBott.GE.1 ) THEN
+C-    increase mixing above bottom (by ~(1/hFac)^mixBott) if too thin p-cell
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = MIN( tmpFac(i,j), pCellMix_maxFac )
+             kappaRV(i,j,k) = MAX( kappaRV(i,j,k),
+     &                             pCellMix_viscAr(k)*tmpFac(i,j) )
+           ENDDO
+          ENDDO
+         ENDIF
+
+         pC_kFac = 1.
+         IF ( pCellMix_delR.LT.drF(km) )
+     &     pC_kFac = pCellMix_delR*recip_drF(km)
+
+C-    Increase KappaRU below surface level:
+         IF ( mixSurf.GE.1 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = 0. _d 0
+             IF ( km.EQ.kSurfW(i,j,bi,bj) .AND.
+     &            km.LT.MIN( kLowC(i,j,bi,bj), kLowC(i-1,j,bi,bj) )
+     &          ) THEN
+               tmpFac(i,j) = pC_kFac*_recip_hFacW(i,j,km,bi,bj)
+             ENDIF
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( mixSurf.EQ.2 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ELSEIF ( mixSurf.EQ.3 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ELSEIF ( mixSurf.EQ.4 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
+     &                    *tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( mixSurf.GE.1 ) THEN
+C-    increase mixing below surface (by ~(1/hFac)^mixSurf) if too thin p-cell
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = MIN( tmpFac(i,j), pCellMix_maxFac )
+             kappaRU(i,j,k) = MAX( kappaRU(i,j,k),
+     &                             pCellMix_viscAr(k)*tmpFac(i,j) )
+           ENDDO
+          ENDDO
+         ENDIF
+
+C-    Increase KappaRV below surface level:
+         IF ( mixSurf.GE.1 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = 0. _d 0
+             IF ( km.EQ.kSurfS(i,j,bi,bj) .AND.
+     &            km.LT.MIN( kLowC(i,j,bi,bj), kLowC(i,j-1,bi,bj) )
+     &          ) THEN
+               tmpFac(i,j) = pC_kFac*_recip_hFacS(i,j,km,bi,bj)
+             ENDIF
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( mixSurf.EQ.2 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ELSEIF ( mixSurf.EQ.3 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ELSEIF ( mixSurf.EQ.4 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
+     &                    *tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( mixSurf.GE.1 ) THEN
+C-    increase mixing below surface (by ~(1/hFac)^mixSurf) if too thin p-cell
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = MIN( tmpFac(i,j), pCellMix_maxFac )
+             kappaRV(i,j,k) = MAX( kappaRV(i,j,k),
+     &                             pCellMix_viscAr(k)*tmpFac(i,j) )
+           ENDDO
+          ENDDO
+         ENDIF
+
+C--   end of k loop
+       ENDDO
+      ENDIF
+#endif /* ndef EXCLUDE_PCELL_MIX_CODE */
 
       RETURN
       END

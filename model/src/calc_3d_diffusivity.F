@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.18 2014/07/30 03:31:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.19 2017/11/02 18:00:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,10 +8,10 @@ CBOP
 C     !ROUTINE: CALC_3D_DIFFUSIVITY
 C     !INTERFACE:
       SUBROUTINE CALC_3D_DIFFUSIVITY(
-     I        bi,bj,iMin,iMax,jMin,jMax,
+     I        bi, bj, iMin,iMax,jMin,jMax,
      I        trIdentity, trUseGMRedi, trUseKPP,
      O        KappaRTr,
-     I        myThid)
+     I        myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -72,6 +72,11 @@ C     msgBuf     :: message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_PTRACERS
       INTEGER iTr
+#endif
+#ifndef EXCLUDE_PCELL_MIX_CODE
+      INTEGER km, mixSurf, mixBott
+      _RL pC_kFac
+      _RL tmpFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 CEOP
 
@@ -234,6 +239,131 @@ C--   Set vertical diffusivity contribution from KPP
      I        myThid)
       ENDIF
 #endif
+
+#ifndef EXCLUDE_PCELL_MIX_CODE
+      IF ( interDiffKr_pCell ) THEN
+C--   This is a hack: alter vertical diffusivity (instead of changing many S/R)
+C     in order to account for missing hFac in diffusion term
+       DO k = 2,Nr
+         km = k - 1
+C-    account for true distance (including hFac) in vertical gradient
+         DO j = 2-OLy, sNy+OLy
+          DO i = 2-OLx, sNx+OLx
+           IF ( k.GT.kSurfC(i,j,bi,bj) .AND.
+     &          k.LE.kLowC(i,j,bi,bj) ) THEN
+             KappaRTr(i,j,k) = KappaRTr(i,j,k)
+     &                *twoRL/(hFacC(i,j,km,bi,bj)+hFacC(i,j,k,bi,bj))
+           ENDIF
+          ENDDO
+         ENDDO
+       ENDDO
+      ENDIF
+
+      IF ( pCellMix_select.GT.0 ) THEN
+C--   This is a hack: alter vertical diffusivity (instead of changing many S/R)
+C     in order to to increase mixing for too thin surface/bottom partial cell
+       mixSurf = pCellMix_select/10
+       mixBott = MOD(pCellMix_select,10)
+       DO k = 2,Nr
+         km = k - 1
+         pC_kFac = 1.
+         IF ( pCellMix_delR.LT.drF(k) )
+     &     pC_kFac = pCellMix_delR*recip_drF(k)
+
+C-    Increase KappaRTr above bottom level:
+         IF ( mixBott.GE.1 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = 0. _d 0
+             IF ( k.EQ.kLowC(i,j,bi,bj) .AND.
+     &            k.GT.kSurfC(i,j,bi,bj) ) THEN
+               tmpFac(i,j) = pC_kFac*_recip_hFacC(i,j,k,bi,bj)
+             ENDIF
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( mixBott.EQ.2 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ELSEIF ( mixBott.EQ.3 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ELSEIF ( mixBott.EQ.4 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
+     &                   * tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( mixBott.GE.1 ) THEN
+C-    increase mixing above bottom (by ~(1/hFac)^mixBott) if too thin p-cell
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = MIN( tmpFac(i,j), pCellMix_maxFac )
+             KappaRTr(i,j,k) = MAX( KappaRTr(i,j,k),
+     &                              pCellMix_diffKr(k)*tmpFac(i,j) )
+           ENDDO
+          ENDDO
+         ENDIF
+
+         pC_kFac = 1.
+         IF ( pCellMix_delR.LT.drF(km) )
+     &     pC_kFac = pCellMix_delR*recip_drF(km)
+
+C-    Increase KappaRTr below surface level:
+         IF ( mixSurf.GE.1 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = 0. _d 0
+             IF ( km.EQ.kSurfC(i,j,bi,bj) .AND.
+     &            km.LT.kLowC(i,j,bi,bj) ) THEN
+               tmpFac(i,j) = pC_kFac*_recip_hFacW(i,j,km,bi,bj)
+             ENDIF
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( mixSurf.EQ.2 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ELSEIF ( mixSurf.EQ.3 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ELSEIF ( mixSurf.EQ.4 ) THEN
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = tmpFac(i,j)*tmpFac(i,j)
+     &                   * tmpFac(i,j)*tmpFac(i,j)
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( mixSurf.GE.1 ) THEN
+C-    increase mixing below surface (by ~(1/hFac)^mixSurf) if too thin p-cell
+          DO j = 2-OLy, sNy+OLy
+           DO i = 2-OLx, sNx+OLx
+             tmpFac(i,j) = MIN( tmpFac(i,j), pCellMix_maxFac )
+             KappaRTr(i,j,k) = MAX( KappaRTr(i,j,k),
+     &                              pCellMix_diffKr(k)*tmpFac(i,j) )
+           ENDDO
+          ENDDO
+         ENDIF
+
+C--   end of k loop
+       ENDDO
+      ENDIF
+#endif /* ndef EXCLUDE_PCELL_MIX_CODE */
 
 C-    Apply mask to vertical diffusivity
 C jmc: do not have the impression that masking is needed
