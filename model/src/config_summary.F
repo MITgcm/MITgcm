@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.159 2017/10/04 20:34:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.160 2017/11/02 17:57:40 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -800,6 +800,28 @@ c    &     'pickup_write_immed =','   /* Model IO flag. */')
       CALL WRITE_0D_L( useMin4hFacEdges, INDEX_NONE,
      & 'useMin4hFacEdges =',
      & ' /* set hFacW,S as minimum of adjacent hFacC factor */')
+      CALL WRITE_0D_L( interViscAr_pCell, INDEX_NONE,
+     & 'interViscAr_pCell =',
+     & ' /* account for partial-cell in interior vert. viscosity */')
+      CALL WRITE_0D_L( interDiffKr_pCell, INDEX_NONE,
+     & 'interDiffKr_pCell =',
+     & ' /* account for partial-cell in interior vert. diffusion */')
+      CALL WRITE_0D_I( pCellMix_select, INDEX_NONE,
+     & 'pCellMix_select =',
+     & ' /* option to enhance mixing near surface & bottom */')
+      IF ( pCellMix_select.NE.0 ) THEN
+       CALL WRITE_0D_RL( pCellMix_maxFac, INDEX_NONE,
+     &  'pCellMix_maxFac =', ' /* maximum enhanced mixing factor */')
+       CALL WRITE_0D_RL( pCellMix_delR, INDEX_NONE, 'pCellMix_delR =',
+     &  ' /* thickness criteria for too thin partial-cell ( '
+     &  //rUnits//' ) */')
+       CALL WRITE_1D_RL( pCellMix_viscAr, Nr, INDEX_K,
+     &  'pCellMix_viscAr = ',
+     &  ' /* vertical viscosity   for too thin partial-cell */')
+       CALL WRITE_1D_RL( pCellMix_diffKr, Nr, INDEX_K,
+     &  'pCellMix_diffKr = ',
+     &  ' /* vertical diffusivity for too thin partial-cell */')
+      ENDIF
       CALL WRITE_0D_I( selectSigmaCoord, INDEX_NONE,
      & 'selectSigmaCoord =',
      & ' /* Hybrid-Sigma Vert. Coordinate option */')

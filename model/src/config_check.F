@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.86 2017/10/04 20:34:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.87 2017/11/02 17:57:40 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -67,6 +67,31 @@ C       code is being compiled
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
      &  'Re-compile with: "#define ALLOW_3D_DIFFKR"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif
+
+#ifdef EXCLUDE_PCELL_MIX_CODE
+      IF ( interDiffKr_pCell .OR. interViscAr_pCell
+     &                       .OR. pCellMix_select.NE.0 ) THEN
+        IF ( interDiffKr_pCell ) THEN
+          WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &    'Cannot use interDiffKr_pCell=.TRUE.'
+          CALL PRINT_ERROR( msgBuf, myThid )
+        ENDIF
+        IF ( interViscAr_pCell ) THEN
+          WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &    'Cannot use interViscAr_pCell=.TRUE.'
+          CALL PRINT_ERROR( msgBuf, myThid )
+        ENDIF
+        IF ( pCellMix_select.NE.0 ) THEN
+          WRITE(msgBuf,'(2A,I6)') 'CONFIG_CHECK: ',
+     &    'Cannot use pCellMix_select=', pCellMix_select
+          CALL PRINT_ERROR( msgBuf, myThid )
+        ENDIF
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: when compiled ',
+     &  'with "#define EXCLUDE_PCELL_MIX_CODE" in CPP_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF

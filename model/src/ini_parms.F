@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.278 2017/10/19 00:30:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.279 2017/11/02 17:57:40 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -276,7 +276,10 @@ C--   Gridding parameters
      & phiEuler, thetaEuler, psiEuler,
      & rSphere, radius_fromHorizGrid, deepAtmosphere, seaLev_Z,
      & top_Pres, delZ, delP, delR, delRc, delRFile, delRcFile,
-     & useMin4hFacEdges, selectSigmaCoord, rSigmaBnd, hybSigmFile,
+     & useMin4hFacEdges, interViscAr_pCell, interDiffKr_pCell,
+     & pCellMix_select, pCellMix_maxFac, pCellMix_delR,
+     & pCellMix_viscAr, pCellMix_diffKr,
+     & selectSigmaCoord, rSigmaBnd, hybSigmFile,
      & Ro_SeaLevel, rkFac, groundAtK1, thetaMin, phiMin
 
 C--   Input files
@@ -1053,6 +1056,17 @@ C     In cartesian coords distances are in metres
 C     In spherical polar distances are in degrees
       dxSpacing = UNSET_RL
       dySpacing = UNSET_RL
+C-    pCell-Mix  parameters:
+      interViscAr_pCell = .FALSE.
+      interDiffKr_pCell = .FALSE.
+      pCellMix_select = 0
+      pCellMix_maxFac = 1. _d 4
+      pCellMix_delR = 0.
+      DO k=1,Nr
+        pCellMix_viscAr(k) = viscArNr(k)
+        pCellMix_diffKr(k) = diffKrNrT(k)
+      ENDDO
+
       WRITE(msgBuf,'(A)') ' INI_PARMS ; starts to read PARM04'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
