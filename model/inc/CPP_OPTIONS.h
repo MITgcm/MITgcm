@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.54 2016/11/28 22:55:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.55 2017/11/02 17:43:26 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -18,6 +18,8 @@ CEOP
 
 C CPP flags controlling particular source code features
 
+C-- Forcing code options:
+
 C o Shortwave heating as extra term in external_forcing.F
 C Note: this should be a run-time option
 #undef SHORTWAVE_HEATING
@@ -25,8 +27,36 @@ C Note: this should be a run-time option
 C o Include/exclude Geothermal Heat Flux at the bottom of the ocean
 #undef ALLOW_GEOTHERMAL_FLUX
 
+C o Allow to account for heating due to friction (and momentum dissipation)
+#undef ALLOW_FRICTION_HEATING
+
+C o Allow mass source or sink of Fluid in the interior
+C   (3-D generalisation of oceanic real-fresh water flux)
+#undef ALLOW_ADDFLUID
+
+C o Include pressure loading code
+#define ATMOSPHERIC_LOADING
+
+C o Include/exclude balancing surface forcing fluxes code
+#undef ALLOW_BALANCE_FLUXES
+
+C o Include/exclude balancing surface forcing relaxation code
+#undef ALLOW_BALANCE_RELAX
+
+C o Include/exclude checking for negative salinity
+#undef CHECK_SALINITY_FOR_NEGATIVE_VALUES
+
+C-- Options to discard parts of the main code:
+
+C o Exclude/allow external forcing-fields load
+C   this allows to read & do simple linear time interpolation of oceanic
+C   forcing fields, if no specific pkg (e.g., EXF) is used to compute them.
+#undef EXCLUDE_FFIELDS_LOAD
+
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
+
+C-- Vertical mixing code options:
 
 C o Include/exclude call to S/R CONVECT
 #define INCLUDE_CONVECT_CALL
@@ -40,49 +70,43 @@ C o Allow full 3D specification of vertical diffusivity
 C o Allow latitudinally varying BryanLewis79 vertical diffusivity
 #undef ALLOW_BL79_LAT_VARY
 
-C o Include/exclude Implicit vertical advection code
-#define INCLUDE_IMPLVERTADV_CODE
+C o Exclude/allow partial-cell effect (physical or enhanced) in vertical mixing
+C   this allows to account for partial-cell in vertical viscosity and diffusion,
+C   either from grid-spacing reduction effect or as artificially enhanced mixing
+C   near surface & bottom for too thin grid-cell
+#undef EXCLUDE_PCELL_MIX_CODE
+
+C-- Time-stepping code options:
 
 C o Include/exclude combined Surf.Pressure and Drag Implicit solver code
 #undef ALLOW_SOLVE4_PS_AND_DRAG
 
+C o Include/exclude Implicit vertical advection code
+#define INCLUDE_IMPLVERTADV_CODE
+
 C o Include/exclude AdamsBashforth-3rd-Order code
 #undef ALLOW_ADAMSBASHFORTH_3
+
+C-- Model formulation options:
+
+C o Allow/exclude "Exact Convervation" of fluid in Free-Surface formulation
+C   that ensures that d/dt(eta) is exactly equal to - Div.Transport
+#define EXACT_CONSERV
+
+C o Allow the use of Non-Linear Free-Surface formulation
+C   this implies that grid-cell thickness (hFactors) varies with time
+#undef NONLIN_FRSURF
 
 C o Include/exclude nonHydrostatic code
 #undef ALLOW_NONHYDROSTATIC
 
-C o Allow to account for heating due to friction (and momentum dissipation)
-#undef ALLOW_FRICTION_HEATING
-
-C o Allow mass source or sink of Fluid in the interior
-C   (3-D generalisation of oceanic real-fresh water flux)
-#undef ALLOW_ADDFLUID
-
-C o Include pressure loading code
-#define ATMOSPHERIC_LOADING
-
-C o exclude/allow external forcing-fields load
-C   this allows to read & do simple linear time interpolation of oceanic
-C   forcing fields, if no specific pkg (e.g., EXF) is used to compute them.
-#undef EXCLUDE_FFIELDS_LOAD
-
-C o Include/exclude balancing surface forcing fluxes code
-#undef ALLOW_BALANCE_FLUXES
-
-C o Include/exclude balancing surface forcing relaxation code
-#undef ALLOW_BALANCE_RELAX
-
 C o Include/exclude GM-like eddy stress in momentum code
 #undef ALLOW_EDDYPSI
 
-C o Use "Exact Convervation" of fluid in Free-Surface formulation
-C   so that d/dt(eta) is exactly equal to - Div.Transport
-#define EXACT_CONSERV
+C-- Algorithm options:
 
-C o Allow the use of Non-Linear Free-Surface formulation
-C   this implies that surface thickness (hFactors) vary with time
-#undef NONLIN_FRSURF
+C o Use Non Self-Adjoint (NSA) conjugate-gradient solver
+#undef ALLOW_CG2D_NSA
 
 C o Include/exclude code for single reduction Conjugate-Gradient solver
 #define ALLOW_SRCG
@@ -92,6 +116,8 @@ C   The following has low memory footprint, but not suitable for AD
 #undef SOLVE_DIAGONAL_LOWMEMORY
 C   The following one suitable for AD but does not vectorize
 #undef SOLVE_DIAGONAL_KINNER
+
+C-- Retired code options:
 
 C o ALLOW isotropic scaling of harmonic and bi-harmonic terms when
 C   using an locally isotropic spherical grid with (dlambda) x (dphi*cos(phi))
@@ -126,8 +152,14 @@ C   Default is to use "new" grid files (OLD_GRID_IO undef) but OLD_GRID_IO
 C   is still useful with, e.g., single-domain curvilinear configurations.
 #undef OLD_GRID_IO
 
+C o Use thsice+seaice (old) call sequence: ice-Dyn,ice-Advect,ice-Thermo(thsice)
+C              as opposed to new sequence: ice-Thermo(thsice),ice-Dyn,ice-Advect
+#undef OLD_THSICE_CALL_SEQUENCE
+
 C o Use old EXTERNAL_FORCING_U,V,T,S subroutines (for backward compatibility)
 #undef USE_OLD_EXTERNAL_FORCING
+
+C-- Other option files:
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"

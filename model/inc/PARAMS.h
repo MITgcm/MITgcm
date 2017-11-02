@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.288 2017/10/04 20:30:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.289 2017/11/02 17:43:26 jmc Exp $
 C $Name:  $
 C
 
@@ -199,6 +199,11 @@ C     selectBotDragQuadr  :: quadratic bottom drag discretisation option:
 C                           =0: average KE from grid center to U & V location
 C                           =1: use local velocity norm @ U & V location
 C                           =2: same with wet-point averaging of other component
+C     pCellMix_select     :: select option to enhance mixing near surface & bottom
+C                            unit digit: near bottom ; tens digit: near surface
+C                            with digit =0 : disable ;
+C                           = 1 : increases mixing linearly with recip_hFac
+C                           = 2,3,4 : increases mixing by recip_hFac^(2,3,4)
 C     readBinaryPrec      :: Precision used for reading binary files
 C     writeStatePrec      :: Precision used for writing model state.
 C     writeBinaryPrec     :: Precision used for writing binary files
@@ -227,7 +232,7 @@ C-    plotLevel           :: controls printing of field maps ; higher -> more fl
      &        tempAdvScheme, tempVertAdvScheme,
      &        saltAdvScheme, saltVertAdvScheme,
      &        selectKEscheme, selectVortScheme,
-     &        selectBotDragQuadr,
+     &        selectBotDragQuadr, pCellMix_select,
      &        readBinaryPrec, writeBinaryPrec, writeStatePrec,
      &        rwSuffixType, monitorSelect, debugLevel, plotLevel
       INTEGER cg2dMaxIters
@@ -255,6 +260,7 @@ C-    plotLevel           :: controls printing of field maps ; higher -> more fl
       INTEGER selectKEscheme
       INTEGER selectVortScheme
       INTEGER selectBotDragQuadr
+      INTEGER pCellMix_select
       INTEGER readBinaryPrec
       INTEGER writeStatePrec
       INTEGER writeBinaryPrec
@@ -286,6 +292,8 @@ C     deepAtmosphere :: deep model (drop the shallow-atmosphere approximation)
 C     setInterFDr    :: set Interface depth (put cell-Center at the middle)
 C     setCenterDr    :: set cell-Center depth (put Interface at the middle)
 C     useMin4hFacEdges :: set hFacW,hFacS as minimum of adjacent hFacC factor
+C     interViscAr_pCell :: account for partial-cell in interior vert. viscosity
+C     interDiffKr_pCell :: account for partial-cell in interior vert. diffusion
 C- Momentum params:
 C     no_slip_sides  :: Impose "no-slip" at lateral boundaries.
 C     no_slip_bottom :: Impose "no-slip" at bottom boundary.
@@ -406,6 +414,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & usingCartesianGrid, usingSphericalPolarGrid, rotateGrid,
      & usingCylindricalGrid, usingCurvilinearGrid, hasWetCSCorners,
      & deepAtmosphere, setInterFDr, setCenterDr, useMin4hFacEdges,
+     & interViscAr_pCell, interDiffKr_pCell,
      & no_slip_sides, no_slip_bottom, bottomVisc_pCell, useSmag3D,
      & useFullLeith, useStrainTensionVisc, useAreaViscLength,
      & momViscosity, momAdvection, momForcing, momTidalForcing,
@@ -455,6 +464,8 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL setInterFDr
       LOGICAL setCenterDr
       LOGICAL useMin4hFacEdges
+      LOGICAL interViscAr_pCell
+      LOGICAL interDiffKr_pCell
 
       LOGICAL no_slip_sides
       LOGICAL no_slip_bottom
@@ -688,6 +699,10 @@ C     diffKrBLEQsurf :: same as diffKrBL79surf but at Equator
 C     diffKrBLEQdeep :: same as diffKrBL79deep but at Equator
 C     diffKrBLEQscl  :: same as diffKrBL79scl but at Equator
 C     diffKrBLEQHo   :: same as diffKrBL79Ho but at Equator
+C     pCellMix_maxFac :: maximum enhanced mixing factor for thin partial-cell
+C     pCellMix_delR   :: thickness criteria   for too thin partial-cell
+C     pCellMix_viscAr :: vertical viscosity   for too thin partial-cell
+C     pCellMix_diffKr :: vertical diffusivity for too thin partial-cell
 C     deltaT    :: Default timestep ( s )
 C     deltaTClock  :: Timestep used as model "clock". This determines the
 C                    IO frequencies and is used in tagging output. It can
@@ -799,6 +814,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
      & BL79LatVary,
      & diffKrBLEQsurf, diffKrBLEQdeep, diffKrBLEQscl, diffKrBLEQHo,
+     & pCellMix_maxFac, pCellMix_delR, pCellMix_viscAr, pCellMix_diffKr,
      & tauCD, rCD, epsAB_CD,
      & freeSurfFac, implicSurfPress, implicDiv2DFlow, implicitNHPress,
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
@@ -898,6 +914,10 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL diffKrBLEQdeep
       _RL diffKrBLEQscl
       _RL diffKrBLEQHo
+      _RL pCellMix_maxFac
+      _RL pCellMix_delR
+      _RL pCellMix_viscAr(Nr)
+      _RL pCellMix_diffKr(Nr)
       _RL tauCD, rCD, epsAB_CD
       _RL gravity,       recip_gravity
       _RL gBaro
@@ -983,7 +1003,8 @@ C             derived from the orography. Implemented: 0,1 (see INI_P_GROUND)
       _RL atm_Po, atm_Cp, atm_Rd, atm_kappa, atm_Rq
       INTEGER integr_GeoPot, selectFindRoSurf
 
-C Logical flags for selecting packages
+C----------------------------------------
+C-- Logical flags for selecting packages
       LOGICAL useGAD
       LOGICAL useOBCS
       LOGICAL useSHAP_FILT
