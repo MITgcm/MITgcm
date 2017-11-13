@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.15 2017/10/20 19:22:08 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.16 2017/11/13 22:05:23 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -882,6 +882,10 @@ c 3d local variables
         CALL DIAGNOSTICS_FILL(P_uptake, 'BLGPUP  ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(mu,       'BLGMU   ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(mu_diaz,  'BLGMUDIA',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(CaCO3_diss, 'BLGCCdis',0,Nr,2,bi,bj,
+     &       myThid)
+        CALL DIAGNOSTICS_FILL(CaCO3_uptake,'BLGCCpro',0,Nr,2,bi,bj,
+     &       myThid)
 
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */

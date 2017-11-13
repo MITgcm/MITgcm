@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_diagnostics_init.F,v 1.7 2017/05/11 13:32:24 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_diagnostics_init.F,v 1.8 2017/11/13 22:05:23 mmazloff Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -488,6 +488,20 @@ c bgc
       diagTitle = 'Oxygen flux in/out of sediments'
       diagUnits = 'mol O/m3/s      '
       diagCode  = 'SM P    M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGCCdis'
+      diagTitle = 'Calcium carbonate dissolution'
+      diagUnits = 'mol C/m3/s      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGCCpro'
+      diagTitle = 'Calcium carbonate production'
+      diagUnits = 'mol C/m3/s      '
+      diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
