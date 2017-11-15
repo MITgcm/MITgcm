@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/ECCO_CPPOPTIONS.h,v 1.4 2014/10/16 20:09:24 gforget Exp $
+C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/ECCO_CPPOPTIONS.h,v 1.5 2017/11/15 23:15:45 jmc Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -80,7 +80,6 @@ Cml#define ALLOW_DIFFKR_CONTROL
 C o only topography as a control vector
 #define ALLOW_DEPTH_CONTROL
 #ifdef ALLOW_DEPTH_CONTROL
-# define ALLOW_CG2D_NSA
 # define USE_SMOOTH_MIN
 #endif /* ALLOW_DEPTH_CONTROL */
 
