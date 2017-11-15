@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_ad_check_lev2_dir.h,v 1.5 2017/03/29 16:16:14 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_ad_check_lev2_dir.h,v 1.6 2017/11/15 18:17:24 mmazloff Exp $
 C $Name:  $
 
 #ifdef ALLOW_BLING
@@ -13,6 +13,7 @@ CADJ STORE phyto_sm          = tapelev2, key = ilev_2
 CADJ STORE phyto_lg          = tapelev2, key = ilev_2 
 CADJ STORE phyto_diaz        = tapelev2, key = ilev_2
 CADJ STORE chl               = tapelev2, key = ilev_2
+CADJ STORE poc               = tapelev2, key = ilev_2
 
 CADJ STORE atmosp0        = tapelev2, key = ilev_2
 CADJ STORE atmosp1        = tapelev2, key = ilev_2

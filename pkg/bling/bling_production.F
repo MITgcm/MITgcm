@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.16 2017/11/13 22:05:23 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.17 2017/11/15 18:17:24 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -790,14 +790,14 @@ c  If oxic
           IF (PTR_O2(i,j,k) .gt. oxic_min) THEN 
           G_O2(i,j,k) = G_O2(i,j,k) 
      &                  -O2toN * ((1. _d 0 - phi_DOM2d(i,j,bi,bj)) 
-     &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))           
+     &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))       
      &                  + DON_remin(i,j,k) +  N_recycle(i,j,k))
 c  If anoxic but NO3 concentration is very low
 c  (generate negative O2; proxy for HS-).
           ELSEIF (PTR_NO3(i,j,k) .lt. oxic_min) THEN
           G_O2(i,j,k) = G_O2(i,j,k) 
      &                  -O2toN * ((1. _d 0 - phi_DOM2d(i,j,bi,bj)) 
-     &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))           
+     &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))       
      &                  + DON_remin(i,j,k) +  N_recycle(i,j,k))
      &                  + N_den_benthic(i,j,k) * 1.25 _d 0
           ENDIF
@@ -822,6 +822,10 @@ c  for diagnostics: convert to mol C/m3
          Phy_sm_local(i,j,k) = Phy_sm_local(i,j,k) * CtoN
          Phy_diaz_local(i,j,k) = Phy_diaz_local(i,j,k) * CtoN
 
+c  for constraints determine POC, which is 30% biomass
+         poc(i,j,k,bi,bj) = (Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k) +
+     &                       Phy_diaz_local(i,j,k) ) * 3.33333 _d 0 
+
          ENDIF
 
         ENDDO
@@ -842,6 +846,7 @@ c 3d global variables
         CALL DIAGNOSTICS_FILL(Phy_diaz_local,'BLGPDIA ',0,Nr,1,bi,bj,
      &       myThid)
         CALL DIAGNOSTICS_FILL(chl,    'BLGCHL  ',0,Nr,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(poc,    'BLGPOC  ',0,Nr,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(irr_mem,'BLGIMEM ',0,Nr,1,bi,bj,myThid)
 c 3d local variables
         CALL DIAGNOSTICS_FILL(irrk,    'BLGIRRK ',0,Nr,2,bi,bj,myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_diagnostics_init.F,v 1.8 2017/11/13 22:05:23 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_diagnostics_init.F,v 1.9 2017/11/15 18:17:24 mmazloff Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -58,6 +58,13 @@ c biology
       diagName  = 'BLGCHL  '
       diagTitle = 'Chlorophyll concentration'
       diagUnits = 'mol chl/m3      '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGPOC  '
+      diagTitle = 'Particulate organic carbon concentration'
+      diagUnits = 'mol C/m3      '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )

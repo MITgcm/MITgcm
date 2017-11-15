@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_ad_check_lev1_dir.h,v 1.4 2017/03/29 16:16:14 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_ad_check_lev1_dir.h,v 1.5 2017/11/15 18:17:24 mmazloff Exp $
 C $Name:  $
 
 #ifdef ALLOW_BLING
@@ -20,6 +20,7 @@ CADJ STORE phyto_sm          = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE phyto_lg          = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE phyto_diaz        = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE chl               = comlev1, key = ikey_dynamics, kind=isbyte
+CADJ STORE poc               = comlev1, key = ikey_dynamics, kind=isbyte
 
 # ifdef USE_EXFCO2
 CADJ STORE apco20        = comlev1, key=ikey_dynamics, kind=isbyte

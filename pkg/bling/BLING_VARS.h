@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_VARS.h,v 1.8 2017/02/23 20:48:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_VARS.h,v 1.9 2017/11/15 18:17:24 mmazloff Exp $
 C $Name:  $
 
 C ==========================================================
@@ -199,6 +199,7 @@ C ==========================================================
      &                     phyto_sm,
      &                     phyto_diaz,
      &                     chl,
+     &                     poc,
      &                     pivotal,
      &                     Pc_0,
      &                     Pc_0_diaz,
@@ -274,6 +275,7 @@ C ==========================================================
       _RL phyto_sm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL phyto_diaz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL chl(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL poc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL Pc_2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL Pc_2d_diaz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL alpha_photo2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
