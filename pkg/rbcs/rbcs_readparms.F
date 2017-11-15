@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_readparms.F,v 1.13 2017/08/09 15:23:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_readparms.F,v 1.14 2017/11/15 23:34:31 jmc Exp $
 C $Name:  $
 
 #include "RBCS_OPTIONS.h"
@@ -35,12 +35,19 @@ C  none
 C     === Local variables ===
 C     msgBuf      :: Informational/error message buffer
 C     iUnit       :: Work variable for IO unit number
+C     iTracer     :: passive tracer index
+C     relaxMaskFile :: local mask-file name to read from namelist
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
-      INTEGER irbc
+      INTEGER irbc, errCount
+      INTEGER locSize
 #ifdef ALLOW_PTRACERS
       INTEGER iTracer
+      PARAMETER( locSize = 10+PTRACERS_num )
+#else
+      PARAMETER( locSize = 4 )
 #endif
+      CHARACTER*(MAX_LEN_FNAM) relaxMaskFile(locSize)
 C--   useRBCptracers is no longer used
       LOGICAL useRBCptracers
       INTEGER rbcsIniter
@@ -104,7 +111,7 @@ C--   Default values
       tauRelaxS = 0.
       relaxMaskUFile = ' '
       relaxMaskVFile = ' '
-      DO irbc=1,maskLEN
+      DO irbc=1,locSize
         relaxMaskFile(irbc) = ' '
       ENDDO
       relaxUFile = ' '
@@ -152,6 +159,27 @@ C--   Close the open data file
 #else
       CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
+
+C-    save local mask-file name into relaxMaskTrFile (stored in common block)
+      DO irbc=1,maskLEN
+        relaxMaskTrFile(irbc) = ' '
+      ENDDO
+      errCount = 0
+      DO irbc=1,locSize
+        IF ( irbc.LE.maskLEN ) THEN
+          relaxMaskTrFile(irbc) = relaxMaskFile(irbc)
+        ELSEIF ( relaxMaskFile(irbc).NE.' ' ) THEN
+          errCount = errCount + 1
+        ENDIF
+      ENDDO
+      IF ( errCount.GT.0 ) THEN
+        WRITE(msgBuf,'(2A,I6)')' RBCS_READPARAMS: ',
+     &   'Too many "relaxMaskFile" are set ! exceeds maskLEN=', maskLEN
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)')' RBCS_READPARAMS: ',
+     &   '==> Increase maskLEN (in RBCS_SIZE.h) and recompile'
+        CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
 
 C---  Check RBCS config and params:
 #ifdef DISABLE_RBCS_MOM
