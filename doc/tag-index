@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2361 2017/11/02 21:54:59 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2362 2017/11/16 00:46:25 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/rbcs:
+  - increase size of "relaxMaskFile" to read-in from namelist and save it
+    (+check) into new (renamed) "relaxMaskTrFile" array.
 o model/src:
   - option (interViscAr_pCell, interDiffKr_pCell) to account for true vertical
     distance (including hFac) in vertical viscous flux and diffusive flux ;
