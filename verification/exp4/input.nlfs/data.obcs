@@ -3,10 +3,15 @@
 # This flag turns off checking and fixing problematic topography across
 # open boundaries.
  OBCSfixTopo=.FALSE.,
- OB_Jnorth= 80*-1,
- OB_Jsouth= 80*1,
- OB_Ieast = 42*-1,
- OB_Iwest = 42*1,
+#OB_Jnorth= 80*-1,
+#OB_Jsouth= 80*1,
+#OB_Ieast = 42*-1,
+#OB_Iwest = 42*1,
+#- above setting is identical to simplified (new) setting below:
+ OB_singleJnorth= -1,
+ OB_singleJsouth=  1,
+ OB_singleIeast = -1,
+ OB_singleIwest =  1,
  useOBCSprescribe = .TRUE.,
  OBNuFile = 'OBmeridU.bin',
  OBSuFile = 'OBmeridU.bin',
