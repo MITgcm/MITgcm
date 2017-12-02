@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2362 2017/11/16 00:46:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2363 2017/12/02 16:48:51 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  - fix pkg/exf AD variable output (mainly ADJprecip), left from pkg/exf modif
+    on Jan 27, 2017. Try also to fix ADJrunoff and TLM output (but less clear).
+o pkg/obcs:
+  - add simpler setting (single value) of OB indices for the case where
+    indices are uniform over the full section (Bruno Deremble contribution).
 o pkg/rbcs:
   - increase size of "relaxMaskFile" to read-in from namelist and save it
     (+check) into new (renamed) "relaxMaskTrFile" array.
