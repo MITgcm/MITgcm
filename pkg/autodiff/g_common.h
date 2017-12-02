@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.25 2014/04/30 02:46:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.26 2017/12/02 16:42:58 jmc Exp $
 C $Name:  $
 
 C--   These common blocks are extracted from the
@@ -92,11 +92,6 @@ cph larger common block, so be careful
       COMMON /g_ffields_SSS/ g_SSS
       COMMON /g_ffields_lambdaThetaClimRelax/ g_lambdaThetaClimRelax
       COMMON /g_ffields_lambdaSaltClimRelax/ g_lambdaSaltClimRelax
-#ifdef ATMOSPHERIC_LOADING
-      COMMON /g_ffields_pload/ g_pload
-      COMMON /g_ffields_sIceLoad/ g_sIceLoad
-#endif
-
       _RS  g_fu       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  g_fv       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  g_Qnet     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -109,7 +104,10 @@ cph larger common block, so be careful
      &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  g_lambdaSaltClimRelax
      &    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
 #ifdef ATMOSPHERIC_LOADING
+      COMMON /g_ffields_pload/ g_pload
+      COMMON /g_ffields_sIceLoad/ g_sIceLoad
       _RS  g_pload    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  g_sIceLoad (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
@@ -145,10 +143,15 @@ cph larger common block, so be careful
 # ifdef ALLOW_ATM_TEMP
       _RL g_atemp     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_aqh       (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL g_hs        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL g_hl        (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_lwflux    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL g_evap      (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_precip    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      common /g_exf_atm_temp_r/ g_atemp, g_aqh, g_lwflux, g_precip
-# endif
+      _RL g_snowprecip(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /g_exf_atm_temp_r/ g_atemp, g_aqh, g_hs, g_hl,
+     &  g_lwflux, g_evap, g_precip, g_snowprecip
+# endif /* ALLOW_ATM_TEMP */
 
       _RL g_uwind     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_vwind     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -161,13 +164,13 @@ cph larger common block, so be careful
 # endif
 # ifdef ALLOW_CLIMSST_RELAXATION
       _RL g_climsst(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      common /adexf_clim_sst_r/ g_climsst
+      common /g_exf_clim_sst_r/ g_climsst
 # endif
 # ifdef ALLOW_CLIMSSS_RELAXATION
       _RL g_climsss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      common /adexf_clim_sss_r/ g_climsss
+      common /g_exf_clim_sss_r/ g_climsss
 # endif
-#endif
+#endif /* ALLOW_EXF */
 
 #ifdef ALLOW_SEAICE
       _RL g_area  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -180,4 +183,3 @@ cph larger common block, so be careful
 #endif
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
-
