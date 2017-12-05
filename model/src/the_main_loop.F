@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.182 2017/06/20 11:32:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.183 2017/12/05 14:15:25 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -688,6 +688,11 @@ c$openad DEPENDENT(fc)
 # endif /* ALLOW_OPENAD */
 
 #endif /* ALLOW_COST */
+
+#ifdef USE_PDAF
+C     PDAF finalization
+      CALL FINALIZE_PDAF( )
+#endif
 
       _BARRIER
       CALL TIMER_STOP ('MAIN LOOP           [THE_MAIN_LOOP]', myThid)
