@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.19 2017/11/02 18:00:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.20 2017/12/07 19:41:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -324,7 +324,7 @@ C-    Increase KappaRTr below surface level:
              tmpFac(i,j) = 0. _d 0
              IF ( km.EQ.kSurfC(i,j,bi,bj) .AND.
      &            km.LT.kLowC(i,j,bi,bj) ) THEN
-               tmpFac(i,j) = pC_kFac*_recip_hFacW(i,j,km,bi,bj)
+               tmpFac(i,j) = pC_kFac*_recip_hFacC(i,j,km,bi,bj)
              ENDIF
            ENDDO
           ENDDO
