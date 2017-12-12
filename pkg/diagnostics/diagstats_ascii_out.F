@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ascii_out.F,v 1.7 2015/12/08 19:18:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_ascii_out.F,v 1.8 2017/12/12 17:40:28 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -19,7 +19,6 @@ C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
 
@@ -46,11 +45,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER( myThid)
 
-#ifdef ALLOW_USE_MPI
-      IF ( diagSt_Ascii .AND. mpiMyId.EQ.0 ) THEN
-#else
-      IF ( diagSt_Ascii ) THEN
-#endif
+      IF ( diagSt_Ascii .AND. myProcId.EQ.0 ) THEN
 
        nUnit = diagSt_ioUnit(listId)
        kLev = kdiag(ndId)
