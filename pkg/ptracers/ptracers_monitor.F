@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.18 2010/03/16 00:22:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.19 2017/12/12 17:43:12 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -126,7 +126,7 @@ C     & mon_write_mnc (since it is the only thread that uses those flags):
      &        '============================='
          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
          WRITE(msgBuf,'(A)')
-     &        '// End MONITOR ptracers field statistics'
+     &        '// End MONITOR ptracer field statistics'
          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
          WRITE(msgBuf,'(2A)') '// ==========================',
      &        '============================='
