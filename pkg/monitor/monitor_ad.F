@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.F,v 1.14 2014/04/04 21:21:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.F,v 1.15 2017/12/12 17:42:35 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -97,7 +97,7 @@ C       Dynamics field monitor start
      &             '============================='
             CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
             WRITE(msgBuf,'(A)')
-     &             '// Begin MONITOR dynamic field statistics'
+     &             '// Begin AD_MONITOR dynamic field statistics'
             CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
             WRITE(msgBuf,'(2A)') '// ==========================',
      &             '============================='
@@ -228,7 +228,7 @@ C     & mon_write_mnc (since it is the only thread that uses those flags):
      &             '============================='
             CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
             WRITE(msgBuf,'(A)')
-     &             '// End MONITOR dynamic field statistics'
+     &             '// End AD_MONITOR dynamic field statistics'
             CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
             WRITE(msgBuf,'(2A)') '// ==========================',
      &             '============================='
