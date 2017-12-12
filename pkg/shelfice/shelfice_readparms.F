@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.26 2017/08/09 15:23:36 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.27 2017/12/12 19:38:55 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -47,9 +47,10 @@ CEOP
      &     SHELFICEMassStepping,
      &     rhoShelfice, SHELFICEkappa,
      &     SHELFICElatentHeat, SHELFICEHeatCapacity_Cp,
-     &     SHELFICEDragLinear, SHELFICEDragQuadratic,
+     &     no_slip_shelfice, SHELFICEDragLinear,
+     &     SHELFICEDragQuadratic, SHELFICEselectDragQuadr,
      &     SHELFICEthetaSurface,
-     &     useISOMIPTD, no_slip_shelfice,
+     &     useISOMIPTD,
      &     SHELFICEconserve, SHELFICEboundaryLayer,
      &     SHELFICEwriteState,
      &     SHELFICE_dumpFreq,
