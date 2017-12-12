@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_diagnostics_init.F,v 1.9 2017/11/15 18:17:24 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_diagnostics_init.F,v 1.10 2017/12/12 19:12:58 mmazloff Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -57,14 +57,28 @@ c biology
 
       diagName  = 'BLGCHL  '
       diagTitle = 'Chlorophyll concentration'
-      diagUnits = 'mol chl/m3      '
+      diagUnits = 'mg/m3           '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGCHL2C'
+      diagTitle = 'Chlorophyll to Carbon ratio'
+      diagUnits = 'mol Chl/mol C   '
+      diagCode  = 'SM P    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'BLGC2CHL'
+      diagTitle = 'Carbon to Chlorophyll ratio'
+      diagUnits = 'g C/g Chl       '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'BLGPOC  '
       diagTitle = 'Particulate organic carbon concentration'
-      diagUnits = 'mol C/m3      '
+      diagUnits = 'mol C/m3        '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -406,14 +420,14 @@ c phosphorus
 c light
 
       diagName  = 'BLGQSW  '
-      diagTitle = 'Effective irradiance'
+      diagTitle = 'Surface irradiance'
       diagUnits = 'W/m2   '
-      diagCode  = 'SM P    MR      '
+      diagCode  = 'SM P    L1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'BLGIRRIS'
-      diagTitle = 'Effective irradiance'
+      diagTitle = 'Local irradiance'
       diagUnits = 'W/m2   '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,

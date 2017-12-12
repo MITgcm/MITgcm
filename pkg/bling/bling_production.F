@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.17 2017/11/15 18:17:24 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_production.F,v 1.18 2017/12/12 19:12:58 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -157,6 +157,7 @@ C
       _RL Pc_m_diaz
       _RL theta_Fe_max       
       _RL theta_Fe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL thFe_inv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL irrk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)  
       _RL irr_inst(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL irr_eff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -452,6 +453,13 @@ c  Fe-limitation.
      &                  / (1. _d 0 + alpha_photo2d(i,j,bi,bj)
      &                  *theta_Fe_max
      &                  *irr_mem(i,j,k,bi,bj)/(epsln + 2. _d 0*Pc_m))
+
+c  for diagnostics: C:Chl ratio in g C / g Chl
+           IF ( theta_Fe(i,j,k) .EQ.0. ) THEN
+             thFe_inv(i,j,k) = 0.
+           ELSE
+             thFe_inv(i,j,k) = 1./theta_Fe(i,j,k)
+           ENDIF
 
 c ---------------------------------------------------------------------
 c  Nutrient-limited efficiency of algal photosystems, irrk, is calculated 
@@ -822,7 +830,8 @@ c  for diagnostics: convert to mol C/m3
          Phy_sm_local(i,j,k) = Phy_sm_local(i,j,k) * CtoN
          Phy_diaz_local(i,j,k) = Phy_diaz_local(i,j,k) * CtoN
 
-c  for constraints determine POC, which is 30% biomass
+c  for constraints determine POC, assuming that phytoplankton carbon 
+c  is 30% of POC
          poc(i,j,k,bi,bj) = (Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k) +
      &                       Phy_diaz_local(i,j,k) ) * 3.33333 _d 0 
 
@@ -846,11 +855,13 @@ c 3d global variables
         CALL DIAGNOSTICS_FILL(Phy_diaz_local,'BLGPDIA ',0,Nr,1,bi,bj,
      &       myThid)
         CALL DIAGNOSTICS_FILL(chl,    'BLGCHL  ',0,Nr,1,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(poc,    'BLGPOC  ',0,Nr,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(irr_mem,'BLGIMEM ',0,Nr,1,bi,bj,myThid)
 c 3d local variables
         CALL DIAGNOSTICS_FILL(irrk,    'BLGIRRK ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(irr_eff, 'BLGIEFF ',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(poc,     'BLGPOC  ',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(theta_Fe,'BLGCHL2C',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(thFe_inv,'BLGC2CHL',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(Fe_lim,  'BLGFELIM',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(NO3_lim, 'BLGNLIM ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(PO4_lim, 'BLGPLIM ',0,Nr,2,bi,bj,myThid)
