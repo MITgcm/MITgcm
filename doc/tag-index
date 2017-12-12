@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2364 2017/12/05 14:16:07 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2365 2017/12/12 19:45:18 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint66m (2017/12/12)
 o add another hook (S/R PDF_FINALIZE) for the Parallel Data Assimilation
     Framework PDAF (http://pdaf.awi.de/) in the_main_loop.F
 o pkg/autodiff:
