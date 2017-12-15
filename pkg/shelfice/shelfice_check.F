@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_check.F,v 1.10 2017/12/05 20:58:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_check.F,v 1.11 2017/12/15 19:37:08 jmc Exp $
 C $Name:  $
 #include "SHELFICE_OPTIONS.h"
 
@@ -89,6 +89,8 @@ C     print shelfice summary here before checking the parameter combinations
      &   'SHELFICEuseGammaFrict =',
      &   ' /* use velocity dependent exchange coefficients */')
        IF ( SHELFICEuseGammaFrict ) THEN
+        CALL WRITE_0D_L( SHELFICE_oldCalcUStar, INDEX_NONE,
+     &   'SHELFICE_oldCalcUStar =', ' /* use old uStar expression */')
         CALL WRITE_0D_RL( shiCdrag, INDEX_NONE,
      & 'shiCdrag   =', ' /* quadr. drag coefficient for uStar */')
         CALL WRITE_0D_RL( shiZetaN, INDEX_NONE,

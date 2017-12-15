@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.47 2015/12/17 01:52:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.48 2017/12/15 19:37:08 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -87,10 +87,8 @@ C     drKp1, recip_drLoc
       _RL tLoc(1:sNx,1:sNy)
       _RL sLoc(1:sNx,1:sNy)
       _RL pLoc(1:sNx,1:sNy)
-#ifndef SHI_USTAR_WETPOINT
       _RL uLoc(1:sNx,1:sNy)
       _RL vLoc(1:sNx,1:sNy)
-#endif
       _RL velSq(1:sNx,1:sNy)
       _RL thetaFreeze, saltFreeze, recip_Cp
       _RL freshWaterFlux, convertFW2SaltLoc
@@ -255,40 +253,54 @@ C     where this value is part of the protocol
      &                    + act4*max1*max2*max3
 # endif /* SHI_ALLOW_GAMMAFRICT */
 #endif /* ALLOW_AUTODIFF_TAMC */
-        DO J = 1, sNy
-         DO I = 1, sNx
 C--   make local copies of temperature, salinity and depth (pressure in deci-bar)
 C--   underneath the ice
+        DO J = 1, sNy
+         DO I = 1, sNx
           K         = MAX(1,kTopC(I,J,bi,bj))
           pLoc(I,J) = ABS(R_shelfIce(I,J,bi,bj))
 c         pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*1. _d -4
           tLoc(I,J) = theta(I,J,K,bi,bj)
           sLoc(I,J) = MAX(salt(I,J,K,bi,bj), zeroRL)
-#ifdef SHI_USTAR_WETPOINT
-          velSq(I,J) = 0.
-          tmpFac = _hFacW(I,  J,K,bi,bj) + _hFacW(I+1,J,K,bi,bj)
-          IF ( tmpFac.GT.0. _d 0 )
+         ENDDO
+        ENDDO
+        IF ( .NOT.SHELFICE_oldCalcUStar ) THEN
+C-    New (more accurate) averaging expression for uStar:
+         DO J = 1, sNy
+          DO I = 1, sNx
+           uLoc(I,J) = 0.
+           vLoc(I,J) = 0.
+           velSq(I,J) = 0.
+           K = MAX(1,kTopC(I,J,bi,bj))
+           tmpFac = _hFacW(I,  J,K,bi,bj) + _hFacW(I+1,J,K,bi,bj)
+           IF ( tmpFac.GT.0. _d 0 )
      &     velSq(I,J) = (
      &     uVel( I, J,K,bi,bj)*uVel( I, J,K,bi,bj)*_hFacW( I, J,K,bi,bj)
      &   + uVel(I+1,J,K,bi,bj)*uVel(I+1,J,K,bi,bj)*_hFacW(I+1,J,K,bi,bj)
      &                  )/tmpFac
-          tmpFac = _hFacS(I,J,  K,bi,bj) + _hFacS(I,J+1,K,bi,bj)
-          IF ( tmpFac.GT.0. _d 0 )
+           tmpFac = _hFacS(I,J,  K,bi,bj) + _hFacS(I,J+1,K,bi,bj)
+           IF ( tmpFac.GT.0. _d 0 )
      &     velSq(I,J) = velSq(I,J) + (
      &     vVel(I, J, K,bi,bj)*vVel(I, J, K,bi,bj)*_hFacS(I, J, K,bi,bj)
      &   + vVel(I,J+1,K,bi,bj)*vVel(I,J+1,K,bi,bj)*_hFacS(I,J+1,K,bi,bj)
      &                               )/tmpFac
-#else /* SHI_USTAR_WETPOINT */
-          uLoc(I,J) = recip_hFacC(I,J,K,bi,bj) * halfRL *
+          ENDDO
+         ENDDO
+        ELSE
+C-    Original averaging expression for uStar:
+         DO J = 1, sNy
+          DO I = 1, sNx
+           K = MAX(1,kTopC(I,J,bi,bj))
+           uLoc(I,J) = recip_hFacC(I,J,K,bi,bj) * halfRL *
      &         ( uVel(I,  J,K,bi,bj) * _hFacW(I,  J,K,bi,bj)
      &         + uVel(I+1,J,K,bi,bj) * _hFacW(I+1,J,K,bi,bj) )
-          vLoc(I,J) = recip_hFacC(I,J,K,bi,bj) * halfRL *
+           vLoc(I,J) = recip_hFacC(I,J,K,bi,bj) * halfRL *
      &         ( vVel(I,J,  K,bi,bj) * _hFacS(I,J,  K,bi,bj)
      &         + vVel(I,J+1,K,bi,bj) * _hFacS(I,J+1,K,bi,bj) )
-          velSq(I,J) = uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)
-#endif /* SHI_USTAR_WETPOINT */
+           velSq(I,J) = uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)
+          ENDDO
          ENDDO
-        ENDDO
+        ENDIF
         IF ( SHELFICEBoundaryLayer ) THEN
 C--   average over boundary layer width
          DO J = 1, sNy
@@ -309,7 +321,6 @@ C--   lower cell may not be as thick as required
             sLoc(I,J) = ( sLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
      &           + MAX(salt(I,J,Kp1,bi,bj), zeroRL) * drKp1 )
      &           * recip_drLoc
-#ifndef SHI_USTAR_WETPOINT
             uLoc(I,J) = ( uLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
      &           + drKp1 * recip_hFacC(I,J,Kp1,bi,bj) * halfRL *
      &           ( uVel(I,  J,Kp1,bi,bj) * _hFacW(I,  J,Kp1,bi,bj)
@@ -321,7 +332,6 @@ C--   lower cell may not be as thick as required
      &           + vVel(I,J+1,Kp1,bi,bj) * _hFacS(I,J+1,Kp1,bi,bj) )
      &           ) * recip_drLoc
             velSq(I,J) = uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)
-#endif /* ndef SHI_USTAR_WETPOINT */
            ENDIF
           ENDDO
          ENDDO

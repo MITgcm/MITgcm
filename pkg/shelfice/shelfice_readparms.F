@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.27 2017/12/12 19:38:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.28 2017/12/15 19:37:08 jmc Exp $
 C $Name:  $
 
 #include "SHELFICE_OPTIONS.h"
@@ -62,7 +62,7 @@ CEOP
      &     SHELFICEMassDynTendFile, SHELFICETransCoeffTFile,
      &     SHELFICEDynMassOnly,
      &     SHELFICEadvDiffHeatFlux,
-     &     SHELFICEuseGammaFrict,
+     &     SHELFICEuseGammaFrict, SHELFICE_oldCalcUStar,
      &     shiCdrag, shiZetaN, shiRc,
      &     shiPrandtl, shiSchmidt, shiKinVisc
 #ifdef ALLOW_COST
@@ -116,6 +116,7 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICE_taveFreq        = taveFreq
       SHELFICEadvDiffHeatFlux  = .FALSE.
       SHELFICEuseGammaFrict    = .FALSE.
+      SHELFICE_oldCalcUStar    = .FALSE.
 C these params. are default of Holland and Jenkins (1999)
       shiCdrag                 = 0.0015 _d 0
       shiZetaN                 = 0.052 _d 0
@@ -162,6 +163,9 @@ C Now set-up any remaining parameters that result from the input parameters
       IF ( SHELFICEsaltTransCoeff .EQ. UNSET_RL )
      &     SHELFICEsaltTransCoeff =
      &     5.05 _d -3 *SHELFICEheatTransCoeff
+
+C New calcUstar expression not available with SHELFICEboundaryLayer:
+      IF ( SHELFICEboundaryLayer ) SHELFICE_oldCalcUStar = .TRUE.
 
 C Set quadratic bottom drag depending on choices:
       IF ( SHELFICEDragQuadratic .EQ. UNSET_RL) THEN

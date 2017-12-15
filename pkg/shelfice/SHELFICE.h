@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.21 2015/11/02 21:27:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE.h,v 1.22 2017/12/15 19:37:08 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHELFICE
@@ -46,6 +46,7 @@ C     -----------------------------------------------------------------------
 C     SHELFICEuseGammaFrict    :: use velocity dependent exchange coefficients,
 C                                 see Holland and Jenkins (1999), eq.11-18,
 C                                 with the following parameters (def: F):
+C     SHELFICE_oldCalcUStar    :: use old uStar averaging expression
 C     shiCdrag                 :: quadratic drag coefficient to compute uStar
 C                                 (def: 0.0015)
 C     shiZetaN                 :: ??? (def: 0.052)
@@ -100,7 +101,7 @@ CEOP
      &     SHELFICE_dumpFreq, SHELFICE_taveFreq,
      &     SHELFICEheatTransCoeff, SHELFICEsaltTransCoeff,
      &     rhoShelfice, SHELFICEkappa,
-     &     SHELFICElatentHeat, 
+     &     SHELFICElatentHeat,
      &     SHELFICEheatCapacity_Cp,
      &     SHELFICEthetaSurface,
      &     SHELFICEDragLinear, SHELFICEDragQuadratic,
@@ -161,6 +162,7 @@ CEOP
       LOGICAL SHELFICE_tave_mnc
       LOGICAL SHELFICEadvDiffHeatFlux
       LOGICAL SHELFICEuseGammaFrict
+      LOGICAL SHELFICE_oldCalcUStar
       LOGICAL SHELFICEMassStepping
       LOGICAL SHELFICEDynMassOnly
       COMMON /SHELFICE_PARMS_L/
@@ -176,6 +178,7 @@ CEOP
      &     SHELFICE_tave_mnc,
      &     SHELFICEadvDiffHeatFlux,
      &     SHELFICEuseGammaFrict,
+     &     SHELFICE_oldCalcUStar,
      &     SHELFICEMassStepping,
      &     SHELFICEDynMassOnly
 
