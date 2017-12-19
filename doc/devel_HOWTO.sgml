@@ -1,6 +1,6 @@
 <!DOCTYPE ARTICLE PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
 <!--
- $Header: /u/gcmpack/MITgcm/doc/devel_HOWTO.sgml,v 1.17 2012/05/16 02:33:48 jmc Exp $
+ $Header: /u/gcmpack/MITgcm/doc/devel_HOWTO.sgml,v 1.18 2017/12/19 18:38:40 jmc Exp $
  $Name:  $
 -->
 
@@ -253,7 +253,7 @@
 
 	<listitem>
 	  <para> You need to register to the
-        <ulink url="http://mitgcm.org/mailman/listinfo/mitgcm-cvs">
+	<ulink url="http://mailman.mitgcm.org/mailman/listinfo/mitgcm-cvs">
        mitgcm-cvs </ulink> mailing list.
           This ensures that other developers will receive email notification
            when you make changes; you will also receive such email
@@ -263,7 +263,7 @@
 
 	<listitem>
 	  <para> It is highly recommended that you register also to the
-        <ulink url="http://mitgcm.org/mailman/listinfo/mitgcm-devel">
+	<ulink url="http://mailman.mitgcm.org/mailman/listinfo/mitgcm-devel">
        mitgcm-devel </ulink> mailing list (expect a short delay for
        this request to be processed).
           This list is intended for developer discussions.
