@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ref_machine/test_newRef,v 1.7 2017/08/03 12:14:44 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ref_machine/test_newRef,v 1.8 2017/12/21 17:49:16 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
@@ -20,7 +20,9 @@ ulimit -s unlimited
 #  MPI test (for now, only with gfortran)
    source ~jm_c/bin/openmpi.sh
 #- method to acces CVS:
-  cmdCVS='cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack -q'
+ #cmdCVS='cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack -q'
+  export CVS_RSH=ssh
+  cmdCVS='cvs -d :ext:jmc@mitgcm.org:/u/gcmpack -q'
  #cmdCVS='cvs -d /u/gcmpack'
 
 # checkOut=2 : download new code ;
