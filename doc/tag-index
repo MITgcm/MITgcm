@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2366 2017/12/15 19:45:22 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2367 2017/12/21 18:27:33 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/isomip:
+  - update secondary test (input.htd): a) drop cd_scheme, useJamartWetPoints=T
+    and increase viscAh ; b) use ivdc_kappa with implicit Diff & Visc ;
+    c) switch off SHELFICEboundaryLayer, turn on pCellMix_select (=20) and
+    use SHELFICEselectDragQuadr=1 ; add new set of pickup files.
 o pkg/shelfice:
   - Replace CPP option: SHI_USTAR_WETPOINT with run-time parameter:
      SHELFICE_oldCalcUStar (default=F <--> #define SHI_USTAR_WETPOINT)
