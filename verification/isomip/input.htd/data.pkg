@@ -1,6 +1,6 @@
 # Packages
  &PACKAGES
  useShelfIce=.TRUE.,
-#useDiagnostics=.TRUE.,
+ useDiagnostics=.TRUE.,
  useMNC=.TRUE.,
  &
