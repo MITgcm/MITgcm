@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/isomip/code/DIAGNOSTICS_SIZE.h,v 1.1 2010/02/11 22:24:12 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/verification/isomip/code/DIAGNOSTICS_SIZE.h,v 1.2 2017/12/21 17:54:51 jmc Exp $
 C $Name:  $
 
 
@@ -22,7 +22,7 @@ C  and "diagSt_size" (statistics-diags) since values here are deliberately small
       INTEGER    diagSt_size
       PARAMETER( ndiagMax = 500 )
       PARAMETER( numlists = 10, numperlist = 50, numLevels=2*Nr )
-      PARAMETER( numDiags = 2*Nr+2 )
+      PARAMETER( numDiags = 20*Nr )
       PARAMETER( nRegions = 0 , sizRegMsk = 1 , nStats = 4 )
       PARAMETER( diagSt_size = 10*Nr )
 
