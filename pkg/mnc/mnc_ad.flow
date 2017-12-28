@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_ad.flow,v 1.6 2011/05/23 00:27:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_ad.flow,v 1.7 2017/12/28 13:29:27 jmc Exp $
 C $Name:  $
 
 C----------------------------------------
@@ -26,16 +26,16 @@ CADJ SUBROUTINE mnc_cw_rs_w_s  INPUT  = 1,2,3,4,5,6,7
 CADJ SUBROUTINE mnc_cw_rs_w_s  OUTPUT =
 
 C----------------------------------------
-C subroutine mnc_cw_rl_r
+C subroutine mnc_cw_rl_w
 C----------------------------------------
-CADJ SUBROUTINE mnc_cw_rl_r  INPUT  = 1,2,3,4,5,6,7
-CADJ SUBROUTINE mnc_cw_rl_r  OUTPUT =
+CADJ SUBROUTINE mnc_cw_rl_w  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE mnc_cw_rl_w  OUTPUT =
 
 C----------------------------------------
-C subroutine mnc_cw_rs_r
+C subroutine mnc_cw_rs_w
 C----------------------------------------
-CADJ SUBROUTINE mnc_cw_rs_r  INPUT  = 1,2,3,4,5,6,7
-CADJ SUBROUTINE mnc_cw_rs_r  OUTPUT =
+CADJ SUBROUTINE mnc_cw_rs_w  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE mnc_cw_rs_w  OUTPUT =
 
 C----------------------------------------
 C subroutine  mnc_cw_rl_w_offset
@@ -48,6 +48,18 @@ C subroutine  mnc_cw_rs_w_offset
 C----------------------------------------
 CADJ SUBROUTINE mnc_cw_rs_w_offset  INPUT  = 1,2,3,4,5,6,7,8
 CADJ SUBROUTINE mnc_cw_rs_w_offset  OUTPUT =
+
+C----------------------------------------
+C subroutine mnc_cw_rl_r
+C----------------------------------------
+CADJ SUBROUTINE mnc_cw_rl_r  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE mnc_cw_rl_r  OUTPUT =
+
+C----------------------------------------
+C subroutine mnc_cw_rs_r
+C----------------------------------------
+CADJ SUBROUTINE mnc_cw_rs_r  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE mnc_cw_rs_r  OUTPUT =
 
 C----------------------------------------
 C subroutine  mnc_cw_set_udim
