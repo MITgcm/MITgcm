@@ -1,23 +1,23 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/GCHEM_FIELDS.h,v 1.1 2004/11/28 23:48:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/GCHEM_FIELDS.h,v 1.2 2017/12/29 19:37:40 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_GCHEM
 CBOP
 C    !ROUTINE: GCHEM_FIELDS.h
 C    !INTERFACE:
- 
+
 C    !DESCRIPTION:
 C Contains tracer fields specifically for chemical tracers.
 C
 C  gchemTendency :: 3DxPTRACER_num field that store the tendencies due
 C                   to the bio-geochemical model
 
-#ifndef GCHEM_SEPARATE_FORCING
+#ifdef GCHEM_ADD2TR_TENDENCY
       _RL gchemTendency(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
-     &                  PTRACERS_num)
-      COMMON /GCHEM_FIELDS/ 
+     &                  GCHEM_tendTr_num)
+      COMMON /GCHEM_FIELDS/
      &     gchemTendency
-#endif /* GCHEM_SEPARATE_FORCING */
+#endif /* GCHEM_ADD2TR_TENDENCY */
 CEOP
 #endif /* ALLOW_GCHEM */
 
