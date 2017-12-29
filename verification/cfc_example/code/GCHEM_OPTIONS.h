@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/cfc_example/code/GCHEM_OPTIONS.h,v 1.5 2011/12/24 01:17:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/cfc_example/code/GCHEM_OPTIONS.h,v 1.6 2017/12/29 19:46:43 jmc Exp $
 C $Name:  $
 
 #ifndef GCHEM_OPTIONS_H
@@ -16,7 +16,19 @@ C    !DESCRIPTION:
 C options for biogeochemistry package
 CEOP
 
+C o Allow separated update of Geo-Chemistry and Advect-Diff
+C    (fractional time-stepping type) for some gchem tracers
 #undef GCHEM_SEPARATE_FORCING
+
+C o Allow single update of some gchem tracers, adding Geo-Chemistry
+C    tendency to Advect-Diff tendency
+#undef GCHEM_ADD2TR_TENDENCY
+#ifdef ALLOW_CFC
+# define GCHEM_ADD2TR_TENDENCY
+#endif
+#ifdef ALLOW_SPOIL
+# define GCHEM_ADD2TR_TENDENCY
+#endif
 
 #endif /* ALLOW_GCHEM */
 #endif /* GCHEM_OPTIONS_H */
