@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ref_machine/test_newRef,v 1.8 2017/12/21 17:49:16 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ref_machine/test_newRef,v 1.9 2017/12/29 16:58:05 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
@@ -35,7 +35,7 @@ dNam=`hostname -s | tr '[:upper:]' '[:lower:]'`
 #TESTDIR="/scratch/jmc/test_${dNam}"
 TESTDIR="/home/jm_c/test_${dNam}"
 #outDir="${dNam}-${tst_grp}"
-outDir="charles-B"
+outDir=$dNam
 MC=11
 sepDir=1
 option=
@@ -91,7 +91,13 @@ if test $checkOut = 2 ; then
   if test -f $updFile ; then rm -f $updFile ; sleep 2 ; fi
   echo -n "Downloading the MITgcm code using: $cmdCVS ..."
   $cmdCVS co -P MITgcm > /dev/null
-  echo "  done"
+  retVal=$?
+  if test "x$retVal" != x0 ; then echo ''
+       echo "'$cmdCVS co  -P MITgcm' on '"`hostname`"' fail (return val=$retVal) => exit"
+       exit
+  else echo "  done"
+      #echo "'$cmdCVS co  -P MITgcm' on '"`hostname`"' work"
+  fi
   if test -d other_input ; then
     list_dirs=`(cd other_input ; ls 2> /dev/null )`
     echo "Updating ( $cmdCVS update -P -d ) 'other_input' extra dirs:"
