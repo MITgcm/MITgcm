@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.242 2017/03/29 15:44:00 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.243 2017/12/29 19:30:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -27,6 +27,12 @@ C $Name:  $
 #endif
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_OPTIONS.h"
+#endif
+#ifdef ALLOW_GCHEM
+# include "GCHEM_OPTIONS.h"
+#endif
+#ifdef ALLOW_DIC
+# include "DIC_OPTIONS.h"
 #endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
@@ -292,6 +298,7 @@ C     == Global variables ==
 #  include "PTRACERS_FIELDS.h"
 # endif
 # ifdef ALLOW_GCHEM
+#  include "GCHEM_SIZE.h"
 #  include "GCHEM_FIELDS.h"
 # endif
 # ifdef ALLOW_CFC

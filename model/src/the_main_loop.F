@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.183 2017/12/05 14:15:25 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.184 2017/12/29 19:30:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -6,26 +6,32 @@ C $Name:  $
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD_OPTIONS.h"
+#endif
+#ifdef ALLOW_GGL90
+# include "GGL90_OPTIONS.h"
+#endif
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
+#endif
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
 #endif
-#ifdef ALLOW_GENERIC_ADVDIFF
-# include "GAD_OPTIONS.h"
+#ifdef ALLOW_GCHEM
+# include "GCHEM_OPTIONS.h"
 #endif
-#ifdef ALLOW_GMREDI
-# include "GMREDI_OPTIONS.h"
-#endif
-#ifdef ALLOW_STREAMICE
-# include "STREAMICE_OPTIONS.h"
-#endif
-#ifdef ALLOW_GGL90
-# include "GGL90_OPTIONS.h"
+#ifdef ALLOW_DIC
+# include "DIC_OPTIONS.h"
 #endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
+#endif
+#ifdef ALLOW_STREAMICE
+# include "STREAMICE_OPTIONS.h"
 #endif
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
@@ -102,6 +108,7 @@ c They provide the fields to be stored.
 #   include "PTRACERS_START.h"
 #  endif
 #  ifdef ALLOW_GCHEM
+#   include "GCHEM_SIZE.h"
 #   include "GCHEM_FIELDS.h"
 #  endif
 #  ifdef ALLOW_CFC
