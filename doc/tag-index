@@ -1,9 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2367 2017/12/21 18:27:33 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2368 2017/12/29 19:56:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gchem, changes to enable to use several geo-chemistry pkgs together:
+  - new CPP option GCHEM_ADD2TR_TENDENCY around definition of gchemTendency
+    array (replacing #ifndef GCHEM_SEPARATE_FORCING) ;
+  - in GCHEM_FIELDS.h, change dimension of array "gchemTendency"
+    from PTRACERS_num to GCHEM_tendTr_num ; this later one is set in new header
+    file: GCHEM_SIZE.h, to be included anytime GCHEM_FIELDS.h is included ;
+  - new set of S/R, called from GCHEM_TR_REGISTER, to record rank (in pTracer
+    array) and number of tracers for each geo-chemistry pkg ;
+  - check that GCHEM tracers all fit in pTracer and gchemTendency arrays ;
+  - initialise gchemTendency array in gchem_init_vari.F ;
+  - fix storage directives for gchemTendency ;
+  - add some entry points for new geo-chemistry pkg SPOIL.
 o verification/isomip:
   - update secondary test (input.htd): a) drop cd_scheme, useJamartWetPoints=T
     and increase viscAh ; b) use ivdc_kappa with implicit Diff & Visc ;
