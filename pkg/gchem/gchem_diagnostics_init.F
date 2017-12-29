@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_diagnostics_init.F,v 1.8 2014/07/18 22:12:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_diagnostics_init.F,v 1.9 2017/12/29 19:42:09 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -13,11 +13,12 @@ C experiment
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
-#include "PTRACERS_SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-#include "GAD.h"
+#include "GCHEM.h"
+c#include "GAD.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -47,7 +48,7 @@ C     !LOCAL VARIABLES:
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Define diagnostics Names :
-      DO iTrc=1,PTRACERS_num
+      DO iTrc=1,gchem_sepFTr_num
 C-     Set default name & tracer Units:
        WRITE(locName,'(A,I4.4,A)') 'Tracer ',iTrc
        trcUnits  = '(kg/kg)'

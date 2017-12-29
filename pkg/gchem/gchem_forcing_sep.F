@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.44 2017/03/29 15:46:27 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.45 2017/12/29 19:42:09 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -77,7 +77,7 @@ c     INTEGER i,j
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
 C--   fill-in tracer diagnostics before any GChem udate
-       DO iTr = 1,PTRACERS_numInUse
+       DO iTr = 1,gchem_sepFTr_num
         diagName = '        '
         WRITE(diagName,'(A5,A2)') 'GC_Tr', PTRACERS_ioLabel(iTr)
         CALL DIAGNOSTICS_FILL( pTracer(1-OLx,1-OLy,1,1,1,iTr), diagName,
@@ -245,7 +245,7 @@ C       tendency multiplied by maskInC)
 #ifdef ALLOW_DEBUG
           IF (debugMode) CALL DEBUG_CALL('OBCS_APPLY_PTRACER',myThid)
 #endif
-          DO iTr = 1,PTRACERS_numInUse
+          DO iTr = 1,gchem_sepFTr_num
             CALL OBCS_APPLY_PTRACER(
      I                bi, bj, 0, iTr,
      U                pTracer(1-OLx,1-OLy,1,bi,bj,iTr),
