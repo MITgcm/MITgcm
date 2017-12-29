@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.22 2017/08/09 15:23:37 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.23 2017/12/29 19:35:38 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -20,7 +20,7 @@ C !USES: ===============================================================
 #include "GCHEM.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  myThid               :: thread number
+C  myThid         :: thread number
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -29,10 +29,9 @@ C  none
 #ifdef ALLOW_GCHEM
 
 C !LOCAL VARIABLES: ====================================================
-C  tIter0               :: retired parameter
-C  iTracer              :: loop indices
-C  iUnit                :: unit number for I/O
-C  msgBuf               :: message buffer
+C  tIter0         :: retired parameter
+C  iUnit          :: unit number for I/O
+C  msgBuf         :: message buffer
       INTEGER tIter0
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -42,18 +41,15 @@ C- Sub-package on/off flags: not fully implemented, requires
 C  to test the flag before any corresponding pkg S/R call
 
       NAMELIST /GCHEM_PARM01/
-     &                   nsubtime,
      &                   useCFC,
      &                   useDIC,
      &                   useBLING,
+     &                   useSPOIL,
      &                   useDARWIN,
-     &                   Filename1,
-     &                   Filename2,
-     &                   Filename3,
-     &                   Filename4,
-     &                   Filename5,
+     &           fileName1, fileName2, fileName3,
+     &           fileName4, fileName5,
      &           gchem_int1, gchem_int2, gchem_int3,
-     &           gchem_int4, gchem_int5,
+     &           gchem_int4, gchem_int5, nsubtime,
      &           gchem_rl1, gchem_rl2, gchem_rl3,
      &           gchem_rl4, gchem_rl5,
      &           gchem_ForcingPeriod, gchem_ForcingCycle,
@@ -73,18 +69,19 @@ C     print a (weak) warning if data.gchem is found
 
       _BEGIN_MASTER(myThid)
 
-C Set defaults values for parameters in GCHEM.h
+C- Set defaults values for parameters in GCHEM.h
        useCFC = .FALSE.
        useDIC = .FALSE.
        useBLING  = .FALSE.
+       useSPOIL  = .FALSE.
        useDARWIN = .FALSE.
        tIter0 = UNSET_I
-       nsubtime=1
-       Filename1=' '
-       Filename2=' '
-       Filename3=' '
-       Filename4=' '
-       Filename5=' '
+       fileName1=' '
+       fileName2=' '
+       fileName3=' '
+       fileName4=' '
+       fileName5=' '
+       nsubtime = 1
        gchem_int1=0
        gchem_int2=0
        gchem_int3=0
@@ -95,13 +92,13 @@ C Set defaults values for parameters in GCHEM.h
        gchem_rl3=0. _d 0
        gchem_rl4=0. _d 0
        gchem_rl5=0. _d 0
-c default periodic forcing to same as for physics
+C  default periodic forcing to same as for physics
        gchem_ForcingPeriod=externForcingPeriod
        gchem_ForcingCycle=externForcingCycle
-C Open and read the data.gchem file
+C- Open and read the data.gchem file
       WRITE(msgBuf,'(A)') ' GCHEM_READPARMS: opening data.gchem'
-      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
-     &                   SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
       CALL OPEN_COPY_DATA_FILE(
      I                   'data.gchem', 'GCHEM_PARM01',
      O                   iUnit,
@@ -109,10 +106,10 @@ C Open and read the data.gchem file
       READ(UNIT=iUnit,NML=GCHEM_PARM01)
       WRITE(msgBuf,'(A)')
      &  ' GCHEM_READPARMS: finished reading data.gchem'
-      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
-     &                   SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
-C Close the open data file
+C- Close the open data file
 #ifdef SINGLE_DISK_IO
       CLOSE(iUnit)
 #else
@@ -125,17 +122,17 @@ c      nRetired = nRetired+1
        WRITE(msgBuf,'(A,A)')
      &  'S/R GCHEM_READPARMS: Paramater "tIter0" is',
      &  ' no longer allowed in file "data.gchem"'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A,A)')
      &  'S/R GCHEM_READPARMS: "tIter0" has been moved to',
      &  ' PTRACERS_Iter0 in file "data.ptracers".'
-       CALL PRINT_ERROR( msgBuf , myThid)
+       CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R GCHEM_READPARMS'
       ENDIF
 
       _END_MASTER(myThid)
 
-C Everyone else must wait for the parameters to be loaded
+C  Everyone else must wait for the parameters to be loaded
       _BARRIER
 
 #ifdef ALLOW_CFC
@@ -156,11 +153,20 @@ C Everyone else must wait for the parameters to be loaded
       ENDIF
 #endif
 
+#ifdef ALLOW_SPOIL
+      IF ( useSPOIL ) THEN
+        CALL SPOIL_READPARMS(myThid)
+      ENDIF
+#endif
+
 #ifdef ALLOW_DARWIN
       IF ( useDARWIN ) THEN
         CALL DARWIN_READPARMS(myThid)
       ENDIF
 #endif
+
+C- Register GCHEM tracer indices
+      CALL GCHEM_TR_REGISTER( myThid )
 
 #endif /* ALLOW_GCHEM */
 

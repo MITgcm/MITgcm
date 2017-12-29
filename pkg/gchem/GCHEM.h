@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/GCHEM.h,v 1.14 2016/05/23 13:09:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/GCHEM.h,v 1.15 2017/12/29 19:35:37 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_GCHEM
@@ -15,51 +15,54 @@ C--   COMMON /GCHEM_PARM_L/ Logical valued parameters used by GCHEM pkg.
 C     useCFC    :: flag to turn on/off CFC pkg
 C     useDIC    :: flag to turn on/off DIC pkg
 C     useBLING  :: flag to turn on/off BLING pkg
+C     useSPOIL  :: flag to turn on/off SPOIL pkg
 C     useDARWIN :: flag to turn on/off darwin pkg
 C
 C--   COMMON /GCHEM_PARAMS/
-C  nsubtime    :: number of chemistry timesteps per deltaTtracer
-C                 (default 1)
-C  Filename*   :: various spare filenames
+C  gchem_Tracer_num :: number of Geo-Chemistry tracers
+C  gchem_sepFTr_num :: number of GChem tracers that use Separate Forcing
+C  nsubtime    :: number of chemistry timesteps per deltaTtracer (default 1)
+C  fileName*   :: various spare filenames
 C  gchem_int*  :: place holder to read in a integer number, set at run time
 C  gchem_rl*   :: place holder to read in a real number, set at run time
 C  gchem_ForcingPeriod :: periodic forcing parameter specific for gchem (seconds)
 C  gchem_ForcingCycle  :: periodic forcing parameter specific for gchem (seconds)
-
 CEOP
 
       COMMON /GCHEM_PARM_L/
      &              useCFC,
      &              useDIC,
      &              useBLING,
+     &              useSPOIL,
      &              useDARWIN
+      LOGICAL useCFC, useDIC, useBLING, useSPOIL, useDARWIN
 
-      LOGICAL useCFC, useDIC, useBLING, useDARWIN
+      COMMON /GCHEM_PARM_C/
+     &                   fileName1, fileName2, fileName3,
+     &                   fileName4, fileName5
+      CHARACTER*(MAX_LEN_FNAM) fileName1
+      CHARACTER*(MAX_LEN_FNAM) fileName2
+      CHARACTER*(MAX_LEN_FNAM) fileName3
+      CHARACTER*(MAX_LEN_FNAM) fileName4
+      CHARACTER*(MAX_LEN_FNAM) fileName5
 
-      COMMON /GCHEM_PARAMS/
-     &                   Filename1,
-     &                   Filename2,
-     &                   Filename3,
-     &                   Filename4,
-     &                   Filename5,
-     &                   nsubtime,
-     &           gchem_int1, gchem_int2, gchem_int3,
-     &           gchem_int4, gchem_int5,
-     &           gchem_rl1, gchem_rl2, gchem_rl3,
-     &           gchem_rl4, gchem_rl5,
-     &           gchem_ForcingPeriod, gchem_ForcingCycle
-
+      COMMON /GCHEM_PARM_I/
+     &           gchem_Tracer_num, gchem_sepFTr_num,
+     &           nsubtime,   gchem_int1, gchem_int2,
+     &           gchem_int3, gchem_int4, gchem_int5
+      INTEGER gchem_Tracer_num
+      INTEGER gchem_sepFTr_num
       INTEGER nsubtime
-      CHARACTER*(MAX_LEN_FNAM) Filename1
-      CHARACTER*(MAX_LEN_FNAM) Filename2
-      CHARACTER*(MAX_LEN_FNAM) Filename3
-      CHARACTER*(MAX_LEN_FNAM) Filename4
-      CHARACTER*(MAX_LEN_FNAM) Filename5
       INTEGER gchem_int1
       INTEGER gchem_int2
       INTEGER gchem_int3
       INTEGER gchem_int4
       INTEGER gchem_int5
+
+      COMMON /GCHEM_PARM_R/
+     &           gchem_rl1, gchem_rl2, gchem_rl3,
+     &           gchem_rl4, gchem_rl5,
+     &           gchem_ForcingPeriod, gchem_ForcingCycle
       _RL     gchem_rl1
       _RL     gchem_rl2
       _RL     gchem_rl3
