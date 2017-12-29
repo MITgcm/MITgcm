@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_add_tendency.F,v 1.5 2014/07/09 16:56:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_add_tendency.F,v 1.6 2017/12/29 19:40:06 jmc Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -10,61 +10,62 @@ C !INTERFACE: ==========================================================
       SUBROUTINE GCHEM_ADD_TENDENCY(
      U                     gPtracer,
      I                     iMin,iMax,jMin,jMax, k, bi, bj,
-     I                     iTracer, myTime, myIter, myThid )
+     I                     iTr, myTime, myIter, myThid )
 
 C !DESCRIPTION:
-C     In the case of GCHEM_SEPARATE_FORCING undefined, GCHEM_ADD_TENDENCY
-C     will update passive tracer tendencies gPtr with gchemTendency,
-C     the latter having been computed in GCHEM_CALC_TENDENDY, so that
-C     they will be incorporated into regular timestepping in
+C     In the case of a tracer not using GCHEM_SEPARATE_FORCING,
+C     GCHEM_ADD_TENDENCY will update passive tracer tendencies gPtr with
+C     gchemTendency, the latter having been computed in GCHEM_CALC_TENDENDY,
+C     so that they will be incorporated into regular timestepping in
 C     PTRACERS_INTERGRATE.
-C     IF GCHEM_SEPARATE_FORCING is defined, this routine is empty.
 
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
-#include "GRID.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "PTRACERS_SIZE.h"
-c#include "PTRACERS_FIELDS.h"
+#include "GCHEM.h"
+#include "GCHEM_SIZE.h"
 #include "GCHEM_FIELDS.h"
 
 C !INPUT/OUTPUT PARAMETERS: ============================================
-C  gPtracer             :: the tendency array
-C  k                    :: vertical level
-C  bi,bj                :: tile indices
-C  iTracer              :: ptracer number
-C  myTime               :: current time
-C  myIter               :: current timestep
-C  myThid               :: thread number
+C  gPtracer     :: the tendency array
+C  k            :: vertical level
+C  bi,bj        :: tile indices
+C  iTr          :: ptracer number
+C  myTime       :: current time
+C  myIter       :: current timestep
+C  myThid       :: thread number
       _RL gPtracer   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin,iMax,jMin,jMax
-      INTEGER k, bi, bj, iTracer
+      INTEGER k, bi, bj, iTr
       _RL myTime
       INTEGER myIter, myThid
 CEOP
 
-#ifdef ALLOW_GCHEM
-# ifndef GCHEM_SEPARATE_FORCING
+#ifdef GCHEM_ADD2TR_TENDENCY
 C !LOCAL VARIABLES: ====================================================
-C  i,j                  :: loop indices
+C  jTr          :: number of corresponding tracer tendency (in gchemTendency)
+C  i,j          :: loop indices
+      INTEGER jTr
       INTEGER i,j
 
-C     apply the tendencies computed in GCHEM_CALC_TENDENCY to the passive
+C     Apply the tendencies computed in GCHEM_CALC_TENDENCY to the passive
 C     tracers tendendy terms. The part of the code could also go into
 C     ptracers_forcing and replace the call to gchem_add_tendency there,
 C     but this way, no gchem-related header files and CPP-flags are required
 C     within ptracers_forcing.
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      IF ( iTr.GT.gchem_sepFTr_num .AND.
+     &     iTr.LE.gchem_Tracer_num ) THEN
+       jTr = iTr - gchem_sepFTr_num
+       DO j=jMin,jMax
+        DO i=iMin,iMax
          gPtracer(i,j) = gPtracer(i,j)
-     &                 + gchemTendency(i,j,k,bi,bj,iTracer)
+     &                 + gchemTendency(i,j,k,bi,bj,jTr)
+        ENDDO
        ENDDO
-      ENDDO
-# endif /* GCHEM_SEPARATE_FORCING */
-#endif /* ALLOW_GCHEM */
+      ENDIF
+#endif /* GCHEM_ADD2TR_TENDENCY */
 
       RETURN
       END
