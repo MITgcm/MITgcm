@@ -1,6 +1,6 @@
 <!DOCTYPE ARTICLE PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
 <!--
- $Header: /u/gcmpack/MITgcm/doc/devel_HOWTO.sgml,v 1.18 2017/12/19 18:38:40 jmc Exp $
+ $Header: /u/gcmpack/MITgcm/doc/devel_HOWTO.sgml,v 1.19 2018/01/05 20:47:02 jmc Exp $
  $Name:  $
 -->
 
@@ -236,17 +236,17 @@
       <orderedlist>
 	<listitem>
 	  <para> You will need an account (login access) to the server
-           "mitgcm.org" (curently: <filename>forge.csail.mit.edu</filename>) 
-           with the proper group setting (e.g., group "gcmctrb" to add/modify 
+           "mitgcm.org" (curently: <filename>mitgcmcvs.mit.edu</filename>)
+           with the proper group setting (e.g., group "gcmctrb" to add/modify
            code into MITgcm_contrib).
-           This kind of account is granted only upon well motivated request 
-           (we recommend to ask your senior MITgcm-collaborator to send such 
-           request to marshall-admin at techsquare.com with Cc to Chris Hill 
+           This kind of account is granted only upon well motivated request
+           (we recommend to ask your senior MITgcm-collaborator to send such
+           request to marshall-admin at techsquare.com with Cc to Chris Hill
            for approval).</para>
-	  <para> The access to the server <filename>mitgcm.org</filename> is 
-           through ssh-key authorization which will need to be set properly on 
-           both side (on your local machine and on your server account). 
-           You need to be able to ssh to <filename>mitgcm.org</filename> 
+	  <para> The access to the server <filename>mitgcm.org</filename> is
+           through ssh-key authorization which will need to be set properly on
+           both side (on your local machine and on your server account).
+           You need to be able to ssh to <filename>mitgcm.org</filename>
            (or <filename>ssh MY_USER_NAME@mitgcm.org</filename>
            in case of different user-name on both sides) to proceed further.</para>
 	</listitem>
@@ -309,7 +309,7 @@
           this file (the "cvs commit" command automatically opens your standard
           editor for this purpose).</para>
 	  <para> Note:
-           Please ignore the following warnings that the "cvs commit" command 
+           Please ignore the following warnings that the "cvs commit" command
            produces if you are not part of the "gcmpack" group:
 <screen>
    cvs commit: failed to create lock directory for `/u/gcmpack/CVSROOT'
@@ -402,7 +402,6 @@ checkpoint50d_pre
 
     </sect2>
   </sect1>
-
 
   <sect1 id="coding">
     <title>Coding for MITgcm</title>
@@ -1119,7 +1118,6 @@ checkpoint50d_pre
 
     </sect2>
 
-
     <sect2 id="packages">
       <title>Creating MITgcm Packages</title>
 
@@ -1237,7 +1235,6 @@ CPP Flags
        specific to that package. It also includes
        "PACKAGES_CONFIG.h" and "CPP_OPTIONS.h".
 
-
 Package Boot Sequence
 =====================
 
@@ -1248,7 +1245,6 @@ Package Boot Sequence
     1. S/R PACKAGES_BOOT()
             :
         CALL OPEN_COPY_DATA_FILE( 'data.pkg', 'PACKAGES_BOOT', ... )
-
 
     2. S/R PACKAGES_READPARMS()
             :
@@ -1394,7 +1390,6 @@ Summary
 
   </sect1>
 
-
   <sect1 id="documentation">
     <title>Editing the Documentation</title>
 
@@ -1461,7 +1456,6 @@ Summary
       </orderedlist>
 	
 
-
     </sect2>
 
     <sect2>
@@ -1498,5 +1492,4 @@ Summary
   </sect1>
 
 </article>
-
 
