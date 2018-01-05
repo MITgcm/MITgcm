@@ -6,7 +6,7 @@
 #PBS -e /u/jcampin/test_pleiades/output/tst_fast.stderr
 #PBS -o /u/jcampin/test_pleiades/output/tst_fast.stdout
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/nasa_ames/test_pleiades_fast,v 1.5 2017/09/19 18:11:58 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/nasa_ames/test_pleiades_fast,v 1.6 2018/01/05 22:34:07 jmc Exp $
 # $Name:  $
 
 if test -f /etc/profile.d/modules.sh ; then
@@ -24,7 +24,7 @@ dNam='pleiades'
 HERE="$HOME/test_$dNam"
 OUTP="$HERE/output"; SavD="$HERE/send"
 SEND="ssh pfe $SavD/mpack"
-ADDR='jmc@dev.mitgcm.org'
+ADDR='jm_c@mitgcm.org'
 TST_DISK="/nobackupp2/jcampin"
 TST_DIR="$TST_DISK/test_${dNam}"
 
