@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.36 2017/05/14 15:59:39 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.37 2018/01/06 15:19:55 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
@@ -253,7 +253,7 @@ do
   else
     comm="$comm -md cyrus-makedepend"
   fi
-  comm="$comm -odir $outDir -a jmc@dev.mitgcm.org"
+  comm="$comm -odir $outDir -a jm_c@mitgcm.org"
 #-- set the optfile (+ mpi & match-precision)
   MPI=0
   case $typ in
@@ -323,7 +323,7 @@ do
   if test $tt != $typ
   then
     echo "testing restart using:"	| tee -a $tdir/output_$tt
-    comm="../tools/do_tst_2+2 -o $outDir -a jmc@dev.mitgcm.org"
+    comm="../tools/do_tst_2+2 -o $outDir -a jm_c@mitgcm.org"
     if test $MPI = 0 ; then
       echo "  \"$comm\""		| tee -a $tdir/output_$tt
       echo "======================"
