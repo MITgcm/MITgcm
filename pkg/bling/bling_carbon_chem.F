@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_carbon_chem.F,v 1.3 2016/09/12 22:31:47 mmazloff Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_carbon_chem.F,v 1.4 2018/01/10 19:36:03 mmazloff Exp $
 C $Name:  $
 
 #include "BLING_OPTIONS.h"
@@ -429,6 +429,10 @@ cmick based on Dickson and Goyet
 cmick - estimate contribution from silicate
 cmick based on Dickson and Goyet
         siooh3g = sit*ksilocal / (ksilocal + hguess)
+
+cmm - rare, but ice melt can cause prescribed silicate alkalinity to be
+cmm   larger than total alkalinity. Crop here to account for this
+        IF (siooh3g.GT.0.2 _d 0*ta) siooh3g = 0.2 _d 0*ta
 
 cmick - now estimate carbonate alkalinity
         cag = ta - bohg - (kwlocal/hguess) + hguess
