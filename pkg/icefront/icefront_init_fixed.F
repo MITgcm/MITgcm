@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_fixed.F,v 1.8 2017/02/07 00:18:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_init_fixed.F,v 1.9 2018/01/10 11:00:58 mlosch Exp $
 C $Name:  $
 
 #include "ICEFRONT_OPTIONS.h"
@@ -39,6 +39,9 @@ C     errCount      :: error counter
 #ifdef ALLOW_ICEFRONT_DEBUG
       INTEGER ISinterface
 #endif
+#ifdef ALLOW_EXF
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif /* ALLOW_EXF */
 
 #ifdef ALLOW_EXF
       IF ( useEXF .AND. SGRunOffFile .NE. ' ' ) THEN
