@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/mdjwf.py,v 1.1 2018/01/11 14:26:17 mlosch Exp $
+# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/mdjwf.py,v 1.2 2018/01/11 14:34:22 mlosch Exp $
 # $Name:  $
 #
 # converted from matlab version to python in Jan 2018
@@ -67,10 +67,10 @@ def densmdjwf(s,theta,p):
     AUTHOR:  Martin Losch 2002-08-09  (Martin.Losch@awi.de)
 
     check value
-    S     = 35.5 PSU
-    Theta = 3 degC
-    P     = 3000 dbar
-    rho   = 1041.83267 kg/m^3
+    S     = 35 PSU
+    Theta = 25 degC
+    P     = 2000 dbar
+    rho   = 1031.654229 kg/m^3
 
     McDougall et al., 2003, JAOT 20(5), pp. 730-741
     """
