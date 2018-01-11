@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.10 2017/03/24 23:31:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_co2.F,v 1.11 2018/01/11 01:55:54 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -24,6 +24,7 @@ C     == Global data ==
 #include "RESTART.h"
 #include "GRID.h"
 
+#include "AIM_PARAMS.h"
 #include "AIM_CO2.h"
 C-- Coupled to the Ocean :
 #ifdef COMPONENT_MODULE
@@ -76,13 +77,7 @@ C     i,j    - loop counters
       ENDIF
 #endif /* COMPONENT_MODULE */
 
-      IF ( Aim_CO2_Flag .EQ. 1 .AND. myTime .EQ. startTime ) THEN
-        _BEGIN_MASTER(myThid)
-        atm_pCO2 = atmpCO2init
-        _END_MASTER(myThid)
-        _BARRIER
-
-      ELSEIF ( Aim_CO2_Flag .EQ. 2 ) THEN
+      IF ( aim_select_pCO2 .GE. 2 ) THEN
 
 C- First compute global mole flux at air-sea interface
         DO bj=myByLo(myThid),myByHi(myThid)
@@ -102,8 +97,7 @@ C- First compute global mole flux at air-sea interface
         _BEGIN_MASTER(myThid)
         IF ( myIter.EQ.0 ) THEN
 C- If  first iteration, use atmpCO2init as initial condition
-          atm_pCO2 = atmpCO2init
-          Atm_CO2_Moles = atm_pCO2 * total_atmos_moles
+          atm_CO2_Moles = atm_pCO2 * total_atmos_moles
 
         ELSEIF ( myIter.EQ.nIter0 ) THEN
 C- If restart, read moles number from pickup
@@ -121,9 +115,9 @@ C- If restart, read moles number from pickup
           CALL MDS_READVEC_LOC(  fn, precFloat64, iUnit, 'RL', 2,
      O                           tmpco2, dummyRS,
      I                           0, 0, 1, myThid )
-          Atm_CO2_Moles = tmpco2(1)
+          atm_CO2_Moles = tmpco2(1)
           atpco2_check  = tmpco2(2)
-          atm_pCO2 = Atm_CO2_Moles / total_atmos_moles
+          atm_pCO2 = atm_CO2_Moles / total_atmos_moles
 
           iUnit = standardMessageUnit
           iLo = IFNBLNK(fn)
@@ -138,17 +132,17 @@ C- If restart, read moles number from pickup
           CALL WRITE_0D_RL( atpco2_check, INDEX_NONE, 'atpco2_check =',
      &                     ' /* pCo2 from pickup file */')
           CALL WRITE_0D_RL( atm_pCO2, INDEX_NONE, 'atm_pCO2 =',
-     &                     ' /* pCo2 from Atm_CO2_Moles */')
-
-c        ELSE
-c          WRITE(msgBuf,'(A)') 'AIM_DO_CO2: How did you end up here?'
-c          CALL PRINT_ERROR( msgBuf , myThid)
-c          STOP 'ABNORMAL END: S/R AIM_DO_CO2'
+     &                     ' /* pCo2 from atm_CO2_Moles */')
         ENDIF
 
 C- Calculate new atmos pCO2
-        Atm_CO2_Moles = Atm_CO2_Moles - total_flux
-        atm_pCO2 = Atm_CO2_Moles / total_atmos_moles
+        atm_CO2_Moles = atm_CO2_Moles - total_flux
+        atm_pCO2 = atm_CO2_Moles / total_atmos_moles
+
+C- Set pCO2 for AIM Radiation:
+        IF ( aim_select_pCO2 .EQ. 3 ) THEN
+          aim_pCO2 = atm_pCO2
+        ENDIF
 
 C- Write out if time for a new pickup
         modelEnd = (myTime+deltaTClock).EQ.endTime
@@ -161,7 +155,6 @@ C- Write out if time for a new pickup
      &    DIFFERENT_MULTIPLE( chkptFreq,myTime+deltaTClock,deltaTClock)
         IF ( (modelEnd.AND.writePickupAtEnd)
      &       .OR. permPickup .OR. tempPickup ) THEN
-
           IF ( permPickup ) THEN
             IF ( rwSuffixType.EQ.0 ) THEN
               WRITE(fn,'(A,I10.10)') 'pickup_aimCo2.', myIter+1
@@ -174,7 +167,7 @@ C- Write out if time for a new pickup
             WRITE(fn,'(A,A)') 'pickup_aimCo2.', checkPtSuff(nCheckLev)
           ENDIF
 C- write values to new pickup
-          tmpco2(1)= Atm_CO2_Moles
+          tmpco2(1)= atm_CO2_Moles
           tmpco2(2)= atm_pCO2
           iUnit = 0
           CALL MDS_WRITEVEC_LOC( fn, precFloat64, iUnit, 'RL', 2,
@@ -184,7 +177,7 @@ C- write values to new pickup
         _END_MASTER(myThid)
         _BARRIER
 
-C--- end of Aim_CO2_Flag IF.
+C--- end if aim_select_pCO2 >= 2
       ENDIF
 
 #endif /* ALLOW_AIM_CO2 */

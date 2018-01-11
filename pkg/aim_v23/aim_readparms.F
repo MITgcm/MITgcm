@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.20 2017/08/09 15:23:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.21 2018/01/11 01:55:53 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -26,13 +26,10 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "AIM_PARAMS.h"
+#include "AIM_CO2.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
-#ifdef ALLOW_AIM_CO2
-#include "AIM_CO2.h"
-#endif
-
 
 C-   Physical constants + functions of sigma and latitude
 c #include "com_physcon.h"
@@ -53,10 +50,18 @@ CEOP
 #ifdef ALLOW_AIM
 
 C     == Local Variables ==
-C     msgBuf      :: Informational/error meesage buffer
-C     iUnit       :: Work variable for IO unit number
+C     msgBuf         :: Informational/error message buffer
+C     iUnit          :: Work variable for IO unit number
+C     aim_fixed_pCO2 :: fixed and uniform pCO2 value for AIM radiation
+C     atmpCO2init    :: Atmospheric pCO2 initial value of well-mixed atm. box
+
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*10 endList
+      INTEGER buffI(1)
       INTEGER iUnit
+      INTEGER errCount
+      _RL aim_fixed_pCO2
+      _RL atmpCO2init
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -80,14 +85,14 @@ C     aim_lstFile  :: file name for Land.Surf.Temp      (F.M. surfBC)
 C     aim_oiceFile :: file name for Sea Ice fraction    (F.M. surfBC)
 C     aim_snowFile :: file name for Snow depth          (F.M. surfBC)
 C     aim_swcFile  :: file name for Soil Water content  (F.M. surfBC)
-C     aim_dragStrato :: stratospheric-drag damping time scale (s)
+C     aim_dragStrato  :: stratospheric-drag damping time scale (s)
+C     aim_select_pCO2 :: select AIM CO2 formulation (= 0,1,2 or 3)
+C     aim_selectOceAlbedo :: Ocean albedo(latitude) scheme (integer)
+C                     :: 0 = constant (default); 1 = Briegleb et al. 1986
 C     aim_clrSkyDiag :: compute clear-sky radiation for diagnostics
 C     aim_taveFreq :: Frequency^-1 for time-average output (s)
 C     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
 C     aim_tendFreq :: Frequency^-1 for tendencies output (s)
-C     aim_selectOceAlbedo :: Ocean albedo(latitude) scheme (integer)
-C                              0 = constant (default)
-C                              1 = Briegleb et al. 1986
       NAMELIST /AIM_PARAMS/
      &    aim_useFMsurfBC, aim_useMMsurfFc,
      &    aim_surfForc_TimePeriod, aim_surfForc_NppCycle,
@@ -97,11 +102,11 @@ C                              1 = Briegleb et al. 1986
      &    aim_LandFile, aim_albFile, aim_vegFile,
      &    aim_sstFile, aim_lstFile, aim_oiceFile, aim_snowFile,
      &    aim_swcFile, aim_qfxFile,
-     &    aim_dragStrato,
+     &    aim_dragStrato, aim_selectOceAlbedo,
+     &    aim_select_pCO2, aim_abs_pCO2, aim_fixed_pCO2, atmpCO2init,
      &    aim_clrSkyDiag, aim_taveFreq, aim_diagFreq, aim_tendFreq,
      &    aim_timeave_mnc, aim_snapshot_mnc,
-     &    aim_pickup_write_mnc, aim_pickup_read_mnc,
-     &    aim_selectOceAlbedo
+     &    aim_pickup_write_mnc, aim_pickup_read_mnc
 
 C--   Physical constants (common PHYCON) :
 C       P0    = reference pressure                 [Pa=N/m2]
@@ -163,7 +168,6 @@ C      SMF    = ratio between secondary and primary mass flux at cloud-base
       NAMELIST /AIM_PAR_CNV/
      &    PSMIN, TRCNV, QBL, RHBL, RHIL, ENTMAX, SMF
 
-
 C--   Constants for large-scale condendation (common LSCCON) :
 C      TRLSC  = Relaxation time (in hours) for specific humidity
 C      RHLSC  = Maximum relative humidity threshold (at sigma=1)
@@ -210,10 +214,6 @@ C      SEGRAD = minimum gradient of dry static energy (d_DSE/d_phi)
       NAMELIST /AIM_PAR_VDI/
      &    TRSHC, TRVDI, TRVDS, RHGRAD, SEGRAD
 
-#ifdef ALLOW_AIM_CO2
-      NAMELIST /AIM_PAR_CO2/ atmpCO2init, Aim_CO2_Flag
-#endif
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
@@ -242,7 +242,6 @@ C-    Length (s) of one time period:
       aim_surfForc_TimePeriod = 30.*86400.
 C-    Number of time period per Cycle:
       aim_surfForc_NppCycle   = 12
-      aim_selectOceAlbedo = 0
 C-    define how fast the (linear) transition is from one month to the next
 C      = 1                 -> linear between 2 midle month
 C      > TimePeriod/deltaT -> jump from one month to the next one
@@ -257,21 +256,26 @@ C      > TimePeriod/deltaT -> jump from one month to the next one
       aim_swcFile  = ' '
       aim_qfxFile  = ' '
       aim_dragStrato = 0.
+      aim_selectOceAlbedo = 0
+      aim_select_pCO2 = 0
+      aim_ref_pCO2   = 320. _d -6
+C- note: default value of aim_abs_pCO2 has to be changed to something meaningful
+      aim_abs_pCO2   = 1.
+      aim_fixed_pCO2 = UNSET_RL
+      atmpCO2init    = UNSET_RL
+C-
       aim_taveFreq = taveFreq
       aim_diagFreq = dumpFreq
       aim_tendFreq = 0.
       OBLIQ = 23.45 _d 0
-#ifdef ALLOW_AIM_CO2
-      atmpCO2init  = 326. _d -6
-      Aim_CO2_Flag = 1
-#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      WRITE(msgBuf,'(A)') ' AIM_READ_PHYSPARMS: opening data.aimphys'
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A)') ' AIM_READPARMS: opening data.aimphys'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
-      CALL OPEN_COPY_DATA_FILE( 'data.aimphys', 'AIM_READ_PHYSPARMS',
+      CALL OPEN_COPY_DATA_FILE( 'data.aimphys', 'AIM_READPARMS',
      O                          iUnit, myThid )
 
 C--   Read parameters from open data file:
@@ -297,14 +301,10 @@ C-    Constants for radiation
 C-    Constants for vertical diffusion and sh. conv.
       READ(UNIT=iUnit,NML=AIM_PAR_VDI)
 
-#ifdef ALLOW_AIM_CO2
-C-    Constants for CO2
-      READ(UNIT=iUnit,NML=AIM_PAR_CO2)
-#endif
-
       WRITE(msgBuf,'(A)')
-     &   ' AIM_READ_PHYSPARMS: finished reading data.aimphys'
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+     &   ' AIM_READPARMS: finished reading data.aimphys'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT, myThid )
 
 C--   Close the open data file
 #ifdef SINGLE_DISK_IO
@@ -315,17 +315,54 @@ C--   Close the open data file
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Check parameters and model configuration
+      errCount = 0
+
+      IF ( aim_select_pCO2.LT.0 .OR. aim_select_pCO2.GT.3 ) THEN
+        WRITE(msgBuf,'(2A)') 'AIM_READPARMS: ',
+     &       'Invalid value for "aim_select_pCO2"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#ifndef ALLOW_AIM_CO2
+      IF ( aim_select_pCO2.GE.2 .AND. aim_select_pCO2.LE.3 ) THEN
+        WRITE(msgBuf,'(2A)') 'AIM_READPARMS: ',
+     &       'aim_select_pCO2 > 1 but ALLOW_AIM_CO2 undef'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)')
+     &       'Re-compile with: #define ALLOW_AIM_CO2 (AIM_OPTIONS.h)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* ndef ALLOW_AIM_CO2 */
+
+      IF ( aim_fixed_pCO2.EQ.UNSET_RL ) THEN
+        aim_fixed_pCO2 = aim_ref_pCO2
+      ELSEIF ( aim_select_pCO2.NE.1 .AND.
+     &         aim_select_pCO2.GE.0 .AND. aim_select_pCO2.LE.3 ) THEN
+        WRITE(msgBuf,'(2A)') 'AIM_READPARMS: ',
+     &       'aim_fixed_pCO2 only used if aim_select_pCO2=1'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( atmpCO2init.EQ.UNSET_RL ) THEN
+        atmpCO2init = aim_ref_pCO2
+      ELSEIF ( aim_select_pCO2.GE.0 .AND. aim_select_pCO2.LT.2 ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** AIM_READPARMS: ',
+     &       'atmpCO2init only used if aim_select_pCO2 > 1'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
 
 #ifndef ALLOW_CLR_SKY_DIAG
 C-    If aim_clrSkyDiag is set, then must compile the Clear-Sky Diagnostic code
       IF ( aim_clrSkyDiag ) THEN
-        WRITE(msgBuf,'(A)')
-     &  'AIM_READPARMS: aim_clrSkyDiag=T but ALLOW_CLR_SKY_DIAG undef'
-        CALL PRINT_ERROR( msgBuf, myThid)
+        WRITE(msgBuf,'(2A)') 'AIM_READPARMS: ',
+     &       'aim_clrSkyDiag=T but ALLOW_CLR_SKY_DIAG undef'
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)')
      &  'Re-compile with: #define ALLOW_CLR_SKY_DIAG (AIM_OPTIONS.h)'
-        CALL PRINT_ERROR( msgBuf, myThid)
-        STOP 'ABNORMAL END: S/R AIM_READPARMS'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
       ENDIF
 #endif
 
@@ -334,11 +371,11 @@ C-    If aim_taveFreq is positive, then must compile the aim-diagnostics code
       IF (aim_taveFreq.GT.0.) THEN
         WRITE(msgBuf,'(A)')
      &  'AIM_READPARMS: aim_taveFreq > 0 but ALLOW_AIM_TAVE undefined'
-        CALL PRINT_ERROR( msgBuf, myThid)
+        CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)')
      &  'Re-compile with: #define ALLOW_AIM_TAVE (AIM_OPTIONS.h)'
-        CALL PRINT_ERROR( msgBuf, myThid)
-        STOP 'ABNORMAL END: S/R AIM_READPARMS'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
       ENDIF
 #endif /* ALLOW_AIM_TAVE */
 
@@ -362,18 +399,19 @@ C-    If aim_taveFreq is positive, then must compile the aim-diagnostics code
       aim_pickup_read_mdsio  = (.NOT. aim_pickup_read_mnc)
      &                     .OR. outputTypesInclusive
 
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Print out parameter values :
+      iUnit = standardMessageUnit
+      endList = '    ;     '
 
       WRITE(msgBuf,'(A)') ' '
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '// AIM physics parameters :'
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
       WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
 
        CALL WRITE_0D_L( useLand, INDEX_NONE,
      &                 'useLand =',
@@ -406,6 +444,38 @@ C- namelist AIM_PARAMS:
      &  ' /* separate Sea-Ice & Ocean Flux on/off flag */')
        CALL WRITE_0D_RL(aim_dragStrato,INDEX_NONE,'aim_dragStrato=',
      &    ' /* stratospheric-drag damping time scale (s) */')
+       CALL WRITE_0D_I( aim_selectOceAlbedo, INDEX_NONE,
+     &  'aim_selectOceAlbedo =', ' /* Ocean albedo(latitude) flag */')
+C-
+       WRITE(msgBuf,'(2A)') 'aim_select_pCO2=',
+     &              ' /* select AIM CO2 option */'
+       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+       buffI(1) = aim_select_pCO2
+       CALL PRINT_LIST_I( buffI, 1, 1, INDEX_NONE,
+     &                    .FALSE., .TRUE., iUnit )
+       WRITE(msgBuf,'(2A)')
+     &      '   =0: prescribed LW absorption in CO2 band (=ABLCO2)'
+       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)')
+     &      '   =1: absorption fct of prescribed pCO2 (=aim_fixed_pCO2)'
+       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)')
+     &      '   =2: same as 0 with passive,  well-mixed pCO2 atm box'
+       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)')
+     &      '   =3: same as 1 with evolving, well-mixed pCO2 atm-box'
+       CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
+       CALL PRINT_MESSAGE(endList, iUnit, SQUEEZE_RIGHT, myThid )
+       IF ( aim_select_pCO2.EQ.1 .OR. aim_select_pCO2.EQ.3 )
+     & CALL WRITE_0D_RL( aim_abs_pCO2, INDEX_NONE,
+     &  'aim_abs_pCO2 =', ' /* pCO2 dep. coeff. of CO2 absortion */')
+       IF ( aim_select_pCO2.EQ.1 )
+     & CALL WRITE_0D_RL( aim_fixed_pCO2, INDEX_NONE,
+     &  'aim_fixed_pCO2 =', ' /* fixed pCO2 for AIM radiation */')
+#ifdef ALLOW_AIM_CO2
+       CALL WRITE_0D_RL( atmpCO2init, INDEX_NONE,
+     &  'atmpCO2init =', ' /* Initial atm-box pCO2 */')
+#endif
        CALL WRITE_0D_L( aim_clrSkyDiag, INDEX_NONE,
      &                 'aim_clrSkyDiag =',
      &  ' /* do clear-sky radiation diagnostics */')
@@ -415,9 +485,6 @@ C- namelist AIM_PARAMS:
      &  '   /* Frequency^-1 for diagnostic output (s) */')
        CALL WRITE_0D_RL( aim_tendFreq, INDEX_NONE,'aim_tendFreq =',
      &  '   /* Frequency^-1 for tendencies output (s) */')
-       CALL WRITE_0D_I( aim_selectOceAlbedo, INDEX_NONE,
-     &                 'aim_selectOceAlbedo =',
-     &  '   /* Ocean albedo(latitude) flag */')
 
 C- namelist AIM_PAR_FOR:
        CALL WRITE_0D_RL( SOLC,  INDEX_NONE,'AIM_FOR:   SOLC =',
@@ -516,7 +583,7 @@ C- namelist AIM_PAR_RAD:
 
        WRITE(msgBuf,'(A)')
      &  ' AIM_RAD : ShortWave absorptivities (for dp = 10^5 Pa) :'
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT, myThid )
        CALL WRITE_0D_RL( ABSDRY,INDEX_NONE,'AIM_RAD: ABSDRY =',
      &  '   /* abs. of dry air (visible band) */')
        CALL WRITE_0D_RL( ABSAER,INDEX_NONE,'AIM_RAD: ABSAER =',
@@ -557,17 +624,21 @@ C- namelist AIM_PAR_VDI:
        CALL WRITE_0D_RL( SEGRAD,INDEX_NONE,'AIM_VDI: SEGRAD =',
      &  '   /* max grad. of dry static Energy(d_DSE/d_phi)*/')
 
-#ifdef ALLOW_AIM_CO2
-C- namelist AIM_PAR_CO2:
-       CALL WRITE_0D_I( Aim_CO2_Flag, INDEX_NONE,
-     &                 'AIM_PAR_CO2: Aim_CO2_Flag =',
-     &  ' /* CO2 flag, 1: prescribed, 2: interactive  */')
-       CALL WRITE_0D_RL( atmpCO2init,    INDEX_NONE,
-     &                 'AIM_PAR_CO2: atmpCO2init =',
-     &  ' /* pCO2 when prescribed or IC when interactive */')
-#endif
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &       'AIM_READPARMS: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R AIM_READPARMS'
+      ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C- Initialise CO2 concentration (a better place would be from AIM_INIT_VARIA):
+      aim_pCO2 = aim_fixed_pCO2
+#ifdef ALLOW_AIM_CO2
+      atm_pCO2 = atmpCO2init
+#endif /* ALLOW_AIM_CO2 */
 
       _END_MASTER(myThid)
 
