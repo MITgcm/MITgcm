@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2368 2017/12/29 19:56:37 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2369 2018/01/11 02:14:50 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/aim_v23:
+  - merge namelist "AIM_PAR_CO2" into "AIM_PARAMS" and replace Aim_CO2_Flag=2
+    option with aim_select_pCO2=2 (using #define ALLOW_AIM_CO2);
+  - add option to derive LW absorption in CO2 band as function of pCO2,
+    using either prescribed pCO2 (aim_select_pCO2=1), or computed pCO2
+    from well-mixed atm-box (aim_select_pCO2=3).
 o pkg/gchem, changes to enable to use several geo-chemistry pkgs together:
   - new CPP option GCHEM_ADD2TR_TENDENCY around definition of gchemTendency
     array (replacing #ifndef GCHEM_SEPARATE_FORCING) ;
