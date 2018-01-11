@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_driver.F,v 1.9 2010/10/26 20:59:53 dfer Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_driver.F,v 1.10 2018/01/11 01:58:50 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -8,7 +8,6 @@ C     !ROUTINE: PHY_DRIVER
 C     !INTERFACE:
       SUBROUTINE PHY_DRIVER( tYear, usePkgDiag,
      I                       bi, bj, myTime, myIter, myThid )
-
 
 C     !DESCRIPTION: \bv
 C------------------------
@@ -43,6 +42,7 @@ C-- size for MITgcm & Physics package :
 C-- Physics package
 #include "AIM_PARAMS.h"
 #include "AIM_GRID.h"
+#include "AIM_CO2.h"
 
 C     Constants + functions of sigma and latitude
 #include "com_physcon.h"
@@ -99,7 +99,8 @@ C      PSG     :: surface pressure (normalized)
       _RL PSG   (NGP)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- Local variables:
-C    kGrd   :: Ground level index              (2-dim)
+C    absLW_CO2 :: LW absorbtion in CO2 band (uniform value)
+C    kGround   :: Ground level index              (2-dim)
 C    dpFac  :: cell delta_P fraction           (3-dim)
 C    dTskin :: temp. correction for daily-cycle heating [K]
 C    T1s    :: near-surface air temperature (from Pot.Temp)
@@ -115,6 +116,7 @@ C              0: Flux(Ts=0.oC) ; 1: Flux(Ts^n) ; 2: d.Flux/d.Ts(Ts^n)
       LOGICAL LRADSW
       INTEGER ICLTOP(NGP)
       INTEGER kGround(NGP)
+      _RL absLW_CO2
       _RL dpFac(NGP,NLEV)
 c_FM  REAL    RPS(NGP), ST4S(NGP)
       _RL ST4S(NGP)
@@ -227,6 +229,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     3.1 Compute shortwave tendencies and initialize lw transmissivity
 
+C     Set LW absorption in CO2 band
+      IF ( aim_select_pCO2.EQ.1 .OR. aim_select_pCO2.EQ.3 ) THEN
+        absLW_CO2 = ABLCO2
+     &            + aim_abs_pCO2*LOG( aim_pCO2/aim_ref_pCO2 )
+      ELSE
+        absLW_CO2 = ABLCO2
+      ENDIF
+
 C     The sw radiation may be called at selected time steps
       LRADSW = .TRUE.
 
@@ -241,7 +251,7 @@ c_FM &              ICLTOP,CLOUDC,TSR,SSR,TT_RSW)
      O             ICLTOP,CLOUDC(1,myThid),
      O             TSR(1,myThid),SSR(1,0,myThid),
      O             UPSWG,TT_RSW(1,1,myThid),
-     I             kGround,bi,bj,myThid)
+     I             absLW_CO2, kGround, bi, bj, myThid )
 
         DO J=1,NGP
           CLTOP(J,myThid)=SIGH(ICLTOP(J)-1)*PSG_1(J)
@@ -387,7 +397,7 @@ C      3.5.1 Compute shortwave tendencies
      O             TAU2, STRATC,
      O             dummyI, dummyR,
      O  TSWclr(1,myThid), SSWclr(1,myThid), UPSWG, TT_SWclr(1,1,myThid),
-     I             kGround,bi,bj,myThid)
+     I             absLW_CO2, kGround, bi, bj, myThid )
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( usePkgDiag ) THEN
