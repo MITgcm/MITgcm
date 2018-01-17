@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_psurf.F,v 1.11 2009/06/14 21:45:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_psurf.F,v 1.12 2018/01/17 15:04:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -31,7 +31,10 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "SURFACE.h"
 #ifdef ALLOW_CD_CODE
-#include "CD_CODE_VARS.h"
+# include "CD_CODE_VARS.h"
+#endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -50,8 +53,8 @@ CEOP
 C--   Initialise surface position anomaly to zero
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
           etaN(I,J,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
@@ -68,14 +71,13 @@ C      fill the overlap (+ BARRIER)
 C--   By default, initialize etaNm1 with etaN :
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
           etaNm1(I,J,bi,bj) = etaN(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-
 C     _EXCH_XY_RL(etaNm1, myThid)
 #endif
 
@@ -83,8 +85,8 @@ C     _EXCH_XY_RL(etaNm1, myThid)
 C--   By default, initialize etaH with etaN :
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           etaH(i,j,bi,bj) = etaN(i,j,bi,bj)
           etaHnm1(i,j,bi,bj) = etaN(i,j,bi,bj)
           dEtaHdt(i,j,bi,bj) = 0. _d 0
@@ -93,6 +95,21 @@ C--   By default, initialize etaH with etaN :
        ENDDO
       ENDDO
 #endif /* EXACT_CONSERV */
+
+#ifdef ALLOW_SHELFICE
+      IF ( useShelfIce .AND. usingZCoords ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              phi0surf(i,j,bi,bj) = phi0surf(i,j,bi,bj)
+     &          + shelficeLoadAnomaly(i,j,bi,bj)*recip_rhoConst
+            ENDDO
+           ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
+#endif /* ALLOW_SHELFICE */
 
       RETURN
       END
