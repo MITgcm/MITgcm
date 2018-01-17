@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2369 2018/01/11 02:14:50 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2370 2018/01/17 21:22:07 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice & down_slope:
+  - remove few files from ${pkg}_ad_diff.list (when calling S/R is not in
+    any *_ad_diff.list)
+o pkg/shelfice:
+  - account for "shelficeLoadAnomaly" in computation of initial pressure
+    that is used in EOS (case selectP_inEOS_Zc >= 2).
 o pkg/aim_v23:
   - merge namelist "AIM_PAR_CO2" into "AIM_PARAMS" and replace Aim_CO2_Flag=2
     option with aim_select_pCO2=2 (using #define ALLOW_AIM_CO2);
