@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2370 2018/01/17 21:22:07 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2371 2018/01/18 14:15:37 jmc Exp $
 $Name:  $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint66n (2018/01/18)
 o pkg/seaice & down_slope:
   - remove few files from ${pkg}_ad_diff.list (when calling S/R is not in
     any *_ad_diff.list)
