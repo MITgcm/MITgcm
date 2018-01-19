@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_tr_register.F,v 1.2 2018/01/19 22:22:29 jahn Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_tr_register.F,v 1.3 2018/01/19 22:23:06 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -67,9 +67,9 @@ C                             and finish with those using gchem-tendency
 #endif
 #ifdef ALLOW_DARWIN
       IF ( useDARWIN ) THEN
-        CALL DDARWIN_TR_REGISTER(
-     U                  gchem_Tracer_num, gchem_sepFTr_num,
-     I                  myThid )
+        CALL DARWIN_TR_REGISTER(
+     U                 gchem_Tracer_num, gchem_sepFTr_num,
+     I                 myThid )
       ENDIF
 #endif
 
