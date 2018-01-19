@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_tr_register.F,v 1.1 2017/12/29 19:35:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_tr_register.F,v 1.2 2018/01/19 22:22:29 jahn Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -18,13 +18,6 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GCHEM.h"
-#ifdef ALLOW_DARWIN
-C- temporary, until we get S/R DARWIN_TR_REGISTER written
-# ifdef ALLOW_PTRACERS
-#  include "PTRACERS_SIZE.h"
-#  include "PTRACERS_PARAMS.h"
-# endif
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid         :: thread number
@@ -74,8 +67,9 @@ C                             and finish with those using gchem-tendency
 #endif
 #ifdef ALLOW_DARWIN
       IF ( useDARWIN ) THEN
-        gchem_Tracer_num = gchem_Tracer_num + PTRACERS_numInUse
-        gchem_sepFTr_num = gchem_sepFTr_num + PTRACERS_numInUse
+        CALL DDARWIN_TR_REGISTER(
+     U                  gchem_Tracer_num, gchem_sepFTr_num,
+     I                  myThid )
       ENDIF
 #endif
 
