@@ -1,0 +1,11 @@
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/ref_machine/crontab_jm_c,v 1.1 2018/01/19 20:04:38 jmc Exp $
+
+#---------------------------------------------------------
+#-from: jm_c@villon.mit.edu
+#  current output of "crontab -l":
+MAILTO=jmc@ocean.mit.edu
+
+55 23  * * * cd /home/jm_c/testing/ref_machine && cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d
+10 00 * * * /home/jm_c/testing/ref_machine/test_newRef a
+
+#---------------------------------------------------------
