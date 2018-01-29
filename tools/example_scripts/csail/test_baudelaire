@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.37 2018/01/06 15:19:55 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.38 2018/01/29 21:59:01 jmc Exp $
 
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
@@ -63,13 +63,13 @@ TODAY=`date +%d`
 tdir=$TESTDIR
 updFile='updated_code' ; today=`date +%Y%m%d`
 if test $checkOut != 2 ; then
-  if test -e $tdir/MITgcm/CVS ; then
-    echo $tdir/MITgcm/CVS 'exist'
+  if test -e $tdir/MITgcm_today/CVS ; then
+    echo $tdir/MITgcm_today/CVS 'exist'
     if test $sepDir = 0 -a $checkOut = 1 ; then
       #- remove date/lock-file:
       if test -f $tdir/$updFile ; then rm -f $tdir/$updFile ; sleep 2 ; fi
       echo -n "Update the MITgcm code using: $cmdCVS ..."
-      cd $tdir/MITgcm
+      cd $tdir/MITgcm_today
       $cmdCVS update -P -d
       echo "  done"
       #- update date/lock-file:
@@ -77,14 +77,14 @@ if test $checkOut != 2 ; then
         sleep 2 ; ls -l $updFile )
     fi
   else
-    echo -n $tdir/MITgcm 'missing ; '
+    echo -n $tdir/MITgcm_today 'missing ; '
     checkOut=2
   fi
 fi
 if test $checkOut = 2 ; then
   if test -e $tdir ; then
-    echo -n "Removing working copy: $tdir/MITgcm ..."
-    test -e $tdir/MITgcm  &&  rm -rf $tdir/MITgcm
+    echo -n "Removing working copy: $tdir/MITgcm_today ..."
+    test -e $tdir/MITgcm_today  &&  rm -rf $tdir/MITgcm_today
   else
     echo -n "Creating a working dir: $tdir ..."
     mkdir $tdir
@@ -94,8 +94,15 @@ if test $checkOut = 2 ; then
   #- remove date/lock-file:
   if test -f $updFile ; then rm -f $updFile ; sleep 2 ; fi
   echo -n "Downloading the MITgcm code using: $cmdCVS ..."
-  $cmdCVS co -P MITgcm > /dev/null
-  echo "  done"
+  $cmdCVS co -P -d MITgcm_today MITgcm > /dev/null
+  retVal=$?
+  if test "x$retVal" != x0 ; then echo ''
+       echo -n "'$cmdCVS co  -P -d MITgcm_today MITgcm'"
+       echo " on '"`hostname`"' fail (return val=$retVal) => exit"
+       exit
+  else echo "  done"
+      #echo "'$cmdCVS co  -P -d MITgcm_today MITgcm' on '"`hostname`"' work"
+  fi
   if test -d other_input ; then
     list_dirs=`(cd other_input ; ls 2> /dev/null )`
     echo "Updating ( $cmdCVS update -P -d ) 'other_input' extra dirs:"
@@ -150,6 +157,9 @@ do
   #- clean-up old output files
   rm -f $tdir/output_${typ}*
   touch $tdir/output_$tt
+  echo -n "-- Starting test: $tt at: "		>> $tdir/output_$tt
+  date						>> $tdir/output_$tt
+  echo " typ='$typ', addExp='$addExp'"		>> $tdir/output_$tt
   if test $sepDir = 1 ; then
     new_dir="MITgcm_$typ"
     reUse=1 ; if [ $checkOut -ge 2 ] ; then reUse=0 ; fi
@@ -159,9 +169,9 @@ do
         ( cd verification ; ../tools/do_tst_2+2 -clean )
       fi
       if test $checkOut = 1 ; then
-        echo -n "Update the MITgcm code using: $cmdCVS ..."
-        $cmdCVS update -P -d
-        echo "  done"
+        echo -n "Update the MITgcm code using: $cmdCVS ..." | tee -a $tdir/output_$tt
+        $cmdCVS update -P -d		| tee -a $tdir/output_$tt
+        echo "  done"			| tee -a $tdir/output_$tt
       fi
     else
       if test -d prev ; then
@@ -176,6 +186,7 @@ do
         if test "x$oldS" != x ; then cp -p -f $oldS prev/rs_out.$typ ; fi
        fi
       fi
+      echo " remove dir: $new_dir and make new one"	>> $tdir/output_$tt
       test -e $new_dir  &&  rm -rf $new_dir
       mkdir $new_dir
     #- before making a copy, check that code has been updated
@@ -195,46 +206,46 @@ do
       ls -l $updFile					| tee -a $tdir/output_$tt
       echo " waited nCount=$nCount for updated code ($updDate) to copy"	| tee -a $tdir/output_$tt
     #-----------------------------
-      if test -d MITgcm -a -d $new_dir ; then
-        echo " copy main code from MITgcm to $new_dir"  | tee -a $tdir/output_$tt
-        cp -ra MITgcm/* $new_dir 2>&1   | tee -a $tdir/output_$tt
+      if test -d MITgcm_today -a -d $new_dir ; then
+        echo " copy main code from MITgcm_today to $new_dir"	| tee -a $tdir/output_$tt
+        cp -ra MITgcm_today/* $new_dir 2>&1	| tee -a $tdir/output_$tt
       else
-        if test -d MITgcm ; then
-         echo " missing dir $new_dir --> end test $tt"  | tee -a $tdir/output_$tt
+        if test -d MITgcm_today ; then
+         echo " missing dir $new_dir --> end test $tt"		| tee -a $tdir/output_$tt
         else
-         echo " missing dir MITgcm --> end test $tt"    | tee -a $tdir/output_$tt
+         echo " missing dir MITgcm_today --> end test $tt"	| tee -a $tdir/output_$tt
         fi
         continue
       fi
-      echo -n " cd $tdir/$new_dir "     | tee -a $tdir/output_$tt
+      echo -n " cd $tdir/$new_dir "		| tee -a $tdir/output_$tt
       cd $tdir/$new_dir
       retVal=$?
-      ( echo "(retVal= $retVal )" ; pwd )       | tee -a $tdir/output_$tt
+      ( echo "(retVal= $retVal )" ; pwd )	| tee -a $tdir/output_$tt
       if test -d verification ; then
-        echo " check: dir verification exist"   | tee -a $tdir/output_$tt
+        echo " check: dir verification exist"	| tee -a $tdir/output_$tt
       else
-        echo " missing dir verification --> end test $tt"       | tee -a $tdir/output_$tt
+        echo " missing dir verification --> end test $tt"	| tee -a $tdir/output_$tt
         continue
       fi
       #-- download additional experience from Contrib:
       for exp2add in $addExp ; do
-        echo " add dir: $exp2add (from Contrib:verification_other)"
+        echo " add dir: $exp2add (from Contrib:verification_other)"	| tee -a $tdir/output_$tt
         ( cd verification ;  $cmdCVS co -P -d $exp2add \
              MITgcm_contrib/verification_other/$exp2add > /dev/null )
         if test $exp2add = 'global_oce_cs32' ; then
-          echo " link dir 'other_input/core2_cnyf' in here"
+          echo " link dir 'other_input/core2_cnyf' in here"		| tee -a $tdir/output_$tt
           ( cd verification/${exp2add}
             ln -s ../../../other_input/core2_cnyf . )
         fi
         if test $exp2add = 'shelfice_remeshing' ; then
-          echo " link dir 'other_input/remeshing_code' to 'extra_code'"
+          echo " link dir 'other_input/remeshing_code' to 'extra_code'"	| tee -a $tdir/output_$tt
           ( cd verification/${exp2add}
             ln -s ../../../other_input/remeshing_code extra_code )
         fi
       done
     fi
   else
-    cd $tdir/MITgcm
+    cd $tdir/MITgcm_today
   fi
   cd verification
 
@@ -341,7 +352,7 @@ do
   if test $sepDir = 0 ; then
 #-- cleaning:
     echo "======================"
-    echo "Cleaning test directories:"	| tee -a $tdir/output_$tt
+    echo "Cleaning test directories:"		| tee -a $tdir/output_$tt
     if test $tt != $typ ; then
       cmdCLN="../tools/do_tst_2+2 -clean"
       echo " clean tst_2+2 running: $cmdCLN"	| tee -a $tdir/output_$tt
