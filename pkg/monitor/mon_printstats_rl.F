@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_printstats_rl.F,v 1.11 2010/01/26 01:09:02 jmc Exp $
-C $Name:  $
-
 #include "MONITOR_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

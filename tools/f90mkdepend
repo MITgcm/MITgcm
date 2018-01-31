@@ -1,6 +1,4 @@
 #!/bin/bash
-# $Header: /u/gcmpack/MITgcm/tools/f90mkdepend,v 1.7 2013/12/11 21:53:02 jahn Exp $
-# $Name:  $
 #
 # Generate some make file dependency entries for a Fortran 90 file that employs "use".
 #

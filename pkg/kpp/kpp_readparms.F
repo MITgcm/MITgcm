@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.25 2017/10/19 13:17:17 jmc Exp $
-C $Name:  $
 #include "KPP_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

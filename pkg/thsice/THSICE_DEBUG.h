@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_DEBUG.h,v 1.1 2006/05/25 17:59:00 jmc Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: THSICE_DEBUG.h
 

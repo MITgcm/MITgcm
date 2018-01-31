@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_read_pickup.F,v 1.6 2017/03/24 23:34:13 jmc Exp $
-C $Name:  $
-
 #include "CHEAPAML_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

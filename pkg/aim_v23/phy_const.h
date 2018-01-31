@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_const.h,v 1.2 2004/05/14 16:08:38 jmc Exp $
-C $Name:  $
-
 C--   Constants for physical parametrization routines:
 
 C--   Constants for boundary forcing (common FORCON):

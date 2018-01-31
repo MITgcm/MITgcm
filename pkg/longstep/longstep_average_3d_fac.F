@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_average_3d_fac.F,v 1.3 2015/11/16 23:11:21 jmc Exp $
-C $Name:  $
-
 #include "LONGSTEP_OPTIONS.h"
 
 CBOP

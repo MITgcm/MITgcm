@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.161 2016/08/24 15:00:51 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF

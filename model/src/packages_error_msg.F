@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_error_msg.F,v 1.2 2012/04/02 21:31:06 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

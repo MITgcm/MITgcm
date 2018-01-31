@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_summary.F,v 1.91 2017/06/08 15:10:05 mlosch Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 
 CBOP

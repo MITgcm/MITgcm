@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_ini_forcing.F,v 1.3 2017/02/23 20:48:56 jmc Exp $
-C $Name:  $
-
 #include "BLING_OPTIONS.h"
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"

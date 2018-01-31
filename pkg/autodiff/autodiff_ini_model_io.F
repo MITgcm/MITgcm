@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.32 2017/02/18 16:12:36 gforget Exp $
-C $Name:  $
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #include "AUTODIFF_OPTIONS.h"

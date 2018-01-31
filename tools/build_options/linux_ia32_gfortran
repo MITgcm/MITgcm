@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_gfortran,v 1.12 2013/07/22 18:40:45 jmc Exp $
-#  $Name:  $
 #
 
 #  Tested with gcc-gfortran v4.1.1 on FC5, FC6, FC8, using flags

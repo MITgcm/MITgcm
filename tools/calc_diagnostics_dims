@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/calc_diagnostics_dims,v 1.1 2004/02/13 06:05:49 edhill Exp $
-# $Name:  $
-
 #  The purpose of this script is to calculate the exact number of "z"
 #  dimensions needed within a FORTRAN storage array for the MITgcm
 #  diagnostics package.

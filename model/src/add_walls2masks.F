@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/add_walls2masks.F,v 1.1 2014/02/08 17:20:06 jmc Exp $
-C $Name:  $
-
 c#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

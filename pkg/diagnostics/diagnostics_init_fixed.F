@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_fixed.F,v 1.8 2011/07/06 01:43:49 jmc Exp $
-C $Name:  $
-
 #include "DIAG_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

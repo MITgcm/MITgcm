@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_read_co2_pickup.F,v 1.4 2017/03/24 23:34:13 jmc Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 
       SUBROUTINE DIC_READ_CO2_PICKUP(

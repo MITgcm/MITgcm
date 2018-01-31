@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_hyd.F,v 1.7 2014/05/02 16:57:43 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

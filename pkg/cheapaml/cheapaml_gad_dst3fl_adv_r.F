@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_gad_dst3fl_adv_r.F,v 1.3 2012/12/04 17:26:10 jmc Exp $
-C $Name:  $
-
 #include "GAD_OPTIONS.h"
 
 CBOP

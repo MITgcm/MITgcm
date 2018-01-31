@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/cpl_atm2d+ocn/shared_code/ATMIDS.h,v 1.3 2013/12/02 23:48:15 jmc Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | ATMIDS.h Declare symbolic constants holding strings that
 C     |          are used to identify this component and the

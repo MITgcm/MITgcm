@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.19 2015/06/02 20:58:22 jmc Exp $
-C $Name:  $
-
 #include "DIAG_OPTIONS.h"
 
 CBOP 0

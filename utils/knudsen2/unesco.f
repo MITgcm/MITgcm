@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/utils/knudsen2/unesco.f,v 1.1 2002/08/07 16:55:52 mlosch Exp $
-
       PROGRAM KNUDSEN2
       implicit none
 C

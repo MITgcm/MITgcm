@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/gsw_teos10.F,v 1.2 2015/02/27 08:18:12 mlosch Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 C--  File gsw_teos10.F: routines that compute quantities related to seawater.

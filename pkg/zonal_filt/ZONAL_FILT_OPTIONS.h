@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/ZONAL_FILT_OPTIONS.h,v 1.5 2011/12/24 01:09:42 jmc Exp $
-C $Name:  $
-
 #ifndef ZONAL_FILT_OPTIONS_H
 #define ZONAL_FILT_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

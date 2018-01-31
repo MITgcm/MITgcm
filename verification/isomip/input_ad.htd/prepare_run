@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/isomip/input_ad.htd/prepare_run,v 1.1 2015/02/05 21:12:02 jmc Exp $
-#  $Name:  $
-
 #- in order to save disc space, take *.bin files
 #- from this dir:
 fromDir="../input"

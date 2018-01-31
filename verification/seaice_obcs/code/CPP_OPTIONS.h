@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/code/CPP_OPTIONS.h,v 1.2 2012/12/14 19:19:44 dimitri Exp $
-C $Name:  $
-
 #ifndef CPP_OPTIONS_H
 #define CPP_OPTIONS_H
 

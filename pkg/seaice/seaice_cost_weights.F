@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_weights.F,v 1.8 2014/10/20 03:20:57 gforget Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_ECCO
 #include "ECCO_OPTIONS.h"

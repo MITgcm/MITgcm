@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_ifort,v 1.2 2010/03/21 22:22:52 jmc Exp $
-# $Name:  $
-
 #  Ed Hill
 #
 #  Build options for the intel 9 fortran compiler on MAC OS X

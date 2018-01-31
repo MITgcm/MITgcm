@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.33 2017/01/27 17:01:04 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 
       SUBROUTINE EXF_CHECK_RANGE( myTime, myIter, myThid )

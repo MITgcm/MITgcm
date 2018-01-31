@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_ad/SIZE.h,v 1.3 2010/04/09 15:41:36 jmc Exp $
-C $Name:  $
-
 C
 CBOP
 C    !ROUTINE: SIZE.h

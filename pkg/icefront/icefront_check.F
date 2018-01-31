@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_check.F,v 1.6 2013/11/10 02:58:34 yunx Exp $
-C $Name:  $
 #include "ICEFRONT_OPTIONS.h"
 
       SUBROUTINE ICEFRONT_CHECK( myThid )

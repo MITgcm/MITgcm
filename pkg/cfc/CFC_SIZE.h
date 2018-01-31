@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/CFC_SIZE.h,v 1.1 2017/12/29 18:32:38 jmc Exp $
-C $Name:  $
-
 #ifndef CFC_SIZE_H
 #define CFC_SIZE_H
 

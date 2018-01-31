@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_check.F,v 1.2 2004/09/23 12:02:54 mlosch Exp $
-C $Name:  $
 #include "OPPS_OPTIONS.h"
 
       SUBROUTINE OPPS_CHECK( myThid )

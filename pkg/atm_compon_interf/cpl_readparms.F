@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_readparms.F,v 1.13 2017/08/09 15:23:39 mlosch Exp $
-C $Name:  $
-
 #include "ATM_CPL_OPTIONS.h"
 
 CBOP

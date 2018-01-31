@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/adcommon.h,v 1.3 2007/10/09 02:36:41 jmc Exp $
-C $Name:  $
-
 C     These common blocks are extracted from the
 C     automatically created adjoint code.
 C     You need to make sure that they are up-to-date

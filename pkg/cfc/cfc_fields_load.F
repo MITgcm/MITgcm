@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.21 2013/06/10 02:58:12 jmc Exp $
-C $Name:  $
-
 #include "GCHEM_OPTIONS.h"
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"

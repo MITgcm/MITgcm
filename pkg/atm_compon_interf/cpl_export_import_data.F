@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_export_import_data.F,v 1.6 2016/01/13 21:36:26 jmc Exp $
-C $Name:  $
-
 #include "ATM_CPL_OPTIONS.h"
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcomponent_tile_register.F,v 1.3 2013/11/27 21:53:04 jmc Exp $
-C $Name:  $
-
 !=======================================================================
       subroutine MITCOMPONENT_tile_register( num_tiles, iReg )
       implicit none

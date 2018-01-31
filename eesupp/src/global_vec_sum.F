@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_vec_sum.F,v 1.5 2012/05/11 20:07:51 jmc Exp $
-C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
 C--  File global_vec_sum.F: Perform a global sum on a tiled-array of vectors.

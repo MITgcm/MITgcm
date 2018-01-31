@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc_visc.F,v 1.5 2015/07/04 02:20:43 heimbach Exp $
-C $Name:  $
-
 #include "KPP_OPTIONS.h"
 
       SUBROUTINE KPP_CALC_VISC(

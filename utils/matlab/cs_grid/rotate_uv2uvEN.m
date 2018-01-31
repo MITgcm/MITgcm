@@ -25,9 +25,6 @@ function [uE,vN,msk] = rotate_uv2uvEN(u,v,AngleCS,AngleSN,Grid,maskW,maskS)
 % >> AngleSN=rdmds('AngleSN');
 % >> [uE,vN] = rotate_uv2uvEN(uA,vA,AngleCS,AngleSN,'A');
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/rotate_uv2uvEN.m,v 1.4 2008/06/24 16:48:42 jmc Exp $
-% $Name:  $
-
 % Default is a C-grid configuration.
 if nargin == 4, Grid = 'C'; end
 UVmsk=0; if isequal(Grid,'C') & nargin == 7, UVmsk=1; end

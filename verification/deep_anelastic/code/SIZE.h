@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/deep_anelastic/code/SIZE.h,v 1.1 2006/12/06 00:24:28 jmc Exp $
-C $Name:  $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

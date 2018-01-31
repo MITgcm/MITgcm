@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.42 2015/02/18 12:31:10 heimbach Exp $
-C $Name:  $
-
 #include "GRDCHK_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"

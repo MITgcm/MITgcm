@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.13 2012/10/11 19:15:18 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 #ifdef USE_LIBHPM
 # include "f_hpm.h"

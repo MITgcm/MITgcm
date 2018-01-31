@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/SBO_OPTIONS.h,v 1.5 2011/12/24 01:09:40 jmc Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | SBO_OPTIONS.h
 C     | o CPP options file for SBO package.

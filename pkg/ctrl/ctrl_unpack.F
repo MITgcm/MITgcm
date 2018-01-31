@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.55 2014/12/03 16:47:45 mlosch Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/CTRL_OPTIONS.h,v 1.2 2014/10/16 20:06:23 gforget Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: CTRL_OPTIONS.h
 C !INTERFACE:

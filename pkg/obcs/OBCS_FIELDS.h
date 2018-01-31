@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_FIELDS.h,v 1.5 2012/11/15 20:46:52 dimitri Exp $
-C $Name:  $
-
 #ifdef ALLOW_OBCS
 
 CBOP

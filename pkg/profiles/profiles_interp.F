@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_interp.F,v 1.16 2017/01/10 15:40:59 gforget Exp $
-C $Name:  $
-
 #include "PROFILES_OPTIONS.h"
 #ifdef ALLOW_ECCO
 # include "ECCO_OPTIONS.h"

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kl10/KL10_OPTIONS.h,v 1.1 2014/07/30 03:28:05 jmc Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | KL10_OPTIONS.h
 C     | o CPP options file for KL10 package.

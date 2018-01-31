@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcplr_all_check.F,v 1.1 2013/12/02 21:35:45 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !INTERFACE:
       SUBROUTINE MITCPLR_ALL_CHECK( errFlag, errMsg )

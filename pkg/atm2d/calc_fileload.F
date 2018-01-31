@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/calc_fileload.F,v 1.2 2007/10/08 23:48:28 jmc Exp $
-C $Name:  $
-
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 C

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_fixed.F,v 1.13 2016/01/11 21:46:55 jmc Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

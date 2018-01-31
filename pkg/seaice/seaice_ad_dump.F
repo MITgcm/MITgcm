@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_dump.F,v 1.14 2017/03/24 23:51:14 jmc Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 #include "AD_CONFIG.h"
 #ifdef ALLOW_AUTODIFF

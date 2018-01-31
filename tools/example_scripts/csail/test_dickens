@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_dickens,v 1.26 2013/06/28 15:38:19 jmc Exp $
-
 #  Test script for MITgcm that should work on most of the csail.mit.edu
 #  Linux machines.
 

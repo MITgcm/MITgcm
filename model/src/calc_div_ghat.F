@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.27 2012/11/09 22:37:05 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

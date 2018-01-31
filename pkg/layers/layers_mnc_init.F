@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_mnc_init.F,v 1.1 2009/09/16 21:25:47 rpa Exp $
-C $Name:  $
-
 #include "LAYERS_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

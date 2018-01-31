@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_eigs.F,v 1.7 2014/11/24 10:23:50 dfer Exp $
-C $Name:  $
-
 #include "GMREDI_OPTIONS.h"
 
 C     !ROUTINE: EIGENVAL

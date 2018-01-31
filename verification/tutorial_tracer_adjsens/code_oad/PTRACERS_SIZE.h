@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_oad/PTRACERS_SIZE.h,v 1.1 2013/03/21 18:44:33 jahn Exp $
-C $Name:  $
-
 #ifdef ALLOW_PTRACERS
 
 CBOP

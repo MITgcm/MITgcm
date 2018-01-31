@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.16 2011/05/23 00:39:20 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

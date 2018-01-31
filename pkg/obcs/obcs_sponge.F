@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_sponge.F,v 1.14 2014/09/27 00:13:40 dimitri Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 
 C--   File obcs_sponge.F:

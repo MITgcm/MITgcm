@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_obcs.F,v 1.17 2011/09/02 18:22:50 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 
 C--  File exf_set_obcs.F:

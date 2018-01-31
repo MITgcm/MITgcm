@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/FIZHI_OPTIONS.h,v 1.3 2012/03/22 14:19:21 jmc Exp $
-C $Name:  $
-
 #ifndef FIZHI_OPTIONS_H
 #define FIZHI_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

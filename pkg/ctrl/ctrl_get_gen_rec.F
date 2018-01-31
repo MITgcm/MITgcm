@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen_rec.F,v 1.15 2012/08/10 19:38:57 jmc Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_get_gen_rec(

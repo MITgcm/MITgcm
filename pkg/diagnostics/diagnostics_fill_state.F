@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.43 2015/06/09 16:31:45 rpa Exp $
-C $Name:  $
-
 #include "DIAG_OPTIONS.h"
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xy.F,v 1.34 2015/06/16 20:20:26 gforget Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_unpack_xy(

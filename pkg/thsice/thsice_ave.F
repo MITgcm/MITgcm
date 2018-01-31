@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.15 2013/05/02 20:01:21 jmc Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_inadmode_set_ad.F,v 1.14 2016/01/22 15:33:21 mlosch Exp $
-C $Name:  $
-
 #include "AUTODIFF_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/cumulsum_z_tile.F,v 1.3 2012/09/06 15:25:01 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_EEOPTIONS.h"
 

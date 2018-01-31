@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/isomip/code/SIZE.h,v 1.3 2013/10/22 20:25:16 jmc Exp $
-C $Name:  $
-
 CBOP
 C    !ROUTINE: SIZE.h
 C    !INTERFACE:

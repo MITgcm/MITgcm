@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/AtoC.F,v 1.8 2006/08/27 18:27:36 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
        subroutine AtoC(myThid,fieldin1,fieldin2,mask,idim1,idim2,
      .  jdim1,jdim2,numlevs,Nsx,Nsy,im1,im2,jm1,jm2,fieldout1,fieldout2)

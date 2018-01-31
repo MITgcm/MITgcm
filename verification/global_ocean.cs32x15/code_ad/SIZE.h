@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/SIZE.h,v 1.2 2010/12/24 21:59:09 jmc Exp $
-C $Name:  $
-
-
 CBOP
 C    !ROUTINE: SIZE.h
 C    !INTERFACE:

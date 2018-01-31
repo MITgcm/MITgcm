@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost.h,v 1.18 2013/11/06 18:50:56 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 
 c     ==================================================================

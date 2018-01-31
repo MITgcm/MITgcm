@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_grid_angles.F,v 1.2 2013/02/17 02:29:52 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

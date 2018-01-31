@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_export_data.F,v 1.2 2016/01/06 01:04:05 jmc Exp $
-C $Name:  $
-
 #include "OCN_CPL_OPTIONS.h"
 
 CBOP

@@ -1,7 +1,4 @@
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/use_bk_line.m,v 1.3 2013/02/12 17:59:02 jmc Exp $
-% $Name:  $
-
 % input: krd, kfac, jprt
 krd=2; kfac=0; jprt=0;
 

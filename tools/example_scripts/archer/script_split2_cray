@@ -7,9 +7,6 @@
 #PBS -A n02-ncas
 #PBS -V
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/archer/script_split2_cray,v 1.1 2016/10/03 20:12:05 dfer Exp $
-# $Name:  $
-
 #- to get case insensitive "ls" (and order of tested experiments)
 setenv LC_ALL "en_US.UTF-8"
 

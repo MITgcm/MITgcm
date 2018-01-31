@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_calc_rho.F,v 1.4 2016/02/15 15:27:32 jmc Exp $
-C $Name:  $
-
 #include "DWNSLP_OPTIONS.h"
 
 CBOP

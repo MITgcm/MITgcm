@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/ctrl_map_ini_genarr.F,v 1.3 2015/01/30 19:19:19 heimbach Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 #include "STREAMICE_OPTIONS.h"
 

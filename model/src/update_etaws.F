@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_etaws.F,v 1.2 2011/12/22 00:11:11 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

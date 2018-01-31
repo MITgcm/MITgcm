@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/mds_byteswapr4.F,v 1.3 2009/01/09 22:51:13 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
       subroutine MDS_BYTESWAPR4( n, arr )

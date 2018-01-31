@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_dyn_state_mod.F,v 1.4 2008/05/10 19:57:10 jmc Exp $
-C $Name:  $
-
 #include "PTRACERS_OPTIONS.h"
 #ifdef PTRACERS_ALLOW_DYN_STATE
 

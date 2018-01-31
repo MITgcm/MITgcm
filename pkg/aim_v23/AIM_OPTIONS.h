@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_OPTIONS.h,v 1.12 2013/08/11 02:54:51 jmc Exp $
-C $Name:  $
-
 C  CPP options file for AIM package
 
 #ifndef AIM_OPTIONS_H

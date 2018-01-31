@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_weights.h,v 1.11 2014/10/09 00:49:27 gforget Exp $
-C $Name:  $
-
 c     Define dummy weights as a placeholder
       common /ctrl_weights_dummy_r/
      &                        wtheta, wsalt,

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcplr_init1.F,v 1.3 2013/11/27 21:48:30 jmc Exp $
-C $Name:  $
-
 !=======================================================================
       subroutine MITCPLR_init1( myTypeStr, couplerFlag )
       implicit none

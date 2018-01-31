@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/open_copy_data_file.F,v 1.11 2017/08/10 15:31:02 mlosch Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 CBOP

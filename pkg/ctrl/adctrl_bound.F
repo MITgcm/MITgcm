@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/adctrl_bound.F,v 1.11 2012/08/12 19:34:22 jmc Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 
 C--  File ctrl_bound.F:

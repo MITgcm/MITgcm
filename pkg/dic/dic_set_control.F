@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_set_control.F,v 1.9 2014/09/09 22:45:55 jmc Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"

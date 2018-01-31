@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.38 2009/04/02 21:31:05 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
       subroutine moistio (ndmoist,istrip,npcs,
      .   lowlevel,midlevel,nltop,nsubmin,nsubmax,Lup,

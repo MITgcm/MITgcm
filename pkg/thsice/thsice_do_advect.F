@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_do_advect.F,v 1.6 2015/11/20 22:56:52 jmc Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 
 CBOP

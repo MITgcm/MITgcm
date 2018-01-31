@@ -1,6 +1,3 @@
-C$Header: /u/gcmpack/MITgcm/pkg/openad/seawater.F,v 1.3 2015/02/24 20:01:10 mlosch Exp $
-C$Name:  $
-
 #include "CPP_OPTIONS.h"
 
 C--  File seawater.F: routines that compute quantities related to seawater.

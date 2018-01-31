@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/rotate_spherical_polar_grid.F,v 1.4 2011/12/25 22:24:35 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

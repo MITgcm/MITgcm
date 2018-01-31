@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_fixed.F,v 1.14 2016/10/20 15:24:24 dgoldberg Exp $
-C $Name:  $
-
 #include "STREAMICE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

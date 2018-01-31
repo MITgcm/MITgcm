@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c2_adv_y.F,v 1.3 2001/09/21 13:11:43 adcroft Exp $
-C $Name:  $
-
 #include "GAD_OPTIONS.h"
 
 CBOP

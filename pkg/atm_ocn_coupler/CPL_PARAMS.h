@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/CPL_PARAMS.h,v 1.5 2015/11/12 00:49:04 jmc Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | CPL_PARAMS.h
 C     |  - parameter for the Coupler, holds in common block

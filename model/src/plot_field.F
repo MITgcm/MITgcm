@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/plot_field.F,v 1.14 2002/02/07 20:00:09 heimbach Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 C--   File plot_field.F: Routines for "formatted" I/O in the MITgcm UV 

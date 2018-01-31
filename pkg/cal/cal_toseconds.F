@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_toseconds.F,v 1.9 2012/04/07 16:21:05 jmc Exp $
-C $Name:  $
-
 #include "CAL_OPTIONS.h"
 
       SUBROUTINE CAL_TOSECONDS(

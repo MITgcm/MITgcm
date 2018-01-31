@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.128x64x5/code/external_forcing.F,v 1.8 2005/07/17 18:40:10 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

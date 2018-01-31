@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/tutorial_cfc_offline/input/prepare_run,v 1.2 2008/05/05 22:34:21 jmc Exp $
-#  $Name:  $
- 
 #- in order to save disc space, take *.bin files
 #- from this dir:
 fromDir="../../tutorial_global_oce_biogeo/input"

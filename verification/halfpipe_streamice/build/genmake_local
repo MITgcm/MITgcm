@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/build/genmake_local,v 1.2 2013/06/25 13:29:41 jmc Exp $
-
 #  This is the local options file for the "new" version of genmake
 
 ALWAYS_USE_F90=1

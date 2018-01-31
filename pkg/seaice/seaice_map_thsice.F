@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_map_thsice.F,v 1.5 2014/10/20 03:20:57 gforget Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_THSICE
 # include "THSICE_OPTIONS.h"

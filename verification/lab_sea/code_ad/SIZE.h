@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/SIZE.h,v 1.3 2010/03/24 21:53:41 heimbach Exp $
-C $Name:  $
-
 C
 CBOP
 C    !ROUTINE: SIZE.h

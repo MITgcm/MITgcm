@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_read_pickup.F,v 1.3 2017/03/24 23:31:41 jmc Exp $
-C $Name:  $
-
 #include "ATM_PHYS_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

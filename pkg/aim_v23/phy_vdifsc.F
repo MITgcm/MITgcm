@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_vdifsc.F,v 1.1 2002/11/22 17:17:03 jmc Exp $
-C $Name:  $
-
 #include "AIM_OPTIONS.h"
 
       SUBROUTINE VDIFSC (dpFac,SE,RH,QA,QSAT,

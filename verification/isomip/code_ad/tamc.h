@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/isomip/code_ad/tamc.h,v 1.1 2012/01/06 13:01:09 heimbach Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 
 c     ================================================================

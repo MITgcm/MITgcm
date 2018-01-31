@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/ECCO_CPPOPTIONS.h,v 1.2 2012/08/09 18:15:58 jmc Exp $
-C $Name:  $
-
 #ifndef ECCO_CPPOPTIONS_H
 #define ECCO_CPPOPTIONS_H
 

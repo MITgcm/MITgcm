@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_fillnegs.F,v 1.9 2009/04/02 20:54:03 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
       SUBROUTINE QCHECK ( idim1,idim2,jdim1,jdim2,ldim,Nsx,Nsy,im1,im2,
      .     jm1,jm2,bi,bj,dp,qz)

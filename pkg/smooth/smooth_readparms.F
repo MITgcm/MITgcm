@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_readparms.F,v 1.8 2017/08/09 15:23:36 mlosch Exp $
-C $Name:  $
-
 #include "SMOOTH_OPTIONS.h"
 
       subroutine smooth_readparms( myThid )

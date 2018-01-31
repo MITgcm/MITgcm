@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advection.F,v 1.16 2011/06/07 22:26:37 jmc Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD_OPTIONS.h"

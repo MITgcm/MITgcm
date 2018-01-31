@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_glbmean.F,v 1.1 2017/04/05 04:55:02 ou.wang Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_sflcon.h,v 1.2 2004/06/24 23:41:12 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_AIM
 
 C--   COMMON /SFLCON/: Constants for surface fluxes (initial. in INPHYS)

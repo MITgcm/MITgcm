@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_postsmooth.F,v 1.3 2001/02/04 14:38:51 cnh Exp $
-C $Name:  $
-
 #include "ZONAL_FILT_OPTIONS.h"
 
       SUBROUTINE ZONAL_FILT_POSTSMOOTH( 

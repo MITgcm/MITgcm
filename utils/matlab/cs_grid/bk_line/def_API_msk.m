@@ -1,7 +1,4 @@
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/def_API_msk.m,v 1.5 2014/09/26 23:00:34 jmc Exp $
-% $Name:  $
-
 krd=1; kpr=2; kgr=0; kwr=1;
 %krd=0; kpr=0; kgr=1; kwr=0; % <- execute a 2nd time & draw some plot
 %set_axis

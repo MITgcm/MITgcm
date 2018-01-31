@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_diagnostics_init.F,v 1.45 2017/05/23 16:23:46 mlosch Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 
 C--  File seaice_diagnostics_init.F: Routines initialize SEAICE diagnostics

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_tr_register.F,v 1.3 2018/01/19 22:23:06 jahn Exp $
-C $Name:  $
-
 #include "GCHEM_OPTIONS.h"
 
 CBOP

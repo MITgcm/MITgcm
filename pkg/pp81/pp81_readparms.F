@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_readparms.F,v 1.5 2017/08/09 15:23:36 mlosch Exp $
-C $Name:  $
-
 #include "PP81_OPTIONS.h"
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_coare3_flux.F,v 1.16 2013/06/17 13:45:14 jmc Exp $
-C $Name:  $
-
 #include "CHEAPAML_OPTIONS.h"
 
 C--   File cheapaml_coare3_flux.F:

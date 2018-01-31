@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_FLUX_LIMITER.h,v 1.6 2013/12/16 21:17:18 jmc Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: GAD_FLUX_LIMITER.h
 

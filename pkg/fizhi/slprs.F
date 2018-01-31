@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/slprs.F,v 1.4 2009/04/02 20:54:03 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
       subroutine slprs (PHIS,PLE,THZ,lwmask,im,jm,lm,SLP)
 C**********************************************************************

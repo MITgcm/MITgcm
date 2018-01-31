@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/cost_ice_test.F,v 1.14 2014/12/03 16:47:45 mlosch Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 
       subroutine cost_ice_test( mytime, myiter, mythid )

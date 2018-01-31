@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/ocn_to_atm_mapxyr8.F,v 1.4 2014/07/19 23:01:48 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CStartOfInterface

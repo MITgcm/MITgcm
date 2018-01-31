@@ -14,9 +14,6 @@ function [fac]=grph_CS(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx,kEnv)
 %-----------------------
 
 % Written by jmc@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CS.m,v 1.7 2013/02/16 19:51:18 jmc Exp $
-% $Name:  $
-
 %- small number (relative to lon,lat in degree)
 epsil=1.e-6;
 %- mid-longitude of the grid (truncated @ epsil level):

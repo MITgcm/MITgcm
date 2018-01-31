@@ -1,6 +1,5 @@
 #! /usr/bin/env sh
 #
-#  $Header: /u/gcmpack/MITgcm/doc/api_reference/build_main,v 1.5 2004/05/05 22:50:54 dimitri Exp $
 #
 #  A script to generate the main LaTeX file given the list of sections.
 

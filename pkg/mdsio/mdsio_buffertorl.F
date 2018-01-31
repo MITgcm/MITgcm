@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_buffertorl.F,v 1.1 2008/12/30 01:54:26 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

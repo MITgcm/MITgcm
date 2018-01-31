@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.50 2016/11/28 22:55:00 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: DYNVARS.h
 C     !INTERFACE:

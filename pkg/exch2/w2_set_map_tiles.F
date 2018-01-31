@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_map_tiles.F,v 1.6 2012/07/16 20:25:10 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 #include "W2_OPTIONS.h"
 

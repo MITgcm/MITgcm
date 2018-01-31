@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/comprecv_r8tiles.F,v 1.3 2009/09/14 16:22:01 jmc Exp $
-C $Name:  $
-
 !=======================================================================
       subroutine comprecv_r8tiles( dataname, Ni,Oi,Nj,Oj,Nk,Tx,Ty, arr )
       implicit none

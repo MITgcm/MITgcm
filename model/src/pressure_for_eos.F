@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/pressure_for_eos.F,v 1.7 2016/04/27 22:09:13 jmc Exp $
-C $Name:  $
 #include "CPP_OPTIONS.h"
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_set_iounit.F,v 1.4 2009/08/12 22:11:17 jmc Exp $
-C $Name:  $
-
 #include "MONITOR_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

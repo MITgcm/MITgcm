@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles.flow,v 1.4 2013/08/08 14:31:34 heimbach Exp $
-C $Name:  $
-
 C----------------------------------------
 C subroutine profiles_readvector
 C----------------------------------------

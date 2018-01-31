@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_land_coms.h,v 1.3 2004/06/16 19:22:18 molod Exp $
-C $Name:  $
-
 c Land State Common
 c -----------------
       common /land_state/ tcanopy, tdeep, ecanopy, 

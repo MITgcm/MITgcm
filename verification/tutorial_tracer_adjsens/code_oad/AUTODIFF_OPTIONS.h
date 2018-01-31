@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_oad/AUTODIFF_OPTIONS.h,v 1.1 2014/09/11 19:40:48 jmc Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: AUTODIFF_OPTIONS.h
 C !INTERFACE:

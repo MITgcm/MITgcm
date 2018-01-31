@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_readparms.F,v 1.4 2017/08/09 15:23:36 mlosch Exp $
-C $Name:  $
-
 #include "ZONAL_FILT_OPTIONS.h"
 
       SUBROUTINE ZONAL_FILT_READPARMS( myThid )

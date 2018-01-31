@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_mapping.h,v 1.6 2004/08/04 22:30:52 molod Exp $
-C $Name:  $
-
 c Alternate grid Mapping Common
 c ------------------------------
 #ifdef ALLOW_FIZHI

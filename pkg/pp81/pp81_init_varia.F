@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_init_varia.F,v 1.3 2015/02/23 21:20:15 jmc Exp $
-C $Name:  $
-
 #include "PP81_OPTIONS.h"
 
       SUBROUTINE PP81_INIT_VARIA( myThid )

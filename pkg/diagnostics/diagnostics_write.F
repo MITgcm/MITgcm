@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.39 2015/06/02 20:58:22 jmc Exp $
-C $Name:  $
-
 #include "DIAG_OPTIONS.h"
 
       SUBROUTINE DIAGNOSTICS_WRITE (

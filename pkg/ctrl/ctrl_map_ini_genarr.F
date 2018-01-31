@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_genarr.F,v 1.28 2017/09/18 15:16:52 gforget Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 #ifdef ALLOW_GMREDI
 # include "GMREDI_OPTIONS.h"

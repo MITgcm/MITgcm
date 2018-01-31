@@ -1,6 +1,3 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/diffusivity_mod.F90,v 1.2 2017/08/11 20:48:50 jmc Exp $
-! $Name:  $
-
 module diffusivity_mod
 
 !=======================================================================

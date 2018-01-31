@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_check.F,v 1.18 2014/09/12 20:49:42 gforget Exp $
-C $Name:  $
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #include "AUTODIFF_OPTIONS.h"

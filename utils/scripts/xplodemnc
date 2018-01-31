@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/utils/scripts/xplodemnc,v 1.5 2011/10/25 13:07:16 mlosch Exp $
-# $Name:  $
-
 # This is a shell script to separate an MITgcm mnc output file into
 # one file per multi-dimensional variable. 
 # The file should be in one directory, where this script is run.

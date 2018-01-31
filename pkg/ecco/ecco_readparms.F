@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.95 2017/08/09 15:23:38 mlosch Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
       subroutine ecco_readparms( mythid )

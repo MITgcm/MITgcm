@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/active_file_profiles_g.F,v 1.7 2015/08/06 15:48:20 gforget Exp $
-C $Name:  $
-
 #include "PROFILES_OPTIONS.h"
 
 c     ==================================================================

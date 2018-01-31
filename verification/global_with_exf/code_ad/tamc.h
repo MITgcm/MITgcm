@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code_ad/tamc.h,v 1.1 2015/02/17 12:35:48 heimbach Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 
 

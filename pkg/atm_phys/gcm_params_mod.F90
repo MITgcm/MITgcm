@@ -1,6 +1,3 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/gcm_params_mod.F90,v 1.2 2014/06/09 12:51:00 jmc Exp $
-! $Name:  $
-
 module gcm_params_mod
 
 !use fms_mod, only: write_version_number

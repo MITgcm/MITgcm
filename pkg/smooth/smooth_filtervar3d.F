@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_filtervar3d.F,v 1.5 2017/02/22 23:15:28 jmc Exp $
-C $Name:  $
-
 #include "SMOOTH_OPTIONS.h"
 
       subroutine smooth_filtervar3D (smoothOpNb,myThid)

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_CO2.h,v 1.4 2018/01/11 01:55:53 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_AIM
 
 C     *==========================================================*

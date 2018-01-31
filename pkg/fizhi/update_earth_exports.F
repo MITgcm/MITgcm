@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.31 2012/03/21 21:08:12 jmc Exp $
-C $Name:  $
 #include "FIZHI_OPTIONS.h"
 
 C--  File update_earth_exports.F:

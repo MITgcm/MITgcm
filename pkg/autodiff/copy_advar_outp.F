@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/copy_advar_outp.F,v 1.3 2014/04/04 23:06:04 jmc Exp $
-C $Name:  $
-
 #include "AUTODIFF_OPTIONS.h"
 #include "AD_CONFIG.h"
 

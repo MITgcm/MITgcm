@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/ad_optfile.local,v 1.4 2016/01/15 18:37:45 jmc Exp $
-#  $Name:  $
-
 #  This AD option-file contains the settings for the adjoint and
 #  tangent-linear compilers to use for this particular setup.
 #  It is similar to the default AD-optfile except:

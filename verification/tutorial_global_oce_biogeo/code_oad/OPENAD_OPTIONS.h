@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_oad/OPENAD_OPTIONS.h,v 1.1 2015/02/22 16:15:43 heimbach Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: OPENAD_OPTIONS.h
 C !INTERFACE:

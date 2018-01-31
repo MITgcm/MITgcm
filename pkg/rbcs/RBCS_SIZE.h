@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/RBCS_SIZE.h,v 1.1 2011/05/14 19:52:12 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_RBCS
 
 CBOP

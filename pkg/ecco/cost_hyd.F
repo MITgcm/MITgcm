@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_hyd.F,v 1.42 2015/11/24 21:26:31 gforget Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"

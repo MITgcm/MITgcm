@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_diagnostics_init.F,v 1.12 2015/06/10 20:51:17 jmc Exp $
-C $Name:  $
-
 #include "LAYERS_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

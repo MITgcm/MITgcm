@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_fields_load.F,v 1.36 2016/01/16 21:57:12 jmc Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 
 CBOP

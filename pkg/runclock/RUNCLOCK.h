@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/runclock/RUNCLOCK.h,v 1.1 2005/05/31 18:24:30 adcroft Exp $
-C $Name:  $
-
 #ifdef ALLOW_RUNCLOCK
 
 C     Package flag

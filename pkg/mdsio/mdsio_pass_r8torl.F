@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_pass_r8torl.F,v 1.4 2010/12/23 02:40:42 jmc Exp $
-C $Name:  $
-
 #include "MDSIO_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_load_climatology.F,v 1.8 2017/04/04 23:31:27 jmc Exp $
-C $Name:  $
-
 #include "EBM_OPTIONS.h"
 #ifdef ALLOW_EXCH2
 # include "W2_OPTIONS.h"

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/chronos/chronos.F,v 1.1 2004/07/28 01:26:03 molod Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
       subroutine set_alarm (tag,date,time,freq)

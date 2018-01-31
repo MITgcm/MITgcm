@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SOLVE_FOR_PRESSURE3D.h,v 1.5 2005/11/08 01:54:53 jmc Exp $
-C $Name:  $
-
 CBOP
 C    !ROUTINE: SOLVE_FOR_PRESSURE3D.h
 C    !INTERFACE:

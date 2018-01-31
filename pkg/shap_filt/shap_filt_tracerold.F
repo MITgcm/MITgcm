@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracerold.F,v 1.4 2001/05/29 14:01:40 adcroft Exp $
-C $Name:  $
-
 #include "SHAP_FILT_OPTIONS.h"
 
       SUBROUTINE SHAP_FILT_TRACEROLD( 

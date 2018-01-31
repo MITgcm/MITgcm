@@ -15,9 +15,6 @@ function [z] = cube2latlon(x,y,c,xi,yi,varargin)
 % >> ti=cube2latlon(x,y,t,xi,yi);
 %
 % Written by adcroft@.mit.edu, 2001.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/cube2latlon.m,v 1.1 2005/09/15 20:04:56 jmc Exp $
-% $Name:  $
-
 NN=size(c);
 [nx ny nz]=size(c);
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.20 2013/01/21 21:49:33 jmc Exp $
-C $Name:  $
-
 #include "AIM_OPTIONS.h"
 
 CBOP

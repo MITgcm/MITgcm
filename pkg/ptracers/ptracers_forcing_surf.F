@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_forcing_surf.F,v 1.11 2012/03/08 17:13:31 jmc Exp $
-C $Name:  $
-
 #include "PTRACERS_OPTIONS.h"
 
 CBOP

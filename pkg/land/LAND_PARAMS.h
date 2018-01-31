@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_PARAMS.h,v 1.8 2007/02/02 14:47:04 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_LAND
 C     *==========================================================*
 C     | LAND_PARAMS.h

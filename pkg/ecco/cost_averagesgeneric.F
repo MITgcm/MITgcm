@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesgeneric.F,v 1.10 2015/03/23 21:10:04 gforget Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
       subroutine cost_averagesgeneric(

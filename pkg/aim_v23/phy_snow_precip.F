@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_snow_precip.F,v 1.1 2004/03/11 14:33:19 jmc Exp $
-C $Name:  $
-
 #include "AIM_OPTIONS.h"
 
 CBOP

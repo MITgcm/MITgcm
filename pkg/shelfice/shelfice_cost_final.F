@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_final.F,v 1.9 2014/09/09 22:59:55 jmc Exp $
-C $Name:  $
-
 #include "SHELFICE_OPTIONS.h"
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_store_my_data.F,v 1.9 2016/01/06 01:08:33 jmc Exp $
-C $Name:  $
-
 #include "OCN_CPL_OPTIONS.h"
 
 C     !ROUTINE: OCN_STORE_MY_DATA

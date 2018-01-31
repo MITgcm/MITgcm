@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2ocn_main.F,v 1.3 2011/04/15 18:30:01 jscott Exp $
-C $Name:  $
-
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 C     !INTERFACE:

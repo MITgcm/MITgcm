@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_obcs_output.F,v 1.4 2017/03/24 23:53:17 jmc Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_OBCS
 #include "OBCS_OPTIONS.h"

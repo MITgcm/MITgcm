@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_coriolis.F,v 1.9 2006/06/07 01:55:15 heimbach Exp $
-C $Name:  $
-
 #include "MOM_VECINV_OPTIONS.h"
 
       SUBROUTINE MOM_VI_CORIOLIS(

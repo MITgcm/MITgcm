@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.14 2014/04/04 21:04:47 jmc Exp $
-C $Name:  $
-
 #include "COST_OPTIONS.h"
 
       subroutine cost_dependent_init( mythid )

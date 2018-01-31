@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/DRIVER.h,v 1.13 2012/08/21 18:43:13 jscott Exp $
-C $Name:  $
-
       COMMON /DRIVER_VARS/
      &        dtcouple, dtatm, dtocn, startYear, endYear, taveDump,
      &        ncall_atm, ncall_ocean

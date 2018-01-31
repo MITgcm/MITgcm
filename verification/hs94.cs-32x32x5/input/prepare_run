@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/input/prepare_run,v 1.2 2006/07/15 23:22:00 jmc Exp $
-#  $Name:  $
- 
 #- in order to save disc space, take files:
 fileList="tile001.mitgrid tile002.mitgrid tile003.mitgrid tile004.mitgrid tile005.mitgrid tile006.mitgrid"
 #- from this dir:

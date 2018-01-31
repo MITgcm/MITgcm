@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_readparms.F,v 1.28 2017/12/15 19:37:08 jmc Exp $
-C $Name:  $
-
 #include "SHELFICE_OPTIONS.h"
 
 CBOP

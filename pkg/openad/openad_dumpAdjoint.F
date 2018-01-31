@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/openad_dumpAdjoint.F,v 1.9 2017/03/24 23:38:57 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 c#ifdef ALLOW_AUTODIFF

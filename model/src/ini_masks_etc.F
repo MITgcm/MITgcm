@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.58 2017/05/02 18:12:03 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

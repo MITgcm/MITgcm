@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.30 2013/07/22 18:40:45 jmc Exp $
-#  $Name:  $
 #
 #  tested on  faulks with gcc-g77 v3.4.6 (with FC 6)
 #  tested with MPI on (old) aces cluster (gcc-g77 3.3.3, FC 2), using:

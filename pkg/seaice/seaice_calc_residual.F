@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_calc_residual.F,v 1.9 2016/05/17 15:26:46 mlosch Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_calc_diff.F,v 1.3 2015/02/23 21:20:15 jmc Exp $
-C $Name:  $
-
 #include "KL10_OPTIONS.h"
 
       SUBROUTINE KL10_CALC_DIFF(

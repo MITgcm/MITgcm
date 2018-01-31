@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_apply_forcing.F,v 1.4 2017/08/12 23:49:10 jmc Exp $
-C $Name:  $
-
 #include "PTRACERS_OPTIONS.h"
 
 CBOP

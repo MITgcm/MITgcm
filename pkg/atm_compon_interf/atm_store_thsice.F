@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_store_thsice.F,v 1.5 2016/01/06 00:51:58 jmc Exp $
-C $Name:  $
-
 #include "ATM_CPL_OPTIONS.h"
 
 CBOP

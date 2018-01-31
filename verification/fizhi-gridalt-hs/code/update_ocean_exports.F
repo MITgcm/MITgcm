@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/update_ocean_exports.F,v 1.5 2010/03/16 00:27:00 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
        subroutine update_ocean_exports (myTime, myIter, myThid)
 c----------------------------------------------------------------------

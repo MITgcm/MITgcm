@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77+mpi_xd1,v 1.9 2010/12/19 22:42:23 jmc Exp $
-#  $Name:  $
 #
 # tested on xd1.awi-bremerhaven.de
 # Linux xd1-420-6 2.4.21_H_01_01 #6 SMP Wed Nov 3 15:30:06 PST 2004 x86_64 unknownx

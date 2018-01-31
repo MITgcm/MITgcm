@@ -1,7 +1,4 @@
 
-% $Header: /u/gcmpack/MITgcm/verification/front_relax/input.mxl/gendata.m,v 1.2 2011/02/10 23:32:59 jmc Exp $
-% $Name:  $
-
 dzL=20;
 hup=200; kL=round(hup/dzL);
 N=15;

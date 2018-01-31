@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/tamc.h,v 1.3 2013/07/18 20:15:06 heimbach Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 
 

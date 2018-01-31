@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/SALT_PLUME.h,v 1.10 2014/05/21 10:46:03 heimbach Exp $
-C $Name:  $
-
 #ifdef ALLOW_SALT_PLUME
 
 C--   SALT_PLUME parameters

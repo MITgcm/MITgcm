@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.14 2010/03/16 00:19:33 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
        subroutine update_chemistry_exports (myTime, myIter, myThid)
 c----------------------------------------------------------------------

@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/comm_stats.F,v 1.6 2004/03/27 03:51:50 edhill Exp $
-C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
 CBOP

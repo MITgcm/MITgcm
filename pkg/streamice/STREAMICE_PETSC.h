@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE_PETSC.h,v 1.1 2015/06/15 14:32:44 dgoldberg Exp $
-C $Name:  $
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_STREAMICE

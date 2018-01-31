@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/freeze_surface.F,v 1.7 2006/06/07 01:55:13 heimbach Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

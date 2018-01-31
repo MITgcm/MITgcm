@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.16 2017/08/09 15:23:37 mlosch Exp $
-C $Name:  $
-
 #include "OCN_CPL_OPTIONS.h"
 
 CBOP

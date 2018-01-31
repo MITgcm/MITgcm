@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_state.F,v 1.10 2009/08/27 18:00:01 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
 CBOP
 C     !ROUTINE: FIZHI_WRITE_STATE

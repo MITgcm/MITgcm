@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/internal_wave/code/SIZE.h,v 1.6 2008/12/18 19:48:20 jmc Exp $
-C $Name:  $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

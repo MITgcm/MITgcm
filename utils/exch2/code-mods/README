@@ -1,6 +1,3 @@
-# $Header: /u/gcmpack/MITgcm/utils/exch2/code-mods/README,v 1.1 2009/05/12 22:18:38 jmc Exp $
-# $Name:  $
-
 ---- May 12, 2009 (after checkpoint61n)
  fortran code to set-up topology is now part of pkg/exch2, with new parameter
  file "data.exch2". 

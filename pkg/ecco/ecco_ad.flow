@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_ad.flow,v 1.3 2005/05/27 22:10:27 heimbach Exp $
-C $Name:  $
-
 C----------------------------------------
 C subroutine  ecco_check_exp
 C----------------------------------------

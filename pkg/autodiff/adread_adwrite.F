@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adread_adwrite.F,v 1.25 2014/04/04 23:03:59 jmc Exp $
-C $Name:  $
-
 #include "AUTODIFF_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"

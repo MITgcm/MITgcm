@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.19 2014/09/09 22:34:06 jmc Exp $
-C $Name:  $
-
 #include "GMREDI_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"

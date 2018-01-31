@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_k3d.F,v 1.26 2015/10/30 10:33:24 dfer Exp $
-C $Name:  $
-
 #include "GMREDI_OPTIONS.h"
 
 C     !ROUTINE: GMREDI_K3D

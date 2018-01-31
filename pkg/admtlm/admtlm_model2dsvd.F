@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_model2dsvd.F,v 1.9 2012/08/12 18:29:25 jmc Exp $
-C $Name:  $
-
 #include "ADMTLM_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"

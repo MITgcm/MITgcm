@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_output.F,v 1.6 2017/03/24 23:47:43 jmc Exp $
-C $Name:  $
-
 #include "PTRACERS_OPTIONS.h"
 
 CBOP

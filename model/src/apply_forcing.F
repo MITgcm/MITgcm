@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/apply_forcing.F,v 1.9 2017/10/04 20:40:35 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

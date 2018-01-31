@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/SIZE.h,v 1.3 2006/09/03 23:31:11 jmc Exp $
-C $Name:  $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

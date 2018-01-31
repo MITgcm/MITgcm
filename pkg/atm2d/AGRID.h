@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/AGRID.h,v 1.6 2009/09/02 16:26:22 jscott Exp $
-C $Name:  $
-
       COMMON/ATM_GRID/atm_yC,atm_yG
        REAL*4 atm_yC(jm0)    ! center points of atmos grid
        REAL*4 atm_yG(jm0)    ! southern boundary of atmos grid cells

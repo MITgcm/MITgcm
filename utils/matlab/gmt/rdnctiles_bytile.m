@@ -19,9 +19,6 @@ function [tlist] = rdnctiles_bytile(fall,vit, dlev)
 %  called by a wrapper function that ensures proper inputs.
 %
 %  Ed Hill
-%  $Id: rdnctiles_bytile.m,v 1.5 2005/10/24 04:54:13 edhill Exp $
-
-
 tlist = struct('gtn',{});
 for fi = 1:length(fall)
   if dlev > 10

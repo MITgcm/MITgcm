@@ -23,9 +23,6 @@ function h=llc_vec(t,xfld,yfld,fspec);
 %         Code that does the scale arrow is a bit of a hack - to say the
 %         least :-).
 
-%% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/latloncap/llc_vec.m,v 1.1 2007/05/07 14:00:52 cnh Exp $
-%% $Name:  $
-
 % Make a vector plot using quiver
 clf; h=[];
 

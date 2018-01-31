@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.100 2017/02/21 00:57:47 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF

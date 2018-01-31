@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.13 2017/07/23 00:24:18 jmc Exp $
-C $Name:  $
-
 #include "DIAG_OPTIONS.h"
 
 CBOP

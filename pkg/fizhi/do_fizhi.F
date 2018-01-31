@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.55 2012/03/27 15:48:27 jmc Exp $
-C $Name:  $
 #include "FIZHI_OPTIONS.h"
        SUBROUTINE DO_FIZHI(myIter,myid,
      & idim1,idim2,jdim1,jdim2,Nrphin,nSxIn,nSyIn,im1,im2,jm1,jm2,bi,bj,

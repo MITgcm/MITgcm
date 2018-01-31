@@ -1,5 +1,3 @@
-# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/jmd95.py,v 1.1 2012/10/25 23:31:30 jahn Exp $
-# $Name:  $
 #
 # created by mlosch on 2002-08-09
 # converted to python by jahn on 2010-04-29

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_oad/GAD_OPTIONS.h,v 1.1 2013/03/21 18:44:32 jahn Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: GAD_OPTIONS.h
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/put_ocnvars.F,v 1.6 2010/04/30 20:25:59 jscott Exp $
-C $Name:  $
-
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 

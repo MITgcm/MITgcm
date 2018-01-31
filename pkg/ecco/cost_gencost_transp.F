@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_transp.F,v 1.4 2015/11/12 13:22:14 atn Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
       subroutine cost_gencost_transp(mythid)

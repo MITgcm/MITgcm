@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/exch_component_configs.F,v 1.1 2013/12/02 21:55:06 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP 0

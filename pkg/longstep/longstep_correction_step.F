@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_correction_step.F,v 1.3 2014/08/07 17:37:32 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_restore.F,v 1.34 2017/02/21 04:00:39 jmc Exp $
-C $Name:  $
-
 #include "AUTODIFF_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"

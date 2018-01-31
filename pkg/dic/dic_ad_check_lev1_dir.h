@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ad_check_lev1_dir.h,v 1.4 2013/06/26 20:47:02 heimbach Exp $
-C $Name:  $
-
 #ifdef ALLOW_DIC
 
 C common CARBON_NEEDS

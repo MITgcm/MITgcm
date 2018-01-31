@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_g77,v 1.5 2010/12/19 22:42:23 jmc Exp $
-# $Name:  $
-
 FC=g77
 DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4 -DNML_EXTENDED_F77'
 CPP='cpp  -traditional -P'

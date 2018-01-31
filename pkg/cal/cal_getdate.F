@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_getdate.F,v 1.6 2012/06/08 02:17:01 jmc Exp $
-C $Name:  $
-
 #include "CAL_OPTIONS.h"
 
       SUBROUTINE CAL_GETDATE(

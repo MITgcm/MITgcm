@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_diagnostics_init.F,v 1.10 2013/06/11 01:34:47 jmc Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 
 CBOP

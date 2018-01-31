@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_wind_perturb.F,v 1.4 2011/08/28 22:18:13 jmc Exp $
-C $Name:  $
-
 #include "EBM_OPTIONS.h"
 
 CStartOfInterface

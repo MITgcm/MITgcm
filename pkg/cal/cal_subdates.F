@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_subdates.F,v 1.3 2012/04/07 16:21:05 jmc Exp $
-C $Name:  $
-
 #include "CAL_OPTIONS.h"
 
       SUBROUTINE CAL_SUBDATES(

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/car_flux_omega_top.F,v 1.7 2008/04/07 20:31:16 dfer Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 
 CBOP

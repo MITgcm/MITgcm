@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_upd_ffrac_uncoupled.F,v 1.4 2015/07/01 16:34:53 dgoldberg Exp $
-C $Name:  $
-
-
 C this needs changes
 
 #include "STREAMICE_OPTIONS.h"

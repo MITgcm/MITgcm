@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_init_fixed.F,v 1.12 2013/11/05 13:31:50 jmc Exp $
-C $Name:  $
-
 #include "MOM_COMMON_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

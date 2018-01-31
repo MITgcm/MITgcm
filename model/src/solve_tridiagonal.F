@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_tridiagonal.F,v 1.13 2016/10/26 00:50:25 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

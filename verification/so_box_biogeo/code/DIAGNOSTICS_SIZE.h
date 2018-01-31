@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/so_box_biogeo/code/DIAGNOSTICS_SIZE.h,v 1.1 2014/08/27 02:12:49 jmc Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

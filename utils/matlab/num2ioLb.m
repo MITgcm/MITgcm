@@ -4,9 +4,6 @@ function [ioLb] = num2ioLb( iTr );
 %  do conversion on individual number (return a 2c label)
 %  or on number array (N x 1) and then return a character array ( N x 2c )
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/num2ioLb.m,v 1.1 2007/11/05 17:04:16 jmc Exp $
-% $Name:  $
-
  N=prod(size(iTr)); iTr=reshape(iTr,[N 1]);
 
 %- step 1 : express number in modified 62/52/10 base, digits: k1,k2

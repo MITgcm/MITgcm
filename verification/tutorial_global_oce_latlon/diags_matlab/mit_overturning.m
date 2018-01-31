@@ -3,9 +3,6 @@ function [psi, psimask] = mit_overturning(v,vmask,dx,dz,addlayer);
 % overturning stream function for mitgcm model, time slabs are handled as 
 % cell objects, integration from bottom to top.
 
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/mit_overturning.m,v 1.3 2006/08/12 20:25:13 jmc Exp $
-% $Name:  $
-
   if nargin < 5
     addlayer = 0;
   elseif (nargin > 5 & nargin < 4)

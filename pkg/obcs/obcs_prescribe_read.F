@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.31 2014/11/02 21:23:40 gforget Exp $
-C $Name:  $
-
 # include "OBCS_OPTIONS.h"
 
 CBOP

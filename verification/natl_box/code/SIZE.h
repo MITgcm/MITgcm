@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/natl_box/code/SIZE.h,v 1.5 2009/06/29 21:27:53 jmc Exp $
-C $Name:  $
-
 C
 CBOP
 C    !ROUTINE: SIZE.h

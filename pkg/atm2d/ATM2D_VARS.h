@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/ATM2D_VARS.h,v 1.16 2013/05/02 20:37:52 jmc Exp $
-C $Name:  $
-
       INTEGER nForcingPer
       PARAMETER ( nForcingPer = 12)
 

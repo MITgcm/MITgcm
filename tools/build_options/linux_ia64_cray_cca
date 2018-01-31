@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_cca,v 1.2 2015/04/15 15:47:28 mlosch Exp $
-# $Name:  $
-
 # Tested on cca at ecmwf.int: 
 # http://www.ecmwf.int/en/computing/our-facilities/supercomputer
 #

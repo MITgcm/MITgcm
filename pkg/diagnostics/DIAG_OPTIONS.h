@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAG_OPTIONS.h,v 1.9 2011/12/24 01:04:45 jmc Exp $
-C $Name:  $
-
 #ifndef DIAG_OPTIONS_H
 #define DIAG_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

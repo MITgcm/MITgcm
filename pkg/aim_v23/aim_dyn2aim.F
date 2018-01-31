@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_dyn2aim.F,v 1.6 2014/05/12 01:32:41 jmc Exp $
-C $Name:  $
-
 #include "AIM_OPTIONS.h"
 
 CBOP

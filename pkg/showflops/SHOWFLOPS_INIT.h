@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/showflops/SHOWFLOPS_INIT.h,v 1.2 2007/10/09 00:11:02 jmc Exp $
-C $Name:  $
-
 #if defined(TIME_PER_TIMESTEP) || defined(USE_PAPI_FLOPS) || defined(USE_PCL_FLOPS)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef TIME_PER_TIMESTEP

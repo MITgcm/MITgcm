@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_ave.F,v 1.9 2010/01/02 22:46:29 jmc Exp $
-C $Name:  $
-
 #include "BULK_FORCE_OPTIONS.h"
 
 CBOP

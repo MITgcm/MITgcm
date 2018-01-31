@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_convdate.F,v 1.6 2012/04/08 19:22:34 jmc Exp $
-C $Name:  $
-
 #include "CAL_OPTIONS.h"
 
       SUBROUTINE CAL_CONVDATE(

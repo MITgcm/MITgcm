@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/phi_gl_streamice.F,v 1.2 2013/06/21 19:35:44 dgoldberg Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
       _RL FUNCTION PHI_GL_STREAMICE (X, W)

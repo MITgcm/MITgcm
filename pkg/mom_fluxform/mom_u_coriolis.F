@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_coriolis.F,v 1.9 2008/11/16 17:25:26 jmc Exp $
-C $Name:  $
-
 #include "MOM_FLUXFORM_OPTIONS.h"
 
 CBOP

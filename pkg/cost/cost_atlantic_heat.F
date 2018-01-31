@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_atlantic_heat.F,v 1.11 2012/08/10 19:36:02 jmc Exp $
-C $Name:  $
-
 #include "COST_OPTIONS.h"
 
       subroutine cost_atlantic_heat( myThid )

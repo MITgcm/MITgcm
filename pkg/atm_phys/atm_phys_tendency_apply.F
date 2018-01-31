@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_tendency_apply.F,v 1.6 2017/08/12 22:12:48 jmc Exp $
-C $Name:  $
-
 #include "ATM_PHYS_OPTIONS.h"
 C--  File atm_phys_tendency_apply.F: Routines to apply ATM_PHYS tendencies
 C--   Contents

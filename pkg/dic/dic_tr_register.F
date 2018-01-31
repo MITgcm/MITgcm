@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_tr_register.F,v 1.1 2017/12/29 18:36:29 jmc Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 
 CBOP

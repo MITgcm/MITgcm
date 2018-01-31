@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/FLT_BUFF.h,v 1.1 2011/08/31 21:41:55 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: FLT_BUFF.h
 C     !INTERFACE:

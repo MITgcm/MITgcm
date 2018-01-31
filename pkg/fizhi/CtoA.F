@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/CtoA.F,v 1.6 2005/02/24 16:44:25 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
        subroutine CtoA(myThid,fieldin1,fieldin2,mask1,mask2,idim1,idim2,
      .  jdim1,jdim2,numlevs,Nsx,Nsy,im1,im2,jm1,jm2,fieldout1,fieldout2)

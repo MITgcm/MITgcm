@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_fixed.F,v 1.8 2017/10/13 17:48:03 jmc Exp $
-C $Name:  $
-
 #include "CHEAPAML_OPTIONS.h"
 #undef CHEAPAML_OLD_MASK_SETTING
 

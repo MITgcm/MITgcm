@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/PP81_TAVE.h,v 1.2 2010/01/03 19:19:59 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_PP81
 
 C     *==========================================================*

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/embed_files/embed_files_init.F,v 1.1 2006/01/12 03:24:09 edhill Exp $
-C $Name:  $
-      
 #include "EMBED_FILES_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

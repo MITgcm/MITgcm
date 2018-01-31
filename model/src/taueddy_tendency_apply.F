@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/taueddy_tendency_apply.F,v 1.2 2015/01/20 20:47:42 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_GMREDI

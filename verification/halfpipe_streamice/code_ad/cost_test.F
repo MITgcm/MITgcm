@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_ad/cost_test.F,v 1.2 2015/02/19 16:52:03 heimbach Exp $
-C $Name:  $
-
 #include "STREAMICE_OPTIONS.h"
 
       subroutine cost_test( myThid )

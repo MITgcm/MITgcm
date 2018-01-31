@@ -1,8 +1,5 @@
 % This is a matlab script that generates the input data
 
-% $Header: /u/gcmpack/MITgcm/verification/exp4/input/gendata.m,v 1.8 2011/05/19 00:03:06 jmc Exp $
-% $Name:  $
-
 % Dimensions of grid
 nx=80;
 ny=42;

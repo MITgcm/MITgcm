@@ -1,7 +1,4 @@
 /*
- * $Header: /u/gcmpack/MITgcm/eesupp/src/tim.c,v 1.6 2003/11/11 20:38:26 edhill Exp $
- * $Name:  $
-
 //BOP
 // !ROUTINE: cloc
 // !INTERFACE:

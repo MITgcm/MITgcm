@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advscheme.F,v 1.1 2014/08/05 01:50:35 jmc Exp $
-C $Name:  $
-
 #include "GAD_OPTIONS.h"
 
 C--   File gad_advscheme.F: Keeping track of Advection schemes requirement

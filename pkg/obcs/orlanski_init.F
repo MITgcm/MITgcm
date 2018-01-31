@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_init.F,v 1.3 2009/09/17 16:30:07 jmc Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 
       SUBROUTINE ORLANSKI_INIT(bi, bj, myThid )

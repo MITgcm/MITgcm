@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-32x32x40/input/prepare_run,v 1.2 2007/01/17 23:25:17 jmc Exp $
-#  $Name:  $
- 
 #  Figure out which veg file we need (how many tiles)
 #- do a symbolic link in the current directory 
 #   (if the file does not already exist)

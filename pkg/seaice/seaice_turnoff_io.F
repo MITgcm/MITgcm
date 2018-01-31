@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_turnoff_io.F,v 1.2 2012/11/09 22:15:18 heimbach Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 
 CBOP

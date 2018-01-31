@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_init3d.F,v 1.5 2017/01/10 15:37:49 gforget Exp $
-C $Name:  $
-
 #include "SMOOTH_OPTIONS.h"
 
       subroutine smooth_init3D (smoothOpNb,mythid)

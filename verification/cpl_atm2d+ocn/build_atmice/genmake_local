@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_atm2d+ocn/build_atmice/genmake_local,v 1.2 2013/12/06 02:19:25 jmc Exp $
-# $Name:  $
-
 #  This is the local options file for the "new" version of genmake
 #
 #  EH3 initial version 2003-08

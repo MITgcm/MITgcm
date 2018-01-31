@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.29 2017/02/21 01:04:26 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 
 CBOP

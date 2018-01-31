@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.23 2014/04/04 20:54:11 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF

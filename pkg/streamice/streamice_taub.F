@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_taub.F,v 1.3 2015/03/23 14:07:16 dgoldberg Exp $
-C $Name:  $
-
 #include "STREAMICE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

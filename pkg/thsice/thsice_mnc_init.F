@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_mnc_init.F,v 1.3 2005/07/06 21:18:33 edhill Exp $
-C $Name:  $
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #include "THSICE_OPTIONS.h"

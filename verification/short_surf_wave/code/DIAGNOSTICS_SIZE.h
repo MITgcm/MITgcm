@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/short_surf_wave/code/DIAGNOSTICS_SIZE.h,v 1.1 2010/01/23 19:39:04 jmc Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

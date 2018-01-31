@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_toolbox.F,v 1.13 2016/04/08 00:23:44 gforget Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
 C--  File ecco_toolbox.F: Routines to handle basic operations common in ecco.

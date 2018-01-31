@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/adjustment.cs-32x32x1/code_min/main.F,v 1.2 2013/11/26 01:08:35 jmc Exp $
-C $Name:  $
-
 CBOI
 C
 C !TITLE: WRAPPER CODE SYNOPSIS

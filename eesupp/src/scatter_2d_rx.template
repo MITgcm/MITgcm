@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/scatter_2d_rx.template,v 1.7 2012/09/03 19:36:29 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_EEOPTIONS.h"
 

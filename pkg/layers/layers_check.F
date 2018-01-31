@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_check.F,v 1.9 2015/06/12 16:21:31 jmc Exp $
-C $Name:  $
-
 #include "LAYERS_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

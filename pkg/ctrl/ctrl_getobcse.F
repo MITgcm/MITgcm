@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_getobcse.F,v 1.16 2014/10/09 00:49:26 gforget Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"

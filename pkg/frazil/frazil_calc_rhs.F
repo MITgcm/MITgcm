@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_calc_rhs.F,v 1.4 2012/03/26 01:47:08 dimitri Exp $
-C $Name:  $
-
 #include "FRAZIL_OPTIONS.h"
 
 CBOP

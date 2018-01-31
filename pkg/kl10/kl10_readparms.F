@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_readparms.F,v 1.2 2017/08/09 15:23:37 mlosch Exp $
-C $Name:  $
-
 #include "KL10_OPTIONS.h"
 
 CBOP

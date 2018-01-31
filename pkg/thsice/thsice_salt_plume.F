@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_salt_plume.F,v 1.3 2016/01/19 01:12:06 jmc Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 #ifdef ALLOW_SALT_PLUME
 # include "SALT_PLUME_OPTIONS.h"

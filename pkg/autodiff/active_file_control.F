@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_control.F,v 1.14 2015/02/17 14:31:42 gforget Exp $
-C $Name:  $
-
 #include "AUTODIFF_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"

@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_ia32_ifort.aces,v 1.1 2011/09/29 16:13:51 jmc Exp $
-# $Name:  $
-
 # test Multi-Treaded with OpenMP:
 #  to get 1 node with 2 cpu : qsub -I -l nodes=1:ppn=2
 # then on computer node:

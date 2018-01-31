@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_accumulate.F,v 1.3 2011/12/28 20:48:17 jmc Exp $
-C $Name:  $
-
 #include "SHELFICE_OPTIONS.h"
 
       subroutine shelfice_cost_accumulate( myThid )

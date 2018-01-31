@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/MDSIO_BUFF_WH.h,v 1.5 2011/05/20 22:26:55 gforget Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: MDSIO_BUFF_WH.h
 C     !INTERFACE:

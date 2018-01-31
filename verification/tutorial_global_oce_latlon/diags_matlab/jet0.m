@@ -10,10 +10,6 @@ function J = jet0(m)
 % taken from jet.m, Martin Losch, 3-8-02  
 %   C. B. Moler, 5-10-91, 8-19-92.
 %   Copyright 1984-2001 The MathWorks, Inc. 
-%   $Revision: 1.3 $  $Date: 2006/08/12 20:25:12 $
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/jet0.m,v 1.3 2006/08/12 20:25:12 jmc Exp $
-% $Name:  $
-
 if nargin < 1, m = size(get(gcf,'colormap'),1); end
 n = max(round(m/4),1);
 x = (1:n)'/n;

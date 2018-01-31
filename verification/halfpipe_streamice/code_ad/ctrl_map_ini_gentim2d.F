@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_ad/ctrl_map_ini_gentim2d.F,v 1.1 2015/02/19 16:52:03 heimbach Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"

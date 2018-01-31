@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/port_rand.F,v 1.8 2013/08/09 15:00:46 jmc Exp $
-C $Name:  $
-
 #undef _USE_INTEGERS
 
 C--  File port_rand.F: Portable random number generator functions

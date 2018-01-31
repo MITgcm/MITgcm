@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_readparms.F,v 1.9 2017/08/09 15:23:36 mlosch Exp $
-C $Name:  $
-
 #include "SALT_PLUME_OPTIONS.h"
 
 CBOP 0

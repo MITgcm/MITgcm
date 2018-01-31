@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.44 2016/01/19 01:12:06 jmc Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 #ifdef ALLOW_ATM2D
 # include "ctrparam.h"

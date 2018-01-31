@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tidal_basin_2d/code/external_forcing.F,v 1.8 2014/07/05 15:11:36 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

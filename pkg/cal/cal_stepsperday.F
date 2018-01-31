@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_stepsperday.F,v 1.3 2012/04/03 15:20:29 jmc Exp $
-C $Name:  $
-
 #include "CAL_OPTIONS.h"
 
       subroutine cal_StepsPerDay(

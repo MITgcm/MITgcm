@@ -25,9 +25,6 @@ function [] = plotcube(XX,YY,C)
 % plotube(xg,yg,ps);shading interp
 %
 % Written by adcroft@.mit.edu, 2001.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/plotcube.m,v 1.2 2005/11/23 23:55:21 enderton Exp $
-% $Name:  $
-
 if max(max(max(YY)))-min(min(min(YY))) < 3*pi
  X=tiles(XX*180/pi,1:6);
  Y=tiles(YY*180/pi,1:6);

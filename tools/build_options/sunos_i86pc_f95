@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_i86pc_f95,v 1.3 2009/11/10 15:01:47 mlosch Exp $
-#  $Name:  $  
 #
 # tested on 
 # uname -a: SunOS solasrv4 5.10 Generic_127128-11 i86pc i386 i86pc

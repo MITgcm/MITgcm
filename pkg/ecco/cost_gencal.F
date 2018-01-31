@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencal.F,v 1.4 2016/03/01 23:05:15 gforget Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

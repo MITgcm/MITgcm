@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_tendency_apply.F,v 1.4 2014/07/09 17:00:49 jmc Exp $
-C $Name:  $
-
 #include "MYPACKAGE_OPTIONS.h"
 C--  File mypackage_tendency_apply.F: Routines to apply MYPACKAGE tendencies
 C--   Contents

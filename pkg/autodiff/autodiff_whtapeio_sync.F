@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_whtapeio_sync.F,v 1.11 2015/07/22 20:54:42 gforget Exp $
-C $Name:  $
-
 #include "AUTODIFF_OPTIONS.h"
 #include "MDSIO_OPTIONS.h"
 #ifdef ALLOW_CTRL

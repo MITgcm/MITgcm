@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_lanl_flux.F,v 1.6 2012/12/28 23:25:50 jmc Exp $
-C $Name:  $
-
 #include "CHEAPAML_OPTIONS.h"
 #undef ALLOW_THSICE
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_interp_linear.F,v 1.1 2009/02/01 21:10:51 jmc Exp $
-C $Name:  $
-
 #include "FLT_OPTIONS.h"
 
 C--   Contents

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_read_pickup.F,v 1.2 2017/03/24 23:38:56 jmc Exp $
-C $Name:  $
-
 #include "GGL90_OPTIONS.h"
 
 CBOP

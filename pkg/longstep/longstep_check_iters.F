@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_check_iters.F,v 1.4 2015/11/16 23:11:21 jmc Exp $
-C $Name:  $
-
 #include "LONGSTEP_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc_diff.F,v 1.5 2015/02/23 21:20:15 jmc Exp $
-C $Name:  $
-
 #include "MY82_OPTIONS.h"
 
       SUBROUTINE MY82_CALC_DIFF(

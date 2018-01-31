@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/master_cpu_io.F,v 1.4 2010/05/23 01:35:51 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 CBOP

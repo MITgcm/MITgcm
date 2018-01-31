@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_initialise.F,v 1.7 2012/07/07 00:08:09 jmc Exp $
-C $Name:  $
-
 #include "GRIDALT_OPTIONS.h"
 
        subroutine gridalt_initialise (myThid)

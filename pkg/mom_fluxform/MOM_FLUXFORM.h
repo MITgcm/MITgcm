@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/MOM_FLUXFORM.h,v 1.4 2014/04/04 19:55:51 jmc Exp $
-C $Name:  $
-
 #ifdef NONLIN_FRSURF
 # ifndef DISABLE_RSTAR_CODE
 

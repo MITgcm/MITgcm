@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_mon_stats.F,v 1.3 2012/09/17 22:06:17 jmc Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 
 C--  File obcs_mon_stats.F: compute statistic of a field at OB section

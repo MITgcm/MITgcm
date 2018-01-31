@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/lab_sea/input_ad/dorun.sh,v 1.3 2013/07/24 00:20:45 jmc Exp $
-#  $Name:  $
-
 #  number of additional executions to perform is given by "add_DIVA_runs"
 #  and corresponds to "nchklev_3" value in file "code_ad/tamc.h"
 add_DIVA_runs=4

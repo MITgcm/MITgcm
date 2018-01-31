@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/isomip/code_oad/ECCO_CPPOPTIONS.h,v 1.3 2014/09/09 23:39:39 jmc Exp $
-C $Name:  $
-
 #ifndef ECCO_CPPOPTIONS_H
 #define ECCO_CPPOPTIONS_H
 

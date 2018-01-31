@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_fill.F,v 1.6 2014/08/08 19:29:48 jmc Exp $
-C $Name:  $
-
 #include "DIAG_OPTIONS.h"
 
 C--   File diagstats_fill.F:

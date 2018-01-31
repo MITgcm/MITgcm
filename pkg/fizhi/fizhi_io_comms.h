@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_io_comms.h,v 1.2 2004/08/06 23:17:55 molod Exp $
-C $Name:  $
-
-
 C     FIZHI I/O flags
 
       logical fizhi_mdsio_read_pickup,fizhi_mdsio_write_pickup

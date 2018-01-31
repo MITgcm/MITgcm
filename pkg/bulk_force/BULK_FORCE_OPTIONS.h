@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULK_FORCE_OPTIONS.h,v 1.6 2011/12/24 01:04:45 jmc Exp $
-C $Name:  $
-
 #ifndef BULK_FORCE_OPTIONS_H
 #define BULK_FORCE_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

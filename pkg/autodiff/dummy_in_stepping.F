@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/dummy_in_stepping.F,v 1.4 2012/07/27 21:12:02 jmc Exp $
-C $Name:  $
-
 #include "AUTODIFF_OPTIONS.h"
 
 CBOP

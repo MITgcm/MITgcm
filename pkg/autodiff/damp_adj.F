@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/damp_adj.F,v 1.2 2012/08/12 18:49:09 jmc Exp $
-C $Name:  $
-
 #include "AUTODIFF_OPTIONS.h"
 
 CBOP

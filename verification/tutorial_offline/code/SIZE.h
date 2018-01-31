@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_offline/code/SIZE.h,v 1.1 2005/10/01 02:31:45 edhill Exp $
-C $Name:  $
-
 C
 CBOP
 C    !ROUTINE: SIZE.h

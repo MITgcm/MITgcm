@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_VARS.h,v 1.9 2017/11/15 18:17:24 mmazloff Exp $
-C $Name:  $
-
 C ==========================================================
 C   Carbon chemistry variables
 C ==========================================================

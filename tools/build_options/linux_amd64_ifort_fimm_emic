@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort_fimm_emic,v 1.2 2010/03/21 18:01:13 jmc Exp $
-# $Name:  $
-
 #  optifile for fimm.bccs.uib.no
 #  http://www.parallab.uib.no/resources/cluster/nodemem
 #

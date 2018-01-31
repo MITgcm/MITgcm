@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/ideal_2D_oce/code/GMREDI_OPTIONS.h,v 1.7 2013/11/19 17:28:02 jmc Exp $
-C $Name:  $
-
 C CPP options file for GM/Redi package
 C Use this file for selecting options within the GM/Redi package
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_init.F,v 1.14 2014/10/09 00:50:54 gforget Exp $
-C $Name:  $
-
 #include "GRDCHK_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CG3D.h,v 1.10 2010/03/16 00:04:00 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_NONHYDROSTATIC
 CBOP
 C     !ROUTINE: CG3D.h

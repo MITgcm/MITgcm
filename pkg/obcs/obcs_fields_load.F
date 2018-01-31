@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_fields_load.F,v 1.5 2015/05/29 21:47:01 heimbach Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 
 C--  File obcs_external_fields_load.F: Routines to read of OBC fields from files

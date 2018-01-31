@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_add_tides.F,v 1.3 2017/06/11 01:36:56 dimitri Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

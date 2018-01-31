@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write_pickup.F,v 1.11 2017/07/23 00:24:18 jmc Exp $
-C $Name:  $
-
 #include "DIAG_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

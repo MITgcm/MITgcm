@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/code/SIZE.h,v 1.3 2012/12/14 19:19:44 dimitri Exp $
-C $Name:  $
-
 C
 CBOP
 C    !ROUTINE: SIZE.h

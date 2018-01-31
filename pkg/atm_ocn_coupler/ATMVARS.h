@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/ATMVARS.h,v 1.8 2016/01/06 00:28:14 jmc Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | ATMVARS.h Declare arrays for holding data on the atmos.
 C     |           grid. Arrays may need adding or removing

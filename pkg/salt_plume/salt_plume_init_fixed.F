@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_init_fixed.F,v 1.2 2007/11/28 17:55:36 dimitri Exp $
-C $Name:  $
-
 #include "SALT_PLUME_OPTIONS.h"
 
 CBOP 0

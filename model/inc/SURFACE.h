@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.20 2014/04/29 21:03:00 jmc Exp $
-C $Name:  $
 C
 CBOP
 C    !ROUTINE: SURFACE.h

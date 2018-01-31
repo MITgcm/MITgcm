@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_TAVE.h,v 1.2 2012/10/22 21:14:06 heimbach Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: SEAICE_TAVE.h
 C     !INTERFACE:

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hdiv.F,v 1.5 2015/09/10 17:53:04 jmc Exp $
-C $Name:  $
-
 #include "MOM_COMMON_OPTIONS.h"
 
       SUBROUTINE MOM_CALC_HDIV(

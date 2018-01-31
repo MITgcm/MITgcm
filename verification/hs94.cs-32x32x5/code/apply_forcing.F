@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/code/apply_forcing.F,v 1.1 2014/08/20 20:23:10 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 C--  File apply_forcing.F:

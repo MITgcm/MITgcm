@@ -1,5 +1,3 @@
-# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/llc.py,v 1.12 2017/03/06 17:21:26 jahn Exp $
-# $Name:  $
 from __future__ import print_function
 import sys
 import numpy as np

@@ -9,10 +9,6 @@ function b=compact2map(a,flag,rgbDim);
   % flag == 1          : convert from 2d map to compact format 
   
   % author: Martin Losch (Martin.Losch@awi.de)
-  % $Name:  $
-  % $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/latloncap/compact2map.m,v 1.2 2012/04/15 23:00:58 jmc Exp $
-
-  
   if nargin < 2
     flag = 0;
   end

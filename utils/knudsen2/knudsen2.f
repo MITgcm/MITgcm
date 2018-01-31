@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/utils/knudsen2/knudsen2.f,v 1.3 2002/08/07 16:55:52 mlosch Exp $
-
       PROGRAM KNUDSEN2
       implicit none
 C

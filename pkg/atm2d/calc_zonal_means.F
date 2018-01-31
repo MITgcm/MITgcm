@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/calc_zonal_means.F,v 1.8 2009/07/09 21:40:36 jscott Exp $
-C $Name:  $
-
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
 

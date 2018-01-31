@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/GRDCHK_OPTIONS.h,v 1.3 2012/07/06 23:12:45 jmc Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: GRDCHK_OPTIONS.h
 C !INTERFACE:

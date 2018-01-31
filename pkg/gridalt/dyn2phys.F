@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/dyn2phys.F,v 1.7 2012/07/07 00:08:08 jmc Exp $
-C $Name:  $
-
 #include "GRIDALT_OPTIONS.h"
 
       subroutine dyn2phys(qdyn,pedyn,im1,im2,jm1,jm2,lmdyn,Nsx,Nsy,

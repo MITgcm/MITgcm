@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.135 2017/06/08 15:10:05 mlosch Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | SEAICE_PARAMS.h
 C     | o Basic parameter header for sea ice model.

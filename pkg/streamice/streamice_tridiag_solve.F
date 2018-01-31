@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_tridiag_solve.F,v 1.2 2013/06/21 20:49:51 jmc Exp $
-C $Name:  $
-
 #include "STREAMICE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

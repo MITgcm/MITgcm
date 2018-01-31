@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_r_star.F,v 1.9 2011/05/20 01:09:37 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

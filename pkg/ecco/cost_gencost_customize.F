@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_customize.F,v 1.28 2017/07/05 18:27:39 ou.wang Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"

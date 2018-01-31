@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.17 2014/05/12 01:22:06 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 #undef OLD_PSTAR_SLOPE_TERM
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.66 2017/03/24 23:26:36 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

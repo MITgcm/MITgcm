@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_efc,v 1.5 2011/09/13 19:36:15 jmc Exp $
-# $Name:  $
-
 #  Ed Hill
 #
 #  tested on orion.jpl.nasa.gov (Linux orion 2.4.21-sgi230r7 #1 SMP Tue Oct 7 22:38:53 PDT 2003 ia64 unknown), 20031029

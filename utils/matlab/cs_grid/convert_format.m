@@ -2,9 +2,6 @@
 % a) old-format (not compact) to compact format
 % b) compact-format to per face format (matlab structure)
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/convert_format.m,v 1.2 2007/03/26 23:15:55 jmc Exp $
-% $Name:  $
-
 nr=360;nb=90;ng=90;
 %- set all 6 faces dimensions
 nf=ones(6,2); 

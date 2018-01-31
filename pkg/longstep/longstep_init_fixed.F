@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_init_fixed.F,v 1.2 2010/01/12 23:55:48 jahn Exp $
-C $Name:  $
-
 #include "LONGSTEP_OPTIONS.h"
 
 CBOP

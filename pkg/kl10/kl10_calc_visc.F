@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_calc_visc.F,v 1.1 2014/07/30 03:28:05 jmc Exp $
-C $Name:  $
 #include "KL10_OPTIONS.h"
 
       SUBROUTINE KL10_CALC_VISC(

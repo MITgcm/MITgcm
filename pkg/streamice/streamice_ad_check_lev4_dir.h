@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_ad_check_lev4_dir.h,v 1.3 2014/06/04 12:55:58 dgoldberg Exp $
-C $Name:  $
-
 #ifdef ALLOW_STREAMICE
 
 CADJ STORE area_shelf_streamice = tapelev4, key = ilev_4

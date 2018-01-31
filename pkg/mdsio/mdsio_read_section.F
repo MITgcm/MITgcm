@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_section.F,v 1.4 2011/06/07 22:30:29 jmc Exp $
-C $Name:  $
-
 #include "MDSIO_OPTIONS.h"
 
 C--  File mdsio_read_section.F: Routines to handle mid-level I/O interface.

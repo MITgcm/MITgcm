@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_readparms.F,v 1.6 2017/10/19 00:31:59 jmc Exp $
-C $Name:  $
 #include "EBM_OPTIONS.h"
 
 CBOP 0

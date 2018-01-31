@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_check.F,v 1.2 2004/09/23 12:02:54 mlosch Exp $
-C $Name:  $
 #include "MY82_OPTIONS.h"
 
       SUBROUTINE MY82_CHECK( myThid )

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/read_fld_xy_rl.F,v 1.5 2009/09/01 19:28:24 jmc Exp $
-C $Name:  $
-
 #include "RW_OPTIONS.h"
 
       SUBROUTINE READ_FLD_XY_RL( pref,suff,field,myIter,myThid)

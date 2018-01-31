@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_fields_load.F,v 1.17 2011/06/07 20:45:30 jmc Exp $
-C $Name:  $
-
 #include "BULK_FORCE_OPTIONS.h"
 
 C     !ROUTINE: BULKF_FIELDS_LOAD

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_atmos.F,v 1.5 2013/06/10 02:51:47 jmc Exp $
-C $Name:  $
-
 #include "GCHEM_OPTIONS.h"
 
 CBOP

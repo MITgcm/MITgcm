@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/OPPS.h,v 1.1 2004/09/16 11:28:16 mlosch Exp $
-C $Name:  $
-
 #ifdef ALLOW_OPPS
 
 CBOP

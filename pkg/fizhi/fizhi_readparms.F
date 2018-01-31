@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.20 2017/08/09 15:23:38 mlosch Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

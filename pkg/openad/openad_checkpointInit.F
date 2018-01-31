@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/openad_checkpointInit.F,v 1.2 2014/07/08 19:05:12 jmc Exp $
-C $Name:  $
-
       SUBROUTINE openad_checkpointinit(uCheckLev1,
      +     uCheckLev2,
      +     uCheckLev3,

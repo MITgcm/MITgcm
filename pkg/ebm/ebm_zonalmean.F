@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_zonalmean.F,v 1.6 2011/09/27 23:43:36 jmc Exp $
-C $Name:  $
-
 #include "EBM_OPTIONS.h"
 
 CBOP 0

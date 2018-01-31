@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_diagnostics_init.F,v 1.4 2015/02/19 15:44:12 mlosch Exp $
-C $Name:  $
-
 #include "GGL90_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

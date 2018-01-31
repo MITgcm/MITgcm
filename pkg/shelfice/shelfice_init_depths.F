@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_init_depths.F,v 1.1 2017/04/10 23:50:41 jmc Exp $
-C $Name:  $
-
 #include "SHELFICE_OPTIONS.h"
 
 CBOP

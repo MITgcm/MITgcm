@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.25 2012/03/23 20:23:16 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
 
       SUBROUTINE FIZHI_INIT_VEG(myThid,vegdata,im,jm,nSx,nSy,Nxg,Nyg,

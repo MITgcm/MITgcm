@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagalarms.F,v 1.5 2005/10/14 16:58:33 molod Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
       subroutine fizhi_diagalarms (myThid)
 

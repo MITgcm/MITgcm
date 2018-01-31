@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_calc_depth.F,v 1.9 2014/10/20 03:17:22 gforget Exp $
-C $Name:  $
-
 #include "SALT_PLUME_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"

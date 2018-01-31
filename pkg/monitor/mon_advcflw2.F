@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_advcflw2.F,v 1.4 2009/04/28 18:16:53 jmc Exp $
-C $Name:  $
-
 #include "MONITOR_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

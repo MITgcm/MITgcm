@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_vel_phistage.F,v 1.5 2015/04/20 19:10:58 dgoldberg Exp $
-C $Name:  $
-
 #include "STREAMICE_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"

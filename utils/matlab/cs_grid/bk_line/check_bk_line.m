@@ -1,9 +1,6 @@
 function check_bk_line( ...
          nc,ydim,jl,ylat,savNpts,savFlg,savIuv,savJuv,savXsg,savYsg);
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/check_bk_line.m,v 1.1 2007/02/05 05:24:33 jmc Exp $
-% $Name:  $
-
 %------------------------------------------------------
 if jl > 1 & ydim < 6*nc,
 %-- check that this broken-line is different from any previous one :

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lsm.F,v 1.9 2010/08/24 14:36:55 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
       SUBROUTINE TILE (
      I                 NCH, DTSTEP, ITYP, TRAINL,TRAINC, TSNOW,  UM,

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_ad_check_lev4_dir.h,v 1.3 2013/07/07 22:24:20 jmc Exp $
-C $Name:  $
-
 cph( not sure exactly why these are needed.
 CADJ STORE phi0surf          = tapelev4, key = ilev_4
 CADJ STORE rhoinsitu         = tapelev4, key = ilev_4

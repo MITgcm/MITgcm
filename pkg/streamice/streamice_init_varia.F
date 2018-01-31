@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_init_varia.F,v 1.14 2015/03/23 14:07:16 dgoldberg Exp $
-C $Name:  $
-
 c#ifdef ALLOW_COST
 c# include "COST_OPTIONS.h"
 c#endif

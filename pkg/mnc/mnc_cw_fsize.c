@@ -1,6 +1,4 @@
 /*************************************************  -*- mode: C -*-
- * $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_fsize.c,v 1.1 2004/10/21 15:40:38 edhill Exp $
- * $Name:  $
  */
 
 /*  Here, we get the definition of the FC_NAMEMANGLE() macro. */

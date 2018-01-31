@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_xz/code/SIZE.h,v 1.3 2016/04/05 22:57:27 jmc Exp $
-C $Name:  $
-
 CBOP
 C    !ROUTINE: SIZE.h
 C    !INTERFACE:

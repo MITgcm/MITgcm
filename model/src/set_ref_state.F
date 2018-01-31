@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_ref_state.F,v 1.10 2016/04/07 16:21:20 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

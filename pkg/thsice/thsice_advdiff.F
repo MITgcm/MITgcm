@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_advdiff.F,v 1.14 2013/01/22 23:31:09 heimbach Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD_OPTIONS.h"

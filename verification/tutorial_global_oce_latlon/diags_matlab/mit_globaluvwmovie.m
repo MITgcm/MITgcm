@@ -1,8 +1,5 @@
 % plot velocity fields
 
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/mit_globaluvwmovie.m,v 1.3 2006/08/12 20:25:12 jmc Exp $
-% $Name:  $
-
 figure
 colormap(jet0);
 for k=pkt;

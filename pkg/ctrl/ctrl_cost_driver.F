@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_driver.F,v 1.9 2015/10/29 03:43:59 gforget Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_cost_driver( myThid )

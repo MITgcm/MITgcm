@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/tst_2+2,v 1.13 2016/01/11 20:46:05 jmc Exp $
-# $Name:  $
-
 rnp_loc()
 {
 #   rnp_loc arg_1 arg_2

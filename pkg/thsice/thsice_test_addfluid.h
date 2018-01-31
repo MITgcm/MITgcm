@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_test_addfluid.h,v 1.1 2008/08/24 21:50:12 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_ADDFLUID
 C   this is a small piece of code to add to S/R thsice_main.F
 C   to check AddFluid implementation : 

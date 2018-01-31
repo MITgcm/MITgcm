@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/gad_c2_2d_adv_x.F,v 1.3 2011/02/24 16:11:41 wienders Exp $
-C $Name:  $
-
 #include "GAD_OPTIONS.h"
 
 CBOP

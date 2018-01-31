@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/zero_adj.F,v 1.7 2012/08/12 18:46:20 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 C--  File zero_adj.F:

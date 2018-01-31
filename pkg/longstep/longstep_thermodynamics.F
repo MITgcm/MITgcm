@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_thermodynamics.F,v 1.9 2013/12/27 16:01:16 jmc Exp $
-C $Name:  $
-
 #include "LONGSTEP_OPTIONS.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC

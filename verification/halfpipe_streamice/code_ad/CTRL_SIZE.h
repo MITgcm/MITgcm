@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_ad/CTRL_SIZE.h,v 1.2 2014/11/13 17:02:13 gforget Exp $
-C $Name:  $
-
 c     ==================================================================
 c     CTRL_SIZE.h
 c     ==================================================================

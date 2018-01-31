@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_import_cplparms.F,v 1.2 2016/01/06 00:45:23 jmc Exp $
-C $Name:  $
-
 #include "ATM_CPL_OPTIONS.h"
 
 CBOP 0

@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYU_MACROS.h,v 1.3 2001/09/21 15:13:31 cnh Exp $
-C $Name:  $
 C
 CBOP
 C    !ROUTINE: DYU_MACROS.h

@@ -3,9 +3,6 @@ function grid = mit_oceanmasks(grid,plotit)
 % create masks for the 4x4 degree run for the individual oceans
 % hfacc/s/w have to be available for this
   
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/mit_oceanmasks.m,v 1.3 2006/08/12 20:25:13 jmc Exp $
-% $Name:  $
-
   if grid.nx ~= 90 | grid.ny ~= 40 
     error(sprintf( ...
 	'%s\n%s\n%s\n%s', ...

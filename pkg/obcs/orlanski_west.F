@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_west.F,v 1.13 2012/09/18 20:09:17 jmc Exp $
-C $Name:  $
 cc
 
 #include "OBCS_OPTIONS.h"

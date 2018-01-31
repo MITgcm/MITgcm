@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_basic2d.F,v 1.2 2015/01/23 18:58:26 gforget Exp $
-C $Name:  $
-
 #include "SMOOTH_OPTIONS.h"
 
       subroutine smooth_basic2D (

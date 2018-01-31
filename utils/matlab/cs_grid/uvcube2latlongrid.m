@@ -28,11 +28,6 @@ function [U,V] = uvcube2latlongrid(del,u,v,XG,YG,RAC,dxG,dyG)
 % >> [ui,vi]=uvcube2latlongrid(del,u,v,XG,YG,RAC,dxG,dyG);
 
 % Written by gmaze@mit.edu, 2007
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/uvcube2latlongrid.m,v 1.1 2007/01/26 20:41:35 jmc Exp $
-% $Name:  $
-
-
-
 [nnx ny nz]=size(u);
 
 for iz = 1 : nz

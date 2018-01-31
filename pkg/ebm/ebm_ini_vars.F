@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_ini_vars.F,v 1.4 2011/08/28 21:47:10 jmc Exp $
-C $Name:  $
-
 #include "EBM_OPTIONS.h"
 
 CBOP 0

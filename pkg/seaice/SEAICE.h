@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.85 2016/06/14 20:36:07 jmc Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: SEAICE.h
 

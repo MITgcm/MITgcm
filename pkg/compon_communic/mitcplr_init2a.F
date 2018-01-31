@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcplr_init2a.F,v 1.3 2013/11/27 21:48:30 jmc Exp $
-C $Name:  $
-
 !=======================================================================
       subroutine mitcplr_init2a( myTypeStr )
 

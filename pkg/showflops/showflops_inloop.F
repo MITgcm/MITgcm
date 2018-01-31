@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/showflops/showflops_inloop.F,v 1.3 2012/07/07 00:08:09 jmc Exp $
-C $Name:  $
-
 #include "SHOWFLOPS_OPTIONS.h"
 
 CBOP

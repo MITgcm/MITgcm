@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/eta_gl_prime_streamice.F,v 1.1 2016/11/29 14:20:16 dgoldberg Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
       _RL FUNCTION ETA_GL_PRIME_STREAMICE (X, M1, M2, Y0, W)

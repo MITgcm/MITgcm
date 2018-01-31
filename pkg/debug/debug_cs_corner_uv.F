@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_cs_corner_uv.F,v 1.8 2013/11/27 00:40:31 jmc Exp $
-C $Name:  $
-
 #include "DEBUG_OPTIONS.h"
 
       SUBROUTINE DEBUG_CS_CORNER_UV(

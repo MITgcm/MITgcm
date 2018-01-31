@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_fulldate.F,v 1.5 2012/04/08 19:31:46 jmc Exp $
-C $Name:  $
-
 #include "CAL_OPTIONS.h"
 
       SUBROUTINE CAL_FULLDATE(

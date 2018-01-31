@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_cumulsum_z_tile.F,v 1.4 2012/09/03 19:40:09 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 #include "W2_OPTIONS.h"
 

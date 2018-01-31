@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_set_iolabel.F,v 1.2 2010/03/16 00:22:26 jmc Exp $
-C $Name:  $
-
 #undef STAND_ALONE_IOLABEL_TESTING
 C     to test the S/R above, #define the above C-PreProcessor flag
 C     and compile this fortran source code alone.

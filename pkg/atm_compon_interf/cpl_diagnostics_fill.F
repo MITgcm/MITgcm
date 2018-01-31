@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_diagnostics_fill.F,v 1.1 2016/01/06 00:36:02 jmc Exp $
-C $Name:  $
-
 #include "ATM_CPL_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

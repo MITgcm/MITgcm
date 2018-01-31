@@ -31,9 +31,6 @@ function rho = densjmd95(s,t,p);
 % Jackett and McDougall, 1995, JAOT 12(4), pp. 381-388
 
 % created by mlosch on 2002-08-09
-% $Header: /u/gcmpack/MITgcm/utils/matlab/densjmd95.m,v 1.2 2007/02/17 23:49:43 jmc Exp $
-% $Name:  $
-  
 %----------------------
 % CHECK INPUT ARGUMENTS
 %----------------------

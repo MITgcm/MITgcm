@@ -1,7 +1,5 @@
 #!/bin/bash
 # 
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_gfortran_greenplanet,v 1.2 2010/04/06 17:17:38 yunx Exp $
-#  $Name:  $
 # 
 # tested on greenplanet.ps.uci.edu
 # Linux greenplanet.ps.uci.edu 2.6.18-128.el5 #1 SMP Wed Jan 21 10:41:14 EST 2009 x86_64 x86_64 x86_64 GNU/Linux

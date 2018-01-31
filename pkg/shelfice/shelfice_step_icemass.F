@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_step_icemass.F,v 1.5 2015/04/22 21:33:58 dgoldberg Exp $
-C $Name:  $
-
 #include "SHELFICE_OPTIONS.h"
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"

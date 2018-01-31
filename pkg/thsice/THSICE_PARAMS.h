@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.17 2012/11/21 01:53:34 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_THSICE
 C     *==========================================================*
 C     | THSICE_PARAMS.h

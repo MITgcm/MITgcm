@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_remineralization.F,v 1.11 2017/05/24 17:21:15 mmazloff Exp $
-C $Name:  $
-
 #include "BLING_OPTIONS.h"
 
 CBOP

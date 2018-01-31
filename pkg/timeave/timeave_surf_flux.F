@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_surf_flux.F,v 1.6 2011/04/27 20:21:42 jmc Exp $
-C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
       SUBROUTINE TIMEAVE_SURF_FLUX(

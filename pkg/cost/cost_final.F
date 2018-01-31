@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.37 2017/02/18 16:20:12 gforget Exp $
-C $Name:  $
-
 #include "COST_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"

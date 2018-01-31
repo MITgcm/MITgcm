@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/GGL90.h,v 1.13 2016/01/14 17:44:26 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_GGL90
 
 CBOP

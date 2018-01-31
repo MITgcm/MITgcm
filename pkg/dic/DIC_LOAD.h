@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_LOAD.h,v 1.9 2014/11/04 17:16:32 jmc Exp $
-C $Name:  $
-
 C--   COMMON /DIC_LOAD/
 C     DIC_ldRec     :: time-record currently loaded (in temp arrays *[1])
 C     chlinput      :: chlorophyll climatology input field [mg/m3]

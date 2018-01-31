@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_preconditioner.F,v 1.33 2016/04/22 08:50:34 mlosch Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"

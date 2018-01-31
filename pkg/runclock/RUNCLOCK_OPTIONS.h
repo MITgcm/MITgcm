@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/runclock/RUNCLOCK_OPTIONS.h,v 1.2 2011/12/24 01:09:40 jmc Exp $
-C $Name:  $
-
 C CPP options file for RUNCLOCK package
 C Use this file for selecting options within the RUNCLOCK package
 

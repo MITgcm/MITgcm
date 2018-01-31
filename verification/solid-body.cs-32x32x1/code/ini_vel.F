@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/solid-body.cs-32x32x1/code/ini_vel.F,v 1.3 2009/04/28 18:06:15 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

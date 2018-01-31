@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_cs/code/GAD_OPTIONS.h,v 1.4 2013/03/04 18:42:22 jmc Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: GAD_OPTIONS.h
 

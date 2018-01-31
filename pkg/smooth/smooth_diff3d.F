@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_diff3d.F,v 1.11 2017/03/06 19:55:48 gforget Exp $
-C $Name:  $
-
 #include "SMOOTH_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"

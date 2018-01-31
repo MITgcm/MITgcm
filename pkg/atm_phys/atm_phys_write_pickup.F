@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_write_pickup.F,v 1.2 2014/09/25 19:45:23 jmc Exp $
-C $Name:  $
-
 #include "ATM_PHYS_OPTIONS.h"
 
 CBOP

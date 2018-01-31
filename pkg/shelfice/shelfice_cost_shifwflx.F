@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_cost_shifwflx.F,v 1.5 2014/09/09 22:59:55 jmc Exp $
-C $Name:  $
-
 #include "SHELFICE_OPTIONS.h"
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"

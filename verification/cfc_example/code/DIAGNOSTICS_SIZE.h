@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/cfc_example/code/DIAGNOSTICS_SIZE.h,v 1.2 2013/01/10 00:08:10 dfer Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

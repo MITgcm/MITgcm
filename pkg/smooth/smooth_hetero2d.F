@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_hetero2d.F,v 1.3 2016/12/20 03:13:39 gforget Exp $
-C $Name:  $
-
 #include "SMOOTH_OPTIONS.h"
 
       subroutine smooth_hetero2D (

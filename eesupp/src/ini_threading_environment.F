@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_threading_environment.F,v 1.14 2012/09/03 19:30:33 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 #include "PACKAGES_CONFIG.h"
 

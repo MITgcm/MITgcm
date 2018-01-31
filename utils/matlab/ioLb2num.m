@@ -4,9 +4,6 @@ function [iTr] = ioLb2num( ioLb );
 %  do conversion on individual 2c label
 %  or on character array ( N x 2c ) and then return number array (N x 1)
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/ioLb2num.m,v 1.1 2007/11/05 17:04:16 jmc Exp $
-% $Name:  $
-
  if size(ioLb,2) == 1 & size(ioLb,2) == 2,
   N=1; ioLb=ioLb';
  else

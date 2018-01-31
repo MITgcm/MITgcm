@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/SIZE.h,v 1.5 2007/05/10 16:31:26 heimbach Exp $
-C $Name:  $
-
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

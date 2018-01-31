@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/regrid/regrid_readparms.F,v 1.3 2017/08/09 15:23:36 mlosch Exp $
-C $Name:  $
-
 #include "REGRID_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

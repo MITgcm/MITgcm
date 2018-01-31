@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_SIZE.h,v 1.2 2010/10/13 20:56:00 jahn Exp $
-C $Name:  $
-
 CBOP
 C    !ROUTINE: W2_EXCH2_SIZE.h
 C    !INTERFACE:

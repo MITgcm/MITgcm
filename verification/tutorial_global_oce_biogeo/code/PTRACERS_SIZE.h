@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code/PTRACERS_SIZE.h,v 1.1 2006/04/20 16:34:51 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_PTRACERS
 
 CBOP

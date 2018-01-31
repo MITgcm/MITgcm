@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_diva,v 1.19 2016/01/15 18:36:15 jmc Exp $
-#  $Name:  $
 #
 
 #  This AD option-file contains the default settings for the divided adjoint (DIVA)

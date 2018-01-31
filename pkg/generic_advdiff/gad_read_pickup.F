@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_read_pickup.F,v 1.5 2017/03/24 23:38:56 jmc Exp $
-C $Name:  $
-
 #include "GAD_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_init_fixed.F,v 1.1 2011/08/06 03:13:22 dimitri Exp $
-C $Name:  $
-
 #include "BBL_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

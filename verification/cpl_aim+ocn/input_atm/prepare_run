@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/input_atm/prepare_run,v 1.2 2009/01/02 01:03:24 jmc Exp $
-#  $Name:  $
- 
 #- in order to save disc space, from this dir:
 fromDir="../../aim.5l_cs/input.thSI"
 #  link files:

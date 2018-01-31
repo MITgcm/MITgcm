@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/tamc.h,v 1.8 2011/01/12 00:08:54 gforget Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 
 c     ================================================================

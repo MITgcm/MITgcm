@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/mom_vi_hfacz_diss.F,v 1.2 2003/07/13 19:26:05 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
       SUBROUTINE MOM_VI_HFACZ_DISS(

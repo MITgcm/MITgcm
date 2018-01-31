@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_p_ground.F,v 1.11 2016/04/04 21:29:00 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 #undef CHECK_ANALYLIC_THETA
 

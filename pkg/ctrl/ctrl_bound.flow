@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_bound.flow,v 1.4 2011/10/12 22:08:43 heimbach Exp $
-C $Name:  $
-
 c----------------------------------------
 c subroutine ctrl_bound_3D
 c----------------------------------------

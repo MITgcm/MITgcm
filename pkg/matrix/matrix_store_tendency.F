@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_store_tendency.F,v 1.6 2014/08/11 20:29:06 jmc Exp $
-C $Name:  $
-
 #include "MATRIX_OPTIONS.h"
 
 C--   File matrix_store_tendency.F:

@@ -30,7 +30,6 @@ function hh = myquiver(arg1,arg2,arg3,arg4,arg5,arg6)
 
 %	Clay M. Thompson 3-3-94
 %	Copyright (c) 1994 by The MathWorks, Inc.
-%	$Revision: 1.4 $
 
 % modified D Menemenlis 28 mar 95
 % modified from QUIVER for more consistent scaling

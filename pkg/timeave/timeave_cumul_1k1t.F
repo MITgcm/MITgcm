@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_cumul_1k1t.F,v 1.4 2005/08/19 22:50:26 heimbach Exp $
-C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
 CStartofinterface

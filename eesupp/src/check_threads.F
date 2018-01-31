@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/check_threads.F,v 1.16 2012/03/30 14:18:07 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 CBOP

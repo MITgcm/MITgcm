@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_msg.F,v 1.5 2011/08/24 02:45:36 jmc Exp $
-C $Name:  $
-
 #include "DEBUG_OPTIONS.h"
 
 CBOP

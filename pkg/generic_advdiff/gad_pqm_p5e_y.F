@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_pqm_p5e_y.F,v 1.1 2016/03/13 01:44:03 jmc Exp $
-C $Name:  $
-
 #     include "GAD_OPTIONS.h"
 
       SUBROUTINE GAD_PQM_P5E_Y(bi,bj,kk,ix,

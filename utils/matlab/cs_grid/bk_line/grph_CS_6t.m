@@ -7,9 +7,6 @@ function grph_CS_6t(var,c1,c2,nc,titv,Cgrd)
 % titv = title
 % Cgrd : C-grid position: 0 = center ; 1 = U-vel ; 2 = V-vel ; 3 = Z-point
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CS_6t.m,v 1.1 2014/10/06 23:27:31 jmc Exp $
-% $Name:  $
-
 if nargin < 6, Cgrd=0; end
 if nargin < 5, ktit=0; titv=' '; else ktit=1; end
 if nargin < 4, nc=32; end

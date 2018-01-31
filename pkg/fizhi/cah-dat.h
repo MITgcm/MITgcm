@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/cah-dat.h,v 1.3 2009/04/02 20:54:03 jmc Exp $
-C $Name:  $
-
 c
       data ((cah(i,j),i=1,22),j= 1, 5)/
      & 0.9923, 0.9922, 0.9921, 0.9920, 0.9916, 0.9910, 0.9899, 0.9882,

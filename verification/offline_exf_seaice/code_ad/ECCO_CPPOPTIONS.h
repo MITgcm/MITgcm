@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/ECCO_CPPOPTIONS.h,v 1.13 2015/08/06 20:35:17 gforget Exp $
-C $Name:  $
-
 #ifndef ECCO_CPPOPTIONS_H
 #define ECCO_CPPOPTIONS_H
 c#include "PACKAGES_CONFIG.h"

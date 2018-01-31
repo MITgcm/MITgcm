@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/dummy_in_hfac.F,v 1.4 2012/08/12 01:34:44 jmc Exp $
-C $Name:  $
-
 #include "AUTODIFF_OPTIONS.h"
 
       subroutine dummy_in_hfac( myname, myIter, myThid )

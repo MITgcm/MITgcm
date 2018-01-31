@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/gsum.F,v 1.9 2012/09/06 15:25:01 jmc Exp $
-C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
 CBOP

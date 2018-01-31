@@ -7,9 +7,6 @@ function scalHV_colbar(barscale,ori_h0v1)
 %                            AND reduce by 0.4 in H & 0.5 in V
 
 % Written by jmc@ocean.mit.edu, 2006.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/scalHV_colbar.m,v 1.1 2006/05/09 21:38:15 jmc Exp $
-% $Name:  $
-
 if (nargin < 2), ori_h0v1 = 0; end
 %---
 barfac=barscale;

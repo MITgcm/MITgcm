@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_map_exf.F,v 1.7 2013/04/04 16:44:34 jmc Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 #ifdef ALLOW_EXF
 #include "EXF_OPTIONS.h"

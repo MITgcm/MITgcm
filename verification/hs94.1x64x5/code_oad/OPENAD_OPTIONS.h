@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/OPENAD_OPTIONS.h,v 1.3 2015/02/22 23:50:22 heimbach Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: OPENAD_OPTIONS.h
 C !INTERFACE:

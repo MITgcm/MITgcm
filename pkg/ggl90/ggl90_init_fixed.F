@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_init_fixed.F,v 1.7 2015/07/02 04:42:43 heimbach Exp $
-C $Name:  $
-
 #include "GGL90_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_do_exch.F,v 1.2 2016/01/19 01:07:31 jmc Exp $
-C $Name:  $
-
 #include "SALT_PLUME_OPTIONS.h"
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.18 2014/08/07 17:32:03 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

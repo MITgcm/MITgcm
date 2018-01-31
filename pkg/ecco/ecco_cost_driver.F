@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_driver.F,v 1.21 2015/11/24 21:26:31 gforget Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
       subroutine ecco_cost_driver(  myTime, myIter, myThid  )

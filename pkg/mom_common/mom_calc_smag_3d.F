@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_smag_3d.F,v 1.3 2013/11/07 23:09:45 jmc Exp $
-C $Name:  $
-
 #include "MOM_COMMON_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

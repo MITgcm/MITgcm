@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check_depths.F,v 1.5 2012/09/18 19:45:21 jmc Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 
       SUBROUTINE OBCS_CHECK_DEPTHS( myThid )

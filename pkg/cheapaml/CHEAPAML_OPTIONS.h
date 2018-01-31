@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML_OPTIONS.h,v 1.2 2011/12/24 01:04:45 jmc Exp $
-C $Name:  $
-
 C Options file for CheapAML package
 C Use this file for selecting options within the CheapAML package
 

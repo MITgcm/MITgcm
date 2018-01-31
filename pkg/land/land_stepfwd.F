@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_stepfwd.F,v 1.7 2007/10/01 13:31:15 jmc Exp $
-C $Name:  $
-
 #include "LAND_OPTIONS.h"
 
 CBOP

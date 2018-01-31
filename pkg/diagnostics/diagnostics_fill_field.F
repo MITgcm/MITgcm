@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_field.F,v 1.8 2017/07/23 00:35:53 jmc Exp $
-C $Name:  $
-
 #include "DIAG_OPTIONS.h"
 
 C--   File diagnostics_fill_field.F:

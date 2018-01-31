@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_COST.h,v 1.1 2013/03/30 01:23:58 heimbach Exp $
-C $Name:  $
-
 C     /==========================================================\
 C     | THSICE_COST.h                                            |
 C     | o Sea ice cost terms.                                    |

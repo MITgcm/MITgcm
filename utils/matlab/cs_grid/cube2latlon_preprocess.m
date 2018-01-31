@@ -16,9 +16,6 @@ function [del] = cube2latlon_preprocess(x,y,xi,yi,varargin)
 % >> ti=cube2latlon_fast(del,t);
 %
 % Written by adcroft@.mit.edu, 2004.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/cube2latlon_preprocess.m,v 1.2 2008/07/14 23:26:18 jmc Exp $
-% $Name:  $
-
 NN=size(x);
 [nx ny nz]=size(x);
 

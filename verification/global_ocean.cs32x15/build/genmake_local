@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/build/genmake_local,v 1.6 2011/06/28 20:07:06 jmc Exp $
-
 #  This is the local options file for the "new" version of genmake
 
 MAKEDEPEND=tools_xmakedepend

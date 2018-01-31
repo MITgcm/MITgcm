@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_send_put_vec.F,v 1.9 2012/09/06 16:13:53 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 #undef DBUG_EXCH_VEC
 

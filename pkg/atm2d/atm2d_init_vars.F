@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_init_vars.F,v 1.10 2012/08/21 21:02:22 jscott Exp $
-C $Name:  $
-
 #include "ctrparam.h"
 C
       SUBROUTINE ATM2D_INIT_VARS(myThid)

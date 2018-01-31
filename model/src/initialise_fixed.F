@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.57 2015/11/12 01:09:58 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

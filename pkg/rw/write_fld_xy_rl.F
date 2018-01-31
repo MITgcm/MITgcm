@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_fld_xy_rl.F,v 1.6 2017/03/24 15:38:01 jmc Exp $
-C $Name:  $
-
 #include "RW_OPTIONS.h"
 
       SUBROUTINE WRITE_FLD_XY_RL( pref,suff,field,myIter,myThid )

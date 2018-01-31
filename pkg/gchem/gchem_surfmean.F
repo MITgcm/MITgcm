@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_surfmean.F,v 1.1 2014/05/06 20:46:53 jahn Exp $
-C $Name:  $
-
 #include "GCHEM_OPTIONS.h"
 
 C !INTERFACE: ==========================================================

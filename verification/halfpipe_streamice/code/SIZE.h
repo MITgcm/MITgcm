@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code/SIZE.h,v 1.2 2013/06/26 20:42:24 jmc Exp $
-C $Name:  $
-
 C
 CBOP
 C    !ROUTINE: SIZE.h

@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_gfortran+mpi_fc_lam,v 1.1 2005/10/16 06:35:31 edhill Exp $
-#  $Name:  $
 #
 
 #  Tested with gcc-gfortran v4.0.x as shipped with Fedora Core 4.

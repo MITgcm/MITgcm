@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_init_varia.F,v 1.12 2014/08/15 19:18:12 jmc Exp $
-C $Name:  $
-
 #include "PTRACERS_OPTIONS.h"
 #include "GAD_OPTIONS.h"
 

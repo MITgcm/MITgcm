@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/cpl_atm2d+ocn/shared_code/OCNIDS.h,v 1.2 2007/06/13 15:23:10 jscott Exp $
-C $Name:  $
-
 C     /==========================================================\
 C     | OCNIDS.h Declare symbolic constants holding strings that |
 C     |          are used to identify this component and the     |

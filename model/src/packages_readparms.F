@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.77 2014/07/30 03:31:35 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

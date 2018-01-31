@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc12_forcing.F,v 1.12 2013/06/10 02:52:57 jmc Exp $
-C $Name:  $
-
 C modified for external_forcing_DIC.F  August 1999
 C
 C modified swd Oct 01 and Feb 02, for use as package for c40_patch1

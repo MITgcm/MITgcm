@@ -1,7 +1,6 @@
 #
 # $XConsortium: cpp.ed,v 1.3 89/12/12 12:44:18 jim Exp $
 #
-# $Locker $
 #
 /struct symtab stab/d
 /struct symtab \*defloc;/d

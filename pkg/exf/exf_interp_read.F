@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp_read.F,v 1.16 2017/03/10 00:14:27 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 
 CBOP

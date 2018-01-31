@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_write_pickup.F,v 1.2 2014/03/06 05:00:33 m_bates Exp $
-C $Name:  $
-
 #include "GMREDI_OPTIONS.h"
 
 CBOP

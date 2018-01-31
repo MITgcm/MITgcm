@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/sp6+mpi_iblade,v 1.2 2017/06/29 00:23:51 jmc Exp $
-#  $Name:  $
 # 
 # tested on iblade1.awi.de
 # uname -a: AIX iblade1 3 5 0007465AD400

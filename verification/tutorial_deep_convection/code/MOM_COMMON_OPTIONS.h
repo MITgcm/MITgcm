@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_deep_convection/code/MOM_COMMON_OPTIONS.h,v 1.1 2013/09/30 18:19:41 jmc Exp $
-C $Name:  $
-
 C CPP options file for mom_common package
 C Use this file for selecting CPP options within the mom_common package
 

@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_deep_convection/code/SIZE.h,v 1.2 2008/04/23 23:24:22 jmc Exp $
-C $Name:  $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

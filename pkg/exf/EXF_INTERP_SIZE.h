@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_INTERP_SIZE.h,v 1.1 2017/03/10 00:14:27 jmc Exp $
-C $Name:  $
-
 CBOP
 C    !ROUTINE: EXF_INTERP_SIZE.h
 C    !INTERFACE:

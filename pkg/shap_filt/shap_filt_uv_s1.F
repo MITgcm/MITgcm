@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s1.F,v 1.3 2002/03/04 01:32:55 jmc Exp $
-C $Name:  $
-
 #include "SHAP_FILT_OPTIONS.h"
 
 CBOP

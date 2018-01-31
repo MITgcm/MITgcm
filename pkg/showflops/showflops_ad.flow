@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/showflops/showflops_ad.flow,v 1.3 2007/10/11 05:19:01 heimbach Exp $
-C $Name:  $
-
 cph: These flow dir. need to be removed from eesupp.flow
 cph: Should be obsolete with introduction of new routines
 cph: showflops_init.F, showflops_inloop.F

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/exch_component_configs.F,v 1.1 2013/12/02 23:54:43 jmc Exp $
-C $Name:  $
-
 #include "ATM2D_OPTIONS.h"
 
 CBOP 0

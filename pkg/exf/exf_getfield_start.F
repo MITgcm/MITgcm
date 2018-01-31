@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getfield_start.F,v 1.3 2017/02/07 00:15:29 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

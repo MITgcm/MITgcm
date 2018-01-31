@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_START.h,v 1.1 2012/03/08 17:05:44 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: PTRACERS_START.h
 C     !INTERFACE:

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_set_myown_facets.F,v 1.2 2010/04/23 20:21:06 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_EEOPTIONS.h"
 #include "W2_OPTIONS.h"

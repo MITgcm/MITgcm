@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/EXF_OPTIONS.h,v 1.11 2017/10/06 00:13:56 jmc Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: EXF_OPTIONS.h
 C !INTERFACE:

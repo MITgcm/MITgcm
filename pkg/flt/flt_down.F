@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_down.F,v 1.5 2010/12/22 21:25:18 jahn Exp $
-C $Name:  $
-
 #include "FLT_OPTIONS.h"
 
       SUBROUTINE FLT_DOWN (

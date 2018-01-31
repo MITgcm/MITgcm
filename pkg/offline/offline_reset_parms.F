@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_reset_parms.F,v 1.4 2015/07/18 21:49:08 jmc Exp $
-C $Name:  $
-
 #include "OFFLINE_OPTIONS.h"
 
 C !INTERFACE: ==========================================================

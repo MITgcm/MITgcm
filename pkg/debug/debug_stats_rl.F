@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_stats_rl.F,v 1.6 2016/07/26 16:23:52 jmc Exp $
-C $Name:  $
-
 #include "DEBUG_OPTIONS.h"
 
       SUBROUTINE DEBUG_STATS_RL(

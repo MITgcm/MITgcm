@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_init_fixed.F,v 1.1 2011/10/26 09:29:36 mlosch Exp $
-C $Name:  $
-
 #include "PP81_OPTIONS.h"
 
 CBOP

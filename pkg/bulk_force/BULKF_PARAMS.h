@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULKF_PARAMS.h,v 1.5 2010/08/24 13:56:02 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_BULK_FORCE
 C     *==========================================================*
 C     | BULK_PARAMS.h

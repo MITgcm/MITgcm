@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_formula_aim.F,v 1.2 2006/06/22 14:10:29 jmc Exp $
-C $Name:  $
-
 #include "BULK_FORCE_OPTIONS.h"
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_check.F,v 1.9 2017/02/18 16:20:12 gforget Exp $
-C $Name:  $
-
 #include "COST_OPTIONS.h"
 
       SUBROUTINE COST_CHECK( myThid )

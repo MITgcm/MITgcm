@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/ATMCPL.h,v 1.5 2016/01/06 00:42:51 jmc Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | ATMCPL.h
 C     | o Variables shared between atmos. component to coupler

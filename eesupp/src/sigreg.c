@@ -1,7 +1,4 @@
 /*
- * $Header: /u/gcmpack/MITgcm/eesupp/src/sigreg.c,v 1.7 2011/08/10 22:33:32 jahn Exp $
- * $Name:  $
-
 //BOP
 // !ROUTINE: sigreg
 // !INTERFACE:

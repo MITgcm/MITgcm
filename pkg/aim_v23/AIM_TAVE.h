@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_TAVE.h,v 1.1 2009/12/29 23:02:21 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: AIM_TAVE.h
 C     !INTERFACE:

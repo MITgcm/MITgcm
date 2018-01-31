@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/tamc.h,v 1.4 2007/10/09 02:36:42 jmc Exp $
-C $Name:  $
-
 c     ================================================================
 c     HEADER TAMC
 c     ================================================================

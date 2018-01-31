@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/active_file_profiles.flow,v 1.4 2007/10/09 00:07:59 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: flow directives for active_file.F
 C     !INTERFACE:

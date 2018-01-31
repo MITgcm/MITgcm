@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_write_grid_info.F,v 1.15 2013/07/26 14:23:53 jmc Exp $
-C $Name:  $
-
 #include "MNC_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

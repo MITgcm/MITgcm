@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.83 2017/03/24 15:41:19 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

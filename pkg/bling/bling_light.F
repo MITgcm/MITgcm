@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_light.F,v 1.1 2016/05/19 20:29:26 mmazloff Exp $
-C $Name:  $
-
 #include "BLING_OPTIONS.h"
 
 CBOP

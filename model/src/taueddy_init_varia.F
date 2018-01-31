@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/taueddy_init_varia.F,v 1.4 2009/09/09 15:31:42 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

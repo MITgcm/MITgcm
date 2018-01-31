@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_ad/THSICE_OPTIONS.h,v 1.1 2013/04/20 23:51:48 jmc Exp $
-C $Name:  $
-
 #ifndef THSICE_OPTIONS_H
 #define THSICE_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

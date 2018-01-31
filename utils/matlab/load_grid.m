@@ -13,9 +13,6 @@ function G = load_grid(varargin);
 %      option >= 20 : only read in Verti.Grid spacing (without hFac)
 %      nxAxis = number of spacing in 1.D x-axis xAxC (default: nxAxis = grid-Nx)
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/load_grid.m,v 1.2 2013/02/12 16:06:32 jmc Exp $
-% $Name:  $
-
 if nargin == 0
   rDir = '.';
 else

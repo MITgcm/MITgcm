@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_init_fixed.F,v 1.5 2013/12/02 23:54:43 jmc Exp $
-C $Name:  $
-
 #include "ctrparam.h"
 #ifdef OCEAN_3D
 #  include "ATM2D_OPTIONS.h"

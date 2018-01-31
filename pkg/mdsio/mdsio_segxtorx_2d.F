@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_segxtorx_2d.F,v 1.1 2009/09/01 19:16:51 jmc Exp $
-C $Name:  $
-
 #include "MDSIO_OPTIONS.h"
 
 C--  File mdsio_segxtorx_2d.F: Routines to pass segment to/from 2D section array

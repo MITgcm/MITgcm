@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_fgmres.F,v 1.22 2016/09/27 05:34:46 mlosch Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 
 C--   File seaice_fgmres.F: seaice fgmres dynamical (linear) solver S/R:

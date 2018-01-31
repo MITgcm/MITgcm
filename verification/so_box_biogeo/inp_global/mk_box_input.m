@@ -5,9 +5,6 @@
 %    b) extracting initial conditions and OBCs from a 2-years run
 %       (done here in ../run_glob/) using model parameters from ../inp_global.
 
-% $Header: /u/gcmpack/MITgcm/verification/so_box_biogeo/inp_global/mk_box_input.m,v 1.1 2014/08/27 21:36:34 jmc Exp $
-% $Name:  $
-
 %- kwr(1) = 2 : write Region mask to get matching Stat-Diags in Global Ocean run
 %- kwr(2) = 2 : write forcing files for S.Ocean box
 %- kwr(3) = 2 : write initial State for S.Ocean box

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_swapffields.F,v 1.7 2011/09/02 18:22:24 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 
 C--  File exf_swapffields.F: Routines to swap 2 fields

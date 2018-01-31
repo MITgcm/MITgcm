@@ -1,6 +1,3 @@
-# $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/README,v 1.7 2012/10/20 17:43:41 jmc Exp $
-# $Name:  $
-
 ---- Oct 13, 2010 (after checkpoint62l)
  matlab-topology-generator is no longer supported and does not work anymore
  since latest additions to pkg/exch2 (for OBCS) have not been incorporated into

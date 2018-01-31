@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/KPP_OPTIONS.h,v 1.1 2015/07/05 03:28:51 heimbach Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | KPP_OPTIONS.h
 C     | o CPP options file for KPP package.

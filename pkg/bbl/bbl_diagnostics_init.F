@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_diagnostics_init.F,v 1.2 2012/04/03 00:22:16 jmc Exp $
-C $Name:  $
-
 #include "BBL_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

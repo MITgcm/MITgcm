@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_common/atm_diagnostics_init.F,v 1.5 2010/01/21 01:47:32 jmc Exp $
-C $Name:  $
-
 #include "ATM_COMMON_OPTIONS.h"
 
 C !INTERFACE: ==========================================================

@@ -4,8 +4,6 @@
 #   sed -n '1,/^# \$Header:/ p' crontab_jmc.bak > crontab_jmc
 #   ( echo '' ; crontab -l ) >> crontab_jmc
 #-
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/nasa_ames/crontab_jmc,v 1.4 2017/07/10 19:05:07 jmc Exp $
-
 MAILTO=jmc@ocean.mit.edu
 
 55 23 1,16 * * cd /u/jcampin/test_pleiades/nasa_ames && cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d

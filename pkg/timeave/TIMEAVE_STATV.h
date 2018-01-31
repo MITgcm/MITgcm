@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.18 2009/12/28 02:43:52 jmc Exp $
-C $Name:  $
-
 #include "TIMEAVE_OPTIONS.h"
 
 #ifdef ALLOW_TIMEAVE

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_albedo.F,v 1.8 2013/04/13 20:51:32 heimbach Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 
 CBOP

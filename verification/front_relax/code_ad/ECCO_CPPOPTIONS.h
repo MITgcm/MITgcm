@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/ECCO_CPPOPTIONS.h,v 1.5 2013/03/26 20:19:41 jmc Exp $
-C $Name:  $
-
 #ifndef ECCO_CPPOPTIONS_H
 #define ECCO_CPPOPTIONS_H
 

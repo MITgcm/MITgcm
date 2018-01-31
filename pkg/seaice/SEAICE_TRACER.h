@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_TRACER.h,v 1.7 2012/02/16 01:22:02 gforget Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: SEAICE_TRACER.h
 

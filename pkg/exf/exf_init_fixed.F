@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_init_fixed.F,v 1.36 2017/10/06 00:03:56 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 
 CBOP

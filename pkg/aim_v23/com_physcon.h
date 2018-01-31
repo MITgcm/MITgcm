@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_physcon.h,v 1.3 2010/08/24 13:29:00 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_AIM
 
 C--   COMMON /PHYCON/: Physical constants (initial. in INPHYS)

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ocean_stress.F,v 1.30 2012/03/06 16:45:20 jmc Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface

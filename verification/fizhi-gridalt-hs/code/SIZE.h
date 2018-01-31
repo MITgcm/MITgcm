@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/SIZE.h,v 1.1 2004/04/27 17:43:40 molod Exp $
-C $Name:  $
-
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |
 C     |==========================================================|

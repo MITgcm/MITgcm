@@ -1,8 +1,5 @@
 % m-file: mit_plotzonalvelocity.m
 
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/mit_plotzonalvelocity.m,v 1.3 2006/08/12 20:25:13 jmc Exp $
-% $Name:  $
-
 % select timestep
 k=kmax;
 

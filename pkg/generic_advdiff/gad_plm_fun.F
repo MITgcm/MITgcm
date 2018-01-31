@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_plm_fun.F,v 1.1 2016/03/13 01:44:02 jmc Exp $
-C $Name:  $
-
 #     include "GAD_OPTIONS.h"
 
 C--  File gad_plm_fun.F: Routines for monotone piecewise linear method.

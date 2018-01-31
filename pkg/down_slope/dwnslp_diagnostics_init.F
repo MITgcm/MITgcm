@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/dwnslp_diagnostics_init.F,v 1.2 2011/11/07 15:48:14 jmc Exp $
-C $Name:  $
-
 #include "DWNSLP_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

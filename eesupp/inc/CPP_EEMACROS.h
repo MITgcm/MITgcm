@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.26 2017/09/13 22:12:35 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: CPP_EEMACROS.h
 C     !INTERFACE:

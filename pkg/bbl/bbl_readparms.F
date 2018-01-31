@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_readparms.F,v 1.4 2017/08/09 15:23:39 mlosch Exp $
-C $Name:  $
-
 #include "BBL_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

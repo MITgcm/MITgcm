@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_hyd_press_1d.F,v 1.2 2016/04/04 21:29:00 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

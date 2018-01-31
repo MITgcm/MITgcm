@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.40 2016/08/22 22:06:01 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #include "AD_CONFIG.h"

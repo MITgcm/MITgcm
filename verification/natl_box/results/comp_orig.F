@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/natl_box/results/comp_orig.F,v 1.2 2001/02/04 14:38:53 cnh Exp $
-C $Name:  $
 C     Compare KPPhbl_01_01.00000_00720_240 to KPPhbl_orig.
 C     for North Atlantic test domain.
 C     Maximum difference between two files is reported.

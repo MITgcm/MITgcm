@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/grad_sigma.F,v 1.10 2011/12/17 21:17:22 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

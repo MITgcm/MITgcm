@@ -38,9 +38,6 @@ function new = change(old,relation,flag,value)
 %          alter.m   - Phil  Morgan    Feb 91
 %          convert.m - Peter Mcintosh Aug 91
 %--------------------------------------------------------------------
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/change.m,v 1.3 2006/08/12 20:25:12 jmc Exp $
-% $Name:  $
-
 % CHECK INPUT ARGUMENTS CALL
 if nargin ~= 4
   error('CHANGE.M: Must have 4 input arguments')

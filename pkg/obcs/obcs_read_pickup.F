@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_read_pickup.F,v 1.6 2017/03/24 23:38:57 jmc Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

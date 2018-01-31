@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_init_fixed.F,v 1.1 2012/04/05 21:59:03 jmc Exp $
-C $Name:  $
-
 #include "CAL_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

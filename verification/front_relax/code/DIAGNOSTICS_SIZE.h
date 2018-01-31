@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code/DIAGNOSTICS_SIZE.h,v 1.1 2007/06/21 01:16:04 jmc Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

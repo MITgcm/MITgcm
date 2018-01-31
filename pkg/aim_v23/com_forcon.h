@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_forcon.h,v 1.2 2004/05/14 16:08:38 jmc Exp $
-C $Name:  $
-C $Namer: $
-
 #ifdef ALLOW_AIM
 
 C--   COMMON /FORCON/: Constants for forcing fields (initial. in INPHYS)

@@ -1,6 +1,3 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/my25_turb_mod.F90,v 1.1 2013/05/08 22:14:14 jmc Exp $
-! $Name:  $
-
   MODULE MY25_TURB_MOD
 
 !=======================================================================

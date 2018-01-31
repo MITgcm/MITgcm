@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forcing_surf_relax.F,v 1.1 2013/07/04 23:02:48 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

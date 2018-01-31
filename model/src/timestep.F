@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.60 2014/12/10 22:22:31 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_CD_CODE

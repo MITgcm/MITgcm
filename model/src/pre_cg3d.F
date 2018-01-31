@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/pre_cg3d.F,v 1.6 2016/05/04 22:10:37 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

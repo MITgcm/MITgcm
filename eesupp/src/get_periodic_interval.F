@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/get_periodic_interval.F,v 1.2 2011/04/20 01:36:09 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 CBOP

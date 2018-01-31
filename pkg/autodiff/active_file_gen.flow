@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_gen.flow,v 1.1 2012/08/05 20:24:48 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: flow directives for active_file_gen.F
 C     !INTERFACE:

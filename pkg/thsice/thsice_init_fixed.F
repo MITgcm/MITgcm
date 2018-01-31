@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_init_fixed.F,v 1.2 2005/06/24 04:36:54 edhill Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_write_meta.F,v 1.6 2013/01/13 22:42:26 jmc Exp $
-C $Name:  $
-
 #include "MDSIO_OPTIONS.h"
 
 CBOP

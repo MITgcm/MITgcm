@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/smooth_impldiff.F,v 1.3 2012/09/04 14:37:18 gforget Exp $
-C $Name:  $
-
 #include "SMOOTH_OPTIONS.h"
 
       SUBROUTINE SMOOTH_IMPLDIFF( bi, bj, iMin, iMax, jMin, jMax,

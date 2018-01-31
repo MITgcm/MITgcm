@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_driver.F,v 1.1 2004/05/14 21:10:34 heimbach Exp $
-C $Name:  $
-
 #include "EBM_OPTIONS.h"
 
       SUBROUTINE EBM_DRIVER( myTime, myIter, myThid )

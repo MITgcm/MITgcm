@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.11 2012/08/12 01:38:02 jmc Exp $
-C $Name:  $
-
 #include "COST_OPTIONS.h"
 
       subroutine cost_test( myThid )

@@ -1,6 +1,3 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/dargan_bettsmiller_mod.F90,v 1.3 2017/08/11 20:48:50 jmc Exp $
-! $Name:  $
-
 module dargan_bettsmiller_mod
 
 ! modified by pog:

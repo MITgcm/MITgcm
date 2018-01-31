@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean_ebm/code_ad/ECCO_CPPOPTIONS.h,v 1.4 2014/12/12 17:41:49 gforget Exp $
-C $Name:  $
-
 #ifndef ECCO_CPPOPTIONS_H
 #define ECCO_CPPOPTIONS_H
 

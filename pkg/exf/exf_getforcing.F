@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.49 2017/01/27 17:22:55 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"

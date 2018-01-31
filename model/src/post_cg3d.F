@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/post_cg3d.F,v 1.8 2017/03/24 15:41:19 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

@@ -1,9 +1,6 @@
 kgr=3; nRgr=3; kwr=1;
 dbug=1;
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/mk_psiLine_CS.m,v 1.2 2013/02/12 17:59:02 jmc Exp $
-% $Name:  $
-
 %- set ncdf=1 to load MNC (NetCDF) grid-files ;
 %   or ncdf=0 to load MDS (binary) grid-files :
  ncdf=0;

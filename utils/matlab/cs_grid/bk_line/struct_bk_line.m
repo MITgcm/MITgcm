@@ -1,7 +1,4 @@
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/struct_bk_line.m,v 1.1 2005/09/15 16:46:28 jmc Exp $
-% $Name:  $
-
 %- output arrays:
 % ylat=-87:3:87;
 % if ydim > 1,  ydim=length(ylat); end

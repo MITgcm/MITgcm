@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_print_msg.F,v 1.1 2014/01/19 23:58:46 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

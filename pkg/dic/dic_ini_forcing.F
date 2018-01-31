@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_ini_forcing.F,v 1.24 2014/11/04 17:16:33 jmc Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 
 CBOP

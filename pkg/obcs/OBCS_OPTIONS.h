@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_OPTIONS.h,v 1.19 2017/06/11 01:36:56 dimitri Exp $
-C $Name:  $
-
 C CPP options file for OBCS package
 C Use this file for selecting options within the OBCS package
 

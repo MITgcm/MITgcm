@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc12_surfforcing.F,v 1.4 2013/06/10 02:56:57 jmc Exp $
-C $Name:  $
-
 #include "GCHEM_OPTIONS.h"
 
 CBOP

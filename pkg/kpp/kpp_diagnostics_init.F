@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_diagnostics_init.F,v 1.10 2014/05/21 10:45:33 heimbach Exp $
-C $Name:  $
-
 #include "KPP_OPTIONS.h"
 #ifdef ALLOW_SALT_PLUME
 #include "SALT_PLUME_OPTIONS.h"

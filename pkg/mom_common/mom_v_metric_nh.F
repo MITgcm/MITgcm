@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_metric_nh.F,v 1.3 2007/03/12 23:54:26 jmc Exp $
-C $Name:  $
-
 #include "MOM_COMMON_OPTIONS.h"
 
 CBOP

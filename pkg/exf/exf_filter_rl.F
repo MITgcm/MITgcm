@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_filter_rl.F,v 1.10 2012/01/03 17:49:46 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 
       SUBROUTINE EXF_FILTER_RL(

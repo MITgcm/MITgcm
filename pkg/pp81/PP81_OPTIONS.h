@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/PP81_OPTIONS.h,v 1.3 2011/12/24 01:09:39 jmc Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | PP81_OPTIONS.h
 C     | o CPP options file for PP81 package.

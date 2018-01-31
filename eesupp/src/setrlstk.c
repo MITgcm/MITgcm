@@ -1,7 +1,4 @@
 /*
- * $Header: /u/gcmpack/MITgcm/eesupp/src/setrlstk.c,v 1.2 2006/06/20 03:13:54 edhill Exp $
- * $Name:  $
-
 //BOP
 // !ROUTINE: setrlstk
 // !INTERFACE:

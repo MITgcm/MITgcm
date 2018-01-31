@@ -20,9 +20,6 @@
 %
 % llc_vec         - plots a vector map.
 
-%% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/latloncap/plot_llc.m,v 1.1 2007/05/07 14:00:52 cnh Exp $
-%% $Name:  $
-
 % Set what to get and where to get it from
 % gfpat    - where to get grid files
 % dfpat    - where to get output files

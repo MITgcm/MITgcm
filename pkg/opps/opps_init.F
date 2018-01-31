@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_init.F,v 1.1 2004/09/16 11:28:16 mlosch Exp $
-C $Name:  $
-
 #include "OPPS_OPTIONS.h"
 
       SUBROUTINE OPPS_INIT( myThid )

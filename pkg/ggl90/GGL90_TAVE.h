@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/GGL90_TAVE.h,v 1.3 2010/08/06 18:37:05 gforget Exp $
-C $Name:  $
-
 #ifdef ALLOW_GGL90
 
 C     *==========================================================*

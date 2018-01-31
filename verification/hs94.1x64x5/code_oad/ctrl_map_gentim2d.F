@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/ctrl_map_gentim2d.F,v 1.4 2015/02/18 20:47:01 heimbach Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 
 CBOP

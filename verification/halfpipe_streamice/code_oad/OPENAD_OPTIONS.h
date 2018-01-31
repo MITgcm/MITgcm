@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/OPENAD_OPTIONS.h,v 1.2 2015/02/19 16:52:03 heimbach Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: OPENAD_OPTIONS.h
 C !INTERFACE:

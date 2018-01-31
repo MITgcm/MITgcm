@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/DEF_IN_MAKEFILE.h,v 1.3 2012/10/26 18:50:17 jmc Exp $
-C $Name:  $
-
 C=====  WARNING: DO NOT include this file in any source code =====
 CBOP
 C     !DESCRIPTION:

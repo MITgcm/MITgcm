@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/momentum_correction_step.F,v 1.12 2017/08/21 18:34:47 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

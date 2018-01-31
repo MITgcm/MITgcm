@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_gentim2d.F,v 1.7 2014/09/22 14:00:42 gforget Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 
 CBOP

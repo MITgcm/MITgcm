@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_absvort3.F,v 1.2 2005/04/28 14:51:04 jmc Exp $
-C $Name:  $
-
 #include "MOM_COMMON_OPTIONS.h"
 
       SUBROUTINE MOM_CALC_ABSVORT3( 

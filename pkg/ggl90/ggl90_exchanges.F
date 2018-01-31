@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_exchanges.F,v 1.3 2015/02/19 15:44:12 mlosch Exp $
-C $Name:  $
-
 #include "GGL90_OPTIONS.h"
 
 CBOP

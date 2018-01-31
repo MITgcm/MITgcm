@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_oad/cost_tracer.F,v 1.1 2013/04/23 16:29:35 jahn Exp $
-C $Name:  $
-
 #include "COST_OPTIONS.h"
 
       subroutine cost_tracer( bi, bj, myThid )

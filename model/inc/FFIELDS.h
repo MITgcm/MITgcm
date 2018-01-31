@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.48 2017/10/04 20:30:04 jmc Exp $
-C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h
 C     !INTERFACE:

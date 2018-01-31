@@ -4,10 +4,6 @@
 %  positive when the flow goes from right to left of arc A -> B.
 % (e.g.: if lat_A = lat_B and long_A < long_B, northward flow -> transport > 0 )
 %-----------------------
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grt_circ_bkl.m,v 1.3 2013/02/12 17:59:02 jmc Exp $
-% $Name:  $
-
-
 %- kwr=1 : => write broken-line to file: filnam(.mat)
 %- kplot : to check different steps of making bk-line:
 %  < 0 : no plot ; 0 : just plot cos(longitude) after rotation

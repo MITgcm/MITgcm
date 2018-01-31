@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.14 2014/07/16 20:12:21 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
       SUBROUTINE fizhi_tendency_apply_u(
      U                        gU_arr,

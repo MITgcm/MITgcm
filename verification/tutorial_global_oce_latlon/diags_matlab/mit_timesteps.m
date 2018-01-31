@@ -1,9 +1,6 @@
 % m-file: mit_timesteps.m
 % sets up the the variables tname and timesteps for the 4x4 global runs
 
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/mit_timesteps.m,v 1.3 2006/08/12 20:25:13 jmc Exp $
-% $Name:  $
-
 deltat = mit_getparm('data','deltaTtracer');
 if isempty(deltat)
   error('deltaTtracer is empty')

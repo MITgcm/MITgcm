@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_sunf90,v 1.5 2013/07/22 18:40:45 jmc Exp $
-# $Name:  $
-
 # Build options for the Sun fortran compiler (with and without MPI)
 #            on Linux AMD64 platform
 # MPI : need to set environment variable MPI_INC_DIR to the include

@@ -1,6 +1,3 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/simple_sat_vapor_pres_mod.F90,v 1.1 2013/05/08 22:14:15 jmc Exp $
-! $Name:  $
-
 module simple_sat_vapor_pres_mod
 
 !-----------------------------------------------------------------------

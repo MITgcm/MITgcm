@@ -1,6 +1,4 @@
 /*
- * $Header: /u/gcmpack/MITgcm/eesupp/src/setdir.c,v 1.1 2013/10/25 17:29:58 jmc Exp $
- * $Name:  $
 */
 
 #include <stdlib.h>

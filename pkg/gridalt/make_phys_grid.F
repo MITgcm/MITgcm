@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/make_phys_grid.F,v 1.12 2012/08/12 01:28:03 jmc Exp $
-C $Name:  $
-
 #include "GRIDALT_OPTIONS.h"
 
        SUBROUTINE MAKE_PHYS_GRID(drF,hfacC,im1,im2,jm1,jm2,Nr,

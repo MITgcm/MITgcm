@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev4_dir.h,v 1.9 2012/10/23 20:15:32 heimbach Exp $
-C $Name:  $
-
 #ifdef ALLOW_OBCS
 #
 # ifdef ALLOW_OBCS_NORTH

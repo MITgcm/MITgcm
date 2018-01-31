@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_vertshear.F,v 1.11 2015/09/10 18:08:51 jmc Exp $
-C $Name:  $
-
 #include "MOM_VECINV_OPTIONS.h"
 
       SUBROUTINE MOM_VI_U_VERTSHEAR(

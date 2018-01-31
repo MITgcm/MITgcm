@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/LONGSTEP.h,v 1.4 2010/01/12 23:55:48 jahn Exp $
-C $Name:  $
-
 #ifdef ALLOW_LONGSTEP
 
 CBOP

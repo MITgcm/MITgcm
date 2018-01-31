@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.34 2017/04/03 17:09:01 ou.wang Exp $
-C $Name:  $
-
 #ifdef ALLOW_GMREDI
 
 C---  GM/Redi package parameters

@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/seaice_itd/code/DIAGNOSTICS_SIZE.h,v 1.2 2014/06/24 08:00:16 mlosch Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

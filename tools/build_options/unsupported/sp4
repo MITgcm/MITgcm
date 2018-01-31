@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/sp4,v 1.1 2017/06/29 00:09:43 jmc Exp $
-# $Name:  $
-
 #  tested on bluesky, ce107 Oct 2005
 #  using the following invocation:
 #  ../../../tools/genmake2 -of=../../../tools/build_options/sp4 -mpi -make=gmake

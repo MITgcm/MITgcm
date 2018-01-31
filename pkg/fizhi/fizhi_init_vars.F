@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.23 2012/03/27 15:48:27 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
        SUBROUTINE FIZHI_INIT_VARS (myThid)
 c-----------------------------------------------------------------------

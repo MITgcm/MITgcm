@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_output.F,v 1.5 2017/03/24 23:38:57 jmc Exp $
-C $Name:  $
-
 #include "PP81_OPTIONS.h"
 
 CBOP

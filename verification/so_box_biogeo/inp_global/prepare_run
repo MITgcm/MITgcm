@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/so_box_biogeo/inp_global/prepare_run,v 1.1 2014/08/27 21:36:34 jmc Exp $
-#  $Name:  $
-
 #- take *.bin files and pickup files from this dir:
 fromDir="../../tutorial_global_oce_biogeo/input"
 

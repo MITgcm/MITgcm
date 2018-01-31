@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_sla_read_yd.F,v 1.5 2014/06/09 17:47:57 gforget Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
 

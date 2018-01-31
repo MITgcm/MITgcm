@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_BUFFER.h,v 1.4 2012/09/04 00:43:13 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: W2_EXCH2_BUFFER.h
 C     !INTERFACE:

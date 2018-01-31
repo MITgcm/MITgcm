@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_mnc_init.F,v 1.3 2008/05/23 07:22:40 mlosch Exp $
-C $Name:  $
-      
 #include "LAND_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

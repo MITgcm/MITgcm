@@ -1,6 +1,3 @@
-! $Header: /u/gcmpack/MITgcm/tools/OAD_support/ad_template.active_read_xyz.F,v 1.1 2015/02/18 12:39:27 heimbach Exp $
-! $Name:  $
-
 #include "OPENAD_OPTIONS.h"
 
       subroutine template()

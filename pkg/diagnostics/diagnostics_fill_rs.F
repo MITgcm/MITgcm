@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_rs.F,v 1.4 2017/07/23 00:38:52 jmc Exp $
-C $Name:  $
-
 #include "DIAG_OPTIONS.h"
 
 CBOP

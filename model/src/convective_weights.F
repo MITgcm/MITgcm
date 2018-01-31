@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_weights.F,v 1.6 2012/03/05 01:17:42 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

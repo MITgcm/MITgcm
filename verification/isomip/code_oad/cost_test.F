@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/isomip/code_oad/cost_test.F,v 1.1 2013/03/29 23:18:56 heimbach Exp $
-C $Name:  $
-
 #include "COST_OPTIONS.h"
 
       subroutine cost_test( myThid )

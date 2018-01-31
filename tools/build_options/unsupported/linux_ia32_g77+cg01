@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_ia32_g77+cg01,v 1.1 2004/07/30 20:53:25 edhill Exp $
 #
 # tested on cg01 and confirmed to work, eh3 2003-09-08
 

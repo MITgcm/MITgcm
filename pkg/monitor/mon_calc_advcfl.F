@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_calc_advcfl.F,v 1.2 2016/07/22 14:21:20 jmc Exp $
-C $Name:  $
-
 #include "MONITOR_OPTIONS.h"
 
 C--  File mon_calc_advcfl.F: Routines to compute Tracer Advective CFL

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/coupler.F,v 1.7 2016/01/06 00:32:11 jmc Exp $
-C $Name:  $
-
 CBOP 0
 C !ROUTINE: COUPLER
 

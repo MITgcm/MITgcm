@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/compsend_r8.F,v 1.3 2009/09/14 16:22:02 jmc Exp $
-C $Name:  $
-
 !=======================================================================
       subroutine compsend_r8( dataname, Ni,Oi,Nj,Oj, arr )
       implicit none

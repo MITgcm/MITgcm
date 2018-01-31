@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_presmooth.F,v 1.4 2001/04/10 22:35:27 heimbach Exp $
-C $Name:  $
-
 #include "ZONAL_FILT_OPTIONS.h"
 
       SUBROUTINE ZONAL_FILT_PRESMOOTH(

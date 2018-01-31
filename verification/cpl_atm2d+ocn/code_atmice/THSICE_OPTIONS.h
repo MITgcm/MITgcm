@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/cpl_atm2d+ocn/code_atmice/THSICE_OPTIONS.h,v 1.1 2009/09/02 21:59:42 jscott Exp $
-C $Name:  $
-
 #ifndef THSICE_OPTIONS_H
 #define THSICE_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_write_pickup.F,v 1.3 2014/03/30 18:00:23 jmc Exp $
-C $Name:  $
-
 #include "STREAMICE_OPTIONS.h"
 
 CBOP

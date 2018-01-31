@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_ad_check_lev3_dir.h,v 1.3 2014/01/17 21:56:30 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_SHELFICE
 CADJ STORE shelficeForcingT = tapelev3, key = ilev_3
 CADJ STORE shelficeForcingS = tapelev3, key = ilev_3

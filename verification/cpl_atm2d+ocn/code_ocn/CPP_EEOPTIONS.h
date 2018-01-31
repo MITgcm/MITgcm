@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/cpl_atm2d+ocn/code_ocn/CPP_EEOPTIONS.h,v 1.4 2015/08/25 21:11:50 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: CPP_EEOPTIONS.h
 C     !INTERFACE:

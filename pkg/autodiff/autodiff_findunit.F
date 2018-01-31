@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_findunit.F,v 1.1 2015/07/22 20:54:42 gforget Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE AUTODIFF_FINDUNIT( ioUnit, myThid )

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kl10/kl10_output.F,v 1.2 2017/03/24 23:38:56 jmc Exp $
-C $Name:  $
-
 #include "KL10_OPTIONS.h"
 
 CBOP

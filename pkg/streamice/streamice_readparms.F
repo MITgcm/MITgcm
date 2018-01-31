@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/streamice_readparms.F,v 1.18 2017/08/09 15:23:36 mlosch Exp $
-C $Name:  $
-
 C this needs changes
 
 #include "STREAMICE_OPTIONS.h"

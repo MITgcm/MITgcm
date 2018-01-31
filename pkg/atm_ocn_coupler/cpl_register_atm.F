@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/cpl_register_atm.F,v 1.3 2006/06/15 23:29:17 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CStartOfInterface

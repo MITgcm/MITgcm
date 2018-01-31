@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum_tile.F,v 1.5 2015/08/25 20:26:38 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 C--   File global_sum_tile.F: Routines that perform global sum

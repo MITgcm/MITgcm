@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT_OPTIONS.h,v 1.7 2013/11/10 02:58:34 yunx Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | ICEFRONT_OPTIONS.h
 C     | o CPP options file for ICEFRONT package.

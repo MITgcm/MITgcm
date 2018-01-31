@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_oceanic_surf_flux.F,v 1.16 2015/06/03 13:39:21 rpa Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_check4file.F,v 1.2 2011/03/14 01:34:17 jmc Exp $
-C $Name:  $
-
 #include "MDSIO_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

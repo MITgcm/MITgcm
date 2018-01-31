@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_ri_number.F,v 1.4 2010/01/03 19:17:01 jmc Exp $
-C $Name:  $
-
 #include "PP81_OPTIONS.h"
 
 CBOP

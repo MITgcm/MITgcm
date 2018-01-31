@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_ad_check_lev3_dir.h,v 1.6 2017/11/15 18:17:24 mmazloff Exp $
-C $Name:  $
-
 #ifdef ALLOW_BLING
 
 C common CARBON_NEEDS

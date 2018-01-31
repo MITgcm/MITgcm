@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_varia.F,v 1.13 2017/03/24 23:38:56 jmc Exp $
-C $Name:  $
-
 #include "FLT_OPTIONS.h"
 
       SUBROUTINE FLT_INIT_VARIA ( myThid  )

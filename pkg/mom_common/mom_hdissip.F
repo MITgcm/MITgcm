@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_hdissip.F,v 1.7 2014/02/11 20:22:51 jmc Exp $
-C $Name:  $
-
 #include "MOM_COMMON_OPTIONS.h"
 
       SUBROUTINE MOM_HDISSIP(

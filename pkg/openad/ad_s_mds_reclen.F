@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/ad_s_mds_reclen.F,v 1.3 2014/07/08 19:05:13 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
       subroutine oad_s_MDS_RECLEN( filePrec, nnn, myThid, reclen )

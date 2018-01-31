@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.16 2014/01/19 14:33:43 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 C--   File utils.F: General purpose support routines

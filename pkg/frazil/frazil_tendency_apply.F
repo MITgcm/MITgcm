@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_tendency_apply.F,v 1.5 2014/07/09 17:00:49 jmc Exp $
-C $Name:  $
-
 #include "FRAZIL_OPTIONS.h"
 C--  File frazil_tendency_apply.F: Routines to apply FRAZIL tendencies
 C--   Contents

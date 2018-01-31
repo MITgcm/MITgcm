@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_check.F,v 1.6 2012/04/03 00:20:14 jmc Exp $
-C $Name:  $
-
 #include "MYPACKAGE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

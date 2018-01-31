@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_check.F,v 1.11 2017/12/15 19:37:08 jmc Exp $
-C $Name:  $
 #include "SHELFICE_OPTIONS.h"
 
       SUBROUTINE SHELFICE_CHECK( myThid )

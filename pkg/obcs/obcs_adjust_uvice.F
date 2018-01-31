@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_adjust_uvice.F,v 1.2 2012/09/18 20:09:17 jmc Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 
 CBOP

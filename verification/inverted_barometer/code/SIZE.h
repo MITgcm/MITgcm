@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/inverted_barometer/code/SIZE.h,v 1.2 2003/02/11 14:19:51 jmc Exp $
-C $Name:  $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

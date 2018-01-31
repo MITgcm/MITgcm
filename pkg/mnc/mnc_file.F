@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.24 2008/06/20 20:36:58 utke Exp $
-C $Name:  $
-
 #include "MNC_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

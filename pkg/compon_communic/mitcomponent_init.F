@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcomponent_init.F,v 1.4 2013/12/02 21:37:53 jmc Exp $
-C $Name:  $
-
 !=======================================================================
       subroutine MITCOMPONENT_init(
      I                      myTypeStr, 

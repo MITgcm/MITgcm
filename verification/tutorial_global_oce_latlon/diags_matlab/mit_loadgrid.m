@@ -4,9 +4,6 @@ function grid = mit_loadgrid(varargin);
 
 % Aug 15, 2002: fixed a bug (?): yc' -> yc 
 %
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/mit_loadgrid.m,v 1.3 2006/08/12 20:25:13 jmc Exp $
-% $Name:  $
-
   if nargin == 0
     dname = '.';
   else

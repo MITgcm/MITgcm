@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_ad_check_lev1_dir.h,v 1.3 2013/07/07 22:24:20 jmc Exp $
-C $Name:  $
-
 CADJ STORE save0 = comlev1, key = ikey_dynamics
 CADJ STORE save1 = comlev1, key = ikey_dynamics
 CADJ STORE tave0 = comlev1, key = ikey_dynamics

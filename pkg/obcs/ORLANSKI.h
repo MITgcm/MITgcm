@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/ORLANSKI.h,v 1.3 2004/07/06 18:25:52 adcroft Exp $
-C $Name:  $
-
 C SPK 6/2/00: Added storage arrays for salinity. Removed some 
 C             unneeded arrays.
 C             

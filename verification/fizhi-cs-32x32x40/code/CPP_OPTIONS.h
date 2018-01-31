@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-32x32x40/code/CPP_OPTIONS.h,v 1.1 2007/01/11 17:56:21 molod Exp $
-C $Name:  $
-
 #ifndef CPP_OPTIONS_H
 #define CPP_OPTIONS_H
 

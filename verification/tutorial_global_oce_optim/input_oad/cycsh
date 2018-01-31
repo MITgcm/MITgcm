@@ -3,9 +3,6 @@ set name=tutorial
 set itermax=15
 module load ifc
 
-# $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/input_oad/cycsh,v 1.2 2014/10/15 23:23:27 jmc Exp $
-# $Name:  $
-
 set ite=`egrep 'optimcycle' data.optim | sed 's/ optimcycle=//'| sed 's/,$//'`
 set i=`expr $ite + 1`
 while ( $i <= $itermax )

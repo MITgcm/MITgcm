@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/regrid/regrid_check.F,v 1.1 2006/08/15 04:05:48 edhill Exp $
-C $Name:  $
-
 #include "REGRID_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

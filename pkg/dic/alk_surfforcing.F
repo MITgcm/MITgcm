@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/alk_surfforcing.F,v 1.13 2010/04/11 22:03:53 jmc Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 
 CBOP

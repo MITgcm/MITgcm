@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_smooth.F,v 1.4 2012/08/12 19:46:19 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE CTRL_SMOOTH (

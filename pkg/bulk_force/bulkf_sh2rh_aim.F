@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_sh2rh_aim.F,v 1.1 2006/01/22 15:50:37 jmc Exp $
-C $Name:  $
-
 #include "BULK_FORCE_OPTIONS.h"
 
       SUBROUTINE BULKF_SH2RH_AIM(IMODE,NGP,TA,PS,SIG,QA,RH,QSAT,myThid)

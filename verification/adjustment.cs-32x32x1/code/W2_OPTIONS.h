@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/adjustment.cs-32x32x1/code/W2_OPTIONS.h,v 1.1 2011/10/03 12:47:07 jmc Exp $
-C $Name:  $
-
 C CPP options file for EXCH2 package
 
 #ifndef W2_OPTIONS_H

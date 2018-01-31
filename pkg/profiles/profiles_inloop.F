@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_inloop.F,v 1.16 2015/08/06 15:48:20 gforget Exp $
-C $Name:  $
-
 #include "PROFILES_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"

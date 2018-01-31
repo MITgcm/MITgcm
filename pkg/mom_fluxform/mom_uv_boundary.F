@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_uv_boundary.F,v 1.1 2007/10/28 21:38:21 jmc Exp $
-C $Name:  $
-
 #include "MOM_FLUXFORM_OPTIONS.h"
 
 CBOP

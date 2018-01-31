@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_check.F,v 1.6 2014/05/30 17:10:15 jmc Exp $
-C $Name:  $
-
 #include "SBO_OPTIONS.h"
 
       SUBROUTINE SBO_CHECK( myThid )

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_calc.F,v 1.14 2016/03/10 20:57:11 jmc Exp $
-C $Name:  $
-
 #include "OPPS_OPTIONS.h"
 #undef OPPS_ORGCODE
 

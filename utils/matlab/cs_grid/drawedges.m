@@ -3,9 +3,6 @@ function [] = drawedges(xg,yg,varargin)
 % >> drawedges(xg,yg)
 %
 % Written by adcroft@.mit.edu, 2001.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/drawedges.m,v 1.1 2005/09/15 20:04:56 jmc Exp $
-% $Name:  $
-
 [nx ny nt]=size(xg);
 hnx=ceil(nx/2);
 hny=ceil(ny/2);

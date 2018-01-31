@@ -1,6 +1,3 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/mixed_layer_mod.F90,v 1.3 2017/08/11 20:48:51 jmc Exp $
-! $Name:  $
-
 module mixed_layer_mod
 
 !

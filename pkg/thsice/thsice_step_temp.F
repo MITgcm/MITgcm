@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_temp.F,v 1.16 2013/06/01 14:49:50 heimbach Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 
 CBOP

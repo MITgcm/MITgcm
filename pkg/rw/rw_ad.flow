@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/rw_ad.flow,v 1.16 2017/03/24 22:03:37 jmc Exp $
-C $Name:  $
-
 C----------------------------------------
 C subroutine  set_write_global_fld
 C----------------------------------------

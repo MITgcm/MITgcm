@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_set_pointers.F,v 1.7 2008/10/30 18:52:54 dfer Exp $
-C $Name:  $
-
 #include "DIAG_OPTIONS.h"
 
 CBOP

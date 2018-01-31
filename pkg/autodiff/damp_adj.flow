@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/damp_adj.flow,v 1.1 2010/04/17 20:47:24 gforget Exp $
-C $Name:  $
-
 c----------------------------------------
 c subroutine damp_adj
 c----------------------------------------

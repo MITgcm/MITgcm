@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_write_pickup.F,v 1.1 2015/07/02 04:42:43 heimbach Exp $
-C $Name:  $
-
 #include "GGL90_OPTIONS.h"
 
 CBOP

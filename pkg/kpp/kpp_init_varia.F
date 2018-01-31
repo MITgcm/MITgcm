@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_init_varia.F,v 1.3 2010/01/02 23:16:22 jmc Exp $
-C $Name:  $
-
 #include "KPP_OPTIONS.h"
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0

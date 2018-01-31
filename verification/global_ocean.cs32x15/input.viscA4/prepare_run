@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/input.viscA4/prepare_run,v 1.2 2016/05/08 18:32:09 jmc Exp $
-#  $Name:  $
-
 #- in order to save disc space, un-gzip files
 #- from this dir:
 fromDir="../input.viscA4"

@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/regrid/REGRID.h,v 1.1 2006/08/15 04:05:48 edhill Exp $
-C $Name:  $
-
-
 C     Package flags
       LOGICAL regridisON
       LOGICAL regrid_MNC

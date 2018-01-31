@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/sp4+mpi_edvir1,v 1.1 2010/02/18 17:03:11 jmc Exp $
-#  $Name:  $
 # 
 # tested on edvir1.awi-bremerhaven.de
 # uname -a: AIX edvir1 2 5 0010117A4C00

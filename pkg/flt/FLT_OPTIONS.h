@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/FLT_OPTIONS.h,v 1.4 2011/12/24 01:04:47 jmc Exp $
-C $Name:  $
-
 C CPP options file for FLT package
 
 #ifndef FLT_OPTIONS_H

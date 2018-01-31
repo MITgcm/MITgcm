@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_calc.F,v 1.32 2017/03/24 23:38:56 jmc Exp $
-C $Name:  $
-
 #include "LAYERS_OPTIONS.h"
 #ifdef ALLOW_GMREDI
 #include "GMREDI_OPTIONS.h"

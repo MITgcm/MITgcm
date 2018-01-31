@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_vdicon.h,v 1.1 2002/11/22 17:16:07 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_AIM
 
 C--   COMMON /VDICON/: Constants for vertical diffusion and shallow convection

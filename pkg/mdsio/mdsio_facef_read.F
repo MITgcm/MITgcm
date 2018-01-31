@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_facef_read.F,v 1.4 2009/06/28 01:06:39 jmc Exp $
-C $Name:  $
-
 #include "MDSIO_OPTIONS.h"
 
 C--  File mdsio_read_facefile.F:

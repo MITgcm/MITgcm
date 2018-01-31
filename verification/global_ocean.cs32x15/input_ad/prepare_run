@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/input_ad/prepare_run,v 1.2 2008/06/16 18:49:21 heimbach Exp $
-#  $Name:  $
- 
 #- in order to save disc space, take files:
 fileList="grid_cs32.face001.bin grid_cs32.face002.bin grid_cs32.face003.bin grid_cs32.face004.bin grid_cs32.face005.bin grid_cs32.face006.bin"
 

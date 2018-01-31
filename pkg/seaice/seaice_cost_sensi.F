@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_sensi.F,v 1.2 2010/03/15 16:08:29 heimbach Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 
       subroutine seaice_cost_sensi( myTime, myIter, myThid )

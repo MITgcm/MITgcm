@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.24 2017/08/08 20:21:19 jmc Exp $
-# $Name:  $
-
 bdPfx='build'; # build-dir prefix
 
 #- default:

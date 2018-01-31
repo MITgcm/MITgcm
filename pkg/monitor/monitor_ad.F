@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.F,v 1.15 2017/12/12 17:42:35 jmc Exp $
-C $Name:  $
-
 #include "MONITOR_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"

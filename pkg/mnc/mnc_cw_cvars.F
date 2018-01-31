@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.16 2011/05/23 01:08:22 jmc Exp $
-C $Name:  $
-
 #include "MNC_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

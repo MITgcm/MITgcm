@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_exf_load.F,v 1.10 2017/03/03 01:01:12 jmc Exp $
-C $Name:  $
-
 # include "OBCS_OPTIONS.h"
 
 C--  File obcs_exf_load.F: Routines to read of OBC fields with EXF

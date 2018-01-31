@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEBUFF_SCPU.h,v 1.1 2009/05/16 13:33:33 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: EEBUFF_SCPU.h
 C     !INTERFACE:

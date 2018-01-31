@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_init.F,v 1.12 2017/05/09 03:05:57 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 
 CBOP

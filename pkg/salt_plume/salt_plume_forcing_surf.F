@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_forcing_surf.F,v 1.5 2014/05/21 10:46:03 heimbach Exp $
-C $Name:  $
-
 #include "SALT_PLUME_OPTIONS.h"
 
 CBOP

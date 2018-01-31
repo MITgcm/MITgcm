@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_barfiles.F,v 1.36 2015/03/24 14:27:55 gforget Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 #include "AD_CONFIG.h"
 #ifdef ALLOW_SEAICE

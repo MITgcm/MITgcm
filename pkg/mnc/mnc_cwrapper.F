@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.35 2010/01/21 01:48:05 jmc Exp $
-C $Name:  $
-
 #include "MNC_OPTIONS.h"
 
 C--  File mnc_cwrapper.F:

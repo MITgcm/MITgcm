@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/mom_vi_mask_vort3.F,v 1.1 2002/01/09 00:28:56 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
       SUBROUTINE MOM_VI_MASK_VORT3(

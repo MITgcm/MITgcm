@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_tr_register.F,v 1.1 2017/12/29 18:37:35 jmc Exp $
-C $Name:  $
-
 #include "BLING_OPTIONS.h"
 
 CBOP

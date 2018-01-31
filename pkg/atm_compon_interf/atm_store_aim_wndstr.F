@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_store_aim_wndstr.F,v 1.2 2015/11/12 01:01:57 jmc Exp $
-C $Name:  $
-
 #include "ATM_CPL_OPTIONS.h"
 #ifdef ALLOW_AIM
 # include "AIM_OPTIONS.h"

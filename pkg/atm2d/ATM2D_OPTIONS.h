@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/ATM2D_OPTIONS.h,v 1.2 2011/12/24 01:04:45 jmc Exp $
-C $Name:  $
-
 #ifndef ATM2D_OPTIONS_H
 #define ATM2D_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

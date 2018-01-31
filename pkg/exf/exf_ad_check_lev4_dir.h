@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_check_lev4_dir.h,v 1.14 2016/10/15 21:25:46 mmazloff Exp $
-C $Name:  $
-
 #ifdef ALLOW_EXF
 
 CADJ STORE StoreEXF1        = tapelev4, key = ilev_4

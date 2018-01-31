@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_OPTIONS.h,v 1.6 2017/03/16 17:03:26 mmazloff Exp $
-C $Name:  $
-
 #ifndef BLING_OPTIONS_H
 #define BLING_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

@@ -15,9 +15,6 @@ function [z] = cube2latlon_fast(del,c,varargin)
 % >> ti=cube2latlon_fast(del,t);
 %
 % Written by adcroft@.mit.edu, 2004.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/cube2latlon_fast.m,v 1.1 2005/09/15 20:04:56 jmc Exp $
-% $Name:  $
-
 NN=size(c);
 [nx ny nz]=size(c);
 

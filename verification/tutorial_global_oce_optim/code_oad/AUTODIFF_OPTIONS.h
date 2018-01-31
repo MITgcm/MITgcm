@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_oad/AUTODIFF_OPTIONS.h,v 1.1 2014/09/11 20:01:43 jmc Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: AUTODIFF_OPTIONS.h
 C !INTERFACE:

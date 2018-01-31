@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_CONSTANTS.h,v 1.5 2008/11/17 23:08:29 jmc Exp $
-C $Name:  $
 c
 c
 c     ==================================================================

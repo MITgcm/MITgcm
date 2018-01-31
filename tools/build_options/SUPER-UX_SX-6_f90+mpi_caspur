@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/SUPER-UX_SX-6_f90+mpi_caspur,v 1.2 2010/03/21 22:22:53 jmc Exp $
-# $Name:  $
-
 # adapted to nec.caspur.it
 
 DEFINES='-DWORDLENGTH=1'

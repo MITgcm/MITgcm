@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/CPP_OPTIONS.h,v 1.6 2017/11/02 17:53:45 jmc Exp $
-C $Name:  $
-
 #ifndef CPP_OPTIONS_H
 #define CPP_OPTIONS_H
 

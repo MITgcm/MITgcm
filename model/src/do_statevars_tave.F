@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_tave.F,v 1.5 2010/01/03 00:07:03 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

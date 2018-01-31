@@ -1,8 +1,5 @@
 % This is a matlab script that generates the input data
 
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_deep_convection/input/gendata.m,v 1.4 2013/12/07 00:35:18 jmc Exp $
-% $Name:  $
-
 % Dimensions of grid
 nx=100;
 ny=100;

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_PARAMS.h,v 1.7 2017/06/11 01:36:56 dimitri Exp $
-C $Name:  $
-
 #ifdef ALLOW_OBCS
 
 CBOP

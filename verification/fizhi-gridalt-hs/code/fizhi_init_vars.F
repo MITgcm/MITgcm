@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/fizhi_init_vars.F,v 1.4 2012/03/27 15:49:37 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
        SUBROUTINE FIZHI_INIT_VARS (myThid)
 c-----------------------------------------------------------------------

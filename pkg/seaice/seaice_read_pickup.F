@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_read_pickup.F,v 1.26 2017/03/24 23:51:14 jmc Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 
 CBOP

@@ -8,9 +8,6 @@ function [uCs,vCs,errFlag]=uvLatLon2cube(xc,yc,uFld,vFld,xcs,ycs,spv,cosalpha,si
 %           assume: size(xcs)=size(ycs)=[6*nc nc]=size(uCs)[1:2]=size(vCs)[1:2]
 %
 % Written by jmc@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/uvLatLon2cube.m,v 1.2 2007/06/21 20:06:15 molod Exp $
-% $Name:  $
-
 if nargin < 7, mask=0 ; else mask=1 ; end
 uCs=0; vCs=0; mCsU=0; mCsV=0; errFlag=0;
 

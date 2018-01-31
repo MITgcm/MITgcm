@@ -1,6 +1,3 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/radiation_mod.F90,v 1.7 2017/08/11 20:48:51 jmc Exp $
-! $Name:  $
-
 module radiation_mod
 
 ! ==================================================================================

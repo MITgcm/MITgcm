@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_calc_stats_rs.F,v 1.2 2016/07/25 21:48:56 jmc Exp $
-C $Name:  $
-
 #include "MONITOR_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

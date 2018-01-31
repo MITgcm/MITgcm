@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_g.F,v 1.10 2012/08/02 22:10:31 jmc Exp $
-C $Name:  $
-
 #include "AUTODIFF_OPTIONS.h"
 
 C     ==================================================================

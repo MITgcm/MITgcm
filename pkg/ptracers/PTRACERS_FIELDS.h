@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_FIELDS.h,v 1.4 2016/08/23 18:29:48 jahn Exp $
-C $Name:  $
-
 #ifdef ALLOW_PTRACERS
 
 CBOP

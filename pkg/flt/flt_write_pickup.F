@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_write_pickup.F,v 1.9 2011/08/31 21:35:35 jmc Exp $
-C $Name:  $
-
 #include "FLT_OPTIONS.h"
 
 

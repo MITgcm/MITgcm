@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_etah.F,v 1.13 2011/12/08 22:35:43 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_do_exch.F,v 1.3 2014/12/05 17:39:39 jmc Exp $
-C $Name:  $
-
 #include "GMREDI_OPTIONS.h"
 
 CBOP

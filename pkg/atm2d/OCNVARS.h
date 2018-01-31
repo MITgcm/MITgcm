@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/OCNVARS.h,v 1.4 2013/12/02 23:54:43 jmc Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | OCNVARS.h Declare arrays for holding data on the ocean
 C     |           grid. Arrays may need adding or removing

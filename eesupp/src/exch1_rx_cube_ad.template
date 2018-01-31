@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch1_rx_cube_ad.template,v 1.1 2010/05/19 01:46:11 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 C--  File exch1_RX_cube_ad.F: adjoint routines to exch1 cube routines

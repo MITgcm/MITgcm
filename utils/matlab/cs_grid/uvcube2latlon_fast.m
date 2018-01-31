@@ -16,9 +16,6 @@ function [U,V] = uvcube2latlon_fast(del,u,v)
 % >> [ui,vi]=uvcube2latlon_fast(del,u,v);
 %
 % Written by adcroft@.mit.edu, 2000.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/uvcube2latlon_fast.m,v 1.1 2005/09/15 20:04:57 jmc Exp $
-% $Name:  $
-
 NN=size(u);
 [nnx ny nz]=size(u);
 

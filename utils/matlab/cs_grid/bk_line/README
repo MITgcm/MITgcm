@@ -1,7 +1,4 @@
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/README,v 1.2 2013/02/12 17:59:02 jmc Exp $
-% $Name:  $
-
 %- Feb 12 2013:
 needs MDS (binary) grid files (XC,YC,XG,YG & RAC) in dir "./grid_files/"
  (read-in using matlab script: MITgcm/utils/matlab/load_grid.m)

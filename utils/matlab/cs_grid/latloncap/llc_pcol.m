@@ -32,9 +32,6 @@
 % range. 
 function h=llc_pcol(varargin)
 
-%$Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/latloncap/llc_pcol.m,v 1.1 2007/05/04 15:35:29 mlosch Exp $
-%$Name:  $
-
   zlevel = 1;
   ph = [];
   holdstatus=ishold;

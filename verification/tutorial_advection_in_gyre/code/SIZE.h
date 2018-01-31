@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_advection_in_gyre/code/SIZE.h,v 1.1 2008/01/23 17:12:17 jahn Exp $
-C $Name:  $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_baroclinic_gyre/code/SIZE.h,v 1.1 2006/04/20 16:25:24 jmc Exp $
-C $Name:  $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/cost_profiles.F,v 1.30 2017/04/05 03:30:06 ou.wang Exp $
-C $Name:  $
-
 #include "PROFILES_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"

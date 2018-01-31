@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_readparms.F,v 1.6 2017/08/09 15:23:37 mlosch Exp $
-C $Name:  $
-
 #include "MATRIX_OPTIONS.h"
 
 C     !ROUTINE: MATRIX_READPARMS

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_param.F,v 1.2 2006/08/02 22:50:49 jmc Exp $
-C $Name:  $
-
 #include "GCHEM_OPTIONS.h"
 
 CStartOfInterface

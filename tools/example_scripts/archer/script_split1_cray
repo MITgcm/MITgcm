@@ -6,9 +6,6 @@
 #PBS -A n02-ncas
 #PBS -V
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/archer/script_split1_cray,v 1.1 2016/10/03 20:11:34 dfer Exp $
-# $Name:  $
-
 ### script to run testreport, tar the result, and send it to jmc@mitgcm.org
 
 #- to get case insensitive "ls" (and order of tested experiments)

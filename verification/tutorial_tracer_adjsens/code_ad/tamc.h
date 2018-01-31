@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/tamc.h,v 1.4 2012/07/17 18:02:47 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 
 c     ================================================================

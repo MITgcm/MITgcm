@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_ad_check_lev1_dir.h,v 1.26 2017/02/21 04:01:03 jmc Exp $
-C $Name:  $
-
 c
 c     store directives for checkpoint level 1
 c

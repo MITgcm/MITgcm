@@ -1,6 +1,4 @@
 /*************************************************  -*- mode: C -*-
- * $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_create_dir.c,v 1.4 2006/03/10 05:50:23 edhill Exp $
- * $Name:  $
  */
 
 /*  Here, we get the definition of the FC_NAMEMANGLE() macro. */

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_phys.F,v 1.18 2017/04/03 23:16:38 ou.wang Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
       subroutine ecco_phys( mythid )

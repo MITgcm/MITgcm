@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/OCN_CPL_OPTIONS.h,v 1.1 2015/11/12 00:53:45 jmc Exp $
-C $Name:  $
-
 #ifndef OCN_CPL_OPTIONS_H
 #define OCN_CPL_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

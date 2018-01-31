@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/RW_MFLDS.h,v 1.1 2007/10/22 13:20:07 jmc Exp $
-C $Name:  $
-
 C     !ROUTINE: RW_MFLDS.h
 C     !INTERFACE:
 C     include "RW_MFLDS.h"

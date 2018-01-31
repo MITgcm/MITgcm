@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_mnc_init.F,v 1.5 2007/11/05 18:48:04 jmc Exp $
-C $Name:  $
-
 #include "PTRACERS_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

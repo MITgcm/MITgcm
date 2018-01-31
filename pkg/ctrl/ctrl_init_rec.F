@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_rec.F,v 1.1 2013/01/26 14:45:56 heimbach Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

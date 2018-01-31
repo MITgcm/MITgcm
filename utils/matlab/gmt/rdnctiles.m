@@ -33,9 +33,6 @@ function [res,att] = rdnctiles(fpat,vnames,tlev, flag,dblev)
 %
 %
 %  Ed Hill
-%  $Id: rdnctiles.m,v 1.8 2005/11/18 13:38:38 edhill Exp $
-
-
 %  Set defaults
 dlev = 0;
 if nargin < 1

@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_init_fixed.F,v 1.6 2005/09/27 13:31:40 baylor Exp $
-C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

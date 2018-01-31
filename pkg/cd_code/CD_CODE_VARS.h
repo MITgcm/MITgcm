@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/CD_CODE_VARS.h,v 1.3 2006/10/26 00:24:40 jmc Exp $
-C $Name:  $
-
 C     uVelD  :: D grid zonal velocity
 C     vVelD  :: D grid meridional velocity
 

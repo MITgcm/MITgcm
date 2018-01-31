@@ -1,8 +1,5 @@
 krd=2; kgr=1; kfac=0;
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/use_psiLine.m,v 1.3 2013/02/12 17:59:02 jmc Exp $
-% $Name:  $
-
 if krd > 0,
 %-- load velocity :
  rac='output_files/';

@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/fill_in_corners_rl.F,v 1.1 2003/12/07 20:36:16 jmc Exp $
-C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
 CStartofinterface

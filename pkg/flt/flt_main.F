@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_main.F,v 1.9 2011/08/31 21:33:50 jmc Exp $
-C $Name:  $
-
 #include "FLT_OPTIONS.h"
 
 C     ==================================================================

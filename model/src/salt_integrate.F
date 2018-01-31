@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/salt_integrate.F,v 1.18 2016/10/09 18:13:09 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF

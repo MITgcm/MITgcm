@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/adams_bashforth3.F,v 1.7 2014/08/14 16:49:19 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

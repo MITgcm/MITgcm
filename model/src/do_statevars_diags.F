@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.21 2013/01/17 23:12:11 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

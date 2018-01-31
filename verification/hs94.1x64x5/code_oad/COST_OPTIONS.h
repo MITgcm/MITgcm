@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_oad/COST_OPTIONS.h,v 1.1 2014/04/05 23:16:34 jmc Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: COST_OPTIONS.h
 C !INTERFACE:

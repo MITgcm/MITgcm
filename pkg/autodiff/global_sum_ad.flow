@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_ad.flow,v 1.5 2009/04/22 01:28:47 jmc Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | SUBROUTINE GLOBAL_SUM_R* is linear                       |
 C     | only the array argument is active                        |

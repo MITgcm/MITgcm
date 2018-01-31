@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_fill_3d_fac.F,v 1.2 2010/01/18 01:02:56 jmc Exp $
-C $Name:  $
-
 #include "LONGSTEP_OPTIONS.h"
 
 CBOP

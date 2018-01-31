@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort+impi,v 1.2 2017/01/26 20:22:21 jahn Exp $
-# $Name:  $
 #
 #  Build options for ifort with impi on Linux AMD64 platform
 #

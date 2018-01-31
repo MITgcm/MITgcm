@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_check.F,v 1.42 2017/03/19 15:16:45 gforget Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
 C--  File ecco_check.F:

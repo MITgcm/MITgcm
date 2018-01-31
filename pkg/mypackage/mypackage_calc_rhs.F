@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_calc_rhs.F,v 1.2 2011/08/03 00:31:39 jmc Exp $
-C $Name:  $
-
 #include "MYPACKAGE_OPTIONS.h"
 
 CBOP

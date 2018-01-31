@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_mnc_init.F,v 1.9 2008/05/23 07:22:29 mlosch Exp $
-C $Name:  $
-      
 #include "FIZHI_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

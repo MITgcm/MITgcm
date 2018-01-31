@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/submeso_calc_psi.F,v 1.2 2011/12/22 19:06:25 jmc Exp $
-C $Name:  $
-
 #include "GMREDI_OPTIONS.h"
 
 CBOP

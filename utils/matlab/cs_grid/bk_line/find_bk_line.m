@@ -4,9 +4,6 @@ function [savI,savJ,savF,isav,jsav,xsav,nMx6t]=find_bk_line( ...
 % find the broken-line closest to yl, starting from the West side = min(x)
 %--------------------------------------
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/find_bk_line.m,v 1.2 2007/02/05 05:24:33 jmc Exp $
-% $Name:  $
-
 if yl == 1, fprintf( ...
  '--- find_bk_line: nf1,nf2,nc,ydim,yl= %i %i %i %i %8.3f\n', ...
                     nf1,nf2,nc,ydim,yl); end

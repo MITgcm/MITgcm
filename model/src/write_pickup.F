@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_pickup.F,v 1.20 2017/03/25 16:03:10 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

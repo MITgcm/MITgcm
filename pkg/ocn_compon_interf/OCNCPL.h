@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/OCNCPL.h,v 1.7 2016/01/06 01:02:28 jmc Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | OCNCPL.h
 C     | o Variables shared between coupling layer and ocean

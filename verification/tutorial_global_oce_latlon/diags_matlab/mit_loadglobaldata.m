@@ -1,9 +1,6 @@
 % m-file: mit_loadglobaldata.m
 % read all the data files for the 4x4 global run and take time averages
 % of it
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/mit_loadglobaldata.m,v 1.3 2006/08/12 20:25:13 jmc Exp $
-% $Name:  $
-
 precision = mit_getparm('data','readBinaryPrec');
 if isempty(precision); precision = 32.; end
 if precision == 32

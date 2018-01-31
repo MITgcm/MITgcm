@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_fld_s3d_rl.F,v 1.1 2009/11/18 00:33:58 jmc Exp $
-C $Name:  $
-
 #include "RW_OPTIONS.h"
 
 CBOP

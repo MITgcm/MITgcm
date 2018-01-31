@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/FFTPACK.h,v 1.4 2003/10/09 04:19:20 edhill Exp $
-C $Name:  $
-
 #include "ZONAL_FILT_OPTIONS.h"
 
 #ifdef ALLOW_ZONAL_FILT

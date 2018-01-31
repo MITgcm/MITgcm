@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averages_bar_directives.h,v 1.8 2014/08/15 09:27:03 atn Exp $
-C $Name:  $
-
 c
 c     store directives for cost_averagesfields
 c     xx_..._mean_dummy

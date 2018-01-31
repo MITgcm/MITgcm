@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_TAVE.h,v 1.4 2009/12/29 23:05:52 jmc Exp $
-C $Name:  $
-
-
 CBOP
 C     !ROUTINE: LAND_TAVE.h
 C     !INTERFACE:

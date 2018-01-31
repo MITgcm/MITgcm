@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.123 2017/09/18 16:44:16 gforget Exp $
-C $Name:  $
-
 CBOI
 C
 C !TITLE: MITGCM KERNEL CODE SYNOPSIS

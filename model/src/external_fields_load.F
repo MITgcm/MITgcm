@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.40 2014/04/04 20:56:32 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

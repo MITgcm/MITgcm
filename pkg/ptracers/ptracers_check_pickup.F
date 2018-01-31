@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_check_pickup.F,v 1.4 2014/08/18 14:34:27 jmc Exp $
-C $Name:  $
-
 #include "PTRACERS_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

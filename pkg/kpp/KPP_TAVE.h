@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_TAVE.h,v 1.3 2010/04/03 22:28:45 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_KPP
 
 C     *==========================================================*

@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_ifort_uv100,v 1.1 2015/03/11 11:09:22 mlosch Exp $
-# $Name:  $
-
 # Tested on uv100.awi.de (SGI UV 100, details:
 #                         http://www.sgi.com/products/servers/uv/specs.html)
 # a) For more speed, provided your data size does not exceed 2GB you can

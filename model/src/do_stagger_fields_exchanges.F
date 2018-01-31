@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_stagger_fields_exchanges.F,v 1.12 2016/01/11 22:49:55 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

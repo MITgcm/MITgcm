@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_ref_files.F,v 1.4 2016/02/15 17:59:40 jmc Exp $
-C $Name:  $
-
 c #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

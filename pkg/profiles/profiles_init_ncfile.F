@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_ncfile.F,v 1.12 2015/08/06 15:48:20 gforget Exp $
-C $Name:  $
-
 #include "PROFILES_OPTIONS.h"
 
 C     o==========================================================o

@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/isomip/input_oad/prepare_run,v 1.2 2015/02/05 21:11:01 jmc Exp $
-#  $Name:  $
-
 #- in order to save disc space, take *.bin files from this dir:
 fromDir="../input"
 

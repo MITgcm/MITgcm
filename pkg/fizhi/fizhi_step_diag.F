@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.20 2012/03/20 19:50:45 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
       SUBROUTINE FIZHI_STEP_DIAG(myid,p,uphy,vphy,thphy,sphy,qq,pk,dp,
      &  radswt,radswg,swgclr,osr,osrclr,st4,dst4,tgz,tg0,radlwg,lwgclr,

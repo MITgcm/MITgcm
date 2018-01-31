@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.36 2017/07/23 00:24:18 jmc Exp $
-C $Name:  $
-
 #include "DIAG_OPTIONS.h"
 
 C--   File diagnostics_utils.F: General purpose support routines

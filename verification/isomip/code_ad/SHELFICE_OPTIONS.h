@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/isomip/code_ad/SHELFICE_OPTIONS.h,v 1.2 2012/01/06 17:06:01 jmc Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | SHELFICE_OPTIONS.h
 C     | o CPP options file for SHELFICE package.

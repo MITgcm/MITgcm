@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/lab_sea/input_ad/prepare_run,v 1.2 2013/07/18 20:09:20 heimbach Exp $
-#  $Name:  $
- 
 #- in order to save disc space, take *.1979 files
 #- from this dir:
 fromDir="../input"

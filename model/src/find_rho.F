@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.43 2016/03/10 20:36:31 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef TARGET_NEC_SX

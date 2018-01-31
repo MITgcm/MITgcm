@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_rho.F,v 1.4 2011/05/13 14:57:22 jahn Exp $
-C $Name:  $
-
 #include "SBO_OPTIONS.h"
 
       _RL FUNCTION SBO_RHO( DPT, LAT, S, T )

@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_norma_2v.F,v 1.2 2003/12/05 02:27:58 jmc Exp $
-C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
 CStartofinterface

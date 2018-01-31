@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_phi_rlow.F,v 1.12 2016/03/10 20:55:56 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

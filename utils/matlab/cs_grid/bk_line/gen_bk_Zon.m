@@ -2,9 +2,6 @@ krd=1; kpr=1; kgr=0; kwr=1;
 % krd=0; kpr=0; kgr=1; kwr=0; % <- execute a 2nd time & draw some plot
 ijprt=65;
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/gen_bk_Zon.m,v 1.3 2013/02/12 17:59:02 jmc Exp $
-% $Name:  $
-
 if krd == 1,
 
 %- set ncdf=1 to load MNC (NetCDF) grid-files ;

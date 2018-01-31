@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/SUPER-UX_SX-8_sxf90+mpi_awi,v 1.1 2011/09/29 16:27:29 jmc Exp $
-# $Name:  $
-
 # for cross compiling on sx8.awi.de
 # uname -a:
 # Linux sx8 2.6.5-7.282-default #1 SMP Tue Aug 29 10:40:40 UTC 2006 ia64 ia64 ia64 GNU/Linux#

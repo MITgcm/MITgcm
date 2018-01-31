@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_printdate.F,v 1.4 2012/02/28 00:36:36 gforget Exp $
-C $Name:  $
-
 #include "CAL_OPTIONS.h"
 
       subroutine cal_PrintDate(

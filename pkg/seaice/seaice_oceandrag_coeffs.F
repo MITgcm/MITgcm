@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_oceandrag_coeffs.F,v 1.3 2014/10/20 03:20:58 gforget Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"

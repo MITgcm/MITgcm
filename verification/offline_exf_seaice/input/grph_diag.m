@@ -1,6 +1,3 @@
-% $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/input/grph_diag.m,v 1.2 2013/01/14 16:55:13 jmc Exp $
-% $Name:  $
-
 if size(who('kpr'),1) > 0,
  fprintf('kpr is defined and = %i \n',kpr);
 else

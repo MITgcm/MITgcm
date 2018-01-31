@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/frazil/FRAZIL_OPTIONS.h,v 1.1 2012/03/02 01:45:22 dimitri Exp $
-C $Name:  $
-
 C CPP options file for FRAZIL
 C Use this file for selecting options within package "Frazil"
 

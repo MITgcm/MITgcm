@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad/tamc.h,v 1.12 2009/02/16 00:45:15 heimbach Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 
 c     ================================================================

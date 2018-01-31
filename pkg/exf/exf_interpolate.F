@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interpolate.F,v 1.1 2012/01/05 20:22:28 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 
 C--  File exf_interp.F: Routines to interpolate input field on to model grid

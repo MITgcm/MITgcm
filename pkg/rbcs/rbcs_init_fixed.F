@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_fixed.F,v 1.11 2017/11/15 23:33:54 jmc Exp $
-C $Name:  $
-
 #include "RBCS_OPTIONS.h"
 
 C !INTERFACE: ==========================================================

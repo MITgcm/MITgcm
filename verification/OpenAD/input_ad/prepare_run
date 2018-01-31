@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/OpenAD/input_ad/prepare_run,v 1.1 2007/05/10 16:34:15 heimbach Exp $
-#  $Name:  $
- 
 #- in order to save disc space, take *.bin files
 #- from this dir:
 fromDir="../../tutorial_global_oce_latlon/input"

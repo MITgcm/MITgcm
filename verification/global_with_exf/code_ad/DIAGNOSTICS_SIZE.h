@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code_ad/DIAGNOSTICS_SIZE.h,v 1.1 2015/02/17 12:35:48 heimbach Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_fixed.F,v 1.19 2014/11/25 01:08:20 jmc Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

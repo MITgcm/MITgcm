@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.44 2017/03/24 23:51:14 jmc Exp $
-C $Name:  $
-
 #include "TIMEAVE_OPTIONS.h"
 
 CBOP

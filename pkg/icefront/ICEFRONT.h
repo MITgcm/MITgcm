@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/ICEFRONT.h,v 1.15 2017/01/31 20:37:43 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_ICEFRONT
 
 CBOP

@@ -19,9 +19,6 @@ function [z] = cubeZ2latlon(x,y,c,xi,yi)
 % >> x(end+1)=mean(xg([2*nc:2*nc:6*nc],1)); y(end+1)=mean(yg([2*nc:2*nc:6*nc],1));
 %
 % Written by jmc@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/cubeZ2latlon.m,v 1.1 2005/09/15 16:22:24 jmc Exp $
-% $Name:  $
-
 NN=size(c);
 [nPt2 nz]=size(c);
 nc=fix(sqrt(nPt2/6)); nPts=6*nc*nc;

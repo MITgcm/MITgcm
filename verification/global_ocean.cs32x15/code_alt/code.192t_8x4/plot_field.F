@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_alt/code.192t_8x4/plot_field.F,v 1.1 2004/03/15 01:37:23 cnh Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 C--   File plot_field.F: Routines for "formatted" I/O in the MITgcm UV 

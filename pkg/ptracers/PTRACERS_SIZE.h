@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_SIZE.h,v 1.4 2006/02/15 04:00:44 heimbach Exp $
-C $Name:  $
-
 #ifdef ALLOW_PTRACERS
 
 CBOP

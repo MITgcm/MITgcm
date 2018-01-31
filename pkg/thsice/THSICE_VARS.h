@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_VARS.h,v 1.13 2013/05/02 20:03:12 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_THSICE
 
 C     !ROUTINE: THSICE_VARS.h

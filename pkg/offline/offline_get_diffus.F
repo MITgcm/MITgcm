@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_get_diffus.F,v 1.2 2015/07/19 18:17:49 jmc Exp $
-C $Name:  $
-
 #include "OFFLINE_OPTIONS.h"
 #ifdef ALLOW_DIC
 #include "DIC_OPTIONS.h"

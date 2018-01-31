@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_metric_cylinder.F,v 1.4 2012/08/11 19:01:35 jmc Exp $
-C $Name:  $
-
 #include "MOM_FLUXFORM_OPTIONS.h"
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/MOM_COMMON_OPTIONS.h,v 1.4 2013/07/30 19:05:54 jmc Exp $
-C $Name:  $
-
 C CPP options file for mom_common package
 C Use this file for selecting CPP options within the mom_common package
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagstats_others_calc.F,v 1.4 2014/08/25 22:13:51 jmc Exp $
-C $Name:  $
-
 #include "DIAG_OPTIONS.h"
 
 C--  File diagstats_others_calc.F: Routines to calculate regional statistics

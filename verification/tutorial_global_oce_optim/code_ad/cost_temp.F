@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_ad/cost_temp.F,v 1.7 2014/09/11 19:52:44 jmc Exp $
-C $Name:  $
-
 #include "COST_OPTIONS.h"
 c#ifdef ALLOW_CTRL
 c# include "CTRL_OPTIONS.h"

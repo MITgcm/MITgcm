@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/atm_phys_dyn2phys.F,v 1.2 2015/01/22 18:11:13 jmc Exp $
-C $Name:  $
-
 #include "ATM_PHYS_OPTIONS.h"
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_init_varia.F,v 1.5 2014/08/30 00:34:02 jmc Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

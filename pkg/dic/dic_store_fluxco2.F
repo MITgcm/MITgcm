@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_store_fluxco2.F,v 1.5 2016/01/11 21:46:55 jmc Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 
 CStartOfInterface

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_dic_adjoffline/code_ad/tamc.h,v 1.1 2009/10/16 16:49:48 heimbach Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 
 c     ================================================================

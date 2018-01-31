@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_earth_coms.h,v 1.11 2004/08/27 15:08:02 molod Exp $
-C $Name:  $
-
 c Solid-Earth State Variables
 c ---------------------------
       common /earth_state/ phis_var, tilefrac, surftype 

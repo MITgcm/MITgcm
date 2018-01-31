@@ -17,9 +17,6 @@ function [cos_alpha, sin_alpha, u_a, v_a] = calcFacetAngles(yG,dxG,dyG)
 % cos_alpha, sin_alpha, u_a and v_a are at cell centers.
 % u_a and v_a are returned for testing, they are not really needed.
 
-%% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/latloncap/calcFacetAngles.m,v 1.1 2007/05/07 14:00:52 cnh Exp $
-%% $Name:  $
-
 % Define a stream function that varies along the meridional coordinate of 
 % mesh2 only.
   psi= (yG);

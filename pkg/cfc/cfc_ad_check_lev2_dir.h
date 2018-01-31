@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_ad_check_lev2_dir.h,v 1.2 2013/06/10 02:59:42 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_CFC
 cCADJ STORE AtmosCFC11   = tapelev2, key = ilev_2
 cCADJ STORE AtmosCFC12   = tapelev2, key = ilev_2

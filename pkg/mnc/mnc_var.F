@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.26 2011/08/01 16:00:17 jahn Exp $
-C $Name:  $
-
 #include "MNC_OPTIONS.h"
 
 C--  File mnc_var.F: Handle NetCDF variables (definition,description & writing)

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/RW_OPTIONS.h,v 1.4 2011/12/24 01:09:40 jmc Exp $
-C $Name:  $
-
 C CPP options file for Read-Write (RW) package
 C Use this file for selecting options within the RW package
 

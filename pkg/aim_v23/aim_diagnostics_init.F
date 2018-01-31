@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics_init.F,v 1.11 2010/10/26 20:59:53 dfer Exp $
-C $Name:  $
-
 #include "AIM_OPTIONS.h"
 
 CBOP

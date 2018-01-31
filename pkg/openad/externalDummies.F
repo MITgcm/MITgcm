@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/externalDummies.F,v 1.10 2016/11/29 12:08:42 dgoldberg Exp $
-C $Name:  $
-
 #include "OPENAD_OPTIONS.h"
 #ifdef ALLOW_STREAMICE
 #include "STREAMICE_OPTIONS.h"

@@ -1,6 +1,3 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/shallow_conv_mod.F90,v 1.1 2013/05/08 22:14:14 jmc Exp $
-! $Name:  $
-
   MODULE SHALLOW_CONV_MOD
 
 !=======================================================================

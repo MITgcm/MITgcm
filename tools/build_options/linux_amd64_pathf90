@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.13 2014/07/23 22:54:51 jmc Exp $
-#  $Name:  $
 #
 # Build options for PathScale (EKOPATH) Compiler on Linux x86-64
 #  first version tested on Fedore Core 3 x86-64 Opteron (Linux batsi)

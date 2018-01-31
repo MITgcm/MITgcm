@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/deep_anelastic/code/DIAGNOSTICS_SIZE.h,v 1.1 2006/12/06 00:24:28 jmc Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

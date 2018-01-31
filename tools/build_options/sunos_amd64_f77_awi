@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_amd64_f77_awi,v 1.1 2007/01/16 15:12:03 mlosch Exp $
-# $Name:  $  
 #
 # tested on 
 # SunOS testopt2 5.10 Generic_118855-19 i86pc i386 i86pc

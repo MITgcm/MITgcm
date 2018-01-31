@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_obcsn.F,v 1.13 2014/10/20 03:16:12 gforget Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"

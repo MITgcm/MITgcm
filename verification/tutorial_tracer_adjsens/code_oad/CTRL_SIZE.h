@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_oad/CTRL_SIZE.h,v 1.2 2014/11/13 17:05:25 gforget Exp $
-C $Name:  $
-
 c     ==================================================================
 c     CTRL_SIZE.h
 c     ==================================================================

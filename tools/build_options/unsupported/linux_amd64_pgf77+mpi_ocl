@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_amd64_pgf77+mpi_ocl,v 1.1 2011/09/29 16:10:32 jmc Exp $
-# $Name:  $
-
 # tested on ocl00.awi-bremerhaven.de
 # Linux ocl00 2.4.21-261-smp #1 SMP Wed Nov 17 22:05:59 UTC 2004 x86_64 unknown
 # pgf77 5.2-4

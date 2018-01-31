@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_boxmean.F,v 1.16 2017/02/22 23:14:53 jmc Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
       subroutine cost_gencost_boxmean(mythid)

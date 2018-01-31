@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.23 2017/07/23 00:42:28 jmc Exp $
-C $Name:  $
-
 C ======================================================================
 C  Common blocks for diagnostics package.
 C  - DIAG_DEFINE contains the definition of all available diagnostics

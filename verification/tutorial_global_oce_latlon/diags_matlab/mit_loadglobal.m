@@ -15,9 +15,6 @@
 % mit_meridflux
 % mit_plotmeandrift
 
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/mit_loadglobal.m,v 1.5 2016/09/15 23:06:25 heimbach Exp $
-% $Name:  $
-
 % read in all grid files, etc. This has to be done at the very beginning!
 grd = mit_loadgrid('.');
 dname = grd.dname;

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_os7mp_adv_r.F,v 1.7 2008/06/16 13:40:25 jmc Exp $
-C $Name:  $
-
 #include "GAD_OPTIONS.h"
 
       SUBROUTINE GAD_OS7MP_ADV_R(

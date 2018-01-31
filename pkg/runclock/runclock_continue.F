@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/runclock/runclock_continue.F,v 1.2 2007/09/20 20:55:21 ce107 Exp $
-C $Name:  $
-
 #include "RUNCLOCK_OPTIONS.h"
 
 CBOP

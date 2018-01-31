@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/runclock/runclock_readparms.F,v 1.4 2017/08/09 15:23:36 mlosch Exp $
-C $Name:  $
-
 #include "RUNCLOCK_OPTIONS.h"
 
       SUBROUTINE RUNCLOCK_READPARMS( myThid )

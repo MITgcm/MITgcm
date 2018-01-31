@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_area_t.F,v 1.5 2011/08/29 19:39:33 jmc Exp $
-C $Name:  $
-
 #include "EBM_OPTIONS.h"
 
 CBOP 0

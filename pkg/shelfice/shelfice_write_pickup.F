@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_write_pickup.F,v 1.1 2015/01/20 14:54:36 dgoldberg Exp $
-C $Name:  $
-
 #include "SHELFICE_OPTIONS.h"
 
 CBOP

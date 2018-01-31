@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.27 2012/08/06 16:56:59 jmc Exp $
-C $Name:  $
-
 #include "TIMEAVE_OPTIONS.h"
 
 CBOP

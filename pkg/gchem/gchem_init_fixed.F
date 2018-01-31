@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_fixed.F,v 1.12 2016/05/23 13:09:31 jmc Exp $
-C $Name:  $
-
 #include "GCHEM_OPTIONS.h"
 
 C !INTERFACE: ==========================================================

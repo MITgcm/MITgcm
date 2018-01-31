@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_urms.F,v 1.2 2013/07/11 14:33:23 m_bates Exp $
-C $Name:  $
-
 #include "GMREDI_OPTIONS.h"
 
 C     !ROUTINE: EIGENVAL

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM2DYN.h,v 1.3 2013/01/21 21:55:32 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_AIM
 C     *==========================================================*
 C     | AIM2DYN.h

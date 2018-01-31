@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_FFIELDS.h,v 1.6 2009/09/24 20:08:06 dfer Exp $
-C $Name:  $
-
 #ifdef ALLOW_AIM
 
 C     *==========================================================*

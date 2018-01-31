@@ -1,9 +1,6 @@
 % m-file: mit_plotmeandrift.m
 % mean temperature and salinity drift
 
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/mit_plotmeandrift.m,v 1.3 2006/08/12 20:25:13 jmc Exp $
-% $Name:  $
-
 if ~isempty(msg_spinup)
   % extracted from the monitor output with a script by jmc
   global_mt = load('spinup.t_A');

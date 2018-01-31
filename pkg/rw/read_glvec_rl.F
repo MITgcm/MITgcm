@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/read_glvec_rl.F,v 1.1 2010/12/21 23:44:45 jmc Exp $
-C $Name:  $
-
 #include "RW_OPTIONS.h"
 
 CBOP

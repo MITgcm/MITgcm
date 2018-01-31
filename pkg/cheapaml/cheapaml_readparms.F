@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_readparms.F,v 1.17 2017/10/13 17:45:58 jmc Exp $
-C $Name:  $
-
 #include "CHEAPAML_OPTIONS.h"
 
       SUBROUTINE CHEAPAML_READPARMS( myThid )

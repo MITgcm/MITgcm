@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_open64,v 1.7 2013/07/22 18:40:45 jmc Exp $
-#  $Name:  $
 #
 # Build options for Open64 compiler on Linux IA32 platform
 # tested on lagoon (FC 4),

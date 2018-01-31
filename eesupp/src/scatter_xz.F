@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/scatter_xz.F,v 1.3 2009/04/28 18:28:55 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE SCATTER_XZ( global, local, myThid )

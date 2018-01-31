@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/fizhi_init_fixed.F,v 1.4 2012/03/20 19:46:17 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
        SUBROUTINE FIZHI_INIT_FIXED (myThid)
 c-----------------------------------------------------------------------

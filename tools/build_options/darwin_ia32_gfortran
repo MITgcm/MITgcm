@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ia32_gfortran,v 1.16 2013/07/22 18:40:45 jmc Exp $
-# $Name:  $
-
 # Tested on MacBook Pro with Snow Leopard
 #- on 20-Nov-2009, without MPI:
 #    gcc and gfortran obtained from

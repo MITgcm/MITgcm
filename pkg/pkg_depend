@@ -1,6 +1,3 @@
-# $Header: /u/gcmpack/MITgcm/pkg/pkg_depend,v 1.31 2017/02/08 22:36:02 jmc Exp $
-# $Name:  $
-
 #  This file contains a terse list of package dependencies that
 #  specify which packages either must be or must not be compiled
 #  simultaneously.  The format is:

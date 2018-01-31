@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_fields_load.F,v 1.10 2016/05/27 23:35:45 mmazloff Exp $
-C $Name:  $
-
 #include "GCHEM_OPTIONS.h"
 
 CBOP

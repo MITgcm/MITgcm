@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_obcs_variables.F,v 1.10 2014/10/09 00:49:27 gforget Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_init_obcs_variables( mythid )

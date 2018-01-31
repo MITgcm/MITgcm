@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.30 2015/01/11 20:02:41 jmc Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
 

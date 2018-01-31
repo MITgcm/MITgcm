@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_amd64_ifort+mpi_generic,v 1.1 2011/09/29 16:08:45 jmc Exp $
-#  $Name:  $
 #
 # Composed and tested by ce107 on ross/weddell (Opteron system)
 # Should work fine on EM64T and other AMD64 compatible Intel systems

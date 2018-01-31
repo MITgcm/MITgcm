@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code/GGL90_OPTIONS.h,v 1.1 2015/02/19 16:00:45 mlosch Exp $
-C $Name:  $
-
 C     *=============================================================*
 C     | GGL90_OPTIONS.h
 C     | o CPP options file for GGL90 package.

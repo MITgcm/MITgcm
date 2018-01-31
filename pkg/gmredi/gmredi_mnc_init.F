@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_mnc_init.F,v 1.2 2007/10/25 12:08:00 mlosch Exp $
-C $Name:  $
-
 #include "GMREDI_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

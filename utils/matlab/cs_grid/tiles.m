@@ -8,9 +8,6 @@ function [a] = tile(b,varargin)
 % n can be vector of integers between 1 and 6
 %
 % Written by adcroft@.mit.edu, 2001.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/tiles.m,v 1.1 2005/09/15 20:04:57 jmc Exp $
-% $Name:  $
-
 if nargin==1
  n=1:6;
 else

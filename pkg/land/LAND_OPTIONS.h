@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_OPTIONS.h,v 1.6 2011/12/24 01:04:48 jmc Exp $
-C $Name:  $
-
 C  CPP options file for Land package
 
 #ifndef LAND_OPTIONS_H

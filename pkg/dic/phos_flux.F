@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/phos_flux.F,v 1.16 2010/08/18 12:20:13 mlosch Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 
 CBOP

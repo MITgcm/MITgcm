@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_seaice.F,v 1.1 2013/06/17 13:45:14 jmc Exp $
-C $Name:  $
-
 #include "CHEAPAML_OPTIONS.h"
 #ifdef ALLOW_THSICE
 # include "THSICE_OPTIONS.h"

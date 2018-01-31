@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_init_varia.F,v 1.8 2011/05/14 19:52:12 jmc Exp $
-C $Name:  $
-
 #include "RBCS_OPTIONS.h"
 
 C !INTERFACE: ==========================================================

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_sigma_hfac.F,v 1.1 2010/09/11 21:24:52 jmc Exp $
-C $Name:  $
-
 c#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

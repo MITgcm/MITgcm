@@ -8,9 +8,6 @@ function [UVtot,UVtrans,U2tot,U2trans,V2tot,V2trans,errFlag]=calc2ndmom(u,v,usq,
 % uv      = time averaged product of u-wind and v-wind on cubed sphere grid at mass points
 %
 % Written by molod@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/calc2ndmom.m,v 1.4 2012/12/17 16:19:04 dfer Exp $
-% $Name:  $
-
 fprintf('Entering calc2ndmom: \n');
 errFlag=0;
 %

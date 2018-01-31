@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/STREAMICE_OPTIONS.h,v 1.2 2013/12/23 21:49:45 jmc Exp $
-C $Name:  $
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C CPP options file for STREAMICE

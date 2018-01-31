@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_cumul_2v.F,v 1.7 2005/08/19 22:50:26 heimbach Exp $
-C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
 CStartofinterface

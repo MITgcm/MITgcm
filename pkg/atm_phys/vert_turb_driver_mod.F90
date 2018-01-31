@@ -1,6 +1,3 @@
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/vert_turb_driver_mod.F90,v 1.2 2017/08/11 20:48:51 jmc Exp $
-! $Name:  $
-
 module vert_turb_driver_mod
 
 !-----------------------------------------------------------------------

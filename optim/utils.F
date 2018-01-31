@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/optim/utils.F,v 1.3 2003/11/11 20:38:27 edhill Exp $
-
 #include "CPP_EEOPTIONS.h"
 
 C--   File utils.F: General purpose support routines

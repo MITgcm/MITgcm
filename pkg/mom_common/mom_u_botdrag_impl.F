@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_botdrag_impl.F,v 1.1 2016/11/28 23:09:12 jmc Exp $
-C $Name:  $
-
 #include "MOM_COMMON_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"

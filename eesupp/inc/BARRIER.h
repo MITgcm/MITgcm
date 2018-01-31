@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/BARRIER.h,v 1.7 2005/11/08 15:53:41 cnh Exp $
-C $Name:  $
 CBOP
 C     !ROUTINE: BARRIER.h
 C     !INTERFACE:

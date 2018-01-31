@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.34 2016/01/12 20:39:12 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 #ifdef USE_LIBHPM
 # include "f_hpm.h"

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULKF_CONSERV.h,v 1.2 2003/11/23 01:36:55 jmc Exp $
-C $Name:  $
-
 C     /==========================================================\
 C     | BULKF_CONSERV.h                                          |
 C     | o Header for Bulk formula conservation variables         |

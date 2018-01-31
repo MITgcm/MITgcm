@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_optim/code_oad/cost_weights.F,v 1.2 2014/09/11 19:54:57 jmc Exp $
-C $Name:  $
-
 #include "COST_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"

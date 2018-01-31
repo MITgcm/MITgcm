@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/MYPACKAGE_OPTIONS.h,v 1.4 2011/12/24 01:09:39 jmc Exp $
-C $Name:  $
-
 C CPP options file for MYPACKAGE
 C Use this file for selecting options within package "MyPackage"
 

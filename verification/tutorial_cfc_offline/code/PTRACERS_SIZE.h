@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_cfc_offline/code/PTRACERS_SIZE.h,v 1.1 2005/10/01 02:28:30 edhill Exp $
-C $Name:  $
-
 #ifdef ALLOW_PTRACERS
 
 CBOP

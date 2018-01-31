@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch2_recv_get_vec.F,v 1.5 2017/02/11 21:07:13 gforget Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_EEOPTIONS.h"
 #undef DBUG_EXCH_VEC

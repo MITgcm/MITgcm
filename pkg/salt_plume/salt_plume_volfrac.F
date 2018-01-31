@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/salt_plume_volfrac.F,v 1.2 2014/05/21 13:59:39 atn Exp $
-C $Name:  $
-
 #include "SALT_PLUME_OPTIONS.h"
 
 CBOP

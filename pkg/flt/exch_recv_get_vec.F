@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/exch_recv_get_vec.F,v 1.10 2012/09/06 16:13:53 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 #undef EXCH_USE_SPINNING
 #undef DBUG_EXCH_VEC

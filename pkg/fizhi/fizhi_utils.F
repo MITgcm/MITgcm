@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_utils.F,v 1.16 2009/03/30 02:14:48 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
       function minval (q,im)
       implicit none

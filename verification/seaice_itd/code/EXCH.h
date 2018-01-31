@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/seaice_itd/code/EXCH.h,v 1.1 2014/06/24 08:00:16 mlosch Exp $
-C $Name:  $
 C
 CBOP
 C     !ROUTINE: EXCH.h

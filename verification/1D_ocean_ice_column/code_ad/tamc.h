@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code_ad/tamc.h,v 1.2 2011/06/19 00:06:28 ifenty Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 
 

@@ -1,6 +1,3 @@
-# $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/README,v 1.4 2007/02/06 22:07:28 dimitri Exp $
-# $Name:  $
-
 Matlab scripts (written by Alistair) specific to Cubed-Shere grid:
  [initially in utils/matlab and moved here Sep. 15, 2005]
 

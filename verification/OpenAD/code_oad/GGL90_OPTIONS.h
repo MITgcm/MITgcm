@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_oad/GGL90_OPTIONS.h,v 1.1 2015/07/02 15:57:20 heimbach Exp $
-C $Name:  $
-
 C     *=============================================================*
 C     | GGL90_OPTIONS.h
 C     | o CPP options file for GGL90 package.

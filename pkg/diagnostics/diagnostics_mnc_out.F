@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_mnc_out.F,v 1.5 2013/02/06 16:24:29 jmc Exp $
-C $Name:  $
-
 #include "DIAG_OPTIONS.h"
 #undef DIAG_MNC_COORD_NEEDSWORK
 

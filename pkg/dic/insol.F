@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/insol.F,v 1.14 2010/07/30 12:06:44 mlosch Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 
 CBOP

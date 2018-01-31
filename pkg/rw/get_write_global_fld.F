@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/get_write_global_fld.F,v 1.1 2004/11/11 01:25:05 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE GET_WRITE_GLOBAL_FLD ( flag )

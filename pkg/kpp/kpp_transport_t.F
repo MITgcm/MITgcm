@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_t.F,v 1.20 2014/05/06 15:50:14 jmc Exp $
-C $Name:  $
-
 #include "KPP_OPTIONS.h"
 #ifdef ALLOW_GMREDI
 #include "GMREDI_OPTIONS.h"

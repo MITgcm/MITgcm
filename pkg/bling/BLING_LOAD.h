@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/BLING_LOAD.h,v 1.1 2016/05/19 20:29:26 mmazloff Exp $
-C $Name:  $
-
 C--   COMMON /BLING_LOAD/
 C     BLING_ldRec     :: time-record currently loaded (in temp arrays *[1])
 

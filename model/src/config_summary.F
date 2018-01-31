@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.160 2017/11/02 17:57:40 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_EXCH2

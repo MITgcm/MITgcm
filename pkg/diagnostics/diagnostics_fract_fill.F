@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fract_fill.F,v 1.9 2017/07/23 00:24:18 jmc Exp $
-C $Name:  $
-
 #include "DIAG_OPTIONS.h"
 
 CBOP

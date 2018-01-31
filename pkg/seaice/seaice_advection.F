@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_advection.F,v 1.33 2014/10/20 03:20:57 gforget Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD_OPTIONS.h"

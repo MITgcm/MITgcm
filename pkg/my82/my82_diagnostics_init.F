@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_diagnostics_init.F,v 1.3 2010/01/12 21:34:09 jmc Exp $
-C $Name:  $
-
 #include "MY82_OPTIONS.h"
 
 CBOP

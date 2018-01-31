@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_mpf77+mpi_sunfire,v 1.5 2010/03/21 22:22:53 jmc Exp $
-# $Name:  $
-
 # developed and tested on
 # SunOS model 5.9 Generic_112233-11 sun4u sparc SUNW,Sun-Fire-15000
 # (hostname: model.awi-bremerhaven.de)

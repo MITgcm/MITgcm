@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_forcing.F,v 1.20 2017/01/20 20:51:35 gforget Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 
 CBOP

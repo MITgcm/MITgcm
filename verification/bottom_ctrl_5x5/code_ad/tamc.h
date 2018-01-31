@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/bottom_ctrl_5x5/code_ad/tamc.h,v 1.2 2009/02/16 15:04:07 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 
 c     ================================================================

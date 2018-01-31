@@ -1,9 +1,6 @@
 function y = mit_getparm(fname,pname);
 %function y = mit_getparm(fname,pname);
   
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/mit_getparm.m,v 1.3 2006/08/12 20:25:12 jmc Exp $
-% $Name:  $
-
   y = [];
   [fp, msg] = fopen(fname,'r');
   if fp > 0

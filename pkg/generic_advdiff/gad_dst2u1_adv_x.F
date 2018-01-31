@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst2u1_adv_x.F,v 1.8 2008/02/29 01:30:59 mlosch Exp $
-C $Name:  $
-
 #include "GAD_OPTIONS.h"
 
 CBOP

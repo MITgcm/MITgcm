@@ -14,8 +14,6 @@ function [tlev] = find_all_iters(fall, vname)
 %
 %
 %  Ed Hill
-%  $Id: find_all_iters.m,v 1.1 2005/10/23 06:50:03 edhill Exp $
-
 if nargin < 2 || isempty(vname)
   vname = 'iter';
 end

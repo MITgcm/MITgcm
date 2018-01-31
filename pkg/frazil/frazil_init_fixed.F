@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_init_fixed.F,v 1.2 2012/03/04 23:11:20 dimitri Exp $
-C $Name:  $
-
 #include "FRAZIL_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_fixed.F,v 1.47 2017/04/03 23:16:38 ou.wang Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 #include "AD_CONFIG.h"
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_init_fixed.F,v 1.12 2015/06/16 21:43:10 rpa Exp $
-C $Name:  $
-
 #include "LAYERS_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

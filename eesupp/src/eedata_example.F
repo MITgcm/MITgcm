@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eedata_example.F,v 1.6 2012/04/02 23:48:15 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE EEDATA_EXAMPLE

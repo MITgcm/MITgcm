@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_init.F,v 1.8 2012/08/06 16:55:37 jmc Exp $
-C $Name:  $
-
 #include "ZONAL_FILT_OPTIONS.h"
 
 CBOP

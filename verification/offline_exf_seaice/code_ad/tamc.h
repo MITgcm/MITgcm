@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/tamc.h,v 1.6 2013/05/03 13:38:18 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 
 c     ================================================================

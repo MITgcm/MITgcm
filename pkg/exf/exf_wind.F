@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_wind.F,v 1.18 2017/01/28 18:29:11 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"

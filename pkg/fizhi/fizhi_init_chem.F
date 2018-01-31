@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.15 2004/10/20 16:41:21 molod Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
       subroutine fizhi_init_chem(mythid,nozlats,nozlevs,ntimesoz,
      . ozlats,ozlevs,o3,

@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_ad_check_lev3_dir.h,v 1.6 2015/08/06 20:33:20 gforget Exp $
-C $Name:  $
 c
 c     store directives for checkpoint level 3
 c

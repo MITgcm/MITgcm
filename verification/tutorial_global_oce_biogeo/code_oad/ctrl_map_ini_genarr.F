@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_oad/ctrl_map_ini_genarr.F,v 1.3 2015/02/22 16:15:43 heimbach Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 
 CBOP

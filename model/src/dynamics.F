@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.178 2016/11/28 23:05:05 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF

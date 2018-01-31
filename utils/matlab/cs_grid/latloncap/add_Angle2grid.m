@@ -1,9 +1,6 @@
 
 %-- Add angle (Cos & Sin) to grid files
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/latloncap/add_Angle2grid.m,v 1.1 2008/11/05 23:59:51 jmc Exp $
-% $Name:  $
-
 %nr = 360; ng = 120; nb = 120; tnx=120; tny=120; %- polar-cap grid
 rgbDim=[360 120 120];
 %- set all 6 faces dimensions

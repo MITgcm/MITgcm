@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_balance_flow.F,v 1.8 2016/07/06 22:48:56 jmc Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

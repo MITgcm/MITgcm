@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/NH_VARS.h,v 1.4 2013/07/28 21:06:00 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: NH_VARS.h
 C     !INTERFACE:

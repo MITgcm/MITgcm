@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/rw_get_suffix.F,v 1.1 2017/03/24 22:03:37 jmc Exp $
-C $Name:  $
-
 #include "RW_OPTIONS.h"
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_ad_dump.F,v 1.6 2017/03/24 23:48:33 jmc Exp $
-C $Name:  $
-
 #include "PTRACERS_OPTIONS.h"
 #include "AD_CONFIG.h"
 #ifdef ALLOW_AUTODIFF

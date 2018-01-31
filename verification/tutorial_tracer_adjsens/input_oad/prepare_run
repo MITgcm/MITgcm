@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/input_oad/prepare_run,v 1.1 2013/03/21 18:44:33 jahn Exp $
-#  $Name:  $
- 
 #- in order to save disc space, take *.bin files
 #- from this dir:
 fromDir="../input"

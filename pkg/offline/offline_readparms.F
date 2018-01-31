@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_readparms.F,v 1.13 2017/08/09 15:23:37 mlosch Exp $
-C $Name:  $
-
 #include "OFFLINE_OPTIONS.h"
 
       SUBROUTINE OFFLINE_READPARMS( myThid )

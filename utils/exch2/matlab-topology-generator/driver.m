@@ -1,6 +1,3 @@
-% $Header: /u/gcmpack/MITgcm/utils/exch2/matlab-topology-generator/driver.m,v 1.5 2012/10/20 17:43:41 jmc Exp $
-% $Name:  $
-
 % Create exch2 communication map and schedule for a cube sphere grid with
 % constant tile size tnx x tny.
 

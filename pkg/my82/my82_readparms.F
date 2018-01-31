@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_readparms.F,v 1.4 2017/08/09 15:23:37 mlosch Exp $
-C $Name:  $
-
 #include "MY82_OPTIONS.h"
 
 CBOP

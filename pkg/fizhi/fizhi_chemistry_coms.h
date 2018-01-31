@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_chemistry_coms.h,v 1.6 2004/07/13 21:11:08 molod Exp $
-C $Name:  $
-
 c Chemistry Variables Dimensions
 c -------------------------------
       integer nlatsoz, nlevsoz, ntimesoz, nlatsq, nlevsq, ntimesq,

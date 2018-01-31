@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_rayleigh.F,v 1.9 2006/08/03 23:29:02 molod Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
       subroutine rayleigh(myid,pres,pkap,pekap,zsurf,u,v,t,s,im,jm,lm,
      .                                                bi,bj,rfu,rfv,rft)

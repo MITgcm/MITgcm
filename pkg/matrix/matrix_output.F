@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_output.F,v 1.3 2011/08/26 19:47:00 jmc Exp $
-C $Name:  $
-
 #include "MATRIX_OPTIONS.h"
 
 CBOP

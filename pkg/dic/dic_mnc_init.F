@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_mnc_init.F,v 1.4 2007/07/31 23:01:58 ce107 Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

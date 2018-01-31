@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/isomip/code_ad/DIAGNOSTICS_SIZE.h,v 1.1 2012/01/06 13:01:09 heimbach Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

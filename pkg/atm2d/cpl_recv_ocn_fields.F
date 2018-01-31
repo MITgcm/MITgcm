@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/cpl_recv_ocn_fields.F,v 1.3 2007/10/08 23:48:28 jmc Exp $
-C $Name:  $
-
 #include "ATM2D_OPTIONS.h"
 #ifdef ATM2D_MPI_ON
 

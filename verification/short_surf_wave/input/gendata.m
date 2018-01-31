@@ -1,7 +1,4 @@
 % This is a matlab script that generates the input data
-% $Header: /u/gcmpack/MITgcm/verification/short_surf_wave/input/gendata.m,v 1.1 2010/01/23 19:42:38 jmc Exp $
-% $Name:  $
-
 prec='real*8';
 ieee='b';
 

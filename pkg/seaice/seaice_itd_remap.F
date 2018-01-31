@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_itd_remap.F,v 1.2 2016/11/29 22:04:08 jmc Exp $
-C $Name:  $
-
 C     contains:
 C     S/R SEAICE_ITD_REMAP
 C     S/R SEAICE_ITD_REMAP_LINEAR

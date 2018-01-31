@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.46 2017/10/06 00:03:56 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 
 C--  File exf_summary.F: Routines to print out EXF settings

@@ -5,9 +5,6 @@
 % See also  PCOLOR, IMAGESC
 function [hh] = pcol(varargin);
 
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/pcol.m,v 1.3 2006/08/12 20:25:13 jmc Exp $
-% $Name:  $
-
 %cmap=colormap;
 %if cmap(size(cmap,1),:)==[0 0 0]
 %else

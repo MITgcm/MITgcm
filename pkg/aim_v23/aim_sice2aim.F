@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.15 2015/07/29 00:43:17 jmc Exp $
-C $Name:  $
-
 #include "AIM_OPTIONS.h"
 #ifdef ALLOW_THSICE
 #include "THSICE_OPTIONS.h"

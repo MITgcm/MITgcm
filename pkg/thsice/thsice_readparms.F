@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.23 2017/08/09 15:23:36 mlosch Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 
 CBOP

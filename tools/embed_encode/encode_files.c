@@ -1,8 +1,4 @@
 /*************************************************   -*- mode: C -*-
-**
-** $Header: /u/gcmpack/MITgcm/tools/embed_encode/encode_files.c,v 1.1 2006/01/11 04:50:30 edhill Exp $
-** $Name:  $
-**
 */
 
 /*  Encode one or more files for later writing */

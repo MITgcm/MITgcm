@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_check.F,v 1.6 2017/02/18 16:21:54 gforget Exp $
-C $Name:  $
 #include "GGL90_OPTIONS.h"
 
       SUBROUTINE GGL90_CHECK( myThid )

@@ -12,9 +12,6 @@ function [u6t,v6t] = split_UV_cub(u3d,v3d,ksign,kad)
 %   => output is u6t(nc+1,nc,[nr],6) & v6t(nc,nc+1,[nr],6)
 %----------------------------------------------
 % Written by jmc@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/split_UV_cub.m,v 1.2 2017/08/07 21:15:41 jmc Exp $
-% $Name:  $
-
 if nargin < 3 , ksign = 0; end
 if nargin < 4 , kad = 1; end
 % ksign = 0 ==> no sign ; ksign = 1 ==> change the sign where needed

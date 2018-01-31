@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code/DIAG_OPTIONS.h,v 1.1 2014/08/27 18:19:03 jmc Exp $
-C $Name:  $
-
 #ifndef DIAG_OPTIONS_H
 #define DIAG_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

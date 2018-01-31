@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_open64,v 1.10 2014/07/16 18:45:15 jmc Exp $
-#  $Name:  $
 #
 # Build options for Open64 Compiler on Linux x86-64
 #  first version tested on Fedore Core 4 x86-64 Opteron (Linux batsi)

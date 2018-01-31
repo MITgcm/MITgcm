@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/CHEAPAML.h,v 1.16 2017/10/13 17:45:58 jmc Exp $
-C $Name:  $
-
 c #ifdef ALLOW_CHEAPAML
 C     !ROUTINE: CHEAPAML.h
 C -------------------------------

@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/do_fizhi.F,v 1.9 2012/03/27 15:49:37 jmc Exp $
-C $Name:  $
 #include "FIZHI_OPTIONS.h"
        SUBROUTINE DO_FIZHI(myIter,myid,
      & idim1,idim2,jdim1,jdim2,Nrphin,nSxin,nSyin,im1,im2,jm1,jm2,bi,bj,

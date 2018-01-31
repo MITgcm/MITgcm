@@ -1,7 +1,4 @@
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/check_gridfiles.m,v 1.2 2010/12/06 13:53:22 jmc Exp $
-% $Name:  $
-
 %- for a symetric cubed-sphere grid (nr=ng=nb), check that:
 %  1) all the faces have identical grid-spacing & grid-cell area
 %     + long & lat match exactly.

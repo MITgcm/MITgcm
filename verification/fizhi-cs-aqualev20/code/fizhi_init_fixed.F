@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/fizhi_init_fixed.F,v 1.2 2012/03/20 19:47:21 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
        SUBROUTINE FIZHI_INIT_FIXED (myThid)
 c-----------------------------------------------------------------------

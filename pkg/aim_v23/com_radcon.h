@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_radcon.h,v 1.1 2002/11/22 17:16:06 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_AIM
 
 C--   COMMON /RADCON/: Radiation constants (initial. in INPHYS)

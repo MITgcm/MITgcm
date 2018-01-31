@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/PROFILES_OPTIONS.h,v 1.8 2015/08/16 14:48:34 gforget Exp $
-C $Name:  $
-
 C CPP options file for PROFILES package
 C Use this file for selecting options within the PROFILES package
 

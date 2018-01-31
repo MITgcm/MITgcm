@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/salt_plume/SALT_PLUME_OPTIONS.h,v 1.5 2014/05/21 10:46:03 heimbach Exp $
-C $Name:  $
-
 C CPP options file for salt_plume package
 C Use this file for selecting options within the salt_plume package
 

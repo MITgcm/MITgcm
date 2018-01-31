@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad_singlelayer/cost_test.F,v 1.2 2007/08/14 21:02:18 heimbach Exp $
-
 #include "CPP_OPTIONS.h"
 
       subroutine cost_test( myThid )

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_grid_factors.F,v 1.2 2009/12/08 21:50:35 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

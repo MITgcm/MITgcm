@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_budget_ocean.F,v 1.19 2012/11/09 22:15:18 heimbach Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface

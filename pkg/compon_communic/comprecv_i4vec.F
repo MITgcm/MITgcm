@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/comprecv_i4vec.F,v 1.1 2015/11/04 17:06:54 jmc Exp $
-C $Name:  $
-
 !=======================================================================
       subroutine comprecv_i4vec( dataname, length, vecFld )
       implicit none

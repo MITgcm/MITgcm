@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_OPTIONS.h,v 1.5 2015/10/23 18:48:14 gforget Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: CTRL_OPTIONS.h
 C !INTERFACE:

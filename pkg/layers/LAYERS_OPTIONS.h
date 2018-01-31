@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS_OPTIONS.h,v 1.7 2015/06/08 16:26:12 rpa Exp $
-C $Name:  $
-
 C CPP options file for LAYERS package
 C Use this file for selecting options within package "LAYERS"
 

@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/MONITOR.h,v 1.11 2016/07/18 16:45:21 jmc Exp $
-C $Name:  $
 C
 
 CBOP

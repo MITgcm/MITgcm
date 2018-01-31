@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/code_ocn/DIAGNOSTICS_SIZE.h,v 1.1 2013/09/20 19:17:22 jmc Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_scheme.F,v 1.6 2013/04/08 21:31:29 jmc Exp $
-C $Name:  $
-
 #include "CD_CODE_OPTIONS.h"
 
 CBOP

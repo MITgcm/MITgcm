@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_diagnostics_init.F,v 1.8 2017/10/12 15:25:34 jmc Exp $
-C $Name:  $
-
 #include "CHEAPAML_OPTIONS.h"
 CBOP
 C     !ROUTINE: CHEAPAML_DIAGNOSTICS_INIT

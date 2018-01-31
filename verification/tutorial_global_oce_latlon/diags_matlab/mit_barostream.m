@@ -6,9 +6,6 @@ function [psi, psimask] = mit_barostream(u,varargin)
 % handled as cell objects, integration from north to the south (by
 % convention). 
 
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/mit_barostream.m,v 1.3 2006/08/12 20:25:12 jmc Exp $
-% $Name:  $
-
   if nargin == 2
     g = varargin{1};
     umask = g.umask;

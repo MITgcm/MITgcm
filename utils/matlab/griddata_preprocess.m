@@ -7,10 +7,6 @@ function [del] = griddata_preprocess(x,y,xi,yi,method)
 %   Based on
 %   Clay M. Thompson 8-21-95
 %   Copyright 1984-2001 The MathWorks, Inc. 
-%   $Revision: 1.4 $  $Date: 2013/07/11 12:41:06 $
-
-% $Header: /u/gcmpack/MITgcm/utils/matlab/griddata_preprocess.m,v 1.4 2013/07/11 12:41:06 mlosch Exp $
-% $Name:  $
 
 error(nargchk(4,5,nargin))
 

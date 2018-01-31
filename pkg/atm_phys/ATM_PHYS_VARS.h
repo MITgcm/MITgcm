@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_phys/ATM_PHYS_VARS.h,v 1.2 2015/12/21 20:04:57 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_ATM_PHYS
 
 C-    AtmPhys 2-dim. fields

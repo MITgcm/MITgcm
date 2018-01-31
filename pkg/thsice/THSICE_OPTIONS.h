@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_OPTIONS.h,v 1.5 2011/12/24 01:09:41 jmc Exp $
-C $Name:  $
-
 #ifndef THSICE_OPTIONS_H
 #define THSICE_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

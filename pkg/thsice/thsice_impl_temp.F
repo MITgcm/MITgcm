@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_impl_temp.F,v 1.8 2011/06/07 22:26:37 jmc Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 
 C     !ROUTINE: THSICE_IMPL_TEMP

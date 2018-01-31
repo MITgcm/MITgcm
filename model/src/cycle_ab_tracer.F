@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cycle_ab_tracer.F,v 1.3 2014/08/18 12:24:16 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

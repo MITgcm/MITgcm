@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/tamc_keys.h,v 1.5 2014/04/04 23:06:34 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_AUTODIFF_TAMC
 C     *==========================================================*
 C     | tamc_keys.h keys required by TAMC for record computation |

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/STREAMICE.h,v 1.1 2016/01/22 
-C $Name:  $
-
 C---+----1--+-+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_STREAMICE

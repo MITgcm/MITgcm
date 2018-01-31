@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_ia32_open64.trapuv,v 1.1 2011/09/29 16:15:42 jmc Exp $
-#  $Name:  $
 #
 # Build options for Fedore Core 4 i686 Pentium4
 # tested on ACES, (Linux a54-1727-072 2.6.11.7smp-perfctr-tty #5 SMP Fri Apr 22 15:07:50 EDT 2005 i686 i686 i386 GNU/Linux) system 20071213

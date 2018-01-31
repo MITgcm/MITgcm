@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_genread.F,v 1.8 2015/03/26 14:52:42 gforget Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

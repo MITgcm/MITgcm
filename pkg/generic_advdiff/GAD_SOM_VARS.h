@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_SOM_VARS.h,v 1.2 2008/05/09 21:43:16 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: GAD_SOM_VARS.h
 C     !INTERFACE:

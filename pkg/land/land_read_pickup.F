@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_read_pickup.F,v 1.7 2017/03/24 23:38:56 jmc Exp $
-C $Name:  $
-
 #include "LAND_OPTIONS.h"
 
 CBOP

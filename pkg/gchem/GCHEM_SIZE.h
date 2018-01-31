@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/GCHEM_SIZE.h,v 1.1 2017/12/29 19:29:18 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_GCHEM
 
 CBOP

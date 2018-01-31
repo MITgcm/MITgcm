@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/SHAP_FILT_OPTIONS.h,v 1.4 2011/12/24 01:17:51 jmc Exp $
-C $Name:  $
-
 C CPP options file for pkg SHAP_FILT
 
 #ifndef SHAP_FILT_OPTIONS_H

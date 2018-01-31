@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_land2aim.F,v 1.6 2004/05/21 17:27:22 jmc Exp $
-C $Name:  $
-
 #include "AIM_OPTIONS.h"
 #ifdef ALLOW_LAND
 #include "LAND_OPTIONS.h"

@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77+mpi_aer,v 1.6 2010/12/19 22:42:23 jmc Exp $
-# $Name:  $
-
 FC='/opt/mpich/bin/mpif77'
 CC='/opt/mpich/bin/mpicc'
 LINK='/opt/mpich/bin/mpif77'

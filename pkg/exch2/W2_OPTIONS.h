@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_OPTIONS.h,v 1.6 2011/10/03 12:45:41 jmc Exp $
-C $Name:  $
-
 C CPP options file for EXCH2 package
 
 #ifndef W2_OPTIONS_H

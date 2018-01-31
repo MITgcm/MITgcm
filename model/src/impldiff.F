@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.36 2016/10/06 14:22:12 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

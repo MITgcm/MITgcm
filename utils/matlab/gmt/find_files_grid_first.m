@@ -11,8 +11,6 @@ function [flist] = find_files_grid_first(fpat)
 %
 %
 %  Ed Hill
-%  $Id: find_files_grid_first.m,v 1.4 2006/05/31 21:35:42 edhill Exp $
-
 files = {};
 fdirs = {};
 if ischar(fpat)

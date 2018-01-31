@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_som_advect.F,v 1.14 2015/06/03 13:39:22 rpa Exp $
-C $Name:  $
-
 #include "GAD_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

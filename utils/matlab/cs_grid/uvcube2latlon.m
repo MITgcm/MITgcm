@@ -17,9 +17,6 @@ function [U,V,ub,vb] = uvcube2latlon(xc,yc,u,v,xi,yi,cosalpha,sinalpha)
 % >> [ui,vi]=uvcube2latlon(xc,yc,u,v,xi,yi);
 %
 % Written by adcroft@.mit.edu, 2001.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/uvcube2latlon.m,v 1.3 2016/04/20 18:04:47 dfer Exp $
-% $Name:  $
-
 NN=size(u);
 [nnx ny nz]=size(u);
 

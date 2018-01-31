@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP.h,v 1.10 2007/12/18 09:05:59 dimitri Exp $
-C $Name:  $
-
 #ifdef ALLOW_KPP
 
 CBOP

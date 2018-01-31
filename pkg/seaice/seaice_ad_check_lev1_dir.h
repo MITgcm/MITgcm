@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_ad_check_lev1_dir.h,v 1.34 2016/04/22 08:52:15 mlosch Exp $
-C $Name:  $
-
 CADJ STORE hsnow = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE tices = comlev1, key=ikey_dynamics, kind=isbyte
 

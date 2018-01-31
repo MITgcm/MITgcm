@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_iigw_correction.F,v 1.2 2006/06/07 01:55:13 heimbach Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

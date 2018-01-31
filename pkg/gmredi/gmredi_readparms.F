@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.37 2017/08/09 15:23:37 mlosch Exp $
-C $Name:  $
-
 #include "GMREDI_OPTIONS.h"
 
 CBOP

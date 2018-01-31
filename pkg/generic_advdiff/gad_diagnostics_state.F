@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diagnostics_state.F,v 1.2 2008/05/09 21:43:16 jmc Exp $
-C $Name:  $
-
 #include "GAD_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

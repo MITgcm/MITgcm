@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_fields_blocking_exch.F,v 1.1 2012/03/08 17:12:33 jmc Exp $
-C $Name:  $
-
 #include "PTRACERS_OPTIONS.h"
 #include "GAD_OPTIONS.h"
 

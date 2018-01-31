@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_interp_p2p.F,v 1.1 2006/12/24 20:15:42 jmc Exp $
-C $Name:  $
 #include "DIAG_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

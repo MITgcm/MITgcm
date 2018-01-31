@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_SIZE.h,v 1.3 2005/06/23 20:02:50 edhill Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | AIM_SIZE.h Declare size of arrays for AIM Physics        |
 C     *==========================================================*

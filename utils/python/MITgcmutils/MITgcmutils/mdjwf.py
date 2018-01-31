@@ -1,5 +1,3 @@
-# $Header: /u/gcmpack/MITgcm/utils/python/MITgcmutils/MITgcmutils/mdjwf.py,v 1.2 2018/01/11 14:34:22 mlosch Exp $
-# $Name:  $
 #
 # converted from matlab version to python in Jan 2018
 

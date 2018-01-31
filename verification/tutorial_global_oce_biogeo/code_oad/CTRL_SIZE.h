@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_biogeo/code_oad/CTRL_SIZE.h,v 1.2 2014/11/13 23:50:07 gforget Exp $
-C $Name:  $
-
 c     ==================================================================
 c     CTRL_SIZE.h
 c     ==================================================================

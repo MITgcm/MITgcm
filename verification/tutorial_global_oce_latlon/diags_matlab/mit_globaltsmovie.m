@@ -1,7 +1,4 @@
 
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/mit_globaltsmovie.m,v 1.3 2006/08/12 20:25:12 jmc Exp $
-% $Name:  $
-
 figure('PaperPosition',[0.31 0.25 10.5 7.88],'PaperOrientation','landscape');
 colormap('default'); cmap = colormap; colormap([.75*ones(1,3); cmap]);
 for k=pkt;

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/W2_EXCH2_PARAMS.h,v 1.13 2012/09/04 00:43:13 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: W2_EXCH2_PARAMS.h
 C     !INTERFACE:

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.23 2011/10/07 21:36:39 dfer Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 
 C--  File carbon_chem.F:

@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/global_ocean_ebm/input_ad/prepare_run,v 1.1 2010/04/30 13:01:00 jmc Exp $
-#  $Name:  $
- 
 #- in order to save disc space, take *.bin files
 #- from this dir:
 fromDir="../input"

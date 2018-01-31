@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_mnc_vars.F,v 1.13 2017/06/01 20:50:56 mlosch Exp $
-C $Name:  $
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #include "PACKAGES_CONFIG.h"

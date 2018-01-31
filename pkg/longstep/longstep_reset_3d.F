@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/longstep/longstep_reset_3d.F,v 1.3 2009/06/28 16:35:48 jmc Exp $
-C $Name:  $
-
 #include "LONGSTEP_OPTIONS.h"
 
 CBOP

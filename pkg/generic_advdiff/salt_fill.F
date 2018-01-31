@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/salt_fill.F,v 1.5 2009/12/08 21:41:01 jmc Exp $
-C $Name:  $
-
 #include "GAD_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

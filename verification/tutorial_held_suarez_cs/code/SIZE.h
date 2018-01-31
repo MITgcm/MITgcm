@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_held_suarez_cs/code/SIZE.h,v 1.1 2005/07/15 21:25:20 jmc Exp $
-C $Name:  $
-
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |
 C     |==========================================================|

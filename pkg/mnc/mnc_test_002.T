@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_test_002.T,v 1.5 2004/03/19 03:28:37 edhill Exp $
-C $Name:  $
-
 C     Simple test program for MNC
 
       PROGRAM mnc_test_002

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_fld_3d_rl.F,v 1.3 2009/09/01 19:28:24 jmc Exp $
-C $Name:  $
-
 #include "RW_OPTIONS.h"
 
       SUBROUTINE WRITE_FLD_3D_RL(

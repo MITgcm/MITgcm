@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_summary.F,v 1.25 2017/01/20 20:55:56 gforget Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
       SUBROUTINE ECCO_SUMMARY( mythid )

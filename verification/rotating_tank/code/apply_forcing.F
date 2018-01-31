@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/apply_forcing.F,v 1.1 2014/07/11 18:46:36 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

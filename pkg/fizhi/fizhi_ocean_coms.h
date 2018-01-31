@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_ocean_coms.h,v 1.5 2007/03/12 21:46:24 molod Exp $
-C $Name:  $
-
 c Ocean Parameters
 c -------------------
       common /ocean_params/sstclim,siceclim,ksst,kice

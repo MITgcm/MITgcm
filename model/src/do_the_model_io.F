@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.68 2017/04/04 23:22:38 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

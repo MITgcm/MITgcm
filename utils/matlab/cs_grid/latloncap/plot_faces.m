@@ -9,9 +9,6 @@ function plot_faces(nfg,vF,k,ccB,rgbDim);
 %  b) of simple array "vF" in compact format (with cs-grid dimensions =
 %     rgbDim = [nr ng nb] )
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/latloncap/plot_faces.m,v 1.2 2008/10/18 18:49:53 jmc Exp $
-% $Name:  $
-
 if nargin < 4, ccB=[0 0]; end
 
 %- extract list of faces:

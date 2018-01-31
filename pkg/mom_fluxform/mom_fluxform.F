@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.55 2016/11/30 00:11:22 jmc Exp $
-C $Name:  $
-
 CBOI
 C !TITLE: pkg/mom\_advdiff
 C !AUTHORS: adcroft@mit.edu

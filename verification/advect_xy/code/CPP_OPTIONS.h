@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_xy/code/CPP_OPTIONS.h,v 1.4 2005/08/24 23:04:13 jmc Exp $
-C $Name:  $
-
 #ifndef CPP_OPTIONS_H
 #define CPP_OPTIONS_H
 

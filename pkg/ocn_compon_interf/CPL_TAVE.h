@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/CPL_TAVE.h,v 1.2 2016/01/06 00:58:23 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: CPL_TAVE.h
 C     !INTERFACE:

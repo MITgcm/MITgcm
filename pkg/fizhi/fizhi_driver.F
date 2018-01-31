@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.44 2017/01/11 03:44:08 gforget Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
        SUBROUTINE FIZHI_DRIVER (myid,im,jm,lm,bi,bj,ptracer,ntracer,
      & turbStart, xlats,xlons,

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/dome/code/CPP_OPTIONS.h,v 1.1 2004/07/06 18:40:32 adcroft Exp $
-C $Name:  $
-
 #ifndef CPP_OPTIONS_H
 #define CPP_OPTIONS_H
 

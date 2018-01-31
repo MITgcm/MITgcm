@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/reset_halo.F,v 1.1 2013/07/04 22:49:16 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 C--  File reset_halo.F: to fill-up halo region with constant value

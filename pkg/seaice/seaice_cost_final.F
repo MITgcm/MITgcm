@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_final.F,v 1.21 2015/05/29 20:16:13 heimbach Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_COST
 #include "COST_OPTIONS.h"

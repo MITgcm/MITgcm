@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/GRIDALT_OPTIONS.h,v 1.2 2011/12/24 01:04:48 jmc Exp $
-C $Name:  $
-
 #ifndef GRIDALT_OPTIONS_H
 #define GRIDALT_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

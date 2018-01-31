@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_init_varia.F,v 1.6 2009/08/25 21:33:28 jmc Exp $
-C $Name:  $
-
 #include "MYPACKAGE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

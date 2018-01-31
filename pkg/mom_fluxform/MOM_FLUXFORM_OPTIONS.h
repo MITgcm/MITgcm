@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/MOM_FLUXFORM_OPTIONS.h,v 1.4 2011/12/24 01:09:39 jmc Exp $
-C $Name:  $
-
 C CPP options file for mom_fluxform package
 C Use this file for selecting CPP options within the mom_fluxform package
 

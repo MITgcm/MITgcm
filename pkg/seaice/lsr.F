@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.36 2016/01/28 12:54:12 mlosch Exp $
-C $Name:  $
-
 #ifndef SEAICE_LSRBNEW
 C     for an alternative discretization of d/dx[ (zeta-eta) dV/dy]
 C     and d/dy[ (zeta-eta) dU/dx] uncomment this option

@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/setenv_OpenAD.sh,v 1.1 2014/07/17 23:11:50 jmc Exp $
-#  $Name:  $
-
 ##########################################################
 # This file is part of OpenAD released under the LGPL.   #
 # The full COPYRIGHT notice can be found in the top      #

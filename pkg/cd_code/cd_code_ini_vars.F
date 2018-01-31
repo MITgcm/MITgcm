@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_ini_vars.F,v 1.9 2009/08/25 21:33:27 jmc Exp $
-C $Name:  $
-
 #include "CD_CODE_OPTIONS.h"
 
       SUBROUTINE CD_CODE_INI_VARS( myThid )

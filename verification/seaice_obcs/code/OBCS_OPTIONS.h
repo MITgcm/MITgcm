@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/code/OBCS_OPTIONS.h,v 1.8 2012/11/15 15:55:42 dimitri Exp $
-C $Name:  $
-
 C CPP options file for OBCS package
 C Use this file for selecting options within the OBCS package
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_diagnostics_fill.F,v 1.20 2017/05/11 20:57:50 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 
       SUBROUTINE EXF_DIAGNOSTICS_FILL(

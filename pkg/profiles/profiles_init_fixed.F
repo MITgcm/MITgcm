@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_fixed.F,v 1.39 2017/04/03 23:16:38 ou.wang Exp $
-C $Name:  $
-
 #include "PROFILES_OPTIONS.h"
 #include "AD_CONFIG.h"
 

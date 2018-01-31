@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/remove_mean.F,v 1.3 2009/04/28 18:30:33 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

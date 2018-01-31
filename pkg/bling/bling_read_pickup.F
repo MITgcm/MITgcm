@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_read_pickup.F,v 1.3 2017/03/24 23:34:13 jmc Exp $
-C $Name:  $
-
 #include "BLING_OPTIONS.h"
 
 CBOP

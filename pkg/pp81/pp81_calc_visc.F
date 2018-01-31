@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_calc_visc.F,v 1.3 2009/10/08 20:08:20 jmc Exp $
-C $Name:  $
 #include "PP81_OPTIONS.h"
 
       SUBROUTINE PP81_CALC_VISC(

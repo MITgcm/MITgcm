@@ -6,9 +6,6 @@ function hout=suptitle(str)
 
 % Drea Thomas 6/15/95 drea@mathworks.com
 %
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/suptitle.m,v 1.3 2006/08/12 20:25:13 jmc Exp $
-% $Name:  $
-
 % Warning: If the figure or axis units are non-default, this
 % will break.
 

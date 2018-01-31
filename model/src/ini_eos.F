@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.21 2011/07/19 12:53:24 mlosch Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 #undef INCLUDE_EOS_CHECK
 

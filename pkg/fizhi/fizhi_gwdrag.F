@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_gwdrag.F,v 1.11 2005/07/01 01:12:00 jmc Exp $
-C $Name:  $
 #include "FIZHI_OPTIONS.h"
       subroutine gwdrag (myid,pz,pl,ple,dpres,pkz,uz,vz,tz,qz,phis_var,
      .         dudt,dvdt,dtdt,im,jm,Lm,bi,bj,istrip,npcs,imglobal)

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_ad.flow,v 1.7 2013/11/18 21:32:10 heimbach Exp $
-C $Name:  $
-
 C----------------------------------------
 C Naming of adjoint common blocks:
 C Retain naming convention of TAF version 1 via flow directives

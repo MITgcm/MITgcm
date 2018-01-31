@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getpwhere.F,v 1.11 2010/03/16 00:19:33 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
 #undef CHECK_GETPWHERE
 

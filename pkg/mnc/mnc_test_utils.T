@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_test_utils.T,v 1.3 2004/01/27 05:47:32 edhill Exp $
-C $Name:  $
-
 C     MNC utilities duplicating things in MITgcm
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

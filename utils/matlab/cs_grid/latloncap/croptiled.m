@@ -3,9 +3,6 @@ function t = croptiled(t, cspec )
 % Crop size of variables listed vlist in a tiled structure t.
 %
 
-%% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/latloncap/croptiled.m,v 1.1 2007/05/07 14:00:52 cnh Exp $
-%% $Name:  $
-
 d=1;
 for c=1:length(cspec.crops)
  vlist=cspec.crops(c).fields;

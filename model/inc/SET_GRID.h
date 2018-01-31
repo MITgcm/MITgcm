@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SET_GRID.h,v 1.1 2011/12/12 18:58:51 jmc Exp $
-C $Name:  $
 C
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_depth_ini.F,v 1.7 2015/02/23 23:22:45 jmc Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 
 CBOP

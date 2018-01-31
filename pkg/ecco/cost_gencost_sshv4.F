@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_sshv4.F,v 1.36 2017/04/03 17:20:58 ou.wang Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
 

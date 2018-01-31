@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_ivdc.F,v 1.8 2011/12/19 11:47:04 mlosch Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 CBOP
 C     !ROUTINE: CALC_IVDC

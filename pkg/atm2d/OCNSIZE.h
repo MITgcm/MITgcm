@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/OCNSIZE.h,v 1.1 2006/09/06 15:32:40 jscott Exp $
-C $Name:  $
-
 C     /==========================================================\
 C     | OCN_SIZE.h Declare size of underlying computational grid |
 C     |            for ocean component.                          |

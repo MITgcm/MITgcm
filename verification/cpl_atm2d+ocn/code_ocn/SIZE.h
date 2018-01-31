@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/cpl_atm2d+ocn/code_ocn/SIZE.h,v 1.1 2007/05/01 21:50:53 jscott Exp $
-C $Name:
-C
 CBOP
 C    !ROUTINE: SIZE.h
 C    !INTERFACE:

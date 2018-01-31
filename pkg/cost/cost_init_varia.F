@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_init_varia.F,v 1.16 2014/09/14 15:21:13 gforget Exp $
-C $Name:  $
-
 #include "COST_OPTIONS.h"
 
       SUBROUTINE COST_INIT_VARIA( mythid )

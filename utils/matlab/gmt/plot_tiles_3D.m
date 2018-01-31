@@ -30,9 +30,6 @@ function [rv] = plot_tiles_3D(tdat,vname,tvals,iz, opts)
 %
 %
 %  Ed Hill
-%  $Id: plot_tiles_3D.m,v 1.4 2006/06/29 18:50:27 enderton Exp $
-
-
 %  For debugging:
 if 1 == 2
   clear all ; close all

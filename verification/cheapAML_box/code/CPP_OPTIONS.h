@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/cheapAML_box/code/CPP_OPTIONS.h,v 1.1 2012/12/04 19:04:11 jmc Exp $
-C $Name:  $
-
 #ifndef CPP_OPTIONS_H
 #define CPP_OPTIONS_H
 

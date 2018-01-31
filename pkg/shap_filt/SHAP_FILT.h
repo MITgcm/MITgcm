@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/SHAP_FILT.h,v 1.8 2005/10/07 00:24:01 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_SHAP_FILT
 
 C-    Package flag and logical parameters :

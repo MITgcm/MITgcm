@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.72 2015/01/21 14:35:16 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

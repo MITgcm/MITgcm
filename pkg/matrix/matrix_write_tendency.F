@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/matrix/matrix_write_tendency.F,v 1.5 2012/04/02 21:26:12 jmc Exp $
-C $Name:  $
-
 #include "MATRIX_OPTIONS.h"
 
 C !ROUTINE MATRIX_WRITE_TENDENCY.F

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/FIZHI_OPTIONS.h,v 1.4 2012/03/22 14:23:30 jmc Exp $
-C $Name:  $
-
 #ifndef FIZHI_OPTIONS_H
 #define FIZHI_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

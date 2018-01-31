@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/reset_nlfs_vars.F,v 1.2 2014/05/02 16:56:53 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

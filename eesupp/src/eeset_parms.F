@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.48 2017/08/10 15:30:19 mlosch Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesflags.F,v 1.6 2012/08/10 19:45:25 jmc Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
 

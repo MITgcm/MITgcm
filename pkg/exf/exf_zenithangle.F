@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_zenithangle.F,v 1.8 2017/03/06 22:38:03 gforget Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_VARS.h,v 1.10 2014/11/04 17:15:52 jmc Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 
 C     *==========================================================*

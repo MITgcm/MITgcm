@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.15 2014/04/04 20:29:08 jmc Exp $
-C $Name:  $
-
 #include "GAD_OPTIONS.h"
 
       SUBROUTINE GAD_DST3FL_ADV_Y(

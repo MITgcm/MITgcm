@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/RESTART.h,v 1.2 2009/12/11 13:49:56 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: RESTART.h
 C     !INTERFACE:

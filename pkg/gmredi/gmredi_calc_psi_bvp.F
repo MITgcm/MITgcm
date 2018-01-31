@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_bvp.F,v 1.6 2016/10/26 00:49:05 jmc Exp $
-C $Name:  $
-
 #include "GMREDI_OPTIONS.h"
 
 CBOP

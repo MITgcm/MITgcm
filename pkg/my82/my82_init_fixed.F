@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_init_fixed.F,v 1.1 2008/04/14 09:42:03 mlosch Exp $
-C $Name:  $
-
 #include "MY82_OPTIONS.h"
 
 CBOP

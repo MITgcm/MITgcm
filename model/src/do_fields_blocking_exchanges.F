@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.32 2016/02/15 18:00:26 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

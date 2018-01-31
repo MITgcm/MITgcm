@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/generate_tag.F,v 1.3 2014/10/23 16:05:21 jmc Exp $
-C $Name:  $
-
 !=======================================================================
       integer function generate_tag( iarg1, iarg2, carg )
       implicit none

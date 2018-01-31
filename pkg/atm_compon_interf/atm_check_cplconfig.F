@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/atm_check_cplconfig.F,v 1.2 2017/04/04 23:31:27 jmc Exp $
-C $Name:  $
-
 c#include "PACKAGES_CONFIG.h"
 #include "ATM_CPL_OPTIONS.h"
 

@@ -9,9 +9,6 @@ function [z6t] = split_Z_cub(z3d)
 %                                 neighbours) for the 2 missing corners
 %----------------------------------------------
 % Written by jmc@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/split_Z_cub.m,v 1.1 2005/09/15 16:22:24 jmc Exp $
-% $Name:  $
-
 dims=size(z3d); nDim=length(dims);
 %fprintf(' nDim= %i , dims:',nDim);fprintf(' %i',dims);fprintf('\n');
 

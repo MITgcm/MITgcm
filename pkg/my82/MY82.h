@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/MY82.h,v 1.2 2005/05/30 07:41:45 mlosch Exp $
-C $Name:  $
-
 #ifdef ALLOW_MY82
 
 CBOP

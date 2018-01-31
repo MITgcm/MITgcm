@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.25 2017/01/10 20:56:37 gforget Exp $
-C $Name:  $
-
 #include "MNC_OPTIONS.h"
 
 C--  File mnc_utils.F:

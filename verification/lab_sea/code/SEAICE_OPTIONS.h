@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.34 2016/04/22 09:13:50 mlosch Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | SEAICE_OPTIONS.h
 C     | o CPP options file for sea ice package.

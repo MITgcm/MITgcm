@@ -105,7 +105,6 @@ AC_SUBST($1)])
 dnl bsd_sockets.m4--which socket libraries do we need? 
 dnl Derrick Brashear
 dnl from Zephyr
-dnl $Id: aclocal.m4,v 1.3 2008/02/23 03:30:03 jmc Exp $
 
 dnl Hacked on by Rob Earhart to not just toss stuff in LIBS
 dnl It now puts everything required for sockets into LIB_SOCKET

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGSTATS_REGIONS.h,v 1.3 2010/12/19 23:50:57 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: DIAGSTATS_REGIONS.h
 C     !INTERFACE:

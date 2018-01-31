@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_write_pickup.F,v 1.4 2007/10/19 03:21:39 jmc Exp $
-C $Name:  $
-
 #include "CD_CODE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

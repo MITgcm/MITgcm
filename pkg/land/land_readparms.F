@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.15 2017/08/09 15:23:37 mlosch Exp $
-C $Name:  $
-
 #include "LAND_OPTIONS.h"
 
 CBOP

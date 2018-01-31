@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/active_file_loc.flow,v 1.4 2011/11/05 19:20:42 heimbach Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: flow directives for active_file_loc.F
 C     !INTERFACE:

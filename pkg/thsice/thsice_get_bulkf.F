@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_bulkf.F,v 1.8 2013/04/13 20:51:32 heimbach Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 #ifdef ALLOW_BULK_FORCE
 #include "BULK_FORCE_OPTIONS.h"

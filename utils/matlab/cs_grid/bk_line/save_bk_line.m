@@ -6,8 +6,6 @@ function [svNpts,svFlg,svIuv,svJuv,svXsg,svYsg,svXx1,svYy1]=save_bk_line( ...
 %        savI,savJ,savF,isav,jsav,xsav,ncut,icut,xcut,ycut);
 %- output : put together the pieces of bk-lines from the 6 faces
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/save_bk_line.m,v 1.3 2007/02/06 19:29:36 jmc Exp $
-% $Name:  $
 %--------------------------------------
 
 %- output arrays:

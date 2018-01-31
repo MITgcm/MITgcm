@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_write_pickup.F,v 1.6 2016/01/02 00:53:30 jmc Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 CBOP
 C     !ROUTINE: THSICE_WRITE_PICKUP

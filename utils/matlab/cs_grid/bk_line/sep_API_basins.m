@@ -2,9 +2,6 @@
 krd=1; kpr=1; kgr=0; kwr=1;
 %krd=0; kpr=0; kgr=1; kwr=0; % <- execute a 2nd time & draw some plot
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/sep_API_basins.m,v 1.4 2014/09/26 23:00:34 jmc Exp $
-% $Name:  $
-
 if krd == 1,
 %- set ncdf=1 to load MNC (NetCDF) grid-files ;
 %   or ncdf=0 to load MDS (binary) grid-files :

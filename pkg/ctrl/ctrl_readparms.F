@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.63 2017/08/09 15:23:38 mlosch Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 #include "AD_CONFIG.h"
 

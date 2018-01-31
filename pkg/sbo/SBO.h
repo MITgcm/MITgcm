@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/SBO.h,v 1.9 2014/05/18 23:55:51 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_SBO
 
 C     *==========================================================*

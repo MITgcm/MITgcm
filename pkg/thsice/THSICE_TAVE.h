@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_TAVE.h,v 1.5 2013/05/02 20:01:21 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: THSICE_TAVE.h
 C     !INTERFACE:

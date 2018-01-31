@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/ames_dbg+mpi,v 1.1 2010/02/18 17:03:10 jmc Exp $
 #
 
 S64='$(TOOLSDIR)/set64bitConst.sh'

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_OPTIONS.h,v 1.16 2013/03/04 18:20:46 jmc Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: GAD_OPTIONS.h
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/utils/exch2/code-mods/s24t_16x16/SIZE.h,v 1.1 2004/03/12 21:41:16 afe Exp $
-C $Name:  $
-
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

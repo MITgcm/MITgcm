@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_south.F,v 1.10 2012/09/18 20:09:17 jmc Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 
       SUBROUTINE ORLANSKI_SOUTH( bi, bj, futureTime,

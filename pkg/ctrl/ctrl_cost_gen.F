@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_cost_gen.F,v 1.9 2015/10/29 03:43:59 gforget Exp $
-C $Name:  $
-
 c ----------------------------------------------------------------
 c --- ctrl_cost_gen2d
 c --- ctrl_cost_gen3d

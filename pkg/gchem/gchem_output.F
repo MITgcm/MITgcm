@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_output.F,v 1.2 2009/06/30 16:43:00 jahn Exp $
-C $Name:  $
-
 #include "GCHEM_OPTIONS.h"
 #ifdef ALLOW_DARWIN
 #include "DARWIN_OPTIONS.h"

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/mds_reclen.F,v 1.3 2009/01/09 22:51:13 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
       INTEGER FUNCTION MDS_RECLEN( filePrec, nnn, myThid )

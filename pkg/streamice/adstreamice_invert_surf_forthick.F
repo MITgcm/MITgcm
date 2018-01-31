@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/streamice/adstreamice_invert_surf_forthick.F,v 1.6 2016/11/29 14:19:37 dgoldberg Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 #include "STREAMICE_OPTIONS.h"
 

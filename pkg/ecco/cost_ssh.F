@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.24 2015/10/24 18:49:43 gforget Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
 

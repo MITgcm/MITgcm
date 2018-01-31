@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/mdsfindunit.F,v 1.4 2017/09/26 15:52:52 dimitri Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE MDSFINDUNIT( ioUnit, myThid )

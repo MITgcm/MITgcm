@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc_diff_s.F,v 1.4 2007/09/27 14:42:59 dimitri Exp $
-C $Name:  $
-
 #include "KPP_OPTIONS.h"
 
       SUBROUTINE KPP_CALC_DIFF_S( 

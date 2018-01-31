@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.16 2014/02/07 15:10:38 dimitri Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

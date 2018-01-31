@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_output.F,v 1.8 2017/03/24 23:38:56 jmc Exp $
-C $Name:  $
-
 #include "KPP_OPTIONS.h"
 #ifdef ALLOW_GMREDI
 # include "GMREDI_OPTIONS.h"

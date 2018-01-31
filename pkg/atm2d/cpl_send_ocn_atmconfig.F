@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/cpl_send_ocn_atmconfig.F,v 1.3 2013/12/02 23:54:43 jmc Exp $
-C $Name:  $
-
 #include "ATM2D_OPTIONS.h"
 
 CBOP 0

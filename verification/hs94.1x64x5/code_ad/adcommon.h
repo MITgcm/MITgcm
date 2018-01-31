@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code_ad/adcommon.h,v 1.3 2008/05/09 18:42:27 dfer Exp $
-C $Name:  $
-
 C--   These common blocks are extracted from the
 C--   automatically created tangent linear code.
 C--   You need to make sure that they are up-to-date

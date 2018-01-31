@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/seaice_obcs/input/prepare_run,v 1.1 2012/12/19 02:44:21 dimitri Exp $
-#  $Name:  $
- 
 #- in order to save disc space, take files:
 fileList="tair.labsea1979 qa.labsea1979 u10m.labsea1979 v10m.labsea1979 prate.labsea1979 flo.labsea1979 fsh.labsea1979 SSS_monthly.labsea1979"
 

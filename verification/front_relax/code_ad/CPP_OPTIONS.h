@@ -1,7 +1,4 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/CPP_OPTIONS.h,v 1.10 2013/03/26 20:19:41 jmc Exp $
-C $Name:  $
-
 C CPP flags controlling which code in included in the files that
 C will be compiled.
 

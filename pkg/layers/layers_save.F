@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_save.F,v 1.4 2015/06/10 20:51:17 jmc Exp $
-C $Name:  $
-
 #include "LAYERS_OPTIONS.h"
 C--  File layers_save.F:
 C--   Contents

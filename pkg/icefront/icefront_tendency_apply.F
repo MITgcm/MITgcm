@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_tendency_apply.F,v 1.4 2014/07/09 17:00:49 jmc Exp $
-C $Name:  $
-
 #include "ICEFRONT_OPTIONS.h"
 C--  File icefront_tendency_apply.F: Routines to apply ICEFRONT tendencies
 C--   Contents

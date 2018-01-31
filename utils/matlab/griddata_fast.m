@@ -7,10 +7,6 @@ function zi = griddata_fast(delau,z,method)
 %   Based on
 %   Clay M. Thompson 8-21-95
 %   Copyright 1984-2001 The MathWorks, Inc. 
-%   $Revision: 1.2 $  $Date: 2007/02/17 23:49:43 $
-
-% $Header: /u/gcmpack/MITgcm/utils/matlab/griddata_fast.m,v 1.2 2007/02/17 23:49:43 jmc Exp $
-% $Name:  $
 
 error(nargchk(2,3,nargin))
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/diags_rho.F,v 1.5 2011/11/10 21:03:35 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

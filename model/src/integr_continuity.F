@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.28 2011/12/22 19:00:58 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

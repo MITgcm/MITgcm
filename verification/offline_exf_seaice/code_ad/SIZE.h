@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code_ad/SIZE.h,v 1.5 2013/03/25 02:39:34 gforget Exp $
-C $Name:  $
-
 C
 CBOP
 C    !ROUTINE: SIZE.h

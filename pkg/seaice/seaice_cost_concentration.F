@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_concentration.F,v 1.11 2015/03/23 21:04:59 gforget Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_ECCO
 # include "ECCO_OPTIONS.h"

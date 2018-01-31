@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_s.F,v 1.18 2014/05/22 13:11:14 heimbach Exp $
-C $Name:  $
-
 #include "KPP_OPTIONS.h"
 #ifdef ALLOW_GMREDI
 #include "GMREDI_OPTIONS.h"

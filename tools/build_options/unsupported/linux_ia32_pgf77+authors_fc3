@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_ia32_pgf77+authors_fc3,v 1.1 2010/03/21 16:08:29 jmc Exp $
 #
 
 FC='/usr/local/pkg/pgi/pgi-5.2-fc3/linux86/5.2/bin/pgf77'

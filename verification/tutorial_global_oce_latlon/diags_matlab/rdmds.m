@@ -63,9 +63,6 @@ function [AA,itrs,MM] = rdmds(fnamearg,varargin)
 %     'n' 'l' 'b' 'd' 'g' 'c' 'a' 's'  - see FOPEN for more details
 %
 
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/rdmds.m,v 1.4 2011/04/25 18:20:40 jmc Exp $
-% $Name:  $
-
 AA=[];
 itrs=[];
 MM=[];

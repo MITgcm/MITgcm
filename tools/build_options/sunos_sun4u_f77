@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_f77,v 1.7 2005/02/28 08:47:36 mlosch Exp $
-#  $Name:  $  
 #
 # tested on 
 # SunOS model.awi-bremerhaven.de 5.9 Generic_112233-11 sun4u sparc SUNW,Sun-Fire-15000

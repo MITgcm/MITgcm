@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_mnc_init.F,v 1.2 2011/10/28 11:42:14 mlosch Exp $
-C $Name:  $
-
 #include "SHELFICE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

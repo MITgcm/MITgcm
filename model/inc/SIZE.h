@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SIZE.h,v 1.28 2009/05/17 21:15:07 jmc Exp $
-C $Name:  $
-
   These lines are here to deliberately cause a compile-time error.
   If you see these lines in your .F files or the compiler shows them
   as an error then it means you have not placed your configuration

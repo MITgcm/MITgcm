@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/CPP_EEOPTIONS.h,v 1.5 2017/08/11 21:34:14 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: CPP_EEOPTIONS.h
 C     !INTERFACE:

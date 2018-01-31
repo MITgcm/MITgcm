@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_baudelaire,v 1.38 2018/01/29 21:59:01 jmc Exp $
-
 #  Test script for MITgcm that should work on most of the csail.mit.edu Linux machines.
 
 tst_grp=0 ; if test $# = 1 ; then tst_grp=$1 ; fi

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/aim_surf_bc.F,v 1.9 2011/12/12 19:05:41 jmc Exp $
-C $Name:  $
-
 #include "AIM_OPTIONS.h"
 
 CBOP

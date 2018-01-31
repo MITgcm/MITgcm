@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.36 2014/02/13 04:10:25 jmc Exp $
-C $Name:  $
 CBOP
 C     !ROUTINE: EEPARAMS.h
 C     !INTERFACE:

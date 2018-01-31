@@ -1,6 +1,3 @@
-% $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/input.thsice/check_OceConserve.m,v 1.1 2007/03/01 04:39:40 jmc Exp $
-% $Name:  $
-
 %-- after running mitgcmuv, in ../tr_run.thsice:
 %  1) extract numerical values from ASCII stat-Diag output files:
 %   ( script "extract_StD" & matlab script read_StD.m

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/SHAP_FILT_OPTIONS.h,v 1.7 2011/12/24 01:09:41 jmc Exp $
-C $Name:  $
-
 C CPP options file for pkg SHAP_FILT
 
 #ifndef SHAP_FILT_OPTIONS_H

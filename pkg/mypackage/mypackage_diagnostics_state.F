@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mypackage/mypackage_diagnostics_state.F,v 1.3 2011/08/08 14:55:55 jmc Exp $
-C $Name:  $
-
 #include "MYPACKAGE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

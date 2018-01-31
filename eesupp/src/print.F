@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.35 2013/03/04 17:49:45 utke Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 C--  File printf.F: Routines for performing formatted textual I/O

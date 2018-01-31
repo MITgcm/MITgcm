@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_diagnostics_init.F,v 1.3 2010/01/12 21:31:15 jmc Exp $
-C $Name:  $
-
 #include "GRIDALT_OPTIONS.h"
 
 CBOP

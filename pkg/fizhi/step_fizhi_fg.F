@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_fg.F,v 1.11 2004/10/22 14:52:14 molod Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
        subroutine step_fizhi_fg (myTime, myIter, myThid, dt)
 c-----------------------------------------------------------------------

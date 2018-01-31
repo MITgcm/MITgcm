@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/fizhi_tendency_apply.F,v 1.2 2014/07/09 17:07:07 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
       subroutine fizhi_tendency_apply_u(
      U                        gU_arr,

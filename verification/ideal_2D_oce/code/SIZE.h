@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/ideal_2D_oce/code/SIZE.h,v 1.2 2003/02/05 20:29:37 jmc Exp $
-C $Name:  $
-
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

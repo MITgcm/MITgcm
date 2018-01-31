@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/freesurf_rescale_g.F,v 1.8 2014/08/14 16:49:19 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

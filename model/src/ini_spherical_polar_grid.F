@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.31 2013/02/17 02:27:39 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 #undef USE_BACKWARD_COMPATIBLE_GRID

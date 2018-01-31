@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/vermix/code/SIZE.h,v 1.2 2009/11/10 02:59:14 dfer Exp $
-C $Name:  $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

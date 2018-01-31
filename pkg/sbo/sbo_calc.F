@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_calc.F,v 1.17 2014/05/30 17:10:15 jmc Exp $
-C $Name:  $
-
 #include "SBO_OPTIONS.h"
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"

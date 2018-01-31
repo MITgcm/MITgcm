@@ -1,6 +1,3 @@
-% $Header: /u/gcmpack/MITgcm/verification/advect_xz/input/gendata.m,v 1.2 2011/12/05 22:03:52 jmc Exp $
-% $Name:  $
-
 % This is a matlab script that generates the input data
 prec='real*8';
 ieee='b';

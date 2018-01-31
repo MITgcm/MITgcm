@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/sunos_sparc_sunf90_m64+mpi_generic+mth,v 1.1 2011/09/29 16:26:39 jmc Exp $
-# $Name:  $
-
 #  Build options for the Sun fortran compiler with a generic MPI
 # DON'T FORGET to set environment variable MPI_INC_DIR to the include
 # directory of your MPI implementation

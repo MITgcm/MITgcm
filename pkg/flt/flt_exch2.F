@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_exch2.F,v 1.4 2017/02/11 21:07:13 gforget Exp $
-C $Name:  $
-
 #include "FLT_OPTIONS.h"
 #undef DBUG_EXCH_VEC
 

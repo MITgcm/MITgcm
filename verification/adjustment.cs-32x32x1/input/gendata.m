@@ -1,8 +1,5 @@
 % This is a matlab script that generates the input data
 
-% $Header: /u/gcmpack/MITgcm/verification/adjustment.cs-32x32x1/input/gendata.m,v 1.3 2009/04/18 20:21:17 jmc Exp $
-% $Name:  $
-
 nx=32; ny=nx; nf=6;
 kwr=1;
 

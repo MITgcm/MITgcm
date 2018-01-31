@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/write_utils.F,v 1.1 2009/05/07 18:24:40 jmc Exp $
-C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
 C--  File write_utils.F: Routine for formatted textual I/O to Standard Output

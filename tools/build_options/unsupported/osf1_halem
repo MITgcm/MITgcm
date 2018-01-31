@@ -1,6 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/osf1_halem,v 1.1 2010/02/18 17:03:11 jmc Exp $
 #
 
 #  confirmed on Halem by eh3, 2003-09-03

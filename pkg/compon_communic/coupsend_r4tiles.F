@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/coupsend_r4tiles.F,v 1.3 2015/11/04 17:04:21 jmc Exp $
-C $Name:  $
-
 !=======================================================================
       subroutine coupsend_r4tiles( component, dataname, Nx, Ny, arr )
       implicit none

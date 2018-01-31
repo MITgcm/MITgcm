@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.36 2012/03/27 15:48:27 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
        SUBROUTINE FIZHI_WRAPPER (myTime, myIter, myThid)
 c-----------------------------------------------------------------------

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_summary.F,v 1.11 2014/10/09 21:47:42 gforget Exp $
-C $Name:  $
-
 #include "GRDCHK_OPTIONS.h"
 
       subroutine grdchk_Summary(

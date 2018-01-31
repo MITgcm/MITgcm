@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga4.F,v 1.4 2011/12/22 19:04:45 jmc Exp $
-C $Name:  $
-
 #include "FLT_OPTIONS.h"
 #undef _USE_INTEGERS
 

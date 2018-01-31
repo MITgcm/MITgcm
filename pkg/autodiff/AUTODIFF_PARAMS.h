@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF_PARAMS.h,v 1.9 2014/06/28 22:41:00 gforget Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: AUTODIFF_PARAMS.h
 C     !INTERFACE:

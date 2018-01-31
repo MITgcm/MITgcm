@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.212 2017/03/12 16:34:11 jmc Exp $
-#  $Name:  $
 #
 
 usage()

@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/nasa_ames/test_submit_pleiades,v 1.2 2017/04/21 19:22:23 jmc Exp $
-# $Name:  $
-
 today=`date +%Y%m%d`
 dInWeek=`date +%a`
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_tracer_adjsens/code_ad/ctrl_map_ini_genarr.F,v 1.5 2014/09/09 23:45:45 jmc Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 
 CBOP

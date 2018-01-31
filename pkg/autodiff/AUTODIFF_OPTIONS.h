@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF_OPTIONS.h,v 1.10 2015/07/22 20:54:42 gforget Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: AUTODIFF_OPTIONS.h
 C !INTERFACE:

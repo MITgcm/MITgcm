@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/frazil/FRAZIL.h,v 1.2 2012/03/03 16:04:38 dimitri Exp $
-C $Name:  $
-
 #ifdef ALLOW_FRAZIL
 
 C     FrazilForcingT : frazil temperature forcing, > 0 increases theta [W/m^2]

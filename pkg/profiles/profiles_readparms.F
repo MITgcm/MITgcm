@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_readparms.F,v 1.25 2017/08/09 15:23:36 mlosch Exp $
-C $Name:  $
-
 #include "PROFILES_OPTIONS.h"
 
       subroutine profiles_readparms( myThid )

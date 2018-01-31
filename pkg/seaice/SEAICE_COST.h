@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_COST.h,v 1.5 2014/04/01 22:02:10 atn Exp $
-C $Name:  $
-
 C     /==========================================================\
 C     | SEAICE_COST.h                                            |
 C     | o Sea ice cost terms.                                    |

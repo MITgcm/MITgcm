@@ -2,9 +2,6 @@ function [ncut,icut,xcut,ycut,misfit,xyfit]=clean_bk_line( ...
          nf1,nf2,nc,ydim,yl,dylat,xMid,xx1,xx2,yy2, ...
          savI,savJ,savF,isav,jsav,xsav,nMx6t)
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/clean_bk_line.m,v 1.2 2007/02/05 05:24:33 jmc Exp $
-% $Name:  $
-
 %- define "segments" = continuous part of the line : --> i,x,y_cut(:,1:2,:)
 
 ncut=zeros(6,1); icut=zeros(nc,6,6); xcut=zeros(nc,4,6); ycut=zeros(nc,4,6);

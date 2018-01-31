@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_albedo.F,v 1.2 2007/01/31 23:02:06 dfer Exp $
-C $Name:  $
-
 #include "LAND_OPTIONS.h"
 
 CBOP

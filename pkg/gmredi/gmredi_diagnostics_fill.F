@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_fill.F,v 1.4 2013/06/21 17:23:31 m_bates Exp $
-C $Name:  $
-
 #include "GMREDI_OPTIONS.h"
 
 CStartOfInterface

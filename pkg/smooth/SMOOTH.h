@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/smooth/SMOOTH.h,v 1.6 2014/04/01 08:05:37 atn Exp $
-C $Name:  $
-
 c pkg/smooth constants
 
       integer     smoothprec

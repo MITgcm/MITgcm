@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch0_rx.template,v 1.1 2012/05/14 13:15:05 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 C--  File exch0_rx.template: to replace EXCH routines when using disconnected tiles

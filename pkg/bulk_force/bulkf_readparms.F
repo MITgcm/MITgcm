@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_readparms.F,v 1.8 2017/08/09 15:23:39 mlosch Exp $
-C $Name:  $
-
 #include "BULK_FORCE_OPTIONS.h"
 
       SUBROUTINE BULKF_READPARMS( myThid )

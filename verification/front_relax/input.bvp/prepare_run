@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/front_relax/input.bvp/prepare_run,v 1.1 2011/02/10 23:30:55 jmc Exp $
-#  $Name:  $
- 
 #- in order to save disc space, take files:
 fileList=`(cd ../input.mxl ; ls -1 *.bin )`
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d_nsa.F,v 1.7 2014/04/04 20:54:11 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF

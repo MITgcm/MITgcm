@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/down_slope/DWNSLP_VARS.h,v 1.1 2008/08/17 02:01:27 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_DOWN_SLOPE
 
 C store the location of potential site where Down-Sloping Flow is applied

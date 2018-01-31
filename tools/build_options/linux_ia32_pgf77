@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77,v 1.11 2013/07/22 18:40:45 jmc Exp $
-# $Name:  $
-
 # Build options for portland-group compiler (pgi) on Linux IA32 platform
 
 # Tested on author, pgi 6.1 on faulks (FC 6) using:

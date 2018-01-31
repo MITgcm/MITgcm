@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/cg2d.flow,v 1.5 2012/05/11 23:35:33 jmc Exp $
-C $Name:  $
-
 C----------------------------------------
 C subroutine  cg2d
 C----------------------------------------

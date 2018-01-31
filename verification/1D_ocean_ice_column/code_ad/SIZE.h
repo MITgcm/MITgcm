@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code_ad/SIZE.h,v 1.2 2011/06/23 17:59:16 ifenty Exp $
-C $Name:  $
-
 C
 CBOP
 C    !ROUTINE: SIZE.h

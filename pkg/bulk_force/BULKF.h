@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULKF.h,v 1.7 2007/04/19 21:26:49 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_BULK_FORCE
 C     !ROUTINE: BULKF.h
 C -------------------------------

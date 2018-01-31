@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_ad_check_lev4_dir.h,v 1.5 2014/08/15 19:18:12 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_PTRACERS
 # ifdef AUTODIFF_PTRACERS_SPLIT_FILES
 CADJ STORE pTracer(:,:,:,:,:,1:PTRACERS_num)

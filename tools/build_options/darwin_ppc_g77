@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ppc_g77,v 1.8 2010/12/19 22:42:23 jmc Exp $
-# $Name:  $
-
 # tested on G4-PowerBook, 1GHz
 # cc-compiler is available only with the Apple Developer Tools,
 # so make sure that those are installed

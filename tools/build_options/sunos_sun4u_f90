@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_f90,v 1.1 2008/06/24 12:05:41 mlosch Exp $
-#  $Name:  $  
 #
 # tested on 
 # SunOS rays1.awi.de 5.10 Generic_137111-01 sun4u sparc SUNW,Sun-Fire-880

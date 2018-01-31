@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/PROFILES_SIZE.h,v 1.3 2017/04/03 23:16:38 ou.wang Exp $
-C $Name:  $
-
 C============================================================
 C NOBSGLOB            :: maximum number of profiles per file and tile
 C NFILESPROFMAX       :: maximum number of files

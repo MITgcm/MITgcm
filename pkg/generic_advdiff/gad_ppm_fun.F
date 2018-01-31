@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_ppm_fun.F,v 1.1 2016/03/13 01:44:03 jmc Exp $
-C $Name:  $
-
 #     include "GAD_OPTIONS.h"
 
 C--  File gad_ppm_fun.F: Routines to form PPM grid-cell polynomial.

@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.50 2012/03/27 15:48:27 jmc Exp $
-C $Name:  $
 #include "FIZHI_OPTIONS.h"
 
 C--  File fizhi_turb.F:

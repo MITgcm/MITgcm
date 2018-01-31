@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_alarms.F,v 1.13 2009/04/01 19:55:07 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
       subroutine fizhi_alarms (nymdb,nhmsb,deltaT)
 

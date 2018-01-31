@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_state_final,v 1.17 2013/08/09 18:28:36 jmc Exp $
-#  $Name:  $
-
 #  This file is a template for SVD-type calculations
 #  where a vector-valued cost function (-dependent) is used,
 #  representing the final state (e.g. theta, salt or SST, SSS)

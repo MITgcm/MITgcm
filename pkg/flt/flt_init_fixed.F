@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_init_fixed.F,v 1.7 2017/02/11 21:07:13 gforget Exp $
-C $Name:  $
-
 #include "FLT_OPTIONS.h"
 
       SUBROUTINE FLT_INIT_FIXED( myThid  )

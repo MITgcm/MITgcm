@@ -1,7 +1,4 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/OpenAD/code_ad_singlelayer/CPP_OPTIONS.h,v 1.2 2008/08/21 16:03:22 jmc Exp $
-C $Name:  $
-
 C CPP flags controlling which code in included in the files that
 C will be compiled.
 

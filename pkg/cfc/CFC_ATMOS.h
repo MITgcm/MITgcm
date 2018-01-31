@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/CFC_ATMOS.h,v 1.1 2013/06/10 02:51:08 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: CFC_ATMOS.h
 C     !INTERFACE:

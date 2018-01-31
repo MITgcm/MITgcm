@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor_ad.flow,v 1.9 2016/07/18 16:45:21 jmc Exp $
-C $Name:  $
-
 C----------------------------------------
 C subroutine  MONITOR
 C----------------------------------------

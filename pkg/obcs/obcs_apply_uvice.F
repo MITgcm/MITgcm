@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uvice.F,v 1.17 2012/09/18 20:09:17 jmc Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 #ifdef ALLOW_SEAICE
 #include "SEAICE_OPTIONS.h"

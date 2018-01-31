@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/CPLIDS.h,v 1.3 2006/06/15 23:29:17 jmc Exp $
-C $Name:  $
-
 C     /==========================================================\
 C     | CPLIDS.h Declare symbolic constants holding strings that |
 C     |          are used to identify this component and the     |

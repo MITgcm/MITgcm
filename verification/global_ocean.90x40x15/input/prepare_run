@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/input/prepare_run,v 1.1 2006/07/16 00:10:39 jmc Exp $
-#  $Name:  $
- 
 #- in order to save disc space, take *.bin files
 #- from this dir:
 fromDir="../../tutorial_global_oce_latlon/input"

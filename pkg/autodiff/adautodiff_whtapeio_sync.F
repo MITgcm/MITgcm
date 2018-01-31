@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/adautodiff_whtapeio_sync.F,v 1.2 2011/01/21 22:02:50 gforget Exp $
-C $Name:  $
-
 #include "AUTODIFF_OPTIONS.h"
 #include "MDSIO_OPTIONS.h"
 

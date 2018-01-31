@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.43 2014/04/04 21:39:04 jmc Exp $
-C $Name:  $
-
 #include "GRDCHK_OPTIONS.h"
 #include "AD_CONFIG.h"
 #ifdef ALLOW_COST

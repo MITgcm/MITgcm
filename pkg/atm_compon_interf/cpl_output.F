@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_output.F,v 1.1 2009/06/17 14:53:11 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 CStartOfInterFace

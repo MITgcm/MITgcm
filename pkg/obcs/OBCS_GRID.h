@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_GRID.h,v 1.5 2014/11/25 01:07:23 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_OBCS
 
 CBOP

@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/inverted_barometer/code/DIAGNOSTICS_SIZE.h,v 1.1 2008/10/27 19:54:58 jmc Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

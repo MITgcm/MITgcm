@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.50 2017/12/01 16:21:44 jmc Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getyearlyfieldname.F,v 1.1 2008/01/25 16:02:56 mlosch Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
       subroutine exf_GetYearlyFieldName(
      I     useYearlyFields, twoDigitYear, genperiod, year, genfile,

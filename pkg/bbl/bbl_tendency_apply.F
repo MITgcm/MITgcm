@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_tendency_apply.F,v 1.3 2014/07/09 17:00:49 jmc Exp $
-C $Name:  $
-
 #include "BBL_OPTIONS.h"
 C--  File bbl_tendency_apply.F: Routines to apply BBL tendencies
 C--   Contents

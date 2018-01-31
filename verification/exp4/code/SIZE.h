@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp4/code/SIZE.h,v 1.7 2011/05/02 18:29:35 jmc Exp $
-C $Name:  $
-
 C
 CBOP
 C    !ROUTINE: SIZE.h

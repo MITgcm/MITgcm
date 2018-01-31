@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/CPL_PARAMS.h,v 1.8 2016/01/06 01:05:45 jmc Exp $
-C $Name:  $
-
 #ifdef COMPONENT_MODULE
 C     *==========================================================*
 C     | CPL_PARAMS.h

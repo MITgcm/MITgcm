@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/cfc_example/code/LAYERS_SIZE.h,v 1.1 2013/01/09 00:04:35 jmc Exp $
-C $Name:  $
-
 C ======================================================================
 C * Compiled-in size options for the LAYERS package *
 C

@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tidal_basin_2d/code/SIZE.h,v 1.3 2003/05/15 15:19:02 adcroft Exp $
-C $Name:  $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/inner_do_loop.F,v 1.1 2015/07/03 21:32:49 heimbach Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #include "OPENAD_OPTIONS.h"

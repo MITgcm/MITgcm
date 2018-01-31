@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/arpack_debug.h,v 1.2 2007/10/08 23:45:51 jmc Exp $
-C $Name:  $
-
 c
 c\SCCS Information: @(#)
 c FILE: debug.h   SID: 2.3   DATE OF SID: 11/16/95   RELEASE: 2

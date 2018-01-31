@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor_ad.F,v 1.8 2015/10/25 23:24:20 atn Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"

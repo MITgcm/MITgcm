@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_SIZE.h,v 1.1 2003/06/12 17:54:22 jmc Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | LAND_SIZE.h Declare size of arrays for Land Model
 C     *==========================================================*

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_fields_load.F,v 1.9 2011/04/17 20:50:29 jmc Exp $
-C $Name:  $
-
 #include "AIM_OPTIONS.h"
 
 CStartOfInterface

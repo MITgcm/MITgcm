@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_init_fixed.F,v 1.1 2014/05/28 21:59:32 jmc Exp $
-C $Name:  $
-
 #include "LAND_OPTIONS.h"
 
 CBOP

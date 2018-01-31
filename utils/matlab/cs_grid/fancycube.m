@@ -22,9 +22,6 @@ function [] = fancycube(XX,YY,C,H,r)
 % fancycube(xg,yg,ps,h,0.05/5000);
 %
 % Written by adcroft@.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/fancycube.m,v 1.1 2005/09/15 20:04:56 jmc Exp $
-% $Name:  $
-
 if max(max(max(YY)))-min(min(min(YY))) < 3*pi
  X=tiles(XX*180/pi,1:6);
  Y=tiles(YY*180/pi,1:6);

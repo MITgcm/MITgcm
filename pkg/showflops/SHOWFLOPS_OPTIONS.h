@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/showflops/SHOWFLOPS_OPTIONS.h,v 1.4 2011/12/24 01:09:41 jmc Exp $
-C $Name:  $
-
 C CPP options file for SHOWFLOPS package
 C Use this file for selecting options within the SHOWFLOPS package
 

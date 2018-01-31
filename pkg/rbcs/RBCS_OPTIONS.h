@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/RBCS_OPTIONS.h,v 1.5 2013/12/31 22:24:28 jmc Exp $
-C $Name:  $
-
 C CPP options file for pkg RBCS
 C Use this file for selecting options within package "RBCS"
 

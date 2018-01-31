@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.19 2011/06/24 01:20:49 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
        subroutine step_fizhi_corr (myTime, myIter, myThid, dt)
 c----------------------------------------------------------------------

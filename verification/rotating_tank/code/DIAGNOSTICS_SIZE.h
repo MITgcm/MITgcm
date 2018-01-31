@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/DIAGNOSTICS_SIZE.h,v 1.1 2006/09/03 23:29:19 jmc Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_ad_check_lev1_dir.h,v 1.12 2014/08/30 21:50:35 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_OBCS
 
 #ifdef ALLOW_OBCS_NORTH

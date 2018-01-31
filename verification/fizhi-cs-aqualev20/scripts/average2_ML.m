@@ -1,5 +1,4 @@
 %
-%  $Id: average2_ML.m,v 1.1 2006/04/03 20:55:29 molod Exp $
 %
 %  Ed Hill
 %

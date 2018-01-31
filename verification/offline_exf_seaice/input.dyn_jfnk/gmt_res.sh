@@ -1,6 +1,4 @@
 #!/bin/bash 
-# $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/input.dyn_jfnk/gmt_res.sh,v 1.1 2012/12/11 22:51:32 mlosch Exp $
-# $Name:  $
 # GMT script to plot the development of the residual and the 
 # number of Krylov steps per Newton step
 #

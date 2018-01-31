@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/do_tst_2+2,v 1.22 2016/10/07 17:03:49 jmc Exp $
-# $Name:  $
-
 usage()
 {
         echo "Usage: `basename $0` [OPTIONS]"

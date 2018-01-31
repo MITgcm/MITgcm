@@ -1,5 +1,4 @@
 #
-#  $Header: /u/gcmpack/MITgcm/pkg/regrid/Makefile,v 1.2 2010/05/25 23:30:34 jmc Exp $
 #
 #  A Makefile for REGRID templates
 #

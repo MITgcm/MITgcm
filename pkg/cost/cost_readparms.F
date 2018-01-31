@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.17 2017/08/09 15:23:38 mlosch Exp $
-C $Name:  $
-
 #include "COST_OPTIONS.h"
 
       subroutine cost_readparms( mythid )

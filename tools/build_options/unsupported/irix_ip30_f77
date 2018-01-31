@@ -1,8 +1,4 @@
 #!/bin/bash
-#
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/irix64_ip30_f77,v 1.1
-2004/02/21 14:41:09 dimitri Exp $
-#
 
 S64='$(TOOLSDIR)/set64bitConst.sh'
 %MAKEDEPEND=makedepend

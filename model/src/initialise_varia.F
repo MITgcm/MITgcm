@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.80 2016/08/12 14:48:33 heimbach Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/load_grid_spacing.F,v 1.8 2011/12/12 19:00:10 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_EXCH2

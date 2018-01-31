@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/PP81.h,v 1.1 2004/09/02 09:11:54 mlosch Exp $
-C $Name:  $
-
 #ifdef ALLOW_PP81
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc_stevens.F,v 1.14 2015/01/12 16:06:38 mlosch Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 #undef CHECK_BALANCE
 

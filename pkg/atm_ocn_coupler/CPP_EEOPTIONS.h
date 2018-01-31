@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/CPP_EEOPTIONS.h,v 1.5 2009/09/14 18:24:51 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: CPP_EEOPTIONS.h
 C     !INTERFACE:

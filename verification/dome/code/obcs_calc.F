@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/dome/code/obcs_calc.F,v 1.9 2011/05/24 20:31:33 jmc Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 
       SUBROUTINE OBCS_CALC( futureTime, futureIter,

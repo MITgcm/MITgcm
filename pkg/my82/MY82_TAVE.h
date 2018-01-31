@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/MY82_TAVE.h,v 1.2 2010/01/03 19:10:46 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_MY82
 
 C     *==========================================================*

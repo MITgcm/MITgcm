@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_internal_params.F,v 1.10 2015/10/29 03:41:06 gforget Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
 

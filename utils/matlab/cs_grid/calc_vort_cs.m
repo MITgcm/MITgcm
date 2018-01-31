@@ -8,9 +8,6 @@ function [vort,z6t]=calc_vort_cs(u3d,v3d,dxC,dyC,rAz);
 %   z6t(nc+1,nc+1,*,6) = face splitted.
 %
 % Written by jmc@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/calc_vort_cs.m,v 1.2 2005/10/06 01:16:44 jmc Exp $
-% $Name:  $
-
 dims=size(u3d); nx=dims(1); nc=dims(2); ncp=nc+1; n2p=nc+2; nPg=nx*nc ;
 if nx == 6*nc, flag=1; else flag=0; end
 if size(v3d) ~= dims, flag=0; end

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/forward_step_atm2d.F,v 1.27 2013/05/02 20:37:52 jmc Exp $
-C $Name:  $
-
 #include "ctrparam.h"
 #ifdef OCEAN_3D
 #  include "ATM2D_OPTIONS.h"

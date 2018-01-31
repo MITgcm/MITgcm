@@ -4,9 +4,6 @@ function [] = displaytiles(A)
 % Dimensions of A must be (n,n,6)
 %
 % Written by adcroft@.mit.edu, 2001.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/displaytiles.m,v 1.1 2005/09/15 20:04:56 jmc Exp $
-% $Name:  $
-
 global cmin cmax
 clf
 

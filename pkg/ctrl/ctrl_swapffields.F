@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_swapffields.F,v 1.2 2015/02/14 16:32:46 dgoldberg Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 
 C--  File CTRL_SWAPFFIELDS.F: Routines to swap 2 fields

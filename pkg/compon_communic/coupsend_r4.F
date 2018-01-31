@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/coupsend_r4.F,v 1.3 2015/11/04 17:04:21 jmc Exp $
-C $Name:  $
-
 !=======================================================================
       subroutine coupsend_r4( component, dataname, Nx, Ny, arr )
       implicit none

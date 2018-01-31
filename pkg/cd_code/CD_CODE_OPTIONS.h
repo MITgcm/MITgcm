@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/CD_CODE_OPTIONS.h,v 1.3 2011/12/24 01:04:45 jmc Exp $
-C $Name:  $
-
 C CPP options file for CD_CODE package
 C Use this file for selecting CPP options within the cd_code package
 

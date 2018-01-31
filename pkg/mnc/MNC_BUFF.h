@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_BUFF.h,v 1.1 2005/09/10 18:30:06 edhill Exp $
-C $Name:  $
 C
 
 C     The following is the size of the buffer used by MNC to read and

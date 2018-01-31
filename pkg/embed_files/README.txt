@@ -1,8 +1,4 @@
 
-# $Header: /u/gcmpack/MITgcm/pkg/embed_files/README.txt,v 1.1 2006/01/11 01:38:09 edhill Exp $
-# $Name:  $
-
-
  =================
     EMBED_FILES
  =================

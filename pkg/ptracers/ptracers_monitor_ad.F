@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor_ad.F,v 1.8 2017/12/12 17:43:12 jmc Exp $
-C $Name:  $
-
 #include "PTRACERS_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"

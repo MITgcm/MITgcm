@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_COMMON.h,v 1.3 2008/06/23 20:52:58 utke Exp $
-C $Name:  $
 C
 C     ==========================================
 C     MNC : an MITgcm wrapper package for NetCDF

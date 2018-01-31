@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_relvort3.F,v 1.8 2014/04/04 19:38:23 jmc Exp $
-C $Name:  $
-
 #include "SHAP_FILT_OPTIONS.h"
 #undef CALC_CS_CORNER_EXTENDED
 

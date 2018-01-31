@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_wr_rec_rl.F,v 1.5 2013/01/19 23:47:01 jmc Exp $
-C $Name:  $
-
 #include "MDSIO_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

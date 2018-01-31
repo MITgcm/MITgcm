@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/MAIN_PDIRECTIVES2.h,v 1.7 2005/11/07 18:16:08 cnh Exp $
-C $Name:  $
 CBOP
 C     !ROUTINE: MAIN_PDIRECTIVES2.h
 C     !INTERFACE:

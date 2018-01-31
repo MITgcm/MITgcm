@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CG2D.h,v 1.16 2009/11/23 16:13:57 mlosch Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: CG2D.h
 C     !INTERFACE:

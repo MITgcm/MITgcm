@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CUMULSUM.h,v 1.1 2011/07/09 21:56:55 jmc Exp $
-C $Name:  $
 CBOP
 C     !ROUTINE: CUMULSUM.h
 C     !INTERFACE:

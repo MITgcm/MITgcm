@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/code/DIAGNOSTICS_SIZE.h,v 1.3 2005/05/19 03:53:35 jmc Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

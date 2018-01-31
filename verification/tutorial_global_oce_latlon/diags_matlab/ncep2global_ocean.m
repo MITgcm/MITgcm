@@ -5,9 +5,6 @@ function ncep2global_ocean
 % freshwater flux (E-P only)
 % interpolates the fluxes onto 90x40 grid of global_ocean.90x40x15
 %
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/ncep2global_ocean.m,v 1.3 2006/08/12 20:25:13 jmc Exp $
-% $Name:  $
-
 % constants
   ql_evap = 2.5e6; % latent heat due to evaporation
   rho_fresh = 1000; % density of fresh water

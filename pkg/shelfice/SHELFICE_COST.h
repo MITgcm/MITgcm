@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/SHELFICE_COST.h,v 1.3 2012/01/06 09:33:59 mlosch Exp $
-C $Name:  $
-
 #ifdef ALLOW_SHELFICE
 
 CBOP

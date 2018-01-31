@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_cost_init_varia.F,v 1.1 2013/03/30 01:23:58 heimbach Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 
       subroutine thsice_cost_init_varia( mythid )

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_output.F,v 1.4 2017/03/24 23:38:56 jmc Exp $
-C $Name:  $
-
 #include "MY82_OPTIONS.h"
 
 CBOP

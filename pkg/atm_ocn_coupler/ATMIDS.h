@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/ATMIDS.h,v 1.4 2015/11/12 00:43:34 jmc Exp $
-C $Name:  $
-
   These lines are here to deliberately cause a compile-time error.
   If you see these lines in your .F files or the compiler shows them
     as an error then it means you have not placed your coupler

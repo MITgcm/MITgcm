@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.16 2014/01/06 14:53:34 mlosch Exp $
-C $Name:  $
-
 #include "AIM_OPTIONS.h"
 
 CBOP

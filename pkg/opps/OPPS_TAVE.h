@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/OPPS_TAVE.h,v 1.2 2010/01/03 19:15:31 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_OPPS
 
 C     *==========================================================*

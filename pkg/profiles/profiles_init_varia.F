@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_init_varia.F,v 1.10 2017/04/03 23:16:38 ou.wang Exp $
-C $Name:  $
-
 #include "PROFILES_OPTIONS.h"
 
       subroutine profiles_init_varia( mythid )

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_varia.F,v 1.9 2015/03/23 21:04:59 gforget Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 
       subroutine seaice_cost_init_varia( mythid )

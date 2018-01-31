@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eesupp.flow,v 1.15 2014/07/15 22:00:28 jmc Exp $
-C $Name:  $
-
 C---------------------------------------------------------------
 C Subroutine barrier is difficult to handle,
 C it is required but it does not compute values.

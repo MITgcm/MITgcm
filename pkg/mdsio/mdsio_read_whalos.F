@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_read_whalos.F,v 1.8 2016/09/21 01:52:20 heimbach Exp $
-C $Name:  $
-
 #include "MDSIO_OPTIONS.h"
 
 CBOP

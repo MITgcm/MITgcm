@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_hfacz.F,v 1.10 2014/10/23 15:57:36 jmc Exp $
-C $Name:  $
-
 #include "MOM_COMMON_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"

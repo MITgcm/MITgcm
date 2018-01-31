@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.24 2015/10/29 03:41:06 gforget Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
 

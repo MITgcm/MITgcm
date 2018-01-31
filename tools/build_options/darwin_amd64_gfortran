@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_amd64_gfortran,v 1.5 2015/02/21 02:05:05 mlosch Exp $
-# $Name:  $
-
 # tested on MacBook Pro with Snow Leopard & Snow Lion
 # ==> need to update folowing comments:
 # on 20-Nov-2009

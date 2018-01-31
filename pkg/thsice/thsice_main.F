@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.41 2015/11/20 22:58:54 jmc Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_EXF

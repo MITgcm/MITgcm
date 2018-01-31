@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/ctrparam.h,v 1.4 2010/08/24 13:52:54 jmc Exp $
-C $Name:  $
-
 C ==================================================
 C
 C ctrparam.h

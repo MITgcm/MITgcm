@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_g77,v 1.9 2013/09/23 23:36:05 jmc Exp $
-#  $Name:  $
 #
 # Build options for g77 compiler (compat-gcc-34-g77) on Linux AMD64 platform
 #  Tested on Linux 2.4.21-102-smp (x86_64),

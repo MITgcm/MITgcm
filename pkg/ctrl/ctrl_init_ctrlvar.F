@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_ctrlvar.F,v 1.13 2012/08/10 19:38:57 jmc Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 #include "AD_CONFIG.h"
 

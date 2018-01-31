@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_init_varia.F,v 1.8 2015/02/21 20:10:08 jmc Exp $
-C $Name:  $
-
 #include "GGL90_OPTIONS.h"
 
 CBOP

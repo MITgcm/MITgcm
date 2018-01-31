@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_gencost_seaicev4.F,v 1.20 2017/04/03 23:16:38 ou.wang Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
       subroutine cost_gencost_seaicev4(mythid)

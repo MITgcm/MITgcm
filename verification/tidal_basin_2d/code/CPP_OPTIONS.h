@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tidal_basin_2d/code/CPP_OPTIONS.h,v 1.6 2014/07/11 18:58:17 jmc Exp $
-C $Name:  $
-
 #ifndef CPP_OPTIONS_H
 #define CPP_OPTIONS_H
 

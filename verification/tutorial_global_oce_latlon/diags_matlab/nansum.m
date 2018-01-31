@@ -8,11 +8,7 @@ function y = nansum(x)
 %    See also NANMEDIAN, NANSTD, NANMIN, NANMAX, NANMEAN.
 
 %   Copyright 1993-2000 The MathWorks, Inc. 
-%   $Revision: 1.3 $  $Date: 2006/08/12 20:25:13 $
 %
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/nansum.m,v 1.3 2006/08/12 20:25:13 jmc Exp $
-% $Name:  $
-
 % Replace NaNs with zeros.
 nans = isnan(x);
 i = find(nans);

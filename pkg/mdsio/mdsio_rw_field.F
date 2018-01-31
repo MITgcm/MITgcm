@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_rw_field.F,v 1.4 2009/09/01 19:20:40 jmc Exp $
-C $Name:  $
-
 #include "MDSIO_OPTIONS.h"
 
 C--  File mdsio_rw_field.F: old version of MDSIO READ/WRITE FIELD S/R with

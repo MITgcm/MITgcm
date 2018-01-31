@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_write_pickup.F,v 1.3 2016/05/23 13:09:31 jmc Exp $
-C $Name:  $
-
 #include "GCHEM_OPTIONS.h"
 #ifdef ALLOW_DARWIN
 #include "DARWIN_OPTIONS.h"

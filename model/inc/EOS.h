@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/EOS.h,v 1.5 2011/07/19 12:53:23 mlosch Exp $
-C $Name:  $
 CBOP
 C    !ROUTINE: EOS.h
 C    !INTERFACE:

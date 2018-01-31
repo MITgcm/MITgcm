@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/short_surf_wave/code/SIZE.h,v 1.2 2010/01/23 20:19:04 jmc Exp $
-C $Name:  $
-
 CBOP
 C    !ROUTINE: SIZE.h
 C    !INTERFACE:

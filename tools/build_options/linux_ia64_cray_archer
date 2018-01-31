@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_cray_archer,v 1.5 2017/09/19 17:03:16 dfer Exp $
-# $Name:  $
-
 # To be used with the suite of cray compilers (PrgEnv-cray).
 # To get netcdf, add:
 # module load cray-hdf5-parallel/1.10.0.1

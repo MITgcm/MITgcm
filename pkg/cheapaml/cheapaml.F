@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml.F,v 1.30 2017/06/27 15:01:50 bderembl Exp $
-C $Name:  $
-
 #include "CHEAPAML_OPTIONS.h"
 
       SUBROUTINE CHEAPAML(

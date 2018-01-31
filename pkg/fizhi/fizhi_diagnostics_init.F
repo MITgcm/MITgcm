@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_diagnostics_init.F,v 1.13 2010/01/12 21:31:15 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
 
 CBOP

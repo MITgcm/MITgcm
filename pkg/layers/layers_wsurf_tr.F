@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_wsurf_tr.F,v 1.1 2015/06/03 17:29:37 rpa Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 #include "LAYERS_OPTIONS.h"
 

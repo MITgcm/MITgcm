@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/1D_ocean_ice_column/code/DIAGNOSTICS_SIZE.h,v 1.1 2011/03/28 15:50:50 ifenty Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

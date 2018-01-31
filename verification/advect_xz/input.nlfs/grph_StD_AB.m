@@ -8,9 +8,6 @@
 alphAB=0.6; %- Adams-bashforth parameter (= 0.5+abEps )
 alphAB=0.;
 
-% $Header: /u/gcmpack/MITgcm/verification/advect_xz/input.nlfs/grph_StD_AB.m,v 1.1 2011/12/06 18:56:16 jmc Exp $
-% $Name:  $
-
 nItMx=1e10*ones(1,Nexp); %nItMx(3)=11;
 nItMx=2400*ones(1,Nexp);
 namLg=namA ; namLg=strrep(namLg,'_','\_');

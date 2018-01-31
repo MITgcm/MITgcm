@@ -1,8 +1,4 @@
 #  -*- mode: text -*-
-#  $Id: README,v 1.1 2005/10/21 18:09:54 edhill Exp $
-#  $Name:  $
-
-
    =======   gmt:  General MITgcm Tiles/Topologies   =======
 
 This directory contains MatLAB and shell utilities for post-processing

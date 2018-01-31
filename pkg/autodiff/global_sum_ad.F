@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_sum_ad.F,v 1.11 2010/04/27 19:27:54 jmc Exp $
-C $Name:  $
-
 #include "AUTODIFF_OPTIONS.h"
 
 C--   File global_adsum.F: Routines that perform adjoint of

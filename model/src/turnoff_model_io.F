@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/turnoff_model_io.F,v 1.8 2017/04/04 23:21:46 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_dic_adjoffline/code_ad/DIC_OPTIONS.h,v 1.5 2016/01/11 22:43:00 jmc Exp $
-C $Name:  $
-
 #ifndef DIC_OPTIONS_H
 #define DIC_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

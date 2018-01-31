@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_cycle_ebl.F,v 1.5 2004/03/27 03:51:51 edhill Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 CBOP

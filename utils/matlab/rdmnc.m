@@ -30,9 +30,6 @@ function [S] = rdmnc(varargin)
 %  Author:  Alistair Adcroft
 %  Modifications:  Daniel Enderton
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.27 2013/02/12 21:54:01 jmc Exp $
-% $Name:  $
-
 % Initializations
 dBug=0;
 file={};

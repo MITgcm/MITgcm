@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_diagnostics_init.F,v 1.22 2015/09/24 21:31:35 dfer Exp $
-C $Name:  $
-
 #include "GMREDI_OPTIONS.h"
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep_tracer.F,v 1.18 2014/08/08 19:55:52 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

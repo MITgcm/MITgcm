@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_atmos.F,v 1.20 2016/01/11 21:46:55 jmc Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
 

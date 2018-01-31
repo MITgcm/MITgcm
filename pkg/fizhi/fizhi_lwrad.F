@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.26 2010/03/16 00:19:33 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
       subroutine lwrio (nymd,nhms,bi,bj,myid,istrip,npcs,
      .                  low_level,mid_level,

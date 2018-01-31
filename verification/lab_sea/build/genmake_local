@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/verification/lab_sea/build/genmake_local,v 1.12 2015/09/08 17:58:12 jmc Exp $
-
 #-- This is the local options file for the "new" version of genmake
 
 AD_OPTFILE='../../../tools/adjoint_options/adjoint_diva'

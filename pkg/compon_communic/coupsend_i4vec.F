@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/coupsend_i4vec.F,v 1.1 2015/11/04 17:06:54 jmc Exp $
-C $Name:  $
-
 !=======================================================================
       subroutine coupsend_i4vec( component, dataname, length, vecFld )
       implicit none

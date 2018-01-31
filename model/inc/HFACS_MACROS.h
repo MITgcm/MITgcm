@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/HFACS_MACROS.h,v 1.4 2006/06/07 01:55:12 heimbach Exp $
-C $Name:  $
 C
 CBOP
 C    !ROUTINE: HFACS_MACROS.h

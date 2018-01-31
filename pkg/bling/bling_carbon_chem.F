@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_carbon_chem.F,v 1.4 2018/01/10 19:36:03 mmazloff Exp $
-C $Name:  $
-
 #include "BLING_OPTIONS.h"
 
 C--  File bling_carbon_chem.F:

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/offline/offline_fields_load.F,v 1.26 2015/07/18 21:47:08 jmc Exp $
-C $Name:  $
-
 #include "OFFLINE_OPTIONS.h"
 
 CBOP

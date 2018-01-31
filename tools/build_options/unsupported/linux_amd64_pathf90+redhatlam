@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_amd64_pathf90+redhatlam,v 1.1 2017/06/29 00:09:43 jmc Exp $
-#  $Name:  $
 #
 # Build options for Fedore Core 3 x86-64 Opteron with the Fedore LAM version
 # tested on (Linux batsi 2.6.10-1.766_FC3smp #1 SMP Wed Feb 9 23:17:48 EST 2005 x86_64 x86_64 x86_64 GNU/Linux) system 20051802

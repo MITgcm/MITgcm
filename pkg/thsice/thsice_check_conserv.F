@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check_conserv.F,v 1.5 2013/05/02 20:01:21 jmc Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 
 C     !ROUTINE: THSICE_CHECK_CONSERV

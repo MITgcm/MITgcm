@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/frazil/frazil_diagnostics_init.F,v 1.4 2013/05/08 18:01:40 jmc Exp $
-C $Name:  $
-
 #include "FRAZIL_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

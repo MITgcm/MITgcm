@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/BAR2.h,v 1.4 2004/03/27 03:51:50 edhill Exp $
-C $Name:  $
 C
 CBOP
 C     !ROUTINE: BAR2.h

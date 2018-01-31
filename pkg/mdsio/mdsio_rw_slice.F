@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_rw_slice.F,v 1.1 2009/09/01 19:19:10 jmc Exp $
-C $Name:  $
-
 #include "MDSIO_OPTIONS.h"
 
 C--  File mdsio_rw_slice.F: old version of MDS_READ/WRITE_SEC_XZ/YZ S/R with

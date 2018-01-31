@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/SIZE.h,v 1.7 2009/05/17 22:25:34 jmc Exp $
-C $Name:  $
 C
 CBOP
 C    !ROUTINE: SIZE.h

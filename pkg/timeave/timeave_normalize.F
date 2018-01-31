@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_normalize.F,v 1.1 2009/12/28 01:03:17 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 CBOP 0

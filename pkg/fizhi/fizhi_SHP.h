@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_SHP.h,v 1.1 2006/02/17 16:04:00 molod Exp $
-C $Name:  $
-
-
 C The physics state uses the dynamics dimensions in the horizontal
 C     and the land dimensions in the horizontal for turbulence variables
 c

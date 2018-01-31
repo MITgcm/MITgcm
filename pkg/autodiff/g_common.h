@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/g_common.h,v 1.26 2017/12/02 16:42:58 jmc Exp $
-C $Name:  $
-
 C--   These common blocks are extracted from the
 C--   automatically created tangent linear code.
 C--   You need to make sure that they are up-to-date

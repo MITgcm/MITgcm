@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_init_varia.F,v 1.28 2015/03/23 21:12:54 gforget Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 #include "AD_CONFIG.h"
 

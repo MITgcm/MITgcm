@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_zenithangle_table.F,v 1.5 2013/04/02 13:05:55 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 
       SUBROUTINE EXF_ZENITHANGLE_TABLE( myThid )

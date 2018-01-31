@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_daysformonth.F,v 1.3 2012/04/19 19:43:31 heimbach Exp $
-C $Name:  $
-
 #include "CAL_OPTIONS.h"
 
       subroutine cal_DaysForMonth( 

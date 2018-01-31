@@ -15,8 +15,6 @@ function [vDy,klev,dpD]=fromPhys2Dyn(vPh,dpP,inpPres,delR);
 % [vDy,klev]=fromPhys2Dyn(vPh,dpP,Dp,delR);
 %- next calls:
 % [vDy]=fromPhys2Dyn(vPh,dpP,klev);
-% $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/matlab/fromPhys2Dyn.m,v 1.1 2005/07/07 23:51:52 jmc Exp $
-
 if nargin < 4,
  first=0;
  klev=inpPres;

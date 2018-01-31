@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/GMREDI_OPTIONS.h,v 1.4 2003/10/26 21:26:56 heimbach Exp $
-C $Name:  $
-
 C CPP options file for GM/Redi package
 C
 C Use this file for selecting options within the GM/Redi package

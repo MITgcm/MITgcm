@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/input/prepare_run,v 1.5 2012/03/11 21:53:06 jmc Exp $
-#  $Name:  $
- 
 #- in order to save disc space, take *.bin files
 #- from this dir:
 fromDir="../../fizhi-cs-32x32x40/input"

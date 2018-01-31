@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_cost_driver.F,v 1.2 2013/04/13 23:14:43 heimbach Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 
       subroutine thsice_cost_driver( mytime, myiter, mythid )

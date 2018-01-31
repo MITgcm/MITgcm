@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_seg8torl.F,v 1.2 2009/09/01 18:55:05 jmc Exp $
-C $Name:  $
-
 #include "MDSIO_OPTIONS.h"
 
       SUBROUTINE MDS_SEG8toRL( j,bi,bj,k,nNz, seg, copyTo, arr )

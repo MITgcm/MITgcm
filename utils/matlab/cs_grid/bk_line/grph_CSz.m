@@ -13,9 +13,6 @@ function grph_CSz(var,xcs,ycs,xcg,ycg,c1,c2,shift,cbV,AxBx,kEnv)
 % AxBx = do axis(AxBx) to zoom in Box "AxBx" ; only if shift=-1 ;
 %-----------------------
 % Written by jmc@ocean.mit.edu, 2005.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/grph_CSz.m,v 1.6 2008/05/31 20:47:09 jmc Exp $
-% $Name:  $
-
 %- small number (relative to lon,lat in degree)
 epsil=1.e-6;
 %- mid-longitude of the grid (truncated @ epsil level):

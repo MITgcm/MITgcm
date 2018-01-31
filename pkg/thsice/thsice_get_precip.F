@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_precip.F,v 1.4 2013/06/11 01:48:22 jmc Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 #ifdef ALLOW_BULK_FORCE
 # include "BULK_FORCE_OPTIONS.h"

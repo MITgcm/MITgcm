@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/utils/scripts/gluemnc,v 1.16 2011/11/10 14:26:16 mlosch Exp $
-# $Name:  $
-
 # This is a shell script to combine multiple MITgcm mnc output files from
 # different tiles into one global file.
 # All of the variables should be in one directory, where this script is run.

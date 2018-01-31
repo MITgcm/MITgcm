@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_gen.F,v 1.39 2017/02/21 01:04:26 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 
 C--  File exf_set_gen.F: General routines to load-in an input field

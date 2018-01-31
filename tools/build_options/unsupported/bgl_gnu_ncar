@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/bgl_gnu_ncar,v 1.1 2017/06/29 00:09:43 jmc Exp $
-# $Name:  $
-
 #  tested on frost, ce107 Aug 5 2005, will work when IBM/NCAR provides an MPI library for g77
 #  using the following invocation:
 #    ../../../tools/genmake2 -mods=../code -of=../../../tools/build_options/bgl_gnu_ncar

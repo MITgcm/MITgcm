@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_fluxcalc.F,v 1.17 2015/06/15 21:34:07 jmc Exp $
-C $Name:  $
-
 #include "LAYERS_OPTIONS.h"
 #ifdef ALLOW_GMREDI
 #include "GMREDI_OPTIONS.h"

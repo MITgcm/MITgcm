@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/matrix/MATRIX.h,v 1.4 2011/08/26 19:46:59 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_MATRIX
 
       INTEGER expMatrixCounter(nSx,nSy), impMatrixCounter(nSx,nSy)

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_init_varia.F,v 1.16 2017/10/12 15:40:07 jmc Exp $
-C $Name:  $
-
 #include "CHEAPAML_OPTIONS.h"
 
 CBOP

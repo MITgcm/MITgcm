@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_xy/code/ini_salt.F,v 1.4 2013/12/16 18:53:06 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

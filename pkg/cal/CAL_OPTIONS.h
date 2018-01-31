@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/CAL_OPTIONS.h,v 1.5 2012/08/08 20:11:32 jmc Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: CAL_OPTIONS.h
 C !INTERFACE:

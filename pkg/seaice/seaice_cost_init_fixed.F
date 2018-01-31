@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_init_fixed.F,v 1.7 2015/03/23 21:04:59 gforget Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 #include "AD_CONFIG.h"
 

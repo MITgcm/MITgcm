@@ -1,7 +1,5 @@
 #! /usr/bin/env sh
 #
-# $Header: /u/gcmpack/MITgcm/tools/xmakedepend,v 1.13 2016/12/30 23:56:52 jmc Exp $
-# $Name:  $
 #
 # $TOG: mdepend.cpp /main/13 1997/06/20 21:12:18 kaleb $
 #

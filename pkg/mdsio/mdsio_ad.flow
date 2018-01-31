@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_ad.flow,v 1.12 2015/11/19 20:27:00 gforget Exp $
-C $Name:  $
-
 C----------------------------------------
 C subroutine mds_read_field
 C----------------------------------------

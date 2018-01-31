@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_cost_export.F,v 1.5 2012/03/06 16:45:20 jmc Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 
       subroutine seaice_cost_export( myThid )

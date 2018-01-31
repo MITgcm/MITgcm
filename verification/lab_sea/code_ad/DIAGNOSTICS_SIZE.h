@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code_ad/DIAGNOSTICS_SIZE.h,v 1.1 2006/12/15 18:11:58 heimbach Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

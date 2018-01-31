@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_cg2d.F,v 1.6 2014/11/18 23:53:04 jmc Exp $
-C $Name:  $
-
 #include "DIAG_OPTIONS.h"
 #undef DEBUG_DIAG_CG2D
 

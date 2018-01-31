@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/read_mflds.F,v 1.10 2014/03/30 16:21:52 jmc Exp $
-C $Name:  $
-
 #include "RW_OPTIONS.h"
 
 C--  File read_mflds.F: Routines to handle reading Multi-Fields File (+ meta file)

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_check.F,v 1.3 2013/08/27 21:34:21 dimitri Exp $
-C $Name:  $
-
 #include "BBL_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/sp4+mpi_jump,v 1.1 2017/06/29 00:09:43 jmc Exp $
-# $Name:  $
-
 #  tested on jump.fz-juelich.de, mlosch
 #  uname -a: AIX j36 3 5 00223C3B4C00
 #  using the following invocation:

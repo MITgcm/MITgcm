@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.31 2012/03/22 14:22:32 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
 
 C--  File fizhi_clockstuff.F:

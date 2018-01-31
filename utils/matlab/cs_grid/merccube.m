@@ -25,9 +25,6 @@ function [] = merccube(XX,YY,C)
 % mercube(xc,yc,ps);shading interp
 %
 % Written by adcroft@.mit.edu, 2004.
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/merccube.m,v 1.2 2005/11/21 21:57:31 enderton Exp $
-% $Name:  $
-
 if max(max(max(YY)))-min(min(min(YY))) < 3*pi
  X=XX*180/pi;
  Y=YY*180/pi;

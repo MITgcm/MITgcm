@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/global_max_ad.F,v 1.5 2012/09/06 14:49:45 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 C--   File global_max.F: Routines that perform global max reduction on an array

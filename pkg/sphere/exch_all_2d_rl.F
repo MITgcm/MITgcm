@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sphere/exch_all_2d_rl.F,v 1.3 2012/09/06 14:55:39 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
       subroutine exch_allgather_2d_rl(

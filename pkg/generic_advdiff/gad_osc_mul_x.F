@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_osc_mul_x.F,v 1.1 2016/03/13 01:44:02 jmc Exp $
-C $Name:  $
-
 #     include "GAD_OPTIONS.h"
 
       SUBROUTINE GAD_OSC_MUL_X(ix,hh,mask,ohat,scal)

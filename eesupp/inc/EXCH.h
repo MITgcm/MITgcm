@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EXCH.h,v 1.7 2010/03/16 00:02:33 jmc Exp $
-C $Name:  $
 C
 CBOP
 C     !ROUTINE: EXCH.h

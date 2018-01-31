@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/MDSIO_OPTIONS.h,v 1.11 2014/04/04 19:53:23 jmc Exp $
-C $Name:  $
-
 #ifndef MDSIO_OPTIONS_H
 #define MDSIO_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

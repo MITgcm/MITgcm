@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_interp.F,v 1.38 2017/06/15 23:10:30 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

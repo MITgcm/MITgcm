@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/halfpipe_streamice/code_oad/STREAMICE_OPTIONS.h,v 1.2 2015/02/21 19:56:50 dgoldberg Exp $
-C $Name:  $
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C CPP options file for MYPACKAGE

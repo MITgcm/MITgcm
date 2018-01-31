@@ -1,8 +1,5 @@
 function [x3b,xPA,yPA,xAI,yAI,xIP,yIP]=line_sep(yIn);
 
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/line_sep.m,v 1.2 2014/09/26 22:58:36 jmc Exp $
-% $Name:  $
-
 %- Realistic continents, check that it works at cs32 resolution
 %-sep. line Pac - Atl (y increasing order):
  xPA=[ -70  -59  -70  -70  -62  -90 -104 -104  -88];

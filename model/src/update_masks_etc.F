@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_masks_etc.F,v 1.11 2017/04/04 23:22:38 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF

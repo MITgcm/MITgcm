@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.61 2016/09/12 19:59:10 mmazloff Exp $
-C $Name:  $
 c
 c     store directives for checkpoint level 4
 c

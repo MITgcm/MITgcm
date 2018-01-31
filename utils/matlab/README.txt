@@ -1,6 +1,3 @@
-% $Header: /u/gcmpack/MITgcm/utils/matlab/README.txt,v 1.4 2017/02/07 17:02:10 dimitri Exp $
-% $Name:  $
-
 The following utilities are available in this directory:
 
   cm_landwater.m            :: creates colormap for plotting bathymetry/orography

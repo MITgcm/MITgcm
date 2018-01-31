@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.38 2016/01/15 18:36:15 jmc Exp $
-#  $Name:  $
-
 #  This AD option-file contains the default settings for the adjoint
 #  and tangent-linear compilers.  If you need to change these settings,
 #  please make a separate (local) copy of this file.

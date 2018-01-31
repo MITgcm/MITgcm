@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/check_pickup.F,v 1.6 2015/01/20 20:46:55 jmc Exp $
-C $Name:  $
-
 c#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_PARAMS.h,v 1.16 2006/11/05 18:36:06 edhill Exp $
-C $Name:  $
 C
 
 CBOP

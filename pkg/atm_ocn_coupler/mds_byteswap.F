@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/mds_byteswap.F,v 1.4 2010/08/24 13:40:38 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 C--  File mds_byteswap.F: Routines to do IO byte swapping

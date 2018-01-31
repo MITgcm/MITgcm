@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_cost_test.F,v 1.3 2013/06/01 15:48:13 heimbach Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 
       subroutine thsice_cost_test( mytime, myiter, mythid )

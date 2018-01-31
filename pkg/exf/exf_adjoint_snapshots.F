@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots.F,v 1.4 2007/10/09 00:04:05 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 
       subroutine EXF_ADJOINT_SNAPSHOTS( iwhen, mytime, myiter, myThid )

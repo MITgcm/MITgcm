@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_readparms.F,v 1.10 2017/08/09 15:23:37 mlosch Exp $
-C $Name:  $
-
 #include "FLT_OPTIONS.h"
 
       SUBROUTINE FLT_READPARMS( myThid  )

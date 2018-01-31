@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_deep_convection/code/DIAGNOSTICS_SIZE.h,v 1.1 2008/04/23 23:24:22 jmc Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

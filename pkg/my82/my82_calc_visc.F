@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc_visc.F,v 1.4 2009/10/08 20:07:53 jmc Exp $
-C $Name:  $
 #include "MY82_OPTIONS.h"
 
       SUBROUTINE MY82_CALC_VISC(

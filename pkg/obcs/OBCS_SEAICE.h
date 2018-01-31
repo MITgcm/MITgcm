@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/OBCS_SEAICE.h,v 1.4 2012/11/15 15:55:42 dimitri Exp $
-C $Name:  $
-
 #ifdef ALLOW_OBCS
 
 CBOP

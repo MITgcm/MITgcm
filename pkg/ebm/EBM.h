@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/EBM.h,v 1.6 2012/02/16 02:30:34 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: EBM.h
 C     !INTERFACE:

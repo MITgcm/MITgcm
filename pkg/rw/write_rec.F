@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rw/write_rec.F,v 1.5 2010/10/25 18:39:50 jmc Exp $
-C $Name:  $
 #include "RW_OPTIONS.h"
 
 C--  File read_write_rec.F: Routines to handle mid-level I/O interface.

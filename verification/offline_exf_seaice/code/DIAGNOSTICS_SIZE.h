@@ -1,7 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/code/DIAGNOSTICS_SIZE.h,v 1.2 2012/12/08 00:34:29 jmc Exp $
-C $Name:  $
-
-
 C     Diagnostics Array Dimension
 C     ---------------------------
 C     ndiagMax   :: maximum total number of available diagnostics

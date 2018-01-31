@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_init_fixed.F,v 1.4 2012/08/12 18:29:25 jmc Exp $
-C $Name:  $
-
 #include "ADMTLM_OPTIONS.h"
 
       subroutine admtlm_init_fixed( myThid )

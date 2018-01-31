@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_surf_dr.F,v 1.8 2012/11/15 15:55:42 dimitri Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.64 2016/09/17 17:00:05 mmazloff Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_ocn_coupler/CPL_MAP2GRIDS.h,v 1.4 2013/12/02 22:03:09 jmc Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | CPL_MAP2GRIDS.h
 C     |   Declare arrays used for mapping coupling fields from

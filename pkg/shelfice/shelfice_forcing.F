@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shelfice/shelfice_forcing.F,v 1.6 2015/04/22 13:12:19 dgoldberg Exp $
-C $Name:  $
-
 #include "SHELFICE_OPTIONS.h"
 
 C--  File shelfice_forcing.F:

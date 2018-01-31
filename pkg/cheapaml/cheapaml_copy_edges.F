@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cheapaml/cheapaml_copy_edges.F,v 1.1 2013/02/18 21:17:11 jmc Exp $
-C $Name:  $
-
 #include "CHEAPAML_OPTIONS.h"
 
 CBOP

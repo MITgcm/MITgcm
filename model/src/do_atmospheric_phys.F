@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_atmospheric_phys.F,v 1.13 2014/09/04 22:30:46 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_shtorh.F,v 1.4 2006/06/22 01:25:02 jmc Exp $
-C $Name:  $
-
 #include "AIM_OPTIONS.h"
 
       SUBROUTINE SHTORH (IMODE,NGP,TA,PS,SIG,QA,RH,QSAT,myThid)

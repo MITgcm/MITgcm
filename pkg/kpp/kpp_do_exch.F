@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_do_exch.F,v 1.4 2014/09/11 19:22:24 jmc Exp $
-C $Name:  $
-
 #include "KPP_OPTIONS.h"
 
 CBOP

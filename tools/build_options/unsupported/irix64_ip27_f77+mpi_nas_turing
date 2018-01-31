@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/irix64_ip27_f77+mpi_nas_turing,v 1.1 2017/06/29 00:09:43 jmc Exp $
-# $Name:  $
-
 # adapted for compilation on turing.nas.nasa.gov
 # and execute on turing, lomax, chapman
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/CTRL_FIELDS.h,v 1.1 2014/04/26 19:20:43 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: CTRL_FIELDS.h
 C     !INTERFACE:

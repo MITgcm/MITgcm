@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ECCO_OPTIONS.h,v 1.3 2016/09/21 19:15:49 gforget Exp $
-C $Name:  $
-
 CBOP
 C !ROUTINE: ECCO_OPTIONS.h
 C !INTERFACE:

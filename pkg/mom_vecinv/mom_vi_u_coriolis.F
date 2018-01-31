@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_coriolis.F,v 1.14 2017/04/28 17:17:14 mlosch Exp $
-C $Name:  $
-
 #include "MOM_VECINV_OPTIONS.h"
 
 CBOP

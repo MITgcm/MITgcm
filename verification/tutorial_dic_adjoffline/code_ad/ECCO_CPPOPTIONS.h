@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/tutorial_dic_adjoffline/code_ad/ECCO_CPPOPTIONS.h,v 1.4 2014/10/16 20:09:32 gforget Exp $
-C $Name:  $
-
 #ifndef ECCO_CPPOPTIONS_H
 #define ECCO_CPPOPTIONS_H
 

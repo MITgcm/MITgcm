@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_readparms.F,v 1.14 2017/11/15 23:34:31 jmc Exp $
-C $Name:  $
-
 #include "RBCS_OPTIONS.h"
 
 CBOP

@@ -4,9 +4,6 @@
 % sq(A,val1)       val1 -> NaN
 % sq(A,val1,val2)  val1 -> val2
 
-% $Header: /u/gcmpack/MITgcm/verification/tutorial_global_oce_latlon/diags_matlab/sq.m,v 1.3 2006/08/12 20:25:13 jmc Exp $
-% $Name:  $
-
 function [A] = sq(B,varargin);
 A=squeeze(B);
 if nargin>=2

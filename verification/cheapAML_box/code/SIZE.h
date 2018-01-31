@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/cheapAML_box/code/SIZE.h,v 1.2 2012/12/26 02:57:26 jmc Exp $
-C $Name:  $
-
 CBOP
 C    !ROUTINE: SIZE.h
 C    !INTERFACE:

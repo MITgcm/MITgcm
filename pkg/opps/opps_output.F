@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_output.F,v 1.3 2017/03/24 23:38:57 jmc Exp $
-C $Name:  $
-
 #include "OPPS_OPTIONS.h"
 
 CBOP

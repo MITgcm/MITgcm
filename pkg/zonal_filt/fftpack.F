@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/fftpack.F,v 1.7 2003/12/24 00:27:53 jmc Exp $
-C $Name:  $
-
 #include "ZONAL_FILT_OPTIONS.h"
 
 C     SUBROUTINE RFFTB (N,R,WSAVE)

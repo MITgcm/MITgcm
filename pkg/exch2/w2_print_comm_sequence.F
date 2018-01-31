@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_print_comm_sequence.F,v 1.11 2012/09/04 00:45:25 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 #undef W2_PRINT_PREFIX
 

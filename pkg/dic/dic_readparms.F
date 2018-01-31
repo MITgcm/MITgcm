@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_readparms.F,v 1.16 2017/08/09 15:23:38 mlosch Exp $
-C $Name:  $
-
 #include "DIC_OPTIONS.h"
 
 CBOP

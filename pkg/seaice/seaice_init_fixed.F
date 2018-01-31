@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_init_fixed.F,v 1.30 2014/08/23 20:22:16 torge Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 
 CStartOfInterface

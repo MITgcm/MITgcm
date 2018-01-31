@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/profiles/profiles_findunit.F,v 1.2 2017/01/10 15:40:59 gforget Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE PROFILES_FINDUNIT( ioUnit, myThid )

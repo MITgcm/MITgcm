@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_readparms.F,v 1.17 2017/08/09 15:23:37 mlosch Exp $
-C $Name:  $
-
 #include "ICEFRONT_OPTIONS.h"
 
 CBOP

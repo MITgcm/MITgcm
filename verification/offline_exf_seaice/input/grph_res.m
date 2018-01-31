@@ -1,6 +1,3 @@
-% $Header: /u/gcmpack/MITgcm/verification/offline_exf_seaice/input/grph_res.m,v 1.1 2013/01/10 20:23:52 jmc Exp $
-% $Name:  $
-
 rDir1='./'; rDir2=rDir1;
 %rDir2='res_c00/';
 %rDir2='./';

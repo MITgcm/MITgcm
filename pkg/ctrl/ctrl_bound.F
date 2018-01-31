@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_bound.F,v 1.5 2012/08/12 19:34:22 jmc Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 C- note: although we just need CPP_EEOPTIONS.h here, prefer to
 C        include the same option-file above as in the AD version.

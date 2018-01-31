@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_uv.F,v 1.8 2012/09/18 20:09:17 jmc Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 
 CBOP

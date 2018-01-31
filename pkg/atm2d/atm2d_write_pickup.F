@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm2d/atm2d_write_pickup.F,v 1.9 2012/08/06 16:56:59 jmc Exp $
-C $Name:  $
-
 #include "ctrparam.h"
 #include "ATM2D_OPTIONS.h"
       SUBROUTINE ATM2D_WRITE_PICKUP(

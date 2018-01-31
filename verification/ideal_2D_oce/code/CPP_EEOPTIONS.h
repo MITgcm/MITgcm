@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/ideal_2D_oce/code/CPP_EEOPTIONS.h,v 1.6 2017/08/11 21:25:58 jmc Exp $
-C $Name:  $
-
 CBOP
 C     !ROUTINE: CPP_EEOPTIONS.h
 C     !INTERFACE:

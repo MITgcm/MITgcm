@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/icefront/icefront_diagnostics_init.F,v 1.5 2010/02/17 20:31:23 dimitri Exp $
-C $Name:  $
-
 #include "ICEFRONT_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

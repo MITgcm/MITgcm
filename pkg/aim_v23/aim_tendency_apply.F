@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.14 2015/01/21 14:36:01 jmc Exp $
-C $Name:  $
-
 #include "AIM_OPTIONS.h"
 
 C--  File aim_tendency_apply.F: Routines to Add AIM tendency contributions

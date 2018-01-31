@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_physics.F,v 1.6 2004/08/29 19:39:42 molod Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
        subroutine step_physics(uphy,vphy,thphy,sphy,dt,
      .  idim1,idim2,jdim1,jdim2,Nrphys,Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,

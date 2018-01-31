@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_PARAM.h,v 1.44 2017/10/06 00:03:56 jmc Exp $
-C $Name:  $
 C
 C     ==================================================================
 C     HEADER EXF_PARAM.h

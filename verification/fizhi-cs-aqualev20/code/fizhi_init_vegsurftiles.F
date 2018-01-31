@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-cs-aqualev20/code/fizhi_init_vegsurftiles.F,v 1.2 2009/05/06 02:59:35 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/CPP_OPTIONS.h,v 1.2 2005/11/08 05:19:24 jmc Exp $
-C $Name:  $
-
 #ifndef CPP_OPTIONS_H
 #define CPP_OPTIONS_H
 

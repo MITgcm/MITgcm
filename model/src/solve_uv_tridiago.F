@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_uv_tridiago.F,v 1.1 2012/12/16 19:11:53 jmc Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
 CBOP

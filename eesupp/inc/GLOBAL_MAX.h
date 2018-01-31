@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/GLOBAL_MAX.h,v 1.5 2009/06/10 03:45:11 jmc Exp $
-C $Name:  $
 CBOP
 C     !ROUTINE: GLOBAL_MAX.h
 C     !INTERFACE:

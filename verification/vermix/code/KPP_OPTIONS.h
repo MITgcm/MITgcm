@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/verification/vermix/code/KPP_OPTIONS.h,v 1.2 2011/12/24 01:17:56 jmc Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | KPP_OPTIONS.h
 C     | o CPP options file for KPP package.

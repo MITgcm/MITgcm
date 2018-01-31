@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/MOM_VECINV_OPTIONS.h,v 1.4 2011/12/24 01:09:39 jmc Exp $
-C $Name:  $
-
 C CPP options file for mom_vecinv package
 C Use this file for selecting CPP options within the mom_vecinv package
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_COST.h,v 1.3 2005/05/19 21:46:15 ce107 Exp $
-C $Name:  $
-
 c DIC_COST.h
          _RL totcost
 c control variables

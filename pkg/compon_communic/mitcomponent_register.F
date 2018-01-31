@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/mitcomponent_register.F,v 1.3 2013/11/27 21:48:30 jmc Exp $
-C $Name:  $
-
 !=======================================================================
       subroutine MITCOMPONENT_register( nx, ny, i0, j0 )
 

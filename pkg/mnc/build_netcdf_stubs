@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/pkg/mnc/build_netcdf_stubs,v 1.1 2004/07/27 03:19:56 edhill Exp $
-# $Name:  $
 #
 
 cat mnc_netcdf_stubs.h

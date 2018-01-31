@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/fool_the_compiler.F,v 1.10 2014/07/15 22:00:28 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 C--  File fool_the_compiler.F: Routines to prevent compiler to skip pieces of code

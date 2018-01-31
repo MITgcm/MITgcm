@@ -1,7 +1,4 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_xyz.F,v 1.12 2012/08/10 19:38:57 jmc Exp $
-C $Name:  $
-
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_globfld_xyz(

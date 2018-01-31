@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_readparms.F,v 1.8 2017/08/09 15:23:36 mlosch Exp $
-C $Name:  $
-
 #include "SBO_OPTIONS.h"
 
 CBOP

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/MNC_OPTIONS.h,v 1.8 2011/12/24 01:09:39 jmc Exp $
-C $Name:  $
-
 #ifndef MNC_OPTIONS_H
 #define MNC_OPTIONS_H
 #include "PACKAGES_CONFIG.h"

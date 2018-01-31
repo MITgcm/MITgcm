@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/regrid/REGRID_OPTIONS.h,v 1.2 2011/12/24 01:09:40 jmc Exp $
-C $Name:  $
-
 C     CPP options file for pkg REGRID
 C     Use this file to select options within the REGRID package
 

@@ -23,9 +23,6 @@
 !!                                                                   !!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-! $Header: /u/gcmpack/MITgcm/pkg/atm_phys/constants_mod.F90,v 1.1 2013/05/08 22:14:14 jmc Exp $
-! $Name:  $
-
 module constants_mod
 
 ! <CONTACT EMAIL="Bruce.Wyman@noaa.gov">

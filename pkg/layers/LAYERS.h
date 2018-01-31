@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/LAYERS.h,v 1.17 2015/06/15 21:40:49 jmc Exp $
-C $Name:  $
-
 #ifdef ALLOW_LAYERS
 
 C--   Header for LAYERS package. By Ryan Abernathey.

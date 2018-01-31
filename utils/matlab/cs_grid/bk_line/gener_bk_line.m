@@ -1,9 +1,6 @@
 % main script to generate broken lines that folows the cubic grid
 % and stay close as possible to a given latitude
 %-----------------------
-% $Header: /u/gcmpack/MITgcm/utils/matlab/cs_grid/bk_line/gener_bk_line.m,v 1.5 2013/02/12 17:59:02 jmc Exp $
-% $Name:  $
-
 %- load definition of the grid (needs to be done at the 1rst call):
 
 if size(who('krd'),1) > 0,

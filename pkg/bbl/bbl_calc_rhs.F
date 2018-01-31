@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bbl/bbl_calc_rhs.F,v 1.8 2013/08/27 21:34:21 dimitri Exp $
-C $Name:  $
-
 #include "BBL_OPTIONS.h"
 
 CBOP

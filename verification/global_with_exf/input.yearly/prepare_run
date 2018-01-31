@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/global_with_exf/input.yearly/prepare_run,v 1.1 2008/01/31 09:57:20 mlosch Exp $
-#  $Name:  $
- 
 #- in order to save disc space, take *.bin files
 #- from this dir:
 fromDir="../../tutorial_global_oce_latlon/input"

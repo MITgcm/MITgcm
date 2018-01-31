@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_radiat.F,v 1.8 2018/01/11 01:58:50 jmc Exp $
-C $Name:  $
-
 #include "AIM_OPTIONS.h"
 
 C--  File phy_radiat.F:

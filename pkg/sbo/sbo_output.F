@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/sbo/sbo_output.F,v 1.5 2017/03/24 23:51:14 jmc Exp $
-C $Name:  $
-
 #include "SBO_OPTIONS.h"
 
 CBOP

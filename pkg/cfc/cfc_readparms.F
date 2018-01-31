@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_readparms.F,v 1.4 2017/08/09 15:23:38 mlosch Exp $
-C $Name:  $
-
 #include "GCHEM_OPTIONS.h"
 
 CBOP

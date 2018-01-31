@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/rbcs/rbcs_ad_check_lev3_dir.h,v 1.5 2016/12/28 22:03:15 heimbach Exp $
-C $Name:  $
-
 CADJ STORE rbct0 = tapelev3, key = ilev_3
 CADJ STORE rbct1 = tapelev3, key = ilev_3
 CADJ STORE rbcs0 = tapelev3, key = ilev_3

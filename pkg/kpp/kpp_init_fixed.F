@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_init_fixed.F,v 1.4 2010/04/03 22:28:45 jmc Exp $
-C $Name:  $
-
 #include "KPP_OPTIONS.h"
 
 CBOP

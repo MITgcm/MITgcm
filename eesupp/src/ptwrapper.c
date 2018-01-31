@@ -1,6 +1,4 @@
 /*
- *  $Header: /u/gcmpack/MITgcm/eesupp/src/ptwrapper.c,v 1.1 2004/08/29 17:13:24 edhill Exp $
- *  $Name:  $
  *
  *
  *  A PTHREADS convenience wrapper intended primarily for use with

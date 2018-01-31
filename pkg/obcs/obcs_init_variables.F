@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.44 2012/11/15 20:46:52 dimitri Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 
 CBOP

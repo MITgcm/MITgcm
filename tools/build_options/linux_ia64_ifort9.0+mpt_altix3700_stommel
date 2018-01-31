@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_ifort9.0+mpt_altix3700_stommel,v 1.6 2017/06/29 00:26:00 jmc Exp $
-# $Name:  $
-
 CC=icc
 FC=ifort
 LD=ifort

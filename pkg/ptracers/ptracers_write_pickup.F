@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_pickup.F,v 1.16 2014/08/18 14:34:27 jmc Exp $
-C $Name:  $
-
 #include "GAD_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
 

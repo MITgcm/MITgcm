@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EESUPPORT.h,v 1.10 2009/04/21 16:00:53 jmc Exp $
-C $Name:  $
 CBOP
 C     !ROUTINE: EESUPPORT.h
 C     !INTERFACE:

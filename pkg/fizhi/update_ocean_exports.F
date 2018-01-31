@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.33 2010/09/22 22:21:41 jmc Exp $
-C $Name:  $
-
 #include "FIZHI_OPTIONS.h"
        subroutine update_ocean_exports (myTime, myIter, myThid)
 c----------------------------------------------------------------------

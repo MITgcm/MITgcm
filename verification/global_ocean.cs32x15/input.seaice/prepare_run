@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/input.seaice/prepare_run,v 1.1 2010/12/17 21:57:12 gforget Exp $
-#  $Name:  $
- 
 #- in order to save disc space, take files:
 fileList=`(cd ../input.icedyn ; ls -1 *.bin pickup*)`
 

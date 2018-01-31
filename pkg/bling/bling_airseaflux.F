@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bling/bling_airseaflux.F,v 1.5 2017/05/11 13:32:24 mmazloff Exp $
-C $Name:  $
-
 #include "BLING_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
 

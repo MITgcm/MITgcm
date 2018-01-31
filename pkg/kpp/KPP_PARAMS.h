@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.15 2017/10/19 00:34:25 jmc Exp $
-C $Name:  $
-
 C     *==========================================================*
 C     | KPP_PARAMS.h
 C     | o Basic parameter header for KPP vertical mixing

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.24 2017/03/24 23:51:14 jmc Exp $
-C $Name:  $
-
 #include "THSICE_OPTIONS.h"
 #ifdef ALLOW_AIM
 # include "AIM_OPTIONS.h"

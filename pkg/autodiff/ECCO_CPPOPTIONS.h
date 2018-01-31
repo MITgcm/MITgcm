@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/ECCO_CPPOPTIONS.h,v 1.1 2012/08/10 17:41:45 jmc Exp $
-C $Name:  $
-
 --->>>     COMPILE FAILURE IS DELIBERATE     <<<---
 --->>> default ECCO_CPPOPTIONS.h option-file <<<---
 --->>> CANNOT be used WITHOUT CUSTOMIZATION  <<<---

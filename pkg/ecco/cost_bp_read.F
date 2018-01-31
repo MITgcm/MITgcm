@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_bp_read.F,v 1.5 2014/09/29 16:47:49 gforget Exp $
-C $Name:  $
-
 #include "ECCO_OPTIONS.h"
 
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc_diff_ptr.F,v 1.2 2011/09/20 22:28:13 jmc Exp $
-C $Name:  $
-
 #include "KPP_OPTIONS.h"
 
       SUBROUTINE KPP_CALC_DIFF_PTR(

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/openad/the_model_main.F,v 1.17 2015/02/22 23:50:22 heimbach Exp $
-C $Name:  $
-
 CBOI
 C
 C !TITLE: MITGCM KERNEL CODE SYNOPSIS

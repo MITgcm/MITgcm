@@ -1,8 +1,5 @@
 #! /usr/bin/env bash
 
-#  $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/input_ocn/prepare_run,v 1.2 2009/01/02 01:03:25 jmc Exp $
-#  $Name:  $
- 
 #- in order to save disc space, from this dir:
 fromDir="../../global_ocean.cs32x15/input"
 #  link files:

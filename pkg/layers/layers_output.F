@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/layers/layers_output.F,v 1.13 2017/03/24 23:38:56 jmc Exp $
-C $Name:  $
-
 #include "LAYERS_OPTIONS.h"
 
 CBOP 0

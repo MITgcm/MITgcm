@@ -1,8 +1,5 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/build_options/unsupported/linux_ia64_ifort+oad,v 1.1 2017/06/28 18:56:04 jmc Exp $
-# $Name:  $
-
 #  Build options for the intel compiler with OpenAD
 
 FC=ifort

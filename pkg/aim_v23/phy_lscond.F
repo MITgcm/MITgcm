@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_lscond.F,v 1.3 2006/03/28 04:26:21 jmc Exp $
-C $Name:  $
-
 #include "AIM_OPTIONS.h"
 
       SUBROUTINE LSCOND (PSA,dpFac,QA,QSAT,

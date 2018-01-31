@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.43 2013/07/26 14:20:01 jmc Exp $
-C $Name:  $
 C
 CBOP
 C    !ROUTINE: GRID.h

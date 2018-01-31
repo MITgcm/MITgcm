@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/compon_communic/couprecv_r8tiles.F,v 1.3 2009/09/14 16:22:03 jmc Exp $
-C $Name:  $
-
 !=======================================================================
       subroutine couprecv_r8tiles( component, dataname, Nx, Ny, arr )
       implicit none

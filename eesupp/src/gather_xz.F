@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/gather_xz.F,v 1.2 2006/10/19 06:54:23 dimitri Exp $
-C $Name:  $
-
 #include "CPP_OPTIONS.h"
 
       SUBROUTINE GATHER_XZ( global, local, myThid )

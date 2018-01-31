@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_ATMOS.h,v 1.4 2010/04/11 20:59:27 jmc Exp $
-C $Name:  $
-
        COMMON /INTERACT_ATMOS_NEEDS/
      &              co2atmos,
      &              total_atmos_carbon, total_ocean_carbon,

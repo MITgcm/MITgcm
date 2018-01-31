@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/write_fullarray_rl.F,v 1.8 2012/08/11 18:13:23 jmc Exp $
-C $Name:  $
-
 #include "CPP_EEOPTIONS.h"
 
 CBOP

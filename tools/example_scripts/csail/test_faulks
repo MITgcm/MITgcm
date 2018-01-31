@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm/tools/example_scripts/csail/test_faulks,v 1.22 2011/09/07 21:42:52 jmc Exp $
-
 #  Test script for MITgcm that should work on most of the csail.mit.edu
 #  Linux machines.
 

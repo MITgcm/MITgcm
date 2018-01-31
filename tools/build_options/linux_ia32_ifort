@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_ifort,v 1.18 2013/07/22 18:40:45 jmc Exp $
-# $Name:  $
-
 # Build options for the intel fortran compiler - version 9.0 (and earlier) -
 #            on Linux IA32 platform
 

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_PARAMS.h,v 1.14 2016/09/15 14:39:49 jahn Exp $
-C $Name:  $
-
 #ifdef ALLOW_PTRACERS
 
 CBOP

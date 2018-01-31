@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_adcommon.h,v 1.1 2011/08/18 09:11:00 heimbach Exp $
-C $Name:  $
-
 C--   These common blocks are extracted from the
 C--   automatically created tangent linear code.
 C--   You need to make sure that they are up-to-date

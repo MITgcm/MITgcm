@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_seaice_sponge.F,v 1.2 2012/09/25 16:39:20 dimitri Exp $
-C $Name:  $
-
 #include "OBCS_OPTIONS.h"
 
 C--   File obcs_seaice_sponge.F:

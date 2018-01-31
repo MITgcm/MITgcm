@@ -1,6 +1,3 @@
-# $Header: /u/gcmpack/MITgcm/pkg/exch2/Makefile,v 1.17 2010/05/27 14:40:09 jmc Exp $
-# $Name:  $
-
 # Makefile for generate eesupp source code from templates.
 # Why do we do this?  Answer: saves typing!
 

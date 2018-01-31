@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_adjoint_snapshots_ad.F,v 1.13 2017/03/24 23:34:13 jmc Exp $
-C $Name:  $
-
 #include "EXF_OPTIONS.h"
 #include "AD_CONFIG.h"
 #ifdef ALLOW_AUTODIFF
