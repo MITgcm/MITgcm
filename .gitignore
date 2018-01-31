@@ -4,7 +4,7 @@ TAGS
 .make.state
 .nse_depinfo
 *~
-#*
+\#*
 .#*
 ,*
 _$*
@@ -27,3 +27,9 @@ _$*
 core
 # CVS default ignores end
 notes
+build/
+run/
+# OSX system files
+.DS_store
+/doc/_build/
+*.pyc
