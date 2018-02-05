@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67 (2018/02/05)
+o add Sphinx configuration for documentation on https://mitgcm.readthedocs.io
+o add Travis configuration for testing pull requests
 o migrate from CVS to Git (2018/01/31)
 
 checkpoint66o (2018/01/30)
