@@ -1,0 +1,15 @@
+/* Make equation numbers float to the right */
+span.eqno {
+    float: right;
+    margin-left: 0.5em;
+}
+/* Hide the link and move into margin */
+span.eqno a.headerlink {
+    visibility: hidden;
+    display: inline-block;
+    width: 0px;
+}
+/* Show if the equation is hovered */
+div.math:hover a.headerlink {
+    visibility: visible;
+}

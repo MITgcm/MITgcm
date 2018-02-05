@@ -1,0 +1,36 @@
+.. MITgcm documentation master file, created by
+   sphinx-quickstart on Tue Jun  6 11:04:04 2017.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to MITgcm's user manual
+===============================
+
+
+.. only:: html
+
+   Authors
+   -------
+
+   Alistair Adcroft, Jean-Michel Campin, Ed Doddridge, Stephanie Dutkiewicz, Constantinos Evangelinos, David Ferreira, Mick Follows, Gael Forget, Baylor Fox-Kemper, Patrick Heimbach, Chris Hill, Ed Hill, Helen Hill, Oliver Jahn, Jody Klymak, Martin Losch, John Marshall, Guillaume Maze, Matt Mazloff, Dimitris Menemenlis, Andrea Molod, and Jeff Scott
+
+
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Contents:
+   :numbered: 4
+
+   overview/overview
+   discrete_algorithm/discrete_algorithm
+   getting_started/getting_started
+   examples/examples.rst
+   contributing/contributing.rst
+   software_arch/software_arch.rst
+   auto_diff/auto_diff.rst
+   phys_pkgsI/phys_pkgsI
+   phys_pkgsII/phys_pkgsII
+   ocean_state_est/ocean_state_est.rst
+   under_dev/under_dev.rst
+   prev_applications/prev_applications.rst
+   references
