@@ -49,7 +49,7 @@ Type:
 
 ::
 
-    % git clone https://github.com/altMITgcm/MITgcm.git
+    % git clone https://github.com/MITgcm/MITgcm.git
 
 This will download the latest available code. If you now want to revert this code to a specific checkpoint release,
 first ``cd`` into the MITgcm directory you just downloaded, then type ``git checkout checkpointXXX`` where ``XXX`` is the checkpoint version.
@@ -58,7 +58,7 @@ Alternatively, if you prefer to use ssh keys (say for example, you have a firewa
 
 ::
 
-    % git clone git@github.com:altMITgcm/MITgcm.git
+    % git clone git@github.com:MITgcm/MITgcm.git
 
 You will need a GitHub account for this, and will have to generate a ssh key though your GitHub account user settings. 
 
@@ -73,13 +73,13 @@ To obtain the current code, type:
 
 ::
 
-    % wget https://github.com/altMITgcm/MITgcm/archive/master.zip
+    % wget https://github.com/MITgcm/MITgcm/archive/master.zip
 
 For specific checkpoint release ``XXX``, instead type: 
 
 ::
 
-    % wget https://github.com/altMITgcm/MITgcm/archive/checkpointXXX.zip
+    % wget https://github.com/MITgcm/MITgcm/archive/checkpointXXX.zip
 
 Updating the code
 =================
@@ -112,7 +112,7 @@ or any of its subdirectories, type:
     % git pull
 
 and all files will be updated to match the current state of the code repository, as it exists
-at `GitHub <https://github.com/altMITgcm/MITgcm.git>`_. (*Note:* if you plan to contribute to
+at `GitHub <https://github.com/MITgcm/MITgcm.git>`_. (*Note:* if you plan to contribute to
 the MITgcm and followed the steps to download the code as described in 
 :numref:`chap_contributing`, you will need to type ``git pull upstream`` instead.)
 
@@ -239,7 +239,7 @@ See :numref:`genmake2_optfiles`.
 The MITgcm developers are willing to
 provide help writing or modifing optfiles. And we encourage users to
 ask for assistance or post new optfiles (particularly ones for new machines or
-architectures) through the `GitHub issue tracker <https://github.com/altMITgcm/MITgcm/issues>`_
+architectures) through the `GitHub issue tracker <https://github.com/MITgcm/MITgcm/issues>`_
 or email the MITgcm-support@mitgcm.org list.
 
 To specify an optfile to ``genmake2``, the command line syntax is:
@@ -429,7 +429,7 @@ architecture) using the GCC (g77) compiler is
 
 If you write an optfile for an unrepresented machine or compiler, you
 are strongly encouraged to submit the optfile to the MITgcm project for
-inclusion. Please submit the file through the `GitHub issue tracker <https://github.com/altMITgcm/MITgcm/issues>`_
+inclusion. Please submit the file through the `GitHub issue tracker <https://github.com/MITgcm/MITgcm/issues>`_
 or email the MITgcm-support@mitgcm.org list.
 
 .. _genmake_commandline:
@@ -529,7 +529,7 @@ The steps for building MITgcm with MPI support are:
 #. Determine the locations of your MPI-enabled compiler and/or MPI
    libraries and put them into an options file as described in :numref:`genmake2_optfiles`. 
    One can start with one of the examples in
-   `tools/build_options <https://github.com/altMITgcm/MITgcm66/tree/master/tools/build_options>`_
+   `tools/build_options <https://github.com/MITgcm/MITgcm/tree/master/tools/build_options>`_
    such as ``linux_amd64_gfortran`` or ``linux_amd64_ifort+impi`` and
    then edit it to suit the machine at hand. You may need help from your
    user guide or local systems administrator to determine the exact

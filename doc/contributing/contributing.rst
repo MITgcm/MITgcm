@@ -9,7 +9,7 @@ The MITgcm is an open source project that relies on the participation of its use
 Bugs and feature requests
 =========================
 
-If you think you've found a bug, the first thing to check that you're using the latest version of the model. If the bug is still in the latest version, then think about how you might fix it and file a ticket in the `GitHub issue tracker <https://github.com/altMITgcm/MITgcm/issues>`_. Please include as much detail as possible. At a minimum your ticket should include:
+If you think you've found a bug, the first thing to check that you're using the latest version of the model. If the bug is still in the latest version, then think about how you might fix it and file a ticket in the `GitHub issue tracker <https://github.com/MITgcm/MITgcm/issues>`_. Please include as much detail as possible. At a minimum your ticket should include:
 
  - what the bug does;
  - the location of the bug: file name and line number(s); and
@@ -43,7 +43,7 @@ Quickstart Guide
 
 ::
 
-    % git remote add upstream https://github.com/altMITgcm/MITgcm.git
+    % git remote add upstream https://github.com/MITgcm/MITgcm.git
 
 **4.** Make a new branch from ``upstream/master`` (name it something appropriate, here we call the new feature branch ``newfeature``) and make edits on this branch:
 
@@ -128,7 +128,7 @@ One other aspect of Git that requires some explanation to the uninitiated: your 
 
 A detailed explanation of steps for contributing MITgcm repository edits:
 
-**1.** On GitHub, create a local copy of the repository in your GitHub cloud user space: from the main repository (https://github.com/altMITgcm/MITgcm) hit the **Fork** button.
+**1.** On GitHub, create a local copy of the repository in your GitHub cloud user space: from the main repository (https://github.com/MITgcm/MITgcm) hit the **Fork** button.
 As mentioned, your GitHub copy “origin” is necessary to streamline the collaborative development process -- you need to create a place for your edits in the GitHub cloud, for developers to peruse.
 
 **2.** Download the code onto your local computer using the git clone command. Even if you previously downloaded the code through a “git-aware” method (i.e., a git clone command, see :numref:`git-aware_download`),
@@ -150,7 +150,7 @@ We need to set up a remote that points to the main repository:
 
 ::
 
-    % git remote add upstream https://github.com/altMITgcm/MITgcm.git
+    % git remote add upstream https://github.com/MITgcm/MITgcm.git
 
 This means that we now have two "remotes" of the project. A remote is just a pointer to a repository not on your computer, i.e., in the GitHub cloud, one pointing to your GitHub user space (“origin”), and this new remote pointing to the original (“upstream”). You can read and write into your "origin" version (since it belongs to you, in the cloud), but not into the "upstream" version. This command just sets up this remote, which is needed in step #4 -- no actual file manipulation is done at this point. If in doubt, the command ``git remote -v`` will list what remotes have been set up.
 
@@ -303,7 +303,7 @@ is ```clickable_text <URL>`_``  (the ‘<’ and ‘>’ are literal characters,
 
 **File references:** to create a link to pull up MITgcm code (or any file in the repo) in a code browser window, the syntax is ``:filelink:`path/filename```.
 If you want to have a different text link to click on (e.g., say you didn’t want to display the full path), the syntax is ``:filelink:`clickable_text <path/filename>```
-(again, the ‘<‘ and ‘>’ are literal characters). The top directory here is https://github.com/altMITgcm/MITgcm ,
+(again, the ‘<‘ and ‘>’ are literal characters). The top directory here is https://github.com/MITgcm/MITgcm ,
 so if for example you wanted to pop open the file :filelink:`dynamics.F <model/src/dynamics.F>`
 from the main model source directory, you would specify ``model/src/dynamics.F`` in place of path/filename.
 

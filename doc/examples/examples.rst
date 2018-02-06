@@ -11,7 +11,7 @@ and are documented in sections :numref:`sec_eg_baro` -
 :numref:`sec_eg_tank`. The other examples follow the same general
 structure as the tutorial examples. However, they only include brief
 instructions in text file README.  The examples are
-located in subdirectories under the directory `verification <https://github.com/altMITgcm/MITgcm66h/tree/master/>`_.
+located in subdirectories under the directory `verification <https://github.com/MITgcm/MITgcm/tree/master/>`_.
 Each example is briefly described below.
 
 .. _sec_eg_baro:
