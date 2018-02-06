@@ -3,46 +3,52 @@ language: python
 
 services: 
  - docker
- 
-before_install:
- #  Set up environment needed for Sphinx to build docs
- - sudo apt-get install texlive-latex-recommended
- - sudo apt-get install texlive-latex-extra
- - sudo apt-get install texlive-fonts-recommended
- - sudo apt-get install latexmk
- - pip install sphinx
- - pip install sphinx_rtd_theme
- - pip install sphinxcontrib-bibtex
- # Set up environment needed to run testreport code tests
- - docker pull mitgcm/testreport-images:fc11-base-20170715
- - docker run  -v `pwd`:/MITgcm --name fc11-testreport -t -d mitgcm/testreport-images:fc11-base-20170715 /bin/bash
- - docker exec -i fc11-testreport rpm -vv --rebuilddb
- - docker exec -i fc11-testreport df -h
- - docker exec -i fc11-testreport ls -altr /MITgcm
- - docker exec -i fc11-testreport yum install python-pip
- - docker exec -i fc11-testreport yum install gcc-gfortran
- - docker exec -i fc11-testreport yum install python-argparse
 
-script: 
- - echo `pwd`
- - MITGCM_TROPT="-devel -of=../tools/build_options/linux_amd64_gfortran"
- - MITGCM_DECMD="docker exec -i fc11-testreport bash -c"
- # Test report runs
- - MITGCM_EXP="aim.5l_cs";                  MITGCM_PRECS="14 16";          . tools/ci/runtr.sh
- - MITGCM_EXP="global_ocean.cs32x15";       MITGCM_PRECS="16 16 16 16 16"; . tools/ci/runtr.sh
- - MITGCM_EXP="global_ocean.90x40x15";      MITGCM_PRECS="16 16 16";       . tools/ci/runtr.sh
- - MITGCM_EXP="hs94.cs-32x32x5";            MITGCM_PRECS="13 16";          . tools/ci/runtr.sh
- - MITGCM_EXP="isomip";                     MITGCM_PRECS="16 16 16";       . tools/ci/runtr.sh
- - MITGCM_EXP="offline_exf_seaice";         MITGCM_PRECS="16 16 16 16 16"; . tools/ci/runtr.sh
- - MITGCM_EXP="tutorial_advection_in_gyre"; MITGCM_PRECS="16";             . tools/ci/runtr.sh
- - MITGCM_EXP="tutorial_cfc_offline";       MITGCM_PRECS="16";             . tools/ci/runtr.sh
- - MITGCM_EXP="tutorial_deep_convection";   MITGCM_PRECS="16 16";          . tools/ci/runtr.sh
- - MITGCM_EXP="tutorial_global_oce_biogeo"; MITGCM_PRECS="16";             . tools/ci/runtr.sh
- - MITGCM_EXP="tutorial_global_oce_in_p";   MITGCM_PRECS="16";             . tools/ci/runtr.sh
- - MITGCM_EXP="tutorial_plume_on_slope";    MITGCM_PRECS="16";             . tools/ci/runtr.sh
- # Generate a summary
- - docker exec -i fc11-testreport bash -c "cd /MITgcm/verification; ./testreport ${MITGCM_TROPT} -q"
- # build documentation
- - cd doc
- - make clean html
- - make clean latexpdf
+cache: bundler
+
+before_install:
+    #  Set up environment needed for Sphinx to build docs
+  - sudo apt-get install texlive-latex-recommended
+  - sudo apt-get install texlive-latex-extra
+  - sudo apt-get install texlive-fonts-recommended
+  - sudo apt-get install latexmk
+  - pip install sphinx
+  - pip install sphinx_rtd_theme
+  - pip install sphinxcontrib-bibtex
+    # Set up environment needed to run testreport code tests
+  - docker pull mitgcm/testreport-images:fc11-base-20170715
+  - docker run  -v `pwd`:/MITgcm --name fc11-testreport -t -d mitgcm/testreport-images:fc11-base-20170715 /bin/bash
+  - docker exec -i fc11-testreport rpm -vv --rebuilddb
+  - docker exec -i fc11-testreport df -h
+  - docker exec -i fc11-testreport ls -altr /MITgcm
+  - docker exec -i fc11-testreport yum install python-pip
+  - docker exec -i fc11-testreport yum install gcc-gfortran
+  - docker exec -i fc11-testreport yum install python-argparse
+  # set options for Travis script
+  - echo `pwd`
+  - MITGCM_TROPT="-devel -of=../tools/build_options/linux_amd64_gfortran"
+  - MITGCM_DECMD="docker exec -i fc11-testreport bash -c"
+
+jobs:
+  include:
+    # run the tests
+    - stage: code tests
+      script: MITGCM_EXP="aim.5l_cs";                  MITGCM_PRECS="14 16";          . tools/ci/runtr.sh
+    - script: MITGCM_EXP="global_ocean.cs32x15";       MITGCM_PRECS="16 16 16 16 16"; . tools/ci/runtr.sh
+    - script: MITGCM_EXP="global_ocean.90x40x15";      MITGCM_PRECS="16 16 16";       . tools/ci/runtr.sh
+    - script: MITGCM_EXP="hs94.cs-32x32x5";            MITGCM_PRECS="13 16";          . tools/ci/runtr.sh
+    - script: MITGCM_EXP="isomip";                     MITGCM_PRECS="16 16 16";       . tools/ci/runtr.sh
+    - script: MITGCM_EXP="offline_exf_seaice";         MITGCM_PRECS="16 16 16 16 16"; . tools/ci/runtr.sh
+    - script: MITGCM_EXP="tutorial_advection_in_gyre"; MITGCM_PRECS="16";             . tools/ci/runtr.sh
+    - script: MITGCM_EXP="tutorial_cfc_offline";       MITGCM_PRECS="16";             . tools/ci/runtr.sh
+    - script: MITGCM_EXP="tutorial_deep_convection";   MITGCM_PRECS="16 16";          . tools/ci/runtr.sh
+    - script: MITGCM_EXP="tutorial_global_oce_biogeo"; MITGCM_PRECS="16";             . tools/ci/runtr.sh
+    - script: MITGCM_EXP="tutorial_global_oce_in_p";   MITGCM_PRECS="16";             . tools/ci/runtr.sh
+    - script: MITGCM_EXP="tutorial_plume_on_slope";    MITGCM_PRECS="16";             . tools/ci/runtr.sh
+    - stage: summary of code tests
+    # Generate a summary
+      script: docker exec -i fc11-testreport bash -c "cd /MITgcm/verification; ./testreport ${MITGCM_TROPT} -q"
+    # build documentation
+    - stage: test documentation
+      script: cd doc; make clean html
+    - script: cd doc; make clean latexpdf
