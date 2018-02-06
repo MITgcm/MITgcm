@@ -5,6 +5,7 @@ services:
  - docker
  
 before_install:
+ #  Set up environment needed for Sphinx to build docs
  - sudo apt-get install texlive-latex-recommended
  - sudo apt-get install texlive-latex-extra
  - sudo apt-get install texlive-fonts-recommended
@@ -12,6 +13,7 @@ before_install:
  - pip install sphinx
  - pip install sphinx_rtd_theme
  - pip install sphinxcontrib-bibtex
+ # Set up environment needed to run testreport code tests
  - docker pull mitgcm/testreport-images:fc11-base-20170715
  - docker run  -v `pwd`:/MITgcm --name fc11-testreport -t -d mitgcm/testreport-images:fc11-base-20170715 /bin/bash
  - docker exec -i fc11-testreport rpm -vv --rebuilddb
