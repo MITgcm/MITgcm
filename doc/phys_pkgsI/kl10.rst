@@ -1,0 +1,229 @@
+.. _sub_phys_pkg_kl10:
+
+KL10: Vertical Mixing Due to Breaking Internal Waves
+----------------------------------------------------
+
+
+(in directory: *pkg/kl10/*)
+
+Authors: Jody M. Klymak
+
+.. _ssub_phys_pkg_kl10_intro:
+
+Introduction
+++++++++++++
+
+The :cite:`klymaklegg10` parameterization for breaking internal waves is meant to represent
+mixing in the ocean “interior” due to convective instability. Many
+mixing schemes in the presence of unstable stratification simply turn on
+an arbitrarily large diffusivity and viscosity in the overturning
+region. This assumes the fluid completely mixes, which is probably not a
+terrible assumption, but it also makes estimating the turbulence
+dissipation rate in the overturning region meaningless.
+
+The KL10 scheme overcomes this limitation by estimating the viscosity
+and diffusivity from a combination of the Ozmidov relation and the
+Osborn relation, assuming a turbulent Prandtl number of one. The Ozmidov
+relation says that outer scale of turbulence in an overturn will scale
+with the strength of the turbulence :math:`\epsilon`, and the
+stratification :math:`N`, as
+
+.. math::
+   :label: eq-pkg-kl10-Lo
+
+   L_O^2 \approx \epsilon N^{-3}.
+
+The Osborn relation relates the strength of the dissipation to the
+vertical diffusivity as
+
+.. math:: K_{v}=\Gamma \epsilon N^{-2},
+
+where :math:`\Gamma\approx 0.2` is the mixing ratio of buoyancy flux to
+thermal dissipation due to the turbulence. Combining the two gives us
+
+.. math:: K_{v} \approx \Gamma L_O^2 N.
+
+The ocean turbulence community often approximates the Ozmidov scale by
+the root-mean-square of the Thorpe displacement, :math:`\delta_z`, in an
+overturn :cite:`thorpe77`. The Thorpe displacement is the distance one would have to
+move a water parcel for the water column to be stable, and is readily
+measured in a measured profile by sorting the profile and tracking how
+far each parcel moves during the sorting procedure. This method gives an
+imperfect estimate of the turbulence, but it has been found to agree on
+average over a large range of overturns :cite:`wesson94,seimgregg94,moum96`.
+
+The algorithm coded here is a slight simplification of the usual Thorpe
+method for estimating turbulence in overturning regions. Usually,
+overturns are identified and :math:`N` is averaged over the overturn.
+Here, instead we estimate
+
+.. math:: K_{v}(z) \approx \Gamma \delta_z^2\, N_s(z).
+
+where :math:`N_s(z)` is the local sorted stratification. This saves
+complexity in the code and adds a slight inaccuracy, but we don’t
+believe is biased.
+
+We assume a turbulent Prandtl number of 1, so :math:`A_v=K_{v}`.
+
+We also calculate and output a turbulent dissipation from this scheme.
+We do not simply evaluate the overturns for :math:`\epsilon` using
+([eq:pkg:kl10:Lo]). Instead we compute the vertical shear terms that the
+viscosity is acting on:
+
+.. math:: \epsilon_v = A_v \left(\left(\frac{\partial u}{\partial z}\right)^2 + \left(\frac{\partial v}{\partial z}\right)^2 \right).
+
+There are straightforward caveats to this approach, covered in :cite:`klymaklegg10`.
+
+-  If your resolution is too low to resolve the breaking internal waves,
+   you won’t have any turbulence.
+
+-  If the model resolution is too high, the estimates of
+   :math:`\epsilon_v` will start to be exaggerated, particularly if the
+   run in non-hydrostatic. That is because there will be significant
+   shear at small scales that represents the turbulence being
+   parameterized in the scheme. At very high resolutions direct
+   numerical simulation or more sophisticated large-eddy schemes should
+   be used.
+
+-  We find that grid cells of approximately 10 to 1 aspect ratio are a
+   good rule of thumb for achieving good results are usual oceanic
+   scales. For a site like the Hawaiian Ridge, and Luzon Strait, this
+   means 10-m vertical resolusion and approximately 100-m horizontal.
+   The 10-m resolution can be relaxed if the stratification drops, and
+   we often WKB-stretch the grid spacing with depth.
+
+-  The dissipation estimate is useful for pinpoiting the location of
+   turbulence, but again, is grid size dependent to some extent, and
+   should be treated with a grain of salt. It will also not include any
+   numerical dissipation such as you may find with higher order
+   advection schemes.
+
+
+.. _ssub_phys_pkg_kl10_comp:
+
+KL10 configuration and compiling 
+++++++++++++++++++++++++++++++++
+
+As with all MITgcm packages, KL10 can be turned on or off at compile
+time
+
+-  using the ``packages.conf`` file by adding ``kl10`` to it,
+
+-  or using ``genmake2`` adding ``-enable=kl10`` or ``-disable=kl10``
+   switches
+
+-  *Required packages and CPP options:*
+   No additional packages are required.
+
+(see Section [sec:buildingCode]).
+
+KL10 has no compile-time options (``KL10_OPTIONS.h`` is empty).
+
+
+.. _ssub_phys_pkg_kl10_runtime:
+
+Run-time parameters
++++++++++++++++++++
+
+Run-time parameters are set in files ``data.pkg`` and ``data.kl10``
+which are read in ``kl10_readparms.F``. Run-time parameters may be
+broken into 3 categories: (i) switching on/off the package at runtime,
+(ii) required MITgcm flags, (iii) package flags and parameters.
+
+Enabling the package
+####################
+
+The KL10 package is switched on at runtime by setting
+``useKL10 = .TRUE.`` in ``data.pkg``.
+
+Required MITgcm flags
+#####################
+
+The following flags/parameters of the MITgcm dynamical kernel need to
+be set in conjunction with KL10:
+
++----------------------------------+--------------------------------------+
+| ``implicitViscosity = .TRUE.``   | enable implicit vertical viscosity   |
++----------------------------------+--------------------------------------+
+| ``implicitDiffusion = .TRUE.``   | enable implicit vertical diffusion   |
++----------------------------------+--------------------------------------+
+
+Package flags and parameters
+############################
+
+:numref:`tab_phys_pkg_kl10_runtime` summarizes the runtime
+flags that are set in ``data.kl10``, and their default values.
+
+
+.. table:: KL10 runtime parameters.
+  :name: tab_phys_pkg_kl10_runtime
+
+  +----------------------+---------------------------------+----------------------------------------------+
+  | **Flag/parameter**   | **default**                     | **Description**                              |
+  +======================+=================================+==============================================+
+  | KLviscMax            | 300 \ m\ :sup:`2` s\ :sup:`--1` | Maximum viscosity the scheme will ever give  |
+  |                      |                                 | (useful for stability)                       |
+  +----------------------+---------------------------------+----------------------------------------------+
+  | KLdumpFreq           | ``dumpFreq``                    | Dump frequency of KL10 field snapshots       |
+  +----------------------+---------------------------------+----------------------------------------------+
+  | KLtaveFreq           | ``taveFreq``                    | Averaging and dump frequency of KL10 fields  |
+  +----------------------+---------------------------------+----------------------------------------------+
+  | KLwriteState         | ``.FALSE.``                     | write KL10 state to file                     |
+  +----------------------+---------------------------------+----------------------------------------------+
+
+.. _ssub_phys_pkg_kl10_equations:
+
+Equations and key routines
+++++++++++++++++++++++++++
+
+KL10_CALC:
+###########
+
+Top-level routine. Calculates viscosity and diffusivity on the grid cell
+centers. Note that the runtime parameters ``viscAz`` and ``diffKzT`` act
+as minimum viscosity and diffusivities. So if there are no overturns (or
+they are weak) then these will be returned.
+
+KL10_CALC_VISC:
+###############
+
+Calculates viscosity on the W and S grid faces for U and V respectively.
+
+KL10_CALC_DIFF:
+###############
+
+Calculates the added diffusion from KL10.
+
+.. _ssub_phys_pkg_kl10_diagnostics:
+
+KL10 diagnostics
+++++++++++++++++
+
+Diagnostics output is available via the diagnostics package (see Section
+[sec:pkg:diagnostics]). Available output fields are summarized here:
+
+::
+
+    ------------------------------------------------------
+     <-Name->|Levs|grid|<--  Units   -->|<- Tile (max=80c)
+    ------------------------------------------------------
+     KLviscAr| Nr |SM  |m^2/s           |KL10 vertical eddy viscosity coefficient
+     KLdiffKr| Nr |SM  |m^2/s           |Vertical diffusion coefficient for salt, temperature, & tracers
+     KLeps   | Nr |SM  |m^3/s^3         |Turbulence dissipation estimate.
+
+
+.. _ssub_phys_pkg_kl10_examples:
+
+
+References
+++++++++++
+
+Klymak and Legg, 2010, *Oc. Modell.*.
+
+
+Experiments and tutorials that use KL10
++++++++++++++++++++++++++++++++++++++++
+
+-  Modified Internal Wave experiment, in internal_wave verification
+   directory
+
