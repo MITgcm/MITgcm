@@ -22,14 +22,14 @@ Welcome to MITgcm's user manual
    :numbered: 4
 
    overview/overview
-   discrete_algorithm/discrete_algorithm
+   algorithm/algorithm
    getting_started/getting_started
    examples/examples.rst
    contributing/contributing.rst
    software_arch/software_arch.rst
-   auto_diff/auto_diff.rst
-   phys_pkgsI/phys_pkgsI
-   phys_pkgsII/phys_pkgsII
+   autodiff/autodiff.rst
+   phys_pkgs/phys_pkgs
+   outp_pkgs/outp_pkgs
    ocean_state_est/ocean_state_est.rst
    under_dev/under_dev.rst
    prev_applications/prev_applications.rst
