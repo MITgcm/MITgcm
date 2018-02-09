@@ -606,7 +606,7 @@ grid files. *This operation could eventually be inlined.*
 
     netcdf XBT_v5 {
     dimensions:
-    īPROF = 278026 ;
+    iPROF = 278026 ;
     iDEPTH = 55 ;
     lTXT = 30 ;
     variables:
