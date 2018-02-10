@@ -4,7 +4,7 @@ MITgcm Tutorial Example Experiments
 ***********************************
 
 The full MITgcm distribution comes with a set of pre-configured
-numerical experiments.  Some are tests of
+example numerical experiments.  Some of these examples are tests of
 individual parts of the model code, but many are fully fledged
 numerical simulations. Full tutorials exist for a few of the examples,
 and are documented in sections :numref:`sec_eg_baro` -
