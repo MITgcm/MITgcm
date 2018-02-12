@@ -213,13 +213,13 @@ General flags and parameters
   +------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
   | SEAICE_cStar                 | 20.0000E+00                  | sea-ice strength paramter :math:`C^{*}`                                                        |
   +------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | SEAICE_rhoAir                | 1.3 (or value)               | density of air (kg/m:math:`^3`)                                                                |
+  | SEAICE_rhoAir                | 1.3 (or ``exf`` value)       | density of air (kg/m:math:`^3`)                                                                |
   +------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | SEAICE_cpAir                 | 1004 (or value)              | specific heat of air (J/kg/K)                                                                  |
+  | SEAICE_cpAir                 | 1004 (or ``exf`` value)      | specific heat of air (J/kg/K)                                                                  |
   +------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | SEAICE_lhEvap                | 2,500,000 (or val    ue)     | latent heat of evaporation                                                                     |
+  | SEAICE_lhEvap                | 2,500,000 (or ``exf`` value) | latent heat of evaporation                                                                     |
   +------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | SEAICE_lhFusion              | 334,000 (or value    )       | latent heat of fusion                                                                          |
+  | SEAICE_lhFusion              | 334,000 (or ``exf`` value)   | latent heat of fusion                                                                          |
   +------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
   | SEAICE_lhSublim              | 2,834,000                    | latent heat of sublimation                                                                     |
   +------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
@@ -307,7 +307,7 @@ original code have been modified and improved :cite:`losch10:_mitsim`:
 -  three different solution methods for solving the nonlinear momentum
    equations have been adopted: LSOR :cite:`zhang97`, EVP :cite:`hun97`, JFNK :cite:`lemieux10,losch14:_jfnk`;
 
--  ice-ocean stress can be formulated as in :cite:`hibler87` or as in :cite:`cam08`;
+-  ice-ocean stress can be formulated as in :cite:`hibler87` or as in :cite:`cam:08`;
 
 -  ice variables are advected by sophisticated, conservative advection
    schemes with flux limiting;
@@ -374,7 +374,7 @@ The momentum equation of the sea-ice model is
    :label: eq_momseaice
 	   
      m \frac{D\mathbf{u}}{Dt} = -mf\mathbf{k}\times\mathbf{u} +
-     \mathbf{\tau}_{air} + \mathbf\tau}_{ocean}
+     \mathbf{\tau}_{air} + \mathbf{\tau}_{ocean}
      - m \nabla{\phi(0)} + \mathbf{F},
 
 where :math:`m=m_{i}+m_{s}` is the ice and snow mass per unit area;
@@ -452,12 +452,13 @@ depends on both thickness :math:`h` and compactness (concentration)
    P_{\max} = P^{*}c\,h\,\exp\{-C^{*}\cdot(1-c)\},
    \label{eq:icestrength}
 
-with the constants :math:`P^{*}` (run-time parameter ``SEAICE_strength``) and
-:math:`C^{*}=20`. The nonlinear bulk and shear viscosities :math:`\eta`
-and :math:`\zeta` are functions of ice strain rate invariants and ice
-strength such that the principal components of the stress lie on an
-elliptical yield curve with the ratio of major to minor axis :math:`e`
-equal to :math:`2`; they are given by:
+with the constants :math:`P^{*}` (run-time parameter 
+``SEAICE_strength``) and :math:`C^{*}=20` (run-time parameter
+``SEAICE_cStar``). The nonlinear bulk and shear viscosities
+:math:`\eta` and :math:`\zeta` are functions of ice strain rate
+invariants and ice strength such that the principal components of the
+stress lie on an elliptical yield curve with the ratio of major to
+minor axis :math:`e` equal to :math:`2`; they are given by:
 
 .. math::
 
