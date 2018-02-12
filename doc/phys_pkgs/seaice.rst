@@ -209,9 +209,9 @@ General flags and parameters
   +------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
   | SEAICE_waterAlbedo           | 1.00000E-01                  | water albedo                                                                                   |
   +------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | SEAICE_strength              | 2.75000E+04                  | sea-ice strength :math:`P^{*}`                                                                 |
+  | SEAICE_strength              | 2.75000E+04                  | sea-ice strength :math:`P^{\ast}`                                                              |
   +------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | SEAICE_cStar                 | 20.0000E+00                  | sea-ice strength paramter :math:`C^{*}`                                                        |
+  | SEAICE_cStar                 | 20.0000E+00                  | sea-ice strength paramter :math:`C^{\ast}`                                                     |
   +------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
   | SEAICE_rhoAir                | 1.3 (or ``exf`` value)       | density of air (kg/m:math:`^3`)                                                                |
   +------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
@@ -449,11 +449,11 @@ depends on both thickness :math:`h` and compactness (concentration)
 
 .. math::
 
-   P_{\max} = P^{*}c\,h\,\exp\{-C^{*}\cdot(1-c)\},
+   P_{\max} = P^{\ast}c\,h\,\exp\{-C^{\ast}\cdot(1-c)\},
    \label{eq:icestrength}
 
-with the constants :math:`P^{*}` (run-time parameter 
-``SEAICE_strength``) and :math:`C^{*}=20` (run-time parameter
+with the constants :math:`P^{\ast}` (run-time parameter 
+``SEAICE_strength``) and :math:`C^{\ast}=20` (run-time parameter
 ``SEAICE_cStar``). The nonlinear bulk and shear viscosities
 :math:`\eta` and :math:`\zeta` are functions of ice strain rate
 invariants and ice strength such that the principal components of the
@@ -476,8 +476,8 @@ minor axis :math:`e` equal to :math:`2`; they are given by:
 The bulk viscosities are bounded above by imposing both a minimum
 :math:`\Delta_{\min}` (for numerical reasons, run-time parameter
 ``SEAICE_EPS`` with a default value of :math:`10^{-10}\text{\,s}^{-1}`)
-and a maximum :math:`\zeta_{\max} = P_{\max}/\Delta^*`, where
-:math:`\Delta^*=(5\times10^{12}/2\times10^4)\text{\,s}^{-1}`. (There
+and a maximum :math:`\zeta_{\max} = P_{\max}/\Delta^\ast`, where
+:math:`\Delta^\ast=(5\times10^{12}/2\times10^4)\text{\,s}^{-1}`. (There
 is also the option of bounding :math:`\zeta` from below by setting
 run-time parameter ``SEAICE_zetaMin`` :math:`>0`, but this is generally not
 recommended). For stress tensor computation the replacement pressure
@@ -493,8 +493,8 @@ bounding :math:`\zeta` by a smooth (differentiable) expression:
      \begin{split}
      \zeta &= \zeta_{\max}\tanh\left(\frac{P}{2\,\min(\Delta,\Delta_{\min})
          \,\zeta_{\max}}\right)\\
-     &= \frac{P}{2\Delta^*}
-     \tanh\left(\frac{\Delta^*}{\min(\Delta,\Delta_{\min})}\right) 
+     &= \frac{P}{2\Delta^\ast}
+     \tanh\left(\frac{\Delta^\ast}{\min(\Delta,\Delta_{\min})}\right) 
      \end{split}
 
 where :math:`\Delta_{\min}=10^{-20}\text{\,s}^{-1}` is chosen to avoid
@@ -738,7 +738,7 @@ The genuine EVP schemes appears to give noisy solu tions :cite:`hun01,lemieux12,
 	   
      m\frac{D\mathbf{u}}{Dt} \approx
      m\frac{\mathbf{u}^{p+1}-\mathbf{u}^{n}}{\Delta{t}} +
-     \beta^{*}\frac{\mathbf{u}^{p+1}-\mathbf{u}^{p}}{\Delta{t}_{\mathrm{EVP}}}
+     \beta^{\ast}\frac{\mathbf{u}^{p+1}-\mathbf{u}^{p}}{\Delta{t}_{\mathrm{EVP}}}
 
 where :math:`n` is the previous time step index, and :math:`p` is the
 previous sub-cycling index. The extra “intertial” term
