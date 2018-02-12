@@ -448,9 +448,9 @@ depends on both thickness :math:`h` and compactness (concentration)
 :math:`c`:
 
 .. math::
+   :label: eq_icestrength
 
    P_{\max} = P^{\ast}c\,h\,\exp\{-C^{\ast}\cdot(1-c)\},
-   \label{eq:icestrength}
 
 with the constants :math:`P^{\ast}` (run-time parameter 
 ``SEAICE_strength``) and :math:`C^{\ast}=20` (run-time parameter
@@ -488,8 +488,8 @@ Defining the CPP-flag ``SEAICE_ZETA_SMOOTHREG`` in ``SEAICE_OPTIONS.h`` before c
 bounding :math:`\zeta` by a smooth (differentiable) expression:
 
 .. math::
+   :label: eq_zetaregsmooth
 
-   \label{eq:zetaregsmooth}
      \begin{split}
      \zeta &= \zeta_{\max}\tanh\left(\frac{P}{2\,\min(\Delta,\Delta_{\min})
          \,\zeta_{\max}}\right)\\
@@ -694,17 +694,22 @@ shearing strain rates, :math:`D_T =
 the equations :eq:`eq_evpequation` can be written as:
 
 .. math::
+     :label: eq_evpstresstensor1
 
-   \begin{aligned}
-     \label{eq:evpstresstensor1}
      \frac{\partial\sigma_{1}}{\partial{t}} + \frac{\sigma_{1}}{2T} +
-     \frac{P}{2T} &= \frac{P}{2T\Delta} D_D \\
-     \label{eq:evpstresstensor2}
+     \frac{P}{2T} &= \frac{P}{2T\Delta} D_D
+
+.. math::
+     :label: eq_evpstresstensor2
+
      \frac{\partial\sigma_{2}}{\partial{t}} + \frac{\sigma_{2} e^{2}}{2T}
-     &= \frac{P}{2T\Delta} D_T \\
-     \label{eq:evpstresstensor12}
+     &= \frac{P}{2T\Delta} D_T
+
+.. math::
+     :label: eq_evpstresstensor12
+
      \frac{\partial\sigma_{12}}{\partial{t}} + \frac{\sigma_{12} e^{2}}{2T}
-     &= \frac{P}{4T\Delta} D_S \end{aligned}
+     &= \frac{P}{4T\Delta} D_S
 
 Here, the elastic parameter :math:`E` is redefined in terms of a damping
 timescale :math:`T` for elastic waves
@@ -752,17 +757,19 @@ terminology of , the evolution equations of stress :math:`\sigma_{ij}`
 and momentum :math:`\mathbf{u}` can be written as:
 
 .. math::
+     :label: eq_evpstarsigma
 
-   \begin{aligned}
-     \label{eq:evpstarsigma}
      \sigma_{ij}^{p+1}&=\sigma_{ij}^p+\frac{1}{\alpha}
      \Big(\sigma_{ij}(\mathbf{u}^p)-\sigma_{ij}^p\Big),
-     \phantom{\int}\\
-     \label{eq:evpstarmom}
+     \phantom{\int}
+
+.. math::
+     :label: eq_evpstarmom
+
      \mathbf{u}^{p+1}&=\mathbf{u}^p+\frac{1}{\beta}
      \Big(\frac{\Delta t}{m}\nabla \cdot{\bf \sigma}^{p+1}+
      \frac{\Delta t}{m}\mathbf{R}^{p}+\mathbf{u}_n
-     -\mathbf{u}^p\Big).\end{aligned}
+     -\mathbf{u}^p\Big).
 
 :math:`\mathbf{R}` contains all terms in the momentum equations except
 for the rheology terms and the time derivative; :math:`\alpha` and
@@ -783,8 +790,8 @@ Another variant is the aEVP scheme :cite:`kimmritz16`, where the value
 of :math:`\alpha` is set dynamically based on the stability criterion
 
 .. math::
+   :label: eq_aevpalpha
 
-   \label{eq:aevpalpha}
      \alpha = \beta = \max\left( \tilde{c}\pi\sqrt{c \frac{\zeta}{A_{c}}
        \frac{\Delta{t}}{\max(m,10^{-4}\text{\,kg})}},\alpha_{\min} \right)
 
@@ -806,8 +813,8 @@ Truncated ellipse method (TEM) for yield curve
 In the so-called truncated ellipse method the shear viscosity :math:`\eta` is capped to suppress any tensile stress:
 
 .. math::
+   :label: eq_etatem
 
-   \label{eq:etatem}
      \eta = \min\left(\frac{\zeta}{e^2},
      \frac{\frac{P}{2}-\zeta(\dot{\epsilon}_{11}+\dot{\epsilon}_{22})}
      {\sqrt{\max(\Delta_{\min}^{2},(\dot{\epsilon}_{11}-\dot{\epsilon}_{22})^2
@@ -1086,8 +1093,8 @@ concentration :math:`c` and effective snow thickness
 (:math:`c\cdot{h}_{s}`) are advected by ice velocities:
 
 .. math::
+   :label: eq_advection
 
-   \label{eq:advection}
      \frac{\partial{X}}{\partial{t}} = - \nabla\cdot\left({{\vec{\mathbf{u}}}}\,X\right) +
      \Gamma_{X} + D_{X}
 
