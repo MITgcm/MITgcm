@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o doc:
+  - first addition of reST/sphinx documentation (formerly in
+    https://github.com/altMITgcm/MITgcm/doc/), converted from original MITgcm
+    LaTeX manual in: https://github.com/MITgcm/manual-archive with edits
+    (including new sections) from @jrscott and @edoddridge ;
+  - update section on Ocean State Estimation packages by @gaelforget ;
+  - updated seaice pkg description by @mjlosch.
+
 checkpoint67 (2018/02/05)
 o add Sphinx configuration for documentation on https://mitgcm.readthedocs.io
 o add Travis configuration for testing pull requests
