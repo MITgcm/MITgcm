@@ -20,7 +20,7 @@ CPP options enable or disable different aspects of the package
 field-related dates/times are set in data.seaice (Section :numref:`para_phys_pkg_seaice_runtime`).
 A description of key subroutines is given in Section
 :numref:`para_phys_pkg_seaice_subroutines`. Input fields, units and sign conventions
-are summarized in Section [sec:pkg:seaice:fields:sub:`u`\ nits], and
+are summarized in Section [sec:pkg:seaice:fields_units], and
 available diagnostics output is listed in Section
 [sec:pkg:seaice:diagnostics].
 
@@ -46,7 +46,7 @@ time
    SEAICE requires the external forcing package ``exf`` to be enabled; no
    additional CPP options are required.
 
-(see Section [sec:buildingCode]).
+(see Section :numref:`building_code`).
 
 Parts of the SEAICE code can be enabled or disabled at compile time via
 CPP preprocessor flags. These options are set in ``SEAICE_OPTIONS.h``. :numref:`tab_phys_pkg_seaice_cpp` summarizes the most important ones. For more
@@ -350,7 +350,7 @@ The reformulation improves model physics by representing the brine
 content of the upper ice with a variable heat capacity. It also improves
 model numerics and consumes less computer time and memory.
 
-The Winton sea-ice thermodynamics have been ported to the MIT GCM; they currently reside under ``pkg/seaice``. The package ``thsice`` is described in section [sec:pkg:thsice]; it is fully compatible with the packages ``seaice`` and ``exf``.  When turned on together with ``seaice``, the zero-layer thermodynamics are replaced by the Winton thermodynamics. In order to use the ``seaice``-package with the thermodynamics of ``thsice``, compile both packages and turn both package on in ``data.pkg``; see an example in ``global_ocean.cs32x15/input.icedyn``. Note, that once ``thsice`` is turned on, the variables and diagnostics associated to the default thermodynamics are meaningless, and the diagnostics of ``thsice`` have to be used instead.
+The Winton sea-ice thermodynamics have been ported to the MIT GCM; they currently reside under ``pkg/seaice``. The package ``thsice`` is described in section :numref:`sub_phys_pkg_thsice`; it is fully compatible with the packages ``seaice`` and ``exf``.  When turned on together with ``seaice``, the zero-layer thermodynamics are replaced by the Winton thermodynamics. In order to use the ``seaice``-package with the thermodynamics of ``thsice``, compile both packages and turn both package on in ``data.pkg``; see an example in ``global_ocean.cs32x15/input.icedyn``. Note, that once ``thsice`` is turned on, the variables and diagnostics associated to the default thermodynamics are meaningless, and the diagnostics of ``thsice`` have to be used instead.
 
 .. _para_phys_pkg_seaice_surfaceforcing:
 
@@ -475,9 +475,9 @@ minor axis :math:`e` equal to :math:`2`; they are given by:
 
 The bulk viscosities are bounded above by imposing both a minimum
 :math:`\Delta_{\min}` (for numerical reasons, run-time parameter
-``SEAICE_EPS`` with a default value of :math:`10^{-10}\text{\,s}^{-1}`)
+``SEAICE_EPS`` with a default value of :math:`10^{-10}\,\text{s}^{-1}`)
 and a maximum :math:`\zeta_{\max} = P_{\max}/\Delta^\ast`, where
-:math:`\Delta^\ast=(5\times10^{12}/2\times10^4)\text{\,s}^{-1}`. (There
+:math:`\Delta^\ast=(5\times10^{12}/2\times10^4)\,\text{s}^{-1}`. (There
 is also the option of bounding :math:`\zeta` from below by setting
 run-time parameter ``SEAICE_zetaMin`` :math:`>0`, but this is generally not
 recommended). For stress tensor computation the replacement pressure
@@ -497,7 +497,7 @@ bounding :math:`\zeta` by a smooth (differentiable) expression:
      \tanh\left(\frac{\Delta^\ast}{\min(\Delta,\Delta_{\min})}\right) 
      \end{split}
 
-where :math:`\Delta_{\min}=10^{-20}\text{\,s}^{-1}` is chosen to avoid
+where :math:`\Delta_{\min}=10^{-20}\,\text{s}^{-1}` is chosen to avoid
 divisions by zero.
 
 .. _para_phys_pkg_seaice_LSRJFNK:
@@ -697,19 +697,19 @@ the equations :eq:`eq_evpequation` can be written as:
      :label: eq_evpstresstensor1
 
      \frac{\partial\sigma_{1}}{\partial{t}} + \frac{\sigma_{1}}{2T} +
-     \frac{P}{2T} &= \frac{P}{2T\Delta} D_D
+     \frac{P}{2T} = \frac{P}{2T\Delta} D_D
 
 .. math::
      :label: eq_evpstresstensor2
 
      \frac{\partial\sigma_{2}}{\partial{t}} + \frac{\sigma_{2} e^{2}}{2T}
-     &= \frac{P}{2T\Delta} D_T
+     = \frac{P}{2T\Delta} D_T
 
 .. math::
      :label: eq_evpstresstensor12
 
      \frac{\partial\sigma_{12}}{\partial{t}} + \frac{\sigma_{12} e^{2}}{2T}
-     &= \frac{P}{4T\Delta} D_S
+     = \frac{P}{4T\Delta} D_S
 
 Here, the elastic parameter :math:`E` is redefined in terms of a damping
 timescale :math:`T` for elastic waves
@@ -759,14 +759,14 @@ and momentum :math:`\mathbf{u}` can be written as:
 .. math::
      :label: eq_evpstarsigma
 
-     \sigma_{ij}^{p+1}&=\sigma_{ij}^p+\frac{1}{\alpha}
+     \sigma_{ij}^{p+1}=\sigma_{ij}^p+\frac{1}{\alpha}
      \Big(\sigma_{ij}(\mathbf{u}^p)-\sigma_{ij}^p\Big),
      \phantom{\int}
 
 .. math::
      :label: eq_evpstarmom
 
-     \mathbf{u}^{p+1}&=\mathbf{u}^p+\frac{1}{\beta}
+     \mathbf{u}^{p+1}=\mathbf{u}^p+\frac{1}{\beta}
      \Big(\frac{\Delta t}{m}\nabla \cdot{\bf \sigma}^{p+1}+
      \frac{\Delta t}{m}\mathbf{R}^{p}+\mathbf{u}_n
      -\mathbf{u}^p\Big).
@@ -780,10 +780,10 @@ fixed to ``SEAICEnEVPstarSteps``.
 
 In order to use mEVP in the MITgcm, set ``SEAICEuseEVPstar = .TRUE.,``
 in ``data.seaice``. If ``SEAICEuseEVPrev =.TRUE.,`` the actual form of
-equations ([eq:evpstarsigma]) and ([eq:evpstarmom]) is used with fewer
+equations :eq:`eq_evpstarsigma` and :eq:`eq_evpstarmom` is used with fewer
 implicit terms and the factor of :math:`e^{2}` dropped in the stress
-equations ([eq:evpstresstensor2]) and
-([eq:evpstresstensor12]). Although this modifies the original
+equations :eq:`eq_evpstresstensor2` and
+:eq:`eq_evpstresstensor12`. Although this modifies the original
 EVP-equations, it turns out to improve convergence :cite:`bouillon13`.
 
 Another variant is the aEVP scheme :cite:`kimmritz16`, where the value
@@ -793,7 +793,7 @@ of :math:`\alpha` is set dynamically based on the stability criterion
    :label: eq_aevpalpha
 
      \alpha = \beta = \max\left( \tilde{c}\pi\sqrt{c \frac{\zeta}{A_{c}}
-       \frac{\Delta{t}}{\max(m,10^{-4}\text{\,kg})}},\alpha_{\min} \right)
+       \frac{\Delta{t}}{\max(m,10^{-4}\,\text{kg})}},\alpha_{\min} \right)
 
 with the grid cell area :math:`A_c` and the ice and snow mass :math:`m`.
 This choice sacrifices speed of convergence for stability with the
@@ -1057,7 +1057,7 @@ over a potentially very heterogeneous thickness distribution. In order
 to parameterize a sub-grid scale distribution for heat flux
 computations, the mean ice thickness :math:`h` is split into :math:`N`
 thickness categories :math:`H_{n}` that are equally distributed between
-:math:`2h` and a minimum imposed ice thickness of :math:`5\text{\,cm}`
+:math:`2h` and a minimum imposed ice thickness of :math:`5\,\text{cm}`
 by :math:`H_n= \frac{2n-1}{7}\,h` for :math:`n\in[1,N]`. The heat fluxes
 computed for each thickness category is area-averaged to give the total
 heat flux :cite:`hibler84`. To use this thickness category parameterization set ``SEAICE_multDim`` to the number of desired categories in ``data.seaice`` (7 is a good guess, for anything larger than 7 modify ``SEAICE_SIZE.h``); note that this requires different restart files and switching this flag on in the middle of an integration is not advised. In order to include the same distribution for snow, set ``SEAICE_useMultDimSnow = .TRUE.``; only then, the parameterization of always having a fraction of thin ice is efficient and generally thicker ice is produce :cite:`castro-morales14`.
@@ -1112,7 +1112,7 @@ The MITgcm sea ice model provides the option to use the thermodynamics
 model of :cite:`win00`, which in turn is based on the 3-layer model of
 :cite:`sem76` and which treats brine content by means of enthalpy
 conservation; the corresponding package ``thsice`` is described in
-section [sec:pkg:thsice]. This scheme requires additional state
+section :numref:`sub_phys_pkg_thsice`. This scheme requires additional state
 variables, namely the enthalpy of the two ice layers (instead of
 effective ice salinity), to be advected by ice velocities. The
 internal sea ice temperature is inferred from ice enthalpy. To avoid
