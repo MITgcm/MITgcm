@@ -20,7 +20,7 @@ CPP options enable or disable different aspects of the package
 field-related dates/times are set in data.seaice (Section :numref:`para_phys_pkg_seaice_runtime`).
 A description of key subroutines is given in Section
 :numref:`para_phys_pkg_seaice_subroutines`. Input fields, units and sign conventions
-are summarized in Section [sec:pkg:seaice:fields:sub:`u`\ nits], and
+are summarized in Section [sec:pkg:seaice:fields_units], and
 available diagnostics output is listed in Section
 [sec:pkg:seaice:diagnostics].
 
@@ -46,7 +46,7 @@ time
    SEAICE requires the external forcing package ``exf`` to be enabled; no
    additional CPP options are required.
 
-(see Section [sec:buildingCode]).
+(see Section :numref:`building_code`).
 
 Parts of the SEAICE code can be enabled or disabled at compile time via
 CPP preprocessor flags. These options are set in ``SEAICE_OPTIONS.h``. :numref:`tab_phys_pkg_seaice_cpp` summarizes the most important ones. For more
@@ -350,7 +350,7 @@ The reformulation improves model physics by representing the brine
 content of the upper ice with a variable heat capacity. It also improves
 model numerics and consumes less computer time and memory.
 
-The Winton sea-ice thermodynamics have been ported to the MIT GCM; they currently reside under ``pkg/seaice``. The package ``thsice`` is described in section [sec:pkg:thsice]; it is fully compatible with the packages ``seaice`` and ``exf``.  When turned on together with ``seaice``, the zero-layer thermodynamics are replaced by the Winton thermodynamics. In order to use the ``seaice``-package with the thermodynamics of ``thsice``, compile both packages and turn both package on in ``data.pkg``; see an example in ``global_ocean.cs32x15/input.icedyn``. Note, that once ``thsice`` is turned on, the variables and diagnostics associated to the default thermodynamics are meaningless, and the diagnostics of ``thsice`` have to be used instead.
+The Winton sea-ice thermodynamics have been ported to the MIT GCM; they currently reside under ``pkg/seaice``. The package ``thsice`` is described in section :numref:`sub_phys_pkg_thsice`; it is fully compatible with the packages ``seaice`` and ``exf``.  When turned on together with ``seaice``, the zero-layer thermodynamics are replaced by the Winton thermodynamics. In order to use the ``seaice``-package with the thermodynamics of ``thsice``, compile both packages and turn both package on in ``data.pkg``; see an example in ``global_ocean.cs32x15/input.icedyn``. Note, that once ``thsice`` is turned on, the variables and diagnostics associated to the default thermodynamics are meaningless, and the diagnostics of ``thsice`` have to be used instead.
 
 .. _para_phys_pkg_seaice_surfaceforcing:
 
@@ -475,9 +475,9 @@ minor axis :math:`e` equal to :math:`2`; they are given by:
 
 The bulk viscosities are bounded above by imposing both a minimum
 :math:`\Delta_{\min}` (for numerical reasons, run-time parameter
-``SEAICE_EPS`` with a default value of :math:`10^{-10}\text{\,s}^{-1}`)
+``SEAICE_EPS`` with a default value of :math:`10^{-10}\,\text{s}^{-1}`)
 and a maximum :math:`\zeta_{\max} = P_{\max}/\Delta^\ast`, where
-:math:`\Delta^\ast=(5\times10^{12}/2\times10^4)\text{\,s}^{-1}`. (There
+:math:`\Delta^\ast=(5\times10^{12}/2\times10^4)\,\text{s}^{-1}`. (There
 is also the option of bounding :math:`\zeta` from below by setting
 run-time parameter ``SEAICE_zetaMin`` :math:`>0`, but this is generally not
 recommended). For stress tensor computation the replacement pressure
@@ -497,7 +497,7 @@ bounding :math:`\zeta` by a smooth (differentiable) expression:
      \tanh\left(\frac{\Delta^\ast}{\min(\Delta,\Delta_{\min})}\right) 
      \end{split}
 
-where :math:`\Delta_{\min}=10^{-20}\text{\,s}^{-1}` is chosen to avoid
+where :math:`\Delta_{\min}=10^{-20}\,\text{s}^{-1}` is chosen to avoid
 divisions by zero.
 
 .. _para_phys_pkg_seaice_LSRJFNK:
@@ -780,10 +780,10 @@ fixed to ``SEAICEnEVPstarSteps``.
 
 In order to use mEVP in the MITgcm, set ``SEAICEuseEVPstar = .TRUE.,``
 in ``data.seaice``. If ``SEAICEuseEVPrev =.TRUE.,`` the actual form of
-equations ([eq:evpstarsigma]) and ([eq:evpstarmom]) is used with fewer
+equations :eq:`eq_evpstarsigma` and :eq:`eq_evpstarmom` is used with fewer
 implicit terms and the factor of :math:`e^{2}` dropped in the stress
-equations ([eq:evpstresstensor2]) and
-([eq:evpstresstensor12]). Although this modifies the original
+equations :eq:`eq_evpstresstensor2` and
+:eq:`eq_evpstresstensor12`. Although this modifies the original
 EVP-equations, it turns out to improve convergence :cite:`bouillon13`.
 
 Another variant is the aEVP scheme :cite:`kimmritz16`, where the value
@@ -793,7 +793,7 @@ of :math:`\alpha` is set dynamically based on the stability criterion
    :label: eq_aevpalpha
 
      \alpha = \beta = \max\left( \tilde{c}\pi\sqrt{c \frac{\zeta}{A_{c}}
-       \frac{\Delta{t}}{\max(m,10^{-4}\text{\,kg})}},\alpha_{\min} \right)
+       \frac{\Delta{t}}{\max(m,10^{-4}\,\text{kg})}},\alpha_{\min} \right)
 
 with the grid cell area :math:`A_c` and the ice and snow mass :math:`m`.
 This choice sacrifices speed of convergence for stability with the
@@ -1057,7 +1057,7 @@ over a potentially very heterogeneous thickness distribution. In order
 to parameterize a sub-grid scale distribution for heat flux
 computations, the mean ice thickness :math:`h` is split into :math:`N`
 thickness categories :math:`H_{n}` that are equally distributed between
-:math:`2h` and a minimum imposed ice thickness of :math:`5\text{\,cm}`
+:math:`2h` and a minimum imposed ice thickness of :math:`5\,\text{cm}`
 by :math:`H_n= \frac{2n-1}{7}\,h` for :math:`n\in[1,N]`. The heat fluxes
 computed for each thickness category is area-averaged to give the total
 heat flux :cite:`hibler84`. To use this thickness category parameterization set ``SEAICE_multDim`` to the number of desired categories in ``data.seaice`` (7 is a good guess, for anything larger than 7 modify ``SEAICE_SIZE.h``); note that this requires different restart files and switching this flag on in the middle of an integration is not advised. In order to include the same distribution for snow, set ``SEAICE_useMultDimSnow = .TRUE.``; only then, the parameterization of always having a fraction of thin ice is efficient and generally thicker ice is produce :cite:`castro-morales14`.
@@ -1112,7 +1112,7 @@ The MITgcm sea ice model provides the option to use the thermodynamics
 model of :cite:`win00`, which in turn is based on the 3-layer model of
 :cite:`sem76` and which treats brine content by means of enthalpy
 conservation; the corresponding package ``thsice`` is described in
-section [sec:pkg:thsice]. This scheme requires additional state
+section :numref:`sub_phys_pkg_thsice`. This scheme requires additional state
 variables, namely the enthalpy of the two ice layers (instead of
 effective ice salinity), to be advected by ice velocities. The
 internal sea ice temperature is inferred from ice enthalpy. To avoid
@@ -1189,8 +1189,97 @@ SEAICE diagnostics
 ##################
 
 Diagnostics output is available via the diagnostics package (see Section
-[sec:pkg:diagnostics]). Available output fields are summarized in Table
-[tab:pkg:seaice:diagnostics].
+[sec:pkg:diagnostics]). Available output fields are summarized in the
+following table:
+
+.. code-block:: text
+
+    ---------+----------+----------------+-----------------
+     <-Name->|<- grid ->|<--  Units   -->|<- Tile (max=80c)
+    ---------+----------+----------------+-----------------
+     sIceLoad|SM      U1|kg/m^2          |sea-ice loading (in Mass of ice+snow / area unit)
+    ---
+    SEA ICE STATE:
+    ---
+     SIarea  |SM      M1|m^2/m^2         |SEAICE fractional ice-covered area [0 to 1]
+     SIheff  |SM      M1|m               |SEAICE effective ice thickness
+     SIhsnow |SM      M1|m               |SEAICE effective snow thickness
+     SIhsalt |SM      M1|g/m^2           |SEAICE effective salinity
+     SIuice  |UU      M1|m/s             |SEAICE zonal ice velocity, >0 from West to East
+     SIvice  |VV      M1|m/s             |SEAICE merid. ice velocity, >0 from South to North
+    ---
+    ATMOSPHERIC STATE AS SEEN BY SEA ICE:
+    ---
+     SItices |SM  C   M1|K               |Surface Temperature over Sea-Ice (area weighted)
+     SIuwind |UM      U1|m/s             |SEAICE zonal 10-m wind speed, >0 increases uVel
+     SIvwind |VM      U1|m/s             |SEAICE meridional 10-m wind speed, >0 increases uVel
+     SIsnPrcp|SM      U1|kg/m^2/s        |Snow precip. (+=dw) over Sea-Ice (area weighted)
+    ---
+    FLUXES ACROSS ICE-OCEAN INTERFACE (ATMOS to OCEAN FOR ICE-FREE REGIONS):
+    ---
+     SIfu    |UU      U1|N/m^2           |SEAICE zonal surface wind stress, >0 increases uVel
+     SIfv    |VV      U1|N/m^2           |SEAICE merid. surface wind stress, >0 increases vVel
+     SIqnet  |SM      U1|W/m^2           |Ocean surface heatflux, turb+rad, >0 decreases theta
+     SIqsw   |SM      U1|W/m^2           |Ocean surface shortwave radiat., >0 decreases theta
+     SIempmr |SM      U1|kg/m^2/s        |Ocean surface freshwater flux, > 0 increases salt
+     SIqneto |SM      U1|W/m^2           |Open Ocean Part of SIqnet, turb+rad, >0 decr theta
+     SIqneti |SM      U1|W/m^2           |Ice Covered Part of SIqnet, turb+rad, >0 decr theta
+    ---
+    FLUXES ACROSS ATMOSPHERE-ICE INTERFACE (ATMOS to OCEAN FOR ICE-FREE REGIONS):
+    ---
+     SIatmQnt|SM      U1|W/m^2           |Net atmospheric heat flux, >0 decreases theta
+     SIatmFW |SM      U1|kg/m^2/s        |Net freshwater flux from atmosphere & land (+=down)
+     SIfwSubl|SM      U1|kg/m^2/s        |Freshwater flux of sublimated ice, >0 decreases ice
+    ---
+    THERMODYNAMIC DIAGNOSTICS:
+    ---
+     SIareaPR|SM      M1|m^2/m^2         |SIarea preceeding ridging process
+     SIareaPT|SM      M1|m^2/m^2         |SIarea preceeding thermodynamic growth/melt
+     SIheffPT|SM      M1|m               |SIheff preceeeding thermodynamic growth/melt
+     SIhsnoPT|SM      M1|m               |SIhsnow preceeeding thermodynamic growth/melt
+     SIaQbOCN|SM      M1|m/s             |Potential HEFF rate of change by ocean ice flux
+     SIaQbATC|SM      M1|m/s             |Potential HEFF rate of change by atm flux over ice
+     SIaQbATO|SM      M1|m/s             |Potential HEFF rate of change by open ocn atm flux
+     SIdHbOCN|SM      M1|m/s             |HEFF rate of change by ocean ice flux
+     SIdSbATC|SM      M1|m/s             |HSNOW rate of change by atm flux over sea ice
+     SIdSbOCN|SM      M1|m/s             |HSNOW rate of change by ocean ice flux
+     SIdHbATC|SM      M1|m/s             |HEFF rate of change by atm flux over sea ice
+     SIdHbATO|SM      M1|m/s             |HEFF rate of change by open ocn atm flux
+     SIdHbFLO|SM      M1|m/s             |HEFF rate of change by flooding snow
+     SIdAbATO|SM      M1|m^2/m^2/s       |Potential AREA rate of change by open ocn atm flux
+     SIdAbATC|SM      M1|m^2/m^2/s       |Potential AREA rate of change by atm flux over ice
+     SIdAbOCN|SM      M1|m^2/m^2/s       |Potential AREA rate of change by ocean ice flux
+     SIdA    |SM      M1|m^2/m^2/s       |AREA rate of change (net)
+    ---
+    DYNAMIC/RHEOLOGY DIAGNOSTICS:
+    ---
+     SIpress |SM      M1|m^2/s^2         |SEAICE strength (with upper and lower limit)
+     SIzeta  |SM      M1|m^2/s           |SEAICE nonlinear bulk viscosity
+     SIeta   |SM      M1|m^2/s           |SEAICE nonlinear shear viscosity
+     SIsigI  |SM      M1|no units        |SEAICE normalized principle stress, component one
+     SIsigII |SM      M1|no units        |SEAICE normalized principle stress, component two
+    ---
+    ADVECTIVE/DIFFUSIVE FLUXES OF SEA ICE variables:
+    ---
+     ADVxHEFF|UU      M1|m.m^2/s         |Zonal      Advective Flux of eff ice thickn
+     ADVyHEFF|VV      M1|m.m^2/s         |Meridional Advective Flux of eff ice thickn
+     SIuheff |UU      M1|m^2/s           |Zonal      Transport of eff ice thickn (centered)
+     SIvheff |VV      M1|m^2/s           |Meridional Transport of eff ice thickn (centered)
+     DFxEHEFF|UU      M1|m^2/s           |Zonal      Diffusive Flux of eff ice thickn
+     DFyEHEFF|VV      M1|m^2/s           |Meridional Diffusive Flux of eff ice thickn
+     ADVxAREA|UU      M1|m^2/m^2.m^2/s   |Zonal      Advective Flux of fract area
+     ADVyAREA|VV      M1|m^2/m^2.m^2/s   |Meridional Advective Flux of fract area
+     DFxEAREA|UU      M1|m^2/m^2.m^2/s   |Zonal      Diffusive Flux of fract area
+     DFyEAREA|VV      M1|m^2/m^2.m^2/s   |Meridional Diffusive Flux of fract area
+     ADVxSNOW|UU      M1|m.m^2/s         |Zonal      Advective Flux of eff snow thickn
+     ADVySNOW|VV      M1|m.m^2/s         |Meridional Advective Flux of eff snow thickn
+     DFxESNOW|UU      M1|m.m^2/s         |Zonal      Diffusive Flux of eff snow thickn
+     DFyESNOW|VV      M1|m.m^2/s         |Meridional Diffusive Flux of eff snow thickn
+     ADVxSSLT|UU      M1|psu.m^2/s       |Zonal      Advective Flux of seaice salinity
+     ADVySSLT|VV      M1|psu.m^2/s       |Meridional Advective Flux of seaice salinity
+     DFxESSLT|UU      M1|psu.m^2/s       |Zonal      Diffusive Flux of seaice salinity
+     DFyESSLT|VV      M1|psu.m^2/s       |Meridional Diffusive Flux of seaice salinity
+
 
 Experiments and tutorials that use seaice
 #########################################
