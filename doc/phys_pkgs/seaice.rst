@@ -1189,8 +1189,97 @@ SEAICE diagnostics
 ##################
 
 Diagnostics output is available via the diagnostics package (see Section
-[sec:pkg:diagnostics]). Available output fields are summarized in Table
-[tab:pkg:seaice:diagnostics].
+[sec:pkg:diagnostics]). Available output fields are summarized in the
+following table:
+
+.. code-block:: text
+
+    ---------+----------+----------------+-----------------
+     <-Name->|<- grid ->|<--  Units   -->|<- Tile (max=80c)
+    ---------+----------+----------------+-----------------
+     sIceLoad|SM      U1|kg/m^2          |sea-ice loading (in Mass of ice+snow / area unit)
+    ---
+    SEA ICE STATE:
+    ---
+     SIarea  |SM      M1|m^2/m^2         |SEAICE fractional ice-covered area [0 to 1]
+     SIheff  |SM      M1|m               |SEAICE effective ice thickness
+     SIhsnow |SM      M1|m               |SEAICE effective snow thickness
+     SIhsalt |SM      M1|g/m^2           |SEAICE effective salinity
+     SIuice  |UU      M1|m/s             |SEAICE zonal ice velocity, >0 from West to East
+     SIvice  |VV      M1|m/s             |SEAICE merid. ice velocity, >0 from South to North
+    ---
+    ATMOSPHERIC STATE AS SEEN BY SEA ICE:
+    ---
+     SItices |SM  C   M1|K               |Surface Temperature over Sea-Ice (area weighted)
+     SIuwind |UM      U1|m/s             |SEAICE zonal 10-m wind speed, >0 increases uVel
+     SIvwind |VM      U1|m/s             |SEAICE meridional 10-m wind speed, >0 increases uVel
+     SIsnPrcp|SM      U1|kg/m^2/s        |Snow precip. (+=dw) over Sea-Ice (area weighted)
+    ---
+    FLUXES ACROSS ICE-OCEAN INTERFACE (ATMOS to OCEAN FOR ICE-FREE REGIONS):
+    ---
+     SIfu    |UU      U1|N/m^2           |SEAICE zonal surface wind stress, >0 increases uVel
+     SIfv    |VV      U1|N/m^2           |SEAICE merid. surface wind stress, >0 increases vVel
+     SIqnet  |SM      U1|W/m^2           |Ocean surface heatflux, turb+rad, >0 decreases theta
+     SIqsw   |SM      U1|W/m^2           |Ocean surface shortwave radiat., >0 decreases theta
+     SIempmr |SM      U1|kg/m^2/s        |Ocean surface freshwater flux, > 0 increases salt
+     SIqneto |SM      U1|W/m^2           |Open Ocean Part of SIqnet, turb+rad, >0 decr theta
+     SIqneti |SM      U1|W/m^2           |Ice Covered Part of SIqnet, turb+rad, >0 decr theta
+    ---
+    FLUXES ACROSS ATMOSPHERE-ICE INTERFACE (ATMOS to OCEAN FOR ICE-FREE REGIONS):
+    ---
+     SIatmQnt|SM      U1|W/m^2           |Net atmospheric heat flux, >0 decreases theta
+     SIatmFW |SM      U1|kg/m^2/s        |Net freshwater flux from atmosphere & land (+=down)
+     SIfwSubl|SM      U1|kg/m^2/s        |Freshwater flux of sublimated ice, >0 decreases ice
+    ---
+    THERMODYNAMIC DIAGNOSTICS:
+    ---
+     SIareaPR|SM      M1|m^2/m^2         |SIarea preceeding ridging process
+     SIareaPT|SM      M1|m^2/m^2         |SIarea preceeding thermodynamic growth/melt
+     SIheffPT|SM      M1|m               |SIheff preceeeding thermodynamic growth/melt
+     SIhsnoPT|SM      M1|m               |SIhsnow preceeeding thermodynamic growth/melt
+     SIaQbOCN|SM      M1|m/s             |Potential HEFF rate of change by ocean ice flux
+     SIaQbATC|SM      M1|m/s             |Potential HEFF rate of change by atm flux over ice
+     SIaQbATO|SM      M1|m/s             |Potential HEFF rate of change by open ocn atm flux
+     SIdHbOCN|SM      M1|m/s             |HEFF rate of change by ocean ice flux
+     SIdSbATC|SM      M1|m/s             |HSNOW rate of change by atm flux over sea ice
+     SIdSbOCN|SM      M1|m/s             |HSNOW rate of change by ocean ice flux
+     SIdHbATC|SM      M1|m/s             |HEFF rate of change by atm flux over sea ice
+     SIdHbATO|SM      M1|m/s             |HEFF rate of change by open ocn atm flux
+     SIdHbFLO|SM      M1|m/s             |HEFF rate of change by flooding snow
+     SIdAbATO|SM      M1|m^2/m^2/s       |Potential AREA rate of change by open ocn atm flux
+     SIdAbATC|SM      M1|m^2/m^2/s       |Potential AREA rate of change by atm flux over ice
+     SIdAbOCN|SM      M1|m^2/m^2/s       |Potential AREA rate of change by ocean ice flux
+     SIdA    |SM      M1|m^2/m^2/s       |AREA rate of change (net)
+    ---
+    DYNAMIC/RHEOLOGY DIAGNOSTICS:
+    ---
+     SIpress |SM      M1|m^2/s^2         |SEAICE strength (with upper and lower limit)
+     SIzeta  |SM      M1|m^2/s           |SEAICE nonlinear bulk viscosity
+     SIeta   |SM      M1|m^2/s           |SEAICE nonlinear shear viscosity
+     SIsigI  |SM      M1|no units        |SEAICE normalized principle stress, component one
+     SIsigII |SM      M1|no units        |SEAICE normalized principle stress, component two
+    ---
+    ADVECTIVE/DIFFUSIVE FLUXES OF SEA ICE variables:
+    ---
+     ADVxHEFF|UU      M1|m.m^2/s         |Zonal      Advective Flux of eff ice thickn
+     ADVyHEFF|VV      M1|m.m^2/s         |Meridional Advective Flux of eff ice thickn
+     SIuheff |UU      M1|m^2/s           |Zonal      Transport of eff ice thickn (centered)
+     SIvheff |VV      M1|m^2/s           |Meridional Transport of eff ice thickn (centered)
+     DFxEHEFF|UU      M1|m^2/s           |Zonal      Diffusive Flux of eff ice thickn
+     DFyEHEFF|VV      M1|m^2/s           |Meridional Diffusive Flux of eff ice thickn
+     ADVxAREA|UU      M1|m^2/m^2.m^2/s   |Zonal      Advective Flux of fract area
+     ADVyAREA|VV      M1|m^2/m^2.m^2/s   |Meridional Advective Flux of fract area
+     DFxEAREA|UU      M1|m^2/m^2.m^2/s   |Zonal      Diffusive Flux of fract area
+     DFyEAREA|VV      M1|m^2/m^2.m^2/s   |Meridional Diffusive Flux of fract area
+     ADVxSNOW|UU      M1|m.m^2/s         |Zonal      Advective Flux of eff snow thickn
+     ADVySNOW|VV      M1|m.m^2/s         |Meridional Advective Flux of eff snow thickn
+     DFxESNOW|UU      M1|m.m^2/s         |Zonal      Diffusive Flux of eff snow thickn
+     DFyESNOW|VV      M1|m.m^2/s         |Meridional Diffusive Flux of eff snow thickn
+     ADVxSSLT|UU      M1|psu.m^2/s       |Zonal      Advective Flux of seaice salinity
+     ADVySSLT|VV      M1|psu.m^2/s       |Meridional Advective Flux of seaice salinity
+     DFxESSLT|UU      M1|psu.m^2/s       |Zonal      Diffusive Flux of seaice salinity
+     DFyESSLT|VV      M1|psu.m^2/s       |Meridional Diffusive Flux of seaice salinity
+
 
 Experiments and tutorials that use seaice
 #########################################
