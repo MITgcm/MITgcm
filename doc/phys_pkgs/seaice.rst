@@ -697,19 +697,19 @@ the equations :eq:`eq_evpequation` can be written as:
      :label: eq_evpstresstensor1
 
      \frac{\partial\sigma_{1}}{\partial{t}} + \frac{\sigma_{1}}{2T} +
-     \frac{P}{2T} &= \frac{P}{2T\Delta} D_D
+     \frac{P}{2T} = \frac{P}{2T\Delta} D_D
 
 .. math::
      :label: eq_evpstresstensor2
 
      \frac{\partial\sigma_{2}}{\partial{t}} + \frac{\sigma_{2} e^{2}}{2T}
-     &= \frac{P}{2T\Delta} D_T
+     = \frac{P}{2T\Delta} D_T
 
 .. math::
      :label: eq_evpstresstensor12
 
      \frac{\partial\sigma_{12}}{\partial{t}} + \frac{\sigma_{12} e^{2}}{2T}
-     &= \frac{P}{4T\Delta} D_S
+     = \frac{P}{4T\Delta} D_S
 
 Here, the elastic parameter :math:`E` is redefined in terms of a damping
 timescale :math:`T` for elastic waves
@@ -759,14 +759,14 @@ and momentum :math:`\mathbf{u}` can be written as:
 .. math::
      :label: eq_evpstarsigma
 
-     \sigma_{ij}^{p+1}&=\sigma_{ij}^p+\frac{1}{\alpha}
+     \sigma_{ij}^{p+1}=\sigma_{ij}^p+\frac{1}{\alpha}
      \Big(\sigma_{ij}(\mathbf{u}^p)-\sigma_{ij}^p\Big),
      \phantom{\int}
 
 .. math::
      :label: eq_evpstarmom
 
-     \mathbf{u}^{p+1}&=\mathbf{u}^p+\frac{1}{\beta}
+     \mathbf{u}^{p+1}=\mathbf{u}^p+\frac{1}{\beta}
      \Big(\frac{\Delta t}{m}\nabla \cdot{\bf \sigma}^{p+1}+
      \frac{\Delta t}{m}\mathbf{R}^{p}+\mathbf{u}_n
      -\mathbf{u}^p\Big).
