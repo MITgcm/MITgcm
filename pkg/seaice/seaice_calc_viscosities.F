@@ -6,7 +6,10 @@
 CBOP
 CStartOfInterface
       SUBROUTINE SEAICE_CALC_VISCOSITIES(
-     I     e11, e22, e12, zMin, zMax, hEffM, press0, tnsFac,
+     I     e11, e22, e12, zMin, zMax, hEffM, press0, tnsFac, 
+#ifdef SEAICE_ALLOW_DAMAGE
+     I     damage,
+#endif /* SEAICE_ALLOW_DAMAGE */
      O     eta, etaZ, zeta, zetaZ, press, deltaC,
      I     iStep, myTime, myIter, myThid )
 C     *==========================================================*
@@ -18,6 +21,10 @@ C     *==========================================================*
 C     | written by Martin Losch, Mar 2006                        |
 C     *==========================================================*
       IMPLICIT NONE
+C ############ dringeis modi beg #################################
+      _RL SMOOTH_MIN
+      EXTERNAL SMOOTH_MIN
+C ############ dringeis modi end #################################
 
 C     === Global variables ===
 #include "SIZE.h"
@@ -57,6 +64,10 @@ C     bulk viscosity
 C     shear viscosity
       _RL zeta  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL zetaZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C
+#ifdef SEAICE_ALLOW_DAMAGE
+      _RL damage(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* SEAICE_ALLOW_DAMAGE */
 CEndOfInterface
 
 #if ( defined (SEAICE_CGRID) && defined (SEAICE_ALLOW_DYNAMICS) )
@@ -71,12 +82,20 @@ C     em            - e11-e22 (abbreviation)
       _RL e12Csq(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef SEAICE_ALLOW_TEM
       _RL etaMax, etaDen
+C  ############ dringeis modi beg #################################
+      _RL recip_Ppar
+C  ############ dringeis modi end #################################
 #endif /* SEAICE_ALLOW_TEM */
       INTEGER k
       _RL sumNorm, maskZ
 #ifdef SEAICE_ZETA_SMOOTHREG
       _RL argTmp
 #endif /* SEAICE_ZETA_SMOOTHREG */
+#ifdef SEAICE_ALLOW_MEB
+      _RL SEAICEmebMu
+      _RL poissonFac, denom, mu
+      _RL recip_rlx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif /* SEAICE_ALLOW_MEB */
 CEOP
 
 C--   FIRST SET UP BASIC CONSTANTS
@@ -87,6 +106,35 @@ C--   FIRST SET UP BASIC CONSTANTS
 C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+#ifdef SEAICE_ALLOW_MEB
+        IF ( SEAICEuseMEB ) THEN  
+         SEAICEmebMu = 0.5 _d 0 /(1. _d 0+SEAICEpoissonRatio)
+C     this may be wrong for two reasons
+C     1. 4->2 (not idea where the "4" came from)?
+C     2. 1/(1-2nu) should be 1/(1-nu) because of 2D plane approximation
+C     make sure that this is consistent with S/R seaice_meb_calc_stress
+CML         poissonFac1 = 4. _d 0*SEAICEpoissonRatio
+CML     &        /(1.-2.*SEAICEpoissonRatio)
+         poissonFac = 2. _d 0*SEAICEpoissonRatio
+     &        /(1. _d 0 - SEAICEpoissonRatio)
+         CALL SEAICE_RECIP_RELAXTIME( 
+     I        damage,
+     O        recip_rlx,
+     I        bi, bj, myTime, myIter, myThid )
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           denom  = 1./(1.+SEAICE_deltaTdyn*recip_rlx(I,J))
+           mu     = press0(i,j,bi,bj) * SEAICEmebMu * SEAICE_deltaTdyn
+     &          * denom * maskC(I,J,k,bi,bj)
+           zeta (i,j,bi,bj) = mu*(poissonFac + 1. _d 0)
+           eta  (i,j,bi,bj) = mu
+           press(i,j,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ELSE
+#else /* SEAICE_ALLOW_MEB */
+        IF (.TRUE.) THEN
+#endif /* SEAICE_ALLOW_MEB */
 #ifdef ALLOW_AUTODIFF_TAMC
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -177,19 +225,34 @@ CML     &         ) * ( 1. _d 0 - tnsFac(I,J,bi,bj) )
         ENDDO
 #ifdef SEAICE_ALLOW_TEM
         IF ( SEAICEuseTEM ) THEN
+C  ############ dringeis modi beg #################################
+        recip_Ppar=1.0 / SEAICEmcPpar
          DO j=1-OLy+1,sNy+OLy-1
           DO i=1-OLx+1,sNx+OLx-1
+           press(I,J,bi,bj)=SEAICEmcPfac*2*deltaC(I,J,bi,bj)
+     &      *zeta(I,J,bi,bj)
            ep = e11(i,j,bi,bj)+e22(i,j,bi,bj)
            em = e11(i,j,bi,bj)-e22(i,j,bi,bj)
            etaDen = em*em + 4. _d 0 * e12Csq(i,j)
-           etaDen = SQRT(MAX(deltaMinSq,etaDen))
-           etaMax = ( 0.5 _d 0*press(I,J,bi,bj)-zeta(I,J,bi,bj)*ep
+#ifdef SEAICE_DELTA_SMOOTHREG
+           etaDen = SEAICEmcDpar*SQRT(deltaMinSq + etaDen)
+#else
+           etaDen = SEAICEmcDpar*SQRT(MAX(deltaMinSq,etaDen))
+#endif /* SEAICE_DELTA_SMOOTHREG */
+           etaMax = (recip_Ppar *press(I,J,bi,bj)-zeta(I,J,bi,bj)*ep
      &          )/etaDen
+#ifdef ETA_SMOOTH_MIN
+           eta(I,J,bi,bj) = SMOOTH_MIN(eta(I,J,bi,bj),etaMax)
+#else
            eta(I,J,bi,bj) = MIN(eta(I,J,bi,bj),etaMax)
+#endif /* ETA_SMOOTH_MIN */
           ENDDO
          ENDDO
+C  ############ dringeis modi end #################################
         ENDIF
 #endif /* SEAICE_ALLOW_TEM */
+C     end if not SEAICEuseMEB
+        ENDIF
 C     compute eta at Z-points by simple averaging
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
@@ -223,3 +286,63 @@ C     about the no-slip boundary conditions
 #endif /* SEAICE_ALLOW_DYNAMICS and SEAICE_CGRID */
       RETURN
       END
+
+C  ############ dringeis modi beg #################################
+#ifdef ETA_SMOOTH_MIN
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      _RL FUNCTION SMOOTH_MIN( a, b )
+
+      IMPLICIT NONE
+
+      _RL a, b
+
+      _RL SMOOTH_ABS
+      EXTERNAL SMOOTH_ABS
+
+Cml      smoothMin_R8 = .5*(a+b)
+      SMOOTH_MIN = .5*( a+b - SMOOTH_ABS(a-b) )
+Cml      smoothMin_R8 = MIN(a,b)
+
+      RETURN
+      END
+
+      _RL FUNCTION SMOOTH_ABS( x )
+
+      IMPLICIT NONE
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+C     input parameter
+      _RL x
+c     local variable
+      _RL sf, rsf
+      
+
+      IF ( smoothAbsFuncRange .LT. 0.0 ) THEN
+c     limit of smoothMin(a,b) = .5*(a+b)
+         SMOOTH_ABS = 0.
+      ELSE
+         IF ( smoothAbsFuncRange .NE. 0.0 ) THEN
+            sf  = 10.0D0/smoothAbsFuncRange
+            rsf = 1.D0/sf
+         ELSE
+c     limit of smoothMin(a,b) = min(a,b)
+            sf  = 0.D0
+            rsf = 0.D0
+         ENDIF
+c
+         IF ( x .GE. smoothAbsFuncRange ) THEN
+            SMOOTH_ABS = x
+         ELSEIF ( x .LE. -smoothAbsFuncRange ) THEN
+            SMOOTH_ABS = -x
+         ELSE
+            SMOOTH_ABS = log((exp(x*sf)+exp(-x*sf)))*rsf
+         ENDIF
+      ENDIF
+
+      RETURN
+      END
+#endif /* ETA_SMOOTH_MIN */
+C  ############ dringeis modi end #################################

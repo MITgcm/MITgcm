@@ -62,6 +62,11 @@ C     iUnit      :: Work variable for IO unit number
       INTEGER nRetired
       _RL tmp
 
+C     local runtime parameters that are only used in this routine 
+C     SEAICEelasticWaveSp :: parameter for undamaged elasticity modulus 
+C                            (500. _d 0)
+      _RL SEAICEelasticWaveSp
+
 C-    Old parameters (to be retired one day):
       _RL SEAICE_availHeatTaper
       _RL SEAICE_gamma_t, SEAICE_gamma_t_frz, SEAICE_availHeatFracFrz
@@ -115,7 +120,7 @@ C--   SEAICE parameters
      & SEAICE_evpAlpha, SEAICE_evpBeta,
      & SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin,
      & SEAICE_zetaMin, SEAICE_zetaMaxFac, SEAICEusePicardAsPrecon,
-     & SEAICEuseKrylov, SEAICEuseJFNK, 
+     & SEAICEuseKrylov, SEAICEuseJFNK, SEAICEuseMEB, SEAICEupdateDamage,
      & SEAICEnonLinIterMax, SEAICElinearIterMax, SEAICEnonLinTol,
      & SEAICEnewtonIterMax, SEAICEkrylovIterMax, JFNKgamma_nonlin,
      & SEAICEpreconNL_Iter, SEAICEpreconLinIter,
@@ -144,6 +149,10 @@ C--   SEAICE parameters
      & SEAICEbasalDragK2, SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
      & SEAICE_strength, SEAICE_cStar, SEAICE_eccen,
      & SEAICEpressReplFac, SEAICE_tensilFac, SEAICE_tensilDepth, 
+     & SEAICEpoissonRatio, SEAICEviscosity, SEAICEcohesion,
+     & SEAICEdamageMin, SEAICEdamageParm, 
+     & SEAICEintFrictCoeff, SEAICEmohrCoulombSlope,
+     & SEAICEelasticWaveSp, SEAICEhealingTime, SEAICEdamageTime,
      & SEAICE_lhFusion, SEAICE_lhEvap, SEAICE_dalton,
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      & SEAICE_salinity, SIsalFRAC, SIsal0,
@@ -386,7 +395,7 @@ C
 #else /* if undef SEAICE_EXTERNAL_FLUXES */
       SEAICE_waterAlbedo = 0.1    _d +00
 #endif /* SEAICE_EXTERNAL_FLUXES */
-      SEAICE_strength    = 2.75   _d +04
+      SEAICE_strength    = UNSET_RL
       SEAICE_cStar       = 20.    _d 0
       SEAICEpressReplFac = 1.     _d 0
       SEAICE_eccen       = 2.     _d 0
@@ -562,6 +571,21 @@ c     MAX_TICE           = 30.     _d 0
       MAX_HEFF           = UNSET_RL
       SEAICEuseAB2       = .FALSE.
       SEAICE_abEps       = UNSET_RL
+C     
+      SEAICEupdateDamage  = .FALSE.
+C     MEB parameters
+      SEAICEuseMEB        = .FALSE.
+      SEAICEpoissonRatio  = 0.3
+      SEAICEdamageMin     = 1. _d -16
+      SEAICEviscosity     = UNSET_RL
+      SEAICEcohesion      = 25.0 _d 3
+      SEAICEdamageParm    = 4.0 _d 0
+      SEAICEintFrictCoeff = UNSET_RL
+      SEAICEmohrCoulombSlope = UNSET_RL
+      SEAICEelasticWaveSp = 500. _d 0
+      SEAICEhealingTime   = 1. _d 5
+      SEAICEdamageTime    = SEAICE_deltaTdyn
+
 C-    end retired parameters
 
 #ifdef ALLOW_COST
@@ -658,6 +682,16 @@ C nITD is set in SEAICE_SIZE.h
 
 C--   Set default values (if not specified in data.seaice namelist)
 
+C--   damage always needs to be updated for MEB
+      IF ( SEAICEuseMEB ) SEAICEupdateDamage = .TRUE.
+C--   Default ice strength (Pstar)
+      IF (SEAICE_strength .EQ. UNSET_RL ) THEN
+       SEAICE_strength = 2.75 _d +04
+       IF ( SEAICEuseMEB ) SEAICE_strength = 2.*SEAICEelasticWaveSp**2 
+     &      * (1+SEAICEpoissonRatio) * SEAICE_rhoIce
+      ENDIF
+      IF (SEAICEviscosity .EQ. UNSET_RL ) 
+     &     SEAICEviscosity = SEAICE_strength*1. _d 07
 C--   Default for regularizing Delta to remain backward compatible
       IF ( SEAICE_deltaMin .EQ. UNSET_RL ) SEAICE_deltaMin = SEAICE_EPS
 
@@ -765,6 +799,28 @@ CML        SEAICEuseEVPrev    = .TRUE.
 C     Check if all parameters are set.
       ENDIF
 #endif /* SEAICE_ALLOW_EVP */
+
+      IF ( SEAICEmohrCoulombSlope .NE. UNSET_RL 
+     &     .AND. SEAICEintFrictCoeff .NE. UNSET_RL ) THEN
+       WRITE(msgBuf,'(A)')
+     &      'cannot set SEAICEmohrCoulomb and SEAICEintFrictCoeff '//
+     &      'at the same time.'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+      ENDIF
+      IF ( SEAICEintFrictCoeff .NE. UNSET_RL ) THEN
+       SEAICEmohrCoulombSlope = SEAICEintFrictCoeff
+     &      /SQRT(1. _d 0 + SEAICEintFrictCoeff**2)
+      ELSE
+       IF ( SEAICEmohrCoulombSlope .NE. UNSET_RL ) THEN
+        SEAICEintFrictCoeff = SEAICEmohrCoulombSlope
+     &       /SQRT(1. _d 0 - SEAICEmohrCoulombSlope**2)
+       ELSE
+        SEAICEintFrictCoeff = 0.7 _d 0
+        SEAICEmohrCoulombSlope = SEAICEintFrictCoeff
+     &       /SQRT(1. _d 0 + SEAICEintFrictCoeff**2)
+       ENDIF
+      ENDIF
 
 #ifdef SEAICE_ALLOW_FREEDRIFT
       IF ( SEAICEuseFREEDRIFT ) SEAICEuseEVP = .FALSE.

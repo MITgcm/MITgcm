@@ -49,6 +49,10 @@ C     i,j,k,bi,bj :: Loop counters
 #ifdef SEAICE_CGRID
       _RL recip_tensilDepth
 #endif
+#ifdef SEAICE_ALLOW_DAMAGE
+      _RL PORT_RAND
+      EXTERNAL PORT_RAND 
+#endif
 
       IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
        kSurface = Nr
@@ -281,11 +285,11 @@ C
           seaiceMassV(i,j,bi,bj)=0. _d 0
           stressDivergenceX(i,j,bi,bj) = 0. _d 0
           stressDivergenceY(i,j,bi,bj) = 0. _d 0
-# ifdef SEAICE_ALLOW_EVP
+# if defined SEAICE_ALLOW_EVP || defined SEAICE_ALLOW_MEB
           seaice_sigma1 (i,j,bi,bj) = 0. _d 0
           seaice_sigma2 (i,j,bi,bj) = 0. _d 0
           seaice_sigma12(i,j,bi,bj) = 0. _d 0
-# endif /* SEAICE_ALLOW_EVP */
+# endif /* SEAICE_ALLOW_EVP or SEAICE_ALLOW_MEB */
 #else /* SEAICE_CGRID */
           uIceC(i,j,bi,bj)  = 0. _d 0
           vIceC(i,j,bi,bj)  = 0. _d 0
@@ -679,6 +683,20 @@ C---  Complete initialization
           PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
          ENDDO
         ENDDO
+#ifdef SEAICE_ALLOW_DAMAGE
+        call port_ranarr((sNx+2*Olx)*(sNy+2*Oly)*nSx*nSy,
+     &        cohesion)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+C     no damage means damage = 1
+          damage   (I,J,bi,bj) = 1. _d 0 * maskC(I,J,kSurface,bi,bj)
+          damageNm1(I,J,bi,bj) = damage(I,J,bi,bj)
+          dCrit    (I,J,bi,bj) = 1. _d 0
+          cohesion (I,J,bi,bj) = SEAICEcohesion
+C    &          *( 1.+cohesion(I,J,bi,bj) ) * maskC(I,J,kSurface,bi,bj)
+         ENDDO
+        ENDDO
+#endif /* SEAICE_ALLOW_DAMAGE */
         IF ( useRealFreshWaterFlux .AND. .NOT.useThSIce ) THEN
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx

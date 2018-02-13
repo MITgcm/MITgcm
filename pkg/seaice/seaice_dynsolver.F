@@ -294,6 +294,20 @@ C--   now add in tilt
        ENDIF
 #endif /* ALLOW_OBCS */
 
+#ifdef SEAICE_ALLOW_DAMAGE
+       IF ( SEAICEupdateDamage ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            damageNm1(I,J,bi,bj) = damage(I,J,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* SEAICE_ALLOW_DAMAGE */
+       
 #ifdef SEAICE_ALLOW_EVP
 # ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice    = comlev1, key=ikey_dynamics, kind=isbyte
@@ -333,7 +347,10 @@ C     Jacobian-free Newton Krylov solver (Lemieux et al. 2010, 2012)
        ENDIF
 # endif /*  ALLOW_AUTODIFF_TAMC */
 #endif /* SEAICE_ALLOW_JFNK */
-
+#ifdef SEAICE_ALLOW_DAMAGE
+       IF ( SEAICEupdateDamage .AND. .NOT.SEAICEuseIMEX )
+     &      CALL SEAICE_UPDATE_DAMAGE( myTime, myIter, myThid )
+#endif /* SEAICE_ALLOW_DAMAGE */
 C End of IF (SEAICEuseDYNAMICS ...
       ENDIF
 #endif /* SEAICE_ALLOW_DYNAMICS */

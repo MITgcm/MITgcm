@@ -192,6 +192,8 @@ C     local copies of precomputed coefficients that are to stay
 C     constant for the preconditioner
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
+         IF ( SEAICEuseIMEX .AND. SEAICEupdateDamage )
+     &   CALL SEAICE_CALC_ICE_STRENGTH( bi, bj, myTime, myIter, myThid )
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            zetaPre(I,J,bi,bj) =  zeta(I,J,bi,bj)
@@ -349,6 +351,33 @@ C     reset du/vIce here instead of setting sol = 0 in seaice_fgmres_driver
 C     end of Newton iterate
       ENDDO
 
+C     some more output diagnostics
+      IF ( debugLevel.GE.debLevA ) THEN
+       _BEGIN_MASTER( myThid )
+       WRITE(msgBuf,'(2A,2(1XI6),2E12.5)')
+     &      ' S/R SEAICE_JFNK: Newton iterate / total, ',
+     &      'JFNKgamma_lin, final   norm = ',
+     &        newtonIter, totalNewtonItersLoc,
+     &        JFNKgamma_lin,JFNKresidual
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+       _END_MASTER( myThid )
+      ENDIF
+
+#ifdef SEAICE_ALLOW_MEB
+C     after damage is up to date, we need to update sigma to be consistent
+C     with the damage, this time return result in global fields
+      IF ( SEAICEuseMEB .AND. SEAICEuseIMEX ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         CALL SEAICE_MEB_UPDATE_SIGMA(
+     I        e11, e22, e12, press0, etaZ, damage, dCrit,
+     U        seaice_sigma1, seaice_sigma2, seaice_sigma12,
+     I        bi, bj, myTime, myIter, myThid )
+        ENDDO
+       ENDDO
+      ENDIF
+#endif
 C--   Output diagnostics
 
       IF ( SEAICE_monFreq .GT. 0. _d 0 ) THEN
@@ -566,7 +595,7 @@ C     product that SEAICE_FGMRES does
 C     Determine, if we need more iterations
        doLineSearch = resLoc .GE. JFNKresidual
 C     Limit the maximum number of iterations arbitrarily to four
-       doLineSearch = doLineSearch .AND. l .LT. 4
+       doLineSearch = doLineSearch .AND. l .LT. 20
 C     For the first iteration du/vIce = 0 and there will be no
 C     improvement of the residual possible, so we do only the first
 C     iteration
@@ -578,7 +607,7 @@ C     Increment counter
 C     some output diagnostics
        IF ( debugLevel.GE.debLevA .AND. doLineSearch ) THEN
         _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(2A,2(1XI6),3E12.5)')
+        WRITE(msgBuf,'(2A,2(1XI6),3E13.5)')
      &       ' S/R SEAICE_JFNK_UPDATE: Newton iter, LSiter, ',
      &       'facLS, JFNKresidual, resLoc = ',
      &        newtonIter, l, facLS, JFNKresidual, resLoc
@@ -593,6 +622,10 @@ C     iterations, 0.25*du/vIce in the second, etc.
       ENDDO
 C     This is the new residual
       JFNKresidual = resLoc
+#ifdef SEAICE_ALLOW_DAMAGE
+      IF ( SEAICEupdateDamage .AND. SEAICEuseIMEX ) 
+     &     CALL SEAICE_UPDATE_DAMAGE( myTime, myIter, myThid )
+#endif
 
 #endif /* SEAICE_ALLOW_JFNK */
 

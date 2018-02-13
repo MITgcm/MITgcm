@@ -139,6 +139,13 @@ C     in analogy to the maximal compressive stress PRESS0
       _RL CbotC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
 
+#ifdef SEAICE_ALLOW_DAMAGE
+      COMMON/SEAICE_DAMAGE/ damage, damageNm1, cohesion, dCrit
+      _RL damage     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL damageNm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL dCrit      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cohesion   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* SEAICE_ALLOW_DAMAGE */      
       COMMON/SEAICE_REG_NEG/d_HEFFbyNEG,d_HSNWbyNEG
 C     The change of mean ice thickness due to out-of-bounds values following
 C     sea ice dynamics and advection
@@ -177,9 +184,10 @@ C     TICES :: Seaice/snow surface temperature for each category
       _RL vice_fd   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
-#if (defined (SEAICE_CGRID) && defined (SEAICE_ALLOW_EVP))
+#ifdef SEAICE_CGRID
+#if defined SEAICE_ALLOW_MEB || defined SEAICE_ALLOW_EVP
 C
-C     additional fields needed by the EVP solver
+C     additional fields needed by the EVP solver and/or MEB rheology
 C
 C     seaice_sigma1  - sigma11+sigma22, defined at C-points
 C     seaice_sigma2  - sigma11-sigma22, defined at C-points
@@ -189,9 +197,7 @@ C     seaice_sigma12 - off-diagonal term, defined at Z-points
       _RL seaice_sigma1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL seaice_sigma2    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL seaice_sigma12   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif /* SEAICE_ALLOW_EVP and SEAICE_CGRID */
-
-#ifdef SEAICE_CGRID
+#endif /* SEAICE_ALLOW_EVP or SEAICE_ALLOW_MEB */
 C     stressDivergenceX/Y - divergence of stress tensor
       COMMON /SEAICE_STRESSDIV/
      &     stressDivergenceX, stressDivergenceY

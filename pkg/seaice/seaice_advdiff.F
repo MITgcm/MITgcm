@@ -395,6 +395,37 @@ C     now do the "explicit" time step
         ENDIF
 #endif /* SEAICE_VARIABLE_SALINITY */
 
+#ifdef SEAICE_ALLOW_DAMAGE
+        IF ( SEAICEadvArea .AND. SEAICEupdateDamage ) THEN
+         CALL SEAICE_ADVECTION(
+     I        GAD_AREA, SEAICEadvSchArea,
+     I        uc(1-OLx,1-OLy,bi,bj), vc(1-OLx,1-OLy,bi,bj),
+     I        uTrans, vTrans, damage(1-OLx,1-OLy,bi,bj), recip_heff,
+     O        gFld, afx, afy,
+     I        bi, bj, myTime, myIter, myThid )
+         IF ( SEAICEdiffKhArea .GT. 0. _d 0 ) THEN
+C-    Add tendency due to diffusion
+          CALL SEAICE_DIFFUSION(
+     I         GAD_AREA, SEAICEdiffKhArea, ONE,
+     I         damage(1-OLx,1-OLy,bi,bj), HEFFM,
+     I         xA(1-OLx,1-OLy,bi,bj), yA(1-OLx,1-OLy,bi,bj),
+     U         gFld,
+     I         bi, bj, myTime, myIter, myThid )
+         ENDIF
+C     now do the "explicit" time step
+         DO j=1,sNy
+          DO i=1,sNx
+           damage(i,j,bi,bj) = HEFFM(i,j,bi,bj) * (
+     &          damage(i,j,bi,bj) + SEAICE_deltaTtherm * gFld(i,j)
+     &          )
+C     safeguard against overshoots
+           damage(i,j,bi,bj) = MIN( 1. _d 0, damage(i,j,bi,bj) )
+           damage(i,j,bi,bj) = MAX( 0. _d 0, damage(i,j,bi,bj) )
+          ENDDO
+         ENDDO
+         ENDIF
+#endif /* SEAICE_ALLOW_DAMAGE */
+
 #ifdef ALLOW_SITRACER
 C--   Sea Ice Tracers
         DO iTr = 1, SItrNumInUse

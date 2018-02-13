@@ -92,7 +92,9 @@ C     strength according to Rothrock (1975), hidden in S/R seaice_repare_ridging
         opnWtrFrac(i,j,bi,bj) = 1. _d 0 - AREA(i,j,bi,bj)
        ENDDO
       ENDDO
+#endif /* SEAICE_ITD */
 
+#ifdef SEAICE_ITD
       IF ( useHibler79IceStrength ) THEN
 #else
       IF ( .TRUE. ) THEN
@@ -176,6 +178,25 @@ C
 #endif /* SEAICE_ITD */
       ENDIF
 
+#ifdef SEAICE_ALLOW_DAMAGE
+      IF ( SEAICEupdateDamage ) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         press0(i,j,bi,bj)=press0(i,j,bi,bj)*damage(I,J,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* SEAICE_ALLOW_DAMAGE */
+#ifdef ALLOW_OBCS
+      IF ( useOBCS ) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         press0(i,j,bi,bj)=press0(i,j,bi,bj)*maskInC(I,J,bi,bj)
+         ZMIN(I,J,bi,bj)  =  ZMIN(I,J,bi,bj)*maskInC(I,J,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* ALLOW_OBCS */
 CML#ifdef SEAICE_CGRID
 CMLC     compute tensile strength factor k: tensileStrength = k*PRESS
 CMLC     can be done in initialisation phase as long as it depends only

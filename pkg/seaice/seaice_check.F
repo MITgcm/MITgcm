@@ -759,6 +759,14 @@ C     end if usePW79thermodynamics
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
+      IF ( SEAICEuseEVP .AND. SEAICEuseMEB ) THEN
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseMEB cannot be'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'SEAICE_CHECK: used (yet?) with SEAICEuseEVP'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
 #endif
 
 #ifndef SEAICE_GLOBAL_3DIAG_SOLVER
@@ -809,7 +817,25 @@ C     end if usePW79thermodynamics
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif
-
+#if !defined(SEAICE_ALLOW_MEB) || !defined(SEAICE_CGRID)
+      IF ( SEAICEuseMEB ) THEN
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseMEB requires that'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'SEAICE_CHECK: SEAICE_ALLOW_MEB and SEAICE_CGRID are defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif
+#if defined(SEAICE_ALLOW_MEB) && !defined(SEAICE_ALLOW_DAMAGE)
+      WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_ALLOW_MEB requires'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      WRITE(msgBuf,'(A)')
+     &  'SEAICE_CHECK: that SEAICE_ALLOW_DAMAGE is defined'
+      CALL PRINT_ERROR( msgBuf, myThid )
+      STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+#endif
+      
 #ifndef SEAICE_CGRID
 #ifdef SEAICE_TEST_ICE_STRESS_1
        WRITE(msgBuf,'(A)')
@@ -928,7 +954,7 @@ C--   SEAICE_ALLOW_FREEDRIFT and SEAICEuseFREEDRIFT
         WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseIMEX = .TRUE. '//
      &       'only allowed with SEAICEuseJFNK = .TRUE.'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+CML        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
        ENDIF
       ENDIF
       IF ( SEAICEuseIMEX ) THEN
