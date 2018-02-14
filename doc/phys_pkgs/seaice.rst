@@ -350,7 +350,7 @@ The reformulation improves model physics by representing the brine
 content of the upper ice with a variable heat capacity. It also improves
 model numerics and consumes less computer time and memory.
 
-The Winton sea-ice thermodynamics have been ported to the MIT GCM; they currently reside under ``pkg/seaice``. The package ``thsice`` is described in section :numref:`sub_phys_pkg_thsice`; it is fully compatible with the packages ``seaice`` and ``exf``.  When turned on together with ``seaice``, the zero-layer thermodynamics are replaced by the Winton thermodynamics. In order to use the ``seaice``-package with the thermodynamics of ``thsice``, compile both packages and turn both package on in ``data.pkg``; see an example in ``global_ocean.cs32x15/input.icedyn``. Note, that once ``thsice`` is turned on, the variables and diagnostics associated to the default thermodynamics are meaningless, and the diagnostics of ``thsice`` have to be used instead.
+The Winton sea-ice thermodynamics have been ported to the MIT GCM; they currently reside under ``pkg/thsice``. The package ``thsice`` is described in section :numref:`sub_phys_pkg_thsice`; it is fully compatible with the packages ``seaice`` and ``exf``.  When turned on together with ``seaice``, the zero-layer thermodynamics are replaced by the Winton thermodynamics. In order to use the ``seaice``-package with the thermodynamics of ``thsice``, compile both packages and turn both package on in ``data.pkg``; see an example in ``global_ocean.cs32x15/input.icedyn``. Note, that once ``thsice`` is turned on, the variables and diagnostics associated to the default thermodynamics are meaningless, and the diagnostics of ``thsice`` have to be used instead.
 
 .. _para_phys_pkg_seaice_surfaceforcing:
 
