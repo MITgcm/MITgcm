@@ -16,24 +16,22 @@ Package “seaice” provides a dynamic and thermodynamic interactive
 sea-ice model.
 
 CPP options enable or disable different aspects of the package
-(Section :numref:`para_phys_pkg_seaice_compile`). Run-Time options, flags, filenames and
-field-related dates/times are set in data.seaice (Section :numref:`para_phys_pkg_seaice_runtime`).
-A description of key subroutines is given in Section
-:numref:`para_phys_pkg_seaice_subroutines`. Input fields, units and sign conventions
-are summarized in Section [sec:pkg:seaice:fields_units], and
-available diagnostics output is listed in Section
-[sec:pkg:seaice:diagnostics].
+(:numref:`ssub_phys_pkg_seaice_config`). Run-Time options, flags, filenames and
+field-related dates/times are set in data.seaice (:numref:`ssub_phys_pkg_seaice_runtime`).
+A description of key subroutines is given in
+:numref:`ssub_phys_pkg_seaice_subroutines`. Input fields, units and sign conventions
+are summarized in Section :ref:`para_phys_pkg_seaice_fields_units`, and
+available diagnostics output is listed in
+:numref:`ssub_phys_pkg_seaice_diagnostics`.
+
+
+.. _ssub_phys_pkg_seaice_config:
 
 SEAICE configuration and compiling
 ++++++++++++++++++++++++++++++++++
 
-
-.. _para_phys_pkg_seaice_compile:
-
-Compile-time options 
+Compile-time options
 ####################
-
- 
 
 As with all MITgcm packages, SEAICE can be turned on or off at compile
 time
@@ -86,7 +84,7 @@ options see the default ``pkg/seaice/SEAICE_OPTIONS.h``.
   +------------------------------------+----------------------------------------------------------------------------------------------------------+
 
 
-.. _para_phys_pkg_seaice_runtime:
+.. _ssub_phys_pkg_seaice_runtime:
 
 Run-time parameters 
 +++++++++++++++++++
@@ -274,6 +272,8 @@ General flags and parameters
   | SEAICE_useMultDimSnow        | F                            | use SEAICE_multDim snow categories                                                             |
   +------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
 
+
+.. _para_phys_pkg_seaice_fields_units:
 
 Input fields and units
 ######################
@@ -1132,7 +1132,7 @@ currently implemented solution, the sea-ice mass flux is used to
 advect the enthalpy in order to ensure conservation of enthalpy and to
 prevent false enthalpy extrema.
 
-.. _para_phys_pkg_seaice_subroutines:
+.. _ssub_phys_pkg_seaice_subroutines:
 
 Key subroutines
 +++++++++++++++
@@ -1183,7 +1183,7 @@ Top-level routine: ``seaice_model.F``
     c  |
     c  o
 
-.. _para_phys_pkg_seaice_diagnostics:
+.. _ssub_phys_pkg_seaice_diagnostics:
 
 SEAICE diagnostics
 ++++++++++++++++++
