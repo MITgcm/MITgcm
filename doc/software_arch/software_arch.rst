@@ -653,7 +653,7 @@ and ``bj`` varies for different parts of the MITgcm algorithm.
 Consider  a code extract from the two-dimensional
 implicit elliptic solver:
 
-.. code-block:: fortrtan
+.. code-block:: fortran
 
           REAL*8  cg2d_r(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
           REAL*8  err
@@ -703,7 +703,7 @@ values of ``nPx`` and ``nPy`` are absent from the core numerical and support
 code.
 
 Examples of :filelink:`SIZE.h <model/inc/SIZE.h>` specifications
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following different :filelink:`SIZE.h <model/inc/SIZE.h>` parameter setting illustrate how to
 interpret the values of ``sNx``, ``sNy``, ``OLx``, ``OLy``, ``nSx``, ``nSy``, ``nPx`` and ``nPy``.
@@ -858,7 +858,7 @@ flags to request multi-threading support. The header files
 compatible with compilers for Sun, Compaq, SGI, Hewlett-Packard SMP
 systems and CRAY PVP systems. These directives can be activated by using
 compile time directives ``-DTARGET_SUN``, ``-DTARGET_DEC``,
-``-DTARGET_SGI``, ``-DTARGET\_HP`` or ``-DTARGET_CRAY_VECTOR``
+``-DTARGET_SGI``, ``-DTARGET_HP`` or ``-DTARGET_CRAY_VECTOR``
 respectively. Compiler options for invoking multi-threaded compilation
 vary from system to system and from compiler to compiler. The options
 will be described in the individual compiler documentation. For the
@@ -1272,9 +1272,9 @@ platforms. This section describes the information that is held and used.
    threads then it can save memory resources to reduce the variable
    :varlink:`MAX_NO_THREADS` to be equal to the actual number of threads that
    will be used and to declare the physical parameterization work arrays
-   with a single :varlink:`MAX\_NO\_THREADS` extra dimension. An example of this
+   with a single :varlink:`MAX_NO_THREADS` extra dimension. An example of this
    is given in the verification experiment :filelink:`verification/aim.5l_cs`. Here the
-   default setting of :varlink:`MAX\_NO\_THREADS` is altered to
+   default setting of :varlink:`MAX_NO_THREADS` is altered to
 
    ::
 
