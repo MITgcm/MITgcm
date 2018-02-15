@@ -24,8 +24,8 @@ are summarized in Section [sec:pkg:seaice:fields_units], and
 available diagnostics output is listed in Section
 [sec:pkg:seaice:diagnostics].
 
-SEAICE configuration, compiling & running
-+++++++++++++++++++++++++++++++++++++++++
+SEAICE configuration and compiling
+++++++++++++++++++++++++++++++++++
 
 
 .. _para_phys_pkg_seaice_compile:
@@ -89,18 +89,18 @@ options see the default ``pkg/seaice/SEAICE_OPTIONS.h``.
 .. _para_phys_pkg_seaice_runtime:
 
 Run-time parameters 
-###################
++++++++++++++++++++
 
 Run-time parameters (see :numref:`tab_phys_pkg_seaice_runtimeparms`) are set in
 files `data.pkg` (read in `packages_readparms.F`), and `data.seaice` (read in `seaice_readparms.F`).
 
 Enabling the package
-^^^^^^^^^^^^^^^^^^^^
+####################
 
 A package is switched on/off at run-time by setting (e.g. for SEAICE `useSEAICE = .TRUE.` in `data.pkg`).
 
 General flags and parameters
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+############################
 
 :numref:`tab_phys_pkg_seaice_runtimeparms` lists most run-time parameters.
 
@@ -276,7 +276,7 @@ General flags and parameters
 
 
 Input fields and units
-^^^^^^^^^^^^^^^^^^^^^^
+######################
 
  - `HeffFile`: Initial sea ice thickness averaged over grid cell in meters; initializes variable `HEFF`;
 
@@ -1135,7 +1135,7 @@ prevent false enthalpy extrema.
 .. _para_phys_pkg_seaice_subroutines:
 
 Key subroutines
-###############
++++++++++++++++
 
 Top-level routine: ``seaice_model.F``
 
@@ -1186,7 +1186,7 @@ Top-level routine: ``seaice_model.F``
 .. _para_phys_pkg_seaice_diagnostics:
 
 SEAICE diagnostics
-##################
+++++++++++++++++++
 
 Diagnostics output is available via the diagnostics package (see Section
 [sec:pkg:diagnostics]). Available output fields are summarized in the
@@ -1282,7 +1282,7 @@ following table:
 
 
 Experiments and tutorials that use seaice
-#########################################
++++++++++++++++++++++++++++++++++++++++++
 
 - Labrador Sea experiment in ``lab_sea`` verification directory. }
 - ``seaice_obcs``, based on ``lab_sea``
