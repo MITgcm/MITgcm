@@ -104,19 +104,7 @@ C     ( remember to average to correct velocity points )
      &         + DWATN(I,J-1,bi,bj) * 0.5 _d 0 *
      &          ( uVel(I,J-1,kSrf,bi,bj)+uVel(I+1,J-1,kSrf,bi,bj))
      &         ) )*areaS(I,J)
-         ENDDO
-        ENDDO
-#ifdef SEAICE_ALLOW_MEB
-        IF ( SEAICEuseMEB ) THEN
-         CALL SEAICE_MEB_UPDATE_RHS(
-     I        damage, seaice_sigma1, seaice_sigma2, seaice_sigma12,
-     U        uIceRHS, vIceRHS,
-     I        bi, bj, myTime, myIter, myThid )
-        ENDIF
-#endif /* SEAICE_ALLOW_MEB */
 C     apply masks for interior (important when we have open boundaries)
-        DO J=1,sNy
-         DO I=1,sNx
           uIceRHS(I,J,bi,bj) = uIceRHS(I,J,bi,bj)*maskinW(I,J,bi,bj)
           vIceRHS(I,J,bi,bj) = vIceRHS(I,J,bi,bj)*maskinS(I,J,bi,bj)
          ENDDO

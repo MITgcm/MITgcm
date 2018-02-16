@@ -118,20 +118,6 @@ C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
 # undef SEAICE_ZETA_SMOOTHREG
 C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
 # undef SEAICE_ALLOW_TEM
-C     allow using a damage parameter that records violations of a Mohr
-C     Coulomb criterion for stress
-# undef SEAICE_ALLOW_DAMAGE
-C     allow Maxwell Elasto-Brittle rheology (runtime flat SEAICEuseMEB);
-C     the MEB code re-uses a lot of the VP code and can be used together
-C     with all implicit solvers, although the parameter tuning requires
-C     some care and not all combinations give satisfactory results; you need
-C     an accurate solution of the momentum equations to reduce the amount
-C     of error accumulation
-# undef SEAICE_ALLOW_MEB
-# ifdef SEAICE_ALLOW_MEB
-C     MEB always needs the damage field
-#  define SEAICE_ALLOW_DAMAGE
-# endif
 C     Use LSR vector code; not useful on non-vector machines, because it
 C     slows down convergence considerably, but the extra iterations are
 C     more than made up by the much faster code on vector machines. For

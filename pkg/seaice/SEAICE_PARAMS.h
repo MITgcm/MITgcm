@@ -36,9 +36,6 @@ C                          instead of LSR (default: false)
 C     SEAICEuseIMEX     :: use IMplicit/EXplicit scheme with JFNK
 C     SEAICEuseTEM      :: to use truncated ellipse method (see Geiger et al.
 C                          1998) set this parameter to true, default is false
-C     SEAICEuseMEB      :: use Maxwell-Elasto-Brittle rheology (within
-C                          implicity solver for momentum equations)
-C     SEAICEupdateDamage:: update damage parameter (true for MEB, false otherwise)
 C     SEAICEuseTilt     :: If true then include surface tilt term in dynamics
 C     SEAICEuseMetricTerms :: use metric terms for dynamics solver
 C                          (default = .true. )
@@ -119,8 +116,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,
      &     SEAICEuseLSR, SEAICEuseKrylov,
-     &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,SEAICEuseMEB,
-     &     SEAICEupdateDamage,
+     &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2,
      &     SEAICEusePicardAsPrecon,
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseLinRemapITD,
@@ -148,8 +144,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICEuseEVPpickup,
      &     SEAICEuseMultiTileSolver,
      &     SEAICEuseLSR, SEAICEuseKrylov,
-     &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2, SEAICEuseMEB,
-     &     SEAICEupdateDamage,
+     &     SEAICEuseJFNK, SEAICEuseIMEX, SEAICEuseBDF2, 
      &     SEAICEusePicardAsPrecon,
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseLinRemapITD,
@@ -353,20 +348,6 @@ C     ICE2WATR           :: ratio of sea ice density to water density
 C     OCEAN_drag         :: air-ocean drag coefficient
 C     SEAICE_cpAir       :: specific heat of air                        (J/kg/K)
 C
-C     SEAICEpoissonRatio :: Maxwell-Elasto-Brittle parameter (0.3)
-C     SEAICEdamageMin    :: lower cut off for regularization (1e-16)
-C     SEAICEviscosity    :: SEAICE_strength * 1e7
-C     SEAICEcohesion     :: constant cohesion parameter: 25 kN/m^2
-C     SEAICEdamageParm   :: parameter alpha that determines ratio of damaged 
-C                           elasticity modululs undamaged appararent viscosity
-C                           > 1 (default = 4.0)
-C     SEAICEintFrictCoeff:: used to compute Mohr-Coulomb slope in principle 
-C                           stress space (default = 0.7)
-C     SEAICEmohrCoulombSlope :: slope in stress invariant space,
-C                           e.g. cos(45) = 1/sqrt(2)
-C     SEAICEhealingTime  :: 1. _d 5
-C     SEAICEdamageTime   :: 2. _d 0
-C
 C     SEAICE_drag        :: air-ice drag coefficient
 C     SEAICE_waterDrag   :: water-ice drag coefficient * water density
 C     SEAICE_dryIceAlb   :: winter albedo
@@ -520,10 +501,6 @@ C
       _RL SEAICEgStar, SEAICEhStar, SEAICEaStar, SEAICEshearParm
       _RL SEAICEmuRidging, SEAICEmaxRaft, SEAICE_cf
       _RL SEAICEsnowFracRidge
-      _RL SEAICEpoissonRatio, SEAICEviscosity, SEAICEcohesion
-      _RL SEAICEdamageMin, SEAICEdamageParm
-      _RL SEAICEintFrictCoeff, SEAICEmohrCoulombSlope
-      _RL SEAICEhealingTime, SEAICEdamageTime
 
       COMMON /SEAICE_PARM_RL/
      &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
@@ -568,11 +545,7 @@ C
      &    SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      &    SEAICEgStar, SEAICEhStar, SEAICEaStar, SEAICEshearParm,
      &    SEAICEmuRidging, SEAICEmaxRaft, SEAICE_cf,
-     &    SEAICEsnowFracRidge,
-     &    SEAICEpoissonRatio, SEAICEviscosity, SEAICEcohesion,
-     &    SEAICEdamageMin, SEAICEdamageParm, 
-     &    SEAICEintFrictCoeff, SEAICEmohrCoulombSlope,
-     &    SEAICEhealingTime, SEAICEdamageTime,
+     &    SEAICEsnowFracRidge
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values
 C     MIN_ATEMP         :: minimum air temperature   (deg C)

@@ -151,14 +151,11 @@ C     but we are looking for T = k*P = k*press/(1-k)
         ENDDO
         CALL DIAGNOSTICS_FILL(tIce,'SItensil',0,1 ,0,1,1,myThid)
        ENDIF
-#ifdef SEAICE_ALLOW_DAMAGE
-       CALL DIAGNOSTICS_FILL(damage,'SIdamage',0,1 ,0,1,1,myThid)
-#endif /* SEAICE_ALLOW_DAMAGE */
        IF ( DIAGNOSTICS_IS_ON('SIsig1  ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIsig2  ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIshear ',myThid) ) THEN
-#if defined SEAICE_ALLOW_EVP || defined SEAICE_ALLOW_MEB
-        IF ( SEAICEuseMEB .OR. SEAICEuseEVP ) THEN
+#ifdef SEAICE_ALLOW_EVP
+        IF ( SEAICEuseEVP ) THEN
 C     for EVP compute principle stress components from recent
 C     stress state and normalize with latest
 C     PRESS = PRESS(n-1), n = number of sub-cycling steps
@@ -175,11 +172,8 @@ C     PRESS = PRESS(n-1), n = number of sub-cycling steps
      &            + seaice_sigma12(I  ,J+1,bi,bj) )
              sigTmp = SQRT( sigm*sigm + 4. _d 0*sig12(I,J)*sig12(I,J) )
              recip_prs = 0. _d 0
-             IF ( SEAICEuseMEB .AND. HEFF(I,J,bi,bj).GT.1. _d -4) THEN
-              recip_prs=1./SEAICE_strength/HEFF(I,J,bi,bj)
-             ELSEIF ( press0(I,J,bi,bj) .GT. 1. _d -13 ) THEN
-              recip_prs = 1./press0(I,J,bi,bj)
-             ENDIF
+             IF ( press0(I,J,bi,bj) .GT. 1. _d -13 )
+     &            recip_prs = 1./press0(I,J,bi,bj)
              sig1(I,J) = 0.5*(sigp + sigTmp)*recip_prs
              sig2(I,J) = 0.5*(sigp - sigTmp)*recip_prs
             ENDDO
@@ -191,7 +185,7 @@ C     PRESS = PRESS(n-1), n = number of sub-cycling steps
         ELSE
 #else
         IF ( .TRUE. ) THEN
-#endif /* SEAICE_ALLOW_EVP or SEAICE_ALLOW_MEB */
+#endif /* SEAICE_ALLOW_EVP */
 C     recompute strainrates from up-to-date velocities
          CALL SEAICE_CALC_STRAINRATES(
      I        uIce, vIce,
@@ -199,9 +193,6 @@ C     recompute strainrates from up-to-date velocities
      I        0, myTime, myIter, myThid )
 CML      CALL SEAICE_CALC_VISCOSITIES(
 CML     I     e11, e22, e12, zMin, zMax, hEffM, press0, tensileStrFac,
-CML#ifdef SEAICE_ALLOW_DAMAGE
-CML     I     damage,
-CML#endif /* SEAICE_ALLOW_DAMAGE */
 CML     O     eta, etaZ, zeta, zetaZ, press, deltaC,
 CML     I     0, myTime, myIter, myThid )
 C     but use old viscosities and pressure for the

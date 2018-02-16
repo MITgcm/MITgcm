@@ -733,20 +733,6 @@ C=============== dynamics ============
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIsig1pr'
-      diagTitle = 'SEAICE normalized principle stress, component one'
-      diagUnits = 'no units        '
-      diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'SIsig2pr'
-      diagTitle = 'SEAICE normalized principle stress, component two'
-      diagUnits = 'no units        '
-      diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
       diagName  = 'SIshear '
       diagTitle = 'SEAICE shear deformation'
       diagUnits = 's^{-1}          '
@@ -767,15 +753,6 @@ C=============== dynamics ============
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-#ifdef SEAICE_ALLOW_DAMAGE
-      diagName  = 'SIdamage'
-      diagTitle = 'SEAICE damage'
-      diagUnits = 'no units        '
-      diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I    diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-#endif /* SEAICE_ALLOW_DAMAGE */
 
 #ifdef SEAICE_ITD
 C=============== ice thickness categories ============

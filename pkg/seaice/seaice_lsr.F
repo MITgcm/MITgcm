@@ -87,6 +87,7 @@ C     i,j,bi,bj  :: Loop counters
 
       _RL WFAU, WFAV, WFAU2, WFAV2
       _RL S1, S2, S1A, S2A
+      _RL eplus, eminus
       _RL recip_deltaT
 
 C     diagonals of coefficient matrices
@@ -323,9 +324,6 @@ CADJ STORE vice = comlev1_dynsol, kind=isbyte, key = itmpkey
 
       CALL SEAICE_CALC_VISCOSITIES(
      I     e11, e22, e12, zMin, zMax, hEffM, press0, tensileStrFac,
-#ifdef SEAICE_ALLOW_DAMAGE
-     I     damage,
-#endif /* SEAICE_ALLOW_DAMAGE */
      O     eta, etaZ, zeta, zetaZ, press, deltaC,
      I     ipass, myTime, myIter, myThid )
 
@@ -415,14 +413,6 @@ C-    add Coriolis term
      &         *0.5 _d 0*( uIceC(i  ,j-1,bi,bj)+uIceC(i+1,j-1,bi,bj) ) )
          ENDDO
         ENDDO
-#ifdef SEAICE_ALLOW_MEB
-        IF ( SEAICEuseMEB ) THEN
-         CALL SEAICE_MEB_UPDATE_RHS(
-     I        damage, seaice_sigma1, seaice_sigma2, seaice_sigma12,
-     U        FORCEX, FORCEY,
-     I        bi, bj, myTime, myIter, myThid )
-        ENDIF
-#endif /* SEAICE_ALLOW_MEB */
 C      this is the rhs contribution of the time derivative
         DO j=jMin,jMax
          DO i=iMin,iMax

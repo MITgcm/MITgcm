@@ -128,8 +128,6 @@ C--  Seaice-Dynamics parameters
      & 'SEAICEuseEVP      =', ' /* use EVP solver rather than LSR */')
       CALL WRITE_0D_L ( SEAICEuseJFNK, INDEX_NONE,
      & 'SEAICEuseJFNK     =', ' /* use JFNK solver */')
-      CALL WRITE_0D_L ( SEAICEuseMEB, INDEX_NONE,
-     & 'SEAICEuseMEB      =', ' /* use MEB rheology */')
 #ifdef SEAICE_ALLOW_FREEDRIFT
       CALL WRITE_0D_L ( SEAICEuseFREEDRIFT, INDEX_NONE,
      & 'SEAICEuseFREEDRIFT =', ' /* use free drift solution */')
@@ -160,32 +158,8 @@ C--  Seaice-Dynamics parameters
      & 'SEAICEuseTilt     =', ' /* include surface tilt in dyna. */')
       CALL WRITE_0D_L ( SEAICEuseTEM, INDEX_NONE,
      & 'SEAICEuseTEM      =', ' /* use truncated ellipse rheology */')
-      IF ( SEAICEuseMEB ) THEN
-       CALL WRITE_0D_RL( SEAICE_strength   ,INDEX_NONE,
-     & 'SEAICE_strength   =', ' /* undamaged elasticity modulus */')
-       CALL WRITE_0D_RL( SEAICEpoissonRatio   ,INDEX_NONE,
-     & 'SEAICEpoissonRatio =', ' /* sea ice Poisson ratio */')
-       CALL WRITE_0D_RL( SEAICEviscosity   ,INDEX_NONE,
-     & 'SEAICEviscosity =', ' /* MEB apparent viscosity */')
-       CALL WRITE_0D_RL( SEAICEcohesion   ,INDEX_NONE,
-     & 'SEAICEcohesion =', ' /* max. cohesion in pure shear */')
-       CALL WRITE_0D_RL( SEAICEdamageParm   ,INDEX_NONE,
-     & 'SEAICEdamageParm =', ' /* exponent alpha of damage*/')
-       CALL WRITE_0D_RL( SEAICEdamageTime   ,INDEX_NONE,
-     & 'SEAICEdamageTime =', ' /* damage time scale */')
-       CALL WRITE_0D_RL( SEAICEdamageMin   ,INDEX_NONE,
-     & 'SEAICEdamageMin =', ' /* stability parameter */')
-       CALL WRITE_0D_RL( SEAICEintFrictCoeff   ,INDEX_NONE,
-     & 'SEAICEintFrictCoeff =', ' /* MEB interal friction coeff. */')
-       CALL WRITE_0D_RL( SEAICEmohrCoulombSlope   ,INDEX_NONE,
-     & 'SEAICEmohrCoulombSlope =',
-     & ' /* slope of M.-C. criterion in stress invariants space */')
-       CALL WRITE_0D_RL( SEAICEhealingTime   ,INDEX_NONE,
-     & 'SEAICEhealingTime =', ' /* damage healing time scale */')
-      ELSE
-       CALL WRITE_0D_RL( SEAICE_strength   ,INDEX_NONE,
+      CALL WRITE_0D_RL( SEAICE_strength   ,INDEX_NONE,
      & 'SEAICE_strength   =', ' /* sea-ice strength Pstar */')
-      ENDIF
       CALL WRITE_0D_RL( SEAICE_cStar   ,INDEX_NONE,
      & 'SEAICE_cStar      =', ' /* sea-ice strength parameter cStar */')
       CALL WRITE_0D_RL( SEAICEpressReplFac,INDEX_NONE,

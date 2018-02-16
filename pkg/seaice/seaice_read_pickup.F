@@ -164,9 +164,8 @@ C--     no ITD information available with old pickup files
 C       use log-normal distribution based on mean thickness instead
         CALL SEAICE_ITD_PICKUP( nIter0, myThid )
 #endif
-#if defined SEAICE_CGRID && ( defined SEAICE_ALLOW_EVP || defined SEAICE_ALLOW_MEB ) 
-        IF ( (SEAICEuseEVP .OR. SEAICEuseMEB) 
-     &   .AND. SEAICEuseEVPpickup ) THEN
+#if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
+        IF ( SEAICEuseEVP .AND. SEAICEuseEVPpickup ) THEN
          CALL READ_REC_3D_RL(fn,fp,1,seaice_sigma1,nj, nIter0, myThid )
          nj = nj + 1
          CALL READ_REC_3D_RL(fn,fp,1,seaice_sigma2,nj, nIter0, myThid )
@@ -174,7 +173,7 @@ C       use log-normal distribution based on mean thickness instead
          CALL READ_REC_3D_RL(fn,fp,1,seaice_sigma12,nj,nIter0, myThid )
          nj = nj + 1
         ENDIF
-#endif /* SEAICE_ALLOW_EVP or SEAICE_ALLOW_MEB */
+#endif /* SEAICE_ALLOW_EVP */
 #ifdef SEAICE_VARIABLE_SALINITY
         CALL READ_REC_3D_RL( fn, fp, 1, HSALT    , nj, nIter0, myThid )
         nj = nj + 1
@@ -264,9 +263,8 @@ C--    read Sea-Ice Dynamics variables (all 2-D fields):
           CALL READ_MFLDS_3D_RL('siVicNm1', vIceNm1,
      &                                      nj, fp, 1, nIter0, myThid )
          ENDIF
-#if defined SEAICE_CGRID && \
-    ( defined SEAICE_ALLOW_EVP || defined SEAICE_ALLOW_MEB ) 
-        IF ( SEAICEuseEVP .OR. SEAICEuseMEB ) THEN
+#if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
+        IF ( SEAICEuseEVP ) THEN
          CALL READ_MFLDS_3D_RL( 'siSigm1 ', seaice_sigma1,
      &                                      nj, fp, 1, nIter0, myThid )
          CALL READ_MFLDS_3D_RL( 'siSigm2 ', seaice_sigma2,
@@ -274,7 +272,7 @@ C--    read Sea-Ice Dynamics variables (all 2-D fields):
          CALL READ_MFLDS_3D_RL( 'siSigm12', seaice_sigma12,
      &                                      nj, fp, 1, nIter0, myThid )
         ENDIF
-#endif /* SEAICE_ALLOW_EVP or SEAICE_ALLOW_MEB */
+#endif /* SEAICE_CGRID & SEAICE_ALLOW_EVP */
 
 C---   end: new way to read pickup file
        ENDIF
@@ -322,14 +320,13 @@ C--    Update overlap regions
        _EXCH_XY_RL( AREA, myThid )
        CALL EXCH_3D_RL( TICES, nITD, myThid )
        _EXCH_XY_RL(HSNOW, myThid )
-#if defined SEAICE_CGRID && \
-    ( defined SEAICE_ALLOW_EVP || defined SEAICE_ALLOW_MEB ) 
-       IF ( SEAICEuseEVP .OR. SEAICEuseMEB ) THEN
+#if (defined(SEAICE_CGRID) && defined(SEAICE_ALLOW_EVP))
+       IF ( SEAICEuseEVP ) THEN
           _EXCH_XY_RL(seaice_sigma1 , myThid )
           _EXCH_XY_RL(seaice_sigma2 , myThid )
           _EXCH_XY_RL(seaice_sigma12, myThid )
        ENDIF
-#endif /* SEAICE_ALLOW_EVP or SEAICE_ALLOw_MEB */
+#endif /* SEAICE_CGRID SEAICE_ALLOW_EVP */
 #ifdef SEAICE_VARIABLE_SALINITY
        _EXCH_XY_RL(HSALT, myThid )
 #endif

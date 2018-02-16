@@ -193,8 +193,6 @@ C     the non-linear drag coefficents
      &          (vIce(I,J,bi,bj) + vIceLin(I,J,bi,bj))
           ENDDO
          ENDDO
-         IF ( SEAICEuseIMEX .AND. SEAICEupdateDamage )
-     &   CALL SEAICE_CALC_ICE_STRENGTH( bi, bj, myTime, myIter, myThid )
         ENDDO
        ENDDO
 C     u/vIce have changed in Picard iteration so that new drag 
@@ -221,9 +219,6 @@ C     the Krylov iteration)
      I      0, myTime, myIter, myThid )
        CALL SEAICE_CALC_VISCOSITIES(
      I      e11, e22, e12, zMin, zMax, hEffM, press0, tensileStrFac,
-#ifdef SEAICE_ALLOW_DAMAGE
-     I      damage,
-#endif /* SEAICE_ALLOW_DAMAGE */
      O      eta, etaZ, zeta, zetaZ, press, deltaC,
      I      0, myTime, myIter, myThid )
 C     compute rhs that does not change during Krylov iteration
@@ -260,16 +255,16 @@ C     compute convergence criterion for linear preconditioned FGMRES
        krylovLinTol = JFNKgamma_lin_max
 C     the best method is still not clear to me
 C     this is described in Lemieux et al 2008
-       IF ( picardIter .EQ. 1 ) krylovLinTol = 1./10.
-       IF ( picardIter .EQ. 2 ) krylovLinTol = 1./20.
-       IF ( picardIter .EQ. 3 ) krylovLinTol = 1./20.
-       IF ( picardIter .EQ. 4 ) krylovLinTol = 1./30.
-       IF ( picardIter .EQ. 5 ) krylovLinTol = 1./30.
-       IF ( picardIter .EQ. 6 ) krylovLinTol = 1./30.
-       IF ( picardIter .EQ. 7 ) krylovLinTol = 1./30.
-       IF ( picardIter .EQ. 8 ) krylovLinTol = 1./40.
-       IF ( picardIter .EQ. 9 ) krylovLinTol = 1./50.
-       IF ( picardIter .GT. 9 ) krylovLinTol = 1./80.
+CML       IF ( picardIter .EQ. 1 ) krylovLinTol = 1./10.
+CML       IF ( picardIter .EQ. 2 ) krylovLinTol = 1./20.
+CML       IF ( picardIter .EQ. 3 ) krylovLinTol = 1./20.
+CML       IF ( picardIter .EQ. 4 ) krylovLinTol = 1./30.
+CML       IF ( picardIter .EQ. 5 ) krylovLinTol = 1./30.
+CML       IF ( picardIter .EQ. 6 ) krylovLinTol = 1./30.
+CML       IF ( picardIter .EQ. 7 ) krylovLinTol = 1./30.
+CML       IF ( picardIter .EQ. 8 ) krylovLinTol = 1./40.
+CML       IF ( picardIter .EQ. 9 ) krylovLinTol = 1./50.
+CML       IF ( picardIter .GT. 9 ) krylovLinTol = 1./80.
 C     this is used with the JFNK solver, but the Picard-Krylov solver
 C     converges too slowly for this scheme
 CML       IF ( picardIter.GT.1.AND.picardResidual.LT.JFNKres_t ) THEN
@@ -406,43 +401,10 @@ C     criterion for the transition from accurate to approximate FGMRES
      &        JFNKres_t = picardResidual * JFNKres_tFac
         ENDIF
        ENDIF
-#ifdef SEAICE_ALLOW_DAMAGE
-       IF ( SEAICEupdateDamage .AND. SEAICEuseIMEX ) 
-     &      CALL SEAICE_UPDATE_DAMAGE( myTime, myIter, myThid )
-#endif
 C     end of Picard iterate
       ENDDO
 
-#ifdef SEAICE_ALLOW_MEB
-C     after damage is up to date, we need to update sigma to be consistent
-C     with the damage, this time return result in global fields
-      IF ( SEAICEuseMEB .AND. SEAICEuseIMEX ) THEN
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         CALL SEAICE_MEB_UPDATE_SIGMA(
-     I        e11, e22, e12, press0, etaZ, damage, dCrit,
-     U        seaice_sigma1, seaice_sigma2, seaice_sigma12,
-     I        bi, bj, myTime, myIter, myThid )
-        ENDDO
-       ENDDO
-      ENDIF
-#endif
-
 C--   Output diagnostics
-      IF ( debugLevel.GE.debLevA
-     &     .AND. .NOT.SEAICEusePicardAsPrecon ) THEN
-       _BEGIN_MASTER( myThid )
-       totalPicardItersLoc =
-     &      picardIterMax*(myIter-nIter0)+picardIter
-       WRITE(msgBuf,'(2A,2(1XI6),2E12.5)')
-     &      ' S/R SEAICE_KRYLOV: Picard iterate / total, ',
-     &      'KRYLOVgamma_lin, final   norm = ',
-     &      picardIter, totalPicardItersLoc,
-     &      krylovLinTol,picardResidual
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &      SQUEEZE_RIGHT, myThid )
-       _END_MASTER( myThid )
-      ENDIF
 
       IF ( SEAICE_monFreq .GT. 0. _d 0 ) THEN
 C     Count iterations
