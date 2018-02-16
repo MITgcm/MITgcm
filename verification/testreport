@@ -1,6 +1,4 @@
 #! /usr/bin/env bash
-#
-#
 
 usage()
 {
@@ -1739,22 +1737,23 @@ for dir in $TESTDIRS ; do
 		grep '^Get compiler version using:' $gmkLog > /dev/null 2>&1
 		RETVAL=$?
 		if test "x$RETVAL" = x0 ; then
-		  echo -n "from '$gmkLog', " >> $DRESULTS/genmake_state
+		  echo -n "from '$gmkLog', "	>> $DRESULTS/genmake_state
 		  echo "extract compiler version:"   >> $DRESULTS/genmake_state
 		  sed -n '/Get compiler version/,/<-- compiler version/p' \
 		     $gmkLog | grep -v '^... compiler version ' > tmp.tr_log
-		  sed -n '1p' tmp.tr_log >> $DRESULTS/genmake_state
+		  sed -n '1p' tmp.tr_log	>> $DRESULTS/genmake_state
 		  sed -n '2,/^$/p' tmp.tr_log | sed '/^$/d' | sed 's/^./ &/' \
-					 >> $DRESULTS/genmake_state
+						>> $DRESULTS/genmake_state
 		  rm -f tmp.tr_log
 		fi
 	    fi
 	    gmkLog=$dir/$builddir/genmake_state
 	    if test -r $gmkLog ; then
-		echo -n "from '$gmkLog', "      >> $DRESULTS/genmake_state
-		echo "get genmake settings:"    >> $DRESULTS/genmake_state
+		echo -n "from '$gmkLog', "	>> $DRESULTS/genmake_state
+		echo "get genmake settings:"	>> $DRESULTS/genmake_state
 		sed -n '/^HAVE_/p' $gmkLog | sed 's/^./ &/' \
 						>> $DRESULTS/genmake_state
+		sed -n '/^THIS[A-Z]*=/p' $gmkLog >> $DRESULTS/genmake_state
 	    fi
 	fi
     fi
