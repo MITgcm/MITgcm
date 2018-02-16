@@ -300,6 +300,10 @@ Other embedded links
 **Hyperlinks:** to reference a (clickable) URL, simply enter the full URL. If you want to have a different,
 clickable text link instead of displaying the full URL, the syntax
 is ```clickable_text <URL>`_``  (the ‘<’ and ‘>’ are literal characters, and note the trailing underscore). 
+For this kind of link, the clickable text has to be unique for each URL.  If
+you would like to use a non-unique text (like ‘click here’), you should use
+an ‘anonymous reference’ with a double trailing underscore:
+```clickable_text <URL>`__``.
 
 **File references:** to create a link to pull up MITgcm code (or any file in the repo) in a code browser window, the syntax is ``:filelink:`path/filename```.
 If you want to have a different text link to click on (e.g., say you didn’t want to display the full path), the syntax is ``:filelink:`clickable_text <path/filename>```
