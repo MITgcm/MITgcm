@@ -255,8 +255,8 @@ Contributing to the manual
 
 Whether you are simply correcting typos or describing undocumented packages, we welcome all contributions to the manual. The following information will help you make sure that your contribution is consistent with the style of the MITgcm documentation. (We know that not all of the current documentation follows these guidelines - we're working on it)
 
-The manual is written in **rst** format, which is short for ReStructuredText directives. rst offers many wonderful features: it automatically does much of the formatting for you, it is reasonably well documented on the web (e.g. primers available `here <http://www.sphinx-doc.org/en/stable/rest.html>`_ and
-`here <http://docutils.sourceforge.net/docs/user/rst/quickref.html>`_), it can accept raw latex syntax and track equation labelling for you, in addition to numerous other useful features. On the down side however, it can be very fussy about formatting, requiring exact spacing and indenting, and seemingly innocuous things such as blank spaces at ends of lines can wreak havoc. We suggest looking at the existing rst files in the manual to see exactly how something is formatted, along with the syntax guidelines specified in this section, prior to writing and formatting your own manual text.
+The manual is written in **rst** format, which is short for ReStructuredText directives. rst offers many wonderful features: it automatically does much of the formatting for you, it is reasonably well documented on the web (e.g. primers available `here <http://www.sphinx-doc.org/en/stable/rest.html>`__ and
+`here <http://docutils.sourceforge.net/docs/user/rst/quickref.html>`__), it can accept raw latex syntax and track equation labelling for you, in addition to numerous other useful features. On the down side however, it can be very fussy about formatting, requiring exact spacing and indenting, and seemingly innocuous things such as blank spaces at ends of lines can wreak havoc. We suggest looking at the existing rst files in the manual to see exactly how something is formatted, along with the syntax guidelines specified in this section, prior to writing and formatting your own manual text.
 
 The manual can be viewed either of two ways: interactively (i.e., web-based), as hosted by read-the-docs (https://readthedocs.org/),
 requiring an html format build, or downloaded as a pdf file. 
@@ -351,7 +351,7 @@ off each manual chapter subdirectory.
 The wild-card is used here so that different file formats can be used in the build process.
 For vector graphic images, save a ``pdf`` for the pdf build plus a ``svg`` file for the html build. 
 For bitmapped images, ``gif``, ``png``, or ``jpeg`` formats can be used for both builds, no wild-card necessary
-(see `here <http://www.sphinx-doc.org/en/stable/builders.html>`_ for more info
+(see `here <http://www.sphinx-doc.org/en/stable/builders.html>`__ for more info
 on compatible formats).
 
 ``:width:``:  used to scale the size of the figure, here specified as 80% scaling factor
