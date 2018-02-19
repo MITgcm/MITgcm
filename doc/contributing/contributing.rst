@@ -261,7 +261,7 @@ The manual is written in **rst** format, which is short for ReStructuredText dir
 The manual can be viewed either of two ways: interactively (i.e., web-based), as hosted by read-the-docs (https://readthedocs.org/),
 requiring an html format build, or downloaded as a pdf file. 
 When you have completed your documentation edits, you should double check both versions are to your satisfaction, particularly noting that figure sizing and placement
-may be render differently in the pdf build.
+may be rendered differently in the pdf build.
 
 Section headings
 ----------------
