@@ -21,7 +21,6 @@ C !USES: ===============================================================
 # include "THSICE_VARS.h"
 #endif
 #ifdef ALLOW_SEAICE
-# define SEAICE_EXCLUDE_WIND_STRESS
 # include "SEAICE_SIZE.h"
 # include "SEAICE.h"
 #endif
