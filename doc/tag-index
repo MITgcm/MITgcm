@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - move wind-stress over seaice out of SEAICE.h into local seaice_dynsolver.F
+    common block ; move initialisation of TAUX & TAUY accordingly and add them
+    to argument list of S/R SEAICE_OCEAN_STRESS (like SEAICE_GET_DYNFORCING).
+    This enable to remove CPP option "SEAICE_EXCLUDE_WIND_STRESS" (hack from
+    June 2016) in pkg/dic/dic_fields_update.F
 o doc:
   - first addition of reST/sphinx documentation (formerly in
     https://github.com/altMITgcm/MITgcm/doc/), converted from original MITgcm
