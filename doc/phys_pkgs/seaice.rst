@@ -60,7 +60,7 @@ options see the default ``pkg/seaice/SEAICE_OPTIONS.h``.
    "``SEAICE_CGRID``", "LSR solver on C-grid (rather than original B-grid)"
    "``SEAICE_ALLOW_EVP``", "enable use of EVP rheology solver"
    "``SEAICE_ALLOW_JFNK``", "enable use of JFNK rheology solver"
-   "``SEAICE_ALLOW_KRYLOV``", "enable Krylov code by defining the following flag"
+   "``SEAICE_ALLOW_KRYLOV``", "enable use of Krylov rheology solver"
    "``SEAICE_LSR_ZEBRA``", "use a coloring method for LSR solver"
    "``SEAICE_EXTERNAL_FLUXES``", "use EXF-computed fluxes as starting point"
    "``SEAICE_ZETA_SMOOTHREG``", "use differentialable regularization for viscosities"
