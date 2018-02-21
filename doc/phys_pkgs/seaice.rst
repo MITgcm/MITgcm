@@ -50,39 +50,24 @@ Parts of the SEAICE code can be enabled or disabled at compile time via
 CPP preprocessor flags. These options are set in ``SEAICE_OPTIONS.h``. :numref:`tab_phys_pkg_seaice_cpp` summarizes the most important ones. For more
 options see the default ``pkg/seaice/SEAICE_OPTIONS.h``.
 
-.. table:: Some of the most relevant CPP preporocessor flags in the ``seaice``-package. 
-  :name: tab_phys_pkg_seaice_cpp
+.. csv-table:: Some of the most relevant CPP preporocessor flags in the ``seaice``-package.
+   :header: "CPP option", "Description"
+   :widths: auto
+   :name: tab_phys_pkg_seaice_cpp
 
-  +------------------------------------+----------------------------------------------------------------------------------------------------------+
-  | **CPP option**                     | **Description**                                                                                          |
-  +====================================+==========================================================================================================+
-  | ``SEAICE_DEBUG``                   | Enhance STDOUT for debugging                                                                             |
-  +------------------------------------+----------------------------------------------------------------------------------------------------------+
-  | ``SEAICE_ALLOW_DYNAMICS``          | sea-ice dynamics code                                                                                    |
-  +------------------------------------+----------------------------------------------------------------------------------------------------------+
-  | ``SEAICE_CGRID``                   | LSR solver on C-grid (rather than original B-grid)                                                       |
-  +------------------------------------+----------------------------------------------------------------------------------------------------------+
-  | ``SEAICE_ALLOW_EVP``               | enable use of EVP rheology solver                                                                        |
-  +------------------------------------+----------------------------------------------------------------------------------------------------------+
-  | ``SEAICE_ALLOW_JFNK``              | enable use of JFNK rheology solver                                                                       |
-  +------------------------------------+----------------------------------------------------------------------------------------------------------+
-  | ``SEAICE_EXTERNAL_FLUXES``         | use EXF-computed fluxes as starting point                                                                |
-  +------------------------------------+----------------------------------------------------------------------------------------------------------+
-  | ``SEAICE_ZETA_SMOOTHREG``          | use differentialable regularization for viscosities                                                      |
-  +------------------------------------+----------------------------------------------------------------------------------------------------------+
-  | ``SEAICE_VARIABLE_FREEZING_POINT`` | enable linear dependence of the freezing point on salinity (by default undefined)                        |
-  +------------------------------------+----------------------------------------------------------------------------------------------------------+
-  | ``ALLOW_SEAICE_FLOODING``          | enable snow to ice conversion for submerged sea-ice                                                      |
-  +------------------------------------+----------------------------------------------------------------------------------------------------------+
-  | ``SEAICE_VARIABLE_SALINITY``       | enable sea-ice with variable salinity (by default undefined)                                             |
-  +------------------------------------+----------------------------------------------------------------------------------------------------------+
-  | ``SEAICE_SITRACER``                | enable sea-ice tracer package (by default undefined)                                                     |
-  +------------------------------------+----------------------------------------------------------------------------------------------------------+
-  | ``SEAICE_BICE_STRESS``             | B-grid only for backward compatiblity: turn on ice-stress on ocean                                       |
-  +------------------------------------+----------------------------------------------------------------------------------------------------------+
-  | ``EXPLICIT_SSH_SLOPE``             | B-grid only for backward compatiblity: use ETAN for tilt computations rather than geostrophic velocities |
-  +------------------------------------+----------------------------------------------------------------------------------------------------------+
-
+   "``SEAICE_DEBUG``", "Enhance STDOUT for debugging"
+   "``SEAICE_ALLOW_DYNAMICS``", "sea-ice dynamics code"
+   "``SEAICE_CGRID``", "LSR solver on C-grid (rather than original B-grid)"
+   "``SEAICE_ALLOW_EVP``", "enable use of EVP rheology solver"
+   "``SEAICE_ALLOW_JFNK``", "enable use of JFNK rheology solver"
+   "``SEAICE_EXTERNAL_FLUXES``", "use EXF-computed fluxes as starting point"
+   "``SEAICE_ZETA_SMOOTHREG``", "use differentialable regularization for viscosities"
+   "``SEAICE_VARIABLE_FREEZING_POINT``", "enable linear dependence of the freezing point on salinity (by default undefined)"
+   "``ALLOW_SEAICE_FLOODING``", "enable snow to ice conversion for submerged sea-ice"
+   "``SEAICE_VARIABLE_SALINITY``", "enable sea-ice with variable salinity (by default undefined)"
+   "``SEAICE_SITRACER``", "enable sea-ice tracer package (by default undefined)"
+   "``SEAICE_BICE_STRESS``", "B-grid only for backward compatiblity: turn on ice-stress on ocean"
+   "``EXPLICIT_SSH_SLOPE``", "B-grid only for backward compatiblity: use ETAN for tilt computations rather than geostrophic velocities"
 
 .. _ssub_phys_pkg_seaice_runtime:
 
