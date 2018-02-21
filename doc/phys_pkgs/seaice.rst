@@ -292,8 +292,6 @@ Input fields and units
 Description
 +++++++++++
 
-[TO BE CONTINUED/MODIFIED]
-
 The MITgcm sea ice model (MITgcm/sim) is based on a variant of the
 viscous-plastic (VP) dynamic-thermodynamic sea ice model :cite:`zhang97` first
 introduced by :cite:`hib79,hib80`. In order to adapt this model to the requirements of
@@ -1095,8 +1093,8 @@ concentration :math:`c` and effective snow thickness
 .. math::
    :label: eq_advection
 
-     \frac{\partial{X}}{\partial{t}} = - \nabla\cdot\left({{\vec{\mathbf{u}}}}\,X\right) +
-     \Gamma_{X} + D_{X}
+     \frac{\partial{X}}{\partial{t}} =
+	   - \nabla\cdot\left(\mathbf{u}\,X\right) + \Gamma_{X} + D_{X}
 
 where :math:`\Gamma_X` are the thermodynamic source terms and
 :math:`D_{X}` the diffusive terms for quantities
