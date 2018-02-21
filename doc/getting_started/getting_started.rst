@@ -26,9 +26,9 @@ Where to find information
 There is a web-archived support mailing list for the model that you can
 email at MITgcm-support@mitgcm.org once you have subscribed.
 
-To sign up (subscribe) for the mailing list (highly recommended), click `here <http://mailman.mitgcm.org/mailman/listinfo/mitgcm-support/>`_ 
+To sign up (subscribe) for the mailing list (highly recommended), click `here <http://mailman.mitgcm.org/mailman/listinfo/mitgcm-support/>`__
 
-To browse through the support archive, click `here <http://mailman.mitgcm.org/pipermail/mitgcm-support/>`_
+To browse through the support archive, click `here <http://mailman.mitgcm.org/pipermail/mitgcm-support/>`__
 
 
 Obtaining the code
