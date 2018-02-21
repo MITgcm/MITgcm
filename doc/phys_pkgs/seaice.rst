@@ -52,7 +52,7 @@ options see the default ``pkg/seaice/SEAICE_OPTIONS.h``.
 
 .. csv-table:: Some of the most relevant CPP preporocessor flags in the ``seaice``-package.
    :header: "CPP option", "Description"
-   :widths: auto
+   :widths: 40, 60
    :name: tab_phys_pkg_seaice_cpp
 
    "``SEAICE_DEBUG``", "Enhance STDOUT for debugging"
