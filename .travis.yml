@@ -75,7 +75,17 @@ jobs:
     - stage: test documentation
       env: 
       - BUILD="html"
+      python: "2.7"
+      script: cd doc; make clean ${BUILD}
+    - env:
+      - BUILD="html"
+      python: "3.6"
       script: cd doc; make clean ${BUILD}
     - env:
       - BUILD="latexpdf"
+      python: "2.7"
+      script: cd doc; make clean ${BUILD}
+    - env:
+      - BUILD="latexpdf"
+      python: "3.6"
       script: cd doc; make clean ${BUILD}
