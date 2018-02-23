@@ -60,31 +60,27 @@ author = u'Alistair Adcroft, Jean-Michel Campin, Ed Doddridge, Stephanie Dutkiew
 # built documents.
 #
 
-from subprocess import Popen, PIPE
+from subprocess import check_output, CalledProcessError
 
 def get_version():
     """
-    Returns project version as string from 'git describe' command.
-    
-    Slightly modified from:
-    http://dreamiurg.net/2011/10/03/using-git-to-get-version-information/
+    Return the latest tag (checkpoint) and, if there have
+    been commits since the version was tagged, the commit hash.
 
     To get just the release tag use:
     version = version.split('-')[0]
     """
 
-    pipe = Popen('git describe --tags --always', stdout=PIPE, shell=True)
-    version = pipe.stdout.read()
+    try:
+        version = check_output(['git', 'describe', '--tags', '--always'],
+                               universal_newlines=True)
+    except CalledProcessError:
+        return 'unknown version'
 
-    if version:
-        return version
-    else:
-        return 'X.Y'
+    return version.rstrip()
 
-# The full version, including alpha/beta/rc tags and, if there have 
-# been commits since the version was tagged, the commit hash.
 # "version" is used for html build
-version = get_version().lstrip('v').rstrip()
+version = get_version()
 # "release" is used for LaTeX build
 release = version
 
