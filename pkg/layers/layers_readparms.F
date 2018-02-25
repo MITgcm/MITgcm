@@ -147,6 +147,7 @@ C--   Set layers_num according to layers_name:
         IF ( layers_name(iLa).EQ.'TH ' ) layers_num(iLa) = 1
         IF ( layers_name(iLa).EQ.'SLT' ) layers_num(iLa) = 2
         IF ( layers_name(iLa).EQ.'RHO' ) layers_num(iLa) = 3
+        IF ( layers_name(iLa).EQ.'MSE' ) layers_num(iLa) = 4
         IF ( layers_name(iLa).NE.' ' .AND.
      &       layers_num(iLa).EQ.0 ) THEN
           WRITE(msgBuf,'(2A,I2,3A)') 'LAYERS_READPARMS: ',
@@ -171,6 +172,16 @@ C--   Make sure the layers_bounds we just read is big enough
         ENDDO
        ENDIF
       ENDDO
+
+#ifndef LAYERS_PRHO_REF
+      IF ( LAYER_nb .EQ. 3 ) THEN
+          WRITE(msgBuf,'(2A,I4)')
+     &      'S/R LAYERS_READPARMS: ',
+     &      'Layering in density requires to define LAYERS_PRHO_REF'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R LAYERS_READPARMS'
+      ENDIF
+#endif
 
 C--   Make sure that we locally honor the global MNC on/off flag
       layers_MNC = layers_MNC .AND. useMNC
