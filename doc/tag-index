@@ -2,6 +2,7 @@
     ==============================
 
 o doc:
+  - add Moist Static Energy coordinate in layers package
   - first addition of reST/sphinx documentation (formerly in
     https://github.com/altMITgcm/MITgcm/doc/), converted from original MITgcm
     LaTeX manual in: https://github.com/MITgcm/manual-archive with edits
