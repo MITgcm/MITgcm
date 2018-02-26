@@ -76,6 +76,7 @@ c     COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
       INTEGER prec, nRec, nTimRec
       _RL     timeRec(2)
       _RL     tmpLoc
+      LOGICAL incrementRec
 #ifdef ALLOW_MDSIO
       LOGICAL glf
 #endif
@@ -425,6 +426,28 @@ C         a hack not to write meta files now: pass -nRec < 0 to MDS_WRITE S/R
            ENDIF
           ENDIF
 #endif /*  ALLOW_MNC  */
+
+#ifdef ALLOW_NF90IO
+           IF (useNF90io .AND. diag_nf90io) THEN
+              IF (md.EQ.1) THEN
+C               then this is the first diagnostics of this list element.
+                 incrementRec=.TRUE.
+              ELSE
+                incrementRec=.FALSE.
+             ENDIF
+             IF ( ppFld.LE.1 ) THEN
+                CALL DIAGNOSTICS_NF90IO_OUT(
+     I               NrMax, nLevOutp, listId, ndId,
+     I               qtmp1, incrementRec, timeRec,
+     I               undefRL, myTime, myIter, myThid )
+             ELSE
+                CALL DIAGNOSTICS_NF90IO_OUT(
+     I               NrMax, nLevOutp, listId, ndId,
+     I               qtmp2, incrementRec, timeRec,
+     I               undefRL, myTime, myIter, myThid )
+             ENDIF
+          ENDIF
+#endif /*  ALLOW_NF90IO  */
 
 C--     end of Processing Fld # md
         ENDIF

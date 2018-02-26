@@ -1,0 +1,5 @@
+# Packages
+ &PACKAGES
+ useDIAGNOSTICS=.TRUE.,
+ useNF90IO=.TRUE.,
+ /

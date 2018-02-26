@@ -1,0 +1,80 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# See src/ini_parms.F for possible parameters.
+#
+# Continuous equation parameters
+ &PARM01
+ debugLevel=2,
+ tRefFile='TRef.bin',
+ sRef= 6*35.,
+ viscAz=1.E-5,
+ viscAh=1.0E-4,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ viscA4=0.E12,
+ diffKhT=1.0E-4,
+ diffKzT=1.E-5,
+ diffKhS=1.E3,
+ diffKzS=1.E-5,
+ f0=0.E-4,
+ beta=0.02E-11,
+ tAlpha=2.E-4,
+ sBeta =0.E-4,
+ gravity=9.81,
+ gBaro=9.81,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ eosType='LINEAR',
+ nonHydrostatic=.FALSE.,
+ readBinaryPrec=64,
+ saltStepping=.FALSE.,
+# minimum cell fraction.  This reduces steppiness..
+  hFacMin=0.1,
+  exactConserv=.FALSE.,
+  implicitDiffusion=.TRUE.
+  implicitViscosity=.TRUE.
+# Superbee on:
+ tempAdvScheme=77,
+ staggerTimeStep=.TRUE.,
+/
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-13,
+ cg3dMaxIters=400,
+ cg3dTargetResidual=1.E-13,
+/
+
+# Time stepping parameters
+ &PARM03
+# times are in s
+ startTime=0,
+ endTime=372,
+ deltaT=12.4,
+ abEps=0.1,
+# once per tide checkpoint...
+ pChkptFreq=44640,
+ chkptFreq=0.0,
+ dumpFreq=0,
+ dumpInitAndLast=.FALSE.
+ monitorFreq=124,
+/
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ usingSphericalPolarGrid=.FALSE.,
+ delXfile='delXvar.bin',
+ delYfile='delYvar.bin',
+ delRfile = 'delZvar.bin',
+/
+
+# Input datasets
+ &PARM05
+ bathyFile='topo.bin',
+ mdsioLocalDir='../../',
+ hydrogThetaFile='T0.bin',
+ /

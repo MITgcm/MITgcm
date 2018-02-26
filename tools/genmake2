@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 #
-#
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
 #   adapted  by aja 06/98
@@ -1084,6 +1083,118 @@ EOF
     echo " --> set HAVE_NETCDF='$HAVE_NETCDF'" >> $LOGFILE
 }
 
+check_nf90io_mpi_libs()  {
+    if test ! "x$SKIP_NF90IO_CHECK" = x ; then
+	    return
+    fi
+    echo $LD_LIBRARY_PATH >> $LOGFILE
+    echo $LIBS >> $LOGFILE
+
+    echo >> $LOGFILE
+    echo "running: check_nf90io_libs()" >> $LOGFILE
+    # check if the parallel tests can actually compile...
+    echo "$F90C $FFLAGS $FOPTIM -c f90tst_parallel.f90 \ " >> f90tst_parallel.log
+    echo "  &&  $LINK $FFLAGS $FOPTIM -o f90tst_parallel f90tst_parallel.o $LIBS" >> f90tst_parallel.log
+    $F90C $FFLAGS $FOPTIM  $INCLUDES -c ${TOOLSDIR}/maketests/f90tst_parallel.f90 >> f90tst_parallel.log 2>&1  \
+	&&  $LINK $FFLAGS $FOPTIM -o f90tst_parallel f90tst_parallel.o $LIBS >> f90tst_parallel.log 2>&1
+    RET_COMPILE=$?
+    cat f90tst_parallel.log >> $LOGFILE
+
+    if test "x$RET_COMPILE" = x0 ; then
+	HAVE_NF90IO=t
+	echo "check_nf90io_libs: successful" >> $LOGFILE
+    else
+	# try again with "-lnetcdf" added to the libs
+	echo "==> try again with added '-lnetcdf'" > f90tst_parallel.log
+	echo "$F90C $FFLAGS $FOPTIM -c f90tst_parallel.f90 \ " >> f90tst_parallel.log
+	echo "  &&  $LINK $FFLAGS $FOPTIM -o f90tst_parallel.o $LIBS -lnetcdf" >> f90tst_parallel.log
+	$F90C $FFLAGS $FOPTIM  $INCLUDES -c ${TOOLSDIR}/maketests/f90tst_parallel.f90 >> f90tst_parallel.log 2>&1  \
+	    &&  $LINK $FFLAGS $FOPTIM -o f90tst_parallel f90tst_parallel.o $LIBS -lnetcdf >> f90tst_parallel.log 2>&1
+	RET_COMPILE=$?
+	echo >> $LOGFILE
+	cat f90tst_parallel.log >> $LOGFILE
+	if test "x$RET_COMPILE" = x0 ; then
+	    LIBS="$LIBS -lnetcdf"
+	    HAVE_NF90IO=t
+	    echo "check_nf90io_libs: successful" >> $LOGFILE
+	else
+	# try again with "-lnetcdff" added to the libs
+	    echo "==> try again with added '-lnetcdff -lnetcdf'" > f90tst_parallel.log
+
+	    echo "$F90C $FFLAGS $FOPTIM $INCLUDES -c f90tst_parallel.f90 \ " >> f90tst_parallel.log
+	    echo "  &&  $LINK $FFLAGS $FOPTIM -o f90tst_parallel f90tst_parallel.o $LIBS -lnetcdf lnetcdff" >> f90tst_parallel.log
+	    $F90C $FFLAGS $FOPTIM  $INCLUDES -c  ${TOOLSDIR}/maketests/f90tst_parallel.f90 >> f90tst_parallel.log 2>&1  \
+		&&  $LINK $FFLAGS $FOPTIM -o f90tst_parallel f90tst_parallel.o $LIBS -lnetcdf -lnetcdff >> f90tst_parallel.log 2>&1
+	    RET_COMPILE=$?
+	    echo >> $LOGFILE
+	    cat f90tst_parallel.log >> $LOGFILE
+	    if test "x$RET_COMPILE" = x0 ; then
+		LIBS="$LIBS -lnetcdf -lnetcdff"
+		HAVE_NF90IO=t
+		echo "check_nf90io_libs: successful" >> $LOGFILE
+	    fi
+	fi
+    fi
+    rm -f f90tst_parallel*
+    echo " --> set HAVE_NF90IO='$HAVE_NF90IO'" >> $LOGFILE
+}
+
+check_nf90io_nompi_libs()  {
+    if test ! "x$SKIP_NF90IO_CHECK" = x ; then
+	    return
+    fi
+    echo >> $LOGFILE
+    echo "running: check_nf90io_libs()" >> $LOGFILE
+    echo "===  f90tst_vars.f90  >>>" > f90tst_parallel.log
+    #cat genmake_tnc.F >> f90tst_vars.log
+    echo "<<<  f90tst_vars.f90 ===" >> f90tst_vars.log
+    echo "$F90C $FFLAGS $FOPTIM -c f90tst_vars.f90 \ " >> f90tst_parallel.log
+    echo "  &&  $LINK $FFLAGS $FOPTIM -o f90tst_vars.o $LIBS" >> f90tst_vars.log
+    $F90C $FFLAGS $FOPTIM  $INCLUDES -c ${TOOLSDIR}/maketests/f90tst_vars.f90 >> f90tst_vars.log 2>&1  \
+	&&  $LINK $FFLAGS $FOPTIM -o  f90tst_vars f90tst_vars.o $LIBS >> f90tst_vars.log 2>&1
+    RET_COMPILE=$?
+    cat f90tst_vars.log >> $LOGFILE
+
+    if test "x$RET_COMPILE" = x0 ; then
+	HAVE_NF90IO=t
+	echo "check_nf90io_libs: successful" >> $LOGFILE
+    else
+	# try again with "-lnetcdf" added to the libs
+	echo "==> try again with added '-lnetcdf'" > f90tst_vars.log
+	echo "$F90C $FFLAGS $FOPTIM -c f90tst_vars.f90 \ " >> f90tst_vars.log
+	echo "  &&  $LINK $FFLAGS $FOPTIM -o f90tst_vars.o $LIBS -lnetcdf" >> f90tst_vars.log
+	$F90C $FFLAGS $FOPTIM  $INCLUDES -c  ${TOOLSDIR}/maketests/f90tst_vars.f90 >> f90tst_vars.log 2>&1  \
+	    &&  $LINK $FFLAGS $FOPTIM -o  f90tst_vars f90tst_vars.o $LIBS -lnetcdf >> f90tst_vars.log 2>&1
+	RET_COMPILE=$?
+	echo >> $LOGFILE
+	cat f90tst_vars.log >> $LOGFILE
+	if test "x$RET_COMPILE" = x0 ; then
+	    LIBS="$LIBS -lnetcdf"
+	    HAVE_NF90IO=t
+	    echo "check_nf90io_libs: successful" >> $LOGFILE
+	else
+	# try again with "-lnetcdff" added to the libs
+	    echo "==> try again with added '-lnetcdff -lnetcdf'" > f90tst_vars.log
+
+	    echo "$F90C $FFLAGS $FOPTIM -c f90tst_vars.f90 \ " >> f90tst_vars.log
+	    echo "  &&  $LINK $FFLAGS $FOPTIM -o f90tst_vars.o $LIBS -lnetcdf" >> f90tst_vars.log
+	    $F90C $FFLAGS $FOPTIM  $INCLUDES -c  ${TOOLSDIR}/maketests/f90tst_vars.f90 >> f90tst_vars.log 2>&1  \
+		&&  $LINK $FFLAGS $FOPTIM -o f90tst_vars f90tst_vars.o $LIBS -lnetcdf -lnetcdff >> f90tst_vars.log 2>&1
+	    RET_COMPILE=$?
+	    echo >> $LOGFILE
+	    cat f90tst_vars.log >> $LOGFILE
+	    if test "x$RET_COMPILE" = x0 ; then
+		LIBS="$LIBS -lnetcdf -lnetcdff"
+		HAVE_NF90IO=t
+		echo "check_nf90io_libs: successful" >> $LOGFILE
+	    fi
+	fi
+    fi
+    rm -f f90tst_vars*
+    echo " --> set HAVE_NF90IO='$HAVE_NF90IO'" >> $LOGFILE
+}
+
+
 check_lapack_libs()  {
     if test "x$CHECK_FOR_LAPACK" = xf ; then return ; fi
     echo >> $LOGFILE
@@ -2072,6 +2183,34 @@ else
     echo "no"
 fi
 
+if test "x${TOOLSDIR}" = x ; then
+    TOOLSDIR="$ROOTDIR/tools"
+    TOOLSDIRMK='$(ROOTDIR)'"/tools"
+else
+    TOOLSDIRMK=${TOOLSDIR}
+fi
+if test ! -d ${TOOLSDIR} ; then
+    echo "Error: the specified TOOLSDIR (\"$TOOLSDIR\") does not exist!"
+    exit 1
+fi
+
+
+printf "  Can we create NF90-enabled binaries...  "
+if  [[ $DEFINES ==  *"-DALLOW_USE_MPI"* ]]; then
+    printf "with mpi...  "
+    check_nf90io_mpi_libs
+else
+    printf "without mpi...  "
+    check_nf90io_nompi_libs
+fi
+if test "x$HAVE_NF90IO" != x ; then
+    DEFINES="$DEFINES -DHAVE_NF90IO"
+    echo "yes"
+else
+    echo "no"
+fi
+
+
 printf "  Can we create LAPACK-enabled binaries...  "
 check_lapack_libs
 if test "x$HAVE_LAPACK" != x ; then
@@ -2133,16 +2272,6 @@ if test ! -d ${EXEDIR} ; then
     exit 1
 fi
 
-if test "x${TOOLSDIR}" = x ; then
-    TOOLSDIR="$ROOTDIR/tools"
-    TOOLSDIRMK='$(ROOTDIR)'"/tools"
-else
-    TOOLSDIRMK=${TOOLSDIR}
-fi
-if test ! -d ${TOOLSDIR} ; then
-    echo "Error: the specified TOOLSDIR (\"$TOOLSDIR\") does not exist!"
-    exit 1
-fi
 if test "x$S64" = x ; then
     echo "3.0 _d 3" | ${TOOLSDIR}/set64bitConst.sh > /dev/null 2>&1
     RETVAL=$?
@@ -2170,7 +2299,6 @@ EOF
     fi
 fi
 THIS_SCRIPT=`echo ${0} | sed 's:'$TOOLSDIR':\$(TOOLSDIR):'`
-
 EXECUTABLE=${EXECUTABLE:-mitgcmuv}
 
 #  Set Standard Code Directories:
@@ -2380,6 +2508,35 @@ else
 	fi
     fi
 fi
+
+#  Check for package nf90io: if NF90 is available, then build the nf90io
+#  template files ; otherwise, delete nf90io from the list of packages.
+echo " $PACKAGES " | grep ' nf90io ' > /dev/null 2>&1
+nf90_in=$?
+if test "x$HAVE_NF90IO" != xt ; then
+    if test "x$nf90_in" = x0 ; then
+	cat <<EOF
+*********************************************************************
+WARNING: the "nf90io" package was enabled but tests failed to compile
+  NF90 applications.  Please check that:
+
+  1) NF90 is correctly installed for this compiler and
+  2) the LIBS variable (within the "optfile") specifies the correct
+       NetCDF library to link against.
+  2) the INCLUDE variable (within the "optfile") specifies the correct
+       NetCDF header files to include.
+
+  Due to this failure, the "nf90io" package is now DISABLED.
+*********************************************************************
+EOF
+	PACKAGES=`echo $PACKAGES | sed -e 's/nf90io//g'`
+	DISABLE="$DISABLE nf90io"
+    else
+    #  this prevent to add nf90io (due to pdepend rules) if not available
+	DISABLE="$DISABLE nf90io"
+    fi
+fi
+
 
 #  Check for package PROFILES: if NetCDF is not available,
 #  then delete profiles from the list of available packages.
@@ -3122,18 +3279,18 @@ CPPCMD = cat \$< | ${CPP} \$(DEFINES) \$(INCLUDES) | ${S64}
 .F.$FS:
 	\$(CPPCMD)  > \$@
 .$FS.o:
-	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
+	\$(FC) \$(FFLAGS) \$(INCLUDES) \$(FOPTIM) -c \$<
 .F.o:
-	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
+	\$(FC) \$(FFLAGS) \$(INCLUDES) \$(FOPTIM) -c \$<
 .F90.$FS90:
 	\$(CPPCMD)  > \$@
 .FF90.f$FS90:
 	\$(CPPCMD)  > \$@
 .$FS90.o:
-	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$<
+	\$(F90C) \$(F90FLAGS) \$(INCLUDES) \$(F90OPTIM) -c \$<
 .f$FS90.o:
 	cp \$< \$(basename  \$<).f90
-	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$(F90FIXEDFORMAT) \$(basename  \$<).f90
+	\$(F90C) \$(F90FLAGS) \$(INCLUDES) \$(F90OPTIM) -c \$(F90FIXEDFORMAT) \$(basename  \$<).f90
 .c.o:
 	\$(CC) \$(CFLAGS) \$(DEFINES) \$(INCLUDES) -c \$<
 .flow.flowdir:

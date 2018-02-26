@@ -119,7 +119,7 @@ c     INTEGER misValInt(numLists)
       CHARACTER*8  flds  (numperList,numLists)
       CHARACTER*80 fnames(numLists)
       CHARACTER*8  fflags(numLists)
-      LOGICAL diag_mdsio, diag_mnc, useMissingValue
+      LOGICAL diag_mdsio, diag_mnc, diag_nf90io, useMissingValue
 
       COMMON / DIAG_SELECT_R /
      &     freq, phase, averageFreq, averagePhase,
@@ -132,7 +132,7 @@ c    &   , misValInt
       COMMON / DIAG_SELECT_C /
      &     flds, fnames, fflags
       COMMON / DIAG_SELECT_L /
-     &     diag_mdsio, diag_mnc, useMissingValue
+     &     diag_mdsio, diag_mnc, diag_nf90io, useMissingValue
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

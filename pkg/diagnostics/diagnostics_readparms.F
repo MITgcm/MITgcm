@@ -91,7 +91,7 @@ C--   full level output:
      &     averagingFreq, averagingPhase, repeatCycle,
      &     missing_value, missing_value_int,
      &     levels, fields, fileName, fileFlags,
-     &     dumpAtLast, diag_mnc, useMissingValue,
+     &     dumpAtLast, diag_mnc, diag_nf90io, useMissingValue,
      &     diagCG_maxIters, diagCG_resTarget,
      &     diagCG_pcOffDFac, diagCG_prtResFrq, xPsi0, yPsi0,
      &     diag_pickup_read,     diag_pickup_write,
@@ -149,6 +149,7 @@ c       missing_value(l)     = UNSET_RL
       diagLoc_ioUnit = 0
       dumpAtLast   = .FALSE.
       diag_mnc     = useMNC
+      diag_nf90io  = useNF90io
       useMissingValue = .FALSE.
       diag_pickup_read      = .FALSE.
       diag_pickup_write     = .FALSE.
@@ -257,10 +258,15 @@ C     Fix to avoid running without getting any output:
       diag_mnc   = .FALSE.
       diagSt_mnc = .FALSE.
 #endif
+#ifndef ALLOW_NF90IO
+C     Fix to avoid running without getting any output:
+      diag_nf90io   = .FALSE.
+#endif
 
 C     Fill Diagnostics Common Block with Namelist Info
       diagSt_mnc = diagSt_mnc .AND. useMNC
-      diag_mdsio = (.NOT. diag_mnc) .OR. outputTypesInclusive
+      diag_mdsio = (.NOT. (diag_mnc .OR. diag_nf90io) .OR.
+     $               outputTypesInclusive)
       diag_pickup_read_mnc  = diag_pickup_read_mnc .AND. diag_mnc
       diag_pickup_write_mnc = diag_pickup_write_mnc .AND. diag_mnc
       diag_pickup_read_mdsio  =

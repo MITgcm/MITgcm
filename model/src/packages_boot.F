@@ -91,6 +91,7 @@ C     data.pkg namelists
      &          useREGRID,
      &          useLayers,
      &          useMNC,
+     &          useNF90IO,
      &          useRunClock,
      &          useEMBED_FILES,
      &          useMYPACKAGE
@@ -155,6 +156,7 @@ c     useGAD          =.FALSE.
       useREGRID       =.FALSE.
       useLayers       =.FALSE.
       useMNC          =.FALSE.
+      useNF90IO       =.FALSE.
       useRunClock     =.FALSE.
       useEMBED_FILES  =.FALSE.
       useMYPACKAGE    =.FALSE.
@@ -394,6 +396,9 @@ C----- pkgs with a standard "usePKG" On/Off switch in "data.pkg":
 #endif
 #ifdef ALLOW_MNC
       CALL PACKAGES_PRINT_MSG( useMNC,        'MNC',         ' ' )
+#endif
+#ifdef ALLOW_NF90IO
+      CALL PACKAGES_PRINT_MSG( useNF90IO,     'NF90IO',      ' ' )
 #endif
 #ifdef ALLOW_RUNCLOCK
       CALL PACKAGES_PRINT_MSG( useRunClock,   'RunClock',    ' ' )
