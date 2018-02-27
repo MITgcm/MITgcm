@@ -199,14 +199,6 @@ C     stressDivergenceX/Y - divergence of stress tensor
       _RL stressDivergenceY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* SEAICE_CGRID */
 
-#ifndef SEAICE_EXCLUDE_WIND_STRESS
-      COMMON/WIND_STRESS_ICE/TAUX,TAUY
-C     TAUX   - zonal      wind stress over ice at U point
-C     TAUY   - meridional wind stress over ice at V point
-      _RL TAUX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL TAUY       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif /* SEAICE_EXCLUDE_WIND_STRESS */
-
 #ifndef SEAICE_CGRID
       COMMON/WIND_STRESS_OCE/WINDX,WINDY
 C     WINDX  - zonal      wind stress over water at C points

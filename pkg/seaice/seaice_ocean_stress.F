@@ -1,14 +1,20 @@
 #include "SEAICE_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: SEAICE_OCEAN_STRESS
+C     !INTERFACE:
       SUBROUTINE SEAICE_OCEAN_STRESS(
-     I     myTime, myIter, myThid )
+     I                  windTauX, windTauY,
+     I                  myTime, myIter, myThid )
+C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE SEAICE_OCEAN_STRESS                           |
 C     | o Calculate ocean surface stresses                       |
 C     |   - C-grid version                                       |
 C     *==========================================================*
-C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -22,25 +28,29 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 
-C     === Routine arguments ===
-C     myTime - Simulation time
-C     myIter - Simulation timestep number
-C     myThid - Thread no. that called this routine.
+C     !INPUT/OUTPUT PARAMETERS:
+C     windTauX :: X-direction wind stress over seaice at U point
+C     windTauY :: Y-direction wind stress over seaice at V point
+C     myTime   :: Current time in simulation
+C     myIter   :: Current iteration number
+C     myThid   :: my Thread Id number
+      _RL     windTauX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL     windTauY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
 
 #ifdef SEAICE_CGRID
-C     === Local variables ===
-C     i,j,bi,bj - Loop counters
-C     kSrf      - vertical index of surface layer
+C     !LOCAL VARIABLES:
+C     i,j,bi,bj :: Loop counters
+C     kSrf      :: vertical index of surface layer
       INTEGER i, j, bi, bj
       INTEGER kSrf
       _RL  COSWAT
       _RS  SINWAT
       _RL  fuIceLoc, fvIceLoc
       _RL  areaW, areaS
+CEOP
 
 C     surrface level
       kSrf = 1
@@ -62,7 +72,7 @@ C     stress and internal ice stresses to surface layer of ocean
            areaW = 0.5 * (AREA(I,J,bi,bj) + AREA(I-1,J,bi,bj))
      &          * SEAICEstressFactor
            fu(I,J,bi,bj)=(ONE-areaW)*fu(I,J,bi,bj)
-     &          + areaW*taux(I,J,bi,bj)
+     &          + areaW*windTauX(I,J,bi,bj)
      &          + stressDivergenceX(I,J,bi,bj) * SEAICEstressFactor
           ENDDO
          ENDDO
@@ -72,7 +82,7 @@ C     This loop separation makes the adjoint code vectorize
            areaS = 0.5 * (AREA(I,J,bi,bj) + AREA(I,J-1,bi,bj))
      &          * SEAICEstressFactor
            fv(I,J,bi,bj)=(ONE-areaS)*fv(I,J,bi,bj)
-     &          + areaS*tauy(I,J,bi,bj)
+     &          + areaS*windTauY(I,J,bi,bj)
      &          + stressDivergenceY(I,J,bi,bj) * SEAICEstressFactor
           ENDDO
          ENDDO

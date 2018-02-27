@@ -31,10 +31,6 @@ C     in a separate external package, for example, pkg/exf, and then
 C     modified for sea-ice effects by pkg/seaice.
 #define SEAICE_EXTERNAL_FLUXES
 
-C--   Exclude Wind-Stress common block (in SEAICE.h). This option
-C     should ALWAYS been left undef (just listed here for the record)
-#undef SEAICE_EXCLUDE_WIND_STRESS
-
 C--   This CPP flag has been retired.  The number of ice categories
 C     used to solve for seaice flux is now specified by run-time
 C     parameter SEAICE_multDim.
