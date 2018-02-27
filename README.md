@@ -12,5 +12,5 @@ MIT General Circulation Model master code and documentation. The main MITgcm web
 
 We are currently in the process of transferring the documentation to Read the Docs. 
 
-- Access the old (complete) documentation [here](http://mitgcm.org/public/docs.html)
+- Access the old (complete) documentation [here](http://mitgcm.org/public/r2_manual/final/)
 - Access the new (incomplete) documentation [here](http://mitgcm.readthedocs.io/en/latest/)
