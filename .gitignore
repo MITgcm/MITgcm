@@ -99,7 +99,7 @@ core
 
 /tools/Makefile.*
 
-/tools/cyrus-imapd-makedepend/Makefile*
+/tools/cyrus-imapd-makedepend/Makefile
 /tools/cyrus-imapd-makedepend/config.*
 /tools/cyrus-imapd-makedepend/makedepend
 /tools/cyrus-imapd-makedepend/*.o
