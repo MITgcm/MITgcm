@@ -25,7 +25,7 @@ There is comparison output in the directory:
   results/output.txt
 
 There is comparison output in directory:
-  (verification/global_ocean.90x40x1/) results
+  (verification/global_ocean.90x40x15/) results
 
 Comments:
 o The input data is real*4.
