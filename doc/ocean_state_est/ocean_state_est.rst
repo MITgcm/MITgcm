@@ -1,9 +1,12 @@
+.. _chap_state_estimation:
+
 Ocean State Estimation Packages
 ===============================
 
 This chapter describes packages that have been introduced for ocean
 state estimation purposes and in relation with automatic differentiation
-(see :ref:`chap_autodiff`).
+(see :ref:`chap_autodiff`). Various examples in this chapter rely on two 
+model configurations that can be setup as explained in :ref:`sec:exp:llc`
 
 .. _sec:pkg:ecco:
 
@@ -1223,4 +1226,70 @@ Error handling
 .. [2]
    The quadratic option in fact does not yet exist in
    ``cost_gencost_boxmean.F``...
+
+.. _sec:exp:llc:
+
+
+Test Cases For Estimation Package Capabilities
+----------------------------------------------
+
+First, download the model as explained in :ref:`chap_getting_started` via the MITgcm git server
+::
+
+    % git clone https://github.com/user_name/MITgcm.git
+
+Then, download the setup from the `MITgcm_contrib/` area by logging into the cvs server
+::
+
+    % setenv CVSROOT ':pserver:cvsanon@mitgcm.org:/u/gcmpack'
+    % cvs login
+    %     ( enter the CVS password: "cvsanon" )
+
+and following the directions provided `here for global_oce_cs32 <http://mitgcm.org/viewvc/*checkout*/MITgcm/MITgcm_contrib/verification_other/global_oce_cs32/README>`__
+or `here for global_oce_llc90 <http://mitgcm.org/viewvc/*checkout*/MITgcm/MITgcm_contrib/verification_other/global_oce_llc90/README>`__. These model configurations
+are used for daily regression tests to ensure continued availability of the tested estimation package features discussed in :ref:`chap_state_estimation`.
+Daily results of these tests, which currently run on the `glacier` cluster, are reported `on this site <http://mitgcm.org/public/testing.html>`__.
+To this end, one sets a `crontab job <https://www.computerhope.com/unix/ucrontab.htm>`__ that typically executes the script reported below. 
+The various commands can also be used to run these examples outside of crontab, directly at the command line via the `testreport capability <http://mitgcm.org/public/devel_HOWTO/devel_HOWTO_onepage/>`__.
+
+.. note::
+
+   Users are advised against running `global_oce_llc90/` tests with fewer than 12 cores (96 for adjoint tests) to avoid potential memory overloads. `global_oce_llc90/ <http://mitgcm.org/viewvc/MITgcm/MITgcm_contrib/verification_other/global_oce_llc90/>`__ (595M) uses the same LLC90 grid as the production `ECCO version 4` setup does :cite:`for-eta:15`. The much coarser resolution `global_oce_cs32/ <http://mitgcm.org/viewvc/MITgcm/MITgcm_contrib/verification_other/global_oce_cs32/>`__ (614M) uses the CS32 grid and can run on any modern laptop.
+
+::
+
+    % #!/bin/csh -f
+    % setenv PATH ~/bin:$PATH
+    % setenv MODULESHOME /usr/share/Modules
+    % source /usr/share/Modules/init/csh
+    % module use /usr/share/Modules
+    % module load openmpi-x86_64
+    % setenv MPI_INC_DIR $MPI_INCLUDE
+    % 
+    % cd ~/MITgcm
+    % #mkdir gitpull.log
+    % set D=`date +%Y-%m-%d`
+    % git pull -v > gitpull.log/gitpull.$D.log
+    %
+    % cd verification
+    %
+    % #ieee case:
+    % ./testreport -clean -t 'global_oce_*'
+    % ./testreport -of=../tools/build_options/linux_amd64_gfortran -MPI 24 -t 'global_oce_*' -addr username@something.whatever
+    % ../tools/do_tst_2+2 -t 'global_oce_*' -mpi -exe 'mpirun -np 24 ./mitgcmuv' -a username@something.whatever
+    %
+    % #devel case:
+    % ./testreport -clean -t 'global_oce_*'
+    % ./testreport -of=../tools/build_options/linux_amd64_gfortran -MPI 24 -devel -t 'global_oce_*' -addr username@something.whatever
+    % ../tools/do_tst_2+2 -t 'global_oce_*' -mpi -exe 'mpirun -np 24 ./mitgcmuv' -a username@something.whatever
+    %
+    % #fast case:
+    % ./testreport -clean -t 'global_oce_*'
+    % ./testreport -of=../tools/build_options/linux_amd64_gfortran -MPI 24 -t 'global_oce_*' -fast -addr username@something.whatever
+    % ../tools/do_tst_2+2 -t 'global_oce_*' -mpi -exe 'mpirun -np 24 ./mitgcmuv' -a username@something.whatever
+    %
+    % #adjoint case:
+    % ./testreport -clean -t 'global_oce_*'
+    % ./testreport -of=../tools/build_options/linux_amd64_gfortran -MPI 24 -ad -t 'global_oce_*' -addr username@something.whatever
+
 
