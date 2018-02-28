@@ -1230,8 +1230,8 @@ Error handling
 .. _sec:exp:llc:
 
 
-Test Cases: Estimation Package Features
----------------------------------------
+Test Cases For Estimation Package Capabilities
+----------------------------------------------
 
 First, download the model as explained in :ref:`chap_getting_started` via the MITgcm git server
 ::
@@ -1250,7 +1250,7 @@ or `here for global_oce_llc90 <http://mitgcm.org/viewvc/*checkout*/MITgcm/MITgcm
 are used for daily regression tests to ensure continued availability of the tested estimation package features discussed in :ref:`chap_state_estimation`.
 Daily results of these tests, which currently run on the `glacier` cluster, are reported `on this site <http://mitgcm.org/public/testing.html>`__.
 To this end, one sets a `crontab job <https://www.computerhope.com/unix/ucrontab.htm>`__ that typically executes the script reported below. 
-The various commands can also be used to run these examples outside of crontab, directly at the command line via the `testreport capability <http://mitgcm.org/public/devel_HOWTO/devel_HOWTO_onepage/l>`__.
+The various commands can also be used to run these examples outside of crontab, directly at the command line via the `testreport capability <http://mitgcm.org/public/devel_HOWTO/devel_HOWTO_onepage/>`__.
 
 .. note::
 
@@ -1275,21 +1275,21 @@ The various commands can also be used to run these examples outside of crontab, 
     %
     % #ieee case:
     % ./testreport -clean -t 'global_oce_*'
-    % ./testreport -of=../tools/build_options/linux_amd64_gfortran -MPI 24 -t 'global_oce_*' -addr jm_c@mitgcm.org
-    % ../tools/do_tst_2+2 -t 'global_oce_*' -mpi -exe 'mpirun -np 24 ./mitgcmuv' -a jm_c@mitgcm.org
+    % ./testreport -of=../tools/build_options/linux_amd64_gfortran -MPI 24 -t 'global_oce_*' -addr username@something.whatever
+    % ../tools/do_tst_2+2 -t 'global_oce_*' -mpi -exe 'mpirun -np 24 ./mitgcmuv' -a username@something.whatever
     %
     % #devel case:
     % ./testreport -clean -t 'global_oce_*'
-    % ./testreport -of=../tools/build_options/linux_amd64_gfortran -MPI 24 -devel -t 'global_oce_*' -addr jm_c@mitgcm.org
-    % ../tools/do_tst_2+2 -t 'global_oce_*' -mpi -exe 'mpirun -np 24 ./mitgcmuv' -a jm_c@mitgcm.org
+    % ./testreport -of=../tools/build_options/linux_amd64_gfortran -MPI 24 -devel -t 'global_oce_*' -addr username@something.whatever
+    % ../tools/do_tst_2+2 -t 'global_oce_*' -mpi -exe 'mpirun -np 24 ./mitgcmuv' -a username@something.whatever
     %
     % #fast case:
     % ./testreport -clean -t 'global_oce_*'
-    % ./testreport -of=../tools/build_options/linux_amd64_gfortran -MPI 24 -t 'global_oce_*' -fast -addr jm_c@mitgcm.org
-    % ../tools/do_tst_2+2 -t 'global_oce_*' -mpi -exe 'mpirun -np 24 ./mitgcmuv' -a jm_c@mitgcm.org
+    % ./testreport -of=../tools/build_options/linux_amd64_gfortran -MPI 24 -t 'global_oce_*' -fast -addr username@something.whatever
+    % ../tools/do_tst_2+2 -t 'global_oce_*' -mpi -exe 'mpirun -np 24 ./mitgcmuv' -a username@something.whatever
     %
     % #adjoint case:
     % ./testreport -clean -t 'global_oce_*'
-    % ./testreport -of=../tools/build_options/linux_amd64_gfortran -MPI 24 -ad -t 'global_oce_*' -addr jm_c@mitgcm.org
+    % ./testreport -of=../tools/build_options/linux_amd64_gfortran -MPI 24 -ad -t 'global_oce_*' -addr username@something.whatever
 
 
