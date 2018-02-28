@@ -1,8 +1,4 @@
 # CVS default ignores begin
-tags
-TAGS
-.make.state
-.nse_depinfo
 *~
 \#*
 .#*
@@ -14,13 +10,9 @@ _$*
 *.BAK
 *.orig
 *.rej
-.del-*
 *.a
-*.olb
 *.o
-*.obj
 *.so
-*.exe
 *.Z
 *.elc
 *.ln
