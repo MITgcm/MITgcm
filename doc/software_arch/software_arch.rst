@@ -73,6 +73,8 @@ and in parallel. For many projects simply starting from an example code
 and adapting it to suit a particular situation will be all that is
 required.
 
+.. _wrapper:
+
 WRAPPER
 =======
 
