@@ -1524,7 +1524,7 @@ for dir in $TESTDIRS ; do
 	    rm -f SIZE.h.mpi genmake.tr_log make.tr_log
 	    rm -rf mpi_headers
 	)
-	if test -d $dir/$rundir/CVS ; then
+	if test -d $dir/$rundir ; then
 	    echo -n '  --- dir:' $dir/$rundir ': '
 	    run_clean $dir/$rundir
 	fi
