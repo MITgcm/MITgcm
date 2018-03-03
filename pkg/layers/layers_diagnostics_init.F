@@ -176,7 +176,7 @@ C --- U, V
 
         WRITE(diagName,'(A4,I1,A3)') 'LaTs',iLa,layers_name(iLa)
         diagTitle = 'Layer THETA transformation from surf. forc.'
-        diagUnits = 'm deg./s        '
+        diagUnits = 'm/s             '
         diagCode  = 'SM      MX      '
         diagMate  = 0
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -185,7 +185,7 @@ C --- U, V
 
         WRITE(diagName,'(A4,I1,A3)') 'LaTh',iLa,layers_name(iLa)
         diagTitle = 'Layer THETA transformation from horiz. diff.'
-        diagUnits = 'm deg./s        '
+        diagUnits = 'm/s             '
         diagCode  = 'SM      MX      '
         diagMate  = 0
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -196,7 +196,7 @@ C ------- This diagnostic used to be called 'LaTr', but that name
 C         conflicts with JMC s prho diagnostics.
         WRITE(diagName,'(A4,I1,A3)') 'LaTz',iLa,layers_name(iLa)
         diagTitle = 'Layer THETA transformation from vert. diff.'
-        diagUnits = 'm deg./s        '
+        diagUnits = 'm/s             '
         diagCode  = 'SM      MX      '
         diagMate  = 0
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -205,7 +205,7 @@ C         conflicts with JMC s prho diagnostics.
 
         WRITE(diagName,'(A4,I1,A3)') 'LTha',iLa,layers_name(iLa)
         diagTitle = 'Layer THETA transformation from horiz. adv.'
-        diagUnits = 'm deg./s        '
+        diagUnits = 'm/s             '
         diagCode  = 'SM      MX      '
         diagMate  = 0
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -214,7 +214,7 @@ C         conflicts with JMC s prho diagnostics.
 
         WRITE(diagName,'(A4,I1,A3)') 'LTza',iLa,layers_name(iLa)
         diagTitle = 'Layer THETA transformation from vert. adv.'
-        diagUnits = 'm deg./s        '
+        diagUnits = 'm/s             '
         diagCode  = 'SM      MX      '
         diagMate  = 0
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -223,7 +223,7 @@ C         conflicts with JMC s prho diagnostics.
 
         WRITE(diagName,'(A4,I1,A3)') 'LTto',iLa,layers_name(iLa)
         diagTitle = 'Layer THETA transformation from total tend'
-        diagUnits = 'm deg./s        '
+        diagUnits = 'm/day           '
         diagCode  = 'SM      MX      '
         diagMate  = 0
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -232,7 +232,7 @@ C         conflicts with JMC s prho diagnostics.
 
         WRITE(diagName,'(A4,I1,A3)') 'LaSs',iLa,layers_name(iLa)
         diagTitle = 'Layer SALT transformation from surf. forc.'
-        diagUnits = 'm PSU/s        '
+        diagUnits = 'm/s             '
         diagCode  = 'SM      MX      '
         diagMate  = 0
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -241,7 +241,7 @@ C         conflicts with JMC s prho diagnostics.
 
         WRITE(diagName,'(A4,I1,A3)') 'LaSh',iLa,layers_name(iLa)
         diagTitle = 'Layer SALT transformation from horiz. diff.'
-        diagUnits = 'm PSU/s        '
+        diagUnits = 'm/s             '
         diagCode  = 'SM      MX      '
         diagMate  = 0
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -250,7 +250,7 @@ C         conflicts with JMC s prho diagnostics.
 
         WRITE(diagName,'(A4,I1,A3)') 'LaSz',iLa,layers_name(iLa)
         diagTitle = 'Layer SALT transformation from vert. diff.'
-        diagUnits = 'm PSU/s        '
+        diagUnits = 'm/s             '
         diagCode  = 'SM      MX      '
         diagMate  = 0
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -259,7 +259,7 @@ C         conflicts with JMC s prho diagnostics.
 
         WRITE(diagName,'(A4,I1,A3)') 'LSha',iLa,layers_name(iLa)
         diagTitle = 'Layer SALT transformation from horiz. adv.'
-        diagUnits = 'm PSU/s        '
+        diagUnits = 'm/s             '
         diagCode  = 'SM      MX      '
         diagMate  = 0
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -268,7 +268,7 @@ C         conflicts with JMC s prho diagnostics.
 
         WRITE(diagName,'(A4,I1,A3)') 'LSza',iLa,layers_name(iLa)
         diagTitle = 'Layer SALT transformation from vert. adv.'
-        diagUnits = 'm PSU/s        '
+        diagUnits = 'm/s             '
         diagCode  = 'SM      MX      '
         diagMate  = 0
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -277,7 +277,7 @@ C         conflicts with JMC s prho diagnostics.
 
         WRITE(diagName,'(A4,I1,A3)') 'LSto',iLa,layers_name(iLa)
         diagTitle = 'Layer SALT transformation from total tend'
-        diagUnits = 'm PSU/s        '
+        diagUnits = 'm/day           '
         diagCode  = 'SM      MX      '
         diagMate  = 0
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
