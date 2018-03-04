@@ -159,8 +159,8 @@ C--   bolus contribution only available if using GMRedi
         layers_bolus(iLa) = layers_bolus(iLa) .AND. useGMRedi
       ENDDO
 
-C--   Make sure the layers_bounds we just read is big enough
       DO iLa=1,layers_maxNum
+C--   Make sure the layers_bounds we just read is big enough
        IF ( layers_num(iLa).NE.0 ) THEN
         DO k=1,Nlayers+1
          IF ( layers_bounds(k,iLa).EQ.UNSET_RL ) THEN
@@ -171,17 +171,35 @@ C--   Make sure the layers_bounds we just read is big enough
          ENDIF
         ENDDO
        ENDIF
-      ENDDO
-
 #ifndef LAYERS_PRHO_REF
-      IF ( LAYER_nb .EQ. 3 ) THEN
-          WRITE(msgBuf,'(2A,I4)')
+       IF ( layers_num(iLa).EQ.3 ) THEN
+        WRITE(msgBuf,'(2A,I4)')
      &      'S/R LAYERS_READPARMS: ',
      &      'Layering in density requires to define LAYERS_PRHO_REF'
           CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R LAYERS_READPARMS'
-      ENDIF
+          errCount = errCount + 1
+       ENDIF
 #endif
+#ifndef LAYERS_MSE
+       IF ( layers_num(iLa).EQ.4 ) THEN
+        WRITE(msgBuf,'(2A,I4)')
+     &      'S/R LAYERS_READPARMS: ',
+     &      'Layering in MSE requires to define LAYERS_MSE'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          errCount = errCount + 1
+       ENDIF
+#endif
+C- Check MSE is not used with grey atmosphere nor with fizhi
+       IF ( layers_num(iLa).EQ.4 ) THEN
+        IF ( useAtm_Phys .OR. useFizhi ) THEN
+         WRITE(msgBuf,'(2A,I4)')
+     &       'S/R LAYERS_READPARMS: ',
+     &       'Layering in MSE only work with Aim_v23'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          errCount = errCount + 1
+       ENDIF        
+      ENDIF
+      ENDDO
 
 C--   Make sure that we locally honor the global MNC on/off flag
       layers_MNC = layers_MNC .AND. useMNC
