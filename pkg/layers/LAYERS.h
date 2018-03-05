@@ -47,16 +47,16 @@ C      MapFact  :: factors for interpolating T(Z) to T(ZZ)
 C -- Thermodynamics fields
 C    Right-hand-side tendency terms times thickness
 C
-C      layers_TtendSurf  :: Temperature tendency from surface forcing (m deg/s)
-C      layers_TtendDiffh :: Temperature tendency from horizontal mixing (m deg/s)
-C      layers_TtendDiffr :: Temperature tendency from vertical mixing (m deg/s)
-C      layers_TtendAdvh :: Temperature tendency from horizontal advection (m deg/s)
-C      layers_TtendAdvr :: Temperature tendency from vertical advection (m deg/s)
-C      layers_StendSurf  :: Salinity tendency from surface forcing (m PSU/s)
-C      layers_StendDiffh :: Salinity tendency from horizontal mixing (m PSU/s)
-C      layers_StendDiffr :: Salinity tendency from vertical mixing (m PSU/s)
-C      layers_StendAdvh :: Salinity tendency from horizontal advection (m PSU/s)
-C      layers_StendAdvr :: Salinity tendency from vertical advection (m PSU/s)
+C      layers_TtendSurf  :: Layer thickness tendency due to THETA surf. forc. (m/s)
+C      layers_TtendDiffh :: Layer thickness tendency due to THETA horiz. diff. (m/s)
+C      layers_TtendDiffr :: Layer thickness tendency due to THETA vert. diff. (m/s)
+C      layers_TtendAdvh  :: Layer thickness tendency due to THETA horiz. adv. (m/s)
+C      layers_TtendAdvr  :: Layer thickness tendency due to THETA vert. adv. (m/s)
+C      layers_StendSurf  :: Layer thickness tendency due to SALT surf. forc. (m/s)
+C      layers_StendDiffh :: Layer thickness tendency due to SALT horiz. diff. (m/s)
+C      layers_StendDiffr :: Layer thickness tendency due to SALT vert. diff. (m/s)
+C      layers_StendAdvh  :: Layer thickness tendency due to SALT horiz. adv. (m/s)
+C      layers_StendAdvr  :: Layer thickness tendency due to SALT vert. adv. (m/s)
 C  -- The following are temporary arrays that need to be stored.
 C  -- They are in regular vertical coordinates.
 C  -- The fourth index is tracer id: 1 for T and 2 for S
