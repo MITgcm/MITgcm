@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/layers
+  - fixed up units reported in diagnostics for THETA and SALT term induced layer 
+    thickness changes.
 o pkg/seaice:
   - move wind-stress over seaice out of SEAICE.h into local seaice_dynsolver.F
     common block ; move initialisation of TAUX & TAUY accordingly and add them
