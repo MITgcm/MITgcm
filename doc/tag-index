@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/aim_v23:
+  - change parameter "aim_abs_pCO2" default value (used if aim_select_pCO2=1,3)
+    to calibrated value (from David Ferreira).
 o pkg/layers
   - fixed up units reported in diagnostics for THETA and SALT term induced layer 
     thickness changes.
