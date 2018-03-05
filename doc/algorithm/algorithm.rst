@@ -2312,8 +2312,8 @@ where
 .. math::
 
    \begin{aligned}
-   d_1 & = & \frac{1}{6} ( 2 - |c| ) ( 1 - |c| ) \\
-   d_2 & = & \frac{1}{6} ( 1 - |c| ) ( 1 + |c| )\end{aligned}
+   d_0 & = & \frac{1}{6} ( 2 - |c| ) ( 1 - |c| ) \\
+   d_1 & = & \frac{1}{6} ( 1 - |c| ) ( 1 + |c| )\end{aligned}
 
 The coefficients :math:`d_0` and :math:`d_1` approach :math:`1/3` and
 :math:`1/6` respectively as the Courant number, :math:`c`, vanishes. In
