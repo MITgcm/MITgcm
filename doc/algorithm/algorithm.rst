@@ -2414,13 +2414,13 @@ the flux calculations to be implemented as if in one dimension:
    \begin{aligned}
    \tau^{n+1/3} & = & \tau^{n}
    - \Delta t \left( \frac{1}{\Delta x} \delta_i F^x(\tau^{n})
-              + \tau^{n} \frac{1}{\Delta x} \delta_i u \right) \\
+              - \tau^{n} \frac{1}{\Delta x} \delta_i u \right) \\
    \tau^{n+2/3} & = & \tau^{n+1/3}
    - \Delta t \left( \frac{1}{\Delta y} \delta_j F^y(\tau^{n+1/3})
-              + \tau^{n} \frac{1}{\Delta y} \delta_i v \right) \\
+              - \tau^{n} \frac{1}{\Delta y} \delta_i v \right) \\
    \tau^{n+3/3} & = & \tau^{n+2/3}
    - \Delta t \left( \frac{1}{\Delta r} \delta_k F^x(\tau^{n+2/3})
-              + \tau^{n} \frac{1}{\Delta r} \delta_i w \right)\end{aligned}
+              - \tau^{n} \frac{1}{\Delta r} \delta_i w \right)\end{aligned}
    :label: tau_multiD
 
 In order to incorporate this method into the general model algorithm, we
