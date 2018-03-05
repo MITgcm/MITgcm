@@ -451,8 +451,8 @@ echo "== clean-up and reset :"
  echo ' rm -f' std_????.?i?
  rm -f std_????.?i?
  rm -f TTT.out.?i? 2> /dev/null
- echo ' rm -f' data.pkg data.tst
- rm -f data.pkg data.tst
+ echo ' rm -f' data data.pkg data.tst
+ rm -f data data.pkg data.tst
 #- move back files from temp_tst dir:
  if test -d $tmpDir ; then
   echo "--> move back files from 'temp_tst' dir."
