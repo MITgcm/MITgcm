@@ -159,8 +159,8 @@ C--   bolus contribution only available if using GMRedi
         layers_bolus(iLa) = layers_bolus(iLa) .AND. useGMRedi
       ENDDO
 
-      DO iLa=1,layers_maxNum
 C--   Make sure the layers_bounds we just read is big enough
+      DO iLa=1,layers_maxNum
        IF ( layers_num(iLa).NE.0 ) THEN
         DO k=1,Nlayers+1
          IF ( layers_bounds(k,iLa).EQ.UNSET_RL ) THEN
@@ -197,8 +197,8 @@ C- Check MSE is not used with grey atmosphere nor with fizhi
      &       'Layering in MSE only work with Aim_v23'
           CALL PRINT_ERROR( msgBuf, myThid )
           errCount = errCount + 1
-       ENDIF        
-      ENDIF
+        ENDIF
+       ENDIF
       ENDDO
 
 C--   Make sure that we locally honor the global MNC on/off flag
