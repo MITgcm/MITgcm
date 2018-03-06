@@ -29,9 +29,7 @@ C !USES:
 #ifdef ALLOW_GMREDI
 # include "GMREDI.h"
 #endif
-#ifdef LAYERS_PRHO_REF
-# include "EOS.h"
-#endif
+
 C !INPUT PARAMETERS:
 C     myTime :: Current time in simulation
 C     myIter :: Current iteration number
@@ -75,7 +73,12 @@ C      layers_V   :: mean meridional velocity in layer (only if layer exists) (m
 #endif /* LAYERS_VFLUX */
 #if (defined LAYERS_PRHO_REF) || (defined LAYERS_MSE)
       _RL prho(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL rhoShift, conv_theta2T
+#endif
+#ifdef LAYERS_PRHO_REF
+      _RL rhoShift
+#endif
+#ifdef LAYERS_MSE
+      _RL conv_theta2T
 #endif
 C --  other local variables:
 C     bi, bj   :: tile indices
@@ -176,12 +179,12 @@ C     Initialise layers variable prho:
            ENDDO
           ENDDO
           DO k = 1,Nr
-            CALL FIND_RHO_2D( 1-OLx, sNx+OLx, 1-OLy, sNy+OLy,
-     &                        layers_krho(iLa),
-     &                        theta(1-OLx,1-OLy,k,bi,bj),
-     &                        salt(1-OLx,1-OLy,k,bi,bj),
-     &                        prho(1-OLx,1-OLy,k,bi,bj),
-     &                        k, bi, bj, myThid )
+           CALL FIND_RHO_2D( 1-OLx, sNx+OLx, 1-OLy, sNy+OLy,
+     &                       layers_krho(iLa),
+     &                       theta(1-OLx,1-OLy,k,bi,bj),
+     &                       salt(1-OLx,1-OLy,k,bi,bj),
+     &                       prho(1-OLx,1-OLy,k,bi,bj),
+     &                       k, bi, bj, myThid )
 #ifdef LAYERS_THERMODYNAMICS
 C -- it might be more memory efficient not to store alpha and beta
 C    but to multiply the fluxes in place here
