@@ -515,11 +515,11 @@ C     === Global variables ===
 #include "GRID.h"
 #include "FFIELDS.h"
 #include "BLING_VARS.h"
-CMM(
 #ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+# include "EXF_PARAM.h"
 # include "EXF_FIELDS.h"
 #endif
-CMM)
 
 C     == Routine arguments ==
 C ttemp and stemp are local theta and salt arrays
@@ -774,11 +774,11 @@ C     === Global variables ===
 #include "GRID.h"
 #include "FFIELDS.h"
 #include "BLING_VARS.h"
-CMM(
 #ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+# include "EXF_PARAM.h"
 # include "EXF_FIELDS.h"
 #endif
-CMM)
 C     == Routine arguments ==
 C ttemp and stemp are local theta and salt arrays
 C dont really need to pass T and S in, could use theta, salt in
