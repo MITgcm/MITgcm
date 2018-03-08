@@ -1,4 +1,5 @@
 #include "BLING_OPTIONS.h"
+#include "EXF_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
 
 CBOP
@@ -29,7 +30,6 @@ C     === Global variables ===
 #include "GRID.h"
 #include "FFIELDS.h"
 #ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
 # include "EXF_PARAM.h"
 # include "EXF_FIELDS.h"
 #endif
