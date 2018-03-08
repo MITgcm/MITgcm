@@ -14,6 +14,7 @@ o pkg/seaice:
     This enable to remove CPP option "SEAICE_EXCLUDE_WIND_STRESS" (hack from
     June 2016) in pkg/dic/dic_fields_update.F
 o doc:
+  - add Moist Static Energy coordinate in layers package
   - first addition of reST/sphinx documentation (formerly in
     https://github.com/altMITgcm/MITgcm/doc/), converted from original MITgcm
     LaTeX manual in: https://github.com/MITgcm/manual-archive with edits

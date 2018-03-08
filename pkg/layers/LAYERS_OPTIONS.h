@@ -26,5 +26,8 @@ C The MNC stuff is too complicated
 C Allow use of potential density as a layering field.
 #define LAYERS_PRHO_REF
 
+C Allow use of Moist Static Energy as a coordinate (relevant in the atmosphere)
+#undef LAYERS_MSE
+
 #endif /* ALLOW_LAYERS */
 #endif /* LAYERS_OPTIONS_H */
