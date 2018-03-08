@@ -1,5 +1,7 @@
 #include "BLING_OPTIONS.h"
-#include "EXF_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 #include "PTRACERS_OPTIONS.h"
 
 CBOP
