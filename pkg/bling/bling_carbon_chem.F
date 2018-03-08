@@ -1,4 +1,5 @@
 #include "BLING_OPTIONS.h"
+#include "EXF_OPTIONS.h"
 
 C--  File bling_carbon_chem.F:
 C--   Contents
@@ -516,7 +517,6 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "BLING_VARS.h"
 #ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
 # include "EXF_PARAM.h"
 # include "EXF_FIELDS.h"
 #endif
@@ -775,7 +775,6 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "BLING_VARS.h"
 #ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
 # include "EXF_PARAM.h"
 # include "EXF_FIELDS.h"
 #endif
