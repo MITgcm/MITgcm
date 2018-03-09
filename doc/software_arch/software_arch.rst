@@ -73,6 +73,8 @@ and in parallel. For many projects simply starting from an example code
 and adapting it to suit a particular situation will be all that is
 required.
 
+.. _wrapper:
+
 WRAPPER
 =======
 
@@ -650,8 +652,7 @@ which is then used to reference exchange parameters.
 
 The amount of computation that can be embedded in a single loop over ``bi``
 and ``bj`` varies for different parts of the MITgcm algorithm.
-Consider  a code extract from the two-dimensional
-implicit elliptic solver:
+Consider  a code extract from the 2-D implicit elliptic solver:
 
 .. code-block:: fortran
 

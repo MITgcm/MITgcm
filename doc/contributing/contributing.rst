@@ -3,19 +3,25 @@
 Contributing to the MITgcm
 **************************
 
-The MITgcm is an open source project that relies on the participation of its users, and we welcome contributions. This chapter sets out how you can contribute to the MITgcm.
+The MITgcm is an open source project that relies on the participation of its users,
+and we welcome contributions. This chapter sets out how you can contribute to the MITgcm.
 
 
 Bugs and feature requests
 =========================
 
-If you think you've found a bug, the first thing to check that you're using the latest version of the model. If the bug is still in the latest version, then think about how you might fix it and file a ticket in the `GitHub issue tracker <https://github.com/MITgcm/MITgcm/issues>`_. Please include as much detail as possible. At a minimum your ticket should include:
+If you think you've found a bug, the first thing to check that you're using the
+latest version of the model. If the bug is still in the latest version, then
+think about how you might fix it and file a ticket in the
+`GitHub issue tracker <https://github.com/MITgcm/MITgcm/issues>`_. Please
+include as much detail as possible. At a minimum your ticket should include:
 
  - what the bug does;
  - the location of the bug: file name and line number(s); and
  - any suggestions you have for how it might be fixed.
 
-To request a new feature, or guidance on how to implement it yourself, please open a ticket with the following details:
+To request a new feature, or guidance on how to implement it yourself, please
+open a ticket with the following details:
  
  - a clear explanation of what the feature will do; and
  - a summary of the equations to be solved.
@@ -25,7 +31,13 @@ To request a new feature, or guidance on how to implement it yourself, please op
 Using Git and Github
 ========================
 
-To contribute to the source code of the model you will need to fork the repository and place a pull request on GitHub. The two following sections describe this process in different levels of detail. If you are unfamiliar with git, you may wish to skip the quickstart guide and use the detailed instructions. All contributions to the source code are expected to conform with the :ref:`sec_code_style_guide`. Contributions to the manual should follow the same procedure and conform with :numref:`contrib_manual`.
+To contribute to the source code of the model you will need to fork the repository
+and place a pull request on GitHub. The two following sections describe this
+process in different levels of detail. If you are unfamiliar with git, you may
+wish to skip the quickstart guide and use the detailed instructions. All
+contributions to the source code are expected to conform with the
+:ref:`sec_code_style_guide`. Contributions to the manual should follow
+the same procedure and conform with :numref:`contrib_manual`.
 
 
 Quickstart Guide
@@ -33,34 +45,42 @@ Quickstart Guide
 
 **1.** Fork the project on GitHub (using the fork button).
 
-**2.** Create a local clone (we strongly suggest keeping a separate repository for development work):
+**2.** Create a local clone (we strongly suggest keeping a separate
+repository for development work):
 
 ::
 
-    % git clone https://github.com/user_name/MITgcm.git
+    % git clone https://github.com/«GITHUB_USERNAME»/MITgcm.git
 
-**3.** Move into your local clone directory (cd MITgcm) and and set up a remote that points to the original:
+**3.** Move into your local clone directory (cd MITgcm) and and set
+up a remote that points to the original:
 
 ::
 
     % git remote add upstream https://github.com/MITgcm/MITgcm.git
 
-**4.** Make a new branch from ``upstream/master`` (name it something appropriate, here we call the new feature branch ``newfeature``) and make edits on this branch:
+**4.** Make a new branch from ``upstream/master`` (name it something
+appropriate, such as ‘bugfix’ or ‘newfeature’ etc.) and make edits on this branch:
 
 ::
 
    % git fetch upstream
-   % git checkout -b newfeature upstream/master
+   % git checkout -b «YOUR_NEWBRANCH_NAME» upstream/master
 
-**5.** When edits are done, do all git add’s and git commit’s. In the commit message, make a succinct (<70 char) summary of your changes. If you need more space to describe your changes, you can leave a blank line and type a longer description, or break your commit into multiple smaller commits. Reference any outstanding issues addressed using the syntax ``#ISSUE_NUMBER``.
+**5.** When edits are done, do all git add’s and git commit’s. In the commit message,
+make a succinct (<70 char) summary of your changes. If you need more space to
+describe your changes, you can leave a blank line and type a longer description,
+or break your commit into multiple smaller commits. Reference any outstanding
+issues addressed using the syntax ``#ISSUE_NUMBER``.
 
 **6.** Push the edited branch to the origin remote (i.e. your fork) on GitHub:
 
 ::
 
-    % git push -u origin newfeature
+    % git push -u origin «YOUR_NEWBRANCH_NAME»
 
-**7.** On GitHub, go to your fork and hit the pull request (PR) button, and wait for the MITgcm head developers to review your proposed changes. 
+**7.** On GitHub, go to your fork and hit the pull request (PR) button,
+and wait for the MITgcm head developers to review your proposed changes. 
 In general the MITgcm code reviewers try to respond to a new PR within
 a week. A response may accept the changes, or may request edits and
 changes. Occasionally the review team will reject changes that are not
@@ -68,28 +88,50 @@ sufficiently aligned with and do not fit with the code structure. The
 review team is always happy to discuss their decisions, but wants to
 avoid people investing extensive effort in code that has a fundamental
 design flaw. The current review team is Jean-Michel Campin, Ed Doddridge, Chris
-Hill and Oliver Jahn.
+Hill, Oliver Jahn, and Jeff Scott.
 
-If you want to update your code branch before submitting a PR (or any point in development), follow the recipe below. It will ensure that your GitHub repo stays up to date with the main repository. Note again that your edits should always be to a development branch (here, ``newfeature``), not the master branch.
+If you want to update your code branch before submitting a PR (or any point
+in development), follow the recipe below. It will ensure that your GitHub
+repo stays up to date with the main repository. Note again that your edits
+should always be to your development branch, not the master branch.
 
 ::
 
     % git checkout master
     % git pull upstream master
     % git push origin master
-    % git checkout newfeature
+    % git checkout «YOUR_NEWBRANCH_NAME»
     % git merge master
 
 
-If you prefer, you can rebase rather than merge in the final step above; just be careful regarding your rebase syntax!   
+If you prefer, you can rebase rather than merge in the final step above;
+just be careful regarding your rebase syntax!   
 
 
 Detailed guide for those less familiar with Git and GitHub
 ----------------------------------------------------------
 
-What is `Git <https://en.wikipedia.org/wiki/Git>`_? Git is a version control software tool used to help coordinate work among the many MITgcm model contributors. Version control is a management system to track changes in code over time, not only facilitating ongoing changes to code, but also as a means to check differences and/or obtain code from any past time in the project history. Without such a tool, keeping track of bug fixes and new features submitted by the global network of MITgcm contributors would be virtually impossible. If you are familiar with the older form of version control used by the MITgcm (CVS), there are many similarities, but we now take advantage of the modern capabilities offered by Git.  
+What is `Git <https://en.wikipedia.org/wiki/Git>`_? Git is a version
+control software tool used to help coordinate work among the many
+MITgcm model contributors. Version control is a management system to
+track changes in code over time, not only facilitating ongoing changes
+to code, but also as a means to check differences and/or obtain
+code from any past time in the project history. Without such a tool,
+keeping track of bug fixes and new features submitted by the global
+network of MITgcm contributors would be virtually impossible. If you
+are familiar with the older form of version control used by the
+MITgcm (CVS), there are many similarities, but we now take advantage
+of the modern capabilities offered by Git.  
 
-Git itself is open source linux software (typically included with any new linux installation, check with your sys-admin if it seems to be missing) that is necessary for tracking changes in files, etc. through your local computer’s terminal session. All Git-related terminal commands are of the form ``git <arguments>``.  Important functions include syncing or updating your code library, adding files to a collection of files with edits, and commands to “finalize” these changes for sending back to the MITgcm maintainers. There are numerous other Git command-line tools to help along the way (see man pages via ``man git``).
+Git itself is open source linux software (typically included with any
+new linux installation, check with your sys-admin if it seems to be
+missing) that is necessary for tracking changes in files, etc. through
+your local computer’s terminal session. All Git-related terminal commands
+are of the form ``git «arguments»``.  Important functions include syncing
+or updating your code library, adding files to a collection of files
+with edits, and commands to “finalize” these changes for sending back to
+the MITgcm maintainers. There are numerous other Git command-line
+tools to help along the way (see man pages via ``man git``).
 
 The most common git commands are:
 
@@ -105,8 +147,8 @@ Before you start working with git, make sure you identify yourself. From your te
 
 ::
 
-    % git config --global user.email your_email@example.edu
-    % git config --global user.name ‘John Doe’ 
+    % git config --global user.email «your_email@example.edu»
+    % git config --global user.name «‘John Doe’»
 
 (note the required quotes around your name). You should also personalize your profile associated with your GitHub account.
 
@@ -123,22 +165,39 @@ To better understand this process, :numref:`git_setup` shows a conceptual map of
 
     A conceptual map of the GitHub setup. Git terminal commands are shown in red, GitHub commands are shown in green.
 
-One other aspect of Git that requires some explanation to the uninitiated: your local linux copy of the code repository can contain different “branches”, each branch being a different copy of the code repository (this can occur in all git-aware directories). When you switch branches, basic unix commands such as ``ls`` or ``cat`` will show a different set of files specific to current branch. In other words, Git interacts with your local file system so that edits or newly created files only appear in the current branch, i.e., such changes do not appear in any other branches. So if you swore you made some changes to a particular file, and now it appears those changes have vanished, first check which branch you are on (``git status`` is a useful command here), all is probably not lost.
+One other aspect of Git that requires some explanation to the uninitiated: your
+local linux copy of the code repository can contain different “branches”,
+each branch being a different copy of the code repository (this can occur
+in all git-aware directories). When you switch branches, basic unix commands
+such as ``ls`` or ``cat`` will show a different set of files specific to
+current branch. In other words, Git interacts with your local file system
+so that edits or newly created files only appear in the current branch, i.e.,
+such changes do not appear in any other branches. So if you swore you
+made some changes to a particular file, and now it appears those changes
+have vanished, first check which branch you are on (``git status`` is a
+useful command here), all is probably not lost.
 
 
 A detailed explanation of steps for contributing MITgcm repository edits:
 
-**1.** On GitHub, create a local copy of the repository in your GitHub cloud user space: from the main repository (https://github.com/MITgcm/MITgcm) hit the **Fork** button.
-As mentioned, your GitHub copy “origin” is necessary to streamline the collaborative development process -- you need to create a place for your edits in the GitHub cloud, for developers to peruse.
+**1.** On GitHub, create a local copy of the repository in your GitHub cloud user space:
+from the main repository (https://github.com/MITgcm/MITgcm) hit the **Fork** button.
+As mentioned, your GitHub copy “origin” is necessary to streamline the collaborative
+development process -- you need to create a place for your edits in the GitHub cloud,
+for developers to peruse.
 
-**2.** Download the code onto your local computer using the git clone command. Even if you previously downloaded the code through a “git-aware” method (i.e., a git clone command, see :numref:`git-aware_download`),
-we **STRONGLY SUGGEST** you download a fresh repository, to a separate disk location, for your development work (keeping your research work separate). Type:
+**2.** Download the code onto your local computer using the git clone command.
+Even if you previously downloaded the code through a “git-aware” method
+(i.e., a git clone command, see :numref:`git-aware_download`),
+we **STRONGLY SUGGEST** you download a fresh repository, to a separate
+disk location, for your development work (keeping your research work separate). Type:
 
 ::
 
-    % git clone https://github.com/your_github_user_name/MITgcm.git
+    % git clone https://github.com/«GITHUB_USERNAME»/MITgcm.git
 
-from your terminal (technically, here you are copying the forked “origin” version from the cloud, not the “upstream” version, but these will be identical at this point).
+from your terminal (technically, here you are copying the forked “origin”
+version from the cloud, not the “upstream” version, but these will be identical at this point).
 
 **3.** Move into the local clone directory on your computer:
 
@@ -152,16 +211,32 @@ We need to set up a remote that points to the main repository:
 
     % git remote add upstream https://github.com/MITgcm/MITgcm.git
 
-This means that we now have two "remotes" of the project. A remote is just a pointer to a repository not on your computer, i.e., in the GitHub cloud, one pointing to your GitHub user space (“origin”), and this new remote pointing to the original (“upstream”). You can read and write into your "origin" version (since it belongs to you, in the cloud), but not into the "upstream" version. This command just sets up this remote, which is needed in step #4 -- no actual file manipulation is done at this point. If in doubt, the command ``git remote -v`` will list what remotes have been set up.
+This means that we now have two "remotes" of the project. A remote is
+just a pointer to a repository not on your computer, i.e., in the GitHub
+cloud, one pointing to your GitHub user space (“origin”), and this new
+remote pointing to the original (“upstream”). You can read and write
+into your "origin" version (since it belongs to you, in the cloud),
+but not into the "upstream" version. This command just sets up this
+remote, which is needed in step #4 -- no actual file manipulation
+is done at this point. If in doubt, the command ``git remote -v``
+will list what remotes have been set up.
 
 **4.**  Next make a new branch.
 
 ::
   
     % git fetch upstream
-    % git checkout -b newfeature upstream/master
+    % git checkout -b «YOUR_NEWBRANCH_NAME» upstream/master
 
-You will make edits on this new branch, to keep these new edits completely separate from all files on the master branch. The first command ``git fetch upstream`` makes sure your new branch is the latest code from the main repository; as such, you can redo step 4 at any time to start additional, separate development projects (on a separate, new branch). Note that this second command above not only creates this new branch, which we name ``newfeature``, from the ``upstream/master`` branch, it also switches you onto this newly created branch.  Naming the branch something more descriptive than ‘newfeature’ is helpful. 
+You will make edits on this new branch, to keep these new edits completely
+separate from all files on the master branch. The first command
+``git fetch upstream`` makes sure your new branch is the latest code
+from the main repository; as such, you can redo step 4 at any time to
+start additional, separate development projects (on a separate, new branch).
+Note that this second command above not only creates this new branch,
+from the ``upstream/master`` branch, it also switches you onto this newly
+created branch.  Naming the branch something descriptive like ‘newfeature’
+or ‘bugfix’ (preferably, be even more descriptive) is helpful. 
  
 
 **5.** Doing stuff! This usually comes in one of three flavors: 
@@ -174,7 +249,7 @@ You will make edits on this new branch, to keep these new edits completely separ
 
 
     - edit the relevant file(s) and/or create new files. Refer to :ref:`sec_code_style_guide` for details on expected documentation standards and code style requirements. Of course, changes should be thoroughly tested to ensure they compile and run successfully!
-    - type ``git add <FILENAME1> <FILENAME2> ...`` to stage the file(s) ready for a commit command (note both existing and brand new files need to be added). “Stage” effectively means to notify Git of the the list of files you plan to “commit” for changes into the version tracking system. Note you can change other files and NOT have them sent to model developers; only staged files will be sent. You can repeat this ``git add`` command as many times as you like and it will continue to augment the list of files.  ``git diff`` and ``git status`` are useful commands to see what you have done so far.
+    - type ``git add «FILENAME1» «FILENAME2» ...`` to stage the file(s) ready for a commit command (note both existing and brand new files need to be added). “Stage” effectively means to notify Git of the the list of files you plan to “commit” for changes into the version tracking system. Note you can change other files and NOT have them sent to model developers; only staged files will be sent. You can repeat this ``git add`` command as many times as you like and it will continue to augment the list of files.  ``git diff`` and ``git status`` are useful commands to see what you have done so far.
     - use ``git commit`` to commit the files. This is the first step in bundling a collection of files together to be sent off to the MITgcm maintainers. When you enter this command, an editor window will pop up. On the top line, type a succinct (<70 character) summary of what these changes accomplished. If your commit is non-trivial and additional explanation is required, leave a blank line and then type a longer description of why the action in this commit was appropriate etc. It is good practice to link with known issues using the syntax ``#ISSUE_NUMBER`` in either the summary line or detailed comment. Note that all the changes do not have to be handled in a single commit (i.e. you can git add some files, do a commit, than continue anew by adding different files, do another commit etc.); the ``git commit`` command itself does not (yet) submit anything to maintainers.  
     - if you are fixing a more involved bug or adding a new feature, such that many changes are required, it is preferable to break your contribution into multiple commits (each documented separately) rather than submitting one massive commit; each commit should encompass a single conceptual change to the code base, regardless of how many files it touches. This will allow the MITgcm maintainers to more easily understand your proposed changes and will expedite the review process. 
     - if you make any change to the code, however small, i.e., flavor ii or iii above, we expect you to add your changes to the top of :filelink:`doc/tag-index` (starting at line 4), which is a running history of all development of the MITgcm. Again, be concise, describing your changes in one or several lines of text. We will not accept code changes without this edit.
@@ -185,7 +260,7 @@ When your changes are tested and documented, continue on to step #6, but read al
 
 ::
 
-    % git push -u origin newfeature
+    % git push -u origin «YOUR_NEWBRANCH_NAME»
 
 Some time might elapse during step #5, as you make and test your edits, during which continuing development occurs in the main MITgcm repository. In contrast with some models that opt for static, major releases, the MITgcm is in a constant state of improvement and development. It is very possible that some of your edits occur to files that have also been modified by others; in fact, it is very likely :filelink:`doc/tag-index` will have been updated in the main repo if even a week has elapsed. Your local clone however will not know anything about any changes that may have occurred to the MITgcm repo in the cloud, which may cause an issue in step #7 below, when one of three things will occur:
  
@@ -202,18 +277,18 @@ Development branch code update recipe:
     % git checkout master
     % git pull upstream master
     % git push origin master
-    % git checkout newfeature
+    % git checkout «YOUR_NEWBRANCH_NAME»
     % git merge master
     
 This first command switches you from your development branch to the master branch. The second command above will synchronize your local master branch with the main MITgcm repository master branch (i.e. “pull” any new changes that might have occurred in the upstream repository into your local clone). Note you should not have made any changes to your clone’s master branch; in other words, prior to the pull, master should be a stagnant copy of the code from the day you performed step #1 above. The ``git push`` command does the opposite of pull, so in the third step you are synchronizing your GitHub cloud copy (“origin”) master branch to your local clone’s master branch (which you just updated). Then, switch back to your development branch via the second ``git checkout`` command. Finally, the last command will merge any changes into your development branch. If conflicts occur that git cannot resolve, git will provide you a list of the problematic file names, and in these files, areas of conflict will be demarcated. You will need to edit these files at these problem spots (while removing git’s demarcation text),
-then do a ``git add FILENAME`` for each of these files, followed by a final ``git commit`` to finish off the merger. 
+then do a ``git add «FILENAME»`` for each of these files, followed by a final ``git commit`` to finish off the merger. 
 
-Some additional ``git diff`` commands to help sort out file changes, in case you want to assess the scope of development changes, are as follows. ``git diff master upstream/master`` will show you all differences between your local master branch and the main MITgcm repo, i.e., so you can peruse what parallel MITgcm changes have occurred while you were doing your development (this assumes you have not yet updated your clone’s master branch). You can check for differences on individual files via ``git diff master upstream/master  <FILENAME>``. If you want to see all differences in files you have modified during your development, the command is ``git diff master``. Similarly, to see a combined list of both your changes and those occurring to the main repo, ``git diff upstream/master``. 
+Some additional ``git diff`` commands to help sort out file changes, in case you want to assess the scope of development changes, are as follows. ``git diff master upstream/master`` will show you all differences between your local master branch and the main MITgcm repo, i.e., so you can peruse what parallel MITgcm changes have occurred while you were doing your development (this assumes you have not yet updated your clone’s master branch). You can check for differences on individual files via ``git diff master upstream/master  «FILENAME»``. If you want to see all differences in files you have modified during your development, the command is ``git diff master``. Similarly, to see a combined list of both your changes and those occurring to the main repo, ``git diff upstream/master``. 
 
 Aside comment: if you are familiar with git, you might realize there is an alternate way to merge, using the “rebase” syntax. If you know what you are doing, feel free to use this command instead of our suggested merge command above.
 
 
-**7.** Finally create a “pull request” (a.k.a. “PR”; in other words, you are requesting that the maintainers pull your changes into the main code repository). In GitHub, go to the fork of the project that you made (https://github.com/your_github_user_name/MITgcm.git). There is a button for "Compare and Pull" in your newly created branch. Click the button! Now you can add a final succinct summary description of what you've done in your commit(s), and flag up any issues. The maintainers will now be notified and be able to peruse your changes! In general, the maintainers will try to respond to a new PR within
+**7.** Finally create a “pull request” (a.k.a. “PR”; in other words, you are requesting that the maintainers pull your changes into the main code repository). In GitHub, go to the fork of the project that you made (https://github.com/«GITHUB_USERNAME»/MITgcm.git). There is a button for "Compare and Pull" in your newly created branch. Click the button! Now you can add a final succinct summary description of what you've done in your commit(s), and flag up any issues. The maintainers will now be notified and be able to peruse your changes! In general, the maintainers will try to respond to a new PR within
 a week. While the PR remains open, you can go back to step #5 and make additional edits, git adds,
 git commits, and then redo step #6; such changes will be added to the PR (and maintainers re-notified), no need to redo step #7. 
 
@@ -232,7 +307,7 @@ It is possible for other users (besides the maintainers) to examine
 or even download your pull request; see :ref:`sec_pullreq`.
 
 The current review team is Jean-Michel Campin, Ed Doddridge, Chris
-Hill and Oliver Jahn.
+Hill, Oliver Jahn, and Jeff Scott.
 
 .. _sec_code_style_guide:
 
@@ -253,24 +328,40 @@ The MITgcm uses the continuous integration service Travis-CI to test code before
 Contributing to the manual
 ==========================
 
-Whether you are simply correcting typos or describing undocumented packages, we welcome all contributions to the manual. The following information will help you make sure that your contribution is consistent with the style of the MITgcm documentation. (We know that not all of the current documentation follows these guidelines - we're working on it)
+Whether you are simply correcting typos or describing undocumented packages,
+we welcome all contributions to the manual. The following information will
+help you make sure that your contribution is consistent with the style of
+the MITgcm documentation. (We know that not all of the current documentation
+follows these guidelines - we're working on it)
 
-The manual is written in **rst** format, which is short for ReStructuredText directives. rst offers many wonderful features: it automatically does much of the formatting for you, it is reasonably well documented on the web (e.g. primers available `here <http://www.sphinx-doc.org/en/stable/rest.html>`__ and
-`here <http://docutils.sourceforge.net/docs/user/rst/quickref.html>`__), it can accept raw latex syntax and track equation labelling for you, in addition to numerous other useful features. On the down side however, it can be very fussy about formatting, requiring exact spacing and indenting, and seemingly innocuous things such as blank spaces at ends of lines can wreak havoc. We suggest looking at the existing rst files in the manual to see exactly how something is formatted, along with the syntax guidelines specified in this section, prior to writing and formatting your own manual text.
+The manual is written in **rst** format, which is short for ReStructuredText
+directives. rst offers many wonderful features: it automatically does much of
+the formatting for you, it is reasonably well documented on the web (e.g.,
+primers available `here <http://www.sphinx-doc.org/en/stable/rest.html>`__ and
+`here <http://docutils.sourceforge.net/docs/user/rst/quickref.html>`__), it
+can accept raw latex syntax and track equation labelling for you, in addition
+to numerous other useful features. On the down side however, it can be very
+fussy about formatting, requiring exact spacing and indenting, and seemingly
+innocuous things such as blank spaces at ends of lines can wreak havoc. We
+suggest looking at the existing rst files in the manual to see exactly how
+something is formatted, along with the syntax guidelines specified in this
+section, prior to writing and formatting your own manual text.
 
-The manual can be viewed either of two ways: interactively (i.e., web-based), as hosted by read-the-docs (https://readthedocs.org/),
+The manual can be viewed either of two ways: interactively (i.e., web-based),
+as hosted by read-the-docs (https://readthedocs.org/),
 requiring an html format build, or downloaded as a pdf file. 
-When you have completed your documentation edits, you should double check both versions are to your satisfaction, particularly noting that figure sizing and placement
-may be rendered differently in the pdf build.
+When you have completed your documentation edits, you should double
+check both versions are to your satisfaction, particularly noting that
+figure sizing and placement may be rendered differently in the pdf build.
 
 Section headings
 ----------------
 
 - Chapter headings - these are the main headings with integer numbers - underlined with ``****``
 - section headings - headings with number format X.Y - underlined with ``====``
-- Subsection headings - headings with number format X.Y.Z - underlined with ``---``
-- Subsubsection headings - headings with number format X.Y.Z.A - underlined with ``+++``
-- Paragraph headings - headings with no numbers - underlined with ``###``
+- Subsection headings - headings with number format X.Y.Z - underlined with ``----``
+- Subsubsection headings - headings with number format X.Y.Z.A - underlined with ``~~~~``
+- Paragraph headings - headings with no numbers - underlined with ``^^^^``
 
 N.B. all underlinings should be the same length as the heading. If they are too short an error will be produced.
 
@@ -279,61 +370,101 @@ N.B. all underlinings should be the same length as the heading. If they are too 
 Internal document references
 ----------------------------
 
-rst allows internal referencing of figures, tables, section headings, and equations, i.e. clickable links that bring the reader to the respective figure etc. in the manual.
+rst allows internal referencing of figures, tables, section headings, and
+equations, i.e. clickable links that bring the reader to the respective
+figure etc. in the manual.
 To be referenced, a unique label is required. To reference figures, tables, or section headings by number,
-the rst (inline) directive is ``:numref:`LABELNAME```. For example, this syntax would write out ``Figure XX`` on a line (assuming LABELNAME referred to a figure),
+the rst (inline) directive is ``:numref:`«LABELNAME»```. For example,
+this syntax would write out ``Figure XX`` on a line (assuming «LABELNAME» referred to a figure),
 and when clicked, would relocate your position
-in the manual to figure XX.  Section headings can also be referenced so that the name is written out instead of the section number, instead using this 
-directive ``:ref:`LABELNAME```.
+in the manual to figure XX.  Section headings can also be referenced
+so that the name is written out instead of the section number, instead using this 
+directive ``:ref:`«LABELNAME»```.
 
-Equation references have a slightly different inline syntax: ``:eq:`LABELNAME``` will produce a clickable equation number reference,  surrounded by parentheses. 
+Equation references have a slightly different inline syntax: ``:eq:`«LABELNAME»```
+will produce a clickable equation number reference,  surrounded by parentheses. 
 
-For instructions how to assign a label to tables and figures, see :ref:`below <how_to_figures>`. To label a section heading,
-labels go above the section heading they refer to, with the format ``.. _LABELNAME:``.
-Note the necessary leading underscore. You can also place a clickable link to *any* spot in the text (e.g., mid-section),
-using this same syntax to make the label, and using the syntax
-``:ref:`some_text_to_clickon <LABELNAME>``` for the link.
+For instructions how to assign a label to tables and figures, see
+:ref:`below <how_to_figures>`. To label a section heading,
+labels go above the section heading they refer to, with the format ``.. _«LABELNAME»:``.
+Note the necessary leading underscore. You can also place a clickable
+link to *any* spot in the text (e.g., mid-section),
+using this same syntax to make the label, using the syntax
+``:ref:`«SOME TEXT TO CLICK ON» <«LABELNAME»>``` for the link.
 
 Other embedded links
 --------------------
 
-**Hyperlinks:** to reference a (clickable) URL, simply enter the full URL. If you want to have a different,
+**Hyperlinks:** to reference a (clickable) URL, simply enter the full URL.
+If you want to have a different,
 clickable text link instead of displaying the full URL, the syntax
-is ```clickable_text <URL>`_``  (the ‘<’ and ‘>’ are literal characters, and note the trailing underscore). 
+is ```«CLICKABLE TEXT» <«URL»>`_``  (the ‘<’ and ‘>’ are literal characters,
+and note the trailing underscore). 
 For this kind of link, the clickable text has to be unique for each URL.  If
-you would like to use a non-unique text (like ‘click here’), you should use
+you would like to use non-unique text (like ‘click here’), you should use
 an ‘anonymous reference’ with a double trailing underscore:
-```clickable_text <URL>`__``.
+```«CLICKABLE TEXT» <«URL»>`__``.
 
-**File references:** to create a link to pull up MITgcm code (or any file in the repo) in a code browser window, the syntax is ``:filelink:`path/filename```.
-If you want to have a different text link to click on (e.g., say you didn’t want to display the full path), the syntax is ``:filelink:`clickable_text <path/filename>```
-(again, the ‘<‘ and ‘>’ are literal characters). The top directory here is https://github.com/MITgcm/MITgcm ,
-so if for example you wanted to pop open the file :filelink:`dynamics.F <model/src/dynamics.F>`
-from the main model source directory, you would specify ``model/src/dynamics.F`` in place of path/filename.
+**File references:** to create a link to pull up MITgcm code (or any file in the repo)
+in a code browser window, the syntax is ``:filelink:`«PATH/FILENAME»```.
+If you want to have a different text link to click on (e.g., say you
+didn’t want to display the full path), the syntax is
+``:filelink:`«CLICKABLE TEXT» <«PATH/FILENAME»>```
+(again, the ‘<‘ and ‘>’ are literal characters). The top
+directory here is https://github.com/MITgcm/MITgcm ,
+so if for example you wanted to pop open the file
+:filelink:`dynamics.F <model/src/dynamics.F>`
+from the main model source directory, you would specify
+``model/src/dynamics.F`` in place of «PATH/FILENAME».
 
-**Variable references:** to create a link to bring up a webpage displaying all MITgcm repo references to a particular variable name (for this purpose we are using the LXR Cross Referencer),
-the syntax is ``:varlink:`name_of_variable```.
+**Variable references:** to create a link to bring up a webpage
+displaying all MITgcm repo references to a particular variable
+name (for this purpose we are using the LXR Cross Referencer),
+the syntax is ``:varlink:`«NAME_OF_VARIABLE»```. This will work
+on CPP options as well as FORTRAN identifiers (e.g., common block
+names, subroutine names).
 
 .. _symbolic_notation:
 
 Symbolic Notation
 -----------------
 
-Inline math is done with ``:math:`LATEX_HERE```
+Inline math is done with ``:math:`«LATEX_HERE»```
 
 Separate equations, which will be typeset on their own lines, are produced with::
 
   .. math::
-     LATEX_HERE
-     :label: EQN_LABEL_HERE
+     «LATEX_HERE»
+     :label: «EQN_LABEL_HERE»
 
 
-Labelled separate equations are assigned an equation number, which may be referenced elsewhere in the document (see :numref:`referencing`). Omitting the ``:label:`` above
+Labelled separate equations are assigned an equation number, which may be
+referenced elsewhere in the document (see :numref:`referencing`). Omitting the ``:label:`` above
 will still produce an equation on its own line, except without an equation label.
-Note that using latex formatting ``\begin{aligned}`` ...  ``\end{aligned}`` across multiple lines of equations will not work in conjunction with unique equation labels for each separate line
-(any embedded formatting ``&`` characters will cause errors too). Latex alignment will work however if you assign a single label for the multiple lines of equations.
+Note that using latex formatting ``\begin{aligned}`` ...  ``\end{aligned}``
+across multiple lines of equations will not work in conjunction with unique
+equation labels for each separate line
+(any embedded formatting ``&`` characters will cause errors too). Latex alignment
+will work however if you assign a single label for the multiple lines of equations.
 
-Discuss conversion of .tex files.
+There is a software tool ‘universal document converter’ named `pandoc <https://pandoc.org/>`_
+that we have found helpful in converting raw latex documents
+into rst format. To convert a ``.tex`` file into ``.rst``, from a terminal window type:
+
+::
+
+    % pandoc -f latex -t rst -o «OUTPUT_FILENAME».rst «INPUT_FILENAME».tex
+
+Additional conversion options are available, for example if you have your equations or text in another format;
+see the `pandoc documentation <https://pandoc.org/MANUAL.html>`_.
+
+Note however we have found that a fair amount of clean-up is still
+required after conversion, particularly regarding
+latex equations/labels (pandoc has the unfortunate tendency to add
+extra spaces, sometimes confusing the rst ``:math:`` directive, other
+times creating issues with indentation).
+
+
 
 .. _how_to_figures:
 
@@ -342,28 +473,29 @@ Figures
 
 The syntax to insert a figure is as follows::
 
- .. figure:: pathname/filename.*
+ .. figure:: «PATHNAME/FILENAME».*
     :width: 80%
     :align: center
-    :alt: text description of figure here
-    :name: myfigure
+    :alt: «TEXT DESCRIPTION OF FIGURE HERE»
+    :name: «MY_FIGURE_NAME»
 
     The figure caption goes here as a single line of text.
 
 ``figure::``: The figure file is located in subdirectory ``pathname`` above; in practice, we have located figure files in subdirectories ``figs``
 off each manual chapter subdirectory.
-The wild-card is used here so that different file formats can be used in the build process.
+The wild-card ``*`` is used here so that different file formats can be used in the build process.
 For vector graphic images, save a ``pdf`` for the pdf build plus a ``svg`` file for the html build. 
-For bitmapped images, ``gif``, ``png``, or ``jpeg`` formats can be used for both builds, no wild-card necessary
+For bitmapped images, ``gif``, ``png``, or ``jpeg`` formats can be used for both builds,
+no wild-card necessary, just substitute the actual extension
 (see `here <http://www.sphinx-doc.org/en/stable/builders.html>`__ for more info
-on compatible formats).
+on compatible formats). [Note: A repository for figure source .eps needs to be created]
 
 ``:width:``:  used to scale the size of the figure, here specified as 80% scaling factor
 (check sizing in both the pdf and html builds, as you may need to adjust the figure size within the pdf file independently).
 
 ``:align:``: can be right, center, or left.
 
-``:name:``  use this name when you refer to the figure in the text, i.e. ``:numref:`myfigure```.
+``:name:``  use this name when you refer to the figure in the text, i.e. ``:numref:`«MY_FIGURE_NAME»```.
 
 Note the indentation and line spacing employed above.
 
@@ -437,6 +569,10 @@ when you build the final output, the rst builder (Sphinx) will determine how wid
 Other text blocks
 -----------------
 
+Conventionally, we have used the rst ‘inline literal’ syntax around any literal computer text (commands, labels, literal computer syntax etc.)
+Surrounding text with double back-quotes `````` results in output html ``like this``.
+
+
 To set several lines apart in an whitespace box, e.g. useful for showing lines in from a terminal session, rst uses ``::`` to set off a ‘literal block’.
 For example::
 
@@ -447,7 +583,7 @@ For example::
 
 
 
-(note the ``::`` would not appear in the output html) A splashier way to outline a block, including a box label,
+(note the ``::`` would not appear in the output html or pdf) A splashier way to outline a block, including a box label,
 is to employ what is termed in rst as an ‘admonition block’.
 In the manual these are used to show calling trees and for describing subroutine inputs and outputs. An example of 
 a subroutine input/output block is as follows:
@@ -482,14 +618,12 @@ Units should be typeset in normal text, with a space between a numeric value and
   9.8 m/s\ :sup:`2`
 
 will produce 9.8 m/s\ :sup:`2`. If the exponent is negative use two dashes ``--`` to make the minus sign sufficiently long.
-The backslash removes the space between the unit and the exponent.
+The backslash removes the space between the unit and the exponent. Similarly, for subscripts the command is ``:sub:``.
 
 Alternatively, latex ``:math:`` directives (see :ref:`above <symbolic_notation>`) may also be used to display units, using the ``\text{}`` syntax to display non-italic characters.
 
 
-- double quotes for inline literal computer command, variables, syntax etc.
-
-- discuss how to break up sections into smaller files
+- Todo: determine how to break up sections into smaller files
 
 - discuss | lines
 
@@ -519,29 +653,38 @@ To test pull requests locally you should download the pull request branch. You c
 
 ::
     
-    git clone -b BRANCHNAME https://github.com/USERNAME/MITgcm.git
+    git clone -b «THEIR_DEVELOPMENT_BRANCHNAME» https://github.com/«THEIR_GITHUB_USERNAME»/MITgcm.git
 
-where `USERNAME` is replaced by the username of the person proposing the pull request, and `BRANCHNAME` is the branch from the pull request.
+where «THEIR_GITHUB_USERNAME» is replaced by the username of the person proposing the pull request,
+and «THEIR_DEVELOPMENT_BRANCHNAME» is the branch from the pull request.
 
-Alternatively, you can add the repository of the user proposing the pull request as a remote to your existing local repository. Move directories in to your local repository and then
-
-::
-    
-    git remote add USERNAME https://github.com/USERNAME/MITgcm.git
-
-where USERNAME is replaced by the user name of the person who has made the pull request. Then download the branch from the pull request 
+Alternatively, you can add the repository of the user proposing the pull request as a remote to
+your existing local repository. Navigate to your local repository and type
 
 ::
     
-    git fetch USERNAME 
+    git remote add «THEIR_GITHUB_USERNAME» https://github.com/«THEIR_GITHUB_USERNAME»/MITgcm.git
+
+where «THEIR_GITHUB_USERNAME» is replaced by the user name of the person who has made the
+pull request. Then download their pull request changes
+
+::
+    
+    git fetch «THEIR_GITHUB_USERNAME» 
 
 and switch to the desired branch
 
 ::
     
-    git checkout --track USERNAME/foo
+    git checkout --track «THEIR_GITHUB_USERNAME»/«THEIR_DEVELOPMENT_BRANCHNAME»
 
 
-You now have a local copy of the code from the pull request and can run tests locally. If you have write access to the main repository you can push fixes or changes directly to the pull request.
+You now have a local copy of the code from the pull request and can run tests locally.
+If you have write access to the main repository you can push fixes or changes directly
+to the pull request.
 
-None of these steps, apart from pushing fixes back to the pull request, require write access to either the main repository or the repository of the person proposing the pull request. This means that anyone can review pull requests. However, unless you are one of the core developers you won't be able to directly push changes. You will instead have to make a comment describing any problems you find.
+None of these steps, apart from pushing fixes back to the pull request, require
+write access to either the main repository or the repository of the person proposing
+the pull request. This means that anyone can review pull requests. However, unless
+you are one of the core developers you won't be able to directly push changes. You
+will instead have to make a comment describing any problems you find.
