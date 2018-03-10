@@ -1,20 +1,25 @@
 function [uCs,vCs,errFlag]=uvLatLon2cube(xc,yc,uFld,vFld,xcs,ycs,spv,cosalpha,sinalpha);
-% [uCs,vCs]=uvLatLon2cube(xc,yc,uFld,vFld,xcs,ycs,spv);
+
+% [uCs,vCs]=uvLatLon2cube(xc,yc,uFld,vFld,xcs,ycs,spv,cosalpha,sinalpha);
 % put a vector field (uFld,vFld) on to the C-grid, Cubed-sphere grid: uCs,vCs
-% xc,yc   = long,lat position of vector field (uFld,vFld)
+% xc,yc   : long,lat position of vector field (uFld,vFld)
 %           assume: size(xc) == size(uFld,1) == size(vFld,1)
 %             and : size(yc) == size(uFld,2) == size(vFld,2)
-% xcs,ycs = long,lat of the Cell-Center point on CS-grid
+% xcs,ycs : long,lat of the Cell-Center point on CS-grid
 %           assume: size(xcs)=size(ycs)=[6*nc nc]=size(uCs)[1:2]=size(vCs)[1:2]
+% spv     : masking value of lat-lon fields
+% cosalpha,sinalpha : [optional] cos and sin of angle of cube-sphered grid with
+%                     lat/lon directions, can be obtained from cubeCalcAngle.m
 %
 % Written by jmc@ocean.mit.edu, 2005.
+
 if nargin < 7, mask=0 ; else mask=1 ; end
 uCs=0; vCs=0; mCsU=0; mCsV=0; errFlag=0;
 
 %Rac='/home/jmc/grid_cs32/';
 Rac='grid_files/';
 
-nc=size(xcs,2); ncx=6*nc; nPg=ncx*nc;
+nc=size(xcs,2); ncx=6*nc; nPg=ncx*nc; ncp=nc+1;
 nr=size(uFld,3);
 
 fprintf('Entering uvLatLon2cube:');
@@ -102,6 +107,11 @@ mskC=reshape(permute(mskC,[1 3 2 4]),[ncx nc nr]);
 [u6t]=split_C_cub(ucs);
 [v6t]=split_C_cub(vcs);
 [m6t]=split_C_cub(mskC);
+if nr == 1
+ u6t = reshape(u6t,ncp,ncp,nr,6);
+ v6t = reshape(v6t,ncp,ncp,nr,6);
+ m6t = reshape(m6t,ncp,ncp,nr,6);
+end
 for n=1:2:6,
  uloc=u6t(1,:,:,n);
  u6t(1,:,:,n)=v6t(1,:,:,n);
@@ -112,8 +122,6 @@ for n=2:2:6,
  u6t(:,1,:,n)=v6t(:,1,:,n);
  v6t(:,1,:,n)=uloc;
 end
-%size(u6t)
-ncp=nc+1;
 
 uCs=zeros(nc,nc,nr,6);
 vCs=zeros(nc,nc,nr,6);
