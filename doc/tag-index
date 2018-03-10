@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67a (2018/03/10)
+o pkg/layers
+  - add Moist Static Energy coordinate in layers package
 o pkg/aim_v23:
   - change parameter "aim_abs_pCO2" default value (used if aim_select_pCO2=1,3)
     to calibrated value (from David Ferreira).
@@ -14,7 +17,6 @@ o pkg/seaice:
     This enable to remove CPP option "SEAICE_EXCLUDE_WIND_STRESS" (hack from
     June 2016) in pkg/dic/dic_fields_update.F
 o doc:
-  - add Moist Static Energy coordinate in layers package
   - first addition of reST/sphinx documentation (formerly in
     https://github.com/altMITgcm/MITgcm/doc/), converted from original MITgcm
     LaTeX manual in: https://github.com/MITgcm/manual-archive with edits
