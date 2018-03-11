@@ -440,7 +440,7 @@ C--   SEAICE_ALLOW_DYNAMICS and SEAICEuseDYNAMICS
 #endif
 
 #ifndef SEAICE_ALLOW_MOM_ADVECTION
-      IF ( SEAICEmomAdvection ) THEN 
+      IF ( SEAICEmomAdvection ) THEN
        WRITE(msgBuf,'(A)')
      &   'SEAICE_ALLOW_MOM_ADVECTION needed for SEAICEmomAdvection'
        CALL PRINT_ERROR( msgBuf, myThid )
@@ -662,6 +662,16 @@ C      without EXF (assuming a simple scaling of wind-stress over ice)
 C     end if usePW79thermodynamics
       ENDIF
 
+      IF ( ( SEAICEuseDynamics .OR. SEAICEuseFREEDRIFT ) .AND.
+     &     momStepping .AND. .NOT.SEAICEupdateOceanStress ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
+     &      'SEAICEupdateOceanStress= FALSE will'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_CHECK: ',
+     &      'give inconsistent Ocean surface stress'
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      ENDIF
+
 #ifdef SEAICE_ALLOW_DYNAMICS
       IF ( SEAICEuseDynamics ) THEN
        IF ( SEAICEuseJFNK ) THEN
@@ -702,11 +712,11 @@ C     end if usePW79thermodynamics
         ENDIF
         IF ( SEAICE_OLx .GT. OLx-3 .OR. SEAICE_OLy .GT. OLy-3 ) THEN
          WRITE(msgBuf,'(A,I2,A,I2)')
-     &        'S/R SEAICE_CHECK: SEAICE_OLx/y = ', 
+     &        'S/R SEAICE_CHECK: SEAICE_OLx/y = ',
      &        SEAICE_OLx, '/', SEAICE_OLy
          CALL PRINT_ERROR( msgBuf, myThid )
          WRITE(msgBuf,'(2A,I2,A,I2)')
-     &        'S/R SEAICE_CHECK: with SEAICE_2ndOrderBC, SEAICE_OLx/y', 
+     &        'S/R SEAICE_CHECK: with SEAICE_2ndOrderBC, SEAICE_OLx/y',
      &        ' cannot be larger than OLx/y-3 = ', OLx-3, '/', OLy-3
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'

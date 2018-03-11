@@ -191,14 +191,16 @@ C--  Seaice-Dynamics parameters
       CALL WRITE_0D_L ( SEAICE_no_slip, INDEX_NONE,
      & 'SEAICE_no_slip    =', ' /* no slip boundary conditions */')
       CALL WRITE_0D_L ( SEAICE_2ndOrderBC, INDEX_NONE,
-     & 'SEAICE_2ndOrderBC =', 
+     & 'SEAICE_2ndOrderBC =',
      & ' /* 2nd order no slip boundary conditions */')
       CALL WRITE_0D_L ( SEAICE_clipVelocities, INDEX_NONE,
      & 'SEAICE_clipVeloctities =', ' /* impose max. vels. */')
       CALL WRITE_0D_L ( useHB87stressCoupling, INDEX_NONE,
      & 'useHB87stressCoupling  =', ' /* altern. ice-ocean stress */')
+      CALL WRITE_0D_L ( SEAICEupdateOceanStress, INDEX_NONE,
+     & 'SEAICEupdateOceanStress=', ' /* update Ocean surf. stress */')
       CALL WRITE_0D_L ( SEAICEscaleSurfStress, INDEX_NONE,
-     & 'SEAICEscaleSurfStress  =', 
+     & 'SEAICEscaleSurfStress  =',
      & ' /* scale atm. and ocean-surface stress with AREA */')
       CALL WRITE_0D_L ( SEAICE_maskRHS, INDEX_NONE,
      & 'SEAICE_maskRHS    =', ' /* mask RHS of solver */')
@@ -224,20 +226,20 @@ C--  Seaice-Dynamics parameters
        CALL WRITE_0D_I ( SEAICE_OLy,  INDEX_NONE,
      & 'SEAICE_OLy =', ' /* overlap for LSR/preconditioner */')
        CALL WRITE_0D_I ( SEAICEnonLinIterMax,  INDEX_NONE,
-     & 'SEAICEnonLinIterMax =', 
+     & 'SEAICEnonLinIterMax =',
      & ' /* max. number of nonlinear solver steps */')
        CALL WRITE_0D_I ( SEAICElinearIterMax,  INDEX_NONE,
-     & 'SEAICElinearIterMax =', 
+     & 'SEAICElinearIterMax =',
      & ' /* max. number of linear solver steps */')
        CALL WRITE_0D_RL( SEAICEnonLinTol  ,INDEX_NONE,
      & 'SEAICEnonLinTol     =', ' /* non-linear solver tolerance */')
 #if (defined SEAICE_ALLOW_JFNK) || (defined SEAICE_ALLOW_KRYLOV)
        IF ( SEAICEuseJFNK.OR.SEAICEuseKrylov ) THEN
         CALL WRITE_0D_I ( SEAICEpreconLinIter,  INDEX_NONE,
-     & 'SEAICEpreconLinIter =', 
+     & 'SEAICEpreconLinIter =',
      & ' /* number of linear preconditioner steps */')
         CALL WRITE_0D_I ( SEAICEpreconNL_Iter,  INDEX_NONE,
-     & 'SEAICEpreconNL_Iter =', 
+     & 'SEAICEpreconNL_Iter =',
      & ' /* number of non-linear preconditioner steps */')
         CALL WRITE_0D_L ( SEAICEuseIMEX, INDEX_NONE,
      &  'SEAICEuseIMEX  =', ' /* IMEX scheme with JFNK-solver */')
@@ -320,16 +322,16 @@ C     end if SEAICEuseDYNAMICS bloc
      & 'SEAICEselectVortscheme=',
      &              ' /* V.I Vorticity scheme selector */')
       CALL WRITE_0D_L ( SEAICEhighOrderVorticity, INDEX_NONE,
-     & 'SEAICEhighOrderVorticity =', 
+     & 'SEAICEhighOrderVorticity =',
      &              ' /* V.I Scheme selector for Vorticity-Term */')
       CALL WRITE_0D_L ( SEAICEupwindVorticity, INDEX_NONE,
-     & 'SEAICEupwindVorticity =', 
+     & 'SEAICEupwindVorticity =',
      &             ' /* V.I High order vort. advect. flag */')
       CALL WRITE_0D_L ( SEAICEuseAbsVorticity, INDEX_NONE,
-     & 'SEAICEuseAbsVorticity =', 
+     & 'SEAICEuseAbsVorticity =',
      &              ' /* V.I Works with f+zeta in Coriolis */')
       CALL WRITE_0D_L ( SEAICEuseJamartMomAdv, INDEX_NONE,
-     & 'SEAICEuseJamartMomAdv =', 
+     & 'SEAICEuseJamartMomAdv =',
      &              ' /* V.I Non-linear terms Jamart flag */')
       ENDIF
 #endif
