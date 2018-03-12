@@ -84,6 +84,8 @@ C--  Time-stepping related param.
 #endif
       CALL WRITE_0D_L ( SEAICEuseBDF2, INDEX_NONE,
      & 'SEAICEuseBDF2  =',' /* use backw. differencing for mom. eq. */')
+      CALL WRITE_0D_L ( SEAICEupdateOceanStress, INDEX_NONE,
+     & 'SEAICEupdateOceanStress=', ' /* update Ocean surf. stress */')
       CALL WRITE_0D_L ( SEAICErestoreUnderIce, INDEX_NONE,
      & 'SEAICErestoreUnderIce  =', ' /* restore T and S under ice */')
 
@@ -197,8 +199,6 @@ C--  Seaice-Dynamics parameters
      & 'SEAICE_clipVeloctities =', ' /* impose max. vels. */')
       CALL WRITE_0D_L ( useHB87stressCoupling, INDEX_NONE,
      & 'useHB87stressCoupling  =', ' /* altern. ice-ocean stress */')
-      CALL WRITE_0D_L ( SEAICEupdateOceanStress, INDEX_NONE,
-     & 'SEAICEupdateOceanStress=', ' /* update Ocean surf. stress */')
       CALL WRITE_0D_L ( SEAICEscaleSurfStress, INDEX_NONE,
      & 'SEAICEscaleSurfStress  =',
      & ' /* scale atm. and ocean-surface stress with AREA */')
