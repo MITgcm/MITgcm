@@ -1558,6 +1558,8 @@ the following definitions:
    \epsilon_{nh} \overline{ w^2 }^k \right)
    :label: KE_discrete
 
+.. _mom_diagnostics:
+
 Mom Diagnostics
 ---------------
 
@@ -2660,6 +2662,8 @@ filter:
 with the Laplacian operator :math:`\overline{\nabla}^2` and a length
 scale parameter :math:`L_{shap}`. The stability of this S2g filter
 requires :math:`L_{shap} < \mathrm{Min}^{(Global)}(\Delta x,\Delta y)`.
+
+.. _shapiro_diagnostics:
 
 SHAP Diagnostics
 ----------------

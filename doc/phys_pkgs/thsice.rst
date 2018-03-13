@@ -387,6 +387,8 @@ Important Notes
 #. **StartIceModel** must be changed in **data.ice**: 1 (if starting from no ice), 0 (if using pickup.ic file).
 
 
+.. _thsice_diagnostics:
+
 THSICE Diagnostics
 ++++++++++++++++++
 
