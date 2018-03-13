@@ -256,8 +256,9 @@ C      > TimePeriod/deltaT -> jump from one month to the next one
       aim_selectOceAlbedo = 0
       aim_select_pCO2 = 0
       aim_ref_pCO2   = 320. _d -6
-C- note: default value of aim_abs_pCO2 has to be changed to something meaningful
-      aim_abs_pCO2   = 1.
+C- Note: aim_abs_pCO2 default value has been calibrated (David Ferreira)
+C        for pCO2 values within [ 100.ppm, 1000.ppm ]
+      aim_abs_pCO2   = 1.2616 _d 0
       aim_fixed_pCO2 = UNSET_RL
       atmpCO2init    = UNSET_RL
 C-

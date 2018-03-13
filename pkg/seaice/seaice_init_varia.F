@@ -334,8 +334,6 @@ c "ice concentration" tracer that should remain .EQ.1.
           DO k=1,nITD
             TICES(i,j,k,bi,bj)=0. _d 0
           ENDDO
-          TAUX(i,j,bi,bj)   = 0. _d 0
-          TAUY(i,j,bi,bj)   = 0. _d 0
 #ifdef ALLOW_SEAICE_COST_EXPORT
           uHeffExportCell(i,j,bi,bj) = 0. _d 0
           vHeffExportCell(i,j,bi,bj) = 0. _d 0
