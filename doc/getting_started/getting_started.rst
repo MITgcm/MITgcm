@@ -799,10 +799,6 @@ the resulting `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file into 
 
   Eta = xr.open_dataset('Eta.nc')
 
-
-delete me this lin
-
-
 .. _customize_model:
 
 Customizing the model configuration
