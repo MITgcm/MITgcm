@@ -370,9 +370,11 @@ CADJ STORE CbotC  = comlev1, key=ikey_dynamics, kind=isbyte
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C Calculate ocean surface stress
-      CALL SEAICE_OCEAN_STRESS (
-     I            TAUX, TAUY, myTime, myIter, myThid )
+C Update ocean surface stress
+      IF ( SEAICEupdateOceanStress ) THEN
+        CALL SEAICE_OCEAN_STRESS (
+     I              TAUX, TAUY, myTime, myIter, myThid )
+      ENDIF
 
 #ifdef SEAICE_ALLOW_DYNAMICS
 #ifdef SEAICE_ALLOW_CLIPVELS

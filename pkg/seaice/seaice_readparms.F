@@ -89,8 +89,8 @@ C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
      & SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
      & SEAICEuseTEM, SEAICEuseMetricTerms, SEAICEuseTilt,
-     & useHB87stressCoupling, SEAICEuseFlooding,
-     & usePW79thermodynamics, useMaykutSatVapPoly,
+     & useHB87stressCoupling, SEAICEupdateOceanStress,
+     & usePW79thermodynamics, useMaykutSatVapPoly, SEAICEuseFlooding,
      & SEAICErestoreUnderIce, SEAICE_growMeltByConv,
      & SEAICE_salinityTracer, SEAICE_ageTracer,
      & SEAICEadvHeff, SEAICEadvArea, SEAICEadvSnow,
@@ -98,7 +98,7 @@ C--   SEAICE parameters
      & SEAICEmomAdvection, SEAICEselectKEscheme, SEAICEselectVortScheme,
      & SEAICEhighOrderVorticity, SEAICEupwindVorticity,
      & SEAICEuseAbsVorticity, SEAICEuseJamartMomAdv,
-     & SEAICE_clipVelocities, SEAICE_maskRHS, 
+     & SEAICE_clipVelocities, SEAICE_maskRHS,
      & SEAICE_no_slip, SEAICE_2ndOrderBC,
      & SEAICEetaZmethod, LAD, IMAX_TICE, postSolvTempIter,
      & SEAICEuseFluxForm, SEAICEadvScheme, SEAICEadvSchArea,
@@ -111,11 +111,11 @@ C--   SEAICE parameters
      & SOLV_MAX_ITERS, SOLV_NCHECK, NPSEUDOTIMESTEPS,
      & LSR_ERROR, LSR_mixIniGuess, SEAICEuseMultiTileSolver,
      & SEAICE_deltaTevp, SEAICE_elasticParm, SEAICE_evpTauRelax,
-     & SEAICE_evpDampC, SEAICEnEVPstarSteps, 
+     & SEAICE_evpDampC, SEAICEnEVPstarSteps,
      & SEAICE_evpAlpha, SEAICE_evpBeta,
      & SEAICEaEVPcoeff, SEAICEaEVPcStar, SEAICEaEVPalphaMin,
      & SEAICE_zetaMin, SEAICE_zetaMaxFac, SEAICEusePicardAsPrecon,
-     & SEAICEuseKrylov, SEAICEuseJFNK, 
+     & SEAICEuseKrylov, SEAICEuseJFNK,
      & SEAICEnonLinIterMax, SEAICElinearIterMax, SEAICEnonLinTol,
      & SEAICEnewtonIterMax, SEAICEkrylovIterMax, JFNKgamma_nonlin,
      & SEAICEpreconNL_Iter, SEAICEpreconLinIter,
@@ -123,7 +123,7 @@ C--   SEAICE parameters
      & JFNKgamma_lin_min,JFNKgamma_lin_max,
      & SEAICE_JFNKepsilon, SEAICE_OLx, SEAICE_OLy,
      & SEAICE_JFNKphi, SEAICE_JFNKalpha, SEAICEuseIMEX, SEAICEuseBDF2,
-     & SEAICEuseLinRemapITD, 
+     & SEAICEuseLinRemapITD,
      & useHibler79IceStrength, SEAICEpartFunc, SEAICEredistFunc,
      & SEAICEridgingIterMax, SEAICEsimpleRidging, SEAICEsnowFracRidge,
      & SEAICEgStar, SEAICEhStar, SEAICEaStar, SEAICEshearParm,
@@ -143,7 +143,7 @@ C--   SEAICE parameters
      & SEAICE_cBasalStar, SEAICEbasalDragU0, SEAICEbasalDragK1,
      & SEAICEbasalDragK2, SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
      & SEAICE_strength, SEAICE_cStar, SEAICE_eccen,
-     & SEAICEpressReplFac, SEAICE_tensilFac, SEAICE_tensilDepth, 
+     & SEAICEpressReplFac, SEAICE_tensilFac, SEAICE_tensilDepth,
      & SEAICE_lhFusion, SEAICE_lhEvap, SEAICE_dalton,
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      & SEAICE_salinity, SIsalFRAC, SIsal0,
@@ -163,7 +163,7 @@ C--   SEAICE parameters
      & SEAICE_airTurnAngle, SEAICE_waterTurnAngle,
      & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
      & SEAICE_EPS, SEAICE_EPS_SQ,
-     & SEAICEwriteState, SEAICEuseEVPpickup, 
+     & SEAICEwriteState, SEAICEuseEVPpickup,
      & SEAICEuseEVPstar, SEAICEuseEVPrev,
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc,
@@ -230,6 +230,7 @@ C--   set default sea ice parameters
       SEAICE_salinityTracer = .FALSE.
       SEAICE_ageTracer      = .FALSE.
       useHB87stressCoupling = .FALSE.
+      SEAICEupdateOceanStress = .TRUE.
       SEAICEscaleSurfStress = .FALSE.
       SEAICEaddSnowMass     = .FALSE.
       usePW79thermodynamics = .TRUE.
@@ -249,7 +250,7 @@ C     Thorndyke et al. (1975)
       SEAICEgStar           = 0.15 _d 0
 C     suggested by Hibler (1980), Flato and Hibler (1995)
 C     SEAICEhStar           = 100. _d 0
-C     but this value of 25 seems to give thinner ridges in better agreement 
+C     but this value of 25 seems to give thinner ridges in better agreement
 C     with observations (according to Lipscomb et al 2007)
       SEAICEhStar           =  25. _d 0
 C     according to Lipscomb et al. (2007) these values for aStar and mu
@@ -257,7 +258,7 @@ C     are approximately equivalent to gStar=0.15 (aStar = gStar/3) for
 C     SEAICEpartFunc = 1 ...
       SEAICEaStar           = 0.05 _d 0
 C     ... and hStar=25 for SEAICEredistFunc = 1
-C     Libscomb et al. (2007): mu =  3,  4,  5,   6 
+C     Libscomb et al. (2007): mu =  3,  4,  5,   6
 C     correspond to        hStar = 25, 50, 75, 100
       SEAICEmuRidging       = 3. _d 0
       SEAICEmaxRaft         = 1. _d 0
@@ -379,7 +380,7 @@ C     basal drag parameters following Lemieux et al. (2015)
       SEAICEbasalDragK1 =  8. _d 0
       SEAICEbasalDragK2 =  0. _d 0
 C     Lemieux et al. (2015) recommend: SEAICEbasalDragK2 = 15. _d 0
-C     
+C
       SEAICE_wetAlbTemp  = -1. _d -3
 #ifdef SEAICE_EXTERNAL_FLUXES
       SEAICE_waterAlbedo = UNSET_RL
@@ -437,12 +438,12 @@ C  after PARM01 was read (see below)
       SEAICE_PDF(1)     = 1. _d 0
       DO l=2,nITD
        SEAICE_PDF(l)     = 0. _d 0
-      ENDDO   
+      ENDDO
 #else
       SEAICE_multDim     = 1
       DO l=1,nITD
        SEAICE_PDF(l)     = UNSET_RL
-      ENDDO   
+      ENDDO
 #endif
       SEAICE_useMultDimSnow = .FALSE.
 C     default to be set later (ocean-seaice turbulent flux coeff):
@@ -710,15 +711,15 @@ C     yet been tried nor thought through.
 C     There are four ways to turn on EVP
 C     1. original EVP (Hunke, 2001)
       IF ( SEAICE_deltaTevp .NE. UNSET_RL )      SEAICEuseEVP = .TRUE.
-C     2. modified EVP (Lemieux et al., 2012) or revised EVP (Bouillon 
+C     2. modified EVP (Lemieux et al., 2012) or revised EVP (Bouillon
 C     et al., 2014) by setting alpha and beta
       IF ( SEAICE_evpAlpha  .NE. UNSET_RL
      &  .OR. SEAICE_evpBeta .NE. UNSET_RL )  SEAICEuseEVPstar = .TRUE.
 C     3. adaptive EVP
       IF ( SEAICEaEVPcoeff  .NE. UNSET_RL )  SEAICEuseEVPstar = .TRUE.
-C     4. modified EVP* (Lemieux et al., 2012) or revised EVP (Bouillon 
+C     4. modified EVP* (Lemieux et al., 2012) or revised EVP (Bouillon
 C     et al., 2014) by explicitly setting up specific flags
-      IF ( SEAICEuseEVPstar.OR.SEAICEuseEVPrev ) SEAICEuseEVP = .TRUE. 
+      IF ( SEAICEuseEVPstar.OR.SEAICEuseEVPrev ) SEAICEuseEVP = .TRUE.
 C     if EVP is turned on, a couple of parameters need to be computed
       IF ( SEAICEuseEVP ) THEN
        IF (    (SEAICE_deltaTdyn/SEAICE_deltaTevp) .NE.
@@ -738,9 +739,9 @@ C     if EVP is turned on, a couple of parameters need to be computed
        IF ( SEAICE_evpTauRelax .LE. 0. _d 0 )
      &      SEAICE_evpTauRelax = SEAICE_deltaTdyn*SEAICE_elasticParm
 C     default: evpAlpha = evpBeta
-       IF ( SEAICE_evpAlpha .NE. UNSET_RL .AND. 
+       IF ( SEAICE_evpAlpha .NE. UNSET_RL .AND.
      &  SEAICE_evpBeta .EQ. UNSET_RL ) SEAICE_evpBeta = SEAICE_evpAlpha
-       IF ( SEAICE_evpBeta .NE. UNSET_RL .AND. 
+       IF ( SEAICE_evpBeta .NE. UNSET_RL .AND.
      & SEAICE_evpAlpha .EQ. UNSET_RL ) SEAICE_evpAlpha = SEAICE_evpBeta
 C     derive other parameters
        IF ( SEAICE_evpBeta .EQ. UNSET_RL ) THEN
@@ -802,7 +803,7 @@ C     JFNK problem (and Krylov solver is not used)
      &     .NOT. SEAICEuseKrylov ) SEAICEuseLSR = .TRUE.
       IF ( SEAICEuseJFNK .AND. .NOT. SEAICEusePicardAsPrecon )
      &     SEAICEuseKrylov = .FALSE.
-      
+
 C     Set different defaults for different solvers
       IF ( SEAICEnonLinIterMax .EQ. UNSET_I ) THEN
 C     two nonlinear iterations correspond to the original modified
@@ -816,10 +817,10 @@ C     Make sure that we have least two pseudo time steps for Picard-LSR
 
 C-    different defaults for different linear solvers
       IF ( SEAICElinearIterMax .EQ. UNSET_I ) THEN
-C     maximum number of LSOR steps in default Picard solver 
+C     maximum number of LSOR steps in default Picard solver
 C     (=previous default for retired SOLV_MAX_ITERS)
        SEAICElinearIterMax = 1500
-C     the maximum number of Krylov dimensions of 50 is hard coded in 
+C     the maximum number of Krylov dimensions of 50 is hard coded in
 C     S/R SEAICE_FGMRES, so that more than 50 linear iterations will
 C     restart GMRES
        IF ( SEAICEuseJFNK.OR.SEAICEuseKrylov ) SEAICElinearIterMax = 10
