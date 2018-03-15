@@ -60,9 +60,9 @@ Usage: "$0" [OPTIONS]
       --makedepend=NAME | -md=NAME
 	  Use "NAME" for the MAKEDEPEND program.
 
-    -rootdir NAME | --rootdir NAME | -rd NAME | --rd NAME
-      -rootdir=NAME | --rootdir=NAME | -rd=NAME | --rd=NAME
-	  Specify the location of the MITgcm ROOTDIR as "NAME".
+    -mitgcmdir NAME | --mitgcmdir NAME | -rd NAME | --rd NAME
+      -mitgcmdir=NAME | --mitgcmdir=NAME | -rd=NAME | --rd=NAME
+	  Specify the location of the MITgcm MITGCMDIR as "NAME".
 	  By default, genamke will try to find the location by
 	  looking in parent directories (up to the 5th parent).
 
@@ -208,7 +208,7 @@ test_for_string_in_file() {
     return 0
 }
 
-# Read the $ROOTDIR/pkg/pkg_groups file and expand any references to
+# Read the $MITGCMDIR/pkg/pkg_groups file and expand any references to
 # the package list.
 expand_pkg_groups() {
     new_packages=
@@ -375,7 +375,7 @@ EOF
       stop
       end
 EOF
-	$ROOTDIR/tools/xmakedepend -f $MAKEFILE genmake_tc.f > /dev/null 2>&1
+	$MITGCMDIR/tools/xmakedepend -f $MAKEFILE genmake_tc.f > /dev/null 2>&1
 	RV1=$?
 	which makedepend > /dev/null 2>&1
 	RV2=$?
@@ -418,7 +418,7 @@ build_cyrus_makedepend()  {
     echo "running: build_cyrus_makedepend()" >> $LOGFILE
     rm -f ./genmake_cy_md
     (
-	cd $ROOTDIR/tools/cyrus-imapd-makedepend  \
+	cd $MITGCMDIR/tools/cyrus-imapd-makedepend  \
 	    &&  ./configure > /dev/null 2>&1  \
 	    &&  $MAKE > /dev/null 2>&1
 	if test -x ./makedepend.exe ; then
@@ -443,10 +443,10 @@ build_cyrus_makedepend()  {
 build_embed_encode()
 {
     printf "  building the embed-encode utility...  "
-    if test ! -e "$ROOTDIR/tools/embed_encode/encode_files" ; then
-	if test ! -d "$ROOTDIR/tools/embed_encode" ; then
+    if test ! -e "$MITGCMDIR/tools/embed_encode/encode_files" ; then
+	if test ! -d "$MITGCMDIR/tools/embed_encode" ; then
 	    echo
-	    echo "    Error: can't locate \"$ROOTDIR/tools/embed_encode\""
+	    echo "    Error: can't locate \"$MITGCMDIR/tools/embed_encode\""
 	    echo
 	    EMBED_SRC=f
 	    return 1
@@ -454,7 +454,7 @@ build_embed_encode()
 	clist="cc gcc c89 $CC"
 	for ic in $clist ; do
 	    comm="$ic -o encode_files encode_files.c"
-	    ( cd $ROOTDIR/tools/embed_encode && $comm ) > /dev/null 2>&1
+	    ( cd $MITGCMDIR/tools/embed_encode && $comm ) > /dev/null 2>&1
 	    RETVAL=$?
 	    if test "x$RETVAL" = x0 ; then
 		echo "OK"
@@ -462,7 +462,7 @@ build_embed_encode()
 	    fi
 	done
 	echo
-	echo "    Error: unable to build $ROOTDIR/embed_encode/encode_files"
+	echo "    Error: unable to build $MITGCMDIR/embed_encode/encode_files"
 	echo "      so it has been disabled"
 	echo
 	EMBED_SRC=f
@@ -529,7 +529,7 @@ find_possible_optfile()  {
     tmp3=`echo $tmp2 | sed -e 's/cray sv1/craysv1/'`
     PLATFORM=$tmp3
     echo $PLATFORM | grep cygwin > /dev/null 2>&1  &&  PLATFORM=cygwin_ia32
-    OFLIST=`(cd $ROOTDIR/tools/build_options; ls | grep "^$PLATFORM")`
+    OFLIST=`(cd $MITGCMDIR/tools/build_options; ls | grep "^$PLATFORM")`
     echo "  The platform appears to be:  $PLATFORM" | tee -a $LOGFILE
 
     #================================================================
@@ -575,7 +575,7 @@ EOF
     #  that has a correctly-named optfile
     if test "x$OPTFILE" = x  -a  "x$FC" = x ; then
 	for i in $p_FC ; do
-	    OPTFILE=$ROOTDIR"/tools/build_options/"$PLATFORM"_"$i
+	    OPTFILE=$MITGCMDIR"/tools/build_options/"$PLATFORM"_"$i
 	    if test -r $OPTFILE ; then
 		echo "  Setting OPTFILE to: "$OPTFILE | tee -a $LOGFILE
 		break
@@ -584,7 +584,7 @@ EOF
     fi
 
     if test "x$OPTFILE" = x ; then
-	OPTFILE=$ROOTDIR"/tools/build_options/"$PLATFORM"_"$FC
+	OPTFILE=$MITGCMDIR"/tools/build_options/"$PLATFORM"_"$FC
 	if test ! -r $OPTFILE ; then
 	     echo "  I looked for the file "$OPTFILE" but did not find it"
 	fi
@@ -593,7 +593,7 @@ EOF
     if test "x$OPTFILE" = x ; then
 	cat 1>&2 <<EOF
 
-Error: No options file was found in:  $ROOTDIR/tools/build_options/
+Error: No options file was found in:  $MITGCMDIR/tools/build_options/
   that matches this platform ("$PLATFORM") and the compilers found in
   your path.  Please specify an "optfile" using:
 
@@ -1349,7 +1349,7 @@ MPI_HEADER_FILES=
 LOCAL_MPI_HEADERS=
 
 #  The following state can be set directly by command-line switches
-gm_s1="ROOTDIR STANDARDDIRS MODS PKG_DEPEND PKG_GROUPS DISABLE ENABLE"
+gm_s1="MITGCMDIR STANDARDDIRS MODS PKG_DEPEND PKG_GROUPS DISABLE ENABLE"
 gm_s2="PLATFORM OPTFILE MAKE MAKEFILE MAKEDEPEND FC CC MPI OMP USE_R4"
 gm_s3="FEXTRAFLAGS IEEE DEVEL GSL TS PAPIS PCLS PAPI PCL HPMT DUMPSTATE"
 
@@ -1457,10 +1457,10 @@ for ac_option in "$@" ; do
 	    usage
 	    ;;
 
-	-rootdir | --rootdir | -rd | --rd)
-	    ac_prev=ROOTDIR ;;
-	-rootdir=* | --rootdir=* | -rd=* | --rd=*)
-	    ROOTDIR=$ac_optarg ;;
+	-mitgcmdir | --mitgcmdir | -rd | --rd)
+	    ac_prev=MITGCMDIR ;;
+	-mitgcmdir=* | --mitgcmdir=* | -rd=* | --rd=*)
+	    MITGCMDIR=$ac_optarg ;;
 
 	-mods | --mods | -mo | --mo)
 	    ac_prev=MODS ;;
@@ -1615,35 +1615,35 @@ if test -f ./.genmakerc ; then
     echo
 fi
 
-#  Find the MITgcm ${ROOTDIR}
-if test "x${ROOTDIR}" = x ; then
+#  Find the MITgcm ${MITGCMDIR}
+if test "x${MITGCMDIR}" = x ; then
     tmp=`echo $PWD | sed -e 's/\// /g' | $AWK '{print $NR}'`
     if test "x$tmp" = "xbin" -a -d ../model -a -d ../eesupp -a -d ../pkg ; then
-	ROOTDIR=".."
+	MITGCMDIR=".."
     else
 	for d in . .. ../.. ../../.. ../../../.. ../../../../.. ; do
 	    if [ -d "$d/model" -a -d "$d/eesupp" -a -d "$d/pkg" ]; then
-		ROOTDIR=$d
-		printf "Warning: ROOTDIR was not specified ;"
-		echo " try using a local copy of MITgcm found at \"$ROOTDIR\""
+		MITGCMDIR=$d
+		printf "Warning: MITGCMDIR was not specified ;"
+		echo " try using a local copy of MITgcm found at \"$MITGCMDIR\""
 		break
 	    fi
 	done
     fi
 fi
-if test "x${ROOTDIR}" = x ; then
-    echo "Error: Cannot determine ROOTDIR for MITgcm code."
-    echo "  Please specify a ROOTDIR using either an options "
+if test "x${MITGCMDIR}" = x ; then
+    echo "Error: Cannot determine MITGCMDIR for MITgcm code."
+    echo "  Please specify a MITGCMDIR using either an options "
     echo "  file or a command-line option."
     exit 1
 fi
-if test ! -d ${ROOTDIR} ; then
-    echo "Error: the specified ROOTDIR (\"$ROOTDIR\") does not exist!"
+if test ! -d ${MITGCMDIR} ; then
+    echo "Error: the specified MITGCMDIR (\"$MITGCMDIR\") does not exist!"
     exit 1
 fi
 
 #  Find the MITgcm ${THISVER}
-version_file="${ROOTDIR}/doc/tag-index"
+version_file="${MITGCMDIR}/doc/tag-index"
 if test -f $version_file ; then
     THISVER=`$AWK '/^checkpoint/{print $1; exit}' $version_file`
 #-  remove ./BUILD_INFO.h file if older than version_file
@@ -1691,9 +1691,9 @@ if test "x${AD_OPTFILE}" = x ; then
     if test "x$MITGCM_AD_OF" != x ; then
 	AD_OPTFILE=$MITGCM_AD_OF
     elif test "x$OPENAD" = x ; then
-	AD_OPTFILE=$ROOTDIR/tools/adjoint_options/adjoint_default
+	AD_OPTFILE=$MITGCMDIR/tools/adjoint_options/adjoint_default
     else
-	AD_OPTFILE=$ROOTDIR/tools/adjoint_options/adjoint_oad
+	AD_OPTFILE=$MITGCMDIR/tools/adjoint_options/adjoint_oad
     fi
 fi
 if test "x${AD_OPTFILE}" != xNONE ; then
@@ -2122,7 +2122,7 @@ echo
 
 if test "x${EXEDIR}" = x ; then
     tmp=`echo $PWD | sed -e 's/\// /g' | $AWK '{print $NR}'`
-    if test "x$tmp" = "xbin" -a -d ../exe -a $ROOTDIR = .. ; then
+    if test "x$tmp" = "xbin" -a -d ../exe -a $MITGCMDIR = .. ; then
 	EXEDIR=../exe
     else
 	EXEDIR=.
@@ -2134,8 +2134,8 @@ if test ! -d ${EXEDIR} ; then
 fi
 
 if test "x${TOOLSDIR}" = x ; then
-    TOOLSDIR="$ROOTDIR/tools"
-    TOOLSDIRMK='$(ROOTDIR)'"/tools"
+    TOOLSDIR="$MITGCMDIR/tools"
+    TOOLSDIRMK='$(MITGCMDIR)'"/tools"
 else
     TOOLSDIRMK=${TOOLSDIR}
 fi
@@ -2189,9 +2189,9 @@ fi
 #  We have a special set of source files in eesupp/src which are
 #  generated from some template source files. We'll make them first so
 #  they appear as regular source code
-if test -r $ROOTDIR"/eesupp/src/Makefile" ; then
+if test -r $MITGCMDIR"/eesupp/src/Makefile" ; then
     echo "  Making source files in eesupp from templates"
-    ( cd $ROOTDIR"/eesupp/src/" && $MAKE clean_old && $MAKE \
+    ( cd $MITGCMDIR"/eesupp/src/" && $MAKE clean_old && $MAKE \
     ) > make_eesupp.errors 2>&1
     RETVAL=$?
     if test "x${RETVAL}" = x0 ; then
@@ -2205,9 +2205,9 @@ fi
 
 #same for pkg/exch2 and pkg/regrid
 for pdir in exch2 regrid ; do
-    if test -r $ROOTDIR"/pkg/${pdir}/Makefile" ; then
+    if test -r $MITGCMDIR"/pkg/${pdir}/Makefile" ; then
 	echo "  Making source files in pkg/${pdir} from templates"
-	( cd $ROOTDIR"/pkg/"${pdir} && $MAKE clean_old && $MAKE \
+	( cd $MITGCMDIR"/pkg/"${pdir} && $MAKE clean_old && $MAKE \
 	) > make_${pdir}.errors 2>&1
 	RETVAL=$?
 	if test "x${RETVAL}" = x0 ; then
@@ -2222,12 +2222,12 @@ done
 
 printf "\n===  Determining package settings  ===\n"
 if  test "x${PKG_DEPEND}" = x ; then
-    tmp=$ROOTDIR"/pkg/pkg_depend"
+    tmp=$MITGCMDIR"/pkg/pkg_depend"
     if test -r $tmp ; then PKG_DEPEND=$tmp ; fi
 fi
 if  test "x${PKG_DEPEND}" = x ; then
 	echo "Warning:  No package dependency information was specified."
-	echo "  Please check that ROOTDIR/pkg/pkg_depend exists."
+	echo "  Please check that MITGCMDIR/pkg/pkg_depend exists."
 else
     if test ! -r ${PKG_DEPEND} ; then
 	echo "Error:  can't read package dependency info from PKG_DEPEND=\"$PKG_DEPEND\""
@@ -2238,16 +2238,16 @@ else
     get_pdepend_list $PKG_DEPEND
 fi
 
-# A default package groups file "$ROOTDIR/pkg/pkg_groups" is provided
+# A default package groups file "$MITGCMDIR/pkg/pkg_groups" is provided
 #  to define the "default_pkg_list" and package groups (for convenience, one
 #  can specify a group of packages using names like "ocean" and "atmosphere").
 if test "x${PKG_GROUPS}" = x ; then
-    tmp=$ROOTDIR"/pkg/pkg_groups"
+    tmp=$MITGCMDIR"/pkg/pkg_groups"
     if test -r $tmp ; then PKG_GROUPS=$tmp ; fi
 fi
 if test "x${PKG_GROUPS}" = x ; then
 	echo "Warning:  No package groups information was specified."
-	echo "  Please check that ROOTDIR/pkg/pkg_groups exists."
+	echo "  Please check that MITGCMDIR/pkg/pkg_groups exists."
 else
     if test ! -r ${PKG_GROUPS} ; then
 	echo "Error:  can't read package groups info from PKG_GROUPS=\"$PKG_GROUPS\""
@@ -2327,8 +2327,8 @@ PACKAGES="$PACKAGES $ENABLE"
 # Test if each explicitly referenced package exists
 for i in $PACKAGES ; do
     j=`echo $i | sed 's/[-+]//'`
-    if test ! -d "$ROOTDIR/pkg/$j" ; then
-	echo "Error: dir '$ROOTDIR/pkg/$i' missing for package '$i'"
+    if test ! -d "$MITGCMDIR/pkg/$j" ; then
+	echo "Error: dir '$MITGCMDIR/pkg/$i' missing for package '$i'"
 	exit 1
     fi
     echo $i >> $TMP.pack
@@ -2366,7 +2366,7 @@ EOF
     fi
 else
     # we have NetCDF, we try to build MNC template files
-    ( cd $ROOTDIR"/pkg/mnc" && $MAKE testclean && $MAKE templates ) > make_mnc.errors 2>&1
+    ( cd $MITGCMDIR"/pkg/mnc" && $MAKE testclean && $MAKE templates ) > make_mnc.errors 2>&1
     RETVAL=$?
     if test "x${RETVAL}" = x0 ; then
 	rm -f make_mnc.errors
@@ -2510,8 +2510,8 @@ if  test "x${PKG_DEPEND}" != x ; then
   echo "    packages are: $PACKAGES"
 fi
 for i in $PACKAGES ; do
-    adr="$ROOTDIR/pkg/$i"
-    adrmk='$(ROOTDIR)'"/pkg/$i"
+    adr="$MITGCMDIR/pkg/$i"
+    adrmk='$(MITGCMDIR)'"/pkg/$i"
     if test -d $adr ; then
 	SOURCEDIRS="$SOURCEDIRS $adr"
 	INCLUDEDIRS="$INCLUDEDIRS $adr"
@@ -2532,11 +2532,11 @@ PACKAGES_DOT_H=PACKAGES_CONFIG.h
 #  away.  On 2003-08-12, CNH, JMC, and EH3 agreed that the CPP_OPTIONS.h
 #  file would eventually be split up so that all package-related #define
 #  statements could be separated and handled only by genmake.
-names=`ls -1 "$ROOTDIR/pkg"`
+names=`ls -1 "$MITGCMDIR/pkg"`
 all_pack=
 DISABLED_PACKAGES=
 for n in $names ; do
-    if test -d "$ROOTDIR/pkg/$n" -a "x$n" != xCVS ; then
+    if test -d "$MITGCMDIR/pkg/$n" -a "x$n" != xCVS ; then
 	has_pack="f"
 	for pack in $PACKAGES ; do
 	    if test "x$pack" = "x$n" ; then
@@ -2571,20 +2571,20 @@ echo "  Adding STANDARDDIRS='$STANDARDDIRS'"
 BUILDDIR=${BUILDDIR:-.}
 if test "x$STANDARDDIRS" != x ; then
     for d in $STANDARDDIRS ; do
-	adr="$ROOTDIR/$d/src"
-        adrmk='$(ROOTDIR)/'"$d/src"
+	adr="$MITGCMDIR/$d/src"
+        adrmk='$(MITGCMDIR)/'"$d/src"
 	if test ! -d $adr ; then
-	    echo "Error:  directory $adr not found -- please check that ROOTDIR=\"$ROOTDIR\""
+	    echo "Error:  directory $adr not found -- please check that MITGCMDIR=\"$MITGCMDIR\""
 	    echo "  is correct and that you correctly specified the STANDARDDIRS option"
 	    exit 1
 	else
 	    SOURCEDIRS="$SOURCEDIRS $adr"
 	    SOURCEDIRSMK="$SOURCEDIRSMK $adrmk"
 	fi
-	adr="$ROOTDIR/$d/inc"
-        adrmk='$(ROOTDIR)/'"$d/inc"
+	adr="$MITGCMDIR/$d/inc"
+        adrmk='$(MITGCMDIR)/'"$d/inc"
 	if test ! -d $adr ; then
-	    echo "Error:  directory $adr not found -- please check that ROOTDIR=\"$ROOTDIR\""
+	    echo "Error:  directory $adr not found -- please check that MITGCMDIR=\"$MITGCMDIR\""
 	    echo "  is correct and that you correctly specified the STANDARDDIRS option"
 	    exit 1
 	else
@@ -2599,7 +2599,7 @@ echo "    of \"#define \"-type statements that are no longer allowed:"
 CPP_OPTIONS=
 CPP_EEOPTIONS=
 spaths=". $INCLUDEDIRS"
-names=`ls -1 "$ROOTDIR/pkg"`
+names=`ls -1 "$MITGCMDIR/pkg"`
 for i in $spaths ; do
     try="$i/CPP_OPTIONS.h"
     if test -f $try -a -r $try -a "x$CPP_OPTIONS" = x ; then
@@ -2901,7 +2901,7 @@ cat >>$MAKEFILE <<EOF
 # LINK         : Command for link editor program
 # LIBS         : Library flags /or/ additional optimization/debugging flags
 
-ROOTDIR     = ${ROOTDIR}
+MITGCMDIR   = ${MITGCMDIR}
 BUILDDIR    = ${BUILDDIR}
 SOURCEDIRS  = ${SOURCEDIRSMK}
 INCLUDEDIRS = ${INCLUDEDIRSMK}
@@ -2911,7 +2911,7 @@ TOOLSDIR    = ${TOOLSDIRMK}
 OADTOOLS    = ${OADTOOLSMK}
 
 #eh3  new defines for the adjoint work
-AUTODIFF    = \$(ROOTDIR)/pkg/autodiff
+AUTODIFF    = \$(MITGCMDIR)/pkg/autodiff
 EXE_AD      = ${EXE_AD}
 EXE_FTL     = ${EXE_FTL}
 EXE_SVD     = ${EXE_SVD}
@@ -3104,7 +3104,7 @@ all_fF.tar.gz : \$(SPECIAL_FILES) \$(F77_SRC_FILES) \$(C_SRC_FILES) \$(H_SRC_FIL
 
 EMBEDDED_FILES.h : all_fF.tar.gz
 	@echo Creating \$@ ...
-	-\${ROOTDIR}/tools/embed_encode/encode_files EMBEDDED_FILES.h all_fF.tar.gz
+	-\${MITGCMDIR}/tools/embed_encode/encode_files EMBEDDED_FILES.h all_fF.tar.gz
 
 EOF
 fi
