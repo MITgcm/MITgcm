@@ -37,10 +37,21 @@ SOSE uses the same techniques as ECCO to produce an eddy-permitting state estima
 website: http://sose.ucsd.edu/
 
 
-xmitgcm
+Xgcm: General Circulation Model Postprocessing with xarray
+----------------------------------------------------------
+
+Xgcm is a python packge for working with the datasets produced by numerical General Circulation Models
+(GCMs) and similar gridded datasets that are amenable to finite volume analysis. In these datasets, different
+variables are located at different positions with respect to a volume or area element (e.g. cell center, cell face,
+etc.) xgcm solves the problem of how to interpolate and difference these variables from one position to another.
+
+website: http://xgcm.readthedocs.io/en/latest/
+
+
+Xmitgcm
 -------
 
-xmitgcm is a Python module that loads MITgcm MDS output files as `xarray <http://xarray.pydata.org/en/stable/>`_ datasets with the associated grid information. These can be easily exported as NetCDF files.
+Xmitgcm is a Python module that loads MITgcm MDS output files as `xarray <http://xarray.pydata.org/en/stable/>`_ datasets with the associated grid information. These can be easily exported as NetCDF files.
 
 website: http://xmitgcm.readthedocs.io/en/latest/
 
