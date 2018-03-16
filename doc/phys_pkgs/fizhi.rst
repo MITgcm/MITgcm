@@ -936,6 +936,9 @@ used. Above 100 mb, the SAGE data is used. Between 100 and 300 mb, a
 linear interpolation (in pressure) is performed using the data from SAGE
 and the GCM.
 
+
+.. _fizhi_diagnostics:
+
 Fizhi Diagnostics
 +++++++++++++++++
 

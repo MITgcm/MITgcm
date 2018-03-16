@@ -251,6 +251,8 @@ code which computes the fields on the alternative (fizhi) grid.
 
 And similarly, gridalt contains subroutine phys2dyn.
 
+.. _gridalt_diagnostics:
+
 Gridalt Diagnostics
 +++++++++++++++++++
 
