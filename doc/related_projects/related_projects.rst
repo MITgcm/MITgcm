@@ -40,7 +40,7 @@ website: http://sose.ucsd.edu/
 xmitgcm
 -------
 
-xmitgcm is a Python module that loads MITgcm MDS output files as `xarray <http://xarray.pydata.org/en/stable/>`_ arrays with the associated grid information. These can be easily exported as NetCDF files.
+xmitgcm is a Python module that loads MITgcm MDS output files as `xarray <http://xarray.pydata.org/en/stable/>`_ datasets with the associated grid information. These can be easily exported as NetCDF files.
 
 website: http://xmitgcm.readthedocs.io/en/latest/
 
