@@ -21,6 +21,14 @@ Octopus is an offline Lagrangian particle tracker that uses saved velocity field
 website: https://github.com/jinbow/Octopus
 
 
+OceanParcels - Lagrangian Particle Tracker
+------------------------------------------
+
+Parcels provides a set of Python classses and methods to create customizable particle tracking simulations, focussing on tracking of both passive water parcels as well as active plankton, plastic and fish.
+
+website: http://oceanparcels.org/
+
+
 Southern Ocean State Estimation (SOSE)
 --------------------------------------
 
