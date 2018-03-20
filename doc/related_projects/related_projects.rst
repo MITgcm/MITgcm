@@ -8,10 +8,9 @@ Projects Related to MITgcm
 Estimating the Circulation and Climate of the Ocean (ECCO)
 ----------------------------------------------------------
 
-ECCO is an oceanic reanalysis product that makes use of MITgcm's adjoint capabilities to assimilate observations into a dynamically self-consistent state estimate. 
+ECCO is a community of MITgcm users who create and analyze ocean state estimates. ECCO typically optimizes initial conditions, surface forcing fields, and internal parameters to fit a multi-decadal model solution to various data constraints using MITgcm's adjoint capabilities. Unlike other data assimilation products, ECCO solutions are dynamically self-consistent, have closed budgets, and can easily be re-run by users.
 
-website: https://ecco.jpl.nasa.gov/
-
+websites: https://ecco.jpl.nasa.gov/, http://eccov4.readthedocs.io/en/latest/
 
 Octopus - Lagrangian Particle Tracker
 ---------------------------------------
@@ -36,6 +35,19 @@ SOSE uses the same techniques as ECCO to produce an eddy-permitting state estima
 
 website: http://sose.ucsd.edu/
 
+Gcmfaces: Gridded Earth Variables In Matlab And Octave
+------------------------------------------------------
+
+The gcmfaces toolbox handles gridded Earth variables as sets of connected arrays. This object-oriented approach allows users to write generic, compact analysis codes that readily become applicable to a wide variety of grids. gcmfaces notably allows for analysis of MITgcm output on any of its familiar grids.
+
+website: http://eccov4.readthedocs.io/en/latest/
+
+MITprof: In-Situ Ocean Data In Matlab And Octave
+------------------------------------------------
+
+The MITprof toolbox handles unevenly distributed in-situ ocean observations. It is notably used, along with gcmfaces, to generate input files for MITgcm's profiles package (MITgcm/pkg/profiles).
+
+website: https://github.com/gaelforget/MITprof
 
 Xgcm: General Circulation Model Postprocessing with xarray
 ----------------------------------------------------------
