@@ -1403,8 +1403,8 @@ WRAPPER layer.
 Core equations plus packages.
 
 .. literalinclude:: ../../model/src/the_model_main.F
-    :start-after: Invocation from WRAPPER level
-    :end-before: C \ev
+    :start-at: C Invocation from WRAPPER level...
+    :end-at: C    |                 :: events.
 
 
 Measuring and Characterizing Performance
