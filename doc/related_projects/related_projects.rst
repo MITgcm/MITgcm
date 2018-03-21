@@ -12,13 +12,26 @@ ECCO is a community of MITgcm users who create and analyze ocean state estimates
 
 websites: https://ecco.jpl.nasa.gov/, http://eccov4.readthedocs.io/en/latest/
 
+Gcmfaces: Gridded Earth Variables In Matlab And Octave
+------------------------------------------------------
+
+The gcmfaces toolbox handles gridded Earth variables as sets of connected arrays. This object-oriented approach allows users to write generic, compact analysis codes that readily become applicable to a wide variety of grids. gcmfaces notably allows for analysis of MITgcm output on any of its familiar grids.
+
+website: http://gcmfaces.readthedocs.io/en/latest/
+
+MITprof: In-Situ Ocean Data In Matlab And Octave
+------------------------------------------------
+
+The MITprof toolbox handles unevenly distributed in-situ ocean observations. It is notably used, along with gcmfaces, to generate input files for MITgcm's profiles package (MITgcm/pkg/profiles).
+
+website: https://github.com/gaelforget/MITprof
+
 Octopus - Lagrangian Particle Tracker
 ---------------------------------------
 
 Octopus is an offline Lagrangian particle tracker that uses saved velocity fields from MITgcm simulations.
 
 website: https://github.com/jinbow/Octopus
-
 
 OceanParcels - Lagrangian Particle Tracker
 ------------------------------------------
@@ -34,20 +47,6 @@ Southern Ocean State Estimation (SOSE)
 SOSE uses the same techniques as ECCO to produce an eddy-permitting state estimate of the Southern Ocean.
 
 website: http://sose.ucsd.edu/
-
-Gcmfaces: Gridded Earth Variables In Matlab And Octave
-------------------------------------------------------
-
-The gcmfaces toolbox handles gridded Earth variables as sets of connected arrays. This object-oriented approach allows users to write generic, compact analysis codes that readily become applicable to a wide variety of grids. gcmfaces notably allows for analysis of MITgcm output on any of its familiar grids.
-
-website: http://eccov4.readthedocs.io/en/latest/
-
-MITprof: In-Situ Ocean Data In Matlab And Octave
-------------------------------------------------
-
-The MITprof toolbox handles unevenly distributed in-situ ocean observations. It is notably used, along with gcmfaces, to generate input files for MITgcm's profiles package (MITgcm/pkg/profiles).
-
-website: https://github.com/gaelforget/MITprof
 
 Xgcm: General Circulation Model Postprocessing with xarray
 ----------------------------------------------------------
