@@ -603,6 +603,25 @@ An example of a subroutine in/out admonition box in the documentation is :ref:`h
 
 An example of a calling tree in the documentation is :ref:`here <call-tree-press-meth>`.
 
+To show text from a separate file as one would using 'lstlisting' in LaTeX (e.g. to show lines of code), use the 'literalinclude' command. 
+Example usage is shown here:
+
+   ::
+
+        .. literalinclude:: myfile.F
+            :start-at: String indicating where to start grabbing text
+            :end-at: String indicating where to stop grabbing text
+
+Note one can also use ':start-after:' and ':end-before:' to get text from the file between (not including) those lines. 
+There is also the option to specify line numbers, but note that this is not flexible if the file contents change.
+Example usage in this documentation is :ref:`here <model_main_call_tree>`,
+where the lines to generate this are:
+
+   ::
+
+        .. literalinclude:: ../../model/src/the_model_main.F
+            :start-at: C Invocation from WRAPPER level...
+            :end-at: C    |                 :: events.
 
 
 .. _subsec_manual_style_guide:
