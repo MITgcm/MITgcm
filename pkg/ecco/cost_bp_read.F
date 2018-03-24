@@ -117,8 +117,6 @@ ce    --> there is certainly a better place for this.
       if ( (obsrec.GT.0).AND.(imonth.GT.0) ) then
        call MDS_READ_FIELD(fnametmp, cost_iprec, .FALSE., cost_yftype,
      &                     1,1,1,localobs,dummyRS,imonth,mythid)
-c        call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1,
-c     &                   localobs, imonth, mythid )
       else
         do bj = jtlo,jthi
          do bi = itlo,ithi
