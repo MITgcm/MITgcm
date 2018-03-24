@@ -96,6 +96,8 @@ c old:heff -> model has excess of iceconc     -> new:exconc
       character*(MAX_LEN_FNAM) localobswfile
       logical exst
 
+      _RS dummyRS(1)
+
 c     == external functions ==
 
       integer  ilnblnk
@@ -263,8 +265,8 @@ c====================================================
 c-- initialize to spzerloc = -9999.
         call ecco_zero(localobs,nnzsiv4,spzeroloc,mythid)
         if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
-          call mdsreadfield( fname0, cost_iprec, cost_yftype, nnzsiv4,
-     &         localobs, localrec, mythid )
+         call MDS_READ_FIELD( fname0, cost_iprec, .FALSE., cost_yftype,
+     &        nnzsiv4,1,nnzsiv4,localobs, dummyRS,localrec, mythid )
         else
           il=ilnblnk( fname0 )
           WRITE(standardMessageUnit,'(2A)')

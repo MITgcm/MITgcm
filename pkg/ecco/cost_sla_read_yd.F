@@ -71,6 +71,8 @@ cnew(
       logical exst
 cnew)
 
+      _RS dummyRS(1)
+
 c     == external functions ==
 
       integer  ilnblnk
@@ -106,8 +108,8 @@ c     == end of interface ==
          stop
       endif
 
-      call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1, sla_obs,
-     &                   day, mythid )
+      call MDS_READ_FIELD(fnametmp, cost_iprec,.FALSE.,cost_yftype,
+     &                    1,1,1,sla_obs,dummyRS,irec,mythid)
 
       do bj = jtlo,jthi
         do bi = itlo,ithi

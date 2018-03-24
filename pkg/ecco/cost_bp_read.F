@@ -71,6 +71,8 @@ cnew(
       logical exst
 cnew)
 
+      _RS dummyRS(1)
+
 c     == external functions ==
 
       integer  ilnblnk
@@ -113,8 +115,10 @@ ce    --> there is certainly a better place for this.
       endif
 
       if ( (obsrec.GT.0).AND.(imonth.GT.0) ) then
-        call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1,
-     &                   localobs, imonth, mythid )
+       call MDS_READ_FIELD(fnametmp, cost_iprec, .FALSE., cost_yftype,
+     &                     1,1,1,localobs,dummyRS,imonth,mythid)
+c        call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1,
+c     &                   localobs, imonth, mythid )
       else
         do bj = jtlo,jthi
          do bi = itlo,ithi

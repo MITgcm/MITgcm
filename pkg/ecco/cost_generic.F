@@ -254,6 +254,8 @@ c     == local variables ==
 
       _RL fac
 
+      _RS dummyRS(1)
+
       character*(128) fname1, fname2, fname3
       character*200 msgbuf
 
@@ -353,8 +355,8 @@ c--     load model average and observed average
 
         call ecco_zero(localobs,nnzobs,spzeroloc,myThid)
         if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) )
-     &  call mdsreadfield( fname2, cost_iprec, cost_yftype, nnzobs,
-     &         localobs, localrec, mythid )
+     &  call MDS_READ_FIELD( fname2, cost_iprec, .FALSE., cost_yftype, 
+     &        nnzobs, 1, nnzobs, localobs, dummyRS, localrec, mythid )
 
 c--     Compute masked model-data difference
         call ecco_diffmsk( localbar, nnzbar, localobs, nnzobs,

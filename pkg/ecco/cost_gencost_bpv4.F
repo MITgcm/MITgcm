@@ -72,6 +72,8 @@ c     == local variables ==
 
       integer k, kgen
 
+      _RS dummyRS(1)
+
 c     == external functions ==
 
       integer  ilnblnk
@@ -277,11 +279,11 @@ c--    Remove global mean value
 c--    Smooth field of anomalies
       if (gencost_outputlevel(kgen).GT.0) then
       write(fname4test(1:80),'(1a)') 'bpdifanom_raw'
-      call mdswritefield(fname4test,32,.false.,'RL',
-     & 1,bpdifanom,irec,1,mythid)
+      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,'RL',
+     & 1,1,1,bpdifanom,dummyRS,irec,1,mythid)
       write(fname4test(1:80),'(1a)') 'bpdatanom_raw'
-      call mdswritefield(fname4test,32,.false.,'RL',
-     & 1,bpdatanom,irec,1,mythid)
+      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,'RL',
+     & 1,1,1,bpdatanom,dummyRS,irec,1,mythid)
       endif
 
 #ifdef ALLOW_SMOOTH
@@ -296,11 +298,11 @@ c--    Smooth field of anomalies
 #endif
 
       write(fname4test(1:80),'(1a)') 'bpdifanom_smooth'
-      call mdswritefield(fname4test,32,.false.,'RL',
-     & 1,bpdifanom,irec,1,mythid)
+      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,'RL',
+     & 1,1,1,bpdifanom,dummyRS,irec,1,mythid)
       write(fname4test(1:80),'(1a)') 'bpdatanom_smooth'
-      call mdswritefield(fname4test,32,.false.,'RL',
-     & 1,bpdatanom,irec,1,mythid)
+      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,'RL',
+     & 1,1,1,bpdatanom,dummyRS,irec,1,mythid)
       endif
 
 c--    Compute cost function

@@ -71,6 +71,8 @@ cnew(
       logical exst
 cnew)
 
+      _RS dummyRS(1)
+
 c     == external functions ==
 
       integer  ilnblnk
@@ -116,8 +118,8 @@ c      sshrec = floor(diffsecs/sla_period) + 1
 
 c read data:
       if ( (sshrec .GT. 0).AND.(exst) ) then
-       call mdsreadfield( fnametmp, cost_iprec, cost_yftype,
-     &                          1, sla_obs, sshrec, mythid )
+       call MDS_READ_FIELD(fnametmp, cost_iprec,.FALSE.,cost_yftype,
+     &                     1,1,1,sla_obs,dummyRS,sshrec,mythid)
       else
        do bj = jtlo,jthi
         do bi = itlo,ithi

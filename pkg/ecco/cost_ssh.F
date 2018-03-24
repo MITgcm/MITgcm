@@ -83,6 +83,7 @@ c     == local variables ==
 
       character*(80) fname
       character*(MAX_LEN_MBUF) msgbuf
+      _RS dummyRS(1)
 
 c     == external functions ==
 
@@ -137,8 +138,8 @@ c--   ============
 c--   Read mean field and generate mask
 c--   Convert mean ssh from cm to m
 #ifdef ALLOW_SSH_MEAN_COST_CONTRIBUTION
-      call mdsreadfield( mdtdatfile, cost_iprec, cost_yftype, 1,
-     &                   mdt, 1, mythid )
+      call MDS_READ_FIELD( mdtdatfile, cost_iprec,.FALSE.,cost_yftype,
+     &                    1, 1, 1, mdt, dummyRS, 1, mythid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
