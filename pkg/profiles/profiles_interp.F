@@ -93,11 +93,11 @@ c horizontal interpolation:
 #ifdef ALLOW_ECCO
         elseif (var_cur.EQ.'eta') then
                tab_coeffs1(q)=m_eta(i_cur(q),j_cur(q),bi,bj)
+#endif
         elseif (var_cur.EQ.'UE') then
                tab_coeffs1(q)=m_UE(i_cur(q),j_cur(q),k,bi,bj)
         elseif (var_cur.EQ.'VN') then
                tab_coeffs1(q)=m_VN(i_cur(q),j_cur(q),k,bi,bj)
-#endif
         else
                tab_coeffs1(q)=0. _d 0
         endif
