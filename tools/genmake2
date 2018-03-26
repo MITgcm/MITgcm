@@ -1379,6 +1379,18 @@ or for more detail see the Developer's HOWTO manual at:
 
 EOF
 
+if test "x$MITGCM_ROOTDIR" = x ; then
+  if test "x$ROOTDIR" != x ; then
+    echo "WARNING: Environement Variable 'ROOTDIR' getting retired soon ;"
+    echo "WARNING:  ==> has been replaced by Env. Var. 'MITGCM_ROOTDIR'"
+  # echo "WARNING: Environement Variable 'ROOTDIR' no longer recognized"
+  # echo "WARNING:  use instead 'MITGCM_ROOTDIR'" ; ROOTDIR=
+    echo ''
+  fi
+else
+  ROOTDIR=$MITGCM_ROOTDIR
+fi
+
 LOGFILE="genmake.log"
 #- clean-up previous genmake logfiles:
 rm -f genmake_state genmake_*optfile $LOGFILE
@@ -1633,8 +1645,8 @@ if test "x${ROOTDIR}" = x ; then
 fi
 if test "x${ROOTDIR}" = x ; then
     echo "Error: Cannot determine ROOTDIR for MITgcm code."
-    echo "  Please specify a ROOTDIR using either an options "
-    echo "  file or a command-line option."
+    echo "  Please specify a ROOTDIR using either the command line"
+    echo "   option '-rootdir' or the Env.Var. 'MITGCM_ROOTDIR'."
     exit 1
 fi
 if test ! -d ${ROOTDIR} ; then
