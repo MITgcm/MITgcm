@@ -1381,9 +1381,9 @@ EOF
 
 if test "x$MITGCM_ROOTDIR" = x ; then
   if test "x$ROOTDIR" != x ; then
-    echo "WARNING: Environement Variable 'ROOTDIR' getting retired soon ;"
+    echo "WARNING: Environment Variable 'ROOTDIR' getting retired soon ;"
     echo "WARNING:  ==> has been replaced by Env. Var. 'MITGCM_ROOTDIR'"
-  # echo "WARNING: Environement Variable 'ROOTDIR' no longer recognized"
+  # echo "WARNING: Environment Variable 'ROOTDIR' no longer recognized"
   # echo "WARNING:  use instead 'MITGCM_ROOTDIR'" ; ROOTDIR=
     echo ''
   fi

@@ -216,7 +216,7 @@ EOF
 #-- Sequential part of script starts here --------------------------------------
 if test "x$MITGCM_ROOTDIR" = x ; then
   if test "x$ROOTDIR" != x ; then
-    echo "WARNING: Environement Variable 'ROOTDIR' no longer recognized"
+    echo "WARNING: Environment Variable 'ROOTDIR' no longer recognized"
     echo "WARNING:  use instead 'MITGCM_ROOTDIR'" ; ROOTDIR=
   fi
 else
