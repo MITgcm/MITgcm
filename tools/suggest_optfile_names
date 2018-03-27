@@ -61,7 +61,7 @@ EOF
 build_cyrus_makedepend()  {
     rm -f ./genmake_cy_md
     (
-	cd $ROOTDIR/tools/cyrus-imapd-makedepend  \
+	cd $MITGCMDIR/tools/cyrus-imapd-makedepend  \
 	    &&  ./configure > /dev/null 2>&1  \
 	    &&  make > /dev/null 2>&1
 	if test -x ./makedepend.exe ; then
@@ -93,7 +93,7 @@ find_possible_configs()  {
     tmp3=`echo $tmp2 | sed -e 's/cray sv1/craysv1/'`
     PLATFORM=$tmp3
     echo $PLATFORM | grep cygwin > /dev/null 2>&1  &&  PLATFORM=cygwin_ia32
-    OFLIST=`(cd $ROOTDIR/tools/build_options; ls | grep "^$PLATFORM")`
+    OFLIST=`(cd $MITGCMDIR/tools/build_options; ls | grep "^$PLATFORM")`
     echo "  The platform appears to be:  $PLATFORM"
     
     echo "test" > test
@@ -194,7 +194,7 @@ EOF
     fi
 
     if test "x$OPTFILE" = x ; then
-	OPTFILE=$ROOTDIR"/tools/build_options/"$PLATFORM"_"$FC
+	OPTFILE=$MITGCMDIR"/tools/build_options/"$PLATFORM"_"$FC
 	if test ! -r $OPTFILE ; then
              echo "  I looked for the file "$OPTFILE" but did not find it"
         fi
@@ -202,7 +202,7 @@ EOF
     if test "x$OPTFILE" = x ; then
 	cat 1>&2 <<EOF
 
-Error: No options file was found in:  $ROOTDIR/tools/build_options/
+Error: No options file was found in:  $MITGCMDIR/tools/build_options/
   that matches this platform ("$PLATFORM") and the compilers found in
   your path.  Please specify an "optfile" using:
 
@@ -220,16 +220,16 @@ EOF
 
 AWK=awk
 
-if test "x${ROOTDIR}" = x ; then
+if test "x${MITGCMDIR}" = x ; then
     tmp=`echo $PWD | sed -e 's/\// /g' | awk '{print $NR}'`
     if test "x$tmp" = "xbin" -a -d ../model -a -d ../eesup -a -d ../pkg ; then
-	ROOTDIR=".."
+	MITGCMDIR=".."
     else
 	for d in . .. ../.. ../../.. ../../../.. ../../../../.. ; do
 	    if test -d "$d/model" -a -d "$d/eesupp" -a -d "$d/pkg" ; then
-		ROOTDIR=$d
-		printf "Warning:  ROOTDIR unspecified but there appears to be"
-		echo " a copy of MITgcm at \"$ROOTDIR\""
+		MITGCMDIR=$d
+		printf "Warning:  MITGCMDIR unspecified but there appears to be"
+		echo " a copy of MITgcm at \"$MITGCMDIR\""
 		break
 	    fi
 	done
@@ -246,7 +246,7 @@ PLATFORM=$tmp3
 echo $PLATFORM | grep cygwin > /dev/null 2>&1  &&  PLATFORM=cygwin_ia32
 echo "  The platform appears to be:  $PLATFORM"
 echo "  And possible optfiles are: "
-OFLIST=`(cd $ROOTDIR/tools/build_options; ls | grep "^$PLATFORM")`
+OFLIST=`(cd $MITGCMDIR/tools/build_options; ls | grep "^$PLATFORM")`
 for i in $OFLIST ; do
     echo "    $i"
 done
