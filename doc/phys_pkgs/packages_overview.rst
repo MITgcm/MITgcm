@@ -1,3 +1,5 @@
+.. _using_packages:
+
 Using MITgcm Packages
 =====================
 
