@@ -29,6 +29,9 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#ifdef HACK_FOR_GMAO_CPL
+# include "SEAICE_LAYERS.h"
+#endif
 #ifdef ALLOW_EXF
 # include "DYNVARS.h"
 # include "EXF_FIELDS.h"
@@ -251,8 +254,18 @@ C     interpolate to V points
 #else  /* ALLOW_EXF */
         IF (.TRUE.) THEN
 #endif /* ALLOW_EXF */
-C--   Wind stress is available on U and V points, copy it to seaice variables.
 
+C--   Wind stress is available on U and V points, copy it to seaice variables.
+#ifdef HACK_FOR_GMAO_CPL
+         DO j=2-OLy,sNy+OLy
+          DO i=2-OLx,sNx+OLx
+           taux(i,j,bi,bj) = SIwindTauX(i,j,bi,bj)
+     &                     *_maskW(i,j,ks,bi,bj)
+           tauy(i,j,bi,bj) = SIwindTauY(i,j,bi,bj)
+     &                     *_maskS(i,j,ks,bi,bj)
+          ENDDO
+         ENDDO
+#else /* HACK_FOR_GMAO_CPL */
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
 C now ice surface stress
@@ -267,6 +280,7 @@ C now ice surface stress
      &                     *_maskS(i,j,ks,bi,bj)
           ENDDO
          ENDDO
+#endif /* HACK_FOR_GMAO_CPL */
 
         ENDIF
 

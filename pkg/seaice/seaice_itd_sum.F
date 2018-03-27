@@ -1,13 +1,11 @@
 #include "SEAICE_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
+CBOP
 C !ROUTINE: SEAICE_ITD_SUM
 
 C !INTERFACE: ==========================================================
       SUBROUTINE SEAICE_ITD_SUM(
-     I     bi, bj, myTime, myIter, myThid )
+     I                  bi, bj, myTime, myIter, myThid )
 
 C !DESCRIPTION: \bv
 C     *===========================================================*
@@ -23,51 +21,35 @@ C !USES: ===============================================================
       IMPLICIT NONE
 
 C     === Global variables ===
+C     nITD      :: number of seaice thickness categories
 C     AREA      :: sea ice area   total
 C     AREAITD   :: sea ice area   by category
 C     HEFF      :: sea ice volume total
 C     HEFFITD   :: sea ice volume by category
 C     HSNOW     :: snow    volume total
 C     HSNOWITD  :: snow    volume by category
-C
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
+c#include "PARAMS.h"
 #include "SEAICE_SIZE.h"
-#include "SEAICE_PARAMS.h"
+c#include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
-
 C !INPUT PARAMETERS: ===================================================
-C     === Routine arguments ===
-C     bi,bj     :: outer loop counters
-C     myTime    :: current time
-C     myIter    :: iteration number
-C     myThid    :: Thread no. that called this routine.
+C     bi,bj     :: Current tile indices
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
       _RL myTime
       INTEGER bi, bj
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 #ifdef SEAICE_ITD
-
 C !LOCAL VARIABLES: ====================================================
-C     === Local variables ===
-C     i,j,k :: inner loop counters
-C     nITD        :: number of sea ice thickness categories
-C
+C     i,j,k     :: inner loop counters
       INTEGER i, j, k
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER itmpkey
-#endif /* ALLOW_AUTODIFF_TAMC */
-#ifdef SEAICE_AGE
-      INTEGER iTracer
-#endif
 
 C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -77,9 +59,9 @@ C must now be called within bi,bj loop
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          AREA (i,j,bi,bj)=AREAITD (i,j,1,bi,bj)
-          HEFF (i,j,bi,bj)=HEFFITD (i,j,1,bi,bj)
-          HSNOW(i,j,bi,bj)=HSNOWITD(i,j,1,bi,bj)
+           AREA (i,j,bi,bj) = AREAITD (i,j,1,bi,bj)
+           HEFF (i,j,bi,bj) = HEFFITD (i,j,1,bi,bj)
+           HSNOW(i,j,bi,bj) = HSNOWITD(i,j,1,bi,bj)
          ENDDO
         ENDDO
 

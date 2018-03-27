@@ -52,7 +52,7 @@ C     nbFields    :: number of fields in pickup file (read from meta file)
 C     missFldList :: List of missing fields   (attempted to read but not found)
 C     missFldDim  :: Dimension of missing fields list array: missFldList
 C     nMissing    :: Number of missing fields (attempted to read but not found)
-C     m1,m2       :: 6.th dim index (AB-3) corresponding to time-step N-1 & N-2
+C     m1, m2      :: 6.th dim index (AB-3) corresponding to time-step N-1 & N-2
 C     j           :: loop index
 C     nj          :: record number
 C     ioUnit      :: temp for writing msg unit
@@ -65,9 +65,9 @@ C     msgBuf      :: Informational/error message buffer
       PARAMETER( missFldDim = 20 )
       CHARACTER*(8) missFldList(missFldDim)
 #ifdef ALLOW_ADAMSBASHFORTH_3
-      INTEGER m1, m2
+      INTEGER j, m1, m2
 #endif
-      INTEGER j, nj, ioUnit
+      INTEGER nj, ioUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifndef ALLOW_GENERIC_ADVDIFF
       LOGICAL AdamsBashforthGt
