@@ -613,11 +613,11 @@ use the ``literalinclude`` directive. Example usage is shown here:
             :end-at: String indicating where to stop grabbing text
 
 Unlike the ``:filelink:`` and ``:varlink:`` directives, which assume a file path starting at the top of the MITgcm repository,
-one must specify the path relative to the current directory of the :filelink:`doc` file (from this doc file, it would require
+one must specify the path relative to the current directory of the file (for example, from the doc directory, it would require
 ``../../`` at the start of the file path to specify the base directory of the MITgcm repository).
 Note one can instead use ``:start-after:`` and ``:end-before:`` to get text from the file between (not including) those lines. 
 If one omits the ``start-at`` or ``start-after``, etc. options the whole file is shown. 
-More details for this directive can be found `here <http://www.sphinx-doc.org/en/stable/markup/code.html#directive-literalinclude>`_.
+More details for this directive can be found `here <http://www.sphinx-doc.org/en/stable/markup/code.html#directive-literalinclude>`__.
 Example usage in this documentation is :ref:`here <model_main_call_tree>`,
 where the lines to generate this are:
 
