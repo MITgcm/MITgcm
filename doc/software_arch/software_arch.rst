@@ -1402,6 +1402,8 @@ WRAPPER layer.
 
 Core equations plus packages.
 
+.. _model_main_call_tree:
+
 .. literalinclude:: ../../model/src/the_model_main.F
     :start-at: C Invocation from WRAPPER level...
     :end-at: C    |                 :: events.
