@@ -89,7 +89,23 @@ It can be turned on or off at run time in ``input/data.pkg`` by setting ``useNF9
 
 Finally it can be turned on or off explicitly inside ``input/data.diagnostics`` by setting ``diag_nf90io=.TRUE.`` or ``.FLASE.``.  By default it is set to ``useNF90IO``, so it is just as easy to control from ``input/data.pkg``
 
-Currently there is no ``input/data.nf90io`` because there are no package-specific options to turn on or off.  This may change in the future.
+The file ``input/data.nf90io`` bcontains run-time parameters for the NF90IO package.
+
++---------------------------------+---------+------------+-------------------------------------------------------------+
+| Name                            | Type    | Default    | Description                                                 |
++=================================+=========+============+=============================================================+
+| :varlink:`nf90io_fileFormat`    | I       | 4          | which netCDF file format to create:                         |
+|                                 |         |            |                                                             |
+|                                 |         |            | 1. CDF-1 (classic format)                                   |
+|                                 |         |            | 2. CDF-2 (classic format with 64-bit offsets)               |
+|                                 |         |            | 3. CDF-3 (HDF5-based)                                       |
+|                                 |         |            | 4. CDF-4 (HDF5-based, classic model)                        |
+|                                 |         |            | 5. CDF-5 (classic format with 64-bit data)                  |
+|                                 |         |            |                                                             |
+|                                 |         |            | - 3 and 4 require netCDF to be compiled with HDF5           |
+|                                 |         |            | - 5 may require parallel-netcdf (pnetcdf) with older netCDF |
+|                                 |         |            | - 1, 2 and 5 require parallel-netcdf when running with mpi  |
++---------------------------------+---------+------------+-------------------------------------------------------------+
 
 Note that NF90IO output can be mixed with MDSIO and MNC outputs.  If ``input/data.pkg`` has ``useMNC=.TRUE.`` and ``useNF90IO=.TRUE`` then both styles of files will be written unless explicitly turned off in ``input/data.diagnostics``.  Users probably don't want to output both types of files, so if ``useMNC=.TRUE.`` and ``useNF90IO=.TRUE`` are set in ``input/data.pkg`` then in ``input/data.diagnostics`` users probably want to set ``diag_nf90io=.FALSE.`` *or* ``diag_mnc=.FALSE.``.
 

@@ -47,7 +47,26 @@ CEOP
         _RL     ks(Nr+10)
 
 C initialize this new file...
-        mode_flag = IOR(nf90_netcdf4, nf90_classic_model)
+C
+C file format versions
+        IF (nf90io_fileFormat .EQ. 1) THEN
+C- CDF-1
+          mode_flag = nf90_clobber
+        ELSEIF (nf90io_fileFormat .EQ. 2) THEN
+C- CDF-2
+          mode_flag = nf90_64bit_offset
+        ELSEIF (nf90io_fileFormat .EQ. 3) THEN
+C- CDF-3 (HDF-5)
+          mode_flag = nf90_netcdf4
+        ELSEIF (nf90io_fileFormat .EQ. 4) THEN
+C- CDF-4 (HDF-5 classic model)
+          mode_flag = IOR(nf90_netcdf4, nf90_classic_model)
+        ELSEIF (nf90io_fileFormat .EQ. 5) THEN
+C- CDF-5 (64-bit data, use parallel netCDF)
+          mode_flag = 32
+        ELSE
+          STOP 'invalid nf90io_fileFormat'
+        ENDIF
         IF (usingMPI) THEN
 #ifdef ALLOW_USE_MPI
               mode_flag = IOR(mode_flag, nf90_mpiio)

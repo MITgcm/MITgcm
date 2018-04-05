@@ -143,6 +143,11 @@ C--   if useMNC=T, read run-time flags for MNC; otherwise just return
       CALL MNC_READPARMS( myThid )
 #endif
 
+#ifdef ALLOW_NF90IO
+C--   if useNF90IO=T, read run-time flags for NF90IO; otherwise just return
+      CALL NF90IO_READPARMS( myThid )
+#endif
+
 #ifdef ALLOW_CAL
 C--   if useCAL=T, set the calendar package parameters.
 C      otherwise, just set cal_setStatus=-1 and return
