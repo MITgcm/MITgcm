@@ -47,7 +47,7 @@ C initialize this new file...
 #ifdef ALLOW_USE_MPI
               mode_flag = IOR(mode_flag, nf90_mpiio)
               err = nf90_create(ncfilename, mode_flag, ncid, comm =
-     $             MPI_COMM_WORLD,info = MPI_INFO_NULL)
+     $             MPI_COMM_MODEL,info = MPI_INFO_NULL)
               CALL nf90ERR(err,"Opening netcdf file w/ MPI",myThid)
 #endif
         ELSE

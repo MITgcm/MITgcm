@@ -46,7 +46,7 @@ C     opens in non-parallel if usingMPI not set
 #ifdef ALLOW_USE_MPI
          err = nf90_open(fname, IOR(nf90_write, nf90_mpiio),
      $        ncid,
-     $        comm=MPI_COMM_WORLD, info=MPI_INFO_NULL)
+     $        comm=MPI_COMM_MODEL, info=MPI_INFO_NULL)
 #endif
       ELSE
          err = nf90_open(fname, nf90_write,ncid)
