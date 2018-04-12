@@ -75,6 +75,6 @@
 # Input datasets
  &PARM05
  bathyFile='topo.bin',
- mdsioLocalDir='../../',
  hydrogThetaFile='T0.bin',
+ mdsiolocaldir='res_',
  /
