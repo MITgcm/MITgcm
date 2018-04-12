@@ -8,7 +8,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 
 C     !INTERFACE:
-      SUBROUTINE NF90IO_INIT_FILE ( ncfilename, myThid )
+      SUBROUTINE NF90IO_CREATE_FILE (
+     I                                ncfilename,
+     O                                ncid,
+     I                                myThid )
         use netcdf
         IMPLICIT NONE
 
@@ -26,10 +29,12 @@ C #include "NF90IO.h"
 #include "NH_VARS.h"
 #endif
 
+        CHARACTER*(*) ncfilename
+        INTEGER ncid
         INTEGER myThid
-        character*(MAX_LEN_FNAM) ncfilename
+CEOP
 
-        INTEGER mode_flag, ncid, err, i, j, k, t
+        INTEGER mode_flag, err, i, j, k, t
         INTEGER bi, bj
         INTEGER i_dimid, j_dimid, k_dimid, dimids(4), varid
         INTEGER ig_dimid, jg_dimid, kl_dimid, ku_dimid, kp1_dimid
@@ -74,6 +79,37 @@ C record is my unlimited.  Other mitgcms seem to use time...
         CALL nf90ERR(err,"Adding k_u dim",myThid)
         err = nf90_def_dim(ncid, "k_p1", Nr+1, kp1_dimid)
         CALL nf90ERR(err,"Adding k_p1 dim",myThid)
+
+CCCCCCCCCCCCCCCCCC
+C     Set file attributes
+
+        err = nf90_put_att(ncid, NF90_GLOBAL, 'the_run_name',
+     $       the_run_name)
+
+#ifdef THISVER
+        err = nf90_put_att( ncid, NF90_GLOBAL, 'MITgcm_version',
+     $       THISVER)
+        err = nf90_put_att( ncid, NF90_GLOBAL, 'source',
+     $       THISVER)
+#endif
+#ifdef THISUSER
+        err = nf90_put_att( ncid, NF90_GLOBAL, 'build_user',
+     &       THISUSER)
+#endif
+#ifdef THISHOST
+        err = nf90_put_att( ncid, NF90_GLOBAL, 'build_host',
+     &       THISHOST)
+#endif
+#ifdef THISDATE
+        err = nf90_put_att( ncid, NF90_GLOBAL, 'build_date',
+     &       THISDATE)
+#endif
+
+        err = nf90_put_att( ncid, NF90_GLOBAL, 'MITgcm_URL',
+     $       'http://mitgcm.org')
+
+        err = nf90_put_att( ncid, NF90_GLOBAL, 'history',
+     $       'Saved from nf90io')
 
 C Define co-ordinate variables (i.e. data that goes w/ each dimension)
         err = nf90_def_var(ncid, "record", NF90_INT, (/ rec_dimid /),
@@ -611,296 +647,6 @@ C     Define pHrefs
         err = nf90_put_att(ncid, varid,
      $       "units",
      $       "m2 s-2")
-
-
-C     Stop defining stuff and start filling
-        err = nf90_enddef(ncid)
-
-C     co-ordinate k:
-        err = nf90_inq_varid(ncid, "k", varid)
-        CALL nf90ERR(err, "Getting k varid",myThid)
-        err = nf90io_var_par_access(ncid, varid)
-        CALL nf90ERR(err, "Setting k variable to par access",myThid)
-        ks(1:Nr) = (/  (I, I = 0, Nr-1)  /)
-        err = nf90_put_var(ncid, varid, kS(1:Nr),
-     $       start = (/ 1 /) , count = (/ Nr /) )
-        CALL nf90ERR(err, "Setting k variable values",myThid)
-
-C     co-ordinate i:
-        err = nf90_inq_varid(ncid, "i", varid)
-        CALL nf90ERR(err, "Getting i varid",myThid)
-        err = nf90io_var_par_access(ncid, varid)
-        CALL nf90ERR(err, "Setting i variable to par access",myThid)
-        do bj = 1,nSy
-           do bi = 1,nSx
-C     NOT tested w/ more than one thread be processor, so
-C     maybe incorrect.
-              is(1:sNx) = (/  (I, I = myXGlobalLo+(bi-1)*sNx-1,
-     $             myXGlobalLo+(bi)*sNx-1)  /)
-              err = nf90_put_var(ncid, varid,
-     &             is(1:sNx),
-     &             start = (/ myXGlobalLo+(bi-1)*sNx /) ,
-     &             count = (/ sNx/) )
-              CALL nf90ERR(err, "Getting i varid",myThid)
-           enddo
-        enddo
-
-C     co-ordinate i_g:
-        err = nf90_inq_varid(ncid, "i_g", varid)
-        CALL nf90ERR(err, "Getting i_g varid",myThid)
-        err = nf90io_var_par_access(ncid, varid)
-        CALL nf90ERR(err, "Setting i_g variable to par access",myThid)
-        do bj = 1,nSy
-           do bi = 1,nSx
-C     NOT tested w/ more than one thread be processor, so
-C     maybe incorrect.
-              is(1:sNx) = (/  (I, I = myXGlobalLo+(bi-1)*sNx-1,
-     $             myXGlobalLo+(bi)*sNx-1)  /)
-              err = nf90_put_var(ncid, varid,
-     &             is(1:sNx),
-     &             start = (/ myXGlobalLo+(bi-1)*sNx /) ,
-     &             count = (/ sNx/) )
-              CALL nf90ERR(err, "Getting i_g varid",myThid)
-           enddo
-        enddo
-
-C     co-ordinate j:
-        err = nf90_inq_varid(ncid, "j", varid)
-        CALL nf90ERR(err, "Getting j varid",myThid)
-        err = nf90io_var_par_access(ncid, varid)
-        CALL nf90ERR(err, "Setting j variable to par access",myThid)
-
-        do bj = 1,nSy
-           do bi = 1,nSx
-C     NOT tested w/ more than one thread be processor, so
-C     maybe incorrect.
-              js(1:sNy) = (/  (I, I = myYGlobalLo+(bj-1)*sNy-1,
-     &             myYGlobalLo+(bj)*sNy-1)  /)
-              err = nf90_put_var(ncid, varid,
-     &             js(1:sNy),
-     &             start = (/ myYGlobalLo+(bj-1)*sNy /) ,
-     &             count = (/ sNy/) )
-              CALL nf90ERR(err, "Getting j varid",myThid)
-           enddo
-        enddo
-
-C     co-ordinate j:
-        err = nf90_inq_varid(ncid, "j_g", varid)
-        CALL nf90ERR(err, "Getting j_g varid",myThid)
-        err = nf90io_var_par_access(ncid, varid)
-        CALL nf90ERR(err, "Setting j_g variable to par access",myThid)
-
-        do bj = 1,nSy
-           do bi = 1,nSx
-C     NOT tested w/ more than one thread be processor, so
-C     maybe incorrect.
-              js(1:sNy) = (/  (I, I = myYGlobalLo+(bj-1)*sNy-1,
-     &             myYGlobalLo+(bj)*sNy-1)  /)
-              err = nf90_put_var(ncid, varid,
-     &             js(1:sNy),
-     &             start = (/ myYGlobalLo+(bj-1)*sNy /) ,
-     &             count = (/ sNy/) )
-              CALL nf90ERR(err, "Putting j_g varid",myThid)
-           enddo
-        enddo
-
-
-C     co-ordinate ks:
-        do t = 1,3
-           if (t.EQ.1) then
-              err = nf90_inq_varid(ncid, "k", varid)
-           else if (t.EQ.2) then
-              err = nf90_inq_varid(ncid, "k_u", varid)
-           else if (t.EQ.3) then
-              err = nf90_inq_varid(ncid, "k_l", varid)
-           endif
-           CALL nf90ERR(err, "Getting k varid",myThid)
-           err = nf90io_var_par_access(ncid, varid)
-           CALL nf90ERR(err, "Setting k variable to par access"
-     $          ,myThid)
-
-           ks(1:Nr) = (/  (I, I = 0,Nr-1)  /)
-           err = nf90_put_var(ncid, varid,
-     &          ks(1:Nr),
-     &          start = (/ 1 /) ,
-     &          count = (/ Nr /) )
-           CALL nf90ERR(err, "Getting k varid",myThid)
-        enddo
-
-C     co-ordinate k+:
-        err = nf90_inq_varid(ncid, "k_p1", varid)
-        CALL nf90ERR(err, "Getting k_p1 varid",myThid)
-        err = nf90io_var_par_access(ncid, varid)
-        CALL nf90ERR(err, "Setting k_p1 variable to par access"
-     $       ,myThid)
-        ks(1:Nr+1) = (/  (I, I = 0,Nr)  /)
-        err = nf90_put_var(ncid, varid,
-     &       ks(1:Nr+1),
-     &       start = (/ 1 /) ,
-     &       count = (/ Nr+1 /) )
-        CALL nf90ERR(err, "Writing k_p1",myThid)
-
-
-CCCCCCCCCCCCCC
-C     Now fill the grid data from variables...
-C     z-s
-        err = nf90_inq_varid(ncid, "Z", varid)
-        CALL nf90ERR(err, "Getting Z varid",myThid)
-        err = nf90io_var_par_access(ncid, varid)
-        err = nf90_put_var(ncid, varid,
-     &       rC,
-     &       start = (/ 1 /) ,
-     &       count = (/ Nr /) )
-
-        err = nf90_inq_varid(ncid, "Zp1", varid)
-        CALL nf90ERR(err, "Getting Zp1 varid",myThid)
-        err = nf90io_var_par_access(ncid, varid)
-        err = nf90_put_var(ncid, varid,
-     &       rF,
-     &       start = (/ 1 /) ,
-     &       count = (/ Nr+1 /) )
-
-        err = nf90_inq_varid(ncid, "Zu", varid)
-        CALL nf90ERR(err, "Getting Zu varid",myThid)
-        err = nf90io_var_par_access(ncid, varid)
-        err = nf90_put_var(ncid, varid,
-     &       rF(2:Nr+1),
-     &       start = (/ 1 /) ,
-     &       count = (/ Nr /) )
-
-        err = nf90_inq_varid(ncid, "drC", varid)
-        CALL nf90ERR(err, "Getting drC varid",myThid)
-        err = nf90io_var_par_access(ncid, varid)
-        err = nf90_put_var(ncid, varid,
-     &       drC(1:Nr+1),
-     &       start = (/ 1 /) ,
-     &       count = (/ Nr+1 /) )
-        CALL nf90ERR(err, "writing drC ",myThid)
-
-        err = nf90_inq_varid(ncid, "drF", varid)
-        CALL nf90ERR(err, "Getting drF varid",myThid)
-        err = nf90io_var_par_access(ncid, varid)
-        err = nf90_put_var(ncid, varid,
-     &       drF(1:Nr),
-     &       start = (/ 1 /) ,
-     &       count = (/ Nr /) )
-        CALL nf90ERR(err, "writing drF",myThid)
-
-
-        err = nf90_inq_varid(ncid, "Zl", varid)
-        CALL nf90ERR(err, "Getting Zl varid",myThid)
-        err = nf90io_var_par_access(ncid, varid)
-        err = nf90_put_var(ncid, varid,
-     &       rF(1:Nr),
-     &       start = (/ 1 /) ,
-     &       count = (/ Nr /) )
-
-C     Horizontal co-ordinates...
-
-        CALL NF90IO_FILL_2Dnorec(ncid, "XC", xC, myThid)
-        CALL NF90IO_FILL_2Dnorec(ncid, "XG", xG, myThid)
-        CALL NF90IO_FILL_2Dnorec(ncid, "YC", yC, myThid)
-        CALL NF90IO_FILL_2Dnorec(ncid, "YG", yG, myThid)
-        CALL NF90IO_FILL_2Dnorec(ncid, "dxC", dxC, myThid)
-        CALL NF90IO_FILL_2Dnorec(ncid, "dxG", dxG, myThid)
-        CALL NF90IO_FILL_2Dnorec(ncid, "dyC", dxC, myThid)
-        CALL NF90IO_FILL_2Dnorec(ncid, "dyG", dxG, myThid)
-        CALL NF90IO_FILL_2Dnorec(ncid, "rA", rA, myThid)
-        CALL NF90IO_FILL_2Dnorec(ncid, "rAz", rAz, myThid)
-        CALL NF90IO_FILL_2Dnorec(ncid, "rAw", rAw, myThid)
-        CALL NF90IO_FILL_2Dnorec(ncid, "rAs", rAs, myThid)
-
-C     Hfacs
-        CALL NF90IO_FILL_3Dnorec(ncid, "hFacC", hFacC, myThid)
-        CALL NF90IO_FILL_3Dnorec(ncid, "hFacW", hFacW, myThid)
-        CALL NF90IO_FILL_3Dnorec(ncid, "hFacS", hFacS, myThid)
-
-C     Depth:  Special because model doesn't store
-        err = nf90_inq_varid(ncid, "Depth", varid)
-        CALL nf90ERR(err, "Getting varid Depth",myThid)
-        err = nf90io_var_par_access(ncid, varid)
-        count(1:2) = (/  sNx, sNy /)
-        do bj = 1,nSy
-           do bi = 1,nSx
-C     NOT tested w/ more than one thread be processor, so
-C     maybe incorrect.
-              start(1:2) = (/ myXGlobalLo+(bi-1)*sNx,
-     &             myYGlobalLo+(bj-1)*sNy /)
-              err = nf90_put_var(ncid, varid,
-     &             Ro_surf(1:sNx, 1:sNy,bi,bj) -
-     &             R_low(1:sNx, 1:sNy,bi,bj),
-     &             start = start(1:2), count = count(1:2))
-              CALL nf90ERR(err, "Putting Depth into file", myThid)
-           enddo
-        enddo
-
-C     Reference densities...
-
-        DO k=1,Nr+1
-           ks(k) = phiRef(2*k-1)
-        ENDDO
-        err = nf90_inq_varid(ncid, "PHrefF", varid)
-        CALL nf90ERR(err, "Getting PHRefF varid",myThid)
-        err = nf90io_var_par_access(ncid, varid)
-        err = nf90_put_var(ncid, varid,
-     &       ks(1:NR+1),
-     &       start = (/ 1 /) ,
-     &       count = (/ Nr+1 /) )
-
-        DO k=1,Nr
-           ks(k) = phiRef(2*k)
-        ENDDO
-        err = nf90_inq_varid(ncid, "PHrefC", varid)
-        CALL nf90ERR(err, "Getting PHRefC varid",myThid)
-        err = nf90io_var_par_access(ncid, varid)
-        err = nf90_put_var(ncid, varid,
-     &       ks(1:NR),
-     &       start = (/ 1 /) ,
-     &       count = (/ Nr /) )
-
-
-CCCCCCCCCCCCCCCCCC
-C     Set file attributes
-        err = nf90_redef(ncid)
-        CALL nf90ERR(err, "Entering Def mode for file attributes"
-     $       ,myThid)
-
-        err = nf90_put_att(ncid, NF90_GLOBAL, 'the_run_name',
-     $       the_run_name)
-
-#ifdef THISVER
-        err = nf90_put_att( ncid, NF90_GLOBAL, 'MITgcm_version',
-     $       THISVER)
-        err = nf90_put_att( ncid, NF90_GLOBAL, 'source',
-     $       THISVER)
-#endif
-#ifdef THISUSER
-        err = nf90_put_att( ncid, NF90_GLOBAL, 'build_user',
-     &       THISUSER)
-#endif
-#ifdef THISHOST
-        err = nf90_put_att( ncid, NF90_GLOBAL, 'build_host',
-     &       THISHOST)
-#endif
-#ifdef THISDATE
-        err = nf90_put_att( ncid, NF90_GLOBAL, 'build_date',
-     &       THISDATE)
-#endif
-
-        err = nf90_put_att( ncid, NF90_GLOBAL, 'MITgcm_URL',
-     $       'http://mitgcm.org')
-
-        err = nf90_put_att( ncid, NF90_GLOBAL, 'history',
-     $       'Saved from nf90io')
-
-        err = nf90_enddef(ncid)
-        CALL nf90ERR(err, "Ending def mode file attributes",myThid)
-
-
-CCCCCCCCCCCCCCCCCC
-C     Close
-        err = nf90_close(ncid)
-        CALL nf90ERR(err, "Closing after setting up grids",myThid)
 
         RETURN
         END

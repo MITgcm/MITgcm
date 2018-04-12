@@ -83,6 +83,9 @@ c     COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
 #ifdef ALLOW_MNC
       CHARACTER*(MAX_LEN_FNAM) diag_mnc_bn
 #endif /*  ALLOW_MNC  */
+#ifdef ALLOW_NF90IO
+      INTEGER ncid
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -148,6 +151,15 @@ C--   Convert time to iteration number (debug)
 c     DO i=1,nTimRec
 c       timeRec(i) = timeRec(i)/deltaTClock
 c     ENDDO
+
+#ifdef ALLOW_NF90IO
+      IF (useNF90io .AND. diag_nf90io) THEN
+        CALL DIAGNOSTICS_NF90IO_OPEN(
+     I               listId,
+     O               ncid,
+     I               myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_NF90IO */
 
 C--   Place the loop on lm (= averagePeriod) outside the loop on md (= field):
       DO lm=1,averageCycle(listId)
@@ -436,13 +448,13 @@ C               then this is the first diagnostics of this list element.
                 incrementRec=.FALSE.
              ENDIF
              IF ( ppFld.LE.1 ) THEN
-                CALL DIAGNOSTICS_NF90IO_OUT(
-     I               NrMax, nLevOutp, listId, ndId,
+                CALL DIAGNOSTICS_NF90IO_VAR_OUT(
+     I               ncid, NrMax, nLevOutp, listId, ndId,
      I               qtmp1, incrementRec, timeRec,
      I               undefRL, myTime, myIter, myThid )
              ELSE
-                CALL DIAGNOSTICS_NF90IO_OUT(
-     I               NrMax, nLevOutp, listId, ndId,
+                CALL DIAGNOSTICS_NF90IO_VAR_OUT(
+     I               ncid, NrMax, nLevOutp, listId, ndId,
      I               qtmp2, incrementRec, timeRec,
      I               undefRL, myTime, myIter, myThid )
              ENDIF
@@ -455,6 +467,12 @@ C--     end of Processing Fld # md
 
 C--   end loop on lm counter (= averagePeriod)
       ENDDO
+
+#ifdef ALLOW_NF90IO
+      IF (useNF90io .AND. diag_nf90io) THEN
+        CALL NF90IO_CLOSE(ncid, myThid)
+      ENDIF
+#endif /* ALLOW_NF90IO */
 
 #ifdef ALLOW_MDSIO
       IF (diag_mdsio) THEN
