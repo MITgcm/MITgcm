@@ -1224,7 +1224,7 @@ CEOP
       imin = 1
       imax = snx
 
-      call ( localerr_file, cost_iprec,
+      call READ_REC_3D_RL( localerr_file, cost_iprec,
      &  nnzbar, localweight, iRec, 1, mythid )
 c      call mdsreadfield( localerr_file, cost_iprec,
 c     &  cost_yftype, nnzbar, localweight, iRec, mythid )
