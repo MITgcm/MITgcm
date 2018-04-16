@@ -279,11 +279,15 @@ c--    Remove global mean value
 c--    Smooth field of anomalies
       if (gencost_outputlevel(kgen).GT.0) then
       write(fname4test(1:80),'(1a)') 'bpdifanom_raw'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,'RL',
-     & 1,1,1,bpdifanom,dummyRS,irec,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,'RL',
+c     & 1,1,1,bpdifanom,dummyRS,irec,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     & bpdifanom,irec,1,mythid)
       write(fname4test(1:80),'(1a)') 'bpdatanom_raw'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,'RL',
-     & 1,1,1,bpdatanom,dummyRS,irec,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,'RL',
+c     & 1,1,1,bpdatanom,dummyRS,irec,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     & bpdatanom,irec,1,mythid)
       endif
 
 #ifdef ALLOW_SMOOTH
@@ -298,11 +302,15 @@ c--    Smooth field of anomalies
 #endif
 
       write(fname4test(1:80),'(1a)') 'bpdifanom_smooth'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,'RL',
-     & 1,1,1,bpdifanom,dummyRS,irec,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,'RL',
+c     & 1,1,1,bpdifanom,dummyRS,irec,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     & bpdifanom,irec,1,mythid)
       write(fname4test(1:80),'(1a)') 'bpdatanom_smooth'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,'RL',
-     & 1,1,1,bpdatanom,dummyRS,irec,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,'RL',
+c     & 1,1,1,bpdatanom,dummyRS,irec,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     & bpdatanom,irec,1,mythid)
       endif
 
 c--    Compute cost function

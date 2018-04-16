@@ -265,8 +265,10 @@ c====================================================
 c-- initialize to spzerloc = -9999.
         call ecco_zero(localobs,nnzsiv4,spzeroloc,mythid)
         if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
-         call MDS_READ_FIELD( fname0, cost_iprec, .FALSE., cost_yftype,
-     &        nnzsiv4,1,nnzsiv4,localobs, dummyRS,localrec, mythid )
+c         call MDS_READ_FIELD( fname0, cost_iprec, .FALSE., cost_yftype,
+c     &        nnzsiv4,1,nnzsiv4,localobs, dummyRS,localrec, mythid )
+         call READ_REC_3D_RL( fname0, cost_iprec, 
+     &        nnzsiv4,localobs, localrec, 1, mythid )
         else
           il=ilnblnk( fname0 )
           WRITE(standardMessageUnit,'(2A)')

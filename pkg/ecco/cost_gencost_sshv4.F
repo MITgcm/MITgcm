@@ -337,8 +337,10 @@ cgf =======================================================
 c--   Read mean field and mask
 
       if (using_mdt)
-     &call MDS_READ_FIELD( mdtfi, cost_iprec, .FALSE.,cost_yftype, 
-     &                     1,1,1,mdtob, dummyRS,1, mythid )
+     &call READ_REC_XY_RL( mdtfi, 
+     &                     mdtob,1, myiter, mythid )
+c     &call MDS_READ_FIELD( mdtfi, cost_iprec, .FALSE.,cost_yftype, 
+c     &                     1,1,1,mdtob, dummyRS,1, mythid )
 
       factor =  0.01 _d 0
       spval  = -9990. _d 0
@@ -461,8 +463,10 @@ c--   smooth mean_slaobs_mdt:
 
       if (gencost_outputlevel(igen_mdt).GT.0) then
       write(fname4test(1:80),'(1a)') 'sla2mdt_raw'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,'RL',
-     & 1,1,1,mean_slaobs_mdt,dummyRS,1,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     & mean_slaobs_mdt,1,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,'RL',
+c     & 1,1,1,mean_slaobs_mdt,dummyRS,1,1,mythid)
       endif
 
 #ifdef ALLOW_SMOOTH
@@ -474,8 +478,10 @@ c--   smooth mean_slaobs_mdt:
 
       if (gencost_outputlevel(igen_mdt).GT.0) then
       write(fname4test(1:80),'(1a)') 'sla2mdt_smooth'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,'RL',
-     & 1,1,1,mean_slaobs_mdt,dummyRS,1,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     & mean_slaobs_mdt,1,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,'RL',
+c     & 1,1,1,mean_slaobs_mdt,dummyRS,1,1,mythid)
       endif
 
 c--   re-reference mdt:
@@ -805,8 +811,10 @@ c use the simpler approach
 c--    smooth mean_psMssh_all
       if (gencost_outputlevel(igen_mdt).GT.0) then
       write(fname4test(1:80),'(1a)') 'mdtdiff_raw'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
-     &     'RL',1,1,1,mean_psMssh_all,dummyRS,1,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     &     mean_psMssh_all,1,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
+c     &     'RL',1,1,1,mean_psMssh_all,dummyRS,1,1,mythid)
       endif
 
 #ifdef ALLOW_SMOOTH
@@ -818,14 +826,18 @@ c--    smooth mean_psMssh_all
 
       if (gencost_outputlevel(igen_mdt).GT.0) then
       write(fname4test(1:80),'(1a)') 'mdtdiff_smooth'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
-     &     'RL',1,1,1,mean_psMssh_all,dummyRS,1,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     &     mean_psMssh_all,1,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
+c     &     'RL',1,1,1,mean_psMssh_all,dummyRS,1,1,mythid)
       endif
 
       if (gencost_outputlevel(igen_mdt).GT.0) then
       write(fname4test(1:80),'(1a)') 'sla2model_raw'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
-     &     'RL',1,1,1,mean_slaobs_model,dummyRS,1,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     &     mean_slaobs_model,1,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
+c     &     'RL',1,1,1,mean_slaobs_model,dummyRS,1,1,mythid)
       endif
 
 #ifdef ALLOW_SMOOTH
@@ -837,8 +849,10 @@ c--    smooth mean_psMssh_all
 
       if (gencost_outputlevel(igen_mdt).GT.0) then
       write(fname4test(1:80),'(1a)') 'sla2model_smooth'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
-     &    'RL',1,1,1,mean_slaobs_model,dummyRS,1,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     &    mean_slaobs_model,1,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
+c     &    'RL',1,1,1,mean_slaobs_model,dummyRS,1,1,mythid)
       endif
 
 cgf at this point:
@@ -876,8 +890,10 @@ cgf =======================================================
 
       if (gencost_outputlevel(igen_mdt).GT.0) then
       write(fname4test(1:80),'(1a)') 'misfits_mdt'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
-     &     'RL',1,1,1,diagnosfld,dummyRS,1,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     &     diagnosfld,1,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
+c     &     'RL',1,1,1,diagnosfld,dummyRS,1,1,mythid)
       endif
 
 cgf =======================================================
@@ -1126,12 +1142,16 @@ c ----------------------------------------
 
       if (gencost_outputlevel(igen_lsc).GT.0) then
       write(fname4test(1:80),'(1a)') 'sladiff_raw'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
-     &     'RL',1,1,1,anom_psMslaobs,dummyRS,irec,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     &     anom_psMslaobs,irec,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
+c     &     'RL',1,1,1,anom_psMslaobs,dummyRS,irec,1,mythid)
 
       write(fname4test(1:80),'(1a)') 'slaobs_raw'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
-     &     'RL',1,1,1,anom_slaobs,dummyRS,irec,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     &     anom_slaobs,irec,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
+c     &     'RL',1,1,1,anom_slaobs,dummyRS,irec,1,mythid)
       endif
 
 #ifdef ALLOW_SMOOTH
@@ -1150,12 +1170,16 @@ c ----------------------------------------
 #endif
 c
       write(fname4test(1:80),'(1a)') 'sladiff_smooth'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
-     &     'RL',1,1,1,anom_psMslaobs,dummyRS,irec,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     &     anom_psMslaobs,irec,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
+c     &     'RL',1,1,1,anom_psMslaobs,dummyRS,irec,1,mythid)
 c
       write(fname4test(1:80),'(1a)') 'slaobs_smooth'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
-     &     'RL',1,1,1,anom_slaobs,dummyRS,irec,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     &     anom_slaobs,irec,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
+c     &     'RL',1,1,1,anom_slaobs,dummyRS,irec,1,mythid)
       endif
 
 c PART 4.3: compute cost function term
@@ -1188,12 +1212,16 @@ c ------------------------------------
 
       if (gencost_outputlevel(igen_lsc).GT.0) then
       write(fname4test(1:80),'(1a)') 'sladiff_subsample'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
-     &     'RL',1,1,1,anom_psMslaobs_SUB,dummyRS,irec,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     &     anom_psMslaobs_SUB,irec,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
+c     &     'RL',1,1,1,anom_psMslaobs_SUB,dummyRS,irec,1,mythid)
 c
       write(fname4test(1:80),'(1a)') 'slaobs_subsample'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
-     &     'RL',1,1,1,anom_slaobs_SUB,dummyRS,irec,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     &     anom_slaobs_SUB,irec,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
+c     &     'RL',1,1,1,anom_slaobs_SUB,dummyRS,irec,1,mythid)
       endif
 
 c PART 4.4: compute cost function term for global mean sea level
@@ -1313,29 +1341,41 @@ c time associated with this ndaysrec mean
 
       if (gencost_outputlevel(igen_tp).GT.0) then
       write(fname4test(1:80),'(1a)') 'sladiff_tp_raw'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
-     &     'RL',1,1,1,anom_psMtpobs,dummyRS,irec,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     &     anom_psMtpobs,irec,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
+c     &     'RL',1,1,1,anom_psMtpobs,dummyRS,irec,1,mythid)
       write(fname4test(1:80),'(1a)') 'slaobs_tp_raw'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
-     &     'RL',1,1,1,anom_tpobs,dummyRS,irec,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     &     anom_tpobs,irec,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
+c     &     'RL',1,1,1,anom_tpobs,dummyRS,irec,1,mythid)
       endif
 
       if (gencost_outputlevel(igen_ers).GT.0) then
       write(fname4test(1:80),'(1a)') 'sladiff_ers_raw'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
-     &     'RL',1,1,1,anom_psMersobs,dummyRS,irec,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     &     anom_psMersobs,irec,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
+c     &     'RL',1,1,1,anom_psMersobs,dummyRS,irec,1,mythid)
       write(fname4test(1:80),'(1a)') 'slaobs_ers_raw'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
-     &     'RL',1,1,1,anom_ersobs,dummyRS,irec,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     &     anom_ersobs,irec,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
+c     &     'RL',1,1,1,anom_ersobs,dummyRS,irec,1,mythid)
       endif
 
       if (gencost_outputlevel(igen_gfo).GT.0) then
       write(fname4test(1:80),'(1a)') 'sladiff_gfo_raw'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
-     &     'RL',1,1,1,anom_psMgfoobs,dummyRS,irec,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     &     anom_psMgfoobs,irec,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
+c     &     'RL',1,1,1,anom_psMgfoobs,dummyRS,irec,1,mythid)
       write(fname4test(1:80),'(1a)') 'slaobs_gfo_raw'
-      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
-     &     'RL',1,1,1,anom_gfoobs,dummyRS,irec,1,mythid)
+      call WRITE_REC_XY_RL(fname4test,
+     &     anom_gfoobs,irec,1,mythid)
+c      call MDS_WRITE_FIELD(fname4test,32,.FALSE.,.FALSE.,
+c     &     'RL',1,1,1,anom_gfoobs,dummyRS,irec,1,mythid)
       endif
 
        do bj = jtlo,jthi

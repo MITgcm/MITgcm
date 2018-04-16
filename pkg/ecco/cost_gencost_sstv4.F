@@ -230,8 +230,10 @@ c
 #endif
 
              if ( ( localrec .GT. 0 ).AND.(diffsecs .GT. 0.d0) ) then
-               call mdsreadfield( fname2, cost_iprec, cost_yftype, 1,
-     &           tmp_sst, localrec, mythid )
+               call READ_REC_XY_RL( fname2, 
+     &           tmp_sst, localrec, 1, mythid )
+c               call mdsreadfield( fname2, cost_iprec, cost_yftype, 1,
+c     &           tmp_sst, localrec, mythid )
              else
               do bj = jtlo,jthi
                 do bi = itlo,ithi
@@ -287,12 +289,16 @@ c ----------------------------------------
 
 #ifdef ALLOW_GENCOST_SSTV4_OUTPUT
          write(fname2(1:80),'(1a)') 'sstdiff_raw'
-         call mdswritefield(fname2,32,.false.,'RL',
-     &     1,anom_sst,irec,1,mythid)
+         call WRITE_REC_XY_RL(fname2,
+     &     anom_sst,irec,1,mythid)
+c         call mdswritefield(fname2,32,.false.,'RL',
+c     &     1,anom_sst,irec,1,mythid)
 
          write(fname2(1:80),'(1a)') 'sstobs_raw'
-         call mdswritefield(fname2,32,.false.,'RL',
-     &     1,obs_sst,irec,1,mythid)
+         call WRITE_REC_XY_RL(fname2,
+     &     obs_sst,irec,1,mythid)
+c         call mdswritefield(fname2,32,.false.,'RL',
+c     &     1,obs_sst,irec,1,mythid)
 #endif
 
          if ( useSMOOTH.AND.(k2_lsc.GT.0) )
@@ -307,12 +313,16 @@ c ----------------------------------------
      &     gencost_posproc_i(k2_lsc,kgen_lsc),mythid)
 
          write(fname2(1:80),'(1a)') 'sstdiff_smooth'
-         call mdswritefield(fname2,32,.false.,'RL',
-     &     1,anom_sst,irec,1,mythid)
+         call WRITE_REC_XY_RL(fname2,
+     &     anom_sst,irec,1,mythid)
+c         call mdswritefield(fname2,32,.false.,'RL',
+c     &     1,anom_sst,irec,1,mythid)
 
          write(fname2(1:80),'(1a)') 'sstobs_smooth'
-         call mdswritefield(fname2,32,.false.,'RL',
-     &     1,obs_sst,irec,1,mythid)
+         call WRITE_REC_XY_RL(fname2,
+     &     obs_sst,irec,1,mythid)
+c         call mdswritefield(fname2,32,.false.,'RL',
+c     &     1,obs_sst,irec,1,mythid)
 #endif
 
 c PART 1.3: compute cost function term
@@ -388,8 +398,10 @@ c
 #endif
 
              if ( ( localrec .GT. 0 ).AND.(diffsecs .GT. 0.d0) ) then
-               call mdsreadfield( fname2, cost_iprec, cost_yftype, 1,
-     &           tmp_sst, localrec, mythid )
+               call READ_REC_XY_RL( fname2, 
+     &           tmp_sst, localrec, 1, mythid )
+c               call mdsreadfield( fname2, cost_iprec, cost_yftype, 1,
+c     &           tmp_sst, localrec, mythid )
              else
               do bj = jtlo,jthi
                 do bi = itlo,ithi
@@ -423,8 +435,10 @@ c compute misfit:
 
 #ifdef ALLOW_GENCOST_SSTV4_OUTPUT
          write(fname2(1:80),'(1a)') 'sstdiff_point'
-         call mdswritefield(fname2,32,.false.,'RL',
-     &     1,anom_sst,irec,1,mythid)
+         call WRITE_REC_XY_RL(fname2,
+     &     anom_sst,irec,1,mythid)
+c         call mdswritefield(fname2,32,.false.,'RL',
+c     &     1,anom_sst,irec,1,mythid)
 #endif
 
 c compute cost:

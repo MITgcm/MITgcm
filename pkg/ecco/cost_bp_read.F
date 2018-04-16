@@ -115,8 +115,10 @@ ce    --> there is certainly a better place for this.
       endif
 
       if ( (obsrec.GT.0).AND.(imonth.GT.0) ) then
-       call MDS_READ_FIELD(fnametmp, cost_iprec, .FALSE., cost_yftype,
-     &                     1,1,1,localobs,dummyRS,imonth,mythid)
+c       call MDS_READ_FIELD(fnametmp, cost_iprec, .FALSE., cost_yftype,
+c     &                     1,1,1,localobs,dummyRS,imonth,mythid)
+       call READ_REC_XY_RL(fnametmp,
+     &                     localobs,imonth,1,mythid)
       else
         do bj = jtlo,jthi
          do bi = itlo,ithi

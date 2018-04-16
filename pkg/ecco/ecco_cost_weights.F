@@ -375,8 +375,10 @@ c--
       defined (ALLOW_WSALTLEV))
       lwsaltLevInUse = .true.
       if ( salt0errfile .NE. ' ' ) then
-       call MDS_READ_FIELD(salt0errfile,cost_iprec,.FALSE.,cost_yftype, 
-     &         Nr,1,Nr,wsaltLev,dummyRS, 1, mythid)
+       call READ_REC_3D_RL(salt0errfile,cost_iprec,
+     &         Nr,wsaltLev, 1, 1, mythid)
+c       call MDS_READ_FIELD(salt0errfile,cost_iprec,.FALSE.,cost_yftype, 
+c     &         Nr,1,Nr,wsaltLev,dummyRS, 1, mythid)
          do bj = jtlo,jthi
           do bi = itlo,ithi
            do k = 1,nr
@@ -418,8 +420,10 @@ c--           Test for missing values.
      defined (ALLOW_WTHETALEV))
       lwthetaLevInUse = .true.
       if ( temp0errfile .NE. ' ' ) then
-       call MDS_READ_FIELD(temp0errfile,cost_iprec,.FALSE.,cost_yftype, 
-     &         Nr,1,Nr,wthetaLev,dummyRS, 1, mythid)
+       call READ_REC_3D_RL(temp0errfile,cost_iprec,
+     &         Nr,wthetaLev, 1, 1, mythid)
+c       call MDS_READ_FIELD(temp0errfile,cost_iprec,.FALSE.,cost_yftype, 
+c     &         Nr,1,Nr,wthetaLev,dummyRS, 1, mythid)
          do bj = jtlo,jthi
           do bi = itlo,ithi
            do k = 1,nr
@@ -463,8 +467,10 @@ c--           Test for missing values.
 
       lwsalt2InUse = .true.
       if ( salterrfile .NE. ' ' ) then
-       call MDS_READ_FIELD(salterrfile,cost_iprec,.FALSE.,cost_yftype, 
-     &                     Nr,1,Nr,wsalt2,dummyRS, 1, mythid)
+       call READ_REC_3D_RL(salterrfile,cost_iprec,
+     &                     Nr,wsalt2, 1, 1, mythid)
+c       call MDS_READ_FIELD(salterrfile,cost_iprec,.FALSE.,cost_yftype, 
+c     &                     Nr,1,Nr,wsalt2,dummyRS, 1, mythid)
 
          do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -511,8 +517,10 @@ c--           Test for missing values.
 
       lwtheta2InUse = .true.
       if ( temperrfile .NE. ' ' ) then
-       call MDS_READ_FIELD(temperrfile,cost_iprec,.FALSE.,cost_yftype, 
-     &                     Nr,1,Nr,wtheta2,dummyRS, 1, mythid)
+       call READ_REC_3D_RL(temperrfile,cost_iprec,
+     &                     Nr,wtheta2, 1, 1, mythid)
+c       call MDS_READ_FIELD(temperrfile,cost_iprec,.FALSE.,cost_yftype, 
+c     &                     Nr,1,Nr,wtheta2,dummyRS, 1, mythid)
          do bj = jtlo,jthi
           do bi = itlo,ithi
            do k = 1,nr
@@ -554,13 +562,17 @@ c--           Test for missing values.
 
 #if (defined (ALLOW_SST_COST_CONTRIBUTION) || defined (ALLOW_SST_CONTROL))
       if ( ( using_cost_sst ).AND.( ssterrfile .NE. ' ' ) )
-     & call MDS_READ_FIELD(ssterrfile,cost_iprec,.FALSE.,cost_yftype, 
-     &                     1,1,1,wsst,dummyRS, 1, mythid)
+     & call READ_REC_XY_RL(ssterrfile,
+     &                     wsst, 1, 1, mythid)
+c     & call MDS_READ_FIELD(ssterrfile,cost_iprec,.FALSE.,cost_yftype, 
+c     &                     1,1,1,wsst,dummyRS, 1, mythid)
 #endif
 #if (defined (ALLOW_SSS_COST_CONTRIBUTION) || defined (ALLOW_SSS_CONTROL))
       if ( ssserrfile .NE. ' ' )
-     & call MDS_READ_FIELD(ssserrfile,cost_iprec,.FALSE.,cost_yftype,
-     &                     1,1,1,wsss,dummyRS, 1, mythid)
+     & call READ_REC_XY_RL(ssserrfile,cost_iprec,
+     &                     wsss, 1, 1, mythid)
+c     & call MDS_READ_FIELD(ssserrfile,cost_iprec,.FALSE.,cost_yftype,
+c     &                     1,1,1,wsss,dummyRS, 1, mythid)
 #endif
 
       k = 1
@@ -633,8 +645,10 @@ c--   Read egm-96 geoid covariance. Data in units of meters.
       nnz   =  1
       irec  =  1
       if ( geoid_errfile .NE. ' ' ) then
-      call MDS_READ_FIELD(geoid_errfile,cost_iprec,.FALSE.,cost_yftype,
-     &    nnz,1,nnz, wp, dummyRS,irec, mythid )
+      call READ_REC_3D_RL(geoid_errfile,cost_iprec,
+     &    nnz, wp, irec, 1, mythid )
+c      call MDS_READ_FIELD(geoid_errfile,cost_iprec,.FALSE.,cost_yftype,
+c     &    nnz,1,nnz, wp, dummyRS,irec, mythid )
 c--   Set all tile edges to zero.
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -672,8 +686,10 @@ c--   Read SSH anomaly rms field. Data in units of centimeters.
       nnz   =   1
       irec  =   1
       if ( ssh_errfile .NE. ' ' ) then
-        call MDS_READ_FIELD(ssh_errfile,cost_iprec,.FALSE.,cost_yftype,
-     &      nnz,1,nnz, wtp,dummyRS, irec, mythid )
+        call READ_REC_3D_RL(ssh_errfile,cost_iprec,
+     &      nnz, wtp, irec, 1, mythid )
+c        call MDS_READ_FIELD(ssh_errfile,cost_iprec,.FALSE.,cost_yftype,
+c     &      nnz,1,nnz, wtp,dummyRS, irec, mythid )
 
          do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -701,18 +717,24 @@ c--           T/P error + 5cm
 
 c-- overwrite T/P error field, if available:
       if ( tp_errfile .NE. ' ' )
-     & call MDS_READ_FIELD(tp_errfile,cost_iprec,.FALSE.,cost_yftype, 
-     & nnz,1,nnz,wtp,dummyRS, irec, mythid )
+     & call READ_REC_3D_RL(tp_errfile,cost_iprec,
+     & nnz, wtp, irec, 1, mythid )
+c     & call MDS_READ_FIELD(tp_errfile,cost_iprec,.FALSE.,cost_yftype, 
+c     & nnz,1,nnz,wtp,dummyRS, irec, mythid )
 
 c-- overwrite ERS error field, if available:
       if ( ers_errfile .NE. ' ' )
-     & call MDS_READ_FIELD(ers_errfile,cost_iprec,.FALSE.,cost_yftype, 
-     & nnz,1,nnz,wers,dummyRS, irec, mythid )
+     & call READ_REC_3D_RL(ers_errfile,cost_iprec,
+     & nnz, wers, irec, 1, mythid )
+c     & call MDS_READ_FIELD(ers_errfile,cost_iprec,.FALSE.,cost_yftype, 
+c     & nnz,1,nnz,wers,dummyRS, irec, mythid )
 
 c-- overwrite GFO error field, if available:
       if ( gfo_errfile .NE. ' ' )
-     & call MDS_READ_FIELD(gfo_errfile,cost_iprec,.FALSE.,cost_yftype, 
-     & nnz,1,nnz,wgfo,dummyRS, irec, mythid )
+     & call READ_REC_3D_RL(gfo_errfile,cost_iprec,
+     & nnz, wgfo, irec, 1, mythid )
+c     & call MDS_READ_FIELD(gfo_errfile,cost_iprec,.FALSE.,cost_yftype, 
+c     & nnz,1,nnz,wgfo,dummyRS, irec, mythid )
 
          do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -778,8 +800,10 @@ cph-indonesian)
 
       if ( sshv4cost_errfile(num_var) .NE. ' ' ) then
 c--   read error standard deviation
-      call MDS_READ_FIELD(sshv4cost_errfile(num_var),cost_iprec,.FALSE.,
-     &     cost_yftype,1,1,1, wsshv4tmp,dummyRS, 1, mythid)
+      call READ_REC_XY_RL(sshv4cost_errfile(num_var),
+     &     wsshv4tmp, 1, 1, mythid)
+c      call MDS_READ_FIELD(sshv4cost_errfile(num_var),cost_iprec,.FALSE.,
+c     &     cost_yftype,1,1,1, wsshv4tmp,dummyRS, 1, mythid)
 c--   convert to units of meters
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -828,8 +852,10 @@ c--   convert to units of meters
 #ifdef ALLOW_BP_COST_CONTRIBUTION
       IF (using_cost_bp) THEN
       if ( bperrfile .NE. ' ' )
-     &   call MDS_READ_FIELD(bperrfile,cost_iprec,.FALSE.,cost_yftype, 
-     &                       1,1,1,wbp,dummyRS, 1, mythid)
+     &   call READ_REC_XY_RL(bperrfile,
+     &                       wbp, 1, 1, mythid)
+c     &   call MDS_READ_FIELD(bperrfile,cost_iprec,.FALSE.,cost_yftype, 
+c     &                       1,1,1,wbp,dummyRS, 1, mythid)
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -849,8 +875,10 @@ c--   convert to units of meters
 
 #ifdef ALLOW_IESTAU_COST_CONTRIBUTION
       if ( ieserrfile .NE. ' ' )
-     &   call MDS_READ_FIELD(ieserrfile,cost_iprec,.FALSE.,cost_yftype, 
-     &                       1,1,1,wies,dummyRS, 1, mythid)
+     &   call READ_REC_XY_RL(ieserrfile,
+     &                       wies, 1, 1, mythid)
+c     &   call MDS_READ_FIELD(ieserrfile,cost_iprec,.FALSE.,cost_yftype, 
+c     &                       1,1,1,wies,dummyRS, 1, mythid)
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -875,11 +903,15 @@ c--   Read zonal wind stress variance.
       nnz   =   1
       irec  =   1
       if ( scatx_errfile .NE. ' ' )
-     &call MDS_READ_FIELD(scatx_errfile,cost_iprec,.FALSE.,cost_yftype, 
-     &                    nnz,1,nnz,wscatx,dummyRS, irec, mythid )
+     &call READ_REC_3D_RL(scatx_errfile,cost_iprec,
+     &                    nnz, wscatx, irec, 1, mythid )
+c     &call MDS_READ_FIELD(scatx_errfile,cost_iprec,.FALSE.,cost_yftype, 
+c     &                    nnz,1,nnz,wscatx,dummyRS, irec, mythid )
       if ( scaty_errfile .NE. ' ' )
-     &call MDS_READ_FIELD(scaty_errfile,cost_iprec,.FALSE.,cost_yftype, 
-     &                    nnz,1,nnz,wscaty,dummyRS, irec, mythid )
+     &call READ_REC_3D_RL(scaty_errfile,cost_iprec,
+     &                    nnz, wscaty, irec, 1, mythid )
+c     &call MDS_READ_FIELD(scaty_errfile,cost_iprec,.FALSE.,cost_yftype, 
+c     &                    nnz,1,nnz,wscaty,dummyRS, irec, mythid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -948,8 +980,10 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( tauu_errfile .NE. ' ' ) then
-       call MDS_READ_FIELD(tauu_errfile,cost_iprec,.FALSE.,cost_yftype,
-     &      nnz, 1, nnz, wtauu, dummyRS, irec, mythid )
+       call READ_REC_3D_RL(tauu_errfile,cost_iprec,
+     &      nnz, wtauu, irec, 1, mythid )
+c       call MDS_READ_FIELD(tauu_errfile,cost_iprec,.FALSE.,cost_yftype,
+c     &      nnz, 1, nnz, wtauu, dummyRS, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -986,8 +1020,10 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( uwind_errfile .NE. ' ' ) then
-       call MDS_READ_FIELD(uwind_errfile,cost_iprec,.FALSE.,cost_yftype,
-     &      nnz, 1, nnz, wuwind, dummyRS, irec, mythid )
+       call READ_REC_3D_RL(uwind_errfile,cost_iprec,
+     &      nnz, wuwind, irec, 1, mythid )
+c       call MDS_READ_FIELD(uwind_errfile,cost_iprec,.FALSE.,cost_yftype,
+c     &      nnz, 1, nnz, wuwind, dummyRS, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1018,8 +1054,10 @@ ce(   due to Patrick processing:
 ce)
 
       if ( tauv_errfile .NE. ' ' ) then
-       call MDS_READ_FIELD(tauv_errfile,cost_iprec,.FALSE.,cost_yftype, 
-     &      nnz,1,nnz,wtauv,dummyRS, irec, mythid )
+       call READ_REC_3D_RL(tauv_errfile,cost_iprec,
+     &      nnz, wtauv, irec, 1, mythid )
+c       call MDS_READ_FIELD(tauv_errfile,cost_iprec,.FALSE.,cost_yftype, 
+c     &      nnz,1,nnz,wtauv,dummyRS, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1056,8 +1094,10 @@ ce(   due to Patrick processing:
 ce)
 
       if ( vwind_errfile .NE. ' ' ) then
-       call MDS_READ_FIELD(vwind_errfile,cost_iprec,.FALSE.,cost_yftype,
-     &      nnz, 1, nnz, wvwind, dummyRS, irec, mythid )
+       call READ_REC_3D_RL(vwind_errfile,cost_iprec,
+     &      nnz, wvwind, irec, 1, mythid )
+c       call MDS_READ_FIELD(vwind_errfile,cost_iprec,.FALSE.,cost_yftype,
+c     &      nnz, 1, nnz, wvwind, dummyRS, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1088,8 +1128,10 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( hflux_errfile .NE. ' ' ) then
-       call MDS_READ_FIELD(hflux_errfile,cost_iprec,.FALSE.,cost_yftype,
-     &      nnz, 1, nnz, whflux, dummyRS, irec, mythid )
+       call READ_REC_3D_RL(hflux_errfile,cost_iprec,
+     &      nnz, whflux, irec, 1, mythid )
+c       call MDS_READ_FIELD(hflux_errfile,cost_iprec,.FALSE.,cost_yftype,
+c     &      nnz, 1, nnz, whflux, dummyRS, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1123,8 +1165,10 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( atemp_errfile .NE. ' ' ) then
-       call MDS_READ_FIELD(atemp_errfile,cost_iprec,.FALSE.,cost_yftype,
-     &      nnz, 1, nnz, watemp, dummyRS, irec, mythid )
+       call READ_REC_3D_RL(atemp_errfile,cost_iprec,
+     &      nnz, watemp, irec, 1, mythid )
+c       call MDS_READ_FIELD(atemp_errfile,cost_iprec,.FALSE.,cost_yftype,
+c     &      nnz, 1, nnz, watemp, dummyRS, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1156,8 +1200,10 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( sflux_errfile .NE. ' ' ) then
-       call MDS_READ_FIELD(sflux_errfile,cost_iprec,.FALSE.,cost_yftype,
-     &      nnz, 1, nnz, wsflux, dummyRS, irec, mythid )
+       call READ_REC_3D_RL(sflux_errfile,cost_iprec,
+     &      nnz, wsflux, irec, 1, mythid )
+c       call MDS_READ_FIELD(sflux_errfile,cost_iprec,.FALSE.,cost_yftype,
+c     &      nnz, 1, nnz, wsflux, dummyRS, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1191,8 +1237,10 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( aqh_errfile .NE. ' ' ) then
-       call MDS_READ_FIELD(aqh_errfile,cost_iprec,.FALSE.,cost_yftype, 
-     &      nnz,1,nnz,waqh, dummyRS, irec, mythid )
+       call READ_REC_3D_RL(aqh_errfile,cost_iprec,
+     &      nnz, waqh, irec, 1, mythid )
+c       call MDS_READ_FIELD(aqh_errfile,cost_iprec,.FALSE.,cost_yftype, 
+c     &      nnz,1,nnz,waqh, dummyRS, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1223,8 +1271,10 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( precip_errfile .NE. ' ' ) then
-       call MDS_READ_FIELD(precip_errfile,cost_iprec,.FALSE.,
-     &      cost_yftype,nnz,1,nnz, wprecip, dummyRS, irec, mythid )
+       call READ_REC_3D_RL(precip_errfile,cost_iprec,
+     &      nnz, wprecip, irec, 1, mythid )
+c       call MDS_READ_FIELD(precip_errfile,cost_iprec,.FALSE.,
+c     &      cost_yftype,nnz,1,nnz, wprecip, dummyRS, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1255,8 +1305,10 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( swflux_errfile .NE. ' ' ) then
-       call MDS_READ_FIELD(swflux_errfile,cost_iprec,.FALSE.,
-     &      cost_yftype,nnz,1,nnz, wswflux, dummyRS, irec, mythid )
+       call READ_REC_3D_RL(swflux_errfile,cost_iprec,
+     &      nnz, wswflux, irec, 1, mythid )
+c       call MDS_READ_FIELD(swflux_errfile,cost_iprec,.FALSE.,
+c     &      cost_yftype,nnz,1,nnz, wswflux, dummyRS, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1287,8 +1339,10 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( swdown_errfile .NE. ' ' ) then
-       call MDS_READ_FIELD(swdown_errfile,cost_iprec,.FALSE.,
-     &      cost_yftype,nnz,1,nnz, wswdown, dummyRS, irec, mythid )
+       call READ_REC_3D_RL(swdown_errfile,cost_iprec,
+     &      nnz, wswdown, irec, 1, mythid )
+c       call MDS_READ_FIELD(swdown_errfile,cost_iprec,.FALSE.,
+c     &      cost_yftype,nnz,1,nnz, wswdown, dummyRS, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1319,8 +1373,10 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( lwflux_errfile .NE. ' ' ) then
-        call MDS_READ_FIELD(lwflux_errfile,cost_iprec,.FALSE.,
-     &       cost_yftype,nnz,1,nnz, wlwflux, dummyRS, irec, mythid )
+        call READ_REC_3D_RL(lwflux_errfile,cost_iprec,
+     &       nnz, wlwflux, irec, 1, mythid )
+c        call MDS_READ_FIELD(lwflux_errfile,cost_iprec,.FALSE.,
+c     &       cost_yftype,nnz,1,nnz, wlwflux, dummyRS, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1351,8 +1407,10 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( lwdown_errfile .NE. ' ' ) then
-        call MDS_READ_FIELD(lwdown_errfile,cost_iprec,.FALSE.,
-     &       cost_yftype,nnz,1,nnz,wlwdown,dummyRS,irec, mythid )
+        call READ_REC_3D_RL(lwdown_errfile,cost_iprec,
+     &       nnz, wlwdown ,irec, 1, mythid )
+c        call MDS_READ_FIELD(lwdown_errfile,cost_iprec,.FALSE.,
+c     &       cost_yftype,nnz,1,nnz,wlwdown,dummyRS,irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1383,8 +1441,10 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( snowprecip_errfile .NE. ' ' ) then
-        call MDS_READ_FIELD(snowprecip_errfile,cost_iprec,.FALSE.,
-     &       cost_yftype,nnz,1,nnz, wsnowprecip,dummyRS,irec, mythid )
+        call READ_REC_3D_RL(snowprecip_errfile,cost_iprec,
+     &       nnz, wsnowprecip, irec, 1, mythid )
+c        call MDS_READ_FIELD(snowprecip_errfile,cost_iprec,.FALSE.,
+c     &       cost_yftype,nnz,1,nnz, wsnowprecip,dummyRS,irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1416,8 +1476,10 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( evap_errfile .NE. ' ' ) then
-        call MDS_READ_FIELD(evap_errfile,cost_iprec,.FALSE.,cost_yftype,
-     &      nnz, 1, nnz, wevap, dummyRS, irec, mythid )
+        call READ_REC_3D_RL(evap_errfile,cost_iprec,
+     &      nnz, wevap, irec, 1, mythid )
+c        call MDS_READ_FIELD(evap_errfile,cost_iprec,.FALSE.,cost_yftype,
+c     &      nnz, 1, nnz, wevap, dummyRS, irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1448,8 +1510,10 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( apressure_errfile .NE. ' ' ) then
-        call MDS_READ_FIELD(apressure_errfile,cost_iprec,.FALSE.,
-     &      cost_yftype,nnz,1,nnz, wapressure,dummyRS,irec, mythid )
+        call READ_REC_3D_RL(apressure_errfile,cost_iprec,
+     &      nnz, wapressure, irec, 1, mythid )
+c        call MDS_READ_FIELD(apressure_errfile,cost_iprec,.FALSE.,
+c     &      cost_yftype,nnz,1,nnz, wapressure,dummyRS,irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1481,8 +1545,10 @@ ce(   due to Patrick processing:
       irec  = 1
 ce)
       if ( runoff_errfile .NE. ' ' ) then
-        call MDS_READ_FIELD(runoff_errfile,cost_iprec,.FALSE.,
-     &       cost_yftype,nnz,1,nnz, wrunoff,dummyRS,irec, mythid )
+        call READ_REC_3D_RL(runoff_errfile,cost_iprec,
+     &       nnz, wrunoff, irec, 1, mythid )
+c        call MDS_READ_FIELD(runoff_errfile,cost_iprec,.FALSE.,
+c     &       cost_yftype,nnz,1,nnz, wrunoff,dummyRS,irec, mythid )
       endif
 
       do bj = jtlo,jthi
@@ -1506,8 +1572,10 @@ c--           Data are in units of m/s.
 #if (defined (ALLOW_BOTTOMDRAG_COST_CONTRIBUTION) || defined (ALLOW_BOTTOMDRAG_CONTROL))
       if ( bottomdrag_errfile .NE. ' ' ) then
 
-        call MDS_READ_FIELD(bottomdrag_errfile,cost_iprec,.FALSE.,
-     &       cost_yftype,nnz,1,nnz, wbottomdrag,dummyRS,irec, mythid )
+        call READ_REC_3D_RL(bottomdrag_errfile,cost_iprec,
+     &       nnz, wbottomdrag, irec, 1, mythid )
+c        call MDS_READ_FIELD(bottomdrag_errfile,cost_iprec,.FALSE.,
+c     &       cost_yftype,nnz,1,nnz, wbottomdrag,dummyRS,irec, mythid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1528,8 +1596,10 @@ c--           Test for missing values.
 #if (defined (ALLOW_DIFFKR_COST_CONTRIBUTION) || defined (ALLOW_DIFFKR_CONTROL))
       if ( diffkr_errfile .NE. ' ' ) then
 
-        call MDS_READ_FIELD(diffkr_errfile,cost_iprec,.FALSE.,
-     &       cost_yftype,Nr,1,Nr,wdiffkr2,dummyRS, 1, mythid )
+        call READ_REC_3D_RL(diffkr_errfile,cost_iprec,
+     &       Nr, wdiffkr2, 1, 1, mythid )
+c        call MDS_READ_FIELD(diffkr_errfile,cost_iprec,.FALSE.,
+c     &       cost_yftype,Nr,1,Nr,wdiffkr2,dummyRS, 1, mythid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1552,8 +1622,10 @@ c--           Test for missing values.
 #if (defined (ALLOW_KAPGM_COST_CONTRIBUTION) || defined (ALLOW_KAPGM_CONTROL))
       if ( kapgm_errfile .NE. ' ' ) then
 
-        call MDS_READ_FIELD(kapgm_errfile,cost_iprec,.FALSE.,
-     &       cost_yftype,Nr,1,Nr, wkapgm2,dummyRS,1, mythid )
+        call READ_REC_3D_RL(kapgm_errfile,cost_iprec,
+     &       Nr, wkapgm2, 1, 1, mythid )
+c        call MDS_READ_FIELD(kapgm_errfile,cost_iprec,.FALSE.,
+c     &       cost_yftype,Nr,1,Nr, wkapgm2,dummyRS,1, mythid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1576,8 +1648,10 @@ c--           Test for missing values.
 #if (defined (ALLOW_KAPREDI_COST_CONTRIBUTION) || defined (ALLOW_KAPREDI_CONTROL))
       if ( kapredi_errfile .NE. ' ' ) then
 
-        call MDS_READ_FIELD(kapredi_errfile,cost_iprec,.FALSE.,
-     &       cost_yftype,Nr,1,Nr, wkapredi2,dummyRS,1, mythid )
+        call READ_REC_3D_RL(kapredi_errfile,cost_iprec,
+     &       Nr, wkapredi2, 1, 1, mythid )
+c        call MDS_READ_FIELD(kapredi_errfile,cost_iprec,.FALSE.,
+c     &       cost_yftype,Nr,1,Nr, wkapredi2,dummyRS,1, mythid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1600,8 +1674,10 @@ c--           Test for missing values.
 #if ( defined (ALLOW_EDDYPSI_COST_CONTRIBUTION) || defined (ALLOW_EDDYPSI_CONTROL) )
       if ( edtau_errfile .NE. ' ' ) then
 
-        call MDS_READ_FIELD(edtau_errfile,cost_iprec,.FALSE.,
-     &       cost_yftype,Nr,1,Nr, wedtaux2,dummyRS,1, mythid )
+        call READ_REC_3D_RL(edtau_errfile,cost_iprec,
+     &       Nr, wedtaux2, 1 ,1, mythid )
+c        call MDS_READ_FIELD(edtau_errfile,cost_iprec,.FALSE.,
+c     &       cost_yftype,Nr,1,Nr, wedtaux2,dummyRS,1, mythid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -1624,8 +1700,10 @@ c--           Test for missing values.
 
 #if (defined (ALLOW_ETAN0_COST_CONTRIBUTION) || defined (ALLOW_ETAN0_CONTROL))
       if ( etan0errfile .NE. ' ' ) then
-         call MDS_READ_FIELD(etan0errfile,cost_iprec,.FALSE.,
-     &         cost_yftype, 1,1,1,wetan,dummyRS,1, mythid)
+         call READ_REC_XY_RL(etan0errfile,
+     &         wetan, 1, 1, mythid)
+c         call MDS_READ_FIELD(etan0errfile,cost_iprec,.FALSE.,
+c     &         cost_yftype, 1,1,1,wetan,dummyRS,1, mythid)
          do bj = jtlo,jthi
           do bi = itlo,ithi
             do j = jmin,jmax
@@ -1662,10 +1740,14 @@ c--           Test for missing values.
 #if (defined (ALLOW_VVEL0_COST_CONTRIBUTION) || defined (ALLOW_VVEL0_CONTROL))
 
       if ( uvel0errfile .NE. ' ' .AND. vvel0errfile .NE. ' ' ) then
-         call MDS_READ_FIELD(uvel0errfile,cost_iprec,.FALSE.,
-     &         cost_yftype, Nr,1,Nr,wuvel3d,dummyRS, 1, mythid)
-         call MDS_READ_FIELD(vvel0errfile,cost_iprec,.FALSE.,
-     &         cost_yftype, Nr,1,Nr,wvvel3d,dummyRS, 1, mythid)
+         call READ_REC_3D_RL(uvel0errfile,cost_iprec,
+     &         Nr, wuvel3d, 1, 1, mythid)
+         call READ_REC_3D_RL(vvel0errfile,cost_iprec,
+     &         Nr, wvvel3d, 1, 1, mythid)
+c         call MDS_READ_FIELD(uvel0errfile,cost_iprec,.FALSE.,
+c     &         cost_yftype, Nr,1,Nr,wuvel3d,dummyRS, 1, mythid)
+c         call MDS_READ_FIELD(vvel0errfile,cost_iprec,.FALSE.,
+c     &         cost_yftype, Nr,1,Nr,wvvel3d,dummyRS, 1, mythid)
          do bj = jtlo,jthi
           do bi = itlo,ithi
            do k = 1,nr

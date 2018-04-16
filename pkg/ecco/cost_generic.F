@@ -355,8 +355,10 @@ c--     load model average and observed average
 
         call ecco_zero(localobs,nnzobs,spzeroloc,myThid)
         if ( (localrec .GT. 0).AND.(obsrec .GT. 0).AND.(exst) )
-     &  call MDS_READ_FIELD( fname2, cost_iprec, .FALSE., cost_yftype, 
-     &        nnzobs, 1, nnzobs, localobs, dummyRS, localrec, mythid )
+     &  call READ_REC_3D_RL( fname2, cost_iprec, 
+     &        nnzobs, localobs, localrec, 1, mythid )
+c     &  call MDS_READ_FIELD( fname2, cost_iprec, .FALSE., cost_yftype, 
+c     &        nnzobs, 1, nnzobs, localobs, dummyRS, localrec, mythid )
 
 c--     Compute masked model-data difference
         call ecco_diffmsk( localbar, nnzbar, localobs, nnzobs,

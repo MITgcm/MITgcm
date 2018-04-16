@@ -138,8 +138,10 @@ c--   ============
 c--   Read mean field and generate mask
 c--   Convert mean ssh from cm to m
 #ifdef ALLOW_SSH_MEAN_COST_CONTRIBUTION
-      call MDS_READ_FIELD( mdtdatfile, cost_iprec,.FALSE.,cost_yftype,
-     &                    1, 1, 1, mdt, dummyRS, 1, mythid )
+      call READ_REC_XY_RL( mdtdatfile, 
+     &                    mdt, 1, 1, mythid )
+c      call MDS_READ_FIELD( mdtdatfile, cost_iprec,.FALSE.,cost_yftype,
+c     &                    1, 1, 1, mdt, dummyRS, 1, mythid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi

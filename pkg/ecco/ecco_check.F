@@ -564,10 +564,14 @@ cgf (3) naming convention: m_heat_hadv rather than trHeat, etc?
 cgf     would help eventually distinguish, e.g., m_heat_hdif vs m_heat_vdif...
 cgf (4) generalization: specify type of transport (vol, heat, etc) via namelist?
              call ecco_zero(msktrVolW,1,zeroRL,mythid)
-             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',
-     &            1,1,1,msktrVolW,dummyRS,1,mythid)
-             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',
-     &       1,1,1,gencost_mskWsurf(1-olx,1-oly,1,1,k),dummyRS,1,mythid)
+             call READ_REC_XY_RL(tempfile,
+     &            msktrVolW,1,1,mythid)
+             call READ_REC_XY_RL(tempfile,
+     &            gencost_mskWsurf(1-olx,1-oly,1,1,k),1,1,mythid)
+c             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',
+c     &            1,1,1,msktrVolW,dummyRS,1,mythid)
+c             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',
+c     &       1,1,1,gencost_mskWsurf(1-olx,1-oly,1,1,k),dummyRS,1,mythid)
            endif
 c-- South --------------------
            il = ilnblnk(gencost_errfile(k))
@@ -592,10 +596,14 @@ c-- South --------------------
            else
 c-- will move to init perhaps, but leave here for now due to check exst
              call ecco_zero(msktrVolS,1,zeroRL,mythid)
-             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',
-     &            1,1,1,msktrVolS,dummyRS,1,mythid)
-             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',
-     &       1,1,1,gencost_mskSsurf(1-olx,1-oly,1,1,k),dummyRS,1,mythid)
+             call READ_REC_XY_RL(tempfile,
+     &            msktrVolS,1,1,mythid)
+             call READ_REC_XY_RL(tempfile,
+     &            gencost_mskSsurf(1-olx,1-oly,1,1,k),1,1,mythid)
+c             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',
+c     &            1,1,1,msktrVolS,dummyRS,1,mythid)
+c             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',
+c     &       1,1,1,gencost_mskSsurf(1-olx,1-oly,1,1,k),dummyRS,1,mythid)
            endif
           else
            using_gencost(k)=.FALSE.

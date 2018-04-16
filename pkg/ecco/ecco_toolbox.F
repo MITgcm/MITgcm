@@ -1224,8 +1224,10 @@ CEOP
       imin = 1
       imax = snx
 
-      call mdsreadfield( localerr_file, cost_iprec,
-     &  cost_yftype, nnzbar, localweight, iRec, mythid )
+      call ( localerr_file, cost_iprec,
+     &  nnzbar, localweight, iRec, 1, mythid )
+c      call mdsreadfield( localerr_file, cost_iprec,
+c     &  cost_yftype, nnzbar, localweight, iRec, mythid )
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

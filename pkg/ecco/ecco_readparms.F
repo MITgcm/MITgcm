@@ -732,13 +732,17 @@ c
             write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'C'
             inquire( file=tempfile(1:il+1), exist=exst )
             if (exst.AND.(.NOT.gencost_msk_is3d(k))) then
-             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',1,1,1,
-     &            gencost_mskCsurf(1-olx,1-oly,1,1,k),dummyRS,1,mythid)
+             call READ_REC_XY_RL(tempfile,
+     &            gencost_mskCsurf(1-olx,1-oly,1,1,k),1,1,mythid)
+c             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',1,1,1,
+c     &            gencost_mskCsurf(1-olx,1-oly,1,1,k),dummyRS,1,mythid)
 #ifdef ALLOW_GENCOST3D
             elseif (exst.AND.(gencost_msk_pointer3d(k).LE.
      &                        NGENCOST3D)) then
-             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',Nr,1,
-     &          Nr,gencost_mskC(1-olx,1-oly,1,1,1,kk),dummyRS,1,mythid)
+             call READ_REC_3D_RL(tempfile,cost_iprec,
+     &          Nr,gencost_mskC(1-olx,1-oly,1,1,1,kk),1,1,mythid)
+c             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',Nr,1,
+c     &          Nr,gencost_mskC(1-olx,1-oly,1,1,1,kk),dummyRS,1,mythid)
 #endif
             endif
 c
@@ -746,13 +750,17 @@ c
             write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'W'
             inquire( file=tempfile(1:il+1), exist=exst )
             if (exst.AND.(.NOT.gencost_msk_is3d(k))) then
-             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',1,1,1,
-     &            gencost_mskWsurf(1-olx,1-oly,1,1,k),dummyRS,1,mythid)
+             call READ_REC_XY_RL(tempfile,
+     &            gencost_mskWsurf(1-olx,1-oly,1,1,k),1,1,mythid)
+c             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',1,1,1,
+c     &            gencost_mskWsurf(1-olx,1-oly,1,1,k),dummyRS,1,mythid)
 #ifdef ALLOW_GENCOST3D
             elseif (exst.AND.(gencost_msk_pointer3d(k).LE.
      &                        NGENCOST3D)) then
-             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',Nr,1,
-     &         Nr,gencost_mskW(1-olx,1-oly,1,1,1,kk),dummyRS,1,mythid)
+             call READ_REC_3D_RL(tempfile,cost_iprec,
+     &         Nr,gencost_mskW(1-olx,1-oly,1,1,1,kk),1,1,mythid)
+c             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',Nr,1,
+c     &         Nr,gencost_mskW(1-olx,1-oly,1,1,1,kk),dummyRS,1,mythid)
 #endif
             endif
 c
@@ -760,13 +768,17 @@ c
             write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'S'
             inquire( file=tempfile(1:il+1), exist=exst )
             if (exst.AND.(.NOT.gencost_msk_is3d(k))) then
-             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',1,1,1,
-     &            gencost_mskSsurf(1-olx,1-oly,1,1,k),dummyRS,1,mythid)
+             call READ_REC_XY_RL(tempfile,
+     &            gencost_mskSsurf(1-olx,1-oly,1,1,k),1,1,mythid)
+c             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',1,1,1,
+c     &            gencost_mskSsurf(1-olx,1-oly,1,1,k),dummyRS,1,mythid)
 #ifdef ALLOW_GENCOST3D
             elseif (exst.AND.(gencost_msk_pointer3d(k).LE.
      &                        NGENCOST3D)) then
-             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',Nr,1,
-     &        Nr,gencost_mskS(1-olx,1-oly,1,1,1,kk),dummyRS,1,mythid)
+             call READ_REC_3D_RL(tempfile,cost_iprec,
+     &        Nr,gencost_mskS(1-olx,1-oly,1,1,1,kk),1,1,mythid)
+c             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',Nr,1,
+c     &        Nr,gencost_mskS(1-olx,1-oly,1,1,1,kk),dummyRS,1,mythid)
 #endif
             endif
 c
