@@ -338,7 +338,7 @@ c--   Read mean field and mask
 
       if (using_mdt)
      &call READ_REC_XY_RL( mdtfi, 
-     &                     mdtob,1, myiter, mythid )
+     &                     mdtob,1, 1, mythid )
 c     &call MDS_READ_FIELD( mdtfi, cost_iprec, .FALSE.,cost_yftype, 
 c     &                     1,1,1,mdtob, dummyRS,1, mythid )
 
