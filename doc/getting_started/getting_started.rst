@@ -226,21 +226,6 @@ description of the directory structure of the model under the root tree.
 Building the model
 ==================
 
-MITgcm is written in `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_.
-To build the code we recommend using either a `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_ compiler 
-or any more recent compiler which is backwards compatible with `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_
-(for example, the model will build successfully with a `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_ 
-or  `Fortran 95 <https://en.wikipedia.org/wiki/Fortran#Fortran_95>`_ compiler). Several caveats:
-
-- an available C compiler is also required during the build process, for several low-level system routines;
-  additionally, a `C preprocessor <https://en.wikipedia.org/wiki/C_preprocessor>`_ is required
-- there are some specific packages that contain routines written using 
-  `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_ constructs
-  (either `free-form formatting <https://en.wikipedia.org/wiki/Free-form_language>`_,
-  or `dynamic memory allocation <https://en.wikipedia.org/wiki/Memory_management#DYNAMIC>`_); as such,
-  setups which use these routines require a `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_
-  or later compiler build
-
 
 .. _building_quickstart:
 
@@ -265,26 +250,29 @@ First, build the ``Makefile``:
 
 ::
 
-    % ../../../tools/genmake2 -mods ../code -optfile ../../../tools/build_options/linux_amd64_ifort11
+    % ../../../tools/genmake2 -mods ../code -optfile «/PATH/TO/OPTFILE»
 
 The ``-mods`` command line option tells :filelink:`genmake2 <tools/genmake2>` to override model source code
 with any files in the subdirectory ``../code`` (here, you need to configure the size
 of the model domain by overriding MITgcm’s default :filelink:`SIZE.h <model/inc/SIZE.h>`
 with an edited copy :filelink:`../code/SIZE.h <verification/exp2/code/SIZE.h>`
-containing the specific domain size for this experiment).
+containing the specific domain size for :filelink:`exp2 <verification/exp2>`).
 
 The ``-optfile`` command line option tells :filelink:`genmake2 <tools/genmake2>`
-to run the bash shell script :filelink:`linux_amd64_ifort11 <tools/build_options/linux_amd64_ifort11>`
-during :filelink:`genmake2 <tools/genmake2>`’s execution. An optfile typically contains
+to run the specified :ref:`optfile <genmake2_optfiles>`, a  `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ shell script,
+during :filelink:`genmake2 <tools/genmake2>`’s execution.
+An :ref:`optfile <genmake2_optfiles>` typically contains
 definitions of `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_,
 paths, compiler options, and anything else that needs to be set in order to compile on your
-local computer system or cluster with your specific Fortan compiler. Above, we specified an
-optfile for use with the `Intel Fortran <https://software.intel.com/en-us/fortran-compilers>`_ compiler
-(version 11 and above) on a linux x86_64 platform: :filelink:`linux_amd64_ifort11 <tools/build_options/linux_amd64_ifort11>`.
-Other optfiles for many other common systems and Fortran compilers are located in :filelink:`tools/build_options`.
+local computer system or cluster with your specific Fortan compiler. As an example, we might
+replace ``«/PATH/TO/OPTFILE»`` with :filelink:`../../../tools/build_options/linux_amd64_ifort11 <tools/build_options/linux_amd64_ifort11>`
+for use with the `Intel Fortran <https://software.intel.com/en-us/fortran-compilers>`_ compiler
+(version 11 and above) on a linux x86_64 platform.
+This and many other :ref:`optfiles <genmake2_optfiles>` for common systems and Fortran compilers are located in :filelink:`tools/build_options`.
 
 ``-mods``, ``-optfile``, and many additional :filelink:`genmake2 <tools/genmake2>` command line options are described
-more fully in :numref:`command_line_options`. Detailed instructions on building with MPI are given in :numref:`build_mpi`.
+more fully in :numref:`command_line_options`. Detailed instructions on building with
+`MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ are given in :numref:`build_mpi`.
 
 Once a ``Makefile`` has been generated, we create the dependencies with
 the command:
@@ -333,21 +321,23 @@ to specify how to compile the MITgcm source files (for more detailed description
 are, and how they are used, see `here <https://www.gnu.org/software/make/make.html>`__).
 This section describes details and capabilities of :filelink:`genmake2 <tools/genmake2>` (located in the
 :filelink:`tools` directory), the MITgcm tool used to generate a Makefile. :filelink:`genmake2 <tools/genmake2>` is a shell
-script written to work with all “sh”–compatible shells including bash
-v1, bash v2, and Bourne. Like many unix tools, there is a help option that is invoked thru ``genmake2 -h``.
+script written to work in `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ (and with all “sh”–compatible shells including 
+`Bourne <https://en.wikipedia.org/wiki/Bourne_shell>`_ shells). Like many unix tools, there is a help option that is invoked thru ``genmake2 -h``.
 :filelink:`genmake2 <tools/genmake2>` parses information from the following sources, in this order:
 
 #.    Command-line options (see :numref:`command_line_options`)
 
 #.    A ``genmake_local`` file if one is found in the current directory.
-      This is a bash shell script that is executed prior to the optfile (see step #3),
+      This is a `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ shell
+      script that is executed prior to the :ref:`optfile <genmake2_optfiles>` (see step #3),
       used in some special model configurations and/or to set some options that can
-      affect which lines of the optfile are executed.
+      affect which lines of the :ref:`optfile <genmake2_optfiles>` are executed.
       An example ``genmake_local`` file is :filelink:`here <verification/cpl_aim+ocn/build_cpl/genmake_local>`,
       as required for a special setup, building a ‘MITgcm coupler’
       executable (in a more typical setup, one will not require a ``genmake_local`` file).
 
-#.    An “options file” a.k.a. optfile (a bash shell script) specified by the command-line option
+#.    An “options file” a.k.a. :ref:`optfile <genmake2_optfiles>`
+      (a `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ shell script) specified by the command-line option
       ``–optfile «/PATH/TO/OPTFILE»``, as mentioned briefly in :numref:`building_quickstart`
       and in more detail in :numref:`genmake2_optfiles`.
 
@@ -438,11 +428,11 @@ In the above, notice:
   in one of the verification subdirectory experiments). As such, 
   :filelink:`genmake2 <tools/genmake2>` was smart enough to
   locate all necessary files on its own. To specify a remote ``ROOTDIR``, see :ref:`here <build_elsewhere>`.
-- we specified the ``optfile``  :filelink:`linux_amd64_gfortran <tools/build_options/linux_amd64_gfortran>`
+- we specified the :ref:`optfile <genmake2_optfiles>`  :filelink:`linux_amd64_gfortran <tools/build_options/linux_amd64_gfortran>`
   based on the computer system and Fortran compiler we used
   (here, a linux 64-bit machine with gfortran installed).
 - :filelink:`genmake2 <tools/genmake2>` did some simple checking on availability
-  of certain system libraries; all were found except LAPACK, 
+  of certain system libraries; all were found except `LAPACK <https://en.wikipedia.org/wiki/LAPACK>`_, 
   which is only required for a few specialized packages (in other words,
   in most configurations, this ‘no’ will not block successful compilation).
   `NetCDF <http://www.unidata.ucar.edu/software/netcdf>`_ only requires a ‘yes’
@@ -473,15 +463,15 @@ command-line options. A complete list of these options can be obtained by:
 The most important command-line options are:
 
 ``–optfile «/PATH/TO/OPTFILE»``
-    (= ``-of``) specifies the optfile that should be used for a particular build.
+    (= ``-of``) specifies the :ref:`optfile <genmake2_optfiles>` that should be used for a particular build.
 
-    If no optfile is specified through the command line, :filelink:`genmake2 <tools/genmake2>` will try to make a
+    If no :ref:`optfile <genmake2_optfiles>` is specified through the command line, :filelink:`genmake2 <tools/genmake2>` will try to make a
     reasonable guess from the list provided in :filelink:`tools/build_options`.
     The method used for making this guess is to first determine the
     combination of operating system and hardware and
     then find a working Fortran compiler within the user’s path. When
     these three items have been identified, :filelink:`genmake2 <tools/genmake2>` will try to find an
-    optfile that has a matching name.  See :numref:`genmake2_optfiles`.
+    :ref:`optfile <genmake2_optfiles>` that has a matching name.  See :numref:`genmake2_optfiles`.
 
 .. _mods_option:
 
@@ -530,6 +520,10 @@ The most important command-line options are:
        % make depend
        % make
 
+    As an alternative to specifying the MITgcm repository location through the ``-rootdir`` command-line option, :filelink:`genmake2 <tools/genmake2>` recognizes the
+    `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_ ``$MITGCM_ROOTDIR``.
+
+
 ``-standarddirs «/PATH/TO/STANDARDDIR»``
     specify a path to the standard MITgcm directories for source and includes files. By default, :filelink:`model` and :filelink:`eesupp`
     directories (``src`` and ``inc``)  are the “standard dirs”. This command can be used to reset these default standard directories,
@@ -547,11 +541,11 @@ The most important command-line options are:
     The default file is located in
     :filelink:`tools/adjoint_options/adjoint_default` and it defines the “TAF”
     and “TAMC” compilers. As with any compiler, it is helpful to have the TAF or TAMC
-    directories included in your ``$PATH`` environment variable.
+    directories included in your ``$PATH`` `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_.
 
 ``–mpi``
-    enables certain MPI features (using CPP ``#define``)
-    within the code and is necessary for MPI builds (see :numref:`build_mpi`).
+    enables certain `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ features (using CPP ``#define``)
+    within the code and is necessary for `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ builds (see :numref:`build_mpi`).
 
 ``–omp``
     enables OpenMP code and compiler flag ``OMPFLAG`` (see :numref:`build_openmp`).
@@ -571,8 +565,8 @@ The most important command-line options are:
     option provides a means for specifying the make executable to be
     used.
 
-While it is possible to use :filelink:`genmake2 <tools/genmake2>` command line options to set the fortran or C compiler name (``-fc`` and ``-cc`` respectively),
-we generally recommend setting these through an optfile, as discussed in :numref:`genmake2_optfiles`.
+While it is possible to use :filelink:`genmake2 <tools/genmake2>` command-line options to set the fortran or C compiler name (``-fc`` and ``-cc`` respectively),
+we generally recommend setting these through an :ref:`optfile <genmake2_optfiles>`, as discussed in :numref:`genmake2_optfiles`.
 Other :filelink:`genmake2 <tools/genmake2>` options  are available to
 enable performance/timing analyses, etc.; see ``genmake2 -h`` for more info.
 
@@ -608,7 +602,22 @@ shipped with the code is **OS_HARDWARE_COMPILER** where
         is for (old) Mac PowerPC systems
 
 **COMPILER**
-    is the compiler name (generally, the name of the Fortran executable)
+    is the compiler name (generally, the name of the Fortran compiler executable).
+    MITgcm is written in `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_.
+    To build the code we recommend using either a `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_ compiler 
+    or any more recent compiler which is backwards compatible with `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_
+    (for example, the model will build successfully with a `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_ 
+    or  `Fortran 95 <https://en.wikipedia.org/wiki/Fortran#Fortran_95>`_ compiler). Several caveats:
+
+    - an available C compiler is also required during the build process, for several low-level system routines;
+      additionally, a `C preprocessor <https://en.wikipedia.org/wiki/C_preprocessor>`_ is required;
+    - there are some specific packages that contain routines written using 
+      `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_ constructs
+      (either `free-form formatting <https://en.wikipedia.org/wiki/Free-form_language>`_,
+      or `dynamic memory allocation <https://en.wikipedia.org/wiki/Memory_management#DYNAMIC>`_); as such,
+      setups which use these routines require a `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_
+      or later compiler build.
+
 
 There are existing optfiles that work with many common hardware/compiler configurations;
 we first suggest you peruse the list in :filelink:`tools/build_options`
@@ -619,7 +628,9 @@ and try to find your configuration. These are the most common:
 - :filelink:`linux_amd64_ifort+impi <tools/build_options/linux_amd64_ifort+impi>`
 - :filelink:`linux_amd64_pgf77 <tools/build_options/linux_amd64_pgf77>`
 
-These options are all for linux x86_64 (64-bit) systems, utilized in many large high-performance computing centers.
+The above optfiles are all for linux x86_64 (64-bit) systems, utilized in many large high-performance computing centers.
+All of the above will work with single-threaded, `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_,
+or shared memory (`OpenMP <https://en.wikipedia.org/wiki/OpenMP>`_) code configurations.
 gfortran is `GNU Fortran <https://gcc.gnu.org/fortran>`_, 
 ifort is `Intel Fortran <https://software.intel.com/en-us/fortran-compilers>`_,
 pgf77 is `PGI Fortran <https://www.pgroup.com/>`_ (formerly known as “The Portland Group”).
@@ -629,8 +640,8 @@ is for a specific case of using ``ifort`` with the
 `Intel MPI library <https://software.intel.com/en-us/intel-mpi-library>`_ (a.k.a. ``impi``),
 which requires special define statements in the optfile (in contrast with
 `Open MPI <https://www.open-mpi.org/>`_ or  `MVAPICH2 <http:mvapich.cse.ohio-state.edu/>`_
-libraries; see :numref:`build_mpi`). Either of these ifort optfiles will work for a single threaded (i.e., non-MPI) run, as long as
-as the version of ifort is 11 or higher. Many clusters now-a-day use `environment modules <http:modules.sourceforge.net>`_,
+libraries; see :numref:`build_mpi`). Note that both ifort optfiles require ifort version 11 or higher.
+Many clusters now-a-day use `environment modules <http:modules.sourceforge.net>`_,
 which allows one to easily choose which compiler to use through ``module load «MODULENAME»``,
 automatically configuring your environment for a specific compiler choice
 (type ``echo $PATH`` to see where :filelink:`genmake2 <tools/genmake2>` will look for compilers and system software).
@@ -640,18 +651,19 @@ In most cases, your platform configuration will be included in the available opt
 usable ``Makefile`` being generated. If you are unsure which optfile is correct for your configuration,
 you can try not specifying an optfile; on some systems the
 :filelink:`genmake2 <tools/genmake2>` program will be able to automatically
-recognize the hardware, find compilers and other tools within the user’s
-path, and then choose an appropriate set of options
-from the files (optfiles) contained in the :filelink:`tools/build_options`
-directory (particularly after an appropriate ``module load «MODULENAME»`` has been performed).
-
+recognize the hardware, find a compiler and other tools within the user’s
+path, and then make a best guess as to an appropriate optfile
+from the list in the :filelink:`tools/build_options` directory.
 However, for some platforms and code configurations, new
 optfiles must be written. To create a new optfile, it is generally
 best to start with one of the defaults and modify it to suit your needs.
-Like :filelink:`genmake2 <tools/genmake2>`, the optfiles are all written using a simple
-sh–compatible syntax. While nearly all `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_ used within
+Like :filelink:`genmake2 <tools/genmake2>`, the optfiles are all written in `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ (or using a simple
+`sh–compatible <https://en.wikipedia.org/wiki/Bourne_shell>`_ syntax). While nearly all
+`environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_ used within
 :filelink:`genmake2 <tools/genmake2>` may be specified in the optfiles, the critical ones that
 should be defined are:
+
+.. _list_of_optfile_env_vars:
 
 ``FC``
     the Fortran compiler (executable) to use on ``.F`` files, e.g., ``ifort`` or ``gfortran``, or if using MPI, the mpi-wrapper equivalent, e.g., ``mpif77``
@@ -676,16 +688,19 @@ should be defined are:
     command-line optimization Fortran compiler settings. See your Fortran compiler documentation for specific options and syntax.
 
 ``NOOPTFLAGS``
-    command-line options flags for special files that should not be optimized using the ``FOPTIM`` flags
+    command-line settings for special files that should not be optimized using the ``FOPTIM`` flags
+
+``NOOPTFILES``
+    list of source code files that should be compiled using ``NOOPTFLAGS`` settings
 
 ``INCLUDES``
-    path for additional files (e.g., netcdf.inc, mpif.h) to include in the compilation using the command-line ``-I`` option
+    path for additional files (e.g., ``netcdf.inc``, ``mpif.h``) to include in the compilation using the command-line ``-I`` option
 
 ``INCLUDEDIRS``
    path for additional files to be included in the compilation
 
 ``LIBS``
-   path for additional library files that needed to be linked to generate the final executable, e.g., ``libnetcdf.a``
+   path for additional library files that need to be linked to generate the final executable, e.g., ``libnetcdf.a``
     
 
 For example, an excerpt from an optfile which specifies several of these variables (here, for the linux-amd64
@@ -695,18 +710,18 @@ architecture using the PGI Fortran compiler) is as follows:
     :start-at: if test "x$MPI" = xtrue ; then
     :end-at: F90OPTIM=$FOPTIM
 
-The above list of `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_
+The :ref:`above <list_of_optfile_env_vars>` list of `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_
 typically specified in an optfile is by no means complete;
 additional variables may be required for your specific setup and/or your specific Fortran (or C) compiler.
 
 If you write an optfile for an unrepresented machine or compiler, you
 are strongly encouraged to submit the optfile to the MITgcm project for
-inclusion; MITgcm developers are willing to
+inclusion. MITgcm developers are willing to
 provide help writing or modifing optfiles.  Please submit the file through
 the `GitHub issue tracker <https://github.com/MITgcm/MITgcm/issues>`_
 or email the MITgcm-support@mitgcm.org list.
 
-Instructions on how to use optfiles to build MPI-enabled executables is presented in :numref:`build_mpi`.
+Instructions on how to use optfiles to build `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_\ -enabled executables is presented in :numref:`build_mpi`.
 
 .. _make_target_commands:
 
@@ -768,19 +783,22 @@ In addition, there are several housekeeping ``make clean`` options that might be
 Building  with MPI
 ------------------
 
-Building MITgcm to use MPI libraries can be complicated due to the
-variety of different MPI implementations available, their dependencies
+Building MITgcm to use `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ libraries can be complicated due to the
+variety of different `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ implementations available, their dependencies
 or interactions with different compilers, and their often ad-hoc
 locations within file systems. For these reasons, its generally a good
 idea to start by finding and reading the documentation for your
 machine(s) and, if necessary, seeking help from your local systems
 administrator.
 
-The steps for building MITgcm with MPI support are:
+The steps for building MITgcm with `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ support are:
 
-#. Make sure you have MPI libraries installed on your computer system or cluster. Different Fortran compilers (and different versions of a specific compiler)
-   will generally require a custom version (of a MPI library) built specifically for it. On module-enabled clusters, one typically must first load a
-   Fortran compiler, then specific MPI libraries for that compiler will become available to load. If libraries are not installed, MPI
+#. Make sure you have `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
+   libraries installed on your computer system or cluster. Different Fortran compilers (and different versions of a specific compiler)
+   will generally require a custom version (of a `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ library)
+   built specifically for it. On module-enabled clusters, one typically must first load a
+   Fortran compiler, then specific `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
+   libraries for that compiler will become available to load. If libraries are not installed, MPI
    implementations and related tools are available including:
 
    -  `Open MPI <https://www.open-mpi.org/>`_ 
@@ -793,25 +811,30 @@ The steps for building MITgcm with MPI support are:
 
    Ask you systems administrator for assistance in installing these libraries.
 
-#. Determine the location of your MPI library “wrapper” Fortran compiler, e.g., ``mpif77`` or ``mpifort`` etc.
+#. Determine the location of your `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
+   library “wrapper” Fortran compiler, e.g., ``mpif77`` or ``mpifort`` etc.
    which will be used instead of the name of the fortran compiler (``gfortran``, ``ifort``, ``pgi77`` etc.) to compile your code. Often the directory
-   in which these wrappers are located will be automatically added to your ``$PATH`` environment variable when you perform a
-   ``module load «SOME_MPI_MODULE»`` ergo you will not need to do anything beyond the module load itself. If you are on a cluster that does not support
-   module environments, you may have to manually add this directory to your path, e.g., ``PATH=$PATH:«ADD_ADDITIONAL_PATH_TO_MPI_WRAPPER_HERE»`` in bash.
+   in which these wrappers are located will be automatically added to your ``$PATH``
+   `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_ when you perform a
+   ``module load «SOME_MPI_MODULE»``; thus, you will not need to do anything beyond the module load itself. If you are on a cluster that does not support
+   `environment modules <http:modules.sourceforge.net>`_ module environments,
+   you may have to manually add this directory to your path,
+   e.g., ``PATH=$PATH:«ADD_ADDITIONAL_PATH_TO_MPI_WRAPPER_HERE»`` in bash.
 
 #. Determine the location of the includes file ``mpif.h`` and any other mpi-related includes files.
    Often these files will be located in a subdirectory off the main mpi library ``include/``. In all optfiles in :filelink:`tools/build_options`,
-   we define an environment variable ``$MPI_INC_DIR``; this environment variable should be set in your terminal session. 
+   we define an environment variable ``$MPI_INC_DIR``; this 
+   `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_ should be set in your terminal session. 
 
 #. Determine the locations of your MPI-enabled compiler and/or MPI
-   libraries and put them into an options file as described in :numref:`genmake2_optfiles`. 
+   libraries and put them into an optfile as described in :numref:`genmake2_optfiles`. 
    One can start with one of the examples in
    :filelink:`tools/build_options`
    such as :filelink:`tools/build_options/linux_amd64_gfortran`
    or :filelink:`tools/build_options/linux_amd64_ifort+impi` and
    then edit it to suit the machine at hand. You may need help from your
    user guide or local systems administrator to determine the exact
-   location of the MPI libraries.  
+   location of the `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ libraries.  
  
 #. Build the code with the :filelink:`genmake2 <tools/genmake2>` ``-mpi`` option
    using commands such as:
@@ -826,6 +849,10 @@ The steps for building MITgcm with MPI support are:
 
 Building  with OpenMP
 ---------------------
+
+to be done
+`OpenMP <https://en.wikipedia.org/wiki/OpenMP>`_
+also add section about running OpenMP or mention required change to eedata here.
 
 
 .. _run_the_model:
@@ -875,8 +902,9 @@ check that your set-up indeed works. Congratulations!
 Running with MPI
 ----------------
 
-Run the code with the appropriate MPI “run” or “exec” program
-provided with your particular implementation of MPI. Typical MPI
+Run the code with the appropriate `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ “run” or “exec” program
+provided with your particular implementation of `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_.
+Typical `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
 packages such as `Open MPI <https://www.open-mpi.org/>`_ will use something like:
 
    ::
@@ -884,7 +912,8 @@ packages such as `Open MPI <https://www.open-mpi.org/>`_ will use something like
          %  mpirun -np 4 ./mitgcmuv
 
 Sightly more complicated scripts may be needed for many machines
-since execution of the code may be controlled by both the MPI library
+since execution of the code may be controlled by both the
+`MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ library
 and a job scheduling and queueing system such as `Slurm <https://slurm.schedmd.com/>`_,
 `PBS/TORQUE <http://www.adaptivecomputing.com/products/open-source/torque>`_,
 `LoadLeveler <https://www-03.ibm.com/systems/power/software/loadleveler/>`_,
