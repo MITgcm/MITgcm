@@ -109,9 +109,9 @@ c     == end of interface ==
       endif
 
       call READ_REC_XY_RL(fnametmp, 
-     &                    sla_obs,irec,1,mythid)
+     &                    sla_obs,day,1,mythid)
 c      call MDS_READ_FIELD(fnametmp, cost_iprec,.FALSE.,cost_yftype,
-c     &                    1,1,1,sla_obs,dummyRS,irec,mythid)
+c     &                    1,1,1,sla_obs,dummyRS,day,mythid)
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
