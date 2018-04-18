@@ -78,15 +78,13 @@ jobs:
       python: "2.7"
       script:
         - cd doc
-        - sphinx-build -nWa -b html -d _build/doctrees . _build/html
-        - make clean ${BUILD}
+        - sphinx-build -nWa -b ${BUILD} -d _build/doctrees . _build/html
     - env:
       - BUILD="html"
       python: "3.6"
       script:
         - cd doc
-        - sphinx-build -nWa -b html -d _build/doctrees . _build/html
-        - make clean ${BUILD}
+        - sphinx-build -nWa -b ${BUILD} -d _build/doctrees . _build/html
     - env:
       - BUILD="latexpdf"
       python: "2.7"
