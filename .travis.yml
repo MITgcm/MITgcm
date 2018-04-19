@@ -88,8 +88,8 @@ jobs:
     - env:
       - BUILD="latexpdf"
       python: "2.7"
-      script: cd doc; make clean ${BUILD}
+      script: cd doc; make clean ${BUILD} LATEXOPTS="-interaction=nonstopmode -halt-on-error"
     - env:
       - BUILD="latexpdf"
       python: "3.6"
-      script: cd doc; make clean ${BUILD}
+      script: cd doc; make clean ${BUILD} LATEXOPTS="-interaction=nonstopmode -halt-on-error"
