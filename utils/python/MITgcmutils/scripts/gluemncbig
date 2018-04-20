@@ -94,16 +94,16 @@ than letting ``range(10)`` overwrite the ``time`` variable.
 To read the NetCDF file we just created:
 
     >>> f = netcdf_file('simple.nc', 'r')
-    >>> print f.history
+    >>> print(f.history)
     Created for a test
-    >>> print f.location
+    >>> print(f.location)
     北京
     >>> time = f.variables['time']
-    >>> print time.units
+    >>> print(time.units)
     µs since 2008-01-01
-    >>> print time.shape
+    >>> print(time.shape)
     (10,)
-    >>> print time[-1]
+    >>> print(time[-1])
     9
     >>> f.close()
 
@@ -1262,9 +1262,9 @@ if __name__ == '__main__':
         filess = [files0]
 
     if verbose:
-        print 'Files to be read:'
+        print('Files to be read:')
         for files in filess:
-            print files[0], '... (%d)' % (len(files))
+            print(files[0], '... (%d)' % (len(files)))
 
     nc = netcdf_file(files0[0], 'r', **readopts)
     gatt = OrderedDict(nc.attributes)
@@ -1308,19 +1308,20 @@ if __name__ == '__main__':
             n += Ny - sNy
         dims[k] = n
 
-    print 'Tiled dimensions:', ' '.join([k for k in nc.dimensions if k[0] in 'XY'])
+    print('Tiled dimensions:',
+          ' '.join([k for k in nc.dimensions if k[0] in 'XY']))
 
     havetime = tname in dims
     if havetime:
         assert dims[tname] is None
         nrec = nc.numrecs
-        print 'Record dimension:', tname
+        print('Record dimension:', tname)
     else:
         assert len(its) <= 1
         nrec = None
 
     if verbose:
-        print 'Variables:'
+        print('Variables:')
 
     varprops = OrderedDict()
     for name,var in nc.variables.items():
@@ -1342,7 +1343,8 @@ if __name__ == '__main__':
             if tname in var.dimensions: dimstrs[list(var.dimensions).index(tname)] = tname
             if iX is not None: dimstrs[iX] = var.dimensions[iX]
             if iY is not None: dimstrs[iY] = var.dimensions[iY]
-            if verbose: print '%s %s(%s)' % (var.typecode(), name, ','.join(dimstrs))
+            if verbose:
+                print( '%s %s(%s)' % (var.typecode(), name, ','.join(dimstrs)))
 
     ######################################################################
     # create global netcdf file
@@ -1361,7 +1363,7 @@ if __name__ == '__main__':
         vars = {}
         for name,var in varprops.items():
             dtype_ = np.dtype(var['dtype']).newbyteorder('>')
-        #    if verbose: print 'Creating variable', name, dtype_, var['dimensions']
+        #    if verbose: print('Creating variable', name, dtype_, var['dimensions'])
             vars[name] = ncout.createVariable(name, dtype_, var['dimensions'])
             for attname,att in var['ncattrs'].items():
                 setattr(vars[name], attname, att)
@@ -1419,7 +1421,7 @@ if __name__ == '__main__':
                         indstrings = {}
                         for name,pos,isrec in ncout.begins:
                             if not isrec:
-                                if verbose: print name
+                                if verbose: print(name)
                                 prop = varprops[name]
                                 vardims = prop['dimensions']
                                 var = vars[name]
@@ -1456,7 +1458,7 @@ if __name__ == '__main__':
                                 sys.stderr.write('.')
                             for name,pos,isrec in ncout.begins:
                                 if isrec:
-                                    if verbose: print irec+irecin, name
+                                    if verbose: print(irec+irecin, name)
                                     prop = varprops[name]
                                     vardims = prop['dimensions'][1:]
                                     var = vars[name]
@@ -1512,7 +1514,7 @@ if __name__ == '__main__':
             indstrings = {}
             for name,pos,isrec in ncout.begins:
                 if not isrec:
-                    if verbose: print name
+                    if verbose: print(name)
                     prop = varprops[name]
                     vardims = prop['dimensions']
                     var = vars[name]
@@ -1548,7 +1550,7 @@ if __name__ == '__main__':
                         if progress and not verbose: sys.stderr.write('.')
                         for name,pos,isrec in ncout.begins:
                             if isrec:
-                                if verbose: print irec+irecin, name
+                                if verbose: print(irec+irecin, name)
                                 prop = varprops[name]
                                 vardims = prop['dimensions'][1:]
                                 var = vars[name]
