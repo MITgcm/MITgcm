@@ -73,19 +73,23 @@ jobs:
     #  script: docker exec -i fc11-testreport bash -c "cd /MITgcm/verification; ./testreport ${MITGCM_TROPT} -q"
     # build documentation
     - stage: test documentation
-      env: 
+      env:
       - BUILD="html"
       python: "2.7"
-      script: cd doc; make clean ${BUILD}
+      script:
+        - cd doc
+        - sphinx-build -nWa -b ${BUILD} -d _build/doctrees . _build/html
     - env:
       - BUILD="html"
       python: "3.6"
-      script: cd doc; make clean ${BUILD}
+      script:
+        - cd doc
+        - sphinx-build -nWa -b ${BUILD} -d _build/doctrees . _build/html
     - env:
       - BUILD="latexpdf"
       python: "2.7"
-      script: cd doc; make clean ${BUILD}
+      script: cd doc; make clean ${BUILD} LATEXOPTS="-interaction=nonstopmode -halt-on-error"
     - env:
       - BUILD="latexpdf"
       python: "3.6"
-      script: cd doc; make clean ${BUILD}
+      script: cd doc; make clean ${BUILD} LATEXOPTS="-interaction=nonstopmode -halt-on-error"
