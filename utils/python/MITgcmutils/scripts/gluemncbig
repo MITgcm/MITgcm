@@ -19,6 +19,7 @@ Examples:
 gluemncbig -o ptr.nc mnc_*/ptr_tave.*.nc
 gluemncbig -o BIO.nc -v 'BIO_*' mnc_*/ptr_tave.*.nc
 """
+from __future__ import print_function
 
 # NetCDF reader/writer module modified from pupynere,
 # https://bitbucket.org/robertodealmeida/pupynere/
@@ -117,6 +118,7 @@ TODO:
 __all__ = ['netcdf_file']
 
 
+from functools import reduce
 from operator import mul
 try:
     from collections import OrderedDict
@@ -720,16 +722,15 @@ class netcdf_file(object):
         else:
             types = [
                     (int, NC_INT),
-                    (long, NC_INT),
                     (float, NC_FLOAT),
-                    (basestring, NC_CHAR),
+                    (str, NC_CHAR),
                     ]
             try:
                 sample = values[0]
             except (IndexError, TypeError):
                 sample = values
-            if isinstance(sample, unicode):
-                if not isinstance(values, unicode):
+            if isinstance(sample, str):
+                if not isinstance(values, str):
                     raise ValueError("NetCDF requires that text be encoded as UTF-8")
                 values = values.encode('utf-8')
             for class_, nc_type in types:
@@ -1248,8 +1249,7 @@ if __name__ == '__main__':
 
     files0 = [v for k,v in sorted(files0.items())]
 
-    its = itfiles.keys()
-    its.sort()
+    its = sorted(itfiles.keys())
     for it in its:
         itfiles[it] = [v for k,v in sorted(itfiles[it].items())]
 
