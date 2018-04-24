@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - replace calls to (obsolete) MDSREADFIELD and MDSWRITEFIELD with calls to
+    pkg/rw S/R: READ_REC_3D_RL and WRITE_REC_3D_RL ; this enable to use pkg/ecco
+    without pkg/autodiff.
 o pkg/seaice:
   - new run-time parameter to skip the update of ocean surface stress ; could be
     useful for testing or when seaice-dynamics is off (add a warning otherwise).
