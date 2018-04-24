@@ -118,8 +118,6 @@ CADJ STORE dwatn    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE cbotc    = comlev1, key=ikey_dynamics, kind=isbyte
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
 cccCADJ STORE press0   = comlev1, key=ikey_dynamics, kind=isbyte
-cccCADJ STORE taux   = comlev1, key=ikey_dynamics, kind=isbyte
-cccCADJ STORE tauy  = comlev1, key=ikey_dynamics, kind=isbyte
 cccCADJ STORE zmax   = comlev1, key=ikey_dynamics, kind=isbyte
 cccCADJ STORE zmin  = comlev1, key=ikey_dynamics, kind=isbyte
 cph)

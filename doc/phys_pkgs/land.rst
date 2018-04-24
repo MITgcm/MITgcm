@@ -75,6 +75,8 @@ layer runoff that is put into second layer.
 The time step is 1 hour, it takes several years to reach equalibrium
 offline.
 
+.. _land_diagnostics:
+
 Land diagnostics
 ################
 

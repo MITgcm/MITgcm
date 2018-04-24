@@ -50,7 +50,7 @@ where :math:`L_{y}` is the lateral domain extent (1200~km) and
 
 
   .. figure:: barotropic_gyre/figs/barogyre_simulation_config.*
-      :width: 70%
+      :width: 80%
       :align: center
       :alt: barotropic gyre configuration
       :name: fig_eg_baro_simulation_config

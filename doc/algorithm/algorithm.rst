@@ -1558,6 +1558,8 @@ the following definitions:
    \epsilon_{nh} \overline{ w^2 }^k \right)
    :label: KE_discrete
 
+.. _mom_diagnostics:
+
 Mom Diagnostics
 ---------------
 
@@ -2312,8 +2314,8 @@ where
 .. math::
 
    \begin{aligned}
-   d_1 & = & \frac{1}{6} ( 2 - |c| ) ( 1 - |c| ) \\
-   d_2 & = & \frac{1}{6} ( 1 - |c| ) ( 1 + |c| )\end{aligned}
+   d_0 & = & \frac{1}{6} ( 2 - |c| ) ( 1 - |c| ) \\
+   d_1 & = & \frac{1}{6} ( 1 - |c| ) ( 1 + |c| )\end{aligned}
 
 The coefficients :math:`d_0` and :math:`d_1` approach :math:`1/3` and
 :math:`1/6` respectively as the Courant number, :math:`c`, vanishes. In
@@ -2414,13 +2416,13 @@ the flux calculations to be implemented as if in one dimension:
    \begin{aligned}
    \tau^{n+1/3} & = & \tau^{n}
    - \Delta t \left( \frac{1}{\Delta x} \delta_i F^x(\tau^{n})
-              + \tau^{n} \frac{1}{\Delta x} \delta_i u \right) \\
+              - \tau^{n} \frac{1}{\Delta x} \delta_i u \right) \\
    \tau^{n+2/3} & = & \tau^{n+1/3}
    - \Delta t \left( \frac{1}{\Delta y} \delta_j F^y(\tau^{n+1/3})
-              + \tau^{n} \frac{1}{\Delta y} \delta_i v \right) \\
+              - \tau^{n} \frac{1}{\Delta y} \delta_i v \right) \\
    \tau^{n+3/3} & = & \tau^{n+2/3}
    - \Delta t \left( \frac{1}{\Delta r} \delta_k F^x(\tau^{n+2/3})
-              + \tau^{n} \frac{1}{\Delta r} \delta_i w \right)\end{aligned}
+              - \tau^{n} \frac{1}{\Delta r} \delta_i w \right)\end{aligned}
    :label: tau_multiD
 
 In order to incorporate this method into the general model algorithm, we
@@ -2660,6 +2662,8 @@ filter:
 with the Laplacian operator :math:`\overline{\nabla}^2` and a length
 scale parameter :math:`L_{shap}`. The stability of this S2g filter
 requires :math:`L_{shap} < \mathrm{Min}^{(Global)}(\Delta x,\Delta y)`.
+
+.. _shapiro_diagnostics:
 
 SHAP Diagnostics
 ----------------

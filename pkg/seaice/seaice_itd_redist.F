@@ -1,8 +1,6 @@
 #include "SEAICE_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
+CBOP
 C !ROUTINE: SEAICE_ITD_REDIST
 
 C !INTERFACE: ==========================================================
@@ -37,15 +35,10 @@ C     age ?
 C
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
+c#include "PARAMS.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
-
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C     === Routine arguments ===
@@ -57,7 +50,6 @@ C     myThid    :: Thread no. that called this routine.
       INTEGER bi,bj
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
 
 #ifdef SEAICE_ITD
 
@@ -68,13 +60,8 @@ C     nITD        :: number of sea ice thickness categories
 C     openwater   :: open water area fraction
 C
       INTEGER i, j, k
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER itmpkey
-#endif /* ALLOW_AUTODIFF_TAMC */
-#ifdef SEAICE_AGE
-      INTEGER iTracer
-#endif
       _RL openWater  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+CEOP
 C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 c      DO bj=myByLo(myThid),myByHi(myThid)
@@ -94,7 +81,7 @@ C       calculate area of open water
         ENDDO
        ENDDO
       ENDDO
-      
+
 C     ----------------------------------------------------
 C     | redistribute/"advect" sea ice in thickness space |
 C     | as described in Bitz et al. (2001)               |
@@ -113,8 +100,8 @@ C     and eventual rafting occured in thinnest category:
        ENDDO
       ENDDO
 C
-C     the following steps only make sense if there are actually 
-C     multi-categories 
+C     the following steps only make sense if there are actually
+C     multi-categories
       IF (nITD .gt. 1) THEN
 C
 C--   check if more thicker ice needs to be rafted to accomodate area excess:
@@ -152,7 +139,7 @@ C         now check that ice thickness stays within category limits
          DO i=1-OLx,sNx+OLx
           IF (HEFFITD(i,j,k,bi,bj) .gt.
      &         Hlimit(k)*AREAITD(i,j,k,bi,bj)) THEN
-C--   the upper thickness limit is exceeded: move ice up to next 
+C--   the upper thickness limit is exceeded: move ice up to next
 C     thicker category
            AREAITD (i,j,k+1,bi,bj) = AREAITD (i,j,k+1,bi,bj)
      &                             + AREAITD (i,j,k,bi,bj)
@@ -173,13 +160,13 @@ C            ENDIF
          ENDDO
         ENDDO
        ENDDO
-C     
+C
        DO k=nITD,2,-1
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           IF (HEFFITD(i,j,k,bi,bj) .lt.
      &         Hlimit(k-1)*AREAITD(i,j,k,bi,bj)) THEN
-C--   the lower thickness limit is exceeded: move ice down to next thinner 
+C--   the lower thickness limit is exceeded: move ice down to next thinner
 C     category
            AREAITD (i,j,k-1,bi,bj) = AREAITD (i,j,k-1,bi,bj)
      &                             + AREAITD (i,j,k,bi,bj)

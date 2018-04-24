@@ -10,6 +10,7 @@ is based on the version v23 of the SPEEDY code ().
 Key subroutines, parameters and files
 #####################################
 
+.. _aim_diagnostics:
 
 AIM Diagnostics
 ###############

@@ -38,6 +38,8 @@ There are two high-level routines:
    non-linear schemes and can not be used in conjuction with
    Adams–Bashforth time stepping.
 
+.. _gad_diagnostics:
+
 GAD Diagnostics
 +++++++++++++++
 

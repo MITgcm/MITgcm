@@ -22,6 +22,10 @@ C===========================================================
       _RL prof_etan_mean(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL prof_theta_mean(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL prof_salt_mean(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#ifndef ALLOW_ECCO
+      _RL m_UE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nsx,nsy)
+      _RL m_VN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nsx,nsy)
+#endif
 
       integer profNo(NFILESPROFMAX,nsx,nsy)
       integer profDepthNo(NFILESPROFMAX,nsx,nsy)
@@ -84,6 +88,9 @@ C===========================================================
      &,prof_count1D_all_mean
      &,NLEVELCOMBRL, NAVGBINRL
 #endif
+#ifndef ALLOW_ECCO
+     &,m_UE,m_VN
+#endif /* ALLOW_ECCO */
       COMMON /profiles_i/ prof_ind_glob, profNo, profDepthNo,
      & fidforward, fidadjoint, fidtangent, fiddata,
      & prof_num_var_tot, prof_num_var_cur, prof_itracer

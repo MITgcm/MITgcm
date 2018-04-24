@@ -1,4 +1,0 @@
-
-Previous Applications of MITgcm
-*******************************
-

@@ -61,6 +61,8 @@ The following can be set for each tracer (tracer number iTrc):
 - **PTRACERS\_long\_names(iTrc)**: optional name in long form of tracer.
 - **PTRACERS\_units(iTrc)**: optional units of tracer.
 
+.. _ptracers_diagnostics:
+
 PTRACERS Diagnostics
 ++++++++++++++++++++
 

@@ -44,7 +44,6 @@ C
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
@@ -61,7 +60,6 @@ C     myThid    :: Thread no. that called this routine.
       INTEGER myThid
       _RL heffitdPre  (1:sNx,1:sNy,1:nITD)
       _RL areaitdPre  (1:sNx,1:sNy,1:nITD)
-CEndOfInterface
 
 #ifdef SEAICE_ITD
 
@@ -95,7 +93,6 @@ C     hL :: right end of range over which g(h) > 0
       _RL hR (1:sNx,1:sNy,0:nITD)
 C     local copy of AREAITD
       _RL aLoc(1:sNx,1:sNy)
-C
       LOGICAL doRemapping (1:sNx,1:sNy)
 CEOP
 C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -417,7 +414,6 @@ C     regularization constants
 C     doRemapping :: mask where can be done, excludes points where
 C                    new category limits are outside certain bounds
       LOGICAL doRemapping (1:sNx,1:sNy)
-CEndOfInterface
 
 C !LOCAL VARIABLES: ====================================================
 C     === Local variables ===
@@ -476,7 +472,7 @@ C     reset hL and hR
 
 C---+-|--1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-CEOP
+CBOP
 C !ROUTINE: SEAICE_ITD_REMAP_CHECK_BOUNDS
 
 C !INTERFACE: ==========================================================
@@ -521,7 +517,6 @@ C     AREAITD :: ice concentration of current category
 C     doRemapping :: mask where can be done, excludes points where
 C                    new category limits are outside certain bounds
       LOGICAL doRemapping (1:sNx,1:sNy)
-CEndOfInterface
 
 C !LOCAL VARIABLES: ====================================================
 C     === Local variables ===

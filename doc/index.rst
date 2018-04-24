@@ -32,5 +32,5 @@ Welcome to MITgcm's user manual
    outp_pkgs/outp_pkgs
    ocean_state_est/ocean_state_est.rst
    under_dev/under_dev.rst
-   prev_applications/prev_applications.rst
+   related_projects/related_projects.rst
    references

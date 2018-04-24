@@ -55,24 +55,41 @@ C     !FUNCTIONS:
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
+C     === In Local common block ===
+C     TAUX   :: zonal      wind stress over seaice at U point
+C     TAUY   :: meridional wind stress over seaice at V point
+      COMMON/WIND_STRESS_ICE/TAUX,TAUY
+      _RL TAUX   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL TAUY   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     === Local variables ===
-C     i,j,bi,bj :: Loop counters
+C     i,j    :: Loop counters
+C     bi,bj  :: tile counters
       INTEGER i, j, bi, bj
       _RL phiSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL  mask_uice, mask_vice
-#ifdef ALLOW_AUTODIFF_TAMC
-      _RL PSTAR
-#endif /* ALLOW_AUTODIFF_TAMC */
+      _RL mask_uice, mask_vice
+
+C Initialise local variables in common block
+      IF ( myIter.EQ.nIter0 ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           TAUX(i,j,bi,bj) = 0. _d 0
+           TAUY(i,j,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 
 # ifdef ALLOW_AUTODIFF_TAMC
 C Following re-initialisation breaks some "artificial" AD dependencies
 C incured by IF (DIFFERENT_MULTIPLE ... statement
-      PSTAR = SEAICE_strength
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
-          PRESS0(i,j,bi,bj) = PSTAR*HEFF(i,j,bi,bj)
+          PRESS0(i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
      &         *EXP(-SEAICE_cStar*(ONE-AREA(i,j,bi,bj)))
           ZMAX(I,J,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
           ZMIN(i,j,bi,bj)   = SEAICE_zetaMin
@@ -87,7 +104,6 @@ C incured by IF (DIFFERENT_MULTIPLE ... statement
         ENDDO
        ENDDO
       ENDDO
-C
 CADJ STORE uice    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vice    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE uicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
@@ -354,8 +370,11 @@ CADJ STORE CbotC  = comlev1, key=ikey_dynamics, kind=isbyte
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C Calculate ocean surface stress
-      CALL SEAICE_OCEAN_STRESS ( myTime, myIter, myThid )
+C Update ocean surface stress
+      IF ( SEAICEupdateOceanStress ) THEN
+        CALL SEAICE_OCEAN_STRESS (
+     I              TAUX, TAUY, myTime, myIter, myThid )
+      ENDIF
 
 #ifdef SEAICE_ALLOW_DYNAMICS
 #ifdef SEAICE_ALLOW_CLIPVELS
