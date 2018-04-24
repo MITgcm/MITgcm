@@ -118,7 +118,6 @@ TODO:
 __all__ = ['netcdf_file']
 
 
-from functools import reduce
 from operator import mul
 try:
     from collections import OrderedDict
@@ -133,6 +132,7 @@ from numpy import little_endian as LITTLE_ENDIAN
 import sys
 
 if sys.version_info[0] >= 3:
+    from functools import reduce
     def asbytes(s):
         if isinstance(s, bytes):
             return s
@@ -142,10 +142,21 @@ if sys.version_info[0] >= 3:
         if isinstance(s, bytes):
             return s.decode('latin1')
         return str(s)
+
+    long = int
+    str = str
+    unicode = str
+    bytes = bytes
+    basestring = (str, bytes)
 else:
+    # python 2
     asbytes = str
     asstr = str
-
+    long = long
+    str = str
+    unicode = unicode
+    bytes = str
+    basestring = basestring
 
 ABSENT       = asbytes('\x00\x00\x00\x00\x00\x00\x00\x00')
 ZERO         = asbytes('\x00\x00\x00\x00')
@@ -722,17 +733,20 @@ class netcdf_file(object):
         else:
             types = [
                     (int, NC_INT),
+                    (long, NC_INT),
                     (float, NC_FLOAT),
-                    (str, NC_CHAR),
+                    (basestring, NC_CHAR),
                     ]
             try:
                 sample = values[0]
             except (IndexError, TypeError):
                 sample = values
-            if isinstance(sample, str):
-                if not isinstance(values, str):
-                    raise ValueError("NetCDF requires that text be encoded as UTF-8")
-                values = values.encode('utf-8')
+            if isinstance(sample, unicode):
+                if not isinstance(values, unicode):
+                    raise ValueError(
+                        "NetCDF requires that text be encoded as UTF-8")
+                if sys.version_info[0] < 3:
+                    values = values.encode('utf-8')
             for class_, nc_type in types:
                 if isinstance(sample, class_): break
 
