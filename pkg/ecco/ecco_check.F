@@ -38,14 +38,13 @@ C     myThid -  Number of this instances
       INTEGER myThid
 
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf      - Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       INTEGER igen_etaday, il, k2, ioUnit
       LOGICAL exst
       CHARACTER*(128) tempfile,tempfile1
       INTEGER icount_transp
-      _RS     dummyRS(1)
 #endif
 
       INTEGER bi, bj, i, j, k
@@ -59,7 +58,7 @@ c     == external functions ==
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
           do k = 1,nr
-            do j = 1-OLy,sNy+Oly
+            do j = 1-OLy,sNy+OLy
               do i = 1-OLx,sNx+OLx
                 eccoVol_0(i,j,k,bi,bj)=
      &          hFacC(i,j,k,bi,bj)*drF(k)*rA(i,j,bi,bj)
@@ -395,7 +394,7 @@ catn-- put stop statement if use old siv4 names:
            STOP 'ABNORMAL END: S/R ECCO_CHECK'
          endif
 
-c-atn add another block for cost that do not need datafile but 
+c-atn add another block for cost that do not need datafile but
 c should have checks for other things:
 c here, separate into different gencost_flag block
          else  !if ( gencost_datafile(k) .ne. ' ' ) then
@@ -501,7 +500,7 @@ c
 
 c-- check barfile, make sure character m_[theta,salt] match exactly
 c-- (upper/lower-case matters) in cost_gencost_customize
-           if (.not.( 
+           if (.not.(
      &          (gencost_barfile(k)(1:15).EQ.'m_boxmean_theta').OR.
      &          (gencost_barfile(k)(1:13).EQ.'m_boxmean_eta').OR.
      &          (gencost_barfile(k)(1:14).EQ.'m_boxmean_salt').OR.
@@ -563,15 +562,11 @@ cgf     of e.g. gencost_mskWsurf*gencost_mskZ in ecco_phys.F?
 cgf (3) naming convention: m_heat_hadv rather than trHeat, etc?
 cgf     would help eventually distinguish, e.g., m_heat_hdif vs m_heat_vdif...
 cgf (4) generalization: specify type of transport (vol, heat, etc) via namelist?
-             call ecco_zero(msktrVolW,1,zeroRL,mythid)
-             call READ_REC_XY_RL(tempfile,
-     &            msktrVolW,1,1,mythid)
-             call READ_REC_XY_RL(tempfile,
-     &            gencost_mskWsurf(1-olx,1-oly,1,1,k),1,1,mythid)
-c             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',
-c     &            1,1,1,msktrVolW,dummyRS,1,mythid)
-c             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',
-c     &       1,1,1,gencost_mskWsurf(1-olx,1-oly,1,1,k),dummyRS,1,mythid)
+             call ecco_zero(msktrVolW,1,zeroRL,myThid)
+             CALL READ_REC_3D_RL( tempfile, cost_iprec, 1,
+     &                            msktrVolW, 1, 1, myThid )
+             CALL READ_REC_3D_RL( tempfile, cost_iprec, 1,
+     &             gencost_mskWsurf(1-OLx,1-OLy,1,1,k), 1, 1, myThid )
            endif
 c-- South --------------------
            il = ilnblnk(gencost_errfile(k))
@@ -595,15 +590,11 @@ c-- South --------------------
      &                  SQUEEZE_RIGHT , myThid)
            else
 c-- will move to init perhaps, but leave here for now due to check exst
-             call ecco_zero(msktrVolS,1,zeroRL,mythid)
-             call READ_REC_XY_RL(tempfile,
-     &            msktrVolS,1,1,mythid)
-             call READ_REC_XY_RL(tempfile,
-     &            gencost_mskSsurf(1-olx,1-oly,1,1,k),1,1,mythid)
-c             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',
-c     &            1,1,1,msktrVolS,dummyRS,1,mythid)
-c             call MDS_READ_FIELD(tempfile,cost_iprec,.FALSE.,'RL',
-c     &       1,1,1,gencost_mskSsurf(1-olx,1-oly,1,1,k),dummyRS,1,mythid)
+             call ecco_zero(msktrVolS,1,zeroRL,myThid)
+             CALL READ_REC_3D_RL( tempfile, cost_iprec, 1,
+     &                            msktrVolS, 1, 1, myThid )
+             CALL READ_REC_3D_RL( tempfile, cost_iprec, 1,
+     &             gencost_mskSsurf(1-OLx,1-OLy,1,1,k), 1, 1, myThid )
            endif
           else
            using_gencost(k)=.FALSE.
@@ -672,7 +663,7 @@ c print result to screen
         write(msgbuf,'(a,i3)')
      &  'etaday defined by gencost ',igen_etaday
         call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
+     &                      SQUEEZE_RIGHT , myThid)
       endif
 
 #endif
@@ -712,7 +703,7 @@ C     myThid -  Number of this instances
       integer localstartdate1
 
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf      - Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER irec, mody, modm, yday, locy, il
       LOGICAL exst, singleFileTest, yearlyFileTest

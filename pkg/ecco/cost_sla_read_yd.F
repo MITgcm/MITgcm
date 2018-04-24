@@ -1,11 +1,10 @@
 #include "ECCO_OPTIONS.h"
 
-
       subroutine cost_sla_read_yd( sla_file, sla_startdate,
 c     I                sla_startdate, sla_period,
 c     I                sla_intercept, sla_slope,
      O                sla_obs, sla_mask,
-     I                year,day, mythid )
+     I                year,day, myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_sla_read_yd
@@ -34,14 +33,14 @@ c     == global variables ==
 c     == routine arguments ==
 
       integer year,day
-      integer mythid
+      integer myThid
 
       integer sla_startdate(4)
       _RL sla_period
       _RL sla_intercept
       _RL sla_slope
-      _RL sla_obs    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-      _RL sla_mask   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL sla_obs    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+      _RL sla_mask   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       character*(MAX_LEN_FNAM) sla_file
 
 c     == local variables ==
@@ -71,8 +70,6 @@ cnew(
       logical exst
 cnew)
 
-      _RS dummyRS(1)
-
 c     == external functions ==
 
       integer  ilnblnk
@@ -83,20 +80,20 @@ c     == external functions ==
 
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
       factor = 0.01
       spval = -9990.
 
       if ( (day.GE.1).AND.( (
-     & (cal_IsLeap(year,mythid).eq.2).AND.(day.LE.366)
+     & (cal_IsLeap(year,myThid).eq.2).AND.(day.LE.366)
      & ).OR.(day.LE.365) ) ) then
 
       il=ilnblnk(sla_file)
@@ -108,10 +105,8 @@ c     == end of interface ==
          stop
       endif
 
-      call READ_REC_XY_RL(fnametmp, 
-     &                    sla_obs,day,1,mythid)
-c      call MDS_READ_FIELD(fnametmp, cost_iprec,.FALSE.,cost_yftype,
-c     &                    1,1,1,sla_obs,dummyRS,day,mythid)
+      CALL READ_REC_3D_RL( fnametmp, cost_iprec, 1,
+     &                   sla_obs, day, 1, myThid )
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -166,6 +161,5 @@ c     &                    1,1,1,sla_obs,dummyRS,day,mythid)
 
       endif !if ( (day.GE.1).AND...
 
-      return
-      end
-
+      RETURN
+      END
