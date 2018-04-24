@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf/exf_wind.F:
+  - fix a bug detected by Stanislav Martyanov: replace wStress by 
+    SQRT(wStress) in computing ustar
+  - this bug does not appear to affect the verification experiments
+    but has been around for a while (inherited from the ecco-branch)
 o doc:
   - first addition of reST/sphinx documentation (formerly in
     https://github.com/altMITgcm/MITgcm/doc/), converted from original MITgcm

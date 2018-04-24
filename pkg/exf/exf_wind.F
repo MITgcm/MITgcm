@@ -173,7 +173,7 @@ C             cdn(umps); ustar can be directly computed from stress;
           recip_sqrtRhoA = 1. _d 0 / SQRT(atmrho)
           DO j = 1,sNy
            DO i = 1,sNx
-            ustar = wStress(i,j,bi,bj)*recip_sqrtRhoA
+            ustar = SQRT(wStress(i,j,bi,bj))*recip_sqrtRhoA
             IF ( ustar .EQ. 0. _d 0 ) THEN
              wsLoc(i,j) = 0. _d 0
             ELSE IF ( ustar .LT. ustofu11 ) THEN
