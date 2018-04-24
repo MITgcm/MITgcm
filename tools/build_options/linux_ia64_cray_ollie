@@ -4,8 +4,6 @@
 # <https://swrepo1.awi.de/plugins/mediawiki/wiki/hpc/index.php/Main_Page>
 # module load craype-broadwell
 # module load PrgEnv-cray
-# module swap mvapich2_cce cray-impi
-# module load intel/impi-5.1.3
 
 FC='ftn'
 CC='cc'
@@ -25,7 +23,12 @@ NOOPTFLAGS="-O1"
 # with -fhp3 lead to wrong results of MOD(a,b) in the following function, so
 # we need to use a lower (default) value of -hfp2 implicit in the NOOPTFLAGS
 NOOPTFILES="exf_getffieldrec.F"
-
+# since the cray compiler update of April 2018, these routines break with -O3
+# for tutorial_barotropic_gyre; they work with -O2 and lower, so we include
+# them here to be compiled with NOOPTFLAGS.
+NOOPTFILES="${NOOPTFILES} exch_r4_send_put_y.F exch_r8_send_put_y.F"
+NOOPTFILES="${NOOPTFILES} exch_rl_send_put_y.F exch_rs_send_put_y.F"
+ 
 FFLAGS="$FFLAGS -h byteswapio" 
 if test "x$OMP" = xtrue ; then 
   # alternative if-statement: if test ! "x$OMP" = x ; then

@@ -6,6 +6,25 @@ o pkg/exf/exf_wind.F:
     SQRT(wStress) in computing ustar
   - this bug does not appear to affect the verification experiments
     but has been around for a while (inherited from the ecco-branch)
+o pkg/seaice:
+  - new run-time parameter to skip the update of ocean surface stress ; could be
+    useful for testing or when seaice-dynamics is off (add a warning otherwise).
+
+checkpoint67a (2018/03/10)
+o pkg/layers
+  - add Moist Static Energy coordinate in layers package
+o pkg/aim_v23:
+  - change parameter "aim_abs_pCO2" default value (used if aim_select_pCO2=1,3)
+    to calibrated value (from David Ferreira).
+o pkg/layers
+  - fixed up units reported in diagnostics for THETA and SALT term induced layer
+    thickness changes.
+o pkg/seaice:
+  - move wind-stress over seaice out of SEAICE.h into local seaice_dynsolver.F
+    common block ; move initialisation of TAUX & TAUY accordingly and add them
+    to argument list of S/R SEAICE_OCEAN_STRESS (like SEAICE_GET_DYNFORCING).
+    This enable to remove CPP option "SEAICE_EXCLUDE_WIND_STRESS" (hack from
+    June 2016) in pkg/dic/dic_fields_update.F
 o doc:
   - first addition of reST/sphinx documentation (formerly in
     https://github.com/altMITgcm/MITgcm/doc/), converted from original MITgcm

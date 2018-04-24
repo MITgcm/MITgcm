@@ -1,6 +1,0 @@
-MNC_RESHAPE_R*.F
-MNC_ID_HEADER.h
-MNC_CW_READWRITE_R*
-MNC_CW_READWRITE_I*
-mnc_netcdf_stubs.c
-

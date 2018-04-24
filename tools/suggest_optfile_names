@@ -1,6 +1,4 @@
 #! /usr/bin/env bash
-#
-#
 
 look_for_makedepend()  {
 
@@ -37,7 +35,7 @@ EOF
 	    MAKEDEPEND=makedepend
 	else
 	    echo "    a system-default makedepend was not found."
-	    
+
 	    #  Try to build the cyrus implementation
 	    build_cyrus_makedepend
 	    RETVAL=$?
@@ -56,7 +54,6 @@ EOF
     fi
     rm -f genmake_tc*
 }
-
 
 build_cyrus_makedepend()  {
     rm -f ./genmake_cy_md
@@ -82,7 +79,6 @@ build_cyrus_makedepend()  {
     fi
 }
 
-
 find_possible_configs()  {
 
     tmp1=`uname`"_"`uname -m`
@@ -95,7 +91,7 @@ find_possible_configs()  {
     echo $PLATFORM | grep cygwin > /dev/null 2>&1  &&  PLATFORM=cygwin_ia32
     OFLIST=`(cd $ROOTDIR/tools/build_options; ls | grep "^$PLATFORM")`
     echo "  The platform appears to be:  $PLATFORM"
-    
+
     echo "test" > test
     ln -s ./test link
     RETVAL=$?
@@ -214,9 +210,18 @@ Error: No options file was found in:  $ROOTDIR/tools/build_options/
 EOF
 	exit 1
     fi
-    
+
 }
 
+#-- Sequential part of script starts here --------------------------------------
+if test "x$MITGCM_ROOTDIR" = x ; then
+  if test "x$ROOTDIR" != x ; then
+    echo "WARNING: Environment Variable 'ROOTDIR' no longer recognized"
+    echo "WARNING:  use instead 'MITGCM_ROOTDIR'" ; ROOTDIR=
+  fi
+else
+  ROOTDIR=$MITGCM_ROOTDIR
+fi
 
 AWK=awk
 

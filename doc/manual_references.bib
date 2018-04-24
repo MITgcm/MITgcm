@@ -304,7 +304,6 @@ resistance for atmospheric general circulation models as represented by the Simp
   number = "0",
   pages = "152 - 172",
   year = "2015",
-  note = "",
   issn = "0079-6611",
   doi = "http://dx.doi.org/10.1016/j.pocean.2015.01.013",
   url = "http://www.sciencedirect.com/science/article/pii/S0079661115000245",
@@ -353,6 +352,29 @@ resistance for atmospheric general circulation models as represented by the Simp
   doi   =        {10.1007/BF00210006}
 }
 
+@Article{giering:98,
+  author =       {Giering, R. and T. Kaminski},
+  title =        {Recipes for adjoint code construction},
+  journal =      {ACM Transactions on Mathematical Software},
+  year =         1998,
+  volume =       24,
+  number =       4,
+  pages =        {437-474},
+  doi   =        {10.1145/293686.293695}
+}
+
+@InCollection{giering:00,
+  author =   {Giering, R.},
+  title =  {Tangent linear and adjoint biogeochemical models},
+  booktitle =  {Inverse Methods in Global Biogeochemical Cycles},
+  pages =  {33-48},
+  publisher =  {American Geophysical Union},
+  address   =  {Washington, D.C.},
+  year      =   2000,
+  doi       =   {10.1029/GM114p0033},
+  editor =   {P. Kasibhatla and M. Heimann and P. Rayner and N. Mahowald and R. G. Prinn and D. E. Hartley}
+}
+
 @Article{gil-lem:89,
  author         = {J.C. Gilbert and C. Lemar\'echal},
  year           = 1989,
@@ -361,6 +383,7 @@ resistance for atmospheric general circulation models as represented by the Simp
  journal        = {Math. Programming},
  volume         = {45},
  pages          = {407--435},
+ doi            = {10.1007/BF01589113},
                   }
 
 @book{gill:82,
@@ -371,6 +394,25 @@ resistance for atmospheric general circulation models as represented by the Simp
  address        = {New York},
  pages		= {662 pp.},
 }
+
+@Article{griewank:92,
+  author =       {Griewank, A.},
+  title =        {Achieving logarithmic growth of temporal and spatial complexity in reverse Automatic Differentiation},
+  journal =      {Optimization Methods and Software},
+  year =         1992,
+  volume =       1,
+  pages =        {35-54}
+}
+
+@book{griewank:08,
+ author		= {Griewank, A. and A. Walther},
+ title		= {Evaluating Derivatives: Principles and Techniques of Algorithmic Differentiation, Second Edition},
+ year		= 2008,
+ publisher	= {SIAM},
+ address        = {Philadelphia},
+ pages		= {426 pp.},
+}
+
 
 @ARTICLE{gr:98,
   author =       {Griffies, S.M.},
@@ -512,12 +554,22 @@ Continental Moisture Budget of the United States. },
 
 
 @InProceedings{hill:99,
-  author =   {Hill, C. and A. Adcroft and D. Jamous and John Marshall},
+  author =   {Hill, C. and A. Adcroft and D. Jamous and J. Marshall},
   title =    {A Strategy for Terascale Climate Modeling},
   booktitle =    {In Proceedings of the Eighth ECMWF Workshop on the Use of Parallel Processors in Meteorology},
   year =   1999,
   pages = {406-425},
   publisher =  {World Scientific},
+}
+
+@InProceedings{hoe:99,
+  author =   {Hoe, J. C. and C. Hill and A. Adcroft},
+  title =    {A personal supercomputer for climate research},
+  booktitle =    {SC’99: Proceedings of the 1999 ACM/IEEE Conference on Supercomputing},
+  year =   1999,
+  doi = {10.1109/SC.1999.10009},
+  pages = {59},
+  publisher =  {IEEE},
 }
 
 @Article{Holland75,
@@ -868,6 +920,18 @@ convection for general circulation models.},
 }
 
 
+@InCollection{naumann:06,
+  author =   {Naumann, U. and J. Utke and P. Heimbach and C. Hill and D. Ozyurt and C. Wunsch and M. Fagan and N. Tallent and and M. Strout},
+  title =  {Adjoint code by source transformation with {O}pen{AD}/{F}},
+  booktitle =  {European Conference on Computational Fluid Dynamics (ECCOMAS CFD 2006)},
+  publisher =  {TU Delft},
+  address   =  {The Netherlands},
+  year      =   2006,
+  editor =   {Pieter Wesseling and Jacques P\'eriaux and Eugenio O{\~n}ate},
+  note = {Available online at \url{http://proceedings.fyper.com/eccomascfd2006/documents/35.pdf}},
+}
+
+
 @Article{orl:76,
  author   = {Orlanski, I.},
  year   = 1976,
@@ -919,6 +983,15 @@ pages = {1154--1158},
 title = {{Oceanic Isopycnal Mixing by Coordinate Rotation}},
 volume = {12},
 year = {1982}
+}
+
+@Article{restrepo:98,
+  author =	 {Restrepo, J. and G. Leaf and A. Griewank},
+  year =	 {1998},
+  title =	 {Circumventing storage limitations in variational data assimilation studies},
+  journal =	 {SIAM J. Sci. Comput.},
+  volume =	 {19},
+  pages =	 {1586-1605}
 }
 
 @Incollection{roe:85,
@@ -1005,6 +1078,29 @@ year = {1982}
   editor =   {B. Galperin and S.A. Orszag}
 }
 
+@techreport{stammer:97,
+ author       = {Stammer, D. and C. Wunsch and R. Giering and Q. Zhang and J. Marotzke and J. Marshall and C. Hill},
+ year         = {1997},
+ title        = {The global ocean circulation estimated from {TOPEX}/{POSEIDON} altimetry and a general circulation model},
+ institution  = {Massachusetts Institute of Technology},
+ type         = {CGCS Report Series},
+ number       = {49},
+ address      = {Cambridge, MA},
+ url         = {https://cgcs.mit.edu/publications/cgcs-report/global-ocean-circulation-estimated-topexposeidon-altimetry-and-mit-general},
+}
+
+@Article{stammer:02,
+  author =   {Stammer, D. and C. Wunsch and R. Giering and C. Eckert and P. Heimbach and J. Marotzke and A. Adcroft and C. Hill and J. Marshall},
+  title   = {The global ocean circulation and transports during 1992 - 1997, estimated from ocean observations and a general circulation model},
+  journal = jgr,
+  year    = 2002,
+  volume  = {107},
+  number  = {C9},
+  pages   = {3118},
+  doi     = {10.1029/2001JC000888},
+}
+
+
 @Article{Stommel66,
  author   = {Stommel, H.},
  year   = 1948,
@@ -1027,7 +1123,7 @@ and the influence of recent improvements in the parameterization of convection i
 @techreport{taksz:96,
  author       = {Takacs, L.L. and M.J. Suarez},
  year         = {1996},
- title        = {  Dynamical aspects of climate simulations Using the GEOS
+ title        = {Dynamical aspects of climate simulations Using the GEOS
 General Circulation Model},
  institution  = {National Aeronautics and Space Administration},
  type         = {NASA Technical Memorandum},
@@ -1046,6 +1142,16 @@ General Circulation Model},
   pages   = {125--181}
 }
 
+@Article{utke:08,
+ author   = {Utke, J. and U. Naumann and M. Fagan and N. Tallent and M. Strout and P. Heimbach and C. Hill and C. Wunsch},
+ year   = 2008,
+ title    = {{OpenAD/F}: A modular open-source tool for automatic differentiation of Fortran codes},
+ journal  = {ACM Transactions on Mathematical Software (TOMS)},
+ volume         = {34},
+ number         = 4,
+ pages          = {18},
+ doi            = {10.1145/1377596.1377598},
+      }
 
 @Article{visbeck:97,
   author =   {Visbeck, M. and J. Marshall and T. Haine and M. Spall},

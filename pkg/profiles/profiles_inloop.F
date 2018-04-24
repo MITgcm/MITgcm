@@ -47,6 +47,9 @@ C ==================== Local Variables ==========================
 #ifndef ALLOW_CTRL
       integer optimcycle
 #endif
+#ifndef ALLOW_ECCO
+      integer i,j
+#endif
       
 c     == end of interface ==
 
@@ -55,6 +58,25 @@ c     == end of interface ==
 #endif
 
         _BEGIN_MASTER( mythid )
+
+#ifndef ALLOW_ECCO
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+          do k = 1,nr
+            do j = 1,sNy
+              do i =  1,sNx
+                m_UE(i,j,k,bi,bj)=0. _d 0
+                m_VN(i,j,k,bi,bj)=0. _d 0
+              enddo
+            enddo
+          enddo
+        enddo
+      enddo
+
+      CALL ROTATE_UV2EN_RL(
+     U          uVel, vVel, m_UE, m_VN,
+     I          .TRUE., .TRUE., .FALSE., Nr, mythid )
+#endif /* ALLOW_ECCO */
 
       DO bj=1,nSy
        DO bi=1,nSx

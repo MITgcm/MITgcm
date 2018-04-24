@@ -117,3 +117,12 @@ Sea Ice Packages
 
    thsice.rst
    seaice.rst
+
+Biogeochemistry Packages
+========================
+
+.. toctree::
+   :maxdepth: 3
+
+   gchem.rst
+   dic.rst

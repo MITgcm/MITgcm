@@ -51,11 +51,13 @@ C     myThid  :: My thread Id number
       INTEGER myThid
 
 C     !FUNCTIONS:
+#ifdef ALLOW_RUNOFTEMP
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
+      INTEGER iL
+#endif
 
 C     !LOCAL VARIABLES:
-      INTEGER il
       LOGICAL prtBlkLn, addBlkLn
       CHARACTER*1 blkLin
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -580,12 +582,12 @@ c      CALL EXF_FLD_SUMMARY( 'Runoff temp.',
 c    I      runoftempfile, runoffRepCycle, runoffperiod,
 c    I      runoffStartTime, useExfYearlyFields, addBlkLn, myThid )
 c      addBlkLn = .TRUE.
-       il = ILNBLNK(runoftempfile)
+       iL = ILNBLNK(runoftempfile)
        WRITE(msgBuf,'(A)')
      & '   Runoff temp. is read from file:'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(3A)') '   >> ', runoftempfile(1:il), ' <<'
+       WRITE(msgBuf,'(3A)') '   >> ', runoftempfile(1:iL), ' <<'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
        prtBlkLn = .TRUE.

@@ -147,6 +147,7 @@ C--   Set layers_num according to layers_name:
         IF ( layers_name(iLa).EQ.'TH ' ) layers_num(iLa) = 1
         IF ( layers_name(iLa).EQ.'SLT' ) layers_num(iLa) = 2
         IF ( layers_name(iLa).EQ.'RHO' ) layers_num(iLa) = 3
+        IF ( layers_name(iLa).EQ.'MSE' ) layers_num(iLa) = 4
         IF ( layers_name(iLa).NE.' ' .AND.
      &       layers_num(iLa).EQ.0 ) THEN
           WRITE(msgBuf,'(2A,I2,3A)') 'LAYERS_READPARMS: ',
@@ -169,6 +170,34 @@ C--   Make sure the layers_bounds we just read is big enough
           errCount = errCount + 1
          ENDIF
         ENDDO
+       ENDIF
+#ifndef LAYERS_PRHO_REF
+       IF ( layers_num(iLa).EQ.3 ) THEN
+        WRITE(msgBuf,'(2A,I4)')
+     &      'S/R LAYERS_READPARMS: ',
+     &      'Layering in density requires to define LAYERS_PRHO_REF'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          errCount = errCount + 1
+       ENDIF
+#endif
+#ifndef LAYERS_MSE
+       IF ( layers_num(iLa).EQ.4 ) THEN
+        WRITE(msgBuf,'(2A,I4)')
+     &      'S/R LAYERS_READPARMS: ',
+     &      'Layering in MSE requires to define LAYERS_MSE'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          errCount = errCount + 1
+       ENDIF
+#endif
+C- Check MSE is not used with grey atmosphere nor with fizhi
+       IF ( layers_num(iLa).EQ.4 ) THEN
+        IF ( useAtm_Phys .OR. useFizhi ) THEN
+         WRITE(msgBuf,'(2A,I4)')
+     &       'S/R LAYERS_READPARMS: ',
+     &       'Layering in MSE only work with Aim_v23'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          errCount = errCount + 1
+        ENDIF
        ENDIF
       ENDDO
 

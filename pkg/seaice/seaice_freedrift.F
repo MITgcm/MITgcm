@@ -48,7 +48,6 @@ C     === Local variables ===
       _RL uice_cntr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vice_cntr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-
        kSrf=1
 
 C initialize fields:
@@ -66,9 +65,6 @@ C ==================
          ENDDO
         ENDDO
        ENDDO
-
-       CALL EXCH_UV_XY_RL( TAUX, TAUY, .TRUE., myThid )
-
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -146,7 +142,6 @@ C ==================================
          ENDDO
         ENDDO
        ENDDO
-
 
 C interpolated to velocity points:
 C ================================
