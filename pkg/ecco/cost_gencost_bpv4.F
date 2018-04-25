@@ -296,7 +296,7 @@ c--    Smooth field of anomalies
      &                         bpdifanom, irec, 1, myThid )
          write(fname4test(1:80),'(1a)') 'bpdatanom_smooth'
          CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
-     &                         bpdafanom, irec, 1, myThid )
+     &                         bpdatanom, irec, 1, myThid )
         endif
 
 c--    Compute cost function
