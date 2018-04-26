@@ -131,6 +131,8 @@ from numpy import little_endian as LITTLE_ENDIAN
 
 import sys
 
+# the following are mostly from numpy.compat.py3k
+
 if sys.version_info[0] >= 3:
     from functools import reduce
     def asbytes(s):
@@ -144,18 +146,14 @@ if sys.version_info[0] >= 3:
         return str(s)
 
     long = int
-    str = str
     unicode = str
-    bytes = bytes
-    basestring = (str, bytes)
+    basestring = str
 else:
     # python 2
     asbytes = str
     asstr = str
     long = long
-    str = str
     unicode = unicode
-    bytes = str
     basestring = basestring
 
 ABSENT       = asbytes('\x00\x00\x00\x00\x00\x00\x00\x00')
