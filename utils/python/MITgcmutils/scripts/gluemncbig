@@ -1295,7 +1295,7 @@ if __name__ == '__main__':
     del gatt['tile_number']
     del gatt['bi']
     del gatt['bj']
-    for k in gatt.keys():
+    for k in list(gatt):
         if k.startswith('exch2_'):
             del gatt[k]
 
