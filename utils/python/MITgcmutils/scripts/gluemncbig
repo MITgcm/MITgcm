@@ -743,12 +743,21 @@ class netcdf_file(object):
                 if not isinstance(values, unicode):
                     raise ValueError(
                         "NetCDF requires that text be encoded as UTF-8")
-                if sys.version_info[0] < 3:
-                    values = values.encode('utf-8')
+                values = values.encode('utf-8')
             for class_, nc_type in types:
                 if isinstance(sample, class_): break
 
-        values = asarray(values, TYPEMAP[nc_type])
+        if nc_type == NC_CHAR:
+            if len(values) == 0:
+                # only this can represent zero-length strings
+                dtype_ = dtype('c')
+            else:
+                # this avoids double encoding in python 3
+                dtype_ = dtype('S')
+        else:
+            dtype_ = TYPEMAP[nc_type]
+
+        values = asarray(values, dtype_)
 
         self.fp.write(asbytes(nc_type))
 
