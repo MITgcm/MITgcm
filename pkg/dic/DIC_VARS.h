@@ -12,11 +12,12 @@ C                       calculations.
 C     pCO2        :: surface ocean partial pressure of CO2 (atm).
 C     FluxCO2     :: Air-sea flux of CO2 (mol/m2/s).
 C     wind        :: Wind speed loaded from file for air-sea 
-C                       CO2 flux calculations (m/s).
+C                       flux calculations (m/s).
 C     FIce        :: Fraction of sea ice cover loaded from file 
-C                       for air-sea CO2 flux calculations.
+C						(or set by thice/seaice)
+C                       for air-sea flux calculations.
 C     Silica      :: Surface ocean concentration of silicate for 
-C                       pCO2 calculations. (mol/m3).
+C                       pCO2 calculations. Read in from file (mol/m3).
 C     Kwexch_Pre  :: Common part of piston velocity used for 
 C                       for air-sea CO2 and O2 flux calculations.
        COMMON /CARBON_NEEDS/
@@ -178,32 +179,34 @@ C     | o Biological Carbon Variables
 C     *==========================================================*
 
 C For averages of the output using TIMEAVE
-C  BIOave                 :: biological productivity
+C  BIOave                 :: biological productivity [mol P/m3/s]
 C  CARave                 :: carbonate changes due to biological
-C                             productivity and remineralization
+C                             productivity and remineralization [mol C/m3/s]
 C  SURave                 :: tendency of DIC due to air-sea exchange
-C                            and virtual flux
-C  SUROave                :: tendency of O2 due to air-sea exchange
-C  pCO2ave                :: surface ocean pCO2 
+C                            and virtual flux [mol C/m3/s]
+C  SUROave                :: tendency of O2 due to air-sea exchange [mol O2/m3/s]
+C  pCO2ave                :: surface ocean pCO2 [uatm]
 C  pHave                  :: surface ocean pH
-C  fluxCO2ave             :: tendency of DIC due to air-sea exchange 
-C  omegaCave              :: calcite saturation state
-C  pfluxave               :: changes to PO4 due to flux and remineralization
-C  epfluxave              :: export flux of PO4 through each layer
-C  cfluxave               :: carbonate changes due to flux and remineralization
-C  DIC_timeAve            :: period over which DIC averages are calculated
+C  fluxCO2ave             :: Air-sea flux of CO2 [mol C/m2/s] 
+C  omegaCave              :: Local saturation state with respect to calcite 
+C  pfluxave               :: changes to PO4 due to flux and remineralization [mol P/m3/s] 
+C  epfluxave              :: export flux of PO4 through each layer [mol P/m2/s] 
+C  cfluxave               :: carbonate changes due to flux and remineralization [mol C/m3/s]
+C  DIC_timeAve            :: period over which DIC averages are calculated [s]
 
 C Values for biotic biogeochemistry 
 C          (many set in data.dic, defaults to values in dic_readparms.F)
-C  par                    :: 
-C  alphaUniform, alpha    :: timescale for biological activity [mol P/m3/s]
+C  par                    :: photosynthetically active radiation  (light available for 
+C                            phytoplankton growth) [W/m2]
+C  alphaUniform, alpha    :: maximum rate of biological activity [mol P/m3/s]
 C                            read in alphaUniform and filled in 2d array alpha
-C  rainRatioUniform, rain_ratio :: inorganic/organic carbon rain ratio 
+C  rainRatioUniform, rain_ratio :: inorganic/organic particulate carbon rain ratio (PIC/POC)
 C                            read in rainRatioUniform and filled in 2d array rain_ratio
 C  InputFe                :: aeolian deposition of TOTAL IRON in dust [mol/m2/s]
-C  omegaC                 :: chlorophyll climatology data for self-shading effect [mg/m3]
-C  CHL                    :: chlorophyll climatology [mg/m3]
-C  Kpo4, KFE, lit0        :: half saturation constants for phosphate, iron and light
+C  omegaC                 :: Local saturation state with respect to calcite 
+C  CHL                    :: chlorophyll climatology data for self-shading effect [mg/m3]
+C  Kpo4, KFE, lit0        :: half saturation constants for phosphate, iron and light 
+C							 [mol P/m3, mol Fe/m3, W/m2]
 C  DOPfraction            :: fraction of new production going to DOP  
 C  zcrit, nlev            :: Minimum Depth (m) over which biological activity
 C                            is computed. determines nlev as the indice of the
@@ -211,13 +214,15 @@ C                            first layer deeper than -zcrit
 C  KRemin                 :: remineralization power law coeffient
 C  KDOPremin              :: DOP remineralization rate [1/s]
 C  zca                    :: scale depth for CaCO3 remineralization [m] 
-C  R_op,R_cp,R_NP, R_FeP  :: stochiometric ratio of nutrients 
+C  R_op,R_cp,R_NP, R_FeP  :: stochiometric ratios of nutrients 
+C							 (assumption of stoichometry of plankton and particulate 
+C							 and dissolved organic matter)
 C  O2crit                 :: critical oxygen level [mol/m3] 
 C  alpfe                  :: solubility of aeolian fe [%]
 C  KScav                  :: iron scavenging rate [1/s]
 C  ligand_stab            :: ligand-free iron stability constant [m3/mol]
 C  ligand_tot             :: uniform, invariant total free ligand conc [mol/m3]
-C  freefemax              :: max solubility of free iron [mol/m3]
+C  freefemax              :: max soluble free iron [mol/m3]
 C  fesedflux_pcm          :: ratio of sediment iron to sinking organic matter
 C  FeIntSec               :: Sediment Fe flux, intersect value in:
 C                                    Fe_flux = fesedflux_pcm*pflux + FeIntSec
