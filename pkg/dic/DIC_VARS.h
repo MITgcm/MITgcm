@@ -218,7 +218,7 @@ C  R_op,R_cp,R_NP, R_FeP  :: stochiometric ratios of nutrients
 C							 (assumption of stoichometry of plankton and particulate 
 C							 and dissolved organic matter)
 C  O2crit                 :: critical oxygen level [mol/m3] 
-C  alpfe                  :: solubility of aeolian fe [%]
+C  alpfe                  :: solubility of aeolian fe [fraction]
 C  KScav                  :: iron scavenging rate [1/s]
 C  ligand_stab            :: ligand-free iron stability constant [m3/mol]
 C  ligand_tot             :: uniform, invariant total free ligand conc [mol/m3]
