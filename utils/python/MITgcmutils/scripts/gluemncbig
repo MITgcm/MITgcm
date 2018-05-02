@@ -19,6 +19,7 @@ Examples:
 gluemncbig -o ptr.nc mnc_*/ptr_tave.*.nc
 gluemncbig -o BIO.nc -v 'BIO_*' mnc_*/ptr_tave.*.nc
 """
+from __future__ import print_function
 
 # NetCDF reader/writer module modified from pupynere,
 # https://bitbucket.org/robertodealmeida/pupynere/
@@ -94,16 +95,16 @@ than letting ``range(10)`` overwrite the ``time`` variable.
 To read the NetCDF file we just created:
 
     >>> f = netcdf_file('simple.nc', 'r')
-    >>> print f.history
+    >>> print(f.history)
     Created for a test
-    >>> print f.location
+    >>> print(f.location)
     北京
     >>> time = f.variables['time']
-    >>> print time.units
+    >>> print(time.units)
     µs since 2008-01-01
-    >>> print time.shape
+    >>> print(time.shape)
     (10,)
-    >>> print time[-1]
+    >>> print(time[-1])
     9
     >>> f.close()
 
@@ -130,7 +131,10 @@ from numpy import little_endian as LITTLE_ENDIAN
 
 import sys
 
+# the following are mostly from numpy.compat.py3k
+
 if sys.version_info[0] >= 3:
+    from functools import reduce
     def asbytes(s):
         if isinstance(s, bytes):
             return s
@@ -140,22 +144,29 @@ if sys.version_info[0] >= 3:
         if isinstance(s, bytes):
             return s.decode('latin1')
         return str(s)
+
+    long = int
+    unicode = str
+    basestring = str
 else:
+    # python 2
     asbytes = str
     asstr = str
+    long = long
+    unicode = unicode
+    basestring = basestring
 
-
-ABSENT       = asbytes('\x00\x00\x00\x00\x00\x00\x00\x00')
-ZERO         = asbytes('\x00\x00\x00\x00')
-NC_BYTE      = asbytes('\x00\x00\x00\x01')
-NC_CHAR      = asbytes('\x00\x00\x00\x02')
-NC_SHORT     = asbytes('\x00\x00\x00\x03')
-NC_INT       = asbytes('\x00\x00\x00\x04')
-NC_FLOAT     = asbytes('\x00\x00\x00\x05')
-NC_DOUBLE    = asbytes('\x00\x00\x00\x06')
-NC_DIMENSION = asbytes('\x00\x00\x00\n')
-NC_VARIABLE  = asbytes('\x00\x00\x00\x0b')
-NC_ATTRIBUTE = asbytes('\x00\x00\x00\x0c')
+ABSENT       = b'\x00\x00\x00\x00\x00\x00\x00\x00'
+ZERO         = b'\x00\x00\x00\x00'
+NC_BYTE      = b'\x00\x00\x00\x01'
+NC_CHAR      = b'\x00\x00\x00\x02'
+NC_SHORT     = b'\x00\x00\x00\x03'
+NC_INT       = b'\x00\x00\x00\x04'
+NC_FLOAT     = b'\x00\x00\x00\x05'
+NC_DOUBLE    = b'\x00\x00\x00\x06'
+NC_DIMENSION = b'\x00\x00\x00\n'
+NC_VARIABLE  = b'\x00\x00\x00\x0b'
+NC_ATTRIBUTE = b'\x00\x00\x00\x0c'
 
 
 TYPEMAP = { NC_BYTE:   dtype(np.byte),
@@ -406,7 +417,7 @@ class netcdf_file(object):
 
     def _map(self):
         self.fp.seek(0)
-        self.fp.write(asbytes('CDF'))
+        self.fp.write(b'CDF')
         self.fp.write(array(self.version_byte, '>b').tostring())
 
         # Write headers
@@ -534,7 +545,7 @@ class netcdf_file(object):
             self.fp.seek(pos)
             np.asanyarray(val, var.data.dtype.newbyteorder('>')).tofile(self.fp)
             # pad
-            self.fp.write(asbytes('0') * (var._vsize - count))
+            self.fp.write(b'\x00' * (var._vsize - count))
 
     def write_recvar(self, name, rec, val, j0=None, iY=-2):
         if not self.delay:
@@ -564,13 +575,13 @@ class netcdf_file(object):
             self.fp.seek(pos)
             np.asanyarray(val, var.data.dtype.newbyteorder('>')).tofile(self.fp)
             # pad
-            self.fp.write(asbytes('0') * (var._vsize - count))
+            self.fp.write(b'\x00' * (var._vsize - count))
         if rec >= self._recs:
             self.__dict__['_recs'] = rec + 1
 
     def _write(self):
         self.fp.seek(0)
-        self.fp.write(asbytes('CDF'))
+        self.fp.write(b'CDF')
         self.fp.write(array(self.version_byte, '>b').tostring())
 
         # Write headers and data.
@@ -694,7 +705,7 @@ class netcdf_file(object):
                 var.data = var.data.byteswap()
             self.fp.write(var.data.tostring())
             count = var.data.size * var.data.itemsize
-            self.fp.write(asbytes('0') * (var._vsize - count))
+            self.fp.write(b'\x00' * (var._vsize - count))
         else:  # record variable
             # Handle rec vars with shape[0] < nrecs.
             if self._recs > len(var.data):
@@ -709,7 +720,7 @@ class netcdf_file(object):
                 self.fp.write(rec.tostring())
                 # Padding
                 count = rec.size * rec.itemsize
-                self.fp.write(asbytes('0') * (var._vsize - count))
+                self.fp.write(b'\x00' * (var._vsize - count))
                 pos += self._recsize
                 self.fp.seek(pos)
             self.fp.seek(pos0 + var._vsize)
@@ -730,12 +741,23 @@ class netcdf_file(object):
                 sample = values
             if isinstance(sample, unicode):
                 if not isinstance(values, unicode):
-                    raise ValueError("NetCDF requires that text be encoded as UTF-8")
+                    raise ValueError(
+                        "NetCDF requires that text be encoded as UTF-8")
                 values = values.encode('utf-8')
             for class_, nc_type in types:
                 if isinstance(sample, class_): break
 
-        values = asarray(values, TYPEMAP[nc_type])
+        if nc_type == NC_CHAR:
+            if len(values) == 0:
+                # only this can represent zero-length strings
+                dtype_ = dtype('c')
+            else:
+                # this avoids double encoding in python 3
+                dtype_ = dtype('S')
+        else:
+            dtype_ = TYPEMAP[nc_type]
+
+        values = asarray(values, dtype_)
 
         self.fp.write(asbytes(nc_type))
 
@@ -750,12 +772,12 @@ class netcdf_file(object):
             values = values.byteswap()
         self.fp.write(values.tostring())
         count = values.size * values.itemsize
-        self.fp.write(asbytes('0') * (-count % 4))  # pad
+        self.fp.write(b'\x00' * (-count % 4))  # pad
 
     def _read(self):
         # Check magic bytes and version
         magic = self.fp.read(3)
-        if not magic == asbytes('CDF'):
+        if not magic == b'CDF':
             raise TypeError("Error: %s is not a valid NetCDF 3 file" %
                             self.filename)
         self.__dict__['version_byte'] = fromstring(self.fp.read(1), '>b')[0]
@@ -961,7 +983,7 @@ class netcdf_file(object):
             if values.shape == (1,): values = values[0]
         else:
             ## text values are encoded via UTF-8, per NetCDF standard
-            values = values.rstrip(asbytes('\x00')).decode('utf-8', 'replace')
+            values = values.rstrip(b'\x00').decode('utf-8', 'replace')
         return values
 
     def _pack_begin(self, begin):
@@ -988,11 +1010,11 @@ class netcdf_file(object):
         count = len(s)
         self._pack_int(count)
         self.fp.write(asbytes(s))
-        self.fp.write(asbytes('0') * (-count % 4))  # pad
+        self.fp.write(b'\x00' * (-count % 4))  # pad
 
     def _unpack_string(self):
         count = self._unpack_int()
-        s = self.fp.read(count).rstrip(asbytes('\x00'))
+        s = self.fp.read(count).rstrip(b'\x00')
         self.fp.read(-count % 4)  # read padding
         return s
 
@@ -1248,8 +1270,7 @@ if __name__ == '__main__':
 
     files0 = [v for k,v in sorted(files0.items())]
 
-    its = itfiles.keys()
-    its.sort()
+    its = sorted(itfiles.keys())
     for it in its:
         itfiles[it] = [v for k,v in sorted(itfiles[it].items())]
 
@@ -1262,9 +1283,9 @@ if __name__ == '__main__':
         filess = [files0]
 
     if verbose:
-        print 'Files to be read:'
+        print('Files to be read:')
         for files in filess:
-            print files[0], '... (%d)' % (len(files))
+            print(files[0], '... (%d)' % (len(files)))
 
     nc = netcdf_file(files0[0], 'r', **readopts)
     gatt = OrderedDict(nc.attributes)
@@ -1274,7 +1295,7 @@ if __name__ == '__main__':
     del gatt['tile_number']
     del gatt['bi']
     del gatt['bj']
-    for k in gatt.keys():
+    for k in list(gatt):
         if k.startswith('exch2_'):
             del gatt[k]
 
@@ -1308,19 +1329,20 @@ if __name__ == '__main__':
             n += Ny - sNy
         dims[k] = n
 
-    print 'Tiled dimensions:', ' '.join([k for k in nc.dimensions if k[0] in 'XY'])
+    print('Tiled dimensions:',
+          ' '.join([k for k in nc.dimensions if k[0] in 'XY']))
 
     havetime = tname in dims
     if havetime:
         assert dims[tname] is None
         nrec = nc.numrecs
-        print 'Record dimension:', tname
+        print('Record dimension:', tname)
     else:
         assert len(its) <= 1
         nrec = None
 
     if verbose:
-        print 'Variables:'
+        print('Variables:')
 
     varprops = OrderedDict()
     for name,var in nc.variables.items():
@@ -1342,7 +1364,8 @@ if __name__ == '__main__':
             if tname in var.dimensions: dimstrs[list(var.dimensions).index(tname)] = tname
             if iX is not None: dimstrs[iX] = var.dimensions[iX]
             if iY is not None: dimstrs[iY] = var.dimensions[iY]
-            if verbose: print '%s %s(%s)' % (var.typecode(), name, ','.join(dimstrs))
+            if verbose:
+                print( '%s %s(%s)' % (var.typecode(), name, ','.join(dimstrs)))
 
     ######################################################################
     # create global netcdf file
@@ -1361,7 +1384,7 @@ if __name__ == '__main__':
         vars = {}
         for name,var in varprops.items():
             dtype_ = np.dtype(var['dtype']).newbyteorder('>')
-        #    if verbose: print 'Creating variable', name, dtype_, var['dimensions']
+        #    if verbose: print('Creating variable', name, dtype_, var['dimensions'])
             vars[name] = ncout.createVariable(name, dtype_, var['dimensions'])
             for attname,att in var['ncattrs'].items():
                 setattr(vars[name], attname, att)
@@ -1419,7 +1442,7 @@ if __name__ == '__main__':
                         indstrings = {}
                         for name,pos,isrec in ncout.begins:
                             if not isrec:
-                                if verbose: print name
+                                if verbose: print(name)
                                 prop = varprops[name]
                                 vardims = prop['dimensions']
                                 var = vars[name]
@@ -1456,7 +1479,7 @@ if __name__ == '__main__':
                                 sys.stderr.write('.')
                             for name,pos,isrec in ncout.begins:
                                 if isrec:
-                                    if verbose: print irec+irecin, name
+                                    if verbose: print(irec+irecin, name)
                                     prop = varprops[name]
                                     vardims = prop['dimensions'][1:]
                                     var = vars[name]
@@ -1512,7 +1535,7 @@ if __name__ == '__main__':
             indstrings = {}
             for name,pos,isrec in ncout.begins:
                 if not isrec:
-                    if verbose: print name
+                    if verbose: print(name)
                     prop = varprops[name]
                     vardims = prop['dimensions']
                     var = vars[name]
@@ -1548,7 +1571,7 @@ if __name__ == '__main__':
                         if progress and not verbose: sys.stderr.write('.')
                         for name,pos,isrec in ncout.begins:
                             if isrec:
-                                if verbose: print irec+irecin, name
+                                if verbose: print(irec+irecin, name)
                                 prop = varprops[name]
                                 vardims = prop['dimensions'][1:]
                                 var = vars[name]
