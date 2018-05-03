@@ -1,0 +1,18 @@
+--- /Users/baylor/Research/MITgcm.checking/model/inc/FFIELDS.h	Tue Apr 12 08:59:05 2005
++++ FFIELDS.h	Thu Oct 13 12:51:51 2005
+@@ -203,9 +203,15 @@
+      &                         surfaceForcingV,
+      &                         surfaceForcingT,
+      &                         surfaceForcingS, 
++     &                         invtime_restore,
++     &                         theta_restore,
++     &                         spice_restore,
+      &                         surfaceForcingTice
+       _RL  surfaceForcingU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+       _RL  surfaceForcingV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+       _RL  surfaceForcingT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+       _RL  surfaceForcingS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
++      _RL  invtime_restore   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
++      _RL  theta_restore     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
++      _RL  spice_restore     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+       _RL  surfaceForcingTice(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

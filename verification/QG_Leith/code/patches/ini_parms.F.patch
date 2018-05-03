@@ -1,0 +1,37 @@
+--- ../../../model/src/ini_parms.F	2005-12-13 10:05:24.000000000 -0500
++++ ini_parms.F	2005-10-14 10:11:56.000000000 -0400
+@@ -1,4 +1,4 @@
+-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.173 2005/10/24 22:40:28 jmc Exp $
++C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.172 2005/10/11 21:27:52 jmc Exp $
+ C $Name:  $
+ 
+ #include "PACKAGES_CONFIG.h"
+@@ -169,6 +169,7 @@
+      & viscAr, diffKrT, diffKrS, diffKrNrT, diffKrNrS, hFacMinDr,
+      & viscAp, diffKpT, diffKpS, hFacMinDp,
+      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
++     & fuconst,daylength,Qdiur,Qconst,
+      & rhoConst, rhoConstFresh, buoyancyRelation, HeatCapacity_Cp,
+      & writeBinaryPrec, readBinaryPrec, writeStatePrec,
+      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
+@@ -196,8 +197,7 @@
+      & nIter0, nTimeSteps, nEndIter, pickupSuff,
+      & deltaT, deltaTClock, deltaTmom, 
+      & deltaTtracer, dTtracerLev, deltaTfreesurf,
+-     & forcing_In_AB, doAB_onGtGs,
+-     & abEps, alph_AB, beta_AB, startFromPickupAB2, 
++     & forcing_In_AB, abEps, alph_AB, beta_AB, startFromPickupAB2, 
+      & tauCD, rCD,
+      & baseTime, startTime, endTime, chkPtFreq,
+      & dumpFreq, dumpInitAndLast, adjDumpFreq, taveFreq, tave_lastIter,
+@@ -351,6 +351,10 @@
+        sRef(k)      = UNSET_RL
+       ENDDO
+       gBaro    = UNSET_RL
++      fuconst  = UNSET_RL
++      daylength= UNSET_RL
++      Qdiur    = UNSET_RL
++      Qconst   = UNSET_RL
+       rhoConst = UNSET_RL
+       omega    = UNSET_RL
+       hFacMinDr           = UNSET_RL

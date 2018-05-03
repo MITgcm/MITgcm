@@ -1,0 +1,42 @@
+--- /Users/baylor/Research/MITgcm.checking/model/src/ini_forcing.F	Tue Apr 12 08:59:06 2005
++++ ini_forcing.F	Thu Sep 22 12:22:53 2005
+@@ -35,7 +35,7 @@
+ C     bi,bj  - Loop counters
+ C     I,J
+       INTEGER bi, bj
+-      INTEGER  I,  J
++      INTEGER  I,  J, K
+ CEOP
+ 
+       _BARRIER
+@@ -44,6 +44,11 @@
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
++          DO k=1,Nr
++           invtime_restore(i,j,k,bi,bj) =  0. _d 0
++           theta_restore(i,j,k,bi,bj) =  0. _d 0
++           spice_restore(i,j,k,bi,bj) =  0. _d 0
++          ENDDO
+           fu              (i,j,bi,bj) = 0. _d 0
+           fv              (i,j,bi,bj) = 0. _d 0
+           Qnet            (i,j,bi,bj) = 0. _d 0
+@@ -142,6 +147,18 @@
+       IF ( lambdaSaltFile .NE. ' '  ) THEN
+        CALL READ_FLD_XY_RS( lambdaSaltFile, ' ', 
+      &  lambdaSaltClimRelax, 0, myThid )
++      IF ( thetaRestoreFile .NE. ' '  ) THEN
++       CALL MDSREADFIELD(thetaRestoreFile, readBinaryPrec, 'RS',
++     &                     Nr,theta_restore,1,myThid)
++      ENDIF
++      IF ( spiceRestoreFile .NE. ' '  ) THEN
++       CALL MDSREADFIELD(spiceRestoreFile, readBinaryPrec, 'RS',
++     &                     Nr,spice_restore,1,myThid)
++      ENDIF
++      IF ( invtimeRestoreFile .NE. ' '  ) THEN
++       CALL MDSREADFIELD(invtimeRestoreFile, readBinaryPrec, 'RS',
++     &                     Nr,invtime_restore,1,myThid)
++      ENDIF
+       ENDIF
+ #ifdef SHORTWAVE_HEATING
+       IF ( surfQswFile .NE. ' '  ) THEN

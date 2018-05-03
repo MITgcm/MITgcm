@@ -1,0 +1,68 @@
+--- ../../../model/src/external_forcing_surf.F	2005-12-13 10:05:24.000000000 -0500
++++ external_forcing_surf.F	2005-10-18 10:52:08.000000000 -0400
+@@ -1,4 +1,4 @@
+-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.32 2005/12/08 15:44:33 heimbach Exp $
++C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.31 2005/07/11 19:30:42 jmc Exp $
+ C $Name:  $
+ 
+ #include "PACKAGES_CONFIG.h"
+@@ -102,7 +102,6 @@
+ C     of surf.thickness (hFac): account for change in surf.thickness
+        IF (staggerTimeStep.AND.nonlinFreeSurf.GT.0) THEN
+         IF (select_rStar.GT.0) THEN
+-# ifndef DISABLE_RSTAR_CODE
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+             surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
+@@ -111,7 +110,6 @@
+      &                                  * rStarExpC(i,j,bi,bj)
+           ENDDO
+          ENDDO
+-# endif /* DISABLE_RSTAR_CODE */
+         ELSE
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+@@ -172,16 +170,40 @@
+           surfaceForcingV(i,j,bi,bj) = 
+      &      fv(i,j,bi,bj)*horiVertRatio*recip_rhoConst
+ C     Net heat flux Qnet:
++
++CBFK    This is an idealized wintertime + diurnal forcing
++          Qsw(i,j,bi,bj)=Qdiur*
++     &		(max(cos(2.*pi/86400.*myTime+pi),cos(pi/86400.*daylength))
++     &          -cos(pi/86400.*daylength))
++     	  Qnet(i,j,bi,bj)=Qconst+Qsw(i,j,bi,bj)
++CBFK  Symmetry-Breaking...
++C  	  if (i.eq.1) then 
++C 	     if (j.gt.(jMin+jMax)/2) then
++C	       Qnet(i,j,bi,bj)=Qnet(i,j,bi,bj)+1.0
++C	     else
++C               Qnet(i,j,bi,bj)=Qnet(i,j,bi,bj)-1.0
++C            endif
++C         endif
++
+           surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
+      &       - ( Qnet(i,j,bi,bj)
+ #ifdef SHORTWAVE_HEATING
+      &          -Qsw(i,j,bi,bj)
+ #endif
+      &         ) *recip_Cp*horiVertRatio*recip_rhoConst
+-C     Net Salt Flux : 
+-          surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
+-     &      -saltFlux(i,j,bi,bj)*horiVertRatio*recip_rhoConst
+ 
++C Insure restoring fluxes are included for kpp
++C	  surfaceforcingT(i,j,bi,bj)=surfaceforcingT(i,j,bi,bj)
++C     &        +(theta_restore(i,j,ks,bi,bj)-theta(i,j,ks,bi,bj))*
++C     &        invtime_restore(i,j,ks,bi,bj)
++C     &        *drF(ks)*hFacC(i,j,ks,bi,bj)
++
++C     Net Salt Flux : 
++C          surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
++C     &      -saltFlux(i,j,bi,bj)*horiVertRatio*recip_rhoConst
++C     &        +(spice_restore(i,j,ks,bi,bj)-salt(i,j,ks,bi,bj))*
++C     &        invtime_restore(i,j,ks,bi,bj)
++C     &        *drF(ks)*hFacC(i,j,ks,bi,bj)
+          ENDDO
+       ENDDO
+         

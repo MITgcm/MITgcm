@@ -1,0 +1,20 @@
+--- ../../../model/inc/CPP_OPTIONS.h	2005-08-24 19:05:32.000000000 -0400
++++ CPP_OPTIONS.h	2005-09-22 12:09:40.000000000 -0400
+@@ -8,7 +8,7 @@
+ 
+ C o Shortwave heating as extra term in external_forcing.F
+ C Note: this should be a run-time option
+-#undef SHORTWAVE_HEATING
++#define SHORTWAVE_HEATING
+ 
+ C o Include/exclude phi_hyd calculation code
+ #define INCLUDE_PHIHYD_CALCULATION_CODE
+@@ -26,7 +26,7 @@
+ #undef ALLOW_ADAMSBASHFORTH_3
+ 
+ C o Include/exclude nonHydrostatic code
+-#undef ALLOW_NONHYDROSTATIC
++#define ALLOW_NONHYDROSTATIC
+ 
+ C o Include pressure loading code
+ #define ATMOSPHERIC_LOADING

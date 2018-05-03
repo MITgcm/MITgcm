@@ -1,0 +1,35 @@
+This document briefly explains the code modifications I made to implement QG Leith.
+
+I'm also including some thoughts about how I would do it now, if I were to try this again. QG Leith was my first attempt at a serious modification of the MITgcm code, and my inexperience led me to do some things which were tougher than they needed to be.
+
+**************************************
+
+The main difficulty with coding QG Leith is that it needs (the option) to use the same value for horizontal viscosity and GM transport coefficient. HereI chose to calculate the coefficient twice (once in the thermodynamics loop, and again separately in the dynamics loop).  In hindsight, I think this makes the values slightly different at each time step since the thermodynamic variables would have already been stepped forward when the dynamics loop starts. Probably would have been better to make a separate module and header file with all the variables that QG Leith needs and calculate the coefficient only once, before either of those loops begins.
+
+Key changes to the code that I made:
+
+FLAGS and PARAMETERS (in runtime "data" file):
+LOGICAL leith_qg: selects whether to use QG Leith (as opposed to the original "2D Leith" which is already in MITgcm)
+LOGICAL NoGM: sets all the GM tensor coefficients to zero, so you can use QG Leith viscosity without the GM part
+LOGICAL dyn_leith_qg:  selects whether to use the dynamical Germano scheme along with QG Leith
+_RL filter_width:  selects the width in multiples of dx for the Germano test filter (example values would be 2.0, 3.0, etc.)
+_RL leith_qg_coeff:  if not using Germano, this is the value of the tuning coefficient (a nice value to use is just 1.0)
+
+
+THERMODYNAMICS:
+In gmredi_calc_tensor.F, there is a call to a new subroutine calc_germanoK.F, which calculates the QG Leith coefficient and (optionally) the dynamic Germano version of it. Later on in gmredi_calc_tensor, it adds the QG Leith coefficient (stored in the array "GermanoK") to Kux, Kuz, etc.).  FWIW, my coding strategy was that basically anywhere I saw "VisbeckK" I added my "GermanoK". The "NoGM" option is at the bottom of this subroutine.
+
+In calc_germanoK.F I did one fudgy thing, which is to set the coefficient at the right boundary equal to the coefficient at the left boundary.  I was in a channel bounded by meridional walls and didn't want to fuss with trying to figure out how to correctly calculate the gradient at the boundary since it wasn't important for my experiments.  Obviously this needs to be fixed.
+
+In gmredi_xtransport.F and gmredi_ytransport.F, it adds the QG Leith coefficient again if GM_NON_UNITY_DIAGONAL is true.
+
+
+DYNAMICS: 
+
+In dynamics.F, I pass theta and salt as arguments to mom_fluxform.F so it can calculate the vortex stretching term.  Would have been easier to just add #include "DYNVARS.h" to the mom_fluxform.F subroutine...
+
+In mom_fluxform.F, there is a call to my new subroutine "mom_calc_qg_stretching.F" located with things like calc_strain, calc_tension, etc. The output variable, "stretching", is passed to "mom_calc_visc.F".
+
+In mom_calc_visc.F, the stretching term is added on top of the stuff already in the calcLeith block of code.  *NOTE* that the way I coded it requires that useFullLeith has to be FALSE in order for QG Leith to be called. At the time this was the easiest way to shoehorn my new stuff into the existing code without making changes that were irrelevant to my project.  In the new version it would probably be useful to not make useFullLeith and QG Leith mutually exclusive.
+
+
