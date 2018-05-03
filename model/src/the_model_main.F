@@ -44,6 +44,9 @@ C    | |-INI_PARMS :: Routine to set kernel model parameters.
 C    | |           :: Kernel parameters are read from file "data"
 C    | |           :: in directory in which code executes.
 C    | |
+C    | |-CPL_IMPORT_CPLPARMS :: Import coupling parameters from/to
+C    | |                     :: the coupler layer
+C    | |
 C    | |-PACKAGES_BOOT      :: Start up the optional package environment.
 C    | |                    :: Runtime selection of active packages.
 C    | |-PACKAGES_READPARMS :: read each package input parameter file
@@ -123,6 +126,8 @@ C    | | |-INI_NLFS_VARS :: Initialise all Non-Lin Free-Surf arrays (SURFACE.h)
 C    | | |-INI_DYNVARS   :: Initialise to zero all DYNVARS.h arrays
 C    | | |-INI_NH_VARS   :: Initialise to zero all NH_VARS.h arrays
 C    | | |
+C    | | |-INI_FFIELDS   :: Initialise forcing fields in FFIELDS.h to zero
+C    | | |
 C    | | |-INI_FIELDS    :: Control initialising model fields to non-zero
 C    | | | |-INI_VEL     :: Initialize 3D flow field.
 C    | | | |-INI_THETA   :: Set model initial temperature field.
@@ -131,6 +136,8 @@ C    | | | |-INI_PSURF   :: Set model initial free-surface height/pressure.
 C    | | | |-READ_PICKUP :: Read in main model pickup files to restart a run.
 C    | | |
 C    | | |-INI_MIXING   :: Initialise diapycnal diffusivity.
+C    | | |
+C    | | |-TAUEDDY_INIT_VARIA :: Initialise eddy diffusivities
 C    | | |
 C    | | |-INI_FORCING  :: Set model initial forcing fields, either
 C    | | |   |          :: set in-line or from file as shown here:

@@ -603,6 +603,29 @@ An example of a subroutine in/out admonition box in the documentation is :ref:`h
 
 An example of a calling tree in the documentation is :ref:`here <call-tree-press-meth>`.
 
+To show text from a separate file (e.g., to show lines of code, show comments from a Fortran file, show a parameter file etc.), 
+use the ``literalinclude`` directive. Example usage is shown here:
+
+   ::
+
+        .. literalinclude:: «FILE_TO_SHOW»
+            :start-at: String indicating where to start grabbing text
+            :end-at: String indicating where to stop grabbing text
+
+Unlike the ``:filelink:`` and ``:varlink:`` directives, which assume a file path starting at the top of the MITgcm repository,
+one must specify the path relative to the current directory of the file (for example, from the doc directory, it would require
+``../../`` at the start of the file path to specify the base directory of the MITgcm repository).
+Note one can instead use ``:start-after:`` and ``:end-before:`` to get text from the file between (not including) those lines. 
+If one omits the ``start-at`` or ``start-after``, etc. options the whole file is shown. 
+More details for this directive can be found `here <http://www.sphinx-doc.org/en/stable/markup/code.html#directive-literalinclude>`__.
+Example usage in this documentation is :ref:`here <model_main_call_tree>`,
+where the lines to generate this are:
+
+   ::
+
+        .. literalinclude:: ../../model/src/the_model_main.F
+            :start-at: C Invocation from WRAPPER level...
+            :end-at: C    |                 :: events.
 
 
 .. _subsec_manual_style_guide:

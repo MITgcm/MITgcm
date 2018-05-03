@@ -333,6 +333,7 @@ C     model grid cell-center position (leading to trivial interpolation)
         ENDIF
         apco2_lat_inc(j) = inp_dLat
       ENDDO
+      apco2_interpMethod = 1
 #endif /* USE_EXF_INTERPOLATION */
 #endif
 

@@ -722,6 +722,8 @@ The following AD-specific CPP option files need to be customized:
   This header configures the splitting of the time stepping loop
   with respect to the 3-level checkpointing (see section ???).
 
+.. _building_adcode_using_taf:
+
 Building the AD code using TAF
 ------------------------------
 
@@ -897,6 +899,8 @@ is controlled by three top-level headers.
     end do
 
 All files ``checkpoint_lev?.h`` are contained in directory :filelink:`pkg/autodiff/`.
+
+.. _adoptfile:
 
 Changing the default AD tool flags: ad_options files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
