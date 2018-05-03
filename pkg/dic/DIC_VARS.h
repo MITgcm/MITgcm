@@ -14,7 +14,7 @@ C     FluxCO2     :: Air-sea flux of CO2 (mol/m2/s).
 C     wind        :: Wind speed loaded from file for air-sea 
 C                       flux calculations (m/s).
 C     FIce        :: Fraction of sea ice cover loaded from file 
-C						(or set by thice/seaice)
+C                       (or set by thice/seaice)
 C                       for air-sea flux calculations.
 C     Silica      :: Surface ocean concentration of silicate for 
 C                       pCO2 calculations. Read in from file (mol/m3).
@@ -215,8 +215,8 @@ C  KRemin                 :: remineralization power law coeffient
 C  KDOPremin              :: DOP remineralization rate [1/s]
 C  zca                    :: scale depth for CaCO3 remineralization [m] 
 C  R_op,R_cp,R_NP, R_FeP  :: stochiometric ratios of nutrients 
-C							 (assumption of stoichometry of plankton and particulate 
-C							 and dissolved organic matter)
+C                            (assumption of stoichometry of plankton and particulate 
+C                             and dissolved organic matter)
 C  O2crit                 :: critical oxygen level [mol/m3] 
 C  alpfe                  :: solubility of aeolian fe [fraction]
 C  KScav                  :: iron scavenging rate [1/s]
