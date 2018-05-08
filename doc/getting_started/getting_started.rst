@@ -246,7 +246,7 @@ As an example, assume that you want to build and run experiment
 
     % cd verification/exp2/build
 
-First, build the ``Makefile``:
+First, generate the ``Makefile``:
 
 ::
 
@@ -535,13 +535,12 @@ The most important command-line options are:
 
 ``–adoptfile «/PATH/TO/FILE»``
     (= ``-adof``) specifies the “adjoint” or automatic differentiation options file to
-    be used . The file is analogous to the optfile defined above but it
+    be used. The file is analogous to the optfile defined above but it
     specifies information for the AD build process. See :numref:`adoptfile`.
 
     The default file is located in
     :filelink:`tools/adjoint_options/adjoint_default` and it defines the “TAF”
-    and “TAMC” compilers. As with any compiler, it is helpful to have the TAF or TAMC
-    directories included in your ``$PATH`` `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_.
+    and “TAMC” compiler options. 
 
 ``–mpi``
     enables certain `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ features (using CPP ``#define``)
@@ -621,7 +620,7 @@ shipped with the code is **OS_HARDWARE_COMPILER** where
 
 There are existing optfiles that work with many common hardware/compiler configurations;
 we first suggest you peruse the list in :filelink:`tools/build_options`
-and try to find your configuration. These are the most common:
+and try to find your platform/compiler configuration. These are the most common:
 
 - :filelink:`linux_amd64_gfortran <tools/build_options/linux_amd64_gfortran>`
 - :filelink:`linux_amd64_ifort11 <tools/build_options/linux_amd64_ifort11>`
