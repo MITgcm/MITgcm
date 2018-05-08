@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/calc_germano_disc.F,v 1.15 2012/06/15 18:20:30 bachmans $
-C $Name:  $
-
 #include "GMREDI.h"
 #include "GMREDI_OPTIONS.h"
 

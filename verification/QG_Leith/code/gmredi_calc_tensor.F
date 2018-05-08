@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.42 2013/07/11 14:33:23 m_bates Exp $
-C $Name:  $
-
 #include "GMREDI_OPTIONS.h"
 #ifdef ALLOW_KPP
 # include "KPP_OPTIONS.h"

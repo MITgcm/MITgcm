@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_xtransport.F,v 1.18 2010/01/20 01:20:29 jmc Exp $
-C $Name:  $
-
 #include "GMREDI_OPTIONS.h"
 
       SUBROUTINE GMREDI_XTRANSPORT(

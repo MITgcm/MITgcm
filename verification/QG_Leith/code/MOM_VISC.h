@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/MOM_VISC.h,v 1.5 2013/11/05 13:31:50 jmc Exp $
-C $Name:  $
-
 C- Common file for length scales
 
 #ifdef ALLOW_MOM_COMMON

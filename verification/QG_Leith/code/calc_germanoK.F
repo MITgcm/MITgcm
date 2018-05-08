@@ -1,8 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/calc_germanoK.F,v 1.0 2012/06/15 15:34:00 bachmans $
-C $Name:  $
-
-
-
       SUBROUTINE CALC_GERMANOK(
      I        bi,bj,uFld,vFld,k,
      I        thetaG,saltG, GermanoK_layer)

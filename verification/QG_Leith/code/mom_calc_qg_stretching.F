@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_qg_stretching.F,v 1.0 2013/10/02 sb $
-C $Name:  $
-
 #include "MOM_COMMON_OPTIONS.h"
 
 CBOP

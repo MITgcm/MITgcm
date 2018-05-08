@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_parms.F,v 1.19 2014/04/04 20:56:32 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_MOM_COMMON
