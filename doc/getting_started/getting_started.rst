@@ -601,21 +601,17 @@ shipped with the code is **OS_HARDWARE_COMPILER** where
 
 **COMPILER**
     is the compiler name (generally, the name of the Fortran compiler executable).
-    MITgcm is written in `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_.
-    To build the code we recommend using either a `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_ compiler 
-    or any more recent compiler which is backwards compatible with `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_
+    MITgcm is primarily written in `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_.
+    Compiling the code  requires a `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_ compiler.
+    Any more recent compiler which is backwards compatible with `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_
     (for example, the model will build successfully with a `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_ 
-    or  `Fortran 95 <https://en.wikipedia.org/wiki/Fortran#Fortran_95>`_ compiler). Several caveats:
-
-    - an available C compiler is also required during the build process, for several low-level system routines;
-      additionally, a `C preprocessor <https://en.wikipedia.org/wiki/C_preprocessor>`_ is required;
-    - there are some specific packages that contain routines written using 
-      `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_ constructs
-      (either `free-form formatting <https://en.wikipedia.org/wiki/Free-form_language>`_,
-      or `dynamic memory allocation <https://en.wikipedia.org/wiki/Memory_management#DYNAMIC>`_); as such,
-      setups which use these routines require a `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_
-      or later compiler build.
-
+    or  `Fortran 95 <https://en.wikipedia.org/wiki/Fortran#Fortran_95>`_ compiler) can also be used. A C99 compatible compiler is
+    also need, together with a `C preprocessor <https://en.wikipedia.org/wiki/C_preprocessor>`_ . Some optional
+    packages make use of `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_ constructs
+    (either `free-form formatting <https://en.wikipedia.org/wiki/Free-form_language>`_,
+    or `dynamic memory allocation <https://en.wikipedia.org/wiki/Memory_management#DYNAMIC>`_); as such,
+    setups which use these packages require a `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_
+    or later compiler build.
 
 There are existing optfiles that work with many common hardware/compiler configurations;
 we first suggest you peruse the list in :filelink:`tools/build_options`
