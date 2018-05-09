@@ -304,10 +304,8 @@ are given in section :numref:`run_the_model`.
 Generating the ``Makefile`` using genmake2
 ------------------------------------------
 
-Many open source projects use the `GNU Autotools <https://www.gnu.org/software/automake/faq/autotools-faq.html>`_
-to help streamline the build process for various unix and unix-like architectures.
-For a user, the result is the common "configure" (that is, ``./configure && make && make install``) commands.
-For MITgcm, the process is similar. Typical commands are:
+A shell script called ``genmake2`` for createing a Makefile is included as part of MITgcm.
+Typically ``genmake2`` is used in a sequence of steps as shown below
 
 ::
 
@@ -316,9 +314,10 @@ For MITgcm, the process is similar. Typical commands are:
   % make
 
 
-The first step in any MITgcm build is to create a unix-style ``Makefile`` which will be used by ``make``
+The first step above creates a unix-style ``Makefile``. The ``Makefile`` is used by ``make``
 to specify how to compile the MITgcm source files (for more detailed descriptions of what the make tools 
-are, and how they are used, see `here <https://www.gnu.org/software/make/make.html>`__).
+are, and how they are used, see `here <https://www.gnu.org/software/make/make.html>`__). 
+
 This section describes details and capabilities of :filelink:`genmake2 <tools/genmake2>` (located in the
 :filelink:`tools` directory), the MITgcm tool used to generate a Makefile. :filelink:`genmake2 <tools/genmake2>` is a shell
 script written to work in `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ (and with all “sh”–compatible shells including 
