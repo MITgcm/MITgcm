@@ -730,6 +730,7 @@ command also creates links from the model source to this directory, except for l
 in the specified ``-mods`` directory. The  links
 that exist at this stage are mostly “large F” files (``*.F`` and ``*.F90``) that
 need to be processed by a `C preprocessor <https://en.wikipedia.org/wiki/C_preprocessor>`_ (``cpp``).
+
 **IMPORTANT NOTE:** Editing the source code files in the build directory
 will not edit a local copy (since these are just links) but will
 edit the original files in :filelink:`model/src` (or :filelink:`model/inc`)
@@ -745,10 +746,12 @@ link to this newly edited file).
 
 The final ``make`` invokes the `C preprocessor <https://en.wikipedia.org/wiki/C_preprocessor>`_
 to produce the “little f” files (``*.f`` and ``*.f90``) and then compiles them
-to object code using the specified Fortran compiler and options. An intermediate step occurs during this
-stage to further process custom definitions (i.e., make simple substitutions) such as variable types within the source
-files. This additional stage is necessary in order to overcome some of the inconsistencies in the sizes of objects (bytes)
-between different compilers. The result of the build process is an executable with the name
+to object code using the specified Fortran compiler and options. 
+The C preprocessor step converts a number of CPP macros and ifdef statements to actual Fortran and
+expands C-style include statements to incorporate header files into the 
+“little f" files. CPP style macros and ifdef statements are used to support generating 
+different compile code for different model configurations.
+The result of the build process is an executable with the name
 ``mitgcmuv``.
 
 Additional make “targets” are defined within the makefile to aid in the production
