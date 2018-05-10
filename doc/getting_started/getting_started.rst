@@ -236,7 +236,7 @@ To compile the code, we use the ``make`` program. This uses a file
 (``Makefile``) that allows us to pre-process source files, specify
 compiler and optimization options and also figures out any file
 dependencies. We supply a script (:filelink:`genmake2 <tools/genmake2>`), described in section
-:numref:`genmake2_desc`, that automatically creates the ``Makefile`` for you. You
+:numref:`genmake2_desc`, that automatically generates the ``Makefile`` for you. You
 then need to build the dependencies and compile the code (:numref:`make_target_commands`).
 
 As an example, assume that you want to build and run experiment
@@ -282,7 +282,7 @@ the command:
     % make depend
 
 
-It is important to note that the make depend stage will occasionally
+It is important to note that the ``make depend`` stage will occasionally
 produce warnings or errors if the dependency parsing tool is unable
 to find all of the necessary header files (e.g., ``netcdf.inc``, or worse, 
 say it cannot find a Fortran compiler in your path). In some cases you
@@ -301,11 +301,11 @@ are given in section :numref:`run_the_model`.
 
 .. _genmake2_desc:
 
-Generating the ``Makefile`` using genmake2
-------------------------------------------
+Generating a ``Makefile`` using genmake2
+----------------------------------------
 
-A shell script called ``genmake2`` for createing a Makefile is included as part of MITgcm.
-Typically ``genmake2`` is used in a sequence of steps as shown below
+A shell script called ``genmake2`` for generating a ``Makefile`` is included as part of MITgcm.
+Typically ``genmake2`` is used in a sequence of steps as shown below:
 
 ::
 
@@ -315,11 +315,11 @@ Typically ``genmake2`` is used in a sequence of steps as shown below
 
 
 The first step above creates a unix-style ``Makefile``. The ``Makefile`` is used by ``make``
-to specify how to compile the MITgcm source files (for more detailed descriptions of what the make tools 
+to specify how to compile the MITgcm source files (for more detailed descriptions of what the ``make`` tools 
 are, and how they are used, see `here <https://www.gnu.org/software/make/make.html>`__). 
 
-This section describes details and capabilities of :filelink:`genmake2 <tools/genmake2>` (located in the
-:filelink:`tools` directory), the MITgcm tool used to generate a Makefile. :filelink:`genmake2 <tools/genmake2>` is a shell
+This section describes details and capabilities of :filelink:`genmake2 <tools/genmake2>`, located in the
+:filelink:`tools` directory. :filelink:`genmake2 <tools/genmake2>` is a shell
 script written to work in `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ (and with all “sh”–compatible shells including 
 `Bourne <https://en.wikipedia.org/wiki/Bourne_shell>`_ shells). Like many unix tools, there is a help option that is invoked thru ``genmake2 -h``.
 :filelink:`genmake2 <tools/genmake2>` parses information from the following sources, in this order:
@@ -331,14 +331,14 @@ script written to work in `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)
       script that is executed prior to the :ref:`optfile <genmake2_optfiles>` (see step #3),
       used in some special model configurations and/or to set some options that can
       affect which lines of the :ref:`optfile <genmake2_optfiles>` are executed.
-      An example ``genmake_local`` file is :filelink:`here <verification/cpl_aim+ocn/build_cpl/genmake_local>`,
-      as required for a special setup, building a ‘MITgcm coupler’
-      executable (in a more typical setup, one will not require a ``genmake_local`` file).
+      For example, this :filelink:`genmake_local <verification/cpl_aim+ocn/build_cpl/genmake_local>` file
+      is required for a special setup, building a ‘MITgcm coupler’
+      executable; in a more typical setup, one will not require a ``genmake_local`` file.
 
 #.    An “options file” a.k.a. :ref:`optfile <genmake2_optfiles>`
       (a `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ shell script) specified by the command-line option
       ``–optfile «/PATH/TO/OPTFILE»``, as mentioned briefly in :numref:`building_quickstart`
-      and in more detail in :numref:`genmake2_optfiles`.
+      and described in detail in :numref:`genmake2_optfiles`.
 
 #.    A ``packages.conf`` file (if one is found) with the specific list of
       packages to compile (see :numref:`using_packages`). The search path for file ``packages.conf`` is
@@ -435,14 +435,18 @@ In the above, notice:
   which is only required for a few specialized packages (in other words,
   in most configurations, this ‘no’ will not block successful compilation).
   `NetCDF <http://www.unidata.ucar.edu/software/netcdf>`_ only requires a ‘yes’
-  if `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output is chosen (see :numref:`pkg_mnc`); more specifically, a ‘no’ response 
+  if `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output is chosen (see :numref:`pkg_mnc`);
+  more specifically, a ‘no’ response 
   to “Can we create NetCDF-enabled binaries” will disable including  :filelink:`pkg/mnc`.
   While the makefile can still be built with other ‘no’ responses,
   sometimes this will foretell errors during the
   ``make depend`` or ``make`` commands.
-- any ``.F`` or ``.h`` files in the ``-mods`` directory ``../code`` will also be compiled, overriding any MITgcm repository versions of files, if they exist.
-- a handful of packages are being used in this build; see :numref:`using_packages` for more detail about how to enable and disable packages.
-- :filelink:`genmake2 <tools/genmake2>` terminated without error, generating ``Makefile`` and a log file ``genmake.log``. As mentioned, this does not guarantee that
+- any ``.F`` or ``.h`` files in the ``-mods`` directory ``../code`` will also be compiled,
+  overriding any MITgcm repository versions of files, if they exist.
+- a handful of packages are being used in this build; see :numref:`using_packages`
+  for more detail about how to enable and disable packages.
+- :filelink:`genmake2 <tools/genmake2>` terminated without error,
+  generating ``Makefile`` and a log file ``genmake.log``. As mentioned, this does not guarantee that
   your setup will compile properly, but if there are errors during ``make depend`` or ``make``, 
   these error messages and/or the standard output from :filelink:`genmake2 <tools/genmake2>` or
   ``genmake.log`` may provide clues as to the problem.
@@ -464,7 +468,8 @@ The most important command-line options are:
 ``–optfile «/PATH/TO/OPTFILE»``
     (= ``-of``) specifies the :ref:`optfile <genmake2_optfiles>` that should be used for a particular build.
 
-    If no :ref:`optfile <genmake2_optfiles>` is specified through the command line, :filelink:`genmake2 <tools/genmake2>` will try to make a
+    If no :ref:`optfile <genmake2_optfiles>` is specified through the command line,
+    :filelink:`genmake2 <tools/genmake2>` will try to make a
     reasonable guess from the list provided in :filelink:`tools/build_options`.
     The method used for making this guess is to first determine the
     combination of operating system and hardware and
@@ -474,7 +479,7 @@ The most important command-line options are:
 
 .. _mods_option:
 
-``–mods ’«DIR1 DIR2 DIR3 ...»’``
+``–mods '«DIR1 DIR2 DIR3 ...»'``
     specifies a list of directories containing “modifications”. These
     directories contain files with names that may (or may not) exist in
     the main MITgcm source tree but will be overridden by any
@@ -485,11 +490,9 @@ The most important command-line options are:
 
     -  “mods” directories in the order given (e.g., will use copy of file located in DIR1 instead of DIR2)
 
-    -  Packages either explicitly specified or included by default (in
-       the order given)
+    -  Packages either explicitly specified or included by default
 
-    -  Packages included due to package dependencies (in the order that
-       that package dependencies are parsed)
+    -  Packages included due to package dependencies
 
     -  The “standard dirs” (which may have been specified by the
        ``-standarddirs`` option below)
@@ -500,13 +503,14 @@ The most important command-line options are:
     specify the location of the MITgcm repository top directory (``ROOTDIR``).
     By default, :filelink:`genmake2 <tools/genmake2>` will try to find this location by
     looking in parent directories from where :filelink:`genmake2 <tools/genmake2>` is executed
-    (up to 5 directory levels “higher”).
+    (up to 5 directory levels above the current directory).
 
     In the quickstart example above (:numref:`building_quickstart`) we built the
     executable in the ``build`` directory of the experiment.
     Below, we show how to configure and compile the code on a scratch disk,
     without having to copy the entire source
-    tree. The only requirement is that you have :filelink:`genmake2 <tools/genmake2>` in your ``$PATH``, or
+    tree. The only requirement is that you have :filelink:`genmake2 <tools/genmake2>`
+    in your `$PATH <https://en.wikipedia.org/wiki/PATH_(variable)>`_, or
     you know the absolute path to :filelink:`genmake2 <tools/genmake2>`. In general, one can
     compile the code in any given directory by following this procedure.
     Assuming the model source is in ``~/MITgcm``, then the
@@ -519,13 +523,16 @@ The most important command-line options are:
        % make depend
        % make
 
-    As an alternative to specifying the MITgcm repository location through the ``-rootdir`` command-line option, :filelink:`genmake2 <tools/genmake2>` recognizes the
+    As an alternative to specifying the MITgcm repository location through
+    the ``-rootdir`` command-line option, :filelink:`genmake2 <tools/genmake2>` recognizes the
     `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_ ``$MITGCM_ROOTDIR``.
 
 
 ``-standarddirs «/PATH/TO/STANDARDDIR»``
-    specify a path to the standard MITgcm directories for source and includes files. By default, :filelink:`model` and :filelink:`eesupp`
-    directories (``src`` and ``inc``)  are the “standard dirs”. This command can be used to reset these default standard directories,
+    specify a path to the standard MITgcm directories for source and includes files.
+    By default, :filelink:`model` and :filelink:`eesupp`
+    directories (``src`` and ``inc``)  are the “standard dirs”. This command can be used
+    to reset these default standard directories,
     or instead NOT include either :filelink:`model` or :filelink:`eesupp`
     as done in some specialized configurations.
 
@@ -543,18 +550,20 @@ The most important command-line options are:
 
 ``–mpi``
     enables certain `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ features (using CPP ``#define``)
-    within the code and is necessary for `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ builds (see :numref:`build_mpi`).
+    within the code and is necessary for `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ builds
+    (see :numref:`build_mpi`).
 
 ``–omp``
     enables OpenMP code and compiler flag ``OMPFLAG`` (see :numref:`build_openmp`).
 
 ``–ieee``
-    use IEEE numerics (requires support in optfile). This option is typically a good choice if one wants to compare output from different machines
+    use IEEE numerics (requires support in optfile).
+    This option is typically a good choice if one wants to compare output from different machines
     running the same code. Note using IEEE disables all compiler optimizations.
 
 ``-devel``
-    use IEEE numerics and add additional compiler options to check array bounds and add other additional warning and debugging flags
-    (requires support in optfile).
+    use IEEE numerics (requires support in optfile) and add additional compiler options to check
+    array bounds and add other additional warning and debugging flags.
 
 ``–make «/PATH/TO/GMAKE»``
     due to the poor handling of soft-links and other bugs common with
@@ -563,8 +572,10 @@ The most important command-line options are:
     option provides a means for specifying the make executable to be
     used.
 
-While it is possible to use :filelink:`genmake2 <tools/genmake2>` command-line options to set the fortran or C compiler name (``-fc`` and ``-cc`` respectively),
-we generally recommend setting these through an :ref:`optfile <genmake2_optfiles>`, as discussed in :numref:`genmake2_optfiles`.
+While it is possible to use :filelink:`genmake2 <tools/genmake2>` command-line options
+to set the Fortran or C compiler name (``-fc`` and ``-cc`` respectively),
+we generally recommend setting these through an :ref:`optfile <genmake2_optfiles>`,
+as discussed in :numref:`genmake2_optfiles`.
 Other :filelink:`genmake2 <tools/genmake2>` options  are available to
 enable performance/timing analyses, etc.; see ``genmake2 -h`` for more info.
 
@@ -578,7 +589,8 @@ for particular “platforms” (where “platform” roughly means the
 combination of the hardware and the compiler) and code configurations.
 Given the combinations of possible compilers and library dependencies
 (e.g., `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ or
-`netCDF <http://www.unidata.ucar.edu/software/netcdf>`_) there may be numerous optfiles available for a
+`netCDF <http://www.unidata.ucar.edu/software/netcdf>`_) there may be
+numerous optfiles available for a
 single machine. The naming scheme for the majority of the optfiles
 shipped with the code is **OS_HARDWARE_COMPILER** where
 
@@ -604,8 +616,10 @@ shipped with the code is **OS_HARDWARE_COMPILER** where
     MITgcm is primarily written in `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_.
     Compiling the code  requires a `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_ compiler.
     Any more recent compiler which is backwards compatible with `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_
-    (for example, the model will build successfully with a `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_ 
-    or  `Fortran 95 <https://en.wikipedia.org/wiki/Fortran#Fortran_95>`_ compiler) can also be used. A C99 compatible compiler is
+    can also be used; for example, the model will build successfully
+    with a `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_ 
+    or  `Fortran 95 <https://en.wikipedia.org/wiki/Fortran#Fortran_95>`_ compiler.
+    A `C99 <https://en.wikipedia.org/wiki/C99>`_ compatible compiler is
     also need, together with a `C preprocessor <https://en.wikipedia.org/wiki/C_preprocessor>`_ . Some optional
     packages make use of `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_ constructs
     (either `free-form formatting <https://en.wikipedia.org/wiki/Free-form_language>`_,
@@ -635,7 +649,7 @@ is for a specific case of using ``ifort`` with the
 which requires special define statements in the optfile (in contrast with
 `Open MPI <https://www.open-mpi.org/>`_ or  `MVAPICH2 <http:mvapich.cse.ohio-state.edu/>`_
 libraries; see :numref:`build_mpi`). Note that both ifort optfiles require ifort version 11 or higher.
-Many clusters now-a-day use `environment modules <http:modules.sourceforge.net>`_,
+Many clusters nowadays use `environment modules <http:modules.sourceforge.net>`_,
 which allows one to easily choose which compiler to use through ``module load «MODULENAME»``,
 automatically configuring your environment for a specific compiler choice
 (type ``echo $PATH`` to see where :filelink:`genmake2 <tools/genmake2>` will look for compilers and system software).
@@ -672,7 +686,7 @@ should be defined are:
     command-line options passed to the compiler
 
 ``CPP``
-    the C pre-processor to use, and any necessary command-line options, e.g. ``cpp -traditional -P``
+    the C preprocessor to use, and any necessary command-line options, e.g. ``cpp -traditional -P``
 
 ``CFLAGS``, ``FFLAGS``
     command-line compiler flags required for your C and Fortran compilers, respectively, to compile and execute properly.
@@ -747,15 +761,16 @@ link to this newly edited file).
 The final ``make`` invokes the `C preprocessor <https://en.wikipedia.org/wiki/C_preprocessor>`_
 to produce the “little f” files (``*.f`` and ``*.f90``) and then compiles them
 to object code using the specified Fortran compiler and options. 
-The C preprocessor step converts a number of CPP macros and ifdef statements to actual Fortran and
-expands C-style include statements to incorporate header files into the 
-“little f" files. CPP style macros and ifdef statements are used to support generating 
+The C preprocessor step converts a number of CPP macros and ``#ifdef`` statements to actual Fortran and
+expands C-style ``#include`` statements to incorporate header files into the 
+“little f" files. CPP style macros and ``#ifdef`` statements are used to support generating 
 different compile code for different model configurations.
 The result of the build process is an executable with the name
 ``mitgcmuv``.
 
 Additional make “targets” are defined within the makefile to aid in the production
 of adjoint (:numref:`building_adcode_using_taf`) and other versions of MITgcm.
+
 On computers with multiple processor cores, the build process can often be sped
 up appreciably using the command:
 
@@ -793,7 +808,8 @@ The steps for building MITgcm with `MPI <https://en.wikipedia.org/wiki/Message_P
 #. Make sure you have `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
    libraries installed on your computer system or cluster. Different Fortran compilers (and different versions of a specific compiler)
    will generally require a custom version (of a `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ library)
-   built specifically for it. On module-enabled clusters, one typically must first load a
+   built specifically for it. On `environment module <http:modules.sourceforge.net>`_-enabled
+   clusters, one typically must first load a
    Fortran compiler, then specific `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
    libraries for that compiler will become available to load. If libraries are not installed, MPI
    implementations and related tools are available including:
@@ -810,20 +826,23 @@ The steps for building MITgcm with `MPI <https://en.wikipedia.org/wiki/Message_P
 
 #. Determine the location of your `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
    library “wrapper” Fortran compiler, e.g., ``mpif77`` or ``mpifort`` etc.
-   which will be used instead of the name of the fortran compiler (``gfortran``, ``ifort``, ``pgi77`` etc.) to compile your code. Often the directory
-   in which these wrappers are located will be automatically added to your ``$PATH``
+   which will be used instead of the name of the fortran compiler (``gfortran``, ``ifort``, ``pgi77`` etc.)
+   to compile your code. Often the directory
+   in which these wrappers are located will be automatically added to your `$PATH <https://en.wikipedia.org/wiki/PATH_(variable)>`_
    `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_ when you perform a
-   ``module load «SOME_MPI_MODULE»``; thus, you will not need to do anything beyond the module load itself. If you are on a cluster that does not support
+   ``module load «SOME_MPI_MODULE»``; thus, you will not need to do anything beyond the module load itself.
+   If you are on a cluster that does not support
    `environment modules <http:modules.sourceforge.net>`_ module environments,
    you may have to manually add this directory to your path,
    e.g., ``PATH=$PATH:«ADD_ADDITIONAL_PATH_TO_MPI_WRAPPER_HERE»`` in bash.
 
-#. Determine the location of the includes file ``mpif.h`` and any other mpi-related includes files.
-   Often these files will be located in a subdirectory off the main mpi library ``include/``. In all optfiles in :filelink:`tools/build_options`,
+#. Determine the location of the includes file ``mpif.h`` and any other MPI-related includes files.
+   Often these files will be located in a subdirectory off the main 
+   MPI library ``include/``. In all optfiles in :filelink:`tools/build_options`,
    we define an environment variable ``$MPI_INC_DIR``; this 
    `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_ should be set in your terminal session. 
 
-#. Determine the locations of your MPI-enabled compiler and/or MPI
+#. Determine the locations of any MPI
    libraries and put them into an optfile as described in :numref:`genmake2_optfiles`. 
    One can start with one of the examples in
    :filelink:`tools/build_options`
@@ -831,7 +850,8 @@ The steps for building MITgcm with `MPI <https://en.wikipedia.org/wiki/Message_P
    or :filelink:`tools/build_options/linux_amd64_ifort+impi` and
    then edit it to suit the machine at hand. You may need help from your
    user guide or local systems administrator to determine the exact
-   location of the `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ libraries.  
+   location of the `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ libraries.
+   Note, on most clusters/platforms it is not necessary to specify any MPI libraries.  
  
 #. Build the code with the :filelink:`genmake2 <tools/genmake2>` ``-mpi`` option
    using commands such as:
