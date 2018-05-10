@@ -154,6 +154,9 @@ c     ENDDO
 
 #ifdef ALLOW_NF90IO
       IF (useNF90io .AND. diag_nf90io) THEN
+        IF ( debugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN
+           WRITE(ioUnit,'(A,I6)') ' nf90io open ', listId
+        ENDIF
         CALL DIAGNOSTICS_NF90IO_OPEN(
      I               listId,
      O               ncid,
@@ -441,11 +444,14 @@ C         a hack not to write meta files now: pass -nRec < 0 to MDS_WRITE S/R
 
 #ifdef ALLOW_NF90IO
            IF (useNF90io .AND. diag_nf90io) THEN
-              IF (md.EQ.1) THEN
+             IF (md.EQ.1) THEN
 C               then this is the first diagnostics of this list element.
-                 incrementRec=.TRUE.
-              ELSE
+                incrementRec=.TRUE.
+             ELSE
                 incrementRec=.FALSE.
+             ENDIF
+             IF ( debugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN
+              WRITE(ioUnit,'(A,I6,X,I6)')' nf90io var out',listId,ndId
              ENDIF
              IF ( ppFld.LE.1 ) THEN
                 CALL DIAGNOSTICS_NF90IO_VAR_OUT(

@@ -326,51 +326,38 @@ C     !LOCAL VARIABLES:
       END
 
 CCCCCCCCCCCCCCCC
-      SUBROUTINE nf90ERR( status, msg, myThid )
+      SUBROUTINE NF90ERR( err, msg, myThid )
 
 C     !DESCRIPTION:
-C     Convenience function for handling all MNC and NetCDF library
-C     errors.
+C     Convenience function for handling all NetCDF library errors.
 
 C     !USES:
       use netcdf
 
-      implicit none
+      IMPLICIT NONE
+#include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 
-C     !DESCRIPTION:
-
-C     !USES:
-      INTEGER  myThid, status
-      character*(*) msg
+C     !INPUT PARAMETERS:
+      INTEGER err, myThid
+      CHARACTER*(*) msg
 CEOP
 
 C     !LOCAL VARIABLES:
-      integer i,lenm
-      character*(MAX_LEN_MBUF) msgbuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-C     Functions
-      integer ILNBLNK
-
-      DO i = 1,MAX_LEN_MBUF
-        msgbuf(i:i) = ' '
-      ENDDO
-
-      IF ( status .NE. NF90_NOERR ) THEN
-        write(msgbuf,'(2a)') 'NetCDF ERROR: '
-        lenm = ILNBLNK(msgbuf)
-        print *, msgbuf(1:lenm)
-        CALL print_error(msgbuf(1:lenm), mythid)
-        print *, '==='
-        print *, NF90_STRERROR(status)
-        print *, '==='
-        lenm = ILNBLNK(msg)
-        lenm = MIN(lenm,MAX_LEN_MBUF-11)
-        write(msgbuf,'(2a)') 'NF90IO ERROR: ', msg(1:lenm)
-        lenm = ILNBLNK(msgbuf)
-        print *, msgbuf(1:lenm)
-        CALL print_error(msgbuf(1:lenm), mythid)
+      IF ( err .NE. NF90_NOERR ) THEN
+        WRITE(msgBuf,'(2A)') 'NF90IO ERROR: ', msg
+        CALL PRINT_ERROR(msgBuf, myThid)
+        WRITE(msgBuf,'(2A)') 'NetCDF ERROR: ', NF90_STRERROR(err)
+        CALL PRINT_ERROR(msgBuf, myThid)
         STOP 'ABNORMAL END: S/R NF90ERR'
+      ELSE
+        IF ( debugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN
+          WRITE(standardMessageUnit,'(2A)') 'NF90IO Info:', msg
+        ENDIF
       ENDIF
+
       RETURN
       END

@@ -108,6 +108,10 @@ C--      Place the loop on lm (= averagePeriod) outside the loop on md (= field)
            ndId = ABS(jdiag(md,listId))
            gcode = gdiag(ndId)(1:10)
            IF ( idiag(md,listId).NE.0 .AND. gcode(5:5).NE.'D' ) THEN
+            IF ( debugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN
+              WRITE(standardMessageUnit,'(A,I6,X,I6)')
+     &           ' nf90io var def',listId,ndId
+            ENDIF
             CALL DIAGNOSTICS_NF90IO_VAR_DEF(
      I                 ncid, nLevOutp, listId, ndId,
      I                 myTime, myIter, myThid )
@@ -121,7 +125,7 @@ C--      end loop on lm counter (= averagePeriod)
 
 C        end definition mode...
          err = nf90_enddef(ncid)
-         CALL nf90ERR(err, "enddef failed", myThid)
+         CALL nf90ERR(err, "enddef", myThid)
 
 C        see whether we have to fill k_level
          _BEGIN_MASTER( myThid )
@@ -141,6 +145,10 @@ C           get the variable id
 
          _END_MASTER(myThid)
 
+         IF ( debugLevel.GE.debLevB .AND. myThid.EQ.1 ) THEN
+           WRITE(standardMessageUnit,'(A,I6,X,I6)')
+     &        'NF90IO Info: fill nonrec', ncid
+         ENDIF
          CALL NF90IO_FILL_NONREC( ncid, myThid )
 
        ELSE
