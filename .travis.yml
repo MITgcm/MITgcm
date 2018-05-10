@@ -23,41 +23,41 @@ jobs:
   include:
     # run the tests
     - stage: code tests
-      env: 
-      - MITGCM_EXP="aim.5l_cs" MITGCM_PRECS="14 16"
+      env:
+      - MITGCM_EXP="offline_exf_seaice" MITGCM_PRECS="16 16 16 16 16"
       script: . tools/ci/runtr.sh
     - env:
       - MITGCM_EXP="global_ocean.cs32x15" MITGCM_PRECS="16 16 16 16 16"
       script: . tools/ci/runtr.sh
-    - env: 
-      - MITGCM_EXP="global_ocean.90x40x15" MITGCM_PRECS="16 16 16"
-      script: . tools/ci/runtr.sh
-    - env: 
-      - MITGCM_EXP="hs94.cs-32x32x5" MITGCM_PRECS="13 16"
-      script: . tools/ci/runtr.sh
-    - env: 
-      - MITGCM_EXP="isomip" MITGCM_PRECS="16 16 16"
-      script: . tools/ci/runtr.sh
-    - env: 
-      - MITGCM_EXP="offline_exf_seaice" MITGCM_PRECS="16 16 16 16 16"
-      script: . tools/ci/runtr.sh
-    - env: 
-      - MITGCM_EXP="tutorial_advection_in_gyre" MITGCM_PRECS="16"
-      script: . tools/ci/runtr.sh
-    - env: 
-      - MITGCM_EXP="tutorial_cfc_offline" MITGCM_PRECS="16"
-      script: . tools/ci/runtr.sh
-    - env: 
+    - env:
       - MITGCM_EXP="tutorial_deep_convection" MITGCM_PRECS="16 16"
       script: . tools/ci/runtr.sh
-    - env: 
+    - env:
+      - MITGCM_EXP="aim.5l_cs" MITGCM_PRECS="14 16"
+      script: . tools/ci/runtr.sh
+    - env:
+      - MITGCM_EXP="isomip" MITGCM_PRECS="16 16 16"
+      script: . tools/ci/runtr.sh
+    - env:
+      - MITGCM_EXP="global_ocean.90x40x15" MITGCM_PRECS="16 16 16"
+      script: . tools/ci/runtr.sh
+    - env:
+      - MITGCM_EXP="tutorial_plume_on_slope" MITGCM_PRECS="16"
+      script: . tools/ci/runtr.sh
+    - env:
+      - MITGCM_EXP="tutorial_advection_in_gyre" MITGCM_PRECS="16"
+      script: . tools/ci/runtr.sh
+    - env:
+      - MITGCM_EXP="hs94.cs-32x32x5" MITGCM_PRECS="13 16"
+      script: . tools/ci/runtr.sh
+    - env:
       - MITGCM_EXP="tutorial_global_oce_biogeo" MITGCM_PRECS="16"
       script: . tools/ci/runtr.sh
-    - env: 
+    - env:
       - MITGCM_EXP="tutorial_global_oce_in_p" MITGCM_PRECS="16"
       script: . tools/ci/runtr.sh
-    - env: 
-      - MITGCM_EXP="tutorial_plume_on_slope" MITGCM_PRECS="16"
+    - env:
+      - MITGCM_EXP="tutorial_cfc_offline" MITGCM_PRECS="16"
       script: . tools/ci/runtr.sh
     # - stage: summary of code tests
     # disabled because jobs do not share data
