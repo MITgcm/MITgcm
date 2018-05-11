@@ -829,29 +829,36 @@ The steps for building MITgcm with `MPI <https://en.wikipedia.org/wiki/Message_P
    which will be used instead of the name of the fortran compiler (``gfortran``, ``ifort``, ``pgi77`` etc.)
    to compile your code. Often the directory
    in which these wrappers are located will be automatically added to your `$PATH <https://en.wikipedia.org/wiki/PATH_(variable)>`_
-   `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_ when you perform a
+   `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_ when you perform a
    ``module load «SOME_MPI_MODULE»``; thus, you will not need to do anything beyond the module load itself.
    If you are on a cluster that does not support
-   `environment modules <http:modules.sourceforge.net>`_ module environments,
+   `environment modules <http:modules.sourceforge.net>`_,
    you may have to manually add this directory to your path,
-   e.g., ``PATH=$PATH:«ADD_ADDITIONAL_PATH_TO_MPI_WRAPPER_HERE»`` in bash.
+   e.g., type ``PATH=$PATH:«ADD_ADDITIONAL_PATH_TO_MPI_WRAPPER_HERE»`` in a bash shell.
 
-#. Determine the location of the includes file ``mpif.h`` and any other MPI-related includes files.
+#. Determine the location of the includes file ``mpif.h`` and any
+   other `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_-related includes files.
    Often these files will be located in a subdirectory off the main 
-   MPI library ``include/``. In all optfiles in :filelink:`tools/build_options`,
-   we define an environment variable ``$MPI_INC_DIR``; this 
-   `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_ should be set in your terminal session. 
+   `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
+   library ``include/``. In all optfiles in :filelink:`tools/build_options`,
+   it is assumed `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_
+   ``$MPI_INC_DIR`` specifies this location; ``$MPI_INC_DIR`` 
+   should be set in your terminal session prior to generating a ``Makefile``.
 
-#. Determine the locations of any MPI
-   libraries and put them into an optfile as described in :numref:`genmake2_optfiles`. 
-   One can start with one of the examples in
-   :filelink:`tools/build_options`
-   such as :filelink:`tools/build_options/linux_amd64_gfortran`
-   or :filelink:`tools/build_options/linux_amd64_ifort+impi` and
-   then edit it to suit the machine at hand. You may need help from your
-   user guide or local systems administrator to determine the exact
-   location of the `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ libraries.
-   Note, on most clusters/platforms it is not necessary to specify any MPI libraries.  
+#. Determine how many processors (i.e., CPU cores) you will be using in your run, 
+   and modify your configuration’s :filelink:`SIZE.h <model/inc/SIZE.h>` 
+   (located in a “modified code” directory, as specified in your :filelink:`genmake2 <tools/genmake2>` 
+   :ref:`command-line <command_line_options>`). In :filelink:`SIZE.h <model/inc/SIZE.h>`,
+   you will need to set variables :varlink:`nPx`\ *\ :varlink:`nPy` to match the number of processors you will specify in
+   your run script’s MITgcm execution statement (i.e., typically ``mpirun`` or some similar command, see :numref:`running_mpi`).
+   Note that MITgcm does not use 
+   `dynamic memory allocation <https://en.wikipedia.org/wiki/Memory_management#DYNAMIC>`_ (a feature of 
+   `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_,
+   not `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_), so all array sizes, and hence the number of processors
+   to be used in your `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ run,
+   must be specified at compile-time in addition to run-time. More information about the MITgcm 
+   WRAPPER, domain decomposition, and how to configure :filelink:`SIZE.h <model/inc/SIZE.h>` 
+   can be found in :numref:`using_wrapper`.
  
 #. Build the code with the :filelink:`genmake2 <tools/genmake2>` ``-mpi`` option
    using commands such as:
@@ -867,9 +874,24 @@ The steps for building MITgcm with `MPI <https://en.wikipedia.org/wiki/Message_P
 Building  with OpenMP
 ---------------------
 
-to be done
-`OpenMP <https://en.wikipedia.org/wiki/OpenMP>`_
-also add section about running OpenMP or mention required change to eedata here.
+Unlike MPI, which requires installation of additional software support libraries, using shared memory
+(`OpenMP <https://en.wikipedia.org/wiki/OpenMP>`_) for multi-threaded
+executable builds can be accomplished simply through the :filelink:`genmake2 <tools/genmake2>`
+command-line option ``-omp``:
+
+   ::
+
+         %  ../../../tools/genmake2 -mods=../code -omp -of=«/PATH/TO/OPTFILE»
+         %  make depend
+         %  make
+
+While the four most common optfiles specified in :numref:`genmake2_optfiles` include support for the ``-omp`` option,
+many optfiles in :filelink:`tools/build_options` do not include support for multi-threaded executable builds.
+Check before using one of the less-common optfiles whether ``OMPFLAG`` is defined.
+
+Note that one does not need to specify the number of threads until run-time (see :numref:`running_openmp`).
+However, the default maximum number of threads in MITgcm is set to a (low) value of 4,
+so if you plan on more you will need to change this value in :filelink:`eesupp/inc/EEPARAMS.h` in your modified code directory.
 
 
 .. _run_the_model:
@@ -937,6 +959,14 @@ and a job scheduling and queueing system such as `Slurm <https://slurm.schedmd.c
 or any of a number of similar tools. See your local cluster documentation 
 or system administrator for the specific syntax required to run on your computing facility.
 
+.. _running_openmp:
+
+Running with OpenMP
+-------------------
+
+todo
+discuss OMP_NUM_THREADS and OMP_STACKSIZE
+discuss required change to eedata here
 
 Output files
 ------------
