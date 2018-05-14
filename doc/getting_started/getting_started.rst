@@ -795,8 +795,10 @@ In addition, there are several housekeeping ``make clean`` options that might be
 Building  with MPI
 ------------------
 
-Building MITgcm to use `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ libraries can be complicated due to the
-variety of different `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ implementations available, their dependencies
+Building MITgcm to use `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
+libraries can be complicated due to the
+variety of different `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
+implementations available, their dependencies
 or interactions with different compilers, and their often ad-hoc
 locations within file systems. For these reasons, its generally a good
 idea to start by finding and reading the documentation for your
@@ -828,7 +830,8 @@ The steps for building MITgcm with `MPI <https://en.wikipedia.org/wiki/Message_P
    library “wrapper” Fortran compiler, e.g., ``mpif77`` or ``mpifort`` etc.
    which will be used instead of the name of the fortran compiler (``gfortran``, ``ifort``, ``pgi77`` etc.)
    to compile your code. Often the directory
-   in which these wrappers are located will be automatically added to your `$PATH <https://en.wikipedia.org/wiki/PATH_(variable)>`_
+   in which these wrappers are located will be automatically added
+   to your `$PATH <https://en.wikipedia.org/wiki/PATH_(variable)>`_
    `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_ when you perform a
    ``module load «SOME_MPI_MODULE»``; thus, you will not need to do anything beyond the module load itself.
    If you are on a cluster that does not support
@@ -846,19 +849,23 @@ The steps for building MITgcm with `MPI <https://en.wikipedia.org/wiki/Message_P
    should be set in your terminal session prior to generating a ``Makefile``.
 
 #. Determine how many processors (i.e., CPU cores) you will be using in your run, 
-   and modify your configuration’s :filelink:`SIZE.h <model/inc/SIZE.h>` 
-   (located in a “modified code” directory, as specified in your :filelink:`genmake2 <tools/genmake2>` 
+   and modify your configuration’s :filelink:`SIZE.h <model/inc/SIZE.h>`
+   (located in a “modified code” directory, as specified in your :filelink:`genmake2 <tools/genmake2>`
    :ref:`command-line <command_line_options>`). In :filelink:`SIZE.h <model/inc/SIZE.h>`,
-   you will need to set variables :varlink:`nPx`\ *\ :varlink:`nPy` to match the number of processors you will specify in
-   your run script’s MITgcm execution statement (i.e., typically ``mpirun`` or some similar command, see :numref:`running_mpi`).
+   you will need to set variables :varlink:`nPx`\*\ :varlink:`nPy` to
+   match the number of processors you will specify in
+   your run script’s MITgcm execution statement (i.e., typically ``mpirun``
+   or some similar command, see :numref:`running_mpi`).
    Note that MITgcm does not use 
    `dynamic memory allocation <https://en.wikipedia.org/wiki/Memory_management#DYNAMIC>`_ (a feature of 
    `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_,
-   not `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_), so all array sizes, and hence the number of processors
+   not `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_), so
+   all array sizes, and hence the number of processors
    to be used in your `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ run,
    must be specified at compile-time in addition to run-time. More information about the MITgcm 
    WRAPPER, domain decomposition, and how to configure :filelink:`SIZE.h <model/inc/SIZE.h>` 
    can be found in :numref:`using_wrapper`.
+
  
 #. Build the code with the :filelink:`genmake2 <tools/genmake2>` ``-mpi`` option
    using commands such as:
@@ -964,14 +971,48 @@ or system administrator for the specific syntax required to run on your computin
 Running with OpenMP
 -------------------
 
-todo
-discuss OMP_NUM_THREADS and OMP_STACKSIZE
-discuss required change to eedata here
+The syntax to run the code in a multi-threaded setup is exactly the same as running single-threaded
+(see :numref:`run_the_model`), except that the following additional steps are required beforehand:
+
+#. Generate the ``Makefile`` to build the multi-threaded code with the :filelink:`genmake2 <tools/genmake2>`
+   command-line option ``-omp``, as discussed in :numref:`build_openmp`.
+
+#. `Environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_ 
+   for the number of threads and the stacksize need to be set prior to executing the model.
+   The exact names of these `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_ differ
+   by Fortran compiler, but are typically some variant of ``OMP_NUM_THREADS`` and ``OMP_STACKSIZE``, respectively.
+   For the latter, in your run script we recommend adding the line
+   ``export OMP_STACKSIZE=400M``  (or for a
+   `C shell <https://en.wikipedia.org/wiki/C_shell>`_-variant, ``setenv OMP_STACKSIZE 400M``).
+   If this stacksize setting is insufficient, MITgcm will crash,
+   in which case a larger number can be used. Similarly, ``OMP_NUM_THREADS`` should
+   be set to the exact number of threads you require.
+
+#. In file ``eedata`` you will need to change namelist parameters :varlink:`nTx` and :varlink:`nTy`
+   to reflect the number of threads in x and y, respectively (for a single-threaded run, :varlink:`nTx` \=\ :varlink:`nTy`\ =1).
+   The value of :varlink:`nTx` \*\ :varlink:`nTy` must equal the value of
+   `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_ ``OMP_NUM_THREADS``
+   (or its name-equivalent for your Fortan compiler) or MITgcm will terminate during its initialization with an error message.
+
+MITgcm will take the number of tiles used in the model (as specified in :filelink:`SIZE.h <model/inc/SIZE.h>`)
+and the number of threads (:varlink:`nTx` and :varlink:`nTy` from file ``eedata``),
+and in running will spread the tiles out evenly across the threads. This is done independently for x and y. As such,
+the number of tiles in x (variable :varlink:`nSx` as defined in :filelink:`SIZE.h <model/inc/SIZE.h>`) must divide evenly by
+the number of threads in x (namelist parameter :varlink:`nTx`),
+and similarly for :varlink:`nSy` and :varlink:`nTy`, else MITgcm will terminate on initialization.
+More information about the MITgcm 
+WRAPPER, domain decomposition, and how to configure :filelink:`SIZE.h <model/inc/SIZE.h>` 
+can be found in :numref:`using_wrapper`.
+
+Most typically, you will want to request the same number of processors as threads (or, at least multiple processors) in your run script.
+See your local cluster documentation for specific syntax to work with your cluster’s job-scheduling software.
+   
 
 Output files
 ------------
 
-The model produces various output files and, when using :filelink:`pkg/mnc` (i.e., netCDF),
+The model produces various output files and, when using :filelink:`pkg/mnc`
+(i.e., `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_),
 sometimes even directories. Depending upon the I/O package(s) selected
 at compile time (either :filelink:`pkg/mdsio`, :filelink:`pkg/mnc`, or both as determined by
 ``packages.conf``) and the run-time flags set (in
