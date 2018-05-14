@@ -89,7 +89,7 @@ It can be turned on or off at run time in ``input/data.pkg`` by setting ``useNF9
 
 Finally it can be turned on or off explicitly inside ``input/data.diagnostics`` by setting ``diag_nf90io=.TRUE.`` or ``.FLASE.``.  By default it is set to ``useNF90IO``, so it is just as easy to control from ``input/data.pkg``
 
-The file ``input/data.nf90io`` bcontains run-time parameters for the NF90IO package.
+The file ``input/data.nf90io`` contains run-time parameters for the NF90IO package:
 
 +---------------------------------+---------+------------+-------------------------------------------------------------+
 | Name                            | Type    | Default    | Description                                                 |
@@ -106,6 +106,31 @@ The file ``input/data.nf90io`` bcontains run-time parameters for the NF90IO pack
 |                                 |         |            | - 5 may require parallel-netcdf (pnetcdf) with older netCDF |
 |                                 |         |            | - 1, 2 and 5 require parallel-netcdf when running with mpi  |
 +---------------------------------+---------+------------+-------------------------------------------------------------+
+| :varlink:`nf90io_info_keys`     | C       | ' '        | array of keys for MPI-IO hints                              |
++---------------------------------+---------+------------+-------------------------------------------------------------+
+| :varlink:`nf90io_info_values`   | C       | ' '        | array of values for MPI-IO hints                            |
++---------------------------------+---------+------------+-------------------------------------------------------------+
+
+Permissible values for :varlink:`nf90io_info_keys` and
+:varlink:`nf90io_info_values` will depend on the MPI-IO implementation.
+Generally, useful hints include:
+
++------------------------+-----------------------------------------------+
+| Key                    | Value/Explanation                             |
++========================+===============================================+
+| 'romio_ds_read'        | 'enable' or 'disable'                         |
++------------------------+-----------------------------------------------+
+| 'romio_ds_write'       | 'enable' or 'disable'                         |
++------------------------+-----------------------------------------------+
+| 'romio_cb_read'        | 'enable' or 'disable'                         |
++------------------------+-----------------------------------------------+
+| 'romio_cb_write'       | 'enable' or 'disable'                         |
++------------------------+-----------------------------------------------+
+| 'cb_nodes'             | number of nodes to use for I/O                |
++------------------------+-----------------------------------------------+
+| 'nc_header_align_size' | preallocated size of metadata header in bytes |
+|                        | (parallel-netcdf-specific)                    |
++------------------------+-----------------------------------------------+
 
 Note that NF90IO output can be mixed with MDSIO and MNC outputs.  If ``input/data.pkg`` has ``useMNC=.TRUE.`` and ``useNF90IO=.TRUE`` then both styles of files will be written unless explicitly turned off in ``input/data.diagnostics``.  Users probably don't want to output both types of files, so if ``useMNC=.TRUE.`` and ``useNF90IO=.TRUE`` are set in ``input/data.pkg`` then in ``input/data.diagnostics`` users probably want to set ``diag_nf90io=.FALSE.`` *or* ``diag_mnc=.FALSE.``.
 

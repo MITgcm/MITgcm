@@ -26,36 +26,6 @@ C     doesnt do anything if usingMPI is false
       NF90IO_VAR_PAR_ACCESS = err
       END FUNCTION
 
-CCCCCCCCCCCCCCC
-      FUNCTION NF90IO_OPEN(fname, ncid)
-
-      use netcdf
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#include "NF90IO.h"
-
-C     !DESCRIPTION:
-C     Convenience wrappper around NF90_OPEN that
-C     opens in non-parallel if usingMPI not set
-
-      CHARACTER (LEN=*), intent(in) :: fname
-      INTEGER  :: ncid, err
-
-      IF (usingMPI) THEN
-#ifdef ALLOW_USE_MPI
-         err = nf90_open(fname, IOR(nf90_write, nf90_mpiio),
-     $        ncid,
-     $        comm=MPI_COMM_MODEL, info=MPI_INFO_NULL)
-#endif
-      ELSE
-         err = nf90_open(fname, nf90_write,ncid)
-      ENDIF
-
-      NF90IO_OPEN = err
-      END FUNCTION
-
-
 
 CCCCCCCCCCCCCCC
       SUBROUTINE NF90IO_FILL_3Dnorec(ncid, vname, dat, myThid)

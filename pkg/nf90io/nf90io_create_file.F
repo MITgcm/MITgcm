@@ -39,6 +39,7 @@ CEOP
         INTEGER i_dimid, j_dimid, k_dimid, dimids(4), varid
         INTEGER ig_dimid, jg_dimid, kl_dimid, ku_dimid, kp1_dimid
         INTEGER start(4), count(4), rec_dimid
+        INTEGER info
         LOGICAL iAmDoingIO
         character*(MAX_LEN_MBUF) msgbuf
         _RL     a(sNx,sNy,Nr)
@@ -69,10 +70,19 @@ C- CDF-5 (64-bit data, use parallel netCDF)
         ENDIF
         IF (usingMPI) THEN
 #ifdef ALLOW_USE_MPI
-              mode_flag = IOR(mode_flag, nf90_mpiio)
-              err = nf90_create(ncfilename, mode_flag, ncid, comm =
-     $             MPI_COMM_MODEL,info = MPI_INFO_NULL)
-              CALL nf90ERR(err,"Opening netcdf file w/ MPI",myThid)
+         CALL MPI_INFO_CREATE(info, err)
+         DO i=1,NF90IO_MAX_N_INFO
+          IF ( nf90io_info_keys(i) .NE. ' ' .AND.
+     &         nf90io_info_values(i) .NE. ' ' ) THEN
+           CALL MPI_INFO_SET(info, nf90io_info_keys(i),
+     &                             nf90io_info_values(i), err)
+          ENDIF
+         ENDDO
+         mode_flag = IOR(mode_flag, nf90_mpiio)
+         err = nf90_create(ncfilename, mode_flag, ncid, comm =
+     &                     MPI_COMM_MODEL, info = info)
+         CALL nf90ERR(err,"Opening netcdf file w/ MPI",myThid)
+         CALL MPI_INFO_FREE(info, err)
 #endif
         ELSE
           err = nf90_create(ncfilename, mode_flag, ncid)

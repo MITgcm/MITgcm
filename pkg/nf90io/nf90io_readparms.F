@@ -28,10 +28,12 @@ C     !LOCAL VARIABLES:
 C     msgBuf     :: Informational/error message buffer
 C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit
+      INTEGER iUnit, i
 
       NAMELIST /NF90IO_PARM01/
-     &       nf90io_fileFormat
+     &       nf90io_fileFormat,
+     &       nf90io_info_keys,
+     &       nf90io_info_values
 
       IF ( .NOT.useNF90IO ) THEN
 C-    pkg NF90IO is not used
@@ -47,6 +49,10 @@ C     print a (weak) warning if data.nf90io is found
 
 C--   Default values for NF90IO
       nf90io_fileFormat = 4
+      DO i=1,NF90IO_MAX_N_INFO
+        nf90io_info_keys(i) = ' '
+        nf90io_info_values(i) = ' '
+      ENDDO
 
       WRITE(msgBuf,'(A)') 'NF90IO_READPARMS: opening data.nf90io'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
