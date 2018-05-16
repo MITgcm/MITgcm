@@ -54,14 +54,15 @@ C Put a cap on the stretching term.
      &                  )
 
 C        Grid scale Rossby number, squared: U^2 / (fL)
-         Ro_g2(i,j) = U_scale(i,j)**2 * recip_rA(i,j,bi,bj) / (f0**2)
+         Ro_g2(i,j) = U_scale(i,j)**2 * recip_rA(i,j,bi,bj) /
+     &                  (fCori(i,j,bi,bj)**2)
 C        Grid scale Burger number: N^2 H^2 / (f^2 L^2)
 C         Bu_g(i,j) = Nsq(i,j) * drf(k)**2 * recip_rA(i,j,bi,bj) /
-C     &                 (f0**2 * PI)
+C     &                 (fCori(i,j,bi,bj)**2 * PI)
 C        Grid scale Froude number: U pi /(N^2 H)
 C          Include a small number to prevent division by zero
          Fr_g(i,j) = U_scale(i,j) * PI /
-     &                 ((Nsq(i,j) + 1. _d -12) * drf(k))
+     &                 ((Nsq(i,j)) * drf(k))
 
 C        Implement eqn. (55) from Bachman et al. (2017) JGR-Oceans
 C         stretching_hold(i,j) = MIN( ABS(stretching(i,j)),

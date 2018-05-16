@@ -142,23 +142,24 @@ C At the top row is it the distance from the center to the
 C free surface?  This would make it half of what it is over the other
 C cells in the column, and would explain why I'm getting a junk answer
 
+C a small number (1. _d -9) is added to N^2 to prevent divsion by zero
 
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
         sigmaR= maskC(i,j,k,bi,bj)
      &                *0.25*recip_drC(k)*rkSign
      & *(-3*rhoKm1(i,j)+4*rholoc(i,j)-rhoKp1(i,j))
-        N2_1(i,j) = -gravity*recip_rhoConst*sigmaR
+        N2_1(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
 
         sigmaR= maskC(i,j,k,bi,bj)
      &                *0.25*recip_drC(k)*rkSign
      &                *(rhoKp1(i,j)-rhoKm1(i,j))
-        N2_2(i,j) = -gravity*recip_rhoConst*sigmaR
+        N2_2(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
 
         sigmaR= maskC(i,j,k,bi,bj)
      &                *0.25*recip_drC(k)*rkSign
      &                *(rhoKp2(i,j)-rholoc(i,j))
-        N2_3(i,j) = -gravity*recip_rhoConst*sigmaR
+        N2_3(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
 
        ENDDO
       ENDDO
@@ -185,9 +186,9 @@ C              (f/N^2) * b
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        kernel_1(i,j)=(f0/N2_1(i,j))*buoy_m1(i,j)
-        kernel_2(i,j)=(f0/N2_2(i,j))*buoy(i,j)
-        kernel_3(i,j)=(f0/N2_3(i,j))*buoy_p1(i,j)
+        kernel_1(i,j)=(fCori(i,j,bi,bj)/N2_1(i,j))*buoy_m1(i,j)
+        kernel_2(i,j)=(fCori(i,j,bi,bj)/N2_2(i,j))*buoy(i,j)
+        kernel_3(i,j)=(fCori(i,j,bi,bj)/N2_3(i,j))*buoy_p1(i,j)
        ENDDO
       ENDDO
 
@@ -274,23 +275,24 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C              N^2
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
+C a small number (1. _d -9) is added to N^2 to prevent divsion by zero
 
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
         sigmaR= maskC(i,j,k,bi,bj)
      &                *0.5*recip_drC(k)*rkSign
      & *(3*rhoKp1(i,j)-4*rholoc(i,j)+rhoKm1(i,j))
-        N2_1(i,j) = -gravity*recip_rhoConst*sigmaR
+        N2_1(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
 
         sigmaR= maskC(i,j,k,bi,bj)
      &                *0.5*recip_drC(k)*rkSign
      &                *(rhoKp1(i,j)-rhoKm1(i,j))
-        N2_2(i,j) = -gravity*recip_rhoConst*sigmaR
+        N2_2(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
 
         sigmaR= maskC(i,j,k,bi,bj)
      &                *0.5*recip_drC(k)*rkSign
      &                *(rholoc(i,j)-rhoKm2(i,j))
-        N2_3(i,j) = -gravity*recip_rhoConst*sigmaR
+        N2_3(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
 
        ENDDO
       ENDDO
@@ -317,9 +319,9 @@ C              (f/N^2) * b
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        kernel_1(i,j)=(f0/N2_1(i,j))*buoy_p1(i,j)
-        kernel_2(i,j)=(f0/N2_2(i,j))*buoy(i,j)
-        kernel_3(i,j)=(f0/N2_3(i,j))*buoy_m1(i,j)
+        kernel_1(i,j)=(fCori(i,j,bi,bj)/N2_1(i,j))*buoy_p1(i,j)
+        kernel_2(i,j)=(fCori(i,j,bi,bj)/N2_2(i,j))*buoy(i,j)
+        kernel_3(i,j)=(fCori(i,j,bi,bj)/N2_3(i,j))*buoy_m1(i,j)
        ENDDO
       ENDDO
 
@@ -340,17 +342,6 @@ C I reversed the sign of the derivative here.
 
        ENDDO
       ENDDO
-
-
-
-
-
-
-
-
-
-
-
 
       ELSE
 
@@ -411,22 +402,24 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C              N^2
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
+C a small number (1. _d -9) is added to N^2 to prevent divsion by zero
+
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
         sigmaR= maskC(i,j,k,bi,bj)
      &                *recip_drC(k)*rkSign
      &                *(rholoc(i,j)-rhoKm1(i,j))
-        N2_1(i,j) = -gravity*recip_rhoConst*sigmaR
+        N2_1(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
 
         sigmaR= maskC(i,j,k,bi,bj)
      &                *recip_drC(k)*rkSign
      &                *(rhoKp1(i,j)-rholoc(i,j))
-        N2_2(i,j) = -gravity*recip_rhoConst*sigmaR
+        N2_2(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
 
         sigmaR= maskC(i,j,k,bi,bj)
      &                *0.5*recip_drC(k)*rkSign
      &                *(rhoKp1(i,j)-rhoKm1(i,j))
-        N2_3(i,j) = -gravity*recip_rhoConst*sigmaR
+        N2_3(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
 
 
        ENDDO
@@ -454,8 +447,8 @@ C              (f/N^2) * b
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        kernel_1(i,j)=(f0/N2_1(i,j))*buoy_1(i,j)
-        kernel_2(i,j)=(f0/N2_2(i,j))*buoy_2(i,j)
+        kernel_1(i,j)=(fCori(i,j,bi,bj)/N2_1(i,j))*buoy_1(i,j)
+        kernel_2(i,j)=(fCori(i,j,bi,bj)/N2_2(i,j))*buoy_2(i,j)
        ENDDO
       ENDDO
   
@@ -476,13 +469,8 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
        ENDDO
       ENDDO
 
-
- 
-
-
       ENDIF
 CC End of IF statement about k
-
 
       RETURN
       END
