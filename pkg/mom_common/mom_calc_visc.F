@@ -11,7 +11,7 @@ C     !INTERFACE:
       SUBROUTINE MOM_CALC_VISC(
      I        bi,bj,k,
      O        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
-     I        hDiv,vort3,tension,strain,KE,hFacZ,
+     I        hDiv,vort3,tension,strain,stretching,KE,hFacZ,
      I        myThid)
 
 C     !DESCRIPTION:
@@ -55,6 +55,7 @@ C       biharmonic viscosity>viscA4gridmin*L**4/32/deltaT (approx)
 C     RECOMMENDED VALUES
 C     viscC2Leith=1-3
 C     viscC2LeithD=1-3
+C     viscC2LeithQG=1
 C     viscC4Leith=1-3
 C     viscC4LeithD=1.5-3
 C     viscC2smag=2.2-4 (Griffies and Hallberg,2000)
@@ -94,6 +95,7 @@ C     myThid               :: my thread Id number
       _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL strain(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
@@ -110,8 +112,9 @@ C     !LOCAL VARIABLES:
       _RL smag2fac, smag4fac
       _RL leith2fac, leith4fac
       _RL leithD2fac, leithD4fac
+      _RL leithQG2fac
       _RL viscAhRe_max, viscA4Re_max
-      _RL Alin, grdVrt,grdDiv, keZpt
+      _RL Alin, grdVrt, grdDiv, keZpt
       _RL deepFac3, deepFac4
       _RL L2, L3, L5, L2rdt, L4rdt, recip_dt
       _RL Uscl,U4scl
@@ -135,6 +138,8 @@ C     !LOCAL VARIABLES:
       _RL viscAh_DLthD(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_ZLthD(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_DLthD(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscAh_ZLthQG(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscAh_DLthQG(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_ZSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_DSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_ZSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -184,6 +189,7 @@ C---- variable viscosity :
      &  .OR.(viscC2leithD.NE.0.)
      &  .OR.(viscC4leith.NE.0.)
      &  .OR.(viscC4leithD.NE.0.)
+     &  .OR.(viscC2LeithQG.NE.0.)
 
        calcSmag=
      &      (viscC2smag.NE.0.)
@@ -199,19 +205,25 @@ C---- variable viscosity :
 
        IF (calcLeith) THEN
         IF (useFullLeith) THEN
+C       Uses correct calculation for gradients, but might not work on cube sphere
          leith2fac =(viscC2leith /pi)**6
          leithD2fac=(viscC2leithD/pi)**6
+         leithQG2fac = (viscC2LeithQG/pi)**6
          leith4fac =0.015625 _d 0*(viscC4leith /pi)**6
          leithD4fac=0.015625 _d 0*(viscC4leithD/pi)**6
         ELSE
+C       Uses approximate gradients, but works on cube sphere. No reason to use this
+C        unless `useFullLeith` fails for your setup.
          leith2fac =(viscC2leith /pi)**3
          leithD2fac=(viscC2leithD/pi)**3
+         leithQG2fac = (viscC2LeithQG/pi)**3
          leith4fac =0.125 _d 0*(viscC4leith /pi)**3
          leithD4fac=0.125 _d 0*(viscC4leithD/pi)**3
         ENDIF
        ELSE
         leith2fac=0. _d 0
         leith4fac=0. _d 0
+        leithQG2fac=0. _d 0
         leithD2fac=0. _d 0
         leithD4fac=0. _d 0
        ENDIF
@@ -231,6 +243,7 @@ c         viscA4_Z(i,j) = viscA4Z
           viscA4_Dlth(i,j) = 0. _d 0
           viscAh_DlthD(i,j)= 0. _d 0
           viscA4_DlthD(i,j)= 0. _d 0
+          viscAh_DLthQG(i,j)= 0. _d 0
 
           viscAh_DSmg(i,j) = 0. _d 0
           viscA4_DSmg(i,j) = 0. _d 0
@@ -239,10 +252,11 @@ c         viscA4_Z(i,j) = viscA4Z
           viscA4_ZLth(i,j) = 0. _d 0
           viscAh_ZLthD(i,j)= 0. _d 0
           viscA4_ZLthD(i,j)= 0. _d 0
+          viscAh_ZLthQG(i,j)= 0. _d 0
         ENDDO
        ENDDO
 
-C-    Initialise to zero gradient of vorticity & divergence:
+C-    Initialise to zero gradient of vorticity and divergence:
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
           divDx(i,j) = 0.
@@ -303,6 +317,48 @@ C-       gradient in y direction:
 #endif
           ENDDO
          ENDDO
+
+       IF (useLeithQG) THEN
+C      horizontal gradient of vorticity and vortex stretching:
+C        In the case of using QG Leith, we want to add a term
+C        before calculating vecotr magnitude, so overwrite the
+C        values just calculated.
+C        gradient in x direction:
+         DO j=2-Oly,sNy+Oly
+          DO i=2-Olx,sNx+Olx-1
+            vrtDx(i,j) = (vort3(i+1,j)-vort3(i,j))
+     &                  *recip_dxG(i,j,bi,bj)*recip_deepFacC(k)
+     &                  *maskS(i,j,k,bi,bj)
+#ifdef ALLOW_OBCS
+     &                  *maskInS(i,j,bi,bj)
+#endif
+     &                  + (stretching(i+1,j)-stretching(i,j))
+     &                  *recip_dxG(i,j,bi,bj)*recip_deepFacC(k)
+     &                  *maskS(i,j,k,bi,bj)
+#ifdef ALLOW_OBCS
+     &                  *maskInS(i,j,bi,bj)
+#endif
+          ENDDO
+         ENDDO
+C-       gradient in y direction:
+         DO j=2-Oly,sNy+Oly-1
+          DO i=2-Olx,sNx+Olx
+            vrtDy(i,j) = (vort3(i,j+1)-vort3(i,j))
+     &                  *recip_dyG(i,j,bi,bj)*recip_deepFacC(k)
+     &                  *maskW(i,j,k,bi,bj)
+#ifdef ALLOW_OBCS
+     &                  *maskInW(i,j,bi,bj)
+#endif
+     &                  + (stretching(i,j+1)-stretching(i,j))
+     &                  *recip_dyG(i,j,bi,bj)*recip_deepFacC(k)
+     &                  *maskW(i,j,k,bi,bj)
+#ifdef ALLOW_OBCS
+     &                  *maskInW(i,j,bi,bj)
+#endif
+          ENDDO
+         ENDDO
+C      end if LeithQG
+       ENDIF
 
 C--   end if calcLeith
        ENDIF
@@ -366,6 +422,8 @@ C Using it in Leith serves to damp instabilities in w.
      &     SQRT(leithD2fac*grdDiv)*L3
           viscA4_DLthd(i,j)=
      &     SQRT(leithD4fac*grdDiv)*L5
+          viscAh_DLthQG(i,j) =
+     &     leithQG2fac*SQRT(grdVrt+grdDiv)*L3
          ELSEIF (calcLeith) THEN
 C but this approximation will work on cube (and differs by as much as 4X)
           grdVrt=MAX( ABS(vrtDx(i,j+1)), ABS(vrtDx(i,j)) )
@@ -381,11 +439,13 @@ C This approximation is good to the same order as above...
           viscA4_Dlth(i,j)=(leith4fac*grdVrt+(leithD4fac*grdDiv))*L5
           viscAh_DlthD(i,j)=((leithD2fac*grdDiv))*L3
           viscA4_DlthD(i,j)=((leithD4fac*grdDiv))*L5
+          viscAh_DLthQG(i,j)=leithQG2fac*(grdVrt + grdDiv)*L3
          ELSE
           viscAh_Dlth(i,j)=0. _d 0
           viscA4_Dlth(i,j)=0. _d 0
           viscAh_DlthD(i,j)=0. _d 0
           viscA4_DlthD(i,j)=0. _d 0
+          viscAh_DLthQG(i,j)=0. _d 0
          ENDIF
 
          IF (calcSmag) THEN
@@ -403,7 +463,7 @@ C This approximation is good to the same order as above...
 
 C  Harmonic on Div.u points
          Alin=viscAhD+viscAhGrid*L2rdt
-     &          +viscAh_DLth(i,j)+viscAh_DSmg(i,j)
+     &          +viscAh_DLth(i,j)+viscAh_DSmg(i,j)+viscAh_DLthQG(i,j)
 #ifdef ALLOW_3D_VISCAH
      &          +viscAhDfld(i,j,k,bi,bj)
 #ifdef ALLOW_AUTODIFF
@@ -477,6 +537,7 @@ C This is the vector magnitude of grad(div.v) squared
      &     SQRT(leithD2fac*grdDiv)*L3
           viscA4_ZLthD(i,j)=
      &     SQRT(leithD4fac*grdDiv)*L5
+          viscAh_ZLthQG(i,j)=leithQG2fac*(grdVrt + grdDiv)*L3
 
          ELSEIF (calcLeith) THEN
 C but this approximation will work on cube (and differs by 4X)
@@ -492,11 +553,13 @@ C but this approximation will work on cube (and differs by 4X)
           viscA4_ZLth(i,j)=(leith4fac*grdVrt+(leithD4fac*grdDiv))*L5
           viscAh_ZLthD(i,j)=(leithD2fac*grdDiv)*L3
           viscA4_ZLthD(i,j)=(leithD4fac*grdDiv)*L5
+          viscAh_ZLthQG(i,j)=leithQG2fac*(grdVrt + grdDiv)*L3
          ELSE
           viscAh_ZLth(i,j)=0. _d 0
           viscA4_ZLth(i,j)=0. _d 0
           viscAh_ZLthD(i,j)=0. _d 0
           viscA4_ZLthD(i,j)=0. _d 0
+          viscAh_ZLthQG(i,j)=0. _d 0
          ENDIF
 
          IF (calcSmag) THEN
@@ -511,7 +574,7 @@ C but this approximation will work on cube (and differs by 4X)
 
 C  Harmonic on Zeta points
          Alin=viscAhZ+viscAhGrid*L2rdt
-     &           +viscAh_ZLth(i,j)+viscAh_ZSmg(i,j)
+     &         +viscAh_ZLth(i,j)+viscAh_ZSmg(i,j) + viscAh_ZLthQG(i,j)
 #ifdef ALLOW_3D_VISCAH
      &          +viscAhZfld(i,j,k,bi,bj)
 #endif
@@ -614,6 +677,11 @@ c     ENDIF
        CALL DIAGNOSTICS_FILL(viscAh_ZLthD,'VAHZLTHD',
      &                       k,1,2,bi,bj,myThid)
        CALL DIAGNOSTICS_FILL(viscA4_ZLthD,'VA4ZLTHD',
+     &                       k,1,2,bi,bj,myThid)
+
+       CALL DIAGNOSTICS_FILL(viscAh_DLthQG,'VAHDLTHQG',
+     &                       k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(viscAh_ZLthQG,'VAHZLTHQG',
      &                       k,1,2,bi,bj,myThid)
 
        CALL DIAGNOSTICS_FILL(viscAh_DSmg,'VAHDSMAG',k,1,2,bi,bj,myThid)

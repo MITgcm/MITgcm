@@ -299,6 +299,7 @@ C     bottomVisc_pCell :: account for partial-cell in bottom visc. (no-slip BC)
 C     useSmag3D      :: Use isotropic 3-D Smagorinsky
 C     useFullLeith   :: Set to true to use full Leith viscosity(may be unstable
 C                       on irregular grids)
+C     useLeithQG     :: Set to true to use QG version of Leith viscosity
 C     useStrainTensionVisc:: Set to true to use Strain-Tension viscous terms
 C     useAreaViscLength :: Set to true to use old scaling for viscous lengths,
 C                          e.g., L2=Raz.  May be preferable for cube sphere.
@@ -414,7 +415,8 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & deepAtmosphere, setInterFDr, setCenterDr, useMin4hFacEdges,
      & interViscAr_pCell, interDiffKr_pCell,
      & no_slip_sides, no_slip_bottom, bottomVisc_pCell, useSmag3D,
-     & useFullLeith, useStrainTensionVisc, useAreaViscLength,
+     & useFullLeith, useLeithQG, useStrainTensionVisc,
+     & useAreaViscLength,
      & momViscosity, momAdvection, momForcing, momTidalForcing,
      & momPressureForcing, metricTerms, useNHMTerms,
      & useCoriolis, use3dCoriolis,
@@ -470,6 +472,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL bottomVisc_pCell
       LOGICAL useSmag3D
       LOGICAL useFullLeith
+      LOGICAL useLeithQG
       LOGICAL useStrainTensionVisc
       LOGICAL useAreaViscLength
       LOGICAL momViscosity
@@ -653,6 +656,7 @@ C                   (act on Vorticity  part) ( m^4/s )
 C     smag3D_coeff :: Isotropic 3-D Smagorinsky coefficient (-)
 C     viscC2leith  :: Leith non-dimensional viscosity factor (grad(vort))
 C     viscC2leithD :: Modified Leith non-dimensional visc. factor (grad(div))
+C     viscC2LeithQG:: QG Leith non-dimensional viscosity factor
 C     viscC4leith  :: Leith non-dimensional viscosity factor (grad(vort))
 C     viscC4leithD :: Modified Leith non-dimensional viscosity factor (grad(div))
 C     viscC2smag   :: Smagorinsky non-dimensional viscosity factor (harmonic)
@@ -800,7 +804,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & f0, beta, fPrime, omega, rotationPeriod,
      & viscFacAdj, viscAh, viscAhW, smag3D_coeff,
      & viscAhMax, viscAhGrid, viscAhGridMax, viscAhGridMin,
-     & viscC2leith, viscC2leithD,
+     & viscC2leith, viscC2leithD, viscC2LeithQG,
      & viscC2smag, viscC4smag,
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
      & viscA4, viscA4W, viscA4Max,
@@ -884,6 +888,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL viscAhGrid, viscAhGridMax, viscAhGridMin
       _RL viscC2leith
       _RL viscC2leithD
+      _RL viscC2LeithQG
       _RL viscC2smag
       _RL viscA4
       _RL viscA4W

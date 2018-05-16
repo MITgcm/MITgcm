@@ -106,6 +106,8 @@ C     vort3BC  :: same as vort3  but account for no-slip BC
       _RL tension (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL strain  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL strainBC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Nsq     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL omega3  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vort3   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -205,6 +207,8 @@ c       viscA4_Z(i,j) = 0.
 c       viscA4_D(i,j) = 0.
         strain(i,j)  = 0. _d 0
         strainBC(i,j)= 0. _d 0
+        stretching(i,j) = 0. _d 0
+        Nsq(i,j)     = 0. _d 0
         tension(i,j) = 0. _d 0
 #ifdef ALLOW_AUTODIFF
         hFacZ(i,j)   = 0. _d 0
@@ -327,6 +331,14 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
        CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
 
        IF ( useVariableVisc .OR. useStrainTensionVisc ) THEN
+        IF (useLeithQG) THEN
+          CALL MOM_VISC_QGLEITH_CALC_STRETCHING(bi,bj,k,
+     O                                         stretching,Nsq,
+     I                                         myThid)
+          CALL MOM_VISC_QGLEITH_LIMITER(bi,bj,k,
+     O                                 stretching,
+     I                                 Nsq,uFld,vFld,vort3,myThid)
+        ENDIF
         CALL MOM_CALC_TENSION( bi,bj,k,uFld,vFld,tension,myThid )
         CALL MOM_CALC_STRAIN( bi,bj,k,uFld,vFld,hFacZ,strain,myThid )
 C-    mask strain and account for no-slip / free-slip BC in strainBC:
@@ -365,8 +377,8 @@ C--    Calculate Lateral Viscosities
 C-     uses vort3BC & strainBC which account for no-slip / free-slip BC
          CALL MOM_CALC_VISC( bi, bj, k,
      O            viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
-     I            hDiv, vort3BC, tension, strainBC, KE, hfacZ,
-     I            myThid )
+     I            hDiv, vort3BC, tension, strainBC, stretching,
+     I            KE, hfacZ, myThid )
        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -909,6 +921,10 @@ C--   Set du/dt & dv/dt on boundaries to zero
        IF ( useVariableVisc .OR. useStrainTensionVisc ) THEN
         CALL DIAGNOSTICS_FILL(tension, 'Tension ',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(strainBC,'Strain  ',k,1,2,bi,bj,myThid)
+C         stretching will be zero, unless using QG Leith
+C         protect with if statement?
+        CALL DIAGNOSTICS_FILL(stretching,
+     I                          'Stretch ',k,1,2,bi,bj,myThid)
        ENDIF
         CALL DIAGNOSTICS_FILL(gU(1-OLx,1-OLy,k,bi,bj),
      &                                'Um_Advec',k,1,2,bi,bj,myThid)

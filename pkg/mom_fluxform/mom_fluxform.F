@@ -147,6 +147,8 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL strain(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Nsq(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  uDudxFac
       _RL  AhDudxFac
       _RL  vDudyFac
@@ -209,6 +211,8 @@ c       KE(i,j)     = 0.
         vort3(i,j)  = 0.
         strain(i,j) = 0.
         tension(i,j)= 0.
+        stretching(i,j) = 0.
+        Nsq(i,j)    = 0.
         guDiss(i,j) = 0.
         gvDiss(i,j) = 0.
        ENDDO
@@ -308,6 +312,14 @@ C     anelastic: transports are scaled by rhoFacC (~ mass transport)
         CALL MOM_CALC_RELVORT3( bi,bj,k,uFld,vFld,hFacZ,vort3,myThid )
         CALL MOM_CALC_TENSION( bi,bj,k,uFld,vFld,tension,myThid )
         CALL MOM_CALC_STRAIN( bi,bj,k,uFld,vFld,hFacZ,strain,myThid )
+        IF (useLeithQG) THEN
+          CALL MOM_VISC_QGLEITH_CALC_STRETCHING(bi,bj,k,
+     O                                         stretching,Nsq,
+     I                                         myThid)
+          CALL MOM_VISC_QGLEITH_LIMITER(bi,bj,k,
+     O                                 stretching,
+     I                                 Nsq,uFld,vFld,vort3,myThid)
+        ENDIF
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
            IF ( hFacZ(i,j).EQ.0. ) THEN
@@ -318,10 +330,18 @@ C     anelastic: transports are scaled by rhoFacC (~ mass transport)
         ENDDO
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
-          CALL DIAGNOSTICS_FILL(hDiv,   'momHDiv ',k,1,2,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL(vort3,  'momVort3',k,1,2,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL(tension,'Tension ',k,1,2,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL(strain, 'Strain  ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(hDiv,
+     I                          'momHDiv ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(vort3,
+     I                          'momVort3',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(tension,
+     I                          'Tension ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(strain,
+     I                          'Strain  ',k,1,2,bi,bj,myThid)
+C           stretching will be zero, unless using QG Leith
+C           protect with if statement?
+          CALL DIAGNOSTICS_FILL(stretching,
+     I                          'Stretch ',k,1,2,bi,bj,myThid)
         ENDIF
 #endif
       ENDIF
@@ -394,7 +414,7 @@ C---  Calculate vertical transports (at k+1) below U & V points :
        IF ( useVariableVisc ) THEN
         CALL MOM_CALC_VISC( bi, bj, k,
      O           viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
-     I           hDiv, vort3, tension, strain, KE, hFacZ,
+     I           hDiv, vort3, tension, strain, stretching, KE, hFacZ,
      I           myThid )
        ENDIF
       ENDIF

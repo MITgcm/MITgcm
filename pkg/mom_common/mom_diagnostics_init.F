@@ -195,6 +195,20 @@ C--   add diagnostics for viscosity coefficients:
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'VAHZLTHQG'
+      diagTitle = 'LeithQG Harm Visc Coefficient (m2/s) (Zeta Pt)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SZ      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'VAHDLTHQG'
+      diagTitle = 'LeithQG Harm Visc Coefficient (m2/s) (Div Pt)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'VAHZSMAG'
       diagTitle = 'Smagorinsky Harm Visc Coefficient (m2/s) (Zeta Pt)'
       diagUnits = 'm^2/s           '
@@ -249,6 +263,13 @@ C--   add diagnostics of simple derivative quantities:
 
       diagName  = 'Strain  '
       diagTitle = 'Horizontal Strain of Horizontal Velocities'
+      diagCode  = 'SZR     MR      '
+      diagUnits = 's^-1            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'Stretch '
+      diagTitle = 'Vortex stretching from QG Leith dynamic viscosity'
       diagCode  = 'SZR     MR      '
       diagUnits = 's^-1            '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
