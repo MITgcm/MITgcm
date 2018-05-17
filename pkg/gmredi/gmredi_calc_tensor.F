@@ -42,6 +42,9 @@ C     == Global variables ==
 #ifdef ALLOW_KPP
 # include "KPP.h"
 #endif
+#ifdef ALLOW_GM_LEITH_QG
+#include "MOM_VISC.h"
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
@@ -551,6 +554,9 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef GM_VISBECK_VARIABLE_K
      &           + VisbeckK(i,j,bi,bj)*(1. _d 0 + GM_skewflx)
 #endif
+#ifdef ALLOW_GM_LEITH_QG
+     &           + GM_LeithQG_K(i,j,k,bi,bj)*(1. _d 0 + GM_skewflx)
+#endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &           + op5*(K3D(i,j,k,bi,bj)+K3D(i,j,km1,bi,bj))
      &             *(1. _d 0 + GM_skewflx)
@@ -569,6 +575,9 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &                     + VisbeckK(i,j,bi,bj)
+#endif
+#ifdef ALLOW_GM_LEITH_QG
+     &                     + GM_LeithQG_K(i,j,k,bi,bj)
 #endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &                     + op5*(K3D(i,j,k,bi,bj)+K3D(i,j,km1,bi,bj))
@@ -728,6 +737,10 @@ c      IF ( GM_nonUnitDiag ) THEN
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))
 #endif
+#ifdef ALLOW_GM_LEITH_QG
+     &     +op5*(GM_LeithQG_K(i,j,k,bi,bj)
+     &            +GM_LeithQG_K(i-1,j,k,bi,bj))
+#endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &     +op5*(K3D(i,j,k,bi,bj)+K3D(i-1,j,k,bi,bj))
 #endif
@@ -780,6 +793,10 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))*GM_advect
 #endif
+#ifdef ALLOW_GM_LEITH_QG
+     &     +op5*(GM_LeithQG_K(i,j,k,bi,bj)
+     &            +GM_LeithQG_K(i-1,j,k,bi,bj))*GM_advect
+#endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &     +op5*(K3D(i,j,k,bi,bj)+K3D(i-1,j,k,bi,bj))*GM_advect
 #endif
@@ -808,6 +825,10 @@ C         store in tmp1k Kuz_Redi
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     +(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))*0.5 _d 0
+#endif
+#ifdef ALLOW_GM_LEITH_QG
+     &     +(GM_LeithQG_K(i,j,k,bi,bj)
+     &            +GM_LeithQG_K(i-1,j,k,bi,bj))*0.5 _d 0
 #endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &     +op5*(K3D(i,j,k,bi,bj)+K3D(i-1,j,k,bi,bj))
@@ -946,6 +967,10 @@ c      IF ( GM_nonUnitDiag ) THEN
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
 #endif
+#ifdef ALLOW_GM_LEITH_QG
+     &     +op5*(GM_LeithQG_K(i,j,k,bi,bj)
+     &             +GM_LeithQG_K(i,j-1,k,bi,bj))
+#endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &     +op5*(K3D(i,j,k,bi,bj)+K3D(i,j-1,k,bi,bj))
 #endif
@@ -998,6 +1023,10 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))*GM_advect
 #endif
+#ifdef ALLOW_GM_LEITH_QG
+     &     +op5*(GM_LeithQG_K(i,j,k,bi,bj)
+     &             +GM_LeithQG_K(i,j-1,k,bi,bj))*GM_advect
+#endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &     +op5*(K3D(i,j,k,bi,bj)+K3D(i,j-1,k,bi,bj))*GM_advect
 #endif
@@ -1026,6 +1055,10 @@ C         store in tmp1k Kvz_Redi
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     +(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))*0.5 _d 0
+#endif
+#ifdef ALLOW_GM_LEITH_QG
+     &     +(GM_LeithQG_K(i,j,k,bi,bj)
+     &             +GM_LeithQG_K(i,j-1,k,bi,bj))*0.5 _d 0
 #endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &     +op5*(K3D(i,j,k,bi,bj)+K3D(i,j-1,k,bi,bj))

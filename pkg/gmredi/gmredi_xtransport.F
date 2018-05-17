@@ -35,6 +35,9 @@ C     == GLobal variables ==
 #ifdef ALLOW_CTRL
 # include "CTRL_FIELDS.h"
 #endif
+#ifdef ALLOW_GM_LEITH_QG
+#include "MOM_VISC.h"
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -134,6 +137,10 @@ C--   Area integrated zonal flux
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))
+#endif
+#ifdef ALLOW_GM_LEITH_QG
+     &     +op5*(GM_LeithQG_K(i,j,k,bi,bj)
+     &             +GM_LeithQG_K(i-1,j,k,bi,bj))
 #endif
      &     )
 #endif /* GM_NON_UNITY_DIAGONAL */
