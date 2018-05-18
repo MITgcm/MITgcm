@@ -2939,6 +2939,8 @@ enstrophy-dissipation and the resulting eddy viscosity are
    - {\frac{\partial{\overline {\tilde u}}}{\partial{y}}}\right)\right]^2}
    :label: Leith3
 
+The runtime flag :varlink:`useFullLeith` controls whether or not to calculate the full gradients for the Leith viscosity (.TRUE.) or to use an approximation (.FALSE.). The only reason to set :varlink:`useFullLeith` = .FALSE. is if your simulation fails when computing the gradients. This can occur when using the cubed sphere and other complex grids.
+
 Modified Leith Viscosity
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -2987,6 +2989,29 @@ often what sets the maximum timestep, this viscosity may substantially
 increase the allowable timestep without severely compromising the verity
 of the simulation. Tests have shown that in some calculations, a
 timestep three times larger was allowed when :varlink:`viscC2LeithD` = :varlink:`viscC2Leith`.
+
+
+Quasi-Geostrophic Leith Viscosity
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A variant of Leith viscosity can be derived for quasi-geostrophic dynamics. This leads to a slightly different equation for the viscosity that includes a contribution from quasigeostrophic vortex stretching REFERENCE BACHMAN ET AL. (2017). The viscosity is given by
+
+INSERT EQUATION (39) HERE
+
+However, this viscosity does not constrain purely divergent motions. As such, a small :math:`O(\epsilon)` correction is added
+
+INSERT EQUATION (40) HERE
+
+This form is, however, numerically awkward; as the Brunt-Väisälä Frequency becomes very small in regions of weak or vanishing stratification, the vortex stretching term becomes very large. The resulting large viscosities can lead to numerical instabilities. Bachman et al. (2017) present two limiting forms for the viscosity. The second of which,
+
+INSERT EQUATION (56) HERE
+
+has been implemented and can be used when the runtime flag :varlink:`useLeithQG` = .TRUE.
+
+There is no reason to use the quasi-geostrophic form of Leith at the same time as either standard Leith or modified Leith. Therefore, the model will not run if non-zero values have been set for these coefficients; the model will stop during the configuration check. LeithQG can be used regardless of the setting for `useFullLeith`. Just as for the other forms of Leith viscosity, this flag determines whether the full gradients are used or not.
+
+LeithQG viscosity is designed to work best in simulations that resolve some mesoscale features. In simulations that are too coarse to permit eddies or fine enough to resolve submesoscale features, it should fail gracefully. The non-dimensional parameter :varlink:`viscC2LeithQG` scales the viscosity, and the recommended value is 1.
+
 
 Courant–Freidrichs–Lewy Constraint on Viscosity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
