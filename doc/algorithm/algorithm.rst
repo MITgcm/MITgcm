@@ -3012,6 +3012,7 @@ There is no reason to use the quasi-geostrophic form of Leith at the same time a
 
 LeithQG viscosity is designed to work best in simulations that resolve some mesoscale features. In simulations that are too coarse to permit eddies or fine enough to resolve submesoscale features, it should fail gracefully. The non-dimensional parameter :varlink:`viscC2LeithQG` scales the viscosity, and the recommended value is 1.
 
+To use the LeithQG viscosity at the GMRedi coefficient, as was done in some of the simulations in Bachman et al. (2017), the compile time flag :varlink:`ALLOW_GM_LEITH_QG` must be defined in :filelink:`pkg/mom_common/MOM_COMMON_OPTIONS.h` when the model is compiled.
 
 Courant–Freidrichs–Lewy Constraint on Viscosity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
