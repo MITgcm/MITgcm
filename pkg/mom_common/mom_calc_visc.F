@@ -685,9 +685,9 @@ c     ENDIF
        CALL DIAGNOSTICS_FILL(viscA4_ZLthD,'VA4ZLTHD',
      &                       k,1,2,bi,bj,myThid)
 
-       CALL DIAGNOSTICS_FILL(viscAh_DLthQG,'VAHDLTHQG',
+       CALL DIAGNOSTICS_FILL(viscAh_DLthQG,'VAHDLTHQ',
      &                       k,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(viscAh_ZLthQG,'VAHZLTHQG',
+       CALL DIAGNOSTICS_FILL(viscAh_ZLthQG,'VAHZLTHQ',
      &                       k,1,2,bi,bj,myThid)
 
        CALL DIAGNOSTICS_FILL(viscAh_DSmg,'VAHDSMAG',k,1,2,bi,bj,myThid)

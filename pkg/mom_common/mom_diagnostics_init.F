@@ -195,14 +195,14 @@ C--   add diagnostics for viscosity coefficients:
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'VAHZLTHQG'
+      diagName  = 'VAHZLTHQ'
       diagTitle = 'LeithQG Harm Visc Coefficient (m2/s) (Zeta Pt)'
       diagUnits = 'm^2/s           '
       diagCode  = 'SZ      MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'VAHDLTHQG'
+      diagName  = 'VAHDLTHQ'
       diagTitle = 'LeithQG Harm Visc Coefficient (m2/s) (Div Pt)'
       diagUnits = 'm^2/s           '
       diagCode  = 'SM      MR      '
