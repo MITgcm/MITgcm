@@ -5,6 +5,9 @@ o pkg/ecco:
   - replace calls to (obsolete) MDSREADFIELD and MDSWRITEFIELD with calls to
     pkg/rw S/R: READ_REC_3D_RL and WRITE_REC_3D_RL ; this enable to use pkg/ecco
     without pkg/autodiff.
+o verification exp:
+  - update few (10) adm & tlm output after latest TAF update, from version 3.9.0
+    to version 3.9.6 on May 16-18.
 
 checkpoint67b (2018/05/05)
 o pkg/exf/exf_wind.F:
