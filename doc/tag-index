@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification exp:
+  - update few (10) adm & tlm output after latest TAF update, from version 3.9.0
+    to version 3.9.6 on May 16-18.
+
 checkpoint67b (2018/05/05)
 o pkg/exf/exf_wind.F:
   - fix a bug detected by Stanislav Martyanov: replace wStress by SQRT(wStress)
