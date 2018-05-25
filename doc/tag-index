@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mdsio:
+  - apply same substitution to remaining calls to MDSREADFIELD/MDSWRITEFIELD
+    in pkg/ctrl and in pkg/seaice.
+  - disable the use of obsolete MDSREADFIELD and MDSWRITEFIELD S/R (unless
+    USE_OBSOLETE_MDS_RW_FIELD is defined).
 o pkg/ecco:
   - replace calls to (obsolete) MDSREADFIELD and MDSWRITEFIELD with calls to
     pkg/rw S/R: READ_REC_3D_RL and WRITE_REC_3D_RL ; this enable to use pkg/ecco
