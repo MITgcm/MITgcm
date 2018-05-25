@@ -1,6 +1,19 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - replace calls to (obsolete) MDSREADFIELD and MDSWRITEFIELD with calls to
+    pkg/rw S/R: READ_REC_3D_RL and WRITE_REC_3D_RL ; this enable to use pkg/ecco
+    without pkg/autodiff.
+o verification exp:
+  - update few (10) adm & tlm output after latest TAF update, from version 3.9.0
+    to version 3.9.6 on May 16-18.
+
+checkpoint67b (2018/05/05)
+o pkg/exf/exf_wind.F:
+  - fix a bug detected by Stanislav Martyanov: replace wStress by SQRT(wStress)
+    in computing ustar ; this bug does not appear to affect the verification
+    experiments but has been around for a while (inherited from the ecco-branch)
 o pkg/seaice:
   - new run-time parameter to skip the update of ocean surface stress ; could be
     useful for testing or when seaice-dynamics is off (add a warning otherwise).
