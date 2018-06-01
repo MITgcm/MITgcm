@@ -353,7 +353,7 @@ c       m1 = 1 + MOD(iterNb+1,2)
      I           gtNm(1-OLx,1-OLy,1,bi,bj,m2), dTtracerLev,
      I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
      I           calcAdvection, tempImplVertAdv, AdamsBashforth_T,
-     I           tempVertDiff4, useGMRedi, useKPP,
+     I           tempVertDiff4, useGMRedi, useKPP, temp_stayPositive,
      O           fZon, fMer,
      U           fVer, gT_loc,
      I           myTime, myIter, myThid )
@@ -368,11 +368,11 @@ c       m1 = 1 + MOD(iterNb+1,2)
      I           gtNm1(1-OLx,1-OLy,1,bi,bj), dTtracerLev,
      I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
      I           calcAdvection, tempImplVertAdv, AdamsBashforth_T,
-     I           tempVertDiff4, useGMRedi, useKPP,
+     I           tempVertDiff4, useGMRedi, useKPP, temp_stayPositive,
      O           fZon, fMer,
      U           fVer, gT_loc,
      I           myTime, myIter, myThid )
-#endif
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
 
 C--   External thermal forcing term(s) inside Adams-Bashforth:
         IF ( tempForcing .AND. tracForcingOutAB.NE.1 ) THEN

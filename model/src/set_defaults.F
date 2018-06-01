@@ -190,9 +190,11 @@ C-    viscosity and diffusivity default value:
       tempStepping        = .TRUE.
       tempAdvection       = .TRUE.
       tempForcing         = .TRUE.
+      temp_stayPositive   = .FALSE.
       saltStepping        = .TRUE.
       saltAdvection       = .TRUE.
       saltForcing         = .TRUE.
+      salt_stayPositive   = .FALSE.
       addFrictionHeating  = .FALSE.
       metricTerms         = .TRUE.
       useNHMTerms         = .FALSE.
