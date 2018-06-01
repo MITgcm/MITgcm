@@ -19,6 +19,7 @@
  ivdc_kappa=10.,
  implicitDiffusion=.TRUE.,
  allowFreezing=.TRUE.,
+ salt_stayPositive=.TRUE.,
  exactConserv=.TRUE.,
  useRealFreshWaterFlux=.TRUE.,
  useCDscheme=.TRUE.,
