@@ -971,9 +971,8 @@ or system administrator for the specific syntax required to run on your computin
 Running with OpenMP
 -------------------
 
-See :numref:`build_openmp` for instructions on how to build an executable ``mitgcmuv``
-that is enabled for multi-threaded execution.
-The syntax to run the code in a multi-threaded setup is exactly the same as running single-threaded
+Assuming the executable ``mitgcmuv`` was built with OpenMP (see :numref:`build_openmp`),
+the syntax to run a multi-threaded simulation is the same as running single-threaded
 (see :numref:`run_the_model`), except that the following additional steps are required beforehand:
 
 
@@ -1003,7 +1002,7 @@ and similarly for :varlink:`nSy` and :varlink:`nTy`, else MITgcm will terminate 
 More information about the MITgcm 
 WRAPPER, domain decomposition, and how to configure :filelink:`SIZE.h <model/inc/SIZE.h>` 
 can be found in :numref:`using_wrapper`.
-   
+
 
 Output files
 ------------
