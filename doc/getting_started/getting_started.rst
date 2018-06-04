@@ -892,11 +892,11 @@ command-line option ``-omp``:
          %  make depend
          %  make
 
-While the four most common optfiles specified in :numref:`genmake2_optfiles` include support for the ``-omp`` option,
-many optfiles in :filelink:`tools/build_options` do not include support for multi-threaded executable builds.
-Check before using one of the less-common optfiles whether ``OMPFLAG`` is defined.
+While the most common optfiles specified in :numref:`genmake2_optfiles` include support for the ``-omp`` option,
+some optfiles in :filelink:`tools/build_options` do not include support for multi-threaded executable builds.
+Before using one of the less common optfiles, check whether ``OMPFLAG`` is defined.
 
-Note that one does not need to specify the number of threads until run-time (see :numref:`running_openmp`).
+Note that one does not need to specify the number of threads until runtime (see :numref:`running_openmp`).
 However, the default maximum number of threads in MITgcm is set to a (low) value of 4,
 so if you plan on more you will need to change this value in :filelink:`eesupp/inc/EEPARAMS.h` in your modified code directory.
 
@@ -971,11 +971,11 @@ or system administrator for the specific syntax required to run on your computin
 Running with OpenMP
 -------------------
 
+See :numref:`build_openmp` for instructions on how to build an executable ``mitgcmuv``
+that is enabled for multi-threaded execution.
 The syntax to run the code in a multi-threaded setup is exactly the same as running single-threaded
 (see :numref:`run_the_model`), except that the following additional steps are required beforehand:
 
-#. Generate the ``Makefile`` to build the multi-threaded code with the :filelink:`genmake2 <tools/genmake2>`
-   command-line option ``-omp``, as discussed in :numref:`build_openmp`.
 
 #. `Environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_ 
    for the number of threads and the stacksize need to be set prior to executing the model.
@@ -1003,9 +1003,6 @@ and similarly for :varlink:`nSy` and :varlink:`nTy`, else MITgcm will terminate 
 More information about the MITgcm 
 WRAPPER, domain decomposition, and how to configure :filelink:`SIZE.h <model/inc/SIZE.h>` 
 can be found in :numref:`using_wrapper`.
-
-Most typically, you will want to request the same number of processors as threads (or, at least multiple processors) in your run script.
-See your local cluster documentation for specific syntax to work with your cluster’s job-scheduling software.
    
 
 Output files
@@ -1920,11 +1917,11 @@ their meaning, and their default values:
 +-------------------------------------+---------------------------+---------------------------------------------------------------+
 | :varlink:`dumpInitAndLast`          | T                         | write out initial and last iteration model state              |
 +-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`snapshot_mdsio`          | T                         | model I/O flag.                                                |
+| :varlink:`snapshot_mdsio`           | T                         | model I/O flag.                                               |
 +-------------------------------------+---------------------------+---------------------------------------------------------------+
 | :varlink:`monitorFreq`              | 6.0E+01                   | monitor output interval ( s )                                 |
 +-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`monitor_stdio`           | T                         | model I/O flag.                                                |
+| :varlink:`monitor_stdio`            | T                         | model I/O flag.                                               |
 +-------------------------------------+---------------------------+---------------------------------------------------------------+
 | :varlink:`externForcingPeriod`      | 0.0E+00                   | forcing period (s)                                            |
 +-------------------------------------+---------------------------+---------------------------------------------------------------+
