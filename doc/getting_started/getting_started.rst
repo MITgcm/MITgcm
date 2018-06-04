@@ -740,10 +740,10 @@ Following a successful build of ``Makefile``, type ``make depend``. This command
 modifies the ``Makefile`` by attaching a (usually, long) list of
 files upon which other files depend. The purpose of this is to reduce
 re-compilation if and when you start to modify the code. The ``make depend``
-command also creates links from the model source to this directory, except for links to those files 
-in the specified ``-mods`` directory. The  links
-that exist at this stage are mostly “large F” files (``*.F`` and ``*.F90``) that
-need to be processed by a `C preprocessor <https://en.wikipedia.org/wiki/C_preprocessor>`_ (``cpp``).
+command also creates local links for all source files from the source directories
+(see "-mods" description in :numref:`command_line_options`), so that
+all source files to be used are visible from the local build directory,
+either as hardcopy or as symbolic link.
 
 **IMPORTANT NOTE:** Editing the source code files in the build directory
 will not edit a local copy (since these are just links) but will
