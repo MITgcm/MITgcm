@@ -19,9 +19,9 @@ imaginable and possible options. Therefore, for a regional simulation
 with very particular details, it is recommended to familiarize oneself
 not only with the compile- and runtime-options of this package, but
 also with the code itself. In many cases it will be necessary to adapt
-the obcs-code (in particular \code{S/R OBCS\_CALC}) to the application
+the obcs-code (in particular S/R OBCS\_CALC) to the application
 in question; in these cases the obcs-package (together with the
-rbcs-package, section \ref{sec:pkg:rbcs}) is a very
+rbcs-package, :numref:`sub_phys_pkg_rbcs`) is a very
 useful infrastructure for implementing special regional models.
 
 .. _ssub_pkg_obcs_config_compiling:
@@ -45,11 +45,11 @@ at compile time
 
 
 
-(see also Section \ref{sec:buildingCode}).
+(see also :numref:`building_code`).
 
 Parts of the OBCS code can be enabled or disabled at compile time
 via CPP preprocessor flags. These options are set in
-`OBCS\_OPTIONS.h`. :numref:`pkg_obcs_cpp_opts` summarizes these options.
+`OBCS_OPTIONS.h`. :numref:`pkg_obcs_cpp_opts` summarizes these options.
 
 
 .. tabularcolumns:: |l|l|
@@ -59,18 +59,18 @@ via CPP preprocessor flags. These options are set in
 .. csv-table:: OBCS CPP options
 
   **CPP option**        ,  **Description**
-  `ALLOW_OBCS_NORTH`    ,    enable Northern OB 
-  `ALLOW_OBCS_SOUTH`    ,    enable Southern OB
-   ALLOW_OBCS_EAST      ,    enable Eastern OB 
-   ALLOW_OBCS_WEST      ,    enable Western OB
+  `ALLOW_OBCS_NORTH`    ,  enable Northern OB 
+  `ALLOW_OBCS_SOUTH`    ,  enable Southern OB
+   ALLOW_OBCS_EAST      ,  enable Eastern OB 
+   ALLOW_OBCS_WEST      ,  enable Western OB
 
-   ALLOW_OBCS_PRESCRIBE ,   enable code for prescribing OB's
-   ALLOW\_OBCS\_SPONGE  ,   enable sponge layer code
-   ALLOW\_OBCS\_BALANCE ,  enable code for balancing transports through OB's
-   ALLOW\_ORLANSKI      ,  enable Orlanski radiation conditions at OB's
-   ALLOW\_OBCS\_STEVENS , enable Stevens (1990) boundary conditions at OB's 
+   ALLOW_OBCS_PRESCRIBE ,  enable code for prescribing OB's
+   ALLOW_OBCS_SPONGE    ,  enable sponge layer code
+   ALLOW_OBCS_BALANCE   ,  enable code for balancing transports through OB's
+   ALLOW_ORLANSKI       ,  enable Orlanski radiation conditions at OB's
+   ALLOW_OBCS_STEVENS   ,  enable Stevens (1990) boundary conditions at OB's 
                         ,  (currently only implemented for eastern and 
-                        , western boundaries and NOT for ptracers)
+                        ,  western boundaries and NOT for ptracers)
 
 
 
@@ -116,15 +116,15 @@ their default values.
 .. csv-table:: pkg OBCS run-time parameters
 
   **Flag/parameter** , **default** , **Description**
-  *basic flags & parameters* (OBCS\_PARM01) , ,
-  OB\_Jnorth        , 0           , Nx-vector of J-indices (w.r.t. Ny) of Northern OB at each I-position (w.r.t. Nx) 
-  OB\_Jsouth        , 0           , Nx-vector of J-indices (w.r.t. Ny) of Southern OB at each I-position (w.r.t. Nx)
-  OB\_Ieast         ,  0          , Ny-vector of I-indices (w.r.t. Nx) of Eastern OB at each J-position (w.r.t. Ny)
-  OB\_Iwest         ,  0          , Ny-vector of I-indices (w.r.t. Nx) of Western OB at each J-position (w.r.t. Ny)
+  *basic flags & parameters* (OBCS_PARM01) , ,
+  OB_Jnorth        , 0           , Nx-vector of J-indices (w.r.t. Ny) of Northern OB at each I-position (w.r.t. Nx) 
+  OB_Jsouth        , 0           , Nx-vector of J-indices (w.r.t. Ny) of Southern OB at each I-position (w.r.t. Nx)
+  OB_Ieast         ,  0          , Ny-vector of I-indices (w.r.t. Nx) of Eastern OB at each J-position (w.r.t. Ny)
+  OB_Iwest         ,  0          , Ny-vector of I-indices (w.r.t. Nx) of Western OB at each J-position (w.r.t. Ny)
   useOBCSprescribe  , :code:`.FALSE.` , 
   useOBCSsponge     , :code:`.FALSE.` , 
   useOBCSbalance    , \code{.FALSE.}  ,
-  OBCS\_balanceFacN/S/E/W , 1 , factor(s) determining the details of the balaning code
+  OBCS_balanceFacN/S/E/W , 1 , factor(s) determining the details of the balaning code
   useOrlanskiNorth/South/EastWest, :code:`.FALSE.` , turn on Orlanski boundary conditions for individual boundary
   useStevensNorth/South/EastWest , :code:`.FALSE.` , turn on Stevens boundary conditions for individual boundary
   OB\ **Xy**\ File , , file name of OB field
@@ -133,21 +133,21 @@ their default values.
              , , **w**\ (-velocity) **eta** (sea surface height)
              , , **a** (sea ice area) **h** (sea ice thickness) **sn** (snow thickness) **sl** (sea ice salinity)
              , , 
-  *Orlanski parameters (OBCS\_PARM02)* , ,
+  *Orlanski parameters (OBCS_PARM02)* , ,
   cvelTimeScale , 2000 sec , averaging period for phase speed
   CMAX          , 0.45 m/s , maximum allowable phase speed-CFL for AB-II 
   CFIX          , 0.8 m/s  , fixed boundary phase speed 
   useFixedCEast , :code:`.FALSE.` ,
   useFixedCWest , :code:`.FALSE.` ,
                 , , 
-  *Sponge-layer parameters (OBCS\_PARM03)*
+  *Sponge-layer parameters (OBCS_PARM03)*
   spongeThickness , 0 , sponge layer thickness (in grid points)
   Urelaxobcsinner , 0 sec , relaxation time scale at the innermost sponge layer point of a meridional OB
   Vrelaxobcsinner , 0 sec , relaxation time scale at the innermost sponge layer point of a zonal OB
   Urelaxobcsbound , 0 sec , relaxation time scale at the outermost sponge layer point of a meridional OB
   Vrelaxobcsbound , 0 sec , relaxation time scale at the outermost sponge layer point of a zonal OB
               , , 
-  *Stevens parameters (OBCS\_PARM04)*
+  *Stevens parameters (OBCS_PARM04)*
   T/SrelaxStevens , 0 sec , relaxation time scale for temperature/salinity
   useStevensPhaseVel , \code{.TRUE.} ,
   useStevensAdvection , \code{.TRUE.} ,
@@ -261,10 +261,9 @@ ORLANSKI:
 #########
 
 Orlanski radiation conditions :cite:`orl:76`, examples can be found in
-``verification/dome`` and
-``verification/tutorial\_plume\_on\_slope``
-
-(\ref{sec:eg-gravityplume}).
+``verification/dome``
+(http://www.rsmas.miami.edu/personal/tamay/DOME/dome.html) and
+``verification/tutorial\_plume\_on\_slope``.
 
 
 OBCS\_PRESCRIBE\_READ:
@@ -283,12 +282,12 @@ open boundary:
    :math:`(N_y\times N_r\times\mbox{time levels})`.
 
 -  If a non-linear free surface is used
-   (\ref{sec:nonlinear-freesurface}), additional files
+   (:numref:`nonlinear-freesurface`), additional files
    :code:`OB[N/S/E/W]etaFile` for the sea surface height $\eta$ with
    dimension :math:`(N_{x/y}\times\mbox{time levels})` may be specified.
 
 - If non-hydrostatic dynamics are used
-  (\ref{sec:non-hydrostatic}), additional files
+  (:numref:`non-hydrostatic`), additional files
   :code:`OB[N/S/E/W]wFile` for the vertical velocity $w$ with
   dimensions :math:`(N_{x/y}\times N_r\times\mbox{time levels})` can be
   specified.
@@ -298,13 +297,13 @@ open boundary:
   (:code:`HEFF`), seaice salinity, snow and ice velocities
   :math:`(N_{x/y}\times\mbox{time levels})` can be specified.
 
-As in :code:`S/R external\_fields\_load` or the :code:`exf`-package, the
+As in :code:`S/R external_fields_load` or the :code:`exf`-package, the
 code reads two time levels for each variable, e.g.\ :code:`OBNu0` and
 :code:`OBNu1`, and interpolates linearly between these time levels to
 obtain the value :code:`OBNu` at the current model time (step). When the
 :code:`exf`-package is used, the time levels are controlled for each
 boundary separately in the same way as the :code:`exf`-fields in
-:code:`data.exf`, namelist :code:`EXF\_NML\_OBCS`. The runtime flags
+:code:`data.exf`, namelist :code:`EXF_NML_OBCS`. The runtime flags
 follow the above naming conventions, e.g. for the western boundary the
 corresponding flags are :code:`OBCWstartdate1/2` and
 :code:`OBCWperiod`. Sea-ice boundary values are controlled separately
@@ -316,10 +315,6 @@ in :code:`data`, see :code:`verification/exp4` for an example.
 
 OBCS\_CALC\_STEVENS:
 ####################
-
-(THE IMPLEMENTATION OF THESE BOUNDARY CONDITIONS IS NOT
-COMPLETE. PASSIVE TRACERS, SEA ICE AND NON-LINEAR FREE SURFACE ARE NOT
-SUPPORTED PROPERLY.)
 
 The boundary conditions following :cite:`stevens:90` require the
 vertically averaged normal velocity (originally specified as a stream
@@ -378,30 +373,39 @@ eastern or western boundary):
 
 See :cite:`stevens:90` for details. With this boundary condition
 specifying the exact net transport across the open boundary is simple,
-so that balancing the flow with (S/R~OBCS\_BALANCE\_FLOW, see next
+so that balancing the flow with (S/R OBCS\_BALANCE\_FLOW, see next
 paragraph) is usually not necessary.
+
+Special cases where the current implementation is not complete:
+
+- When you use the non-linear free surface option (parameter `nonlinFreeSurf > 1`), the current implementation just assumes that the gradient normal to the open boundary is zero (:math:`\frac{\partial\eta}{\partial{n}} = 0`). Although this is inconsistent with geostrophic dynamics and the possibility to specify a non-zero tangent velocity together with Stevens BCs for normal velocities, it seems to work. Recommendation: Always specify zero tangential velocities with Stevens BCs.
+
+- There is no code for passive tracers, just a commented template in `S/R obcs_calc_stevens`. This means that passive tracers can be specified independently and are fluxed with the velocities that the Stevens BCs compute, but without the restoring term.
+
+- There are no specific Stevens BCs for sea ice, e.g. `pkg/seaice`. The model uses the default boundary conditions for the sea ice packages.
+
 
 OBCS\_BALANCE\_FLOW:
 ####################
 
-When turned on (:code:`ALLOW\_OBCS\_BALANCE`
-defined in :code:`OBCS\_OPTIONS.h` and :code:`useOBCSbalance=.true.` in
-:code:`data.obcs/OBCS\_PARM01`), this routine balances the net flow
+When turned on (:code:`ALLOW_OBCS_BALANCE`
+defined in :code:`OBCS_OPTIONS.h` and :code:`useOBCSbalance=.true.` in
+:code:`data.obcs/OBCS_PARM01`), this routine balances the net flow
 across the open boundaries. By default the net flow across the
 boundaries is computed and all normal velocities on boundaries are
 adjusted to obtain zero net inflow.
 
 This behavior can be controlled with the runtime flags
-:code:`OBCS\_balanceFacN/S/E/W`. The values of these flags determine
+:code:`OBCS_balanceFacN/S/E/W`. The values of these flags determine
 how the net inflow is redistributed as small correction velocities
 between the individual sections. A value ``-1`` balances an
 individual boundary, values :math:`>0` determine the relative size of the
 correction. For example, the values
 
-:code:`OBCS\_balanceFacE = 1.,`
-:code:`OBCS\_balanceFacW = -1.,`
-:code:`OBCS\_balanceFacN = 2.,`
-:code:`OBCS\_balanceFacS = 0.,`
+:code:`OBCS_balanceFacE = 1.,`
+:code:`OBCS_balanceFacW = -1.,`
+:code:`OBCS_balanceFacN = 2.,`
+:code:`OBCS_balanceFacS = 0.,`
 
 
 make the model
@@ -441,7 +445,7 @@ OBCS\_APPLY\_*:
 OBCS\_SPONGE:
 #############
 
-The sponge layer code (turned on with :code:`ALLOW\_OBCS\_SPONGE` and
+The sponge layer code (turned on with :code:`ALLOW_OBCS_SPONGE` and
 :code:`useOBCSsponge`) adds a relaxation term to the right-hand-side of
 the momentum and tracer equations. The variables are relaxed towards
 the boundary values with a relaxation time scale that increases
@@ -462,13 +466,17 @@ sponge layer (runtime parameter :code:`spongeThickness` in number of grid points
 distance from the boundary (also in grid points), and :math:`\tau_{b}`
 (runtime parameters :code:`Urelaxobcsbound` and :code:`Vrelaxobcsbound`) and :math:`\tau_{i}` (runtime parameters :code:`Urelaxobcsinner` and :code:`Vrelaxobcsinner`)
 the relaxation time scales on the boundary and at the interior
-termination of the sponge layer. The parameters :code:`Urelaxobcsbound/inner`set the relaxation time
+termination of the sponge layer. The parameters :code:`Urelaxobcsbound/inner` set the relaxation time
 scales for the Eastern and Western boundaries, :code:`Vrelaxobcsbound/inner` for the Northern and
 Southern boundaries.
 
 
 OB's with nonlinear free surface
 ################################
+
+
+OB's with sea ice
+#################
 
 
 .. _ssub_phys_pkg_obcs_flowchart:
@@ -489,11 +497,7 @@ Flow chart
 OBCS diagnostics
 ++++++++++++++++
 
-Diagnostics output is available via the diagnostics package (see Section
-[sec:pkg:diagnostics]). Available output fields are summarized in Table
-[tab:pkg:obcs:diagnostics].
-
-[tab:pkg:obcs:diagnostics]
+Diagnostics output is available via the diagnostics package (see :numref:`outp_pack`). Available output fields are summarized below:
 
 ::
 
@@ -517,16 +521,11 @@ In the directory :code:`verifcation`, the following experiments use
    (http://www.rsmas.miami.edu/personal/tamay/DOME/dome.html), uses
    Orlanski-BCs;
 
--  :code:`internal_wave`: uses a heavily modified :code:`S/R~OBCS\_CALC`
+-  :code:`internal_wave`: uses a heavily modified S/R OBCS\_CALC
 
 -  :code:seaice_obcs`: simple example who to use the sea-ice related code, based on :code:`lab_sea`;
 
--  :code:`tutorial_plume_on_slope`: uses Orlanski-BCs, see also section [sec:eg-gravityplume].
-
-
-
-References
-++++++++++
+-  :code:`tutorial_plume_on_slope`: uses Orlanski-BCs.
 
 
 .. _ssub_phys_pkg_obcs_experiments:
@@ -534,5 +533,5 @@ References
 Experiments and tutorials that use obcs
 +++++++++++++++++++++++++++++++++++++++
 
-- :code:`tutorial\_plume\_on\_slope` (section~\ref{sec:eg-gravityplume})
+- :code:`tutorial_plume_on_slope`
 
