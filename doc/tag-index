@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/generic_advdiff:
+  - Add per tracer run-time param to switch on/off Smolarkiewicz-Hack:
+    Run-time switch for Temp & Salt are set from main param file "data"
+    (default value = FALSE); and for pTracers, they are set from parameter
+    file "data.ptracers" (default value = TRUE).
+  - Add a test in verification exp. global_ocean.90x40x15.down_slope for
+    Smolarkiewicz-Hack (switched on for Salt and pTracer(1)) but results
+    remains unchanged since, in this exp., Salt & pTr(1) are well above 0.
 o pkg/mdsio:
   - apply same substitution to remaining calls to MDSREADFIELD/MDSWRITEFIELD
     in pkg/ctrl and in pkg/seaice.

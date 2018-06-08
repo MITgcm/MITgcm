@@ -324,6 +324,7 @@ C      (advection, [explicit] diffusion, parameterizations,...)
      I             PTRACERS_AdamsBash_Tr(iTracer), .FALSE.,
      I             PTRACERS_useGMRedi(iTracer),
      I             PTRACERS_useKPP(iTracer),
+     I             PTRACERS_stayPositive(iTracer),
      O             fZon, fMer,
      U             fVer, gTracer,
      I             myTime, myIter, myThid )
