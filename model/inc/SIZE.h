@@ -28,8 +28,8 @@ C     sNx :: Number of X points in tile.
 C     sNy :: Number of Y points in tile.
 C     OLx :: Tile overlap extent in X.
 C     OLy :: Tile overlap extent in Y.
-C     nSx :: Number of tiles in X.
-C     nSy :: Number of tiles in Y.
+C     nSx :: Number of tiles per process in X.
+C     nSy :: Number of tiles per process in Y.
 C     nPx :: Number of processes to use in X.
 C     nPy :: Number of processes to use in Y.
 C     Nx  :: Number of points in X for the full domain.
@@ -48,17 +48,17 @@ CEOP
       INTEGER Ny
       INTEGER Nr
       PARAMETER (
-     &           sNx =  20,
-     &           sNy =  16,
-     &           OLx =   4,
-     &           OLy =   4,
-     &           nSx =   1,
-     &           nSy =   1,
+     &           sNx =  30,
+     &           sNy =  15,
+     &           OLx =   2,
+     &           OLy =   2,
+     &           nSx =   2,
+     &           nSy =   4,
      &           nPx =   1,
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
-     &           Nr  =  23)
+     &           Nr  =   4)
 
 C     MAX_OLX :: Set to the maximum overlap region size of any array
 C     MAX_OLY    that will be exchanged. Controls the sizing of exch
