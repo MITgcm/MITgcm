@@ -892,5 +892,59 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
 # endif /* ALLOW_GMREDI */
 #endif /* ALLOW_EDDYPSI */
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C Begin adjoint state variables
+
+#ifdef DIAGNOSTICS_ADJ_OUTPUT
+
+      diagName  = 'ADJetan '
+      diagTitle = 'dJ/dEtaN: Sensitivity to sea surface height anomaly'
+      diagUnits = 'dJ/m            '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJuvel '
+      diagTitle = 'dJ/dU: Sensitivity to zonal velocity'
+      diagUnits = 'dJ/(m/s)        '
+      diagCode  = 'UUR     MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'ADJvvel '
+      diagTitle = 'dJ/dV: Sensitivity to meridional velocity'
+      diagUnits = 'dJ/(m/s)        '
+      diagCode  = 'VVR     MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'ADJwvel '
+      diagTitle = 'dJ/dW: Sensitivity to vertical velocity'
+      diagUnits = 'dJ/(m/s)        '
+      diagCode  = 'WM      LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJtheta'
+      diagTitle = 'dJ/dTheta: Sensitivity to potential temperature'
+      diagUnits = 'dJ/degC         '
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJsalt '
+      diagTitle = 'dJ/dSalt: Sensitivity to salinity'
+      diagUnits = 'dJ/psu          '
+      diagCode  = 'SMR     MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#endif
+
+
+
       RETURN
       END
