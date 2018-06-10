@@ -2,6 +2,9 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#ifdef ALLOW_DIAGNOSTICS
+# include "DIAG_OPTIONS.h"
+#endif  
 
       SUBROUTINE ADAUTODIFF_INADMODE_UNSET( myThid )
 C     *==========================================================*
@@ -21,6 +24,7 @@ C     == Global variables ===
 #ifdef ALLOW_CTRL
 #include "ctrl.h"
 #endif
+
 
 C     == Routine arguments ==
 C     myThid :: my Thread Id number
@@ -48,6 +52,12 @@ C     myThid :: my Thread Id number
       SEAICEadjMODE=0
 #endif /* ALLOW_SEAICE */
       viscFacAdj=1. _d 0
+
+#ifdef DIAGNOSTICS_ADJ_OUTPUT
+C --- Flag to print adjoint variables not regular diagnostic variables
+       writeDiagnosticsAdj = .false.
+#endif
+
 
       IF ( debugLevel.GE.debLevC ) THEN
        WRITE(msgBuf,'(A,L5)')

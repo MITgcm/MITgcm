@@ -6,6 +6,9 @@
 # include "CTRL_OPTIONS.h"
 #endif
 #include "AD_CONFIG.h"
+#ifdef ALLOW_DIAGNOSTICS
+# include "DIAG_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: ADDUMMY_IN_STEPPING
@@ -54,6 +57,10 @@ c#include "GRID.h"
 #  include "adcommon.h"
 # endif /* ALLOW_OPENAD */
 #endif /* ALLOW_AUTODIFF_MONITOR */
+#ifdef DIAGNOSTICS_ADJ_OUTPUT
+# include "DIAGNOSTICS_SIZE.h"
+# include "DIAGNOSTICS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -85,7 +92,111 @@ C     msgBuf  :: Error message buffer
       _RL foo3D (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS dumRS(1)
       _RL dumRL(1)
+
+#ifdef ALLOW_DIAGNOSTICS
+# ifdef DIAGNOSTICS_ADJ_OUTPUT
+      logical modelEnd, doExch
+      integer n
+# endif
+#endif
 CEOP
+
+
+C-----------------------------------------------------------------------
+C--- Output adj variables in diagnostics
+C-----------------------------------------------------------------------
+#ifdef ALLOW_DIAGNOSTICS
+# ifdef DIAGNOSTICS_ADJ_OUTPUT
+
+C --- 1. Grab modelEnd, necessary input for diagnostics routines
+        modelEnd = myTime.eq.endTime .or. myIter.eq.nEndIter
+        call diagnostics_switch_onoff( myTime, myIter, myThid )
+
+C --- 2. Test for adexch based on dumpAdVarExch flag
+        doExch=.false.
+        if ( dumpAdVarExch.eq.1 ) then
+          do n = 1,nlists
+            if (different_multiple(ABS(freq(n)),myTime,deltaTClock)) then
+                doExch=.true.
+            endif
+          enddo
+
+        elseif (dumpAdVarExch.eq.2) then
+#  ifndef ALLOW_OPENAD
+          call copy_ad_uv_outp( dumRS, dumRS, aduVel, advVel,
+     &                                 var3Du, var3Dv, Nr, 34, myThid )
+#  else
+          call copy_ad_uv_outp( dumRS, dumRS, uvel%d, vvel%d,
+     &                                 var3Du, var3Dv, Nr, 34, myThid )
+#  endif
+        endif
+
+C --- 3. If necessary, do the exchanges
+C        allow_bulk_offline flag seems unnecessary, but this mirrors the
+C        setup below that does not use the diagnostics pkg
+        if ( doExch ) then
+#  ifndef ALLOW_OPENAD
+#   ifdef AUTODIFF_TAMC_COMPATIBILITY
+          call adexch_xy_rl( myThid,adetan)
+          call adexch_xyz_rl( myThid,adtheta)
+          call adexch_xyz_rl( myThid,adsalt)
+          call adexch_xyz_rl( myThid,adwvel )
+          call adexch_uv_xyz_rl(  .true. ,myThid,aduvel,advvel )
+#   else
+          call adexch_3d_rl( adEtaN, 1 , myThid )
+#    ifndef ALLOW_BULK_OFFLINE
+          call adexch_3d_rl( adTheta,Nr, myThid )
+          call adexch_3d_rl( adSalt, Nr, myThid )
+          call adexch_3d_rl( adwVel, Nr, myThid )
+          call adexch_uv_3d_rl( aduVel,advVel, .TRUE., Nr, myThid )
+#    endif /* ndef ALLOW_BULK_OFFLINE */
+#   endif /* def AUTODIFF_TAMC_COMPATIBILITY */
+#  else 
+          call adexch_3d_rl( etan%d, 1 , myThid )
+#    ifndef ALLOW_BULK_OFFLINE
+          call adexch_3d_rl( theta%d,Nr, myThid )
+          call adexch_3d_rl( salt%d, Nr, myThid )
+          call adexch_3d_rl( wvel%d, Nr, myThid )
+          call adexch_uv_3d_rl( uvel%d,vvel%d, .TRUE., Nr, myThid )
+#    endif /* ndef ALLOW_BULK_OFFLINE */
+#  endif /* ndef ALLOW_OPENAD */
+        endif
+
+C --- 4. Fill up diagnostics
+#  ifndef ALLOW_OPENAD
+C       TAF
+        call diagnostics_fill(adEtaN, 'ADJetan ', 0,1,0,1,1,myThid)
+        call diagnostics_fill(adtheta, 'ADJtheta', 0,Nr,0,1,1,myThid)
+        call diagnostics_fill(adsalt, 'ADJsalt ', 0,Nr,0,1,1,myThid)
+        call diagnostics_fill(adwVel, 'ADJwvel ', 0,Nr,0,1,1,myThid)
+        if ( dumpAdVarExch.ne.2 ) then
+          call diagnostics_fill(aduVel, 'ADJuvel ', 0,Nr,0,1,1,myThid)
+          call diagnostics_fill(advVel, 'ADJvvel ', 0,Nr,0,1,1,myThid)
+        else
+          call diagnostics_fill(var3Du, 'ADJuvel ', 0,Nr,0,1,1,myThid)
+          call diagnostics_fill(var3Dv, 'ADJvvel ', 0,Nr,0,1,1,myThid)
+        endif
+#  else 
+C       OpenAD
+        call diagnostics_fill(EtaN%d, 'ADJetan ', 0,1,0,1,1,myThid)
+        call diagnostics_fill(theta%d, 'ADJtheta', 0,Nr,0,1,1,myThid)
+        call diagnostics_fill(salt%d, 'ADJsalt ', 0,Nr,0,1,1,myThid)
+        call diagnostics_fill(wVel%d, 'ADJwvel ', 0,Nr,0,1,1,myThid)
+        if ( dumpAdVarExch.ne.2 ) then
+          call diagnostics_fill(uvel%d, 'ADJuvel ', 0,Nr,0,1,1,myThid)
+          call diagnostics_fill(vvel%d, 'ADJvvel ', 0,Nr,0,1,1,myThid)
+        else
+          call diagnostics_fill(var3Du, 'ADJuvel ', 0,Nr,0,1,1,myThid)
+          call diagnostics_fill(var3Dv, 'ADJvvel ', 0,Nr,0,1,1,myThid)
+        endif
+#  endif /* ALLOW_OPENAD */
+
+C --- 5. Write the fields out
+        call diagnostics_write( modelEnd, myTime, myIter, myThid )
+# endif /* DIAGNOSTICS_ADJ_OUTPUT */
+#endif /* ALLOW_DIAGNOSTICS */ 
+
+C-----------------------------------------------------------------------
 
       IF (
      &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
