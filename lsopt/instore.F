@@ -52,8 +52,7 @@ cph)
      $    , file   = 'OPWARMD'
      $    , status = 'unknown'
      $    , form   = 'unformatted'
-     $    , access = 'direct'
-     $    , recl   = rectmp
+     $    , access = 'stream'
      $    )
 
       return
