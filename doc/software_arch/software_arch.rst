@@ -515,6 +515,8 @@ years.
 
     Summary of the WRAPPER machine model.
 
+.. _using_wrapper:
+
 Using the WRAPPER
 =================
 
