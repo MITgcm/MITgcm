@@ -449,7 +449,7 @@ Using pkg/diagnostics for adjoint variables
     &
 
 Note: the diagnostics package automatically provides a phase shift of :math:`frequency/2`, 
-so specify `frequency = 0` to match output from `adjDumpFreq`.
+so specify `timePhase = 0` to match output from `adjDumpFreq`.
 
 
 Adding new diagnostics to the code
