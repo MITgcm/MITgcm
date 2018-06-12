@@ -155,12 +155,24 @@ C--   Place the loop on lm (= averagePeriod) outside the loop on md (= field):
       DO lm=1,averageCycle(listId)
 
 #ifdef ALLOW_MNC
-       IF (useMNC .AND. diag_mnc) THEN
-         CALL DIAGNOSTICS_MNC_SET(
-     I                    nLevOutp, listId, lm,
-     O                    diag_mnc_bn,
-     I                    undefRL, myTime, myIter, myThid )
-       ENDIF
+C- Ignore adj variables in fwd mode, regular diags in reverse mode
+# ifdef DIAGNOSTICS_ADJ_OUTPUT
+        if ( (flds(1,listId)(1:3).eq.'ADJ' .and. 
+     &        writeDiagnosticsAdj.eq..true.)
+     &       .or.
+     &       (flds(1,listId)(1:3).ne.'ADJ' .and.
+     &       writeDiagnosticsAdj.eq..false.)
+     &     ) then
+# endif
+          IF (useMNC .AND. diag_mnc) THEN
+            CALL DIAGNOSTICS_MNC_SET(
+     I                      nLevOutp, listId, lm,
+     O                      diag_mnc_bn,
+     I                      undefRL, myTime, myIter, myThid )
+          ENDIF
+# ifdef DIAGNOSTICS_ADJ_OUTPUT
+        endif
+# endif
 #endif /*  ALLOW_MNC  */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

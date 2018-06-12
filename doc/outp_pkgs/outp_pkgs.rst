@@ -410,9 +410,7 @@ Some notes to the user
 2. `adEtaN` is broken in :filelink:`addummy_in_stepping.F <pkg/autodiff/addummy_in_stepping.F>`
    so the output through diagnostics is zeros just as with the standard 'adjoint dump' method.
 
-3. Netcdf output is not available yet for these variables.
-
-4. The diagStats options are not available for these variables.   
+3. The diagStats options are not available for these variables.   
 
 
 Using pkg/diagnostics for adjoint variables
