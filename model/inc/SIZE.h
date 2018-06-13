@@ -15,11 +15,11 @@ C     | SIZE.h Declare size of underlying computational grid.
 C     *==========================================================*
 C     | The design here support a three-dimensional model grid
 C     | with indices I,J and K. The three-dimensional domain
-C     | is comprised of nPx*nSx blocks of size sNx along one axis
-C     | nPy*nSy blocks of size sNy along another axis and one
-C     | block of size Nz along the final axis.
-C     | Blocks have overlap regions of size OLx and OLy along the
-C     | dimensions that are subdivided.
+C     | is comprised of nPx*nSx blocks (or tiles) of size sNx
+C     | along one axis, nPy*nSy blocks of size sNy along another
+C     | axis and one block of size Nr along the vertical axis.
+C     | Blocks/tiles have overlap regions of size OLx and OLy
+C     | along the dimensions that are subdivided.
 C     *==========================================================*
 C     \ev
 C
