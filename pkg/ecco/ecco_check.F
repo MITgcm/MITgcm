@@ -533,6 +533,29 @@ c-- not checked here. also not checked for variwei at the moment
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
 
+C ---
+C Warn the user that this is a less tested objective function
+C TBD: Write a more consistent transport objective function 
+C ---
+
+          if (gencost_barfile(k)(1:7).eq.'m_trVol') then
+           WRITE(msgBuf,'(2A)') 
+     &   '** WARNING ** ECCO_CHECK: cost_gencost_transp.F not tested.',
+     &   ' See m_horflux_vol via
+     & cost_gencost_boxmean.F, which is regularly tested.'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+          elseif( (gencost_barfile(k)(1:8).eq.'m_trHeat').or.
+     &            (gencost_barfile(k)(1:8).eq.'m_trSalt') ) then
+           WRITE(msgBuf,'(4A)') 
+     &   '** WARNING ** ECCO_CHECK: m_tr[Heat,Salt] to be used with
+     & caution because:',
+     &  '  (1) advection inconsistent unless ENUM_CENTERED_2ND is used',
+     &  '  (2) bolus velocities not included',
+     &  '  (3) diffusion components not included'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+         endif
 
 C ---
 C Note to user: use gencost_mask not errfile
@@ -658,6 +681,7 @@ c-- final report to make sure using_cost_transp is set correctly
      &     'using_cost_transp: ',icount_transp,using_cost_transp
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
+
          endif  !gencost_flag
 
          endif !if ( gencost_datafile(k) .ne. ' ' ) then
