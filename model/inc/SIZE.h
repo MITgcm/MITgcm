@@ -13,7 +13,7 @@ C    !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SIZE.h Declare size of underlying computational grid.
 C     *==========================================================*
-C     | The design here support a three-dimensional model grid
+C     | The design here supports a three-dimensional model grid
 C     | with indices I,J and K. The three-dimensional domain
 C     | is comprised of nPx*nSx blocks (or tiles) of size sNx
 C     | along the first (left-most index) axis, nPy*nSy blocks 
