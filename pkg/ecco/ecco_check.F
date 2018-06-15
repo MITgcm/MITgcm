@@ -590,7 +590,7 @@ c-- West ----------------------
            if (.NOT.exst) then
              using_gencost(k)=.FALSE.
              WRITE(msgBuf,'(2A)')
-     &         '** WARNING ** ECCO_CHECK_FILES: missing error file: ',
+     &         '** WARNING ** ECCO_CHECK_FILES: missing mask file: ',
      &         tempfile(1:il+1)
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
@@ -599,19 +599,6 @@ c-- West ----------------------
      &         ' so ',gencost_name(k)(1:il),' gets switched off'
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
-           else
-c-- will move to init perhaps, but leave here for now due to check exst
-cgf (1) should indeed be moved to init_fixed
-cgf (2) generalization: read in a 1D vertical mask and do the product
-cgf     of e.g. gencost_mskWsurf*gencost_mskZ in ecco_phys.F?
-cgf (3) naming convention: m_heat_hadv rather than trHeat, etc?
-cgf     would help eventually distinguish, e.g., m_heat_hdif vs m_heat_vdif...
-cgf (4) generalization: specify type of transport (vol, heat, etc) via namelist?
-             call ecco_zero(msktrVolW,1,zeroRL,myThid)
-             CALL READ_REC_3D_RL( tempfile, cost_iprec, 1,
-     &                            msktrVolW, 1, 1, myThid )
-             CALL READ_REC_3D_RL( tempfile, cost_iprec, 1,
-     &             gencost_mskWsurf(1-OLx,1-OLy,1,1,k), 1, 1, myThid )
            endif
 c-- South --------------------
            il = ilnblnk(gencost_mask(k))
@@ -624,7 +611,7 @@ c-- South --------------------
            if (.NOT.exst) then
              using_gencost(k)=.FALSE.
              WRITE(msgBuf,'(2A)')
-     &         '** WARNING ** ECCO_CHECK_FILES: missing error file: ',
+     &         '** WARNING ** ECCO_CHECK_FILES: missing mask file: ',
      &         tempfile(1:il+1)
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
@@ -633,23 +620,7 @@ c-- South --------------------
      &         ' so ',gencost_name(k)(1:il),' gets switched off'
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
-           else
-c-- will move to init perhaps, but leave here for now due to check exst
-             call ecco_zero(msktrVolS,1,zeroRL,myThid)
-             CALL READ_REC_3D_RL( tempfile, cost_iprec, 1,
-     &                            msktrVolS, 1, 1, myThid )
-             CALL READ_REC_3D_RL( tempfile, cost_iprec, 1,
-     &             gencost_mskSsurf(1-OLx,1-OLy,1,1,k), 1, 1, myThid )
            endif
-          else
-           using_gencost(k)=.FALSE.
-           il=ilnblnk(gencost_name(k))
-           WRITE(msgBuf,'(4A)')
-     &     '** WARNING ** ECCO_CHECKD: errfile not defined',
-     &     ' so ',gencost_name(k)(1:il),' gets switched off'
-           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &               SQUEEZE_RIGHT , myThid)
-           endif  
          endif ! gencost_mask.eq.' '
 
 c-- check barfile, make sure character m_tr[Vol,Heat,Salt] match exactly

@@ -193,7 +193,7 @@ c model mask[W,S]: already included in transp calc in ecco_phys
 
 c--------- PART 0.1 read weights --------------------
 
-c-- read mask in gencost_mask, already stored under msktrVol[W,S]
+c-- read mask in gencost_mask
 c-- for now, assume non-time-variable mask
 
 c=============== PART 1: main loop ===================
@@ -264,7 +264,7 @@ c     O       tmpMeanTile,tmpNumTile,
 c     I       mythid)
 
 c global sums for display of time series
-c note tmpNumGlo is the constant total wet points in the msktrVol[W,S]
+c note tmpNumGlo is the constant total wet points in the gencost_mask[W,S]
             tmpMeanGlo = 0. _d 0
             tmpNumGlo = 0. _d 0
             il=ilnblnk(gencost_barfile(kgen(icount)))

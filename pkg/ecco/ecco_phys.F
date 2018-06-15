@@ -168,58 +168,6 @@ c-- init
       call ecco_zero(trHeat,Nr,zeroRL,myThid)
       call ecco_zero(trSalt,Nr,zeroRL,myThid)
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-c-- init: if done with overlap, more efficient. But since overwritten
-c immediately afterward, init is probably not needed.
-          do k = 1,nr
-            do j = 1-OLy,sNy+Oly
-              do i = 1-OLx,sNx+OLx
-                trVolW(i,j,k)=0. _d 0
-                trVolS(i,j,k)=0. _d 0
-                trHeatW(i,j,k)=0. _d 0
-                trHeatS(i,j,k)=0. _d 0
-                trSaltW(i,j,k)=0. _d 0
-                trSaltS(i,j,k)=0. _d 0
-              enddo
-            enddo
-          enddo
-          do k = 1,nr
-            do j = 1,sNy
-              do i =  1,sNx
-                trVolW(i,j,k) =
-     &                 uVel(i,j,k,bi,bj)*hFacW(i,j,k,bi,bj)
-     &                *dyG(i,j,bi,bj)*drF(k)*msktrVolW(i,j,bi,bj)
-     &                *maskInW(i,j,bi,bj)
-                trVolS(i,j,k) =
-     &                 vVel(i,j,k,bi,bj)*hFacS(i,j,k,bi,bj)
-     &                *dxG(i,j,bi,bj)*drF(k)*msktrVolS(i,j,bi,bj)
-     &                *maskInS(i,j,bi,bj)
-
-                trHeatW(i,j,k) = trVolW(i,j,k)
-     &                *(theta(i,j,k,bi,bj)+theta(i-1,j,k,bi,bj))*halfRL
-     &                *HeatCapacity_Cp*rhoConst
-                trHeatS(i,j,k) = trVolS(i,j,k)
-     &                *(theta(i,j,k,bi,bj)+theta(i,j-1,k,bi,bj))*halfRL
-     &                *HeatCapacity_Cp*rhoConst
-
-                trSaltW(i,j,k) = trVolW(i,j,k)
-     &                *(salt(i,j,k,bi,bj)+salt(i-1,j,k,bi,bj))*halfRL
-     &                *rhoConst/1000.
-                trSaltS(i,j,k) = trVolS(i,j,k)
-     &                *(salt(i,j,k,bi,bj)+salt(i,j-1,k,bi,bj))*halfRL
-     &                *rhoConst/1000.
-c now summing
-                trVol(i,j,k,bi,bj)=trVolW(i,j,k)+trVolS(i,j,k)
-                trHeat(i,j,k,bi,bj)=trHeatW(i,j,k)+trHeatS(i,j,k)
-                trSalt(i,j,k,bi,bj)=trSaltW(i,j,k)+trSaltS(i,j,k)
-                
-              enddo
-            enddo
-          enddo
-        enddo
-      enddo
-
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 
       do kgen=1,NGENCOST
@@ -318,6 +266,38 @@ c
      &          gencost_storefld(i,j,bi,bj,kgen)
      &          +uVel(i,j,k,bi,bj)*tmpmskW
      &          +vVel(i,j,k,bi,bj)*tmpmskS
+
+            ! Only compute tr[Vol,Heat,Salt] if necessary, use
+            ! gencost_mask[W/S] rather than old msktrVol  
+            elseif ( gencost_barfile(kgen)(1:7).eq.'m_trVol' .or. 
+     &               gencost_barfile(kgen)(1:8).eq.'m_trHeat'.or.
+     &               gencost_barfile(kgen)(1:8).eq.'m_trSalt'    ) then
+
+                trVolW(i,j,k) =
+     &                 uVel(i,j,k,bi,bj)*tmpmskW
+     &                *maskInW(i,j,bi,bj)
+                trVolS(i,j,k) =
+     &                 vVel(i,j,k,bi,bj)*tmpmskS
+     &                *maskInS(i,j,bi,bj)
+
+                trHeatW(i,j,k) = trVolW(i,j,k)
+     &                *(theta(i,j,k,bi,bj)+theta(i-1,j,k,bi,bj))*halfRL
+     &                *HeatCapacity_Cp*rhoConst
+                trHeatS(i,j,k) = trVolS(i,j,k)
+     &                *(theta(i,j,k,bi,bj)+theta(i,j-1,k,bi,bj))*halfRL
+     &                *HeatCapacity_Cp*rhoConst
+
+                trSaltW(i,j,k) = trVolW(i,j,k)
+     &                *(salt(i,j,k,bi,bj)+salt(i-1,j,k,bi,bj))*halfRL
+     &                *rhoConst/1000.
+                trSaltS(i,j,k) = trVolS(i,j,k)
+     &                *(salt(i,j,k,bi,bj)+salt(i,j-1,k,bi,bj))*halfRL
+     &                *rhoConst/1000.
+c now summing
+                trVol(i,j,k,bi,bj)=trVolW(i,j,k)+trVolS(i,j,k)
+                trHeat(i,j,k,bi,bj)=trHeatW(i,j,k)+trHeatS(i,j,k)
+                trSalt(i,j,k,bi,bj)=trSaltW(i,j,k)+trSaltS(i,j,k)
+
             endif
           enddo
 c---------
