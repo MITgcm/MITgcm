@@ -37,7 +37,7 @@ C     !FUNCTIONS
       if (our_rev_mode%plain) then
          our_orig_mode = our_rev_mode
 ! original function
-         active_var_p = active_var%v
+         active_var_p = active_var
 ! set up for plain execution
          our_rev_mode%arg_store=.FALSE.
          our_rev_mode%arg_restore=.FALSE.
@@ -51,14 +51,14 @@ C     !FUNCTIONS
 ! reset the mode
          our_rev_mode=our_orig_mode
 ! copy back
-         active_var%v = active_var_p
+         active_var = active_var_p
       end if
 
       if (our_rev_mode%tape) then
 ! taping
          our_orig_mode=our_rev_mode
 ! original function
-         active_var_p = active_var%v
+         active_var_p = active_var
          our_rev_mode%arg_store=.FALSE.
          our_rev_mode%arg_restore=.FALSE.
          our_rev_mode%plain=.TRUE.
@@ -76,7 +76,7 @@ C     !FUNCTIONS
      &        FORWARD_SIMULATION, myOptimIter, myThid )
          our_rev_mode=our_orig_mode
 ! copy back
-         active_var%v = active_var_p
+         active_var = active_var_p
       end if
 
       if (our_rev_mode%adjoint) then
@@ -90,7 +90,7 @@ C     !FUNCTIONS
          WRITE(fname(1:80),'(A)') ' '
          WRITE(fname(1:2+il),'(2A)') adpref, active_var_file(1:il)
 !         WRITE(fname(1:2+il),'(2A)') adpref, active_var_file
-         active_var_p = active_var%d
+         active_var_p = active_var
 ! set up for plain execution
          our_orig_mode=our_rev_mode
          our_rev_mode%arg_store=.FALSE.
@@ -105,7 +105,7 @@ C     !FUNCTIONS
 ! reset the mode
          our_rev_mode=our_orig_mode
 ! copy back
-         active_var%d = active_var_p
+         active_var = active_var_p
       end if
 
 #endif /* ALLOW_OPENAD_ACTIVE_READ_XY */
