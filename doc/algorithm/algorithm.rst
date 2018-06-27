@@ -342,7 +342,7 @@ limit of large :math:`\Delta t` the rigid-lid method is recovered.
 However, the implicit treatment of the free-surface allows the flow to
 be divergent and for the surface pressure/elevation to respond on a
 finite time-scale (as opposed to instantly). To recover the rigid-lid
-formulation, we introduced a switch-like parameter,
+formulation, we use a switch-like variable,
 :math:`\epsilon_{fs}` (:varlink:`freesurfFac`), which selects between the free-surface and
 rigid-lid; :math:`\epsilon_{fs}=1` allows the free-surface to evolve;
 :math:`\epsilon_{fs}=0` imposes the rigid-lid. The evolution in time and
@@ -3123,7 +3123,8 @@ that the minimum of :math:`L_x` and :math:`L_y` be used. On the other
 hand, other viscosities which involve whether a particular wavelength is
 ’resolved’ might be better suited to use the maximum of :math:`L_x` and
 :math:`L_y`. Currently, MITgcm uses :varlink:`useAreaViscLength` to select between
-two options. If false, the geometric mean of :math:`L^2_x` and
+two options. If false, the square root of the `harmonic mean <https://en.wikipedia.org/wiki/Harmonic_mean>`_
+of :math:`L^2_x` and
 :math:`L^2_y` is used for all viscosities, which is closer to the
 minimum and occurs naturally in the CFL constraint. If :varlink:`useAreaViscLength`
 is true, then the square root of the area of the grid cell is used.

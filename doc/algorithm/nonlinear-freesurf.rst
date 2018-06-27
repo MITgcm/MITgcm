@@ -61,8 +61,8 @@ Note that in this case, the two definitions of :math:`\phi_s` and
 :eq:`split-phi-bo` converge toward the same (approximated) expressions:
 :math:`\phi_s = \int^{r_{surf}}_{R_o} b_o dr` and
 :math:`\phi'_{hyd}=\int^{R_o}_r b' dr`.
-On the contrary, the unapproximated formulation (“non-linear
-free-surface”, see the next section) retains the full expression:
+On the contrary, the unapproximated formulation
+(see :numref:`free_surf_effect_col_thick`) retains the full expression:
 :math:`\phi'_{hyd} = \int^{r_{surf}}_r (b - b_o) dr` . This is
 obtained by selecting :varlink:`nonlinFreeSurf` =4 in parameter file ``data``.
 Regarding the surface potential:
@@ -86,6 +86,8 @@ linear coefficient :math:`b_s` is used and computed (:filelink:`INI_LINEAR_PHISU
 according to the reference surface pressure :math:`p_o`:
 :math:`b_s = b_o(R_o) = c_p \kappa (p_o / P^o_{SL})^{(\kappa - 1)} \theta_{ref}(p_o)`,
 with :math:`P^o_{SL}` the mean sea-level pressure.
+
+.. _free_surf_effect_col_thick:
 
 Free surface effect on column total thickness (Non-linear free-surface)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
