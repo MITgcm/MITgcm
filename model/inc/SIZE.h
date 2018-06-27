@@ -16,9 +16,9 @@ C     *==========================================================*
 C     | The design here supports a three-dimensional model grid
 C     | with indices I,J and K. The three-dimensional domain
 C     | is comprised of nPx*nSx blocks (or tiles) of size sNx
-C     | along the first (left-most index) axis, nPy*nSy blocks 
-C     | of size sNy along the second axis and
-C     | one block of size Nr along the vertical (third) axis.
+C     | along the first (left-most index) axis, nPy*nSy blocks
+C     | of size sNy along the second axis and one block of size
+C     | Nr along the vertical (third) axis.
 C     | Blocks/tiles have overlap regions of size OLx and OLy
 C     | along the dimensions that are subdivided.
 C     *==========================================================*
