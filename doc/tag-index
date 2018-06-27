@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67c (2018/06/26)
 o pkg/generic_advdiff:
   - Add per tracer run-time param to switch on/off Smolarkiewicz-Hack:
     Run-time switch for Temp & Salt are set from main param file "data"
