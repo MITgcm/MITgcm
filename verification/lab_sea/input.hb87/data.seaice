@@ -14,6 +14,8 @@
   SEAICE_salt0       = 4.0,
 #- old DIFF1 default:
   DIFF1 = 4.E-3,
+#- requires old default advection scheme
+  SEAICEadvScheme    = 2,
 #- seaice thermodyn params:
   SEAICE_deltaTtherm = 3600.,
   SEAICE_multDim     = 1,
