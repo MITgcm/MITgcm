@@ -3,19 +3,10 @@
  LSR_ERROR             = 1.E-12,
 # test strong implicit coupling method for LSR
  SEAICEuseStrImpCpl    = .TRUE.,
-# test restricted additive Schwarz (RAS) method for LSR
-# SEAICE_OLx/y have to be .LE. OLx/y-2
- SEAICE_OLx = 2,
- SEAICE_OLy = 2,
 #SEAICE_deltaTevp = 60.,
-#SEAICEuseDynamics = .FALSE.,
  SEAICE_clipVelocities = .TRUE.,
 #
  SEAICE_salt0          = 4.,
- SEAICEadvHeff         = .TRUE.,
- SEAICEadvArea         = .TRUE.,
- SEAICEadvSnow         = .TRUE.,
- SEAICEadvScheme       = 77,
  SEAICE_multDim        = 7,
  SEAICE_wetAlbTemp     = 0.,
  SEAICE_mcPheePiston   = 0.00057,
@@ -23,6 +14,12 @@
  SEAICEheatConsFix     = .TRUE.,
 #SEAICE_monFreq        = 2592000.,
 #SEAICEwriteState      = .TRUE.,
+# old defaults
+ SEAICEscaleSurfStress = .FALSE.,
+ SEAICEaddSnowMass     = .FALSE.,
+ SEAICE_useMultDimSnow = .FALSE.,
+ SEAICEetaZmethod = 0,
+ SEAICE_drag = 0.002,
  &
 
  &SEAICE_PARM03
