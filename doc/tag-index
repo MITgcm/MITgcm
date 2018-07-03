@@ -1,6 +1,23 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: some new and hopefully more sensible defaults:
+  - SEAICEscaleSurfStress = .TRUE.
+  - SEAICEaddSnowMass = .TRUE.
+  - SEAICEadvScheme = 77
+  - SEAICE_useMultDimSnow = .TRUE.
+  - SEAICE_Olx/y = Olx/y - 2
+  - SEAICEetaZmethod = 3
+  - SEAICE_drag = 0.001
+  - CPP-flag SEAICE_ZETA_SMOOTHREG defined by default
+  - all verification experiments are affected, so that all data.seaice
+    are adjusted to restore the old defaults for now
+  - note: SEAICE_waterDrag is still 5.5 (=drag * ocean density), because
+    changing it to 5.5e-3 requires changing the code in a few places to
+    replace SEAICE_waterDrag with SEAICE_waterDrag * rhoConst and
+    that would lead to (uncontrolled) truncation errors
+  - updated documentation
+  
 checkpoint67c (2018/06/26)
 o pkg/generic_advdiff:
   - Add per tracer run-time param to switch on/off Smolarkiewicz-Hack:
