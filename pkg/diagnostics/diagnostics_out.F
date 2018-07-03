@@ -157,11 +157,11 @@ C--   Place the loop on lm (= averagePeriod) outside the loop on md (= field):
 #ifdef ALLOW_MNC
 C- Ignore adj variables in fwd mode, regular diags in reverse mode
 # ifdef DIAGNOSTICS_ADJ_OUTPUT
-        if ( (flds(1,listId)(1:3).eq.'ADJ' .and. 
-     &        writeDiagnosticsAdj.eq..true.)
+        if ( ( flds(1,listId)(1:3).eq.'ADJ' .and. 
+     &         writeDiagnosticsAdj )
      &       .or.
-     &       (flds(1,listId)(1:3).ne.'ADJ' .and.
-     &       writeDiagnosticsAdj.eq..false.)
+     &       ( flds(1,listId)(1:3).ne.'ADJ' .and.
+     &        .NOT.writeDiagnosticsAdj )
      &     ) then
 # endif
           IF (useMNC .AND. diag_mnc) THEN
@@ -227,13 +227,13 @@ C STDERR and don't fill with zeros. Just wait until reverse mode.
 C Similarly, don't do anything to regular diagnostics in reverse mode.
 Cts ---
 #ifdef DIAGNOSTICS_ADJ_OUTPUT
-          elseif (  ndiag(ip,1,1).eq.0  .and.
-     &            flds(1,listId)(1:3).eq.'ADJ' .and.
-     &            (writeDiagnosticsAdj.eq..false.) ) then
+          elseif ( ndiag(ip,1,1).eq.0 .and.
+     &             flds(1,listId)(1:3).eq.'ADJ' .and.
+     &             .NOT.writeDiagnosticsAdj ) then
             isComputed = 0
 
-          elseif (  ndiag(ip,1,1).eq.0  .and.
-     &            (writeDiagnosticsAdj.eq..true.) ) then
+          elseif ( ndiag(ip,1,1).eq.0 .and.
+     &             writeDiagnosticsAdj ) then
             isComputed = 0
 #endif
           ELSEIF ( ndiag(ip,1,1).EQ.0 ) THEN
@@ -419,11 +419,11 @@ C--     Ready to write field "md", element "lm" in averageCycle(listId)
 
 C- Ignore adj variables in fwd mode, regular diags in reverse mode
 #ifdef DIAGNOSTICS_ADJ_OUTPUT
-          if ( (flds(1,listId)(1:3).eq.'ADJ' .and. 
-     &          writeDiagnosticsAdj.eq..true.)
+          if ( ( flds(1,listId)(1:3).eq.'ADJ' .and. 
+     &           writeDiagnosticsAdj )
      &         .or.
-     &         (flds(1,listId)(1:3).ne.'ADJ' .and.
-     &         writeDiagnosticsAdj.eq..false.)
+     &         ( flds(1,listId)(1:3).ne.'ADJ' .and.
+     &           .NOT.writeDiagnosticsAdj )
      &       ) then
 #endif
 C-        write to binary file, using MDSIO pkg:
@@ -479,11 +479,11 @@ C--   end loop on lm counter (= averagePeriod)
 
 C- Ignore adj variables in fwd mode, regular diags in reverse mode
 #ifdef DIAGNOSTICS_ADJ_OUTPUT
-          if ( (flds(1,listId)(1:3).eq.'ADJ' .and. 
-     &          writeDiagnosticsAdj.eq..true.)
+          if ( ( flds(1,listId)(1:3).eq.'ADJ' .and. 
+     &           writeDiagnosticsAdj )
      &         .or.
-     &         (flds(1,listId)(1:3).ne.'ADJ' .and.
-     &         writeDiagnosticsAdj.eq..false.)
+     &         ( flds(1,listId)(1:3).ne.'ADJ' .and.
+     &           .NOT.writeDiagnosticsAdj )
      &       ) then
 #endif
 #ifdef ALLOW_MDSIO
