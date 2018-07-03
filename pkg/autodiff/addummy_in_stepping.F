@@ -101,12 +101,12 @@ C     msgBuf  :: Error message buffer
 #endif
 CEOP
 
-
 C-----------------------------------------------------------------------
 C--- Output adj variables in diagnostics
 C-----------------------------------------------------------------------
 #ifdef ALLOW_DIAGNOSTICS
 # ifdef DIAGNOSTICS_ADJ_OUTPUT
+c     IF ( useDiagnostics ) THEN
 
 C --- 1. Grab modelEnd, necessary input for diagnostics routines
         modelEnd = myTime.eq.endTime .or. myIter.eq.nEndIter
@@ -116,7 +116,8 @@ C --- 2. Test for adexch based on dumpAdVarExch flag
         doExch=.false.
         if ( dumpAdVarExch.eq.1 ) then
           do n = 1,nlists
-            if (different_multiple(ABS(freq(n)),myTime,deltaTClock)) then
+            if ( different_multiple(ABS(freq(n)),myTime,deltaTClock)
+     &         ) then
                 doExch=.true.
             endif
           enddo
@@ -193,6 +194,7 @@ C       OpenAD
 
 C --- 5. Write the fields out
         call diagnostics_write( modelEnd, myTime, myIter, myThid )
+c     ENDIF
 # endif /* DIAGNOSTICS_ADJ_OUTPUT */
 #endif /* ALLOW_DIAGNOSTICS */ 
 
