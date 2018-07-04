@@ -539,19 +539,30 @@ C TBD: Write a more consistent transport objective function
 C ---
 
           if (gencost_barfile(k)(1:7).eq.'m_trVol') then
-           WRITE(msgBuf,'(2A)') 
-     &   '** WARNING ** ECCO_CHECK: cost_gencost_transp.F not tested.',
-     &   ' See m_horflux_vol via
-     & cost_gencost_boxmean.F, which is regularly tested.'
+           WRITE(msgBuf,'(A)') 
+     &   '** WARNING ** ECCO_CHECK: cost_gencost_transp.F not tested.'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(A)') 
+     &   ' See m_horflux_vol via cost_gencost_boxmean.F.'
            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
           elseif( (gencost_barfile(k)(1:8).eq.'m_trHeat').or.
      &            (gencost_barfile(k)(1:8).eq.'m_trSalt') ) then
-           WRITE(msgBuf,'(4A)') 
-     &   '** WARNING ** ECCO_CHECK: m_tr[Heat,Salt] to be used with
-     & caution because:',
-     &  '  (1) advection inconsistent unless ENUM_CENTERED_2ND is used',
-     &  '  (2) bolus velocities not included',
+           WRITE(msgBuf,'(2A)') 
+     &   '** WARNING ** ECCO_CHECK: m_tr[Heat,Salt] to be used with',
+     &   ' caution because:'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(A)') 
+     &  '  (1) advection inconsistent unless ENUM_CENTERED_2ND is used'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(A)') 
+     &  '  (2) bolus velocities not included'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(A)') 
      &  '  (3) diffusion components not included'
            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
