@@ -62,15 +62,20 @@ C     i,j,bi,bj,ksrf :: loop indices
       INTEGER i,j,bi,bj
       INTEGER kSrf
       _RL     TEMPVAR
+      _RL     dragCoeff, dragMin, dragMinSouth
 CEOP
 
       kSrf=1
+      dragMin      = 0.25 _d 0
+      dragMinSouth = dragMin
+      IF ( SEAICE_waterDrag       .LE. 0. _d 0 ) dragMin      = 0. _d 0
+      IF ( SEAICE_waterDrag_South .LE. 0. _d 0 ) dragMinSouth = 0. _d 0
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+Oly-1
          DO i=1-OLx,sNx+OLy-1
-C     non-linear water drag coefficients DWATN
+C     non-linear water drag coefficients CwatC (DWATN)
 #ifdef OBCS_UVICE_OLD
           TEMPVAR = 0.25 _d 0*(
      &            ( ( uIceLoc(i  ,j,bi,bj)-uVel(i  ,j,kSrf,bi,bj) )
@@ -91,22 +96,11 @@ C     non-linear water drag coefficients DWATN
      &             *maskInS(i,j+1,bi,bj) )**2 )
 #endif /* OBCS_UVICE_OLD */
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
-           IF ( SEAICE_waterDrag_south.LE.0. ) THEN
-            CwatC(I,J,bi,bj)=0.
-           ELSEIF ( TEMPVAR
-     &           .LE.(0.25 _d 0/SEAICE_waterDrag_south)**2 ) THEN
-            CwatC(I,J,bi,bj)=0.25 _d 0
-           ELSE
-            CwatC(I,J,bi,bj)=SEAICE_waterDrag_south*SQRT(TEMPVAR)
-           ENDIF
+           dragCoeff = SEAICE_waterDrag_south*rhoConstFresh
+           CwatC(I,J,bi,bj) = MAX(dragCoeff*SQRT(TEMPVAR),dragMinSouth)
           ELSE
-           IF ( SEAICE_waterDrag.LE.0. ) THEN
-            CwatC(I,J,bi,bj)=0.
-           ELSEIF ( TEMPVAR.LE.(0.25 _d 0/SEAICE_waterDrag)**2 ) THEN
-            CwatC(I,J,bi,bj)=0.25 _d 0
-           ELSE
-            CwatC(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
-           ENDIF
+           dragCoeff = SEAICE_waterDrag*rhoConstFresh
+           CwatC(I,J,bi,bj) = MAX(dragCoeff*SQRT(TEMPVAR),dragMin)
           ENDIF
           CwatC(I,J,bi,bj) = CwatC(I,J,bi,bj) * maskC(I,J,kSrf,bi,bj)
          ENDDO

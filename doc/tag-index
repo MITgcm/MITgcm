@@ -12,10 +12,11 @@ o pkg/seaice: some new and hopefully more sensible defaults:
   - CPP-flag SEAICE_ZETA_SMOOTHREG defined by default
   - all verification experiments are affected, so that all data.seaice
     are adjusted to restore the old defaults for now
-  - note: SEAICE_waterDrag is still 5.5 (=drag * ocean density), because
-    changing it to 5.5e-3 requires changing the code in a few places to
-    replace SEAICE_waterDrag with SEAICE_waterDrag * rhoConst and
-    that would lead to (uncontrolled) truncation errors
+  - change SEAICE_waterDrag default to 5.5e-3 and add freshwater density
+    to scale it. Add a warning if SEAICE_waterDrag > 1.
+    offline_exf_seaice cannot be fully restored and needs an update.
+    This change also involve a slight re-organization (= simplification)
+    in seaice_oceandrag_coeffs.F
   - updated documentation
   
 checkpoint67c (2018/06/26)

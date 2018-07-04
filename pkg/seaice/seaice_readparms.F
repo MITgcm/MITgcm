@@ -359,7 +359,7 @@ C        c1=1.5/N, c2=42*c1, c3=3.3
       ICE2WATR           = UNSET_RL
       SEAICE_drag        = 0.001  _d 0
       OCEAN_drag         = 0.001  _d 0
-      SEAICE_waterDrag   = 5.5    _d 0
+      SEAICE_waterDrag   = 0.0055 _d 0
       SEAICE_dryIceAlb   = 0.75   _d 0
       SEAICE_wetIceAlb   = 0.66   _d 0
       SEAICE_drySnowAlb  = 0.84   _d 0
@@ -1291,6 +1291,35 @@ C     Check the consitency of a few parameters
      &      SEAICE_emissivity, '/5.67e-8.'
        CALL PRINT_ERROR( msgBuf , myThid)
        STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+      ENDIF
+
+C--   Since the default of SEAICE_waterDrag has changed, issue a warning
+C     in case of large values
+      chkFlag = .FALSE.
+      IF ( SEAICE_waterDrag .GT. 1. _d 0 ) THEN
+       WRITE(msgBuf,'(A,A,F5.2)') '** WARNING ** SEAICE_READPARMS: ',
+     &      'SEAICE_waterDrag = ', SEAICE_waterDrag
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       chkFlag = .TRUE.
+      ENDIF
+      IF ( SEAICE_waterDrag_South .GT. 1. _d 0 ) THEN
+       WRITE(msgBuf,'(A,A,F5.2)') '** WARNING ** SEAICE_READPARMS: ',
+     &      'SEAICE_waterDrag_South = ', SEAICE_waterDrag_South
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       chkFlag = .TRUE.
+      ENDIF
+      IF ( chkFlag ) THEN
+       WRITE(msgBuf,'(3A)') '** WARNING ** SEAICE_READPARMS: ',
+     &      'That is 3 orders of magnitude larger',
+     &      ' than the default of 5.5e-3.'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_READPARMS: ',
+     &      'Are you maybe using an old (pre Jun2018) data.seaice?'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
       ENDIF
 
       IF ( DIFF1 .EQ. UNSET_RL ) THEN

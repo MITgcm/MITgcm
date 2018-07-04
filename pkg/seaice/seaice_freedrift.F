@@ -100,9 +100,9 @@ C norm of angle of rhs
 C solve for norm:
 C ===============
            IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
-            tmpscal1 = 1. _d 0 /SEAICE_waterDrag_south
+            tmpscal1 = 1. _d 0 /rhoConstFresh/SEAICE_waterDrag_south
            ELSE
-            tmpscal1 = 1. _d 0 /SEAICE_waterDrag
+            tmpscal1 = 1. _d 0 /rhoConstFresh/SEAICE_waterDrag
            ENDIF
 C polynomial coefficients
            tmpscal2= tmpscal1*tmpscal1*mIceCor*mIceCor
@@ -118,9 +118,9 @@ C discriminant
 C solve for angle:
 C ================
            IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
-            tmpscal1 = SEAICE_waterDrag_south
+            tmpscal1 = SEAICE_waterDrag_south*rhoConstFresh
            ELSE
-            tmpscal1 = SEAICE_waterDrag
+            tmpscal1 = SEAICE_waterDrag*rhoConstFresh
            ENDIF
 
            tmpscal2= tmpscal1*sol_n*sol_n

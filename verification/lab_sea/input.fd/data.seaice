@@ -27,6 +27,7 @@
  SEAICEscaleSurfStress = .FALSE.,
  SEAICEaddSnowMass     = .FALSE.,
  SEAICE_useMultDimSnow = .FALSE.,
+ SEAICE_waterDrag  = 0.005501100220044009,
  &
 
  &SEAICE_PARM03
