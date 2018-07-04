@@ -64,7 +64,7 @@ options see the default ``pkg/seaice/SEAICE_OPTIONS.h``.
    "``SEAICE_LSR_ZEBRA``", "use a coloring method for LSR solver"
    "``SEAICE_EXTERNAL_FLUXES``", "use EXF-computed fluxes as starting point"
    "``SEAICE_ZETA_SMOOTHREG``", "use differentiable regularization for viscosities"
-   "``SEAICE_DELTA_SMOOTHREG``", "use differentiable regularization for math:`1/\Delta`"
+   "``SEAICE_DELTA_SMOOTHREG``", "use differentiable regularization for :math:`1/\Delta`"
    "``SEAICE_ALLOW_BOTTOMDRAG``", "enable grounding parameterisation for improved fastice in shallow seas"
    "``SEAICE_ITD``", "run with dynamical sea Ice Thickness Distribution (ITD)"
    "``SEAICE_VARIABLE_FREEZING_POINT``", "enable linear dependence of the freezing point on salinity (by default undefined)"
