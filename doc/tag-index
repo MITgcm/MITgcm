@@ -15,7 +15,7 @@ o pkg/seaice: some new and hopefully more sensible defaults:
   - change SEAICE_waterDrag default to 5.5e-3 and add freshwater density
     to scale it. Add a warning if SEAICE_waterDrag > 1.
     offline_exf_seaice cannot be fully restored and needs an update.
-    This change also involve a slight re-organization (= simplification)
+    This change also involves a slight re-organization (= simplification)
     in seaice_oceandrag_coeffs.F
   - updated documentation
   
