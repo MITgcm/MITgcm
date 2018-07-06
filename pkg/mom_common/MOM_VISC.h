@@ -61,12 +61,4 @@ C     viscA4_W  :: Horizontal biharmonic viscosity for vertical momentum
       _RL  viscA4_W(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* ALLOW_NONHYDROSTATIC */
 
-#ifdef ALLOW_GM_LEITH_QG
-C     GM_LeithQG_K  :: Horizontal LeithQG viscosity,
-C                       to be used as GM coefficient
-      COMMON /MOM_VISC_GM_LEITH_QG/
-     &                  GM_LeithQG_K
-      _RL GM_LeithQG_K(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif /* ALLOW_GM_LEITH_QG */
-
 #endif /* ALLOW_MOM_COMMON */

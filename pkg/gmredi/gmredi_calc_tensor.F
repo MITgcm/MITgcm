@@ -42,9 +42,6 @@ C     == Global variables ==
 #ifdef ALLOW_KPP
 # include "KPP.h"
 #endif
-#ifdef ALLOW_GM_LEITH_QG
-#include "MOM_VISC.h"
-#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
@@ -286,6 +283,17 @@ C     Calculate the 3D diffusivity as per Bates et al. (2013)
 
         CALL TIMER_STOP('GMREDI_K3D      [GMREDI_CALC_TENSOR]',
      &                  myThid)
+      ENDIF
+#endif
+
+C   Use Leith QG viscosity in GMRedi scheme
+#ifdef ALLOW_GM_LEITH_QG
+      IF (GM_useLeithQG) THEN
+        CALL GMREDI_CALC_CALC_QG_LEITH_COEFF(
+     I             iMin, iMax, jMin, jMax,
+     I             bi, bj, myTime, myIter, myThid )
+      ELSE
+        GM_LeithQG_K = 0. _d 0
       ENDIF
 #endif
 

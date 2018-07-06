@@ -71,7 +71,8 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_K3D_constK, GM_K3D_use_constK, GM_K3D_smooth,
      &          GM_K3D_beta_eq_0, GM_K3D_Rmin, GM_K3D_ThickSheet,
      &          GM_K3D_constRedi, GM_K3D_minRenorm,
-     &          GM_K3D_maxRenorm
+     &          GM_K3D_maxRenorm, GM_useLeithQG
+
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -88,28 +89,29 @@ C     print a (weak) warning if data.gmredi is found
       _BEGIN_MASTER(myThid)
 
 C--   Default values GM/Redi
-      GM_AdvForm          = .FALSE.
-      GM_AdvSeparate      = .FALSE.
-      GM_InMomAsStress    = .FALSE.
-      GM_isopycK          = -999.
-      GM_background_K     = 0. _d 0
-      GM_maxSlope         = 1. _d -2
-      GM_Kmin_horiz       = 0. _d 0
-      GM_Small_Number     = 1. _d -20
-      GM_slopeSqCutoff    = 1. _d +48
-      GM_taper_scheme     = ' '
-      GM_facTrL2dz        = 1.
-      GM_facTrL2ML        = 5.
-      GM_maxTransLay      = 500.
-      GM_Scrit            = 0.004 _d 0
-      GM_Sd               = 0.001 _d 0
-      GM_MNC              = useMNC
-      GM_iso2dFile        = ' '
-      GM_iso1dFile        = ' '
-      GM_bol2dFile        = ' '
-      GM_bol1dFile        = ' '
+      GM_AdvForm            = .FALSE.
+      GM_AdvSeparate        = .FALSE.
+      GM_InMomAsStress      = .FALSE.
+      GM_isopycK            = -999.
+      GM_background_K       = 0. _d 0
+      GM_maxSlope           = 1. _d -2
+      GM_Kmin_horiz         = 0. _d 0
+      GM_Small_Number       = 1. _d -20
+      GM_slopeSqCutoff      = 1. _d +48
+      GM_taper_scheme       = ' '
+      GM_facTrL2dz          = 1.
+      GM_facTrL2ML          = 5.
+      GM_maxTransLay        = 500.
+      GM_Scrit              = 0.004 _d 0
+      GM_Sd                 = 0.001 _d 0
+      GM_MNC                = useMNC
+      GM_iso2dFile          = ' '
+      GM_iso1dFile          = ' '
+      GM_bol2dFile          = ' '
+      GM_bol1dFile          = ' '
       GM_background_K3dFile = ' '
       GM_isopycK3dFile      = ' '
+      GM_useLeithQG         = .FALSE.
 
 C--   Default values GM/Redi I/O control
 c     GM_dumpFreq         = -1.

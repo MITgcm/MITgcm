@@ -115,6 +115,9 @@ C- print out some kee parameters :
      &  'subMeso_LfMin =',' /* minimum length-scale "Lf" [m] */')
        CALL WRITE_0D_RS( subMeso_Lmax, INDEX_NONE,
      &  'subMeso_Lmax =',' /* maximum grid-scale length [m] */')
+       CALL WRITE_0D_L( GM_useLeithQG, INDEX_NONE,
+     &  'GM_useLeithQG =',
+     &  ' /* if TRUE => add QG Leith viscosity to GMRedi tensor */')
 
 C--  Check parameters:
 

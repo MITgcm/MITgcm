@@ -83,6 +83,9 @@ C     == Global variables ==
 #include "tamc.h"
 #include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF */
+#ifdef ALLOW_GM_LEITH_QG
+#include "GMREDI.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid               :: my thread Id number
