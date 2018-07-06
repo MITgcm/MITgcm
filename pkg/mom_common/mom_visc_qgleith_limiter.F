@@ -53,7 +53,7 @@ C Put a cap on the stretching term.
      &            +vFld( i ,j+1)*vFld( i ,j+1) )
      &                  )
 
-C        Grid scale Rossby number, squared: U^2 / (fL)
+C        Grid scale Rossby number, squared: U^2 / (fL)^2
          Ro_g2(i,j) = U_scale(i,j)**2 * recip_rA(i,j,bi,bj) /
      &                  (fCori(i,j,bi,bj)**2)
 C        Grid scale Burger number: N^2 H^2 / (f^2 L^2)
