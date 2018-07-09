@@ -193,7 +193,7 @@ C       OpenAD
 #  endif /* ALLOW_OPENAD */
 
 C --- 5. Write the fields out
-        call diagnostics_write( modelEnd, myTime, myIter, myThid )
+        call diagnostics_write_adj( modelEnd, myTime, myIter, myThid )
 c     ENDIF
 # endif /* DIAGNOSTICS_ADJ_OUTPUT */
 #endif /* ALLOW_DIAGNOSTICS */ 
