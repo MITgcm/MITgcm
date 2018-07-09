@@ -427,7 +427,10 @@ Using pkg/diagnostics for adjoint variables
    Safe values are e.g. 10-20 and 500-1000 respectively.
 
 3. Specify desired variables in ``data.diagnostics``  
-   as any other variable, for example
+   as any other variable, as in the following example.
+   Note however, adjoint and forward diagnostic variables cannot
+   be in the same list. That is, a single `fields(:,:)` list 
+   cannot contain both adjoint and forward variables.
 
 ::
 
