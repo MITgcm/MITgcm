@@ -229,6 +229,8 @@ grid-attribute information. The :varlink:`gdiag` array is described in :numref:`
    +-----------+-----------------------+-----------------------------------------------------+
    | parse(4)  | :math:`\rightarrow` P | positive definite diagnostic                        |
    +-----------+-----------------------+-----------------------------------------------------+
+   |           | :math:`\rightarrow` A | Adjoint variable diagnostic  |
+   +-----------+-----------------------+-----------------------------------------------------+
    | parse(5)  | :math:`\rightarrow` C | with counter array                                  |
    +-----------+-----------------------+-----------------------------------------------------+
    |           | :math:`\rightarrow` P | post-processed (not filled up) from other diags     |
@@ -395,12 +397,12 @@ Currently, the available adjoint state variables are:
 
 ::
 
-   110 |ADJetan |  1 |       |SM      M1|dJ/m            |dJ/dEtaN: Sensitivity to sea surface height anomaly
-   111 |ADJuvel | 50 |   112 |UUR     MR|dJ/(m/s)        |dJ/dU: Sensitivity to zonal velocity
-   112 |ADJvvel | 50 |   111 |VVR     MR|dJ/(m/s)        |dJ/dV: Sensitivity to meridional velocity
-   113 |ADJwvel | 50 |       |WM      LR|dJ/(m/s)        |dJ/dW: Sensitivity to vertical velocity
-   114 |ADJtheta| 50 |       |SMR     MR|dJ/degC         |dJ/dTheta: Sensitivity to potential temperature
-   115 |ADJsalt | 50 |       |SMR     MR|dJ/psu          |dJ/dSalt: Sensitivity to salinity
+   110 |ADJetan |  1 |       |SM A    M1|dJ/m            |dJ/dEtaN: Sensitivity to sea surface height anomaly
+   111 |ADJuvel | 50 |   112 |UURA    MR|dJ/(m/s)        |dJ/dU: Sensitivity to zonal velocity
+   112 |ADJvvel | 50 |   111 |VVRA    MR|dJ/(m/s)        |dJ/dV: Sensitivity to meridional velocity
+   113 |ADJwvel | 50 |       |WM A    LR|dJ/(m/s)        |dJ/dW: Sensitivity to vertical velocity
+   114 |ADJtheta| 50 |       |SMRA    MR|dJ/degC         |dJ/dTheta: Sensitivity to potential temperature
+   115 |ADJsalt | 50 |       |SMRA    MR|dJ/psu          |dJ/dSalt: Sensitivity to salinity
 
 Some notes to the user
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -411,6 +413,10 @@ Some notes to the user
    so the output through diagnostics is zeros just as with the standard 'adjoint dump' method.
 
 3. The diagStats options are not available for these variables.   
+
+4. Adjoint variables are recognized by checking the 10 character variable `diagCode`.
+   To add a new adjoint variable, set the 4th position of `diagCode` to A 
+   (notice this is the case for the list of available adjoint variables).
 
 
 Using pkg/diagnostics for adjoint variables
