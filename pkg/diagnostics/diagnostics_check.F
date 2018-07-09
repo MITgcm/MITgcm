@@ -215,6 +215,37 @@ C-    If nonlinear free surf is active, need averaged pressures
        ENDIF
       ENDDO
 
+#ifdef DIAGNOSTICS_ADJ_OUTPUT
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C   To print adjoint variables through diagnostics package, must keep 
+C   fwd and adjoint variables separate within lists.
+C   Here: Check to see if variables are mixed, stop if so
+
+      do ld = 1,nlists
+        if (flds(1,ld)(1:3).eq.'ADJ') then
+          do md = 1,nfields(ld)
+            if (flds(md,ld)(1:3).ne.'ADJ') then
+              WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_CHECK: ',
+     &        'Cannot define forward and adjoint variables ',
+     &        'within the same diag list. '
+              CALL PRINT_ERROR( msgBuf , myThid )
+              STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
+            endif 
+          enddo
+        else
+          do md = 1,nfields(ld)
+            if (flds(md,ld)(1:3).eq.'ADJ') then
+              WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_CHECK: ',
+     &        'Cannot define forward and adjoint variables ',
+     &        'within the same diag list. '
+              CALL PRINT_ERROR( msgBuf , myThid )
+              STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
+            endif 
+          enddo
+        endif
+      enddo
+#endif /* define DIAGNOSTICS_ADJ_OUTPUT */
+
       _END_MASTER(myThid)
 
       RETURN
