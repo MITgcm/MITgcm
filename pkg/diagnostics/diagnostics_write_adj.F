@@ -48,6 +48,9 @@ c ===============
 #ifdef ALLOW_FIZHI
       CHARACTER *9 tagname
 #endif
+#ifdef DIAGNOSTICS_ADJ_OUTPUT
+      integer nd
+#endif
 
       myItM1 = myIter - 1
 
@@ -57,7 +60,8 @@ C***********************************************************************
 
       write2file = .FALSE.
       DO n = 1,nlists
-        if ( flds(1,n)(1:3).eq.'ADJ' ) then 
+        nd = abs(jdiag(1,n))
+        if ( gdiag(nd)(4:4).eq.'A' ) then
 
           freqSec = freq(n)
           phiSec = phase(n)
@@ -109,7 +113,8 @@ C-    wait for everyone before setting arrays to zero:
 C--     Clear storage space:
 
       DO n = 1,nlists
-        if ( flds(1,n)(1:3).eq.'ADJ' ) then 
+        nd = abs(jdiag(1,n))
+        if ( gdiag(nd)(4:4).eq.'A' ) then
 
           freqSec = freq(n)
           phiSec = phase(n)

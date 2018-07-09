@@ -157,10 +157,11 @@ C--   Place the loop on lm (= averagePeriod) outside the loop on md (= field):
 #ifdef ALLOW_MNC
 C- Ignore adj variables in fwd mode, regular diags in reverse mode
 # ifdef DIAGNOSTICS_ADJ_OUTPUT
-        if ( ( flds(1,listId)(1:3).eq.'ADJ' .and. 
+        ndId = abs(jdiag(1,listId))
+        if ( ( gdiag(ndId)(4:4).eq.'A' .and. 
      &         writeDiagnosticsAdj )
      &       .or.
-     &       ( flds(1,listId)(1:3).ne.'ADJ' .and.
+     &       ( gdiag(ndId)(4:4).ne.'A' .and.
      &        .NOT.writeDiagnosticsAdj )
      &     ) then
 # endif
@@ -228,7 +229,7 @@ C Similarly, don't do anything to regular diagnostics in reverse mode.
 Cts ---
 #ifdef DIAGNOSTICS_ADJ_OUTPUT
           elseif ( ndiag(ip,1,1).eq.0 .and.
-     &             flds(1,listId)(1:3).eq.'ADJ' .and.
+     &             gcode(4:4).eq.'A' .and.
      &             .NOT.writeDiagnosticsAdj ) then
             isComputed = 0
 
@@ -419,10 +420,10 @@ C--     Ready to write field "md", element "lm" in averageCycle(listId)
 
 C- Ignore adj variables in fwd mode, regular diags in reverse mode
 #ifdef DIAGNOSTICS_ADJ_OUTPUT
-          if ( ( flds(1,listId)(1:3).eq.'ADJ' .and. 
+          if ( ( gcode(4:4).eq.'A' .and. 
      &           writeDiagnosticsAdj )
      &         .or.
-     &         ( flds(1,listId)(1:3).ne.'ADJ' .and.
+     &         ( gcode(4:4).ne.'A' .and.
      &           .NOT.writeDiagnosticsAdj )
      &       ) then
 #endif
@@ -479,10 +480,10 @@ C--   end loop on lm counter (= averagePeriod)
 
 C- Ignore adj variables in fwd mode, regular diags in reverse mode
 #ifdef DIAGNOSTICS_ADJ_OUTPUT
-          if ( ( flds(1,listId)(1:3).eq.'ADJ' .and. 
+          if ( ( gcode(4:4).eq.'A' .and. 
      &           writeDiagnosticsAdj )
      &         .or.
-     &         ( flds(1,listId)(1:3).ne.'ADJ' .and.
+     &         ( gcode(4:4).ne.'A' .and.
      &           .NOT.writeDiagnosticsAdj )
      &       ) then
 #endif

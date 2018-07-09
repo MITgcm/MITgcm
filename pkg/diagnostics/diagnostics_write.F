@@ -44,6 +44,9 @@ c ===============
 #ifdef ALLOW_FIZHI
       CHARACTER *9 tagname
 #endif
+#ifdef DIAGNOSTICS_ADJ_OUTPUT
+      integer nd
+#endif
 
       IF ( myIter.NE.nIter0 ) THEN
         myItM1 = myIter - 1
@@ -55,7 +58,8 @@ C***********************************************************************
         write2file = .FALSE.
         DO n = 1,nlists
 #ifdef DIAGNOSTICS_ADJ_OUTPUT
-          if ( flds(1,n)(1:3).ne.'ADJ' ) then
+          nd = abs(jdiag(1,n))
+          if ( gdiag(nd)(4:4).ne.'A' ) then
 #endif
           freqSec = freq(n)
           phiSec = phase(n)
@@ -169,7 +173,8 @@ C--     Clear storage space:
 
         DO n = 1,nlists
 #ifdef DIAGNOSTICS_ADJ_OUTPUT
-          if ( flds(1,n)(1:3).ne.'ADJ' ) then
+          nd = abs(jdiag(1,n))
+          if ( gdiag(nd)(4:4).ne.'A' ) then
 #endif
           freqSec = freq(n)
           phiSec = phase(n)

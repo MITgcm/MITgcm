@@ -222,9 +222,11 @@ C   fwd and adjoint variables separate within lists.
 C   Here: Check to see if variables are mixed, stop if so
 
       do ld = 1,nlists
-        if (flds(1,ld)(1:3).eq.'ADJ') then
+        nd = ABS(jdiag(1,ld))
+        if (gdiag(nd)(4:4).eq.'A') then
           do md = 1,nfields(ld)
-            if (flds(md,ld)(1:3).ne.'ADJ') then
+            nd = ABS(jdiag(md,ld))
+            if (gdiag(nd)(4:4).ne.'A') then
               WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_CHECK: ',
      &        'Cannot define forward and adjoint variables ',
      &        'within the same diag list. '
@@ -234,7 +236,8 @@ C   Here: Check to see if variables are mixed, stop if so
           enddo
         else
           do md = 1,nfields(ld)
-            if (flds(md,ld)(1:3).eq.'ADJ') then
+            nd = ABS(jdiag(md,ld))
+            if (gdiag(nd)(4:4).eq.'A') then
               WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_CHECK: ',
      &        'Cannot define forward and adjoint variables ',
      &        'within the same diag list. '
