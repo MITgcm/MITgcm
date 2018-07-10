@@ -96,10 +96,10 @@ C     non-linear water drag coefficients CwatC (DWATN)
      &             *maskInS(i,j+1,bi,bj) )**2 )
 #endif /* OBCS_UVICE_OLD */
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
-           dragCoeff = SEAICE_waterDrag_south*rhoConstFresh
+           dragCoeff = SEAICE_waterDrag_south*rhoConst
            CwatC(I,J,bi,bj) = MAX(dragCoeff*SQRT(TEMPVAR),dragMinSouth)
           ELSE
-           dragCoeff = SEAICE_waterDrag*rhoConstFresh
+           dragCoeff = SEAICE_waterDrag*rhoConst
            CwatC(I,J,bi,bj) = MAX(dragCoeff*SQRT(TEMPVAR),dragMin)
           ENDIF
           CwatC(I,J,bi,bj) = CwatC(I,J,bi,bj) * maskC(I,J,kSrf,bi,bj)

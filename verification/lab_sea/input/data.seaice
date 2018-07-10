@@ -25,9 +25,7 @@
  SEAICE_Olx = 0,
  SEAICE_Oly = 0,
  SEAICEetaZmethod = 0,
- SEAICE_waterDrag  = 0.005501100220044009,
- SEAICE_waterDrag  = 5.5e-3,
- SEAICE_waterDrag_South  = 5.5,
+ SEAICE_waterDrag  = 0.005355404089581304,
  &
 
  &SEAICE_PARM03

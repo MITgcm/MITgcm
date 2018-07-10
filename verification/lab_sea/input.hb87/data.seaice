@@ -29,7 +29,7 @@
 # old defaults
  SEAICEscaleSurfStress = .FALSE.,
  SEAICEaddSnowMass     = .FALSE.,
- SEAICE_waterDrag  = 0.005501100220044009,
+ SEAICE_waterDrag  = 0.005355404089581304,
  &
 
  &SEAICE_PARM03

@@ -22,6 +22,7 @@
  SEAICEscaleSurfStress = .FALSE.,
  SEAICEetaZmethod = 0,
  SEAICE_drag = 0.002,
+ SEAICE_waterDrag = 0.005339805825242718,
  SEAICE_Olx = 0,
  SEAICE_Oly = 0,
  &

@@ -224,7 +224,7 @@ C NOW SET UP NON-LINEAR WATER DRAG, FORCEX, FORCEY
           ELSE
            DWATN(I,J,bi,bj) = SEAICE_waterDrag*SQRT(TEMPVAR)
           ENDIF
-          DWATN(I,J,bi,bj) = MAX(DWATN(I,J,bi,bj)*rhoConstFresh,QUART)
+          DWATN(I,J,bi,bj) = MAX(DWATN(I,J,bi,bj)*rhoConst,QUART)
 C NOW SET UP SYMMETTRIC DRAG
           DRAGS(I,J,bi,bj)=DWATN(I,J,bi,bj)*COSWAT
 C NOW SET UP ANTI SYMMETTRIC DRAG PLUS CORIOLIS
