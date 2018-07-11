@@ -1256,11 +1256,14 @@ following table:
     ---
     DYNAMIC/RHEOLOGY DIAGNOSTICS:
     ---
-     SIpress |SM      M1|m^2/s^2         |SEAICE strength (with upper and lower limit)
-     SIzeta  |SM      M1|m^2/s           |SEAICE nonlinear bulk viscosity
-     SIeta   |SM      M1|m^2/s           |SEAICE nonlinear shear viscosity
-     SIsigI  |SM      M1|no units        |SEAICE normalized principle stress, component one
-     SIsigII |SM      M1|no units        |SEAICE normalized principle stress, component two
+     SIpress |SM      M1|N/m             |SEAICE strength (with upper and lower limit)
+     SIzeta  |SM      M1|kg/s            |SEAICE nonlinear bulk viscosity
+     SIeta   |SM      M1|kg/s            |SEAICE nonlinear shear viscosity
+     SIsig1  |SM      M1|no units        |SEAICE normalized principle stress, component one
+     SIsig2  |SM      M1|no units        |SEAICE normalized principle stress, component two
+     SIshear |SM      M1|1/s             |SEAICE shear deformation rate
+     SIdelta |SM      M1|1/s             |SEAICE Delta deformation rate
+     SItensil|SM      M1|N/m             |SEAICE maximal tensile strength
     ---
     ADVECTIVE/DIFFUSIVE FLUXES OF SEA ICE variables:
     ---
@@ -1287,9 +1290,11 @@ following table:
 Experiments and tutorials that use seaice
 +++++++++++++++++++++++++++++++++++++++++
 
-- Labrador Sea experiment in ``lab_sea`` verification directory. }
+- ``lab_sea``: Labrador Sea experiment
 - ``seaice_obcs``, based on ``lab_sea``
-- ``offline_exf_seaice/input.seaicetd``, based on ``lab_sea``
+- ``offline_exf_seaice.dyn_jfnk``, ``offline_exf_seaice.dyn_lsr``, and ``offline_exf_seaice.thermo``, idealized topography in a zonally re-entrant channel
+- ``seaice_itd``, based on ``offline_exf_seaice``, test ice thickness distribution
 - ``global_ocean.cs32x15/input.icedyn`` and ``global_ocean.cs32x15/input.seaice``, global cubed-sphere-experiment with combinations of ``seaice`` and ``thsice``
+- ``1D_ocean_ice_column``, just thermodynamics
 
 
