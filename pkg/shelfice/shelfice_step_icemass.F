@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_step_icemass.F,v 1.3 2016/11/14 11:17:53 ksnow Exp $
+C $Name:  $
+
 #include "SHELFICE_OPTIONS.h"
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
@@ -50,12 +53,14 @@ C  i,j                  :: loop indices
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy-1
            DO i=1-OLx+1,sNx+OLx-1
-            if (streamice_hmask(i,j,bi,bj).eq.1 .or.
-     &          streamice_hmask(i,j,bi,bj).eq.2) then
-
+            if (streamice_hmask(i,j,bi,bj).eq.1) then
              shelficeMass(i,j,bi,bj) =
      &        H_streamice(I,J,bi,bj) * streamice_density
-
+! DNG: change to average ice mass over a partly covered cell	 
+            elseif (streamice_hmask(i,j,bi,bj).eq.2) then
+             shelficeMass(i,j,bi,bj) =
+     &        H_streamice(I,J,bi,bj) * streamice_density
+     &        * area_shelf_streamice(i,j,bi,bj)*recip_rA(i,j,bi,bj)
             endif
            ENDDO
           ENDDO
