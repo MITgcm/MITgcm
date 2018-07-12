@@ -1182,263 +1182,440 @@ the resulting `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file into 
 
   Eta = xr.open_dataset('Eta.nc')
 
+
+Customizing the Model Configuration - Code Parameters and Compilation Options
+=============================================================================
+
+
+Model Array Dimensions
+----------------------     
+
+MITgcm’s array dimensions need to be configured for each unique model domain.
+The size of each tile (in dimensions :math:`x`, :math:`y`, and vertical coordinate r)
+the “overlap” region of each tile (in :math:`x` and :math:`y`), the number of tiles in the :math:`x` and :math:`y` dimensions,
+and the number of processes (using `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_)
+in the :math:`x` and :math:`y` dimensions all need to be specified in :filelink:`SIZE.h <model/inc/SIZE.h>`.
+From these parameters, global domain-size variables :varlink:`Nx`, :varlink:`Ny` are computed by the model.
+See a more detailed discussion of :filelink:`SIZE.h <model/inc/SIZE.h>` parameters in the :ref:`barotropic gyre tutorial <sec_eg_baro_code_config>`
+and a more technical discussion in :numref:`specify_decomp`.
+
++----------------------------------------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **DEFAULT SIZE.h**                               | **DESCRIPTION**                                                                                         |
++----------------------------------------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`sNx`                         | 30                                               | number of points in :math:`x` dimension in a single tile                                                |
++----------------------------------------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`sNy`                         | 15                                               | number of points in :math:`y` dimension in a single tile                                                |
++----------------------------------------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`Nr`                          | 4                                                | number of points in r dimension                                                                         |
++----------------------------------------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`OLx`                         | 2                                                | number of “overlap” points in :math:`x` dimension for a tile                                            |
++----------------------------------------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`OLy`                         | 2                                                | number of “overlap” points in :math:`y` dimension for a tile                                            |
++----------------------------------------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`nSx`                         | 2                                                | number of tile per process in :math:`x` dimension                                                       |
++----------------------------------------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`nSy`                         | 4                                                | number of tile per process in :math:`y` dimension                                                       |
++----------------------------------------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`nPx`                         | 1                                                | number of processes in :math:`x` dimension                                                              |
++----------------------------------------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`nPy`                         | 1                                                | number of processes in :math:`y` dimension                                                              |
++----------------------------------------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
+Note the repository version of :filelink:`SIZE.h <model/inc/SIZE.h>` includes several lines of text at the top that will halt compilation with errors. Thus, to use MITgcm you will need
+to copy :filelink:`SIZE.h <model/inc/SIZE.h>` to a code modification directory and make edits, including deleting or commenting out the offending lines of text.
+
+C Preprocessor Options
+----------------------
+
+The CPP keys relative to the “numerical model” part of the code are all
+defined and set in the file :filelink:`CPP_OPTIONS.h <model/inc/CPP_OPTIONS.h>` in the directory
+:filelink:`model/inc/` or in one of the ``code`` directories of the case study
+experiments under :filelink:`verification/`.  (to be written: inventory/explanation of all CPP options)
+
+strategy: start with list from CPP_OPTIONS.h
+need to mention default packages as model parms in next section etc. (gfd : mom_common mom_fluxform mom_vecinv generic_advdiff debug mdsio rw monitor)
+Oliver has a script to pull stray definitions (i.e. not from .h files), used options but I’ll need to screen which are used in model/src and which belong to packages
+
+
 .. _customize_model:
 
-Customizing the model configuration - Runtime parameters
+Customizing the Model Configuration - Runtime Parameters
 ========================================================
 
 When you are ready to run the model in the configuration you want, the
-easiest thing is to use and adapt the setup of the case studies
+most straightforward approach is to use and adapt the setup of a tutorial or verification
 experiment (described in :numref:`chap_modelExamples`) that is the closest to your
 configuration. Then, the amount of setup will be minimized. In this
-section, we document the MITgcm model runtime parameters set in file ``data``.
-Runtime parameters used by MITgcm packages are documented in :numref:`packagesI` and :numref:`outp_pack`. 
+section, we document the complete list of MITgcm model namelist runtime
+parameters set in file ``data``, which needs to be located in the
+directory where you will run the model. 
+Model parameters are defined and
+declared in the file :filelink:`PARAMS.h <model/inc/PARAMS.h>` and their default values are
+set in the routine :filelink:`set_defaults.F <model/src/set_defaults.F>`.
+Parameters are initialized
+in the routine :filelink:`ini_parms.F <model/src/ini_parms.F>`. :numref:`eedata_parms` documents the “execution environment” namelist parameters
+in file ``eedata``, which must also reside in the current run directory.
+Note that runtime parameters used by (non-default) MITgcm packages are not documented here but rather in :numref:`packagesI`
+and :numref:`outp_pack`, and prescribed in package-specific namelist files which are read in via package-specific .F files.
 
-Compile-time parameters (such as the domain size parameters) are discussed in more detail in :numref:`sarch`.
-(this documentation in software chapter should
-be highlighted as such. CPP options need to be documented).
+In what follows, model parameters are grouped into categories related to
+configuration/computational domain, algorithmic parameters, equations solved in the model, and
+simulation controls. The tables below specify the namelist parameter name, the namelist parameter
+group in ``data`` (and ``eedata`` in :numref:`eedata_parms`), the default value, and a short explanation of its function.
 
 
-In what follows, the parameters are grouped into categories related to
-the computational domain, the equations solved in the model, and the
-simulation controls.
+Parameters: Configuration, Computational Domain, Geometry, and Time-Discretization 
+----------------------------------------------------------------------------------
+
+Model Configuration
+~~~~~~~~~~~~~~~~~~~
+
+:varlink:`buoyancyRelation` is
+set to ``OCEANIC`` by default, which employes a :math:`z`-coordinate vertical axis. 
+To simulate an ocean using pressure coordinates in the vertical, set it to ‘OCEANICP’. For atmospheric simulations,
+:varlink:`buoyancyRelation` needs to be set to ``ATMOSPHERIC``, which also uses pressure as the vertical coordinate.
+The default model configuration is hydrostatic; to run a non-hydrostatic simulation, set the logical
+variable :varlink:`nonHydrostatic` to ``.TRUE.``. 
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`buoyancyRelation`            | PARM01    | OCEANIC                                          | buoyancy relation (OCEANIC, OCEANICP, or ATMOSPHERIC)                                                   |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`quasiHydrostatic`            | PARM01    | F                                                | quasi-hydrostatic formulation on/off flag                                                               |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`nonHydrostatic`              | PARM01    | F                                                | non-hydrostatic formulation on/off flag                                                                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
 
-Parameters: Computational Domain, Geometry, Time-Discretization and Configuration
----------------------------------------------------------------------------------
 
-Dimensions
-     
+Grid Parameters
+~~~~~~~~~~~~~~~     
 
-    The number of points in the x, y, and r directions are represented
-    by the variables :varlink:`sNx`, :varlink:`sNy` and :varlink:`Nr` respectively which are
-    declared and set in the file :filelink:`SIZE.h <model/inc/SIZE.h>`. (Again, this
-    assumes a mono-processor calculation. For multiprocessor
-    calculations see the section on parallel implementation.)
+Four different grids are available: Cartesian, spherical polar, cylindrical, and
+curvilinear (which includes the cubed sphere). The grid is set
+through the logical variables :varlink:`usingCartesianGrid`,
+:varlink:`usingSphericalPolarGrid`, :varlink:`usingCylindricalGrid`,
+and :varlink:`usingCurvilinearGrid`. Note that the cylindrical grid is designed for modeling a rotating tank,
+so that :math:`x` is the azimuthual direction, :math:`y` is the radial direction,
+and r is vertical coordinate (see tutorial :ref:`rotating tank <sec_eg_tank>`).
 
-Grid
-     
+The variable :varlink:`xgOrigin` sets the reference location of the western
+most cell face in the :math:`x` dimension (Cartesian, m; spherical and cyclindrical, degrees).
+For a Cartesian or spherical grid, the southern boundary is
+defined through the variable :varlink:`ygOrigin` which corresponds to the
+latitude of the southern most cell face (Cartesian, m; spherical, degrees).
+For a cyclindrical grid, a positive :varlink:`ygOrigin` adds an inner cylindrical boundary at center to the tank. The resolution
+along the :math:`x` and :math:`y` directions is controlled by the 1D arrays :varlink:`delx` (meters for a Cartesian grid, degrees otherwise)
+and :varlink:`dely` (meters for Cartesian and cyclindrical grids, degrees spherical).
+The vertical grid spacing is set through the 1D array
+:varlink:`delR` (:math:`z`-coordinates: in meters; :math:`p`-coordinates, in Pa).
+Using a curvilinear grid requires complete specification of all MITgcm grid variables, either through a default filename (see ...)
+or as specified by :varlink:`horizGridFile`.
 
-    Three different grids are available: cartesian, spherical polar, and
-    curvilinear (which includes the cubed sphere). The grid is set
-    through the logical variables :varlink:`usingCartesianGrid`,
-    :varlink:`usingSphericalPolarGrid`, and :varlink:`usingCurvilinearGrid`. In the
-    case of spherical and curvilinear grids, the southern boundary is
-    defined through the variable :varlink:`ygOrigin` which corresponds to the
-    latitude of the southern most cell face (in degrees). The resolution
-    along the x and y directions is controlled by the 1D arrays :varlink:`delx`
-    and :varlink:`dely` (in meters in the case of a cartesian grid, in degrees
-    otherwise). The vertical grid spacing is set through the 1D array
-    :varlink:`delz` for the ocean (in meters) or :varlink:`delp` for the atmosphere
-    (in Pa). The variable :varlink:`Ro_SeaLevel` represents the standard
-    position of sea level in “r” coordinate. This is typically set to 0 m
-    for the ocean (default value) and 10\ :sup:`5` Pa for the
-    atmosphere. For the atmosphere, also set the logical variable
-    :varlink:`groundAtK1` to ``.TRUE.`` which puts the first level (k=1) at
-    the lower boundary (ground).
+The variable :varlink:`seaLev_Z` represents the standard
+position of sea level in meters. This is typically set to 0 m
+for the ocean (default value). If instead pressure is used as the vertical coordinate,
+the pressure at the top (of the atmosphere or ocean) is set through :varlink:`top_Pres`, typically 0 Pa.
+As such, these variables are analogous to  :varlink:`xgOrigin` and :varlink:`ygOrigin` to define the vertical grid axis.
+But they also are used for a second purpose: in a :math:`z`-coordinate setup, :varlink:`top_Pres` sets a reference top pressure
+(required in a non-linear equation of state computation, for example); note that 1 bar
+(i.e. typical Earth atmospheric sea-level pressure) is added already, so the default is 0 Pa.
+Similarly, for a :math:`p`-coordinate setup, :varlink:`seaLev_Z` is used to
+deduce a reference pressure at the top of the ocean or bottom of the atmosphere.
 
-    For the cartesian grid case, the Coriolis parameter :math:`f` is set
-    through the variables :varlink:`f0` and :varlink:`beta` which correspond to the
-    reference Coriolis parameter (in s\ :sup:`--1`) and
-    :math:`\frac{\partial f}{ \partial y}`\ (in
-    m\ :sup:`--1`\ s\ :sup:`--1`) respectively. If :varlink:`beta` is set
-    to a nonzero value, :varlink:`f0` is the value of :math:`f` at the southern
-    edge of the domain.
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`usingCartesianGrid`          | PARM04    | T                                                | use Cartesian grid/coordinates on/off flag                                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`usingSphericalPolarGrid`     | PARM04    | F                                                | use spherical grid/coordinates on/off flag                                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`usingCylindricalGrid`        | PARM04    | F                                                | use cylindrical grid/coordinates on/off flag                                                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`usingCurvilinearGrid`        | PARM04    | F                                                | use cylindrical grid/coordinates on/off flag                                                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`xgOrigin`                    | PARM04    | 0.0E+00                                          | west edge :math:`x`-axis origin (Cartesian: m, spherical: degrees longitude)                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`ygOrigin`                    | PARM04    | 0.0E+00                                          | South edge :math:`y`-axis origin (Cartesian: m, spherical: degrees latitude)                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`dxSpacing`                   | PARM04    | unset                                            | :math:`x`-axis uniform grid spacing, separation between cell faces (Cartesian: m, spherical: deg.)      |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`delX`                        | PARM04    | :varlink:`dxSpacing`                             | 1D array of :math:`x`-axis grid spacing, separation between cell faces (Cartesian: m, spherical: deg.)  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`delXFile`                    | PARM04    | ‘ ‘                                              | filename containing 1D array of :math:`x`-axis grid spacing                                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`dySpacing`                   | PARM04    | unset                                            | :math:`y`-axis uniform grid spacing, separation between cell faces (Cartesian: m, spherical: deg.)      |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`delY`                        | PARM04    | :varlink:`dySpacing`                             | 1D array of :math:`x`-axis grid spacing, separation between cell faces (Cartesian: m, spherical: deg.)  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`delYFile`                    | PARM04    | ‘ ‘                                              | filename containing 1D array of :math:`y`-axis grid spacing                                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`delR`                        | PARM04    | computed using delRc                             | vertical grid spacing 1D array ([r] unit)                                                               |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`delRc`                       | PARM04    | computed using delR                              | vertical cell center spacing 1D array ([r] unit)                                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`delRFile`                    | PARM04    | ‘ ‘                                              | filename for vertical grid spacing 1D array ([r] unit)                                                  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`delRcFile`                   | PARM04    | ‘ ‘                                              | filename for vertical cell center spacing 1D array ([r] unit)                                           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`rSphere`                     | PARM04    | 6.37E+06                                         | radius of sphere (Cartesian: ignored, spherical: m)                                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`seaLev_Z`                    | PARM04    | 0.0E+00                                          | reference height of sea level (m)                                                                       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`top_Pres`                    | PARM04    | 0.0E+00                                          | top pressure (p-coordinates) or top reference pressure (:math:`z`-coordinates) (Pa)                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`horizGridFile`               | PARM04    | ‘ ‘                                              | filename containing full set of horizontal grid variables (curvilinear)                                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`radius_fromHorizGrid`        | PARM04    | :varlink:`rSphere`                               | radius of sphere for input curvilinear horizontal grid (m)                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`phiEuler`                    | PARM04    | 0.0E+00                                          | Euler angle, rotation about original z-axis (spherical polar)  (degrees)                                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`thetaEuler`                  | PARM04    | 0.0E+00                                          | Euler angle, rotation about new s-axis (spherical polar)  (degrees)                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`psiEuler`                    | PARM04    | 0.0E+00                                          | Euler angle, rotation about new z-axis (spherical polar)  (degrees)                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
 
 Topography - Full and Partial Cells
-     
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     
 
-    The domain bathymetry is read from a file that contains a 2D (x,y)
-    map of depths (in m) for the ocean or pressures (in Pa) for the
-    atmosphere. The file name is represented by the variable
-    :varlink:`bathyFile`. The file is assumed to contain binary numbers giving
-    the depth (pressure) of the model at each grid cell, ordered with
-    the x coordinate varying fastest. The points are ordered from low
-    coordinate to high coordinate for both axes. The model code applies
-    without modification to enclosed, periodic, and double periodic
-    domains. Periodicity is assumed by default and is suppressed by
-    setting the depths to 0 m for the cells at the limits of the
-    computational domain (note: not sure this is the case for the
-    atmosphere). The precision with which to read the binary data is
-    controlled by the integer variable :varlink:`readBinaryPrec` which can take
-    the value 32 (single precision) or 64 (double precision).
-    See the matlab program ``gendata.m`` in the ``input`` directories of
-    ``verification`` for several tutorial examples (e.g., :filelink:`gendata.m <verification/tutorial_barotropic_gyre/input/gendata.m>`
-    in the :ref:`barotropic gyre tutorial <sec_eg_baro>`)
-    to see how the bathymetry files are generated for the
-    case study experiments.
+For the ocean, the domain bathymetry is read from a file that contains a 2D(:math:`x,y`)
+map of depths/bottom position (in m for z-coordinates, and pressures in Pa for the p-coordinates).
+The file name is represented by the variable
+:varlink:`bathyFile`. The file is assumed to contain binary numbers giving
+the depth (pressure) of the model at each grid cell, ordered with
+the x coordinate varying fastest. The points are ordered from low
+coordinate to high coordinate for both axes. The model code applies
+without modification to enclosed, periodic, and double periodic
+domains. Periodicity is assumed by default and is suppressed by
+setting the depths to 0 m for the cells at the limits of the
+computational domain (note: not sure this is the case for the
+atmosphere). 
+See the matlab program ``gendata.m`` in the ``input`` directories of
+``verification`` for several tutorial examples (e.g., :filelink:`gendata.m <verification/tutorial_barotropic_gyre/input/gendata.m>`
+in the :ref:`barotropic gyre tutorial <sec_eg_baro>`)
+to see how the bathymetry files are generated for the
+case study experiments.
 
-    To use the partial cell capability, the variable :varlink:`hFacMin` needs
-    to be set to a value between 0 and 1 (it is set to 1 by default)
-    corresponding to the minimum fractional size of the cell. For
-    example if the bottom cell is 500 m thick and :varlink:`hFacMin` is set to
-    0.1, the actual thickness of the cell (i.e. used in the code) can
-    cover a range of discrete values 50 m apart from 50 m to 500 m
-    depending on the value of the bottom depth (in :varlink:`bathyFile`) at
-    this point.
+To use the partial cell capability, the variable :varlink:`hFacMin` needs
+to be set to a value between 0 and 1 (it is set to 1 by default)
+corresponding to the minimum fractional size of the cell. For
+example if the bottom cell is 500 m thick and :varlink:`hFacMin` is set to
+0.1, the actual thickness of the cell (i.e. used in the code) can
+cover a range of discrete values 50 m apart from 50 m to 500 m
+depending on the value of the bottom depth (in :varlink:`bathyFile`) at
+this point.
 
-    Note that the bottom depths (or pressures) need not coincide with
-    the models levels as deduced from :varlink:`delz` or :varlink:`delp`. The model
-    will interpolate the numbers in :varlink:`bathyFile` so that they match the
-    levels obtained from :varlink:`delz` or :varlink:`delp` and :varlink:`hFacMin`.
+Note that the bottom depths (or pressures) need not coincide with
+the models levels as deduced from :varlink:`delR`. The model
+will interpolate the numbers in :varlink:`bathyFile` so that they match the
+levels obtained from :varlink:`delR` and :varlink:`hFacMin`.
 
-    (Note: the atmospheric case is a bit more complicated than what is
-    written here. To come soon...)
 
-Time-Discretization
-     
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`bathyFile`                   | PARM05    | ‘ ‘                                              | filename for 2D bathymetry (ocean) (z-coor.: m, negative; p-coor.: Pa, positive)                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`topoFile`                    | PARM05    | ‘ ‘                                              | filename for 2D surface topography (atmosphere) (m)                                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`addWwallFile`                | PARM05    | ‘ ‘                                              | filename for 2D western cell-edge “thin-wall”                                                           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`addSwallFile`                | PARM05    | ‘ ‘                                              | filename for 2D southern cell-edge “thin-wall”                                                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`hFacMin`                     | PARM01    | 1.0E+00                                          | minimum fraction size of a cell                                                                         | 
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`hFacMinDr`                   | PARM01    | 1.0E+00                                          | minimum dimensional size of a cell ([r] unit)                                                           | 
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`hFacInf`                     | PARM01    | 2.0E-01                                          | lower threshold fraction for surf. cell (non-lin. free surf.)                                           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`hFacSup`                     | PARM01    | 2.0E+00                                          | upper threshold fraction for surf. cell (non-lin. free surf.)                                           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`useMin4hFacEdges`            | PARM04    | F                                                | set hFacW, hFacS as minimum of adjacent hFacC on/off flag                                               |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`pCellMix_select`             | PARM04    | 0                                                | option/factor to enhance mixing at the surface or bottom ( 0- 99 )                                      |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`pCellMix_maxFac`             | PARM04    | 1.0E+04                                          | maximum enhanced mixing factor for thin partial-cell ( non-dim. )                                       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`pCellMix_delR`               | PARM04    | 0.0E+04                                          | thickness criteria for too thin partial-cell ( [r] unit )                                               |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-    The time steps are set through the real variables :varlink:`deltaTMom` and
-    :varlink:`deltaTtracer` (in s) which represent the time step for the
-    momentum and tracer equations, respectively. For synchronous
-    integrations, simply set the two variables to the same value (or you
-    can prescribe one time step only through the variable :varlink:`deltaT`).
+
+Rotation
+~~~~~~~~
+
+
+For a Cartesian grid, the Coriolis parameter :math:`f` is set
+through the variables :varlink:`f0` and :varlink:`beta` which correspond to the
+reference Coriolis parameter (in s\ :sup:`--1`) and
+:math:`\frac{\partial f}{ \partial y}`\ (in
+m\ :sup:`--1`\ s\ :sup:`--1`) respectively. If :varlink:`beta` is set
+to a nonzero value, :varlink:`f0` is the value of :math:`f` at the southern
+edge of the domain.
+
+
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`selectCoriMap`               | PARM01    | depends on grid                                  | Coriolis map options (0,1,2,3)                                                                          | 
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`f0`                          | PARM01    | 1.0E-04                                          | reference Coriolis parameter (Cartesian) (1/s)                                                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`beta`                        | PARM01    | 1.0E-11                                          | beta (Cartesian) (m\ :sup:`--1`\ s\ :sup:`--1`)                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`fPrime`                      | PARM01    | 0.0                                              | reciprocal Coriolis parameter (Cartesian)  (1/s)                                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`rotationPeriod`              | PARM01    |8.6164E+04                                        | rotation period (s)                                                                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`omega`                       | PARM01    |:math:`2\pi/`\ :varlink:`rotationPeriod`          | angular velocity (rad/s)                                                                                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
 
 Free Surface
+~~~~~~~~~~~~
 
-    The logical variables :varlink:`rigidLid` and :varlink:`implicitFreeSurface` specify
-    your choice for ocean upper boundary or atmosphere lower boundary
-    (set one to ``.TRUE.`` and the other to ``.FALSE.``). These settings affect the calculations of surface pressure (for the ocean) or
-    surface geopotential (for the atmosphere); see :numref:`parms-main_algorithm`).
+The logical variables :varlink:`rigidLid` and :varlink:`implicitFreeSurface` specify
+your choice for ocean upper boundary or atmosphere lower boundary
+(set one to ``.TRUE.`` and the other to ``.FALSE.``). These settings affect the calculations of surface pressure (for the ocean) or
+surface geopotential (for the atmosphere); see :numref:`parms-main_algorithm`).
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`implicitFreeSurface`         | PARM01    | T                                                | implicit free surface on/off flag                                                                       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`rigidLid`                    | PARM01    | F                                                | rigid lid on/off flag                                                                                   |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`useRealFreshWaterFlux`       | PARM01    | F                                                | use true E-P-R freshwater flux (changes free surface/sea level) on/off flag                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`implicSurfPress`             | PARM01    | 1.0E+00                                          | implicit fraction of the surface pressure gradient (0-1)                                                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`implicDiv2Dflow`             | PARM01    | 1.0E+00                                          | implicit fraction of the barotropic flow divergence (0-1)                                               |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`implicitNHPress`             | PARM01    | :varlink:`implicSurfPress`                       | implicit fraction of the non-hydrostatic pressure gradient (0-1)                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`nonlinFreeSurf`              | PARM01    | 0                                                | non-linear free surface options (-1,0,1,2,3)                                                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`select_rStar`                | PARM01    | 0                                                | vertical coordinate option (0=use r, >0 use r*)                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`selectNHfreeSurf`            | PARM01    | 0                                                | non-hydrostatic free surface formulation option (0=don’t use, >0 use)                                   |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`exactConserv`                | PARM01    | F                                                | exact total volume conservation (recompute divergence after pressure solver) on/off flag                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
 
-(Configuration)
 
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`selectCoriMap`          | PARM01 | depends on grid               | Coriolis map options (0,1,2,3)                                                                     | 
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`f0`                     | PARM01 | 1.0E-04                       | reference Coriolis parameter (Cartesian) ( 1/s )                                                   |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`beta`                   | PARM01 | 1.0E-11                       | beta (Cartesian) ( m\ :sup:`--1`\ s\ :sup:`--1` )                                                  |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`fPrime`                 | PARM01 | 0.0                           | reciprocal Coriolis parameter (Cartesian)  ( 1/s )                                                 |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`rotationPeriod`         | PARM01 |8.6164E+04                     | rotation period ( s )                                                                              |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`omega`                  | PARM01 |:math:`2\pi/`\ rotationPeriod  | angular velocity ( rad/s )                                                                         |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-|                                   |        |                               |                                                                                                    |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`hFacMin`                | PARM01 | 1.0E+00                       | minimum fraction size of a cell                                                                    | 
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`hFacMinDr`              | PARM01 | 1.0E+00                       | minimum dimensional size of a cell ( [r] units )                                                   | 
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`hFacInf`                | PARM01 | 2.0E-01                       | lower threshold fraction for surf. cell (non-lin. free surf. )                                     |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`hFacSup`                | PARM01 | 2.0E+00                       | upper threshold fraction for surf. cell (non-lin. free surf. )                                     |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-|                                   |        |                               |                                                                                                    |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`allowFreezing`          | PARM01 | F                             | limit (ocean) temperature at surface to >= -1.9\ :sup:`o`\ C                                       |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-|                                   |        |                               |                                                                                                    |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`gravityFile`            | PARM01 | ‘ ‘                           | filename for gravity vertical profile ( m/s\ :sup:`2` )                                            | 
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-|                                   |        |                               |                                                                                                    |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`implicitFreeSurface`    | PARM01 | T                             | implicit free surface on/off flag                                                                  |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`rigidLid`               | PARM01 | F                             | rigid lid on/off flag                                                                              |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`implicSurfPress`        | PARM01 | 1.0E+00                       | implicit fraction of the surface pressure gradient (0-1)                                           |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`implicDiv2Dflow`        | PARM01 | 1.0E+00                       | implicit fraction of the barotropic flow divergence (0-1)                                          |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`implicitNHPress`        | PARM01 | :varlink:`implicSurfPress`    | implicit fraction of the non-hydrostatic pressure gradient (0-1)                                   |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`nonlinFreeSurf`         | PARM01 | 0                             | non-linear free surface options (-1,0,1,2,3)                                                       |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`select_rStar`           | PARM01 | 0                             | vertical coordinate option (0=use r, >0 use r*)                                                    |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`selectNHfreeSurf`       | PARM01 | 0                             | non-hydrostatic free surface formulation option (0=don’t use, >0 use)                              |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-|                                   |        |                               |                                                                                                    |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
+Time-Discretization
+~~~~~~~~~~~~~~~~~~~     
+
+The time steps are set through the real variables :varlink:`deltaTMom` and
+:varlink:`deltaTtracer` (in s) which represent the time step for the
+momentum and tracer equations, respectively. For synchronous
+integrations, simply set the two variables to the same value (or you
+can prescribe a single time step value for all parameters using :varlink:`deltaT`).
+The model ”clock” is defined by the variable :varlink:`deltaTClock` (in s)
+which determines the I/O frequencies and is used in tagging output.
+Typically, you will set it to the tracer time step for accelerated runs
+
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`deltaT`                     | PARM03    | 0.0E+00                                          | default value used for model time step parameters (s)                                                   |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`deltaTClock`                | PARM03    | :varlink:`deltaT`                                | timestep used for model clock (s): used for I/O frequency and tagging output and checkpoints            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`deltaTmom`                  | PARM03    | :varlink:`deltaT`                                | momentum equation timestep (s)                                                                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`deltaTtracer`               | PARM03    | :varlink:`deltaT`                                | tracer equation timestep at k=top (s)                                                                   |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`dTtracerLev`                | PARM03    | :varlink:`deltaTtracer`                          | tracer equation timestep specified at each vertical level (s)                                           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`deltaTfreesurf`             | PARM03    | :varlink:`deltaTmom`                             | free surface equation timestep (s)                                                                      |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
+
 
 .. _parms-main_algorithm:
 
-Parameters: Main Algorithmic Parameters (including solving for pressure)
-------------------------------------------------------------------------
+Parameters: Main Algorithmic Parameters
+---------------------------------------
 
 Calculation of Pressure/Geopotential
-     
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    First, to run a non-hydrostatic ocean simulation, set the logical
-    variable :varlink:`nonHydrostatic` to ``.TRUE.``. The pressure field is
-    then inverted through a 3D elliptic equation. (Note: this capability
-    is not available for the atmosphere yet.) By default, a hydrostatic
-    simulation is assumed and a 2D elliptic equation is used to invert
-    the pressure field. The parameters controlling the behavior of the
-    elliptic solvers are the variables :varlink:`cg2dMaxIters` and
-    :varlink:`cg2dTargetResidual` for the 2D case and :varlink:`cg3dMaxIters` and
-    :varlink:`cg3dTargetResidual` for the 3D case. You probably won’t need to
-    alter the default values (are we sure of this?).
+NH: the pressure field is
+then inverted through a 3D elliptic equation. (Note: this capability
+is not available for the atmosphere yet.) By default, a hydrostatic
+simulation is assumed and a 2D elliptic equation is used to invert
+the pressure field. The parameters controlling the behavior of the
+elliptic solvers are the variables :varlink:`cg2dMaxIters` and
+:varlink:`cg2dTargetResidual` for the 2D case and :varlink:`cg3dMaxIters` and
+:varlink:`cg3dTargetResidual` for the 3D case. You probably won’t need to
+alter the default values (are we sure of this?).
+
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`cg2dMaxIters`               | PARM02    | 150                                              | upper limit on 2D conjugate gradient solver iterations                                                  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`cg2dTargetResidual`         | PARM02    | 1.0E-07                                          | 2D conjugate gradient target residual ( no unit [or m2/s2?], RHS normalization )                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`cg2dTargetResWunit`         | PARM02    | -1.0E+00                                         | 2D conjugate gradient target residual (W units, no RHS normalization; <0 use RHS normalization )        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`cg2dPreCondFreq`            | PARM02    | 1                                                | freq. (in number of iterations) for updating cg2d pre-conditioner, non-linear free surface              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`cg2dUseMinResSol`           | PARM02    | 0 unless flat-bottom, cartesian config.          | 0: use last-iteration/converged cg2d solution; 1: use solver minimum-residual solution                  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`cg3dMaxIters`               | PARM02    | 150                                              | upper limit on 3D conjugate gradient solver iterations                                                  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`cg3dTargetResidual`         | PARM02    | 1.0E-07                                          | 3D conjugate gradient target residual ( no unit [or m2/s2?], RHS normalization? )                       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`useSRCGSolver`              | PARM02    | F                                                | use conjugate gradient solver with single reduction (single call of mpi_allreduce)                      |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`printResidualFreq`          | PARM02    | 1 unless :varlink:`debugLevel` >4                | frequency (in number of iterations) of printing conjugate gradient residual                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`integr_GeoPot`               | PARM01    | 2                                                | select method to integrate geopotential                                                                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`uniformLin_PhiSurf`          | PARM01    | T                                                | use uniform :math:`b_s` relation for :math:`\phi_s` on/off flag                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`selectFindRoSurf`            | PARM01    | 0                                                | select method to determine surf. ref. press. from orography (atm)                                       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`deepAtmosphere`              | PARM04    | F                                                | drop the thin shell/shallow water approximation                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
+
 
 Time-Stepping Algorithm
+~~~~~~~~~~~~~~~~~~~~~~~
 
-    The Adams-Bashforth stabilizing parameter is set through the
-    variable :varlink:`abEps` (dimensionless). The stagger baroclinic time
-    stepping can be activated by setting the logical variable
-    :varlink:`staggerTimeStep` to ``.TRUE.``.
+The Adams-Bashforth stabilizing parameter is set through the
+variable :varlink:`abEps` (dimensionless). The stagger baroclinic time
+stepping can be activated by setting the logical variable
+:varlink:`staggerTimeStep` to ``.TRUE.``.
 
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`abEps`                       | PARM03    | 1.0E-02                                          | Adams-Bashforth-2 stabilizing weight                                                                    |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`epsAB_CD`                    | PARM03    | :varlink:`abEps`                                 | Adams-Bashforth-2 stabilizing weight used in C-D scheme                                                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`alph_AB`                     | PARM03    | 0.5E+00                                          | Adams-Bashforth-3 primary factor                                                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`beta_AB`                     | PARM03    | 5.0E+00 / 12.0E+00                               | Adams-Bashforth-3 secondary factor                                                                      |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`staggerTimeStep`             | PARM01    | F                                                | use staggered time stepping (thermodynamic vs. flow variables) on/off flag                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`multiDimAdvection`           | PARM01    | T                                                | use multi-dim advection in advection schemes where optional on/off flag                                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`implicitIntGravWave`         | PARM01    | F                                                | treat internal gravity waves implicitly on/off flag                                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`convertFW2Salt`         | PARM01 | 3.5E+01 (-1 if :varlink:`useRealFreshWaterFlux`) | salinity used to convert freshwater flux to salt flux (-1=use local S) ( psu or g/kg )             |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`useRealFreshWaterFlux`  | PARM01 | F                                                | use true E-P-R freshwater flux (changes sea level) on/off flag                                     |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`selectAddFluid`         | PARM01 | 0                                                | add fluid to ocean interior options (-1, 0=off, or 1)                                              |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`exactConserv`           | PARM01 | F                                                | exact total volume conservation on/off flag                                                        |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-|                                   |        |                                                  |                                                                                                    |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`cg2dMaxIters`          | PARM02 | 150                                              | upper limit on 2D conjugate gradient solver iterations                                             |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`cg2dTargetResidual`    | PARM02 | 1.0E-07                                          | 2D conjugate gradient target residual ( no unit [or m2/s2?], RHS normalization )                   |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`cg2dTargetResWunit`    | PARM02 | -1.0E+00                                         | 2D conjugate gradient target residual (W units, no RHS normalization; <0 use RHS normalization )   |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`cg2dPreCondFreq`       | PARM02 | 1                                                | freq. (in number of iterations) for updating cg2d pre-conditioner, non-linear free surface         |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`cg2dpcOffDFac`         | PARM02 | 0.51                                             | 2D conjugate gradient averaging weight for pre-conditioner off-diagonal                            |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`cg2dUseMinResSol`      | PARM02 | 0 unless flat-bottom, cartesian config.          | 0: use last-iteration/converged cg2d solution; 1: use solver minimum-residual solution             |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`cg3dMaxIters`          | PARM02 | 150                                              | upper limit on 3D conjugate gradient solver iterations                                             |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`cg3dTargetResidual`    | PARM02 | 1.0E-07                                          | 3D conjugate gradient target residual ( no unit [or m2/s2?], RHS normalization? )                  |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`useSRCGSolver`         | PARM02 | F                                                | use conjugate gradient solver with single reduction (single call of mpi_allreduce)                 |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`printResidualFreq`     | PARM02 | 1 unless :varlink:`debugLevel` >4                | frequency (in number of iterations) of printing conjugate gradient residual                        |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-|                                   |        |                                                  |                                                                                                    |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`quasiHydrostatic`       | PARM01 | F                                                | quasi-hydrostatic formulation on/off flag                                                          |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`nonHydrostatic`         | PARM01 | F                                                | non-hydrostatic formulation on/off flag                                                            |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`useNHMTerms`            | PARM01 | F                                                | use non-hydrostatic form of metric terms on/off flag                                               |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-|                                   |        |                                                  |                                                                                                    |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`integr_GeoPot`          | PARM01 | 2                                                | select method to integrate geopotential                                                            |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`uniformLin_PhiSurf`     | PARM01 | T                                                | use uniform :math:`b_s` relation for :math:`\phi_s` on/off flag                                    |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`selectFindRoSurf`       | PARM01 | 0                                                | select method to determine surf. ref. press. from orography (atm)                                  |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-|                                   |        |                                                  |                                                                                                    |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`staggerTimeStep`        | PARM01 | F                                                | use staggered time stepping (thermodynamic vs. flow variables) on/off flag                         |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`multiDimAdvection`      | PARM01 | T                                                | multi-dim advection on/off flag                                                                    |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`implicitIntGravWave`    | PARM01 | F                                                | treat internal gravity waves implicitly on/off flag                                                |
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
-+-----------------------------------+--------+--------------------------------------------------+----------------------------------------------------------------------------------------------------+
 
 
 .. _parms-eos:
@@ -1446,7 +1623,15 @@ Time-Stepping Algorithm
 Parameters: Equation of State
 -----------------------------
 
-First, because the model equations are written in terms of
+
+The form of the equation of state is controlled by the model configuration
+and :varlink:`eosType`. For the atmosphere, :varlink:`eosType` must be set to ``IDEALGAS``. 
+For the ocean, several forms of the equation of state are
+available. For a linear approximation, set :varlink:`eosType` to ``LINEAR``),
+and you will need to specify the thermal
+and haline expansion coefficients, represented by the variables
+:varlink:`tAlpha` (in K\ :sup:`--1`) and :varlink:`sBeta` (in psu\ :sup:`--1`).
+Because the model equations are written in terms of
 perturbations, a reference thermodynamic state needs to be specified.
 This is done through the 1D arrays :varlink:`tRef` and :varlink:`sRef`. :varlink:`tRef`
 specifies the reference potential temperature profile (in
@@ -1455,16 +1640,7 @@ starting from the level k=1. Similarly, :varlink:`sRef` specifies the reference
 salinity profile (in psu or g/kg; see Millero (2010) :cite:`millero:10` ) for the ocean or the reference specific
 humidity profile (in g/kg) for the atmosphere.
 
-The form of the equation of state is controlled by the character
-variables :varlink:`buoyancyRelation` and :varlink:`eosType`. :varlink:`buoyancyRelation` is
-set to ``OCEANIC`` by default and needs to be set to ``ATMOSPHERIC``
-for atmosphere simulations. In this case, :varlink:`eosType` must be set to
-``IDEALGAS``. For the ocean, several forms of the equation of state are
-available. For a linear approximation (set :varlink:`eosType` to ``LINEAR``),
-you need to specify the thermal
-and haline expansion coefficients, represented by the variables
-:varlink:`tAlpha` (in K\ :sup:`--1`) and :varlink:`sBeta` (in psu\ :sup:`--1`).
-For a polynomial approximation to the full nonlinear equation
+For a polynomial approximation to the full (oceanic) nonlinear equation
 (set :varlink:`eosType` to ``POLYNOMIAL``), you need to generate a file of polynomial
 coefficients called ``POLY3.COEFFS``. To do this, use the program
 :filelink:`utils/knudsen2/knudsen2.f` under the model tree (a Makefile is
@@ -1472,7 +1648,7 @@ available in the same directory; you will need to edit the number and
 the values of the vertical levels in :filelink:`knudsen2.f <utils/knudsen2/knudsen2.f>`
 so that they match those of your configuration).
 
-There there are also higher polynomials choices for the equation of state:
+There there are also higher polynomials choices for the (ocean) equation of state:
 
 ``’UNESCO’``:
     The UNESCO equation of state formula of Fofonoff and Millard (1983)
@@ -1511,763 +1687,880 @@ There there are also higher polynomials choices for the equation of state:
     including consideration of surface forcings) has not been implemented;
     also note the original 48-term polynomial term is used, not the newer, preferred 75-term polynomial.
 
-For these options neither a reference profile of temperature or
-salinity is required, nor the file ``POLY3.COEFFS``.
+The file ``POLY3.COEFFS`` in not required for any of these other higher polynomial options.
+For all polynomial options, neither a reference profile of temperature or
+salinity is required, except for a setup where :varlink:`implicitIntGravWave` is set to true or :varlink:`selectP_inEOS_Zc`\ =1.
 
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`tRef`                   | PARM01 | 2.0E+01 at k=top              | reference temperature profile ( :sup:`o`\ C or K )                 |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`tRefFile`               | PARM01 | ‘ ‘                           | filename for reference temperature profile ( :sup:`o`\ C or K )    |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`thetaConst`             | PARM01 | not used                      | use instead of tRef when vertically constant ( :sup:`o`\ C or K )  |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`sRef`                   | PARM01 | 3.0E+01 at k=top              | reference salinity profile ( psu or g/kg )                         |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`sRefFile`               | PARM01 | ‘ ‘                           | filename for reference salinity profile ( g/kg )                   |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`rhoRefFile`             | PARM01 | ‘ ‘                           | filename for ref. density profile (anelastic) ( kg/m\ :sup:`3` )   |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`buoyancyRelation`       | PARM01 | OCEANIC                       | buoyancy relation                                                  |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`eosType`                | PARM01 | LINEAR                        | equation of state form                                             |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`selectP_inEOS_Zc`       | PARM01 | depends on :varlink:`eosType` | select which pressure to use in EOS for z-coordinates (0-3)        |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`rhonil`                 | PARM01 | 9.998E+02                     | reference density for linear EOS ( kg/m\ :sup:`3` )                |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`tAlpha`                 | PARM01 | 2.0E-04                       | linear EOS thermal expansion coefficient ( 1/\ :sup:`o`\ C )       |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`sBeta`                  | PARM01 | 7.4E-04                       | linear EOS haline contraction coefficient ( 1/psu )                |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`rhoConstFresh`          | PARM01 | :varlink:`rhoConst`           | constant ref. density for fresh water (rain) ( kg/m\ :sup:`3` )    |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-|                                   |        |                               |                                                                    |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`HeatCapacity_Cp`        | PARM01 | 3.994E+03                     | specific heat capacity C\ :sub:`p` (ocean) ( J/kg/K )              |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`celsius2K`              | PARM01 | 2.7315E+02                    | conversion constant :sup:`o`\ C to Kelvin                          |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`atm_Cp`                 | PARM01 | 1.004E+03                     | spec. heat capacity C\ :sub:`p` dry air at const. press. ( J/kg/K )|
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`atm_Rd`                 | PARM01 | :varlink:`atm_Cp`\*(2/7)      | gas constant for dry air ( J/kg/K )                                |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`atm_Rq`                 | PARM01 | 0.0E+00                       | water vapor specific volume anomaly relative to dry air ( g/kg )   |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-| :varlink:`atm_Po`                 | PARM01 | 1.0E+05                       | atmosphere standard reference pressure (in Pot. T defn.)  ( Pa )   |
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
-+-----------------------------------+--------+-------------------------------+--------------------------------------------------------------------+
+
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`eosType`                     | PARM01    | LINEAR                                           | equation of state form                                                                                  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`tRef`                        | PARM01    | 2.0E+01 at k=top                                 | 1D vertical reference temperature profile (:sup:`o`\ C or K)                                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`tRefFile`                    | PARM01    | ‘ ‘                                              | filename for reference temperature profile (:sup:`o`\ C or K)                                           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`thetaConst`                  | PARM01    | not used                                         | specify instead of tRef for vertically constant reference (:sup:`o`\ C or K)                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`sRef`                        | PARM01    | 3.0E+01 at k=top                                 | 1D vertical reference salinity profile (psu or g/kg)                                                    |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`sRefFile`                    | PARM01    | ‘ ‘                                              | filename for reference salinity profile (psu or g/kg)                                                   |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`rhoRefFile`                  | PARM01    | ‘ ‘                                              | filename for ref. density profile (anelastic) (kg/m\ :sup:`3`)                                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`selectP_inEOS_Zc`            | PARM01    | depends on :varlink:`eosType`                    | select which pressure to use in EOS for z-coordinates (0-3)                                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`rhonil`                      | PARM01    | 9.998E+02                                        | reference density for linear EOS (kg/m\ :sup:`3`)                                                       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`tAlpha`                      | PARM01    | 2.0E-04                                          | linear EOS thermal expansion coefficient (1/\ :sup:`o`\ C)                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`sBeta`                       | PARM01    | 7.4E-04                                          | linear EOS haline contraction coefficient (1/psu)                                                       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`rhoConstFresh`               | PARM01    | :varlink:`rhoConst`                              | constant reference density for fresh water (rain) (kg/m\ :sup:`3`)                                      |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
+
+Thermodynamic Constants
+~~~~~~~~~~~~~~~~~~~~~~~
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`HeatCapacity_Cp`             | PARM01    | 3.994E+03                                        | specific heat capacity C\ :sub:`p` (ocean) (J/kg/K)                                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`celsius2K`                   | PARM01    | 2.7315E+02                                       | conversion constant :sup:`o`\ C to Kelvin                                                               |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`atm_Cp`                      | PARM01    | 1.004E+03                                        | spec. heat capacity C\ :sub:`p` dry air at const. press. (J/kg/K)                                       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`atm_Rd`                      | PARM01    | :varlink:`atm_Cp`\*(2/7)                         | gas constant for dry air (J/kg/K)                                                                       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`atm_Rq`                      | PARM01    | 0.0E+00                                          | water vapor specific volume anomaly relative to dry air (g/kg)                                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`atm_Po`                      | PARM01    | 1.0E+05                                          | atmosphere standard reference pressure (in Pot. T defn.)  (Pa)                                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
 
 
 Parameters: Momentum Equations
 ------------------------------
 
-In this section, we only focus for now on the parameters that you are
-likely to change, i.e. the ones relative to forcing and dissipation for
-example. The details relevant to the vector-invariant form of the
-equations and the various advection schemes are not covered for the
-moment. We assume that you use the standard form of the momentum
-equations (i.e. the flux-form) with the default advection scheme. Also,
-there are a few logical variables that allow you to turn on/off various
+Configuration
+~~~~~~~~~~~~~
+
+There are a few logical variables that allow you to turn on/off various
 terms in the momentum equation. These variables are called
-:varlink:`momViscosity`, :varlink:`momAdvection`, :varlink:`momForcing`, :varlink:`useCoriolis`,
-:varlink:`momPressureForcing`, :varlink:`momStepping` and :varlink:`metricTerms` and are assumed to
-be set to ``.TRUE.`` here. 
+:varlink:`momViscosity`, :varlink:`momAdvection`,  :varlink:`useCoriolis`,
+:varlink:`momStepping` and :varlink:`metricTerms` and by default are
+set to ``.TRUE.``. Vertical diffusive fluxes of momentum can be computed implicitly
+by setting the logical variable :varlink:`implicitViscosity` to
+``.TRUE.``. The details relevant to the vector-invariant form of the
+equations and the various (momentum) advection schemes are covered in :numref:`discret_algorithm`.
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`momStepping`                 | PARM01    | T                                                | momentum equation time-stepping on/off flag                                                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`momViscosity`                | PARM01    | T                                                | momentum friction terms on/off flag                                                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`momAdvection`                | PARM01    | T                                                | advection of momentum on/off flag                                                                       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`metricTerms`                 | PARM01    | T                                                | include metric terms on/off flag (spherical polar or curvilinear grid)                                  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`useNHMTerms`                 | PARM01    | F                                                | use non-hydrostatic form of metric terms on/off flag                                                    |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`momImplVertAdv`              | PARM01    | F                                                | momentum implicit vertical advection on/off flag                                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`implicitViscosity`           | PARM01    | F                                                | implicit vertical viscosity on/off flag                                                                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`interViscAr_pCell`           | PARM04    | F                                                | account for partial-cell in interior vertical viscosity on/off flag                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`momDissip_In_AB`             | PARM03    | T                                                | use Adams-Bashforth time stepping for dissipation tendency                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`useCoriolis`                 | PARM01    | T                                                | include Coriolis terms on/off flag                                                                      |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`use3dCoriolis`               | PARM01    | T                                                | include reciprocal (aka 3D) Coriolis terms on/off flag                                                  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`useJamartWetPoints`          | PARM01    | F                                                | use Jamart & Ozer ’86 wetpoints method for (boundary) Coriolis terms on/off flag                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`useEnergyConservingCoriolis` | PARM01    | F                                                | use energy-conserving discret. of Coriolis terms (mom. fluxform) on/off flag                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`vectorInvariantMomentum`     | PARM01    | F                                                | use vector-invariant form of momentum equations flag                                                    |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`useJamartMomAdv`             | PARM01    | F                                                | use Jamart wetpoints method for vector invariant form mom. adv. terms on/off flag                       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`selectVortScheme`            | PARM01    | 1                                                | vorticity scheme (vector-invariant) options   (0-3)                                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`upwindVorticity`            | PARM01    | F                                                | bias interpolation of vorticity in the Coriolis term (vector invariant) on/off flag                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`useAbsVorticity`            | PARM01    | F                                                | use :math:`f + \zeta` in Coriolis terms (vector invariant) on/off flag                                  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`highOrderVorticity`         | PARM01    | F                                                | use 3rd/4th order interp. of vorticity (vector invariant) on/off flag                                   |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`upwindShear`                | PARM01    | F                                                | use 1st order upwind for vertical advection (vector invariant) on/off flag                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`selectKEscheme`             | PARM01    | 0                                                | kinetic energy computation in Bernoulli function (vector invariant) options  (-1 to 3)                  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
+
 
 Initialization
-     
+~~~~~~~~~~~~~~    
 
-    The initial horizontal velocity components can be specified from
-    binary files :varlink:`uVelInitFile` and :varlink:`vVelInitFile`. These files
-    should contain 3D data ordered in an (x,y,r) fashion with k=1 as the
-    first vertical level (surface level). If no file names are provided,
-    the velocity is initialized to zero. The initial vertical velocity
-    is always derived from the horizontal velocity using the continuity
-    equation, even in the case of non-hydrostatic simulation (see, e.g.,
-    :filelink:`verification/tutorial_deep_convection/input/`).
+The initial horizontal velocity components can be specified from
+binary files :varlink:`uVelInitFile` and :varlink:`vVelInitFile`. These files
+should contain 3D data ordered in an (x,y,r) fashion with k=1 as the
+first vertical level (surface level). If no file names are provided,
+the velocity is initialized to zero. The initial vertical velocity
+is always derived from the horizontal velocity using the continuity
+equation, even in the case of non-hydrostatic simulation (e.g., see
+:filelink:`verification/tutorial_deep_convection/input/`).
+In the case of a restart (from the end of a previous simulation),
+the velocity field is read from a pickup file (see :numref:`simulation_controls`) and the initial velocity files are
+ignored.
 
-    In the case of a restart (from the end of a previous simulation),
-    the velocity field is read from a pickup file (see section on
-    simulation control parameters) and the initial velocity files are
-    ignored.
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`uVelInitFile`                | PARM05    | ‘ ‘                                              | filename for 3D specification of initial zonal velocity field (m/s)                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`vVelInitFile`                | PARM05    | ‘ ‘                                              | filename for 3D specification of initial meridional velocity field (m/s)                                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`pSurfInitFile`               | PARM05    | ‘ ‘                                              | filename for 2D specification of initial free surface height field ([r] unit)                           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
 Forcing
-
+~~~~~~~
     
-    This section only applies to the ocean. You need to generate
-    wind-stress data into two files :varlink:`zonalWindFile` and
-    :varlink:`meridWindFile` corresponding to the zonal and meridional
-    components of the wind stress, respectively (if you want the stress
-    to be along the direction of only one of the model horizontal axes,
-    you only need to generate one file). The format of the files is
-    similar to the bathymetry file. The zonal (meridional) stress data
-    are assumed to be in Pa and located at U-points (V-points). As for
-    the bathymetry, the precision with which to read the binary data is
-    controlled by the variable :varlink:`readBinaryPrec`. See the matlab
-    program ``gendata.m`` in the ``input`` directories of
-    ``verification`` for several tutorial example
-    (e.g. :filelink:`gendata.m <verification/tutorial_barotropic_gyre/input/gendata.m>`
-    in the :ref:`barotropic gyre tutorial <sec_eg_baro>`)
-    to see how simple analytical wind forcing data are generated for the
-    case study experiments.
+This section only applies to the ocean. You need to generate
+wind-stress data into two files :varlink:`zonalWindFile` and
+:varlink:`meridWindFile` corresponding to the zonal and meridional
+components of the wind stress, respectively (if you want the stress
+to be along the direction of only one of the model horizontal axes,
+you only need to generate one file). The format of the files is
+similar to the bathymetry file. The zonal (meridional) stress data
+are assumed to be in pascals and located at U-points (V-points). See the matlab
+program ``gendata.m`` in the ``input`` directories of
+``verification`` for several tutorial example
+(e.g. :filelink:`gendata.m <verification/tutorial_barotropic_gyre/input/gendata.m>`
+in the :ref:`barotropic gyre tutorial <sec_eg_baro>`)
+to see how simple analytical wind forcing data are generated for the
+case study experiments.
 
-.. _periodic_forcing_expl:
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`momForcing`                  | PARM01    | T                                                | external forcing of momentum on/off flag                                                                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`zonalWindFile`               | PARM05    | ‘ ‘                                              | filename for 2D specification of zonal component of wind forcing (N/m\ :sup:`2`)                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`meridWindFile`               | PARM05    | ‘ ‘                                              | filename for 2D specification of meridional component of wind forcing (N/m\ :sup:`2`)                   |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`momForcingOutAB`             | PARM03    | 0                                                | =1: take momentum forcing out of Adams-Bashforth time stepping                                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`momPressureForcing`          | PARM01    | T                                                | pressure term in momentum equation on/off flag                                                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`momTidalForcing`             | PARM01    | T                                                | tidal forcing of momentum equation on/off flag (requires tidal forcing files)                           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`ploadFile`                   | PARM05    | ‘ ‘                                              | filename for 2D specification of atmospheric pressure loading (ocean z-coor. only) (Pa)                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-    There is also the possibility of prescribing time-dependent periodic
-    forcing. To do this, concatenate the successive time records into a
-    single file (for each stress component) ordered in a (x,y,t) fashion
-    and set the following variables: :varlink:`periodicExternalForcing` to
-    ``.TRUE.``, :varlink:`externForcingPeriod` to the period (in s) of which
-    the forcing varies (typically 1 month), and :varlink:`externForcingCycle`
-    to the repeat time (in s) of the forcing (typically 1 year; note
-    :varlink:`externForcingCycle` must be a multiple of
-    :varlink:`externForcingPeriod`). With these variables set up, the model
-    will interpolate the forcing linearly at each iteration.
 
 .. _mom_dissip:
 
-Dissipation
-
+General Dissipation Parameters/Scheme
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
-    The lateral eddy viscosity coefficient is specified through the
-    variable :varlink:`viscAh` (in m\ :sup:`2`\ s\ :sup:`--1`). The
-    vertical eddy viscosity coefficient is specified through the
-    variable :varlink:`viscAz` (in m\ :sup:`2`\ s\ :sup:`--1`) for the
-    ocean and :varlink:`viscAp` (in Pa\ :sup:`2`\ s\ :sup:`--1`) for the
-    atmosphere. The vertical diffusive fluxes can be computed implicitly
-    by setting the logical variable :varlink:`implicitViscosity` to
-    ``.TRUE.``. In addition, biharmonic mixing can be added as well
-    through the variable :varlink:`viscA4` (in
-    m\ :sup:`4`\ s\ :sup:`--1`). On a spherical polar grid, you
-    might also need to set the variable :varlink:`cosPower` which is set to 0
-    by default and which represents the power of cosine of latitude to
-    multiply viscosity. Slip or no-slip conditions at lateral and bottom
-    boundaries are specified through the logical variables
-    :varlink:`no_slip_sides` and :varlink:`no_slip_bottom`. If set to
-    ``.FALSE.``, free-slip boundary conditions are applied. If no-slip
-    boundary conditions are applied at the bottom, a bottom drag can be
-    applied as well. Two forms are available: linear (set the variable
-    :varlink:`bottomDragLinear` in [r]/s, where [r] is the dimension of the vertical coordinate)
-    and quadratic (set the variable
-    :varlink:`bottomDragQuadratic`, [r]/m).
+The lateral eddy viscosity coefficient is specified through the
+variable :varlink:`viscAh` (in m\ :sup:`2`\ s\ :sup:`--1`). The
+vertical eddy viscosity coefficient is specified through the
+variable :varlink:`viscAr` (in [r]\ :sup:`2`\ s\ :sup:`--1`,
+where [r] is the dimension of the vertical coordinate).
+In addition, biharmonic mixing can be added as well
+through the variable :varlink:`viscA4` (in
+m\ :sup:`4`\ s\ :sup:`--1`). On a spherical polar grid, you
+might decide to set the variable :varlink:`cosPower` which is set to 0
+by default and which represents the power of cosine of latitude to
+multiply viscosity. 
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscAh`                      | PARM01    | 0.0E+00                                          | lateral eddy viscosity (m\ :sup:`2`\ /s)                                                                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscAhD`                     | PARM01    | :varlink:`viscAh`                                | lateral eddy viscosity acts on divergence part (m\ :sup:`2`\ /s)                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscAhZ`                     | PARM01    | :varlink:`viscAh`                                | lateral eddy viscosity acts on vorticity part (zeta points) (m\ :sup:`2`\ /s)                           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscAhW`                     | PARM01    | :varlink:`viscAhD`                               | lateral eddy viscosity no effect hydrostatic (m\ :sup:`2`\ /s)                                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscAhDfile`                 | PARM05    | ‘ ‘                                              | filename for 3D specification of lateral eddy viscosity (divergence part) (m\ :sup:`2`\ /s)             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscAhZfile`                 | PARM05    | ‘ ‘                                              | filename for 3D specification of lateral eddy viscosity (vorticity part, zeta points)                   |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscAhGrid`                  | PARM01    | 0.0E+00                                          | grid-dependent lateral eddy viscosity (non-dim.)                                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscAhMax`                   | PARM01    | 1.0E+21                                          | maximum lateral eddy (grid-dependent) viscosity (m\ :sup:`2`\ /s)                                       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscAhGridMax`               | PARM01    | 1.0E+21                                          | maximum lateral eddy (grid-dependent) viscosity (non-dim.)                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscAhGridMin`               | PARM01    | 0.0E+00                                          | minimum lateral eddy (grid-dependent) viscosity (non-dim.)                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscAhReMax`                 | PARM01    | 0.0E+00                                          | minimum lateral eddy viscosity based on Reynolds # (non-dim.)                                           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscC2leith`                 | PARM01    |0.0E+00                                           | Leith harmonic viscosity factor ( on grad(vort), non-dim.)                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscC2leithD`                | PARM01    |0.0E+00                                           | Leith harmonic viscosity factor ( on grad(div), non-dim.)                                               |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscC2smag`                  | PARM01    |0.0E+00                                           | Smagorinsky harmonic viscosity factor (non-dim.)                                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscA4`                      | PARM01    | 0.0E+00                                          | lateral biharmonic viscosity (m\ :sup:`4`\ /s)                                                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscA4D`                     | PARM01    | :varlink:`viscA4`                                | lateral biharmonic visc. acts on diverg. part (m\ :sup:`4`\ /s)                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscA4Z`                     | PARM01    | :varlink:`viscA4`                                | lateral biharmonic visc. acts on vorticity part (zeta points) (m\ :sup:`4`\ /s)                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscA4W`                     | PARM01    | :varlink:`viscA4D`                               | lateral biharmonic visc. no effect hydrostatic (m\ :sup:`4`\ /s)                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscA4Dfile`                 | PARM05    | ‘ ‘                                              | filename for 3D specification of lateral biharmonic visc. (divergence part)  (m\ :sup:`4`\ /s)          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscA4Zfile`                 | PARM05    | ‘ ‘                                              | filename for 3D specification of lateral biharmonic visc. (vorticity part, zeta points)                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscA4Grid`                  | PARM01    | 0.0E+00                                          | grid dependent biharmonic viscosity (non-dim.)                                                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscA4Max`                   | PARM01    | 1.0E+21                                          | maximum biharmonic (grid-dependent) viscosity (m\ :sup:`4`\ /s)                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscA4GridMax`               | PARM01    | 1.0E+21                                          | maximum biharmonic (grid-dependent) viscosity (non-dim.)                                                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscA4GridMin`               | PARM01    | 0.0E+00                                          | minimum biharmonic (grid-dependent) viscosity (mon-dim.)                                                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscA4ReMax`                 | PARM01    | 0.0E+00                                          | minimum biharmonic viscosity based on Reynolds # (non-dim.)                                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscC4leith`                 | PARM01    |0.0E+00                                           | Leith biharmonic viscosity factor (on grad(vort), non-dim.)                                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscC4leithD`                | PARM01    |0.0E+00                                           | Leith biharmonic viscosity factor (on grad(div), non-dim.)                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscC4smag`                  | PARM01    |0.0E+00                                           | Smagorinsky biharmonic viscosity factor (non-dim.)                                                      |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`useFullLeith`                | PARM01    | F                                                | use full form of Leith viscosities flag                                                                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`useSmag3D`                   | PARM01    | F                                                | use isotropic 3D Smagorinsky harmonic viscosities flag                                                  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`smag3D_coeff`                | PARM01    | 1.0E-02                                          | Isotropic 3D Smagorinsky coefficient (non-dim.)                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`useStrainTensionVisc`        | PARM01    | F                                                | flag to use strain-tension form of viscous operator                                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`useAreaViscLength`           | PARM01    | F                                                | flag to use area for viscous :math:`L^2` instead of harmonic mean of :math:`{L_x}^2, {L_y}^2`           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`cosPower`                    | PARM01    | 0.0E+00                                          | power law for cos(lat) factor for viscosity (also affects tracer diffusivity)                           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscAr`                      | PARM01    | 0.0E+00                                          | vertical eddy viscosity ([r]\ :sup:`2`\ /s)                                                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`viscArNr`                    | PARM01    | 0.0E+00                                          | vertical profile of vertical eddy viscosity ([r]\ :sup:`2`\ /s)                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`pCellMix_viscAr`             | PARM04    | :varlink:`viscArNr`                              | vertical viscosity for too thin partial-cell ([r]\ :sup:`2`\ /s)                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
+
+Sidewall/Bottom Dissipation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Slip or no-slip conditions at lateral and bottom
+boundaries are specified through the logical variables
+:varlink:`no_slip_sides` and :varlink:`no_slip_bottom`. If set to
+``.FALSE.``, free-slip boundary conditions are applied. If no-slip
+boundary conditions are applied at the bottom, a bottom drag can be
+applied as well. Two forms are available: linear (set the variable
+:varlink:`bottomDragLinear` in [r]/s, )
+and quadratic (set the variable
+:varlink:`bottomDragQuadratic`, [r]/m).
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`no_slip_sides`               | PARM01    | T                                                | viscous BCs: no-slip sides                                                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`sideDragFactor`              | PARM01    | 2.0E+00                                          | side-drag scaling factor (2.0=full drag) (non-dim.)                                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`no_slip_bottom`              | PARM01    | T                                                | viscous BCs: no-slip bottom                                                                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`bottomDragLinear`            | PARM01    | 0.0E+00                                          | linear bottom-drag coefficient ([r]/s)                                                                  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`bottomDragQuadratic`         | PARM01    | 0.0E+00                                          | quadratic bottom-drag coefficient ([r]/m)                                                               |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`selectBotDragQuadr`          | PARM01    | 0 (if used)                                      | select quadratic bottom drag discretization option (0-2)                                                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`selectImplicitDrag`          | PARM01    | 0                                                | top/bottom drag implicit treatment options (0-2, 0=explicit)                                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`bottomVisc_pCell`            | PARM01    | F                                                | account for partial-cell in bottom viscosity (using :varlink:`no_slip_bottom`)                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
 
 .. _C-D_scheme:
 
 C-D Scheme
-     
+~~~~~~~~~~     
 
-    If you run at a sufficiently coarse resolution, you might choose to enable the
-    C-D scheme for the computation of the Coriolis terms. The
-    variable :varlink:`tauCD`, which represents the C-D scheme coupling
-    timescale (in s) needs to be set.
+If you run at a sufficiently coarse resolution, you might choose to enable the
+C-D scheme for the computation of the Coriolis terms. The
+variable :varlink:`tauCD`, which represents the C-D scheme coupling
+timescale (in seconds) needs to be set.
 
-
-
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`momStepping`            | PARM01 | T                             | momentum equation time-stepping on/off flag                                                        |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`momViscosity`           | PARM01 | T                             | momentum friction terms on/off flag                                                                |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`momAdvection`           | PARM01 | T                             | advection of momentum on/off flag                                                                  |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`momForcing`             | PARM01 | T                             | external forcing of momentum on/off flag                                                           |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`momPressureForcing`     | PARM01 | T                             | pressure term in momentum equation on/off flag                                                     |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`momTidalForcing`        | PARM01 | T                             | tidal forcing of momentum equation on/off flag (requires tidal forcing files)                      |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`metricTerms`            | PARM01 | T                             | include metric terms on/off flag (spherical polar or curvilinear grid)                             |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`momImplVertAdv`         | PARM01 | F                             | momentum implicit vertical advection on/off flag                                                   |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`implicitViscosity`      | PARM01 | F                             | implicit vertical viscosity on/off flag                                                            |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`useCoriolis`            | PARM01 | T                             | include Coriolis terms on/off flag                                                                 |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`use3dCoriolis`          | PARM01 | T                             | include reciprocal (aka 3D) Coriolis terms on/off flag                                             |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`useCDscheme`            | PARM01 | F                             | use C-D scheme for Coriolis terms on/off flag                                                      |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`useJamartWetPoints`     | PARM01 | F                             | use Jamart & Ozer ’86 wetpoints method for (boundary) Coriolis terms on/off flag                   |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| useEnergyConservingCoriolis       | PARM01 | F                             | use energy-conserving discret. of Coriolis terms (mom. fluxform) on/off flag                       |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`vectorInvariantMomentum`| PARM01 | F                             | use vector-invariant form of momentum equations flag                                               |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`useJamartMomAdv`        | PARM01 | F                             | use Jamart wetpoints method for vector invariant form mom. adv. terms on/off flag                  |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`selectVortScheme`       | PARM01 | 1                             | vorticity scheme (vector-invariant) options   (0-3)                                                |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`upwindVorticity`       | PARM01 | F                             | bias interpolation of vorticity in the Coriolis term (vector invariant) on/off flag                |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`useAbsVorticity`       | PARM01 | F                             | use :math:`f + \zeta` in Coriolis terms (vector invariant) on/off flag                             |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`highOrderVorticity`    | PARM01 | F                             | use 3rd/4th order interp. of vorticity (vector invariant) on/off flag                              |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`upwindShear`           | PARM01 | F                             | use 1st order upwind for vertical advection (vector invariant) on/off flag                         |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`selectKEscheme`        | PARM01 | 0                             | kinetic energy computation (vector invariant) options  (-1 to 3)                                   |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-|                                   |        |                               |                                                                                                    |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`no_slip_sides`          | PARM01 | T                             | viscous BCs: no-slip sides                                                                         |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`sideDragFactor`         | PARM01 | 2.0E+00                       | side-drag scaling factor (2.0=full drag) ( non-dim. )                                              |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`no_slip_bottom`         | PARM01 | T                             | viscous BCs: no-slip bottom                                                                        |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`bottomDragLinear`       | PARM01 | 0.0E+00                       | linear bottom-drag coefficient ( [r]/s )                                                           |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`bottomDragQuadratic`    | PARM01 | 0.0E+00                       | quadratic bottom-drag coefficient ( [r]/m )                                                        |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`selectBotDragQuadr`     | PARM01 | 0 (if used)                   | select quadratic bottom drag discret. option                                                       |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`selectImplicitDrag`     | PARM01 | 0                             | top/bottom drag implicit treatment options (0-2, 0=explicit)                                       |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`bottomVisc_pCell`       | PARM01 | F                             | account for partial-cell in bottom viscosity (using :varlink:`no_slip_bottom`)                     |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-|                                   |        |                               |                                                                                                    |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`rhoConst`               | PARM01 | :varlink:`rhonil`             | vertically constant reference density (Boussinesq) ( kg/m\ :sup:`3` )                              |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`gravity`                | PARM01 | 9.81E+00                      | gravitational acceleration ( m/s\ :sup:`2` )                                                       |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`gBaro`                  | PARM01 | :varlink:`gravity`            | gravity constant in barotropic equation ( m/s\ :sup:`2` )                                          |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`nh_Am2`                 | PARM01 | 1.0E+00                       | non-hydrostatic terms scaling factor                                                               | 
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-|                                   |        |                               |                                                                                                    |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscAh`                 | PARM01 | 0.0E+00                       | lateral eddy viscosity ( m\ :sup:`2`\ /s )                                                         |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscAhD`                | PARM01 | :varlink:`viscAh`             | lateral eddy viscosity acts on divergence part ( m\ :sup:`2`\ /s )                                 |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscAhZ`                | PARM01 | :varlink:`viscAh`             | lateral eddy viscosity acts on vorticity part ( m\ :sup:`2`\ /s )                                  |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscAhW`                | PARM01 | :varlink:`viscAhD`            | lateral eddy viscosity no effect hydrostatic ( m\ :sup:`2`\ /s )                                   |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscAhGrid`             | PARM01 | 0.0E+00                       | grid-dependent lateral eddy viscosity ( non-dim. )                                                 |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscAhMax`              | PARM01 | 1.0E+21                       | maximum lateral eddy (grid-dependent) viscosity ( m\ :sup:`2`\ /s )                                |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscAhGridMax`          | PARM01 | 1.0E+21                       | maximum lateral eddy (grid-dependent) viscosity ( non-dim. )                                       |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscAhGridMin`          | PARM01 | 0.0E+00                       | minimum lateral eddy (grid-dependent) viscosity ( non-dim. )                                       |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscAhReMax`            | PARM01 | 0.0E+00                       | minimum lateral eddy viscosity based on Reynolds # ( non-dim. )                                    |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscC2leith`            | PARM01 |0.0E+00                        | Leith harmonic viscosity factor ( on grad(vort), non-dim. )                                        |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscC2leithD`           | PARM01 |0.0E+00                        | Leith harmonic viscosity factor ( on grad(div), non-dim. )                                         |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscC2smag`             | PARM01 |0.0E+00                        | Smagorinsky harmonic viscosity factor (non-dim.)                                                   |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscA4`                 | PARM01 | 0.0E+00                       | lateral biharmonic viscosity ( m\ :sup:`4`\ /s )                                                   |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscA4D`                | PARM01 | :varlink:`viscA4`             | lateral biharmonic visc. acts on diverg. part ( m\ :sup:`2`\ /s )                                  |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscA4Z`                | PARM01 | :varlink:`viscA4`             | lateral biharmonic visc. acts on vorticity part ( m\ :sup:`2`\ /s )                                |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscA4W`                | PARM01 | :varlink:`viscA4D`            | lateral biharmonic visc. no effect hydrostatic ( m\ :sup:`2`\ /s )                                 |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscA4Grid`             | PARM01 | 0.0E+00                       | grid dependent biharmonic viscosity ( non-dim. )                                                   |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscA4Max`              | PARM01 | 1.0E+21                       | maximum biharmonic (grid-dependent) viscosity ( m\ :sup:`4`\ /s )                                  |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscA4GridMax`          | PARM01 | 1.0E+21                       | maximum biharmonic (grid-dependent) viscosity ( non-dim. )                                         |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscA4GridMin`          | PARM01 | 0.0E+00                       | minimum biharmonic (grid-dependent) viscosity ( non-dim. )                                         |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscA4ReMax`            | PARM01 | 0.0E+00                       | minimum biharmonic viscosity based on Reynolds # ( non-dim. )                                      |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscC4leith`            | PARM01 |0.0E+00                        | Leith biharmonic viscosity factor ( on grad(vort), non-dim. )                                      |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscC4leithD`           | PARM01 |0.0E+00                        | Leith biharmonic viscosity factor ( on grad(div), non-dim. )                                       |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscC4smag`             | PARM01 |0.0E+00                        | Smagorinsky biharmonic viscosity factor (non-dim.)                                                 |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`useFullLeith`           | PARM01 | F                             | use full form of Leith viscosities flag                                                            |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`useSmag3D`              | PARM01 | F                             | use isotropic 3D Smagorinsky harmonic viscosities flag                                             |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`smag3D_coeff`           | PARM01 | 1.0E-02                       | Isotropic 3D Smagorinsky coefficient ( non-dim. )                                                  |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`useStrainTensionVisc`   | PARM01 | F                             | flag to use strain-tension form of viscous operator                                                |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`useAreaViscLength`      | PARM01 | F                             | flag to use area for viscous :math:`L^2` instead of harmonic mean of :math:`{L_x}^2, {L_y}^2`      |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`cosPower`               | PARM01 | 0.0E+00                       | power law for cos(lat) factor for viscosity and diffusivity                                        |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscAr`                 | PARM01 | 0.0E+00                       | vertical eddy viscosity ( units of [r]\ :sup:`2`\ /s )                                             |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-| :varlink:`viscArNr`               | PARM01 | 0.0E+00                       | vertical profile of vertical eddy viscosity ( units of [r]\ :sup:`2`\ /s )                         |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-|                                   |        |                               |                                                                                                    |
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
-+-----------------------------------+--------+-------------------------------+----------------------------------------------------------------------------------------------------+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`useCDscheme`                 | PARM01    | F                                                | use C-D scheme for Coriolis terms on/off flag                                                           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`tauCD`                       | PARM03    | :varlink:`deltaTMom`                             | C-D scheme coupling timescale (s)                                                                       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`rCD`                         | PARM03    | 1.0E+00 - :varlink:`deltaTMom`/:varlink:`tauCD`  | C-D scheme normalized coupling parameter                                                                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
 
+Other Parameters
+~~~~~~~~~~~~~~~~
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`rhoConst`                    | PARM01    | :varlink:`rhonil`                                | vertically constant reference density (Boussinesq) (kg/m\ :sup:`3`)                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`gravity`                     | PARM01    | 9.81E+00                                         | gravitational acceleration (m/s\ :sup:`2`)                                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`gravityFile`                 | PARM01    | ‘ ‘                                              | filename for 1D gravity vertical profile (m/s\ :sup:`2`)                                                | 
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`gBaro`                       | PARM01    | :varlink:`gravity`                               | gravity constant in barotropic equation (m/s\ :sup:`2`)                                                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`nh_Am2`                      | PARM01    | 1.0E+00                                          | non-hydrostatic terms scaling factor                                                                    | 
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
 
 
 Parameters: Tracer Equations
 ----------------------------
 
-This section covers the tracer equations i.e. the potential temperature
+This section covers the tracer equations, i.e., the potential temperature
 equation and the salinity (for the ocean) or specific humidity (for the
-atmosphere) equation. As for the momentum equations, we only describe
-for now the parameters that you are likely to change. The logical
-variables :varlink:`tempAdvection`, :varlink:`tempForcing`, and
+atmosphere) equation. 
+
+
+Configuration
+~~~~~~~~~~~~~
+
+The logical variables :varlink:`tempAdvection`,  and
 :varlink:`tempStepping` allow you to turn on/off terms in the temperature
-equation (same thing for salinity or specific humidity with variables
-:varlink:`saltAdvection` etc.). These variables are all
-assumed here to be set to ``.TRUE.``. 
+equation (similarly for salinity or specific humidity with variables
+:varlink:`saltAdvection` etc.). These variables all
+default to a value of ``.TRUE.``.  The vertical diffusive
+fluxes can be computed implicitly by setting the logical variable
+:varlink:`implicitDiffusion` to ``.TRUE.``. 
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`tempStepping`                | PARM01    | T                                                | temperature equation time-stepping on/off flag                                                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`tempAdvection`               | PARM01    | T                                                | advection of temperature on/off flag                                                                    |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`tempAdvScheme`               | PARM01    | 2                                                | temp. horiz. advection scheme selector                                                                  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`tempVertAdvScheme`           | PARM01    | :varlink:`tempAdvScheme`                         | temp. vert. advection scheme selector                                                                   |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`tempImplVertAdv`             | PARM01    | F                                                | temp. implicit vert. advection on/off flag                                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`allowFreezing`               | PARM01    | F                                                | limit (ocean) temperature at surface to >= -1.9\ :sup:`o`\ C                                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`addFrictionHeating`          | PARM01    | F                                                | include frictional heating in temperature equation on/off flag                                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`saltStepping`                | PARM01    | T                                                | salinity equation time-stepping on/off flag                                                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`saltAdvection`               | PARM01    | T                                                | advection of salinity on/off flag                                                                       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`saltAdvScheme`               | PARM01    | 2                                                | salinity horiz. advection scheme selector                                                               |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`saltVertAdvScheme`           | PARM01    | :varlink:`saltAdvScheme`                         | salinity vert.  advection scheme selector                                                               |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`saltImplVertAdv`             | PARM01    | F                                                | salinity implicit vert. advection on/off flag                                                           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`implicitDiffusion`           | PARM01    | F                                                | implicit vertical diffusion on/off flag                                                                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`interDiffKr_pCell`           | PARM04    | F                                                | account for partial-cell in interior vert. diffusion on/off flag                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`linFSConserveTr`             | PARM01    | T                                                | correct source/sink of tracer using linear free surface on/off flag                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`doAB_onGtGs`                 | PARM03    | T                                                | apply Adams-Bashforth on tendencies (rather than on T,S)                                                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
 
 Initialization
-     
+~~~~~~~~~~~~~~
 
-    The initial tracer data can be contained in the binary files
-    :varlink:`hydrogThetaFile` and :varlink:`hydrogSaltFile`. These files should
-    contain 3D data ordered in an (x,y,r) fashion with k=1 as the first
-    vertical level. If no file names are provided, the tracers are then
-    initialized with the values of :varlink:`tRef` and :varlink:`sRef` mentioned :ref:`above <parms-eos>`.
-    In this case, the initial tracer
-    data are uniform in x and y for each depth level.
+The initial tracer data can be contained in the binary files
+:varlink:`hydrogThetaFile` and :varlink:`hydrogSaltFile`. These files should
+contain 3D data ordered in an (x,y,r) fashion with k=1 as the first
+vertical level. If no file names are provided, the tracers are then
+initialized with the values of :varlink:`tRef` and :varlink:`sRef` mentioned :ref:`above <parms-eos>`.
+In this case, the initial tracer data are uniform in :math:`x` and :math:`y` for each depth level.
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`hydrogThetaFile`             | PARM05    | ‘ ‘                                              | filename for 3D specification of initial potential temperature (:sup:`o`\ C)                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`hydrogSaltFile`              | PARM05    | ‘ ‘                                              | filename for 3D specification of initial salinity (psu or g/kg)                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`maskIniTemp`                 | PARM05    | T                                                | apply (center-point) mask to initial hydrographic theta data on/off flag                                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`maskIniSalt`                 | PARM05    | T                                                | apply (center-point) mask to initial hydrographic salinity on/off flag                                  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`checkIniTemp`                | PARM05    | T                                                | check if initial theta (at wet-point) identically zero on/off flag                                      |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`checkIniSalt`                | PARM05    | T                                                | check if initial salinity (at wet-point) identically zero on/off flag                                   |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
 Forcing
-     
+~~~~~~~     
 
-    This part is more relevant for the ocean, the procedure for the
-    atmosphere not being completely stabilized at the moment.
+This part is more relevant for the ocean, the procedure for the
+atmosphere not being completely stabilized at the moment.
 
-    A combination of fluxes data and relaxation terms can be used for
-    driving the tracer equations. For potential temperature, heat flux
-    data (in W/m\ :sup:`2`) can be stored in the 2D binary file
-    :varlink:`surfQfile`. Alternatively or in addition, the forcing can be
-    specified through a relaxation term. The SST data to which the model
-    surface temperatures are restored to are supposed to be stored in
-    the 2D binary file :varlink:`thetaClimFile`. The corresponding relaxation
-    time scale coefficient is set through the variable
-    :varlink:`tauThetaClimRelax` (in s). The same procedure applies for
-    salinity with the variable names :varlink:`EmPmRfile`, :varlink:`saltClimFile`,
-    and :varlink:`tauSaltClimRelax` for freshwater flux (in m/s) and surface
-    salinity (in ppt) data files and relaxation time scale coefficient
-    (in s), respectively. Also for salinity, if the CPP key
-    ``USE_NATURAL_BCS`` is turned on, natural boundary conditions are
-    applied, i.e., when computing the surface salinity tendency, the
-    freshwater flux is multiplied by the model surface salinity instead
-    of a constant salinity value.
+A combination of fluxes data and relaxation terms can be used for
+driving the tracer equations. For potential temperature, heat flux
+data (in W/m\ :sup:`2`) can be stored in the 2D binary file
+:varlink:`surfQnetfile`. Alternatively or in addition, the forcing can be
+specified through a relaxation term. The SST data to which the model
+surface temperatures are restored to are supposed to be stored in
+the 2D binary file :varlink:`thetaClimFile`. The corresponding relaxation
+time scale coefficient is set through the variable
+:varlink:`tauThetaClimRelax` (in seconds). The same procedure applies for
+salinity with the variable names :varlink:`EmPmRfile`, :varlink:`saltClimFile`,
+and :varlink:`tauSaltClimRelax` for freshwater flux (in m/s) and surface
+salinity (in psu or g/kg) data files and relaxation time scale coefficient
+(in seconds), respectively. 
 
-    As for the other input files, the precision with which to read the
-    data is controlled by the variable :varlink:`readBinaryPrec`.
-    Time-dependent, periodic forcing can be applied as well following
-    the same procedure used for the wind forcing data (see :ref:`above <periodic_forcing_expl>`).
 
-Diffusion
-     
 
-    Lateral eddy diffusivities for temperature and salinity/specific
-    humidity are specified through the variables :varlink:`diffKhT` and
-    :varlink:`diffKhS` (in m\ :sup:`2`\ /s). Vertical eddy diffusivities are
-    specified through the variables :varlink:`diffKrT` and :varlink:`diffKrS` (in
-    m\ :sup:`2`\ /s using z-coordinates and Pa\ :sup:`2`\ /s using p-coordinates). The vertical diffusive
-    fluxes can be computed implicitly by setting the logical variable
-    :varlink:`implicitDiffusion` to ``.TRUE.``. In addition, biharmonic
-    diffusivities can be specified as well through the coefficients
-    :varlink:`diffK4T` and :varlink:`diffK4S` (in m\ :sup:`4`\ /s). Note that the
-    cosine power scaling (specified through :varlink:`cosPower`; see :ref:`above <mom_dissip>`)
-    is applied to the tracer diffusivities
-    (Laplacian and biharmonic) as well. The Gent and McWilliams
-    parameterization for oceanic tracers is described in the package
-    section. Finally, note that tracers can be also subject to Fourier
-    and Shapiro filtering (see the corresponding section on these
-    filters).
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`tempForcing`                 | PARM01    | T                                                | external forcing of temperature forcing on/off flag                                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`surfQnetFile`                | PARM05    | ‘ ‘                                              | filename for 2D specification of (surface, +=upward) net total heat flux (W/m\ :sup:`2`)                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`surfQswFile`                 | PARM05    | ‘ ‘                                              | filename for 2D specification of (surface, +=upward) net shortwave flux (W/m\ :sup:`2`)                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`tauThetaClimRelax`           | PARM03    | 0.0E+00                                          | potential temperature (surface) relaxation time scale (s)                                               |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`lambdaThetaFile`             | PARM05    | ‘ ‘                                              | filename for 2D specification of inverse potential temp. (surface) relaxation time scale (1/s)          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`ThetaClimFile`               | PARM05    | ‘ ‘                                              | filename for specification of (surface) potential temperature relaxation values (:sup:`o`\ C)           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`balanceThetaClimRelax`       | PARM01    | F                                                | subtract global mean temp. relaxation every time step on/off flag                                       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`balanceQnet`                 | PARM01    | F                                                | subtract global mean Qnet every time step on/off flag                                                   |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`geothermalFile`              | PARM05    | ‘ ‘                                              | filename for 2D specification of geothermal heating flux through bottom (W/m\ :sup:`2`)                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`temp_EvPrRn`                 | PARM01    | UNSET                                            | temperature of rain and evaporated water (unset, use local temp.) (:sup:`o`\ C)                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`saltForcing`                 | PARM01    | T                                                | external forcing of salinity forcing on/off flag                                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`convertFW2Salt`              | PARM01    | 3.5E+01 (-1 if :varlink:`useRealFreshWaterFlux`) | salinity used to convert freshwater flux to salt flux (-1=use local S) (psu or g/kg)                    |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`EmPmRFile`                   | PARM05    | ‘ ‘                                              | filename for 2D specification of (surface, +=upward) net freshwater flux (m/s)                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`saltFluxFile`                | PARM05    | ‘ ‘                                              | filename for 2D specification of (surface, +=upward) salt flux (from seaice) (psu.kg/m\ :sup:`2`\/s)    |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`tauSaltClimRelax`            | PARM03    | 0.0E+00                                          | salinity (surface) relaxation time scale (s)                                                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`lambdaSaltFile`              | PARM05    | ‘ ‘                                              | filename for 2D specification of inverse salinity (surface) relaxation time scale (1/s)                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`SaltClimFile`                | PARM05    | ‘ ‘                                              | filename for specification of (surface) salinity relaxation values (psu or g/kg)                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`balanceSaltClimRelax`        | PARM01    | F                                                | subtract global mean salt relaxation every time step on/off flag                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`balanceEmPmR`                | PARM01    | F                                                | subtract global mean EmPmR every time step on/off flag                                                  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`salt_EvPrRn`                 | PARM01    | 0.0E+00                                          | salinity of rain and evaporated water (psu or g/kg)                                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`selectAddFluid`              | PARM01    | 0                                                | add fluid to ocean interior options (-1, 0=off, or 1)                                                   |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`temp_addMass`                | PARM01    | :varlink:`temp_EvPrRn`                           | temp. of added or removed (interior) water (:sup:`o`\ C)                                                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`salt_addMass`                | PARM01    | :varlink:`salt_EvPrRn`                           | salinity of added or removed (interior) water (:sup:`o`\ C)                                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`addMassFile`                 | PARM05    | ‘ ‘                                              | filename for 3D specification of mass source/sink (+=source, kg/s)                                      |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`balancePrintMean`            | PARM01    | F                                                | print subtracted balancing means to STDOUT on/off flag                                                  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`latBandClimRelax`            | PARM03    | whole domain                                     | relaxation to clim. equatorward of this latitude band is applied                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`tracForcingOutAB`            | PARM03    | 0                                                | =1: take T, S, and pTracer forcing out of Adams-Bashforth time stepping                                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
+
+
+Tracer Diffusivities
+~~~~~~~~~~~~~~~~~~~~     
+
+Lateral eddy diffusivities for temperature and salinity/specific
+humidity are specified through the variables :varlink:`diffKhT` and
+:varlink:`diffKhS` (in m\ :sup:`2`\ /s). Vertical eddy diffusivities are
+specified through the variables :varlink:`diffKrT` and :varlink:`diffKrS`.In addition, biharmonic
+diffusivities can be specified as well through the coefficients
+:varlink:`diffK4T` and :varlink:`diffK4S` (in m\ :sup:`4`\ /s). Note that the
+cosine power scaling (specified through :varlink:`cosPower`; see :ref:`above <mom_dissip>`)
+is applied to the tracer diffusivities
+(Laplacian and biharmonic) as well. The Gent and McWilliams
+parameterization for oceanic tracers is described in the package
+section.
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffKhT`                     | PARM01    | 0.0E+00                                          | Laplacian diffusivity of heat laterally (m\ :sup:`2`\ /s)                                               |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffK4T`                     | PARM01    | 0.0E+00                                          | biharmonic diffusivity of heat laterally (m\ :sup:`4`\ /s)                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffKrT`                     | PARM01    | 0.0E+00                                          | Laplacian diffusivity of heat vertically (m\ :sup:`2`\ /s)                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffKr4T`                    | PARM01    | 0.0E+00                                          | biharmonic diffusivity of heat vertically (m\ :sup:`2`\ /s)                                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffKrNrT`                   | PARM01    | 0.0E+00 at k=top                                 | vertical profile of vertical diffusivity of temp (m\ :sup:`2`\ /s)                                      |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`pCellMix_diffKr`             | PARM04    | :varlink:`diffKrNr`                              | vertical diff. for too thin partial-cell ([r]\ :sup:`2`\ /s)                                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffKhS`                     | PARM01    | 0.0E+00                                          | Laplacian diffusivity of salt laterally (m\ :sup:`2`\ /s)                                               |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffK4S`                     | PARM01    | 0.0E+00                                          | biharmonic diffusivity of salt laterally (m\ :sup:`4`\ /s)                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffKrS`                     | PARM01    | 0.0E+00                                          | Laplacian diffusivity of salt vertically (m\ :sup:`2`\ /s)                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffKr4S`                    | PARM01    | 0.0E+00                                          | biharmonic diffusivity of salt vertically (m\ :sup:`2`\ /s)                                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffKrNrS`                   | PARM01    | 0.0E+00 at k=top                                 | vertical profile of vertical diffusivity of salt (m\ :sup:`2`\ /s)                                      |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffKrFile`                  | PARM05    | ‘ ‘                                              | filename for 3D specification of vertical diffusivity (m\ :sup:`2`\ /s)                                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffKrBL79surf`              | PARM01    | 0.0E+00                                          | surface diffusivity for Bryan & Lewis 1979 (m\ :sup:`2`\ /s)                                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffKrBL79deep`              | PARM01    | 0.0E+00                                          | deep diffusivity for Bryan & Lewis 1979 (m\ :sup:`2`\ /s)                                               |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffKrBL79scl`               | PARM01    | 2.0E+02                                          | depth scale for Bryan & Lewis 1979 (m)                                                                  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffKrBL79Ho`                | PARM01    | -2.0E+03                                         | turning depth for Bryan & Lewis 1979 (m)                                                                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffKrBLEQsurf`              | PARM01    | 0.0E+00                                          | same as :varlink:`diffKrBL79surf` but at equator                                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffKrBLEQdeep`              | PARM01    | 0.0E+00                                          | same as :varlink:`diffKrBL79deep` but at equator                                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffKrBLEQscl`               | PARM01    | 2.0E+02                                          | same as :varlink:`diffKrBL79scl` but at equator                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diffKrBLEQHo`                | PARM01    | -2.0E+03                                         | same as :varlink:`diffKrBL79Ho` but at equator                                                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`BL79LatVary`                 | PARM01    | 30\ :math:`^{\circ}`                             | transition from diffKrBLEQ to diffKrBL79 parms at this latitude                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`cosPower`                    | PARM01    | 0.0E+00                                          | power law for cos(lat) factor for tracer diffusivity (also affects viscosity)                           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
 
 Ocean convection
-     
+~~~~~~~~~~~~~~~~     
 
-    Two options are available to parameterize ocean convection.
-    To use the first option, a convective adjustment scheme, you need to
-    set the variable :varlink:`cadjFreq`, which represents the frequency (in s)
-    with which the adjustment algorithm is called, to a non-zero value
-    (note, if :varlink:`cadjFreq` set to a negative value by the user, the model will set it to
-    the tracer time step). The second option is to parameterize
-    convection with implicit vertical diffusion. To do this, set the
-    logical variable :varlink:`implicitDiffusion` to ``.TRUE.`` and the real
-    variable :varlink:`ivdc_kappa` to a value (in m\ :sup:`2`\ /s) you wish
-    the tracer vertical diffusivities to have when mixing tracers
-    vertically due to static instabilities. Note that :varlink:`cadjFreq` and
-    :varlink:`ivdc_kappa` cannot both have non-zero value.
+Two options are available to parameterize ocean convection.
+To use the first option, a convective adjustment scheme, you need to
+set the variable :varlink:`cadjFreq`, which represents the frequency (in s)
+with which the adjustment algorithm is called, to a non-zero value
+(note, if :varlink:`cadjFreq` set to a negative value by the user, the model will set it to
+the tracer time step). The second option is to parameterize
+convection with implicit vertical diffusion. To do this, set the
+logical variable :varlink:`implicitDiffusion` to ``.TRUE.`` and the real
+variable :varlink:`ivdc_kappa` to a value (in m\ :sup:`2`\ /s) you wish
+the tracer vertical diffusivities to have when mixing tracers
+vertically due to static instabilities. Note that :varlink:`cadjFreq` and
+:varlink:`ivdc_kappa` cannot both have non-zero value.
 
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`ivdc_kappa`                  | PARM01    | 0.0E+00                                          | implicit vertical diffusivity for convection (m\ :sup:`2`\ /s)                                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`cAdjFreq`                    | PARM03    | 0                                                | frequency of convective adj. scheme; <0 sets :varlink:`deltaTclock` (s)                                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`hMixCriteria`               | PARM01    | -0.8E+00                                         | <0 :math:`\Delta T`: define ML depth using :math:`\Delta\rho = \Delta T*d\rho/dT` (:sup:`o`\ C);        |
+|                                        |           |                                                  | >1 define ML depth where local strat. exceeds mean strat. by this factor (non-dim.)                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`hMixSmooth`                 | PARM01    | 0.0E+00                                          | use this fraction of neighboring points (for smoothing) in ML calculation (0-1; 0=no smoothing)         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`tempStepping`           | PARM01 | T                         | temperature equation time-stepping on/off flag                            |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`tempAdvection`          | PARM01 | T                         | advection of temperature on/off flag                                      |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`tempAdvScheme`          | PARM01 | 2                         | temp. horiz. advection scheme selector                                    |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`tempVertAdvScheme`      | PARM01 | :varlink:`tempAdvScheme`  | temp. vert. advection scheme selector                                     |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`saltStepping`           | PARM01 | T                         | salinity equation time-stepping on/off flag                               |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`saltAdvection`          | PARM01 | T                         | advection of salinity on/off flag                                         |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`saltAdvScheme`          | PARM01 | 2                         | salinity horiz. advection scheme selector                                 |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`saltVertAdvScheme`      | PARM01 | :varlink:`saltAdvScheme`  | salinity vert.  advection scheme selector                                 |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`tempImplVertAdv`        | PARM01 | F                         | temp. implicit vert. advection on/off flag                                |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`saltImplVertAdv`        | PARM01 | F                         | salinity implicit vert. advection on/off flag                             |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`implicitDiffusion`      | PARM01 | F                         | implicit vertical diffusion on/off flag                                   |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`linFSConserveTr`        | PARM01 | T                         | correct source/sink of tracer using linear free surf on/off flag          |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-|                                   |        |                           |                                                                           |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`tempForcing`            | PARM01 | T                         | external forcing of temperature forcing on/off flag                       |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`saltForcing`            | PARM01 | T                         | external forcing of salinity forcing on/off flag                          |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`balanceQnet`            | PARM01 | F                         | subtract global mean Qnet every time step on/off flag                     |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`balanceThetaClimRelax`  | PARM01 | F                         | subtract global mean temp. relaxation every time step on/off flag         |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`balanceEmPmR`           | PARM01 | F                         | subtract global mean EmPmR every time step on/off flag                    |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`balanceSaltClimRelax`   | PARM01 | F                         | subtract global mean salt relaxation every time step on/off flag          |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`balancePrintMean`       | PARM01 | F                         | print subtracted balancing means to STDOUT on/off flag                    |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`addFrictionHeating`     | PARM01 | F                         | include frictional heating in temperature equation on/off flag            |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`temp_EvPrRn`            | PARM01 | UNSET                     | temp. of rain and evaporated water (unset, use local T) ( :sup:`o`\ C )   |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`temp_addMass`           | PARM01 | :varlink:`temp_EvPrRn`    | temp. of added or removed (interior) water ( :sup:`o`\ C )                |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`salt_EvPrRn`            | PARM01 | 0.0E+00                   | salinity of rain and evaporated water ( psu or g/kg )                     |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`salt_addMass`           | PARM01 | :varlink:`salt_EvPrRn`    | salinity of added or removed (interior) water ( :sup:`o`\ C )             |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-|                                   |        |                           |                                                                           |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffKhT`                | PARM01 | 0.0E+00                   | Laplacian diffusion of heat laterally ( m\ :sup:`2`\ /s )                 |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffK4T`                | PARM01 | 0.0E+00                   | biharmonic diffusion of heat laterally ( m\ :sup:`4`\ /s )                |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffKrT`                | PARM01 | 0.0E+00                   | Laplacian diffusion of heat vertically ( m\ :sup:`2`\ /s )                |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffKr4T`               | PARM01 | 0.0E+00                   | biharmonic diffusion of heat vertically ( m\ :sup:`2`\ /s )               |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffKrNrT`              | PARM01 | 0.0E+00 at k=top          | vertical profile of vertical diffusion of temp ( m\ :sup:`2`\ /s )        |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffKhS`                | PARM01 | 0.0E+00                   | Laplacian diffusion of salt laterally ( m\ :sup:`2`\ /s )                 |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffK4S`                | PARM01 | 0.0E+00                   | biharmonic diffusion of salt laterally ( m\ :sup:`4`\ /s  )               |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffKrS`                | PARM01 | 0.0E+00                   | Laplacian diffusion of salt vertically ( m\ :sup:`2`\ /s )                |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffKr4S`               | PARM01 | 0.0E+00                   | biharmonic diffusion of salt vertically ( m\ :sup:`2`\ /s )               |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffKrNrS`              | PARM01 | 0.0E+00 at k=top          | vertical profile of vertical diffusion of salt ( m\ :sup:`2`\ /s )        |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffKrBL79surf`         | PARM01 | 0.0E+00                   | surface diffusion for Bryan & Lewis 1979 ( m\ :sup:`2`\ /s )              |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffKrBL79deep`         | PARM01 | 0.0E+00                   | deep diffusion for Bryan & Lewis 1979 ( m\ :sup:`2`\ /s )                 |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffKrBL79scl`          | PARM01 | 2.0E+02                   | depth scale for Bryan & Lewis 1979 ( m )                                  |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffKrBL79Ho`           | PARM01 | -2.0E+03                  | turning depth for Bryan & Lewis 1979 ( m )                                |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffKrBLEQsurf`         | PARM01 | 0.0E+00                   | same as :varlink:`diffKrBL79surf` but at equator                          |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffKrBLEQdeep`         | PARM01 | 0.0E+00                   | same as :varlink:`diffKrBL79deep` but at equator                          |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffKrBLEQscl`          | PARM01 | 2.0E+02                   | same as :varlink:`diffKrBL79scl` but at equator                           |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`diffKrBLEQHo`           | PARM01 | -2.0E+03                  | same as :varlink:`diffKrBL79Ho` but at equator                            |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`BL79LatVary`            | PARM01 | 30\ :math:`^{\circ}`      | transition from diffKrBLEQ to diffKrBL79 parms at this latitude           |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`cosPower`               | PARM01 | 0.0E+00                   | power law for cos(lat) factor for viscosity and diffusivity               |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-|                                   |        |                           |                                                                           |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-| :varlink:`ivdc_kappa`             | PARM01 | 0.0E+00                   | implicit vertical diffusivity for convection ( m\ :sup:`2`\ /s )          |
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-+-----------------------------------+--------+---------------------------+---------------------------------------------------------------------------+
-
-
-
+.. _simulation_controls:
 
 Parameters: Simulation Controls
 -------------------------------
 
-The model ”clock” is defined by the variable :varlink:`deltaTClock` (in s)
-which determines the I/O frequencies and is used in tagging output.
-Typically, you will set it to the tracer time step for accelerated runs
-(otherwise it is simply set to the default time step :varlink:`deltaT`).
-Frequency of checkpointing and dumping of the model state are referenced
-to this clock (see :ref:`below <freq_of_output>`).
 
-Run Duration
-     
+Run Start and Duration
+~~~~~~~~~~~~~~~~~~~~~~     
 
-    The beginning of a simulation is set by specifying a start time (in s)
-    through the real variable :varlink:`startTime` or by specifying an
-    initial iteration number through the integer variable :varlink:`nIter0`. If
-    these variables are set to nonzero values, the model will look for a
-    ”pickup” file ``pickup.0000nIter0`` to restart the integration. The
-    end of a simulation is set through the real variable :varlink:`endTime` (in s).
-    Alternatively, you can specify instead the number of time steps
-    to execute through the integer variable :varlink:`nTimeSteps`.
+The beginning of a simulation is set by specifying a start time (in seconds)
+through the real variable :varlink:`startTime` or by specifying an
+initial iteration number through the integer variable :varlink:`nIter0`. If
+these variables are set to non-zero values, the model will look for a
+”pickup” file (by default, ``pickup.0000nIter0``) to restart the integration. The
+end of a simulation is set through the real variable :varlink:`endTime` (in seconds).
+Alternatively, one can instead specify the number of time steps
+to execute through the integer variable :varlink:`nTimeSteps`.
+Iterations are referenced to :varlink:`deltaTClock`, i.e., each iteration is :varlink:`deltaTClock` seconds of model time.
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`nIter0`                     | PARM03    | 0                                                | starting timestep iteration number for this integration                                                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`nTimeSteps`                 | PARM03    | 0                                                | number of (model clock) timesteps to execute                                                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`nTimeSteps_l2`              | PARM03    | 4                                                | number of inner timesteps to execute per timestep (openAD)                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`nEndIter`                   | PARM03    | 0                                                | run ending timestep iteration number (alternate way to prescribe :varlink:`nTimeSteps`)                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`baseTime`                    | PARM03    | 0.0E+00                                          | model base time corresponding to iteration 0 (s)                                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`startTime`                   | PARM03    | :varlink:`baseTime`                              | run start time for this integration (s) (alternate way to prescribe :varlink:`nIter0`)                  |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`endTime`                     | PARM03    | 0.0E+00                                          | run ending time (s) (with :varlink:`startTime`, alternate way to prescribe :varlink:`nTimeSteps`)       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
+Input/Output Files
+~~~~~~~~~~~~~~~~~~
+
+The precision with which to read binary data is
+controlled by the integer variable :varlink:`readBinaryPrec`,  which can take
+the value 32 (single precision) or 64 (double precision). Similarly, the precision with which
+to write binary data is controlled by the integer variable :varlink:`writeBinaryPrec`. 
+By default, MITgcm writes output (snapshots, diagnostics, and pickups) separately for individual tiles,
+leaving it to the user to reassemble these into global files, if needed (scripts are available in :filelink:`utils/`).
+There are two options however to have the model do this for you. Setting :varlink:`globalFiles` to ``.TRUE.`` should always work in a multi-threaded setup,
+but for `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ runs this will depend on the platform -- it requires simultaneous write access to a common file
+(permissible in typical `Lustre <https://en.wikipedia.org/wiki/Lustre_(file_system)>`_ setups, but not on many file systems).
+Alternatively, `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ runs can set :varlink:`useSingleCpuIO`
+to ``.TRUE.``, which should always work, but requires additional mpi-passing of data (and can create a writing bottleneck) and thus may result in slower execution. 
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`globalFiles`                | PARM01    | F                                                | write output “global” (=not per tile) files on/off flag                                                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`useSingleCpuIO`             | PARM01    | F                                                | only master MPI process does I/O (producing global output files)                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`the_run_name`               | PARM05    | ‘ ‘                                              | string identifying the name of the model "run" for meta files                                           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`readBinaryPrec`             | PARM01    | 32                                               | precision used for reading binary files (32 or 64)                                                      |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`writeBinaryPrec`            | PARM01    | 32                                               | precision used for writing binary files (32 or 64)                                                      |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`outputTypesInclusive`       | PARM03    | F                                                | allows writing of output files in multiple formats (i.e. :filelink:`pkg/mdsio` and  :filelink:`pkg/mnc`)|
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`rwSuffixType`               | PARM03    | 0                                                | controls the format of the :filelink:`pkg/mdsio` binary file “suffix” i.e. (0-4)                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`mdsioLocalDir`              | PARM05    | ‘ ‘                                              | if not blank, read-write all tiled files from/to this directory name (+4 digits processor-rank)         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
 
 .. _freq_of_output:
 
-Frequency of Output
+Frequency/Amount of Output
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    Real variables defining frequencies (in s) with which output files
-    are written on disk need to be set up. :varlink:`dumpFreq` controls the
-    frequency with which the instantaneous state of the model is saved.
-    :varlink:`chkPtFreq` and :varlink:`pchkPtFreq` control the output frequency of
-    rolling and permanent checkpoint files, respectively. In addition, time-averaged fields can be written out by
-    setting the variable :varlink:`taveFreq` (in s). The precision with which
-    to write the binary data is controlled by the integer variable
-    :varlink:`writeBinaryPrec` (set it to 32 or 64).
-
-Global Files
-
-    By default, MITgcm writes output (snapshots, diagnostics, and pickups) separately for individual tiles,
-    leaving it to the user to reassemble these into global files, if needed (scripts are available in :filelink:`utils/`).
-    There are two options however to have the model do this for you. Setting :varlink:`globalFiles` to ``.TRUE.`` should always work in a multi-threaded setup,
-    but for `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ runs this will depend on the platform -- it requires simultaneous write access to a common file
-    (permissible in typical `Lustre <https://en.wikipedia.org/wiki/Lustre_(file_system)>`_ setups, but not on many file systems).
-    Alternatively, `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ runs can set :varlink:`useSingleCpuIO`
-    to ``.TRUE.``, which should always work but requires additional passing of data (and can create a writing bottleneck) and thus may result in slower execution. 
-
-+-----------------------------------+--------+--------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`readBinaryPrec`        | PARM01 | 32                             | precision used for reading binary files (32 or 64)                                                 |
-+-----------------------------------+--------+--------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`writeBinaryPrec`       | PARM01 | 32                             | precision used for writing binary files (32 or 64)                                                 |
-+-----------------------------------+--------+--------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`globalFiles`           | PARM01 | F                              | write “global” (=not per tile) files                                                               |
-+-----------------------------------+--------+--------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`useSingleCpuIO`        | PARM01 | F                              | only master MPI process does I/O (producing global files)                                          |
-+-----------------------------------+--------+--------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`usePickupBeforeC54`    | PARM01 | F                              | start using old pickup format, from code < checkpoint54a                                           |
-+-----------------------------------+--------+--------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`debugMode`             | PARM01 | F                              | print statements flagged as debug messages on/off flag                                             |
-+-----------------------------------+--------+--------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`debugLevel`            | PARM01 | depends on :varlink:`debugMode`| level of printing of MITgcm activity messages/statistics (1-5)                                     |
-+-----------------------------------+--------+--------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`plotLevel`             | PARM01 | :varlink:`debugLevel`          | controls printing of field maps (higher -> more fields)                                            |
-+-----------------------------------+--------+--------------------------------+----------------------------------------------------------------------------------------------------+
-|  :varlink:`hMixCriteria`          | PARM01 | -0.8E+00                       | <0 :math:`\Delta T`: define ML depth using :math:`\Delta\rho = \Delta T*\alpha` ( :sup:`o`\ C )    |
-+-----------------------------------+--------+--------------------------------+----------------------------------------------------------------------------------------------------+
-|                                   |        |                                | >1 define ML depth where local strat. exceeds mean strat. by this factor ( non-dim )               |
-+-----------------------------------+--------+--------------------------------+----------------------------------------------------------------------------------------------------+
-+-----------------------------------+--------+--------------------------------+----------------------------------------------------------------------------------------------------+
+The frequency (in seconds) with which output files
+are written on disk needs to be specified. :varlink:`dumpFreq` controls the
+frequency with which the instantaneous state of the model is saved. :varlink:`monitorFreq`
+controls the frequency with which monitor output is dumped to the standard output file(s).
+The frequency of output is referenced to :varlink:`deltaTClock`.
 
 
-Parameters: Default Values
---------------------------
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`dumpFreq`                    | PARM03    | 0.0E+00                                          | interval to write model state/snapshot data (s)                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`adjdumpFreq`                 | PARM03    | 0.0E+00                                          | interval to write model state/snapshot data adjoint run (s)                                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`dumpInitAndLast`             | PARM03    | T                                                | write out initial and last iteration model state on/off flag                                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`diagFreq`                    | PARM03    | 0.0E+00                                          | interval to write additional intermediate (debugging cg2d/3d) output (s)                                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`monitorFreq`                 | PARM03    | lowest of other \*Freq parms                     | interval to write monitor output (s)                                                                    |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`adjMonitorFreq`              | PARM03    | 0.0E+00                                          | interval to write monitor output adjoint run (s)                                                        |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`monitorSelect`               | PARM03    | 2 (3 if fluid is water)                          | select group of monitor variables to output (1-3)                                                       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`debugLevel`                 | PARM01    | depends on :varlink:`debugMode`                  | level of printing of MITgcm activity messages/statistics (1-5)                                          |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`plotLevel`                  | PARM01    | :varlink:`debugLevel`                            | controls printing of field maps (higher -> more fields)                                                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-The CPP keys relative to the “numerical model” part of the code are all
-defined and set in the file :filelink:`CPP_OPTIONS.h <model/inc/CPP_OPTIONS.h>` in the directory
-:filelink:`model/inc/` or in one of the ``code`` directories of the case study
-experiments under :filelink:`verification/`. The model parameters are defined and
-declared in the file :filelink:`PARAMS.h <model/inc/PARAMS.h>` and their default values are
-set in the routine :filelink:`set_defaults.F <model/src/set_defaults.F>`. The default values can
-be modified in the namelist file ``data`` which needs to be located in the
-directory where you will run the model. The parameters are initialized
-in the routine :filelink:`ini_parms.F <model/src/ini_parms.F>`. Look at this routine to see in
-what part of the namelist the parameters are located. Here is a complete
-list of the model parameters related to the main model (namelist
-parameters for the packages are located in the package descriptions),
-their meaning, and their default values:
 
-+--------------------------------+---------------------+--------------------------------------------------------------------+
-| **Name**                       | **Value**           | **Description**                                                    |
-+--------------------------------+---------------------+--------------------------------------------------------------------+
-+--------------------------------+---------------------+--------------------------------------------------------------------+
-| :varlink:`fluidIsAir`          | F                   | fluid major constituent is air                                     |
-+--------------------------------+---------------------+--------------------------------------------------------------------+
-| :varlink:`fluidIsWater`        | T                   | fluid major constituent is water                                   |
-+--------------------------------+---------------------+--------------------------------------------------------------------+
-| :varlink:`usingPCoords`        | F                   | use pressure coordinates                                           |
-+--------------------------------+---------------------+--------------------------------------------------------------------+
-| :varlink:`usingZCoords`        | T                   | use z-coordinates                                                  |
-+--------------------------------+---------------------+--------------------------------------------------------------------+
-+--------------------------------+---------------------+--------------------------------------------------------------------+
 
-+-----------------------------------+-------------------------------+---------------------------------------------------+
-| **Name**                          | **Value**                     | **Description**                                   |
-+-----------------------------------+-------------------------------+---------------------------------------------------+
-+-----------------------------------+-------------------------------+---------------------------------------------------+
-+-----------------------------------+-------------------------------+---------------------------------------------------+
-+-----------------------------------+-------------------------------+---------------------------------------------------+
-| :varlink:`use3Dsolver`            | F                             | use 3-D pressure solver on/off flag               |
-+-----------------------------------+-------------------------------+---------------------------------------------------+
+Checkpoint-related Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-+-----------------------------------+---------------------+-------------------------------------------+
-| **Name**                          | **Value**           | **Description**                           |
-+-----------------------------------+---------------------+-------------------------------------------+
-+-----------------------------------+---------------------+-------------------------------------------+
-|  :varlink:`SadournyCoriolis`      | F                   | don’t document, obsolete                  |
-+-----------------------------------+---------------------+-------------------------------------------+
-|  :varlink:`freeSurfFac`           | 1.0E+00             | don’t doc implicit free surface factor    |
-+-----------------------------------+---------------------+-------------------------------------------+
-+-----------------------------------+---------------------+-------------------------------------------+
-|  :varlink:`useMultiDimAdvec`      | F                   | multi-dim advection is/is-not used        |
-+-----------------------------------+---------------------+-------------------------------------------+
-|  :varlink:`debLevA`               | 1                   | 1st level of debugging                    |
-+-----------------------------------+---------------------+-------------------------------------------+
-|  :varlink:`debLevB`               | 2                   | 2nd level of debugging                    |
-+-----------------------------------+---------------------+-------------------------------------------+
-|  :varlink:`nIter0`                | 0                   | run starting timestep number              |
-+-----------------------------------+---------------------+-------------------------------------------+
-|  :varlink:`nTimeSteps`            | 0                   | number of timesteps                       |
-+-----------------------------------+---------------------+-------------------------------------------+
-|  :varlink:`deltatTmom`            | 6.0E+01             | momentum equation timestep ( s )          |
-+-----------------------------------+---------------------+-------------------------------------------+
-|  :varlink:`deltaTfreesurf`        | 6.0E+01             | freeSurface equation timestep ( s )       |
-+-----------------------------------+---------------------+-------------------------------------------+
-|  :varlink:`dTtracerLev`           | 6.0E+01 at k=top    | tracer equation timestep ( s )            |
-+-----------------------------------+---------------------+-------------------------------------------+
-|  :varlink:`deltaTClock`           | 6.0E+01             | model clock timestep ( s )                |
-+-----------------------------------+---------------------+-------------------------------------------+
+:varlink:`chkPtFreq` and :varlink:`pchkPtFreq` control the output frequency of
+rolling and permanent checkpoint files, respectively. Frequency of checkpointing is referenced
+to :varlink:`deltaTClock`.
 
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| **Name**                            | **Value**                 | **Description**                                               |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`cAdjFreq`                 | 0.0E+00                   | convective adjustment interval ( s )                          |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`momForcingOutAB`          | 0                         | =1: take momentum forcing out of Adams-Bashforth              |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`tracForcingOutAB`         | 0                         | =1: take T,S,pTr forcing out of Adams-Bashforth               |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`momDissip_In_AB`          | T                         | put dissipation tendency in Adams-Bashforth                   |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`doAB_onGtGs`              | T                         | apply AB on tendencies (rather than on T,S)                   |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`abEps`                    | 1.0E-02                   | Adams-Bashforth-2 stabilizing weight                          |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`baseTime`                 | 0.0E+00                   | model base time ( s )                                         |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`startTime`                | 0.0E+00                   | run start time ( s )                                          |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`endTime`                  | 0.0E+00                   | integration ending time ( s )                                 |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`pChkPtFreq`               | 0.0E+00                   | permanent restart/checkpoint file interval ( s )              |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`chkPtFreq`                | 0.0E+00                   | rolling restart/checkpoint file interval ( s )                |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`pickup_write_mdsio`       | T                         | model I/O flag                                                |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`pickup_read_mdsio`        | T                         | model I/O flag                                                |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`pickup_write_immed`       | F                         | model I/O flag                                                |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`dumpFreq`                 | 0.0E+00                   | model state write out interval ( s )                          |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`dumpInitAndLast`          | T                         | write out initial and last iteration model state              |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`snapshot_mdsio`           | T                         | model I/O flag.                                               |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`monitorFreq`              | 6.0E+01                   | monitor output interval ( s )                                 |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`monitor_stdio`            | T                         | model I/O flag.                                               |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`externForcingPeriod`      | 0.0E+00                   | forcing period (s)                                            |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`externForcingCycle`       | 0.0E+00                   | period of the cycle (s)                                       |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`tauThetaClimRelax`        | 0.0E+00                   | relaxation time scale (s)                                     |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`tauSaltClimRelax`         | 0.0E+00                   | relaxation time scale (s)                                     |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`latBandClimRelax`         | 3.703701E+05              | maximum latitude where relaxation applied                     |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`usingCartesianGrid`       | T                         | Cartesian coordinates flag ( true / false )                   |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`usingSphericalPolarGrid`  | F                         | spherical coordinates flag ( true / false )                   |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`usingCylindricalGrid`     | F                         | spherical coordinates flag ( true / false )                   |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`Ro_SeaLevel`              | 0.0E+00                   | r(1) ( units of r )                                           |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`rkSign`                   | -1.0E+00                  | index orientation relative to vertical coordinate             |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`horiVertRatio`            | 1.0E+00                   | ratio on units : horizontal - vertical                        |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`drC`                      | 5.0E+03 at k=1            | center cell separation along Z axis ( units of r )            |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`drF`                      | 1.0E+04 at k=top          | cell face separation along Z axis ( units of r )              |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`delX`                     | 1.234567E+05 at i=east    | U-point spacing ( m - cartesian, degrees - spherical )        |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`delY`                     | 1.234567E+05 at j=1       | V-point spacing ( m - cartesian, degrees - spherical )        |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`ygOrigin`                 | 0.0E+00                   | South edge Y-axis origin (cartesian: m, spherical: deg.)      |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`xgOrigin`                 | 0.0E+00                   | West edge X-axis origin (cartesian: m, spherical: deg.)       |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`rSphere`                  | 6.37E+06                  | Radius ( ignored - cartesian, m - spherical )                 |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`xcoord`                   | 6.172835E+04 at i=1       | P-point X coord ( m - cartesian, degrees - spherical )        |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`ycoord`                   | 6.172835E+04 at j=1       | P-point Y coord ( m - cartesian, degrees - spherical )        |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`rcoord`                   | -5.0E+03 at k=1           | P-point r coordinate ( units of r )                           |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`rF`                       | 0.0E+00 at k=1            | W-interface r coordinate ( units of r )                       |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
-| :varlink:`dBdrRef`                  | 0.0E+00 at k=top          | vertical gradient of reference buoyancy [ (m/s/r)\ :sup:`2` ] |
-+-------------------------------------+---------------------------+---------------------------------------------------------------+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`pChkPtFreq`                  | PARM03    | 0.0E+00                                          | permanent restart/pickup checkpoint file write interval ( s )                                           |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`chkPtFreq`                   | PARM03    | 0.0E+00                                          | rolling restart/pickup checkpoint file write interval ( s )                                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`pickupSuff`                  | PARM03    | ‘ ‘                                              | force run to use pickups (even if nIter0=0) and read files with this suffix (10 char. max)              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`pickupStrictlyMatch`         | PARM03    | T                                                | force pickup (meta) file formats to exactly match (or terminate with error) on/off flag                 |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`writePickupAtEnd`            | PARM03    | F                                                | write a (rolling) pickup file at run completion on/off flag                                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`usePickupBeforeC54`         | PARM01    | F                                                | start using old pickup format, from code < checkpoint54a                                                |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`startFromPickupAB2`         | PARM03    | F                                                | using Adams-Bashforth-3, start using Adams-Bashforth-2 pickup format                                    |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+|  :varlink:`adTapeDir`                  | PARM05    | ‘ ‘                                              | if not blank, read-write read-write checkpointing files from/to this directory name                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-+-------------------+--------------------------------+-------------------------------------------------------+
-| **Name**          | **Value**                      | **Description**                                       |
-+-------------------+--------------------------------+-------------------------------------------------------+
-+-------------------+--------------------------------+-------------------------------------------------------+
-| :varlink:`dxF`    | 1.234567E+05 at k=top          | dxF(:,1,:,1) ( m - cartesian, degrees - spherical )   |
-+-------------------+--------------------------------+-------------------------------------------------------+
-| :varlink:`dyF`    | 1.234567E+05 at i=east         | dyF(:,1,:,1) ( m - cartesian, degrees - spherical )   |
-+-------------------+--------------------------------+-------------------------------------------------------+
-| :varlink:`dxG`    | 1.234567E+05 at i=east         | dxG(:,1,:,1) ( m - cartesian, degrees - spherical )   |
-+-------------------+--------------------------------+-------------------------------------------------------+
-| :varlink:`dyG`    | 1.234567E+05 at i=east         | dyG(:,1,:,1) ( m - cartesian, degrees - spherical )   |
-+-------------------+--------------------------------+-------------------------------------------------------+
-| :varlink:`dxC`    | 1.234567E+05 at i=east         | dxC(:,1,:,1) ( m - cartesian, degrees - spherical )   |
-+-------------------+--------------------------------+-------------------------------------------------------+
-| :varlink:`dyC`    | 1.234567E+05 at i=east         | dyC(:,1,:,1) ( m - cartesian, degrees - spherical )   |
-+-------------------+--------------------------------+-------------------------------------------------------+
-| :varlink:`dxV`    | 1.234567E+05 at i=east         | dxV(:,1,:,1) ( m - cartesian, degrees - spherical )   |
-+-------------------+--------------------------------+-------------------------------------------------------+
-| :varlink:`dyU`    | 1.234567E+05 at i=east         | dyU(:,1,:,1) ( m - cartesian, degrees - spherical )   |
-+-------------------+--------------------------------+-------------------------------------------------------+
-| :varlink:`rA`     | 1.524155E+10 at i=east         | rA(:,1,:,1) ( m - cartesian, degrees - spherical )    |
-+-------------------+--------------------------------+-------------------------------------------------------+
-| :varlink:`rAw`    | 1.524155E+10 at k=top          | rAw(:,1,:,1) ( m - cartesian, degrees - spherical )   |
-+-------------------+--------------------------------+-------------------------------------------------------+
-| :varlink:`rAs`    | 1.524155E+10 at k=top          | rAs(:,1,:,1) ( m - cartesian, degrees - spherical )   |
-+-------------------+--------------------------------+-------------------------------------------------------+
 
-+--------------------------------+-------------------+----------------------------------------------+
-| **Name**                       | **Value**         | **Description**                              |
-+--------------------------------+-------------------+----------------------------------------------+
-+--------------------------------+-------------------+----------------------------------------------+
-| :varlink:`tempMultiDimAdvec`   | F                 | use multi-dim advection method for temp      |
-+--------------------------------+-------------------+----------------------------------------------+
-| :varlink:`tempAdamsBashforth`  | T                 | use Adams-Bashforth time-stepping for temp   |
-+--------------------------------+-------------------+----------------------------------------------+
-| :varlink:`saltMultiDimAdvec`   | F                 | use multi-dim advection method for salt      |
-+--------------------------------+-------------------+----------------------------------------------+
-| :varlink:`saltAdamsBashforth`  | T                 | use Adams-Bashforth time-stepping for salt   |
-+--------------------------------+-------------------+----------------------------------------------+
+.. _periodic_forcing_expl:
 
+Periodic Forcing
+~~~~~~~~~~~~~~~~
+
+To prescribe time-dependent periodic
+forcing, concatenate successive time records into a
+single file ordered in a (:math:`x,y`,time) fashion
+and set the following variables: :varlink:`periodicExternalForcing` to
+``.TRUE.``, :varlink:`externForcingPeriod` to the period (in seconds) with which
+the forcing varies (e.g., 1 month), and :varlink:`externForcingCycle`
+to the repeat time (in seconds) of the forcing (e.g., 1 year; note
+:varlink:`externForcingCycle` must be a multiple of
+:varlink:`externForcingPeriod`). With these variables specified, the model
+will interpolate the forcing linearly at each iteration.
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`periodicExternalForcing`     | PARM03    | F                                                | allow time-dependent periodic forcing on/off flag                                                       |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`externForcingPeriod`         | PARM03    | 0.0E+00                                          | period over which forcing varies (e.g. monthly) (s)                                                     |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`externForcingCycle`          | PARM03    | 0.0E+00                                          | period over which the forcing cycle repeats (e.g. one year) (s)                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
+
+.. _eedata_parms:
+
+Execution Environment Parameters
+--------------------------------
+
+to be written
+
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                          | **GROUP** | **DEFAULT**                                      | **DESCRIPTION**                                                                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`nTx`                         | EEPARMS   | 1                                                | number of threads in the :math:`x` direction                                                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`nTy`                         | EEPARMS   | 1                                                | number of threads in the :math:`y` direction                                                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`debugMode`                   | EEPARMS   | F                                                | print a separate, more comprehensive set of debugging messages beyond those of :varlink:`debugLevel`    |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`printMapIncludesZeros`       | EEPARMS   | F                                                | text map plots of fields should ignore exact zero values on/off flag                                    |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`maxLengthPrt1D`              | EEPARMS   | 65                                               | maximum number of 1D array elements to print to standard output                                         |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`useCubedSphereExchange`      | EEPARMS   | F                                                | use cubed-sphere topology domain on/off flag                                                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`useCoupler`                  | EEPARMS   | F                                                | communicate with other model components through a coupler on/off flag                                   |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`useSETRLSTK`                 | EEPARMS   | F                                                | call C routine to set environment stacksize to ‘unlimited’                                              |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`useSIGREG`                   | EEPARMS   | F                                                | enable signal handler to receive signal to terminate run cleanly on/off flag                            |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
+
+DELETE BELOW:
+
+
+Alternate FORMAT that allows longer description?
+
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+| **PARAMETER**                         | **GROUP** | **DEFAULT**                                                                                                                      |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+| :varlink:`usingCartesianGrid`         | PARM04    | T                                                                                                                                |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+|                                       | use Cartesian grid/coordinates on/off flag                                                                                                   |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+| :varlink:`usingSphericalPolarGrid`    | PARM04    | F                                                                                                                                |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+|                                       | use spherical grid/coordinates on/off flag                                                                                                   |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+| :varlink:`usingCylindricalGrid`       | PARM04    | F                                                                                                                                |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+|                                       | use cylindrical grid/coordinates on/off flag                                                                                                 |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+| :varlink:`usingCurvilinearGrid`       | PARM04    | F                                                                                                                                |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+|                                       | use cylindrical grid/coordinates on/off flag                                                                                                 |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+| :varlink:`xgOrigin`                   | PARM04    | 0.0E+00                                                                                                                          |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+|                                       | west edge of domain :math:`x`-axis origin (Cartesian: m; spherical: :sup:`o` longitude)                                                      |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+| :varlink:`ygOrigin`                   | PARM04    | 0.0E+00                                                                                                                          |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+|                                       | south edge of domain :math:`y`-axis origin (Cartesian: m; spherical: :sup:`o` latitude)                                                      |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+| :varlink:`dxSpacing`                  | PARM04    | unset                                                                                                                            |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+|                                       | :math:`x`-axis uniform grid spacing, separation between cell faces (Cartesian: m; spherical: :sup:`o` longitude)                             |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+| :varlink:`delX`                       | PARM04    | :varlink:`dxSpacing`                                                                                                             |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+|                                       | 1D array of :math:`x`-axis grid spacing, separation between cell faces (Cartesian: m; spherical: :sup:`o` longitude)                         |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+| :varlink:`delXFile`                   | PARM04    | ‘ ‘                                                                                                                              |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+|                                       | filename containing array of :math:`x`-axis grid spacing                                                                                     |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+| :varlink:`dySpacing`                  | PARM04    | unset                                                                                                                            |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+|                                       | :math:`y`-axis uniform grid spacing, separation between cell faces (Cartesian: m; spherical: :sup:`o` latitude)                              |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+| :varlink:`delY`                       | PARM04    | :varlink:`dySpacing`                                                                                                             |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+|                                       | 1D array of :math:`y`-axis grid spacing, separation between cell faces (Cartesian: m; spherical: :sup:`o` latitude)                          |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+| :varlink:`delYFile`                   | PARM04    | ‘ ‘                                                                                                                              |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+|                                       | filename containing array of :math:`y`-axis grid spacing                                                                                     |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+| :varlink:`delR`                       | PARM04    | computed from :varlink:`delRc` if specified                                                                                      |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+|                                       | vertical grid faces spacing array ([r] unit)                                                                                                 |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+| :varlink:`delRc`                      | PARM04    | computed from :varlink:`delR` if specified                                                                                       |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+|                                       | vertical cell center spacing array ([r] unit)                                                                                                |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+| :varlink:`delRFile`                   | PARM04    |  ‘ ‘                                                                                                                             |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+|                                       | filename for vertical grid faces spacing array ([r] unit)                                                                                    |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+| :varlink:`delRcFile`                  | PARM04    | ‘ ‘                                                                                                                              |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
+|                                       | filename for vertical cell center spacing array ([r] unit)                                                                                   |
++---------------------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------+
 
 
 

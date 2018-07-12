@@ -2290,10 +2290,10 @@ only provide the Superbee limiter (Roe 1995 :cite:`roe:85`):
     | :math:`\tau` : :varlink:`tracer` ( argument )
 
 
-Third order direct space time
+Third order direct space-time
 -----------------------------
 
-The direct-space-time method deals with space and time discretization
+The direct space-time method deals with space and time discretization
 together (other methods that treat space and time separately are known
 collectively as the “Method of Lines”). The Lax-Wendroff scheme falls
 into this category; it adds sufficient diffusion to a second order flux
@@ -2355,7 +2355,7 @@ minor overshoots.
     | :math:`W` : :varlink:`rTrans` ( argument )
     | :math:`\tau` : :varlink:`tracer` ( argument )
 
-Third order direct space time with flux limiting
+Third order direct space-time with flux limiting
 ------------------------------------------------
 
 The overshoots in the DST3 method can be controlled with a flux limiter.
@@ -2459,53 +2459,62 @@ A schematic of multi-dimension time stepping for the cube sphere configuration i
 Comparison of advection schemes
 ===============================
 
-:numref:`adv_scheme_summary` shows a summary of the different advection schemes available in MITgcm. “A.B.” stands for Adams-Bashforth and “DST” for direct space time. The code corresponds to the number used to select the corresponding advection scheme in the parameter file (e.g., tempAdvScheme=3 in file data selects the 3rd order upwind advection scheme for temperature).
+:numref:`adv_scheme_summary` shows a summary of the different advection schemes available in MITgcm. 
+“AB” stands for Adams-Bashforth and “DST” for direct space-time. The code corresponds to the number used
+to select the corresponding advection scheme in the parameter file (e.g., ``tempAdvScheme=3`` in file
+``data`` selects the 3rd order upwind advection scheme for temperature advection).
 
 .. table:: MITgcm Advection Schemes
   :name: adv_scheme_summary
 
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  |                                         |      |     |   use      |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  |                                         |      | use |   multi    | stencil |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | Advection Scheme                        | Code | AB? |  -dim?     |  (1-D)  | comments                            |
-  +=========================================+======+=====+============+=========+=====================================+
-  | 1st order upwind                        |  1   |  no |     yes    |   3     | linear :math:`\tau`, non-linear v   |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | centered 2nd order                      |  2   | yes |     no     |   3     | linear                              |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | 3rd order upwind                        |  3   | yes |     no     |   5     | linear :math:`\tau`                 |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | centered 4th order                      |  4   | yes |     no     |   5     | linear                              |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | 2nd order DST (Lax-Wendroff)            |  20  |  no |     yes    |   3     | linear :math:`\tau`, non-linear v   |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | 3rd order DST                           |  30  |  no |     yes    |   5     | linear :math:`\tau`, non-linear v   |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | 2nd order-moment Prather                |  80  |  no |     yes    |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | 2nd order flux limiters                 |  77  |  no |     yes    |   5     | non-linear                          |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | 3rd order DST flux limiter              |  33  |  no |     yes    |   5     | non-linear                          |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | 2nd order-moment Prather w/limiter      |  81  |  no |     yes    |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | piecewise parabolic w/“null” limiter    |  40  |  no |     yes    |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | piecewise parabolic w/“mono” limiter    |  41  |  no |     yes    |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | piecewise quartic w/“null” limiter      |  50  |  no |     yes    |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | piecewise quartic w/“mono” limiter      |  51  |  no |     yes    |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | piecewise quartic w/“weno” limiter      |  52  |  no |     yes    |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | 7th order one-step method w/            |   7  |  no |     yes    |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
-  | monotonicity preserving limiter         |      |     |            |         |                                     |
-  +-----------------------------------------+------+-----+------------+---------+-------------------------------------+
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  |                                                             |      | use |    use        | stencil |                                                   |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  | Advection Scheme                                            | Code | AB? |  multi-dim?   |  (1-D)  | comments                                          |
+  +=============================================================+======+=====+===============+=========+===================================================+
+  | 1st order upwind                                            |  1   |  no | yes\ :sup:`*` |   3     | linear :math:`\tau`, non-linear :math:`\vec{v}`   |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  | centered 2nd order                                          |  2   | yes |        no     |   3     | linear                                            |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  | 3rd order upwind                                            |  3   | yes |        no     |   5     | linear :math:`\tau`                               |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  | centered 4th order                                          |  4   | yes |        no     |   5     | linear                                            |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  | 2nd order DST (Lax-Wendroff)                                |  20  |  no | yes\ :sup:`*` |   3     | linear :math:`\tau`, non-linear :math:`\vec{v}`   |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  | 3rd order DST                                               |  30  |  no | yes\ :sup:`*` |   5     | linear :math:`\tau`, non-linear :math:`\vec{v}`   |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  | 2nd order flux limiters                                     |  77  |  no | yes\ :sup:`*` |   5     | non-linear                                        |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  | 3rd order DST flux limiter                                  |  33  |  no | yes\ :sup:`*` |   5     | non-linear                                        |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  | piecewise parabolic w/“null” limiter                        |  40  |  no |        yes    |   7     | non-linear                                        |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  | piecewise parabolic w/“mono” limiter                        |  41  |  no |        yes    |   7     | non-linear                                        |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  | piecewise parabolic w/“weno” limiter                        |  42  |  no |        yes    |   7     | non-linear                                        |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  | piecewise quartic w/“null” limiter                          |  50  |  no |        yes    |   9     | non-linear                                        |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  | piecewise quartic w/“mono” limiter                          |  51  |  no |        yes    |   9     | non-linear                                        |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  | piecewise quartic w/“weno” limiter                          |  52  |  no |        yes    |   9     | non-linear                                        |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  | 7th order one-step method w/monotonicity preserving limiter |   7  |  no |        yes    |   9     | non-linear                                        |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  | Second order-moment Prather                                 |  80  |  no |        yes    |   3     | non-linear                                        |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+  | Second order-moment Prather w/limiter                       |  81  |  no |        yes    |   3     | non-linear                                        |
+  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
+ 
 
+yes\ :sup:`*` indicates that using multi-dim advection is *optional*, controlled by namelist parameters.
+The minimum size of the required tile overlap region (:varlink:`OLx`, :varlink:`OLx`)
+is (stencil size -1)/2.  The minimum overlap required by the model in general is 2,
+so for some of the above choices the advection scheme will not cost anything in terms of an additional overlap requirement,
+but especially given a small tile size, using scheme 7 for example would require costly additional overlap points
+(note a cube sphere grid with “wet-points” requires doubling this overlap!)
+In the ‘comments’ column, :math:`\tau` refers to tracer advection, :math:`\vec{v}` momentum advection.
 
 Shown in :numref:`advect-1d-lo` and :numref:`advect-1d-hi` is a 1-D comparison of advection schemes. Here we advect both a smooth hill and a hill with a more abrupt shock.
 :numref:`advect-1d-lo` shown the result for a weak flow  (low Courant number) whereas  :numref:`advect-1d-hi` shows the result for a stronger flow (high Courant number).
