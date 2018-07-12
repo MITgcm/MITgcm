@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_forcing_surf.F,v 1.5 2017/03/29 09:20:16 dgoldberg Exp $
+C $Name:  $
+
 #include "SHELFICE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -90,7 +93,13 @@ C     (calling SHELFICE_FORCING_T & _S from APPLY_FORCING_T & _S)
           ENDDO
          ENDDO
 
-         IF ( useRealFreshWaterFlux ) THEN
+        ENDIF
+
+! DNG ALLOW PmE to be used even if boundary layer is being used, as long as 
+! SHELFICErealFWflux is set to account for advective flux	
+		
+        IF ( useRealFreshWaterFlux.and.
+     &    (SHELFICErealFWflux.or.(.not.shelficeboundarylayer))) THEN
 #ifdef ALLOW_AUTODIFF
           STOP 'RealFreshWaterFlux disabled in SHELFICE_FORCING_SURF'
 #else /* ALLOW_AUTODIFF */
@@ -103,10 +112,12 @@ c           ENDIF
            ENDDO
           ENDDO
 #endif /* ALLOW_AUTODIFF */
-         ENDIF
+        ENDIF
+
+
 
 C--   end if not SHELFICEboundaryLayer
-        ENDIF
+!        ENDIF
 
 #ifdef EXACT_CONSERV
         IF ( staggerTimeStep ) THEN
