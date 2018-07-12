@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_init_depths.F,v 1.1 2017/04/10 23:55:33 jmc Exp $
+C $Name:  $
+
 #include "SHELFICE_OPTIONS.h"
 
 CBOP
@@ -64,6 +67,13 @@ C     The 0 is the "iteration" argument. The ' ' is an empty suffix
 C      CALL READ_FLD_XY_RS( SHELFICEtopoFile, ' ', R_shelfIce,
 C    &                      0, myThid )
 C-     end setup R_shelfIce in the interior
+      ENDIF
+
+      IF (shelficeMassStepping) THEN
+       IF ( .NOT. ( startTime .EQ. baseTime .AND. nIter0 .EQ. 0
+     &             .AND. pickupSuff .EQ. ' ' ) ) THEN
+          CALL SHELFICE_READ_PICKUP ( myThid )
+       ENDIF
       ENDIF
 
 C- fill in the overlap (+ BARRIER):

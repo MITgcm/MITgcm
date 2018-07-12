@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_read_pickup.F,v 1.6 2016/07/29 12:44:21 ksnow Exp $
+C $Name:  $
+
 #include "SHELFICE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -16,9 +19,11 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "SHELFICE.h"
-
+#include "SURFACE.h"
 C     !INPUT PARAMETERS:
-C     myThid      :: my Thread Id number
+C     myIter            :: time-step number
+C     myThid            :: thread number
+      INTEGER myIter
       INTEGER myThid
 
 #ifdef ALLOW_SHELFICE
@@ -39,7 +44,6 @@ C     msgBuf      :: Informational/error message buffer
       INTEGER missFldDim, nMissing
       INTEGER j, nj, ioUnit
       PARAMETER( missFldDim = 12 )
-      CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(8) missFldList(missFldDim)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -48,14 +52,9 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
        IF ( pickupSuff.EQ.' ' ) THEN
-        IF ( rwSuffixType.EQ.0 ) THEN
-          WRITE(fn,'(A,I10.10)') 'pickup_shelfice.', nIter0
-        ELSE
-          CALL RW_GET_SUFFIX( suff, startTime, nIter0, myThid )
-          WRITE(fn,'(A,A)') 'pickup_shelfice.', suff
-        ENDIF
+        WRITE(fn,'(A,I10.10)') 'pickup_shelfice.',nIter0
        ELSE
-        WRITE(fn,'(A,A10)')    'pickup_shelfice.', pickupSuff
+        WRITE(fn,'(A,A10)')    'pickup_shelfice.',pickupSuff
        ENDIF
        fp = precFloat64
 
@@ -130,7 +129,14 @@ C---    read SHELFICE 3-D fields for restart
 C---    read STREAMICE 2-D fields for restart
 
         CALL READ_MFLDS_3D_RL( 'SHI_mass', shelfIceMass,
-     &                                 nj, fp, 1 , nIter0, myThid )
+     &                                 nj, fp, 1 , myIter, myThid )
+
+#ifdef ALLOW_SHELFICE_REMESHING
+        CALL READ_MFLDS_3D_RL( 'R_Shelfi', R_shelfice,
+     &                                 nj, fp, 1 , myIter, myThid )
+C        CALL READ_MFLDS_3D_RL( 'RMinSurf', Rmin_surf,
+C     &                                 nj, fp, 1 , myIter, myThid )
+#endif
 
 C--    end: new way to read pickup file
        ENDIF
@@ -140,7 +146,7 @@ C--    Check for missing fields:
        CALL READ_MFLDS_CHECK(
      O                     missFldList,
      U                     nMissing,
-     I                     nIter0, myThid )
+     I                     myIter, myThid )
        IF ( nMissing.GT.missFldDim ) THEN
          WRITE(msgBuf,'(2A,I4)') 'SHELFICE_READ_PICKUP: ',
      &     'missing fields list has been truncated to', missFldDim
@@ -162,6 +168,13 @@ C--    Check for missing fields:
 C--    Update overlap regions:
 
         CALL EXCH_XY_RL( shelfIceMass, myThid )
+#ifdef ALLOW_SHELFICE_REMESHING
+        CALL EXCH_XY_RL( R_shelfice, myThid )
+        CALL EXCH_XY_RL( Rmin_surf, myThid )
+#endif
+        
+
+c       CALL EXCH_XY_RL( myPa_Surf2, myThid )
 
 #endif /* ALLOW_SHELFICE */
 

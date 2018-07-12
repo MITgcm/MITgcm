@@ -61,7 +61,10 @@ CEOP
      &     SHELFICEadvDiffHeatFlux,
      &     SHELFICEuseGammaFrict, SHELFICE_oldCalcUStar,
      &     shiCdrag, shiZetaN, shiRc,
-     &     shiPrandtl, shiSchmidt, shiKinVisc
+     &     shiPrandtl, shiSchmidt, shiKinVisc,
+     &     SHELFICERemeshFrequency, SHELFICESplitThreshold,
+     &     SHELFICEMergeThreshold, SHELFICErealfwflux,
+     &     conserve_ssh
 #ifdef ALLOW_COST
      &     , mult_shelfice
      &     , mult_shifwflx, wshifwflx0, shifwflx_errfile
@@ -91,6 +94,7 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEconserve         = .FALSE.
       SHELFICEboundaryLayer    = .FALSE.
       SHELFICEMassStepping     = .FALSE.
+	  SHELFICErealFWflux       = .FALSE.
       SHELFICEDynMassOnly      = .FALSE.
       SHELFICEtopoFile         = ' '
       SHELFICEmassFile         = ' '
@@ -114,6 +118,10 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEadvDiffHeatFlux  = .FALSE.
       SHELFICEuseGammaFrict    = .FALSE.
       SHELFICE_oldCalcUStar    = .FALSE.
+	  SHELFICERemeshFrequency  = 2592000.
+      SHELFICESplitThreshold   = 5
+      SHELFICEMergeThreshold   = -8
+	  conserve_ssh             = .false.
 C these params. are default of Holland and Jenkins (1999)
       shiCdrag                 = 0.0015 _d 0
       shiZetaN                 = 0.052 _d 0

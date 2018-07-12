@@ -33,6 +33,8 @@ C     SHELFICEadvDiffHeatFlux  :: use advective-diffusive heat flux into the
 C                                 ice shelf instead of default diffusive heat
 C                                 flux, see Holland and Jenkins (1999),
 C                                 eq.21,22,26,31; def: F
+C     SHELFICErealFWflux       :: ensure vert advective flux at bdry uses top cell
+C                                 value rather than "boundary layer" value   F
 C     SHELFICEheatTransCoeff   :: constant heat transfer coefficient that
 C                                 determines heat flux into shelfice
 C                                 (def: 1e-4 m/s)
@@ -52,6 +54,10 @@ C     shiPrandtl, shiSchmidt   :: constant Prandtl (13.8) and Schmidt (2432.0)
 C                                 numbers used to compute gammaTurb
 C     shiKinVisc               :: constant kinetic viscosity used to compute
 C                                 gammaTurb (def: 1.95e-5)
+C     SHELFICERemeshFrequency  :: Frequency that size of etaN is checked to
+C                                 trigger remesh
+C     SHELFICESplitThreshold   :: Max size of etaN allowed before a remesh
+C     SHELFICEMergeThreshold   :: Min size of etaN allowed before a remesh
 C     -----------------------------------------------------------------------
 C     SHELFICEDragLinear       :: linear drag at bottom shelfice (1/s)
 C     SHELFICEDragQuadratic    :: quadratic drag at bottom shelfice (default
@@ -85,6 +91,8 @@ C     shelficeForcingT       :: analogue of surfaceForcingT
 C                               units are  r_unit.Kelvin/s (=Kelvin.m/s if r=z)
 C     shelficeForcingS       :: analogue of surfaceForcingS
 C                               units are  r_unit.psu/s (=psu.m/s if r=z)
+C     conserve_ssh           :: KS16. Use the obcs to conserve net open
+C                               ocean eta to 0m
 C-----------------------------------------------------------------------
 C \ev
 CEOP
@@ -103,7 +111,10 @@ CEOP
      &     SHELFICEthetaSurface,
      &     SHELFICEDragLinear, SHELFICEDragQuadratic,
      &     shiCdrag, shiZetaN, shiRc,
-     &     shiPrandtl, shiSchmidt, shiKinVisc
+     &     shiPrandtl, shiSchmidt, shiKinVisc,
+     &     SHELFICERemeshFrequency,
+     &     SHELFICESplitThreshold,
+     &     SHELFICEMergeThreshold
 
       _RL SHELFICE_dumpFreq, SHELFICE_taveFreq
       _RL SHELFICEheatTransCoeff
@@ -117,6 +128,10 @@ CEOP
       _RL SHELFICEthetaSurface
       _RL shiCdrag, shiZetaN, shiRc
       _RL shiPrandtl, shiSchmidt, shiKinVisc
+	  _RL SHELFICERemeshFrequency
+      _RL SHELFICESplitThreshold
+      _RL SHELFICEMergeThreshold
+	  
 
       COMMON /SHELFICE_FIELDS_RL/
      &     shelficeMass, shelficeMassInit,
@@ -162,6 +177,8 @@ CEOP
       LOGICAL SHELFICE_oldCalcUStar
       LOGICAL SHELFICEMassStepping
       LOGICAL SHELFICEDynMassOnly
+	  LOGICAL SHELFICErealfwflux
+	  LOGICAL conserve_ssh
       COMMON /SHELFICE_PARMS_L/
      &     SHELFICEisOn,
      &     useISOMIPTD,
@@ -177,7 +194,9 @@ CEOP
      &     SHELFICEuseGammaFrict,
      &     SHELFICE_oldCalcUStar,
      &     SHELFICEMassStepping,
-     &     SHELFICEDynMassOnly
+     &     SHELFICEDynMassOnly,
+     &     SHELFICErealfwflux, 
+     &     conserve_ssh
 
       CHARACTER*(MAX_LEN_FNAM) SHELFICEloadAnomalyFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICEmassFile

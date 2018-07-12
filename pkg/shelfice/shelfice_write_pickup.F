@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_write_pickup.F,v 1.6 2016/07/29 12:44:52 ksnow Exp $
+C $Name:  $
+
 #include "SHELFICE_OPTIONS.h"
 
 CBOP
@@ -16,7 +19,7 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "SHELFICE.h"
-
+#include "SURFACE.h"
 C !INPUT PARAMETERS: ===================================================
 C     permPickup      :: write a permanent pickup
 C     suff            :: suffix for pickup file (eg. ckptA or 0000000010)
@@ -79,8 +82,25 @@ C-    switch to 2-D fields:
      &                        nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'SHI_mass'
 
+#ifdef ALLOW_SHELFICE_REMESHING
 
-c       j = j + 1
+        j = j + 1
+        nj = nj-1
+
+        CALL WRITE_REC_3D_RL( fn, fp, 1, R_shelfice,
+     &                        nj, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'R_Shelfi'
+
+C        j = j + 1
+C        nj = nj-1
+C
+C        CALL WRITE_REC_3D_RL( fn, fp, 1, Rmin_surf,
+C     &                        nj, myIter, myThid )
+C        IF (j.LE.listDim) wrFldList(j) = 'RMinSurf'
+
+#endif
+       
+
 c       nj = nj-1
 c       CALL WRITE_REC_3D_RL( fn, fp, 1, myPa_Surf2,
 c    &                        nj, myIter, myThid )
