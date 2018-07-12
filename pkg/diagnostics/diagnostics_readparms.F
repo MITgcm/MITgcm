@@ -110,6 +110,7 @@ C-    pkg DIAGNOSTICS is not used
         _BEGIN_MASTER(myThid)
 C-    Track diagnostics pkg activation status:
          diag_pkgStatus = -1
+         useDiag4AdjOutp = .FALSE.
 C     print a (weak) warning if data.diagnostics is found
          CALL PACKAGES_UNUSED_MSG( 'useDiagnostics', ' ', ' ' )
         _END_MASTER(myThid)
@@ -124,6 +125,13 @@ C-    Initialize and Read Diagnostics Namelist
       DO k=1,LEN(blkFilName)
         blkFilName(k:k) = ' '
       ENDDO
+
+C-    for now, useDiag4AdjOutp is hard coded (fct of CPP option);
+C     alternative would be to set it to T if ADJ diags are found in namelist
+      useDiag4AdjOutp = .FALSE.
+#ifdef DIAGNOSTICS_ADJ_OUTPUT
+      useDiag4AdjOutp = .TRUE.
+#endif
 
       DO l = 1,ldimLoc
         frequency(l)  = 0.
