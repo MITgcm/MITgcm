@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/forward_step.F,v 1.4 2017/08/21 16:06:48 jmc Exp $
+C $Name:  $
+
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
@@ -25,17 +28,14 @@
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_OPTIONS.h"
 #endif
-#ifdef ALLOW_GCHEM
-# include "GCHEM_OPTIONS.h"
-#endif
-#ifdef ALLOW_DIC
-# include "DIC_OPTIONS.h"
-#endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
+#endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
 #endif
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
@@ -110,6 +110,8 @@ C     \ev
 
 C     !CALLING SEQUENCE:
 C     FORWARD_STEP
+C       |
+C       |-- SHELFICE_REMESHING
 C       |
 C       |-- AUTODIFF_INADMODE_UNSET
 C       |
@@ -295,7 +297,6 @@ C     == Global variables ==
 #  include "PTRACERS_FIELDS.h"
 # endif
 # ifdef ALLOW_GCHEM
-#  include "GCHEM_SIZE.h"
 #  include "GCHEM_FIELDS.h"
 # endif
 # ifdef ALLOW_CFC
@@ -387,6 +388,15 @@ C     myIterBeg :: iteration number at beginning of time step
       _RL myTimeBeg
 #endif /* ALLOW_LONGSTEP */
 CEOP
+
+#ifdef ALLOW_SHELFICE
+#ifdef ALLOW_SHELFICE_REMESHING
+C-- Remesh shelfice
+        CALL TIMER_START('SHELFICE_REMESHING     [FORWARD_STEP]',myThid)
+        CALL SHELFICE_REMESHING (myTime, myIter, myThid )
+        CALL TIMER_STOP('SHELFICE_REMESHING     [FORWARD_STEP]',myThid)
+#endif /* ALLOW_SHELFICE_REMESHING */
+#endif /* ALLOW_SHELFICE */
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('FORWARD_STEP',myThid)
