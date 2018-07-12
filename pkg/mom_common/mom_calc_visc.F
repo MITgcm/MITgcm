@@ -83,9 +83,7 @@ C     == Global variables ==
 #include "tamc.h"
 #include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF */
-#ifdef ALLOW_GM_LEITH_QG
-#include "GMREDI.h"
-#endif
+
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid               :: my thread Id number
@@ -427,9 +425,7 @@ C Using it in Leith serves to damp instabilities in w.
      &     SQRT(leithD4fac*grdDiv)*L5
           viscAh_DLthQG(i,j) =
      &     leithQG2fac*SQRT(grdVrt+grdDiv)*L3
-#ifdef ALLOW_GM_LEITH_QG
-          GM_LeithQG_K(i,j,k,bi,bj) = viscAh_DLthQG(i,j)
-#endif
+
          ELSEIF (calcLeith) THEN
 C but this approximation will work on cube (and differs by as much as 4X)
           grdVrt=MAX( ABS(vrtDx(i,j+1)), ABS(vrtDx(i,j)) )
@@ -446,9 +442,7 @@ C This approximation is good to the same order as above...
           viscAh_DlthD(i,j)=((leithD2fac*grdDiv))*L3
           viscA4_DlthD(i,j)=((leithD4fac*grdDiv))*L5
           viscAh_DLthQG(i,j)=leithQG2fac*(grdVrt + grdDiv)*L3
-#ifdef ALLOW_GM_LEITH_QG
-          GM_LeithQG_K(i,j,k,bi,bj) = viscAh_DLthQG(i,j)
-#endif
+
          ELSE
           viscAh_Dlth(i,j)=0. _d 0
           viscA4_Dlth(i,j)=0. _d 0

@@ -2,15 +2,14 @@
 
 
 CBOP
-C     !ROUTINE: GMREDI_CALC_CALC_QG_LEITH_COEFF
+C     !ROUTINE: GMREDI_CALC_QG_LEITH_COEFF
 C     !INTERFACE:
-      SUBROUTINE GMREDI_CALC_CALC_QG_LEITH_COEFF(
-     I             iMin, iMax, jMin, jMax,
-     I             bi, bj, myTime, myIter, myThid )
+      SUBROUTINE GMREDI_CALC_QG_LEITH_COEFF(
+     I             bi, bj, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE GMREDI_CALC_CALC_QG_LEITH_COEFF
+C     | SUBROUTINE GMREDI_CALC_QG_LEITH_COEFF
 C     | o Calculate QG Leith contribution to GMRedi tensor.
 C     *==========================================================*
 C     *==========================================================*
@@ -32,100 +31,76 @@ C     == Global variables ==
 
 C     == Routine arguments ==
 C     bi,bj   :: current tile indices
-C     k       :: current vertical level
-C     iMin,iMax,jMin,jMax :: loop ranges
-C     myTime  :: current time
-C     myIter  :: current time-step number
 C     myThid  :: my Thread Id number
       INTEGER bi,bj
-      INTEGER iMin,iMax,jMin,jMax
-      _RL     myTime
-      INTEGER myIter
       INTEGER myThid
 
 #ifdef ALLOW_GM_LEITH_QG
 
 C     == Local variables ==
-C     strainBC :: same as strain but account for no-slip BC
-C     vort3BC  :: same as vort3  but account for no-slip BC
-      _RL deepFac3, deepFac4
-      _RL L2, L3, L5, L2rdt, L4rdt, recip_dt
+      _RL deepFac3
+      _RL L3
       _RS hFacZ   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS h0FacZ  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS r_hFacZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tension (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL strain  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL strainBC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Nsq     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL KE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL omega3  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vort3   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vort3BC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hDiv    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL divDx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL divDy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vrtDx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vrtDy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL grdVrt, grdDiv
-      _RL viscAh_DLthQG(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL leithQG2fac
-C     i,j    :: Loop counters
+C     i,j,k    :: Loop counters
       INTEGER i,j,k
-C     xxxFac :: On-off tracer parameters used for switching terms off.
-      _RL  ArDudrFac
-      _RL  ArDvdrFac
-      _RL  sideMaskFac
-      LOGICAL bottomDragTerms
-      LOGICAL writeDiag
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER imomkey
-#endif
-
-#ifdef ALLOW_MNC
-      INTEGER offsets(9)
-      CHARACTER*(1) pf
-#endif
 
 
-C--   Initialise intermediate terms
+C--   Initialise terms
+
+        IF (useFullLeith) THEN
+C       Uses correct calculation for gradients, but might not work on cube sphere
+          leithQG2fac = (viscC2LeithQG/pi)**6
+        ELSE
+C       Uses approximate gradients, but works on cube sphere. No reason to use this
+C        unless `useFullLeith` fails for your setup.
+          leithQG2fac = (viscC2LeithQG/pi)**3
+        ENDIF
+
+       grdVrt = 0. _d 0
+       grdDiv = 0. _d 0
+
       DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        vort3(i,j) = 0.
-        omega3(i,j)= 0.
-        KE(i,j)    = 0.
-        strain(i,j)  = 0. _d 0
-        strainBC(i,j)= 0. _d 0
-        stretching(i,j) = 0. _d 0
-        Nsq(i,j)     = 0. _d 0
-        tension(i,j) = 0. _d 0
-#ifdef ALLOW_AUTODIFF
-        hFacZ(i,j)   = 0. _d 0
-#endif
-       ENDDO
+        DO i=1-OLx,sNx+OLx
+          hFacZ(i,j)         = 0. _d 0
+          r_hFacZ(i,j)       = 0. _d 0
+          uFld(i,j)          = 0. _d 0
+          vFld(i,j)          = 0. _d 0
+          stretching(i,j)    = 0. _d 0
+          Nsq(i,j)           = 0. _d 0
+          vort3(i,j)         = 0. _d 0
+          hDiv(i,j)          = 0. _d 0
+          divDx(i,j)         = 0. _d 0
+          divDy(i,j)         = 0. _d 0
+          vrtDx(i,j)         = 0. _d 0
+          vrtDy(i,j)         = 0. _d 0
+        ENDDO
       ENDDO
 
-C note: using standard stencil (no mask) results in under-estimating
-C       vorticity at a no-slip boundary by a factor of 2 = sideDragFactor
-      IF ( no_slip_sides ) THEN
-        sideMaskFac = sideDragFactor
-      ELSE
-        sideMaskFac = 0. _d 0
-      ENDIF
-
-      IF ( selectImplicitDrag.EQ.0 .AND.
-     &      (  no_slip_bottom
-     &    .OR. selectBotDragQuadr.GE.0
-     &    .OR. bottomDragLinear.NE.0. ) ) THEN
-       bottomDragTerms=.TRUE.
-      ELSE
-       bottomDragTerms=.FALSE.
-      ENDIF
-
-C     start k loop since momentum code is inside one`
       DO k=1,Nr
+        DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            GM_LeithQG_K(i,j,k,bi,bj)  = 0. _d 0
+          ENDDO
+        ENDDO
+      ENDDO
+
+C     start k loop since momentum code is inside one
+      DO k=1,Nr
+
+        deepFac3 = deepFac2C(k)*deepFacC(k)
 
 C--     Calculate open water fraction at vorticity points
         CALL MOM_CALC_HFACZ(bi,bj,k,hFacZ,r_hFacZ,myThid)
@@ -138,44 +113,25 @@ C       Make local copies of horizontal flow field
          ENDDO
         ENDDO
 
-C       Do not need KE for LeithQG, so no point calculating it.
-C       CALL MOM_CALC_KE(bi,bj,k,selectKEscheme,uFld,vFld,KE,myThid)
+        CALL MOM_CALC_RELVORT3( bi,bj,k,uFld,vFld,hFacZ,vort3,myThid )
+        CALL MOM_CALC_HDIV( bi,bj,k,2,uFld,vFld,hDiv,myThid )
 
-        CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
 
-C-      mask vort3 and account for no-slip / free-slip BC in vort3BC:
+C vorticity needs to be masked if using vector invariant momentum
+#ifdef ALLOW_MOM_VECINV
+C-      mask vort3
         DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            vort3BC(i,j) = vort3(i,j)
             IF ( hFacZ(i,j).EQ.zeroRS ) THEN
-              vort3BC(i,j) = sideMaskFac*vort3BC(i,j)
               vort3(i,j)   = 0.
             ENDIF
           ENDDO
         ENDDO
+#endif /* ALLOW_MOM_VECINV */
 
 
-C--     For viscous term, compute horizontal divergence, tension & strain
-C       and mask relative vorticity (free-slip case):
-
-        DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-            h0FacZ(i,j) = hFacZ(i,j)
-          ENDDO
-        ENDDO
-#ifdef NONLIN_FRSURF
-        IF ( no_slip_sides .AND. nonlinFreeSurf.GT.0 ) THEN
-          DO j=2-OLy,sNy+OLy
-            DO i=2-OLx,sNx+OLx
-              h0FacZ(i,j) = MIN(
-     &          MIN( h0FacW(i,j,k,bi,bj), h0FacW(i,j-1,k,bi,bj) ),
-     &          MIN( h0FacS(i,j,k,bi,bj), h0FacS(i-1,j,k,bi,bj) ) )
-            ENDDO
-          ENDDO
-        ENDIF
-#endif /* NONLIN_FRSURF */
-
-        CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
+C     Having calculated the quantitites, use them to calculate
+C       LeithQG coefficient
 
         CALL MOM_VISC_QGLEITH_CALC_STRETCHING(bi,bj,k,
      O                                         stretching,Nsq,
@@ -183,47 +139,7 @@ C       and mask relative vorticity (free-slip case):
         CALL MOM_VISC_QGLEITH_LIMITER(bi,bj,k,
      O                                 stretching,
      I                                 Nsq,uFld,vFld,vort3,myThid)
-        CALL MOM_CALC_TENSION( bi,bj,k,uFld,vFld,tension,myThid )
-        CALL MOM_CALC_STRAIN( bi,bj,k,uFld,vFld,hFacZ,strain,myThid )
 
-C-      mask strain and account for no-slip / free-slip BC in strainBC:
-        DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-            strainBC(i,j) = strain(i,j)
-            IF ( hFacZ(i,j).EQ.zeroRS ) THEN
-              strainBC(i,j) = sideMaskFac*strainBC(i,j)
-              strain(i,j)   = 0.
-            ENDIF
-          ENDDO
-        ENDDO
-
-
-C-      uses vort3BC & strainBC which account for no-slip / free-slip BC
-
-        IF (useFullLeith) THEN
-C       Uses correct calculation for gradients, but might not work on cube sphere
-          leithQG2fac = (viscC2LeithQG/pi)**6
-        ELSE
-C       Uses approximate gradients, but works on cube sphere. No reason to use this
-C        unless `useFullLeith` fails for your setup.
-          leithQG2fac = (viscC2LeithQG/pi)**3
-        ENDIF
-
-        DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-            viscAh_DLthQG(i,j)= 0. _d 0
-          ENDDO
-        ENDDO
-
-C-      Initialise to zero gradient of vorticity and divergence:
-        DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-            divDx(i,j) = 0.
-            divDy(i,j) = 0.
-            vrtDx(i,j) = 0.
-            vrtDy(i,j) = 0.
-          ENDDO
-        ENDDO
 
 C--     horizontal gradient of horizontal divergence:
 C-       gradient in x direction:
@@ -295,11 +211,7 @@ C-       gradient in y direction:
           DO i=2-OLx,sNx+OLx-1
 
 C These are (powers of) length scales
-            L2 = L2_D(i,j,bi,bj)*deepFac2C(k)
-            L2rdt = 0.25 _d 0*recip_dt*L2
             L3 = L3_D(i,j,bi,bj)*deepFac3
-            L4rdt = L4rdt_D(i,j,bi,bj)*deepFac4
-            L5 = (L2*L3)
 
 
             IF (useFullLeith) THEN
@@ -316,13 +228,8 @@ C Using it in Leith serves to damp instabilities in w.
      &                     + (divDy(i,j+1)*divDy(i,j+1)
      &                        + divDy(i,j)*divDy(i,j) )  )
 
-              viscAh_DLthQG(i,j) =
-     &          leithQG2fac*SQRT(grdVrt+grdDiv)*L3
-              IF (GM_useLeithQG) THEN
-                GM_LeithQG_K(i,j,k,bi,bj) = viscAh_DLthQG(i,j)
-              ELSE
-                GM_LeithQG_K(i,j,k,bi,bj) = 0. _d 0
-              ENDIF            
+              GM_LeithQG_K(i,j,k,bi,bj) =
+     &              leithQG2fac*SQRT(grdVrt+grdDiv)*L3
 
             ELSE
 C but this approximation will work on cube (and differs by as much as 4X)
@@ -335,16 +242,11 @@ C This approximation is good to the same order as above...
               grdDiv=MAX( grdDiv, ABS(divDy(i,j+1)) )
               grdDiv=MAX( grdDiv, ABS(divDy(i,j))   )
 
-              viscAh_DLthQG(i,j)=leithQG2fac*(grdVrt + grdDiv)*L3
-              IF (GM_useLeithQG) THEN
-                GM_LeithQG_K(i,j,k,bi,bj) = viscAh_DLthQG(i,j)
-              ELSE
-                GM_LeithQG_K(i,j,k,bi,bj) = 0. _d 0
-              ENDIF
+              GM_LeithQG_K(i,j,k,bi,bj)=leithQG2fac*(grdVrt + grdDiv)*L3
+
             ENDIF
           ENDDO
         ENDDO
-
 
         CALL DIAGNOSTICS_FILL(GM_LeithQG_K,'GM_LTHQG',
      &                       k,1,2,bi,bj,myThid)

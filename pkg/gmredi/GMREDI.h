@@ -278,9 +278,8 @@ C     gradf        :: gradient of the Coriolis paramater at a cell centre, 1/(m*
 #ifdef ALLOW_GM_LEITH_QG
 C     GM_LeithQG_K  :: Horizontal LeithQG viscosity,
 C                       to be used as GM coefficient
-      COMMON /GM_LEITH_QG/
-     &                  GM_LeithQG_K
       _RL GM_LeithQG_K(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      COMMON /GM_LEITH_QG/ GM_LeithQG_K
 #endif /* ALLOW_GM_LEITH_QG */
 
 #endif /* ALLOW_GMREDI */
