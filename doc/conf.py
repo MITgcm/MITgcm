@@ -176,6 +176,7 @@ latex_elements = {
     \newcommand{\pp}[2]{\frac{\partial #1}{\partial #2}}
     \newcommand{\dd}[2]{\frac{d #1}{d #2}}
     \newcommand{\h}{\frac{1}{2}}
+    \setlength{\tymax}{0.5\textwidth}
     ''',
 
     # Latex figure (float) alignment
