@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - Replace "mskTrVol" and "gencost_errfile" with "gencost_mask" in
+    "cost_gencost_transp", mirroring "m_horflux_vol".
+  - Document and warn user (via STDERR) of potential issues with using
+    "cost_gencost_transp" to compute volume, heat, or salt transport.
+
 checkpoint67c (2018/06/26)
 o pkg/generic_advdiff:
   - Add per tracer run-time param to switch on/off Smolarkiewicz-Hack:
@@ -19,10 +25,6 @@ o pkg/ecco:
   - replace calls to (obsolete) MDSREADFIELD and MDSWRITEFIELD with calls to
     pkg/rw S/R: READ_REC_3D_RL and WRITE_REC_3D_RL ; this enable to use pkg/ecco
     without pkg/autodiff.
-  - Replace "mskTrVol" and "gencost_errfile" with "gencost_mask" in 
-    "cost_gencost_transp", mirroring "m_horflux_vol".
-  - Document and warn user (via STDERR) of potential issues with using 
-    "cost_gencost_transp" to compute volume, heat, or salt transport. 
 o verification exp:
   - update few (10) adm & tlm output after latest TAF update, from version 3.9.0
     to version 3.9.6 on May 16-18.
