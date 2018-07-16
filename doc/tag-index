@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - Replace "mskTrVol" and "gencost_errfile" with "gencost_mask" in
+    "cost_gencost_transp", mirroring "m_horflux_vol".
+  - Document and warn user (via STDERR) of potential issues with using
+    "cost_gencost_transp" to compute volume, heat, or salt transport.
+
 checkpoint67c (2018/06/26)
 o pkg/generic_advdiff:
   - Add per tracer run-time param to switch on/off Smolarkiewicz-Hack:
