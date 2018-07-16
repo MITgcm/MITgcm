@@ -51,6 +51,8 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 
+#ifdef ALLOW_SHELFICE
+#ifdef ALLOW_SHELFICE_REMESHING
 
       IF ( selectSigmaCoord.EQ.0 ) THEN
 C---  r-coordinate with partial-cell or full cell mask
@@ -535,6 +537,8 @@ c #ifdef ALLOW_NONHYDROSTATIC
 C--   Calculate "recip_hFacU" = reciprocal hfac distance/volume for W cells
 C NOTE:  not used ; computed locally in CALC_GW
 c #endif
+#endif
+#endif
 
       RETURN
       END
