@@ -659,7 +659,7 @@ Once you've made your changes to the manual, you should build it locally to veri
  - sphinxcontrib-bibtex
  - sphinx_rtd_theme
 
-Then, run :code:`make html` in the :code:`docs` directory.
+Once these modules are installed you can build the html version of the manual by running :code:`make html` in the :code:`doc` directory. To build the pdf version of the manual you will also need a working version of LaTeX installed. The command to build the pdf version is :code:`make latexpdf`, which should also be run in the :code:`doc` directory.
 
 
 
