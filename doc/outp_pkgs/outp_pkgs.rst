@@ -407,14 +407,16 @@ Currently, the available adjoint state variables are:
 Some notes to the user
 ^^^^^^^^^^^^^^^^^^^^^^
 
-1. This has not yet been tested with OpenAD, although it should work
+1. This feature is currently untested with OpenAD.
 
-2. `adEtaN` is broken in :filelink:`addummy_in_stepping.F <pkg/autodiff/addummy_in_stepping.F>`
+2. This feature does not work with the divided adjoint.
+
+3. `adEtaN` is broken in :filelink:`addummy_in_stepping.F <pkg/autodiff/addummy_in_stepping.F>`
    so the output through diagnostics is zeros just as with the standard 'adjoint dump' method.
 
-3. The diagStats options are not available for these variables.   
+4. The diagStats options are not available for these variables.   
 
-4. Adjoint variables are recognized by checking the 10 character variable `diagCode`.
+5. Adjoint variables are recognized by checking the 10 character variable `diagCode`.
    To add a new adjoint variable, set the 4th position of `diagCode` to A 
    (notice this is the case for the list of available adjoint variables).
 
