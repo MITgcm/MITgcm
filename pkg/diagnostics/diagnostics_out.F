@@ -19,9 +19,6 @@ C     !USES:
 #include "GRID.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
-#ifdef DIAGNOSTICS_ADJ_OUTPUT
-# include "AUTODIFF_PARAMS.h"
-#endif      
 
       INTEGER NrMax
       PARAMETER( NrMax = numLevels )
@@ -87,7 +84,7 @@ c     COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
 #endif /*  ALLOW_MNC  */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      
+
 C---  set file properties
       ioUnit= standardMessageUnit
       undefRL = misValFlt(listId)
@@ -155,25 +152,12 @@ C--   Place the loop on lm (= averagePeriod) outside the loop on md (= field):
       DO lm=1,averageCycle(listId)
 
 #ifdef ALLOW_MNC
-C- Ignore adj variables in fwd mode, regular diags in reverse mode
-# ifdef DIAGNOSTICS_ADJ_OUTPUT
-        ndId = abs(jdiag(1,listId))
-        if ( ( gdiag(ndId)(4:4).eq.'A' .and. 
-     &         writeDiagnosticsAdj )
-     &       .or.
-     &       ( gdiag(ndId)(4:4).ne.'A' .and.
-     &        .NOT.writeDiagnosticsAdj )
-     &     ) then
-# endif
-          IF (useMNC .AND. diag_mnc) THEN
-            CALL DIAGNOSTICS_MNC_SET(
-     I                      nLevOutp, listId, lm,
-     O                      diag_mnc_bn,
-     I                      undefRL, myTime, myIter, myThid )
-          ENDIF
-# ifdef DIAGNOSTICS_ADJ_OUTPUT
-        endif
-# endif
+       IF (useMNC .AND. diag_mnc) THEN
+         CALL DIAGNOSTICS_MNC_SET(
+     I                    nLevOutp, listId, lm,
+     O                    diag_mnc_bn,
+     I                    undefRL, myTime, myIter, myThid )
+       ENDIF
 #endif /*  ALLOW_MNC  */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -222,21 +206,6 @@ C         => skip computation and just write qtmp2
      &         ' from previous computation of Diag # ', isComputed
             ENDIF
             isComputed = 0
-Cts ---
-C For adjoint state variables in forward mode, don't output warnings to
-C STDERR and don't fill with zeros. Just wait until reverse mode.
-C Similarly, don't do anything to regular diagnostics in reverse mode.
-Cts ---
-#ifdef DIAGNOSTICS_ADJ_OUTPUT
-          elseif ( ndiag(ip,1,1).eq.0 .and.
-     &             gcode(4:4).eq.'A' .and.
-     &             .NOT.writeDiagnosticsAdj ) then
-            isComputed = 0
-
-          elseif ( ndiag(ip,1,1).eq.0 .and.
-     &             writeDiagnosticsAdj ) then
-            isComputed = 0
-#endif
           ELSEIF ( ndiag(ip,1,1).EQ.0 ) THEN
 C-        Empty diagnostics case :
             isComputed = 0
@@ -418,15 +387,6 @@ C--     End of empty diag / not-empty diag block
 
 C--     Ready to write field "md", element "lm" in averageCycle(listId)
 
-C- Ignore adj variables in fwd mode, regular diags in reverse mode
-#ifdef DIAGNOSTICS_ADJ_OUTPUT
-          if ( ( gcode(4:4).eq.'A' .and. 
-     &           writeDiagnosticsAdj )
-     &         .or.
-     &         ( gcode(4:4).ne.'A' .and.
-     &           .NOT.writeDiagnosticsAdj )
-     &       ) then
-#endif
 C-        write to binary file, using MDSIO pkg:
           IF ( diag_mdsio ) THEN
 c          nRec = lm + (md-1)*averageCycle(listId)
@@ -465,11 +425,6 @@ C         a hack not to write meta files now: pass -nRec < 0 to MDS_WRITE S/R
            ENDIF
           ENDIF
 #endif /*  ALLOW_MNC  */
-          
-#ifdef DIAGNOSTICS_ADJ_OUTPUT
-          endif
-C End if statement to skip output for adj variables in forward mode ...
-#endif
 
 C--     end of Processing Fld # md
         ENDIF
@@ -478,15 +433,6 @@ C--     end of Processing Fld # md
 C--   end loop on lm counter (= averagePeriod)
       ENDDO
 
-C- Ignore adj variables in fwd mode, regular diags in reverse mode
-#ifdef DIAGNOSTICS_ADJ_OUTPUT
-          if ( ( gcode(4:4).eq.'A' .and. 
-     &           writeDiagnosticsAdj )
-     &         .or.
-     &         ( gcode(4:4).ne.'A' .and.
-     &           .NOT.writeDiagnosticsAdj )
-     &       ) then
-#endif
 #ifdef ALLOW_MDSIO
       IF (diag_mdsio) THEN
 C-    Note: temporary: since it is a pain to add more arguments to
@@ -501,10 +447,6 @@ C     meta files but with more informations in it.
      &              nRec, myIter, myThid)
       ENDIF
 #endif /*  ALLOW_MDSIO  */
-#ifdef DIAGNOSTICS_ADJ_OUTPUT
-          endif
-C End if statement to skip output for adj variables in forward mode ...
-#endif
 
       RETURN
       END
