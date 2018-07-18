@@ -229,7 +229,7 @@ grid-attribute information. The :varlink:`gdiag` array is described in :numref:`
    +-----------+-----------------------+-----------------------------------------------------+
    | parse(4)  | :math:`\rightarrow` P | positive definite diagnostic                        |
    +-----------+-----------------------+-----------------------------------------------------+
-   |           | :math:`\rightarrow` A | Adjoint variable diagnostic  |
+   |           | :math:`\rightarrow` A | Adjoint variable diagnostic                         |
    +-----------+-----------------------+-----------------------------------------------------+
    | parse(5)  | :math:`\rightarrow` C | with counter array                                  |
    +-----------+-----------------------+-----------------------------------------------------+
