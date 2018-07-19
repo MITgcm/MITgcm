@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice:
+  - fix ice shelf mask for very-thin ice shelf case, when hFacMin
+    and hFacMinDr criteria leave no room for ice (hFac(k=1)=1).
+    Note: thin ice-shelf that results in 0< hFac(k=1) <1 still need
+    to be fixed when using any seaice pkg.
 o pkg/ecco:
   - Replace "mskTrVol" and "gencost_errfile" with "gencost_mask" in
     "cost_gencost_transp", mirroring "m_horflux_vol".
