@@ -42,6 +42,11 @@ o pkg/obcs/obcs_balance_flow.F and pkg/shelfice/shelfice_sea_level_avg (7/12/18)
   - incoming/outgoing velocity set based on "flux" derived from \int(sea level in open ocean)
     divided by delta t
 
+o pkg/ecco:
+  - Replace "mskTrVol" and "gencost_errfile" with "gencost_mask" in
+    "cost_gencost_transp", mirroring "m_horflux_vol".
+  - Document and warn user (via STDERR) of potential issues with using
+    "cost_gencost_transp" to compute volume, heat, or salt transport.
 
 checkpoint67c (2018/06/26)
 o pkg/generic_advdiff:

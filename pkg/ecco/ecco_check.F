@@ -524,7 +524,7 @@ c-- (upper/lower-case matters) in cost_gencost_customize
            endif !barfile
 
 c---------------- block -4 ----------------------------
-c-- transs: require [err,bar][W,S]file, can have datafile, but
+c-- transs: require [mask,bar][W,S]file, can have datafile, but
 c-- not checked here. also not checked for variwei at the moment
          elseif ( gencost_flag(k).eq. -4 ) then
           WRITE(msgBuf,'(A,i3,L5)')
@@ -533,10 +533,66 @@ c-- not checked here. also not checked for variwei at the moment
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
 
-          if ( gencost_errfile(k) .NE. ' ' ) then
+C ---
+C Warn the user that this is a less tested objective function
+C TBD: Write a more consistent transport objective function 
+C ---
+
+          if (gencost_barfile(k)(1:7).eq.'m_trVol') then
+           WRITE(msgBuf,'(A)') 
+     &   '** WARNING ** ECCO_CHECK: cost_gencost_transp.F not tested.'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(A)') 
+     &   ' See m_horflux_vol via cost_gencost_boxmean.F.'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+          elseif( (gencost_barfile(k)(1:8).eq.'m_trHeat').or.
+     &            (gencost_barfile(k)(1:8).eq.'m_trSalt') ) then
+           WRITE(msgBuf,'(2A)') 
+     &   '** WARNING ** ECCO_CHECK: m_tr[Heat,Salt] to be used with',
+     &   ' caution because:'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(A)') 
+     &  '  (1) advection inconsistent unless ENUM_CENTERED_2ND is used'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(A)') 
+     &  '  (2) bolus velocities not included'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           WRITE(msgBuf,'(A)') 
+     &  '  (3) diffusion components not included'
+           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+         endif
+
+C ---
+C Note to user: use gencost_mask not errfile
+C ---
+          if(gencost_errfile(k) .ne. ' ') then
+            WRITE(msgBuf,'(3A)') 'S/R ECCO_CHECK: transp now ',
+     &        ' uses gencost_mask instead of gencost_errfile --',
+     &        ' please update data.ecco accordingly'
+            CALL PRINT_ERROR( msgBuf, myThid )
+            STOP 'ABNORMAL END: S/R ECCO_CHECK'
+          endif
+
+          if(gencost_mask(k) .eq. ' ') then
+            using_gencost(k)=.FALSE.
+            il = ilnblnk(gencost_name(k))
+            WRITE(msgBuf,'(4A)')
+     &        '** WARNING ** ECCO_CHECK_FILES: gencost_mask is',
+     &        ' undefined so ',gencost_name(k)(1:il),
+     &        ' gets switched off'
+            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                 SQUEEZE_RIGHT , myThid)
+
+          else
 c-- West ----------------------
-           il = ilnblnk(gencost_errfile(k))
-           write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'W'
+           il = ilnblnk(gencost_mask(k))
+           write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'W'
            inquire( file=tempfile(1:il+1), exist=exst )
            write(msgBuf,'(2A,L5)') 'ecco_check file, exst: ',
      &       tempfile(1:il+1),exst
@@ -545,7 +601,7 @@ c-- West ----------------------
            if (.NOT.exst) then
              using_gencost(k)=.FALSE.
              WRITE(msgBuf,'(2A)')
-     &         '** WARNING ** ECCO_CHECK_FILES: missing error file: ',
+     &         '** WARNING ** ECCO_CHECK_FILES: missing mask file: ',
      &         tempfile(1:il+1)
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
@@ -554,23 +610,10 @@ c-- West ----------------------
      &         ' so ',gencost_name(k)(1:il),' gets switched off'
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
-           else
-c-- will move to init perhaps, but leave here for now due to check exst
-cgf (1) should indeed be moved to init_fixed
-cgf (2) generalization: read in a 1D vertical mask and do the product
-cgf     of e.g. gencost_mskWsurf*gencost_mskZ in ecco_phys.F?
-cgf (3) naming convention: m_heat_hadv rather than trHeat, etc?
-cgf     would help eventually distinguish, e.g., m_heat_hdif vs m_heat_vdif...
-cgf (4) generalization: specify type of transport (vol, heat, etc) via namelist?
-             call ecco_zero(msktrVolW,1,zeroRL,myThid)
-             CALL READ_REC_3D_RL( tempfile, cost_iprec, 1,
-     &                            msktrVolW, 1, 1, myThid )
-             CALL READ_REC_3D_RL( tempfile, cost_iprec, 1,
-     &             gencost_mskWsurf(1-OLx,1-OLy,1,1,k), 1, 1, myThid )
            endif
 c-- South --------------------
-           il = ilnblnk(gencost_errfile(k))
-           write(tempfile(1:128),'(2A)') gencost_errfile(k)(1:il),'S'
+           il = ilnblnk(gencost_mask(k))
+           write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'S'
            inquire( file=tempfile(1:il+1), exist=exst )
            write(msgBuf,'(2A,L5)') 'ecco_check file, exst: ',
      &       tempfile(1:il+1),exst
@@ -579,7 +622,7 @@ c-- South --------------------
            if (.NOT.exst) then
              using_gencost(k)=.FALSE.
              WRITE(msgBuf,'(2A)')
-     &         '** WARNING ** ECCO_CHECK_FILES: missing error file: ',
+     &         '** WARNING ** ECCO_CHECK_FILES: missing mask file: ',
      &         tempfile(1:il+1)
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
@@ -588,24 +631,9 @@ c-- South --------------------
      &         ' so ',gencost_name(k)(1:il),' gets switched off'
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                  SQUEEZE_RIGHT , myThid)
-           else
-c-- will move to init perhaps, but leave here for now due to check exst
-             call ecco_zero(msktrVolS,1,zeroRL,myThid)
-             CALL READ_REC_3D_RL( tempfile, cost_iprec, 1,
-     &                            msktrVolS, 1, 1, myThid )
-             CALL READ_REC_3D_RL( tempfile, cost_iprec, 1,
-     &             gencost_mskSsurf(1-OLx,1-OLy,1,1,k), 1, 1, myThid )
            endif
-          else
-           using_gencost(k)=.FALSE.
-           il=ilnblnk(gencost_name(k))
-           WRITE(msgBuf,'(4A)')
-     &     '** WARNING ** ECCO_CHECKD: errfile not defined',
-     &     ' so ',gencost_name(k)(1:il),' gets switched off'
-           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &               SQUEEZE_RIGHT , myThid)
+         endif ! gencost_mask.eq.' '
 
-          endif!errfile
 c-- check barfile, make sure character m_tr[Vol,Heat,Salt] match exactly
 c-- (upper/lower-case matters) in cost_gencost_customize
           if(.not.( (gencost_barfile(k)(1:7).EQ.'m_trVol') .OR.
@@ -635,6 +663,7 @@ c-- final report to make sure using_cost_transp is set correctly
      &     'using_cost_transp: ',icount_transp,using_cost_transp
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
+
          endif  !gencost_flag
 
          endif !if ( gencost_datafile(k) .ne. ' ' ) then
