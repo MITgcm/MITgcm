@@ -653,7 +653,7 @@ Alternatively, latex ``:math:`` directives (see :ref:`above <symbolic_notation>`
 Building the manual
 -------------------
 
-Once you've made your changes to the manual, you should build it locally to verify that it works as expected. To do this you will need a working python installation with the following modules installed (use ``pip install MODULE`` in the terminal):
+Once you've made your changes to the manual, you should build it locally to verify that it works as expected. To do this you will need a working python installation with the following modules installed (use ``pip install «MODULE»`` in the terminal):
 
  - sphinx
  - sphinxcontrib-bibtex
