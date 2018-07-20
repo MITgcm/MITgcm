@@ -3,7 +3,7 @@
  useGMRedi = .TRUE.,
  useEXF    = .FALSE.,
  useTHSICE = .FALSE.,
-#useDiagnostics=.TRUE.,
+ useDiagnostics=.TRUE.,
 #useMNC=.TRUE.,
  useGrdchk=.TRUE.,
  &
