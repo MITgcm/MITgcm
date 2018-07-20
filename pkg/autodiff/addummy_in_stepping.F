@@ -5,10 +5,10 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
-#include "AD_CONFIG.h"
 #ifdef ALLOW_DIAGNOSTICS
 # include "DIAG_OPTIONS.h"
 #endif
+#include "AD_CONFIG.h"
 
 CBOP
 C     !ROUTINE: ADDUMMY_IN_STEPPING
@@ -47,21 +47,20 @@ C     == Global variables ===
 # include "FFIELDS.h"
 #endif
 #include "AUTODIFF_PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
-c#include "GRID.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
+c#include "GRID.h"
 # include "AUTODIFF.h"
 # ifndef ALLOW_OPENAD
 #  include "adcommon.h"
 # endif /* ALLOW_OPENAD */
+# ifdef ALLOW_MNC
+#  include "MNC_PARAMS.h"
+# endif
+# ifdef ALLOW_DIAGNOSTICS
+#  include "DIAGNOSTICS_SIZE.h"
+#  include "DIAGNOSTICS.h"
+# endif
 #endif /* ALLOW_AUTODIFF_MONITOR */
-#ifdef ALLOW_DIAGNOSTICS
-# include "DIAG_OPTIONS.h"
-# include "DIAGNOSTICS_SIZE.h"
-# include "DIAGNOSTICS.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -92,7 +91,6 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RS dumRS(1)
       _RL dumRL(1)
       LOGICAL doExch
-
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL modelEnd
 #endif

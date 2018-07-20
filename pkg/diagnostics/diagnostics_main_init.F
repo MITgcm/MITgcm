@@ -892,11 +892,9 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
 # endif /* ALLOW_GMREDI */
 #endif /* ALLOW_EDDYPSI */
 
+#ifdef ALLOW_AUTODIFF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-C Begin adjoint state variables
-
-#ifdef DIAGNOSTICS_ADJ_OUTPUT
+C     Adjoint state variables
 
       diagName  = 'ADJetan '
       diagTitle = 'dJ/dEtaN: Sensitivity to sea surface height anomaly'
@@ -942,9 +940,7 @@ C Begin adjoint state variables
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-#endif
-
-
+#endif /* ALLOW_AUTODIFF */
 
       RETURN
       END

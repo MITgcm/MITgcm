@@ -41,15 +41,13 @@ C     !FUNCTIONS:
 
 c Local variables
 c ===============
-      INTEGER   n
+      INTEGER   n, nd
       INTEGER   myItM1, wrIter
       LOGICAL   dump2fileNow, write2file
+      LOGICAL   writeDiags(numLists)
       _RL       phiSec, freqSec, wrTime
 #ifdef ALLOW_FIZHI
       CHARACTER *9 tagname
-#endif
-#ifdef DIAGNOSTICS_ADJ_OUTPUT
-      integer nd
 #endif
 
       myItM1 = myIter - 1
@@ -60,16 +58,13 @@ C***********************************************************************
 
       write2file = .FALSE.
       DO n = 1,nlists
-        nd = abs(jdiag(1,n))
-        if ( gdiag(nd)(4:4).eq.'A' ) then
-
+        nd = ABS(jdiag(1,n))
+        IF ( gdiag(nd)(4:4).EQ.'A' ) THEN
           freqSec = freq(n)
           phiSec = phase(n)
 
-Cts ---
 C   Want time step of adjoint state variables to match actual time step
 C   to mirror ADJdump
-Cts ---
           wrIter = myIter
           wrTime = myTime
 
@@ -77,8 +72,8 @@ Cts ---
      &                                        wrTime, deltaTClock )
 #ifdef ALLOW_FIZHI
           IF ( useFIZHI ) THEN
-           WRITE(tagname,'(A,I2.2)')'diagtag',n
-           dump2fileNow = ALARM2(tagname)
+            WRITE(tagname,'(A,I2.2)')'diagtag',n
+            dump2fileNow = ALARM2(tagname)
           ENDIF
 #endif
 #ifdef ALLOW_CAL
@@ -91,11 +86,15 @@ Cts ---
           IF ( dumpAtLast .AND. modelEnd
      &                    .AND. freqSec.GE.0. ) dump2fileNow = .TRUE.
           IF ( dump2fileNow ) THEN
-              
             write2file = .TRUE.
             CALL DIAGNOSTICS_OUT(n,wrTime,wrIter,myThid)
           ENDIF
-        endif ! end if (adj var ) 
+          writeDiags(n) = dump2fileNow
+        ELSE
+          writeDiags(n) = .FALSE.
+C       end if ( adj var )
+        ENDIF
+C-    end loop on list id number n
       ENDDO
 
 C--- No Statistics Diag. Output for adjoint variables
@@ -111,34 +110,8 @@ C-    wait for everyone before setting arrays to zero:
       ENDIF
 
 C--     Clear storage space:
-
       DO n = 1,nlists
-        nd = abs(jdiag(1,n))
-        if ( gdiag(nd)(4:4).eq.'A' ) then
-
-          freqSec = freq(n)
-          phiSec = phase(n)
-          wrTime = myTime
-
-          dump2fileNow = DIFF_PHASE_MULTIPLE( phiSec, freqSec,
-     &                                        wrTime, deltaTClock )
-#ifdef ALLOW_FIZHI
-          IF ( useFIZHI ) THEN
-           WRITE(tagname,'(A,I2.2)')'diagtag',n
-           dump2fileNow = ALARM2(tagname)
-          ENDIF
-#endif
-#ifdef ALLOW_CAL
-          IF ( useCAL ) THEN
-            CALL CAL_TIME2DUMP( phiSec, freqSec, deltaTClock,
-     U                          dump2fileNow,
-     I                          wrTime, myIter, myThid )
-          ENDIF
-#endif /* ALLOW_CAL */
-          IF ( dumpAtLast .AND. modelEnd
-     &                    .AND. freqSec.GE.0. ) dump2fileNow = .TRUE.
-          IF ( dump2fileNow ) CALL DIAGNOSTICS_CLEAR(n,myThid)
-        endif ! end if (adj var ) 
+        IF ( writeDiags(n) ) CALL DIAGNOSTICS_CLEAR(n,myThid)
       ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
