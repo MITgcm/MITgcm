@@ -74,9 +74,6 @@ C-- pkg/seaice related switches
       SEAICEuseDYNAMICSswitchInAd  = .FALSE.
       useSmoothCorrel2DinAdMode = .TRUE.
 
-C-- Switch for writing adjoint variables in diagnostics
-      writeDiagnosticsAdj = .false.
-
       WRITE(msgBuf,'(A)') 'AUTODIFF_READPARMS: opening data.autodiff'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )

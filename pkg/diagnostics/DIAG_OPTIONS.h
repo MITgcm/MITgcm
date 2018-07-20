@@ -17,9 +17,6 @@ C Note: Use with cautious since it does not work for all restart
 C  cases (e.g., changing data.diagnostics).
 #undef  DIAGNOSTICS_HAS_PICKUP
 
-C Turn on to print adjoint state variables through diags package
-#undef DIAGNOSTICS_ADJ_OUTPUT
-
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* DIAG_OPTIONS_H */
 

@@ -28,7 +28,6 @@ C     SEAICEuseDYNAMICSswitchInAd  :: switch on/off seaice Dyn in adjoint mode (
       LOGICAL SEAICEuseFREEDRIFTswitchInAd, SEAICEuseFREEDRIFTinFwdMode
       LOGICAL SEAICEuseDYNAMICSswitchInAd, SEAICEuseDYNAMICSinFwdMode
       LOGICAL useSmoothCorrel2DinAdMode, useSmoothCorrel2DinFwdMode
-      LOGICAL writeDiagnosticsAdj
 
 C-    Logical for ad dump format (if true then write all records
 C       to one file per variable; else write one file per record)
@@ -44,7 +43,7 @@ C       to one file per variable; else write one file per record)
      &       SEAICEuseFREEDRIFTswitchInAd, SEAICEuseFREEDRIFTinFwdMode,
      &       SEAICEuseDYNAMICSswitchInAd, SEAICEuseDYNAMICSinFwdMode,
      &       useSmoothCorrel2DinAdMode, useSmoothCorrel2DinFwdMode,
-     &       dumpAdByRec, writeDiagnosticsAdj
+     &       dumpAdByRec
 
 C--   COMMON /AUTODIFF_PARM_I/ Integer valued parameters used by the pkg.
 C     dumpAdVarExch :: control ad-variables exchange before dumping output
