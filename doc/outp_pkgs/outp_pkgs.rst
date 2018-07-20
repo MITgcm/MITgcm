@@ -424,18 +424,21 @@ Some notes to the user
 Using pkg/diagnostics for adjoint variables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. Define the following flag in :filelink:`DIAG_OPTIONS.h <pkg/diagnostics/DIAG_OPTIONS.h>` 
+1. Make sure the following flag is defined in either 
+   :filelink:`AUTODIFF_OPTIONS.h <pkg/autodiff/AUTODIFF_OPTIONS.h>` 
+   or `ECCO_CPPOPTIONS.h` if that is being used.
 
 :: 
 
-    #define DIAGNOSTICS_ADJ_OUTPUT
+    #define ALLOW_AUTODIFF_MONITOR
 
 2. Be sure to increase `numlists` and `numDiags` appropriately in 
    :filelink:`DIAGNOSTICS_SIZE.h <pkg/diagnostics/DIAGNOSTICS_SIZE.h>`.
    Safe values are e.g. 10-20 and 500-1000 respectively.
 
 3. Specify desired variables in ``data.diagnostics``  
-   as any other variable, as in the following example.
+   as any other variable, as in the following example or as in this 
+   :filelink:`data.diagnostics <verification/global_ocean.cs32x15/input_ad/data.diagnostics>`.
    Note however, adjoint and forward diagnostic variables cannot
    be in the same list. That is, a single `fields(:,:)` list 
    cannot contain both adjoint and forward variables.
