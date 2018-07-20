@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics:
+  - Print adjoint variables for theta, salt, uvel, vvel, wvel, and etan
+    through diagnostics package.
 o pkg/shelfice:
   - fix ice shelf mask for very-thin ice shelf case, when hFacMin
     and hFacMinDr criteria leave no room for ice (hFac(k=1)=1).
@@ -11,9 +14,6 @@ o pkg/ecco:
     "cost_gencost_transp", mirroring "m_horflux_vol".
   - Document and warn user (via STDERR) of potential issues with using
     "cost_gencost_transp" to compute volume, heat, or salt transport.
-o pkg/diagnostics:
-  - Print adjoint variables for theta, salt, uvel, vvel, wvel, and etan 
-    through diagnostics package
 
 checkpoint67c (2018/06/26)
 o pkg/generic_advdiff:
