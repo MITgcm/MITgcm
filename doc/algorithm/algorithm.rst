@@ -2467,10 +2467,10 @@ to select the corresponding advection scheme in the parameter file (e.g., ``temp
 .. table:: MITgcm Advection Schemes
   :name: adv_scheme_summary
 
+
   +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
-  |                                                             |      | use |    use        | stencil |                                                   |
-  +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
-  | Advection Scheme                                            | Code | AB? |  multi-dim?   |  (1-D)  | comments                                          |
+  | Advection Scheme                                            | Code | Use | Use           | Stencil | Comments                                          |
+  |                                                             |      | AB? | multi-dim?    | (1-D)   |                                                   |
   +=============================================================+======+=====+===============+=========+===================================================+
   | 1st order upwind                                            |  1   |  no | yes\ :sup:`*` |   3     | linear :math:`\tau`, non-linear :math:`\vec{v}`   |
   +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
@@ -2502,9 +2502,9 @@ to select the corresponding advection scheme in the parameter file (e.g., ``temp
   +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
   | 7th order one-step method w/monotonicity preserving limiter |   7  |  no |        yes    |   9     | non-linear                                        |
   +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
-  | Second order-moment Prather                                 |  80  |  no |        yes    |   3     | non-linear                                        |
+  | second order-moment Prather                                 |  80  |  no |        yes    |   3     | non-linear                                        |
   +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
-  | Second order-moment Prather w/limiter                       |  81  |  no |        yes    |   3     | non-linear                                        |
+  | second order-moment Prather w/limiter                       |  81  |  no |        yes    |   3     | non-linear                                        |
   +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
  
 
@@ -2514,7 +2514,7 @@ is (stencil size -1)/2.  The minimum overlap required by the model in general is
 so for some of the above choices the advection scheme will not cost anything in terms of an additional overlap requirement,
 but especially given a small tile size, using scheme 7 for example would require costly additional overlap points
 (note a cube sphere grid with “wet-points” requires doubling this overlap!)
-In the ‘comments’ column, :math:`\tau` refers to tracer advection, :math:`\vec{v}` momentum advection.
+In the ‘Comments’ column, :math:`\tau` refers to tracer advection, :math:`\vec{v}` momentum advection.
 
 Shown in :numref:`advect-1d-lo` and :numref:`advect-1d-hi` is a 1-D comparison of advection schemes. Here we advect both a smooth hill and a hill with a more abrupt shock.
 :numref:`advect-1d-lo` shown the result for a weak flow  (low Courant number) whereas  :numref:`advect-1d-hi` shows the result for a stronger flow (high Courant number).
