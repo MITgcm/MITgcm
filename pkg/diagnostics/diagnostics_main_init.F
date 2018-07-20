@@ -892,5 +892,55 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
 # endif /* ALLOW_GMREDI */
 #endif /* ALLOW_EDDYPSI */
 
+#ifdef ALLOW_AUTODIFF
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     Adjoint state variables
+
+      diagName  = 'ADJetan '
+      diagTitle = 'dJ/dEtaN: Sensitivity to sea surface height anomaly'
+      diagUnits = 'dJ/m            '
+      diagCode  = 'SM A    M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJuvel '
+      diagTitle = 'dJ/dU: Sensitivity to zonal velocity'
+      diagUnits = 'dJ/(m/s)        '
+      diagCode  = 'UURA    MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'ADJvvel '
+      diagTitle = 'dJ/dV: Sensitivity to meridional velocity'
+      diagUnits = 'dJ/(m/s)        '
+      diagCode  = 'VVRA    MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'ADJwvel '
+      diagTitle = 'dJ/dW: Sensitivity to vertical velocity'
+      diagUnits = 'dJ/(m/s)        '
+      diagCode  = 'WM A    LR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJtheta'
+      diagTitle = 'dJ/dTheta: Sensitivity to potential temperature'
+      diagUnits = 'dJ/degC         '
+      diagCode  = 'SMRA    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJsalt '
+      diagTitle = 'dJ/dSalt: Sensitivity to salinity'
+      diagUnits = 'dJ/psu          '
+      diagCode  = 'SMRA    MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#endif /* ALLOW_AUTODIFF */
+
       RETURN
       END

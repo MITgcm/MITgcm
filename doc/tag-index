@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics:
+  - Print adjoint variables for theta, salt, uvel, vvel, wvel, and etan
+    through diagnostics package.
 o pkg/shelfice:
   - fix ice shelf mask for very-thin ice shelf case, when hFacMin
     and hFacMinDr criteria leave no room for ice (hFac(k=1)=1).
