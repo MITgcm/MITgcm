@@ -564,16 +564,21 @@ C-----------------------------------------------------------------------
 
           IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
            var2Du = Fu%d
-           CALL WRITE_FLD_XY_RS('ADJtaux.',suff, var2Du, myIter, myThid )
+           CALL WRITE_FLD_XY_RS( 'ADJtaux.', suff,
+     &                           var2Du, myIter, myThid )
            var2Du = Fv%d
-           CALL WRITE_FLD_XY_RS('ADJtauy.',suff, var2Du, myIter, myThid )
+           CALL WRITE_FLD_XY_RS( 'ADJtauy.', suff,
+     &                           var2Du, myIter, myThid )
            var2Du = Qnet%d
-           CALL WRITE_FLD_XY_RS('ADJqnet.',suff, var2Du,myIter,myThid )
+           CALL WRITE_FLD_XY_RS( 'ADJqnet.', suff,
+     &                           var2Du, myIter, myThid )
            var2Du = EmPmR%d
-           CALL WRITE_FLD_XY_RS('ADJempr.',suff,var2Du,myIter,myThid )
+           CALL WRITE_FLD_XY_RS( 'ADJempr.', suff,
+     &                           var2Du, myIter, myThid )
 #ifdef SHORTWAVE_HEATING
 cc           var2Du = Qsw%d
-cc           CALL WRITE_FLD_XY_RS('ADJqsw.', suff, var2Du,myIter, myThid )
+cc           CALL WRITE_FLD_XY_RS( 'ADJqsw.', suff,
+cc     &                           var2Du, myIter, myThid )
 #endif
           ENDIF
 
@@ -609,16 +614,18 @@ cc     &                           var3Du, myIter, myThid )
 #endif
 #ifdef ALLOW_SST0_CONTROL
           var2Du = sst%d
-          CALL WRITE_FLD_XY_RS( 'ADJsst.',suff, adSST, myIter, myThid )
+          CALL WRITE_FLD_XY_RS ( 'ADJsst.', suff,
+     &                           var2Du, myIter, myThid )
 #endif
 #ifdef ALLOW_SSS0_CONTROL
           var2Du = sss%d
-          CALL WRITE_FLD_XY_RS( 'ADJsss.',suff, adSSS, myIter, myThid )
+          CALL WRITE_FLD_XY_RS ( 'ADJsss.', suff,
+     &                           var2Du, myIter, myThid )
 #endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
           var2Du = BottomDragFld%d
           CALL WRITE_FLD_XY_RL ( 'ADJbottomdrag.', suff,
-     &                           adBottomDragFld, myIter, myThid )
+     &                           var2Du, myIter, myThid )
 #endif
 
         ELSEIF ( ( dumpAdVarExch.NE.2 ).AND.(dumpAdByRec) ) THEN
@@ -644,21 +651,21 @@ cc     &                           var3Du, myIter, myThid )
 
           IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
            var2Du = fu%d
-           CALL WRITE_REC_XY_RS('ADJtaux',
-     &          var2Du, dumpAdRecMn, myIter, myThid )
+           CALL WRITE_REC_XY_RS( 'ADJtaux',
+     &                           var2Du, dumpAdRecMn, myIter, myThid )
            var2Du = fv%d
-           CALL WRITE_REC_XY_RS('ADJtauy',
-     &          var2Du, dumpAdRecMn, myIter, myThid )
+           CALL WRITE_REC_XY_RS( 'ADJtauy',
+     &                           var2Du, dumpAdRecMn, myIter, myThid )
            var2Du = Qnet%d
-           CALL WRITE_REC_XY_RS('ADJqnet',
-     &          var2Du,dumpAdRecMn, myIter,myThid )
+           CALL WRITE_REC_XY_RS( 'ADJqnet',
+     &                           var2Du, dumpAdRecMn, myIter, myThid )
            var2Du = EmPmR%d
-           CALL WRITE_REC_XY_RS('ADJempr',
-     &          var2Du,dumpAdRecMn, myIter,myThid )
+           CALL WRITE_REC_XY_RS( 'ADJempr',
+     &                           var2Du, dumpAdRecMn, myIter, myThid )
 #ifdef SHORTWAVE_HEATING
 cc           var2Du = Qsw%d
-cc           CALL WRITE_REC_XY_RS('ADJqsw',
-cc     &          var2Du,dumpAdRecMn, myIter, myThid )
+cc           CALL WRITE_REC_XY_RS( 'ADJqsw',
+cc     &          var2Du, dumpAdRecMn, myIter, myThid )
 #endif
           ENDIF
 
@@ -672,35 +679,35 @@ cc     &         var3Du, dumpAdRecMn, myIter, myThid )
 #ifdef ALLOW_DIFFKR_CONTROL
           var3Du = Diffkr%d
           CALL WRITE_REC_XYZ_RL( 'ADJdiffkr',
-     &         var3Du, dumpAdRecMn, myIter, myThid )
+     &                           var3Du, dumpAdRecMn, myIter, myThid )
 #endif
 #ifdef ALLOW_KAPGM_CONTROL
           var3Du = KapGM%d
           CALL WRITE_REC_XYZ_RL( 'ADJkapgm',
-     &         var3Du, dumpAdRecMn, myIter, myThid )
+     &                           var3Du, dumpAdRecMn, myIter, myThid )
 #endif
 #ifdef ALLOW_KAPREDI_CONTROL
           var3Du = KapRedi%d
           CALL WRITE_REC_XYZ_RL( 'ADJkapredi',
-     &         var3Du, dumpAdRecMn, myIter, myThid )
+     &                           var3Du, dumpAdRecMn, myIter, myThid )
 #endif
 #ifdef ALLOW_EDDYPSI_CONTROL
           var3Du = EddyPsiX%d
           CALL WRITE_REC_XYZ_RS( 'ADJeddypsix',
-     &         var3Du, dumpAdRecMn, myIter, myThid )
+     &                           var3Du, dumpAdRecMn, myIter, myThid )
           var3Du = EddyPsiY%d
           CALL WRITE_REC_XYZ_RS( 'ADJeddypsiy',
-     &         var3Du, dumpAdRecMn, myIter, myThid )
+     &                           var3Du, dumpAdRecMn, myIter, myThid )
 #endif
 #ifdef ALLOW_SST0_CONTROL
           var2Du = sst%d
           CALL WRITE_REC_XY_RS( 'ADJsst',
-     &         var2Du, dumpAdRecMn, myIter, myThid )
+     &                           var2Du, dumpAdRecMn, myIter, myThid )
 #endif
 #ifdef ALLOW_SSS0_CONTROL
           var2Du = sss%d
           CALL WRITE_REC_XY_RS( 'ADJsss',
-     &         var2Du, dumpAdRecMn, myIter, myThid )
+     &                           var2Du, dumpAdRecMn, myIter, myThid )
 #endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
           var2Du = BottomDragFld%d
@@ -746,23 +753,23 @@ C       case dumpAdVarExch = 2
            CALL COPY_AD_UV_OUTP( Fu%d, Fv%d, dumRL, dumRL,
      &                                  var2Du, var2Dv, 1, 33, myThid )
            IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJtaux.',
-     &                           suff,var2Du,myIter,myThid )
+     &                           suff, var2Du, myIter, myThid )
            IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJtaux',
-     &                           var2Du,dumpAdRecMn, myIter,myThid )
+     &                           var2Du, dumpAdRecMn, myIter, myThid )
            IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJtauy.',
-     &                           suff,var2Dv,myIter,myThid )
+     &                           suff, var2Dv, myIter, myThid )
            IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJtauy',
-     &                           var2Dv,dumpAdRecMn, myIter,myThid )
+     &                           var2Dv, dumpAdRecMn, myIter, myThid )
            CALL COPY_ADVAR_OUTP( Qnet%d, dumRL, var2Du, 1, 11, myThid )
            IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJqnet.',
-     &                           suff,var2Du,myIter,myThid )
+     &                           suff, var2Du, myIter, myThid )
            IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJqnet',
-     &                           var2Du,dumpAdRecMn, myIter,myThid )
+     &                           var2Du, dumpAdRecMn, myIter, myThid )
            CALL COPY_ADVAR_OUTP( EmPmR%d,dumRL, var2Du, 1, 11, myThid )
            IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJempr.',
-     &                           suff,var2Du,myIter,myThid )
+     &                           suff, var2Du, myIter, myThid )
            IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJempr',
-     &                           var2Du,dumpAdRecMn, myIter,myThid )
+     &                           var2Du, dumpAdRecMn, myIter, myThid )
 #ifdef SHORTWAVE_HEATING
 cc           CALL COPY_ADVAR_OUTP( Qsw%d,  dumRL, var2Du, 1, 11, myThid )
 cc           IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJqsw.',
@@ -814,16 +821,16 @@ cc     &                           var3Du, dumpAdRecMn, myIter, myThid )
 #ifdef ALLOW_SST0_CONTROL
           CALL COPY_ADVAR_OUTP( SST%d, dumRL, var2Du, 1, 11, myThid )
           IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJsst.',
-     &                           suff,var2Du,myIter,myThid )
+     &                           suff, var2Du, myIter, myThid )
           IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJsst',
-     &                           var2Du,dumpAdRecMn, myIter,myThid )
+     &                           var2Du, dumpAdRecMn, myIter, myThid )
 #endif
 #ifdef ALLOW_SSS0_CONTROL
           CALL COPY_ADVAR_OUTP( SSS%d, dumRL, var2Du, 1, 11, myThid )
           IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJsss.',
-     &                           suff,var2Du,myIter,myThid )
+     &                           suff, var2Du, myIter, myThid )
           IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJsss',
-     &                           var2Du,dumpAdRecMn, myIter,myThid )
+     &                           var2Du, dumpAdRecMn, myIter, myThid )
 #endif
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
           CALL COPY_ADVAR_OUTP( dumRS, BottomDragFld%d,
@@ -915,7 +922,7 @@ C     dumpAdVarExch.NE.2
           CALL MNC_CW_RL_W('D','adstate',0,0,'adW', adwVel, myThid)
 
           CALL MNC_CW_RS_W('D','adstate',0,0,'adQnet', adQnet, myThid)
-          CALL MNC_CW_RS_W('D','adstate',0,0,'adEmpmr', adEmpmr, myThid)
+          CALL MNC_CW_RS_W('D','adstate',0,0,'adEmpmr',adEmpmr, myThid)
           CALL MNC_CW_RS_W('D','adstate',0,0,'adFu', adfu, myThid)
           CALL MNC_CW_RS_W('D','adstate',0,0,'adFv', adfv, myThid)
 
