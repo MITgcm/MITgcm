@@ -229,6 +229,8 @@ grid-attribute information. The :varlink:`gdiag` array is described in :numref:`
    +-----------+-----------------------+-----------------------------------------------------+
    | parse(4)  | :math:`\rightarrow` P | positive definite diagnostic                        |
    +-----------+-----------------------+-----------------------------------------------------+
+   |           | :math:`\rightarrow` A | Adjoint variable diagnostic                         |
+   +-----------+-----------------------+-----------------------------------------------------+
    | parse(5)  | :math:`\rightarrow` C | with counter array                                  |
    +-----------+-----------------------+-----------------------------------------------------+
    |           | :math:`\rightarrow` P | post-processed (not filled up) from other diags     |
@@ -382,6 +384,85 @@ The parameter :varlink:`numLists` must be set greater than or equal to the numbe
 of separate output streams that the user specifies in the namelist
 file ``data.diagnostics``. The parameter :varlink:`numperList` corresponds to the
 maximum number of diagnostics requested per output streams.
+
+
+Adjoint variables
+~~~~~~~~~~~~~~~~~
+
+The diagnostics package can also be used to print adjoint state variables. Using the diagnostics package
+as opposed to using the standard 'adjoint dump' options allows one to take advantage of all the 
+averaging and post processing routines available to other diagnostics variables. 
+
+Currently, the available adjoint state variables are:
+
+::
+
+   110 |ADJetan |  1 |       |SM A    M1|dJ/m            |dJ/dEtaN: Sensitivity to sea surface height anomaly
+   111 |ADJuvel | 50 |   112 |UURA    MR|dJ/(m/s)        |dJ/dU: Sensitivity to zonal velocity
+   112 |ADJvvel | 50 |   111 |VVRA    MR|dJ/(m/s)        |dJ/dV: Sensitivity to meridional velocity
+   113 |ADJwvel | 50 |       |WM A    LR|dJ/(m/s)        |dJ/dW: Sensitivity to vertical velocity
+   114 |ADJtheta| 50 |       |SMRA    MR|dJ/degC         |dJ/dTheta: Sensitivity to potential temperature
+   115 |ADJsalt | 50 |       |SMRA    MR|dJ/psu          |dJ/dSalt: Sensitivity to salinity
+
+Some notes to the user
+^^^^^^^^^^^^^^^^^^^^^^
+
+1. This feature is currently untested with OpenAD.
+
+2. This feature does not work with the divided adjoint.
+
+3. `adEtaN` is broken in :filelink:`addummy_in_stepping.F <pkg/autodiff/addummy_in_stepping.F>`
+   so the output through diagnostics is zeros just as with the standard 'adjoint dump' method.
+
+4. The diagStats options are not available for these variables.   
+
+5. Adjoint variables are recognized by checking the 10 character variable `diagCode`.
+   To add a new adjoint variable, set the 4th position of `diagCode` to A 
+   (notice this is the case for the list of available adjoint variables).
+
+
+Using pkg/diagnostics for adjoint variables
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+1. Make sure the following flag is defined in either 
+   :filelink:`AUTODIFF_OPTIONS.h <pkg/autodiff/AUTODIFF_OPTIONS.h>` 
+   or `ECCO_CPPOPTIONS.h` if that is being used.
+
+:: 
+
+    #define ALLOW_AUTODIFF_MONITOR
+
+2. Be sure to increase `numlists` and `numDiags` appropriately in 
+   :filelink:`DIAGNOSTICS_SIZE.h <pkg/diagnostics/DIAGNOSTICS_SIZE.h>`.
+   Safe values are e.g. 10-20 and 500-1000 respectively.
+
+3. Specify desired variables in ``data.diagnostics``  
+   as any other variable, as in the following example or as in this 
+   :filelink:`data.diagnostics <verification/global_ocean.cs32x15/input_ad/data.diagnostics>`.
+   Note however, adjoint and forward diagnostic variables cannot
+   be in the same list. That is, a single `fields(:,:)` list 
+   cannot contain both adjoint and forward variables.
+
+::
+
+    &DIAGNOSTICS_LIST
+    # ---
+      fields(1:5,1) = 'ADJtheta','ADJsalt ',
+                         'ADJuvel ','ADJvvel ','ADJwvel '
+      filename(1) = 'diags/adjState_3d_snaps',
+      frequency(1)=-86400.0,
+      timePhase(1)=0.0,
+    #---
+      fields(1:5,2) = 'ADJtheta','ADJsalt ',
+                         'ADJuvel ','ADJvvel ','ADJwvel '
+      filename(2) = 'diags/adjState_3d_avg',
+      frequency(2)= 86400.0,
+    #---
+    &
+
+Note: the diagnostics package automatically provides a phase shift of :math:`frequency/2`, 
+so specify `timePhase = 0` to match output from `adjDumpFreq`.
+
 
 Adding new diagnostics to the code
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

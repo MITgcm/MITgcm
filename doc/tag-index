@@ -42,6 +42,15 @@ o pkg/obcs/obcs_balance_flow.F and pkg/shelfice/shelfice_sea_level_avg (7/12/18)
   - incoming/outgoing velocity set based on "flux" derived from \int(sea level in open ocean)
     divided by delta t
 
+o pkg/diagnostics:
+  - Print adjoint variables for theta, salt, uvel, vvel, wvel, and etan
+    through diagnostics package.
+o pkg/shelfice:
+  - fix ice shelf mask for very-thin ice shelf case, when hFacMin
+    and hFacMinDr criteria leave no room for ice (hFac(k=1)=1).
+    Note: thin ice-shelf that results in 0< hFac(k=1) <1 still need
+    to be fixed when using any seaice pkg.
+
 o pkg/ecco:
   - Replace "mskTrVol" and "gencost_errfile" with "gencost_mask" in
     "cost_gencost_transp", mirroring "m_horflux_vol".
