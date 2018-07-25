@@ -27,6 +27,9 @@ c#endif
 #ifdef ALLOW_DIC
 # include "DIC_OPTIONS.h"
 #endif
+#ifdef ALLOW_BLING
+# include "BLING_OPTIONS.h"
+#endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
