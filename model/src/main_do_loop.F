@@ -27,9 +27,6 @@ c#endif
 #ifdef ALLOW_DIC
 # include "DIC_OPTIONS.h"
 #endif
-#ifdef ALLOW_BLING
-# include "BLING_OPTIONS.h"
-#endif
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
@@ -108,10 +105,6 @@ c**************************************
 #  include "DIC_ATMOS.h"
 #  include "DIC_CTRL.h"
 #  include "DIC_COST.h"
-# endif
-# ifdef ALLOW_BLING
-#  include "BLING_VARS.h"
-#  include "BLING_LOAD.h"
 # endif
 # ifdef ALLOW_OBCS
 #  include "OBCS_PARAMS.h"
