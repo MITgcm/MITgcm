@@ -121,10 +121,6 @@ c They provide the fields to be stored.
 #   include "DIC_CTRL.h"
 #   include "DIC_COST.h"
 #  endif
-#  ifdef ALLOW_BLING
-#   include "BLING_VARS.h"
-#   include "BLING_LOAD.h"
-#  endif
 #  ifdef ALLOW_OBCS
 #   include "OBCS_PARAMS.h"
 #   include "OBCS_FIELDS.h"
@@ -135,10 +131,15 @@ c They provide the fields to be stored.
 #  endif
 #  ifdef ALLOW_EXF
 #   include "EXF_FIELDS.h"
+#   include "EXF_PARAM.h"
 #   ifdef ALLOW_BULKFORMULAE
 #    include "EXF_CONSTANTS.h"
 #   endif
 #  endif /* ALLOW_EXF */
+#  ifdef ALLOW_BLING
+#   include "BLING_VARS.h"
+#   include "BLING_LOAD.h"
+#  endif
 #  ifdef ALLOW_SEAICE
 #   include "SEAICE_SIZE.h"
 #   include "SEAICE.h"
