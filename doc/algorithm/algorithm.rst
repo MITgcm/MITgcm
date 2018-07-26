@@ -1313,6 +1313,7 @@ points respectively.
 
     | :math:`G_u^{metric}, G_v^{metric}` : :varlink:`mT` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
+.. _non_hyd_metric_terms:
 
 Non-hydrostatic metric terms
 ----------------------------
@@ -2513,7 +2514,7 @@ The minimum size of the required tile overlap region (:varlink:`OLx`, :varlink:`
 is (stencil size -1)/2.  The minimum overlap required by the model in general is 2,
 so for some of the above choices the advection scheme will not cost anything in terms of an additional overlap requirement,
 but especially given a small tile size, using scheme 7 for example would require costly additional overlap points
-(note a cube sphere grid with “wet-points” requires doubling this overlap!)
+(note a cube sphere grid with a “wet-corner” requires doubling this overlap!)
 In the ‘Comments’ column, :math:`\tau` refers to tracer advection, :math:`\vec{v}` momentum advection.
 
 Shown in :numref:`advect-1d-lo` and :numref:`advect-1d-hi` is a 1-D comparison of advection schemes. Here we advect both a smooth hill and a hill with a more abrupt shock.
