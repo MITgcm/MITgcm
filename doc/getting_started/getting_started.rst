@@ -1906,7 +1906,8 @@ of salinity measurements, and why use of the latter is preferred, in the context
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`selectP_inEOS_Zc`            | PARM01    | depends on :varlink:`eosType`                    | select which pressure to use in EOS for :math:`z`-coor. (0= use :math:`-g \rho_c z`,                    |
 |                                        |           |                                                  | 1= use :math:`p_{ref} = -\int{-g\rho(T_{ref},S_{ref},p_{ref})dz}`, 2= hydrostatic dynamical pressure,   |
-|                                        |           |                                                  | 3= use full hyd.+non-hyd. pressure); for 'JMD95P', 'UNESCO', 'MDJWF', 'MDJWF' default=2, otherwise 0    |
+|                                        |           |                                                  | 3= use full hyd.+non-hyd. pressure); for ``JMD95P``, ``UNESCO``, ``MDJWF``, ``MDJWF`` default=2,        |
+|                                        |           |                                                  | otherwise 0                                                                                             |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`rhonil`                      | PARM01    | 9.998E+02                                        | reference density for linear EOS (kg/m\ :sup:`3`)                                                       |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -2432,7 +2433,7 @@ time scale coefficient is set through the variable
 :varlink:`tauThetaClimRelax` (in seconds). The same procedure applies for
 salinity with the variable names :varlink:`EmPmRfile`, :varlink:`saltClimFile`,
 and :varlink:`tauSaltClimRelax` for freshwater flux (in m/s) and surface
-salinity (in psu or g/kg) data files and relaxation time scale coefficient
+salinity (in psu or g/kg) data files and relaxation timescale coefficient
 (in seconds), respectively. 
 
 
