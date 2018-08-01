@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/STREAMICE_OPTIONS.h,v 1.3 2016/04/02 23:13:10 jmc Exp $
-C $Name:  $
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C CPP options file for MYPACKAGE

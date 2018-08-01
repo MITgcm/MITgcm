@@ -34,7 +34,7 @@ C                                 ice shelf instead of default diffusive heat
 C                                 flux, see Holland and Jenkins (1999),
 C                                 eq.21,22,26,31; def: F
 C     SHELFICErealFWflux       :: ensure vert advective flux at bdry uses top cell
-C                                 value rather than "boundary layer" value   F
+C                                 value rather than "boundary layer" value; def F  
 C     SHELFICEheatTransCoeff   :: constant heat transfer coefficient that
 C                                 determines heat flux into shelfice
 C                                 (def: 1e-4 m/s)
@@ -54,8 +54,8 @@ C     shiPrandtl, shiSchmidt   :: constant Prandtl (13.8) and Schmidt (2432.0)
 C                                 numbers used to compute gammaTurb
 C     shiKinVisc               :: constant kinetic viscosity used to compute
 C                                 gammaTurb (def: 1.95e-5)
-C     SHELFICERemeshFrequency  :: Frequency that size of etaN is checked to
-C                                 trigger remesh
+C     SHELFICERemeshFrequency  :: Frequency (in seconds) of call to
+C                                 SHELFICE_REMESHING; def 2592000
 C     SHELFICESplitThreshold   :: Max size of etaN allowed before a remesh
 C     SHELFICEMergeThreshold   :: Min size of etaN allowed before a remesh
 C     -----------------------------------------------------------------------
@@ -128,10 +128,10 @@ CEOP
       _RL SHELFICEthetaSurface
       _RL shiCdrag, shiZetaN, shiRc
       _RL shiPrandtl, shiSchmidt, shiKinVisc
-	  _RL SHELFICERemeshFrequency
+      _RL SHELFICERemeshFrequency
       _RL SHELFICESplitThreshold
       _RL SHELFICEMergeThreshold
-	  
+  
 
       COMMON /SHELFICE_FIELDS_RL/
      &     shelficeMass, shelficeMassInit,
@@ -177,8 +177,7 @@ CEOP
       LOGICAL SHELFICE_oldCalcUStar
       LOGICAL SHELFICEMassStepping
       LOGICAL SHELFICEDynMassOnly
-	  LOGICAL SHELFICErealfwflux
-	  LOGICAL conserve_ssh
+      LOGICAL SHELFICErealfwflux
       COMMON /SHELFICE_PARMS_L/
      &     SHELFICEisOn,
      &     useISOMIPTD,
@@ -195,8 +194,7 @@ CEOP
      &     SHELFICE_oldCalcUStar,
      &     SHELFICEMassStepping,
      &     SHELFICEDynMassOnly,
-     &     SHELFICErealfwflux, 
-     &     conserve_ssh
+     &     SHELFICErealfwflux 
 
       CHARACTER*(MAX_LEN_FNAM) SHELFICEloadAnomalyFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICEmassFile

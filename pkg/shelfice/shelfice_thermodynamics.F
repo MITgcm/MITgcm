@@ -85,13 +85,13 @@ C     drKp1, recip_drLoc
       _RL sLoc(1:sNx,1:sNy)
       _RL pLoc(1:sNx,1:sNy)
       _RL uLoc(1:sNx,1:sNy)
-      _RL vLoc(1:sNx,1:sNy)	  
+      _RL vLoc(1:sNx,1:sNy) 
 C--  DNG: TOPDR averages U/V over boundary layer at U/V points, then averages
-C--  (as opposed to averaging horizontally then vertically)	  
+C--  (as opposed to averaging horizontally then vertically)  
 #ifdef SHI_USTAR_TOPDR
       _RL u_topdr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_topdr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif	  	  
+#endif    
       _RL velSq(1:sNx,1:sNy)
       _RL thetaFreeze, saltFreeze, recip_Cp
       _RL freshWaterFlux, convertFW2SaltLoc
@@ -250,7 +250,7 @@ C     where this value is part of the protocol
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 C--  DNG: TOPDR averages U/V over boundary layer at U/V points, then averages
-C--  (as opposed to averaging horizontally then vertically)	   
+C--  (as opposed to averaging horizontally then vertically)
 #ifdef SHI_USTAR_TOPDR
         IF ( SHELFICEBoundaryLayer ) THEN
 C--   average over boundary layer width
@@ -262,7 +262,7 @@ C--   average over boundary layer width
          ENDDO
         ENDIF
 #endif
-	   
+   
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef SHI_ALLOW_GAMMAFRICT
         act1 = bi - myBxLo(myThid)
@@ -326,7 +326,7 @@ C-    Original averaging expression for uStar:
          ENDDO
         ENDIF
 C--  DNG: TOPDR averages U/V over boundary layer at U/V points, then averages
-C--  (as opposed to averaging horizontally then vertically)		
+C--  (as opposed to averaging horizontally then vertically)
 #ifdef SHI_USTAR_TOPDR
 c    Average at u- and v- points over deltaR. use later to override uLoc/vLoc
         IF ( SHELFICEBoundaryLayer ) THEN
@@ -433,7 +433,7 @@ C halfRL*
          ENDDO
         ENDIF
 #endif
-		
+
 C--   turn potential temperature into in-situ temperature relative
 C--   to the surface
         DO J = 1, sNy

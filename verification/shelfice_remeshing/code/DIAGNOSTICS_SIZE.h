@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/DIAGNOSTICS_SIZE.h,v 1.2 2016/01/22 16:09:33 dgoldberg Exp $
-C $Name:  $
-
 
 C     Diagnostics Array Dimension
 C     ---------------------------

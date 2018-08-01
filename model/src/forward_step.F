@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/forward_step.F,v 1.4 2017/08/21 16:06:48 jmc Exp $
-C $Name:  $
-
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
@@ -111,9 +108,9 @@ C     \ev
 C     !CALLING SEQUENCE:
 C     FORWARD_STEP
 C       |
-C       |-- SHELFICE_REMESHING
-C       |
 C       |-- AUTODIFF_INADMODE_UNSET
+C       |
+C       |-- SHELFICE_REMESHING
 C       |
 C       |-- RESET_NLFS_VARS
 C       |-- UPDATE_R_STAR
@@ -389,15 +386,6 @@ C     myIterBeg :: iteration number at beginning of time step
 #endif /* ALLOW_LONGSTEP */
 CEOP
 
-#ifdef ALLOW_SHELFICE
-#ifdef ALLOW_SHELFICE_REMESHING
-C-- Remesh shelfice
-        CALL TIMER_START('SHELFICE_REMESHING     [FORWARD_STEP]',myThid)
-        CALL SHELFICE_REMESHING (myTime, myIter, myThid )
-        CALL TIMER_STOP('SHELFICE_REMESHING     [FORWARD_STEP]',myThid)
-#endif /* ALLOW_SHELFICE_REMESHING */
-#endif /* ALLOW_SHELFICE */
-
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('FORWARD_STEP',myThid)
 #endif
@@ -426,6 +414,15 @@ c**************************************
 #include "checkpoint_lev1_template.h"
 c**************************************
 #endif
+
+#ifdef ALLOW_SHELFICE
+#ifdef ALLOW_SHELFICE_REMESHING
+C-- Remesh shelfice
+        CALL TIMER_START('SHELFICE_REMESHING     [FORWARD_STEP]',myThid)
+        CALL SHELFICE_REMESHING (myTime, myIter, myThid )
+        CALL TIMER_STOP('SHELFICE_REMESHING     [FORWARD_STEP]',myThid)
+#endif /* ALLOW_SHELFICE_REMESHING */
+#endif /* ALLOW_SHELFICE */
 
 C--   Reset geometric factors (hFacC,W,S & recip_hFac) to their current values:
 C     added to simplify adjoint derivation - no effect in forward run

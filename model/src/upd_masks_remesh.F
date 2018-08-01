@@ -147,7 +147,7 @@ C--   Calculate lopping factor hFacC : Remove part outside of the domain
 C     taking into account the Reference (=at rest) Surface Position Ro_surf
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx  
-		  Ro_surf(i,j,bi,bj) = 0. _d 0
+          Ro_surf(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
         DO k=1, Nr
@@ -219,8 +219,10 @@ C       Note: if no fluid (continent) ==> kSurf = Nr+1
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           Ro_surf(i,j,bi,bj) = R_low(i,j,bi,bj) + tmpVar2(i,j)
-          maskInC(i,j,bi,bj) = 0.
-          IF ( kSurfC(i,j,bi,bj).LE.Nr ) maskInC(i,j,bi,bj) = 1.
+!          maskInC(i,j,bi,bj) = 0.
+!          IF ( kSurfC(i,j,bi,bj).LE.Nr ) maskInC(i,j,bi,bj) = 1.
+! DNG do not need to update these for vertical remeshing
+! DNG but will need to update for horizontal remeshing
          ENDDO
         ENDDO
 
@@ -449,10 +451,12 @@ C--   Calculate surface k index for interface W & S (U & V points)
            IF (hFacW(i,j,k,bi,bj).NE.zeroRS) kSurfW(i,j,bi,bj) = k
            IF (hFacS(i,j,k,bi,bj).NE.zeroRS) kSurfS(i,j,bi,bj) = k
           ENDDO
-          maskInW(i,j,bi,bj)= 0.
-          IF ( kSurfW(i,j,bi,bj).LE.Nr ) maskInW(i,j,bi,bj)= 1.
-          maskInS(i,j,bi,bj)= 0.
-          IF ( kSurfS(i,j,bi,bj).LE.Nr ) maskInS(i,j,bi,bj)= 1.
+!          maskInW(i,j,bi,bj)= 0.
+!          IF ( kSurfW(i,j,bi,bj).LE.Nr ) maskInW(i,j,bi,bj)= 1.
+!          maskInS(i,j,bi,bj)= 0.
+!          IF ( kSurfS(i,j,bi,bj).LE.Nr ) maskInS(i,j,bi,bj)= 1.
+! DNG do not need to update these for vertical remeshing
+! DNG but will need to update for horizontal remeshing
          ENDDO
         ENDDO
        ENDDO

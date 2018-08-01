@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/OBCS_OPTIONS.h,v 1.3 2016/05/05 18:16:04 dgoldberg Exp $
-C $Name:  $
- 
 C CPP options file for OBCS package
 C
 C Use this file for selecting options within the OBCS package

@@ -17,7 +17,7 @@
  SHELFICERemeshFrequency = 1500.0,
  SHELFICESplitThreshold =1.25,
  SHELFICEMergeThreshold =0.24,
- conserve_ssh = .true.,
+# conserve_ssh = .true.,
 # shelfice_dig_ice = .false.
 # shelfice_massmin_trueDens=.false.
  &

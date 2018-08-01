@@ -1,11 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/shelfice, pkg/obcs, model/src (7/12/18):
+o pkg/shelfice, model/src (7/12/18):
   - addition of functionality described in Jordan et al (2017), "Ocean-Forced 
     Ice-Shelf Thinning in a Synchronously Coupled Ice-Ocean Model". 
-    allows "remeshing" of masks in vertical in response to changing free surface
-    due to ice shelf mass change
+    allows "remeshing" of masks in vertical in response to changing free 
+    surface due to ice shelf mass change
   - consists of following new files in shelfice package:
     shelfice_remeshing.F:
       called from forward_step. begins remeshing process at fixed time intervals
@@ -20,29 +20,22 @@ o pkg/shelfice, pkg/obcs, model/src (7/12/18):
     shelfice_read_pickup.F
     shelfice_write_pickup.F 
     shelfice_init_fixed.F
-    shelfice_init_varia.F
-  - model/src/forward_step.F: to add call to shelfice_remeshing if #define ALLOW_SHELFICE_REMESHING	
-  - new file model/src/upd_masks_remesh.F: necessary to recalculate hFac/masks after remeshing
-    similar to ini_masks_etc
-  - new file pkg/obcs/obcs_update_remesh.F: necessary as remeshing resets maskinW/S/C
-     called from shelfice_remeshing. similar to obcs_ini_masks
-  - new file model/src/upd_linear_phisurf.F: necessary as fields depend in maskC/W/S
-     similar to ini_linear_phisurf
-  - pkg/shelfice/shelfice_init_depths.F: to reflect change made in verification_other/shelfice_remeshing experiment
-  - pkg/shelfice/shelfice_thermodynamics.F: to allow different formulation of ustar, set via CPP directive 
-     SHI_USTAR_TOPDR
-  - pkg/shelfice/shelfice_thermodynamics.F: to make use of real fw flux even with shelficeBoundaryLayer
-  - pkg/shelfice/shelfice_forcing_surf.F: to make use of real fw flux even with shelficeBoundaryLayer
-  
-o pkg/shelfice/shelfice_step_icemass.F (7/12/18):
-  - average out shelfice thickness for partially-covered cell to set shelfice_mass
-  
-o pkg/obcs/obcs_balance_flow.F and pkg/shelfice/shelfice_sea_level_avg (7/12/18)
-  - use obcs_balance boundary condition to correct imbalance in average sea level
-  - incoming/outgoing velocity set based on "flux" derived from \int(sea level in open ocean)
-    divided by delta t
+  - model/src/forward_step.F: to add call to shelfice_remeshing if 
+    #define ALLOW_SHELFICE_REMESHING	
+  - new file model/src/upd_masks_remesh.F: necessary to recalculate hFac/masks 
+    after remeshing similar to ini_masks_etc
+  - pkg/shelfice/shelfice_init_depths.F: to reflect change made in 
+    verification_other/shelfice_remeshing experiment
+  - pkg/shelfice/shelfice_thermodynamics.F: to allow different formulation of 
+    ustar, set via CPP directive SHI_USTAR_TOPDR
+  - pkg/shelfice/shelfice_thermodynamics.F: to make use of real fw flux even 
+    with shelficeBoundaryLayer
+  - pkg/shelfice/shelfice_forcing_surf.F: to make use of real fw flux even with 
+    shelficeBoundaryLayer
+  - verification/shelfice_remeshing/*: new verification experiment
+    to test remeshing functionality
 
-o pkg/diagnostics:
+o pkg/diagnostics (7/12/18):
   - Print adjoint variables for theta, salt, uvel, vvel, wvel, and etan
     through diagnostics package.
 o pkg/shelfice:
@@ -50,7 +43,6 @@ o pkg/shelfice:
     and hFacMinDr criteria leave no room for ice (hFac(k=1)=1).
     Note: thin ice-shelf that results in 0< hFac(k=1) <1 still need
     to be fixed when using any seaice pkg.
-
 o pkg/ecco:
   - Replace "mskTrVol" and "gencost_errfile" with "gencost_mask" in
     "cost_gencost_transp", mirroring "m_horflux_vol".
