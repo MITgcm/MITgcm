@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm_contrib/verification_other/shelfice_remeshing/code/shelfice_init_varia.F,v 1.1 2016/01/22 16:09:34 dgoldberg Exp $
-C $Name:  $
-
 #include "SHELFICE_OPTIONS.h"
 
 CBOP
@@ -45,8 +42,6 @@ CEOP
           shiTransCoeffT        (i,j,bi,bj) = 0. _d 0
           shiTransCoeffS        (i,j,bi,bj) = 0. _d 0
           shelficeMass          (i,j,bi,bj) = 0. _d 0
-!          EFFMASS               (i,j,bi,bj) = 0. _d 0
-!          SeaLevelRestore       (i,j,bi,bj) = 0. _d 0 
          ENDDO
         ENDDO
        ENDDO
