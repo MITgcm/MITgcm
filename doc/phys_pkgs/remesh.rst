@@ -55,8 +55,8 @@ Run-time parameters
   +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
   | SHELFICEMergeThreshold          |   .26                        | Minimum allowed ``hFacC`` for a cell                                                                            |
   +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
-  | conserve_SSH                    |   .false.                    | Conserves sea level of non-ice covered ocean                                                                    |
-  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+..  | conserve_SSH                    |   .false.                    | Conserves sea level of non-ice covered ocean                                                                    |
+..  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
   
   
   
@@ -103,10 +103,10 @@ Coupling with STREAMICE
 
 Shelfice remeshing can be used on its own (i.e. without coupling to an ice sheet model), with the effects of ice dynamics specified via ``SHELFICEMassDynTendFile``. Alternatively it can be coupled to the ``STREAMICE`` package. To allow this, STREAMICE must be enabled. Please see the shelfice_remeshing verification for an example. (Documentation on SHELFICE is under construction)
 
-Sea level restoring
-+++++++++++++++++++
+.. Sea level restoring
+.. +++++++++++++++++++
 
-When the grounded part of an ice sheet represented by ``STREAMICE`` or the calved mass of an ice shelf is not accounted for, the amount of water displaced by the ice changes, which could lead to sea level change in open ocean. The latter of these is the case in the shelfice_remeshing verification experiment. In a small domain, this has large effects on open-ocean sea level. If these effects are unwanted, the ``conserve_ssh`` flag can be used. This feature takes advantage of the balance feature of the OBCS (:numref:`sub_phys_pkg_obcs`) package. To use this, OBCS must be enabled, as well as the CPP directive ``OBCS_BALANCE_FLOW`` and the runtime parameter ``useOBCSbalance`` must be set to .TRUE. This remeshing feature calculates at each time step the average sea level :math:`z_{sl}` of non-ice shelf covered ocean, and the OBCS balance flow then acts as if there is an additional flux of :math:`\frac{z_{sl}}{\Delta t}` into the domain which must be balanced.
+.. When the grounded part of an ice sheet represented by ``STREAMICE`` or the calved mass of an ice shelf is not accounted for, the amount of water displaced by the ice changes, which could lead to sea level change in open ocean. The latter of these is the case in the shelfice_remeshing verification experiment. In a small domain, this has large effects on open-ocean sea level. If these effects are unwanted, the ``conserve_ssh`` flag can be used. This feature takes advantage of the balance feature of the OBCS (:numref:`sub_phys_pkg_obcs`) package. To use this, OBCS must be enabled, as well as the CPP directive ``OBCS_BALANCE_FLOW`` and the runtime parameter ``useOBCSbalance`` must be set to .TRUE. This remeshing feature calculates at each time step the average sea level :math:`z_{sl}` of non-ice shelf covered ocean, and the OBCS balance flow then acts as if there is an additional flux of :math:`\frac{z_{sl}}{\Delta t}` into the domain which must be balanced.
    
 Diagnostics
 +++++++++++
