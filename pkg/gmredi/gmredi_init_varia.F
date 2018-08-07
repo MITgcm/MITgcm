@@ -22,9 +22,7 @@ C     === Global variables ===
 #include "GRID.h"
 #include "GMREDI.h"
 #include "GMREDI_TAVE.h"
-#ifdef ALLOW_GM_LEITH_QG
-#include "MOM_VISC.h"
-#endif
+
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===

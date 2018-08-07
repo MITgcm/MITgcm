@@ -34,9 +34,6 @@ C     == GLobal variables ==
 #ifdef ALLOW_CTRL
 # include "CTRL_FIELDS.h"
 #endif
-#ifdef ALLOW_GM_LEITH_QG
-#include "MOM_VISC.h"
-#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
