@@ -6,7 +6,6 @@
  &PARM01
  viscAr=5.E-5,
 #- Use QG version of Leith dynamic viscosity
- useLeithQG = .TRUE.,
  viscC2LeithQG = 1.,
 #- This is the max Viscosity used, be it Smag or Leith, and it scales
 #  with grid size and timestep
