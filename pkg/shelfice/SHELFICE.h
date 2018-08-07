@@ -25,16 +25,18 @@ C                                 following Jenkins et al. (2001, JPO), def: F
 C     SHELFICEMassStepping     :: flag to step forward ice shelf mass/thickness
 C                                 accounts for melting/freezing & dynamics
 C                                 (from file or from coupling), def: F
-C     SHELFICEDynMassOnly      :: step ice mass ONLY with Shelficemassdyntendency
-C                                 (not melting/freezing) def: F
+C     SHELFICEDynMassOnly      :: step ice mass ONLY with 
+C                                 Shelficemassdyntendency, not melting/freezing 
+C                                 def: F
 C     SHELFICEboundaryLayer    :: turn on vertical merging of cells to for a
 C                                 boundary layer of drF thickness, def: F
 C     SHELFICEadvDiffHeatFlux  :: use advective-diffusive heat flux into the
 C                                 ice shelf instead of default diffusive heat
 C                                 flux, see Holland and Jenkins (1999),
 C                                 eq.21,22,26,31; def: F
-C     SHELFICErealFWflux       :: ensure vert advective flux at bdry uses top cell
-C                                 value rather than "boundary layer" value, def: F  
+C     SHELFICErealFWflux       :: ensure vert advective flux at bdry uses top i
+C                                 cell value rather than "boundary layer" value
+C                                 def: F  
 C     SHELFICEheatTransCoeff   :: constant heat transfer coefficient that
 C                                 determines heat flux into shelfice
 C                                 (def: 1e-4 m/s)
