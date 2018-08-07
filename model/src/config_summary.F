@@ -147,8 +147,6 @@ C-    Horizontal viscosity parameters:
      & ' /* Grid dependent lateral harmonic viscosity ( non-dim. ) */')
        CALL WRITE_0D_L( useFullLeith, INDEX_NONE, 'useFullLeith =',
      & ' /* Use Full Form of Leith Viscosity on/off flag*/')
-       CALL WRITE_0D_L( useLeithQG, INDEX_NONE, 'useLeithQG =',
-     & ' /* Use QG Leith Viscosity on/off flag*/')
        CALL WRITE_0D_L( useAreaViscLength, INDEX_NONE,
      & 'useAreaViscLength =',
      & ' /* Use area for visc length instead of geom. mean*/')

@@ -182,7 +182,7 @@ C--   Continuous equation parameters
      & viscAh, viscAhW, viscAhMax,
      & viscAhGrid, viscAhGridMax, viscAhGridMin,
      & viscC2leith, viscC4leith, smag3D_coeff, useSmag3D,
-     & useFullLeith, useLeithQG, useAnisotropicViscAgridMax,
+     & useFullLeith, useAnisotropicViscAgridMax,
      & useStrainTensionVisc, useAreaViscLength,
      & viscC2leithD, viscC4leithD, viscC2LeithQG, viscC2smag,
      & viscC4smag, viscAhD, viscAhZ, viscA4D, viscA4Z,

@@ -331,14 +331,6 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
        CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
 
        IF ( useVariableVisc .OR. useStrainTensionVisc ) THEN
-        IF (useLeithQG) THEN
-          CALL MOM_VISC_QGLEITH_CALC_STRETCHING(bi,bj,k,
-     O                                         stretching,Nsq,
-     I                                         myThid)
-          CALL MOM_VISC_QGLEITH_LIMITER(bi,bj,k,
-     O                                 stretching,
-     I                                 Nsq,uFld,vFld,vort3,myThid)
-        ENDIF
         CALL MOM_CALC_TENSION( bi,bj,k,uFld,vFld,tension,myThid )
         CALL MOM_CALC_STRAIN( bi,bj,k,uFld,vFld,hFacZ,strain,myThid )
 C-    mask strain and account for no-slip / free-slip BC in strainBC:
@@ -351,6 +343,14 @@ C-    mask strain and account for no-slip / free-slip BC in strainBC:
            ENDIF
          ENDDO
         ENDDO
+#ifdef ALLOW_LEITH_QG
+        CALL MOM_VISC_QGLEITH_CALC_STRETCHING(bi,bj,k,
+     O                                         stretching,Nsq,
+     I                                         myThid)
+        CALL MOM_VISC_QGLEITH_LIMITER(bi,bj,k,
+     O                                 stretching,
+     I                                 Nsq,uFld,vFld,vort3,myThid)
+#endif
        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC

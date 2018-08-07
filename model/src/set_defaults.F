@@ -199,7 +199,6 @@ C-    viscosity and diffusivity default value:
       useNHMTerms         = .FALSE.
       useSmag3D           = .FALSE.
       useFullLeith        = .FALSE.
-      useLeithQG          = .FALSE.
       useAreaViscLength   = .FALSE.
       useStrainTensionVisc= .FALSE.
       implicitDiffusion   = .FALSE.

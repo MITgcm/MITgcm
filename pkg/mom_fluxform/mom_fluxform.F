@@ -312,14 +312,14 @@ C     anelastic: transports are scaled by rhoFacC (~ mass transport)
         CALL MOM_CALC_RELVORT3( bi,bj,k,uFld,vFld,hFacZ,vort3,myThid )
         CALL MOM_CALC_TENSION( bi,bj,k,uFld,vFld,tension,myThid )
         CALL MOM_CALC_STRAIN( bi,bj,k,uFld,vFld,hFacZ,strain,myThid )
-        IF (useLeithQG) THEN
-          CALL MOM_VISC_QGLEITH_CALC_STRETCHING(bi,bj,k,
+#ifdef ALLOW_LEITH_QG
+        CALL MOM_VISC_QGLEITH_CALC_STRETCHING(bi,bj,k,
      O                                         stretching,Nsq,
      I                                         myThid)
-          CALL MOM_VISC_QGLEITH_LIMITER(bi,bj,k,
+        CALL MOM_VISC_QGLEITH_LIMITER(bi,bj,k,
      O                                 stretching,
      I                                 Nsq,uFld,vFld,vort3,myThid)
-        ENDIF
+#endif
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
            IF ( hFacZ(i,j).EQ.0. ) THEN

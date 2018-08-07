@@ -145,7 +145,7 @@ C     !LOCAL VARIABLES:
       _RL viscAh_DSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_ZSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_DSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      LOGICAL calcLeith, calcSmag
+      LOGICAL calcLeith, calcSmag, calcLeithQG
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act1 = bi - myBxLo(myThid)
@@ -195,6 +195,9 @@ C---- variable viscosity :
        calcSmag=
      &      (viscC2smag.NE.0.)
      &  .OR.(viscC4smag.NE.0.)
+
+       calcLeithQG=
+     &      (viscC2LeithQG.NE.0)
 
        IF (calcSmag) THEN
         smag2fac=(viscC2smag/pi)**2
@@ -319,7 +322,7 @@ C-       gradient in y direction:
           ENDDO
          ENDDO
 
-       IF (useLeithQG) THEN
+       IF (calcLeithQG) THEN
 C      horizontal gradient of vorticity and vortex stretching:
 C        In the case of using QG Leith, we want to add a term
 C        before calculating vecotr magnitude, so overwrite the
@@ -358,7 +361,7 @@ C-       gradient in y direction:
 #endif
           ENDDO
          ENDDO
-C      end if LeithQG
+C      end if calcLeithQG
        ENDIF
 
 C--   end if calcLeith

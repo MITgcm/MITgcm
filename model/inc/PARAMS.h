@@ -299,7 +299,6 @@ C     bottomVisc_pCell :: account for partial-cell in bottom visc. (no-slip BC)
 C     useSmag3D      :: Use isotropic 3-D Smagorinsky
 C     useFullLeith   :: Set to true to use full Leith viscosity(may be unstable
 C                       on irregular grids)
-C     useLeithQG     :: Set to true to use QG version of Leith viscosity
 C     useStrainTensionVisc:: Set to true to use Strain-Tension viscous terms
 C     useAreaViscLength :: Set to true to use old scaling for viscous lengths,
 C                          e.g., L2=Raz.  May be preferable for cube sphere.
@@ -415,7 +414,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & deepAtmosphere, setInterFDr, setCenterDr, useMin4hFacEdges,
      & interViscAr_pCell, interDiffKr_pCell,
      & no_slip_sides, no_slip_bottom, bottomVisc_pCell, useSmag3D,
-     & useFullLeith, useLeithQG, useStrainTensionVisc,
+     & useFullLeith, useStrainTensionVisc,
      & useAreaViscLength,
      & momViscosity, momAdvection, momForcing, momTidalForcing,
      & momPressureForcing, metricTerms, useNHMTerms,
@@ -472,7 +471,6 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL bottomVisc_pCell
       LOGICAL useSmag3D
       LOGICAL useFullLeith
-      LOGICAL useLeithQG
       LOGICAL useStrainTensionVisc
       LOGICAL useAreaViscLength
       LOGICAL momViscosity
