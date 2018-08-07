@@ -34,7 +34,7 @@ C                                 ice shelf instead of default diffusive heat
 C                                 flux, see Holland and Jenkins (1999),
 C                                 eq.21,22,26,31; def: F
 C     SHELFICErealFWflux       :: ensure vert advective flux at bdry uses top cell
-C                                 value rather than "boundary layer" value; def F  
+C                                 value rather than "boundary layer" value, def: F  
 C     SHELFICEheatTransCoeff   :: constant heat transfer coefficient that
 C                                 determines heat flux into shelfice
 C                                 (def: 1e-4 m/s)
