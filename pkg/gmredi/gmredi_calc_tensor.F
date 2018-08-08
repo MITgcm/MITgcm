@@ -289,7 +289,7 @@ C     Calculate the 3D diffusivity as per Bates et al. (2013)
 C   Use Leith QG viscosity in GMRedi scheme
 #ifdef ALLOW_GM_LEITH_QG
       IF (GM_useLeithQG) THEN
-        CALL GMREDI_CALC_QG_LEITH_COEFF(
+        CALL GMREDI_CALC_QGLEITH(
      I             bi, bj, myThid )
       ELSE
         GM_LeithQG_K = 0. _d 0

@@ -344,12 +344,12 @@ C-    mask strain and account for no-slip / free-slip BC in strainBC:
          ENDDO
         ENDDO
 #ifdef ALLOW_LEITH_QG
-        CALL MOM_VISC_QGLEITH_CALC_STRETCHING(bi,bj,k,
-     O                                         stretching,Nsq,
-     I                                         myThid)
-        CALL MOM_VISC_QGLEITH_LIMITER(bi,bj,k,
-     O                                 stretching,
-     I                                 Nsq,uFld,vFld,vort3,myThid)
+        CALL MOM_VISC_QGL_STRETCH(bi,bj,k,
+     O                            stretching,Nsq,
+     I                            myThid)
+        CALL MOM_VISC_QGL_LIMIT(bi,bj,k,
+     O                          stretching,
+     I                          Nsq,uFld,vFld,vort3,myThid)
 #endif
        ENDIF
 

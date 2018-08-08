@@ -1,9 +1,9 @@
 #include "MOM_COMMON_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: MOM_VISC_QGLEITH_CALC_STRETCHING
+C     !ROUTINE: MOM_VISC_QGL_STRETCH
 C     !INTERFACE:
-      SUBROUTINE MOM_VISC_QGLEITH_CALC_STRETCHING(
+      SUBROUTINE MOM_VISC_QGL_STRETCH(
      I                                 bi, bj, k,
      O                                 stretching, Nsq,
      I                                 myThid )

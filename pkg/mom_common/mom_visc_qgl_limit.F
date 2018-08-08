@@ -1,8 +1,8 @@
 #include "MOM_COMMON_OPTIONS.h"
 
-C     !ROUTINE: MOM_VISC_QGLEITH_LIMITER
+C     !ROUTINE: MOM_VISC_QGL_LIMIT
 C     !INTERFACE:
-      SUBROUTINE MOM_VISC_QGLEITH_LIMITER(
+      SUBROUTINE MOM_VISC_QGL_LIMIT(
      I                           bi, bj, k,
      O                           stretching,
      I                           Nsq, uFld, vFld, vort3, myThid )

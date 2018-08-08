@@ -2,14 +2,14 @@
 
 
 CBOP
-C     !ROUTINE: GMREDI_CALC_QG_LEITH_COEFF
+C     !ROUTINE: GMREDI_CALC_QGLEITH
 C     !INTERFACE:
-      SUBROUTINE GMREDI_CALC_QG_LEITH_COEFF(
+      SUBROUTINE GMREDI_CALC_QGLEITH(
      I             bi, bj, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE GMREDI_CALC_QG_LEITH_COEFF
+C     | SUBROUTINE GMREDI_CALC_QGLEITH
 C     | o Calculate QG Leith contribution to GMRedi tensor.
 C     *==========================================================*
 C     *==========================================================*
@@ -133,10 +133,10 @@ C-      mask vort3
 C     Having calculated the quantitites, use them to calculate
 C       LeithQG coefficient
 
-        CALL MOM_VISC_QGLEITH_CALC_STRETCHING(bi,bj,k,
+        CALL MOM_VISC_QGL_STRETCH(bi,bj,k,
      O                                         stretching,Nsq,
      I                                         myThid)
-        CALL MOM_VISC_QGLEITH_LIMITER(bi,bj,k,
+        CALL MOM_VISC_QGL_LIMIT(bi,bj,k,
      O                                 stretching,
      I                                 Nsq,uFld,vFld,vort3,myThid)
 
