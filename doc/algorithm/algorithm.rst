@@ -3021,13 +3021,13 @@ This form is, however, numerically awkward; as the Brunt-Väisälä Frequency be
     :label: bachman2017_eq56
 
 
-has been implemented and can be used when the runtime flag :varlink:`useLeithQG` = .TRUE.
-
-There is no reason to use the quasi-geostrophic form of Leith at the same time as either standard Leith or modified Leith. Therefore, the model will not run if non-zero values have been set for these coefficients; the model will stop during the configuration check. LeithQG can be used regardless of the setting for `useFullLeith`. Just as for the other forms of Leith viscosity, this flag determines whether or not the full gradients are used. The simplified gradients were originally intended for use on complex grids, but have been shown to produce better kinetic energy spectra even on very straightforward grids.
+has been implemented and is active when the cpp option :varlink:`ALLOW_LEITH_QG` is defined in the copy of :filelink:`MOM_COMMON_OPTIONS.h<pkg/mom_common/MOM_COMMON_OPTIONS.h>` in the `code` folder.
 
 LeithQG viscosity is designed to work best in simulations that resolve some mesoscale features. In simulations that are too coarse to permit eddies or fine enough to resolve submesoscale features, it should fail gracefully. The non-dimensional parameter :varlink:`viscC2LeithQG` corresponds to :math:`\Lambda` in the above equations and scales the viscosity; the recommended value is 1.
 
-To add the LeithQG viscosity to the GMRedi coefficient, as was done in some of the simulations in Bachman et al. (2017) :cite:`Bachman2017`, the compile time flag :varlink:`ALLOW_GM_LEITH_QG` must be defined in :filelink:`pkg/gmredi/GMREDI_OPTIONS.h` when the model is compiled and the runtime parameter :varlink:`GM_useLeithQG` set to .TRUE. in :code:`data.gmredi`.
+There is no reason to use the quasi-geostrophic form of Leith at the same time as either standard Leith or modified Leith. Therefore, the model will not run if non-zero values have been set for these coefficients; the model will stop during the configuration check. LeithQG can be used regardless of the setting for :varlink:`useFullLeith`. Just as for the other forms of Leith viscosity, this flag determines whether or not the full gradients are used. The simplified gradients were originally intended for use on complex grids, but have been shown to produce better kinetic energy spectra even on very straightforward grids.
+
+To add the LeithQG viscosity to the GMRedi coefficient, as was done in some of the simulations in Bachman et al. (2017) :cite:`Bachman2017`, the compile time flag :varlink:`ALLOW_GM_LEITH_QG` must be defined in the ``code`` directory's copy of :filelink:`GMREDI_OPTIONS.h<pkg/gmredi/GMREDI_OPTIONS.h>` when the model is compiled, and the runtime parameter :varlink:`GM_useLeithQG` set to .TRUE. in ``data.gmredi``. This will use the value of :varlink:`viscC2LeithQG` specified in the ``data`` input file to compute the coefficient.
 
 
 Courant–Freidrichs–Lewy Constraint on Viscosity
