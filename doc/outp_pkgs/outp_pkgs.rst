@@ -912,6 +912,16 @@ features and limitations:
     complicated array shapes which can be helpful when
     debugging -- features that do not exist within :filelink:`pkg/mdsio`.
 
+.. tabularcolumns:: |\Y{.4}|L|L|
+
+
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| CPP Flag Name                                 | Default | Description                                                                                                          |
++===============================================+=========+======================================================================================================================+
+| :varlink:`SAFE_IO`                            | #undef  | if defined, stops the model from overwriting its own files                                                           |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| :varlink:`ALLOW_WHIO`                         | #undef  | I/O will include tile halos in the files                                                                             |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 
 pkg/rw basic binary I/O utilities
 ---------------------------------
@@ -944,6 +954,18 @@ the variables being written and the spatial and temporal locations of
 those variables use the :filelink:`pkg/mnc` instead (see :numref:`pkg_mnc`) which
 produces `netCDF <http://www.unidata.ucar.edu/software/netcdf/>`_ format output.
 
+.. tabularcolumns:: |\Y{.4}|L|L|
+
+
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| CPP Flag Name                                 | Default | Description                                                                                                          |
++===============================================+=========+======================================================================================================================+
+| :varlink:`RW_SAFE_MFLDS`                      | #define | use READ_MFLDS in "safe" mode (set/check/unset for each file to read); involves more thread synchronization          |
+|                                               |         | which could slow down multi-threaded run                                                                             |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| :varlink:`RW_DISABLE_SMALL_OVERLAP`           | #undef  | disable writing of small-overlap size array (to reduce memory size since those S/R do a local copy to 3-D            |
+|                                               |         | full-size overlap array)                                                                                             |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 .. _pkg_mnc:
 
 NetCDF I/O: pkg/mnc
@@ -1533,6 +1555,17 @@ It should be noted that the ``outputTypesInclusive`` flag will make
 **ALL** kinds of output (that is, everything written by :filelink:`pkg/mdsio`,
 :filelink:`pkg/mnc`, and :filelink:`pkg/monitor`) simultaneously active so it should be used
 only with caution -– and perhaps only for debugging purposes.
+
+
+.. tabularcolumns:: |\Y{.4}|L|L|
+
+
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| CPP Flag Name                                 | Default | Description                                                                                                          |
++===============================================+=========+======================================================================================================================+
+| :varlink:`MONITOR_TEST_HFACZ`                 | #undef  | disable use of hFacZ                                                                                                 |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+
 
 Grid Generation
 ===============

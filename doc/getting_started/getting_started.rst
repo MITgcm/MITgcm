@@ -1298,6 +1298,14 @@ newer users of the MITgcm are encouraged to jump to :numref:`customize_model` wh
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 | :varlink:`SOLVE_DIAGONAL_KINNER`              | #undef  | choice for implicit solver routines solve_*diagonal.F suitable for AD                                                |
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| :varlink:`COSINEMETH_III`                     | #define | selects implementation form of :math:`\cos{\varphi}` scaling of bi-harmonic term for viscosity                       |
+|                                               |         | (note, CPP option for tracer diffusivity set independently in                                                        |
+|                                               |         | :filelink:`GAD_OPTIONS.h <pkg/generic_advdiff/GAD_OPTIONS.h>`)                                                       |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| :varlink:`ISOTROPIC_COS_SCALING`              | #undef  | selects isotropic scaling of harmonic and bi-harmonic viscous terms when using the :math:`\cos{\varphi}` scaling     |
+|                                               |         | (note, CPP option for tracer diffusivity set independently in                                                        |
+|                                               |         | :filelink:`GAD_OPTIONS.h <pkg/generic_advdiff/GAD_OPTIONS.h>`)                                                       |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 
 
 By default, MITgcm includes several core packages, i.e., these packages are enabled during
@@ -1315,58 +1323,8 @@ These default packages are as follows:
 - :filelink:`pkg/mom_vecinv`
 - :filelink:`pkg/generic_advdiff`
 
-Additional CPP options are set in files ``${PKG}_OPTIONS.h`` located in these packages' directories, and are are listed below. 
-
-
-.. tabularcolumns:: |\Y{.4}|L|L|
-
-
-+-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| CPP Flag Name                                 | Default | Description                                                                                                          |
-+===============================================+=========+======================================================================================================================+
-+-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| :varlink:`SAFE_IO`                            | #undef  | if defined, stops the model from overwriting its own files (:filelink:`MDSIO_OPTIONS.h <pkg/mdsio/MDSIO_OPTIONS.h>`) |
-+-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| :varlink:`ALLOW_WHIO`                         | #undef  | I/O will include tile halos in the files (:filelink:`MDSIO_OPTIONS.h <pkg/mdsio/MDSIO_OPTIONS.h>`)                   |
-+-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| :varlink:`RW_SAFE_MFLDS`                      | #define | use READ_MFLDS in "safe" mode (set/check/unset for each file to read); involves more thread synchronization          |
-|                                               |         | which could slow down multi-threaded run (:filelink:`RW_OPTIONS.h <pkg/rw/RW_OPTIONS.h>`)                            |
-+-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| :varlink:`RW_DISABLE_SMALL_OVERLAP`           | #undef  | disable writing of small-overlap size array (to reduce memory size since those S/R do a local copy to 3-D            |
-|                                               |         | full-size overlap array) (:filelink:`RW_OPTIONS.h <pkg/rw/RW_OPTIONS.h>`)                                            |
-+-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| :varlink:`MONITOR_TEST_HFACZ`                 | #undef  | disable use of hFacZ (:filelink:`MONITOR_OPTIONS.h <pkg/monitor/MONITOR_OPTIONS.h>`)                                 |
-+-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| :varlink:`ALLOW_SMAG_3D`                      | #undef  | allow isotropic 3D Smagorinsky viscosity (:filelink:`MOM_COMMON_OPTIONS.h <pkg/mom_common/MOM_COMMON_OPTIONS.h>`)    |
-+-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| :varlink:`ALLOW_3D_VISCAH`                    | #undef  | allow full 3D specification of horizontal Laplacian viscosity                                                        |
-|                                               |         | (:filelink:`MOM_COMMON_OPTIONS.h <pkg/mom_common/MOM_COMMON_OPTIONS.h>`)                                             |
-+-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| :varlink:`ALLOW_3D_VISCA4`                    | #undef  | allow full 3D specification of horizontal biharmonic viscosity                                                       |
-|                                               |         | (:filelink:`MOM_COMMON_OPTIONS.h <pkg/mom_common/MOM_COMMON_OPTIONS.h>`)                                             |
-+-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| :varlink:`MOM_BOUNDARY_CONSERVE`              | #undef  | conserve :math:`u,v` momentum next to a step (vertical plane) or a coastline edge (horizontal plane)                 |
-|                                               |         | (:filelink:`MOM_FLUXFORM_OPTIONS.h <pkg/mom_fluxform/MOM_FLUXFORM_OPTIONS.h>`)                                       |
-+-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| :varlink:`COSINEMETH_III`                     | #define | selects the form of :math:`\cos{\varphi}` scaling of bi-harmonic term                                                |
-|                                               |         | (:filelink:`GAD_OPTIONS.h <pkg/gad/GAD_OPTIONS.h>`)                                                                  |
-+-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| :varlink:`ISOTROPIC_COS_SCALING`              | #undef  | selects isotropic scaling of harmonic and bi-harmonic term when using the :math:`\cos{\varphi}` scaling              |
-|                                               |         | (:filelink:`GAD_OPTIONS.h <pkg/gad/GAD_OPTIONS.h>`)                                                                  |
-+-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| :varlink:`DISABLE_MULTIDIM_ADVECTION`         | #undef  | disables compilation of multi-dim. advection code (:filelink:`GAD_OPTIONS.h <pkg/gad/GAD_OPTIONS.h>`)                |
-+-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| :varlink:`GAD_MULTIDIM_COMPRESSIBLE`          | #undef  | use compressible flow method for multi-dim advection instead of older, less accurate method; note option has         |
-|                                               |         | no effect on SOM advection which always uses compressible flow method                                                |
-|                                               |         | (:filelink:`GAD_OPTIONS.h <pkg/gad/GAD_OPTIONS.h>`)                                                                  |
-+-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| :varlink:`GAD_ALLOW_TS_SOM_ADV`               | #undef  | enable the use of 2nd-order moment advection scheme (Prather 1986 :cite:`prather:86`)                                |
-|                                               |         | for temp. and salinity (:filelink:`GAD_OPTIONS.h <pkg/gad/GAD_OPTIONS.h>`)                                           |
-+-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-| :varlink:`GAD_SMOLARKIEWICZ_HACK`             | #undef  | enables hack to get rid of negatives caused by Redi, see Smolarkiewicz (1989) :cite:`smolark:89`                     |
-|                                               |         | (for ptracers, except temp and salinity) (:filelink:`GAD_OPTIONS.h <pkg/gad/GAD_OPTIONS.h>`)                         |
-+-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-
+Additional CPP options that affect the model core code are set in files ``${PKG}_OPTIONS.h`` located in these packages' directories. Similarly, optional (non-default) packages
+also include package-specific CPP options that must be set in files ``${PKG}_OPTIONS.h``.
 
 The file  :filelink:`eesupp/inc/CPP_EEOPTIONS.h`  does not contain any CPP options that will typically need be modified by users.
 
@@ -1390,7 +1348,7 @@ when initialized in the routine :filelink:`ini_parms.F <model/src/ini_parms.F>`.
 documents the “execution environment” namelist parameters
 in file ``eedata``, which must also reside in the current run directory.
 Note that runtime parameters used by (non-default) MITgcm packages are not documented here but rather in :numref:`packagesI`
-and :numref:`outp_pack`, and prescribed in package-specific namelist files which are read in via
+and :numref:`outp_pack`, and prescribed in package-specific ``data.${pkg}`` namelist files which are read in via
 package-specific ``${pkg}.F`` files (typically, ``${pkg}_readparms.F)``, where ``${pkg}`` is the package name
 (see :numref:`using_packages`).
 
@@ -1448,7 +1406,10 @@ defined through the variable :varlink:`ygOrigin` which corresponds to the
 latitude of the southern most gridcell face (Cartesian, m; spherical, degrees).
 For a cyclindrical grid, a positive :varlink:`ygOrigin` (m) adds an inner cylindrical boundary at the center of the tank. The resolution
 along the :math:`x` and :math:`y` directions is controlled by the 1D arrays :varlink:`delX` (meters for a Cartesian grid, degrees otherwise)
-and :varlink:`delY` (meters for Cartesian and cyclindrical grids, degrees spherical).
+and :varlink:`delY` (meters for Cartesian and cyclindrical grids, degrees spherical). On a spherical polar grid, you
+might decide to set the variable :varlink:`cosPower` which is set to 0
+by default and which represents :math:`n` in :math:`(\cos\varphi)^n`, the power of cosine of latitude to
+multiply horizontal viscosity and tracer diffusivity.
 The vertical grid spacing is set through the 1D array
 :varlink:`delR` (:math:`z`-coordinates: in meters; :math:`p`-coordinates, in Pa).
 Using a curvilinear grid requires complete specification of all horizontal MITgcm grid variables,
@@ -1498,6 +1459,9 @@ set a reference geopotential (after gravity scaling) at the top of the ocean or 
 |                                        |           |                                                  | (Cartesian and cyclindrical: m; spherical: degrees)                                                     |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`delYFile`                    | PARM04    | :kbd:`' '`                                       | filename containing 1D array of :math:`y`-axis grid spacing                                             |
++----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+| :varlink:`cosPower`                    | PARM01    | 0.0                                              | power law :math:`n` in :math:`(\cos\varphi)^n` factor for horizontal (harmonic or biharmonic)           |
+|                                        |           |                                                  | viscosity and tracer diffusivity (spherical polar)                                                      |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`delR`                        | PARM04    | computed using delRc                             | vertical grid spacing 1D array ([:math:`r`] unit)                                                       |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -2052,10 +2016,7 @@ variable :varlink:`viscAr` (in [:math:`r`]\ :sup:`2`\ s\ :sup:`--1`,
 where [:math:`r`] is the dimension of the vertical coordinate).
 In addition, biharmonic mixing can be added as well
 through the variable :varlink:`viscA4` (in
-m\ :sup:`4`\ s\ :sup:`--1`). On a spherical polar grid, you
-might decide to set the variable :varlink:`cosPower` which is set to 0
-by default and which represents :math:`n` in :math:`(\cos\varphi)^n`, the power of cosine of latitude to
-multiply viscosity. 
+m\ :sup:`4`\ s\ :sup:`--1`).  
 
 .. tabularcolumns:: |\Y{.215}|\Y{.1}|\Y{.115}|\Y{.595}|
 
@@ -2072,10 +2033,10 @@ multiply viscosity.
 |                                        |           |                                                  | requires #define :varlink:`ALLOW_NONHYDROSTATIC`                                                        |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`viscAhDfile`                 | PARM05    | :kbd:`' '`                                       | filename for 3D specification of lateral eddy viscosity (divergence part) (m\ :sup:`2`\ /s);            |
-|                                        |           |                                                  | requires #define :varlink:`ALLOW_3D_VISCAH`                                                             |
+|                                        |           |                                                  | requires #define :varlink:`ALLOW_3D_VISCAH` in :filelink:`pkg/mom_common/MOM_COMMON_OPTIONS.h`          |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`viscAhZfile`                 | PARM05    | :kbd:`' '`                                       | filename for 3D specification of lateral eddy viscosity (vorticity part, :math:`\zeta` points);         |
-|                                        |           |                                                  | requires #define :varlink:`ALLOW_3D_VISCAH`                                                             |
+|                                        |           |                                                  | requires #define :varlink:`ALLOW_3D_VISCAH` in :filelink:`pkg/mom_common/MOM_COMMON_OPTIONS.h`          |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`viscAhGrid`                  | PARM01    | 0.0                                              | grid-dependent lateral eddy viscosity (non-dim.)                                                        |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -2103,10 +2064,10 @@ multiply viscosity.
 |                                        |           |                                                  | requires #define :varlink:`ALLOW_NONHYDROSTATIC`                                                        |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`viscA4Dfile`                 | PARM05    | :kbd:`' '`                                       | filename for 3D specification of lateral biharmonic viscosity (divergence part)  (m\ :sup:`4`\ /s);     |
-|                                        |           |                                                  | requires #define :varlink:`ALLOW_3D_VISCA4`                                                             |
+|                                        |           |                                                  | requires #define :varlink:`ALLOW_3D_VISCA4` in :filelink:`pkg/mom_common/MOM_COMMON_OPTIONS.h`          |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`viscA4Zfile`                 | PARM05    | :kbd:`' '`                                       | filename for 3D specification of lateral biharmonic viscosity (vorticity part, :math:`\zeta` points);   |
-|                                        |           |                                                  | requires #define :varlink:`ALLOW_3D_VISCA4`                                                             |
+|                                        |           |                                                  | requires #define :varlink:`ALLOW_3D_VISCA4` in :filelink:`pkg/mom_common/MOM_COMMON_OPTIONS.h`          |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`viscA4Grid`                  | PARM01    | 0.0                                              | grid dependent biharmonic viscosity (non-dim.)                                                          |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -2127,14 +2088,14 @@ multiply viscosity.
 | :varlink:`useFullLeith`                | PARM01    | FALSE                                            | use full form of Leith viscosities on/off flag                                                          |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`useSmag3D`                   | PARM01    | FALSE                                            | use isotropic 3D Smagorinsky harmonic viscosities flag; requires #define :varlink:`ALLOW_SMAG_3D`       |
+|                                        |           |                                                  | in :filelink:`pkg/mom_common/MOM_COMMON_OPTIONS.h`                                                      |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`smag3D_coeff`                | PARM01    | 1.0E-02                                          | isotropic 3D Smagorinsky coefficient (non-dim.); requires #define :varlink:`ALLOW_SMAG_3D`              |
+|                                        |           |                                                  | in :filelink:`pkg/mom_common/MOM_COMMON_OPTIONS.h`                                                      |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`useStrainTensionVisc`        | PARM01    | FALSE                                            | flag to use strain-tension form of viscous operator                                                     |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`useAreaViscLength`           | PARM01    | FALSE                                            | flag to use area for viscous :math:`L^2` instead of harmonic mean of :math:`{L_x}^2, {L_y}^2`           |
-+----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`cosPower`                    | PARM01    | 0.0                                              | power law :math:`n` in :math:`(\cos\varphi)^n` factor for viscosity (also affects tracer diffusivity)   |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`viscAr`                      | PARM01    | 0.0                                              | vertical eddy viscosity ([:math:`r`]\ :sup:`2`\ /s)                                                     |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -2283,10 +2244,7 @@ humidity are specified through the variables :varlink:`diffKhT` and
 :varlink:`diffKhS` (in m\ :sup:`2`\ /s). Vertical eddy diffusivities are
 specified through the variables :varlink:`diffKrT` and :varlink:`diffKrS`.In addition, biharmonic
 diffusivities can be specified as well through the coefficients
-:varlink:`diffK4T` and :varlink:`diffK4S` (in m\ :sup:`4`\ /s). Note that the
-cosine power scaling (specified through :varlink:`cosPower`; see :ref:`above <mom_dissip>`)
-is applied to the tracer diffusivities
-(Laplacian and biharmonic) as well. The Gent and McWilliams
+:varlink:`diffK4T` and :varlink:`diffK4S` (in m\ :sup:`4`\ /s). The Gent and McWilliams
 parameterization for advection and mixing of oceanic tracers is described in :numref:`sub_phys_pkg_gmredi`.
 
 .. tabularcolumns:: |\Y{.2}|\Y{.1}|\Y{.15}|\Y{.575}|
@@ -2336,8 +2294,6 @@ parameterization for advection and mixing of oceanic tracers is described in :nu
 | :varlink:`diffKrBLEQHo`                | PARM01    | -2.0E+03                                         | same as :varlink:`diffKrBL79Ho` but at equator; requires #define ALLOW_BL79_LAT_VARY                    |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`BL79LatVary`                 | PARM01    | 3.0E+01                                          | transition from diffKrBLEQ to diffKrBL79 parms at this latitude; requires #define ALLOW_BL79_LAT_VARY   |
-+----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`cosPower`                    | PARM01    | 0.0                                              | power law :math:`n` in :math:`(\cos\varphi)^n` factor for tracer diffusivity (also affects viscosity)   |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
 
