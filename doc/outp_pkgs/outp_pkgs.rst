@@ -966,6 +966,7 @@ produces `netCDF <http://www.unidata.ucar.edu/software/netcdf/>`_ format output.
 | :varlink:`RW_DISABLE_SMALL_OVERLAP`           | #undef  | disable writing of small-overlap size array (to reduce memory size since those S/R do a local copy to 3-D            |
 |                                               |         | full-size overlap array)                                                                                             |
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+
 .. _pkg_mnc:
 
 NetCDF I/O: pkg/mnc
