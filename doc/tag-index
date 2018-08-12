@@ -1,6 +1,6 @@
     Notes on tags used in MITgcmUV
     ==============================
-
+    
 o pkg/shelfice, model/src (7/12/18):
   - addition of functionality described in Jordan et al (2017), "Ocean-Forced 
     Ice-Shelf Thinning in a Synchronously Coupled Ice-Ocean Model". 
@@ -34,8 +34,11 @@ o pkg/shelfice, model/src (7/12/18):
     shelficeBoundaryLayer
   - verification/shelfice_remeshing/*: new verification experiment
     to test remeshing functionality
-
-o pkg/diagnostics (7/12/18):
+o pkg/seaice:
+  - fix bug in seaice B-grid code (call to seaice_advdiff, see issue #134);
+    Note: B-grid code not tested in any verification exp. (only compiled in one)
+    so no need to update any output.txt
+o pkg/diagnostics
   - Print adjoint variables for theta, salt, uvel, vvel, wvel, and etan
     through diagnostics package.
 o pkg/shelfice:
