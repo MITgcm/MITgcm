@@ -69,10 +69,27 @@ C ff used for water vapor and pressure correction
 C   [Weiss & Price (1980, Mar. Chem., 8, 347-359; Eq 13 with table 6 values)]
 C Ksp_TP_Calc solubility product for calcite
 C   [Following Mucci (1983) with pressure dependence from Ingle (1975)]
+C If using Munhoven's Solvesaphe routines (Munhoven, 2013) then in adittion,
+C   akn = the dissociation constant of ammonium [H][NH3]/[NH4]
+C       References: Yao and Millero (1995)  
+C   akhs = the dissociation constant of hydrogen sulfide [H][HS]/[H2S]
+C       References: Millero et al. (1988) (cited by Millero (1995) and Yao and Millero (1995))
+C   aphscale = convert from the total to the free scale for solvesaphe calculations
+C       References: Munhoven, 2013
+C   Ksp_TP_Arag = solubility product for aragonite
+C       References: Mucci (1983)
+
        COMMON /CARBON_CHEM/
      &                     ak0,ak1,ak2,akw,akb,aks,akf,
      &                     ak1p,ak2p,ak3p,aksi, fugf,
      &                     ff,ft,st,bt, Ksp_TP_Calc
+#if defined(CARBONCHEM_SOLVESAPHE_CONST) || defined(CARBONCHEM_SOLVESAPHE_PCO2)
+     &                    ,cat, akn, akhs, aphscale, Ksp_TP_Arag
+#ifdef CARBONCHEM_SOLVESAPHE_PCO2   
+     &                    ,jp_maxniter_atgen, jp_maxniter_atsec, 
+     &                     jp_maxniter_atfast
+#endif
+#endif     
       _RL  ak0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ak1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ak2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -91,7 +108,23 @@ C Fugacity Factor added by Val Bennington Nov. 2010
       _RL  st(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  bt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Ksp_TP_Calc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#if defined(CARBONCHEM_SOLVESAPHE_CONST) || defined(CARBONCHEM_SOLVESAPHE_PCO2)
+C Use Munhoven's Solvesaphe routines
+      _RL  cat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  akn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  akhs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  aphscale(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  Ksp_TP_Arag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+#ifdef CARBONCHEM_SOLVESAPHE_PCO2
+C     Parameters for the max number of iterations allowed for ph solver
+C     PARAMETER jp_maxniter_atgen, jp_maxniter_atsec, jp_maxniter_atfast
+      INTEGER jp_maxniter_atgen
+      INTEGER jp_maxniter_atsec
+      INTEGER jp_maxniter_atfast
+#endif
+#endif      
+      
 C Store dissociation coefficients for O2 solubility
        COMMON /OXYGEN_CHEM/
      &              oA0,oA1,oA2,oA3,oA4,oA5,

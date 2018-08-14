@@ -47,6 +47,9 @@ C local variables for carbon chem
       _RL surfdic(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iprt,jprt
       LOGICAL pH_isLoaded
+      
+C     msgBuf     :: Informational/error message buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -203,16 +206,34 @@ C FOR NON-INTERACTIVE Si
          ENDDO
         ENDDO
 
+#if defined(CARBONCHEM_SOLVESAPHE_CONST) || defined(CARBONCHEM_SOLVESAPHE_PCO2)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS_SOLVESAPHE',myThid)
+#endif
+        CALL CARBON_COEFFS_SOLVESAPHE(
+     I                       surftemp,surfsalt,
+     I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
+#else
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS',myThid)
+#endif
         CALL CARBON_COEFFS(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
+#endif
 
 C====================================================================
 
         IF ( .NOT.pH_isLoaded ) THEN
 C set guess of pH for first step here
+#ifdef ALLOW_DEBUG
+        IF (debugMode) THEN
+          WRITE(msgBuf,'(A,A)')
+     &       'Initial pCO2 approximation method'
+          CALL DEBUG_MSG(msgBuf(1:33),myThid)
+        ENDIF
+#endif
 
-          WRITE(standardMessageUnit,*) 'QQ: pCO2 approximation method'
 c first approximation
 C$TAF LOOP = parallel
           DO j=jMin,jMax
@@ -220,6 +241,42 @@ C$TAF LOOP = parallel
            DO i=iMin,iMax
             IF ( maskC(i,j,kLev,bi,bj) .NE. 0. _d 0) THEN
 C$TAF init dic_surf = static, 10
+#ifdef CARBONCHEM_SOLVESAPHE_PCO2
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
+#endif
+C call AHINI_FOR_AT to get better initial guess of pH
+               CALL AHINI_FOR_AT(
+     I           surfalk(i,j)*permil,
+     I           surfdic(i,j)*permil, 
+     I           bt(i,j,bi,bj),
+     U           pH(i,j,bi,bj),
+     I           i,j,kLev,bi,bj,nIter0,myThid )       
+
+C$TAF STORE pH(i,j,bi,bj)                              = dic_surf
+C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
+
+C Use Munhoven's Solvesaphe routine to initialize pH
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
+#endif
+              CALL CALC_PCO2_SOLVESAPHE(
+     I        surftemp(i,j),surfsalt(i,j),
+     I        surfdic(i,j), surfphos(i,j),
+     I        surfsi(i,j),surfalk(i,j),
+C     I        ak1(i,j,bi,bj),ak2(i,j,bi,bj),
+C     I        ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),
+C     I        aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
+C     I        aksi(i,j,bi,bj),akf(i,j,bi,bj),
+C     I        ak0(i,j,bi,bj),ff(i,j,bi,bj), fugf(i,j,bi,bj),
+C     I        akn(i,j,bi,bj),akhs(i,j,bi,bj),aphscale(i,j,bi,bj),
+C     I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
+     U        pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
+     I        i,j,kLev,bi,bj, it ,  myThid )       
+#else
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
+#endif
              DO it=1,10
 C$TAF STORE pH(i,j,bi,bj)                              = dic_surf
 C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
@@ -237,19 +294,29 @@ C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
      U        pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I        i,j,kLev,bi,bj, it ,  myThid )
              ENDDO
+#endif
             ENDIF
            ENDDO
           ENDDO
+
+#ifdef ALLOW_DEBUG
+        IF (debugMode) THEN
           iprt = MIN(20,sNx)
           jprt = MIN(20,sNy)
-          WRITE(standardMessageUnit,*) 'QQ first guess pH',
-     &        pH(iprt,jprt,bi,bj),
-     &        theta(iprt,jprt,1,bi,bj), salt(iprt,jprt,1,bi,bj),
-     &        surfdic(iprt,jprt), surfphos(iprt,jprt),
-     &        surfsi(iprt,jprt),surfalk(iprt,jprt)
-
+          WRITE(msgBuf,'(A,7(F7.2,A))')
+          WRITE(standardMessageUnit,*) 'QQ first guess pH ',
+     &        pH(iprt,jprt,bi,bj),' Temp ',theta(iprt,jprt,1,bi,bj),
+     &        ' Salt ',salt(iprt,jprt,1,bi,bj),
+     &        ' DIC ' ,surfdic(iprt,jprt), 
+     &        ' PO4 ' ,surfphos(iprt,jprt),
+     &        ' SiT ' ,surfsi(iprt,jprt),
+     &        ' ALK ' ,surfalk(iprt,jprt)
+         CALL DEBUG_MSG(msgBuf,myThid)
+        ENDIF 
+#endif
+        
+C ENDIF (.NOT.pH_isLoaded)
         ENDIF
-
 C     end bi,bj loops
        ENDDO
       ENDDO

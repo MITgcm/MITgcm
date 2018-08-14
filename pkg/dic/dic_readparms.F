@@ -206,6 +206,91 @@ C--   Print out parameter values :
       WRITE(msgBuf,'(A)') '// ==================================='
       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
 
+C Record which carbonate coefficients are used and which pH/pCO2 solver
+#if defined(CARBONCHEM_SOLVESAPHE_CONST) || defined(CARBONCHEM_SOLVESAPHE_PCO2) 
+      WRITE(msgBuf,'(A)') 
+     &  'Using Munhoven (2013) Solvesaphe carbon coefficients'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)      
+C Munhoven (2013)'s "Solvesaphe" coefficients have several options:
+#ifdef CARBONCHEM_MILLERO95K1K2COM
+      WRITE(msgBuf,'(A)') 
+     &  'Using Millero (1995) "consensus" K1 and K2 coefficients'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)    
+#elif (defined(CARBONCHEM_ROY93K1K2))
+      WRITE(msgBuf,'(A)') 
+     &  'Using Roy et al. (1993) K1 and K2 coefficients'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)    
+#elif (defined(CARBONCHEM_LUECKER00K1K2))
+      WRITE(msgBuf,'(A)') 
+     &  'Using Luecker et al. (2000) K1 and K2 coefficients'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)    
+#elif (defined(CARBONCHEM_MILLERO10K1K2))
+      WRITE(msgBuf,'(A)') 
+     &  'Using Millero et al. (2010) K1 and K2 coefficients'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)    
+#elif (defined(CARBONCHEM_WATERS14K1K2))
+      WRITE(msgBuf,'(A)') 
+     &  'Using Waters et al. (2014) K1 and K2 coefficients'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)    
+#else
+      WRITE(msgBuf,'(A)') 
+     &  'Using Millero (1995)/Mehrbach K1 and K2 coefficients'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)    
+#endif
+#ifdef CARBONCHEM_PEREZ87KF
+      WRITE(msgBuf,'(A)') 
+     &  'Using Perez and Fraga (1987) KF coefficient'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+#else
+      WRITE(msgBuf,'(A)') 
+     &  'Using Dickson and Riley (1979) KF coefficient'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+#endif
+#ifdef CARBONCHEM_LEE10BT
+      WRITE(msgBuf,'(A)') 
+     &  'Using Lee et al (2010) BT estimation from salinity'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+#else
+      WRITE(msgBuf,'(A)') 
+     &  'Using Uppstrom (1974) BT estimation from salinity'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+#endif
+#ifdef CARBONCHEM_CULKIN65FT
+      WRITE(msgBuf,'(A)') 
+     &  'Using Culkin (1965) FT estimation from salinity'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+#else
+      WRITE(msgBuf,'(A)') 
+     &  'Using Riley (1965) FT estimation from salinity'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+#endif
+#else
+C OCMIP2 Coefficients from S/R CARBON_COEFFS in CARBON_CHEM.F
+      WRITE(msgBuf,'(A)') 
+     &  'Using Millero (1995)/Mehrbach K1 and K2 coefficients'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)   
+      WRITE(msgBuf,'(A)') 
+     &  'Using Dickson and Riley (1979) KF coefficient'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)        
+      WRITE(msgBuf,'(A)') 
+     &  'Using Uppstrom (1974) BT estimation from salinity'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)        
+      WRITE(msgBuf,'(A)') 
+     &  'Using Riley (1965) FT estimation from salinity'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+#endif
+
+C Record the solver to calculate pH and evaluate surface ocean pCO2
+#ifdef CARBONCHEM_SOLVESAPHE_PCO2
+      WRITE(msgBuf,'(A)') 
+     &  'Using Munhoven (2013) Solvesaphe for pH/pCO2'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+#else
+      WRITE(msgBuf,'(A)') 
+     &  'Using Follows et al. (2006) for pH/pCO2'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+#endif
+
 C- namelist ABIOTIC_PARMS
        CALL WRITE_0D_RL( permil, INDEX_NONE,'permil =',
      &  ' /* Ref. density to convert mol/m3 to mol/kg */')

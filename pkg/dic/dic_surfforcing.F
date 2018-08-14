@@ -119,9 +119,21 @@ C FOR NON-INTERACTIVE Si
           ENDDO
          ENDDO
 
-         CALL CARBON_COEFFS(
+#if defined(CARBONCHEM_SOLVESAPHE_CONST) || defined(CARBONCHEM_SOLVESAPHE_PCO2)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS_SOLVESAPHE',myThid)
+#endif
+        CALL CARBON_COEFFS_SOLVESAPHE(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
+#else
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS',myThid)
+#endif
+        CALL CARBON_COEFFS(
+     I                       surftemp,surfsalt,
+     I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
+#endif
 C====================================================================
 
        DO j=jMin,jMax
@@ -153,6 +165,29 @@ C$TAF LOOP = parallel
         DO i=iMin,iMax
 
           IF ( maskC(i,j,kLev,bi,bj).NE.0. _d 0 ) THEN
+#ifdef CARBONCHEM_SOLVESAPHE_PCO2
+C Use Munhoven's Solvesaphe routine to calculate pH and pCO2
+#ifdef ALLOW_DEBUG
+          IF (debugMode) CALL DEBUG_CALL(
+     &     'CALC_PCO2_SOLVESAPHE from DIC_SURFFORCING',myThid)
+#endif
+            CALL CALC_PCO2_SOLVESAPHE(
+     I        surftemp(i,j),surfsalt(i,j),
+     I        surfdic(i,j), surfphos(i,j),
+     I        surfsi(i,j),surfalk(i,j),
+C     I        ak1(i,j,bi,bj),ak2(i,j,bi,bj),
+C     I        ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),
+C     I        aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
+C     I        aksi(i,j,bi,bj),akf(i,j,bi,bj),
+C     I        ak0(i,j,bi,bj),ff(i,j,bi,bj), fugf(i,j,bi,bj),
+C     I        akn(i,j,bi,bj),akhs(i,j,bi,bj),aphscale(i,j,bi,bj),
+C     I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
+     U        pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
+     I        i,j,kLev,bi,bj,myIter, myThid )       
+#else
+#ifdef ALLOW_DEBUG
+            IF (debugMode) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
+#endif
             CALL CALC_PCO2_APPROX(
      I        surftemp(i,j),surfsalt(i,j),
      I        surfdic(i,j), surfphos(i,j),
@@ -165,7 +200,8 @@ C$TAF LOOP = parallel
      I        ff(i,j,bi,bj),
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U        pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
-     I        i,j,kLev,bi,bj,myIter,myThid )
+     I        i,j,kLev,bi,bj,myIter, myThid )
+#endif
           ELSE
             pCO2(i,j,bi,bj)=0. _d 0
           ENDIF
@@ -214,7 +250,7 @@ c Flux = kw*rho*(ff*pCO2atm-k0*FugFac*pCO2ocean)
      &            ff(i,j,bi,bj)*pCO2sat(i,j) -
      &            pCO2(i,j,bi,bj)*fugf(i,j,bi,bj)
      &            *ak0(i,j,bi,bj) )
-     &
+
 #endif
           ELSE
               FluxCO2(i,j,bi,bj) = 0. _d 0
