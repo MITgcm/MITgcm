@@ -62,14 +62,10 @@ C     i,j,bi,bj,ksrf :: loop indices
       INTEGER i,j,bi,bj
       INTEGER kSrf
       _RL     TEMPVAR
-      _RL     dragCoeff, dragMin, dragMinSouth
+      _RL     dragCoeff
 CEOP
 
       kSrf=1
-      dragMin      = 0.25 _d 0
-      dragMinSouth = dragMin
-      IF ( SEAICE_waterDrag       .LE. 0. _d 0 ) dragMin      = 0. _d 0
-      IF ( SEAICE_waterDrag_South .LE. 0. _d 0 ) dragMinSouth = 0. _d 0
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -97,11 +93,17 @@ C     non-linear water drag coefficients CwatC (DWATN)
 #endif /* OBCS_UVICE_OLD */
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
            dragCoeff = SEAICE_waterDrag_south*rhoConst
-           CwatC(I,J,bi,bj) = MAX(dragCoeff*SQRT(TEMPVAR),dragMinSouth)
           ELSE
-           dragCoeff = SEAICE_waterDrag*rhoConst
-           CwatC(I,J,bi,bj) = MAX(dragCoeff*SQRT(TEMPVAR),dragMin)
+           dragCoeff = SEAICE_waterDrag      *rhoConst
           ENDIF
+          CwatC(I,J,bi,bj) = 0.25 _d 0
+C     This is the AD-proof version of 
+C         IF ( dragCoeff * SQRT(TEMPVAR) .GT. 0.25 _d 0 )
+C     which was previously implemented as
+C         IF ( TEMPVAR .GT. (0.25 _d 0/dragCoeff)**2 )
+C     I like this better:
+          IF ( dragCoeff**2 * TEMPVAR .GT. 0.0625 _d 0 )
+     &         CwatC(I,J,bi,bj) = dragCoeff*SQRT(TEMPVAR)
           CwatC(I,J,bi,bj) = CwatC(I,J,bi,bj) * maskC(I,J,kSrf,bi,bj)
          ENDDO
         ENDDO
