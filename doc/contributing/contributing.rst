@@ -653,13 +653,15 @@ Alternatively, latex ``:math:`` directives (see :ref:`above <symbolic_notation>`
 Building the manual
 -------------------
 
-Once you've made your changes to the manual, you should build it locally to verify that it works as expected. To do this you will need a working python installation with the following modules installed (use :code:`pip install MODULE` in the terminal):
+Once you've made your changes to the manual, you should build it locally to verify that it works as expected. To do this you will need a working python installation with the following modules installed (use ``pip install «MODULE»`` in the terminal):
 
  - sphinx
  - sphinxcontrib-bibtex
  - sphinx_rtd_theme
 
-Then, run :code:`make html` in the :code:`docs` directory.
+Once these modules are installed you can build the html version of the manual by running ``make html`` in the ``doc`` directory. 
+
+To build the pdf version of the manual you will also need a working version of LaTeX that includes `several packages <http://www.sphinx-doc.org/en/master/usage/builders/index.html#sphinx.builders.latex.LaTeXBuilder>`_ that are not always found in minimal LaTeX installations. The command to build the pdf version is ``make latexpdf``, which should also be run in the ``doc`` directory.
 
 
 

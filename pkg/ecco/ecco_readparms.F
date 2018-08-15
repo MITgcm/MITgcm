@@ -726,7 +726,8 @@ C--   load masks if needed:
       do k=1,NGENCOST
            kk=gencost_msk_pointer3d(k)
            if ( ( gencost_mask(k) .NE. ' ' ).AND.
-     &          (gencost_flag(k).EQ.-3) ) then
+     &          (gencost_flag(k).EQ.-3 .or. 
+     &           gencost_flag(k).eq.-4     ) ) then
 c
             il = ilnblnk(gencost_mask(k))
             write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'C'
