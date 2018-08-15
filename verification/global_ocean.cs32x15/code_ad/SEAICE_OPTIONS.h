@@ -62,9 +62,10 @@ C--   To try avoid 'spontaneous generation' of tracer maxima by advdiff.
 # define ALLOW_SITRACER_ADVCAP
 #endif
 
-C--   By default the seaice model is discretized on a B-Grid (for
-C     historical reasons). Define the following flag to use a new
-C     (not thoroughly) test version on a C-grid
+C--   Historically, the seaice model was discretized on a B-Grid. This
+C     discretization should still work but it is not longer actively tested
+C     and supported. The following flag should always be set in order to use
+C     the operational C-grid discretization.
 #define SEAICE_CGRID
 
 C--   Only for the C-grid version it is possible to
@@ -77,6 +78,13 @@ C--   viscosities from below and above in seaice_evp
 C--   not necessary, and not recommended
 #  undef SEAICE_ALLOW_CLIPZETA
 # endif /* SEAICE_ALLOW_EVP */
+C     smooth regularization (without max-function) of delta for
+C     better differentiability
+# undef SEAICE_DELTA_SMOOTHREG
+C     regularize zeta to zmax with a smooth tanh-function instead
+C     of a min(zeta,zmax). This improves convergence of iterative
+C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
+# undef SEAICE_ZETA_SMOOTHREG
 C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
 # undef SEAICE_ALLOW_TEM
 #else /* not SEAICE_CGRID, but old B-grid */
