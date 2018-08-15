@@ -83,9 +83,10 @@ C--   grease ice uses SItracer:
 # define ALLOW_SITRACER_ADVCAP
 #endif
 
-C--   By default the seaice model is discretized on a B-Grid (for
-C     historical reasons). Define the following flag to use a new
-C     (not thoroughly) test version on a C-grid
+C--   Historically, the seaice model was discretized on a B-Grid. This
+C     discretization should still work but it is not longer actively tested
+C     and supported. The following flag should always be set in order to use
+C     the operational C-grid discretization.
 #define SEAICE_CGRID
 
 C--   Only for the C-grid version it is possible to
