@@ -2509,7 +2509,8 @@ to select the corresponding advection scheme in the parameter file (e.g., ``temp
   +-------------------------------------------------------------+------+-----+---------------+---------+---------------------------------------------------+
  
 
-yes\ :sup:`*` indicates that using multi-dim advection is *optional*, controlled by namelist parameters.
+yes\ :sup:`*` indicates that either the multi-dim advection algorithm or standard approach can be utilized, controlled by a namelist parameter :varlink:`multiDimAdvection`
+(in these cases, given that these schemes was designed to use multi-dim advection, using the standard approach is not recommended).
 The minimum size of the required tile overlap region (:varlink:`OLx`, :varlink:`OLx`)
 is (stencil size -1)/2.  The minimum overlap required by the model in general is 2,
 so for some of the above choices the advection scheme will not cost anything in terms of an additional overlap requirement,
