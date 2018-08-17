@@ -127,8 +127,6 @@ General flags and parameters
   +------------------------------+------------------------------+-------------------------------------------------------------------------+
   |   usePW79thermodynamics      |     T                        | flag to turn off zero-layer-thermodynamics for testing                  |
   +------------------------------+------------------------------+-------------------------------------------------------------------------+
-  |   SEAICE_useMultDimSnow      |     T                        | use the same fixed PDF for snow as for multi-thickness-category ice     |
-  +------------------------------+------------------------------+-------------------------------------------------------------------------+
   | SEAICEadvHeff/Area/Snow/Salt | T                            | flag to turn off advection of scalar state variables                    |
   +------------------------------+------------------------------+-------------------------------------------------------------------------+
   | SEAICEadvScheme              | 77                           | set advection scheme for seaice scalar state variables                  |
@@ -272,7 +270,7 @@ General flags and parameters
   +------------------------------+------------------------------+-------------------------------------------------------------------------+
   | SEAICE_multDim               | 1                            | number of ice categories for thermodynamics                             |
   +------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | SEAICE_useMultDimSnow        | F                            | use SEAICE_multDim snow categories                                      |
+  | SEAICE_useMultDimSnow        | T                            | use SEAICE_multDim snow categories                                      |
   +------------------------------+------------------------------+-------------------------------------------------------------------------+
 
 
@@ -1061,7 +1059,7 @@ thickness categories :math:`H_{n}` that are equally distributed between
 :math:`2h` and a minimum imposed ice thickness of :math:`5\,\text{cm}`
 by :math:`H_n= \frac{2n-1}{7}\,h` for :math:`n\in[1,N]`. The heat fluxes
 computed for each thickness category is area-averaged to give the total
-heat flux :cite:`hibler84`. To use this thickness category parameterization set ``SEAICE_multDim`` to the number of desired categories in ``data.seaice`` (7 is a good guess, for anything larger than 7 modify ``SEAICE_SIZE.h``); note that this requires different restart files and switching this flag on in the middle of an integration is not advised. In order to include the same distribution for snow, set ``SEAICE_useMultDimSnow = .TRUE.``; only then, the parameterization of always having a fraction of thin ice is efficient and generally thicker ice is produce :cite:`castro-morales14`.
+heat flux :cite:`hibler84`. To use this thickness category parameterization set ``SEAICE_multDim`` to the number of desired categories in ``data.seaice`` (7 is a good guess, for anything larger than 7 modify ``SEAICE_SIZE.h``); note that this requires different restart files and switching this flag on in the middle of an integration is not advised. In order to include the same distribution for snow, set ``SEAICE_useMultDimSnow = .TRUE.`` (this is the default); only then, the parameterization of always having a fraction of thin ice is efficient and generally thicker ice is produce :cite:`castro-morales14`.
 
 The atmospheric heat flux is balanced by an oceanic heat flux from
 below. The oceanic flux is proportional to
