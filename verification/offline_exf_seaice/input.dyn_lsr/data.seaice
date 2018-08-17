@@ -13,13 +13,6 @@
  HsnowFile = 'const_00.bin',
  SEAICEwriteState   = .TRUE.,
  SEAICE_monFreq = 1800.,
-# old defaults
- SEAICEscaleSurfStress = .FALSE.,
- SEAICEetaZmethod = 0,
- SEAICE_drag = 0.002,
- SEAICE_waterDrag = 0.005194951456310679,
- SEAICE_Olx = 0,
- SEAICE_Oly = 0,
  &
 
  &SEAICE_PARM03
