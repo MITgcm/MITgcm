@@ -117,6 +117,14 @@ Sea Ice Packages
 
    thsice.rst
    seaice.rst
+   
+Ice Sheet-Ocean Packages
+========================   
+   
+.. toctree::   
+   :maxdepth: 3
+   
+   streamice.rst   
 
 Biogeochemistry Packages
 ========================
