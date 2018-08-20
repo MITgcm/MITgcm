@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic:
+  - Promote constants in S/R CARBON_COEFFS_PRESSURE_DEP and S/R CAR_FLUX_OMEGA_TOP to double precision.
+o pkg/seaice:
+  - fix bug in seaice B-grid code (call to seaice_advdiff, see issue #134);
+    Note: B-grid code not tested in any verification exp. (only compiled in one)
+    so no need to update any output.txt
 o pkg/diagnostics:
   - Print adjoint variables for theta, salt, uvel, vvel, wvel, and etan
     through diagnostics package.
