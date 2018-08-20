@@ -280,7 +280,6 @@ rethought if the effects of tides are to be considered.
 .. math::
    :label: tau_eqn
 
-   \label{eq:sliding_law}
     \vec{\tau}_b = C (|\vec{u}|^2+u_{min}^2)^{\frac{m-1}{2}}\vec{u}.
 
 Again, the form is slightly different if a hybrid formulation is to be
