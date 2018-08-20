@@ -288,15 +288,16 @@ condition (CFBC), the boundary condition has the following form:
 
 .. math::
 
-   \begin{aligned}
    \label{eq:cfbcx}
     (h\nu(4\dot{\varepsilon}_{xx}+2\dot{\varepsilon}_{yy}))n_x +
-   (2h\nu\dot{\varepsilon}_{xy})n_y = & \frac{1}{2}g \left(\rho h^2 - \rho_w
-   b^2\right)n_x   \\
+   (2h\nu\dot{\varepsilon}_{xy})n_y = \frac{1}{2}g \left(\rho h^2 - \rho_w
+   b^2\right)n_x   
+
+.. math::
    \label{eq:cfbcy}  
    (2h\nu\dot{\varepsilon}_{xy})n_x +
-   (h\nu(4\dot{\varepsilon}_{yy}+2\dot{\varepsilon}_{xx}))n_y = & \frac{1}{2}g
-   \left(\rho h^2 - \rho_w b^2\right)n_y. \end{aligned}
+   (h\nu(4\dot{\varepsilon}_{yy}+2\dot{\varepsilon}_{xx}))n_y = \frac{1}{2}g
+   \left(\rho h^2 - \rho_w b^2\right)n_y. 
 
 Here :math:`\vec{n}` is the normal to the boundary, and :math:`R(x,y)`
 is the bathymetry.
