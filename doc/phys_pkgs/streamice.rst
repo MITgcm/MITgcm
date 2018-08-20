@@ -42,6 +42,8 @@ options see the default ``pkg/seaice/STREAMICE_OPTIONS.h``.
    "``STREAMICE_HYBRID_STRESS``", "Use L1L2 formulation for stress balance (default Shallow Shelf Approx)"
    "``USE_ALT_RLOW``", "Use package array for rLow rather than model"
    "``STREAMICE_GEOM_FILE_SETUP``", "Use files rather than parameters in ``STREAMICE_PARM03`` to configure boundaries"
+   "``STREAMICE_SMOOTH_FLOATATION2``", "Subgrid parameterization of transition across the grounding line"
+   "``ALLOW_PETSC``", "Enable interface to PETSc for velocity solver matrix solve"
    
 
 .. _ssub_phys_pkg_streamice_runtime:
@@ -368,7 +370,7 @@ Numerical Details
 
    Hypothetical configuration, detailing the meaning of thickness and velocity masks and their role in controlling boundary conditions.
 
-The momentum balance is solved via iteration on viscosity (*Goldberg* 2011). At each iteration, a linear elliptic differential equation is solved via a finite-element method using bilinear basis functions. The velocity solution "lives" on cell corners, while thickness "lives" at cell centers (Fig. :numref:`figstencil`). The cell-centered thickness is then evolved using a second-order slope-limited finite-volume scheme, with the velocity field from the previous solve.
+The momentum balance is solved via iteration on viscosity (*Goldberg* 2011). At each iteration, a linear elliptic differential equation is solved via a finite-element method using bilinear basis functions. The velocity solution "lives" on cell corners, while thickness "lives" at cell centers (Fig. :numref:`figstencil`). The cell-centered thickness is then evolved using a second-order slope-limited finite-volume scheme, with the velocity field from the previous solve. To represent the flow of floating ice, basal stress terms are multiplied by an array ``float_frac_streamice``, a cell-centered array which determines where ice meets the floation condition.
 
 The computational domain of ``STREAMICE`` (which may be smaller than the array/grid as
 defined by ``SIZE.h`` and ``GRID.h``) is determined by a number of mask
@@ -518,13 +520,13 @@ Additional Features
 Grounding line parameterization
 ###############################
 
-Representing grounding line movement (change of boundary between grounded and floating ice) is problematic in ice sheet models due to the high resolution required. It has been found that sub-grid treatment of the grounding line can partially alleviate this requirement (Gladstone et al, 2011). STREAMICE implements a simple "smoothing" of the floatation condition. By default, ``float_frac_streamice`` is equal to 0 in cells that satisfy the floatation condition, and 1 elsewhere. If the compile option ``STREAMICE_SMOOTH_FLOATATION`` is defined, then the array varies smoothly between 0 and 1 in cells where :math:`|h-h_f| < w_{smooth}/2`, where
+Representing grounding line movement (change of boundary between grounded and floating ice) is problematic in ice sheet models due to the high resolution required. It has been found that sub-grid treatment of the grounding line can partially alleviate this requirement (Gladstone et al, 2011). STREAMICE implements a simple "smoothing" of the floatation condition. By default, ``float_frac_streamice`` is equal to 0 in cells that satisfy the floatation condition, and 1 elsewhere. If the compile option ``STREAMICE_SMOOTH_FLOATATION2`` is defined, then the array varies smoothly between 0 and 1 in cells where :math:`|h-h_f| < w_{smooth}/2`, where
 
 .. math::
 
   h_f = -\frac{\rho}{\rho_w}R
 
-and :math:`w_{smooth}` is specified by ``streamice_smooth_gl_width``. It is found that this parameterisation is necessary in order to achieve grounding line reversibility in the MISMIP3D intercomparison experiment (Pattyn et al, 2013).
+and :math:`w_{smooth}` is specified by ``streamice_smooth_gl_width``. This modification then smooths the transition from grounded to floating ice with respect to basal stress. It is found that this parameterisation is necessary in order to achieve grounding line reversibility in the MISMIP3D intercomparison experiment (Pattyn et al, 2013).
 
 PETSc
 #####
