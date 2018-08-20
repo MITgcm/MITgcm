@@ -123,15 +123,15 @@ General flags and parameters
   +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
   | streamicebasalTracConfig        |    'UNIFORM'                 | method by which to initialise basal traction ('FILE' or 'UNIFORM')                             |
   +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamicebasalTracFile          |                              | basal trac initialisation file (see ??? for units)                                             |
+  | streamicebasalTracFile          |                              | basal trac initialisation file (see :ref:`ssub_phys_pkg_streamice_units` for units)            |
   +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | C_basal_fric_const              |    31.71                     | uniform basal traction value (see ??? for units)                                               |
+  | C_basal_fric_const              |    31.71                     | uniform basal traction value (see :ref:`ssub_phys_pkg_streamice_units` for units)              |
   +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
   | streamiceGlenConstConfig        |    'UNIFORM'                 | method by which to initialise Glen's constant ('FILE' or 'UNIFORM')                            |
   +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamiceGlenConstFile          |                              | Glen's constant initialisation file (see ??? for units)                                        |
+  | streamiceGlenConstFile          |                              | Glen's constant initialisation file (see :ref:`ssub_phys_pkg_streamice_units` for units)       |
   +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | B_glen_isothermal               |                              | uniform Glen's constant value (see ??? for units)                                              |
+  | B_glen_isothermal               |                              | uniform Glen's constant value (see :ref:`ssub_phys_pkg_streamice_units` for units)             |
   +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
   | streamiceBdotFile               |                              | File to initialise time-indep melt rate (m/year)                                               |
   +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
@@ -178,15 +178,15 @@ General flags and parameters
  
 
   
-
+.. _ssub_phys_pkg_streamice_descr:
   
 Description
 +++++++++++
 
-
+.. _ssub_phys_pkg_streamice_eqns:
 
 Equations Solved
-++++++++++++++++
+################
 
 The model solves for 3 dynamic variables: :math:`x`-velocity
 (:math:`u`), :math:`y`-velocity (:math:`v`), and thickness (:math:`h`).
@@ -258,14 +258,18 @@ Thus
 
 :math:`\nu` has the form arising from Glen's law
 
+
+
 .. math::
+   :label: visc_eqn
 
    \nu =
    \frac{1}{2}A^{-\frac{1}{n}}\left(\dot{\varepsilon}_{xx}^2+\dot{\varepsilon}_{yy}
    ^2+\dot{\varepsilon}_{xx}\dot{\varepsilon}_{yy}+\dot{\varepsilon}_{xy}^2+\dot{
    \varepsilon}_{min}^2\right)^{\frac{1-n}{2n}},
 
-though the form is slightly different if a hybrid formulation is used.
+though the form is slightly different if a hybrid formulation is used. 
+
 Whether :math:`\tau_b` is nonzero depends on whether the floatation
 condition is satisfied. Currently this is determined simply on an
 instantaneous cell-by-cell basis (unless subgrid interpolation is used),
@@ -274,6 +278,7 @@ rethought if the effects of tides are to be considered.
 :math:`\vec{\tau}_b` has the form
 
 .. math::
+   :label: tau_eqn
 
    \label{eq:sliding_law}
     \vec{\tau}_b = C (|\vec{u}|^2+u_{min}^2)^{\frac{m-1}{2}}\vec{u}.
@@ -351,6 +356,23 @@ be set through a binary input file to allow front advance past its initial posit
 
 No calving parameterisation is implemented in ``STREAMICE``. However,
 front advancement is a precursor for such a development to be added.
+
+.. _ssub_phys_pkg_streamice_units:
+
+Units of input files
+####################
+
+The inputs for basal traction (``streamicebasalTracFile``, ``C_basal_fric_const``) and ice stiffness (``streamiceGlenConstFile``, ``B_glen_isothermal``) require specific units. For ice stiffness (`A` in Eqn :eq:`visc_eqn`), :math:`B=A^{-1/n}` is specified; or, more accurately, its square root :math:`A^{-1/(2n)}` is specified. (This is to ensure positivity of `B` by squaring the input.) The units of ``streamiceGlenConstFile`` and ``B_glen_isothermal`` are
+
+:math:`\mathrm{Pa}^{1/2}\ \mathrm{yr}^{1/(2n)}`
+
+where `n` is ``n_glen``.
+
+``streamicebasalTracFile`` and ``C_basal_fric_const`` initialise the basal traction (`C` in Eqn :eq:`tau_eqn`). Again :math:`C^{1/2}` is directly specified rather than `C` to ensure positivity. The units are
+
+:math:`\mathrm{Pa}^{1/2} (\mathrm{m }\ \mathrm{yr}^{-1})^{n_b}`
+
+where :math:`n_b` is ``n_basal_friction``.
 
 Numerical Details
 +++++++++++++++++
@@ -432,9 +454,9 @@ There are different boundary condition types that can be set:
 
 -  ``nostress``: velocity normal to boundary will be zero; there will be no tangential stress along the boundary.
 
--  ``fluxbdry``: a mass volume flux is specified along this boundary, which becomes a boundary condition for the thickness advection equation (see ???). velocities will be zero. The corresponing parameter ``flux_val_bdry_X`` then sets the value.
+-  ``fluxbdry``: a mass volume flux is specified along this boundary, which becomes a boundary condition for the thickness advection equation (see :ref:`ssub_phys_pkg_streamice_eqns`). velocities will be zero. The corresponing parameter ``flux_val_bdry_X`` then sets the value.
 
--  ``CFBC``: calving front boundary condition, a neumann condition based on ice thickness and bed depth, is imposed at this boundary (see ???).
+-  ``CFBC``: calving front boundary condition, a neumann condition based on ice thickness and bed depth, is imposed at this boundary (see :ref:`ssub_phys_pkg_streamice_eqns`).
   
  Note the above only apply if there is dynamic ice in the cells at the boundary in question. The boundary conditions are then set by specifying the above conditions over ranges of each (north/south/east/west) boundary. The division of each boundary should be exhaustive and the ranges should not overlap.
 
