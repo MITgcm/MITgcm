@@ -14,8 +14,13 @@ o pkg/seaice: some new and hopefully more sensible defaults:
     rhoConst to scale it. Add a warning if SEAICE_waterDrag > 1.
     This change also involves a slight re-organization (= simplification)
     in seaice_oceandrag_coeffs.F
-  - all verification experiments are affected, so that all data.seaice
-    are adjusted to restore the old defaults for now
+  - all verification experiments are affected, so that all but four
+    data.seaice are adjusted to restore the old defaults. The four experiments
+    that use the new defaults are
+    + global_ocean.cs32x15.seaice
+    + offline_exf_seaice
+    + offline_exf_seaice.dyn_jfnk
+    + offline_exf_seaice.dyn_lsr
   - updated documentation
 o pkg/seaice:
   - fix bug in seaice B-grid code (call to seaice_advdiff, see issue #134);
