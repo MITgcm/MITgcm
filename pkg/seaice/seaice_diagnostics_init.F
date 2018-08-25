@@ -700,21 +700,21 @@ C=============== dynamics ============
 
       diagName  = 'SIpress '
       diagTitle = 'SEAICE strength (with upper and lower limit)'
-      diagUnits = 'm^2/s^2         '
+      diagUnits = 'N/m             '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIzeta  '
       diagTitle = 'SEAICE nonlinear bulk viscosity'
-      diagUnits = 'm^2/s           '
+      diagUnits = 'kg/s            '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIeta   '
       diagTitle = 'SEAICE nonlinear shear viscosity'
-      diagUnits = 'm^2/s           '
+      diagUnits = 'kg/s            '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -734,22 +734,22 @@ C=============== dynamics ============
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIshear '
-      diagTitle = 'SEAICE shear deformation'
-      diagUnits = 's^{-1}          '
+      diagTitle = 'SEAICE shear deformation rate'
+      diagUnits = '1/s             '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIdelta '
-      diagTitle = 'SEAICE Delta deformation'
-      diagUnits = 's^{-1}          '
+      diagTitle = 'SEAICE Delta deformation rate'
+      diagUnits = '1/s             '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SItensil'
       diagTitle = 'SEAICE maximal tensile strength'
-      diagUnits = 'm^2/s^2         '
+      diagUnits = 'N/m             '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I    diagName, diagCode, diagUnits, diagTitle, 0, myThid )
