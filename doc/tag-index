@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/do_tst_2+2
+  - Fix up to use absolute paths for results directories.
 o pkg/seaice: some new and hopefully more sensible defaults:
   - SEAICEscaleSurfStress = .TRUE.
   - SEAICEaddSnowMass = .TRUE.
