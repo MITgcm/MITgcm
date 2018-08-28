@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/do_tst_2+2
+  - Fix up to use absolute paths for results directories.
 o pkg/diagnostics:
   - Print adjoint variables for theta, salt, uvel, vvel, wvel, and etan
     through diagnostics package.
