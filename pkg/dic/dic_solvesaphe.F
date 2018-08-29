@@ -314,13 +314,13 @@ C Load from the carbon_chem common block
 
       z_hini = 10. _d 0**(-1. _d 0 * pHlocal)
              
+      at_maxniter  = 50
+
 #if defined(USE_SOLVESAPHE_SEC)
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('SOLVESAPHE_AT_GENERAL_SEC',myThid)
-#endif
-      jp_maxniter_atsec  = 50
-      
+#endif    
       CALL SOLVE_AT_GENERAL_SEC(z_alktot, z_dictot, z_bortot,
      &                          z_po4tot, z_siltot, z_nh4tot, z_h2stot,
      &                          z_so4tot, z_flutot, z_hini,   z_val,
@@ -332,8 +332,6 @@ C Load from the carbon_chem common block
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('SOLVESAPHE_AT_FAST',myThid)
 #endif
-      jp_maxniter_atfast  = 50
-
       CALL SOLVE_AT_FAST(z_alktot, z_dictot, z_bortot,
      &                   z_po4tot, z_siltot, z_nh4tot, z_h2stot,
      &                   z_so4tot, z_flutot, z_hini,   z_val,
@@ -345,8 +343,6 @@ C Load from the carbon_chem common block
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('SOLVESAPHE_AT_GENERAL',myThid)
 #endif
-      jp_maxniter_atgen  = 50
-
       CALL SOLVE_AT_GENERAL(z_alktot, z_dictot, z_bortot,
      &                      z_po4tot, z_siltot, z_nh4tot, z_h2stot, 
      &                      z_so4tot, z_flutot, z_hini,   z_val,
@@ -1456,7 +1452,7 @@ C Reset counters of iterations
       DO
         niter_atfast = niter_atfast + 1
      
-        IF(niter_atfast > jp_maxniter_atfast) THEN
+        IF(niter_atfast > at_maxniter) THEN
            zh = -1. _d 0
            EXIT
         ENDIF
@@ -1646,7 +1642,7 @@ C     Reset counters of iterations
       zeqn_absmin       = HUGE(1. _d 0)
       
       DO
-        IF(niter_atgen >= jp_maxniter_atgen) THEN
+        IF(niter_atgen >= at_maxniter) THEN
            zh = -1. _d 0
            EXIT
        ENDIF
@@ -2012,7 +2008,7 @@ C                and zeqn_2 < zeqn_1 < 0
       ENDIF
       
       DO
-        IF(niter_atsec >= jp_maxniter_atsec) THEN
+        IF(niter_atsec >= at_maxniter) THEN
            zh = -1. _d 0
            EXIT
         ENDIF

@@ -86,8 +86,7 @@ C       References: Mucci (1983)
 #if defined(CARBONCHEM_SOLVESAPHE_CONST) || defined(CARBONCHEM_SOLVESAPHE_PCO2)
      &                    ,cat, akn, akhs, aphscale, Ksp_TP_Arag
 #ifdef CARBONCHEM_SOLVESAPHE_PCO2   
-     &                    ,jp_maxniter_atgen, jp_maxniter_atsec, 
-     &                     jp_maxniter_atfast
+     &                    ,at_maxniter
 #endif
 #endif     
       _RL  ak0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -118,10 +117,7 @@ C Use Munhoven's Solvesaphe routines
 
 #ifdef CARBONCHEM_SOLVESAPHE_PCO2
 C     Parameters for the max number of iterations allowed for ph solver
-C     PARAMETER jp_maxniter_atgen, jp_maxniter_atsec, jp_maxniter_atfast
-      INTEGER jp_maxniter_atgen
-      INTEGER jp_maxniter_atsec
-      INTEGER jp_maxniter_atfast
+      INTEGER at_maxniter
 #endif
 #endif      
       
