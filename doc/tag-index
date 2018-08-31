@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/generic_advdiff:
+  - move masking of (explicit) vertical diffusive flux to S/R that compute each
+    contribution (pass maskUp as a new argument): This ensures that diagnostics
+    of explicit vertical diffusive flux are properly masked.
 o tools/do_tst_2+2
   - Fix up to use absolute paths for results directories.
 o pkg/seaice: some new and hopefully more sensible defaults:
@@ -25,7 +29,8 @@ o pkg/seaice: some new and hopefully more sensible defaults:
     + offline_exf_seaice.dyn_lsr
   - updated documentation
 o pkg/dic:
-  - Promote constants in S/R CARBON_COEFFS_PRESSURE_DEP and S/R CAR_FLUX_OMEGA_TOP to double precision.
+  - Promote constants in S/R CARBON_COEFFS_PRESSURE_DEP and
+    S/R CAR_FLUX_OMEGA_TOP to double precision.
 o pkg/seaice:
   - fix bug in seaice B-grid code (call to seaice_advdiff, see issue #134);
     Note: B-grid code not tested in any verification exp. (only compiled in one)
