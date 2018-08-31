@@ -17,7 +17,7 @@
      &     localmask, localweight,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_local, num_local,
-     &     myiter, mytime, mythid )
+     &     myIter, myTime, myThid )
 
       implicit none
 
@@ -49,26 +49,26 @@ c     == routine arguments ==
       integer nnzbar
       integer nnzobs
       integer nrecloc
-      integer myiter
-      integer mythid
+      integer myIter
+      integer myThid
       integer localstartdate(4)
 
-      _RL localbar   (1-olx:snx+olx,1-oly:sny+oly,nnzbar,nsx,nsy)
-      _RL areabar   (1-olx:snx+olx,1-oly:sny+oly,nnzbar,nsx,nsy)
+      _RL localbar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      _RL areabar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
 
-      _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
-      _RL localweight(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RS localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
+      _RL localweight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
       _RL xx_localbar_mean_dummy
       _RL xx_areabar_mean_dummy
       _RL mult_local
-      _RL mytime
+      _RL myTime
       _RL localperiod
       _RL spminloc
       _RL spmaxloc
       _RL spzeroloc
-      _RL objf_local(nsx,nsy)
-      _RL num_local(nsx,nsy)
+      _RL objf_local(nSx,nSy)
+      _RL num_local(nSx,nSy)
 
       character*(MAX_LEN_FNAM) areabarfile
       character*(MAX_LEN_FNAM) localbarfile
@@ -99,7 +99,7 @@ c     == local variables ==
       _RL localcost
       _RL junk
 
-      _RL cmask (1-olx:snx+olx,1-oly:sny+oly,nnzobs)
+      _RL cmask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs)
 
       character*(128) fname1, fname2,fname3
 
@@ -127,14 +127,14 @@ C       who knows what this cost-cointribution means fix it.
       _RL SEAICE_freeze
       SEAICE_freeze  = -1.96  _d 0
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
 c--   Initialise local variables.
 
@@ -150,7 +150,6 @@ c--   Initialise local variables.
 c--   First, read tiled data.
       doglobalread = .false.
       ladinit      = .false.
-
 
       write(fname1(1:128),'(80a)') ' '
       write(fname3(1:128),'(80a)') ' '
@@ -170,21 +169,21 @@ c--   Loop over records for the second time.
 
         if ( nnzbar .EQ. 1 ) then
            call active_read_xy( fname1, localbar, irec, doglobalread,
-     &                      ladinit, optimcycle, mythid,
+     &                      ladinit, optimcycle, myThid,
      &                      xx_localbar_mean_dummy )
         else
            call active_read_xyz( fname1, localbar, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid,
+     &                       ladinit, optimcycle, myThid,
      &                       xx_localbar_mean_dummy )
         endif
 
         if ( nnzbar .EQ. 1 ) then
            call active_read_xy( fname3, areabar, irec, doglobalread,
-     &                      ladinit, optimcycle, mythid,
+     &                      ladinit, optimcycle, myThid,
      &                      xx_areabar_mean_dummy )
         else
            call active_read_xyz( fname3, areabar, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid,
+     &                       ladinit, optimcycle, myThid,
      &                       xx_areabar_mean_dummy )
         endif
 
@@ -194,8 +193,8 @@ cnew(
       daytime = FLOAT(secondsperday*(irec-1)) + modelstart
       dayiter = hoursperday*(irec-1)+modeliter0
 
-      call cal_getdate( dayiter, daytime, daydate, mythid )
-      call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
+      call cal_getdate( dayiter, daytime, daydate, myThid )
+      call cal_convdate( daydate,yday,md,dd,sd,ld,wd,myThid )
       ymod = smrareastartdate(1)/10000
 
 #ifdef SEAICE_DEBUG
@@ -223,9 +222,8 @@ cnew(
       middate(3) = modelstartdate(3)
       middate(4) = modelstartdate(4)
 
-
-      call cal_TimePassed( middate, daydate, difftime, mythid )
-      call cal_ToSeconds( difftime, diffsecs, mythid )
+      call cal_TimePassed( middate, daydate, difftime, myThid )
+      call cal_ToSeconds( difftime, diffsecs, myThid )
 
       localrec = int(diffsecs/localperiod) + 1
 
@@ -259,8 +257,8 @@ cnew(
           print *,'calling mdsreadfile',fname2,localrec
 #endif
 
-          call mdsreadfield( fname2, cost_iprec, cost_yftype, nnzobs,
-     &         localobs, localrec, mythid )
+          CALL READ_REC_3D_RL( fname2, cost_iprec, nnzobs,
+     &                         localobs, localrec, 1, myThid )
         else
           do bj = jtlo,jthi
             do bi = itlo,ithi
@@ -367,4 +365,5 @@ c--   End of mult_local or localobsfile
 #endif /* ALLOW_SEAICE_COST_SMR_AREA */
 #endif /* ifdef ALLOW_COST */
 
-      end
+      RETURN
+      END

@@ -465,6 +465,18 @@ section (non quadratic cost function). To this end one sets
 with ``‘_’``, and set ``gencost_barfile`` to one of ``m_trVol``,
 ``m_trHeat``, and ``m_trSalt``.
 
+Note: the functionality in ``cost_gencost_transp.F`` is not regularly tested.
+Users interested in computing volumetric transports through a section
+are recommended to use the ``m_horflux_vol`` capabilities described above as 
+it is regularly tested. Users interested in computing heat and salt transport 
+should note the following about ``m_trHeat`` and ``m_trSalt``:
+
+    1. The associated advection scheme with transports may be inconsistent with
+       the model unless ``ENUM_CENTERED_2ND`` is implemented 
+    2. Bolus velocities are not included
+    3. Diffusion components are not included
+
+
 .. table:: Pre-defined ``gencost_name`` special cases (as of checkpoint
            65z; :numref:`v4custom`).
   :name: gencost_ecco_name

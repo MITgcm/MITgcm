@@ -97,6 +97,13 @@ c       ENDDO
 C------------------------
 C chemical forcing      |
 C------------------------
+#ifdef ALLOW_SPOIL
+        IF ( useSPOIL ) THEN
+          CALL SPOIL_CALC_TENDENCY( bi, bj,
+     I                              myTime, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_SPOIL */
+
 #ifdef ALLOW_CFC
         IF ( useCFC ) THEN
          iTr = CFC_pTr_i1

@@ -173,24 +173,28 @@ C             cdn(umps); ustar can be directly computed from stress;
           recip_sqrtRhoA = 1. _d 0 / SQRT(atmrho)
           DO j = 1,sNy
            DO i = 1,sNx
-            ustar = wStress(i,j,bi,bj)*recip_sqrtRhoA
-            IF ( ustar .EQ. 0. _d 0 ) THEN
-             wsLoc(i,j) = 0. _d 0
-            ELSE IF ( ustar .LT. ustofu11 ) THEN
-             tmp1 = -cquadrag_2/cquadrag_1*exf_half
-             tmp2 = SQRT(tmp1*tmp1 + ustar*ustar/cquadrag_1)
-             wsLoc(i,j) = SQRT(tmp1 + tmp2)
+C     check for zero wStress to please AD tools 
+            IF ( wStress(i,j,bi,bj) .LE. 0. _d 0 ) THEN
+             ustar      = 0. _d 0
+             wsloc(i,j) = 0. _d 0
             ELSE
-             tmp1 = clindrag_2/clindrag_1*oneThirdRL
-             tmp2 = ustar*ustar/clindrag_1*exf_half
-     &            - tmp1*tmp1*tmp1
-             tmp3 = SQRT( ustar*ustar/clindrag_1*
-     &            (ustar*ustar/clindrag_1*0.25 _d 0 - tmp1*tmp1*tmp1 )
-     &                  )
-             tmp4 = (tmp2 + tmp3)**oneThirdRL
-             wsLoc(i,j) = tmp4 + tmp1*tmp1 / tmp4 - tmp1
-c            wsLoc(i,j) = (tmp2 + tmp3)**oneThirdRL +
-c    &            tmp1*tmp1 * (tmp2 + tmp3)**(-oneThirdRL) - tmp1
+             ustar = SQRT(wStress(i,j,bi,bj))*recip_sqrtRhoA
+             IF ( ustar .LT. ustofu11 ) THEN
+              tmp1 = -cquadrag_2/cquadrag_1*exf_half
+              tmp2 = SQRT(tmp1*tmp1 + ustar*ustar/cquadrag_1)
+              wsLoc(i,j) = SQRT(tmp1 + tmp2)
+             ELSE
+              tmp1 = clindrag_2/clindrag_1*oneThirdRL
+              tmp2 = ustar*ustar/clindrag_1*exf_half
+     &             - tmp1*tmp1*tmp1
+              tmp3 = SQRT( ustar*ustar/clindrag_1*
+     &             (ustar*ustar/clindrag_1*0.25 _d 0 - tmp1*tmp1*tmp1 )
+     &                    )
+              tmp4 = (tmp2 + tmp3)**oneThirdRL
+              wsLoc(i,j) = tmp4 + tmp1*tmp1 / tmp4 - tmp1
+c             wsLoc(i,j) = (tmp2 + tmp3)**oneThirdRL +
+c    &             tmp1*tmp1 * (tmp2 + tmp3)**(-oneThirdRL) - tmp1
+             ENDIF
             ENDIF
            ENDDO
           ENDDO

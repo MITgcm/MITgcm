@@ -2,7 +2,7 @@ C
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_globfld_xz(
-     I     fname, ivartype, mythid )
+     I     fname, ivartype, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_set_globfld_xz
@@ -26,7 +26,6 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "GRID.h"
 
 #include "ctrl.h"
 #include "optim.h"
@@ -35,7 +34,7 @@ c     == routine arguments ==
 
       character*( 80)   fname
       integer ivartype
-      integer mythid
+      integer myThid
 
 c     == local variables ==
 
@@ -48,68 +47,64 @@ c     == local variables ==
       integer imin,imax
       integer irec,nrec_nl
 
-      _RL globfld3d(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nr,nSx,nSy)
-      _RL globfldxz(1-oLx:sNx+oLx,nr,nSx,nSy)
+      _RL globfld3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
+      _RL globfldxz(1-OLx:sNx+OLx,nr,nSx,nSy)
 
 c     == external ==
 
 c     == end of interface ==
 
-      jtlo = 1
-      jthi = nsy
-      itlo = 1
-      ithi = nsx
-      jmin = 1-oLy
-      jmax = sny+oLy
-      imin = 1-oLx
-      imax = snx+oLx
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
+      jmin = 1-OLy
+      jmax = sNy+OLy
+      imin = 1-OLx
+      imax = sNx+OLx
 
 c     Initialise temporary file
       do bj = jtlo,jthi
-         do bi = itlo,ithi
-            do k = 1,nr
-               do i = imin,imax
-                  globfldxz(i,k,bi,bj) = 0. _d 0
-               enddo
-            enddo
-         enddo
+        do bi = itlo,ithi
+           do k = 1,nr
+             do i = imin,imax
+                globfldxz(i,k,bi,bj) = 0. _d 0
+             enddo
+           enddo
+        enddo
       enddo
 c     Initialise temporary file
       do bj = jtlo,jthi
-         do bi = itlo,ithi
-            do k = 1,nr
-               do j = jmin,jmax
-                  do i = imin,imax
-                     globfld3d(i,j,k,bi,bj) = 0. _d 0
-                  enddo
-               enddo
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                globfld3d(i,j,k,bi,bj) = 0. _d 0
+              enddo
             enddo
-         enddo
+          enddo
+        enddo
       enddo
-
-c--   Only the master thread will do I/O.
-      _BEGIN_MASTER( mythid )
 
       if ( useSingleCPUio ) then
 C     MDSWRITEFIELDXZ does not know about useSingleCPUio, so the faster
 C     method that works for .not.useSingleCPUio cannot be used
-       nrec_nl = 0
+        nrec_nl = 0
       else
-       nrec_nl = int(ncvarrecs(ivartype)/Ny)
+        nrec_nl = int(ncvarrecs(ivartype)/Ny)
       endif
 
       do irec = 1, nrec_nl
-       call MDSWRITEFIELD( fname, ctrlprec,.FALSE., 'RL',
-     &      Nr, globfld3d,
-     &      irec,   optimcycle,  mythid)
+        CALL WRITE_REC_3D_RL( fname, ctrlprec, Nr,
+     &                        globfld3d,
+     &                        irec, optimcycle, myThid )
       enddo
 
       do irec = nrec_nl*Ny+1, ncvarrecs(ivartype)
-       call MDSWRITEFIELDXZ( fname, ctrlprec,.FALSE., 'RL',
-     &      Nr, globfldxz,
-     &      irec,   optimcycle,  mythid)
+        CALL MDSWRITEFIELDXZ( fname, ctrlprec, .FALSE., 'RL',
+     &                        Nr, globfldxz,
+     &                        irec, optimcycle, myThid )
       enddo
 
-      _END_MASTER( mythid )
-
-      end
+      RETURN
+      END

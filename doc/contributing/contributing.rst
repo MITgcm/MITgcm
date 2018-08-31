@@ -603,6 +603,29 @@ An example of a subroutine in/out admonition box in the documentation is :ref:`h
 
 An example of a calling tree in the documentation is :ref:`here <call-tree-press-meth>`.
 
+To show text from a separate file (e.g., to show lines of code, show comments from a Fortran file, show a parameter file etc.), 
+use the ``literalinclude`` directive. Example usage is shown here:
+
+   ::
+
+        .. literalinclude:: «FILE_TO_SHOW»
+            :start-at: String indicating where to start grabbing text
+            :end-at: String indicating where to stop grabbing text
+
+Unlike the ``:filelink:`` and ``:varlink:`` directives, which assume a file path starting at the top of the MITgcm repository,
+one must specify the path relative to the current directory of the file (for example, from the doc directory, it would require
+``../../`` at the start of the file path to specify the base directory of the MITgcm repository).
+Note one can instead use ``:start-after:`` and ``:end-before:`` to get text from the file between (not including) those lines. 
+If one omits the ``start-at`` or ``start-after``, etc. options the whole file is shown. 
+More details for this directive can be found `here <http://www.sphinx-doc.org/en/stable/markup/code.html#directive-literalinclude>`__.
+Example usage in this documentation is :ref:`here <model_main_call_tree>`,
+where the lines to generate this are:
+
+   ::
+
+        .. literalinclude:: ../../model/src/the_model_main.F
+            :start-at: C Invocation from WRAPPER level...
+            :end-at: C    |                 :: events.
 
 
 .. _subsec_manual_style_guide:
@@ -630,13 +653,15 @@ Alternatively, latex ``:math:`` directives (see :ref:`above <symbolic_notation>`
 Building the manual
 -------------------
 
-Once you've made your changes to the manual, you should build it locally to verify that it works as expected. To do this you will need a working python installation with the following modules installed (use :code:`pip install MODULE` in the terminal):
+Once you've made your changes to the manual, you should build it locally to verify that it works as expected. To do this you will need a working python installation with the following modules installed (use ``pip install «MODULE»`` in the terminal):
 
  - sphinx
  - sphinxcontrib-bibtex
  - sphinx_rtd_theme
 
-Then, run :code:`make html` in the :code:`docs` directory.
+Once these modules are installed you can build the html version of the manual by running ``make html`` in the ``doc`` directory. 
+
+To build the pdf version of the manual you will also need a working version of LaTeX that includes `several packages <http://www.sphinx-doc.org/en/master/usage/builders/index.html#sphinx.builders.latex.LaTeXBuilder>`_ that are not always found in minimal LaTeX installations. The command to build the pdf version is ``make latexpdf``, which should also be run in the ``doc`` directory.
 
 
 

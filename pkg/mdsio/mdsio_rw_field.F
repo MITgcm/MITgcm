@@ -1,3 +1,4 @@
+#undef USE_OBSOLETE_MDS_RW_FIELD
 #include "MDSIO_OPTIONS.h"
 
 C--  File mdsio_rw_field.F: old version of MDSIO READ/WRITE FIELD S/R with
@@ -51,7 +52,7 @@ C Routine arguments
       INTEGER irecord
       INTEGER myThid
 
-#ifdef ALLOW_AUTODIFF
+#ifdef USE_OBSOLETE_MDS_RW_FIELD
 C Local variables
       _RL dummyRL(1)
       _RS dummyRS(1)
@@ -68,9 +69,9 @@ C Local variables
      I                irecord, myThid )
       ENDIF
 
-#else /* ALLOW_AUTODIFF */
+#else /* USE_OBSOLETE_MDS_RW_FIELD */
       STOP 'ABNORMAL END: S/R MDSREADFIELD is retired'
-#endif /* ALLOW_AUTODIFF */
+#endif /* USE_OBSOLETE_MDS_RW_FIELD */
 
       RETURN
       END
@@ -117,7 +118,7 @@ C Routine arguments
       INTEGER irecord
       INTEGER myThid
 
-#ifdef ALLOW_AUTODIFF
+#ifdef USE_OBSOLETE_MDS_RW_FIELD
 C Local variables
       _RL dummyRL(1)
       _RS dummyRS(1)
@@ -134,9 +135,9 @@ C Local variables
      I                irecord, myThid )
       ENDIF
 
-#else /* ALLOW_AUTODIFF */
+#else /* USE_OBSOLETE_MDS_RW_FIELD */
       STOP 'ABNORMAL END: S/R MDSREADFIELD_LOC is empty'
-#endif /* ALLOW_AUTODIFF */
+#endif /* USE_OBSOLETE_MDS_RW_FIELD */
 
       RETURN
       END
@@ -189,7 +190,7 @@ C Routine arguments
       INTEGER myIter
       INTEGER myThid
 
-#ifdef ALLOW_AUTODIFF
+#ifdef USE_OBSOLETE_MDS_RW_FIELD
 C Local variables
       _RL dummyRL(1)
       _RS dummyRS(1)
@@ -206,9 +207,9 @@ C Local variables
      I                 irecord, myIter, myThid )
       ENDIF
 
-#else /* ALLOW_AUTODIFF */
+#else /* USE_OBSOLETE_MDS_RW_FIELD */
       STOP 'ABNORMAL END: S/R MDSWRITEFIELD is retired'
-#endif /* ALLOW_AUTODIFF */
+#endif /* USE_OBSOLETE_MDS_RW_FIELD */
 
       RETURN
       END
@@ -261,7 +262,7 @@ C Routine arguments
       INTEGER myIter
       INTEGER myThid
 
-#ifdef ALLOW_AUTODIFF
+#ifdef USE_OBSOLETE_MDS_RW_FIELD
 C Local variables
       _RL dummyRL(1)
       _RS dummyRS(1)
@@ -278,9 +279,9 @@ C Local variables
      I                 irecord, myIter, myThid )
       ENDIF
 
-#else /* ALLOW_AUTODIFF */
+#else /* USE_OBSOLETE_MDS_RW_FIELD */
       STOP 'ABNORMAL END: S/R MDSWRITEFIELD_LOC is empty'
-#endif /* ALLOW_AUTODIFF */
+#endif /* USE_OBSOLETE_MDS_RW_FIELD */
 
       RETURN
       END

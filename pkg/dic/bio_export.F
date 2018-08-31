@@ -8,7 +8,7 @@ C !INTERFACE: ==========================================================
 #ifdef ALLOW_FE
      I           PTR_FE,
 #endif
-     I           bioac,
+     O           bioac,
      I           bi,bj,iMin,iMax,jMin,jMax,
      I           myIter,myTime,myThid)
 

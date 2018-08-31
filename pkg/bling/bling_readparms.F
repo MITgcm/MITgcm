@@ -205,11 +205,20 @@ C   epsln            :: a very small number
      
       _RL secperday
       integer k
-#ifdef USE_EXF_INTERPOLATION
+#ifdef USE_EXFCO2
+# ifdef USE_EXF_INTERPOLATION
       INTEGER gridNx, gridNy
       INTEGER j
       _RL inp_lon0, inp_lat0, inp_dLon, inp_dLat
-#endif
+# ifdef ALLOW_EXCH2
+      gridNx = exch2_mydNx(1)
+      gridNy = exch2_mydNy(1)
+# else /* ALLOW_EXCH2 */
+      gridNx = Nx
+      gridNy = Ny
+# endif /* ALLOW_EXCH2 */
+# endif /* USE_EXF_INTERPOLATION */
+#endif /* USE_EXFCO2 */
 
       _BEGIN_MASTER(myThid)
       errCount = 0
@@ -333,6 +342,7 @@ C     model grid cell-center position (leading to trivial interpolation)
         ENDIF
         apco2_lat_inc(j) = inp_dLat
       ENDDO
+      apco2_interpMethod = 1
 #endif /* USE_EXF_INTERPOLATION */
 #endif
 

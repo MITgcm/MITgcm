@@ -1,10 +1,9 @@
 #include "ECCO_OPTIONS.h"
 
-
       subroutine cost_sla_read( sla_file, sla_startdate, sla_period,
      I                sla_intercept, sla_slope,
      O                sla_obs, sla_mask,
-     I                irec, mythid )
+     I                irec, myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_sla_read
@@ -33,7 +32,7 @@ c     == global variables ==
 c     == routine arguments ==
 
       integer irec
-      integer mythid
+      integer myThid
 
 c     == local variables ==
 
@@ -56,8 +55,8 @@ c     == local variables ==
       _RL sla_period
       _RL sla_intercept
       _RL sla_slope
-      _RL sla_obs    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-      _RL sla_mask   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL sla_obs    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
+      _RL sla_mask   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       character*(MAX_LEN_FNAM) sla_file
 
 cnew(
@@ -78,14 +77,14 @@ c     == external functions ==
 
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
       factor = 0.01
       spval = -9990.
@@ -93,19 +92,19 @@ c     == end of interface ==
 c select data record to read
       daytime = FLOAT(secondsperday*(irec-1)) + modelstart
       dayiter = hoursperday*(irec-1)+modeliter0
-      call cal_getdate( dayiter, daytime, daydate, mythid )
-      call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
+      call cal_getdate( dayiter, daytime, daydate, myThid )
+      call cal_convdate( daydate,yday,md,dd,sd,ld,wd,myThid )
       ymod = sla_startdate(1)/10000
 
       if ( ymod .GE. yday ) then
-         call cal_FullDate( sla_startdate(1), 0, middate, mythid)
+         call cal_FullDate( sla_startdate(1), 0, middate, myThid)
       else
          tempDate_1 = yday*10000+100+1
-         call cal_FullDate( tempDate_1, 0, middate, mythid)
+         call cal_FullDate( tempDate_1, 0, middate, myThid)
       endif
 
-      call cal_TimePassed( middate, daydate, difftime, mythid )
-      call cal_ToSeconds( difftime, diffsecs, mythid )
+      call cal_TimePassed( middate, daydate, difftime, myThid )
+      call cal_ToSeconds( difftime, diffsecs, myThid )
 c      sshrec = floor(diffsecs/sla_period) + 1
       sshrec = int(diffsecs/sla_period) + 1
 
@@ -116,8 +115,8 @@ c      sshrec = floor(diffsecs/sla_period) + 1
 
 c read data:
       if ( (sshrec .GT. 0).AND.(exst) ) then
-       call mdsreadfield( fnametmp, cost_iprec, cost_yftype,
-     &                          1, sla_obs, sshrec, mythid )
+       CALL READ_REC_3D_RL( fnametmp, cost_iprec, 1,
+     &                      sla_obs, sshrec, 1, myThid )
       else
        do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -168,7 +167,5 @@ c mask data:
         enddo
       enddo
 
-
-      return
-      end
-
+      RETURN
+      END
