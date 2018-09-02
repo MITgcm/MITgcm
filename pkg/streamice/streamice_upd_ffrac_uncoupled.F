@@ -29,11 +29,11 @@ CEOP
 
       INTEGER bi, bj, i, j
       _RL OD, rhoi, rhow, delta, r, h, hf, i_r, rlo
-#ifdef STREAMICE_SMOOTH_FLOATATION
+#ifdef STREAMICE_SMOOTH_FLOATATION2
       _RL ETA_GL_STREAMICE
       external ETA_GL_STREAMICE
 #endif
-#if defined(STREAMICE_SMOOTH_FLOATATION) || defined(STREAMICE_SMOOTH_FLOATATION2)
+#if defined(STREAMICE_SMOOTH_FLOATATION2) || defined(STREAMICE_SMOOTH_FLOATATION)
       _RL PHI_GL_STREAMICE
       external PHI_GL_STREAMICE
 #endif
@@ -53,7 +53,7 @@ CEOP
 #endif
 
 
-#ifdef STREAMICE_SMOOTH_FLOATATION
+#ifdef STREAMICE_SMOOTH_FLOATATION2
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -98,7 +98,7 @@ CEOP
       ENDDO
 
 #else 
-! STREAMICE_SMOOTH_FLOATATION
+! STREAMICE_SMOOTH_FLOATATION2
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -161,7 +161,7 @@ c         ice thickness does not take up whole ocean column -> floating
      &      + H
           ENDIF
 
-#ifndef STREAMICE_SMOOTH_FLOATATION2
+#ifndef STREAMICE_SMOOTH_FLOATATION
 
 
           IF (OD .ge. 0. _d 0) THEN          

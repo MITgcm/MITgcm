@@ -54,7 +54,7 @@ C     === Global variables ===
            v_streamice_diag(i,j,bi,bj) = v_streamice(i,j,bi,bj)%v
            h_streamice_diag(i,j,bi,bj) = H_streamice(i,j,bi,bj)%v
            area_diag(i,j,bi,bj) = area_shelf_streamice(i,j,bi,bj)%v
-#ifdef STREAMICE_SMOOTH_FLOATATION
+#ifdef STREAMICE_SMOOTH_FLOATATION2
            float_frac_diag(i,j,bi,bj) = 
      &         float_frac_streamice(i,j,bi,bj)%v
 #endif
@@ -115,7 +115,7 @@ C     === Global variables ===
 #endif
 
 #ifdef ALLOW_OPENAD
-#ifdef STREAMICE_SMOOTH_FLOATATION
+#ifdef STREAMICE_SMOOTH_FLOATATION2
        CALL DIAGNOSTICS_FILL(float_frac_diag,'SI_float',
      &      0,1,0,1,1,myThid)
 #else
