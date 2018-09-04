@@ -611,11 +611,15 @@ C           boundary condition.
         ENDDO
        ENDDO
       ELSE
-        CALL GAD_DIFF_R(bi,bj,k,KappaR,TracerN,df,myThid)
+        CALL GAD_DIFF_R(
+     I                    bi,bj,k, maskup, KappaR, TracerN,
+     O                    df, myThid )
       ENDIF
 
       IF ( trUseDiffKr4 ) THEN
-        CALL GAD_BIHARM_R( bi,bj,k, diffKr4, TracerN, df, myThid )
+        CALL GAD_BIHARM_R(
+     I                    bi,bj,k, maskUp, diffKr4, TracerN,
+     U                    df, myThid )
       ENDIF
 
 #ifdef ALLOW_GMREDI
@@ -623,7 +627,7 @@ C-    GM/Redi flux in R
       IF ( trUseGMRedi ) THEN
         CALL GMREDI_RTRANSPORT(
      I         trIdentity, bi, bj, k, iMin, iMax, jMin, jMax,
-     I         TracerN,
+     I         maskUp, TracerN,
      U         df,
      I         myThid )
       ENDIF
@@ -631,7 +635,7 @@ C-    GM/Redi flux in R
 
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        fVerT(i,j,kUp) = fVerT(i,j,kUp) + df(i,j)*maskUp(i,j)
+        fVerT(i,j,kUp) = fVerT(i,j,kUp) + df(i,j)
        ENDDO
       ENDDO
 
