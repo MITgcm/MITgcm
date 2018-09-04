@@ -1,8 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67d (2018/09/04)
 o doc:
-  - update few piece of documentation including addition (in "getting_started"
+  - update few pieces of documentation including addition (in "getting_started"
     section) of main CPP OPTIONS description and main code full list of
     run-time parameters.
 o pkg/generic_advdiff:
