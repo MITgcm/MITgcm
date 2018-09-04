@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o doc:
+  - update few piece of documentation including addition (in "getting_started"
+    section) of main CPP OPTIONS description and main code full list of
+    run-time parameters.
 o pkg/generic_advdiff:
   - move masking of (explicit) vertical diffusive flux to S/R that compute each
     contribution (pass maskUp as a new argument): This ensures that diagnostics
