@@ -1,6 +1,59 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67d (2018/09/04)
+o doc:
+  - update few pieces of documentation including addition (in "getting_started"
+    section) of main CPP OPTIONS description and main code full list of
+    run-time parameters.
+o pkg/generic_advdiff:
+  - move masking of (explicit) vertical diffusive flux to S/R that compute each
+    contribution (pass maskUp as a new argument): This ensures that diagnostics
+    of explicit vertical diffusive flux are properly masked.
+o tools/do_tst_2+2
+  - Fix up to use absolute paths for results directories.
+o pkg/seaice: some new and hopefully more sensible defaults:
+  - SEAICEscaleSurfStress = .TRUE.
+  - SEAICEaddSnowMass = .TRUE.
+  - SEAICEadvScheme = 77
+  - SEAICE_useMultDimSnow = .TRUE.
+  - SEAICE_Olx/y = Olx/y - 2
+  - SEAICEetaZmethod = 3
+  - SEAICE_drag = 0.001
+  - CPP-flag SEAICE_ZETA_SMOOTHREG defined by default
+  - change SEAICE_waterDrag default to 5.5e-3 and add reference density
+    rhoConst to scale it. Add a warning if SEAICE_waterDrag > 1.
+    This change also involves a slight re-organization (= simplification)
+    in seaice_oceandrag_coeffs.F
+  - all verification experiments are affected, so that all but four
+    data.seaice are adjusted to restore the old defaults. The four experiments
+    that use the new defaults are
+    + global_ocean.cs32x15.seaice
+    + offline_exf_seaice
+    + offline_exf_seaice.dyn_jfnk
+    + offline_exf_seaice.dyn_lsr
+  - updated documentation
+o pkg/dic:
+  - Promote constants in S/R CARBON_COEFFS_PRESSURE_DEP and
+    S/R CAR_FLUX_OMEGA_TOP to double precision.
+o pkg/seaice:
+  - fix bug in seaice B-grid code (call to seaice_advdiff, see issue #134);
+    Note: B-grid code not tested in any verification exp. (only compiled in one)
+    so no need to update any output.txt
+o pkg/diagnostics:
+  - Print adjoint variables for theta, salt, uvel, vvel, wvel, and etan
+    through diagnostics package.
+o pkg/shelfice:
+  - fix ice shelf mask for very-thin ice shelf case, when hFacMin
+    and hFacMinDr criteria leave no room for ice (hFac(k=1)=1).
+    Note: thin ice-shelf that results in 0< hFac(k=1) <1 still need
+    to be fixed when using any seaice pkg.
+o pkg/ecco:
+  - Replace "mskTrVol" and "gencost_errfile" with "gencost_mask" in
+    "cost_gencost_transp", mirroring "m_horflux_vol".
+  - Document and warn user (via STDERR) of potential issues with using
+    "cost_gencost_transp" to compute volume, heat, or salt transport.
+
 checkpoint67c (2018/06/26)
 o pkg/generic_advdiff:
   - Add per tracer run-time param to switch on/off Smolarkiewicz-Hack:

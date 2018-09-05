@@ -3,7 +3,6 @@
 #- seaice dynamics params:
 # LSR_ERROR          = 1.E-12,
   SEAICE_no_slip     = .TRUE.,
-  SEAICE_drag        = 0.001,
 # Depending on vertical resolution this angle should have a value > 0
 #  (e.g., 25deg for drF(1)=10m)
 # SEAICE_waterTurnAngle = 0.0,
@@ -19,6 +18,14 @@
   SEAICE_mcPheeTaper = 0.92,
 #- seaice I/O params:
   SEAICEwriteState   = .TRUE.,
+# old defaults
+ SEAICEscaleSurfStress = .FALSE.,
+ SEAICEaddSnowMass     = .FALSE.,
+ SEAICE_useMultDimSnow = .FALSE.,
+ SEAICE_Olx = 0,
+ SEAICE_Oly = 0,
+ SEAICEetaZmethod = 0,
+ SEAICE_waterDrag  = 0.005355404089581304,
  &
 
  &SEAICE_PARM03

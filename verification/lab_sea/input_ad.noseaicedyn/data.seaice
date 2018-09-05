@@ -28,12 +28,13 @@
       SEAICE_tempFrz0    = -1.96,
       SEAICE_dTempFrz_dS = 0.,
       SEAICE_availHeatFrac = 0.8,
-      SEAICEadvSnow      = .TRUE.,
-      SEAICEuseFlooding  = .TRUE.,
       SEAICEwriteState   = .TRUE.,
 #     SEAICE_tave_mnc    = .FALSE.,
 #     SEAICE_dump_mnc    = .FALSE.,
 #     SEAICE_mon_mnc     = .FALSE.,
+# old defaults
+ SEAICEadvScheme       = 2,
+ SEAICE_useMultDimSnow = .FALSE.,
  &
 
  &SEAICE_PARM02
