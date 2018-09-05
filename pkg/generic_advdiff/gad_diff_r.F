@@ -6,8 +6,7 @@ C !ROUTINE: GAD_DIFF_R
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_DIFF_R(
      I           bi, bj, k,
-     I           KappaR,
-     I           tracer,
+     I           maskUp, KappaR, tracer,
      O           dfr,
      I           myThid )
 
@@ -28,10 +27,12 @@ C !USES: ===============================================================
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
 C  k                    :: vertical level
+C  maskUp               :: 2-D array for mask at W points
 C  KappaR               :: vertical diffusivity
 C  tracer               :: tracer field
 C  myThid               :: thread number
       INTEGER bi,bj,k
+      _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KappaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
@@ -57,7 +58,7 @@ CEOP
       ELSE
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-         dfr(i,j) = -KappaR(i,j)
+         dfr(i,j) = -KappaR(i,j)*maskUp(i,j)
      &            *_rA(i,j,bi,bj)*deepFac2F(k)*rhoFacF(k)
      &            *recip_drC(k)
      &            *(tracer(i,j,k)-tracer(i,j,km1))*rkSign
