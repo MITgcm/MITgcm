@@ -1,6 +1,13 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/streamice:
+  - fix bugs relating to ice front advance:
+    streamice_advect_thickness.F -- overlap update of array passed to 
+     streamice_adv_front which was leading to spurious ice area values
+    streamice_init_varia.F -- proper initialisation of area_shelf_streamice
+     which is used for ice front advance (only affects diagnostics)
+
 checkpoint67d (2018/09/04)
 o doc:
   - update few pieces of documentation including addition (in "getting_started"
