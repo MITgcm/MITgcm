@@ -4,13 +4,18 @@ Using MITgcm Packages
 =====================
 
 
-The set of packages that will be used within a partiucular model can be
+The set of packages that will be used within a particular model can be
 configured using a combination of both “compile–time” and “run–time”
 options. Compile–time options are those used to select which packages
 will be “compiled in” or implemented within the program. Packages
 excluded at compile time are completely absent from the executable
 program(s) and thus cannot be later activated by any set of subsequent
 run–time options.
+
+Here we use the following shorthand for various forms of package names, i.e. that appear in package-related filenames, parameters etc.:
+all upper case  ``${PKG}``, all lower case ``${pkg}``, and mixed case ``${Pkg}``.
+For example, for :filelink:`pkg/gmredi` these are ``GMREDI``, ``gmredi``, and ``gmRedi`` respectively.
+
 
 Package Inclusion/Exclusion
 ---------------------------

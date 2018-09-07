@@ -558,39 +558,31 @@ Test-experiment directory content
 Each test-experiment directory («TESTDIR», see :filelink:`verification` for
 the full list of choices) contains several standard subdirectories and files which
 :filelink:`testreport <verification/testreport>` recognizes and uses when running a regression test.
-The directories/files that :filelink:`testreport <verification/testreport>`
+The directories and files that :filelink:`testreport <verification/testreport>`
 uses are different for a forward test and an adjoint test (``testreport -adm``, see :numref:`testreport_utility`) and
 some test-experiments are set-up for only one type of regression test
 whereas others allow both types of tests (forward and adjoint).
 Also some test-experiments allow, using the same MITgcm executable, multiple tests using
 different parameters and input files, with a primary input set-up (e.g., ``input/`` or ``input_ad/``)  and  corresponding
 results (e.g., ``results/output.txt`` or ``results/output_adm.txt``)  and with one or several secondary inputs
-(e.g., ``input.OTHER/`` or ``input_ad.OTHER/``) and corresponding results (e.g., ``results/output.OTHER.txt`` or ``results/output_adm.OTHER.txt``).
+(e.g., ``input.«OTHER»/`` or ``input_ad.«OTHER»/``) and corresponding results (e.g., ``results/output.«OTHER».txt`` or ``results/output_adm.«OTHER».txt``).
 
 directory «TESTDIR»/results/ 
   Contains reference standard output used for test comparison.
   ``results/output.txt`` and ``results/output_adm.txt``,
   respectively, correspond to primary forward and adjoint test run on the reference
   platform  (currently baudelaire.csail.mit.edu) on one processor  (no  MPI,  single  thread)  using  the
-  reference  compiler  (currently  the  GNU  Fortran  compiler ``gfortran``).  The  presence  of  these  files  determines
+  reference  compiler  (currently  the  `GNU  Fortran  compiler gfortran <https://gcc.gnu.org/fortran>`_).
+  The  presence  of  these  output files  determines
   whether or not :filelink:`testreport <verification/testreport>`
   is testing or skipping this test-experiment. Reference standard output for secondary tests
-  (``results/output.OTHER.txt`` or ``results/output_adm.OTHER.txt``) are also expected here.
+  (``results/output.«OTHER».txt`` or ``results/output_adm.«OTHER».txt``) are also expected here.
   
-  The test comparison involves few model variables output: By default for a forward test, the 2-D
-  solver initial residual ``cg2d_init_res`` and 3-D state variables (``T``, ``S``, ``U``, ``V``) from :filelink:`pkg/monitor` output; by default
-  for an adjoint test, the cost-function and gradient-check. However, some test-experiments use some package-
-  specific variables from :filelink:`pkg/monitor` according to the file
-  ``«TESTDIR»/input[_ad][.OTHER]/tr_checklist`` specification. Note that at this time,
-  the only variables that are compared in :filelink:`testreport <verification/testreport>`
-  are those dumped in standard output via :filelink:`pkg/monitor`, not output produced
-  by :filelink:`pkg/diagnostics`.
-
 
 directory «TESTDIR»/build/
-   Initially empty directory where :filelink:`testreport <verification/testreport>`
-   will build the MITgcm executable for forward and adjoint test. It
-   might contains an experiment specific ``genmake_local`` file (see :numref:`genmake2_desc`).
+   Directory where :filelink:`testreport <verification/testreport>`
+   will build the MITgcm executable for forward and adjoint tests. It is initially empty except in some cases
+   will contain an experiment specific ``genmake_local`` file (see :numref:`genmake2_desc`).
    Note that the original ``code[_ad]/SIZE.h_mpi``
    is not directly used as :filelink:`SIZE.h <model/inc/SIZE.h>` to build an MPI-executable; instead, a local copy
    ``build/SIZE.h.mpi`` is derived from ``code[_ad]/SIZE.h_mpi`` by adjusting the number
@@ -600,7 +592,8 @@ directory «TESTDIR»/build/
 
 
 directory TESTDIR/code/
-   Contains the test-experiment specific source code used to build the MITgcm executable (``mitgcmuv``)
+   Contains the test-experiment specific source code (i.e., files that have been modified from the standard
+   MITgcm repository version) used to build the MITgcm executable (``mitgcmuv``)
    for forward-test (using ``genmake2 -mods=../code``).
  
    It  can  also  contain  specific  source  files  with  the  suffix  ``_mpi``  to  be  used  in  place  of  the  corresponding  file
@@ -620,7 +613,7 @@ directory TESTDIR/input/
    (without suffix) for MPI tests, or with suffix ``.mth`` to be used for 
    multi-threaded tests (see :numref:`testreport_utility`). The presence or absence of
    ``eedata.mth`` determines whether or not a multi-threaded test on this test-experiment is
-   performed or skipped.
+   performed or skipped, respectively.
 
    To save disk space and reduce downloading time, multiple copies of the same input file are avoided by using a
    shell script ``prepare_run``. When such a script is found in ``TESTDIR/input/``,
@@ -631,7 +624,7 @@ directory TESTDIR/input_ad/
    Contains the input and parameter files used to run the primary adjoint test of this test-experiment. It can also
    contain specific parameter files with the suffix ``.mpi`` and shell script ``prepare_run`` as described above.
 
-directory TESTDIR/input.OTHER/
+directory TESTDIR/input.«OTHER»/
     Contains the input and parameter files used to run the secondary OTHER forward test of this test-experiment.
     It can also contain specific parameter files with suffix ``.mpi`` or ``.mth`` and shell script
     ``prepare_run`` (see above).
@@ -639,7 +632,7 @@ directory TESTDIR/input.OTHER/
     The presence or absence the file ``eedata.mth`` determines whether or not a secondary multi-threaded test on this
     test-experiment is performed or skipped.
 
-directory TESTDIR/input_ad.OTHER/
+directory TESTDIR/input_ad.«OTHER»/
     Contains the input and parameter files used to run the secondary OTHER adjoint test of this test-experiment. It
     can also contain specific parameter files with the suffix ``.mpi`` and shell script ``prepare_run`` (see above).
 
@@ -659,7 +652,7 @@ directory TESTDIR/run/
 
     The sequence for an adjoint test is similar, with ``../input_ad/`` replacing ``../input/``.
 
-directory TESTDIR/tr_run.OTHER/
+directory TESTDIR/tr_run.«OTHER»/
     Directory created by :filelink:`testreport <verification/testreport>`
     to run the MITgcm executable for secondary "OTHER" forward or adjoint tests.
 
@@ -719,7 +712,7 @@ The testreport script accepts a number of command-line options which can be list
 
 ``-tdir «TESTDIR»`` (or ``-tdir ’«TDIR1» «TDIR2» ...’``)
    This option specifies the test directory or list of test directories that should be used.
-   Each of these entries should exactly (note: they are case sensitive!) match the names of directories in
+   Each of these entries should exactly match (note: they are case sensitive!) the names of directories in
    :filelink:`verification`. If this option is omitted, then all directories that are
    properly formatted (that is, containing an input subdirectory and a ``results/output.txt``
    file) will be used.
@@ -764,18 +757,7 @@ The testreport script accepts a number of command-line options which can be list
    Clean out all files/progress from any previously executed :filelink:`testreport <verification/testreport>` runs.
 
 ``-match «NUMBER»``
-   Set matching criteria to «NUMBER» of significant digits.
-
-The :filelink:`testreport <verification/testreport>` script will create an output
-directory «tr_NAME_DATE_N/», with your computer hostname substituted for
-NAME, the current date for DATE, followed by a suffix number N to distinguish
-from previous :filelink:`testreport <verification/testreport>`
-output directories. :filelink:`testreport <verification/testreport>` writes progress to the screen (stdout) and
-reports into the output directory as it runs. In particular, one can find, in the output directory, the
-``summary.txt`` file that contains a brief comparison of the current 
-output with the "known-good" output. At the end of the testing process, the
-``tr_out.txt`` file is generated in :filelink:`verification` directory as a compact version of ``summary.txt``.
-
+   Set matching criteria to «NUMBER» of significant digits (default is 10 digits).
 
 Additional :filelink:`testreport <verification/testreport>` options are available
 to pass options to the :filelink:`genmake2 <tools/genmake2>` step
@@ -784,10 +766,104 @@ as well as additional options to skip specific steps of the
 ``testreport -help`` for a detailed list.
 
 
+The :filelink:`testreport <verification/testreport>` script will create an output
+directory «tr_NAME_DATE_N/», with your computer hostname substituted for
+NAME, the current date for DATE, followed by a suffix number N to distinguish
+from previous :filelink:`testreport <verification/testreport>`
+output directories. :filelink:`testreport <verification/testreport>` writes progress to the screen (stdout) and
+reports into the «tr_NAME_DATE_N/» directory as it runs. In particular, one can find, in this directory, the
+``summary.txt`` file that contains information about the run, and a brief comparison of the current 
+output with the "known-good" output. 
+The test comparison involves few model variables output: By default for a forward test, the 2D
+solver initial residual ``cg2d_init_res`` and 3-D state variables
+(``T``, ``S``, ``U``, ``V``) from :filelink:`pkg/monitor` output; by default
+for an adjoint test, the cost-function and gradient-check. However, some test-experiments
+use some package-specific variables from :filelink:`pkg/monitor` according to the file
+``«TESTDIR»/input[_ad][.«OTHER»]/tr_checklist`` specification. Note that at this time,
+the only variables that are compared in :filelink:`testreport <verification/testreport>`
+are those dumped in standard output via :filelink:`pkg/monitor`, not output produced
+by :filelink:`pkg/diagnostics`.
+At the end of the testing process, a
+``summary.txt`` file is generated in the «tr_NAME_DATE_N/» directory as a compact, combined version of the ``summary.txt``
+located in all experiment sub-directories.
+Below is an excerpt from this file, running the full testreport suite:
+
+::
+
+  run: ./testreport -of ../tools/build_options/linux_amd64_gfortran
+  on : Linux c072 4.11.9-100.fc24.x86_64 #1 SMP Wed Jul 5 16:34:07 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
+  
+    OPTFILE=/home/jscott/MITgcm_fortesting/MITgcm/tools/build_options/linux_amd64_gfortran
+  
+  default 10  ----T-----  ----S-----  ----U-----  ----V-----  --PTR 01--  --PTR 02--  --PTR 03--  --PTR 04--  --PTR 05--
+  G D M    c        m  s        m  s        m  s        m  s        m  s        m  s        m  s        m  s        m  s
+  e p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .
+  n n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d
+  2 d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .
+  
+  Y Y Y Y 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 22 16 16>16<22  .  .  .  .  .  .  .  .  .  .  .  . pass  1D_ocean_ice_column
+  Y Y Y Y>14<16 16 16 16 22 22 22 22 22 22 22 22 13  4 13 13  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  adjustment.128x64x1
+  Y Y Y Y>14<16 16 16 16 22 22 22 22 16 16 13 16 16 16  4 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  adjustment.cs-32x32x1
+  Y Y Y Y>14<16 16 16  0 22 22 22 22 16 16  0 14 16 16  0 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  adjustment.cs-32x32x1.nlfs
+  Y Y Y Y -- 16 16 16>16<16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  advect_cs
+  Y Y Y Y -- 14 14 16>16<16 16 16 16 16 16 16 22 16 16 16 22  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  advect_xy
+  Y Y Y Y -- 16 16 16>16<16 16 16 16 16 16 16 22 16 16 16 22  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  advect_xy.ab3_c4
+  Y Y Y Y -- 16 16 16>16<16 16 16 16 16 16 16 16 22 22 22 22  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  advect_xz
+  Y Y Y Y -- 16 16 16>16<16 14 16 14 16 16 16 16 22 22 22 22  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  advect_xz.nlfs
+  Y Y Y Y -- 13 14 16>14<12 16 16 16 16 16 16 16 22 22 22 22  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  advect_xz.pqm
+  Y Y Y Y>14<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  aim.5l_cs
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  aim.5l_cs.thSI
+  Y Y Y Y>14<16 16 13 14 16 16 13 13 16 16 13 13 16 16 13 14  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  aim.5l_Equatorial_Channel
+  Y Y Y Y>14<16 16 13 13 16 16 13 13 16 16 13 13 16 16 13 13  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  aim.5l_LatLon
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  . pass  cfc_example
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  cheapAML_box
+  Y Y Y Y>14<16 16 16 12 22 22 22 22 13 16 12 16 13 14 12 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  deep_anelastic
+  Y Y Y Y>14<16 16 16 16 16 16 16 16 16 16 16 16 16 13 14 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  dome
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  exp2
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  exp2.rigidLid
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  exp4
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  exp4.nlfs
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  exp4.stevens
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  fizhi-cs-32x32x40
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  fizhi-cs-aqualev20
+  Y Y Y Y>16<16 16 16 16 22 22 22 22 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  fizhi-gridalt-hs
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  flt_example
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  front_relax
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  front_relax.bvp
+  ...
+
+
+The four columns on the left are pass/fail indicators (pass=Y, fail=N). Explanation of these columns is as follows:
+
+  - Gen2: did genmake2 build the makefile for this experiment without error?
+  - Dpnd: did the ``make depend`` for this experiment complete without error?
+  - Make: did the ``make`` successfully generate a ``mitgcmuv`` executable for this experiment?
+  - Run: did execution of this experiment generate output that matched a given
+    number of significant digits (see ``-match`` option above) to known “good output”?
+
+The next sets of columns shows the number of significant digits matched from the monitor
+output “cg2d”, “min”, “max”, “mean”, and “s d” (standard deviation) for variables T, S, U, and V (see column headings).
+For some experiments, additional variables are tested, as shown in “PTR 01”, “PTR 02”, etc. sets of columns.
+A match to near-full machine precision is 15-17 digits; this generally will occur when the same type of computer,
+similar operating system, and similar version of Fortran compiler are used for the test. Otherwise, different round-off can occur,
+and due to the chaotic nature of ocean and climate models, fewer digits (typically, 10-13 digits) are matched. A match of 22 digits generally is
+due to output being exactly 0.0. In some experiments, some variables may not be used or meaningful, which causes the ‘0’ and ‘4’ match results above.
+
+While the match for many variables is tested, only one of these is used to assess pass/fail: this number is bracketed by ``>`` and ``<``.
+For example, above in setup :filelink:`advect_cs <verification/advect_cs>` the pass/fail test occurs on variable “T: s d”, as specified in
+:filelink:`verification/advect_cs/input/tr_checklist`. 
+
+(which time monitor dump is used, last? PTR 01 is typically tracer but can be say some SI variable or something else?
+what does pass mean to the right of the match digits?)
+
+
+
 The do_tst_2+2 utility
 ~~~~~~~~~~~~~~~~~~~~~~
 
 The shell script :filelink:`tools/do_tst_2+2` can be used to check the accuracy of the restart procedure.
+
+mneed instructions from J-M
 
 Daily testing of MITgcm
 -----------------------
@@ -807,6 +883,15 @@ Required testing for MITgcm code contributors
 
 Using testreport to check your new code
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- run testreport thru full suite (non-mpi or mth) in an unmodified code branch or download of MITgcm repository
+- run testreport thru full suite with modified code
+- diff summary.txt in the «tr_NAME_DATE_N/» from these two sets of runs. any differences?
+
+(running testreport  on the modified code will catch compiler errors even prior to the summary.txt comparison. But the comparison
+will catch if numerical output is affected by the modification. In some cases -- say you fixed a bug 
+in one of the model’s advection schemes -- then one would even expect 
+differences in numerical output for any setup using that specific scheme)
 
 Automatic testing with Travis-CI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
