@@ -61,8 +61,8 @@ Note that in this case, the two definitions of :math:`\phi_s` and
 :eq:`split-phi-bo` converge toward the same (approximated) expressions:
 :math:`\phi_s = \int^{r_{surf}}_{R_o} b_o dr` and
 :math:`\phi'_{hyd}=\int^{R_o}_r b' dr`.
-On the contrary, the unapproximated formulation (“non-linear
-free-surface”, see the next section) retains the full expression:
+On the contrary, the unapproximated formulation
+(see :numref:`free_surf_effect_col_thick`) retains the full expression:
 :math:`\phi'_{hyd} = \int^{r_{surf}}_r (b - b_o) dr` . This is
 obtained by selecting :varlink:`nonlinFreeSurf` =4 in parameter file ``data``.
 Regarding the surface potential:
@@ -86,6 +86,8 @@ linear coefficient :math:`b_s` is used and computed (:filelink:`INI_LINEAR_PHISU
 according to the reference surface pressure :math:`p_o`:
 :math:`b_s = b_o(R_o) = c_p \kappa (p_o / P^o_{SL})^{(\kappa - 1)} \theta_{ref}(p_o)`,
 with :math:`P^o_{SL}` the mean sea-level pressure.
+
+.. _free_surf_effect_col_thick:
 
 Free surface effect on column total thickness (Non-linear free-surface)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -177,28 +179,26 @@ involved in the solver matrix update is negligible.
    :name: nonlinFreeSurf-flags
 
    +---------------------------+---------+----------------------------------------------------------------------------------------+
-   | parameter                 | value   | description                                                                            |
+   | Parameter                 | Value   | Description                                                                            |
    +===========================+=========+========================================================================================+
-   |                           | -1      | linear free-surface, restart from a pickup file                                        |
+   | :varlink:`nonlinFreeSurf` | -1      | linear free-surface, restart from a pickup file                                        |
+   |                           |         | produced with #undef :varlink:`EXACT_CONSERV` code                                     |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
-   |                           |         | produced with #undef EXACT\_CONSERV code                                               |
+   |                           | 0       | linear free-surface (= default)                                                        |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
-   |                           | 0       | Linear free-surface                                                                    |
-   +---------------------------+---------+----------------------------------------------------------------------------------------+
-   | :varlink:`nonlinFreeSurf` | 4       | Non-linear free-surface                                                                |
+   |                           | 4       | full non-linear free-surface                                                           |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
    |                           | 3       | same as 4 but neglecting :math:`\int_{R_o}^{R_o+\eta} b' dr` in :math:`\Phi'_{hyd}`    |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
    |                           | 2       | same as 3 but do not update cg2d solver matrix                                         |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
-   |                           | 1       | same as 2 but treat momentum as in Linear FS                                           |
+   |                           | 1       | same as 2 but treat momentum as in linear free-surface                                 |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
-   |                           | 0       | do not use :math:`r*` vertical coordinate (= default)                                  |
+   | :varlink:`select_rStar`   | 0       | do not use :math:`r^*` vertical coordinate (= default)                                 |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
-   | :varlink:`select_rStar`   | 2       | use :math:`r^*` vertical coordinate                                                    |
+   |                           | 2       | use :math:`r^*` vertical coordinate                                                    |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
    |                           | 1       | same as 2 but without the contribution of the                                          |
-   +---------------------------+---------+----------------------------------------------------------------------------------------+
    |                           |         | slope of the coordinate in :math:`\nabla \Phi`                                         |
    +---------------------------+---------+----------------------------------------------------------------------------------------+
 

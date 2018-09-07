@@ -1,8 +1,41 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67d (2018/09/04)
+o doc:
+  - update few pieces of documentation including addition (in "getting_started"
+    section) of main CPP OPTIONS description and main code full list of
+    run-time parameters.
+o pkg/generic_advdiff:
+  - move masking of (explicit) vertical diffusive flux to S/R that compute each
+    contribution (pass maskUp as a new argument): This ensures that diagnostics
+    of explicit vertical diffusive flux are properly masked.
+o tools/do_tst_2+2
+  - Fix up to use absolute paths for results directories.
+o pkg/seaice: some new and hopefully more sensible defaults:
+  - SEAICEscaleSurfStress = .TRUE.
+  - SEAICEaddSnowMass = .TRUE.
+  - SEAICEadvScheme = 77
+  - SEAICE_useMultDimSnow = .TRUE.
+  - SEAICE_Olx/y = Olx/y - 2
+  - SEAICEetaZmethod = 3
+  - SEAICE_drag = 0.001
+  - CPP-flag SEAICE_ZETA_SMOOTHREG defined by default
+  - change SEAICE_waterDrag default to 5.5e-3 and add reference density
+    rhoConst to scale it. Add a warning if SEAICE_waterDrag > 1.
+    This change also involves a slight re-organization (= simplification)
+    in seaice_oceandrag_coeffs.F
+  - all verification experiments are affected, so that all but four
+    data.seaice are adjusted to restore the old defaults. The four experiments
+    that use the new defaults are
+    + global_ocean.cs32x15.seaice
+    + offline_exf_seaice
+    + offline_exf_seaice.dyn_jfnk
+    + offline_exf_seaice.dyn_lsr
+  - updated documentation
 o pkg/dic:
-  - Promote constants in S/R CARBON_COEFFS_PRESSURE_DEP and S/R CAR_FLUX_OMEGA_TOP to double precision.
+  - Promote constants in S/R CARBON_COEFFS_PRESSURE_DEP and
+    S/R CAR_FLUX_OMEGA_TOP to double precision.
 o pkg/seaice:
   - fix bug in seaice B-grid code (call to seaice_advdiff, see issue #134);
     Note: B-grid code not tested in any verification exp. (only compiled in one)
