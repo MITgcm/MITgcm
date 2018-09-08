@@ -304,6 +304,19 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
        CALL PRINT_ERROR( msgBuf, myThid)
       ENDIF
 
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1-oly,sNy+oly
+         DO i=1-olx,sNx+olx
+          IF (H_streamice(i,j,bi,bj .gt. 0. _d 0 .and.
+     &         STREAMICE_hmask(i,j,bi,bj) .eq. 1.0) then
+           area_shelf_streamice(i,j,bi,bj) = rA(i,j,bi,bj)
+          ENDIF
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
 #endif
 ! STREAMICE_GEOM_FILE_SETUP
 
