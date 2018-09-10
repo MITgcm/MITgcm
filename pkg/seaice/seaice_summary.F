@@ -141,7 +141,7 @@ C--  Seaice-Dynamics parameters
       CALL WRITE_0D_RL( SEAICE_drag_south       ,INDEX_NONE,
      & 'SEAICE_drag_south      =', ' /* Southern Ocean SEAICE_drag */')
       CALL WRITE_0D_RL( SEAICE_waterDrag  ,INDEX_NONE,
-     & 'SEAICE_waterDrag  =', ' /* water-ice drag * density */')
+     & 'SEAICE_waterDrag  =', ' /* water-ice drag */')
       CALL WRITE_0D_RL( SEAICE_waterDrag_south  ,INDEX_NONE,
      & 'SEAICE_waterDrag_south =', ' /* Southern Ocean waterDrag */')
 #ifdef SEAICE_ALLOW_BOTTOMDRAG

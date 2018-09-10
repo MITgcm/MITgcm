@@ -345,7 +345,7 @@ c       m1 = 1 + MOD(iterNb+1,2)
      I           gsNm(1-OLx,1-OLy,1,bi,bj,m2), dTtracerLev,
      I           GAD_SALINITY, saltAdvScheme, saltVertAdvScheme,
      I           calcAdvection, saltImplVertAdv, AdamsBashforth_S,
-     I           saltVertDiff4, useGMRedi, useKPP,
+     I           saltVertDiff4, useGMRedi, useKPP, salt_stayPositive,
      O           fZon, fMer,
      U           fVer, gS_loc,
      I           myTime, myIter, myThid )
@@ -360,7 +360,7 @@ c       m1 = 1 + MOD(iterNb+1,2)
      I           gsNm1(1-OLx,1-OLy,1,bi,bj), dTtracerLev,
      I           GAD_SALINITY, saltAdvScheme, saltVertAdvScheme,
      I           calcAdvection, saltImplVertAdv, AdamsBashforth_S,
-     I           saltVertDiff4, useGMRedi, useKPP,
+     I           saltVertDiff4, useGMRedi, useKPP, salt_stayPositive,
      O           fZon, fMer,
      U           fVer, gS_loc,
      I           myTime, myIter, myThid )

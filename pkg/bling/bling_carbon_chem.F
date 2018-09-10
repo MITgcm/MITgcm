@@ -39,6 +39,10 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
+#ifdef ALLOW_EXF
+# include "EXF_PARAM.h"
+# include "EXF_FIELDS.h"
+#endif
 #include "BLING_VARS.h"
 
 C     == Routine arguments ==
@@ -356,6 +360,10 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
+#ifdef ALLOW_EXF
+# include "EXF_PARAM.h"
+# include "EXF_FIELDS.h"
+#endif
 #include "BLING_VARS.h"
 
 C     == Routine arguments ==
@@ -517,11 +525,11 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "BLING_VARS.h"
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
 # include "EXF_FIELDS.h"
 #endif
+#include "BLING_VARS.h"
 
 C     == Routine arguments ==
 C ttemp and stemp are local theta and salt arrays
@@ -775,11 +783,12 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
-#include "BLING_VARS.h"
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
 # include "EXF_FIELDS.h"
 #endif
+#include "BLING_VARS.h"
+
 C     == Routine arguments ==
 C ttemp and stemp are local theta and salt arrays
 C dont really need to pass T and S in, could use theta, salt in

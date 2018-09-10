@@ -1,6 +1,6 @@
 #include "ECCO_OPTIONS.h"
 
-      subroutine ecco_readparms( mythid )
+      subroutine ecco_readparms( myThid )
 
 c     ==================================================================
 c     SUBROUTINE ecco_readparms
@@ -39,10 +39,10 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer mythid
+      integer myThid
 
 c     == local variables ==
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf      - Informational/error message buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER k, k2, iUnit, num_file, num_var
@@ -76,7 +76,7 @@ c--   Read the namelist input.
      &                   mdtstartdate1, mdtstartdate2,
      &                   mdtenddate1, mdtenddate2,
      &                   using_cost_altim,
-     &                   using_cost_bp, using_cost_scat, 
+     &                   using_cost_bp, using_cost_scat,
      &                   using_cost_sst, using_cost_seaice,
      &                   using_cost_transp,
      &                   using_mdt, using_tpj, using_ers, using_gfo,
@@ -168,7 +168,7 @@ c--   Read the namelist input.
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
       namelist /ecco_gencost_nml/
-     &         using_gencost, 
+     &         using_gencost,
      &         gencost_barfile,
      &         gencost_datafile,
      &         gencost_name,
@@ -608,15 +608,15 @@ c--   Set default values.
          gencost_msk_is3d      = .FALSE.
          gencost_msk_pointer3d(k)  = 0
 c boxmean/horflux masks
-         call ecco_zero(gencost_mskCsurf(1-olx,1-oly,1,1,k),
-     &          1,zeroRL,mythid)
-         call ecco_zero(gencost_mskWsurf(1-olx,1-oly,1,1,k),
-     &          1,zeroRL,mythid)
-         call ecco_zero(gencost_mskSsurf(1-olx,1-oly,1,1,k),
-     &          1,zeroRL,mythid)
+         call ecco_zero(gencost_mskCsurf(1-OLx,1-OLy,1,1,k),
+     &          1,zeroRL,myThid)
+         call ecco_zero(gencost_mskWsurf(1-OLx,1-OLy,1,1,k),
+     &          1,zeroRL,myThid)
+         call ecco_zero(gencost_mskSsurf(1-OLx,1-OLy,1,1,k),
+     &          1,zeroRL,myThid)
          do k2 = 1,nr
           gencost_mskVertical(k2,k)= 1. _d 0
-         enddo  
+         enddo
 c deprecated:
         gencost_nrecperiod(k) = 0
         gencost_scalefile(k)  = ' '
@@ -627,12 +627,12 @@ c deprecated:
 #ifdef ALLOW_GENCOST3D
       do k=1,NGENCOST3D
 c boxmean/horflux masks
-         call ecco_zero(gencost_mskC(1-olx,1-oly,1,1,1,k),
-     &          Nr,zeroRL,mythid)
-         call ecco_zero(gencost_mskW(1-olx,1-oly,1,1,1,k),
-     &          Nr,zeroRL,mythid)
-         call ecco_zero(gencost_mskS(1-olx,1-oly,1,1,1,k),
-     &          Nr,zeroRL,mythid)
+         call ecco_zero(gencost_mskC(1-OLx,1-OLy,1,1,1,k),
+     &          Nr,zeroRL,myThid)
+         call ecco_zero(gencost_mskW(1-OLx,1-OLy,1,1,1,k),
+     &          Nr,zeroRL,myThid)
+         call ecco_zero(gencost_mskS(1-OLx,1-OLy,1,1,1,k),
+     &          Nr,zeroRL,myThid)
       enddo
 #endif
 
@@ -690,7 +690,7 @@ catn add cost global transport using gencost framework
      &     SQUEEZE_RIGHT , 1)
 
 c pre-specified generic cost terms that create their own barfile
-         elseif ( 
+         elseif (
      &        (gencost_name(k).EQ.'siv4-conc').OR.
      &        (gencost_name(k).EQ.'siv4-deconc').OR.
      &        (gencost_name(k).EQ.'siv4-exconc') ) then
@@ -726,19 +726,20 @@ C--   load masks if needed:
       do k=1,NGENCOST
            kk=gencost_msk_pointer3d(k)
            if ( ( gencost_mask(k) .NE. ' ' ).AND.
-     &          (gencost_flag(k).EQ.-3) ) then
+     &          (gencost_flag(k).EQ.-3 .or. 
+     &           gencost_flag(k).eq.-4     ) ) then
 c
             il = ilnblnk(gencost_mask(k))
             write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'C'
             inquire( file=tempfile(1:il+1), exist=exst )
             if (exst.AND.(.NOT.gencost_msk_is3d(k))) then
-             call mdsreadfield(tempfile,cost_iprec,'RL',1,
-     &            gencost_mskCsurf(1-olx,1-oly,1,1,k),1,mythid)
+             CALL READ_REC_3D_RL( tempfile, cost_iprec, 1,
+     &            gencost_mskCsurf(1-OLx,1-OLy,1,1,k), 1, 1, myThid )
 #ifdef ALLOW_GENCOST3D
             elseif (exst.AND.(gencost_msk_pointer3d(k).LE.
      &                        NGENCOST3D)) then
-             call mdsreadfield(tempfile,cost_iprec,'RL',Nr,
-     &            gencost_mskC(1-olx,1-oly,1,1,1,kk),1,mythid)
+             CALL READ_REC_3D_RL( tempfile, cost_iprec, Nr,
+     &            gencost_mskC(1-OLx,1-OLy,1,1,1,kk), 1, 1, myThid )
 #endif
             endif
 c
@@ -746,13 +747,13 @@ c
             write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'W'
             inquire( file=tempfile(1:il+1), exist=exst )
             if (exst.AND.(.NOT.gencost_msk_is3d(k))) then
-             call mdsreadfield(tempfile,cost_iprec,'RL',1,
-     &            gencost_mskWsurf(1-olx,1-oly,1,1,k),1,mythid)
+             CALL READ_REC_3D_RL( tempfile, cost_iprec, 1,
+     &            gencost_mskWsurf(1-OLx,1-OLy,1,1,k), 1, 1, myThid )
 #ifdef ALLOW_GENCOST3D
             elseif (exst.AND.(gencost_msk_pointer3d(k).LE.
      &                        NGENCOST3D)) then
-             call mdsreadfield(tempfile,cost_iprec,'RL',Nr,
-     &            gencost_mskW(1-olx,1-oly,1,1,1,kk),1,mythid)
+             CALL READ_REC_3D_RL( tempfile, cost_iprec, Nr,
+     &            gencost_mskW(1-OLx,1-OLy,1,1,1,kk), 1, 1, myThid )
 #endif
             endif
 c
@@ -760,13 +761,13 @@ c
             write(tempfile(1:128),'(2A)') gencost_mask(k)(1:il),'S'
             inquire( file=tempfile(1:il+1), exist=exst )
             if (exst.AND.(.NOT.gencost_msk_is3d(k))) then
-             call mdsreadfield(tempfile,cost_iprec,'RL',1,
-     &            gencost_mskSsurf(1-olx,1-oly,1,1,k),1,mythid)
+             CALL READ_REC_3D_RL( tempfile, cost_iprec, 1,
+     &            gencost_mskSsurf(1-OLx,1-OLy,1,1,k), 1, 1, myThid )
 #ifdef ALLOW_GENCOST3D
             elseif (exst.AND.(gencost_msk_pointer3d(k).LE.
      &                        NGENCOST3D)) then
-             call mdsreadfield(tempfile,cost_iprec,'RL',Nr,
-     &            gencost_mskS(1-olx,1-oly,1,1,1,kk),1,mythid)
+             CALL READ_REC_3D_RL( tempfile, cost_iprec, Nr,
+     &            gencost_mskS(1-OLx,1-OLy,1,1,1,kk), 1, 1, myThid )
 #endif
             endif
 c
@@ -775,8 +776,8 @@ c
             inquire( file=tempfile(1:il+1), exist=exst )
             if (exst) then
              ioUnit = 0
-             call MDS_READVEC_LOC(tempfile,cost_iprec,ioUnit,'RL',
-     &         nR, gencost_mskVertical(1,k), dummyRS, 0, 0, 1, myThid )
+             CALL MDS_READVEC_LOC( tempfile, cost_iprec, ioUnit, 'RL',
+     &        Nr, gencost_mskVertical(1,k), dummyRS, 0, 0, 1, myThid )
             endif
 c
            endif!errfile
@@ -905,4 +906,5 @@ catn -- checking boxmean and transp
 
       _BARRIER
 
-      end
+      RETURN
+      END

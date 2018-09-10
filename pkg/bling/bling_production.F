@@ -845,18 +845,18 @@ c ---------------------------------------------------------------------
       IF ( useDiagnostics ) THEN
 
 c 3d global variables
-        CALL DIAGNOSTICS_FILL(Phy_sm_local,'BLGPSM  ',0,Nr,1,bi,bj,
-     &       myThid)
-        CALL DIAGNOSTICS_FILL(Phy_lg_local,'BLGPLG  ',0,Nr,1,bi,bj,
-     &       myThid)
-        CALL DIAGNOSTICS_FILL(Phy_diaz_local,'BLGPDIA ',0,Nr,1,bi,bj,
-     &       myThid)
         CALL DIAGNOSTICS_FILL(chl,    'BLGCHL  ',0,Nr,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(irr_mem,'BLGIMEM ',0,Nr,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(poc,     'BLGPOC  ',0,Nr,1,bi,bj,myThid)
 c 3d local variables
+        CALL DIAGNOSTICS_FILL(Phy_sm_local,'BLGPSM  ',0,Nr,2,bi,bj,
+     &       myThid)
+        CALL DIAGNOSTICS_FILL(Phy_lg_local,'BLGPLG  ',0,Nr,2,bi,bj,
+     &       myThid)
+        CALL DIAGNOSTICS_FILL(Phy_diaz_local,'BLGPDIA ',0,Nr,2,bi,bj,
+     &       myThid)
         CALL DIAGNOSTICS_FILL(irrk,    'BLGIRRK ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(irr_eff, 'BLGIEFF ',0,Nr,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(poc,     'BLGPOC  ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(theta_Fe,'BLGCHL2C',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(thFe_inv,'BLGC2CHL',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(Fe_lim,  'BLGFELIM',0,Nr,2,bi,bj,myThid)

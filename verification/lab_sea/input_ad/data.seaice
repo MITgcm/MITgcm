@@ -25,13 +25,21 @@
       SEAICE_tempFrz0    = -1.96,
       SEAICE_dTempFrz_dS = 0.,
       SEAICE_availHeatFrac = 0.8,
-      SEAICEadvSnow      = .TRUE.,
-      SEAICEuseFlooding  = .TRUE.,
       SEAICEdiffKhArea   = 200.,
       SEAICEwriteState   = .TRUE.,
 #     SEAICE_tave_mnc    = .FALSE.,
 #     SEAICE_dump_mnc    = .FALSE.,
 #     SEAICE_mon_mnc     = .FALSE.,
+# old defaults
+ SEAICEadvScheme       = 2,
+ SEAICEscaleSurfStress = .FALSE.,
+ SEAICEaddSnowMass     = .FALSE.,
+ SEAICE_useMultDimSnow = .FALSE.,
+ SEAICEetaZmethod = 0,
+ SEAICE_Olx       = 0,
+ SEAICE_Oly       = 0,
+ SEAICE_drag      = 0.002,
+ SEAICE_waterDrag = 0.005355404089581304,
  &
 
  &SEAICE_PARM02
