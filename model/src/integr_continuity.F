@@ -1,5 +1,6 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#include "AUTODIFF_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: INTEGR_CONTINUITY
@@ -13,6 +14,8 @@ C     | SUBROUTINE INTEGR_CONTINUITY
 C     | o Integrate the continuity Eq : compute vertical velocity
 C     |   and free surface "r-anomaly" (etaN,etaH) to satisfy
 C     |   exactly the conservation of the Total Volume
+C     | o Routine dummy_for_etan located here in order to print the
+C     |   correct adjoint variable for etaN
 C     *==========================================================*
 C     \ev
 
@@ -294,6 +297,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   End bi,bj loops
        ENDDO
       ENDDO
+
+#ifdef ALLOW_AUTODIFF_MONITOR
+C     In reverse, print adjoint variable for etaN
+      CALL DUMMY_FOR_ETAN( myTime, myIter, myThid )
+#endif
 
       IF ( exactConserv .AND. myIter.NE.nIter0
      &                  .AND. implicDiv2Dflow .NE. 0. _d 0 )
