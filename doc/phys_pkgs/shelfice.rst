@@ -72,7 +72,7 @@ not be :math:`p_{top}`, but
 :math:`\rho_{0}=` :varlink:`rhoConst`, so that in the absence of a :math:`\rho^{*}`
 that is different from :math:`\rho_{0}`, the anomaly is zero.
 
-.. tabularcolumns:: |\Y{.225}|\Y{.125}|\Y{.125}|\Y{.55}|
+.. tabularcolumns:: |\Y{.27}|\Y{.21}|\Y{.205}|\Y{.34}|
 
 +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Group           | Default                                    | Description                                                                                             |
