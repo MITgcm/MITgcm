@@ -1,6 +1,13 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/*/data
+  - set "rhoConst" instead of "rhoNil" (unless using Linear EOS)
+  - for net surface heat flux, set "surfQnetFile" instead of "surfQfile"
+    (unless net surface shortwave is also specified).
+  - fix OpenAD/input_oad.kpp set-up where net surface heat flux was used
+    as net heat-flux minus short-wave and update the output.
+
 checkpoint67d (2018/09/04)
 o doc:
   - update few pieces of documentation including addition (in "getting_started"
