@@ -71,7 +71,7 @@ appropriate, such as ‘bugfix’ or ‘newfeature’ etc.) and make edits on th
 make a succinct (<70 char) summary of your changes. If you need more space to
 describe your changes, you can leave a blank line and type a longer description,
 or break your commit into multiple smaller commits. Reference any outstanding
-issues addressed using the syntax ``#ISSUE_NUMBER``.
+issues addressed using the syntax ``#«ISSUE_NUMBER»``.
 
 **6.** Push the edited branch to the origin remote (i.e. your fork) on GitHub:
 
@@ -79,10 +79,12 @@ issues addressed using the syntax ``#ISSUE_NUMBER``.
 
     % git push -u origin «YOUR_NEWBRANCH_NAME»
 
-**7.** On GitHub, go to your fork and hit the pull request (PR) button,
+**7.** On GitHub, go to your fork and hit the compare and pull request (PR) button,
+provide the requested information about your PR (in particular, a non-trivial change to the model
+requires a suggested addition to :filelink:`doc/tag-index`)
 and wait for the MITgcm head developers to review your proposed changes. 
 In general the MITgcm code reviewers try to respond to a new PR within
-a week. A response may accept the changes, or may request edits and
+a week. The reviewers may accept the PR as is, or may request edits and
 changes. Occasionally the review team will reject changes that are not
 sufficiently aligned with and do not fit with the code structure. The
 review team is always happy to discuss their decisions, but wants to
@@ -252,7 +254,6 @@ or ‘bugfix’ (preferably, be even more descriptive) is helpful.
     - type ``git add «FILENAME1» «FILENAME2» ...`` to stage the file(s) ready for a commit command (note both existing and brand new files need to be added). “Stage” effectively means to notify Git of the the list of files you plan to “commit” for changes into the version tracking system. Note you can change other files and NOT have them sent to model developers; only staged files will be sent. You can repeat this ``git add`` command as many times as you like and it will continue to augment the list of files.  ``git diff`` and ``git status`` are useful commands to see what you have done so far.
     - use ``git commit`` to commit the files. This is the first step in bundling a collection of files together to be sent off to the MITgcm maintainers. When you enter this command, an editor window will pop up. On the top line, type a succinct (<70 character) summary of what these changes accomplished. If your commit is non-trivial and additional explanation is required, leave a blank line and then type a longer description of why the action in this commit was appropriate etc. It is good practice to link with known issues using the syntax ``#ISSUE_NUMBER`` in either the summary line or detailed comment. Note that all the changes do not have to be handled in a single commit (i.e. you can git add some files, do a commit, than continue anew by adding different files, do another commit etc.); the ``git commit`` command itself does not (yet) submit anything to maintainers.  
     - if you are fixing a more involved bug or adding a new feature, such that many changes are required, it is preferable to break your contribution into multiple commits (each documented separately) rather than submitting one massive commit; each commit should encompass a single conceptual change to the code base, regardless of how many files it touches. This will allow the MITgcm maintainers to more easily understand your proposed changes and will expedite the review process. 
-    - if you make any change to the code, however small, i.e., flavor ii or iii above, we expect you to add your changes to the top of :filelink:`doc/tag-index` (starting at line 4), which is a running history of all development of the MITgcm. Again, be concise, describing your changes in one or several lines of text. We will not accept code changes without this edit.
 
 When your changes are tested and documented, continue on to step #6, but read all of step #6 and #7 before proceeding; you might want to do an optional “bring my development branch up to date” sequence of steps before step #6.
 
@@ -262,13 +263,13 @@ When your changes are tested and documented, continue on to step #6, but read al
 
     % git push -u origin «YOUR_NEWBRANCH_NAME»
 
-Some time might elapse during step #5, as you make and test your edits, during which continuing development occurs in the main MITgcm repository. In contrast with some models that opt for static, major releases, the MITgcm is in a constant state of improvement and development. It is very possible that some of your edits occur to files that have also been modified by others; in fact, it is very likely :filelink:`doc/tag-index` will have been updated in the main repo if even a week has elapsed. Your local clone however will not know anything about any changes that may have occurred to the MITgcm repo in the cloud, which may cause an issue in step #7 below, when one of three things will occur:
+Some time might elapse during step #5, as you make and test your edits, during which continuing development occurs in the main MITgcm repository. In contrast with some models that opt for static, major releases, the MITgcm is in a constant state of improvement and development. It is very possible that some of your edits occur to files that have also been modified by others. Your local clone however will not know anything about any changes that may have occurred to the MITgcm repo in the cloud, which may cause an issue in step #7 below, when one of three things will occur:
  
    - the files you have modified in your development have **NOT** been modified in the main repo during this elapsed time, thus git will have no conflicts in trying to update (i.e. merge) your changes into the main repo.
    - during the elapsed time, the files you have modified have also been edited/updated in the main repo, but you edited different places in these files than those edits to the main repo, such that git is smart enough to be able to merge these edits without conflict.
    - during the elapsed time, the files you have modified have also been edited/updated in the main repo, but git is not smart enough to know how to deal with this conflict (it will notify you of this problem during step #7).
 
-One option is to NOT attempt to bring your development code branch up to date, instead simply proceed with steps #6 and #7 and let the maintainers assess and resolve any conflict(s), should such occur (there is a checkbox ‘Allow edits by maintainers’ that is checked by default when you do step #7). If very little time elapsed during step #5, such conflict is less likely (exception would be to :filelink:`doc/tag-index`, which the maintainers can easily resolve). However, if step #5 takes on the order of months, we do suggest you follow this recipe below to update the code and merge yourself. And/or during the development process, you might have reasons to bring the latest changes in the main repo into your development branch, and thus might opt to follow these same steps.
+One option is to NOT attempt to bring your development code branch up to date, instead simply proceed with steps #6 and #7 and let the maintainers assess and resolve any conflict(s), should such occur (there is a checkbox ‘Allow edits by maintainers’ that is checked by default when you do step #7). If very little time elapsed during step #5, such conflict is less likely. However, if step #5 takes on the order of months, we do suggest you follow this recipe below to update the code and merge yourself. And/or during the development process, you might have reasons to bring the latest changes in the main repo into your development branch, and thus might opt to follow these same steps.
 
 Development branch code update recipe:
 
@@ -288,7 +289,8 @@ Some additional ``git diff`` commands to help sort out file changes, in case you
 Aside comment: if you are familiar with git, you might realize there is an alternate way to merge, using the “rebase” syntax. If you know what you are doing, feel free to use this command instead of our suggested merge command above.
 
 
-**7.** Finally create a “pull request” (a.k.a. “PR”; in other words, you are requesting that the maintainers pull your changes into the main code repository). In GitHub, go to the fork of the project that you made (https://github.com/«GITHUB_USERNAME»/MITgcm.git). There is a button for "Compare and Pull" in your newly created branch. Click the button! Now you can add a final succinct summary description of what you've done in your commit(s), and flag up any issues. The maintainers will now be notified and be able to peruse your changes! In general, the maintainers will try to respond to a new PR within
+**7.** Finally create a “pull request” (a.k.a. “PR”; in other words, you are requesting that the maintainers pull your changes into the main code repository). In GitHub, go to the fork of the project that you made (https://github.com/«GITHUB_USERNAME»/MITgcm.git). There is a button for "Compare and Pull" in your newly created branch. Click the button! Now you can add a final succinct summary description of what you've done in your commit(s), flag up any issues, and respond to the remaining questions on the PR template form. If you have made non-trivial changes to
+the code or documentation, we will note this in the MITgcm change log, :filelink:`doc/tag-index`. Please suggest how to note your changes in :filelink:`doc/tag-index`; we will not accept the PR if this field is left blank. The maintainers will now be notified and be able to peruse your changes! In general, the maintainers will try to respond to a new PR within
 a week. While the PR remains open, you can go back to step #5 and make additional edits, git adds,
 git commits, and then redo step #6; such changes will be added to the PR (and maintainers re-notified), no need to redo step #7. 
 
@@ -469,7 +471,7 @@ All packages follow a required "boot" sequence outlined here:
    is responsible for initialization of all package variables, called after the core model state has been completely
    initialized but before the core model timestepping starts.
    This routine calls ${PKG}_READ_PICKUP, where any package variables required to restart the model
-   will be that will read from a pickup file.
+   will be read from a pickup file.
    ${PKG}_INIT_VARIA is called in :filelink:`packages_init_variables.F <model/src/packages_init_variables.F>`,
    which in turn is called from S/R :filelink:`initialise_varia.F <model/src/initialise_varia.F>`.
    Note: the name ${PKG}_INIT_VARIA is not yet standardized across all packages;
