@@ -1,8 +1,7 @@
 #include "ECCO_OPTIONS.h"
 
-
       subroutine cost_gencost_bpv4(
-     I                     mythid
+     I                     myThid
      &                   )
 
 c     ==================================================================
@@ -34,7 +33,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer mythid
+      integer myThid
 
 #ifdef ALLOW_ECCO
 #ifdef ALLOW_GENCOST_CONTRIBUTION
@@ -51,16 +50,16 @@ c     == local variables ==
       logical doglobalread
       logical ladinit
 
-      _RL locbpbar(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL locbpdat(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL locbpmask(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL locwbp(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL locbpbar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL locbpdat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL locbpmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL locwbp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      _RL bpdifmean ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
-      _RL bpdifanom ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
-      _RL bpdatmean ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
-      _RL bpdatanom ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
-      _RL bpcount ( 1-olx:snx+olx, 1-oly:sny+oly, nsx, nsy )
+      _RL bpdifmean ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
+      _RL bpdifanom ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
+      _RL bpdatmean ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
+      _RL bpdatanom ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
+      _RL bpcount ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL junk
 
       character*(80) fname
@@ -79,11 +78,10 @@ c     == external functions ==
 
 c     == end of interface ==
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
 
       kgen=0
       do k=1,NGENCOST
@@ -94,53 +92,51 @@ c     == end of interface ==
 
       if (kgen.GT.0) then
 
-      call ecco_zero(gencost_weight(:,:,1,1,kgen),1,zeroRL,myThid)
-      if ( gencost_errfile(kgen) .NE. ' ' )
-     &     call ecco_readwei(gencost_errfile(kgen),
-     &     gencost_weight(:,:,1,1,kgen),1,1,mythid)
+       call ecco_zero(gencost_weight(:,:,1,1,kgen),1,zeroRL,myThid)
+       if ( gencost_errfile(kgen) .NE. ' ' )
+     &   call ecco_readwei(gencost_errfile(kgen),
+     &     gencost_weight(:,:,1,1,kgen),1,1,myThid)
 
 c-- initialise local variables
 cgf convert phibot from m2/s2 to cm
-      fac = 1. _d 2 / 9.81 _d 0
-      do bj = jtlo,jthi
+       fac = 1. _d 2 / 9.81 _d 0
+       do bj = jtlo,jthi
         do bi = itlo,ithi
-          do j = 1,sny
-            do i = 1,snx
-              bpdifmean(i,j,bi,bj) = 0. _d 0
-              bpdifanom(i,j,bi,bj) = 0. _d 0
-              bpdatmean(i,j,bi,bj) = 0. _d 0
-              bpdatanom(i,j,bi,bj) = 0. _d 0
-              bpcount(i,j,bi,bj) = 0. _d 0
-              locwbp(i,j,bi,bj) = 0. _d 0
-              locbpbar(i,j,bi,bj) = 0. _d 0
-              locbpdat(i,j,bi,bj) = 0. _d 0
-              locbpmask(i,j,bi,bj) = 0. _d 0
-            enddo
+          do j = 1,sNy
+           do i = 1,sNx
+             bpdifmean(i,j,bi,bj) = 0. _d 0
+             bpdifanom(i,j,bi,bj) = 0. _d 0
+             bpdatmean(i,j,bi,bj) = 0. _d 0
+             bpdatanom(i,j,bi,bj) = 0. _d 0
+             bpcount(i,j,bi,bj) = 0. _d 0
+             locwbp(i,j,bi,bj) = 0. _d 0
+             locbpbar(i,j,bi,bj) = 0. _d 0
+             locbpdat(i,j,bi,bj) = 0. _d 0
+             locbpmask(i,j,bi,bj) = 0. _d 0
+           enddo
           enddo
         enddo
-      enddo
+       enddo
 
-      doglobalread = .false.
-      ladinit      = .false.
+       doglobalread = .false.
+       ladinit      = .false.
 
 c-- map global variable to local variables
 
-      do bj = jtlo,jthi
-       do bi = itlo,ithi
-        do j = 1,sny
-         do i = 1,snx
-           locwbp(i,j,bi,bj) = gencost_weight(i,j,bi,bj,kgen)
-         enddo
+       do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = 1,sNy
+           do i = 1,sNx
+             locwbp(i,j,bi,bj) = gencost_weight(i,j,bi,bj,kgen)
+           enddo
+          enddo
         enddo
        enddo
-      enddo
-
-c--
 
 #ifdef ALLOW_CTRL
-      write(fname(1:80),'(80a)') ' '
-      il=ilnblnk( gencost_barfile(kgen) )
-      write(fname(1:80),'(2a,i10.10)')
+       write(fname(1:80),'(80a)') ' '
+       il=ilnblnk( gencost_barfile(kgen) )
+       write(fname(1:80),'(2a,i10.10)')
      &     gencost_barfile(kgen)(1:il),'.',eccoiter
 #endif
 
@@ -148,186 +144,187 @@ c--   ============
 c--   Mean values.
 c--   ============
 
-      do irec = 1, nmonsrec
+       do irec = 1, nmonsrec
 
 c--     Compute the mean over all bpdat records.
 #ifdef ALLOW_AUTODIFF
         call active_read_xy( fname, locbpbar, irec, doglobalread,
-     &                       ladinit, eccoiter, mythid,
+     &                       ladinit, eccoiter, myThid,
      &                       gencost_dummy(kgen) )
 #else
         CALL READ_REC_XY_RL( fname, locbpbar,
      &                       iRec, 1, myThid )
 #endif
 
-        call cost_bp_read( gencost_datafile(kgen), 
+        call cost_bp_read( gencost_datafile(kgen),
      &       gencost_startdate(1,kgen),
-     &       locbpdat, locbpmask, irec, mythid )
+     &       locbpdat, locbpmask, irec, myThid )
 
         do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do j = 1,sny
-              do i = 1,snx
-                if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
-     &               (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
-                  bpdifmean(i,j,bi,bj) = bpdifmean(i,j,bi,bj) +
+         do bi = itlo,ithi
+           do j = 1,sNy
+            do i = 1,sNx
+              if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
+     &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
+                bpdifmean(i,j,bi,bj) = bpdifmean(i,j,bi,bj) +
      &              ( fac*locbpbar(i,j,bi,bj) - locbpdat(i,j,bi,bj) )
-                  bpdatmean(i,j,bi,bj) = bpdatmean(i,j,bi,bj) +
+                bpdatmean(i,j,bi,bj) = bpdatmean(i,j,bi,bj) +
      &              locbpdat(i,j,bi,bj)
-                  bpcount(i,j,bi,bj) = bpcount(i,j,bi,bj) + 1. _d 0
-                endif
-              enddo
+                bpcount(i,j,bi,bj) = bpcount(i,j,bi,bj) + 1. _d 0
+              endif
             enddo
-          enddo
+           enddo
+         enddo
         enddo
 
-      enddo
+       enddo
 
-        do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do j = 1,sny
-              do i = 1,snx
-                if (bpcount(i,j,bi,bj).GT. 0. _d 0) then
-                  bpdifmean(i,j,bi,bj) =
+       do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = 1,sNy
+           do i = 1,sNx
+             if (bpcount(i,j,bi,bj).GT. 0. _d 0) then
+               bpdifmean(i,j,bi,bj) =
      &              bpdifmean(i,j,bi,bj)/bpcount(i,j,bi,bj)
-                  bpdatmean(i,j,bi,bj) =
+               bpdatmean(i,j,bi,bj) =
      &              bpdatmean(i,j,bi,bj)/bpcount(i,j,bi,bj)
-                endif
-              enddo
-            enddo
+             endif
+           enddo
           enddo
         enddo
+       enddo
 
 c--   ==========
 c--   Anomalies.
 c--   ==========
 
 c--   Loop over records for the second time.
-      do irec = 1, nmonsrec
+       do irec = 1, nmonsrec
 #ifdef ALLOW_AUTODIFF
         call active_read_xy( fname, locbpbar, irec, doglobalread,
-     &                       ladinit, eccoiter, mythid,
+     &                       ladinit, eccoiter, myThid,
      &                       gencost_dummy(kgen) )
 #else
         CALL READ_REC_XY_RL( fname, locbpbar,
      &                       iRec, 1, myThid )
 #endif
 
-        call cost_bp_read( gencost_datafile(kgen), 
+        call cost_bp_read( gencost_datafile(kgen),
      &       gencost_startdate(1,kgen),
-     &       locbpdat, locbpmask, irec, mythid )
+     &       locbpdat, locbpmask, irec, myThid )
 
 c--    Compute field of anomalies
         do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do j = 1,sny
-              do i = 1,snx
-                if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
-     &               (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
-                  bpdifanom(i,j,bi,bj) =
+         do bi = itlo,ithi
+           do j = 1,sNy
+            do i = 1,sNx
+              if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
+     &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
+                bpdifanom(i,j,bi,bj) =
      &              ( fac*locbpbar(i,j,bi,bj) - locbpdat(i,j,bi,bj) )
      &              - bpdifmean(i,j,bi,bj)
-                  bpdatanom(i,j,bi,bj) =
+                bpdatanom(i,j,bi,bj) =
      &              locbpdat(i,j,bi,bj) - bpdatmean(i,j,bi,bj)
-                else
-                  bpdifanom(i,j,bi,bj) = 0. _d 0
-                  bpdatanom(i,j,bi,bj) = 0. _d 0
-                endif
-              enddo
+              else
+                bpdifanom(i,j,bi,bj) = 0. _d 0
+                bpdatanom(i,j,bi,bj) = 0. _d 0
+              endif
             enddo
-          enddo
+           enddo
+         enddo
         enddo
 
 c--    Remove global mean value
-      offset     = 0. _d 0
-      offset_sum = 0. _d 0
+        offset     = 0. _d 0
+        offset_sum = 0. _d 0
 
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do j = 1,sny
-            do i = 1,snx
+        do bj = jtlo,jthi
+         do bi = itlo,ithi
+           do j = 1,sNy
+            do i = 1,sNx
               if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
      &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
                 offset  = offset + RA(i,j,bi,bj)*bpdifanom(i,j,bi,bj)
                 offset_sum = offset_sum + RA(i,j,bi,bj)
               endif
             enddo
-          enddo
+           enddo
+         enddo
         enddo
-      enddo
 
-      _GLOBAL_SUM_RL( offset     , mythid )
-      _GLOBAL_SUM_RL( offset_sum , mythid )
+        _GLOBAL_SUM_RL( offset     , myThid )
+        _GLOBAL_SUM_RL( offset_sum , myThid )
 
         do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do j = 1,sny
-              do i = 1,snx
-                if ((offset_sum.GT. 0. _d 0).AND.
-     &              (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
-     &              (maskc(i,j,1,bi,bj).NE. 0. _d 0)) then
-                  bpdifanom(i,j,bi,bj) = bpdifanom(i,j,bi,bj)
-     &                                 - offset/offset_sum
-                endif
-              enddo
+         do bi = itlo,ithi
+           do j = 1,sNy
+            do i = 1,sNx
+              if ( (offset_sum.GT. 0. _d 0).AND.
+     &             (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
+     &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
+                bpdifanom(i,j,bi,bj) = bpdifanom(i,j,bi,bj)
+     &                               - offset/offset_sum
+              endif
             enddo
-          enddo
+           enddo
+         enddo
         enddo
 
 c--    Smooth field of anomalies
-      if (gencost_outputlevel(kgen).GT.0) then
-      write(fname4test(1:80),'(1a)') 'bpdifanom_raw'
-      call mdswritefield(fname4test,32,.false.,'RL',
-     & 1,bpdifanom,irec,1,mythid)
-      write(fname4test(1:80),'(1a)') 'bpdatanom_raw'
-      call mdswritefield(fname4test,32,.false.,'RL',
-     & 1,bpdatanom,irec,1,mythid)
-      endif
+        if (gencost_outputlevel(kgen).GT.0) then
+         write(fname4test(1:80),'(1a)') 'bpdifanom_raw'
+         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
+     &                         bpdifanom, irec, 1, myThid )
+         write(fname4test(1:80),'(1a)') 'bpdatanom_raw'
+         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
+     &                         bpdatanom, irec, 1, myThid )
+        endif
 
 #ifdef ALLOW_SMOOTH
-      if ( useSMOOTH )
-     &  call smooth_basic2D(bpdifanom,maskc,300000. _d 0,3000,mythid)
+        if ( useSMOOTH )
+     &   call smooth_basic2D(bpdifanom,maskc,300000. _d 0,3000,myThid)
 #endif
 
-      if (gencost_outputlevel(kgen).GT.0) then
+        if (gencost_outputlevel(kgen).GT.0) then
 #ifdef ALLOW_SMOOTH
-      if ( useSMOOTH ) 
-     &  call smooth_basic2D(bpdatanom,maskc,300000. _d 0,3000,mythid)
+         if ( useSMOOTH )
+     &   call smooth_basic2D(bpdatanom,maskc,300000. _d 0,3000,myThid)
 #endif
 
-      write(fname4test(1:80),'(1a)') 'bpdifanom_smooth'
-      call mdswritefield(fname4test,32,.false.,'RL',
-     & 1,bpdifanom,irec,1,mythid)
-      write(fname4test(1:80),'(1a)') 'bpdatanom_smooth'
-      call mdswritefield(fname4test,32,.false.,'RL',
-     & 1,bpdatanom,irec,1,mythid)
-      endif
+         write(fname4test(1:80),'(1a)') 'bpdifanom_smooth'
+         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
+     &                         bpdifanom, irec, 1, myThid )
+         write(fname4test(1:80),'(1a)') 'bpdatanom_smooth'
+         CALL WRITE_REC_3D_RL( fname4test, precFloat32, 1,
+     &                         bpdatanom, irec, 1, myThid )
+        endif
 
 c--    Compute cost function
         do bj = jtlo,jthi
-          do bi = itlo,ithi
-            do j = 1,sny
-              do i = 1,snx
+         do bi = itlo,ithi
+           do j = 1,sNy
+            do i = 1,sNx
 c-- map to global cost variables
-                if ( (locwbp(i,j,bi,bj).NE. 0. _d 0).AND.
-     &               (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
-     &               (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
-                   junk = bpdifanom(i,j,bi,bj)
-                   objf_gencost(kgen,bi,bj) = objf_gencost(kgen,bi,bj)
+              if ( (locwbp(i,j,bi,bj).NE. 0. _d 0).AND.
+     &             (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
+     &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
+                 junk = bpdifanom(i,j,bi,bj)
+                 objf_gencost(kgen,bi,bj) = objf_gencost(kgen,bi,bj)
      &               + junk*junk*locwbp(i,j,bi,bj)
-                   num_gencost(kgen,bi,bj) = num_gencost(kgen,bi,bj)
+                 num_gencost(kgen,bi,bj) = num_gencost(kgen,bi,bj)
      &               + 1. _d 0
-                endif
-              enddo
+              endif
             enddo
-          enddo
+           enddo
+         enddo
         enddo
 
-      enddo
+       enddo
 
       endif !if (kgen.GT.0) then
 
 #endif /* ifdef ALLOW_GENCOST_CONTRIBUTION */
 #endif /* ifdef ALLOW_ECCO */
 
-      end
+      RETURN
+      END

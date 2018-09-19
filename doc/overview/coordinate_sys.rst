@@ -41,4 +41,4 @@ are defined by, in spherical coordinates:
     :alt: diagram of spherical polar coordinates
     :name: sphere_coor
     
-    Spherical polar coordinates: longitude :math:`\lambda`, latitude :math:`\phi` and :math:`r` the distance from the center.
+    Spherical polar coordinates: longitude :math:`\lambda`, latitude :math:`\varphi` and :math:`r` the distance from the center.

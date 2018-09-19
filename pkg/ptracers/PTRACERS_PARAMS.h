@@ -88,6 +88,7 @@ C     PTRACERS_startAllTrc   :: internal flag, all tracers start at startTime
 C     PTRACERS_calcSurfCor   :: calculate Linear Free-Surf source/sink of tracer
 C                               (set internally)
 C     PTRACERS_linFSConserve :: apply mean Free-Surf source/sink at surface
+C     PTRACERS_stayPositive  :: use Smolarkiewicz Hack to ensure Tracer stays >0
 C     PTRACERS_useRecords    :: snap-shot output: put all pTracers in one file
       LOGICAL PTRACERS_ImplVertAdv(PTRACERS_num)
       LOGICAL PTRACERS_MultiDimAdv(PTRACERS_num)
@@ -98,6 +99,7 @@ C     PTRACERS_useRecords    :: snap-shot output: put all pTracers in one file
       LOGICAL PTRACERS_useDWNSLP(PTRACERS_num)
       LOGICAL PTRACERS_useKPP(PTRACERS_num)
       LOGICAL PTRACERS_linFSConserve(PTRACERS_num)
+      LOGICAL PTRACERS_stayPositive(PTRACERS_num)
       LOGICAL PTRACERS_doAB_onGpTr
       LOGICAL PTRACERS_addSrelax2EmP
       LOGICAL PTRACERS_startAllTrc
@@ -114,10 +116,8 @@ C     PTRACERS_useRecords    :: snap-shot output: put all pTracers in one file
      &     PTRACERS_MultiDimAdv,
      &     PTRACERS_SOM_Advection,
      &     PTRACERS_AdamsBashGtr, PTRACERS_AdamsBash_Tr,
-     &     PTRACERS_useGMRedi,
-     &     PTRACERS_useDWNSLP,
-     &     PTRACERS_useKPP,
-     &     PTRACERS_linFSConserve,
+     &     PTRACERS_useGMRedi, PTRACERS_useDWNSLP, PTRACERS_useKPP,
+     &     PTRACERS_linFSConserve, PTRACERS_stayPositive,
      &     PTRACERS_doAB_onGpTr,
      &     PTRACERS_addSrelax2EmP,
      &     PTRACERS_startAllTrc,

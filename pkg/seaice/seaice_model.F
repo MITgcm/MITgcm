@@ -45,13 +45,12 @@ C !USES: ===============================================================
 #endif
 
 C !INPUT PARAMETERS: ===================================================
-C     myTime - Simulation time
-C     myIter - Simulation timestep number
-C     myThid - Thread no. that called this routine.
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration number in simulation
+C     myThid :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
 
 C !LOCAL VARIABLES: ====================================================
 C     i,j,bi,bj :: Loop counters
@@ -61,6 +60,10 @@ C     i,j,bi,bj :: Loop counters
 #endif
 #ifdef ALLOW_SITRACER
       INTEGER iTr
+#endif
+#ifndef SEAICE_CGRID
+      _RL uLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 CEOP
 
@@ -176,7 +179,11 @@ C NOW DO ADVECTION and DIFFUSION
 #ifdef ALLOW_DEBUG
        IF (debugMode) CALL DEBUG_CALL( 'SEAICE_ADVDIFF', myThid )
 #endif
+#ifdef SEAICE_CGRID
        CALL SEAICE_ADVDIFF( uIce, vIce, myTime, myIter, myThid )
+#else /* SEAICE_CGRID */
+       CALL SEAICE_ADVDIFF( uLoc, vLoc, myTime, myIter, myThid )
+#endif /* SEAICE_CGRID */
       ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE heffm  = comlev1, key=ikey_dynamics, kind=isbyte

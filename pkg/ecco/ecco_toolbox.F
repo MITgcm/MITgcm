@@ -40,7 +40,7 @@ c     == routine arguments ==
       INTEGER myThid
       INTEGER nnzloc
       _RL zeroloc
-      _RL fld   (1-olx:snx+olx,1-oly:sny+oly,nnzloc,nsx,nsy)
+      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -55,15 +55,14 @@ c     == local variables ==
 
 CEOP
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
-
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
+      jmin = 1-OLy
+      jmax = sNy+OLy
+      imin = 1-OLx
+      imax = sNx+OLx
 
 c--     Determine the model-data difference mask
         do bj = jtlo,jthi
@@ -82,7 +81,6 @@ c--     Determine the model-data difference mask
 
       RETURN
       END
-
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -115,11 +113,11 @@ c     == routine arguments ==
       INTEGER myThid
       INTEGER nnzobs, nnzbar
 
-      _RL localbar   (1-olx:snx+olx,1-oly:sny+oly,nnzbar,nsx,nsy)
-      _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
-      _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL localdif   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
-      _RL difmask    (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
+      _RL localbar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
+      _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
+      _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
+      _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
 
       _RL spminloc, spmaxloc, spzeroloc
 
@@ -136,15 +134,14 @@ c     == local variables ==
 
 CEOP
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
-
+      imax = sNx
 
 c--     Determine the model-data difference mask
         do bj = jtlo,jthi
@@ -181,8 +178,8 @@ CBOP
 C     !ROUTINE: ecco_diffanommsk
 C     !INTERFACE:
       subroutine ecco_diffanommsk(
-     I                   localbar, localbarmean, nnzbar, 
-     I                   localobs, localobsmean, nnzobs, 
+     I                   localbar, localbarmean, nnzbar,
+     I                   localobs, localobsmean, nnzobs,
      I                   localmask,
      I                   spminloc, spmaxloc, spzeroloc,
      O                   localdif, difmask,
@@ -209,13 +206,13 @@ c     == routine arguments ==
       INTEGER myThid
       INTEGER nnzobs, nnzbar
 
-      _RL localbar   (1-olx:snx+olx,1-oly:sny+oly,nnzbar,nsx,nsy)
-      _RL localbarmean (1-olx:snx+olx,1-oly:sny+oly,nnzbar,nsx,nsy)
-      _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
-      _RL localobsmean (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
-      _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL localdif   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
-      _RL difmask    (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
+      _RL localbar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      _RL localbarmean (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
+      _RL localobsmean (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
+      _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
+      _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
+      _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
 
       _RL spminloc, spmaxloc, spzeroloc
 
@@ -232,15 +229,14 @@ c     == local variables ==
 
 CEOP
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
-
+      imax = sNx
 
 c--     Determine the model-data difference mask
         do bj = jtlo,jthi
@@ -285,7 +281,7 @@ C     !INTERFACE:
      &                   )
 
 C     !DESCRIPTION: \bv
-C     mask (model) fieds if observation is out-of-bound or missing. 
+C     mask (model) fieds if observation is out-of-bound or missing.
 C     \ev
 
 C     !USES:
@@ -304,11 +300,11 @@ c     == routine arguments ==
       INTEGER myThid
       INTEGER nnzobs, nnzbar
 
-      _RL localbar   (1-olx:snx+olx,1-oly:sny+oly,nnzbar,nsx,nsy)
-      _RL localobs   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
-      _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL localout   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
-      _RL obsmask    (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
+      _RL localbar   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzbar,nSx,nSy)
+      _RL localobs   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
+      _RL localmask  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
+      _RL localout   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
+      _RL obsmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
 
       _RL spminloc, spmaxloc, spzeroloc
 
@@ -325,15 +321,14 @@ c     == local variables ==
 
 CEOP
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
-
+      imax = sNx
 
 c--     Determine the model-data difference mask
         do bj = jtlo,jthi
@@ -394,8 +389,8 @@ c     == routine arguments ==
       INTEGER myThid
       INTEGER nzOut, nzIn
 
-      _RL fldIn   (1-olx:snx+olx,1-oly:sny+oly,nzIn,nsx,nsy)
-      _RL fldOut   (1-olx:snx+olx,1-oly:sny+oly,nzOut,nsx,nsy)
+      _RL fldIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL fldOut   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -410,15 +405,14 @@ c     == local variables ==
 
 CEOP
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
-
+      imax = sNx
 
 c--     Determine the model-data difference mask
         do bj = jtlo,jthi
@@ -467,8 +461,8 @@ c     == routine arguments ==
       INTEGER myThid
       INTEGER nzOut, nzIn
 
-      _RS fldIn   (1-olx:snx+olx,1-oly:sny+oly,nzIn,nsx,nsy)
-      _RL fldOut   (1-olx:snx+olx,1-oly:sny+oly,nzOut,nsx,nsy)
+      _RS fldIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL fldOut   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -483,15 +477,14 @@ c     == local variables ==
 
 CEOP
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
-
+      imax = sNx
 
 c--     Determine the model-data difference mask
         do bj = jtlo,jthi
@@ -541,12 +534,12 @@ c     == routine arguments ==
       INTEGER myThid
       INTEGER nnzobs
 
-      _RL localdif   (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
-      _RL localweight(1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
-      _RL difmask    (1-olx:snx+olx,1-oly:sny+oly,nnzobs,nsx,nsy)
+      _RL localdif   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
+      _RL localweight(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
+      _RL difmask    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzobs,nSx,nSy)
 
-      _RL objf_local(nsx,nsy)
-      _RL num_local(nsx,nsy)
+      _RL objf_local(nSx,nSy)
+      _RL num_local(nSx,nSy)
 
       logical dosumsq
 
@@ -567,14 +560,14 @@ c     == local variables ==
 
 CEOP
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
       localwww = 0. _d 0
 
@@ -636,8 +629,8 @@ c     == routine arguments ==
       INTEGER myThid
       INTEGER nzOut, nzIn
 
-      _RL fldIn   (1-olx:snx+olx,1-oly:sny+oly,nzIn,nsx,nsy)
-      _RL fldOut   (1-olx:snx+olx,1-oly:sny+oly,nzOut,nsx,nsy)
+      _RL fldIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL fldOut   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -652,15 +645,14 @@ c     == local variables ==
 
 CEOP
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
-
+      imax = sNx
 
 c--     Determine the model-data difference mask
         do bj = jtlo,jthi
@@ -710,8 +702,8 @@ c     == routine arguments ==
       INTEGER myThid
       INTEGER nzOut, nzIn
 
-      _RL fldIn   (1-olx:snx+olx,1-oly:sny+oly,nzIn,nsx,nsy)
-      _RL fldOut   (1-olx:snx+olx,1-oly:sny+oly,nzOut,nsx,nsy)
+      _RL fldIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL fldOut   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -726,14 +718,14 @@ c     == local variables ==
 
 CEOP
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -758,13 +750,13 @@ CBOP
 C     !ROUTINE: ecco_addmask
 C     !INTERFACE:
       subroutine ecco_addmask(
-     I                   fldIn, fldInmask, nzIn, fldOut, fldOutnum, 
+     I                   fldIn, fldInmask, nzIn, fldOut, fldOutnum,
      I                   nzOut, myThid
      &                   )
 
 C     !DESCRIPTION: \bv
 C     add a field to another array only grids where the mask is non-zero.
-C     Also increase the counter by one one those girds.   
+C     Also increase the counter by one one those girds.
 C     \ev
 
 C     !USES:
@@ -783,10 +775,10 @@ c     == routine arguments ==
       INTEGER myThid
       INTEGER nzOut, nzIn
 
-      _RL fldIn   (1-olx:snx+olx,1-oly:sny+oly,nzIn,nsx,nsy)
-      _RL fldInmask   (1-olx:snx+olx,1-oly:sny+oly,nzIn,nsx,nsy)
-      _RL fldOut   (1-olx:snx+olx,1-oly:sny+oly,nzOut,nsx,nsy)
-      _RL fldOutnum   (1-olx:snx+olx,1-oly:sny+oly,nzOut,nsx,nsy)
+      _RL fldIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL fldInmask   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL fldOut   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
+      _RL fldOutnum   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -801,15 +793,14 @@ c     == local variables ==
 
 CEOP
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
-
+      imax = sNx
 
 c--     Determine the model-data difference mask
         do bj = jtlo,jthi
@@ -855,7 +846,7 @@ c     == routine arguments ==
       INTEGER myThid
       INTEGER nnzloc
       _RL numerloc
-      _RL fld   (1-olx:snx+olx,1-oly:sny+oly,nnzloc,nsx,nsy)
+      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -870,14 +861,14 @@ c     == local variables ==
 
 CEOP
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -916,8 +907,8 @@ c     == routine arguments ==
 
       INTEGER myThid
       INTEGER nnzloc
-      _RL fld   (1-olx:snx+olx,1-oly:sny+oly,nnzloc,nsx,nsy)
-      _RL flddenom (1-olx:snx+olx,1-oly:sny+oly,nnzloc,nsx,nsy)
+      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
+      _RL flddenom (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -932,14 +923,14 @@ c     == local variables ==
 
 CEOP
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -949,7 +940,7 @@ CEOP
                 if(flddenom(i,j,k,bi,bj) .NE. 0. _d 0) then
                  fld(i,j,k,bi,bj) = fld(i,j,k,bi,bj)/
      &                   flddenom(i,j,k,bi,bj)
-                else 
+                else
                  fld(i,j,k,bi,bj) = 0. _d 0
                 endif
               enddo
@@ -984,7 +975,7 @@ c     == routine arguments ==
       INTEGER myThid
       INTEGER nnzloc
       _RL multloc
-      _RL fld   (1-olx:snx+olx,1-oly:sny+oly,nnzloc,nsx,nsy)
+      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -999,14 +990,14 @@ c     == local variables ==
 
 CEOP
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -1045,8 +1036,8 @@ c     == routine arguments ==
 
       INTEGER myThid
       INTEGER nnzloc
-      _RL fld   (1-olx:snx+olx,1-oly:sny+oly,nnzloc,nsx,nsy)
-      _RL fld2  (1-olx:snx+olx,1-oly:sny+oly,nnzloc,nsx,nsy)
+      _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
+      _RL fld2  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
 
 #ifdef ALLOW_ECCO
 
@@ -1061,14 +1052,14 @@ c     == local variables ==
 
 CEOP
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
         do bj = jtlo,jthi
           do bi = itlo,ithi
@@ -1142,12 +1133,12 @@ CEOP
         if ( nnzbar .EQ. 1 ) then
            call active_read_xy( active_var_file, active_var,
      &                      irec, doglobalread,
-     &                      ladinit, eccoiter, mythid,
+     &                      ladinit, eccoiter, myThid,
      &                      dummy )
         else
            call active_read_xyz( active_var_file, active_var,
      &                       irec, doglobalread,
-     &                       ladinit, eccoiter, mythid,
+     &                       ladinit, eccoiter, myThid,
      &                       dummy )
         endif
 #else
@@ -1215,17 +1206,17 @@ c     == local variables ==
 
 CEOP
 
-      jtlo = mybylo(mythid)
-      jthi = mybyhi(mythid)
-      itlo = mybxlo(mythid)
-      ithi = mybxhi(mythid)
+      jtlo = myByLo(myThid)
+      jthi = myByHi(myThid)
+      itlo = myBxLo(myThid)
+      ithi = myBxHi(myThid)
       jmin = 1
-      jmax = sny
+      jmax = sNy
       imin = 1
-      imax = snx
+      imax = sNx
 
-      call mdsreadfield( localerr_file, cost_iprec,
-     &  cost_yftype, nnzbar, localweight, iRec, mythid )
+      CALL READ_REC_3D_RL( localerr_file, cost_iprec, nnzbar,
+     &                     localweight, iRec, 1, myThid )
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -1252,8 +1243,4 @@ c--        Convert to weight
 
       RETURN
       END
-
-
-
-
 

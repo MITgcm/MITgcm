@@ -8,7 +8,8 @@ C !ROUTINE: SEAICE_ADVDIFF
 
 C !INTERFACE: ==========================================================
       SUBROUTINE SEAICE_ADVDIFF(
-     I     uc, vc, myTime, myIter, myThid )
+     U                  uc, vc,
+     I                  myTime, myIter, myThid )
 
 C !DESCRIPTION: \bv
 C     *===========================================================*
@@ -23,9 +24,6 @@ C !USES: ===============================================================
       IMPLICIT NONE
 
 C     === Global variables ===
-C     UICE/VICE :: ice velocity
-C     HEFF      :: scalar field to be advected
-C     HEFFM     :: mask for scalar field
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -35,29 +33,28 @@ C     HEFFM     :: mask for scalar field
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 #include "SEAICE_TRACER.h"
-
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
 
-C !INPUT PARAMETERS: ===================================================
+C !INPUT/OUTPUT PARAMETERS: ===================================================
 C     === Routine arguments ===
-C     myTime    :: current time
-C     myIter    :: iteration number
-C     myThid    :: Thread no. that called this routine.
+C     uc/vc     :: current ice velocity on C-grid;
+C               :: C-Grid : Input only ; B-grid : Output only
+C     myTime    :: current time in simulation
+C     myIter    :: current iteration number in simulation
+C     myThid    :: my Thread Id number
+      _RL uc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL myTime
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
 
 C !LOCAL VARIABLES: ====================================================
 C     === Local variables ===
 C     i,j,bi,bj :: Loop counters
-#ifdef SEAICE_ITD
 C     it        :: Loop counter for ice thickness categories
-#endif /* SEAICE_ITD */
 C     ks        :: surface level index
-C     uc/vc     :: current ice velocity on C-grid
 C     uTrans    :: volume transport, x direction
 C     vTrans    :: volume transport, y direction
 C     afx       :: horizontal advective flux, x direction
@@ -87,9 +84,6 @@ C     xA,yA     :: "areas" of X and Y face of tracer cells
       _RL DIAGarray (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 # endif
 #endif /* ALLOW_SITRACER */
-
-      _RL uc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL vc        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL fldNm1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL uTrans    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -110,7 +104,7 @@ C--   alternatively interpolate to C-points if necessary
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 #ifndef SEAICE_CGRID /* not SEAICE_CGRID = BGRID */
-C--   hack to ensure backward compatibility: 
+C--   hack to ensure backward compatibility:
 C     average B-grid seaice velocity to C-grid
         DO j=1-OLy,sNy+OLy-1
          DO i=1-OLx,sNx+OLx-1

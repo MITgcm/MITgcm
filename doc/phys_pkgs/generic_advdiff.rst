@@ -4,7 +4,7 @@ Generic Advection/Diffusion
 ---------------------------
 
 
-The generic\_advdiff package contains high-level subroutines to solve
+The generic_advdiff package contains high-level subroutines to solve
 the advection-diffusion equation of any tracer, either active (potential
 temperature, salinity or water vapor) or passive (see pkg/ptracers).
 (see also sections [sec:tracer:sub:`e`\ quations] to
@@ -13,7 +13,7 @@ temperature, salinity or water vapor) or passive (see pkg/ptracers).
 Introduction
 ++++++++++++
 
-Package “generic\_advdiff” provides a common set of routines for
+Package “generic_advdiff” provides a common set of routines for
 calculating advective/diffusive fluxes for tracers (cell centered
 quantities on a C-grid).
 
@@ -37,6 +37,35 @@ There are two high-level routines:
 -  GAD\_ADVECTION calculates just the advective fluxes using the
    non-linear schemes and can not be used in conjuction with
    Adams–Bashforth time stepping.
+
+
+.. tabularcolumns:: |\Y{.4}|L|L|
+
+
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| CPP Flag Name                                 | Default | Description                                                                                                          |
++===============================================+=========+======================================================================================================================+
+| :varlink:`COSINEMETH_III`                     | #define | sets the implementation form of :math:`\cos{\varphi}` scaling of bi-harmonic terms for tracer diffusivity            |
+|                                               |         | (note, in :filelink:`pkg/generic_advdiff` routines the definition set here overrides whether this is defined in      |
+|                                               |         | :filelink:`model/inc/CPP_OPTIONS.h`, where the setting affects viscous term calculations)                            |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| :varlink:`ISOTROPIC_COS_SCALING`              | #undef  | selects isotropic scaling of harmonic and bi-harmonic terms when using the :math:`\cos{\varphi}` scaling             |
+|                                               |         | (note, in :filelink:`pkg/generic_advdiff` routines the definition set here overrides whether this is defined in      |
+|                                               |         | :filelink:`model/inc/CPP_OPTIONS.h`, where the setting affects viscous term calculations)                            |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| :varlink:`DISABLE_MULTIDIM_ADVECTION`         | #undef  | disables compilation of multi-dim. advection code                                                                    |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| :varlink:`GAD_MULTIDIM_COMPRESSIBLE`          | #undef  | use compressible flow method for multi-dim advection instead of older, less accurate method; note option has         |
+|                                               |         | no effect on SOM advection which always uses compressible flow method                                                |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| :varlink:`GAD_ALLOW_TS_SOM_ADV`               | #undef  | enable the use of 2nd-order moment advection scheme (Prather 1986 :cite:`prather:86`)                                |
+|                                               |         | for temp. and salinity                                                                                               |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| :varlink:`GAD_SMOLARKIEWICZ_HACK`             | #undef  | enables hack to get rid of negatives caused by Redi, see Smolarkiewicz (1989) :cite:`smolark:89`                     |
+|                                               |         | (for ptracers, except temp and salinity)                                                                             |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+
+
 
 .. _gad_diagnostics:
 
