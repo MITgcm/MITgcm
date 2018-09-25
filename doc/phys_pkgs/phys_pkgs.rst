@@ -69,6 +69,7 @@ Packages Related to Hydrodynamical Kernel
    :maxdepth: 3
 
    generic_advdiff.rst
+   mom_packages.rst
    shap_filt.rst
    zonal_filt.rst
    exch2.rst

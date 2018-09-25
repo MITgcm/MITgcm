@@ -6,7 +6,7 @@ C !ROUTINE: GAD_BIHARM_R
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_BIHARM_R(
      I           bi, bj, k,
-     I           diffKr4, tracer,
+     I           maskUp, diffKr4, tracer,
      U           d4f,
      I           myThid )
 
@@ -26,10 +26,12 @@ C !USES: ===============================================================
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
 C  k                    :: vertical level
+C  maskUp               :: 2-D array for mask at W points
 C  diffKr4              :: vertical bi-harmonic diffusivity
 C  tracer               :: tracer field
 C  myThid               :: my thread Id number
       INTEGER bi, bj, k
+      _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL diffKr4(Nr)
       _RL tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
@@ -91,7 +93,7 @@ C     Add bi-harmonic flux (gradient of 2nd derivative)
         DO i=1-OLx,sNx+OLx
           d4f(i,j) = d4f(i,j)
      &             + diffKr4(k)*( del2T(i,j,2)-del2T(i,j,1) )
-     &              *tmpFac*_rA(i,j,bi,bj)
+     &              *tmpFac*_rA(i,j,bi,bj)*maskUp(i,j)
         ENDDO
        ENDDO
 
