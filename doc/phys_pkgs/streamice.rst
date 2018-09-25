@@ -641,7 +641,7 @@ The ``halfpipe_streamice`` verification experiment uses STREAMICE.
 References
 ++++++++++
 
-Gladstone, Payne and Cornford (2010). Parameterising the grounding line in flow-line ice sheet models. The Cryosphere, 4, 605–619.
+.. Gladstone, Payne and Cornford (2010). Parameterising the grounding line in flow-line ice sheet models. The Cryosphere, 4, 605–619.
 
 Goldberg, D N (2011). A variationally-derived, depth-integrated approximation to the Blatter/Pattyn balance. J. of Glaciology, 57, 157-170.
 
@@ -649,4 +649,4 @@ Goldberg, D N and P Heimbach (2013). Parameter and state estimation with a time-
 
 Goldberg, D., Narayanan, S. H. K., Hascoet, L. & Utke, J. (2016). An optimized treatment for algorithmic differentiation of an important glaciological fixed-point problem. Geosci. Model Dev., 9, 1891-1904.
 
-Pattyn, F. and others (2013). Grounding-line migration in plan-view marine ice-sheet models: results of the ice2sea MISMIP3d intercomparison. J of Glaciology, 59 (215), 410-422
+.. Pattyn, F. and others (2013). Grounding-line migration in plan-view marine ice-sheet models: results of the ice2sea MISMIP3d intercomparison. J of Glaciology, 59 (215), 410-422
