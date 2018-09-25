@@ -22,24 +22,24 @@ STREAMICE configuration and compiling
 Compile-time options
 ####################
 
-As with all MITgcm packages, SEAICE can be turned on or off at compile
+As with all MITgcm packages, STREAMICE can be turned on or off at compile
 time
 
 -  using the ``packages.conf`` file by adding ``streamice`` to it,
 
-(see Section :numref:`building_code`).
+(see :numref:`building_code`).
 
 Parts of the STREAMICE code can be enabled or disabled at compile time via
-CPP preprocessor flags. These options are set in ``STREAMICE_OPTIONS.h``. :numref:`tab_phys_pkg_streamice_cpp` summarizes the most important ones. For more
-options see the default ``pkg/seaice/STREAMICE_OPTIONS.h``.
+CPP flags. These options are set in ``STREAMICE_OPTIONS.h``. :numref:`tab_phys_pkg_streamice_cpp` summarizes the most important ones. For more
+options see the default ``pkg/seaice/STREAMICE_OPTIONS.h``. 
 
 .. csv-table:: Some of the most relevant CPP preporocessor flags in the ``streamice``-package.
    :header: "CPP option", "Description"
    :widths: 40, 60
    :name: tab_phys_pkg_streamice_cpp
 
-   "``STREAMICE_CONSTRUCT_MATRIX``", "Explicit construction of matrix for Picard iteration for velocity"
-   "``STREAMICE_HYBRID_STRESS``", "Use L1L2 formulation for stress balance (default Shallow Shelf Approx)"
+   "``STREAMICE_CONSTRUCT_MATRIX``", "Explicit construction of matrix for Picard iteration for velocity. Defined by default"
+   "``STREAMICE_HYBRID_STRESS``", "Use L1L2 formulation for stress balance (default Shallow Shelf Approx). Undefined by default"
    "``USE_ALT_RLOW``", "Use package array for rLow rather than model"
    "``STREAMICE_GEOM_FILE_SETUP``", "Use files rather than parameters in ``STREAMICE_PARM03`` to configure boundaries"
    "``ALLOW_PETSC``", "Enable interface to PETSc for velocity solver matrix solve"
@@ -392,7 +392,7 @@ Numerical Details
 
    Hypothetical configuration, detailing the meaning of thickness and velocity masks and their role in controlling boundary conditions.
 
-The momentum balance is solved via iteration on viscosity (*Goldberg* 2011). At each iteration, a linear elliptic differential equation is solved via a finite-element method using bilinear basis functions. The velocity solution "lives" on cell corners, while thickness "lives" at cell centers (Fig. :numref:`figstencil`). The cell-centered thickness is then evolved using a second-order slope-limited finite-volume scheme, with the velocity field from the previous solve. To represent the flow of floating ice, basal stress terms are multiplied by an array ``float_frac_streamice``, a cell-centered array which determines where ice meets the floation condition.
+The momentum balance is solved via iteration on viscosity (*Goldberg* 2011). At each iteration, a linear elliptic differential equation is solved via a finite-element method using bilinear basis functions. The velocity solution "lives" on cell corners, while thickness "lives" at cell centers (:numref:`figstencil`). The cell-centered thickness is then evolved using a second-order slope-limited finite-volume scheme, with the velocity field from the previous solve. To represent the flow of floating ice, basal stress terms are multiplied by an array ``float_frac_streamice``, a cell-centered array which determines where ice meets the floation condition.
 
 The computational domain of ``STREAMICE`` (which may be smaller than the array/grid as
 defined by ``SIZE.h`` and ``GRID.h``) is determined by a number of mask
@@ -610,8 +610,7 @@ Top-level routine: ``streamice_timestep.F`` (called from ``do_oceanic_phys.F``)
 STREAMICE diagnostics
 +++++++++++++++++++++
 
-Diagnostics output is available via the diagnostics package (see Section
-[sec:pkg:diagnostics]). Available output fields are summarized in the
+Diagnostics output is available via the diagnostics package (:ref:`outp_pack`). Available output fields are summarized in the
 following table:
 
 .. code-block:: text
