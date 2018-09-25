@@ -8,6 +8,12 @@ o pkg/streamice:
     STREAMICE_SMOOTH_FLOATATION2, new functionality enabled via
     STREAMICE_SMOOTH_FLOATATION
   - affects verification/halfpipe_streamice, default and OAD (and likely taf)
+o verification/*/data
+  - set "rhoConst" instead of "rhoNil" (unless using Linear EOS)
+  - for net surface heat flux, set "surfQnetFile" instead of "surfQfile"
+    (unless net surface shortwave is also specified).
+  - fix OpenAD/input_oad.kpp set-up where net surface heat flux was used
+    as net heat-flux minus short-wave and update the output.
 
 checkpoint67d (2018/09/04)
 o doc:
