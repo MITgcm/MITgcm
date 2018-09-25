@@ -92,6 +92,6 @@
  meridWindFile  ='trenberth_tauy.bin',
  thetaClimFile  ='lev_sst.bin',
 #saltClimFile   ='lev_sss.bin',
- surfQFile      ='shi_qnet.bin',
+ surfQnetFile   ='shi_qnet.bin',
  EmPmRFile      ='shi_empmr.bin',
  &

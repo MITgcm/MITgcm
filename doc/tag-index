@@ -7,6 +7,12 @@ o pkg/streamice:
      streamice_adv_front which was leading to spurious ice area values
     streamice_init_varia.F -- proper initialisation of area_shelf_streamice
      which is used for ice front advance (only affects diagnostics)
+o verification/*/data
+  - set "rhoConst" instead of "rhoNil" (unless using Linear EOS)
+  - for net surface heat flux, set "surfQnetFile" instead of "surfQfile"
+    (unless net surface shortwave is also specified).
+  - fix OpenAD/input_oad.kpp set-up where net surface heat flux was used
+    as net heat-flux minus short-wave and update the output.
 
 checkpoint67d (2018/09/04)
 o doc:

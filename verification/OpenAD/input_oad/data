@@ -85,7 +85,7 @@
  meridWindFile=  'trenberth_tauy.bin',
  thetaClimFile=  'lev_sst.bin',
  saltClimFile=   'lev_sss.bin',
- surfQFile=      'ncep_qnet.bin',
+ surfQnetFile=   'ncep_qnet.bin',
 # fresh water flux is turned off, uncomment next line to turn on
 # (not recommened together with surface salinity restoring)
 # EmPmRFile=      'ncep_emp.bin',
