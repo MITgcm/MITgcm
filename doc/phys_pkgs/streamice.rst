@@ -42,8 +42,8 @@ options see the default ``pkg/seaice/STREAMICE_OPTIONS.h``.
    "``STREAMICE_HYBRID_STRESS``", "Use L1L2 formulation for stress balance (default Shallow Shelf Approx)"
    "``USE_ALT_RLOW``", "Use package array for rLow rather than model"
    "``STREAMICE_GEOM_FILE_SETUP``", "Use files rather than parameters in ``STREAMICE_PARM03`` to configure boundaries"
-   "``STREAMICE_SMOOTH_FLOATATION2``", "Subgrid parameterization of transition across the grounding line"
    "``ALLOW_PETSC``", "Enable interface to PETSc for velocity solver matrix solve"
+..   "``STREAMICE_SMOOTH_FLOATATION2``", "Subgrid parameterization of transition across the grounding line"
    
 
 .. _ssub_phys_pkg_streamice_runtime:
@@ -169,11 +169,11 @@ General flags and parameters
   +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
   | STREAMICEvShearTimeDepFile      |                              |                                                                                                |
   +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
-  | streamice_smooth_gl_width       |   0                          |  (meters) thickness range parameter in basal traction smoothing across grounding line          |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
   | streamice_adot_uniform          |   0                          |  time/space uniform surface accumulation rate (m/year)                                         |
   +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
   | streamice_forcing_period        |   0                          | (seconds) File input frequency for STREAMICE time-dependent forcing fields                     |
+  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
+..  | streamice_smooth_gl_width       |   0                          |  (meters) thickness range parameter in basal traction smoothing across grounding line          |
   +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
  
 
@@ -539,16 +539,16 @@ There are different boundary condition types that can be set:
 Additional Features
 +++++++++++++++++++
 
-Grounding line parameterization
-###############################
+.. Grounding line parameterization
+.. ###############################
 
-Representing grounding line movement (change of boundary between grounded and floating ice) is problematic in ice sheet models due to the high resolution required. It has been found that sub-grid treatment of the grounding line can partially alleviate this requirement (Gladstone et al, 2011). STREAMICE implements a simple "smoothing" of the floatation condition. By default, ``float_frac_streamice`` is equal to 0 in cells that satisfy the floatation condition, and 1 elsewhere. If the compile option ``STREAMICE_SMOOTH_FLOATATION2`` is defined, then the array varies smoothly between 0 and 1 in cells where :math:`|h-h_f| < w_{smooth}/2`, where
+.. Representing grounding line movement (change of boundary between grounded and floating ice) is problematic in ice sheet models due to the high resolution required. It has been found that sub-grid treatment of the grounding line can partially alleviate this requirement (Gladstone et al, 2011). STREAMICE implements a simple "smoothing" of the floatation condition. By default, ``float_frac_streamice`` is equal to 0 in cells that satisfy the floatation condition, and 1 elsewhere. If the compile option ``STREAMICE_SMOOTH_FLOATATION2`` is defined, then the array varies smoothly between 0 and 1 in cells where :math:`|h-h_f| < w_{smooth}/2`, where
 
-.. math::
+.. .. math::
 
-  h_f = -\frac{\rho}{\rho_w}R
+..  h_f = -\frac{\rho}{\rho_w}R
 
-and :math:`w_{smooth}` is specified by ``streamice_smooth_gl_width``. This modification then smooths the transition from grounded to floating ice with respect to basal stress. It is found that this parameterisation is necessary in order to achieve grounding line reversibility in the MISMIP3D intercomparison experiment (Pattyn et al, 2013).
+.. and :math:`w_{smooth}` is specified by ``streamice_smooth_gl_width``. This modification then smooths the transition from grounded to floating ice with respect to basal stress. It is found that this parameterisation is necessary in order to achieve grounding line reversibility in the MISMIP3D intercomparison experiment (Pattyn et al, 2013).
 
 PETSc
 #####
