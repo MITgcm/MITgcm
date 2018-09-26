@@ -1,12 +1,25 @@
 #include "MOM_COMMON_OPTIONS.h"
 
-C     !ROUTINE: MOM_VISC_QGL_LIMIT
-C     !INTERFACE:
+CBOP
+C !ROUTINE: MOM_VISC_QGL_LIMIT
+
+C !INTERFACE: ==========================================================
       SUBROUTINE MOM_VISC_QGL_LIMIT(
      I                           bi, bj, k,
      O                           stretching,
-     I                           Nsq, uFld, vFld, vort3, myThid )
+     I                           Nsq, uFld, vFld, vort3,
+     I                           myThid, myTime, myIter )
 
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE MOM_VISC_QGL_LIMIT
+C     | Limit the contribution of the vortex stretching term.
+C     | When the flow is unstratified, the algorithm tries to
+C     | divide by zero. This subroutine ensures that the result
+C     | remains finite.
+C     *==========================================================*
+
+C !USES: ===============================================================
       IMPLICIT NONE
 
 C     == Global variables ==
@@ -20,27 +33,37 @@ C     == Global variables ==
 #endif /* ALLOW_AUTODIFF_TAMC */
 #include "MOM_VISC.h"
 
-C#include "PACKAGES_CONFIG.h"
-
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  Nsq                  :: Stratification
+C  uFld                 :: U velocity (east flow on spherical grid)
+C  vFld                 :: V velocity (north flow on spherical grid)
+C  vort3                :: Relative vorticity
+C  myThid               :: my Thread Id number
+C  myTime               :: current time of simulation ( s )
+C  myIter               :: current iteration number of simulation
       INTEGER bi,bj,k
-      _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Nsq(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-      INTEGER myThid
+      INTEGER myThid, myTime, myIter
 
-C     == Local variables ==
+C !OUTPUT PARAMETERS: ==================================================
+C  stretching           :: vortex stretching term (to be limited)
+      _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+
+C !LOCAL VARIABLES: ====================================================
       INTEGER i,j
-
       _RL U_scale(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Ro_g2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C      _RL Bu_g(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Fr_g(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL stretching_hold(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-
+CEOP
 
 C Initialise local variables
       DO j=1-OLy,sNy+OLy
@@ -73,7 +96,8 @@ C         Bu_g(i,j) = Nsq(i,j) * drf(k)**2 * recip_rA(i,j,bi,bj) /
 C     &                 (fCori(i,j,bi,bj)**2 * PI)
 C        Grid scale Froude number: U pi /(N^2 H)
 C          Include a small number to prevent division by zero
-          Fr_g(i,j) = U_scale(i,j) * PI / ((Nsq(i,j)) * drf(k)) + 1. _d -9
+          Fr_g(i,j) = U_scale(i,j) * PI / ((Nsq(i,j)) * 
+     &                      drf(k)) + 1. _d -9
 
 C     Make the scheme gracefully transition to something else
 C     as stratification goes to zero

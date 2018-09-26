@@ -1,16 +1,24 @@
 #include "MOM_COMMON_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: MOM_VISC_QGL_STRETCH
-C     !INTERFACE:
+C !ROUTINE: MOM_VISC_QGL_STRETCH
+
+C !INTERFACE: ==========================================================
       SUBROUTINE MOM_VISC_QGL_STRETCH(
      I                                 bi, bj, k,
      O                                 stretching, Nsq,
-     I                                 myThid )
+     I                                 myThid, myTime, myIter )
 
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE MOM_VISC_QGL_STRETCH
+C     | Calculates the stratification (Nsq) and vortex stretching
+C     | terms for the Quasi-Geostrophic implementation of Leith 
+C     | dynamic viscosity.
+C     *==========================================================*
+
+C !USES: ===============================================================
       IMPLICIT NONE
-
-C     == Global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
@@ -25,22 +33,31 @@ C     == Global variables ==
 #include "MOM_VISC.h"
 #include "DYNVARS.h"
 
-C#include "PACKAGES_CONFIG.h"
 
-C     == Routine arguments ==
-      INTEGER i,j,k,bi,bj
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  myThid               :: my Thread Id number
+C  myTime               :: current time of simulation ( s )
+C  myIter               :: current iteration number of simulation
+      INTEGER bi,bj, k
+      INTEGER myThid, myTime, myIter
+
+C !OUTPUT PARAMETERS: ==================================================
+C  stretching           :: vortex stretching contribution
+C  Nsq                  :: vertical stratification
       _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Nsq(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER myThid
 
 
-C     == Local variables ==
-
+C !LOCAL VARIABLES: ====================================================
       _RL sigmaR
 
+      INTEGER i, j
       INTEGER iMin, iMax
       INTEGER jMin, jMax
 
+      _RL QGL_epsil
 
       _RL kernel_1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL kernel_2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -63,8 +80,7 @@ C     == Local variables ==
       _RL N2_2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL N2_3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-C Here we go.....
-
+CEOP
 
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
@@ -89,6 +105,7 @@ C Here we go.....
        ENDDO
       ENDDO
 
+      QGL_epsil = 1. _d -9
 
       IF (k.EQ.1) THEN
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
@@ -154,24 +171,26 @@ C At the top row is it the distance from the center to the
 C free surface?  This would make it half of what it is over the other
 C cells in the column, and would explain why I'm getting a junk answer
 
-C a small number (1. _d -9) is added to N^2 to prevent divsion by zero
+C QGL_epsil is a small number (1. _d -9) that 
+C is added to N^2 to prevent divsion by zero
 
         DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
             sigmaR= maskC(i,j,k,bi,bj)
-     &                *0.25*recip_drC(k)*rkSign
-     &                *(-3*rhoKm1(i,j)+4*rholoc(i,j)-rhoKp1(i,j))
-            N2_1(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
+     &                *halfRL*halfRL*recip_drC(k)*rkSign
+     &                *(-3. _d 0 *rhoKm1(i,j) + 
+     &                    4. _d 0 *rholoc(i,j)-rhoKp1(i,j))
+            N2_1(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
 
             sigmaR= maskC(i,j,k,bi,bj)
-     &                *0.25*recip_drC(k)*rkSign
+     &                *halfRL*halfRL*recip_drC(k)*rkSign
      &                *(rhoKp1(i,j)-rhoKm1(i,j))
-            N2_2(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
+            N2_2(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
 
             sigmaR= maskC(i,j,k,bi,bj)
-     &                *0.25*recip_drC(k)*rkSign
+     &                *halfRL*halfRL*recip_drC(k)*rkSign
      &                *(rhoKp2(i,j)-rholoc(i,j))
-            N2_3(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
+            N2_3(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
 
           ENDDO
         ENDDO
@@ -179,14 +198,14 @@ C a small number (1. _d -9) is added to N^2 to prevent divsion by zero
 C Take a weighted nearest neighbors average to smooth it out a bit
         DO j=2-Oly,sNy+Oly-1
           DO i=2-Olx,sNx+Olx-1
-            N2_1(i,j) = (4*N2_1(i,j) + N2_1(i+1,j) +
-     &        N2_1(i-1,j) + N2_1(i,j-1) + N2_1(i,j+1))/8.0
+            N2_1(i,j) = (4. _d 0 *N2_1(i,j) + N2_1(i+1,j) +
+     &        N2_1(i-1,j) + N2_1(i,j-1) + N2_1(i,j+1))/8. _d 0
 
-            N2_2(i,j) = (4*N2_2(i,j) + N2_2(i+1,j) +
-     &        N2_2(i-1,j) + N2_2(i,j-1) + N2_2(i,j+1))/8.0
+            N2_2(i,j) = (4. _d 0 *N2_2(i,j) + N2_2(i+1,j) +
+     &        N2_2(i-1,j) + N2_2(i,j-1) + N2_2(i,j+1))/8. _d 0
 
-            N2_3(i,j) = (4*N2_3(i,j) + N2_3(i+1,j) +
-     &        N2_3(i-1,j) + N2_3(i,j-1) + N2_3(i,j+1))/8.0
+            N2_3(i,j) = (4. _d 0 *N2_3(i,j) + N2_3(i+1,j) +
+     &        N2_3(i-1,j) + N2_3(i,j-1) + N2_3(i,j+1))/8. _d 0
           ENDDO
         ENDDO
 
@@ -210,8 +229,9 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
         DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
             stretching(i,j)= maskC(i,j,k,bi,bj)
-     &              *0.25*recip_drC(k)*rkSign
-     &              *(-3*kernel_1(i,j)+4*kernel_2(i,j)-kernel_3(i,j))
+     &              *halfRL*halfRL*recip_drC(k)*rkSign
+     &              *(-3. _d 0 *kernel_1(i,j)+4. _d 0 
+     &                 *kernel_2(i,j)-kernel_3(i,j))
 
             Nsq(i,j) = N2_1(i,j)
           ENDDO
@@ -284,33 +304,34 @@ C a small number (1. _d -9) is added to N^2 to prevent divsion by zero
         DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
             sigmaR= maskC(i,j,k,bi,bj)
-     &                *0.5*recip_drC(k)*rkSign
-     &                *(3*rhoKp1(i,j)-4*rholoc(i,j)+rhoKm1(i,j))
-            N2_1(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
+     &                *halfRL*recip_drC(k)*rkSign
+     &                *(3. _d 0 *rhoKp1(i,j)-4. _d 0 
+     &                    *rholoc(i,j)+rhoKm1(i,j))
+            N2_1(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
 
             sigmaR= maskC(i,j,k,bi,bj)
-     &                *0.5*recip_drC(k)*rkSign
+     &                *halfRL*recip_drC(k)*rkSign
      &                *(rhoKp1(i,j)-rhoKm1(i,j))
-            N2_2(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
+            N2_2(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
 
             sigmaR= maskC(i,j,k,bi,bj)
-     &                *0.5*recip_drC(k)*rkSign
+     &                *halfRL*recip_drC(k)*rkSign
      &                *(rholoc(i,j)-rhoKm2(i,j))
-            N2_3(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
+            N2_3(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
           ENDDO
         ENDDO
 
 C Take a weighted nearest neighbors average to smooth it out a bit
         DO j=2-Oly,sNy+Oly-1
           DO i=2-Olx,sNx+Olx-1
-            N2_1(i,j) = (4*N2_1(i,j) + N2_1(i+1,j) +
-     &          N2_1(i-1,j) + N2_1(i,j-1) + N2_1(i,j+1))/8.0
+            N2_1(i,j) = (4. _d 0 *N2_1(i,j) + N2_1(i+1,j) +
+     &          N2_1(i-1,j) + N2_1(i,j-1) + N2_1(i,j+1))/8. _d 0
 
-            N2_2(i,j) = (4*N2_2(i,j) + N2_2(i+1,j) +
-     &          N2_2(i-1,j) + N2_2(i,j-1) + N2_2(i,j+1))/8.0
+            N2_2(i,j) = (4. _d 0 *N2_2(i,j) + N2_2(i+1,j) +
+     &          N2_2(i-1,j) + N2_2(i,j-1) + N2_2(i,j+1))/8. _d 0
 
-            N2_3(i,j) = (4*N2_3(i,j) + N2_3(i+1,j) +
-     &          N2_3(i-1,j) + N2_3(i,j-1) + N2_3(i,j+1))/8.0
+            N2_3(i,j) = (4. _d 0 *N2_3(i,j) + N2_3(i+1,j) +
+     &          N2_3(i-1,j) + N2_3(i,j-1) + N2_3(i,j+1))/8. _d 0
           ENDDO
         ENDDO
 
@@ -335,8 +356,9 @@ C I reversed the sign of the derivative here.
         DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
             stretching(i,j)= maskC(i,j,k,bi,bj)
-     &                *0.5*recip_drC(k)*rkSign
-     &          *(3*kernel_1(i,j)-4*kernel_2(i,j)+kernel_3(i,j))
+     &                *halfRL*recip_drC(k)*rkSign
+     &          *(3. _d 0 *kernel_1(i,j)-4. _d 0 
+     &              *kernel_2(i,j)+kernel_3(i,j))
 
             Nsq(i,j) = N2_1(i,j)
           ENDDO
@@ -387,8 +409,8 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
             buoy_p1(i,j)=-Gravity*recip_rhoConst*rhoKp1(i,j)
 
 C Interpolate buoyancy to cell borders
-            buoy_1(i,j)= 0.5 * (buoy(i,j) + buoy_m1(i,j))
-            buoy_2(i,j)= 0.5 * (buoy(i,j) + buoy_p1(i,j))
+            buoy_1(i,j)= halfRL * (buoy(i,j) + buoy_m1(i,j))
+            buoy_2(i,j)= halfRL * (buoy(i,j) + buoy_p1(i,j))
 
           ENDDO
         ENDDO
@@ -405,31 +427,31 @@ C a small number (1. _d -9) is added to N^2 to prevent divsion by zero
             sigmaR= maskC(i,j,k,bi,bj)
      &                *recip_drC(k)*rkSign
      &                *(rholoc(i,j)-rhoKm1(i,j))
-            N2_1(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
+            N2_1(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
 
             sigmaR= maskC(i,j,k,bi,bj)
      &                *recip_drC(k)*rkSign
      &                *(rhoKp1(i,j)-rholoc(i,j))
-            N2_2(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
+            N2_2(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
 
             sigmaR= maskC(i,j,k,bi,bj)
-     &                *0.5*recip_drC(k)*rkSign
+     &                *halfRL*recip_drC(k)*rkSign
      &                *(rhoKp1(i,j)-rhoKm1(i,j))
-            N2_3(i,j) = -gravity*recip_rhoConst*sigmaR + 1. _d -9
+            N2_3(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
           ENDDO
         ENDDO
 
 C Take a weighted nearest neighbors average to smooth it out a bit
         DO j=2-Oly,sNy+Oly-1
           DO i=2-Olx,sNx+Olx-1
-            N2_1(i,j) = (4*N2_1(i,j) + N2_1(i+1,j) +
-     &          N2_1(i-1,j) + N2_1(i,j-1) + N2_1(i,j+1))/8.0
+            N2_1(i,j) = (4. _d 0 *N2_1(i,j) + N2_1(i+1,j) +
+     &          N2_1(i-1,j) + N2_1(i,j-1) + N2_1(i,j+1))/8. _d 0
 
-            N2_2(i,j) = (4*N2_2(i,j) + N2_2(i+1,j) +
-     &          N2_2(i-1,j) + N2_2(i,j-1) + N2_2(i,j+1))/8.0
+            N2_2(i,j) = (4. _d 0 *N2_2(i,j) + N2_2(i+1,j) +
+     &          N2_2(i-1,j) + N2_2(i,j-1) + N2_2(i,j+1))/8. _d 0
 
-            N2_3(i,j) = (4*N2_3(i,j) + N2_3(i+1,j) +
-     &          N2_3(i-1,j) + N2_3(i,j-1) + N2_3(i,j+1))/8.0
+            N2_3(i,j) = (4. _d 0 *N2_3(i,j) + N2_3(i+1,j) +
+     &          N2_3(i-1,j) + N2_3(i,j-1) + N2_3(i,j+1))/8. _d 0
           ENDDO
         ENDDO
 

@@ -2,23 +2,20 @@
 
 
 CBOP
-C     !ROUTINE: GMREDI_CALC_QGLEITH
-C     !INTERFACE:
-      SUBROUTINE GMREDI_CALC_QGLEITH(
-     I             bi, bj, myThid )
+C !ROUTINE: GMREDI_CALC_QGLEITH
 
-C     !DESCRIPTION: \bv
+C !INTERFACE: ==========================================================
+      SUBROUTINE GMREDI_CALC_QGLEITH(
+     I             bi, bj, myThid, myTime, myIter )
+
+C     !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE GMREDI_CALC_QGLEITH
-C     | o Calculate QG Leith contribution to GMRedi tensor.
+C     | Calculate QG Leith contribution to GMRedi tensor.
 C     *==========================================================*
-C     *==========================================================*
-C     \ev
 
-C     !USES:
+C !USES: ===============================================================
       IMPLICIT NONE
-
-C     == Global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #include "DYNVARS.h"
@@ -29,15 +26,15 @@ C     == Global variables ==
 #include "MOM_VISC.h"
 
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
 C     bi,bj   :: current tile indices
 C     myThid  :: my Thread Id number
       INTEGER bi,bj
-      INTEGER myThid
+      INTEGER myThid, myTime, myIter
 
 #ifdef ALLOW_GM_LEITH_QG
 
-C     == Local variables ==
+C !LOCAL VARIABLES: ====================================================
       _RL deepFac3
       _RL L3
       _RS hFacZ   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -56,7 +53,7 @@ C     == Local variables ==
       _RL leithQG2fac
 C     i,j,k    :: Loop counters
       INTEGER i,j,k
-
+CEOP
 
 C--   Initialise terms
 
@@ -135,10 +132,11 @@ C       LeithQG coefficient
 
         CALL MOM_VISC_QGL_STRETCH(bi,bj,k,
      O                                         stretching,Nsq,
-     I                                         myThid)
+     I                                         myThid, myTime, myIter)
         CALL MOM_VISC_QGL_LIMIT(bi,bj,k,
      O                                 stretching,
-     I                                 Nsq,uFld,vFld,vort3,myThid)
+     I                                 Nsq,uFld,vFld,vort3,
+     I                                         myThid, myTime, myIter)
 
 
 C--     horizontal gradient of horizontal divergence:
