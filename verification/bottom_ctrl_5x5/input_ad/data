@@ -35,7 +35,6 @@
 #momPressureForcing = .false.,
  &
 
-
 # Elliptic solver parameters
  &PARM02
  cg2dMaxIters=100,
@@ -80,6 +79,6 @@
  hydrogSaltFile=,
  zonalWindFile='windx.sin_y',
  meridWindFile=,
- surfQFile=,
+ surfQnetFile=,
  EmPmRFile=,
  &
