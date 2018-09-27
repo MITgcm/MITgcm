@@ -1003,7 +1003,20 @@ C     If useThSice=.TRUE., do not reset it here, but issue a warning
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
       ENDIF
-C     SEAICE_GROWTH, i.e. needs usePW79thermodynamics = .TRUE.
+C
+      IF ( .NOT.SEAICEmultiDimAdvection ) THEN
+       WRITE(msgBuf,'(A,L1)')
+     &      'SEAICE_CHECK: SEAICEmultiDimAdvection = ',
+     &      SEAICEmultiDimAdvection
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: is not allowed when '//
+     &      'SEAICE_ITD is defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: use a multiDimAdvection '//
+     &      'scheme instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
 #endif
 
       _END_MASTER(myThid)
