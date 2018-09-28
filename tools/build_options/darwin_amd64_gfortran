@@ -105,7 +105,7 @@ elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
     INCLUDES="-I${NETCDF_INCDIR}"
     LIBDIR="${NETCDF_LIBDIR}"
     LIBS="-L${NETCDF_LIBDIR}"
-elif [[ -n $( nf-config --includedir )  &&  ($? == 0) ]] ; then
+elif [[ -n $( nf-config --includedir ) && ($? == 0) ]] ; then
     # NETCDF env variables are not set, trying nf-config instead
     INCLUDEDIR=$( nf-config --includedir )
     INCLUDES="-I$INCLUDEDIR"
@@ -133,7 +133,7 @@ fi
 if [ "x$MPI" = xtrue ] ; then
    if [ -z "$MPI_INC_DIR" ] ; then
       # MPI env variables are not set, trying pkg-config insteal
-      if [[ $( command -v pkg-config ) ]] ; then
+      if [[ -n $( pkg-config --cflags-only-I ompi ) && ($? == 0) ]] ; then
          MPI_INC_DIR=$(pkg-config --cflags-only-I ompi | awk '{ print $1 }' | sed -e "s/-I//" )
       else
          echo MPI_HOME is not set and pkg-config not available, aborting
