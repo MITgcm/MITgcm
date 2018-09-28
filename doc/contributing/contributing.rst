@@ -295,15 +295,17 @@ a week. While the PR remains open, you can go back to step #5 and make additiona
 git commits, and then redo step #6; such changes will be added to the PR (and maintainers re-notified), no need to redo step #7. 
 
 Your pull request remains open until either the maintainers fully accept and
-merge your code changes into the main repository, or decide to reject your changes
-(occasionally, the review team will reject changes that are not
-sufficiently aligned with and do not fit with the code structure).
-But much more likely than the latter, you will instead be asked to respond to feedback, 
+merge your code changes into the main repository, or decide to reject your changes.
+Occasionally, the review team will reject changes that are not
+sufficiently aligned with and do not fit with the code structure; the review team is always happy to discuss their decisions, but wants to
+avoid people investing extensive additional effort in code that has a fundamental
+design flaw.
+But much more likely than outright rejection, you will instead be asked to respond to feedback, 
 modify your code changes in some way, and/or clean up your code to better satisfy our style requirements, etc.,
-and the pull request will remain open instead of outright rejection. 
-The review team is always happy to discuss their decisions, but wants to
-avoid people investing extensive effort in code that has a fundamental
-design flaw. 
+and the pull request will remain open.  
+In some cases, the maintainers might take initiative to make some changes to your pull request
+(such changes can then be incorporated back into your local branch simply by typing ``git pull`` from your branch), but
+more typically you will be asked to undertake the majority of the necessary changes.
 
 It is possible for other users (besides the maintainers) to examine 
 or even download your pull request; see :ref:`sec_pullreq`.
@@ -696,7 +698,7 @@ However, some systems may require an explicit shell invocation such as:
 
    % «/SOME/PATH/TO/BASH» testreport
 
-The testreport script accepts a number of command-line options which can be listed using the
+The :filelink:`testreport <verification/testreport>` script accepts a number of command-line options which can be listed using the
 ``-help`` option. The most important ones are:
 
 ``-ieee`` (default) / ``-fast``
@@ -762,33 +764,41 @@ The testreport script accepts a number of command-line options which can be list
    Set matching criteria to «NUMBER» of significant digits (default is 10 digits).
 
 Additional :filelink:`testreport <verification/testreport>` options are available
-to pass options to the :filelink:`genmake2 <tools/genmake2>` step
+to pass options to :filelink:`genmake2 <tools/genmake2>` (called during :filelink:`testreport <verification/testreport>` execution)
 as well as additional options to skip specific steps of the
 :filelink:`testreport <verification/testreport>` shell script. See 
 ``testreport -help`` for a detailed list.
 
 
-The :filelink:`testreport <verification/testreport>` script will create an output
-directory «tr_NAME_DATE_N/», with your computer hostname substituted for
+In the :filelink:`verification/` directory, the :filelink:`testreport <verification/testreport>` script will create an output
+directory «tr_NAME_DATE_N», with your computer hostname substituted for
 NAME, the current date for DATE, followed by a suffix number N to distinguish
 from previous :filelink:`testreport <verification/testreport>`
-output directories. :filelink:`testreport <verification/testreport>` writes progress to the screen (stdout) and
-reports into the «tr_NAME_DATE_N/» directory as it runs. In particular, one can find, in this directory, the
-``summary.txt`` file that contains information about the run, and a brief comparison of the current 
-output with the "known-good" output. 
-The test comparison involves few model variables output: By default for a forward test, the 2D
-solver initial residual ``cg2d_init_res`` and 3-D state variables
+output directories. Unless you specify otherwise using the ``-tdir`` or ``-skipdir`` options described above,
+all sub-directories (i.e., TESTDIR experiments) in :filelink:`verification` will be tested. 
+:filelink:`testreport <verification/testreport>` writes progress to the screen (stdout) and
+reports into the «tr_NAME_DATE_N/TESTDIR» sub-directories as it runs. In particular,
+one can find, in each TESTDIR sub-directory, a
+``summary.txt`` file that contains information about the run, and a comparison of the current 
+output with “reference output” (see :ref:`below <reference_output>` for information on how this reference output is generated). 
+The test comparison involves several output model variables. By default, for a forward test, these are the 2D
+solver initial residual ``cg2d_init_res`` and 3D state variables
 (``T``, ``S``, ``U``, ``V``) from :filelink:`pkg/monitor` output; by default
 for an adjoint test, the cost-function and gradient-check. However, some test-experiments
 use some package-specific variables from :filelink:`pkg/monitor` according to the file
 ``«TESTDIR»/input[_ad][.«OTHER»]/tr_checklist`` specification. Note that at this time,
-the only variables that are compared in :filelink:`testreport <verification/testreport>`
+the only variables that are compared by :filelink:`testreport <verification/testreport>`
 are those dumped in standard output via :filelink:`pkg/monitor`, not output produced
-by :filelink:`pkg/diagnostics`.
-At the end of the testing process, a
-``summary.txt`` file is generated in the «tr_NAME_DATE_N/» directory as a compact, combined version of the ``summary.txt``
-located in all experiment sub-directories.
-Below is an excerpt from this file, running the full testreport suite:
+by :filelink:`pkg/diagnostics`.  Monitor output produced from **ALL** run time steps are compared
+to assess significant digit match; the worst match is reported.
+At the end of the testing process, a composite
+``summary.txt`` file is generated in the top «tr_NAME_DATE_N» directory as a compact, combined version of the ``summary.txt``
+files located in all TESTDIR sub-directories.
+Below is an excerpt from this file, created by running the full testreport suite (in the example here, on a linux cluster, using gfortran):
+
+
+
+
 
 ::
 
@@ -797,110 +807,237 @@ Below is an excerpt from this file, running the full testreport suite:
   
     OPTFILE=/home/jscott/MITgcm_fortesting/MITgcm/tools/build_options/linux_amd64_gfortran
   
-  default 10  ----T-----  ----S-----  ----U-----  ----V-----  --PTR 01--  --PTR 02--  --PTR 03--  --PTR 04--  --PTR 05--
-  G D M    c        m  s        m  s        m  s        m  s        m  s        m  s        m  s        m  s        m  s
-  e p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .
-  n n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d
-  2 d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .
+  default 10  ----T-----  ----S-----  ----U-----  ----V-----  --PTR 01--  --PTR 02--
+  G D M    c        m  s        m  s        m  s        m  s        m  s        m  s
+  e p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  . 
+  n n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d 
+  2 d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  . 
   
-  Y Y Y Y 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 22 16 16>16<22  .  .  .  .  .  .  .  .  .  .  .  . pass  1D_ocean_ice_column
-  Y Y Y Y>14<16 16 16 16 22 22 22 22 22 22 22 22 13  4 13 13  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  adjustment.128x64x1
-  Y Y Y Y>14<16 16 16 16 22 22 22 22 16 16 13 16 16 16  4 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  adjustment.cs-32x32x1
-  Y Y Y Y>14<16 16 16  0 22 22 22 22 16 16  0 14 16 16  0 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  adjustment.cs-32x32x1.nlfs
-  Y Y Y Y -- 16 16 16>16<16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  advect_cs
-  Y Y Y Y -- 14 14 16>16<16 16 16 16 16 16 16 22 16 16 16 22  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  advect_xy
-  Y Y Y Y -- 16 16 16>16<16 16 16 16 16 16 16 22 16 16 16 22  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  advect_xy.ab3_c4
-  Y Y Y Y -- 16 16 16>16<16 16 16 16 16 16 16 16 22 22 22 22  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  advect_xz
-  Y Y Y Y -- 16 16 16>16<16 14 16 14 16 16 16 16 22 22 22 22  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  advect_xz.nlfs
-  Y Y Y Y -- 13 14 16>14<12 16 16 16 16 16 16 16 22 22 22 22  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  advect_xz.pqm
-  Y Y Y Y>14<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  aim.5l_cs
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  aim.5l_cs.thSI
-  Y Y Y Y>14<16 16 13 14 16 16 13 13 16 16 13 13 16 16 13 14  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  aim.5l_Equatorial_Channel
-  Y Y Y Y>14<16 16 13 13 16 16 13 13 16 16 13 13 16 16 13 13  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  aim.5l_LatLon
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  . pass  cfc_example
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  cheapAML_box
-  Y Y Y Y>14<16 16 16 12 22 22 22 22 13 16 12 16 13 14 12 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  deep_anelastic
-  Y Y Y Y>14<16 16 16 16 16 16 16 16 16 16 16 16 16 13 14 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  dome
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  exp2
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  exp2.rigidLid
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  exp4
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  exp4.nlfs
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  exp4.stevens
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  fizhi-cs-32x32x40
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  fizhi-cs-aqualev20
-  Y Y Y Y>16<16 16 16 16 22 22 22 22 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  fizhi-gridalt-hs
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  flt_example
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  front_relax
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  . pass  front_relax.bvp
+  Y Y Y Y 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 22 16 16>16<22 pass  1D_ocean_ice_column
+  Y Y Y Y>14<16 16 16 16 22 22 22 22 22 22 22 22 13  4 13 13  .  .  .  .  .  .  .  . pass  adjustment.128x64x1
+  Y Y Y Y>14<16 16 16 16 22 22 22 22 16 16 13 16 16 16  4 16  .  .  .  .  .  .  .  . pass  adjustment.cs-32x32x1
+  Y Y Y Y>14<16 16 16  0 22 22 22 22 16 16  0 14 16 16  0 16  .  .  .  .  .  .  .  . pass  adjustment.cs-32x32x1.nlfs
+  Y Y Y Y -- 16 16 16>16<16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  advect_cs
+  Y Y Y Y -- 14 14 16>16<16 16 16 16 16 16 16 22 16 16 16 22  .  .  .  .  .  .  .  . pass  advect_xy
+  Y Y Y Y -- 16 16 16>16<16 16 16 16 16 16 16 22 16 16 16 22  .  .  .  .  .  .  .  . pass  advect_xy.ab3_c4
+  Y Y Y Y -- 16 16 16>16<16 16 16 16 16 16 16 16 22 22 22 22  .  .  .  .  .  .  .  . pass  advect_xz
+  Y Y Y Y -- 16 16 16>16<16 14 16 14 16 16 16 16 22 22 22 22  .  .  .  .  .  .  .  . pass  advect_xz.nlfs
+  Y Y Y Y -- 13 14 16>14<12 16 16 16 16 16 16 16 22 22 22 22  .  .  .  .  .  .  .  . pass  advect_xz.pqm
+  Y Y Y Y>14<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  aim.5l_cs
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  . pass  aim.5l_cs.thSI
+  Y Y Y Y>14<16 16 13 14 16 16 13 13 16 16 13 13 16 16 13 14  .  .  .  .  .  .  .  . pass  aim.5l_Equatorial_Channel
+  Y Y Y Y>14<16 16 13 13 16 16 13 13 16 16 13 13 16 16 13 13  .  .  .  .  .  .  .  . pass  aim.5l_LatLon
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 pass  cfc_example
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  cheapAML_box
+  Y Y Y Y>14<16 16 16 12 22 22 22 22 13 16 12 16 13 14 12 16  .  .  .  .  .  .  .  . pass  deep_anelastic
+  Y Y Y Y>14<16 16 16 16 16 16 16 16 16 16 16 16 16 13 14 16  .  .  .  .  .  .  .  . pass  dome
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  exp2
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  exp2.rigidLid
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  . pass  exp4
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  . pass  exp4.nlfs
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  exp4.stevens
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  fizhi-cs-32x32x40
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  fizhi-cs-aqualev20
+  Y Y Y Y>16<16 16 16 16 22 22 22 22 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  fizhi-gridalt-hs
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  flt_example
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  front_relax
+  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  front_relax.bvp
   ...
 
 
-The four columns on the left are pass/fail indicators (pass=Y, fail=N). Explanation of these columns is as follows:
+The four columns on the left are build/run results (successful=Y, unsuccessful=N). Explanation of these columns is as follows:
 
   - Gen2: did genmake2 build the makefile for this experiment without error?
   - Dpnd: did the ``make depend`` for this experiment complete without error?
   - Make: did the ``make`` successfully generate a ``mitgcmuv`` executable for this experiment?
-  - Run: did execution of this experiment generate output that matched a given
-    number of significant digits (see ``-match`` option above) to known “good output”?
+  - Run: did execution of this experiment startup and complete successfully?
 
 The next sets of columns shows the number of significant digits matched from the monitor
-output “cg2d”, “min”, “max”, “mean”, and “s d” (standard deviation) for variables T, S, U, and V (see column headings).
-For some experiments, additional variables are tested, as shown in “PTR 01”, “PTR 02”, etc. sets of columns.
-A match to near-full machine precision is 15-17 digits; this generally will occur when the same type of computer,
+output “cg2d”, “min”, “max”, “mean”, and “s d” (standard deviation) for variables T, S, U, and V (see column headings), as compared with the reference output.
+NOTE: these column heading labels are for the default list of variables, even if different variables are specified in a ``tr_checklist`` file
+(for reference, the list of actual variables tested for a specific TESTDIR experiment is output near the end of the file  ``summary.txt``
+appearing in the specific TESTDIR experiment directory).
+For some experiments, additional variables are tested, as shown in “PTR 01”, “PTR 02” sets of columns;
+:filelink:`testreport <verification/testreport>` will detect if tracers are active
+in a given experiment and check digit match on their concentration values.
+A match to near-full machine precision is 15-17 digits; this generally will occur when a similar type of computer,
 similar operating system, and similar version of Fortran compiler are used for the test. Otherwise, different round-off can occur,
 and due to the chaotic nature of ocean and climate models, fewer digits (typically, 10-13 digits) are matched. A match of 22 digits generally is
-due to output being exactly 0.0. In some experiments, some variables may not be used or meaningful, which causes the ‘0’ and ‘4’ match results above.
+due to output being exactly 0.0. In some experiments, some variables may not be used or meaningful, which causes the ‘0’ and ‘4’ match results 
+in several of the adjustment experiments above.
 
-While the match for many variables is tested, only one of these is used to assess pass/fail: this number is bracketed by ``>`` and ``<``.
-For example, above in setup :filelink:`advect_cs <verification/advect_cs>` the pass/fail test occurs on variable “T: s d”, as specified in
-:filelink:`verification/advect_cs/input/tr_checklist`. 
-
-(which time monitor dump is used, last? PTR 01 is typically tracer but can be say some SI variable or something else?
-what does pass mean to the right of the match digits?)
-
+While the significant digit match for many variables is tested and displayed in ``summary.txt``,
+only one of these is used to assess pass/fail (output to the right of the match test results) -- the number bracketed by ``>`` and ``<``.
+For example, see above for experiment :filelink:`advect_cs <verification/advect_cs>` the pass/fail test occurs on variable “T: s d”
+(i.e., standard deviation of potential temperature), the first variable in the list specified in
+:filelink:`verification/advect_cs/input/tr_checklist`. By default (i.e., if no file ``tr_checklist`` is provided),
+pass/fail is assessed on the cg2d monitor output.
+See the :filelink:`testreport <verification/testreport>` script for a list of
+permissible variables to test and a guide to their abbreviations. See ``tr_checklist`` files in the input subdirectories of many TESTDIR
+experiments for examples of syntax (note, a ``+`` after a variable in a ``tr_checklist file`` is shorthand to compare the 
+mean, minimum, maximum, and standard deviation for the variable).
 
 
 The do_tst_2+2 utility
 ~~~~~~~~~~~~~~~~~~~~~~
 
 The shell script :filelink:`tools/do_tst_2+2` can be used to check the accuracy of the restart procedure.
+:filelink:`do_tst_2+2 <tools/do_tst_2+2>` executes three additional short runs. The first run makes use of the pickup files output
+from the run executed by :filelink:`testreport <verification/testreport>` to restart and run
+for four time steps, writing pickup files upon completion. The second run
+is similar except only two time steps are executed, writing pickup files.
+The third run restarts from the end of the second run, executing two additional time steps,
+writing pickup files upon completion.
+In order to successfully pass :filelink:`do_tst_2+2 <tools/do_tst_2+2>`, not only must all three runs execute and complete successfully, 
+but the pickups generated at the end the first run must be identical to the pickup files from the end of the third run.
+Note that a prerequisite to running :filelink:`do_tst_2+2 <tools/do_tst_2+2>`
+is running :filelink:`testreport <verification/testreport>`, both to build the excutables used by :filelink:`do_tst_2+2 <tools/do_tst_2+2>`,
+and to generate the pickup files from which :filelink:`do_tst_2+2 <tools/do_tst_2+2>` begins execution.
 
-mneed instructions from J-M
+The :filelink:`tools/do_tst_2+2` script should be called from the :filelink:`verification/` directory, e.g.:
 
-Daily testing of MITgcm
+::
+
+   % cd verification
+   % ../tools/do_tst_2+2
+
+
+The :filelink:`do_tst_2+2 <tools/do_tst_2+2>` script accepts a number of command-line options which can be listed using the
+``-help`` option. The most important ones are:
+
+``-t «TESTDIR»``
+   Similar to :filelink:`testreport <verification/testreport>` option ``-tdir``, specifies the test directory or list of test directories that should be used.
+   If omitted, the test is attempted in all sub-directories.
+
+``-skd «TESTDIR»``
+   Similar to :filelink:`testreport <verification/testreport>` option ``-skipdir``, specifies a test directory or list of test directories to skip.
+
+``-mpi``
+   Run the tests using MPI; requires the prerequisite :filelink:`testreport <verification/testreport>`
+   run to have been executed with the ``-mpi`` or ``-MPI «NUMBER_OF_PROCS»`` flag.
+   No argument is necessary, as the :filelink:`do_tst_2+2 <tools/do_tst_2+2>` script will determine the
+   correct number of processes to use for your executable.
+
+``-clean``
+   Clean up any output generated from the :filelink:`do_tst_2+2 <tools/do_tst_2+2>`.
+   This step is necessary if one wants to do additional :filelink:`testreport <verification/testreport>` runs
+   from these directories.
+
+Upon completion, :filelink:`do_tst_2+2 <tools/do_tst_2+2>` will generate a file ``tst_2+2_out.txt``
+in the :filelink:`verification/` directory which summarizes the results.
+The top half of the file includes information from the composite ``summary.txt`` file from the prerequisite :filelink:`testreport <verification/testreport>` run.
+In the bottom half, new results from each verification experiment are given:
+each line starts with four Y/N indicators indicating if pickups from
+the :filelink:`testreport <verification/testreport>` run were available,
+and whether runs 1, 2 and 3, completely successfully, respectively,
+followed by a pass or fail from the output pickup file comparison test, followed by the TESTDIR experiment name.
+In each ``«TESTDIR»/run`` subdirectory
+:filelink:`do_tst_2+2 <tools/do_tst_2+2>` also creates a log file ``tst_2+2_out.log`` which contains additional information.
+
+.. _reference_output:
+
+Reference Output
+----------------
+
+Reference output is currently generated using the linux server ``baudelaire.mit.edu`` which employs an Intel Xeon Westmere processor running Fedora Core 13.
+For each verification experiment in the MITgcm repository, this reference output is stored in the file ``«TESTDIR»/results/output.txt``,
+which is the standard output generated by running :filelink:`testreport <verification/testreport>`
+(using a single process) on ``baudelaire.mit.edu`` using the gfortran (`GNU Fortran <https://gcc.gnu.org/fortran>`_) compiler version 4.4.5.
+
+Using a different gfortran version (or a different Fortran compiler entirely), and/or running with MPI,
+a different operating system, or a different processor (cpu) type will generally result in output that differs to machine precision.
+The greater the number of such differences between your platform and this reference platform, typically the fewer digits of matching output precision.
+
+
+Daily Testing of MITgcm
 -----------------------
 
 On a daily basis, MITgcm runs a full suite of :filelink:`testreport <verification/testreport>`
-(i.e., forward and adjoint runs, single-threaded and mpi) on an array of different
-clusters. When changes in output occur from previous runs, even if as minor as changes
+(i.e., forward and adjoint runs, single process, single-threaded and mpi) on an array of different
+clusters, running using different operating systems, testing several different Fortran compilers.
+The reference machine ``baudelaire.mit.edu`` is one of such daily test machines.
+When changes in output occur from previous runs, even if as minor as changes
 in numeric output to machine precision, MITgcm maintainers are automatically notified.
 
-The default system configuration that is tested is:
-``testreport -match 13 -devel -of=../tools/build_options/linux_amd64_gfortran``
+Links to summary results from the daily testing are posted at http://mitgcm.org/public/testing.html. 
 
 
 
-Required testing for MITgcm code contributors
+Required Testing for MITgcm Code Contributors
 ---------------------------------------------
 
 Using testreport to check your new code
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- run testreport thru full suite (non-mpi or mth) in an unmodified code branch or download of MITgcm repository
-- run testreport thru full suite with modified code
-- diff summary.txt in the «tr_NAME_DATE_N/» from these two sets of runs. any differences?
+Before submitting your pull request for approval, if you have made any changes to MITgcm code, however trivial, you **MUST** complete the following:
 
-(running testreport  on the modified code will catch compiler errors even prior to the summary.txt comparison. But the comparison
-will catch if numerical output is affected by the modification. In some cases -- say you fixed a bug 
-in one of the model’s advection schemes -- then one would even expect 
-differences in numerical output for any setup using that specific scheme)
+- Run :filelink:`testreport <verification/testreport>` (on all experiments) on an unmodified master branch of MITgcm. We suggest using the ``-devel`` option
+  and gfortran (typically installed in most linux environments) although neither is strictly necessary for this test.
+  Depending how different your platform
+  is from our reference machine setup, typically most tests will pass but some match tests may fail; it is possible one or more experiments might not even
+  build or run successfully. But even if there are multiple experiment fails or unsuccessful builds or runs, do not despair, the purpose at this
+  stage is simply to generate a reference report on your local platform using the master code.
+  It may take one or more hours for :filelink:`testreport <verification/testreport>` to complete.
+
+- Switch to your pull request branch, and repeat the :filelink:`testreport <verification/testreport>` sequence using the same options.
+
+- From the verification directory on your pull request branch, type ``git diff master tr_out.txt``
+  which will report any differences in :filelink:`testreport <verification/testreport>` output from the above tests
+  (the file ``tr_out.txt`` is simply a condensed version of the composite ``summary.txt`` file located in the «tr_NAME_DATE_N» directory).
+  If no differences occur (other than timestamp-related), see below if you are required
+  to do a :filelink:`do_tst_2+2 <tools/do_tst_2+2>` test, otherwise, you
+  are clear for submitting your pull request.
+
+
+Differences might occur due to one or more of the following reasons:
+
+- Your modified code no longer builds properly in one or more experiments. This is likely due to a Fortran syntax error; examine output and log files
+  in the failed experiment TESTDIR to identify and fix the problem.
+
+- The run in the modified code branch terminates due to a to numerical exception error. This too requires further investigation into the cause of the error,
+  and a remedy, before the pull request should be submitted.
+
+- You have made changes which require changes to input parameters
+  (e.g., renaming a namelist parameter, changing the units or function of an input parameter, etc.) 
+  This by definition is a “breaking change”, which must be noted when completing the PR template -- but should not deter you from
+  submitting your PR. Ultimately, you and the maintainers will likely have to make changes to one or more verification experiments, but as a first
+  step we will want to review your PR.
+
+- You have made algorithmic changes which change model output in some or all setups; this too is a “breaking change” that should be noted in
+  the PR template. As usual recourse, if the PR is accepted, the maintainers will re-generate reference output and push to the affected
+  ``«TESTDIR»/results/`` directories when the PR is merged.
+ 
+Most typically, running testreport using a single process is a sufficient test. However, any code changes which call MITgcm
+routines (such as :filelink:`eesupp/src/global_sum.F`) employing low-level MPI-directives
+should run :filelink:`testreport <verification/testreport>` with the ``-mpi`` option enabled.
+
+Using do_tst_2+2 to check your new code
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you make any kind of algorithmic change to the code, or modify anything related to generating or reading pickup files,
+you are also required to also complete a :filelink:`do_tst_2+2 <tools/do_tst_2+2>`. Again, run the test on both the unmodified master branch and your
+pull request branch (after you have run :filelink:`testreport <verification/testreport>` on both branches).
+Verify that the output ``tst_2+2_out.txt`` file is identical between branches.
+If not, attempt to identify and fix what is causing the difference.
+
 
 Automatic testing with Travis-CI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The MITgcm uses the continuous integration service Travis-CI to test code before it is accepted into the repository. When you submit a pull request your contributions will be automatically tested. However, it is a good idea to test before submitting a pull request, so that you have time to fix any issues that are identified. To do this, you will need to activate Travis-CI for your fork of the repository.
+Once your PR is submitted onto GitHub, the continuous integration service
+`Travis-CI <https://travis-ci.org>`_ runs additional tests on your PR submission.
+On the ‘Pull request’ tab in GitHub (https://github.com/MITgcm/MITgcm/pulls), find your pull request; initially you will see a yellow circle
+to the right of your PR title, indicating testing in progress. Eventually this will change to a green checkmark (pass) or a red X (fail).
+If you get a red X, click the X and then click on ‘Details’ to list specifics tests that failed; these can be clicked to produce a screenshot
+with error messages.
 
-**Detailed instructions or link to be added.**
+Note that `Travis-CI <https://travis-ci.org>`_ builds documentation (both html and latex) in addition to code testing, so if you have
+introduced syntax errors into the documentation files,
+these will be flagged at this stage. Follow the same procedure as above to identify the error messages so the problem(s) can be fixed. Make any
+appropriate edits to your pull request, re-``git add`` and re-``git commit`` any newly modified files, re-``git push``. Anytime changes are pushed to the PR,
+`Travis-CI <https://travis-ci.org>`_ will re-run its tests.
+
+The maintainers will not review your PR until all `Travis-CI <https://travis-ci.org>`_ tests pass.
 
 
 .. _contrib_manual:
