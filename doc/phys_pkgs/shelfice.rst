@@ -104,9 +104,9 @@ that is different from :math:`\rho_{0}`, the anomaly is zero.
 +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`no_slip_shelfice`            | SHELFICE_PARM01 | :varlink:`no_slip_bottom`	                | slip along bottom of ice shelf on/off flag                                                              |
 +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`SHELFICEDragLinear`          | SHELFICE_PARM01 | :varlink:`bottomDragLinear`                | linear drag coefficient at bottom ice shelf ([:math:`r`]/s)                                             |
+| :varlink:`SHELFICEDragLinear`          | SHELFICE_PARM01 | :varlink:`bottomDragLinear`                | linear drag coefficient at bottom ice shelf (m/s)                                                       |
 +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`SHELFICEDragQuadratic`       | SHELFICE_PARM01 | :varlink:`bottomDragQuadratic`             | quadratic drag coefficient at bottom ice shelf ([:math:`r`]/m)                                          |
+| :varlink:`SHELFICEDragQuadratic`       | SHELFICE_PARM01 | :varlink:`bottomDragQuadratic`             | quadratic drag coefficient at bottom ice shelf (non-dim.)                                               |
 +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`SHELFICEwriteState`          | SHELFICE_PARM01 | FALSE                                      | write ice shelf state to file on/off flag                                                               |
 +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -122,7 +122,7 @@ SHELFICE Description
 
 In the light of isomorphic equations for pressure and height
 coordinates, the ice shelf topography on top of the water column has a
-similar role as (and in the language of Marshall et al. (2004) :cite:`marshall:04`
+similar role as (and in the language of Marshall et al. (2004) :cite:`marshall:04`,
 is isomorphic to) the orography and the pressure boundary conditions at
 the bottom of the fluid for atmospheric and oceanic models in pressure
 coordinates. The total pressure :math:`p_{tot}` in the ocean can be
@@ -200,6 +200,16 @@ cell :math:`k` as
 
 where :math:`H(k'-k)=1` for :math:`k'<k` and :math:`0` otherwise.
 
+
+ .. figure:: figs/gridschematic.*
+    :width: 80%
+    :align: center
+    :alt: schematic of vertical section of grid
+    :name: shelfice_grid
+
+    Schematic of a vertical section of the grid at the base of an ice shelf. Grid lines are thin; the thick line is the model’s representation of the ice shelf-water interface. Plus signs mark the position of pressure points for pressure gradient computations. The letters A, B, and C mark specific grid cells for reference. :math:`h_k` is the fractional cell thickness so that :math:`h_k \Delta z_k` is the actual cell thickness.
+
+
 Setting :varlink:`SHELFICEboundaryLayer` ``=.TRUE.`` introduces a simple boundary layer that reduces the potential
 noise problem at the cost of increased vertical mixing. For this purpose
 the water temperature at the :math:`k`-th layer abutting ice shelf
@@ -212,7 +222,7 @@ the same thickness as the layer thickness :math:`\Delta{z}_{k}`:
    :label: thetabl
 
 where :math:`h_{k}\in[0,1]` is the fractional layer thickness of the
-:math:`k`-th layer. The original contributions due to ice shelf-ocean
+:math:`k`-th layer (see :numref:`shelfice_grid`). The original contributions due to ice shelf-ocean
 interaction :math:`g_{\theta}` to the total tendency terms
 :math:`G_{\theta}` in the time-stepping equation
 :math:`\theta^{n+1} = f(\theta^{n},\Delta{t},G_{\theta}^{n})` are
@@ -450,4 +460,4 @@ Diagnostics output is available via the diagnostics package (see
 Experiments and tutorials that use shelfice
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-(need something here)
+See the verification experiment :filelink:`isomip <verification/isomip>` for example usage of :filelink:`pkg/shelfice`.
