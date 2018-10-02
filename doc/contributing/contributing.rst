@@ -177,7 +177,9 @@ so that edits or newly created files only appear in the current branch, i.e.,
 such changes do not appear in any other branches. So if you swore you
 made some changes to a particular file, and now it appears those changes
 have vanished, first check which branch you are on (``git status`` is a
-useful command here), all is probably not lost.
+useful command here), all is probably not lost. NOTE: for a file to be “assigned” to a specific Git branch,
+Git must first be “made aware” of the file, which occurs after a ``git add`` and ``git commit`` (see :ref:`below <doing_stuff_in_git>`).
+Prior to this, the file will appear in the current folder independently, i.e., regardless of which git branch you are on.
 
 
 A detailed explanation of steps for contributing MITgcm repository edits:
@@ -240,6 +242,7 @@ from the ``upstream/master`` branch, it also switches you onto this newly
 created branch.  Naming the branch something descriptive like ‘newfeature’
 or ‘bugfix’ (preferably, be even more descriptive) is helpful. 
  
+.. _doing_stuff_in_git:
 
 **5.** Doing stuff! This usually comes in one of three flavors: 
 
@@ -1108,6 +1111,36 @@ Note the necessary leading underscore. You can also place a clickable
 link to *any* spot in the text (e.g., mid-section),
 using this same syntax to make the label, using the syntax
 ``:ref:`«SOME TEXT TO CLICK ON» <«LABELNAME»>``` for the link.
+
+
+Citations
+---------
+
+In the text, references should be given using the standard “Author(s) (Year)” shorthand followed by a link
+to the full reference in the manual bibliography. This link is accomplished using the syntax
+``:cite:`«BIB_REFERENCE»```; this will produce clickable text, usually some variation on the authors’ initials or names, surrounded by brackets.
+
+Full references are specified in the file :filelink:`doc/manual_references.bib` using standard `BibTeX <http://www.bibtex.org>`_ format.
+Even if unfamiliar with `BibTeX <http://www.bibtex.org>`_, it is relatively easy to add a new reference by simply examining other entries.
+Note this file is in approximate alphabetic order by author name.
+For all new references added to the manual, please include a `DOI <https://www.doi.org>`_ or
+a URL in addition to journal name, volume and other
+standard reference infomation. An example JGR journal article reference is
+reproduced below; note the «BIB_REFERENCE» here is “bryan:79” so the syntax in the rst file format would be ``“Bryan and Lewis (1979) :cite:`bryan:79```,
+which will appear in the manual as Bryan and Lewis (1979) :cite:`bryan:79`.
+
+
+| @Article{bryan:79,
+|   author =	 {Bryan, K. and L.J. Lewis},
+|   title =	 {A water mass model of the world ocean},
+|   journal =	 jgr,
+|   volume =	 84,
+|   number =       {C5},
+|   pages =	 {2503--2517},
+|   doi =          {10.1029/JC084iC05p02503},
+|   year =	 1979,
+| }
+
 
 Other embedded links
 --------------------
