@@ -149,6 +149,7 @@ C     tendency due to advection of momentum
       _RL residU_fd, residV_fd
       _RL residUmix, residVmix
 #endif /* SEAICE_ALLOW_FREEDRIFT */
+      _RL areaMinLoc
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -201,7 +202,10 @@ C     initialise fractional areas at velocity points
           areaS(I,J,bi,bj) = 1. _d 0
          ENDDO
         ENDDO
+        areaMinLoc = 0. _d 0
         IF ( SEAICEscaleSurfStress ) THEN
+         areaMinLoc = 1. _d -10
+CML         areaMinLoc = SEAICE_EPS
          DO J=jMin,jMax
           DO I=iMin,iMax
            areaW(I,J,bi,bj) =
@@ -549,13 +553,13 @@ C--   Calculate initial residual of the linearised system
      &         / ( 1. _d 0 - seaiceMaskU(i,j,bi,bj)
      &           + seaiceMassU(i,j,bi,bj)*recip_deltaT
      &           + HALF*( dragSym(i,j,bi,bj) + dragSym(i-1,j,bi,bj) )
-     &                 * areaW(i,j,bi,bj)
+     &                 * MAX(areaW(i,j,bi,bj),areaMinLoc)
      &           )
             vIce_fd(i,j,bi,bj) = FORCEY(i,j,bi,bj)
      &         / ( 1. _d 0 - seaiceMaskV(i,j,bi,bj)
      &           + seaiceMassV(i,j,bi,bj)*recip_deltaT
      &           + HALF*( dragSym(i,j,bi,bj) + dragSym(i,j-1,bi,bj) )
-     &                 * areaS(i,j,bi,bj)
+     &                 * MAX(areaS(i,j,bi,bj),areaMinLoc)
      &           )
            ENDDO
           ENDDO
