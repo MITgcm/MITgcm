@@ -8,6 +8,12 @@ o pkg/seaice: clean up advection and SEAICE_ITD
   - re-organize SEAICE_ITD code in seaice_advdiff.F
 o pkg/seaice:
   - add a fix for LSR_mixIniGuess > 0 to avoid division by zero
+o pkg/streamice:
+  - fix bugs relating to ice front advance:
+    streamice_advect_thickness.F -- overlap update of array passed to 
+     streamice_adv_front which was leading to spurious ice area values
+    streamice_init_varia.F -- proper initialisation of area_shelf_streamice
+     which is used for ice front advance (only affects diagnostics)
 o verification/*/data
   - set "rhoConst" instead of "rhoNil" (unless using Linear EOS)
   - for net surface heat flux, set "surfQnetFile" instead of "surfQfile"
