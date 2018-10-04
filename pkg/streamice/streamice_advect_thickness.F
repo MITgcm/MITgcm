@@ -168,6 +168,8 @@ CADJ STORE streamice_hmask  = comlev1, key=ikey_dynamics
       _EXCH_XY_RL(BCVALY,myThid)
       _EXCH_XY_RL(h_after_uflux_SI,myThid)
       _EXCH_XY_RL(h_after_vflux_SI,myThid)
+      _EXCH_XY_RL(hflux_x_SI,myThid)
+      _EXCH_XY_RL(hflux_y_SI,myThid)
 
 #ifndef ALLOW_AUTODIFF
 
