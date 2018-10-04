@@ -94,26 +94,7 @@ C     msgBuf  :: Error message buffer
       _RL var2Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dumRS(1)
       _RL dumRL(1)
-      LOGICAL doExch
 CEOP
-
-C--- Test for adexch based on dumpAdVarExch flag
-      doExch = DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
-      doExch = doExch .AND. ( dumpAdVarExch.EQ.1 )
-
-C--- If necessary, do the exchanges
-      IF ( doExch ) THEN
-#ifdef ALLOW_OPENAD
-C--   need to all the correct OpenAD EXCH S/R ; left empty for now
-#else /* ALLOW_OPENAD */
-
-#ifdef AUTODIFF_TAMC_COMPATIBILITY
-        call adexch_xy_rl( myThid,adEtaN)
-# else /* ndfef AUTODIFF_TAMC_COMPATIBILITY */
-        CALL ADEXCH_3D_RL( adEtaN, 1 , myThid )
-#endif /* AUTODIFF_TAMC_COMPATIBILITY */
-#endif /* ALLOW_OPENAD */
-      ENDIF
 
       IF (
      &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
