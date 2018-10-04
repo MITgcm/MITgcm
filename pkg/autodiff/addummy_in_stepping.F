@@ -252,8 +252,8 @@ C-----------------------------------------------------------------------
 
         CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
-c increment ad dump record number (used only if dumpAdByRec is true)
-        dumpAdRecMn=dumpAdRecMn+1
+C Note: dumpAdRecMn is now incremented by addummy_for_etan.F as this is
+C       called first
 c#ifdef ALLOW_DEBUG
 c      IF ( debugMode ) print*,'dumpAdRecMn',dumpAdRecMn
 c#endif
@@ -264,11 +264,6 @@ C--     Set suffix for this set of data files.
         ELSE
           CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
         ENDIF
-C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
-C ==>>  is very very very nasty !!!
-c       writeBinaryPrec = writeStatePrec
-C <<==  If you really want to mess-up with this at your own risk,
-C <<==  uncomment the line above
 
 C-----------------------------------------------------------------------
 #ifndef ALLOW_OPENAD
