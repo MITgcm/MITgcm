@@ -10,10 +10,16 @@ o pkg/shelfice,model/src
     shelfice_remeshing.F:
       called from forward_step. begins remeshing process at fixed time intervals
     shelfice_update_masks_remesh.F
-      called from upd_masks_remesh. checks for cells that are too thick or thin
-      and adjusts R_surf & eta accordingly, updates dynamic arrays
-    shelfice_update_ksurf_remesh.F
-      called from shelfice_remeshing. updates ksurf after masks updated
+      called from shelfice_remeshing. checks for cells that are too thick or 
+      thin and adjusts R_surf & eta accordingly, updates dynamic arrays
+    shelfice_remesh_uvmasks.F 
+      updates u- and v-point masks and geom factors, using same alg as 
+      s/r ini_masks_etc. called from shelfice_update_masks_remesh
+    shelfice_remesh_update_rminsurf.F
+      called from shelfice_remeshing. updates Rminsurf to avoid SURF_ADJUST
+    shelfice_integr_cont_remesh.F
+      re-initialises wvel at end of remeshing process. called by
+      shelfice_remeshing
   - following files updated to reflect new arrays, params
     SHELFICE.h
     shelfice_readparms.F
@@ -22,8 +28,6 @@ o pkg/shelfice,model/src
     shelfice_init_fixed.F
   - model/src/forward_step.F: to add call to shelfice_remeshing if 
     #define ALLOW_SHELFICE_REMESHING	
-  - new file model/src/upd_masks_remesh.F: necessary to recalculate hFac/masks 
-    after remeshing similar to ini_masks_etc
   - pkg/shelfice/shelfice_init_depths.F: to reflect change made in 
     verification_other/shelfice_remeshing experiment
   - pkg/shelfice/shelfice_thermodynamics.F: to allow different formulation of 

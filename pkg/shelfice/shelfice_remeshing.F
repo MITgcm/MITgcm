@@ -20,14 +20,14 @@ C     !CALLING SEQUENCE:
 C     SHELFICE_REMESHING
 C       |
 C       |-- SHELFICE_UPDATE_MASKS_REMESH
-C       |
-C       |-- SHELFICE_REMESH_UPDATE_RMINSURF
 C       |    |
 C       |    |-- SHELFICE_REMESH_UVMASKS
 C       |    |-- OBCS_UPDATE_REMESH (called only if horiz remeshing)
 C       |    |-- CALC_SURF_DR
 C       |    |-- CALC_SURF_DR
 C       |    |-- UPDATE_SURF_DR
+C       |
+C       |-- SHELFICE_REMESH_UPDATE_RMINSURF
 C       |
 C       |-- UPDATE_CG2D
 C       |
