@@ -1,6 +1,3 @@
-c#ifdef ALLOW_COST
-c# include "COST_OPTIONS.h"
-c#endif
 #include "STREAMICE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -306,10 +303,10 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-oly,sNy+oly
-         DO i=1-olx,sNx+olx
-          IF (H_streamice(i,j,bi,bj .gt. 0. _d 0 .and.
-     &         STREAMICE_hmask(i,j,bi,bj) .eq. 1.0) then
+        DO j=1-oLy,sNy+oLy
+         DO i=1-oLx,sNx+oLx
+          IF ( H_streamice(i,j,bi,bj) .GT. zeroRL .AND.
+     &         STREAMICE_hmask(i,j,bi,bj) .EQ. oneRS ) THEN
            area_shelf_streamice(i,j,bi,bj) = rA(i,j,bi,bj)
           ENDIF
          ENDDO
