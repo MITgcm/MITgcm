@@ -14,7 +14,7 @@
 # SHELFICEheatTransCoeff = 0., 
 # SHELFICEsaltTransCoeff = 0.,
  SHELFICEMassStepping = .true.,
- SHELFICERemeshFrequency = 1500.0,
+ SHELFICERemeshFrequency = 3000.0,
  SHELFICESplitThreshold =1.25,
  SHELFICEMergeThreshold =0.24,
 # conserve_ssh = .true.,
