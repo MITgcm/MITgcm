@@ -16,6 +16,23 @@ C     |   checks if etaN under shelfice triggers a remesh
 C     *==========================================================*
 C     \ev
 
+C     !CALLING SEQUENCE:
+C     SHELFICE_REMESHING
+C       |
+C       |-- SHELFICE_UPDATE_MASKS_REMESH
+C       |
+C       |-- SHELFICE_REMESH_UPDATE_RMINSURF
+C       |    |
+C       |    |-- SHELFICE_REMESH_UVMASKS
+C       |    |-- OBCS_UPDATE_REMESH (called only if horiz remeshing)
+C       |    |-- CALC_SURF_DR
+C       |    |-- CALC_SURF_DR
+C       |    |-- UPDATE_SURF_DR
+C       |
+C       |-- UPDATE_CG2D
+C       |
+C       |-- SHELFICE_INTEGR_CONT_REMESH
+
 C     !USES:
       IMPLICIT NONE
 C     === Global variables ===
@@ -36,25 +53,21 @@ C     === Global variables ===
 
 #ifdef ALLOW_SHELFICE
 #ifdef ALLOW_SHELFICE_REMESHING
-          IF ((myTime/ShelficeRemeshFrequency) .EQ.
+
+      INTEGER k, bi, bj, i, j
+      Real*8 addMass(1)
+      Real*8 rStarDhDt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+        IF ((myTime/ShelficeRemeshFrequency) .EQ.
      &     INT (myTime/ShelficeRemeshFrequency) .AND. myTime
      &      .NE. 0.0        ) THEN
-         CALL UPD_MASKS_REMESH (myThid)
-         CALL SHELFICE_UPDATE_KSURF_REMESH( myThid )
-#ifdef ALLOW_OBCS
-         if (useobcs) then
-! DNG call will be needed for horizontal remeshing
-!         CALL OBCS_UPDATE_REMESH( myThid )
-         endif
-#endif
+         CALL SHELFICE_UPDATE_MASKS_REMESH (mytime, myiter, myThid)
+         CALL SHELFICE_REMESH_UPDATE_RMINSURF(myTime, myIter, myThid)
 C-- DNG: CALC_SURF_DR is called twice as the hfac_surfNm1 etc fields
 C-- must be initialised since maskC has changed
-         CALL CALC_SURF_DR( etaH, myTime, myIter, myThid )
-         CALL CALC_SURF_DR( etaH, myTime, myIter, myThid )
-         CALL UPDATE_SURF_DR(.FALSE., myTime, myIter, myThid)
          CALL UPDATE_CG2D(myTime,myIter, myThid)
-         CALL INTEGR_CONTINUITY (uVel ,vVel, myTime, niter0, myThid)
-         ENDIF 
+         CALL SHELFICE_INTEGR_CONT_REMESH (uVel ,vVel, myThid)
+        ENDIF 
 #endif /* ALLOW_SHELFICE_REMESHING */
 #endif /* ALLOW_SHELFICE */
 

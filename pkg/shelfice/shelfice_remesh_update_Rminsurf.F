@@ -1,0 +1,76 @@
+#include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
+
+CBOP
+C     !ROUTINE: SHELFICE_REMESHING
+C     !INTERFACE:
+      SUBROUTINE SHELFICE_REMESH_UPDATE_RMINSURF(
+     I    myTime, myIter, myThid)
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE SHELFICE_REMESH_UPDATE_RMINSURF
+C     | to update Rmin_surf after remeshing downward and avoid
+C     | surf_adjustments
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "SURFACE.h"
+#include "GRID.h"
+
+      INTEGER myThid
+      INTEGER myIter
+      _RL myTime
+
+#ifdef ALLOW_SHELFICE
+#ifdef ALLOW_SHELFICE_REMESHING 
+      _RL Rmin_tmp
+      _RL hfacInfMom
+      INTEGER bi, bj
+      INTEGER I, J, Ks
+
+      hFacInfMOM = hFacInf
+
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+
+C-- Compute the mimimum value of r_surf (used for computing hFac_surfC)
+         DO j=1,sNy
+          DO i=1,sNx
+           ks = kSurfC(i,j,bi,bj)
+           IF (ks.LE.Nr) THEN
+             Rmin_tmp = rF(ks+1)
+             IF ( ks.EQ.kSurfW(i,j,bi,bj))
+     &          Rmin_tmp = MAX(Rmin_tmp, R_low(i-1,j,bi,bj))
+             IF ( ks.EQ.kSurfW(i+1,j,bi,bj))
+     &          Rmin_tmp = MAX(Rmin_tmp, R_low(i+1,j,bi,bj))
+             IF ( ks.EQ.kSurfS(i,j,bi,bj))
+     &          Rmin_tmp = MAX(Rmin_tmp, R_low(i,j-1,bi,bj))
+             IF ( ks.EQ.kSurfS(i,j+1,bi,bj))
+     &          Rmin_tmp = MAX(Rmin_tmp, R_low(i,j+1,bi,bj))
+
+             Rmin_surf(i,j,bi,bj) =
+     &        MAX( MAX(rF(ks+1),R_low(i,j,bi,bj)) + hFacInf*drF(ks),
+     &                                Rmin_tmp + hFacInfMOM*drF(ks)
+     &           )
+           ENDIF
+          ENDDO
+         ENDDO
+
+C-    end bi,bj loop.
+       ENDDO
+      ENDDO
+
+      CALL EXCH_XY_RL( Rmin_surf, myThid )
+#endif
+#endif
+      RETURN
+      END
