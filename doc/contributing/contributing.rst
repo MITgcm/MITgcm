@@ -331,7 +331,11 @@ the MITgcm core driver code and organized into
 packages. The packaging structure provides a mechanism for
 maintaining suites of code, specific to particular
 classes of problem, in a way that is cleanly
-separated from the generic fluid dynamical engine.
+separated from the generic fluid dynamical engine. An overview of available MITgcm
+packages is presented in :numref:`packagesI`, as illustrated in :numref:`fig_package_organigramme`.
+An overview of how to include and use MITgcm packages in your setup is presented in :numref:`using_packages`,
+with specific details on using existing packages spread throughout :numref:`packagesI`, :numref:`outp_pack`, and :numref:`chap_state_estimation`.
+This sub-section includes information necessary to create your own package for use with MITgcm.
 
 The MITgcm packaging structure is described
 below using generic package names ``${pkg}``.
