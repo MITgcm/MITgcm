@@ -416,6 +416,10 @@ When you run the :filelink:`genmake2 <tools/genmake2>` script, typical output mi
     Adding makedepend marker
   
   ===  Done  ===
+    original 'Makefile' generated successfully
+  => next steps:
+    > make depend
+    > make       (<-- to generate executable)
 
  
 
@@ -445,11 +449,17 @@ In the above, notice:
   overriding any MITgcm repository versions of files, if they exist.
 - a handful of packages are being used in this build; see :numref:`using_packages`
   for more detail about how to enable and disable packages.
-- :filelink:`genmake2 <tools/genmake2>` terminated without error,
+- :filelink:`genmake2 <tools/genmake2>` terminated without error (note output at end after ``===  Done  ===``),
   generating ``Makefile`` and a log file ``genmake.log``. As mentioned, this does not guarantee that
   your setup will compile properly, but if there are errors during ``make depend`` or ``make``, 
   these error messages and/or the standard output from :filelink:`genmake2 <tools/genmake2>` or
-  ``genmake.log`` may provide clues as to the problem.
+  ``genmake.log`` may provide clues as to the problem. If instead you receive a
+  warning message ``Warning: FORTRAN compiler test failed`` at the end of :filelink:`genmake2 <tools/genmake2>` output ,
+  :filelink:`genmake2 <tools/genmake2>` is unable
+  to locate the Fortran compiler or a pass a trivial “hello world” Fortran compilation & run test. See ``genmake.log``
+  for errors and/or seek assistance from your system administrator;
+  these tests need to pass in order to proceed to the ``make`` steps.
+
 
 .. _command_line_options:
 
