@@ -1,6 +1,8 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#include "AUTODIFF_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: INTEGR_CONTINUITY
@@ -299,17 +301,13 @@ C--   End bi,bj loops
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_MONITOR
-
 C     In reverse, print adjoint variable for etaN
       CALL DUMMY_FOR_ETAN( myTime, myIter, myThid )
       _EXCH_XY_RL( etaN , myThid )
-
 #else /* ALLOW_AUTODIFF_MONITOR */
-
       IF ( exactConserv .AND. myIter.NE.nIter0
      &                  .AND. implicDiv2Dflow .NE. 0. _d 0 )
      &    _EXCH_XY_RL( etaN , myThid )
-
 #endif /* ALLOW_AUTODIFF_MONITOR */
 
       IF ( implicitIntGravWave .OR. myIter.EQ.nIter0 )
