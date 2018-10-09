@@ -252,8 +252,8 @@ C-----------------------------------------------------------------------
 
         CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
-C Note: dumpAdRecMn is now incremented by addummy_for_etan.F as this is
-C       called first
+c increment ad dump record number (used only if dumpAdByRec is true)
+        dumpAdRecMn=dumpAdRecMn+1
 c#ifdef ALLOW_DEBUG
 c      IF ( debugMode ) print*,'dumpAdRecMn',dumpAdRecMn
 c#endif

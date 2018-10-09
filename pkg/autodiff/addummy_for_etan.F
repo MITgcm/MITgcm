@@ -103,9 +103,9 @@ CEOP
         CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
 c increment ad dump record number (used only if dumpAdByRec is true)
-        dumpAdRecMn=dumpAdRecMn+1
+        dumpAdRecEt=dumpAdRecEt+1
 c#ifdef ALLOW_DEBUG
-c      IF ( debugMode ) print*,'dumpAdRecMn',dumpAdRecMn
+c      IF ( debugMode ) print*,'dumpAdRecEt',dumpAdRecEt
 c#endif
 
 C--     Set suffix for this set of data files.
@@ -127,7 +127,7 @@ C-----------------------------------------------------------------------
         ELSEIF ( ( dumpAdVarExch.NE.2 ).AND.(dumpAdByRec) ) THEN
 
           CALL WRITE_REC_XY_RL ( 'ADJetan',
-     &                           adEtaN, dumpAdRecMn, myIter, myThid)
+     &                           adEtaN, dumpAdRecEt, myIter, myThid)
 
         ELSE
 C       case dumpAdVarExch = 2
@@ -135,7 +135,7 @@ C       case dumpAdVarExch = 2
           IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL(  'ADJetan.',
      &                           suff, var2Du, myIter, myThid )
           IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL(  'ADJetan',
-     &                           var2Du, dumpAdRecMn, myIter, myThid)
+     &                           var2Du, dumpAdRecEt, myIter, myThid)
         ENDIF
 
 C-----------------------------------------------------------------------
@@ -151,7 +151,7 @@ C-----------------------------------------------------------------------
 
           var2Du = etaN%d
           CALL WRITE_REC_XY_RL ( 'ADJetan',
-     &                           var2Du, dumpAdRecMn, myIter, myThid)
+     &                           var2Du, dumpAdRecEt, myIter, myThid)
 
         ELSE
 C       case dumpAdVarExch = 2
@@ -159,7 +159,7 @@ C       case dumpAdVarExch = 2
           IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL(  'ADJetan.',
      &                           suff, var2Du, myIter, myThid )
           IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL(  'ADJetan',
-     &                           var2Du, dumpAdRecMn, myIter, myThid)
+     &                           var2Du, dumpAdRecEt, myIter, myThid)
 
 
 C       end if dumpAdVarExch = 2
