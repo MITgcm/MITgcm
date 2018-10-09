@@ -1124,8 +1124,11 @@ In the text, references should be given using the standard “Author(s) (Year)�
 to the full reference in the manual bibliography. This link is accomplished using the syntax
 ``:cite:`«BIB_REFERENCE»```; this will produce clickable text, usually some variation on the authors’ initials or names, surrounded by brackets.
 
-Full references are specified in the file :filelink:`doc/manual_references.bib` using standard `BibTeX <http://www.bibtex.org>`_ format.
-Even if unfamiliar with `BibTeX <http://www.bibtex.org>`_, it is relatively easy to add a new reference by simply examining other entries.
+Full references are specified in the file :filelink:`doc/manual_references.bib`
+using standard `BibTeX <http://www.bibtex.org>`_ format.
+Even if unfamiliar with `BibTeX <http://www.bibtex.org>`_, it is relatively easy
+to add a new reference by simply examining other entries. Furthermore, most
+publishers provide a means to download BibTex formatted references directly from their website.
 Note this file is in approximate alphabetic order by author name.
 For all new references added to the manual, please include a `DOI <https://www.doi.org>`_ or
 a URL in addition to journal name, volume and other
