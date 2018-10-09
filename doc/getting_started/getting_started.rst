@@ -455,9 +455,9 @@ In the above, notice:
   these error messages and/or the standard output from :filelink:`genmake2 <tools/genmake2>` or
   ``genmake.log`` may provide clues as to the problem. If instead you receive a
   warning message ``Warning: FORTRAN compiler test failed`` at the end of :filelink:`genmake2 <tools/genmake2>` output ,
-  :filelink:`genmake2 <tools/genmake2>` is unable
-  to locate the Fortran compiler or a pass a trivial “hello world” Fortran compilation & run test. See ``genmake.log``
-  for errors and/or seek assistance from your system administrator;
+  this means that :filelink:`genmake2 <tools/genmake2>` is unable
+  to locate the Fortran compiler or pass a trivial “hello world” Fortran compilation and run test. In this case, 
+  you should see ``genmake.log`` for errors and/or seek assistance from your system administrator;
   these tests need to pass in order to proceed to the ``make`` steps.
 
 
