@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  - created addummy_for_etan.F to correctly print adjoint variable for etaN
 o pkg/streamice:
   - fix bugs relating to ice front advance:
     streamice_advect_thickness.F -- overlap update of array passed to 
