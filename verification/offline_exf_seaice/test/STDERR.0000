@@ -1,0 +1,8 @@
+(PID.TID 0000.0001) ** WARNING ** SEAICE_LSR (it=         0,   2) did not converge :
+(PID.TID 0000.0001)  nIt,wFU,dU=   500 0.950  3.655705E-05 ; nIt,wFV,dV=    84 0.950  9.905559E-06
+(PID.TID 0000.0001) ** WARNING ** SEAICE_LSR (it=         1,   1) did not converge :
+(PID.TID 0000.0001)  nIt,wFU,dU=   500 0.950  8.793542E-05 ; nIt,wFV,dV=   186 0.950  9.894497E-06
+(PID.TID 0000.0001) ** WARNING ** SEAICE_LSR (it=         1,   2) did not converge :
+(PID.TID 0000.0001)  nIt,wFU,dU=   500 0.950  3.024068E-05 ; nIt,wFV,dV=   176 0.950  9.771326E-06
+(PID.TID 0000.0001) ** WARNING ** SEAICE_LSR (it=         2,   1) did not converge :
+(PID.TID 0000.0001)  nIt,wFU,dU=   500 0.950  3.646436E-05 ; nIt,wFV,dV=   156 0.950  9.817246E-06

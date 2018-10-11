@@ -216,6 +216,12 @@ C--   Effective Thickness (Volume)
      I         uTrans, vTrans, HEFF(1-OLx,1-OLy,bi,bj), recip_heff,
      O         gFld, afx, afy,
      I         bi, bj, myTime, myIter, myThid )
+          if ( bi .eq. 2 .and. bj .eq. 1 ) then
+           i = 9
+           j = 16
+           print *, 'ml-adv: ', gfld(i,j),heff(i-1,j,bi,bj),
+     &          heff(i,j,bi,bj),heff(i+1,j,bi,bj)
+          endif
          IF ( SEAICEdiffKhHeff .GT. 0. _d 0 ) THEN
 C-    Add tendency due to diffusion
           CALL SEAICE_DIFFUSION(

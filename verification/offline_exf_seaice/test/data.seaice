@@ -1,0 +1,19 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+ SEAICErestoreUnderIce=.TRUE.,
+ usePW79thermodynamics=.FALSE.,
+ LSR_ERROR          = 1.E-5,
+ SEAICElinearIterMax= 500,
+#LSR_mixIniGuess    = 1,
+ SEAICE_no_Slip     = .TRUE.,
+#SEAICEwriteState   = .TRUE.,
+ SEAICE_monFreq = 21600.,
+ SEAICE_monFreq = 1800.,
+ SEAICEadvScheme = 51,
+#
+#AreaFile='const100.bin',
+ HeffFile='const+20.bin',
+ &
+
+ &SEAICE_PARM03
+ &
