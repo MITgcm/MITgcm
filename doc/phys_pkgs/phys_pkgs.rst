@@ -110,8 +110,8 @@ Atmosphere Packages
    land.rst
    fizhi.rst
 
-Sea Ice Packages
-================
+Ice and Sea Ice Packages
+========================
 
 .. toctree::
    :maxdepth: 3
@@ -125,6 +125,7 @@ Ice Sheet-Ocean Packages
 .. toctree::   
    :maxdepth: 3
    
+   shelfice.rst
    streamice.rst   
 
 Biogeochemistry Packages
