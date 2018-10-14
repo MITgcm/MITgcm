@@ -51,130 +51,129 @@ options see the default ``pkg/seaice/STREAMICE_OPTIONS.h``.
 Run-time parameters 
 +++++++++++++++++++
 
-Run-time parameters (see :numref:`tab_phys_pkg_streamice_runtimeparms`) are set in
-files `data.pkg` (read in `packages_readparms.F`), and `data.streamice` (read in `streamice_readparms.F`).
+.. Run-time parameters (see :numref:`tab_phys_pkg_streamice_runtimeparms`) are set in files `data.pkg` (read in `packages_readparms.F`), and `data.streamice` (read in `streamice_readparms.F`).
 
 Enabling the package
 ####################
 
-A package is switched on/off at run-time by setting (e.g. for STREAMICE `useSTREAMICE = .TRUE.` in `data.pkg`).
+Once it has been compiled, ``pkg/streamice`` is switched on/off at run-time by setting ``useSTREAMICE`` to ``.TRUE.`` in file ``data.pkg``.
 
 General flags and parameters
 ############################
 
-:numref:`tab_phys_pkg_streamice_runtimeparms` lists most run-time parameters.
+Other run-time parameters are listed below in :numref:`tab_phys_pkg_streamice_runtimeparms`. Parameters are set in data.streamice, which is read by ``pkg/streamice/streamice_readparms.F``
 
 
 .. table:: Run-time parameters and default values (defined under STREAMICE_PARM01 Namelist)
   :name: tab_phys_pkg_streamice_runtimeparms
 
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  |   **Name**                      |     **Default value**        | **Description**                                                                                |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | STREAMICEdensity                |     910                      | the (uniform) density of land ice                                                              |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | STREAMICEdensity_ocean_avg      |     1024                     | the (uniform) density of ocean                                                                 |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | n_glen                          |     3                        | Glen's Flow Law exponent                                                                       |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | eps_glen_min                    |     1e-12                    | minimum strain rate in Glen's Law (:math:`\varepsilon_0`)                                      |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | eps_u_min                       |     1e-6                     | minimum speed in nonlinear sliding law (:math:`u_0`)                                           |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | n_basal_friction                |     1                        | exponent in nonlinear sliding law                                                              |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamice_cg_tol                |     1e-6                     | tolerance of conjugate gradient of linear solve of Picard iteration for velocity               |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamice_lower_cg_tol          |     .true.                   | lower CG tolerance when nonlinear residual decreases by fixed factor                           |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamice_max_cg_iter           |     2000                     | maximum iterations in linear solve                                                             |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamice_maxcgiter_cpl         |     0                        | as above when coupled with SHELFICE                                                            |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamice_nonlin_tol            |     1e-6                     | tolerance of nonlinear residual for velocity (relative to initial)                             |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamice_max_nl_iter           |     100                      | maximum Picard iterations in solve for velocity                                                |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamice_maxnliter_cpl         |     0                        | as above when coupled with SHELFICE                                                            |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamice_nonlin_tol_fp         |     1e-6                     | tolerance of relative change for velocity iteration (relative to magnitude)                    |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamice_err_norm              |    0                         | type of norm evaluated for error (:math:`p` in :math:`p`-norm; 0 is :math: `infty`             |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | STREAMICE_chkfixedptconvergence |    .false.                   | terminate velocity iteration based on relative change per iteration                            |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | STREAMICE_chkresidconvergence   |    .true.                    | terminate velocity iteration based on residual                                                 |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | STREAMICEthickInit              |    'FILE'                    | method by which to initialise thickness ('FILE' or 'PARAM')                                    |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | STREAMICEthickFile              |                              | thickness initialisation file (rather than parameters in ``STREAMICE_PARM03``)                 |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | STREAMICE_move_front            |    .false.                   | allow ice shelf front to advance                                                               |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | STREAMICE_calve_to_mask         |    .false.                   | (if STREAMICE_move_front=.true.) do not allow to advance beyond ``STREAMICE_calve_mask``       |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | STREAMICEcalveMaskFile          |                              | file to initialise ``STREAMICE_calve_mask``                                                    |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | STREAMICE_diagnostic_only       |    .false.                   | do not update ice thickness (velocity solve only)                                              |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamice_CFL_factor            |    0.5                       | CFL factor which determine maximum time step for thickness sub-cycling                         |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamice_adjDump               |    0.                        | frequency (s) of writing of adjoint fields to file (TAF only)                                  |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamicebasalTracConfig        |    'UNIFORM'                 | method by which to initialise basal traction ('FILE' or 'UNIFORM')                             |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamicebasalTracFile          |                              | basal trac initialisation file (see :ref:`ssub_phys_pkg_streamice_units` for units)            |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | C_basal_fric_const              |    31.71                     | uniform basal traction value (see :ref:`ssub_phys_pkg_streamice_units` for units)              |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamiceGlenConstConfig        |    'UNIFORM'                 | method by which to initialise Glen's constant ('FILE' or 'UNIFORM')                            |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamiceGlenConstFile          |                              | Glen's constant initialisation file (see :ref:`ssub_phys_pkg_streamice_units` for units)       |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | B_glen_isothermal               |                              | uniform Glen's constant value (see :ref:`ssub_phys_pkg_streamice_units` for units)             |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamiceBdotFile               |                              | File to initialise time-indep melt rate (m/year)                                               |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamiceBdotTimeDepFile        |                              | File to initialise time-varying melt rate (m/year), based on ``streamice_forcing_period``      |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamiceTopogFile              |                              | topography initialisation file (if ``USE_ALT_RLOW`` defined)                                   |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | streamiceHmaskFile              |                              | ``STREAMICE_hmask`` initialisation file (if ``STREAMICE_GEOM_FILE_SETUP`` defined)             |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | STREAMICEuFaceBdryFile          |                              | ``STREAMICE_ufacemask_bdry`` initialisation file (if ``STREAMICE_GEOM_FILE_SETUP`` defined)    |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | STREAMICEvFaceBdryFile          |                              | ``STREAMICE_vfacemask_bdry`` initialisation file (if ``STREAMICE_GEOM_FILE_SETUP`` defined)    |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | STREAMICEuMassFluxFile          |                              | mass flux at `u`-faces initialisation file (if ``STREAMICE_GEOM_FILE_SETUP`` defined)          |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | STREAMICEvMassFluxFile          |                              | mass flux at `v`-faces  initialisation file (if ``STREAMICE_GEOM_FILE_SETUP`` defined)         |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | STREAMICEuFluxTimeDepFile       |                              | time-dep mass flux at `u`-faces file (if ``STREAMICE_GEOM_FILE_SETUP`` defined)                |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
-  | STREAMICEvFluxTimeDepFile       |                              | time-dep mass flux at `v`-faces file (if ``STREAMICE_GEOM_FILE_SETUP`` defined)                |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
-  | STREAMICEuNormalStressFile      |                              |                                                                                                |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | STREAMICEvNormalStressFile      |                              |                                                                                                |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+
-  | STREAMICEuShearStressFile       |                              |                                                                                                |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
-  | STREAMICEvShearStressFile       |                              |                                                                                                |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
-  | STREAMICEuNormalTimeDepFile     |                              |                                                                                                |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
-  | STREAMICEvNormalTimeDepFile     |                              |                                                                                                |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
-  | STREAMICEuShearTimeDepFile      |                              |                                                                                                |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
-  | STREAMICEvShearTimeDepFile      |                              |                                                                                                |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
-  | streamice_adot_uniform          |   0                          |  time/space uniform surface accumulation rate (m/year)                                         |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
-  | streamice_forcing_period        |   0                          | (seconds) File input frequency for STREAMICE time-dependent forcing fields                     |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  |   **Name**                      |     **Default value**        | **Description**                                                                                                 |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICEdensity                |     910                      | the (uniform) density of land ice (:math:`kg\  m^{-3}`)                                                         |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICEdensity_ocean_avg      |     1024                     | the (uniform) density of ocean (:math:`kg\  m^{-3}`)                                                            |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | n_glen                          |     3                        | Glen's Flow Law exponent (nondim)                                                                               |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | eps_glen_min                    |     1e-12                    | minimum strain rate in Glen's Law (:math:`\varepsilon_0`, :math:`yr^{-1}`)                                      |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | eps_u_min                       |     1e-6                     | minimum speed in nonlinear sliding law (:math:`u_0`, :math:`m\ yr^{-1}`)                                        |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | n_basal_friction                |     1                        | exponent in nonlinear sliding law (nondim)                                                                      |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamice_cg_tol                |     1e-6                     | tolerance of conjugate gradient of linear solve of Picard iteration for velocity                                |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamice_lower_cg_tol          |     .true.                   | lower CG tolerance when nonlinear residual decreases by fixed factor                                            |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamice_max_cg_iter           |     2000                     | maximum iterations in linear solve                                                                              |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamice_maxcgiter_cpl         |     0                        | as above when coupled with SHELFICE                                                                             |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamice_nonlin_tol            |     1e-6                     | tolerance of nonlinear residual for velocity (relative to initial)                                              |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamice_max_nl_iter           |     100                      | maximum Picard iterations in solve for velocity                                                                 |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamice_maxnliter_cpl         |     0                        | as above when coupled with SHELFICE                                                                             |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamice_nonlin_tol_fp         |     1e-6                     | tolerance of relative change for velocity iteration (relative to magnitude)                                     |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamice_err_norm              |    0                         | type of norm evaluated for error (:math:`p` in :math:`p`-norm; 0 is :math:`\infty`)                             |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICE_chkfixedptconvergence |    .false.                   | terminate velocity iteration based on relative change per iteration                                             |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICE_chkresidconvergence   |    .true.                    | terminate velocity iteration based on residual                                                                  |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICEthickInit              |    'FILE'                    | method by which to initialise thickness ('FILE' or 'PARAM')                                                     |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICEthickFile              |                              | thickness initialisation file, in meters (rather than parameters in ``STREAMICE_PARM03``)                       |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICE_move_front            |    .false.                   | allow ice shelf front to advance                                                                                |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICE_calve_to_mask         |    .false.                   | (if STREAMICE_move_front=.true.) do not allow to advance beyond ``STREAMICE_calve_mask``                        |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICEcalveMaskFile          |                              | file to initialise ``STREAMICE_calve_mask``                                                                     |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICE_diagnostic_only       |    .false.                   | do not update ice thickness (velocity solve only)                                                               |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamice_CFL_factor            |    0.5                       | CFL factor which determine maximum time step for thickness sub-cycling                                          |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamice_adjDump               |    0.                        | frequency (s) of writing of adjoint fields to file (TAF only)                                                   |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamicebasalTracConfig        |    'UNIFORM'                 | method by which to initialise basal traction ('FILE' or 'UNIFORM')                                              |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamicebasalTracFile          |                              | basal trac initialisation file (see :ref:`ssub_phys_pkg_streamice_units` for units)                             |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | C_basal_fric_const              |    31.71                     | uniform basal traction value (see :ref:`ssub_phys_pkg_streamice_units` for units)                               |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamiceGlenConstConfig        |    'UNIFORM'                 | method by which to initialise Glen's constant ('FILE' or 'UNIFORM')                                             |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamiceGlenConstFile          |                              | Glen's constant initialisation file (see :ref:`ssub_phys_pkg_streamice_units` for units)                        |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | B_glen_isothermal               |                              | uniform Glen's constant value (see :ref:`ssub_phys_pkg_streamice_units` for units)                              |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamiceBdotFile               |                              | File to initialise time-indep melt rate (m/yr)                                                                  |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamiceBdotTimeDepFile        |                              | File to initialise time-varying melt rate (m/yr), based on ``streamice_forcing_period``                         |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamiceTopogFile              |                              | topography initialisation file in meters (if ``USE_ALT_RLOW`` defined)                                          |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamiceHmaskFile              |                              | ``STREAMICE_hmask`` initialisation file (if ``STREAMICE_GEOM_FILE_SETUP`` defined)                              |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICEuFaceBdryFile          |                              | ``STREAMICE_ufacemask_bdry`` initialisation file (if ``STREAMICE_GEOM_FILE_SETUP`` defined)                     |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICEvFaceBdryFile          |                              | ``STREAMICE_vfacemask_bdry`` initialisation file (if ``STREAMICE_GEOM_FILE_SETUP`` defined)                     |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICEuMassFluxFile          |                              | mass flux at `u`-faces init. file (if ``STREAMICE_GEOM_FILE_SETUP`` defined); m :math:`^2`/yr                   |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICEvMassFluxFile          |                              | mass flux at `v`-faces init. file (if ``STREAMICE_GEOM_FILE_SETUP`` defined); m :math:`^2`/yr                   |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICEuFluxTimeDepFile       |                              | time-dep mass flux at `u`-faces file (if ``STREAMICE_GEOM_FILE_SETUP`` defined) m :math:`^2`/yr                 |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+ 
+  | STREAMICEvFluxTimeDepFile       |                              | time-dep mass flux at `v`-faces file (if ``STREAMICE_GEOM_FILE_SETUP`` defined) m :math:`^2`/yr                 |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+ 
+  | STREAMICEuNormalStressFile      |                              | Calving front normal stress parameter along u-faces (nondim; see :ref:`ssub_phys_pkg_streamice_boundary_stress`)|
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICEvNormalStressFile      |                              | Calving front normal stress parameter along u-faces (nondim; see :ref:`ssub_phys_pkg_streamice_boundary_stress`)|
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICEuShearStressFile       |                              | Calving front normal stress parameter along u-faces (nondim; see :ref:`ssub_phys_pkg_streamice_boundary_stress`)|
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+ 
+  | STREAMICEvShearStressFile       |                              | Calving front normal stress parameter along u-faces (nondim; see :ref:`ssub_phys_pkg_streamice_boundary_stress`)|
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICEuNormalTimeDepFile     |                              | Time-dependent version of STREAMICEuNormalStressFile                                                            |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICEvNormalTimeDepFile     |                              | Time-dependent version of STREAMICEvNormalStressFile                                                            |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICEuShearTimeDepFile      |                              | Time-dependent version of STREAMICEuShearStressFile                                                             |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | STREAMICEvShearTimeDepFile      |                              | Time-dependent version of STREAMICEvShearStressFile                                                             |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamice_adot_uniform          |   0                          |  time/space uniform surface accumulation rate (m/year)                                                          | 
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
+  | streamice_forcing_period        |   0                          | (seconds) File input frequency for STREAMICE time-dependent forcing fields                                      |
+  +---------------------------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+
 ..  | streamice_smooth_gl_width       |   0                          |  (meters) thickness range parameter in basal traction smoothing across grounding line          |
-  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
+..  +---------------------------------+------------------------------+------------------------------------------------------------------------------------------------+ 
  
 
   
@@ -191,32 +190,37 @@ Equations Solved
 The model solves for 3 dynamic variables: :math:`x`-velocity
 (:math:`u`), :math:`y`-velocity (:math:`v`), and thickness (:math:`h`).
 There is also a variable that tracks coverage of fractional cells,
-discussed...
+discussed in :ref:`ssub_phys_pkg_streamice_advance`.
 
 By default the model solves the Shallow Shelf approximation (SSA) for
 velocity. The SSA is appropriate for floating ice (ice shelf) or ice
-flowing over a low-friction bed (e.g. MacAyeal, 1989). The SSA consists
+flowing over a low-friction bed (e.g. :cite:`Macayeal:89`). The SSA consists
 of the :math:`x`-momentum balance:
 
 .. math::
+   :label: mom_x
 
    \label{eq:xmom}
     \partial_x(h\nu(4\dot{\varepsilon}_{xx}+2\dot{\varepsilon}_{yy})) +
-   \partial_y(2h\nu\dot{\varepsilon}_{xy}) - \tau_{bx} = \rho g h s_x
+   \partial_y(2h\nu\dot{\varepsilon}_{xy}) - \tau_{bx} = \rho g h \frac{\partial s}{\partial x}
 
 the :math:`y`-momentum balance:
 
 .. math::
+   :label: mom_y
 
    \label{eq:ymom}
     \partial_x(2h\nu\dot{\varepsilon}_{xy}) +
    \partial_y(h\nu(4\dot{\varepsilon}_{yy}+2\dot{\varepsilon}_{xx})) - \tau_{by} =
-   \rho g h s_y.
+   \rho g h \frac{\partial s}{\partial y},
+
+where :math:`\rho` is ice density, :math:`g` is gravitational acceleration, and :math:`s` is surface elevation. :math:`\nu`, :math:`\tau_{bi}` and :math:`\dot{\varepsilon}_{ij}` are ice viscosity, basal drag, and the strain rate tensor, respectively, all explained below.
 
 From the velocity field, thickness evolves according to the continuity
 equation:
 
 .. math::
+   :label: adv_eqn
 
    \label{eq:cont}
     h_t + \nabla\cdot(h\vec{u}) = \dot{a}-\dot{b},
@@ -232,7 +236,7 @@ where :math:`R(x,y)` is the bathymetry, and the basal elevation
 :math:`b` is equal to :math:`R`. If ice is floating, then the assumption
 of hydrostasy and constant density gives
 
-.. math:: s = (1-\frac{\rho}{\rho_w} h,
+.. math:: s = (1-\frac{\rho}{\rho_w}) h,
 
 where :math:`\rho_w` is a representative ocean density, and
 :math:`b=-(\rho/\rho_w)h`. Again by hydrostasy, floation is assumed
@@ -241,12 +245,12 @@ wherever
 .. math:: h \leq -\frac{\rho_w}{\rho}R
 
 is satisfied. Floatation criteria is stored in ``float_frac_streamice``,
-equal to 1 where ice is at floatation.
+equal to 1 where ice is grounded, and equal to 0 where ice is floating.
 
 The strain rates :math:`\varepsilon_{ij}` are generalized to the case of
 orthogonal curvilinear coordinates, to include the "metric" terms that
 arise when casting the equations of motion on a sphere or projection on
-to a sphere (see pkg/SEAICE, 6.6.2.4.8 of the MITgcm documentation).
+to a sphere (see :ref:`para_phys_pkg_seaice_discretization`).
 Thus
 
 .. math::
@@ -283,22 +287,22 @@ rethought if the effects of tides are to be considered.
     \vec{\tau}_b = C (|\vec{u}|^2+u_{min}^2)^{\frac{m-1}{2}}\vec{u}.
 
 Again, the form is slightly different if a hybrid formulation is to be
-used. The scalar term multiplying :math:`\vec{u}` is referred to as
-:math:`\beta` below.
+used.
 
 The momentum equations are solved together with appropriate boundary
 conditions, discussed below. In the case of a calving front boundary
 condition (CFBC), the boundary condition has the following form:
 
 .. math::
+   :label: cfbc_x
 
-   \label{eq:cfbcx}
     (h\nu(4\dot{\varepsilon}_{xx}+2\dot{\varepsilon}_{yy}))n_x +
    (2h\nu\dot{\varepsilon}_{xy})n_y = \frac{1}{2}g \left(\rho h^2 - \rho_w
    b^2\right)n_x   
 
 .. math::
-   \label{eq:cfbcy}  
+   :label: cfbc_y
+
    (2h\nu\dot{\varepsilon}_{xy})n_x +
    (h\nu(4\dot{\varepsilon}_{yy}+2\dot{\varepsilon}_{xx}))n_y = \frac{1}{2}g
    \left(\rho h^2 - \rho_w b^2\right)n_y. 
@@ -317,13 +321,13 @@ that in all but a few cases, vertical shear and longitudinal stresses
 streamice can allow for representation of vertical shear, although the
 approximation is made that longitudinal stresses are depth-independent.
 The stress balance is referred to as "hybrid" because it is a joining of
-the SSA and the Shallow Ice Approximation (SIA), which only accounts
+the SSA and the Shallow Ice Approximation (SIA), which accounts
 only for vertical shear. Such hybrid formulations have been shown to be
-valid over a larger range of conditions than SSA (*Goldberg* 2011).
+valid over a larger range of conditions than SSA :cite:`goldberg:2011`.
 
 In the hybrid formulation, :math:`\overline{u}` and
 :math:`\overline{v}`, the depth-averaged :math:`x-` and :math:`y-`
-velocities, replace :math:`u` and :math:`v` in , , and , and gradients
+velocities, replace :math:`u` and :math:`v` in :eq:`mom_x`, :eq:`mom_y`, and :eq:`adv_eqn`, and gradients
 such as :math:`u_x` are replaced by :math:`(\overline{u})_x`. Viscosity
 becomes
 
@@ -336,7 +340,9 @@ becomes
 
 In the formulation for :math:`\tau_b`, :math:`u_b`, the horizontal
 velocity at :math:`u_b` is used instead. The details are given in
-*Goldberg* (2011).
+:cite:`goldberg:2011`.
+
+.. _ssub_phys_pkg_streamice_advance:
 
 Ice front advance
 #################
@@ -351,7 +357,7 @@ is added to the volume of ice already in the cell, whose partial area coverage i
 If ``calve_to_mask=.true.``, this sets a limit to how far the front can
 advance, even if advance is allowed. The front will not advance into
 cells where the array ``calve_mask`` is not equal to 1. This mask must
-be set through a binary input file to allow front advance past its initial position.
+be set through a binary input file to allow the front to advance past its initial position.
 
 No calving parameterisation is implemented in ``STREAMICE``. However,
 front advancement is a precursor for such a development to be added.
@@ -392,7 +398,7 @@ Numerical Details
 
    Hypothetical configuration, detailing the meaning of thickness and velocity masks and their role in controlling boundary conditions.
 
-The momentum balance is solved via iteration on viscosity (*Goldberg* 2011). At each iteration, a linear elliptic differential equation is solved via a finite-element method using bilinear basis functions. The velocity solution "lives" on cell corners, while thickness "lives" at cell centers (:numref:`figstencil`). The cell-centered thickness is then evolved using a second-order slope-limited finite-volume scheme, with the velocity field from the previous solve. To represent the flow of floating ice, basal stress terms are multiplied by an array ``float_frac_streamice``, a cell-centered array which determines where ice meets the floation condition.
+The momentum balance is solved via iteration on viscosity :cite:`goldberg:2011`. At each iteration, a linear elliptic differential equation is solved via a finite-element method using bilinear basis functions. The velocity solution "lives" on cell corners, while thickness "lives" at cell centers (:numref:`figstencil`). The cell-centered thickness is then evolved using a second-order slope-limited finite-volume scheme, with the velocity field from the previous solve. To represent the flow of floating ice, basal stress terms are multiplied by an array ``float_frac_streamice``, a cell-centered array which determines where ice meets the floation condition.
 
 The computational domain of ``STREAMICE`` (which may be smaller than the array/grid as
 defined by ``SIZE.h`` and ``GRID.h``) is determined by a number of mask
@@ -433,12 +439,16 @@ are only evaluated if :math:`hmask=1` in a given cell, and a given nodal
 basis function is only considered if :math:`umask=1` or :math:`vmask=1`
 at that node.
 
+.. _ssub_phys_pkg_streamice_domain_setup:
+
 Configuring domain through files
 ################################
 
 The ``STREAMICE_GEOM_FILE_SETUP`` compile option allows versatility in defining the domain. With this option, the array ``STREAMICE_hmask`` must be initialised through a file (``streamiceHmaskFile``) as must ``STREAMICE_ufacemask_bdry`` and ``STREAMICE_vfacemask_bdry`` (through ``STREAMICEuFaceBdryFile`` and ``STREAMICEvFaceBdryFile``) as well as ``u_flux_bdry_SI`` and ``v_flux_bdry_SI``, volume flux at the boundaries, where appropriate (through ``STREAMICEuMassFluxFile`` and ``STREAMICEvMassFluxFile``). Thickness must be initialised through a file as well (``STREAMICEthickFile``); ``STREAMICE_hmask`` is set to zero where ice thickness is zero, and boundaries between in-domain and out-of-domain cells (according to ``STREAMICE_hmask``) are no-slip by default.
 
-When using this option, it is important that for all internal boundaries, ``STREAMICE_ufacemask_bdry`` and ``STREAMICE_vfacemask_bdry`` are -1. (This will not be the case if ``STREAMICEuFaceBdryFile`` and ``STREAMICEvFaceBdryFile`` are undefined.)
+When using this option, it is important that for all internal boundaries, ``STREAMICE_ufacemask_bdry`` and ``STREAMICE_vfacemask_bdry`` are -1. (This will not be the case if ``STREAMICEuFaceBdryFile`` and ``STREAMICEvFaceBdryFile`` are undefined.) 
+
+In fact, if ``STREAMICE_hmask`` is configured correctly, ``STREAMICE_ufacemask_bdry`` and ``STREAMICE_vfacemask_bdry`` can be set uniformly to -1, UNLESS there are no-stress or flux-condition boundaries in the domain. Where ``STREAMICE_ufacemask_bdry`` and ``STREAMICE_vfacemask_bdry`` are set to -1, they will be overridden at (a) boundaries where ``STREAMICE_hmask`` changes from 1 to -1 (which become no-slip boundaries), and (b) boundaries where ``STREAMICE_hmask`` changes from 1 to 0 (which become calving front boundaries).
 
 An example of domain configuration through files can be found in the ``halfpipe_streamice`` verification folder. By default, ``halfpipe_streamice`` is compiled with ``STREAMICE_GEOM_FILE_SETUP`` undefined, but the user can modify this option. The file ``data.streamice_geomSetup`` represents an alternative version of ``data.streamice`` in which the appropriate binary files are specified.
 
@@ -555,10 +565,43 @@ PETSc
 
 There is an option to use PETSc for the matrix solve component of the velocity solve, and this has been observed to give a 3- or 4-fold improvement in performance over the inbuilt Conjugate Gradient solver in a number of cases. To use this option, the compile option ``ALLOW_PETSC`` must be defined, and MITgcm must be compiled with the -mpi flag. However, often a system-specific installation of PETSc is required. If you wish to use PETSc with STREAMICE, please contact the author.
 
+.. _ssub_phys_pkg_streamice_boundary_stress:
+
+Boundary Stresses
+#################
+
+The calving front boundary conditions :eq:`cfbc_x` and :eq:`cfbc_y` are intended for ice fronts bordering open ocean. However, there may be reasons to apply different Neumann condtions at these locations, e.g. one might want to represent force associated with ice melange, or to represent parts of the ice shelf that are not resolved, as in :cite:`Goldberg:2015`. The user can then modify these boundary conditions in the form
+
+.. math::
+
+    (h\nu(4\dot{\varepsilon}_{xx}+2\dot{\varepsilon}_{yy}))n_x +
+   (2h\nu\dot{\varepsilon}_{xy})n_y = \frac{1}{2}g \left(\rho h^2 - \rho_w
+   b^2\right)n_x + \sigma n_x + \tau n_y, 
+
+.. math::
+
+   (2h\nu\dot{\varepsilon}_{xy})n_x +
+   (h\nu(4\dot{\varepsilon}_{yy}+2\dot{\varepsilon}_{xx}))n_y = \frac{1}{2}g
+   \left(\rho h^2 - \rho_w b^2\right)n_y + \sigma n_y + \tau n_x. 
+
+In these equations, :math:`\sigma` and :math:`tau` represent normal and shear stresses at the boundaries of cells. They are not specified directly, but through coefficients :math:`\gamma_{\sigma}` and :math:`\gamma_{\tau}`:
+
+.. math::
+ 
+   \sigma = \frac{1}{2}g \left(\rho h^2 - \rho_w
+   b^2\right)\gamma_{\sigma},
+
+.. math::
+ 
+   \tau = \frac{1}{2}g \left(\rho h^2 - \rho_w
+   b^2\right)\gamma_{\tau}.
+
+:math:`\gamma_{\sigma}` is specified through ``STREAMICEu/vNormalStressFile`` and ``STREAMICEu/vNormalTimeDepFile`` and :math:`\gamma_{\tau}` is specified through ``STREAMICEu/vShearStressFile`` and ``STREAMICEu/vShearTimeDepFile``. The file names (``u`` and ``v``) determine whether the values are specified along horizontal (:math:`u`-) faces and vertical (:math:`v`-) faces. The values will only have an effect if they are specified along calving front boundaries (see :ref:`ssub_phys_pkg_streamice_domain_setup`).
+
 Adjoint
 +++++++
 
-The STREAMICE package is adjoinable using both TAF (Goldberg and Heimbach, 2013) and OpenAD (Goldberg et al, 2016). In OpenAD, the fixed-point method of Christianson (1994) is implemented, greatly reducing the memory requirements and also improving performance when PETSc is used.
+The STREAMICE package is adjoinable using both TAF :cite:`goldberg_heimbach:2013` and OpenAD :cite:`goldberg_openad_fixed:2016`. In OpenAD, the fixed-point method of Christianson (1994) is implemented, greatly reducing the memory requirements and also improving performance when PETSc is used.
 
 Verification experiments with both OpenAD and TAF are located in the ``halfpipe_streamice`` verification folder (see below).
 
@@ -642,10 +685,10 @@ References
 
 .. Gladstone, Payne and Cornford (2010). Parameterising the grounding line in flow-line ice sheet models. The Cryosphere, 4, 605–619.
 
-Goldberg, D N (2011). A variationally-derived, depth-integrated approximation to the Blatter/Pattyn balance. J. of Glaciology, 57, 157-170.
+.. Goldberg, D N (2011). A variationally-derived, depth-integrated approximation to the Blatter/Pattyn balance. J. of Glaciology, 57, 157-170.
 
-Goldberg, D N and P Heimbach (2013). Parameter and state estimation with a time-dependent adjoint marine ice sheet model. The Cryosphere, 7, 1659-1678 
+.. Goldberg, D N and P Heimbach (2013). Parameter and state estimation with a time-dependent adjoint marine ice sheet model. The Cryosphere, 7, 1659-1678 
 
-Goldberg, D., Narayanan, S. H. K., Hascoet, L. & Utke, J. (2016). An optimized treatment for algorithmic differentiation of an important glaciological fixed-point problem. Geosci. Model Dev., 9, 1891-1904.
+.. Goldberg, D., Narayanan, S. H. K., Hascoet, L. & Utke, J. (2016). An optimized treatment for algorithmic differentiation of an important glaciological fixed-point problem. Geosci. Model Dev., 9, 1891-1904.
 
 .. Pattyn, F. and others (2013). Grounding-line migration in plan-view marine ice-sheet models: results of the ice2sea MISMIP3d intercomparison. J of Glaciology, 59 (215), 410-422
