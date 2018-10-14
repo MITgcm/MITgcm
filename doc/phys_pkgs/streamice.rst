@@ -200,7 +200,6 @@ of the :math:`x`-momentum balance:
 .. math::
    :label: mom_x
 
-   \label{eq:xmom}
     \partial_x(h\nu(4\dot{\varepsilon}_{xx}+2\dot{\varepsilon}_{yy})) +
    \partial_y(2h\nu\dot{\varepsilon}_{xy}) - \tau_{bx} = \rho g h \frac{\partial s}{\partial x}
 
@@ -209,7 +208,6 @@ the :math:`y`-momentum balance:
 .. math::
    :label: mom_y
 
-   \label{eq:ymom}
     \partial_x(2h\nu\dot{\varepsilon}_{xy}) +
    \partial_y(h\nu(4\dot{\varepsilon}_{yy}+2\dot{\varepsilon}_{xx})) - \tau_{by} =
    \rho g h \frac{\partial s}{\partial y},
@@ -222,7 +220,6 @@ equation:
 .. math::
    :label: adv_eqn
 
-   \label{eq:cont}
     h_t + \nabla\cdot(h\vec{u}) = \dot{a}-\dot{b},
 
 Where :math:`\dot{b}` is a basal mass balance (e.g. melting due to
