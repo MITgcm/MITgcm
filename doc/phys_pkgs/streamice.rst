@@ -677,8 +677,8 @@ Experiments and tutorials that use streamice
 
 The ``halfpipe_streamice`` verification experiment uses STREAMICE.
 
-References
-++++++++++
+.. References
+.. ++++++++++
 
 .. Gladstone, Payne and Cornford (2010). Parameterising the grounding line in flow-line ice sheet models. The Cryosphere, 4, 605–619.
 
