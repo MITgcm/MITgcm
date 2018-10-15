@@ -16,16 +16,16 @@ C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE ADDUMMY_FOR_ETAN                           |
 C     *==========================================================*
-C     Extract adjoint variable for sea level height 
+C     Extract adjoint variable for sea level height
 C     from TAMC/TAF-generated
 C     adjoint common blocks, contained in adcommon.h
 C     and write fields to file;
 C     Make sure common blocks in adcommon.h are up-to-date
 C     w.r.t. current adjoint code.
-C   
+C
 C     This dummy routine is located inside integr_continuity
 C     to get the impact of rstar or surf_dr adjoint
-C     variables on adEtaN. 
+C     variables on adEtaN.
 C
 C     This does not use the diagnostics package because adEtaN is a
 C     "half" time step away from the other adjoint variables, but would
@@ -90,10 +90,9 @@ C     suff    :: Hold suffix part of a filename
 C     msgBuf  :: Error message buffer
       CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_OPENAD
       _RL var2Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL var2Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dumRS(1)
-      _RL dumRL(1)
+#endif
 CEOP
 
       IF (
@@ -119,50 +118,26 @@ C-----------------------------------------------------------------------
 #ifndef ALLOW_OPENAD
 C-----------------------------------------------------------------------
 
-        IF ( ( dumpAdVarExch.NE.2 ).AND.(.NOT.dumpAdByRec) ) THEN
-          CALL WRITE_FLD_XY_RL ( 'ADJetan.', suff,
-     &                           adEtaN, myIter, myThid )
-
-
-        ELSEIF ( ( dumpAdVarExch.NE.2 ).AND.(dumpAdByRec) ) THEN
-
+        IF ( dumpAdByRec ) THEN
           CALL WRITE_REC_XY_RL ( 'ADJetan',
      &                           adEtaN, dumpAdRecEt, myIter, myThid)
-
         ELSE
-C       case dumpAdVarExch = 2
-          CALL COPY_ADVAR_OUTP( dumRS, adEtaN, var2Du,1,12,myThid )
-          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL(  'ADJetan.',
-     &                           suff, var2Du, myIter, myThid )
-          IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL(  'ADJetan',
-     &                           var2Du, dumpAdRecEt, myIter, myThid)
+          CALL WRITE_FLD_XY_RL ( 'ADJetan.', suff,
+     &                           adEtaN, myIter, myThid )
         ENDIF
 
 C-----------------------------------------------------------------------
 #else /* ndef ALLOW_OPENAD */
 C-----------------------------------------------------------------------
 
-        IF ( ( dumpAdVarExch.NE.2 ).AND.(.NOT.dumpAdByRec) ) THEN
-          var2Du = etaN%d
-          CALL WRITE_FLD_XY_RL ( 'ADJetan.', suff,
-     &                           var2Du, myIter, myThid )
-
-        ELSEIF ( ( dumpAdVarExch.NE.2 ).AND.(dumpAdByRec) ) THEN
-
+        IF ( dumpAdByRec ) THEN
           var2Du = etaN%d
           CALL WRITE_REC_XY_RL ( 'ADJetan',
      &                           var2Du, dumpAdRecEt, myIter, myThid)
-
         ELSE
-C       case dumpAdVarExch = 2
-          CALL COPY_ADVAR_OUTP( dumRS, etaN%d, var2Du,1,12,myThid )
-          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL(  'ADJetan.',
-     &                           suff, var2Du, myIter, myThid )
-          IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL(  'ADJetan',
-     &                           var2Du, dumpAdRecEt, myIter, myThid)
-
-
-C       end if dumpAdVarExch = 2
+          var2Du = etaN%d
+          CALL WRITE_FLD_XY_RL ( 'ADJetan.', suff,
+     &                           var2Du, myIter, myThid )
         ENDIF
 
 C-----------------------------------------------------------------------
@@ -173,29 +148,18 @@ C-- NOW NMC output
 
 #ifndef ALLOW_OPENAD
 #ifdef ALLOW_MNC
-        IF (useMNC .AND. autodiff_mnc) THEN
+        IF ( useMNC .AND. autodiff_mnc ) THEN
          CALL MNC_CW_SET_UDIM('adstate', -1, myThid)
          CALL MNC_CW_RL_W_S('D','adstate',0,0,'T',myTime,myThid)
          CALL MNC_CW_SET_UDIM('adstate', 0, myThid)
          CALL MNC_CW_I_W_S('I','adstate',0,0,'iter',myIter,myThid)
          CALL MNC_CW_RL_W_S('D','adstate',0,0,'model_time',myTime,
      &        myThid)
-
-         IF ( dumpAdVarExch.EQ.2 ) THEN
-          CALL COPY_ADVAR_OUTP( dumRS, adEtaN, var2Du, 1 , 12, myThid )
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adEta', var2Du, myThid)
-         ELSE
-C     dumpAdVarExch.NE.2
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adEta', adEtaN, myThid)
-         ENDIF
+         CALL MNC_CW_RL_W('D','adstate',0,0,'adEta', adEtaN, myThid)
 C     endif mnc
         ENDIF
 #endif /* ALLOW_MNC */
 #endif /* ALLOW_OPENAD */
-
-#ifdef ALLOW_EXF
-cph        IF ( useEXF ) CALL EXF_AD_DUMP( myTime, myIter, myThid )
-#endif
 
         CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
