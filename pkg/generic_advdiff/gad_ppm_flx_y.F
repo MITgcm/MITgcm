@@ -94,7 +94,6 @@ C     ==================== integrate profile over region swept by face
      &             + ivec(3) * fhat(3,iy-1)
 
 CML              intF = intF / (ss22 - ss11)
-              intF = 0.5 _d 0 * intF / MAX(vCFL, 1.D-20)
 
               else
 
@@ -122,13 +121,11 @@ C     ==================== integrate profile over region swept by face
      &             + ivec(3) * fhat(3,iy-0)
 
 CML              intF = intF / (ss22 - ss11)
-              intF = 0.5 _d 0 * intF / MIN(vCFL, -1.D-20)
 
               end if
 
-CML              intF = 0.5 _d 0 * intF / SIGN(MAX(ABS(vCFL),1.D-20),vCFL)
-CML              if ( bi .eq. 2.and.bj.eq.1  ) 
-CML     &     print *, 'ml-ppm4', ix,iy, intF, ss11, vCFL, vvel(ix,iy)
+              intF = 0.5 _d 0 * intF / sign(max(abs(vCFL),1.d-20),vCFL)
+
 C     ==================== calc. flux = upwind tracer * face-transport
               flux(ix,iy) = + vfac(ix,iy) * intF
 

@@ -99,7 +99,7 @@ C     ==================== integrate profile over region swept by face
      &             + ivec(4) * fhat(4,iy-1)
      &             + ivec(5) * fhat(5,iy-1)
 
-              intF = intF / (ss22 - ss11)
+CML              intF = intF / (ss22 - ss11)
 
               else
 
@@ -132,9 +132,11 @@ C     ==================== integrate profile over region swept by face
      &             + ivec(4) * fhat(4,iy-0)
      &             + ivec(5) * fhat(5,iy-0)
 
-              intF = intF / (ss22 - ss11)
+CML              intF = intF / (ss22 - ss11)
 
               end if
+
+              intF = 0.5 _d 0 * intF / sign(max(abs(vCFL),1.d-20),vCFL)
 
 C     ==================== calc. flux = upwind tracer * face-transport
               flux(ix,iy) = + vfac(ix,iy) * intF
