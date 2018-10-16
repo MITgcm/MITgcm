@@ -1,6 +1,15 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - add advection ppm and pqm advection schemes
+  - test new scheme in verification/offline_exf_seaice.dyn_lsr
+o pkg/generic_advection:
+  - regularize ppm and pqm advection schemes:
+  - replace unsafe division in the case of numerical underflows by
+    regularized expression sign(max(abs(uCFL),1.d-20),uCFL) and similar,
+    in anology to other advection routines, e.g. gad_os7mp_adv_x/y/z.F
+  - affects verification/advect_xz at truncation level -> updated
 o pkg/streamice:
   - fix bugs relating to ice front advance:
     streamice_advect_thickness.F -- overlap update of array passed to 
