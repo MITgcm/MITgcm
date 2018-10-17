@@ -607,6 +607,69 @@ EOF
     fi
 }
 
+#  Just try to use FC, report failed attempt as a Warning
+check_fortran_compiler() {
+    echo -n "  check Fortran Compiler... "
+    echo "" >> $LOGFILE
+    echo "running: check_fortran_compiler" >> $LOGFILE
+    FC_CHECK=-1
+    rm -f ./genmake_tcomp.f
+    cat >> genmake_tcomp.f <<EOF
+      program hello
+      integer i
+      do i=1,3
+        print *, 'hello world : ', i
+      enddo
+      end
+EOF
+    COMM="$FC $FFLAGS $FOPTIM -c genmake_tcomp.f"
+    echo ' '$COMM >> $LOGFILE
+    $COMM >> $LOGFILE 2>&1
+    RETVAL=$?
+    if test "x$RETVAL" != x0 ; then
+	FC_CHECK=0
+	echo "" >> $LOGFILE
+	echo " Warning: FORTRAN compiler test fails to compile" >> $LOGFILE
+	echo -n " fail to compile"
+    fi
+    if test $FC_CHECK = '-1' ; then
+	COMM="$LINK $FFLAGS $FOPTIM -o genmake_tcomp genmake_tcomp.o $LIBS"
+	echo ' '$COMM >> $LOGFILE
+	$COMM >> $LOGFILE 2>&1
+	RETVAL=$?
+    else RETVAL=0 ; fi
+    if test "x$RETVAL" != x0 ; then
+	FC_CHECK=1
+	echo "" >> $LOGFILE
+	echo " Warning: FORTRAN compiler test fails to link" >> $LOGFILE
+	echo -n " fail to generate executable"
+    fi
+    if test $FC_CHECK = '-1' -a -x genmake_tcomp ; then
+	if test "x$MPI" = 'xtrue' ; then
+	    COMM="mpirun -np 1 genmake_tcomp"
+	else
+	    COMM="./genmake_tcomp"
+	fi
+	echo ' '$COMM >> $LOGFILE
+	$COMM >> $LOGFILE 2>&1
+	RETVAL=$?
+	if test "x$RETVAL" != x0 ; then
+	   FC_CHECK=3
+	  #echo -n " fail to run"
+	else
+	   FC_CHECK=4
+	   echo -n " pass"
+	fi
+    elif test $FC_CHECK = '-1' ; then
+	FC_CHECK=2
+	echo 'WARNING: missing executable from FORTRAN compiler test' >> $LOGFILE
+	echo -n " fail to generate executable"
+    fi
+    rm -f genmake_tcomp.* genmake_tcomp
+    echo " --> set FC_CHECK='$FC_CHECK'" >> $LOGFILE
+    echo "  (set FC_CHECK='$FC_CHECK')"
+}
+
 #  Do a local copy of MPI headers files (in local dir ./mpi_headers/) after
 #  checking for additional included headers (in case of chain of included header)
 mpi_headers_do_local_copy() {
@@ -1287,6 +1350,7 @@ CHECK_FOR_LAPACK=f
 # DEFINES checked by test compilation or command-line
 HAVE_SYSTEM=
 HAVE_FDATE=
+FC_CHECK=
 FC_NAMEMANGLE=
 HAVE_CLOC=
 # HAVE_SETRLSTK=
@@ -1357,7 +1421,7 @@ gm_s3="FEXTRAFLAGS IEEE DEVEL GSL TS PAPIS PCLS PAPI PCL HPMT DUMPSTATE"
 gm_s4="LN S64 LINK PACKAGES INCLUDES FFLAGS FOPTIM"
 gm_s5="CFLAGS LIBS KPP KFLAGS1 KFLAGS2 KPPFILES NOOPTFILES NOOPTFLAGS"
 gm_s6="PWD TOOLSDIR SOURCEDIRS INCLUDEDIRS EXEDIR EXECUTABLE EXEHOOK"
-gm_s7="TMP THISHOST THISUSER THISDATE THISVER MACHINE FC_NAMEMANGLE"
+gm_s7="TMP THISHOST THISUSER THISDATE THISVER MACHINE FC_CHECK FC_NAMEMANGLE"
 gm_s8="HAVE_NETCDF HAVE_SYSTEM HAVE_FDATE HAVE_ETIME HAVE_LAPACK HAVE_FLUSH"
 
 #  The following are all related to adjoint/tangent-linear stuff
@@ -1776,6 +1840,10 @@ fi
 if test "x$MAKE" = x ; then
     MAKE="make"
 fi
+
+#- check for fortran compiler (for now, just for information, no consequence)
+check_fortran_compiler
+
 if test "x$CPP" = x ; then
     CPP="cpp -traditional -P"
 fi
@@ -3650,4 +3718,26 @@ if test "x$DUMPSTATE" = xt ; then
 	eval $t1
 	echo "$i='$t2'" | sed -e 's/  */ /g' >> genmake_state
     done
+fi
+
+#  Conclude
+if test "x$FC_CHECK" = x4 ; then
+    echo "  original 'Makefile' generated successfully"
+    echo "=> next steps:"
+    ad=`echo $PACKAGES | grep -c autodiff`
+    if test "x$OPENAD" != x ; then
+	echo "  > make adAll    (<-- adjoint executable)"
+    elif test $ad != 0 ; then
+	echo "  > make depend"
+	echo "    > make adall  (<-- adjoint executable)"
+	echo " or > make tlm    (<-- tang-lin executable)"
+	echo " or > make        (<-- forward executable)"
+    else
+#	echo "  > make depend   (add dependencies to Makefile)"
+	echo "  > make depend"
+	echo "  > make       (<-- to generate executable)"
+    fi
+else
+	echo "Warning: FORTRAN compiler test failed (please see '$LOGFILE')"
+	echo "Warning: 'Makefile' might be unusable (check your optfile)"
 fi
