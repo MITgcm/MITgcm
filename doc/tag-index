@@ -1,9 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67e (2018/10/16)
+o pkg/seaice:
+  - fix possible division by zero if LSR_mixIniGuess > 0
 o pkg/streamice:
   - fix bugs relating to ice front advance:
-    streamice_advect_thickness.F -- overlap update of array passed to 
+    streamice_advect_thickness.F -- overlap update of array passed to
      streamice_adv_front which was leading to spurious ice area values
     streamice_init_varia.F -- proper initialisation of area_shelf_streamice
      which is used for ice front advance (only affects diagnostics)
