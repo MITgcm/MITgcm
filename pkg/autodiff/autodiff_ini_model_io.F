@@ -56,6 +56,7 @@ c     initialize ad dump record number (used only if dumpAdByRec is true)
       dumpAdRecMn=0
       dumpAdRecDy=0
       dumpAdRecSi=0
+      dumpAdRecEt=0
 
       _BEGIN_MASTER( myThid )
 

@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  - created addummy_for_etan.F to correctly print adjoint variable for etaN
+
 checkpoint67e (2018/10/16)
 o pkg/seaice:
   - fix possible division by zero if LSR_mixIniGuess > 0
