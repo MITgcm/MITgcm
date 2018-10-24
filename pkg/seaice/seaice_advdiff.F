@@ -303,7 +303,7 @@ C     now do the "explicit" time step
           ENDDO
          ENDDO
         ENDIF
-        
+
 C     update mean ice thickness HEFF and total ice concentration AREA
 C     to match single category values
 C     (necessary here because updated HEFF is used below for SItracer)
