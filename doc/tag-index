@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice: clean up advection and SEAICE_ITD
+  - make SEAICEmultiDimAdvection a global variable that is set in
+    seaice_readparams.F
+  - do not allow SEAICE_ITD with old 2nd order advection scheme anymore
+  - re-organize SEAICE_ITD code in seaice_advdiff.F
+  - make it possible to compile pkg/seaice without pkg/generic_advdiff
 o pkg/autodiff:
   - created addummy_for_etan.F to correctly print adjoint variable for etaN
 
