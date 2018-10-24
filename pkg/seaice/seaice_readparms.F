@@ -23,7 +23,9 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "GAD.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD.h"
+#endif /* ALLOW_GENERIC_ADVDIFF */
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE_TRACER.h"
@@ -959,12 +961,16 @@ C     Set diffusivity to some sensible values if not done in data.seaice
       IF ( SEAICE_EPS_SQ .EQ. -99999. )
      &     SEAICE_EPS_SQ = SEAICE_EPS * SEAICE_EPS
 
+#ifdef ALLOW_GENERIC_ADVDIFF
       SEAICEmultiDimAdvection = .TRUE.
       IF ( SEAICEadvScheme.EQ.ENUM_CENTERED_2ND
      & .OR.SEAICEadvScheme.EQ.ENUM_UPWIND_3RD
      & .OR.SEAICEadvScheme.EQ.ENUM_CENTERED_4TH ) THEN
        SEAICEmultiDimAdvection = .FALSE.
       ENDIF
+#else
+      SEAICEmultiDimAdvection = .FALSE.
+#endif /* ALLOW_GENERIC_ADVDIFF */
 
 C-    Retired parameters
       IF ( SEAICEnewtonIterMax .NE. UNSET_I ) THEN

@@ -28,7 +28,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "GAD.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
@@ -92,6 +91,7 @@ C     xA,yA     :: "areas" of X and Y face of tracer cells
       _RS xA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS yA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL recip_heff(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -136,6 +136,7 @@ CADJ STORE vc   = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE heffm  = comlev1, key = ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
       IF ( SEAICEmultiDimAdvection ) THEN
+#ifdef ALLOW_GENERIC_ADVDIFF
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -566,11 +567,29 @@ C---   end bi,bj loops
        ENDDO
       ENDDO
 
+#else /* not ALLOW_GENERIC_ADVDIFF */
+      WRITE(msgBuf,'(2A)')
+     &  'SEAICE_ADVDIFF: cannot use SEAICEmultiDimAdvection',
+     &  ' without pkg/generic_advdiff'
+      CALL PRINT_ERROR( msgBuf , myThid )
+      WRITE(msgBuf,'(2A)') 'SEAICE_ADVDIFF: ',
+     &  'Re-compile with pkg "generic_advdiff" in packages.conf'
+      CALL PRINT_ERROR( msgBuf , myThid )
+      CALL ALL_PROC_DIE( myThid )
+      STOP 'ABNORMAL END: S/R SEAICE_ADVDIFF'
+#endif /* ALLOW_GENERIC_ADVDIFF */
       ELSE
 C--   if not multiDimAdvection
 #ifdef SEAICE_ITD
 C     just for safety
-       STOP "ITD without multiDimAdvection is not allow"
+      WRITE(msgBuf,'(2A)') 'SEAICE_ADVDIFF: ',
+     &  'ITD with SEAICEmultiDimAdvection=.False. is not allowed,'
+      CALL PRINT_ERROR( msgBuf , myThid )
+      WRITE(msgBuf,'(2A)') 'SEAICE_ADVDIFF: ',
+     &  'use a multidimensional advection scheme (in data.seaice)'
+      CALL PRINT_ERROR( msgBuf , myThid )
+      CALL ALL_PROC_DIE( myThid )
+      STOP 'ABNORMAL END: S/R SEAICE_ADVDIFF'
 #endif /* SEAICE_ITD */
 
        IF ( SEAICEadvHEff ) THEN
