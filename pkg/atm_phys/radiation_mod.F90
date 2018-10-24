@@ -64,6 +64,7 @@ real    :: ir_tau_wv_win2  = 1.0814e4
 ! default value set later (according to wv_exponent):
 real    :: ir_tau_co2      = -999.
 real    :: ir_tau_wv       = -999.
+real    :: ir_tau_wv2      = -999.
 real    :: window          = -999.
 !RG: added carbon dioxide concentration to namelist
 real    :: carbon_conc     = 360.0
@@ -72,9 +73,9 @@ real, save :: pi, deg_to_rad , rad_to_deg
 
 namelist/radiation_nml/ select_incSW, solar_constant, del_sol, &
            ir_tau_eq, ir_tau_pole, linear_tau, ir_tau_co2, ir_tau_wv,   &
-           atm_abs, sw_diff, del_sw, albedo_value, window, wv_exponent, &
-           solar_exponent, yearLength, yearPhase, obliquity, sw_co2, &
-           ir_tau_co2_win, ir_tau_wv_win1, ir_tau_wv_win2, carbon_conc
+           ir_tau_wv2, atm_abs, sw_diff, del_sw, albedo_value, window,  &
+           wv_exponent, solar_exponent, yearLength, yearPhase, obliquity, &
+           sw_co2, ir_tau_co2_win, ir_tau_wv_win1, ir_tau_wv_win2, carbon_conc
 
 !==================================================================================
 !-------------------- diagnostics fields -------------------------------
@@ -140,8 +141,9 @@ rad_to_deg = 360.0/2./pi
 
 if ( wv_exponent .eq. -1. ) then
 ! default value for wv_exponent=-1:
-   if ( ir_tau_co2.eq. -999. ) ir_tau_co2 = 0.154925
-   if ( ir_tau_wv .eq. -999. ) ir_tau_wv  = 351.48
+   if ( ir_tau_co2.eq. -999. ) ir_tau_co2 =   3.14
+   if ( ir_tau_wv .eq. -999. ) ir_tau_wv  = 199.25
+   if ( ir_tau_wv2.eq. -999. ) ir_tau_wv2 =  14.78
    if ( window    .eq. -999. ) window     = 0.3732 ! spectral window for Water Vapour
 else
 ! default value for wv_exponent= 0:
@@ -296,12 +298,12 @@ endif
 ss  = sin(lat)
 
 if ( select_incSW .eq. 0 ) then
-! Original Incoming SW (no saisonal cycle):
+! Original Incoming SW (no seasonal cycle):
    p2 = (1. - 3.*ss*ss)/4.
    solar = 0.25*solar_constant*(1.0 + del_sol*p2 + del_sw * ss)
 
 elseif ( select_incSW .eq. 1 ) then
-! daily-mean Incoming SW with simple seasonal cycle acounting
+! daily-mean Incoming SW with simple seasonal cycle accounting
 !  only for obliquity (i.e., circular orbit planet)
    largeTan = 1.e+16
 
@@ -312,7 +314,7 @@ elseif ( select_incSW .eq. 1 ) then
 ! a) approximate estimate of declination angle: relative error is less
 !    than 0.03 for current obliq but as large as 0.21 for obliq=60^o
 !  xDecl = - obliquity*deg_to_rad * cos(2.*pi*tYear)
-! b) unaproximate expression:
+! b) unapproximate expression:
    sDecl = -sin(  obliquity*deg_to_rad ) * cos(2.*pi*tYear)
    cDecl =  cos( asin( sDecl ) )
    if ( cDecl.EQ.0. ) then
@@ -390,7 +392,7 @@ if ( wv_exponent .eq. -1. ) then
 ! RG: added carbon dioxide log function
   do k = 1, n
     del_tau    = ( ir_tau_co2 + 0.2023 * lgCO2conc                             &
-                    + ir_tau_wv*sqrt(q(:,:,k)) )                               &
+                    + ir_tau_wv*log(ir_tau_wv2*q(:,:,k) + 1) )                 &
                * ( p_half(:,:,k+1)-p_half(:,:,k) ) / p_half(:,:,n+1)
     dtrans(:,:,k) = exp( - del_tau )
     del_tau_win   = ( ir_tau_co2_win + 0.0954 * lgCO2conc                      &
