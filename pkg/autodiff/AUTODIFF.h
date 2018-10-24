@@ -12,8 +12,10 @@ c ad dump record number (used only if dumpAdByRec is true)
       integer dumpAdRecMn
       integer dumpAdRecDy
       integer dumpAdRecSi
+      integer dumpAdRecEt
       COMMON /AUTODIFF_DUMP_AD_REC/ 
-     &       dumpAdRecMn, dumpAdRecDy, dumpAdRecSi
+     &       dumpAdRecMn, dumpAdRecDy, dumpAdRecSi,
+     &       dumpAdRecEt
 
       integer ilev_1
       integer ilev_2
