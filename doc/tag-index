@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/atm_phys:
+  - change IR absorption formulation regarding the dependence on Water-Vapor
+    in the case wv_exponent = -1 ; update results of experiment "atm_gray.ape"
+    from verification_other repos.
 o pkg/seaice: clean up advection and SEAICE_ITD
   - make SEAICEmultiDimAdvection a global variable that is set in
     seaice_readparams.F
