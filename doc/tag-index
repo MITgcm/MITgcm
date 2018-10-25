@@ -2,13 +2,12 @@
     ==============================
 
 o pkg/streamice:
-  - new implementation of grounding line smoothing by smoothing of basal 
-     traction in partly grounded cell, affects streamice_upd_ffrac_uncoupled.F
+  - new implementation of grounding line smoothing by smoothing of basal
+     traction in partly grounded cell, in streamice_upd_ffrac_uncoupled.F
   - rename CPP directives: previous smoothing functionality now enabled with
     STREAMICE_SMOOTH_FLOATATION2, new functionality enabled via
     STREAMICE_SMOOTH_FLOATATION
-  - affects verification/halfpipe_streamice, default and OAD (and likely taf)
-  - default
+  - affects verification/halfpipe_streamice, FWD, TAF and OpenAD adjoint.
 o pkg/atm_phys:
   - change IR absorption formulation regarding the dependence on Water-Vapor
     in the case wv_exponent = -1 ; update results of experiment "atm_gray.ape"
@@ -31,7 +30,6 @@ o pkg/streamice:
      streamice_adv_front which was leading to spurious ice area values
     streamice_init_varia.F -- proper initialisation of area_shelf_streamice
      which is used for ice front advance (only affects diagnostics)
->>>>>>> master
 o verification/*/data
   - set "rhoConst" instead of "rhoNil" (unless using Linear EOS)
   - for net surface heat flux, set "surfQnetFile" instead of "surfQfile"
