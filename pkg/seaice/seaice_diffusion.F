@@ -52,6 +52,7 @@ C     myThid     :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
+#ifdef ALLOW_GENERIC_ADVDIFF
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
       CHARACTER*4 SEAICE_DIAG_SUFX, diagSufx
@@ -106,6 +107,7 @@ C     excluding advective terms:
 #endif
 C     endif do horizontal diffusion
       ENDIF
+#endif /* ALLOW_GENERIC_ADVDIFF */
 
       RETURN
       END
