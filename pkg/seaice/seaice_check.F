@@ -34,8 +34,9 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 #include "SEAICE_TRACER.h"
-#include "GAD.h"
-
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD.h"
+#endif /* ALLOW_GENERIC_ADVDIFF */
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myThid     :: my Thread Id. number
@@ -249,6 +250,7 @@ c      ENDIF
 #endif
 
 C--   Check advection schemes
+#ifdef ALLOW_GENERIC_ADVDIFF
       checkAdvSchArea = SEAICEadvArea .AND. (
      &     SEAICEadvSchArea.NE.ENUM_UPWIND_1RST .AND.
      &     SEAICEadvSchArea.NE.ENUM_CENTERED_2ND .AND.
@@ -328,6 +330,20 @@ C    for an other ice-field. In this case, stop here.
      &     SEAICEadvSchSnow.NE.ENUM_CENTERED_2ND
         checkAdvSchSalt = SEAICEadvSalt .AND.
      &     SEAICEadvSchSalt.NE.ENUM_CENTERED_2ND
+#else /* not ALLOW_GENERIC_ADVDIFF */
+      IF ( SEAICEadvScheme.EQ.2 ) THEN
+C-- for now, the code does not allow to use the default advection scheme
+C    (Centered 2nd order) for 1 ice-field and an other advection scheme
+C    for an other ice-field. In this case, stop here.
+        checkAdvSchArea = SEAICEadvArea .AND.
+     &     SEAICEadvSchArea.NE.2
+        checkAdvSchHEFF = SEAICEadvHeff .AND.
+     &     SEAICEadvSchHeff.NE.2
+        checkAdvSchSnow = SEAICEadvSnow .AND.
+     &     SEAICEadvSchSnow.NE.2
+        checkAdvSchSalt = SEAICEadvSalt .AND.
+     &     SEAICEadvSchSalt.NE.2
+#endif /* ALLOW_GENERIC_ADVDIFF */
        IF ( checkAdvSchArea .OR. checkAdvSchHeff .OR.
      &      checkAdvSchSnow .OR. checkAdvSchSalt ) THEN
         WRITE(msgBuf,'(A,I3,A)') 'SEAICE_CHECK: SEAICEadvScheme=',
@@ -1003,7 +1019,20 @@ C     If useThSice=.TRUE., do not reset it here, but issue a warning
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &      SQUEEZE_RIGHT, myThid )
       ENDIF
-C     SEAICE_GROWTH, i.e. needs usePW79thermodynamics = .TRUE.
+C
+      IF ( .NOT.SEAICEmultiDimAdvection ) THEN
+       WRITE(msgBuf,'(A,L1)')
+     &      'SEAICE_CHECK: SEAICEmultiDimAdvection = ',
+     &      SEAICEmultiDimAdvection
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: is not allowed when '//
+     &      'SEAICE_ITD is defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: use a multiDimAdvection '//
+     &      'scheme instead'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
 #endif
 
       _END_MASTER(myThid)

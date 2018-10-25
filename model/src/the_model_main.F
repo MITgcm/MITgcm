@@ -166,6 +166,7 @@ C    | | |
 C    | | |-INTEGR_CONTINUITY :: Integrate the continuity Equation
 C    | | | |-INTEGRATE_FOR_W :: Integrate for vertical velocity
 C    | | | |-OBCS_APPLY_W    :: Open boundary package (see pkg/obcs).
+C    | | | |-DUMMY_FOR_ETAN  :: For printing adEtaN (see pkg/autodiff).
 C    | | | |-UPDATE_ETAH     :: Update Surface height/pressure
 C    | | |
 C    | | |-CALC_R_STAR    :: Calculate the new level thickness factor (r* coord)
