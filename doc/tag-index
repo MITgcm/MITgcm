@@ -1,6 +1,13 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/streamice:
+  - new implementation of grounding line smoothing by smoothing of basal
+     traction in partly grounded cell, in streamice_upd_ffrac_uncoupled.F
+  - rename CPP directives: previous smoothing functionality now enabled with
+    STREAMICE_SMOOTH_FLOATATION2, new functionality enabled via
+    STREAMICE_SMOOTH_FLOATATION
+  - affects verification/halfpipe_streamice, FWD, TAF and OpenAD adjoint.
 o pkg/atm_phys:
   - change IR absorption formulation regarding the dependence on Water-Vapor
     in the case wv_exponent = -1 ; update results of experiment "atm_gray.ape"
