@@ -25,15 +25,13 @@ Compile-time options
 As with all MITgcm packages, STREAMICE can be turned on or off at compile
 time
 
--  using the ``packages.conf`` file by adding ``streamice`` to it,
-
-(see :numref:`building_code`).
+-  using the ``packages.conf`` file by adding ``streamice`` to it (see :numref:`building_code`).
 
 Parts of the STREAMICE code can be enabled or disabled at compile time via
 CPP flags. These options are set in ``STREAMICE_OPTIONS.h``. :numref:`tab_phys_pkg_streamice_cpp` summarizes the most important ones. For more
 options see the default ``pkg/seaice/STREAMICE_OPTIONS.h``. 
 
-.. csv-table:: Some of the most relevant CPP preporocessor flags in the ``streamice``-package.
+.. csv-table:: Some of the most relevant CPP flags in the ``streamice``-package.
    :header: "CPP option", "Description"
    :widths: 40, 60
    :name: tab_phys_pkg_streamice_cpp
