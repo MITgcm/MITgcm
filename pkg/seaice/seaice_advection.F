@@ -100,6 +100,7 @@ C  afy           :: horizontal advective flux, y direction
       _RL afx   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afy   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
+#ifdef ALLOW_GENERIC_ADVDIFF
 C !LOCAL VARIABLES: ====================================================
 C  maskLocW      :: 2-D array for mask at West points
 C  maskLocS      :: 2-D array for mask at South points
@@ -760,5 +761,6 @@ C-    explicit advection is done ; store tendency in gFld:
       ENDIF
 #endif /* ALLOW_DEBUG */
 
+#endif /* ALLOW_GENERIC_ADVDIFF */
       RETURN
       END

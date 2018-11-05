@@ -39,7 +39,7 @@ ADDRESS=
 MPACK="../tools/mpack-1.6/mpack"
 SENDCMD=
 SAVDIR='.'
-here=`pwd`
+HERE=`pwd`
 yy=
 for xx
 do
@@ -106,11 +106,11 @@ if test $CLEAN = 1 ; then
   do
     if test -r $xx/$yy/data.tst ; then
       echo "clean dir:" $xx/$yy
-      cd $xx/$yy
-      echo ' ' >> $LOGFILE
-      echo $SCRIPT 4 >> $LOGFILE
-      $SCRIPT 4 >> $LOGFILE 2>&1
-      cd $here
+      ( cd $xx/$yy
+        echo ' ' >> $LOGFILE
+        echo $SCRIPT 4 >> $LOGFILE
+        $SCRIPT 4 >> $LOGFILE 2>&1
+      )
     fi
   done
  done
@@ -222,37 +222,37 @@ do
       if test $yy = 'run' ; then nam=$xx
       else nam=$xx`echo $yy | sed 's/tr_run//'` ; fi
       echo -n "Entering $xx/$yy :"
-      cd $xx/$yy
-      pwd > $LOGFILE
-      if test "x$COMMAND" = x ; then
-        echo $SCRIPT $scrArg >> $LOGFILE ; echo ' ' >> $LOGFILE
-        $SCRIPT $scrArg >> $LOGFILE 2>&1
-        out=$?
-      else
-        echo "$SCRIPT $scrArg -command \"$rCommand\"" >> $LOGFILE
-        echo ' ' >> $LOGFILE
-        $SCRIPT $scrArg -command "$rCommand" >> $LOGFILE 2>&1
-        out=$?
-      fi
-      case $out in
-       0 ) echo ' pass test 2+2=4'
-           echo "Y Y Y Y  pass   <- $nam" >> ../../$SUMMARY ;;
-      4|5) echo "Y Y Y Y FAIL ($out) - $nam" >> ../../$SUMMARY ;;
-       3 ) echo "Y Y Y N FAIL ($out) - $nam" >> ../../$SUMMARY ;;
-       2 ) echo "Y Y N N FAIL ($out) - $nam" >> ../../$SUMMARY ;;
-       1 ) echo "Y N N N FAIL ($out) - $nam" >> ../../$SUMMARY ;;
-       * ) echo "N N N N FAIL ($out) - $nam" >> ../../$SUMMARY ;;
-      esac
-      if test $out != '0' ; then
-        echo " test 2+2=4 FAIL (exit $out)"
-        echo " "
-        tail -5 $LOGFILE
-        echo " "
-        cp -p $LOGFILE ../../$DRESULTS/$nam.log
-      elif test $SAVELOG = 1 ; then
-        cp -p $LOGFILE ../../$DRESULTS/$nam.log
-      fi
-      cd $here
+      ( cd $xx/$yy
+        pwd > $LOGFILE
+        if test "x$COMMAND" = x ; then
+          echo $SCRIPT $scrArg >> $LOGFILE ; echo ' ' >> $LOGFILE
+          $SCRIPT $scrArg >> $LOGFILE 2>&1
+          out=$?
+        else
+          echo "$SCRIPT $scrArg -command \"$rCommand\"" >> $LOGFILE
+          echo ' ' >> $LOGFILE
+          $SCRIPT $scrArg -command "$rCommand" >> $LOGFILE 2>&1
+          out=$?
+        fi
+        case $out in
+         0 ) echo ' pass test 2+2=4'
+             echo "Y Y Y Y  pass   <- $nam" >> $HERE/$SUMMARY ;;
+        4|5) echo "Y Y Y Y FAIL ($out) - $nam" >> $HERE/$SUMMARY ;;
+         3 ) echo "Y Y Y N FAIL ($out) - $nam" >> $HERE/$SUMMARY ;;
+         2 ) echo "Y Y N N FAIL ($out) - $nam" >> $HERE/$SUMMARY ;;
+         1 ) echo "Y N N N FAIL ($out) - $nam" >> $HERE/$SUMMARY ;;
+         * ) echo "N N N N FAIL ($out) - $nam" >> $HERE/$SUMMARY ;;
+        esac
+        if test $out != '0' ; then
+          echo " test 2+2=4 FAIL (exit $out)"
+          echo " "
+          tail -5 $LOGFILE
+          echo " "
+          cp -p $LOGFILE $HERE/$DRESULTS/$nam.log
+        elif test $SAVELOG = 1 ; then
+          cp -p $LOGFILE $HERE/$DRESULTS/$nam.log
+        fi
+      )
     fi
   done
   if test "x$mpi" != x0 -a "x$MPI_MFILE" != x ; then rm -f $LOC_MFILE ; fi

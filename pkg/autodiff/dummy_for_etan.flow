@@ -1,0 +1,11 @@
+C     /==========================================================\
+C     | SUBROUTINE DUMMY_FOR_ETAN                                |
+C     \==========================================================/
+cadj SUBROUTINE dummy_for_etan INPUT   = 1, 2, 3
+cadj SUBROUTINE dummy_for_etan OUTPUT  =
+cadj SUBROUTINE dummy_for_etan ACTIVE  =
+cadj SUBROUTINE dummy_for_etan DEPEND  = 1, 2, 3
+cadj SUBROUTINE dummy_for_etan REQUIRED
+cadj SUBROUTINE dummy_for_etan INFLUENCED
+cadj SUBROUTINE dummy_for_etan ADNAME  = addummy_for_etan
+cadj SUBROUTINE dummy_for_etan FTLNAME = g_dummy_for_etan
