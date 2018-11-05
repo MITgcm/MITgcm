@@ -28,20 +28,23 @@
  pChkptFreq=36000000.0,
  chkptFreq=12000000.0,
  dumpFreq=24000000.0,
+ monitorFreq=1200.,
  &
 
 # Gridding parameters
  &PARM04
  usingCartesianGrid=.TRUE.,
- delX=60*20E3,
- delY=60*20E3,
+ delX=62*20.E3,
+ delY=62*20.E3,
+ xgOrigin=-20.E3,
+ ygOrigin=-20.E3,
  delR=5000.,
  &
 
 # Input datasets
  &PARM05
- addSwallFile='Swall.box32'
- addWwallFile='Wwall.box32'
- zonalWindFile='windx.cos_y32',
+ bathyFile='bathy.bin'
+ zonalWindFile='windx_cosy.bin',
+#zonalWindFile='windx_siny.bin',
  meridWindFile=,
  &
