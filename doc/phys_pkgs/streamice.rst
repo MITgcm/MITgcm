@@ -344,7 +344,7 @@ Ice front advance
 
 By default all mass flux across calving boundaries is considered lost. However, it is possible to account for this flux and potential advance of the ice shelf front. If ``STREAMICE_move_front=.true.``, then a partial-area formulation is used.
 
-The algorithm is based on *Albrecht* (2011). In this scheme, for empty or partial cells adjacent to a calving front, a **reference** thickness
+The algorithm is based on :cite:`Albrecht:2011`. In this scheme, for empty or partial cells adjacent to a calving front, a **reference** thickness
 :math:`h_{ref}` is found, defined as an average over the thickness
 of all neighboring cells with that flow into the cell. The total volume input over a time step to
 is added to the volume of ice already in the cell, whose partial area coverage is then updated based on the volume and reference thickness. If the area coverage reaches 100% in a time step, then the additional volume is cascaded into adjacent empty or partial cells.
