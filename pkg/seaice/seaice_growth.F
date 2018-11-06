@@ -1055,7 +1055,7 @@ C efficiency of turbulent fluxes : dependency to AREA (McPhee cases)
 C maximum turbulent flux, in ice meters
           tmpscal2= - (HeatCapacity_Cp*rhoConst * recip_QI)
      &         * (theta(I,J,kSurface,bi,bj)-tempFrz)
-     &         * SEAICE_deltaTtherm * maskC(i,j,kSurface,bi,bj)
+     &         * SEAICE_deltaTtherm * HEFFM(i,j,bi,bj)
 C available turbulent flux
           a_QbyOCN(i,j) =
      &         tmpscal1 * tmpscal2 * MixedLayerTurbulenceFactor
@@ -2207,7 +2207,7 @@ CADJ STORE d_hsnwbyocnonsnw = comlev1_bibj,key=iicekey,byte=isbyte
      &           + d_HSNWbyNEG(I,J,bi,bj)*SNOW2ICE
      &           - convertPRECIP2HI *
      &             snowPrecip(i,j,bi,bj) * (ONE-AREApreTH(I,J))
-     &           ) * maskC(I,J,kSurface,bi,bj)
+     &           ) * HEFFM(I,J,bi,bj)
          ENDDO
         ENDDO
         DO J=1,sNy
@@ -2256,7 +2256,7 @@ C to diagnoze and/or apply the correction to QNET.
 catn: initialize tmpscal1
            tmpscal1 = ZERO
 C ocean water going to ice/snow, in precip units
-           tmpscal3=rhoConstFresh*maskC(I,J,kSurface,bi,bj)*(
+           tmpscal3=rhoConstFresh*HEFFM(I,J,bi,bj)*(
      &       ( d_HSNWbyATMonSNW(I,J)*SNOW2ICE
      &       + d_HSNWbyOCNonSNW(I,J)*SNOW2ICE
      &       + d_HEFFbyOCNonICE(I,J) + d_HEFFbyATMonOCN(I,J)
@@ -2309,17 +2309,17 @@ CML since it does not contribute to heating the air.
 CML So this diagnostic is only good for heat budget calculations within
 CML the ice-ocean system.
            SIatmQnt(I,J,bi,bj) =
-     &            maskC(I,J,kSurface,bi,bj)*convertHI2Q*(
+     &            HEFFM(I,J,bi,bj)*convertHI2Q*(
      &            a_QSWbyATM_cover(I,J) +
      &            a_QbyATM_cover(I,J) + a_QbyATM_open(I,J) )
 Cgf 2) SItflux (analogous to tflux; includes advection by water
 C             exchanged between atmosphere and ocean+ice)
 C solid water going to atm, in precip units
-           tmpscal1 = rhoConstFresh*maskC(I,J,kSurface,bi,bj)
+           tmpscal1 = rhoConstFresh*HEFFM(I,J,bi,bj)
      &       * convertHI2PRECIP * ( - d_HSNWbyRAIN(I,J)*SNOW2ICE
      &       + a_FWbySublim(I,J) - r_FWbySublim(I,J) )
 C liquid water going to atm, in precip units
-           tmpscal2=rhoConstFresh*maskC(I,J,kSurface,bi,bj)*
+           tmpscal2=rhoConstFresh*HEFFM(I,J,bi,bj)*
      &       ( ( EVAP(I,J,bi,bj)-PRECIP(I,J,bi,bj) )
      &         * ( ONE - AREApreTH(I,J) )
 #ifdef ALLOW_RUNOFF
@@ -2368,7 +2368,7 @@ C ==================================================
      &             +d_HSNWbyNEG(I,J,bi,bj)*SNOW2ICE
 C     If r_FWbySublim>0, then it is evaporated from ocean.
      &             +r_FWbySublim(I,J)
-          EmPmR(I,J,bi,bj)  = maskC(I,J,kSurface,bi,bj)*(
+          EmPmR(I,J,bi,bj)  = HEFFM(I,J,bi,bj)*(
      &         ( EVAP(I,J,bi,bj)-PRECIP(I,J,bi,bj) )
      &         * ( ONE - AREApreTH(I,J) )
 #ifdef ALLOW_RUNOFF
@@ -2380,10 +2380,10 @@ C     If r_FWbySublim>0, then it is evaporated from ocean.
 C     beware of the sign: fw2ObyRidge is snow mass moved into the ocean
 C     by ridging, so requires a minus sign
      &         - fw2ObyRidge(I,J,bi,bj)*recip_deltaTtherm
-     &           * maskC(I,J,kSurface,bi,bj)
+     &           * HEFFM(I,J,bi,bj)
 #endif /* SEAICE_ITD */
 C and the flux leaving/entering the ocean+ice
-           SIatmFW(I,J,bi,bj) = maskC(I,J,kSurface,bi,bj)*(
+           SIatmFW(I,J,bi,bj) = HEFFM(I,J,bi,bj)*(
      &          EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
      &          - PRECIP(I,J,bi,bj)
 #ifdef ALLOW_RUNOFF
@@ -2399,7 +2399,7 @@ C and the flux leaving/entering the ocean+ice
 C--
         DO J=1,sNy
          DO I=1,sNx
-            frWtrAtm(I,J,bi,bj) = maskC(I,J,kSurface,bi,bj)*(
+            frWtrAtm(I,J,bi,bj) = HEFFM(I,J,bi,bj)*(
      &           PRECIP(I,J,bi,bj)
      &           - EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
 # ifdef ALLOW_RUNOFF
@@ -2417,7 +2417,7 @@ C--
 # ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
         DO J=1,sNy
          DO I=1,sNx
-          frWtrAtm(I,J,bi,bj) = maskC(I,J,kSurface,bi,bj)*(
+          frWtrAtm(I,J,bi,bj) = HEFFM(I,J,bi,bj)*(
      &         PRECIP(I,J,bi,bj)
      &         - EVAP(I,J,bi,bj)
      &         *( ONE - AREApreTH(I,J) )
@@ -2538,7 +2538,7 @@ C ===================================================================
 C three that actually need intermediate storage
          DO J=1,sNy
           DO I=1,sNx
-            DIAGarrayA(I,J) = maskC(I,J,kSurface,bi,bj)
+            DIAGarrayA(I,J) = HEFFM(I,J,bi,bj)
      &        * d_HSNWbyRAIN(I,J)*SEAICE_rhoSnow*recip_deltaTtherm
             DIAGarrayB(I,J) =  AREA(I,J,bi,bj)-AREApreTH(I,J)
           ENDDO
@@ -2549,7 +2549,7 @@ C three that actually need intermediate storage
      &      tmpscal1,1,'SIdA    ',0,1,3,bi,bj,myThid)
          DO J=1,sNy
           DO I=1,sNx
-           DIAGarrayB(I,J) = maskC(I,J,kSurface,bi,bj) *
+           DIAGarrayB(I,J) = HEFFM(I,J,bi,bj) *
      &       a_FWbySublim(I,J) * SEAICE_rhoIce * recip_deltaTtherm
           ENDDO
          ENDDO
@@ -2559,11 +2559,11 @@ C
          DO J=1,sNy
           DO I=1,sNx
 C the actual Freshwater flux of sublimated ice, >0 decreases ice
-           DIAGarrayA(I,J) = maskC(I,J,kSurface,bi,bj)
+           DIAGarrayA(I,J) = HEFFM(I,J,bi,bj)
      &       * (a_FWbySublim(I,J)-r_FWbySublim(I,J))
      &       * SEAICE_rhoIce * recip_deltaTtherm
 C the residual Freshwater flux of sublimated ice
-           DIAGarrayC(I,J) = maskC(I,J,kSurface,bi,bj)
+           DIAGarrayC(I,J) = HEFFM(I,J,bi,bj)
      &       * r_FWbySublim(I,J)
      &       * SEAICE_rhoIce * recip_deltaTtherm
 C the latent heat flux
@@ -2572,7 +2572,7 @@ C the latent heat flux
            tmpscal2= ( a_FWbySublim(I,J)-r_FWbySublim(I,J) )
      &             * convertHI2PRECIP
            tmpscal3= SEAICE_lhEvap+SEAICE_lhFusion
-           DIAGarrayB(I,J) = -maskC(I,J,kSurface,bi,bj)*rhoConstFresh
+           DIAGarrayB(I,J) = -HEFFM(I,J,bi,bj)*rhoConstFresh
      &             * ( tmpscal1*SEAICE_lhEvap + tmpscal2*tmpscal3 )
           ENDDO
          ENDDO

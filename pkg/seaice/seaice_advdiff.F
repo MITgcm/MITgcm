@@ -53,7 +53,6 @@ C !LOCAL VARIABLES: ====================================================
 C     === Local variables ===
 C     i,j,bi,bj :: Loop counters
 C     it        :: Loop counter for ice thickness categories
-C     ks        :: surface level index
 C     uTrans    :: volume transport, x direction
 C     vTrans    :: volume transport, y direction
 C     afx       :: horizontal advective flux, x direction
@@ -64,7 +63,6 @@ C     xA,yA     :: "areas" of X and Y face of tracer cells
 #ifdef SEAICE_ITD
       INTEGER it
 #endif /* SEAICE_ITD */
-      INTEGER ks
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER itmpkey
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -96,8 +94,6 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      ks = 1
-
 C--   make a local copy of the velocities for compatibility with B-grid
 C--   alternatively interpolate to C-points if necessary
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -115,8 +111,8 @@ C     average B-grid seaice velocity to C-grid
 C-    compute cell areas used by all tracers
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          xA(i,j,bi,bj) = _dyG(i,j,bi,bj)*_maskW(i,j,ks,bi,bj)
-          yA(i,j,bi,bj) = _dxG(i,j,bi,bj)*_maskS(i,j,ks,bi,bj)
+          xA(i,j,bi,bj) = _dyG(i,j,bi,bj)*SIMaskU(i,j,bi,bj)
+          yA(i,j,bi,bj) = _dxG(i,j,bi,bj)*SIMaskV(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO

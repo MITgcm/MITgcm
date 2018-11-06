@@ -35,6 +35,7 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE.h"      
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -104,7 +105,7 @@ C         IF ( TEMPVAR .GT. (0.25 _d 0/dragCoeff)**2 )
 C     I like this better:
           IF ( dragCoeff**2 * TEMPVAR .GT. 0.0625 _d 0 )
      &         CwatC(I,J,bi,bj) = dragCoeff*SQRT(TEMPVAR)
-          CwatC(I,J,bi,bj) = CwatC(I,J,bi,bj) * maskC(I,J,kSrf,bi,bj)
+          CwatC(I,J,bi,bj) = CwatC(I,J,bi,bj) * HEFFM(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO
