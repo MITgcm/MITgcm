@@ -874,52 +874,16 @@ At the end of the testing process, a composite
 files located in all TESTDIR sub-directories
 (a slightly more condensed version of this information is also written to file ``tr_out.txt`` in the top :filelink:`verification/` directory;
 note this file is overwritten upon subsequent :filelink:`testreport <verification/testreport>` runs).
-Below is an excerpt from the composite ``summary.txt``, created by running the full testreport suite (in the example here, on a linux cluster, using gfortran):
+:numref:`testreport_output` shows an excerpt from the composite ``summary.txt``, created by running the full testreport suite (in the example here, on a linux cluster, using gfortran):
 
 
-::
+.. figure:: figs/testreport_output.*
+    :width: 100%
+    :align: center
+    :alt: output text from summary.txt
+    :name: testreport_output
 
-  run: ./testreport -of ../tools/build_options/linux_amd64_gfortran
-  on : Linux c072 4.11.9-100.fc24.x86_64 #1 SMP Wed Jul 5 16:34:07 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
-  
-    OPTFILE=/home/jscott/MITgcm_fortesting/MITgcm/tools/build_options/linux_amd64_gfortran
-  
-  default 10  ----T-----  ----S-----  ----U-----  ----V-----  --PTR 01--  --PTR 02--
-  G D M    c        m  s        m  s        m  s        m  s        m  s        m  s
-  e p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  . 
-  n n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d 
-  2 d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  . 
-  
-  Y Y Y Y 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 22 16 16>16<22 pass  1D_ocean_ice_column
-  Y Y Y Y>14<16 16 16 16 22 22 22 22 22 22 22 22 13  4 13 13  .  .  .  .  .  .  .  . pass  adjustment.128x64x1
-  Y Y Y Y>14<16 16 16 16 22 22 22 22 16 16 13 16 16 16  4 16  .  .  .  .  .  .  .  . pass  adjustment.cs-32x32x1
-  Y Y Y Y>14<16 16 16  0 22 22 22 22 16 16  0 14 16 16  0 16  .  .  .  .  .  .  .  . pass  adjustment.cs-32x32x1.nlfs
-  Y Y Y Y -- 16 16 16>16<16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  advect_cs
-  Y Y Y Y -- 14 14 16>16<16 16 16 16 16 16 16 22 16 16 16 22  .  .  .  .  .  .  .  . pass  advect_xy
-  Y Y Y Y -- 16 16 16>16<16 16 16 16 16 16 16 22 16 16 16 22  .  .  .  .  .  .  .  . pass  advect_xy.ab3_c4
-  Y Y Y Y -- 16 16 16>16<16 16 16 16 16 16 16 16 22 22 22 22  .  .  .  .  .  .  .  . pass  advect_xz
-  Y Y Y Y -- 16 16 16>16<16 14 16 14 16 16 16 16 22 22 22 22  .  .  .  .  .  .  .  . pass  advect_xz.nlfs
-  Y Y Y Y -- 13 14 16>14<12 16 16 16 16 16 16 16 22 22 22 22  .  .  .  .  .  .  .  . pass  advect_xz.pqm
-  Y Y Y Y>14<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  aim.5l_cs
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  . pass  aim.5l_cs.thSI
-  Y Y Y Y>14<16 16 13 14 16 16 13 13 16 16 13 13 16 16 13 14  .  .  .  .  .  .  .  . pass  aim.5l_Equatorial_Channel
-  Y Y Y Y>14<16 16 13 13 16 16 13 13 16 16 13 13 16 16 13 13  .  .  .  .  .  .  .  . pass  aim.5l_LatLon
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 pass  cfc_example
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  cheapAML_box
-  Y Y Y Y>14<16 16 16 12 22 22 22 22 13 16 12 16 13 14 12 16  .  .  .  .  .  .  .  . pass  deep_anelastic
-  Y Y Y Y>14<16 16 16 16 16 16 16 16 16 16 16 16 16 13 14 16  .  .  .  .  .  .  .  . pass  dome
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  exp2
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  exp2.rigidLid
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  . pass  exp4
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  . pass  exp4.nlfs
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  exp4.stevens
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  fizhi-cs-32x32x40
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  fizhi-cs-aqualev20
-  Y Y Y Y>16<16 16 16 16 22 22 22 22 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  fizhi-gridalt-hs
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  flt_example
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  front_relax
-  Y Y Y Y>16<16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16  .  .  .  .  .  .  .  . pass  front_relax.bvp
-  ...
+    Example output from testreport ``summary.txt``
 
 
 The four columns on the left are build/run results (successful=Y, unsuccessful=N). Explanation of these columns is as follows:
