@@ -13,7 +13,7 @@ C     !INTERFACE:
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             sigmaX, sigmaY, sigmaR,
      I             ldd97_LrhoW, ldd97_LrhoS,
-     I             myThid )
+     I             myThid, myTime, myIter )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -50,7 +50,7 @@ C     == Routine arguments ==
       _RL ldd97_LrhoW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ldd97_LrhoS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj,iMin,iMax,jMin,jMax
-      INTEGER myThid
+      INTEGER myThid, myTime, myIter
 CEOP
 
 #ifdef ALLOW_GMREDI
@@ -81,6 +81,22 @@ C-    Initialization : <= done in S/R gmredi_init
      &                        + act3*max1*max2
      &                        + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
+
+C   Use Leith QG viscosity in GMRedi scheme
+#ifdef ALLOW_GM_LEITH_QG
+      IF (GM_useLeithQG) THEN
+        CALL GMREDI_CALC_QGLEITH(
+     I             bi, bj, myThid, myTime, myIter )
+      ELSE
+        DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              GM_LeithQG_K(i,j,k,bi,bj) = 0. _d 0
+            ENDDO
+          ENDDO
+        ENDDO
+      ENDIF
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef GM_VISBECK_VARIABLE_K
@@ -156,6 +172,10 @@ C-  Compute the 2 stream-function Components ( GM bolus vel.)
 #ifdef GM_VISBECK_VARIABLE_K
      &      +op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
+#ifdef ALLOW_GM_LEITH_QG
+     &     +op5*(GM_LeithQG_K(i,j,k,bi,bj)
+     &            +GM_LeithQG_K(i-1,j,k,bi,bj))
+#endif
      &      )*maskW(i,j,k,bi,bj)
 #ifdef ALLOW_EDDYPSI
      &     +eddyPsiX(i,j,k,bi,bj)*maskW(i,j,k,bi,bj)
@@ -178,6 +198,10 @@ C-  Compute the 2 stream-function Components ( GM bolus vel.)
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &      +op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
+#endif
+#ifdef ALLOW_GM_LEITH_QG
+     &     +op5*(GM_LeithQG_K(i,j,k,bi,bj)
+     &             +GM_LeithQG_K(i,j-1,k,bi,bj))
 #endif
      &      )*maskS(i,j,k,bi,bj)
 #ifdef ALLOW_EDDYPSI
