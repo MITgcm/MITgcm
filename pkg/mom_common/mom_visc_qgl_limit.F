@@ -79,7 +79,7 @@ C        Bu_g(i,j)            = 0. _d 0
        ENDDO
       ENDDO
 
-      QGL_lim_epsil = 1. _d -9
+      QGL_lim_epsil = 1. _d -12
 
 
 C Put a cap on the stretching term.
@@ -95,7 +95,7 @@ C Put a cap on the stretching term.
 
 C        Grid scale Rossby number, squared: U^2 / (fL)^2
           Ro_g2(i,j) = U_scale(i,j)**2 * recip_rA(i,j,bi,bj) /
-     &                  (fCori(i,j,bi,bj)**2)
+     &                  MAX(QGL_lim_epsil, fCori(i,j,bi,bj**2))
 C        Grid scale Burger number: N^2 H^2 / (f^2 L^2)
 C         Bu_g(i,j) = Nsq(i,j) * drf(k)**2 * recip_rA(i,j,bi,bj) /
 C     &                 (fCori(i,j,bi,bj)**2 * PI)

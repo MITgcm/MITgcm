@@ -110,8 +110,9 @@ CEOP
       ENDDO
 
       skip_loc = .FALSE.
-      QGL_epsil = 1. _d -9
+      QGL_epsil = 1. _d -12
       k_offset = 0
+      rho_single_cell = 0. _d 0
 
 
 
@@ -255,18 +256,20 @@ C to N^2 to prevent divsion by zero
               sigmaR= maskC(i,j,k,bi,bj)
      &                *recip_drC(k+k_offset)*rkSign
      &                *(rholoc(i,j)-rhoKm1(i,j))
+              sigmaR = MIN( zeroRL, sigmaR )
               N2_1(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
 
               sigmaR= maskC(i,j,k,bi,bj)
      &                *recip_drC(k+1+k_offset)*rkSign
      &                *(rhoKp1(i,j)-rholoc(i,j))
+              sigmaR = MIN( zeroRL, sigmaR )
               N2_2(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
 
               sigmaR= maskC(i,j,k,bi,bj)
      &                *rkSign
      &                *(rhoKp1(i,j)-rhoKm1(i,j))
      &                /(drC(k+k_offset) + drC(k+1+k_offset))
-
+              sigmaR = MIN( zeroRL, sigmaR )
               N2_3(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
 
 
