@@ -56,6 +56,9 @@ C !LOCAL VARIABLES: ====================================================
       INTEGER i, j
       INTEGER iMin, iMax
       INTEGER jMin, jMax
+      INTEGER k_offset
+
+      LOGICAL skip_loc
 
       _RL QGL_epsil
 
@@ -68,6 +71,7 @@ C !LOCAL VARIABLES: ====================================================
       _RL rhoKp1(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rhoKm2(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rhoKp2(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rho_single_cell
 
       _RL buoy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL buoy_m1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -105,16 +109,16 @@ CEOP
        ENDDO
       ENDDO
 
+      skip_loc = .FALSE.
       QGL_epsil = 1. _d -9
+      k_offset = 0
 
-      IF (k.EQ.1) THEN
+
+
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C              CALCULATE DENSITIES
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C This is for the surface layer;  Km1 is going to be the top row,
-C and I need 3 rows below that
 
-C--     Start computation of dynamics
         iMin = 1-Olx
         iMax = sNx+Olx
         jMin = 1-Oly
@@ -124,364 +128,180 @@ C--     Start computation of dynamics
      I              iMin, iMax, jMin, jMax, k,
      I              theta(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k,bi,bj),
      I              salt(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k,bi,bj),
-     O              rhoKm1,
+     O              rholoc,
      I              k, bi, bj, myThid )
 
+C       Bathymetry and iceshelves can modify where the ocean is,
+C       but we know that there is no ocean above k=1 or below
+C       k=Nr. Only evaluate those levels when they exist.
+
+      IF (k.GT.1) THEN
+        CALL FIND_RHO_2D(
+     I              iMin, iMax, jMin, jMax, k,
+     I              theta(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k-1,bi,bj),
+     I              salt(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k-1,bi,bj),
+     O              rhoKm1,
+     I              k-1, bi, bj, myThid )
+      ENDIF
+
+
+      IF (k.LT.Nr) THEN
         CALL FIND_RHO_2D(
      I              iMin, iMax, jMin, jMax, k,
      I              theta(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k+1,bi,bj),
      I              salt(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k+1,bi,bj),
-     O              rholoc,
-     I              k+1, bi, bj, myThid )
-
-
-        CALL FIND_RHO_2D(
-     I              iMin, iMax, jMin, jMax, k,
-     I              theta(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k+2,bi,bj),
-     I              salt(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k+2,bi,bj),
      O              rhoKp1,
+     I              k+1, bi, bj, myThid )
+      ENDIF
+
+C      IF (k.GT.2) THEN
+C        CALL FIND_RHO_2D(
+C     I              iMin, iMax, jMin, jMax, k,
+C     I              theta(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k-2,bi,bj),
+C     I              salt(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k-2,bi,bj),
+C     O              rhoKm2,
+C     I              k-2, bi, bj, myThid )
+C      ENDIF
+
+C      IF (k.LT.Nr-1) THEN
+C        CALL FIND_RHO_2D(
+C     I              iMin, iMax, jMin, jMax, k,
+C     I              theta(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k+2,bi,bj),
+C     I              salt(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k+2,bi,bj),
+C     O              rhoKp2,
+C     I              k+2, bi, bj, myThid )
+C      ENDIF
+
+
+        DO j=jMin,jMax
+          DO i=iMin,iMax
+            skip_loc = .FALSE.
+            k_offset = 0
+
+            IF (k.LT.kSurfC(i,j,bi,bj)) THEN
+C     Above the upper ocean level (probably in an ice shelf). Do nothing.
+C     Leave stretching and Nsq as the zeros they were initialised to.
+            skip_loc = .TRUE.
+
+            ELSEIF (k.EQ.kSurfC(i,j,bi,bj)) THEN
+C     Topmost ocean level. Need an offset to calculate the terms.
+              k_offset = 1
+
+              CALL FIND_RHO_2D(
+     I              i, i, j, j, k,
+     I              theta(i,j,k+2,bi,bj),
+     I              salt(i,j,k+2,bi,bj),
+     O              rho_single_cell,
      I              k+2, bi, bj, myThid )
 
-        CALL FIND_RHO_2D(
-     I              iMin, iMax, jMin, jMax, k,
-     I              theta(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k+3,bi,bj),
-     I              salt(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k+3,bi,bj),
-     O              rhoKp2,
-     I              k+3, bi, bj, myThid )
+              rhoKm1(i,j) = rholoc(i,j)
+              rholoc(i,j) = rhoKp1(i,j)
+              rhoKp1(i,j) = rho_single_cell
 
+            ELSEIF (k.GT.kSurfC(i,j,bi,bj) .AND.
+     &                 k.LT.kLowC(i,j,bi,bj)) THEN
+C     In the ocean interior. Standard calculation. No offsets required.
 
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC    
-C              BUOYANCY
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+            ELSEIF (k.EQ.kLowC(i,j,bi,bj)) THEN
+C     Lowest ocean cell. Need an offset
+              k_offset = -1
 
-        DO j=jMin,jMax
-          DO i=iMin,iMax
-            buoy(i,j)=-Gravity*recip_rhoConst*rholoc(i,j)
-            buoy_m1(i,j)=-Gravity*recip_rhoConst*rhoKm1(i,j)
-            buoy_p1(i,j)=-Gravity*recip_rhoConst*rhoKp1(i,j)
-          ENDDO
-        ENDDO
-
-
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C              N^2
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C recip_drC is the distance to the cell center...
-C At the top row is it the distance from the center to the 
-C free surface?  This would make it half of what it is over the other
-C cells in the column, and would explain why I'm getting a junk answer
-
-C QGL_epsil is a small number (1. _d -9) that 
-C is added to N^2 to prevent divsion by zero
-
-        DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-            sigmaR= maskC(i,j,k,bi,bj)
-     &                *halfRL*halfRL*recip_drC(k)*rkSign
-     &                *(-3. _d 0 *rhoKm1(i,j) + 
-     &                    4. _d 0 *rholoc(i,j)-rhoKp1(i,j))
-            N2_1(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
-
-            sigmaR= maskC(i,j,k,bi,bj)
-     &                *halfRL*halfRL*recip_drC(k)*rkSign
-     &                *(rhoKp1(i,j)-rhoKm1(i,j))
-            N2_2(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
-
-            sigmaR= maskC(i,j,k,bi,bj)
-     &                *halfRL*halfRL*recip_drC(k)*rkSign
-     &                *(rhoKp2(i,j)-rholoc(i,j))
-            N2_3(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
-
-          ENDDO
-        ENDDO
-
-C Take a weighted nearest neighbors average to smooth it out a bit
-        DO j=2-Oly,sNy+Oly-1
-          DO i=2-Olx,sNx+Olx-1
-            N2_1(i,j) = (4. _d 0 *N2_1(i,j) + N2_1(i+1,j) +
-     &        N2_1(i-1,j) + N2_1(i,j-1) + N2_1(i,j+1))/8. _d 0
-
-            N2_2(i,j) = (4. _d 0 *N2_2(i,j) + N2_2(i+1,j) +
-     &        N2_2(i-1,j) + N2_2(i,j-1) + N2_2(i,j+1))/8. _d 0
-
-            N2_3(i,j) = (4. _d 0 *N2_3(i,j) + N2_3(i+1,j) +
-     &        N2_3(i-1,j) + N2_3(i,j-1) + N2_3(i,j+1))/8. _d 0
-          ENDDO
-        ENDDO
-
-
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C              (f/N^2) * b
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-        DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-            kernel_1(i,j)=(fCori(i,j,bi,bj)/N2_1(i,j))*buoy_m1(i,j)
-            kernel_2(i,j)=(fCori(i,j,bi,bj)/N2_2(i,j))*buoy(i,j)
-            kernel_3(i,j)=(fCori(i,j,bi,bj)/N2_3(i,j))*buoy_p1(i,j)
-          ENDDO
-        ENDDO
-
-
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C              d/dz of it
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-
-        DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-            stretching(i,j)= maskC(i,j,k,bi,bj)
-     &              *halfRL*halfRL*recip_drC(k)*rkSign
-     &              *(-3. _d 0 *kernel_1(i,j)+4. _d 0 
-     &                 *kernel_2(i,j)-kernel_3(i,j))
-
-            Nsq(i,j) = N2_1(i,j)
-          ENDDO
-        ENDDO
-
-
-      ELSEIF (k.EQ.Nr) THEN
-
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C              CALCULATE DENSITIES
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C This is for the bottom layer;  Kp1 is going to be the bottom row,
-C and I need 3 rows above that
-
-C--     Start computation of dynamics
-        iMin = 1-Olx
-        iMax = sNx+Olx
-        jMin = 1-Oly
-        jMax = sNy+Oly
-
-        CALL FIND_RHO_2D(
-     I              iMin, iMax, jMin, jMax, k,
-     I              theta(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k,bi,bj),
-     I              salt(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k,bi,bj),
-     O              rhoKp1,
-     I              k, bi, bj, myThid )
-
-        CALL FIND_RHO_2D(
-     I              iMin, iMax, jMin, jMax, k,
-     I              theta(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k-1,bi,bj),
-     I              salt(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k-1,bi,bj),
-     O              rholoc,
-     I              k-1, bi, bj, myThid )
-
-
-        CALL FIND_RHO_2D(
-     I              iMin, iMax, jMin, jMax, k,
-     I              theta(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k-2,bi,bj),
-     I              salt(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k-2,bi,bj),
-     O              rhoKm1,
+              CALL FIND_RHO_2D(
+     I              i, i, j, j, k,
+     I              theta(i,j,k-2,bi,bj),
+     I              salt(i,j,k-2,bi,bj),
+     O              rho_single_cell,
      I              k-2, bi, bj, myThid )
 
-        CALL FIND_RHO_2D(
-     I              iMin, iMax, jMin, jMax, k,
-     I              theta(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k-3,bi,bj),
-     I              salt(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k-3,bi,bj),
-     O              rhoKm2,
-     I              k-3, bi, bj, myThid )
+              rhoKp1(i,j) = rholoc(i,j)
+              rholoc(i,j) = rhoKm1(i,j)
+              rhoKm1(i,j) = rho_single_cell
 
+            ELSEIF (k.GT.kLowC(i,j,bi,bj)) THEN
+C     Below the lowest ocean level. Do nothing.
+C     Leave stretching and Nsq as the zeros that they were initialised to.
+            skip_loc = .TRUE.
 
+            ELSE
+C     Catch unexpected behaviour here.
+              STOP
+            ENDIF
+
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C         Do QG Leith calculations
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+            IF (skip_loc) THEN
+C     Skip this location - it isn't water
+
+            ELSE
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C              BUOYANCY
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+              buoy(i,j)=-Gravity*recip_rhoConst*rholoc(i,j)
+              buoy_m1(i,j)=-Gravity*recip_rhoConst*rhoKm1(i,j)
+              buoy_p1(i,j)=-Gravity*recip_rhoConst*rhoKp1(i,j)
 
-        DO j=jMin,jMax
-          DO i=iMin,iMax
-            buoy(i,j)=-Gravity*recip_rhoConst*rholoc(i,j)
-            buoy_m1(i,j)=-Gravity*recip_rhoConst*rhoKm1(i,j)
-            buoy_p1(i,j)=-Gravity*recip_rhoConst*rhoKp1(i,j)
-          ENDDO
-        ENDDO
+C Interpolate buoyancy to upper and lower cell faces.
+              buoy_1(i,j)= halfRL * (buoy(i,j) + buoy_m1(i,j))
+              buoy_2(i,j)= halfRL * (buoy(i,j) + buoy_p1(i,j))
 
 
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C              N^2
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C a small number QGL_epsil (default value of 1. _d -9) is added
+C to N^2 to prevent divsion by zero
 
-C a small number (1. _d -9) is added to N^2 to prevent divsion by zero
+              sigmaR= maskC(i,j,k,bi,bj)
+     &                *recip_drC(k+k_offset)*rkSign
+     &                *(rholoc(i,j)-rhoKm1(i,j))
+              N2_1(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
 
-        DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-            sigmaR= maskC(i,j,k,bi,bj)
-     &                *halfRL*recip_drC(k)*rkSign
-     &                *(3. _d 0 *rhoKp1(i,j)-4. _d 0 
-     &                    *rholoc(i,j)+rhoKm1(i,j))
-            N2_1(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
+              sigmaR= maskC(i,j,k,bi,bj)
+     &                *recip_drC(k+1+k_offset)*rkSign
+     &                *(rhoKp1(i,j)-rholoc(i,j))
+              N2_2(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
 
-            sigmaR= maskC(i,j,k,bi,bj)
-     &                *halfRL*recip_drC(k)*rkSign
+              sigmaR= maskC(i,j,k,bi,bj)
+     &                *rkSign
      &                *(rhoKp1(i,j)-rhoKm1(i,j))
-            N2_2(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
+     &                /(drC(k+k_offset) + drC(k+1+k_offset))
 
-            sigmaR= maskC(i,j,k,bi,bj)
-     &                *halfRL*recip_drC(k)*rkSign
-     &                *(rholoc(i,j)-rhoKm2(i,j))
-            N2_3(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
-          ENDDO
-        ENDDO
-
-C Take a weighted nearest neighbors average to smooth it out a bit
-        DO j=2-Oly,sNy+Oly-1
-          DO i=2-Olx,sNx+Olx-1
-            N2_1(i,j) = (4. _d 0 *N2_1(i,j) + N2_1(i+1,j) +
-     &          N2_1(i-1,j) + N2_1(i,j-1) + N2_1(i,j+1))/8. _d 0
-
-            N2_2(i,j) = (4. _d 0 *N2_2(i,j) + N2_2(i+1,j) +
-     &          N2_2(i-1,j) + N2_2(i,j-1) + N2_2(i,j+1))/8. _d 0
-
-            N2_3(i,j) = (4. _d 0 *N2_3(i,j) + N2_3(i+1,j) +
-     &          N2_3(i-1,j) + N2_3(i,j-1) + N2_3(i,j+1))/8. _d 0
-          ENDDO
-        ENDDO
+              N2_3(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
 
 
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C              (f/N^2) * b
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-        DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-            kernel_1(i,j)=(fCori(i,j,bi,bj)/N2_1(i,j))*buoy_p1(i,j)
-            kernel_2(i,j)=(fCori(i,j,bi,bj)/N2_2(i,j))*buoy(i,j)
-            kernel_3(i,j)=(fCori(i,j,bi,bj)/N2_3(i,j))*buoy_m1(i,j)
-          ENDDO
-        ENDDO
+              kernel_1(i,j)=(fCori(i,j,bi,bj)/N2_1(i,j))*buoy_1(i,j)
+              kernel_2(i,j)=(fCori(i,j,bi,bj)/N2_2(i,j))*buoy_2(i,j)
 
 
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C              d/dz of it
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C I reversed the sign of the derivative here.
-
-        DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-            stretching(i,j)= maskC(i,j,k,bi,bj)
-     &                *halfRL*recip_drC(k)*rkSign
-     &          *(3. _d 0 *kernel_1(i,j)-4. _d 0 
-     &              *kernel_2(i,j)+kernel_3(i,j))
-
-            Nsq(i,j) = N2_1(i,j)
-          ENDDO
-        ENDDO
-
-      ELSE
-
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C              CALCULATE DENSITIES
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C--     Start computation of dynamics
-        iMin = 1-Olx
-        iMax = sNx+Olx
-        jMin = 1-Oly
-        jMax = sNy+Oly
-
-        CALL FIND_RHO_2D(
-     I              iMin, iMax, jMin, jMax, k,
-     I              theta(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k,bi,bj),
-     I              salt(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k,bi,bj),
-     O              rholoc,
-     I              k, bi, bj, myThid )
-
-        CALL FIND_RHO_2D(
-     I              iMin, iMax, jMin, jMax, k,
-     I              theta(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k-1,bi,bj),
-     I              salt(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k-1,bi,bj),
-     O              rhoKm1,
-     I              k-1, bi, bj, myThid )
-
-
-        CALL FIND_RHO_2D(
-     I              iMin, iMax, jMin, jMax, k,
-     I              theta(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k+1,bi,bj),
-     I              salt(1-OLx:sNx+Olx,1-OLy:sNy+Oly,k+1,bi,bj),
-     O              rhoKp1,
-     I              k+1, bi, bj, myThid )
-
-
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC     
-C              BUOYANCY
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-
-        DO j=jMin,jMax
-          DO i=iMin,iMax
-            buoy(i,j)=-Gravity*recip_rhoConst*rholoc(i,j)
-            buoy_m1(i,j)=-Gravity*recip_rhoConst*rhoKm1(i,j)
-            buoy_p1(i,j)=-Gravity*recip_rhoConst*rhoKp1(i,j)
-
-C Interpolate buoyancy to cell borders
-            buoy_1(i,j)= halfRL * (buoy(i,j) + buoy_m1(i,j))
-            buoy_2(i,j)= halfRL * (buoy(i,j) + buoy_p1(i,j))
-
-          ENDDO
-        ENDDO
-
-
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C              N^2
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-
-C a small number (1. _d -9) is added to N^2 to prevent divsion by zero
-
-        DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-            sigmaR= maskC(i,j,k,bi,bj)
-     &                *recip_drC(k)*rkSign
-     &                *(rholoc(i,j)-rhoKm1(i,j))
-            N2_1(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
-
-            sigmaR= maskC(i,j,k,bi,bj)
-     &                *recip_drC(k)*rkSign
-     &                *(rhoKp1(i,j)-rholoc(i,j))
-            N2_2(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
-
-            sigmaR= maskC(i,j,k,bi,bj)
-     &                *halfRL*recip_drC(k)*rkSign
-     &                *(rhoKp1(i,j)-rhoKm1(i,j))
-            N2_3(i,j) = -gravity*recip_rhoConst*sigmaR + QGL_epsil
-          ENDDO
-        ENDDO
-
-C Take a weighted nearest neighbors average to smooth it out a bit
-        DO j=2-Oly,sNy+Oly-1
-          DO i=2-Olx,sNx+Olx-1
-            N2_1(i,j) = (4. _d 0 *N2_1(i,j) + N2_1(i+1,j) +
-     &          N2_1(i-1,j) + N2_1(i,j-1) + N2_1(i,j+1))/8. _d 0
-
-            N2_2(i,j) = (4. _d 0 *N2_2(i,j) + N2_2(i+1,j) +
-     &          N2_2(i-1,j) + N2_2(i,j-1) + N2_2(i,j+1))/8. _d 0
-
-            N2_3(i,j) = (4. _d 0 *N2_3(i,j) + N2_3(i+1,j) +
-     &          N2_3(i-1,j) + N2_3(i,j-1) + N2_3(i,j+1))/8. _d 0
-          ENDDO
-        ENDDO
-
-
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C              (f/N^2) * b 
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-        DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-            kernel_1(i,j)=(fCori(i,j,bi,bj)/N2_1(i,j))*buoy_1(i,j)
-            kernel_2(i,j)=(fCori(i,j,bi,bj)/N2_2(i,j))*buoy_2(i,j)
-          ENDDO
-        ENDDO
-  
-
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-C              d/dz of it
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-
-        DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-            stretching(i,j)= maskC(i,j,k,bi,bj)
-     &                *recip_drC(k)*rkSign
+              stretching(i,j)= maskC(i,j,k,bi,bj)
+     &                *recip_drF(k)*rkSign
      &                *(kernel_2(i,j)-kernel_1(i,j))
-            Nsq(i,j) = N2_3(i,j)
+              Nsq(i,j) = N2_3(i,j)
+
+            ENDIF
           ENDDO
         ENDDO
 
-      ENDIF
-CC End of IF statement about k
+C C Take a weighted nearest neighbors average to smooth it out a bit
+C         DO j=2-Oly,sNy+Oly-1
+C           DO i=2-Olx,sNx+Olx-1
+C             N2_1(i,j) = (4. _d 0 *N2_1(i,j) + N2_1(i+1,j) +
+C      &          N2_1(i-1,j) + N2_1(i,j-1) + N2_1(i,j+1))/8. _d 0
+
+C             N2_2(i,j) = (4. _d 0 *N2_2(i,j) + N2_2(i+1,j) +
+C      &          N2_2(i-1,j) + N2_2(i,j-1) + N2_2(i,j+1))/8. _d 0
+
+C             N2_3(i,j) = (4. _d 0 *N2_3(i,j) + N2_3(i+1,j) +
+C      &          N2_3(i-1,j) + N2_3(i,j-1) + N2_3(i,j+1))/8. _d 0
+C           ENDDO
+C         ENDDO
 
       RETURN
       END
