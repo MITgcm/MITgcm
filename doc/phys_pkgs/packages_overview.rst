@@ -16,6 +16,7 @@ Here we use the following shorthand for various forms of package names, i.e. tha
 all upper case  ``${PKG}``, all lower case ``${pkg}``, and mixed case ``${Pkg}``.
 For example, for :filelink:`pkg/gmredi` these are ``GMREDI``, ``gmredi``, and ``gmRedi`` respectively.
 
+.. _pkg_inclusion_exclusion:
 
 Package Inclusion/Exclusion
 ---------------------------

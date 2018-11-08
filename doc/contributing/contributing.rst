@@ -143,7 +143,14 @@ The most common git commands are:
  - ``git add`` stage a file, or changes to a file, so that they are ready for ``git commit``
  - ``git commit`` create a commit. A commit is a snapshot of the repository with an associated message that describes the changes.
 
-What is GitHub then? GitHub is a website that has three major purposes: 1) Code Viewer: through your browser, you can view all source code and all changes to such over time; 2) “Pull Requests”: facilitates the process whereby code developers submit changes to the primary MITgcm maintainers; 3) the “Cloud”: GitHub functions as a cloud server to store different copies of the code. The utility of #1 is fairly obvious. For #2 and #3, without GitHub, one might envision making a big tarball of edited files and emailing the maintainers for inclusion in the main repository. Instead, GitHub effectively does something like this for you in a much more elegant way.  Note unlike using (linux terminal command) git, GitHub commands are NOT typed in a terminal, but are typically invoked by hitting a button on the web interface, or clicking on a webpage link etc. To contribute edits to MITgcm, you need to obtain a github account. It’s free; do this first if you don’t have one already. 
+What is GitHub then? GitHub is a website that has three major purposes: 1) Code Viewer: through your browser, you can view
+all source code and all changes to such over time; 2) “Pull Requests”: facilitates the process whereby code developers submit
+changes to the primary MITgcm maintainers; 3) the “Cloud”: GitHub functions as a cloud server to store different copies of the code.
+The utility of #1 is fairly obvious. For #2 and #3, without GitHub, one might envision making a big tarball of edited files and
+emailing the maintainers for inclusion in the main repository. Instead, GitHub effectively does something like this for you in a
+much more elegant way.  Note unlike using (linux terminal command) git, GitHub commands are NOT typed in a terminal, but are
+typically invoked by hitting a button on the web interface, or clicking on a webpage link etc. To contribute edits to MITgcm,
+you need to obtain a github account. It’s free; do this first if you don’t have one already. 
 
 Before you start working with git, make sure you identify yourself. From your terminal, type:
 
@@ -154,9 +161,16 @@ Before you start working with git, make sure you identify yourself. From your te
 
 (note the required quotes around your name). You should also personalize your profile associated with your GitHub account.
 
-There are many online tutorials to using Git and GitHub (see for example https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project ); here, we are just communicating the basics necessary to submit code changes to the MITgcm. Spending some time learning the more advanced features of Git will likely pay off in the long run, and not just for MITgcm contributions, as you are likely to encounter it in all sorts of different projects.
+There are many online tutorials to using Git and GitHub
+(see for example https://akrabat.com/the-beginners-guide-to-contributing-to-a-github-project );
+here, we are just communicating the basics necessary to submit code changes to the MITgcm. Spending some time learning the more
+advanced features of Git will likely pay off in the long run, and not just for MITgcm contributions,
+as you are likely to encounter it in all sorts of different projects.
 
-To better understand this process, :numref:`git_setup` shows a conceptual map of the Git setup. Note three copies of the code: the main MITgcm repository sourcecode “upstream” (i.e., owned by the MITgcm maintainers) in the GitHub cloud, a copy of the repository “origin” owned by you, also residing in the GitHub cloud, and a local copy on your personal computer or compute cluster (where you intend to compile and run). The Git and GitHub commands to create this setup are explained more fully below.
+To better understand this process, :numref:`git_setup` shows a conceptual map of the Git setup. Note three copies of the code:
+the main MITgcm repository sourcecode “upstream” (i.e., owned by the MITgcm maintainers) in the GitHub cloud, a copy of the
+repository “origin” owned by you, also residing in the GitHub cloud, and a local copy on your personal computer or compute cluster
+(where you intend to compile and run). The Git and GitHub commands to create this setup are explained more fully below.
 
 
  .. figure:: figs/git_setup.*
@@ -253,26 +267,56 @@ or ‘bugfix’ (preferably, be even more descriptive) is helpful.
 |   To do this you should:
 
 
-    - edit the relevant file(s) and/or create new files. Refer to :ref:`sec_code_style_guide` for details on expected documentation standards and code style requirements. Of course, changes should be thoroughly tested to ensure they compile and run successfully!
-    - type ``git add «FILENAME1» «FILENAME2» ...`` to stage the file(s) ready for a commit command (note both existing and brand new files need to be added). “Stage” effectively means to notify Git of the the list of files you plan to “commit” for changes into the version tracking system. Note you can change other files and NOT have them sent to model developers; only staged files will be sent. You can repeat this ``git add`` command as many times as you like and it will continue to augment the list of files.  ``git diff`` and ``git status`` are useful commands to see what you have done so far.
-    - use ``git commit`` to commit the files. This is the first step in bundling a collection of files together to be sent off to the MITgcm maintainers. When you enter this command, an editor window will pop up. On the top line, type a succinct (<70 character) summary of what these changes accomplished. If your commit is non-trivial and additional explanation is required, leave a blank line and then type a longer description of why the action in this commit was appropriate etc. It is good practice to link with known issues using the syntax ``#ISSUE_NUMBER`` in either the summary line or detailed comment. Note that all the changes do not have to be handled in a single commit (i.e. you can git add some files, do a commit, than continue anew by adding different files, do another commit etc.); the ``git commit`` command itself does not (yet) submit anything to maintainers.  
-    - if you are fixing a more involved bug or adding a new feature, such that many changes are required, it is preferable to break your contribution into multiple commits (each documented separately) rather than submitting one massive commit; each commit should encompass a single conceptual change to the code base, regardless of how many files it touches. This will allow the MITgcm maintainers to more easily understand your proposed changes and will expedite the review process. 
+    - edit the relevant file(s) and/or create new files. Refer to :ref:`sec_code_style_guide` for details on expected documentation
+      standards and code style requirements. Of course, changes should be thoroughly tested to ensure they compile and run successfully!
+    - type ``git add «FILENAME1» «FILENAME2» ...`` to stage the file(s) ready for a commit command (note both existing and
+      brand new files need to be added). “Stage” effectively means to notify Git of the the list of files you plan to “commit”
+      for changes into the version tracking system. Note you can change other files and NOT have them sent to model developers;
+      only staged files will be sent. You can repeat this ``git add`` command as many times as you like and it will continue
+      to augment the list of files.  ``git diff`` and ``git status`` are useful commands to see what you have done so far.
+    - use ``git commit`` to commit the files. This is the first step in bundling a collection of files together to be sent
+      off to the MITgcm maintainers. When you enter this command, an editor window will pop up. On the top line, type a succinct
+      (<70 character) summary of what these changes accomplished. If your commit is non-trivial and additional explanation is required,
+      leave a blank line and then type a longer description of why the action in this commit was appropriate etc.
+      It is good practice to link with known issues using the syntax ``#ISSUE_NUMBER`` in either the summary line or detailed comment.
+      Note that all the changes do not have to be handled in a single commit (i.e. you can git add some files, do a commit,
+      than continue anew by adding different files, do another commit etc.); the ``git commit`` command itself does
+      not (yet) submit anything to maintainers.  
+    - if you are fixing a more involved bug or adding a new feature, such that many changes are required,
+      it is preferable to break your contribution into multiple commits (each documented separately) rather than submitting one massive commit;
+      each commit should encompass a single conceptual change to the code base, regardless of how many files it touches.
+      This will allow the MITgcm maintainers to more easily understand your proposed changes and will expedite the review process. 
 
-When your changes are tested and documented, continue on to step #6, but read all of step #6 and #7 before proceeding; you might want to do an optional “bring my development branch up to date” sequence of steps before step #6.
+When your changes are tested and documented, continue on to step #6, but read all of step #6 and #7 before proceeding;
+you might want to do an optional “bring my development branch up to date” sequence of steps before step #6.
 
-**6.** Now we “push” our modified branch with committed changes onto the origin remote in the GitHub cloud. This effectively updates your GitHub cloud copy of the MITgcm repo to reflect the wonderful changes you are contributing.
+**6.** Now we “push” our modified branch with committed changes onto the origin remote in the GitHub cloud.
+This effectively updates your GitHub cloud copy of the MITgcm repo to reflect the wonderful changes you are contributing.
 
 ::
 
     % git push -u origin «YOUR_NEWBRANCH_NAME»
 
-Some time might elapse during step #5, as you make and test your edits, during which continuing development occurs in the main MITgcm repository. In contrast with some models that opt for static, major releases, the MITgcm is in a constant state of improvement and development. It is very possible that some of your edits occur to files that have also been modified by others. Your local clone however will not know anything about any changes that may have occurred to the MITgcm repo in the cloud, which may cause an issue in step #7 below, when one of three things will occur:
+Some time might elapse during step #5, as you make and test your edits, during which continuing development occurs in the main MITgcm repository.
+In contrast with some models that opt for static, major releases, the MITgcm is in a constant state of improvement and development.
+It is very possible that some of your edits occur to files that have also been modified by others. Your local clone however will not
+know anything about any changes that may have occurred to the MITgcm repo in the cloud, which may cause an issue in step #7 below,
+when one of three things will occur:
  
-   - the files you have modified in your development have **NOT** been modified in the main repo during this elapsed time, thus git will have no conflicts in trying to update (i.e. merge) your changes into the main repo.
-   - during the elapsed time, the files you have modified have also been edited/updated in the main repo, but you edited different places in these files than those edits to the main repo, such that git is smart enough to be able to merge these edits without conflict.
-   - during the elapsed time, the files you have modified have also been edited/updated in the main repo, but git is not smart enough to know how to deal with this conflict (it will notify you of this problem during step #7).
+   - the files you have modified in your development have **NOT** been modified in the main repo during this elapsed time,
+     thus git will have no conflicts in trying to update (i.e. merge) your changes into the main repo.
+   - during the elapsed time, the files you have modified have also been edited/updated in the main repo,
+     but you edited different places in these files than those edits to the main repo, such that git is
+     smart enough to be able to merge these edits without conflict.
+   - during the elapsed time, the files you have modified have also been edited/updated in the main repo,
+     but git is not smart enough to know how to deal with this conflict (it will notify you of this problem during step #7).
 
-One option is to NOT attempt to bring your development code branch up to date, instead simply proceed with steps #6 and #7 and let the maintainers assess and resolve any conflict(s), should such occur (there is a checkbox ‘Allow edits by maintainers’ that is checked by default when you do step #7). If very little time elapsed during step #5, such conflict is less likely. However, if step #5 takes on the order of months, we do suggest you follow this recipe below to update the code and merge yourself. And/or during the development process, you might have reasons to bring the latest changes in the main repo into your development branch, and thus might opt to follow these same steps.
+One option is to NOT attempt to bring your development code branch up to date, instead simply proceed with steps #6 and #7 and
+let the maintainers assess and resolve any conflict(s), should such occur (there is a checkbox ‘Allow edits by maintainers’
+that is checked by default when you do step #7). If very little time elapsed during step #5, such conflict is less likely.
+However, if step #5 takes on the order of months, we do suggest you follow this recipe below to update the code and merge yourself.
+And/or during the development process, you might have reasons to bring the latest changes in the main repo into your
+development branch, and thus might opt to follow these same steps.
 
 Development branch code update recipe:
 
@@ -284,25 +328,46 @@ Development branch code update recipe:
     % git checkout «YOUR_NEWBRANCH_NAME»
     % git merge master
     
-This first command switches you from your development branch to the master branch. The second command above will synchronize your local master branch with the main MITgcm repository master branch (i.e. “pull” any new changes that might have occurred in the upstream repository into your local clone). Note you should not have made any changes to your clone’s master branch; in other words, prior to the pull, master should be a stagnant copy of the code from the day you performed step #1 above. The ``git push`` command does the opposite of pull, so in the third step you are synchronizing your GitHub cloud copy (“origin”) master branch to your local clone’s master branch (which you just updated). Then, switch back to your development branch via the second ``git checkout`` command. Finally, the last command will merge any changes into your development branch. If conflicts occur that git cannot resolve, git will provide you a list of the problematic file names, and in these files, areas of conflict will be demarcated. You will need to edit these files at these problem spots (while removing git’s demarcation text),
+This first command switches you from your development branch to the master branch. The second command above will synchronize
+your local master branch with the main MITgcm repository master branch (i.e. “pull” any new changes that might have occurred
+in the upstream repository into your local clone). Note you should not have made any changes to your clone’s master branch;
+in other words, prior to the pull, master should be a stagnant copy of the code from the day you performed step #1 above.
+The ``git push`` command does the opposite of pull, so in the third step you are synchronizing your GitHub cloud copy (“origin”)
+master branch to your local clone’s master branch (which you just updated). Then, switch back to your development branch via
+the second ``git checkout`` command. Finally, the last command will merge any changes into your development branch.
+If conflicts occur that git cannot resolve, git will provide you a list of the problematic file names, and in these files,
+areas of conflict will be demarcated. You will need to edit these files at these problem spots (while removing git’s demarcation text),
 then do a ``git add «FILENAME»`` for each of these files, followed by a final ``git commit`` to finish off the merger. 
 
-Some additional ``git diff`` commands to help sort out file changes, in case you want to assess the scope of development changes, are as follows. ``git diff master upstream/master`` will show you all differences between your local master branch and the main MITgcm repo, i.e., so you can peruse what parallel MITgcm changes have occurred while you were doing your development (this assumes you have not yet updated your clone’s master branch). You can check for differences on individual files via ``git diff master upstream/master  «FILENAME»``. If you want to see all differences in files you have modified during your development, the command is ``git diff master``. Similarly, to see a combined list of both your changes and those occurring to the main repo, ``git diff upstream/master``. 
+Some additional ``git diff`` commands to help sort out file changes, in case you want to assess the scope of development changes,
+are as follows. ``git diff master upstream/master`` will show you all differences between your local master branch and the main
+MITgcm repo, i.e., so you can peruse what parallel MITgcm changes have occurred while you were doing your development (this assumes
+you have not yet updated your clone’s master branch).
+You can check for differences on individual files via ``git diff master upstream/master  «FILENAME»``.
+If you want to see all differences in files you have modified during your development, the command
+is ``git diff master``. Similarly, to see a combined list of both your changes and those occurring to the main repo, ``git diff upstream/master``. 
 
-Aside comment: if you are familiar with git, you might realize there is an alternate way to merge, using the “rebase” syntax. If you know what you are doing, feel free to use this command instead of our suggested merge command above.
+Aside comment: if you are familiar with git, you might realize there is an alternate way to merge, using the “rebase” syntax.
+If you know what you are doing, feel free to use this command instead of our suggested merge command above.
 
 
-**7.** Finally create a “pull request” (a.k.a. “PR”; in other words, you are requesting that the maintainers pull your changes into the main code repository). In GitHub, go to the fork of the project that you made (https://github.com/«GITHUB_USERNAME»/MITgcm.git). There is a button for "Compare and Pull" in your newly created branch. Click the button! Now you can add a final succinct summary description of what you've done in your commit(s), flag up any issues, and respond to the remaining questions on the PR template form. If you have made non-trivial changes to
-the code or documentation, we will note this in the MITgcm change log, :filelink:`doc/tag-index`. Please suggest how to note your changes in :filelink:`doc/tag-index`; we will not accept the PR if this field is left blank. The maintainers will now be notified and be able to peruse your changes! In general, the maintainers will try to respond to a new PR within
+**7.** Finally create a “pull request” (a.k.a. “PR”; in other words, you are requesting that the maintainers pull your changes into the main code repository).
+In GitHub, go to the fork of the project that you made (https://github.com/«GITHUB_USERNAME»/MITgcm.git).
+There is a button for "Compare and Pull" in your newly created branch. Click the button!
+Now you can add a final succinct summary description of what you've done in your commit(s),
+flag up any issues, and respond to the remaining questions on the PR template form. If you have made non-trivial changes to
+the code or documentation, we will note this in the MITgcm change log, :filelink:`doc/tag-index`. Please suggest how to note your
+changes in :filelink:`doc/tag-index`; we will not accept the PR if this field is left blank. The maintainers will now be notified
+and be able to peruse your changes! In general, the maintainers will try to respond to a new PR within
 a week. While the PR remains open, you can go back to step #5 and make additional edits, git adds,
 git commits, and then redo step #6; such changes will be added to the PR (and maintainers re-notified), no need to redo step #7. 
 
 Your pull request remains open until either the maintainers fully accept and
 merge your code changes into the main repository, or decide to reject your changes.
 Occasionally, the review team will reject changes that are not
-sufficiently aligned with and do not fit with the code structure; the review team is always happy to discuss their decisions, but wants to
-avoid people investing extensive additional effort in code that has a fundamental
-design flaw.
+sufficiently aligned with and do not fit with the code structure;
+the review team is always happy to discuss their decisions, but wants to
+avoid people investing extensive additional effort in code that has a fundamental design flaw.
 But much more likely than outright rejection, you will instead be asked to respond to feedback, 
 modify your code changes in some way, and/or clean up your code to better satisfy our style requirements, etc.,
 and the pull request will remain open.  
@@ -346,6 +411,25 @@ the package names ``${PKG} = GMREDI``, ``${pkg} = gmredi``, and ``${Pkg} = gmRed
 Package structure
 -----------------
 
+•  Compile-time state: Given that each package is allowed to be compiled or not
+   (e.g., all ``${pkg}`` listed in ``packages.conf`` are compiled, see :numref:`pkg_inclusion_exclusion`),
+   :filelink:`genmake2 <tools/genmake2>` keeps track of each package's compile-state in PACKAGES_CONFIG.h
+   with CPP option ``ALLOW_${PKG}`` being defined (``#define``) or not (``#undef``).
+   Therefore, in the MITgcm core code (or code from other included packages), calls to package-specific
+   subroutines and package-specific header file ``#include`` statements
+   must be protected within ``#ifdef ALLOW_${PKG}`` ... ... ``#endif /* ALLOW_${PKG} */``
+   (see :ref:`below <example_pkg_call_from_outside>`) to ensure that the model compiles when this ${pkg} 
+   is not compiled.
+
+
+•  Run-time state: The core driver part of the model can check
+   for a run-time on/off switch of individual package(s)
+   through the Fortran logical flag ``use${Pkg}``.
+   The information is loaded from a
+   global package setup file called ``data.pkg``. Note a
+   ``use${Pkg}`` flag is NOT used within the
+   package-local subroutine code (i.e., ``${pkg}_«DO_SOMETHING».F`` package source code).
+
 •  Each package gets its runtime configuration
    parameters from a file named ``data.${pkg}``.
    Package runtime configuration options are imported
@@ -357,33 +441,26 @@ Package structure
    by other packages to check dependencies and requirements
    from other packages (see :numref:`package_boot_sequence`).
 
-•  Compile-time state: Within the core driver, code flags of the form
-   ``ALLOW_${PKG}`` are used to include or exclude
-   whole packages. The ``ALLOW_${PKG}`` flags are defined (or, by default, are undefined)
-   in ``PACKAGES_CONFIG.h``, which is
-   automatically generated by :filelink:`genmake2 <tools/genmake2>` (see :numref:`genmake2_desc`).
-
-•  Run-time state: The core driver part of the model can check
-   for a run-time on/off switch of individual package(s)
-   through the Fortran logical flag ``use${Pkg}``.
-   The information is loaded from a
-   global package setup file called ``data.pkg``. Note
-   ``use${Pkg}`` flags are NOT used within
-   package-local subroutine code (i.e., ``${pkg}_«DO_SOMETHING».F`` package source code).
-
 
 In order for a package’s run-time state ``use${Pkg}`` to be set to true (i.e., “on”),
 the code build must have its compile-time state ``ALLOW_${PKG}`` defined (i.e., “included”),
 else mitgcmuv will terminate (cleanly) during initialization. A package’s run-time state
 is not permitted to change during a model run. 
 
-Every call to a package routine from outside the package
+Every call to a package routine from **outside** the package
 requires a check on BOTH compile-time and run-time states:
+
+.. _example_pkg_call_from_outside:
 
 ::
 
    #include "PACKAGES_CONFIG.h"
    #include "CPP_OPTIONS.h"
+         .
+         .
+   #ifdef ALLOW_${PKG}
+   #  include "${PKG}_PARAMS.h"
+   #endif 
          .
          .
          .
@@ -398,20 +475,29 @@ requires a check on BOTH compile-time and run-time states:
    #endif
 
 
-Within an individual package, the header file ``${PKG}_OPTIONS.h``
-is used to set CPP flags specific to that package. This header file should also include
-``PACKAGES_CONFIG.h`` and :filelink:`CPP_OPTIONS.h <model/inc/CPP_OPTIONS.h>`:
+**Within** an individual package, the header file ``${PKG}_OPTIONS.h``
+is used to set CPP flags specific to that package. This header file should include
+``PACKAGES_CONFIG.h`` and :filelink:`CPP_OPTIONS.h <model/inc/CPP_OPTIONS.h>`, as shown in this example:
 
 ::
 
+   #ifndef ${PKG}_OPTIONS_H
+   #define ${PKG}_OPTIONS_H
    #include "PACKAGES_CONFIG.h"
    #include "CPP_OPTIONS.h"
+  
+   #ifdef ALLOW_${PKG}
          .
          .
          .
    #define ${PKG}_SOME_PKG_SPECIFIC_CPP_OPTION
          .
+         .
+         .
+   #endif /* ALLOW_${PKG} */
+   #endif /* ${PKG}_OPTIONS_H */
  
+
 See for example :filelink:`GMREDI_OPTIONS.h <pkg/gmredi/GMREDI_OPTIONS.h>`.
 
 .. _package_boot_sequence:
@@ -464,8 +550,7 @@ All packages follow a required "boot" sequence outlined here:
    ${PKG}_INIT_FIXED is called in S/R :filelink:`packages_init_fixed.F <model/src/packages_init_fixed.F>`,
    which in turn is called from S/R :filelink:`initialise_fixed.F <model/src/initialise_fixed.F>`.
    Note: some packages instead use ``CALL ${PKG}_INITIALISE``  (or the old form ``CALL ${PKG}_INIT``).
-   Also, for a very simple package setup, this part can be done instead inside ${PKG}_READPARMS.
-
+   
 - ${PKG}_CHECK()
    is responsible for validating
    basic package setup and inter-package dependencies.
@@ -484,19 +569,19 @@ All packages follow a required "boot" sequence outlined here:
    ${PKG}_INIT_VARIA is called in :filelink:`packages_init_variables.F <model/src/packages_init_variables.F>`,
    which in turn is called from S/R :filelink:`initialise_varia.F <model/src/initialise_varia.F>`.
    Note: the name ${PKG}_INIT_VARIA is not yet standardized across all packages;
-   instead, other S/R names are ${PKG}_INI_VARS or ${PKG}_INIT_VARIABLES or ${PKG}_INIT.
+   one can find other S/R names such as ${PKG}_INI_VARS or ${PKG}_INIT_VARIABLES or ${PKG}_INIT.
 
  
 Package S/R calls
 -----------------
 
-Calls to package routines within the core code timestepping
+Calls to package subroutines within the core code timestepping
 loop can vary. Below we show an example of calls to do calculations, generate output 
 and dump the package state (for pickup): 
 
 ::
 
-        S/R DO_SOMETHING()
+        S/R DO_OCEANIC_PHYS()
            #ifdef ALLOW_${PKG}
               IF ( use${Pkg} ) CALL ${PKG}_DO_SOMETHING( )
            #endif
@@ -577,30 +662,6 @@ different parameters and input files, with a primary input set-up (e.g., ``input
 results (e.g., ``results/output.txt`` or ``results/output_adm.txt``)  and with one or several secondary inputs
 (e.g., ``input.«OTHER»/`` or ``input_ad.«OTHER»/``) and corresponding results (e.g., ``results/output.«OTHER».txt`` or ``results/output_adm.«OTHER».txt``).
 
-directory «TESTDIR»/results/ 
-  Contains reference standard output used for test comparison.
-  ``results/output.txt`` and ``results/output_adm.txt``,
-  respectively, correspond to primary forward and adjoint test run on the reference
-  platform  (currently baudelaire.csail.mit.edu) on one processor  (no  MPI,  single  thread)  using  the
-  reference  compiler  (currently  the  `GNU  Fortran  compiler gfortran <https://gcc.gnu.org/fortran>`_).
-  The  presence  of  these  output files  determines
-  whether or not :filelink:`testreport <verification/testreport>`
-  is testing or skipping this test-experiment. Reference standard output for secondary tests
-  (``results/output.«OTHER».txt`` or ``results/output_adm.«OTHER».txt``) are also expected here.
-  
-
-directory «TESTDIR»/build/
-   Directory where :filelink:`testreport <verification/testreport>`
-   will build the MITgcm executable for forward and adjoint tests. It is initially empty except in some cases
-   will contain an experiment specific ``genmake_local`` file (see :numref:`genmake2_desc`).
-   Note that the original ``code[_ad]/SIZE.h_mpi``
-   is not directly used as :filelink:`SIZE.h <model/inc/SIZE.h>` to build an MPI-executable; instead, a local copy
-   ``build/SIZE.h.mpi`` is derived from ``code[_ad]/SIZE.h_mpi`` by adjusting the number
-   of processors (:varlink:`nPx`, :varlink:`nPy`) according  to «NUMBER_OF_PROCS»
-   (see :numref:`testreport_utility`, ``testreport -MPI``); then it is
-   linked to :filelink:`SIZE.h <model/inc/SIZE.h>` (``ln -s SIZE.h.mpi SIZE.h``) before building the MPI-executable. 
-
-
 directory TESTDIR/code/
    Contains the test-experiment specific source code (i.e., files that have been modified from the standard
    MITgcm repository version) used to build the MITgcm executable (``mitgcmuv``)
@@ -609,13 +670,23 @@ directory TESTDIR/code/
    It  can  also  contain  specific  source  files  with  the  suffix  ``_mpi``  to  be  used  in  place  of  the  corresponding  file
    (without suffix) for an MPI test (see :numref:`testreport_utility`). The presence or absence of ``SIZE.h_mpi``
    determines whether or not an MPI test on this test-experiment is performed or skipped. 
+   Note that the original ``code/SIZE.h_mpi``
+   is not directly used as :filelink:`SIZE.h <model/inc/SIZE.h>` to build an MPI-executable; instead, a local copy
+   ``build/SIZE.h.mpi`` is derived from ``code/SIZE.h_mpi`` by adjusting the number
+   of processors (:varlink:`nPx`, :varlink:`nPy`) according  to «NUMBER_OF_PROCS»
+   (see :numref:`testreport_utility`, ``testreport -MPI``); then it is
+   linked to :filelink:`SIZE.h <model/inc/SIZE.h>` (``ln -s SIZE.h.mpi SIZE.h``) before building the MPI-executable. 
+
 
 directory TESTDIR/code_ad/
    Contains  the  test-experiment  specific  source  code  used  to  build  the  MITgcm  executable  (``mitgcmuv_ad``)  for
    adjoint-test  (using ``genmake2 -mods=../code_ad``).  It  can  also  contain  specific  source  files  with  the  suffix
    ``_mpi`` (see above).
 
-
+directory «TESTDIR»/build/
+   Directory where :filelink:`testreport <verification/testreport>`
+   will build the MITgcm executable for forward and adjoint tests. It is initially empty except in some cases
+   will contain an experiment specific ``genmake_local`` file (see :numref:`genmake2_desc`).
 directory TESTDIR/input/
    Contains the input and parameter files used to run the primary forward test of this test-experiment.
 
@@ -646,6 +717,17 @@ directory TESTDIR/input_ad.«OTHER»/
     Contains the input and parameter files used to run the secondary OTHER adjoint test of this test-experiment. It
     can also contain specific parameter files with the suffix ``.mpi`` and shell script ``prepare_run`` (see above).
 
+directory «TESTDIR»/results/ 
+  Contains reference standard output used for test comparison.
+  ``results/output.txt`` and ``results/output_adm.txt``,
+  respectively, correspond to primary forward and adjoint test run on the reference
+  platform  (currently baudelaire.csail.mit.edu) on one processor  (no  MPI,  single  thread)  using  the
+  reference  compiler  (currently  the  `GNU  Fortran  compiler gfortran <https://gcc.gnu.org/fortran>`_).
+  The  presence  of  these  output files  determines
+  whether or not :filelink:`testreport <verification/testreport>`
+  is testing or skipping this test-experiment. Reference standard output for secondary tests
+  (``results/output.«OTHER».txt`` or ``results/output_adm.«OTHER».txt``) are also expected here.
+  
 directory TESTDIR/run/
     Initially empty directory where :filelink:`testreport <verification/testreport>`
     will run the MITgcm executable for primary forward and adjoint tests.
@@ -691,18 +773,8 @@ script can be run with a command line as simple as:
 ::
 
    % cd verification
-   % ./testreport
+   % ./testreport -optfile ../tools/build_options/linux_amd64_gfortran 
 
-
-However, some systems may require an explicit shell invocation such as:
-
-::
-
-   % sh testreport
-
-   or 
-
-   % «/SOME/PATH/TO/BASH» testreport
 
 The :filelink:`testreport <verification/testreport>` script accepts a number of command-line options which can be listed using the
 ``-help`` option. The most important ones are:
@@ -742,12 +814,11 @@ The :filelink:`testreport <verification/testreport>` script accepts a number of 
    build and run on 2 MPI processors (equivalent to ``-MPI 2``).
 
    Note that the use of MPI typically requires a special command option (see "-command" below) to invoke the
-   MPI executable. Examples of PBS scripts using testreport with MPI can be found in  :filelink:`tools/example_scripts`.
+   MPI executable. 
 
 ``-command=’«SOME COMMANDS TO RUN»’``
    For some tests, particularly MPI runs, a specific command might be needed to run the executable.
-   This option allows a more general command (or shell script) to be invoked. Examples of
-   scripts using testreport with MPI can be found in :filelink:`tools/example_scripts`. 
+   This option allows a more general command (or shell script) to be invoked.  
    
    The default here is for «SOME COMMANDS TO RUN» to be replaced by
    ``mpirun -np TR_NPROC mitgcmuv``. If on your system you require
@@ -784,12 +855,13 @@ output directories. Unless you specify otherwise using the ``-tdir`` or ``-skipd
 all sub-directories (i.e., TESTDIR experiments) in :filelink:`verification` will be tested. 
 :filelink:`testreport <verification/testreport>` writes progress to the screen (stdout) and
 reports into the «tr_NAME_DATE_N/TESTDIR» sub-directories as it runs. In particular,
-one can find, in each TESTDIR sub-directory, a
-``summary.txt`` file that contains information about the run, and a comparison of the current 
+one can find, in each TESTDIR subdirectory, a
+``summary.txt`` file in addition to log and/or error file(s) (depending how the run failed, if this occurred).
+``summary.txt``  contains information about the run and a comparison of the current 
 output with “reference output” (see :ref:`below <reference_output>` for information on how this reference output is generated). 
 The test comparison involves several output model variables. By default, for a forward test, these are the 2D
 solver initial residual ``cg2d_init_res`` and 3D state variables
-(``T``, ``S``, ``U``, ``V``) from :filelink:`pkg/monitor` output; by default
+(T, S, U, V) from :filelink:`pkg/monitor` output; by default
 for an adjoint test, the cost-function and gradient-check. However, some test-experiments
 use some package-specific variables from :filelink:`pkg/monitor` according to the file
 ``«TESTDIR»/input[_ad][.«OTHER»]/tr_checklist`` specification. Note that at this time,
@@ -799,11 +871,10 @@ by :filelink:`pkg/diagnostics`.  Monitor output produced from **ALL** run time s
 to assess significant digit match; the worst match is reported.
 At the end of the testing process, a composite
 ``summary.txt`` file is generated in the top «tr_NAME_DATE_N» directory as a compact, combined version of the ``summary.txt``
-files located in all TESTDIR sub-directories.
-Below is an excerpt from this file, created by running the full testreport suite (in the example here, on a linux cluster, using gfortran):
-
-
-
+files located in all TESTDIR sub-directories
+(a slightly more condensed version of this information is also written to file ``tr_out.txt`` in the top :filelink:`verification/` directory;
+note this file is overwritten upon subsequent :filelink:`testreport <verification/testreport>` runs).
+Below is an excerpt from the composite ``summary.txt``, created by running the full testreport suite (in the example here, on a linux cluster, using gfortran):
 
 
 ::
@@ -866,7 +937,7 @@ appearing in the specific TESTDIR experiment directory).
 For some experiments, additional variables are tested, as shown in “PTR 01”, “PTR 02” sets of columns;
 :filelink:`testreport <verification/testreport>` will detect if tracers are active
 in a given experiment and check digit match on their concentration values.
-A match to near-full machine precision is 15-17 digits; this generally will occur when a similar type of computer,
+A match to near-full machine precision is 15-16 digits; this generally will occur when a similar type of computer,
 similar operating system, and similar version of Fortran compiler are used for the test. Otherwise, different round-off can occur,
 and due to the chaotic nature of ocean and climate models, fewer digits (typically, 10-13 digits) are matched. A match of 22 digits generally is
 due to output being exactly 0.0. In some experiments, some variables may not be used or meaningful, which causes the ‘0’ and ‘4’ match results 
@@ -876,11 +947,11 @@ While the significant digit match for many variables is tested and displayed in 
 only one of these is used to assess pass/fail (output to the right of the match test results) -- the number bracketed by ``>`` and ``<``.
 For example, see above for experiment :filelink:`advect_cs <verification/advect_cs>` the pass/fail test occurs on variable “T: s d”
 (i.e., standard deviation of potential temperature), the first variable in the list specified in
-:filelink:`verification/advect_cs/input/tr_checklist`. By default (i.e., if no file ``tr_checklist`` is provided),
+:filelink:`verification/advect_cs/input/tr_checklist`. By default (i.e., if no file ``tr_checklist`` is present),
 pass/fail is assessed on the cg2d monitor output.
 See the :filelink:`testreport <verification/testreport>` script for a list of
-permissible variables to test and a guide to their abbreviations. See ``tr_checklist`` files in the input subdirectories of many TESTDIR
-experiments for examples of syntax (note, a ``+`` after a variable in a ``tr_checklist file`` is shorthand to compare the 
+permissible variables to test and a guide to their abbreviations. See ``tr_checklist`` files in the input subdirectories of several TESTDIR
+experiments (e.g., :filelink:`verification/advect_xz/input/tr_checklist`) for examples of syntax (note, a ``+`` after a variable in a ``tr_checklist file`` is shorthand to compare the 
 mean, minimum, maximum, and standard deviation for the variable).
 
 .. _reference_output:
@@ -903,7 +974,9 @@ The do_tst_2+2 utility
 ----------------------
 
 The shell script :filelink:`tools/do_tst_2+2` can be used to check the accuracy of the restart procedure.
-:filelink:`do_tst_2+2 <tools/do_tst_2+2>` executes three additional short runs. The first run makes use of the pickup files output
+For each experiment that has been run through testreport, 
+:filelink:`do_tst_2+2 <tools/do_tst_2+2>` executes three additional short runs using the tools/tst2+2 script.
+The first run makes use of the pickup files output
 from the run executed by :filelink:`testreport <verification/testreport>` to restart and run
 for four time steps, writing pickup files upon completion. The second run
 is similar except only two time steps are executed, writing pickup files.
@@ -912,7 +985,7 @@ writing pickup files upon completion.
 In order to successfully pass :filelink:`do_tst_2+2 <tools/do_tst_2+2>`, not only must all three runs execute and complete successfully, 
 but the pickups generated at the end the first run must be identical to the pickup files from the end of the third run.
 Note that a prerequisite to running :filelink:`do_tst_2+2 <tools/do_tst_2+2>`
-is running :filelink:`testreport <verification/testreport>`, both to build the excutables used by :filelink:`do_tst_2+2 <tools/do_tst_2+2>`,
+is running :filelink:`testreport <verification/testreport>`, both to build the executables used by :filelink:`do_tst_2+2 <tools/do_tst_2+2>`,
 and to generate the pickup files from which :filelink:`do_tst_2+2 <tools/do_tst_2+2>` begins execution.
 
 The :filelink:`tools/do_tst_2+2` script should be called from the :filelink:`verification/` directory, e.g.:
@@ -954,6 +1027,9 @@ and whether runs 1, 2 and 3, completely successfully, respectively,
 followed by a pass or fail from the output pickup file comparison test, followed by the TESTDIR experiment name.
 In each ``«TESTDIR»/run`` subdirectory
 :filelink:`do_tst_2+2 <tools/do_tst_2+2>` also creates a log file ``tst_2+2_out.log`` which contains additional information.
+Note it is also possible to create a separate directory of  summary information, including log files for all failed tests, in an output directory «rs_NAME_DATE_N»
+similar to the syntax for the :filelink:`testreport <verification/testreport>`  output directory name; this directory is NOT created by default, but is written
+by adding the :filelink:`do_tst_2+2 <tools/do_tst_2+2>` command line option ``-a NONE``.
 
 
 Daily Testing of MITgcm
@@ -986,13 +1062,18 @@ Before submitting your pull request for approval, if you have made any changes t
   stage is simply to generate a reference report on your local platform using the master code.
   It may take one or more hours for :filelink:`testreport <verification/testreport>` to complete.
 
+- Save a copy of this summary output from running  :filelink:`testreport <verification/testreport>` on the mastrer branch: from the verification
+  directory, type ``cp tr_out.txt tr_out_master.txt``. The file ``tr_out.txt`` is simply a condensed version of the
+  composite ``summary.txt`` file located in the «tr_NAME_DATE_N» directory. Note we are not making this file "git-aware",
+  as we have no desire to check this into the repo,
+  so we are using an old-fashioned copy to save the output here for later comparison.
+
 - Switch to your pull request branch, and repeat the :filelink:`testreport <verification/testreport>` sequence using the same options.
 
-- From the verification directory on your pull request branch, type ``git diff master tr_out.txt``
-  which will report any differences in :filelink:`testreport <verification/testreport>` output from the above tests
-  (the file ``tr_out.txt`` is simply a condensed version of the composite ``summary.txt`` file located in the «tr_NAME_DATE_N» directory).
+- From the verification directory, type ``diff tr_out_master.txt master tr_out.txt`` 
+  which will report any differences in :filelink:`testreport <verification/testreport>` output from the above tests.
   If no differences occur (other than timestamp-related), see below if you are required
-  to do a :filelink:`do_tst_2+2 <tools/do_tst_2+2>` test, otherwise, you
+  to do a :filelink:`do_tst_2+2 <tools/do_tst_2+2>` test; otherwise, you
   are clear for submitting your pull request.
 
 
@@ -1001,7 +1082,7 @@ Differences might occur due to one or more of the following reasons:
 - Your modified code no longer builds properly in one or more experiments. This is likely due to a Fortran syntax error; examine output and log files
   in the failed experiment TESTDIR to identify and fix the problem.
 
-- The run in the modified code branch terminates due to a to numerical exception error. This too requires further investigation into the cause of the error,
+- The run in the modified code branch terminates due to a numerical exception error. This too requires further investigation into the cause of the error,
   and a remedy, before the pull request should be submitted.
 
 - You have made changes which require changes to input parameters
@@ -1024,8 +1105,8 @@ Using do_tst_2+2 to check your new code
 If you make any kind of algorithmic change to the code, or modify anything related to generating or reading pickup files,
 you are also required to also complete a :filelink:`do_tst_2+2 <tools/do_tst_2+2>`. Again, run the test on both the unmodified master branch and your
 pull request branch (after you have run :filelink:`testreport <verification/testreport>` on both branches).
-Verify that the output ``tst_2+2_out.txt`` file is identical between branches.
-If not, attempt to identify and fix what is causing the difference.
+Verify that the output ``tst_2+2_out.txt`` file is identical between branches, similar to the above procedure for the file ``tr_out.txt``.
+If the files differ, attempt to identify and fix what is causing the problem.
 
 
 Automatic testing with Travis-CI
@@ -1407,7 +1488,8 @@ Alternatively, latex ``:math:`` directives (see :ref:`above <symbolic_notation>`
 Building the manual
 -------------------
 
-Once you've made your changes to the manual, you should build it locally to verify that it works as expected. To do this you will need a working python installation with the following modules installed (use ``pip install «MODULE»`` in the terminal):
+Once you've made your changes to the manual, you should build it locally to verify that it works as expected.
+To do this you will need a working python installation with the following modules installed (use ``pip install «MODULE»`` in the terminal):
 
  - sphinx
  - sphinxcontrib-bibtex
@@ -1415,7 +1497,9 @@ Once you've made your changes to the manual, you should build it locally to veri
 
 Once these modules are installed you can build the html version of the manual by running ``make html`` in the ``doc`` directory. 
 
-To build the pdf version of the manual you will also need a working version of LaTeX that includes `several packages <http://www.sphinx-doc.org/en/master/usage/builders/index.html#sphinx.builders.latex.LaTeXBuilder>`_ that are not always found in minimal LaTeX installations. The command to build the pdf version is ``make latexpdf``, which should also be run in the ``doc`` directory.
+To build the pdf version of the manual you will also need a working version of LaTeX that includes
+`several packages <http://www.sphinx-doc.org/en/master/usage/builders/index.html#sphinx.builders.latex.LaTeXBuilder>`_ that are
+not always found in minimal LaTeX installations. The command to build the pdf version is ``make latexpdf``, which should also be run in the ``doc`` directory.
 
 
 
@@ -1424,7 +1508,8 @@ To build the pdf version of the manual you will also need a working version of L
 Reviewing pull requests
 =======================
 
-The only people with write access to the main repository are a small number of core MITgcm developers. They are the people that will eventually merge your pull requests. However, before your PR gets merged, it will undergo the automated testing on Travis-CI, and it will be assessed by the MITgcm community.
+The only people with write access to the main repository are a small number of core MITgcm developers. They are the people that
+will eventually merge your pull requests. However, before your PR gets merged, it will undergo the automated testing on Travis-CI, and it will be assessed by the MITgcm community.
 
 **Everyone can review and comment on pull requests.** Even if you are not one of the core developers you can still comment on a pull request.
 
