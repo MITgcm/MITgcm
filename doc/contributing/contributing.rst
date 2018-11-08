@@ -1034,7 +1034,7 @@ Before submitting your pull request for approval, if you have made any changes t
 
 - Switch to your pull request branch, and repeat the :filelink:`testreport <verification/testreport>` sequence using the same options.
 
-- From the verification directory, type ``diff tr_out_master.txt master tr_out.txt`` 
+- From the verification directory, type ``diff tr_out_master.txt tr_out.txt`` 
   which will report any differences in :filelink:`testreport <verification/testreport>` output from the above tests.
   If no differences occur (other than timestamp-related), see below if you are required
   to do a :filelink:`do_tst_2+2 <tools/do_tst_2+2>` test; otherwise, you
