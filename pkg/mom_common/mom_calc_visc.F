@@ -325,39 +325,46 @@ C-       gradient in y direction:
        IF (calcLeithQG) THEN
 C      horizontal gradient of vorticity and vortex stretching:
 C        In the case of using QG Leith, we want to add a term
-C        before calculating vecotr magnitude, so overwrite the
+C        before calculating vector magnitude, so add to the
 C        values just calculated.
 C        gradient in x direction:
          DO j=2-Oly,sNy+Oly
           DO i=2-Olx,sNx+Olx-1
-            vrtDx(i,j) = (vort3(i+1,j)-vort3(i,j))
-     &                  *recip_dxG(i,j,bi,bj)*recip_deepFacC(k)
-     &                  *maskS(i,j,k,bi,bj)
+            vrtDx(i,j) = vrtDx(i,j)
+     &                  + halfRL*halfRL*
+     &                    + ((stretching(i+1,j)-stretching(i,j))
+     &                      *recip_dxC(i+1,j,bi,bj)*recip_deepFacC(k)
+     &                    + (stretching(i,j)-stretching(i-1,j))
+     &                      *recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+     &                    + (stretching(i+1,j-1)-stretching(i,j-1))
+     &                      *recip_dxC(i,j-1,bi,bj)*recip_deepFacC(k)
+     &                    + (stretching(i,j-1)-stretching(i-1,j-1))
+     &                      *recip_dxC(i-1,j-1,bi,bj)*recip_deepFacC(k)
+     &                  )*maskS(i,j,k,bi,bj)
 #ifdef ALLOW_OBCS
-     &                  *maskInS(i,j,bi,bj)
+     &                    *maskInS(i,j,bi,bj)
 #endif
-     &                  + (stretching(i+1,j)-stretching(i,j))
-     &                  *recip_dxG(i,j,bi,bj)*recip_deepFacC(k)
-     &                  *maskS(i,j,k,bi,bj)
-#ifdef ALLOW_OBCS
-     &                  *maskInS(i,j,bi,bj)
-#endif
+
           ENDDO
          ENDDO
 C-       gradient in y direction:
          DO j=2-Oly,sNy+Oly-1
           DO i=2-Olx,sNx+Olx
-            vrtDy(i,j) = (vort3(i,j+1)-vort3(i,j))
-     &                  *recip_dyG(i,j,bi,bj)*recip_deepFacC(k)
-     &                  *maskW(i,j,k,bi,bj)
+            vrtDy(i,j) = vrtDy(i,j)
+C        Average d/dy of stretching onto U-points to match vrtDy
+     &                  + halfRL*halfRL*
+     &                    ((stretching(i,j+1)-stretching(i,j))
+     &                      *recip_dyC(i,j+1,bi,bj)*recip_deepFacC(k)
+     &                      *maskW(i,j,k,bi,bj)
+     &                    + (stretching(i,j)-stretching(i,j-1))
+     &                      *recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
+     &                    + (stretching(i-1,j+1)-stretching(i-1,j))
+     &                      *recip_dyC(i-1,j+1,bi,bj)*recip_deepFacC(k)
+     &                    + (stretching(i-1,j)-stretching(i-1,j-1))
+     &                      *recip_dyC(i-1,j,bi,bj)*recip_deepFacC(k)
+     &                  )*maskW(i,j,k,bi,bj)
 #ifdef ALLOW_OBCS
-     &                  *maskInW(i,j,bi,bj)
-#endif
-     &                  + (stretching(i,j+1)-stretching(i,j))
-     &                  *recip_dyG(i,j,bi,bj)*recip_deepFacC(k)
-     &                  *maskW(i,j,k,bi,bj)
-#ifdef ALLOW_OBCS
-     &                  *maskInW(i,j,bi,bj)
+     &                      *maskInW(i,j,bi,bj)
 #endif
           ENDDO
          ENDDO

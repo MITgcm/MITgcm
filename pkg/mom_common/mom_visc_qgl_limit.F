@@ -63,6 +63,9 @@ C !LOCAL VARIABLES: ====================================================
 C      _RL Bu_g(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Fr_g(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL stretching_hold(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL QGL_lim_epsil
+      _RL vort3C
+
 CEOP
 
 C Initialise local variables
@@ -76,16 +79,18 @@ C        Bu_g(i,j)            = 0. _d 0
        ENDDO
       ENDDO
 
+      QGL_lim_epsil = 1. _d -9
+
 
 C Put a cap on the stretching term.
 
        DO j=2-OLy,sNy+OLy-1
         DO I=2-OLx,sNx+OLx-1
           U_scale(i,j) = 0.5* SQRT(
-     &             ( uFld( i , j )*uFld( i , j )
-     &              + uFld(i+1, j )*uFld(i+1, j ) )
-     &           + ( vFld( i , j )*vFld( i , j )
-     &              + vFld( i ,j+1)*vFld( i ,j+1) )
+     &             ( uFld(i,j)*uFld(i,j)
+     &              + uFld(i+1,j)*uFld(i+1,j) )
+     &           + ( vFld(i,j)*vFld(i,j)
+     &              + vFld(i,j+1)*vFld(i,j+1) )
      &                             )
 
 C        Grid scale Rossby number, squared: U^2 / (fL)^2
@@ -97,7 +102,7 @@ C     &                 (fCori(i,j,bi,bj)**2 * PI)
 C        Grid scale Froude number: U pi /(N^2 H)
 C          Include a small number to prevent division by zero
           Fr_g(i,j) = U_scale(i,j) * PI / ((Nsq(i,j)) * 
-     &                      drf(k)) + 1. _d -9
+     &                      drf(k) + QGL_lim_epsil)
 
 C     Make the scheme gracefully transition to something else
 C     as stratification goes to zero
@@ -108,8 +113,11 @@ C     &    ABS(vort3(i,j) / MAX(Bu_g(i,j),Ro_g2(i,j)) ) )
 
 C        Implement eqn. (56) from Bachman et al. (2017) JGR-Oceans
 C          This limiter goes to 2D Leith as stratification -> 0
+          vort3C = halfRL*halfRL*(vort3(i,j) + vort3(i+1,j)
+     &                            + vort3(i,j+1) + vort3(i+1,j+1))
+
           stretching_hold(i,j) = min( ABS(stretching(i,j)),
-     &                  ABS(vort3(i,j) * Fr_g(i,j)**2 /
+     &                  ABS(vort3C * Fr_g(i,j)**2 /
      &                       (Ro_g2(i,j) + Fr_g(i,j)**4))
      &                               )
 

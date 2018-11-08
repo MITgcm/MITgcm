@@ -568,7 +568,9 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
      &           + VisbeckK(i,j,bi,bj)*(1. _d 0 + GM_skewflx)
 #endif
 #ifdef ALLOW_GM_LEITH_QG
-     &           + GM_LeithQG_K(i,j,k,bi,bj)*(1. _d 0 + GM_skewflx)
+     &           + op5*(GM_LeithQG_K(i,j,k,bi,bj)
+     &                  + GM_LeithQG_K(i,j,km1,bi,bj))
+     &           *(1. _d 0 + GM_skewflx)
 #endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &           + op5*(K3D(i,j,k,bi,bj)+K3D(i,j,km1,bi,bj))
@@ -590,7 +592,8 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
      &                     + VisbeckK(i,j,bi,bj)
 #endif
 #ifdef ALLOW_GM_LEITH_QG
-     &                     + GM_LeithQG_K(i,j,k,bi,bj)
+     &                     + op5*(GM_LeithQG_K(i,j,k,bi,bj)
+     &                            + GM_LeithQG_K(i,j,km1,bi,bj))
 #endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &                     + op5*(K3D(i,j,k,bi,bj)+K3D(i,j,km1,bi,bj))
