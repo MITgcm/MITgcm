@@ -721,7 +721,7 @@ directory «TESTDIR»/results/
   Contains reference standard output used for test comparison.
   ``results/output.txt`` and ``results/output_adm.txt``,
   respectively, correspond to primary forward and adjoint test run on the reference
-  platform  (currently baudelaire.csail.mit.edu) on one processor  (no  MPI,  single  thread)  using  the
+  platform  (currently baudelaire.mit.edu) on one processor  (no  MPI,  single  thread)  using  the
   reference  compiler  (currently  the  `GNU  Fortran  compiler gfortran <https://gcc.gnu.org/fortran>`_).
   The  presence  of  these  output files  determines
   whether or not :filelink:`testreport <verification/testreport>`
@@ -991,8 +991,11 @@ and whether runs 1, 2 and 3, completely successfully, respectively,
 followed by a pass or fail from the output pickup file comparison test, followed by the TESTDIR experiment name.
 In each ``«TESTDIR»/run`` subdirectory
 :filelink:`do_tst_2+2 <tools/do_tst_2+2>` also creates a log file ``tst_2+2_out.log`` which contains additional information.
-Note it is also possible to create a separate directory of  summary information, including log files for all failed tests, in an output directory «rs_NAME_DATE_N»
-similar to the syntax for the :filelink:`testreport <verification/testreport>`  output directory name; this directory is NOT created by default, but is written
+During :filelink:`do_tst_2+2 <tools/do_tst_2+2>` execution a separate directory of  summary information,
+including log files for all failed tests, is created in an output directory «rs_NAME_DATE_N»
+similar to the syntax for the :filelink:`testreport <verification/testreport>`  output directory name.
+Note however this directory is deleted by default
+upon :filelink:`do_tst_2+2 <tools/do_tst_2+2>` completion, but can be saved
 by adding the :filelink:`do_tst_2+2 <tools/do_tst_2+2>` command line option ``-a NONE``.
 
 
