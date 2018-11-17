@@ -1,0 +1,4 @@
+#----------  used by testreport for Divided Adjoint Run:  ----------
+#  number of additional executions to perform is given by "add_DIVA_runs"
+#  and corresponds to "nchklev_3" value in file "code_ad/tamc.h"
+add_DIVA_runs = 4

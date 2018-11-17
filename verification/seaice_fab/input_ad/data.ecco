@@ -1,0 +1,29 @@
+# *******************
+# ECCO cost functions
+# *******************
+ &ECCO_COST_NML
+#
+ data_errfile    = 'data.err',
+# cost_iprec  = 64,
+ cost_iprec  = 32,
+ cost_yftype = 'RL',
+#
+ &
+# ***************************
+# ECCO generic cost functions
+# ***************************
+ &ECCO_GENCOST_NML
+ gencost_avgperiod(1)  = 'month',
+ gencost_barfile(1) = 'm_siarea',
+ gencost_datafile(1) = 'zeros_20x16x13_r4',
+ gencost_errfile(1) = 'Mask_9_12x8_12',
+ gencost_name(1) = 'genheff',
+ gencost_spmin(1) = -999.,
+ gencost_spmax(1) = 999.,
+ gencost_spzero(1) = -9999.,
+ gencost_startdate1(1) = 19791201,
+ gencost_startdate2(1)= 00000,
+ gencost_enddate1(1) = 19791230,
+ gencost_enddate2(1)= 00000,
+ mult_gencost(1) = 1.0e+9,
+  &

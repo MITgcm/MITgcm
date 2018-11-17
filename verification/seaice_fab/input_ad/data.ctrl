@@ -1,0 +1,47 @@
+# *********************
+# ECCO controlvariables
+# *********************
+ &ctrl_nml
+ doSinglePrecTapelev=.TRUE.,
+#the two smooth flags below are irrelevant
+#when using gentim2d and genarr[2d,3d] for ctrl
+ ctrlSmoothCorrel2D=.TRUE.,
+ ctrlSmoothCorrel3D=.TRUE.,
+ ctrlUseGen=.TRUE.,
+ doInitXX = .TRUE.,
+ doMainPack = .TRUE.,
+ doMainUnpack = .FALSE.,
+ forcingPrecond=1.,
+ &
+#
+# *********************
+# names for ctrl_pack/unpack
+# *********************
+ &ctrl_packnames
+ &
+#
+# *********************
+# names for CTRL_GENARR, CTRL_GENTIM
+# *********************
+ &CTRL_NML_GENARR
+ xx_gentim2d_weight(1) = 'ones_20x16_r4',
+ xx_gentim2d_file(1)='xx_atemp',
+ xx_gentim2d_period(1)=1209600.0,
+# xx_gentim2d_period(3)=86400.0,
+ xx_gentim2d_preproc(1,1)='noscaling',
+ mult_gentim2d(1) = 0.,
+##
+# xx_genarr2d_weight(1) = 'ones_20x16_r4',
+# xx_genarr2d_file(1)='xx_siarea',
+# xx_genarr2d_preproc(1,1)='noscaling',
+# xx_genarr2d_bounds(1:5,1)=0.0,0.001,0.9999,1.0,0.,
+# mult_genarr2d(1) = 0.,
+###
+# xx_genarr2d_weight(2) = 'ones_20x16_r4',
+# xx_genarr2d_file(2)='xx_siheff',
+# xx_genarr2d_preproc(1,2)='noscaling',
+# xx_genarr2d_bounds(1:5,2)=0.0,0.001,3.0,4.0,0.,
+# mult_genarr2d(2) = 0.,
+###
+ &
+

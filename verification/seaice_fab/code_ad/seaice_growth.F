@@ -987,6 +987,7 @@ c         with area converts to mean snow thickness.
         ENDDO
 
 #ifdef ALLOW_SALT_PLUME
+#ifdef SALT_PLUME_IN_LEADS
 C       Now that we know the thickness tendency terms, we can calculate the saltPlumeFlux
         DO J=1,sNy
          DO I=1,sNx
@@ -1044,6 +1045,7 @@ c            Only consider positive ice growth rate in leads for salt production
 
          ENDDO
         ENDDO
+#endif /* SALT_PLUME_IN_LEADS */
 #endif /* ALLOW_SALT_PLUME */
 
 

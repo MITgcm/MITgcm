@@ -1,0 +1,106 @@
+# Diagnostic Package Choices
+#-----------------
+# for each output-stream:
+#  filename(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#  frequency(n):< 0 : write snap-shot output every multiple of |frequency| (iter)
+#               > 0 : write time-average output every multiple of frequency (iter)
+#  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
+#                 when this entry is missing, select all common levels of this list
+#  fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics" file 
+#                 for the list of all available diag. in this particular config)
+#--------------------------------------------------------------------
+#
+ &diagnostics_list
+#
+   dumpatlast = .TRUE.,
+  frequency(11) = 2635200.0,
+   fields(1:9,11) = 'ETAN    ','SIarea  ','SIheff  ','SIhsnow ',
+#stuff that is not quite state variables (and may not be quite
+#synchroneous) but are added here to reduce number of files
+                 'DETADT2 ','PHIBOT  ','sIceLoad',
+                 'MXLDEPTH','oceSPDep',
+#                 'SIatmQnt','SIatmFW ','oceQnet ','oceFWflx',
+#                 'oceTAUX ','oceTAUY ',
+#                 'ADVxHEFF','ADVyHEFF','DFxEHEFF','DFyEHEFF',
+#                 'ADVxSNOW','ADVySNOW','DFxESNOW','DFyESNOW',
+##                 'SIuice  ','SIvice  ',
+   filename(11) = 'diags/state_2d_set1',
+###---
+  frequency(12) = 2635200.0,
+   fields(1:2,12) = 'THETA   ','SALT    ',
+#stuff that is not quite state variables (and may not be quite
+#synchroneous) but are added here to reduce file number
+#                   'DRHODR  ',
+   filename(12) = 'diags/state_3d_set1',
+##---
+  frequency(13) = 2635200.0,
+   fields(1:2,13) = 'UVELMASS','VVELMASS',
+#comment out until need
+#                 'WVELMASS',
+#                 'GM_PsiX ','GM_PsiY ',
+   filename(13) = 'diags/trsp_3d_set1',
+#   fileFlags(13) = 'D       ',
+###---
+#  frequency(14) = 2635200.0,
+#   fields(1:8,14) = 'DFxE_TH ','DFyE_TH ','ADVx_TH ','ADVy_TH ',
+#                    'DFxE_SLT','DFyE_SLT','ADVx_SLT','ADVy_SLT',
+#   filename(14) = 'diags/trsp_2d_set1',
+##vertically integrate fields we only use to compute vertically integr.
+##meridional transports (also omit vertical transports, both to save space)
+#   fileFlags(14) = ' I      ',
+###---
+#5-day avg sea ice to compare with SSMI, ICEsat and RGPS
+  frequency(15) = 2635200.0,
+   fields(1:7,15) = 'SIarea  ','SIheff  ','SIhsnow ',
+                    'SIuice  ','SIvice  ','ETAN    ','ETANSQ  ',
+   filename(15) = 'diags/seaice_2d_set1',
+###---
+  frequency(16) = 2635200.0,
+   fields(1:18,16) ='EXFpreci','EXFevap ','EXFroff ','EXFempmr',
+                 'EXFswdn ','EXFlwdn ','EXFswnet','EXFlwnet','EXFqnet ',
+                 'EXFatemp','EXFaqh  ','EXFtaux ','EXFtauy ',
+                 'EXFuwind','EXFvwind','EXFpress','EXFhs   ','EXFhl   ',
+   filename(16) = 'diags/exf_zflux_set1',
+
+  frequency(21) = 2635200.0,
+   fields(1:2,21) = 'ADJtheta','ADJsalt ', 
+   filename(21) = 'diags/adjState_3d',
+
+ /
+#
+#
+# Parameter for Diagnostics of per level statistics:
+#-----------------
+# for each output-stream:
+#  stat_fname(n) : prefix of the output file name (only 8.c long) for outp.stream n
+#  stat_freq(n):< 0 : write snap-shot output every |stat_freq| seconds
+#               > 0 : write time-average output every stat_freq seconds
+#  stat_phase(n)    : write at time = stat_phase + multiple of |stat_freq|
+#  stat_region(:,n) : list of "regions" (default: 1 region only=global)
+#  stat_fields(:,n) : list of diagnostics fields (8.c) (see "available_diagnostics.log"
+#                 file for the list of all available diag. in this particular config)
+#-----------------
+ &DIAG_STATIS_PARMS
+# diagSt_regMaskFile='basin_masks_eccollc_90x50.bin',
+# nSetRegMskFile=1,
+# set_regMask(1)= 1,  1,  1,  1,  1,  1,  1,  1,  1,
+#                 1,  1,  1,  1,  1,  1,  1,  1
+# val_regMask(1)= 1., 2., 3., 4., 5., 6., 7., 8., 9.,
+#                10.,11.,12.,13.,14.,15.,16.,17.
+##---
+# stat_fields(1,1)= 'ETAN    ','ETANSQ  ','DETADT2 ',
+#                   'UVEL    ','VVEL    ','WVEL    ',
+#                   'THETA   ','SALT    ',
+#    stat_fname(1)= 'dynStDiag',
+#     stat_freq(1)= 3153600.,
+# stat_region(1,1)=  1, 2, 3, 4, 5, 6, 7, 8, 9,
+#                   10,11,12,13,14,15,16,17
+##---
+# stat_fields(1,2)= 'oceTAUX ','oceTAUY ',
+#                   'surForcT','surForcS','TFLUX   ','SFLUX   ',
+#                   'oceQnet ','oceSflux','oceFWflx',
+#    stat_fname(2)= 'surfStDiag',
+#     stat_freq(2)= 3153600.,
+# stat_region(1,2)=  1, 2, 3, 4, 5, 6, 7, 8, 9,
+#                   10,11,12,13,14,15,16,17
+ /
