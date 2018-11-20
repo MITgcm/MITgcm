@@ -1093,47 +1093,55 @@ check_nf90io_mpi_libs()  {
     echo >> $LOGFILE
     echo "running: check_nf90io_libs()" >> $LOGFILE
     # check if the parallel tests can actually compile...
-    echo "$F90C $FFLAGS $FOPTIM -c f90tst_parallel.f90 \ " >> f90tst_parallel.log
+    echo "$F90C $FFLAGS $FOPTIM $INCLUDES -c f90tst_parallel.f90 \ " >> f90tst_parallel.log
     echo "  &&  $LINK $FFLAGS $FOPTIM -o f90tst_parallel f90tst_parallel.o $LIBS" >> f90tst_parallel.log
     $F90C $FFLAGS $FOPTIM  $INCLUDES -c ${TOOLSDIR}/maketests/f90tst_parallel.f90 >> f90tst_parallel.log 2>&1  \
 	&&  $LINK $FFLAGS $FOPTIM -o f90tst_parallel f90tst_parallel.o $LIBS >> f90tst_parallel.log 2>&1
-    RET_COMPILE=$?
+    RETVAL=$?
     cat f90tst_parallel.log >> $LOGFILE
+    if test "x$RETVAL" = x0 ; then
+        # need to run to know that parallel I/O actually works
+        mpirun -n 4 ./f90tst_parallel >> $LOGFILE 2>&1
+        RETVAL=$?
+        if test "x$RETVAL" != x0 ; then
+            echo "check_nf90io_libs: could not run test program" >> $LOGFILE
+        fi
+    fi
 
-    if test "x$RET_COMPILE" = x0 ; then
+    if test "x$RETVAL" = x0 ; then
 	HAVE_NF90IO=t
 	echo "check_nf90io_libs: successful" >> $LOGFILE
-    else
-	# try again with "-lnetcdf" added to the libs
-	echo "==> try again with added '-lnetcdf'" > f90tst_parallel.log
-	echo "$F90C $FFLAGS $FOPTIM -c f90tst_parallel.f90 \ " >> f90tst_parallel.log
-	echo "  &&  $LINK $FFLAGS $FOPTIM -o f90tst_parallel.o $LIBS -lnetcdf" >> f90tst_parallel.log
-	$F90C $FFLAGS $FOPTIM  $INCLUDES -c ${TOOLSDIR}/maketests/f90tst_parallel.f90 >> f90tst_parallel.log 2>&1  \
-	    &&  $LINK $FFLAGS $FOPTIM -o f90tst_parallel f90tst_parallel.o $LIBS -lnetcdf >> f90tst_parallel.log 2>&1
-	RET_COMPILE=$?
+    elif command -v nc-config >/dev/null 2>&1; then
+        # get libs and includes from nc-config (but skip other fflags)
+        EXTRALIBS="$(nc-config --flibs)"
+        EXTRAINCLUDES=
+        for o in $(nc-config --fflags); do
+          if test "${o::2}" = "-I"; then
+            EXTRAINCLUDES="$EXTRAINCLUDES $o"
+          fi
+        done
+	echo "==> try again with options from nc-config" > f90tst_parallel.log
+	echo "$F90C $FFLAGS $FOPTIM $INCLUDES $EXTRAINCLUDES -c f90tst_parallel.f90 \ " >> f90tst_parallel.log
+	echo "  &&  $LINK $FFLAGS $FOPTIM -o f90tst_parallel.o $LIBS $EXTRALIBS" >> f90tst_parallel.log
+	$F90C $FFLAGS $FOPTIM $INCLUDES $EXTRAINCLUDES -c ${TOOLSDIR}/maketests/f90tst_parallel.f90 >> f90tst_parallel.log 2>&1  \
+	    &&  $LINK $FFLAGS $FOPTIM -o f90tst_parallel f90tst_parallel.o $LIBS $EXTRALIBS >> f90tst_parallel.log 2>&1
+	RETVAL=$?
 	echo >> $LOGFILE
 	cat f90tst_parallel.log >> $LOGFILE
-	if test "x$RET_COMPILE" = x0 ; then
-	    LIBS="$LIBS -lnetcdf"
-	    HAVE_NF90IO=t
-	    echo "check_nf90io_libs: successful" >> $LOGFILE
-	else
-	# try again with "-lnetcdff" added to the libs
-	    echo "==> try again with added '-lnetcdff -lnetcdf'" > f90tst_parallel.log
-
-	    echo "$F90C $FFLAGS $FOPTIM $INCLUDES -c f90tst_parallel.f90 \ " >> f90tst_parallel.log
-	    echo "  &&  $LINK $FFLAGS $FOPTIM -o f90tst_parallel f90tst_parallel.o $LIBS -lnetcdf lnetcdff" >> f90tst_parallel.log
-	    $F90C $FFLAGS $FOPTIM  $INCLUDES -c  ${TOOLSDIR}/maketests/f90tst_parallel.f90 >> f90tst_parallel.log 2>&1  \
-		&&  $LINK $FFLAGS $FOPTIM -o f90tst_parallel f90tst_parallel.o $LIBS -lnetcdf -lnetcdff >> f90tst_parallel.log 2>&1
-	    RET_COMPILE=$?
-	    echo >> $LOGFILE
-	    cat f90tst_parallel.log >> $LOGFILE
-	    if test "x$RET_COMPILE" = x0 ; then
-		LIBS="$LIBS -lnetcdf -lnetcdff"
-		HAVE_NF90IO=t
-		echo "check_nf90io_libs: successful" >> $LOGFILE
-	    fi
+	if test "x$RETVAL" = x0 ; then
+            mpirun -n 4 ./f90tst_parallel >> $LOGFILE 2>&1
+            RETVAL=$?
+            if test "x$RETVAL" = x0 ; then
+                INCLUDES="$INCLUDES $EXTRAINCLUDES"
+                LIBS="$LIBS $EXTRALIBS"
+                HAVE_NF90IO=t
+                echo "check_nf90io_libs: successful" >> $LOGFILE
+            else
+                echo "check_nf90io_libs: could not run test program" >> $LOGFILE
+            fi
 	fi
+    else
+	echo "check_nf90io_libs: nc-config not found" >> $LOGFILE
     fi
     rm -f f90tst_parallel*
     echo " --> set HAVE_NF90IO='$HAVE_NF90IO'" >> $LOGFILE
@@ -1145,50 +1153,44 @@ check_nf90io_nompi_libs()  {
     fi
     echo >> $LOGFILE
     echo "running: check_nf90io_libs()" >> $LOGFILE
-    echo "===  f90tst_vars.f90  >>>" > f90tst_parallel.log
+    echo "===  f90tst_vars.f90  >>>" > f90tst_vars.log
     #cat genmake_tnc.F >> f90tst_vars.log
     echo "<<<  f90tst_vars.f90 ===" >> f90tst_vars.log
-    echo "$F90C $FFLAGS $FOPTIM -c f90tst_vars.f90 \ " >> f90tst_parallel.log
-    echo "  &&  $LINK $FFLAGS $FOPTIM -o f90tst_vars.o $LIBS" >> f90tst_vars.log
+    echo "$F90C $FFLAGS $FOPTIM -c f90tst_vars.f90 \ " >> f90tst_vars.log
+    echo "  &&  $LINK $FFLAGS $FOPTIM $INCLUDES -o f90tst_vars.o $LIBS" >> f90tst_vars.log
     $F90C $FFLAGS $FOPTIM  $INCLUDES -c ${TOOLSDIR}/maketests/f90tst_vars.f90 >> f90tst_vars.log 2>&1  \
 	&&  $LINK $FFLAGS $FOPTIM -o  f90tst_vars f90tst_vars.o $LIBS >> f90tst_vars.log 2>&1
-    RET_COMPILE=$?
+    RETVAL=$?
     cat f90tst_vars.log >> $LOGFILE
 
-    if test "x$RET_COMPILE" = x0 ; then
+    if test "x$RETVAL" = x0 ; then
 	HAVE_NF90IO=t
 	echo "check_nf90io_libs: successful" >> $LOGFILE
-    else
+    elif command -v nc-config >/dev/null 2>&1; then
+        EXTRALIBS="$(nc-config --flibs)"
+        EXTRAINCLUDES=
+        for o in $(nc-config --fflags); do
+          if test "${o::2}" = "-I"; then
+            EXTRAINCLUDES="$EXTRAINCLUDES $o"
+          fi
+        done
 	# try again with "-lnetcdf" added to the libs
-	echo "==> try again with added '-lnetcdf'" > f90tst_vars.log
-	echo "$F90C $FFLAGS $FOPTIM -c f90tst_vars.f90 \ " >> f90tst_vars.log
-	echo "  &&  $LINK $FFLAGS $FOPTIM -o f90tst_vars.o $LIBS -lnetcdf" >> f90tst_vars.log
-	$F90C $FFLAGS $FOPTIM  $INCLUDES -c  ${TOOLSDIR}/maketests/f90tst_vars.f90 >> f90tst_vars.log 2>&1  \
-	    &&  $LINK $FFLAGS $FOPTIM -o  f90tst_vars f90tst_vars.o $LIBS -lnetcdf >> f90tst_vars.log 2>&1
-	RET_COMPILE=$?
+	echo "==> try again with options from nc-config" > f90tst_vars.log
+	echo "$F90C $FFLAGS $FOPTIM $INCLUDES $EXTRAINCLUDES -c f90tst_vars.f90 \ " >> f90tst_vars.log
+	echo "  &&  $LINK $FFLAGS $FOPTIM -o f90tst_vars.o $LIBS $EXTRALIBS" >> f90tst_vars.log
+	$F90C $FFLAGS $FOPTIM $INCLUDES $EXTRAINCLUDES -c ${TOOLSDIR}/maketests/f90tst_vars.f90 >> f90tst_vars.log 2>&1  \
+	    &&  $LINK $FFLAGS $FOPTIM -o f90tst_vars f90tst_vars.o $LIBS $EXTRALIBS >> f90tst_vars.log 2>&1
+	RETVAL=$?
 	echo >> $LOGFILE
 	cat f90tst_vars.log >> $LOGFILE
-	if test "x$RET_COMPILE" = x0 ; then
-	    LIBS="$LIBS -lnetcdf"
+	if test "x$RETVAL" = x0 ; then
+	    INCLUDES="$INCLUDES $EXTRAINCLUDES"
+	    LIBS="$LIBS $EXTRALIBS"
 	    HAVE_NF90IO=t
 	    echo "check_nf90io_libs: successful" >> $LOGFILE
-	else
-	# try again with "-lnetcdff" added to the libs
-	    echo "==> try again with added '-lnetcdff -lnetcdf'" > f90tst_vars.log
-
-	    echo "$F90C $FFLAGS $FOPTIM -c f90tst_vars.f90 \ " >> f90tst_vars.log
-	    echo "  &&  $LINK $FFLAGS $FOPTIM -o f90tst_vars.o $LIBS -lnetcdf" >> f90tst_vars.log
-	    $F90C $FFLAGS $FOPTIM  $INCLUDES -c  ${TOOLSDIR}/maketests/f90tst_vars.f90 >> f90tst_vars.log 2>&1  \
-		&&  $LINK $FFLAGS $FOPTIM -o f90tst_vars f90tst_vars.o $LIBS -lnetcdf -lnetcdff >> f90tst_vars.log 2>&1
-	    RET_COMPILE=$?
-	    echo >> $LOGFILE
-	    cat f90tst_vars.log >> $LOGFILE
-	    if test "x$RET_COMPILE" = x0 ; then
-		LIBS="$LIBS -lnetcdf -lnetcdff"
-		HAVE_NF90IO=t
-		echo "check_nf90io_libs: successful" >> $LOGFILE
-	    fi
 	fi
+    else
+	echo "check_nf90io_libs: nc-config not found" >> $LOGFILE
     fi
     rm -f f90tst_vars*
     echo " --> set HAVE_NF90IO='$HAVE_NF90IO'" >> $LOGFILE
