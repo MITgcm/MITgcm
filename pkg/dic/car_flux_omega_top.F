@@ -81,7 +81,7 @@ c        exp_tot=0
             cflux(i,j,k)=0. _d 0
          enddo
          
-         kBottom   = MAX(kLowC(i,j,bi,bj),1)
+         kBottom   = kLowC(i,j,bi,bj)
          
          DO k=1,nLev
           if (hFacC(i,j,k,bi,bj).gt.0. _d 0) then
