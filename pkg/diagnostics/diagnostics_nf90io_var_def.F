@@ -51,15 +51,26 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER varid, rec_dimid, i_dimid, j_dimid, k_dimid, err
+      INTEGER xtype
       INTEGER dimids(4)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER( myThid )
 
+C logic copied from mnc...
+      IF ( ( writeBinaryPrec .EQ. precFloat32 .AND.
+     &       fflags(listId)(1:1) .NE. 'D' )
+     &     .OR. fflags(listId)(1:1) .EQ. 'R' ) THEN
+        xtype = NF90_FLOAT
+      ELSE
+        xtype = NF90_DOUBLE
+      ENDIF
+
 C     we need to initialize this variable
       err = nf90_inq_dimid(ncid, 'record', rec_dimid)
       CALL nf90ERR(err, "inq record_dimid",myThid)
+
 C     gdiag will tell us what the other two or three dimensions are
 C     so here we get i_dimid and j_dimid with the proper dimensions
       IF (gdiag(ndId)(2:2) .EQ. 'M') THEN
@@ -105,13 +116,13 @@ C     do the same for k_dimid (if necessary)
          ENDIF
 
          dimids =  (/  i_dimid, j_dimid, k_dimid, rec_dimid /)
-         err = nf90_def_var(ncid, cdiag(ndId), NF90_DOUBLE, dimids,
+         err = nf90_def_var(ncid, cdiag(ndId), xtype, dimids,
      &        varid)
       ELSEIF (nLevOutp.EQ.1) THEN
 C        Define the one-level variable
          dimids(1:3) =  (/  i_dimid, j_dimid, rec_dimid /)
-         err = nf90_def_var(ncid, cdiag(ndId), NF90_DOUBLE,
-     &        dimids(1:3), varid)
+         err = nf90_def_var(ncid, cdiag(ndId), xtype, dimids(1:3),
+     &        varid)
       ELSE
 C        This is a multi-level diagnostic and we need to define a new
 C        dimension k_level.
@@ -145,7 +156,7 @@ C     &           ,myThid)
          ENDIF
 C        Done if we need to define k_level
          dimids =  (/  i_dimid, j_dimid, k_dimid, rec_dimid /)
-         err = nf90_def_var(ncid, cdiag(ndId), NF90_DOUBLE, dimids,
+         err = nf90_def_var(ncid, cdiag(ndId), xtype, dimids,
      &        varid)
       ENDIF
       CALL nf90ERR(err, "Adding diagsnostic variable",myThid)
