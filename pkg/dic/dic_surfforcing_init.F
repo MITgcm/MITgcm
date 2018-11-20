@@ -206,7 +206,7 @@ C FOR NON-INTERACTIVE Si
          ENDDO
         ENDDO
 
-#if defined(CARBONCHEM_SOLVESAPHE_CONST) || defined(CARBONCHEM_SOLVESAPHE_PCO2)
+#ifdef CARBONCHEM_SOLVESAPHE
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS_SOLVESAPHE',myThid)
 #endif
@@ -241,12 +241,15 @@ C$TAF LOOP = parallel
            DO i=iMin,iMax
             IF ( maskC(i,j,kLev,bi,bj) .NE. 0. _d 0) THEN
 C$TAF init dic_surf = static, 10
-#ifdef CARBONCHEM_SOLVESAPHE_PCO2
+#ifdef CARBONCHEM_SOLVESAPHE
+             IF ( selectPHsolver.GT.0 ) THEN
+C Use Munhoven's Solvesaphe routine to initialize pH
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
+              IF (debugMode) CALL DEBUG_CALL(
+     &            'AHINI_FOR_AT',myThid)
 #endif
 C call AHINI_FOR_AT to get better initial guess of pH
-               CALL AHINI_FOR_AT(
+              CALL AHINI_FOR_AT(
      I           surfalk(i,j)*permil,
      I           surfdic(i,j)*permil, 
      I           bt(i,j,bi,bj),
@@ -256,9 +259,9 @@ C call AHINI_FOR_AT to get better initial guess of pH
 C$TAF STORE pH(i,j,bi,bj)                              = dic_surf
 C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
 
-C Use Munhoven's Solvesaphe routine to initialize pH
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
+              IF (debugMode) CALL DEBUG_CALL(
+     &           'CALC_PCO2_SOLVESAPHE',myThid)
 #endif
               CALL CALC_PCO2_SOLVESAPHE(
      I        surftemp(i,j),surfsalt(i,j),
@@ -273,14 +276,17 @@ C     I        akn(i,j,bi,bj),akhs(i,j,bi,bj),aphscale(i,j,bi,bj),
 C     I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U        pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I        i,j,kLev,bi,bj, it ,  myThid )       
-#else
+             ELSE
+C Use the original Follows et al. (2006) solver
+#endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
+              IF (debugMode) CALL DEBUG_CALL(
+     &           'CALC_PCO2_APPROX',myThid)
 #endif
-             DO it=1,10
+              DO it=1,10
 C$TAF STORE pH(i,j,bi,bj)                              = dic_surf
 C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
-              CALL CALC_PCO2_APPROX(
+               CALL CALC_PCO2_APPROX(
      I        surftemp(i,j),surfsalt(i,j),
      I        surfdic(i,j), surfphos(i,j),
      I        surfsi(i,j),surfalk(i,j),
@@ -293,8 +299,10 @@ C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U        pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I        i,j,kLev,bi,bj, it ,  myThid )
-             ENDDO
-#endif
+              ENDDO
+#ifdef CARBONCHEM_SOLVESAPHE             
+             ENDIF
+#endif /* CARBONCHEM_SOLVESAPHE */
             ENDIF
            ENDDO
           ENDDO

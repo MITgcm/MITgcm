@@ -83,12 +83,7 @@ C       References: Mucci (1983)
      &                     ak0,ak1,ak2,akw,akb,aks,akf,
      &                     ak1p,ak2p,ak3p,aksi, fugf,
      &                     ff,ft,st,bt, Ksp_TP_Calc
-#if defined(CARBONCHEM_SOLVESAPHE_CONST) || defined(CARBONCHEM_SOLVESAPHE_PCO2)
-     &                    ,cat, akn, akhs, aphscale, Ksp_TP_Arag
-#ifdef CARBONCHEM_SOLVESAPHE_PCO2   
-     &                    ,at_maxniter
-#endif
-#endif     
+
       _RL  ak0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ak1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ak2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -107,18 +102,62 @@ C Fugacity Factor added by Val Bennington Nov. 2010
       _RL  st(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  bt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Ksp_TP_Calc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#if defined(CARBONCHEM_SOLVESAPHE_CONST) || defined(CARBONCHEM_SOLVESAPHE_PCO2)
+      
+#ifdef CARBONCHEM_SOLVESAPHE
 C Use Munhoven's Solvesaphe routines
+C  cat = total calcium concentration
+C    [Culkin (1965)]
+C  akn = [H][NH3]/[NH4]
+C    [Yao and Millero (1995)]
+C  akhs = [H][HS]/[H2S]
+C    [Millero et al. (1988)]
+C  aphscale, pH scale conversion factor
+C  Ksp_TP_Arag solubility product for aragonite
+C    [Following Mucci (1983)]
+C  at_maxniter, max number of iterations
+C
+C  selectBTconst estimates borate concentration from salinity:
+C     selectBTconst=1 for the default formulation of Uppström (1974) i.e. the same as S/R CARBON_COEFFS
+C     selectBTconst=2 for the new formulation from Lee et al (2010)
+C
+C  selectFTconst estimates fluoride concentration from salinity:
+C     selectFTconst=1 for the default formulation of Riley (1965) i.e. the same as S/R CARBON_COEFFS
+C     selectFTconst=2 for the new formulation from Culkin (1965)
+C
+C  selectHFconst sets the first dissociation constant for hydrogen fluoride:
+C     selectHFconst=1 for the default  Dickson and Riley (1979) i.e. the same as S/R CARBON_COEFFS
+C     selectHFconst=2 for the formulation of Perez and Fraga (1987)
+C
+C  selectK1K2const sets the first and second dissociation constants of carbonic acid:
+C     selectK1K2const=1 for the default formulation of Millero (1995) with data from Mehrbach et al. (1973),
+C          i.e. the same as S/R CARBON_COEFFS
+C     selectK1K2const=2 for the formulation of Roy et al. (1993)
+C     selectK1K2const=3 for the "combination" formulation of Millero (1995)
+C     selectK1K2const=4 for the formulation of Luecker et al. (2000)
+C     selectK1K2const=5 for the formulation of Millero (2010, Mar. Fresh Wat. Res.)
+C     selectK1K2const=6 for the formulation of Waters, Millero, Woosley (2014, Mar. Chem.)
+C  selectPHsolver sets the pH solver to use the GENERAL (selectPHsolver=1), 
+C        SEC (selectPHsolver=2) or FAST (selectPHsolver=3) routine.
+
+       COMMON /CARBONCHEM_SOLVESAPHE/
+     &                     cat, akn, akhs, aphscale, Ksp_TP_Arag,
+     &                     at_maxniter,
+     &                     selectBTconst,selectFTconst,
+     &                     selectHFconst,selectK1K2const,
+     &                     selectPHsolver
+
       _RL  cat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  akn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  akhs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  aphscale(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Ksp_TP_Arag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#ifdef CARBONCHEM_SOLVESAPHE_PCO2
-C     Parameters for the max number of iterations allowed for ph solver
       INTEGER at_maxniter
-#endif
+      INTEGER selectBTconst
+      INTEGER selectFTconst
+      INTEGER selectHFconst
+      INTEGER selectK1K2const
+      INTEGER selectPHsolver
 #endif      
       
 C Store dissociation coefficients for O2 solubility

@@ -23,8 +23,8 @@ C
 C    JMLauderdale Summer 2018:
 C    - Modified for MITGCM style, just keeping the "general" equations from
 C        MOD_PHSOLVERS SOLVE_AT_GENERAL SOLVE_AT_GENERAL_SEC and SOLVE_AT_FAST. 
-C        The default is GENERAL, use cpp flags in DIC_OPTIONS.h to use SEC
-C        "#define USE_SOLVESAPHE_SEC" or FAST "#define USE_SOLVESAPHE_FAST".
+C        Use runtime flags in data.dic to use GENERAL (selectPHsolver=1, default), 
+C        SEC (selectPHsolver=2) or FAST (selectPHsolver=3).
 C
 C    - MOD_CHEMCONST is included here as CARBON_COEFFS_SOLVESAPHE, with the 
 C        style brought in line with S/R CARBON_COEFF (i.e all ak values are 
@@ -34,28 +34,28 @@ C    - MOD_CHEMCONST pressure corrections have been split off into the new
 C        S/R CARBON_COEFFS_SOLVESAPHE_PRESSURE_DEP, call both to get pressure
 C        adjusted dissociation constants
 C    
-C    - Different coefficients can be accessed using cpp flags in DIC_OPTIONS.h:
+C    - Different coefficients can be accessed using runtime flags in data.dic:
 C
 C    Borate concentration from salinity:
-C     "#define CARBONCHEM_LEE10BT" for new formulation from Lee et al (2010)
-C     else use the default formulation Uppström (1974) i.e. the same as S/R CARBON_COEFFS
+C     selectBTconst=1 for the default formulation of Uppström (1974) i.e. the same as S/R CARBON_COEFFS
+C     selectBTconst=2 for the new formulation from Lee et al (2010)
 C
 C    Fluoride concentration from salinity:
-C    "#undef CARBONCHEM_CULKIN65FT" for new formulation from Culkin (1965)
-C    else use the default formulation Riley (1965) i.e. the same as S/R CARBON_COEFFS
+C     selectFTconst=1 for the default formulation of Riley (1965) i.e. the same as S/R CARBON_COEFFS
+C     selectFTconst=2 for the new formulation from Culkin (1965)
 C
 C    First dissociation constant for hydrogen fluoride:
-C     "#define CARBONCHEM_PEREZ87KF" for Perez and Fraga (1987)
-C     else use default formulation of Dickson and Riley (1979) i.e. the same as S/R CARBON_COEFFS
+C     selectHFconst=1 for the default  Dickson and Riley (1979) i.e. the same as S/R CARBON_COEFFS
+C     selectHFconst=2 for the formulation of Perez and Fraga (1987)
 C
 C    First and second dissociation constants of carbonic acid:
-C     "#define "CARBONCHEM_ROY93K1K2"     for Roy et al. (1993)
-C     "#define "CARBONCHEM_MILLERO95COMK1K2" for the "combination" formulation of Millero (1995)
-C     "#define "CARBONCHEM_LUECKER00K1K2" for Luecker et al. (2000)
-C     "#define "CARBONCHEM_MILLERO10K1K2" for Millero (2010, Mar. Fresh Wat. Res.)
-C     "#define "CARBONCHEM_WATERS14K1K2"  for Waters, Millero, Woosley (2014, Mar. Chem.)
-C     else use the default formulation of Millero (1995) with data from Mehrbach et al. (1973),
+C     selectK1K2const=1 for the default formulation of Millero (1995) with data from Mehrbach et al. (1973),
 C          i.e. the same as S/R CARBON_COEFFS
+C     selectK1K2const=2 for the formulation of Roy et al. (1993)
+C     selectK1K2const=3 for the "combination" formulation of Millero (1995)
+C     selectK1K2const=4 for the formulation of Luecker et al. (2000)
+C     selectK1K2const=5 for the formulation of Millero (2010, Mar. Fresh Wat. Res.)
+C     selectK1K2const=6 for the formulation of Waters, Millero, Woosley (2014, Mar. Chem.)
 C
 C--  File dic_solvesaphe.F:
 C--   Contents:
@@ -103,8 +103,7 @@ C -----------------------------------------------------------------------
       _RL p_hini
       INTEGER i,j,k,bi,bj,myIter,myThid
 
-#ifdef CARBONCHEM_SOLVESAPHE_PCO2
-      
+#ifdef CARBONCHEM_SOLVESAPHE      
 C -----------------------------------------------------------------------
 C     Local variables 
 C -----------------------------------------------------------------------
@@ -149,7 +148,7 @@ C      If the discriminant is positive
       ENDIF
       ENDIF
  
-#endif /* CARBONCHEM_SOLVESAPHE_PCO2 */
+#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
 C      END SUBROUTINE AHINI_FOR_AT
@@ -195,7 +194,7 @@ C      --------------------
       _RL p_alknw_sup
       INTEGER i,j,k,bi,bj,myIter,myThid
       
-#ifdef CARBONCHEM_SOLVESAPHE_PCO2  
+#ifdef CARBONCHEM_SOLVESAPHE
 C      p_alknw_inf = -\Sum_i m_i Xtot_i
 C      
 C      p_alknw_inf =-p_dictot*0. _d 0 & C         n = 2, m = 0
@@ -224,7 +223,7 @@ C                  p_flutot*(1. _d 0-1. _d 0)    ! n = 1, m = 1
      &             + p_po4tot + p_po4tot + p_siltot
      &             + p_nh4tot + p_h2stot
 
-#endif /* CARBONCHEM_SOLVESAPHE_PCO2 */
+#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
 C      END SUBROUTINE ANW_INFSUP
@@ -275,7 +274,7 @@ C      _RL  knlocal,khslocal,phscalelocal
       _RL  z_co3
       INTEGER i,j,k,bi,bj,myIter,myThid
 
-#ifdef CARBONCHEM_SOLVESAPHE_PCO2
+#ifdef CARBONCHEM_SOLVESAPHE
 
 C     == Local variables ==
       _RL  z_h
@@ -316,39 +315,37 @@ C Load from the carbon_chem common block
              
       at_maxniter  = 50
 
-#if defined(USE_SOLVESAPHE_SEC)
-
+      IF ( selectPHsolver.EQ.1 ) THEN
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('SOLVESAPHE_AT_GENERAL_SEC',myThid)
+        IF (debugMode) CALL DEBUG_CALL(
+     &     'SOLVESAPHE_AT_GENERAL',myThid)
+#endif
+         CALL SOLVE_AT_GENERAL(z_alktot, z_dictot, z_bortot,
+     &                 z_po4tot, z_siltot, z_nh4tot, z_h2stot, 
+     &                 z_so4tot, z_flutot, z_hini,   z_val,
+     &                 z_h,
+     &                 i, j, k, bi, bj, myIter, myThid )
+      ELSEIF ( selectPHsolver.EQ.2 ) THEN
+#ifdef ALLOW_DEBUG
+         IF (debugMode) CALL DEBUG_CALL(
+     &      'SOLVESAPHE_AT_GENERAL_SEC',myThid)
 #endif    
-      CALL SOLVE_AT_GENERAL_SEC(z_alktot, z_dictot, z_bortot,
-     &                          z_po4tot, z_siltot, z_nh4tot, z_h2stot,
-     &                          z_so4tot, z_flutot, z_hini,   z_val,
-     &                          z_h,
-     &                          i, j, k, bi, bj, myIter, myThid )
-    
-#elif (defined(USE_SOLVESAPHE_FAST))
-
+         CALL SOLVE_AT_GENERAL_SEC(z_alktot, z_dictot, z_bortot,
+     &                 z_po4tot, z_siltot, z_nh4tot, z_h2stot,
+     &                 z_so4tot, z_flutot, z_hini,   z_val,
+     &                 z_h,
+     &                 i, j, k, bi, bj, myIter, myThid )
+      ELSEIF ( selectPHsolver.EQ.3 ) THEN
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('SOLVESAPHE_AT_FAST',myThid)
+         IF (debugMode) CALL DEBUG_CALL(
+     &      'SOLVESAPHE_AT_FAST',myThid)
 #endif
-      CALL SOLVE_AT_FAST(z_alktot, z_dictot, z_bortot,
-     &                   z_po4tot, z_siltot, z_nh4tot, z_h2stot,
-     &                   z_so4tot, z_flutot, z_hini,   z_val,
-     &                   z_h,
-     &                   i, j, k, bi, bj, myIter, myThid )
-            
-#else /* Use the default SOLVESAPHE_AT_GENERAL routine */
-
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('SOLVESAPHE_AT_GENERAL',myThid)
-#endif
-      CALL SOLVE_AT_GENERAL(z_alktot, z_dictot, z_bortot,
-     &                      z_po4tot, z_siltot, z_nh4tot, z_h2stot, 
-     &                      z_so4tot, z_flutot, z_hini,   z_val,
-     &                      z_h,
-     &                      i, j, k, bi, bj, myIter, myThid )
-#endif /* USE_SOLVESAPHE_XXX */
+         CALL SOLVE_AT_FAST(z_alktot, z_dictot, z_bortot,
+     &                 z_po4tot, z_siltot, z_nh4tot, z_h2stot,
+     &                 z_so4tot, z_flutot, z_hini,   z_val,
+     &                 z_h,
+     &                 i, j, k, bi, bj, myIter, myThid )
+      ENDIF
 
 C Unlikely, but it might happen...
       IF ( z_h .LT. 0. _d 0 ) THEN
@@ -396,7 +393,7 @@ C Reconvert from mol/kg -> mol/m^3
       z_co3    = z_co3/permil
       z_co2aq  = z_co2s/permil
         
-#endif /* CARBONCHEM_SOLVESAPHE_PCO2 */
+#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
 C      END SUBROUTINE CALC_PCO2_SOLVESAPHE
@@ -424,7 +421,7 @@ C     MITgcm GLobal variables
       _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj,iMin,iMax,jMin,jMax,myThid
 
-#if defined(CARBONCHEM_SOLVESAPHE_PCO2) || defined(CARBONCHEM_SOLVESAPHE_CONST)
+#ifdef CARBONCHEM_SOLVESAPHE
 
 C LOCAL VARIABLES
       INTEGER i, j, k
@@ -474,14 +471,7 @@ C salinity
            scl=s/1.80655 _d 0
            s35=s/35. _d 0     
 
-#ifdef CARBONCHEM_LEE10BT  
-C -----------------------------------------------------------------------    
-C       Calculate the total borate concentration in mol/kg-SW
-C       given the salinity of a sample
-C       References: New formulation from Lee et al (2010)
-C       pH scale  : N/A
-           bt(i,j,bi,bj) = 0.0002414 _d 0* scl/10.811 _d 0
-#else             
+      IF ( selectBTconst.EQ.1 ) THEN
 C -----------------------------------------------------------------------    
 C       Calculate the total borate concentration in mol/kg-SW
 C       given the salinity of a sample
@@ -489,24 +479,31 @@ C       References: Uppström (1974), cited by  Dickson et al. (2007, chapter 5,
 C                   Millero (1982) cited in Millero (1995)
 C       pH scale  : N/A
            bt(i,j,bi,bj) = 0.000232 _d 0* scl/10.811 _d 0
-#endif
+      ELSEIF ( selectBTconst.EQ.2 ) THEN
+C -----------------------------------------------------------------------    
+C       Calculate the total borate concentration in mol/kg-SW
+C       given the salinity of a sample
+C       References: New formulation from Lee et al (2010)
+C       pH scale  : N/A
+           bt(i,j,bi,bj) = 0.0002414 _d 0* scl/10.811 _d 0
+      ENDIF
       
-#ifdef CARBONCHEM_CULKIN65FT
+      IF ( selectFTconst.EQ.1 ) THEN
+C -----------------------------------------------------------------------    
+C       Calculate the total fluoride concentration in mol/kg-SW
+C       given the salinity of a sample
+C       References: Riley (1965)
+C       pH scale  : N/A   
+           ft(i,j,bi,bj) = 0.000067 _d 0 * scl/18.9984 _d 0      
+      ELSEIF ( selectFTconst.EQ.2 ) THEN
 C -----------------------------------------------------------------------    
 C       Calculate the total fluoride concentration in mol/kg-SW
 C       given the salinity of a sample
 C       References: Culkin (1965) (???)
 C       pH scale  : N/A   
            ft(i,j,bi,bj) = 0.000068 _d 0*(s35)
-#else
-C -----------------------------------------------------------------------    
-C       Calculate the total fluoride concentration in mol/kg-SW
-C       given the salinity of a sample
-C       References: Riley (1965)
-C       pH scale  : N/A   
-           ft(i,j,bi,bj) = 0.000067 _d 0 * scl/18.9984 _d 0
-#endif
-   
+      ENDIF
+         
 C -----------------------------------------------------------------------    
 C       Calculate the total sulfate concentration in mol/kg-SW
 C       given the salinity of a sample
@@ -554,27 +551,27 @@ C       pH scale  : N/A
 C    "x2" term often neglected (assumed = 1) in applications of Weiss's (1974) equation 9
 C     x2 = 1 - x1 = 1 - xCO2 (it is very close to 1, but not quite)           
            fugf(i,j,bi,bj) = exp( (B+2. _d 0*delta) * P1atm / RT)
-                
-#ifdef CARBONCHEM_LUECKER00K1K2
+
+      IF ( selectK1K2const.EQ.1 ) THEN
 C -----------------------------------------------------------------------
 C       Calculate first dissociation constant of carbonic acid
-C       in mol/kg-SW on the Total pH-scale.
-C       Suitable when 2 < T < 35 and 19 < S < 43    
-C       References: Luecker et al. (2000) -- also Handbook (2007)
-C       pH scale:   Total
-           ak1(i,j,bi,bj)  = 10. _d 0**( 61.2172 _d 0 
-     &                 - 3633.86 _d 0*inv_t_k - 9.67770 _d 0*dlog_t_k 
-     &                 + s*(0.011555 - s*0.0001152 _d 0))
+C       in mol/kg-SW on the Seawater pH-scale.
+C       References: Millero (1995, eq 35 -- pK1(MEHR));
+C                   Mehrbach et al. (1973) data
+C       pH scale:   Seawater      
+           ak1(i,j,bi,bj)=10.**(-1. _d 0*(3670.7 _d 0*inv_t_k -
+     &          62.008 _d 0 + 9.7944 _d 0*dlog_t_k -
+     &          0.0118 _d 0 * s + 0.000116 _d 0*s*s))
 
 C       Calculate second dissociation constant of carbonic acid
-C       in mol/kg-SW on the Total pH-scale.
-C       Suitable when 2 < T < 35 and 19 < S < 43    
-C       References: Luecker et al. (2000) -- also Handbook (2007)
-C       pH scale:   Total     
-           ak2(i,j,bi,bj)  = 10. _d 0**(-25.9290 _d 0
-     &                 - 471.78 _d 0*inv_t_k + 3.16967 _d 0*dlog_t_k
-     &                 + s*(0.01781 _d 0 - s*0.0001122 _d 0))
-#elif (defined (CARBONCHEM_ROY93K1K2))
+C       in mol/kg-SW on the Seawater pH-scale.    
+C       References: Millero (1995, eq 36 -- pK2(MEHR))
+C                   Mehrbach et al. (1973) data
+C       pH scale:   Seawater
+           ak2(i,j,bi,bj)=10.**(-1. _d 0*(1394.7 _d 0*inv_t_k + 
+     &           4.777 _d 0- 0.0184 _d 0*s + 0.000118 _d 0*s*s))
+
+      ELSEIF ( selectK1K2const.EQ.2 ) THEN
 C -----------------------------------------------------------------------
 C       Calculate first dissociation constant of carbonic acid
 C       in mol/kg-SW on the Total pH-scale.
@@ -598,7 +595,48 @@ C       Note      : converted here from mol/kg-H2O to mol/kg-SW
      &              + ( -23.9722 _d 0*inv_t_k - 0.106901773 _d 0)*sqrts
      &              + 0.1130822*s - 0.00846934 _d 0*sqrts*s)                   
      &              *(1. _d 0 - 0.001005 _d 0*s)
-#elif (defined (CARBONCHEM_MILLERO10K1K2))
+
+      ELSEIF ( selectK1K2const.EQ.3 ) THEN
+C -----------------------------------------------------------------------
+C       Calculate first dissociation constant of carbonic acid
+C       in mol/kg-SW on the Seawater pH-scale.
+C       References: Millero (1995, eq 50 -- ln K1(COM))
+C       pH scale:   Seawater      
+           ak1(i,j,bi,bj)  = EXP(2.18867 _d 0 - 2275.0360 _d 0*inv_t_k 
+     &              - 1.468591 _d 0*dlog_t_k
+     &              + ( -0.138681 _d 0 - 9.33291 _d 0*inv_t_k)*sqrts
+     &              + 0.0726483 _d 0*s - 0.00574938 _d 0*s*sqrts)
+      
+C       Calculate second dissociation constant of carbonic acid
+C       in mol/kg-SW on the Seawater pH-scale.    
+C       References: Millero (1995, eq 51 -- ln K2(COM))
+C       pH scale:   Seawater
+           ak2(i,j,bi,bj)  = EXP(-0.84226 _d 0 - 3741.1288 _d 0*inv_t_k 
+     &              -  1.437139 _d 0*dlog_t_k
+     &              + (-0.128417 _d 0 - 24.41239 _d 0*inv_t_k)*sqrts
+     &              +  0.1195308 _d 0*s - 0.00912840 _d 0*s*sqrts)
+
+      ELSEIF ( selectK1K2const.EQ.4 ) THEN                          
+C -----------------------------------------------------------------------
+C       Calculate first dissociation constant of carbonic acid
+C       in mol/kg-SW on the Total pH-scale.
+C       Suitable when 2 < T < 35 and 19 < S < 43    
+C       References: Luecker et al. (2000) -- also Handbook (2007)
+C       pH scale:   Total
+           ak1(i,j,bi,bj)  = 10. _d 0**( 61.2172 _d 0 
+     &                 - 3633.86 _d 0*inv_t_k - 9.67770 _d 0*dlog_t_k 
+     &                 + s*(0.011555 - s*0.0001152 _d 0))
+
+C       Calculate second dissociation constant of carbonic acid
+C       in mol/kg-SW on the Total pH-scale.
+C       Suitable when 2 < T < 35 and 19 < S < 43    
+C       References: Luecker et al. (2000) -- also Handbook (2007)
+C       pH scale:   Total     
+           ak2(i,j,bi,bj)  = 10. _d 0**(-25.9290 _d 0
+     &                 - 471.78 _d 0*inv_t_k + 3.16967 _d 0*dlog_t_k
+     &                 + s*(0.01781 _d 0 - s*0.0001122 _d 0))
+
+      ELSEIF ( selectK1K2const.EQ.5 ) THEN
 C -----------------------------------------------------------------------
 C       Calculate first dissociation constant of carbonic acid
 C       in mol/kg-SW on the Seawater pH-scale.
@@ -623,7 +661,8 @@ C       pH scale:   Seawater
      &     + 21.3728 _d 0*sqrts + 0.1218 _d 0*s - (3.688 _d -4)*s2
      &     + (-788.289 _d 0*sqrts - 19.189 _d 0*s)*inv_t_k
      &     -3.374 _d 0*sqrts*dlog_t_k))
-#elif (defined (CARBONCHEM_WATERS14K1K2))
+
+      ELSEIF ( selectK1K2const.EQ.6 ) THEN
 C -----------------------------------------------------------------------
 C       Calculate first dissociation constant of carbonic acid
 C       in mol/kg-SW on the Seawater pH-scale.
@@ -648,44 +687,8 @@ C       pH scale:   Seawater
      &     + 21.225890 _d 0*sqrts + 0.12450870 _d 0*s - (3.7243 _d -4)*s2
      &     + (-779.3444 _d 0*sqrts - 19.91739 _d 0*s)*inv_t_k
      &     -3.3534679 _d 0*sqrts*dlog_t_k))
-#elif (defined (CARBONCHEM_MILLERO95K1K2COM))
-C -----------------------------------------------------------------------
-C       Calculate first dissociation constant of carbonic acid
-C       in mol/kg-SW on the Seawater pH-scale.
-C       References: Millero (1995, eq 50 -- ln K1(COM))
-C       pH scale:   Seawater      
-           ak1(i,j,bi,bj)  = EXP(2.18867 _d 0 - 2275.0360 _d 0*inv_t_k 
-     &              - 1.468591 _d 0*dlog_t_k
-     &              + ( -0.138681 _d 0 - 9.33291 _d 0*inv_t_k)*sqrts
-     &              + 0.0726483 _d 0*s - 0.00574938 _d 0*s*sqrts)
-      
-C       Calculate second dissociation constant of carbonic acid
-C       in mol/kg-SW on the Seawater pH-scale.    
-C       References: Millero (1995, eq 51 -- ln K2(COM))
-C       pH scale:   Seawater
-           ak2(i,j,bi,bj)  = EXP(-0.84226 _d 0 - 3741.1288 _d 0*inv_t_k 
-     &              -  1.437139 _d 0*dlog_t_k
-     &              + (-0.128417 _d 0 - 24.41239 _d 0*inv_t_k)*sqrts
-     &              +  0.1195308 _d 0*s - 0.00912840 _d 0*s*sqrts)
-#else /* Use default formulation of Millero 1995/Mehrbach et al. (1973) */
-C -----------------------------------------------------------------------
-C       Calculate first dissociation constant of carbonic acid
-C       in mol/kg-SW on the Seawater pH-scale.
-C       References: Millero (1995, eq 35 -- pK1(MEHR));
-C                   Mehrbach et al. (1973) data
-C       pH scale:   Seawater      
-           ak1(i,j,bi,bj)=10.**(-1. _d 0*(3670.7 _d 0*inv_t_k -
-     &          62.008 _d 0 + 9.7944 _d 0*dlog_t_k -
-     &          0.0118 _d 0 * s + 0.000116 _d 0*s*s))
 
-C       Calculate second dissociation constant of carbonic acid
-C       in mol/kg-SW on the Seawater pH-scale.    
-C       References: Millero (1995, eq 36 -- pK2(MEHR))
-C                   Mehrbach et al. (1973) data
-C       pH scale:   Seawater
-           ak2(i,j,bi,bj)=10.**(-1. _d 0*(1394.7 _d 0*inv_t_k + 
-     &           4.777 _d 0- 0.0184 _d 0*s + 0.000118 _d 0*s*s))
-#endif
+      ENDIF /* selectK1K2const */
     
 C -----------------------------------------------------------------------
 C       Calculate boric acid dissociation constant KB
@@ -782,14 +785,7 @@ C       Note      : converted here from mol/kg-H2O to mol/kg-SW
      &                + ( 1776. _d 0*inv_t_k)*ion_st*ion_st)    
      &               * ( 1. _d 0 - 0.001005 _d 0*s)                     
 
-#ifdef CARBONCHEM_PEREZ87KF                     
-C -----------------------------------------------------------------------    
-C       Calculate the dissociation constant for hydrogen fluoride
-C       in mol/kg-SW
-C       References: Perez and Fraga (1987)
-C       pH scale  : Total (according to Handbook, 2007)
-           akf(i,j,bi,bj) = EXP(874. _d 0*inv_t_k - 9.68 _d 0 + 0.111 _d 0*sqrts)
-#else     
+      IF ( selectHFconst.EQ.1 ) THEN
 C -----------------------------------------------------------------------    
 C       Calculate the dissociation constant \beta_{HF} [(mol/kg-SW)^{-1}]
 C       in (mol/kg-SW)^{-1}, where
@@ -799,8 +795,15 @@ C       pH scale  : free
 C       Note      : converted here from mol/kg-H2O to mol/kg-SW
            akf(i,j,bi,bj) = EXP(1590.2 _d 0*inv_t_k - 12.641 _d 0 
      &                 + 1.525 _d 0*sqrtis) 
-     &               / ( 1. _d 0 - 0.001005 _d 0*s)                          
-#endif
+     &               / ( 1. _d 0 - 0.001005 _d 0*s)                                
+      ELSEIF ( selectHFconst.EQ.2 ) THEN
+C -----------------------------------------------------------------------    
+C       Calculate the dissociation constant for hydrogen fluoride
+C       in mol/kg-SW
+C       References: Perez and Fraga (1987)
+C       pH scale  : Total (according to Handbook, 2007)
+           akf(i,j,bi,bj) = EXP(874. _d 0*inv_t_k - 9.68 _d 0 + 0.111 _d 0*sqrts)
+      ENDIF
 
 C -----------------------------------------------------------------------    
 C       Calculate the water dissociation constant Kw in (mol/kg-SW)^2
@@ -823,13 +826,14 @@ C pH scale conversion factors and conversions. Everything on total pH scale
       
            total2sw = total2free * free2sw    
 
-           aphscale(i,j,bi,bj) = 1._d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj)
+           aphscale(i,j,bi,bj) = 1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj)
 
-#if ! defined(CARBONCHEM_ROY93K1K2) || ! defined(CARBONCHEM_LUECKER00K1K2)
+
+      IF ( selectK1K2const.NE.2 .AND. selectK1K2const.NE.4 ) THEN
 C Convert to the total pH scale
            ak1(i,j,bi,bj)  = ak1(i,j,bi,bj)/total2sw
            ak2(i,j,bi,bj)  = ak2(i,j,bi,bj)/total2sw
-#endif
+      ENDIF  
            ak1p(i,j,bi,bj) = ak1p(i,j,bi,bj)/total2sw
            ak2p(i,j,bi,bj) = ak2p(i,j,bi,bj)/total2sw
            ak3p(i,j,bi,bj) = ak3p(i,j,bi,bj)/total2sw
@@ -837,9 +841,9 @@ C Convert to the total pH scale
            akn (i,j,bi,bj) = akn (i,j,bi,bj)/total2sw
            akhs(i,j,bi,bj) = akhs(i,j,bi,bj)/total2sw
            aks (i,j,bi,bj) = aks (i,j,bi,bj)/total2free
-#ifndef CARBONCHEM_PEREZ87KF       
+      IF ( selectHFconst.EQ.1 ) THEN
            akf (i,j,bi,bj) = akf (i,j,bi,bj)/total2free
-#endif
+      ENDIF
            akw (i,j,bi,bj) = akw (i,j,bi,bj)/total2free
            
 C -----------------------------------------------------------------------    
@@ -895,7 +899,7 @@ C       Units     : (mol/kg-SW)^2
          endif
          end do
         end do
-#endif /* CARBONCHEM_SOLVESAPHE_PCO2 OR CARBONCHEM_SOLVESAPHE_CONST */
+#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
 C     END SUBROUTINE CARBON_COEFFS_SOLVESAPHE
@@ -924,7 +928,7 @@ C     MITgcm GLobal variables
       _RL  stemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj,iMin,iMax,jMin,jMax,Klevel,myThid
 
-#if defined(CARBONCHEM_SOLVESAPHE_PCO2) || defined(CARBONCHEM_SOLVESAPHE_CONST)
+#ifdef CARBONCHEM_SOLVESAPHE
 C LOCAL VARIABLES
       INTEGER i, j, k
       _RL  bdepth
@@ -1160,8 +1164,8 @@ C -----------------------------------------------------------------------
 C       Apply pressure dependence to the stoichiometric solubility product
 C       of calcite in seawater
 C       References: Millero (1995) for pressure correction
-           zdvi      =  -48.76_d 0 + 0.5304_d 0*t
-           zdki      = (-11.76_d 0 + 0.3692_d 0*t)*1. _d -3
+           zdvi      =  -48.76 _d 0 + 0.5304 _d 0*t
+           zdki      = (-11.76 _d 0 + 0.3692 _d 0*t)*1. _d -3
            pfac = (-zdvi + zdki*pressc/2. _d 0)*pressc/zrt
            Ksp_TP_Calc(i,j,bi,bj) = Ksp_TP_Calc(i,j,bi,bj) * exp(pfac)
       
@@ -1169,8 +1173,8 @@ C -----------------------------------------------------------------------
 C       Apply pressure dependence to the stoichiometric solubility product
 C       of aragonite in seawater
 C       References: Millero (1979) for pressure correction
-           zdvi      =  -48.76_d 0 + 0.5304_d 0*t  + 2.8 _d 0
-           zdki      = (-11.76_d 0 + 0.3692_d 0*t)*1. _d -3
+           zdvi      =  -48.76 _d 0 + 0.5304 _d 0*t  + 2.8 _d 0
+           zdki      = (-11.76 _d 0 + 0.3692 _d 0*t)*1. _d -3
            pfac = (-zdvi + zdki*pressc/2. _d 0)*pressc/zrt
            Ksp_TP_Arag(i,j,bi,bj) = Ksp_TP_Arag(i,j,bi,bj) * exp(pfac)     
          else
@@ -1199,7 +1203,7 @@ C       References: Millero (1979) for pressure correction
          endif
        enddo
       enddo
-#endif /* CARBONCHEM_SOLVESAPHE_PCO2 OR CARBONCHEM_SOLVESAPHE_CONST */
+#endif /* CARBONCHEM_SOLVESAPHE */
 
       RETURN
       END    
@@ -1243,7 +1247,7 @@ C      --------------------
       _RL p_eqn
       INTEGER i,j,k,bi,bj,myIter,myThid
 
-#ifdef CARBONCHEM_SOLVESAPHE_PCO2
+#ifdef CARBONCHEM_SOLVESAPHE
 
 C      -----------------
 C      Local variables 
@@ -1366,7 +1370,7 @@ C      HF - F : n=1
      &               - akw(i,j,bi,bj)/p_h**2 - 1. _d 0/aphscale(i,j,bi,bj)
 C      ENDIF
 
-#endif /* CARBONCHEM_SOLVESAPHE_PCO2 */      
+#endif /* CARBONCHEM_SOLVESAPHE */      
       RETURN
       END
 C     END SUBROUTINE EQUATION_AT
@@ -1412,7 +1416,7 @@ C     --------------------
       _RL p_hnew   
       INTEGER i,j,k,bi,bj,myIter,myThid
  
-#if defined(CARBONCHEM_SOLVESAPHE_PCO2) && defined(USE_SOLVESAPHE_FAST)
+#ifdef CARBONCHEM_SOLVESAPHE
 
 C     --------------------
 C     Local variables
@@ -1520,7 +1524,7 @@ C     &                          p_so4tot, p_flutot)
         ENDIF
 C     ENDIF
 
-#endif /* CARBONCHEM_SOLVESAPHE_PCO2 */
+#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
 C END FUNCTION SOLVE_AT_FAST
@@ -1566,7 +1570,7 @@ C     --------------------
        _RL p_val
        INTEGER i,j,k,bi,bj,myIter,myThid
 
-#ifdef CARBONCHEM_SOLVESAPHE_PCO2
+#ifdef CARBONCHEM_SOLVESAPHE
 
 C     -----------------
 C     Local variables 
@@ -1777,7 +1781,7 @@ C      ENDIF
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('SOLVE_AT_GENERAL',myThid)
 #endif      
-#endif /* CARBONCHEM_SOLVESAPHE_PCO2 */
+#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END      
 C      END FUNCTION SOLVE_AT_GENERAL
@@ -1824,7 +1828,7 @@ C     --------------------
       _RL p_val
       INTEGER i,j,k,bi,bj,myIter,myThid
       
-#if defined(CARBONCHEM_SOLVESAPHE_PCO2) && defined(USE_SOLVESAPHE_SEC)
+#ifdef CARBONCHEM_SOLVESAPHE
 
 C     -----------------
 C     Local variables 
@@ -2121,7 +2125,7 @@ C     &                       p_so4tot, p_flutot)
        ENDIF
 C      ENDIF
       
-#endif /* CARBONCHEM_SOLVESAPHE_PCO2  */
+#endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
 C      END FUNCTION SOLVE_AT_GENERAL_SEC

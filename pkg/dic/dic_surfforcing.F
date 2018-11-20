@@ -119,7 +119,7 @@ C FOR NON-INTERACTIVE Si
           ENDDO
          ENDDO
 
-#if defined(CARBONCHEM_SOLVESAPHE_CONST) || defined(CARBONCHEM_SOLVESAPHE_PCO2)
+#ifdef CARBONCHEM_SOLVESAPHE
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS_SOLVESAPHE',myThid)
 #endif
@@ -163,15 +163,15 @@ C$TAF LOOP = parallel
        DO j=jMin,jMax
 C$TAF LOOP = parallel
         DO i=iMin,iMax
-
           IF ( maskC(i,j,kLev,bi,bj).NE.0. _d 0 ) THEN
-#ifdef CARBONCHEM_SOLVESAPHE_PCO2
+#ifdef CARBONCHEM_SOLVESAPHE
+             IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven's Solvesaphe routine to calculate pH and pCO2
 #ifdef ALLOW_DEBUG
-          IF (debugMode) CALL DEBUG_CALL(
+                IF (debugMode) CALL DEBUG_CALL(
      &     'CALC_PCO2_SOLVESAPHE from DIC_SURFFORCING',myThid)
 #endif
-            CALL CALC_PCO2_SOLVESAPHE(
+                CALL CALC_PCO2_SOLVESAPHE(
      I        surftemp(i,j),surfsalt(i,j),
      I        surfdic(i,j), surfphos(i,j),
      I        surfsi(i,j),surfalk(i,j),
@@ -184,11 +184,14 @@ C     I        akn(i,j,bi,bj),akhs(i,j,bi,bj),aphscale(i,j,bi,bj),
 C     I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U        pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I        i,j,kLev,bi,bj,myIter, myThid )       
-#else
+             ELSE
+C Use the original Follows et al. (2006) solver
+#endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
-            IF (debugMode) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
+                IF (debugMode) CALL DEBUG_CALL(
+     &        'CALC_PCO2_APPROX',myThid)
 #endif
-            CALL CALC_PCO2_APPROX(
+                CALL CALC_PCO2_APPROX(
      I        surftemp(i,j),surfsalt(i,j),
      I        surfdic(i,j), surfphos(i,j),
      I        surfsi(i,j),surfalk(i,j),
@@ -201,7 +204,9 @@ C     I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U        pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I        i,j,kLev,bi,bj,myIter, myThid )
-#endif
+#ifdef CARBONCHEM_SOLVESAPHE
+             ENDIF
+#endif /* CARBONCHEM_SOLVESAPHE */
           ELSE
             pCO2(i,j,bi,bj)=0. _d 0
           ENDIF
