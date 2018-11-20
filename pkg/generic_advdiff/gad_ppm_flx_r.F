@@ -115,7 +115,9 @@ CML              intF = intF / (ss22 - ss11)
 
               end if
 
-              intF = - 0.5 _d 0 * intF/sign(max(abs(wCFL),1.d-20),wCFL)
+c             intF = -0.5 _d 0 * intF / wCFL
+C-    to avoid potential underflow:
+              intF = -0.5 _d 0 * intF/sign(max(abs(wCFL),1.d-20),wCFL)
 
 C     ==================== calc. flux = upwind tracer * face-transport
               flux(ix,iy,ir) = + wfac(ix,iy,ir) * intF
