@@ -48,7 +48,7 @@ c                            layer
 c depth_u, depth_l        :: depths of upper and lower interfaces
 c flux_u, flux_l          :: flux through upper and lower interfaces
        _RL caexport(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-       INTEGER I,J,k, ko
+       INTEGER I,J,k, ko, kBottom
        _RL flux_u, flux_l
 c variables for calcium carbonate dissolution
        _RL KierRate
@@ -80,6 +80,9 @@ c        exp_tot=0
          do k=1,nR
             cflux(i,j,k)=0. _d 0
          enddo
+         
+         kBottom   = MAX(kLowC(i,j,bi,bj),1)
+         
          DO k=1,nLev
           if (hFacC(i,j,k,bi,bj).gt.0. _d 0) then
            caexport(i,j)= R_CP*rain_ratio(i,j,bi,bj)*bioac(i,j,k)*
@@ -101,7 +104,7 @@ C flux through lower face of cell
                 flux_l = flux_u
 
 c if at bottom, remineralize remaining flux
-                if (ko.eq.Nr.or.hFacC(i,j,ko+1,bi,bj).eq.0. _d 0) then
+                if (ko.eq.kBottom) then
                   if (iflx.eq.1) then
 c ... at surface
                      cflux(i,j,1)=cflux(i,j,1)+
@@ -138,7 +141,7 @@ c    &            omegaC(i,j,ko,bi,bj)
 c           endif
 c TEST ............................
 c no flux to ocean bottom
-                 if (ko.eq.Nr.or.hFacC(i,j,ko+1,bi,bj).eq.0. _d 0)
+                 if (ko.eq.kBottom)
      &                      flux_l=0. _d 0
               endif
 
