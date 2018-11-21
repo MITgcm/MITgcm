@@ -259,11 +259,11 @@ C--   Check advection schemes
      &     SEAICEadvSchArea.NE.ENUM_DST3 .AND.
      &     SEAICEadvSchArea.NE.ENUM_DST3_FLUX_LIMIT .AND.
      &     SEAICEadvSchArea.NE.ENUM_PPM_NULL_LIMIT  .AND.
-     &     SEAICEadvSchArea.EQ.ENUM_PPM_MONO_LIMIT  .AND.
-     &     SEAICEadvSchArea.EQ.ENUM_PPM_WENO_LIMIT  .AND.
-     &     SEAICEadvSchArea.EQ.ENUM_PQM_NULL_LIMIT  .AND.
-     &     SEAICEadvSchArea.EQ.ENUM_PQM_MONO_LIMIT  .AND.
-     &     SEAICEadvSchArea.EQ.ENUM_PQM_WENO_LIMIT  .AND.
+     &     SEAICEadvSchArea.NE.ENUM_PPM_MONO_LIMIT  .AND.
+     &     SEAICEadvSchArea.NE.ENUM_PPM_WENO_LIMIT  .AND.
+     &     SEAICEadvSchArea.NE.ENUM_PQM_NULL_LIMIT  .AND.
+     &     SEAICEadvSchArea.NE.ENUM_PQM_MONO_LIMIT  .AND.
+     &     SEAICEadvSchArea.NE.ENUM_PQM_WENO_LIMIT  .AND.
      &     SEAICEadvSchArea.NE.ENUM_OS7MP )
       checkAdvSchHEFF = SEAICEadvHeff .AND. (
      &     SEAICEadvSchHeff.NE.ENUM_UPWIND_1RST .AND.
@@ -273,11 +273,11 @@ C--   Check advection schemes
      &     SEAICEadvSchHeff.NE.ENUM_DST3 .AND.
      &     SEAICEadvSchHeff.NE.ENUM_DST3_FLUX_LIMIT .AND.
      &     SEAICEadvSchHeff.NE.ENUM_PPM_NULL_LIMIT  .AND.
-     &     SEAICEadvSchHeff.EQ.ENUM_PPM_MONO_LIMIT  .AND.
-     &     SEAICEadvSchHeff.EQ.ENUM_PPM_WENO_LIMIT  .AND.
-     &     SEAICEadvSchHeff.EQ.ENUM_PQM_NULL_LIMIT  .AND.
-     &     SEAICEadvSchHeff.EQ.ENUM_PQM_MONO_LIMIT  .AND.
-     &     SEAICEadvSchHeff.EQ.ENUM_PQM_WENO_LIMIT  .AND.
+     &     SEAICEadvSchHeff.NE.ENUM_PPM_MONO_LIMIT  .AND.
+     &     SEAICEadvSchHeff.NE.ENUM_PPM_WENO_LIMIT  .AND.
+     &     SEAICEadvSchHeff.NE.ENUM_PQM_NULL_LIMIT  .AND.
+     &     SEAICEadvSchHeff.NE.ENUM_PQM_MONO_LIMIT  .AND.
+     &     SEAICEadvSchHeff.NE.ENUM_PQM_WENO_LIMIT  .AND.
      &     SEAICEadvSchHeff.NE.ENUM_OS7MP )
       checkAdvSchSnow = SEAICEadvSnow .AND. (
      &     SEAICEadvSchSnow.NE.ENUM_UPWIND_1RST .AND.
@@ -287,11 +287,11 @@ C--   Check advection schemes
      &     SEAICEadvSchSnow.NE.ENUM_DST3 .AND.
      &     SEAICEadvSchSnow.NE.ENUM_DST3_FLUX_LIMIT .AND.
      &     SEAICEadvSchSnow.NE.ENUM_PPM_NULL_LIMIT  .AND.
-     &     SEAICEadvSchSnow.EQ.ENUM_PPM_MONO_LIMIT  .AND.
-     &     SEAICEadvSchSnow.EQ.ENUM_PPM_WENO_LIMIT  .AND.
-     &     SEAICEadvSchSnow.EQ.ENUM_PQM_NULL_LIMIT  .AND.
-     &     SEAICEadvSchSnow.EQ.ENUM_PQM_MONO_LIMIT  .AND.
-     &     SEAICEadvSchSnow.EQ.ENUM_PQM_WENO_LIMIT  .AND.
+     &     SEAICEadvSchSnow.NE.ENUM_PPM_MONO_LIMIT  .AND.
+     &     SEAICEadvSchSnow.NE.ENUM_PPM_WENO_LIMIT  .AND.
+     &     SEAICEadvSchSnow.NE.ENUM_PQM_NULL_LIMIT  .AND.
+     &     SEAICEadvSchSnow.NE.ENUM_PQM_MONO_LIMIT  .AND.
+     &     SEAICEadvSchSnow.NE.ENUM_PQM_WENO_LIMIT  .AND.
      &     SEAICEadvSchSnow.NE.ENUM_OS7MP )
       checkAdvSchSalt = SEAICEadvSalt .AND. (
      &     SEAICEadvSchSalt.NE.ENUM_UPWIND_1RST .AND.
@@ -301,18 +301,18 @@ C--   Check advection schemes
      &     SEAICEadvSchSalt.NE.ENUM_DST3 .AND.
      &     SEAICEadvSchSalt.NE.ENUM_DST3_FLUX_LIMIT .AND.
      &     SEAICEadvSchSalt.NE.ENUM_PPM_NULL_LIMIT  .AND.
-     &     SEAICEadvSchSalt.EQ.ENUM_PPM_MONO_LIMIT  .AND.
-     &     SEAICEadvSchSalt.EQ.ENUM_PPM_WENO_LIMIT  .AND.
-     &     SEAICEadvSchSalt.EQ.ENUM_PQM_NULL_LIMIT  .AND.
-     &     SEAICEadvSchSalt.EQ.ENUM_PQM_MONO_LIMIT  .AND.
-     &     SEAICEadvSchSalt.EQ.ENUM_PQM_WENO_LIMIT  .AND.
+     &     SEAICEadvSchSalt.NE.ENUM_PPM_MONO_LIMIT  .AND.
+     &     SEAICEadvSchSalt.NE.ENUM_PPM_WENO_LIMIT  .AND.
+     &     SEAICEadvSchSalt.NE.ENUM_PQM_NULL_LIMIT  .AND.
+     &     SEAICEadvSchSalt.NE.ENUM_PQM_MONO_LIMIT  .AND.
+     &     SEAICEadvSchSalt.NE.ENUM_PQM_WENO_LIMIT  .AND.
      &     SEAICEadvSchSalt.NE.ENUM_OS7MP )
       IF ( checkAdvSchArea .OR. checkAdvSchHeff .OR.
      &     checkAdvSchSnow .OR. checkAdvSchSalt ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: allowed advection schemes',
      &          ' for heff, area, snow, and salt are: '
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A,7I3)') 'SEAICE_CHECK:',
+       WRITE(msgBuf,'(A,13I3)') 'SEAICE_CHECK:',
      &      ENUM_UPWIND_1RST, ENUM_CENTERED_2ND, ENUM_DST2,
      &      ENUM_FLUX_LIMIT, ENUM_DST3, ENUM_DST3_FLUX_LIMIT,
      &      ENUM_PPM_NULL_LIMIT,ENUM_PPM_MONO_LIMIT,ENUM_PPM_WENO_LIMIT,
@@ -320,7 +320,7 @@ C--   Check advection schemes
      &      ENUM_OS7MP
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
-     &      ' the following Adv.Scheme are not allowed:'
+     &      ' the following Adv.Schemes are not allowed:'
        CALL PRINT_ERROR( msgBuf, myThid )
        IF ( checkAdvSchArea ) THEN
         WRITE(msgBuf,'(2A,I3)') 'SEAICE_CHECK:',
