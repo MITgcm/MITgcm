@@ -1,0 +1,11 @@
+ &NF90IO_PARM01
+ nf90io_fileFormat=3,
+ nf90io_info_keys(1)=   'romio_ds_read',
+ nf90io_info_values(1)= 'disable',
+ nf90io_info_keys(2)=   'romio_ds_write',
+ nf90io_info_values(2)= 'disable',
+ nf90io_info_keys(3)=   'romio_cb_read',
+ nf90io_info_values(3)= 'enable',
+ nf90io_info_keys(4)=   'romio_cb_write',
+ nf90io_info_values(4)= 'enable',
+ /
