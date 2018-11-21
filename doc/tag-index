@@ -1,15 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice:
-  - add advection ppm and pqm advection schemes
-  - test new scheme in verification/offline_exf_seaice.dyn_lsr
-o pkg/generic_advection:
-  - regularize ppm and pqm advection schemes:
-  - replace unsafe division in the case of numerical underflows by
-    regularized expression sign(max(abs(uCFL),1.d-20),uCFL) and similar,
-    in anology to other advection routines, e.g. gad_os7mp_adv_x/y/z.F
-  - affects verification/advect_xz at truncation level -> updated
+
+o pkg/streamice:
+  - new implementation of grounding line smoothing by smoothing of basal
+     traction in partly grounded cell, in streamice_upd_ffrac_uncoupled.F
+  - rename CPP directives: previous smoothing functionality now enabled with
+    STREAMICE_SMOOTH_FLOATATION2, new functionality enabled via
+    STREAMICE_SMOOTH_FLOATATION
+  - affects verification/halfpipe_streamice, FWD, TAF and OpenAD adjoint.
 o pkg/atm_phys:
   - change IR absorption formulation regarding the dependence on Water-Vapor
     in the case wv_exponent = -1 ; update results of experiment "atm_gray.ape"

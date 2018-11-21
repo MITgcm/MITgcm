@@ -646,7 +646,7 @@ EOF
     fi
     if test $FC_CHECK = '-1' -a -x genmake_tcomp ; then
 	if test "x$MPI" = 'xtrue' ; then
-	    COMM="mpirun -np 1 genmake_tcomp"
+	    COMM="mpirun -np 1 ./genmake_tcomp"
 	else
 	    COMM="./genmake_tcomp"
 	fi
