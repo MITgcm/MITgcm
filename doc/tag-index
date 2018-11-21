@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic:
+  - fix out-of-bounds error in S/R CAR_FLUX_OMEGA_TOP (#define CAR_DISS)
 o pkg/streamice:
   - new implementation of grounding line smoothing by smoothing of basal
      traction in partly grounded cell, in streamice_upd_ffrac_uncoupled.F
