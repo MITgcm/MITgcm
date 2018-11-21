@@ -159,7 +159,7 @@ C        Done if we need to define k_level
          err = nf90_def_var(ncid, cdiag(ndId), xtype, dimids,
      &        varid)
       ENDIF
-      CALL nf90ERR(err, "Adding diagsnostic variable",myThid)
+      CALL nf90ERR(err, "Adding diagnostic variable",myThid)
 
 C     add attributes to the newy defined variable
       err = nf90_put_att(ncid, varid,
@@ -173,6 +173,11 @@ C     add attributes to the newy defined variable
       CALL nf90ERR(err, "Adding attribute diagnostic variable"
      &     ,myThid)
 C     no standard name?  Booo
+
+C     set to not pre-fill variable....
+      err = nf90_def_var_fill(ncid, varid, 1, 0)
+      CALL nf90ERR(err, "Setting variable not to be pre-filled"
+     &     ,myThid)
 
       _END_MASTER(myThid)
 
