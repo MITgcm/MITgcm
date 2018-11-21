@@ -632,7 +632,7 @@ and ``hFacC``, ``hFacS``, ``hFacW``, which contain 3D(:math:`x,y,z`) data.
 
 All the 2D grid data files contain ``.001.001`` in their name, e.g., ``DXC.001.001.data`` -- this is the tile number in ``.XXX.YYY`` format.
 Here, we have just a single tile in both x and y, so both tile numbers are ``001``. Using multiple tiles, by default the local tile grid information
-would be output separately for each tile (as an example, see the :ref:`baroclinic gyre tutorial <tutorial_baroclinic_gyre>`,
+would be output separately for each tile (as an example, see the baroclinic gyre tutorial,
 which is set up using multiple tiles), producing multiple files for each 2D grid variable.
 
 
@@ -657,7 +657,7 @@ filename starting with ``U`` (:varlink:`uVel`),
 ``V`` (:varlink:`uVel`), ``T`` (:varlink:`theta`), and ``S`` (:varlink:`salt`);
 given our setup, these latter two fields
 remain uniform in space and time, thus not very interesting until we
-explore a baroclinic gyre setup in :numref:`tutorial_baroclinic_gyre`.
+explore a baroclinic gyre setup in tutorial_baroclinic_gyre.
 These are all 3D(:math:`x,y,z`) fields. The format for the file names is similar
 to the free-surface height files. Also dumped are snapshots
 of diagnosed vertical velocity W (:varlink:`wVel`) (note in non-hydrostatic
