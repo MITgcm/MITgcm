@@ -64,7 +64,8 @@ CEOP
       NAMELIST /EEPARMS/
      & nTx, nTy, usingMPI,
      & useCubedSphereExchange,
-     & useCoupler, useNEST_PARENT, useNEST_CHILD, useOASIS,
+     & useCoupler, useNEST_PARENT, useNEST_CHILD,
+     & useNest2W_parent, useNest2W_child, useOASIS,
      & useSETRLSTK, useSIGREG,
      & debugMode, printMapIncludesZeros, maxLengthPrt1D
 
@@ -109,6 +110,8 @@ C     which sets the stack size to "unlimited" using setrlimit()
       useCoupler                 = .FALSE.
       useNEST_PARENT             = .FALSE.
       useNEST_CHILD              = .FALSE.
+      useNest2W_parent           = .FALSE.
+      useNest2W_child            = .FALSE.
       useOASIS                   = .FALSE.
       nTx                        = 1
       nTy                        = 1

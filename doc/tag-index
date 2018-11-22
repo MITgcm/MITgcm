@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/nest2w:
+  - introduce stubs for calling new package
 o pkg/dic:
   - fix out-of-bounds error in S/R CAR_FLUX_OMEGA_TOP (#define CAR_DISS)
 o pkg/streamice:
