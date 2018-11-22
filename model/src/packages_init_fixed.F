@@ -23,6 +23,8 @@ C       |
 C       |-- DIAGNOSTICS_INIT_EARLY
 C       |-- DIAGNOSTICS_MAIN_INIT
 C       |
+C       |-- NEST2W_INIT_FIXED
+C       |
 C       |-- GAD_INIT_FIXED
 C       |
 C       |-- MOM_INIT_FIXED
@@ -169,6 +171,16 @@ C-    needs to call DIAGNOSTICS_INIT_EARLY before all package-diag-init calls
         CALL DIAGNOSTICS_MAIN_INIT( myThid )
       ENDIF
 #endif
+
+#ifdef ALLOW_NEST2W_COMMON
+C--   Initialise the 2-Way Nesting packages
+      IF ( useNest2W_parent .OR. useNest2W_child ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('NEST2W_INIT_FIXED',myThid)
+# endif
+        CALL NEST2W_INIT_FIXED( myThid )
+      ENDIF
+#endif /* ALLOW_NEST2W_COMMON */
 
 #ifdef ALLOW_GENERIC_ADVDIFF
 C--   Initialize fixed params for GAD
@@ -358,7 +370,7 @@ C--   in order to provide the weight files
 
 #ifdef ALLOW_ECCO
       IF (useECCO) THEN
-C--   Initialise ecco-specific cost function. This needs to preceed 
+C--   Initialise ecco-specific cost function. This needs to preceed
 C     the call ctrl_init in order to provide the weight files
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('ECCO_COST_INIT_FIXED',myThid)
@@ -617,7 +629,7 @@ C--   needs to be called after the OASIS_INIT
 
 #ifdef ALLOW_CTRL
       IF (useCTRL) THEN
-C--   Initialise the control variables. Moved to the end of this S/R 
+C--   Initialise the control variables. Moved to the end of this S/R
 C     to allow other pkgs to set mask and weight fields.
 # ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('CTRL_INIT',myThid)

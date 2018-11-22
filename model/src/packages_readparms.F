@@ -119,6 +119,9 @@ C       |
 C       |-- NEST_CHILD_READPARMS
 C       |-- NEST_PARENT_READPARMS
 C       |
+C       |-- NEST2W_C_READPARMS
+C       |-- NEST2W_P_READPARMS
+C       |
 C       |-- CPL_READPARMS
 C       |
 C       |-- OASIS_READPARMS
@@ -376,6 +379,16 @@ C
 C--    Initialize nest(ing) package parameters x PARENT
        IF (useNEST_PARENT) CALL NEST_PARENT_READPARMS ( myThid )
 #endif /* ALLOW_NEST_PARENT */
+
+#ifdef ALLOW_NEST2W_CHILD
+C--    Initialize Child 2-way nest(ing) package parameters
+       IF (useNest2W_child) CALL NEST2W_C_READPARMS( myThid )
+#endif /* ALLOW_NEST2W_CHILD */
+C
+#ifdef ALLOW_NEST2W_PARENT
+C--    Initialize Parent 2-way nest(ing) package parameters
+       IF (useNest2W_parent) CALL NEST2W_P_READPARMS( myThid )
+#endif /* ALLOW_NEST2W_PARENT */
 
 #ifdef COMPONENT_MODULE
 C--   set Coupling parameters
