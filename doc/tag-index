@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67f (2018/11/23)
 o pkg/seaice:
   - add advection ppm and pqm advection schemes ;
   - test new scheme in verification/offline_exf_seaice.dyn_lsr
