@@ -2,6 +2,7 @@
 # Lines beginning "#" are comments
 #  nTx      :: No. threads per process in X
 #  nTy      :: No. threads per process in Y
+# debugMode :: print debug msg (sequence of S/R calls)
  &EEPARMS
  nTx=1,
  nTy=1,

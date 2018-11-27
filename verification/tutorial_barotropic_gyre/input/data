@@ -4,7 +4,7 @@
  viscAh=4.E2,
  f0=1.E-4,
  beta=1.E-11,
- rhonil=1000.,
+ rhoNil=1000.,
  gBaro=9.81,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
@@ -23,12 +23,15 @@
  &PARM03
  nIter0=0,
  nTimeSteps=10,
-# nTimeSteps=60000,
  deltaT=1200.0,
- pChkptFreq=36000000.0,
- chkptFreq=12000000.0,
- dumpFreq=24000000.0,
+ pChkptFreq=31536000.0,
+ chkptFreq=15552000.0,
+ dumpFreq= 15552000.0,
+ monitorSelect=2,
  monitorFreq=1200.,
+#- longer run (3.yr):
+# nTimeSteps=77760,
+# monitorFreq=864000.,
  &
 
 # Gridding parameters
