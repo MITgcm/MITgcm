@@ -26,10 +26,10 @@
  deltaT=1200.0,
  pChkptFreq=31536000.0,
  chkptFreq=15552000.0,
- dumpFreq= 15552000.0,
- monitorSelect=2,
+ dumpFreq=15552000.0,
  monitorFreq=1200.,
-#- longer run (3.yr):
+ monitorSelect=2,
+#-for longer run (3.0 yr):
 # nTimeSteps=77760,
 # monitorFreq=864000.,
  &

@@ -285,12 +285,12 @@ PARM01 - Continuous equation parameters
        :end-at: beta
        :lineno-match:
 
-- This line sets parameter :varlink:`rhonil`, a reference density which will also be used
+- This line sets parameter :varlink:`rhoNil`, a reference density which will also be used
   as :math:`rho_c` (parameter :varlink:`rhoConst`) in :eq:`baro_model_eq_u`, to 1000 kg/m\ :sup:`3`.
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/input/data
-       :start-at: rhonil
-       :end-at: rhonil
+       :start-at: rhoNil
+       :end-at: rhoNil
        :lineno-match:
 
 - This line sets parameter :varlink:`gBaro`, the acceleration due to gravity :math:`g` (in the free surface terms
@@ -369,17 +369,17 @@ PARM03 - Time stepping parameters
        :lineno-match:
 
 - This line sets parameter :varlink:`nTimeSteps`, the (integer) number of timesteps the model will integrate forward. Below,
-  we have set this to integrate for just 10 time steps, for MITgcm automated testing purposes (ref to testreport). To integrate the solution to near steady state,
-  uncomment the line where we set the value to 60,000 time steps. When you make this change, be sure to comment out the line that sets :varlink:`monitorFreq` (see below).
+  we have set this to integrate for just 10 time steps, for MITgcm automated testing purposes (:numref:`code_testing_protocols`). To integrate the solution to near steady state,
+  uncomment the line a few lines further down where we set the value to 77760 time steps. When you make this change, be sure to comment out the line that sets :varlink:`monitorFreq` (see below).
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/input/data
        :start-at: nTimeSteps=10
-       :end-at: nTimeSteps=60
+       :end-at: nTimeSteps=10
        :lineno-match:
 
 - This line sets parameter :varlink:`deltaT`, the timestep used in stepping forward the model, to 1200 seconds.
   In combination with the larger value of :varlink:`nTimeSteps` above,
-  we have effectively set the model to integrate forward for :math:`60000 \times 1200 \text{ s} = 2.28` years, long enough for the solution to approach equilibrium.
+  we have effectively set the model to integrate forward for :math:`77760  \times 1200 \text{ s} = 3.0` years (based on 360-day years), long enough for the solution to approach equilibrium.
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/input/data
        :start-at: deltaT
@@ -387,14 +387,14 @@ PARM03 - Time stepping parameters
        :lineno-match:
 
 - These lines control the frequency at which restart (a.k.a. pickup) files are dumped by MITgcm.
-  Here the value of :varlink:`pChkptFreq` is set to 36,000,000 seconds (=1.14 years) of model time;
+  Here the value of :varlink:`pChkptFreq` is set to 31,536,000 seconds (=1.0 years) of model time;
   this controls the frequency of “permanent” checkpoint pickup files. With permanent files,
   the model’s iteration number is part of the file name (as the filename “suffix”; see :numref:`other_output`)
   in order to save it as a labelled, permanent, pickup state.
-  The value of :varlink:`ChkptFreq` is set to 12,000,000 seconds (=0.38 years); the pickup files
+  The value of :varlink:`ChkptFreq` is set to 15,552,000 seconds (=0.5 years); the pickup files
   written at this frequency but will NOT include the iteration number in the filename,
   instead toggling between ``ckptA`` and ``ckptB`` in the filename, and thus these
-  files will be overwritten with new data every 2 :math:`\times` 12,000,000 seconds.
+  files will be overwritten with new data every 2 :math:`\times` 15,552,000 seconds.
   Temporary checkpoint files can be written more frequently without requiring additional disk space,
   for example to peruse (or re-run) the model state prior to an instability,
   or restart following a computer crash, etc.
@@ -407,20 +407,21 @@ PARM03 - Time stepping parameters
 
 - This line sets parameter :varlink:`dumpFreq`, frequency of writing model state
   snapshot diagnostics (of relevance in this setup: variables :math:`u`, :math:`v`, and :math:`\eta`).
-  Here, we opt for a snapshot of model state every 24,000,000 seconds (=0.76 years), or after every 20000 time steps of integration.
+  Here, we opt for a snapshot of model state every 15,552,000 seconds (=0.5 years), or after every 12960 time steps of integration.
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/input/data
        :start-at: dumpFreq
        :end-at: dumpFreq
        :lineno-match:
 
-- This line is set to dump monitor output (see ref to pkg monitor) every 1200 seconds (i.e., every time step) to standard output.
-  While this is monitor frequency is needed for MITgcm automated testing, this is much too much output for our tutorial run. Comment out this line, and monitor output
-  will default to the same frequency as :varlink:`dumpFreq`.
+- These lines are set to dump monitor output (see :numref:`pkg_monitor`) every 1200 seconds (i.e., every time step) to standard output. 
+  While this is monitor frequency is needed for MITgcm automated testing, this is much too much output for our tutorial run. Comment out this line
+  and uncomment the line where :varlink:`monitorFreq` is set to 864,000 seconds, i.e., output every 10 days.
+  Parameter :varlink:`monitorSelect` is set to 2 here to reduce output of non-applicable quantities for this simple example. 
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/input/data
        :start-at: monitorFreq
-       :end-at: monitorFreq
+       :end-at: monitorSelect
        :lineno-match:
 
 
@@ -527,17 +528,18 @@ was used to generate this bathymetry file.
 
 .. _baro_gyre_windx_cosy:
 
-Files ``input/windx_cosy.bin`` and ``input/windx_siny.bin``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+File ``input/windx_cosy.bin``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Similar to file ``input/bathy.bin``, these files are 2D(:math:`x,y`)
+Similar to file ``input/bathy.bin``, this files is a 2D(:math:`x,y`)
 map of :math:`\tau_{x}` wind stress values, formatted in the same manner.
 The units are Nm\ :sup:`--2`. Although :math:`\tau_{x}` is only a function of :math:`y` in this experiment,
 this file must still define a complete 2D map in order
 to be compatible with the standard code for loading forcing fields 
 in MITgcm. The matlab program :filelink:`verification/tutorial_barotropic_gyre/input/gendata.m`
-was used to generate this wind stress file. File ``input/windx_cosy.bin`` is required in the standard barotropic gyre setup;
-file ``input/windx_cosy.bin`` is used in the barotropic jet variation setup.
+was used to generate this wind stress file. To run the barotropic jet variation of this tutorial example (see :numref:`baro_jet_solution`),
+you will in fact need to run this
+matlab program to generate the file ``input/windx_siny.bin``.
 
 
 
@@ -639,16 +641,16 @@ which is set up using multiple tiles), producing multiple files for each 2D grid
 **State Variable Snapshot Data**:
 
 ``Eta.0000000000.001.001.data, Eta.0000000000.001.001.meta`` - this is
-the a binary data snapshot of model dynamic variable
+a binary data snapshot of model dynamic variable
 :varlink:`etaN` (the free-surface height) and its meta file, respectively.
-Note the tile number is included in the filename, as is the iteration number ``0000000000``
-(the iteration number, i.e. the text after the variable name, is referred to as the “suffix” in
-MITgcm parlance; there are options to change this “suffix” to something other than iteration number).
+Note the tile number is included in the filename, as is the iteration number ``0000000000``, which is simply the time step
+(the iteration number, i.e., the text after the variable name, is referred to as the “suffix” in
+MITgcm parlance; there are options to change this suffix to something other than iteration number).
 In other words, this is a dump of the free-surface height from the initialized state,
 iteration 0; if you load up this data file,
 you will see it is all zeroes. More interesting is the free-surface
 height after some time steps have occurred; snapshots are written according
-to our parameter choice :varlink:`dumpFreq`, here set to 20,000.
+to our parameter choice :varlink:`dumpFreq`, here set to 15,552,000 seconds, which is every 12960 time steps.
 We will examine the model solutions in :numref:`barotropic_gyre_solution`.
 The free-surface height is a 2D(:math:`x,y`) field.
 
@@ -668,7 +670,7 @@ simulations, W is a fully prognostic model variable).
 
 In addition, the following pickup files are generated:
 
-- ``pickup.0000030000.001.001.data``, ``pickup.0000030000.001.001.meta``, etc., - written at frequency set by :varlink:`pChkptFreq`
+- ``pickup.0000026280.001.001.data``, ``pickup.0000026280.001.001.meta``, etc., - written at frequency set by :varlink:`pChkptFreq`
 - ``pickup.ckptA.001.001.data``, ``pickup.ckptA.001.001.meta``, ``pickup.ckptB.001.001.data``,
   ``pickup.ckptB.001.001.meta`` - written at frequency set by :varlink:`ChkptFreq`
 
@@ -676,7 +678,7 @@ In addition, the following pickup files are generated:
 **Other Model Output Data**: For completeness, here we list the remaining default output files produced by MITgcm (despite being not particularly informative for this simple setup).
 
 ``RhoRef.data, RhoRef.meta`` - this is a 1D(:math:`z`) array of reference density. Here we have a single level and have not specified an equation of state relation, thus
-the file simply contains our prescribed value :varlink:`rhonil`.
+the file simply contains our prescribed value :varlink:`rhoNil`.
 
 ``PHrefC.data, PHrefC.meta, PHrefF.data, PHrefF.meta`` - these are 1D(:math:`z`) arrays containing reference
 hydrostatic “pressure potential” :math:`\phi = p/\rho_c` (see :numref:`finding_the_pressure_field`),
@@ -697,10 +699,10 @@ Model Solution
 --------------
 
 
-After running the model for 60,000 time steps (2.28 years), the solution is near equilibrium.
+After running the model for 77,760 time steps (3.0 years), the solution is near equilibrium.
 This equilibrium timescale is consistent with barotropic Rossby waves
 requiring order one month to cross our model domain. The model solution of free-surface
-height :math:`\eta` (proportional to streamfunction) at :math:`t=` 2.28 years is shown in :numref:`barotropic_nl_soln`.
+height :math:`\eta` (proportional to streamfunction) at :math:`t=` 3.0 years is shown in :numref:`barotropic_nl_soln`.
 
   .. figure:: barotropic_gyre/figs/full_solution.*
       :width: 80%
@@ -708,16 +710,16 @@ height :math:`\eta` (proportional to streamfunction) at :math:`t=` 2.28 years is
       :alt: barotropic gyre full solution
       :name: barotropic_nl_soln
 
-      MITgcm solution to the barotropic gyre example after :math:`t=` 2.28 years of model integration. Free surface height is shown in meters.
+      MITgcm solution to the barotropic gyre example after :math:`t=` 3.0 years of model integration. Free surface height is shown in meters.
 
 Using matlab for example, visualizing output using the :filelink:`utils/matlab/rdmds.m` utility to load the
-binary data in ``Eta.0000060000.001.001.data`` is as simple as:
+binary data in ``Eta.0000077760.001.001.data`` is as simple as:
 
 ::
 
    addpath ../../../utils/matlab/
    XC=rdmds('XC'); YC=rdmds('YC');
-   Eta=rdmds('Eta',60000); 
+   Eta=rdmds('Eta',77760); 
    contourf(XC/1000,YC/1000,Eta,[-.04:.01:.04]); colorbar; 
    set(gca,'Clim',[-.04 .04]); set(gca,'XLim',[0 1200]); set(gca,'YLim',[0 1200])
 
@@ -727,8 +729,8 @@ or using python (you will need to copy :filelink:`utils/python/MITgcmutils/MITgc
 
    import mds
    import matplotlib.pyplot as plt
-   XC = mds.rdmds('XC’); YC = mds.rdmds('YC')
-   Eta = mds.rdmds('Eta', 6000)
+   XC = mds.rdmds('XC'); YC = mds.rdmds('YC')
+   Eta = mds.rdmds('Eta', 77760)
    plt.contourf(XC, YC, Eta[:,:]); plt.colorbar(); plt.show()
 
 
@@ -755,7 +757,7 @@ the analytical solution to the linearized equations. Success!
       :alt: barotropic gyre linearized solution
       :name: lin_anal_soln
 
-      Comparison of free surface height for the near-equilibrium MITgcm solution (:math:`t=` 2.28 years) with momentum advection switched off (left) and the analytical equilibrium solution to the linearized equation (right).
+      Comparison of free surface height for the near-equilibrium MITgcm solution (:math:`t=` 3.0 years) with momentum advection switched off (left) and the analytical equilibrium solution to the linearized equation (right).
 
 Finally, let’s examine one additional simulation where we change the cosine profile of wind stress forcing to a sine profile.
 In file :filelink:`data <verification/tutorial_barotropic_gyre/input/data>`,
