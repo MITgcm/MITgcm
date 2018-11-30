@@ -331,7 +331,7 @@ CADJ STORE vice = comlev1_dynsol, kind=isbyte, key = itmpkey
      I     ipass, myTime, myIter, myThid )
 
       CALL SEAICE_OCEANDRAG_COEFFS(
-     I     uIceC, vIceC,
+     I     uIceC, vIceC, HEFFM,
      O     DWATN,
      I     ipass, myTime, myIter, myThid )
 
@@ -343,6 +343,7 @@ CADJ STORE vice = comlev1_dynsol, kind=isbyte, key = itmpkey
 #else
      I     HEFF, AREA,
 #endif
+     I     HEFFM,
      O     CbotC,
      I     ipass, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */

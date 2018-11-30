@@ -199,7 +199,7 @@ C     u/vIce have changed in Picard iteration so that new drag
 C     coefficients and viscosities are required (that will not change in
 C     the Krylov iteration)
        CALL SEAICE_OCEANDRAG_COEFFS(
-     I      uIceLin, vIceLin,
+     I      uIceLin, vIceLin, HEFFM,
      O      DWATN,
      I      0, myTime, myIter, myThid )
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
@@ -210,6 +210,7 @@ C     the Krylov iteration)
 #else
      I      HEFF, AREA,
 #endif      
+     I      HEFFM,
      O      CbotC,
      I      0, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */

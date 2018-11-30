@@ -16,6 +16,7 @@ C     !INTERFACE:
 #else
      I     HEFFLoc, AREALoc,
 #endif      
+     I     HEFFMLoc,
      O     CbotLoc,
      I     iStep, myTime, myIter, myThid )
 
@@ -42,7 +43,6 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
-#include "SEAICE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -64,6 +64,8 @@ C     u/vIceLoc :: local copies of the current ice velocity
       _RL HEFFLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif      
       _RL AREALoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     HEFFMLoc  :: local copy of land-sea masks
+      _RL HEFFMLoc  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     CbotLoc   :: drag coefficients
       _RL CbotLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
@@ -148,7 +150,7 @@ CML     &            tmpFld(I,J) * MAX( hActual - hCrit, 0. _d 0)
      &           * LOG(EXP( fac*(hActual - hCrit) ) + 1. _d 0)*rFac
      &           * EXP( - SEAICE_cBasalStar
      &                  *(SEAICE_area_max - AREALoc(I,J,bi,bj)) )
-     &           * HEFFM(I,J,bi,bj)
+     &           * HEFFMLoc(I,J,bi,bj)
            ENDIF
           ENDDO
          ENDDO

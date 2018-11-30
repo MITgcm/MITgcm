@@ -10,7 +10,7 @@ CBOP
 C     !ROUTINE: SEAICE_OCEANDRAG_COEFFS
 C     !INTERFACE:
       SUBROUTINE SEAICE_OCEANDRAG_COEFFS(
-     I     uIceLoc, vIceLoc,
+     I     uIceLoc, vIceLoc, HEFFMLoc,
      O     CwatC,
      I     iStep, myTime, myIter, myThid )
 
@@ -35,7 +35,6 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
-#include "SEAICE.h"      
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -54,6 +53,8 @@ C     iStep  :: current sub-time step iterate
 C     u/vIceLoc :: local copies of the current ice velocity
       _RL uIceLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     HEFFMLoc  :: local copy of land-sea masks
+      _RL HEFFMLoc  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     CwatC     :: drag coefficients
       _RL CwatC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
@@ -105,7 +106,7 @@ C         IF ( TEMPVAR .GT. (0.25 _d 0/dragCoeff)**2 )
 C     I like this better:
           IF ( dragCoeff**2 * TEMPVAR .GT. 0.0625 _d 0 )
      &         CwatC(I,J,bi,bj) = dragCoeff*SQRT(TEMPVAR)
-          CwatC(I,J,bi,bj) = CwatC(I,J,bi,bj) * HEFFM(I,J,bi,bj)
+          CwatC(I,J,bi,bj) = CwatC(I,J,bi,bj) * HEFFMLoc(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO

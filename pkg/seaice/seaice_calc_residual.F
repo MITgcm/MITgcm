@@ -77,7 +77,7 @@ C     Initialise
 C     u/vIceLoc have changed so that new drag coefficients and
 C     viscosities are required
       CALL SEAICE_OCEANDRAG_COEFFS(
-     I     uIceLoc, vIceLoc,
+     I     uIceLoc, vIceLoc, HEFFM,
      O     DWATN,
      I     krylovIter, myTime, myIter, myThid )
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
@@ -87,7 +87,8 @@ C     viscosities are required
      I     HEFFITD, AREAITD, AREA,
 #else
      I     HEFF, AREA,
-#endif      
+#endif
+     I     HEFFM,
      O     CbotC,
      I     krylovIter, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */

@@ -740,7 +740,7 @@ C
 C     set up rhs for stepping the velocity field
 C
         CALL SEAICE_OCEANDRAG_COEFFS(
-     I       uIce, vIce,
+     I       uIce, vIce, HEFFM,
      O       DWATN,
      I       iEVPstep, myTime, myIter, myThid )
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
@@ -751,6 +751,7 @@ C
 #else
      I       HEFF, AREA,
 #endif
+     I       HEFFM,
      O       CbotC,
      I       iEVPstep, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
