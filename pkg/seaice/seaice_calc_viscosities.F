@@ -43,7 +43,7 @@ C     strain rate tensor
 C
       _RL zMin  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL zMax  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL hEffM (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL HEFFM (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C
       _RL press0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL press (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -158,7 +158,7 @@ C     put min and max viscosities in
           zeta (I,J,bi,bj) = MIN(ZMAX(I,J,bi,bj),zeta(I,J,bi,bj))
 #endif /*  SEAICE_ZETA_SMOOTHREG */
           zeta (I,J,bi,bj) = MAX(ZMIN(I,J,bi,bj),zeta(I,J,bi,bj))
-C     set viscosities to zero at hEffM flow pts
+C     set viscosities to zero at HEFFM flow pts
           zeta (I,J,bi,bj) = zeta(I,J,bi,bj)*HEFFM(I,J,bi,bj)
           eta  (I,J,bi,bj) = recip_e2*zeta(I,J,bi,bj)
 C     "replacement pressure"
