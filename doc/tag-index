@@ -1,6 +1,13 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/example_scripts:
+  - remove all files in tools/example_scripts/
+    (updated testing scripts are all in MITgcm_contrib/test_scripts)
+o verification:
+  - remove un-tested experiments: cpl_atm2d+ocn, tidal_basin_2d and
+    tutorial_offline
+
 checkpoint67f (2018/11/23)
 o pkg/seaice:
   - add advection ppm and pqm advection schemes ;
