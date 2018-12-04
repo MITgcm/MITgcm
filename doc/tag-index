@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/monitor:
+  - fix local array declaration in mon_stats_latbnd_rl.F
 o tools/example_scripts:
   - remove all files in tools/example_scripts/
     (updated testing scripts are all in MITgcm_contrib/test_scripts)
