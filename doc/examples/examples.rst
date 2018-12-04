@@ -95,7 +95,7 @@ and :math:`A_{h}` the horizontal Laplacian viscosity.
 Discrete Numerical Configuration
 --------------------------------
 
-The domain is discretized with a uniform grid spacing in the horizontal set to :math:`\Delta x=\Delta y=20` km, so that there are sixty grid cells in the :math:`x` and :math:`y` directions. Vertically the model is configured with a single layer with depth, :math:`\Delta z`, of 5000 m. 
+The domain is discretized with a uniform grid spacing in the horizontal set to :math:`\Delta x=\Delta y=20` km, so that there are sixty grid cells in the :math:`x` and :math:`y` directions. Vertically the model is configured using a single layer in depth, :math:`\Delta z`, of 5000 m. 
 
 
 Numerical Stability Criteria
@@ -120,15 +120,15 @@ The numerical stability for inertial oscillations (Adcroft 1995 :cite:`adcroft:9
 .. math::
     :label: eq_baro_inertial_stability
 
-    S_{i} = f^{2} {\delta t}^2 < 0.5 \text{ for stability}
+    S_{i} = f {\delta t} < 0.5 \text{ for stability}
 
 
-evaluates to 0.014 for our choice of :math:`\delta t`, which is well below the stability criteria.
+evaluates to 0.12 for our choice of :math:`\delta t`, which is below the stability criteria.
 
 There are two general rules in choosing a lateral Laplacian eddy viscosity :math:`A_{h}`:
 
   - the resulting Munk layer width should be at least as large (preferably, larger) than the lateral grid spacing;
-  - the viscosity should be sufficiently large that the model is stable, given the time step. 
+  - the viscosity should be sufficiently small that the model is stable for horizontal friction, given the time step. 
 
 Let’s use this first rule to dictate our choice of :math:`A_{h}`.
 The theoretical Munk boundary layer width (as defined by the solution
@@ -145,7 +145,7 @@ or roughly across five grid cells, so we set :math:`A_{h} = 400` m\ :sup:`2` s\ 
 that the frictional boundary layer is well resolved.
 
 Given our choice of :math:`\delta t`, the stability 
-parameter to the horizontal Laplacian friction (Adcroft 1995 :cite:`adcroft:95`)
+parameter for the horizontal Laplacian friction (Adcroft 1995 :cite:`adcroft:95`)
 
 .. math::
     :label: baro_laplacian_stability
@@ -153,7 +153,7 @@ parameter to the horizontal Laplacian friction (Adcroft 1995 :cite:`adcroft:95`)
     S_{l} = 4 \frac{A_{h} \delta t}{{\Delta x}^2}  < 0.3 \text{ for stability}
 
 
-evaluates to 0.012, which is well also below the stability criteria.
+evaluates to 0.012, which is well below the stability criteria.
 
 .. _sec_eg_baro_code_config:
 
@@ -172,8 +172,8 @@ The experiment files
  - verification/tutorial_barotropic_gyre/input/windx_cosy.bin
  
 contain the code customizations and parameter settings for this 
-experiments. Below we describe the customizations
-to these files associated with this experiment. 
+experiment. Below we describe these customizations in detail.
+ 
 
 Note: MITgcm’s defaults are configured to simulate an ocean rather than an atmosphere, with vertical :math:`z`-coordinates.
 To model the ocean using pressure coordinates using MITgcm, additional parameter changes are required; see tutorial ocean_in_p. 
@@ -207,7 +207,7 @@ as done with :filelink:`data <verification/tutorial_barotropic_gyre/input/data>`
 - These lines set parameters :varlink:`OLx` and :varlink:`OLy` in the :math:`x` and :math:`y` directions, respectively.
   These values are the overlap extent of a model tile, or in other words the number of grid cells on the border of each tile that are duplicated
   in neighboring tiles. The minimum model overlap is 2 in both :math:`x` and :math:`y`. Some horizontal advection schemes and other parameter and setup choices
-  may require a larger overlap setting (provide ref).
+  may require a larger overlap setting (see :numref:`adv_scheme_summary`).
   In our configuration, we are using a second-order center-differences advection scheme (the MITgcm default)
   which does not requires setting a overlap beyond the MITgcm minimum 2. Note these constraints on :varlink:`OLx` and
   :varlink:`OLy` size exist even if using a single tile, as in this setup.
@@ -286,7 +286,7 @@ PARM01 - Continuous equation parameters
        :lineno-match:
 
 - This line sets parameter :varlink:`rhoNil`, a reference density which will also be used
-  as :math:`rho_c` (parameter :varlink:`rhoConst`) in :eq:`baro_model_eq_u`, to 1000 kg/m\ :sup:`3`.
+  as :math:`\rho_c` (parameter :varlink:`rhoConst`) in :eq:`baro_model_eq_u`, to 1000 kg/m\ :sup:`3`.
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/input/data
        :start-at: rhoNil
@@ -313,8 +313,8 @@ PARM01 - Continuous equation parameters
 
 - This line sets parameter :varlink:`momAdvection` to suppress the momentum of advection
   terms in the momentum equations. However, note the ``#`` in column 1: this
-  “comments out” the line, so using this :filelink:`data <verification/tutorial_barotropic_gyre/input/data>`
-  file as is will in fact include the momentum advection terms (i.e., MITgcm default for this parameter is TRUE).
+  “comments out” the line, so using the above :filelink:`data <verification/tutorial_barotropic_gyre/input/data>`
+  file verbatum will in fact include the momentum advection terms (i.e., MITgcm default for this parameter is TRUE).
   We’ll explore the linearized solution (i.e., by removing the leading ``#``) in :numref:`barotropic_gyre_solution`.
   Note the ability to comment out a line in a namelist file is not part of standard Fortran,
   but this feature is implemented for all MITgcm namelist files.
@@ -342,7 +342,7 @@ PARM02 - Elliptic solver parameters
 
 - The first line sets the tolerance (parameter :varlink:`cg2dTargetResidual`) that the 2D conjugate gradient solver,
   the iterative method used in the pressure method algorithm, will use to test for convergence.
-  The second line sets parameter :varlink:`cg2dMaxIters` the maximum
+  The second line sets parameter :varlink:`cg2dMaxIters`, the maximum
   number of iterations.
   The solver will iterate until the residual falls below this target value
   (here, set to :math:`1 \times 10^{-7}`) or until this maximum number of solver iterations is reached
@@ -370,7 +370,8 @@ PARM03 - Time stepping parameters
 
 - This line sets parameter :varlink:`nTimeSteps`, the (integer) number of timesteps the model will integrate forward. Below,
   we have set this to integrate for just 10 time steps, for MITgcm automated testing purposes (:numref:`code_testing_protocols`). To integrate the solution to near steady state,
-  uncomment the line a few lines further down where we set the value to 77760 time steps. When you make this change, be sure to comment out the line that sets :varlink:`monitorFreq` (see below).
+  uncomment the line a few lines further down where we set the value to 77760 time steps. When you make this change,
+  be sure to also comment out the line that sets :varlink:`monitorFreq` (see below).
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/input/data
        :start-at: nTimeSteps=10
@@ -378,7 +379,7 @@ PARM03 - Time stepping parameters
        :lineno-match:
 
 - This line sets parameter :varlink:`deltaT`, the timestep used in stepping forward the model, to 1200 seconds.
-  In combination with the larger value of :varlink:`nTimeSteps` above,
+  In combination with the larger value of :varlink:`nTimeSteps` mentioned above,
   we have effectively set the model to integrate forward for :math:`77760  \times 1200 \text{ s} = 3.0` years (based on 360-day years), long enough for the solution to approach equilibrium.
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/input/data
@@ -436,8 +437,8 @@ PARM04 - Gridding parameters
        :lineno-match:
 
 - These lines set the horizontal grid spacing in the discrete grid, parameters :varlink:`delX` and :varlink:`delY`.
-  The syntax indicates that the discrete grid should be comprise of 62 grid lines,
-  each separated by :math:`20 \times 10^{3}` m (=20 km), in both the :math:`x`- and :math:`y`-coordinate.
+  The syntax indicates that the discrete grid is comprised of 62 grid boxes,
+  with grid lines separated by :math:`20 \times 10^{3}` m (=20 km), in both the :math:`x`- and :math:`y`-coordinate.
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/input/data
        :start-at: delX
@@ -475,7 +476,7 @@ PARM05 - Input datasets
        :end-at: bathyFile
        :lineno-match:
  
-- These lines specifies the names of the files from which the surface wind stress is read.
+- These lines specify the names of the files from which the surface wind stress is read.
   There is a separate file for the :math:`x`-direction (:varlink:`zonalWindFile`) and the :math:`y`-direction (:varlink:`meridWindFile`).
   Note, here we have left the latter parameter blank, as there is no meridional wind stress forcing in our example.
  
@@ -531,7 +532,7 @@ was used to generate this bathymetry file.
 File ``input/windx_cosy.bin``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Similar to file ``input/bathy.bin``, this files is a 2D(:math:`x,y`)
+Similar to file ``input/bathy.bin``, this file is a 2D(:math:`x,y`)
 map of :math:`\tau_{x}` wind stress values, formatted in the same manner.
 The units are Nm\ :sup:`--2`. Although :math:`\tau_{x}` is only a function of :math:`y` in this experiment,
 this file must still define a complete 2D map in order
@@ -644,12 +645,12 @@ which is set up using multiple tiles), producing multiple files for each 2D grid
 a binary data snapshot of model dynamic variable
 :varlink:`etaN` (the free-surface height) and its meta file, respectively.
 Note the tile number is included in the filename, as is the iteration number ``0000000000``, which is simply the time step
-(the iteration number, i.e., the text after the variable name, is referred to as the “suffix” in
+(the iteration number here  is referred to as the “suffix” in
 MITgcm parlance; there are options to change this suffix to something other than iteration number).
 In other words, this is a dump of the free-surface height from the initialized state,
 iteration 0; if you load up this data file,
 you will see it is all zeroes. More interesting is the free-surface
-height after some time steps have occurred; snapshots are written according
+height after some time steps have occurred. Snapshots are written according
 to our parameter choice :varlink:`dumpFreq`, here set to 15,552,000 seconds, which is every 12960 time steps.
 We will examine the model solutions in :numref:`barotropic_gyre_solution`.
 The free-surface height is a 2D(:math:`x,y`) field.
@@ -662,15 +663,15 @@ remain uniform in space and time, thus not very interesting until we
 explore a baroclinic gyre setup in tutorial_baroclinic_gyre.
 These are all 3D(:math:`x,y,z`) fields. The format for the file names is similar
 to the free-surface height files. Also dumped are snapshots
-of diagnosed vertical velocity W (:varlink:`wVel`) (note in non-hydrostatic
-simulations, W is a fully prognostic model variable).
+of diagnosed vertical velocity ``W`` (:varlink:`wVel`) (note in non-hydrostatic
+simulations, ``W`` is a fully prognostic model variable).
 
 
 **Checkpoint Files**:
 
 In addition, the following pickup files are generated:
 
-- ``pickup.0000026280.001.001.data``, ``pickup.0000026280.001.001.meta``, etc., - written at frequency set by :varlink:`pChkptFreq`
+- ``pickup.0000026280.001.001.data``, ``pickup.0000026280.001.001.meta``, etc. - written at frequency set by :varlink:`pChkptFreq`
 - ``pickup.ckptA.001.001.data``, ``pickup.ckptA.001.001.meta``, ``pickup.ckptB.001.001.data``,
   ``pickup.ckptB.001.001.meta`` - written at frequency set by :varlink:`ChkptFreq`
 
@@ -689,7 +690,8 @@ i.e., computed at the midpoint of our single vertical cell.
 ``PH``, ``PHL`` files - these are a 3D(:math:`x,y,z`) field of hydrostatic
 :math:`\phi’` (including free-surface contribution) at cell centers
 and a 2D(:math:`x,y`) field of ocean bottom :math:`\phi’`, respectively, as a function of time.
-To obtain full :math:`\phi(t)` values, ``PHrefC`` should be added to ``PH``, and ``PHrefF``\ (z=bottom) should be added to ``PHL``.
+To obtain full :math:`\phi(t)` values, ``PHrefC`` should be added to ``PH``,
+and ``PHrefF``\ (:math:`z` =bottom) should be added to ``PHL``.
 
 
 
@@ -760,7 +762,9 @@ the analytical solution to the linearized equations. Success!
       Comparison of free surface height for the near-equilibrium MITgcm solution (:math:`t=` 3.0 years) with momentum advection switched off (left) and the analytical equilibrium solution to the linearized equation (right).
 
 Finally, let’s examine one additional simulation where we change the cosine profile of wind stress forcing to a sine profile.
-In file :filelink:`data <verification/tutorial_barotropic_gyre/input/data>`,
+First, run the matlab script :filelink:`verification/tutorial_barotropic_gyre/input/gendata.m` to generate the alternate sine 
+profile wind stress, and place a copy in your run directory. Then,
+in file :filelink:`data <verification/tutorial_barotropic_gyre/input/data>`,
 replace the line ``zonalWindFile='windx_cosy.bin’,`` with ``zonalWindFile='windx_siny.bin’,``.
 
   .. figure:: barotropic_gyre/figs/baro_jet_solution.*
