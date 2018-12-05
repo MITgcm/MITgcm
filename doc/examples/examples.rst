@@ -584,21 +584,21 @@ The standard output is essentially a log file of the model run. The following in
   :filelink:`data <verification/tutorial_barotropic_gyre/input/data>`,
   and :filelink:`data.pkg <verification/tutorial_barotropic_gyre/input/data.pkg>`).
 
-- information about the grid and bathymetry, including dumps of all grid variables (if Cartesian or spherical polar coordinates used, as is the case here).
+- information about the grid and bathymetry, including dumps of all grid variables (only if Cartesian or spherical polar coordinates used, as is the case here).
 
 - all runtime parameter choices used by the model, including all model defaults as well as user-specified parameters.
 
-- monitor statistics at regular intervals (note we did not specify parameter
-  :varlink:`monitorFreq` in :filelink:`data <verification/tutorial_barotropic_gyre/input/data>`,
-  so MITgcm defaulted to the value of parameter :varlink:`dumpFreq` for the monitor interval). See :numref:`pkg_monitor`.
+- monitor statistics at regular intervals (as specified by parameter
+  :varlink:`monitorFreq` in :filelink:`data <verification/tutorial_barotropic_gyre/input/data>`. See :numref:`pkg_monitor`).
 
 - output from the 2D conjugate gradient solver. More specifically, statistics from the right-hand side of the elliptic
   equation -- for our linear free-surface, see eq. :eq:`elliptic-backward-free-surface` -- are dumped for every model time step. If the model solution
   blows up, these statistics will increase to infinity, so one can see exactly when the problem occurred (i.e., to aid in debugging). Additional
   solver variables, such as number of iterations and residual, are included with the monitor statistics.
 
-- a summary of end-of-run execution information, including user-, wall- and system-time elapsed during execution
-  (for the overall run, and broken down by time spent in various subroutines), and tile communication statistics.
+- a summary of end-of-run execution information, including user-, wall- and system-time elapsed during execution,
+  and tile communication statistics.
+  These statistics are provided for the overall run, and also broken down by time spent in various subroutines. 
 
 Different setups using non-standard packages and/or different parameter choices will include
 additional or different output as part of the standard output. It is also possible to select more or less output
@@ -613,7 +613,7 @@ Other output files
 
 In addition to raw binary data files with ``.data`` extension, each binary file has a corresponding ``.meta`` file. These plain-text files include
 information about the array size, precision (i.e., ``float32`` or ``float64``), and if relevant, time information  and/or 
-a list of these fields included in the binary file.  The ``.meta`` files are used by MITgcm :filelink:`utils` when binary data is read.
+a list of these fields included in the binary file.  The ``.meta`` files are used by MITgcm :filelink:`utils` when binary data are read.
 
 The following output files are generated:
 
@@ -622,10 +622,10 @@ The following output files are generated:
 - ``XC``, ``YC`` - grid cell center point locations
 - ``XG``, ``YG`` - grid cell velocity point locations
 - ``RC``, ``RF`` - vertical cell center and cell faces positions
-- ``DXC``, ``DYC`` - grid cell center point separations (fig 2.6b)
-- ``DXG``, ``DYG`` - grid cell velocity point separations (fig 2.6a)
+- ``DXC``, ``DYC`` - grid cell center point separations (:numref:`hgrid-abcd` b)
+- ``DXG``, ``DYG`` - grid cell velocity point separations (:numref:`hgrid-abcd` a)
 - ``DRC``, ``DRF`` - separation of vertical cell center points and between faces
-- ``RAC``, ``RAS``, ``RAW``, ``RAZ`` - areas of the grid “tracer cells”, “southern cells”, “western cells” and “vorticity cells” (see fig 2.6)
+- ``RAC``, ``RAS``, ``RAW``, ``RAZ`` - areas of the grid “tracer cells”, “southern cells”, “western cells” and “vorticity cells” (:numref:`hgrid-abcd`)
 - ``hFacC``, ``hFacS``, ``hFacW`` - fractions of the grid cell in the vertical which are “open” as defined
   in the center and on the southern and western boundary. These variables effectively contain the configuration bathymetric (or topographic) information.
 - ``Depth`` - bathymetry depths
@@ -633,8 +633,8 @@ The following output files are generated:
 All these files contain 2D(:math:`x,y`) data except ``RC``, ``RF``, ``DRC``, ``DRF``, which are 1D(:math:`z`), 
 and ``hFacC``, ``hFacS``, ``hFacW``, which contain 3D(:math:`x,y,z`) data.
 
-All the 2D grid data files contain ``.001.001`` in their name, e.g., ``DXC.001.001.data`` -- this is the tile number in ``.XXX.YYY`` format.
-Here, we have just a single tile in both x and y, so both tile numbers are ``001``. Using multiple tiles, by default the local tile grid information
+All the 2D grid data files contain ``.001.001`` in their filename, e.g., ``DXC.001.001.data`` -- this is the tile number in ``.XXX.YYY`` format.
+Here, we have just a single tile in both x and y, so both tile numbers are ``001``. Using multiple tiles, the default is that the local tile grid information
 would be output separately for each tile (as an example, see the baroclinic gyre tutorial,
 which is set up using multiple tiles), producing multiple files for each 2D grid variable.
 
@@ -655,21 +655,21 @@ to our parameter choice :varlink:`dumpFreq`, here set to 15,552,000 seconds, whi
 We will examine the model solutions in :numref:`barotropic_gyre_solution`.
 The free-surface height is a 2D(:math:`x,y`) field.
 
-Similar snapshot files exist for other prognostic model variables,
-filename starting with ``U`` (:varlink:`uVel`),
+Snapshot files exist for other prognostic model variables, in particular
+filenames starting with ``U`` (:varlink:`uVel`),
 ``V`` (:varlink:`uVel`), ``T`` (:varlink:`theta`), and ``S`` (:varlink:`salt`);
 given our setup, these latter two fields
 remain uniform in space and time, thus not very interesting until we
 explore a baroclinic gyre setup in tutorial_baroclinic_gyre.
 These are all 3D(:math:`x,y,z`) fields. The format for the file names is similar
 to the free-surface height files. Also dumped are snapshots
-of diagnosed vertical velocity ``W`` (:varlink:`wVel`) (note in non-hydrostatic
+of diagnosed vertical velocity ``W`` (:varlink:`wVel`) (note that in non-hydrostatic
 simulations, ``W`` is a fully prognostic model variable).
 
 
 **Checkpoint Files**:
 
-In addition, the following pickup files are generated:
+The following pickup files are generated:
 
 - ``pickup.0000026280.001.001.data``, ``pickup.0000026280.001.001.meta``, etc. - written at frequency set by :varlink:`pChkptFreq`
 - ``pickup.ckptA.001.001.data``, ``pickup.ckptA.001.001.meta``, ``pickup.ckptB.001.001.data``,
@@ -749,7 +749,7 @@ For the linearized equations, the Munk layer (equilibrium) analytical solution i
    \left[1 - \exp({\frac{-x}{2\delta_m}}) \left(\cos\frac{\sqrt{3}x}{2\delta_m} + \frac{1}{\sqrt{3}} \sin\frac{\sqrt{3}x}{2\delta_m} \right) \right]
  
 
-:numref:`lin_anal_soln` displays the MITgcm output after switching off momentum advection vs.
+where :math:`\delta_m= ( \frac { A_{h} }{ \beta } )^{\frac{1}{3}}`. :numref:`lin_anal_soln` displays the MITgcm output after switching off momentum advection vs.
 the analytical solution to the linearized equations. Success!
 
 
