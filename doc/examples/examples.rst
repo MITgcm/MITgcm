@@ -109,18 +109,22 @@ maximum horizontal flow speed is:
 .. math::
     :label: eq_baro_cfl_stability
 
-    S_{a} = \frac{| \vec{u} | \delta t}{ \Delta x} < 0.5 \text{ for stability}
+    S_{a} = 2 \left( \frac{ |u| \Delta t}{ \Delta x} \right) < 0.5 \text{ for stability}
 
-In our configuration, let’s assume our solution will achieve a maximum :math:`{|\vec{u}|}=2` ms\ :sup:`--1`. To keep :math:`\delta t` safely
-below the stability criteria, let’s choose :math:`\delta t` = 1200 s (= 20 minutes), which 
+The 2 factor on the left is because we have a 2D problem (in contrast with the more familiar 1D canonical stability analysis); the right hand side is 0.5 
+due to our default use of Adams-Bashforth2 (see :numref:`adams-bashforth`) rather than the more familiar
+value of 1 that one would obtain using a forward Euler scheme.
+In our configuration, let’s assume our solution will achieve a maximum :math:`| u | = 1` ms\ :sup:`--1`
+(in reality, current speeds in our solution will be much smaller). To keep :math:`\Delta t` safely
+below the stability criteria, let’s choose :math:`\Delta t` = 1200 s (= 20 minutes), which 
 results in :math:`S_{a}` = 0.12.
 
-The numerical stability for inertial oscillations (Adcroft 1995 :cite:`adcroft:95`)
+The numerical stability for inertial oscillations using Adams-Bashforth2 (Adcroft 1995 :cite:`adcroft:95`)
 
 .. math::
     :label: eq_baro_inertial_stability
 
-    S_{i} = f {\delta t} < 0.5 \text{ for stability}
+    S_{i} = f {\Delta t} < 0.5 \text{ for stability}
 
 
 evaluates to 0.12 for our choice of :math:`\delta t`, which is below the stability criteria.
@@ -130,7 +134,7 @@ There are two general rules in choosing a lateral Laplacian eddy viscosity :math
   - the resulting Munk layer width should be at least as large (preferably, larger) than the lateral grid spacing;
   - the viscosity should be sufficiently small that the model is stable for horizontal friction, given the time step. 
 
-Let’s use this first rule to dictate our choice of :math:`A_{h}`.
+Let’s use this first rule to make our choice for :math:`A_{h}`, and check this value using the second rule.
 The theoretical Munk boundary layer width (as defined by the solution
 zero-crossing, see Pedlosky 1987 :cite:`pedlosky:87`) is given by: 
 
@@ -144,16 +148,20 @@ or roughly across five grid cells, so we set :math:`A_{h} = 400` m\ :sup:`2` s\ 
 (more precisely, this sets the full width at :math:`M_{w}` = 124 km). This choice ensures
 that the frictional boundary layer is well resolved.
 
-Given our choice of :math:`\delta t`, the stability 
+Given our choice of :math:`\Delta t`, the stability 
 parameter for the horizontal Laplacian friction (Adcroft 1995 :cite:`adcroft:95`)
 
 .. math::
     :label: baro_laplacian_stability
 
-    S_{l} = 4 \frac{A_{h} \delta t}{{\Delta x}^2}  < 0.3 \text{ for stability}
+    S_{l} = 2 \left( 4 \frac{A_{h} \Delta t}{{\Delta x}^2} \right)  < 0.6 \text{ for stability}
 
 
-evaluates to 0.012, which is well below the stability criteria.
+evaluates to 0.0096, which is well below the stability criteria. As in :eq:`eq_baro_cfl_stability` the above criteria
+is for a 2D problem using Adams-Bashforth2 time stepping, with the 0.6 value on the right replacing the more familiar 1
+that is obtained using a forward Euler scheme.
+
+See :numref:`adams-bashforth` for additional details on Adams-Bashforth time-stepping and numerical stability criteria.
 
 .. _sec_eg_baro_code_config:
 
@@ -195,9 +203,14 @@ Since FORTRAN77 lacks dynamical memory allocation capabilities, this must be spe
 as done with :filelink:`data <verification/tutorial_barotropic_gyre/input/data>`,
 :filelink:`data.pkg <verification/tutorial_barotropic_gyre/input/data.pkg>`, etc.
 
+For this first tutorial, our setup and run environment is the most simple possible: we run on a single process 
+(i.e., NOT  `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ and NOT multi-threaded)
+using a single model :ref:`"tile" <tile_description>`.
+See other tutorials for more  complex model domain decomposition. 
+
 
 - These lines set parameters :varlink:`sNx` and :varlink:`sNy`, the number of grid points in the :math:`x` and :math:`y` directions, respectively,
-  for a single model “tile”.
+  for a model tile.
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/code/SIZE.h
        :start-at: sNx =
@@ -206,7 +219,8 @@ as done with :filelink:`data <verification/tutorial_barotropic_gyre/input/data>`
 
 - These lines set parameters :varlink:`OLx` and :varlink:`OLy` in the :math:`x` and :math:`y` directions, respectively.
   These values are the overlap extent of a model tile, or in other words the number of grid cells on the border of each tile that are duplicated
-  in neighboring tiles. The minimum model overlap is 2 in both :math:`x` and :math:`y`. Some horizontal advection schemes and other parameter and setup choices
+  in neighboring tiles. The minimum model overlap is 2 in both :math:`x` and :math:`y`.
+  Some horizontal advection schemes and other parameter and setup choices
   may require a larger overlap setting (see :numref:`adv_scheme_summary`).
   In our configuration, we are using a second-order center-differences advection scheme (the MITgcm default)
   which does not requires setting a overlap beyond the MITgcm minimum 2. Note these constraints on :varlink:`OLx` and
@@ -219,10 +233,8 @@ as done with :filelink:`data <verification/tutorial_barotropic_gyre/input/data>`
 
 - These lines set parameters :varlink:`nSx` and :varlink:`nSy`, the number of model tiles in the :math:`x` and :math:`y` directions, respectively,
   which execute on a single process.
-  In our configuration, we are using a single model tile; as such, parameters :varlink:`sNx` and :varlink:`sNy`,
-  set to 62 grid points each, span the full model domain of 1200 km plus an extra solid border gridcell surrounding our ocean domain. For a multi-threaded setup
-  (i.e., the process splits execution into multiple threads, taking advantage of multiple processor cores if available),
-  one would set one or both of these to something larger than one.
+  As discussed above, we are using a single model tile here; as such, parameters :varlink:`sNx` and :varlink:`sNy`,
+  set to 62 grid points each, spanning the full model domain of 1200 km plus an extra solid border gridcell surrounding our ocean domain.
   There are also numerical, computational, and/or grid-dictated reasons why one
   might opt to break the domain into multiple tiles in some setups.
 
@@ -247,6 +259,14 @@ as done with :filelink:`data <verification/tutorial_barotropic_gyre/input/data>`
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/code/SIZE.h
        :start-at: Nr  =
        :end-at: Nr  =
+       :lineno-match:
+
+- Note these lines summarize the horizontal size of the model domain (**NOT** to be edited).
+
+
+  .. literalinclude:: ../../verification/tutorial_barotropic_gyre/code/SIZE.h
+       :start-at: sNx*nSx*nPx
+       :end-at: sNy*nSy*nPy
        :lineno-match:
 
 Further information and examples about how to configure :filelink:`model/inc/SIZE.h`
