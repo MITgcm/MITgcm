@@ -337,13 +337,12 @@ CADJ STORE vice = comlev1_dynsol, kind=isbyte, key = itmpkey
 
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
       IF (SEAICEbasalDragK2.GT.0. _d 0) CALL SEAICE_BOTTOMDRAG_COEFFS(
-     I     uIceC, vIceC,
+     I     uIceC, vIceC, HEFFM,
 #ifdef SEAICE_ITD
      I     HEFFITD, AREAITD, AREA,
 #else
      I     HEFF, AREA,
 #endif
-     I     HEFFM,
      O     CbotC,
      I     ipass, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */

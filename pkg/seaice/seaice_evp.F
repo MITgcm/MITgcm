@@ -745,13 +745,12 @@ C
      I       iEVPstep, myTime, myIter, myThid )
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
       IF (SEAICEbasalDragK2.GT.0. _d 0) CALL SEAICE_BOTTOMDRAG_COEFFS(
-     I       uIce, vIce,
+     I       uIce, vIce, HEFFM,
 #ifdef SEAICE_ITD
      I       HEFFITD, AREAITD, AREA,
 #else
      I       HEFF, AREA,
 #endif
-     I       HEFFM,
      O       CbotC,
      I       iEVPstep, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
@@ -815,9 +814,9 @@ C     coriols terms
            ENDDO
           ENDDO
 #ifdef SEAICE_ALLOW_MOM_ADVECTION
-          IF ( SEAICEmomAdvection ) THEN 
-           DO J=1-Oly,sNy+Oly
-            DO I=1-Olx,sNx+Olx
+          IF ( SEAICEmomAdvection ) THEN
+           DO J=1-OLy,sNy+OLy
+            DO I=1-OLx,sNx+OLx
              gUmom(I,J) = 0. _d 0
              gVmom(I,J) = 0. _d 0
             ENDDO

@@ -3,9 +3,9 @@
 CBOP
 C     !ROUTINE: SEAICE_CALC_RESIDUAL
 C     !INTERFACE:
-      SUBROUTINE SEAICE_CALC_RESIDUAL( 
-     I     uIceLoc, vIceLoc, 
-     O     uIceRes, vIceRes, 
+      SUBROUTINE SEAICE_CALC_RESIDUAL(
+     I     uIceLoc, vIceLoc,
+     O     uIceRes, vIceRes,
      I     newtonIter, krylovIter, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
@@ -27,7 +27,7 @@ C     === Global variables ===
 #include "SEAICE_SIZE.h"
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
 #include "SEAICE_PARAMS.h"
-#endif /* SEAICE_ALLOW_BOTTOMDRAG */ 
+#endif /* SEAICE_ALLOW_BOTTOMDRAG */
 #include "SEAICE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -50,7 +50,7 @@ C     u/vIceRes :: residual of sea-ice momentum equations
       _RL vIceRes(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef SEAICE_ALLOW_JFNK
-C     u/vIceLHS :: left hand side of momentum equations 
+C     u/vIceLHS :: left hand side of momentum equations
       _RL uIceLHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceLHS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     u/vIceRHS :: righ hand side of momentum equations
@@ -64,8 +64,8 @@ CEOP
 C     Initialise
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
           uIceLHS(I,J,bi,bj) = 0. _d 0
           vIceLHS(I,J,bi,bj) = 0. _d 0
           uIceRHS(I,J,bi,bj) = 0. _d 0
@@ -82,13 +82,12 @@ C     viscosities are required
      I     krylovIter, myTime, myIter, myThid )
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
       IF (SEAICEbasalDragK2.GT.0. _d 0) CALL SEAICE_BOTTOMDRAG_COEFFS(
-     I     uIceLoc, vIceLoc,
+     I     uIceLoc, vIceLoc, HEFFM,
 #ifdef SEAICE_ITD
      I     HEFFITD, AREAITD, AREA,
 #else
      I     HEFF, AREA,
 #endif
-     I     HEFFM,
      O     CbotC,
      I     krylovIter, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
@@ -101,8 +100,8 @@ C     viscosities are required
      O     eta, etaZ, zeta, zetaZ, press, deltaC,
      I     krylovIter, myTime, myIter, myThid )
 
-C     The scheme is backward Euler in time, i.e. the rhs-vector contains 
-C     only terms that are independent of u/vIce, except for the time 
+C     The scheme is backward Euler in time, i.e. the rhs-vector contains
+C     only terms that are independent of u/vIce, except for the time
 C     derivative part mass*(u/vIce-u/vIceNm1)/deltaT
 
 C     compute new right hand side (depends to DWATN=Cdrag)

@@ -10,22 +10,21 @@ CBOP
 C     !ROUTINE: SEAICE_BOTTOMDRAG_COEFFS
 C     !INTERFACE:
       SUBROUTINE SEAICE_BOTTOMDRAG_COEFFS(
-     I     uIceLoc, vIceLoc, 
+     I     uIceLoc, vIceLoc, HEFFMLoc,
 #ifdef SEAICE_ITD
      I     HEFFITDLoc, AREAITDLoc, AREALoc,
 #else
      I     HEFFLoc, AREALoc,
-#endif      
-     I     HEFFMLoc,
+#endif
      O     CbotLoc,
      I     iStep, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE SEAICE_BOTTOMDRAG_COEFFS
-C     | o Compute the non-linear drag coefficients for ice-bottom 
+C     | o Compute the non-linear drag coefficients for ice-bottom
 C     |   drag, as a parameterization for grounding fastice
-C     |   following 
+C     |   following
 C     |   Lemieux et al. (2015), doi:10.1002/2014JC010678
 C     *==========================================================*
 C     | written by Martin Losch, Apr 2016
@@ -46,28 +45,28 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myTime :: Simulation time
-C     myIter :: Simulation timestep number
-C     myThid :: my Thread Id. number
-C     iStep  :: current sub-time step iterate 
-      _RL     myTime
-      INTEGER myIter
-      INTEGER myThid
-      INTEGER iStep
 C     u/vIceLoc :: local copies of the current ice velocity
+C     HEFFMLoc  :: local copy of land-sea masks
+C     CbotLoc   :: drag coefficients
+C     iStep     :: current sub-time step iterate
+C     myTime    :: Simulation time
+C     myIter    :: Simulation timestep number
+C     myThid    :: my Thread Id. number
       _RL uIceLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL HEFFMLoc  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef SEAICE_ITD
       _RL HEFFITDLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
       _RL AREAITDLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
 #else
       _RL HEFFLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif      
+#endif
       _RL AREALoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C     HEFFMLoc  :: local copy of land-sea masks
-      _RL HEFFMLoc  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C     CbotLoc   :: drag coefficients
       _RL CbotLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER iStep
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
 C     === local variables ===
@@ -85,7 +84,7 @@ CEOP
 C     some abbreviations
       u0sq     = SEAICEbasalDragU0*SEAICEbasalDragU0
       recip_k1 = 0. _d 0
-      IF ( SEAICEbasalDragK1 .GT. 0. _d 0 ) 
+      IF ( SEAICEbasalDragK1 .GT. 0. _d 0 )
      &     recip_k1 = 1. _d 0/SEAICEbasalDragK1
 C     fac scales the soft maximum for more accuracy
       fac = 10. _d 0
@@ -93,13 +92,13 @@ C     fac scales the soft maximum for more accuracy
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+Oly
+        DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLy
           CbotLoc(I,J,bi,bj) = 0. _d 0
           tmpFld(I,J)      = 0. _d 0
          ENDDO
         ENDDO
-        DO j=1-OLy,sNy+Oly-1
+        DO j=1-OLy,sNy+OLy-1
          DO i=1-OLx,sNx+OLy-1
           IF ( AREALoc(I,J,bi,bj) .GT. 0.01 _d 0 ) THEN
 #ifdef OBCS_UVICE_OLD
@@ -122,11 +121,11 @@ C     fac scales the soft maximum for more accuracy
 #ifdef SEAICE_ITD
         DO k=1,nITD
 #endif /* SEAICE_ITD */
-         DO j=1-OLy,sNy+Oly-1
+         DO j=1-OLy,sNy+OLy-1
           DO i=1-OLx,sNx+OLy-1
            IF ( AREALoc(I,J,bi,bj) .GT. 0.01 _d 0 ) THEN
 CML           hActual = HEFFLoc(i,j,bi,bj)
-CML     &          /SQRT( AREALocITDLoc(i,j,bi,bj)**2 + area_reg_sq )
+CML     &          /SQRT( AREAITDLoc(i,j,bi,bj)**2 + area_reg_sq )
 CML           hActual = SQRT(hActual * hActual + hice_reg_sq)
 CML           hCrit   = ABS(R_low(I,J,bi,bj)) * recip_k1
 #ifdef SEAICE_ITD
@@ -143,10 +142,10 @@ C     In our case, b=0, so exp(k*b) = 1.
 C     max(a,0;k) = ln(exp(k*a)+1)/k
 C     If k*a gets too large, EXP will overflow, but for the anticipated
 C     values of hActual < 100m, and k=10, this should be very unlikely
-CML             CbotLoc(I,J,bi,bj) = 
-CML     &            tmpFld(I,J) * MAX( hActual - hCrit, 0. _d 0) 
-            CbotLoc(I,J,bi,bj) = CbotLoc(I,J,bi,bj) 
-     &           + tmpFld(I,J) 
+CML             CbotLoc(I,J,bi,bj) =
+CML     &            tmpFld(I,J) * MAX( hActual - hCrit, 0. _d 0)
+            CbotLoc(I,J,bi,bj) = CbotLoc(I,J,bi,bj)
+     &           + tmpFld(I,J)
      &           * LOG(EXP( fac*(hActual - hCrit) ) + 1. _d 0)*rFac
      &           * EXP( - SEAICE_cBasalStar
      &                  *(SEAICE_area_max - AREALoc(I,J,bi,bj)) )
