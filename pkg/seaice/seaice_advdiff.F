@@ -128,9 +128,6 @@ CADJ STORE uc   = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE vc   = comlev1, key = ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE heffm  = comlev1, key = ikey_dynamics, kind=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
       IF ( SEAICEmultiDimAdvection ) THEN
 #ifdef ALLOW_GENERIC_ADVDIFF
 
@@ -156,18 +153,11 @@ C
         itmpkey = (act1 + 1) + act2*max1
      &                       + act3*max1*max2
      &                       + act4*max1*max2*max3
-C
-CADJ STORE area(:,:,bi,bj)  = comlev1_bibj,
-CADJ &     key = itmpkey, kind=isbyte
-CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj,
-CADJ &     key = itmpkey, kind=isbyte
-CADJ STORE heffm(:,:,bi,bj)  = comlev1_bibj,
-CADJ &     key = itmpkey, kind=isbyte
-CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,
-CADJ &     key = itmpkey, kind=isbyte
+CADJ STORE area(:,:,bi,bj)  = comlev1_bibj, key=itmpkey, kind=isbyte
+CADJ STORE heff(:,:,bi,bj)  = comlev1_bibj, key=itmpkey, kind=isbyte
+CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key=itmpkey, kind=isbyte
 # ifdef SEAICE_VARIABLE_SALINITY
-CADJ STORE hsalt(:,:,bi,bj)  = comlev1_bibj,
-CADJ &     key = itmpkey, kind=isbyte
+CADJ STORE hsalt(:,:,bi,bj) = comlev1_bibj, key=itmpkey, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
