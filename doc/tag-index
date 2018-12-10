@@ -1,6 +1,17 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - move initialisation of masks and metric coefficients and KGEO from
+    seaice_init_varia.F to seaice_init_fixed.F
+  - remove all reference to global masks maskC/maskW/maskS:
+   * introduce new masks SIMaskU/V
+   * initialise HEFFM/SIMaskU/V as copies of surface maskC/W/S
+   * replace maskC/W/S with HEFFM/SIMaskU/SIMaskV; in some places this requires
+     including SEAICE.h and as a consequence renaming a few local variables to
+     avoid name overlap
+  - remove TAF storage directives for "heffm" (no longer needed) and simplify
+    seaice calls and TAF storage dir in do_oceanic_phys.F
 o pkg/monitor:
   - fix local array declaration in mon_stats_latbnd_rl.F
 o tools/example_scripts:
