@@ -48,6 +48,7 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE.h"      
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
 #endif
@@ -253,11 +254,11 @@ C--   Make local copy of sea-ice field and mask West & South
        DO i=1-OLx,sNx+OLx
          localTij(i,j)=iceFld(i,j)
 #ifdef ALLOW_OBCS
-         maskLocW(i,j) = _maskW(i,j,k,bi,bj)*maskInW(i,j,bi,bj)
-         maskLocS(i,j) = _maskS(i,j,k,bi,bj)*maskInS(i,j,bi,bj)
+         maskLocW(i,j) = SIMaskU(i,j,bi,bj)*maskInW(i,j,bi,bj)
+         maskLocS(i,j) = SIMaskV(i,j,bi,bj)*maskInS(i,j,bi,bj)
 #else /* ALLOW_OBCS */
-         maskLocW(i,j) = _maskW(i,j,k,bi,bj)
-         maskLocS(i,j) = _maskS(i,j,k,bi,bj)
+         maskLocW(i,j) = SIMaskU(i,j,bi,bj)
+         maskLocS(i,j) = SIMaskV(i,j,bi,bj)
 #endif /* ALLOW_OBCS */
        ENDDO
       ENDDO

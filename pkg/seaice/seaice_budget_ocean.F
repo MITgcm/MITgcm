@@ -142,7 +142,7 @@ C     Salt flux from Precipitation and Evaporation.
 #  ifdef ALLOW_RUNOFF
         sflux(i,j,bi,bj) = sflux(i,j,bi,bj) - runoff(i,j,bi,bj)
 #  endif
-        sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+        sflux(i,j,bi,bj) = sflux(i,j,bi,bj)!*HEFFM(i,j,bi,bj)
         empmr(i,j,bi,bj) = sflux(i,j,bi,bj)*rhoConstFresh
 # endif /* ALLOW_DOWNWARD_RADIATION */
 #endif /* SEAICE_EXTERNAL_FLUXES */
