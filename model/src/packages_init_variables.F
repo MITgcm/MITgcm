@@ -95,6 +95,8 @@ C       |
 C       |-- NEST_CHILD_INIT_VARIA
 C       |-- NEST_PARENT_INIT_VARIA
 C       |
+C       |-- NEST2W_INIT_VARIA
+C       |
 C       |-- CPL_INI_VARS
 C       |
 C       |-- MYPACKAGE_INIT_VARIA
@@ -446,6 +448,16 @@ C--   Initialize NEST in PARENT configuration
        CALL NEST_PARENT_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_NEST_PARENT */
+
+#ifdef ALLOW_NEST2W_COMMON
+C--   Initialise the 2-Way Nesting packages variables
+      IF ( useNest2W_parent .OR. useNest2W_child ) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('NEST2W_INIT_VARIA',myThid)
+# endif
+        CALL NEST2W_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_NEST2W_COMMON */
 
 #ifdef COMPONENT_MODULE
       IF (useCoupler) THEN
