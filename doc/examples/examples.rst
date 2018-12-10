@@ -516,7 +516,7 @@ File :filelink:`input/data.pkg <verification/tutorial_barotropic_gyre/input/data
 This file does not set any namelist parameters, yet is necessary to run --  only standard packages
 (i.e., those compiled in MITgcm by default) are required for this setup, so no other customization is necessary.
 We will demonstrate how to include additional packages
-in parts II and II of this tutorial.
+in other tutorial experiments.
 
 
 File :filelink:`input/eedata <verification/tutorial_barotropic_gyre/input/eedata>`
