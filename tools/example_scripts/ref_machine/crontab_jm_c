@@ -1,9 +1,0 @@
-#---------------------------------------------------------
-#-from: jm_c@villon.mit.edu
-#  current output of "crontab -l":
-MAILTO=jmc@ocean.mit.edu
-
-55 23  * * * cd /home/jm_c/testing/ref_machine && cvs -q -d :pserver:cvsanon@mitgcm.org:/u/gcmpack update -P -d
-10 00 * * * /home/jm_c/testing/ref_machine/test_newRef a
-
-#---------------------------------------------------------

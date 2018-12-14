@@ -1,6 +1,47 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - move initialisation of masks and metric coefficients and KGEO from
+    seaice_init_varia.F to seaice_init_fixed.F
+  - remove all reference to global masks maskC/maskW/maskS:
+   * introduce new masks SIMaskU/V
+   * initialise HEFFM/SIMaskU/V as copies of surface maskC/W/S
+   * replace maskC/W/S with HEFFM/SIMaskU/SIMaskV; in some places this requires
+     including SEAICE.h and as a consequence renaming a few local variables to
+     avoid name overlap
+  - remove TAF storage directives for "heffm" (no longer needed) and simplify
+    seaice calls and TAF storage dir in do_oceanic_phys.F
+o pkg/monitor:
+  - fix local array declaration in mon_stats_latbnd_rl.F
+o tools/example_scripts:
+  - remove all files in tools/example_scripts/
+    (updated testing scripts are all in MITgcm_contrib/test_scripts)
+o verification:
+  - remove un-tested experiments: cpl_atm2d+ocn, tidal_basin_2d and
+    tutorial_offline
+
+checkpoint67f (2018/11/23)
+o pkg/seaice:
+  - add advection ppm and pqm advection schemes ;
+  - test new scheme in verification/offline_exf_seaice.dyn_lsr
+o pkg/generic_advection:
+  - regularize ppm and pqm advection schemes:
+  - replace unsafe division in the case of numerical underflows by
+    regularized expression sign(max(abs(uCFL),1.d-20),uCFL) and similar,
+    in anology to other advection routines, e.g. gad_os7mp_adv_x/y/z.F
+  - affects verification/advect_xz at truncation level -> updated
+o eesupp & model:
+  - add entry points for 2-way nesting pkgs.
+o pkg/dic:
+  - fix out-of-bounds error in S/R CAR_FLUX_OMEGA_TOP (#define CAR_DISS)
+o pkg/streamice:
+  - new implementation of grounding line smoothing by smoothing of basal
+     traction in partly grounded cell, in streamice_upd_ffrac_uncoupled.F
+  - rename CPP directives: previous smoothing functionality now enabled with
+    STREAMICE_SMOOTH_FLOATATION2, new functionality enabled via
+    STREAMICE_SMOOTH_FLOATATION
+  - affects verification/halfpipe_streamice, FWD, TAF and OpenAD adjoint.
 o pkg/atm_phys:
   - change IR absorption formulation regarding the dependence on Water-Vapor
     in the case wv_exponent = -1 ; update results of experiment "atm_gray.ape"

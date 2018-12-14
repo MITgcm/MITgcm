@@ -47,7 +47,6 @@ C     msgBuf :: Informational/error meesage buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi,bj,i,j,k,n
       INTEGER km, k1, k2
-      LOGICAL noPnts(Ny)
       _RL tmpVal
       _RL tmpVol
       INTEGER nSepDim
@@ -55,6 +54,7 @@ C     msgBuf :: Informational/error meesage buffer
       _RL tileVol (nSx,nSy,nSepDim)
       _RL tileMean(nSx,nSy,nSepDim)
       _RL tileVar (nSx,nSy,nSepDim)
+      LOGICAL noPnts(nSepDim)
 
 C-    Check local Dim
       IF ( nSepBnd .GT. nSepDim ) THEN

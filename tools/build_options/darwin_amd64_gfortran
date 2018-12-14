@@ -76,6 +76,9 @@ else
     fi
 fi
 
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+
 INCLUDEDIRS=''
 INCLUDES=''
 LIBS=''
@@ -85,13 +88,67 @@ if [ "x$NETCDF_ROOT" != x ] ; then
     INCLUDES="-I${NETCDF_ROOT}/include"
     LIBDIR="${NETCDF_ROOT}/lib"
     LIBS="-L${NETCDF_ROOT}/lib -lnetcdf -lcurl"
+elif [ "x$NETCDF_HOME" != x ]; then
+    INCLUDEDIR="${NETCDF_HOME}/include"
+    INCLUDES="-I${NETCDF_HOME}/include"
+    LIBDIR="${NETCDF_HOME}/lib"
+    LIBS="-L${NETCDF_HOME}/lib"
+elif [ "x$NETCDF_INC" != x -a "x$NETCDF_LIB" != x ]; then
+    NETCDF_INC=`echo $NETCDF_INC | sed 's/-I//g'`
+    NETCDF_LIB=`echo $NETCDF_LIB | sed 's/-L//g'`
+    INCLUDEDIR="${NETCDF_INC}"
+    INCLUDES="-I${NETCDF_INC}"
+    LIBDIR="${NETCDF_LIB}"
+    LIBS="-L${NETCDF_LIB}"
+elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
+    INCLUDEDIR="${NETCDF_INCDIR}"
+    INCLUDES="-I${NETCDF_INCDIR}"
+    LIBDIR="${NETCDF_LIBDIR}"
+    LIBS="-L${NETCDF_LIBDIR}"
+elif [[ -n $( nf-config --includedir ) && ($? == 0) ]] ; then
+    # NETCDF env variables are not set, trying nf-config instead
+    INCLUDEDIR=$( nf-config --includedir )
+    INCLUDES="-I$INCLUDEDIR"
+    LIBS=$( nf-config --flibs )
+elif test -d /usr/include/netcdf-3 ; then
+    INCLUDES='-I/usr/include/netcdf-3'
+    LIBS='-L/usr/lib/netcdf-3 -L/usr/lib64/netcdf-3'
+elif test -d /usr/include/netcdf ; then
+    INCLUDES='-I/usr/include/netcdf'
+elif test -d /usr/local/netcdf ; then
+    INCLUDES='-I/usr/local/netcdf/include'
+    LIBS='-L/usr/local/netcdf/lib'
+elif test -d /usr/local/include/netcdf.inc ; then
+    INCLUDES='-I/usr/local/include'
+    LIBS='-L/usr/local/lib64'
+elif test -d /usr/include/netcdf.inc ; then
+    INCLUDES='-I/usr/include'
+    LIBS='-L/usr/lib64'
 fi
 
-if [ -n "$MPI_INC_DIR" -a "x$MPI" = xtrue ] ; then
-    INCLUDES="$INCLUDES -I$MPI_INC_DIR"
-    INCLUDEDIRS="$INCLUDEDIRS $MPI_INC_DIR"
-    #- used for parallel (MPI) DIVA
-    MPIINCLUDEDIR="$MPI_INC_DIR"
-   #MPI_HEADER_FILES='mpif.h mpiof.h'
+if [ -n "$MPI_HOME" -a -z "$MPI_INC_DIR" ]; then
+    MPI_INC_DIR="$MPI_HOME/include"
+fi
+
+if [ "x$MPI" = xtrue ] ; then
+   if [ -z "$MPI_INC_DIR" ] ; then
+      # MPI env variables are not set, trying pkg-config insteal
+      if [[ -n $( pkg-config --cflags-only-I ompi ) && ($? == 0) ]] ; then
+         MPI_INC_DIR=$(pkg-config --cflags-only-I ompi | awk '{ print $1 }' | sed -e "s/-I//" )
+      else
+         echo MPI_HOME is not set and pkg-config not available, aborting
+         exit 1
+      fi
+   fi
+   if [ -n "$MPI_INC_DIR" ] ; then
+      # only fill this if we can find MPI, otherwise triggers netcdf error
+      INCLUDES+=" -I$MPI_INC_DIR"
+      INCLUDEDIRS+=" $MPI_INC_DIR"
+      #- used for parallel (MPI) DIVA
+      MPIINCLUDEDIR="$MPI_INC_DIR"
+   else
+      echo could not set MPI_INC_DIR, aborting
+      exit 1
+   fi
 fi
 

@@ -102,7 +102,6 @@ C--   Map thSice-variables to HEFF and AREA
 CADJ STORE uwind = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vwind = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE heffm = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE area  = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef SEAICE_ALLOW_DYNAMICS
 #  ifdef SEAICE_CGRID
@@ -185,9 +184,6 @@ C NOW DO ADVECTION and DIFFUSION
        CALL SEAICE_ADVDIFF( uLoc, vLoc, myTime, myIter, myThid )
 #endif /* SEAICE_CGRID */
       ENDIF
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE heffm  = comlev1, key=ikey_dynamics, kind=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     After advection, the sea ice variables may have unphysical values
 C     e.g., < 0, that are regularized here. Concentration as a special case
