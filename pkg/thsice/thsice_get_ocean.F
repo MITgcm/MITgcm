@@ -2,6 +2,9 @@
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
 #endif /* ALLOW_SEAICE */
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif /* ALLOW_SHELFICE */
 
 CBOP
 C     !ROUTINE: THSICE_GET_OCEAN
@@ -33,6 +36,9 @@ c#include "THSICE_PARAMS.h"
 # include "SEAICE_SIZE.h"
 # include "SEAICE.h"
 #endif /* ALLOW_SEAICE */
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE.h"
+#endif /* ALLOW_SHELFICE */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -87,6 +93,17 @@ C--     Mixed layer thickness: take the 1rst layer
            ENDDO
           ENDDO
         ENDIF
+
+#ifdef ALLOW_SHELFICE
+C--   Prevent seaice to form where Ice-Shelf is present
+        IF ( useShelfIce ) THEN
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             IF ( kTopC(i,j,bi,bj).NE.0 ) hOceMxL(i,j,bi,bj) = 0. _d 0
+           ENDDO
+          ENDDO
+        ENDIF
+#endif /* ALLOW_SHELFICE */
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
