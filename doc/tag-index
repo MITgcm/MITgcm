@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice:
+  - allow to include thin ice-shelf (i.e., such that hFacC(k=1) > 0 ) when
+    using pkg/thsice, by preventing seaice to form where there is an ice-shelf.
+  - prevent short-wave heating below an ice-shelf (previously still happening
+    below thin ice-shelf); also fix Qnet there (but only for diagnostics).
 o pkg/seaice:
   - move initialisation of masks and metric coefficients and KGEO from
     seaice_init_varia.F to seaice_init_fixed.F
