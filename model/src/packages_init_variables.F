@@ -66,17 +66,17 @@ C       |-- RBCS_INIT_VARIA
 C       |
 C       |-- MATRIX_INIT_VARIA
 C       |
+C       |-- STREAMICE_INIT_VARIA
+C       |
+C       |-- SHELFICE_INIT_VARIA
+C       |
+C       |-- ICEFRONT_INIT_VARIA
+C       |
 C       |-- FRAZIL_INIT_VARIA
 C       |
 C       |-- SEAICE_INIT_VARIA
 C       |
 C       |-- SALT_PLUME_INIT_VARIA
-C       |
-C       |-- SHELFICE_INIT_VARIA
-C       |
-C       |-- STREAMICE_INIT_VARIA
-C       |
-C       |-- ICEFRONT_INIT_VARIA
 C       |
 C       |-- THSICE_INI_VARS
 C       |
@@ -317,6 +317,33 @@ C--   Initialise float position
       ENDIF
 #endif /* ALLOW_MATRIX */
 
+#ifdef ALLOW_STREAMICE
+      IF (useStreamIce) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('STREAMICE_INIT_VARIA',myThid)
+# endif
+       CALL STREAMICE_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_STREAMICE */
+
+#ifdef ALLOW_SHELFICE
+      IF (useShelfIce) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('SHELFICE_INIT_VARIA',myThid)
+# endif
+       CALL SHELFICE_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_SHELFICE */
+
+#ifdef ALLOW_ICEFRONT
+      IF (useICEFRONT) THEN
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('ICEFRONT_INIT_VARIA',myThid)
+# endif
+       CALL ICEFRONT_INIT_VARIA( myThid )
+      ENDIF
+#endif /* ALLOW_ICEFRONT */
+
 #ifdef ALLOW_FRAZIL
       IF (useFRAZIL) THEN
 # ifdef ALLOW_DEBUG
@@ -341,33 +368,6 @@ C--   Initialize SEAICE model.
         CALL SALT_PLUME_INIT_VARIA( myThid )
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
-
-#ifdef ALLOW_SHELFICE
-      IF (useShelfIce) THEN
-# ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('SHELFICE_INIT_VARIA',myThid)
-# endif
-       CALL SHELFICE_INIT_VARIA( myThid )
-      ENDIF
-#endif /* ALLOW_SHELFICE */
-
-#ifdef ALLOW_STREAMICE
-      IF (useStreamIce) THEN
-# ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('STREAMICE_INIT_VARIA',myThid)
-# endif
-       CALL STREAMICE_INIT_VARIA( myThid )
-      ENDIF
-#endif /* ALLOW_STREAMICE */
-
-#ifdef ALLOW_ICEFRONT
-      IF (useICEFRONT) THEN
-# ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('ICEFRONT_INIT_VARIA',myThid)
-# endif
-       CALL ICEFRONT_INIT_VARIA( myThid )
-      ENDIF
-#endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_THSICE
       IF (useThSIce) THEN
