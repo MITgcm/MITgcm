@@ -77,17 +77,17 @@ C       |-- GCHEM_INIT_FIXED
 C       |
 C       |-- RBCS_INIT_FIXED
 C       |
+C       |-- STREAMICE_INIT_FIXED
+C       |
+C       |-- SHELFICE_INIT_FIXED
+C       |
+C       |-- ICEFRONT_INIT_FIXED
+C       |
 C       |-- FRAZIL_INIT_FIXED
 C       |
 C       |-- SEAICE_INIT_FIXED
 C       |
 C       |-- SALT_PLUME_INIT_FIXED
-C       |
-C       |-- SHELFICE_INIT_FIXED
-C       |
-C       |-- STREAMICE_INIT_FIXED
-C       |
-C       |-- ICEFRONT_INIT_FIXED
 C       |
 C       |-- THSICE_INIT_FIXED
 C       |
@@ -436,6 +436,37 @@ C--   Initialise fixed array for Float pkg
       ENDIF
 #endif
 
+#ifdef ALLOW_STREAMICE
+      IF (useStreamIce) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('STREAMICE_INIT_FIXED',myThid)
+# endif
+#ifndef ALLOW_OPENAD
+       CALL STREAMICE_INIT_FIXED( myThid )
+#else
+       CALL OPENAD_STREAMICE_INIT_FIXED( myThid )
+#endif
+      ENDIF
+#endif /* ALLOW_STREAMICE */
+
+#ifdef ALLOW_SHELFICE
+      IF (useShelfIce) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('SHELFICE_INIT_FIXED',myThid)
+# endif
+        CALL SHELFICE_INIT_FIXED( myThid )
+      ENDIF
+#endif /* ALLOW_SHELFICE */
+
+#ifdef ALLOW_ICEFRONT
+      IF (useICEFRONT) THEN
+# ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('ICEFRONT_INIT_FIXED',myThid)
+# endif
+        CALL ICEFRONT_INIT_FIXED( myThid )
+      ENDIF
+#endif /* ALLOW_ICEFRONT */
+
 #ifdef ALLOW_FRAZIL
       IF (useFRAZIL) THEN
 # ifdef ALLOW_DEBUG
@@ -462,37 +493,6 @@ C--   Initialise fixed array for Float pkg
         CALL SALT_PLUME_INIT_FIXED(myThid)
       ENDIF
 #endif
-
-#ifdef ALLOW_SHELFICE
-      IF (useShelfIce) THEN
-# ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('SHELFICE_INIT_FIXED',myThid)
-# endif
-        CALL SHELFICE_INIT_FIXED( myThid )
-      ENDIF
-#endif /* ALLOW_SHELFICE */
-
-#ifdef ALLOW_STREAMICE
-      IF (useStreamIce) THEN
-# ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('STREAMICE_INIT_FIXED',myThid)
-# endif
-#ifndef ALLOW_OPENAD
-       CALL STREAMICE_INIT_FIXED( myThid )
-#else
-       CALL OPENAD_STREAMICE_INIT_FIXED( myThid )
-#endif
-      ENDIF
-#endif /* ALLOW_STREAMICE */
-
-#ifdef ALLOW_ICEFRONT
-      IF (useICEFRONT) THEN
-# ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL('ICEFRONT_INIT_FIXED',myThid)
-# endif
-        CALL ICEFRONT_INIT_FIXED( myThid )
-      ENDIF
-#endif /* ALLOW_ICEFRONT */
 
 #ifdef ALLOW_THSICE
       IF (useThSIce) THEN

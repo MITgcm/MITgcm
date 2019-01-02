@@ -233,6 +233,7 @@ C--   Initialise grid parameters that do no change during the integration
 C--   Initialise grid info
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+C-    loops on tile indices bi,bj:
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           HEFFM  (i,j,bi,bj) = 0. _d 0
@@ -385,8 +386,33 @@ C     approximation
          ENDDO
         ENDIF
 #endif /* not SEAICE_CGRID */
+C-    end bi,bj loops
        ENDDO
       ENDDO
+
+#ifdef ALLOW_SHELFICE
+      IF ( useShelfIce ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+C--   Prevent seaice to form where Ice-Shelf is present
+          CALL SHELFICE_MASK_SEAICE(
+     U                  HEFFM,
+     I                  bi, bj, -1, myThid )
+          DO j=2-OLy,sNy+OLy
+           DO i=2-OLx,sNx+OLx
+            IF ( HEFFM(i-1,j,bi,bj).EQ.zeroRL .OR.
+     &           HEFFM( i, j,bi,bj).EQ.zeroRL )
+     &           SIMaskU(i,j,bi,bj) = zeroRL
+            IF ( HEFFM(i,j-1,bi,bj).EQ.zeroRL .OR.
+     &           HEFFM(i, j, bi,bj).EQ.zeroRL )
+     &           SIMaskV(i,j,bi,bj) = zeroRL
+           ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL EXCH_UV_XY_RL( SIMaskU, SIMaskV, .FALSE., myThid )
+      ENDIF
+#endif /* ALLOW_SHELFICE */
 
 #ifndef SEAICE_CGRID
 C--   Choose a proxy level for geostrophic velocity,

@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - change ordering of pkg calls in initialisation: streamice / shelfice and
+    then seaice / salt_plume / thsice;
+  - fix thin ice-shelf issue with pkg/seaice ; implemented by updating (recently
+    added) seaice masks (requiring new ordering of calls).
 o pkg/shelfice:
   - allow to include thin ice-shelf (i.e., such that hFacC(k=1) > 0 ) when
     using pkg/thsice, by preventing seaice to form where there is an ice-shelf.
