@@ -7,7 +7,7 @@
  LSR_ERROR          = 1.E-12,
  SEAICElinearIterMax= 1500,
  LSR_mixIniGuess    = 1,
- SEAICEadvScheme    = 77,
+ SEAICEadvScheme    = 41,
  AreaFile  = 'const100.bin',
  HeffFile  = 'const+20.bin',
  HsnowFile = 'const_00.bin',

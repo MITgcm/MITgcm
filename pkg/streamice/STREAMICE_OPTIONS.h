@@ -17,7 +17,12 @@ C Place CPP define/undef flag here
 #undef STREAMICE_HYBRID_STRESS
 #undef USE_ALT_RLOW
 #undef STREAMICE_GEOM_FILE_SETUP
+C   The following will taper basal stress in a cell based
+C   on height above floatation, and option (2) will also 
+C   smooth surface elevation across grounding line;
+C   only one should be defined
 #undef STREAMICE_SMOOTH_FLOATATION
+#undef STREAMICE_SMOOTH_FLOATATION2
 
 #endif /* ALLOW_STREAMICE */
 #endif /* STREAMICE_OPTIONS_H */

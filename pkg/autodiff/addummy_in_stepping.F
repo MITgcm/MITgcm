@@ -110,7 +110,6 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
 #else /* ALLOW_OPENAD */
 
 #ifdef AUTODIFF_TAMC_COMPATIBILITY
-        call adexch_xy_rl( myThid,adetan)
         call adexch_xyz_rl( myThid,adTheta)
         call adexch_xyz_rl( myThid,adSalt)
         call adexch_xyz_rl( myThid,adwVel )
@@ -142,7 +141,6 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
 # endif
 # else /* ndfef AUTODIFF_TAMC_COMPATIBILITY */
 
-        CALL ADEXCH_3D_RL( adEtaN, 1 , myThid )
 #  ifndef ALLOW_BULK_OFFLINE
         CALL ADEXCH_3D_RL( adTheta,Nr, myThid )
         CALL ADEXCH_3D_RL( adSalt, Nr, myThid )
@@ -192,13 +190,6 @@ C --- 1. Grab modelEnd, necessary input for diagnostics routines
 C --- 2. Fill up diagnostics from local copy (after exch)
 
 # ifdef ALLOW_OPENAD
-         CALL COPY_ADVAR_OUTP( dumRS, etaN%d, var2Du, 1 , 12, myThid )
-# else
-         CALL COPY_ADVAR_OUTP( dumRS, adEtaN, var2Du, 1 , 12, myThid )
-# endif
-         CALL DIAGNOSTICS_FILL( var2Du, 'ADJetan ', 0,1, 0,1,1,myThid )
-
-# ifdef ALLOW_OPENAD
          CALL COPY_ADVAR_OUTP( dumRS, theta%d,var3Du, Nr, 12, myThid )
 # else
          CALL COPY_ADVAR_OUTP( dumRS, adTheta,var3Du, Nr, 12, myThid )
@@ -233,7 +224,6 @@ C --- 3. Fill up diagnostics directly
 
 #  ifdef ALLOW_OPENAD
 C -     OpenAD
-         CALL DIAGNOSTICS_FILL( etaN%d, 'ADJetan ', 0,1, 0,1,1,myThid )
          CALL DIAGNOSTICS_FILL( theta%d,'ADJtheta', 0,Nr,0,1,1,myThid )
          CALL DIAGNOSTICS_FILL( salt%d, 'ADJsalt ', 0,Nr,0,1,1,myThid )
          CALL DIAGNOSTICS_FILL( wVel%d, 'ADJwvel ', 0,Nr,0,1,1,myThid )
@@ -241,7 +231,6 @@ C -     OpenAD
          CALL DIAGNOSTICS_FILL( vVel%d, 'ADJvvel ', 0,Nr,0,1,1,myThid )
 #  else /* ALLOW_OPENAD */
 C -     TAF
-         CALL DIAGNOSTICS_FILL( adEtaN, 'ADJetan ', 0,1, 0,1,1,myThid )
          CALL DIAGNOSTICS_FILL( adTheta,'ADJtheta', 0,Nr,0,1,1,myThid )
          CALL DIAGNOSTICS_FILL( adSalt, 'ADJsalt ', 0,Nr,0,1,1,myThid )
          CALL DIAGNOSTICS_FILL( adwVel, 'ADJwvel ', 0,Nr,0,1,1,myThid )
@@ -275,11 +264,6 @@ C--     Set suffix for this set of data files.
         ELSE
           CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
         ENDIF
-C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
-C ==>>  is very very very nasty !!!
-c       writeBinaryPrec = writeStatePrec
-C <<==  If you really want to mess-up with this at your own risk,
-C <<==  uncomment the line above
 
 C-----------------------------------------------------------------------
 #ifndef ALLOW_OPENAD
@@ -296,8 +280,6 @@ C-----------------------------------------------------------------------
      &                           advVel, myIter, myThid )
           CALL WRITE_FLD_XYZ_RL( 'ADJwvel.', suff,
      &                           adwVel, myIter, myThid )
-          CALL WRITE_FLD_XY_RL ( 'ADJetan.', suff,
-     &                           adEtaN, myIter, myThid )
 
           IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
            CALL WRITE_FLD_XY_RS('ADJtaux.',suff, adFu, myIter, myThid )
@@ -356,8 +338,6 @@ c    &                             adGGL90DiffKr, myIter, myThid )
      &                           advVel, dumpAdRecMn, myIter, myThid )
           CALL WRITE_REC_XYZ_RL( 'ADJwvel',
      &                           adwVel, dumpAdRecMn, myIter, myThid )
-          CALL WRITE_REC_XY_RL ( 'ADJetan',
-     &                           adEtaN, dumpAdRecMn, myIter, myThid )
 
           IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
            CALL WRITE_REC_XY_RS('ADJtaux',
@@ -438,11 +418,6 @@ C       case dumpAdVarExch = 2
      &                           suff, var3Du, myIter, myThid )
           IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJwvel',
      &                           var3Du, dumpAdRecMn, myIter, myThid )
-          CALL COPY_ADVAR_OUTP( dumRS, adEtaN, var2Du, 1 , 12, myThid )
-          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL(  'ADJetan.',
-     &                           suff, var2Du, myIter, myThid )
-          IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL(  'ADJetan',
-     &                           var2Du, dumpAdRecMn, myIter, myThid )
 
           IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
            CALL COPY_AD_UV_OUTP( adFu, adFv, dumRL, dumRL,
@@ -558,9 +533,6 @@ C-----------------------------------------------------------------------
           var3Du = wVel%d
           CALL WRITE_FLD_XYZ_RL( 'ADJwvel.', suff,
      &                           var3Du, myIter, myThid )
-          var2Du = etaN%d
-          CALL WRITE_FLD_XY_RL ( 'ADJetan.', suff,
-     &                           var2Du, myIter, myThid )
 
           IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
            var2Du = Fu%d
@@ -645,9 +617,6 @@ cc     &                           var3Du, myIter, myThid )
           var3Du = wVel%d
           CALL WRITE_REC_XYZ_RL( 'ADJwvel',
      &                           var3Du, dumpAdRecMn, myIter, myThid )
-          var2Du = etaN%d
-          CALL WRITE_REC_XY_RL ( 'ADJetan',
-     &                           var2Du, dumpAdRecMn, myIter, myThid )
 
           IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
            var2Du = fu%d
@@ -743,11 +712,6 @@ C       case dumpAdVarExch = 2
      &                           suff, var3Du, myIter, myThid )
           IF (  dumpAdByRec   ) CALL WRITE_REC_XYZ_RL( 'ADJwvel',
      &                           var3Du, dumpAdRecMn, myIter, myThid )
-          CALL COPY_ADVAR_OUTP( dumRS, EtaN%d, var2Du, 1 , 12, myThid )
-          IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL(  'ADJetan.',
-     &                           suff, var2Du, myIter, myThid )
-          IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL(  'ADJetan',
-     &                           var2Du, dumpAdRecMn, myIter, myThid )
 
           IF ( .NOT. useSEAICE .AND. .NOT. useEXF ) THEN
            CALL COPY_AD_UV_OUTP( Fu%d, Fv%d, dumRL, dumRL,
@@ -869,8 +833,6 @@ C-- NOW NMC output
           CALL MNC_CW_RL_W('D','adstate',0,0,'adT', var3Du, myThid)
           CALL COPY_ADVAR_OUTP( dumRS, adSalt,var3Du, Nr, 12, myThid )
           CALL MNC_CW_RL_W('D','adstate',0,0,'adS', var3Du, myThid)
-          CALL COPY_ADVAR_OUTP( dumRS, adEtaN, var2Du, 1 , 12, myThid )
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adEta', var2Du, myThid)
           CALL COPY_ADVAR_OUTP( dumRS, adwVel, var3Du, Nr, 12, myThid )
           CALL MNC_CW_RL_W('D','adstate',0,0,'adW', var3Du, myThid)
 
@@ -918,7 +880,6 @@ C     dumpAdVarExch.NE.2
           CALL MNC_CW_RL_W('D','adstate',0,0,'adV', advVel, myThid)
           CALL MNC_CW_RL_W('D','adstate',0,0,'adT', adTheta, myThid)
           CALL MNC_CW_RL_W('D','adstate',0,0,'adS', adSalt, myThid)
-          CALL MNC_CW_RL_W('D','adstate',0,0,'adEta', adetaN, myThid)
           CALL MNC_CW_RL_W('D','adstate',0,0,'adW', adwVel, myThid)
 
           CALL MNC_CW_RS_W('D','adstate',0,0,'adQnet', adQnet, myThid)
