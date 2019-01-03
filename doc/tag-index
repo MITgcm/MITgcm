@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o documentation for pkg/streamice
 o model/src:
   - change ordering of pkg calls in initialisation: streamice / shelfice and
     then seaice / salt_plume / thsice;
