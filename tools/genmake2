@@ -3747,7 +3747,7 @@ if test "x$DUMPSTATE" = xt ; then
 fi
 
 #  Conclude
-if test "x$FC_CHECK" = x4 ; then
+if test "x$FC_CHECK" = x5 ; then
     echo "  original 'Makefile' generated successfully"
     echo "=> next steps:"
     ad=`echo $PACKAGES | grep -c autodiff`
