@@ -165,11 +165,12 @@ Usage: "$0" [OPTIONS]
 
   which, depending upon your shell, may need to be single-quoted.
 
-  For more detailed genmake documentation, please see:
-
-    http://mitgcm.org/public/devel_HOWTO/
+  For more detailed genmake documentation, please see section "Building the model"
+    (under "Getting Started") at:  https://mitgcm.readthedocs.io/
 
 EOF
+#- full link directly to section 3.5:
+#https://mitgcm.readthedocs.io/en/latest/getting_started/getting_started.html#building-the-model
 
     exit 1
 }
@@ -600,7 +601,7 @@ Error: No options file was found in:  $ROOTDIR/tools/build_options/
     1) the command line (eg. "-optfile=path/to/OPTFILE"), or
     2) the MITGCM_OF environment variable.
 
-  If you need help, please contact the developers at <MITgcm-support@mitgcm.org>.
+  If you need help, please contact the <MITgcm-support@mitgcm.org> list.
 
 EOF
 	exit 1
@@ -1455,8 +1456,8 @@ GENMAKE :
 
 A program for GENerating MAKEfiles for the MITgcm project.
    For a quick list of options, use "genmake2 -h"
-or for more detail see the Developer's HOWTO manual at:
-   http://mitgcm.org/public/docs.html
+or for more detail see the documentation, section "Building the model"
+   (under "Getting Started") at:  https://mitgcm.readthedocs.io/
 
 EOF
 
@@ -1700,10 +1701,9 @@ fi
 if test -f ./.genmakerc ; then
     echo
     echo "WARNING: genmake2 has detected a copy of the old-style \"./.genmakerc\""
-    echo "  file.  This file format is no longer supported.  For directions on"
-    echo "  how to setup and use the new \"genmake2\" script, please see:"
-    echo "    http://mitgcm.org/public/devel_HOWTO/"
-    echo "  and send an email to MITgcm-support@mitgcm.org if you need help."
+    echo "  file.  This file format is no longer supported."
+    echo "  For directions on how to setup and use the new \"genmake2\" script,"
+    echo "  please see the User Manual at:  https://mitgcm.readthedocs.io/"
     echo "WARNING: ignore \"./.genmakerc\" and continue."
     echo
 fi
