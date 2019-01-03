@@ -646,28 +646,45 @@ EOF
     fi
     if test $FC_CHECK = '-1' -a -x genmake_tcomp ; then
 	if test "x$MPI" = 'xtrue' ; then
+	  which mpirun > /dev/null 2>&1
+	  RETVAL=$?
+	  if test "x${RETVAL}" = x0 ; then
 	    COMM="mpirun -np 1 ./genmake_tcomp"
+	  else
+	    which mpiexec > /dev/null 2>&1
+	    RETVAL=$?
+	    if test "x${RETVAL}" = x0 ; then
+	      COMM="mpiexec -np 1 ./genmake_tcomp"
+	    else
+	      FC_CHECK=3
+	      echo "" >> $LOGFILE
+	      echo " warning: MPI run command not found ==> skip run-test check" >> $LOGFILE
+	     #echo -n " fail to generate executable"
+	    fi
+	  fi
 	else
 	    COMM="./genmake_tcomp"
-	fi
-	echo ' '$COMM >> $LOGFILE
-	$COMM >> $LOGFILE 2>&1
-	RETVAL=$?
-	if test "x$RETVAL" != x0 ; then
-	   FC_CHECK=3
-	  #echo -n " fail to run"
-	else
-	   FC_CHECK=4
-	   echo -n " pass"
 	fi
     elif test $FC_CHECK = '-1' ; then
 	FC_CHECK=2
 	echo 'WARNING: missing executable from FORTRAN compiler test' >> $LOGFILE
 	echo -n " fail to generate executable"
     fi
+    if test $FC_CHECK = '-1' ; then
+	echo ' '$COMM >> $LOGFILE
+	$COMM >> $LOGFILE 2>&1
+	RETVAL=$?
+	if test "x$RETVAL" != x0 ; then
+	   FC_CHECK=4
+	  #echo -n " fail to run"
+	else
+	   FC_CHECK=5
+	   echo -n " pass"
+	fi
+    fi
     rm -f genmake_tcomp.* genmake_tcomp
-    echo " --> set FC_CHECK='$FC_CHECK'" >> $LOGFILE
-    echo "  (set FC_CHECK='$FC_CHECK')"
+    echo " --> set FC_CHECK= $FC_CHECK /5" >> $LOGFILE
+    echo "  (set FC_CHECK=${FC_CHECK}/5)"
 }
 
 #  Do a local copy of MPI headers files (in local dir ./mpi_headers/) after
@@ -1148,7 +1165,7 @@ EOF
 }
 
 check_lapack_libs()  {
-    if test "x$CHECK_FOR_LAPACK" = xf ; then return ; fi
+    HAVE_LAPACK=f
     echo >> $LOGFILE
     echo "running: check_lapack_libs()" >> $LOGFILE
     cat <<EOF > genmake_tla.F
@@ -2152,13 +2169,22 @@ else
     echo "no"
 fi
 
-printf "  Can we create LAPACK-enabled binaries...  "
-check_lapack_libs
-if test "x$HAVE_LAPACK" != x ; then
-    DEFINES="$DEFINES -DHAVE_LAPACK"
-    echo "yes"
+if test "x$CHECK_FOR_LAPACK" = xf ; then
+    echo   "    skip check for LAPACK Libs"
 else
-    echo "no"
+    printf "  Can we create LAPACK-enabled binaries...  "
+    check_lapack_libs
+    if test "x$HAVE_LAPACK" = xt ; then
+	echo "yes"
+    else
+	echo "no"
+    fi
+fi
+if test "x$HAVE_LAPACK" = xt ; then
+    DEFINES="$DEFINES -DHAVE_LAPACK"
+elif test "x$HAVE_LAPACK" = x ; then
+   #- do not report if unset and unchecked:
+    gm_state=`echo $gm_state | sed 's/HAVE_LAPACK//'`
 fi
 
 printf "  Can we call FLUSH intrinsic subroutine...  "
