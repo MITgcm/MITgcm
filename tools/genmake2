@@ -657,7 +657,7 @@ EOF
 	    if test "x${RETVAL}" = x0 ; then
 	      COMM="mpiexec -np 1 ./genmake_tcomp"
 	    else
-	      FC_CHECK=3
+	      FC_CHECK=4
 	      echo "" >> $LOGFILE
 	      echo " warning: MPI run command not found ==> skip run-test check" >> $LOGFILE
 	     #echo -n " fail to generate executable"
@@ -676,7 +676,7 @@ EOF
 	$COMM >> $LOGFILE 2>&1
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
-	   FC_CHECK=4
+	   FC_CHECK=3
 	  #echo -n " fail to run"
 	else
 	   FC_CHECK=5
@@ -3747,7 +3747,7 @@ if test "x$DUMPSTATE" = xt ; then
 fi
 
 #  Conclude
-if test "x$FC_CHECK" = x5 ; then
+if test $FC_CHECK = 5 ; then
     echo "  original 'Makefile' generated successfully"
     echo "=> next steps:"
     ad=`echo $PACKAGES | grep -c autodiff`
@@ -3763,7 +3763,10 @@ if test "x$FC_CHECK" = x5 ; then
 	echo "  > make depend"
 	echo "  > make       (<-- to generate executable)"
     fi
+elif [ $FC_CHECK -ge 3 ] ; then
+    echo "  original 'Makefile' generated but was unable to"
+    echo "   run compiled test-program (please see '$LOGFILE')"
 else
-	echo "Warning: FORTRAN compiler test failed (please see '$LOGFILE')"
-	echo "Warning: 'Makefile' might be unusable (check your optfile)"
+    echo "Warning: FORTRAN compiler test failed (please see '$LOGFILE')"
+    echo "Warning: 'Makefile' might be unusable (check your optfile)"
 fi
