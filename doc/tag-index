@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/genmake2:
+  - improve Fortran Compiler check, section: running MPI executable ; also
+    refine the "conclusion" printed message.
+
 checkpoint67g (2019/01/03)
 o doc:
   - add documentation for pkg/streamice
