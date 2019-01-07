@@ -10,12 +10,12 @@ build and run MITgcm.
 We believe the best way to familiarize yourself with the
 model is to run one of the tutorial examples provided in the MITgcm repository
 (see :numref:`chap_modelExamples`), so would suggest newer MITgcm users
-jump there following a read-through of the first part of this chapter. 
+jump there following a read-through of the first part of this chapter.
 Information is also provided
-in this chapter on how to customize the code when you are ready to try implementing 
-the configuration you have in mind, in the second part (:numref:`customize_model`). 
-The code and algorithm are described more fully in :numref:`discret_algorithm` and 
-:numref:`sarch` and chapters thereafter. 
+in this chapter on how to customize the code when you are ready to try implementing
+the configuration you have in mind, in the second part (:numref:`customize_model`).
+The code and algorithm are described more fully in :numref:`discret_algorithm` and
+:numref:`sarch` and chapters thereafter.
 
 In this chapter and others (e.g., chapter :ref:`chap_contributing`),
 for arguments where the user is expected to replace the text
@@ -37,7 +37,6 @@ click `here <http://mailman.mitgcm.org/mailman/listinfo/mitgcm-support/>`__
 To browse through the support archive,
 click `here <http://mailman.mitgcm.org/pipermail/mitgcm-support/>`__
 
-
 Obtaining the code
 ==================
 
@@ -51,7 +50,7 @@ at minimum a rudimentary understanding of git in order to make it worth one’s 
 
 Periodically we release an official checkpoint (or “tag”). We recommend one download
 the latest code, unless there are reasons for obtaining a specific checkpoint
-(e.g. duplicating older results, collaborating with someone using an older release, etc.) 
+(e.g. duplicating older results, collaborating with someone using an older release, etc.)
 
 .. _git-aware_download:
 
@@ -59,7 +58,7 @@ Method 1
 --------
 
 This section describes how to download git-aware copies of the repository.
-In a terminal window, cd to the directory where you want your code to reside. 
+In a terminal window, cd to the directory where you want your code to reside.
 Type:
 
 ::
@@ -79,7 +78,7 @@ a firewall which won’t allow a https download), type:
     % git clone git@github.com:MITgcm/MITgcm.git
 
 You will need a GitHub account for this, and will have to generate a ssh
-key though your GitHub account user settings. 
+key though your GitHub account user settings.
 
 The fully git-aware download is over several hundred MB, which is considerable
 if one has limited internet download speed. In comparison, the one-time
@@ -87,20 +86,20 @@ download zip file (`Method 2`_, below) is order 100MB. However, one can
 obtain a truncated, yet still git-aware copy of the current code by adding
 the option ``--depth=1`` to the git clone command above; all files will be
 present, but it will not include the full git history. However, the repository
-can be updated going forward. 
+can be updated going forward.
 
 Method 2
 --------
 
 This section describes how to do a one-time download of MITgcm, NOT git-aware.
-In a terminal window, ``cd`` to the directory where you want your code to reside. 
+In a terminal window, ``cd`` to the directory where you want your code to reside.
 To obtain the current code, type:
 
 ::
 
     % wget https://github.com/MITgcm/MITgcm/archive/master.zip
 
-For specific checkpoint release ``XXX``, instead type: 
+For specific checkpoint release ``XXX``, instead type:
 
 ::
 
@@ -122,7 +121,7 @@ research project, this would be a great time to grab the most recent code reposi
 new work entirely separate from any past simulations. This approach requires no understanding of git,
 and you are free to make changes to any files in the MIT repo tree (although we generally recommend
 that you avoid doing so, instead working in new subdirectories or on separate scratch disks as described
-:ref:`here <build_elsewhere>`, for example). 
+:ref:`here <build_elsewhere>`, for example).
 
 2. **Using** ``git pull`` **to update the (unmodified) MITgcm repo tree**
 
@@ -138,7 +137,7 @@ or any of its subdirectories, type:
 
 and all files will be updated to match the current state of the code repository, as it exists
 at `GitHub <https://github.com/MITgcm/MITgcm.git>`_. (*Note:* if you plan to contribute to
-MITgcm and followed the steps to download the code as described in 
+MITgcm and followed the steps to download the code as described in
 :numref:`chap_contributing`, you will need to type ``git pull upstream`` instead.)
 
 This update pathway is ideal if you are in the midst of a project and you want to incorporate new
@@ -163,7 +162,6 @@ simulations over time. If you're planning to submit a pull request to include yo
 read the contributing guide in :numref:`chap_contributing`, and we suggest you do this model development
 in a separate, fresh copy of the code. See :numref:`using_git_and_github` for more information and how
 to use git effectively to manage your workflow.
-
 
 Model and directory structure
 =============================
@@ -210,7 +208,7 @@ description of the directory structure of the model under the root tree.
    contains matlab scripts for reading model output directly into
    matlab. The subdirectory :filelink:`utils/python` contains similar routines for python.
    :filelink:`utils/scripts` contains C-shell post-processing scripts for
-   joining processor-based and tiled-based model output. 
+   joining processor-based and tiled-based model output.
 
 -  :filelink:`verification`: this directory contains the model examples. See
    :numref:`chap_modelExamples`.
@@ -225,7 +223,6 @@ description of the directory structure of the model under the root tree.
 
 Building the model
 ==================
-
 
 .. _building_quickstart:
 
@@ -281,10 +278,9 @@ the command:
 
     % make depend
 
-
 It is important to note that the ``make depend`` stage will occasionally
 produce warnings or errors if the dependency parsing tool is unable
-to find all of the necessary header files (e.g., ``netcdf.inc``, or worse, 
+to find all of the necessary header files (e.g., ``netcdf.inc``, or worse,
 say it cannot find a Fortran compiler in your path). In some cases you
 may need to obtain help from your system administrator to locate these files.
 
@@ -294,10 +290,10 @@ Next, one can compile the code using:
 
     % make
 
-Assuming no errors occurred, the ``make`` command creates an executable called ``mitgcmuv``. 
+Assuming no errors occurred, the ``make`` command creates an executable called ``mitgcmuv``.
 
 Now you are ready to run the model. General instructions for doing so
-are given in section :numref:`run_the_model`. 
+are given in section :numref:`run_the_model`.
 
 .. _genmake2_desc:
 
@@ -309,18 +305,17 @@ Typically ``genmake2`` is used in a sequence of steps as shown below:
 
 ::
 
-  % ../../../tools/genmake2 -mods../code -optfile «/PATH/TO/OPTFILE»
+  % ../../../tools/genmake2 -mods ../code -optfile «/PATH/TO/OPTFILE»
   % make depend
   % make
 
-
 The first step above creates a unix-style ``Makefile``. The ``Makefile`` is used by ``make``
-to specify how to compile the MITgcm source files (for more detailed descriptions of what the ``make`` tools 
-are, and how they are used, see `here <https://www.gnu.org/software/make/make.html>`__). 
+to specify how to compile the MITgcm source files (for more detailed descriptions of what the ``make`` tools
+are, and how they are used, see `here <https://www.gnu.org/software/make/make.html>`__).
 
 This section describes details and capabilities of :filelink:`genmake2 <tools/genmake2>`, located in the
 :filelink:`tools` directory. :filelink:`genmake2 <tools/genmake2>` is a shell
-script written to work in `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ (and with all “sh”–compatible shells including 
+script written to work in `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ (and with all “sh”–compatible shells including
 `Bourne <https://en.wikipedia.org/wiki/Bourne_shell>`_ shells). Like many unix tools, there is a help option that is invoked thru ``genmake2 -h``.
 :filelink:`genmake2 <tools/genmake2>` parses information from the following sources, in this order:
 
@@ -345,18 +340,19 @@ script written to work in `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)
       first the current directory, and then each of the ``-mods`` directories
       in the given order (as described :ref:`here <mods_option>`).
 
-
 When you run the :filelink:`genmake2 <tools/genmake2>` script, typical output might be as follows:
 
 ::
 
   % ../../../tools/genmake2 -mods ../code -optfile ../../../tools/build_options/linux_amd64_gfortran
-  
+
   GENMAKE :
-  
+
   A program for GENerating MAKEfiles for the MITgcm project.
      For a quick list of options, use "genmake2 -h"
-  
+  or for more detail see the documentation, section "Building the model"
+     (under "Getting Started") at:  https://mitgcm.readthedocs.io/
+
   ===  Processing options files and arguments  ===
     getting local config information:  none found
   Warning: ROOTDIR was not specified ; try using a local copy of MITgcm found at "../../.."
@@ -364,8 +360,9 @@ When you run the :filelink:`genmake2 <tools/genmake2>` script, typical output mi
       using OPTFILE="../../../tools/build_options/linux_amd64_gfortran"
     getting AD_OPTFILE information:
       using AD_OPTFILE="../../../tools/adjoint_options/adjoint_default"
+    check Fortran Compiler...  pass  (set FC_CHECK=5/5)
     check makedepend (local: 0, system: 1, 1)
-  
+
   ===  Checking system libraries  ===
     Do we have the system() command using gfortran...  yes
     Do we have the fdate() command using gfortran...  yes
@@ -375,15 +372,15 @@ When you run the :filelink:`genmake2 <tools/genmake2>` script, typical output mi
     Can we register a signal handler using gfortran...  yes
     Can we use stat() through C calls...  yes
     Can we create NetCDF-enabled binaries...  yes
-    Can we create LAPACK-enabled binaries...  no
+      skip check for LAPACK Libs
     Can we call FLUSH intrinsic subroutine...  yes
-  
+
   ===  Setting defaults  ===
-    Adding MODS directories: ../code 
+    Adding MODS directories: ../code
     Making source files in eesupp from templates
     Making source files in pkg/exch2 from templates
     Making source files in pkg/regrid from templates
-  
+
   ===  Determining package settings  ===
     getting package dependency info from  ../../../pkg/pkg_depend
     getting package groups info from      ../../../pkg/pkg_groups
@@ -401,10 +398,10 @@ When you run the :filelink:`genmake2 <tools/genmake2>` script, typical output mi
     Adding STANDARDDIRS='eesupp model'
     Searching for *OPTIONS.h files in order to warn about the presence
       of "#define "-type statements that are no longer allowed:
-      found CPP_OPTIONS="./CPP_OPTIONS.h"
-      found CPP_EEOPTIONS="./CPP_EEOPTIONS.h"
+      found CPP_EEOPTIONS="../../../eesupp/inc/CPP_EEOPTIONS.h"
+      found CPP_OPTIONS="../../../model/inc/CPP_OPTIONS.h"
     Creating the list of files for the adjoint compiler.
-  
+
   ===  Creating the Makefile  ===
     setting INCLUDES
     Determining the list of source and include files
@@ -414,34 +411,31 @@ When you run the :filelink:`genmake2 <tools/genmake2>` script, typical output mi
     Making list of NOOPTFILES
     Add rules for links
     Adding makedepend marker
-  
+
   ===  Done  ===
     original 'Makefile' generated successfully
   => next steps:
     > make depend
     > make       (<-- to generate executable)
 
- 
-
 In the above, notice:
 
 - we did not specify ``ROOTDIR``,
-  i.e., a path to your MITgcm repository, 
+  i.e., a path to your MITgcm repository,
   but here we are building code from within the repository (specifically,
-  in one of the verification subdirectory experiments). As such, 
+  in one of the verification subdirectory experiments). As such,
   :filelink:`genmake2 <tools/genmake2>` was smart enough to
   locate all necessary files on its own. To specify a remote ``ROOTDIR``, see :ref:`here <build_elsewhere>`.
 - we specified the :ref:`optfile <genmake2_optfiles>`  :filelink:`linux_amd64_gfortran <tools/build_options/linux_amd64_gfortran>`
   based on the computer system and Fortran compiler we used
   (here, a linux 64-bit machine with gfortran installed).
 - :filelink:`genmake2 <tools/genmake2>` did some simple checking on availability
-  of certain system libraries; all were found except `LAPACK <https://en.wikipedia.org/wiki/LAPACK>`_, 
-  which is only required for a few specialized packages (in other words,
-  in most configurations, this ‘no’ will not block successful compilation).
+  of certain system libraries; all were found (except `LAPACK <https://en.wikipedia.org/wiki/LAPACK>`_,
+  which was not checked since it is not needed here).
   `NetCDF <http://www.unidata.ucar.edu/software/netcdf>`_ only requires a ‘yes’
-  if `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output is chosen (see :numref:`pkg_mnc`);
-  more specifically, a ‘no’ response 
-  to “Can we create NetCDF-enabled binaries” will disable including  :filelink:`pkg/mnc`.
+  if you want to write `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output;
+  more specifically, a ‘no’ response to “Can we create NetCDF-enabled binaries” will disable
+  including  :filelink:`pkg/mnc` and switch to output plain binary files.
   While the makefile can still be built with other ‘no’ responses,
   sometimes this will foretell errors during the
   ``make depend`` or ``make`` commands.
@@ -449,17 +443,18 @@ In the above, notice:
   overriding any MITgcm repository versions of files, if they exist.
 - a handful of packages are being used in this build; see :numref:`using_packages`
   for more detail about how to enable and disable packages.
-- :filelink:`genmake2 <tools/genmake2>` terminated without error (note output at end after ``===  Done  ===``),
-  generating ``Makefile`` and a log file ``genmake.log``. As mentioned, this does not guarantee that
-  your setup will compile properly, but if there are errors during ``make depend`` or ``make``, 
-  these error messages and/or the standard output from :filelink:`genmake2 <tools/genmake2>` or
-  ``genmake.log`` may provide clues as to the problem. If instead you receive a
-  warning message ``Warning: FORTRAN compiler test failed`` at the end of :filelink:`genmake2 <tools/genmake2>` output ,
-  this means that :filelink:`genmake2 <tools/genmake2>` is unable
-  to locate the Fortran compiler or pass a trivial “hello world” Fortran compilation and run test. In this case, 
-  you should see ``genmake.log`` for errors and/or seek assistance from your system administrator;
+- :filelink:`genmake2 <tools/genmake2>` terminated without error (note output at end
+  after ``===  Done  ===``), generating ``Makefile`` and a log file ``genmake.log``.
+  As mentioned, this does not guarantee that your setup will compile properly, but if
+  there are errors during ``make depend`` or ``make``, these error messages and/or the
+  standard output from :filelink:`genmake2 <tools/genmake2>` or ``genmake.log`` may
+  provide clues as to the problem.
+  If instead :filelink:`genmake2 <tools/genmake2>` finishes with
+  a warning message  ``Warning: FORTRAN compiler test failed`` , this means
+  that :filelink:`genmake2 <tools/genmake2>` is unable to locate the Fortran
+  compiler or pass a trivial “hello world” Fortran compilation test. In this case, you
+  should see ``genmake.log`` for errors and/or seek assistance from your system administrator;
   these tests need to pass in order to proceed to the ``make`` steps.
-
 
 .. _command_line_options:
 
@@ -476,7 +471,8 @@ command-line options. A complete list of these options can be obtained by:
 The most important command-line options are:
 
 ``–optfile «/PATH/TO/OPTFILE»``
-    (= ``-of``) specifies the :ref:`optfile <genmake2_optfiles>` that should be used for a particular build.
+    (or shorter: ``-of`` ) specifies the :ref:`optfile <genmake2_optfiles>` that should be
+    used for a particular build.
 
     If no :ref:`optfile <genmake2_optfiles>` is specified through the command line,
     :filelink:`genmake2 <tools/genmake2>` will try to make a
@@ -537,7 +533,6 @@ The most important command-line options are:
     the ``-rootdir`` command-line option, :filelink:`genmake2 <tools/genmake2>` recognizes the
     `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_ ``$MITGCM_ROOTDIR``.
 
-
 ``-standarddirs «/PATH/TO/STANDARDDIR»``
     specify a path to the standard MITgcm directories for source and includes files.
     By default, :filelink:`model` and :filelink:`eesupp`
@@ -550,13 +545,13 @@ The most important command-line options are:
     generates a makefile for an OpenAD build (see :numref:`ad_openad`)
 
 ``–adoptfile «/PATH/TO/FILE»``
-    (= ``-adof``) specifies the “adjoint” or automatic differentiation options file to
-    be used. The file is analogous to the optfile defined above but it
+    (or shorter: ``-adof`` ) specifies the “adjoint” or automatic differentiation options
+    file to be used. The file is analogous to the optfile defined above but it
     specifies information for the AD build process. See :numref:`adoptfile`.
 
     The default file is located in
     :filelink:`tools/adjoint_options/adjoint_default` and it defines the “TAF”
-    and “TAMC” compiler options. 
+    and “TAMC” compiler options.
 
 ``–mpi``
     enables certain `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ features (using CPP ``#define``)
@@ -627,7 +622,7 @@ shipped with the code is **OS_HARDWARE_COMPILER** where
     Compiling the code  requires a `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_ compiler.
     Any more recent compiler which is backwards compatible with `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_
     can also be used; for example, the model will build successfully
-    with a `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_ 
+    with a `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_
     or  `Fortran 95 <https://en.wikipedia.org/wiki/Fortran#Fortran_95>`_ compiler.
     A `C99 <https://en.wikipedia.org/wiki/C99>`_ compatible compiler is
     also need, together with a `C preprocessor <https://en.wikipedia.org/wiki/C_preprocessor>`_ . Some optional
@@ -649,7 +644,7 @@ and try to find your platform/compiler configuration. These are the most common:
 The above optfiles are all for linux x86_64 (64-bit) systems, utilized in many large high-performance computing centers.
 All of the above will work with single-threaded, `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_,
 or shared memory (`OpenMP <https://en.wikipedia.org/wiki/OpenMP>`_) code configurations.
-gfortran is `GNU Fortran <https://gcc.gnu.org/fortran>`_, 
+gfortran is `GNU Fortran <https://gcc.gnu.org/fortran>`_,
 ifort is `Intel Fortran <https://software.intel.com/en-us/fortran-compilers>`_,
 pgf77 is `PGI Fortran <https://www.pgroup.com/>`_ (formerly known as “The Portland Group”).
 Note in the above list there are two ``ifort`` optfiles:
@@ -719,7 +714,6 @@ should be defined are:
 
 ``LIBS``
    path for additional library files that need to be linked to generate the final executable, e.g., ``libnetcdf.a``
-    
 
 For example, an excerpt from an optfile which specifies several of these variables (here, for the linux-amd64
 architecture using the PGI Fortran compiler) is as follows:
@@ -761,19 +755,19 @@ edit the original files in :filelink:`model/src` (or :filelink:`model/inc`)
 or in the specified ``-mods`` directory. While the latter might
 be what you intend, editing the master copy in :filelink:`model/src`
 is usually **NOT** what is intended and may cause grief somewhere down the road.
-Rather, if you need to add 
+Rather, if you need to add
 to the list of modified source code files, place a copy of
 the file(s) to edit in the ``-mods`` directory, make the edits to
 these ``-mods`` directory files, go back to the build directory and type ``make Clean``,
-and then re-build the makefile (these latter steps critical or the makefile will not 
+and then re-build the makefile (these latter steps critical or the makefile will not
 link to this newly edited file).
 
 The final ``make`` invokes the `C preprocessor <https://en.wikipedia.org/wiki/C_preprocessor>`_
 to produce the “little f” files (``*.f`` and ``*.f90``) and then compiles them
-to object code using the specified Fortran compiler and options. 
+to object code using the specified Fortran compiler and options.
 The C preprocessor step converts a number of CPP macros and ``#ifdef`` statements to actual Fortran and
-expands C-style ``#include`` statements to incorporate header files into the 
-“little f" files. CPP style macros and ``#ifdef`` statements are used to support generating 
+expands C-style ``#include`` statements to incorporate header files into the
+“little f" files. CPP style macros and ``#ifdef`` statements are used to support generating
 different compile code for different model configurations.
 The result of the build process is an executable with the name
 ``mitgcmuv``.
@@ -791,14 +785,12 @@ up appreciably using the command:
 where the “2” can be replaced with a number that corresponds to the
 number of cores (or discrete CPUs) available.
 
-
 In addition, there are several housekeeping ``make clean`` options that might be useful:
 
 - ``make clean`` removes files that ``make`` generates (e.g., \*.o and \*.f files)
 - ``make Clean`` removes files and links generated by ``make`` and ``make depend``; strongly recommended for “un-clean” directories which may contain
   the (perhaps partial) results of previous builds
 - ``make CLEAN`` removes pretty much everything, including any executables and output from :filelink:`genmake2 <tools/genmake2>`
-
 
 .. _build_mpi:
 
@@ -826,7 +818,7 @@ The steps for building MITgcm with `MPI <https://en.wikipedia.org/wiki/Message_P
    libraries for that compiler will become available to load. If libraries are not installed, MPI
    implementations and related tools are available including:
 
-   -  `Open MPI <https://www.open-mpi.org/>`_ 
+   -  `Open MPI <https://www.open-mpi.org/>`_
 
    -  `MVAPICH2 <http:mvapich.cse.ohio-state.edu/>`_
 
@@ -851,14 +843,14 @@ The steps for building MITgcm with `MPI <https://en.wikipedia.org/wiki/Message_P
 
 #. Determine the location of the includes file ``mpif.h`` and any
    other `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_-related includes files.
-   Often these files will be located in a subdirectory off the main 
+   Often these files will be located in a subdirectory off the main
    `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
    library ``include/``. In all optfiles in :filelink:`tools/build_options`,
    it is assumed `environment variable <https://en.wikipedia.org/wiki/Environment_variable>`_
-   ``$MPI_INC_DIR`` specifies this location; ``$MPI_INC_DIR`` 
+   ``$MPI_INC_DIR`` specifies this location; ``$MPI_INC_DIR``
    should be set in your terminal session prior to generating a ``Makefile``.
 
-#. Determine how many processors (i.e., CPU cores) you will be using in your run, 
+#. Determine how many processors (i.e., CPU cores) you will be using in your run,
    and modify your configuration’s :filelink:`SIZE.h <model/inc/SIZE.h>`
    (located in a “modified code” directory, as specified in your :filelink:`genmake2 <tools/genmake2>`
    :ref:`command-line <command_line_options>`). In :filelink:`SIZE.h <model/inc/SIZE.h>`,
@@ -866,17 +858,16 @@ The steps for building MITgcm with `MPI <https://en.wikipedia.org/wiki/Message_P
    match the number of processors you will specify in
    your run script’s MITgcm execution statement (i.e., typically ``mpirun``
    or some similar command, see :numref:`running_mpi`).
-   Note that MITgcm does not use 
-   `dynamic memory allocation <https://en.wikipedia.org/wiki/Memory_management#DYNAMIC>`_ (a feature of 
+   Note that MITgcm does not use
+   `dynamic memory allocation <https://en.wikipedia.org/wiki/Memory_management#DYNAMIC>`_ (a feature of
    `Fortran 90 <https://en.wikipedia.org/wiki/Fortran#Fortran_90>`_,
    not `FORTRAN 77 <https://en.wikipedia.org/wiki/Fortran#FORTRAN_77>`_), so
    all array sizes, and hence the number of processors
    to be used in your `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ run,
-   must be specified at compile-time in addition to run-time. More information about the MITgcm 
-   WRAPPER, domain decomposition, and how to configure :filelink:`SIZE.h <model/inc/SIZE.h>` 
+   must be specified at compile-time in addition to run-time. More information about the MITgcm
+   WRAPPER, domain decomposition, and how to configure :filelink:`SIZE.h <model/inc/SIZE.h>`
    can be found in :numref:`using_wrapper`.
 
- 
 #. Build the code with the :filelink:`genmake2 <tools/genmake2>` ``-mpi`` option
    using commands such as:
 
@@ -910,10 +901,9 @@ Note that one does not need to specify the number of threads until runtime (see 
 However, the default maximum number of threads in MITgcm is set to a (low) value of 4,
 so if you plan on more you will need to change this value in :filelink:`eesupp/inc/EEPARAMS.h` in your modified code directory.
 
-
 .. _run_the_model:
 
-Running the model 
+Running the model
 =================
 
 If compilation finished successfully (:numref:`building_code`) then an
@@ -952,7 +942,6 @@ output is kept in :filelink:`verification/exp2/results/output.txt` for compariso
 your ``output.txt`` with the corresponding one for that experiment to
 check that your set-up indeed works. Congratulations!
 
-
 .. _running_mpi:
 
 Running with MPI
@@ -973,7 +962,7 @@ since execution of the code may be controlled by both the
 and a job scheduling and queueing system such as `Slurm <https://slurm.schedmd.com/>`_,
 `PBS/TORQUE <http://www.adaptivecomputing.com/products/open-source/torque>`_,
 `LoadLeveler <https://www-03.ibm.com/systems/power/software/loadleveler/>`_,
-or any of a number of similar tools. See your local cluster documentation 
+or any of a number of similar tools. See your local cluster documentation
 or system administrator for the specific syntax required to run on your computing facility.
 
 .. _running_openmp:
@@ -985,8 +974,7 @@ Assuming the executable ``mitgcmuv`` was built with OpenMP (see :numref:`build_o
 the syntax to run a multi-threaded simulation is the same as running single-threaded
 (see :numref:`run_the_model`), except that the following additional steps are required beforehand:
 
-
-#. `Environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_ 
+#. `Environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_
    for the number of threads and the stacksize need to be set prior to executing the model.
    The exact names of these `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_ differ
    by Fortran compiler, but are typically some variant of ``OMP_NUM_THREADS`` and ``OMP_STACKSIZE``, respectively.
@@ -1009,10 +997,9 @@ and in running will spread the tiles out evenly across the threads. This is done
 the number of tiles in x (variable :varlink:`nSx` as defined in :filelink:`SIZE.h <model/inc/SIZE.h>`) must divide evenly by
 the number of threads in x (namelist parameter :varlink:`nTx`),
 and similarly for :varlink:`nSy` and :varlink:`nTy`, else MITgcm will terminate on initialization.
-More information about the MITgcm 
-WRAPPER, domain decomposition, and how to configure :filelink:`SIZE.h <model/inc/SIZE.h>` 
+More information about the MITgcm
+WRAPPER, domain decomposition, and how to configure :filelink:`SIZE.h <model/inc/SIZE.h>`
 can be found in :numref:`using_wrapper`.
-
 
 Output files
 ------------
@@ -1028,15 +1015,14 @@ and model diagnostics is described in :numref:`outp_pack`.
 Raw binary output files
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-The “traditional” output files are generated by the :filelink:`pkg/mdsio` 
+The “traditional” output files are generated by the :filelink:`pkg/mdsio`
 (see :numref:`pkg_mdsio`).The :filelink:`pkg/mdsio` model data are written according to a
 “meta/data” file format. Each variable is associated with two files with
 suffix names ``.data`` and ``.meta``. The ``.data`` file contains the
 data written in binary form (big endian by default). The ``.meta`` file
 is a “header” file that contains information about the size and the
 structure of the ``.data`` file. This way of organizing the output is
-particularly useful when running multi-processors calculations. 
-
+particularly useful when running multi-processors calculations.
 
 At a minimum, the instantaneous “state” of the model is written out,
 which is made of the following files:
@@ -1078,7 +1064,6 @@ Some additional parameterizations and packages also produce separate pickup file
 
 -  ``pickup_ptracers.00000nIter`` if passive tracers are included in the simulation (see :ref:`sub_phys_pkg_ptracers`)
 
-
 Rolling checkpoint files are
 the same as the pickup files but are named differently. Their name
 contain the chain ``ckptA`` or ``ckptB`` instead of ``00000nIter``. They
@@ -1095,7 +1080,6 @@ placed within a subdirectory with a name such as ``mnc_output_`` (by default,
 `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ tries to append, rather than overwrite, existing files,
 so a unique output directory is helpful for each separate run).
 
-
 The :filelink:`pkg/mnc` output files are all in the “self-describing” `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ format and
 can thus be browsed and/or plotted using tools such as:
 
@@ -1107,11 +1091,9 @@ can thus be browsed and/or plotted using tools such as:
    is a very convenient and quick way to plot `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_
    data and it runs on most platforms. `Panoply <https://www.giss.nasa.gov/tools/panoply/>`_ is a similar alternative.
 
--  `MATLAB <https://www.mathworks.com/>`_, `GrADS <http://cola.gmu.edu/grads/>`_, 
+-  `MATLAB <https://www.mathworks.com/>`_, `GrADS <http://cola.gmu.edu/grads/>`_,
    `IDL <http://www.harrisgeospatial.com/SoftwareTechnology/IDL.aspx>`_ and other common post-processing environments provide
    built-in `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ interfaces.
-
-
 
 Looking at the output
 ---------------------
@@ -1143,8 +1125,7 @@ Some examples of reading and visualizing some output in `Matlab <https://www.mat
     >> eta=rdmds('Eta',[0:10:100]);
     >> for n=1:11; imagesc(eta(:,:,n)');axis ij;colorbar;pause(.5);end
 
-
-NetCDF output 
+NetCDF output
 ^^^^^^^^^^^^^
 
 Similar scripts for `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output (e.g., :filelink:`utils/matlab/rdmnc.m`) are available and they
@@ -1161,7 +1142,7 @@ for reading binary :filelink:`/pkg/mdsio` format under :filelink:`utils/python`.
 The following example shows how to load in some data:
 
 ::
-  
+
     # python
     import mds
 
@@ -1170,7 +1151,7 @@ The following example shows how to load in some data:
 The docstring for ``mds.rdmds`` (see file :filelink:`utils/python/MITgcmutils/MITgcmutils/mds.py`)
 contains much more detail about using this function and the options that it takes.
 
-NetCDF output 
+NetCDF output
 ^^^^^^^^^^^^^
 
 The `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output
@@ -1178,25 +1159,22 @@ is currently produced with one file per processor. This means the individual til
 need to be stitched together to create a single
 `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file that spans the model domain. The script
 :filelink:`utils/python/MITgcmutils/scripts/gluemncbig` can do
-this efficiently from the command line. 
+this efficiently from the command line.
 
 The following example shows how to use the `xarray python package <http://xarray.pydata.org/>`_ to read
 the resulting `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file into `Python <https://www.python.org/>`_:
 
-
 ::
-  
+
   # python
   import xarray as xr
 
   Eta = xr.open_dataset('Eta.nc')
 
-
 .. _customize_compilation:
 
 Customizing the Model Configuration - Code Parameters and Compilation Options
 =============================================================================
-
 
 Model Array Dimensions
 ----------------------     
@@ -1247,7 +1225,6 @@ newer users of the MITgcm are encouraged to jump to :numref:`customize_model` wh
 
 .. tabularcolumns:: |\Y{.475}|\Y{.1}|\Y{.45}|
 
-
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 | CPP Flag Name                                 | Default | Description                                                                                                          |
 +===============================================+=========+======================================================================================================================+
@@ -1287,9 +1264,7 @@ newer users of the MITgcm are encouraged to jump to :numref:`customize_model` wh
 | :varlink:`ALLOW_SOLVE4_PS_AND_DRAG`           | #undef  | include code for combined surface pressure and drag implicit solver                                                  |
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 
-
 .. tabularcolumns:: |\Y{.475}|\Y{.1}|\Y{.45}|
-
 
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 | CPP Flag Name                                 | Default | Description                                                                                                          |
@@ -1324,11 +1299,10 @@ newer users of the MITgcm are encouraged to jump to :numref:`customize_model` wh
 |                                               |         | :filelink:`GAD_OPTIONS.h <pkg/generic_advdiff/GAD_OPTIONS.h>`)                                                       |
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 
-
 By default, MITgcm includes several core packages, i.e., these packages are enabled during
-:filelink:`genmake2 <tools/genmake2>` execution if a file ``packages.conf`` is not found. 
+:filelink:`genmake2 <tools/genmake2>` execution if a file ``packages.conf`` is not found.
 See :numref:`using_packages` for more information about ``packages.conf``, and see
-:filelink:`pkg/pkg_groups` for more information about default packages and package groups. 
+:filelink:`pkg/pkg_groups` for more information about default packages and package groups.
 These default packages are as follows:
 
 - :filelink:`pkg/mom_common`
@@ -1345,7 +1319,6 @@ also include package-specific CPP options that must be set in files ``${PKG}_OPT
 
 The file  :filelink:`eesupp/inc/CPP_EEOPTIONS.h`  does not contain any CPP options that typically will need to be modified by users.
 
-
 .. _customize_model:
 
 Customizing the Model Configuration - Runtime Parameters
@@ -1357,10 +1330,10 @@ experiment (described in :numref:`chap_modelExamples`) that is the closest to yo
 configuration. Then, the amount of setup will be minimized. In this
 section, we document the complete list of MITgcm model namelist runtime
 parameters set in file ``data``, which needs to be located in the
-directory where you will run the model. 
+directory where you will run the model.
 Model parameters are defined and
 declared in the file :filelink:`PARAMS.h <model/inc/PARAMS.h>` and their default values are
-generally set in the routine :filelink:`set_defaults.F <model/src/set_defaults.F>`, otherwise 
+generally set in the routine :filelink:`set_defaults.F <model/src/set_defaults.F>`, otherwise
 when initialized in the routine :filelink:`ini_parms.F <model/src/ini_parms.F>`. :numref:`eedata_parms`
 documents the “execution environment” namelist parameters
 in file ``eedata``, which must also reside in the current run directory.
@@ -1375,8 +1348,7 @@ simulation controls. The tables below specify the namelist parameter name, the n
 group in ``data`` (and ``eedata`` in :numref:`eedata_parms`), the default value, and a short description of its function.
 Runtime parameters that require **non-default** CPP options to be set prior to compilation (see :numref:`customize_compilation`) for proper use are noted.
 
-
-Parameters: Configuration, Computational Domain, Geometry, and Time-Discretization 
+Parameters: Configuration, Computational Domain, Geometry, and Time-Discretization
 ----------------------------------------------------------------------------------
 
 .. _model_config_parms:
@@ -1385,11 +1357,11 @@ Model Configuration
 ~~~~~~~~~~~~~~~~~~~
 
 :varlink:`buoyancyRelation` is
-set to ``OCEANIC`` by default, which employes a :math:`z`-coordinate vertical axis. 
+set to ``OCEANIC`` by default, which employes a :math:`z`-coordinate vertical axis.
 To simulate an ocean using pressure coordinates in the vertical, set it to ``OCEANICP``. For atmospheric simulations,
 :varlink:`buoyancyRelation` needs to be set to ``ATMOSPHERIC``, which also uses pressure as the vertical coordinate.
 The default model configuration is hydrostatic; to run a non-hydrostatic simulation, set the logical
-variable :varlink:`nonHydrostatic` to ``.TRUE.``. 
+variable :varlink:`nonHydrostatic` to ``.TRUE.``.
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.125}|\Y{.575}|
 
@@ -1404,8 +1376,6 @@ variable :varlink:`nonHydrostatic` to ``.TRUE.``.
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`nonHydrostatic`              | PARM01    | FALSE                                            | non-hydrostatic formulation on/off flag; requires #define :varlink:`ALLOW_NONHYDROSTATIC`               |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-
-
 
 Grid
 ~~~~     
@@ -1509,7 +1479,6 @@ set a reference geopotential (after gravity scaling) at the top of the ocean or 
 | :varlink:`psiEuler`                    | PARM04    | 0.0                                              | Euler angle, rotation about new :math:`z`-axis (spherical polar)  (degrees)                             |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
 Topography - Full and Partial Cells
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1518,7 +1487,7 @@ map of bathymetry, in meters for :math:`z`-coordinates, in pascals for :math:`p`
 The bathymetry is specified by entering the vertical position of the ocean floor relative to the surface, so by convention in
 :math:`z`-coordinates bathymetry is specified as negative numbers (“depth” is defined as positive-definite) whereas in :math:`p`-coordinates
 bathymetry data is positive. The file name is represented by the variable
-:varlink:`bathyFile`. See our introductory tutorial setup :numref:`sec_eg_baro` for additional details on the file format. Note no changes are required in the model source code 
+:varlink:`bathyFile`. See our introductory tutorial setup :numref:`sec_eg_baro` for additional details on the file format. Note no changes are required in the model source code
 to represent enclosed, periodic, or double periodic
 domains: periodicity is assumed by default and is suppressed by
 setting the depths to 0 m for the cells at the limits of the
@@ -1534,10 +1503,9 @@ If the specified bathymetry depth
 fell within the top 50m of this gridcell (i.e., less than :varlink:`hFacMin`), the model bathymetry would snap to the nearest legal value
 (i.e., initial :varlink:`hFacC`\ (:math:`x,y,r`) would be equal to 0.0 or 0.1 depending if the depth was within 0-25 m or 25-50 m, respectively).
 Also note while specified bathymetry bottom depths (or pressures) need not coincide with
-the model's levels as deduced from :varlink:`delR`, any depth falling below the model's defined vertical axis is truncated. 
+the model's levels as deduced from :varlink:`delR`, any depth falling below the model's defined vertical axis is truncated.
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.125}|\Y{.575}|
-
 
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Group     | Default                                          | Description                                                                                             |
@@ -1550,9 +1518,9 @@ the model's levels as deduced from :varlink:`delR`, any depth falling below the 
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`addSwallFile`                | PARM05    | :kbd:`' '`                                       | filename for 2D southern cell-edge “thin-wall”                                                          |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`hFacMin`                     | PARM01    | 1.0E+00                                          | minimum fraction size of a cell                                                                         | 
+| :varlink:`hFacMin`                     | PARM01    | 1.0E+00                                          | minimum fraction size of a cell                                                                         |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`hFacMinDr`                   | PARM01    | 1.0E+00                                          | minimum dimensional size of a cell ([:math:`r`] unit)                                                   | 
+| :varlink:`hFacMinDr`                   | PARM01    | 1.0E+00                                          | minimum dimensional size of a cell ([:math:`r`] unit)                                                   |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`hFacInf`                     | PARM01    | 2.0E-01                                          | lower threshold fraction for surface cell;                                                              |
 |                                        |           |                                                  | for non-linear free surface only, see parameter :ref:`nonlinFreeSurf <free_surface_parms>`              |
@@ -1569,7 +1537,6 @@ the model's levels as deduced from :varlink:`delR`, any depth falling below the 
 | :varlink:`pCellMix_delR`               | PARM04    | 0.0                                              | thickness criteria for too thin partial-cell ([:math:`r`] unit)                                         |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
 Physical Constants
 ~~~~~~~~~~~~~~~~~~
 
@@ -1582,19 +1549,15 @@ Physical Constants
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`gravity`                     | PARM01    | 9.81E+00                                         | gravitational acceleration (m/s\ :sup:`2`)                                                              |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`gravityFile`                 | PARM01    | :kbd:`' '`                                       | filename for 1D gravity vertical profile (m/s\ :sup:`2`)                                                | 
+| :varlink:`gravityFile`                 | PARM01    | :kbd:`' '`                                       | filename for 1D gravity vertical profile (m/s\ :sup:`2`)                                                |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`gBaro`                       | PARM01    | :varlink:`gravity`                               | gravity constant in barotropic equation (m/s\ :sup:`2`)                                                 |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
-
 Rotation
 ~~~~~~~~
 
-
 .. tabularcolumns:: |\Y{.2}|\Y{.1}|\Y{.2}|\Y{.525}|
-
 
 For a Cartesian or cylindical grid, the Coriolis parameter :math:`f` is set
 through the variables :varlink:`f0` (in s\ :sup:`--1`) and :varlink:`beta` (:math:`\frac{\partial f}{ \partial y}`; in m\ :sup:`--1`\ s\ :sup:`--1`), which corresponds to a
@@ -1608,7 +1571,7 @@ Coriolis parameter  :math:`f = f_o + \beta y` (the so-called :math:`\beta`\ -pla
 | :varlink:`omega`                       | PARM01    | :math:`2\pi/`\ :varlink:`rotationPeriod`         | angular velocity (rad/s)                                                                                |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`selectCoriMap`               | PARM01    | depends on grid: Cartesian/cyclindical=1,        | Coriolis map options (0= f-plane; 1= beta-plane; 2= spherical Coriolis (:math:`=2\Omega\sin{\varphi}`); |
-|                                        |           | spherical/curvilinear=2                          | 3= read 2D field from file);                                                                            | 
+|                                        |           | spherical/curvilinear=2                          | 3= read 2D field from file);                                                                            |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`f0`                          | PARM01    | 1.0E-04                                          | reference Coriolis parameter (Cartesian or cyclindrical grid) (1/s)                                     |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -1625,12 +1588,11 @@ Free Surface
 ~~~~~~~~~~~~
 
 The logical variables :varlink:`rigidLid` and :varlink:`implicitFreeSurface` specify
-your choice for ocean upper boundary (or lower boundary if using :math:`p`-coordinates); 
+your choice for ocean upper boundary (or lower boundary if using :math:`p`-coordinates);
 set one to ``.TRUE.`` and the other to ``.FALSE.``. These settings affect the calculations of surface pressure (for the ocean) or
 surface geopotential (for the atmosphere); see :numref:`parms-main_algorithm`.
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.175}|\Y{.525}|
-
 
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Group     | Default                                          | Description                                                                                             |
@@ -1657,10 +1619,8 @@ surface geopotential (for the atmosphere); see :numref:`parms-main_algorithm`.
 | :varlink:`selectNHfreeSurf`            | PARM01    | 0                                                | non-hydrostatic free surface formulation option (0=don’t use, >0 use);                                  |
 |                                        |           |                                                  | requires non-hydrostatic formulation, see parameter :ref:`nonHydrostatic <model_config_parms>`          |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`exactConserv`                | PARM01    | FALSE                                            | exact total volume conservation (recompute divergence after pressure solver) on/off flag                |              
+| :varlink:`exactConserv`                | PARM01    | FALSE                                            | exact total volume conservation (recompute divergence after pressure solver) on/off flag                |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-
-
 
 Time-Discretization
 ~~~~~~~~~~~~~~~~~~~
@@ -1675,9 +1635,7 @@ Time in the model is thus computed as:
 
 |       model time = :varlink:`baseTime` + iteration number  * :varlink:`deltaTClock`
 
-
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.125}|\Y{.575}|
-
 
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Group     | Default                                          | Description                                                                                             |
@@ -1697,8 +1655,6 @@ Time in the model is thus computed as:
 | :varlink:`baseTime`                    | PARM03    | 0.0                                              | model base time corresponding to iteration 0 (s)                                                        |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
-
 .. _parms-main_algorithm:
 
 Parameters: Main Algorithmic Parameters
@@ -1714,11 +1670,9 @@ inverted through a 3D elliptic equation (note this capability
 is not yet available for the atmosphere). The parameters controlling the behavior of the
 elliptic solvers are the variables :varlink:`cg2dMaxIters` and
 :varlink:`cg2dTargetResidual` for the 2D case and :varlink:`cg3dMaxIters` and
-:varlink:`cg3dTargetResidual` for the 3D case. 
+:varlink:`cg3dTargetResidual` for the 3D case.
 
 .. tabularcolumns:: |\Y{.2}|\Y{.1}|\Y{.2}|\Y{.525}|
-
-
 
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Group     | Default                                          | Description                                                                                             |
@@ -1750,10 +1704,8 @@ elliptic solvers are the variables :varlink:`cg2dMaxIters` and
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`deepAtmosphere`              | PARM04    | FALSE                                            | don’t make the thin shell/shallow water approximation                                                   |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`nh_Am2`                      | PARM01    | 1.0E+00                                          | non-hydrostatic terms scaling factor; requires #define :varlink:`ALLOW_NONHYDROSTATIC`                  | 
+| :varlink:`nh_Am2`                      | PARM01    | 1.0E+00                                          | non-hydrostatic terms scaling factor; requires #define :varlink:`ALLOW_NONHYDROSTATIC`                  |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-
-
 
 Time-Stepping Algorithm
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -1762,7 +1714,6 @@ The Adams-Bashforth stabilizing parameter is set through the
 variable :varlink:`abEps` (dimensionless). The stagger baroclinic time
 stepping algorithm can be activated by setting the logical variable
 :varlink:`staggerTimeStep` to ``.TRUE.``.
-
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.125}|\Y{.575}|
 
@@ -1782,18 +1733,15 @@ stepping algorithm can be activated by setting the logical variable
 | :varlink:`implicitIntGravWave`         | PARM01    | FALSE                                            | treat internal gravity waves implicitly on/off flag; requires #define :varlink:`ALLOW_NONHYDROSTATIC`   |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
-
 .. _parms-eos:
 
 Parameters: Equation of State
 -----------------------------
 
-
 The form of the equation of state is controlled by the model configuration
-and :varlink:`eosType`. 
+and :varlink:`eosType`.
 
-For the atmosphere, :varlink:`eosType` must be set to ``IDEALGAS``. 
+For the atmosphere, :varlink:`eosType` must be set to ``IDEALGAS``.
 
 For the ocean, several forms of the equation of state are
 available:
@@ -1814,7 +1762,7 @@ available:
 - MITgcm offers several approximations to the full (oceanic) non-linear equation
   of state that can be selected as :varlink:`eosType`:
 
-   ``'POLYNOMIAL'``: 
+   ``'POLYNOMIAL'``:
     This approximation is based on the Knudsen formula (see Bryan and Cox 1972 :cite:`bryan:72`).
     For this option you need to generate a file of polynomial
     coefficients called ``POLY3.COEFFS``. To do this, use the program
@@ -1828,7 +1776,6 @@ available:
     :cite:`fofonoff:83`. This equation of state assumes
     in-situ temperature, which is not a model variable; **its use is
     therefore discouraged**.
- 
 
    ``’JMD95Z’``:
     A modified UNESCO formula by Jackett and McDougall (1995)
@@ -1836,7 +1783,6 @@ available:
     potential temperature as input. The ’Z’ indicates that this
     equation of state uses a horizontally and temporally constant
     pressure :math:`p_{0}=-g\rho_{0}z`.
- 
 
    ``’JMD95P’``:
     A modified UNESCO formula by Jackett and McDougall (1995)
@@ -1857,7 +1803,7 @@ available:
     TEOS-10 is based on a Gibbs function formulation from which all thermodynamic
     properties of seawater (density, enthalpy, entropy sound speed, etc.) can be derived in a thermodynamically consistent manner;
     see http://www.teos-10.org. See IOC et al. (2010) :cite:`ioc:10`, McDougall and Parker (2011)
-    :cite:`mcdougall:11`, and Roquet et al. (2015) :cite:`roquet:15` for implementation details. 
+    :cite:`mcdougall:11`, and Roquet et al. (2015) :cite:`roquet:15` for implementation details.
     It also requires lagging the pressure and therefore an additional pickup file for restarts.
     Note at this time a full implementation of TEOS10 (i.e. ocean variables of conservative temperature and practical salinity,
     including consideration of surface forcings) has not been implemented;
@@ -1865,8 +1811,6 @@ available:
 
    For these non-linear approximations, neither a reference profile of temperature or
    salinity is required, except for a setup where :varlink:`implicitIntGravWave` is set to ``.TRUE.`` or :varlink:`selectP_inEOS_Zc`\ =1.
-
-
 
 Note that salinity can can be expressed in either practical salinity units (psu, i.e., unit-less) or g/kg,
 depending on the choice of equation of state. See Millero (2010) :cite:`millero:10` for a detailed discussion
@@ -1903,7 +1847,6 @@ of salinity measurements, and why use of the latter is preferred, in the context
 | :varlink:`sBeta`                       | PARM01    | 7.4E-04                                          | linear EOS haline contraction coefficient (1/psu)                                                       |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
 Thermodynamic Constants
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1924,8 +1867,6 @@ Thermodynamic Constants
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`atm_Po`                      | PARM01    | 1.0E+05                                          | atmosphere standard reference pressure (for potential temp. defn.)  (Pa)                                |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-
-
 
 Parameters: Momentum Equations
 ------------------------------
@@ -1997,8 +1938,6 @@ equations and the various (momentum) advection schemes are covered in :numref:`d
 |                                        |           |                                                  | see :filelink:`mom_calc_ke.F <pkg/mom_common/mom_calc_ke.F>`)                                           |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
-
 Initialization
 ~~~~~~~~~~~~~~    
 
@@ -2024,7 +1963,6 @@ and the initial velocity files are ignored.
 | :varlink:`pSurfInitFile`               | PARM05    | :kbd:`' '`                                       | filename for 2D specification of initial free surface position ([:math:`r`] unit)                       |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
 .. _mom_dissip:
 
 General Dissipation Scheme
@@ -2037,7 +1975,7 @@ variable :varlink:`viscAr` (in [:math:`r`]\ :sup:`2`\ s\ :sup:`--1`,
 where [:math:`r`] is the dimension of the vertical coordinate).
 In addition, biharmonic mixing can be added as well
 through the variable :varlink:`viscA4` (in
-m\ :sup:`4`\ s\ :sup:`--1`).  
+m\ :sup:`4`\ s\ :sup:`--1`).
 
 .. tabularcolumns:: |\Y{.215}|\Y{.1}|\Y{.115}|\Y{.595}|
 
@@ -2125,7 +2063,6 @@ m\ :sup:`4`\ s\ :sup:`--1`).
 | :varlink:`pCellMix_viscAr`             | PARM04    | :varlink:`viscArNr`                              | vertical viscosity for too thin partial-cell ([:math:`r`]\ :sup:`2`\ /s)                                |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
 Sidewall/Bottom Dissipation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -2166,15 +2103,12 @@ and quadratic (set the variable
 | :varlink:`bottomVisc_pCell`            | PARM01    | FALSE                                            | account for partial-cell in bottom viscosity (using :varlink:`no_slip_bottom` = ``.TRUE.``) on/off flag |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
-
 Parameters: Tracer Equations
 ----------------------------
 
 This section covers the tracer equations, i.e., the potential temperature
 equation and the salinity (for the ocean) or specific humidity (for the
-atmosphere) equation. 
-
+atmosphere) equation.
 
 Configuration
 ~~~~~~~~~~~~~
@@ -2185,7 +2119,7 @@ equation (similarly for salinity or specific humidity with variables
 :varlink:`saltAdvection` etc.). These variables all
 default to a value of ``.TRUE.``.  The vertical diffusive
 fluxes can be computed implicitly by setting the logical variable
-:varlink:`implicitDiffusion` to ``.TRUE.``. 
+:varlink:`implicitDiffusion` to ``.TRUE.``.
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.175}|\Y{.525}|
 
@@ -2230,7 +2164,6 @@ fluxes can be computed implicitly by setting the logical variable
 | :varlink:`doAB_onGtGs`                 | PARM03    | TRUE                                             | apply Adams-Bashforth on tendencies (rather than on T,S) on/off flag                                    |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
 Initialization
 ~~~~~~~~~~~~~~
 
@@ -2258,8 +2191,6 @@ In this case, the initial tracer data are uniform in :math:`x` and :math:`y` for
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`checkIniSalt`                | PARM05    | TRUE                                             | check if initial salinity (at wet-point) identically zero on/off flag                                   |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-
-
 
 Tracer Diffusivities
 ~~~~~~~~~~~~~~~~~~~~     
@@ -2321,7 +2252,6 @@ parameterization for advection and mixing of oceanic tracers is described in :nu
 | :varlink:`BL79LatVary`                 | PARM01    | 3.0E+01                                          | transition from diffKrBLEQ to diffKrBL79 parms at this latitude; requires #define ALLOW_BL79_LAT_VARY   |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
 Ocean Convection
 ~~~~~~~~~~~~~~~~     
 
@@ -2353,7 +2283,6 @@ Note that :varlink:`cadjFreq` and
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`hMixSmooth`                  | PARM01    | 0.0                                              | use this fraction of neighboring points (for smoothing) in ML calculation (0-1; 0=no smoothing)         |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-
 
 Parameters: Model Forcing
 -------------------------
@@ -2398,8 +2327,6 @@ case study experiments.
 | :varlink:`ploadFile`                   | PARM05    | :kbd:`' '`                                       | filename for 2D specification of atmospheric pressure loading (ocean :math:`z`-coor. only) (Pa)         |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
-
 Tracer Forcing
 ~~~~~~~~~~~~~~     
 
@@ -2415,12 +2342,9 @@ time scale coefficient is set through the variable
 salinity with the variable names :varlink:`EmPmRfile`, :varlink:`saltClimFile`,
 and :varlink:`tauSaltClimRelax` for freshwater flux (in m/s) and surface
 salinity (in psu or g/kg) data files and relaxation timescale coefficient
-(in seconds), respectively. 
-
-
+(in seconds), respectively.
 
 .. tabularcolumns:: |\Y{.24}|\Y{.1}|\Y{.15}|\Y{.535}|
-
 
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Group     | Default                                          | Description                                                                                             |
@@ -2444,16 +2368,14 @@ salinity (in psu or g/kg) data files and relaxation timescale coefficient
 | :varlink:`balanceQnet`                 | PARM01    | FALSE                                            | subtract global mean Qnet every time step on/off flag; requires #define :varlink:`ALLOW_BALANCE_FLUXES` |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`geothermalFile`              | PARM05    | :kbd:`' '`                                       | filename for 2D specification of geothermal heating flux through bottom (W/m\ :sup:`2`);                |
-|                                        |           |                                                  | requires #define :varlink:`ALLOW_GEOTHERMAL_FLUX`                                                       |  
+|                                        |           |                                                  | requires #define :varlink:`ALLOW_GEOTHERMAL_FLUX`                                                       |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`temp_EvPrRn`                 | PARM01    | UNSET                                            | temperature of rain and evaporated water (unset, use local temp.) (:sup:`o`\ C)                         |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`allowFreezing`               | PARM01    | FALSE                                            | limit (ocean) temperature at surface to >= -1.9\ :sup:`o`\ C                                            |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
 .. tabularcolumns:: |\Y{.24}|\Y{.1}|\Y{.15}|\Y{.535}|
-
 
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Group     | Default                                          | Description                                                                                             |
@@ -2498,8 +2420,6 @@ salinity (in psu or g/kg) data files and relaxation timescale coefficient
 | :varlink:`tracForcingOutAB`            | PARM03    | 0                                                | =1: take T, S, and pTracer forcing out of Adams-Bashforth time stepping                                 |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
-
 .. _periodic_forcing_expl:
 
 Periodic Forcing
@@ -2518,7 +2438,6 @@ will interpolate the forcing linearly at each iteration.
 
 .. tabularcolumns:: |\Y{.25}|\Y{.1}|\Y{.125}|\Y{.55}|
 
-
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Group     | Default                                          | Description                                                                                             |
 +========================================+===========+==================================================+=========================================================================================================+
@@ -2529,13 +2448,10 @@ will interpolate the forcing linearly at each iteration.
 | :varlink:`externForcingCycle`          | PARM03    | 0.0                                              | period over which the forcing cycle repeats (e.g. one year) (s)                                         |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
-
 .. _simulation_controls:
 
 Parameters: Simulation Controls
 -------------------------------
-
 
 Run Start and Duration
 ~~~~~~~~~~~~~~~~~~~~~~     
@@ -2551,7 +2467,6 @@ to execute through the integer variable :varlink:`nTimeSteps`.
 Iterations are referenced to :varlink:`deltaTClock`, i.e., each iteration is :varlink:`deltaTClock` seconds of model time.
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.125}|\Y{.575}|
-
 
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Group     | Default                                          | Description                                                                                             |
@@ -2573,17 +2488,16 @@ Input/Output Files
 The precision with which to read binary data is
 controlled by the integer variable :varlink:`readBinaryPrec`,  which can take
 the value 32 (single precision) or 64 (double precision). Similarly, the precision with which
-to write binary data is controlled by the integer variable :varlink:`writeBinaryPrec`. 
+to write binary data is controlled by the integer variable :varlink:`writeBinaryPrec`.
 By default, MITgcm writes output (snapshots, diagnostics, and pickups) separately for individual tiles,
 leaving it to the user to reassemble these into global files, if needed (scripts are available in :filelink:`utils/`).
 There are two options however to have the model do this for you. Setting :varlink:`globalFiles` to ``.TRUE.`` should always work in a single process setup (including multi-threaded processes),
 but for `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ runs this will depend on the platform -- it requires simultaneous write access to a common file
 (permissible in typical `Lustre <https://en.wikipedia.org/wiki/Lustre_(file_system)>`_ setups, but not on all file systems).
 Alternatively, one can set :varlink:`useSingleCpuIO`
-to ``.TRUE.`` to generate global files, which should always work, but requires additional mpi-passing of data and may result in slower execution. 
+to ``.TRUE.`` to generate global files, which should always work, but requires additional mpi-passing of data and may result in slower execution.
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.125}|\Y{.575}|
-
 
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Group     | Default                                          | Description                                                                                             |
@@ -2608,7 +2522,6 @@ to ``.TRUE.`` to generate global files, which should always work, but requires a
 |                                        |           |                                                  | (+four-digit processor-rank code)                                                                       |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
 .. _freq_of_output:
 
 Frequency/Amount of Output
@@ -2620,9 +2533,7 @@ frequency with which the instantaneous state of the model is written. :varlink:`
 controls the frequency with which monitor output is dumped to the standard output file(s).
 The frequency of output is referenced to :varlink:`deltaTClock`.
 
-
 .. tabularcolumns:: |\Y{.18}|\Y{.1}|\Y{.2}|\Y{.545}|
-
 
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Group     | Default                                          | Description                                                                                             |
@@ -2642,8 +2553,6 @@ The frequency of output is referenced to :varlink:`deltaTClock`.
 |  :varlink:`plotLevel`                  | PARM01    | :varlink:`debugLevel`                            | controls printing of field maps (1-5, higher -> more fields)                                            |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-
-
 Restart/Pickup Files
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -2652,7 +2561,6 @@ rolling and permanent pickup (a.k.a. checkpoint) files, respectively. These freq
 to :varlink:`deltaTClock`.
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.125}|\Y{.575}|
-
 
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Group     | Default                                          | Description                                                                                             |
@@ -2672,9 +2580,6 @@ to :varlink:`deltaTClock`.
 |  :varlink:`startFromPickupAB2`         | PARM03    | FALSE                                            | using Adams-Bashforth-3, start using Adams-Bashforth-2 pickup format;                                   |
 |                                        |           |                                                  | requires #define :varlink:`ALLOW_ADAMSBASHFORTH_3`                                                      |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-
-
-
 
 Parameters Used In Optional Packages
 ------------------------------------
@@ -2696,7 +2601,6 @@ timescale (in seconds) needs to be set.
 
 .. tabularcolumns:: |\Y{.175}|\Y{.1}|\Y{.225}|\Y{.525}|
 
-
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Group     | Default                                          | Description                                                                                             |
 +========================================+===========+==================================================+=========================================================================================================+
@@ -2715,7 +2619,6 @@ Automatic Differentiation
 (package :filelink:`pkg/autodiff`; see :numref:`chap_autodiff`)
 
 .. tabularcolumns:: |\Y{.225}|\Y{.1}|\Y{.125}|\Y{.575}|
-
 
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Group     | Default                                          | Description                                                                                             |
@@ -2746,7 +2649,6 @@ produces a more coding-oriented set of print statements (e.g., entering and exit
 
 .. tabularcolumns:: |\Y{.25}|\Y{.125}|\Y{.125}|\Y{.525}|
 
-
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Group     | Default                                          | Description                                                                                             |
 +========================================+===========+==================================================+=========================================================================================================+
@@ -2768,5 +2670,4 @@ produces a more coding-oriented set of print statements (e.g., entering and exit
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`maxLengthPrt1D`              | EEPARMS   | 65                                               | maximum number of 1D array elements to print to standard output                                         |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-
 
