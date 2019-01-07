@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67g (2019/01/03)
+o doc:
+  - add documentation for pkg/streamice
 o model/src:
   - change ordering of pkg calls in initialisation: streamice / shelfice and
     then seaice / salt_plume / thsice;
