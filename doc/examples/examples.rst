@@ -25,6 +25,9 @@ Barotropic Gyre MITgcm Example
 This example experiment demonstrates using the MITgcm to simulate a barotropic, wind-forced, ocean gyre circulation.
 The experiment is a numerical rendition of the gyre circulation problem described analytically
 by Stommel in 1948  :cite:`stommel:48` and Munk in 1950 :cite:`munk:50`, and numerically in Bryan (1963) :cite:`bryan:63`.
+Note this tutorial assumes a basic familiarity with ocean dynamics and geophysical fluid dynamics; readers new to the field
+may which to consult one of the standard texts on these subjects,
+such as Vallis (2017) :cite:`vallis:17` or Cushman-Roisin and Beckers (2011) :cite:`cushmanroisin:11`.
 
 In this experiment the model is configured to represent a rectangular enclosed box of fluid, :math:`1200 \times 1200` km
 in lateral extent. The fluid depth :math:`D =`  5 km. The fluid is forced by a zonal wind stress, :math:`\tau_x`, that varies
@@ -89,7 +92,8 @@ equations for this configuration as follows:
 
 where :math:`u` and :math:`v` are the :math:`x` and :math:`y` components of the
 flow vector :math:`\vec{u}`, :math:`\eta` is the free surface height,
-and :math:`A_{h}` the horizontal Laplacian viscosity. 
+:math:`A_{h}` the horizontal Laplacian viscosity, :math:`\rho_{c}` is the fluid density,
+and :math:`g` the acceleration due to gravity.
 
 
 Discrete Numerical Configuration
@@ -111,12 +115,13 @@ maximum horizontal flow speed is:
 
     S_{a} = 2 \left( \frac{ |u| \Delta t}{ \Delta x} \right) < 0.5 \text{ for stability}
 
-The 2 factor on the left is because we have a 2D problem (in contrast with the more familiar 1D canonical stability analysis); the right hand side is 0.5 
+The 2 factor on the left is because we have a 2D problem
+(in contrast with the more familiar 1D canonical stability analysis); the right hand side is 0.5 
 due to our default use of Adams-Bashforth2 (see :numref:`adams-bashforth`) rather than the more familiar
 value of 1 that one would obtain using a forward Euler scheme.
 In our configuration, let’s assume our solution will achieve a maximum :math:`| u | = 1` ms\ :sup:`--1`
 (in reality, current speeds in our solution will be much smaller). To keep :math:`\Delta t` safely
-below the stability criteria, let’s choose :math:`\Delta t` = 1200 s (= 20 minutes), which 
+below the stability threshold, let’s choose :math:`\Delta t` = 1200 s (= 20 minutes), which 
 results in :math:`S_{a}` = 0.12.
 
 The numerical stability for inertial oscillations using Adams-Bashforth2 (Adcroft 1995 :cite:`adcroft:95`)
@@ -127,9 +132,9 @@ The numerical stability for inertial oscillations using Adams-Bashforth2 (Adcrof
     S_{i} = f {\Delta t} < 0.5 \text{ for stability}
 
 
-evaluates to 0.12 for our choice of :math:`\delta t`, which is below the stability criteria.
+evaluates to 0.12 for our choice of :math:`\delta t`, which is below the stability threshold.
 
-There are two general rules in choosing a lateral Laplacian eddy viscosity :math:`A_{h}`:
+There are two general rules in choosing a horizontal Laplacian eddy viscosity :math:`A_{h}`:
 
   - the resulting Munk layer width should be at least as large (preferably, larger) than the lateral grid spacing;
   - the viscosity should be sufficiently small that the model is stable for horizontal friction, given the time step. 
@@ -157,7 +162,7 @@ parameter for the horizontal Laplacian friction (Adcroft 1995 :cite:`adcroft:95`
     S_{l} = 2 \left( 4 \frac{A_{h} \Delta t}{{\Delta x}^2} \right)  < 0.6 \text{ for stability}
 
 
-evaluates to 0.0096, which is well below the stability criteria. As in :eq:`eq_baro_cfl_stability` the above criteria
+evaluates to 0.0096, which is well below the stability threshold. As in :eq:`eq_baro_cfl_stability` the above criteria
 is for a 2D problem using Adams-Bashforth2 time stepping, with the 0.6 value on the right replacing the more familiar 1
 that is obtained using a forward Euler scheme.
 
@@ -243,8 +248,10 @@ See other tutorials for more  complex model domain decomposition.
        :end-at: nSy =
        :lineno-match:
 
-- These lines set parameters :varlink:`nPx` and :varlink:`nPy`, the number of processes to use in the :math:`x` and :math:`y` directions, respectively.
-  Each process would solve the model equations for a separate MITgcm tile (or several, depending on your :varlink:`nSx` and :varlink:`nSy` setting).
+- These lines set parameters :varlink:`nPx` and :varlink:`nPy`, the number of processes
+  to use in the :math:`x` and :math:`y` directions, respectively.
+  Each process would solve the model equations for a separate MITgcm tile (or several,
+  depending on your :varlink:`nSx` and :varlink:`nSy` setting).
   Given the relatively small domain size and minimal computational resources
   required to run this example, we have configured the model to run on a 
   single processor, thus both parameters are set to one. 
@@ -331,10 +338,10 @@ PARM01 - Continuous equation parameters
        :end-at: implicitFreeSurface
        :lineno-match:
 
-- This line sets parameter :varlink:`momAdvection` to suppress the momentum of advection
+- This line sets parameter :varlink:`momAdvection` to suppress the (non-linear) momentum of advection
   terms in the momentum equations. However, note the ``#`` in column 1: this
   “comments out” the line, so using the above :filelink:`data <verification/tutorial_barotropic_gyre/input/data>`
-  file verbatum will in fact include the momentum advection terms (i.e., MITgcm default for this parameter is TRUE).
+  file verbatim will in fact include the momentum advection terms (i.e., MITgcm default for this parameter is TRUE).
   We’ll explore the linearized solution (i.e., by removing the leading ``#``) in :numref:`barotropic_gyre_solution`.
   Note the ability to comment out a line in a namelist file is not part of standard Fortran,
   but this feature is implemented for all MITgcm namelist files.
@@ -347,9 +354,11 @@ PARM01 - Continuous equation parameters
 - These lines set parameters :varlink:`tempStepping` and :varlink:`saltStepping` to
   suppress MITgcm’s forward time integration of temperature and salt in the tracer equations,
   as these prognostic variables are not relevant for the model solution in this configuration.
-  The advantage of doing so is to
+  By default, MITgcm solves equations governing these two (active) tracers; later tutorials will
+  demonstrate how additional passive tracers can be included in the solution.
+  The advantage of NOT solving the temperature and salinity equations is to
   eliminate many unnecessary computations. In most typical configurations however, one will want the model to
-  compute a solution for :math:`T` and :math:`S` (the MITgcm default), which
+  compute a solution for :math:`T` and :math:`S`, which
   typically comprises the majority of MITgcm’s processing time. 
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/input/data
@@ -408,7 +417,7 @@ PARM03 - Time stepping parameters
        :lineno-match:
 
 - These lines control the frequency at which restart (a.k.a. pickup) files are dumped by MITgcm.
-  Here the value of :varlink:`pChkptFreq` is set to 31,536,000 seconds (=1.0 years) of model time;
+  Here the value of :varlink:`pChkptFreq` is set to 31,104,000 seconds (=1.0 years) of model time;
   this controls the frequency of “permanent” checkpoint pickup files. With permanent files,
   the model’s iteration number is part of the file name (as the filename “suffix”; see :numref:`other_output`)
   in order to save it as a labelled, permanent, pickup state.
@@ -436,7 +445,7 @@ PARM03 - Time stepping parameters
        :lineno-match:
 
 - These lines are set to dump monitor output (see :numref:`pkg_monitor`) every 1200 seconds (i.e., every time step) to standard output. 
-  While this is monitor frequency is needed for MITgcm automated testing, this is much too much output for our tutorial run. Comment out this line
+  While this monitor frequency is needed for MITgcm automated testing, this is too much output for our tutorial run. Comment out this line
   and uncomment the line where :varlink:`monitorFreq` is set to 864,000 seconds, i.e., output every 10 days.
   Parameter :varlink:`monitorSelect` is set to 2 here to reduce output of non-applicable quantities for this simple example. 
 
@@ -456,7 +465,8 @@ PARM04 - Gridding parameters
        :end-at: usingCartesianGrid
        :lineno-match:
 
-- These lines set the horizontal grid spacing in the discrete grid, parameters :varlink:`delX` and :varlink:`delY`.
+- These lines set the horizontal grid spacing in the discrete grid, parameters :varlink:`delX` and :varlink:`delY`
+  (i.e., :math:`\Delta x` and :math:`\Delta y` respectively).
   The syntax indicates that the discrete grid is comprised of 62 grid boxes,
   with grid lines separated by :math:`20 \times 10^{3}` m (=20 km), in both the :math:`x`- and :math:`y`-coordinate.
 
@@ -476,7 +486,7 @@ PARM04 - Gridding parameters
        :lineno-match:
 
 
-- This line sets parameter :varlink:`delR`, the vertical grid spacing in the :math:`z`-coordinate, to 5000m.
+- This line sets parameter :varlink:`delR`, the vertical grid spacing in the :math:`z`-coordinate (i.e., :math:`\Delta z`), to 5000m.
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/input/data
        :start-at: delR
@@ -691,7 +701,7 @@ simulations, ``W`` is a fully prognostic model variable).
 
 The following pickup files are generated:
 
-- ``pickup.0000026280.001.001.data``, ``pickup.0000026280.001.001.meta``, etc. - written at frequency set by :varlink:`pChkptFreq`
+- ``pickup.0000025920.001.001.data``, ``pickup.0000025920.001.001.meta``, etc. - written at frequency set by :varlink:`pChkptFreq`
 - ``pickup.ckptA.001.001.data``, ``pickup.ckptA.001.001.meta``, ``pickup.ckptB.001.001.data``,
   ``pickup.ckptB.001.001.meta`` - written at frequency set by :varlink:`ChkptFreq`
 
@@ -722,9 +732,12 @@ Model Solution
 
 
 After running the model for 77,760 time steps (3.0 years), the solution is near equilibrium.
-This equilibrium timescale is consistent with barotropic Rossby waves
-requiring order one month to cross our model domain. The model solution of free-surface
+Given an approximate timescale of one month for barotropic Rossby waves
+to cross our model domain, one might expect the solution to require several years to achieve an equilibrium state.
+The model solution of free-surface
 height :math:`\eta` (proportional to streamfunction) at :math:`t=` 3.0 years is shown in :numref:`barotropic_nl_soln`.
+For further details on this solution, particularly examining the effect of the non-linear terms with increasing Reynolds number,
+the reader is referred to Pedlosky (1987) :cite:`pedlosky:87` section 5.11.
 
   .. figure:: barotropic_gyre/figs/full_solution.*
       :width: 80%
@@ -743,7 +756,7 @@ binary data in ``Eta.0000077760.001.001.data`` is as simple as:
    XC=rdmds('XC'); YC=rdmds('YC');
    Eta=rdmds('Eta',77760); 
    contourf(XC/1000,YC/1000,Eta,[-.04:.01:.04]); colorbar; 
-   set(gca,'Clim',[-.04 .04]); set(gca,'XLim',[0 1200]); set(gca,'YLim',[0 1200])
+   colormap((flipud(hot))); set(gca,'XLim',[0 1200]); set(gca,'YLim',[0 1200])
 
 or using python (you will need to copy :filelink:`utils/python/MITgcmutils/MITgcmutils/mds.py` to your run directory before proceeding):
 

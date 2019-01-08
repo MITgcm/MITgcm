@@ -24,7 +24,7 @@
  nIter0=0,
  nTimeSteps=10,
  deltaT=1200.0,
- pChkptFreq=31536000.0,
+ pChkptFreq=31104000.0,
  chkptFreq=15552000.0,
  dumpFreq=15552000.0,
  monitorFreq=1200.,
