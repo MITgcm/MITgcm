@@ -441,10 +441,13 @@ C LOCAL VARIABLES
       _RL sqrts
       _RL inv_t_k
       _RL ion_st
-      _RL is2
+      _RL is_2
       _RL scl
       _RL s35
-      _RL s2
+      _RL s_2
+      _RL s_15
+      _RL kgfw2kgsw
+      _RL B1
       _RL B
       _RL delta
       _RL P1atm
@@ -467,15 +470,18 @@ C temperature
            t_k_o_100_2 = t_k_o_100*t_k_o_100
            inv_t_k=1.0 _d 0/t_k
            dlog_t_k=LOG(t_k)
-C ionic strength
+C ionic strength (converted to kgsw)
            ion_st=19.924 _d 0*s/(1000. _d 0-1.005 _d 0*s)
-           is2=ion_st*ion_st
+           is_2=ion_st*ion_st
            sqrtis=sqrt(ion_st)
 C salinity
-           s2 = s*s
+           s_2  = s*s
+           s_15 = s**1.5 _d 0
            sqrts=sqrt(s)
-           scl=s/1.80655 _d 0
-           s35=s/35. _d 0
+           scl  =s/1.80655 _d 0
+           s35  =s/35. _d 0
+
+           kgfw2kgsw = 1. _d 0 - 0.001005 _d 0*s
 
       IF ( selectBTconst.EQ.1 ) THEN
 C -----------------------------------------------------------------------
@@ -515,7 +521,7 @@ C       Calculate the total sulfate concentration in mol/kg-SW
 C       given the salinity of a sample
 C       References: Morris & Riley (1966) quoted in Handbook (2007)
 C       pH scale  : N/A
-           st(i,j,bi,bj) = (0.1400 _d 0/96.062 _d 0)*scl
+           st(i,j,bi,bj) = 0.14 _d 0 * scl/96.062 _d 0
 
 C -----------------------------------------------------------------------
 C       Calculate the total calcium concentration in mol/kg-SW
@@ -529,10 +535,10 @@ C       Calculate K0 in (mol/kg-SW)/atmosphere
 C       References: Weiss (1979) [(mol/kg-SW)/atm]
 C       pH scale  : N/A
 C       Note      : currently no pressure correction
-           ak0(i,j,bi,bj)  = EXP( -60.2409 _d 0 + 93.4517 _d 0/t_k_o_100
+           ak0(i,j,bi,bj)  = EXP( 93.4517 _d 0/t_k_o_100 - 60.2409 _d 0
      &                 + 23.3585 _d 0*LOG(t_k_o_100)
-     &                 + (0.023517 _d 0 - 0.023656 _d 0*t_k_o_100
-     &                 + 0.0047036 _d 0 * t_k_o_100_2)*s )
+     &                 + s * (0.023517 _d 0 - 0.023656 _d 0*t_k_o_100
+     &                 + 0.0047036 _d 0*t_k_o_100_2))
 
 C------------------------------------------------------------------------
 C       Calculate f = k0(1-pH2O)*correction term for non-ideality
@@ -541,8 +547,8 @@ C                   Eq 13 with table 6 values)
 C       pH scale  : N/A
            ff(i,j,bi,bj) = exp(-162.8301 _d 0 + 218.2968 _d 0/t_k_o_100
      &          + 90.9241 _d 0*log(t_k_o_100) - 1.47696 _d 0*t_k_o_100_2
-     &          + s * (.025695 _d 0 - .025225 _d 0*t_k_o_100 +
-     &          0.0049867 _d 0*t_k_o_100_2))
+     &          + s * (.025695 _d 0 - .025225 _d 0*t_k_o_100
+     &          + 0.0049867 _d 0*t_k_o_100_2))
 
 C------------------------------------------------------------------------
 C       Calculate Fugacity Factor needed for non-ideality in ocean
@@ -552,8 +558,8 @@ C       pH scale  : N/A
            Rgas = 83.1451 _d 0  ! bar*cm3/(mol*K)
            RT = Rgas*t_k
            delta = (57.7 _d 0 - 0.118 _d 0*t_k)
-           B = -1636.75 _d 0 + 12.0408 _d 0*t_k - 0.0327957 _d 0*t_k*t_k
-     &         + 3.16528 _d -5*t_k*t_k*t_k
+           B1 = -1636.75 _d 0 + 12.0408 _d 0*t_k - 0.0327957 _d 0*t_k*t_k
+           B  = B1 + + 3.16528 _d 0*t_k*t_k*t_k*(0.00001 _d 0)
 C   "x2" term often neglected (assumed=1) in applications of Weiss's (1974) eq.9
 C    x2 = 1 - x1 = 1 - xCO2 (it is very close to 1, but not quite)
            fugf(i,j,bi,bj) = exp( (B+2. _d 0*delta) * P1atm / RT)
@@ -565,17 +571,17 @@ C       in mol/kg-SW on the Seawater pH-scale.
 C       References: Millero (1995, eq 35 -- pK1(MEHR));
 C                   Mehrbach et al. (1973) data
 C       pH scale:   Seawater
-           ak1(i,j,bi,bj)=10.**(-1. _d 0*(3670.7 _d 0*inv_t_k -
-     &          62.008 _d 0 + 9.7944 _d 0*dlog_t_k -
-     &          0.0118 _d 0 * s + 0.000116 _d 0*s*s))
+           ak1(i,j,bi,bj)=10.**(-1. _d 0*(3670.7 _d 0*inv_t_k
+     &          - 62.008 _d 0 + 9.7944 _d 0*dlog_t_k
+     &          - 0.0118 _d 0 * s + 0.000116 _d 0*s_2))
 
 C       Calculate second dissociation constant of carbonic acid
 C       in mol/kg-SW on the Seawater pH-scale.
 C       References: Millero (1995, eq 36 -- pK2(MEHR))
 C                   Mehrbach et al. (1973) data
 C       pH scale:   Seawater
-           ak2(i,j,bi,bj)=10.**(-1. _d 0*(1394.7 _d 0*inv_t_k +
-     &           4.777 _d 0- 0.0184 _d 0*s + 0.000118 _d 0*s*s))
+           ak2(i,j,bi,bj)=10.**(-1. _d 0*(1394.7 _d 0*inv_t_k
+     &           + 4.777 _d 0 - 0.0184 _d 0*s + 0.000118 _d 0*s_2))
 
       ELSEIF ( selectK1K2const.EQ.2 ) THEN
 C -----------------------------------------------------------------------
@@ -588,8 +594,8 @@ C       Note      : converted here from mol/kg-H2O to mol/kg-SW
      &              - 1.5529413 _d 0*dlog_t_k
      &              + (-4.0484 _d 0*inv_t_k - 0.20760841)*sqrts
      &              + 0.08468345*s
-     &              - 0.00654208*sqrts*s)
-     &              *(1. _d 0 - 0.001005 _d 0*s)
+     &              - 0.00654208*s_15
+     &              + LOG(kgfw2kgsw))
 
 C       Calculate second dissociation constant of carbonic acid
 C       in mol/kg-SW on the Total pH-scale.
@@ -599,8 +605,8 @@ C       Note      : converted here from mol/kg-H2O to mol/kg-SW
            ak2(i,j,bi,bj) = EXP(-3351.6106 _d 0*inv_t_k - 9.226508 _d 0
      &              - 0.2005743 _d 0*dlog_t_k
      &              + ( -23.9722 _d 0*inv_t_k - 0.106901773 _d 0)*sqrts
-     &              + 0.1130822*s - 0.00846934 _d 0*sqrts*s)
-     &              *(1. _d 0 - 0.001005 _d 0*s)
+     &              + 0.1130822*s - 0.00846934 _d 0*s_15
+     &              + LOG(kgfw2kgsw))
 
       ELSEIF ( selectK1K2const.EQ.3 ) THEN
 C -----------------------------------------------------------------------
@@ -611,7 +617,7 @@ C       pH scale:   Seawater
            ak1(i,j,bi,bj)  = EXP(2.18867 _d 0 - 2275.0360 _d 0*inv_t_k
      &              - 1.468591 _d 0*dlog_t_k
      &              + ( -0.138681 _d 0 - 9.33291 _d 0*inv_t_k)*sqrts
-     &              + 0.0726483 _d 0*s - 0.00574938 _d 0*s*sqrts)
+     &              + 0.0726483 _d 0*s - 0.00574938 _d 0*s_15)
 
 C       Calculate second dissociation constant of carbonic acid
 C       in mol/kg-SW on the Seawater pH-scale.
@@ -620,7 +626,7 @@ C       pH scale:   Seawater
            ak2(i,j,bi,bj)  = EXP(-0.84226 _d 0 - 3741.1288 _d 0*inv_t_k
      &              -  1.437139 _d 0*dlog_t_k
      &              + (-0.128417 _d 0 - 24.41239 _d 0*inv_t_k)*sqrts
-     &              +  0.1195308 _d 0*s - 0.00912840 _d 0*s*sqrts)
+     &              +  0.1195308 _d 0*s - 0.00912840 _d 0*s_15)
 
       ELSEIF ( selectK1K2const.EQ.4 ) THEN
 C -----------------------------------------------------------------------
@@ -652,7 +658,7 @@ C                   Millero (1979) pressure correction
 C       pH scale:   Seawater
            ak1(i,j,bi,bj) = 10.0 _d 0**(-1*(6320.813 _d 0*inv_t_k
      &      + 19.568224 _d 0*dlog_t_k -126.34048 _d 0
-     &      + 13.4038 _d 0*sqrts + 0.03206 _d 0*s - (5.242 _d -5)*s2
+     &      + 13.4038 _d 0*sqrts + 0.03206 _d 0*s - (5.242 _d -5)*s_2
      &      + (-530.659 _d 0*sqrts - 5.8210 _d 0*s)*inv_t_k
      &      -2.0664 _d 0*sqrts*dlog_t_k))
 
@@ -664,7 +670,7 @@ C                   Millero (1979) pressure correction
 C       pH scale:   Seawater
            ak2(i,j,bi,bj) = 10.0 _d 0**(-1*(5143.692 _d 0*inv_t_k
      &     + 14.613358 _d 0*dlog_t_k -90.18333 _d 0
-     &     + 21.3728 _d 0*sqrts + 0.1218 _d 0*s - (3.688 _d -4)*s2
+     &     + 21.3728 _d 0*sqrts + 0.1218 _d 0*s - (3.688 _d -4)*s_2
      &     + (-788.289 _d 0*sqrts - 19.189 _d 0*s)*inv_t_k
      &     -3.374 _d 0*sqrts*dlog_t_k))
 
@@ -678,7 +684,7 @@ C                   Millero (1979) pressure correction
 C       pH scale:   Seawater
            ak1(i,j,bi,bj) = 10.0 _d 0**(-1*(6320.813 _d 0*inv_t_k
      &     + 19.568224 _d 0*dlog_t_k -126.34048 _d 0
-     &     + 13.409160 _d 0*sqrts + 0.031646 _d 0*s - (5.1895 _d -5)*s2
+     &     + 13.409160 _d 0*sqrts + 0.031646 _d 0*s - (5.1895 _d -5)*s_2
      &     + (-531.3642 _d 0*sqrts - 5.713 _d 0*s)*inv_t_k
      &     -2.0669166 _d 0*sqrts*dlog_t_k))
 
@@ -691,7 +697,7 @@ C       pH scale:   Seawater
            ak2(i,j,bi,bj) = 10.0 _d 0**(-1*
      &     ( 5143.692 _d 0*inv_t_k + 14.613358 _d 0*dlog_t_k
      &      - 90.18333 _d 0 + 21.225890 _d 0*sqrts + 0.12450870 _d 0*s
-     &      - (3.7243 _d -4)*s2
+     &      - (3.7243 _d -4)*s_2
      &      + (-779.3444 _d 0*sqrts - 19.91739 _d 0*s)*inv_t_k
      &      - 3.3534679 _d 0*sqrts*dlog_t_k ) )
 
@@ -702,15 +708,11 @@ C       Calculate boric acid dissociation constant KB
 C       in mol/kg-SW on the total pH-scale.
 C       References: Dickson (1990, eq. 23) -- also Handbook (2007, eq. 37)
 C       pH scale  : total
-           akb(i,j,bi,bj)  = EXP(
-     &      ( -8966.90 _d 0
-     &       + sqrts*( -2890.53 _d 0
-     &        + sqrts*( -77.942 _d 0
-     &         + sqrts*( 1.728 _d 0 - 0.0996 _d 0*sqrts ) ) ) )*inv_t_k
-     &      + 148.0248 _d 0 + sqrts*(137.1942 _d 0 + sqrts*1.62142 _d 0)
-     &      + ( -24.4344 _d 0 + sqrts*(-25.085 _d 0 - sqrts*0.2474 _d 0)
-     &        ) * dlog_t_k
-     &      + 0.053105 _d 0*sqrts*t_k )
+           akb(i,j,bi,bj)  = EXP(( -8966.90 _d 0 - 2890.53 _d 0*sqrts
+     &      -77.942 _d 0*s + 1.728 _d 0*s_15 - 0.0996 _d 0*s_2 )*inv_t_k
+     &      + (148.0248 _d 0 + 137.1942 _d 0*sqrts + 1.62142 _d 0*s)
+     &      + (-24.4344 _d 0 - 25.085 _d 0*sqrts - 0.2474 _d 0*s)* 
+     &      dlog_t_k + 0.053105 _d 0*sqrts*t_k )
 
 C -----------------------------------------------------------------------
 C       Calculate the first dissociation constant
@@ -753,8 +755,8 @@ C       Note      : converted here from mol/kg-H2O to mol/kg-sw
      &         - 19.334 _d 0 * dlog_t_k
      &         + ( 3.5913 _d 0 -  458.79 _d 0*inv_t_k) * sqrtis
      &         + (-1.5998 _d 0 +  188.74 _d 0*inv_t_k) * ion_st
-     &         + (0.07871 _d 0 - 12.1652 _d 0*inv_t_k) * ion_st*ion_st )
-     &                     * (1. _d 0 - 0.001005 _d 0*s)
+     &         + (0.07871 _d 0 - 12.1652 _d 0*inv_t_k) * ion_st*ion_st
+     &         + LOG(kgfw2kgsw))
 
 C -----------------------------------------------------------------------
 C       Calculate the dissociation constant
@@ -790,10 +792,10 @@ C       Note      : converted here from mol/kg-H2O to mol/kg-SW
      &                + ( 324.57 _d 0 - 13856. _d 0*inv_t_k
      &                -   47.986 _d 0*dlog_t_k) * sqrtis
      &                + (-771.54 _d 0 + 35474. _d 0*inv_t_k
-     &                +   114.723 _d 0*dlog_t_k) * ion_st
-     &                - ( 2698. _d 0*inv_t_k)*sqrtis * ion_st
-     &                + ( 1776. _d 0*inv_t_k)*ion_st*ion_st)
-     &               * ( 1. _d 0 - 0.001005 _d 0*s)
+     &                +  114.723 _d 0*dlog_t_k) * ion_st
+     &                - 2698. _d 0*inv_t_k*ion_st**1.5 _d 0
+     &                + 1776. _d 0*inv_t_k*ion_st*ion_st
+     &                + LOG(kgfw2kgsw))
 
       IF ( selectHFconst.EQ.1 ) THEN
 C -----------------------------------------------------------------------
@@ -804,8 +806,8 @@ C       References: Dickson and Riley (1979)
 C       pH scale  : free
 C       Note      : converted here from mol/kg-H2O to mol/kg-SW
            akf(i,j,bi,bj) = EXP(1590.2 _d 0*inv_t_k - 12.641 _d 0
-     &                 + 1.525 _d 0*sqrtis)
-     &               / ( 1. _d 0 - 0.001005 _d 0*s)
+     &                 + 1.525 _d 0*sqrtis
+     &                 + LOG(kgfw2kgsw))
       ELSEIF ( selectHFconst.EQ.2 ) THEN
 C -----------------------------------------------------------------------
 C       Calculate the dissociation constant for hydrogen fluoride
@@ -868,7 +870,7 @@ C       Units     : (mol/kg-SW)^2
      &             + 2839.319 _d 0*inv_t_k + 71.595 _d 0*dlog_t_k
      &             + ( -0.77712 _d 0 + 0.0028426 _d 0*t_k
      &             + 178.34 _d 0*inv_t_k)*sqrts
-     &             - 0.07711 _d 0*s + 0.0041249 _d 0*s*sqrts)
+     &             - 0.07711 _d 0*s + 0.0041249 _d 0*s_15)
 
 C -----------------------------------------------------------------------
 C       Calculate the stoichiometric solubility product
@@ -882,7 +884,7 @@ C       Units     : (mol/kg-SW)^2
      &             + 2903.293 _d 0*inv_t_k + 71.595 _d 0*dlog_t_k
      &             + ( -0.068393 _d 0 + 0.0017276 _d 0*t_k
      &             + 88.135 _d 0*inv_t_k)*sqrts
-     &             - 0.10018 _d 0*s + 0.0059415 _d 0*s*sqrts)
+     &             - 0.10018 _d 0*s + 0.0059415 _d 0*s_15)
          else
            bt(i,j,bi,bj)  = 0. _d 0
            st(i,j,bi,bj)  = 0. _d 0
@@ -954,13 +956,14 @@ C LOCAL VARIABLES
       _RL dlog_t_k
       _RL sqrtis
       _RL sqrts
-      _RL s2
-      _RL s15
+      _RL s_2
+      _RL s_15
       _RL inv_t_k
       _RL ion_st
-      _RL is2
+      _RL is_2
       _RL scl
       _RL zrt
+      _RL B1
       _RL B
       _RL delta
       _RL Pzatm
@@ -1010,12 +1013,12 @@ C temperature
            dlog_t_k=log(t_k)
 C ionic strength
            ion_st=19.924 _d 0*s/(1000. _d 0-1.005 _d 0*s)
-           is2=ion_st*ion_st
+           is_2=ion_st*ion_st
            sqrtis=sqrt(ion_st)
 C salinity
-           s2=s*s
+           s_2=s*s
            sqrts=sqrt(s)
-           s15=s**1.5 _d 0
+           s_15=s**1.5 _d 0
            scl=s/1.80655 _d 0
            zds = s - 34.8 _d 0
 
@@ -1035,8 +1038,8 @@ C       Reference : Weiss (1974) Marine Chemistry
 C       pH scale  : N/A
            Pzatm = 1.01325 _d 0+pressc ! bars
            delta = (57.7 _d 0 - 0.118 _d 0*t_k)
-           B = -1636.75 _d 0 + 12.0408 _d 0*t_k - 0.0327957 _d 0*t_k*t_k
-     &         + 3.16528 _d -5*t_k*t_k*t_k
+           B1 = -1636.75 _d 0 + 12.0408 _d 0*t_k - 0.0327957 _d 0*t_k*t_k
+           B  = B1 + 3.16528 _d 0*t_k*t_k*t_k*(0.00001 _d 0)
 C   "x2" term often neglected (assumed=1) in applications of Weiss's (1974) eq.9
 C    x2 = 1 - x1 = 1 - xCO2 (it is very close to 1, but not quite)
            fugf(i,j,bi,bj) = exp( (B+2. _d 0*delta) * Pzatm / zrt)
