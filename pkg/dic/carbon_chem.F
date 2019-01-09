@@ -686,7 +686,7 @@ C Millero p.671 (1995) using data from Yao and Millero (1995)
 C The constant 117.385 is an approximation to convert to the total pH scale 
 C  (Dickson et al., 2007). Use Millero's 117.400 constant to stay on the seawater
 C  pH scale (everything else is the same).
-C  Note      : converted here from mol/kg-H2O to mol/kg-SW
+C  Note: converted here from mol/kg-H2O to mol/kg-SW
            aksi(i,j,bi,bj) = exp(-8904.2 _d 0*invtk + 117.385 _d 0 -
      &          19.334 _d 0*dlogtk +
      &          (-458.79 _d 0*invtk + 3.5913 _d 0) * sqrtis +
@@ -707,7 +707,7 @@ C------------------------------------------------------------------------
 C ks = [H][SO4]/[HSO4]
 C dickson (1990, J. chem. Thermodynamics 22, 113)
 C On the free pH scale
-C Note      : converted here from mol/kg-H2O to mol/kg-SW
+C Note: converted here from mol/kg-H2O to mol/kg-SW
            aks(i,j,bi,bj)=exp(-4276.1 _d 0*invtk + 141.328 _d 0 -
      &          23.093 _d 0*dlogtk +
      &   (-13856. _d 0*invtk + 324.57 _d 0 - 47.986 _d 0*dlogtk)*sqrtis+
@@ -717,7 +717,7 @@ C Note      : converted here from mol/kg-H2O to mol/kg-SW
 C------------------------------------------------------------------------
 C kf = [H][F]/[HF]
 C dickson and Riley (1979) -- change pH scale to total (following Dickson & Goyet, 1994)
-C Note      : converted here from mol/kg-H2O to mol/kg-SW
+C Note: converted here from mol/kg-H2O to mol/kg-SW
            akf(i,j,bi,bj)=exp(1590.2 _d 0*invtk - 12.641 _d 0 +
      &   1.525 _d 0*sqrtis + log(1.0 _d 0 - 0.001005 _d 0*s) +
      &   log(1.0 _d 0 + (0.1400 _d 0/96.062 _d 0)*(scl)/aks(i,j,bi,bj)))
@@ -1040,7 +1040,7 @@ C Millero p.671 (1995) using data from Yao and Millero (1995)
 C The constant 117.385 is an approximation to convert to the total pH scale 
 C  (Dickson et al., 2007). Use Millero's 117.400 constant to stay on the seawater
 C  pH scale (everything else is the same).
-C Note      : converted here from mol/kg-H2O to mol/kg-SW
+C Note: converted here from mol/kg-H2O to mol/kg-SW
            aksi(i,j,bi,bj) = exp(-8904.2 _d 0*invtk + 117.385 _d 0 -
      &          19.334 _d 0*dlogtk +
      &          (-458.79 _d 0*invtk + 3.5913 _d 0) * sqrtis +
@@ -1061,7 +1061,7 @@ C------------------------------------------------------------------------
 C ks = [H][SO4]/[HSO4]
 C dickson (1990, J. chem. Thermodynamics 22, 113)
 C On the free pH scale
-C Note      : converted here from mol/kg-H2O to mol/kg-SW
+C Note: converted here from mol/kg-H2O to mol/kg-SW
            aks(i,j,bi,bj)=exp(-4276.1 _d 0*invtk + 141.328 _d 0 -
      &          23.093 _d 0*dlogtk +
      &          (-13856 _d 0*invtk + 324.57 _d 0 - 47.986 _d 0*dlogtk)*sqrtis +
@@ -1071,7 +1071,7 @@ C Note      : converted here from mol/kg-H2O to mol/kg-SW
 C------------------------------------------------------------------------
 C kf = [H][F]/[HF]
 C dickson and Riley (1979) -- change pH scale to total (following Dickson & Goyet, 1994)
-C Note      : converted here from mol/kg-H2O to mol/kg-SW
+C Note: converted here from mol/kg-H2O to mol/kg-SW
            akf(i,j,bi,bj)=exp(1590.2 _d 0*invtk - 12.641 _d 0 
      &          + 1.525 _d 0*sqrtis      
      &          + log(1.0 _d 0 - 0.001005 _d 0*s)
@@ -1193,6 +1193,7 @@ C Estimated from the effect on akb
             pfactor = - (dv/(bigR*tk))*pressc
      &                + (0.5*dk/(bigR*tk))*pressc*pressc
             aksi(i,j,bi,bj) = total2sw_surf*aksi(i,j,bi,bj)*exp(pfactor)
+            aksi(i,j,bi,bj) = aksi(i,j,bi,bj)/total2sw
 #endif
 
 C------------------------------------------------------------------------
