@@ -168,8 +168,8 @@ C     Apply masks (same/similar to seaice_evp.F/seaice_lsr.F)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          uIce_fd(i,j,bi,bj)=uIce_fd(i,j,bi,bj)* _maskW(i,j,kSrf,bi,bj)
-          vIce_fd(i,j,bi,bj)=vIce_fd(i,j,bi,bj)* _maskS(i,j,kSrf,bi,bj)
+          uIce_fd(i,j,bi,bj)=uIce_fd(i,j,bi,bj)*SIMaskU(i,j,bi,bj)
+          vIce_fd(i,j,bi,bj)=vIce_fd(i,j,bi,bj)*SIMaskV(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
