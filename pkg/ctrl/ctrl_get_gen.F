@@ -38,6 +38,11 @@ c     == global variables ==
 #ifndef ECCO_CTRL_DEPRECATED
       character*(MAX_LEN_FNAM) xx_tauu_file
       character*(MAX_LEN_FNAM) xx_tauv_file
+      character*(MAX_LEN_FNAM) xx_aqh_file
+      character*(MAX_LEN_FNAM) xx_atemp_file
+      character*(MAX_LEN_FNAM) xx_precip_file      
+      character*(MAX_LEN_FNAM) xx_lwdown_file      
+      character*(MAX_LEN_FNAM) xx_swdown_file            
 #endif
 
 c     == routine arguments ==
@@ -211,8 +216,24 @@ cph Initial wind stress adjustments are too vigorous.
 #ifndef ECCO_CTRL_DEPRECATED
       xx_tauu_file       = 'xx_tauu'
       xx_tauv_file       = 'xx_tauv'
+      
+      
+      xx_aqh_file        = 'xx_aqh'
+      xx_atemp_file      = 'xx_atemp'
+      xx_precip_file     = 'xx_precip' 
+      xx_lwdown_file     = 'xx_lwdown' 
+      xx_swdown_file     = 'xx_swdown'
+      
 #endif
 
+CIGF Originally only the first two time variable 
+CIGF tau u and tau v control records were disabled
+CIGF The DISABLE_FIRST_TWO_ATM_CTRLS_XX flag extends
+CIGF that to the rest of the time variable atmospheric
+CIGF controls.
+
+
+#ifndef DISABLE_FIRST_TWO_ATM_CTRLS_XX
       if ( gencount0 .LE. 2 .AND.
      &     ( xx_gen_file(1:7) .EQ. xx_tauu_file .OR.
      &       xx_gen_file(1:7) .EQ. xx_tauv_file ) .AND.
@@ -221,12 +242,29 @@ cph Initial wind stress adjustments are too vigorous.
       else
          doCtrlUpdate = .TRUE.
       endif
+#else 
+      if ( gencount0 .LE. 2 .AND.
+     &     ( xx_gen_file(1:7) .EQ. xx_tauu_file .OR.
+     &       xx_gen_file(1:7) .EQ. xx_tauv_file .OR.
+     &       xx_gen_file(1:6) .EQ. xx_aqh_file .OR.     
+     &       xx_gen_file(1:8) .EQ. xx_atemp_file .OR.
+     &       xx_gen_file(1:9) .EQ. xx_precip_file .OR.
+     &       xx_gen_file(1:9) .EQ. xx_lwdown_file .OR.
+     &       xx_gen_file(1:9) .EQ. xx_swdown_file) .AND.
+     &     ( xx_genperiod .NE. 0 ) ) then
+         doCtrlUpdate = .FALSE.
+      else
+         doCtrlUpdate = .TRUE.
+      endif      
+#endif
+      
       if ( xx_gen_file(1:7) .EQ. xx_tauu_file .OR.
      &     xx_gen_file(1:7) .EQ. xx_tauv_file ) then
          gensign = -1.
       else
          gensign = 1.
       endif
+
 
 c
 cph since the above is ECCO specific, we undo it here:
