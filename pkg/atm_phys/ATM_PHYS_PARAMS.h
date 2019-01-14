@@ -23,7 +23,8 @@ C     atmPhys_sstFile  :: name of initial SST [in K] file
 C     atmPhys_qFlxFile :: name of Q-flux file
 C     atmPhys_mxldFile :: name of Mixed-Layer Depth file
 C     atmPhys_albedoFile :: name of Albedo file
-C     atmPhys_ozoneFile  :: name of ozone concentration file
+C     atmPhys_ozoneFile  :: name of annual mean ozone concentration file
+C                           (units: mol/mol i.e. volume mixing ratio)
       CHARACTER*(MAX_LEN_FNAM) atmPhys_sstFile
       CHARACTER*(MAX_LEN_FNAM) atmPhys_qFlxFile
       CHARACTER*(MAX_LEN_FNAM) atmPhys_mxldFile
