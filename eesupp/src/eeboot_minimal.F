@@ -57,10 +57,12 @@ C     mpiRC      :: Error code reporting variable used with MPI.
       INTEGER mpiIsInitialized
       LOGICAL doReport
 #if defined(ALLOW_OASIS) || defined(COMPONENT_MODULE)
-      INTEGER mpiMyWid
+      INTEGER mpiMyWId
+#elif defined(ALLOW_NEST2W_COMMON)
+      INTEGER mpiMyWId
 #endif
 #if defined(ALLOW_NEST_PARENT) || defined(ALLOW_NEST_CHILD)
-      INTEGER mpiMyWid, color
+      INTEGER mpiMyWId, color
 #endif
 #ifdef USE_PDAF
       INTEGER mpi_task_id
@@ -168,6 +170,17 @@ C--    Set the running directory
 C--    Setup Nesting Execution Environment
        CALL NEST_EEINIT( mpiMyWId, color )
 #endif /* ALLOW_NEST_PARENT | ALLOW_NEST_CHILD */
+
+#ifdef ALLOW_NEST2W_COMMON
+C--    Case with 2-Ways Nest(ing)
+C-     Set the running directory
+       CALL MPI_COMM_RANK( MPI_COMM_WORLD, mpiMyWId, mpiRC )
+       CALL SETDIR( mpiMyWId )
+
+C-     Setup Nesting Execution Environment
+       CALL NEST2W_EEINIT( mpiMyWId )
+       IF ( eeBootError ) GOTO 999
+#endif /* ALLOW_NEST2W_COMMON */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

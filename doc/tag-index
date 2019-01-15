@@ -1,6 +1,60 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic:
+  - Adjust unit conversions for dissociation coefficients aks, aksi, and akf
+    (#define CARBONCHEM_TOTALPHSCALE).
+o tools/genmake2:
+  - improve Fortran Compiler check, section: running MPI executable ; also
+    refine the "conclusion" printed message.
+
+checkpoint67g (2019/01/03)
+o doc:
+  - add documentation for pkg/streamice
+o model/src:
+  - change ordering of pkg calls in initialisation: streamice / shelfice and
+    then seaice / salt_plume / thsice;
+  - fix thin ice-shelf issue with pkg/seaice ; implemented by updating (recently
+    added) seaice masks (requiring new ordering of calls).
+o pkg/shelfice:
+  - allow to include thin ice-shelf (i.e., such that hFacC(k=1) > 0 ) when
+    using pkg/thsice, by preventing seaice to form where there is an ice-shelf.
+  - prevent short-wave heating below an ice-shelf (previously still happening
+    below thin ice-shelf); also fix Qnet there (but only for diagnostics).
+o pkg/seaice:
+  - move initialisation of masks and metric coefficients and KGEO from
+    seaice_init_varia.F to seaice_init_fixed.F
+  - remove all reference to global masks maskC/maskW/maskS:
+   * introduce new masks SIMaskU/V
+   * initialise HEFFM/SIMaskU/V as copies of surface maskC/W/S
+   * replace maskC/W/S with HEFFM/SIMaskU/SIMaskV; in some places this requires
+     including SEAICE.h and as a consequence renaming a few local variables to
+     avoid name overlap
+  - remove TAF storage directives for "heffm" (no longer needed) and simplify
+    seaice calls and TAF storage dir in do_oceanic_phys.F
+o pkg/monitor:
+  - fix local array declaration in mon_stats_latbnd_rl.F
+o tools/example_scripts:
+  - remove all files in tools/example_scripts/
+    (updated testing scripts are all in MITgcm_contrib/test_scripts)
+o verification:
+  - remove un-tested experiments: cpl_atm2d+ocn, tidal_basin_2d and
+    tutorial_offline
+
+checkpoint67f (2018/11/23)
+o pkg/seaice:
+  - add advection ppm and pqm advection schemes ;
+  - test new scheme in verification/offline_exf_seaice.dyn_lsr
+o pkg/generic_advection:
+  - regularize ppm and pqm advection schemes:
+  - replace unsafe division in the case of numerical underflows by
+    regularized expression sign(max(abs(uCFL),1.d-20),uCFL) and similar,
+    in anology to other advection routines, e.g. gad_os7mp_adv_x/y/z.F
+  - affects verification/advect_xz at truncation level -> updated
+o eesupp & model:
+  - add entry points for 2-way nesting pkgs.
+o pkg/dic:
+  - fix out-of-bounds error in S/R CAR_FLUX_OMEGA_TOP (#define CAR_DISS)
 o pkg/streamice:
   - new implementation of grounding line smoothing by smoothing of basal
      traction in partly grounded cell, in streamice_upd_ffrac_uncoupled.F

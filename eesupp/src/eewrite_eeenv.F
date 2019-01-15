@@ -160,6 +160,15 @@ CEOP
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
 
+      WRITE(msgBuf,'(A,L5,A)') 'useNest2W_parent =', useNest2W_parent,
+     & ' ;/* Control 2-W Nesting comm */'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &  SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A,L5,A)') 'useNest2W_child  =', useNest2W_child,
+     & ' ;/* Control 2-W Nesting comm */'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &  SQUEEZE_RIGHT , 1)
+
       WRITE(msgBuf,'(A,L5,A)') 'debugMode =', debugMode,
      & ' ; /* print debug msg. (sequence of S/R calls)  */'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,

@@ -7,7 +7,7 @@ CBOP
 C     !ROUTINE: SEAICE_GET_DYNFORCING
 C     !INTERFACE:
       SUBROUTINE SEAICE_GET_DYNFORCING(
-     I     uIce, vIce, icFrac,
+     I     uIce, vIce, icFrac, SIMaskU, SIMaskV,
      O     taux, tauy,
      I     myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
@@ -48,6 +48,8 @@ C     !INPUT/OUTPUT PARAMETERS:
 C   uIce   (inp) :: zonal      ice velocity (input)
 C   vIce   (inp) :: meridional ice velocity (input)
 C   icFrac (inp) :: seaice fraction (input)
+C   SImaskU(inp) :: mask at U-point
+C   SImaskV(inp) :: mask at V-point
 C   taux   (out) :: zonal      wind stress over ice at U point
 C   tauy   (out) :: meridional wind stress over ice at V point
 C   myTime (inp) :: current time in simulation
@@ -56,6 +58,8 @@ C   myThid (inp) :: my Thread Id. number
       _RL uIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIce   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL icFrac (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SImaskU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SImaskV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL taux   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tauy   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL     myTime
@@ -128,9 +132,9 @@ C     from A-grid to U and V points of C-grid
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
           fu(i,j,bi,bj) = 0.5 _d 0*( oceTauX(i,j) + oceTauX(i-1,j) )
-     &                            *_maskW(i,j,ks,bi,bj)
+     &                            * SIMaskU(i,j,bi,bj)
           fv(i,j,bi,bj) = 0.5 _d 0*( oceTauY(i,j) + oceTauY(i,j-1) )
-     &                            *_maskS(i,j,ks,bi,bj)
+     &                            * SIMaskV(i,j,bi,bj)
          ENDDO
         ENDDO
 #endif /* ndef SEAICE_EXTERNAL_FLUXES */
@@ -203,7 +207,7 @@ C     interpolate to U points
      &          (vWind(i-1,j,bi,bj)
      &          +0.5 _d 0*(vVel(i-1,j,ks,bi,bj)+vVel(i-1,j+1,ks,bi,bj))
      &          -0.5 _d 0*(vIce(i-1,j,bi,bj)+vIce(i-1,j+1,bi,bj))))
-     &         )*_maskW(i,j,ks,bi,bj)
+     &         )*SIMaskU(i,j,bi,bj)
 C     interpolate to V points
             tauy(i,j,bi,bj)= 0.5 _d 0 *
      &         ( CDAIR(i,j)*(SIGN(SINWIN, _fCori(i,j,bi,bj))*
@@ -222,7 +226,7 @@ C     interpolate to V points
      &          (vWind(i,j-1,bi,bj)
      &          +0.5 _d 0*(vVel(i,j-1,ks,bi,bj)+vVel(i,j,ks,bi,bj))
      &          -0.5 _d 0*(vIce(i,j-1,bi,bj)+vIce(i,j,bi,bj))))
-     &         )*_maskS(i,j,ks,bi,bj)
+     &         )*SIMaskV(i,j,bi,bj)
            ENDDO
           ENDDO
          ELSE
@@ -236,7 +240,7 @@ C     interpolate to U points
      &          + CDAIR(i-1,j)*(
      &          COSWIN                            *uWind(i-1,j,bi,bj)
      &          -SIGN(SINWIN, _fCori(i-1,j,bi,bj))*vWind(i-1,j,bi,bj) )
-     &         )*_maskW(i,j,ks,bi,bj)
+     &         )*SIMaskU(i,j,bi,bj)
 C     interpolate to V points
             tauy(i,j,bi,bj)=0.5 _d 0 *
      &         (  CDAIR(i,j  )*(
@@ -245,7 +249,7 @@ C     interpolate to V points
      &          + CDAIR(i,j-1)*(
      &          SIGN(SINWIN, _fCori(i,j-1,bi,bj))*uWind(i,j-1,bi,bj)
      &          +COSWIN*vWind(i,j-1,bi,bj) )
-     &         )*_maskS(i,j,ks,bi,bj)
+     &         )*SIMaskV(i,j,bi,bj)
            ENDDO
           ENDDO
          ENDIF
@@ -259,10 +263,8 @@ C--   Wind stress is available on U and V points, copy it to seaice variables.
 #ifdef HACK_FOR_GMAO_CPL
          DO j=2-OLy,sNy+OLy
           DO i=2-OLx,sNx+OLx
-           taux(i,j,bi,bj) = SIwindTauX(i,j,bi,bj)
-     &                     *_maskW(i,j,ks,bi,bj)
-           tauy(i,j,bi,bj) = SIwindTauY(i,j,bi,bj)
-     &                     *_maskS(i,j,ks,bi,bj)
+           taux(i,j,bi,bj) = SIwindTauX(i,j,bi,bj)*SIMaskU(i,j,bi,bj)
+           tauy(i,j,bi,bj) = SIwindTauY(i,j,bi,bj)*SIMaskV(i,j,bi,bj)
           ENDDO
          ENDDO
 #else /* HACK_FOR_GMAO_CPL */
@@ -275,9 +277,9 @@ C now ice surface stress
             CDAIR(i,j) = SEAICE_drag      /OCEAN_drag
            ENDIF
            taux(i,j,bi,bj) = CDAIR(i,j)*fu(i,j,bi,bj)
-     &                     *_maskW(i,j,ks,bi,bj)
+     &                     *SIMaskU(i,j,bi,bj)
            tauy(i,j,bi,bj) = CDAIR(i,j)*fv(i,j,bi,bj)
-     &                     *_maskS(i,j,ks,bi,bj)
+     &                     *SIMaskV(i,j,bi,bj)
           ENDDO
          ENDDO
 #endif /* HACK_FOR_GMAO_CPL */

@@ -1257,8 +1257,8 @@ Then, download the setup from the `MITgcm_contrib/` area by logging into the cvs
     % cvs login
     %     ( enter the CVS password: "cvsanon" )
 
-and following the directions provided `here for global_oce_cs32 <http://mitgcm.org/viewvc/*checkout*/MITgcm/MITgcm_contrib/verification_other/global_oce_cs32/README>`__
-or `here for global_oce_llc90 <http://mitgcm.org/viewvc/*checkout*/MITgcm/MITgcm_contrib/verification_other/global_oce_llc90/README>`__. These model configurations
+and following the directions provided `here for global_oce_cs32 <https://github.com/MITgcm/verification_other/tree/master/global_oce_cs32>`__
+or `here for global_oce_llc90 <https://github.com/MITgcm/verification_other/tree/master/global_oce_llc90>`__. These model configurations
 are used for daily regression tests to ensure continued availability of the tested estimation package features discussed in :ref:`chap_state_estimation`.
 Daily results of these tests, which currently run on the `glacier` cluster, are reported `on this site <http://mitgcm.org/public/testing.html>`__.
 To this end, one sets a `crontab job <https://www.computerhope.com/unix/ucrontab.htm>`__ that typically executes the script reported below. 
