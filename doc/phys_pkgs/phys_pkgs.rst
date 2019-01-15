@@ -127,6 +127,8 @@ Ice Sheet-Ocean Packages
    
    remesh.rst   
    shelfice.rst
+   streamice.rst   
+
 
 Biogeochemistry Packages
 ========================

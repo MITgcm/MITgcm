@@ -531,13 +531,14 @@ can be controlled by the runtime parameter ``SEAICEnonLinIterMax``
 (default is 2).
 
 In order to overcome the poor convergence of the Picard-solver,
-introduced a Jacobian-free Newton-Krylov solver for the sea ice momentum
-equations. This solver is also implemented in the MITgcm . The Newton
-method transforms minimizing the residual
-:math:`\mathbf{F}(\mathbf{x}) = \mathbf{A}(\mathbf{x})\,\mathbf{x} -
-\mathbf{b}(\mathbf{x})` to finding the roots of a multivariate Taylor
-expansion of the residual :math:`\mathbf{F}` around the previous
-(:math:`k-1`) estimate :math:`\mathbf{x}^{k-1}`:
+:cite:`lemieux10` introduced a Jacobian-free Newton-Krylov solver for
+the sea ice momentum equations. This solver is also implemented in the
+MITgcm :cite:`losch14:_jfnk`. The Newton method transforms minimizing
+the residual :math:`\mathbf{F}(\mathbf{x}) =
+\mathbf{A}(\mathbf{x})\,\mathbf{x} - \mathbf{b}(\mathbf{x})` to
+finding the roots of a multivariate Taylor expansion of the residual
+:math:`\mathbf{F}` around the previous (:math:`k-1`) estimate
+:math:`\mathbf{x}^{k-1}`:
 
 .. math::
    :label: eq_jfnktaylor

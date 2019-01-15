@@ -57,6 +57,9 @@ C--   Zero out surface forcing terms below ice-shelf
             surfaceForcingT(i,j,bi,bj) = 0.
             surfaceForcingS(i,j,bi,bj) = 0.
             EmPmR(i,j,bi,bj) = 0.
+            Qsw  (i,j,bi,bj) = 0.
+C-    just for consistent diagnostics, also reset Qnet:
+            Qnet (i,j,bi,bj) = 0.
           ENDIF
          ENDDO
         ENDDO

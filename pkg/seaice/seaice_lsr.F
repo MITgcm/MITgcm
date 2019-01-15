@@ -326,18 +326,18 @@ CADJ STORE vice = comlev1_dynsol, kind=isbyte, key = itmpkey
      I     ipass, myTime, myIter, myThid )
 
       CALL SEAICE_CALC_VISCOSITIES(
-     I     e11, e22, e12, zMin, zMax, hEffM, press0, tensileStrFac,
+     I     e11, e22, e12, zMin, zMax, HEFFM, press0, tensileStrFac,
      O     eta, etaZ, zeta, zetaZ, press, deltaC,
      I     ipass, myTime, myIter, myThid )
 
       CALL SEAICE_OCEANDRAG_COEFFS(
-     I     uIceC, vIceC,
+     I     uIceC, vIceC, HEFFM,
      O     DWATN,
      I     ipass, myTime, myIter, myThid )
 
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
       IF (SEAICEbasalDragK2.GT.0. _d 0) CALL SEAICE_BOTTOMDRAG_COEFFS(
-     I     uIceC, vIceC,
+     I     uIceC, vIceC, HEFFM,
 #ifdef SEAICE_ITD
      I     HEFFITD, AREAITD, AREA,
 #else
@@ -1534,8 +1534,8 @@ C     contribution of sigma12 to rhs of u-equation
      &       * 0.5 _d 0 * ( vIceC(I,J,bi,bj) + vIceC(I-1,J,bi,bj) )
      &       )
 C     free slip conditions (sig12=0) are taken care of by masking sig12
-     &       *maskC(I  ,J  ,kSrf,bi,bj)*maskC(I-1,J  ,kSrf,bi,bj)
-     &       *maskC(I  ,J-1,kSrf,bi,bj)*maskC(I-1,J-1,kSrf,bi,bj)
+     &       *HEFFM(I  ,J  ,bi,bj)*HEFFM(I-1,J  ,bi,bj)
+     &       *HEFFM(I  ,J-1,bi,bj)*HEFFM(I-1,J-1,bi,bj)
 C     no slip boundary conditions (v(i-1)=-v(i))
 C     v(i)+v(i-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with v(i)-v(i-1)
@@ -1557,8 +1557,8 @@ C     we do not have to add any metric terms, because they cancel.
      &        * _recip_dyU(I,J,bi,bj)
      &        )
 C     free slip conditions (sig12=0) are taken care of by masking sig12
-     &        *maskC(I  ,J  ,kSrf,bi,bj)*maskC(I-1,J  ,kSrf,bi,bj)
-     &        *maskC(I  ,J-1,kSrf,bi,bj)*maskC(I-1,J-1,kSrf,bi,bj)
+     &        *HEFFM(I  ,J  ,bi,bj)*HEFFM(I-1,J  ,bi,bj)
+     &        *HEFFM(I  ,J-1,bi,bj)*HEFFM(I-1,J-1,bi,bj)
 C     no slip boundary conditions (u(j-1)=-u(j))
 C     u(j)+u(j-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with u(j)-u(j-1)
@@ -1666,8 +1666,8 @@ C     contribution of sigma12 to rhs of v-equation
      &       * 0.5 _d 0 * ( uIceC(I,J,bi,bj) + uIceC(I,J-1,bi,bj) )
      &       )
 C     free slip conditions (sig12=0) are taken care of by masking sig12,
-     &       *maskC(I  ,J  ,kSrf,bi,bj)*maskC(I-1,J  ,kSrf,bi,bj)
-     &       *maskC(I  ,J-1,kSrf,bi,bj)*maskC(I-1,J-1,kSrf,bi,bj)
+     &       *HEFFM(I  ,J  ,bi,bj)*HEFFM(I-1,J  ,bi,bj)
+     &       *HEFFM(I  ,J-1,bi,bj)*HEFFM(I-1,J-1,bi,bj)
 C     no slip boundary conditions (u(j-1)=-u(j))
 C     u(j)+u(j-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with u(j)-u(j-1)
@@ -1689,8 +1689,8 @@ C     we do not have to add any metric terms, because they cancel.
      &        * _recip_dxV(I,J,bi,bj)
      &        )
 C     free slip conditions (sig12=0) are taken care of by masking sig12
-     &        *maskC(I  ,J  ,kSrf,bi,bj)*maskC(I-1,J  ,kSrf,bi,bj)
-     &        *maskC(I  ,J-1,kSrf,bi,bj)*maskC(I-1,J-1,kSrf,bi,bj)
+     &        *HEFFM(I  ,J  ,bi,bj)*HEFFM(I-1,J  ,bi,bj)
+     &        *HEFFM(I  ,J-1,bi,bj)*HEFFM(I-1,J-1,bi,bj)
 C     no slip boundary conditions (v(i-1)=-v(i))
 C     v(i)+v(i-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with v(i)-v(i-1)

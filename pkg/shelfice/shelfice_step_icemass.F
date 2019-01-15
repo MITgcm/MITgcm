@@ -4,13 +4,11 @@
 #endif
 
 CBOP
-C !ROUTINE: SHELFICE_U_DRAG
+C !ROUTINE: SHELFICE_STEP_ICEMASS
 
 C !INTERFACE: ==========================================================
       SUBROUTINE SHELFICE_STEP_ICEMASS(
      I                        myTime, myIter, myThid )
-
-!        myTime, myIter, myThid
 
 C !DESCRIPTION:
 C Serves as a "stub" for ice dynamics
@@ -28,10 +26,9 @@ C !USES: ===============================================================
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
-C     myIter :: iteration counter for this thread
-C     myTime :: time counter for this thread
-C     myThid :: thread number for this instance of the routine.
+C     myTime      :: current time in simulation
+C     myIter      :: current iteration number insimulation
+C     myThid      :: my thread Id number
       _RL  myTime
       INTEGER myIter
       INTEGER myThid
@@ -39,44 +36,43 @@ CEOP
 
 #ifdef ALLOW_SHELFICE
 C !LOCAL VARIABLES : ====================================================
-C  i,j                  :: loop indices
+C     i,j, bi,bj  :: loop indices
       INTEGER bi,bj,i,j
 
       IF ( SHELFICEMassStepping ) THEN
 
-#ifdef ALLOW_STREAMICE
        IF (useStreamIce) THEN
+
+#ifdef ALLOW_STREAMICE
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy-1
            DO i=1-OLx+1,sNx+OLx-1
-            if (streamice_hmask(i,j,bi,bj).eq.1 .or.
-     &          streamice_hmask(i,j,bi,bj).eq.2) then
-
+            IF ( streamice_hmask(i,j,bi,bj).EQ.1 .OR.
+     &           streamice_hmask(i,j,bi,bj).EQ.2 ) THEN
              shelficeMass(i,j,bi,bj) =
-     &        H_streamice(I,J,bi,bj) * streamice_density
-
-            endif
+     &        H_streamice(i,j,bi,bj) * streamice_density
+            ENDIF
            ENDDO
           ENDDO
          ENDDO
         ENDDO
-       ENDIF
 #endif /* ALLOW_STREAMICE */
 
-       IF (.NOT.useStreamIce) THEN
+       ELSE
+
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
 
-           IF (.NOT. SHELFICEDynMassOnly) then
-            shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj)
-     &      + shelfIceFreshWaterFlux(I,J,bi,bj) * deltaT
-           ENDIF
+            IF ( .NOT.SHELFICEDynMassOnly ) THEN
+             shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj)
+     &        + shelfIceFreshWaterFlux(i,j,bi,bj)*deltaT
+            ENDIF
 
             shelficeMass(i,j,bi,bj) = shelficeMass(i,j,bi,bj)
-     &      + shelfIceMassDynTendency(I,J,bi,bj)*deltaT
+     &        + shelfIceMassDynTendency(i,j,bi,bj)*deltaT
 
            ENDDO
           ENDDO
