@@ -112,8 +112,7 @@ C Now correct the coefficients for pressure dependence
 #ifdef CARBONCHEM_SOLVESAPHE
              calcium = cat(i,j,bi,bj)
 #else
-             calcium = 1.028 _d -2
-     &                - 2. _d 0*salt(i,j,k,bi,bj)/35. _d 0
+             calcium = 1.028 _d -2*salt(i,j,k,bi,bj)/35. _d 0
 #endif
 
 c 30 micromol = 0.03 mol m-3
