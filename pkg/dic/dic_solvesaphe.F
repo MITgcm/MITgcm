@@ -6,8 +6,8 @@ C--   o AHINI_FOR_AT
 C--   o ANW_INFSUP
 C--   o EQUATION_AT
 C--   o CALC_PCO2_SOLVESAPHE
-C--   o CARBON_COEFFS_SOLVESAPHE
-C--   o CARBON_COEFFS_SOLVESAPHE_PRESSURE_DEP
+C--   o DIC_COEFFS_SURF
+C--   o DIC_COEFFS_DEEP
 C--   o SOLVE_AT_FAST
 C--   o SOLVE_AT_GENERAL
 C--   o SOLVE_AT_GENERAL_SEC
@@ -39,12 +39,12 @@ C        MOD_PHSOLVERS SOLVE_AT_GENERAL SOLVE_AT_GENERAL_SEC and SOLVE_AT_FAST.
 C        Use runtime flags in data.dic to use GENERAL (selectPHsolver=1,
 C        default), SEC (selectPHsolver=2) or FAST (selectPHsolver=3).
 C
-C    - MOD_CHEMCONST is included here as CARBON_COEFFS_SOLVESAPHE, with the
+C    - MOD_CHEMCONST is included here as DIC_COEFFS_SURF, with the
 C        style brought in line with S/R CARBON_COEFF (i.e all ak values are
 C        filled in one call, rather than all as separate functions).
 C
 C    - MOD_CHEMCONST pressure corrections have been split off into the new
-C        S/R CARBON_COEFFS_SOLVESAPHE_PRESSURE_DEP, call both to get pressure
+C        S/R DIC_COEFFS_DEEP, call both to get pressure
 C        adjusted dissociation constants
 C
 C    - Different coefficients can be accessed using runtime flags in data.dic:
@@ -245,7 +245,7 @@ C     I                    k0local,fflocal, fugflocal,
 C     I                    knlocal,khslocal,phscalelocal,
 C     I                    z_bortot,z_so4tot,z_flutot,
      U                    pHlocal,z_pco2,z_co3,
-     I                    i,j,k,bi,bj,myIter,myThid )
+     I                    i,j,k,bi,bj,debugPrt,myIter,myThid )
 
       IMPLICIT NONE
 
@@ -277,7 +277,9 @@ C      _RL  kslocal, kblocal, kwlocal, ksilocal, kflocal
 C      _RL  k0local, fugflocal
 C      _RL  knlocal,khslocal,phscalelocal
       _RL  z_co3
-      INTEGER i,j,k,bi,bj,myIter,myThid
+      INTEGER i,j,k,bi,bj
+      LOGICAL debugPrt
+      INTEGER myIter,myThid
 
 #ifdef CARBONCHEM_SOLVESAPHE
 
@@ -322,34 +324,31 @@ C Load from the carbon_chem common block
 
       IF ( selectPHsolver.EQ.1 ) THEN
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL(
-     &     'SOLVESAPHE_AT_GENERAL',myThid)
+        IF (debugPrt) CALL DEBUG_CALL('SOLVE_AT_GENERAL',myThid)
 #endif
-         CALL SOLVE_AT_GENERAL(z_alktot, z_dictot, z_bortot,
-     &                 z_po4tot, z_siltot, z_nh4tot, z_h2stot,
-     &                 z_so4tot, z_flutot, z_hini,   z_val,
-     &                 z_h,
-     &                 i, j, k, bi, bj, myIter, myThid )
+        CALL SOLVE_AT_GENERAL(z_alktot, z_dictot, z_bortot,
+     &                z_po4tot, z_siltot, z_nh4tot, z_h2stot,
+     &                z_so4tot, z_flutot, z_hini,   z_val,
+     &                z_h,
+     &                i, j, k, bi, bj, debugPrt, myIter, myThid )
       ELSEIF ( selectPHsolver.EQ.2 ) THEN
 #ifdef ALLOW_DEBUG
-         IF (debugMode) CALL DEBUG_CALL(
-     &      'SOLVESAPHE_AT_GENERAL_SEC',myThid)
+        IF (debugPrt) CALL DEBUG_CALL('SOLVE_AT_GENERAL_SEC',myThid)
 #endif
-         CALL SOLVE_AT_GENERAL_SEC(z_alktot, z_dictot, z_bortot,
-     &                 z_po4tot, z_siltot, z_nh4tot, z_h2stot,
-     &                 z_so4tot, z_flutot, z_hini,   z_val,
-     &                 z_h,
-     &                 i, j, k, bi, bj, myIter, myThid )
+        CALL SOLVE_AT_GENERAL_SEC(z_alktot, z_dictot, z_bortot,
+     &                z_po4tot, z_siltot, z_nh4tot, z_h2stot,
+     &                z_so4tot, z_flutot, z_hini,   z_val,
+     &                z_h,
+     &                i, j, k, bi, bj, debugPrt, myIter, myThid )
       ELSEIF ( selectPHsolver.EQ.3 ) THEN
 #ifdef ALLOW_DEBUG
-         IF (debugMode) CALL DEBUG_CALL(
-     &      'SOLVESAPHE_AT_FAST',myThid)
+        IF (debugPrt) CALL DEBUG_CALL('SOLVE_AT_FAST',myThid)
 #endif
-         CALL SOLVE_AT_FAST(z_alktot, z_dictot, z_bortot,
-     &                 z_po4tot, z_siltot, z_nh4tot, z_h2stot,
-     &                 z_so4tot, z_flutot, z_hini,   z_val,
-     &                 z_h,
-     &                 i, j, k, bi, bj, myIter, myThid )
+        CALL SOLVE_AT_FAST(z_alktot, z_dictot, z_bortot,
+     &                z_po4tot, z_siltot, z_nh4tot, z_h2stot,
+     &                z_so4tot, z_flutot, z_hini,   z_val,
+     &                z_h,
+     &                i, j, k, bi, bj, debugPrt, myIter, myThid )
       ENDIF
 
 C Unlikely, but it might happen...
@@ -405,7 +404,7 @@ C      END SUBROUTINE CALC_PCO2_SOLVESAPHE
 C      =========================================================================
 
 C      =========================================================================
-      SUBROUTINE CARBON_COEFFS_SOLVESAPHE(
+      SUBROUTINE DIC_COEFFS_SURF(
      &                   ttemp,stemp,
      &                   bi,bj,iMin,iMax,jMin,jMax,myThid)
 
@@ -437,18 +436,11 @@ C LOCAL VARIABLES
       _RL t_k_o_100
       _RL t_k_o_100_2
       _RL dlog_t_k
-      _RL sqrtis
-      _RL sqrts
       _RL inv_t_k
-      _RL ion_st
-      _RL is_2
-      _RL scl
-      _RL s35
-      _RL s_2
-      _RL s_15
-      _RL kgfw2kgsw
-      _RL B1
-      _RL B
+      _RL ion_st, is_2, sqrtis
+      _RL s_2, sqrts, s_15, scl, s35
+      _RL log_fw2sw
+      _RL B, B1
       _RL delta
       _RL P1atm
       _RL RT
@@ -476,12 +468,12 @@ C ionic strength (converted to kgsw)
            sqrtis=sqrt(ion_st)
 C salinity
            s_2  = s*s
-           s_15 = s**1.5 _d 0
            sqrts=sqrt(s)
-           scl  =s/1.80655 _d 0
-           s35  =s/35. _d 0
+           s_15 = s*sqrts
+           scl  = s/1.80655 _d 0
+           s35  = s/35. _d 0
 
-           kgfw2kgsw = 1. _d 0 - 0.001005 _d 0*s
+           log_fw2sw = LOG( 1. _d 0 - 0.001005 _d 0*s )
 
       IF ( selectBTconst.EQ.1 ) THEN
 C -----------------------------------------------------------------------
@@ -596,7 +588,7 @@ C       Note      : converted here from mol/kg-H2O to mol/kg-SW
      &              + (-4.0484 _d 0*inv_t_k - 0.20760841)*sqrts
      &              + 0.08468345*s
      &              - 0.00654208*s_15
-     &              + LOG(kgfw2kgsw))
+     &              + log_fw2sw )
 
 C       Calculate second dissociation constant of carbonic acid
 C       in mol/kg-SW on the Total pH-scale.
@@ -607,7 +599,7 @@ C       Note      : converted here from mol/kg-H2O to mol/kg-SW
      &              - 0.2005743 _d 0*dlog_t_k
      &              + ( -23.9722 _d 0*inv_t_k - 0.106901773 _d 0)*sqrts
      &              + 0.1130822*s - 0.00846934 _d 0*s_15
-     &              + LOG(kgfw2kgsw))
+     &              + log_fw2sw )
 
       ELSEIF ( selectK1K2const.EQ.3 ) THEN
 C -----------------------------------------------------------------------
@@ -712,7 +704,7 @@ C       pH scale  : total
            akb(i,j,bi,bj)  = EXP(( -8966.90 _d 0 - 2890.53 _d 0*sqrts
      &      -77.942 _d 0*s + 1.728 _d 0*s_15 - 0.0996 _d 0*s_2 )*inv_t_k
      &      + (148.0248 _d 0 + 137.1942 _d 0*sqrts + 1.62142 _d 0*s)
-     &      + (-24.4344 _d 0 - 25.085 _d 0*sqrts - 0.2474 _d 0*s)* 
+     &      + (-24.4344 _d 0 - 25.085 _d 0*sqrts - 0.2474 _d 0*s)*
      &      dlog_t_k + 0.053105 _d 0*sqrts*t_k )
 
 C -----------------------------------------------------------------------
@@ -757,7 +749,7 @@ C       Note      : converted here from mol/kg-H2O to mol/kg-sw
      &         + ( 3.5913 _d 0 -  458.79 _d 0*inv_t_k) * sqrtis
      &         + (-1.5998 _d 0 +  188.74 _d 0*inv_t_k) * ion_st
      &         + (0.07871 _d 0 - 12.1652 _d 0*inv_t_k) * ion_st*ion_st
-     &         + LOG(kgfw2kgsw))
+     &         + log_fw2sw )
 
 C -----------------------------------------------------------------------
 C       Calculate the dissociation constant
@@ -796,7 +788,7 @@ C       Note      : converted here from mol/kg-H2O to mol/kg-SW
      &                +  114.723 _d 0*dlog_t_k) * ion_st
      &                - 2698. _d 0*inv_t_k*ion_st**1.5 _d 0
      &                + 1776. _d 0*inv_t_k*ion_st*ion_st
-     &                + LOG(kgfw2kgsw))
+     &                + log_fw2sw )
 
       IF ( selectHFconst.EQ.1 ) THEN
 C -----------------------------------------------------------------------
@@ -808,7 +800,7 @@ C       pH scale  : free
 C       Note      : converted here from mol/kg-H2O to mol/kg-SW
            akf(i,j,bi,bj) = EXP(1590.2 _d 0*inv_t_k - 12.641 _d 0
      &                 + 1.525 _d 0*sqrtis
-     &                 + LOG(kgfw2kgsw))
+     &                 + log_fw2sw )
       ELSEIF ( selectHFconst.EQ.2 ) THEN
 C -----------------------------------------------------------------------
 C       Calculate the dissociation constant for hydrogen fluoride
@@ -915,11 +907,11 @@ C       Units     : (mol/kg-SW)^2
 #endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
       END
-C     END SUBROUTINE CARBON_COEFFS_SOLVESAPHE
+C     END SUBROUTINE DIC_COEFFS_SURF
 C -----------------------------------------------------------------------
 
 C -----------------------------------------------------------------------
-      SUBROUTINE CARBON_COEFFS_SOLVESAPHE_PRESSURE_DEP(
+      SUBROUTINE DIC_COEFFS_DEEP(
      &                   ttemp,stemp,
      &                   bi,bj,iMin,iMax,jMin,jMax,
      &                   Klevel,myThid)
@@ -1222,7 +1214,7 @@ C       References: Millero (1979) for pressure correction
 
       RETURN
       END
-C     END SUBROUTINE CARBON_COEFFS_SOLVESAPHE_PRESSURE_DEP
+C     END SUBROUTINE DIC_COEFFS_DEEP
 C      =========================================================================
 
 C      =========================================================================
@@ -1396,7 +1388,8 @@ C      =========================================================================
      &                         p_po4tot, p_siltot, p_nh4tot,
      &                         p_h2stot, p_so4tot, p_flutot,
      &                         p_hini,   p_val,    p_hnew,
-     &                         i,j,k,bi,bj,myIter,myThid )
+     &                         i, j, k, bi, bj,
+     &                         debugPrt, myIter, myThid )
 C      =========================================================================
 C      Fast version of SOLVE_AT_GENERAL, without any bounds checking.
 
@@ -1429,7 +1422,9 @@ C     --------------------
       _RL p_hini
       _RL p_val
       _RL p_hnew
-      INTEGER i,j,k,bi,bj,myIter,myThid
+      INTEGER i, j, k, bi, bj
+      LOGICAL debugPrt
+      INTEGER myIter, myThid
 
 #ifdef CARBONCHEM_SOLVESAPHE
 
@@ -1482,11 +1477,11 @@ C        zeqn = EQUATION_AT(p_alktot, zh,       p_dictot, p_bortot,
 C     &                      p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C     &                      p_so4tot, p_flutot, P_DERIVEQN = zdeqndh)
 
-        CALL EQUATION_AT(p_alktot, zh      , p_dictot, p_bortot,
-     &                   p_po4tot, p_siltot, p_nh4tot, p_h2stot,
-     &                   p_so4tot, p_flutot,
-     &                   zeqn    , zdeqndh,
-     &                   i, j, k, bi, bj, myIter, myThid )
+        CALL EQUATION_AT( p_alktot, zh      , p_dictot, p_bortot,
+     &                    p_po4tot, p_siltot, p_nh4tot, p_h2stot,
+     &                    p_so4tot, p_flutot,
+     &                    zeqn    , zdeqndh,
+     &                    i, j, k, bi, bj, myIter, myThid )
 C zh is the root
         IF(zeqn == 0. _d 0) EXIT
 
@@ -1529,7 +1524,7 @@ C     IF(PRESENT(p_val)) THEN
 C           p_val = EQUATION_AT(p_alktot, zh,       p_dictot, p_bortot,
 C     &                          p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C     &                          p_so4tot, p_flutot)
-            CALL EQUATION_AT(p_alktot, zh,       p_dictot, p_bortot,
+           CALL EQUATION_AT( p_alktot, zh,       p_dictot, p_bortot,
      &                       p_po4tot, p_siltot, p_nh4tot, p_h2stot,
      &                       p_so4tot, p_flutot,
      &                       p_val   , zdeqndh,
@@ -1550,7 +1545,8 @@ C      =========================================================================
      &                         p_po4tot, p_siltot, p_nh4tot,
      &                         p_h2stot, p_so4tot, p_flutot,
      &                         p_hini,   p_val,    p_hnew,
-     &                         i, j, k, bi, bj, myIter, myThid )
+     &                         i, j, k, bi, bj,
+     &                         debugPrt, myIter, myThid )
 C      Universal pH solver that converges from any given initial value,
 C      determines upper an lower bounds for the solution if required
 
@@ -1583,7 +1579,9 @@ C     --------------------
        _RL p_hini
        _RL p_hnew
        _RL p_val
-       INTEGER i,j,k,bi,bj,myIter,myThid
+      INTEGER i, j, k, bi, bj
+      LOGICAL debugPrt
+      INTEGER myIter, myThid
 
 #ifdef CARBONCHEM_SOLVESAPHE
 
@@ -1617,7 +1615,7 @@ C        PRINT*, '[SOLVE_AT_GENERAL] h_ini :', zh_ini
 C#endif
 C      ENDIF
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('ANW_INFSUP',myThid)
+      IF (debugPrt) CALL DEBUG_CALL('ANW_INFSUP',myThid)
 #endif
       CALL ANW_INFSUP(p_dictot, p_bortot,
      &                p_po4tot, p_siltot,  p_nh4tot, p_h2stot,
@@ -1668,16 +1666,16 @@ C     Reset counters of iterations
 
         zh_prev = zh
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('EQUATION_AT',myThid)
+        IF (debugPrt) CALL DEBUG_CALL('EQUATION_AT',myThid)
 #endif
 C        zeqn = EQUATION_AT(p_alktot, zh,      p_dictot, p_bortot,
 C     &                   p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C     &                   p_so4tot, p_flutot, P_DERIVEQN = zdeqndh)
-            CALL EQUATION_AT(p_alktot, zh,       p_dictot, p_bortot,
-     &                       p_po4tot, p_siltot, p_nh4tot, p_h2stot,
-     &                       p_so4tot, p_flutot,
-     &                       zeqn   , zdeqndh,
-     &                       i, j, k, bi, bj, myIter, myThid )
+        CALL EQUATION_AT( p_alktot, zh,       p_dictot, p_bortot,
+     &                    p_po4tot, p_siltot, p_nh4tot, p_h2stot,
+     &                    p_so4tot, p_flutot,
+     &                    zeqn   , zdeqndh,
+     &                    i, j, k, bi, bj, myIter, myThid )
 
 C         Adapt bracketing interval
         IF(zeqn > 0. _d 0) THEN
@@ -1794,7 +1792,7 @@ C           p_val = HUGE(1. _d 0)
 C       ENDIF
 C      ENDIF
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_LEAVE('SOLVE_AT_GENERAL',myThid)
+      IF (debugPrt) CALL DEBUG_LEAVE('SOLVE_AT_GENERAL',myThid)
 #endif
 #endif /* CARBONCHEM_SOLVESAPHE */
       RETURN
@@ -1809,8 +1807,8 @@ C      =========================================================================
      &                           p_h2stot, p_so4tot,
      &                           p_flutot, p_hini,
      &                           p_val,    p_hnew,
-     &                           i, j, k, bi, bj, myIter,
-     &                           myThid )
+     &                           i, j, k, bi, bj,
+     &                           debugPrt, myIter, myThid )
 
 C      Universal pH solver that converges from any given initial value,
 C      determines upper an lower bounds for the solution if required
@@ -1841,7 +1839,9 @@ C     --------------------
       _RL p_hini
       _RL p_hnew
       _RL p_val
-      INTEGER i,j,k,bi,bj,myIter,myThid
+      INTEGER i, j, k, bi, bj
+      LOGICAL debugPrt
+      INTEGER myIter, myThid
 
 #ifdef CARBONCHEM_SOLVESAPHE
 
@@ -1923,11 +1923,11 @@ C     zh_2 is the initial value
 C      zeqn_2 = EQUATION_AT(p_alktot, zh_2,     p_dictot, p_bortot,
 C     &                   p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C     &                   p_so4tot, p_flutot)
-             CALL EQUATION_AT(p_alktot, zh_2,    p_dictot, p_bortot,
-     &                       p_po4tot, p_siltot, p_nh4tot, p_h2stot,
-     &                       p_so4tot, p_flutot,
-     &                       zeqn_2  , zdeqndh,
-     &                       i, j, k, bi, bj, myIter, myThid )
+      CALL EQUATION_AT( p_alktot, zh_2,    p_dictot, p_bortot,
+     &                  p_po4tot, p_siltot, p_nh4tot, p_h2stot,
+     &                  p_so4tot, p_flutot,
+     &                  zeqn_2  , zdeqndh,
+     &                  i, j, k, bi, bj, myIter, myThid )
 
       zeqn_absmin       = ABS(zeqn_2)
 
@@ -1970,11 +1970,11 @@ C     Update counter of iterations
 C      zeqn_1 = EQUATION_AT(p_alktot, zh_1,      p_dictot, p_bortot,
 C     &                   p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C     &                   p_so4tot, p_flutot)
-            CALL EQUATION_AT(p_alktot, zh_1,     p_dictot, p_bortot,
-     &                       p_po4tot, p_siltot, p_nh4tot, p_h2stot,
-     &                       p_so4tot, p_flutot,
-     &                       zeqn_1  , zdeqndh,
-     &                       i, j, k, bi, bj, myIter, myThid )
+      CALL EQUATION_AT( p_alktot, zh_1,     p_dictot, p_bortot,
+     &                  p_po4tot, p_siltot, p_nh4tot, p_h2stot,
+     &                  p_so4tot, p_flutot,
+     &                  zeqn_1  , zdeqndh,
+     &                  i, j, k, bi, bj, myIter, myThid )
 
 C      Adapt bracketing interval: we know that zh_1 <= zh <= zh_max (if zeqn_1>0)
 C      or zh_min <= zh <= zh_1 (if zeqn_1 < 0), so this can always be done
@@ -2035,11 +2035,11 @@ C                and zeqn_2 < zeqn_1 < 0
 C        zeqn = EQUATION_AT(p_alktot, zh, p_dictot, p_bortot,
 C      &                  p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C      &                  p_so4tot, p_flutot)
-            CALL EQUATION_AT(p_alktot, zh,       p_dictot, p_bortot,
-     &                       p_po4tot, p_siltot, p_nh4tot, p_h2stot,
-     &                       p_so4tot, p_flutot,
-     &                       zeqn    , zdeqndh,
-     &                       i, j, k, bi, bj, myIter, myThid )
+        CALL EQUATION_AT( p_alktot, zh,       p_dictot, p_bortot,
+     &                    p_po4tot, p_siltot, p_nh4tot, p_h2stot,
+     &                    p_so4tot, p_flutot,
+     &                    zeqn    , zdeqndh,
+     &                    i, j, k, bi, bj, myIter, myThid )
 
 C       Adapt bracketing interval: since initially, zh_min <= zh <= zh_max
 C       we are sure that zh will improve either bracket, depending on the sign
@@ -2130,11 +2130,11 @@ C      IF(PRESENT(p_val)) THEN
 C           p_val = EQUATION_AT(p_alktot, zh,      p_dictot, p_bortot,
 C     &                       p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C     &                       p_so4tot, p_flutot)
-            CALL EQUATION_AT(p_alktot, zh,       p_dictot, p_bortot,
-     &                       p_po4tot, p_siltot, p_nh4tot, p_h2stot,
-     &                       p_so4tot, p_flutot,
-     &                       p_val   , zdeqndh,
-     &                       i, j, k, bi, bj, myIter, myThid )
+          CALL EQUATION_AT( p_alktot, zh,       p_dictot, p_bortot,
+     &                      p_po4tot, p_siltot, p_nh4tot, p_h2stot,
+     &                      p_so4tot, p_flutot,
+     &                      p_val   , zdeqndh,
+     &                      i, j, k, bi, bj, myIter, myThid )
         ELSE
           p_val = HUGE(1. _d 0)
        ENDIF

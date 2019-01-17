@@ -46,6 +46,7 @@ c depth_u, depth_l        :: depths of upper and lower interfaces
 c flux_u, flux_l          :: flux through upper and lower interfaces
 c zbase                   :: depth of bottom of current productive layer
        INTEGER I,J,k
+       LOGICAL debugPrt
        _RL carbonate
        _RL calcium
        _RL silicaTEST
@@ -54,14 +55,13 @@ c zbase                   :: depth of bottom of current productive layer
        _RL alklocal
        _RL pCO2local
        _RL pHlocal
-#ifdef CARBONCHEM_SOLVESAPHE 
+#ifdef CARBONCHEM_SOLVESAPHE
       _RL surftemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfsalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
        INTEGER CO3ITER
        INTEGER CO3ITERmax
 CEOP
-
 
 cmick...................................................
 c       write(6,*)'myIter ',myIter,'  CALLED CALCITEcd_SATURATION'
@@ -78,19 +78,19 @@ c determine calcite saturation state
             surftemp(i,j) = theta(i,j,k,bi,bj)
             surfsalt(i,j) = salt (i,j,k,bi,bj)
          ENDDO
-        ENDDO 
+        ENDDO
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL(
-     &   'CARBON_COEFFS_SOLVESAPHE_PRESSURE_DEP',myThid)
+     &   'DIC_COEFFS_DEEP',myThid)
 #endif
 C Calculate carbon coefficients
-        CALL CARBON_COEFFS_SOLVESAPHE(
+        CALL DIC_COEFFS_SURF(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
 
 C Now correct the coefficients for pressure dependence
-        CALL CARBON_COEFFS_SOLVESAPHE_PRESSURE_DEP(
+        CALL DIC_COEFFS_DEEP(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
@@ -105,6 +105,7 @@ C Now correct the coefficients for pressure dependence
      I                       k,myThid)
 #endif
 
+        debugPrt = debugMode
         DO j=jmin,jmax
          DO i=imin,imax
 
@@ -128,17 +129,17 @@ CMICK silica = fixed
       IF ( selectPHsolver.GT.0 ) THEN
 C Use Munhoven's Solvesaphe routine to calculate pH and pCO2
 #ifdef ALLOW_DEBUG
-         IF (debugMode) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
+         IF (debugPrt) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
 #endif
 C call AHINI_FOR_AT to get better initial guess of pH
-               CALL AHINI_FOR_AT(alklocal*permil,
-     I           diclocal*permil, 
+            CALL AHINI_FOR_AT(alklocal*permil,
+     I           diclocal*permil,
      I           bt(i,j,bi,bj),
      O           pHlocal,
-     I           i,j,k,bi,bj,myIter,myThid )       
+     I           i,j,k,bi,bj,myIter,myThid )
 
 #ifdef ALLOW_DEBUG
-         IF (debugMode) CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
+         IF (debugPrt) CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
 #endif
             CALL CALC_PCO2_SOLVESAPHE(
      I          theta(i,j,k,bi,bj),salt(i,j,k,bi,bj),
@@ -151,19 +152,20 @@ C     I          aksi(i,j,bi,bj),akf(i,j,bi,bj),
 C     I          ak0(i,j,bi,bj), fugf(i,j,bi,bj), ff(i,j,bi,bj),
 C     I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U          pHlocal,pCO2local,carbonate,
-     I          i,j,k,bi,bj,myIter,myThid )
+     I          i,j,k,bi,bj, debugPrt,myIter,myThid )
+            debugPrt = .FALSE.
       ELSE
 C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */
 #ifdef ALLOW_DEBUG
-            IF (debugMode) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
+            IF (debugPrt) CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
 #endif
             pHlocal = 7.9 _d 0
 CMICK -DEC 04
 CMICK- NOW ITERATE pH SOLVER AT DEPTH ONLY
 CMICK  TO ENSURE ACCURATE ESTIMATE OF CO3 AT DEPTH
 CMICK - NOTE Si STILL USING A UNIFORM DUMMY VALUE
-             CO3itermax = 10
+            CO3itermax = 10
 CMICK - SO NOW WE ITERATE, UPDATING THE ESTIMATE OF pH and CO3--
 CMICK - SINCE WE CALL THIS FOR DEEP OCEAN INFREQUENTLY (MONTHLY?)
 CMIKC - CAN AFFORD TO MAKE SEVERAL ITERATIONS...
@@ -190,7 +192,7 @@ c........................................................
 #ifdef CARBONCHEM_SOLVESAPHE
       ENDIF
 #endif /* CARBONCHEM_SOLVESAPHE */
-            
+
              omegaC(i,j,k,bi,bj) = calcium * carbonate /
      &                          Ksp_TP_Calc(i,j,bi,bj)
 
