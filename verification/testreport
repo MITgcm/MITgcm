@@ -1768,7 +1768,8 @@ for dir in $TESTDIRS ; do
     echo "-------------------------------------------------------------------------------"
 
 done
-grep '^HAVE_LAPACK' */$builddir/genmake_state | head -1 >> $DRESULTS/genmake_state
+grep '^HAVE_LAPACK' */$builddir/genmake_state 2> /dev/null \
+			| head -1 >> $DRESULTS/genmake_state
 
 printf "Start time:  " >> $SUMMARY
 echo "$start_date" >> $SUMMARY
