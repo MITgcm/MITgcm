@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - fix missing update of sIceLoad in the case usePW79thermodynamics=F.
 o pkg/dic:
   - Adjust unit conversions for dissociation coefficients aks, aksi, and akf
     (#define CARBONCHEM_TOTALPHSCALE).
