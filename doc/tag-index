@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic:
+  - Adjust unit conversions for dissociation coefficients aks, aksi, and akf
+    (#define CARBONCHEM_TOTALPHSCALE).
 o tools/genmake2:
   - improve Fortran Compiler check, section: running MPI executable ; also
     refine the "conclusion" printed message.
