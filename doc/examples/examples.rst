@@ -749,7 +749,8 @@ or using python (you will need to copy :filelink:`utils/python/MITgcmutils/MITgc
    import matplotlib.pyplot as plt
    XC = mds.rdmds('XC'); YC = mds.rdmds('YC')
    Eta = mds.rdmds('Eta', 77760)
-   plt.contourf(XC, YC, Eta[:,:]); plt.colorbar(); plt.show()
+   plt.contourf(XC, YC, Eta, np.linspace(-0.02, 0.05,8), cmap='hot_r')
+   plt.colorbar(); plt.show()
 
 
 Let’s simplify the example by considering the linear problem where we neglect the advection of momentum terms.
