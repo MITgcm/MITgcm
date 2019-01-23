@@ -203,19 +203,17 @@ File :filelink:`code/SIZE.h <verification/tutorial_barotropic_gyre/code/SIZE.h>`
 Here we show a modified :filelink:`model/inc` source code file, customizing MITgcm’s array sizes to our model domain.
 This file must be uniquely configured for any model setup; using the MITgcm default
 :filelink:`model/inc/SIZE.h`  will in fact cause a compilation error.
-Since FORTRAN77 lacks dynamical memory allocation capabilities, this must be specified by parameter choices in a source code
-``.h`` file rather than as a runtime (namelist) parameter settings,
-as done with :filelink:`data <verification/tutorial_barotropic_gyre/input/data>`,
-:filelink:`data.pkg <verification/tutorial_barotropic_gyre/input/data.pkg>`, etc.
+Note that MITgcm's storage arrays are allocated as `static variables <https://en.wikipedia.org/wiki/Static_variable>`_ 
+(hence their size must be declared in the source code), in contrast to some model codes which declare array sizes dynamically,
+i.e., through runtime (namelist) parameter settings. 
 
 For this first tutorial, our setup and run environment is the most simple possible: we run on a single process 
 (i.e., NOT  `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ and NOT multi-threaded)
-using a single model :ref:`"tile" <tile_description>`.
-See other tutorials for more  complex model domain decomposition. 
+using a single model :ref:`"tile" <tile_description>`. For a more complete explanation of the parameter choices to use multiple tiles,
+see the tutorial Baroclinic Gyre.
 
 
-- These lines set parameters :varlink:`sNx` and :varlink:`sNy`, the number of grid points in the :math:`x` and :math:`y` directions, respectively,
-  for a model tile.
+- These lines set parameters :varlink:`sNx` and :varlink:`sNy`, the number of grid points in the :math:`x` and :math:`y` directions, respectively.
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/code/SIZE.h
        :start-at: sNx =
@@ -223,44 +221,26 @@ See other tutorials for more  complex model domain decomposition.
        :lineno-match:
 
 - These lines set parameters :varlink:`OLx` and :varlink:`OLy` in the :math:`x` and :math:`y` directions, respectively.
-  These values are the overlap extent of a model tile, or in other words the number of grid cells on the border of each tile that are duplicated
-  in neighboring tiles. The minimum model overlap is 2 in both :math:`x` and :math:`y`.
-  Some horizontal advection schemes and other parameter and setup choices
-  may require a larger overlap setting (see :numref:`adv_scheme_summary`).
-  In our configuration, we are using a second-order center-differences advection scheme (the MITgcm default)
-  which does not requires setting a overlap beyond the MITgcm minimum 2. Note these constraints on :varlink:`OLx` and
-  :varlink:`OLy` size exist even if using a single tile, as in this setup.
+  These values are the overlap extent of a model tile, the purpose of which will be explained in later tutorials.
+  Here, we simply specify the required minimum value (2)
+  in both :math:`x` and :math:`y`.
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/code/SIZE.h
        :start-at: OLx =
        :end-at: OLy =
        :lineno-match:
 
-- These lines set parameters :varlink:`nSx` and :varlink:`nSy`, the number of model tiles in the :math:`x` and :math:`y` directions, respectively,
-  which execute on a single process.
-  As discussed above, we are using a single model tile here; as such, parameters :varlink:`sNx` and :varlink:`sNy`,
-  set to 62 grid points each, spanning the full model domain of 1200 km plus an extra solid border gridcell surrounding our ocean domain.
-  There are also numerical, computational, and/or grid-dictated reasons why one
-  might opt to break the domain into multiple tiles in some setups.
+- These lines set parameters :varlink:`nSx`, :varlink:`nSy`, :varlink:`nPx`, and :varlink:`nPy`,
+  the number of model tiles and the number of processes in the :math:`x` and :math:`y` directions, respectively. 
+  As discussed above, in this tutorial we configure a single model tile on
+  a single process, so these parameters are all set to the value one.
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/code/SIZE.h
        :start-at: nSx =
-       :end-at: nSy =
-       :lineno-match:
-
-- These lines set parameters :varlink:`nPx` and :varlink:`nPy`, the number of processes
-  to use in the :math:`x` and :math:`y` directions, respectively.
-  Each process would solve the model equations for a separate MITgcm tile (or several,
-  depending on your :varlink:`nSx` and :varlink:`nSy` setting).
-  Given the relatively small domain size and minimal computational resources
-  required to run this example, we have configured the model to run on a 
-  single processor, thus both parameters are set to one. 
-
-  .. literalinclude:: ../../verification/tutorial_barotropic_gyre/code/SIZE.h
-       :start-at: nPx =
        :end-at: nPy =
        :lineno-match:
 
+  
 - This line sets parameter :varlink:`Nr`, the number of points in the vertical dimension. Here we use just a single vertical level.
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/code/SIZE.h
@@ -467,8 +447,9 @@ PARM04 - Gridding parameters
 
 - These lines set the horizontal grid spacing in the discrete grid, parameters :varlink:`delX` and :varlink:`delY`
   (i.e., :math:`\Delta x` and :math:`\Delta y` respectively).
-  The syntax indicates that the discrete grid is comprised of 62 grid boxes,
-  with grid lines separated by :math:`20 \times 10^{3}` m (=20 km), in both the :math:`x`- and :math:`y`-coordinate.
+  This syntax indicates that the discrete grid is comprised of 62 grid boxes in both the :math:`x`- and :math:`y`-coordinate
+  (**NOTE** these values must match the grid size specified previously in :filelink:`SIZE.h <verification/tutorial_barotropic_gyre/code/SIZE.h>`)
+  with grid lines separated by :math:`20 \times 10^{3}` m (=20 km).
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/input/data
        :start-at: delX
@@ -647,21 +628,23 @@ a list of these fields included in the binary file.  The ``.meta`` files are use
 
 The following output files are generated:
 
-**Grid Data**: see :numref:`spatial_discret_dyn_eq` for definitions and description of the C-grid staggering of these variables.
+**Grid Data**: see :numref:`spatial_discret_dyn_eq` for definitions and description of the `Arakawa C-grid <https://en.wikipedia.org/wiki/Arakawa_grids>`_
+staggering of model variables. 
 
 - ``XC``, ``YC`` - grid cell center point locations
-- ``XG``, ``YG`` - grid cell velocity point locations
+- ``XG``, ``YG`` - locations of grid cell vertices
 - ``RC``, ``RF`` - vertical cell center and cell faces positions
 - ``DXC``, ``DYC`` - grid cell center point separations (:numref:`hgrid-abcd` b)
-- ``DXG``, ``DYG`` - grid cell velocity point separations (:numref:`hgrid-abcd` a)
-- ``DRC``, ``DRF`` - separation of vertical cell center points and between faces
-- ``RAC``, ``RAS``, ``RAW``, ``RAZ`` - areas of the grid “tracer cells”, “southern cells”, “western cells” and “vorticity cells” (:numref:`hgrid-abcd`)
+- ``DXG``, ``DYG`` - separation of grid cell vertices (:numref:`hgrid-abcd` a)
+- ``DRC``, ``DRF`` - separation of vertical cell centers and faces, respectively
+- ``RAC``, ``RAS``, ``RAW``, ``RAZ`` - areas of the grid “tracer cells”, “southern cells”, “western cells” and “vorticity cells”, respectively (:numref:`hgrid-abcd`)
 - ``hFacC``, ``hFacS``, ``hFacW`` - fractions of the grid cell in the vertical which are “open” as defined
-  in the center and on the southern and western boundary. These variables effectively contain the configuration bathymetric (or topographic) information.
+  in the center and on the southern and western boundaries, respectively. These variables effectively contain the configuration bathymetric (or topographic) information.
 - ``Depth`` - bathymetry depths
 
 All these files contain 2D(:math:`x,y`) data except ``RC``, ``RF``, ``DRC``, ``DRF``, which are 1D(:math:`z`), 
-and ``hFacC``, ``hFacS``, ``hFacW``, which contain 3D(:math:`x,y,z`) data.
+and ``hFacC``, ``hFacS``, ``hFacW``, which contain 3D(:math:`x,y,z`) data. Units for the grid files depends on one's choice of model grid;
+here, they are all in given in meters (or :math:`\text{m}^2` for areas).
 
 All the 2D grid data files contain ``.001.001`` in their filename, e.g., ``DXC.001.001.data`` -- this is the tile number in ``.XXX.YYY`` format.
 Here, we have just a single tile in both x and y, so both tile numbers are ``001``. Using multiple tiles, the default is that the local tile grid information
