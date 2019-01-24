@@ -445,11 +445,11 @@ PARM04 - Gridding parameters
        :end-at: usingCartesianGrid
        :lineno-match:
 
-- These lines set the horizontal grid spacing in the discrete grid, parameters :varlink:`delX` and :varlink:`delY`
+- These lines set the horizontal grid spacing of the model grid, as vectors :varlink:`delX` and :varlink:`delY`
   (i.e., :math:`\Delta x` and :math:`\Delta y` respectively).
-  This syntax indicates that the discrete grid is comprised of 62 grid boxes in both the :math:`x`- and :math:`y`-coordinate
-  (**NOTE** these values must match the grid size specified previously in :filelink:`SIZE.h <verification/tutorial_barotropic_gyre/code/SIZE.h>`)
-  with grid lines separated by :math:`20 \times 10^{3}` m (=20 km).
+  This syntax indicates that we specify 62 values in both the :math:`x` and :math:`y` directions, which matches the
+  domain size as specified in :filelink:`SIZE.h <verification/tutorial_barotropic_gyre/code/SIZE.h>`.
+  Grid spacing is set to :math:`20 \times 10^{3}` m (=20 km). 
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/input/data
        :start-at: delX
@@ -458,7 +458,7 @@ PARM04 - Gridding parameters
 
 - The cartesian grid default origin is (0,0) so here we set the origin with parameters :varlink:`xgOrigin` and :varlink:`ygOrigin` to (-20000,-20000),
   accounting for the bordering solid wall.
-  The centers of the grid boxes will thus be at -10km, 10 km, 30 km, 50 km, ...,
+  The centers of the grid boxes will thus be at -10 km, 10 km, 30 km, 50 km, ...,
   in both :math:`x` and :math:`y` directions.
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/input/data
@@ -467,7 +467,7 @@ PARM04 - Gridding parameters
        :lineno-match:
 
 
-- This line sets parameter :varlink:`delR`, the vertical grid spacing in the :math:`z`-coordinate (i.e., :math:`\Delta z`), to 5000m.
+- This line sets parameter :varlink:`delR`, the vertical grid spacing in the :math:`z`-coordinate (i.e., :math:`\Delta z`), to 5000 m.
 
   .. literalinclude:: ../../verification/tutorial_barotropic_gyre/input/data
        :start-at: delR
