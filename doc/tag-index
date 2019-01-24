@@ -1,6 +1,16 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/atm_phys:
+  - add 3-D input file for stratospheric ozone
+  - add code from Matt Kasoar for SW absorption by stratospheric ozone,
+    based on following papers:
+    Lacis and Hansen (JAS, 1974) and Forster and Shine (JGR, 1997).
+  - turned on using 2 local run-time parameter: ozone_in_SW (downward)
+    and two_stream_SW (also in upward); default are off.
+  - clean up S/R "radiation_up": rename "net" to "flux_lw" (better name)
+    and remove un-used local (dyn-allocated) arrays.
+  - also avoid division by zero in Rel-Humid diagnostics (atm_phys_driver.F)
 o pkg/seaice:
   - fix missing update of sIceLoad in the case usePW79thermodynamics=F.
 o pkg/dic:
