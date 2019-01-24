@@ -72,6 +72,8 @@ CEOP
       _RL t_surf  (sNx,sNy)
 C-- radiation fields:
       _RL albedo_2d (sNx,sNy)
+      _RL ozone_3d  (sNx,sNy,Nr)
+      _RL ozoneColmn(sNx,sNy,Nr+1)
       _RL dtrans_3d (sNx,sNy,Nr)
       _RL dtrans_win(sNx,sNy,Nr)
       _RL b_3d      (sNx,sNy,Nr)
@@ -178,6 +180,11 @@ c       ENDIF
         ocean_qflux(:,:) = atmPhys_Qflx(1:sNx,1:sNy,bi,bj)
         mixLayDepth(:,:) = atmPhys_MxLD(1:sNx,1:sNy,bi,bj)
         albedo_2d(:,:) = atmPhys_Albedo(1:sNx,1:sNy,bi,bj)
+C--   copy atmPhys_Ozone to ozone_3d for rad scheme
+        DO k=1,Nr
+          kc = Nr-k+1
+          ozone_3d(:,:,k) = atmPhys_Ozone(1:sNx,1:sNy,kc,bi,bj)
+        ENDDO
 
 C--   Get grid and dynamical fields from main model common blocks
         CALL ATM_PHYS_DYN2PHYS(
@@ -276,7 +283,7 @@ c    &                            0, 1, 3, bi, bj, myThid )
            CALL DIAGNOSTICS_FILL( rain2d , 'AtPhLscP',
      &                            0, 1, 3, bi, bj, myThid )
 C     Re-use "q_ref" array to calculate Relative Humidity (in %)
-           q_ref = 100. _d 0 * q3d_tmp/q_ref
+           q_ref = 100. _d 0 * q3d_tmp/MAX( q_ref, 1. _d -12 )
            CALL DIAGNOSTICS_FILL( q_ref , 'RELHUM  ',
      &                           -1, Nr, 3, bi, bj, myThid )
         ENDIF
@@ -285,8 +292,8 @@ C     Re-use "q_ref" array to calculate Relative Humidity (in %)
         IF ( two_stream ) THEN
           CALL RADIATION_DOWN(
      I                   sNx,sNy, myTime, lat2d, pHalf3d, t3d, q3d,
-     I                   albedo_2d,
-     O                   s_sw_dwn, s_lw_dwn,
+     I                   albedo_2d, ozone_3d,
+     O                   ozoneColmn, s_sw_dwn, s_lw_dwn,
      O                   dtrans_3d, dtrans_win, b_3d, b_win,
      O                   lw_down_3d, sw_down_3d, myThid )
 
@@ -325,7 +332,7 @@ c    &      lw_down_3d(1,1,15), lw_down_3d(1,sNy,15)
           CALL RADIATION_UP(
      I                   sNx,sNy, myTime, lat2d, pHalf3d, t_surf, t3d,
      U                   tdt3d, lw_net_3d, sw_net_3d,
-     I                   albedo_2d, dtrans_3d, dtrans_win,
+     I                   albedo_2d, ozoneColmn, dtrans_3d, dtrans_win,
      I                   b_3d, b_win, lw_down_3d, sw_down_3d, myThid )
 
 c         write(errorMessageUnit,'(A,I5,I3,4F9.3)')
