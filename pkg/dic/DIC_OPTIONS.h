@@ -11,8 +11,10 @@ C Compile Munhoven (2013)'s "Solvesaphe" package for pH/pCO2
 C  can still select Follows et al (2006) solver in data.dic
 #undef CARBONCHEM_SOLVESAPHE
 
-C Convert ak1 and ak2 to the total pH scale consistent with other coefficients
-C  in S/R CARBON_CHEM (currently on the seawater scale).
+C In S/R CARBON_CHEM convert ak1 and ak2 to the total pH scale
+C  consistent with other coefficients (currently on the seawater scale).
+C NOTE: Has NO effect when CARBONCHEM_SOLVESAPHE is defined (different 
+C  coeffs are used).
 #undef CARBONCHEM_TOTALPHSCALE
 
 C BIOTIC OPTIONS
