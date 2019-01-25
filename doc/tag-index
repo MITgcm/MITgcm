@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/tutorial_barotropic_gyre:
+  - add 1rst tutorial documentation to new manual and update corresponding setup
 o pkg/atm_phys:
   - add 3-D input file for stratospheric ozone
   - add code from Matt Kasoar for SW absorption by stratospheric ozone,
