@@ -1746,6 +1746,7 @@ for dir in $TESTDIRS ; do
 						>> $DRESULTS/genmake_state
 		  rm -f tmp.tr_log
 		fi
+		grep ' set FC_CHECK=' $gmkLog	>> $DRESULTS/genmake_state
 	    fi
 	    gmkLog=$dir/$builddir/genmake_state
 	    if test -r $gmkLog ; then
@@ -1767,6 +1768,8 @@ for dir in $TESTDIRS ; do
     echo "-------------------------------------------------------------------------------"
 
 done
+grep '^HAVE_LAPACK' */$builddir/genmake_state 2> /dev/null \
+			| head -1 >> $DRESULTS/genmake_state
 
 printf "Start time:  " >> $SUMMARY
 echo "$start_date" >> $SUMMARY

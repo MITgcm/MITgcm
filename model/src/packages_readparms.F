@@ -74,15 +74,15 @@ C       |-- OFFLINE_READPARMS
 C       |
 C       |-- MATRIX_READPARMS
 C       |
-C       |-- SEAICE_READPARMS
-C       |
-C       |-- SALT_PLUME_READPARMS
+C       |-- STREAMICE_READPARMS
 C       |
 C       |-- SHELFICE_READPARMS
 C       |
-C       |-- STREAMICE_READPARMS
-C       |
 C       |-- ICEFRONT_READPARMS
+C       |
+C       |-- SEAICE_READPARMS
+C       |
+C       |-- SALT_PLUME_READPARMS
 C       |
 C       |-- THSICE_READPARMS
 C       |
@@ -118,6 +118,9 @@ C       |-- LAYERS_READPARMS
 C       |
 C       |-- NEST_CHILD_READPARMS
 C       |-- NEST_PARENT_READPARMS
+C       |
+C       |-- NEST2W_C_READPARMS
+C       |-- NEST2W_P_READPARMS
 C       |
 C       |-- CPL_READPARMS
 C       |
@@ -264,6 +267,21 @@ C--   if useMATRIX=T, set MATRIX parameters; otherwise just return
       CALL MATRIX_READPARMS ( myThid )
 #endif
 
+#ifdef ALLOW_STREAMICE
+C--   if useStreamIce=T, set STREAMICE parameters; otherwise just return
+      CALL STREAMICE_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_SHELFICE
+C--   if useShelfIce=T, set SHELFICE parameters; otherwise just return
+      CALL SHELFICE_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_ICEFRONT
+C--   if useICEFRONT=T, set ICEFRONT parameters; otherwise just return
+      CALL ICEFRONT_READPARMS( myThid )
+#endif
+
 #ifdef ALLOW_SEAICE
 C--   if useSEAICE=T, set SEAICE parameters; otherwise just return
       CALL SEAICE_READPARMS( myThid )
@@ -272,21 +290,6 @@ C--   if useSEAICE=T, set SEAICE parameters; otherwise just return
 #ifdef ALLOW_SALT_PLUME
 C--   if useSALT_PLUME=T, set SALT_PLUME parameters; otherwise just return
       CALL SALT_PLUME_READPARMS( myThid )
-#endif
-
-#ifdef ALLOW_SHELFICE
-C--   if useShelfIce=T, set SHELFICE parameters; otherwise just return
-      CALL SHELFICE_READPARMS( myThid )
-#endif
-
-#ifdef ALLOW_STREAMICE
-C--   if useStreamIce=T, set STREAMICE parameters; otherwise just return
-      CALL STREAMICE_READPARMS( myThid )
-#endif
-
-#ifdef ALLOW_ICEFRONT
-C--   if useICEFRONT=T, set ICEFRONT parameters; otherwise just return
-      CALL ICEFRONT_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_THSICE
@@ -376,6 +379,16 @@ C
 C--    Initialize nest(ing) package parameters x PARENT
        IF (useNEST_PARENT) CALL NEST_PARENT_READPARMS ( myThid )
 #endif /* ALLOW_NEST_PARENT */
+
+#ifdef ALLOW_NEST2W_CHILD
+C--    Initialize Child 2-way nest(ing) package parameters
+       IF (useNest2W_child) CALL NEST2W_C_READPARMS( myThid )
+#endif /* ALLOW_NEST2W_CHILD */
+C
+#ifdef ALLOW_NEST2W_PARENT
+C--    Initialize Parent 2-way nest(ing) package parameters
+       IF (useNest2W_parent) CALL NEST2W_P_READPARMS( myThid )
+#endif /* ALLOW_NEST2W_PARENT */
 
 #ifdef COMPONENT_MODULE
 C--   set Coupling parameters
