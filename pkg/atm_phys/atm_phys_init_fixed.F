@@ -39,7 +39,7 @@ C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
       INTEGER axes(4)
-      INTEGER i,j,bi,bj
+      INTEGER i,j,k,bi,bj
       _RL cst_albedo, cst_mxlDepth
 
       namelist / atmosphere_nml /
@@ -131,6 +131,13 @@ c    I                        lat2d, ocean_qflux,
             atmPhys_Albedo(i,j,bi,bj) = cst_albedo
           ENDDO
          ENDDO
+         DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            atmPhys_Ozone(i,j,k,bi,bj) = 0. _d 0
+           ENDDO
+          ENDDO
+         ENDDO
        ENDDO
       ENDDO
       IF ( atmPhys_qFlxFile .NE. ' ' ) THEN
@@ -147,6 +154,11 @@ c    I                        lat2d, ocean_qflux,
         CALL READ_FLD_XY_RL( atmPhys_albedoFile,' ',
      &                       atmPhys_Albedo, 0, myThid )
         CALL EXCH_XY_RL( atmPhys_Albedo, myThid )
+      ENDIF
+      IF ( atmPhys_ozoneFile .NE. ' ' ) THEN
+        CALL READ_FLD_XYZ_RL( atmPhys_ozoneFile,' ',
+     &                        atmPhys_Ozone, 0, myThid )
+        CALL EXCH_XYZ_RL( atmPhys_Ozone, myThid )
       ENDIF
 
 #ifdef ALLOW_MNC

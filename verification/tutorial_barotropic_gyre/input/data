@@ -1,58 +1,53 @@
 # Model parameters
 # Continuous equation parameters
  &PARM01
- tRef=20.,
- sRef=10.,
- viscAz=1.E-2,
  viscAh=4.E2,
- diffKhT=4.E2,
- diffKzT=1.E-2,
+ f0=1.E-4,
  beta=1.E-11,
- tAlpha=2.E-4,
- sBeta =0.,
- gravity=9.81,
+ rhoNil=1000.,
  gBaro=9.81,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
- eosType='LINEAR',
- readBinaryPrec=64,
+# momAdvection=.FALSE.,
+ tempStepping=.FALSE.,
+ saltStepping=.FALSE.,
  &
 
 # Elliptic solver parameters
  &PARM02
- cg2dMaxIters=1000,
  cg2dTargetResidual=1.E-7,
+ cg2dMaxIters=1000,
  &
 
 # Time stepping parameters
  &PARM03
- startTime=0,
-#endTime=311040000,
- endTime=12000.0,
- deltaTmom=1200.0,
- deltaTtracer=1200.0,
- abEps=0.1,
- pChkptFreq=2592000.0,
- chkptFreq=120000.0,
- dumpFreq=2592000.0,
+ nIter0=0,
+ nTimeSteps=10,
+ deltaT=1200.0,
+ pChkptFreq=31104000.0,
+ chkptFreq=15552000.0,
+ dumpFreq=15552000.0,
+ monitorFreq=1200.,
  monitorSelect=2,
- monitorFreq=1.,
+#-for longer run (3.0 yr):
+# nTimeSteps=77760,
+# monitorFreq=864000.,
  &
 
 # Gridding parameters
  &PARM04
  usingCartesianGrid=.TRUE.,
- usingSphericalPolarGrid=.FALSE.,
- delX=60*20E3,
- delY=60*20E3,
- delZ=5000.,
+ delX=62*20.E3,
+ delY=62*20.E3,
+ xgOrigin=-20.E3,
+ ygOrigin=-20.E3,
+ delR=5000.,
  &
 
 # Input datasets
  &PARM05
- bathyFile='topog.box',
- hydrogThetaFile=,
- hydrogSaltFile=,
- zonalWindFile='windx.sin_y',
+ bathyFile='bathy.bin'
+ zonalWindFile='windx_cosy.bin',
+#zonalWindFile='windx_siny.bin',
  meridWindFile=,
  &
