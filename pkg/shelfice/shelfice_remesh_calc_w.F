@@ -5,14 +5,14 @@
 
 
 CBOP
-C     !ROUTINE: SHELFICE_INTEGR_CONT_REMESH
+C     !ROUTINE: SHELFICE_REMESH_CALC_W
 C     !INTERFACE:
-      SUBROUTINE SHELFICE_INTEGR_CONT_REMESH(
+      SUBROUTINE SHELFICE_REMESH_CALC_W (
      I                             uFld, vFld,
      I                             myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE SHELFICE_INTEGR_CONT_REMESH
+C     | SUBROUTINE SHELFICE_REMESH_CALC_W
 C     | o Integrate the continuity Eq : compute vertical velocity
 C     *==========================================================*
 C     \ev

@@ -61,12 +61,12 @@ C     === Global variables ===
         IF ((myTime/ShelficeRemeshFrequency) .EQ.
      &     INT (myTime/ShelficeRemeshFrequency) .AND. myTime
      &      .NE. 0.0        ) THEN
-         CALL SHELFICE_UPDATE_MASKS_REMESH (mytime, myiter, myThid)
-         CALL SHELFICE_REMESH_UPDATE_RMINSURF(myTime, myIter, myThid)
+         CALL SHELFICE_REMESH_C_MASK (mytime, myiter, myThid)
+         CALL SHELFICE_REMESH_RMINSURF(myTime, myIter, myThid)
 C-- DNG: CALC_SURF_DR is called twice as the hfac_surfNm1 etc fields
 C-- must be initialised since maskC has changed
          CALL UPDATE_CG2D(myTime,myIter, myThid)
-         CALL SHELFICE_INTEGR_CONT_REMESH (uVel ,vVel, myThid)
+         CALL SHELFICE_REMESH_CALC_W (uVel ,vVel, myThid)
         ENDIF 
 #endif /* ALLOW_SHELFICE_REMESHING */
 #endif /* ALLOW_SHELFICE */

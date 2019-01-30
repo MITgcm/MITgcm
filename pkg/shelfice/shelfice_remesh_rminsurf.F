@@ -5,13 +5,13 @@
 #endif
 
 CBOP
-C     !ROUTINE: SHELFICE_REMESHING
+C     !ROUTINE: SHELFICE_REMESH_RMINSURF
 C     !INTERFACE:
-      SUBROUTINE SHELFICE_REMESH_UPDATE_RMINSURF(
+      SUBROUTINE SHELFICE_REMESH_RMINSURF(
      I    myTime, myIter, myThid)
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE SHELFICE_REMESH_UPDATE_RMINSURF
+C     | SUBROUTINE SHELFICE_REMESH_RMINSURF
 C     | to update Rmin_surf after remeshing downward and avoid
 C     | surf_adjustments
 C     *==========================================================*

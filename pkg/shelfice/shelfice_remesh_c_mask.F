@@ -4,15 +4,15 @@
 #endif
 
 CBOP
-C     !ROUTINE: SHELFICE_UPDATE_MASKS_REMESH
+C     !ROUTINE: SHELFICE_REMESH_C_MASK
 C     !INTERFACE:
-      SUBROUTINE SHELFICE_UPDATE_MASKS_REMESH(
+      SUBROUTINE SHELFICE_REMESH_C_MASK(
 !     I     rF, recip_drF, drF, kLowC,
 !     U     hFacC,
      I     mytime, myiter,myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE SHELFICE_UPDATE_MASKS_REMESH
+C     | SUBROUTINE SHELFICE_REMESH_C_MASK
 C     | o Loops through top level cells and determines those where
 C     | o hfac is too large and hence splits into two cells,
 C     | o and cells where hfac is too small, and merges cell with
@@ -65,10 +65,10 @@ C     I,J,K   :: Loop counters
       _RL stag_fac
       _RL salt_int, theta_int, newvol, eta_old, vel_int
       _RL tmpVar
-      _RS maskS_temp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
-      _RS maskW_temp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
-      _RL hFacS_temp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
-      _RL hFacW_temp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RS maskS_old (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RS maskW_old (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RL hFacS_old (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RL hFacW_old (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
 
       stag_fac = 0.0
       if (staggerTimestep) stag_fac = 1.0
@@ -95,6 +95,7 @@ C- Update etaN
 ! decrement eta and increment R_shelfice and Ro_surf
               etaN(I,J,bi,bj) = etaN(I,J,bi,bj)- adjust
               etaH(I,J,bi,bj) = etaH(I,J,bi,bj)- adjust
+              etaHnm1(I,J,bi,bj) = etaHnm1(I,J,bi,bj)- adjust
               R_shelfIce(I,J,bi,bj) = R_shelfIce(I,J,bi,bj)+adjust
               Ro_surf(I,J,bi,bj) = Ro_surf(I,J,bi,bj)+adjust
 
@@ -132,6 +133,7 @@ C- Update etaN
 ! increment eta and decrement R_shelfice and Ro_sur
              etaN(I,J,bi,bj) = etaN(I,J,bi,bj) + adjust
              etaH(I,J,bi,bj) = etaH(I,J,bi,bj) + adjust
+             etaHnm1(I,J,bi,bj) = etaHnm1(I,J,bi,bj) + adjust
              R_shelfice(I,J,bi,bj) = R_shelfice(I,J,bi,bj)-adjust
              Ro_surf(I,J,bi,bj) = Ro_surf(I,J,bi,bj)-adjust
 
@@ -195,15 +197,15 @@ C- Update etaN
        ENDDO
       ENDDO
      
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J = 1,sNy
-         DO I = 1,sNx
-           etaHnm1(I,J,bi,bj)=etaH(I,J,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
+!      DO bj = myByLo(myThid), myByHi(myThid)
+!       DO bi = myBxLo(myThid), myBxHi(myThid)
+!        DO J = 1,sNy
+!         DO I = 1,sNx
+!           etaHnm1(I,J,bi,bj)=etaH(I,J,bi,bj)
+!         ENDDO
+!        ENDDO
+!       ENDDO
+!      ENDDO
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -233,6 +235,29 @@ C- fill in the overlap (+ BARRIER):
       _EXCH_XY_RS(R_shelfIce, myThid )
       _EXCH_XY_RS(Ro_Surf, myThid )
       CALL EXCH_XY_RL(recip_Rcol,myThid)
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1,sNy
+         DO i=1,sNx
+           rSurfW(i,j,bi,bj) =
+     &           MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
+           rSurfW(i,j,bi,bj) =
+     &           MAX( rSurfW(i,j,bi,bj), rLowW(i,j,bi,bj) )
+         ENDDO
+        ENDDO
+      
+        DO j=1,sNy
+         DO i=1,sNx
+           rSurfS(i,j,bi,bj) =
+     &           MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
+           rSurfS(i,j,bi,bj) =
+     &           MAX( rSurfS(i,j,bi,bj), rLowS(i,j,bi,bj) )
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -281,10 +306,10 @@ C- fill in the overlap (+ BARRIER):
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
 
-           hFacW_temp (i,j,k,bi,bj) = hFacW(i,j,k,bi,bj) 
-           hFacS_temp (i,j,k,bi,bj) = hFacS(i,j,k,bi,bj) 
-           maskW_temp (i,j,k,bi,bj) = maskW(i,j,k,bi,bj) 
-           maskS_temp (i,j,k,bi,bj) = maskS(i,j,k,bi,bj) 
+           hFacW_old (i,j,k,bi,bj) = hFacW(i,j,k,bi,bj) 
+           hFacS_old (i,j,k,bi,bj) = hFacS(i,j,k,bi,bj) 
+           maskW_old (i,j,k,bi,bj) = maskW(i,j,k,bi,bj) 
+           maskS_old (i,j,k,bi,bj) = maskS(i,j,k,bi,bj) 
            
           ENDDO
          ENDDO
@@ -299,9 +324,9 @@ C- fill in the overlap (+ BARRIER):
 !         CALL OBCS_UPDATE_REMESH( myThid )
          endif
 #endif
+      CALL CALC_SURF_DR( etaHnm1, myTime, myIter, myThid )
+      CALL UPDATE_SURF_DR(.TRUE., myTime, myIter, myThid)
       CALL CALC_SURF_DR( etaH, myTime, myIter, myThid )
-      CALL CALC_SURF_DR( etaH, myTime, myIter, myThid )
-      CALL UPDATE_SURF_DR(.FALSE., myTime, myIter, myThid)
 
       DO k=1,Nr
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -310,18 +335,18 @@ C- fill in the overlap (+ BARRIER):
           DO i=1,sNx
 
             IF (maskS(i,j,k,bi,bj).eq.0.0 .AND.
-     &         maskS_temp(i,j,k,bi,bj).eq.1.0) THEN
+     &         maskS_old(i,j,k,bi,bj).eq.1.0) THEN
              
              newvol = hFacS(i,j,k+1,bi,bj) * drF(k+1)
-             vel_int = hFacS_temp (i,j,k,bi,bj) * drF(k) * 
+             vel_int = hFacS_old (i,j,k,bi,bj) * drF(k) * 
      &         vVel(i,j,k,bi,bj) +  
-     &        hFacS_temp (i,j,k+1,bi,bj) * drF(k+1) *
+     &        hFacS_old (i,j,k+1,bi,bj) * drF(k+1) *
      &         vVel(i,j,k+1,bi,bj)
              vVel(i,j,k,bi,bj) = 0.0
              vVel(i,j,k+1,bi,bj) = vel_int / newvol
-             vel_int = hFacS_temp (i,j,k,bi,bj) * drF(k) * 
+             vel_int = hFacS_old (i,j,k,bi,bj) * drF(k) * 
      &         gvNm1(i,j,k,bi,bj) +  
-     &        hFacS_temp (i,j,k+1,bi,bj) * drF(k+1) *
+     &        hFacS_old (i,j,k+1,bi,bj) * drF(k+1) *
      &         gvNm1(i,j,k+1,bi,bj)
              gvNm1(i,j,k,bi,bj) = 0.0
              gvNm1(i,j,k+1,bi,bj) = vel_int / newvol
@@ -329,18 +354,18 @@ C- fill in the overlap (+ BARRIER):
             ENDIF
 
             IF (maskW(i,j,k,bi,bj).eq.0.0 .AND.
-     &         maskW_temp(i,j,k,bi,bj).eq.1.0) THEN
+     &         maskW_old (i,j,k,bi,bj).eq.1.0) THEN
 
              newvol = hFacW(i,j,k+1,bi,bj) * drF(k+1)
-             vel_int = hFacW_temp (i,j,k,bi,bj) * drF(k) *
+             vel_int = hFacW_old (i,j,k,bi,bj) * drF(k) *
      &         uVel(i,j,k,bi,bj) +
-     &        hFacW_temp (i,j,k+1,bi,bj) * drF(k+1) *
+     &        hFacW_old (i,j,k+1,bi,bj) * drF(k+1) *
      &         uVel(i,j,k+1,bi,bj)
              uVel(i,j,k,bi,bj) = 0.0
              uVel(i,j,k+1,bi,bj) = vel_int / newvol
-             vel_int = hFacW_temp (i,j,k,bi,bj) * drF(k) *
+             vel_int = hFacW_old (i,j,k,bi,bj) * drF(k) *
      &         guNm1(i,j,k,bi,bj) +
-     &        hFacW_temp (i,j,k+1,bi,bj) * drF(k+1) *
+     &        hFacW_old (i,j,k+1,bi,bj) * drF(k+1) *
      &         guNm1(i,j,k+1,bi,bj)
              guNm1(i,j,k,bi,bj) = 0.0
              guNm1(i,j,k+1,bi,bj) = vel_int / newvol
@@ -349,12 +374,12 @@ C- fill in the overlap (+ BARRIER):
        
            IF (k .lt. Nr) THEN
             IF (maskS(i,j,k,bi,bj).eq.1.0 .AND.
-     &         maskS_temp(i,j,k,bi,bj).eq.0.0) THEN
+     &         maskS_old (i,j,k,bi,bj).eq.0.0) THEN
              vVel(i,j,k,bi,bj) = vVel(i,j,k+1,bi,bj)
              gVNm1(i,j,k,bi,bj) = gvNm1(i,j,k+1,bi,bj)
             ENDIF
             IF (maskW(i,j,k,bi,bj).eq.1.0 .AND.
-     &         maskW_temp(i,j,k,bi,bj).eq.0.0) THEN
+     &         maskW_old (i,j,k,bi,bj).eq.0.0) THEN
              uVel(i,j,k,bi,bj) = uVel(i,j,k+1,bi,bj)
              guNm1(i,j,k,bi,bj) = guNm1(i,j,k+1,bi,bj)
             ENDIF
