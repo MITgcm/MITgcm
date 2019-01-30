@@ -228,15 +228,16 @@ CIGF controls.
 #endif
 
       if ( gencount0 .LE. 2 .AND.
-     &     ( xx_gen_file(1:7) .EQ. xx_tauu_file .OR.
-#ifdef DISABLE_FIRST_TWO_ATM_CTRLS_XX
+     &      (
+#ifdef CTRL_SKIP_FIRST_TWO_ATM_REC_ALL
      &       xx_gen_file(1:6) .EQ. xx_aqh_file  .OR.
      &       xx_gen_file(1:8) .EQ. xx_atemp_file .OR.
      &       xx_gen_file(1:9) .EQ. xx_precip_file .OR.
      &       xx_gen_file(1:9) .EQ. xx_lwdown_file .OR.
      &       xx_gen_file(1:9) .EQ. xx_swdown_file .OR.
 #endif
-     &       xx_gen_file(1:7) .EQ. xx_tauv_file ) .AND.
+     &       xx_gen_file(1:7) .EQ. xx_tauu_file .OR.
+     &       xx_gen_file(1:7) .EQ. xx_tauv_file ) .AND.     
      &     ( xx_genperiod .NE. zeroRL ) ) then
          doCtrlUpdate = .FALSE.
       else
