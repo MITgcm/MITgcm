@@ -91,11 +91,7 @@ C                       and the 2nd order approximation does not have a solution
 
 C     MITgcm GLobal variables
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-#include "FFIELDS.h"
 #include "DIC_VARS.h"
 
 C -----------------------------------------------------------------------
@@ -176,11 +172,7 @@ C      inf(TA - [OH-] + [H+]) and sup(TA - [OH-] + [H+])
 
 C     MITgcm GLobal variables
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-#include "FFIELDS.h"
 #include "DIC_VARS.h"
 
 C      --------------------
@@ -251,11 +243,7 @@ C     I                    z_bortot,z_so4tot,z_flutot,
 
 C     MITgcm GLobal variables
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-#include "FFIELDS.h"
 #include "DIC_VARS.h"
 
 C -----------------------------------------------------------------------
@@ -415,11 +403,9 @@ C     loaded into common block
 
 C     MITgcm GLobal variables
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "FFIELDS.h"
 #include "DIC_VARS.h"
 
       _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -923,11 +909,9 @@ C     converted back to the total scale
 
 C     MITgcm GLobal variables
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "FFIELDS.h"
 #include "DIC_VARS.h"
 
       _RL  ttemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -1229,11 +1213,7 @@ C      =========================================================================
 
 C     MITgcm GLobal variables
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-#include "FFIELDS.h"
 #include "DIC_VARS.h"
 
 C      --------------------
@@ -1397,11 +1377,7 @@ C      Fast version of SOLVE_AT_GENERAL, without any bounds checking.
 
 C     MITgcm GLobal variables
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-#include "FFIELDS.h"
 #include "DIC_VARS.h"
 
 C     _RL SOLVE_AT_FAST
@@ -1437,6 +1413,7 @@ C     --------------------
       _RL zeqn, zdeqndh
 
 C     LOGICAL l_exitnow
+      LOGICAL iterate4pH
       _RL pz_exp_threshold
       _RL pp_rdel_ah_target
       INTEGER niter_atfast
@@ -1463,15 +1440,16 @@ C     ENDIF
 C Reset counters of iterations
       niter_atfast    = 0
 
-      DO
-        niter_atfast = niter_atfast + 1
+      iterate4pH = .TRUE.
+      DO WHILE ( iterate4pH )
 
-        IF(niter_atfast > at_maxniter) THEN
-           zh = -1. _d 0
-           EXIT
-        ENDIF
+       niter_atfast = niter_atfast + 1
+       IF ( niter_atfast .GT. at_maxniter ) THEN
+         zh = -1. _d 0
+         iterate4pH = .FALSE.
+       ELSE
 
-        zh_prev = zh
+         zh_prev = zh
 
 C        zeqn = EQUATION_AT(p_alktot, zh,       p_dictot, p_bortot,
 C     &                      p_po4tot, p_siltot, p_nh4tot, p_h2stot,
@@ -1483,8 +1461,10 @@ C     &                      p_so4tot, p_flutot, P_DERIVEQN = zdeqndh)
      &                    zeqn    , zdeqndh,
      &                    i, j, k, bi, bj, myIter, myThid )
 C zh is the root
-        IF(zeqn == 0. _d 0) EXIT
+        iterate4pH = ( zeqn .NE. 0. _d 0 )
+       ENDIF
 
+       IF ( iterate4pH ) THEN
         zh_lnfactor = -zeqn/(zdeqndh*zh_prev)
         IF(ABS(zh_lnfactor) > pz_exp_threshold) THEN
            zh          = zh_prev*EXP(zh_lnfactor)
@@ -1512,8 +1492,9 @@ C      ! rdel <- pp_rdel_ah_target
 
 C        l_exitnow = (ABS(zh_lnfactor) < pp_rdel_ah_target)
 C        IF(l_exitnow) EXIT
-        IF(ABS(zh_lnfactor) < pp_rdel_ah_target) EXIT
+        iterate4pH = ( ABS(zh_lnfactor) .GE. pp_rdel_ah_target )
 
+       ENDIF
       ENDDO
 
 C     SOLVE_AT_FAST = zh
@@ -1530,7 +1511,8 @@ C     &                          p_so4tot, p_flutot)
      &                       p_val   , zdeqndh,
      &                       i, j, k, bi, bj, myIter, myThid )
         ELSE
-           p_val = HUGE(1. _d 0)
+c          p_val = HUGE(1. _d 0)
+           p_val = 1. _d +65
         ENDIF
 C     ENDIF
 
@@ -1554,11 +1536,7 @@ C      determines upper an lower bounds for the solution if required
 
 C     MITgcm GLobal variables
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-#include "FFIELDS.h"
 #include "DIC_VARS.h"
 
 C      _RL SOLVE_AT_GENERAL
@@ -1597,6 +1575,7 @@ C     -----------------
       INTEGER niter_atgen
 
 C      LOGICAL       :: l_exitnow
+      LOGICAL iterate4pH
       _RL pz_exp_threshold
       _RL pp_rdel_ah_target
 
@@ -1656,13 +1635,16 @@ C      zh = SQRT(zh_max*zh_min)
 
 C     Reset counters of iterations
       niter_atgen       = 0
-      zeqn_absmin       = HUGE(1. _d 0)
+c     zeqn_absmin       = HUGE(1. _d 0)
+      zeqn_absmin       = 1. _d +65
 
-      DO
-        IF(niter_atgen >= at_maxniter) THEN
+      iterate4pH = .TRUE.
+      DO WHILE ( iterate4pH )
+
+       IF ( niter_atgen .GE. at_maxniter ) THEN
            zh = -1. _d 0
-           EXIT
-       ENDIF
+           iterate4pH = .FALSE.
+       ELSE
 
         zh_prev = zh
 #ifdef ALLOW_DEBUG
@@ -1684,9 +1666,11 @@ C         Adapt bracketing interval
            zh_max = zh_prev
         ELSE
 C            zh is the root; unlikely but, one never knows
-           EXIT
+           iterate4pH = .FALSE.
+        ENDIF
        ENDIF
 
+       IF ( iterate4pH ) THEN
 C         Now determine the next iterate zh
         niter_atgen = niter_atgen + 1
 
@@ -1722,7 +1706,7 @@ C                 = [H]_old * EXP(-zeqn/(zdeqndh*[H]_old))
            ELSE
              zh_delta    = zh_lnfactor*zh_prev
              zh          = zh_prev + zh_delta
-          ENDIF
+           ENDIF
 
 C#if defined(DEBUG_PHSOLVERS)
 C           PRINT*, '[SOLVE_AT_GENERAL] testing zh :', zh, zeqn, zh_lnfactor
@@ -1742,7 +1726,7 @@ C                     = SQRT([H]_old * zh_min)
              zh               = SQRT(zh_prev * zh_min)
 C Required to test convergence below
              zh_lnfactor      = (zh - zh_prev)/zh_prev
-          ENDIF
+           ENDIF
 
            IF( zh > zh_max ) THEN
 C              if [H]_new > [H]_max
@@ -1759,8 +1743,8 @@ C                     = SQRT([H]_old * zhmax)
 C Required to test convergence below
              zh_lnfactor      = (zh - zh_prev)/zh_prev
 
-          ENDIF
-       ENDIF
+           ENDIF
+        ENDIF
 
         zeqn_absmin = MIN( ABS(zeqn), zeqn_absmin)
 C        Stop iterations once |\delta{[H]}/[H]| < rdel
@@ -1777,7 +1761,9 @@ C
 C        rdel <-- pp_rdel_ah_target
 C        l_exitnow = (ABS(zh_lnfactor) < pp_rdel_ah_target)
 C        IF(l_exitnow) EXIT
-        IF(ABS(zh_lnfactor) < pp_rdel_ah_target) EXIT
+         iterate4pH = ( ABS(zh_lnfactor) .GE. pp_rdel_ah_target )
+
+       ENDIF
       ENDDO
 
 C      SOLVE_AT_GENERAL = zh
@@ -1816,11 +1802,7 @@ C      determines upper an lower bounds for the solution if required
 
 C     MITgcm GLobal variables
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "GRID.h"
-#include "FFIELDS.h"
 #include "DIC_VARS.h"
 
 C     --------------------
@@ -1856,9 +1838,10 @@ C     -----------------
       _RL  zdelta, zdeqndh
       _RL pp_rdel_ah_target
       INTEGER niter_atsec
-      pp_rdel_ah_target = 1. _d -8
-
 C      LOGICAL       ::  l_exitnow
+      LOGICAL iterate4pH
+
+      pp_rdel_ah_target = 1. _d -8
 
 C      IF(PRESENT(p_hini)) THEN
         zh_ini = p_hini
@@ -2026,11 +2009,13 @@ C                and zeqn_2 < zeqn_1 < 0
         zh = SQRT(zh_1*zh_min)
       ENDIF
 
-      DO
-        IF(niter_atsec >= at_maxniter) THEN
+      iterate4pH = .TRUE.
+      DO WHILE ( iterate4pH )
+
+       IF ( niter_atsec .GE. at_maxniter ) THEN
            zh = -1. _d 0
-           EXIT
-        ENDIF
+           iterate4pH = .FALSE.
+       ELSE
 
 C        zeqn = EQUATION_AT(p_alktot, zh, p_dictot, p_bortot,
 C      &                  p_po4tot, p_siltot, p_nh4tot, p_h2stot,
@@ -2050,9 +2035,11 @@ C       of zeqn
           zh_max = zh
         ELSE
 C         zh is the root
-          EXIT
+          iterate4pH = .FALSE.
+        ENDIF
        ENDIF
 
+       IF ( iterate4pH ) THEN
 C      Start calculation of next iterate
         niter_atsec = niter_atsec + 1
 
@@ -2096,9 +2083,9 @@ C                     = SQRT([H]_old*10**(-ph_max))
 C                     = SQRT([H]_old * zh_min)
              zh              = SQRT(zh_1 * zh_min)
              zh_delta         = zh - zh_1
-          ENDIF
+           ENDIF
 
-          IF( zh > zh_max ) THEN
+           IF( zh > zh_max ) THEN
 C              if [H]_new > [H]_max
 C              i.e., if ph_new < ph_min, then
 C              take one bisection step on [ph_min, ph_prev]
@@ -2111,22 +2098,24 @@ C                     = SQRT([H]_old*10**(-ph_min))
 C                     = SQRT([H]_old * zhmax)
              zh               = SQRT(zh_1 * zh_max)
              zh_delta          = zh - zh_1
-          ENDIF
-       ENDIF
+           ENDIF
+        ENDIF
 
         zeqn_absmin = MIN(ABS(zeqn), zeqn_absmin)
 
 C       Stop iterations once |([H]-[H_1])/[H_1]| < rdel
 C        l_exitnow = (ABS(zh_delta) < pp_rdel_ah_target*zh_1)
 C        IF(l_exitnow) EXIT
-        IF(ABS(zh_delta) < pp_rdel_ah_target*zh_1) EXIT
+        iterate4pH = ( ABS(zh_delta) .GE. pp_rdel_ah_target*zh_1 )
+
+       ENDIF
       ENDDO
 
 C      SOLVE_AT_GENERAL_SEC = zh
       p_hnew = zh
 
 C      IF(PRESENT(p_val)) THEN
-        IF(zh > 0. _d 0) THEN
+       IF(zh > 0. _d 0) THEN
 C           p_val = EQUATION_AT(p_alktot, zh,      p_dictot, p_bortot,
 C     &                       p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C     &                       p_so4tot, p_flutot)
@@ -2135,8 +2124,9 @@ C     &                       p_so4tot, p_flutot)
      &                      p_so4tot, p_flutot,
      &                      p_val   , zdeqndh,
      &                      i, j, k, bi, bj, myIter, myThid )
-        ELSE
-          p_val = HUGE(1. _d 0)
+       ELSE
+c         p_val = HUGE(1. _d 0)
+          p_val = 1. _d +65
        ENDIF
 C      ENDIF
 
