@@ -113,9 +113,9 @@ C -----------------------------------------------------------------------
       _RL zd, zsqrtd, zhmin
       _RL za2, za1, za0
 
-      IF (p_alkcb <= 0. _d 0) THEN
+      IF (p_alkcb .LE. 0. _d 0) THEN
        p_hini = 1. _d -3
-      ELSEIF (p_alkcb >= (2. _d 0*p_dictot + p_bortot)) THEN
+      ELSEIF (p_alkcb .GE. (2. _d 0*p_dictot + p_bortot)) THEN
        p_hini = 1. _d -10
       ELSE
        zcar = p_dictot/p_alkcb
@@ -134,10 +134,10 @@ C      Taylor expansion around the minimum
 C            Discriminant of the quadratic equation
 C                 for the minimum close to the root
 
-       IF(zd > 0. _d 0) THEN
+       IF(zd .GT. 0. _d 0) THEN
 C      If the discriminant is positive
          zsqrtd = SQRT(zd)
-         IF(za2 < 0) THEN
+         IF(za2 .LT. 0) THEN
            zhmin = (-za2 + zsqrtd)/3. _d 0
          ELSE
            zhmin = -za1/(za2 + zsqrtd)
@@ -146,7 +146,7 @@ C      If the discriminant is positive
      &            /zsqrtd)
        ELSE
          p_hini = 1. _d -7
-      ENDIF
+       ENDIF
       ENDIF
 
 #endif /* CARBONCHEM_SOLVESAPHE */
@@ -661,7 +661,7 @@ C       Suitable when 0 < T < 50 and 1 < S < 50
 C       References: Waters, Millero, Woosley (Mar. Chem., 165, 66-67, 2014)
 C                   Millero (1979) pressure correction
 C       pH scale:   Seawater
-           ak1(i,j,bi,bj) = 10.0 _d 0**(-1*(6320.813 _d 0*inv_t_k
+           ak1(i,j,bi,bj) = 10.0 _d 0**(-1.*(6320.813 _d 0*inv_t_k
      &     + 19.568224 _d 0*dlog_t_k -126.34048 _d 0
      &     + 13.409160 _d 0*sqrts + 0.031646 _d 0*s - (5.1895 _d -5)*s_2
      &     + (-531.3642 _d 0*sqrts - 5.713 _d 0*s)*inv_t_k
@@ -673,7 +673,7 @@ C       Suitable when 0 < T < 50 and 1 < S < 50
 C       References: Waters, Millero, Woosley (Mar. Chem., 165, 66-67, 2014)
 C                   Millero (1979) pressure correction
 C       pH scale:   Seawater
-           ak2(i,j,bi,bj) = 10.0 _d 0**(-1*
+           ak2(i,j,bi,bj) = 10.0 _d 0**(-1.*
      &     ( 5143.692 _d 0*inv_t_k + 14.613358 _d 0*dlog_t_k
      &      - 90.18333 _d 0 + 21.225890 _d 0*sqrts + 0.12450870 _d 0*s
      &      - (3.7243 _d -4)*s_2
@@ -1015,7 +1015,7 @@ C       Reference : Weiss (1974) Marine Chemistry
 C       pH scale  : N/A
            Pzatm = 1.01325 _d 0+pressc ! bars
            delta = (57.7 _d 0 - 0.118 _d 0*t_k)
-           B1 = -1636.75 _d 0 + 12.0408 _d 0*t_k - 0.0327957 _d 0*t_k*t_k
+           B1 = -1636.75 _d 0 + 12.0408 _d 0*t_k -0.0327957 _d 0*t_k*t_k
            B  = B1 + 3.16528 _d 0*t_k*t_k*t_k*(0.00001 _d 0)
 C   "x2" term often neglected (assumed=1) in applications of Weiss's (1974) eq.9
 C    x2 = 1 - x1 = 1 - xCO2 (it is very close to 1, but not quite)
@@ -1466,7 +1466,7 @@ C zh is the root
 
        IF ( iterate4pH ) THEN
         zh_lnfactor = -zeqn/(zdeqndh*zh_prev)
-        IF(ABS(zh_lnfactor) > pz_exp_threshold) THEN
+        IF(ABS(zh_lnfactor) .GT. pz_exp_threshold) THEN
            zh          = zh_prev*EXP(zh_lnfactor)
         ELSE
            zhdelta     = zh_lnfactor*zh_prev
@@ -1501,7 +1501,7 @@ C     SOLVE_AT_FAST = zh
       p_hnew = zh
 
 C     IF(PRESENT(p_val)) THEN
-        IF(zh > 0. _d 0) THEN
+        IF(zh .GT. 0. _d 0) THEN
 C           p_val = EQUATION_AT(p_alktot, zh,       p_dictot, p_bortot,
 C     &                          p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C     &                          p_so4tot, p_flutot)
@@ -1605,7 +1605,7 @@ C      ENDIF
       zdelta = (p_alktot-p_alknw_inf)**2 + 4. _d 0*akw(i,j,bi,bj)
      &         /aphscale(i,j,bi,bj)
 
-      IF(p_alktot >= p_alknw_inf) THEN
+      IF(p_alktot .GE. p_alknw_inf) THEN
         zh_min = 2. _d 0*akw(i,j,bi,bj) /( p_alktot-p_alknw_inf
      &           + SQRT(zdelta) )
       ELSE
@@ -1616,7 +1616,7 @@ C      ENDIF
       zdelta = (p_alktot-p_alknw_sup)**2 + 4. _d 0*akw(i,j,bi,bj)
      &         /aphscale(i,j,bi,bj)
 
-      IF(p_alktot <= p_alknw_sup) THEN
+      IF(p_alktot .LE. p_alknw_sup) THEN
         zh_max = aphscale(i,j,bi,bj)*(-(p_alktot-p_alknw_sup)
      &           + SQRT(zdelta) ) / 2. _d 0
       ELSE
@@ -1660,12 +1660,12 @@ C     &                   p_so4tot, p_flutot, P_DERIVEQN = zdeqndh)
      &                    i, j, k, bi, bj, myIter, myThid )
 
 C         Adapt bracketing interval
-        IF(zeqn > 0. _d 0) THEN
+        IF(zeqn .GT. 0. _d 0) THEN
            zh_min = zh_prev
-        ELSEIF(zeqn < 0. _d 0) THEN
+        ELSEIF(zeqn .LT. 0. _d 0) THEN
            zh_max = zh_prev
         ELSE
-C            zh is the root; unlikely but, one never knows
+C          zh is the root; unlikely but, one never knows
            iterate4pH = .FALSE.
         ENDIF
        ENDIF
@@ -1674,7 +1674,7 @@ C            zh is the root; unlikely but, one never knows
 C         Now determine the next iterate zh
         niter_atgen = niter_atgen + 1
 
-        IF(ABS(zeqn) >= 0.5 _d 0*zeqn_absmin) THEN
+        IF(ABS(zeqn) .GE. 0.5 _d 0*zeqn_absmin) THEN
 C          if the function evaluation at the current point is
 C          not decreasing faster than with a bisection step (at least linearly)
 C          in absolute value take one bisection step on [ph_min, ph_max]
@@ -1701,7 +1701,7 @@ C                 = [H]_old * EXP(-LOG(10)*zeqn/(zdeqndh*[H]_old*LOG(10)))
 C                 = [H]_old * EXP(-zeqn/(zdeqndh*[H]_old))
            zh_lnfactor = -zeqn/(zdeqndh*zh_prev)
 
-           IF(ABS(zh_lnfactor) > pz_exp_threshold) THEN
+           IF(ABS(zh_lnfactor) .GT. pz_exp_threshold) THEN
              zh          = zh_prev*EXP(zh_lnfactor)
            ELSE
              zh_delta    = zh_lnfactor*zh_prev
@@ -1712,7 +1712,7 @@ C#if defined(DEBUG_PHSOLVERS)
 C           PRINT*, '[SOLVE_AT_GENERAL] testing zh :', zh, zeqn, zh_lnfactor
 C#endif
 
-           IF( zh < zh_min ) THEN
+           IF( zh .LT. zh_min ) THEN
 C              if [H]_new < [H]_min
 C              i.e., if ph_new > ph_max then
 C              take one bisection step on [ph_prev, ph_max]
@@ -1728,7 +1728,7 @@ C Required to test convergence below
              zh_lnfactor      = (zh - zh_prev)/zh_prev
            ENDIF
 
-           IF( zh > zh_max ) THEN
+           IF( zh .GT. zh_max ) THEN
 C              if [H]_new > [H]_max
 C              i.e., if ph_new < ph_min, then
 C              take one bisection step on [ph_min, ph_prev]
@@ -1864,7 +1864,7 @@ C      ENDIF
       zdelta = (p_alktot-p_alknw_inf)**2 + 4. _d 0*akw(i,j,bi,bj)
      &         /aphscale(i,j,bi,bj)
 
-      IF(p_alktot >= p_alknw_inf) THEN
+      IF(p_alktot .GE. p_alknw_inf) THEN
         zh_min = 2. _d 0*akw(i,j,bi,bj) /( p_alktot-p_alknw_inf
      &           + SQRT(zdelta) )
       ELSE
@@ -1875,7 +1875,7 @@ C      ENDIF
       zdelta = (p_alktot-p_alknw_sup)**2 + 4. _d 0*akw(i,j,bi,bj)
      &         /aphscale(i,j,bi,bj)
 
-      IF(p_alktot <= p_alknw_sup) THEN
+      IF(p_alktot .LE. p_alknw_sup) THEN
         zh_max = aphscale(i,j,bi,bj)*(-(p_alktot-p_alknw_sup)
      &           + SQRT(zdelta) ) / 2. _d 0
       ELSE
@@ -1916,7 +1916,7 @@ C     &                   p_so4tot, p_flutot)
 
 C      Adapt bracketing interval and heuristically set zh_1
 
-      IF(zeqn_2 < 0. _d 0) THEN
+      IF(zeqn_2 .LT. 0. _d 0) THEN
 C                 If zeqn_2 < 0, then we adjust zh_max:
 C                 we can be sure that zh_min < zh_2 < zh_max.
         zh_max = zh_2
@@ -1925,7 +1925,7 @@ C                 but stay above SQRT(zh_min*zh_max), which would be equivalent
 C                 to a bisection step on [pH@zh_min, pH@zh_max]
         zh_1   = MAX(zh_max/1.25 _d 0, SQRT(zh_min*zh_max))
 
-      ELSEIF(zeqn_2 > 0. _d 0) THEN
+      ELSEIF(zeqn_2 .GT. 0. _d 0) THEN
 C                 If zeqn_2 < 0, then we adjust zh_min:
 C                 we can be sure that zh_min < zh_2 < zh_max.
         zh_min = zh_2
@@ -1940,7 +1940,7 @@ C        SOLVE_AT_GENERAL_SEC = zh_2
          p_hnew = zh_2
 C        IF(PRESENT(p_val)) p_val = zeqn_2
          p_val = zeqn_2
-       RETURN
+        RETURN
       ENDIF
 
 C      We now have the first pair completed (zh_2, zeqn_2).
@@ -1962,9 +1962,9 @@ C     &                   p_so4tot, p_flutot)
 C      Adapt bracketing interval: we know that zh_1 <= zh <= zh_max (if zeqn_1>0)
 C      or zh_min <= zh <= zh_1 (if zeqn_1 < 0), so this can always be done
 
-      IF(zeqn_1 > 0. _d 0) THEN
+      IF(zeqn_1 .GT. 0. _d 0) THEN
         zh_min = zh_1
-      ELSEIF(zeqn_1 < 0. _d 0) THEN
+      ELSEIF(zeqn_1 .LT. 0. _d 0) THEN
         zh_max = zh_1
       ELSE
 C      zh_1 is the root
@@ -1974,7 +1974,7 @@ C        IF(PRESENT(p_val)) p_val = zeqn_1
         p_val = zeqn_1
       ENDIF
 
-      IF(ABS(zeqn_1) > zeqn_absmin) THEN
+      IF(ABS(zeqn_1) .GT. zeqn_absmin) THEN
 C     Swap zh_2 and zh_1 if ABS(zeqn_2) < ABS(zeqn_1)
 C                 so that zh_2 and zh_1 lead to decreasing equation
 C                 values (in absolute value)
@@ -1997,13 +1997,13 @@ C     Pre-calculate the first secant iterate (this is the second iterate)
 C      Make sure that zh_min < zh < zh_max (if not,
 C      bisect around zh_1 which is the best estimate)
 
-      IF (zh > zh_max) THEN
+      IF (zh .GT. zh_max) THEN
 C       This can only happen if zh_2 < zh_1
 C                 and zeqn_2 > zeqn_1 > 0
         zh = SQRT(zh_1*zh_max)
       ENDIF
 
-      IF (zh < zh_min) THEN
+      IF (zh .LT. zh_min) THEN
 C       This can only happen if zh_2 > zh_1
 C                and zeqn_2 < zeqn_1 < 0
         zh = SQRT(zh_1*zh_min)
@@ -2029,9 +2029,9 @@ C      &                  p_so4tot, p_flutot)
 C       Adapt bracketing interval: since initially, zh_min <= zh <= zh_max
 C       we are sure that zh will improve either bracket, depending on the sign
 C       of zeqn
-        IF(zeqn > 0. _d 0) THEN
+        IF(zeqn .GT. 0. _d 0) THEN
           zh_min = zh
-        ELSEIF(zeqn < 0. _d 0) THEN
+        ELSEIF(zeqn .LT. 0. _d 0) THEN
           zh_max = zh
         ELSE
 C         zh is the root
@@ -2048,7 +2048,7 @@ C      Start calculation of next iterate
         zh_1   = zh
         zeqn_1 = zeqn
 
-        IF(ABS(zeqn) >= 0.5 _d 0*zeqn_absmin) THEN
+        IF(ABS(zeqn) .GE. 0.5 _d 0*zeqn_absmin) THEN
 C            if the function evaluation at the current point
 C            is not decreasing faster in absolute value than
 C            we may expect for a bisection step, then take
@@ -2070,7 +2070,7 @@ C            H_new = H_1 + \Delta H
 C#if defined(DEBUG_PHSOLVERS)
 C           PRINT*, '[SOLVE_AT_GENERAL_SEC] testing zh :', zh, zeqn, zh_delta
 C#endif
-           IF( zh < zh_min ) THEN
+           IF( zh .LT. zh_min ) THEN
 C              if [H]_new < [H]_min
 C              i.e., if ph_new > ph_max then
 C              take one bisection step on [ph_prev, ph_max]
@@ -2085,7 +2085,7 @@ C                     = SQRT([H]_old * zh_min)
              zh_delta         = zh - zh_1
            ENDIF
 
-           IF( zh > zh_max ) THEN
+           IF( zh .GT. zh_max ) THEN
 C              if [H]_new > [H]_max
 C              i.e., if ph_new < ph_min, then
 C              take one bisection step on [ph_min, ph_prev]
@@ -2115,7 +2115,7 @@ C      SOLVE_AT_GENERAL_SEC = zh
       p_hnew = zh
 
 C      IF(PRESENT(p_val)) THEN
-       IF(zh > 0. _d 0) THEN
+       IF(zh .GT. 0. _d 0) THEN
 C           p_val = EQUATION_AT(p_alktot, zh,      p_dictot, p_bortot,
 C     &                       p_po4tot, p_siltot, p_nh4tot, p_h2stot,
 C     &                       p_so4tot, p_flutot)
