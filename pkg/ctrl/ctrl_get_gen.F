@@ -211,12 +211,6 @@ cph(
 cph this flag ported from the SIO code
 cph Initial wind stress adjustments are too vigorous.
 
-CIGF Originally only the first two time variable
-CIGF tau u and tau v control records were disabled
-CIGF The DISABLE_FIRST_TWO_ATM_CTRLS_XX flag extends
-CIGF that to the rest of the time variable atmospheric
-CIGF controls.
-
 #ifndef ECCO_CTRL_DEPRECATED
       xx_tauu_file       = 'xx_tauu'
       xx_tauv_file       = 'xx_tauv'
@@ -227,8 +221,7 @@ CIGF controls.
       xx_swdown_file     = 'xx_swdown'
 #endif
 
-      if ( gencount0 .LE. 2 .AND.
-     &      (
+      if ( gencount0 .LE. 2 .AND. (
 #ifdef CTRL_SKIP_FIRST_TWO_ATM_REC_ALL
      &       xx_gen_file(1:6) .EQ. xx_aqh_file  .OR.
      &       xx_gen_file(1:8) .EQ. xx_atemp_file .OR.
@@ -237,7 +230,7 @@ CIGF controls.
      &       xx_gen_file(1:9) .EQ. xx_swdown_file .OR.
 #endif
      &       xx_gen_file(1:7) .EQ. xx_tauu_file .OR.
-     &       xx_gen_file(1:7) .EQ. xx_tauv_file ) .AND.     
+     &       xx_gen_file(1:7) .EQ. xx_tauv_file ) .AND.
      &     ( xx_genperiod .NE. zeroRL ) ) then
          doCtrlUpdate = .FALSE.
       else
