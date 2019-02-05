@@ -82,22 +82,6 @@ C-    Initialization : <= done in S/R gmredi_init
      &                        + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C   Use Leith QG viscosity in GMRedi scheme
-#ifdef ALLOW_GM_LEITH_QG
-      IF (GM_useLeithQG) THEN
-        CALL GMREDI_CALC_QGLEITH(
-     I             bi, bj, myThid, myTime, myIter )
-      ELSE
-        DO k=1,Nr
-          DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-              GM_LeithQG_K(i,j,k,bi,bj) = 0. _d 0
-            ENDDO
-          ENDDO
-        ENDDO
-      ENDIF
-#endif
-
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef GM_VISBECK_VARIABLE_K
 CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
