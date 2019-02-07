@@ -82,6 +82,8 @@ C-    Fill-in EXF surface flux diags, weighted by open-ocean fraction
         IF ( thSIce_skipThermo ) grpDiag = -2
         CALL EXF_WEIGHT_SFX_DIAGS(
      I                  iceMask, grpDiag, myTime, myIter, myThid )
+        IF ( .NOT.useSEAICE ) CALL EXF_WEIGHT_SFX_DIAGS(
+     I                       iceMask, -1, myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_EXF */
 
