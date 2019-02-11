@@ -97,7 +97,7 @@ C Put a cap on the stretching term.
 
 C        Grid scale Rossby number, squared: U^2 / (fL)^2
           Ro_g2(i,j) = U_scale(i,j)**2 * recip_rA(i,j,bi,bj) /
-     &                  MAX(QGL_lim_epsil, fCori(i,j,bi,bj**2))
+     &                  MAX(QGL_lim_epsil, fCori(i,j,bi,bj)**2)
 C        Grid scale Burger number: N^2 H^2 / (f^2 L^2)
 C         Bu_g(i,j) = Nsq(i,j) * drf(k)**2 * recip_rA(i,j,bi,bj) /
 C     &                 (fCori(i,j,bi,bj)**2 * PI)
@@ -120,7 +120,8 @@ C          This limiter goes to 2D Leith as stratification -> 0
 
           stretching_hold(i,j) = min( ABS(stretching(i,j)),
      &                  ABS(vort3C * Fr_g(i,j)**2 /
-     &                       (Ro_g2(i,j) + Fr_g(i,j)**4))
+     &                       (Ro_g2(i,j) + Fr_g(i,j)**4
+     &                         + QGL_lim_epsil) )
      &                               )
 
           stretching(i,j) = SIGN(stretching_hold(i,j), stretching(i,j))
