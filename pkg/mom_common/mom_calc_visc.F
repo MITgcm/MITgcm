@@ -434,7 +434,7 @@ C Using it in Leith serves to damp instabilities in w.
           viscA4_DLthd(i,j)=
      &     SQRT(leithD4fac*grdDiv)*L5
           viscAh_DLthQG(i,j) =
-     &     leithQG2fac*SQRT(grdVrt+grdDiv)*L3
+     &     SQRT(leithQG2fac*(grdVrt+grdDiv))*L3
 
          ELSEIF (calcLeith) THEN
 C but this approximation will work on cube (and differs by as much as 4X)
