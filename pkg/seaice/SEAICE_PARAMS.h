@@ -45,7 +45,7 @@ C                          only with EVP, JFNK or KRYLOV solver, default=F)
 C     SEAICE_maskRHS    :: mask the RHS of the solver where there is no ice
 C     SEAICE_clipVelocities :: clip velocities to +/- 40cm/s
 C     SEAICEaddSnowMass :: in computing seaiceMass, add snow contribution
-C                          default is .FALSE. for historical reasons
+C                          default is .TRUE.
 C     useHB87stressCoupling :: use an intergral over ice and ocean surface
 C                          layer to define surface stresses on ocean
 C                          following Hibler and Bryan (1987, JPO)
@@ -61,7 +61,7 @@ C                          on energetics and an ice thickness distribution
 C                          (default = .true.)
 C     SEAICEscaleSurfStress :: if TRUE, scale ice-ocean and ice-atmosphere
 C                          stress on ice by concenration (AREA) following
-C                          Connolley et al. (2004), JPO. (default = .false.)
+C                          Connolley et al. (2004), JPO. (default = .TRUE.)
 C     SEAICEsimpleRidging :: use Hibler(1979) ridging (default=.true.)
 C     SEAICEuseLinRemapITD :: use linear remapping (Lipscomb et al. 2001)
 C                             .TRUE. by default
@@ -76,6 +76,9 @@ C     SEAICEadvSnow     :: turn on advection of snow (does not work with
 C                          non-default Leap-frog scheme for advection)
 C     SEAICEadvSalt     :: turn on advection of salt (does not work with
 C                          non-default Leap-frog scheme for advection)
+C     SEAICEmultiDimAdvection:: internal flag, set to false if any sea ice
+C                          variable uses a non-multi-dimensional advection
+C                          scheme
 C     SEAICEmomAdvection:: turn on advection of momentum (default = .false.)
 C     SEAICEhighOrderVorticity :: momentum advection parameters analogous to
 C     SEAICEupwindVorticity    :: highOrderVorticity, upwindVorticity,
@@ -85,7 +88,7 @@ C - thermodynamics:
 C     usePW79thermodynamics :: use "0-layer" thermodynamics as described in
 C                           Parkinson and Washington (1979) and Hibler (1979)
 C     SEAICE_useMultDimSnow :: use same fixed pdf for snow as for
-C                              MULITCATEGORY ice
+C                              multi-thickness-category ice (default=.TRUE.)
 C     SEAICEuseFlooding  :: turn on scheme to convert submerged snow into ice
 C     SEAICEheatConsFix  :: If true then fix ocn<->seaice advective heat flux.
 C     useMaykutSatVapPoly :: use Maykut Polynomial for saturation vapor pressure
@@ -128,6 +131,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     SEAICE_clipVelocities, SEAICEaddSnowMass,
      &     useHB87stressCoupling, SEAICEupdateOceanStress,
      &     SEAICEuseFluxForm, SEAICEadvHeff, SEAICEadvArea,
+     &     SEAICEmultiDimAdvection,
      &     SEAICEadvSnow, SEAICEadvSalt, SEAICEmomAdvection,
      &     SEAICEhighOrderVorticity, SEAICEupwindVorticity,
      &     SEAICEuseAbsVorticity, SEAICEuseJamartMomAdv,
@@ -157,6 +161,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     useHB87stressCoupling, SEAICEupdateOceanStress,
      &     SEAICEuseFluxForm, SEAICEadvHeff, SEAICEadvArea,
      &     SEAICEadvSnow, SEAICEadvSalt, SEAICEmomAdvection,
+     &     SEAICEmultiDimAdvection,
      &     SEAICEhighOrderVorticity, SEAICEupwindVorticity,
      &     SEAICEuseAbsVorticity, SEAICEuseJamartMomAdv,
      &     usePW79thermodynamics,
@@ -192,10 +197,11 @@ C     SEAICE_JFNK_lsIter  :: number of Newton iterations after which the
 C                            line search is started
 C     SEAICE_JFNK_tolIter :: number of Newton iterations after which the
 C                            the tolerance is relaxed again (default = 100)
-C     SEAICE_OLx/y      :: overlaps for LSR-preconditioner in JFNK solver;
-C                          for 0 < SEAICE_OLx/y 0 <= OLx/y-2
-C                          the preconditioner is a restricted additive
-C                           Schwarz method (default = OLx/y-2).
+C     SEAICE_OLx/y      :: overlaps for LSR-solver and for the
+C                          LSR-preconditioner in JFNK and KRYLOV solver;
+C                          for 0 < SEAICE_OLx/y 0 <= OLx/y-2 the LSR solver
+C                          and preconditioner use a restricted additive
+C                          Schwarz method (default = OLx/y-2).
 C     LSR_mixIniGuess   :: control mixing of free-drift sol. into LSR initial
 C                          guess
 C                       :: =0 : nothing; =1 : no mix, but print free-drift
@@ -216,6 +222,7 @@ C     end ridging parameters
 C     SEAICEselectKEscheme   :: momentum advection parameters analogous
 C     SEAICEselectVortScheme :: to selectKEscheme and selectVortScheme
 C     SEAICEadvScheme   :: sets the advection scheme for thickness and area
+C                          (default = 77)
 C     SEAICEadvSchArea  :: sets the advection scheme for area
 C     SEAICEadvSchHeff  :: sets the advection scheme for effective thickness
 C                         (=volume), snow thickness, and salt if available
@@ -350,8 +357,8 @@ C     ICE2WATR           :: ratio of sea ice density to water density
 C     OCEAN_drag         :: air-ocean drag coefficient
 C     SEAICE_cpAir       :: specific heat of air                        (J/kg/K)
 C
-C     SEAICE_drag        :: air-ice drag coefficient
-C     SEAICE_waterDrag   :: water-ice drag coefficient * water density
+C     SEAICE_drag        :: air-ice drag coefficient (default 0.001)
+C     SEAICE_waterDrag   :: water-ice drag coefficient * water density (default 5.5)
 C     SEAICE_dryIceAlb   :: winter albedo
 C     SEAICE_wetIceAlb   :: summer albedo
 C     SEAICE_drySnowAlb  :: dry snow albedo

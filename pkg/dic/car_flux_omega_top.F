@@ -48,7 +48,7 @@ c                            layer
 c depth_u, depth_l        :: depths of upper and lower interfaces
 c flux_u, flux_l          :: flux through upper and lower interfaces
        _RL caexport(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-       INTEGER I,J,k, ko
+       INTEGER I,J,k, ko, kBottom
        _RL flux_u, flux_l
 c variables for calcium carbonate dissolution
        _RL KierRate
@@ -72,22 +72,25 @@ c reaches bottom layer 0=bottom, 1=top
       iflx=1
 c set some nominal particulate sinking rate
 c try 100m/day
-       WsinkPIC = 100/86400.0
+       WsinkPIC = 100. _d 0/86400. _d 0
 c calculate carbonate flux from base of each nlev
        DO j=jmin,jmax
         DO i=imin,imax
 c        exp_tot=0
          do k=1,nR
-            cflux(i,j,k)=0.d0
+            cflux(i,j,k)=0. _d 0
          enddo
+         
+         kBottom   = kLowC(i,j,bi,bj)
+         
          DO k=1,nLev
-          if (hFacC(i,j,k,bi,bj).gt.0.d0) then
+          if (hFacC(i,j,k,bi,bj).gt.0. _d 0) then
            caexport(i,j)= R_CP*rain_ratio(i,j,bi,bj)*bioac(i,j,k)*
-     &           (1.0-DOPfraction)*drF(k)*hFacC(i,j,k,bi,bj)
+     &           (1. _d 0-DOPfraction)*drF(k)*hFacC(i,j,k,bi,bj)
 c          exp_tot=exp_tot+caexport(i,j)
 c calculate flux to each layer from base of k
            Do ko=k+1,Nr
-            if (hFacC(i,j,ko,bi,bj).gt.0.d0) then
+            if (hFacC(i,j,ko,bi,bj).gt.0. _d 0) then
               if (ko .eq. k+1) then
                 flux_u = caexport(i,j)
               else
@@ -97,11 +100,11 @@ c calculate flux to each layer from base of k
 
 
 C flux through lower face of cell
-              if (omegaC(i,j,ko,bi,bj) .gt. 1.0) then
+              if (omegaC(i,j,ko,bi,bj) .gt. 1. _d 0) then
                 flux_l = flux_u
 
 c if at bottom, remineralize remaining flux
-                if (ko.eq.Nr.or.hFacC(i,j,ko+1,bi,bj).eq.0.d0) then
+                if (ko.eq.kBottom) then
                   if (iflx.eq.1) then
 c ... at surface
                      cflux(i,j,1)=cflux(i,j,1)+
@@ -109,23 +112,24 @@ c ... at surface
                   else
 
 c ... at bottom
-                     flux_l=0.d0
+                     flux_l=0. _d 0
                   endif
                 endif
               else
 c if dissolution, then use rate from Kier (1980) Geochem. Cosmochem. Acta
 c Kiers dissolution rate in %  per day
-                 KierRate = 7.177* ((1.0-omegaC(i,j,ko,bi,bj))**4.54)
+                 KierRate = 7.177 _d 0* 
+     &             ((1. _d 0-omegaC(i,j,ko,bi,bj))**4.54 _d 0)
 c convert to per s
 c Karsten finds Kier value not in 0/0 after all... therefore drop 100 factor
 c                DissolutionRate = KierRate/(100.0*86400.0)
-                 DissolutionRate = KierRate/(86400.0)
+                 DissolutionRate = KierRate/(86400. _d 0)
 c                flux_l = flux_u*(1.0-DissolutionRate*drF(k)/WsinkPIC)
 c Karstens version
 c - gives NaNs (because using kierrate, not dissolution rate)???
 c                flux_l = flux_u*(1.0-KierRate)**(drF(k)/WsinkPIC)
 c MICKS NEW VERSION... based on vertical sinking/remin balance
-                 dumrate = -1.0d0*DissolutionRate*drF(ko)*
+                 dumrate = -1. _d 0*DissolutionRate*drF(ko)*
      &                       hFacC(i,j,ko,bi,bj)/WsinkPIC
                  flux_l = flux_u*exp(dumrate)
 c TEST ............................
@@ -137,8 +141,8 @@ c    &            omegaC(i,j,ko,bi,bj)
 c           endif
 c TEST ............................
 c no flux to ocean bottom
-                 if (ko.eq.Nr.or.hFacC(i,j,ko+1,bi,bj).eq.0.d0)
-     &                      flux_l=0.d0
+                 if (ko.eq.kBottom)
+     &                      flux_l=0. _d 0
               endif
 
 c flux divergence
@@ -153,17 +157,17 @@ c TEST ............................
            else
 c if no layer below initial layer, remineralize
                if (ko.eq.k+1) then
-                if (iflx.eq.1.and.omegaC(i,j,k,bi,bj) .gt. 1.d0) then
+                if (iflx.eq.1.and.omegaC(i,j,k,bi,bj) .gt. 1. _d 0) then
 c ... at surface
                    cflux(i,j,1)=cflux(i,j,1)
-     &                  +bioac(i,j,k)*(1.0-DOPfraction)*
+     &                  +bioac(i,j,k)*(1. _d 0-DOPfraction)*
      &                    R_CP*rain_ratio(i,j,bi,bj)
      &                   *drF(k)*hFacC(i,j,k,bi,bj)/
      &                    (drF(1)*hFacC(i,j,1,bi,bj) )
                 else
 c ... at bottom
                   cflux(i,j,k)=cflux(i,j,k)
-     &                  +bioac(i,j,k)*(1.0-DOPfraction)*
+     &                  +bioac(i,j,k)*(1. _d 0-DOPfraction)*
      &                    R_CP*rain_ratio(i,j,bi,bj)
                 endif
                endif
@@ -177,14 +181,14 @@ c        flx_tot=0
 c        k=0
 c        do k=1,nR
 c          flx_tot=flx_tot+cflux(i,j,k)*drF(k)*hFacC(i,j,k,bi,bj)
-c          if (hFacC(i,j,k,bi,bj).gt.0) then
+c          if (hFacC(i,j,k,bi,bj).gt.0 _d 0) then
 c             knum=k
 c             omeg_bot=omegaC(i,j,k,bi,bj)
 c          endif
 c        enddo
-c        if (hFacC(i,j,k,bi,bj).gt.0) then
+c        if (hFacC(i,j,k,bi,bj).gt. 0. _d 0) then
 c         tmp=abs(exp_tot-flx_tot)
-c         if (tmp>1e-20) then
+c         if (tmp>1 _d -20) then
 c          print*,'QQ car_flux', knum,
 c    &                 omeg_bot, exp_tot, flx_tot, exp_tot-flx_tot
 c         endif

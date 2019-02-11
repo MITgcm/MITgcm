@@ -10,7 +10,7 @@ CBOP
 C     !ROUTINE: SEAICE_OCEANDRAG_COEFFS
 C     !INTERFACE:
       SUBROUTINE SEAICE_OCEANDRAG_COEFFS(
-     I     uIceLoc, vIceLoc,
+     I     uIceLoc, vIceLoc, HEFFMLoc,
      O     CwatC,
      I     iStep, myTime, myIter, myThid )
 
@@ -53,6 +53,8 @@ C     iStep  :: current sub-time step iterate
 C     u/vIceLoc :: local copies of the current ice velocity
       _RL uIceLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     HEFFMLoc  :: local copy of land-sea masks
+      _RL HEFFMLoc  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     CwatC     :: drag coefficients
       _RL CwatC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
@@ -62,6 +64,7 @@ C     i,j,bi,bj,ksrf :: loop indices
       INTEGER i,j,bi,bj
       INTEGER kSrf
       _RL     TEMPVAR
+      _RL     dragCoeff
 CEOP
 
       kSrf=1
@@ -70,7 +73,7 @@ CEOP
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+Oly-1
          DO i=1-OLx,sNx+OLy-1
-C     non-linear water drag coefficients DWATN
+C     non-linear water drag coefficients CwatC (DWATN)
 #ifdef OBCS_UVICE_OLD
           TEMPVAR = 0.25 _d 0*(
      &            ( ( uIceLoc(i  ,j,bi,bj)-uVel(i  ,j,kSrf,bi,bj) )
@@ -91,24 +94,19 @@ C     non-linear water drag coefficients DWATN
      &             *maskInS(i,j+1,bi,bj) )**2 )
 #endif /* OBCS_UVICE_OLD */
           IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
-           IF ( SEAICE_waterDrag_south.LE.0. ) THEN
-            CwatC(I,J,bi,bj)=0.
-           ELSEIF ( TEMPVAR
-     &           .LE.(0.25 _d 0/SEAICE_waterDrag_south)**2 ) THEN
-            CwatC(I,J,bi,bj)=0.25 _d 0
-           ELSE
-            CwatC(I,J,bi,bj)=SEAICE_waterDrag_south*SQRT(TEMPVAR)
-           ENDIF
+           dragCoeff = SEAICE_waterDrag_south*rhoConst
           ELSE
-           IF ( SEAICE_waterDrag.LE.0. ) THEN
-            CwatC(I,J,bi,bj)=0.
-           ELSEIF ( TEMPVAR.LE.(0.25 _d 0/SEAICE_waterDrag)**2 ) THEN
-            CwatC(I,J,bi,bj)=0.25 _d 0
-           ELSE
-            CwatC(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
-           ENDIF
+           dragCoeff = SEAICE_waterDrag      *rhoConst
           ENDIF
-          CwatC(I,J,bi,bj) = CwatC(I,J,bi,bj) * maskC(I,J,kSrf,bi,bj)
+          CwatC(I,J,bi,bj) = 0.25 _d 0
+C     This is the AD-proof version of 
+C         IF ( dragCoeff * SQRT(TEMPVAR) .GT. 0.25 _d 0 )
+C     which was previously implemented as
+C         IF ( TEMPVAR .GT. (0.25 _d 0/dragCoeff)**2 )
+C     I like this better:
+          IF ( dragCoeff**2 * TEMPVAR .GT. 0.0625 _d 0 )
+     &         CwatC(I,J,bi,bj) = dragCoeff*SQRT(TEMPVAR)
+          CwatC(I,J,bi,bj) = CwatC(I,J,bi,bj) * HEFFMLoc(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO

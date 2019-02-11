@@ -57,6 +57,12 @@ c         _END_MASTER( myThid )
       ENDIF
 #endif
 
+#ifdef ALLOW_SPOIL
+      IF ( useSPOIL ) THEN
+         CALL SPOIL_INIT_FIXED( myThid )
+      ENDIF
+#endif
+
 #ifdef ALLOW_DIAGNOSTICS
 C     Define diagnostics Names :
       IF ( useDiagnostics ) THEN

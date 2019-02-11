@@ -19,6 +19,7 @@
  ivdc_kappa=10.,
  implicitDiffusion=.TRUE.,
  allowFreezing=.TRUE.,
+ salt_stayPositive=.TRUE.,
  exactConserv=.TRUE.,
  useRealFreshWaterFlux=.TRUE.,
  useCDscheme=.TRUE.,
@@ -86,7 +87,7 @@
  meridWindFile=  'trenberth_tauy.bin',
  thetaClimFile=  'lev_sst.bin',
  saltClimFile=   'lev_sss.bin',
- surfQFile=      'ncep_qnet.bin',
+ surfQnetFile=   'ncep_qnet.bin',
  the_run_name=   'global_ocean.90x40x15',
  EmPmRFile=      'ncep_emp.bin',
  &

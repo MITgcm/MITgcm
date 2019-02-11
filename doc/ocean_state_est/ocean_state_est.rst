@@ -465,6 +465,18 @@ section (non quadratic cost function). To this end one sets
 with ``‘_’``, and set ``gencost_barfile`` to one of ``m_trVol``,
 ``m_trHeat``, and ``m_trSalt``.
 
+Note: the functionality in ``cost_gencost_transp.F`` is not regularly tested.
+Users interested in computing volumetric transports through a section
+are recommended to use the ``m_horflux_vol`` capabilities described above as 
+it is regularly tested. Users interested in computing heat and salt transport 
+should note the following about ``m_trHeat`` and ``m_trSalt``:
+
+    1. The associated advection scheme with transports may be inconsistent with
+       the model unless ``ENUM_CENTERED_2ND`` is implemented 
+    2. Bolus velocities are not included
+    3. Diffusion components are not included
+
+
 .. table:: Pre-defined ``gencost_name`` special cases (as of checkpoint
            65z; :numref:`v4custom`).
   :name: gencost_ecco_name
@@ -1245,8 +1257,8 @@ Then, download the setup from the `MITgcm_contrib/` area by logging into the cvs
     % cvs login
     %     ( enter the CVS password: "cvsanon" )
 
-and following the directions provided `here for global_oce_cs32 <http://mitgcm.org/viewvc/*checkout*/MITgcm/MITgcm_contrib/verification_other/global_oce_cs32/README>`__
-or `here for global_oce_llc90 <http://mitgcm.org/viewvc/*checkout*/MITgcm/MITgcm_contrib/verification_other/global_oce_llc90/README>`__. These model configurations
+and following the directions provided `here for global_oce_cs32 <https://github.com/MITgcm/verification_other/tree/master/global_oce_cs32>`__
+or `here for global_oce_llc90 <https://github.com/MITgcm/verification_other/tree/master/global_oce_llc90>`__. These model configurations
 are used for daily regression tests to ensure continued availability of the tested estimation package features discussed in :ref:`chap_state_estimation`.
 Daily results of these tests, which currently run on the `glacier` cluster, are reported `on this site <http://mitgcm.org/public/testing.html>`__.
 To this end, one sets a `crontab job <https://www.computerhope.com/unix/ucrontab.htm>`__ that typically executes the script reported below. 

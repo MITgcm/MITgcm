@@ -192,7 +192,7 @@ C     recompute strainrates from up-to-date velocities
      O        e11, e22, e12,
      I        0, myTime, myIter, myThid )
 CML      CALL SEAICE_CALC_VISCOSITIES(
-CML     I     e11, e22, e12, zMin, zMax, hEffM, press0, tensileStrFac,
+CML     I     e11, e22, e12, zMin, zMax, HEFFM, press0, tensileStrFac,
 CML     O     eta, etaZ, zeta, zetaZ, press, deltaC,
 CML     I     0, myTime, myIter, myThid )
 C     but use old viscosities and pressure for the

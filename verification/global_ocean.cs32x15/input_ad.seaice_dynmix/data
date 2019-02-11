@@ -99,6 +99,6 @@
 # meridWindFile  ='trenberth_tauy.bin',
 # thetaClimFile  ='lev_surfT_cs_12m.bin',
 # saltClimFile   ='lev_surfS_cs_12m.bin',
-# surfQFile      ='shiQnet_cs32.bin',
+# surfQnetFile   ='shiQnet_cs32.bin',
 # EmPmRFile      ='shiEmPR_cs32.bin',
  &

@@ -432,7 +432,7 @@ CML   I do not like these hidden regularisations, why do we need to
 CML   divide by mass?
              evpAlphaC(I,J,bi,bj) = SQRT(zetaC(I,J)
      &            * EVPcFac / MAX(seaiceMassC(I,J,bi,bj), 1.D-04)
-     &            * recip_rA(I,J,bi,bj) ) * maskC(I,J,kSrf,bi,bj)
+     &            * recip_rA(I,J,bi,bj) ) * HEFFM(I,J,bi,bj)
              evpAlphaC(I,J,bi,bj) =
      &            MAX(evpAlphaC(I,J,bi,bj),SEAICEaEVPalphaMin)
             ENDDO
@@ -442,8 +442,8 @@ C     compute zetaZ and deltaZ by simple averaging (following
 C     Bouillon et al., 2013)
           DO J=1,sNy+1
            DO I=1,sNx+1
-            sumNorm = maskC(I,J,  kSrf,bi,bj)+maskC(I-1,J,  kSrf,bi,bj)
-     &              + maskC(I,J-1,kSrf,bi,bj)+maskC(I-1,J-1,kSrf,bi,bj)
+            sumNorm = HEFFM(I,J,  bi,bj)+HEFFM(I-1,J,  bi,bj)
+     &              + HEFFM(I,J-1,bi,bj)+HEFFM(I-1,J-1,bi,bj)
             IF ( sumNorm.GT.0. _d 0 ) sumNorm = 1. _d 0 / sumNorm
             zetaZ(I,J,bi,bj) = sumNorm *
      &           ( zetaC(I,  J) + zetaC(I-1,J-1)
@@ -465,7 +465,7 @@ C     regularize zeta if necessary
            DO i=0,sNx+1
             zetaC(I,J)  = MAX(zMin(I,J,bi,bj),MIN(zMax(I,J,bi,bj)
      &           ,zetaC(I,J)))
-CML            zetaC(I,J)   = zetaC(I,J)*hEffM(I,J,bi,bj)
+CML            zetaC(I,J)   = zetaC(I,J)*HEFFM(I,J,bi,bj)
 C
 C     zMin, zMax are defined at C-points, make sure that they are not
 C     masked by boundaries/land points
@@ -520,19 +520,19 @@ C     save new eta for diagnostics
 #endif /* ALLOW_DIAGNOSTICS */
              seaice_div    (I,J) =
      &            ( 2. _d 0 *zetaC(I,J)*ep(I,J) - pressC(I,J)
-     &            ) * hEffM(I,J,bi,bj)
+     &            ) * HEFFM(I,J,bi,bj)
              seaice_tension(I,J) = 2. _d 0*MIN(zetaC(I,J),zetaMaxC)
-     &            * em(I,J) * hEffM(I,J,bi,bj)
+     &            * em(I,J) * HEFFM(I,J,bi,bj)
             ENDDO
            ENDDO
            DO j=1,sNy+1
             DO i=1,sNx+1
              sumNorm = 0.25 _d 0
 CML            sumNorm = 1.0 _d 0
-CML     &           / MAX(1.D0,maskC(I,  J,  kSrf,bi,bj)
-CML     &           +          maskC(I-1,J,  kSrf,bi,bj)
-CML     &           +          maskC(I,  J-1,kSrf,bi,bj)
-CML     &           +          maskC(I-1,J-1,kSrf,bi,bj) )
+CML     &           / MAX(1.D0,HEFFM(I,  J,  bi,bj)
+CML     &           +          HEFFM(I-1,J,  bi,bj)
+CML     &           +          HEFFM(I,  J-1,bi,bj)
+CML     &           +          HEFFM(I-1,J-1,bi,bj) )
 C     Averaging the squares gives more accurate viscous-plastic behavior
 C     than squaring the averages
              etaDenZ  =
@@ -560,9 +560,9 @@ C     than squaring the averages
             DO I=0,sNx
              seaice_div    (I,J) =
      &            ( 2. _d 0 *zetaC(I,J)*ep(I,J) - pressC(I,J)
-     &            ) * hEffM(I,J,bi,bj)
+     &            ) * HEFFM(I,J,bi,bj)
              seaice_tension(I,J) = 2. _d 0*zetaC(I,J)
-     &            * em(I,J) * hEffM(I,J,bi,bj)
+     &            * em(I,J) * HEFFM(I,J,bi,bj)
             ENDDO
            ENDDO
            DO J=1,sNy+1
@@ -596,12 +596,12 @@ C     sigma1 and sigma2 are computed on C points
      &           * ( evpAlphaC(I,J,bi,bj) - evpRevFac )
      &           + seaice_div(I,J)
      &           ) * denom1(I,J,bi,bj)
-     &           *hEffM(I,J,bi,bj)
+     &           *HEFFM(I,J,bi,bj)
             seaice_sigma2 (I,J,bi,bj) = ( seaice_sigma2 (I,J,bi,bj)
      &           * ( evpAlphaC(I,J,bi,bj) - evpRevFac )
      &           + seaice_tension(I,J)*recip_evpRevFac
      &           ) * denom2(I,J,bi,bj)
-     &         *hEffM(I,J,bi,bj)
+     &         *HEFFM(I,J,bi,bj)
 #ifdef SEAICE_EVP_ELIMINATE_UNDERFLOWS
 C     Code to avoid very small numbers that can degrade performance.
 C     Many compilers can handle this more efficiently with the help of
@@ -740,12 +740,12 @@ C
 C     set up rhs for stepping the velocity field
 C
         CALL SEAICE_OCEANDRAG_COEFFS(
-     I       uIce, vIce,
+     I       uIce, vIce, HEFFM,
      O       DWATN,
      I       iEVPstep, myTime, myIter, myThid )
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
       IF (SEAICEbasalDragK2.GT.0. _d 0) CALL SEAICE_BOTTOMDRAG_COEFFS(
-     I       uIce, vIce,
+     I       uIce, vIce, HEFFM,
 #ifdef SEAICE_ITD
      I       HEFFITD, AREAITD, AREA,
 #else
@@ -814,9 +814,9 @@ C     coriols terms
            ENDDO
           ENDDO
 #ifdef SEAICE_ALLOW_MOM_ADVECTION
-          IF ( SEAICEmomAdvection ) THEN 
-           DO J=1-Oly,sNy+Oly
-            DO I=1-Olx,sNx+Olx
+          IF ( SEAICEmomAdvection ) THEN
+           DO J=1-OLy,sNy+OLy
+            DO I=1-OLx,sNx+OLx
              gUmom(I,J) = 0. _d 0
              gVmom(I,J) = 0. _d 0
             ENDDO

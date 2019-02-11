@@ -56,7 +56,7 @@ c shielding effect
             qsw(i,j,bi,bj) = qsw(i,j,bi,bj) * fac
 #if (defined ALLOW_EXF) && (defined ALLOW_ATM_TEMP)
 c the fresh water flux at the top of the ice
-            EmPmR(i,j,bi,bj)  = maskC(i,j,1,bi,bj)*(
+            EmPmR(i,j,bi,bj)  = HEFFM(i,j,bi,bj)*(
      &         fac * EVAP(i,j,bi,bj)
      &             - PRECIP(i,j,bi,bj)
 #ifdef ALLOW_RUNOFF

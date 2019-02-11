@@ -327,6 +327,8 @@ C- Temp. & Salt params:
 C     tempStepping   :: Turns temperature equation time-stepping on/off
 C     saltStepping   :: Turns salinity equation time-stepping on/off
 C     addFrictionHeating :: account for frictional heating
+C     temp_stayPositive :: use Smolarkiewicz Hack to ensure Temp stays positive
+C     salt_stayPositive :: use Smolarkiewicz Hack to ensure Salt stays positive
 C     tempAdvection  :: Flag which turns advection of temperature on and off.
 C     tempVertDiff4  :: use vertical bi-harmonic diffusion for temperature
 C     tempIsActiveTr :: Pot.Temp. is a dynamically active tracer
@@ -424,7 +426,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & upwindVorticity, highOrderVorticity,
      & useAbsVorticity, upwindShear,
      & momStepping, calc_wVelocity, tempStepping, saltStepping,
-     & addFrictionHeating,
+     & addFrictionHeating, temp_stayPositive, salt_stayPositive,
      & tempAdvection, tempVertDiff4, tempIsActiveTr, tempForcing,
      & saltAdvection, saltVertDiff4, saltIsActiveTr, saltForcing,
      & maskIniTemp, maskIniSalt, checkIniTemp, checkIniSalt,
@@ -497,6 +499,8 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL tempStepping
       LOGICAL saltStepping
       LOGICAL addFrictionHeating
+      LOGICAL temp_stayPositive
+      LOGICAL salt_stayPositive
       LOGICAL tempAdvection
       LOGICAL tempVertDiff4
       LOGICAL tempIsActiveTr

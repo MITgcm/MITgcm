@@ -48,6 +48,7 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+#include "SEAICE.h"      
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
 #endif
@@ -100,6 +101,7 @@ C  afy           :: horizontal advective flux, y direction
       _RL afx   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afy   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
+#ifdef ALLOW_GENERIC_ADVDIFF
 C !LOCAL VARIABLES: ====================================================
 C  maskLocW      :: 2-D array for mask at West points
 C  maskLocS      :: 2-D array for mask at South points
@@ -252,11 +254,11 @@ C--   Make local copy of sea-ice field and mask West & South
        DO i=1-OLx,sNx+OLx
          localTij(i,j)=iceFld(i,j)
 #ifdef ALLOW_OBCS
-         maskLocW(i,j) = _maskW(i,j,k,bi,bj)*maskInW(i,j,bi,bj)
-         maskLocS(i,j) = _maskS(i,j,k,bi,bj)*maskInS(i,j,bi,bj)
+         maskLocW(i,j) = SIMaskU(i,j,bi,bj)*maskInW(i,j,bi,bj)
+         maskLocS(i,j) = SIMaskV(i,j,bi,bj)*maskInS(i,j,bi,bj)
 #else /* ALLOW_OBCS */
-         maskLocW(i,j) = _maskW(i,j,k,bi,bj)
-         maskLocS(i,j) = _maskS(i,j,k,bi,bj)
+         maskLocW(i,j) = SIMaskU(i,j,bi,bj)
+         maskLocS(i,j) = SIMaskV(i,j,bi,bj)
 #endif /* ALLOW_OBCS */
        ENDDO
       ENDDO
@@ -387,6 +389,18 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
          ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_X(     bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
+     O         af, myThid )
+         ELSEIF (advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
+     &           advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
+     &           advectionScheme.EQ.ENUM_PPM_WENO_LIMIT) THEN
+          CALL GAD_PPM_ADV_X( advectionScheme, bi, bj, k , .TRUE.,
+     I         SEAICE_deltaTtherm, uFld, uTrans, localTij,
+     O         af, myThid )
+         ELSEIF (advectionScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
+     &           advectionScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
+     &           advectionScheme.EQ.ENUM_PQM_WENO_LIMIT) THEN
+          CALL GAD_PQM_ADV_X( advectionScheme, bi, bj, k , .TRUE.,
+     I         SEAICE_deltaTtherm, uFld, uTrans, localTij,
      O         af, myThid )
 #endif
          ELSE
@@ -590,6 +604,18 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
           CALL GAD_OS7MP_ADV_Y(     bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
+         ELSEIF (advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
+     &           advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
+     &           advectionScheme.EQ.ENUM_PPM_WENO_LIMIT) THEN
+          CALL GAD_PPM_ADV_Y( advectionScheme, bi, bj, k , .TRUE.,
+     I         SEAICE_deltaTtherm, vFld, vTrans, localTij,
+     O         af, myThid )
+         ELSEIF (advectionScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
+     &           advectionScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
+     &           advectionScheme.EQ.ENUM_PQM_WENO_LIMIT) THEN
+          CALL GAD_PQM_ADV_Y( advectionScheme, bi, bj, k , .TRUE.,
+     I         SEAICE_deltaTtherm, vFld, vTrans, localTij,
+     O         af, myThid )
 #endif
          ELSE
            WRITE(msgBuf,'(A,I3,A)')
@@ -760,5 +786,6 @@ C-    explicit advection is done ; store tendency in gFld:
       ENDIF
 #endif /* ALLOW_DEBUG */
 
+#endif /* ALLOW_GENERIC_ADVDIFF */
       RETURN
       END

@@ -100,9 +100,9 @@ C norm of angle of rhs
 C solve for norm:
 C ===============
            IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
-            tmpscal1 = 1. _d 0 /SEAICE_waterDrag_south
+            tmpscal1 = 1. _d 0 /rhoConst/SEAICE_waterDrag_south
            ELSE
-            tmpscal1 = 1. _d 0 /SEAICE_waterDrag
+            tmpscal1 = 1. _d 0 /rhoConst/SEAICE_waterDrag
            ENDIF
 C polynomial coefficients
            tmpscal2= tmpscal1*tmpscal1*mIceCor*mIceCor
@@ -118,9 +118,9 @@ C discriminant
 C solve for angle:
 C ================
            IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
-            tmpscal1 = SEAICE_waterDrag_south
+            tmpscal1 = SEAICE_waterDrag_south*rhoConst
            ELSE
-            tmpscal1 = SEAICE_waterDrag
+            tmpscal1 = SEAICE_waterDrag*rhoConst
            ENDIF
 
            tmpscal2= tmpscal1*sol_n*sol_n
@@ -168,8 +168,8 @@ C     Apply masks (same/similar to seaice_evp.F/seaice_lsr.F)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          uIce_fd(i,j,bi,bj)=uIce_fd(i,j,bi,bj)* _maskW(i,j,kSrf,bi,bj)
-          vIce_fd(i,j,bi,bj)=vIce_fd(i,j,bi,bj)* _maskS(i,j,kSrf,bi,bj)
+          uIce_fd(i,j,bi,bj)=uIce_fd(i,j,bi,bj)*SIMaskU(i,j,bi,bj)
+          vIce_fd(i,j,bi,bj)=vIce_fd(i,j,bi,bj)*SIMaskV(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO

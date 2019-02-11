@@ -23,6 +23,9 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD.h"
+#endif /* ALLOW_GENERIC_ADVDIFF */
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE_TRACER.h"
@@ -231,8 +234,8 @@ C--   set default sea ice parameters
       SEAICE_ageTracer      = .FALSE.
       useHB87stressCoupling = .FALSE.
       SEAICEupdateOceanStress = .TRUE.
-      SEAICEscaleSurfStress = .FALSE.
-      SEAICEaddSnowMass     = .FALSE.
+      SEAICEscaleSurfStress = .TRUE.
+      SEAICEaddSnowMass     = .TRUE.
       usePW79thermodynamics = .TRUE.
 C     start of ridging parameters
       useHibler79IceStrength= .TRUE.
@@ -287,8 +290,8 @@ C     end ridging parampeters
       SEAICE_2ndOrderBC  = .FALSE.
       SEAICE_clipVelocities = .FALSE.
       SEAICE_maskRHS     = .FALSE.
-      SEAICEetaZmethod   = 0
-      SEAICEadvScheme    = 2
+      SEAICEetaZmethod   = 3
+      SEAICEadvScheme    = 77
       SEAICEadvSchArea   = UNSET_I
       SEAICEadvSchHeff   = UNSET_I
       SEAICEadvSchSnow   = UNSET_I
@@ -314,10 +317,8 @@ C     This should be the default for both JFNK and for LSR but in order
 C     to not jeopardize any existing results, and because it does not yet
 C     work for llc/cubed-sphere topologies, we require that the user knows
 C     what he/she is doing when turning this on.
-CML      SEAICE_OLx          = OLx-2
-CML      SEAICE_OLy          = OLy-2
-      SEAICE_OLx          = UNSET_I
-      SEAICE_OLy          = UNSET_I
+      SEAICE_OLx          = OLx-2
+      SEAICE_OLy          = OLy-2
       JFNKgamma_nonlin    = 1. _d -05
       JFNKgamma_lin_min   = 0.10 _d 0
       JFNKgamma_lin_max   = 0.99 _d 0
@@ -359,9 +360,9 @@ C        c1=1.5/N, c2=42*c1, c3=3.3
       SEAICE_rhoIce      = 0.91   _d +03
       SEAICE_rhoSnow     = 330.   _d 0
       ICE2WATR           = UNSET_RL
-      SEAICE_drag        = 0.002  _d 0
+      SEAICE_drag        = 0.001  _d 0
       OCEAN_drag         = 0.001  _d 0
-      SEAICE_waterDrag   = 5.5    _d 0
+      SEAICE_waterDrag   = 0.0055 _d 0
       SEAICE_dryIceAlb   = 0.75   _d 0
       SEAICE_wetIceAlb   = 0.66   _d 0
       SEAICE_drySnowAlb  = 0.84   _d 0
@@ -445,7 +446,7 @@ C  after PARM01 was read (see below)
        SEAICE_PDF(l)     = UNSET_RL
       ENDDO
 #endif
-      SEAICE_useMultDimSnow = .FALSE.
+      SEAICE_useMultDimSnow = .TRUE.
 C     default to be set later (ocean-seaice turbulent flux coeff):
       SEAICE_mcPheeStepFunc = .FALSE.
       SEAICE_mcPheeTaper    = UNSET_RL
@@ -836,23 +837,10 @@ C     and EVP, JFNK, and Krylov solvers
       IF ( .NOT. SEAICE_no_slip ) SEAICE_2ndOrderBC = .FALSE.
       IF ( SEAICEuseLSR ) SEAICE_2ndOrderBC = .FALSE.
 
-C     So far we use the restrictive additive Schwartz method only in
-C     the preconditioner for the Krylov methods by default
-      IF ( SEAICE_OLx.EQ.UNSET_I ) THEN
-       SEAICE_OLx = 0
-       IF ( SEAICEuseJFNK .OR. SEAICEuseKrylov ) THEN
-        SEAICE_OLx = OLx-2
-C     2nd order boundary conditions require one more row of overlap
-        IF ( SEAICE_2ndOrderBC ) SEAICE_OLx = OLx-3
-       ENDIF
-      ENDIF
-      IF ( SEAICE_OLy.EQ.UNSET_I ) THEN
-       SEAICE_OLy = 0
-       IF ( SEAICEuseJFNK .OR. SEAICEuseKrylov ) THEN
-        SEAICE_OLy = OLy-2
-C     2nd order boundary conditions require one more row of overlap
-        IF ( SEAICE_2ndOrderBC ) SEAICE_OLy = OLy-3
-       ENDIF
+C     2nd order boundary conditions require one more row of overlap for the additive Schwartz method
+      IF ( SEAICE_2ndOrderBC ) THEN
+       SEAICE_OLx = OLx-3
+       SEAICE_OLy = OLy-3
       ENDIF
 
 C-    The old ways of specifying mcPheeTaper, mcPheePiston & frazilFrac:
@@ -972,6 +960,17 @@ C     Set diffusivity to some sensible values if not done in data.seaice
      &     SEAICEdiffKhSalt = SEAICEdiffKhHeff
       IF ( SEAICE_EPS_SQ .EQ. -99999. )
      &     SEAICE_EPS_SQ = SEAICE_EPS * SEAICE_EPS
+
+#ifdef ALLOW_GENERIC_ADVDIFF
+      SEAICEmultiDimAdvection = .TRUE.
+      IF ( SEAICEadvScheme.EQ.ENUM_CENTERED_2ND
+     & .OR.SEAICEadvScheme.EQ.ENUM_UPWIND_3RD
+     & .OR.SEAICEadvScheme.EQ.ENUM_CENTERED_4TH ) THEN
+       SEAICEmultiDimAdvection = .FALSE.
+      ENDIF
+#else
+      SEAICEmultiDimAdvection = .FALSE.
+#endif /* ALLOW_GENERIC_ADVDIFF */
 
 C-    Retired parameters
       IF ( SEAICEnewtonIterMax .NE. UNSET_I ) THEN
@@ -1306,6 +1305,35 @@ C     Check the consitency of a few parameters
      &      SEAICE_emissivity, '/5.67e-8.'
        CALL PRINT_ERROR( msgBuf , myThid)
        STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+      ENDIF
+
+C--   Since the default of SEAICE_waterDrag has changed, issue a warning
+C     in case of large values
+      chkFlag = .FALSE.
+      IF ( SEAICE_waterDrag .GT. 1. _d 0 ) THEN
+       WRITE(msgBuf,'(A,A,F5.2)') '** WARNING ** SEAICE_READPARMS: ',
+     &      'SEAICE_waterDrag = ', SEAICE_waterDrag
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       chkFlag = .TRUE.
+      ENDIF
+      IF ( SEAICE_waterDrag_South .GT. 1. _d 0 ) THEN
+       WRITE(msgBuf,'(A,A,F5.2)') '** WARNING ** SEAICE_READPARMS: ',
+     &      'SEAICE_waterDrag_South = ', SEAICE_waterDrag_South
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       chkFlag = .TRUE.
+      ENDIF
+      IF ( chkFlag ) THEN
+       WRITE(msgBuf,'(3A)') '** WARNING ** SEAICE_READPARMS: ',
+     &      'That is 3 orders of magnitude larger',
+     &      ' than the default of 5.5e-3.'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '** WARNING ** SEAICE_READPARMS: ',
+     &      'Are you maybe using an old (pre Jun2018) data.seaice?'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
       ENDIF
 
       IF ( DIFF1 .EQ. UNSET_RL ) THEN

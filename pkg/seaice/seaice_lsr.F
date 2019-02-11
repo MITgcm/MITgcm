@@ -149,6 +149,7 @@ C     tendency due to advection of momentum
       _RL residU_fd, residV_fd
       _RL residUmix, residVmix
 #endif /* SEAICE_ALLOW_FREEDRIFT */
+      _RL areaMinLoc
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -201,7 +202,10 @@ C     initialise fractional areas at velocity points
           areaS(I,J,bi,bj) = 1. _d 0
          ENDDO
         ENDDO
+        areaMinLoc = 0. _d 0
         IF ( SEAICEscaleSurfStress ) THEN
+         areaMinLoc = 1. _d -10
+CML         areaMinLoc = SEAICE_EPS
          DO J=jMin,jMax
           DO I=iMin,iMax
            areaW(I,J,bi,bj) =
@@ -322,18 +326,18 @@ CADJ STORE vice = comlev1_dynsol, kind=isbyte, key = itmpkey
      I     ipass, myTime, myIter, myThid )
 
       CALL SEAICE_CALC_VISCOSITIES(
-     I     e11, e22, e12, zMin, zMax, hEffM, press0, tensileStrFac,
+     I     e11, e22, e12, zMin, zMax, HEFFM, press0, tensileStrFac,
      O     eta, etaZ, zeta, zetaZ, press, deltaC,
      I     ipass, myTime, myIter, myThid )
 
       CALL SEAICE_OCEANDRAG_COEFFS(
-     I     uIceC, vIceC,
+     I     uIceC, vIceC, HEFFM,
      O     DWATN,
      I     ipass, myTime, myIter, myThid )
 
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
       IF (SEAICEbasalDragK2.GT.0. _d 0) CALL SEAICE_BOTTOMDRAG_COEFFS(
-     I     uIceC, vIceC,
+     I     uIceC, vIceC, HEFFM,
 #ifdef SEAICE_ITD
      I     HEFFITD, AREAITD, AREA,
 #else
@@ -549,13 +553,13 @@ C--   Calculate initial residual of the linearised system
      &         / ( 1. _d 0 - seaiceMaskU(i,j,bi,bj)
      &           + seaiceMassU(i,j,bi,bj)*recip_deltaT
      &           + HALF*( dragSym(i,j,bi,bj) + dragSym(i-1,j,bi,bj) )
-     &                 * areaW(i,j,bi,bj)
+     &                 * MAX(areaW(i,j,bi,bj),areaMinLoc)
      &           )
             vIce_fd(i,j,bi,bj) = FORCEY(i,j,bi,bj)
      &         / ( 1. _d 0 - seaiceMaskV(i,j,bi,bj)
      &           + seaiceMassV(i,j,bi,bj)*recip_deltaT
      &           + HALF*( dragSym(i,j,bi,bj) + dragSym(i,j-1,bi,bj) )
-     &                 * areaS(i,j,bi,bj)
+     &                 * MAX(areaS(i,j,bi,bj),areaMinLoc)
      &           )
            ENDDO
           ENDDO
@@ -1530,8 +1534,8 @@ C     contribution of sigma12 to rhs of u-equation
      &       * 0.5 _d 0 * ( vIceC(I,J,bi,bj) + vIceC(I-1,J,bi,bj) )
      &       )
 C     free slip conditions (sig12=0) are taken care of by masking sig12
-     &       *maskC(I  ,J  ,kSrf,bi,bj)*maskC(I-1,J  ,kSrf,bi,bj)
-     &       *maskC(I  ,J-1,kSrf,bi,bj)*maskC(I-1,J-1,kSrf,bi,bj)
+     &       *HEFFM(I  ,J  ,bi,bj)*HEFFM(I-1,J  ,bi,bj)
+     &       *HEFFM(I  ,J-1,bi,bj)*HEFFM(I-1,J-1,bi,bj)
 C     no slip boundary conditions (v(i-1)=-v(i))
 C     v(i)+v(i-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with v(i)-v(i-1)
@@ -1553,8 +1557,8 @@ C     we do not have to add any metric terms, because they cancel.
      &        * _recip_dyU(I,J,bi,bj)
      &        )
 C     free slip conditions (sig12=0) are taken care of by masking sig12
-     &        *maskC(I  ,J  ,kSrf,bi,bj)*maskC(I-1,J  ,kSrf,bi,bj)
-     &        *maskC(I  ,J-1,kSrf,bi,bj)*maskC(I-1,J-1,kSrf,bi,bj)
+     &        *HEFFM(I  ,J  ,bi,bj)*HEFFM(I-1,J  ,bi,bj)
+     &        *HEFFM(I  ,J-1,bi,bj)*HEFFM(I-1,J-1,bi,bj)
 C     no slip boundary conditions (u(j-1)=-u(j))
 C     u(j)+u(j-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with u(j)-u(j-1)
@@ -1662,8 +1666,8 @@ C     contribution of sigma12 to rhs of v-equation
      &       * 0.5 _d 0 * ( uIceC(I,J,bi,bj) + uIceC(I,J-1,bi,bj) )
      &       )
 C     free slip conditions (sig12=0) are taken care of by masking sig12,
-     &       *maskC(I  ,J  ,kSrf,bi,bj)*maskC(I-1,J  ,kSrf,bi,bj)
-     &       *maskC(I  ,J-1,kSrf,bi,bj)*maskC(I-1,J-1,kSrf,bi,bj)
+     &       *HEFFM(I  ,J  ,bi,bj)*HEFFM(I-1,J  ,bi,bj)
+     &       *HEFFM(I  ,J-1,bi,bj)*HEFFM(I-1,J-1,bi,bj)
 C     no slip boundary conditions (u(j-1)=-u(j))
 C     u(j)+u(j-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with u(j)-u(j-1)
@@ -1685,8 +1689,8 @@ C     we do not have to add any metric terms, because they cancel.
      &        * _recip_dxV(I,J,bi,bj)
      &        )
 C     free slip conditions (sig12=0) are taken care of by masking sig12
-     &        *maskC(I  ,J  ,kSrf,bi,bj)*maskC(I-1,J  ,kSrf,bi,bj)
-     &        *maskC(I  ,J-1,kSrf,bi,bj)*maskC(I-1,J-1,kSrf,bi,bj)
+     &        *HEFFM(I  ,J  ,bi,bj)*HEFFM(I-1,J  ,bi,bj)
+     &        *HEFFM(I  ,J-1,bi,bj)*HEFFM(I-1,J-1,bi,bj)
 C     no slip boundary conditions (v(i-1)=-v(i))
 C     v(i)+v(i-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with v(i)-v(i-1)

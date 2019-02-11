@@ -26,13 +26,18 @@
 @string{jcp = {J.~Comput.~Phys.}}
 @string{jfm = {J.~Fluid Mech.}}
 @string{jgr = {J.~Geophys.~Res.}}
+@string{jgra = {J.~Geophys.~Res. Atmospheres}}
+@string{jgro = {J.~Geophys.~Res. Oceans}}
 @string{ijrs  = {Int.~J.~Remote Sensing}}
 @string{jms = {J.~Mar.~Sys.}}
+@string{jmet = {J.~Meteor.}}
 @string{jpo = {J.~Phys.~Oceanogr.}}
 @string{mpi = {MPI f\"ur Meteorologie}}
 @string{mcp = {Meth. Comput. Phys.}}
 @string{mwr     = {Mon.~Wea.~Rev.}}
 @string{om  = {Ocean Modelling}}
+@string{os  = {Ocean Science}}
+@string{ocn  = {Oceanography}}
 @string{pf = {Physics of Fluids}}
 @string{pd = {Physica D.}}
 @string{ptrsl   = {{Phil.~Trans.~R.~Soc.~Lond.}}}
@@ -145,6 +150,18 @@
   year = {2017}
 }
 
+@Article{beckmann:99,
+  author =   {Beckmann, A. and H. H. Hellmer and R. Timmermann},
+  title =    {A numerical model of the Weddell Sea: Large-scale circulation and water mass distribution},
+  journal =    jgro,
+  year =   1999,
+  volume =   104,
+  number =   {C10},
+  pages =  {23375–23391},
+  doi   =  {10.1029/1999JC900194},
+}
+
+
 @Article{bouillon13,
   author =	 {Bouillon, S. and T. Fichefet and V. Legat and G. Madec},
   title =	 {The Elastic-Viscous-Plastic Method Revisited},
@@ -159,6 +176,27 @@
   url =		 {http://dx.doi.org/10.1016/j.ocemod.2013.05.013},
 }
 
+
+@Article{bryan:63,
+  author =	 {Bryan, K.},
+  title =	 {A numerical investigation of a nonlinear model of a wind-driven ocean},
+  journal =	 jas,
+  volume =	 20,
+  pages =	 {594-606},
+  year =	 1963,
+}
+
+
+@Article{bryan:72,
+  author =	 {Bryan, K. and M.D. Cox},
+  title =	 {An approximate equation of state for numerical models of ocean circulation},
+  journal =	 jpo,
+  volume =	 2,
+  pages =	 {510--514},
+  doi   =        {10.1175/1520-0485(1972)002<0510:AAEOSF>2.0.CO;2},
+  year =	 1972,
+}
+
 @Article{bryan:75,
   author =	 {Bryan, K. and S. Manabe and R.C. Pacanowski},
   title =	 {A global ocean-atmosphere climate model. Part II. The oceanic circulation},
@@ -167,6 +205,32 @@
   pages =	 {30--46},
   year =	 1975,
 }
+
+
+@Article{bryan:79,
+  author =	 {Bryan, K. and L.J. Lewis},
+  title =	 {A water mass model of the world ocean},
+  journal =	 jgr,
+  volume =	 84,
+  number =   {C5},
+  pages =	 {2503--2517},
+  doi =     {10.1029/JC084iC05p02503},
+  year =	 1979,
+}
+
+
+<@techreport{burridge:77,
+ author       = {Burridge, D.M. and J. Haseler},
+ year         = {1977},
+ title        = {A Model for medium range weather forecasting: Adiabatic Formulation},
+ institution  = {ECMWF},
+ type         = {Technical Report},
+ number       = {4},
+ address      = {Bracknell, U.K.},
+ pages        = {196 pp.},
+ url          = {https://www.ecmwf.int/sites/default/files/elibrary/1977/8495-model-medium-range-weather-forecasts-adiabatic-formulation.pdf},
+}
+
 
 @Article{cam:04,
   author =   {Campin, J.-M. and A. Adcroft and C. Hill and J. Marshall},
@@ -195,8 +259,7 @@
   title =	 {Sensitivity of Simulated {A}rctic Sea Ice to
                   Realistic Ice Thickness Distributions and Snow
                   Parameterizations},
-  journal =	 jgr,
-  issn =	 {2169-9291},
+  journal =	 jgro,
   year = 	 2014,
   volume = 	 119,
   number = 	 1,
@@ -237,6 +300,17 @@ for use in general circulation models},
  note         = {http://www.gmao.nasa.gov/}
 }
 
+@Article{christianson:94,
+ author       = {Christianson, B.},
+ year         = {1994},
+ title        = {Reverse accumulation and attractive fixed points},
+ journal      = {Optim. Method. Softw.},
+ volume       = {9},
+ pages        = {307-322},
+ doi          = {10.1080/10556789408805572},
+}
+
+
 @Article{clarke:70,
  author       = {Clarke, R.H.},
  year         = {1970},
@@ -256,6 +330,14 @@ for use in general circulation models},
   pages =        {1-5 (Unpublished manuscript)}
 }
 
+@book{cushmanroisin:11,
+ author   = {Cushman-Roisin, B. and J.-M. Beckers},
+ title    = {Introduction to Geophysical Fluid Dynamics, 2nd Edition},
+ year   = 2011,
+ publisher  = {Academic Press},
+ address        = {New York},
+ pages    = {875 pp.},
+}
 
 
 @Article{deftow:94,
@@ -330,8 +412,10 @@ resistance for atmospheric general circulation models as represented by the Simp
                    Oceanic Vertical Mixing: Tests at Station Papa and Long-Term
                    Upper Ocean Study Site},
  journal  = jgr,
- volume   = {95 (C9)},
+ volume   = 95,
+ number    ={C9},
  pages    = {16,179--16,193},
+ doi      = {10.1029/JC095iC09p16179},
       }
 
 @Article{gen-eta:95,
@@ -456,6 +540,17 @@ resistance for atmospheric general circulation models as represented by the Simp
   pages =        {2935-2946}
 }
 
+@Article{grosfeld:97,
+  author =       {Grosfeld, K. and R. Gerdes and J. Determann},
+  title =        {Thermohaline circulation and interaction between ice shelf cavities and the adjacent open water},
+  journal =      jgro,
+  year =         1997,
+  volume =       102,
+  number =       {C7},
+  pages =        {15595-15610},
+  doi    =       {10.1029/97JC00891},
+}
+
 
 @Article{harlow:65,
   author =       {Harlow, F.H. and J.E. Welch},
@@ -521,6 +616,17 @@ Continental Moisture Budget of the United States. },
  pages        = {784-806}
 }
 
+@Article{hellmer:89,
+ author       = {Hellmer, H. H., and D. J. Olbers},
+ year         = {1989},
+ title        = {A two-dimensional model of the thermohaline circulation under an ice shelf},
+ journal      = {Antarct. Sci.},
+ volume       = {1},
+ number       = 4,
+ pages        = {325-336},
+ doi          = {10.1017/S0954102089000490},
+}
+
 
 @ARTICLE{hib79,
   author =   {Hibler, III, W.D.},
@@ -528,7 +634,7 @@ Continental Moisture Budget of the United States. },
   JOURNAL     = jpo,
   YEAR        = 1979,
   VOLUME      = 9,
-  PAGES       = "815-846"
+  PAGES       = {815-846}
 }
 
 @Article{hib80,
@@ -542,8 +648,7 @@ Continental Moisture Budget of the United States. },
 
 @InCollection{hibler84,
   author =	 {Hibler, III, W.D.},
-  title =	 {The role of sea ice dynamics in modeling CO{$_2$}
-                  increases},
+  title =	 {The role of sea ice dynamics in modeling CO2 increases},
   booktitle =	 {Climate processes and climate sensitivity},
   pages =	 {238--253},
   publisher =	 {AGU},
@@ -585,15 +690,6 @@ Continental Moisture Budget of the United States. },
   publisher =  {IEEE},
 }
 
-@Article{Holland75,
- author   = {Holland, W.R. and L.B. Lin},
- year   = {1975},
- title    = {On the origin of mesoscale eddies and their contribution
- to the general circulation of the ocean. I. A preliminary numerical experiment},
- journal  = jpo,
- volume         = {5},
- pages          = {642-657}
-      }
 
 @Article{holland:78,
  author   = {Holland, W.R.},
@@ -602,6 +698,16 @@ Continental Moisture Budget of the United States. },
  journal  = jpo,
  volume         = {8},
  pages          = {363-392}
+      }
+
+@Article{holland:99,
+ author   = {Holland, D.M and A. Jenkins},
+ year   = {1999},
+ title    = {Modeling Thermodynamic Ice–Ocean Interactions at the Base of an Ice Shelf},
+ journal  = jpo,
+ volume         = {29},
+ pages          = {1787-1800},
+ doi      = {10.1175/1520-0485(1999)029<1787:MTIOIA>2.0.CO;2},
       }
 
 
@@ -639,6 +745,19 @@ Continental Moisture Budget of the United States. },
   doi =		 {10.1016/S1463-5003(03)00040-4}
 }
 
+@techreport{ioc:10,
+  author = {IOC, and SCOR and IAPSO},
+  year = {2010},
+  institution  = {UNESCO (English)},
+  address = {Paris, France},
+  pages = {196 pp.},
+  title = {The International Thermodynamic Equation of Seawater 2010 (TEOS-10): Calculation and Use of Thermodynamic Properties},
+  type = {Intergovernmental Oceanographic Commission,  Manuals and Guides},
+  number = {56},
+  url      =     {http://www.teos-10.org/pubs/TEOS-10_Manual.pdf},
+}
+
+
 @Article{jackett:95,
   author =	 {Jackett, D. R. and T. J. McDougall},
   title =	 {Minimal adjustment of hydrographic profiles to achieve static stability},
@@ -647,6 +766,17 @@ Continental Moisture Budget of the United States. },
   volume =	 12,
   number =	 {4},
   pages =	 {381-389},
+}
+
+@Article{jenkins:01,
+  author =	 {Jenkins, A. and H. H. Hellmer and D. M. Holland},
+  title =	 {The role of meltwater advection in the formulation of 
+                  conservative boundary conditions at an ice-ocean interface},
+  journal =	 jpo,
+  year =	 2001,
+  volume =	 31,
+  pages =	 {285-296},
+  doi   =        {10.1175/1520-0485(2001)031<0285:TROMAI>2.0.CO;2},
 }
 
 @Article{kimmritz15,
@@ -709,7 +839,9 @@ Continental Moisture Budget of the United States. },
 in Climate Models as a Composite of Independent Vegetation Stands.},
  journal      = jgr,
  volume       = {97},
- pages        = {2697-2715}
+ number       = {D3},
+ pages        = {2697-2715},
+ doi          = {10.1029/91JD01696},
 }
 
 @Article{lar-eta:94,
@@ -807,6 +939,17 @@ in the Earth's atmosphere.  },
 }
 
 
+@Article{losch:08,
+  author =   {Losch, M.},
+  title =  {Modeling ice shelf cavities in a z-coordinate ocean general circulation model},
+  journal =  jgro,
+  year =   2008,
+  volume =   113,
+  number =   {C08043},
+  pages =  {129--144},
+  doi =    {10.1029/2007JC004368}
+}
+
 @Article{losch10:_mitsim,
   author =   {Losch, M. and D. Menemenlis and J.-M. Campin and P. Heimbach and C. Hill},
   title =  {On the formulation of sea-ice models. {P}art 1:
@@ -839,8 +982,10 @@ in the Earth's atmosphere.  },
                   circulation model and application to Atlantic heat
                   transport variability},
  journal  = jgr,
- volume   = {104, C12},
+ volume   = {104},
+ number    =  {C12},
  pages    = {29,529--29,547},
+ doi      = {10.1029/1999JC900236},
       }
 
 
@@ -865,6 +1010,7 @@ in the Earth's atmosphere.  },
   volume =   102,
   number =   {C3},
   pages =  {5733-5752},
+  doi   = {10.1029/96JC02776},
   url      =     {http://mitgcm.org/pdfs/96JC02775.pdf},
 }
 
@@ -878,6 +1024,7 @@ in the Earth's atmosphere.  },
   volume =   102,
   number =   {C3},
   pages =  {5753-5766},
+  doi   = {10.1029/96JC02775},
   url      =     {http://mitgcm.org/pdfs/96JC02776.pdf},
 }
 
@@ -900,6 +1047,27 @@ in the Earth's atmosphere.  },
   year =   2003,
   volume =   5,
   pages =  {730-741},
+}
+
+@techreport{mcdougall:11,
+  author = {McDougall, T. and P. M. Barker},
+  year = {2011},
+  institution  = {SCOR/IAPSO WG127},
+  pages = {28 pp.},
+  title = {Getting started with TEOS-10 and the Gibbs Seawater (GSW) Oceanographic Toolbox},
+  type = {ISBN 978-0-646-55612-5},
+  url      =     {http://www.teos-10.org/pubs/gsw/pdf/Getting_Started.pdf},
+}
+
+
+@Article{millero:10,
+  author =   {Millero, F. J.},
+  title =    {History of the equation of state of seawater},
+  journal =    ocn,
+  year =   2010,
+  volume =   23,
+  doi    = {10.5670/oceanog.2010.21},
+  pages =  {18-33},
 }
 
 @Article{mol:09,
@@ -928,8 +1096,19 @@ convection for general circulation models.},
   title   = {Energy-containing scales of turbulence in the ocean thermocline},
   journal = jgr,
   year    = 1996,
-  volume  = {101 (C3)},
+  volume  = {101},
+  number  =  {C6},
+  doi     = {10.1029/96JC00507},
   pages   = {14095--14109}
+}
+
+@Article{munk:50,
+  author  = {Munk, W.H.},
+  title   = {On the wind-driven ocean circulation},
+  journal = jmet,
+  year    = 1950,
+  volume  = {7},
+  pages   = {79-932}
 }
 
 
@@ -974,6 +1153,17 @@ convection for general circulation models.},
  publisher    = {American Meteorological Society}
 }
 
+@book{pedlosky:87,
+ author		= {Pedlosky, J.},
+ title		= {Geophysical Fluid Dynamics, Second Edition},
+ year		= 1987,
+ publisher	= {Spring-Verlag},
+ address        = {New York},
+ pages		= {710 pp.},
+}
+
+
+
 @book{potter:73,
  author		= {Potter, D.},
  title		= {Computational Physics},
@@ -982,6 +1172,18 @@ convection for general circulation models.},
  address        = {New York},
  pages		= {304 pp.},
 		  }
+
+@Article{prather:86,
+  author =	 {Prather, M.J.},
+  year =	 {1986},
+  title =	 {Numerical advection by conservation of second-order moments},
+  journal =	 jgr,
+  volume =	 91,
+  number =       {D6},
+  pages =	 {6671-6681},
+  doi  =         {10.1029/JD091iD06p06671}
+}
+
 
 @article{redi1982,
 abstract = {Current numerical models of oceanic circulation differentiate between the eddy diffusion and viscosity transport along the geopotential horizontal and vertical directions only. In order to model the effect of anisotropic turbulence as diffusive transport along and across},
@@ -1020,6 +1222,16 @@ year = {1982}
  address        = {Providence, RI},
 }
 
+@Article{roquet:15,
+ author         = {Roquet, F. and G. Madec and T. J. McDougall and P. M. Barker},
+ year           = 2015,
+ title          = {Accurate polynomial expressions for the density and specific volume of seawater using the TEOS-10 standard},
+ journal =	 om,
+ volume =	 {90},
+ pages =	 {29-43},
+ doi    =       {10.1016/j.ocemod.2015.04.002},
+}
+
 @Article{rosen:87,
   author =	 {Rosenfield, J.E. and  M.R. Schoeberl and M.A. Geller},
   year =	 {1987},
@@ -1031,12 +1243,24 @@ year = {1982}
   pages =	 {859-876}
 }
 
+@Article{sadourny:75,
+  author =	 {Sadourny, R.},
+  year =	 {1975},
+  title =	 {The Dynamics of Finite-Difference Models of the Shallow-Water Equations},
+  journal =	 jas,
+  volume =	 {32},
+  doi    =       {10.1175/1520-0469(1975)032<0680:TDOFDM>2.0.CO;2 },
+  pages =	 {680-689}
+}
+
 @Article{seimgregg94,		
   author  = {Seim, H.E. and M.C. Gregg},		
   title   = {Detailed observations of a naturally occurring shear instability},		
   journal = jgr,		
   year    = 1994,		
-  volume  = {99 (C5)},		
+  volume  = 99,
+  number  = {C5},
+  doi     = {10.1029/94JC00168},	
   pages   = {10049--10073},		
 }		
 
@@ -1091,6 +1315,18 @@ year = {1982}
   editor =   {B. Galperin and S.A. Orszag}
 }
 
+@Article{smolark:89,
+  author =   {Smolarkiewicz, P.K.},
+  title   = {Comment on "A positive definite advection scheme obtained by nonlinear renormalization of the advective fluxes"},
+  journal = mwr,
+  year    = 1989,
+  volume  = {117},
+  number  = {11},
+  doi     = {10.1175/1520-0493(1989)117<2626:COPDAS>2.0.CO;2},
+  pages   = {2626--2632}
+}
+
+
 @techreport{stammer:97,
  author       = {Stammer, D. and C. Wunsch and R. Giering and Q. Zhang and J. Marotzke and J. Marshall and C. Hill},
  year         = {1997},
@@ -1114,7 +1350,7 @@ year = {1982}
 }
 
 
-@Article{Stommel66,
+@Article{stommel:48,
  author   = {Stommel, H.},
  year   = 1948,
  title    = {The western intensification of wind-driven ocean currents},
@@ -1176,6 +1412,16 @@ General Circulation Model},
   pages =  {381-402}
 }
 
+@book{vallis:17,
+ author   = {Vallis, G.K.},
+ title    = {Atmospheric and Oceanic Fluid Dynamics: Fundamentals and Large-Scale Circulation, 2nd Edition},
+ year   =17,
+ publisher  = {Cambridge University Press},
+  pages    = {964 pp.},
+ doi   = {10.1017/9781107588417}
+}
+
+
 @Article{wajsowicz:93,
   author =   {Wajsowicz, R.},
   title =    {A consistent formulation of the anisotropic stress tensor for use in
@@ -1200,9 +1446,10 @@ General Circulation Model},
   author  = {White, A.A. and  R.A. Bromley},
   title   = {Dynamically consistent,  quasi-hydrostatic equations for global models 
              with  a complete representation of the Coriolis force},
-  journal = jgr,
+  journal = qjrms,
   year    = 1995,
   volume  = {121},
+  doi     = {10.1002/qj.49712152208},
   pages   = { 399--418}
 }
 
@@ -1254,6 +1501,7 @@ atmospheric boundary layer.},
   year =   1997,
   volume =   102,
   number =   {C4},
+  doi    =   {10.1029/96JC03744},
   pages =  {8691--8702}
 }
 
@@ -1278,4 +1526,60 @@ atmospheric boundary layer.},
  pages        = {903-927}
 }
 
+@Article{ goldberg:2011,
+        author = "D N Goldberg",
+        title = "A variationally-derived, depth-integrated approximation to a higher-order glaciologial flow model",
+        journal = "J. of Glaciology",
+        YEAR = "2011",
+        volume = 57,
+        issue = 201,
+        pages = "157--170"
+}
 
+@Article{ goldberg_heimbach:2013,
+        author = "D N Goldberg and P Heimbach",
+        title = "Parameter and state estimation with a time-dependent adjoint marine ice sheet model",
+        journal = "The Cryosphere",
+        YEAR = "2013",
+        volume = 7,
+        pages = "1659--1678"
+}
+
+@Article{ goldberg_openad_fixed:2016,
+        author = "D N Goldberg and S H K Narayanan and L Hascoet and J Utke",
+        title = "An optimized treatment for algorithmic differentiation of an important glaciological fixed-point problem",
+        journal = "Geoscientific Model Development",
+        YEAR = "2016",
+        volume = 9,
+        pages = "1891--1904"
+}
+
+@Article{Macayeal:89,
+        author = "D R MacAyeal",
+        title = "Large-scale ice flow over a viscous basal sediment: Theory and application to {I}ce {S}tream {B}, {A}ntarctica",
+        year = 1989,
+        journal = "Journal of Geophysical Research -- Solid Earth",
+        volume = 94,
+        pages = "4071--4087"
+}
+
+@Article{Goldberg:2015,
+        author = "D N Goldberg and P Heimbach and I Joughin and B Smith",
+        title = "Committed retreat of Smith, Pope, and Kohler Glaciers over the next 30 years inferred by transient model calibration",
+        year = 2015,
+        journal = "The Cryosphere",
+        volume = 9,
+        pages = "2429--2446"
+}
+
+@Article{Albrecht:2011,
+AUTHOR = {Albrecht, T. and Martin, M. and Haseloff, M. and Winkelmann, R. and Levermann, A.},
+TITLE = {Parameterization for subgrid-scale motion of ice-shelf calving fronts},
+JOURNAL = {The Cryosphere},
+VOLUME = {5},
+YEAR = {2011},
+NUMBER = {1},
+PAGES = {35--44},
+URL = {https://www.the-cryosphere.net/5/35/2011/},
+DOI = {10.5194/tc-5-35-2011}
+}
