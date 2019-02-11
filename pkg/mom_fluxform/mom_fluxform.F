@@ -313,13 +313,15 @@ C     anelastic: transports are scaled by rhoFacC (~ mass transport)
         CALL MOM_CALC_TENSION( bi,bj,k,uFld,vFld,tension,myThid )
         CALL MOM_CALC_STRAIN( bi,bj,k,uFld,vFld,hFacZ,strain,myThid )
 #ifdef ALLOW_LEITH_QG
-        CALL MOM_VISC_QGL_STRETCH(bi,bj,k,
+        IF (viscC2LeithQG .NE. 0) THEN
+          CALL MOM_VISC_QGL_STRETCH(bi,bj,k,
      O                            stretching,Nsq,
      I                            myTime, myIter, myThid)
-        CALL MOM_VISC_QGL_LIMIT(bi,bj,k,
+          CALL MOM_VISC_QGL_LIMIT(bi,bj,k,
      O                          stretching,
      I                          Nsq,uFld,vFld,vort3,
      I                          myTime, myIter, myThid )
+        ENDIF
 #endif
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -340,9 +342,10 @@ C     anelastic: transports are scaled by rhoFacC (~ mass transport)
           CALL DIAGNOSTICS_FILL(strain,
      I                          'Strain  ',k,1,2,bi,bj,myThid)
 C           stretching will be zero, unless using QG Leith
-C           protect with if statement?
-          CALL DIAGNOSTICS_FILL(stretching,
+          IF (viscC2LeithQG .NE. 0) THEN
+            CALL DIAGNOSTICS_FILL(stretching,
      I                          'Stretch ',k,1,2,bi,bj,myThid)
+          ENDIF
         ENDIF
 #endif
       ENDIF

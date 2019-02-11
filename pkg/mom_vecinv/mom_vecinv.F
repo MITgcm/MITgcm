@@ -344,13 +344,15 @@ C-    mask strain and account for no-slip / free-slip BC in strainBC:
          ENDDO
         ENDDO
 #ifdef ALLOW_LEITH_QG
-        CALL MOM_VISC_QGL_STRETCH(bi,bj,k,
+        IF (viscC2LeithQG .NE. 0) THEN
+          CALL MOM_VISC_QGL_STRETCH(bi,bj,k,
      O                            stretching,Nsq,
      I                            myTime, myIter, myThid )
-        CALL MOM_VISC_QGL_LIMIT(bi,bj,k,
+          CALL MOM_VISC_QGL_LIMIT(bi,bj,k,
      O                          stretching,
      I                          Nsq,uFld,vFld,vort3,
      I                          myTime, myIter, myThid )
+        ENDIF
 #endif
        ENDIF
 
@@ -923,9 +925,10 @@ C--   Set du/dt & dv/dt on boundaries to zero
         CALL DIAGNOSTICS_FILL(tension, 'Tension ',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(strainBC,'Strain  ',k,1,2,bi,bj,myThid)
 C         stretching will be zero, unless using QG Leith
-C         protect with if statement?
-        CALL DIAGNOSTICS_FILL(stretching,
+        IF (viscC2LeithQG .NE. 0) THEN
+          CALL DIAGNOSTICS_FILL(stretching,
      I                          'Stretch ',k,1,2,bi,bj,myThid)
+        ENDIF
        ENDIF
         CALL DIAGNOSTICS_FILL(gU(1-OLx,1-OLy,k,bi,bj),
      &                                'Um_Advec',k,1,2,bi,bj,myThid)
