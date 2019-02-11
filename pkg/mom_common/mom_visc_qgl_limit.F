@@ -8,7 +8,7 @@ C !INTERFACE: ==========================================================
      I                           bi, bj, k,
      O                           stretching,
      I                           Nsq, uFld, vFld, vort3,
-     I                           myThid, myTime, myIter )
+     I                           myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -49,7 +49,9 @@ C  myIter               :: current iteration number of simulation
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-      INTEGER myThid, myTime, myIter
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
 C  stretching           :: vortex stretching term (to be limited)

@@ -132,11 +132,11 @@ C       LeithQG coefficient
 
         CALL MOM_VISC_QGL_STRETCH(bi,bj,k,
      O                                         stretching,Nsq,
-     I                                         myThid, myTime, myIter)
+     I                                         myTime, myIter, myThid)
         CALL MOM_VISC_QGL_LIMIT(bi,bj,k,
      O                                 stretching,
      I                                 Nsq,uFld,vFld,vort3,
-     I                                         myThid, myTime, myIter)
+     I                                         myTime, myIter, myThid)
 
 
 C--     horizontal gradient of horizontal divergence:

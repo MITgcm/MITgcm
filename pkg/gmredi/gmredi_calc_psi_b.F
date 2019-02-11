@@ -13,7 +13,7 @@ C     !INTERFACE:
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             sigmaX, sigmaY, sigmaR,
      I             ldd97_LrhoW, ldd97_LrhoS,
-     I             myThid, myTime, myIter )
+     I             myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -50,7 +50,9 @@ C     == Routine arguments ==
       _RL ldd97_LrhoW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ldd97_LrhoS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj,iMin,iMax,jMin,jMax
-      INTEGER myThid, myTime, myIter
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 CEOP
 
 #ifdef ALLOW_GMREDI

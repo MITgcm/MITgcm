@@ -7,7 +7,7 @@ C !INTERFACE: ==========================================================
       SUBROUTINE MOM_VISC_QGL_STRETCH(
      I                                 bi, bj, k,
      O                                 stretching, Nsq,
-     I                                 myThid, myTime, myIter )
+     I                                 myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -41,7 +41,9 @@ C  myThid               :: my Thread Id number
 C  myTime               :: current time of simulation ( s )
 C  myIter               :: current iteration number of simulation
       INTEGER bi,bj, k
-      INTEGER myThid, myTime, myIter
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
 C  stretching           :: vortex stretching contribution

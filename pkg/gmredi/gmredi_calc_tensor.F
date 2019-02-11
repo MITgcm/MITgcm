@@ -290,7 +290,7 @@ C   Use Leith QG viscosity in GMRedi scheme
 #ifdef ALLOW_GM_LEITH_QG
       IF (GM_useLeithQG) THEN
         CALL GMREDI_CALC_QGLEITH(
-     I             bi, bj, myThid, myTime, myIter )
+     I             bi, bj, myTime, myIter, myThid )
       ELSE
         DO k=1,Nr
           DO j=1-OLy,sNy+OLy
@@ -632,7 +632,7 @@ C          If using GM_K3D PsiX and PsiY are calculated in gmredi_k3d
      I              bi, bj, iMin, iMax, jMin, jMax,
      I              sigmaX, sigmaY, sigmaR,
      I              ldd97_LrhoW, ldd97_LrhoS,
-     I              myThid, myTime, myIter )
+     I              myTime, myIter, myThid )
 #ifndef GM_K3D_PASSIVE
          ENDIF
 #endif
