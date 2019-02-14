@@ -293,8 +293,10 @@ C jmc: moved here before any freezing/seaice pkg adjustment of surf-fluxes
        ENDDO
       ENDDO
 # endif
-# ifdef ALLOW_ECCO
-#  ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+#endif /* ALLOW_AUTODIFF */
+
+#if (defined (ALLOW_ECCO) || defined (ALLOW_LEITH_QG))
+# if (defined (ALLOW_SIGMAR_COST_CONTRIBUTION) || defined (ALLOW_LEITH_QG))
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO k=1,Nr
@@ -306,9 +308,8 @@ C jmc: moved here before any freezing/seaice pkg adjustment of surf-fluxes
         ENDDO
        ENDDO
       ENDDO
-#  endif
-# endif
-#endif /* ALLOW_AUTODIFF */
+# endif /* ALLOW_SIGMAR_COST_CONTRIBUTION or ALLOW_LEITH_QG*/
+#endif /* ALLOW_ECCO or ALLOW_LEITH_QG*/
 
 #ifdef ALLOW_FRAZIL
       IF ( useFRAZIL ) THEN
@@ -812,15 +813,17 @@ cph Avoid variable aliasing for adjoint !!!
      I             rhoInSitu(1-OLx,1-OLy,k,bi,bj), rhoKm1, rhoKp1,
      O             sigmaX, sigmaY, sigmaR,
      I             myThid )
-#ifdef ALLOW_ECCO
-# ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
+
+#if (defined (ALLOW_ECCO) || defined (ALLOW_LEITH_QG))
+# if (defined (ALLOW_SIGMAR_COST_CONTRIBUTION) || defined (ALLOW_LEITH_QG))
             DO j=jMin,jMax
              DO i=iMin,iMax
               sigmaRfield(i,j,k,bi,bj)=sigmaR(i,j,k)
              ENDDO
             ENDDO
-# endif
-#endif /* ALLOW_ECCO */
+# endif /* ALLOW_SIGMAR_COST_CONTRIBUTION or ALLOW_LEITH_QG */
+#endif /* ALLOW_ECCO or ALLOW_LEITH_QG */
+
 #ifdef ALLOW_AUTODIFF
 #ifdef GMREDI_WITH_STABLE_ADJOINT
 cgf zero out adjoint fields to stabilize pkg/gmredi adjoint
