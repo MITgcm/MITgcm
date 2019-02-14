@@ -6,8 +6,8 @@ C !ROUTINE: MOM_VISC_QGL_LIMIT
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_VISC_QGL_LIMIT(
      I                           bi, bj, k,
-     O                           stretching,
-     I                           Nsq, uFld, vFld, vort3,
+     O                           stretching, Nsquare,
+     I                           uFld, vFld, vort3,
      I                           myTime, myIter, myThid )
 
 C     !DESCRIPTION:
@@ -32,11 +32,12 @@ C     == Global variables ==
 #include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 #include "MOM_VISC.h"
+#include "DYNVARS.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
 C  k                    :: vertical level
-C  Nsq                  :: Stratification
+C  Nsquare              :: buoyancy frequency
 C  uFld                 :: U velocity (east flow on spherical grid)
 C  vFld                 :: V velocity (north flow on spherical grid)
 C  vort3                :: Relative vorticity
@@ -44,7 +45,7 @@ C  myThid               :: my Thread Id number
 C  myTime               :: current time of simulation ( s )
 C  myIter               :: current iteration number of simulation
       INTEGER bi,bj,k
-      _RL Nsq(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Nsquare(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -57,6 +58,7 @@ C !OUTPUT PARAMETERS: ==================================================
 C  stretching           :: vortex stretching term (to be limited)
       _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
+#ifdef ALLOW_LEITH_QG
 
 C !LOCAL VARIABLES: ====================================================
       INTEGER i,j
@@ -99,12 +101,13 @@ C        Grid scale Rossby number, squared: U^2 / (fL)^2
           Ro_g2(i,j) = U_scale(i,j)**2 * recip_rA(i,j,bi,bj) /
      &                  MAX(QGL_lim_epsil, fCori(i,j,bi,bj)**2)
 C        Grid scale Burger number: N^2 H^2 / (f^2 L^2)
-C         Bu_g(i,j) = Nsq(i,j) * drf(k)**2 * recip_rA(i,j,bi,bj) /
+C         Bu_g(i,j) = Nsquare(i,j) * drf(k)**2 * recip_rA(i,j,bi,bj) /
 C     &                 (fCori(i,j,bi,bj)**2 * PI)
 C        Grid scale Froude number: U pi /(N^2 H)
 C          Include a small number to prevent division by zero
-          Fr_g(i,j) = U_scale(i,j) * PI / ((Nsq(i,j)) * 
-     &                      drf(k) + QGL_lim_epsil)
+          Fr_g(i,j) = U_scale(i,j) * PI / 
+     &                 (MAX(Nsquare(i,j) * drF(k),
+     &                      QGL_lim_epsil))
 
 C     Make the scheme gracefully transition to something else
 C     as stratification goes to zero
@@ -129,6 +132,7 @@ C          This limiter goes to 2D Leith as stratification -> 0
         ENDDO
        ENDDO
 
+#endif /* ALLOW_LEITH_QG */
 
       RETURN
       END

@@ -42,7 +42,7 @@ C !LOCAL VARIABLES: ====================================================
       _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL Nsq     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Nsquare (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vort3   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hDiv    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL divDx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -76,7 +76,7 @@ C        unless `useFullLeith` fails for your setup.
           uFld(i,j)          = 0. _d 0
           vFld(i,j)          = 0. _d 0
           stretching(i,j)    = 0. _d 0
-          Nsq(i,j)           = 0. _d 0
+          Nsquare(i,j)       = 0. _d 0
           vort3(i,j)         = 0. _d 0
           hDiv(i,j)          = 0. _d 0
           divDx(i,j)         = 0. _d 0
@@ -131,12 +131,12 @@ C     Having calculated the quantitites, use them to calculate
 C       LeithQG coefficient
 
         CALL MOM_VISC_QGL_STRETCH(bi,bj,k,
-     O                                         stretching,Nsq,
-     I                                         myTime, myIter, myThid)
+     O                                   stretching, Nsquare,
+     I                                   myTime, myIter, myThid)
         CALL MOM_VISC_QGL_LIMIT(bi,bj,k,
      O                                 stretching,
-     I                                 Nsq,uFld,vFld,vort3,
-     I                                         myTime, myIter, myThid)
+     I                                 Nsquare, uFld,vFld,vort3,
+     I                                 myTime, myIter, myThid)
 
 
 C--     horizontal gradient of horizontal divergence:

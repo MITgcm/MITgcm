@@ -148,7 +148,7 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL strain(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL Nsq(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Nsquare(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  uDudxFac
       _RL  AhDudxFac
       _RL  vDudyFac
@@ -212,7 +212,7 @@ c       KE(i,j)     = 0.
         strain(i,j) = 0.
         tension(i,j)= 0.
         stretching(i,j) = 0.
-        Nsq(i,j)    = 0.
+        Nsquare(i,j)    = 0.
         guDiss(i,j) = 0.
         gvDiss(i,j) = 0.
        ENDDO
@@ -315,11 +315,11 @@ C     anelastic: transports are scaled by rhoFacC (~ mass transport)
 #ifdef ALLOW_LEITH_QG
         IF (viscC2LeithQG .NE. 0) THEN
           CALL MOM_VISC_QGL_STRETCH(bi,bj,k,
-     O                            stretching,Nsq,
+     O                            stretching, Nsquare,
      I                            myTime, myIter, myThid)
           CALL MOM_VISC_QGL_LIMIT(bi,bj,k,
      O                          stretching,
-     I                          Nsq,uFld,vFld,vort3,
+     I                          Nsquare, uFld,vFld,vort3,
      I                          myTime, myIter, myThid )
         ENDIF
 #endif
