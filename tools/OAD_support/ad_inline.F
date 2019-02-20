@@ -805,6 +805,30 @@ C $OpenAD$ END DECLS
 #endif
       end subroutine 
 
+      subroutine cp_arg_store_bool_vector(b)
+C $OpenAD$ INLINE DECLS
+        use OAD_cp
+        implicit none
+        logical, dimension(:) :: b
+C $OpenAD$ END DECLS
+#ifdef OAD_DEBUG_CP
+        !write(standardmessageunit,*)'OAD: cp write b ', b(1)
+#endif
+        write(unit=cp_io_unit) b
+      end subroutine
+
+      subroutine cp_arg_restore_bool_vector(b)
+C $OpenAD$ INLINE DECLS
+        use OAD_cp
+        implicit none
+        logical, dimension(:) :: b
+C $OpenAD$ END DECLS
+        read(unit=cp_io_unit) b
+#ifdef OAD_DEBUG_CP
+        !write(standardmessageunit,*)'OAD: cp read b ', b(1)
+#endif
+      end subroutine
+
       subroutine cp_arg_store_bool_matrix(b)
 C $OpenAD$ INLINE DECLS
         use OAD_cp
