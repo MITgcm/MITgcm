@@ -8,7 +8,17 @@ module OAD_tape
        push_d0, push_i0, push_d1, push_i1, & 
        pop_d0, pop_i0, pop_d1, pop_i1, & 
        push_d4, push_d6, & 
-       pop_d4, pop_d6
+       pop_d4, pop_d6, &
+       cp_integer_tape_unit, cp_double_tape_unit, &
+       cp_logical_tape_unit, &
+       cp_open_integer_tape, cp_close_integer_tape, &
+       cp_read_integer_tape,&
+       cp_open_double_tape, cp_close_double_tape, &
+       cp_read_double_tape,&
+       cp_open_logical_tape, cp_close_logical_tape, &
+       cp_read_logical_tape, &
+       cp_open_string_tape, cp_close_string_tape, &
+       cp_read_string_tape 
     
   public :: &
        oad_dt, oad_dt_ptr, oad_dt_sz, oad_dt_grow, &
@@ -18,7 +28,10 @@ module OAD_tape
        oad_chunk_size, &
        oad_tape_init, &
        oad_dump_tapestats, & 
-       oad_tape_push, oad_tape_pop
+       oad_tape_push, oad_tape_pop, &
+       cp_write_integer_tape, cp_write_double_tape, &
+       cp_write_logical_tape, cp_write_string_tape, &
+       cp_read_tape_state, cp_write_tape_state
        
   double precision, dimension(:), allocatable :: oad_dt, dtt
   integer, dimension(:), allocatable :: oad_it, itt
@@ -30,6 +43,8 @@ module OAD_tape
   integer :: oad_lt_sz=0, oad_st_sz=0
   integer :: increment
   integer :: oad_chunk_size
+  integer :: cp_integer_tape_unit, cp_double_tape_unit
+  integer :: cp_logical_tape_unit, cp_string_tape_unit
 
   interface oad_tape_init
     module procedure init
@@ -67,39 +82,122 @@ module OAD_tape
      module procedure pop_d4, pop_d6
   end interface
 
+!Integer Tape
+
+  interface cp_open_integer_tape
+     module procedure open_integer_tape_i
+  end interface
+
+  interface cp_close_integer_tape
+     module procedure close_integer_tape_i
+  end interface
+
+  interface cp_read_integer_tape
+     module procedure read_integer_tape_i
+  end interface
+
+  interface cp_write_integer_tape
+     module procedure write_integer_tape_i
+  end interface
+
+!Double Tape Store/Restore
+
+  interface cp_open_double_tape
+     module procedure open_double_tape_i
+  end interface
+
+  interface cp_close_double_tape
+     module procedure close_double_tape_i
+  end interface
+
+  interface cp_read_double_tape
+     module procedure read_double_tape_i
+  end interface
+
+  interface cp_write_double_tape
+     module procedure write_double_tape_i
+  end interface
+
+!Logical Tape Store/Restore
+
+  interface cp_open_logical_tape
+     module procedure open_logical_tape_i
+  end interface
+
+  interface cp_close_logical_tape
+     module procedure close_logical_tape_i
+  end interface
+
+  interface cp_read_logical_tape
+     module procedure read_logical_tape_i
+  end interface
+
+  interface cp_write_logical_tape
+     module procedure write_logical_tape_i
+  end interface
+
+!String Tape Store/Restore
+
+  interface cp_open_string_tape
+     module procedure open_string_tape_i
+  end interface
+
+  interface cp_close_string_tape
+     module procedure close_string_tape_i
+  end interface
+
+  interface cp_read_string_tape
+     module procedure read_string_tape_i
+  end interface
+
+  interface cp_write_string_tape
+     module procedure write_string_tape_i
+  end interface
+
+!Tape Status Store
+  interface cp_read_tape_state
+     module procedure read_tape_state_i
+  end interface
+
+  interface cp_write_tape_state
+     module procedure write_tape_state_i
+  end interface
 contains
 
   subroutine init
+    implicit none
     integer :: initialSize=1048576
     increment=16777216
-    ! DT
     oad_dt_ptr=1
+    oad_dt_sz=initialSize
+    oad_it_ptr=1
+    oad_it_sz=initialSize
+    oad_lt_ptr=1
+    oad_lt_sz=initialSize
+    oad_st_ptr=1
+    oad_st_sz=initialSize 
+
+    !DT
     if (allocated(oad_dt)) then 
        deallocate(oad_dt)
     end if
-    oad_dt_sz=initialSize
     allocate(oad_dt(oad_dt_sz))
     ! IT
-    oad_it_ptr=1
     if (allocated(oad_it)) then 
        deallocate(oad_it)
     end if
-    oad_it_sz=initialSize
     allocate(oad_it(oad_it_sz))
     ! LT
-    oad_lt_ptr=1
     if (allocated(oad_lt)) then 
        deallocate(oad_lt)
     end if
-    oad_lt_sz=initialSize
     allocate(oad_lt(oad_lt_sz))
     ! ST
-    oad_st_ptr=1
     if (allocated(oad_st)) then 
        deallocate(oad_st)
     end if
-    oad_st_sz=initialSize
     allocate(oad_st(oad_st_sz))
+
   end subroutine init
 
   subroutine dump_tapestats()
@@ -297,4 +395,230 @@ contains
     v=reshape(oad_dt(oad_dt_ptr:oad_dt_ptr+chunk-1),dims) 
   end subroutine pop_d6
 
+!Integer Tape
+  subroutine open_integer_tape_i(fileno)
+    implicit none
+    integer fileno
+    integer rank
+    character*128 fname ! file name
+    rank=0
+    write(fname,'(A,I3.3,A,I3.3)') 'oad_aux_integer_tape.',fileno,'.',rank
+    open( UNIT=cp_integer_tape_unit,FILE=TRIM(fname),FORM='unformatted',STATUS='UNKNOWN' )
+  end subroutine 
+
+  subroutine close_integer_tape_i()
+    implicit none
+    close( UNIT=cp_integer_tape_unit)
+  end subroutine
+
+  subroutine write_integer_tape_i(fileno)
+    implicit none
+    integer fileno
+    call cp_open_integer_tape(fileno)
+    print *, 'DIVA Writing to file integer_tape', fileno
+    write (unit=cp_integer_tape_unit) oad_it(1:oad_it_ptr-1)
+    call cp_close_integer_tape
+  end subroutine
+
+    subroutine read_integer_tape_i(fileno)
+    implicit none
+    integer fileno
+    call cp_open_integer_tape(fileno)
+    read (unit=cp_integer_tape_unit) oad_it(1:oad_it_ptr-1)
+    print *, 'DIVA Read from file integer_tape', fileno
+    call cp_close_integer_tape
+  end subroutine 
+
+!Double Tape
+  subroutine open_double_tape_i(fileno)
+    implicit none
+    integer fileno
+    integer rank
+    character*128 fname ! file name
+    rank=0
+    write(fname,'(A,I3.3,A,I3.3)') 'oad_aux_double_tape.',fileno,'.',rank
+    open( UNIT=cp_double_tape_unit,FILE=TRIM(fname),FORM='unformatted',STATUS='UNKNOWN' )
+  end subroutine 
+
+  subroutine close_double_tape_i()
+    implicit none
+    close( UNIT=cp_double_tape_unit)
+  end subroutine
+
+  subroutine write_double_tape_i(fileno)
+    implicit none
+    integer fileno
+    call cp_open_double_tape(fileno)
+    print *, 'DIVA Writing to file double_tape', fileno
+    write (unit=cp_double_tape_unit) oad_dt(1:oad_dt_ptr-1)
+    call cp_close_double_tape
+  end subroutine
+
+  subroutine read_double_tape_i(fileno)
+    implicit none
+    integer fileno
+    call cp_open_double_tape(fileno)
+    read (unit=cp_double_tape_unit) oad_dt(1:oad_dt_ptr-1)
+    print *, 'DIVA Read from file double_tape', fileno
+    call cp_close_double_tape
+  end subroutine 
+
+!Logical Tape
+  subroutine open_logical_tape_i(fileno)
+    implicit none
+    integer fileno
+    integer rank
+    character*128 fname ! file name
+    rank=0
+    write(fname,'(A,I3.3,A,I3.3)') 'oad_aux_logical_tape.',fileno,'.',rank
+    open( UNIT=cp_logical_tape_unit,FILE=TRIM(fname),FORM='unformatted',STATUS='UNKNOWN' )
+  end subroutine 
+
+  subroutine close_logical_tape_i()
+    implicit none
+    close( UNIT=cp_logical_tape_unit)
+  end subroutine
+
+  subroutine write_logical_tape_i(fileno)
+    implicit none
+    integer fileno
+    call cp_open_logical_tape(fileno)
+    print *, 'DIVA Writing to file logical_tape', fileno
+    write (unit=cp_logical_tape_unit) oad_lt(1:oad_lt_ptr-1)
+    call cp_close_logical_tape
+  end subroutine
+
+  subroutine read_logical_tape_i(fileno)
+    implicit none
+    integer fileno
+    call cp_open_logical_tape(fileno)
+    read (unit=cp_logical_tape_unit) oad_lt(1:oad_lt_ptr-1)
+    print *, 'DIVA Read from file logical_tape', fileno
+    call cp_close_logical_tape
+  end subroutine
+
+!STRING
+  subroutine open_string_tape_i(fileno)
+    implicit none
+    integer fileno
+    integer rank
+    character*128 fname ! file name
+    rank=0
+    write(fname,'(A,I3.3,A,I3.3)') 'oad_aux_string_tape.',fileno,'.',rank
+    open(UNIT=cp_string_tape_unit,FILE=TRIM(fname),FORM='unformatted',STATUS='UNKNOWN')
+  end subroutine
+
+  subroutine close_string_tape_i()
+    implicit none
+    close( UNIT=cp_string_tape_unit)
+  end subroutine
+
+  subroutine write_string_tape_i(fileno)
+    implicit none
+    integer fileno
+    call cp_open_string_tape(fileno)
+    print *, 'DIVA Writing to file string_tape', fileno
+    write (unit=cp_string_tape_unit) oad_st(1:oad_st_ptr-1)
+    call cp_close_string_tape
+  end subroutine
+
+  subroutine read_string_tape_i(fileno)
+    implicit none
+    integer fileno
+    call cp_open_string_tape(fileno)
+    read (unit=cp_string_tape_unit) oad_st(1:oad_st_ptr-1)
+    print *, 'DIVA Read from file string_tape', fileno
+    call cp_close_string_tape
+  end subroutine
+
+!Tape State
+  subroutine write_tape_state_i(fileno)
+    implicit none
+    integer fileno
+    integer rank
+    logical exst
+    character*128 fname ! file name
+    rank=0
+    write(fname,'(A,I3.3,A,I3.3)') 'oad_aux_tape_state.',fileno,'.',rank
+    exst =.false.
+    inquire(file=fname,exist=exst)
+    if (exst.eqv..true.) then
+      print *, 'DIVA NOT Writing tape_state'
+      return
+    end if
+    open( UNIT=77,FILE=TRIM(fname),FORM='formatted')
+    write(unit=77,fmt=*) oad_dt_ptr
+    write(unit=77,fmt=*) oad_dt_sz
+    write(unit=77,fmt=*) oad_it_ptr
+    write(unit=77,fmt=*) oad_it_sz
+    write(unit=77,fmt=*) oad_lt_ptr
+    write(unit=77,fmt=*) oad_lt_sz
+    write(unit=77,fmt=*) oad_st_ptr
+    write(unit=77,fmt=*) oad_st_sz
+    close(unit=77)
+    print *, 'DIVA Writing tape_state', fileno
+    call cp_write_integer_tape(fileno)
+    call cp_write_double_tape(fileno)
+    call cp_write_logical_tape(fileno)
+    call cp_write_string_tape(fileno)
+  end subroutine
+
+  subroutine read_tape_state_i(fileno) 
+    implicit none
+    integer fileno
+    integer rank
+    logical exst
+    character*128 fname ! file name
+
+    rank=0
+    write(fname,'(A,I3.3,A,I3.3)') 'oad_aux_tape_state.',fileno,'.',rank
+    !write(fname,'(A,I3.3)') 'oad_aux_tape_state.',rank
+    exst =.false.
+    inquire(file=fname,exist=exst)
+    if (exst.eqv..true.) then
+      open( UNIT=77,FILE=TRIM(fname),FORM='formatted')
+      read(unit=77,fmt=*) oad_dt_ptr
+      read(unit=77,fmt=*) oad_dt_sz
+      read(unit=77,fmt=*) oad_it_ptr
+      read(unit=77,fmt=*) oad_it_sz
+      read(unit=77,fmt=*) oad_lt_ptr
+      read(unit=77,fmt=*) oad_lt_sz
+      read(unit=77,fmt=*) oad_st_ptr
+      read(unit=77,fmt=*) oad_st_sz
+      close(unit=77)
+      print *, 'DIVA found tape_state_file', fileno
+    else
+      print *, 'DIVA tape_state_file not found', fname
+      stop 'DIVA State file not found'
+    end if
+
+    !DT
+    if (allocated(oad_dt)) then
+       deallocate(oad_dt)
+    end if
+    allocate(oad_dt(oad_dt_sz))
+    ! IT
+    if (allocated(oad_it)) then
+       deallocate(oad_it)
+    end if
+    allocate(oad_it(oad_it_sz))
+    ! LT
+    if (allocated(oad_lt)) then
+       deallocate(oad_lt)
+    end if
+    allocate(oad_lt(oad_lt_sz))
+    ! ST
+    if (allocated(oad_st)) then
+       deallocate(oad_st)
+    end if
+    allocate(oad_st(oad_st_sz))
+
+    if (exst.eqv..true.) then
+      call cp_read_integer_tape(fileno)
+      call cp_read_double_tape(fileno)
+      call cp_read_logical_tape(fileno)
+      call cp_read_string_tape(fileno)
+    end if
+
+  end subroutine 
 end module
