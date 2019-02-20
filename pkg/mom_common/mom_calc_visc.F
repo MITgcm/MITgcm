@@ -355,7 +355,6 @@ C        Average d/dy of stretching onto U-points to match vrtDy
      &                  + halfRL*halfRL*
      &                    ((stretching(i,j+1)-stretching(i,j))
      &                      *recip_dyC(i,j+1,bi,bj)*recip_deepFacC(k)
-     &                      *maskW(i,j,k,bi,bj)
      &                    + (stretching(i,j)-stretching(i,j-1))
      &                      *recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
      &                    + (stretching(i-1,j+1)-stretching(i-1,j))
