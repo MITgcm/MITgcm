@@ -1,0 +1,26 @@
+rm -f oad_reg_cp.*
+rm -f oad_cp.*
+
+# Starting timestep for forward sweep (currcp); 
+# 0 implies that computation has either finished or is about to start
+# At the end of the forward sweep currcp will be nTimeSteps_l2
+
+echo "0" > oad_reg_state.000
+
+# Starting timestep for adjoint sweep (curradjcp); 
+# -1 implies that computation has not completed the forward sweep
+# At the end of the forward sweep currcp will be nTimeSteps_l2
+
+echo "-1" >> oad_reg_state.000
+
+# maxfwditer: the number of forward steps to perform
+
+echo "1" >> oad_reg_state.000
+
+#maxadjiter: the number of adjoint steps to perform
+
+echo "8" >> oad_reg_state.000
+
+#myIter: the iteration at which computation is presently
+#At the start this should equal nIter0
+echo "5184000" >> oad_reg_state.000
