@@ -5,8 +5,9 @@ module OAD_regular_cp
   private :: cp_file_number, cp_open
 
   public :: cp_io_unit, cp_init, cp_write_open, cp_read_open, cp_close, cp_fNumber
+  public :: cp_open_state,  cp_close_state, cp_read_state, cp_write_state
 
-  integer :: cp_file_number, cp_io_unit
+  integer :: cp_file_number, cp_io_unit, cp_state_unit
 
   interface cp_init
      module procedure init_i
@@ -34,6 +35,22 @@ module OAD_regular_cp
      module procedure findunit_i
   end interface
   
+  interface cp_open_state
+     module procedure open_state_i
+  end interface
+
+  interface cp_close_state
+     module procedure close_state_i
+  end interface
+
+  interface cp_read_state
+     module procedure read_state_i
+  end interface
+
+  interface cp_write_state
+     module procedure write_state_i
+  end interface
+
 contains
 
   subroutine init_i
@@ -88,7 +105,6 @@ contains
 
     write(fname,'(A,I3.3,A,I5.5)') 'oad_reg_cp.',rank,'.',cp_file_number
     open( UNIT=cp_io_unit,FILE=TRIM(fname),FORM='unformatted',STATUS='UNKNOWN' )
-    !open( UNIT=cp_io_unit,FILE=TRIM(fname),FORM='formatted',STATUS='UNKNOWN' )
   end subroutine 
 
   subroutine close_i()
@@ -136,4 +152,43 @@ contains
     cp_fNumber=cp_file_number
   end function 
 
+  subroutine open_state_i()
+    implicit none
+    integer rank
+    character*128 fname ! file name
+    rank=0
+    write(fname,'(A,I3.3)') 'oad_reg_state.',rank
+    open( UNIT=cp_state_unit,FILE=TRIM(fname),FORM='formatted',STATUS='UNKNOWN' )
+  end subroutine 
+
+  subroutine close_state_i()
+    implicit none
+    close( UNIT=cp_state_unit)
+  end subroutine
+
+  subroutine write_state_i(currcp, curradjointcp, maxfwditer, maxadjiter, myIter)
+    implicit none
+    integer :: currcp, curradjointcp, maxfwditer, maxadjiter, myIter
+    call cp_open_state
+    print *, 'DIVA Writing to file state =', currcp, curradjointcp, maxfwditer, maxadjiter, myIter
+    write (cp_state_unit, *) currcp
+    write (cp_state_unit, *) curradjointcp
+    write (cp_state_unit, *) maxfwditer
+    write (cp_state_unit, *) maxadjiter
+    write (cp_state_unit, *) myIter
+    call cp_close_state
+  end subroutine
+
+  subroutine read_state_i(currcp, curradjointcp, maxfwditer, maxadjiter, myIter)
+    implicit none
+    integer :: currcp, curradjointcp, maxfwditer, maxadjiter, myIter
+    call cp_open_state
+    read (cp_state_unit, *) currcp
+    read (cp_state_unit, *) curradjointcp
+    read (cp_state_unit, *) maxfwditer
+    read (cp_state_unit, *) maxadjiter
+    read (cp_state_unit, *) myIter
+    print *, 'DIVA Read from file state =', currcp, curradjointcp, maxfwditer, maxadjiter, myIter
+    call cp_close_state
+  end subroutine 
 end module 
