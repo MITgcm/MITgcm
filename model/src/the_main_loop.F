@@ -197,6 +197,8 @@ c They provide the fields to be stored.
 #  include "ecco_cost.h"
 # endif
 
+#else
+#include "OPENAD_OPTIONS.h"
 # endif /* undef ALLOW_OPENAD */
 
 # ifdef ALLOW_CTRL
@@ -324,10 +326,17 @@ c$openad INDEPENDENT(xx_gentim2d_dummy)
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INITIALISE_VARIA',myThid)
 #endif
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_OPENAD_DIVA))
+      if(myIter.eq.nIter0) then
+        print *, 'DIVA calling INITIALISE_VARIA', myIter, nIter0
+#endif 
 C--   Set initial conditions (variable arrays)
       CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', myThid)
       CALL INITIALISE_VARIA( myThid )
       CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', myThid)
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_OPENAD_DIVA))
+      end if
+#endif
 #ifdef ECCO_CTRL_DEPRECATED
 #ifdef ALLOW_ECCO
 cph: avoid renewed call of initialise_varia in recomputation loop
@@ -686,10 +695,16 @@ c--   Compute all ecco cost function contributions.
 #endif /* ALLOW_ECCO */
 
 #ifdef ALLOW_COST
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_OPENAD_DIVA))
+      IF(MYITER .eq. NITER0+nTimeSteps_l2*nTimeSteps) THEN
+#endif
 c--   Sum all cost function contributions.
       CALL TIMER_START('COST_FINAL         [ADJOINT SPIN-DOWN]', myThid)
       CALL COST_FINAL ( myThid )
       CALL TIMER_STOP ('COST_FINAL         [ADJOINT SPIN-DOWN]', myThid)
+#if (defined (ALLOW_OPENAD) && defined (ALLOW_OPENAD_DIVA))
+      end if
+#endif
 
 # ifdef ALLOW_OPENAD
 c$openad DEPENDENT(fc)

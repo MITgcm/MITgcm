@@ -264,7 +264,11 @@ C -->> OpenAD
       use OAD_active
       use OAD_rev
       use OAD_tape
+#ifdef ALLOW_OPENAD_DIVA
+      use OAD_regular_cp
+#else
       use OAD_cp
+#endif
 #include "cost.h"
 C <<-- OpenAD
 #include "SIZE.h"
@@ -300,6 +304,8 @@ C     myIter :: Iteration counter for this thread
       LOGICAL exst
       LOGICAL lastdiva
 C -->> OpenAD
+      LOGICAL fwddone
+      integer currcp, curradjointcp, maxfwditer, maxadjiter
       _RL foo(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL foo2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       CHARACTER*(10) suff
@@ -439,23 +445,111 @@ C -->> OpenAD
       IF (debugMode) CALL DEBUG_CALL('THE_MAIN_LOOP',myThid)
 #   endif
       CALL TIMER_START('THE_MAIN_LOOP (F)      [THE_MODEL_MAIN]',myThid)
+#ifdef ALLOW_OPENAD_DIVA
+      exst =.false.
+      inquire(file='costfinal',exist=exst)
+      if (exst.eqv..true.) then
+         open(unit=76,file='costfinal',form='formatted')
+         read(unit=76,fmt=*) fc%v
+         read(unit=76,fmt=*) fc%d
+         close(unit=76)
+         print *, 'DIVA found costfinal', fc%v, fc%d
+      end if
+      call cp_read_state(currcp, curradjointcp, maxfwditer, maxadjiter,
+     +myIter)
+      fwddone = .true.
+      if (curradjointcp .eq. -1 .and. currcp.ne. nTimeSteps_l2) then
+        fwddone = .false.
+      end if
+      print *, 'DIVA myIter is', myIter , nIter0
+      IF (debugMode) CALL DEBUG_CALL('THE_MAIN_LOOP',myThid)
+      CALL TIMER_START('THE_MAIN_LOOP (F)      [THE_MODEL_MAIN]',myThid)
+C#ifdef ALLOW_OPENAD
+C--   Set initial conditions (variable arrays)
+C      CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', myThid)
+C      CALL INITIALISE_VARIA( myThid )
+C      CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', myThid)
+C#endif
+#endif
       our_rev_mode%plain=.FALSE.
       our_rev_mode%tape=.TRUE.
       call timeratio()
-      CALL OpenAD_THE_MAIN_LOOP( myTime, myIter, myThid )
+#ifdef ALLOW_OPENAD_DIVA
+      if((curradjointcp.eq.-1).and.(currcp.ne.nTimeSteps_l2)) then
+        do while(currcp.ne.nTimeSteps_l2) 
+#endif
+          CALL OpenAD_THE_MAIN_LOOP( myTime, myIter, myThid )
+#ifdef ALLOW_OPENAD_DIVA
+          call cp_read_state(currcp, curradjointcp, maxfwditer, maxadjit
+     +er, myIter)
+        end do 
+      end if
+#endif 
       CALL TIMER_STOP ('THE_MAIN_LOOP (F)      [THE_MODEL_MAIN]',myThid)
       CALL TIMER_START('THE_MAIN_LOOP (A)      [THE_MODEL_MAIN]',myThid)
+#ifdef ALLOW_OPENAD_DIVA
+      if (fwddone .eqv. .false.) then
+        open(unit=76,file='costfinal')
+        write(76,*) fc%v
+        write(76,*) fc%d
+        close(76)
+      end if 
+      call cp_read_state(currcp, curradjointcp, maxfwditer, maxadjiter,
+     +myIter)
+      if (fwddone .eqv. .false.) then
+        if(curradjointcp .eq. -1 .and. currcp.eq. nTimeSteps_l2) then
+          stop 'DIVA FINISHED FORWARD'
+        else
+          stop 'DIVA SUSPEND FORWARD'
+        end if
+      end if
+#endif 
       our_rev_mode%arg_store=.FALSE.
       our_rev_mode%arg_restore=.FALSE.
       our_rev_mode%plain=.FALSE.
       our_rev_mode%tape=.FALSE.
       our_rev_mode%adjoint=.TRUE.
       IF (myProcID .EQ. 0) THEN
-        fc%d=1.0
+#ifdef ALLOW_OPENAD_DIVA
+        exst =.false.
+        inquire(file='costfinalad',exist=exst)
+        if (exst.eqv..true.) then
+          open(unit=76,file='costfinalad')
+          read(76,*) fc%v
+          read(76,*) fc%d
+          close(76)
+        else
+#endif
+          fc%d=1.0
+#ifdef ALLOW_OPENAD_DIVA
+        end if
+#endif
       ENDIF
       call timeratio()
+#ifdef ALLOW_OPENAD_DIVA
+      print *, 'DIVA reverse found costfinal', fc%v, fc%d
+      print *, 'DIVA Before adjoint, myiter is ', myiter
+#endif
       CALL OpenAD_THE_MAIN_LOOP( myTime, myIter, myThid )
       call timeratio()
+#ifdef ALLOW_OPENAD_DIVA
+      call cp_read_state(currcp, curradjointcp, maxfwditer, maxadjiter,
+     +myIter)
+      if(curradjointcp.eq.0) then
+         open(unit=76,file='costfinal',form='formatted')
+         read(unit=76,fmt=*) fc%v
+         close(unit=76)
+      end if
+      open(unit=76,file='costfinalad')
+      write(76,*) fc%v
+      write(76,*) fc%d
+      close(76)
+      call cp_read_state(currcp, curradjointcp, maxfwditer, maxadjiter,
+     +myIter)
+      if(curradjointcp.ne.0) then
+        stop 'DIVA SUSPEND ADJOINT'
+      end if
+#endif
       our_rev_mode%arg_store=.FALSE.
       our_rev_mode%arg_restore=.FALSE.
       our_rev_mode%plain=.TRUE.

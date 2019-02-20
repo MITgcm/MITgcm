@@ -55,6 +55,7 @@ ini_theta.f
 ini_dynvars.f	
 ini_vel.f	
 initialise_varia.f
+inner_do_loop.f
 integrate_for_w.f
 integr_continuity.f
 load_fields_driver.f

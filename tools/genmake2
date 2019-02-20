@@ -30,6 +30,9 @@ Usage: "$0" [OPTIONS]
 	  "tools/adjoint_options/adjoint_oad" (for OpenAD built) or
 	  "tools/adjoint_options/adjoint_default" will be used.
 
+    -diva | --diva)
+	  OPENAD_DIVA="ALLOW_OPENAD_DIVA=" ;;
+
     -optfile NAME | --optfile NAME | -of NAME | --of NAME
       -optfile=NAME | --optfile=NAME | -of=NAME | --of=NAME
 	  Use "NAME" as the optfile.  By default, an attempt will be
@@ -1412,6 +1415,7 @@ FS90=
 
 AUTODIFF_PKG_USED=f
 OPENAD=
+OPENAD_DIVA=
 AD_OPTFILE=
 CAT_SRC_FOR_TAF=1
 TAF=
@@ -1426,6 +1430,7 @@ SVD_TAMC_FLAGS=
 TAMC_EXTRA=
 
 DIVA=
+OPENAD_DIVA=
 MPIINCLUDEDIR=
 MPI_HEADER_FILES=
 LOCAL_MPI_HEADERS=
@@ -1513,6 +1518,9 @@ for ac_option in "$@" ; do
 	    ac_prev=AD_OPTFILE ;;
 	-adoptfile=* | --adoptfile=* | -adof=* | --adof=*)
 	    AD_OPTFILE=$ac_optarg ;;
+
+	-diva | --diva)
+	    OPENAD_DIVA="ALLOW_OPENAD_DIVA=" ;;
 
 	-pdepend | --pdepend)
 	    ac_prev=PKG_DEPEND ;;
@@ -3053,6 +3061,7 @@ F90C = ${F90C}
 CC = ${CC}
 # Link editor
 LINK = ${LINK} ${LDADD}
+export $OPENAD_DIVA
 
 # Defines for CPP
 DEFINES = ${DEFINES}
@@ -3581,6 +3590,7 @@ OAD_cp.F90 \
 OAD_rev.F90 \
 OAD_tape.F90 \
 OAD_regular_cp.F90 \
+OAD_auxillary_cp.F90 \
 revolve.F90
 
 OPENAD_SUPPORT_C_SRC_FILES = \

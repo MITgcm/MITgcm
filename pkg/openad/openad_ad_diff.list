@@ -13,6 +13,5 @@ ini_sigma_hfac.f
 ini_spherical_polar_grid.f
 ini_vertical_grid.f
 initialise_fixed.f
-inner_do_loop.f
 set_ref_state.f
 find_hyd_press_1d.f
