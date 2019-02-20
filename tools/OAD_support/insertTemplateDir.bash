@@ -15,6 +15,13 @@ do
         echo "c\$openad XXX Template ad_template.regular.f" >> temp.sed
       fi
       ;;
+    "OpenAD_the_main_loop" )
+      if [ -z ${ALLOW_OPENAD_DIVA+x} ]; then
+        echo "c\$openad XXX Template ad_template.split.f" >> temp.sed
+      else
+        echo "c\$openad XXX Template ad_template.the_main_loop.f" >> temp.sed
+      fi
+      ;;
     "OpenAD_streamice_cg_make_a" )
       echo "c\$openad XXX Template ad_template.split_non_anonymous.f" >> temp.sed
       ;;
