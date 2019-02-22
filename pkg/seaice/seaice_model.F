@@ -200,7 +200,7 @@ C     because of ugly time level business
         IF (debugMode) CALL DEBUG_CALL( 'SEAICE_GROWTH', myThid )
 #endif
 
-#ifdef SEAICE_SIMPLEGROWTH
+#ifdef SEAICE_ALLOW_SIMPLEGROWTH
         CALL SEAICE_SIMPLEGROWTH( myTime, myIter, myThid )
 #else
         CALL SEAICE_GROWTH( myTime, myIter, myThid )
