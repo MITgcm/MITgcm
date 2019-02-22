@@ -1,5 +1,3 @@
-C SEAICE GROWTH REBORN v02 2015/01/15
-
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
@@ -12,13 +10,13 @@ C SEAICE GROWTH REBORN v02 2015/01/15
 #endif
 
 CBOP
-C     !ROUTINE: SEAICE_GROWTH
+C     !ROUTINE: SEAICE_SIMPLEGROWTH
 C     !INTERFACE:
-      SUBROUTINE SEAICE_GROWTH( myTime, myIter, myThid )
+      SUBROUTINE SEAICE_SIMPLEGROWTH( myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE seaice_growth
-C     | o rebirth of seaice_growth_if
+C     | SUBROUTINE seaice_simplegrowth
+C     | o  based on  seaice_growth_if
 C     *==========================================================*
 C     \ev
 
