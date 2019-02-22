@@ -468,15 +468,15 @@ c--   Save gencost_barfile on file.
 
 #ifdef ALLOW_AUTODIFF
       if ( useAUTODIFF ) then
-      write(adfname_gencostbar,'(3a,i10.10)')
+      write(adfname_gencostbar(k),'(3a,i10.10)')
      &     yadprefix, gencost_barfile(k)(1:ilt), '.', eccoiter
       do irec = 1,gencost_nrec(k)
 #ifdef ALLOW_ADJOINT_RUN
         if (.NOT.gencost_is3d(k))
-     &  call active_write_xy( adfname_gencostbar, tmpfld2d, irec,
+     &  call active_write_xy( adfname_gencostbar(k), tmpfld2d, irec,
      &       eccoiter, mythid, gencost_dummy(k) )
         if (gencost_is3d(k))
-     &  call active_write_xyz( adfname_gencostbar, tmpfld3d, irec,
+     &  call active_write_xyz( adfname_gencostbar(k), tmpfld3d, irec,
      &       eccoiter, mythid, gencost_dummy(k) )
 #endif
       enddo
