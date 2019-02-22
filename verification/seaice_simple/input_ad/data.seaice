@@ -3,7 +3,8 @@
       SEAICE_initialHEFF = 1.0,
       SEAICE_deltaTtherm = 3600.,
       SEAICE_deltaTdyn   = 3600.,
-      SEAICEuseDYNAMICS  =.TRUE.,
+#      SEAICEuseDYNAMICS  =.TRUE.,
+#      SEAICEuseDYNAMICS  =.FALSE.,
 #-- According to Martin, SEAICE_clipVelocities is not recommended
 #     SEAICE_clipVelocities=.TRUE.,
       SEAICEadvSalt      =.FALSE.,

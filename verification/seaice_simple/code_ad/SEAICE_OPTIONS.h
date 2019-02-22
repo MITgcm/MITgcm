@@ -17,12 +17,18 @@ C     Package-specific Options & Macros go here
 C--   Write "text-plots" of certain fields in STDOUT for debugging.
 #undef SEAICE_DEBUG
 
+C--   Allow the seaice_simplegrowth code.
+C     This option allows for  the adjointable seaice thermodynamic code
+#define SEAICE_ALLOW_SIMPLEGROWTH
+
+
 C--   Allow sea-ice dynamic code.
 C     This option is provided to allow use of TAMC
 C     on the thermodynamics component of the code only.
 C     Sea-ice dynamics can also be turned off at runtime
 C     using variable SEAICEuseDYNAMICS.
-#define SEAICE_ALLOW_DYNAMICS
+C#define SEAICE_ALLOW_DYNAMICS
+#undef SEAICE_ALLOW_DYNAMICS
 
 C--   By default, the sea-ice package uses its own integrated bulk
 C     formulae to compute fluxes (fu, fv, EmPmR, Qnet, and Qsw) over
