@@ -199,8 +199,14 @@ C     because of ugly time level business
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL( 'SEAICE_GROWTH', myThid )
 #endif
+
+#ifdef SEAICE_SIMPLEGROWTH
+        CALL SEAICE_SIMPLEGROWTH( myTime, myIter, myThid )
+#else
         CALL SEAICE_GROWTH( myTime, myIter, myThid )
+#endif
        ELSE
+
 #endif /* DISABLE_SEAICE_GROWTH */
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)

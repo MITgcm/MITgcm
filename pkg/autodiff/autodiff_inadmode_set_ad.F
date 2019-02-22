@@ -38,6 +38,9 @@ C     myThid :: my Thread Id number
       ctrlSmoothCorrel2D  = useSmoothCorrel2DinAdMode
 #endif
 #ifdef ALLOW_SEAICE
+      SINegFac = SIregFacInAd
+#endif /* ALLOW_SEAICE */
+#ifdef ALLOW_SEAICE
       IF ( SEAICEuseFREEDRIFTswitchInAd ) THEN
         SEAICEuseFREEDRIFT = .NOT.SEAICEuseFREEDRIFTinFwdMode
         SEAICEuseLSR       = .NOT.SEAICEuseFREEDRIFT
