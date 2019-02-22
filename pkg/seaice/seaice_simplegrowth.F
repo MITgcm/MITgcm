@@ -745,7 +745,7 @@ c  ice/atmosphere interface for each thickness category
 c =======================================================================
 
         DO IT=1,SEAICE_multDim
-         CALL SEAICE_SOLVE4TEMP(
+         CALL SEAICE_SIMPLESOLVE4TEMP(
      I        UG, hiceActualMult(1,1,IT), hsnowActualMult(1,1,IT),
      U        ticeInMult(1,1,IT), ticeOutMult(1,1,IT),
      O        F_io_net_mult(1,1,IT),
