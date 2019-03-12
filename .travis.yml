@@ -5,7 +5,7 @@ services:
  - docker
 
 before_install:
-    # Set up environment needed to run testreport code tests
+  # Set up environment needed to run testreport code tests
   - docker pull mitgcm/testreport-images:fc11-base-20170715
   - docker pull mitgcm/testreport-images:centos
   - docker run  -v `pwd`:/MITgcm --name fc11-testreport -t -d mitgcm/testreport-images:fc11-base-20170715 /bin/bash
@@ -30,7 +30,7 @@ jobs:
       env:
       - MITGCM_EXP="global_ocean.90x40x15" MITGCM_PRECS="16"
       - MITGCM_TROPT="-oad -devel -of=../tools/build_options/linux_amd64_gfortran"
-      - MITGCM_DECMD="docker exec -i centos-openad bash -c \"pwd; cd /root/OpenAD; export PATH='.:${PATH}';source setenv.sh;\"\\"
+      - MITGCM_DECMD="docker exec -i centos-openad bash -c "pwd; cd /root/OpenAD; export PATH=.:\${PATH};source setenv.sh;\\"
       script: . tools/ci/runtr.sh
     # run the base code tests
     - stage: base code tests
