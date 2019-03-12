@@ -31,6 +31,7 @@ jobs:
       - MITGCM_EXP="global_ocean.90x40x15" MITGCM_PRECS="16"
       - MITGCM_TROPT="-oad -devel -of=../tools/build_options/linux_amd64_gfortran"
       - MITGCM_DECMD="docker exec -i centos-openad bash -c \"pwd; cd /root/OpenAD; export PATH='.:${PATH}';source setenv.sh;\"\\"
+      script: . tools/ci/runtr.sh
     # run the base code tests
     - stage: base code tests
       env:
