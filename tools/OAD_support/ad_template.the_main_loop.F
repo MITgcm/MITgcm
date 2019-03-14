@@ -13,7 +13,9 @@ c we may need these for the checkpointing
       use PARAMS_mod
       use BAR2_mod
       use BARRIER_mod
+#ifdef ALLOW_PTRACERS
       use ptracers_fields_mod
+#endif
 #ifdef ALLOW_CD_CODE
       use CD_CODE_VARS_mod
 #endif
@@ -48,6 +50,13 @@ c we may need these for the checkpointing
       use STREAMICE_BDRY_mod
       use STREAMICE_CG_mod
 #endif
+#ifdef ALLOW_SHELFICE
+
+      use shelfice_mod
+      use shelfice_cost_mod
+      use obcs_fields_mod
+#endif
+
       use SOLVE_FOR_PRESSURE3D_mod
       use SOLVE_FOR_PRESSURE_mod
       use SURFACE_mod
@@ -60,12 +69,15 @@ c we may need these for the checkpointing
       use ctrl_weights_mod
       use optim_mod
       use grdchk_mod
+#ifdef ALLOW_DIC
       use dic_cost_mod
       use dic_vars_mod
       use dic_load_mod
       use dic_atmos_mod
-      use ptracers_start_mod
-
+#endif
+#ifdef ALLOW_PTRACERS
+     use ptracers_start_mod
+#endif 
 !$TEMPLATE_PRAGMA_DECLARATIONS
 
       integer :: currcp, curradjointcp, maxfwditer, maxadjiter
