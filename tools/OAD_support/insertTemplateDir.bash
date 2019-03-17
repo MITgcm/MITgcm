@@ -61,6 +61,9 @@ do
     "OpenAD_streamice_smooth_adjoint_field" )
       echo "c\$openad XXX Template ad_template.streamice_smooth_adjoint_field.f" >> temp.sed
       ;;
+    "OpenAD_cg2d_no_nsa" )
+      echo "c\$openad XXX Template ad_template.cg2d_no_nsa.f" >> temp.sed
+      ;;
     "OpenAD_exch1_rl" |          \
     "OpenAD_exch1_rs" |          \
     "OpenAD_global_max_r8" |     \
