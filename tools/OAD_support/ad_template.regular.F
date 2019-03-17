@@ -2,12 +2,9 @@
 #include "OPENAD_OPTIONS.h"
 
       subroutine template()
-#ifdef ALLOW_OPENAD_DIVA
       use OAD_regular_cp
       use OAD_tape
       use OAD_rev
-
-c we may need these for the checkpointing
       use SIZE_mod
       use EEPARAMS_mod
       use PARAMS_mod
@@ -24,9 +21,7 @@ c we may need these for the checkpointing
       use EXCH_mod
       use FC_NAMEMANGLE_mod
       use FFIELDS_mod
-#ifdef ALLOW_GENERIC_ADVDIFF
       use GAD_mod
-#endif
       use GLOBAL_MAX_mod
       use GLOBAL_SUM_mod
 #ifdef ALLOW_GMREDI
@@ -34,19 +29,8 @@ c we may need these for the checkpointing
       use GMREDI_TAVE_mod
 #endif
       use GRID_mod
-#ifdef ALLOW_MOM_COMMON
       use MOM_VISC_mod
-#endif
       use MPI_INFO_mod
-#ifdef ALLOW_SHAP_FILT
-      use SHAP_FILT_mod
-#endif
-#ifdef ALLOW_STREAMICE
-      use STREAMICE_mod
-      use STREAMICE_ADV_mod
-      use STREAMICE_BDRY_mod
-      use STREAMICE_CG_mod
-#endif
       use SOLVE_FOR_PRESSURE3D_mod
       use SOLVE_FOR_PRESSURE_mod
       use SURFACE_mod
@@ -59,7 +43,34 @@ c we may need these for the checkpointing
       use ctrl_weights_mod
       use optim_mod
       use grdchk_mod
-      
+#ifdef ALLOW_DIC
+      use dic_cost_mod
+      use dic_vars_mod
+      use dic_load_mod
+      use dic_atmos_mod
+      use dic_ctrl_mod
+#endif
+#ifdef ALLOW_PTRACERS
+      use ptracers_size_mod
+      use ptracers_fields_mod
+      use ptracers_start_mod
+#endif
+
+C we may need these for the checkpointing
+      use OAD_active
+      use w2f__types
+      use oad_intrinsics
+      use size_mod
+      use eeparams_mod
+      use params_mod
+      use ctrl_size_mod
+      use ctrl_genarr_mod
+      use ctrl_obcs_mod
+#ifdef ALLOW_GCHEM
+      use gchem_size_mod
+      use gchem_fields_mod
+#endif
+#endif      
 !$TEMPLATE_PRAGMA_DECLARATIONS
       integer, save :: currcp, curradjointcp, maxfwditer, maxadjiter
       integer myfwditer, myadjiter
@@ -199,5 +210,4 @@ c we may need these for the checkpointing
           end do
         end if      
       end if
-#endif
       end subroutine template
