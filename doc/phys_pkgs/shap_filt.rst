@@ -12,7 +12,7 @@ Implementation of filter is described in :numref:`shapiro_filter`.
 Experiments and tutorials that use shap filter
 ++++++++++++++++++++++++++++++++++++++++++++++
 
--  Held Suarez tutorial, in :filelink:`verification/tutorial_held_suarez_cs`, described in section :numref:`sec_eg_hs`.
+-  Held Suarez tutorial, in :filelink:`verification/tutorial_held_suarez_cs`.
 
 -  Other Held Suarez verification experiments (:filelink:`hs94.128x64x5 <verification/hs94.128x64x5>`, :filelink:`hs94.1x64x5 <verification/hs94.1x64x5>`, :filelink:`hs94.cs-32x32x5 <verification/hs94.cs-32x32x5>`)
 

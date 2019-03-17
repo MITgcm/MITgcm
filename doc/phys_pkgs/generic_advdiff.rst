@@ -97,10 +97,9 @@ Experiments and tutorials that use GAD
 ++++++++++++++++++++++++++++++++++++++
 
 -  Baroclinic gyre experiment, in :filelink:`tutorial\_baroclinic\_gyre <verification/tutorial_baroclinic_gyre>`
-   verification directory, described in section :numref:`sec_eg_baroclinic`
+   verification directory.
 
 -  Tracer Sensitivity tutorial, in :filelink:`tutorial\_tracer\_adjsens <verification/tutorial_tracer_adjsens>`
    verification directory.
-   .. described in section :numref:`sec_eg_tracer_adjsens`
 
 
