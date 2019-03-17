@@ -36,6 +36,7 @@ else
 fi
 
 #- For big executable, this could help:
-#FFLAGS='-h pic -dynamic'
-#CFLAGS='-h pic -dynamic'
+F90FIXEDFORMAT='-ffixed'
+FFLAGS='-h pic -dynamic'
+CFLAGS='-h pic -dynamic'
 
