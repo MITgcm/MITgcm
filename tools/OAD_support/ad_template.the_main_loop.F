@@ -2,7 +2,6 @@
 #include "OPENAD_OPTIONS.h"
 
       subroutine template()
-#ifdef ALLOW_OPENAD_DIVA
       use OAD_auxillary_cp
       use OAD_tape
       use OAD_rev
@@ -15,6 +14,7 @@ c we may need these for the checkpointing
       use BARRIER_mod
 #ifdef ALLOW_PTRACERS
       use ptracers_fields_mod
+      use ptracers_start_mod
 #endif
 #ifdef ALLOW_CD_CODE
       use CD_CODE_VARS_mod
@@ -75,15 +75,13 @@ c we may need these for the checkpointing
       use dic_load_mod
       use dic_atmos_mod
 #endif
-#ifdef ALLOW_PTRACERS
-     use ptracers_start_mod
-#endif 
+
 !$TEMPLATE_PRAGMA_DECLARATIONS
 
       integer :: currcp, curradjointcp, maxfwditer, maxadjiter
       integer :: cp_loop_variable_1,cp_loop_variable_2,
      +     cp_loop_variable_3,cp_loop_variable_4
-i     logical :: exst
+      logical :: exst
       integer iaddr
       external iaddr
       
@@ -210,6 +208,5 @@ i     logical :: exst
       write(standardmessageunit,*) 
 
       our_indent=our_indent-1
-#endif
 #endif
       end subroutine template
