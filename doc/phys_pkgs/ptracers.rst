@@ -58,7 +58,7 @@ The following can be set for each tracer (tracer number iTrc):
 - :varlink:`PTRACERS_useKPP` (iTrc): apply KPP or not. Defaults to :varlink:`useKPP`.
 - :varlink:`PTRACERS_initialFile` (iTrc): file with initial tracer concentration. Will be used if ``PTRACERS_Iter0`` :math:`=` ``nIter0``. Default is no name, in which case tracer is initialised as zero. If ``PTRACERS_Iter0`` :math:`<` ``nIter0``, then tracer concentration will come from ``pickup_ptracer``.
 - :varlink:`PTRACERS_names` (iTrc): tracer name. Needed for netcdf. Defaults to nothing.
-- :varlink:`PTRACERS_long\_names` (iTrc): optional name in long form of tracer.
+- :varlink:`PTRACERS_long_names` (iTrc): optional name in long form of tracer.
 - :varlink:`PTRACERS_units` (iTrc): optional units of tracer.
 
 .. _ptracers_diagnostics:
