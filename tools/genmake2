@@ -1867,7 +1867,9 @@ if test "x$MAKE" = x ; then
 fi
 
 #- check for fortran compiler (for now, just for information, no consequence)
-check_fortran_compiler
+if test "x$FC_CHECK" = x -o "x$FC_CHECK" = xt ; then
+    check_fortran_compiler
+else FC_CHECK=-2 ; fi
 
 if test "x$CPP" = x ; then
     CPP="cpp -traditional -P"
@@ -3776,7 +3778,7 @@ if test $FC_CHECK = 5 ; then
 elif [ $FC_CHECK -ge 3 ] ; then
     echo "  original 'Makefile' generated but was unable to"
     echo "   run compiled test-program (please see '$LOGFILE')"
-else
+elif [ $FC_CHECK -ge 0 ] ; then
     echo "Warning: FORTRAN compiler test failed (please see '$LOGFILE')"
     echo "Warning: 'Makefile' might be unusable (check your optfile)"
 fi

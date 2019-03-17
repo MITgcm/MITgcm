@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/genmake2:
+  - allow to skip "check_fortran_compiler" part (as, e.g., in opt-file:
+     tools/build_options/linux_ia64_cray_archer).
 o verification/tutorial_barotropic_gyre:
   - add 1rst tutorial documentation to new manual and update corresponding setup
 o pkg/atm_phys:
