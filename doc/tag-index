@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - remove argument tFld & dFld from S/R CALC_PHI_HYD and from 2 related S/R
 o tools/genmake2:
   - allow to skip "check_fortran_compiler" part (as, e.g., in opt-file:
      tools/build_options/linux_ia64_cray_archer).
