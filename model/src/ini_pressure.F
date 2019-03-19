@@ -110,7 +110,6 @@ C     for each level save old pressure and compute new pressure
             ENDDO
             CALL CALC_PHI_HYD(
      I           bi, bj, iMin, iMax, jMin, jMax, k,
-     I           theta, salt,
      U           phiHydF,
      O           phiHydC, dPhiHydX, dPhiHydY,
      I           startTime, -1, myThid )
