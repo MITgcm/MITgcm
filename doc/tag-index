@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/genmake2:
+  - fix option "-nocat4ad" for latest version of TAF: now needs to add TAF
+    option "-fixed" to process *.flowdir files with newer (after 4.1.1) version
+    of TAF (otherwise assumed now to be in free format).
 o model/src:
   - remove argument tFld & dFld from S/R CALC_PHI_HYD and from 2 related S/R
 o tools/genmake2:
