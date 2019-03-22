@@ -173,6 +173,8 @@ the computational domain will be subdivided over multiple logical
 processors in order to then bind those logical processors to physical
 processor resources that can compute in parallel.
 
+.. _tile_description:
+
 Tiles
 ~~~~~
 

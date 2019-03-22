@@ -40,7 +40,7 @@ C     tmpFld    :: Temporary array used to compute & write Total Depth
 C     tmpVar*   :: Temporary array used to integrate column thickness
       INTEGER bi, bj
       INTEGER i, j, k
-      _RS tmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     _RS tmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tmpVar1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmpVar2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hFacMnSz, hFacCtmp
@@ -176,7 +176,6 @@ C       Note: if no fluid (continent) ==> kSurf = Nr+1
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           tmpVar2(i,j) = 0.
-          tmpFld(i,j,bi,bj) = 0.
           kSurfC(i,j,bi,bj) = Nr+1
           kLowC (i,j,bi,bj) = 0
          ENDDO
@@ -185,7 +184,6 @@ C       Note: if no fluid (continent) ==> kSurf = Nr+1
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            tmpVar2(i,j) = tmpVar2(i,j) + drF(k)*hFacC(i,j,k,bi,bj)
-           tmpFld(i,j,bi,bj) = tmpFld(i,j,bi,bj) + 1.
            IF ( hFacC(i,j,k,bi,bj).NE.zeroRS ) kLowC(i,j,bi,bj) = k
           ENDDO
          ENDDO
@@ -202,6 +200,8 @@ C       Note: if no fluid (continent) ==> kSurf = Nr+1
           Ro_surf(i,j,bi,bj) = R_low(i,j,bi,bj) + tmpVar2(i,j)
           maskInC(i,j,bi,bj) = 0.
           IF ( kSurfC(i,j,bi,bj).LE.Nr ) maskInC(i,j,bi,bj) = 1.
+c         k = MAX( 0, kLowC (i,j,bi,bj) - kSurfC(i,j,bi,bj) + 1 )
+c         tmpFld(i,j,bi,bj) = k
          ENDDO
         ENDDO
 
@@ -228,7 +228,7 @@ C--   Calculate quantities derived from XY depth map
          DO i=1-OLx,sNx+OLx
 C         Total fluid column thickness (r_unit) :
           tmpVar1(i,j) = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
-          tmpFld(i,j,bi,bj) = tmpVar1(i,j)
+c         tmpFld(i,j,bi,bj) = tmpVar1(i,j)
 C         Inverse of fluid column thickness (1/r_unit)
           IF ( tmpVar1(i,j) .LE. zeroRL ) THEN
            recip_Rcol(i,j,bi,bj) = 0.

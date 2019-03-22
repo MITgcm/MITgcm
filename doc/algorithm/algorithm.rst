@@ -985,6 +985,7 @@ at the same point in the code.
    crank-nicol.rst
    nonlinear-freesurf.rst
 
+.. _spatial_discret_dyn_eq:
 
 Spatial discretization of the dynamical equations
 =================================================

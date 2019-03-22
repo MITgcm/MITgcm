@@ -477,7 +477,6 @@ CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 C--      Integrate hydrostatic balance for phiHyd with BC of phiHyd(z=0)=0
          CALL CALC_PHI_HYD(
      I        bi,bj,iMin,iMax,jMin,jMax,k,
-     I        theta, salt,
      U        phiHydF,
      O        phiHydC, dPhiHydX, dPhiHydY,
      I        myTime, myIter, myThid )
