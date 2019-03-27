@@ -91,7 +91,6 @@ c        e5d(i,j,k) = 0. _d 0
        DO i=1-OLx,sNx+OLx
          KE2d (i,j) = 0. _d 0
          cDrag(i,j) = 0. _d 0
-         botDragU(i,j,bi,bj) = 0. _d 0
        ENDDO
       ENDDO
 #ifdef ALLOW_DIAGNOSTICS
