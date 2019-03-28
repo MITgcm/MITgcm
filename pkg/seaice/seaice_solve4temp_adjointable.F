@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.37 2014/10/20 03:20:58 gforget Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
@@ -10,9 +7,9 @@ C $Name:  $
 #endif
 
 CBOP
-C     !ROUTINE: SEAICE_SOLVE4TEMP
+C     !ROUTINE: SEAICE_SIMPLESOLVE4TEMP
 C     !INTERFACE:
-      SUBROUTINE SEAICE_SOLVE4TEMP(
+      SUBROUTINE SEAICE_SIMPLESOLVE4TEMP(
      I   UG, HICE_ACTUAL, HSNOW_ACTUAL,
 #ifdef SEAICE_CAP_SUBLIM
      I   F_lh_max,
@@ -25,7 +22,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE SOLVE4TEMP
+C     | SUBROUTINE SIMPLESOLVE4TEMP
 C     | o Calculate ice growth rate, surface fluxes and
 C     |   temperature of ice surface.
 C     |   see Hibler, MWR, 108, 1943-1973, 1980
@@ -153,13 +150,19 @@ C     local copies of global variables
       _RL ALB_SNOW   (1:sNx,1:sNy)
 C     iceOrNot :: this is HICE_ACTUAL.GT.0.
       LOGICAL iceOrNot(1:sNx,1:sNy)
+
+CAB
+      _RL SItflux     (1:sNx,1:sNy)
+      _RL SIacSubl    (1:sNx,1:sNy)
+CAB
+
 #ifdef SEAICE_DEBUG
 #endif /* SEAICE_DEBUG */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ INIT comlev1_solve4temp = COMMON, sNx*sNy*NMAX_TICE
+CADJ INIT comlev1_simplesolve4temp = COMMON, sNx*sNy*NMAX_TICE
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-    MAYKUT CONSTANTS FOR SAT. VAP. PRESSURE TEMP. POLYNOMIAL
@@ -363,7 +366,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         DO I=1,sNx
 #ifdef ALLOW_AUTODIFF_TAMC
          iicekey = I + sNx*(J-1) + (ITER-1)*sNx*sNy
-CADJ STORE tsurfLoc(i,j) = comlev1_solve4temp,
+CADJ STORE tsurfLoc(i,j) = comlev1_simplesolve4temp,
 CADJ &                     key = iicekey, byte = isbyte
 #endif /*  ALLOW_AUTODIFF_TAMC */
 
@@ -400,7 +403,7 @@ C     d(qh)/d(TICE)
           ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tsurfLoc(i,j) = comlev1_solve4temp,
+CADJ STORE tsurfLoc(i,j) = comlev1_simplesolve4temp,
 CADJ &                     key = iicekey, byte = isbyte
 #endif /*  ALLOW_AUTODIFF_TAMC */
 C     Calculate the flux terms based on the updated tsurfLoc
@@ -439,7 +442,7 @@ C-    Update tsurf as solution of : Fc = Fia + d/dT(Fia - Fc) *delta.tsurf
      &    + ( F_c(I,J)-F_ia(I,J) ) / ( effConduct(I,J)+dFia_dTs(I,J) )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tsurfLoc(i,j) = comlev1_solve4temp,
+CADJ STORE tsurfLoc(i,j) = comlev1_simplesolve4temp,
 CADJ &                     key = iicekey, byte = isbyte
 #endif /*  ALLOW_AUTODIFF_TAMC */
           IF ( useMaykutSatVapPoly ) THEN
@@ -536,6 +539,33 @@ C     Fresh water flux (kg/m^2/s) from latent heat of sublimation.
 C     F_lh is positive upward (sea ice looses heat) and FWsublim
 C     is also positive upward (atmosphere gains freshwater)
          FWsublim(I,J) = F_lh(I,J)/lhSublim
+
+CAB
+C     F_c      :: conductive heat flux through seaice+snow (+=upward)
+C     F_lwu    :: upward long-wave surface heat flux (+=upward)
+C     F_sens   :: sensible surface heat flux         (+=upward)
+C     F_lh     :: latent heat flux (sublimation) (+=upward)
+
+C       SItflux(I,J) =
+C     &    (F_c(I,J)+F_lwu(I,J)+F_lh(I,J) + F_sens(I,J))
+C     &   -lwdownLoc(I,J) -absorbedSW(I,J) + F_lwu(I,J))
+C     &    *  maskC(I,J,kSurface,bi,bj)
+
+C       SIacSubl(I,J) =  
+C     &   (-lwdownLoc(I,J) -absorbedSW(I,J) + F_lwu(I,J))
+C     &    *  maskC(I,J,kSurface,bi,bj)
+
+
+
+C       CALL DIAGNOSTICS_FILL(SItflux,
+C     &        'SItflux ',0,1,3,bi,bj,myThid)
+
+C       CALL DIAGNOSTICS_FILL(SIacSubl,
+C     &        'SIacSubl',0,1,3,bi,bj,myThid)
+
+CAB
+
+
 
 #ifdef SEAICE_DEBUG
          IF ( (I .EQ. SEAICE_debugPointI) .AND.
