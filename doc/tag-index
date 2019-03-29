@@ -38,6 +38,17 @@ o pkg/shelfice,model/src
     shelficeBoundaryLayer
   - verification/shelfice_remeshing/*: new verification experiment
     to test remeshing functionality
+checkpoint67h (2019/03/21)
+o tools/genmake2:
+  - fix option "-nocat4ad" for latest version of TAF: now needs to add TAF
+    option "-fixed" to process *.flowdir files with newer (after 4.1.1) version
+    of TAF (otherwise assumed now to be in free format).
+o model/src:
+  - remove argument tFld & dFld from S/R CALC_PHI_HYD and from 2 related S/R
+o tools/genmake2:
+  - allow to skip "check_fortran_compiler" part (as, e.g., in opt-file:
+     tools/build_options/linux_ia64_cray_archer).
+>>>>>>> master
 o verification/tutorial_barotropic_gyre:
   - add 1rst tutorial documentation to new manual and update corresponding setup
 o pkg/atm_phys:
