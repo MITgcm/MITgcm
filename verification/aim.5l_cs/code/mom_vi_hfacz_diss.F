@@ -30,7 +30,7 @@ C     == Local variables ==
 C--   Calculate open water fraction at vorticity points
 
       DO i=1-Olx,sNx+Olx
-       hFacZ(i,1-Oly)=0.
+       hFacZ(i,1-Oly)=0. + FOO
        r_hFacZ(i,1-Oly)=0.
       ENDDO
 

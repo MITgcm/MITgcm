@@ -22,7 +22,7 @@
  f0=0.e-4,
  beta=0.E-11,
  eosType='LINEAR',
- tAlpha=2.E-4,
+ tAlpha=.TRUE.,
  sBeta =0.E-4,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
