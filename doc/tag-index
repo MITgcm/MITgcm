@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/verification_parser.py
+  - ensure Travis test suite fails when a build or a run fails.
+
 checkpoint67h (2019/03/21)
 o tools/genmake2:
   - fix option "-nocat4ad" for latest version of TAF: now needs to add TAF
