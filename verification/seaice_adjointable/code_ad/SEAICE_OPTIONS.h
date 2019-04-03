@@ -17,9 +17,9 @@ C     Package-specific Options & Macros go here
 C--   Write "text-plots" of certain fields in STDOUT for debugging.
 #undef SEAICE_DEBUG
 
-C--   Allow the seaice_simplegrowth code.
+C--   Allow the seaice_growth_adjointable code.
 C     This option allows for  the adjointable seaice thermodynamic code
-#define SEAICE_ALLOW_SIMPLEGROWTH
+#define SEAICE_ALLOW_GROWTH_ADJOINTABLE
 
 
 C--   Allow sea-ice dynamic code.

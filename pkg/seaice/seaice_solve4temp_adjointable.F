@@ -7,9 +7,9 @@
 #endif
 
 CBOP
-C     !ROUTINE: SEAICE_SIMPLESOLVE4TEMP
+C     !ROUTINE: SEAICE_SOLVE4TEMP_ADJOINTABLE
 C     !INTERFACE:
-      SUBROUTINE SEAICE_SIMPLESOLVE4TEMP(
+      SUBROUTINE SEAICE_SOLVE4TEMP_ADJOINTABLE(
      I   UG, HICE_ACTUAL, HSNOW_ACTUAL,
 #ifdef SEAICE_CAP_SUBLIM
      I   F_lh_max,
@@ -22,7 +22,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE SIMPLESOLVE4TEMP
+C     | SUBROUTINE SOLVE4TEMP_ADJOINTABLE
 C     | o Calculate ice growth rate, surface fluxes and
 C     |   temperature of ice surface.
 C     |   see Hibler, MWR, 108, 1943-1973, 1980
@@ -162,7 +162,7 @@ CAB
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ INIT comlev1_simplesolve4temp = COMMON, sNx*sNy*NMAX_TICE
+CADJ INIT comlev1_solve4temp_adjointable = COMMON, sNx*sNy*NMAX_TICE
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-    MAYKUT CONSTANTS FOR SAT. VAP. PRESSURE TEMP. POLYNOMIAL
@@ -366,7 +366,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         DO I=1,sNx
 #ifdef ALLOW_AUTODIFF_TAMC
          iicekey = I + sNx*(J-1) + (ITER-1)*sNx*sNy
-CADJ STORE tsurfLoc(i,j) = comlev1_simplesolve4temp,
+CADJ STORE tsurfLoc(i,j) = comlev1_solve4temp_adjointable,
 CADJ &                     key = iicekey, byte = isbyte
 #endif /*  ALLOW_AUTODIFF_TAMC */
 
@@ -403,7 +403,7 @@ C     d(qh)/d(TICE)
           ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tsurfLoc(i,j) = comlev1_simplesolve4temp,
+CADJ STORE tsurfLoc(i,j) = comlev1_solve4temp_adjointable,
 CADJ &                     key = iicekey, byte = isbyte
 #endif /*  ALLOW_AUTODIFF_TAMC */
 C     Calculate the flux terms based on the updated tsurfLoc
@@ -442,7 +442,7 @@ C-    Update tsurf as solution of : Fc = Fia + d/dT(Fia - Fc) *delta.tsurf
      &    + ( F_c(I,J)-F_ia(I,J) ) / ( effConduct(I,J)+dFia_dTs(I,J) )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tsurfLoc(i,j) = comlev1_simplesolve4temp,
+CADJ STORE tsurfLoc(i,j) = comlev1_solve4temp_adjointable,
 CADJ &                     key = iicekey, byte = isbyte
 #endif /*  ALLOW_AUTODIFF_TAMC */
           IF ( useMaykutSatVapPoly ) THEN

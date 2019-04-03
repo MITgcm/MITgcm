@@ -10,12 +10,12 @@
 #endif
 
 CBOP
-C     !ROUTINE: SEAICE_SIMPLEGROWTH
+C     !ROUTINE: SEAICE_GROWTH_ADJOINTABLE
 C     !INTERFACE:
-      SUBROUTINE SEAICE_SIMPLEGROWTH( myTime, myIter, myThid )
+      SUBROUTINE SEAICE_GROWTH_ADJOINTABLE( myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE seaice_simplegrowth
+C     | SUBROUTINE seaice_growth_adjointable
 C     | o  based on  seaice_growth_if
 C     *==========================================================*
 C     \ev
@@ -745,7 +745,7 @@ c  ice/atmosphere interface for each thickness category
 c =======================================================================
 
         DO IT=1,SEAICE_multDim
-         CALL SEAICE_SIMPLESOLVE4TEMP(
+         CALL SEAICE_SOLVE4TEMP_ADJOINTABLE(
      I        UG, hiceActualMult(1,1,IT), hsnowActualMult(1,1,IT),
      U        ticeInMult(1,1,IT), ticeOutMult(1,1,IT),
      O        F_io_net_mult(1,1,IT),
