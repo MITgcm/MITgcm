@@ -1228,7 +1228,7 @@ where the density function :math:`\gamma(h_1,h)` of resulting thickness :math:`h
    
    \gamma(h_1, h) = \frac{1}{k \lambda} \exp\left[{\frac{-(h-h_{\min})}{\lambda}}\right] 
 
-for :math:`h \geq h_{\min}`, with :math:`\gamma(h_1,h)=0` for :math:`h < h_{\min}$`.
+for :math:`h \geq h_{\min}`, with :math:`\gamma(h_1,h)=0` for :math:`h < h_{\min}`.
 In this parameterization, the normalization factor :math:`k=\frac{h_{\min} + \lambda}{h_1}`, the e-folding scale :math:`\lambda = \mu h_1^{1/2}` and the minimum ridge thickness :math:`h_{\min}=\min(2h_1,h_1 + h_{\textrm{raft}})` all depend on the original thickness :math:`h_1`.
 The maximal ice thickness allowed to raft :math:`h_{\textrm{raft}}` is constant (``SEAICEmaxRaft``, default 1~m) and :math:`\mu` (``SEAICEmuRidging``) is a tunable parameter. 
 
