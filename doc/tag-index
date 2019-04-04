@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - fix small bug (wrong balanceEmPmR report) in config_summary.F, spotted by
+    Christopher Wolfe ; add report of balancePrintMean to summary.
 o verification/verification_parser.py
   - ensure Travis test suite fails when a build or a run fails.
 
