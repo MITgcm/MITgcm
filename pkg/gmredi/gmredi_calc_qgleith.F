@@ -1,12 +1,12 @@
 #include "GMREDI_OPTIONS.h"
 
-
 CBOP
 C !ROUTINE: GMREDI_CALC_QGLEITH
 
 C !INTERFACE: ==========================================================
       SUBROUTINE GMREDI_CALC_QGLEITH(
-     I             bi, bj, myThid, myTime, myIter )
+     O             leithQG_K,
+     I             bi, bj, myTime, myIter, myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -17,22 +17,28 @@ C     *==========================================================*
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
-#include "GRID.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "SURFACE.h"
-#include "GMREDI.h"
+#include "GRID.h"
+#include "DYNVARS.h"
 #include "MOM_VISC.h"
 
-
 C !INPUT PARAMETERS: ===================================================
-C     bi,bj   :: current tile indices
-C     myThid  :: my Thread Id number
-      INTEGER bi,bj
-      INTEGER myThid, myTime, myIter
+C     bi, bj    :: tile indices
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number in simulation
+C     myThid    :: My Thread Id. number
+      INTEGER bi, bj
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
+
+C !OUTPUT PARAMETERS: ==================================================
+C  leithQG_K    :: Horizontal LeithQG viscosity, to add to GM coefficient
+      _RL leithQG_K(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 #ifdef ALLOW_GM_LEITH_QG
+#ifdef ALLOW_MOM_COMMON
 
 C !LOCAL VARIABLES: ====================================================
       _RL deepFac3
@@ -86,14 +92,6 @@ C        unless `useFullLeith` fails for your setup.
         ENDDO
       ENDDO
 
-      DO k=1,Nr
-        DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-            GM_LeithQG_K(i,j,k,bi,bj)  = 0. _d 0
-          ENDDO
-        ENDDO
-      ENDDO
-
 C     start k loop since momentum code is inside one
       DO k=1,Nr
 
@@ -113,7 +111,6 @@ C       Make local copies of horizontal flow field
         CALL MOM_CALC_RELVORT3( bi,bj,k,uFld,vFld,hFacZ,vort3,myThid )
         CALL MOM_CALC_HDIV( bi,bj,k,2,uFld,vFld,hDiv,myThid )
 
-
 C vorticity needs to be masked if using vector invariant momentum
 #ifdef ALLOW_MOM_VECINV
 C-      mask vort3
@@ -126,7 +123,6 @@ C-      mask vort3
         ENDDO
 #endif /* ALLOW_MOM_VECINV */
 
-
 C     Having calculated the quantitites, use them to calculate
 C       LeithQG coefficient
 
@@ -137,7 +133,6 @@ C       LeithQG coefficient
      O                                 stretching,
      I                                 Nsquare, uFld,vFld,vort3,
      I                                 myTime, myIter, myThid)
-
 
 C--     horizontal gradient of horizontal divergence:
 C-       gradient in x direction:
@@ -170,8 +165,8 @@ C       horizontal gradient of vorticity and vortex stretching:
 C        In the case of using QG Leith, we want to add a term
 C        before calculating vector magnitude.
 C        gradient in x direction:
-        DO j=2-Oly,sNy+Oly
-          DO i=2-Olx,sNx+Olx-1
+        DO j=2-OLy,sNy+OLy
+          DO i=2-OLx,sNx+OLx-1
             vrtDx(i,j) = (vort3(i+1,j)-vort3(i,j))
      &                  *recip_dxG(i,j,bi,bj)*recip_deepFacC(k)
      &                  *maskS(i,j,k,bi,bj)
@@ -187,8 +182,8 @@ C        gradient in x direction:
           ENDDO
         ENDDO
 C-       gradient in y direction:
-        DO j=2-Oly,sNy+Oly-1
-          DO i=2-Olx,sNx+Olx
+        DO j=2-OLy,sNy+OLy-1
+          DO i=2-OLx,sNx+OLx
             vrtDy(i,j) = (vort3(i,j+1)-vort3(i,j))
      &                  *recip_dyG(i,j,bi,bj)*recip_deepFacC(k)
      &                  *maskW(i,j,k,bi,bj)
@@ -204,13 +199,11 @@ C-       gradient in y direction:
           ENDDO
         ENDDO
 
-
         DO j=2-OLy,sNy+OLy-1
           DO i=2-OLx,sNx+OLx-1
 
 C These are (powers of) length scales
             L3 = L3_D(i,j,bi,bj)*deepFac3
-
 
             IF (useFullLeith) THEN
 C This is the vector magnitude of the vorticity gradient squared
@@ -226,8 +219,7 @@ C Using it in Leith serves to damp instabilities in w.
      &                     + (divDy(i,j+1)*divDy(i,j+1)
      &                        + divDy(i,j)*divDy(i,j) )  )
 
-              GM_LeithQG_K(i,j,k,bi,bj) =
-     &              leithQG2fac*SQRT(grdVrt+grdDiv)*L3
+              LeithQG_K(i,j,k) = leithQG2fac*SQRT(grdVrt+grdDiv)*L3
 
             ELSE
 C but this approximation will work on cube (and differs by as much as 4X)
@@ -240,17 +232,22 @@ C This approximation is good to the same order as above...
               grdDiv=MAX( grdDiv, ABS(divDy(i,j+1)) )
               grdDiv=MAX( grdDiv, ABS(divDy(i,j))   )
 
-              GM_LeithQG_K(i,j,k,bi,bj)=leithQG2fac*(grdVrt + grdDiv)*L3
+              LeithQG_K(i,j,k) = leithQG2fac*(grdVrt + grdDiv)*L3
 
             ENDIF
           ENDDO
         ENDDO
 
-        CALL DIAGNOSTICS_FILL(GM_LeithQG_K,'GM_LTHQG',
-     &                       k,1,2,bi,bj,myThid)
-
       ENDDO /* k loop */
 
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_FILL( LeithQG_K, 'GM_LTHQG',
+     &                         0, Nr, 2, bi, bj, myThid )
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
+#endif /* ALLOW_MOM_COMMON */
 #endif /* ALLOW_GM_LEITH_QG */
 
       RETURN
