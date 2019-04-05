@@ -13,7 +13,7 @@ C     !INTERFACE:
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             sigmaX, sigmaY, sigmaR,
      I             ldd97_LrhoW, ldd97_LrhoS,
-     I             myTime, myIter, myThid )
+     I             myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -50,8 +50,6 @@ C     == Routine arguments ==
       _RL ldd97_LrhoW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ldd97_LrhoS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj,iMin,iMax,jMin,jMax
-      _RL     myTime
-      INTEGER myIter
       INTEGER myThid
 CEOP
 
@@ -159,10 +157,10 @@ C-  Compute the 2 stream-function Components ( GM bolus vel.)
      &      +op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
 #ifdef ALLOW_GM_LEITH_QG
-     &     +op25*(GM_LeithQG_K(i,j,km1,bi,bj)
-     &             + GM_LeithQG_K(i-1,j,km1,bi,bj) +
-     &            GM_LeithQG_K(i,j,k,bi,bj)
-     &             + GM_LeithQG_K(i-1,j,k,bi,bj) )
+     &      +op25*( GM_LeithQG_K(i-1,j,km1,bi,bj)
+     &            + GM_LeithQG_K( i ,j,km1,bi,bj)
+     &            + GM_LeithQG_K(i-1,j,k,bi,bj)
+     &            + GM_LeithQG_K( i ,j,k,bi,bj) )
 #endif
      &      )*maskW(i,j,k,bi,bj)
 #ifdef ALLOW_EDDYPSI
@@ -188,8 +186,10 @@ C-  Compute the 2 stream-function Components ( GM bolus vel.)
      &      +op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
 #ifdef ALLOW_GM_LEITH_QG
-     &     +op5*(GM_LeithQG_K(i,j,k,bi,bj)
-     &             +GM_LeithQG_K(i,j-1,k,bi,bj))
+     &      +op25*( GM_LeithQG_K(i,j-1,km1,bi,bj)
+     &            + GM_LeithQG_K(i, j ,km1,bi,bj)
+     &            + GM_LeithQG_K(i,j-1,k,bi,bj)
+     &            + GM_LeithQG_K(i, j ,k,bi,bj) )
 #endif
      &      )*maskS(i,j,k,bi,bj)
 #ifdef ALLOW_EDDYPSI
