@@ -6,7 +6,7 @@ C     !ROUTINE: CALC_GRAD_PHI_HYD
 C     !INTERFACE:
       SUBROUTINE CALC_GRAD_PHI_HYD(
      I                       k, bi, bj, iMin,iMax, jMin,jMax,
-     I                       phiHydC, alphRho, tFld, sFld,
+     I                       phiHydC, alphRho,
      O                       dPhiHydX, dPhiHydY,
      I                       myTime, myIter, myThid)
 C     !DESCRIPTION: \bv
@@ -33,8 +33,6 @@ C     iMin,iMax,jMin,jMax :: Loop counters
 C     phiHydC    :: Hydrostatic Potential anomaly
 C                  (atmos: =Geopotential ; ocean-z: =Pressure/rho)
 C     alphRho    :: Density (z-coord) or specific volume (p-coord)
-C     tFld       :: Potential temp.
-C     sFld       :: Salinity
 C     dPhiHydX,Y :: Gradient (X & Y directions) of Hyd. Potential
 C     myTime :: Current time
 C     myIter :: Current iteration number
@@ -42,8 +40,6 @@ C     myThid :: Instance number for this call of the routine.
       INTEGER k, bi,bj, iMin,iMax, jMin,jMax
       _RL phiHydC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL alphRho(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL dPhiHydX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dPhiHydY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL myTime
