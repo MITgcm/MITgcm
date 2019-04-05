@@ -190,7 +190,6 @@ C     (derived from previous block and not directly user configured)
      &                   GM_skewflx, GM_advect,
      &                   GM_BVP_rModeNumber, GM_BVP_cHat2Min
 
-
 C--   COMMON /GM_COEFFICIENTS/ GM/Redi scaling coefficients
 C     defined at grid-cell center (tracer location)
 C     GM_isoFac2d  :: 2.D horiz scaling factor [-] of Isopycnal diffusivity
@@ -276,8 +275,7 @@ C     gradf        :: gradient of the Coriolis paramater at a cell centre, 1/(m*
 #endif
 
 #ifdef ALLOW_GM_LEITH_QG
-C     GM_LeithQG_K  :: Horizontal LeithQG viscosity,
-C                       to be used as GM coefficient
+C     GM_LeithQG_K :: Horizontal LeithQG viscosity, to add to GM coefficient
       _RL GM_LeithQG_K(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       COMMON /GM_LEITH_QG/ GM_LeithQG_K
 #endif /* ALLOW_GM_LEITH_QG */

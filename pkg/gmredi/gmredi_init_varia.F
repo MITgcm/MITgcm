@@ -23,7 +23,6 @@ C     === Global variables ===
 #include "GMREDI.h"
 #include "GMREDI_TAVE.h"
 
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myThid ::  my Thread Id number
