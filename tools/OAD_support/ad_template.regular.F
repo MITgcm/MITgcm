@@ -106,6 +106,9 @@ C we may need these for the checkpointing
      +myIter)
         myfwditer = 0
         if (curradjointcp .eq. -1 .and. currcp.ne. nTimeSteps_l2) then 
+          if(currcp.eq.0) then
+            call cp_write_tape_state(4)
+          end if
           do nt=currcp+1,nTimeSteps_l2
             print *, 'DIVA Checkpointing currcp  and running plain', cur
      +rcp
@@ -208,6 +211,7 @@ C we may need these for the checkpointing
               return
             end if
           end do
+          call cp_read_tape_state(4)
         end if      
       end if
       end subroutine template
