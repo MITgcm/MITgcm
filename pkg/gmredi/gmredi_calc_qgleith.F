@@ -21,7 +21,9 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "MOM_VISC.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_VISC.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C     bi, bj    :: tile indices
