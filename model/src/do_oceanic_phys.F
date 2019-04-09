@@ -1,5 +1,8 @@
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_COMMON_OPTIONS.h"
+#endif
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
@@ -295,8 +298,7 @@ C jmc: moved here before any freezing/seaice pkg adjustment of surf-fluxes
 # endif
 #endif /* ALLOW_AUTODIFF */
 
-#if (defined (ALLOW_ECCO) || defined (ALLOW_LEITH_QG))
-# if (defined (ALLOW_SIGMAR_COST_CONTRIBUTION) || defined (ALLOW_LEITH_QG))
+#if (defined (ALLOW_SIGMAR_COST_CONTRIBUTION) || defined (ALLOW_LEITH_QG))
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO k=1,Nr
@@ -308,8 +310,7 @@ C jmc: moved here before any freezing/seaice pkg adjustment of surf-fluxes
         ENDDO
        ENDDO
       ENDDO
-# endif /* ALLOW_SIGMAR_COST_CONTRIBUTION or ALLOW_LEITH_QG*/
-#endif /* ALLOW_ECCO or ALLOW_LEITH_QG*/
+#endif /* ALLOW_SIGMAR_COST_CONTRIBUTION or ALLOW_LEITH_QG*/
 
 #ifdef ALLOW_FRAZIL
       IF ( useFRAZIL ) THEN
@@ -814,15 +815,13 @@ cph Avoid variable aliasing for adjoint !!!
      O             sigmaX, sigmaY, sigmaR,
      I             myThid )
 
-#if (defined (ALLOW_ECCO) || defined (ALLOW_LEITH_QG))
-# if (defined (ALLOW_SIGMAR_COST_CONTRIBUTION) || defined (ALLOW_LEITH_QG))
+#if (defined (ALLOW_SIGMAR_COST_CONTRIBUTION) || defined (ALLOW_LEITH_QG))
             DO j=jMin,jMax
              DO i=iMin,iMax
               sigmaRfield(i,j,k,bi,bj)=sigmaR(i,j,k)
              ENDDO
             ENDDO
-# endif /* ALLOW_SIGMAR_COST_CONTRIBUTION or ALLOW_LEITH_QG */
-#endif /* ALLOW_ECCO or ALLOW_LEITH_QG */
+#endif /* ALLOW_SIGMAR_COST_CONTRIBUTION or ALLOW_LEITH_QG */
 
 #ifdef ALLOW_AUTODIFF
 #ifdef GMREDI_WITH_STABLE_ADJOINT
