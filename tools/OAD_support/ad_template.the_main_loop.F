@@ -175,7 +175,7 @@ c we may need these for the checkpointing
       end if 
       if (isfirst.eqv..true.) then                         
         call cp_read_tape_state(2)
-      else if (curradjointcp+maxadjiter.ge.nTimeSteps_l2) then
+      else if (curradjointcp-maxadjiter.le.0) then
         call cp_read_tape_state(1)
       else
         call cp_read_tape_state(3)
