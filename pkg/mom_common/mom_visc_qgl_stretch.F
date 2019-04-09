@@ -13,10 +13,10 @@ C     !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE MOM_VISC_QGL_STRETCH
 C     | Calculates the stratification and vortex stretching terms
-C     | for the Quasi-Geostrophic implementation of Leith 
+C     | for the Quasi-Geostrophic implementation of Leith
 C     | dynamic viscosity.
 C     | At the upper and lower boundaries, the stratification is
-C     | assumed constant. This means that 'stretching' is 
+C     | assumed constant. This means that 'stretching' is
 C     | dictated by the buoyancy difference between the
 C     | boundary cell and its vertical neighbour.
 C     *==========================================================*
@@ -24,19 +24,11 @@ C     *==========================================================*
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
-#include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_NONHYDROSTATIC
-#include "NH_VARS.h"
-#endif
-#ifdef ALLOW_AUTODIFF_TAMC
-#include "tamc.h"
-#include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
-#include "MOM_VISC.h"
+#include "GRID.h"
 #include "DYNVARS.h"
-
+c#include "MOM_VISC.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
@@ -61,7 +53,6 @@ C !LOCAL VARIABLES: ====================================================
       INTEGER i, j
       INTEGER iMin, iMax
       INTEGER jMin, jMax
-
 
       _RL QGL_epsil
 
@@ -98,11 +89,10 @@ CEOP
 C use sigmaRfield, rhoInSitu from common block DYNVARS.h
 C sigmaRfield is correctly masked, so no need to mask Nsquare
 
-      iMin = 1-Olx
-      iMax = sNx+Olx
-      jMin = 1-Oly
-      jMax = sNy+Oly
-
+      iMin = 1-OLx
+      iMax = sNx+OLx
+      jMin = 1-OLy
+      jMax = sNy+OLy
 
       DO j=jMin,jMax
         DO i=iMin,iMax
@@ -133,7 +123,6 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
             Nsquarep1    = gravity*gravitySign*recip_rhoConst
      &                  * sigmaRfield(i,j,k+1,bi,bj)
 
-
             kernel_1(i,j) = (fCori(i,j,bi,bj)/
      &                     MAX(Nsquare(i,j),QGL_epsil))*
      &                        buoy_1(i,j)
@@ -155,7 +144,6 @@ C           Ocean only has one level. There is no possibility
 C           for vertical stratification. Fail gracefully.
             stretching(i,j) = 0. _d 0
 
-
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
           ELSEIF (k.EQ.kSurfC(i,j,bi,bj) .AND.
      &                 k.LT.kLowC(i,j,bi,bj)) THEN
@@ -168,13 +156,12 @@ C           buoyancy
             buoy_p1(i,j) = gravity*gravitySign*recip_rhoConst*
      &                       rhoInSitu(i,j,k+1,bi,bj)
 
-C           Assuming constant stratification, so no need to 
+C           Assuming constant stratification, so no need to
 C           interpolate these.
 
 C           (f/N^2) * b
             Nsquarep1    = gravity*gravitySign*recip_rhoConst
      &                  * sigmaRfield(i,j,k+1,bi,bj)
-
 
             kernel_1(i,j) = (fCori(i,j,bi,bj)/
      &                     MAX(Nsquarep1,QGL_epsil))*
@@ -188,7 +175,6 @@ C           d/dz of it
      &                *recip_drC(k+1)*rkSign
      &                *(kernel_2(i,j)-kernel_1(i,j))
 
-
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
           ELSEIF (k.GT.kSurfC(i,j,bi,bj) .AND.
      &                 k.EQ.kLowC(i,j,bi,bj)) THEN
@@ -201,13 +187,12 @@ C           buoyancy
             buoy_m1(i,j) = gravity*gravitySign*recip_rhoConst*
      &                       rhoInSitu(i,j,k-1,bi,bj)
 
-C           Assuming constant stratification, so no need to 
+C           Assuming constant stratification, so no need to
 C           interpolate these.
 
 C           (f/N^2) * b
             Nsquare(i,j) = gravity*gravitySign*recip_rhoConst
      &                  * sigmaRfield(i,j,k,bi,bj)
-
 
             kernel_1(i,j) = (fCori(i,j,bi,bj)/
      &                     MAX(Nsquare(i,j),QGL_epsil))*
@@ -221,9 +206,8 @@ C           d/dz of it
      &                *recip_drC(k)*rkSign
      &                *(kernel_2(i,j)-kernel_1(i,j))
 
-
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-          ELSE 
+          ELSE
 C           Not in the ocean (probably in an ice shelf)
 C           Do nothing - stretching should be zero
             stretching(i,j) = 0. _d 0

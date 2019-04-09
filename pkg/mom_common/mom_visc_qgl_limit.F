@@ -24,15 +24,11 @@ C !USES: ===============================================================
 
 C     == Global variables ==
 #include "SIZE.h"
-#include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-#include "tamc.h"
-#include "tamc_keys.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
-#include "MOM_VISC.h"
-#include "DYNVARS.h"
+#include "GRID.h"
+c#include "DYNVARS.h"
+c#include "MOM_VISC.h"
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
@@ -85,7 +81,6 @@ C        Bu_g(i,j)            = 0. _d 0
 
       QGL_lim_epsil = 1. _d -12
 
-
 C Put a cap on the stretching term.
 
        DO j=2-OLy,sNy+OLy-1
@@ -105,7 +100,7 @@ C         Bu_g(i,j) = Nsquare(i,j) * drf(k)**2 * recip_rA(i,j,bi,bj) /
 C     &                 (fCori(i,j,bi,bj)**2 * PI)
 C        Grid scale Froude number: U pi /(N^2 H)
 C          Include a small number to prevent division by zero
-          Fr_g(i,j) = U_scale(i,j) * PI / 
+          Fr_g(i,j) = U_scale(i,j) * PI /
      &                 (MAX(Nsquare(i,j) * drF(k),
      &                      QGL_lim_epsil))
 
