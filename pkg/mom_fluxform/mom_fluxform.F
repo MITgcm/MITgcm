@@ -313,7 +313,7 @@ C     anelastic: transports are scaled by rhoFacC (~ mass transport)
         CALL MOM_CALC_TENSION( bi,bj,k,uFld,vFld,tension,myThid )
         CALL MOM_CALC_STRAIN( bi,bj,k,uFld,vFld,hFacZ,strain,myThid )
 #ifdef ALLOW_LEITH_QG
-        IF (viscC2LeithQG .NE. 0) THEN
+        IF ( viscC2LeithQG.NE.zeroRL ) THEN
           CALL MOM_VISC_QGL_STRETCH(bi,bj,k,
      O                            stretching, Nsquare,
      I                            myTime, myIter, myThid)
@@ -333,18 +333,14 @@ C     anelastic: transports are scaled by rhoFacC (~ mass transport)
         ENDDO
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
-          CALL DIAGNOSTICS_FILL(hDiv,
-     I                          'momHDiv ',k,1,2,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL(vort3,
-     I                          'momVort3',k,1,2,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL(tension,
-     I                          'Tension ',k,1,2,bi,bj,myThid)
-          CALL DIAGNOSTICS_FILL(strain,
-     I                          'Strain  ',k,1,2,bi,bj,myThid)
-C           stretching will be zero, unless using QG Leith
-          IF (viscC2LeithQG .NE. 0) THEN
+          CALL DIAGNOSTICS_FILL(hDiv,   'momHDiv ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(vort3,  'momVort3',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(tension,'Tension ',k,1,2,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(strain, 'Strain  ',k,1,2,bi,bj,myThid)
+C     stretching will be zero, unless using QG Leith
+          IF ( viscC2LeithQG.NE.zeroRL ) THEN
             CALL DIAGNOSTICS_FILL(stretching,
-     I                          'Stretch ',k,1,2,bi,bj,myThid)
+     I                            'Stretch ',k,1,2,bi,bj,myThid)
           ENDIF
         ENDIF
 #endif
