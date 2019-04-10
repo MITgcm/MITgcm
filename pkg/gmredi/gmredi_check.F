@@ -229,6 +229,15 @@ C     Make sure we are not trying to use some arrays that are unavailable
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R GMREDI_CHECK'
       ENDIF
+      IF ( GM_useLeithQG ) THEN
+       WRITE(msgBuf,'(A)')
+     &   ' GMREDI_CHECK: GM_useLeithQG is only implemented for cases'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &   ' GMREDI_CHECK: with #define GM_NON_UNITY_DIAGONAL'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+      ENDIF
 #endif
 
 #ifdef GM_EXCLUDE_SUBMESO
