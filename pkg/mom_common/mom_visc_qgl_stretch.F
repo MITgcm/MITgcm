@@ -43,7 +43,7 @@ C  myThid               :: my Thread Id number
 
 C !OUTPUT PARAMETERS: ==================================================
 C  stretching           :: vortex stretching contribution
-C  Nsquare              :: buoyancy frequency
+C  Nsquare              :: buoyancy frequency, averaged to cell centre
       _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Nsquare(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
@@ -130,6 +130,10 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
      &                     MAX(Nsquarep1,QGL_epsil))*
      &                        buoy_2(i,j)
 
+C           Average Nsquare to cell centre for use in
+C           MOM_VISC_QGL_LIMIT
+            Nsquare(i,j) = halfRL * ( Nsquare(i,j) + Nsquarep1 )
+
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C              d/dz of it
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
@@ -170,6 +174,12 @@ C           (f/N^2) * b
      &                     MAX(Nsquarep1,QGL_epsil))*
      &                        buoy_p1(i,j)
 
+C           Average Nsquare to cell centre for use in
+C           MOM_VISC_QGL_LIMIT
+C           (have assumed constant stratification, so
+C           just assign it)
+            Nsquare(i,j) = Nsquarep1
+
 C           d/dz of it
             stretching(i,j)= maskC(i,j,k,bi,bj)
      &                *recip_drC(k+1)*rkSign
@@ -200,6 +210,11 @@ C           (f/N^2) * b
             kernel_2(i,j)=(fCori(i,j,bi,bj)/
      &                     MAX(Nsquare(i,j),QGL_epsil))*
      &                        buoy(i,j)
+
+C           Average Nsquare to cell centre for use in
+C           MOM_VISC_QGL_LIMIT
+C           (have assumed constant stratification, so
+C           no need to do anything)
 
 C           d/dz of it
             stretching(i,j)= maskC(i,j,k,bi,bj)
