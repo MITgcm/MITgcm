@@ -124,7 +124,7 @@ c we may need these for the checkpointing
 #endif
 #ifdef ALLOW_OPENAD_DIVA
       DO iloop1 = 1, nTimeSteps
-        PROD = (ILOOP1 + NTIMESTEPS_L2 *(ILOOP +(-1)))
+        PROD = (ILOOP1 + NTIMESTEPS *(ILOOP +(-1)))
         print *, 'DIVA Revolve Plain PROD = ', PROD
         CALL OpenAD_forward_step( PROD, mytime, myiter, mythid )
       enddo
@@ -156,7 +156,7 @@ c we may need these for the checkpointing
                 call OAD_revPlain
                 do currIter=currIter,theAction%iteration-1
 #ifdef ALLOW_OPENAD_DIVA 
-                   PROD = (currIter+1 + NTIMESTEPS_L2 *(ILOOP +(-1)))
+                   PROD = (currIter+1 + NTIMESTEPS *(ILOOP +(-1)))
                    print *, 'DIVA Revolve Tape rvForward PROD = ', PROD
                    CALL OpenAD_forward_step( PROD, mytime, 
      +myiter, mythid )
@@ -168,7 +168,7 @@ c we may need these for the checkpointing
                 call OAD_revTape
              case (rvFirstUTurn)
 #ifdef ALLOW_OPENAD_DIVA 
-                PROD = (currIter+1 + NTIMESTEPS_L2 *(ILOOP +(-1)))
+                PROD = (currIter+1 + NTIMESTEPS *(ILOOP +(-1)))
                 print *, 'DIVA Revolve Tape rvFirstUTurn PROD = ', PROD
                 CALL OpenAD_forward_step( PROD, mytime, myiter, 
      +mythid )
@@ -188,7 +188,7 @@ c we may need these for the checkpointing
              case (rvFirstUTurn)
 !we taped already ... see above
 #ifdef ALLOW_OPENAD_DIVA 
-                PROD = (currIter+1 + NTIMESTEPS_L2 *(ILOOP +(-1))) 
+                PROD = (currIter+1 + NTIMESTEPS *(ILOOP +(-1))) 
                 print *, 'DIVA Revolve Adjoint rvFirstUTurn PROD = ', PROD
                 CALL OpenAD_forward_step( PROD, mytime, myiter, 
      +mythid )
@@ -209,7 +209,7 @@ c we may need these for the checkpointing
                 call OAD_revPlain
                 do currIter=currIter,theAction%iteration-1
 #ifdef ALLOW_OPENAD_DIVA
-                   PROD = (currIter+1 + NTIMESTEPS_L2 *(ILOOP +(-1)))
+                   PROD = (currIter+1 + NTIMESTEPS *(ILOOP +(-1)))
                    print *, 'DIVA Revolve Adjoint rvForward PROD = ', PROD 
                    CALL OpenAD_forward_step( PROD, mytime, myiter,
      + mythid )
@@ -221,7 +221,7 @@ c we may need these for the checkpointing
                 call OAD_revAdjoint
              case (rvUTurn)
 #ifdef ALLOW_OPENAD_DIVA
-                PROD = (currIter+1 + NTIMESTEPS_L2 *(ILOOP +(-1))) 
+                PROD = (currIter+1 + NTIMESTEPS *(ILOOP +(-1))) 
 #endif
                 call OAD_revTape
 #ifdef ALLOW_OPENAD_DIVA
