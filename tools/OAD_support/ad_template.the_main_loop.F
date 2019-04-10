@@ -153,10 +153,13 @@ c we may need these for the checkpointing
       call cp_close
       if (isfirst.eqv..true.) then 
         call cp_write_tape_state(1)
-      else if (currcp.eq.nTimeSteps_l2) then
+      end if
+      if (currcp.eq.nTimeSteps_l2) then
         call cp_write_tape_state(2)
       else
-        call cp_write_tape_state(3)
+        if (isfirst.eqv..false.) then
+          call cp_write_tape_state(3)
+        end if
       end if
       end if 
       if (our_rev_mode%adjoint 
