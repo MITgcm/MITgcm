@@ -58,10 +58,10 @@ C  stretching           :: vortex stretching term (to be limited)
 
 C !LOCAL VARIABLES: ====================================================
       INTEGER i,j
-      _RL U_scale(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL Ro_g2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL U_scale_sq(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Ro_g_sq(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C      _RL Bu_g(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL Fr_g(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Fr_g_sq(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL stretching_hold(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL QGL_lim_epsil
       _RL vort3C
@@ -71,10 +71,14 @@ CEOP
 C Initialise local variables
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        U_scale(i,j)         = 0. _d 0
-        Ro_g2(i,j)           = 0. _d 0
+C       square of the velocity scale
+        U_scale_sq(i,j)         = 0. _d 0
+C       square of the gridscale Rossby number
+        Ro_g_sq(i,j)           = 0. _d 0
+C       Gridscale Burger number
 C        Bu_g(i,j)            = 0. _d 0
-        Fr_g(i,j)            = 0. _d 0
+C       Square of the gridscale Froude number
+        Fr_g_sq(i,j)            = 0. _d 0
         stretching_hold(i,j) = 0. _d 0
        ENDDO
       ENDDO
@@ -85,7 +89,7 @@ C Put a cap on the stretching term.
 
        DO j=2-OLy,sNy+OLy-1
         DO I=2-OLx,sNx+OLx-1
-          U_scale(i,j) = 0.5* SQRT(
+          U_scale_sq(i,j) = 0.5* (
      &             ( uFld(i,j)*uFld(i,j)
      &              + uFld(i+1,j)*uFld(i+1,j) )
      &           + ( vFld(i,j)*vFld(i,j)
@@ -93,15 +97,15 @@ C Put a cap on the stretching term.
      &                             )
 
 C        Grid scale Rossby number, squared: U^2 / (fL)^2
-          Ro_g2(i,j) = U_scale(i,j)**2 * recip_rA(i,j,bi,bj) /
+          Ro_g_sq(i,j) = U_scale_sq(i,j) * recip_rA(i,j,bi,bj) /
      &                  MAX(QGL_lim_epsil, fCori(i,j,bi,bj)**2)
 C        Grid scale Burger number: N^2 H^2 / (f^2 L^2)
 C         Bu_g(i,j) = Nsquare(i,j) * drf(k)**2 * recip_rA(i,j,bi,bj) /
 C     &                 (fCori(i,j,bi,bj)**2 * PI)
-C        Grid scale Froude number: U pi /(N^2 H)
+C        Grid scale Froude number, squared: U^2 pi^2 /(N^2 H)^2
 C          Include a small number to prevent division by zero
-          Fr_g(i,j) = U_scale(i,j) * PI /
-     &                 (MAX(Nsquare(i,j) * drF(k),
+          Fr_g_sq(i,j) = U_scale_sq(i,j) * PI * PI /
+     &                 (MAX((Nsquare(i,j) * drF(k))**2,
      &                      QGL_lim_epsil))
 
 C     Make the scheme gracefully transition to something else
@@ -109,7 +113,7 @@ C     as stratification goes to zero
 C
 C        Implement eqn. (55) from Bachman et al. (2017) JGR-Oceans
 C         stretching_hold(i,j) = MIN( ABS(stretching(i,j)),
-C     &    ABS(vort3(i,j) / MAX(Bu_g(i,j),Ro_g2(i,j)) ) )
+C     &    ABS(vort3(i,j) / MAX(Bu_g(i,j),Ro_g_sq(i,j)) ) )
 
 C        Implement eqn. (56) from Bachman et al. (2017) JGR-Oceans
 C          This limiter goes to 2D Leith as stratification -> 0
@@ -117,8 +121,8 @@ C          This limiter goes to 2D Leith as stratification -> 0
      &                            + vort3(i,j+1) + vort3(i+1,j+1))
 
           stretching_hold(i,j) = min( ABS(stretching(i,j)),
-     &                  ABS(vort3C * Fr_g(i,j)**2 /
-     &                       (Ro_g2(i,j) + Fr_g(i,j)**4
+     &                  ABS(vort3C * Fr_g_sq(i,j) /
+     &                       (Ro_g_sq(i,j) + Fr_g_sq(i,j)**2
      &                         + QGL_lim_epsil) )
      &                               )
 
