@@ -240,6 +240,18 @@ C     Make sure we are not trying to use some arrays that are unavailable
       ENDIF
 #endif
 
+#ifndef ALLOW_GM_LEITH_QG
+      IF ( GM_useLeithQG ) THEN
+       WRITE(msgBuf,'(A)')
+     &   ' GMREDI_CHECK: GM_useLeithQG used in data.gmredi without'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &   ' GMREDI_CHECK: #define ALLOW_GM_LEITH_QG'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+      ENDIF
+#endif
+
 #ifdef GM_EXCLUDE_SUBMESO
       IF ( GM_useSubMeso ) THEN
         WRITE(msgBuf,'(2A)') ' GMREDI_CHECK: ',
