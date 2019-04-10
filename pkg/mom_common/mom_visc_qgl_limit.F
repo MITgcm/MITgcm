@@ -37,9 +37,9 @@ C  Nsquare              :: buoyancy frequency
 C  uFld                 :: U velocity (east flow on spherical grid)
 C  vFld                 :: V velocity (north flow on spherical grid)
 C  vort3                :: Relative vorticity
-C  myThid               :: my Thread Id number
 C  myTime               :: current time of simulation ( s )
 C  myIter               :: current iteration number of simulation
+C  myThid               :: my Thread Id number
       INTEGER bi,bj,k
       _RL Nsquare(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)

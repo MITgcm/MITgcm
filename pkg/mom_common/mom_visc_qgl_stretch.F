@@ -33,9 +33,9 @@ c#include "MOM_VISC.h"
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
 C  k                    :: vertical level
-C  myThid               :: my Thread Id number
 C  myTime               :: current time of simulation ( s )
 C  myIter               :: current iteration number of simulation
+C  myThid               :: my Thread Id number
       INTEGER bi,bj, k
       _RL     myTime
       INTEGER myIter
