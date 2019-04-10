@@ -42,8 +42,14 @@ C  myThid               :: my Thread Id number
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
-C  stretching           :: vortex stretching contribution
-C  Nsquare              :: buoyancy frequency, averaged to cell centre
+C  stretching           :: vortex stretching contribution, calculated at
+C                          cell centre, except near top and bottom, when
+C                          it is calculated at cell face, but assumed to
+C                          reside at cell centre.
+C  Nsquare              :: buoyancy frequency, averaged to cell centre,
+C                          except near top and bottom, when constant
+C                          stratification is assumed, and it is copied
+C                          to cell centre.
       _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Nsquare(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
@@ -111,7 +117,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
      &                       rhoInSitu(i,j,k+1,bi,bj)
 
 C           Interpolate buoyancy to upper and lower cell faces.
-C           (same location as Nsquare)
+C           (same location as Nsquare is calculated)
             buoy_1(i,j)= halfRL * (buoy(i,j) + buoy_m1(i,j))
             buoy_2(i,j)= halfRL * (buoy(i,j) + buoy_p1(i,j))
 

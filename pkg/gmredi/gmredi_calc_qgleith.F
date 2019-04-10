@@ -12,6 +12,7 @@ C     !DESCRIPTION:
 C     *==========================================================*
 C     | SUBROUTINE GMREDI_CALC_QGLEITH
 C     | Calculate QG Leith contribution to GMRedi tensor.
+C     | leithQG_K is located at the cell centre.
 C     *==========================================================*
 
 C !USES: ===============================================================
