@@ -974,7 +974,6 @@ C     o set base time from the 2 others
          baseTime = startTime - deltaTClock*DFLOAT(nIter0)
       ENDIF
 
-      nTimeSteps_l2 = 4
 C     o nTimeSteps 1
       IF ( nTimeSteps .EQ. 0 .AND. nEndIter .NE. 0 )
      &     nTimeSteps = nEndIter-nIter0
