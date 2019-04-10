@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/testreport:
+  - for file run_ADM_DIVA, fix sed search syntax so that it works with BSD-sed
 o model/src:
   - fix small bug (wrong balanceEmPmR report) in config_summary.F, spotted by
     Christopher Wolfe ; add report of balancePrintMean to summary.
