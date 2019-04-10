@@ -182,12 +182,10 @@ C     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 #else
 # ifdef ALLOW_OPENAD_DIVA
        CALL TIMER_START('INNER_DO_LOOP       [MAIN_DO_LOOP]',myThid)
-       nTimeSteps_l2 = 2
        CALL INNER_DO_LOOP( iloop, myTime, myIter, myThid )
        CALL TIMER_STOP ('INNER_DO_LOOP       [MAIN_DO_LOOP]',myThid)
 # else
        CALL TIMER_START('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
-       nTimeSteps_l2 = 2
        CALL FORWARD_STEP( iloop, myTime, myIter, myThid )
        CALL TIMER_STOP ('FORWARD_STEP        [MAIN_DO_LOOP]',myThid)
 # endif
