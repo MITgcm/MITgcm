@@ -176,11 +176,19 @@ C        gradient in x direction:
 #ifdef ALLOW_OBCS
      &                  *maskInS(i,j,bi,bj)
 #endif
-     &                  + (stretching(i+1,j)-stretching(i,j))
-     &                  *recip_dxG(i,j,bi,bj)*recip_deepFacC(k)
-     &                  *maskS(i,j,k,bi,bj)
+C        Average d/dx of stretching onto V-points to match vrtDX
+     &                  + halfRL*halfRL*
+     &                    + ((stretching(i+1,j)-stretching(i,j))
+     &                      *recip_dxC(i+1,j,bi,bj)*recip_deepFacC(k)
+     &                    + (stretching(i,j)-stretching(i-1,j))
+     &                      *recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+     &                    + (stretching(i+1,j-1)-stretching(i,j-1))
+     &                      *recip_dxC(i,j-1,bi,bj)*recip_deepFacC(k)
+     &                    + (stretching(i,j-1)-stretching(i-1,j-1))
+     &                      *recip_dxC(i-1,j-1,bi,bj)*recip_deepFacC(k)
+     &                  )*maskS(i,j,k,bi,bj)
 #ifdef ALLOW_OBCS
-     &                  *maskInS(i,j,bi,bj)
+     &                    *maskInS(i,j,bi,bj)
 #endif
           ENDDO
         ENDDO
@@ -193,11 +201,19 @@ C-       gradient in y direction:
 #ifdef ALLOW_OBCS
      &                  *maskInW(i,j,bi,bj)
 #endif
-     &                  + (stretching(i,j+1)-stretching(i,j))
-     &                  *recip_dyG(i,j,bi,bj)*recip_deepFacC(k)
-     &                  *maskW(i,j,k,bi,bj)
+C        Average d/dy of stretching onto U-points to match vrtDy
+     &                  + halfRL*halfRL*
+     &                    ((stretching(i,j+1)-stretching(i,j))
+     &                      *recip_dyC(i,j+1,bi,bj)*recip_deepFacC(k)
+     &                    + (stretching(i,j)-stretching(i,j-1))
+     &                      *recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
+     &                    + (stretching(i-1,j+1)-stretching(i-1,j))
+     &                      *recip_dyC(i-1,j+1,bi,bj)*recip_deepFacC(k)
+     &                    + (stretching(i-1,j)-stretching(i-1,j-1))
+     &                      *recip_dyC(i-1,j,bi,bj)*recip_deepFacC(k)
+     &                  )*maskW(i,j,k,bi,bj)
 #ifdef ALLOW_OBCS
-     &                  *maskInW(i,j,bi,bj)
+     &                      *maskInW(i,j,bi,bj)
 #endif
           ENDDO
         ENDDO
