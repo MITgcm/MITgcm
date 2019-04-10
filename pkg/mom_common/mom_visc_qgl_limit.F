@@ -6,7 +6,8 @@ C !ROUTINE: MOM_VISC_QGL_LIMIT
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_VISC_QGL_LIMIT(
      I                           bi, bj, k,
-     O                           stretching, Nsquare,
+     O                           stretching,
+     I                           Nsquare,
      I                           uFld, vFld, vort3,
      I                           myTime, myIter, myThid )
 
