@@ -29,7 +29,6 @@ C     === Local variables ===
 #ifdef SEAICE_ITD
 C     msgBuf      :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*15 HlimitMsgFormat
 C     k - loop counter for ITD categories
       INTEGER k
       _RL tmpVar
@@ -160,20 +159,17 @@ C     check if Hlimit contains useful values
        IF ( Hlimit(k).LE.Hlimit(k-1) ) computeHlimit=.TRUE.
       ENDDO
       IF ( computeHlimit ) THEN
-       WRITE(msgBuf,'(A,I2,A)') ' SEAICE_INIT_FIXED: Computing ',
+       WRITE(msgBuf,'(A,I2,A)') 'SEAICE_INIT_FIXED: Computing ',
      &      nITD, ' thickness category limits with'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F6.2)')
-     &      ' SEAICE_INIT_FIXED: Hlimit_c1 = ', Hlimit_c1
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F6.2)')
-     &      ' SEAICE_INIT_FIXED: Hlimit_c2 = ', Hlimit_c2
-       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,F6.2)')
-     &      ' SEAICE_INIT_FIXED: Hlimit_c3 = ', Hlimit_c3
+       CALL WRITE_0D_RL( Hlimit_c1  ,INDEX_NONE,
+     &      'Hlimit_c1  =', ' /* ITD bin parameter */')
+       CALL WRITE_0D_RL( Hlimit_c2  ,INDEX_NONE,
+     &      'Hlimit_c2  =', ' /* ITD bin parameter */')
+       CALL WRITE_0D_RL( Hlimit_c3  ,INDEX_NONE,
+     &      'Hlimit_c3  =', ' /* ITD bin parameter */')
+       WRITE(msgBuf,'(A)') ' '
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
 C     use Equ. 22 of Lipscomb et al. (2001, JGR) to generate ice
@@ -200,16 +196,6 @@ C       -> HINT: set parameters c1, c2 and c3 in seaice_readparms.F
 C     thickest category is unlimited
       Hlimit(nITD) = 999.9 _d 0
 
-      WRITE(msgBuf,'(A,I2,A)')
-     &     ' SEAICE_INIT_FIXED: There are ', nITD,
-     &     ' sea ice thickness categories'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-      WRITE(HlimitMsgFormat,'(A,I2,A)') '(A,',nITD,'F6.2,F6.1)'
-      WRITE(msgBuf,HlimitMsgFormat)
-     &     ' SEAICE_INIT_FIXED: Hlimit = ', (Hlimit(k),k=0,nITD)
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
 #endif /* SEAICE_ITD */
 
 C     Only Master Thread updates parameter in common block:
