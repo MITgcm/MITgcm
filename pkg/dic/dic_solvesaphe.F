@@ -194,27 +194,27 @@ C      --------------------
 #ifdef CARBONCHEM_SOLVESAPHE
 C      p_alknw_inf = -\Sum_i m_i Xtot_i
 C
-C      p_alknw_inf =-p_dictot*0. _d 0 & C         n = 2, m = 0
-C                  -p_bortot*0. _d 0 & C         n = 1, m = 0
-C                  -p_po4tot*1. _d 0 & C         n = 3, m = 1
-C                  -p_siltot*0. _d 0 & C         n = 1, m = 0
-C                  -p_nh4tot*0. _d 0 & C         n = 1, m = 0
-C                  -p_h2stot*0. _d 0 & C         n = 1, m = 0
-C                  -p_so4tot*1. _d 0 & C         n = 1, m = 1
-C                  -p_flutot*1. _d 0C            n = 1, m = 1
+C      p_alknw_inf =-p_dictot*0. _d 0 & ! n = 2, m = 0
+C                  -p_bortot*0. _d 0 &  ! n = 1, m = 0
+C                  -p_po4tot*1. _d 0 &  ! n = 3, m = 1
+C                  -p_siltot*0. _d 0 &  ! n = 1, m = 0
+C                  -p_nh4tot*0. _d 0 &  ! n = 1, m = 0
+C                  -p_h2stot*0. _d 0 &  ! n = 1, m = 0
+C                  -p_so4tot*1. _d 0 &  ! n = 1, m = 1
+C                  -p_flutot*1. _d 0    ! n = 1, m = 1
 
       p_alknw_inf =    -p_po4tot - p_so4tot - p_flutot
 
 C      p_alknw_sup = \Sum_i (n_i - m_i) Xtot_i
 C
 C      p_alknw_sup = p_dictot*(2. _d 0-0. _d 0) &  ! n = 2, m = 0
-C                  p_bortot*(1. _d 0-0. _d 0) &  ! n = 1, m = 0
-C                  p_po4tot*(3. _d 0-1. _d 0) &  ! n = 3, m = 1
-C                  p_siltot*(1. _d 0-0. _d 0) &  ! n = 1, m = 0
-C                  p_nh4tot*(1. _d 0-0. _d 0) &  ! n = 1, m = 0
-C                  p_h2stot*(1. _d 0-0. _d 0) &  ! n = 1, m = 0
-C                  p_so4tot*(1. _d 0-1. _d 0) &  ! n = 1, m = 1
-C                  p_flutot*(1. _d 0-1. _d 0)    ! n = 1, m = 1
+C                  p_bortot*(1. _d 0-0. _d 0) &    ! n = 1, m = 0
+C                  p_po4tot*(3. _d 0-1. _d 0) &    ! n = 3, m = 1
+C                  p_siltot*(1. _d 0-0. _d 0) &    ! n = 1, m = 0
+C                  p_nh4tot*(1. _d 0-0. _d 0) &    ! n = 1, m = 0
+C                  p_h2stot*(1. _d 0-0. _d 0) &    ! n = 1, m = 0
+C                  p_so4tot*(1. _d 0-1. _d 0) &    ! n = 1, m = 1
+C                  p_flutot*(1. _d 0-1. _d 0)      ! n = 1, m = 1
 
       p_alknw_sup =  p_dictot + p_dictot + p_bortot
      &             + p_po4tot + p_po4tot + p_siltot
@@ -229,13 +229,6 @@ C      =========================================================================
 C INTERFACE: ==========================================================
       SUBROUTINE CALC_PCO2_SOLVESAPHE(
      I                    t,s,z_dictot,z_po4tot,z_siltot,z_alktot,
-C     I                    k1local,k2local,
-C     I                    k1plocal,k2plocal,k3plocal,
-C     I                    kslocal,kblocal,kwlocal,
-C     I                    ksilocal,kflocal,
-C     I                    k0local,fflocal, fugflocal,
-C     I                    knlocal,khslocal,phscalelocal,
-C     I                    z_bortot,z_so4tot,z_flutot,
      U                    pHlocal,z_pco2,z_co3,
      I                    i,j,k,bi,bj,debugPrt,myIter,myThid )
 
@@ -258,12 +251,6 @@ C       t   = temperature (degrees C)
 C       s   = salinity (PSU)
       _RL  t, s, z_po4tot, z_siltot, z_alktot
       _RL  z_pco2, z_dictot, pHlocal
-C      _RL  fflocal, btlocal, stlocal, ftlocal
-C      _RL  k1local, k2local
-C      _RL  k1plocal, k2plocal, k3plocal
-C      _RL  kslocal, kblocal, kwlocal, ksilocal, kflocal
-C      _RL  k0local, fugflocal
-C      _RL  knlocal,khslocal,phscalelocal
       _RL  z_co3
       INTEGER i,j,k,bi,bj
       LOGICAL debugPrt

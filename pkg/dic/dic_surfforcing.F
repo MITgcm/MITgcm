@@ -167,7 +167,7 @@ C$TAF LOOP = parallel
           IF ( maskC(i,j,kLev,bi,bj).NE.0. _d 0 ) THEN
 #ifdef CARBONCHEM_SOLVESAPHE
             IF ( selectPHsolver.GT.0 ) THEN
-C Use Munhoven's Solvesaphe routine to calculate pH and pCO2
+C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
 #ifdef ALLOW_DEBUG
               IF (debugPrt) CALL DEBUG_CALL(
      &     'CALC_PCO2_SOLVESAPHE from DIC_SURFFORCING',myThid)
@@ -176,13 +176,6 @@ C Use Munhoven's Solvesaphe routine to calculate pH and pCO2
      I          surftemp(i,j),surfsalt(i,j),
      I          surfdic(i,j), surfphos(i,j),
      I          surfsi(i,j),surfalk(i,j),
-C     I        ak1(i,j,bi,bj),ak2(i,j,bi,bj),
-C     I        ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),
-C     I        aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
-C     I        aksi(i,j,bi,bj),akf(i,j,bi,bj),
-C     I        ak0(i,j,bi,bj),ff(i,j,bi,bj), fugf(i,j,bi,bj),
-C     I        akn(i,j,bi,bj),akhs(i,j,bi,bj),aphscale(i,j,bi,bj),
-C     I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U          pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I          i,j,kLev,bi,bj, debugPrt, myIter, myThid )
               debugPrt = .FALSE.

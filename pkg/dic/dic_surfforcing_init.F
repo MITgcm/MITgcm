@@ -244,7 +244,7 @@ C$TAF LOOP = parallel
 C$TAF init dic_surf = static, 10
 #ifdef CARBONCHEM_SOLVESAPHE
              IF ( selectPHsolver.GT.0 ) THEN
-C Use Munhoven's Solvesaphe routine to initialize pH
+C Use Munhoven (2013) Solvesaphe routine to initialize pH
 #ifdef ALLOW_DEBUG
               IF (debugPrt) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
 #endif
@@ -267,13 +267,6 @@ C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
      I         surftemp(i,j),surfsalt(i,j),
      I         surfdic(i,j), surfphos(i,j),
      I         surfsi(i,j),surfalk(i,j),
-C     I         ak1(i,j,bi,bj),ak2(i,j,bi,bj),
-C     I         ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),
-C     I         aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
-C     I         aksi(i,j,bi,bj),akf(i,j,bi,bj),
-C     I         ak0(i,j,bi,bj),ff(i,j,bi,bj), fugf(i,j,bi,bj),
-C     I         akn(i,j,bi,bj),akhs(i,j,bi,bj),aphscale(i,j,bi,bj),
-C     I         bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U         pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
      I         i,j,kLev,bi,bj, debugPrt, nIter0, myThid )
               debugPrt = .FALSE.

@@ -127,7 +127,7 @@ CMICK silica = fixed
 
 #ifdef CARBONCHEM_SOLVESAPHE
       IF ( selectPHsolver.GT.0 ) THEN
-C Use Munhoven's Solvesaphe routine to calculate pH and pCO2
+C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
 #ifdef ALLOW_DEBUG
          IF (debugPrt) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
 #endif
@@ -145,12 +145,6 @@ C call AHINI_FOR_AT to get better initial guess of pH
      I          theta(i,j,k,bi,bj),salt(i,j,k,bi,bj),
      I          diclocal, po4local,
      I          silicaTEST,alklocal,
-C     I          ak1(i,j,bi,bj),ak2(i,j,bi,bj),
-C     I          ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),
-C     I          aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
-C     I          aksi(i,j,bi,bj),akf(i,j,bi,bj),
-C     I          ak0(i,j,bi,bj), fugf(i,j,bi,bj), ff(i,j,bi,bj),
-C     I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U          pHlocal,pCO2local,carbonate,
      I          i,j,k,bi,bj, debugPrt,myIter,myThid )
             debugPrt = .FALSE.
