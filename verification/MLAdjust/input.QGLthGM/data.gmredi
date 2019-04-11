@@ -8,7 +8,6 @@
  &GM_PARM01
   GM_AdvForm=.TRUE.,
   GM_useBVP = .FALSE.,
-  GM_BVP_modeNumber=9,
   GM_background_K=0.,
   GM_taper_scheme    = 'linear',
   GM_Small_Number    = 1.e-18,
