@@ -237,7 +237,6 @@ C--   add diagnostics for viscosity coefficients:
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-
 C--   add diagnostics of simple derivative quantities:
       diagName  = 'momKE   '
       diagTitle = 'Kinetic Energy (in momentum Eq.)'
@@ -268,13 +267,6 @@ C--   add diagnostics of simple derivative quantities:
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'Stretch '
-      diagTitle = 'Vortex stretching from QG Leith dynamic viscosity'
-      diagCode  = 'SZR     MR      '
-      diagUnits = 's^-1            '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
       diagName  = 'Tension '
       diagTitle = 'Horizontal Tension of Horizontal Velocities'
       diagCode  = 'SMR     MR      '
@@ -282,6 +274,13 @@ C--   add diagnostics of simple derivative quantities:
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_MOM_VECINV */
+
+      diagName  = 'Stretch '
+      diagTitle = 'Vortex stretching from QG Leith dynamic viscosity'
+      diagCode  = 'SM      MR      '
+      diagUnits = 's^-1            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 C--   add diagnostics of tendencies from each terms
       diagUnits = 'm/s^2           '
