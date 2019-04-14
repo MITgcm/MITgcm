@@ -208,7 +208,7 @@ c       viscA4_D(i,j) = 0.
         strain(i,j)  = 0. _d 0
         strainBC(i,j)= 0. _d 0
         stretching(i,j) = 0. _d 0
-        Nsquare(i,j)     = 0. _d 0
+        Nsquare(i,j) = 0. _d 0
         tension(i,j) = 0. _d 0
 #ifdef ALLOW_AUTODIFF
         hFacZ(i,j)   = 0. _d 0
@@ -344,7 +344,7 @@ C-    mask strain and account for no-slip / free-slip BC in strainBC:
          ENDDO
         ENDDO
 #ifdef ALLOW_LEITH_QG
-        IF (viscC2LeithQG .NE. 0) THEN
+        IF ( viscC2LeithQG.NE.0. ) THEN
           CALL MOM_VISC_QGL_STRETCH(bi,bj,k,
      O                            stretching, Nsquare,
      I                            myTime, myIter, myThid )
@@ -353,7 +353,7 @@ C-    mask strain and account for no-slip / free-slip BC in strainBC:
      I                          Nsquare, uFld,vFld,vort3,
      I                          myTime, myIter, myThid )
         ENDIF
-#endif
+#endif /* ALLOW_LEITH_QG */
        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -678,12 +678,12 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 C--   Horizontal advection of relative (or absolute) vorticity
        IF ( (highOrderVorticity.OR.upwindVorticity)
      &     .AND.useAbsVorticity ) THEN
-        CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,selectVortScheme, 
+        CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,selectVortScheme,
      &                         highOrderVorticity,upwindVorticity,
      &                         vFld,omega3,r_hFacZ,
      &                         uCf,myThid)
        ELSEIF ( (highOrderVorticity.OR.upwindVorticity) ) THEN
-        CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,selectVortScheme, 
+        CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,selectVortScheme,
      &                         highOrderVorticity, upwindVorticity,
      &                         vFld,vort3, r_hFacZ,
      &                         uCf,myThid)
@@ -703,12 +703,12 @@ C--   Horizontal advection of relative (or absolute) vorticity
        ENDDO
        IF ( (highOrderVorticity.OR.upwindVorticity)
      &     .AND.useAbsVorticity ) THEN
-        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,k,selectVortScheme, 
+        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,k,selectVortScheme,
      &                         highOrderVorticity, upwindVorticity,
      &                         uFld,omega3,r_hFacZ,
      &                         vCf,myThid)
        ELSEIF ( (highOrderVorticity.OR.upwindVorticity) ) THEN
-        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,k,selectVortScheme, 
+        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,k,selectVortScheme,
      &                         highOrderVorticity, upwindVorticity,
      &                         uFld,vort3, r_hFacZ,
      &                         vCf,myThid)
