@@ -84,7 +84,6 @@ C     == Global variables ==
 #include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF */
 
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid               :: my thread Id number
       INTEGER bi,bj,k
@@ -185,19 +184,17 @@ C---- variable viscosity :
         viscA4Re_max=0. _d 0
        ENDIF
 
+       calcLeithQG = (viscC2LeithQG.NE.zeroRL)
        calcLeith=
      &      (viscC2leith.NE.0.)
      &  .OR.(viscC2leithD.NE.0.)
      &  .OR.(viscC4leith.NE.0.)
      &  .OR.(viscC4leithD.NE.0.)
-     &  .OR.(viscC2LeithQG.NE.0.)
+     &  .OR. calcLeithQG
 
        calcSmag=
      &      (viscC2smag.NE.0.)
      &  .OR.(viscC4smag.NE.0.)
-
-       calcLeithQG=
-     &      (viscC2LeithQG.NE.0)
 
        IF (calcSmag) THEN
         smag2fac=(viscC2smag/pi)**2
@@ -322,54 +319,53 @@ C-       gradient in y direction:
           ENDDO
          ENDDO
 
-       IF (calcLeithQG) THEN
+        IF (calcLeithQG) THEN
 C      horizontal gradient of vorticity and vortex stretching:
 C        In the case of using QG Leith, we want to add a term
 C        before calculating vector magnitude, so add to the
 C        values just calculated.
 C        gradient in x direction:
-         DO j=2-Oly,sNy+Oly
-          DO i=2-Olx,sNx+Olx-1
-            vrtDx(i,j) = vrtDx(i,j)
+         DO j=2-OLy,sNy+OLy
+          DO i=2-OLx,sNx+OLx-1
 C        Average d/dx of stretching onto V-points to match vrtDX
-     &                  + halfRL*halfRL*
-     &                    ( (stretching(i+1,j)-stretching(i,j))
-     &                      *recip_dxC(i+1,j,bi,bj)*recip_deepFacC(k)
-     &                    + (stretching(i,j)-stretching(i-1,j))
-     &                      *recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
-     &                    + (stretching(i+1,j-1)-stretching(i,j-1))
-     &                      *recip_dxC(i,j-1,bi,bj)*recip_deepFacC(k)
-     &                    + (stretching(i,j-1)-stretching(i-1,j-1))
-     &                      *recip_dxC(i-1,j-1,bi,bj)*recip_deepFacC(k)
-     &                  )*maskS(i,j,k,bi,bj)
+            vrtDx(i,j) = vrtDx(i,j)
+     &                 + halfRL*halfRL*
+     &                   ( (stretching(i+1,j)-stretching(i,j))
+     &                     *recip_dxC(i+1,j,bi,bj)*recip_deepFacC(k)
+     &                   + (stretching(i,j)-stretching(i-1,j))
+     &                     *recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
+     &                   + (stretching(i+1,j-1)-stretching(i,j-1))
+     &                     *recip_dxC(i,j-1,bi,bj)*recip_deepFacC(k)
+     &                   + (stretching(i,j-1)-stretching(i-1,j-1))
+     &                     *recip_dxC(i-1,j-1,bi,bj)*recip_deepFacC(k)
+     &                   )*maskS(i,j,k,bi,bj)
 #ifdef ALLOW_OBCS
      &                    *maskInS(i,j,bi,bj)
 #endif
-
           ENDDO
          ENDDO
 C-       gradient in y direction:
-         DO j=2-Oly,sNy+Oly-1
-          DO i=2-Olx,sNx+Olx
-            vrtDy(i,j) = vrtDy(i,j)
+         DO j=2-OLy,sNy+OLy-1
+          DO i=2-OLx,sNx+OLx
 C        Average d/dy of stretching onto U-points to match vrtDy
-     &                  + halfRL*halfRL*
-     &                    ((stretching(i,j+1)-stretching(i,j))
-     &                      *recip_dyC(i,j+1,bi,bj)*recip_deepFacC(k)
-     &                    + (stretching(i,j)-stretching(i,j-1))
-     &                      *recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
-     &                    + (stretching(i-1,j+1)-stretching(i-1,j))
-     &                      *recip_dyC(i-1,j+1,bi,bj)*recip_deepFacC(k)
-     &                    + (stretching(i-1,j)-stretching(i-1,j-1))
-     &                      *recip_dyC(i-1,j,bi,bj)*recip_deepFacC(k)
-     &                  )*maskW(i,j,k,bi,bj)
+            vrtDy(i,j) = vrtDy(i,j)
+     &                 + halfRL*halfRL*
+     &                   ( (stretching(i,j+1)-stretching(i,j))
+     &                     *recip_dyC(i,j+1,bi,bj)*recip_deepFacC(k)
+     &                   + (stretching(i,j)-stretching(i,j-1))
+     &                     *recip_dyC(i,j,bi,bj)*recip_deepFacC(k)
+     &                   + (stretching(i-1,j+1)-stretching(i-1,j))
+     &                     *recip_dyC(i-1,j+1,bi,bj)*recip_deepFacC(k)
+     &                   + (stretching(i-1,j)-stretching(i-1,j-1))
+     &                     *recip_dyC(i-1,j,bi,bj)*recip_deepFacC(k)
+     &                   )*maskW(i,j,k,bi,bj)
 #ifdef ALLOW_OBCS
-     &                      *maskInW(i,j,bi,bj)
+     &                    *maskInW(i,j,bi,bj)
 #endif
           ENDDO
          ENDDO
 C      end if calcLeithQG
-       ENDIF
+        ENDIF
 
 C--   end if calcLeith
        ENDIF
@@ -380,8 +376,8 @@ CCCCCCCCCCCCCCC Divergence Point CalculationsCCCCCCCCCCCCCCCCCCCC
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifndef AUTODIFF_DISABLE_LEITH
-           lockey_2 = i+olx + (sNx+2*olx)*(j+oly-1)
-     &                      + (sNx+2*olx)*(sNy+2*oly)*(lockey_1-1)
+           lockey_2 = i+OLx + (sNx+2*OLx)*(j+OLy-1)
+     &                      + (sNx+2*OLx)*(sNy+2*OLy)*(lockey_1-1)
 CADJ STORE viscA4_ZSmg(i,j)
 CADJ &     = comlev1_mom_ijk_loop , key=lockey_2, byte=isbyte
 CADJ STORE viscAh_ZSmg(i,j)
