@@ -84,7 +84,7 @@ C       Square of the gridscale Froude number
        ENDDO
       ENDDO
 
-      QGL_lim_epsil = 1. _d -12
+      QGL_lim_epsil = 1. _d -24
 
 C Put a cap on the stretching term.
 
