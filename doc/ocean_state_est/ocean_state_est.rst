@@ -1300,7 +1300,7 @@ The optimization loop is executed outside of this program within a script.
 The code can be obtained at https://github.com/mjlosch/optim_m1qn3
 . The ``README`` contains short instructions how to build and use the
 code in combination with the ``tutorial_global_oce_optim``
-experiment. The usuage is very similar to the :filelink:`optim`
+experiment. The usage is very similar to the :filelink:`optim`
 package.
 
 .. _sec:exp:llc:
