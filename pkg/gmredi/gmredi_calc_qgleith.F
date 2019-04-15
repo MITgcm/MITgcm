@@ -178,7 +178,7 @@ C        gradient in x direction:
 #endif
 C        Average d/dx of stretching onto V-points to match vrtDX
      &                  + halfRL*halfRL*
-     &                    + ((stretching(i+1,j)-stretching(i,j))
+     &                    ((stretching(i+1,j)-stretching(i,j))
      &                      *recip_dxC(i+1,j,bi,bj)*recip_deepFacC(k)
      &                    + (stretching(i,j)-stretching(i-1,j))
      &                      *recip_dxC(i,j,bi,bj)*recip_deepFacC(k)
