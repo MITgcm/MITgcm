@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - add Hlimit to seaice namelist in data.seaice
+  - use verification seaice_itd.thermo to test this feature with default
+    values (experiment does not change)
+  - clean up related output in seaice_init_fixed.F a little
 o verification/testreport:
   - for file run_ADM_DIVA, fix sed search syntax so that it works with BSD-sed
 o model/src:
