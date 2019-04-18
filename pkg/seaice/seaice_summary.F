@@ -395,7 +395,7 @@ C--   ITD parameters
       CALL WRITE_0D_I (SEAICE_multDim,INDEX_NONE,'nITD              ='
      & , ' /* number of ice thickness categories */')
       CALL WRITE_1D_RL( Hlimit(1), nITD, INDEX_K, 'Hlimit =',
-     & ' /* seaice thickness category bin limits ( meters ) */')
+     & ' /* seaice thickness category bin limits ( m ), Hlimit(0)=0 */')
       CALL WRITE_0D_L ( SEAICEuseLinRemapITD, INDEX_NONE,
      & 'SEAICEuseLinRemapITD  =',
      & ' /* select linear remapping scheme for ITD */')
