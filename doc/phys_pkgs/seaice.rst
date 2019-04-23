@@ -98,7 +98,7 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   |   Name                             |      Default value           |   Description                                                           |
   +====================================+==============================+=========================================================================+
-  | :varlink:`SEAICEwriteState`        |     TRUE                     | write sea ice state to file                                             |
+  | :varlink:`SEAICEwriteState`        |     FALSE                    | write sea ice state to file                                             |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseDYNAMICS`       |     TRUE                     | use dynamics                                                            |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -112,7 +112,7 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseEVPpickup`      |     TRUE                     | use EVP pickups                                                         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICEuseFluxForm`       |     FALSE                    | use flux form for 2nd central difference advection scheme               |
+  | :varlink:`SEAICEuseFluxForm`       |     TRUE                     | use flux form for 2nd central difference advection scheme               |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICErestoreUnderIce`   |     FALSE                    | enable restoring to climatology under ice                               |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -176,9 +176,9 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_OLy`              | :varlink:`OLy` - 2           | overlap for LSR-solver or preconditioner, :math:`y`-dimension           |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICEnonLinIterMax`     | 10                           |  maximum number of JFNK-Newton iterations (non-linear)                  |
+  | :varlink:`SEAICEnonLinIterMax`     | 2/10                         |  maximum number of non-linear (outer loop) iterations (LSR/JFNK)        |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICElinearIterMax`     | 10                           | maximum number of JFNK-Krylov iterations (linear)                       |
+  | :varlink:`SEAICElinearIterMax`     | 1500/10                      | maximum number of linear iterations (LSR/JFNK)                          |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_JFNK_lsIter`      | (off)                        | start line search after “lsIter” Newton iterations                      |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -232,7 +232,7 @@ General flags and parameters
   | :varlink:`SEAICE_lhFusion`         | 3.34E+05 (or                 | latent heat of fusion (J/kg)                                            |
   |                                    | :filelink:`pkg/exf` value)   |                                                                         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICE_dalton`           | 1.75E-03                     | sensible heat transfer coefficient (non-dim.)                           |
+  | :varlink:`SEAICE_dalton`           | 1.75E-03                     | ice-ocean transfer coefficient for latent and sensible heat (non-dim.)  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_iceConduct`       | 2.16560E+00                  | sea ice conductivity  (W m\ :sup:`-1` K\ :sup:`-1`)                     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -333,7 +333,7 @@ All parameters are non-dimensional unless indicated.
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseLinRemapITD`    | TRUE                         | use linear remapping scheme of :cite:`lipscomb:01`                      |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`Hlimit`                  | unset                        | array of ice thickness category limits (m)                              |
+  | :varlink:`Hlimit`                  | unset                        | nITD+1-array of ice thickness category limits (m)                       |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`Hlimit_c1`,              | 3.0,                         | when :varlink:`Hlimit` is not set, then these parameters                |
   | :varlink:`Hlimit_c2`,              | 15.0,                        | determine :varlink:`Hlimit` from a simple function                      |
@@ -398,15 +398,13 @@ Compatibility with ice-thermodynamics package :filelink:`pkg/thsice`
 --------------------------------------------------------------------
 
 By default :filelink:`pkg/seaice` includes the original so-called
-zero-layer thermodynamics following with a snow cover as in (??). The
-zero-layer thermodynamic model assumes that ice does not store heat and,
-therefore, tends to exaggerate the seasonal variability in ice
-thickness. This exaggeration can be significantly reduced by using Winton's  (Winton 2000 :cite:`win00`)
-three-layer thermodynamic model that permits heat storage in ice.
-Recently, the three-layer thermodynamic model has been reformulated by (??).
-The reformulation improves model physics by representing the brine
-content of the upper ice with a variable heat capacity. It also improves
-model numerics and consumes less computer time and memory.
+zero-layer thermodynamics with a snow cover as in the
+appendix of Semtner (1976) :cite:`sem76`. The zero-layer thermodynamic
+model assumes that ice does not store heat and, therefore, tends to
+exaggerate the seasonal variability in ice thickness. This
+exaggeration can be significantly reduced by using Winton's (Winton
+2000 :cite:`win00`) three-layer thermodynamic model that permits heat
+storage in ice.
 
 The Winton (2000) sea-ice thermodynamics have been ported to MITgcm; they currently
 reside under :filelink:`pkg/thsice`, described in :numref:`sub_phys_pkg_thsice`.
@@ -430,7 +428,8 @@ and specific humidity, downward longwave and shortwave radiations, precipitation
 and river and glacier runoff. The sea ice model also requires surface temperature from
 the ocean model and the top level horizontal velocity. Output fields are surface wind stress,
 evaporation minus precipitation minus runoff, net surface heat flux, and net shortwave flux.
-The sea-ice model is global: in ice-free regions bulk formulae are used to estimate
+The sea-ice model is global: in ice-free regions bulk formulae (by default computed in package
+:filelink:`exf <pkg/exf>`) are used to estimate
 oceanic forcing from the atmospheric fields.
 
 .. _para_phys_pkg_seaice_dynamics:
@@ -536,17 +535,20 @@ with the abbreviation
 
  .. math::
     \Delta =  \left[
-       \left(\dot{\epsilon}_{11}^2+\dot{\epsilon}_{22}^2\right)
-       (1+e^{-2}) +  4e^{-2}\dot{\epsilon}_{12}^2 + 
-       2\dot{\epsilon}_{11}\dot{\epsilon}_{22} (1-e^{-2})
-     \right]^{\frac{1}{2}}
+    \left(\dot{\epsilon}_{11}+\dot{\epsilon}_{22}\right)^2
+    + e^{-2}\left( \left(\dot{\epsilon}_{11}-\dot{\epsilon}_{22} \right)^2
+      + \dot{\epsilon}_{12}^2 \right) 
+    \right]^{\frac{1}{2}}
 
 The bulk viscosities are bounded above by imposing both a minimum
 :math:`\Delta_{\min}` (for numerical reasons, runtime parameter
-:varlink:`SEAICE_EPS` with a default value of :math:`10^{-10}\,\text{s}^{-1}`)
-and a maximum :math:`\zeta_{\max} = P_{\max}/\Delta^\ast`, where
-:math:`\Delta^\ast=(5\times10^{12}/2\times10^4)\,\text{s}^{-1}`. (There
-is also the option of bounding :math:`\zeta` from below by setting
+:varlink:`SEAICE_deltaMin` is set to a default value of :math:`10^{-10}\,\text{s}^{-1}`,
+the value of :varlink:`SEAICE_EPS`)
+and a maximum :math:`\zeta_{\max} = P_{\max}/(2\Delta^\ast)`, where
+:math:`\Delta^\ast=(2\times10^4/5\times10^{12})\,\text{s}^{-1}` :math:`= 2\times10^{-9}\,\text{s}^{-1}`.
+Obviously, this corresponds to regularizing :math:`\Delta` with the typical value of
+:varlink:`SEAICE_deltaMin` :math:`= 2\times10^{-9}`. Clearly, some of this regularization is redundant.
+(There is also the option of bounding :math:`\zeta` from below by setting
 runtime parameter :varlink:`SEAICE_zetaMin` :math:`>0`, but this is generally not
 recommended). For stress tensor computation the replacement pressure
 :math:`P = 2\,\Delta\zeta` is used so that the stress state always
@@ -565,7 +567,7 @@ bounding :math:`\zeta` by a smooth (differentiable) expression:
    \end{split}
    :label: eq_zetaregsmooth
 
-where :math:`\Delta_{\min}=10^{-20}\,\text{s}^{-1}` is chosen to avoid
+where :math:`\Delta_{\min}=10^{-20}\,\text{s}^{-1}` should be chosen to avoid
 divisions by zero.
 
 .. _para_phys_pkg_seaice_LSRJFNK:
@@ -573,24 +575,24 @@ divisions by zero.
 LSR and JFNK solver
 -------------------
 
-In the matrix notation, the discretized momentum equations can be
+In matrix notation, the discretized momentum equations can be
 written as
 
 .. math::
    :label: eq_matrixmom
 	   
-     \mathbf{A}(\mathbf{x})\,\mathbf{x} = \mathbf{b}(\mathbf{x})
+     \mathbf{A}(\mathbf{x})\,\mathbf{x} = \mathbf{b}(\mathbf{x}).
 
 The solution vector :math:`\mathbf{x}` consists of the two velocity
 components :math:`u` and :math:`v` that contain the velocity variables
 at all grid points and at one time level. The standard (and default)
 method for solving Eq. :eq:`eq_matrixmom` in the sea ice component of
-MITgcm, as in many sea ice models, is an iterative Picard solver: in the
+MITgcm is an iterative Picard solver: in the
 :math:`k`-th iteration a linearized form
 :math:`\mathbf{A}(\mathbf{x}^{k-1})\,\mathbf{x}^{k} =
 \mathbf{b}(\mathbf{x}^{k-1})` is solved (in the case of MITgcm it
-is a Line Successive (over) Relaxation (LSR) algorithm ). Picard
-solvers converge slowly, but generally the iteration is terminated
+is a Line Successive (over) Relaxation (LSR) algorithm). Picard
+solvers converge slowly, but in practice the iteration is generally terminated
 after only a few nonlinear steps and the calculation continues with
 the next time level. This method is the default method in
 MITgcm. The number of nonlinear iteration steps or pseudo-time steps
@@ -673,12 +675,12 @@ to :eq:`eq_jfnklinpc` in subspace
 :math:`(\mathbf{J}\mathbf{P}^{-1})^2\mathbf{r}_0`, :math:`\dots`, 
 :math:`(\mathbf{J}\mathbf{P}^{-1})^m\mathbf{r}_0`)
 with increasing :math:`m`;
-:math:`\mathbf{r}_0 = -\mathbf{F}(\mathbf{x}^{k-1})      -\mathbf{J}(\mathbf{x}^{k-1})\,\delta\mathbf{x}^{k}_{0}`
+:math:`\mathbf{r}_0 = -\mathbf{F}(\mathbf{x}^{k-1}) -\mathbf{J}(\mathbf{x}^{k-1})\,\delta\mathbf{x}^{k}_{0}`
 is the initial residual of :eq:`eq_jfnklin`;
 :math:`\mathbf{r}_0=-\mathbf{F}(\mathbf{x}^{k-1})`
 with the first guess
 :math:`\delta\mathbf{x}^{k}_{0}=0`. We allow a
-Krylov-subspace of dimension \ :math:`m=50` and we do not use restarts.
+Krylov-subspace of dimension \ :math:`m=50` and we do allow restarts for more than 50 Krylov iterations.
 The preconditioning operation involves applying
 :math:`\mathbf{P}^{-1}` to the basis vectors
 :math:`\mathbf{v}_0, \mathbf{v}_1, \mathbf{v}_2, \ldots, \mathbf{v}_m`
@@ -689,7 +691,7 @@ Because :math:`\mathbf{P} \approx \mathbf{A}(\mathbf{x}^{k-1})`, we
 can use the LSR-algorithm already implemented in the Picard solver. Each
 preconditioning operation uses a fixed number of 10 LSR-iterations
 avoiding any termination criterion. More details and results can be
-found in .
+found in Losch et al. (2014) :cite:`losch:14`).
 
 To use the JFNK-solver set :varlink:`SEAICEuseJFNK` ``= .TRUE.,`` in the namelist file
 ``data.seaice``; ``#define`` :varlink:`SEAICE_ALLOW_JFNK` in
@@ -724,7 +726,7 @@ choices are :math:`\gamma_0 =` :varlink:`JFNKgamma_lin_max` :math:`= 0.99`,
 :varlink:`JFNKres_tFac` :math:`= 0.5`. We recommend a maximum number of
 nonlinear iterations :varlink:`SEAICEnewtonIterMax` :math:`= 100` and a maximum number
 of Krylov iterations :varlink:`SEAICEkrylovIterMax` :math:`= 50`, because the Krylov
-subspace has a fixed dimension of 50.
+subspace has a fixed dimension of 50 (but restarts are allowed for :varlink:`SEAICEkrylovIterMax` :math:`> 50`).
 
 Setting :varlink:`SEAICEuseStrImpCpl` ``= .TRUE.,`` turns on “strength implicit
 coupling” (see Hutchings et al. 2004 :cite:`hutchings04`) in the LSR-solver and in the
@@ -809,7 +811,7 @@ the above recommendations are obsolete. Use mEVP or aEVP instead.)
 More stable variants of Elastic-Viscous-Plastic Dynamics: EVP\* , mEVP, and aEVP
 --------------------------------------------------------------------------------
 
-The genuine EVP schemes appears to give noisy solutions (see Hunke 2001, Lemieux et al. 2012,
+The genuine EVP scheme appears to give noisy solutions (see Hunke 2001, Lemieux et al. 2012,
 Bouillon et a1. 2013 :cite:`hun01,lemieux12,bouillon13`). This has led to a modified EVP or EVP\*
 (Lemieux et al. 2012, Bouillon et a1. 2013, Kimmritz et al. 2015 :cite:`lemieux12,bouillon13,kimmritz15`);
 here, we refer to these variants by modified EVP (mEVP) and adaptive EVP (aEVP).
@@ -828,9 +830,10 @@ definition of a residual :math:`|\mathbf{u}^{p+1}-\mathbf{u}^{p}|`
 that, as :math:`\mathbf{u}^{p+1} \rightarrow \mathbf{u}^{n+1}`,
 converges to :math:`0`. In this way EVP can be re-interpreted as a
 pure iterative solver where the sub-cycling has no association with
-time-relation (through :math:`\Delta{t}_{\mathrm{EVP}}`) . Using the
-terminology of (???), the evolution equations of stress :math:`\sigma_{ij}`
-and momentum :math:`\mathbf{u}` can be written as:
+time-relation (through :math:`\Delta{t}_{\mathrm{EVP}}`). Using the
+terminology of Kimmritz et al. 2015 :cite:`kimmritz15`, the evolution
+equations of stress :math:`\sigma_{ij}` and momentum
+:math:`\mathbf{u}` can be written as:
 
 .. math::
    \sigma_{ij}^{p+1}=\sigma_{ij}^p+\frac{1}{\alpha}
@@ -842,14 +845,14 @@ and momentum :math:`\mathbf{u}` can be written as:
    \mathbf{u}^{p+1}=\mathbf{u}^p+\frac{1}{\beta}
    \Big(\frac{\Delta t}{m}\nabla \cdot{\bf \sigma}^{p+1}+
    \frac{\Delta t}{m}\mathbf{R}^{p}+\mathbf{u}_n
-     -\mathbf{u}^p\Big).
+     -\mathbf{u}^p\Big)
    :label: eq_evpstarmom
 
 :math:`\mathbf{R}` contains all terms in the momentum equations except
 for the rheology terms and the time derivative; :math:`\alpha` and
 :math:`\beta` are free parameters (:varlink:`SEAICE_evpAlpha`, :varlink:`SEAICE_evpBeta`)
 that replace the time stepping parameters :varlink:`SEAICE_deltaTevp`
-(:math:`\Delta{T}_{\mathrm{EVP}}`), :varlink:`SEAICE_elasticParm` (:math:`E_{0}`),
+(:math:`\Delta{t}_{\mathrm{EVP}}`), :varlink:`SEAICE_elasticParm` (:math:`E_{0}`),
 or :varlink:`SEAICE_evpTauRelax` (:math:`T`). :math:`\alpha` and :math:`\beta` determine
 the speed of convergence and the stability. Usually, it makes sense to use
 :math:`\alpha = \beta`, and :varlink:`SEAICEnEVPstarSteps` :math:`\gg (\alpha,\,\beta)`
@@ -869,7 +872,7 @@ Another variant is the aEVP scheme (Kimmritz et al. 2016 :cite:`kimmritz16`), wh
 of :math:`\alpha` is set dynamically based on the stability criterion
 
 .. math::
-   \alpha = \beta = \max\left( \tilde{c}\pi\sqrt{c \frac{\zeta}{A_{c}}
+   \alpha = \beta = \max\left( \tilde{c} \pi\sqrt{c \frac{\zeta}{A_{c}}
    \frac{\Delta{t}}{\max(m,10^{-4}\,\text{kg})}},\alpha_{\min} \right)
    :label: eq_aevpalpha
 
@@ -881,12 +884,12 @@ practice, aEVP leads to an overall better convergence than mEVP (Kimmritz et al.
 To use aEVP in MITgcm set :varlink:`SEAICEaEVPcoeff` :math:`= \tilde{c}`;
 this also sets the default values of :varlink:`SEAICEaEVPcStar` (:math:`c=4`)
 and :varlink:`SEAICEaEVPalphaMin` (:math:`\alpha_{\min}=5`). Good convergence
-has been obtained with setting these values (Kimmritz et al. 2016 :cite:`kimmritz16`):
+has been obtained with these values (Kimmritz et al. 2016 :cite:`kimmritz16`):
 :varlink:`SEAICEaEVPcoeff` :math:`= 0.5`, :varlink:`SEAICEnEVPstarSteps` :math:`= 500`,
 :varlink:`SEAICEuseEVPstar` ``= .TRUE.``, :varlink:`SEAICEuseEVPrev` ``= .TRUE.``.
 
 Note, that probably because of the C-grid staggering of velocities and
-stresses, mEVP may not converge as successfully as in Kimmritz et al. (2015) :cite:`kimmritz15`,
+stresses, mEVP may not converge as successfully as in Kimmritz et al. (2015) :cite:`kimmritz15`, see also Kimmritz et al. (2016) :cite:`kimmritz16`,
 and that convergence at very high resolution (order 5 km) has not been studied yet.
 
 .. _para_phys_pkg_seaice_TEM:
@@ -1115,7 +1118,7 @@ on boundaries.
 Thermodynamics
 --------------
 
-**NOTE: THIS SECTION IS TERRIBLY OUT OF DATE**
+**NOTE: THIS SECTION IS STILL NOT COMPLETE**
 
 In its original formulation the sea ice model uses simple
 thermodynamics following the appendix of Semtner (1976) :cite:`sem76`. This
@@ -1127,25 +1130,73 @@ conductivity. It is expressed as :math:`(K/h)(T_{w}-T_{0})`, where
 :math:`T_{w}-T_{0}` the difference between water and ice surface
 temperatures. This type of model is often refered to as a “zero-layer”
 model. The surface heat flux is computed in a similar way to that of
-and .
+Parkinson and Washington (1979) :cite:`parkinson:79` and Manabe et al. (1979) :cite:`manabe:79`.
+All fluxes are assumed to instanteously reach a stationary balance
+(:math:`\partial T_{0}/\partial t = 0`):
 
-The conductive heat flux depends strongly on the ice thickness
+.. math::
+   \begin{aligned}
+   \rho\,c_p \frac{\partial T_{0}}{\partial t} = 0 =& \frac{K}{h}(T_{w}-T_{0})
+   + Q_{SW\downarrow}(1-\mathrm{albedo}) + \epsilon Q_{LW\downarrow} - Q_{LW\uparrow}(T_{0}) \\
+   &+ Q_{LH}(T_{0}) + Q_{SH}(T_{0})
+   \end{aligned}
+   :label: eq_zerolayerheatbalance
+	   
+where :math:`\epsilon` is the emissivity of the surface (snow or ice),
+:math:`Q_{S/LW\downarrow}` the downwelling shortwave and longwave
+radiation to be prescribed, and :math:`Q_{LW\uparrow}=\epsilon\sigma_B
+T_{0}^4` the emitted long wave radiation with the Stefan-Boltzmann
+constant :math:`\sigma_B`. With explicit expressions in :math:`T_0`
+for the turbulent fluxes of latent heat:
+
+.. math::
+   Q_{LH} = \rho_a C_E (\Lambda_v + \Lambda_f) |u_\mathrm{atm}|\left[ q_\mathrm{air} - q_\mathrm{sat}(T_0)\right] 
+
+where :math:`\rho_a` is the air density (parameter :varlink:`SEAICE_rhoAir`),
+:math:`C_E` is the ice-ocean transfer coefficient for sensible and latent heat (parameter :varlink:`SEAICE_dalton`),
+:math:`\Lambda_v` and :math:`\Lambda_f` are the latent heat of vaporization and fusion, respectively
+(parameters :varlink:`SEAICE_lhEvap` and :varlink:`SEAICE_lhFusion`). Similarly, for sensible heat:
+
+.. math::
+   Q_{SH}= \rho_a c_p C_E |u_\mathrm{atm}|\left[ T_\mathrm{10m} - T_{0} \right]
+
+where :math:`c_p` is the specific heat of air (parameter :varlink:`SEAICE_cpAir`).
+:eq:`eq_zerolayerheatbalance` can be solved for
+:math:`T_0` with an iterative Ralphson-Newton method, that usually
+converges very quickly in less that 10 iterations. For the latent heat
+:math:`Q_{LH}` a choice can be made between the old polynomial
+expression for saturation humidity :math:`q_\mathrm{sat}(T_0)` (by
+setting :varlink:`useMaykutSatVapPoly` to ``.TRUE.``) and the default
+exponential relation approximation that is more accurate at low
+temperatures.
+
+In the zero-layer model of Semtner (1976) :cite:`sem76`, the
+conductive heat flux depends strongly on the ice thickness
 :math:`h`. However, the ice thickness in the model represents a mean
 over a potentially very heterogeneous thickness distribution. In order
 to parameterize a sub-grid scale distribution for heat flux
 computations, the mean ice thickness :math:`h` is split into :math:`N`
-thickness categories :math:`H_{n}` that are equally distributed between
-:math:`2h` and a minimum imposed ice thickness of :math:`5\,\text{cm}`
-by :math:`H_n= \frac{2n-1}{7}\,h` for :math:`n\in[1,N]`. The heat fluxes
-computed for each thickness category are area-averaged to give the total
-heat flux (see Hibler 1984 :cite:`hibler84`). To use this thickness category parameterization
-set :varlink:`SEAICE_multDim` to the number of desired categories in ``data.seaice``
-(7 is a good guess, for anything larger than 7 modify :filelink:`SEAICE_SIZE.h <pkg/seaice/SEAICE_SIZE.h>`);
-note that this requires different restart files and switching this flag on
-in the middle of an integration is not advised. In order to include the same
-distribution for snow, set :varlink:`SEAICE_useMultDimSnow` ``= .TRUE.`` (this is the default);
-only then, the parameterization of always having a fraction of thin ice
-is efficient and generally thicker ice is produced (Castro-Morales et al. 2014 :cite:`castro-morales14`).
+thickness categories :math:`H_{n}` that are equally distributed
+between :math:`2h` and a minimum imposed ice thickness of
+:math:`5\,\text{cm}` by :math:`H_n= \frac{2n-1}{7}\,h` for
+:math:`n\in[1,N]`. The heat fluxes computed for each thickness
+category are area-averaged to give the total heat flux (see Hibler
+1984 :cite:`hibler84`). To use this thickness category
+parameterization set :varlink:`SEAICE_multDim` to the number of
+desired categories in ``data.seaice`` (7 is a good guess, for anything
+larger than 7 modify :filelink:`SEAICE_SIZE.h
+<pkg/seaice/SEAICE_SIZE.h>`).  Note that this requires different
+restart files and switching this flag on in the middle of an
+integration is not advised. As an alternative to the flat
+distribution, the runtime parameter :varlink:`SEAICE_PDF` (1D-array of
+lenght :varlink:`nITD`) can be used to prescribe an arbitrary
+distribution of ice thicknesses, for example derived from observed
+distributions (Castro-Morales et al. 2014
+:cite:`castro-morales14`). In order to include the ice thickness
+distribution also for snow, set :varlink:`SEAICE_useMultDimSnow` ``=
+.TRUE.`` (this is the default); only then, the parameterization of
+always having a fraction of thin ice is efficient and generally
+thicker ice is produced (see Castro-Morales et al. 2014 :cite:`castro-morales14`).
 
 The atmospheric heat flux is balanced by an oceanic heat flux from
 below. The oceanic flux is proportional to
@@ -1155,12 +1206,12 @@ below. The oceanic flux is proportional to
 function of salinity. This flux is not assumed to instantaneously melt
 or create ice, but a time scale of three days (runtime parameter :varlink:`SEAICE_gamma_t`)
 is used to relax :math:`T_{w}` to the freezing point. The parameterization of lateral
-and vertical growth of sea ice follows that of Hibler and Bryan (1979) and Hibler (1980) :cite:`hib79,hib80`; the so-called
+and vertical growth of sea ice follows that of Hibler (1979) and Hibler (1980) :cite:`hib79,hib80`; the so-called
 lead closing parameter :math:`h_{0}` (runtime parameter :varlink:`HO`) has
 a default value of 0.5 meters.
 
 On top of the ice there is a layer of snow that modifies the heat flux
-and the albedo (Zhange et al. 1998 :cite:`zha98a`). Snow modifies the effective conductivity according to
+and the albedo (Zhang et al. 1998 :cite:`zha98a`). Snow modifies the effective conductivity according to
 
 .. math:: \frac{K}{h} \rightarrow \frac{1}{\frac{h_{s}}{K_{s}}+\frac{h}{K}},
 
@@ -1351,7 +1402,7 @@ while the default parameterization :eq:`eq_icestrength` can be used for both IT
 In contrast to :eq:`eq_icestrength`, which is based on the plausible assumption that thick
 and compact ice is stronger than thin and loose drifting ice, this parameterization :eq:`eq_rothrock`
 clearly contains the more physical assumptions about energy conservation.
-For that reason alone this parameterization is often considered to be more physically realistic than REF,
+For that reason alone this parameterization is often considered to be more physically realistic than :eq:`eq_icestrength`,
 but in practice, the success is not so clear (Ungermann et al. 2007 :cite:`ungermann:17`).
 Ergo, the default is to use :eq:`eq_icestrength`; set :varlink:`useHibler79IceStrength` ``=.FALSE.``
 in ``data.seaice`` to change this behavior.
