@@ -442,7 +442,7 @@ The momentum equation of the sea-ice model is
 
 .. math::
    m \frac{D\mathbf{u}}{Dt} = -mf\mathbf{k}\times\mathbf{u} +
-   \mathbf{\tau}_{air} + \mathbf{\tau}_{ocean}
+   \mathbf{\tau}_\mathrm{air} + \mathbf{\tau}_\mathrm{ocean}
    - m \nabla{\phi(0)} + \mathbf{F}
    :label: eq_momseaice
 
@@ -453,8 +453,8 @@ is the ice velocity vector; :math:`\mathbf{i}`,
 :math:`\mathbf{k}` are unit vectors in the
 :math:`x`, :math:`y`, and :math:`z` directions, respectively; :math:`f`
 is the Coriolis parameter;
-:math:`\mathbf{\tau}_{air}` and
-:math:`\mathbf{\tau}_{ocean}` are the
+:math:`\mathbf{\tau}_\mathrm{air}` and
+:math:`\mathbf{\tau}_\mathrm{ocean}` are the
 wind-ice and ocean-ice stresses, respectively; :math:`g` is the gravity
 accelation; :math:`\nabla\phi(0)` is the gradient (or tilt) of the sea
 surface height; :math:`\phi(0) = g\eta + p_{a}/\rho_{0} + mg/\rho_{0}`
@@ -469,19 +469,19 @@ stress terms are given by
 
 .. math::
    \begin{aligned}
-     \mathbf{\tau}_{air}   = & \rho_{air}  C_{air}
-     |\mathbf{U}_{air} -\mathbf{u}|  R_{air}  (\mathbf{U}_{air}
+     \mathbf{\tau}_\mathrm{air}   = & \rho_\mathrm{air}  C_\mathrm{air}
+     |\mathbf{U}_\mathrm{air} -\mathbf{u}|  R_\mathrm{air}  (\mathbf{U}_\mathrm{air}
      -\mathbf{u}) \\
-     \mathbf{\tau}_{ocean} = & \rho_{ocean}C_{ocean}
-     |\mathbf{U}_{ocean}-\mathbf{u}|
-     R_{ocean}(\mathbf{U}_{ocean}-\mathbf{u})
+     \mathbf{\tau}_\mathrm{ocean} = & \rho_\mathrm{ocean}C_\mathrm{ocean}
+     |\mathbf{U}_\mathrm{ocean}-\mathbf{u}|
+     R_\mathrm{ocean}(\mathbf{U}_\mathrm{ocean}-\mathbf{u})
    \end{aligned}
 
-where :math:`\mathbf{U}_{air/ocean}` are the
+where :math:`\mathbf{U}_\mathrm{air/ocean}` are the
 surface winds of the atmosphere and surface currents of the ocean,
-respectively; :math:`C_{air/ocean}` are air and ocean drag coefficients;
-:math:`\rho_{air/ocean}` are reference densities; and
-:math:`R_{air/ocean}` are rotation matrices that act on the wind/current
+respectively; :math:`C_\mathrm{air/ocean}` are air and ocean drag coefficients;
+:math:`\rho_\mathrm{air/ocean}` are reference densities; and
+:math:`R_\mathrm{air/ocean}` are rotation matrices that act on the wind/current
 vectors.
 
 .. _para_phys_pkg_seaice_VPrheology:
@@ -916,16 +916,16 @@ Ice-Ocean stress
 ----------------
 
 Moving sea ice exerts a stress on the ocean which is the opposite of
-the stress :math:`\mathbf{\tau}_{ocean}` in
+the stress :math:`\mathbf{\tau}_\mathrm{ocean}` in
 :eq:`eq_momseaice`. This stress is applied directly to the surface
 layer of the ocean model. An alternative ocean stress formulation is
 given by Hibler and Bryan (1987) :cite:`hibler87`. Rather than applying
-:math:`\mathbf{\tau}_{ocean}` directly, the stress is derived from
+:math:`\mathbf{\tau}_\mathrm{ocean}` directly, the stress is derived from
 integrating over the ice thickness to the bottom of the oceanic
 surface layer. In the resulting equation for the *combined* ocean-ice
 momentum, the interfacial stress cancels and the total stress appears
 as the sum of windstress and divergence of internal ice stresses:
-:math:`\delta(z) (\mathbf{\tau}_{air} + \mathbf{F})/\rho_0`, see also
+:math:`\delta(z) (\mathbf{\tau}_\mathrm{air} + \mathbf{F})/\rho_0`, see also
 Eq. (2) of Hibler and Bryan (1987) :cite:`hibler87`. The disadvantage of this formulation is
 that now the velocity in the surface layer of the ocean that is used
 to advect tracers, is really an average over the ocean surface
@@ -1150,20 +1150,20 @@ constant :math:`\sigma_B`. With explicit expressions in :math:`T_0`
 for the turbulent fluxes of latent heat:
 
 .. math::
-   Q_{LH} = \rho_a C_E (\Lambda_v + \Lambda_f) |u_\mathrm{atm}|\left[ q_\mathrm{air} - q_\mathrm{sat}(T_0)\right] 
+   Q_{LH} = \rho_\mathrm{air} C_E (\Lambda_v + \Lambda_f) |\mathbf{U}_\mathrm{air}|\left[ q_\mathrm{air} - q_\mathrm{sat}(T_0)\right] 
 
-where :math:`\rho_a` is the air density (parameter :varlink:`SEAICE_rhoAir`),
+where :math:`\rho_\mathrm{air}` is the air density (parameter :varlink:`SEAICE_rhoAir`),
 :math:`C_E` is the ice-ocean transfer coefficient for sensible and latent heat (parameter :varlink:`SEAICE_dalton`),
 :math:`\Lambda_v` and :math:`\Lambda_f` are the latent heat of vaporization and fusion, respectively
 (parameters :varlink:`SEAICE_lhEvap` and :varlink:`SEAICE_lhFusion`). Similarly, for sensible heat:
 
 .. math::
-   Q_{SH}= \rho_a c_p C_E |u_\mathrm{atm}|\left[ T_\mathrm{10m} - T_{0} \right]
+   Q_{SH}= \rho_\mathrm{air} c_p C_E |\mathbf{U}_\mathrm{air}|\left[ T_\mathrm{10m} - T_{0} \right]
 
 where :math:`c_p` is the specific heat of air (parameter :varlink:`SEAICE_cpAir`).
 :eq:`eq_zerolayerheatbalance` can be solved for
-:math:`T_0` with an iterative Ralphson-Newton method, that usually
-converges very quickly in less that 10 iterations. For the latent heat
+:math:`T_0` with an iterative Ralphson-Newton method which usually
+converges very quickly, in less that 10 iterations. For the latent heat
 :math:`Q_{LH}` a choice can be made between the old polynomial
 expression for saturation humidity :math:`q_\mathrm{sat}(T_0)` (by
 setting :varlink:`useMaykutSatVapPoly` to ``.TRUE.``) and the default
@@ -1372,9 +1372,9 @@ If :varlink:`Hlimit` is not set in ``data.seaice``, a simple recursive formula f
 :cite:`lipscomb:01` is used to compute :varlink:`Hlimit`:
 
 .. math::
-   H_\mathrm{limit}(k) = H_\mathrm{limit}(k-1) + c_1 + c_2 [ 1 + \tanh c_3 (\frac{k-1}{n} - 1) ]
+   H_\mathrm{limit}(k) = H_\mathrm{limit}(k-1) + \frac{c_1}{n} + \frac{c_1 c_2}{n} [ 1 + \tanh c_3 (\frac{k-1}{n} - 1) ]
 
-with :math:`H_\mathrm{limit}(0)=0` and :math:`H_\mathrm{limit}(n)=999.9`. The three constants are the runtime parameters
+with :math:`H_\mathrm{limit}(0)=0\,\text{m}` and :math:`H_\mathrm{limit}(n)=999.9\,\text{m}`. The three constants are the runtime parameters
 :varlink:`Hlimit_c1`, :varlink:`Hlimit_c2`, and :varlink:`Hlimit_c3`.
 The total ice concentration and volume can then be calculated by summing up the values for each category.
 
