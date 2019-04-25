@@ -73,25 +73,25 @@ options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
 
 .. _ssub_phys_pkg_seaice_runtime:
 
-Run-time parameters 
-===================
+Runtime parameters 
+==================
 
-Run-time parameters (see :numref:`tab_phys_pkg_seaice_runtimeparms`) are set in
+Runtime parameters (see :numref:`tab_phys_pkg_seaice_runtimeparms`) are set in
 `data.seaice` (read in :filelink:`pkg/seaice/seaice_readparms.F`).
 
 Enabling the package
 --------------------
 
-:filelink:`seaice <pkg/seaice>` package is switched on/off at run-time by setting :varlink:`useSEAICE` ``= .TRUE.`` in ``data.pkg``.
+:filelink:`seaice <pkg/seaice>` package is switched on/off at runtime by setting :varlink:`useSEAICE` ``= .TRUE.`` in ``data.pkg``.
 
 General flags and parameters
 ----------------------------
 
-:numref:`tab_phys_pkg_seaice_runtimeparms` lists most run-time parameters.
+:numref:`tab_phys_pkg_seaice_runtimeparms` lists most runtime parameters.
 
 .. tabularcolumns:: |\Y{.275}|\Y{.20}|\Y{.525}|
 
-.. table:: Run-time parameters and default values
+.. table:: Runtime parameters and default values
   :class: longtable
   :name: tab_phys_pkg_seaice_runtimeparms
 
