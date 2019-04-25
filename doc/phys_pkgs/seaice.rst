@@ -15,7 +15,7 @@ Package :filelink:`seaice <pkg/seaice>` provides a dynamic and thermodynamic int
 sea ice model.
 
 CPP options enable or disable different aspects of the package
-(:numref:`ssub_phys_pkg_seaice_config`). Runtime options, flags, filenames and
+(:numref:`ssub_phys_pkg_seaice_config`). Run-time options, flags, filenames and
 field-related dates/times are set in ``data.seaice`` (:numref:`ssub_phys_pkg_seaice_runtime`).
 A description of key subroutines is given in
 :numref:`ssub_phys_pkg_seaice_subroutines`. 
@@ -73,10 +73,10 @@ options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
 
 .. _ssub_phys_pkg_seaice_runtime:
 
-Runtime parameters 
-==================
+Run-time parameters 
+===================
 
-Runtime parameters (see :numref:`tab_phys_pkg_seaice_runtimeparms`) are set in
+Run-time parameters (see :numref:`tab_phys_pkg_seaice_runtimeparms`) are set in
 `data.seaice` (read in :filelink:`pkg/seaice/seaice_readparms.F`).
 
 Enabling the package
@@ -87,11 +87,11 @@ Enabling the package
 General flags and parameters
 ----------------------------
 
-:numref:`tab_phys_pkg_seaice_runtimeparms` lists most runtime parameters.
+:numref:`tab_phys_pkg_seaice_runtimeparms` lists most run-time parameters.
 
 .. tabularcolumns:: |\Y{.275}|\Y{.20}|\Y{.525}|
 
-.. table:: Runtime parameters and default values
+.. table:: Run-time parameters and default values
   :class: longtable
   :name: tab_phys_pkg_seaice_runtimeparms
 
@@ -391,7 +391,7 @@ decided to use the VP model as the default dynamic component of our ice
 model. To do this we extended the line successive over relaxation (LSOR)
 method of Zhang and Hibler (1997) :cite:`zhang97` for use in a
 parallel configuration. An EVP model and a
-free-drift implementation can be selected with runtime flags.
+free-drift implementation can be selected with run-time flags.
 
 
 .. _para_phys_pkg_seaice_thsice:
@@ -518,8 +518,8 @@ depends on both thickness :math:`h` and compactness (concentration)
 
    P_{\max} = P^{\ast}c\,h\,\exp\{-C^{\ast}\cdot(1-c)\},
 
-with the constants :math:`P^{\ast}` (runtime parameter 
-:varlink:`SEAICE_strength`) and :math:`C^{\ast}` (runtime parameter
+with the constants :math:`P^{\ast}` (run-time parameter 
+:varlink:`SEAICE_strength`) and :math:`C^{\ast}` (run-time parameter
 :varlink:`SEAICE_cStar`). The nonlinear bulk and shear viscosities
 :math:`\eta` and :math:`\zeta` are functions of ice strain rate
 invariants and ice strength such that the principal components of the
@@ -543,7 +543,7 @@ with the abbreviation
     \right]^{\frac{1}{2}}
 
 The bulk viscosities are bounded above by imposing both a minimum
-:math:`\Delta_{\min}` (for numerical reasons, runtime parameter
+:math:`\Delta_{\min}` (for numerical reasons, run-time parameter
 :varlink:`SEAICE_deltaMin` is set to a default value of :math:`10^{-10}\,\text{s}^{-1}`,
 the value of :varlink:`SEAICE_EPS`)
 and a maximum :math:`\zeta_{\max} = P_{\max}/(2\Delta^\ast)`, where
@@ -551,7 +551,7 @@ and a maximum :math:`\zeta_{\max} = P_{\max}/(2\Delta^\ast)`, where
 Obviously, this corresponds to regularizing :math:`\Delta` with the typical value of
 :varlink:`SEAICE_deltaMin` :math:`= 2\times10^{-9}`. Clearly, some of this regularization is redundant.
 (There is also the option of bounding :math:`\zeta` from below by setting
-runtime parameter :varlink:`SEAICE_zetaMin` :math:`>0`, but this is generally not
+run-time parameter :varlink:`SEAICE_zetaMin` :math:`>0`, but this is generally not
 recommended). For stress tensor computation the replacement pressure
 :math:`P = 2\,\Delta\zeta` is used so that the stress state always
 lies on the elliptic yield curve by definition.
@@ -598,7 +598,7 @@ solvers converge slowly, but in practice the iteration is generally terminated
 after only a few nonlinear steps and the calculation continues with
 the next time level. This method is the default method in
 MITgcm. The number of nonlinear iteration steps or pseudo-time steps
-can be controlled by the runtime parameter :varlink:`SEAICEnonLinIterMax`
+can be controlled by the run-time parameter :varlink:`SEAICEnonLinIterMax`
 (default is 2).
 
 In order to overcome the poor convergence of the Picard-solver,
@@ -701,7 +701,7 @@ To use the JFNK-solver set :varlink:`SEAICEuseJFNK` ``= .TRUE.,`` in the namelis
 smooth regularization of :math:`\zeta` by ``#define`` :varlink:`SEAICE_ZETA_SMOOTHREG`
 (see above) for better convergence. The nonlinear Newton iteration is terminated when
 the :math:`L_2`-norm of the residual is reduced by :math:`\gamma_{\mathrm{nl}}`
-(runtime parameter :varlink:`SEAICEnonLinTol` ``= 1.E-4,`` will already lead to expensive simulations)
+(run-time parameter :varlink:`SEAICEnonLinTol` ``= 1.E-4,`` will already lead to expensive simulations)
 with respect to the initial norm: :math:`\|\mathbf{F}(\mathbf{x}^k)\| <
 \gamma_{\mathrm{nl}}\|\mathbf{F}(\mathbf{x}^0)\|`.
 Within a nonlinear iteration, the linear FGMRES solver is terminated
@@ -1190,7 +1190,7 @@ larger than 7 modify :filelink:`SEAICE_SIZE.h
 <pkg/seaice/SEAICE_SIZE.h>`).  Note that this requires different
 restart files and switching this flag on in the middle of an
 integration is not advised. As an alternative to the flat
-distribution, the runtime parameter :varlink:`SEAICE_PDF` (1D-array of
+distribution, the run-time parameter :varlink:`SEAICE_PDF` (1D-array of
 lenght :varlink:`nITD`) can be used to prescribe an arbitrary
 distribution of ice thicknesses, for example derived from observed
 distributions (Castro-Morales et al. 2014
@@ -1206,10 +1206,10 @@ below. The oceanic flux is proportional to
 :math:`c_{p}` are the density and heat capacity of sea water and
 :math:`T_{fr}` is the local freezing point temperature that is a
 function of salinity. This flux is not assumed to instantaneously melt
-or create ice, but a time scale of three days (runtime parameter :varlink:`SEAICE_gamma_t`)
+or create ice, but a time scale of three days (run-time parameter :varlink:`SEAICE_gamma_t`)
 is used to relax :math:`T_{w}` to the freezing point. The parameterization of lateral
 and vertical growth of sea ice follows that of Hibler (1979) and Hibler (1980) :cite:`hib79,hib80`; the so-called
-lead closing parameter :math:`h_{0}` (runtime parameter :varlink:`HO`) has
+lead closing parameter :math:`h_{0}` (run-time parameter :varlink:`HO`) has
 a default value of 0.5 meters.
 
 On top of the ice there is a layer of snow that modifies the heat flux
@@ -1223,7 +1223,7 @@ ice and the snow is flooded, a simple mass conserving parameterization
 of snowice formation (a flood-freeze algorithm following Archimedes’
 principle) turns snow into ice until the ice surface is back at
 :math:`z=0` (see Leppäranta 1983 :cite:`leppaeranta83`).
-The flood-freeze algorithm is turned on with runtime parameter :varlink:`SEAICEuseFlooding=.TRUE.`.
+The flood-freeze algorithm is turned on with run-time parameter :varlink:`SEAICEuseFlooding=.TRUE.`.
 
 .. _para_phys_pkg_seaice_advection:
 
@@ -1247,7 +1247,7 @@ schemes to preserve sharp gradients and edges that are typical of sea
 ice distributions and to rule out unphysical over- and undershoots
 (negative thickness or concentration). These schemes conserve volume and
 horizontal area and are unconditionally stable, so that we can set
-:math:`D_{X}=0`. Runtime flags: :varlink:`SEAICEadvScheme` (default=77, is a
+:math:`D_{X}=0`. Run-time flags: :varlink:`SEAICEadvScheme` (default=77, is a
 2nd-order flux limited scheme), :varlink:`DIFF1` = :math:`D_{X}/\Delta{x}`
 (default=0).
 
@@ -1262,7 +1262,7 @@ internal sea ice temperature is inferred from ice enthalpy. To avoid
 unphysical (negative) values for ice thickness and concentration, a
 positive 2nd-order advection scheme with a SuperBee flux limiter (Roe 1985
 :cite:`roe:85`) should be used to advect all sea-ice-related quantities
-of the Winton (2000) :cite:`win00` thermodynamic model (runtime flag
+of the Winton (2000) :cite:`win00` thermodynamic model (run-time flag
 :varlink:`thSIceAdvScheme` :math:`= 77` and :varlink:`thSIce_diffK` :math:`= D_{X} = 0`
 in ``data.ice``, defaults are 0). Because of the nonlinearity of the
 advection scheme, care must be taken in advecting these quantities:
@@ -1309,11 +1309,11 @@ a function describing the mechanical redistribution of sea ice during ridging or
 
 The mechanical redistribution function :math:`\Psi` generates open water in divergent motion
 and creates ridged ice during convergent motion. The ridging process depends on total strain
-rate and on the ratio between shear (runtime parameter :varlink:`SEAICEshearParm`) and divergent strain.
+rate and on the ratio between shear (run-time parameter :varlink:`SEAICEshearParm`) and divergent strain.
 In the single category model, ridge formation is treated implicitly by limiting the ice concentration
 to a maximum of one (see Hibler 1979 :cite:`hib79`), so that further volume increase in convergent motion
 leads to thicker ice. (This is also the default for ITD models; to change from the default, set
-runtime parameter :varlink:`SEAICEsimpleRidging` ``=.FALSE.`` in ``data.seaice``).
+run-time parameter :varlink:`SEAICEsimpleRidging` ``=.FALSE.`` in ``data.seaice``).
 For the ITD model, the ridging mode in convergence
 
 .. math::
@@ -1323,8 +1323,8 @@ gives the effective change for the ice volume with thickness between :math:`h` a
 as the normalized difference between the ice :math:`n(h)` generated by ridging and the ice :math:`a(h)` participating in ridging.
 
 The participation function :math:`a(h) = b(h)g(h)` can be computed either following Thorndike et al. (1975) :cite:`thorndike:75`
-(runtime parameter :varlink:`SEAICEpartFunc` =0) or Lipscomb et al. (2007) :cite:`lipscomb:07` (:varlink:`SEAICEpartFunc` =1), and similarly the
-ridging function :math:`n(h)` can be computed following Hilber (1980) :cite:`hib80` (runtime parameter :varlink:`SEAICEredistFunc` =0)
+(run-time parameter :varlink:`SEAICEpartFunc` =0) or Lipscomb et al. (2007) :cite:`lipscomb:07` (:varlink:`SEAICEpartFunc` =1), and similarly the
+ridging function :math:`n(h)` can be computed following Hilber (1980) :cite:`hib80` (run-time parameter :varlink:`SEAICEredistFunc` =0)
 or Lipscomb et al. (2007) :cite:`lipscomb:07` (:varlink:`SEAICEredistFunc` =1). As an example, we show here the functions
 that Lipscomb et al. (2007) :cite:`lipscomb:07` suggested
 to avoid noise in the solutions. These functions are smooth and avoid non-differentiable discontinuities,
@@ -1366,17 +1366,17 @@ the heat flux with the category-specific values for ice and snow thickness,
 so there are no conceptual differences in the
 thermodynamics between the single category and ITD configurations.
 The only difference is that only in the thinnest category the creation
-of new ice of thickness :math:`H_0` (runtime parameter :varlink:`HO`) is possible,
+of new ice of thickness :math:`H_0` (run-time parameter :varlink:`HO`) is possible,
 all other categories are limited to basal growth.  The conservation of ice
 area is replaced by the evolution equation of the ITD :eq:`eq_itd` that is discretized
-in thickness space with :math:`n+1` category limits given by runtime parameter :varlink:`Hlimit`.
+in thickness space with :math:`n+1` category limits given by run-time parameter :varlink:`Hlimit`.
 If :varlink:`Hlimit` is not set in ``data.seaice``, a simple recursive formula following Lipscomb (2001)
 :cite:`lipscomb:01` is used to compute :varlink:`Hlimit`:
 
 .. math::
    H_\mathrm{limit}(k) = H_\mathrm{limit}(k-1) + \frac{c_1}{n} + \frac{c_1 c_2}{n} [ 1 + \tanh c_3 (\frac{k-1}{n} - 1) ]
 
-with :math:`H_\mathrm{limit}(0)=0\,\text{m}` and :math:`H_\mathrm{limit}(n)=999.9\,\text{m}`. The three constants are the runtime parameters
+with :math:`H_\mathrm{limit}(0)=0\,\text{m}` and :math:`H_\mathrm{limit}(n)=999.9\,\text{m}`. The three constants are the run-time parameters
 :varlink:`Hlimit_c1`, :varlink:`Hlimit_c2`, and :varlink:`Hlimit_c3`.
 The total ice concentration and volume can then be calculated by summing up the values for each category.
 
