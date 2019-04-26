@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom_common & pkg/gmredi:
+  - add quasi-geostrophic variant of Leith dynamic visocity
+  - use the quasi-geostrophic Leith dynamic visocity as GM diffusivity
+  - new verification experiment to test QG-Leith (variant of MLAdjust)
+  - updated documentation about new option
 o pkg/seaice:
   - add Hlimit to seaice namelist in data.seaice
   - use verification seaice_itd.thermo to test this feature with default
