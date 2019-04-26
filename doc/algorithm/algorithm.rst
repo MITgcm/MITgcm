@@ -3026,8 +3026,8 @@ divergent motions. As such, a small :math:`\mathcal{O}(\epsilon)` correction is 
 
 .. math::
     \nu_{*} = \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} 
-    |\nabla_{h}(f\mathbf{\hat{z}}) + \nabla_{h}(\nabla \times \mathbf{v}_{h*}) + 
-    \partial_{z} \frac{f}{N^{2}} \nabla_{h} b| + | \nabla[\nabla \cdot \mathbf{v}_{h}]|^{2}
+    \sqrt{|\nabla_{h}(f\mathbf{\hat{z}}) + \nabla_{h}(\nabla \times \mathbf{v}_{h*}) + 
+    \partial_{z} \frac{f}{N^{2}} \nabla_{h} b|^{2} + | \nabla[\nabla \cdot \mathbf{v}_{h}]|^{2}}
     :label: bachman2017_eq40
 
 This form is, however, numerically awkward; as the Brunt-Väisälä Frequency becomes very small
