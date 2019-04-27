@@ -45,7 +45,7 @@ C Allows to use the Boundary-Value-Problem method to evaluate GM Bolus transport
 #define GM_BOLUS_BVP
 
 C Allow QG Leith variable viscosity to be added to GMRedi coefficient
-#undef ALLOW_GM_LEITH_QG
+#define ALLOW_GM_LEITH_QG
 
 #endif /* ALLOW_GMREDI */
 #endif /* GMREDI_OPTIONS_H */

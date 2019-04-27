@@ -2951,6 +2951,8 @@ enstrophy-dissipation and the resulting eddy viscosity are
    - {\frac{\partial{\overline {\tilde u}}}{\partial{y}}}\right)\right]^2}
    :label: Leith3
 
+The runtime flag :varlink:`useFullLeith` controls whether or not to calculate the full gradients for the Leith viscosity (.TRUE.) or to use an approximation (.FALSE.). The only reason to set :varlink:`useFullLeith` = .FALSE. is if your simulation fails when computing the gradients. This can occur when using the cubed sphere and other complex grids.
+
 Modified Leith Viscosity
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -2999,6 +3001,75 @@ often what sets the maximum timestep, this viscosity may substantially
 increase the allowable timestep without severely compromising the verity
 of the simulation. Tests have shown that in some calculations, a
 timestep three times larger was allowed when :varlink:`viscC2LeithD` = :varlink:`viscC2Leith`.
+
+
+Quasi-Geostrophic Leith Viscosity
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A variant of Leith viscosity can be derived for quasi-geostrophic dynamics.
+This leads to a slightly different equation for the viscosity that includes
+a contribution from quasigeostrophic vortex stretching (Bachman et al. 2017 :cite:`bachman:17`).
+The viscosity is given by
+
+.. math::
+    \nu_{*} = \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} | \nabla_{h}(f\mathbf{\hat{z}}) + 
+    \nabla_{h}(\nabla \times \mathbf{v}_{h*}) + \partial_{z}\frac{f}{N^{2}} \nabla_{h} b|
+    :label: bachman2017_eq39
+
+where :math:`\Lambda` is a tunable parameter of :math:`\mathcal{O}(1)`,
+:math:`\Delta s = \sqrt{\Delta x \Delta y}` is the grid scale, :math:`f\mathbf{\hat{z}}`
+is the vertical component of the Coriolis parameter, :math:`\mathbf{v}_{h*}` is the horizontal velocity,
+:math:`N^{2}` is the Brunt-Väisälä frequency, and :math:`b` is the buoyancy.
+
+However, the viscosity given by :eq:`bachman2017_eq39` does not constrain purely
+divergent motions. As such, a small :math:`\mathcal{O}(\epsilon)` correction is added
+
+.. math::
+    \nu_{*} = \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} 
+    \sqrt{|\nabla_{h}(f\mathbf{\hat{z}}) + \nabla_{h}(\nabla \times \mathbf{v}_{h*}) + 
+    \partial_{z} \frac{f}{N^{2}} \nabla_{h} b|^{2} + | \nabla[\nabla \cdot \mathbf{v}_{h}]|^{2}}
+    :label: bachman2017_eq40
+
+This form is, however, numerically awkward; as the Brunt-Väisälä Frequency becomes very small
+in regions of weak or vanishing stratification, the vortex stretching term becomes very large.
+The resulting large viscosities can lead to numerical instabilities. Bachman et al. (2017) :cite:`bachman:17`
+present two limiting forms for the viscosity based on flow parameters such as :math:`Fr_{*}`,
+the Froude number, and :math:`Ro_{*}`, the Rossby number. The second of which,
+
+.. math::
+    \begin{aligned}
+    \nu_{*} = & \left(\frac{\Lambda \Delta s}{\pi}\right)^{3} \\
+    & \sqrt{min\left(|\nabla_{h}q_{2*} + \partial_{z} \frac{f^{2}}{N^{2}} \nabla_{h} b |,
+    \left( 1 + \frac{Fr_{*}^{2}}{Ro_{*}^{2}} + Fr_{*}^{4}\right) |\nabla_{h}q_{2*}|\right)^{2} + | \nabla[\nabla \cdot \mathbf{v}_{h}]|^{2}},
+    \end{aligned}
+    :label: bachman2017_eq56
+
+
+has been implemented and is active when ``#define`` :varlink:`ALLOW_LEITH_QG` is included
+in a copy of :filelink:`MOM_COMMON_OPTIONS.h<pkg/mom_common/MOM_COMMON_OPTIONS.h>` in
+a code mods directory (specified through :ref:`-mods <mods_option>` command
+line option in :filelink:`genmake2 <tools/genmake2>`).
+
+LeithQG viscosity is designed to work best in simulations that resolve some mesoscale features.
+In simulations that are too coarse to permit eddies or fine enough to resolve submesoscale features,
+it should fail gracefully. The non-dimensional parameter :varlink:`viscC2LeithQG` corresponds to
+:math:`\Lambda` in the above equations and scales the viscosity; the recommended value is 1.
+
+There is no reason to use the quasi-geostrophic form of Leith at the same time as either
+standard Leith or modified Leith. Therefore, the model will not run if non-zero values have
+been set for these coefficients; the model will stop during the configuration check.
+LeithQG can be used regardless of the setting for :varlink:`useFullLeith`. Just as for the
+other forms of Leith viscosity, this flag determines whether or not the full gradients are used.
+The simplified gradients were originally intended for use on complex grids, but have been
+shown to produce better kinetic energy spectra even on very straightforward grids.
+
+To add the LeithQG viscosity to the GMRedi coefficient, as was done in some of the simulations
+in Bachman et al. (2017) :cite:`bachman:17`, ``#define`` :varlink:`ALLOW_LEITH_QG` must be specified,
+as described above. In addition to this, the compile-time flag :varlink:`ALLOW_GM_LEITH_QG`
+must also be defined in a (``-mods``) copy of :filelink:`GMREDI_OPTIONS.h<pkg/gmredi/GMREDI_OPTIONS.h>`
+when the model is compiled, and the runtime parameter :varlink:`GM_useLeithQG` set to .TRUE. in ``data.gmredi``.
+This will use the value of :varlink:`viscC2LeithQG` specified in the ``data`` input file to compute the coefficient.
+
 
 Courant–Freidrichs–Lewy Constraint on Viscosity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
