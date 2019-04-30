@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o autofdiff:
+  - fix to avoid TAF recomputations in ggl90 & salt_plume pkgs
+    and in model/src PCELL_MIX_CODE.
 o pkg/mom_common & pkg/gmredi:
   - add quasi-geostrophic variant of Leith dynamic visocity
   - use the quasi-geostrophic Leith dynamic visocity as GM diffusivity
