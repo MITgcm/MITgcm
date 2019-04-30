@@ -10,7 +10,7 @@ C Use this file for selecting CPP options within the mom_common package
 C     Package-specific options go here
 
 C allow LeithQG coefficient to be calculated
-#undef ALLOW_LEITH_QG
+#define ALLOW_LEITH_QG
 
 C allow isotropic 3-D Smagorinsky viscosity
 #undef ALLOW_SMAG_3D
