@@ -54,8 +54,10 @@ C     myThid :: my Thread Id number
 
 C !LOCAL VARIABLES: ====================================================
 C     i,j,bi,bj :: Loop counters
+#ifdef ALLOW_AUTODIFF_TAMC
       INTEGER i, j
       INTEGER bi, bj
+#endif
 #ifdef ALLOW_SITRACER
       INTEGER iTr
 #endif
@@ -100,6 +102,7 @@ C--   Map thSice-variables to HEFF and AREA
 CADJ STORE uwind = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vwind = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE heffm = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE area  = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef SEAICE_ALLOW_DYNAMICS
 #  ifdef SEAICE_CGRID
@@ -182,6 +185,9 @@ C NOW DO ADVECTION and DIFFUSION
        CALL SEAICE_ADVDIFF( uLoc, vLoc, myTime, myIter, myThid )
 #endif /* SEAICE_CGRID */
       ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE heffm  = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
 
 C     After advection, the sea ice variables may have unphysical values
 C     e.g., < 0, that are regularized here. Concentration as a special case
@@ -196,10 +202,17 @@ C     thermodynamics growth
 C     must call growth after calling advection
 C     because of ugly time level business
        IF ( usePW79thermodynamics ) THEN
+#ifdef ALLOW_SEAICE_GROWTH_ADX
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL( 'SEAICE_GROWTH_ADX', myThid )
+#endif
+        CALL SEAICE_GROWTH_ADX( myTime, myIter, myThid )
+#else
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL( 'SEAICE_GROWTH', myThid )
 #endif
         CALL SEAICE_GROWTH( myTime, myIter, myThid )
+#endif
        ELSE
 #endif /* DISABLE_SEAICE_GROWTH */
         DO bj=myByLo(myThid),myByHi(myThid)
