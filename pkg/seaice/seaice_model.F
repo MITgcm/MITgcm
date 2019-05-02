@@ -54,10 +54,8 @@ C     myThid :: my Thread Id number
 
 C !LOCAL VARIABLES: ====================================================
 C     i,j,bi,bj :: Loop counters
-#ifdef ALLOW_AUTODIFF_TAMC
       INTEGER i, j
       INTEGER bi, bj
-#endif
 #ifdef ALLOW_SITRACER
       INTEGER iTr
 #endif
