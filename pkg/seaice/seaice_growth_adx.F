@@ -1,5 +1,3 @@
-C SEAICE GROWTH REBORN v02 2015/01/15
-
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
@@ -12,13 +10,13 @@ C SEAICE GROWTH REBORN v02 2015/01/15
 #endif
 
 CBOP
-C     !ROUTINE: SEAICE_GROWTH
+C     !ROUTINE: SEAICE_GROWTH_ADX
 C     !INTERFACE:
-      SUBROUTINE SEAICE_GROWTH( myTime, myIter, myThid )
+      SUBROUTINE SEAICE_GROWTH_ADX( myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE seaice_growth
-C     | o rebirth of seaice_growth_if
+C     | SUBROUTINE seaice_growth_adx
+C     | o rebirth of seaice_growth_adx
 C     *==========================================================*
 C     \ev
 
@@ -99,15 +97,27 @@ C conversion factors to go from Q (W/m2) to HEFF (ice meters)
 C conversion factors to go from precip (m/s) unit to HEFF (ice meters)
       _RL convertPRECIP2HI, convertHI2PRECIP
 
-      _RL heffTooHeavy
+
+
 C     wind speed square
       _RL SPEED_SQ
 
 C     Regularization values squared
       _RL area_reg_sq, hice_reg_sq
 
+C     pathological cases thresholds
+      _RL heffTooHeavy
+
 C     Helper variables: reciprocal of some constants
       _RL recip_multDim
+      _RL recip_deltaTtherm
+      _RL recip_rhoIce
+
+C     local value (=1/HO or 1/HO_south)
+      _RL recip_HO
+
+C     local value (=1/ice thickness)
+      _RL recip_HH
 
 #ifndef SEAICE_ITD
 C     facilitate multi-category snow implementation
@@ -146,6 +156,7 @@ C     AREA_PRE :: hold sea-ice fraction field before any seaice-thermo update
       _RL AREApreTH           (1:sNx,1:sNy)
       _RL HEFFpreTH           (1:sNx,1:sNy)
       _RL HSNWpreTH           (1:sNx,1:sNy)
+
 
 C     wind speed
       _RL UG                  (1:sNx,1:sNy)
@@ -269,7 +280,7 @@ C        F_ao > 0
 
 C     F_mi - heat flux from ocean to the ice (W/m^2)
       _RL F_mi                          (1:sNx,1:sNy)
-
+      
       _RL FWsublim                      (1:sNx,1:sNy)
 
 C     S_a_from_IGROW : d(AREA)/dt [from ice growth rate from open water fluxes]
@@ -301,6 +312,10 @@ C ===================================================================
 C     avoid unnecessary divisions in loops
       recip_multDim        = SEAICE_multDim
       recip_multDim        = ONE / recip_multDim
+C     above/below: double/single precision calculation of recip_multDim
+c     recip_multDim        = 1./float(SEAICE_multDim)
+      recip_deltaTtherm = ONE / SEAICE_deltaTtherm
+      recip_rhoIce      = ONE / SEAICE_rhoIce
 
 C     Cutoff for iceload
       heffTooHeavy=drF(kSurface) / 5. _d 0
@@ -341,7 +356,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                       + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-
+cph-test(
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE area = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE heff = comlev1_bibj, key = iicekey, byte = isbyte
@@ -350,6 +365,7 @@ CADJ STORE qnet = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE qsw = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE tices = comlev1_bibj, key = iicekey, byte = isbyte
 #endif
+cph-test)
 
 C array initializations
 C =====================
@@ -695,7 +711,7 @@ c  ice/atmosphere interface for each thickness category
 c =======================================================================
 
         DO IT=1,SEAICE_multDim
-         CALL SEAICE_SOLVE4TEMP(
+         CALL SEAICE_SOLVE4TEMP_ADX(
      I        UG, hiceActualMult(1,1,IT), hsnowActualMult(1,1,IT),
      U        ticeInMult(1,1,IT), ticeOutMult(1,1,IT),
      O        F_io_net_mult(1,1,IT),
@@ -1173,7 +1189,8 @@ c    to calculate freshwater fluxes for the purpose of changing the
 c    salinity of the liquid cell.  In the case of non-zero ice salinity,
 c    the amount of freshwater is reduced by the ratio of ice salinity
 c    to water cell salinity.
-            IF  (salt(I,J,kSurface,bi,bj) .GE. SEAICE_salt0) THEN
+            IF  (salt(I,J,kSurface,bi,bj) .GE. SEAICE_salt0 .AND.
+     &           salt(I,J,kSurface,bi,bj) .GT. 0. _d 0) THEN
 
                  FreshwaterContribFromIce(I,J) =
      &            - ActualNewTotalVolumeChange(I,J) *
@@ -1286,6 +1303,8 @@ C =================================
          ENDDO
         ENDIF
 
+
+        print * , 'igf here'
 
 #ifdef SEAICE_DEBUG
             DO j=1,sNy

@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp.F,v 1.37 2014/10/20 03:20:58 gforget Exp $
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
@@ -10,9 +7,9 @@ C $Name:  $
 #endif
 
 CBOP
-C     !ROUTINE: SEAICE_SOLVE4TEMP
+C     !ROUTINE: SEAICE_SOLVE4TEMP_ADX
 C     !INTERFACE:
-      SUBROUTINE SEAICE_SOLVE4TEMP(
+      SUBROUTINE SEAICE_SOLVE4TEMP_ADX(
      I   UG, HICE_ACTUAL, HSNOW_ACTUAL,
 #ifdef SEAICE_CAP_SUBLIM
      I   F_lh_max,
@@ -25,7 +22,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE SOLVE4TEMP
+C     | SUBROUTINE SOLVE4TEMP_ADX
 C     | o Calculate ice growth rate, surface fluxes and
 C     |   temperature of ice surface.
 C     |   see Hibler, MWR, 108, 1943-1973, 1980
@@ -159,7 +156,7 @@ C     iceOrNot :: this is HICE_ACTUAL.GT.0.
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ INIT comlev1_solve4temp = COMMON, sNx*sNy*NMAX_TICE
+CADJ INIT comlev1_solve4temp_adx = COMMON, sNx*sNy*NMAX_TICE
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-    MAYKUT CONSTANTS FOR SAT. VAP. PRESSURE TEMP. POLYNOMIAL
@@ -363,7 +360,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         DO I=1,sNx
 #ifdef ALLOW_AUTODIFF_TAMC
          iicekey = I + sNx*(J-1) + (ITER-1)*sNx*sNy
-CADJ STORE tsurfLoc(i,j) = comlev1_solve4temp,
+CADJ STORE tsurfLoc(i,j) = comlev1_solve4temp_adx,
 CADJ &                     key = iicekey, byte = isbyte
 #endif /*  ALLOW_AUTODIFF_TAMC */
 
@@ -400,7 +397,7 @@ C     d(qh)/d(TICE)
           ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tsurfLoc(i,j) = comlev1_solve4temp,
+CADJ STORE tsurfLoc(i,j) = comlev1_solve4temp_adx,
 CADJ &                     key = iicekey, byte = isbyte
 #endif /*  ALLOW_AUTODIFF_TAMC */
 C     Calculate the flux terms based on the updated tsurfLoc
@@ -439,7 +436,7 @@ C-    Update tsurf as solution of : Fc = Fia + d/dT(Fia - Fc) *delta.tsurf
      &    + ( F_c(I,J)-F_ia(I,J) ) / ( effConduct(I,J)+dFia_dTs(I,J) )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE tsurfLoc(i,j) = comlev1_solve4temp,
+CADJ STORE tsurfLoc(i,j) = comlev1_solve4temp_adx,
 CADJ &                     key = iicekey, byte = isbyte
 #endif /*  ALLOW_AUTODIFF_TAMC */
           IF ( useMaykutSatVapPoly ) THEN
