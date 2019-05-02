@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp_adx.F,
+C $Name:  $
+
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
