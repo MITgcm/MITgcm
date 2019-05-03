@@ -421,6 +421,49 @@ C     Orlanski and prescribed boundary conditions
       ENDIF
 #endif /* ALLOW_OBCS_STEVENS */
 
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_LEAVE('OBCS_CALC',myThid)
+#endif
+#endif /* ALLOW_OBCS */
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C     !ROUTINE: OBCS_BALANCE_AND_TIDES
+
+C     !INTERFACE:
+      SUBROUTINE OBCS_BALANCE_AND_TIDES( 
+     &     futureTime, futureIter, myThid )
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE OBCS_BALANCE_AND_TIDES
+C     | o balance boundary fluxes and apply tidal forcing
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
+
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "OBCS_PARAMS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+      INTEGER futureIter
+      _RL futureTime
+      INTEGER myThid
+
+#ifdef ALLOW_OBCS
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_ENTER('OBCS_BALANCE_AND_TIDES',myThid)
+#endif
+
 #ifdef ALLOW_OBCS_BALANCE
       IF ( useOBCSbalance ) THEN
         CALL OBCS_BALANCE_FLOW( futureTime, futureIter, myThid )
@@ -434,9 +477,10 @@ C     Orlanski and prescribed boundary conditions
 #endif /* ALLOW_OBCS_TIDES */
 
 #ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_LEAVE('OBCS_CALC',myThid)
+      IF (debugMode) CALL DEBUG_LEAVE('OBCS_BALANCE_AND_TIDES',myThid)
 #endif
 #endif /* ALLOW_OBCS */
 
       RETURN
       END
+      

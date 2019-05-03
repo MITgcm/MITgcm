@@ -25,8 +25,6 @@ C     === Global variables ===
 #include "OBCS_GRID.h"
 #include "OBCS_FIELDS.h"
 #ifdef EXACT_CONSERV
-# include "DYNVARS.h"
-# include "SURFACE.h"
 # include "FFIELDS.h"
 #endif
 
@@ -294,10 +292,8 @@ C     displacement fluxes from advancing ice sheets or imported sea ice
          tileFlow(bi,bj) = 0.
          DO j=1,sNy
           DO i=1,sNx
-CML           tileFlow(bi,bj) = tileFlow(bi,bj) + etaN(i,j,bi,bj)/deltaT !dEtaHdt(i,j,bi,bj)
-CML           tileFlow(bi,bj) = tileFlow(bi,bj) + dEtaHdt(i,j,bi,bj)
            tileFlow(bi,bj) = tileFlow(bi,bj)
-     &          + PmEpR(i,j,bi,bj)*mass2rUnit
+     &          - EmPmR(i,j,bi,bj)*mass2rUnit
      &          * _rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
           ENDDO
          ENDDO

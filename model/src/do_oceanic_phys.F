@@ -1087,6 +1087,18 @@ C---  if fluid Is Water: end
       ENDIF
 #endif /* ALLOW_KPP */
 
+#ifdef  ALLOW_OBCS
+      IF (useOBCS) THEN
+C--   After all surface fluxes are known apply balancing fluxes and
+C--   apply tidal forcing to open boundaries
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('OBCS_BALANCE_AND_TIDES',myThid)
+# endif
+       CALL OBCS_BALANCE_AND_TIDES(
+     I      myTime+deltaTClock, myIter+1, myThid )
+      ENDIF
+#endif  /* ALLOW_OBCS */
+
 #ifdef ALLOW_DIAGNOSTICS
       IF ( fluidIsWater .AND. useDiagnostics ) THEN
         CALL DIAGS_RHO_G(
