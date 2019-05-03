@@ -68,6 +68,8 @@ C--   Print OBCS set-up summary:
       CALL WRITE_0D_L( useOBCSbalance, INDEX_NONE,
      &   'useOBCSbalance =', ' /* balance the flow through OB */')
       IF ( useOBCSbalance ) THEN
+        CALL WRITE_0D_L( OBCSbalanceSurf, INDEX_NONE,
+     &   'OBCSbalanceSurf =', ' /* include surf. flux in balance */')
         CALL WRITE_0D_RL( OBCS_balanceFacN, INDEX_NONE,
      &   'OBCS_balanceFacN =',
      &   ' /* Northern OB Factor for balancing OB flow [-] */')
@@ -373,6 +375,19 @@ CML       ENDIF
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
+#endif /* ALLOW_OBCS_BALANCE */
+#ifdef ALLOW_OBCS_BALANCE
+# ifndef EXACT_CONSERV
+      IF ( OBCSbalanceSurf ) THEN
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: OBCSbalanceSurf requires to define'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: EXACT_CONSERV in "CPP_OPTIONS.h"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+# endif /* EXACT_CONSERV */
 #endif /* ALLOW_OBCS_BALANCE */
 
 #ifndef ALLOW_OBCS_TIDES

@@ -24,6 +24,11 @@ C     === Global variables ===
 #include "OBCS_PARAMS.h"
 #include "OBCS_GRID.h"
 #include "OBCS_FIELDS.h"
+#ifdef EXACT_CONSERV
+# include "DYNVARS.h"
+# include "SURFACE.h"
+# include "FFIELDS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
       _RL myTime
@@ -45,7 +50,7 @@ C     msgBuf       :: Informational/error message buffer
       INTEGER i, j, k, iB, jB
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL areaOB, areaE, areaW, areaN, areaS, tmpA
-      _RL inFlow, flowE, flowW, flowN, flowS
+      _RL inFlow, flowE, flowW, flowN, flowS, dEtaHdtSum
       _RL tileArea(nSx,nSy)
       _RL tileFlow(nSx,nSy)
       _RL tileAreaOB(nSx,nSy)
@@ -277,12 +282,45 @@ c    &   'OBCS_balance it,areaS,flowS=', myIter, areaS, flowS
 #endif /* ALLOW_OBCS_SOUTH */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Calculate a flux throught the surface from the global change of etaH
+C     to take into account both freshwater fluxes like precipitation and
+C     displacement fluxes from advancing ice sheets or imported sea ice
+
+      dEtaHdtSum = 0. _d 0
+#ifdef EXACT_CONSERV
+      IF ( OBCSbalanceSurf ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         tileFlow(bi,bj) = 0.
+         DO j=1,sNy
+          DO i=1,sNx
+CML           tileFlow(bi,bj) = tileFlow(bi,bj) + etaN(i,j,bi,bj)/deltaT !dEtaHdt(i,j,bi,bj)
+CML           tileFlow(bi,bj) = tileFlow(bi,bj) + dEtaHdt(i,j,bi,bj)
+           tileFlow(bi,bj) = tileFlow(bi,bj)
+     &          + PmEpR(i,j,bi,bj)*mass2rUnit
+     &          * _rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+       CALL GLOBAL_SUM_TILE_RL( tileFlow, dEtaHdtSum, myThid )
+       IF ( debugLevel.GE.debLevC ) THEN
+        WRITE(msgBuf,'(A,I9,A,1P1E16.8)') 'OBCS_balance (it=',
+     &       myIter, ' ) correct for dEtaHdtSum:', dEtaHdtSum
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
+       ENDIF
+      ENDIF
+#endif /* EXACT_CONSERV */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Calculate a unique velocity correction for all (OBCS_balanceFac>0) OB
 C     and correct each OB using corresponding weight factor OBCS_balanceFac
 
       IF ( flag ) CALL GLOBAL_SUM_TILE_RL( tileAreaOB, areaOB, myThid )
       IF ( areaOB.GT.0. ) THEN
         CALL GLOBAL_SUM_TILE_RL( tileInFlow, inFlow, myThid )
+        inFlow = inFlow + dEtaHdtSum
         IF ( debugLevel.GE.debLevC ) THEN
           WRITE(msgBuf,'(A,I9,A,1P2E16.8)') 'OBCS_balance (it=',
      &       myIter, ' ) correct for inFlow:', inFlow, inFlow/areaOB
