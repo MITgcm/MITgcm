@@ -547,6 +547,18 @@ C     and all vertical mixing schemes, but keep OBCS_CALC
      I             iMin, iMax, jMin, jMax,
      I             myTime, myIter, myThid )
 
+#ifdef  ALLOW_OBCS
+      IF (useOBCS) THEN
+C--   After all surface fluxes are known apply balancing fluxes and
+C--   apply tidal forcing to open boundaries
+# ifdef ALLOW_DEBUG
+       IF (debugMode) CALL DEBUG_CALL('OBCS_BALANCE_AND_TIDES',myThid)
+# endif
+       CALL OBCS_BALANCE_AND_TIDES(
+     I      myTime+deltaTClock, myIter+1, myThid )
+      ENDIF
+#endif  /* ALLOW_OBCS */
+
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   HPF directive to help TAMC
 CHPF$ INDEPENDENT
@@ -1086,18 +1098,6 @@ C---  if fluid Is Water: end
         CALL KPP_DO_EXCH( myThid )
       ENDIF
 #endif /* ALLOW_KPP */
-
-#ifdef  ALLOW_OBCS
-      IF (useOBCS) THEN
-C--   After all surface fluxes are known apply balancing fluxes and
-C--   apply tidal forcing to open boundaries
-# ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('OBCS_BALANCE_AND_TIDES',myThid)
-# endif
-       CALL OBCS_BALANCE_AND_TIDES(
-     I      myTime+deltaTClock, myIter+1, myThid )
-      ENDIF
-#endif  /* ALLOW_OBCS */
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( fluidIsWater .AND. useDiagnostics ) THEN
