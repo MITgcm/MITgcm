@@ -61,7 +61,7 @@ C-- New method applies to all OB with BCS_balanceFac >=0 :
 C      ensure that the net inflow through all OB is balanced by correcting
 C      each OB normal flow with a uniform velocity, using the corresponding
 C      weight factor OBCS_balanceFac.
-C  e.g., OBCS_balanceFac_E,W,N,S= 1, -1, 2, 0 :
+C  e.g., OBCS_balanceFacE,W,N,S= 1, -1, 2, 0 :
 C      => correct Western OBWu (by substracting a uniform velocity) to ensure
 C         zero net transport through Western OB
 C      => correct Eastern and Northern normal flow (twice larger Northern
