@@ -59,8 +59,8 @@ via CPP preprocessor flags. These options are set in
 .. csv-table:: OBCS CPP options
 
   **CPP option**        ,  **Description**
-  `ALLOW_OBCS_NORTH`    ,  enable Northern OB 
-  `ALLOW_OBCS_SOUTH`    ,  enable Southern OB
+   ALLOW_OBCS_NORTH     ,  enable Northern OB 
+   ALLOW_OBCS_SOUTH     ,  enable Southern OB
    ALLOW_OBCS_EAST      ,  enable Eastern OB 
    ALLOW_OBCS_WEST      ,  enable Western OB
 
@@ -121,12 +121,13 @@ their default values.
   OB_Jsouth        , 0           , Nx-vector of J-indices (w.r.t. Ny) of Southern OB at each I-position (w.r.t. Nx)
   OB_Ieast         ,  0          , Ny-vector of I-indices (w.r.t. Nx) of Eastern OB at each J-position (w.r.t. Ny)
   OB_Iwest         ,  0          , Ny-vector of I-indices (w.r.t. Nx) of Western OB at each J-position (w.r.t. Ny)
-  useOBCSprescribe  , :code:`.FALSE.` , 
   useOBCSsponge     , :code:`.FALSE.` , 
-  useOBCSbalance    , \code{.FALSE.}  ,
+  useOBCSbalance    , :code:`.FALSE.` , turn on balancing code
   OBCS_balanceFacN/S/E/W , 1 , factor(s) determining the details of the balaning code
+  OBCSbalanceSurf   , :code:`.FALSE.`, include surface mass flux in balance
   useOrlanskiNorth/South/EastWest, :code:`.FALSE.` , turn on Orlanski boundary conditions for individual boundary
   useStevensNorth/South/EastWest , :code:`.FALSE.` , turn on Stevens boundary conditions for individual boundary
+  useOBCSprescribe  , :code:`.FALSE.` , turn on code for reading OBCS fields from files
   OB\ **Xy**\ File , , file name of OB field
              , , **X**: **N**\ (orth) **S**\ (outh) **E**\ (ast) **W**\ (est) 
              , , **y**: **t**\ (emperature) **s**\ (salinity) **u**\ (-velocity) **v**\ (-velocity)
@@ -149,8 +150,8 @@ their default values.
               , , 
   *Stevens parameters (OBCS_PARM04)*
   T/SrelaxStevens , 0 sec , relaxation time scale for temperature/salinity
-  useStevensPhaseVel , \code{.TRUE.} ,
-  useStevensAdvection , \code{.TRUE.} ,
+  useStevensPhaseVel  , :code:`.TRUE.` ,
+  useStevensAdvection , :code:`.TRUE.` ,
 
 
 .. _ssub_phys_pkg_obcs_defining_open_boundaries:
@@ -263,7 +264,7 @@ ORLANSKI:
 Orlanski radiation conditions :cite:`orl:76`, examples can be found in
 ``verification/dome``
 (http://www.rsmas.miami.edu/personal/tamay/DOME/dome.html) and
-``verification/tutorial\_plume\_on\_slope``.
+``verification/tutorial_plume_on_slope``.
 
 
 OBCS\_PRESCRIBE\_READ:
@@ -435,7 +436,12 @@ this combination of flags is *not* useful if you want to simulate, say,
 a sector of the Southern Ocean with a strong ACC entering through the
 western and leaving through the eastern boundary, because the value of
 ''-1'' for these flags will make sure that the strong inflow is removed.
-Clearly, gobal balancing with :code:`OBCS_balanceFacE/W/N/S` :math:`\ge 0` is the preferred method.
+Clearly, gobal balancing with :code:`OBCS_balanceFacE/W/N/S`
+:math:`\ge 0` is the preferred method.
+
+With runtime parameter :code:`OBCSbalanceSurf=.TRUE.`, the surface mass flux
+contribution, say, from surface freshwater flux :code:`EmPmR` is included in
+the balancing scheme.
 
 
 OBCS\_APPLY\_*:
