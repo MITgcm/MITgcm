@@ -54,6 +54,9 @@ C     msgBuf       :: Informational/error message buffer
       _RL tileAreaOB(nSx,nSy)
       _RL tileInFlow(nSx,nSy)
       LOGICAL flag
+#ifdef ALLOW_SHELFICE
+      _RL shelfIceNetMassFlux
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- Old method (OBCS_balanceFac < 0): balance each OB separately
@@ -308,6 +311,21 @@ C     displacement fluxes from advancing ice sheets or imported sea ice
        ENDIF
       ENDIF
 #endif /* EXACT_CONSERV */
+#ifdef ALLOW_SHELFICE
+      shelfIceNetMassFlux = 0. _d 0
+      IF ( OBCSbalanceSurf .AND. useShelfIce ) THEN
+       CALL SHELFICE_NETMASSFLUX_SURF(
+     O                        shelfIceNetMassFlux,
+     I                        myTime, myIter, myThid )
+       IF ( debugLevel.GE.debLevC ) THEN
+        WRITE(msgBuf,'(A,I9,A,1P1E16.8)') 'OBCS_balance (it=',
+     &       myIter, ' ) correct for shelfIceNetMassFlux:',
+     &       shelfIceNetMassFlux
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
+       ENDIF
+      ENDIF
+#endif /* ALLOW_SHELFICE */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Calculate a unique velocity correction for all (OBCS_balanceFac>0) OB
@@ -316,13 +334,13 @@ C     and correct each OB using corresponding weight factor OBCS_balanceFac
       IF ( flag ) CALL GLOBAL_SUM_TILE_RL( tileAreaOB, areaOB, myThid )
       IF ( areaOB.GT.0. ) THEN
         CALL GLOBAL_SUM_TILE_RL( tileInFlow, inFlow, myThid )
-        inFlow = inFlow + dEtaHdtSum
         IF ( debugLevel.GE.debLevC ) THEN
           WRITE(msgBuf,'(A,I9,A,1P2E16.8)') 'OBCS_balance (it=',
      &       myIter, ' ) correct for inFlow:', inFlow, inFlow/areaOB
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
         ENDIF
+        inFlow = inFlow + dEtaHdtSum + shelfIceNetMassFlux
         inFlow = inFlow / areaOB
       ENDIF
       IF ( OBCS_balanceFacE.GE.0. ) flowE =  inFlow*OBCS_balanceFacE
