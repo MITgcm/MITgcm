@@ -340,7 +340,10 @@ C     and correct each OB using corresponding weight factor OBCS_balanceFac
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
         ENDIF
-        inFlow = inFlow + dEtaHdtSum + shelfIceNetMassFlux
+        inFlow = inFlow + dEtaHdtSum
+#ifdef ALLOW_SHELFICE
+     &       + shelfIceNetMassFlux
+#endif
         inFlow = inFlow / areaOB
       ENDIF
       IF ( OBCS_balanceFacE.GE.0. ) flowE =  inFlow*OBCS_balanceFacE
