@@ -519,12 +519,6 @@ C     Orlanski and prescribed boundary conditions
       ENDIF
 #endif /* ALLOW_OBCS_STEVENS */
 
-C--   This is a hack and should not be here because we call
-C     this routine later in S/R do_oceanic_phys. For some reason,
-C     I cannot even move this call to immediately after calling
-C     S/R obcs_calc without breaking the dome-experiment.
-      CALL OBCS_BALANCE_AND_TIDES( futureTime, futureIter, myThid )
-
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('OBCS_CALC',myThid)
 #endif
