@@ -4,19 +4,19 @@
 #endif
 
 CBOP
-C !ROUTINE: MOM_BOTTOM_DRAG_U
+C !ROUTINE: MOM_V_BOTDRAG_COEFF
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE MOM_BOTTOM_DRAG_U(
+      SUBROUTINE MOM_V_BOTDRAG_COEFF(
      I                 bi, bj, k, inp_KE,
-     I                 uFld, vFld, kappaRU,
+     I                 uFld, vFld, kappaRV,
      U                 KE,
      O                 cDrag,
      I                 myIter, myThid )
 
 C !DESCRIPTION:
-C Compute bottom-drag coefficient (Cd) for U component momentum,
-C   such that bottom stress: taux_{bot} = -Cd * U_{bot} * rUnit2mass ;
+C Compute bottom-drag coefficient (Cd) for V component momentum,
+C   such that bottom stress: taux_{bot} = -Cd * V_{bot} * rUnit2mass ;
 C include linear and quadratic bottom drag and friction (no-slip BC) at bottom
 
 C !USES: ===============================================================
@@ -35,7 +35,7 @@ C  k              :: vertical level to process
 C  inp_KE         :: =T : KE is provided as input ; =F : to compute here
 C  uFld           :: velocity, zonal component
 C  vFld           :: velocity, meridional component
-C  kappaRU        :: vertical viscosity
+C  kappaRV        :: vertical viscosity
 C  KE             :: Kinetic energy (input when inp_KE = T)
 C  myIter         :: current iteration number
 C  myThid         :: my Thread Id number
@@ -43,7 +43,7 @@ C  myThid         :: my Thread Id number
       LOGICAL inp_KE
       _RL uFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL kappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
+      _RL kappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr+1)
       _RL KE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myIter, myThid
 
@@ -56,7 +56,7 @@ C !LOCAL VARIABLES: ====================================================
 C  i,j            :: loop indices
       INTEGER i, j
       INTEGER kDown,kLowF,kBottom
-      _RL viscFac, dragFac, uSq
+      _RL viscFac, dragFac, vSq
       _RL recDrC
 CEOP
 
@@ -87,11 +87,11 @@ c       dragFac = wUnit2rVel(k)
        ENDIF
 
 C--   Linear bottom drag contribution to cDrag:
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx+1,sNx+OLx
+       DO j=1-OLy+1,sNy+OLy
+        DO i=1-OLx,sNx+OLx
           cDrag(i,j) = bottomDragLinear*dragFac
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-     &      + halfRL*( bottomDragFld(i-1,j,bi,bj)
+     &      + halfRL*( bottomDragFld(i,j-1,bi,bj)
      &               + bottomDragFld(i,j,bi,bj) )*dragFac
 #endif
         ENDDO
@@ -100,19 +100,19 @@ C--   Linear bottom drag contribution to cDrag:
 C--   Add friction at the bottom (no-slip BC) to cDrag:
        IF ( no_slip_bottom .AND. bottomVisc_pCell ) THEN
 C-    bottom friction accounts for true distance (including hFac) to the bottom
-        DO j=1-OLy,sNy+OLy-1
-         DO i=1-OLx+1,sNx+OLx-1
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
            cDrag(i,j) = cDrag(i,j)
-     &      + kappaRU(i,j,kLowF)*recDrC*viscFac
-     &                          *_recip_hFacW(i,j,k,bi,bj)
+     &      + kappaRV(i,j,kLowF)*recDrC*viscFac
+     &                          *_recip_hFacS(i,j,k,bi,bj)
          ENDDO
         ENDDO
        ELSEIF ( no_slip_bottom ) THEN
 C-    ignores partial-cell reduction of the distance to the bottom
-        DO j=1-OLy,sNy+OLy-1
-         DO i=1-OLx+1,sNx+OLx-1
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
            cDrag(i,j) = cDrag(i,j)
-     &      + kappaRU(i,j,kLowF)*recDrC*viscFac
+     &      + kappaRV(i,j,kLowF)*recDrC*viscFac
          ENDDO
         ENDDO
        ENDIF
@@ -131,69 +131,69 @@ C--   Add quadratic bottom drag to cDrag:
            ENDDO
           ENDDO
         ENDIF
-C-    average grid-cell-center KE to get velocity norm @ U.pt
-        DO j=1-OLy,sNy+OLy-1
-         DO i=1-OLx+1,sNx+OLx-1
-          IF ( (KE(i,j)+KE(i-1,j)).GT.zeroRL ) THEN
+C-    average grid-cell-center KE to get velocity norm @ V.pt
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
+          IF ( (KE(i,j)+KE(i,j-1)).GT.zeroRL ) THEN
            cDrag(i,j) = cDrag(i,j)
-     &      + bottomDragQuadratic*SQRT(KE(i,j)+KE(i-1,j))*dragFac
+     &      + bottomDragQuadratic*SQRT(KE(i,j)+KE(i,j-1))*dragFac
           ENDIF
          ENDDO
         ENDDO
        ELSEIF ( selectBotDragQuadr.EQ.1 ) THEN
-C-    calculate locally velocity norm @ U.pt (local U & 4 V averaged)
-        DO j=1-OLy,sNy+OLy-1
-         DO i=1-OLx+1,sNx+OLx-1
-          uSq = uFld(i,j)*uFld(i,j)
-     &     + ( (vFld(i-1, j )*vFld(i-1, j )*hFacS(i-1, j ,k,bi,bj)
-     &         +vFld( i , j )*vFld( i , j )*hFacS( i , j ,k,bi,bj))
-     &       + (vFld(i-1,j+1)*vFld(i-1,j+1)*hFacS(i-1,j+1,k,bi,bj)
-     &         +vFld( i ,j+1)*vFld( i ,j+1)*hFacS( i ,j+1,k,bi,bj))
-     &       )*recip_hFacW(i,j,k,bi,bj)*0.25 _d 0
-          IF ( uSq.GT.zeroRL ) THEN
+C-    calculate locally velocity norm @ V.pt (local V & 4 U averaged)
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
+          vSq = vFld(i,j)*vFld(i,j)
+     &     + ( (uFld( i ,j-1)*uFld( i ,j-1)*hFacW( i ,j-1,k,bi,bj)
+     &         +uFld( i , j )*uFld( i , j )*hFacW( i , j ,k,bi,bj))
+     &       + (uFld(i+1,j-1)*uFld(i+1,j-1)*hFacW(i+1,j-1,k,bi,bj)
+     &         +uFld(i+1, j )*uFld(i+1, j )*hFacW(i+1, j ,k,bi,bj))
+     &       )*recip_hFacS(i,j,k,bi,bj)*0.25 _d 0
+          IF ( vSq.GT.zeroRL ) THEN
            cDrag(i,j) = cDrag(i,j)
-     &      + bottomDragQuadratic*SQRT(uSq)*dragFac
+     &      + bottomDragQuadratic*SQRT(vSq)*dragFac
           ENDIF
          ENDDO
         ENDDO
        ELSEIF ( selectBotDragQuadr.EQ.2 ) THEN
-C-    same as above but using wet-point method to average 4 V
-        DO j=1-OLy,sNy+OLy-1
-         DO i=1-OLx+1,sNx+OLx-1
-          uSq = ( hFacS(i-1, j ,k,bi,bj) + hFacS( i , j ,k,bi,bj) )
-     &        + ( hFacS(i-1,j+1,k,bi,bj) + hFacS( i ,j+1,k,bi,bj) )
-          IF ( uSq.GT.zeroRL ) THEN
-           uSq = uFld(i,j)*uFld(i,j)
-     &      + ( (vFld(i-1, j )*vFld(i-1, j )*hFacS(i-1, j ,k,bi,bj)
-     &          +vFld( i , j )*vFld( i , j )*hFacS( i , j ,k,bi,bj))
-     &        + (vFld(i-1,j+1)*vFld(i-1,j+1)*hFacS(i-1,j+1,k,bi,bj)
-     &          +vFld( i ,j+1)*vFld( i ,j+1)*hFacS( i ,j+1,k,bi,bj))
-     &        )/uSq
+C-    same as above but using wet-point method to average 4 U
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx,sNx+OLx-1
+          vSq = ( hFacW( i ,j-1,k,bi,bj) + hFacW( i , j ,k,bi,bj) )
+     &        + ( hFacW(i+1,j-1,k,bi,bj) + hFacW(i+1, j ,k,bi,bj) )
+          IF ( vSq.GT.zeroRL ) THEN
+           vSq = vFld(i,j)*vFld(i,j)
+     &      + ( (uFld( i ,j-1)*uFld( i ,j-1)*hFacW( i ,j-1,k,bi,bj)
+     &          +uFld( i , j )*uFld( i , j )*hFacW( i , j ,k,bi,bj))
+     &        + (uFld(i+1,j-1)*uFld(i+1,j-1)*hFacW(i+1,j-1,k,bi,bj)
+     &          +uFld(i+1, j )*uFld(i+1, j )*hFacW(i+1, j ,k,bi,bj))
+     &        )/vSq
           ELSE
-           uSq = uFld(i,j)*uFld(i,j)
+           vSq = vFld(i,j)*vFld(i,j)
           ENDIF
-          IF ( uSq.GT.zeroRL ) THEN
+          IF ( vSq.GT.zeroRL ) THEN
            cDrag(i,j) = cDrag(i,j)
-     &      + bottomDragQuadratic*SQRT(uSq)*dragFac
+     &      + bottomDragQuadratic*SQRT(vSq)*dragFac
           ENDIF
          ENDDO
         ENDDO
        ELSEIF ( selectBotDragQuadr.NE.-1 ) THEN
-        STOP 'MOM_BOTTOM_DRAG_U: invalid selectBotDragQuadr value'
+        STOP 'MOM_V_BOTDRAG_COEFF: invalid selectBotDragQuadr value'
        ENDIF
 
 C--   Apply bottom mask (i.e., zero except at bottom):
        IF ( k.EQ.kBottom ) THEN
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx+1,sNx+OLx
-           cDrag(i,j) = cDrag(i,j)*_maskW(i,j,k,bi,bj)
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+           cDrag(i,j) = cDrag(i,j)*_maskS(i,j,k,bi,bj)
          ENDDO
         ENDDO
        ELSE
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx+1,sNx+OLx
-           cDrag(i,j) = cDrag(i,j)*_maskW(i,j,k,bi,bj)
-     &                * ( oneRS -_maskW(i,j,kDown,bi,bj) )
+        DO j=1-OLy+1,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+           cDrag(i,j) = cDrag(i,j)*_maskS(i,j,k,bi,bj)
+     &                * ( oneRS -_maskS(i,j,kDown,bi,bj) )
          ENDDO
         ENDDO
        ENDIF
