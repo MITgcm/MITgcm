@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67i (2019/05/08)
 o autofdiff:
   - fix to avoid TAF recomputations in ggl90 & salt_plume pkgs
     and in model/src PCELL_MIX_CODE.
