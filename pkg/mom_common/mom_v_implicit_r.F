@@ -153,7 +153,7 @@ C--   Add bottom drag coeff to main diagonal "c5d":
        IF ( no_slip_bottom .OR. selectBotDragQuadr.GE.0
      &                     .OR. bottomDragLinear.NE.0. ) THEN
         DO k=1,Nr
-          CALL MOM_BOTTOM_DRAG_V( bi, bj, k, .FALSE.,
+          CALL MOM_V_BOTDRAG_COEFF( bi, bj, k, .FALSE.,
      I                     uVel(1-OLx,1-OLy,k,bi,bj),
      I                     vVel(1-OLx,1-OLy,k,bi,bj),
      I                     kappaRV,

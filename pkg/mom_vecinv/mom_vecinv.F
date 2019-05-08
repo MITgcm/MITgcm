@@ -346,7 +346,7 @@ C-    mask strain and account for no-slip / free-slip BC in strainBC:
          ENDDO
         ENDDO
 #ifdef ALLOW_LEITH_QG
-        IF ( viscC2LeithQG.NE.0. ) THEN
+        IF ( viscC2LeithQG.NE.zeroRL ) THEN
           CALL MOM_VISC_QGL_STRETCH(bi,bj,k,
      O                            stretching, Nsquare,
      I                            myTime, myIter, myThid )
@@ -511,7 +511,7 @@ C-    No-slip BCs impose a drag at bottom
 CADJ STORE KE(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 #endif
-        CALL MOM_BOTTOM_DRAG_U( bi, bj, k, .TRUE.,
+        CALL MOM_U_BOTDRAG_COEFF( bi, bj, k, .TRUE.,
      I                  uFld, vFld, kappaRU, KE,
      O                  cDrag,
      I                  myIter, myThid )
@@ -600,7 +600,7 @@ C-    No-slip BCs impose a drag at bottom
 CADJ STORE KE(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 #endif
-        CALL MOM_BOTTOM_DRAG_V( bi, bj, k, .TRUE.,
+        CALL MOM_V_BOTDRAG_COEFF( bi, bj, k, .TRUE.,
      I                  uFld, vFld, kappaRV, KE,
      O                  cDrag,
      I                  myIter, myThid )
@@ -967,7 +967,7 @@ C--   Set du/dt & dv/dt on boundaries to zero
         CALL DIAGNOSTICS_FILL(tension, 'Tension ',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(strainBC,'Strain  ',k,1,2,bi,bj,myThid)
 C         stretching will be zero, unless using QG Leith
-        IF (viscC2LeithQG .NE. 0) THEN
+        IF ( viscC2LeithQG.NE.zeroRL ) THEN
           CALL DIAGNOSTICS_FILL(stretching,
      I                          'Stretch ',k,1,2,bi,bj,myThid)
         ENDIF

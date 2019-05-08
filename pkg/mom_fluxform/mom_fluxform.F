@@ -597,7 +597,7 @@ C-    No-slip BCs impose a drag at bottom
 CADJ STORE KE(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 #endif
-         CALL MOM_BOTTOM_DRAG_U( bi, bj, k, .TRUE.,
+         CALL MOM_U_BOTDRAG_COEFF( bi, bj, k, .TRUE.,
      I                   uFld, vFld, kappaRU, KE,
      O                   cDrag,
      I                   myIter, myThid )
@@ -843,7 +843,7 @@ C-    No-slip BCs impose a drag at bottom
 CADJ STORE KE(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 #endif
-         CALL MOM_BOTTOM_DRAG_V( bi, bj, k, .TRUE.,
+         CALL MOM_V_BOTDRAG_COEFF( bi, bj, k, .TRUE.,
      I                   uFld, vFld, kappaRV, KE,
      O                   cDrag,
      I                   myIter, myThid )
