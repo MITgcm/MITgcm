@@ -48,15 +48,16 @@ C     msgBuf       :: Informational/error message buffer
       INTEGER i, j, k, iB, jB
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL areaOB, areaE, areaW, areaN, areaS, tmpA
-      _RL inFlow, flowE, flowW, flowN, flowS, dEtaHdtSum
+      _RL inFlow, flowE, flowW, flowN, flowS
       _RL tileArea(nSx,nSy)
       _RL tileFlow(nSx,nSy)
       _RL tileAreaOB(nSx,nSy)
       _RL tileInFlow(nSx,nSy)
       LOGICAL flag
-#ifdef ALLOW_SHELFICE
+#ifdef EXACT_CONSERV
+      _RL netFreshWaterFlux
       _RL shelfIceNetMassFlux
-#endif
+#endif /* EXACT_CONSERV */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- Old method (OBCS_balanceFac < 0): balance each OB separately
@@ -287,9 +288,10 @@ C--   Calculate a flux throught the surface from the global change of etaH
 C     to take into account both freshwater fluxes like precipitation and
 C     displacement fluxes from advancing ice sheets or imported sea ice
 
-      dEtaHdtSum = 0. _d 0
 #ifdef EXACT_CONSERV
-      IF ( OBCSbalanceSurf ) THEN
+      netFreshWaterFlux = 0. _d 0
+      shelfIceNetMassFlux = 0. _d 0
+      IF ( OBCSbalanceSurf .AND. exactConserv ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          tileFlow(bi,bj) = 0.
@@ -302,30 +304,30 @@ C     displacement fluxes from advancing ice sheets or imported sea ice
          ENDDO
         ENDDO
        ENDDO
-       CALL GLOBAL_SUM_TILE_RL( tileFlow, dEtaHdtSum, myThid )
+       CALL GLOBAL_SUM_TILE_RL( tileFlow, netFreshWaterFlux, myThid )
        IF ( debugLevel.GE.debLevC ) THEN
         WRITE(msgBuf,'(A,I9,A,1P1E16.8)') 'OBCS_balance (it=',
-     &       myIter, ' ) correct for dEtaHdtSum:', dEtaHdtSum
+     &       myIter, ' ) correct for netFreshWaterFlux:',
+     &       netFreshWaterFlux
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &       SQUEEZE_RIGHT, myThid )
        ENDIF
-      ENDIF
-#endif /* EXACT_CONSERV */
 #ifdef ALLOW_SHELFICE
-      shelfIceNetMassFlux = 0. _d 0
-      IF ( OBCSbalanceSurf .AND. useShelfIce ) THEN
-       CALL SHELFICE_NETMASSFLUX_SURF(
+       IF ( useShelfIce ) THEN
+        CALL SHELFICE_NETMASSFLUX_SURF(
      O                        shelfIceNetMassFlux,
      I                        myTime, myIter, myThid )
-       IF ( debugLevel.GE.debLevC ) THEN
-        WRITE(msgBuf,'(A,I9,A,1P1E16.8)') 'OBCS_balance (it=',
-     &       myIter, ' ) correct for shelfIceNetMassFlux:',
-     &       shelfIceNetMassFlux
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT, myThid )
+        IF ( debugLevel.GE.debLevC ) THEN
+         WRITE(msgBuf,'(A,I9,A,1P1E16.8)') 'OBCS_balance (it=',
+     &        myIter, ' ) correct for shelfIceNetMassFlux:',
+     &        shelfIceNetMassFlux
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT, myThid )
+        ENDIF
        ENDIF
-      ENDIF
 #endif /* ALLOW_SHELFICE */
+      ENDIF
+#endif /* EXACT_CONSERV */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Calculate a unique velocity correction for all (OBCS_balanceFac>0) OB
@@ -340,10 +342,14 @@ C     and correct each OB using corresponding weight factor OBCS_balanceFac
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
         ENDIF
-        inFlow = inFlow + dEtaHdtSum
+#ifdef EXACT_CONSERV
+        IF ( OBCSbalanceSurf .AND. exactConserv ) THEN
+         inFlow = inFlow + netFreshWaterFlux
 #ifdef ALLOW_SHELFICE
-     &       + shelfIceNetMassFlux
+         IF ( useShelfIce ) inFlow = inFlow + shelfIceNetMassFlux
 #endif
+        ENDIF
+#endif /* EXACT_CONSERV */
         inFlow = inFlow / areaOB
       ENDIF
       IF ( OBCS_balanceFacE.GE.0. ) flowE =  inFlow*OBCS_balanceFacE
