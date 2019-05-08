@@ -51,9 +51,15 @@ def verification_parser(filename, threshold):
             # split test_results into a list with values for each number. 
             # this uses spaces and the < > characters to separate the numbers.
             test_results = re.split('[ ><]',test_results)
-            # ignore the Genmake, depend, make, and run checks, as well as
-            # the "pass" or "fail" and test name at the end of the line
+            # Check the Genmake, depend, make, and run checks
+
+            for status in test_results[:4]:
+                assert status== 'Y'
+
+            # Ignore the build status varaibles that were just checked, as
+            # well as "pass" or "fail" and test name at the end of the line
             test_results = test_results[4:-3]
+
             # convert to floats
             dp_similarity = []
             for i, x in enumerate(test_results):
