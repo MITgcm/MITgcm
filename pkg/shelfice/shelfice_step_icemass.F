@@ -134,52 +134,61 @@ C !LOCAL VARIABLES : ====================================================
 C     i,j, bi,bj  :: loop indices
       INTEGER bi,bj,i,j
       _RL shelfIceNetMassFluxTile(nSx,nSy)
-      _RL etaTile(nSx,nSy)
-      _RL areaTile(nSx,nSy)
-      _RL etaSum, areaSum
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       shelfIceNetMassFlux = 0. _d 0
 
       IF ( SHELFICEMassStepping ) THEN
 
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         shelfIceNetMassFluxTile(bi,bj) = 0. _d 0
-         etaTile(bi,bj) = 0. _d 0
-         areaTile(bi,bj) = 0. _d 0
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
+       IF (useStreamIce) THEN
 
-C--   I do not think that this contributon should be counted here
-CML           IF ( .NOT.SHELFICEDynMassOnly ) THEN
-CML            shelfIceNetMassFluxTile(bi,bj) =
-CML     &             shelfIceNetMassFluxTile(bi,bj)
-CML     &           + shelfIceFreshWaterFlux(i,j,bi,bj)*mass2rUnit
-CML     &           * _rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
-CML           ENDIF
-           shelfIceNetMassFluxTile(bi,bj) =
-     &            shelfIceNetMassFluxTile(bi,bj)
-     &          + shelfIceMassDynTendency(i,j,bi,bj)*mass2rUnit
-     &           * _rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
-           IF ( kTopC(I,J,bi,bj) .EQ. 0
-     &          .AND. kSurfC(I,J,bi,bj) .EQ. 1 ) THEN
-            etaTile(bi,bj) = etaTile(bi,bj)
-     &           + EtaN(i,j,bi,bj) * _rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
-            areaTile(bi,bj) = areaTile(bi,bj)
-     &           + _rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
-           ENDIF
+#ifdef ALLOW_STREAMICE
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j=1,sNy
+           DO i=1,sNx
+            IF ( streamice_hmask(i,j,bi,bj).EQ.1 .OR.
+     &           streamice_hmask(i,j,bi,bj).EQ.2 ) THEN
+C--   this assumes that the change in H_streamice include the melting flux
+CML             shelfIceNetMassFluxTile(bi,bj) =
+CML     &              shelfIceNetMassFluxTile(bi,bj)
+CML     &            +(H_streamice(i,j,bi,bj)-H_streamice_prev(i,j,bi,bj))
+CML     &            /deltaT * streamice_density * mass2rUnit
+CML     &            * _rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
+            ENDIF
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
-       ENDDO
-       CALL GLOBAL_SUM_TILE_RL( etaTile, etaSum, myThid )
-       CALL GLOBAL_SUM_TILE_RL( areaTile, areaSum, myThid )
-       IF ( debugLevel.GE.debLevC ) THEN
-        WRITE(msgBuf,'(A,I9,A,1P1E16.8)') 'OBCS_balance (it=',
-     &       myIter, ' ) etaMean (open Water):', etaSum/areaSum
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT, myThid )
+#endif /* ALLOW_STREAMICE */
+
+       ELSE
+
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          shelfIceNetMassFluxTile(bi,bj) = 0. _d 0
+          DO j=1,sNy
+           DO i=1,sNx
+C--   Flux of new ice will raise the sea level
+            shelfIceNetMassFluxTile(bi,bj) =
+     &             shelfIceNetMassFluxTile(bi,bj)
+     &           + shelfIceMassDynTendency(i,j,bi,bj)*mass2rUnit
+     &           * _rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
+            IF ( .NOT.SHELFICEDynMassOnly ) THEN
+C--   Freshwater flux by thermodynamic processes. In the case of
+C     melting this will be negative (positive upward) so it will reduce
+C     the amount of added ice mass. The same freshwater flux is added
+C     to the ocean in EmPmR and will raise the sea level, so that this
+C     contribution is canceled.
+             shelfIceNetMassFluxTile(bi,bj) =
+     &              shelfIceNetMassFluxTile(bi,bj)
+     &            + shelfIceFreshWaterFlux(i,j,bi,bj)*mass2rUnit
+     &            * _rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+
        ENDIF
 
        CALL GLOBAL_SUM_TILE_RL( shelficeNetMassFluxTile,
