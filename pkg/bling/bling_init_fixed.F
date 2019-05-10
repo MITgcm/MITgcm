@@ -58,7 +58,7 @@ C coefficients for determining saturation O2
       oB3= -8.17083 _d -3
       oC0= -4.88682 _d -7
 
-#ifdef USE_EXFCO2
+#ifdef ALLOW_EXF
       apco2mask = 'c'
       IF ( useSEAICE ) THEN
        apco2mask = ' '

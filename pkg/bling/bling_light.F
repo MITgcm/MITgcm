@@ -21,6 +21,13 @@ C     |   timesteps, to represent photoadaptation.
 C     | - irr_eff is the effective irradiance for photosynthesis, 
 C     |   given either by irr_inst or irr_mix, depending on model
 C     |   options and location.
+C     | o instantaneous light is calculated either from 
+C     | - date and latitude, then exponentially attenuated down the 
+C     |   water column, or
+C     | - short-wave radiation read from external forcing file, 
+C     |   attenuated down the water column, or
+C     | - short-wave radiation distributed through the water column 
+C     |   according to SWFRAC routine
 C     =================================================================
 
       implicit none
@@ -30,14 +37,14 @@ C     irr_inst      :: Instantaneous irradiance
 C     irr_mem       :: Phyto irradiance memory
 
 #include "SIZE.h"
+#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "FFIELDS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
 #include "BLING_VARS.h"
-#include "PTRACERS_SIZE.h"
-#include "PTRACERS_PARAMS.h"
+#ifdef USE_QSW
+#include "FFIELDS.h"
+#endif
 #ifdef ALLOW_AUTODIFF
 # include "tamc.h"
 #endif
@@ -73,12 +80,17 @@ C     === Local variables ===
       _RL SumMLIrr
       _RL tmp_ML
 #endif
-#ifndef READ_PAR
 #ifndef USE_QSW
       _RL sfac      (1-OLy:sNy+OLy)
 #endif
-#endif
        integer i,j,k
+CMM(
+      _RL minusOne
+      PARAMETER (minusOne=-1.)
+      INTEGER kp1
+      _RL swfracb(2)
+CMM)
+       LOGICAL QSW_underice
 CEOP
 
        DO k=1,Nr
@@ -92,7 +104,7 @@ CEOP
 c ---------------------------------------------------------------------
 c  Surface insolation
 
-#ifndef USE_EXFQSW
+#ifndef USE_QSW
 c  From pkg/dic/dic_insol
 c  find light as function of date and latitude
 c  based on paltridge and parson
@@ -132,7 +144,7 @@ C     (makes latitude independent of grid)
           IF (cosz.LE.5. _d -3) cosz= 5. _d -3
           frac = dayhrs/PI                           !fraction of daylight in day
 C daily average photosynthetically active solar radiation just below surface
-         fluxi = solar*(1. _d 0-albedo)*cosz*frac*parfrac
+          fluxi = solar*(1. _d 0-albedo)*cosz*frac*parfrac
 
 C convert to sfac
           sfac(j) = MAX(1. _d -5,fluxi)
@@ -147,17 +159,25 @@ c  instantaneous light, mixed layer averaged light
        DO i=imin,imax
        
 c  Photosynthetically-available radiations (PAR)
-#ifdef USE_EXFQSW
+#ifdef USE_QSW
         irr_surf(i,j) = max(epsln,
      &                 -parfrac*Qsw(i,j,bi,bj)*maskC(i,j,1,bi,bj))
 #else
         irr_surf(i,j) = sfac(j)
 #endif
-cav        IF ( .NOT. QSW_underice ) THEN
-c  if using Qsw but not seaice/thsice or coupled, then
-c  ice fraction needs to be taken into account
-cav         irr_surf(i,j) = irr_surf(i,j)*(1. _d 0 - FIce(i,j,bi,bj))
-cav        ENDIF
+
+c  Remove light under ice
+c  If using Qsw and seaice/thsice, then ice fraction is already 
+c  taken into account
+        QSW_underice = .FALSE.
+#ifdef USE_QSW
+        IF ( useSEAICE ) QSW_underice = .TRUE.
+        IF ( useThSIce ) QSW_underice = .TRUE.
+#endif
+        IF ( .NOT. QSW_underice ) THEN
+         irr_surf(i,j) = irr_surf(i,j)*(1. _d 0 - FIce(i,j,bi,bj))
+        ENDIF
+
 
 #ifdef ML_MEAN_LIGHT
         SumMLIrr   = 0. _d 0
@@ -168,6 +188,30 @@ cav        ENDIF
 
          IF (hFacC(i,j,k,bi,bj).gt.0) THEN
 
+CMM(
+#ifdef USE_QSW_Z
+
+C Penetrating SW radiation
+       swfracb(1)=abs(rF(k))
+       swfracb(2)=abs(rF(k+1))
+       CALL SWFRAC(
+     I             2, minusOne,
+     U             swfracb,
+     I             myTime, 1, myThid )
+       kp1 = k+1
+       IF (k.EQ.Nr) THEN
+        kp1 = k
+        swfracb(2)=0. _d 0
+       ENDIF
+         irr_inst(i,j,k) = 
+     &         irr_surf(i,j)*(swfracb(1)*maskC(i,j,k,bi,bj)
+     &         -swfracb(2)*maskC(i,j,kp1, bi,bj))
+     &         *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+
+#else
+CMM)
+
+C SW radiation attenuated exponentially
          IF (k.eq.1) THEN
 c  Light attenuation in middle of top layer
           atten = k0*drF(1)/2. _d 0*hFacC(i,j,1,bi,bj)
@@ -179,6 +223,10 @@ c  Attenuation from one more layer
           irr_inst(i,j,k) =
      &           irr_inst(i,j,k-1)*exp(-atten)
          ENDIF
+
+CMM(
+#endif /* if USE_QSW_Z */
+CMM)
 
 #ifdef ML_MEAN_LIGHT
 c  Mean irradiance in the mixed layer
@@ -204,10 +252,11 @@ c  Mean irradiance in the mixed layer
          IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
 
           irr_eff(i,j,k) = irr_inst(i,j,k)
+          
 #ifdef ML_MEAN_LIGHT
 c  Inside mixed layer, effective light is set to mean mixed layer light 
          IF ((-rf(k+1) .le. mld(i,j)).and.
-     &               (-rf(k+1).lt.200. _d 0)) THEN
+     &               (-rf(k+1).lt.100. _d 0)) THEN
            irr_eff(i,j,k) = irr_mix(i,j)
           ENDIF
 #endif 
@@ -220,7 +269,6 @@ c  Inside mixed layer, effective light is set to mean mixed layer light
      
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-        CALL DIAGNOSTICS_FILL(Qsw,'BLGQSW  ',0,1,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(irr_inst,'BLGIRRIS',0,Nr,2,bi,bj,myThid)
       ENDIF 
 #endif

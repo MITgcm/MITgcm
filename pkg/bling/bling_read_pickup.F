@@ -72,14 +72,18 @@ C--   Read pickup file
         CALL READ_REC_3D_RL( fn, fp, Nr, chl, 3, myIter, myThid )
         CALL READ_REC_3D_RL( fn, fp, Nr, phyto_sm, 4, myIter, myThid )
         CALL READ_REC_3D_RL( fn, fp, Nr, phyto_lg, 5, myIter, myThid )
+#ifndef USE_BLING_V0
         CALL READ_REC_3D_RL( fn, fp, Nr, phyto_diaz, 6, myIter, myThid )
+#endif
 
         _EXCH_XYZ_RL( pH, myThid )
         _EXCH_XYZ_RL( irr_mem, myThid )
         _EXCH_XYZ_RL( chl, myThid )
         _EXCH_XYZ_RL( phyto_sm, myThid )
         _EXCH_XYZ_RL( phyto_lg, myThid )
+#ifndef USE_BLING_V0
         _EXCH_XYZ_RL( phyto_diaz, myThid )
+#endif
 
       ELSE
         pH_isLoaded = .FALSE.

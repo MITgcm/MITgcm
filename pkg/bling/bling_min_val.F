@@ -2,7 +2,7 @@
 
 CBOP
       subroutine BLING_MIN_VAL(
-     I                          PTR, min_val, bi, bj )
+     I                          PTR, min_val, adj, bi, bj )
 
 C     =================================================================
 C     | subroutine bling_min_val
@@ -21,6 +21,7 @@ C     === Routine arguments ===
 C     === Input ===
       _RL     PTR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     min_val
+      _RL     adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 CEOP
 
 C     == Local variables ==
@@ -29,7 +30,9 @@ C     == Local variables ==
        DO k=1,Nr
          DO i=1,sNx
           DO j=1,sNy
+           adj(i,j,k) = PTR(i,j,k)
            PTR(i,j,k) = max( min_val*maskC(i,j,k,bi,bj), PTR(i,j,k) )
+           adj(i,j,k) = PTR(i,j,k)-adj(i,j,k)
           ENDDO
          ENDDO
        ENDDO

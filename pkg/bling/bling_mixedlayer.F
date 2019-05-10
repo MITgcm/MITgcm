@@ -9,6 +9,7 @@ CBOP
 C     =================================================================
 C     | subroutine bling_mixedlayer
 C     | o Calculate mixed layer depth based on density criterion 
+C     |   (default: second derivative criterion; optional: threshold)
 C     =================================================================
 
       implicit none
@@ -44,12 +45,130 @@ C      sumMLDepth   :: mixed layer depth
       _RL sumMLDepth(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     === Local variables ===
+#ifdef BLING_USE_THRESHOLD_MLD
       _RL dens_surf (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dens_z    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL delta_dens(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#else
+      _RL blg_stra   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL rhoKm1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhoKp1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL blg_minstra(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL blg_str2   (Nr)
+      _RL blg_str2max
+       integer blgI,blgJ
+#endif
        integer i,j,k
 CEOP
 
+# ifndef BLING_USE_THRESHOLD_MLD
+c ---------------------------------------------------------------------
+c  Mixed layer depth initialization
+
+      DO j=jmin,jmax
+        DO i=imin,imax
+          sumMLDepth(i,j) = drF(1)
+          rhoKm1 (i,j)   = 0. _d 0
+          rhoKp1 (i,j)   = 0. _d 0
+          blg_minstra(i,j) = 0. _d 0
+        ENDDO
+      ENDDO
+
+      DO k=1,Nr
+        DO j=jmin,jmax
+          DO i=imin,imax
+            blg_stra(i,j,k) = 0. _d 0
+          ENDDO
+        ENDDO
+        blg_str2(k) = 0
+      ENDDO
+
+c  get drhdr
+      DO k=1,Nr-1
+       DO j=jmin,jmax
+        DO i=imin,imax
+          rhoKm1(i,j) = rhoKp1(i,j)
+        ENDDO
+       ENDDO
+       CALL FIND_RHO_2D(
+     I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1,
+     I        theta(1-OLx,1-OLy,k+1,bi,bj), salt(1-OLx,1-OLy,k+1,bi,bj),
+     O        rhoKp1,
+     I        k+1, bi, bj, myThid )
+
+       IF (k.EQ.1) THEN
+        DO j=jmin,jmax
+         DO i=imin,imax
+          blg_stra(i,j,k)= 0. _d 0
+         ENDDO
+        ENDDO
+       ELSE
+        DO j=jmin,jmax
+         DO i=imin,imax
+          blg_stra(i,j,k)= maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+     &                *recip_drC(k)*rkSign
+     &                *(rhoKp1(i,j)-rhoKm1(i,j))
+         ENDDO
+        ENDDO
+       ENDIF
+      ENDDO
+CMM Strat at k is on bottom of cell 
+
+C  % 1. find min(drho/dz)
+        DO j=jmin,jmax
+         DO i=imin,imax
+          DO k = 1,NR
+           IF(blg_stra(i,j,k).LT.blg_minstra(i,j))   
+     &        blg_minstra(i,j) = blg_stra(i,j,k)
+          ENDDO
+         ENDDO
+        ENDDO
+ 
+CMM NOW LOOP TO GET MLD
+        DO j=jmin,jmax
+         DO i=imin,imax
+C  % 2. check that we have at least 3 grid cells of water 
+          IF (hFacC(i,j,3,bi,bj).GT. 0. _d 0)  THEN
+C  %  check that we have stable strat
+           IF (blg_minstra(i,j).LT. 0. _d 0) THEN
+C  % 3. find the index of minimum stratification
+            blgI = 3
+            DO k = NR,1,-1
+             IF (blg_stra(i,j,k).EQ.blg_minstra(i,j))  blgI = k
+            ENDDO
+C        %if deep enough see strat starts before pynocline
+            IF (blgI.GT.3) THEN
+C % 4. compute the second derivative (d2rho/dz2)..
+CMM Only look up
+            blg_str2max = -999
+            DO k = 3,blgI
+CMM blg_str2 will be in cell center
+             blg_str2(k) = (blg_stra(i,j,k-1) -blg_stra(i,j,k))
+     &                                             *recip_drF(k)
+C     &                                             *blg_invdz(k)
+Cblg_invdz should be DRF 
+             IF (blg_str2(k).GT.blg_str2max)
+     &            blg_str2max = blg_str2(k)
+            ENDDO
+            DO k = NR,1,-1 
+             IF (blg_str2(k).EQ.blg_str2max)  blgJ = k
+            ENDDO
+
+CMM %TAKE WHERE STRAT IS FASTEST INCREASING ABOVE PYCNOCLINE
+            IF (blgJ.LT.blgI)  blgI = blgJ
+
+            IF ( (blg_str2(blgI).LT. 0. _d 0) .AND. (blgI.EQ.blgJ) )
+CMM; %error: strat should increase or be flat
+     &       print*,'error: strat should increase or be flat'
+
+            sumMLDepth(i,j) = -RF(blgI)
+           ENDIF 
+          ENDIF
+         ENDIF
+        ENDDO
+       ENDDO
+
+#else /* BLING_USE_THRESHOLD_MLD */
 c ---------------------------------------------------------------------
 c  Mixed layer depth 
 
@@ -102,6 +221,8 @@ c           SumMLDepth(i,j) = 0. _d 0
           ENDDO
         ENDDO
       ENDDO
+
+#endif /* BLING_USE_THRESHOLD_MLD */
 
       RETURN
       END
