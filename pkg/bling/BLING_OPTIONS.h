@@ -75,7 +75,7 @@ c For adjoint safe, do not call bling_dvm
 
 C ABIOTIC OPTIONS
 C Compile Munhoven (2013)'s "Solvesaphe" package for pH/pCO2
-C  can still select Follows et al (2006) solver in data.dic,
+C  can still select Follows et al (2006) solver in data.bling,
 C  but will use solvesaphe dissociation coefficient options.
 #undef CARBONCHEM_SOLVESAPHE
 
