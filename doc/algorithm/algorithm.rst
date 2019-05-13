@@ -2689,4 +2689,3 @@ large aspect ratio or far from the tropics. This approximation is used
 here, as it does not affect the form of the eddy stresses which is the
 main topic. The frictional terms are preserved in this approximate form
 for later comparison with eddy stresses.
-   
