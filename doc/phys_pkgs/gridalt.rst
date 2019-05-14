@@ -131,9 +131,9 @@ scheme must be constructed so that a dynamics-to-physics interpolation
 can be exactly reversed with a physics-to-dynamics mapping. The simple
 scheme employed to achieve this is:
 
-Coarse to fine:For all physics layers l in dynamics layer L, :math:`T_{phys}(l) = \{T_{dyn}(L)\} = T_{dyn}(L)`.
+Coarse to fine: For all physics layers l in dynamics layer L, :math:`T_{phys}(l) = \{T_{dyn}(L)\} = T_{dyn}(L)`.
 
-| Fine to coarse:For all physics layers l in dynamics layer L, :math:`T_{dyn}(L) = [T_{phys}(l)] = \int{T_{phys} dp }`.
+Fine to coarse: For all physics layers l in dynamics layer L, :math:`T_{dyn}(L) = [T_{phys}(l)] = \int{T_{phys} dp }`.
 
 Where :math:`\{\}` is defined as the dynamics-to-physics operator and
 :math:`[ ]` is the physics-to-dynamics operator, :math:`T` stands for
@@ -144,10 +144,10 @@ Key subroutines, parameters and files
 ++++++++++++++++++++++++++++++++++++++
 
 One of the central elements of the gridalt package is the routine which
-is called from subroutine gridalt\_initialise to define the grid to be
-used for the high end physics calculations. Routine make\_phys\_grid
+is called from subroutine :filelink:`gridalt_initialise <pkg/gridalt/gridalt_initialise.F>` to define the grid to be
+used for the high end physics calculations. Routine :filelink:`make_phys_grid <pkg/gridalt/make_phys_grid.F>`
 passes back the parameters which define the grid, ultimately stored in
-the common block gridalt\_mapping.
+the common block :filelink:`gridalt_mapping <pkg/gridalt/gridalt_mapping.F>`.
 
 ::
 
@@ -189,8 +189,8 @@ the common block gridalt\_mapping.
     c***********************************************************************
 
 In the case of the grid used to compute the atmospheric physical forcing
-(fizhi package), the locations of the grid points move in time with the
-MITgcm :math:`p^*` coordinate, and subroutine gridalt\_update is called
+(:ref:`sub_phys_pkg_fizhi`), the locations of the grid points move in time with the
+MITgcm :math:`p^*` coordinate, and subroutine :filelink:`gridalt_update <pkg/gridalt/gridalt_update.F>` is called
 during the run to update the locations of the grid points:
 
 ::
@@ -273,6 +273,6 @@ Gridalt Reference
 Experiments and tutorials that use gridalt
 ++++++++++++++++++++++++++++++++++++++++++
 
--  Fizhi experiment, in fizhi-cs-32x32x10 verification directory
+-  Fizhi experiment, in :filelink:`verification/fizhi-cs-32x32x10` verification directory
 
 
