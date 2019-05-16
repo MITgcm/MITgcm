@@ -71,7 +71,7 @@ C     GM_slopeSqCutoff :: slope^2 cut-off value
      &          GM_K3D_constK, GM_K3D_use_constK, GM_K3D_smooth,
      &          GM_K3D_beta_eq_0, GM_K3D_Rmin, GM_K3D_ThickSheet,
      &          GM_K3D_constRedi, GM_K3D_minRenorm,
-     &          GM_K3D_maxRenorm
+     &          GM_K3D_maxRenorm, GM_useLeithQG
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -109,7 +109,8 @@ C--   Default values GM/Redi
       GM_bol2dFile        = ' '
       GM_bol1dFile        = ' '
       GM_background_K3dFile = ' '
-      GM_isopycK3dFile      = ' '
+      GM_isopycK3dFile    = ' '
+      GM_useLeithQG       = .FALSE.
 
 C--   Default values GM/Redi I/O control
 c     GM_dumpFreq         = -1.
