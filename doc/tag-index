@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mdsio:
+  - in meta file, write number of records with longer format (10 digits vs 5
+    previously) to accommodate large number of floats.
+
 checkpoint67i (2019/05/08)
 o autofdiff:
   - fix to avoid TAF recomputations in ggl90 & salt_plume pkgs
