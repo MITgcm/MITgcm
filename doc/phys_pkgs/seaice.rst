@@ -272,6 +272,44 @@ General flags and parameters
   +------------------------------+------------------------------+-------------------------------------------------------------------------+
   | SEAICE_useMultDimSnow        | T                            | use SEAICE_multDim snow categories                                      |
   +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | dynamical ice thickness distribution and ridging parameters, only active with SEAICE_ITD defined:                                     |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | useHibler79IceStrength       | T                            | do not use :cite:`rot75` with ITD                                       |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | SEAICEsimpleRidging          | T                            | use simple ridging a la :cite:`hib79`                                   |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | SEAICE_cf                    | 17                           | scaling parameter of :cite:`rot75` ice strength parameterization        |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | SEAICEpartFunc               | 0                            | use partition function of :cite:`tho75`                                 |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | SEAICEredistFunc             | 0                            | use redistribution function of :cite:`hib80`                            |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | SEAICEridgingIterMax         | 10                           | maximum number of ridging sweeps                                        |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | SEAICEshearParm              | 0.5                          | fraction of shear to be used for ridging                                |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | SEAICEgStar                  | 0.15                         | max. ice conc. that participates in ridging :cite:`tho75`               |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | SEAICEhStar                  | 25.                          | ridging parameter for :cite:`tho75`, :cite:`lip07`                      |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | SEAICEaStar                  | 0.05                         | similar to gStar for :cite:`lip07` participation function               |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | SEAICEmuRidging              | 3.                           | similar to hStar for :cite:`lip07` ridging function                     |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | SEAICEmaxRaft                | 1.                           | regularization parameter for rafting                                    | 
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | SEAICEsnowFracRidge          | 0.5                          | fraction of snow that remains on ridged ice                             |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | SEAICEuseLinRemapITD         | T                            | use linear remapping scheme of :cite:`lip01`                            |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | Hlimit(nITD+1)               | UNSET_RL                     | ice thickness category limits (m)                                       |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | Hlimit_c1                    | 3.0                          | when Hlimit is not set, then these parameters                           |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | Hlimit_c2                    | 15.0                         | determine Hlimit from a simple function                                 |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | Hlimit_c3                    | 3.0                          | following :cite:`lip01`                                                 |
+  +------------------------------+------------------------------+-------------------------------------------------------------------------+
 
 
 .. _para_phys_pkg_seaice_fields_units:
@@ -1106,7 +1144,7 @@ schemes to preserve sharp gradients and edges that are typical of sea
 ice distributions and to rule out unphysical over- and undershoots
 (negative thickness or concentration). These schemes conserve volume and
 horizontal area and are unconditionally stable, so that we can set
-:math:`D_{X}=0`. Run-timeflags: ``SEAICEadvScheme ``(default=77, is a
+:math:`D_{X}=0`. Run-timeflags: ``SEAICEadvScheme`` (default=77, is a
 2nd-order flux limited scheme), ``DIFF`` = :math:`D_{X}/\Delta{x}`
 (default=0).
 
@@ -1133,6 +1171,90 @@ can occur, which then leads to unrealistic ice temperature. In the
 currently implemented solution, the sea-ice mass flux is used to
 advect the enthalpy in order to ensure conservation of enthalpy and to
 prevent false enthalpy extrema.
+
+.. _para_phys_pkg_seaice_itd:
+
+Dynamical Ice Thickness Distribution (ITD)
+##########################################
+
+The ice thickness distribution model implemented in MITgcm follows the implementatin in the Los Alamos sea ice model CICE (https://github.com/CICE-Consortium/CICE).
+There are two parts to it that are closely connected: the participation and rigding functions that determine which thickness classes take part in ridging and which thickness classes recieve ice during ridging based on :cite:`tho75` and the ice strength parameterization by :cite:`rot75` which uses this information.
+The following description is sligthly modified from :cite:`ung17`. Verification experiment ``seaice_itd`` uses the ITD model.
+
+Distribution, participation and redistribution functions in ridging
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+When ``SEAICE_ITD`` is defined in ``SEAICE_OPTIONS.h``, the ice
+thickness is described by the ice thickness distribution :math:`g(h,\mathbf{x},t)` for the subgrid-scale :cite:`tho75`, a probability density function for thickness :math:`h` following the evolution
+equation
+
+
+.. math::
+   :label: eq_itd
+
+   \frac{\partial g}{\partial t} = - \nabla \cdot (\mathbf{u} g) - \frac{\partial}{\partial h}(fg) + \Psi.
+
+Here :math:`f=\frac{\mathrm{d} h}{\mathrm{d} t}` is the thermodynamic growth rate and :math:`\Psi` a function describing the mechanical redistribution of sea ice during ridging or lead opening. 
+
+The mechanical redistribution function :math:`\Psi` generates open water in divergent motion and creates ridged ice during convergent motion. The ridging process depends on total strain rate and on the ratio between shear (runtime parameter ``SEAICEshearParm``) and divergent strain.
+In the single category model, ridge formation is treated implicitly by limiting the ice concentration to a maximum of one :cite:`hib79`, so that further volume increase in convergent motion leads to thicker ice. (This is also the default for ITD models; to change that set runtime parameter ``SEAICEsimpleRidging=.FALSE.`` in ``data.seaice``).
+For the ITD model, the ridging mode in convergence
+
+.. math::
+
+   \omega_r(h)= \frac{-a(h)+n(h)}{N}
+   
+gives the effective change for the ice volume with thickness between :math:`h` and :math:`h+\textrm{d} h` as the normalized difference between the ice :math:`n(h)` generated by ridging and the ice :math:`a(h)` participating in ridging.
+
+The participation function :math:`a(h) = b(h)g(h)` can be computed either following :cite:`tho75` (runtime parameter ``SEAICEpartFunc=0``) or :cite:`lip07` (``SEAICEpartFunc=1``), and similarly the ridging function :math:`n(h)` can be computed following :cite:`hib80` (runtime parameter ``SEAICEredistFunc=0``) or :cite:`lip07` (``SEAICEredistFunc=1``). As an example, we show here the functions that :cite:`lip07` suggested to avoid noise in the solutions. These functions are smooth and avoid non-differentiable discontinuities, but so far we did not find any noise issues as in :cite:`lip07`.
+
+With ``SEAICEpartFunc=1`` in ``data.seaice``, the participation function with the relative amount of ice of thickness :math:`h` weighted by an exponential function
+
+.. math::
+
+   b(h) = b_0 \exp [ -G(h)/a^*]
+   
+where :math:`G(h)=\int_0^h g(h) \textrm{d} h` is the cumulative thickness distribution function, :math:`b_0` a normalization factor, and :math:`a^*` (``SEAICEaStar``) the exponential constant that determines which relative amount of thicker and thinner ice take part in ridging.
+
+With ``SEAICEredistFunc=1`` in ``data.seaice``, the ice generated by ridging is calculated as 
+
+.. math::
+
+   n(h) = \int_0^\infty  a(h_1)\gamma(h_1,h) \textrm{d} h_1
+
+where the density function :math:`\gamma(h_1,h)` of resulting thickness :math:`h` for ridged ice with an original thickness of :math:`h_1` is taken as
+
+.. math::
+   
+   \gamma(h_1, h) = \frac{1}{k \lambda} \exp\left[{\frac{-(h-h_{\min})}{\lambda}}\right] 
+
+for :math:`h \geq h_{\min}`, with :math:`\gamma(h_1,h)=0` for :math:`h < h_{\min}`.
+In this parameterization, the normalization factor :math:`k=\frac{h_{\min} + \lambda}{h_1}`, the e-folding scale :math:`\lambda = \mu h_1^{1/2}` and the minimum ridge thickness :math:`h_{\min}=\min(2h_1,h_1 + h_{\textrm{raft}})` all depend on the original thickness :math:`h_1`.
+The maximal ice thickness allowed to raft :math:`h_{\textrm{raft}}` is constant (``SEAICEmaxRaft``, default 1~m) and :math:`\mu` (``SEAICEmuRidging``) is a tunable parameter. 
+
+In the numerical model these equations are discretized into a set of :math:`n` (``nITD`` defined in ``SEAICE_SIZE.h``) thickness categories employing the delta function scheme of :cite:`bitz01`.  For each thickness category in an ITD configuration, the volume conservation equation :eq:`eq_advection` is evaluated using
+the heat flux with the category-specific values for ice and snow thickness, so there are no conceptual differences in the
+thermodynamics between the single category and ITD configurations. The only difference is that only in the thinnest category the creation
+of new ice of thickness :math:`H_0` (runtime parameter ``HO``) is possible, all other categories are limited to basal growth.  The conservation of ice
+area is replaced by the evolution equation of the ITD :eq:`eq_itd` that is discretized in thickness space with :math:`n+1` category limits given by runtime parameter ``Hlimit``. If ``Hlimit`` is not set in ``data.seaice``, a simple recursive formula following :cite:`lip01` is used to compute ``Hlimit``:
+:math:`H_\mathrm{limit}(k) = H_\mathrm{limit}(k-1) + c_1 + c_2 [ 1 + \tanh c_3 (\frac{k-1}{n} - 1) ]`, with :math:`H_\mathrm{limit}(0)=0` and :math:`H_\mathrm{limit}(n)=999.9`. The three contants are the runtime parameters ``Hlimit_c1, Hlimit_c2, Hlimit_c3``.
+The total ice concentration and volume can then be calculated by summing up the values for each category.
+
+Ice strength parameterization
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+In the default approach of equation :eq:`eq_icestrength`, the ice strength is parameterized following :cite:`hib79` and :math:`P` depends only on average ice concentration and thickness per grid cell and the constant ice strength parameters :math:`P^{\ast}` (``SEAICE_strength``) and :math:`C^{\ast}` (``SEAICE_cStar``). With an ice thickness distribution, it is possibe to use a different parameterization following :cite:`rot75`
+
+.. math::
+   :label: eq_rothrock
+
+      P = C_f C_p \int_0^\infty h^2 \omega_r(h) \textrm{d}h
+
+following considerations about the production of potential energy and the frictional energy loss in ridging.
+The physical constant :math:`C_p = \rho_i (\rho_w - \rho_i) \hat{g} / (2 \rho_w)` is a combination of the gravitational acceleration :math:`\hat{g}` and the densities :math:`\rho_i`, :math:`\rho_w` of ice and water, and :math:`C_f` (``SEAICE_cf``) is a scaling factor relating the amount of work against gravity necessary for ridging to the amount of work against friction. 
+To calculate the integral, this parameterization needs information about the ITD in each grid cell, while the default parameterization :eq:`eq_icestrength` can be used with both for ITD and single thickness category models. 
+In contrast to :eq:`eq_icestrength`, which is based on the plausible assumption that thick and compact ice is stronger than thin and loose drifting ice, this parameterization :eq:`eq_rothrock` clearly contains the more physical assumptions about energy conservation.
+For that reason alone this parameterization is often considered to be more physically realistic than REF, but in practice, the success is not so clear :cite:`ung17`. That is why the default is to use :eq:`eq_icestrength` (set ``useHibler79IceStrength=.FALSE.`` in ``data.seaice`` to change this behavior).
 
 .. _ssub_phys_pkg_seaice_subroutines:
 
@@ -1292,8 +1414,9 @@ Experiments and tutorials that use seaice
 - ``lab_sea``: Labrador Sea experiment
 - ``seaice_obcs``, based on ``lab_sea``
 - ``offline_exf_seaice.dyn_jfnk``, ``offline_exf_seaice.dyn_lsr``, and ``offline_exf_seaice.thermo``, idealized topography in a zonally re-entrant channel
-- ``seaice_itd``, based on ``offline_exf_seaice``, test ice thickness distribution
+- ``seaice_itd``, based on ``offline_exf_seaice``, tests ice thickness distribution
 - ``global_ocean.cs32x15/input.icedyn`` and ``global_ocean.cs32x15/input.seaice``, global cubed-sphere-experiment with combinations of ``seaice`` and ``thsice``
 - ``1D_ocean_ice_column``, just thermodynamics
+
 
 

@@ -154,6 +154,8 @@ C-    Horizontal viscosity parameters:
      & ' /* Leith harmonic visc. factor (on grad(vort),non-dim.) */')
        CALL WRITE_0D_RL( viscC2leithD, INDEX_NONE, 'viscC2leithD =',
      & ' /* Leith harmonic viscosity factor (on grad(div),non-dim.)*/')
+       CALL WRITE_0D_RL( viscC2LeithQG, INDEX_NONE, 'viscC2LeithQG =',
+     & ' /* QG Leith harmonic viscosity factor (non-dim.)*/')
        CALL WRITE_0D_RL( viscC2smag, INDEX_NONE, 'viscC2smag =',
      & ' /* Smagorinsky harmonic viscosity factor (non-dim.) */')
       ENDIF
@@ -588,7 +590,7 @@ C---  report of some vector-invariant parameters ends here
       CALL WRITE_0D_L( saltForcing,  INDEX_NONE,
      & 'saltForcing  =', '  /* Salinity forcing on/off flag */')
 #ifdef ALLOW_BALANCE_FLUXES
-      CALL WRITE_0D_L( balanceQnet, INDEX_NONE, 'balanceEmPmR =',
+      CALL WRITE_0D_L( balanceEmPmR, INDEX_NONE, 'balanceEmPmR =',
      &             '  /* balance net fresh-water flux on/off flag */')
 #endif
       CALL WRITE_0D_L( doSaltClimRelax, INDEX_NONE,
@@ -604,6 +606,11 @@ C---  report of some vector-invariant parameters ends here
      &  ' /* Precision used for reading binary files */')
       CALL WRITE_0D_I(writeBinaryPrec, INDEX_NONE, 'writeBinaryPrec =',
      &  ' /* Precision used for writing binary files */')
+#ifdef ALLOW_BALANCE_FLUXES
+      CALL WRITE_0D_L( balancePrintMean, INDEX_NONE,
+     &                 'balancePrintMean  =',
+     &  '  /* print means for balancing fluxes */')
+#endif
 C---
 c     CALL WRITE_0D_I(rwSuffixType, INDEX_NONE, 'rwSuffixType =',
 c    &  ' /* Select format of mds file suffix */')

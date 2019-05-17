@@ -195,6 +195,20 @@ C--   add diagnostics for viscosity coefficients:
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+      diagName  = 'VAHZLTHQ'
+      diagTitle = 'LeithQG Harm Visc Coefficient (m2/s) (Zeta Pt)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SZ      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'VAHDLTHQ'
+      diagTitle = 'LeithQG Harm Visc Coefficient (m2/s) (Div Pt)'
+      diagUnits = 'm^2/s           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
       diagName  = 'VAHZSMAG'
       diagTitle = 'Smagorinsky Harm Visc Coefficient (m2/s) (Zeta Pt)'
       diagUnits = 'm^2/s           '
@@ -222,7 +236,6 @@ C--   add diagnostics for viscosity coefficients:
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
 
 C--   add diagnostics of simple derivative quantities:
       diagName  = 'momKE   '
@@ -261,6 +274,13 @@ C--   add diagnostics of simple derivative quantities:
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif /* ALLOW_MOM_VECINV */
+
+      diagName  = 'Stretch '
+      diagTitle = 'Vortex stretching from QG Leith dynamic viscosity'
+      diagCode  = 'SM      MR      '
+      diagUnits = 's^-1            '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 C--   add diagnostics of tendencies from each terms
       diagUnits = 'm/s^2           '
