@@ -688,6 +688,8 @@ C     !USES:
       IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -708,7 +710,7 @@ C    bi, bj    :: indices of current tile
       _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL uVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 
-#ifdef ALLOW_OBCS_STEVENS
+#if (defined ALLOW_OBCS_NORTH & defined ALLOW_OBCS_STEVENS)
 C     !LOCAL VARIABLES:
 C     i,j,k        :: loop indices
 C     uPhase       :: estimate of phase velocity for radiation condition
@@ -732,14 +734,16 @@ CEOP
      &         MAX( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
      &         ) * pFac
          ENDIF
-C     Compute the tracer tendency here, the tracer will be updated
-C     with a simple Euler forward step in S/R obcs_apply_ts
+C     Compute the tracer tendency ...
          OBEf(J,K,bi,bj) = _maskW(I,J,K,bi,bj) * (
      &        - ( aFac*MAX(0.D0,uVel(I,J,K,bi,bj)) + uPhase )
      &        *(tracer(I,J,K,bi,bj)-tracer(I-1,J,K,bi,bj))
      &        * _recip_dxC(I,J,bi,bj)
      &        - gFacM(J,K) * gammaf
      &        * (tracer(I,J,K,bi,bj)-OBEf(J,K,bi,bj)) )
+C     ... and update tracer with a simple Euler forward step
+         OBEf(J,K,bi,bj) = tracer(I,J,K,bi,bj)
+     &        + dTtracerLev(K) * OBEf(J,K,bi,bj) 
         ENDIF
        ENDDO
       ENDDO
@@ -769,6 +773,8 @@ C     !USES:
       IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -789,7 +795,7 @@ C    bi, bj    :: indices of current tile
       _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL uVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 
-#ifdef ALLOW_OBCS_STEVENS
+#if (defined ALLOW_OBCS_NORTH & defined ALLOW_OBCS_STEVENS)
 C     !LOCAL VARIABLES:
 C     i,j,k        :: loop indices
 C     uPhase       :: estimate of phase velocity for radiation condition
@@ -814,14 +820,16 @@ CEOP
      &         MIN( 0.D0, -cflMer(J,K)*dTracTime/dTracSpace )
      &         ) * pFac
          ENDIF
-C     Compute the tracer tendency here, the tracer will be updated
-C     with a simple Euler forward step in S/R obcs_apply_ts
+C     Compute the tracer tendency ...
          OBWf(J,K,bi,bj) = _maskW(I+1,J,K,bi,bj) * (
      &        - ( aFac*MIN(0.D0,uVel(I+1,J,K,bi,bj)) + uPhase )
      &        *(tracer(I+1,J,K,bi,bj)-tracer(I,J,K,bi,bj))
      &        * _recip_dxC(I+1,J,bi,bj)
      &        - gFacM(J,K) * gammaf
      &        * (tracer(I,J,K,bi,bj)-OBWf(J,K,bi,bj)) )
+C     ... and update tracer with a simple Euler forward step
+         OBWf(J,K,bi,bj) = tracer(I,J,K,bi,bj)
+     &        + dTtracerLev(K) * OBWf(J,K,bi,bj) 
         ENDIF
        ENDDO
       ENDDO
@@ -851,6 +859,8 @@ C     !USES:
       IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -871,7 +881,7 @@ C    bi, bj    :: indices of current tile
       _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL vVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 
-#ifdef ALLOW_OBCS_STEVENS
+#if (defined ALLOW_OBCS_NORTH & defined ALLOW_OBCS_STEVENS)
 C     !LOCAL VARIABLES:
 C     i,j,k        :: loop indices
 C     vPhase       :: estimate of phase velocity for radiation condition
@@ -896,14 +906,16 @@ C     Theta first:
      &         MAX( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
      &         ) * pFac
          ENDIF
-C     Compute the tracer tendency here, the tracer will be updated
-C     with a simple Euler forward step in S/R obcs_apply_ts
+C     Compute the tracer tendency ...
          OBNf(I,K,bi,bj) = _maskS(I,J,K,bi,bj) * (
      &        - ( aFac*MAX(0.D0,vVel(I,J,K,bi,bj)) + vPhase )
      &        *(tracer(I,J,K,bi,bj)-tracer(I,J-1,K,bi,bj))
      &        * _recip_dyC(I,J,bi,bj)
      &        - gFacZ(I,K) * gammaf
      &        * (tracer(I,J,K,bi,bj)-OBNf(I,K,bi,bj)) )
+C     ... and update tracer with a simple Euler forward step
+         OBNf(I,K,bi,bj) = tracer(I,J,K,bi,bj)
+     &        + dTtracerLev(K) * OBNf(I,K,bi,bj) 
         ENDIF
        ENDDO
       ENDDO
@@ -933,6 +945,8 @@ C     !USES:
       IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -953,7 +967,7 @@ C    bi, bj    :: indices of current tile
       _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL vVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 
-#ifdef ALLOW_OBCS_STEVENS
+#if (defined ALLOW_OBCS_SOUTH & defined ALLOW_OBCS_STEVENS)
 C     !LOCAL VARIABLES:
 C     i,j,k        :: loop indices
 C     vPhase       :: estimate of phase velocity for radiation condition
@@ -977,14 +991,16 @@ CEOP
      &         MIN( 0.D0, -cflZon(I,K)*dTracTime/dTracSpace )
      &         ) * pFac
          ENDIF
-C     Compute the tracer tendency here, the tracer will be updated
-C     with a simple Euler forward step in S/R obcs_apply_ts
+C     Compute the tracer tendency ...
          OBSf(I,K,bi,bj) = _maskS(I,J+1,K,bi,bj) * (
      &        - ( aFac*MIN(0.D0,vVel(I,J+1,K,bi,bj)) + vPhase )
      &        *(tracer(I,J+1,K,bi,bj)-tracer(I,J,K,bi,bj))
      &        * _recip_dyC(I,J+1,bi,bj)
      &        - gFacZ(I,K) * gammaf
      &        * (tracer(I,J,K,bi,bj)-OBSf(I,K,bi,bj)) )
+C     ... and update tracer with a simple Euler forward step
+         OBSf(I,K,bi,bj) = tracer(I,J,K,bi,bj)
+     &        + dTtracerLev(K) * OBSf(I,K,bi,bj) 
         ENDIF
        ENDDO
       ENDDO
