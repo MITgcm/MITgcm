@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_solve4temp_adx.F,
-C $Name:  $
-
 #include "SEAICE_OPTIONS.h"
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
@@ -508,7 +505,7 @@ C     The flux between the ice/snow surface and the atmosphere.
           F_ia(I,J) = -lwdownLoc(I,J) -absorbedSW(I,J) + F_lwu(I,J)
      &              +  F_sens(I,J) + F_lh(I,J)
 
-C IGF_SIR-b		  
+C IGF_SIR-b
           IF (-F_c(I,J) .LT. ZERO) THEN
 C note that F_c is flipped sign in this rewrite for some reason
             F_io_net(I,J) = F_c(I,J)

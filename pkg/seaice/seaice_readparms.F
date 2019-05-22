@@ -527,7 +527,7 @@ C     LSR parameters
 #endif
       SEAICE_debugPointI = UNSET_I
       SEAICE_debugPointJ = UNSET_I
-      SINegFac = 1. _d 0      
+      SINegFac = 1. _d 0
 C-    Retired parameters:
 c     LAD        = 2
       LAD        = UNSET_I
