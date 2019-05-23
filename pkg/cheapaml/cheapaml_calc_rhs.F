@@ -1,10 +1,10 @@
 #include "GAD_OPTIONS.h"
 
 CBOP
-C !ROUTINE: GAD_2d_CALC_RHS
+C !ROUTINE: CHEAPAML_CALC_RHS
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_2d_CALC_RHS(
+      SUBROUTINE CHEAPAML_CALC_RHS(
      I           bi,bj,iMin,iMax,jMin,jMax,
      I           uTrans,vTrans,
      I           uVel, vVel,

@@ -141,7 +141,7 @@ C compute advective and diffusive flux divergence
              vTrans(i,j)=vWind(i,j,bi,bj)
            ENDDO
           ENDDO
-          CALL GAD_2d_CALC_RHS(
+          CALL CHEAPAML_CALC_RHS(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy,
      I           uTrans, vTrans,
      I           uWind, vWind,
@@ -179,7 +179,7 @@ C do water
              vTrans(i,j)=vWind(i,j,bi,bj)
            ENDDO
           ENDDO
-          CALL GAD_2d_CALC_RHS(
+          CALL CHEAPAML_CALC_RHS(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy,
      I           uTrans, vTrans,
      I           uWind, vWind,
@@ -218,7 +218,7 @@ C     do tracer
              vTrans(i,j)=vWind(i,j,bi,bj)
            ENDDO
           ENDDO
-          CALL GAD_2d_CALC_RHS(
+          CALL CHEAPAML_CALC_RHS(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy,
      I           uTrans, vTrans,
      I           uWind, vWind,
