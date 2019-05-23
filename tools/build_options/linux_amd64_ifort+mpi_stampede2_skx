@@ -3,7 +3,7 @@
 # For running on TACC's Stampede 2, skylake nodes
 #
 # Make sure the following modules are loaded:
-#   intel/18.0.2 impi/18.0.2 netcdf/4.3.3.1 
+#   intel/18.0.2 impi/18.0.2 netcdf/4.3.3.1
 
 CC=icc
 FC=ifort
