@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mdsio:
+  - in meta file, write number of records with longer format (10 digits vs 5
+    previously) to accommodate large number of floats.
+
+checkpoint67i (2019/05/08)
+o autofdiff:
+  - fix to avoid TAF recomputations in ggl90 & salt_plume pkgs
+    and in model/src PCELL_MIX_CODE.
 o pkg/mom_common & pkg/gmredi:
   - add quasi-geostrophic variant of Leith dynamic visocity
   - use the quasi-geostrophic Leith dynamic visocity as GM diffusivity
