@@ -710,7 +710,7 @@ C    bi, bj    :: indices of current tile
       _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL uVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 
-#if (defined ALLOW_OBCS_NORTH & defined ALLOW_OBCS_STEVENS)
+#if (defined ALLOW_OBCS_EAST && defined ALLOW_OBCS_STEVENS)
 C     !LOCAL VARIABLES:
 C     i,j,k        :: loop indices
 C     uPhase       :: estimate of phase velocity for radiation condition
@@ -795,7 +795,7 @@ C    bi, bj    :: indices of current tile
       _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL uVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 
-#if (defined ALLOW_OBCS_NORTH & defined ALLOW_OBCS_STEVENS)
+#if (defined ALLOW_OBCS_WEST && defined ALLOW_OBCS_STEVENS)
 C     !LOCAL VARIABLES:
 C     i,j,k        :: loop indices
 C     uPhase       :: estimate of phase velocity for radiation condition
@@ -881,7 +881,7 @@ C    bi, bj    :: indices of current tile
       _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL vVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 
-#if (defined ALLOW_OBCS_NORTH & defined ALLOW_OBCS_STEVENS)
+#if (defined ALLOW_OBCS_NORTH && defined ALLOW_OBCS_STEVENS)
 C     !LOCAL VARIABLES:
 C     i,j,k        :: loop indices
 C     vPhase       :: estimate of phase velocity for radiation condition
@@ -967,7 +967,7 @@ C    bi, bj    :: indices of current tile
       _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL vVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 
-#if (defined ALLOW_OBCS_SOUTH & defined ALLOW_OBCS_STEVENS)
+#if (defined ALLOW_OBCS_SOUTH && defined ALLOW_OBCS_STEVENS)
 C     !LOCAL VARIABLES:
 C     i,j,k        :: loop indices
 C     vPhase       :: estimate of phase velocity for radiation condition
