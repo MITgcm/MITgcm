@@ -88,7 +88,6 @@ C     surfDrag   :: surface drag coeff (for wind stress)
 C temp var
         _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-
 C useful values
 C inverse of time step
         deltaTm=1. _d 0/deltaT
@@ -108,7 +107,6 @@ C--   fill-in diagnostics for cheapAML state variables:
      & CALL DIAGNOSTICS_FILL( Qair, 'CH_QAIR ', 0,1,0,1,1, myThid )
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -301,7 +299,6 @@ C     now continue with diabatic forcing
              ENDDO
            ENDDO
 
-         
          IF (useRelativeWind) THEN
            DO j = 1-OLy, sNy+OLy
              DO i = 1-OLx, sNx+OLx
@@ -338,10 +335,8 @@ C     now continue with diabatic forcing
              ENDDO
            ENDDO
 
-         ENDIF           
+         ENDIF
 
-
-           
          IF ( useThSIce ) THEN
            CALL CHEAPAML_SEAICE(
      I                    solar(1-OLx,1-OLy,bi,bj),
@@ -493,7 +488,7 @@ C     Convective precip
 
               cheapPrecip(i,j,bi,bj) = precip*1200/CheapHgrid(i,j,bi,bj)
             ENDIF
-              
+
               entrain = cdq(i,j)*q*0.25
 
 c           gqair(i,j,bi,bj)=(evp-precip-entrain)/CheapHgrid(i,j,bi,bj)
@@ -625,7 +620,7 @@ c     CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
 
         IF ( .NOT.useStressOption .AND. FluxFormula.EQ.'COARE3' ) THEN
           IF (useRelativeWind) THEN
-            
+
           DO j = 1-OLy+1,sNy+OLy
           DO i = 1-OLx+1,sNx+OLx
             fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)*0.5 _d 0
@@ -690,7 +685,6 @@ c     CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
 #endif /* INCONSISTENT_WIND_LOCATION */
          ENDIF !relative wind
 
-         
        ELSE
 Cswd move wind stresses to u and v points
          DO j = 1-OLy,sNy+OLy
@@ -710,7 +704,6 @@ Cswd move wind stresses to u and v points
 C--   end bi,bj loops
        ENDDO
       ENDDO
-
 
 #ifdef ALLOW_DIAGNOSTICS
 C- note: with thSIce, CH_QNET and CH_EmP correspond to the fluxes over the
