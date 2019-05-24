@@ -70,7 +70,7 @@ C--   default : write one file per record
       SEAICEapproxLevInAd = 0
       viscFacInAd        = 1. _d 0
       SIregFacInAd       = UNSET_RL
-      SIregFacInFw       = UNSET_RL 
+      SIregFacInFw       = UNSET_RL
 
 C-- pkg/seaice related switches
       SEAICEuseFREEDRIFTswitchInAd = .FALSE.
