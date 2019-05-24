@@ -113,10 +113,8 @@ C     local value (=1/HO or 1/HO_south)
 C     local value (=1/ice thickness)
       _RL recip_HH
 
-#ifndef SEAICE_ITD
 C     facilitate multi-category snow implementation
       _RL pFac, pFacSnow
-#endif
 
 C     temporary variables available for the various computations
       _RL tmpscal0, tmpscal1, tmpscal2, tmpscal3, tmpscal4
@@ -136,12 +134,10 @@ C==   local arrays ==
 C--   TmixLoc        :: ocean surface/mixed-layer temperature (in K)
       _RL TmixLoc       (1:sNx,1:sNy)
 
-#ifndef SEAICE_ITD
 C     actual ice thickness (with upper and lower limit)
       _RL hiceActual          (1:sNx,1:sNy)
 C     actual snow thickness
       _RL hsnowActual         (1:sNx,1:sNy)
-#endif
 C     actual ice thickness (with lower limit only) Reciprocal
       _RL recip_hiceActual    (1:sNx,1:sNy)
 
