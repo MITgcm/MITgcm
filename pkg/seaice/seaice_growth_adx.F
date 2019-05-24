@@ -80,21 +80,12 @@ C     number of surface interface layer
 C     IT :: ice thickness category index (MULTICATEGORIES and ITD code)
       INTEGER IT
 C     msgBuf      :: Informational/error message buffer
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*12 msgBufForm
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 C     constants
       _RL tempFrz, ICE2SNOW, SNOW2ICE, surf_theta
-      _RL QI, QS, recip_QI
+      _RL QI, QS
       _RL RHOSW
       _RL lhSublim
-
-C conversion factors to go from Q (W/m2) to HEFF (ice meters)
-      _RL convertQ2HI, convertHI2Q
-C conversion factors to go from precip (m/s) unit to HEFF (ice meters)
-      _RL convertPRECIP2HI, convertHI2PRECIP
-
-C     wind speed square
-      _RL SPEED_SQ
 
 C     Regularization values squared
       _RL area_reg_sq, hice_reg_sq
@@ -107,25 +98,12 @@ C     Helper variables: reciprocal of some constants
       _RL recip_deltaTtherm
       _RL recip_rhoIce
 
-C     local value (=1/HO or 1/HO_south)
-      _RL recip_HO
-
-C     local value (=1/ice thickness)
-      _RL recip_HH
-
 C     facilitate multi-category snow implementation
       _RL pFac, pFacSnow
 
 C     temporary variables available for the various computations
-      _RL tmpscal0, tmpscal1, tmpscal2, tmpscal3, tmpscal4
+      _RL tmpscal0, tmpscal1, tmpscal2, tmpscal3
 
-#ifdef ALLOW_SITRACER
-      INTEGER iTr
-#ifdef ALLOW_DIAGNOSTICS
-      CHARACTER*8   diagName
-#endif
-
-#endif /* ALLOW_SITRACER */
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER ilockey
 #endif
@@ -150,8 +128,6 @@ C     wind speed
       _RL UG                  (1:sNx,1:sNy)
 
 C     temporary variables available for the various computations
-      _RL tmparr1             (1:sNx,1:sNy)
-
       _RL ticeInMult          (1:sNx,1:sNy,nITD)
       _RL ticeOutMult         (1:sNx,1:sNy,nITD)
       _RL hiceActualMult      (1:sNx,1:sNy,nITD)
@@ -165,7 +141,7 @@ C     temporary variables available for the various computations
 
 #ifdef ALLOW_DIAGNOSTICS
 C     Helper variables for diagnostics
-      _RL DIAGarrayA    (1:sNx,1:sNy)
+c     _RL DIAGarrayA    (1:sNx,1:sNy)
       _RL DIAGarrayB    (1:sNx,1:sNy)
       _RL DIAGarrayC    (1:sNx,1:sNy)
       _RL DIAGarrayD    (1:sNx,1:sNy)
