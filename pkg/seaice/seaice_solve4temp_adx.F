@@ -52,13 +52,16 @@ C     !INPUT PARAMETERS:
 C     UG           :: atmospheric wind speed (m/s)
 C     HICE_ACTUAL  :: actual ice thickness
 C     HSNOW_ACTUAL :: actual snow thickness
-C     TSURF      :: surface temperature of ice/snow in Kelvin
+C     TSURFin    :: surface temperature of ice/snow in Kelvin
 C     bi,bj      :: tile indices
 C     myTime     :: current time in simulation
 C     myIter     :: iteration number in simulation
 C     myThid     :: my Thread Id number
 C     !OUTPUT PARAMETERS:
-C     TSURF      :: updated surface temperature of ice/snow in Kelvin
+C     TSURFout   :: updated surface temperature of ice/snow in Kelvin
+C     F_io_net   :: upward conductive heat flux through seaice+snow
+C     F_ia_net   :: net heat flux divergence at the sea ice/snow surface:
+C                   includes ice conductive fluxes and atmospheric fluxes (W/m^2)
 C     F_ia       :: upward seaice/snow surface heat flux to atmosphere (W/m^2)
 C     IcePenetSW :: short wave heat flux transmitted through ice (+=upward)
 C     FWsublim   :: fresh water (mass) flux due to sublimation (+=up)(kg/m^2/s)
@@ -76,6 +79,8 @@ C----------
 #endif
       _RL TSURFin     (1:sNx,1:sNy)
       _RL TSURFout    (1:sNx,1:sNy)
+      _RL F_io_net    (1:sNx,1:sNy)
+      _RL F_ia_net    (1:sNx,1:sNy)
       _RL F_ia        (1:sNx,1:sNy)
       _RL IcePenetSW  (1:sNx,1:sNy)
       _RL FWsublim    (1:sNx,1:sNy)
@@ -126,12 +131,6 @@ C     dFia_dTs :: derivative of surf heat flux (F_ia) w.r.t surf. temp
       _RL F_lwu      (1:sNx,1:sNy)
       _RL F_sens     (1:sNx,1:sNy)
       _RL F_lh       (1:sNx,1:sNy)
-
-C     F_io_net :: upward conductive heat flux through seaice+snow
-C     F_ia_net :: net heat flux divergence at the sea ice/snow surface:
-C                 includes ice conductive fluxes and atmospheric fluxes (W/m^2)
-      _RL F_io_net   (1:sNx,1:sNy)
-      _RL F_ia_net   (1:sNx,1:sNy)
 
       _RL qhice      (1:sNx,1:sNy)
       _RL dqh_dTs    (1:sNx,1:sNy)
