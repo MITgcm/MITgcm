@@ -199,7 +199,7 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       ENDIF
 
       diagName  = 'UVEL    '
-      diagTitle = 'Zonal Component of Velocity (m/s)'
+      diagTitle = 'Velocity in x (m/s)'
       diagUnits = 'm/s             '
       diagCode  = 'UUR     MR      '
       diagMate  = diagNum + 2
@@ -207,7 +207,7 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'VVEL    '
-      diagTitle = 'Meridional Component of Velocity (m/s)'
+      diagTitle = 'y Component of Velocity (m/s)'
       diagUnits = 'm/s             '
       diagCode  = 'VVR     MR      '
       diagMate  = diagNum
@@ -245,7 +245,7 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       ENDIF
 
       diagName  = 'UVELSQ  '
-      diagTitle = 'Square of Zonal Comp of Velocity (m^2/s^2)'
+      diagTitle = 'Square of x Component of Velocity (m^2/s^2)'
       diagUnits = 'm^2/s^2         '
       diagCode  = 'UURP    MR      '
       diagMate  = diagNum + 2
@@ -253,7 +253,7 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'VVELSQ  '
-      diagTitle = 'Square of Meridional Comp of Velocity (m^2/s^2)'
+      diagTitle = 'Square of y Component of Velocity (m^2/s^2)'
       diagUnits = 'm^2/s^2         '
       diagCode  = 'VVRP    MR      '
       diagMate  = diagNum
@@ -284,7 +284,7 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'UV_VEL_C'
-      diagTitle ='Product of horizontal Comp of velocity (cell center)'
+      diagTitle ='Product of Horizontal Comp of Velocity (cell center)'
       diagUnits = 'm^2/s^2         '
       diagCode  = 'UMR     MR      '
       diagMate  = diagNum + 1
@@ -292,7 +292,7 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'UV_VEL_Z'
-      diagTitle = 'Meridional Transport of Zonal Momentum (m^2/s^2)'
+      diagTitle = 'y Transport of x Comp of Momentum (m^2/s^2)'
       diagUnits = 'm^2/s^2         '
       diagCode  = 'UZR     MR      '
       diagMate  = diagNum + 1
@@ -300,21 +300,21 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'WU_VEL  '
-      diagTitle = 'Vertical Transport of Zonal Momentum'
+      diagTitle = 'Vertical Transport of x Comp of Momentum'
       diagUnits = DIAGS_MK_UNITS( 'm.'//rUnit2c//'/s^2', myThid )
       diagCode  = 'WU      LR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'WV_VEL  '
-      diagTitle ='Vertical Transport of Meridional Momentum'
+      diagTitle ='Vertical Transport of y Comp of Momentum'
       diagUnits = DIAGS_MK_UNITS( 'm.'//rUnit2c//'/s^2', myThid )
       diagCode  = 'WV      LR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'UVELMASS'
-      diagTitle = 'Zonal Mass-Weighted Comp of Velocity (m/s)'
+      diagTitle = 'Mass-Weighted x Comp of Velocity (m/s)'
       diagUnits = 'm/s             '
       diagCode  = 'UUr     MR      '
       diagMate  = diagNum + 2
@@ -322,7 +322,7 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'VVELMASS'
-      diagTitle = 'Meridional Mass-Weighted Comp of Velocity (m/s)'
+      diagTitle = 'Mass-Weighted y Comp of Velocity (m/s)'
       diagUnits = 'm/s             '
       diagCode  = 'VVr     MR      '
       diagMate  = diagNum
@@ -354,7 +354,7 @@ C-    use 'PhiVEL' as mate.
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'UTHMASS '
-      diagTitle = 'Zonal Mass-Weight Transp of Pot Temp'
+      diagTitle = 'Mass-Weighted Transp of Pot Temp in x'
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'.m/s', myThid )
       diagCode  = 'UUr     MR      '
       diagMate  = diagNum + 2
@@ -362,7 +362,7 @@ C-    use 'PhiVEL' as mate.
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'VTHMASS '
-      diagTitle = 'Meridional Mass-Weight Transp of Pot Temp'
+      diagTitle = 'Mass-Weighted Transp of Pot Temp in y'
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'.m/s', myThid )
       diagCode  = 'VVr     MR      '
       diagMate  = diagNum
@@ -370,14 +370,14 @@ C-    use 'PhiVEL' as mate.
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'WTHMASS '
-      diagTitle = 'Vertical Mass-Weight Transp of Pot Temp (K.m/s)'
+      diagTitle = 'Vertical Mass-Weighted Transp of Pot Temp (K.m/s)'
       diagUnits = DIAGS_MK_UNITS(tUnit4c//'.'//rUnit2c//'/s', myThid )
       diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'USLTMASS'
-      diagTitle = DIAGS_MK_TITLE( 'Zonal Mass-Weight Transp of '
+      diagTitle = DIAGS_MK_TITLE( 'x Comp Mass-Weighted Transp of '
      I                           //sTitle, myThid )
       diagUnits = DIAGS_MK_UNITS(sUnit5c//'.m/s', myThid )
       diagCode  = 'UUr     MR      '
@@ -386,7 +386,7 @@ C-    use 'PhiVEL' as mate.
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'VSLTMASS'
-      diagTitle = DIAGS_MK_TITLE( 'Meridional Mass-Weight Transp of '
+      diagTitle = DIAGS_MK_TITLE( 'y Comp Mass-Weighted Transp of '
      I                           //sTitle, myThid )
       diagUnits = DIAGS_MK_UNITS(sUnit5c//'.m/s', myThid )
       diagCode  = 'VVr     MR      '
@@ -395,7 +395,7 @@ C-    use 'PhiVEL' as mate.
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'WSLTMASS'
-      diagTitle = DIAGS_MK_TITLE( 'Vertical Mass-Weight Transp of '
+      diagTitle = DIAGS_MK_TITLE( 'Vertical Mass-Weighted Transp of '
      I                           //sTitle, myThid )
       diagUnits = DIAGS_MK_UNITS(sUnit5c//'.'//rUnit2c//'/s', myThid )
       diagCode  = 'WM      LR      '
@@ -403,7 +403,7 @@ C-    use 'PhiVEL' as mate.
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'UVELTH  '
-      diagTitle = 'Zonal Transport of Pot Temp'
+      diagTitle = 'Transport of Pot Temp in x'
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'.m/s', myThid )
       diagCode  = 'UUR     MR      '
       diagMate  = diagNum + 2
@@ -411,7 +411,7 @@ C-    use 'PhiVEL' as mate.
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'VVELTH  '
-      diagTitle = 'Meridional Transport of Pot Temp'
+      diagTitle = 'Transport of Pot Temp in y'
       diagUnits = DIAGS_MK_UNITS( tUnit4c//'.m/s', myThid )
       diagCode  = 'VVR     MR      '
       diagMate  = diagNum
@@ -426,7 +426,7 @@ C-    use 'PhiVEL' as mate.
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'UVELSLT '
-      diagTitle = DIAGS_MK_TITLE( 'Zonal Transport of '
+      diagTitle = DIAGS_MK_TITLE( 'x Transport of '
      I                          //sTitle, myThid )
       diagUnits = DIAGS_MK_UNITS( sUnit5c//'.m/s', myThid )
       diagCode  = 'UUR     MR      '
@@ -435,7 +435,7 @@ C-    use 'PhiVEL' as mate.
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'VVELSLT '
-      diagTitle = DIAGS_MK_TITLE( 'Meridional Transport of '
+      diagTitle = DIAGS_MK_TITLE( 'y Transport of '
      I                          //sTitle, myThid )
       diagUnits = DIAGS_MK_UNITS( sUnit5c//'.m/s', myThid )
       diagCode  = 'VVR     MR      '
@@ -452,7 +452,7 @@ C-    use 'PhiVEL' as mate.
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'UVELPHI '
-      diagTitle = DIAGS_MK_TITLE( 'Zonal Mass-Weight Transp of '
+      diagTitle = DIAGS_MK_TITLE( 'x Mass-Weighted Transp of '
      I                 //pTitle//' Anomaly', myThid )
       diagUnits = 'm^3/s^3         '
       diagCode  = 'UUr     MR      '
@@ -461,7 +461,7 @@ C-    use 'PhiVEL' as mate.
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'VVELPHI '
-      diagTitle = DIAGS_MK_TITLE( 'Merid. Mass-Weight Transp of '
+      diagTitle = DIAGS_MK_TITLE( 'y Mass-Weighted Transp of '
      I                 //pTitle//' Anomaly', myThid )
       diagUnits = 'm^3/s^3         '
       diagCode  = 'VVr     MR      '
@@ -486,7 +486,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'URHOMASS'
-      diagTitle = 'Zonal Transport of Density'
+      diagTitle = 'x Transport of Density'
       diagUnits = 'kg/m^2/s        '
       diagCode  = 'UUr     MR      '
       diagMate  = diagNum + 2
@@ -494,7 +494,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'VRHOMASS'
-      diagTitle = 'Meridional Transport of Density'
+      diagTitle = 'y Transport of Density'
       diagUnits = 'kg/m^2/s        '
       diagCode  = 'VVr     MR      '
       diagMate  = diagNum
@@ -606,7 +606,7 @@ c     diagTitle = 'Square of ocean bottom pressure / top. geo-Potential'
 
 C--   surface fluxes:
       diagName  = 'oceTAUX '
-      diagTitle = 'zonal surface wind stress, >0 increases uVel'
+      diagTitle = 'x Comp of Surface Wind Stress, >0 increases uVel'
       diagUnits = 'N/m^2           '
       diagCode  = 'UU      U1      '
       diagMate  = diagNum + 2
@@ -614,7 +614,7 @@ C--   surface fluxes:
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'oceTAUY '
-      diagTitle = 'meridional surf. wind stress, >0 increases vVel'
+      diagTitle = 'y Comp of Surface Wind Stress, >0 increases vVel'
       diagUnits = 'N/m^2           '
       diagCode  = 'VV      U1      '
       diagMate  = diagNum
@@ -739,7 +739,7 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'TOTUTEND'
-      diagTitle = 'Tendency of Zonal Component of Velocity'
+      diagTitle = 'Tendency of x Component of Velocity'
       diagUnits = 'm/s/day         '
       diagCode  = 'UUR     MR      '
       diagMate  = diagNum + 2
@@ -747,7 +747,7 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'TOTVTEND'
-      diagTitle = 'Tendency of Meridional Component of Velocity'
+      diagTitle = 'Tendency of y Component of Velocity'
       diagUnits = 'm/s/day         '
       diagCode  = 'VVR     MR      '
       diagMate  = diagNum
@@ -858,7 +858,7 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
 
 #ifdef ALLOW_EDDYPSI
       diagName  = 'TAUXEDDY'
-      diagTitle = 'Zonal Eddy Stress'
+      diagTitle = 'x Component of Eddy Stress'
       diagUnits = 'N/m^2           '
       diagCode  = 'UU      LR      '
       diagMate  = diagNum + 2
@@ -866,7 +866,7 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'TAUYEDDY'
-      diagTitle = 'Meridional Eddy Stress'
+      diagTitle = 'y Component of Eddy Stress'
       diagUnits = 'N/m^2           '
       diagCode  = 'VV      LR      '
       diagMate  = diagNum
@@ -875,7 +875,7 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
 
 # ifdef ALLOW_GMREDI
       diagName  = 'U_EulerM'
-      diagTitle = 'Zonal Eulerian-Mean Velocity (m/s)'
+      diagTitle = 'x Component of Eulerian-Mean Velocity (m/s)'
       diagUnits = 'm/s             '
       diagCode  = 'UUR     MR      '
       diagMate  = diagNum + 2
@@ -883,7 +883,7 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'V_EulerM'
-      diagTitle = 'Meridional Eulerian-Mean Velocity (m/s)'
+      diagTitle = 'y Component of Eulerian-Mean Velocity (m/s)'
       diagUnits = 'm/s             '
       diagCode  = 'VVR     MR      '
       diagMate  = diagNum
@@ -904,7 +904,7 @@ C     Adjoint state variables
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'ADJuvel '
-      diagTitle = 'dJ/dU: Sensitivity to zonal velocity'
+      diagTitle = 'dJ/dU: Sensitivity to x component of velocity'
       diagUnits = 'dJ/(m/s)        '
       diagCode  = 'UURA    MR      '
       diagMate  = diagNum + 2
@@ -912,7 +912,7 @@ C     Adjoint state variables
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'ADJvvel '
-      diagTitle = 'dJ/dV: Sensitivity to meridional velocity'
+      diagTitle = 'dJ/dV: Sensitivity to y component of velocity'
       diagUnits = 'dJ/(m/s)        '
       diagCode  = 'VVRA    MR      '
       diagMate  = diagNum
