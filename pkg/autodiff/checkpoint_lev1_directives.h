@@ -82,6 +82,24 @@ CADJ &     kind = isbyte
 CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
+#else
+CADJ STORE detahdt = comlev1, key = ikey_dynamics,
+CADJ & kind = isbyte
+#ifndef ALLOW_ADAMSBASHFORTH_3
+CADJ STORE gsnm1,gtnm1 = comlev1, key = ikey_dynamics,
+CADJ & kind = isbyte
+CADJ STORE gunm1,gvnm1 = comlev1, key = ikey_dynamics,
+CADJ & kind = isbyte
+#else
+CADJ STORE gsnm,gtnm = comlev1, key = ikey_dynamics,
+CADJ & kind = isbyte
+CADJ STORE gunm,gvnm = comlev1, key = ikey_dynamics,
+CADJ & kind = isbyte
+#endif
+CADJ STORE wvel = comlev1, key = ikey_dynamics,
+CADJ & kind = isbyte
+CADJ STORE etaH = comlev1, key = ikey_dynamics,
+CADJ & kind = isbyte
 #endif /* NONLIN_FRSURF */
 
 #ifdef ALLOW_DEPTH_CONTROL
