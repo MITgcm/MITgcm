@@ -162,10 +162,8 @@ c     Set switches for reading new records.
         endif
        endif
 
-c      count0 = fldcount
-c      count1 = fldcount + 1
-       count0 = fldcount - startrec + 1
-       count1 = fldcount - startrec + 2
+       count0 = fldcount
+       count1 = fldcount + 1
 
        call cal_TimeInterval( fldsecs, 'secs', difftime, mythid )
        call cal_AddTime( fldstartdate, difftime, flddate, mythid )
