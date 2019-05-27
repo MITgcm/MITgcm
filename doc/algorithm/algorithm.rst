@@ -1262,7 +1262,7 @@ where the subscripts on :math:`f` and :math:`f'` indicate evaluation of
 the Coriolis parameters at the appropriate points in space. The above
 discretization does *not* conserve anything, especially energy, but for
 historical reasons is the default for the code. A flag controls this
-discretization: set run-time integer :varlink:`selectCoriScheme` to option 2
+discretization: set run-time integer :varlink:`selectCoriScheme` to two (=2)
 (which otherwise defaults to zero)
 to select the energy-conserving conserving form :eq:`cdscheme_gu`, :eq:`cdscheme_gv`, and :eq:`cdscheme_gw` above.
 
