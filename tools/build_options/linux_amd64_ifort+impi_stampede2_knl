@@ -1,0 +1,50 @@
+#!/bin/bash
+#
+# For running on TACC's Stampede 2, Knight's Landing processors
+#
+# Note that for performance you may need to use many more processes on this
+# machine; the individual cores are actually quite slow and rely on memory
+# bandwidth and massive parallelism for throughput
+#
+# Make sure the following modules are loaded:
+#   intel/18.0.2 impi/18.0.2 netcdf/4.3.3.1
+
+CC=icc
+FC=ifort
+F90C=ifort
+LINK="$F90C -no-ipo"
+
+DEFINES='-DALLOW_USE_MPI -DWORDLENGTH=4'
+CPP='cpp -traditional -P'
+F90FIXEDFORMAT='-fixed -Tf'
+EXTENDED_SRC_FLAG='-132'
+GET_FC_VERSION="--version"
+OMPFLAG='-openmp'
+
+NOOPTFLAGS='-O1 -fp-model precise'
+
+FFLAGS="$FFLAGS -W0 -WB -convert big_endian -assume byterecl"
+FFLAGS="$FFLAGS -fPIC"
+
+if test "x$IEEE" = x ; then
+    FOPTIM="-align -traceback -xMIC-AVX512 -O2 -ip -ftz -fp-model precise"
+    NOOPTFILES='seaice_growth.F calc_oce_mxlayer.F fizhi_lsm.F fizhi_clockstuff.F'
+else
+    if test "x$DEVEL" = x ; then
+        FOPTIM='-O0 -noalign -traceback -xMIC-AVX512 -ip -mp'
+    else
+        FFLAGS="$FFLAGS -warn all -warn nounused"
+        FOPTIM="-fpe0 -fpstkchk -fpmodel except -check all -ftrapuv"
+        FOPTIM="-O0 -noalign -g -traceback"
+    fi
+fi
+
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+CFLAGS="-O2 -ip -fPIC"
+
+INCLUDEDIRS="${TACC_IMPI_INC} ${TACC_NETCDF_INC}"
+INCLUDES="-I${TACC_IMPI_INC} -I${TACC_NETCDF_INC}"
+LIBS="-L${TACC_IMPI_LIB} -lmpi -lmpifort -L${TACC_NETCDF_LIB} -lnetcdf -lnetcdff"
+MPIINCLUDEDIR="${TACC_IMPI_INC}"
+
