@@ -1269,7 +1269,7 @@ The principle of reverse communication is outlined in this example::
     call simul (indic,n,x,f,g)
   end while
 
-``simul_rc`` is an empty ''model simulator'', and ``simul`` generate a
+``simul_rc`` is an empty ''model simulator'', and ``simul`` generates a
 new state based on the value of ``indic``.
 
 The original ``m1qn3`` has been modified to work "offline", i.e. the
