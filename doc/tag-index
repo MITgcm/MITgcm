@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - add alternative version of seaice thermodynamics two routines that provide
+    accurate adjoint. Switched by defining CPP option: ALLOW_SEAICE_GROWTH_ADX
 o pkg/mdsio:
   - in meta file, write number of records with longer format (10 digits vs 5
     previously) to accommodate large number of floats.
@@ -33,7 +36,7 @@ o tools/genmake2:
     option "-fixed" to process *.flowdir files with newer (after 4.1.1) version
     of TAF (otherwise assumed now to be in free format).
 o model/src:
-  - remove argument tFld & dFld from S/R CALC_PHI_HYD and from 2 related S/R
+  - remove argument tFld & sFld from S/R CALC_PHI_HYD and from 2 related S/R
 o tools/genmake2:
   - allow to skip "check_fortran_compiler" part (as, e.g., in opt-file:
      tools/build_options/linux_ia64_cray_archer).
