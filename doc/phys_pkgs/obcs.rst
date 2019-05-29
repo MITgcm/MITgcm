@@ -205,7 +205,7 @@ Defining open boundary positions
 
 There are four open boundaries (OBs): Northern, Southern, Eastern, and
 Western. All OB locations are specified by their absolute meridional
-vv(Northern/Southern) or zonal (Eastern/Western) indices. Thus, for each
+(Northern/Southern) or zonal (Eastern/Western) indices. Thus, for each
 zonal position :math:`i=1\ldots N_x` a meridional index :math:`j`
 specifies the Northern/Southern OB position, and for each meridional
 position :math:`j=1\ldots N_y` a zonal index :math:`i` specifies the
