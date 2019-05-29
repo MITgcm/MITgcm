@@ -47,8 +47,10 @@ CADJ &     kind = isbyte
 CADJ STORE hFac_surfNm1W = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 c
+#ifdef EXACT_CONSERV
 CADJ STORE detahdt            = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
+#endif
 # ifndef ALLOW_ADAMSBASHFORTH_3
 CADJ STORE gsnm1,gtnm1        = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
@@ -83,8 +85,10 @@ CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #else
+#ifdef EXACT_CONSERV
 CADJ STORE detahdt = comlev1, key = ikey_dynamics,
 CADJ & kind = isbyte
+#endif
 #ifndef ALLOW_ADAMSBASHFORTH_3
 CADJ STORE gsnm1,gtnm1 = comlev1, key = ikey_dynamics,
 CADJ & kind = isbyte
