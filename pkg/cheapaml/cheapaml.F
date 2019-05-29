@@ -137,8 +137,8 @@ C compute advective and diffusive flux divergence
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
              gTair(i,j,bi,bj)=0. _d 0
-             uTrans(i,j)=uWind(i,j,bi,bj)
-             vTrans(i,j)=vWind(i,j,bi,bj)
+             uTrans(i,j) = uWind(i,j,bi,bj)*dyG(i,j,bi,bj)
+             vTrans(i,j) = vWind(i,j,bi,bj)*dxG(i,j,bi,bj)
            ENDDO
           ENDDO
           CALL CHEAPAML_CALC_RHS(
@@ -175,8 +175,8 @@ C do water
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
              gqair(i,j,bi,bj)=0. _d 0
-             uTrans(i,j)=uWind(i,j,bi,bj)
-             vTrans(i,j)=vWind(i,j,bi,bj)
+             uTrans(i,j) = uWind(i,j,bi,bj)*dyG(i,j,bi,bj)
+             vTrans(i,j) = vWind(i,j,bi,bj)*dxG(i,j,bi,bj)
            ENDDO
           ENDDO
           CALL CHEAPAML_CALC_RHS(
@@ -214,8 +214,8 @@ C     do tracer
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
              gCheaptracer(i,j,bi,bj)=0. _d 0
-             uTrans(i,j)=uWind(i,j,bi,bj)
-             vTrans(i,j)=vWind(i,j,bi,bj)
+             uTrans(i,j) = uWind(i,j,bi,bj)*dyG(i,j,bi,bj)
+             vTrans(i,j) = vWind(i,j,bi,bj)*dxG(i,j,bi,bj)
            ENDDO
           ENDDO
           CALL CHEAPAML_CALC_RHS(
