@@ -151,12 +151,14 @@ C compute advective and diffusive flux divergence
      O           wWind,
      U           gTair,
      I           myTime, myIter, myThid )
-         startAB = cheapTairStartAB + nt - 1
-         CALL ADAMS_BASHFORTH2(
+         IF  (.NOT.useFluxLimit ) THEN
+           startAB = cheapTairStartAB + nt - 1
+           CALL ADAMS_BASHFORTH2(
      I           bi, bj, 1, 1,
      U           gTair(1-OLx,1-OLy,bi,bj),
      U           gTairm(1-OLx,1-OLy,bi,bj), tmpFld,
      I           startAB, myIter, myThid )
+         ENDIF
          CALL CHEAPAML_TIMESTEP(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
      I           gTair,
@@ -189,12 +191,14 @@ C do water
      O           wWind,
      U           gqair,
      I           myTime, myIter, myThid )
-          startAB = cheapTairStartAB + nt - 1
-          CALL ADAMS_BASHFORTH2(
+          IF  (.NOT.useFluxLimit ) THEN
+           startAB = cheapTairStartAB + nt - 1
+           CALL ADAMS_BASHFORTH2(
      I           bi, bj, 1, 1,
      U           gqair(1-OLx,1-OLy,bi,bj),
      U           gqairm(1-OLx,1-OLy,bi,bj), tmpFld,
      I           startAB, myIter, myThid )
+          ENDIF
           CALL CHEAPAML_TIMESTEP(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
      I           gqair,
@@ -228,12 +232,14 @@ C     do tracer
      O           wWind,
      U           gCheaptracer,
      I           myTime, myIter, myThid )
-          startAB = cheapTracStartAB + nt - 1
-          CALL ADAMS_BASHFORTH2(
+          IF  (.NOT.useFluxLimit ) THEN
+           startAB = cheapTracStartAB + nt - 1
+           CALL ADAMS_BASHFORTH2(
      I           bi, bj, 1, 1,
      U           gCheaptracer(1-OLx,1-OLy,bi,bj),
      U           gCheaptracerm(1-OLx,1-OLy,bi,bj), tmpFld,
      I           startAB, myIter, myThid )
+          ENDIF
           CALL CHEAPAML_TIMESTEP(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
      I           gCheaptracer,
