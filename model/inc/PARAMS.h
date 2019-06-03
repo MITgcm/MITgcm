@@ -657,6 +657,7 @@ C                   (act on Vorticity  part) ( m^4/s )
 C     smag3D_coeff :: Isotropic 3-D Smagorinsky coefficient (-)
 C     viscC2leith  :: Leith non-dimensional viscosity factor (grad(vort))
 C     viscC2leithD :: Modified Leith non-dimensional visc. factor (grad(div))
+C     viscC2LeithQG:: QG Leith non-dimensional viscosity factor
 C     viscC4leith  :: Leith non-dimensional viscosity factor (grad(vort))
 C     viscC4leithD :: Modified Leith non-dimensional viscosity factor (grad(div))
 C     viscC2smag   :: Smagorinsky non-dimensional viscosity factor (harmonic)
@@ -804,7 +805,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & f0, beta, fPrime, omega, rotationPeriod,
      & viscFacAdj, viscAh, viscAhW, smag3D_coeff,
      & viscAhMax, viscAhGrid, viscAhGridMax, viscAhGridMin,
-     & viscC2leith, viscC2leithD,
+     & viscC2leith, viscC2leithD, viscC2LeithQG,
      & viscC2smag, viscC4smag,
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
      & viscA4, viscA4W, viscA4Max,
@@ -888,6 +889,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL viscAhGrid, viscAhGridMax, viscAhGridMin
       _RL viscC2leith
       _RL viscC2leithD
+      _RL viscC2LeithQG
       _RL viscC2smag
       _RL viscA4
       _RL viscA4W

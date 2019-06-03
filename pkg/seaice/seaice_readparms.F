@@ -171,9 +171,10 @@ C--   SEAICE parameters
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc,
 #ifdef SEAICE_ITD
-     & Hlimit_c1, Hlimit_c2, Hlimit_c3,
+     & Hlimit_c1, Hlimit_c2, Hlimit_c3, Hlimit,
 #endif
-     & SEAICE_debugPointI, SEAICE_debugPointJ
+     & SEAICE_debugPointI, SEAICE_debugPointJ,
+     & SINegFac
 
 #ifdef ALLOW_COST
       NAMELIST /SEAICE_PARM02/
@@ -353,6 +354,9 @@ C      - original parameters of Lipscomb et al. (2001):
 C        c1=3.0/N, c2=15*c1, c3=3.0
 C      - and a higher resolution of thin end of ITD:
 C        c1=1.5/N, c2=42*c1, c3=3.3
+      DO l = 0, nITD
+       Hlimit(l) = UNSET_RL
+      ENDDO
       Hlimit_c1          = 3.0
       Hlimit_c2          = 15.
       Hlimit_c3          = 3.0
@@ -523,7 +527,7 @@ C     LSR parameters
 #endif
       SEAICE_debugPointI = UNSET_I
       SEAICE_debugPointJ = UNSET_I
-
+      SINegFac = 1. _d 0
 C-    Retired parameters:
 c     LAD        = 2
       LAD        = UNSET_I
