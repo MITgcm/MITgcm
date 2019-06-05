@@ -98,6 +98,7 @@ C-    On/Off flags for viscosity coefficients
      &      viscAhGrid  .NE.zeroRL .OR. viscA4Grid  .NE.zeroRL
      &  .OR. viscC2smag .NE.zeroRL .OR. viscC4smag  .NE.zeroRL
      &  .OR. viscC2leith.NE.zeroRL .OR. viscC2leithD.NE.zeroRL
+     &  .OR. viscC2LeithQG.NE.zeroRL
      &  .OR. viscC4leith.NE.zeroRL .OR. viscC4leithD.NE.zeroRL
      &  .OR. viscAhDfile.NE.' '    .OR.  viscAhZfile.NE.' '
      &  .OR. viscA4Dfile.NE.' '    .OR.  viscA4Zfile.NE.' '
@@ -106,6 +107,7 @@ C-    On/Off flags for viscosity coefficients
      &  .OR. viscAhD    .NE.zeroRL .OR. viscAhZ     .NE.zeroRL
      &  .OR. viscAhGrid .NE.zeroRL .OR. viscC2smag  .NE.zeroRL
      &  .OR. viscC2leith.NE.zeroRL .OR. viscC2leithD.NE.zeroRL
+     &  .OR. viscC2LeithQG.NE.zeroRL
      &  .OR. viscAhDfile.NE. ' '   .OR. viscAhZfile .NE. ' '
 
       useBiharmonicVisc = viscA4.NE.zeroRL
