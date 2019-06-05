@@ -100,6 +100,10 @@ C--   generic 3D control variables
       igen_kapgm=0
       igen_kapredi=0
       igen_diffkr=0
+#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
+      igen_uvel0=0
+      igen_vvel0=0
+#endif
       DO iarr = 1, maxCtrlArr3D
       if (xx_genarr3d_weight(iarr).NE.' ') then
         if (xx_genarr3d_file(iarr)(1:8).EQ.'xx_theta') 
