@@ -1,6 +1,31 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic:
+  - Implement SolveSAPHE (Munhoven, 2013), a robust algorithm to calculate
+    oceanic pH/pCO2 ; compiled when CARBONCHEM_SOLVESAPHE is defined (in
+    DIC_OPTIONS.h) and used when (in data.dic) selectPHsolver > 0 ;
+    Add several options for selecting dissociation coefficients, available
+    when CARBONCHEM_SOLVESAPHE is defined.
+  - Change experiment "so_box_biogeo" to compile with CARBONCHEM_SOLVESAPHE
+    defined and add secondary test "saphe" (dir: input.saphe) to this experiment
+    to test GENERAL pH solver (selectPHsolver=1).
+o pkg/seaice:
+  - add alternative version of seaice thermodynamics two routines that provide
+    accurate adjoint. Switched by defining CPP option: ALLOW_SEAICE_GROWTH_ADX
+o pkg/mdsio:
+  - in meta file, write number of records with longer format (10 digits vs 5
+    previously) to accommodate large number of floats.
+
+checkpoint67i (2019/05/08)
+o autofdiff:
+  - fix to avoid TAF recomputations in ggl90 & salt_plume pkgs
+    and in model/src PCELL_MIX_CODE.
+o pkg/mom_common & pkg/gmredi:
+  - add quasi-geostrophic variant of Leith dynamic visocity
+  - use the quasi-geostrophic Leith dynamic visocity as GM diffusivity
+  - new verification experiment to test QG-Leith (variant of MLAdjust)
+  - updated documentation about new option
 o pkg/seaice:
   - add Hlimit to seaice namelist in data.seaice
   - use verification seaice_itd.thermo to test this feature with default
@@ -20,7 +45,7 @@ o tools/genmake2:
     option "-fixed" to process *.flowdir files with newer (after 4.1.1) version
     of TAF (otherwise assumed now to be in free format).
 o model/src:
-  - remove argument tFld & dFld from S/R CALC_PHI_HYD and from 2 related S/R
+  - remove argument tFld & sFld from S/R CALC_PHI_HYD and from 2 related S/R
 o tools/genmake2:
   - allow to skip "check_fortran_compiler" part (as, e.g., in opt-file:
      tools/build_options/linux_ia64_cray_archer).

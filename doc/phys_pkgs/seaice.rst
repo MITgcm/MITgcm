@@ -1465,7 +1465,7 @@ Top-level routine: :filelink:`pkg/seaice/seaice_model.F`
 SEAICE diagnostics
 ==================
 
-Diagnostics output is available via the diagnostics package (see :numref:`doc_diagnostics`).
+Diagnostics output is available via the diagnostics package (see :numref:`sub_outp_pkg_diagnostics`).
 Available output fields are summarized in the following table:
 
 .. code-block:: text

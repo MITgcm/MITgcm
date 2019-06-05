@@ -437,10 +437,11 @@ C--   Check parameter consistency :
         errCount = errCount + 1
       ENDIF
       IF ( ( OLx.LT.3 .OR. OLy.LT.3 ) .AND.
-     &     ( viscC2leithD.NE.0. .OR. viscC4leithD.NE.0. )
+     &     ( viscC2leithD.NE.0. .OR. viscC4leithD.NE.0. .OR.
+     &       viscC2LeithQG.NE.0.)
      &   ) THEN
         WRITE(msgBuf,'(A,A)')
-     &  'CONFIG_CHECK: cannot use Leith Visc.(div.part) with',
+     &  'CONFIG_CHECK: cannot use Leith Visc.(div.part or QG) with',
      &  ' overlap (OLx,OLy) smaller than 3'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
@@ -450,6 +451,16 @@ C--   Check parameter consistency :
         WRITE(msgBuf,'(A,A)')
      &  'CONFIG_CHECK: cannot use Smag-3D + CD-scheme with',
      &  ' overlap (OLx,OLy) smaller than 3'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+
+      IF ( ( viscC4leithD.NE.0. .OR. viscC4leith.NE.0. .OR.
+     &       viscC2leithD.NE.0. .OR. viscC2leith.NE.0.)
+     &     .AND. (viscC2LeithQG.NE.0) ) THEN
+        WRITE(msgBuf,'(A,A)')
+     &  'CONFIG_CHECK: cannot use LeithQG in conjunction with',
+     &  ' either standard Leith or LeithD'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF

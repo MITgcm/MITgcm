@@ -154,6 +154,8 @@ C-    Horizontal viscosity parameters:
      & ' /* Leith harmonic visc. factor (on grad(vort),non-dim.) */')
        CALL WRITE_0D_RL( viscC2leithD, INDEX_NONE, 'viscC2leithD =',
      & ' /* Leith harmonic viscosity factor (on grad(div),non-dim.)*/')
+       CALL WRITE_0D_RL( viscC2LeithQG, INDEX_NONE, 'viscC2LeithQG =',
+     & ' /* QG Leith harmonic viscosity factor (non-dim.)*/')
        CALL WRITE_0D_RL( viscC2smag, INDEX_NONE, 'viscC2smag =',
      & ' /* Smagorinsky harmonic viscosity factor (non-dim.) */')
       ENDIF

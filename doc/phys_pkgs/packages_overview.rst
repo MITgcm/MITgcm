@@ -23,7 +23,7 @@ Package Inclusion/Exclusion
 
 There are numerous ways that one can specify compile–time package
 inclusion or exclusion and they are all implemented by the ``genmake2``
-program which was previously described in Section [sec:buildingCode].
+program which was previously described in Section :numref:`building_code`.
 The options are as follows:
 
 #. Setting the ``genamake2`` options ``–enable PKG`` and/or
@@ -246,15 +246,15 @@ Adding a package to PARAMS.h and packages\_boot()
 
 An MITgcm package directory contains all the code needed for that
 package apart from one variable for each package. This variable is the
-*use${Pkg} * flag. This flag, which is of type logical, **must** be
-declared in the shared header file *PARAMS.h* in the *PARM\_PACKAGES*
+``use${Pkg}`` flag. This flag, which is of type logical, **must** be
+declared in the shared header file ``PARAMS.h`` in the ``PARM_PACKAGES``
 block. This convention is used to support a single runtime control file
-*data.pkg* which is read by the startup routine *packages\_boot()* and
+``data.pkg`` which is read by the startup routine ``packages_boot()`` and
 that sets a flag controlling the runtime use of a package. This routine
 needs to be able to read the flags for packages that were not built at
 compile time. Therefore when adding a new package, in addition to
-creating the per-package directory in the *pkg/* subdirectory a
-developer should add a *use${Pkg} * flag to *PARAMS.h* and a *use${Pkg}
-* entry to the *packages\_boot()* *PACKAGES* namelist. The only other
+creating the per-package directory in the ``pkg/`` subdirectory a
+developer should add a ``use${Pkg}`` flag to ``PARAMS.h`` and a ``use${Pkg}``
+entry to the ``packages_boot()`` ``PACKAGES`` namelist. The only other
 package specific code that should appear outside the individual package
 directory are calls to the specific package API.
