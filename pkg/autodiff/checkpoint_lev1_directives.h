@@ -17,12 +17,6 @@ CADJ &     kind = isbyte
 
 #ifdef ALLOW_SEAICE
 # ifdef ALLOW_DOWN_SLOPE
-CADJ STORE area,heff,hsnow = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE uice,vice = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE tices = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
 CADJ STORE eta,zeta = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 # endif
@@ -72,9 +66,6 @@ c
 # ifndef DISABLE_RSTAR_CODE
 CADJ STORE rstarfacc
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
-ccCADJ STORE rstarfacc,rstarfacs,rstarfacw
-ccCADJ &     = comlev1, key = ikey_dynamics,
-ccCADJ &     kind = isbyte
 CADJ STORE rStarFacNm1C,rStarFacNm1S,rStarFacNm1W
 CADJ &     = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
@@ -107,16 +98,10 @@ CADJ & kind = isbyte
 #endif /* NONLIN_FRSURF */
 
 #ifdef ALLOW_DEPTH_CONTROL
-CADJ STORE pmepr,surfaceforcingtice
+CADJ STORE surfaceforcingtice
 CADJ &     = comlev1, key=ikey_dynamics,
 CADJ &     kind = isbyte
-CADJ STORE detahdt
-CADJ &     = comlev1, key=ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE gsnm1,gtnm1,gunm1,gvnm1
-CADJ &     = comlev1, key=ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE theta,salt,totphihyd,wvel
+CADJ STORE theta,salt
 CADJ &     = comlev1, key=ikey_dynamics,
 CADJ &     kind = isbyte
 #endif /* ALLOW_DEPTH_CONTROL */
@@ -190,14 +175,6 @@ CADJ &     kind = isbyte
 
 #ifdef ALLOW_OBCS
 # include "obcs_ad_check_lev1_dir.h"
-# ifdef ALLOW_SEAICE
-CML required for the combination of seaice and obcs. In combination with
-CML downslope or ALLOW_HFLUXM_CONTROL, these directives are double
-CADJ STORE area,heff,hsnow = comlev1, key=ikey_dynamics, kind=isbyte
-#  ifdef SEAICE_ALLOW_DYNAMICS
-CADJ STORE uice,vice       = comlev1, key=ikey_dynamics, kind=isbyte
-#  endif /* SEAICE_ALLOW_DYNAMICS */
-# endif /* ALLOW_SEAICE */
 #endif  /* ALLOW_OBCS */
 
 #ifdef ALLOW_SALT_PLUME
@@ -286,12 +263,7 @@ CADJ &     kind = isbyte
 cph temporary for HD
 # ifdef ALLOW_HFLUXM_CONTROL
 CADJ STORE qnetm      = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE area       = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE heff,hsnow = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE eta,zeta   = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE pmepr      = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE totphihyd,salt = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE uice,vice  = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 # ifdef ANNUAL_BALANCE
 CADJ STORE balance_itcount = comlev1, key = ikey_dynamics, kind = isbyte
