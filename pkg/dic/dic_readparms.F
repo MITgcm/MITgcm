@@ -34,8 +34,14 @@ CEOP
 C     === Local variables ===
 C     msgBuf    :: Informational/error message buffer
 C     iUnit     :: Work variable for IO unit number
+C     errCount  :: error counter
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
+      INTEGER errCount
+#ifndef CARBONCHEM_SOLVESAPHE
+      INTEGER selectBTconst, selectFTconst, selectHFconst
+      INTEGER selectK1K2const, selectPHsolver
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -45,11 +51,37 @@ C             default permil = 1024.5 kg/m3
 C Pa2Atm   :: Conversion factor for atmospheric pressure pLoad (when coupled
 C             to atmospheric model) into Atm. Default assumes pLoad in Pascal
 C             1 Atm = 1.01325e5 Pa = 1013.25 mb
+C  selectBTconst :: estimates borate concentration from salinity:
+C     =1 :: use default formulation of Uppström (1974)(same as S/R CARBON_COEFFS)
+C     =2 :: use new formulation from Lee et al (2010)
+C  selectFTconst :: estimates fluoride concentration from salinity:
+C     =1 :: use default formulation of Riley (1965) (same as S/R CARBON_COEFFS)
+C     =2 :: use new formulation from Culkin (1965)
+C  selectHFconst :: sets the first dissociation constant for hydrogen fluoride:
+C     =1 :: use default  Dickson and Riley (1979) (same as S/R CARBON_COEFFS)
+C     =2 :: use new formulation of Perez and Fraga (1987)
+C  selectK1K2const :: sets the 1rst & 2nd dissociation constants of carbonic acid:
+C     =1 :: use default formulation of Millero (1995) with data
+C            from Mehrbach et al. (1973) (same as S/R CARBON_COEFFS)
+C     =2 :: use formulation of Roy et al. (1993)
+C     =3 :: use "combination" formulation of Millero (1995)
+C     =4 :: use formulation of Luecker et al. (2000)
+C     =5 :: use formulation of Millero (2010, Mar. Fresh Wat. Res.)
+C     =6 :: use formulation of Waters, Millero, Woosley (2014, Mar. Chem.)
+C  selectPHsolver :: sets the pH solver to use:
+C     =0 :: use Follows et al., (2006) solver;
+C     =1 :: use the GENERAL solver from Munhoven (2013);
+C     =2 :: use SEC solver  from Munhoven (2013);
+C     =3 :: use FAST solver from Munhoven (2013);
+C----
 
-      NAMELIST /ABIOTIC_PARMS/ permil, Pa2Atm
+      NAMELIST /ABIOTIC_PARMS/
+     &  permil, Pa2Atm,
+     &  selectBTconst, selectFTconst,
+     &  selectHFconst, selectK1K2const,
+     &  selectPHsolver
 
 #ifdef DIC_BIOTIC
-
 C-- Biotic dic parameters:
 C   DOPfraction :: fraction of new production going to DOP
 C   KDOPRemin   :: DOP remineralization rate (1/s) = 1/(6 month)
@@ -100,9 +132,16 @@ C                  read in rainRatioUniform and filled in 2d array rain_ratio
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _BEGIN_MASTER(myThid)
+       errCount = 0
 
        permil      = 1. _d 0 / 1024.5 _d 0
        Pa2Atm      = 1.01325 _d 5
+       selectBTconst   = UNSET_I
+       selectFTconst   = UNSET_I
+       selectHFconst   = UNSET_I
+       selectK1K2const = UNSET_I
+       selectPHsolver  = UNSET_I
+
 #ifdef DIC_BIOTIC
        DOPfraction = 0.67 _d 0
        KDOPRemin   = 1. _d 0/(6. _d 0*30. _d 0*86400. _d 0)
@@ -181,6 +220,12 @@ C--   Close the open data file
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    derive other parameters:
 
+C-    set parameter default values
+      IF ( selectBTconst  .EQ.UNSET_I ) selectBTconst   = 1
+      IF ( selectFTconst  .EQ.UNSET_I ) selectFTconst   = 1
+      IF ( selectHFconst  .EQ.UNSET_I ) selectHFconst   = 1
+      IF ( selectK1K2const.EQ.UNSET_I ) selectK1K2const = 1
+      IF ( selectPHsolver .EQ.UNSET_I ) selectPHsolver  = 0
 #ifdef DIC_BIOTIC
        QSW_underice = .FALSE.
 #ifdef USE_QSW_UNDERICE
@@ -205,6 +250,96 @@ C--   Print out parameter values :
       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       WRITE(msgBuf,'(A)') '// ==================================='
       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+
+#ifdef CARBONCHEM_SOLVESAPHE
+C Record the solver to calculate pH and evaluate surface ocean pCO2
+      IF ( selectPHsolver.GT.0 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Munhoven (2013) Solvesaphe for pH/pCO2'
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      ELSEIF ( selectPHsolver.EQ.0 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Follows et al. (2006) for pH/pCO2'
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      ENDIF
+#endif /* CARBONCHEM_SOLVESAPHE */
+
+C Record which carbonate coefficients are used and which pH/pCO2 solver
+#ifdef CARBONCHEM_SOLVESAPHE
+      WRITE(msgBuf,'(A)')
+     &  'Using Munhoven (2013) Solvesaphe carbon coefficients'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+C Munhoven (2013)'s "Solvesaphe" coefficients have several options:
+      IF ( selectK1K2const.EQ.1 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Millero (1995)/Mehrbach K1 and K2 coefficients'
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      ELSEIF ( selectK1K2const.EQ.2 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Roy et al. (1993) K1 and K2 coefficients'
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      ELSEIF ( selectK1K2const.EQ.3 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Millero (1995) "consensus" K1 and K2 coefficients'
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      ELSEIF ( selectK1K2const.EQ.4 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Luecker et al. (2000) K1 and K2 coefficients'
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      ELSEIF ( selectK1K2const.EQ.5 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Millero et al. (2010) K1 and K2 coefficients'
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      ELSEIF ( selectK1K2const.EQ.6 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Waters et al. (2014) K1 and K2 coefficients'
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      ENDIF
+
+      IF ( selectHFconst.EQ.1 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Dickson and Riley (1979) KF coefficient'
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      ELSEIF ( selectHFconst.EQ.2 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Perez and Fraga (1987) KF coefficient'
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      ENDIF
+
+      IF ( selectBTconst.EQ.1 ) THEN
+         WRITE(msgBuf,'(A)')
+     & 'Using Uppstrom (1974) BT estimation from salinity'
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      ELSEIF ( selectBTconst.EQ.2 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Lee et al (2010) BT estimation from salinity'
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      ENDIF
+
+      IF ( selectFTconst.EQ.1 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Riley (1965) FT estimation from salinity'
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      ELSEIF ( selectBTconst.EQ.2 ) THEN
+         WRITE(msgBuf,'(A)')
+     &  'Using Culkin (1965) FT estimation from salinity'
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      ENDIF
+#else /* CARBONCHEM_SOLVESAPHE */
+C OCMIP2 Coefficients from S/R CARBON_COEFFS in CARBON_CHEM.F
+      WRITE(msgBuf,'(A)')
+     &  'Using Millero (1995)/Mehrbach K1 and K2 coefficients'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      WRITE(msgBuf,'(A)')
+     &  'Using Dickson and Riley (1979) KF coefficient'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      WRITE(msgBuf,'(A)')
+     &  'Using Uppstrom (1974) BT estimation from salinity'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      WRITE(msgBuf,'(A)')
+     &  'Using Riley (1965) FT estimation from salinity'
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+#endif /* CARBONCHEM_SOLVESAPHE */
 
 C- namelist ABIOTIC_PARMS
        CALL WRITE_0D_RL( permil, INDEX_NONE,'permil =',
@@ -264,10 +399,9 @@ C- namelist BIOTIC_PARMS
      &  ' /* Timescale for biological activity */')
        CALL WRITE_0D_RL(rainRatioUniform,INDEX_NONE,'rainRatioUniform=',
      &  ' /* Inorganic/organic carbon rain ratio */')
-
        CALL WRITE_0D_L( QSW_underice, INDEX_NONE, 'QSW_underice  =',
      &  '  /* Flag for Qsw under Sea-Ice (i.e. SI fract included) */')
-#endif
+#endif /* DIC_BIOTIC */
 
 C- namelist DIC_FORCING
        CALL WRITE_0D_C( DIC_windFile, -1, INDEX_NONE, 'DIC_windFile =',
@@ -307,7 +441,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         WRITE(msgBuf,'(A)')
      &    'DIC_READPARMS: cannot change default dic_pCO2 if dic_int1=0'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R DIC_READPARMS: dic_pCO2 error'
+        errCount = errCount + 1
       ENDIF
 #ifdef ALLOW_OLD_VIRTUALFLUX
       IF ( PTRACERS_EvPrRn(1).NE.UNSET_RL .OR.
@@ -325,10 +459,60 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &   ' cannot set PTRACERS_EvPrRn(2) (in data.ptracers)'
          CALL PRINT_ERROR( msgBuf, myThid )
         ENDIF
-        STOP 'ABNORMAL END: S/R DIC_READPARMS'
+        errCount = errCount + 1
       ENDIF
 #endif /* ALLOW_OLD_VIRTUALFLUX */
 
+#ifdef CARBONCHEM_SOLVESAPHE
+      IF ( selectHFconst.LT.1 .OR. selectHFconst.GT.2 .OR.
+     &     selectBTconst.LT.1 .OR. selectBTconst.GT.2 .OR.
+     &     selectFTconst.LT.1 .OR. selectFTconst.GT.2 ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &        'Invalid value for selectHF, selectBT or selectFT'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( selectK1K2const.LT.1 .OR. selectK1K2const.GT.6 ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &        'Invalid value for selectK1K2const (< 1 or > 6)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( selectPHsolver.LT.0 .OR. selectPHsolver.GT.3 ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &        'Invalid value for selectPHsolver (< 0 or > 3)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#else /* CARBONCHEM_SOLVESAPHE */
+      IF ( selectBTconst.NE.1 .OR. selectFTconst.NE.1 .OR.
+     &     selectHFconst.NE.1 .OR. selectK1K2const.NE.1 ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'to use: selectHF, selectBT, selectFT or selectK1K2const'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'needs: "#define CARBONCHEM_SOLVESAPHE" in "DIC_OPTIONS.h"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+      IF ( selectPHsolver.NE.0 ) THEN
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'to use: selectPHsolver > 0'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'DIC_READPARMS: ',
+     &    'needs: "#define CARBONCHEM_SOLVESAPHE" in "DIC_OPTIONS.h"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* CARBONCHEM_SOLVESAPHE */
+
+      IF ( errCount.GE.1 ) THEN
+        WRITE(msgBuf,'(A,I3,A)')
+     &       'DIC_READPARMS: detected', errCount,' fatal error(s)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        CALL ALL_PROC_DIE( 0 )
+        STOP 'ABNORMAL END: S/R DIC_READPARMS'
+      ENDIF
       _END_MASTER(myThid)
 
 C--   Everyone else must wait for the parameters to be loaded
