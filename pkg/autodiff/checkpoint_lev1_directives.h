@@ -4,44 +4,47 @@ C
 C     created: heimbach@mit.edu 10-Jan-2002
 C
 
-CADJ STORE totphihyd = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE totPhiHyd = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE phi0surf  = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE saltflux  = comlev1, key = ikey_dynamics, kind = isbyte
-#ifdef EXACT_CONSERV
-CADJ STORE pmepr     = comlev1, key = ikey_dynamics,  kind = isbyte
-CADJ STORE detahdt   = comlev1, key = ikey_dynamics,  kind = isbyte
+CADJ STORE saltFlux  = comlev1, key = ikey_dynamics, kind = isbyte
+#ifdef ATMOSPHERIC_LOADING
+CADJ STORE sIceLoad  = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
-CADJ STORE wvel      = comlev1, key = ikey_dynamics, kind = isbyte
+#ifdef EXACT_CONSERV
+CADJ STORE PmEpR     = comlev1, key = ikey_dynamics,  kind = isbyte
+CADJ STORE dEtaHdt   = comlev1, key = ikey_dynamics,  kind = isbyte
+#endif
+CADJ STORE wVel      = comlev1, key = ikey_dynamics, kind = isbyte
 
 #ifdef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gtnm, gsnm   = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE gunm, gvnm   = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE gtNm, gsNm   = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE guNm, gvNm   = comlev1, key = ikey_dynamics, kind = isbyte
 #else
-CADJ STORE gtnm1, gsnm1 = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE gunm1, gvnm1 = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE gtNm1, gsNm1 = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE guNm1, gvNm1 = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
 #ifdef NONLIN_FRSURF
 
-CADJ STORE hfac_surfc    = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE hFac_surfNm1C = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE hfac_surfs    = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE hFac_surfNm1S = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE hfac_surfw    = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE hFac_surfNm1W = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE hFac_surfC    = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE hFac_surfW    = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE hFac_surfS    = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE hfac_surfNm1C = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE hfac_surfNm1W = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE hfac_surfNm1S = comlev1, key = ikey_dynamics, kind = isbyte
 
 CADJ STORE theta, salt   = comlev1, key = ikey_dynamics,kind = isbyte
-CADJ STORE uvel, vvel    = comlev1, key = ikey_dynamics,kind = isbyte
-CADJ STORE surfaceforcingtice = comlev1,
+CADJ STORE uVel, vVel    = comlev1, key = ikey_dynamics,kind = isbyte
+CADJ STORE surfaceForcingTice = comlev1,
 CADJ &     key = ikey_dynamics,kind = isbyte
 
 # ifndef DISABLE_RSTAR_CODE
-CADJ STORE rstarfacc = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE rStarFacNm1C, rStarFacNm1S, rStarFacNm1W = comlev1,
+CADJ STORE rStarFacC = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE rStarFacNm1C, rStarFacNm1W, rStarFacNm1S = comlev1,
 CADJ &     key = ikey_dynamics,kind = isbyte
-CADJ STORE rstarexpc, rstarexps, rstarexpw = comlev1,
+CADJ STORE rStarExpC, rStarExpW, rStarExpS = comlev1,
 CADJ &     key = ikey_dynamics,kind = isbyte
-CADJ STORE rstardhcdt, rstardhsdt, rstardhwdt = comlev1,
+CADJ STORE rStarDhCDt, rStarDhWDt, rStarDhSDt = comlev1,
 CADJ &     key = ikey_dynamics,kind = isbyte
 # endif
 
@@ -50,7 +53,7 @@ CADJ &     key = ikey_dynamics,kind = isbyte
 CADJ STORE etaH = comlev1, key = ikey_dynamics, kind = isbyte
 # if ( defined(ALLOW_DEPTH_CONTROL) || defined(ALLOW_SEAICE) )
 CADJ STORE theta, salt = comlev1, key = ikey_dynamics,kind = isbyte
-CADJ STORE surfaceforcingtice = comlev1,
+CADJ STORE surfaceForcingTice = comlev1,
 CADJ &     key = ikey_dynamics,kind = isbyte
 # endif /* ALLOW_DEPTH_CONTROL or ALLOW_SEAICE */
 
@@ -76,10 +79,10 @@ CADJ &     key = ikey_dynamics,kind = isbyte
 # include "ctrl_ad_check_lev1_dir.h"
 #endif
 
-#ifdef STORE_LOADEDREC_TEST
+#ifndef EXCLUDE_FFIELDS_LOAD
+# ifdef STORE_LOADEDREC_TEST
 CADJ STORE loadedRec = comlev1, key = ikey_dynamics, kind = 4
-#endif
-
+# endif
 CADJ STORE taux0     = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE taux1     = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE tauy0     = comlev1, key = ikey_dynamics, kind = isbyte
@@ -98,11 +101,11 @@ CADJ STORE saltFlux1 = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE Qsw0      = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE Qsw1      = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
-#ifdef ATMOSPHERIC_LOADING
-CADJ STORE pload0    = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE pload1    = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE siceload  = comlev1, key = ikey_dynamics, kind = isbyte
-#endif
+# ifdef ATMOSPHERIC_LOADING
+CADJ STORE pLoad0    = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE pLoad1    = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
+#endif /* ndef EXCLUDE_FFIELDS_LOAD */
 
 #ifdef ALLOW_OBCS
 # include "obcs_ad_check_lev1_dir.h"
@@ -159,10 +162,10 @@ CADJ STORE siceload  = comlev1, key = ikey_dynamics, kind = isbyte
 #ifdef ALLOW_EBM
 CADJ STORE fu      = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE fv      = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE sss     = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE qnet    = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE qsw     = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE empmr   = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE SSS     = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE Qnet    = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE Qsw     = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE EmPmR   = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE theta   = comlev1, key = ikey_dynamics, kind = isbyte
 # include "ebm_ad_check_lev1_dir.h"
 #endif
@@ -180,11 +183,13 @@ CADJ STORE vVel  = comlev1, key = ikey_dynamics, kind = isbyte
 
 #ifdef ALLOW_SEAICE
 # ifdef ALLOW_DOWN_SLOPE
-CADJ STORE eta, zeta = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE ETA, ZETA = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
+C Note: code under option ALLOW_HFLUXM_CONTROL or ANNUAL_BALANCE is not
+C       standard MITgcm code (-> untested and not maintained).
 # ifdef ALLOW_HFLUXM_CONTROL
-CADJ STORE qnetm     = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE eta, zeta = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE Qnetm     = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE ETA, ZETA = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 # ifdef ANNUAL_BALANCE
 CADJ STORE balance_itcount = comlev1, key = ikey_dynamics, kind = isbyte
