@@ -508,6 +508,7 @@ C--   Close the open data file
       CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
 
+      iUnit = standardMessageUnit
 C Record the solver to calculate pH and evaluate surface ocean pCO2
 #ifdef CARBONCHEM_SOLVESAPHE
       IF ( selectPHsolver.GT.0 ) THEN
