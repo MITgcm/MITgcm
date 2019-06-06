@@ -6,7 +6,6 @@
 cphc$taf COMMON DIC_XX        adname = addic_xx
 cphc$taf COMMON DIC_COST_CTRL adname = ADDIC_COST_CTRL
 
-
 C !INTERFACE: ==========================================================
       SUBROUTINE DIC_SET_CONTROL( myThid )
 
@@ -99,7 +98,7 @@ cswd -- QQ limits
        DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j = 1, sNy
           DO i = 1, sNx
-            feload(i,j,bi,bj) = feload(i,j,bi,bj)*(1. _d 0 +xx_dic(1))
+c           feload(i,j,bi,bj) = feload(i,j,bi,bj)*(1. _d 0 +xx_dic(1))
             rain_ratio(i,j,bi,bj) =
      &                      rain_ratio(i,j,bi,bj)*(1. _d 0 +xx_dic(2))
           ENDDO
@@ -109,7 +108,7 @@ cswd -- QQ limits
 
       _EXCH_XY_RL( alpha, myThid )
       _EXCH_XY_RL( rain_ratio, myThid )
-      _EXCH_XY_RL( feload, myThid )
+c     _EXCH_XY_RL( feload, myThid )
 
       KScav       = KScav       * ( 1. _d 0 + xx_dic(3)*1. _d 6 )
       ligand_stab = ligand_stab * ( 1. _d 0 + xx_dic(4)*1. _d 6 )
@@ -121,9 +120,8 @@ cswd -- QQ limits
 
 #endif /* ALLOW_DIC_CONTROL */
 
-#endif /* ALLOW_CTRL */
-
 cph#endif /* DIC_BIOTIC */
+#endif /* ALLOW_CTRL */
 
       RETURN
       END
