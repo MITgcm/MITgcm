@@ -66,12 +66,16 @@ C    &                      0, myThid )
 C-     end setup R_shelfIce in the interior
       ENDIF
 
+#ifndef ALLOW_SHELFICE_REMESHING
       IF (shelficeMassStepping) THEN
+#endif
        IF ( .NOT. ( startTime .EQ. baseTime .AND. nIter0 .EQ. 0
      &             .AND. pickupSuff .EQ. ' ' ) ) THEN
           CALL SHELFICE_READ_PICKUP ( myThid )
        ENDIF
+#ifndef ALLOW_SHELFICE_REMESHING
       ENDIF
+#endif
 
 C- fill in the overlap (+ BARRIER):
       _EXCH_XY_RS( R_shelfIce, myThid )
