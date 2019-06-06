@@ -13,21 +13,26 @@ CADJ &     key = ikey_dynamics, kind = isbyte
 #ifdef EXACT_CONSERV
 CADJ STORE pmepr = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
+CADJ STORE detahdt            = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 #endif
 
-#ifdef ALLOW_SEAICE
-# ifdef ALLOW_DOWN_SLOPE
-CADJ STORE eta,zeta = comlev1, key = ikey_dynamics,
+#ifdef ALLOW_ADAMSBASHFORTH_3
+CADJ STORE gtnm,gsnm          = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-# endif
-CADJ STORE surfaceforcingtice = comlev1, key = ikey_dynamics,
+CADJ STORE gunm,gvnm          = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-CADJ STORE salt = comlev1, key = ikey_dynamics,
+#else
+CADJ STORE gtnm1,gsnm1        = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE gunm1,gvnm1        = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #endif
+CADJ STORE wvel = comlev1, key = ikey_dynamics,
+CADJ & kind = isbyte
 
 #ifdef NONLIN_FRSURF
-c
+
 CADJ STORE hfac_surfc  = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE hFac_surfNm1C = comlev1, key = ikey_dynamics,
@@ -40,29 +45,14 @@ CADJ STORE hfac_surfw  = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE hFac_surfNm1W = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-c
-#ifdef EXACT_CONSERV
-CADJ STORE detahdt            = comlev1, key = ikey_dynamics,
+
+CADJ STORE theta, salt        = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-#endif
-# ifndef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gsnm1,gtnm1        = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE gunm1,gvnm1        = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-# else
-CADJ STORE gsnm,gtnm          = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-cphCADJ STORE gunm,gvnm          = comlev1, key = ikey_dynamics,
-cphCADJ &     kind = isbyte
-# endif
-CADJ STORE salt,theta         = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE uvel,vvel,wvel     = comlev1, key = ikey_dynamics,
+CADJ STORE uvel, vvel         = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE surfaceforcingtice = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-c
+
 # ifndef DISABLE_RSTAR_CODE
 CADJ STORE rstarfacc
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
@@ -75,36 +65,21 @@ CADJ &     kind = isbyte
 CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
-#else
-#ifdef EXACT_CONSERV
-CADJ STORE detahdt = comlev1, key = ikey_dynamics,
-CADJ & kind = isbyte
-#endif
-#ifndef ALLOW_ADAMSBASHFORTH_3
-CADJ STORE gsnm1,gtnm1 = comlev1, key = ikey_dynamics,
-CADJ & kind = isbyte
-CADJ STORE gunm1,gvnm1 = comlev1, key = ikey_dynamics,
-CADJ & kind = isbyte
-#else
-CADJ STORE gsnm,gtnm = comlev1, key = ikey_dynamics,
-CADJ & kind = isbyte
-CADJ STORE gunm,gvnm = comlev1, key = ikey_dynamics,
-CADJ & kind = isbyte
-#endif
-CADJ STORE wvel = comlev1, key = ikey_dynamics,
-CADJ & kind = isbyte
+
+#else /* NONLIN_FRSURF */
+
 CADJ STORE etaH = comlev1, key = ikey_dynamics,
 CADJ & kind = isbyte
-#endif /* NONLIN_FRSURF */
-
-#ifdef ALLOW_DEPTH_CONTROL
+# if ( defined(ALLOW_DEPTH_CONTROL) || defined(ALLOW_SEAICE) )
 CADJ STORE surfaceforcingtice
 CADJ &     = comlev1, key=ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE theta,salt
 CADJ &     = comlev1, key=ikey_dynamics,
 CADJ &     kind = isbyte
-#endif /* ALLOW_DEPTH_CONTROL */
+# endif /* ALLOW_DEPTH_CONTROL or ALLOW_SEAICE */
+
+#endif /* NONLIN_FRSURF */
 
 #ifdef ALLOW_CD_CODE
 # include "cd_code_ad_check_lev1_dir.h"
@@ -260,7 +235,10 @@ CADJ &     kind = isbyte
 #endif
 
 #ifdef ALLOW_SEAICE
-cph temporary for HD
+# ifdef ALLOW_DOWN_SLOPE
+CADJ STORE eta,zeta = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+# endif
 # ifdef ALLOW_HFLUXM_CONTROL
 CADJ STORE qnetm      = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE eta,zeta   = comlev1, key = ikey_dynamics, kind = isbyte
