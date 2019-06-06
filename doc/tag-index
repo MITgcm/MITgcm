@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+  - Fix bug in ctrl_map_ini_genarr.F regarding missing initialization of
+    igen_uvel & igen_vvel (just like all the other variables).
 o pkg/dic:
   - Implement SolveSAPHE (Munhoven, 2013), a robust algorithm to calculate
     oceanic pH/pCO2 ; compiled when CARBONCHEM_SOLVESAPHE is defined (in
