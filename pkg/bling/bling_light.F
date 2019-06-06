@@ -83,12 +83,14 @@ C     === Local variables ===
 #ifndef USE_QSW
       _RL sfac      (1-OLy:sNy+OLy)
 #endif
-       integer i,j,k
+      INTEGER i,j,k
 CMM(
       _RL minusOne
       PARAMETER (minusOne=-1.)
+#ifdef USE_QSW_Z
       INTEGER kp1
       _RL swfracb(2)
+#endif
 CMM)
        LOGICAL QSW_underice
 CEOP

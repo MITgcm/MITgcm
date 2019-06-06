@@ -23,9 +23,7 @@ C     myThid       :: my Thread Id number
 CEOP
 
 #ifdef ALLOW_BLING
-      INTEGER k
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

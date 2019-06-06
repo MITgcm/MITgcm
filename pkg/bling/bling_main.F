@@ -111,7 +111,6 @@ C     runoff_PO4           :: tendency due to river runoff
       _RL  G_SI (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
 #endif
-      INTEGER iTracer
 CEOP
 
 c-----------------------------------------------------------

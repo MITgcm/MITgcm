@@ -44,7 +44,6 @@ C local variables for carbon chem
       _RL thetatmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL salttmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dictmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER iprt,jprt
       LOGICAL pH_isLoaded
 CEOP
 

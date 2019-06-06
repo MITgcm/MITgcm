@@ -36,13 +36,13 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
       INTEGER prec
 #ifndef USE_ATMOSCO2
-      INTEGER ioUnit
-      _RL tmpFld(2)
-      _RS dummyRS(1)
+c     INTEGER ioUnit
+c     _RL tmpFld(2)
+c     _RS dummyRS(1)
 #endif
       LOGICAL glf
       _RL     timList(1)
-      INTEGER j, nj
+      INTEGER j
       INTEGER listDim, nWrFlds
       PARAMETER( listDim = 6 )
       CHARACTER*(8) wrFldList(listDim)

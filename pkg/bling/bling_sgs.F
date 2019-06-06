@@ -43,8 +43,7 @@ C     === Output ===
 #ifdef ALLOW_BLING
 C     === Local variables ===
 C     i,j,k         :: loop indices
-
-      INTEGER i,j,k
+c     INTEGER i,j,k
 
 CEOP
 

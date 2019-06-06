@@ -53,8 +53,8 @@ C     diclocal          :: local value of DIC
 C     alklocal          :: local value of ALK
 C     pCO2local         :: local value of pCO2
 C     pHlocal           :: local value of pH
-C     CO3ITER           :: iterations counter for CO3 ion calculation
-C     CO3ITERmax        :: total number of iterations
+C     CO3iter           :: iterations counter for CO3 ion calculation
+C     CO3iterMax        :: total number of iterations
 C     silicaDEEP        :: subsurface silica concentration
        INTEGER i,j,k
        _RL carbonate
@@ -69,13 +69,13 @@ C     silicaDEEP        :: subsurface silica concentration
        _RL ttmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
        _RL stmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-       INTEGER CO3ITER
-       INTEGER CO3ITERmax
+c      INTEGER CO3iter
+c      INTEGER CO3iterMax
 CEOP
 
 C  Since pH is now a 3D field and is solved for at every time step
 C  few iterations are needed
-       CO3itermax = 1
+c      CO3iterMax = 1
 
 C determine carbonate ion concentration through full domain
 C determine calcite saturation state
@@ -187,7 +187,7 @@ C Use the original Follows et al. (2006) solver
 C  Evaluate carbonate (CO3) ions concentration
 C  iteratively
 
-c             DO CO3iter = 1, CO3itermax
+c             DO CO3iter = 1, CO3iterMax
 
 C--------------------------------------------------
 

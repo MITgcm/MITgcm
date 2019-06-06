@@ -33,7 +33,9 @@ CEOP
 
 c !LOCAL VARIABLES: ===================================================
        INTEGER bi,bj,i,j
+#ifdef USE_BLING_V0
        CHARACTER*(MAX_LEN_MBUF) msgBuf
+#endif
 
 C First call requires that we initialize everything to zero for safety
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -74,7 +76,7 @@ C First call requires that we initialize everything to zero for safety
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R BLING_INI_FORCING'
 #endif
-#endif
+#endif /* USE_BLING_V0 */
 
 c set reasonable values to those that need at least something
        DO bj = myByLo(myThid), myByHi(myThid)
