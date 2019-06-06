@@ -7,11 +7,11 @@ CBOP
 C     =================================================================
 C     | subroutine bling_min_val
 C     | o replaces tracer values that are too small or negative
-C     |   (in a separate routine so can be hidden from adjoint) 
+C     |   (in a separate routine so can be hidden from adjoint)
 C     =================================================================
 
-      implicit none
-      
+      IMPLICIT NONE
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "GRID.h"

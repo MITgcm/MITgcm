@@ -1,7 +1,7 @@
 #include "BLING_OPTIONS.h"
 
 CBOP
-      subroutine BLING_CARBONATE_SYS( 
+      subroutine BLING_CARBONATE_SYS(
      I           PTR_DIC, PTR_ALK, PTR_PO4,
 #ifdef USE_SIBLING
      I           PTR_SI,
@@ -15,8 +15,8 @@ C     | o Calculate carbonate fluxes
 C     |   Also update pH (3d field)
 C     =================================================================
 
-      implicit none
-      
+      IMPLICIT NONE
+
 C     == GLobal variables ==
 #include "SIZE.h"
 #include "DYNVARS.h"
@@ -42,7 +42,6 @@ C     myTime               :: current time
       _RL  PTR_SI(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
       INTEGER imin, imax, jmin, jmax, bi, bj
-      
 
 #ifdef ALLOW_PTRACERS
 
@@ -55,7 +54,7 @@ C     alklocal          :: local value of ALK
 C     pCO2local         :: local value of pCO2
 C     pHlocal           :: local value of pH
 C     CO3ITER           :: iterations counter for CO3 ion calculation
-C     CO3ITERmax        :: total number of iterations 
+C     CO3ITERmax        :: total number of iterations
 C     silicaDEEP        :: subsurface silica concentration
        INTEGER i,j,k
        _RL carbonate
@@ -67,14 +66,12 @@ C     silicaDEEP        :: subsurface silica concentration
        _RL pHlocal
        _RL silicaDEEP
 
-
        _RL ttmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
        _RL stmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
        INTEGER CO3ITER
        INTEGER CO3ITERmax
 CEOP
-
 
 C  Since pH is now a 3D field and is solved for at every time step
 C  few iterations are needed
@@ -137,7 +134,6 @@ C$TAF LOOP = parallel
              IF ( hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
 C$TAF init dic_caco3 = static, 2
 
-
 #ifdef CARBONCHEM_SOLVESAPHE
              calcium = cat(i,j,bi,bj)
 #else
@@ -149,7 +145,7 @@ C  Estimate calcium concentration from salinity
              diclocal = PTR_DIC(i,j,k)
              alklocal = PTR_ALK(i,j,k)
              pHlocal  = pH(i,j,k,bi,bj)
-             
+
 C  Assume constant deep silica value
 C  30 micromol = 0.03 mol m-3
 C  unless SIBLING is used
@@ -168,10 +164,10 @@ C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
 CAV since we carry pH, no need for an initial guess
 C call AHINI_FOR_AT to get better initial guess of pH
 c               CALL AHINI_FOR_AT(alklocal*permil,
-c     I           diclocal*permil, 
+c     I           diclocal*permil,
 c     I           bt(i,j,bi,bj),
 c     O           pHlocal,
-c     I           i,j,k,bi,bj,myIter,myThid )       
+c     I           i,j,k,bi,bj,myIter,myThid )
 #ifdef ALLOW_DEBUG
          IF (debugMode) CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
 #endif
@@ -215,7 +211,7 @@ c             ENDDO
 
               pH(i,j,k,bi,bj) = pHlocal
 
-C  Calculate calcium carbonate (calcite and aragonite) 
+C  Calculate calcium carbonate (calcite and aragonite)
 C  saturation state
              omegaC(i,j,k,bi,bj) = calcium * carbonate /
      &                          Ksp_TP_Calc(i,j,bi,bj)

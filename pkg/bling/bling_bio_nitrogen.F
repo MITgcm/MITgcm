@@ -1,19 +1,19 @@
 #include "BLING_OPTIONS.h"
 
 CBOP
-      subroutine BLING_BIO_NITROGEN( 
+      subroutine BLING_BIO_NITROGEN(
      I           PTR_O2, PTR_FE, PTR_PO4, PTR_DOP,
-     I           PTR_NO3, PTR_DON, 
+     I           PTR_NO3, PTR_DON,
 #ifdef USE_SIBLING
-     I           PTR_SI, 
+     I           PTR_SI,
 #endif
 #ifdef ADVECT_PHYTO
      I           PTR_PHY,
-#endif 
-     O           G_DIC, G_ALK, G_O2, G_FE, 
+#endif
+     O           G_DIC, G_ALK, G_O2, G_FE,
      O           G_PO4, G_DOP, G_NO3, G_DON,
 #ifdef USE_SIBLING
-     O           G_SI, 
+     O           G_SI,
 #endif
      I           bi, bj, imin, imax, jmin, jmax,
      I           myIter, myTime, myThid )
@@ -21,10 +21,10 @@ CBOP
 C     =================================================================
 C     | subroutine bling_bio_nitrogen
 C     | o Nutrient uptake and partitioning between organic pools.
-C     | - Phytoplankton specific growth rate is calculated 
-C     |   as a function of light, nutrient limitation, and  
-C     |   temperature. 
-C     | - Population growth is calculated as a function of the local 
+C     | - Phytoplankton specific growth rate is calculated
+C     |   as a function of light, nutrient limitation, and
+C     |   temperature.
+C     | - Population growth is calculated as a function of the local
 C     |   phytoplankton biomass.
 C     | o Organic matter export and remineralization.
 C     | - Sinking particulate flux and diel migration contribute to
@@ -35,10 +35,10 @@ C     | - Iron scavenging
 C     | o Diel Vertical Migration
 C     =================================================================
 
-      implicit none
-      
+      IMPLICIT NONE
+
 C     === Global variables ===
-C     phyto_sm     :: small phytoplankton biomass 
+C     phyto_sm     :: small phytoplankton biomass
 C     phyto_lg     :: large phytoplankton biomass
 C     phyto_diaz   :: diazotroph phytoplankton biomass
 C *** if ADVECT_PHYTO, these are fraction of total biomass instead ***
@@ -106,20 +106,20 @@ C     G_xxx         :: tendency term for tracer xxx
 # ifndef USE_BLING_V0
 C     === Local variables ===
 C     i,j,k         :: loop indices
-C     Phy_lg_local  :: biomass in large phytoplankton 
-C     Phy_sm_local  :: biomass in small phytoplankton 
-C     Phy_diaz_local:: biomass in diazotroph phytoplankton 
-C     NO3_lim       :: nitrate limitation 
-C     PO4_lim       :: phosphate limitation           
-C     Fe_lim        :: iron limitation for phytoplankton    
+C     Phy_lg_local  :: biomass in large phytoplankton
+C     Phy_sm_local  :: biomass in small phytoplankton
+C     Phy_diaz_local:: biomass in diazotroph phytoplankton
+C     NO3_lim       :: nitrate limitation
+C     PO4_lim       :: phosphate limitation
+C     Fe_lim        :: iron limitation for phytoplankton
 C     Fe_lim_diaz   :: iron limitation for diazotrophs
-C     light_lim     :: light limitation 
+C     light_lim     :: light limitation
 C     expkT         :: temperature function
 C     Pc_m          :: light-saturated max photosynthesis rate for phyto
 C     Pc_m_diaz     :: light-saturated max photosynthesis rate for diaz
-C     theta_Fe      :: Chl:C ratio 
-C     theta_Fe_inv  :: C:Chl ratio 
-C     theta_Fe_max  :: Fe-replete maximum Chl:C ratio  
+C     theta_Fe      :: Chl:C ratio
+C     theta_Fe_inv  :: C:Chl ratio
+C     theta_Fe_max  :: Fe-replete maximum Chl:C ratio
 C     irrk          :: nut-limited efficiency of algal photosystems
 C     irr_inst      :: instantaneous light
 C     irr_eff       :: effective irradiance
@@ -136,7 +136,7 @@ C     P_uptake      :: PO4 utilization by phytoplankton
 C     Fe_uptake     :: dissolved Fe utilization by phytoplankton
 C     CaCO3_uptake  :: Calcium carbonate uptake for shell formation
 C     CaCO3_diss    :: Calcium carbonate dissolution
-C     G_CaCO3       :: tendency of calcium carbonate 
+C     G_CaCO3       :: tendency of calcium carbonate
 C     DON_prod      :: production of dissolved organic nitrogen
 C     DOP_prod      :: production of dissolved organic phosphorus
 C     DON_remin     :: remineralization of dissolved organic nitrogen
@@ -172,14 +172,14 @@ C     POC_sed       :: flux of particulate organic carbon to sediment
 C     Fe_sed        :: sediment iron efflux
 C     kFe_eq_lig    :: iron ligand stability constant
 C     FreeFe        :: free (unbound) iron concentration
-C     Fe_ads_inorg  :: iron adsorption 
+C     Fe_ads_inorg  :: iron adsorption
 C     Fe_ads_org    :: iron adsorption  (2nd order)
 C     NO3_btmflx    :: bottom flux of nitrate
 C     PO4_btmflx    :: bottom flux of phosphate
 C     O2_btmflx     :: bottom flux of oxygen
 C     Fe_burial     :: flux of iron to sediment as particulate
 C
-      INTEGER i,j,k        
+      INTEGER i,j,k
       INTEGER bottomlayer
       _RL Phy_lg_local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL Phy_sm_local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -192,10 +192,10 @@ C
       _RL expkT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL Pc_m
       _RL Pc_m_diaz
-      _RL theta_Fe_max       
+      _RL theta_Fe_max
       _RL theta_Fe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL theta_Fe_inv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL irrk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)  
+      _RL irrk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL irr_inst(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL irr_eff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL mld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -260,13 +260,13 @@ C
       _RL PO4_btmflx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL O2_btmflx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Fe_burial(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL no3_adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr) 
-      _RL po4_adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr) 
-      _RL fe_adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr) 
-      _RL o2_adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr) 
-      _RL don_adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr) 
+      _RL no3_adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL po4_adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL fe_adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL o2_adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL don_adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL dop_adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-#ifdef ML_MEAN_PHYTO     
+#ifdef ML_MEAN_PHYTO
       _RL tmp_p_sm_ML
       _RL tmp_p_lg_ML
       _RL tmp_p_diaz_ML
@@ -291,7 +291,7 @@ C
       _RL dvm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL x_erfcc,z_erfcc,t_erfcc,erfcc
 #endif
-#ifdef USE_SIBLING     
+#ifdef USE_SIBLING
       _RL Si_lim(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL Si_uptake(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL Si_recycle(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -304,12 +304,10 @@ C
       _RL zremin_Si
       _RL si_adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
-#ifdef ADVECT_PHYTO     
+#ifdef ADVECT_PHYTO
       _RL phy_adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
 CEOP
-
-
 
 c  Initialize output and diagnostics
        DO j=jmin,jmax
@@ -404,10 +402,8 @@ c  Initialize output and diagnostics
         ENDDO
        ENDDO
 
-
-
 c-----------------------------------------------------------
-c  avoid negative nutrient concentrations that can result from 
+c  avoid negative nutrient concentrations that can result from
 c  advection when low concentrations
 
 #ifdef BLING_NO_NEG
@@ -419,12 +415,11 @@ c  advection when low concentrations
       CALL BLING_MIN_VAL(PTR_DON, 1. _d -11, don_adj, bi, bj)
 # ifdef USE_SIBLING
       CALL BLING_MIN_VAL(PTR_SI , 1. _d -7, si_adj, bi, bj)
-# endif 
+# endif
 # ifdef ADVECT_PHYTO
       CALL BLING_MIN_VAL(PTR_PHY, 1. _d -11, phy_adj, bi, bj)
-# endif 
+# endif
 #endif
-
 
 c-----------------------------------------------------------
 c  Phytoplankton size classes
@@ -455,21 +450,20 @@ c  (with BLING_ADJOINT_SAFE flag, USE_BLING_DVM is undefined)
       defined (ML_MEAN_PHYTO) || \
       defined (USE_BLING_DVM) )
        CALL BLING_MIXEDLAYER(
-     U                         mld, 
+     U                         mld,
      I                         bi, bj, imin, imax, jmin, jmax,
      I                         myIter, myTime, myThid)
 #endif
 
-
 c  Phytoplankton mixing
 c  The mixed layer is assumed to homogenize vertical gradients of phytoplankton.
-c  This allows for basic Sverdrup dynamics in a qualitative sense. 
+c  This allows for basic Sverdrup dynamics in a qualitative sense.
 c  This has not been thoroughly tested, and care should be
 c  taken with its interpretation.
 
-#ifdef ML_MEAN_PHYTO     
+#ifdef ML_MEAN_PHYTO
       DO j=jmin,jmax
-       DO i=imin,imax  
+       DO i=imin,imax
 
         tmp_p_sm_ML = 0. _d 0
         tmp_p_lg_ML = 0. _d 0
@@ -515,7 +509,7 @@ c  taken with its interpretation.
 #ifdef USE_SIBLING
       DO k=1,Nr
        DO j=jmin,jmax
-        DO i=imin,imax  
+        DO i=imin,imax
          Phy_diatom_local(i,j,k) = Phy_lg_local(i,j,k)
         ENDDO
        ENDDO
@@ -532,14 +526,14 @@ c  light availability for biological production
      I               myIter, myTime, myThid )
 
 c  phytoplankton photoadaptation to local light level
-c  This represents the fact that phytoplankton cells are adapted 
-c  to the averaged light field to which they've been exposed over 
-c  their lifetimes, rather than the instantaneous light. The 
+c  This represents the fact that phytoplankton cells are adapted
+c  to the averaged light field to which they've been exposed over
+c  their lifetimes, rather than the instantaneous light. The
 c  timescale is set by gamma_irr_mem.
-       
+
       DO k=1,Nr
        DO j=jmin,jmax
-        DO i=imin,imax  
+        DO i=imin,imax
 
           irr_mem(i,j,k,bi,bj) = irr_mem(i,j,k,bi,bj) +
      &           (irr_eff(i,j,k) - irr_mem(i,j,k,bi,bj))*
@@ -554,18 +548,18 @@ c  Nutrient uptake and partitioning between organic pools
 
       DO k=1,Nr
        DO j=jmin,jmax
-        DO i=imin,imax  
+        DO i=imin,imax
 
          IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
 
 c ---------------------------------------------------------------------
-c  First, calculate the limitation terms for NUT and Fe, and the 
-c  Fe-limited Chl:C maximum. The light-saturated maximal photosynthesis 
-c  rate term (Pc_m) is simply the product of a prescribed maximal 
-c  photosynthesis rate (Pc_0), the Eppley temperature dependence, and a 
-c  resource limitation term. The iron limitation term has a lower limit 
-c  of Fe_lim_min and is scaled by (k_Fe2P + Fe2P_max) / Fe2P_max so that 
-c  it approaches 1 as Fe approaches infinity. Thus, it is of comparable 
+c  First, calculate the limitation terms for NUT and Fe, and the
+c  Fe-limited Chl:C maximum. The light-saturated maximal photosynthesis
+c  rate term (Pc_m) is simply the product of a prescribed maximal
+c  photosynthesis rate (Pc_0), the Eppley temperature dependence, and a
+c  resource limitation term. The iron limitation term has a lower limit
+c  of Fe_lim_min and is scaled by (k_Fe2P + Fe2P_max) / Fe2P_max so that
+c  it approaches 1 as Fe approaches infinity. Thus, it is of comparable
 c  magnitude to the macro-nutrient limitation term.
 
 c  Macro-nutrient limitation
@@ -576,13 +570,13 @@ c  Macro-nutrient limitation
 
 c  Iron limitation
 
-          Fe_lim(i,j,k) = PTR_FE(i,j,k) 
+          Fe_lim(i,j,k) = PTR_FE(i,j,k)
      &                    / (PTR_FE(i,j,k)+k_Fe_2d(i,j,bi,bj))
-         
-          Fe_lim_diaz(i,j,k) = PTR_FE(i,j,k) 
+
+          Fe_lim_diaz(i,j,k) = PTR_FE(i,j,k)
      &                         / (PTR_FE(i,j,k)+k_Fe_diaz_2d(i,j,bi,bj))
 
-#ifdef USE_SIBLING     
+#ifdef USE_SIBLING
           Si_lim(i,j,k) = PTR_Si(i,j,k)/(PTR_Si(i,j,k)+k_Si)
 #endif
 
@@ -590,19 +584,19 @@ c ---------------------------------------------------------------------
 c  Temperature functionality of growth and grazing
 
 c  NB The temperature function of Eppley (1972) is used to represent the
-c  effects of temperature on uptake, synthesis and ecosystem function. 
-c  The reference value is 0 C. Note that this differs slightly from the 
-c  more common Arrhenius form of the equation, but by a tiny amount (less 
-c  than 4% difference over the range -2 to 32 C for an Arrhenius constant 
+c  effects of temperature on uptake, synthesis and ecosystem function.
+c  The reference value is 0 C. Note that this differs slightly from the
+c  more common Arrhenius form of the equation, but by a tiny amount (less
+c  than 4% difference over the range -2 to 32 C for an Arrhenius constant
 c  (Ae) of 5150).
 
-          expkT(i,j,k) = exp(kappa_eppley * theta(i,j,k,bi,bj))   
- 
-c  The light-saturated maximal photosynthesis rate term (pc_m) is  
-c  the product of a prescribed maximal photosynthesis rate (pc_0), the 
+          expkT(i,j,k) = exp(kappa_eppley * theta(i,j,k,bi,bj))
+
+c  The light-saturated maximal photosynthesis rate term (pc_m) is
+c  the product of a prescribed maximal photosynthesis rate (pc_0), the
 c  Eppley temperature dependence, and a co-limitation term (the product
-c  of Michaelis-Menten no3-limitation, po4-limitation, or iron-limitation). 
-c  Note this was altered from the Liebig limitation of BLINGv0, following 
+c  of Michaelis-Menten no3-limitation, po4-limitation, or iron-limitation).
+c  Note this was altered from the Liebig limitation of BLINGv0, following
 c  the arguments of Danger (Oikos, 2008) and Harpole (Ecol. Letters 2011).
 c  Taking the cube root, to provide the geometric mean.
 
@@ -620,8 +614,8 @@ c  Geometric mean is causing instability in b-SOSE. Returning to Liebig
 
 c  Diazotrophs are assumed to be more strongly temperature sensitive,
 c  given their observed restriction to relatively warm waters. Presumably
-c  this is because of the difficulty of achieving N2 fixation in an oxic 
-c  environment. Thus, they have lower pc_0 and higher kappa_eppley. 
+c  this is because of the difficulty of achieving N2 fixation in an oxic
+c  environment. Thus, they have lower pc_0 and higher kappa_eppley.
 c  Taking the square root, to provide the geometric mean.
 
 #ifdef MIN_NUT_LIM
@@ -639,7 +633,7 @@ c  Taking the square root, to provide the geometric mean.
 c  Diatoms are limited by the abundance of silica
 c  Note: this is not in original SiBLING code
 
-#ifdef USE_SIBLING     
+#ifdef USE_SIBLING
 # ifdef MIN_NUT_LIM
           Pc_m_diatom = Pc_0_2d(i,j,bi,bj) * expkT(i,j,k)
      &           * min(NO3_lim(i,j,k), PO4_lim(i,j,k), Fe_lim(i,j,k),
@@ -655,21 +649,20 @@ c  (Pc_m and Pc_m_diaz crash adjoint if get too small)
 #ifdef BLING_ADJOINT_SAFE
           Pc_m        = max(Pc_m       ,maskC(i,j,k,bi,bj)*1. _d -15)
           Pc_m_diaz   = max(Pc_m_diaz  ,maskC(i,j,k,bi,bj)*1. _d -15)
-# ifdef USE_SIBLING     
+# ifdef USE_SIBLING
           Pc_m_diatom = max(Pc_m_diatom,maskC(i,j,k,bi,bj)*1. _d -15)
 # endif
 #endif
 
-
 c ---------------------------------------------------------------------
-c  Fe limitation reduces the maximum achievable Chl:C ratio (theta_Fe) 
-c  below a prescribed, Fe-replete maximum value (theta_Fe_max), 
+c  Fe limitation reduces the maximum achievable Chl:C ratio (theta_Fe)
+c  below a prescribed, Fe-replete maximum value (theta_Fe_max),
 c  to approach a prescribed minimum Chl:C (theta_Fe_min) under extreme
 c  Fe-limitation.
 
           theta_Fe_max = theta_Fe_max_lo+
      &                  (theta_Fe_max_hi-theta_Fe_max_lo)*Fe_lim(i,j,k)
-     
+
           theta_Fe(i,j,k) = theta_Fe_max
      &                  / (1. _d 0 + alpha_photo_2d(i,j,bi,bj)
      &                  *theta_Fe_max
@@ -684,30 +677,30 @@ c  for diagnostics: C:Chl ratio in g C / g Chl
            ENDIF
 
 c ---------------------------------------------------------------------
-c  Nutrient-limited efficiency of algal photosystems, irrk, is calculated 
-c  with the iron limitation term included as a multiplier of the 
+c  Nutrient-limited efficiency of algal photosystems, irrk, is calculated
+c  with the iron limitation term included as a multiplier of the
 c  theta_Fe_max to represent the importance of Fe in forming chlorophyll
 c  accessory antennae, which do not affect the Chl:C but still affect the
 c  phytoplankton ability to use light (eg Stzrepek & Harrison, Nature 2004).
-c  Use same thetamax for diazotrophs, since their extra Fe requirement 
+c  Use same thetamax for diazotrophs, since their extra Fe requirement
 c  is for nitrogenase, not for the photosystem.
-    
+
           irrk(i,j,k) = Pc_m
-     &             /(epsln + alpha_photo_2d(i,j,bi,bj)*theta_Fe_max) 
+     &             /(epsln + alpha_photo_2d(i,j,bi,bj)*theta_Fe_max)
      &             + irr_mem(i,j,k,bi,bj)/2. _d 0
 
           light_lim(i,j,k) = ( 1. _d 0 - exp(-irr_eff(i,j,k)
      &               /(epsln + irrk(i,j,k))))
-     
-c  Carbon-specific photosynthesis rate     
-     
+
+c  Carbon-specific photosynthesis rate
+
           mu(i,j,k) = Pc_m * light_lim(i,j,k)
 
-#ifdef USE_SIBLING     
+#ifdef USE_SIBLING
           mu_diatom(i,j,k) = Pc_m_diatom * light_lim(i,j,k)
 #endif
 
-c  Temperature threshold for diazotrophs        
+c  Temperature threshold for diazotrophs
 
           IF (theta(i,j,k,bi,bj) .gt. 14) THEN
            mu_diaz(i,j,k) = Pc_m_diaz * light_lim(i,j,k)
@@ -724,15 +717,15 @@ c  Stoichiometry
      &                   PTR_FE(i,j,k) / (k_FetoN + PTR_FE(i,j,k))
 
 #ifdef USE_SIBLING
-c  Si uptake by diatoms varies with both Si-limitation and growth-rate 
-c  limitation by other factors: increasing Si limitation decreases Si 
-c  uptake, but growth limitation by other factors under high Si conditions 
+c  Si uptake by diatoms varies with both Si-limitation and growth-rate
+c  limitation by other factors: increasing Si limitation decreases Si
+c  uptake, but growth limitation by other factors under high Si conditions
 c  results in increase Si:P of uptake.
 
-          SitoP_uptake(i,j,k) = min(SitoP_uptake_max, 16.  
+          SitoP_uptake(i,j,k) = min(SitoP_uptake_max, 16.
      &                   * Si_lim(i,j,k) * max(SitoP_uptake_min/16.,
      &                   (1. / epsln + SitoP_uptake_scale + min(
-     &                   PO4_lim(i,j,k), Fe_lim(i,j,k) ) * (1. - 
+     &                   PO4_lim(i,j,k), Fe_lim(i,j,k) ) * (1. -
      &                   exp(-irr_eff(i,j,k)/(epsln + irrk(i,j,k) )) ))
      &                   **SitoP_uptake_exp))
 #endif
@@ -751,7 +744,7 @@ c  Nutrient uptake
      &                       N_fix(i,j,k)) * FetoN(i,j,k)
 
 #ifdef USE_SIBLING
-          Si_uptake(i,j,k) = mu(i,j,k) * Phy_diatom_local(i,j,k)  
+          Si_uptake(i,j,k) = mu(i,j,k) * Phy_diatom_local(i,j,k)
      &                       * SitoP_uptake(i,j,k)
 #endif
 
@@ -759,10 +752,10 @@ c  Calcium carbonate production
 
 c  Alkalinity is consumed through the production of CaCO3. Here, this is
 c  simply a linear function of the implied growth rate of small
-c  phytoplankton, which gave a reasonably good fit to the global 
+c  phytoplankton, which gave a reasonably good fit to the global
 c  observational synthesis of Dunne (2009). This is consistent
 c  with the findings of Jin et al. (GBC,2006).
-    
+
           CaCO3_uptake(i,j,k) = mu(i,j,k) * Phy_sm_local(i,j,k)
      &                          * phi_sm_2d(i,j,bi,bj) * CatoN
 
@@ -772,24 +765,24 @@ c  with the findings of Jin et al. (GBC,2006).
       ENDDO
 
 c ---------------------------------------------------------------------
-c  Grazing is treated using the size-dependent grazing laws of 
+c  Grazing is treated using the size-dependent grazing laws of
 c  Dunne et al. (GBC, 2005), with alpha=1/3 (eq. 5b):
 c   lambda_small = lambda0 * e^kT * (small/pivotal)
 c   lambda_large = lambda0 * e^hT * (large/pivotal)^alpha
-c  where small/large are the biomasses of small and large phytoplankton, 
-c  and lambda is mortality. The constants were determined empirically 
+c  where small/large are the biomasses of small and large phytoplankton,
+c  and lambda is mortality. The constants were determined empirically
 c  from a global dataset.
-c  Basically, small phytoplankton have a linear increase in mortality 
-c  with biomass, reflecting the rapid increase of small zooplankton as 
-c  growth rates increase, while large zooplankton respond weakly to 
+c  Basically, small phytoplankton have a linear increase in mortality
+c  with biomass, reflecting the rapid increase of small zooplankton as
+c  growth rates increase, while large zooplankton respond weakly to
 c  increases in the growth rates of large phytoplankton. This produces
 c  a simple bloom dynamic.
-c  Because diazotrophs have specialized grazers (O'Neil and Roman, 1992; 
-c  Mulholland, Biogeosciences 2007), they are treated independently from 
-c  other phytoplankton. This has an important impact, reducing direct 
+c  Because diazotrophs have specialized grazers (O'Neil and Roman, 1992;
+c  Mulholland, Biogeosciences 2007), they are treated independently from
+c  other phytoplankton. This has an important impact, reducing direct
 c  competition between diazotrophs and other phytoplankton.
-c  Note that the phytoplankton concentrations here are not part of the 
-c  conserved nutrient pools: they are only used to keep track of the 
+c  Note that the phytoplankton concentrations here are not part of the
+c  conserved nutrient pools: they are only used to keep track of the
 c  biomass, which is required to calculate the uptake fluxes.
 
       DO k=1,Nr
@@ -798,37 +791,37 @@ c  biomass, which is required to calculate the uptake fluxes.
 
          IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
 
-c  Silicate uptake: diatom biomass is first diagnosed based on the 
-c  fraction of large phytoplankton and the degree of Si limitation, 
-c  analogous to TOPAZ. Diatom biomass adjusts on the same timescale as 
+c  Silicate uptake: diatom biomass is first diagnosed based on the
+c  fraction of large phytoplankton and the degree of Si limitation,
+c  analogous to TOPAZ. Diatom biomass adjusts on the same timescale as
 c  total biomass.
 
-          Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) + 
+          Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) +
      &                Phy_lg_local(i,j,k)*(mu(i,j,k) - lambda_0
-     &                * expkT(i,j,k) * 
-     &                (Phy_lg_local(i,j,k)/pivotal)**(1. / 3.)) 
+     &                * expkT(i,j,k) *
+     &                (Phy_lg_local(i,j,k)/pivotal)**(1. / 3.))
      &                * PTRACERS_dTLev(k)
 
-          Phy_sm_local(i,j,k) = Phy_sm_local(i,j,k) + 
+          Phy_sm_local(i,j,k) = Phy_sm_local(i,j,k) +
      &                Phy_sm_local(i,j,k)*(mu(i,j,k) - lambda_0
-     &                * expkT(i,j,k) * (Phy_sm_local(i,j,k)/pivotal)) 
+     &                * expkT(i,j,k) * (Phy_sm_local(i,j,k)/pivotal))
      &                * PTRACERS_dTLev(k)
-     
-          Phy_diaz_local(i,j,k) = Phy_diaz_local(i,j,k) + 
+
+          Phy_diaz_local(i,j,k) = Phy_diaz_local(i,j,k) +
      &                Phy_diaz_local(i,j,k)*(mu_diaz(i,j,k) - lambda_0
-     &                * expkT(i,j,k) * (Phy_diaz_local(i,j,k)/pivotal)) 
+     &                * expkT(i,j,k) * (Phy_diaz_local(i,j,k)/pivotal))
      &                * PTRACERS_dTLev(k)
 
 #ifdef USE_SIBLING
 c  For now: assuming that all large phyto are diatoms
-c  Another option would be to have a separate diatom population and give 
+c  Another option would be to have a separate diatom population and give
 c  them a higher growth rate to be competitive. Would also need to add
 c  a global variable "phyto_diatom"
-          Phy_diatom_local(i,j,k) = Phy_lg_local(i,j,k) 
+          Phy_diatom_local(i,j,k) = Phy_lg_local(i,j,k)
 
-c          Phy_diatom_local(i,j,k) = Phy_diatom_local(i,j,k) + 
+c          Phy_diatom_local(i,j,k) = Phy_diatom_local(i,j,k) +
 c     &                Phy_diatom_local(i,j,k)*(mu_diatom(i,j,k)-lambda_0
-c     &                * expkT(i,j,k) * (Phy_diatom_local(i,j,k)/pivotal)) 
+c     &                * expkT(i,j,k) * (Phy_diatom_local(i,j,k)/pivotal))
 c     &                * PTRACERS_dTLev(k)
 #endif
 
@@ -850,7 +843,7 @@ CADJ STORE Phy_diaz_local  = comlev1, key = ikey_dynamics, kind=isbyte
 
 #ifdef ADVECT_PHYTO
 c  update tracer here
-         PTR_PHY(i,j,k) = Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k) 
+         PTR_PHY(i,j,k) = Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k)
      &                     + Phy_diaz_local(i,j,k)
 c  update fractional abundance
          phyto_lg(i,j,k,bi,bj) = Phy_lg_local(i,j,k)/PTR_PHY(i,j,k)
@@ -867,7 +860,7 @@ c  update biomass
 c  use the diagnostic biomass to calculate the chl concentration
 c  in mg/m3 (carbon = 12.01 g/mol)
 
-          chl(i,j,k,bi,bj) = max(chl_min, CtoN * 12.01 * 1. _d 3 * 
+          chl(i,j,k,bi,bj) = max(chl_min, CtoN * 12.01 * 1. _d 3 *
      &           theta_Fe(i,j,k) *
      &           (Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k)
      &           + Phy_diaz_local(i,j,k)))
@@ -876,8 +869,7 @@ c  in mg/m3 (carbon = 12.01 g/mol)
         ENDDO
        ENDDO
       ENDDO
-          
-          
+
 c ---------------------------------------------------------------------
 c  Partitioning between organic pools
 
@@ -886,18 +878,18 @@ c  phytoplankton, which subsequently die and are consumed by heterotrophs.
 c  This can involve the transfer of nutrient elements between many
 c  organic pools, both particulate and dissolved, with complex histories.
 c  We take a simple approach here, partitioning the total uptake into two
-c  fractions - sinking and non-sinking - as a function of temperature, 
-c  following Dunne et al. (2005). 
-c  Then, the non-sinking fraction is further subdivided, such that the 
+c  fractions - sinking and non-sinking - as a function of temperature,
+c  following Dunne et al. (2005).
+c  Then, the non-sinking fraction is further subdivided, such that the
 c  majority is recycled instantaneously to the inorganic nutrient pool,
 c  representing the fast turnover of labile dissolved organic matter via
 c  the microbial loop, and the remainder is converted to semi-labile
-c  dissolved organic matter. Iron and macro-nutrient are treated 
-c  identically for the first step, but all iron is recycled 
-c  instantaneously in the second step (i.e. there is no dissolved organic 
+c  dissolved organic matter. Iron and macro-nutrient are treated
+c  identically for the first step, but all iron is recycled
+c  instantaneously in the second step (i.e. there is no dissolved organic
 c  iron pool).
-c  Assume that the fraction of uptake that produces sinking particulate 
-c  organic matter is the same for diazotrophic and non-diazotrophic 
+c  Assume that the fraction of uptake that produces sinking particulate
+c  organic matter is the same for diazotrophic and non-diazotrophic
 c  phytoplankton.
 
       DO k=1,Nr
@@ -906,28 +898,28 @@ c  phytoplankton.
 
          IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
 
-c  sinking fraction: particulate organic matter 
+c  sinking fraction: particulate organic matter
 
-          frac_exp = (phi_sm_2d(i,j,bi,bj) + phi_lg_2d(i,j,bi,bj) * 
+          frac_exp = (phi_sm_2d(i,j,bi,bj) + phi_lg_2d(i,j,bi,bj) *
      &           (mu(i,j,k)/(epsln + lambda_0*expkT(i,j,k)))**2.)/
      &           (1. + (mu(i,j,k)/(epsln + lambda_0*expkT(i,j,k)))**2.)*
      &           exp(kappa_remin * theta(i,j,k,bi,bj))
 
 #ifdef USE_BLING_DVM
-          N_dvm(i,j,k) = phi_dvm * frac_exp *  
-     &             (N_uptake(i,j,k) + N_fix(i,j,k)) 
-          
-          P_dvm(i,j,k) = phi_dvm * frac_exp * P_uptake(i,j,k) 
+          N_dvm(i,j,k) = phi_dvm * frac_exp *
+     &             (N_uptake(i,j,k) + N_fix(i,j,k))
 
-          Fe_dvm(i,j,k) = phi_dvm * frac_exp * Fe_uptake(i,j,k) 
-          
-          N_spm(i,j,k) = frac_exp * (1.0 - phi_dvm) *  
+          P_dvm(i,j,k) = phi_dvm * frac_exp * P_uptake(i,j,k)
+
+          Fe_dvm(i,j,k) = phi_dvm * frac_exp * Fe_uptake(i,j,k)
+
+          N_spm(i,j,k) = frac_exp * (1.0 - phi_dvm) *
      &                 (N_uptake(i,j,k) + N_fix(i,j,k))
 
-          P_spm(i,j,k) = frac_exp * (1.0 - phi_dvm) * 
+          P_spm(i,j,k) = frac_exp * (1.0 - phi_dvm) *
      &                 P_uptake(i,j,k)
 
-          Fe_spm(i,j,k) = frac_exp * (1.0 - phi_dvm) * 
+          Fe_spm(i,j,k) = frac_exp * (1.0 - phi_dvm) *
      &                  Fe_uptake(i,j,k)
 #else
           N_spm(i,j,k) = frac_exp * (N_uptake(i,j,k) + N_fix(i,j,k))
@@ -938,46 +930,44 @@ c  sinking fraction: particulate organic matter
           P_dvm(i,j,k) = 0
           Fe_dvm(i,j,k) = 0
 #endif
-        
+
 c  the remainder is divided between instantaneously recycled and
-c  long-lived dissolved organic matter. 
-    
-          DON_prod(i,j,k) = phi_DOM_2d(i,j,bi,bj)*(N_uptake(i,j,k) 
-     &                      + N_fix(i,j,k) - N_spm(i,j,k) 
+c  long-lived dissolved organic matter.
+
+          DON_prod(i,j,k) = phi_DOM_2d(i,j,bi,bj)*(N_uptake(i,j,k)
+     &                      + N_fix(i,j,k) - N_spm(i,j,k)
      &                      - N_dvm(i,j,k))
 
-          DOP_prod(i,j,k) = phi_DOM_2d(i,j,bi,bj)*(P_uptake(i,j,k) 
+          DOP_prod(i,j,k) = phi_DOM_2d(i,j,bi,bj)*(P_uptake(i,j,k)
      &                      - P_spm(i,j,k) - P_dvm(i,j,k))
-                  
+
           N_recycle(i,j,k) = N_uptake(i,j,k) + N_fix(i,j,k)
-     &                       - N_spm(i,j,k) - DON_prod(i,j,k) 
+     &                       - N_spm(i,j,k) - DON_prod(i,j,k)
      &                       - N_dvm(i,j,k)
 
           P_recycle(i,j,k) = P_uptake(i,j,k)
-     &                       - P_spm(i,j,k) - DOP_prod(i,j,k) 
+     &                       - P_spm(i,j,k) - DOP_prod(i,j,k)
      &                       - P_dvm(i,j,k)
 
-          Fe_recycle(i,j,k) = Fe_uptake(i,j,k) 
+          Fe_recycle(i,j,k) = Fe_uptake(i,j,k)
      &                        - Fe_spm(i,j,k) - Fe_dvm(i,j,k)
 
          ENDIF
-         
+
         ENDDO
        ENDDO
       ENDDO
-
 
 C ---------------------------------------------------------------------
 c  Remineralization
 c  In general, the flux at the bottom of a grid cell should equal
 c  Fb = (Ft + Prod*dz) / (1 + zremin*dz)
-c  where Ft is the flux at the top, and prod*dz is the integrated 
+c  where Ft is the flux at the top, and prod*dz is the integrated
 c  production of new sinking particles within the layer.
 c  This is also multiplied by the fraction of the grid cell that is
-c  not intercepted by the bottom at this level, according to the 
+c  not intercepted by the bottom at this level, according to the
 c  subgridscale sediment interception fraction.
 c  Since Ft=0 in the first layer,
-
 
 C$TAF LOOP = parallel
        DO j=jmin,jmax
@@ -1009,7 +999,7 @@ c  not a bottom cell
 
          IF ( hFacC(i,j,k,bi,bj).gt.0. _d 0 ) THEN
 
-c  Calculate the remineralization lengthscale matrix, zremin, a function 
+c  Calculate the remineralization lengthscale matrix, zremin, a function
 c  of z. Sinking rate (wsink) is constant over the upper wsink0_z metres,
 c  then  increases linearly with depth.
 c  The remineralization rate is a function of oxygen concentrations,
@@ -1054,7 +1044,7 @@ C  CaCO3 flux leaving the cell
 C  Start with cells that are not the deepest cells
 
           IF (bottomlayer.EQ.0) THEN
-          
+
 C  Nutrient accumulation in a cell is given by the biological production
 C  (and instant remineralization) of particulate organic matter
 C  plus flux thought upper interface minus flux through lower interface.
@@ -1070,11 +1060,11 @@ C  (Since not deepest cell: hFacC=1)
      &                    *drF(k) - CaCO3flux_l)*recip_drF(k)
 
            Fe_sed(i,j,k) = 0. _d 0
-           
+
 C  Now do bottom layer
 
           ELSE
-          
+
 C  If this layer is adjacent to bottom topography or it is the deepest
 C  cell of the domain, then remineralize/dissolve in this grid cell
 C  i.e. do not subtract off lower boundary fluxes when calculating remin
@@ -1109,7 +1099,7 @@ C  Convert from mol N m-2 s-1 to umol C cm-2 d-1 and take the log
             log_btm_flx = log10(min(43.0 _d 0, POC_sed *
      &           86400. _d 0 * 100.0 _d 0))
 
-C  Metamodel gives units of umol C cm-2 d-1, convert to mol N m-2 s-1 and 
+C  Metamodel gives units of umol C cm-2 d-1, convert to mol N m-2 s-1 and
 C  multiply by no3_2_n to give NO3 consumption rate
 
              N_den_benthic(i,j,k) = min (POC_sed * NO3toN / CtoN,
@@ -1123,21 +1113,21 @@ C  multiply by no3_2_n to give NO3 consumption rate
 #endif
 
 C  ---------------------------------------------------------------------
-C  Calculate external bottom fluxes. Positive fluxes 
-C  are into the water column from the seafloor. For P, the bottom flux puts 
-C  the sinking flux reaching the bottom cell into the water column through 
-C  diffusion. For iron, the sinking flux disappears into the sediments if 
-C  bottom waters are oxic (assumed adsorbed as oxides). If bottom waters are 
+C  Calculate external bottom fluxes. Positive fluxes
+C  are into the water column from the seafloor. For P, the bottom flux puts
+C  the sinking flux reaching the bottom cell into the water column through
+C  diffusion. For iron, the sinking flux disappears into the sediments if
+C  bottom waters are oxic (assumed adsorbed as oxides). If bottom waters are
 C  anoxic, the sinking flux of Fe is returned to the water column.
 C
-C  For oxygen, the consumption of oxidant required to respire the settling flux 
-C  of organic matter (in support of the no3 bottom flux) diffuses from the 
+C  For oxygen, the consumption of oxidant required to respire the settling flux
+C  of organic matter (in support of the no3 bottom flux) diffuses from the
 C  bottom water into the sediment.
 
-C  Assume all NO3 for benthic denitrification is supplied from the bottom water, 
-C  and that all organic N is also consumed under denitrification (Complete   
-C  Denitrification, sensu Paulmier, Biogeosciences 2009). Therefore, no NO3 is 
-C  regenerated from organic matter respired by benthic denitrification 
+C  Assume all NO3 for benthic denitrification is supplied from the bottom water,
+C  and that all organic N is also consumed under denitrification (Complete
+C  Denitrification, sensu Paulmier, Biogeosciences 2009). Therefore, no NO3 is
+C  regenerated from organic matter respired by benthic denitrification
 C  (necessitating the second term in b_no3).
 
           NO3_btmflx(i,j) = PONflux_l*drF(k)*hFacC(i,j,k,bi,bj)
@@ -1145,9 +1135,9 @@ C  (necessitating the second term in b_no3).
 
           PO4_btmflx(i,j) = POPflux_l*drF(k)*hFacC(i,j,k,bi,bj)
 
-C  Oxygen flux into sediments is that required to support non-denitrification 
-C  respiration, assuming a 4/5 oxidant ratio of O2 to NO3. Oxygen consumption 
-C  is allowed to continue at negative oxygen concentrations, representing 
+C  Oxygen flux into sediments is that required to support non-denitrification
+C  respiration, assuming a 4/5 oxidant ratio of O2 to NO3. Oxygen consumption
+C  is allowed to continue at negative oxygen concentrations, representing
 C  sulphate reduction.
 
           O2_btmflx(i,j) = -(O2toN * PONflux_l*drF(k)*hFacC(i,j,k,bi,bj)
@@ -1155,18 +1145,18 @@ C  sulphate reduction.
 
           ENDIF
 
-c  Calculate free and inorganically associated iron concentration for 
-c  scavenging. We assume that there is a spectrum of iron ligands present 
-c  in seawater, with  varying binding strengths and whose composition 
-c  varies with light and iron concentrations. For example, 
-c  photodissocation of ligand complexes occurs under bright light, 
+c  Calculate free and inorganically associated iron concentration for
+c  scavenging. We assume that there is a spectrum of iron ligands present
+c  in seawater, with  varying binding strengths and whose composition
+c  varies with light and iron concentrations. For example,
+c  photodissocation of ligand complexes occurs under bright light,
 c  weakening the binding strength (e.g. Barbeau et al., Nature 2001),
-c  while at very low iron concentrations (order kfe_eq_lig_femin), 
-c  siderophores are thought to be produced as a response to extreme iron 
-c  stress. In anoxic waters, iron should be reduced, and therefore mostly 
-c  immune to scavenging; therefore, the feprime calculation is not made 
+c  while at very low iron concentrations (order kfe_eq_lig_femin),
+c  siderophores are thought to be produced as a response to extreme iron
+c  stress. In anoxic waters, iron should be reduced, and therefore mostly
+c  immune to scavenging; therefore, the feprime calculation is not made
 c  if oxygen is less than 0.
-     
+
           kFe_eq_lig = kFe_eq_lig_max-(kFe_eq_lig_max-kFe_eq_lig_min)
      &             *(irr_inst(i,j,k)**2
      &             /(kFe_eq_lig_irr**2+irr_inst(i,j,k)**2))
@@ -1187,8 +1177,8 @@ c  if oxygen is less than 0.
      &       kFe_inorg*(max(1. _d -8,FreeFe))**(1.5)
 
 c  Calculate the Fe adsorption using this PONflux_l:
-c  The absolute first order rate constant is calculated from the 
-c  concentration of organic particles, after Parekh et al. (2005). 
+c  The absolute first order rate constant is calculated from the
+c  concentration of organic particles, after Parekh et al. (2005).
 c  (Galbraith's code limits the value to 1/2dt for numerical stability).
 
            IF ( PONflux_l .GT. 0. _d 0 ) THEN
@@ -1234,7 +1224,6 @@ C  Prepare the tracers for the next layer down
        ENDDO
       ENDDO
 
-
 c-----------------------------------------------------------
 c  remineralization from diel vertical migration
 #ifdef USE_BLING_DVM
@@ -1254,7 +1243,7 @@ C$TAF LOOP = parallel
 C$TAF LOOP = parallel
        DO i=imin,imax
 
-c  Initialize 
+c  Initialize
         o2_upper = 0.
         o2_lower = 0.
         dz_upper = 0.
@@ -1302,7 +1291,7 @@ c  Also convert O2 to mmol m-3.
         temp_lower = temp_lower / (epsln + dz_lower)
 
 c  Calculate the regression, using the constants given in Bianchi et al. (2013).
-c  The variable values are bounded to lie within reasonable ranges: 
+c  The variable values are bounded to lie within reasonable ranges:
 c         O2 gradient   : [-10,300] mmol/m3
 c         Log10 Chl     : [-1.8,0.85] log10(mg/m3)
 c         mld           : [0,500] m
@@ -1316,9 +1305,9 @@ c         T gradient    : [-3,20] C
      &   - 2.40 _d 0*min(20. _d 0,max(-3. _d 0,(temp_upper-temp_lower)))
 
 c  Limit the depth of migration in polar winter.
-c  Use irr_mem since this is averaged over multiple days, dampening the 
+c  Use irr_mem since this is averaged over multiple days, dampening the
 c  diurnal cycle.
-c  Tapers Z_DVM to the minimum when surface irradince is below a given  
+c  Tapers Z_DVM to the minimum when surface irradince is below a given
 c  threshold (here 10 W/m2).
 
         if ( irr_mem(i,j,1,bi,bj) .lt. 10. ) then
@@ -1450,121 +1439,117 @@ c  Calculate the remineralization terms as the divergence of the flux
 #endif
 
 c-----------------------------------------------------------
-c  
+c
 
       DO k=1,Nr
        DO j=jmin,jmax
-        DO i=imin,imax  
+        DO i=imin,imax
 
          IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
 
 c  Dissolved organic matter slow remineralization
 
 #ifdef BLING_NO_NEG
-          DON_remin(i,j,k) = MAX(maskC(i,j,k,bi,bj)*gamma_DON 
+          DON_remin(i,j,k) = MAX(maskC(i,j,k,bi,bj)*gamma_DON
      &                       *PTR_DON(i,j,k),0. _d 0)
-     
+
           DOP_remin(i,j,k) = MAX(maskC(i,j,k,bi,bj)*gamma_DOP
      &                       *PTR_DOP(i,j,k),0. _d 0)
 #else
           DON_remin(i,j,k) = maskC(i,j,k,bi,bj)*gamma_DON
      &                       *PTR_DON(i,j,k)
-     
+
           DOP_remin(i,j,k) = maskC(i,j,k,bi,bj)*gamma_DOP
      &                       *PTR_DOP(i,j,k)
 #endif
-    
-      
-c  Pelagic denitrification    
-c  If anoxic  
 
-          IF (PTR_O2(i,j,k) .lt. oxic_min) THEN 
+c  Pelagic denitrification
+c  If anoxic
+
+          IF (PTR_O2(i,j,k) .lt. oxic_min) THEN
            IF (PTR_NO3(i,j,k) .gt. oxic_min) THEN
-            N_den_pelag(i,j,k) = max(epsln, (NO3toN *        
+            N_den_pelag(i,j,k) = max(epsln, (NO3toN *
      &                    ((1. _d 0 - phi_DOM_2d(i,j,bi,bj))
-     &                    * (N_reminp(i,j,k) 
-     &                    + N_remindvm(i,j,k)) + DON_remin(i,j,k) + 
-     &                    N_recycle(i,j,k))) - N_den_benthic(i,j,k)) 
+     &                    * (N_reminp(i,j,k)
+     &                    + N_remindvm(i,j,k)) + DON_remin(i,j,k) +
+     &                    N_recycle(i,j,k))) - N_den_benthic(i,j,k))
            ENDIF
           ENDIF
-          
+
 c  oxygen production through photosynthesis
 
-          O2_prod(i,j,k) = O2toN * N_uptake(i,j,k)               
+          O2_prod(i,j,k) = O2toN * N_uptake(i,j,k)
      &                     + (O2toN - 1.25 _d 0) * N_fix(i,j,k)
 
-   
-   
 c-----------------------------------------------------------
-C  ADD TERMS 
-   
-c  Nutrients  
+C  ADD TERMS
+
+c  Nutrients
 c  Sum of fast recycling, decay of sinking POM, and decay of DOM,
 c  less uptake, (less denitrification).
 
-          G_PO4(i,j,k) = -P_uptake(i,j,k) + P_recycle(i,j,k) 
-     &                   + (1. _d 0 - phi_DOM_2d(i,j,bi,bj)) 
-     &                   * (P_reminp(i,j,k) 
+          G_PO4(i,j,k) = -P_uptake(i,j,k) + P_recycle(i,j,k)
+     &                   + (1. _d 0 - phi_DOM_2d(i,j,bi,bj))
+     &                   * (P_reminp(i,j,k)
      &                   + P_remindvm(i,j,k)) + DOP_remin(i,j,k)
-          
-          G_NO3(i,j,k) = -N_uptake(i,j,k) 
-          IF (PTR_O2(i,j,k) .lt. oxic_min) THEN 
-c  Anoxic 
-           G_NO3(i,j,k) = G_NO3(i,j,k) 
-     &                    - N_den_pelag(i,j,k) - N_den_benthic(i,j,k)   
+
+          G_NO3(i,j,k) = -N_uptake(i,j,k)
+          IF (PTR_O2(i,j,k) .lt. oxic_min) THEN
+c  Anoxic
+           G_NO3(i,j,k) = G_NO3(i,j,k)
+     &                    - N_den_pelag(i,j,k) - N_den_benthic(i,j,k)
           ELSE
 c  Oxic
-           G_NO3(i,j,k) = G_NO3(i,j,k) 
+           G_NO3(i,j,k) = G_NO3(i,j,k)
      &                   + N_recycle(i,j,k)
      &                   + (1. _d 0 - phi_DOM_2d(i,j,bi,bj))
      &                   * (N_reminp(i,j,k) + N_remindvm(i,j,k))
      &                   + DON_remin(i,j,k)
-          ENDIF    
+          ENDIF
 
 c  Iron
-c  remineralization, sediments and adsorption are all bundled into 
+c  remineralization, sediments and adsorption are all bundled into
 c  Fe_reminsum
 
-          G_FE(i,j,k) = -Fe_uptake(i,j,k) + Fe_reminsum(i,j,k) 
-     &                  + Fe_remindvm(i,j,k) + Fe_recycle(i,j,k) 
+          G_FE(i,j,k) = -Fe_uptake(i,j,k) + Fe_reminsum(i,j,k)
+     &                  + Fe_remindvm(i,j,k) + Fe_recycle(i,j,k)
 
 c  Dissolved Organic Matter
 c  A fraction of POM remineralization goes into dissolved pools.
 
           G_DON(i,j,k) = DON_prod(i,j,k) + phi_DOM_2d(i,j,bi,bj)
-     &                   * (N_reminp(i,j,k) + N_remindvm(i,j,k)) 
+     &                   * (N_reminp(i,j,k) + N_remindvm(i,j,k))
      &                   - DON_remin(i,j,k)
 
-          G_DOP(i,j,k) = DOP_prod(i,j,k) + phi_DOM_2d(i,j,bi,bj) 
-     &                   * (P_reminp(i,j,k) + P_remindvm(i,j,k)) 
+          G_DOP(i,j,k) = DOP_prod(i,j,k) + phi_DOM_2d(i,j,bi,bj)
+     &                   * (P_reminp(i,j,k) + P_remindvm(i,j,k))
      &                   - DOP_remin(i,j,k)
 
 c  Oxygen:
-c  Assuming constant O2:N ratio in terms of oxidant required per mol of 
-c  organic N. This implies a constant stoichiometry of C:N and H:N (where H is 
-c  reduced, organic H). Because the N provided by N2 fixation is reduced from 
-c  N2, rather than NO3-, the o2_2_n_fix is slightly less than the NO3- based 
-c  ratio (by 1.25 mol O2/ mol N). Account for the organic matter respired 
-c  through benthic denitrification by subtracting 5/4 times the benthic 
+c  Assuming constant O2:N ratio in terms of oxidant required per mol of
+c  organic N. This implies a constant stoichiometry of C:N and H:N (where H is
+c  reduced, organic H). Because the N provided by N2 fixation is reduced from
+c  N2, rather than NO3-, the o2_2_n_fix is slightly less than the NO3- based
+c  ratio (by 1.25 mol O2/ mol N). Account for the organic matter respired
+c  through benthic denitrification by subtracting 5/4 times the benthic
 c  denitrification NO3 utilization rate from the overall oxygen consumption.
 
-          G_O2(i,j,k) = O2_prod(i,j,k) 
+          G_O2(i,j,k) = O2_prod(i,j,k)
 c  If oxic
-          IF (PTR_O2(i,j,k) .gt. oxic_min) THEN 
-          G_O2(i,j,k) = G_O2(i,j,k) 
-     &                  -O2toN * ((1. _d 0 - phi_DOM_2d(i,j,bi,bj)) 
-     &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))       
+          IF (PTR_O2(i,j,k) .gt. oxic_min) THEN
+          G_O2(i,j,k) = G_O2(i,j,k)
+     &                  -O2toN * ((1. _d 0 - phi_DOM_2d(i,j,bi,bj))
+     &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))
      &                  + DON_remin(i,j,k) +  N_recycle(i,j,k))
 c  If anoxic but NO3 concentration is very low
 c  (generate negative O2; proxy for HS-).
           ELSEIF (PTR_NO3(i,j,k) .lt. oxic_min) THEN
-          G_O2(i,j,k) = G_O2(i,j,k) 
-     &                  -O2toN * ((1. _d 0 - phi_DOM_2d(i,j,bi,bj)) 
-     &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))       
+          G_O2(i,j,k) = G_O2(i,j,k)
+     &                  -O2toN * ((1. _d 0 - phi_DOM_2d(i,j,bi,bj))
+     &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))
      &                  + DON_remin(i,j,k) +  N_recycle(i,j,k))
      &                  + N_den_benthic(i,j,k) * 1.25 _d 0
           ENDIF
-
 
 c  Carbon flux diagnostic
 
@@ -1573,8 +1558,8 @@ c  Carbon flux diagnostic
           NPP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)) * CtoN
 
           NCP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)
-     &                   - N_recycle(i,j,k) 
-     &                   - (1. _d 0 - phi_DOM_2d(i,j,bi,bj)) 
+     &                   - N_recycle(i,j,k)
+     &                   - (1. _d 0 - phi_DOM_2d(i,j,bi,bj))
      &                   * (N_reminp(i,j,k) + N_remindvm(i,j,k))
      &                   - DON_remin(i,j,k) ) * CtoN
 
@@ -1585,18 +1570,17 @@ c  Carbon flux diagnostic
 
           G_DIC(i,j,k) = -NCP(i,j,k) + G_CaCO3(i,j,k)
 
-
 c  for diagnostics: convert to mol C/m3
 
          Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) * CtoN
          Phy_sm_local(i,j,k) = Phy_sm_local(i,j,k) * CtoN
          Phy_diaz_local(i,j,k) = Phy_diaz_local(i,j,k) * CtoN
 
-c  for constraints determine POC, assuming that phytoplankton carbon 
+c  for constraints determine POC, assuming that phytoplankton carbon
 c  is 30% of POC
 
          poc(i,j,k,bi,bj) = (Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k) +
-     &                       Phy_diaz_local(i,j,k) ) * 3.33333 _d 0 
+     &                       Phy_diaz_local(i,j,k) ) * 3.33333 _d 0
 
          ENDIF
 
@@ -1604,7 +1588,6 @@ c  is 30% of POC
        ENDDO
       ENDDO
 
-        
 c ---------------------------------------------------------------------
 
 #ifdef ALLOW_DIAGNOSTICS

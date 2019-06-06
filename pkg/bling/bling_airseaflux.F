@@ -5,12 +5,12 @@
 #include "PTRACERS_OPTIONS.h"
 
 CBOP
-      subroutine BLING_AIRSEAFLUX( 
-     I           PTR_DIC, PTR_ALK, PTR_O2, PTR_PO4, 
+      subroutine BLING_AIRSEAFLUX(
+     I           PTR_DIC, PTR_ALK, PTR_O2, PTR_PO4,
 #ifdef USE_SIBLING
-     I           PTR_SI, 
+     I           PTR_SI,
 #endif
-     O           SGDIC, SGO2, FluxO2, 
+     O           SGDIC, SGO2, FluxO2,
      I           bi, bj, imin, imax, jmin, jmax,
      I           myIter, myTime, myThid)
 
@@ -19,14 +19,14 @@ C     | subroutine bling_airseaflux
 C     | o Calculate the carbon and oxygen air-sea flux terms
 C     |   Adapted from pkg/dic/dic_surfforcing.F
 C     | - Get atmospheric pCO2 value
-C     |   Option 1: constant value, default 268.d-6, can be changed  
+C     |   Option 1: constant value, default 268.d-6, can be changed
 C     |             in data.bling
 C     |   Option 2: read 2D field using EXF pkg
 C     | - Update pCO2 and pH
 C     =================================================================
 
-      implicit none
-      
+      IMPLICIT NONE
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "DYNVARS.h"
@@ -64,10 +64,10 @@ C     PTR_O2           :: oxygen tracer field
       _RL  PTR_SI (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
 C     === Output ===
-C     SGDIC            :: surface tendency of DIC due to air-sea exchange 
-C     SGO2             :: surface tendency of O2 due to air-sea exchange 
-C     FluxO2           :: air-sea flux of O2 
-C     (FluxCO2 is a global variable) 
+C     SGDIC            :: surface tendency of DIC due to air-sea exchange
+C     SGO2             :: surface tendency of O2 due to air-sea exchange
+C     FluxO2           :: air-sea flux of O2
+C     (FluxCO2 is a global variable)
       _RL  SGDIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  SGO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  FluxO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -160,7 +160,7 @@ C which is re-used for flux of O2
 C Schmidt number is accounted for later
 
               pisvel(i,j) = 0.337 _d 0 * wind(i,j,bi,bj)**2/3.6 _d 5
-              
+
               Kwexch_Pre(i,j) = pisvel(i,j)* (1. _d 0 - FIce(i,j,bi,bj))
 
         ENDDO
@@ -188,7 +188,7 @@ C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
      I        surfdic(i,j), surfphos(i,j),
      I        surfsi(i,j),surfalk(i,j),
      U        pH(i,j,klev,bi,bj),pCO2(i,j,bi,bj),co3dummy,
-     I        i,j,klev,bi,bj,myIter, myThid )       
+     I        i,j,klev,bi,bj,myIter, myThid )
              ELSE
 C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */
@@ -255,7 +255,7 @@ c Flux = kw*rho*(ff*pCO2atm-k0*FugFac*pCO2ocean)
           ELSE
               FluxCO2(i,j,bi,bj) = 0. _d 0
           ENDIF
-          
+
 C convert flux (mol kg-1 m s-1) to (mol m-2 s-1)
           FluxCO2(i,j,bi,bj) = FluxCO2(i,j,bi,bj)/permil
 
@@ -335,8 +335,8 @@ C update surface tendencies
           ENDDO
         ENDDO
 
-        _EXCH_XY_RL( pCO2, mythid )
-        _EXCH_XYZ_RL( pH, mythid )
+        _EXCH_XY_RL( pCO2, myThid )
+        _EXCH_XYZ_RL( pH, myThid )
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN

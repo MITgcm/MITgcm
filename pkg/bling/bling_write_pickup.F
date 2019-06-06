@@ -9,8 +9,8 @@ C     | subroutine bling_write_pickup
 C     | o Writes BLING arrays (needed for a restart) to a pickup file
 C     =================================================================
 
-      implicit none
-      
+      IMPLICIT NONE
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -70,18 +70,18 @@ C       record number < 0 : a hack not to write meta files now:
         IF (j.LE.listDim) wrFldList(j) = 'BLG_chl '
 
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, prec, Nr, phyto_sm, -j, myIter, 
+        CALL WRITE_REC_3D_RL( fn, prec, Nr, phyto_sm, -j, myIter,
      & myThid )
         IF (j.LE.listDim) wrFldList(j) = 'BLG_Psm '
 
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, prec, Nr, phyto_lg, -j, myIter, 
+        CALL WRITE_REC_3D_RL( fn, prec, Nr, phyto_lg, -j, myIter,
      & myThid )
         IF (j.LE.listDim) wrFldList(j) = 'BLG_Plg '
 
 #ifndef USE_BLING_V0
         j = j + 1
-        CALL WRITE_REC_3D_RL( fn, prec, Nr, phyto_diaz, -j, myIter, 
+        CALL WRITE_REC_3D_RL( fn, prec, Nr, phyto_diaz, -j, myIter,
      & myThid )
         IF (j.LE.listDim) wrFldList(j) = 'BLG_Pdia'
 #endif

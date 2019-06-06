@@ -10,8 +10,8 @@ C     | o Calculate first guess of pH
 C     |   Adapted from pkg/dic/dic_surfforcing_init.F
 C     ==========================================================
 
-      implicit none
-      
+      IMPLICIT NONE
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "DYNVARS.h"
@@ -59,7 +59,7 @@ C--   Now calculate whether it is time to update the forcing arrays
        CALL GET_PERIODIC_INTERVAL(
      O                   intimeP, intime0, intime1, bWght, aWght,
      I                   externForcingCycle, externForcingPeriod,
-     I                   deltaTclock, startTime, myThid )
+     I                   deltaTClock, startTime, myThid )
 
        _BARRIER
        _BEGIN_MASTER(myThid)
@@ -87,8 +87,8 @@ C--   Now calculate whether it is time to update the forcing arrays
        IF ( BLING_silicaFile .NE. ' '  ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
              silica(i,j,bi,bj)= bWght*silica0(i,j,bi,bj)
      &                        + aWght*silica1(i,j,bi,bj)
            ENDDO
@@ -113,7 +113,7 @@ C =================================================================
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
-          DO i=1-Olx,sNx+OLx
+          DO i=1-OLx,sNx+OLx
             pH(i,j,k,bi,bj) = 8. _d 0
           ENDDO
          ENDDO
@@ -228,10 +228,10 @@ C Use Munhoven (2013) Solvesaphe routine to initialize pH
 C call AHINI_FOR_AT to get better initial guess of pH
               CALL AHINI_FOR_AT(
      I           alktmp(i,j)*permil,
-     I           dictmp(i,j)*permil, 
+     I           dictmp(i,j)*permil,
      I           bt(i,j,bi,bj),
      U           pH(i,j,k,bi,bj),
-     I           i,j,k,bi,bj,nIter0,myThid )       
+     I           i,j,k,bi,bj,nIter0,myThid )
 CAV C$TAF STORE pH(i,j,k,bi,bj)                            = dic_surf
 CAV C$TAF STORE alktmp(i,j), phostmp(i,j), sitmp(i,j)      = dic_surf
 #ifdef ALLOW_DEBUG
@@ -243,7 +243,7 @@ CAV C$TAF STORE alktmp(i,j), phostmp(i,j), sitmp(i,j)      = dic_surf
      I        dictmp(i,j), phostmp(i,j),
      I        sitmp(i,j),alktmp(i,j),
      U        pH(i,j,k,bi,bj),pCO2(i,j,bi,bj),co3dummy,
-     I        i,j,k,bi,bj, it ,  myThid )       
+     I        i,j,k,bi,bj, it ,  myThid )
              ELSE
 C Use the original Follows et al. (2006) solver
 #endif /* CARBONCHEM_SOLVESAPHE */
@@ -268,7 +268,7 @@ C Use the original Follows et al. (2006) solver
      I        i,j,k,bi,bj, it ,  myThid )
              ENDDO
             ENDIF
-#ifdef CARBONCHEM_SOLVESAPHE             
+#ifdef CARBONCHEM_SOLVESAPHE
              ENDIF
 #endif /* CARBONCHEM_SOLVESAPHE */
            ENDDO

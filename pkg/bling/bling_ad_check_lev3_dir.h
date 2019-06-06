@@ -13,8 +13,8 @@ CADJ STORE ft                = tapelev3, key = ilev_3
 CADJ STORE irr_mem           = tapelev3, key = ilev_3
 CADJ STORE chl               = tapelev3, key = ilev_3
 CADJ STORE poc               = tapelev3, key = ilev_3
-CADJ STORE phyto_sm          = tapelev3, key = ilev_3 
-CADJ STORE phyto_lg          = tapelev3, key = ilev_3 
+CADJ STORE phyto_sm          = tapelev3, key = ilev_3
+CADJ STORE phyto_lg          = tapelev3, key = ilev_3
 # ifndef USE_BLING_V0
 CADJ STORE phyto_diaz        = tapelev3, key = ilev_3
 # endif
@@ -36,7 +36,6 @@ CADJ STORE wspeed            = tapelev3, key = ilev_3
 CADJ STORE apco20            = tapelev3, key = ilev_3
 CADJ STORE apco21            = tapelev3, key = ilev_3
 # endif
-
 
 #endif /* ALLOW_BLING */
 

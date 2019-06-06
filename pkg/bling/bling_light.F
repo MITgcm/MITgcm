@@ -6,32 +6,32 @@ CBOP
      U               irr_inst, irr_eff,
      I               bi, bj, imin, imax, jmin, jmax,
      I               myIter, myTime, myThid )
-     
+
 C     =================================================================
 C     | subroutine bling_light
 C     | o calculate effective light for phytoplankton growth
 C     |   There are multiple types of light.
 C     | - irr_inst is the instantaneous irradiance field.
-C     | - irr_mix is the same, but with the irr_inst averaged throughout   
-C     |   the mixed layer. This quantity is intended to represent the 
-C     |   light to which phytoplankton subject to turbulent transport in 
+C     | - irr_mix is the same, but with the irr_inst averaged throughout
+C     |   the mixed layer. This quantity is intended to represent the
+C     |   light to which phytoplankton subject to turbulent transport in
 C     |   the mixed-layer would be exposed.
-C     | - irr_mem is a temporally smoothed field carried between 
+C     | - irr_mem is a temporally smoothed field carried between
 C     |   timesteps, to represent photoadaptation.
-C     | - irr_eff is the effective irradiance for photosynthesis, 
+C     | - irr_eff is the effective irradiance for photosynthesis,
 C     |   given either by irr_inst or irr_mix, depending on model
 C     |   options and location.
-C     | o instantaneous light is calculated either from 
-C     | - date and latitude, then exponentially attenuated down the 
+C     | o instantaneous light is calculated either from
+C     | - date and latitude, then exponentially attenuated down the
 C     |   water column, or
-C     | - short-wave radiation read from external forcing file, 
+C     | - short-wave radiation read from external forcing file,
 C     |   attenuated down the water column, or
-C     | - short-wave radiation distributed through the water column 
+C     | - short-wave radiation distributed through the water column
 C     |   according to SWFRAC routine
 C     =================================================================
 
-      implicit none
-      
+      IMPLICIT NONE
+
 C     === Global variables ===
 C     irr_inst      :: Instantaneous irradiance
 C     irr_mem       :: Phyto irradiance memory
@@ -63,7 +63,7 @@ C     myThid        :: thread Id. number
 C     === Input ===
       _RL mld       (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     === Output ===
-C      irr_inst     :: instantaneous light 
+C      irr_inst     :: instantaneous light
 C      irr_eff      :: effective light for photosynthesis
       _RL irr_inst  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL irr_eff   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -75,7 +75,7 @@ C     === Local variables ===
       _RL cosz, frac, fluxi
       _RL atten
       _RL irr_surf  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#ifdef ML_MEAN_LIGHT      
+#ifdef ML_MEAN_LIGHT
       _RL irr_mix   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL SumMLIrr
       _RL tmp_ML
@@ -157,7 +157,7 @@ c  instantaneous light, mixed layer averaged light
 
       DO j=jmin,jmax
        DO i=imin,imax
-       
+
 c  Photosynthetically-available radiations (PAR)
 #ifdef USE_QSW
         irr_surf(i,j) = max(epsln,
@@ -167,7 +167,7 @@ c  Photosynthetically-available radiations (PAR)
 #endif
 
 c  Remove light under ice
-c  If using Qsw and seaice/thsice, then ice fraction is already 
+c  If using Qsw and seaice/thsice, then ice fraction is already
 c  taken into account
         QSW_underice = .FALSE.
 #ifdef USE_QSW
@@ -177,7 +177,6 @@ c  taken into account
         IF ( .NOT. QSW_underice ) THEN
          irr_surf(i,j) = irr_surf(i,j)*(1. _d 0 - FIce(i,j,bi,bj))
         ENDIF
-
 
 #ifdef ML_MEAN_LIGHT
         SumMLIrr   = 0. _d 0
@@ -203,7 +202,7 @@ C Penetrating SW radiation
         kp1 = k
         swfracb(2)=0. _d 0
        ENDIF
-         irr_inst(i,j,k) = 
+         irr_inst(i,j,k) =
      &         irr_surf(i,j)*(swfracb(1)*maskC(i,j,k,bi,bj)
      &         -swfracb(2)*maskC(i,j,kp1, bi,bj))
      &         *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
@@ -244,35 +243,34 @@ c  Mean irradiance in the mixed layer
        ENDDO
       ENDDO
 
-
       DO k=1,Nr
        DO j=jmin,jmax
-        DO i=imin,imax  
+        DO i=imin,imax
 
          IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
 
           irr_eff(i,j,k) = irr_inst(i,j,k)
-          
+
 #ifdef ML_MEAN_LIGHT
-c  Inside mixed layer, effective light is set to mean mixed layer light 
+c  Inside mixed layer, effective light is set to mean mixed layer light
          IF ((-rf(k+1) .le. mld(i,j)).and.
      &               (-rf(k+1).lt.100. _d 0)) THEN
            irr_eff(i,j,k) = irr_mix(i,j)
           ENDIF
-#endif 
+#endif
 
          ENDIF
 
         ENDDO
        ENDDO
       ENDDO
-     
+
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
         CALL DIAGNOSTICS_FILL(irr_inst,'BLGIRRIS',0,Nr,2,bi,bj,myThid)
-      ENDIF 
+      ENDIF
 #endif
 
       RETURN
       END
-      
+

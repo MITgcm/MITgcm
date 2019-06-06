@@ -14,7 +14,7 @@ C     |   for pH calculation
 C     | o Update fields from EXF package
 C     *========================================================*
 
-      implicit none
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"
@@ -287,7 +287,7 @@ C     Atmospheric carbon dioxide concentration
      I     myTime, myIter, myThid )
        ENDIF
       ENDIF
-#endif 
+#endif
 
 #endif /* ALLOW_BLING */
       RETURN

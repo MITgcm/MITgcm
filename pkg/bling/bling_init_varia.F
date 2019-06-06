@@ -8,8 +8,8 @@ C     | subroutine bling_init_varia
 C     | o Initialize variable parameters
 C     ==========================================================
 
-      implicit none
-      
+      IMPLICIT NONE
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -34,8 +34,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Initialise global variables
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           DO k = 1, Nr
             omegaC(i,j,k,bi,bj)     = 0. _d 0
             omegaAr(i,j,k,bi,bj)    = 0. _d 0
@@ -49,7 +49,7 @@ C--   Initialise global variables
 #endif
           ENDDO
           gamma_POM_2d(i,j,bi,bj)   = gamma_POM
-          wsink0_2d(i,j,bi,bj)      = wsink0 
+          wsink0_2d(i,j,bi,bj)      = wsink0
           phi_DOM_2d(i,j,bi,bj)     = phi_DOM
           phi_sm_2d(i,j,bi,bj)      = phi_sm
           phi_lg_2d(i,j,bi,bj)      = phi_lg
@@ -67,12 +67,12 @@ C--   Initialise global variables
 
 C Read in 2d bio related variables
         IF ( bling_Pc_2dFile .NE. ' ' ) THEN
-           CALL READ_FLD_XY_RL( bling_Pc_2dFile, ' ', 
+           CALL READ_FLD_XY_RL( bling_Pc_2dFile, ' ',
      &                          Pc_0_2d, 0, myThid )
         _EXCH_XY_RL(Pc_0_2d,myThid)
         ENDIF
         IF ( bling_k_Fe2dFile .NE. ' ' ) THEN
-           CALL READ_FLD_XY_RL( bling_k_Fe2dFile, ' ', 
+           CALL READ_FLD_XY_RL( bling_k_Fe2dFile, ' ',
      &                          k_Fe_2d, 0, myThid )
         _EXCH_XY_RL(k_Fe_2d,myThid)
         ENDIF
@@ -103,7 +103,7 @@ C Read in 2d bio related variables
         ENDIF
 #ifndef USE_BLING_V0
         IF ( bling_Pc_2d_diazFile .NE. ' ' ) THEN
-           CALL READ_FLD_XY_RL( bling_Pc_2d_diazFile,' ', 
+           CALL READ_FLD_XY_RL( bling_Pc_2d_diazFile,' ',
      &                          Pc_0_diaz_2d, 0, myThid)
         _EXCH_XY_RL(Pc_0_diaz_2d,myThid)
         ENDIF

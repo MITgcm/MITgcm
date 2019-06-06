@@ -6,10 +6,9 @@ code_merged:
 
 *** added log chl and poc cost
 
-
 2) cost_profiles
 
-*** added log poc cost 
+*** added log poc cost
 
 c from profiles_readparms.F, num_var=15 is chlorophyll, 16 is POC
 c for those variables, use log cost function
@@ -17,10 +16,7 @@ c for those variables, use log cost function
 
 *** is || correct syntax?
 
-
-
 pkg/bling:
-
 
 1) bling_carbon_chem
 
@@ -30,12 +26,12 @@ pkg/bling:
 <        print *,'CMMcag1', cag,i,j,k,xC(i,j,1,1),yC(i,j,1,1)
 < C myXGlobalLo-1+(bi-1)*sNx+i,        myYGlobalLo-1+(bj-1)*sNy+j
 <        print *,'CMMcag2',ta,bohg,(kwlocal/hguess),hguess,hpo4g,
-<      &           2.0 _d 0*po4g,h3po4g, siooh3g 
+<      &           2.0 _d 0*po4g,h3po4g, siooh3g
 <        cag = 0.1 _d 0*ta
 <         ENDIF
 < CMM)
 ---
-> 
+>
 464,474d448
 < CMM(
 <         IF ( hnew .GT. (0.00001 _d 0) )  THEN
@@ -71,13 +67,12 @@ pkg/bling:
 <            delta = (57.7 _d 0 - 0.118 _d 0*tk)
 <            B1 = -1636.75 _d 0 + 12.0408 _d 0*tk - 0.0327957 _d 0*tk*tk
 <            B = B1 + 3.16528 _d 0*tk*tk*tk*(0.00001 _d 0)
-<            fugf(i,j,bi,bj) = exp( (B+2. _d 0*delta) * 
-<      &                            AtmosP(i,j,bi,bj) * P1atm / RT) 
+<            fugf(i,j,bi,bj) = exp( (B+2. _d 0*delta) *
+<      &                            AtmosP(i,j,bi,bj) * P1atm / RT)
 
 *** to do: add comment that we're using atmosp in fugf calculation (dic pkg doesn't)
 
 *** to do: add comment that we're calculating omega_arag
-
 
 2) bling_diagnostic_init
 
@@ -85,19 +80,17 @@ pkg/bling:
 
 *** added #ifdef USE_SIBLING, #ifndef USE_BLING_v0 for specific diagnostics
 
-
 3) bling_init_varia
 
 *** I did not add init biomass memory (we likely won't use it)
 
-
 4) bling_light
 
 *** added comments *** check that it's ok
-C     | o instantaneous light is calculated either from 
-C     | - date and latitude, then exponentially attenuated down the 
+C     | o instantaneous light is calculated either from
+C     | - date and latitude, then exponentially attenuated down the
 C     |   water column, or
-C     | - short-wave radiation read from external forcing file, 
+C     | - short-wave radiation read from external forcing file,
 C     |   attenuated down the water column according to bling default, or
 C     | - short-wave radiation read from external forcing file,
 C     |   attenuated (in a conservative way) down the water column
@@ -107,7 +100,7 @@ C     |   according to SWFRAC routine
 
 *** deal with ice here instead of in bling_readparms
 c  Remove light under ice
-c  If using Qsw and seaice/thsice, then ice fraction is already 
+c  If using Qsw and seaice/thsice, then ice fraction is already
 c  taken into account
         QSW_underice = .FALSE.
 #ifdef USE_QSW
@@ -118,29 +111,26 @@ c  taken into account
          irr_surf(i,j) = irr_surf(i,j)*(1. _d 0 - FIce(i,j,bi,bj))
         ENDIF
 
-*** added MM changes under #ifdef USE_QSW_Z 
+*** added MM changes under #ifdef USE_QSW_Z
 *** to do: find a more meaningful flag name?
 
 *** to do: make max mixing depth a variable in data.bling
 (for now changed from 200 to 100)
 
-
 5) bling_min_val
 
 *** added a record of corrections to tracer fields
-
 
 6) bling_mixed_layer
 
 *** added MM new code, which is now default option
 for threshold criterion need #define BLING_USE_THRESHOLD_MLD
 
-
 7) BLING_OPTIONS
 
 *** added:
 
-c Calculate MLD using a threshold criterion. If undefined, 
+c Calculate MLD using a threshold criterion. If undefined,
 c MLD is calculated using the second derivative of rho(z)
 #undef BLING_USE_THRESHOLD_MLD
 
@@ -155,8 +145,7 @@ c Use local atmospheric pressure from EXF package for fugacity factor
 c Read atmospheric pCO2 values from EXF package
 #define  USE_EXFCO2
 
-*** added options for new chemistry 
-
+*** added options for new chemistry
 
 8) bling_bio_nitrogen
 
@@ -164,15 +153,12 @@ c Read atmospheric pCO2 values from EXF package
 
 *** I did not add the delayed mortality term
 
-
 9) BLING_VARS
 
-*** added variable MLmix_max (max depth over which light and biomass can be mixed; 
+*** added variable MLmix_max (max depth over which light and biomass can be mixed;
 default = 200m -> to do: change to 100 in data.bling
 
 *** I did not add init biomass memory (we likely won't use it)
-
-
 
 10) bling_main
 
@@ -180,23 +166,17 @@ default = 200m -> to do: change to 100 in data.bling
 
 *** different order of tracers is define USE_BLING_v0
 
-
 11) bling_fields_load
 
 *** atmosp is apressure/Pa2atm instead of apressure*0.00001 (more correct)
-
 
 12) cost_gencost_customize
 
 add log cost for chl and poc
 
-
 13) bling_fields_load
 
 *** this is where wind, fice, atmosp, atm_pco2 are read either from file or exf
-
-
-
 
 new chem:
 
@@ -208,15 +188,13 @@ new chem:
 #include DIC_OPTIONS to #include BLING_OPTIONS
 and DIC_VARS to BLING_VARS
 
-
-1) bling_carbonate_sys: 
+1) bling_carbonate_sys:
 
 *** added option CARBONCHEM_SOLVESAPHE
 
 Jonathan calls it surftemp, surfsalt, but it’s for k=1:Nr
 
-
-2) bling_carbonate_init: 
+2) bling_carbonate_init:
 
 *** added option CARBONCHEM_SOLVESAPHE
 
@@ -226,33 +204,27 @@ cav changing surftheta to thetatmp
 C$TAF STORE pH(i,j,k,bi,bj)                            = dic_surf
 C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
 
-
-3) bling_airseaflux: 
-
-*** added option CARBONCHEM_SOLVESAPHE
-
-
-4) bling_readparms: 
+3) bling_airseaflux:
 
 *** added option CARBONCHEM_SOLVESAPHE
 
-
-5) BLING_VARS: 
-
-*** added option CARBONCHEM_SOLVESAPHE
-
-
-6) BLING_OPTIONS: 
+4) bling_readparms:
 
 *** added option CARBONCHEM_SOLVESAPHE
 
+5) BLING_VARS:
+
+*** added option CARBONCHEM_SOLVESAPHE
+
+6) BLING_OPTIONS:
+
+*** added option CARBONCHEM_SOLVESAPHE
 
 7) bling_ad_diff_list
 
 *** added bling_solvesaphe.f
 
-
-8) bling_carbon_chem: 
+8) bling_carbon_chem:
 
 *** added option CARBONCHEM_TOTALPHSCALE
 

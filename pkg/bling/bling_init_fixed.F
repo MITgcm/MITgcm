@@ -8,8 +8,8 @@ C     | subroutine bling_init_fixed
 C     | o Initialize fixed parameters
 C     ==========================================================
 
-      implicit none
-      
+      IMPLICIT NONE
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"

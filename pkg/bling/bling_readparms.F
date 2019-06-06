@@ -11,7 +11,7 @@ C     | subroutine bling_readparms
 C     | o Initialise and read parameters for BLING model
 C     *========================================================*
 
-      implicit none
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"
@@ -81,7 +81,7 @@ C     selectPHsolver=3 for Munhoven (2013) solvesaphe fast
 C ==========================================================
 
       NAMELIST /ABIOTIC_PARMS/
-     &                      permil, 
+     &                      permil,
      &                      Pa2Atm,
      &                      epsln
 #ifdef CARBONCHEM_SOLVESAPHE
@@ -177,7 +177,7 @@ C ==========================================================
      &                     MLmix_max,
      &                     river_conc_po4,
      &                     river_dom_to_nut
-     
+
 C ==========================================================
 C   BLING forcing
 C ==========================================================
@@ -212,24 +212,24 @@ C                       Default permil = 1024.5 kg/m3
 C   Pa2Atm           :: Conversion factor for atmospheric pressure from EXF
 C                       1 Atm = 1.01325e5 Pa = 1013.25 mb
 C   epsln            :: A very small number
-C   CtoN             :: Carbon to nitrogen ratio in organic matter 
-C   CtoP             :: Carbon to phosphorus ratio in organic matter 
-C   NtoP             :: Nitrogen to phosphorus ratio in organic matter 
+C   CtoN             :: Carbon to nitrogen ratio in organic matter
+C   CtoP             :: Carbon to phosphorus ratio in organic matter
+C   NtoP             :: Nitrogen to phosphorus ratio in organic matter
 C   HtoC             :: Reduced hydrogen to carbon ratio in organic matter
 C   NO3toN           :: Nitrate to organic nitrogen ratio for denitrification
-C   O2toN            :: Oxygen to nitrogen for biological activity 
-C   O2toP            :: Oxygen to phosphorus for biological activity 
+C   O2toN            :: Oxygen to nitrogen for biological activity
+C   O2toP            :: Oxygen to phosphorus for biological activity
 C   CatoN            :: Calcium to nitrogen uptake by small phyto
-C   CatoP            :: Calcium to phosphorus uptake by small phyto 
+C   CatoP            :: Calcium to phosphorus uptake by small phyto
 C   masstoN          :: Organic matter mass to nitrogen ratio
-C   pivotal          :: Pivotal phytoplankton biomass, for grazing law 
+C   pivotal          :: Pivotal phytoplankton biomass, for grazing law
 C                       [mol P m-3  or  mol N m-3]
 C   Pc_0             :: Maximum phytoplankton carbon-specific growth rate at 0C
 C   Pc_0_diaz        :: Maximum diazotroph carbon-specific growth rate at 0C
 C   lambda_0         :: Total mortality rate constant
 C   resp_frac        :: Fraction of production that is respired
 C   chl_min          :: Minimum chl concentration allowed (for numerical stability)
-C   alpha_photo      :: Quantum yield under low light, Fe-replete 
+C   alpha_photo      :: Quantum yield under low light, Fe-replete
 C                       [g C g Chl-1 m2 W-1 s-1]
 C   alpha_max        :: Quantum yield under low light, abundant iron
 C   alpha_min        :: Quantum yield under low light, iron limited
@@ -239,7 +239,7 @@ C   gamma_irr_mem    :: Photoadaptation timescale
 C   gamma_DON        :: Dissolved organic nitrogen decay timescale
 C   gamma_DOP        :: Dissolved organic phosphorus decay timescale
 C   gamma_POM        :: Particulate Organic Matter decay timescale
-C   gamma_biomass    :: Biomass adjustment time scale 
+C   gamma_biomass    :: Biomass adjustment time scale
 C   gamma_Si_0       :: Opal dissolution timescale
 C   k_Fe             :: Iron half-saturation concentration
 C   k_Fe_diaz        :: Iron half-saturation concentration for diazotrophs
@@ -259,24 +259,24 @@ C   kFe_inorg        :: Iron scavenging, 2nd order
 C   PtoN_max         :: Phosphorus to Nitrogen uptake ratio maximum
 C   PtoN_min         :: Phosphorus to Nitrogen uptake ratio minimum
 C   FetoN_max        :: Iron to Nitrogen uptake ratio maximum
-C   FetoN_min        :: Iron to Nitrogen uptake ratio minimum 
+C   FetoN_min        :: Iron to Nitrogen uptake ratio minimum
 C   FetoC_sed        :: Iron released per organic carbon delivery to sediments
-C   FetoP_max        :: Iron to Phosphorus uptake ratio maximum 
+C   FetoP_max        :: Iron to Phosphorus uptake ratio maximum
 C   Fe_lim_min       :: Minimum iron limitation
-C   SitoP_uptake_min :: Si to PO4 uptake ratio limiter   
-C   SitoP_uptake_max :: Si to PO4 uptake ratio limiter  
-C   SitoP_uptake_scale:: Scale factor for Si to PO4 uptake ratio 
-C   SitoP_uptake_exp :: Exponent for Si to PO4 uptake ratio     
+C   SitoP_uptake_min :: Si to PO4 uptake ratio limiter
+C   SitoP_uptake_max :: Si to PO4 uptake ratio limiter
+C   SitoP_uptake_scale:: Scale factor for Si to PO4 uptake ratio
+C   SitoP_uptake_exp :: Exponent for Si to PO4 uptake ratio
 C   remin_min        :: Minimum remineralization under anoxia
-C   oxic_min         :: Anaerobic respiration threshold 
+C   oxic_min         :: Anaerobic respiration threshold
 C   ligand           :: Iron ligand concentration
-C   kappa_eppley     :: Temperature dependence of growth 
+C   kappa_eppley     :: Temperature dependence of growth
 C   kappa_eppley_diaz:: Temperature dependence of growth for diazotrophs
 C   kappa_remin      :: Temperature dependence for particle fractionation
 C   kappa_remin_Si   :: Temperature dependence for silica
 C   ca_remin_depth   :: CaCO3 dissolution length scale (subject to omega)
 C   q_SitoN_diss     :: Stoichiometric role in opal dissolution, following TOPAZ
-C   phi_DOM          :: Fraction of uptake/consumption that becomes DOM  
+C   phi_DOM          :: Fraction of uptake/consumption that becomes DOM
 C   phi_sm           :: Fraction of small phytoplankton biomass converted to detritus
 C   phi_lg           :: Fraction of large phytoplankton biomass converted to detritus
 C   phi_dvm          :: Fraction of particate production exported by animals
@@ -287,11 +287,11 @@ C   wsinkacc         :: Sinking rate acceleration with depth
 C   wsink_si         :: Opal sinking velocity
 C   parfrac          :: Fraction of Qsw available for photosynthesis
 C   alpfe            :: Solubility of aeolian iron
-C   k0               :: Light attentuation coefficient 
+C   k0               :: Light attentuation coefficient
 C   MLmix_max        :: Maximum depth over which light and biomass can be mixed
 C   river_conc_po4   :: Phosphate concentration in river runoff
 C   river_dom_to_nut :: DOM to PO4 ratio in river runoff
-     
+
       _RL secperday
 #ifdef ALLOW_EXF
 #ifdef USE_EXF_INTERPOLATION
@@ -319,13 +319,13 @@ C     Default values
       Pa2Atm               = 1.01325 _d 5
       epsln                = 1. _d -30
 #ifdef CARBONCHEM_SOLVESAPHE
-       selectBTconst   = 1 
+       selectBTconst   = 1
        selectFTconst   = 1
        selectHFconst   = 1
        selectK1K2const = 1
        selectPHsolver  = 0
 #endif
-      
+
       CtoN                 = 6.75 _d 0
       CtoP                 = 106. _d 0
       NtoP                 = 16. _d 0
@@ -511,88 +511,88 @@ C--   Close the open data file
 C Record the solver to calculate pH and evaluate surface ocean pCO2
 #ifdef CARBONCHEM_SOLVESAPHE
       IF ( selectPHsolver.GT.0 ) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &  'Using Munhoven (2013) Solvesaphe for pH/pCO2'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ELSEIF ( selectPHsolver.EQ.0 ) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &  'Using Follows et al. (2006) for pH/pCO2'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid) 
-      ENDIF 
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      ENDIF
 #endif
 
 C Record which carbonate coefficients are used and which pH/pCO2 solver
 #ifdef CARBONCHEM_SOLVESAPHE
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &  'Using Munhoven (2013) Solvesaphe carbon coefficients'
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)      
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
 C Munhoven (2013)'s "Solvesaphe" coefficients have several options:
       IF ( selectK1K2const.EQ.1 ) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &  'Using Millero (1995)/Mehrbach K1 and K2 coefficients'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)    
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ELSEIF ( selectK1K2const.EQ.2 ) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &  'Using Roy et al. (1993) K1 and K2 coefficients'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ELSEIF ( selectK1K2const.EQ.3 ) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &  'Using Millero (1995) "consensus" K1 and K2 coefficients'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)    
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ELSEIF ( selectK1K2const.EQ.4 ) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &  'Using Luecker et al. (2000) K1 and K2 coefficients'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)    
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ELSEIF ( selectK1K2const.EQ.5 ) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &  'Using Millero et al. (2010) K1 and K2 coefficients'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)    
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ELSEIF ( selectK1K2const.EQ.6 ) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &  'Using Waters et al. (2014) K1 and K2 coefficients'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)    
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ENDIF
       IF ( selectHFconst.EQ.1 ) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &  'Using Dickson and Riley (1979) KF coefficient'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ELSEIF ( selectHFconst.EQ.2 ) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &  'Using Perez and Fraga (1987) KF coefficient'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ENDIF
       IF ( selectBTconst.EQ.1 ) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      & 'Using Uppstrom (1974) BT estimation from salinity'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ELSEIF ( selectBTconst.EQ.2 ) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &  'Using Lee et al (2010) BT estimation from salinity'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ENDIF
       IF ( selectFTconst.EQ.1 ) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &  'Using Riley (1965) FT estimation from salinity'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ELSEIF ( selectBTconst.EQ.2 ) THEN
-         WRITE(msgBuf,'(A)') 
+         WRITE(msgBuf,'(A)')
      &  'Using Culkin (1965) FT estimation from salinity'
-         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+         CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
       ENDIF
 #else
 C OCMIP2 Coefficients from S/R CARBON_COEFFS in CARBON_CHEM.F
-      WRITE(msgBuf,'(A)') 
+      WRITE(msgBuf,'(A)')
      &  'Using Millero (1995)/Mehrbach K1 and K2 coefficients'
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)   
-      WRITE(msgBuf,'(A)') 
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      WRITE(msgBuf,'(A)')
      &  'Using Dickson and Riley (1979) KF coefficient'
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)        
-      WRITE(msgBuf,'(A)') 
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      WRITE(msgBuf,'(A)')
      &  'Using Uppstrom (1974) BT estimation from salinity'
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)        
-      WRITE(msgBuf,'(A)') 
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
+      WRITE(msgBuf,'(A)')
      &  'Using Riley (1965) FT estimation from salinity'
-      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)  
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,myThid)
 #endif
 
       IF ( errCount.GE.1 ) THEN
@@ -604,7 +604,7 @@ C OCMIP2 Coefficients from S/R CARBON_COEFFS in CARBON_CHEM.F
       ENDIF
 
 #ifdef CARBONCHEM_SOLVESAPHE
-      IF ( selectHFconst.GT.2 .OR. selectBTconst.GT.2 
+      IF ( selectHFconst.GT.2 .OR. selectBTconst.GT.2
      & .OR. selectFTconst.GT.2 ) THEN
         WRITE(msgBuf,'(A)')
      &    'BLING_READPARMS: selectHF, selectBT or selectFT > 2'

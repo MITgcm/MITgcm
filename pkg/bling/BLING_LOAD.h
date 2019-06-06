@@ -6,7 +6,7 @@ C     BLING_ldRec     :: time-record currently loaded (in temp arrays *[1])
      &    dicwind0, dicwind1,
      &    atmosp0, atmosp1,
      &    silica0, silica1,
-     &    ice0, ice1, 
+     &    ice0, ice1,
      &    feinput0, feinput1
 
       INTEGER BLING_ldRec(nSx,nSy)

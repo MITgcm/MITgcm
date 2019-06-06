@@ -27,8 +27,8 @@ C     |   Adapted from pkg/dic/carbon_chem.F
 C     |   from OCMIP2 code
 C     =================================================================
 
-      implicit none
-      
+      IMPLICIT NONE
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "DYNVARS.h"
@@ -135,7 +135,6 @@ c set first guess and brackets for [H+] solvers
 c first guess (for newton-raphson)
         phguess = phlocal
 
-
 c bracketing values (for bracket/bisection)
         phhi = 10.0
         phlo = 5.0
@@ -144,7 +143,6 @@ c convert to [H+]...
         xlo = 10.0**(-phhi)
         xhi = 10.0**(-phlo)
         xmid = (xlo + xhi)*0.5
-
 
 c----------------------------------------------------------------
 c iteratively solve for [H+]
@@ -236,7 +234,6 @@ c      with fixed, large number of iterations
               if(hstep .eq. 3)x = xmid
 c set some common combinations of parameters used in
 c the iterative [H+] solvers
-
 
               x2=x*x
               x3=x2*x
@@ -344,8 +341,8 @@ C     CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C      Apr 2011: fix vapour bug (following Bennington)
 C      Oct 2011: add CO3 extimation and pass out
 
-      implicit none
-      
+      IMPLICIT NONE
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "DYNVARS.h"
@@ -387,7 +384,6 @@ C     == Local variables ==
         _RL  h3po4g, h2po4g, hpo4g, po4g
         _RL  siooh3g
         _RL  fco2
-
 
 c ---------------------------------------------------------------------
 C Change units from the input of mol/m^3 -> mol/kg:
@@ -440,7 +436,7 @@ CMM(
        print *,'CMMcag1', cag,i,j,k,xC(i,j,1,1),yC(i,j,1,1)
 C myXGlobalLo-1+(bi-1)*sNx+i,        myYGlobalLo-1+(bj-1)*sNy+j
        print *,'CMMcag2',ta,bohg,(kwlocal/hguess),hguess,hpo4g,
-     &           2.0 _d 0*po4g,h3po4g, siooh3g 
+     &           2.0 _d 0*po4g,h3po4g, siooh3g
        cag = 0.1 _d 0*ta
         ENDIF
 CMM)
@@ -523,8 +519,8 @@ C
 C Apr 2011: fix vapour bug (following Bennington)
 C--------------------------------------------------------------------------
 
-      implicit none
-      
+      IMPLICIT NONE
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "DYNVARS.h"
@@ -570,7 +566,7 @@ c add Bennington
 #ifdef CARBONCHEM_TOTALPHSCALE
 c pH scale converstions
         _RL total2free
-        _RL free2sw        
+        _RL free2sw
         _RL total2sw
 #endif
         INTEGER i
@@ -658,7 +654,7 @@ C On total pH scale
 C------------------------------------------------------------------------
 C k1p = [H][H2PO4]/[H3PO4]
 C DOE(1994) eq 7.2.20 with footnote using data from Millero (1974)
-C The constant 115.525 is an approximation to convert to the total pH scale 
+C The constant 115.525 is an approximation to convert to the total pH scale
 C  (Dickson et al., 2007). Use Millero's 115.540 constant to stay on the seawater
 C  pH scale (everything else is the same).
            ak1p(i,j,bi,bj) = exp(-4576.752 _d 0*invtk + 115.525 _d 0 -
@@ -668,7 +664,7 @@ C  pH scale (everything else is the same).
 C------------------------------------------------------------------------
 C k2p = [H][HPO4]/[H2PO4]
 C DOE(1994) eq 7.2.23 with footnote using data from Millero (1974))
-C The constant 172.0833 is an approximation to convert to the total pH scale 
+C The constant 172.0833 is an approximation to convert to the total pH scale
 C  (Dickson et al., 2007). Use Millero's 172.1033 constant to stay on the seawater
 C  pH scale (everything else is the same).
            ak2p(i,j,bi,bj) = exp(-8814.715 _d 0*invtk + 172.0883 _d 0 -
@@ -678,7 +674,7 @@ C  pH scale (everything else is the same).
 C------------------------------------------------------------------------
 C k3p = [H][PO4]/[HPO4]
 C DOE(1994) eq 7.2.26 with footnote using data from Millero (1974)
-C The constant 18.141 is an approximation to convert to the total pH scale 
+C The constant 18.141 is an approximation to convert to the total pH scale
 C  (Dickson et al., 2007). Use Millero's 18.126 constant to stay on the seawater
 C  pH scale (everything else is the same).
            ak3p(i,j,bi,bj) = exp(-3070.75 _d 0*invtk - 18.141 _d 0 +
@@ -687,7 +683,7 @@ C  pH scale (everything else is the same).
 C------------------------------------------------------------------------
 C ksi = [H][SiO(OH)3]/[Si(OH)4]
 C Millero p.671 (1995) using data from Yao and Millero (1995)
-C The constant 117.385 is an approximation to convert to the total pH scale 
+C The constant 117.385 is an approximation to convert to the total pH scale
 C  (Dickson et al., 2007). Use Millero's 117.400 constant to stay on the seawater
 C  pH scale (everything else is the same).
 C  Note: converted here from mol/kg-H2O to mol/kg-SW
@@ -700,7 +696,7 @@ C  Note: converted here from mol/kg-H2O to mol/kg-SW
 C------------------------------------------------------------------------
 C kw = [H][OH]
 C Millero p.670 (1995) using composite data
-C The constant 148.9652 is an approximation to convert to the total pH scale 
+C The constant 148.9652 is an approximation to convert to the total pH scale
 C  (Dickson et al., 2007). Use Millero's 148.9802 constant to stay on the seawater
 C  pH scale (everything else is the same).
            akw(i,j,bi,bj) = exp(-13847.26 _d 0*invtk + 148.9652 _d 0 -
@@ -738,14 +734,14 @@ C------------------------------------------------------------------------
 C Convert between pH scales, we want everything to end up on the total scale
 C ak1 and ak2 are on seawater scale and aks is on the free scale
            total2free = 1. _d 0/
-     &                 (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj)) 
-           free2sw = 1. _d 0 
-     &                 + st(i,j,bi,bj)/ aks(i,j,bi,bj) 
-     &                 + ft(i,j,bi,bj)/(akf(i,j,bi,bj)*total2free) 
-           total2sw = total2free * free2sw                         
+     &                 (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
+           free2sw = 1. _d 0
+     &                 + st(i,j,bi,bj)/ aks(i,j,bi,bj)
+     &                 + ft(i,j,bi,bj)/(akf(i,j,bi,bj)*total2free)
+           total2sw = total2free * free2sw
            ak1(i,j,bi,bj)  = ak1(i,j,bi,bj)/total2sw
            ak2(i,j,bi,bj)  = ak2(i,j,bi,bj)/total2sw
-           aks(i,j,bi,bj)  = aks(i,j,bi,bj)/total2free     
+           aks(i,j,bi,bj)  = aks(i,j,bi,bj)/total2free
 #endif
          else
 c add Bennington
@@ -815,8 +811,8 @@ C based on Takahashi, GEOSECS Atlantic Report, Vol. 1 (1981)
 C
 C--------------------------------------------------------------------------
 
-      implicit none
-      
+      IMPLICIT NONE
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "DYNVARS.h"
@@ -883,10 +879,10 @@ c add Bennington
 #ifdef CARBONCHEM_TOTALPHSCALE
 c pH scale converstions
         _RL total2free_surf
-        _RL free2sw_surf       
+        _RL free2sw_surf
         _RL total2sw_surf
         _RL total2free
-        _RL free2sw        
+        _RL free2sw
         _RL total2sw
 #endif
 
@@ -949,8 +945,8 @@ C Weiss (1974) Marine Chemistry
            delta = (57.7 _d 0 - 0.118 _d 0*tk)
            B1 = -1636.75 _d 0 + 12.0408 _d 0*tk - 0.0327957 _d 0*tk*tk
            B = B1 + 3.16528 _d 0*tk*tk*tk*(0.00001 _d 0)
-           fugf(i,j,bi,bj) = exp( (B+2. _d 0*delta) * 
-     &                            AtmosP(i,j,bi,bj) * P1atm / RT) 
+           fugf(i,j,bi,bj) = exp( (B+2. _d 0*delta) *
+     &                            AtmosP(i,j,bi,bj) * P1atm / RT)
 C------------------------------------------------------------------------
 C f = k0(1-pH2O)*correction term for non-ideality
 C Weiss & Price (1980, Mar. Chem., 8, 347-359; Eq 13 with table 6 values)
@@ -1025,7 +1021,7 @@ C D. Wallace, 1998 - see endnotes for commentary on Millero, 95)
 C------------------------------------------------------------------------
 C k1p = [H][H2PO4]/[H3PO4]
 C DOE(1994) eq 7.2.20 with footnote using data from Millero (1974)
-C The constant 115.525 is an approximation to convert to the total pH scale 
+C The constant 115.525 is an approximation to convert to the total pH scale
 C  (Dickson et al., 2007). Use Millero's 115.540 constant to stay on the seawater
 C  pH scale (everything else is the same).
            ak1p(i,j,bi,bj) = exp(-4576.752*invtk + 115.525 -
@@ -1035,7 +1031,7 @@ C  pH scale (everything else is the same).
 C------------------------------------------------------------------------
 C k2p = [H][HPO4]/[H2PO4]
 C DOE(1994) eq 7.2.23 with footnote using data from Millero (1974))
-C The constant 172.0833 is an approximation to convert to the total pH scale 
+C The constant 172.0833 is an approximation to convert to the total pH scale
 C  (Dickson et al., 2007). Use Millero's 172.1033 constant to stay on the seawater
 C  pH scale (everything else is the same).
            ak2p(i,j,bi,bj) = exp(-8814.715*invtk + 172.0883 -
@@ -1045,7 +1041,7 @@ C  pH scale (everything else is the same).
 C------------------------------------------------------------------------
 C k3p = [H][PO4]/[HPO4]
 C DOE(1994) eq 7.2.26 with footnote using data from Millero (1974)
-C The constant 18.141 is an approximation to convert to the total pH scale 
+C The constant 18.141 is an approximation to convert to the total pH scale
 C  (Dickson et al., 2007). Use Millero's 18.126 constant to stay on the seawater
 C  pH scale (everything else is the same).
            ak3p(i,j,bi,bj) = exp(-3070.75*invtk - 18.141 +
@@ -1054,7 +1050,7 @@ C  pH scale (everything else is the same).
 C------------------------------------------------------------------------
 C ksi = [H][SiO(OH)3]/[Si(OH)4]
 C Millero p.671 (1995) using data from Yao and Millero (1995)
-C The constant 117.385 is an approximation to convert to the total pH scale 
+C The constant 117.385 is an approximation to convert to the total pH scale
 C  (Dickson et al., 2007). Use Millero's 117.400 constant to stay on the seawater
 C  pH scale (everything else is the same).
 C Note: converted here from mol/kg-H2O to mol/kg-SW
@@ -1067,7 +1063,7 @@ C Note: converted here from mol/kg-H2O to mol/kg-SW
 C------------------------------------------------------------------------
 C kw = [H][OH]
 C Millero p.670 (1995) using composite data
-C The constant 148.9652 is an approximation to convert to the total pH scale 
+C The constant 148.9652 is an approximation to convert to the total pH scale
 C  (Dickson et al., 2007). Use Millero's 148.9802 constant to stay on the seawater
 C  pH scale (everything else is the same).
            akw(i,j,bi,bj) = exp(-13847.26*invtk + 148.9652 -
@@ -1113,15 +1109,15 @@ C  scale before pressure correction, and then convert back to the total scale.
 C All the terms for pressure correction are from Table 9, Millero (1995), p675
 C Info about pH conversions from Munhoven (2013) and Orr and Epitalon (2015)
            total2free_surf = 1. _d 0/
-     &                 (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj)) 
+     &                 (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
 
-           free2sw_surf = 1. _d 0 
-     &                 + st(i,j,bi,bj)/ aks(i,j,bi,bj) 
-     &                 + ft(i,j,bi,bj)/(akf(i,j,bi,bj)*total2free_surf) 
-     
-           total2sw_surf = total2free_surf * free2sw_surf    
+           free2sw_surf = 1. _d 0
+     &                 + st(i,j,bi,bj)/ aks(i,j,bi,bj)
+     &                 + ft(i,j,bi,bj)/(akf(i,j,bi,bj)*total2free_surf)
 
-C------------------------------------------------------------------------         
+           total2sw_surf = total2free_surf * free2sw_surf
+
+C------------------------------------------------------------------------
 C Pressure correct aks on native free pH scale
            dv=-18.03 _d 0 + 0.0466 _d 0*t + 0.316 _d -3 *t*t
            dk=-4.53 _d -3 + 0.09 _d -3 *t
@@ -1130,13 +1126,13 @@ C Pressure correct aks on native free pH scale
            aks(i,j,bi,bj) = aks(i,j,bi,bj)*exp(pfactor)
 
            total2free = 1. _d 0/
-     &                 (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj)) 
-C free2sw has an additional component from fluoride           
-           free2sw    = 1. _d 0 
-     &                 + st(i,j,bi,bj)/ aks(i,j,bi,bj) 
-           
+     &                 (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
+C free2sw has an additional component from fluoride
+           free2sw    = 1. _d 0
+     &                 + st(i,j,bi,bj)/ aks(i,j,bi,bj)
+
            aks(i,j,bi,bj) = aks(i,j,bi,bj)/total2free
-           
+
 C------------------------------------------------------------------------
 C Pressure correct akf on the free scale before converting back to total
            akf(i,j,bi,bj) = akf(i,j,bi,bj) * total2free_surf
@@ -1145,11 +1141,11 @@ C Pressure correct akf on the free scale before converting back to total
            pfactor = -(dv/(bigR*tk))*pressc
      &               +(0.5*dk/(bigR*tk))*pressc*pressc
            akf(i,j,bi,bj) = akf(i,j,bi,bj) * exp(pfactor)
-           akf(i,j,bi,bj) = akf(i,j,bi,bj)/total2free        
-        
-           free2sw = free2sw 
-     &               + ft(i,j,bi,bj)/(akf(i,j,bi,bj)*total2free) 
-           total2sw = total2free * free2sw                        
+           akf(i,j,bi,bj) = akf(i,j,bi,bj)/total2free
+
+           free2sw = free2sw
+     &               + ft(i,j,bi,bj)/(akf(i,j,bi,bj)*total2free)
+           total2sw = total2free * free2sw
 
 C------------------------------------------------------------------------
 C Convert pressure corrected ak1 and ak2 from the seawater pH scale to the total scale
@@ -1182,7 +1178,7 @@ C Pressure correct ak2p on the seawater scale before converting back to total sc
      &                + (0.5*dk/(bigR*tk))*pressc*pressc
             ak2p(i,j,bi,bj) = total2sw_surf*ak2p(i,j,bi,bj)*exp(pfactor)
             ak2p(i,j,bi,bj) = ak2p(i,j,bi,bj)/total2sw
-            
+
 C------------------------------------------------------------------------
 C Pressure correct ak3p on the seawater scale before converting back to total scale
             dv = -26.57 _d 0 + 0.2020 _d 0*t -3.042 _d -3*t*t
@@ -1191,7 +1187,7 @@ C Pressure correct ak3p on the seawater scale before converting back to total sc
      &                + (0.5*dk/(bigR*tk))*pressc*pressc
             ak3p(i,j,bi,bj) = total2sw_surf*ak3p(i,j,bi,bj)*exp(pfactor)
             ak3p(i,j,bi,bj) = ak3p(i,j,bi,bj)/total2sw
-            
+
 C------------------------------------------------------------------------
 C Pressure correct akw on the seawater scale before converting back to total scale
             dv = -20.02 _d 0 + 0.1119 _d 0*t -1.409 _d -3*t*t
@@ -1264,7 +1260,6 @@ c alternative pressure dependence from Ingle (1975)
 
            Ksp_TP_Calc(i,j,bi,bj) = Ksp_T_Calc*10**(xvalue)
            Ksp_TP_Arag(i,j,bi,bj) = Ksp_T_Arag*10**(xvalue)
-
 
 C------------------------------------------------------------------------
          else

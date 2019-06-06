@@ -145,7 +145,7 @@ C      Schmidt number coefficients
       _RL     apco2const
       _RL     apco2_exfremo_intercept
       _RL     apco2_exfremo_slope
-      character*1 apco2mask
+      CHARACTER*1 apco2mask
 #endif
 
 C ==========================================================
@@ -213,7 +213,7 @@ C      apco2               :: Atmospheric pCO2 to be read in with exf pkg
       _RL     bling_pCO2
       _RL     river_conc_po4
       _RL     river_dom_to_nut
-      
+
 C ==========================================================
 C   EXF input/output scaling factors for unit conversion if needed
 C ==========================================================
@@ -345,7 +345,7 @@ C ==========================================================
      &                     alpfe,
      &                     k0,
      &                     MLmix_max
-     
+
       _RL InputFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL omegaC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL omegaAr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

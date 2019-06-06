@@ -8,8 +8,8 @@ C     | subroutine bling_diagnostics_init
 C     | o Define diagnostics for bling pkg
 C     =================================================================
 
-      implicit none
-      
+      IMPLICIT NONE
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -402,7 +402,7 @@ c nitrogen
 
 #endif
 
-c phosphorus 
+c phosphorus
 
       diagName  = 'BLGPUP  '
       diagTitle = 'Phosphorus uptake by bio'

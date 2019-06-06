@@ -11,7 +11,7 @@ C     | subroutine bling_ini_forcing
 C     | o Initialize forcing fields
 C     ==========================================================
 
-      implicit none
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"

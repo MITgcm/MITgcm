@@ -1,9 +1,9 @@
 #include "BLING_OPTIONS.h"
 
 CBOP
-      subroutine BLING_MAIN( PTR_DIC, PTR_ALK, PTR_O2, 
+      subroutine BLING_MAIN( PTR_DIC, PTR_ALK, PTR_O2,
 #ifndef USE_BLING_V0
-     &                      PTR_NO3, PTR_PO4, PTR_FE, 
+     &                      PTR_NO3, PTR_PO4, PTR_FE,
      &                      PTR_DON, PTR_DOP,
 #ifdef USE_SIBLING
      &                      PTR_SI,
@@ -12,7 +12,7 @@ CBOP
      &                      PTR_PHY,
 #endif
 #else
-     &                      PTR_PO4, PTR_DOP, PTR_FE, 
+     &                      PTR_PO4, PTR_DOP, PTR_FE,
 #endif
      &                      bi, bj, imin, imax, jmin, jmax,
      &                      myIter, myTime, myThid)
@@ -22,11 +22,11 @@ C     | subroutine bling_main
 C     | o Updates all the tracers for the effects of air-sea exchange,
 C     |   biological production, and remineralization.
 C     | - The basic model includes 8 tracers
-C     | - There is an optional tracer for phytoplankton biomass 
+C     | - There is an optional tracer for phytoplankton biomass
 C     | - River runoff is included here
 C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"
@@ -146,13 +146,12 @@ c  Initialize local variables
        ENDDO
       ENDDO
 
-
 c-----------------------------------------------------------
 c  carbon and oxygen air-sea interaction
        CALL BLING_AIRSEAFLUX(
      I                       PTR_DIC, PTR_ALK, PTR_O2, PTR_PO4,
 #ifdef USE_SIBLING
-     I                       PTR_SI, 
+     I                       PTR_SI,
 #endif
      U                       surf_DIC, surf_O2, fluxO2,
      I                       bi, bj, imin, imax, jmin, jmax,
@@ -177,26 +176,25 @@ C  call either "BLING" or "BLING + nitrogen"
 #ifndef USE_BLING_V0
        CALL BLING_BIO_NITROGEN(
      I                 PTR_O2, PTR_FE, PTR_PO4, PTR_DOP,
-     I                 PTR_NO3, PTR_DON, 
+     I                 PTR_NO3, PTR_DON,
 #ifdef USE_SIBLING
-     I                 PTR_SI, 
+     I                 PTR_SI,
 #endif
 #ifdef ADVECT_PHYTO
-     I                 PTR_PHY, 
+     I                 PTR_PHY,
 #endif
-     U                 G_DIC, G_ALK, G_O2, G_FE, 
+     U                 G_DIC, G_ALK, G_O2, G_FE,
      U                 G_PO4, G_DOP, G_NO3, G_DON,
      I                 bi, bj, imin, imax, jmin, jmax,
      I                 myIter, myTime, myThid)
 #else
        CALL BLING_BIO(
      I                 PTR_O2, PTR_FE, PTR_PO4, PTR_DOP,
-     U                 G_DIC, G_ALK, G_O2, G_FE, 
-     U                 G_PO4, G_DOP, 
+     U                 G_DIC, G_ALK, G_O2, G_FE,
+     U                 G_PO4, G_DOP,
      I                 bi, bj, imin, imax, jmin, jmax,
      I                 myIter, myTime, myThid)
 #endif
-
 
 C-----------------------------------------------------------
 C  Calculate river runoff source
@@ -206,7 +204,7 @@ C  no input south of 60S (it's ice melt)
 
 #ifdef ALLOW_EXF
        DO j=jmin,jmax
-        IF (YC(i,j,bi,bj).gt.-60.0) THEN 
+        IF (YC(i,j,bi,bj).gt.-60.0) THEN
          DO i=imin,imax
           runoff_PO4(i,j) = river_conc_po4*runoff(i,j,bi,bj)
      &                       *recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
@@ -214,7 +212,6 @@ C  no input south of 60S (it's ice melt)
         ENDIF
        ENDDO
 #endif
-
 
 C-----------------------------------------------------------
 C   adding surface tendencies due to air-sea exchange
@@ -227,18 +224,18 @@ C   adding aeolian iron source
 
                G_DIC(i,j,1) = G_DIC(i,j,1) + surf_DIC(i,j)
      &                    + runoff_PO4(i,j)*CtoN*NtoP
-               G_ALK(i,j,1) = G_ALK(i,j,1) 
+               G_ALK(i,j,1) = G_ALK(i,j,1)
      &                    - runoff_PO4(i,j)*NtoP
-               G_O2(i,j,1)  = G_O2(i,j,1) + surf_O2(i,j) 
+               G_O2(i,j,1)  = G_O2(i,j,1) + surf_O2(i,j)
                surf_Fe(i,j) = alpfe*InputFe(i,j,bi,bj)
                G_FE(i,j,1)  = G_FE(i,j,1) + surf_Fe(i,j)
      &                    * recip_drF(1) * recip_hFacC(i,j,1,bi,bj)
                G_PO4(i,j,1) = G_PO4(i,j,1) + runoff_PO4(i,j)
-               G_DOP(i,j,1) = G_DOP(i,j,1) 
+               G_DOP(i,j,1) = G_DOP(i,j,1)
      &                    + runoff_PO4(i,j)*river_dom_to_nut
 #ifndef USE_BLING_V0
                G_NO3(i,j,1) = G_NO3(i,j,1) + runoff_PO4(i,j)*NtoP
-               G_DON(i,j,1) = G_DON(i,j,1) 
+               G_DON(i,j,1) = G_DON(i,j,1)
      &                    + runoff_PO4(i,j)*NtoP*river_dom_to_nut
 
 #endif

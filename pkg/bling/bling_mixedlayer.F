@@ -5,15 +5,15 @@ CBOP
      U               sumMLDepth,
      I               bi, bj, imin, imax, jmin, jmax,
      I               myIter, myTime, myThid )
-     
+
 C     =================================================================
 C     | subroutine bling_mixedlayer
-C     | o Calculate mixed layer depth based on density criterion 
+C     | o Calculate mixed layer depth based on density criterion
 C     |   (default: second derivative criterion; optional: threshold)
 C     =================================================================
 
-      implicit none
-      
+      IMPLICIT NONE
+
 C     === Global variables ===
 
 #include "SIZE.h"
@@ -112,22 +112,22 @@ c  get drhdr
         ENDDO
        ENDIF
       ENDDO
-CMM Strat at k is on bottom of cell 
+CMM Strat at k is on bottom of cell
 
 C  % 1. find min(drho/dz)
         DO j=jmin,jmax
          DO i=imin,imax
           DO k = 1,NR
-           IF(blg_stra(i,j,k).LT.blg_minstra(i,j))   
+           IF(blg_stra(i,j,k).LT.blg_minstra(i,j))
      &        blg_minstra(i,j) = blg_stra(i,j,k)
           ENDDO
          ENDDO
         ENDDO
- 
+
 CMM NOW LOOP TO GET MLD
         DO j=jmin,jmax
          DO i=imin,imax
-C  % 2. check that we have at least 3 grid cells of water 
+C  % 2. check that we have at least 3 grid cells of water
           IF (hFacC(i,j,3,bi,bj).GT. 0. _d 0)  THEN
 C  %  check that we have stable strat
            IF (blg_minstra(i,j).LT. 0. _d 0) THEN
@@ -146,11 +146,11 @@ CMM blg_str2 will be in cell center
              blg_str2(k) = (blg_stra(i,j,k-1) -blg_stra(i,j,k))
      &                                             *recip_drF(k)
 C     &                                             *blg_invdz(k)
-Cblg_invdz should be DRF 
+Cblg_invdz should be DRF
              IF (blg_str2(k).GT.blg_str2max)
      &            blg_str2max = blg_str2(k)
             ENDDO
-            DO k = NR,1,-1 
+            DO k = NR,1,-1
              IF (blg_str2(k).EQ.blg_str2max)  blgJ = k
             ENDDO
 
@@ -162,7 +162,7 @@ CMM; %error: strat should increase or be flat
      &       print*,'error: strat should increase or be flat'
 
             sumMLDepth(i,j) = -RF(blgI)
-           ENDIF 
+           ENDIF
           ENDIF
          ENDIF
         ENDDO
@@ -170,7 +170,7 @@ CMM; %error: strat should increase or be flat
 
 #else /* BLING_USE_THRESHOLD_MLD */
 c ---------------------------------------------------------------------
-c  Mixed layer depth 
+c  Mixed layer depth
 
       DO j=jmin,jmax
         DO i=imin,imax
@@ -199,7 +199,7 @@ c  Surface density
 
       DO k = 2,Nr
 
-c  Potential density 
+c  Potential density
          CALL FIND_RHO_2D(
      I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1,
      I        theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
@@ -208,16 +208,16 @@ c  Potential density
 
         DO j=jmin,jmax
           DO i=imin,imax
-                
+
 c           SumMLDepth(i,j) = 0. _d 0
 
            IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
             delta_dens(i,j,k) = dens_z(i,j)-dens_surf(i,j)
             IF (delta_dens(i,j,k) .LT. 0.03 _d 0) THEN
              SumMLDepth(i,j) = SumMLDepth(i,j)+drF(k)
-            ENDIF 
+            ENDIF
            ENDIF
-           
+
           ENDDO
         ENDDO
       ENDDO
@@ -226,4 +226,4 @@ c           SumMLDepth(i,j) = 0. _d 0
 
       RETURN
       END
-      
+
