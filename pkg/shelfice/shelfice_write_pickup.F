@@ -68,7 +68,9 @@ CEOP
 
 C       Firstly, write 3-D fields as consecutive records,
 
+#ifndef ALLOW_SHELFICE_REMESHING
         IF (shelficeMassStepping) then
+#endif
 
 C-    switch to 2-D fields:
         nj = -j*Nr
@@ -132,7 +134,9 @@ C     uses this specific S/R to write (with more informations) only meta files
      &                         nj, myIter, myThid )
 #endif /* ALLOW_MDSIO */
 C--------------------------
+#ifndef ALLOW_SHELFICE_REMESHING
       ENDIF ! shelficeMassStepping
+#endif
 
 #endif /* ALLOW_SHELFICE */
 
