@@ -315,23 +315,26 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
          ENDIF
 #endif /* ALLOW_SMOOTH */
 
-         IF (doscaling) then
          DO bj=myByLo(myThid), myByHi(myThid)
           DO bi=myBxLo(myThid), myBxHi(myThid)
            DO j = 1,sNy
             DO i = 1,sNx
-             if ((maskC(i,j,1,bi,bj).NE.0.).AND.
-     &           (wgentim2d(i,j,bi,bj,iarr).GT.0.)) then
+             IF (maskC(i,j,1,bi,bj).NE.0.) THEN
+              IF (doscaling) THEN
+               IF (wgentim2d(i,j,bi,bj,iarr).GT.0.) THEN
                 xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)
      &                  /sqrt(wgentim2d(i,j,bi,bj,iarr))
-             else
+               ELSE
                 xx_gen(i,j,bi,bj)=0. _d 0
-             endif
+               ENDIF 
+              ENDIF ! IF (doscaling) then
+             ELSE
+                xx_gen(i,j,bi,bj)=0. _d 0
+             ENDIF
             ENDDO
            ENDDO
           ENDDO
          ENDDO
-         ENDIF ! IF (doscaling) then
 #endif /* ALLOW_OPENAD */
 
          CALL CTRL_BOUND_2D(xx_gen,maskC,
