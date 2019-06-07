@@ -279,15 +279,15 @@ c--   Now, read the control vector.
             DO j = 1,sNy
               DO i = 1,sNx
 c scale param adjustment
-                IF ( (maskC(i,j,1,bi,bj).NE.0.).AND.
-     &               (wgenarr2d(i,j,bi,bj,iarr).GT.0.) ) THEN
-                  IF (doscaling) THEN
+                if ( (maskC(i,j,1,bi,bj).NE.0.).AND.
+     &               (wgenarr2d(i,j,bi,bj,iarr).GT.0.) ) then
+                  IF (doscaling) then
                     xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)
      &                       /sqrt( wgenarr2d(i,j,bi,bj,iarr) )
                   ENDIF
-                ELSE
+                else
                   xx_gen(i,j,bi,bj)=0.
-                ENDIF
+                endif
 c add to model parameter
                 fld(i,j,bi,bj)=fld(i,j,bi,bj)+xx_gen(i,j,bi,bj)
               enddo
@@ -450,18 +450,18 @@ c--   set local mask
               DO i = 1,sNx
 c scale param adjustment
 #if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
-                IF ( (localmask(i,j,k,bi,bj).NE.0.).AND.
+                if ( (localmask(i,j,k,bi,bj).NE.0.).AND.
 #else
-                IF ( (maskC(i,j,k,bi,bj).NE.0.).AND.
+                if ( (maskC(i,j,k,bi,bj).NE.0.).AND.
 #endif
-     &               (wgenarr3d(i,j,k,bi,bj,iarr).GT.0.) ) THEN
-                 IF (doscaling) THEN
+     &               (wgenarr3d(i,j,k,bi,bj,iarr).GT.0.) ) then
+                 IF (doscaling) then
                    xx_gen(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
      &                      /sqrt( wgenarr3d(i,j,k,bi,bj,iarr) )
                  ENDIF
-                ELSE
+                else
                   xx_gen(i,j,k,bi,bj)=0.
-                ENDIF
+                endif
 c add to model parameter
                 fld(i,j,k,bi,bj)=fld(i,j,k,bi,bj)+xx_gen(i,j,k,bi,bj)
               enddo
