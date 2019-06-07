@@ -281,10 +281,10 @@ c--   Now, read the control vector.
 c scale param adjustment
                 if ( (maskC(i,j,1,bi,bj).NE.0.).AND.
      &               (wgenarr2d(i,j,bi,bj,iarr).GT.0.) ) then
-                  IF (doscaling) then
-                    xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)
-     &                       /sqrt( wgenarr2d(i,j,bi,bj,iarr) )
-                  ENDIF
+                 IF (doscaling) then
+                  xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)
+     &                     /sqrt( wgenarr2d(i,j,bi,bj,iarr) )
+                 ENDIF
                 else
                   xx_gen(i,j,bi,bj)=0.
                 endif
@@ -456,8 +456,8 @@ c scale param adjustment
 #endif
      &               (wgenarr3d(i,j,k,bi,bj,iarr).GT.0.) ) then
                  IF (doscaling) then
-                   xx_gen(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
-     &                      /sqrt( wgenarr3d(i,j,k,bi,bj,iarr) )
+                  xx_gen(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
+     &                     /sqrt( wgenarr3d(i,j,k,bi,bj,iarr) )
                  ENDIF
                 else
                   xx_gen(i,j,k,bi,bj)=0.
