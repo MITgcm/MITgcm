@@ -304,9 +304,8 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
          do k2 = 1, maxCtrlProc
           if (xx_gentim2d_preproc(k2,iarr).EQ.'variaweight') jrec=irec
          enddo
-         CALL MDS_READ_FIELD( xx_gentim2d_weight(iarr),ctrlprec,
-     &    .FALSE.,'RL',1,1,1,wgentim2d(1-Olx,1-Oly,1,1,iarr),
-     &    dummyRS,jrec,myThid )
+         call READ_REC_3D_RL(xx_gentim2d_weight(iarr),ctrlprec,1,
+     &     wgentim2d(1-Olx,1-Oly,1,1,iarr), jrec, 1, myThid )
 
 #ifdef ALLOW_SMOOTH
          IF (useSMOOTH) THEN

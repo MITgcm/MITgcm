@@ -109,8 +109,7 @@ c--   only do interior, and exchange outside
        ENDDO
       ENDDO
 
-      CALL MDS_READ_FIELD(wFileCur,ctrlprec,.FALSE.,'RL',
-     &                    nR,1,nR,wFld3d,dummyRS,1,mythid)
+      call READ_REC_3D_RL(wFileCur,ctrlprec,nR,wFld3d,1,1,mythid)
       _EXCH_XYZ_RL( wFld3d, mythid )
 
       il=ilnblnk( xxFileCur )
@@ -153,8 +152,8 @@ c avoid xx larger than boundsVec(5) X uncertainty
       if (useSMOOTH) call smooth3D(xxFld3d,paramSmooth,mythid)
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xxFileCur(1:il),'.smooth.',optimcycle
-      CALL MDS_WRITE_FIELD(fnamegeneric,ctrlprec,.FALSE.,.FALSE.,
-     & 'RL',nr,1,nr,xxFld3d,dummyRS,1,optimcycle,mythid)
+      call WRITE_REC_3D_RL(fnamegeneric,ctrlprec,
+     & nr, xxFld3d, 1, optimcycle, mythid)
 # endif
 #endif
 
@@ -209,8 +208,8 @@ c avoid param out of [boundsVec(1) boundsVec(4)]
       IF ( ctrlSmoothCorrel3D ) THEN
         write(fnamegeneric(1:80),'(2a,i10.10)')
      &    xxFileCur(1:il),'.effective.',optimcycle
-        CALL MDS_WRITE_FIELD(fnamegeneric,ctrlprec,.FALSE.,.FALSE.,
-     &   'RL',nr,1,nr,paramFld3d,dummyRS,1,optimcycle,mythid)
+        call WRITE_REC_3D_RL(fnamegeneric,ctrlprec,
+     &    nr, paramFld3d, 1, optimcycle, mythid)
       ENDIF
 
       RETURN
@@ -321,8 +320,7 @@ c--   only do interior, and exchange outside
        ENDDO
       ENDDO
 
-      CALL MDS_READ_FIELD(wFileCur,ctrlprec,.FALSE.,'RL',
-     &                    1,1,1,wFld2d,dummyRS,1,mythid)
+      call READ_REC_3D_RL(wFileCur,ctrlprec,1,wFld2d,1,1,mythid)
       _EXCH_XY_RL( wFld2d, mythid )
 
       il=ilnblnk( xxFileCur )
@@ -363,8 +361,8 @@ c avoid xx larger than boundsVec(5) X uncertainty
       if (useSMOOTH) call smooth2d(xxFld2d,maskFld3d,paramSmooth,mythid)
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xxFileCur(1:il),'.smooth.',optimcycle
-      CALL MDS_WRITE_FIELD(fnamegeneric,ctrlprec,.FALSE.,.FALSE.,
-     & 'RL',1,1,1,xxFld2d,dummyRS,1,optimcycle,mythid)
+      call WRITE_REC_3D_RL(fnamegeneric,ctrlprec,
+     & 1, xxFld2d, 1, optimcycle, mythid)
 # endif
 #endif
 
@@ -414,8 +412,8 @@ c scale param adjustment
       IF ( ctrlSmoothCorrel2D ) THEN
         write(fnamegeneric(1:80),'(2a,i10.10)')
      &   xxFileCur(1:il),'.effective.',optimcycle
-        CALL MDS_WRITE_FIELD(fnamegeneric,ctrlprec,.FALSE.,.FALSE.,
-     &   'RL',1,1,1,paramFld2d,dummyRS,1,optimcycle,mythid)
+        call WRITE_REC_3D_RL(fnamegeneric,ctrlprec,
+     &   1, paramFld2d, 1, optimcycle, mythid)
       endif
 
       RETURN

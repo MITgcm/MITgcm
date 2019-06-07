@@ -257,8 +257,8 @@ c--   Now, read the control vector.
       write(fnamegenOut(1:80),'(2a,i10.10)')
      &       fnamebase(1:ilgen),'.effective.',optimcycle
 
-      CALL MDS_READ_FIELD(xx_genarr2d_weight(iarr),ctrlprec,.FALSE.,
-     & 'RL',1,1,1,wgenarr2d(1-Olx,1-Oly,1,1,iarr),dummyRS,1,mythid)
+      call READ_REC_3D_RL(xx_genarr2d_weight(iarr),ctrlprec,1,
+     &     wgenarr2d(1-Olx,1-Oly,1,1,iarr),1,1,mythid)
 
 #ifdef ALLOW_AUTODIFF
       call active_read_xy( fnamegenIn, xx_gen, 1, doglobalread,
@@ -300,8 +300,8 @@ c avoid param out of [boundsVec(1) boundsVec(4)]
 
       CALL EXCH_XY_RL( fld, mythid )
 
-      CALL MDS_WRITE_FIELD(fnamegenOut,ctrlprec,.FALSE.,.FALSE.,
-     & 'RL',1,1,1,fld,dummyRS,1,optimcycle,mythid)
+      CALL WRITE_REC_3D_RL(fnamegenOut,ctrlprec,
+     &    1, fld, 1, optimcycle, mythid)
 
 #endif /* ALLOW_GENARR2D_CONTROL */
 
@@ -414,8 +414,8 @@ c--   Now, read the control vector.
       write(fnamegenOut(1:80),'(2a,i10.10)')
      &       fnamebase(1:ilgen),'.effective.',optimcycle
 
-      CALL MDS_READ_FIELD(xx_genarr3d_weight(iarr),ctrlprec,.FALSE.,
-     & 'RL',nR,1,nR,wgenarr3d(1-Olx,1-Oly,1,1,1,iarr),dummyRS,1,mythid)
+      call READ_REC_3D_RL(xx_genarr3d_weight(iarr),ctrlprec,nR,
+     &     wgenarr3d(1-Olx,1-Oly,1,1,1,iarr),1,1,mythid)
 
 #ifdef ALLOW_AUTODIFF
       call active_read_xyz( fnamegenIn, xx_gen, 1, doglobalread,
@@ -485,8 +485,8 @@ C  xx_uvel and xx_vvel are read in.
      &    xx_genarr3d_file(iarr)(1:7).NE.'xx_vvel')
      &    CALL EXCH_XYZ_RL( fld, mythid )
 
-      CALL MDS_WRITE_FIELD(fnamegenOut,ctrlprec,.FALSE.,.FALSE.,
-     & 'RL',nr,1,nr,fld,dummyRS,1,optimcycle,mythid)
+      CALL WRITE_REC_3D_RL(fnamegenOut,ctrlprec,
+     &    nr, fld, 1, optimcycle, mythid)
 
 #endif /* ALLOW_GENARR3D_CONTROL */
 
