@@ -319,15 +319,12 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
           DO bi=myBxLo(myThid), myBxHi(myThid)
            DO j = 1,sNy
             DO i = 1,sNx
-             IF (maskC(i,j,1,bi,bj).NE.0.) THEN
-              IF (doscaling) THEN
-               IF (wgentim2d(i,j,bi,bj,iarr).GT.0.) THEN
+             IF ( (maskC(i,j,1,bi,bj).NE.0.).AND.
+     &            (wgentim2d(i,j,bi,bj,iarr).GT.0.) ) THEN
+               IF (doscaling) THEN
                 xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)
      &                  /sqrt(wgentim2d(i,j,bi,bj,iarr))
-               ELSE
-                xx_gen(i,j,bi,bj)=0. _d 0
-               ENDIF 
-              ENDIF ! IF (doscaling) then
+               ENDIF ! IF (doscaling) then
              ELSE
                 xx_gen(i,j,bi,bj)=0. _d 0
              ENDIF
