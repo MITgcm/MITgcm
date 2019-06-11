@@ -5,7 +5,7 @@
 
 CBOP
       SUBROUTINE BLING_FIELDS_LOAD (
-     I           myIter,myTime,myThid)
+     I           myTime, myIter, myThid)
 
 C     *========================================================*
 C     | subroutine bling_fields_load

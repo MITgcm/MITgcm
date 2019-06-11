@@ -2,10 +2,10 @@
 
 CBOP
       subroutine BLING_LIGHT(
-     I               mld,
-     U               irr_inst, irr_eff,
-     I               bi, bj, imin, imax, jmin, jmax,
-     I               myIter, myTime, myThid )
+     I           mld,
+     U           irr_inst, irr_eff,
+     I           bi, bj, imin, imax, jmin, jmax,
+     I           myTime, myIter, myThid)
 
 C     =================================================================
 C     | subroutine bling_light

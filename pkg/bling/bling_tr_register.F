@@ -4,8 +4,8 @@ CBOP
 C     !ROUTINE: BLING_TR_REGISTER
 C     !INTERFACE:
       SUBROUTINE BLING_TR_REGISTER(
-     U                            tracer_num, sepFTr_num,
-     I                            myThid )
+     U           tracer_num, sepFTr_num,
+     I           myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*

@@ -2,7 +2,7 @@
 
 CBOP
       subroutine BLING_MIN_VAL(
-     I                          PTR, min_val, adj, bi, bj )
+     I           PTR, min_val, adj, bi, bj )
 
 C     =================================================================
 C     | subroutine bling_min_val

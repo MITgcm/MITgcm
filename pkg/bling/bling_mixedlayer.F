@@ -2,9 +2,9 @@
 
 CBOP
       subroutine BLING_MIXEDLAYER(
-     U               sumMLDepth,
-     I               bi, bj, imin, imax, jmin, jmax,
-     I               myIter, myTime, myThid )
+     U           sumMLDepth,
+     I           bi, bj, imin, imax, jmin, jmax,
+     I           myTime, myIter, myThid)
 
 C     =================================================================
 C     | subroutine bling_mixedlayer

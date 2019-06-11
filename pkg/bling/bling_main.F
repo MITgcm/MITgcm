@@ -3,19 +3,19 @@
 CBOP
       subroutine BLING_MAIN( PTR_DIC, PTR_ALK, PTR_O2,
 #ifndef USE_BLING_V0
-     &                      PTR_NO3, PTR_PO4, PTR_FE,
-     &                      PTR_DON, PTR_DOP,
+     U           PTR_NO3, PTR_PO4, PTR_FE,
+     U           PTR_DON, PTR_DOP,
 #ifdef USE_SIBLING
-     &                      PTR_SI,
+     U           PTR_SI,
 #endif
 #ifdef ADVECT_PHYTO
-     &                      PTR_PHY,
+     U           PTR_PHY,
 #endif
 #else
-     &                      PTR_PO4, PTR_DOP, PTR_FE,
+     U           PTR_PO4, PTR_DOP, PTR_FE,
 #endif
-     &                      bi, bj, imin, imax, jmin, jmax,
-     &                      myIter, myTime, myThid)
+     I           bi, bj, imin, imax, jmin, jmax,
+     I           myTime, myIter, myThid)
 
 C     ==================================================================
 C     | subroutine bling_main
@@ -154,7 +154,7 @@ c  carbon and oxygen air-sea interaction
 #endif
      U                       surf_DIC, surf_O2, fluxO2,
      I                       bi, bj, imin, imax, jmin, jmax,
-     I                       myIter, myTime, myThid)
+     I                       myTime, myIter, myThid)
 
 CADJ STORE ph = comlev1, key = ikey_dynamics,
 CADJ &    kind = isbyte
@@ -167,7 +167,7 @@ c  determine calcite saturation for remineralization
      I                         PTR_SI,
 #endif
      I                         bi, bj, imin, imax, jmin, jmax,
-     I                         myIter, myTime, myThid)
+     I                         myTime, myIter, myThid)
 
 C-----------------------------------------------------------
 C  biological activity
@@ -185,14 +185,14 @@ C  call either "BLING" or "BLING + nitrogen"
      U                 G_DIC, G_ALK, G_O2, G_FE,
      U                 G_PO4, G_DOP, G_NO3, G_DON,
      I                 bi, bj, imin, imax, jmin, jmax,
-     I                 myIter, myTime, myThid)
+     I                 myTime, myIter, myThid)
 #else
        CALL BLING_BIO(
      I                 PTR_O2, PTR_FE, PTR_PO4, PTR_DOP,
      U                 G_DIC, G_ALK, G_O2, G_FE,
      U                 G_PO4, G_DOP,
      I                 bi, bj, imin, imax, jmin, jmax,
-     I                 myIter, myTime, myThid)
+     I                 myTime, myIter, myThid)
 #endif
 
 C-----------------------------------------------------------

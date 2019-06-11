@@ -2,8 +2,8 @@
 
 CBOP
       subroutine BLING_READ_PICKUP(
-     O                            pH_isLoaded,
-     I                            myIter, myThid )
+     O           pH_isLoaded,
+     I           myIter, myThid )
 
 C     ==========================================================
 C     | subroutine bling_read_pickup

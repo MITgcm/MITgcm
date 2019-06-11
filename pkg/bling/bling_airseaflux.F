@@ -12,7 +12,7 @@ CBOP
 #endif
      O           SGDIC, SGO2, FluxO2,
      I           bi, bj, imin, imax, jmin, jmax,
-     I           myIter, myTime, myThid)
+     I           myTime, myIter, myThid)
 
 C     =================================================================
 C     | subroutine bling_airseaflux

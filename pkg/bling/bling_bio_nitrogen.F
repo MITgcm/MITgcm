@@ -16,7 +16,7 @@ CBOP
      O           G_SI,
 #endif
      I           bi, bj, imin, imax, jmin, jmax,
-     I           myIter, myTime, myThid )
+     I           myTime, myIter, myThid)
 
 C     =================================================================
 C     | subroutine bling_bio_nitrogen
@@ -452,7 +452,7 @@ c  (with BLING_ADJOINT_SAFE flag, USE_BLING_DVM is undefined)
        CALL BLING_MIXEDLAYER(
      U                         mld,
      I                         bi, bj, imin, imax, jmin, jmax,
-     I                         myIter, myTime, myThid)
+     I                         myTime, myIter, myThid)
 #endif
 
 c  Phytoplankton mixing
@@ -520,10 +520,10 @@ c-----------------------------------------------------------
 c  light availability for biological production
 
        CALL BLING_LIGHT(
-     I               mld,
-     U               irr_inst, irr_eff,
-     I               bi, bj, imin, imax, jmin, jmax,
-     I               myIter, myTime, myThid )
+     I                    mld,
+     U                    irr_inst, irr_eff,
+     I                    bi, bj, imin, imax, jmin, jmax,
+     I                    myTime, myIter, myThid )
 
 c  phytoplankton photoadaptation to local light level
 c  This represents the fact that phytoplankton cells are adapted
