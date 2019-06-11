@@ -1,5 +1,4 @@
 #include "DIC_OPTIONS.h"
-#include "PTRACERS_OPTIONS.h"
 
 CBOP
 C !ROUTINE: DIC_SURFFORCING
@@ -39,10 +38,11 @@ C !OUTPUT PARAMETERS: ===================================================
 c GDC                   :: tendency due to air-sea exchange
       _RL  GDC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-#ifdef ALLOW_PTRACERS
+#ifdef ALLOW_DIC
 
 C !LOCAL VARIABLES: ====================================================
        INTEGER i,j, kLev
+       LOGICAL debugPrt
        _RL co3dummy
 C Number of iterations for pCO2 solvers...
 C Solubility relation coefficients
@@ -97,11 +97,11 @@ cQQQQ check ptracer numbers
              surfphos(i,j)  = PTR_PO4(i,j,klev)
      &                          * maskC(i,j,kLev,bi,bj)
 #endif
-#else
+#else /* DIC_BIOTIC */
              surfalk(i,j) = 2.366595 _d 0 * salt(i,j,kLev,bi,bj)/gsm_s
      &                          * maskC(i,j,kLev,bi,bj)
              surfphos(i,j)  = 5.1225 _d -4 * maskC(i,j,kLev,bi,bj)
-#endif
+#endif /* DIC_BIOTIC */
 C FOR NON-INTERACTIVE Si
              surfsi(i,j)   = SILICA(i,j,bi,bj) * maskC(i,j,kLev,bi,bj)
 #ifdef DIC_BOUNDS
@@ -119,9 +119,21 @@ C FOR NON-INTERACTIVE Si
           ENDDO
          ENDDO
 
-         CALL CARBON_COEFFS(
+#ifdef CARBONCHEM_SOLVESAPHE
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('DIC_COEFFS_SURF',myThid)
+#endif
+        CALL DIC_COEFFS_SURF(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
+#else /* CARBONCHEM_SOLVESAPHE */
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS',myThid)
+#endif
+        CALL CARBON_COEFFS(
+     I                       surftemp,surfsalt,
+     I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
+#endif /* CARBONCHEM_SOLVESAPHE */
 C====================================================================
 
        DO j=jMin,jMax
@@ -146,26 +158,51 @@ C Schmidt number is accounted for later
         ENDDO
        ENDDO
 
+       debugPrt = debugMode
 c pCO2 solver...
 C$TAF LOOP = parallel
        DO j=jMin,jMax
 C$TAF LOOP = parallel
         DO i=iMin,iMax
-
           IF ( maskC(i,j,kLev,bi,bj).NE.0. _d 0 ) THEN
-            CALL CALC_PCO2_APPROX(
-     I        surftemp(i,j),surfsalt(i,j),
-     I        surfdic(i,j), surfphos(i,j),
-     I        surfsi(i,j),surfalk(i,j),
-     I        ak1(i,j,bi,bj),ak2(i,j,bi,bj),
-     I        ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),
-     I        aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
-     I        aksi(i,j,bi,bj),akf(i,j,bi,bj),
-     I        ak0(i,j,bi,bj), fugf(i,j,bi,bj),
-     I        ff(i,j,bi,bj),
-     I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
-     U        pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
-     I        i,j,kLev,bi,bj,myIter,myThid )
+#ifdef CARBONCHEM_SOLVESAPHE
+            IF ( selectPHsolver.GT.0 ) THEN
+C Use Munhoven (2013) Solvesaphe routine to calculate pH and pCO2
+#ifdef ALLOW_DEBUG
+              IF (debugPrt) CALL DEBUG_CALL(
+     &     'CALC_PCO2_SOLVESAPHE from DIC_SURFFORCING',myThid)
+#endif
+              CALL CALC_PCO2_SOLVESAPHE(
+     I          surftemp(i,j),surfsalt(i,j),
+     I          surfdic(i,j), surfphos(i,j),
+     I          surfsi(i,j),surfalk(i,j),
+     U          pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
+     I          i,j,kLev,bi,bj, debugPrt, myIter, myThid )
+              debugPrt = .FALSE.
+            ELSE
+C Use the original Follows et al. (2006) solver
+#endif /* CARBONCHEM_SOLVESAPHE */
+#ifdef ALLOW_DEBUG
+              IF (debugPrt) CALL DEBUG_CALL(
+     &        'CALC_PCO2_APPROX',myThid)
+              debugPrt = .FALSE.
+#endif
+              CALL CALC_PCO2_APPROX(
+     I          surftemp(i,j),surfsalt(i,j),
+     I          surfdic(i,j), surfphos(i,j),
+     I          surfsi(i,j),surfalk(i,j),
+     I          ak1(i,j,bi,bj),ak2(i,j,bi,bj),
+     I          ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),
+     I          aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
+     I          aksi(i,j,bi,bj),akf(i,j,bi,bj),
+     I          ak0(i,j,bi,bj), fugf(i,j,bi,bj),
+     I          ff(i,j,bi,bj),
+     I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
+     U          pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
+     I          i,j,kLev,bi,bj,myIter, myThid )
+#ifdef CARBONCHEM_SOLVESAPHE
+            ENDIF
+#endif /* CARBONCHEM_SOLVESAPHE */
           ELSE
             pCO2(i,j,bi,bj)=0. _d 0
           ENDIF
@@ -214,7 +251,7 @@ c Flux = kw*rho*(ff*pCO2atm-k0*FugFac*pCO2ocean)
      &            ff(i,j,bi,bj)*pCO2sat(i,j) -
      &            pCO2(i,j,bi,bj)*fugf(i,j,bi,bj)
      &            *ak0(i,j,bi,bj) )
-     &
+
 #endif
           ELSE
               FluxCO2(i,j,bi,bj) = 0. _d 0
@@ -255,6 +292,6 @@ C update tendency
           ENDDO
          ENDDO
 
-#endif
+#endif /* ALLOW_DIC */
         RETURN
         END
