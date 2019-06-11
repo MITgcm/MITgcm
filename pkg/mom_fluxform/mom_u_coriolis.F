@@ -43,10 +43,10 @@ C  i,j                  :: loop indices
       PARAMETER( one = 1. _d 0 )
 CEOP
 
-      IF (useEnergyConservingCoriolis) THEN
+      IF ( selectCoriScheme.GE.2 ) THEN
 C Energy conserving discretization
-       DO j=1-Oly,sNy+Oly-1
-        DO i=1-Olx+1,sNx+Olx
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx
          uCoriolisTerm(i,j) =
      &     0.5*( _fCori( i ,j,bi,bj)
      &          *0.5*( vFld( i ,j)+vFld( i ,j+1) )
@@ -56,8 +56,8 @@ C Energy conserving discretization
        ENDDO
       ELSE
 C Original discretization
-       DO j=1-Oly,sNy+Oly-1
-        DO i=1-Olx+1,sNx+Olx
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx
          uCoriolisTerm(i,j) =
      &     0.5*( _fCori( i ,j,bi,bj) +
      &           _fCori(i-1,j,bi,bj)  )
@@ -69,12 +69,12 @@ C Original discretization
        ENDDO
       ENDIF
 
-      IF (useJamartWetPoints) THEN
+      IF ( selectCoriScheme.EQ.1 .OR. selectCoriScheme.EQ.3 ) THEN
 C Scale term so that only "wet" points are used
 C Due to: Jamart and Ozer, 1986, JGR 91 (C9), 10,621-10,631
 C         "Numerical Boundary Layers and Spurious Residual Flows"
-       DO j=1-Oly,sNy+Oly-1
-        DO i=1-Olx+1,sNx+Olx
+       DO j=1-OLy,sNy+OLy-1
+        DO i=1-OLx+1,sNx+OLx
          uCoriolisTerm(i,j) = uCoriolisTerm(i,j)
      &   *4. _d 0/MAX( one,
      &                 maskS( i , j ,k,bi,bj)+maskS( i ,j+1,k,bi,bj)
