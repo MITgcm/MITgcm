@@ -36,6 +36,7 @@ C     dxSpacing, dySpacing :: Default spacing in X and Y.
 C                          :: Units are that of coordinate system
 C                          :: i.e. cartesian => metres
 C                          ::       s. polar => degrees
+C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart & Ozer 1986)
 C     SadournyCoriolis :: for backward compatibility
 C     deltaTtracer  :: Timestep for tracer equations ( s )
 C     forcing_In_AB :: flag to put all forcings (Temp,Salt,Tracers,Momentum)
@@ -51,6 +52,8 @@ C     xxxDefault :: Default value for variable xxx
       _RL  dySpacing
       _RL deltaTtracer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL useJamartWetPoints
+      LOGICAL useEnergyConservingCoriolis
       LOGICAL SadournyCoriolis
       LOGICAL forcing_In_AB
       INTEGER goptCount
@@ -224,10 +227,11 @@ C--   Continuous equation parameters
      & hMixCriteria, dRhoSmall, hMixSmooth,
      & tempAdvScheme, tempVertAdvScheme,
      & saltAdvScheme, saltVertAdvScheme, tracerAdvScheme,
-     & multiDimAdvection, useEnergyConservingCoriolis,
-     & useCDscheme, useJamartWetPoints, useJamartMomAdv, useNHMTerms,
-     & selectVortScheme, upwindVorticity, highOrderVorticity,
-     & SadournyCoriolis, useAbsVorticity, upwindShear, selectKEscheme,
+     & multiDimAdvection, useNHMTerms, useCDscheme,
+     & useAbsVorticity, selectCoriScheme, useJamartWetPoints,
+     & useEnergyConservingCoriolis, selectVortScheme, SadournyCoriolis,
+     & useJamartMomAdv, upwindVorticity, highOrderVorticity,
+     & upwindShear, selectKEscheme,
      & selectAddFluid, useRealFreshWaterFlux, convertFW2Salt,
      & temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
      & temp_addMass, salt_addMass, zonal_filt_lat,
@@ -310,6 +314,9 @@ C     Defaults values for input parameters
      O   viscArDefault, diffKrTDefault, diffKrSDefault,
      O   hFacMinDrDefault, delRDefault,
      I   myThid )
+
+      useJamartWetPoints  = .FALSE.
+      useEnergyConservingCoriolis = .FALSE.
       SadournyCoriolis = .FALSE.
 
 C--   Initialise "which vertical coordinate system used" flags.
@@ -599,6 +606,40 @@ C-    use temp diffusivity as default salt diffusivity:
         IF ( selectAddFluid.GE.1 ) convertFW2Salt=-1
       ENDIF
 
+C--   for backward compatibility :
+      IF ( selectCoriScheme.EQ.UNSET_I ) THEN
+        selectCoriScheme = 0
+        IF ( useJamartWetPoints ) selectCoriScheme = 1
+        IF ( useEnergyConservingCoriolis .AND.
+     &       .NOT.vectorInvariantMomentum )
+     &    selectCoriScheme = selectCoriScheme + 2
+      ENDIF
+      IF ( vectorInvariantMomentum ) THEN
+        IF ( useJamartWetPoints .AND. selectCoriScheme.NE.1 ) THEN
+          WRITE(msgBuf,'(A,I5,A)')
+     &     'S/R INI_PARMS: selectCoriScheme=', selectCoriScheme,
+     &     ' conflicts with "useJamartWetPoints"'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          errCount = errCount + 1
+        ENDIF
+      ELSE
+        IF ( useEnergyConservingCoriolis
+     &       .AND. selectCoriScheme.LT.2 ) THEN
+          WRITE(msgBuf,'(A,I5,A)')
+     &     'S/R INI_PARMS: selectCoriScheme=', selectCoriScheme,
+     &     ' conflicts with "useEnergyConservingCoriolis"'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          errCount = errCount + 1
+        ENDIF
+        IF ( useJamartWetPoints .AND. selectCoriScheme.NE.1
+     &                          .AND. selectCoriScheme.NE.3 ) THEN
+          WRITE(msgBuf,'(A,I5,A)')
+     &     'S/R INI_PARMS: selectCoriScheme=', selectCoriScheme,
+     &     ' conflicts with "useJamartWetPoints"'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          errCount = errCount + 1
+        ENDIF
+      ENDIF
       IF ( SadournyCoriolis ) THEN
 C--   for backward compatibility :
         IF ( selectVortScheme.EQ.UNSET_I ) selectVortScheme = 2

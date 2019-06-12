@@ -68,11 +68,11 @@ C--   generic 2D control variables
       igen_geoth=0
       DO iarr = 1, maxCtrlArr2D
       if (xx_genarr2d_weight(iarr).NE.' ') then
-        if (xx_genarr2d_file(iarr)(1:7).EQ.'xx_etan') 
+        if (xx_genarr2d_file(iarr)(1:7).EQ.'xx_etan')
      &     igen_etan=iarr
-        if (xx_genarr2d_file(iarr)(1:13).EQ.'xx_bottomdrag') 
+        if (xx_genarr2d_file(iarr)(1:13).EQ.'xx_bottomdrag')
      &     igen_bdrag=iarr
-        if (xx_genarr2d_file(iarr)(1:13).EQ.'xx_geothermal') 
+        if (xx_genarr2d_file(iarr)(1:13).EQ.'xx_geothermal')
      &     igen_geoth=iarr
       endif
       ENDDO
@@ -100,22 +100,26 @@ C--   generic 3D control variables
       igen_kapgm=0
       igen_kapredi=0
       igen_diffkr=0
+#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
+      igen_uvel0=0
+      igen_vvel0=0
+#endif
       DO iarr = 1, maxCtrlArr3D
       if (xx_genarr3d_weight(iarr).NE.' ') then
-        if (xx_genarr3d_file(iarr)(1:8).EQ.'xx_theta') 
+        if (xx_genarr3d_file(iarr)(1:8).EQ.'xx_theta')
      &     igen_theta0=iarr
-        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_salt') 
+        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_salt')
      &     igen_salt0=iarr
-        if (xx_genarr3d_file(iarr)(1:8).EQ.'xx_kapgm') 
+        if (xx_genarr3d_file(iarr)(1:8).EQ.'xx_kapgm')
      &     igen_kapgm=iarr
-        if (xx_genarr3d_file(iarr)(1:10).EQ.'xx_kapredi') 
+        if (xx_genarr3d_file(iarr)(1:10).EQ.'xx_kapredi')
      &     igen_kapredi=iarr
-        if (xx_genarr3d_file(iarr)(1:9).EQ.'xx_diffkr') 
+        if (xx_genarr3d_file(iarr)(1:9).EQ.'xx_diffkr')
      &     igen_diffkr=iarr
 #if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
-        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_uvel') 
+        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_uvel')
      &     igen_uvel0=iarr
-        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_vvel') 
+        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_vvel')
      &     igen_vvel0=iarr
 #endif
       endif
@@ -299,7 +303,6 @@ c avoid param out of [boundsVec(1) boundsVec(4)]
       CALL MDS_WRITE_FIELD(fnamegenOut,ctrlprec,.FALSE.,.FALSE.,
      & 'RL',1,1,1,fld,dummyRS,1,optimcycle,mythid)
 
-
 #endif /* ALLOW_GENARR2D_CONTROL */
 
       RETURN
@@ -429,13 +432,13 @@ c--   Now, read the control vector.
 #endif
 
 #if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
-c--   set local mask 
+c--   set local mask
       call ecco_zero(localmask,Nr,zeroRL,myThid)
       if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_uvel') then
         call ecco_cprsrl(maskW,nr,localmask,nr,myThid)
       else if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_vvel') then
         call ecco_cprsrl(maskS,nr,localmask,nr,myThid)
-      else 
+      else
         call ecco_cprsrl(maskC,nr,localmask,nr,myThid)
       endif
 #endif
@@ -475,11 +478,11 @@ c avoid param out of [boundsVec(1) boundsVec(4)]
       CALL CTRL_BOUND_3D(fld,maskC,xx_genarr3d_bounds(1,iarr),myThid)
 #endif
 
-C The tile exchange for xx_uvel and xx_vvel will be 
-C  done in CTRL_MAP_INI_GENARR.F when both 
-C  xx_uvel and xx_vvel are read in. 
+C The tile exchange for xx_uvel and xx_vvel will be
+C  done in CTRL_MAP_INI_GENARR.F when both
+C  xx_uvel and xx_vvel are read in.
       if (xx_genarr3d_file(iarr)(1:7).NE.'xx_uvel'.AND.
-     &    xx_genarr3d_file(iarr)(1:7).NE.'xx_vvel') 
+     &    xx_genarr3d_file(iarr)(1:7).NE.'xx_vvel')
      &    CALL EXCH_XYZ_RL( fld, mythid )
 
       CALL MDS_WRITE_FIELD(fnamegenOut,ctrlprec,.FALSE.,.FALSE.,
@@ -489,5 +492,3 @@ C  xx_uvel and xx_vvel are read in.
 
       RETURN
       END
-
-
