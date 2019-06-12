@@ -147,6 +147,8 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL strain(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Nsquare(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  uDudxFac
       _RL  AhDudxFac
       _RL  vDudyFac
@@ -209,6 +211,8 @@ c       KE(i,j)     = 0.
         vort3(i,j)  = 0.
         strain(i,j) = 0.
         tension(i,j)= 0.
+        stretching(i,j) = 0.
+        Nsquare(i,j)    = 0.
         guDiss(i,j) = 0.
         gvDiss(i,j) = 0.
        ENDDO
@@ -308,6 +312,17 @@ C     anelastic: transports are scaled by rhoFacC (~ mass transport)
         CALL MOM_CALC_RELVORT3( bi,bj,k,uFld,vFld,hFacZ,vort3,myThid )
         CALL MOM_CALC_TENSION( bi,bj,k,uFld,vFld,tension,myThid )
         CALL MOM_CALC_STRAIN( bi,bj,k,uFld,vFld,hFacZ,strain,myThid )
+#ifdef ALLOW_LEITH_QG
+        IF ( viscC2LeithQG.NE.zeroRL ) THEN
+          CALL MOM_VISC_QGL_STRETCH(bi,bj,k,
+     O                            stretching, Nsquare,
+     I                            myTime, myIter, myThid)
+          CALL MOM_VISC_QGL_LIMIT(bi,bj,k,
+     O                          stretching,
+     I                          Nsquare, uFld,vFld,vort3,
+     I                          myTime, myIter, myThid )
+        ENDIF
+#endif
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
            IF ( hFacZ(i,j).EQ.0. ) THEN
@@ -322,6 +337,11 @@ C     anelastic: transports are scaled by rhoFacC (~ mass transport)
           CALL DIAGNOSTICS_FILL(vort3,  'momVort3',k,1,2,bi,bj,myThid)
           CALL DIAGNOSTICS_FILL(tension,'Tension ',k,1,2,bi,bj,myThid)
           CALL DIAGNOSTICS_FILL(strain, 'Strain  ',k,1,2,bi,bj,myThid)
+C     stretching will be zero, unless using QG Leith
+          IF ( viscC2LeithQG.NE.zeroRL ) THEN
+            CALL DIAGNOSTICS_FILL(stretching,
+     I                            'Stretch ',k,1,2,bi,bj,myThid)
+          ENDIF
         ENDIF
 #endif
       ENDIF
@@ -394,7 +414,7 @@ C---  Calculate vertical transports (at k+1) below U & V points :
        IF ( useVariableVisc ) THEN
         CALL MOM_CALC_VISC( bi, bj, k,
      O           viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
-     I           hDiv, vort3, tension, strain, KE, hFacZ,
+     I           hDiv, vort3, tension, strain, stretching, KE, hFacZ,
      I           myThid )
        ENDIF
       ENDIF
