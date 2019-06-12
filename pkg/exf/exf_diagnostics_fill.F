@@ -53,12 +53,12 @@ CEOP
 #ifdef ALLOW_ATM_TEMP
         CALL DIAGNOSTICS_FILL( atemp,     'EXFatemp',0,1,0,1,1,myThid )
         CALL DIAGNOSTICS_FILL( aqh,       'EXFaqh  ',0,1,0,1,1,myThid )
-c      IF ( .NOT.diags_opOceWeighted ) THEN
+       IF ( .NOT.diags_opOceWeighted ) THEN
         CALL DIAGNOSTICS_FILL( hs,        'EXFhs   ',0,1,0,1,1,myThid )
         CALL DIAGNOSTICS_FILL( hl,        'EXFhl   ',0,1,0,1,1,myThid )
         CALL DIAGNOSTICS_FILL( lwflux,    'EXFlwnet',0,1,0,1,1,myThid )
         CALL DIAGNOSTICS_FILL( evap,      'EXFevap ',0,1,0,1,1,myThid )
-c      ENDIF
+       ENDIF
         CALL DIAGNOSTICS_FILL( precip,    'EXFpreci',0,1,0,1,1,myThid )
         CALL DIAGNOSTICS_FILL( snowprecip,'EXFsnow ',0,1,0,1,1,myThid )
 #endif

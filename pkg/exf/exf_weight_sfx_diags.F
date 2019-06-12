@@ -113,7 +113,7 @@ C--   Second group of surface-flux: Buoyancy fluxes
           CALL DIAGNOSTICS_FILL( sflux,  'EXFempmr', 0,1,0,1,1,myThid )
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
           CALL DIAGNOSTICS_FILL( swflux, 'EXFswnet', 0,1,0,1,1,myThid )
-#endif
+#endif /* ALLOW_ATM_TEMP or SHORTWAVE_HEATING */
         ELSEIF ( diagGroup.EQ.2 ) THEN
 
          IF ( DIAGNOSTICS_IS_ON('EXFqnet ',myThid) ) THEN
@@ -158,23 +158,82 @@ C--   Second group of surface-flux: Buoyancy fluxes
           ENDDO
           CALL DIAGNOSTICS_FILL( tmpFld, 'EXFswnet', 0,1,0,1,1,myThid )
          ENDIF
-#endif
-
-C- Note: Below is a list of potential surface fluxes that we may want also to
-C        weight by open-ocean fraction. But at this point not sure if there is
-C        a real interest for this.
-#ifdef ALLOW_ATM_TEMP
-c         CALL DIAGNOSTICS_FILL( hs    , 'EXFhs   ', 0,1,0,1,1,myThid )
-c         CALL DIAGNOSTICS_FILL( hl    , 'EXFhl   ', 0,1,0,1,1,myThid )
-c         CALL DIAGNOSTICS_FILL( lwflux, 'EXFlwnet', 0,1,0,1,1,myThid )
-c         CALL DIAGNOSTICS_FILL( evap,   'EXFevap ', 0,1,0,1,1,myThid )
-#endif
-#ifdef ALLOW_SALTFLX
-c         CALL DIAGNOSTICS_FILL( saltflx,'EXFsalfx', 0,1,0,1,1,myThid )
-#endif
+#endif /* ALLOW_ATM_TEMP or SHORTWAVE_HEATING */
 
 C--   end second group
         ENDIF
+
+#ifdef ALLOW_ATM_TEMP
+C--   Third group: Individual components of surface buoyancy fluxes ;
+C     processed the same way and at same time as buoyancy fluxes (second group)
+        IF ( diagGroup.EQ.-2 ) THEN
+#ifdef ALLOW_ATM_TEMP
+          CALL DIAGNOSTICS_FILL( hs    , 'EXFhs   ', 0,1,0,1,1,myThid )
+          CALL DIAGNOSTICS_FILL( hl    , 'EXFhl   ', 0,1,0,1,1,myThid )
+          CALL DIAGNOSTICS_FILL( lwflux, 'EXFlwnet', 0,1,0,1,1,myThid )
+          CALL DIAGNOSTICS_FILL( evap,   'EXFevap ', 0,1,0,1,1,myThid )
+#endif /* ALLOW_ATM_TEMP */
+        ELSEIF ( diagGroup.EQ.2 ) THEN
+
+         IF ( DIAGNOSTICS_IS_ON('EXFhs   ',myThid) ) THEN
+          DO bj=myByLo(myThid),myByHi(myThid)
+           DO bi=myBxLo(myThid),myBxHi(myThid)
+             DO j = 1-OLy,sNy+OLy
+              DO i = 1-OLx,sNx+OLx
+               tmpFld(i,j,bi,bj) = hs(i,j,bi,bj)
+     &                           *( oneRL - siceFrac(i,j,bi,bj) )
+              ENDDO
+             ENDDO
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL( tmpFld, 'EXFhs   ', 0,1,0,1,1,myThid )
+         ENDIF
+
+         IF ( DIAGNOSTICS_IS_ON('EXFhl   ',myThid) ) THEN
+          DO bj=myByLo(myThid),myByHi(myThid)
+           DO bi=myBxLo(myThid),myBxHi(myThid)
+             DO j = 1-OLy,sNy+OLy
+              DO i = 1-OLx,sNx+OLx
+               tmpFld(i,j,bi,bj) = hl(i,j,bi,bj)
+     &                           *( oneRL - siceFrac(i,j,bi,bj) )
+              ENDDO
+             ENDDO
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL( tmpFld, 'EXFhl   ', 0,1,0,1,1,myThid )
+         ENDIF
+
+         IF ( DIAGNOSTICS_IS_ON('EXFlwnet',myThid) ) THEN
+          DO bj=myByLo(myThid),myByHi(myThid)
+           DO bi=myBxLo(myThid),myBxHi(myThid)
+             DO j = 1-OLy,sNy+OLy
+              DO i = 1-OLx,sNx+OLx
+               tmpFld(i,j,bi,bj) = lwflux(i,j,bi,bj)
+     &                           *( oneRL - siceFrac(i,j,bi,bj) )
+              ENDDO
+             ENDDO
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL( tmpFld, 'EXFlwnet', 0,1,0,1,1,myThid )
+         ENDIF
+
+         IF ( DIAGNOSTICS_IS_ON('EXFevap ',myThid) ) THEN
+          DO bj=myByLo(myThid),myByHi(myThid)
+           DO bi=myBxLo(myThid),myBxHi(myThid)
+             DO j = 1-OLy,sNy+OLy
+              DO i = 1-OLx,sNx+OLx
+               tmpFld(i,j,bi,bj) = evap(i,j,bi,bj)
+     &                           *( oneRL - siceFrac(i,j,bi,bj) )
+              ENDDO
+             ENDDO
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL( tmpFld, 'EXFevap ', 0,1,0,1,1,myThid )
+         ENDIF
+
+C--   end third group
+        ENDIF
+#endif /* ALLOW_ATM_TEMP */
 
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
