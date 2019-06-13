@@ -38,7 +38,7 @@ cccccccccccccccccccccccccc
 
 #ifdef ALLOW_BLING
       IF ( useBLING ) THEN
-       CALL BLING_FIELDS_LOAD( myTime, myIter, myThid )
+       CALL BLING_FIELDS_LOAD (myIter,myTime,myThid)
       ENDIF
 #endif
 

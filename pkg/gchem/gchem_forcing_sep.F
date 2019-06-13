@@ -198,9 +198,7 @@ ccccccccccccccccccccccccccc BLING cccccccccccccccccccccccccccccccc
 #   ifdef ADVECT_PHYTO
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,10),
 #   endif
-     &                          bi, bj, iMin, iMax, jMin, jMax,
-     &                          myTime, myIter, myThid )
-#  else /* USE_SIBLING */
+#  else 
           CALL BLING_MAIN( pTracer(1-OLx,1-OLy,1,bi,bj,1),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,2),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,3),
@@ -212,10 +210,8 @@ ccccccccccccccccccccccccccc BLING cccccccccccccccccccccccccccccccc
 #   ifdef ADVECT_PHYTO
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,9),
 #   endif
-     &                          bi, bj, iMin, iMax, jMin, jMax,
-     &                          myTime, myIter, myThid )
 #  endif /* USE_SIBLING */
-# else /* USE_BLING_v0 */
+# else
           CALL BLING_MAIN( pTracer(1-OLx,1-OLy,1,bi,bj,1),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,2),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,3),
@@ -225,9 +221,9 @@ ccccccccccccccccccccccccccc BLING cccccccccccccccccccccccccccccccc
 #  ifdef ADVECT_PHYTO
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,7),
 #  endif
-     &                          bi, bj, iMin, iMax, jMin, jMax,
-     &                          myTime, myIter, myThid )
 # endif /* USE_BLING_v0 */
+     &                          bi, bj, iMin, iMax, jMin, jMax,
+     &                          myIter, myTime, myThid )
         ENDIF
 #endif /* ALLOW_BLING */
 cccccccccccccccccccccccccc END BLING cccccccccccccccccccccccccccccccccc
