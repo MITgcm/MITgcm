@@ -1,6 +1,15 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - fix/simplify local file names in ecco_cost_init_barfiles.F (within
+    #ifdef ALLOW_GENCOST_CONTRIBUTION ).
+o pkg/mom_vecinv:
+  - add 2 Coriolis schemes which satisfy: d/dt U = f V ; d/dt V = -f U
+    (with U,V = vertically integrated flow).
+  - add new run-time coriolis-scheme selector "selectCoriScheme" to replace
+    "useJamartWetPoints" and "useEnergyConservingCoriolis"; but keep these 2
+    in namelist (backward compatible) to set "selectCoriScheme" accordingly.
 o pkg/ctrl:
   - Fix bug in ctrl_map_ini_genarr.F regarding missing initialization of
     igen_uvel & igen_vvel (just like all the other variables).

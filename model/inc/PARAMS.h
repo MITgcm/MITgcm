@@ -193,6 +193,7 @@ C     saltAdvScheme       :: Salt. Horiz.advection scheme selector
 C     saltVertAdvScheme   :: Salt. Vert. Advection scheme selector
 C     selectKEscheme      :: Kinetic Energy scheme selector (Vector Inv.)
 C     selectVortScheme    :: Scheme selector for Vorticity term (Vector Inv.)
+C     selectCoriScheme    :: Scheme selector for Coriolis term
 C     selectBotDragQuadr  :: quadratic bottom drag discretisation option:
 C                           =0: average KE from grid center to U & V location
 C                           =1: use local velocity norm @ U & V location
@@ -229,7 +230,7 @@ C-    plotLevel           :: controls printing of field maps ; higher -> more fl
      &        momForcingOutAB, tracForcingOutAB,
      &        tempAdvScheme, tempVertAdvScheme,
      &        saltAdvScheme, saltVertAdvScheme,
-     &        selectKEscheme, selectVortScheme,
+     &        selectKEscheme, selectVortScheme, selectCoriScheme,
      &        selectBotDragQuadr, pCellMix_select,
      &        readBinaryPrec, writeBinaryPrec, writeStatePrec,
      &        rwSuffixType, monitorSelect, debugLevel, plotLevel
@@ -257,6 +258,7 @@ C-    plotLevel           :: controls printing of field maps ; higher -> more fl
       INTEGER saltAdvScheme, saltVertAdvScheme
       INTEGER selectKEscheme
       INTEGER selectVortScheme
+      INTEGER selectCoriScheme
       INTEGER selectBotDragQuadr
       INTEGER pCellMix_select
       INTEGER readBinaryPrec
@@ -315,7 +317,6 @@ C     use3dCoriolis :: Turns the 3-D coriolis terms (in Omega.cos Phi) on - off
 C     useCDscheme   :: use CD-scheme to calculate Coriolis terms.
 C     vectorInvariantMomentum :: use Vector-Invariant form (mom_vecinv package)
 C                                (default = F = use mom_fluxform package)
-C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart & Ozer 1986)
 C     useJamartMomAdv :: Use wet-point method for V.I. non-linear term
 C     upwindVorticity :: bias interpolation of vorticity in the Coriolis term
 C     highOrderVorticity :: use 3rd/4th order interp. of vorticity (V.I., advection)
@@ -421,8 +422,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & momPressureForcing, metricTerms, useNHMTerms,
      & useCoriolis, use3dCoriolis,
      & useCDscheme, vectorInvariantMomentum,
-     & useEnergyConservingCoriolis, useJamartWetPoints, useJamartMomAdv,
-     & upwindVorticity, highOrderVorticity,
+     & useJamartMomAdv, upwindVorticity, highOrderVorticity,
      & useAbsVorticity, upwindShear,
      & momStepping, calc_wVelocity, tempStepping, saltStepping,
      & addFrictionHeating, temp_stayPositive, salt_stayPositive,
@@ -486,8 +486,6 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL use3dCoriolis
       LOGICAL useCDscheme
       LOGICAL vectorInvariantMomentum
-      LOGICAL useEnergyConservingCoriolis
-      LOGICAL useJamartWetPoints
       LOGICAL useJamartMomAdv
       LOGICAL upwindVorticity
       LOGICAL highOrderVorticity
