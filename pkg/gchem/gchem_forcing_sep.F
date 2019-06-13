@@ -215,7 +215,7 @@ ccccccccccccccccccccccccccc BLING cccccccccccccccccccccccccccccccc
      &                          bi, bj, iMin, iMax, jMin, jMax,
      &                          myTime, myIter, myThid )
 #  endif /* USE_SIBLING */
-# else /* USE_BLING_v0 */
+# else /* USE_BLING_v1 */
           CALL BLING_MAIN( pTracer(1-OLx,1-OLy,1,bi,bj,1),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,2),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,3),
@@ -227,7 +227,7 @@ ccccccccccccccccccccccccccc BLING cccccccccccccccccccccccccccccccc
 #  endif
      &                          bi, bj, iMin, iMax, jMin, jMax,
      &                          myTime, myIter, myThid )
-# endif /* USE_BLING_v0 */
+# endif /* USE_BLING_v1 */
         ENDIF
 #endif /* ALLOW_BLING */
 cccccccccccccccccccccccccc END BLING cccccccccccccccccccccccccccccccccc
