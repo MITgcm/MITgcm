@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/salt_plume:
+  - fix calculation index range in salt_plume_apply.F (#ifdef SALT_PLUME_VOLUME)
 o pkg/ecco:
   - fix/simplify local file names in ecco_cost_init_barfiles.F (within
     #ifdef ALLOW_GENCOST_CONTRIBUTION ).
