@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - fix/simplify local file names in ecco_cost_init_barfiles.F (within
+    #ifdef ALLOW_GENCOST_CONTRIBUTION ).
 o pkg/mom_vecinv:
   - add 2 Coriolis schemes which satisfy: d/dt U = f V ; d/dt V = -f U
     (with U,V = vertically integrated flow).
