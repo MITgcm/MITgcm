@@ -2,7 +2,7 @@
 
 CBOP
       subroutine BLING_MAIN( PTR_DIC, PTR_ALK, PTR_O2,
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
      U           PTR_NO3, PTR_PO4, PTR_FE,
      U           PTR_DON, PTR_DOP,
 #ifdef USE_SIBLING
@@ -72,7 +72,7 @@ C     PTR_PHY       :: total phytoplankton biomass
       _RL  PTR_FE (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  PTR_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  PTR_DOP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
       _RL  PTR_NO3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  PTR_DON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef USE_SIBLING
@@ -104,7 +104,7 @@ C     runoff_PO4           :: tendency due to river runoff
       _RL  surf_O2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  FluxO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  runoff_PO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
       _RL  G_NO3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  G_DON(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef USE_SIBLING
@@ -134,7 +134,7 @@ c  Initialize local variables
          G_FE(i,j,k)         = 0. _d 0
          G_PO4(i,j,k)        = 0. _d 0
          G_DOP(i,j,k)        = 0. _d 0
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
          G_NO3(i,j,k)        = 0. _d 0
          G_DON(i,j,k)        = 0. _d 0
 #ifdef USE_SIBLING
@@ -172,7 +172,7 @@ c  determine calcite saturation for remineralization
 C-----------------------------------------------------------
 C  biological activity
 C  call either "BLING" or "BLING + nitrogen"
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
        CALL BLING_BIO_NITROGEN(
      I                 PTR_O2, PTR_FE, PTR_PO4, PTR_DOP,
      I                 PTR_NO3, PTR_DON,
@@ -232,7 +232,7 @@ C   adding aeolian iron source
                G_PO4(i,j,1) = G_PO4(i,j,1) + runoff_PO4(i,j)
                G_DOP(i,j,1) = G_DOP(i,j,1)
      &                    + runoff_PO4(i,j)*river_dom_to_nut
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
                G_NO3(i,j,1) = G_NO3(i,j,1) + runoff_PO4(i,j)*NtoP
                G_DON(i,j,1) = G_DON(i,j,1)
      &                    + runoff_PO4(i,j)*NtoP*river_dom_to_nut
@@ -252,7 +252,7 @@ C update
            PTR_FE (i,j,k)=PTR_FE (i,j,k)+G_FE (i,j,k)*PTRACERS_dTLev(k)
            PTR_PO4(i,j,k)=PTR_PO4(i,j,k)+G_PO4(i,j,k)*PTRACERS_dTLev(k)
            PTR_DOP(i,j,k)=PTR_DOP(i,j,k)+G_DOP(i,j,k)*PTRACERS_dTLev(k)
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
            PTR_NO3(i,j,k)=PTR_NO3(i,j,k)+G_NO3(i,j,k)*PTRACERS_dTLev(k)
            PTR_DON(i,j,k)=PTR_DON(i,j,k)+G_DON(i,j,k)*PTRACERS_dTLev(k)
 #ifdef USE_SIBLING

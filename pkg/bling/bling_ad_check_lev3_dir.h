@@ -15,7 +15,7 @@ CADJ STORE chl               = tapelev3, key = ilev_3
 CADJ STORE poc               = tapelev3, key = ilev_3
 CADJ STORE phyto_sm          = tapelev3, key = ilev_3
 CADJ STORE phyto_lg          = tapelev3, key = ilev_3
-# ifndef USE_BLING_V0
+# ifndef USE_BLING_V1
 CADJ STORE phyto_diaz        = tapelev3, key = ilev_3
 # endif
 

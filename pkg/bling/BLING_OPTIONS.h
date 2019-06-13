@@ -9,9 +9,9 @@ C     Package-specific Options & Macros go here
 c BLING+Nitrogen is the default model. It's a version
 c of BLING with 8 tracers and 3 phyto classes.
 c For the original 6-tracer model of Galbraith et al (2010),
-c define USE_BLING_V0 - but note the different order of
+c define USE_BLING_V1 - but note the different order of
 c tracers in data.ptracers
-#undef USE_BLING_V0
+#undef USE_BLING_V1
 
 c options for BLING+Nitrogen code:
 c SiBLING: add a 9th tracer for silica

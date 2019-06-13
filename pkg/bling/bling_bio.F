@@ -73,7 +73,7 @@ C     G_xxx         :: tendency term for tracer xxx
       _RL     G_DOP     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 #ifdef ALLOW_BLING
-# ifdef USE_BLING_V0
+# ifdef USE_BLING_V1
 C     === Local variables ===
 C     i,j,k         :: loop indices
 C     Phy_lg_local  :: biomass in large phytoplankton
@@ -930,7 +930,7 @@ c 2d local variables
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
-#endif /* USE_BLING_V0 */
+#endif /* USE_BLING_V1 */
 
 #endif /* ALLOW_BLING */
 

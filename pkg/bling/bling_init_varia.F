@@ -44,7 +44,7 @@ C--   Initialise global variables
             poc(i,j,k,bi,bj)        = 0. _d 0
             phyto_sm(i,j,k,bi,bj)   = 4. _d -7 / permil
             phyto_lg(i,j,k,bi,bj)   = 4. _d -7 / permil
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
             phyto_diaz(i,j,k,bi,bj) = 4. _d -7 / permil
 #endif
           ENDDO
@@ -55,7 +55,7 @@ C--   Initialise global variables
           phi_lg_2d(i,j,bi,bj)      = phi_lg
           Pc_0_2d(i,j,bi,bj)        = Pc_0
           k_Fe_2d(i,j,bi,bj)        = k_Fe
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
           k_Fe_diaz_2d(i,j,bi,bj)   = k_Fe_diaz
           Pc_0_diaz_2d(i,j,bi,bj)   = Pc_0_diaz
           alpha_photo_2d(i,j,bi,bj) = alpha_photo
@@ -101,7 +101,7 @@ C Read in 2d bio related variables
      &                          phi_lg_2d, 0, myThid )
         _EXCH_XY_RL(phi_lg_2d,myThid)
         ENDIF
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
         IF ( bling_Pc_2d_diazFile .NE. ' ' ) THEN
            CALL READ_FLD_XY_RL( bling_Pc_2d_diazFile,' ',
      &                          Pc_0_diaz_2d, 0, myThid)
@@ -131,7 +131,7 @@ C     Now read phyto plankton abundance ICs and exchange
      &        phyto_lg(1-OLx,1-OLy,1,1,1),0,myThid)
          _EXCH_XYZ_RL(phyto_lg(1-OLx,1-OLy,1,1,1),myThid)
         ENDIF
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
         IF ( bling_PdiazFile .NE. ' ' ) THEN
          CALL READ_FLD_XYZ_RL(bling_pdiazFile,' ',
      &        phyto_diaz(1-OLx,1-OLy,1,1,1),0,myThid)
@@ -148,7 +148,7 @@ C     Apply mask
             IF (maskC(i,j,k,bi,bj).EQ.0.) THEN
              phyto_sm(i,j,k,bi,bj)   = 0. _d 0
              phyto_lg(i,j,k,bi,bj)   = 0. _d 0
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
              phyto_diaz(i,j,k,bi,bj) = 0. _d 0
 #endif
             ENDIF

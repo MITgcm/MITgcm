@@ -184,7 +184,7 @@ cccccccccccccccccccccccccc END DIC cccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccc BLING cccccccccccccccccccccccccccccccc
 #ifdef ALLOW_BLING
         IF ( useBLING ) THEN
-# ifndef USE_BLING_V0
+# ifndef USE_BLING_V1
 #  ifdef USE_SIBLING
           CALL BLING_MAIN( pTracer(1-OLx,1-OLy,1,bi,bj,1),
      &                          pTracer(1-OLx,1-OLy,1,bi,bj,2),

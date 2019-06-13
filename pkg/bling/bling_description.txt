@@ -2,7 +2,7 @@ The "BLING" package is adapted from the Biogeochemistry with Light, Iron, Nutrie
 
 N-BLING, with nitrogen cycling, is the default code. It includes 8 tracers: DIC, ALK, O2, NO3, PO4, Fe, DON, DOP (in that order in data.ptracers). Prognostic tracers for silica and phytoplankton biomass are optional. 
 
-The original 6-tracer BLING code (Galbraith et al., 2010) can be compiled by defining the flag USE_BLING_V0. The tracers in data.ptracers must then be specified in the following order: DIC, ALK, O2, PO4, Fe, DOP.
+The original 6-tracer BLING code (Galbraith et al., 2010) can be compiled by defining the flag USE_BLING_V1. The tracers in data.ptracers must then be specified in the following order: DIC, ALK, O2, PO4, Fe, DOP.
 
 
 

@@ -261,7 +261,7 @@ C ==========================================================
      &                     phi_DOM_2d,
      &                     phi_sm_2d,
      &                     phi_lg_2d,
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
      &                     phyto_diaz,
      &                     Pc_0_diaz_2d,
      &                     k_Fe_diaz_2d,
@@ -361,7 +361,7 @@ C ==========================================================
       _RL phi_DOM_2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL phi_sm_2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL phi_lg_2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
       _RL phyto_diaz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL Pc_0_diaz_2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL k_Fe_diaz_2d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

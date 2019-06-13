@@ -33,7 +33,7 @@ CEOP
 
 c !LOCAL VARIABLES: ===================================================
        INTEGER bi,bj,i,j
-#ifdef USE_BLING_V0
+#ifdef USE_BLING_V1
        CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 
@@ -54,29 +54,29 @@ C First call requires that we initialize everything to zero for safety
       CALL LEF_ZERO( feinput0,myThid )
       CALL LEF_ZERO( feinput1,myThid )
 
-#ifdef USE_BLING_V0
+#ifdef USE_BLING_V1
 #ifdef USE_SIBLING
         WRITE(msgBuf,'(2A)')
      &       ' BLING_INI_FORCING: You can not have USE_SIBLING ',
-     &       ' with USE_BLING_V0'
+     &       ' with USE_BLING_V1'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R BLING_INI_FORCING'
 #endif
 #ifdef USE_BLING_DVM
         WRITE(msgBuf,'(2A)')
      &       ' BLING_INI_FORCING: You can not have USE_BLING_DVM ',
-     &       ' with USE_BLING_V0'
+     &       ' with USE_BLING_V1'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R BLING_INI_FORCING'
 #endif
 #ifdef ADVECT_PHYTO
         WRITE(msgBuf,'(2A)')
      &       ' BLING_INI_FORCING: You can not use ADVECT_PHYTO ',
-     &       ' with USE_BLING_V0'
+     &       ' with USE_BLING_V1'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R BLING_INI_FORCING'
 #endif
-#endif /* USE_BLING_V0 */
+#endif /* USE_BLING_V1 */
 
 c set reasonable values to those that need at least something
        DO bj = myByLo(myThid), myByHi(myThid)

@@ -15,7 +15,7 @@ CADJ STORE chl               = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE poc               = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE phyto_sm          = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE phyto_lg          = comlev1, key = ikey_dynamics, kind=isbyte
-# ifndef USE_BLING_V0
+# ifndef USE_BLING_V1
 CADJ STORE phyto_diaz        = comlev1, key = ikey_dynamics, kind=isbyte
 # endif
 

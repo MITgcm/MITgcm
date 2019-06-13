@@ -35,7 +35,7 @@ C     msgBuf     :: message buffer
       INTEGER BLING_Tr_num
 CEOP
 
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
 # ifdef USE_SIBLING
       BLING_Tr_num = 9
 # else

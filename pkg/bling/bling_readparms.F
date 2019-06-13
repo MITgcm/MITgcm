@@ -105,7 +105,7 @@ C ==========================================================
      &                     CatoN,
      &                     CatoP,
      &                     masstoN,
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
      &                     Pc_0_diaz,
      &                     alpha_photo,
      &                     gamma_DON,
@@ -338,7 +338,7 @@ C     Default values
       CatoN                = CtoN * 0.015 _d 0
       CatoP                = 106.0 _d 0 * 0.015 _d 0
       masstoN              = CtoN * 12.001 _d 0
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
       pivotal              = 1.9 _d -3 / 1028. _d 0 / CtoN / permil
       Pc_0                 = 1.7 _d -5
       Pc_0_diaz            = 0.01 _d -5

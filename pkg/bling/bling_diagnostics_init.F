@@ -45,7 +45,7 @@ c biology
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
       diagName  = 'BLGPDIA '
       diagTitle = 'Diazotroph phytoplankton biomass (mol C/m3/s)'
       diagUnits = 'mol C/m3        '
@@ -117,7 +117,7 @@ c biology
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
       diagName  = 'BLGMUDIA'
       diagTitle = 'Diazotroph growth rate'
       diagUnits = '1/s             '
@@ -140,7 +140,7 @@ c biology
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
       diagName  = 'BLGNLIM '
       diagTitle = 'N limitation'
       diagUnits = '-               '
@@ -172,7 +172,7 @@ c biology
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif
 
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
       diagName  = 'BLGP2N  '
       diagTitle = 'P to N stoichiometric ratio'
       diagUnits = '-               '
@@ -315,7 +315,7 @@ c iron
 
 c nitrogen
 
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
       diagName  = 'BLGNUP  '
       diagTitle = 'Nitrogen uptake by bio'
       diagUnits = 'mol N/m3/s      '

@@ -79,7 +79,7 @@ C       record number < 0 : a hack not to write meta files now:
      & myThid )
         IF (j.LE.listDim) wrFldList(j) = 'BLG_Plg '
 
-#ifndef USE_BLING_V0
+#ifndef USE_BLING_V1
         j = j + 1
         CALL WRITE_REC_3D_RL( fn, prec, Nr, phyto_diaz, -j, myIter,
      & myThid )
