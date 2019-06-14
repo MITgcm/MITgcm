@@ -68,9 +68,7 @@ CEOP
 C     !LOCAL VARIABLES:
       _RL facz, dd, dd20
       INTEGER i, Npowerloc
-#ifndef TARGET_NEC_SX
-      INTEGER kk
-#endif
+c     INTEGER kk
       _RL     one, two, three, S, So, zero
       parameter( one = 1. _d 0, two = 2. _d 0, three = 3. _d 0 )
       parameter( zero = 0. _d 0 )
@@ -97,7 +95,8 @@ C     This is an abbreviation of 1./(exp(1.)-1.)
 C     Default: uniform distribution, PlumeMethod=1, Npower=0
         IF (PlumeMethod .EQ. 1) THEN
          dd20 = (abs(SPDepth(i)))
-#ifdef TARGET_NEC_SX
+c#ifdef TARGET_NEC_SX
+C     This rewriting (originally for TARGET_NEC_SX) is better for all platforms
          IF ( dd20 .GT. zero ) THEN
           S   = (facz/dd20)
 C     crazy attempt to make the code faster and raise S to (Npower+1)
@@ -106,15 +105,15 @@ C     crazy attempt to make the code faster and raise S to (Npower+1)
           S = zero
          ENDIF
          plumek(i) = max(zero,S)
-#else
-         S  = one                  !input depth temp
-         So = one
-         DO kk=1,Npowerloc+1
-          S  = facz*S              !raise to the Npowerloc+1
-          So = dd20*So
-         ENDDO
-         plumek(i) = max(zero,S/So)
-#endif /* TARGET_NEC_SX */
+c#else
+c        S  = one                  !input depth temp
+c        So = one
+c        DO kk=1,Npowerloc+1
+c         S  = facz*S              !raise to the Npowerloc+1
+c         So = dd20*So
+c        ENDDO
+c        plumek(i) = max(zero,S/So)
+c#endif /* TARGET_NEC_SX */
 
         ELSEIF (PlumeMethod .EQ. 2) THEN !exponential distribution
          dd = abs(SPDepth(i))
@@ -149,7 +148,8 @@ C     PlumeMethod = 5, dumping all salt at the top layer
         ELSEIF (PlumeMethod .EQ. 6) THEN
 C     PLumeMethod = 6, currently only works for Npower = 1 and 2.
          dd20 = (abs(SPDepth(i)))
-#ifdef TARGET_NEC_SX
+c#ifdef TARGET_NEC_SX
+C     This rewriting (originally for TARGET_NEC_SX) is better for all platforms
          IF ( dd20 .GT. zero ) THEN
           S  = (facz/dd20)
 C     crazy attempt to make the code faster and raise S to (Npower+1)
@@ -165,20 +165,20 @@ C     crazy attempt to make the code faster and raise S to (Npower+1)
           plumek(i) = max(zero,
      &         three*So*facz - three*So*So*facz*facz + S)
          ENDIF
-#else
-         S  = one                  !input depth temp
-         So = one
-         DO kk=1,Npowerloc+1
-          S  = facz*S              !raise to the Npower+1
-          So = dd20*So
-         ENDDO
-         IF(Npowerloc.EQ.1) THEN   !Npower=1
-          plumek(i) = max(zero,two/dd20*facz-S/So)
-         ELSE                      !Npower=2
-          plumek(i) = max(zero,
-     &         three/dd20*facz - three/(dd20*dd20)*facz*facz + S/So)
-         ENDIF
-#endif /* TARGET_NEC_SX */
+c#else
+c        S  = one                  !input depth temp
+c        So = one
+c        DO kk=1,Npowerloc+1
+c         S  = facz*S              !raise to the Npower+1
+c         So = dd20*So
+c        ENDDO
+c        IF(Npowerloc.EQ.1) THEN   !Npower=1
+c         plumek(i) = max(zero,two/dd20*facz-S/So)
+c        ELSE                      !Npower=2
+c         plumek(i) = max(zero,
+c    &         three/dd20*facz - three/(dd20*dd20)*facz*facz + S/So)
+c        ENDIF
+c#endif /* TARGET_NEC_SX */
 
 catn: 15.Mar.2014
 catn: this is a new method by atn. After fixing adjoint compiling error,

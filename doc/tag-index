@@ -1,6 +1,65 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/salt_plume:
+  - fix calculation index range in salt_plume_apply.F (#ifdef SALT_PLUME_VOLUME)
+o pkg/ecco:
+  - fix/simplify local file names in ecco_cost_init_barfiles.F (within
+    #ifdef ALLOW_GENCOST_CONTRIBUTION ).
+o pkg/mom_vecinv:
+  - add 2 Coriolis schemes which satisfy: d/dt U = f V ; d/dt V = -f U
+    (with U,V = vertically integrated flow).
+  - add new run-time coriolis-scheme selector "selectCoriScheme" to replace
+    "useJamartWetPoints" and "useEnergyConservingCoriolis"; but keep these 2
+    in namelist (backward compatible) to set "selectCoriScheme" accordingly.
+o pkg/ctrl:
+  - Fix bug in ctrl_map_ini_genarr.F regarding missing initialization of
+    igen_uvel & igen_vvel (just like all the other variables).
+o pkg/dic:
+  - Implement SolveSAPHE (Munhoven, 2013), a robust algorithm to calculate
+    oceanic pH/pCO2 ; compiled when CARBONCHEM_SOLVESAPHE is defined (in
+    DIC_OPTIONS.h) and used when (in data.dic) selectPHsolver > 0 ;
+    Add several options for selecting dissociation coefficients, available
+    when CARBONCHEM_SOLVESAPHE is defined.
+  - Change experiment "so_box_biogeo" to compile with CARBONCHEM_SOLVESAPHE
+    defined and add secondary test "saphe" (dir: input.saphe) to this experiment
+    to test GENERAL pH solver (selectPHsolver=1).
+o pkg/seaice:
+  - add alternative version of seaice thermodynamics two routines that provide
+    accurate adjoint. Switched by defining CPP option: ALLOW_SEAICE_GROWTH_ADX
+o pkg/mdsio:
+  - in meta file, write number of records with longer format (10 digits vs 5
+    previously) to accommodate large number of floats.
+
+checkpoint67i (2019/05/08)
+o autofdiff:
+  - fix to avoid TAF recomputations in ggl90 & salt_plume pkgs
+    and in model/src PCELL_MIX_CODE.
+o pkg/mom_common & pkg/gmredi:
+  - add quasi-geostrophic variant of Leith dynamic visocity
+  - use the quasi-geostrophic Leith dynamic visocity as GM diffusivity
+  - new verification experiment to test QG-Leith (variant of MLAdjust)
+  - updated documentation about new option
+o pkg/seaice:
+  - add Hlimit to seaice namelist in data.seaice
+  - use verification seaice_itd.thermo to test this feature with default
+    values (experiment does not change)
+  - clean up related output in seaice_init_fixed.F a little
+o verification/testreport:
+  - for file run_ADM_DIVA, fix sed search syntax so that it works with BSD-sed
+o model/src:
+  - fix small bug (wrong balanceEmPmR report) in config_summary.F, spotted by
+    Christopher Wolfe ; add report of balancePrintMean to summary.
+o verification/verification_parser.py
+  - ensure Travis test suite fails when a build or a run fails.
+
+checkpoint67h (2019/03/21)
+o tools/genmake2:
+  - fix option "-nocat4ad" for latest version of TAF: now needs to add TAF
+    option "-fixed" to process *.flowdir files with newer (after 4.1.1) version
+    of TAF (otherwise assumed now to be in free format).
+o model/src:
+  - remove argument tFld & sFld from S/R CALC_PHI_HYD and from 2 related S/R
 o tools/genmake2:
   - allow to skip "check_fortran_compiler" part (as, e.g., in opt-file:
      tools/build_options/linux_ia64_cray_archer).

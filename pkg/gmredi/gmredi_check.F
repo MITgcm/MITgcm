@@ -115,6 +115,9 @@ C- print out some kee parameters :
      &  'subMeso_LfMin =',' /* minimum length-scale "Lf" [m] */')
        CALL WRITE_0D_RS( subMeso_Lmax, INDEX_NONE,
      &  'subMeso_Lmax =',' /* maximum grid-scale length [m] */')
+       CALL WRITE_0D_L( GM_useLeithQG, INDEX_NONE,
+     &  'GM_useLeithQG =',
+     &  ' /* if TRUE => add QG Leith viscosity to GMRedi tensor */')
 
 C--  Check parameters:
 
@@ -223,6 +226,27 @@ C     Make sure we are not trying to use some arrays that are unavailable
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)')
      &   ' GMREDI_CHECK: to use GM_iso2dFile or GM_iso1dFile'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+      ENDIF
+      IF ( GM_useLeithQG ) THEN
+       WRITE(msgBuf,'(A)')
+     &   ' GMREDI_CHECK: GM_useLeithQG is only implemented for cases'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &   ' GMREDI_CHECK: with #define GM_NON_UNITY_DIAGONAL'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+      ENDIF
+#endif
+
+#ifndef ALLOW_GM_LEITH_QG
+      IF ( GM_useLeithQG ) THEN
+       WRITE(msgBuf,'(A)')
+     &   ' GMREDI_CHECK: GM_useLeithQG used in data.gmredi without'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &   ' GMREDI_CHECK: #define ALLOW_GM_LEITH_QG'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R GMREDI_CHECK'
       ENDIF
