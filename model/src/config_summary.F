@@ -243,7 +243,7 @@ C-    Vertical viscosity parameters:
      & '  /* Parameter for mixed-layer diagnostic */')
       CALL WRITE_0D_RL( hMixSmooth, INDEX_NONE,'hMixSmooth=',
      & '  /* Smoothing parameter for mixed-layer diagnostic */')
-C------------
+C-----
       CALL WRITE_0D_C( eosType, 0, INDEX_NONE, 'eosType =',
      & '  /* Type of Equation of State */')
       IF ( eosType .EQ. 'LINEAR' ) THEN
@@ -278,7 +278,7 @@ C------------
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
        CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
       ENDIF
-C------------
+C-----
       IF ( fluidIsWater ) THEN
        CALL WRITE_0D_RL( HeatCapacity_Cp, INDEX_NONE,
      &   'HeatCapacity_Cp =',
@@ -431,7 +431,7 @@ C------------
      &                ' /* Momentum implicit vert. advection on/off*/')
       CALL WRITE_0D_L( implicitViscosity, INDEX_NONE,
      & 'implicitViscosity =', ' /* Implicit viscosity on/off flag */')
-C------------
+C-----
       WRITE(msgBuf,'(2A)')
      & 'selectImplicitDrag=', ' /* Implicit bot Drag options (0,1,2)*/'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -442,12 +442,11 @@ C------------
      &  ' 2= Fully Impl (with surf.P)'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
-C------------
+C-----
       CALL WRITE_0D_L( metricTerms,  INDEX_NONE, 'metricTerms =',
      &                '  /* metric-Terms on/off flag */')
       CALL WRITE_0D_L( useNHMTerms,  INDEX_NONE, 'useNHMTerms =',
      &              ' /* Non-Hydrostatic Metric-Terms on/off */')
-C------------
       WRITE(msgBuf,'(2A)')
      & 'selectCoriMap =', ' /* Coriolis Map options (0,1,2,3)*/'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
@@ -458,56 +457,80 @@ C------------
      &  ' 2= Spherical ; 3= read from file'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
-C------------
       CALL WRITE_0D_L( use3dCoriolis,  INDEX_NONE,
      & 'use3dCoriolis =', ' /* 3-D Coriolis on/off flag */')
       CALL WRITE_0D_L( useCoriolis,  INDEX_NONE,
      & 'useCoriolis =', '  /* Coriolis on/off flag */')
       CALL WRITE_0D_L( useCDscheme,  INDEX_NONE,
      & 'useCDscheme =', '  /* CD scheme on/off flag */')
-      CALL WRITE_0D_L( useEnergyConservingCoriolis,  INDEX_NONE,
-     & 'useEnergyConservingCoriolis=',
-     & ' /* Flx-Form Coriolis scheme flag */')
-      CALL WRITE_0D_L( useJamartWetPoints,  INDEX_NONE,
-     & 'useJamartWetPoints=',' /* Coriolis WetPoints method flag */')
-      CALL WRITE_0D_L( useJamartMomAdv,  INDEX_NONE,
-     & 'useJamartMomAdv=',' /* V.I Non-linear terms Jamart flag */')
-      CALL WRITE_0D_L( useAbsVorticity,  INDEX_NONE,
+C-----
+      WRITE(msgBuf,'(2A)') 'selectCoriScheme=',
+     &              ' /* Scheme selector for Coriolis-Term */'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      buffI(1) = selectCoriScheme
+      CALL PRINT_LIST_I( buffI, 1, 1, INDEX_NONE,
+     &                   .FALSE., .TRUE., ioUnit )
+      WRITE(msgBuf,'(2A)')  '   = 0 : original discretization',
+     &                      ' (simple averaging, no hFac)'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(2A)')  '   = 1 : Wet-point averaging',
+     &                      ' (Jamar & Ozer 1986)'
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      IF ( vectorInvariantMomentum ) THEN
+       WRITE(msgBuf,'(2A)') '   = 2 : hFac weighted average',
+     &                      ' (Angular Mom. conserving)'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '   = 3 : energy conserving scheme',
+     &                      ' using hFac weighted average'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      ELSE
+       WRITE(msgBuf,'(2A)') '   = 2 : energy conserving scheme',
+     &                      ' (no hFac weight)'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '   = 3 : energy conserving scheme',
+     &                      ' using Wet-point averaging'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+      ENDIF
+      CALL PRINT_MESSAGE( endList, ioUnit, SQUEEZE_RIGHT, myThid )
+      IF ( vectorInvariantMomentum ) THEN
+C---  report here some vector-invariant parameters
+       CALL WRITE_0D_L( useAbsVorticity,  INDEX_NONE,
      & 'useAbsVorticity=',' /* V.I Works with f+zeta in Coriolis */')
       WRITE(msgBuf,'(2A)') 'selectVortScheme=',
      &              ' /* V.I Scheme selector for Vorticity-Term */'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      buffI(1) = selectVortScheme
-      CALL PRINT_LIST_I( buffI, 1, 1, INDEX_NONE,
-     &                   .FALSE., .TRUE., ioUnit )
-      WRITE(msgBuf,'(2A)') '   = 0 : enstrophy (Shallow-Water Eq.)',
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       buffI(1) = selectVortScheme
+       CALL PRINT_LIST_I( buffI, 1, 1, INDEX_NONE,
+     &                    .FALSE., .TRUE., ioUnit )
+       WRITE(msgBuf,'(2A)') '   = 0 : enstrophy (Shallow-Water Eq.)',
      &                  ' conserving scheme by Sadourny, JAS 75'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(2A)') '   = 1 : same as 0 with modified hFac'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(2A)') '   = 2 : energy conserving scheme',
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '   = 1 : same as 0 with modified hFac'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '   = 2 : energy conserving scheme',
      &         ' (used by Sadourny in JAS 75 paper)'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(2A)') '   = 3 : energy (general)',
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '   = 3 : energy (general)',
      &             ' and enstrophy (2D, nonDiv.) conserving scheme'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      WRITE(msgBuf,'(2A)') '         from Sadourny',
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') '         from Sadourny',
      &                     ' (Burridge & Haseler, ECMWF Rep.4, 1977)'
-      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-c     WRITE(msgBuf,'(2A)') '   = 4 : energy (general)',
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+c      WRITE(msgBuf,'(2A)') '   = 4 : energy (general)',
 c    &             ' and enstrophy (2D, nonDiv.) conserving scheme'
-c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-c     WRITE(msgBuf,'(2A)') '         from Arakawa & Lamb, 77'
-c     CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
-      CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
-      CALL WRITE_0D_L( upwindVorticity,  INDEX_NONE,
+       CALL PRINT_MESSAGE(endList, ioUnit, SQUEEZE_RIGHT, myThid )
+       CALL WRITE_0D_L( useJamartMomAdv,  INDEX_NONE,
+     & 'useJamartMomAdv=',' /* V.I Non-linear terms Jamart flag */')
+       CALL WRITE_0D_L( upwindVorticity,  INDEX_NONE,
      & 'upwindVorticity=',' /* V.I Upwind bias vorticity flag */')
-      CALL WRITE_0D_L( highOrderVorticity,  INDEX_NONE,
+       CALL WRITE_0D_L( highOrderVorticity,  INDEX_NONE,
      & 'highOrderVorticity=',' /* V.I High order vort. advect. flag */')
-      CALL WRITE_0D_L( upwindShear,  INDEX_NONE,
+       CALL WRITE_0D_L( upwindShear,  INDEX_NONE,
      & 'upwindShear=',' /* V.I Upwind vertical Shear advection flag */')
-      CALL WRITE_0D_I( selectKEscheme, INDEX_NONE,
+       CALL WRITE_0D_I( selectKEscheme, INDEX_NONE,
      & 'selectKEscheme=',' /* V.I Kinetic Energy scheme selector */')
+C---  report of some vector-invariant parameters ends here
+      ENDIF
       CALL WRITE_0D_L( momForcing,   INDEX_NONE,
      & 'momForcing =', '  /* Momentum forcing on/off flag */')
       IF ( momForcing )
