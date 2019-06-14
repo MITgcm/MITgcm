@@ -10,8 +10,8 @@ C     | o Calculate first guess of pH
 C     |   Adapted from pkg/dic/dic_surfforcing_init.F
 C     ==========================================================
 
-      implicit none
-      
+      IMPLICIT NONE
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "DYNVARS.h"
@@ -44,10 +44,10 @@ C local variables for carbon chem
       _RL thetatmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL salttmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dictmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER iprt,jprt
       LOGICAL pH_isLoaded
 CEOP
 
+#ifndef USE_SIBLING
       IF ( periodicExternalForcing ) THEN
 
 c read in silica field
@@ -58,7 +58,7 @@ C--   Now calculate whether it is time to update the forcing arrays
        CALL GET_PERIODIC_INTERVAL(
      O                   intimeP, intime0, intime1, bWght, aWght,
      I                   externForcingCycle, externForcingPeriod,
-     I                   deltaTclock, startTime, myThid )
+     I                   deltaTClock, startTime, myThid )
 
        _BARRIER
        _BEGIN_MASTER(myThid)
@@ -86,9 +86,9 @@ C--   Now calculate whether it is time to update the forcing arrays
        IF ( BLING_silicaFile .NE. ' '  ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-             SILICA(i,j,bi,bj)= bWght*silica0(i,j,bi,bj)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             silica(i,j,bi,bj)= bWght*silica0(i,j,bi,bj)
      &                        + aWght*silica1(i,j,bi,bj)
            ENDDO
           ENDDO
@@ -98,6 +98,8 @@ C--   Now calculate whether it is time to update the forcing arrays
 
 c end periodicExternalForcing
       ENDIF
+c end SiBLING
+#endif
 
 C =================================================================
 
@@ -110,7 +112,7 @@ C =================================================================
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
-          DO i=1-Olx,sNx+OLx
+          DO i=1-OLx,sNx+OLx
             pH(i,j,k,bi,bj) = 8. _d 0
           ENDDO
          ENDDO
@@ -161,28 +163,51 @@ C determine inorganic carbon chem coefficients
 C set guess of pH for first step here
 
         DO k=1,Nr
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-             alktmp(i,j) = PTRACER(i,j,k,bi,bj,2)
-     &                          * maskC(i,j,k,bi,bj)
-             phostmp(i,j)= PTRACER(i,j,k,bi,bj,5)
-     &                          * maskC(i,j,k,bi,bj)
-C FOR NON-INTERACTIVE Si
-             IF ( k.eq.1 ) THEN
-             sitmp(i,j) =  Silica(i,j,bi,bj) * maskC(i,j,k,bi,bj)
-             ELSE
-             sitmp(i,j) =  0.03 * maskC(i,j,k,bi,bj)
-             ENDIF
-             dictmp(i,j) = PTRACER(i,j,k,bi,bj,1)
-     &                          * maskC(i,j,k,bi,bj)
+         DO j=jMin,jMax
+          DO i=iMin,iMax
              thetatmp(i,j) = theta(i,j,k,bi,bj)
              salttmp(i,j) = salt(i,j,k,bi,bj)
+             dictmp(i,j) = PTRACER(i,j,k,bi,bj,1)
+     &                          * maskC(i,j,k,bi,bj)
+             alktmp(i,j) = PTRACER(i,j,k,bi,bj,2)
+     &                          * maskC(i,j,k,bi,bj)
+             phostmp(i,j) = PTRACER(i,j,k,bi,bj,5)
+     &                          * maskC(i,j,k,bi,bj)
+#ifdef USE_SIBLING
+             sitmp(i,j) = PTRACER(i,j,k,bi,bj,9)
+     &                          * maskC(i,j,k,bi,bj)
+#else
+C FOR NON-INTERACTIVE Si
+             IF ( k.eq.1 ) THEN
+              sitmp(i,j) = silica(i,j,bi,bj) * maskC(i,j,k,bi,bj)
+             ELSE
+              sitmp(i,j) = 0.03 * maskC(i,j,k,bi,bj)
+             ENDIF
+#endif
+          ENDDO
          ENDDO
-        ENDDO
 
-        CALL CARBON_COEFFS_PRESSURE_DEP(
+#ifdef CARBONCHEM_SOLVESAPHE
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('DIC_COEFFS_DEEP',myThid)
+#endif
+        CALL DIC_COEFFS_SURF(
+cav changing surftheta to thetatmp
+     I                       thetatmp,salttmp,
+     I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
+C Now correct the coefficients for pressure dependence
+        CALL DIC_COEFFS_DEEP(
+     I                       thetatmp,salttmp,
+     I                       bi,bj,iMin,iMax,jMin,jMax,
+     I                       k,myThid)
+#else
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS',myThid)
+#endif
+         CALL CARBON_COEFFS_PRESSURE_DEP(
      I                       thetatmp,salttmp,
      I                       bi,bj,iMin,iMax,jMin,jMax,k,myThid)
+#endif
 
 C====================================================================
 
@@ -191,6 +216,41 @@ c first approximation
           DO j=jMin,jMax
            DO i=iMin,iMax
             IF ( maskC(i,j,k,bi,bj) .NE. 0. _d 0) THEN
+
+#ifdef CARBONCHEM_SOLVESAPHE
+             IF ( selectPHsolver.GT.0 ) THEN
+C Use Munhoven (2013) Solvesaphe routine to initialize pH
+#ifdef ALLOW_DEBUG
+              IF (debugMode) CALL DEBUG_CALL(
+     &            'AHINI_FOR_AT',myThid)
+#endif
+C call AHINI_FOR_AT to get better initial guess of pH
+              CALL AHINI_FOR_AT(
+     I           alktmp(i,j)*permil,
+     I           dictmp(i,j)*permil,
+     I           bt(i,j,bi,bj),
+     U           pH(i,j,k,bi,bj),
+     I           i,j,k,bi,bj,nIter0,myThid )
+CAV C$TAF STORE pH(i,j,k,bi,bj)                            = dic_surf
+CAV C$TAF STORE alktmp(i,j), phostmp(i,j), sitmp(i,j)      = dic_surf
+#ifdef ALLOW_DEBUG
+              IF (debugMode) CALL DEBUG_CALL(
+     &           'CALC_PCO2_SOLVESAPHE',myThid)
+#endif
+              CALL CALC_PCO2_SOLVESAPHE(
+     I        thetatmp(i,j),salttmp(i,j),
+     I        dictmp(i,j), phostmp(i,j),
+     I        sitmp(i,j),alktmp(i,j),
+     U        pH(i,j,k,bi,bj),pCO2(i,j,bi,bj),co3dummy,
+     I        i,j,k,bi,bj, it ,  myThid )
+             ELSE
+C Use the original Follows et al. (2006) solver
+#endif /* CARBONCHEM_SOLVESAPHE */
+#ifdef ALLOW_DEBUG
+              IF (debugMode) CALL DEBUG_CALL(
+     &           'CALC_PCO2_APPROX',myThid)
+#endif
+
              DO it=1,10
               CALL CALC_PCO2_APPROX(
      I        thetatmp(i,j),salttmp(i,j),
@@ -207,6 +267,9 @@ c first approximation
      I        i,j,k,bi,bj, it ,  myThid )
              ENDDO
             ENDIF
+#ifdef CARBONCHEM_SOLVESAPHE
+             ENDIF
+#endif /* CARBONCHEM_SOLVESAPHE */
            ENDDO
           ENDDO
          ENDDO
