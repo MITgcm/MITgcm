@@ -92,6 +92,9 @@ contains
     implicit none
 
 
+#ifdef ALLOW_USE_MPI
+include "mpif.h" 
+#endif
 
     integer rank, mpirc
     character*128 fname ! file name
@@ -101,6 +104,9 @@ contains
 !    print *, 'OAD: opening CP file ', cp_file_number
     ! construct the file name
 
+#ifdef ALLOW_USE_MPI
+    call mpi_comm_rank(MPI_COMM_WORLD,rank, mpirc)
+#endif
 
 
     write(fname,'(A,I3.3,A,I5.5)') 'oad_reg_cp.',rank,'.',cp_file_number
@@ -154,9 +160,15 @@ contains
 
   subroutine open_state_i()
     implicit none
-    integer rank
+#ifdef ALLOW_USE_MPI
+include "mpif.h" 
+#endif
+    integer rank, mpirc
     character*128 fname ! file name
     rank=0
+#ifdef ALLOW_USE_MPI
+    call mpi_comm_rank(MPI_COMM_WORLD,rank, mpirc)
+#endif
     write(fname,'(A,I3.3)') 'oad_reg_state.',rank
     open( UNIT=cp_state_unit,FILE=TRIM(fname),FORM='formatted',STATUS='UNKNOWN' )
   end subroutine 

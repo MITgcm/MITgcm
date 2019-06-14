@@ -285,6 +285,15 @@ C <<-- OpenAD
 # include "optim.h"
 # include "CTRL_GENARR.h"
 #endif
+#ifdef ALLOW_USE_MPI
+#include "mpif.h"
+#endif
+
+#ifdef ALLOW_USE_MPI
+      integer mpirc, rank
+#endif
+
+
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -488,15 +497,28 @@ C#endif
       CALL TIMER_STOP ('THE_MAIN_LOOP (F)      [THE_MODEL_MAIN]',myThid)
       CALL TIMER_START('THE_MAIN_LOOP (A)      [THE_MODEL_MAIN]',myThid)
 #ifdef ALLOW_OPENAD_DIVA
+#ifdef ALLOW_USE_MPI
+      rank=0
+      call mpi_comm_rank(MPI_COMM_WORLD,rank, mpirc)
+#endif
       if (fwddone .eqv. .false.) then
+#ifdef ALLOW_USE_MPI
+        if (rank.eq.0) then
+#endif
         open(unit=76,file='costfinal')
         write(76,*) fc%v
         write(76,*) fc%d
         close(76)
+#ifdef ALLOW_USE_MPI
+        endif
+#endif
       end if 
       call cp_read_state(currcp, curradjointcp, maxfwditer, maxadjiter,
      +myIter)
       if (fwddone .eqv. .false.) then
+#ifdef ALLOW_USE_MPI               
+        Call MPI_Barrier(MPI_COMM_WORLD,mpirc)
+#endif
         if(curradjointcp .eq. -1 .and. currcp.eq. nTimeSteps_l2) then
           stop 'DIVA FINISHED FORWARD'
         else
@@ -540,12 +562,23 @@ C#endif
          read(unit=76,fmt=*) fc%v
          close(unit=76)
       end if
+#ifdef ALLOW_USE_MPI
+      rank=0
+      call mpi_comm_rank(MPI_COMM_WORLD,rank, mpirc)
+      if (rank.eq.0) then
+#endif
       open(unit=76,file='costfinalad')
       write(76,*) fc%v
       write(76,*) fc%d
       close(76)
+#ifdef ALLOW_USE_MPI
+      endif
+#endif
       call cp_read_state(currcp, curradjointcp, maxfwditer, maxadjiter,
      +myIter)
+#ifdef ALLOW_USE_MPI               
+        Call MPI_Barrier(MPI_COMM_WORLD,mpirc)
+#endif
       if(curradjointcp.ne.0) then
         stop 'DIVA SUSPEND ADJOINT'
       end if

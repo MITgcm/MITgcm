@@ -398,10 +398,17 @@ contains
 !Integer Tape
   subroutine open_integer_tape_i(fileno)
     implicit none
+#ifdef ALLOW_USE_MPI
+include "mpif.h"
+#endif
     integer fileno
     integer rank
+    integer mpirc
     character*128 fname ! file name
     rank=0
+#ifdef ALLOW_USE_MPI
+    call mpi_comm_rank(MPI_COMM_WORLD,rank, mpirc)
+#endif
     write(fname,'(A,I3.3,A,I3.3)') 'oad_aux_integer_tape.',fileno,'.',rank
     open( UNIT=cp_integer_tape_unit,FILE=TRIM(fname),FORM='unformatted',STATUS='UNKNOWN' )
   end subroutine 
@@ -432,10 +439,17 @@ contains
 !Double Tape
   subroutine open_double_tape_i(fileno)
     implicit none
+#ifdef ALLOW_USE_MPI
+include "mpif.h"
+#endif
     integer fileno
     integer rank
+    integer mpirc
     character*128 fname ! file name
     rank=0
+#ifdef ALLOW_USE_MPI
+    call mpi_comm_rank(MPI_COMM_WORLD,rank, mpirc)
+#endif
     write(fname,'(A,I3.3,A,I3.3)') 'oad_aux_double_tape.',fileno,'.',rank
     open( UNIT=cp_double_tape_unit,FILE=TRIM(fname),FORM='unformatted',STATUS='UNKNOWN' )
   end subroutine 
@@ -466,10 +480,17 @@ contains
 !Logical Tape
   subroutine open_logical_tape_i(fileno)
     implicit none
+#ifdef ALLOW_USE_MPI
+include "mpif.h"
+#endif
     integer fileno
     integer rank
+    integer mpirc
     character*128 fname ! file name
     rank=0
+#ifdef ALLOW_USE_MPI
+    call mpi_comm_rank(MPI_COMM_WORLD,rank, mpirc)
+#endif
     write(fname,'(A,I3.3,A,I3.3)') 'oad_aux_logical_tape.',fileno,'.',rank
     open( UNIT=cp_logical_tape_unit,FILE=TRIM(fname),FORM='unformatted',STATUS='UNKNOWN' )
   end subroutine 
@@ -490,20 +511,33 @@ contains
 
   subroutine read_logical_tape_i(fileno)
     implicit none
-    integer fileno
+#ifdef ALLOW_USE_MPI
+include "mpif.h"
+#endif
+    integer fileno, mpirc, rank
+#ifdef ALLOW_USE_MPI
+    call mpi_comm_rank(MPI_COMM_WORLD,rank, mpirc)
+#endif
     call cp_open_logical_tape(fileno)
     read (unit=cp_logical_tape_unit) oad_lt(1:oad_lt_ptr-1)
-    print *, 'DIVA Read from file logical_tape', fileno
+    print *, 'DIVA Read from file logical_tape', fileno, rank
     call cp_close_logical_tape
   end subroutine
 
 !STRING
   subroutine open_string_tape_i(fileno)
     implicit none
+#ifdef ALLOW_USE_MPI
+include "mpif.h"
+#endif
     integer fileno
     integer rank
+    integer mpirc
     character*128 fname ! file name
     rank=0
+#ifdef ALLOW_USE_MPI
+    call mpi_comm_rank(MPI_COMM_WORLD,rank, mpirc)
+#endif
     write(fname,'(A,I3.3,A,I3.3)') 'oad_aux_string_tape.',fileno,'.',rank
     open(UNIT=cp_string_tape_unit,FILE=TRIM(fname),FORM='unformatted',STATUS='UNKNOWN')
   end subroutine
@@ -534,11 +568,18 @@ contains
 !Tape State
   subroutine write_tape_state_i(fileno)
     implicit none
+#ifdef ALLOW_USE_MPI
+include "mpif.h"
+#endif
     integer fileno
     integer rank
+    integer mpirc
     logical exst
     character*128 fname ! file name
     rank=0
+#ifdef ALLOW_USE_MPI
+    call mpi_comm_rank(MPI_COMM_WORLD,rank, mpirc)
+#endif
     write(fname,'(A,I3.3,A,I3.3)') 'oad_aux_tape_state.',fileno,'.',rank
     exst =.false.
     inquire(file=fname,exist=exst)
@@ -565,14 +606,20 @@ contains
 
   subroutine read_tape_state_i(fileno) 
     implicit none
+#ifdef ALLOW_USE_MPI
+include "mpif.h"
+#endif
     integer fileno
     integer rank
+    integer mpirc
     logical exst
     character*128 fname ! file name
 
     rank=0
+#ifdef ALLOW_USE_MPI
+    call mpi_comm_rank(MPI_COMM_WORLD,rank, mpirc)
+#endif
     write(fname,'(A,I3.3,A,I3.3)') 'oad_aux_tape_state.',fileno,'.',rank
-    !write(fname,'(A,I3.3)') 'oad_aux_tape_state.',rank
     exst =.false.
     inquire(file=fname,exist=exst)
     if (exst.eqv..true.) then
@@ -586,7 +633,7 @@ contains
       read(unit=77,fmt=*) oad_st_ptr
       read(unit=77,fmt=*) oad_st_sz
       close(unit=77)
-      print *, 'DIVA found tape_state_file', fileno
+      print *, 'DIVA found tape_state_file', fileno, rank, oad_dt_sz, oad_dt_ptr
     else
       print *, 'DIVA tape_state_file not found', fname
       stop 'DIVA State file not found'
