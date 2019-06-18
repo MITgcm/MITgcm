@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67j (2019/06/18)
 o pkg/bling:
   - Cleanly seperate NBLING (default), BLING_V1 (enabled with USE_BLING_V1),
     and also add Silica option (enabled with USE_SIBLING);
