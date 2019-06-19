@@ -1,6 +1,15 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - new run-time parameter "diags_opOceWeighted" (default=T) to weight some exf
+    surface diagnostics (all net and upward fluxes) with open-ocean fraction.
+    Option is turned off when no sea-ice pkg (seaice or thsice) is used.
+  - new S/R EXF_WEIGHT_SFX_DIAGS to do some exf diags as open-ocean weighted
+    according to input argument ice fraction. Called from the right location
+    in time-stepping to get diagnostics that are consistent with wind-stress
+    and buoyancy fluxes that ocean receive.
+
 checkpoint67j (2019/06/18)
 o pkg/bling:
   - Cleanly seperate NBLING (default), BLING_V1 (enabled with USE_BLING_V1),
