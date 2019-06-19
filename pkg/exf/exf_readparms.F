@@ -39,7 +39,7 @@ C     ==================================================================
 C     SUBROUTINE exf_readparms
 C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 C     == global variables ==
 
@@ -82,8 +82,9 @@ C     Surface flux data.
      &      exf_iprec    ,   exf_iprec_obcs  , exf_yftype,
      &      exf_verbose  ,   exf_debugLev    , exf_monFreq,
      & useExfYearlyFields,  twoDigitYear,
-     & useStabilityFct_overIce, readStressOnAgrid, readStressOnCgrid,
-     & rotateStressOnAgrid, useAtmWind, useRelativeWind, noNegativeEvap,
+     & readStressOnAgrid, rotateStressOnAgrid, readStressOnCgrid,
+     & useAtmWind,          useRelativeWind  , noNegativeEvap,
+     & useStabilityFct_overIce, diags_opOceWeighted,
      & select_ZenAlbedo, useExfZenIncoming,
      & hu, ht, umin, atmrho, atmcp, cen2kel, gravity_mks,
      & cdrag_1, cdrag_2, cdrag_3, cstanton_1, cstanton_2, cdalton,
@@ -319,7 +320,7 @@ c     exf_verbose        = debugMode
       select_ZenAlbedo   = 0
       useExfZenIncoming  = .FALSE.
       readStressOnAgrid  = .FALSE.
-      rotateStressOnAgrid = .FALSE.
+      rotateStressOnAgrid= .FALSE.
       readStressOnCgrid  = .FALSE.
 #ifdef ALLOW_ATM_WIND
       useAtmWind         = .TRUE.
@@ -328,6 +329,8 @@ c     exf_verbose        = debugMode
 #endif
       useRelativeWind    = .FALSE.
       noNegativeEvap     = .FALSE.
+      useStabilityFct_overIce = .FALSE.
+      diags_opOceWeighted= .TRUE.
 
 C-  default value should be set to main model parameter:
 c     cen2kel     =  celsius2K
@@ -361,7 +364,6 @@ c     humid_fac   =  atm_Rq     <- default is zero !!!
       hu             =       10.000  _d 0
       ht             =        2.000  _d 0
       umin           =        0.5    _d 0
-      useStabilityFct_overIce = .FALSE.
       exf_iceCd        = 1.63 _d -3
       exf_iceCe        = 1.63 _d -3
       exf_iceCh        = 1.63 _d -3
@@ -1053,6 +1055,7 @@ C--   Retired parameters
 
 C--   Derive other parameters:
       IF ( exf_verbose ) exf_debugLev = MAX( exf_debugLev, debLevD )
+      IF ( .NOT.(useThSIce.OR.useSEAICE) ) diags_opOceWeighted=.FALSE.
       hq = ht
       stressIsOnCgrid = readStressOnCgrid
 #if ( defined (ALLOW_BULKFORMULAE) )

@@ -56,6 +56,9 @@ C !LOCAL VARIABLES: ====================================================
 C     i,j,bi,bj :: Loop counters
       INTEGER i, j
       INTEGER bi, bj
+#ifdef ALLOW_EXF
+      INTEGER grpDiag
+#endif
 #ifdef ALLOW_SITRACER
       INTEGER iTr
 #endif
@@ -69,17 +72,26 @@ CEOP
       IF (debugMode) CALL DEBUG_ENTER( 'SEAICE_MODEL', myThid )
 #endif
 
-#ifdef ALLOW_EXF
-C--   Winds are from pkg/exf, which does not update edges.
-      CALL EXCH_UV_AGRID_3D_RL( uwind, vwind, .TRUE., 1, myThid )
-#endif
-
 #ifdef ALLOW_THSICE
       IF ( useThSice ) THEN
 C--   Map thSice-variables to HEFF and AREA
        CALL SEAICE_MAP_THSICE( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_THSICE */
+
+#ifdef ALLOW_EXF
+      IF ( useEXF ) THEN
+C--   Winds are from pkg/exf, which does not update edges.
+       CALL EXCH_UV_AGRID_3D_RL( uwind, vwind, .TRUE., 1, myThid )
+       IF ( useDiagnostics ) THEN
+C-    Fill-in EXF wind-stess diags, weighted by open-ocean fraction
+        grpDiag = -1
+        IF ( SEAICEuseDYNAMICS ) grpDiag = 1
+        CALL EXF_WEIGHT_SFX_DIAGS(
+     I                  AREA, grpDiag, myTime, myIter, myThid )
+       ENDIF
+      ENDIF
+#endif /* ALLOW_EXF */
 
 #ifdef ALLOW_AUTODIFF_TAMC
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -188,6 +200,16 @@ C     e.g., < 0, that are regularized here. Concentration as a special case
 C     may be > 1 in convergent motion and a ridging algorithm redistributes
 C     the ice to limit the concentration to 1.
       CALL SEAICE_REG_RIDGE( myTime, myIter, myThid )
+
+#ifdef ALLOW_EXF
+      IF ( useEXF .AND. useDiagnostics ) THEN
+C-    Fill-in EXF surface flux diags, weighted by open-ocean fraction
+        grpDiag = -2
+        IF ( usePW79thermodynamics ) grpDiag = 2
+        CALL EXF_WEIGHT_SFX_DIAGS(
+     I                  AREA, grpDiag, myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_EXF */
 
 #ifdef DISABLE_SEAICE_GROWTH
        IF ( .TRUE. ) THEN
