@@ -860,7 +860,7 @@ experiments. Below we describe the customizations
 to these files associated with this experiment.
 
 File `input/data`
-+++++++++++++++++
+~~~~~~~~~~~~~~~~~
 
 This file, reproduced completely below, specifies the main parameters 
 for the experiment. The parameters that are significant for this configuration
@@ -1004,19 +1004,19 @@ notes.
 
 
 File `input/data.pkg`
-++++++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~
 
 This file uses standard default values and does not contain
 customizations for this experiment.
 
 File `input/eedata`
-+++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~
 
 This file uses standard default values and does not contain
 customizations for this experiment.
 
 File `input/thetaPol.bin`
-+++++++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The {\it input/thetaPol.bin} file specifies a three-dimensional ($x,y,z$) 
 map of initial values of $\theta$ in degrees Celsius.  This particular 
@@ -1024,7 +1024,7 @@ experiment is set to random values x around 20C to provide initial
 perturbations.
 
 File `input/bathyPol.bin`
-+++++++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The {\it input/bathyPol.bin} file specifies a two-dimensional ($x,y$) 
 map of depth values. For this experiment values are either
@@ -1033,7 +1033,7 @@ the tank. The file contains a raw binary stream of data that is enumerated
 in the same way as standard MITgcm two-dimensional, horizontal arrays.
 
 File `code/SIZE.h`
-++++++++++++++++++
+~~~~~~~~~~~~~~~~~~
 
 Two lines are customized in this file for the current experiment
 
@@ -1058,14 +1058,14 @@ axis aligned with the y-coordinate.
 
 
 File `code/CPP_OPTIONS.h`
-+++++++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This file uses standard default values and does not contain
 customizations for this experiment.
 
 
 File `code/CPP_EEOPTIONS.h`
-+++++++++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This file uses standard default values and does not contain
 customizations for this experiment.
