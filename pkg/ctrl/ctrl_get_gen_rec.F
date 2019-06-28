@@ -29,13 +29,13 @@ c     ==================================================================
 
 c     == global variables ==
 
-#include "EEPARAMS.h"
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "ctrl.h"
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
-#include "PARAMS.h"
 
 c     == routine arguments ==
 
@@ -67,7 +67,7 @@ c     == local variables ==
       integer fldstartdate(4)
       _RL     fldperiod
 
-      integer startrec
+c     integer startrec
 
       logical lArgErr
 #else
@@ -127,11 +127,11 @@ c--   Determine the current date.
        call cal_GetDate( myiter, mytime, mydate, mythid )
 
 c     Determine first record:
-       call cal_TimePassed( fldstartdate, modelstartdate,
-     &                      difftime, mythid )
-       call cal_ToSeconds ( difftime, fldsecs, mythid )
-       startrec = int((modelstart + startTime - fldsecs)/
-     &                fldperiod) + 1
+c      call cal_TimePassed( fldstartdate, modelstartdate,
+c    &                      difftime, mythid )
+c      call cal_ToSeconds ( difftime, fldsecs, mythid )
+c      startrec = int((modelstart + startTime - fldsecs)/
+c    &                fldperiod) + 1
 
 c     Determine the flux record just before mycurrentdate.
        call cal_TimePassed( fldstartdate, mydate, difftime,
