@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o doc:
+  - add a sub-section about optim_m1qn3
 o pkg/ctrl:
   - fix in rescaling option for control vector ("doscaling/noscaling" option,
     S/R CTRL_MAP_INI_GENARR & CTRL_MAP_INI_GENTIM2D); proper counting of
