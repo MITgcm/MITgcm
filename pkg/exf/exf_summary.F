@@ -104,6 +104,9 @@ C--   Print general parameters:
      &  'exf_output_interp =',
      &  ' /* output directly interpolation result */')
 #endif
+      CALL WRITE_0D_L( diags_opOceWeighted, INDEX_NONE,
+     &  'diags_opOceWeighted =',
+     &  ' /* weight flux diags by open-ocean fraction */')
       CALL WRITE_0D_I( exf_debugLev, INDEX_NONE, 'exf_debugLev =',
      &  ' /* select EXF-debug printing level */')
       CALL WRITE_0D_RL( exf_monFreq, INDEX_NONE, 'exf_monFreq  =',

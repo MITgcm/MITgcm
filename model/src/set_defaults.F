@@ -124,6 +124,7 @@ C-    viscosity and diffusivity default value:
       viscAhReMax         = 0. _d 0
       viscC2leith         = 0. _d 0
       viscC2leithD        = 0. _d 0
+      viscC2LeithQG       = 0. _d 0
       viscC2smag          = 0. _d 0
       viscArDefault       = 0. _d -3
       viscFacAdj          = 1. _d 0
@@ -224,10 +225,9 @@ C-    viscosity and diffusivity default value:
       multiDimAdvection   = .TRUE.
       useMultiDimAdvec    = .FALSE.
       useCDscheme         = .FALSE.
-      useEnergyConservingCoriolis = .FALSE.
-      useJamartWetPoints  = .FALSE.
-      useJamartMomAdv     = .FALSE.
+      selectCoriScheme    = UNSET_I
       selectVortScheme    = UNSET_I
+      useJamartMomAdv     = .FALSE.
       upwindVorticity     = .FALSE.
       highOrderVorticity  = .FALSE.
       useAbsVorticity     = .FALSE.

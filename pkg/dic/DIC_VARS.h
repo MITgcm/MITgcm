@@ -1,5 +1,6 @@
-#include "DIC_OPTIONS.h"
-
+#ifdef ALLOW_OPENAD
+# include "DIC_OPTIONS.h"
+#endif
 C     *==========================================================*
 C     | DIC_VARS.h
 C     | o Abiotic Carbon Variables
@@ -7,18 +8,18 @@ C     *==========================================================*
 
 C     AtmospCO2   :: Atmospheric pCO2 (atm).
 C     AtmosP      :: Atmospheric Pressure loaded from file (atm).
-C     pH          :: surface ocean pH (acidity) for pCO2 
+C     pH          :: surface ocean pH (acidity) for pCO2
 C                       calculations.
 C     pCO2        :: surface ocean partial pressure of CO2 (atm).
 C     FluxCO2     :: Air-sea flux of CO2 (mol/m2/s).
-C     wind        :: Wind speed loaded from file for air-sea 
+C     wind        :: Wind speed loaded from file for air-sea
 C                       flux calculations (m/s).
-C     FIce        :: Fraction of sea ice cover loaded from file 
+C     FIce        :: Fraction of sea ice cover loaded from file
 C                       (or set by thice/seaice)
 C                       for air-sea flux calculations.
-C     Silica      :: Surface ocean concentration of silicate for 
+C     Silica      :: Surface ocean concentration of silicate for
 C                       pCO2 calculations. Read in from file (mol/m3).
-C     Kwexch_Pre  :: Common part of piston velocity used for 
+C     Kwexch_Pre  :: Common part of piston velocity used for
 C                       for air-sea CO2 and O2 flux calculations.
        COMMON /CARBON_NEEDS/
      &              AtmospCO2, AtmosP, pH, pCO2, FluxCO2,
@@ -33,9 +34,9 @@ C                       for air-sea CO2 and O2 flux calculations.
       _RL  Silica(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Kwexch_Pre(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-C Store dissociation and carbon chemistry coefficients for 
-C    pCO2 solvers (see carbon_chem.F). 
-C ak0 =  [H2CO2]/pCO2        
+C Store dissociation and carbon chemistry coefficients for
+C    pCO2 solvers (see carbon_chem.F).
+C ak0 =  [H2CO2]/pCO2
 C   [Weiss 1974]
 C ak1 =  [H][HCO3]/[H2CO3]
 C   [Millero p.664 (1995) using Mehrbach et al. data on seawater scale]
@@ -57,22 +58,24 @@ C ak3p = [H][PO4]/[HPO4]
 C   [DOE(1994) eq 7.2.26 with footnote using data from Millero (1974)]
 C aksi = [H][SiO(OH)3]/[Si(OH)4]
 C   [Millero p.671 (1995) using data from Yao and Millero (1995)]
-C ft  = estimated fluoride concentration 
+C ft  = estimated fluoride concentration
 C   [Riley (1965)]
-C st  = estimated sulphate concentration 
+C st  = estimated sulphate concentration
 C   [Morris & Riley (1966)]
-C bt  = estimated borate concentration 
+C bt  = estimated borate concentration
 C   [Uppstrom (1974)]
-C fugf correct for non-ideality in ocean 
+C fugf :: correct for non-ideality in ocean
 C   [Weiss (1974) Marine Chemistry]
-C ff used for water vapor and pressure correction
+C ff   :: used for water vapor and pressure correction
 C   [Weiss & Price (1980, Mar. Chem., 8, 347-359; Eq 13 with table 6 values)]
-C Ksp_TP_Calc solubility product for calcite
+C Ksp_TP_Calc :: solubility product for calcite
 C   [Following Mucci (1983) with pressure dependence from Ingle (1975)]
+
        COMMON /CARBON_CHEM/
      &                     ak0,ak1,ak2,akw,akb,aks,akf,
      &                     ak1p,ak2p,ak3p,aksi, fugf,
      &                     ff,ft,st,bt, Ksp_TP_Calc
+
       _RL  ak0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ak1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  ak2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -91,6 +94,63 @@ C Fugacity Factor added by Val Bennington Nov. 2010
       _RL  st(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  bt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Ksp_TP_Calc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+#ifdef CARBONCHEM_SOLVESAPHE
+C If using Solvesaphe routines (Munhoven, 2013) then in adittion,
+C  cat  = total calcium concentration, Ref.: Culkin (1965)
+C   akn = the dissociation constant of ammonium [H][NH3]/[NH4]
+C           Ref.: Yao and Millero (1995)
+C   akhs = the dissociation constant of hydrogen sulfide [H][HS]/[H2S]
+C           Ref.: Millero et al. (1988)
+C          (cited by Millero (1995) and Yao and Millero (1995))
+C  aphscale = pH scale conversion factor ; convert from the total to the free
+C          scale for solvesaphe calculations;  Ref.: Munhoven, 2013
+C   Ksp_TP_Arag = solubility product for aragonite, Ref.: Mucci (1983)
+C----
+C  selectBTconst :: estimates borate concentration from salinity:
+C     =1 :: use default formulation of Uppström (1974)(same as S/R CARBON_COEFFS)
+C     =2 :: use new formulation from Lee et al (2010)
+C
+C  selectFTconst :: estimates fluoride concentration from salinity:
+C     =1 :: use default formulation of Riley (1965) (same as S/R CARBON_COEFFS)
+C     =2 :: use new formulation from Culkin (1965)
+C
+C  selectHFconst :: sets the first dissociation constant for hydrogen fluoride:
+C     =1 :: use default  Dickson and Riley (1979) (same as S/R CARBON_COEFFS)
+C     =2 :: use new formulation of Perez and Fraga (1987)
+C
+C  selectK1K2const :: sets the 1rst & 2nd dissociation constants of carbonic acid:
+C     =1 :: use default formulation of Millero (1995) with data
+C            from Mehrbach et al. (1973) (same as S/R CARBON_COEFFS)
+C     =2 :: use formulation of Roy et al. (1993)
+C     =3 :: use "combination" formulation of Millero (1995)
+C     =4 :: use formulation of Luecker et al. (2000)
+C     =5 :: use formulation of Millero (2010, Mar. Fresh Wat. Res.)
+C     =6 :: use formulation of Waters, Millero, Woosley (2014, Mar. Chem.)
+C  selectPHsolver :: sets the pH solver to use:
+C     =1 :: use the GENERAL solver ;  =2 :: use SEC solver ;
+C     =3 :: use FAST solver routine.
+
+       COMMON /CARBONCHEM_SOLVESAPHE/
+     &                     cat, akn, akhs, aphscale, Ksp_TP_Arag,
+     &                     at_maxniter,
+     &                     selectBTconst,selectFTconst,
+     &                     selectHFconst,selectK1K2const,
+     &                     selectPHsolver
+
+      _RL  cat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  akn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  akhs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  aphscale(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  Ksp_TP_Arag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+      INTEGER at_maxniter
+      INTEGER selectBTconst
+      INTEGER selectFTconst
+      INTEGER selectHFconst
+      INTEGER selectK1K2const
+      INTEGER selectPHsolver
+#endif /* CARBONCHEM_SOLVESAPHE */
 
 C Store dissociation coefficients for O2 solubility
        COMMON /OXYGEN_CHEM/
@@ -141,12 +201,12 @@ C  DIC_parFile     :: file name of photosynthetically available radiation (PAR)
 C  DIC_chlaFile    :: file name of chlorophyll climatology
 C  DIC_forcingPeriod :: periodic forcing parameter specific for dic (seconds)
 C  DIC_forcingCycle  :: periodic forcing parameter specific for dic (seconds)
-C  dic_int*          :: Handle the atmospheric boundary condition for pCO2 
+C  dic_int*          :: Handle the atmospheric boundary condition for pCO2
 C  dic_int1:
 C          0=use default pCO2 (278.d-6)
 C          1=use constant value of dic_pCO2 read in from data.dic
 C          2=read in from file named co2atmos.dat
-C          3=interact with well mixed atmospheric box (can use dic_pCO2 as initial value)
+C          3=use well mixed atmospheric box (can use dic_pCO2 as initial value)
 C  dic_int2          :: number pCO2 entries to read from file
 C  dic_int3          :: start timestep
 C  dic_int4          :: timestep between file entries
@@ -179,68 +239,84 @@ C     | o Biological Carbon Variables
 C     *==========================================================*
 
 C For averages of the output using TIMEAVE
-C  BIOave                 :: biological productivity [mol P/m3/s]
-C  CARave                 :: carbonate changes due to biological
-C                             productivity and remineralization [mol C/m3/s]
-C  SURave                 :: tendency of DIC due to air-sea exchange
-C                            and virtual flux [mol C/m3/s]
-C  SUROave                :: tendency of O2 due to air-sea exchange [mol O2/m3/s]
-C  pCO2ave                :: surface ocean pCO2 [uatm]
-C  pHave                  :: surface ocean pH
-C  fluxCO2ave             :: Air-sea flux of CO2 [mol C/m2/s] 
-C  omegaCave              :: Local saturation state with respect to calcite 
-C  pfluxave               :: changes to PO4 due to flux and remineralization [mol P/m3/s] 
-C  epfluxave              :: export flux of PO4 through each layer [mol P/m2/s] 
-C  cfluxave               :: carbonate changes due to flux and remineralization [mol C/m3/s]
-C  DIC_timeAve            :: period over which DIC averages are calculated [s]
+C  BIOave     :: biological productivity [mol P/m3/s]
+C  CARave     :: carbonate changes due to biological productivity
+C                 and remineralization [mol C/m3/s]
+C  SURave     :: tendency of DIC due to air-sea exchange
+C                 and virtual flux [mol C/m3/s]
+C  SUROave    :: tendency of O2 due to air-sea exchange [mol O2/m3/s]
+C  pCO2ave    :: surface ocean pCO2 [uatm]
+C  pHave      :: surface ocean pH
+C  fluxCO2ave :: Air-sea flux of CO2 [mol C/m2/s]
+C  omegaCave  :: Local saturation state with respect to calcite
+C  pfluxave   :: changes to PO4 due to flux and remineralization [mol P/m3/s]
+C  epfluxave  :: export flux of PO4 through each layer [mol P/m2/s]
+C  cfluxave   :: carbonate changes due to flux and remineralization [mol C/m3/s]
+C  DIC_timeAve  :: period over which DIC averages are calculated [s]
 
-C Values for biotic biogeochemistry 
-C          (many set in data.dic, defaults to values in dic_readparms.F)
-C  par                    :: photosynthetically active radiation  (light available for 
-C                            phytoplankton growth) [W/m2]
-C  alphaUniform, alpha    :: maximum rate of biological activity [mol P/m3/s]
-C                            read in alphaUniform and filled in 2d array alpha
-C  rainRatioUniform, rain_ratio :: inorganic/organic particulate carbon rain ratio (PIC/POC)
-C                            read in rainRatioUniform and filled in 2d array rain_ratio
-C  InputFe                :: aeolian deposition of TOTAL IRON in dust [mol/m2/s]
-C  omegaC                 :: Local saturation state with respect to calcite 
-C  CHL                    :: chlorophyll climatology data for self-shading effect [mg/m3]
-C  Kpo4, KFE, lit0        :: half saturation constants for phosphate, iron and light 
-C							 [mol P/m3, mol Fe/m3, W/m2]
-C  DOPfraction            :: fraction of new production going to DOP  
-C  zcrit, nlev            :: Minimum Depth (m) over which biological activity
-C                            is computed. determines nlev as the indice of the
-C                            first layer deeper than -zcrit
-C  KRemin                 :: remineralization power law coeffient
-C  KDOPremin              :: DOP remineralization rate [1/s]
-C  zca                    :: scale depth for CaCO3 remineralization [m] 
-C  R_op,R_cp,R_NP, R_FeP  :: stochiometric ratios of nutrients 
-C                            (assumption of stoichometry of plankton and particulate 
-C                             and dissolved organic matter)
-C  O2crit                 :: critical oxygen level [mol/m3] 
-C  alpfe                  :: solubility of aeolian fe [fraction]
-C  KScav                  :: iron scavenging rate [1/s]
-C  ligand_stab            :: ligand-free iron stability constant [m3/mol]
-C  ligand_tot             :: uniform, invariant total free ligand conc [mol/m3]
-C  freefemax              :: max soluble free iron [mol/m3]
-C  fesedflux_pcm          :: ratio of sediment iron to sinking organic matter
-C  FeIntSec               :: Sediment Fe flux, intersect value in:
-C                                    Fe_flux = fesedflux_pcm*pflux + FeIntSec
-C  parfrac                :: fraction of Qsw that is PAR
-C  k0                     :: light attentuation coefficient of water [1/m]
-C  kchl                   :: light attentuation coefficient of chlorophyll [m2/mg]
-C  alphamax, alphamin     :: not used (legacy adjoint param)
-C  calpha                 :: not used (legacy adjoint param)
-C  crain_ratio            :: not used (legacy adjoint param)
-C  cInputFe               :: not used (legacy adjoint param)
-C  calpfe                 :: not used (legacy adjoint param)
-C  feload                 :: not used (legacy adjoint param)
-C  cfeload                :: not used (legacy adjoint param)
-C  QSW_underice           :: is Qsw is masked by ice fraction?
-      COMMON /BIOTIC_NEEDS/
+      COMMON /BIOTIC_TAVE/
      &     BIOave, CARave, SURave, SUROave, pCO2ave, pHave,
      &     fluxCO2ave, omegaCave, pfluxave, epfluxave, cfluxave,
-     &     DIC_timeAve,
+     &     DIC_timeAve
+
+      _RL BIOave    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL CARave    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL SURave    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SUROave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL pCO2ave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL pHave     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL fluxCO2ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL OmegaCave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL pfluxave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL epfluxave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL cfluxave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL DIC_timeAve(nSx,nSy)
+
+C Values for biotic biogeochemistry
+C     (many set in data.dic, defaults to values in dic_readparms.F)
+C  par              :: photosynthetically active radiation (light available
+C                       for phytoplankton growth) [W/m2]
+C  alpha            :: maximum rate of biological activity [mol P/m3/s]
+C  alphaUniform     :: read in alphaUniform to fill in 2d array alpha
+C  rain_ratio       :: inorganic/organic particulate carbon rain ratio (PIC/POC)
+C  rainRatioUniform :: read in rainRatioUniform to fill in 2d array rain_ratio
+C  InputFe          :: aeolian deposition of TOTAL IRON in dust [mol/m2/s]
+C  omegaC           :: Local saturation state with respect to calcite
+C  CHL              :: chlorophyll climatology data for self-shading effect [mg/m3]
+C  Kpo4, KFE, lit0  :: half saturation constants for phosphate [mol P/m3],
+C                       iron [mol Fe/m3] and light [W/m2]
+C  DOPfraction      :: fraction of new production going to DOP
+C  zcrit            :: Minimum Depth (m) over which biological activity is computed
+C  nlev             :: level index just below -zcrit
+C  KRemin           :: remineralization power law coeffient
+C  KDOPremin        :: DOP remineralization rate [1/s]
+C  zca              :: scale depth for CaCO3 remineralization [m]
+C  R_op, R_cp       :: stochiometric ratios of nutrients
+C  R_NP, R_FeP      :: stochiometric ratios of nutrients
+C                       (assumption of stoichometry of plankton and
+C                        particulate  and dissolved organic matter)
+C  O2crit           :: critical oxygen level [mol/m3]
+C  alpfe            :: solubility of aeolian fe [fraction]
+C  KScav            :: iron scavenging rate [1/s]
+C  ligand_stab      :: ligand-free iron stability constant [m3/mol]
+C  ligand_tot       :: uniform, invariant total free ligand conc [mol/m3]
+C  freefemax        :: max soluble free iron [mol/m3]
+C  fesedflux_pcm    :: ratio of sediment iron to sinking organic matter
+C  FeIntSec         :: Sediment Fe flux, intersect value in:
+C                              Fe_flux = fesedflux_pcm*pflux + FeIntSec
+C  parfrac          :: fraction of Qsw that is PAR
+C  k0               :: light attentuation coefficient of water [1/m]
+C  kchl             :: light attentuation coefficient of chlorophyll [m2/mg]
+C  alphamax,alphamin :: not used (legacy adjoint param)
+C  calpha            :: not used (legacy adjoint param)
+C  crain_ratio       :: not used (legacy adjoint param)
+C  cInputFe          :: not used (legacy adjoint param)
+C  calpfe            :: not used (legacy adjoint param)
+C  feload            :: not used (legacy adjoint param)
+C  cfeload           :: not used (legacy adjoint param)
+C  QSW_underice      :: is Qsw is masked by ice fraction?
+
+      COMMON /BIOTIC_NEEDS/
      &     par, alpha, rain_ratio, InputFe, omegaC, CHL,
      &     Kpo4, DOPfraction, zcrit, KRemin,
      &     KDOPremin,zca,R_op,R_cp,R_NP, R_FeP,
@@ -248,24 +324,10 @@ C  QSW_underice           :: is Qsw is masked by ice fraction?
      &     freefemax, fesedflux_pcm, FeIntSec,
      &     parfrac, k0, kchl, lit0,
      &     alphaUniform, rainRatioUniform,
-     &     alphamax, alphamin,
-     &     calpha, crain_ratio, cInputFe, calpfe, feload, cfeload,
      &     nlev, QSW_underice
 
-      INTEGER nlev
-
-      _RL BIOave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL CARave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL SURave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SUROave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pCO2ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pHave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL fluxCO2ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL OmegaCave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL pfluxave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL epfluxave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL cfluxave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL DIC_timeAve(nSx,nSy)
+c    &     alphamax, alphamin,
+c    &     calpha, crain_ratio, cInputFe, calpfe, feload, cfeload,
 
       _RL par(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL alpha(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -295,14 +357,15 @@ C  QSW_underice           :: is Qsw is masked by ice fraction?
       _RL k0, kchl, parfrac, lit0
       _RL alphaUniform
       _RL rainRatioUniform
-      _RL alphamax, alphamin
-      _RL calpha
-      _RL crain_ratio
-      _RL cInputFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL calpfe
-      _RL cfeload
-      _RL feload(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     _RL alphamax, alphamin
+c     _RL calpha
+c     _RL crain_ratio
+c     _RL cInputFe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     _RL calpfe
+c     _RL cfeload
+c     _RL feload(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
+      INTEGER nlev
       LOGICAL QSW_underice
 #endif /* DIC_BIOTIC */
 
