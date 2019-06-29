@@ -48,14 +48,15 @@ C     readStressOnAgrid  :: read wind-streess located on model-grid, A-grid posi
 C     rotateStressOnAgrid  :: rotate from zonal/meridional components to U/V components
 C     readStressOnCgrid  :: read wind-streess located on model-grid, C-grid position
 C     stressIsOnCgrid    :: ustress & vstress are positioned on Arakawa C-grid
-C     useStabilityFct_overIce :: over sea-ice, compute turbulent transfert
-C                                coeff. function of stability (like over
-C                                open ocean) rather than using fixed Coeff.
 C     useAtmWind         :: use wind vector (uwind/vwind) to compute
 C                           the wind stress (ustress/vstress)
 C     useRelativeWind    :: Subtract U/VVEL or U/VICE from U/VWIND before
 C                           computing U/VSTRESS
 C     noNegativeEvap     :: prevent negative evap (= sea-surface condensation)
+C    useStabilityFct_overIce :: over sea-ice, compute turbulent transfert
+C                               coeff. function of stability (like over
+C                               open ocean) rather than using fixed Coeff.
+C    diags_opOceWeighted :: weight surface flux diagnostics with open-ocean fraction
 C     useExfZenAlbedo    :: ocean albedo (direct part) may vary
 C                           with zenith angle (see select_ZenAlbedo)
 C     select_ZenAlbedo   :: switch to different methods to compute albedo (direct part)
@@ -74,10 +75,11 @@ C     exf_monFreq        :: Monitor Frequency (s) for EXF
       LOGICAL rotateStressOnAgrid
       LOGICAL readStressOnCgrid
       LOGICAL stressIsOnCgrid
-      LOGICAL useStabilityFct_overIce
+      LOGICAL useAtmWind
       LOGICAL useRelativeWind
       LOGICAL noNegativeEvap
-      LOGICAL useAtmWind
+      LOGICAL useStabilityFct_overIce
+      LOGICAL diags_opOceWeighted
 
       LOGICAL useExfZenAlbedo
       INTEGER select_ZenAlbedo
@@ -121,7 +123,7 @@ C     {fld}const      :: uniform default field value
       _RL     hfluxconst
       _RL     hflux_exfremo_intercept
       _RL     hflux_exfremo_slope
-      character*1 hfluxmask
+      CHARACTER*1 hfluxmask
 
       INTEGER atempstartdate1
       INTEGER atempstartdate2
@@ -131,7 +133,7 @@ C     {fld}const      :: uniform default field value
       _RL     atempconst
       _RL     atemp_exfremo_intercept
       _RL     atemp_exfremo_slope
-      character*1 atempmask
+      CHARACTER*1 atempmask
 
       INTEGER aqhstartdate1
       INTEGER aqhstartdate2
@@ -141,7 +143,7 @@ C     {fld}const      :: uniform default field value
       _RL     aqhconst
       _RL     aqh_exfremo_intercept
       _RL     aqh_exfremo_slope
-      character*1 aqhmask
+      CHARACTER*1 aqhmask
 
       INTEGER hs_startdate1
       INTEGER hs_startdate2
@@ -151,7 +153,7 @@ C     {fld}const      :: uniform default field value
       _RL     hs_const
       _RL     hs_exfremo_intercept
       _RL     hs_exfremo_slope
-      character*1 hs_mask
+      CHARACTER*1 hs_mask
 
       INTEGER hl_startdate1
       INTEGER hl_startdate2
@@ -161,7 +163,7 @@ C     {fld}const      :: uniform default field value
       _RL     hl_const
       _RL     hl_exfremo_intercept
       _RL     hl_exfremo_slope
-      character*1 hl_mask
+      CHARACTER*1 hl_mask
 
       INTEGER sfluxstartdate1
       INTEGER sfluxstartdate2
@@ -171,7 +173,7 @@ C     {fld}const      :: uniform default field value
       _RL     sfluxconst
       _RL     sflux_exfremo_intercept
       _RL     sflux_exfremo_slope
-      character*1 sfluxmask
+      CHARACTER*1 sfluxmask
 
       INTEGER evapstartdate1
       INTEGER evapstartdate2
@@ -181,7 +183,7 @@ C     {fld}const      :: uniform default field value
       _RL     evapconst
       _RL     evap_exfremo_intercept
       _RL     evap_exfremo_slope
-      character*1 evapmask
+      CHARACTER*1 evapmask
 
       INTEGER precipstartdate1
       INTEGER precipstartdate2
@@ -191,7 +193,7 @@ C     {fld}const      :: uniform default field value
       _RL     precipconst
       _RL     precip_exfremo_intercept
       _RL     precip_exfremo_slope
-      character*1 precipmask
+      CHARACTER*1 precipmask
 
       INTEGER snowprecipstartdate1
       INTEGER snowprecipstartdate2
@@ -201,7 +203,7 @@ C     {fld}const      :: uniform default field value
       _RL     snowprecipconst
       _RL     snowprecip_exfremo_intercept
       _RL     snowprecip_exfremo_slope
-      character*1 snowprecipmask
+      CHARACTER*1 snowprecipmask
 
       INTEGER runoffstartdate1
       INTEGER runoffstartdate2
@@ -211,7 +213,7 @@ C     {fld}const      :: uniform default field value
       _RL     runoffconst
       _RL     runoff_exfremo_intercept
       _RL     runoff_exfremo_slope
-      character*1 runoffmask
+      CHARACTER*1 runoffmask
 
       _RL     runoftempconst
       _RL     runoftemp_exfremo_intercept
@@ -225,7 +227,7 @@ C     {fld}const      :: uniform default field value
       _RL     saltflxconst
       _RL     saltflx_exfremo_intercept
       _RL     saltflx_exfremo_slope
-      character*1 saltflxmask
+      CHARACTER*1 saltflxmask
 
       INTEGER ustressstartdate1
       INTEGER ustressstartdate2
@@ -235,7 +237,7 @@ C     {fld}const      :: uniform default field value
       _RL     ustressconst
       _RL     ustress_exfremo_intercept
       _RL     ustress_exfremo_slope
-      character*1 ustressmask
+      CHARACTER*1 ustressmask
 
       INTEGER vstressstartdate1
       INTEGER vstressstartdate2
@@ -245,7 +247,7 @@ C     {fld}const      :: uniform default field value
       _RL     vstressconst
       _RL     vstress_exfremo_intercept
       _RL     vstress_exfremo_slope
-      character*1 vstressmask
+      CHARACTER*1 vstressmask
 
       INTEGER uwindstartdate1
       INTEGER uwindstartdate2
@@ -255,7 +257,7 @@ C     {fld}const      :: uniform default field value
       _RL     uwindconst
       _RL     uwind_exfremo_intercept
       _RL     uwind_exfremo_slope
-      character*1 uwindmask
+      CHARACTER*1 uwindmask
 
       INTEGER vwindstartdate1
       INTEGER vwindstartdate2
@@ -265,7 +267,7 @@ C     {fld}const      :: uniform default field value
       _RL     vwindconst
       _RL     vwind_exfremo_intercept
       _RL     vwind_exfremo_slope
-      character*1 vwindmask
+      CHARACTER*1 vwindmask
 
       INTEGER wspeedstartdate1
       INTEGER wspeedstartdate2
@@ -275,7 +277,7 @@ C     {fld}const      :: uniform default field value
       _RL     wspeedconst
       _RL     wspeed_exfremo_intercept
       _RL     wspeed_exfremo_slope
-      character*1 wspeedmask
+      CHARACTER*1 wspeedmask
 
       INTEGER swfluxstartdate1
       INTEGER swfluxstartdate2
@@ -285,7 +287,7 @@ C     {fld}const      :: uniform default field value
       _RL     swfluxconst
       _RL     swflux_exfremo_intercept
       _RL     swflux_exfremo_slope
-      character*1 swfluxmask
+      CHARACTER*1 swfluxmask
 
       INTEGER lwfluxstartdate1
       INTEGER lwfluxstartdate2
@@ -295,7 +297,7 @@ C     {fld}const      :: uniform default field value
       _RL     lwfluxconst
       _RL     lwflux_exfremo_intercept
       _RL     lwflux_exfremo_slope
-      character*1 lwfluxmask
+      CHARACTER*1 lwfluxmask
 
       INTEGER swdownstartdate1
       INTEGER swdownstartdate2
@@ -305,7 +307,7 @@ C     {fld}const      :: uniform default field value
       _RL     swdownconst
       _RL     swdown_exfremo_intercept
       _RL     swdown_exfremo_slope
-      character*1 swdownmask
+      CHARACTER*1 swdownmask
 
       INTEGER lwdownstartdate1
       INTEGER lwdownstartdate2
@@ -315,7 +317,7 @@ C     {fld}const      :: uniform default field value
       _RL     lwdownconst
       _RL     lwdown_exfremo_intercept
       _RL     lwdown_exfremo_slope
-      character*1 lwdownmask
+      CHARACTER*1 lwdownmask
 
       INTEGER apressurestartdate1
       INTEGER apressurestartdate2
@@ -325,7 +327,7 @@ C     {fld}const      :: uniform default field value
       _RL     apressureconst
       _RL     apressure_exfremo_intercept
       _RL     apressure_exfremo_slope
-      character*1 apressuremask
+      CHARACTER*1 apressuremask
 
       INTEGER tidePotStartdate1
       INTEGER tidePotStartdate2
@@ -346,7 +348,7 @@ C     {fld}const      :: uniform default field value
       _RL     areamaskconst
       _RL     areamask_exfremo_intercept
       _RL     areamask_exfremo_slope
-      character*1 areamaskmask
+      CHARACTER*1 areamaskmask
 
 C     Calendar data.
       INTEGER climsststartdate1
@@ -358,7 +360,7 @@ C     Calendar data.
       _RL     climsstconst
       _RL     climsst_exfremo_intercept
       _RL     climsst_exfremo_slope
-      character*1 climsstmask
+      CHARACTER*1 climsstmask
 
       INTEGER climsssstartdate1
       INTEGER climsssstartdate2
@@ -369,7 +371,7 @@ C     Calendar data.
       _RL     climsssconst
       _RL     climsss_exfremo_intercept
       _RL     climsss_exfremo_slope
-      character*1 climsssmask
+      CHARACTER*1 climsssmask
 
       INTEGER climustrstartdate1
       INTEGER climustrstartdate2
@@ -380,7 +382,7 @@ C     Calendar data.
       _RL     climustrconst
       _RL     climustr_exfremo_intercept
       _RL     climustr_exfremo_slope
-      character*1 climustrmask
+      CHARACTER*1 climustrmask
 
       INTEGER climvstrstartdate1
       INTEGER climvstrstartdate2
@@ -391,7 +393,7 @@ C     Calendar data.
       _RL     climvstrconst
       _RL     climvstr_exfremo_intercept
       _RL     climvstr_exfremo_slope
-      character*1 climvstrmask
+      CHARACTER*1 climvstrmask
 
 C-    The following variables are used in conjunction with pkg/obcs
 C     to describe S/T/U/V open boundary condition files
@@ -441,34 +443,34 @@ C     and vice open boundary condition files
       _RL     siobWrepCycle
 
 C-    File names.
-      character*(128) hfluxfile
-      character*(128) atempfile
-      character*(128) aqhfile
-      character*(128) hs_file
-      character*(128) hl_file
-      character*(128) evapfile
-      character*(128) precipfile
-      character*(128) snowprecipfile
-      character*(128) sfluxfile
-      character*(128) runofffile
-      character*(128) runoftempfile
-      character*(128) saltflxfile
-      character*(128) ustressfile
-      character*(128) vstressfile
-      character*(128) uwindfile
-      character*(128) vwindfile
-      character*(128) wspeedfile
-      character*(128) swfluxfile
-      character*(128) lwfluxfile
-      character*(128) swdownfile
-      character*(128) lwdownfile
-      character*(128) apressurefile
-      character*(128) tidePotFile
-      character*(128) areamaskfile
-      character*(128) climsstfile
-      character*(128) climsssfile
-      character*(128) climustrfile
-      character*(128) climvstrfile
+      CHARACTER*(128) hfluxfile
+      CHARACTER*(128) atempfile
+      CHARACTER*(128) aqhfile
+      CHARACTER*(128) hs_file
+      CHARACTER*(128) hl_file
+      CHARACTER*(128) evapfile
+      CHARACTER*(128) precipfile
+      CHARACTER*(128) snowprecipfile
+      CHARACTER*(128) sfluxfile
+      CHARACTER*(128) runofffile
+      CHARACTER*(128) runoftempfile
+      CHARACTER*(128) saltflxfile
+      CHARACTER*(128) ustressfile
+      CHARACTER*(128) vstressfile
+      CHARACTER*(128) uwindfile
+      CHARACTER*(128) vwindfile
+      CHARACTER*(128) wspeedfile
+      CHARACTER*(128) swfluxfile
+      CHARACTER*(128) lwfluxfile
+      CHARACTER*(128) swdownfile
+      CHARACTER*(128) lwdownfile
+      CHARACTER*(128) apressurefile
+      CHARACTER*(128) tidePotFile
+      CHARACTER*(128) areamaskfile
+      CHARACTER*(128) climsstfile
+      CHARACTER*(128) climsssfile
+      CHARACTER*(128) climustrfile
+      CHARACTER*(128) climvstrfile
 
       COMMON /EXF_PARAM_L/
      &       useExfCheckRange,
@@ -476,9 +478,9 @@ C-    File names.
      &       useOBCSYearlyFields,
      &       useExfZenAlbedo, useExfZenIncoming,
      &       readStressOnAgrid, readStressOnCgrid,
-     &       stressIsOnCgrid, useStabilityFct_overIce,
+     &       stressIsOnCgrid, rotateStressOnAgrid,
      &       useAtmWind, useRelativeWind, noNegativeEvap,
-     &       rotateStressOnAgrid
+     &       useStabilityFct_overIce, diags_opOceWeighted
 
       COMMON /EXF_PARAM_I/
      &       select_ZenAlbedo,  exf_debugLev,

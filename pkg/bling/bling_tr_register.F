@@ -4,8 +4,8 @@ CBOP
 C     !ROUTINE: BLING_TR_REGISTER
 C     !INTERFACE:
       SUBROUTINE BLING_TR_REGISTER(
-     U                            tracer_num, sepFTr_num,
-     I                            myThid )
+     U           tracer_num, sepFTr_num,
+     I           myThid )
 
 C     !DESCRIPTION:
 C     *==========================================================*
@@ -35,10 +35,17 @@ C     msgBuf     :: message buffer
       INTEGER BLING_Tr_num
 CEOP
 
-#ifdef ADVECT_PHYTO
+#ifndef USE_BLING_V1
+# ifdef USE_SIBLING
       BLING_Tr_num = 9
-#else
+# else
       BLING_Tr_num = 8
+# endif
+#else
+      BLING_Tr_num = 6
+#endif
+#ifdef ADVECT_PHYTO
+      BLING_Tr_num = BLING_Tr_num+1
 #endif
 
       WRITE(msgBuf,'(2A,2I5)') ' BLING_TR_REGISTER:',
