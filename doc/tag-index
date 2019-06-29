@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+  - fix in rescaling option for control vector ("doscaling/noscaling" option,
+    S/R CTRL_MAP_INI_GENARR & CTRL_MAP_INI_GENTIM2D); proper counting of
+    non-zero control vector when weight-mask is different from ocean-mask.
+    Expect differences only when (a) weight-mask is different from ocean mask
+    and (b) xx_genarr2d_preproc='noscaling' (doscaling=.false.).
 o pkg/exf:
   - new run-time parameter "diags_opOceWeighted" (default=T) to weight some exf
     surface diagnostics (all net and upward fluxes) with open-ocean fraction.
