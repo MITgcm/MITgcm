@@ -1,7 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/ctrl:
+o pkg/bling:
   - add missing components of SIBLING
   - add Manizza et al 2005 light attenuation. Enable with PHYTO_SELF_SHADING
   -Replace hard coding of max mixing depth with runtime parameter MLmix_max
