@@ -33,7 +33,7 @@ c nutrient limitations to calculate maximum phyto growth rate
 c Assume that phytoplankton in the mixed layer experience
 c the average light over the mixed layer
 c (as in original BLING model)
-#define ML_MEAN_LIGHT
+#undef ML_MEAN_LIGHT
 
 c Assume that phytoplankton are homogenized in the mixed layer
 #define ML_MEAN_PHYTO
@@ -47,6 +47,10 @@ c otherwise determined from date and latitude
 #define USE_QSW
 c use penetrating fraction instead of exponential attenuation
 #undef USE_QSW_Z
+
+c Light absorption scheme from Manizza et al. (2005),
+c with self shading from phytoplankton
+#undef PHYTO_SELF_SHADING
 
 c note: atm pressure from PKG/EXF is always used for air-sea flux
 c calculation if available;
