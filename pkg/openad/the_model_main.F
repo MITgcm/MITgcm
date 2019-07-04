@@ -485,13 +485,11 @@ C#endif
       call timeratio()
 #ifdef ALLOW_OPENAD_DIVA
       if((curradjointcp.eq.-1).and.(currcp.ne.nTimeSteps_l2)) then
-        do while(currcp.ne.nTimeSteps_l2) 
 #endif
           CALL OpenAD_THE_MAIN_LOOP( myTime, myIter, myThid )
 #ifdef ALLOW_OPENAD_DIVA
           call cp_read_state(currcp, curradjointcp, maxfwditer, maxadjit
      +er, myIter)
-        end do 
       end if
 #endif 
       CALL TIMER_STOP ('THE_MAIN_LOOP (F)      [THE_MODEL_MAIN]',myThid)
