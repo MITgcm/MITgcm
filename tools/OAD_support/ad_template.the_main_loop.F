@@ -51,9 +51,10 @@ c we may need these for the checkpointing
       use STREAMICE_CG_mod
 #endif
 #ifdef ALLOW_SHELFICE
-
       use shelfice_mod
       use shelfice_cost_mod
+#endif
+#ifdef ALLOW_OBCS
       use obcs_fields_mod
 #endif
 
