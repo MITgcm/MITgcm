@@ -76,11 +76,6 @@ c     == local variables ==
       logical ladinit
 
       character*(80) fnamegen
-#ifdef ALLOW_SMOOTH
-#ifdef ALLOW_SMOOTH_CTRL2D
-      _RS dummyRS(1)
-#endif
-#endif
 #ifndef ECCO_CTRL_DEPRECATED
       character*(MAX_LEN_FNAM) xx_tauu_file
       character*(MAX_LEN_FNAM) xx_tauv_file
@@ -163,8 +158,8 @@ cc#endif /* ALLOW_OPENAD */
         if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
         write(fnamegeneric(1:80),'(2a,i10.10)')
      &    xx_gen_file(1:ilgen),'.smooth.',optimcycle
-      call WRITE_REC_3D_RL(fnamegeneric,ctrlprec,
-     & 1, xx_gen1, gencount1, optimcycle, mythid)
+        CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, 1,
+     &             xx_gen1, gencount1, optimcycle, mythid )
 #endif /* ALLOW_SMOOTH_CTRL2D */
 #endif /* ALLOW_SMOOTH */
 
@@ -199,8 +194,8 @@ cc#endif /* ALLOW_OPENAD */
         if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
         write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_gen_file(1:ilgen),'.smooth.',optimcycle
-      call WRITE_REC_3D_RL(fnamegeneric,ctrlprec,
-     & 1, xx_gen1, gencount0, optimcycle, mythid)
+        CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, 1,
+     &             xx_gen1, gencount0, optimcycle, mythid )
 #endif /* ALLOW_SMOOTH_CTRL2D */
 #endif /* ALLOW_SMOOTH */
 
