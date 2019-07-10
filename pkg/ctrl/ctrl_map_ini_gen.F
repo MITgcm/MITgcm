@@ -3,7 +3,13 @@
 # include "AUTODIFF_OPTIONS.h"
 #endif
 
-      subroutine ctrl_map_ini_gen3D(xxFileCur, wFileCur, xxDummyCur,
+C--  File ctrl_map_ini_gen.F:
+C--   Contents
+C--   o CTRL_MAP_INI_GEN3D
+C--   o CTRL_MAP_INI_GEN2D
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      SUBROUTINE CTRL_MAP_INI_GEN3D(xxFileCur, wFileCur, xxDummyCur,
      & boundsVec, paramFld3d, maskFld3d, paramSmooth, mythid )
 
 c     ==================================================================
@@ -67,7 +73,6 @@ c     == local variables ==
       logical ladinit
 
       character*( 80) fnamegeneric
-      _RS dummyRS(1)
 
 c     == external ==
 
@@ -109,7 +114,7 @@ c--   only do interior, and exchange outside
        ENDDO
       ENDDO
 
-      call READ_REC_3D_RL(wFileCur,ctrlprec,nR,wFld3d,1,1,mythid)
+      CALL READ_REC_3D_RL( wFileCur,ctrlprec,Nr, wFld3d, 1,1,myThid )
       _EXCH_XYZ_RL( wFld3d, mythid )
 
       il=ilnblnk( xxFileCur )
@@ -152,8 +157,8 @@ c avoid xx larger than boundsVec(5) X uncertainty
       if (useSMOOTH) call smooth3D(xxFld3d,paramSmooth,mythid)
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xxFileCur(1:il),'.smooth.',optimcycle
-      call WRITE_REC_3D_RL(fnamegeneric,ctrlprec,
-     & nr, xxFld3d, 1, optimcycle, mythid)
+      CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, Nr,
+     &                      xxFld3d, 1, optimcycle, myThid )
 # endif
 #endif
 
@@ -208,8 +213,8 @@ c avoid param out of [boundsVec(1) boundsVec(4)]
       IF ( ctrlSmoothCorrel3D ) THEN
         write(fnamegeneric(1:80),'(2a,i10.10)')
      &    xxFileCur(1:il),'.effective.',optimcycle
-        call WRITE_REC_3D_RL(fnamegeneric,ctrlprec,
-     &    nr, paramFld3d, 1, optimcycle, mythid)
+        CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, Nr,
+     &                        paramFld3d, 1, optimcycle, myThid )
       ENDIF
 
       RETURN
@@ -217,7 +222,7 @@ c avoid param out of [boundsVec(1) boundsVec(4)]
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      subroutine ctrl_map_ini_gen2D(xxFileCur, wFileCur, xxDummyCur,
+      SUBROUTINE CTRL_MAP_INI_GEN2D(xxFileCur, wFileCur, xxDummyCur,
      & boundsVec, paramFld2d, maskFld3d, paramSmooth, mythid )
 
 c     ==================================================================
@@ -280,7 +285,6 @@ c     == local variables ==
       logical ladinit
 
       character*( 80) fnamegeneric
-      _RS dummyRS(1)
 
 c     == external ==
 
@@ -320,7 +324,7 @@ c--   only do interior, and exchange outside
        ENDDO
       ENDDO
 
-      call READ_REC_3D_RL(wFileCur,ctrlprec,1,wFld2d,1,1,mythid)
+      CALL READ_REC_3D_RL( wFileCur, ctrlprec, 1, wFld2d, 1,1,myThid )
       _EXCH_XY_RL( wFld2d, mythid )
 
       il=ilnblnk( xxFileCur )
@@ -361,8 +365,8 @@ c avoid xx larger than boundsVec(5) X uncertainty
       if (useSMOOTH) call smooth2d(xxFld2d,maskFld3d,paramSmooth,mythid)
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xxFileCur(1:il),'.smooth.',optimcycle
-      call WRITE_REC_3D_RL(fnamegeneric,ctrlprec,
-     & 1, xxFld2d, 1, optimcycle, mythid)
+      CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, 1,
+     &                      xxFld2d, 1, optimcycle, myThid )
 # endif
 #endif
 
@@ -412,8 +416,8 @@ c scale param adjustment
       IF ( ctrlSmoothCorrel2D ) THEN
         write(fnamegeneric(1:80),'(2a,i10.10)')
      &   xxFileCur(1:il),'.effective.',optimcycle
-        call WRITE_REC_3D_RL(fnamegeneric,ctrlprec,
-     &   1, paramFld2d, 1, optimcycle, mythid)
+        CALL WRITE_REC_3D_RL( fnamegeneric, ctrlprec, 1,
+     &                        paramFld2d, 1, optimcycle, myThid )
       endif
 
       RETURN

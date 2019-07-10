@@ -3,6 +3,13 @@
 # include "GMREDI_OPTIONS.h"
 #endif
 
+C--  File ctrl_map_ini_genarr.F:
+C--   Contents
+C--   o CTRL_MAP_INI_GENARR
+C--   o CTRL_MAP_GENARR2D
+C--   o CTRL_MAP_GENARR3D
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: CTRL_MAP_INI_GENARR
 C     !INTERFACE:
@@ -154,8 +161,8 @@ C--   generic 3D control variables
       RETURN
       END
 
-C---------------------------
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
 C     !ROUTINE: CTRL_MAP_GENARR2D
 C     !INTERFACE:
       SUBROUTINE CTRL_MAP_GENARR2D( fld, iarr, myThid )
@@ -203,7 +210,6 @@ C     == local variables ==
       logical dosmooth
       logical doscaling
       _RL xx_gen  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RS dummyRS(1)
       character*(80) fnamegenIn
       character*(80) fnamegenOut
       character*(80) fnamebase
@@ -257,8 +263,8 @@ c--   Now, read the control vector.
       write(fnamegenOut(1:80),'(2a,i10.10)')
      &       fnamebase(1:ilgen),'.effective.',optimcycle
 
-      call READ_REC_3D_RL(xx_genarr2d_weight(iarr),ctrlprec,1,
-     &     wgenarr2d(1-Olx,1-Oly,1,1,iarr),1,1,mythid)
+      CALL READ_REC_3D_RL( xx_genarr2d_weight(iarr), ctrlprec, 1,
+     &          wgenarr2d(1-Olx,1-Oly,1,1,iarr), 1, 1, myThid )
 
 #ifdef ALLOW_AUTODIFF
       call active_read_xy( fnamegenIn, xx_gen, 1, doglobalread,
@@ -300,16 +306,16 @@ c avoid param out of [boundsVec(1) boundsVec(4)]
 
       CALL EXCH_XY_RL( fld, mythid )
 
-      CALL WRITE_REC_3D_RL(fnamegenOut,ctrlprec,
-     &    1, fld, 1, optimcycle, mythid)
+      CALL WRITE_REC_3D_RL( fnamegenOut, ctrlprec, 1,
+     &                      fld, 1, optimcycle, myThid )
 
 #endif /* ALLOW_GENARR2D_CONTROL */
 
       RETURN
       END
 
-C---------------------------
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
 C     !ROUTINE: CTRL_MAP_GENARR3D
 C     !INTERFACE:
       SUBROUTINE CTRL_MAP_GENARR3D( fld, iarr, myThid )
@@ -355,7 +361,6 @@ C     == local variables ==
       logical dosmooth
       logical doscaling
       _RL xx_gen  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RS dummyRS(1)
       character*(80) fnamegenIn
       character*(80) fnamegenOut
       character*(80) fnamebase
@@ -414,8 +419,8 @@ c--   Now, read the control vector.
       write(fnamegenOut(1:80),'(2a,i10.10)')
      &       fnamebase(1:ilgen),'.effective.',optimcycle
 
-      call READ_REC_3D_RL(xx_genarr3d_weight(iarr),ctrlprec,nR,
-     &     wgenarr3d(1-Olx,1-Oly,1,1,1,iarr),1,1,mythid)
+      CALL READ_REC_3D_RL( xx_genarr3d_weight(iarr), ctrlprec, Nr,
+     &          wgenarr3d(1-Olx,1-Oly,1,1,1,iarr), 1, 1, myThid )
 
 #ifdef ALLOW_AUTODIFF
       call active_read_xyz( fnamegenIn, xx_gen, 1, doglobalread,
@@ -485,8 +490,8 @@ C  xx_uvel and xx_vvel are read in.
      &    xx_genarr3d_file(iarr)(1:7).NE.'xx_vvel')
      &    CALL EXCH_XYZ_RL( fld, mythid )
 
-      CALL WRITE_REC_3D_RL(fnamegenOut,ctrlprec,
-     &    nr, fld, 1, optimcycle, mythid)
+      CALL WRITE_REC_3D_RL( fnamegenOut, ctrlprec, Nr,
+     &                      fld, 1, optimcycle, myThid )
 
 #endif /* ALLOW_GENARR3D_CONTROL */
 
