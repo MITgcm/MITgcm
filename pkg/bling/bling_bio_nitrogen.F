@@ -1171,7 +1171,7 @@ C  respiration, assuming a 4/5 oxidant ratio of O2 to NO3. Oxygen consumption
 C  is allowed to continue at negative oxygen concentrations, representing
 C  sulphate reduction.
 
-           O2_btmflx(i,j) = -(O2toN * PONflux_l*drF(k)*hFacC(i,j,k,bi,bj)
+           O2_btmflx(i,j) = -( O2toN*PONflux_l*drF(k)*hFacC(i,j,k,bi,bj)
      &                  - N_den_benthic(i,j,k)* 1.25)
 
           ENDIF
