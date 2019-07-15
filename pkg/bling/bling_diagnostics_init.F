@@ -173,35 +173,35 @@ c biology
 
       diagName  = 'BLGSIUP '
       diagTitle = 'Silica uptake by bio'
-      diagUnits = 'mol Si/m3/s      '
+      diagUnits = 'mol Si/m3/s     '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'BLGSIREM'
       diagTitle = 'Silica remin of sinking org matter'
-      diagUnits = 'mol Si/m3/s      '
+      diagUnits = 'mol Si/m3/s     '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'BLGSIREC'
       diagTitle = 'Silica recycling'
-      diagUnits = 'mol Si/m3/s      '
+      diagUnits = 'mol Si/m3/s     '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'BLGSIDIS'
       diagTitle = 'Silica dissolution fraction'
-      diagUnits = 'mol Si/m3/s      '
+      diagUnits = 'mol Si/m3/s     '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'BLGSI2N  '
       diagTitle = 'Si to N stoichiometric ratio'
-      diagUnits = '-      '
+      diagUnits = '-               '
       diagCode  = 'SM P    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
