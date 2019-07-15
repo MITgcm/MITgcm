@@ -4,7 +4,7 @@
 o pkg/bling:
   - add missing components of SIBLING
   - add Manizza et al 2005 light attenuation. Enable with PHYTO_SELF_SHADING
-  -Replace hard coding of max mixing depth with runtime parameter MLmix_max
+  - Replace hard coding of max mixing depth with runtime parameter MLmix_max
 o pkg/ctrl:
   - fix reccord number setting in S/R CTRL_GET_GEN_REC ("startrec" substracted
     for no reason).
