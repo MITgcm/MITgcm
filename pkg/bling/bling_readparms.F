@@ -364,8 +364,8 @@ C     Default values
       gamma_Si_0           = 0.05 / secperday
       kappa_remin_Si       = 0.075
       wsink_Si             = 100. / secperday
-      SitoN_uptake_min     = 4 
-      SitoN_uptake_max     = 1 
+      SitoN_uptake_min     = 4
+      SitoN_uptake_max     = 1
       SitoN_uptake_scale   = 0.6
       SitoN_uptake_exp     = 3.887
       q_SitoN_diss         = 1.0 _d 0

@@ -726,7 +726,7 @@ c  limitation by other factors: increasing Si limitation decreases Si
 c  uptake, but growth limitation by other factors under high Si conditions
 c  results in increase Si:P of uptake.
 
-          SitoN_uptake(i,j,k) = min(SitoN_uptake_max, 
+          SitoN_uptake(i,j,k) = min(SitoN_uptake_max,
      &                   Si_lim(i,j,k) * max(SitoN_uptake_min,
      &                   (1. / epsln + SitoN_uptake_scale + min(
      &                   PO4_lim(i,j,k), Fe_lim(i,j,k) ) * (1. -
@@ -952,8 +952,8 @@ c  long-lived dissolved organic matter.
      &                        - Fe_spm(i,j,k) - Fe_dvm(i,j,k)
 
 #ifdef USE_SIBLING
-          frac_diss_Si(i,j,k) = exp(-SitoN_uptake(i,j,k) / 
-     &                        (q_SitoN_diss * 
+          frac_diss_Si(i,j,k) = exp(-SitoN_uptake(i,j,k) /
+     &                        (q_SitoN_diss *
      &                        exp(kappa_remin_Si * theta(i,j,k,bi,bj))))
 
           Si_recycle(i,j,k) = Si_uptake(i,j,k) * frac_diss_Si(i,j,k)
