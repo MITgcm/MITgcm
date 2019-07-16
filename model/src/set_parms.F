@@ -247,7 +247,7 @@ C     set default according to EOS type (as it was until chkpt65t)
         ENDIF
         IF ( ( eosType .EQ. 'LINEAR' .OR.  eosType .EQ. 'POLY3 ' )
      &      .AND. selectP_inEOS_Zc.NE.0  ) THEN
-          WRITE(msgBuf,'(A,I9,A)') 'SET_PARAMS: selectP_inEOS_Zc=',
+          WRITE(msgBuf,'(A,I9,2A)') 'SET_PARAMS: selectP_inEOS_Zc=',
      &     selectP_inEOS_Zc, ' : invalid with eosType=', eosType
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R SET_PARAMS'
