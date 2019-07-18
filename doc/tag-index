@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - fix format in printing 1 error message from S/R SET_PARMS
 o pkg/bling:
   - add missing components of SIBLING
   - add Manizza et al 2005 light attenuation. Enable with PHYTO_SELF_SHADING
