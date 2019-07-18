@@ -125,10 +125,10 @@ C ==========================================================
      &                     gamma_Si_0,
      &                     kappa_remin_Si,
      &                     wsink_Si,
-     &                     SitoP_uptake_min,
-     &                     SitoP_uptake_max,
-     &                     SitoP_uptake_scale,
-     &                     SitoP_uptake_exp,
+     &                     SitoN_uptake_min,
+     &                     SitoN_uptake_max,
+     &                     SitoN_uptake_scale,
+     &                     SitoN_uptake_exp,
      &                     q_SitoN_diss,
 #endif
 #else
@@ -263,10 +263,10 @@ C   FetoN_min        :: Iron to Nitrogen uptake ratio minimum
 C   FetoC_sed        :: Iron released per organic carbon delivery to sediments
 C   FetoP_max        :: Iron to Phosphorus uptake ratio maximum
 C   Fe_lim_min       :: Minimum iron limitation
-C   SitoP_uptake_min :: Si to PO4 uptake ratio limiter
-C   SitoP_uptake_max :: Si to PO4 uptake ratio limiter
-C   SitoP_uptake_scale:: Scale factor for Si to PO4 uptake ratio
-C   SitoP_uptake_exp :: Exponent for Si to PO4 uptake ratio
+C   SitoN_uptake_max :: Silica to Nitrogen uptake ratio maximum
+C   SitoN_uptake_min :: Silica to Nitrogen uptake ratio minimum
+C   SitoN_uptake_scale:: Scale factor for Silica to Nitrogen uptake ratio
+C   SitoN_uptake_exp :: Exponent for Silica to Nitrogen uptake ratio
 C   remin_min        :: Minimum remineralization under anoxia
 C   oxic_min         :: Anaerobic respiration threshold
 C   ligand           :: Iron ligand concentration
@@ -364,10 +364,10 @@ C     Default values
       gamma_Si_0           = 0.05 / secperday
       kappa_remin_Si       = 0.075
       wsink_Si             = 100. / secperday
-      SitoP_uptake_min     = 4 * NtoP
-      SitoP_uptake_max     = 1 * NtoP
-      SitoP_uptake_scale   = 0.6
-      SitoP_uptake_exp     = 3.887
+      SitoN_uptake_min     = 4
+      SitoN_uptake_max     = 1
+      SitoN_uptake_scale   = 0.6
+      SitoN_uptake_exp     = 3.887
       q_SitoN_diss         = 1.0 _d 0
 #endif
 #else

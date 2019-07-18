@@ -83,6 +83,18 @@ C     === Local variables ===
 #ifndef USE_QSW
       _RL sfac      (1-OLy:sNy+OLy)
 #endif
+CAV(
+#ifdef PHYTO_SELF_SHADING
+      _RL k0_rd, chi_rd, e_rd
+      _RL k0_bg, chi_bg, e_bg
+      _RL kChl_rd   (1-OLx:SNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL kChl_bg   (1-OLx:SNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL atten_rd
+      _RL atten_bg
+      _RL irr_rd    (1-OLx:SNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL irr_bg    (1-OLx:SNx+OLx,1-OLy:sNy+OLy,Nr)
+#endif
+CAV)
       INTEGER i,j,k
 CMM(
       _RL minusOne
@@ -212,6 +224,54 @@ C Penetrating SW radiation
 #else
 CMM)
 
+CAV(
+#ifdef PHYTO_SELF_SHADING
+
+c  Use bio-optical model of Manizza et al. (2005) to account for
+c  effect of self-shading on ligt available for phytoplankton
+c  growth. As written this DOES NOT feedback onto the absorption
+c  of shortwave radiation calculated in the physical model, which
+c  is instead calculated in the subroutine swfrac
+
+c  Specify co-efficients for bio-optical model {kChl = k0 +chi[chl]^e}
+c  in red and blue-green fractions (Morel 1988; Foujols et al. 2000)
+        k0_rd  = 0.225 _d 0
+        k0_bg  = 0.0232 _d 0
+        chi_rd = 0.037 _d 0
+        chi_bg = 0.074 _d 0
+        e_rd   = 0.629 _d 0
+        e_bg   = 0.674 _d 0
+
+         IF (k.eq.1) THEN
+c  Attenuation coefficient adjusted to chlorophyll in top layer
+          kChl_rd(i,j,1) = k0_rd + chi_rd*(chl(i,j,1,bi,bj)**e_rd)
+          kChl_bg(i,j,1) = k0_bg + chi_bg*(chl(i,j,1,bi,bj)**e_bg)
+c  Light attenuation in middle of top layer
+          atten_rd = kChl_rd(i,j,1)*drF(1)/2. _d 0*hFacC(i,j,1,bi,bj)
+          atten_bg = kChl_bg(i,j,1)*drF(1)/2. _d 0*hFacC(i,j,1,bi,bj)
+c  Irradiance in middle of top layer
+          irr_rd(i,j,1) = irr_surf(i,j) * exp(-atten_rd) / 2. _d 0
+          irr_bg(i,j,1) = irr_surf(i,j) * exp(-atten_bg) / 2. _d 0
+          irr_inst(i,j,1) = irr_rd(i,j,1) + irr_bg(i,j,1) / 2. _d 0
+         ELSE
+
+c  Attenuation coefficient adjusted to chlorophyll in kth layer
+          kChl_rd(i,j,k) = k0_rd + chi_rd*(chl(i,j,k,bi,bj)**e_rd)
+          kChl_bg(i,j,k) = k0_bg + chi_bg*(chl(i,j,k,bi,bj)**e_bg)
+c  Light attenuation from one more layer
+          atten_rd = kChl_rd(i,j,k)*drF(k)/2. _d 0*hFacC(i,j,k,bi,bj)
+     &       + kChl_rd(i,j,k-1)*drF(k-1)/2. _d 0*hFacC(i,j,k-1,bi,bj)
+          atten_bg = kChl_bg(i,j,k)*drF(k)/2. _d 0*hFacC(i,j,k,bi,bj)
+     &       + kChl_bg(i,j,k-1)*drF(k-1)/2. _d 0*hFacC(i,j,k-1,bi,bj)
+c  Irradiance in middle of layer k
+          irr_rd(i,j,k) = irr_rd(i,j,k-1)*exp(-atten_rd)
+          irr_bg(i,j,k) = irr_bg(i,j,k-1)*exp(-atten_bg)
+          irr_inst(i,j,k) = irr_rd(i,j,k) + irr_bg(i,j,k) / 2. _d 0
+         ENDIF
+
+#else
+CAV)
+
 C SW radiation attenuated exponentially
          IF (k.eq.1) THEN
 c  Light attenuation in middle of top layer
@@ -225,6 +285,10 @@ c  Attenuation from one more layer
      &           irr_inst(i,j,k-1)*exp(-atten)
          ENDIF
 
+CAV(
+#endif /* if BLING_USE_SHADING */
+CAV)
+
 CMM(
 #endif /* if USE_QSW_Z */
 CMM)
@@ -232,7 +296,7 @@ CMM)
 #ifdef ML_MEAN_LIGHT
 c  Mean irradiance in the mixed layer
          IF ((-rf(k+1) .le. mld(i,j)).and.
-     &               (-rf(k+1).lt.200. _d 0)) THEN
+     &               (-rf(k+1).lt.MLmix_max)) THEN
           SumMLIrr = SumMLIrr+drF(k)*irr_inst(i,j,k)
           tmp_ML = tmp_ML + drF(k)
           irr_mix(i,j) = SumMLIrr/tmp_ML
@@ -256,7 +320,7 @@ c  Mean irradiance in the mixed layer
 #ifdef ML_MEAN_LIGHT
 c  Inside mixed layer, effective light is set to mean mixed layer light
          IF ((-rf(k+1) .le. mld(i,j)).and.
-     &               (-rf(k+1).lt.100. _d 0)) THEN
+     &               (-rf(k+1).lt.MLmix_max)) THEN
            irr_eff(i,j,k) = irr_mix(i,j)
           ENDIF
 #endif
@@ -266,12 +330,6 @@ c  Inside mixed layer, effective light is set to mean mixed layer light
         ENDDO
        ENDDO
       ENDDO
-
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
-        CALL DIAGNOSTICS_FILL(irr_inst,'BLGIRRIS',0,Nr,2,bi,bj,myThid)
-      ENDIF
-#endif
 
       RETURN
       END
