@@ -294,14 +294,17 @@ C
 #ifdef USE_SIBLING
       _RL Si_lim(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL Si_uptake(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL Si_spm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL Si_recycle(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL Si_reminp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL SitoP_uptake(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL SitoN_uptake(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL Phy_diatom_local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL frac_diss_Si(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL Pc_m_diatom
       _RL mu_diatom(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL zremin_Si
+      _RL Siflux_u
+      _RL Siflux_l
       _RL si_adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
 #ifdef ADVECT_PHYTO
@@ -310,18 +313,18 @@ C
 CEOP
 
 c  Initialize output and diagnostics
-       DO j=jmin,jmax
-        DO i=imin,imax
+       DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
             mld(i,j)             = 0. _d 0
             NO3_btmflx(i,j)      = 0. _d 0
             PO4_btmflx(i,j)      = 0. _d 0
             O2_btmflx(i,j)       = 0. _d 0
             Fe_burial(i,j)       = 0. _d 0
-        ENDDO
+         ENDDO
        ENDDO
        DO k=1,Nr
-        DO j=jmin,jmax
-          DO i=imin,imax
+         DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
               G_DIC(i,j,k)          = 0. _d 0
               G_ALK(i,j,k)          = 0. _d 0
               G_O2(i,j,k)           = 0. _d 0
@@ -388,18 +391,19 @@ c  Initialize output and diagnostics
               dvm(i,j,k)            = 0. _d 0
 #endif
 #ifdef USE_SIBLING
-              G_SI(i,j,k)           = 0. _d 0
+              G_SI(i,j,k)             = 0. _d 0
               Si_lim(i,j,k)           = 0. _d 0
+              Si_spm(i,j,k)           = 0. _d 0
               Si_uptake(i,j,k)        = 0. _d 0
               Si_recycle(i,j,k)       = 0. _d 0
               Si_reminp(i,j,k)        = 0. _d 0
-              SitoP_uptake(i,j,k)     = 0. _d 0
+              SitoN_uptake(i,j,k)     = 0. _d 0
               Phy_diatom_local(i,j,k) = 0. _d 0
               frac_diss_Si(i,j,k)     = 0. _d 0
               mu_diatom(i,j,k)        = 0. _d 0
 #endif
-          ENDDO
-        ENDDO
+           ENDDO
+         ENDDO
        ENDDO
 
 c-----------------------------------------------------------
@@ -424,9 +428,9 @@ c  advection when low concentrations
 c-----------------------------------------------------------
 c  Phytoplankton size classes
 
-       DO k=1,Nr
-        DO j=jmin,jmax
-         DO i=imin,imax
+      DO k=1,Nr
+       DO j=jmin,jmax
+        DO i=imin,imax
 #ifdef ADVECT_PHYTO
           Phy_lg_local(i,j,k)   = PTR_PHY(i,j,k)*phyto_lg(i,j,k,bi,bj)
           Phy_sm_local(i,j,k)   = PTR_PHY(i,j,k)*phyto_sm(i,j,k,bi,bj)
@@ -436,9 +440,9 @@ c  Phytoplankton size classes
           Phy_sm_local(i,j,k)   = phyto_sm(i,j,k,bi,bj)
           Phy_diaz_local(i,j,k) = phyto_diaz(i,j,k,bi,bj)
 #endif
-         ENDDO
         ENDDO
        ENDDO
+      ENDDO
 
 c-----------------------------------------------------------
 c  Mixed layer depth calculation for light, phytoplankton and dvm.
@@ -449,7 +453,7 @@ c  (with BLING_ADJOINT_SAFE flag, USE_BLING_DVM is undefined)
 #if ( defined (ML_MEAN_LIGHT) || \
       defined (ML_MEAN_PHYTO) || \
       defined (USE_BLING_DVM) )
-       CALL BLING_MIXEDLAYER(
+      CALL BLING_MIXEDLAYER(
      U                         mld,
      I                         bi, bj, imin, imax, jmin, jmax,
      I                         myTime, myIter, myThid)
@@ -519,7 +523,7 @@ c  taken with its interpretation.
 c-----------------------------------------------------------
 c  light availability for biological production
 
-       CALL BLING_LIGHT(
+      CALL BLING_LIGHT(
      I                    mld,
      U                    irr_inst, irr_eff,
      I                    bi, bj, imin, imax, jmin, jmax,
@@ -670,11 +674,11 @@ c  Fe-limitation.
 
 c  for diagnostics: C:Chl ratio in g C / g Chl
 
-           IF ( theta_Fe(i,j,k) .EQ.0. ) THEN
+          IF ( theta_Fe(i,j,k) .EQ.0. ) THEN
              theta_Fe_inv(i,j,k) = 0.
-           ELSE
+          ELSE
              theta_Fe_inv(i,j,k) = 1./theta_Fe(i,j,k)
-           ENDIF
+          ENDIF
 
 c ---------------------------------------------------------------------
 c  Nutrient-limited efficiency of algal photosystems, irrk, is calculated
@@ -722,12 +726,12 @@ c  limitation by other factors: increasing Si limitation decreases Si
 c  uptake, but growth limitation by other factors under high Si conditions
 c  results in increase Si:P of uptake.
 
-          SitoP_uptake(i,j,k) = min(SitoP_uptake_max, 16.
-     &                   * Si_lim(i,j,k) * max(SitoP_uptake_min/16.,
-     &                   (1. / epsln + SitoP_uptake_scale + min(
+          SitoN_uptake(i,j,k) = min(SitoN_uptake_max,
+     &                   Si_lim(i,j,k) * max(SitoN_uptake_min,
+     &                   (1. / epsln + SitoN_uptake_scale + min(
      &                   PO4_lim(i,j,k), Fe_lim(i,j,k) ) * (1. -
      &                   exp(-irr_eff(i,j,k)/(epsln + irrk(i,j,k) )) ))
-     &                   **SitoP_uptake_exp))
+     &                   **SitoN_uptake_exp))
 #endif
 
 c  Nutrient uptake
@@ -745,7 +749,7 @@ c  Nutrient uptake
 
 #ifdef USE_SIBLING
           Si_uptake(i,j,k) = mu(i,j,k) * Phy_diatom_local(i,j,k)
-     &                       * SitoP_uptake(i,j,k)
+     &                       * SitoN_uptake(i,j,k)
 #endif
 
 c  Calcium carbonate production
@@ -790,11 +794,6 @@ c  biomass, which is required to calculate the uptake fluxes.
         DO i=imin,imax
 
          IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
-
-c  Silicate uptake: diatom biomass is first diagnosed based on the
-c  fraction of large phytoplankton and the degree of Si limitation,
-c  analogous to TOPAZ. Diatom biomass adjusts on the same timescale as
-c  total biomass.
 
           Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) +
      &                Phy_lg_local(i,j,k)*(mu(i,j,k) - lambda_0
@@ -843,18 +842,17 @@ CADJ STORE Phy_diaz_local  = comlev1, key = ikey_dynamics, kind=isbyte
 
 #ifdef ADVECT_PHYTO
 c  update tracer here
-         PTR_PHY(i,j,k) = Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k)
+          PTR_PHY(i,j,k) = Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k)
      &                     + Phy_diaz_local(i,j,k)
 c  update fractional abundance
-         phyto_lg(i,j,k,bi,bj) = Phy_lg_local(i,j,k)/PTR_PHY(i,j,k)
-         phyto_sm(i,j,k,bi,bj) = Phy_sm_local(i,j,k)/PTR_PHY(i,j,k)
-         phyto_diaz(i,j,k,bi,bj)  = Phy_diaz_local(i,j,k)/PTR_PHY(i,j,k)
+          phyto_lg(i,j,k,bi,bj) = Phy_lg_local(i,j,k)/PTR_PHY(i,j,k)
+          phyto_sm(i,j,k,bi,bj) = Phy_sm_local(i,j,k)/PTR_PHY(i,j,k)
+          phyto_diaz(i,j,k,bi,bj) = Phy_diaz_local(i,j,k)/PTR_PHY(i,j,k)
 #else
 c  update biomass
-         phyto_lg(i,j,k,bi,bj) = Phy_lg_local(i,j,k)
-         phyto_sm(i,j,k,bi,bj) = Phy_sm_local(i,j,k)
-         phyto_diaz(i,j,k,bi,bj) = Phy_diaz_local(i,j,k)
-
+          phyto_lg(i,j,k,bi,bj) = Phy_lg_local(i,j,k)
+          phyto_sm(i,j,k,bi,bj) = Phy_sm_local(i,j,k)
+          phyto_diaz(i,j,k,bi,bj) = Phy_diaz_local(i,j,k)
 #endif
 
 c  use the diagnostic biomass to calculate the chl concentration
@@ -952,6 +950,16 @@ c  long-lived dissolved organic matter.
           Fe_recycle(i,j,k) = Fe_uptake(i,j,k)
      &                        - Fe_spm(i,j,k) - Fe_dvm(i,j,k)
 
+#ifdef USE_SIBLING
+          frac_diss_Si(i,j,k) = exp(-SitoN_uptake(i,j,k) /
+     &                        (q_SitoN_diss *
+     &                        exp(kappa_remin_Si * theta(i,j,k,bi,bj))))
+
+          Si_recycle(i,j,k) = Si_uptake(i,j,k) * frac_diss_Si(i,j,k)
+
+          Si_spm(i,j,k) = Si_uptake(i,j,k) - Si_recycle(i,j,k)
+#endif
+
          ENDIF
 
         ENDDO
@@ -970,9 +978,9 @@ c  subgridscale sediment interception fraction.
 c  Since Ft=0 in the first layer,
 
 C$TAF LOOP = parallel
-       DO j=jmin,jmax
+      DO j=jmin,jmax
 C$TAF LOOP = parallel
-        DO i=imin,imax
+       DO i=imin,imax
 
 c  Initialize upper flux
 
@@ -980,6 +988,9 @@ c  Initialize upper flux
         POPflux_u            = 0. _d 0
         PFEflux_u            = 0. _d 0
         CaCO3flux_u          = 0. _d 0
+#ifdef USE_SIBLING
+        Siflux_u             = 0. _d 0
+#endif
 
         DO k=1,Nr
 
@@ -990,12 +1001,12 @@ c  Initialization here helps taf
 c  check if we are at a bottom cell
 
          bottomlayer = 1
-          IF (k.LT.Nr) THEN
+         IF (k.LT.Nr) THEN
            IF (hFacC(i,j,k+1,bi,bj).GT.0) THEN
 c  not a bottom cell
             bottomlayer = 0
            ENDIF
-          ENDIF
+         ENDIF
 
          IF ( hFacC(i,j,k,bi,bj).gt.0. _d 0 ) THEN
 
@@ -1025,6 +1036,10 @@ C  ca_remin_depth constant value as the calcite saturation approaches 0.
           zremin_caco3 = 1. _d 0/ca_remin_depth*(1. _d 0 - min(1. _d 0,
      &               omegaC(i,j,k,bi,bj) + epsln ))
 
+#ifdef USE_SIBLING
+          zremin_Si = gamma_Si_0 / wsink_Si
+#endif
+
 C  POM flux leaving the cell
 
           PONflux_l = (PONflux_u+N_spm(i,j,k)*drF(k)
@@ -1040,6 +1055,12 @@ C  CaCO3 flux leaving the cell
           CaCO3flux_l = (caco3flux_u+CaCO3_uptake(i,j,k)*drF(k)
      &           *hFacC(i,j,k,bi,bj))/(1+zremin_caco3*drF(k)
      &           *hFacC(i,j,k,bi,bj))
+
+#ifdef USE_SIBLING
+          Siflux_l = (Siflux_u+Si_spm(i,j,k)*drF(k)
+     &           *hFacC(i,j,k,bi,bj))/(1+zremin_Si*drF(k)
+     &           *hFacC(i,j,k,bi,bj))
+#endif
 
 C  Start with cells that are not the deepest cells
 
@@ -1059,6 +1080,11 @@ C  (Since not deepest cell: hFacC=1)
            CaCO3_diss(i,j,k) = (CaCO3flux_u + CaCO3_uptake(i,j,k)
      &                    *drF(k) - CaCO3flux_l)*recip_drF(k)
 
+#ifdef USE_SIBLING
+           Si_reminp(i,j,k) = (Siflux_u + Si_spm(i,j,k)*drF(k)
+     &                     - Siflux_l)*recip_drF(k)
+#endif
+
            Fe_sed(i,j,k) = 0. _d 0
 
 C  Now do bottom layer
@@ -1077,6 +1103,11 @@ C  i.e. do not subtract off lower boundary fluxes when calculating remin
 
            CaCO3_diss(i,j,k) = CaCO3flux_u*recip_drF(k)
      &                  *recip_hFacC(i,j,k,bi,bj) + CaCO3_uptake(i,j,k)
+
+#ifdef USE_SIBLING
+           Si_reminp(i,j,k) = Siflux_u*recip_drF(k)
+     &                  *recip_hFacC(i,j,k,bi,bj) + Si_spm(i,j,k)
+#endif
 
 C  Efflux Fed out of sediments
 C  The phosphate flux hitting the bottom boundary
@@ -1102,14 +1133,14 @@ C  Convert from mol N m-2 s-1 to umol C cm-2 d-1 and take the log
 C  Metamodel gives units of umol C cm-2 d-1, convert to mol N m-2 s-1 and
 C  multiply by no3_2_n to give NO3 consumption rate
 
-             N_den_benthic(i,j,k) = min (POC_sed * NO3toN / CtoN,
+            N_den_benthic(i,j,k) = min (POC_sed * NO3toN / CtoN,
      &         (10 _d 0)**(-0.9543 _d 0 + 0.7662 _d 0 *
      &         log_btm_flx - 0.235 _d 0 * log_btm_flx * log_btm_flx)
      &         / (CtoN * 86400. _d 0 * 100.0 _d 0) * NO3toN *
      &         PTR_NO3(i,j,k) / (k_no3 + PTR_NO3(i,j,k)) ) *
      &         recip_drF(k)
 
-          ENDIF
+           ENDIF
 #endif
 
 C  ---------------------------------------------------------------------
@@ -1130,17 +1161,17 @@ C  Denitrification, sensu Paulmier, Biogeosciences 2009). Therefore, no NO3 is
 C  regenerated from organic matter respired by benthic denitrification
 C  (necessitating the second term in b_no3).
 
-          NO3_btmflx(i,j) = PONflux_l*drF(k)*hFacC(i,j,k,bi,bj)
+           NO3_btmflx(i,j) = PONflux_l*drF(k)*hFacC(i,j,k,bi,bj)
      &                   - N_den_benthic(i,j,k) / NO3toN
 
-          PO4_btmflx(i,j) = POPflux_l*drF(k)*hFacC(i,j,k,bi,bj)
+           PO4_btmflx(i,j) = POPflux_l*drF(k)*hFacC(i,j,k,bi,bj)
 
 C  Oxygen flux into sediments is that required to support non-denitrification
 C  respiration, assuming a 4/5 oxidant ratio of O2 to NO3. Oxygen consumption
 C  is allowed to continue at negative oxygen concentrations, representing
 C  sulphate reduction.
 
-          O2_btmflx(i,j) = -(O2toN * PONflux_l*drF(k)*hFacC(i,j,k,bi,bj)
+           O2_btmflx(i,j) = -( O2toN*PONflux_l*drF(k)*hFacC(i,j,k,bi,bj)
      &                  - N_den_benthic(i,j,k)* 1.25)
 
           ENDIF
@@ -1173,7 +1204,7 @@ c  if oxygen is less than 0.
            FreeFe = 0. _d 0
           ENDIF
 
-           Fe_ads_inorg(i,j,k) =
+          Fe_ads_inorg(i,j,k) =
      &       kFe_inorg*(max(1. _d -8,FreeFe))**(1.5)
 
 c  Calculate the Fe adsorption using this PONflux_l:
@@ -1181,13 +1212,13 @@ c  The absolute first order rate constant is calculated from the
 c  concentration of organic particles, after Parekh et al. (2005).
 c  (Galbraith's code limits the value to 1/2dt for numerical stability).
 
-           IF ( PONflux_l .GT. 0. _d 0 ) THEN
+          IF ( PONflux_l .GT. 0. _d 0 ) THEN
             Fe_ads_org(i,j,k) =
      &           kFE_org*(PONflux_l/(epsln + wsink)
      &             * MasstoN)**(0.58)*FreeFe
-           ENDIF
+          ENDIF
 
-           PFEflux_l = (PFEflux_u+(Fe_spm(i,j,k)+Fe_ads_inorg(i,j,k)
+          PFEflux_l = (PFEflux_u+(Fe_spm(i,j,k)+Fe_ads_inorg(i,j,k)
      &            +Fe_ads_org(i,j,k))*drF(k)
      &            *hFacC(i,j,k,bi,bj))/(1+zremin*drF(k)
      &            *hFacC(i,j,k,bi,bj))
@@ -1196,13 +1227,13 @@ C  Added the burial flux of sinking particulate iron here as a
 C  diagnostic, needed to calculate mass balance of iron.
 C  this is calculated last for the deepest cell
 
-           Fe_burial(i,j) = PFEflux_l
+          Fe_burial(i,j) = PFEflux_l
 
-           IF ( PTR_O2(i,j,k) .LT. oxic_min ) THEN
+          IF ( PTR_O2(i,j,k) .LT. oxic_min ) THEN
             PFEflux_l = 0. _d 0
-           ENDIF
+          ENDIF
 
-           Fe_reminp(i,j,k) = (PFEflux_u+(Fe_spm(i,j,k)
+          Fe_reminp(i,j,k) = (PFEflux_u+(Fe_spm(i,j,k)
      &            +Fe_ads_inorg(i,j,k)
      &            +Fe_ads_org(i,j,k))*drF(k)
      &            *hFacC(i,j,k,bi,bj)-PFEflux_l)*recip_drF(k)
@@ -1217,6 +1248,9 @@ C  Prepare the tracers for the next layer down
           POPflux_u   = POPflux_l
           PFEflux_u   = PFEflux_l
           CaCO3flux_u = CaCO3flux_l
+#ifdef USE_SIBLING
+          Siflux_u    = Siflux_l
+#endif
 
          ENDIF
 
@@ -1265,7 +1299,7 @@ c  Initialize
 
 c  Calculate the depth of migration based on linear regression.
 
-        depth_l=-rF(k+1)
+          depth_l=-rF(k+1)
 
 c  Average temperature and oxygen over upper 35 m, and 140-515m.
 c  Also convert O2 to mmol m-3.
@@ -1331,7 +1365,7 @@ c  water, where O2 is available.
 
          ENDIF
 
-        enddo
+        ENDDO
 
 c  The stationary depth is constrained between 150 and 700, above any
 c  anoxic waters found, and above the bottom.
@@ -1372,14 +1406,14 @@ c  From Numerical Recipes (F90, Ch. 6, p. 216)
 c  Returns the complementary error function erfc(x)
 c  with fractional error everywhere less than 1.2e-7
 
-           x_erfcc = (-rf(k) - z_dvm) /
+          x_erfcc = (-rf(k) - z_dvm) /
      &        ( (epsln + 2. _d 0 * sigma_dvm**2. _d 0)**0.5)
 
-           z_erfcc = abs(x_erfcc)
+          z_erfcc = abs(x_erfcc)
 
-           t_erfcc = 1. _d 0/(1. _d 0+0.5 _d 0*z_erfcc)
+          t_erfcc = 1. _d 0/(1. _d 0+0.5 _d 0*z_erfcc)
 
-           erfcc = t_erfcc*exp(-z_erfcc*z_erfcc-1.26551223+t_erfcc*
+          erfcc = t_erfcc*exp(-z_erfcc*z_erfcc-1.26551223+t_erfcc*
      &       (1.00002368+t_erfcc*(0.37409196+t_erfcc*
      &       (.09678418+t_erfcc*(-.18628806+t_erfcc*(.27886807+
      &       t_erfcc*(-1.13520398+t_erfcc*(1.48851587+
@@ -1405,7 +1439,7 @@ c!!          if (k .eq. grid_kmt(i,j)) exit
 
          ENDIF
 
-        enddo
+        ENDDO
 
 c  Sum up the total organic flux to be transported by DVM
 
@@ -1537,19 +1571,24 @@ c  denitrification NO3 utilization rate from the overall oxygen consumption.
           G_O2(i,j,k) = O2_prod(i,j,k)
 c  If oxic
           IF (PTR_O2(i,j,k) .gt. oxic_min) THEN
-          G_O2(i,j,k) = G_O2(i,j,k)
+           G_O2(i,j,k) = G_O2(i,j,k)
      &                  -O2toN * ((1. _d 0 - phi_DOM_2d(i,j,bi,bj))
      &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))
      &                  + DON_remin(i,j,k) +  N_recycle(i,j,k))
 c  If anoxic but NO3 concentration is very low
 c  (generate negative O2; proxy for HS-).
           ELSEIF (PTR_NO3(i,j,k) .lt. oxic_min) THEN
-          G_O2(i,j,k) = G_O2(i,j,k)
+           G_O2(i,j,k) = G_O2(i,j,k)
      &                  -O2toN * ((1. _d 0 - phi_DOM_2d(i,j,bi,bj))
      &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))
      &                  + DON_remin(i,j,k) +  N_recycle(i,j,k))
      &                  + N_den_benthic(i,j,k) * 1.25 _d 0
           ENDIF
+
+#ifdef USE_SIBLING
+          G_Si(i,j,k) = -Si_uptake(i,j,k) + Si_recycle(i,j,k)
+     &                  + Si_reminp(i,j,k)
+#endif
 
 c  Carbon flux diagnostic
 
@@ -1572,15 +1611,15 @@ c  Carbon flux diagnostic
 
 c  for diagnostics: convert to mol C/m3
 
-         Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) * CtoN
-         Phy_sm_local(i,j,k) = Phy_sm_local(i,j,k) * CtoN
-         Phy_diaz_local(i,j,k) = Phy_diaz_local(i,j,k) * CtoN
+          Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) * CtoN
+          Phy_sm_local(i,j,k) = Phy_sm_local(i,j,k) * CtoN
+          Phy_diaz_local(i,j,k) = Phy_diaz_local(i,j,k) * CtoN
 
 c  for constraints determine POC, assuming that phytoplankton carbon
 c  is 30% of POC
 
-         poc(i,j,k,bi,bj) = (Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k) +
-     &                       Phy_diaz_local(i,j,k) ) * 3.33333 _d 0
+          poc(i,j,k,bi,bj) = (Phy_lg_local(i,j,k) + Phy_sm_local(i,j,k)
+     &                     + Phy_diaz_local(i,j,k) ) * 3.33333 _d 0
 
          ENDIF
 
@@ -1612,6 +1651,7 @@ c 3d local variables
      &       myThid)
         CALL DIAGNOSTICS_FILL(irrk,    'BLGIRRK ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(irr_eff, 'BLGIEFF ',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(irr_inst,'BLGIRRIS',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(theta_Fe,'BLGCHL2C',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(theta_Fe_inv,'BLGC2CHL',0,Nr,2,bi,bj,
      &       myThid)
@@ -1619,7 +1659,15 @@ c 3d local variables
         CALL DIAGNOSTICS_FILL(NO3_lim, 'BLGNLIM ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(PO4_lim, 'BLGPLIM ',0,Nr,2,bi,bj,myThid)
 #ifdef USE_SIBLING
+        CALL DIAGNOSTICS_FILL(G_SI    ,'BLGBIOSI',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(Si_lim,  'BLGSILIM',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(Si_uptake,'BLGSIUP ',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(Si_recycle,'BLGSIREC',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(Si_reminp,'BLGSIREM',0,Nr,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(SitoN_uptake,'BLGSI2N ',0,Nr,2,bi,bj,
+     &       myThid)
+        CALL DIAGNOSTICS_FILL(frac_diss_Si,'BLGSIDIS',0,Nr,2,bi,bj,
+     &       myThid)
 #endif
         CALL DIAGNOSTICS_FILL(light_lim,'BLGLLIM ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(POC_flux,'BLGPOCF ',0,Nr,2,bi,bj,myThid)
@@ -1684,5 +1732,4 @@ c 2d local variables
 #endif /* ALLOW_BLING */
 
       RETURN
-
       END

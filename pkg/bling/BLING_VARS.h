@@ -285,10 +285,10 @@ C ==========================================================
      &                     gamma_Si_0,
      &                     kappa_remin_Si,
      &                     wsink_Si,
-     &                     SitoP_uptake_min,
-     &                     SitoP_uptake_max,
-     &                     SitoP_uptake_scale,
-     &                     SitoP_uptake_exp,
+     &                     SitoN_uptake_min,
+     &                     SitoN_uptake_max,
+     &                     SitoN_uptake_scale,
+     &                     SitoN_uptake_exp,
      &                     q_SitoN_diss,
 #endif
 #else
@@ -385,10 +385,10 @@ C ==========================================================
       _RL gamma_Si_0
       _RL kappa_remin_Si
       _RL wsink_Si
-      _RL SitoP_uptake_min
-      _RL SitoP_uptake_max
-      _RL SitoP_uptake_scale
-      _RL SitoP_uptake_exp
+      _RL SitoN_uptake_min
+      _RL SitoN_uptake_max
+      _RL SitoN_uptake_scale
+      _RL SitoN_uptake_exp
       _RL q_SitoN_diss
 #endif
 #else
