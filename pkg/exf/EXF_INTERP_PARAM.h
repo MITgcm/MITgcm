@@ -31,6 +31,17 @@ C-  Internal parameters, for 2 components vector field:
 C    uvInterp_stress     :: interpolate wind-stress u & v components together
 C    uvInterp_wind       :: interpolate wind        u & v components together
 C    uvInterp_climstr    :: interpolate clim stress u & v components together
+C-  used to set default input-grid:
+C    inp_lon0            :: default {inputField}_lon0
+C    inp_dLon            :: default {inputField}_lon_inc
+C    inp_lat0            :: default {inputField}_lat0
+C    inp_dLat            :: default {inputField}_lat_inc
+C    inp_gNx             :: default {inputField}_nlon
+C    inp_gNy             :: default {inputField}_nlat
+C----
+      _RL inp_lon0, inp_dLon
+      _RL inp_lat0, inp_dLat(MAX_LAT_INC)
+      INTEGER inp_gNx, inp_gNy
       _RL ustress_lon0, ustress_lon_inc
       _RL ustress_lat0, ustress_lat_inc(MAX_LAT_INC)
       INTEGER ustress_nlon, ustress_nlat, ustress_interpMethod
@@ -110,6 +121,7 @@ C    uvInterp_climstr    :: interpolate clim stress u & v components together
      & uvInterp_stress, uvInterp_wind, uvInterp_climstr
 
       COMMON /EXF_INTERPOLATION_RL/
+     & inp_lon0, inp_dLon, inp_lat0, inp_dLat,
      & ustress_lon0, ustress_lon_inc,
      & ustress_lat0, ustress_lat_inc,
      & vstress_lon0, vstress_lon_inc,
@@ -158,6 +170,7 @@ C    uvInterp_climstr    :: interpolate clim stress u & v components together
      & areamask_lat0, areamask_lat_inc
 
       COMMON /EXF_INTERPOLATION_I/
+     & inp_gNx, inp_gNy,
      & ustress_nlon, ustress_nlat, ustress_interpMethod,
      & vstress_nlon, vstress_nlat, vstress_interpMethod,
      & hflux_nlon, hflux_nlat, hflux_interpMethod,
