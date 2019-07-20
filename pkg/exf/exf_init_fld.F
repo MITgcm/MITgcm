@@ -84,7 +84,7 @@ C     msgBuf     :: Informational/error message buffer
 CEOP
 
       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), mybxhi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j = 1-OLy, sNy+OLy
             DO i = 1-OLx, sNx+OLx
               fldArr(i,j,bi,bj)  = fldConst
@@ -133,7 +133,7 @@ C-    apply mask
 
 C     Loop over tiles and scale fldArr
          DO bj = myByLo(myThid),myByHi(myThid)
-          DO bi = myBxLo(myThid),mybxhi(myThid)
+          DO bi = myBxLo(myThid),myBxHi(myThid)
            DO j = 1,sNy
             DO i = 1,sNx
               fldArr(i,j,bi,bj) = fld_inScale*fldArr(i,j,bi,bj)

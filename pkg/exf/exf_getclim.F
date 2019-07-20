@@ -82,7 +82,7 @@ c     Get values of climatological sst fields.
      I     myTime, myIter, myThid )
 
       DO bj = myByLo(myThid),myByHi(myThid)
-       DO bi = myBxLo(myThid),mybxhi(myThid)
+       DO bi = myBxLo(myThid),myBxHi(myThid)
         DO j = 1,sNy
          DO i = 1,sNx
             IF (climsst(i,j,bi,bj) .LT. climtempfreeze) THEN
