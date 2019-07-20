@@ -43,6 +43,8 @@ c     == global variables ==
 #endif
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
+#include "EXF_INTERP_SIZE.h"
+#include "EXF_INTERP_PARAM.h"
 #include "EXF_FIELDS.h"
 #if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
 # include "CTRL_SIZE.h"

@@ -32,8 +32,10 @@ C     == global variables ==
 #include "GRID.h"
 
 #include "EXF_PARAM.h"
-#include "EXF_FIELDS.h"
 #include "EXF_CONSTANTS.h"
+#include "EXF_INTERP_SIZE.h"
+#include "EXF_INTERP_PARAM.h"
+#include "EXF_FIELDS.h"
 
 #ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"

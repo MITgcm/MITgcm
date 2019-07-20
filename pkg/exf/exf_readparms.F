@@ -56,6 +56,8 @@ C     == global variables ==
 c#include "cal.h"
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
+#include "EXF_INTERP_SIZE.h"
+#include "EXF_INTERP_PARAM.h"
 
 C     == routine arguments ==
       INTEGER myThid

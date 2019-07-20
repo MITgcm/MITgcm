@@ -39,9 +39,10 @@ C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#include "EXF_INTERP_SIZE.h"
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
+#include "EXF_INTERP_SIZE.h"
+#include "EXF_INTERP_PARAM.h"
 
 C !INPUT/OUTPUT PARAMETERS:
 C     fldName        :: field short name (to print mesg)
