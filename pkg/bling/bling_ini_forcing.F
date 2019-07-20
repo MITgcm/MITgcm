@@ -19,7 +19,7 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_EXF
-# include "EXF_PARAM.h"
+# include "EXF_INTERP_SIZE.h"
 #endif
 #include "BLING_VARS.h"
 #include "BLING_LOAD.h"
@@ -108,7 +108,7 @@ c set reasonable values to those that need at least something
 # endif
      I     myThid )
       ENDIF
-#endif
+#endif /* ALLOW_EXF */
 
 #endif /* ALLOW_BLING */
       RETURN
