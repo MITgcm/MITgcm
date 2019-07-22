@@ -1,6 +1,139 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67k (2019/07/19)
+o model/src:
+  - fix format in printing 1 error message from S/R SET_PARMS
+o pkg/bling:
+  - add missing components of SIBLING
+  - add Manizza et al 2005 light attenuation. Enable with PHYTO_SELF_SHADING
+  - Replace hard coding of max mixing depth with runtime parameter MLmix_max
+o pkg/ctrl:
+  - fix reccord number setting in S/R CTRL_GET_GEN_REC ("startrec" substracted
+    for no reason).
+o doc:
+  - add a sub-section about optim_m1qn3
+o pkg/ctrl:
+  - fix in rescaling option for control vector ("doscaling/noscaling" option,
+    S/R CTRL_MAP_INI_GENARR & CTRL_MAP_INI_GENTIM2D); proper counting of
+    non-zero control vector when weight-mask is different from ocean-mask.
+    Expect differences only when (a) weight-mask is different from ocean mask
+    and (b) xx_genarr2d_preproc='noscaling' (doscaling=.false.).
+o pkg/exf:
+  - new run-time parameter "diags_opOceWeighted" (default=T) to weight some exf
+    surface diagnostics (all net and upward fluxes) with open-ocean fraction.
+    Option is turned off when no sea-ice pkg (seaice or thsice) is used.
+  - new S/R EXF_WEIGHT_SFX_DIAGS to do some exf diags as open-ocean weighted
+    according to input argument ice fraction. Called from the right location
+    in time-stepping to get diagnostics that are consistent with wind-stress
+    and buoyancy fluxes that ocean receive.
+
+checkpoint67j (2019/06/18)
+o pkg/bling:
+  - Cleanly seperate NBLING (default), BLING_V1 (enabled with USE_BLING_V1),
+    and also add Silica option (enabled with USE_SIBLING);
+  - New algorithm for calculating mixed layer depth (old enabled with
+    BLING_USE_THRESHOLD_MLD);
+  - Options for updated carbon chemistry (from J. Lauderdale) enabled with
+    CARBONCHEM_SOLVESAPHE or CARBONCHEM_TOTALPHSCALE ;
+  - And other minor spring cleaning changes;
+  - update calls in pkg/gchem for BLING(V1) or NBLING (with Silica).
+o pkg/salt_plume:
+  - fix calculation index range in salt_plume_apply.F (#ifdef SALT_PLUME_VOLUME)
+o pkg/ecco:
+  - fix/simplify local file names in ecco_cost_init_barfiles.F (within
+    #ifdef ALLOW_GENCOST_CONTRIBUTION ).
+o pkg/mom_vecinv:
+  - add 2 Coriolis schemes which satisfy: d/dt U = f V ; d/dt V = -f U
+    (with U,V = vertically integrated flow).
+  - add new run-time coriolis-scheme selector "selectCoriScheme" to replace
+    "useJamartWetPoints" and "useEnergyConservingCoriolis"; but keep these 2
+    in namelist (backward compatible) to set "selectCoriScheme" accordingly.
+o pkg/ctrl:
+  - Fix bug in ctrl_map_ini_genarr.F regarding missing initialization of
+    igen_uvel & igen_vvel (just like all the other variables).
+o pkg/dic:
+  - Implement SolveSAPHE (Munhoven, 2013), a robust algorithm to calculate
+    oceanic pH/pCO2 ; compiled when CARBONCHEM_SOLVESAPHE is defined (in
+    DIC_OPTIONS.h) and used when (in data.dic) selectPHsolver > 0 ;
+    Add several options for selecting dissociation coefficients, available
+    when CARBONCHEM_SOLVESAPHE is defined.
+  - Change experiment "so_box_biogeo" to compile with CARBONCHEM_SOLVESAPHE
+    defined and add secondary test "saphe" (dir: input.saphe) to this experiment
+    to test GENERAL pH solver (selectPHsolver=1).
+o pkg/seaice:
+  - add alternative version of seaice thermodynamics two routines that provide
+    accurate adjoint. Switched by defining CPP option: ALLOW_SEAICE_GROWTH_ADX
+o pkg/mdsio:
+  - in meta file, write number of records with longer format (10 digits vs 5
+    previously) to accommodate large number of floats.
+
+checkpoint67i (2019/05/08)
+o autofdiff:
+  - fix to avoid TAF recomputations in ggl90 & salt_plume pkgs
+    and in model/src PCELL_MIX_CODE.
+o pkg/mom_common & pkg/gmredi:
+  - add quasi-geostrophic variant of Leith dynamic visocity
+  - use the quasi-geostrophic Leith dynamic visocity as GM diffusivity
+  - new verification experiment to test QG-Leith (variant of MLAdjust)
+  - updated documentation about new option
+o pkg/seaice:
+  - add Hlimit to seaice namelist in data.seaice
+  - use verification seaice_itd.thermo to test this feature with default
+    values (experiment does not change)
+  - clean up related output in seaice_init_fixed.F a little
+o verification/testreport:
+  - for file run_ADM_DIVA, fix sed search syntax so that it works with BSD-sed
+o model/src:
+  - fix small bug (wrong balanceEmPmR report) in config_summary.F, spotted by
+    Christopher Wolfe ; add report of balancePrintMean to summary.
+o verification/verification_parser.py
+  - ensure Travis test suite fails when a build or a run fails.
+
+checkpoint67h (2019/03/21)
+o tools/genmake2:
+  - fix option "-nocat4ad" for latest version of TAF: now needs to add TAF
+    option "-fixed" to process *.flowdir files with newer (after 4.1.1) version
+    of TAF (otherwise assumed now to be in free format).
+o model/src:
+  - remove argument tFld & sFld from S/R CALC_PHI_HYD and from 2 related S/R
+o tools/genmake2:
+  - allow to skip "check_fortran_compiler" part (as, e.g., in opt-file:
+     tools/build_options/linux_ia64_cray_archer).
+o verification/tutorial_barotropic_gyre:
+  - add 1rst tutorial documentation to new manual and update corresponding setup
+o pkg/atm_phys:
+  - add 3-D input file for stratospheric ozone
+  - add code from Matt Kasoar for SW absorption by stratospheric ozone,
+    based on following papers:
+    Lacis and Hansen (JAS, 1974) and Forster and Shine (JGR, 1997).
+  - turned on using 2 local run-time parameter: ozone_in_SW (downward)
+    and two_stream_SW (also in upward); default are off.
+  - clean up S/R "radiation_up": rename "net" to "flux_lw" (better name)
+    and remove un-used local (dyn-allocated) arrays.
+  - also avoid division by zero in Rel-Humid diagnostics (atm_phys_driver.F)
+o pkg/seaice:
+  - fix missing update of sIceLoad in the case usePW79thermodynamics=F.
+o pkg/dic:
+  - Adjust unit conversions for dissociation coefficients aks, aksi, and akf
+    (#define CARBONCHEM_TOTALPHSCALE).
+o tools/genmake2:
+  - improve Fortran Compiler check, section: running MPI executable ; also
+    refine the "conclusion" printed message.
+
+checkpoint67g (2019/01/03)
+o doc:
+  - add documentation for pkg/streamice
+o model/src:
+  - change ordering of pkg calls in initialisation: streamice / shelfice and
+    then seaice / salt_plume / thsice;
+  - fix thin ice-shelf issue with pkg/seaice ; implemented by updating (recently
+    added) seaice masks (requiring new ordering of calls).
+o pkg/shelfice:
+  - allow to include thin ice-shelf (i.e., such that hFacC(k=1) > 0 ) when
+    using pkg/thsice, by preventing seaice to form where there is an ice-shelf.
+  - prevent short-wave heating below an ice-shelf (previously still happening
+    below thin ice-shelf); also fix Qnet there (but only for diagnostics).
 o pkg/seaice:
   - move initialisation of masks and metric coefficients and KGEO from
     seaice_init_varia.F to seaice_init_fixed.F

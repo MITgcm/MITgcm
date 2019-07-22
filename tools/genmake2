@@ -165,11 +165,12 @@ Usage: "$0" [OPTIONS]
 
   which, depending upon your shell, may need to be single-quoted.
 
-  For more detailed genmake documentation, please see:
-
-    http://mitgcm.org/public/devel_HOWTO/
+  For more detailed genmake documentation, please see section "Building the model"
+    (under "Getting Started") at:  https://mitgcm.readthedocs.io/
 
 EOF
+#- full link directly to section 3.5:
+#https://mitgcm.readthedocs.io/en/latest/getting_started/getting_started.html#building-the-model
 
     exit 1
 }
@@ -600,7 +601,7 @@ Error: No options file was found in:  $ROOTDIR/tools/build_options/
     1) the command line (eg. "-optfile=path/to/OPTFILE"), or
     2) the MITGCM_OF environment variable.
 
-  If you need help, please contact the developers at <MITgcm-support@mitgcm.org>.
+  If you need help, please contact the <MITgcm-support@mitgcm.org> list.
 
 EOF
 	exit 1
@@ -646,10 +647,31 @@ EOF
     fi
     if test $FC_CHECK = '-1' -a -x genmake_tcomp ; then
 	if test "x$MPI" = 'xtrue' ; then
+	  which mpirun > /dev/null 2>&1
+	  RETVAL=$?
+	  if test "x${RETVAL}" = x0 ; then
 	    COMM="mpirun -np 1 ./genmake_tcomp"
+	  else
+	    which mpiexec > /dev/null 2>&1
+	    RETVAL=$?
+	    if test "x${RETVAL}" = x0 ; then
+	      COMM="mpiexec -np 1 ./genmake_tcomp"
+	    else
+	      FC_CHECK=4
+	      echo "" >> $LOGFILE
+	      echo " warning: MPI run command not found ==> skip run-test check" >> $LOGFILE
+	     #echo -n " fail to generate executable"
+	    fi
+	  fi
 	else
 	    COMM="./genmake_tcomp"
 	fi
+    elif test $FC_CHECK = '-1' ; then
+	FC_CHECK=2
+	echo 'WARNING: missing executable from FORTRAN compiler test' >> $LOGFILE
+	echo -n " fail to generate executable"
+    fi
+    if test $FC_CHECK = '-1' ; then
 	echo ' '$COMM >> $LOGFILE
 	$COMM >> $LOGFILE 2>&1
 	RETVAL=$?
@@ -657,17 +679,13 @@ EOF
 	   FC_CHECK=3
 	  #echo -n " fail to run"
 	else
-	   FC_CHECK=4
+	   FC_CHECK=5
 	   echo -n " pass"
 	fi
-    elif test $FC_CHECK = '-1' ; then
-	FC_CHECK=2
-	echo 'WARNING: missing executable from FORTRAN compiler test' >> $LOGFILE
-	echo -n " fail to generate executable"
     fi
     rm -f genmake_tcomp.* genmake_tcomp
-    echo " --> set FC_CHECK='$FC_CHECK'" >> $LOGFILE
-    echo "  (set FC_CHECK='$FC_CHECK')"
+    echo " --> set FC_CHECK= $FC_CHECK /5" >> $LOGFILE
+    echo "  (set FC_CHECK=${FC_CHECK}/5)"
 }
 
 #  Do a local copy of MPI headers files (in local dir ./mpi_headers/) after
@@ -1148,7 +1166,7 @@ EOF
 }
 
 check_lapack_libs()  {
-    if test "x$CHECK_FOR_LAPACK" = xf ; then return ; fi
+    HAVE_LAPACK=f
     echo >> $LOGFILE
     echo "running: check_lapack_libs()" >> $LOGFILE
     cat <<EOF > genmake_tla.F
@@ -1438,8 +1456,8 @@ GENMAKE :
 
 A program for GENerating MAKEfiles for the MITgcm project.
    For a quick list of options, use "genmake2 -h"
-or for more detail see the Developer's HOWTO manual at:
-   http://mitgcm.org/public/docs.html
+or for more detail see the documentation, section "Building the model"
+   (under "Getting Started") at:  https://mitgcm.readthedocs.io/
 
 EOF
 
@@ -1683,10 +1701,9 @@ fi
 if test -f ./.genmakerc ; then
     echo
     echo "WARNING: genmake2 has detected a copy of the old-style \"./.genmakerc\""
-    echo "  file.  This file format is no longer supported.  For directions on"
-    echo "  how to setup and use the new \"genmake2\" script, please see:"
-    echo "    http://mitgcm.org/public/devel_HOWTO/"
-    echo "  and send an email to MITgcm-support@mitgcm.org if you need help."
+    echo "  file.  This file format is no longer supported."
+    echo "  For directions on how to setup and use the new \"genmake2\" script,"
+    echo "  please see the User Manual at:  https://mitgcm.readthedocs.io/"
     echo "WARNING: ignore \"./.genmakerc\" and continue."
     echo
 fi
@@ -1790,6 +1807,7 @@ if test "x${AD_OPTFILE}" != xNONE ; then
 	exit 1
     fi
 fi
+if test $CAT_SRC_FOR_TAF = 0 ; then TAF_EXTRA="${TAF_EXTRA} -fixed" ; fi
 
 #====================================================================
 # Initialize INCLUDEDIRSMK from and optfile INCLUDEDIRS
@@ -1842,7 +1860,9 @@ if test "x$MAKE" = x ; then
 fi
 
 #- check for fortran compiler (for now, just for information, no consequence)
-check_fortran_compiler
+if test "x$FC_CHECK" = x -o "x$FC_CHECK" = xt ; then
+    check_fortran_compiler
+else FC_CHECK=-2 ; fi
 
 if test "x$CPP" = x ; then
     CPP="cpp -traditional -P"
@@ -2152,13 +2172,22 @@ else
     echo "no"
 fi
 
-printf "  Can we create LAPACK-enabled binaries...  "
-check_lapack_libs
-if test "x$HAVE_LAPACK" != x ; then
-    DEFINES="$DEFINES -DHAVE_LAPACK"
-    echo "yes"
+if test "x$CHECK_FOR_LAPACK" = xf ; then
+    echo   "    skip check for LAPACK Libs"
 else
-    echo "no"
+    printf "  Can we create LAPACK-enabled binaries...  "
+    check_lapack_libs
+    if test "x$HAVE_LAPACK" = xt ; then
+	echo "yes"
+    else
+	echo "no"
+    fi
+fi
+if test "x$HAVE_LAPACK" = xt ; then
+    DEFINES="$DEFINES -DHAVE_LAPACK"
+elif test "x$HAVE_LAPACK" = x ; then
+   #- do not report if unset and unchecked:
+    gm_state=`echo $gm_state | sed 's/HAVE_LAPACK//'`
 fi
 
 printf "  Can we call FLUSH intrinsic subroutine...  "
@@ -3721,7 +3750,7 @@ if test "x$DUMPSTATE" = xt ; then
 fi
 
 #  Conclude
-if test "x$FC_CHECK" = x4 ; then
+if test $FC_CHECK = 5 ; then
     echo "  original 'Makefile' generated successfully"
     echo "=> next steps:"
     ad=`echo $PACKAGES | grep -c autodiff`
@@ -3737,7 +3766,10 @@ if test "x$FC_CHECK" = x4 ; then
 	echo "  > make depend"
 	echo "  > make       (<-- to generate executable)"
     fi
-else
-	echo "Warning: FORTRAN compiler test failed (please see '$LOGFILE')"
-	echo "Warning: 'Makefile' might be unusable (check your optfile)"
+elif [ $FC_CHECK -ge 3 ] ; then
+    echo "  original 'Makefile' generated but was unable to"
+    echo "   run compiled test-program (please see '$LOGFILE')"
+elif [ $FC_CHECK -ge 0 ] ; then
+    echo "Warning: FORTRAN compiler test failed (please see '$LOGFILE')"
+    echo "Warning: 'Makefile' might be unusable (check your optfile)"
 fi

@@ -74,6 +74,12 @@ C  o Rotation of wind/stress controls adjustments
 C    from Eastward/Northward to model grid directions
 #undef ALLOW_ROTATE_UV_CONTROLS
 
+C  o Originally the first two time-reccords of control
+C    variable tau u and tau v were skipped.
+C    The CTRL_SKIP_FIRST_TWO_ATM_REC_ALL option extends this
+C    to the other the time variable atmospheric controls.
+#undef CTRL_SKIP_FIRST_TWO_ATM_REC_ALL
+
 C  o use pkg/smooth correlation operator (incl. smoother) for 2D controls (Weaver, Courtier 01)
 C    This CPP option just sets the default for ctrlSmoothCorrel2D to .TRUE.
 #undef ALLOW_SMOOTH_CORREL2D

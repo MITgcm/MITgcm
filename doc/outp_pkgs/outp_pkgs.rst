@@ -8,6 +8,8 @@ MITgcm includes several packages related to input and output during a
 model integration. The packages described in this chapter are related to
 the choice of input/output fields and their on-disk format.
 
+.. _sub_outp_pkg_diagnostics:
+
 pkg/diagnostics – A Flexible Infrastructure
 ===========================================
 
@@ -1117,6 +1119,8 @@ encountered, it is a good idea to increase the too-small parameter by a
 factor of 2–10 in order to avoid wasting time on an iterative
 compile–test sequence.
 
+.. _pkg_mnc_inputs:
+
 pkg/mnc Inputs:
 ~~~~~~~~~~~~~~~
 
@@ -1579,6 +1583,7 @@ in-memory structure) coinciding with the start of the specified slice.
 Thus, using this offset array mechanism, a slice can be written along
 any single dimension or combinations of dimensions.
 
+.. _pkg_monitor:
 
 Monitor: Simulation State Monitoring Toolkit
 ============================================

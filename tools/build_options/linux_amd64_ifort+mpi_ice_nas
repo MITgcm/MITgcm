@@ -36,6 +36,7 @@ FFLAGS="$FFLAGS -W0 -WB"
 if test "x$IEEE" = x ; then     #- with optimisation:
     FOPTIM='-O2 -ipo -fp-model precise -align -axCORE-AVX2 -xSSE4.2 -traceback -ftz'
     NOOPTFILES='seaice_growth.F calc_oce_mxlayer.F fizhi_lsm.F fizhi_clockstuff.F ini_parms.F'
+    NOOPTFILES="$NOOPTFILES obcs_init_fixed.F"
 else
   if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
     FOPTIM='-O0 -noalign'

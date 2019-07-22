@@ -1,0 +1,77 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ viscAr=5.E-5,
+#- Use QG version of Leith dynamic viscosity
+ viscC2LeithQG = 1.,
+#- This is the max Viscosity used, be it Smag or Leith, and it scales
+#  with grid size and timestep
+ viscAhGridMax = 1.,
+#- This uses the full grad(vort) and grad(div)
+ useFullLeith=.TRUE.,
+#- other parameter choices
+ no_slip_bottom=.FALSE.,
+ vectorInvariantMomentum=.TRUE.,
+ ivdc_kappa=10.,
+ implicitDiffusion=.TRUE.,
+ implicitViscosity=.TRUE.,
+ f0=7.29E-5,
+ beta=0.E-11,
+ useJamartWetPoints=.TRUE.,
+ eosType='LINEAR',
+#- Using Temperature as only Active Tracer
+ tAlpha=2.E-4,
+#- Using Salinity as Spice
+ sBeta =0.E-4,
+ gravity=9.81,
+ rhoNil=1035.,
+ implicitFreeSurface=.TRUE.,
+ staggerTimeStep=.TRUE.,
+ tempAdvScheme=33,
+ saltAdvScheme=33,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-11,
+ cg3dMaxIters=40,
+ cg3dTargetResidual=1.E-9,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=0,
+#endTime=864000.,
+#- for testing, only run for 12 iterations:
+ nTimeSteps=12,
+ deltaT=1200.,
+ abEps=0.01,
+#- for testing, reduce amount of output by commenting out output frequencies:
+# pchkptFreq=43200.,
+#taveFreq=7200.,
+#dumpFreq=7200.,
+#diagFreq=7200.,
+ monitorSelect=2,
+ monitorFreq=1200.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ delR= 40*5.0,
+ dxSpacing=1.E3,
+ dySpacing=1.E3,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile='topo_sl.bin',
+ hydrogThetaFile='thetaInitial.bin',
+ hydrogSaltFile='spiceInitial.bin',
+ &

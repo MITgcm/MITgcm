@@ -54,9 +54,10 @@ C     myThid :: my Thread Id number
 
 C !LOCAL VARIABLES: ====================================================
 C     i,j,bi,bj :: Loop counters
-#ifdef ALLOW_AUTODIFF_TAMC
       INTEGER i, j
       INTEGER bi, bj
+#ifdef ALLOW_EXF
+      INTEGER grpDiag
 #endif
 #ifdef ALLOW_SITRACER
       INTEGER iTr
@@ -71,17 +72,26 @@ CEOP
       IF (debugMode) CALL DEBUG_ENTER( 'SEAICE_MODEL', myThid )
 #endif
 
-#ifdef ALLOW_EXF
-C--   Winds are from pkg/exf, which does not update edges.
-      CALL EXCH_UV_AGRID_3D_RL( uwind, vwind, .TRUE., 1, myThid )
-#endif
-
 #ifdef ALLOW_THSICE
       IF ( useThSice ) THEN
 C--   Map thSice-variables to HEFF and AREA
        CALL SEAICE_MAP_THSICE( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_THSICE */
+
+#ifdef ALLOW_EXF
+      IF ( useEXF ) THEN
+C--   Winds are from pkg/exf, which does not update edges.
+       CALL EXCH_UV_AGRID_3D_RL( uwind, vwind, .TRUE., 1, myThid )
+       IF ( useDiagnostics ) THEN
+C-    Fill-in EXF wind-stess diags, weighted by open-ocean fraction
+        grpDiag = -1
+        IF ( SEAICEuseDYNAMICS ) grpDiag = 1
+        CALL EXF_WEIGHT_SFX_DIAGS(
+     I                  AREA, grpDiag, myTime, myIter, myThid )
+       ENDIF
+      ENDIF
+#endif /* ALLOW_EXF */
 
 #ifdef ALLOW_AUTODIFF_TAMC
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -166,7 +176,7 @@ C--   Apply ice velocity open boundary conditions
         CALL THSICE_DO_ADVECT( 0, 0, myTime, myIter, myThid )
 #endif /* OLD_THSICE_CALL_SEQUENCE */
       ELSE
-#endif
+#endif /* ALLOW_THSICE */
 C--   Only call advection of heff, area, snow, and salt and
 C--   growth for the generic 0-layer thermodynamics of seaice
 C--   if useThSice=.false., otherwise the 3-layer Winton thermodynamics
@@ -191,18 +201,56 @@ C     may be > 1 in convergent motion and a ridging algorithm redistributes
 C     the ice to limit the concentration to 1.
       CALL SEAICE_REG_RIDGE( myTime, myIter, myThid )
 
-#ifndef DISABLE_SEAICE_GROWTH
+#ifdef ALLOW_EXF
+      IF ( useEXF .AND. useDiagnostics ) THEN
+C-    Fill-in EXF surface flux diags, weighted by open-ocean fraction
+        grpDiag = -2
+        IF ( usePW79thermodynamics ) grpDiag = 2
+        CALL EXF_WEIGHT_SFX_DIAGS(
+     I                  AREA, grpDiag, myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_EXF */
+
+#ifdef DISABLE_SEAICE_GROWTH
+       IF ( .TRUE. ) THEN
+#else /* DISABLE_SEAICE_GROWTH */
 C     thermodynamics growth
 C     must call growth after calling advection
 C     because of ugly time level business
        IF ( usePW79thermodynamics ) THEN
+#ifdef ALLOW_SEAICE_GROWTH_ADX
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL( 'SEAICE_GROWTH_ADX', myThid )
+#endif
+        CALL SEAICE_GROWTH_ADX( myTime, myIter, myThid )
+#else
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL( 'SEAICE_GROWTH', myThid )
 #endif
         CALL SEAICE_GROWTH( myTime, myIter, myThid )
-C
-       ENDIF
+#endif
+       ELSE
 #endif /* DISABLE_SEAICE_GROWTH */
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1,sNy
+           DO i=1,sNx
+            sIceLoad(i,j,bi,bj) = HEFF(i,j,bi,bj)*SEAICE_rhoIce
+     &                         + HSNOW(i,j,bi,bj)*SEAICE_rhoSnow
+           ENDDO
+          ENDDO
+c#ifdef SEAICE_CAP_ICELOAD
+c         sIceTooHeavy = rhoConst*drF(1) / 5. _d 0
+c         DO j=1,sNy
+c          DO i=1,sNx
+c           sIceLoad(i,j,bi,bj) = MIN( sIceLoad(i,j,bi,bj),
+c    &                                 sIceTooHeavy )
+c          ENDDO
+c         ENDDO
+c#endif
+         ENDDO
+        ENDDO
+       ENDIF
 
 #ifdef ALLOW_SITRACER
 # ifdef ALLOW_AUTODIFF_TAMC

@@ -634,7 +634,7 @@ does not do anything. Thus, we suggest you start with this “blank” package�
 to it, perusing the existing mypackage routines and editing as necessary, rather than creating a new package from scratch.
 
 
-
+.. _code_testing_protocols:
 
 MITgcm code testing protocols
 =============================

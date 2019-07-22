@@ -106,6 +106,8 @@ C     vort3BC  :: same as vort3  but account for no-slip BC
       _RL tension (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL strain  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL strainBC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL Nsquare (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL omega3  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vort3   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -205,6 +207,8 @@ c       viscA4_Z(i,j) = 0.
 c       viscA4_D(i,j) = 0.
         strain(i,j)  = 0. _d 0
         strainBC(i,j)= 0. _d 0
+        stretching(i,j) = 0. _d 0
+        Nsquare(i,j) = 0. _d 0
         tension(i,j) = 0. _d 0
 #ifdef ALLOW_AUTODIFF
         hFacZ(i,j)   = 0. _d 0
@@ -339,6 +343,17 @@ C-    mask strain and account for no-slip / free-slip BC in strainBC:
            ENDIF
          ENDDO
         ENDDO
+#ifdef ALLOW_LEITH_QG
+        IF ( viscC2LeithQG.NE.0. ) THEN
+          CALL MOM_VISC_QGL_STRETCH(bi,bj,k,
+     O                            stretching, Nsquare,
+     I                            myTime, myIter, myThid )
+          CALL MOM_VISC_QGL_LIMIT(bi,bj,k,
+     O                          stretching,
+     I                          Nsquare, uFld,vFld,vort3,
+     I                          myTime, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_LEITH_QG */
        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -365,8 +380,8 @@ C--    Calculate Lateral Viscosities
 C-     uses vort3BC & strainBC which account for no-slip / free-slip BC
          CALL MOM_CALC_VISC( bi, bj, k,
      O            viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
-     I            hDiv, vort3BC, tension, strainBC, KE, hfacZ,
-     I            myThid )
+     I            hDiv, vort3BC, tension, strainBC, stretching,
+     I            KE, hfacZ, myThid )
        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -663,12 +678,12 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 C--   Horizontal advection of relative (or absolute) vorticity
        IF ( (highOrderVorticity.OR.upwindVorticity)
      &     .AND.useAbsVorticity ) THEN
-        CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,selectVortScheme, 
+        CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,selectVortScheme,
      &                         highOrderVorticity,upwindVorticity,
      &                         vFld,omega3,r_hFacZ,
      &                         uCf,myThid)
        ELSEIF ( (highOrderVorticity.OR.upwindVorticity) ) THEN
-        CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,selectVortScheme, 
+        CALL MOM_VI_U_CORIOLIS_C4(bi,bj,k,selectVortScheme,
      &                         highOrderVorticity, upwindVorticity,
      &                         vFld,vort3, r_hFacZ,
      &                         uCf,myThid)
@@ -688,12 +703,12 @@ C--   Horizontal advection of relative (or absolute) vorticity
        ENDDO
        IF ( (highOrderVorticity.OR.upwindVorticity)
      &     .AND.useAbsVorticity ) THEN
-        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,k,selectVortScheme, 
+        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,k,selectVortScheme,
      &                         highOrderVorticity, upwindVorticity,
      &                         uFld,omega3,r_hFacZ,
      &                         vCf,myThid)
        ELSEIF ( (highOrderVorticity.OR.upwindVorticity) ) THEN
-        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,k,selectVortScheme, 
+        CALL MOM_VI_V_CORIOLIS_C4(bi,bj,k,selectVortScheme,
      &                         highOrderVorticity, upwindVorticity,
      &                         uFld,vort3, r_hFacZ,
      &                         vCf,myThid)
@@ -909,6 +924,11 @@ C--   Set du/dt & dv/dt on boundaries to zero
        IF ( useVariableVisc .OR. useStrainTensionVisc ) THEN
         CALL DIAGNOSTICS_FILL(tension, 'Tension ',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(strainBC,'Strain  ',k,1,2,bi,bj,myThid)
+C         stretching will be zero, unless using QG Leith
+        IF (viscC2LeithQG .NE. 0) THEN
+          CALL DIAGNOSTICS_FILL(stretching,
+     I                          'Stretch ',k,1,2,bi,bj,myThid)
+        ENDIF
        ENDIF
         CALL DIAGNOSTICS_FILL(gU(1-OLx,1-OLy,k,bi,bj),
      &                                'Um_Advec',k,1,2,bi,bj,myThid)

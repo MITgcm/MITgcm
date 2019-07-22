@@ -29,10 +29,10 @@ C     === Local variables ===
 #ifdef SEAICE_ITD
 C     msgBuf      :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*15 HlimitMsgFormat
 C     k - loop counter for ITD categories
       INTEGER k
       _RL tmpVar
+      LOGICAL computeHlimit
 #endif
 C     i,j, bi,bj  :: Loop counters
       INTEGER i, j, bi, bj
@@ -148,6 +148,30 @@ c     (Smedrud and Martin, 2014, Ann. Glac.)
 #endif /* ALLOW_SITRACER */
 
 #ifdef SEAICE_ITD
+C     zeroth category needs to be zero
+      Hlimit(0)    = 0. _d 0
+C     thickest category is unlimited
+      Hlimit(nITD) = 999.9 _d 0
+      computeHlimit=.FALSE.
+C     check if Hlimit contains useful values
+      DO k = 1, nITD
+       IF ( Hlimit(k).EQ.UNSET_RL )    computeHlimit=.TRUE.
+       IF ( Hlimit(k).LE.Hlimit(k-1) ) computeHlimit=.TRUE.
+      ENDDO
+      IF ( computeHlimit ) THEN
+       WRITE(msgBuf,'(A,I2,A)') 'SEAICE_INIT_FIXED: Computing ',
+     &      nITD, ' thickness category limits with'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       CALL WRITE_0D_RL( Hlimit_c1  ,INDEX_NONE,
+     &      'Hlimit_c1  =', ' /* ITD bin parameter */')
+       CALL WRITE_0D_RL( Hlimit_c2  ,INDEX_NONE,
+     &      'Hlimit_c2  =', ' /* ITD bin parameter */')
+       CALL WRITE_0D_RL( Hlimit_c3  ,INDEX_NONE,
+     &      'Hlimit_c3  =', ' /* ITD bin parameter */')
+       WRITE(msgBuf,'(A)') ' '
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
 C     use Equ. 22 of Lipscomb et al. (2001, JGR) to generate ice
 C     thickness category limits:
 C     - dependends on given number of categories nITD
@@ -156,32 +180,22 @@ C       c1=3.0/N, c2=15*c1, c3=3.0
 C       or emphasize thin end of ITD (in order to enhance ice growth):
 C       c1=1.5/N, c2=42*c1, c3=3.3
 C       -> HINT: set parameters c1, c2 and c3 in seaice_readparms.F
-      Hlimit(0) = 0. _d 0
-      IF ( nITD.GT.1 ) THEN
-       tmpVar = nITD
-       tmpVar = oneRL / tmpVar
-       Hlimit_c1 = Hlimit_c1*tmpVar
-       Hlimit_c2 = Hlimit_c2*Hlimit_c1
-       DO k=1,nITD-1
-        Hlimit(k) = Hlimit(k-1)
-     &            + Hlimit_c1
-     &            + Hlimit_c2
-     &  *( oneRL + TANH( Hlimit_c3 *( FLOAT(k-1)*tmpVar - oneRL ) ) )
-       ENDDO
+       IF ( nITD.GT.1 ) THEN
+        tmpVar = nITD
+        tmpVar = oneRL / tmpVar
+        Hlimit_c1 = Hlimit_c1*tmpVar
+        Hlimit_c2 = Hlimit_c2*Hlimit_c1
+        DO k=1,nITD-1
+         Hlimit(k) = Hlimit(k-1)
+     &             + Hlimit_c1
+     &             + Hlimit_c2
+     &    *( oneRL + TANH( Hlimit_c3 *( FLOAT(k-1)*tmpVar - oneRL ) ) )
+        ENDDO
+       ENDIF
       ENDIF
 C     thickest category is unlimited
       Hlimit(nITD) = 999.9 _d 0
 
-      WRITE(msgBuf,'(A,I2,A)')
-     &     ' SEAICE_INIT_FIXED: ', nITD,
-     &     ' sea ice thickness categories'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-      WRITE(HlimitMsgFormat,'(A,I2,A)') '(A,',nITD,'F6.2,F6.1)'
-      WRITE(msgBuf,HlimitMsgFormat)
-     &     ' SEAICE_INIT_FIXED: Hlimit = ', (Hlimit(k),k=0,nITD)
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
 #endif /* SEAICE_ITD */
 
 C     Only Master Thread updates parameter in common block:
@@ -233,6 +247,7 @@ C--   Initialise grid parameters that do no change during the integration
 C--   Initialise grid info
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+C-    loops on tile indices bi,bj:
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           HEFFM  (i,j,bi,bj) = 0. _d 0
@@ -385,8 +400,33 @@ C     approximation
          ENDDO
         ENDIF
 #endif /* not SEAICE_CGRID */
+C-    end bi,bj loops
        ENDDO
       ENDDO
+
+#ifdef ALLOW_SHELFICE
+      IF ( useShelfIce ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+C--   Prevent seaice to form where Ice-Shelf is present
+          CALL SHELFICE_MASK_SEAICE(
+     U                  HEFFM,
+     I                  bi, bj, -1, myThid )
+          DO j=2-OLy,sNy+OLy
+           DO i=2-OLx,sNx+OLx
+            IF ( HEFFM(i-1,j,bi,bj).EQ.zeroRL .OR.
+     &           HEFFM( i, j,bi,bj).EQ.zeroRL )
+     &           SIMaskU(i,j,bi,bj) = zeroRL
+            IF ( HEFFM(i,j-1,bi,bj).EQ.zeroRL .OR.
+     &           HEFFM(i, j, bi,bj).EQ.zeroRL )
+     &           SIMaskV(i,j,bi,bj) = zeroRL
+           ENDDO
+          ENDDO
+        ENDDO
+       ENDDO
+       CALL EXCH_UV_XY_RL( SIMaskU, SIMaskV, .FALSE., myThid )
+      ENDIF
+#endif /* ALLOW_SHELFICE */
 
 #ifndef SEAICE_CGRID
 C--   Choose a proxy level for geostrophic velocity,
