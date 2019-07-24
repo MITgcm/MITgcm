@@ -182,11 +182,11 @@ As described in :numref:`tracer_eqns`, the time evolution of
 potential temperature :math:`\theta` in :eq:`barooc_gyre_theta`
 is evaluated prognostically. The centered
 second-order scheme with Adams-Bashforth II time stepping described in
-:numref:`tracer_abII` is used to step forward the
+:numref:`sub_tracer_eqns_ab` is used to step forward the
 temperature equation. 
 
 Prognostic terms in the momentum equations are
-solved using flux form as described in :numref:`flux_form_mom`.
+solved using flux form as described in :numref:`flux-form_momentum_equations`.
 The pressure forces that drive
 the fluid motions, :math:`\frac{\partial p^{'}}{\partial \lambda}`
 and :math:`\frac{\partial p^{'}}{\partial \varphi}`, are found by
@@ -637,7 +637,7 @@ File :filelink:`input/data.pkg <verification/tutorial_baroclinic_gyre/input/data
 
 Here we activate two MITgcm packages that are not included with the model by default:
 package :filelink:`mnc <pkg/mnc>` (see :numref:`pkg_mnc`) specifies that model output should be written in `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_  format,
-and package :filelink:`diagnostics <pkg/diagnostics>` (see :numref:`pkg_diagnostics`) allows user-selectable diagnostic output.
+and package :filelink:`diagnostics <pkg/diagnostics>` (see :numref:`sub_outp_pkg_diagnostics`) allows user-selectable diagnostic output.
 The boolean parameters set are :varlink:`useMNC` and :varlink:`useDiagnostics`, respectively. 
 Note these add-on packages also need to be specified when the model is compiled, see :numref:`tut_baroc_code_config`.
 Otherwise, only standard packages (i.e., those compiled in MITgcm by default) are required for this setup,

@@ -25,6 +25,12 @@ CADJ SUBROUTINE exf_diagnostics_fill  DEPEND = 1,2,3
 CADJ SUBROUTINE exf_diagnostics_fill  REQUIRED
 
 C----------------------------------------
+C subroutine exf_weight_sfx_diags
+C----------------------------------------
+CADJ SUBROUTINE exf_weight_sfx_diags  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE exf_weight_sfx_diags  OUTPUT =
+
+C----------------------------------------
 C subroutine exf_adjoint_snapshots
 C----------------------------------------
 cadj SUBROUTINE exf_adjoint_snapshots INPUT   = 1,2,3,4
