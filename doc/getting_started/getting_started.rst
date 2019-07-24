@@ -794,8 +794,8 @@ In addition, there are several housekeeping ``make clean`` options that might be
 
 .. _build_mpi:
 
-Building  with MPI
-------------------
+Building with MPI
+-----------------
 
 Building MITgcm to use `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
 libraries can be complicated due to the
@@ -1298,6 +1298,8 @@ newer users of the MITgcm are encouraged to jump to :numref:`customize_model` wh
 |                                               |         | (note, CPP option for tracer diffusivity set independently in                                                        |
 |                                               |         | :filelink:`GAD_OPTIONS.h <pkg/generic_advdiff/GAD_OPTIONS.h>`)                                                       |
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+
+.. _default_pkg_list:
 
 By default, MITgcm includes several core packages, i.e., these packages are enabled during
 :filelink:`genmake2 <tools/genmake2>` execution if a file ``packages.conf`` is not found.
@@ -1840,7 +1842,7 @@ of salinity measurements, and why use of the latter is preferred, in the context
 |                                        |           |                                                  | 3= use full hyd.+non-hyd. pressure); for ``JMD95P``, ``UNESCO``, ``MDJWF``, ``TEOS10`` default=2,       |
 |                                        |           |                                                  | otherwise 0                                                                                             |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`rhonil`                      | PARM01    | 9.998E+02                                        | reference density for linear EOS (kg/m\ :sup:`3`)                                                       |
+| :varlink:`rhoNil`                      | PARM01    | 9.998E+02                                        | reference density for linear EOS (kg/m\ :sup:`3`)                                                       |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`tAlpha`                      | PARM01    | 2.0E-04                                          | linear EOS thermal expansion coefficient (1/\ :sup:`o`\ C)                                              |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -2251,6 +2253,8 @@ parameterization for advection and mixing of oceanic tracers is described in :nu
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`BL79LatVary`                 | PARM01    | 3.0E+01                                          | transition from diffKrBLEQ to diffKrBL79 parms at this latitude; requires #define ALLOW_BL79_LAT_VARY   |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
+.. _ocean_convection_parms:
 
 Ocean Convection
 ~~~~~~~~~~~~~~~~     

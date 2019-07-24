@@ -276,7 +276,7 @@ The rigid-lid approximation can be easily replaced by a linearization of
 the free-surface equation which can be written:
 
 .. math::
-   \partial_t \eta + \partial_x H \widehat{u} + \partial_y H \widehat{v} = P-E+R
+   \partial_t \eta + \partial_x H \widehat{u} + \partial_y H \widehat{v} = {\cal{P-E+R}}
    :label: linear-free-surface=P-E
 
 which differs from the depth integrated continuity equation with
@@ -291,7 +291,7 @@ method is then replaced by the time discretization of
    \eta^{n+1}
    + \Delta t \partial_x H \widehat{u^{n+1}}
    + \Delta t \partial_y H \widehat{v^{n+1}}
-   = \eta^{n} + \Delta t ( P - E )
+   = \eta^{n} + \Delta t ( {\cal{P-E}})
    :label: discrete-time-backward-free-surface
 
 where the use of flow at time level :math:`n+1` makes the method
@@ -314,7 +314,7 @@ re-arranged as follows:
    :label: vstar-backward-free-surface
 
 .. math::
-   \eta^* = \epsilon_{fs} ( \eta^{n} + \Delta t (P-E) )
+   \eta^* = \epsilon_{fs} ( \eta^{n} + \Delta t ({\cal{P-E}}) )
             - \Delta t ( \partial_x H \widehat{u^{*}}
                             + \partial_y H \widehat{v^{*}} )
    :label: etastar-backward-free-surface
@@ -531,7 +531,7 @@ follow equations:
    :label: vstarstar-sync
 
 .. math::
-   \eta^* = \epsilon_{fs} \left( \eta^{n} + \Delta t (P-E) \right)- \Delta t
+   \eta^* = \epsilon_{fs} \left( \eta^{n} + \Delta t ({\cal{P-E}}) \right)- \Delta t
      \nabla \cdot H \widehat{ \vec{\bf v}^{**} }
    :label: nstar-sync
 
@@ -654,7 +654,7 @@ position in time of variables appropriately:
    :label: vstarstar-staggered
 
 .. math::
-   \eta^*  = \epsilon_{fs} \left( \eta^{n-1/2} + \Delta t (P-E)^n \right)- \Delta t
+   \eta^*  = \epsilon_{fs} \left( \eta^{n-1/2} + \Delta t ({\cal{P-E}})^n \right)- \Delta t
      \nabla \cdot H \widehat{ \vec{\bf v}^{**} }
    :label: nstar-staggered
 
@@ -832,7 +832,7 @@ following equations:
    :label: wstar-nh
 
 .. math::
-   \eta^* ~ = ~ \epsilon_{fs} \left( \eta^{n} + \Delta t (P-E) \right)
+   \eta^* ~ = ~ \epsilon_{fs} \left( \eta^{n} + \Delta t ({\cal{P-E}}) \right)
    - \Delta t \left( \partial_x H \widehat{u^{*}}
                        + \partial_y H \widehat{v^{*}} \right)
    :label: etastar-nh
@@ -896,7 +896,7 @@ where
 .. math::
    {\eta}^* = \epsilon_{fs} \: {\eta}^{n} -
    \Delta t {\bf \nabla}_h \cdot \int_{R_{fixed}}^{R_o} \vec{\bf v}^* dr
-   \: + \: \epsilon_{fw} \Delta t (P-E)^{n}
+   \: + \: \epsilon_{fw} \Delta t ({\cal{P-E}})^{n}
    :label: eq-solve2D_rhs
 
 .. admonition:: S/R  :filelink:`SOLVE_FOR_PRESSURE <model/src/solve_for_pressure.F>`
@@ -1097,6 +1097,7 @@ The calculations are made in the subroutine :filelink:`CALC_PHI_HYD <model/src/c
 this routine, one of other of the atmospheric/oceanic form is selected
 based on the string variable :varlink:`buoyancyRelation`.
 
+.. _flux_form_mom:
 
 Flux-form momentum equations
 ============================
@@ -1934,6 +1935,8 @@ mixing scheme and PV flux parameterization are all dealt with in
 separate sections. The basic discretization of the advection-diffusion
 part of the tracer equations and the various advection schemes will be
 described here.
+
+.. _tracer_abII:
 
 Time-stepping of tracers: ABII
 ------------------------------
