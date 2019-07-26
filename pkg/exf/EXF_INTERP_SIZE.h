@@ -10,12 +10,14 @@ C     ==================================================================
 C    !DESCRIPTION:
 C   Contains maximum size of original input grid from which interpolation
 C    to model grid is done.
+C-  Note: This header file needs to be included before EXF_INTERP_PARAM.h
+C    since it uses MAX_LAT_INC which is defined here.
 CEOP
 
 #ifdef USE_EXF_INTERPOLATION
 
-C-  Note: Any src code that uses EXF_PARAM.h needs also MAX_LAT_INC definition;
-C     to avoid to add this Header everywhere, keep MAX_LAT_INC in EXF_PARAM.h
+C     INTEGER MAX_LAT_INC :: maximum length of latitude grid-spacing vector
+C                            used for exf-interpolation input-grid
       INTEGER MAX_LAT_INC
       PARAMETER( MAX_LAT_INC = 1279 )
 
