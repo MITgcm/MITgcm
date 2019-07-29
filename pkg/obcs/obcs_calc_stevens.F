@@ -1,7 +1,7 @@
 #include "OBCS_OPTIONS.h"
 #undef CHECK_BALANCE
 
-C--   File obcs_calc_stevens.F: 
+C--   File obcs_calc_stevens.F:
 C--    Contents
 C--    o OBCS_CALC_STEVENS
 C--    o OBCS_STEVENS_CALC_TRACER_EAST
@@ -245,15 +245,15 @@ CML         IF ( uVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFacM(J,K) = 1. _d 0
          ENDDO
 C     theta
          CALL OBCS_STEVENS_CALC_TRACER_EAST(
-     U        OBEt, 
-     I        OBEtStevens, theta, gammat, 
+     U        OBEt,
+     I        OBEtStevens, theta, gammat,
      I        uVel, cflMer, gFacM, pFac, aFac,
      I        OB_Ie, OB_indexNone, bi, bj,
      I        futureTime, futureIter,
      I        myThid )
 C     salinity
          CALL OBCS_STEVENS_CALC_TRACER_EAST(
-     U        OBEs, 
+     U        OBEs,
      I        OBEsStevens, salt, gammas,
      I        uVel, cflMer, gFacM, pFac, aFac,
      I        OB_Ie, OB_indexNone, bi, bj,
@@ -265,8 +265,8 @@ CMLC     ptracers
 CML         IF ( usePtracers ) THEN
 CML          DO itracer = 1, PTRACERnumInUse
 CML           CALL OBCS_STEVENS_CALC_TRACER_EAST(
-CML     O          OBEptr       (1-OLy,1,1,1,iTracer), 
-CML     I          OBEpStevens  (1-OLy,1,1,1,iTracer), 
+CML     O          OBEptr       (1-OLy,1,1,1,iTracer),
+CML     I          OBEpStevens  (1-OLy,1,1,1,iTracer),
 CML     I          pTracer(1-OLx,1-OLy,1,1,1,iTracer), gammas,
 CML     I          uVel, cflMer, gFacM, pFac, aFac,
 CML     I          OB_Ie, OB_indexNone, bi, bj,
@@ -372,15 +372,15 @@ CML         IF ( uVel(I+1,J,K,bi,bj) .GT. 0. _d 0 ) gFacM = 1. _d 0
          ENDDO
 C     theta
          CALL OBCS_STEVENS_CALC_TRACER_WEST(
-     U        OBWt, 
-     I        OBWtStevens, theta, gammat, 
+     U        OBWt,
+     I        OBWtStevens, theta, gammat,
      I        uVel, cflMer, gFacM, pFac, aFac,
      I        OB_Iw, OB_indexNone, bi, bj,
      I        futureTime, futureIter,
      I        myThid )
 C     salinity
          CALL OBCS_STEVENS_CALC_TRACER_WEST(
-     U        OBWs, 
+     U        OBWs,
      I        OBWsStevens, salt, gammas,
      I        uVel, cflMer, gFacM, pFac, aFac,
      I        OB_Iw, OB_indexNone, bi, bj,
@@ -483,17 +483,17 @@ CML         IF ( vVel(I,J,K,bi,bj) .LT. 0. _d 0 ) gFacZ(I,K) = 1. _d 0
          ENDDO
 C     theta
          CALL OBCS_STEVENS_CALC_TRACER_NORTH(
-     U        OBNt, 
+     U        OBNt,
      I        OBNtStevens, theta, gammat,
-     I        vVel, cflZon, gFacZ, pFac, aFac, 
+     I        vVel, cflZon, gFacZ, pFac, aFac,
      I        OB_Jn, OB_indexNone, bi, bj,
      I        futureTime, futureIter,
      I        myThid )
 C     salinity
          CALL OBCS_STEVENS_CALC_TRACER_NORTH(
-     U        OBNs, 
+     U        OBNs,
      I        OBNsStevens, salt, gammas,
-     I        vVel, cflZon, gFacZ, pFac, aFac, 
+     I        vVel, cflZon, gFacZ, pFac, aFac,
      I        OB_Jn, OB_indexNone, bi, bj,
      I        futureTime, futureIter,
      I        myThid )
@@ -595,17 +595,17 @@ CML         IF ( vVel(I,J+1,K,bi,bj) .GT. 0. _d 0 ) gFacZ = 1. _d 0
          ENDDO
 C     theta
          CALL OBCS_STEVENS_CALC_TRACER_SOUTH(
-     U        OBSt, 
+     U        OBSt,
      I        OBStStevens, theta, gammat,
-     I        vVel, cflZon, gFacZ, pFac, aFac, 
+     I        vVel, cflZon, gFacZ, pFac, aFac,
      I        OB_Js, OB_indexNone, bi, bj,
      I        futureTime, futureIter,
      I        myThid )
 C     salinity
          CALL OBCS_STEVENS_CALC_TRACER_SOUTH(
-     U        OBSs, 
+     U        OBSs,
      I        OBSsStevens, salt, gammas,
-     I        vVel, cflZon, gFacZ, pFac, aFac, 
+     I        vVel, cflZon, gFacZ, pFac, aFac,
      I        OB_Js, OB_indexNone, bi, bj,
      I        futureTime, futureIter,
      I        myThid )
@@ -671,9 +671,9 @@ CBOP
 C     !ROUTINE: OBCS_STEVENS_CALC_TRACER_EAST
 C     !INTERFACE:
       SUBROUTINE OBCS_STEVENS_CALC_TRACER_EAST(
-     U     OBEf, 
+     U     OBEf,
      I     OBE_Stevens, tracer, gammaf,
-     I     uVel, cflMer, gFacM, pFac, aFac, 
+     I     uVel, cflMer, gFacM, pFac, aFac,
      I     OB_I, OB_indexNone, bi, bj,
      I     futureTime, futureIter,
      I     myThid )
@@ -705,10 +705,10 @@ C    bi, bj    :: indices of current tile
       _RL cflMer               (1-OLy:sNy+OLy,Nr)
       _RL gFacM                (1-OLy:sNy+OLy,Nr)
       _RL gammaf, pFac, aFac
-      _RL OBEf                 (1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL OBE_Stevens          (1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL uVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL OBEf                 (1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL OBE_Stevens          (1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL uVel   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #if (defined ALLOW_OBCS_EAST && defined ALLOW_OBCS_STEVENS)
 C     !LOCAL VARIABLES:
@@ -743,7 +743,7 @@ C     Compute the tracer tendency ...
      &        * (tracer(I,J,K,bi,bj)-OBEf(J,K,bi,bj)) )
 C     ... and update tracer with a simple Euler forward step
          OBEf(J,K,bi,bj) = tracer(I,J,K,bi,bj)
-     &        + dTtracerLev(K) * OBEf(J,K,bi,bj) 
+     &        + dTtracerLev(K) * OBEf(J,K,bi,bj)
         ENDIF
        ENDDO
       ENDDO
@@ -756,9 +756,9 @@ CBOP
 C     !ROUTINE: OBCS_STEVENS_CALC_TRACER_WEST
 C     !INTERFACE:
       SUBROUTINE OBCS_STEVENS_CALC_TRACER_WEST(
-     U     OBWf, 
+     U     OBWf,
      I     OBW_Stevens, tracer, gammaf,
-     I     uVel, cflMer, gFacM, pFac, aFac, 
+     I     uVel, cflMer, gFacM, pFac, aFac,
      I     OB_I, OB_indexNone, bi, bj,
      I     futureTime, futureIter,
      I     myThid )
@@ -790,10 +790,10 @@ C    bi, bj    :: indices of current tile
       _RL cflMer               (1-OLy:sNy+OLy,Nr)
       _RL gFacM                (1-OLy:sNy+OLy,Nr)
       _RL gammaf, pFac, aFac
-      _RL OBWf                 (1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL OBW_Stevens          (1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL uVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL OBWf                 (1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL OBW_Stevens          (1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL uVel   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #if (defined ALLOW_OBCS_WEST && defined ALLOW_OBCS_STEVENS)
 C     !LOCAL VARIABLES:
@@ -829,7 +829,7 @@ C     Compute the tracer tendency ...
      &        * (tracer(I,J,K,bi,bj)-OBWf(J,K,bi,bj)) )
 C     ... and update tracer with a simple Euler forward step
          OBWf(J,K,bi,bj) = tracer(I,J,K,bi,bj)
-     &        + dTtracerLev(K) * OBWf(J,K,bi,bj) 
+     &        + dTtracerLev(K) * OBWf(J,K,bi,bj)
         ENDIF
        ENDDO
       ENDDO
@@ -842,9 +842,9 @@ CBOP
 C     !ROUTINE: OBCS_STEVENS_CALC_TRACER_NORTH
 C     !INTERFACE:
       SUBROUTINE OBCS_STEVENS_CALC_TRACER_NORTH(
-     U     OBNf, 
+     U     OBNf,
      I     OBN_Stevens, tracer, gammaf,
-     I     vVel, cflZon, gFacZ, pFac, aFac, 
+     I     vVel, cflZon, gFacZ, pFac, aFac,
      I     OB_J, OB_indexNone, bi, bj,
      I     futureTime, futureIter,
      I     myThid )
@@ -876,10 +876,10 @@ C    bi, bj    :: indices of current tile
       _RL cflZon               (1-OLx:sNx+OLx,Nr)
       _RL gFacZ                (1-OLx:sNx+OLx,Nr)
       _RL gammaf, pFac, aFac
-      _RL OBNf                 (1-Olx:sNx+Olx,Nr,nSx,nSy)
-      _RL OBN_Stevens          (1-Olx:sNx+Olx,Nr,nSx,nSy)
-      _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL vVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL OBNf                 (1-OLx:sNx+OLx,Nr,nSx,nSy)
+      _RL OBN_Stevens          (1-OLx:sNx+OLx,Nr,nSx,nSy)
+      _RL tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL vVel   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #if (defined ALLOW_OBCS_NORTH && defined ALLOW_OBCS_STEVENS)
 C     !LOCAL VARIABLES:
@@ -915,7 +915,7 @@ C     Compute the tracer tendency ...
      &        * (tracer(I,J,K,bi,bj)-OBNf(I,K,bi,bj)) )
 C     ... and update tracer with a simple Euler forward step
          OBNf(I,K,bi,bj) = tracer(I,J,K,bi,bj)
-     &        + dTtracerLev(K) * OBNf(I,K,bi,bj) 
+     &        + dTtracerLev(K) * OBNf(I,K,bi,bj)
         ENDIF
        ENDDO
       ENDDO
@@ -928,9 +928,9 @@ CBOP
 C     !ROUTINE: OBCS_STEVENS_CALC_TRACER_SOUTH
 C     !INTERFACE:
       SUBROUTINE OBCS_STEVENS_CALC_TRACER_SOUTH(
-     U     OBSf, 
+     U     OBSf,
      I     OBS_Stevens, tracer, gammaf,
-     I     vVel, cflZon, gFacZ, pFac, aFac, 
+     I     vVel, cflZon, gFacZ, pFac, aFac,
      I     OB_J, OB_indexNone, bi, bj,
      I     futureTime, futureIter,
      I     myThid )
@@ -962,10 +962,10 @@ C    bi, bj    :: indices of current tile
       _RL cflZon               (1-OLx:sNx+OLx,Nr)
       _RL gFacZ                (1-OLx:sNx+OLx,Nr)
       _RL gammaf, pFac, aFac
-      _RL OBSf                 (1-Olx:sNx+Olx,Nr,nSx,nSy)
-      _RL OBS_Stevens          (1-Olx:sNx+Olx,Nr,nSx,nSy)
-      _RL tracer (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RL vVel   (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL OBSf                 (1-OLx:sNx+OLx,Nr,nSx,nSy)
+      _RL OBS_Stevens          (1-OLx:sNx+OLx,Nr,nSx,nSy)
+      _RL tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL vVel   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #if (defined ALLOW_OBCS_SOUTH && defined ALLOW_OBCS_STEVENS)
 C     !LOCAL VARIABLES:
@@ -1000,7 +1000,7 @@ C     Compute the tracer tendency ...
      &        * (tracer(I,J,K,bi,bj)-OBSf(I,K,bi,bj)) )
 C     ... and update tracer with a simple Euler forward step
          OBSf(I,K,bi,bj) = tracer(I,J,K,bi,bj)
-     &        + dTtracerLev(K) * OBSf(I,K,bi,bj) 
+     &        + dTtracerLev(K) * OBSf(I,K,bi,bj)
         ENDIF
        ENDDO
       ENDDO
