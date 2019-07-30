@@ -1239,6 +1239,70 @@ Error handling
    The quadratic option in fact does not yet exist in
    ``cost_gencost_boxmean.F``...
 
+
+.. _subsectionoptimm1qn3:
+
+Alternative code to :filelink:`optim` and :filelink:`lsopt`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The non-MITgcm package `optim_m1qn3
+<https://github.com/mjlosch/optim_m1qn3>`_ is based on the same
+quasi-Newton variable storage method (BFGS) :cite:`gil-lem:89` as the
+package in subdirectory ``lsopt``, but it uses a reverse communication
+version of the latest (and probably last) release of the subroutine
+`m1qn3
+<https://who.rocq.inria.fr/Jean-Charles.Gilbert/modulopt/optimization-routines/m1qn3/m1qn3.html>`_.
+This avoids having to define a dummy subroutine ``simul`` and also
+simplifies the code structure. As a consequence this package is
+simple(r) to compile and use, because ``m1qn3.f`` contains all necessary
+subroutines and only one extra routine (``ddot``, which was copied
+from `BLAS <http://www.netlib.org/blas/>`_) is required.
+
+The principle of reverse communication is outlined in this example::
+
+  external simul_rc
+  ...
+  reverse = .true.
+  do while (.true.)
+    call m1qn3 (simul_rc,...,x,f,g,...,reverse,indic,...)
+    if (reverse) break
+    call simul (indic,n,x,f,g)
+  end while
+
+``simul_rc`` is an empty ''model simulator'', and ``simul`` generates a
+new state based on the value of ``indic``.
+
+The original ``m1qn3`` has been modified to work "offline", i.e. the
+simulator and the driver of ``m1qn3_offline`` are separate programs
+that are called alternatingly from a (shell-)script. This requires
+that the "state" of ``m1qn3`` is saved before this program
+terminates. This state is saved in a single file ``OPWARM.optXXX`` per
+simulation, where ``XXX`` is the simulation number. Communication with
+the routine, writing and restoring the state of ``m1qn3`` is achieved
+via three new common-blocks that are contained in three header
+files. ``simul`` is replaced by reading and storing the model state
+and gradient vectors. Schematically the driver routine ``optim_sub``
+does the following: ::
+
+  external simul_rc
+  ...
+
+  call optim_readdata( nn, ctrlname, ...,   xx ) ! read control vector
+  call optim_readdata( nn, costname, ..., adxx ) ! read gradient vector
+  call optim_store_m1qn3( ..., .false. )         ! read state of m1qn3
+  reverse = .true.
+  call m1qn3 (simul_rc,...,xx,objf,adxx,...,reverse,indic,...)
+  call optim_store_m1qn3( ..., .true. )          ! write state of m1qn3
+  call optim_writedata( nn, ctrlname, ..., xx )  ! write control vector
+  
+The optimization loop is executed outside of this program within a script.
+
+The code can be obtained at https://github.com/mjlosch/optim_m1qn3
+. The ``README`` contains short instructions how to build and use the
+code in combination with the ``tutorial_global_oce_optim``
+experiment. The usage is very similar to the :filelink:`optim`
+package.
+
 .. _sec:exp:llc:
 
 
