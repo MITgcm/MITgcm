@@ -409,7 +409,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_OBCS_TIDES */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C     Only needed for Orlanski:
+C     Only needed for Orlanski and Stevens BCs:
       IF ( nIter0.NE.0 .OR. pickupSuff.NE.' ' ) THEN
         CALL OBCS_READ_PICKUP( nIter0, myThid )
       ENDIF
