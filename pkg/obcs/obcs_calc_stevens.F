@@ -9,6 +9,8 @@ C--    o OBCS_STEVENS_CALC_TRACER_WEST
 C--    o OBCS_STEVENS_CALC_TRACER_NORTH
 C--    o OBCS_STEVENS_CALC_TRACER_SOUTH
 C--    o OBCS_STEVENS_SAVE_TRACER
+C--    o OBCS_STEVENS_UPDATE_THETA
+C--    o OBCS_STEVENS_UPDATE_SALT
 
 CBOP
 C     !ROUTINE: OBCS_CALC_STEVENS
@@ -1123,6 +1125,234 @@ C Western boundary
 #endif /* ALLOW_OBCS_WEST */
        ENDDO
       ENDDO
+#endif /* ALLOW_OBCS_STEVENS */
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: OBCS_STEVENS_UPDATE_THETA(
+C     !INTERFACE:
+      SUBROUTINE OBCS_STEVENS_UPDATE_THETA(
+     I     bi, bj, kArg, gTracer,
+     I     myTime, myIter, myThid )
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE OBCS_STEVENS_UPDATE_THETA
+C     | update boundary values with tracer tendency.
+C     *==========================================================*
+C     \ev
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "OBCS_PARAMS.h"
+#include "OBCS_GRID.h"
+#include "OBCS_FIELDS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     bi, bj   :: indices of current tile
+C     kArg     :: index of current level which OBC apply to
+C                 or if zeros, apply to all levels
+C     myThid   :: my Thread Id number
+C     gTracer  :: tracer tendency field @ time-step n
+      INTEGER bi,bj
+      INTEGER kArg
+      _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL myTime
+      INTEGER myIter
+      INTEGER myThid
+
+#ifdef ALLOW_OBCS_STEVENS
+C     !LOCAL VARIABLES:
+C     i,j,k    :: loop indices
+C     Iobc,Jobc:: position-index of open boundary
+      INTEGER i,j
+      INTEGER k, kLo, kHi
+      INTEGER Iobc,Jobc
+CEOP
+
+      IF ( kArg.EQ.0 ) THEN
+       kLo = 1
+       kHi = Nr
+      ELSE
+       kLo = kArg
+       kHi = kArg
+      ENDIF
+C     update obcs-fields
+#ifdef ALLOW_OBCS_SOUTH
+      IF ( tileHasOBS(bi,bj) .AND. useStevensSouth ) THEN
+C     Southern boundary
+       DO i=1-OLx,sNx+OLx
+        Jobc = OB_Js(i,bi,bj)
+        IF ( Jobc.NE.OB_indexNone ) THEN
+         DO k=kLo,kHi
+          OBSt(i,k,bi,bj) = OBSt(i,k,bi,bj)
+     &         + dTtracerLev(k) * gTracer(i,Jobc,k)
+         ENDDO
+        ENDIF
+       ENDDO
+      ENDIF
+#endif /* ALLOW_OBCS_SOUTH */
+#ifdef ALLOW_OBCS_NORTH
+      IF ( tileHasOBN(bi,bj) .AND. useStevensNorth ) THEN
+C     Northern boundary
+       DO i=1-OLx,sNx+OLx
+        Jobc = OB_Jn(i,bi,bj)
+        IF ( Jobc.NE.OB_indexNone ) THEN
+         DO k=kLo,kHi
+          OBNt(i,k,bi,bj) = OBNt(i,k,bi,bj)
+     &         + dTtracerLev(k) * gTracer(i,Jobc,k)
+         ENDDO
+        ENDIF
+       ENDDO
+      ENDIF
+#endif /* ALLOW_OBCS_NORTH */
+#ifdef ALLOW_OBCS_EAST
+      IF ( tileHasOBE(bi,bj) .AND. useStevensEast ) THEN
+C     Eastern boundary
+       DO j=1-OLy,sNy+OLy
+        Iobc = OB_Ie(j,bi,bj)
+        IF ( Iobc.NE.OB_indexNone ) THEN
+         DO k=kLo,kHi
+          OBEt(j,k,bi,bj) = OBEt(j,k,bi,bj)
+     &         + dTtracerLev(k) * gTracer(Iobc,j,k)
+         ENDDO
+        ENDIF
+       ENDDO
+      ENDIF
+#endif /* ALLOW_OBCS_EAST */
+#ifdef ALLOW_OBCS_WEST
+      IF ( tileHasOBW(bi,bj) .AND. useStevensWest ) THEN
+C     Western boundary
+       DO j=1-OLy,sNy+OLy
+        Iobc = OB_Iw(j,bi,bj)
+        IF ( Iobc.NE.OB_indexNone ) THEN
+         DO k=kLo,kHi
+          OBWt(j,k,bi,bj) = OBWt(j,k,bi,bj)
+     &         + dTtracerLev(k) * gTracer(Iobc,j,k)
+         ENDDO
+        ENDIF
+       ENDDO
+      ENDIF
+#endif /* ALLOW_OBCS_WEST */
+#endif /* ALLOW_OBCS_STEVENS */
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: OBCS_STEVENS_UPDATE_SALT(
+C     !INTERFACE:
+      SUBROUTINE OBCS_STEVENS_UPDATE_SALT(
+     I     bi, bj, kArg, gTracer,
+     I     myTime, myIter, myThid )
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE OBCS_STEVENS_UPDATE_SALT
+C     | update boundary values with tracer tendency.
+C     *==========================================================*
+C     \ev
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "OBCS_PARAMS.h"
+#include "OBCS_GRID.h"
+#include "OBCS_FIELDS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     bi, bj   :: indices of current tile
+C     kArg     :: index of current level which OBC apply to
+C                 or if zeros, apply to all levels
+C     myThid   :: my Thread Id number
+C     gTracer  :: tracer tendency field @ time-step n
+      INTEGER bi,bj
+      INTEGER kArg
+      _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL myTime
+      INTEGER myIter
+      INTEGER myThid
+
+#ifdef ALLOW_OBCS_STEVENS
+C     !LOCAL VARIABLES:
+C     i,j,k    :: loop indices
+C     Iobc,Jobc:: position-index of open boundary
+      INTEGER i,j
+      INTEGER k, kLo, kHi
+      INTEGER Iobc,Jobc
+CEOP
+
+      IF ( kArg.EQ.0 ) THEN
+       kLo = 1
+       kHi = Nr
+      ELSE
+       kLo = kArg
+       kHi = kArg
+      ENDIF
+C     update obcs-fields
+#ifdef ALLOW_OBCS_SOUTH
+      IF ( tileHasOBS(bi,bj) .AND. useStevensSouth ) THEN
+C Southern boundary
+       DO i=1-OLx,sNx+OLx
+        Jobc = OB_Js(i,bi,bj)
+        IF ( Jobc.NE.OB_indexNone ) THEN
+         DO k=kLo,kHi
+          OBSs(i,k,bi,bj) = OBSs(i,k,bi,bj)
+     &         + dTtracerLev(k) * gTracer(i,Jobc,k)
+         ENDDO
+        ENDIF
+       ENDDO
+      ENDIF
+#endif /* ALLOW_OBCS_SOUTH */
+#ifdef ALLOW_OBCS_NORTH
+      IF ( tileHasOBN(bi,bj) .AND. useStevensNorth ) THEN
+C     Northern boundary
+       DO i=1-OLx,sNx+OLx
+        Jobc = OB_Jn(i,bi,bj)
+        IF ( Jobc.NE.OB_indexNone ) THEN
+         DO k=kLo,kHi
+          OBNs(i,k,bi,bj) = OBNs(i,k,bi,bj)
+     &         + dTtracerLev(k) * gTracer(i,Jobc,k)
+         ENDDO
+        ENDIF
+       ENDDO
+      ENDIF
+#endif /* ALLOW_OBCS_NORTH */
+#ifdef ALLOW_OBCS_EAST
+      IF ( tileHasOBE(bi,bj) .AND. useStevensEast ) THEN
+C     Eastern boundary
+       DO j=1-OLy,sNy+OLy
+        Iobc = OB_Ie(j,bi,bj)
+        IF ( Iobc.NE.OB_indexNone ) THEN
+         DO k=kLo,kHi
+          OBEs(j,k,bi,bj) = OBEs(j,k,bi,bj)
+     &         + dTtracerLev(k) * gTracer(Iobc,j,k)
+         ENDDO
+        ENDIF
+       ENDDO
+      ENDIF
+#endif /* ALLOW_OBCS_EAST */
+#ifdef ALLOW_OBCS_WEST
+      IF ( tileHasOBW(bi,bj) .AND. useStevensWest ) THEN
+C     Western boundary
+       DO j=1-OLy,sNy+OLy
+        Iobc = OB_Iw(j,bi,bj)
+        IF ( Iobc.NE.OB_indexNone ) THEN
+         DO k=kLo,kHi
+          OBWs(j,k,bi,bj) = OBWs(j,k,bi,bj)
+     &         + dTtracerLev(k) * gTracer(Iobc,j,k)
+         ENDDO
+        ENDIF
+       ENDDO
+      ENDIF
+#endif /* ALLOW_OBCS_WEST */
 #endif /* ALLOW_OBCS_STEVENS */
       RETURN
       END
