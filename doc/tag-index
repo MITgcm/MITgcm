@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o compon_interf pkgs:
+  - fix bi loop range in few initialisation subroutines (2 in each pkg),
+    fixing issue #270
+
 checkpoint67k (2019/07/19)
 o model/src:
   - fix format in printing 1 error message from S/R SET_PARMS
