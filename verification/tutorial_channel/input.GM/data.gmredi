@@ -1,0 +1,20 @@
+# GM+Redi package parameters:
+
+#-from MOM :
+# GM_background_K:      G & Mc.W  diffusion coefficient
+# GM_taper_scheme:      slope clipping or one of the tapering schemes
+# GM_Kmin_horiz  :      horizontal diffusion minimum value
+
+#-Option parameters (needs to "define" options in GMREDI_OPTIONS.h")
+# GM_isopycK     :      isopycnal diffusion coefficient (default=GM_background_K)
+# GM_AdvForm     :      turn on GM Advective form       (default=Skew flux form)
+
+ &GM_PARM01
+  GM_AdvForm         =.TRUE.,
+  GM_background_K    = 1000.,
+#  GM_isopycK         = 0.0E-0,
+# GM_taper_scheme    = 'gkw91',
+  GM_taper_scheme    = 'dm95',
+  GM_Kmin_horiz      = 0.,
+ &end
+

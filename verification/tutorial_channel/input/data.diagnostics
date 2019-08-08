@@ -1,0 +1,50 @@
+# Controls output from the diagnostics package
+#
+ &diagnostics_list
+
+# Heat budget terms
+ frequency(1) = 864000.,
+ filename(1) = 'Diags/heat_3D',
+ fields(1:8,1) = 'THETA   ',
+                'ADVx_TH ', 'ADVy_TH ', 'ADVr_TH ',
+                'DFxE_TH ', 'DFyE_TH ',
+                'DFrE_TH ', 'DFrI_TH ',
+
+ frequency(2) = 864000.,
+ filename(2) = 'Diags/heat_2D',
+ fields(1:8,2) = 'TFLUX   '
+
+# state variables
+ frequency(3) =864000.,
+ filename(3) = 'Diags/state',
+ fields(1:8,3) =    'THETA   ', 'VVEL    ', 'UVEL    ',
+                    'WVEL    ', 'momVort3', 'momHDiv ',
+                    'CONVADJ ', 'PsiVEL  ',
+
+# 2D state variables
+ frequency(4) = 864000.,
+ filename(4) = 'Diags/2D_diags',
+ fields(1:2,4) = 'MXLDEPTH', 'ETAN    ',
+
+# GM variables
+# frequency(5) = 864000.,
+# filename(5) = 'Diags/GM_diags',
+# fields(1:2,5) = 'GM_PsiX ', 'GM_PsiY ',
+
+# Residual mean flow
+ fields(1:3,6) = 'LaVH1TH ', 'LaHs1TH ', 'LaVa1TH ' 
+ fileName(6) = 'Diags/layDiag',
+ frequency(6) = 864000.,
+
+#    diag_mnc  = .FALSE.,
+ &
+ &DIAG_STATIS_PARMS
+ stat_fields(1:10,1) =  'ETAN    ',
+                        'UVEL    ','VVEL    ','WVEL    ',
+                        'THETA   ','SALT    ','CONVADJ ',
+                        'DETADT2 ','MXLDEPTH','momKE   ',
+#                       'LaTr3RHO',
+  stat_fName(1) = 'dynStDiag',
+  stat_freq(1) = 86400.,
+#      diagSt_mnc=.FALSE.,
+ &

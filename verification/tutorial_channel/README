@@ -1,0 +1,23 @@
+Tutorial Example: "Re-entrant channel"
+(Re-entrant Channel In Cartesian Coordinates)
+================================================
+
+Configure and compile the code:
+  cd build
+  ../../../tools/genmake2 -mpi -mods ../code [-of my_platform_optionFile]
+  make depend
+  make
+  cd ..
+
+To run:
+  cd run
+  ln -s ../input/* .
+  ln -s ../build/mitgcmuv .
+  mpiexec -np 2 ./mitgcmuv > output.txt
+  cd ..
+
+There is comparison output in the directory:
+  results/output.txt
+
+Comments:
+  The input data is real*8 and generated using the python notebook config.ipynb

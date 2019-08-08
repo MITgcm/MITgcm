@@ -1,0 +1,98 @@
+# Model parameters
+# Continuous equation parameters
+ &PARM01
+ viscAr=5.E-5,
+#- Use QG version of Leith dynamic viscosity
+ viscC2LeithQG = 1.,
+#- This is the max Viscosity used, and it scales
+#  with grid size and timestep
+ viscAhGridMax = 1.,
+#- Use the full grad(vort) and grad(div)?
+ useFullLeith=.FALSE.,
+# Coriolis
+ f0=-1.363e-4,
+ beta=1.313e-11,
+# Densities
+ rhoConst=1035.,
+ rhoConstFresh=1000.,
+# Equation of state
+ eosType='LINEAR',
+#- Using Temperature as only Active Tracer
+ tAlpha=2.E-4,
+#- Salinity doesn't affect density
+ sBeta =0.E-4,
+ tempStepping=.TRUE.,
+ saltStepping=.FALSE.,
+ rhoNil=1035.,
+ tRef= 49*5.,
+ sRef= 49*5.,
+# free surface paramters
+ gravity=9.81,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+# Diffusivity and mixing
+ ivdc_kappa=10.,
+ diffKhT=1000.,
+ diffKrT=1.E-5,
+ implicitDiffusion=.TRUE.,
+ implicitViscosity=.TRUE.,
+ vectorInvariantMomentum=.TRUE.,
+ useJamartWetPoints=.TRUE.,
+# Advection scheme
+ tempAdvScheme=7,
+ staggerTimeStep=.TRUE
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ useSingleCpuIO=.TRUE.,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dTargetResidual=1.E-7,
+ cg2dMaxIters=1000,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0=0,
+# nTimeSteps=200,
+ deltaT=1000.0,
+ pChkptFreq=31104000.0,
+ chkptFreq=15552000.0,
+ dumpFreq=0,
+ monitorFreq=50000.,
+ monitorSelect=2,
+ tauThetaClimRelax=864000.,
+#-for longer run (30.0 yr):
+ nTimeSteps=933120,
+# monitorFreq=864000.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ delX=20*50.E3,
+ delY=40*50.E3,
+ delR=   5.48716549,   6.19462098,   6.99291201,   7.89353689,
+         8.90937723,  10.05483267,  11.34595414,  12.80056778,
+        14.43837763,  16.28102917,  18.35210877,  20.67704362,
+        23.28285446,  26.1976981 ,  29.45012046,  33.06792588,
+        37.07656002,  41.496912  ,  46.34247864,  51.61592052,
+        57.30518684,  63.37960847,  69.78661289,  76.44996107,
+        83.27047568,  90.13003112,  96.89898027, 103.44631852,
+       109.65099217, 115.4122275 , 120.65692923, 125.34295968,
+       129.45821977, 133.01641219, 136.05088105, 138.60793752,
+       140.74074276, 142.50436556, 143.95220912, 145.133724  ,
+       146.09317287, 146.86917206, 147.49475454, 147.99774783,
+       148.40131516, 148.72455653, 148.98310489, 149.18968055,
+       149.35458582,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile='bathy.bin'
+ zonalWindFile='zonal_wind.bin',
+ meridWindFile=,
+ hydrogThetaFile='temperature.bin',
+ thetaClimFile='T_surf.bin',
+ &

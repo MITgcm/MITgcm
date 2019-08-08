@@ -1,0 +1,7 @@
+# Packages
+ &PACKAGES
+ useRBCS=.TRUE.,
+ useDiagnostics=.TRUE.,
+ useGMRedi=.TRUE.,
+ useLayers=.TRUE.,
+ &
