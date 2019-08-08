@@ -468,6 +468,8 @@ PARM01 - Continuous equation parameters
        :end-at: implicitDiff
        :lineno-match:
 
+.. _tut_baroc_linear_eos:
+
 - The following parameters tell the model to use a linear equation of state. 
   Note a list of :varlink:`Nr` (=15, from :filelink:`SIZE.h <verification/tutorial_baroclinic_gyre/code/SIZE.h>`)
   potential temperature values in :math:`^{\circ}\mathrm{C}` is specified for parameter :varlink:`tRef`, ordered from surface to depth.
@@ -668,6 +670,7 @@ File `input/data.diagnostics`
     :linenos:
     :caption: verification/tutorial_barotropic_gyre/input/data.diagnostics
 
+.. _baroc_diags_parms:
 
 DIAGNOSTICS_LIST - Diagnostic Package Choices
 #############################################
@@ -1021,3 +1024,182 @@ to do so in matlab (reading in files using  :filelink:`utils/matlab/rdmds.m`), o
 :varlink:`globalFiles` to ``.TRUE.`` and the model will output global files for you (note this option is not available for :filelink:`pkg/mnc` output).
 One additional difference between :filelink:`pkg/msdio` and
 :filelink:`pkg/mnc` is that :ref:`Diagnostics Per Level Statistics <baroc_stat_diags>` are written in plain text, not binary, with :filelink:`pkg/msdio`.
+
+Model solution
+--------------
+
+In this section, we will examine details of the model solution,
+using annual mean time average data provided in diagnostics files ``dynStDiag.nc``, ``dynDiag.nc``, and ``surfDiag.nc``.
+See companion :filelink:`matlab file <../../../verification/tutorial_baroclinic_gyre/input/matlab_plots.m>`
+or python file which show example code to create figures plotted in this section.
+
+Our ocean sector model is forced mechanically by wind stress and thermodynamically
+though temperature relaxation at the surface. As such,
+we expect our solution to not only exhibit wind-driven gyres in the upper layers,
+but also include a deep, overturning circulation. Our focus in this section
+will be on the former; this component of the solution equilibrates on a time scale of decades,
+more or less, whereas the deep cell depends on a slower, diffusive timescale.
+We will begin by examining some of our :ref:`Diagnostics Per Level Statistics <baroc_stat_diags>` output, to assess
+how close we are to equilibration at different ocean model levels. Recall we've requested
+these statistics to be computed monthly. Alternatively, with some additional calculations, similar
+statistics could be computed using our annual mean :ref:`Diagnostics Package Choices <baroc_diags_parms>` (but hey, in addition
+to the higher frequency of output without taxing our storage requirements,
+isn't it simpler to let MITgcm do the statistical number crunching than to write matlab or python code?)
+
+
+Load diagnostics ``TRELAX_ave``, ``THETA_lv_avg``, and ``THETA_lv_std`` from file ``dynStDiag.nc``.
+In :numref:`baroclinic_gyre_trelax_timeseries`\a
+we plot the global model surface mean heat flux (``TRELAX_ave``) as a function of time.
+At the beginning of the run,
+we observe that the ocean is cooling dramatically; this is mainly because our ocean surface layer is
+initialized to a uniform :math:`30^{\circ}` C (as specified :ref:`here <tut_baroc_linear_eos>`), which results in
+very strong relaxation initially in the northern portion of ocean model, where the
+restoring temperature is just above :math:`0^{\circ}` C.
+(As an aside comment, such large initialization shocks are often best avoided
+if possible, as they may cause model instability, which
+may necessitate smaller time steps at model onset and/or more realistic initial conditions.)
+However, this initial burst of cooling quickly diminishes over the first decade
+of integration, as the surface layer approaches temperature values close to the specified profile;
+see  :numref:`baroclinic_gyre_trelax_timeseries`\b
+where the mean temperature at surface, thermocline, and abyssal depth are plotted as a function of time.
+Note that while the total heat flux shows that the global heat content is slowly decreasing,
+even after 100 years, the temperature of the deepest water is slowly warming.
+In :numref:`baroclinic_gyre_trelax_timeseries`\c we plot standard deviation of temperature
+(by level) over time. Given that each level is initialized at uniform temperature,
+initially the standard deviation is zero, but should tend to level off at some non-zero
+value over time, as the solution at each depth equilibrates.
+Not surprisingly, the largest gradients in temperature exist at the surface, whereas in the
+abyss the differences in temperature are quite small.
+In summary, we conclude that while the surface appears to approach equilibrium rapidly,
+even after 100 years there are changes occurring in deep circulation, presumably related
+to the meridional overturning circulation.
+We leave it as an exercise to the reader to
+integrate the solution further and/or examine and calculate the meridional overturning circulation strength over time.
+
+
+  .. figure:: figs/trelax_theta_timeseries.png
+      :width: 100%
+      :align: center
+      :alt: baroclinic gyre surface heat flux
+      :name: baroclinic_gyre_trelax_timeseries
+
+      a\) Surface heat flux due to temperature restoring, negative values indicate heat flux out of the ocean; b) and c) potential temperature mean and standard deviation by level, respectively.
+
+
+Next, let's examine the effect of wind stress on the ocean's upper layers.
+Given the orientation of the wind stress and its variation over a full sine wave as shown in :numref:`baroclinic_gyre_config`
+(crudely mimicking easterlies in the tropics, mid-latitude westerlies, and polar easterlies),
+we anticipate a double-gyre solution, with a subtropical gyre and a subpolar gyre.
+Let's begin by examining the free surface solution (load diagnostics ``ETAN`` and ``TRELAX`` from file ``surfDiag.nc``).
+In :numref:`baroclinic_gyre_trelax_freesurface` we show contours of free surface height
+(``ETAN``; this is what we plotted in our :ref:`barotropic gyre tutorial solution <barotropic_gyre_solution>`)
+overlaying a 2-D color plot of ``TRELAX``
+(red is where heat is released from the ocean, blue where heat enters the ocean), averaged over year 100.
+Note that a subtropical gyre is readily apparent, as suggested by geostropic currents in balance with
+the free surface elevation (not shown, but the reader is encouraged to load diagnostics ``UVEL`` and ``VVEL`` 
+and plot the circulation at various levels). Heat is entering the ocean mainly along the southern boundary,
+where upwelling of cold water is occurring, but also along the boundary current between :math:`50^{\circ}`\ N and :math:`65^{\circ}`\ N, where we
+would expect southward flow (i.e., advecting water that is colder than the local restoring temperature).
+Heat is exiting the ocean where the western boundary current transports warm water northward,
+before turning eastward into the basin
+at :math:`40^{\circ}`\ N, and also weakly throughout the higher latitude bands,
+where deeper mixed layers occur (not shown, but variations in mixed layer
+depth can be easily visualized by loading diagnostic ``MXLDEPTH``).
+
+ .. figure:: figs/trelax_freesurface.png
+      :width: 100%
+      :align: center
+      :alt: baroclinic gyre free surface and relaxation
+      :name: baroclinic_gyre_trelax_freesurface
+
+      Contours of free surface height (m) averaged over year 100; shading is surface heat flux due to temperature restoring (W/m\ :sup:`2`), red indicating heat release out of the ocean.
+
+So what happened to our model solution subpolar gyre? Let's compute depth-integrated velocity :math:`u_{bt}, v_{bt}`
+and use it calculate the barotropic transport streamfunction:
+
+
+.. math:: u_{bt} = - \frac{\partial \Psi}{\partial y}, \phantom{WW} v_{bt} = \frac{\partial \Psi}{\partial x}
+
+
+Compute :math:`u_{bt}` by summing the diagnostic ``UVEL`` multiplied by gridcell depth
+(``grid.nc`` variable :varlink:`drF`, i.e.,
+the separation between gridcell faces in the vertical). Now do a cumulative sum of
+:math:`-u_{bt}` times the gridcell spacing the in the :math:`y` direction (you
+will need to load ``grid.nc`` variable :varlink:`dyG`, the separation between gridcell faces in :math:`y`).
+A plot of the resulting :math:`\Psi` field is shown in :numref:`baroclinic_gyre_psi`.
+Note one could also cumulative sum :math:`v_{bt}` times the grid spacing in the :math:`x`-direction and obtain a similar result.
+
+
+ .. figure:: figs/baroc_psi.png
+      :width: 75%
+      :align: center
+      :alt: baroclinic gyre barotropic streamfunction
+      :name: baroclinic_gyre_psi
+
+      Barotropic streamfunction (Sv) as computed over year 100.
+
+
+When velocities are integrated over depth, the subpolar gyre is readily apparent,
+as might be expected given our wind stress forcing profile. The pattern in :numref:`baroclinic_gyre_psi` in fact resembles
+the double-gyre free surface solution we observed in :numref:`baro_jet_solution`
+from tutorial :ref:`sec_eg_baro`, when our model grid was only a single layer in the vertical. 
+
+Is the magnitude of :math:`\Psi`
+we obtain in our solution reasonable? To check this, consider the Sverdrup transport:
+
+.. math:: \rho v_{bt} = \hat{k} \cdot \frac{\nabla \times \vec{\tau}}{\beta} 
+
+If we plug in a typical mid-latitude value for :math:`\beta` (:math:`2 \times 10^{-11}` m\ :sup:`-1` s\ :sup:`-1`)
+and note that :math:`\tau` varies by :math:`0.1` Nm\ :sup:`-2` over :math:`15^{\circ}` latitude,
+and multiply by the width of our ocean sector, we obtain an estimate of approximately 20 Sv.
+This estimate agrees reasonably well with the strength of the circulation in :numref:`baroclinic_gyre_psi`.
+
+Finally, let's examine the model solution potential temperature field averaged over year 100.
+Read in diagnostic ``THETA`` from the file ``dynDiag.nc``. :numref:`baroclinic_gyre_thetaplots`\a shows a plan view of temperature
+at 220 m depth (vertical level k=4). :numref:`baroclinic_gyre_thetaplots`\b shows a slice in the :math:`xz` plane at :math:`28.5^{\circ}`\ N
+(:math:`y`-dimension j=15), through the center of the subtropical gyre. 
+
+
+ .. figure:: figs/baroc_thetaplots.png
+      :width: 100%
+      :align: center
+      :alt: baroclinic gyre plots of theta
+      :name: baroclinic_gyre_thetaplots
+
+      Contour plot of potential temperature at year 100 a) at a depth of 220 m and b) through a section at :math:`28.5^{\circ}`\ N. Contour interval is 2K.
+
+
+
+The dynamics of the subtropical gyre are governed by
+Ventilated Thermocline Theory (see, for example, Pedlosky (1996) :cite:`pedlosky:96` or
+Vallis (2017) :cite:`vallis:17`). Note the presence of warm "mode water" on the western side of the basin;
+the contours of the warm water in the southern half of the sector crudely align with the free surface
+heights we observed in :numref:`baroclinic_gyre_psi`. In :numref:`baroclinic_gyre_thetaplots`\b note
+the presence of a thermocline, i.e., the bunching up of the contours 
+between 200 m and 400 m depth, with weak stratification below the thermocline.
+What sets the penetration depth of the subtropical gyre? Following a simple advective scaling argument
+(see Vallis (2017) :cite:`vallis:17` or Cushman-Roisin and Beckers (2011) :cite:`cushmanroisin:11`;
+this is obtained via thermal wind and the linearized barotropic vorticity equation),
+the depth of the thermocline :math:`H` should scale as:
+
+.. math:: H = \left( \frac{w_e f^2 L_x}{\beta \Delta b} \right) ^2 = \left( \frac{(\tau / L_y) f L_x}{\beta \rho'} \right) ^2
+
+
+where :math:`w_e` is a representive value for Ekman pumping, :math:`\Delta b = g \rho' / \rho_0`
+is the variation in buoyancy across the gyre,
+and :math:`L_x` and :math:`L_y` are length scales in the
+:math:`x` and :math:`y` directions, respectively.
+Plugging in applicable values at :math:`30^{\circ}`\ N, 
+we obtain an estimate for :math:`H` of 200 m, which agrees quite well with that observed in :numref:`baroclinic_gyre_thetaplots`\b.
+
+
+
+
+
+
+
+
+
+
+
+
