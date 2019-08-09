@@ -1,3 +1,8 @@
+%- Uses few MITgcm matlab scripts that can be found in MITgcm/utils/matlab/
+%   (rdmds.m & load_grid.m) and in MITgcm/utils/matlab/cs_grid/ (split_C_cub.m)
+%  Suggestion: uncomment the 2 folowing lines to access them:
+% addpath ../../../utils/matlab/
+% addpath ../../../utils/matlab/cs_grid
 
 if size(who('kpr'),1) > 0,
  fprintf('kpr is defined and = %i \n',kpr);
