@@ -8,4 +8,9 @@
 # MITGCM_TROPT - Test report options
 #
 ${MITGCM_DECMD} "cd /MITgcm/verification; ./testreport -t ${MITGCM_EXP} ${MITGCM_TROPT} | tee ${MITGCM_EXP}/testreport_out.txt"
-${MITGCM_DECMD} "cd /MITgcm/verification; python verification_parser.py -filename ${MITGCM_EXP}/testreport_out.txt -threshold ${MITGCM_PRECS}"
+if [ -z "${MITGCM_INPUT_DIR_PAT}" ]
+then
+ ${MITGCM_DECMD} "cd /MITgcm/verification; python verification_parser.py -filename ${MITGCM_EXP}/testreport_out.txt -threshold ${MITGCM_PRECS}"
+else
+ ${MITGCM_DECMD} "cd /MITgcm/verification; python verification_parser.py -filename ${MITGCM_EXP}/testreport_out.txt -threshold ${MITGCM_PRECS} -input_dir_pat ${MITGCM_INPUT_DIR_PAT}"
+fi
