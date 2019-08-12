@@ -47,12 +47,7 @@
 #                (see "available_diagnostics.log" file for the full list of diags)
 #--------------------
  &DIAG_STATIS_PARMS
-  stat_fields(1:9,1) = 'ETAN    ','ETANSQ  ','DETADT2 ',
-                       'UVEL    ','VVEL    ','WVEL    ',
-                       'THETA   ','SALT    ','TRELAX  ',
+  stat_fields(1:9,1) = 'THETA   ','TRELAX  ',
   stat_fName(1) = 'dynStDiag',
   stat_freq(1) = 2592000.,
-  stat_fields(1:3,2) = 'RHOAnoma','DRHODR  ','CONVADJ ',
-  stat_fName(2) = 'oceStDiag',
-  stat_freq(2) = 2592000.,
- &
+  &

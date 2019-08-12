@@ -14,10 +14,10 @@ The configuration is similar to the double-gyre setup first solved numerically
 in Cox and Bryan (1984) :cite:`cox:84`: the model is configured to 
 represent an enclosed sector of fluid on a sphere, spanning the tropics to mid-latitudes,
 :math:`60^{\circ} \times 60^{\circ}` in lateral extent.
-The fluid is :math:`1.8` km deep and is forced by a constant in time zonal wind
-stress, :math:`\tau_{\lambda}`, that varies sinusoidally in the
+The fluid is :math:`1.8` km deep and is forced by a zonal wind
+stress which is constant in time, :math:`\tau_{\lambda}`, varying sinusoidally in the
 north-south direction. The Coriolis parameter, :math:`f`, is defined
-according to latitude, :math:`\varphi`
+according to latitude :math:`\varphi`
 
 .. math::
    f(\varphi) = 2 \Omega \sin( \varphi )
@@ -31,7 +31,7 @@ The sinusoidal wind-stress variations are defined according to
 where :math:`L_{\varphi}` is the lateral domain extent
 (:math:`60^{\circ}`), :math:`\varphi_o` is set to :math:`15^{\circ} \text{N}` and :math:`\tau_0` is :math:`0.1 \text{ N m}^{-2}`.
 :numref:`baroclinic_gyre_config` summarizes the
-configuration simulated. As indicated by the axes in the lower left of the figure the
+configuration simulated. As indicated by the axes in the lower left of the figure, the
 model code works internally in a locally orthogonal coordinate
 :math:`(x,y,z)`. For this experiment description the local orthogonal
 model coordinate :math:`(x,y,z)` is synonymous with the coordinates
@@ -39,7 +39,7 @@ model coordinate :math:`(x,y,z)` is synonymous with the coordinates
 Initially the fluid is stratified
 with a reference potential temperature profile that varies from :math:`\theta=30 \text{ } ^{\circ}`\ C
 in the surface layer to :math:`\theta=2 \text{ } ^{\circ}`\ C in the bottom layer.
-The equation of state used in this experiment is linear
+The equation of state used in this experiment is linear:
 
 .. math::
    \rho = \rho_{0} ( 1 - \alpha_{\theta}\theta^{\prime} )
@@ -117,7 +117,7 @@ coordinates as follows:
 
 .. math::
    \frac{D\theta}{Dt} -
-   K_{h}\nabla_{h}^2\theta  - K_{z}\frac{\partial^{2}\theta}{\partial z^{2}} = {\cal F}_\theta
+   \kappa_{h}\nabla_{h}^2\theta  - \kappa_{z}\frac{\partial^{2}\theta}{\partial z^{2}} = {\cal F}_\theta
    :label: barooc_gyre_theta
 
 .. math::
@@ -126,8 +126,12 @@ coordinates as follows:
 
 where :math:`u` and :math:`v` are the components of the horizontal flow
 vector :math:`\vec{u}` on the sphere
-(:math:`u=\dot{\lambda},v=\dot{\varphi}`), and :math:`a` is the distance from the center of the Earth. The terms
-:math:`D\widehat{u}` and :math:`D\widehat{v}` are the components of the
+(:math:`u=\dot{\lambda},v=\dot{\varphi}`), :math:`a` is the distance from the center of the Earth,
+:math:`\rho_c` is a fluid density (which appears in the momentum equations,
+and can be set differently than :math:`\rho_0` in :eq:`rhoprime_lineareos`),
+:math:`A_h` and :math:`A_v` are horizontal and vertical viscosity, and 
+:math:`\kappa_h` and :math:`\kappa_v` are horizontal and vertical diffusivity, respectively. 
+The terms :math:`D\widehat{u}` and :math:`D\widehat{v}` are the components of the
 vertical integral term given in equation :eq:`free-surface` and explained
 in more detail in :numref:`press_meth_linear`.
 However, for the problem presented here, the continuity relation
@@ -241,11 +245,11 @@ value in our domain (i.e., in the south) is :math:`\approx 110` km. With the Mun
    M_{w} = \frac{2\pi}{\sqrt{3}}  \left( \frac { A_{h} }{ \beta } \right) ^{\frac{1}{3}}
    :label: baroc_munk_layer
 
-in order to to have a well resolved boundary current in the sub-tropical gyre we will set
+in order to to have a well resolved boundary current in the subtropical gyre we will set
 :math:`A_{h} = 5000` m\ :sup:`2` s\ :sup:`--1`. This results in a boundary current 
 resolved across two to three grid cells in the southern portion of the domain.
 
-Given our choice for :math:`A_{h}` in this experiment is an order of magnitude larger than in
+Given that our choice for :math:`A_{h}` in this experiment is an order of magnitude larger than in
 tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`,
 let's re-examine the stability of horizontal Laplacian friction:
 
@@ -264,10 +268,10 @@ Finally, stability of vertical diffusion of momentum:
    :label: baroc_laplacian_v_stability
  
 Here we will choose :math:`A_{v} = 1\times10^{-2}` m\ :sup:`2` s\ :sup:`--1`,
-which evaluates to 0.02 for our maximum :math:`\Delta z`,
+so :math:`S_{lv}` evaluates to 0.02 for our maximum :math:`\Delta z`,
 well below the stability threshold. Note if we were to use Adams Bashforth II for diffusion of tracers 
 the same check would apply, with :math:`\kappa_{v}` replacing :math:`A_{v}`. However, we will instead choose
-and implicit scheme for computing vertical diffusion of tracers (see :numref:`baroc_input_data`), which is unconditionally stable. 
+an implicit scheme for computing vertical diffusion of tracers (see :numref:`baroc_input_data`), which is unconditionally stable. 
 
 .. _sec_eg_baroclinic_code_config:
 
@@ -312,8 +316,8 @@ package groups are defined in :filelink:`/pkg/pkg_groups`); in fact, if no ``pac
 (e.g., none was specified in tutorial :ref:`sec_eg_baro`), ``gfd`` is the default selection of included packages.
 In addition to package group ``gfd`` we include two additional packages (individual packages, not package groups), :filelink:`mnc </pkg/mnc>`
 and :filelink:`diagnostics </pkg/diagnostics>`. Package :filelink:`mnc </pkg/mnc>` is required
-for output dumped in `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ format. Package :filelink:`diagnostics </pkg/diagnostics>`
-allows one to choose output from a extensive list of model diagnostics, and output frequency, with multiple time averaging or snapshot options.
+for output to be dumped in `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ format. Package :filelink:`diagnostics </pkg/diagnostics>`
+allows one to choose output from a extensive list of model diagnostics, and specify output frequency, with multiple time averaging or snapshot options available.
 Without this package enabled, output is limited to a small number of snapshot output fields. Subsequent tutorial experiments will explore the use
 of packages which expand the physical and scientific capabilities of MITgcm, e.g., such as physical parameterizations or modeling capabilities
 for tracers, ice, etc., that are not compiled unless specified.
@@ -347,7 +351,7 @@ is required when we demonstrate how to run the model using either
   in MITgcm array storage there are an additional 2 border rows surrounding
   each tile which contain model data from neighboring tiles.
   Some horizontal advection schemes and other parameter and setup choices
-  may require a larger overlap setting (see :numref:`adv_scheme_summary`).
+  require a larger overlap setting (see :numref:`adv_scheme_summary`).
   In our configuration, we are using a second-order center-differences advection scheme (the MITgcm default)
   which does not requires setting a overlap beyond the MITgcm minimum 2.
 
@@ -359,7 +363,7 @@ is required when we demonstrate how to run the model using either
 - These lines set parameters :varlink:`nSx` and :varlink:`nSy`,
   the number of model tiles in the :math:`x` and :math:`y` directions, respectively,
   which execute on a single process. Initially, we will run the model on a single core,
-  thus both :varlink:`nSx` and :varlink:`nSy` are set to 2 so that all :math:`2*2=4` tiles are integrated forward in time.
+  thus both :varlink:`nSx` and :varlink:`nSy` are set to 2 so that all :math:`2 \times 2 = 4` tiles are integrated forward in time.
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/code/SIZE.h
        :start-at: nSx =
@@ -368,7 +372,7 @@ is required when we demonstrate how to run the model using either
 
 - These lines set parameters :varlink:`nPx` and :varlink:`nPy`, the number of processes
   to use in the :math:`x` and :math:`y` directions, respectively.
-  As discussed, initially we will run using a single process, so for now these parameters are both set to 1.
+  As noted, initially we will run using a single process, so for now these parameters are both set to 1.
  
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/code/SIZE.h
        :start-at: nPx =
@@ -392,7 +396,7 @@ File :filelink:`code/DIAGNOSTICS_SIZE.h <verification/tutorial_baroclinic_gyre/c
 
 In the default version :filelink:`/pkg/diagnostics/DIAGNOSTICS_SIZE.h` the storage array for diagnostics is purposely
 set quite small, in other words forcing the user to assess how many diagnostics will be computed and thus choose an appropriate 
-size for a storage array. In the above file we've modified the value of parameter :varlink:`numDiags`:
+size for a storage array. In the above file we have modified the value of parameter :varlink:`numDiags`:
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/code/DIAGNOSTICS_SIZE.h
        :start-at: numDiags =
@@ -415,15 +419,15 @@ File :filelink:`input/data <verification/tutorial_baroclinic_gyre/input/data>`
     :linenos:
     :caption: verification/tutorial_barotropic_gyre/input/data
 
-The parameters that are significant for this configuration
-are as follows.
+Parameters for this configuration
+are set as follows.
 
 PARM01 - Continuous equation parameters
 ####################################### 
 
 - These lines set parameters :varlink:`viscAh` and :varlink:`viscAr`, the horizontal and vertical Laplacian viscosities respectively,
   to :math:`5000` m\ :sup:`2` s\ :sup:`--1` and :math:`1 \times 10^{-2}` m\ :sup:`2` s\ :sup:`--1`. Note the subscript :math:`r`
-  is used for the vertical, reflecting MITgcm's generic :math:`r`-vertical coordinate capability (i.e., the model is of capable of
+  is used for the vertical, reflecting MITgcm's generic :math:`r`-vertical coordinate capability (i.e., the model is capable of
   using either a :math:`z`-coordinate or a :math:`p`-coordinate system).
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
@@ -432,7 +436,7 @@ PARM01 - Continuous equation parameters
        :lineno-match:
 
 - These lines set parameters to specify the boundary conditions for momentum on the model domain sidewalls and bottom.
-  Parameter :varlink:`no_slip_sides`,  is set to ``.TRUE.``, i.e., no-slip lateral boundary conditions (the default), 
+  Parameter :varlink:`no_slip_sides` is set to ``.TRUE.``, i.e., no-slip lateral boundary conditions (the default), 
   which will yield a Munk (1950) :cite:`munk:50` western boundary solution.
   Parameter :varlink:`no_slip_bottom` is set to ``.FALSE.``, i.e., free-slip bottom boundary condition (default is true).
   If instead of a Munk layer we desired a Stommel (1948) :cite:`stommel:48` western boundary layer solution, we would 
@@ -455,13 +459,13 @@ PARM01 - Continuous equation parameters
        :lineno-match:
 
 - By default, MITgcm does not apply any parameterization to mix statically unstable columns of water. In a coarse resolution, hydrostatic
-  configuration, typically such parameterization is desired. Although a traditional convective adjustment scheme is available
+  configuration, typically such a parameterization is desired. Although a traditional convective adjustment scheme is available
   (this can be employed through the :varlink:`cAdjFreq` parameter, see :numref:`ocean_convection_parms`), we recommend a scheme which
   simply applies (presumably, large) vertical diffusivity between statically unstable grid cells in the vertical. This vertical diffusivity
   is set by parameter :varlink:`ivdc_kappa`, which here we set to :math:`1.0` m\ :sup:`2` s\ :sup:`--1`. This scheme requires that
-  :varlink:`implicitDiffusion` is set to ``.TRUE.`` (see :numref:`implicit-backward-stepping`; in other words, applying a 
+  :varlink:`implicitDiffusion` is set to ``.TRUE.`` (see :numref:`implicit-backward-stepping`; more specifically, applying a 
   large vertical diffusivity to represent convective mixing requires the use of an implicit
-  time-stepping method for vertical diffusion, rather than Adams Bashforth II).
+  time-stepping method for vertical diffusion, rather than Adams Bashforth II).
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
        :start-at: ivdc
@@ -477,7 +481,7 @@ PARM01 - Continuous equation parameters
   First, anomalies in density are computed using this reference :math:`\theta`, :math:`\theta'(x,y,z) = \theta(x,y,z) - \theta_{ref}(z)`;
   see use in :eq:`rho_lineareos` and :eq:`rhoprime_lineareos`.
   Second, the model will use these reference temperatures for its initial state, as we are not providing a pickup file
-  nor specifying an initial temperature hydrographic file (we will do so, however, in later tutorials). 
+  nor specifying an initial temperature hydrographic file (in later tutorials we will demonstrate how to do so). 
   For each depth level the initial and reference profiles will be uniform in :math:`x` and :math:`y`.
   Note when checking static stability or computing :math:`N^2`, the density gradient resulting from these specified reference levels
   is added to :math:`\partial \rho' / \partial z` from :eq:`rhoprime_lineareos`.
@@ -492,7 +496,7 @@ PARM01 - Continuous equation parameters
   i.e., the density of water at tRef(k=1). This value will also be used
   as :math:`\rho_c` (parameter :varlink:`rhoConst`) in :eq:`baroc_gyre_umom`-:eq:`baroc_gyre_press`,
   lacking a separate explicit assignment of :varlink:`rhoConst` in ``data``. 
-  (note this is the model default value for :varlink:`rhoNil`)
+  Note this value is the model default value for :varlink:`rhoNil`.
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
        :start-at: rhoNil
@@ -513,7 +517,7 @@ PARM01 - Continuous equation parameters
   similar to tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`. Note
   we have added parameter :varlink:`exactConserv`, set to ``.TRUE.``: this instructs the model to
   recompute divergence after the pressure solver step, ensuring volume conservation of the free surface solution
-  (the model default is NOT to recompute divergence, but given the small numerical cost, we recommend doing so).
+  (the model default is NOT to recompute divergence, but given the small numerical cost, we typically recommend doing so).
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
        :start-at: rigidLid
@@ -541,17 +545,18 @@ PARM03 - Time stepping parameters
 - In tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>` we specified a starting iteration number :varlink:`nIter0`
   and a number of time steps to integrate, :varlink:`nTimeSteps`. Here we opt to use another approach to control run start and duration:
   we set a :varlink:`startTime`  and :varlink:`endTime`, both in units of seconds. Given a starting time of 0.0, the model starts
-  from rest using specified initial values of temperature (here, as noted above, from the :varlink:`tRef` parameter) rather than attempting
+  from rest using specified initial values of temperature (here, as previously noted, from the :varlink:`tRef` parameter) rather than attempting
   to restart from a saved checkpoint file. The specified value for :varlink:`endTime`, 12000.0 seconds
   is equivalent to 10 time steps, set for testing purposes.
-  To integrate over a longer, more physically relevant period of time, uncomment the :varlink:`endTime` line near the end of this parameter block.
+  To integrate over a longer, more physically relevant period of time, uncomment the :varlink:`endTime` line
+  located near the end of this parameter block.
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
        :start-at: startTime
        :end-at: endTime
        :lineno-match:
 
-- Remaining time stepping parameter choices (specifically, :math:`\Delta t` choice,
+- Remaining time stepping parameter choices (specifically, :math:`\Delta t`,
   checkpoint frequency, output frequency, and monitor settings)
   are similar to those described
   in tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`;
@@ -584,14 +589,14 @@ PARM04 - Gridding parameters
        :end-at: usingSpherical
        :lineno-match:
 
-- These lines set the horizontal grid spacing of the model grid, as vectors :varlink:`delX` and :varlink:`delY`
+- These lines set the horizontal grid spacing, as vectors :varlink:`delX` and :varlink:`delY`
   (i.e., :math:`\Delta x` and :math:`\Delta y` respectively), with units of degrees
   as dictated by our choice :varlink:`usingSphericalPolarGrid`.
   As before, this syntax indicates that we specify 62 values in both the :math:`x` and :math:`y` directions, which matches the
-  domain size as specified in :filelink:`SIZE.h <verification/tutorial_barotropic_gyre/code/SIZE.h>`.
+  global domain size as specified in :filelink:`SIZE.h <verification/tutorial_barotropic_gyre/code/SIZE.h>`.
   Our ocean sector domain starts at :math:`0^\circ` longitude and :math:`15^\circ` N; accounting for a surrounding land
   row of cells, we thus set the origin in longitude to :math:`-1.0^\circ` and in latitude to :math:`14.0^\circ`.
-  Note again that our origin specifies the southern and western edges of the gridcell, not the cell center location.
+  Again note that our origin specifies the southern and western edges of the gridcell, not the cell center location.
   Setting the origin in latitude is critical given that it affects the initialization of the Coriolis force
   (the default value for :varlink:`ygOrigin` is :math:`0.0^\circ`),
   whereas setting :varlink:`xgOrigin` is optional given that absolute longitude does not appear in the equation discretization.
@@ -622,7 +627,7 @@ PARM05 - Input datasets
        :end-at: meridWindFile
        :lineno-match:
  
-- This line specifies parameter :varlink:`thetaClimFile`, the filename for the (2D) restoring temperature field.
+- This line specifies parameter :varlink:`thetaClimFile`, the filename for the (2-D) restoring temperature field.
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
        :start-at: thetaClimFile
@@ -642,8 +647,7 @@ package :filelink:`mnc <pkg/mnc>` (see :numref:`pkg_mnc`) specifies that model o
 and package :filelink:`diagnostics <pkg/diagnostics>` (see :numref:`sub_outp_pkg_diagnostics`) allows user-selectable diagnostic output.
 The boolean parameters set are :varlink:`useMNC` and :varlink:`useDiagnostics`, respectively. 
 Note these add-on packages also need to be specified when the model is compiled, see :numref:`tut_baroc_code_config`.
-Otherwise, only standard packages (i.e., those compiled in MITgcm by default) are required for this setup,
-so no further customization is necessary.
+Otherwise, only standard packages (i.e., those compiled in MITgcm by default) are required for this setup.
 
 .. _baroc_datamnc:
 
@@ -675,7 +679,7 @@ File `input/data.diagnostics`
 DIAGNOSTICS_LIST - Diagnostic Package Choices
 #############################################
 
-In this section we specify what diagnostics we want to compute, how frequently to write, and the name of output files.
+In this section we specify what diagnostics we want to compute, how frequently to compute them, and the name of output files.
 Multiple diagnostic fields can be grouped into individual files (i.e., an individual output file here is associated with a 'list' of diagnostics).
 
 .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data.diagnostics
@@ -687,9 +691,10 @@ The above lines tell MITgcm that our first list will consist of three diagnostic
 
   - ETAN - the linearized free surface height (m)
   - TRELAX - the heat flux entering the ocean due to surface temperature relaxation (W/m\ :sup:`2`)
-  - MXLDEPTH - the depth of the mixed layer (m), as defined here by a prescribed drop in temperature from the surface
+  - MXLDEPTH - the depth of the mixed layer (m), as defined here by a given magnitude decrease
+    in density from the surface (we'll use the model default for :math:`\Delta  \rho`)
  
-These variables are specified in variable :varlink:`fields`; the first index is specified as ``1:«NUMBER_OF_DIAGS»``, the second index
+These variables are specified in parameter :varlink:`fields`: the first index is specified as ``1:«NUMBER_OF_DIAGS»``, the second index
 designates this for diagnostics list 1. Next, the output filename for diagnostics list 1 is specified  in variable :varlink:`fileName`. Finally,
 for this list we specify variable :varlink:`frequency` to provide time-averaged output every 31,536,000 seconds, i.e., once per year. Had we entered
 a negative value for :varlink:`frequency`, MITgcm would have instead written snapshot data at this interval. Finally, note that all these diagnostic
@@ -706,9 +711,9 @@ The diagnostics in list 2 are:
   - PHYHYD - hydrostatic pressure potential anomaly (m\ :sup:`2`/s\ :sup:`2`)
   - UVEL, VVEL, WVEL - the zonal, meridional, and vertical velocity components respectively (m/s)
 
-Note that we do not specify a parameter :varlink:`levels`, so all depth levels will be included in the output.
-An example of syntax to limit which depths are output is ``levels(1:5,2) = 1.,2.,3.,``, which would dump just the top three depth levels.
-Similar to list 1, we specify an output file name via parameter :varlink:`fileName`, and here specify a time-average period of 157,680,000 seconds (5 years)
+Here we did not specify parameter :varlink:`levels`, so all depth levels will be included in the output.
+An example of syntax to limit which depths are output is ``levels(1:5,2) = 1.,2.,3.,``, which would dump just the top three levels.
+We again specify an output file name via parameter :varlink:`fileName`, and here specify a time-average period of 157,680,000 seconds (5 years)
 through parameter :varlink:`frequency`.
 
 .. _baroc_stat_diags:
@@ -716,8 +721,8 @@ through parameter :varlink:`frequency`.
 DIAG_STATIS_PARMS - Diagnostic Per Level Statistics
 ###################################################
 
-Instead of dumping the full 2-D or 3-D diagnostic field, it is also possible to request output statistics averaged by level (for 3-D diagnostics) and globally,
-or for a pre-defined :math:`(x,y,z)` region  of the model grid. The statistics computed for each diagnostic are as follows:
+It is also possible to request output statistics averaged for global mean and by level average (for 3-D diagnostics) over the full domain,
+and/or for a pre-defined :math:`(x,y)` region  of the model grid. The statistics computed for each diagnostic are as follows:
 
   - (area weighted) mean (in both space and time, if time-averaged frequency is selected)
   - (area weighted) standard deviation
@@ -725,8 +730,8 @@ or for a pre-defined :math:`(x,y,z)` region  of the model grid. The statistics c
   - maximum value
   - volume of the area used in the calculation (multiplied by the number of time steps if time-averaged).
 
-Given that the full 3-D fields of these diagnostics are not output, it is possible to monitor statistical diagnostic output at much higher frequency
-without requiring copious amounts of free disk space.
+While these statistics could in theory also be calculated (by the user) from 2-D and 3-D :varlink:`DIAGNOSTICS_LIST` output, the advantage
+is that much higher frequency statistical output can be  achieved without filling up copious amounts of disk space.
 
 Options for namelist :varlink:`DIAG_STATIS_PARMS` are set as follows:
 
@@ -735,12 +740,12 @@ Options for namelist :varlink:`DIAG_STATIS_PARMS` are set as follows:
     :end-at: stat_freq
     :lineno-match:
 
-The syntax here is analogous with :varlink:`DIAGNOSTICS_LIST` namelist parameters, except the variable names begin with ``stat``
-(here, :varlink:`stat_fields`, :varlink:`stat_fName`, :varlink:`stat_freq`). Frequency can be set to snapshot output or time-averaged,
+The syntax here is analogous with :varlink:`DIAGNOSTICS_LIST` namelist parameters, except the parameter names begin with ``stat``
+(here, :varlink:`stat_fields`, :varlink:`stat_fName`, :varlink:`stat_freq`). Frequency can be set to snapshot or time-averaged output,
 and multiple lists of diagnostics (i.e., separate output files) can be specified. The only major difference from
 :varlink:`DIAGNOSTICS_LIST` syntax is that 2-D and 3-D diagnostics
-can be mixed in a list; for 3-D diagnostics, output statistics will be generated by level and globally.
-As noted, it is possible to select limited areal regions of interest, in addition to the global calculation.
+can be mixed in a list.
+As noted, it is possible to select limited horizontal regions of interest, in addition to the full domain calculation.
 
 
 File :filelink:`input/eedata <verification/tutorial_baroclinic_gyre/input/eedata>`
@@ -774,32 +779,32 @@ larger numbers for parameters :varlink:`endTime` and :varlink:`monitorFreq`. Thi
 will likely take several hours on a single processor (depending on your computer specs); below we also give instructions for running the model
 in parallel either using `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
 or multi-threaded (`OpenMP <https://en.wikipedia.org/wiki/OpenMP>`_), which
-will cut down significantly on run time.
+will cut down run time significantly.
 
 Output Files
 ~~~~~~~~~~~~
 
-As in tutorial :ref:`sec_eg_baro`, standard output is produced (redirected into file ``output.txt`` as specified in :numref:`baro_gyre_build_run`); as before, this file
+As in tutorial :ref:`sec_eg_baro`, standard output is produced (redirected into file ``output.txt`` as specified in :numref:`baro_gyre_build_run`); like before, this file
 includes model startup information, parameters, etc. (see :numref:`barotropic_gyre_std_out`). And because we set ``monitor_mnc=.FALSE.`` in :ref:`data.mnc <baroc_datamnc>`,
 our standard output file will include all monitor statistics output. Note monitor statistics and cg2d
-information are evaluated over the global domain, despite the division of the grid into four separate tiles.
+information are evaluated over the global domain, despite the bifurcation of the grid into four separate tiles.
 As before, the file ``STDERR.0000`` will contain a log of any run-time errors. 
 
 With :filelink:`pkg/mnc` compiled and activated in ``data.pkg``, other output is in `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ format: grid information,
 snapshot output specified in ``data``, diagnostics output specified in ``data.diagnostics`` and separate files containing hydrostatic pressure data (see below).
-There are two notable differences from standard binary output. Previously we specified that the grid was subdivided into four separate tiles (in :ref:`SIZE.h <baroc_code_size>`); 
-however, instead of a ``.XXX.YYY.`` file naming scheme for different files (as discussed :ref:`here <tut_barotropic_tilenaming>`),
-using :filelink:`pkg/nmc` the file names contain ``.t«nnn».`` where «nnn» is the tile number. Secondly, model data from multiple
-time snapshots (or periods) is included in a single file; although an iteration number is still part of the file name (here, ``0000000000``),
+There are two notable differences from standard binary output. Recall that we specified that the grid was subdivided into four separate tiles (in :ref:`SIZE.h <baroc_code_size>`); 
+instead of a ``.XXX.YYY.`` file naming scheme for different tiles (as discussed :ref:`here <tut_barotropic_tilenaming>`),
+with :filelink:`pkg/nmc` the file names contain ``.t«nnn».`` where «nnn» is the tile number. Secondly, model data from multiple
+time snapshots (or periods) is included in a single file. Although an iteration number is still part of the file name (here, ``0000000000``),
 this is the iteration number at the start of the run (instead of
-being the specific iteration number for the data contained in the file, as the case for standard binary output). Note that if you dump data frequently, standard binary can produce
+marking the specific iteration number for the data contained in the file, as the case for standard binary output). Note that if you dump data frequently, standard binary can produce
 huge quantities of separate files, whereas using `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ will greatly reduce the number of files. On the other hand, the 
 `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ files created can instead become quite large.
 
 
-To more easily process and plot our results as a single array,
-we will first reassemble the individual tiles into a new `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ format global array data file.
-To accomplish this, we will make use of a utility script :filelink:`utils/python/MITgcmutils/scripts/gluemncbig`. From the output run directory, type:
+To more easily process and plot our results as a single array over the full domain,
+we will first reassemble the individual tiles into a new `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ format global data file.
+To accomplish this, we will make use of utility script :filelink:`utils/python/MITgcmutils/scripts/gluemncbig`. From the output run directory, type:
 
 ::
 
@@ -816,7 +821,7 @@ The files ``grid.nc``, ``state.nc``, etc. are concatenated from the separate ``t
 into global grid files of horizontal dimension 62\ :math:`\times`\ 62.
 
 
-Let's go through the netcdf output that is produced.
+Let's proceed through the netcdf output that is produced.
 
 
   - ``grid.nc`` - includes all the model grid variables used by MITgcm.
@@ -830,7 +835,7 @@ Let's go through the netcdf output that is produced.
     There are also grid variables in vector form that are not used in the MITgcm source code
     (X, Y, Xp1, Yp1, Z, Zp1, Zu, Zl); see description in  ``grid.nc``. The variables named p1 include an additional data point
     and are dimensioned +1 larger than the standard array size; for example, ``Xp1`` is the longitude of the gridcell left corner, and
-    includes an extra data point for the last gridcell's right corner longitude. Note the ordering of horizontal array indices is (Y,X).
+    includes an extra data point for the last gridcell's right corner longitude.
     
 
   - ``state.nc`` - includes snapshots of state variables U, V, W, Temp, S, and Eta
@@ -841,17 +846,18 @@ Let's go through the netcdf output that is produced.
     (recall, we initialized our model with :varlink:`nIter0` =0).
     Snapshots of model state are written for model iterations 0, 26280, 52560, ...
     according to our ``data`` file parameter choice :varlink:`dumpFreq` (:varlink:`dumpFreq`/:varlink:`deltaT` = 26280).
-    Note the ordering of array indices is (T,Z,Y,X).
+    
 
   - ``surfDiag.nc`` - includes output diagnostics as specified from list 1 in :ref:`data.diagnostics <baroc_diags_list>`.
     Here we specified that list 1 include 2-D diagnostics ``ETAN``, ``TRELAX``, and ``MXLDEPTH``.
     Also includes an array of model times corresponding to the end of the time-average period, the iteration
     number corresponding to these model times, and vector forms of grid variables which describe these data.
-    Note the ordering of array indicies is (T,Z,Y,X); Z is included here even though its dimension is one (given 2-D fields).
+    A Z index is included in the output arrays, even though
+    its dimension is one (given that this list contains only 2-D fields).
 
   - ``dynDiag.nc`` - similar to ``surfDiag.nc`` except this file contains the time-averaged 3-D diagnostics
     we specified in list 2 of :ref:`data.diagnostics <baroc_diags_list>`:
-    ``THETA``, ``PHIHYD``, ``UVEL``, ``VVEL``, ``WVEL``. As in ``surfDiag.nc``, ordering of array indicies is (T,Z,Y,X).
+    ``THETA``, ``PHIHYD``, ``UVEL``, ``VVEL``, ``WVEL``.
 
 .. _phi_hyd_discussion:
 
@@ -863,7 +869,7 @@ Let's go through the netcdf output that is produced.
     ergo they are not included in file ``state.nc``. Like ``state.nc`` output however
     these fields are written at interval according to
     :varlink:`dumpFreq`, except are not written out at time :varlink:`nIter0` (i.e., have one time
-    record fewer than ``state.nc``). (also note, in standary binary output, these filenames begin as ``PH`` and ``PHL`` respectively)
+    record fewer than ``state.nc``). (when writing standary binary output, these filenames begin as ``PH`` and ``PHL`` respectively)
 
 The hydrostatic pressure potential anomaly :math:`\phi'` is computed as follows:
 
@@ -880,22 +886,22 @@ Several additional files are output in standard binary format. These are:
 .. math:: \rho_{ref}(k) = \rho_0  \left( 1 - \alpha_{\theta} (\theta_{ref}(k) - \theta_{ref}(1)) \right)
 
 
-``PHrefC.data, PHrefC.meta, PHrefF.data, PHrefF.meta`` - these are 1-D (k=1...\ :varlink:`Nr` and
-k=1...\ :varlink:`Nr`\ +1, respectively) arrays containing a reference
-hydrostatic “pressure potential” :math:`\phi = p/\rho_c` (see :numref:`finding_the_pressure_field`),
-computed at the (vertical grid) cell centers and cell faces, respectively.
+``PHrefC.data, PHrefC.meta, PHrefF.data, PHrefF.meta`` - these are 1-D (k=1...\ :varlink:`Nr` for PHrefC and
+k=1...\ :varlink:`Nr`\ +1 for PHrefF) arrays containing a reference
+hydrostatic “pressure potential” :math:`\phi = p/\rho_c` (see :numref:`finding_the_pressure_field`).
 Using a linear equation of state, ``PHrefC`` is simply :math:`\frac{\rho_c g |z|}{\rho_c}`,
 with output computed at the midpoint of each vertical cell, whereas ``PHrefF``
 is computed at the surface and bottom of each vertical cell.
 Note that these quantities are not especially useful when using a linear equation of state
-(to compute the full hydrostatic pressure potential, one would use ``RhoRef`` and integrate downward, and add ``phiHyd``),
+(to compute the full hydrostatic pressure potential, one would use ``RhoRef`` and
+integrate downward, and add ``phiHyd``, rather than use these fields),
 but are of greater utility using a non-linear equation of state.
 
 And finally, because we are using the diagnostics package, upon startup the file ``available_diagnostics.log``
 will be generated. This (plain text) file contains a list of all diagnostics available for output in this setup, including a description of each diagnostic and its units,
 and the number of levels for which the diagnostic is available (i.e., 2-D or 3-D field).  This list of available diagnostics will change based
-on what packages are included in the setup; i.e., if your setup includes a seaice package, for example, many seaice diagnostics
-will be listed in ``available_diagnostics.log`` that are not available for this setup.
+on what packages are included in the setup. For example, if your setup includes a seaice package, many seaice diagnostics
+will be listed in ``available_diagnostics.log`` that are not available for our :ref:`tutorial baroclinic gyre <tutorial_baroclinic_gyre>` setup.
 
 .. _baroc_mpi:
 
@@ -921,8 +927,8 @@ and/or set environment variable ``$MPI_INC_DIR`` (for more details, see :numref:
 finding `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_  libraries, :filelink:`genmake2 <tools/genmake2>` output will complain.
 
 Several lines in :filelink:`verification/tutorial_barotropic_gyre/code/SIZE.h_mpi` are different from the standard version.
-First, we change :varlink:`nSx` and :varlink:`nSy` to 1, so that each process integrates the model for a single tile. Recall that previously all four tiles
-were executed on a single process.
+First, we change :varlink:`nSx` and :varlink:`nSy` to 1, so that each process integrates the model for a single tile.
+
 
    .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/code/SIZE.h_mpi
        :start-at: nSx =
@@ -930,7 +936,7 @@ were executed on a single process.
        :lineno-match:
 
 Next, we we change :varlink:`nPx` and :varlink:`nPy` so that we use two processes in each dimension, for a total of :math:`2*2 = 4` processes.
-In other words, we have subdivided the model grid into four separate tiles, and the model equations are solved in parallel on four separate processes
+Effectively, we have subdivided the model grid into four separate tiles, and the model equations are solved in parallel on four separate processes
 (presumably, on a unique physical processor or core). Because of the overlap regions
 (i.e., gridpoints along the tile edges are duplicated in two or more tiles), and limitations
 in the transfer speed of data between processes, the model will not run 4\ :math:`\times` faster, but should be at least 2-3\ :math:`\times` faster than running 
@@ -949,10 +955,10 @@ Finally, to run the model (from your run directory), using four processes runnin
 
 
 On some systems the `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
-run command (and the subsequent command-line option ``-np``) might be something other than ``mpirun``; ask your local system administrator
-(note when using a large `HPC <https://en.wikipedia.org/wiki/Supercomputer>`_ cluster,
-prior steps might be necessary to allocate four processors to your job, and/or might be necessary to
-write this command within a batch scheduler script; again, check with your local system documentation or system administrator).
+run command (and the subsequent command-line option ``-np``) might be something other than ``mpirun``; ask your local system administrator.
+When using a large `HPC <https://en.wikipedia.org/wiki/Supercomputer>`_ cluster,
+prior steps might be required to allocate four processors to your job, and/or it might be necessary to
+write this command within a batch scheduler script; again, check with your local system documentation or system administrator.
 If four processors are not available when you execute the above ``mpirun`` command, an error will occur.
 It is no longer necessary to redirect standard output
 to a file such as ``output.txt``; rather, separate ``STDOUT.xxxx`` and ``STDERR.xxxx``
@@ -966,10 +972,13 @@ Running with OpenMP
 -------------------
 
 To run multi-threaded (using shared memory, `OpenMP <https://en.wikipedia.org/wiki/OpenMP>`_),
-the original :filelink:`SIZE.h <verification/tutorial_baroclinic_gyre/code/SIZE.h>` file is used --
-in our example, each tile will be run in a separate thread -- 
-but like the :ref:`previous section <baroc_mpi>` we must first re-compile the executable from scratch,
-using a special command line option (for this configuration, ``-omp``).
+the original :filelink:`SIZE.h <verification/tutorial_baroclinic_gyre/code/SIZE.h>` file is used.
+In our example, for compatibility with MITgcm :ref:`testing protocols <code_testing_protocols>`, we will
+run using two separate threads, but the user should feel free to experiment using four threads if their local machine contains four cores.
+Like the :ref:`previous section <baroc_mpi>` we must first re-compile the executable from scratch,
+using a special command line option (for this configuration, ``-omp``). However it is not necessary to specify
+how many threads at compile-time (unlike `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_, which requires specific processor count
+information to be set in :filelink:`SIZE.h <verification/tutorial_baroclinic_gyre/code/SIZE.h>`).
 Create and navigate into a new build directory ``build_openmp`` and type:
 
 
@@ -981,9 +990,9 @@ Create and navigate into a new build directory ``build_openmp`` and type:
 
 
 In a run directory, overwrite the contents of :filelink:`eedata <verification/tutorial_baroclinic_gyre/input/eedata>` with file
-:filelink:`verification/tutorial_baroclinic_gyre/input/eedata.mth`. Several lines here are different; we specify to
-use two threads across the :math:`x`-domain and two threads across the :math:`y`-domain, for a total of 4 threads, matching the number
-of defined tiles in :filelink:`SIZE.h <verification/tutorial_baroclinic_gyre/code/SIZE.h>`.
+:filelink:`verification/tutorial_baroclinic_gyre/input/eedata.mth`. The parameter :varlink:`nTy` is changed; we now specify to
+use two threads across the :math:`y`-domain. Since our model domain is subdivided into four tiles, each thread will now
+integrate two tiles in the :math:`x`-domain. Alternatively, to run a multi-threaded example using four threads, both lines should be set to 2.
 
    .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/eedata.mth
        :start-at: nTx=
@@ -995,7 +1004,7 @@ To run the model, we first need to set two `environment variables <https://en.wi
   ::
 
      % export OMP_STACKSIZE=400M
-     % export OMP_NUM_THREADS=4
+     % export OMP_NUM_THREADS=2
      % ../build_openmp/mitgcmuv >output.txt
 
 Your system's `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_ may differ from above;
@@ -1003,13 +1012,10 @@ see :numref:`running_openmp` and/or ask your system administrator
 (also note, above is `bash shell <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ syntax;
 different syntax is required for `C shell <https://en.wikipedia.org/wiki/C_shell>`_).  The important point to note is that
 we must tell the operating system environment how many threads will be used, prior to running the executable.
-The total number of threads must match :varlink:`nTx` * :varlink:`nTy` as specified in file ``eedata``.
+The total number of threads set in ``OMP_NUM_THREADS`` must match :varlink:`nTx` * :varlink:`nTy` as specified in file ``eedata``.
 Moreover, the model domain must be subdivided into sufficient number of tiles in :filelink:`SIZE.h <verification/tutorial_baroclinic_gyre/code/SIZE.h>`
-through the choices of :varlink:`nSx` and :varlink:`nSy`. At minimum the number of tiles (:varlink:`nSx` * :varlink:`nSy`) must equal the number of threads,
-although it is possible to further subdivide the domain into tiles as long as :varlink:`nSx` is a multiple of :varlink:`nTx` and :varlink:`nSy` is a multiple of :varlink:`nTy`.
-For example, if one wanted to run this tutorial on a computer with just two cores, one could simply use
-the existing :filelink:`SIZE.h <verification/tutorial_baroclinic_gyre/code/SIZE.h>` with :varlink:`nSx` = :varlink:`nSy` = 2, and keep :varlink:`nTx` = 2, but
-set :varlink:`nTy` = 1 in file ``eedata`` and set ``OMP_NUM_THREADS=2`` above.
+through the choices of :varlink:`nSx` and :varlink:`nSy`: the number of tiles (:varlink:`nSx` * :varlink:`nSy`) must be equal to or greater than the number of threads.
+More specifically, :varlink:`nSx` must be equal to or an integer multiple of :varlink:`nTx`, and :varlink:`nSy` must be equal to or an integer multiple of :varlink:`nTy`.
 
 Also note that at this time, :filelink:`pkg/mnc` is automatically disabled for multi-threaded setups, so output
 is dumped in standard binary format (i.e., using :filelink:`pkg/msdio`). You will receive a gentle warning message if you run
@@ -1019,9 +1025,9 @@ and :filelink:`pkg/diagnostics` output (e.g., ``surfDiag``, ``oceStDiag``, etc.)
 that contains the time iteration number and tile identification (tile 001 includes ``.001.001`` in the filename,
 tile 002 ``.002.001``, tile 003 ``.001.002``, and tile 004 ``.002.002``).  
 Unfortunately there is no analogous script
-to :filelink:`utils/python/MITgcmutils/scripts/gluemncbig` to concatenate these files, but it is relatively straightforward
+to :filelink:`utils/python/MITgcmutils/scripts/gluemncbig` to concatenate raw binary files, but it is relatively straightforward
 to do so in matlab (reading in files using  :filelink:`utils/matlab/rdmds.m`), or equally simple in python -- or, one could simply set
-:varlink:`globalFiles` to ``.TRUE.`` and the model will output global files for you (note this option is not available for :filelink:`pkg/mnc` output).
+:varlink:`globalFiles` to ``.TRUE.`` and the model will output global files for you (note, this global option is not available for :filelink:`pkg/mnc` output).
 One additional difference between :filelink:`pkg/msdio` and
 :filelink:`pkg/mnc` is that :ref:`Diagnostics Per Level Statistics <baroc_stat_diags>` are written in plain text, not binary, with :filelink:`pkg/msdio`.
 
