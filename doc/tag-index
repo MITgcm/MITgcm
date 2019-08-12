@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/exf:
+  - re-arrange EXF interpolation header files: move setting of "MAX_LAT_INC"
+    from EXF_PARAM.h to EXF_INTERP_SIZE.h (more logical place). But to avoid
+    having to include EXF_INTERP_SIZE.h each time EXF_PARAM.h is included,
+    move EXF interpolation parameters outside EXF_PARAM.h in new header file:
+    EXF_INTERP_PARAM.h
+  - add S/R to define input grid setting (stored in EXF_INTERP_PARAM.h) to be
+    used for EXF interpolated fields as default input grid.
 o compon_interf pkgs:
   - fix bi loop range in few initialisation subroutines (2 in each pkg),
     fixing issue #270
