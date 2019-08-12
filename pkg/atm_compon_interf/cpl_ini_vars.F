@@ -42,7 +42,7 @@ C     i,j,bi,bj :: Loop counters
       INTEGER i,j,bi,bj
 
       DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myByLo(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
 C-        Export field

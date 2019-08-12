@@ -4,12 +4,12 @@ import re
 import glob
 import os
 
-def verification_parser(filename, threshold):
+def verification_parser(filename, threshold, input_dir_pat):
 
     # function should be given a threshold value for each sub test
     (directory, _) = os.path.split(filename)
     # how many additional tests are run with tweaks to this configuration
-    num_exps = len(glob.glob(directory+'/input.*'))+1
+    num_exps = len(glob.glob(directory+input_dir_pat))+1
 
     # check that the correct number of values for `threshold` have been given
     if len(threshold) != num_exps:
@@ -90,6 +90,9 @@ if __name__ == '__main__':
 
     parser.add_argument('-threshold',nargs='+', type=int, default=15, 
                         help='number of decimal places of similarity required for test to pass. Requires a value for each sub test. Separate values with a space.')
+
+    parser.add_argument('-input_dir_pat', type=str, default='/input.*',
+                        help='Directory pattern for searching for sub-experiments for base, oad, adm, tlm. Default /input.*')
 
     args = parser.parse_args()
 
