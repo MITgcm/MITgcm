@@ -18,8 +18,6 @@ before_install:
   - docker exec -i fc11-testreport yum install python-argparse
   # set options for Travis script
   - echo `pwd`
-  - export MITGCM_TROPT=""
-  - export MITGCM_DECMD=""
 
 jobs:
   include:
