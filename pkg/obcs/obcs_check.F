@@ -60,6 +60,20 @@ C--   Print OBCS set-up summary:
       WRITE(msgBuf,'(A)') 'OBCS_CHECK: #define ALLOW_OBCS'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
+#ifdef ALLOW_OBCS_BALANCE
+      IF ( OBCSbalanceSurf .AND. .NOT. useRealFreshWaterFlux ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** OBCS_CHECK:',
+     &       'OBCSbalanceSurf requires useRealFreshWaterFlux=T'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** OBCS_CHECK:',
+     &       'resetting OBCSbalanceSurf to F'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        OBCSbalanceSurf = .FALSE.
+      ENDIF
+#endif /* ALLOW_OBCS_BALANCE */
+
       WRITE(msgBuf,'(A)') 'OBCS_CHECK: start summary:'
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 
@@ -377,8 +391,8 @@ CML       ENDIF
       ENDIF
 #endif /* ALLOW_OBCS_BALANCE */
 #ifdef ALLOW_OBCS_BALANCE
-# ifndef EXACT_CONSERV
       IF ( OBCSbalanceSurf ) THEN
+# ifndef EXACT_CONSERV
         WRITE(msgBuf,'(A)')
      &  'OBCS_CHECK: OBCSbalanceSurf requires to define'
         CALL PRINT_ERROR( msgBuf, myThid )
@@ -386,8 +400,21 @@ CML       ENDIF
      &  'OBCS_CHECK: EXACT_CONSERV in "CPP_OPTIONS.h"'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
-      ENDIF
 # endif /* EXACT_CONSERV */
+C     The surface correction is not applied when none of the
+C     four OBCS_balanceFacE,W,N,S is positive.
+        IF ( OBCS_balanceFacE .LE. 0. _d 0 .AND.
+     &       OBCS_balanceFacW .LE. 0. _d 0 .AND.
+     &       OBCS_balanceFacN .LE. 0. _d 0 .AND.
+     &       OBCS_balanceFacS .LE. 0. _d 0       ) THEN
+         WRITE(msgBuf,'(A)')
+     &    'OBCS_CHECK: OBCSbalanceSurf requires to have at least'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A)')
+     &    'OBCS_CHECK: one of OBCS_balanceFac[E,W,N,S] > 0 to work.'
+         CALL PRINT_ERROR( msgBuf, myThid )
+        ENDIF
+      ENDIF
 #endif /* ALLOW_OBCS_BALANCE */
 
 #ifndef ALLOW_OBCS_TIDES
