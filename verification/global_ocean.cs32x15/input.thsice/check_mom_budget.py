@@ -351,7 +351,7 @@ if j > -1:
     printstats(dUtot,fldList[j])
 
 j = getListIndex('Um_dPhiX',fldList)
-if j == -1: getListIndex('Um_dPHdx',fldList)
+if j == -1: j = getListIndex('Um_dPHdx',fldList)
 if j >-1:
   printstats(gUdp,titUdp)
   gUtot=gUdp
@@ -366,7 +366,7 @@ if j > -1:
     printstats(dVtot,fldList[j])
 
 j = getListIndex('Vm_dPhiY',fldList)
-if j == -1: getListIndex('Vm_dPHdy',fldList)
+if j == -1: j = getListIndex('Vm_dPHdy',fldList)
 if j > -1:
   printstats(gVdp,titVdp)
   gVtot=gVdp
