@@ -171,7 +171,7 @@ CML     &            * _rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
 C--   Flux of new ice will raise the sea level
             shelfIceNetMassFluxTile(bi,bj) =
      &             shelfIceNetMassFluxTile(bi,bj)
-     &           + shelfIceMassDynTendency(i,j,bi,bj)*mass2rUnit
+     &           + shelfIceMassDynTendency(i,j,bi,bj)
      &           * _rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
             IF ( .NOT.SHELFICEDynMassOnly ) THEN
 C--   Freshwater flux by thermodynamic processes. In the case of
@@ -181,7 +181,7 @@ C     to the ocean in EmPmR and will raise the sea level, so that this
 C     contribution is canceled.
              shelfIceNetMassFluxTile(bi,bj) =
      &              shelfIceNetMassFluxTile(bi,bj)
-     &            + shelfIceFreshWaterFlux(i,j,bi,bj)*mass2rUnit
+     &            + shelfIceFreshWaterFlux(i,j,bi,bj)
      &            * _rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
             ENDIF
            ENDDO

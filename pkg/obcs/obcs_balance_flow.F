@@ -24,9 +24,8 @@ C     === Global variables ===
 #include "OBCS_PARAMS.h"
 #include "OBCS_GRID.h"
 #include "OBCS_FIELDS.h"
-#ifdef EXACT_CONSERV
-# include "FFIELDS.h"
-#endif
+#include "FFIELDS.h"
+
 
 C     !INPUT/OUTPUT PARAMETERS:
       _RL myTime
@@ -54,10 +53,8 @@ C     msgBuf       :: Informational/error message buffer
       _RL tileAreaOB(nSx,nSy)
       _RL tileInFlow(nSx,nSy)
       LOGICAL flag
-#ifdef EXACT_CONSERV
       _RL netFreshWaterFlux
       _RL shelfIceNetMassFlux
-#endif /* EXACT_CONSERV */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- Old method (OBCS_balanceFac < 0): balance each OB separately
@@ -288,17 +285,16 @@ C--   Calculate a flux throught the surface from the global change of etaH
 C     to take into account both freshwater fluxes like precipitation and
 C     displacement fluxes from advancing ice sheets or imported sea ice
 
-#ifdef EXACT_CONSERV
       netFreshWaterFlux = 0. _d 0
       shelfIceNetMassFlux = 0. _d 0
-      IF ( OBCSbalanceSurf .AND. exactConserv ) THEN
+      IF ( OBCSbalanceSurf ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          tileFlow(bi,bj) = 0.
          DO j=1,sNy
           DO i=1,sNx
            tileFlow(bi,bj) = tileFlow(bi,bj)
-     &          - EmPmR(i,j,bi,bj)*mass2rUnit
+     &          - EmPmR(i,j,bi,bj)
      &          * _rA(i,j,bi,bj) * maskInC(i,j,bi,bj)
           ENDDO
          ENDDO
@@ -327,7 +323,6 @@ C     displacement fluxes from advancing ice sheets or imported sea ice
        ENDIF
 #endif /* ALLOW_SHELFICE */
       ENDIF
-#endif /* EXACT_CONSERV */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Calculate a unique velocity correction for all (OBCS_balanceFac>0) OB
@@ -342,14 +337,13 @@ C     and correct each OB using corresponding weight factor OBCS_balanceFac
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
         ENDIF
-#ifdef EXACT_CONSERV
-        IF ( OBCSbalanceSurf .AND. exactConserv ) THEN
-         inFlow = inFlow + netFreshWaterFlux
+        IF ( OBCSbalanceSurf ) THEN
+         inFlow = inFlow + netFreshWaterFlux*mass2rUnit
 #ifdef ALLOW_SHELFICE
-         IF ( useShelfIce ) inFlow = inFlow + shelfIceNetMassFlux
+         IF ( useShelfIce )
+     &        inFlow = inFlow + shelfIceNetMassFlux*mass2rUnit
 #endif
         ENDIF
-#endif /* EXACT_CONSERV */
         inFlow = inFlow / areaOB
       ENDIF
       IF ( OBCS_balanceFacE.GE.0. ) flowE =  inFlow*OBCS_balanceFacE
