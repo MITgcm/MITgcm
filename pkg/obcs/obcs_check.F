@@ -49,6 +49,7 @@ C     i, j    :: Loop counters
       INTEGER ln
       INTEGER ioUnit
       INTEGER errCount
+      INTEGER k, nBEast, nBWest, nBNorth, nBSouth
 
       ioUnit = standardMessageUnit
 
@@ -401,18 +402,90 @@ CML       ENDIF
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
 # endif /* EXACT_CONSERV */
+C     check if there is any open boundary to balance the flow with
+        k = 1
+        nBEast  = 0
+        nBWest  = 0
+        nBNorth = 0
+        nBSouth = 0
+#ifdef ALLOW_OBCS_EAST
+C     Eastern boundary
+        IF ( OBCS_balanceFacE .GT. 0. _d 0 ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            i = OB_Ie(j,bi,bj)
+            IF ( i.NE.OB_indexNone ) THEN
+             IF ( maskC(i,j,k,bi,bj).NE.0. ) nBEast = nBEast + 1
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL GLOBAL_SUM_INT( nBEast, myThid )
+        ENDIF
+#endif /* ALLOW_OBCS_EAST */
+#ifdef ALLOW_OBCS_WEST
+C     Western boundary
+        IF ( OBCS_balanceFacW .GT. 0. _d 0 ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            i = OB_Iw(j,bi,bj)
+            IF ( i.NE.OB_indexNone ) THEN
+             IF ( maskC(i,j,k,bi,bj).NE.0. ) nBWest = nBWest + 1
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL GLOBAL_SUM_INT( nBWest, myThid )
+        ENDIF
+#endif /* ALLOW_OBCS_WEST */
+#ifdef ALLOW_OBCS_NORTH
+C     Northern boundary
+        IF ( OBCS_balanceFacN .GT. 0. _d 0 ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO i=1,sNx
+            j = OB_Jn(i,bi,bj)
+            IF ( j.NE.OB_indexNone ) THEN
+             IF ( maskC(i,j,k,bi,bj).NE.0. ) nBNorth = nBNorth + 1
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL GLOBAL_SUM_INT( nBNorth, myThid )
+        ENDIF
+#endif /* ALLOW_OBCS_NORTH */
+#ifdef ALLOW_OBCS_SOUTH
+C     Southern boundary
+        IF ( OBCS_balanceFacS .GT. 0. _d 0 ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO i=1,sNx
+            j = OB_Js(i,bi,bj)
+            IF ( j.NE.OB_indexNone ) THEN
+             IF ( maskC(i,j,k,bi,bj).NE.0. ) nBSouth = nBSouth + 1
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL GLOBAL_SUM_INT( nBSouth, myThid )
+        ENDIF
+#endif /* ALLOW_OBCS_SOUTH */
 C     The surface correction is not applied when none of the
 C     four OBCS_balanceFacE,W,N,S is positive.
-        IF ( OBCS_balanceFacE .LE. 0. _d 0 .AND.
-     &       OBCS_balanceFacW .LE. 0. _d 0 .AND.
-     &       OBCS_balanceFacN .LE. 0. _d 0 .AND.
-     &       OBCS_balanceFacS .LE. 0. _d 0       ) THEN
+        IF ( (nBEast  .EQ. 0 .OR. OBCS_balanceFacE .LE. 0. _d 0) .AND.
+     &       (nBWest  .EQ. 0 .OR. OBCS_balanceFacW .LE. 0. _d 0) .AND.
+     &       (nBNorth .EQ. 0 .OR. OBCS_balanceFacN .LE. 0. _d 0) .AND.
+     &       (nBSouth .EQ. 0 .OR. OBCS_balanceFacS .LE. 0. _d 0) ) THEN
          WRITE(msgBuf,'(A)')
-     &    'OBCS_CHECK: OBCSbalanceSurf requires to have at least'
+     &    'OBCS_CHECK: OBCSbalanceSurf=T requires to have at least'
          CALL PRINT_ERROR( msgBuf, myThid )
-         WRITE(msgBuf,'(A)')
-     &    'OBCS_CHECK: one of OBCS_balanceFac[E,W,N,S] > 0 to work.'
+         WRITE(msgBuf,'(2A)')
+     &        'OBCS_CHECK: one of OBCS_balanceFac[E,W,N,S] > 0',
+     &        ' on an active boundary to work.'
          CALL PRINT_ERROR( msgBuf, myThid )
+         errCount = errCount + 1
         ENDIF
       ENDIF
 #endif /* ALLOW_OBCS_BALANCE */
