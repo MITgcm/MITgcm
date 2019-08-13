@@ -558,8 +558,7 @@ PARM03 - Time stepping parameters
 
 - Remaining time stepping parameter choices (specifically, :math:`\Delta t`,
   checkpoint frequency, output frequency, and monitor settings)
-  are similar to those described
-  in tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`;
+  are described in tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`;
   refer to the description :ref:`here <baro_time_stepping_parms>`.
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
