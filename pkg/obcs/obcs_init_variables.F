@@ -422,7 +422,9 @@ C--   Load/compute OBCS values (initial conditions only)
 #endif
        CALL OBCS_CALC( startTime, nIter0,
      &              uVel, vVel, wVel, theta, salt, myThid )
-       CALL OBCS_BALANCE_AND_TIDES( startTime, nIter0, myThid )
+C     S/R OBCS_CALC is split between computing the boundary conditions
+C     and adjusting them to balance the flow (and apply tides)
+       CALL OBCS_ADJUST( startTime, nIter0, myThid )
 
 C--   Apply OBCS values to initial conditions for consistency
 C      (but initial conditions only)

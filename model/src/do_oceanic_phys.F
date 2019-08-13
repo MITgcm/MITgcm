@@ -75,6 +75,8 @@ C       |-- FREEZE_SURFACE
 C       |
 C       |-- EXTERNAL_FORCING_SURF
 C       |
+C       |-- OBCS_ADJUST
+C       |
 C       |- k loop (Nr:1):
 C       | - DWNSLP_CALC_RHO
 C       | - BBL_CALC_RHO
@@ -552,9 +554,9 @@ C     and all vertical mixing schemes, but keep OBCS_CALC
 C--   After all surface fluxes are known apply balancing fluxes and
 C--   apply tidal forcing to open boundaries
 # ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL('OBCS_BALANCE_AND_TIDES',myThid)
+       IF (debugMode) CALL DEBUG_CALL('OBCS_ADJUST',myThid)
 # endif
-       CALL OBCS_BALANCE_AND_TIDES(
+       CALL OBCS_ADJUST(
      I      myTime+deltaTClock, myIter+1, myThid )
       ENDIF
 #endif  /* ALLOW_OBCS */
