@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 ######################## -*- coding: utf-8 -*-
-"""Usage: ./check_mom_budget.py
+"""Usage: python ./check_mom_budget.py
 """
 
 import sys, os
@@ -22,36 +22,31 @@ rDir, nit, deltaT   = "../tr_run.thsice/", 36010, 86400
 #rDir, nit, deltaT   = "../tr_run.viscA4/", 86405,  3600
 namF, namFs = 'momDiag', 'srfDiag'
 
-class structtype():
-    pass
+class gridLoader:
+    """a hack to mimic a matlab struct"""
+    def __init__(self, gDir):
+        self.xC = rdmds(os.path.join(gDir,'XC'))
+        self.yC = rdmds(os.path.join(gDir,'YC'))
+        self.xG = rdmds(os.path.join(gDir,'XG'))
+        self.yG = rdmds(os.path.join(gDir,'YG'))
 
-def load_grid(gDir):
+        self.dXc=rdmds(os.path.join(gDir,'DXC'))
+        self.dYc=rdmds(os.path.join(gDir,'DYC'))
+        self.dXg=rdmds(os.path.join(gDir,'DXG'))
+        self.dYg=rdmds(os.path.join(gDir,'DYG'))
 
-    grd = structtype()
-    
-    grd.xC = rdmds(os.path.join(gDir,'XC'))
-    grd.yC = rdmds(os.path.join(gDir,'YC'))
-    grd.xG = rdmds(os.path.join(gDir,'XG'))
-    grd.yG = rdmds(os.path.join(gDir,'YG'))
+        self.dRf=np.squeeze(rdmds(os.path.join(gDir,'DRF')))
 
-    grd.dXc=rdmds(os.path.join(gDir,'DXC'))
-    grd.dYc=rdmds(os.path.join(gDir,'DYC'))
-    grd.dXg=rdmds(os.path.join(gDir,'DXG'))
-    grd.dYg=rdmds(os.path.join(gDir,'DYG'))
+        self.rAc=rdmds(os.path.join(gDir,'RAC'))
+        self.rAw=rdmds(os.path.join(gDir,'RAW'))
+        self.rAs=rdmds(os.path.join(gDir,'RAS'))
+        self.rAz=rdmds(os.path.join(gDir,'RAZ'))
 
-    grd.dRf=np.squeeze(rdmds(os.path.join(gDir,'DRF')))
+        self.hFacC=rdmds(os.path.join(gDir,'hFacC'))
+        self.hFacW=rdmds(os.path.join(gDir,'hFacW'))
+        self.hFacS=rdmds(os.path.join(gDir,'hFacS'))
+        self.depth=rdmds(os.path.join(gDir,'Depth'))
 
-    grd.rAc=rdmds(os.path.join(gDir,'RAC'))
-    grd.rAw=rdmds(os.path.join(gDir,'RAW'))
-    grd.rAs=rdmds(os.path.join(gDir,'RAS'))
-    grd.rAz=rdmds(os.path.join(gDir,'RAZ'))
-
-    grd.hFacC=rdmds(os.path.join(gDir,'hFacC'))
-    grd.hFacW=rdmds(os.path.join(gDir,'hFacW'))
-    grd.hFacS=rdmds(os.path.join(gDir,'hFacS'))
-    grd.depth=rdmds(os.path.join(gDir,'Depth'))
-
-    return grd
 
 def readdiags(fname,nit):
     v,iter,M=rdmds(os.path.join(rDir,fname), nit, returnmeta = True);
@@ -85,7 +80,7 @@ def split_C_cub(v3d):
     v6t[:,1:,0, 1]=v6t[:,1:,-1,0]
     v6t[:,1:,0, 3]=v6t[:,1:,-1,2]
     v6t[:,1:,0, 5]=v6t[:,1:,-1,4]
-   
+
     v6t[:,0, :, 0]=v6t[:,-1,:,5]
     v6t[:,0, :, 2]=v6t[:,-1,:,1]
     v6t[:,0, :, 4]=v6t[:,-1,:,3]
@@ -113,9 +108,9 @@ def calc_grad(fld,dx,dy):
           .reshape((nnr,nc,nc*6),order='F') \
           /np.tile(dy.reshape(myshape),(nnr,1,1))
     return dfx, dfy
-    
+
 def getListIndex(diagName,fldLst):
-    """Return index of diagName in fldlst (list of diagnostics names); 
+    """Return index of diagName in fldlst (list of diagnostics names);
     if diagName is not in fldlist, return -1
     """
     if diagName in str(fldLst):
@@ -142,7 +137,7 @@ def printStatsAndSum(fldLst,dtot,gtot):
     """
     for fldName in fldLst:
         j = getListIndex(fldName,fldList)
-        if j > -1: 
+        if j > -1:
             var = np.copy(np.squeeze(v4d[j,:,:,:]))
         elif "m_ImplD" in fldName:
             # U/Vm_ImpD was not found. Now we have to do something different
@@ -160,11 +155,11 @@ def printStatsAndSum(fldLst,dtot,gtot):
         else:
             print('... cannot use '+fldName)
     return
-  
+
 # let's go
 
 # first establish the grid parameters that we are going to need
-G = load_grid(rDir)
+G = gridLoader(rDir)
 
 nr, nc = G.hFacC.shape[:2]
 nPxy = G.hFacC.shape[2]*nc
@@ -193,7 +188,7 @@ elif 'ETAN' in str(f2dList):
     var = gravity*np.copy(v3d[jdps,:,:])
 else:
     jdps = -1
-    
+
 if jdps > -1:
     dpx, dpy = calc_grad(- split_C_cub(var),G.dXc,G.dYc)
 
@@ -354,7 +349,7 @@ j = getListIndex('TOTUTEND',fldList)
 if j > -1:
     dUtot=np.copy(np.squeeze(v4d[j,:,:,:]))/86400.
     printstats(dUtot,fldList[j])
-    
+
 j = getListIndex('Um_dPhiX',fldList)
 if j == -1: getListIndex('Um_dPHdx',fldList)
 if j >-1:
