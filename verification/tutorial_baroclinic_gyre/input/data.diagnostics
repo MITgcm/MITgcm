@@ -26,7 +26,7 @@
                    'UVEL    ','VVEL    ','WVEL    ',
 # did not specify levels => all levels are selected
    fileName(2) = 'dynDiag',
-  frequency(2) = 157680000.,
+  frequency(2) = 31536000.,
  &
 
 #--------------------

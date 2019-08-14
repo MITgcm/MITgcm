@@ -712,7 +712,7 @@ The diagnostics in list 2 are:
 
 Here we did not specify parameter :varlink:`levels`, so all depth levels will be included in the output.
 An example of syntax to limit which depths are output is ``levels(1:5,2) = 1.,2.,3.,``, which would dump just the top three levels.
-We again specify an output file name via parameter :varlink:`fileName`, and here specify a time-average period of 157,680,000 seconds (5 years)
+We again specify an output file name via parameter :varlink:`fileName`, and specify a time-average period of one year
 through parameter :varlink:`frequency`.
 
 .. _baroc_stat_diags:
