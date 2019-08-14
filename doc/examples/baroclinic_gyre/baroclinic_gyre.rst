@@ -808,11 +808,11 @@ To accomplish this, we will make use of utility script :filelink:`utils/python/M
 ::
 
     % ../../../utils/python/MITgcmutils/scripts/gluemncbig -o grid.nc grid.t*.nc
-    % ../../../utils/python/MITgcmutils/scripts/gluemncbig -o state.nc state.t*.nc
-    % ../../../utils/python/MITgcmutils/scripts/gluemncbig -o dynDiag.nc dynDiag.t*.nc
-    % ../../../utils/python/MITgcmutils/scripts/gluemncbig -o surfDiag.nc surfDiag.t*.nc
-    % ../../../utils/python/MITgcmutils/scripts/gluemncbig -o phiHyd.nc phiHyd.*.t*.nc
-    % ../../../utils/python/MITgcmutils/scripts/gluemncbig -o phiHydLow.nc phiHydLow.*.t*.nc
+    % ../../../utils/python/MITgcmutils/scripts/gluemncbig -o state.nc state*.t*.nc
+    % ../../../utils/python/MITgcmutils/scripts/gluemncbig -o dynDiag.nc dynDiag*.t*.nc
+    % ../../../utils/python/MITgcmutils/scripts/gluemncbig -o surfDiag.nc surfDiag*.t*.nc
+    % ../../../utils/python/MITgcmutils/scripts/gluemncbig -o phiHyd.nc phiHyd*.t*.nc
+    % ../../../utils/python/MITgcmutils/scripts/gluemncbig -o phiHydLow.nc phiHydLow*.t*.nc
 
 
 For help using this utility, type ``gluemncbig --help``; note a python installation must for available for this script to work.

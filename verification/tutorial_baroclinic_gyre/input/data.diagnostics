@@ -49,5 +49,5 @@
  &DIAG_STATIS_PARMS
   stat_fields(1:9,1) = 'THETA   ','TRELAX  ',
   stat_fName(1) = 'dynStDiag',
-  stat_freq(1) = 2592000.,
+  stat_freq(1) = 2628000.,
  &
