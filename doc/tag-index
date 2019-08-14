@@ -1,6 +1,16 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom_common & model/src:
+  - new S/R MOM_U/V_BOTDRAG_COEF used both for explicit and implicit bottom drag
+    computation (thus replacing both MOM_U/V_BOTTOMDRAG in explicit case and
+    MOM_U/V_BOTDRAG_IMPL in implicit case) to return a drag coefficient.
+    This modification affects results at machine truncation level.
+  - change diagnostics 'Um_dPHdx' & 'Vm_dPHdy' to 'Um_dPhiX' & 'Vm_dPhiY'
+    for full pressure gradient tendencies (including surf & NH contribution);
+  - remove bottom drag tendency diags (UBotDrag & VBotDrag); add bottom stress
+    diagnostics and implicit viscous tendency diagnostics, both accurate also
+    if using implicit bottom drag (selectImplicitDrag=2).
 o pkg/exf:
   - re-arrange EXF interpolation header files: move setting of "MAX_LAT_INC"
     from EXF_PARAM.h to EXF_INTERP_SIZE.h (more logical place). But to avoid
