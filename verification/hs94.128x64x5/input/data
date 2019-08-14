@@ -10,7 +10,7 @@
  no_slip_bottom=.FALSE.,
  buoyancyRelation='ATMOSPHERIC',
  eosType='IDEALG',
- useEnergyConservingCoriolis=.TRUE.,
+ selectCoriScheme=2,
  momTidalForcing=.FALSE.,
  gravity=9.81,
  rigidLid=.FALSE.,

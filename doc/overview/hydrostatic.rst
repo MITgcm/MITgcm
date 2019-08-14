@@ -1,3 +1,5 @@
+.. _hydrostatic_quasihydrostatic_forms:
+
 Hydrostatic, Quasi-hydrostatic, Quasi-nonhydrostatic and Non-hydrostatic forms
 ------------------------------------------------------------------------------
 

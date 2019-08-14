@@ -173,7 +173,8 @@ C--   SEAICE parameters
 #ifdef SEAICE_ITD
      & Hlimit_c1, Hlimit_c2, Hlimit_c3, Hlimit,
 #endif
-     & SEAICE_debugPointI, SEAICE_debugPointJ
+     & SEAICE_debugPointI, SEAICE_debugPointJ,
+     & SINegFac
 
 #ifdef ALLOW_COST
       NAMELIST /SEAICE_PARM02/
@@ -526,7 +527,7 @@ C     LSR parameters
 #endif
       SEAICE_debugPointI = UNSET_I
       SEAICE_debugPointJ = UNSET_I
-
+      SINegFac = 1. _d 0
 C-    Retired parameters:
 c     LAD        = 2
       LAD        = UNSET_I
