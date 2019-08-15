@@ -47,14 +47,17 @@
    figure
    subplot(1,3,1);plot(1/12:1/12:100,TRELAX_ave,'b','LineWidth',[4]); grid on
                   title('Net Heat Flux into Ocean (TRELAX\_ave)')
+                  xlabel('Time (yrs)');ylabel('W/m^2')
    subplot(1,3,2);plot(1/12:1/12:100,THETA_lv_ave(1,:),'c','LineWidth',[4]); grid on; hold on
                   plot(1/12:1/12:100,THETA_lv_ave(5,:),'g','LineWidth',[4])
                   plot(1/12:1/12:100,THETA_lv_ave(15,:),'r','LineWidth',[4])
                   title('Mean Potential Temp. by Level (THETA\_lv\_avg)')
+                  xlabel('Time (yrs)');ylabel('^oC')
    subplot(1,3,3);plot(1/12:1/12:100,THETA_lv_std(1,:),'c','LineWidth',[4]); grid on; hold on
                   plot(1/12:1/12:100,THETA_lv_std(5,:),'g','LineWidth',[4])
                   plot(1/12:1/12:100,THETA_lv_std(15,:),'r','LineWidth',[4])
                   title('Std. Dev. Potential Temp. by Level (THETA\_lv\_std)')
+                  xlabel('Time (yrs)');ylabel('^oC')
                   
 %  alternatively, a global mean TRELAX (annual mean) could be computed as following,
 %  using HfacC(:,:,1) as a land-ocean mask.
@@ -65,7 +68,8 @@
    figure
    pcolor(Xp1(1:62),Yp1(1:62),TRELAX(:,:,100)');colorbar;shading flat; set(gca,'CLim',[-250 250]); hold on
    contour(X,Y,ETAN(:,:,100)',[-.6:.1:.6],'k'); set(gca,'XLim',[0 60]); set(gca,'YLim',[15 75])
-   title('Free surface height (contours) and TRELAX (shading)')
+   title({'Free surface height (contours, CI .1 m)';'and TRELAX (shading, W/m^2)'})
+   xlabel('Longitude');ylabel('Latitude')
 %  note we have used routine pcolor here with Xp1, Yp1, which are the locations of
 %  the lower left corners of grid cells (here, both length 63 as
 %  they include the ending right and upper locations of the grid,
@@ -79,14 +83,17 @@
    clabel(contourf(Xp1,Y,psi(:,:,100)'/1e6,[-35:5:35],'k'));colorbar
    set(gca,'XLim',[0 60]);set(gca,'Ylim',[15 75])
    title('Barotropic Streamfunction (Sv)')
+   xlabel('Longitude');ylabel('Latitude')
    
 % figure 4.9 - potential temperature at 220m depth and xz slice at 28.5N,
 %  yr. 100
    figure
-   subplot(1,2,1); contourf(XC,YC,THETA(:,:,4,100),2:2:30);colorbar
-   title('THETA 220m Depth (^oC)')
-   subplot(1,2,2); contourf(X,RC,squeeze(THETA(:,15,:,100))',2:2:30);colorbar
-   title('THETA at 30N (^oC)')
+   subplot(1,2,1); contourf(XC,YC,THETA(:,:,4,100),0:2:30);colorbar
+   title('THETA 220m Depth (^oC)'); set(gca,'CLim',[0 30])
+   xlabel('Longitude');ylabel('Latitude')
+   subplot(1,2,2); contourf(X,RC,squeeze(THETA(:,15,:,100))',0:2:30);colorbar
+   title('THETA at 30N (^oC)');set(gca,'CLim',[0 30])
+   xlabel('Longitude');ylabel('Depth (m)')
 %  note plots are a bit ugly at the boundaries due to land cell zero values
 %  to make a nicer looking contour plot, either copy the neighbor ocean
 %  data over to the land cells, or use a mask of NaN for land: mask=HfacC; mask(HfacC==0)=NaN;
