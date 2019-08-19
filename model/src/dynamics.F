@@ -695,9 +695,9 @@ Cml)
      &    .OR. selectBotDragQuadr.GE.0
      &    .OR. bottomDragLinear.NE.0. ) ) THEN
         CALL DIAGNOSTICS_FILL_RS( botDragU, 'botTauX ',
-     &                            0, 1, 1, bi, bj, myThid )
+     &                            0, 1, 0, 1, 1, myThid )
         CALL DIAGNOSTICS_FILL_RS( botDragV, 'botTauY ',
-     &                            0, 1, 1, bi, bj, myThid )
+     &                            0, 1, 0, 1, 1, myThid )
        ENDIF
 
       ENDIF
