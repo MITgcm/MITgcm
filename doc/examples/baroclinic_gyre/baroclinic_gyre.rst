@@ -101,13 +101,13 @@ coordinates as follows:
    \frac{Du}{Dt} - fv -\frac{uv}{a}\tan{\varphi} + 
    \frac{1}{\rho_c a \cos{\varphi}}\frac{\partial p^{\prime}}{\partial \lambda} - 
    A_{h}\nabla_{h}^2u - A_{z}\frac{\partial^{2}u}{\partial z^{2}} 
-   = {\cal{F}_u} = \frac{\tau_{\lambda}}{\rho_{c}\Delta z_{s}}
+   = {\mathcal{F}_u} = \frac{\tau_{\lambda}}{\rho_{c}\Delta z_{s}}
    :label: baroc_gyre_umom
 
 .. math::
    \frac{Dv}{Dt} + fu + \frac{u^2}{a}\tan{\varphi} +
    \frac{1}{\rho_c a}\frac{\partial p^{\prime}}{\partial \varphi} - 
-   A_{h}\nabla_{h}^2v - A_{z}\frac{\partial^{2}v}{\partial z^{2}} = {\cal{F}_v} = 0
+   A_{h}\nabla_{h}^2v - A_{z}\frac{\partial^{2}v}{\partial z^{2}} = {\mathcal{F}_v} = 0
    :label: baroc_gyre_vmom
 
 .. math::
@@ -117,7 +117,7 @@ coordinates as follows:
 
 .. math::
    \frac{D\theta}{Dt} -
-   \kappa_{h}\nabla_{h}^2\theta  - \kappa_{z}\frac{\partial^{2}\theta}{\partial z^{2}} = {\cal F}_\theta
+   \kappa_{h}\nabla_{h}^2\theta  - \kappa_{z}\frac{\partial^{2}\theta}{\partial z^{2}} = {\mathcal F}_\theta
    :label: barooc_gyre_theta
 
 .. math::
@@ -138,7 +138,7 @@ However, for the problem presented here, the continuity relation
 :eq:`baroc_gyre_cont` differs from the general form
 given in :numref:`press_meth_linear`, equation :eq:`linear-free-surface=P-E`
 because the source terms
-:math:`{\cal P}-{\cal E}+{\cal R}` are all :math:`0`.
+:math:`{\mathcal P}-{\mathcal E}+{\mathcal R}` are all :math:`0`.
 
 In :eq:`baroc_gyre_press` the pressure field, :math:`p^{\prime}`, is separated into a barotropic
 part due to variations in sea-surface height, :math:`\eta`, and a
@@ -147,10 +147,10 @@ integrated through the water column. Note the :math:`g` in the first term on the
 MITgcm parameter :varlink:`gBaro` whereas in the seond term :math:`g` is parameter :varlink:`gravity`;
 allowing for different gravity constants here is useful, for example, if one wanted to slow down external gravity waves.
 
-The windstress forcing, :math:`{\cal F}_u` and :math:`{\cal F}_v`, is
+The windstress forcing, :math:`{\mathcal F}_u` and :math:`{\mathcal F}_v`, is
 applied in the surface layer by a source term in the zonal and meridional momentum
 equations, respectively. In the ocean interior these terms are zero. Similarly, the forcing
-term in the temperature equation :math:`{\cal F}_{\theta}` is applied as a source term to
+term in the temperature equation :math:`{\mathcal F}_{\theta}` is applied as a source term to
 surface layer and is zero in the interior.
 
 In the momentum equations, lateral and vertical boundary conditions for
