@@ -256,8 +256,8 @@ C         kSurfW = Nr+1 if dry column
            ENDDO
           ENDDO
          ENDIF
-         CALL DIAGNOSTICS_FILL( botDragU,
-     &                         'botTauX ', 0, 1, 1, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL_RS( botDragU, 'botTauX ',
+     &                             0, 1, 1, bi, bj, myThid )
        ENDIF
        IF ( DIAGNOSTICS_IS_ON( 'botTauY ', myThid ) ) THEN
          IF ( usingZCoords ) THEN
@@ -279,8 +279,8 @@ C         kSurfS = Nr+1 if dry column
            ENDDO
           ENDDO
          ENDIF
-         CALL DIAGNOSTICS_FILL( botDragV,
-     &                         'botTauY ', 0, 1, 1, bi, bj, myThid )
+         CALL DIAGNOSTICS_FILL_RS( botDragV, 'botTauY ',
+     &                             0, 1, 1, bi, bj, myThid )
        ENDIF
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
