@@ -377,13 +377,19 @@ PARM03 - Time stepping parameters
        :lineno-match:
 
 - This line sets parameter :varlink:`nTimeSteps`, the (integer) number of timesteps the model will integrate forward. Below,
-  we have set this to integrate for just 10 time steps, for MITgcm automated testing purposes (:numref:`code_testing_protocols`). To integrate the solution to near steady state,
-  uncomment the line a few lines further down where we set the value to 77760 time steps. When you make this change,
-  be sure to also comment out the line that sets :varlink:`monitorFreq` (see below).
+  we have set this to integrate for just 10 time steps, for MITgcm automated testing purposes (:numref:`code_testing_protocols`).
+  To integrate the solution to near steady state,
+  uncomment the line further down where we set the value to 77760 time steps. When you make this change,
+  be sure to also uncomment the next line that sets :varlink:`monitorFreq` (see below).
 
   .. literalinclude:: ../../../verification/tutorial_barotropic_gyre/input/data
        :start-at: nTimeSteps=10
        :end-at: nTimeSteps=10
+       :lineno-match:
+ 
+  .. literalinclude:: ../../../verification/tutorial_barotropic_gyre/input/data
+       :start-at: for longer
+       :end-at: Freq=864
        :lineno-match:
 
 - This line sets parameter :varlink:`deltaT`, the timestep used in stepping forward the model, to 1200 seconds.
@@ -604,7 +610,7 @@ The standard output is essentially a log file of the model run. The following in
 - monitor statistics at regular intervals (as specified by parameter
   :varlink:`monitorFreq` in :filelink:`data <verification/tutorial_barotropic_gyre/input/data>`. See :numref:`pkg_monitor`).
 
-- output from the 2D conjugate gradient solver. More specifically, statistics from the right-hand side of the elliptic
+- output from the 2-D conjugate gradient solver. More specifically, statistics from the right-hand side of the elliptic
   equation -- for our linear free-surface, see eq. :eq:`elliptic-backward-free-surface` -- are dumped for every model time step. If the model solution
   blows up, these statistics will increase to infinity, so one can see exactly when the problem occurred (i.e., to aid in debugging). Additional
   solver variables, such as number of iterations and residual, are included with the monitor statistics.

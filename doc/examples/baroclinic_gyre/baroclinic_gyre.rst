@@ -476,7 +476,7 @@ PARM01 - Continuous equation parameters
 
 - The following parameters tell the model to use a linear equation of state. 
   Note a list of :varlink:`Nr` (=15, from :filelink:`SIZE.h <verification/tutorial_baroclinic_gyre/code/SIZE.h>`)
-  potential temperature values in :math:`^{\circ}\mathrm{C}` is specified for parameter :varlink:`tRef`, ordered from surface to depth.
+  potential temperature values in :sup:`o`\ C is specified for parameter :varlink:`tRef`, ordered from surface to depth.
   :varlink:`tRef` is used for two purposes here.
   First, anomalies in density are computed using this reference :math:`\theta`, :math:`\theta'(x,y,z) = \theta(x,y,z) - \theta_{ref}(z)`;
   see use in :eq:`rho_lineareos` and :eq:`rhoprime_lineareos`.
@@ -485,11 +485,15 @@ PARM01 - Continuous equation parameters
   For each depth level the initial and reference profiles will be uniform in :math:`x` and :math:`y`.
   Note when checking static stability or computing :math:`N^2`, the density gradient resulting from these specified reference levels
   is added to :math:`\partial \rho' / \partial z` from :eq:`rhoprime_lineareos`.
-  Finally, we set the thermal expansion coefficient :math:`\alpha_{\theta}` (:varlink:`tAlpha`) as used in :eq:`rhoprime_lineareos`.
+  Finally, we set the thermal expansion coefficient :math:`\alpha_{\theta}` (:varlink:`tAlpha`)
+  as used in :eq:`rho_lineareos` and :eq:`rhoprime_lineareos`, while setting
+  the haline contraction coefficient (:varlink:`sBeta`) to zero (see :eq:`rho_lineareos`, which omits a salinity contribution to the
+  linear equation of state; like tutorial :ref:`Barotropic Ocean Gyre <sec_eg_baro>`,
+  salinity is not included as a tracer in this very idealized model setup).
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
        :start-at: eosType
-       :end-at: tAlpha
+       :end-at: sBeta
        :lineno-match:
 
 - This line sets parameter :math:`\rho_0` (:varlink:`rhoNil`) to 999.8 kg/m\ :sup:`3`, the surface reference density for our linear equation of state,
@@ -525,7 +529,7 @@ PARM01 - Continuous equation parameters
        :lineno-match:
 
 - As in tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`, we
-  suppress MITgcm’s forward time integration of salt in the tracer equations, as it is not used here.
+  suppress MITgcm’s forward time integration of salt in the tracer equations.
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
        :start-at: saltStepping
@@ -548,12 +552,19 @@ PARM03 - Time stepping parameters
   from rest using specified initial values of temperature (here, as previously noted, from the :varlink:`tRef` parameter) rather than attempting
   to restart from a saved checkpoint file. The specified value for :varlink:`endTime`, 12000.0 seconds
   is equivalent to 10 time steps, set for testing purposes.
-  To integrate over a longer, more physically relevant period of time, uncomment the :varlink:`endTime` line
-  located near the end of this parameter block.
+  To integrate over a longer, more physically relevant period of time, uncomment the :varlink:`endTime` and :varlink:`monitorFreq` lines
+  located near the end of this parameter block. Note, for simplicity, our units for these time choices assume a 360-day "year"
+  and 30-day "month" (although lacking a seasonal cycle in our forcing, defining a "year" is immaterial; we will demonstrate how to apply time-varying
+  forcings in later tutorials).
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
        :start-at: startTime
        :end-at: endTime
+       :lineno-match:
+
+  .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
+       :start-at: for longer
+       :end-at: Freq=2592
        :lineno-match:
 
 - Remaining time stepping parameter choices (specifically, :math:`\Delta t`,
@@ -695,7 +706,7 @@ The above lines tell MITgcm that our first list will consist of three diagnostic
  
 These variables are specified in parameter :varlink:`fields`: the first index is specified as ``1:«NUMBER_OF_DIAGS»``, the second index
 designates this for diagnostics list 1. Next, the output filename for diagnostics list 1 is specified  in variable :varlink:`fileName`. Finally,
-for this list we specify variable :varlink:`frequency` to provide time-averaged output every 31,536,000 seconds, i.e., once per year. Had we entered
+for this list we specify variable :varlink:`frequency` to provide time-averaged output every 31,104,000 seconds, i.e., once per year. Had we entered
 a negative value for :varlink:`frequency`, MITgcm would have instead written snapshot data at this interval. Finally, note that all these diagnostic
 fields are 2-D output. 2-D and 3-D diagnostics CANNOT be mixed in a diagnostics list. Next, we set up a second diagnostics list for several 3-D diagnostics.
 

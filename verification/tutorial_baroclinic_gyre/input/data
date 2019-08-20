@@ -12,6 +12,7 @@
  eosType='LINEAR',
  tRef=30.,27.,24.,21.,18.,15.,13.,11.,9.,7.,6.,5.,4.,3.,2.,
  tAlpha=2.E-4,
+ sBeta=0.0,
  rhoNil=999.8,
  gravity=9.81,
  rigidLid=.FALSE.,
@@ -27,18 +28,18 @@
  &
 # Time stepping parameters
  &PARM03
- startTime=0.,
- endTime=12000., 
+ startTime=0.0,
+ endTime=12000.0, 
  deltaT=1200.0,
- pChkptFreq=3153600000.0,
- chkptFreq=315360000.0,
- dumpFreq=31536000.0,
+ pChkptFreq=622080000.0,
+ chkptFreq=155520000.0,
+ dumpFreq=31104000.0,
  monitorFreq=1200.,
  monitorSelect=2,
  tauThetaClimRelax=2592000.0
 #-for longer run (100 yrs)
-# endTime = 3153600000.0,
-# monitorFreq=2628000.,
+# endTime = 3110400000.0,
+# monitorFreq=2592000.0,
  &
 # Gridding parameters
  &PARM04
@@ -53,5 +54,5 @@
  bathyFile='bathy.bin',
  zonalWindFile='windx_cosy.bin',
  meridWindFile=,
- thetaClimFile='Trest.bin'
+ thetaClimFile='Trest.bin',
  &
