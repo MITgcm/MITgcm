@@ -401,6 +401,8 @@ PARM03 - Time stepping parameters
        :end-at: deltaT
        :lineno-match:
 
+.. _barot_describe_checkp:
+
 - These lines control the frequency at which restart (a.k.a. pickup) files are dumped by MITgcm.
   Here the value of :varlink:`pChkptFreq` is set to 31,104,000 seconds (=1.0 years) of model time;
   this controls the frequency of “permanent” checkpoint pickup files. With permanent files,

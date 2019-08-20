@@ -227,7 +227,7 @@ approximating the propagation speed as :math:`\sqrt{g' H}` where :math:`g'` is r
 :math:`\Delta \rho` using our linear equation of state is
 :math:`\rho_{0} \alpha_{\theta} \Delta \theta = 6` kg/m\ :sup:`3`) and :math:`H` is the upper layer depth
 (we'll assume 150 m), produces an estimated propagation speed generally less than :math:`| u | = 3` ms\ :sup:`--1`
-(see Adcroft 1995 :cite:`adcroft:95` or Gill textbook), thus still comfortably below the threshold.
+(see Adcroft 1995 :cite:`adcroft:95` or Gill 1982 :cite:`gill:82`), thus still comfortably below the threshold.
 
 Using our chosen value of :math:`\Delta t`, numerical stability for inertial oscillations using Adams-Bashforth II
 
@@ -854,8 +854,8 @@ Let's proceed through the netcdf output that is produced.
     As mentioned, in model output-by-tile files, e.g., ``state.0000000000.t001.nc``, 
     the iteration number ``0000000000`` is the parameter :varlink:`nIter0` for the model run
     (recall, we initialized our model with :varlink:`nIter0` =0).
-    Snapshots of model state are written for model iterations 0, 26280, 52560, ...
-    according to our ``data`` file parameter choice :varlink:`dumpFreq` (:varlink:`dumpFreq`/:varlink:`deltaT` = 26280).
+    Snapshots of model state are written for model iterations 0, 25920, 51840, ...
+    according to our ``data`` file parameter choice :varlink:`dumpFreq` (:varlink:`dumpFreq`/:varlink:`deltaT` = 25920).
     
 
   - ``surfDiag.nc`` - includes output diagnostics as specified from list 1 in :ref:`data.diagnostics <baroc_diags_list>`.
@@ -907,11 +907,16 @@ Note that these quantities are not especially useful when using a linear equatio
 integrate downward, and add ``phiHyd``, rather than use these fields),
 but are of greater utility using a non-linear equation of state.
 
+``pickup.ckptA.001.001.data``, ``pickup.ckptA.001.001.meta``, ``pickup.0000518400.001.001.data``, ``pickup.0000518400.001.001.meta`` etc. - as 
+described in detail in :ref:`tutorial Barotropic Gyre <barot_describe_checkp>`,
+these are temporary and permanent checkpoint files,  output in binary format. Note that separate checkpoint files are written for each model tile.
+
+
 And finally, because we are using the diagnostics package, upon startup the file ``available_diagnostics.log``
 will be generated. This (plain text) file contains a list of all diagnostics available for output in this setup, including a description of each diagnostic and its units,
 and the number of levels for which the diagnostic is available (i.e., 2-D or 3-D field).  This list of available diagnostics will change based
 on what packages are included in the setup. For example, if your setup includes a seaice package, many seaice diagnostics
-will be listed in ``available_diagnostics.log`` that are not available for our :ref:`tutorial baroclinic gyre <tutorial_baroclinic_gyre>` setup.
+will be listed in ``available_diagnostics.log`` that are not available for our :ref:`tutorial Baroclinic Gyre <tutorial_baroclinic_gyre>` setup.
 
 .. _baroc_mpi:
 
