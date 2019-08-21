@@ -523,7 +523,7 @@ File :filelink:`input/eedata <verification/tutorial_barotropic_gyre/input/eedata
 
 .. literalinclude:: ../../../verification/tutorial_barotropic_gyre/input/eedata
     :linenos:
-    :caption: verification/tutorial_barotropic_gyre/input/data.pkg
+    :caption: verification/tutorial_barotropic_gyre/input/eedata
 
 This file uses standard default values (i.e., MITgcm default is single-threaded) and does not contain
 customizations for this experiment.

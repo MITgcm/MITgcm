@@ -307,7 +307,7 @@ File :filelink:`code/packages.conf <verification/tutorial_baroclinic_gyre/code/p
 
 .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/code/packages.conf
     :linenos:
-    :caption: verification/tutorial_barotropic_gyre/code/packages.conf
+    :caption: verification/tutorial_baroclinic_gyre/code/packages.conf
 
 Here we specify which MITgcm packages we want to include in our configuration. ``gfd`` is a pre-defined "package group" (see :ref:`using_packages`)
 of standard packages necessary for most typical geophysical fluid dynamics setups 
@@ -329,7 +329,7 @@ File :filelink:`code/SIZE.h <verification/tutorial_baroclinic_gyre/code/SIZE.h>`
 
 .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/code/SIZE.h
     :linenos:
-    :caption: verification/tutorial_barotropic_gyre/code/SIZE.h
+    :caption: verification/tutorial_baroclinic_gyre/code/SIZE.h
 
 For this second tutorial, we will break the model domain into multiple tiles. Although initially we will
 run the model on a single processor, a multi-tiled setup
@@ -391,7 +391,7 @@ File :filelink:`code/DIAGNOSTICS_SIZE.h <verification/tutorial_baroclinic_gyre/c
 
 .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/code/DIAGNOSTICS_SIZE.h
     :linenos:
-    :caption: verification/tutorial_barotropic_gyre/code/DIAGNOSTICS_SIZE.h
+    :caption: verification/tutorial_baroclinic_gyre/code/DIAGNOSTICS_SIZE.h
 
 
 In the default version :filelink:`/pkg/diagnostics/DIAGNOSTICS_SIZE.h` the storage array for diagnostics is purposely
@@ -417,7 +417,7 @@ File :filelink:`input/data <verification/tutorial_baroclinic_gyre/input/data>`
 
 .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
     :linenos:
-    :caption: verification/tutorial_barotropic_gyre/input/data
+    :caption: verification/tutorial_baroclinic_gyre/input/data
 
 Parameters for this configuration
 are set as follows.
@@ -650,7 +650,7 @@ File :filelink:`input/data.pkg <verification/tutorial_baroclinic_gyre/input/data
 
 .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data.pkg
     :linenos:
-    :caption: verification/tutorial_barotropic_gyre/input/data.pkg
+    :caption: verification/tutorial_baroclinic_gyre/input/data.pkg
 
 Here we activate two MITgcm packages that are not included with the model by default:
 package :filelink:`mnc <pkg/mnc>` (see :numref:`pkg_mnc`) specifies that model output should be written in `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_  format,
@@ -661,12 +661,12 @@ Otherwise, only standard packages (i.e., those compiled in MITgcm by default) ar
 
 .. _baroc_datamnc:
 
-File `input/data.mnc`
-^^^^^^^^^^^^^^^^^^^^^
+File :filelink:`input/data.pkg <verification/tutorial_baroclinic_gyre/input/data.mnc>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data.mnc
     :linenos:
-    :caption: verification/tutorial_barotropic_gyre/input/data.mnc
+    :caption: verification/tutorial_baroclinic_gyre/input/data.mnc
 
 This file sets parameters which affect package :filelink:`pkg/mnc` behavior; in fact, with :filelink:`pkg/mnc` enabled, it is required
 (many packages look for file ``data.«PACKAGENAME»`` and will terminate if not present).
@@ -677,12 +677,12 @@ See :numref:`pkg_mnc_inputs` for a complete listing of :filelink:`pkg/mnc` namel
 
 .. _baroc_diags_list:    
 
-File `input/data.diagnostics`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File :filelink:`input/data.diagnostics <verification/tutorial_baroclinic_gyre/input/data.diagnostics>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data.diagnostics
     :linenos:
-    :caption: verification/tutorial_barotropic_gyre/input/data.diagnostics
+    :caption: verification/tutorial_baroclinic_gyre/input/data.diagnostics
 
 .. _baroc_diags_parms:
 
@@ -762,7 +762,7 @@ File :filelink:`input/eedata <verification/tutorial_baroclinic_gyre/input/eedata
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/eedata
     :linenos:
-    :caption: verification/tutorial_barotropic_gyre/input/data.pkg
+    :caption: verification/tutorial_baroclinic_gyre/input/eedata
 
 As shown, this file is configured for a single-threaded run, but will be modified later in this tutorial for a multi-threaded setup
 (:numref:`baroc_openmp`). 
@@ -772,7 +772,7 @@ As shown, this file is configured for a single-threaded run, but will be modifie
 File ``input/bathy.bin``, ``input/windx_cosy.bin``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The purpose and format of these files is similar to tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`.
+The purpose and format of these files is similar to tutorial :ref:`Barotropic Ocean Gyre <baro_gyre_bathy_file>`.
 The matlab program :filelink:`verification/tutorial_baroclinic_gyre/input/gendata.m`
 was used to generate these files.
 
