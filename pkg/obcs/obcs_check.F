@@ -50,7 +50,7 @@ C     i, j    :: Loop counters
       INTEGER ioUnit
       INTEGER errCount
 C     number of tiles with open boundaries
-      INTEGER nBEast, nBWest, nBNorth, nBSouth
+      INTEGER nTileWithActiveOB
 
       ioUnit = standardMessageUnit
 
@@ -394,54 +394,28 @@ CML       ENDIF
 #endif /* ALLOW_OBCS_BALANCE */
 #ifdef ALLOW_OBCS_BALANCE
       IF ( OBCSbalanceSurf ) THEN
-# ifndef EXACT_CONSERV
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: OBCSbalanceSurf requires to define'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: EXACT_CONSERV in "CPP_OPTIONS.h"'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-# endif /* EXACT_CONSERV */
 C     check if there is any open boundary to balance the flow with
-        nBEast  = 0
-        nBWest  = 0
-        nBNorth = 0
-        nBSouth = 0
+        nTileWithActiveOB  = 0
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-#ifdef ALLOW_OBCS_EAST
 C     Eastern boundary
-          IF ( tileHasOBE(bi,bj) .AND.
-     &         OBCS_balanceFacE .GT. 0. _d 0 ) nBEast = nBEast + 1
-#endif /* ALLOW_OBCS_EAST */
-#ifdef ALLOW_OBCS_WEST
+          IF ( tileHasOBE(bi,bj) .AND. OBCS_balanceFacE .GT. 0. _d 0 )
+     &         nTileWithActiveOB = nTileWithActiveOB + 1
 C     Western boundary
-          IF ( tileHasOBW(bi,bj) .AND.
-     &         OBCS_balanceFacW .GT. 0. _d 0 ) nBWest = nBWest + 1
-#endif /* ALLOW_OBCS_WEST */
-#ifdef ALLOW_OBCS_NORTH
+          IF ( tileHasOBW(bi,bj) .AND. OBCS_balanceFacW .GT. 0. _d 0 )
+     &         nTileWithActiveOB = nTileWithActiveOB + 1
 C     Northern boundary
-          IF ( tileHasOBN(bi,bj) .AND.
-     &         OBCS_balanceFacN .GT. 0. _d 0 ) nBNorth = nBNorth + 1
-#endif /* ALLOW_OBCS_NORTH */
-#ifdef ALLOW_OBCS_SOUTH
+          IF ( tileHasOBN(bi,bj) .AND. OBCS_balanceFacN .GT. 0. _d 0 )
+     &         nTileWithActiveOB = nTileWithActiveOB + 1
 C     Southern boundary
-          IF ( tileHasOBS(bi,bj) .AND.
-     &         OBCS_balanceFacS .GT. 0. _d 0 ) nBSouth = nBSouth + 1
-#endif /* ALLOW_OBCS_SOUTH */
+          IF ( tileHasOBS(bi,bj) .AND. OBCS_balanceFacS .GT. 0. _d 0 )
+     &         nTileWithActiveOB = nTileWithActiveOB + 1
          ENDDO
         ENDDO
-        CALL GLOBAL_SUM_INT( nBEast, myThid )
-        CALL GLOBAL_SUM_INT( nBWest, myThid )
-        CALL GLOBAL_SUM_INT( nBNorth, myThid )
-        CALL GLOBAL_SUM_INT( nBSouth, myThid )
+        CALL GLOBAL_SUM_INT( nTileWithActiveOB, myThid )
 C     The surface correction is not applied when none of the
 C     four OBCS_balanceFacE,W,N,S is positive.
-        IF ( (nBEast  .EQ. 0 .OR. OBCS_balanceFacE .LE. 0. _d 0) .AND.
-     &       (nBWest  .EQ. 0 .OR. OBCS_balanceFacW .LE. 0. _d 0) .AND.
-     &       (nBNorth .EQ. 0 .OR. OBCS_balanceFacN .LE. 0. _d 0) .AND.
-     &       (nBSouth .EQ. 0 .OR. OBCS_balanceFacS .LE. 0. _d 0) ) THEN
+        IF ( nTileWithActiveOB .EQ. 0 ) THEN
          WRITE(msgBuf,'(A)')
      &    'OBCS_CHECK: OBCSbalanceSurf=T requires to have at least'
          CALL PRINT_ERROR( msgBuf, myThid )
