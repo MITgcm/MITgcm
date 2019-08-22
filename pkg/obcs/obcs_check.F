@@ -226,6 +226,30 @@ C-    Check each tile set-up
         STOP 'ABNORMAL END: S/R OBCS_CHECK'
       ENDIF
 
+#ifdef ALLOW_OBCS_BALANCE
+      IF ( OBCSbalanceSurf ) THEN
+C     check if there is any open boundary to balance the flow with
+        nTileWithActiveOB  = 0
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+C     Eastern boundary
+          IF ( tileHasOBE(bi,bj) .AND. OBCS_balanceFacE .GT. 0. _d 0 )
+     &         nTileWithActiveOB = nTileWithActiveOB + 1
+C     Western boundary
+          IF ( tileHasOBW(bi,bj) .AND. OBCS_balanceFacW .GT. 0. _d 0 )
+     &         nTileWithActiveOB = nTileWithActiveOB + 1
+C     Northern boundary
+          IF ( tileHasOBN(bi,bj) .AND. OBCS_balanceFacN .GT. 0. _d 0 )
+     &         nTileWithActiveOB = nTileWithActiveOB + 1
+C     Southern boundary
+          IF ( tileHasOBS(bi,bj) .AND. OBCS_balanceFacS .GT. 0. _d 0 )
+     &         nTileWithActiveOB = nTileWithActiveOB + 1
+         ENDDO
+        ENDDO
+        CALL GLOBAL_SUM_INT( nTileWithActiveOB, myThid )
+      ENDIF
+#endif /* ALLOW_OBCS_BALANCE */
+
 C----------------------------------
 C-    Check options and parameters
       _BEGIN_MASTER( myThid )
@@ -383,38 +407,8 @@ CML       ENDIF
       ENDIF
 #endif /* ALLOW_OBCS_SEAICE_SPONGE */
 
-#ifndef ALLOW_OBCS_BALANCE
-      IF ( useOBCSbalance ) THEN
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: useOBCSbalance requires to define'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &  'OBCS_CHECK: ALLOW_OBCS_BALANCE in "OBCS_OPTIONS.h"'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-      ENDIF
-#endif /* ALLOW_OBCS_BALANCE */
 #ifdef ALLOW_OBCS_BALANCE
       IF ( OBCSbalanceSurf ) THEN
-C     check if there is any open boundary to balance the flow with
-        nTileWithActiveOB  = 0
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-C     Eastern boundary
-          IF ( tileHasOBE(bi,bj) .AND. OBCS_balanceFacE .GT. 0. _d 0 )
-     &         nTileWithActiveOB = nTileWithActiveOB + 1
-C     Western boundary
-          IF ( tileHasOBW(bi,bj) .AND. OBCS_balanceFacW .GT. 0. _d 0 )
-     &         nTileWithActiveOB = nTileWithActiveOB + 1
-C     Northern boundary
-          IF ( tileHasOBN(bi,bj) .AND. OBCS_balanceFacN .GT. 0. _d 0 )
-     &         nTileWithActiveOB = nTileWithActiveOB + 1
-C     Southern boundary
-          IF ( tileHasOBS(bi,bj) .AND. OBCS_balanceFacS .GT. 0. _d 0 )
-     &         nTileWithActiveOB = nTileWithActiveOB + 1
-         ENDDO
-        ENDDO
-        CALL GLOBAL_SUM_INT( nTileWithActiveOB, myThid )
 C     The surface correction is not applied when none of the
 C     four OBCS_balanceFacE,W,N,S is positive.
         IF ( nTileWithActiveOB .EQ. 0 ) THEN
@@ -427,6 +421,16 @@ C     four OBCS_balanceFacE,W,N,S is positive.
          CALL PRINT_ERROR( msgBuf, myThid )
          errCount = errCount + 1
         ENDIF
+      ENDIF
+#else /* ALLOW_OBCS_BALANCE */
+      IF ( useOBCSbalance ) THEN
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: useOBCSbalance requires to define'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: ALLOW_OBCS_BALANCE in "OBCS_OPTIONS.h"'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
       ENDIF
 #endif /* ALLOW_OBCS_BALANCE */
 
