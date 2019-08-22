@@ -49,8 +49,10 @@ C     i, j    :: Loop counters
       INTEGER ln
       INTEGER ioUnit
       INTEGER errCount
+#ifdef ALLOW_OBCS_BALANCE
 C     number of tiles with open boundaries
       INTEGER nTileWithActiveOB
+#endif
 
       ioUnit = standardMessageUnit
 
@@ -64,12 +66,12 @@ C--   Print OBCS set-up summary:
 
 #ifdef ALLOW_OBCS_BALANCE
       IF ( OBCSbalanceSurf .AND. .NOT. useRealFreshWaterFlux ) THEN
-        WRITE(msgBuf,'(2A)') '** WARNING ** OBCS_CHECK:',
+        WRITE(msgBuf,'(2A)') '** WARNING ** OBCS_CHECK: ',
      &       'OBCSbalanceSurf requires useRealFreshWaterFlux=T'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-        WRITE(msgBuf,'(2A)') '** WARNING ** OBCS_CHECK:',
-     &       'resetting OBCSbalanceSurf to F'
+        WRITE(msgBuf,'(2A)') '** WARNING ** OBCS_CHECK: ',
+     &       'resetting OBCSbalanceSurf to False'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         OBCSbalanceSurf = .FALSE.

@@ -562,6 +562,7 @@ c       write(*,*) 'OB Iw =',OB_Iwest
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       ENDIF
+      OBCSbalanceSurf = OBCSbalanceSurf .AND. useOBCSbalance
 
 C--   Continue master-thread only since global OB indices (+ OB_indexUnset)
 C     are not shared (not in common block).
