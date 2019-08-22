@@ -10,14 +10,16 @@ C     ==================================================================
 C    !DESCRIPTION:
 C   Contains maximum size of original input grid from which interpolation
 C    to model grid is done.
+C-  Note: This header file needs to be included before EXF_INTERP_PARAM.h
+C    since it uses MAX_LAT_INC which is defined here.
 CEOP
 
 #ifdef USE_EXF_INTERPOLATION
 
-C-  Note: Any src code that uses EXF_PARAM.h needs also MAX_LAT_INC definition;
-C     to avoid to add this Header everywhere, keep MAX_LAT_INC in EXF_PARAM.h
-c     INTEGER MAX_LAT_INC
-c     PARAMETER(MAX_LAT_INC = 1279)
+C     INTEGER MAX_LAT_INC :: maximum length of latitude grid-spacing vector
+C                            used for exf-interpolation input-grid
+      INTEGER MAX_LAT_INC
+      PARAMETER( MAX_LAT_INC = 1279 )
 
 #ifndef EXF_INTERP_USE_DYNALLOC
 C-  To read input data without dynamical allocation (INTERP_USE_DYNALLOC undef):
@@ -37,8 +39,10 @@ C   increased to 140000 to accommodate for ECMWF-INTERIM (512 x 256)
 #else /* USE_EXF_INTERPOLATION */
 
 C-- Set dummy dimension
+      INTEGER    MAX_LAT_INC
       INTEGER    exf_max_nLon, exf_max_nLat
       INTEGER    exf_interp_bufferSize
+      PARAMETER( MAX_LAT_INC = 1 )
       PARAMETER( exf_max_nLon = 1 )
       PARAMETER( exf_max_nLat = 1 )
       PARAMETER( exf_interp_bufferSize = 1 )

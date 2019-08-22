@@ -46,7 +46,11 @@ C local variables for carbon chem
       _RL surfsalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfdic(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iprt,jprt
+      LOGICAL debugPrt
       LOGICAL pH_isLoaded
+
+C     msgBuf     :: Informational/error message buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -180,11 +184,11 @@ C determine inorganic carbon chem coefficients
              surfphos(i,j)= PTRACER(i,j,kLev,bi,bj,3)
      &                          * maskC(i,j,kLev,bi,bj)
 #endif
-#else
+#else /* DIC_BIOTIC */
              surfalk(i,j) = 2.366595 _d 0 *salt(i,j,kLev,bi,bj)/35. _d 0
      &                          * maskC(i,j,kLev,bi,bj)
              surfphos(i,j)= 5.1225 _d -4 * maskC(i,j,kLev,bi,bj)
-#endif
+#endif /* DIC_BIOTIC */
 C FOR NON-INTERACTIVE Si
              surfsi(i,j)   =  Silica(i,j,bi,bj) * maskC(i,j,kLev,bi,bj)
 #ifdef DIC_BOUNDS
@@ -203,16 +207,34 @@ C FOR NON-INTERACTIVE Si
          ENDDO
         ENDDO
 
+#ifdef CARBONCHEM_SOLVESAPHE
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('DIC_COEFFS_SURF',myThid)
+#endif
+        CALL DIC_COEFFS_SURF(
+     I                       surftemp,surfsalt,
+     I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
+#else /* CARBONCHEM_SOLVESAPHE */
+#ifdef ALLOW_DEBUG
+        IF (debugMode) CALL DEBUG_CALL('CARBON_COEFFS',myThid)
+#endif
         CALL CARBON_COEFFS(
      I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,myThid)
+#endif /* CARBONCHEM_SOLVESAPHE */
 
 C====================================================================
 
         IF ( .NOT.pH_isLoaded ) THEN
 C set guess of pH for first step here
+#ifdef ALLOW_DEBUG
+          IF (debugMode) THEN
+            WRITE(msgBuf,'(A)') 'Initial pCO2 approximation method'
+            CALL DEBUG_MSG(msgBuf(1:33),myThid)
+          ENDIF
+#endif
 
-          WRITE(standardMessageUnit,*) 'QQ: pCO2 approximation method'
+          debugPrt = debugMode
 c first approximation
 C$TAF LOOP = parallel
           DO j=jMin,jMax
@@ -220,36 +242,94 @@ C$TAF LOOP = parallel
            DO i=iMin,iMax
             IF ( maskC(i,j,kLev,bi,bj) .NE. 0. _d 0) THEN
 C$TAF init dic_surf = static, 10
-             DO it=1,10
+#ifdef CARBONCHEM_SOLVESAPHE
+             IF ( selectPHsolver.GT.0 ) THEN
+C Use Munhoven (2013) Solvesaphe routine to initialize pH
+#ifdef ALLOW_DEBUG
+              IF (debugPrt) CALL DEBUG_CALL('AHINI_FOR_AT',myThid)
+#endif
+C call AHINI_FOR_AT to get better initial guess of pH
+              CALL AHINI_FOR_AT(
+     I           surfalk(i,j)*permil,
+     I           surfdic(i,j)*permil,
+     I           bt(i,j,bi,bj),
+     U           pH(i,j,bi,bj),
+     I           i,j,kLev,bi,bj,nIter0,myThid )
+
 C$TAF STORE pH(i,j,bi,bj)                              = dic_surf
 C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
-              CALL CALC_PCO2_APPROX(
-     I        surftemp(i,j),surfsalt(i,j),
-     I        surfdic(i,j), surfphos(i,j),
-     I        surfsi(i,j),surfalk(i,j),
-     I        ak1(i,j,bi,bj),ak2(i,j,bi,bj),
-     I        ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),
-     I        aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
-     I        aksi(i,j,bi,bj),akf(i,j,bi,bj),
-     I        ak0(i,j,bi,bj), fugf(i,j,bi,bj),
-     I        ff(i,j,bi,bj),
-     I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
-     U        pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
-     I        i,j,kLev,bi,bj, it ,  myThid )
-             ENDDO
+
+#ifdef ALLOW_DEBUG
+              IF (debugPrt)
+     &          CALL DEBUG_CALL('CALC_PCO2_SOLVESAPHE',myThid)
+#endif
+              CALL CALC_PCO2_SOLVESAPHE(
+     I         surftemp(i,j),surfsalt(i,j),
+     I         surfdic(i,j), surfphos(i,j),
+     I         surfsi(i,j),surfalk(i,j),
+     U         pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
+     I         i,j,kLev,bi,bj, debugPrt, nIter0, myThid )
+              debugPrt = .FALSE.
+             ELSE
+C Use the original Follows et al. (2006) solver
+#endif /* CARBONCHEM_SOLVESAPHE */
+#ifdef ALLOW_DEBUG
+              IF (debugPrt) THEN
+                CALL DEBUG_CALL('CALC_PCO2_APPROX',myThid)
+                debugPrt = .FALSE.
+              ENDIF
+#endif
+              DO it=1,10
+C$TAF STORE pH(i,j,bi,bj)                              = dic_surf
+C$TAF STORE surfalk(i,j), surfphos(i,j), surfsi(i,j)   = dic_surf
+               CALL CALC_PCO2_APPROX(
+     I          surftemp(i,j),surfsalt(i,j),
+     I          surfdic(i,j), surfphos(i,j),
+     I          surfsi(i,j),surfalk(i,j),
+     I          ak1(i,j,bi,bj),ak2(i,j,bi,bj),
+     I          ak1p(i,j,bi,bj),ak2p(i,j,bi,bj),ak3p(i,j,bi,bj),
+     I          aks(i,j,bi,bj),akb(i,j,bi,bj),akw(i,j,bi,bj),
+     I          aksi(i,j,bi,bj),akf(i,j,bi,bj),
+     I          ak0(i,j,bi,bj), fugf(i,j,bi,bj),
+     I          ff(i,j,bi,bj),
+     I          bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
+     U          pH(i,j,bi,bj),pCO2(i,j,bi,bj),co3dummy,
+     I          i,j,kLev,bi,bj, it ,  myThid )
+              ENDDO
+#ifdef CARBONCHEM_SOLVESAPHE
+             ENDIF
+#endif /* CARBONCHEM_SOLVESAPHE */
             ENDIF
            ENDDO
           ENDDO
+
+#ifdef ALLOW_DEBUG
+        IF (debugMode) THEN
           iprt = MIN(20,sNx)
           jprt = MIN(20,sNy)
-          WRITE(standardMessageUnit,*) 'QQ first guess pH',
-     &        pH(iprt,jprt,bi,bj),
-     &        theta(iprt,jprt,1,bi,bj), salt(iprt,jprt,1,bi,bj),
-     &        surfdic(iprt,jprt), surfphos(iprt,jprt),
-     &        surfsi(iprt,jprt),surfalk(iprt,jprt)
-
+          WRITE(msgBuf,'(4(A,F9.6),2(A,F11.8),A,F9.6)')
+     &        ' first guess pH=', pH(iprt,jprt,bi,bj),
+     &        ', Temp=',theta(iprt,jprt,1,bi,bj),
+     &        ', Salt=',salt(iprt,jprt,1,bi,bj),
+     &        ', DIC=', surfdic(iprt,jprt),
+     &        ', PO4=', surfphos(iprt,jprt),
+     &        ', SiT=', surfsi(iprt,jprt),
+     &        ', ALK=', surfalk(iprt,jprt)
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid )
+c         WRITE(standardMessageUnit,*) 'QQ first guess pH ',
+c    &        pH(iprt,jprt,bi,bj),' Temp ',theta(iprt,jprt,1,bi,bj),
+c    &        ' Salt ',salt(iprt,jprt,1,bi,bj),
+c    &        ' DIC ' ,surfdic(iprt,jprt),
+c    &        ' PO4 ' ,surfphos(iprt,jprt),
+c    &        ' SiT ' ,surfsi(iprt,jprt),
+c    &        ' ALK ' ,surfalk(iprt,jprt)
+c        CALL DEBUG_MSG(msgBuf,myThid)
         ENDIF
+#endif
 
+C ENDIF (.NOT.pH_isLoaded)
+        ENDIF
 C     end bi,bj loops
        ENDDO
       ENDDO

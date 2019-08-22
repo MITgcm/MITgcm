@@ -31,6 +31,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#include "FFIELDS.h"
 #ifdef ALLOW_MOM_COMMON
 # include "MOM_VISC.h"
 #endif
@@ -40,7 +41,6 @@ C     == Global variables ===
 #ifdef ALLOW_AUTODIFF
 # include "tamc.h"
 # include "tamc_keys.h"
-# include "FFIELDS.h"
 # include "EOS.h"
 # ifdef ALLOW_KPP
 #  include "KPP.h"
@@ -108,8 +108,8 @@ C     myThid :: Thread number for this instance of the routine.
 
 C     !FUNCTIONS:
 #ifdef ALLOW_DIAGNOSTICS
-      LOGICAL  DIAGNOSTICS_IS_ON
-      EXTERNAL DIAGNOSTICS_IS_ON
+c     LOGICAL  DIAGNOSTICS_IS_ON
+c     EXTERNAL DIAGNOSTICS_IS_ON
 #endif
 
 C     !LOCAL VARIABLES:
@@ -188,7 +188,7 @@ C     addDissV    :: merid momentum tendency from 3-D Smag. viscosity
       PARAMETER( jMin = 0 , jMax = sNy+1 )
 
 #ifdef ALLOW_DIAGNOSTICS
-      LOGICAL dPhiHydDiagIsOn
+c     LOGICAL dPhiHydDiagIsOn
       _RL tmpFac
 #endif /* ALLOW_DIAGNOSTICS */
 
@@ -242,10 +242,10 @@ CEOP
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
-      dPhiHydDiagIsOn = .FALSE.
-      IF ( useDiagnostics )
-     &  dPhiHydDiagIsOn = DIAGNOSTICS_IS_ON( 'Um_dPHdx', myThid )
-     &               .OR. DIAGNOSTICS_IS_ON( 'Vm_dPHdy', myThid )
+c     dPhiHydDiagIsOn = .FALSE.
+c     IF ( useDiagnostics )
+c    &  dPhiHydDiagIsOn = DIAGNOSTICS_IS_ON( 'Um_dPHdx', myThid )
+c    &               .OR. DIAGNOSTICS_IS_ON( 'Vm_dPHdy', myThid )
 #endif
 
 C-- Call to routine for calculation of Eliassen-Palm-flux-forced
@@ -333,6 +333,14 @@ c--   need some re-initialisation here to break dependencies
 #endif /* ALLOW_AUTODIFF */
          ENDDO
         ENDDO
+        IF ( useDiagnostics ) THEN
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           botDragU(i,j,bi,bj)  = 0. _d 0
+           botDragV(i,j,bi,bj)  = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDIF
 
 C--     Start computation of dynamics
 
@@ -480,15 +488,6 @@ C--      Integrate hydrostatic balance for phiHyd with BC of phiHyd(z=0)=0
      U        phiHydF,
      O        phiHydC, dPhiHydX, dPhiHydY,
      I        myTime, myIter, myThid )
-#ifdef ALLOW_DIAGNOSTICS
-         IF ( dPhiHydDiagIsOn ) THEN
-           tmpFac = -1. _d 0
-           CALL DIAGNOSTICS_SCALE_FILL( dPhiHydX, tmpFac, 1,
-     &                           'Um_dPHdx', k, 1, 2, bi, bj, myThid )
-           CALL DIAGNOSTICS_SCALE_FILL( dPhiHydY, tmpFac, 1,
-     &                           'Vm_dPHdy', k, 1, 2, bi, bj, myThid )
-         ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
 
 C--      Calculate accelerations in the momentum equations (gU, gV, ...)
 C        and step forward storing the result in gU, gV, etc...
@@ -684,13 +683,22 @@ Cml)
 
        CALL DIAGNOSTICS_FILL(totPhihyd,'PHIHYD  ',0,Nr,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(phiHydLow,'PHIBOT  ',0, 1,0,1,1,myThid)
-
        tmpFac = 1. _d 0
        CALL DIAGNOSTICS_SCALE_FILL(totPhihyd,tmpFac,2,
      &                                 'PHIHYDSQ',0,Nr,0,1,1,myThid)
 
        CALL DIAGNOSTICS_SCALE_FILL(phiHydLow,tmpFac,2,
      &                                 'PHIBOTSQ',0, 1,0,1,1,myThid)
+
+       IF ( selectImplicitDrag.EQ.0 .AND.
+     &      (  no_slip_bottom
+     &    .OR. selectBotDragQuadr.GE.0
+     &    .OR. bottomDragLinear.NE.0. ) ) THEN
+        CALL DIAGNOSTICS_FILL_RS( botDragU, 'botTauX ',
+     &                            0, 1, 0, 1, 1, myThid )
+        CALL DIAGNOSTICS_FILL_RS( botDragV, 'botTauY ',
+     &                            0, 1, 0, 1, 1, myThid )
+       ENDIF
 
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */

@@ -58,13 +58,15 @@ C     gvExt    :: forcing tendency, v component
 C     gu_AB    :: tendency increment from Adams-Bashforth, u component
 C     gv_AB    :: tendency increment from Adams-Bashforth, v component
       INTEGER i,j
-      _RL phxFac,phyFac, psFac
+      _RL phFac, psFac
       _RL     guExt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gvExt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gUtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gVtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gu_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gv_AB(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     gUdPx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     gVdPy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_NONHYDROSTATIC
       _RL     nhFac
 #endif
@@ -79,8 +81,7 @@ C-- explicit part of the surface potential gradient is added in this S/R
      &       *recip_deepFacC(k)*recip_rhoFacC(k)
 
 C--  factors for gradient (X & Y directions) of Hydrostatic Potential
-      phxFac = pfFacMom
-      phyFac = pfFacMom
+      phFac = pfFacMom
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -91,6 +92,8 @@ C-    Initialize local arrays (not really necessary for all but safer)
           gvExt(i,j) = 0. _d 0
           gUtmp(i,j) = 0. _d 0
           gVtmp(i,j) = 0. _d 0
+          gUdPx(i,j) = 0. _d 0
+          gVdPy(i,j) = 0. _d 0
 #ifdef ALLOW_CD_CODE
           guCor(i,j) = 0. _d 0
           gvCor(i,j) = 0. _d 0
@@ -110,16 +113,14 @@ C--   Collect forcing term in local array guExt,gvExt:
      I                        myTime, myIter, myThid )
       ENDIF
 
-      IF ( .NOT.staggerTimeStep .AND. .NOT. implicitIntGravWave ) THEN
+      IF ( .NOT.staggerTimeStep .AND. .NOT.implicitIntGravWave ) THEN
 C--   Synchronous time step: add grad Phi_Hyp to gU,gV before doing Adams-Bashforth
         DO j=jMin,jMax
          DO i=iMin,iMax
-           gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj) - phxFac*dPhiHydX(i,j)
-           gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj) - phyFac*dPhiHydY(i,j)
+           gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj) - phFac*dPhiHydX(i,j)
+           gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj) - phFac*dPhiHydY(i,j)
          ENDDO
         ENDDO
-        phxFac = 0.
-        phyFac = 0.
 c     ELSE
 C--   Stagger time step: grad Phi_Hyp will be added later
       ENDIF
@@ -316,6 +317,23 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDIF
 #endif /* NONLIN_FRSURF */
 
+C-- Explicit (remaining) part of the Hyd pressure gradient:
+      IF ( staggerTimeStep .OR. implicitIntGravWave ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+           gUdPx(i,j) = -phFac*dPhiHydX(i,j) - psFac*phiSurfX(i,j)
+           gVdPy(i,j) = -phFac*dPhiHydY(i,j) - psFac*phiSurfY(i,j)
+         ENDDO
+        ENDDO
+      ELSEIF ( implicSurfPress.NE.oneRL ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+           gUdPx(i,j) = -psFac*phiSurfX(i,j)
+           gVdPy(i,j) = -psFac*phiSurfY(i,j)
+         ENDDO
+        ENDDO
+      ENDIF
+
 #ifdef ALLOW_NONHYDROSTATIC
 C-- explicit part of the NH pressure gradient is added here
       IF ( use3Dsolver .AND. implicitNHPress.NE.1. _d 0 ) THEN
@@ -324,14 +342,14 @@ C-- explicit part of the NH pressure gradient is added here
        IF ( exactConserv ) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
-          gUtmp(i,j) = gUtmp(i,j)
-     &               - nhFac*_recip_dxC(i,j,bi,bj)*
-     &                ( (phi_nh(i,j,k,bi,bj)-phi_nh(i-1,j,k,bi,bj))
+          gUdPx(i,j) = gUdPx(i,j)
+     &               - nhFac*_recip_dxC(i,j,bi,bj)
+     &               *( (phi_nh(i,j,k,bi,bj)-phi_nh(i-1,j,k,bi,bj))
      &                 -( dPhiNH(i,j,bi,bj) - dPhiNH(i-1,j,bi,bj) )
      &                )
-          gVtmp(i,j) = gVtmp(i,j)
-     &               - nhFac*_recip_dyC(i,j,bi,bj)*
-     &                ( (phi_nh(i,j,k,bi,bj)-phi_nh(i,j-1,k,bi,bj))
+          gVdPy(i,j) = gVdPy(i,j)
+     &               - nhFac*_recip_dyC(i,j,bi,bj)
+     &               *( (phi_nh(i,j,k,bi,bj)-phi_nh(i,j-1,k,bi,bj))
      &                 -( dPhiNH(i,j,bi,bj) - dPhiNH(i,j-1,bi,bj) )
      &                )
          ENDDO
@@ -339,12 +357,12 @@ C-- explicit part of the NH pressure gradient is added here
        ELSE
         DO j=jMin,jMax
          DO i=iMin,iMax
-          gUtmp(i,j) = gUtmp(i,j)
-     &               - nhFac*_recip_dxC(i,j,bi,bj)*
-     &                  (phi_nh(i,j,k,bi,bj)-phi_nh(i-1,j,k,bi,bj))
-          gVtmp(i,j) = gVtmp(i,j)
-     &               - nhFac*_recip_dyC(i,j,bi,bj)*
-     &                  (phi_nh(i,j,k,bi,bj)-phi_nh(i,j-1,k,bi,bj))
+          gUdPx(i,j) = gUdPx(i,j)
+     &               - nhFac*_recip_dxC(i,j,bi,bj)
+     &               *( phi_nh(i,j,k,bi,bj) - phi_nh(i-1,j,k,bi,bj) )
+          gVdPy(i,j) = gVdPy(i,j)
+     &               - nhFac*_recip_dyC(i,j,bi,bj)
+     &               *( phi_nh(i,j,k,bi,bj) - phi_nh(i,j-1,k,bi,bj) )
          ENDDO
         ENDDO
        ENDIF
@@ -355,11 +373,8 @@ C     Step forward zonal velocity (store in Gu)
       DO j=jMin,jMax
         DO i=iMin,iMax
           gU(i,j,k,bi,bj) = uVel(i,j,k,bi,bj)
-     &     +deltaTMom*(
-     &         gUtmp(i,j)
-     &       - psFac*phiSurfX(i,j)
-     &       - phxFac*dPhiHydX(i,j)
-     &        )*_maskW(i,j,k,bi,bj)
+     &     + deltaTMom*( gUtmp(i,j) + gUdPx(i,j) )
+     &                *_maskW(i,j,k,bi,bj)
         ENDDO
       ENDDO
 
@@ -367,15 +382,33 @@ C     Step forward meridional velocity (store in Gv)
       DO j=jMin,jMax
         DO i=iMin,iMax
           gV(i,j,k,bi,bj) = vVel(i,j,k,bi,bj)
-     &     +deltaTMom*(
-     &         gVtmp(i,j)
-     &       - psFac*phiSurfY(i,j)
-     &       - phyFac*dPhiHydY(i,j)
-     &        )*_maskS(i,j,k,bi,bj)
+     &     + deltaTMom*( gVtmp(i,j) + gVdPy(i,j) )
+     &                *_maskS(i,j,k,bi,bj)
         ENDDO
       ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        IF ( staggerTimeStep .OR. implicitIntGravWave ) THEN
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+            gUdPx(i,j) = gUdPx(i,j)*_maskW(i,j,k,bi,bj)
+            gVdPy(i,j) = gVdPy(i,j)*_maskS(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ELSE
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+            gUdPx(i,j) = ( gUdPx(i,j) - phFac*dPhiHydX(i,j) )
+     &                 *_maskW(i,j,k,bi,bj)
+            gVdPy(i,j) = ( gVdPy(i,j) - phFac*dPhiHydY(i,j) )
+     &                 *_maskS(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
+        CALL DIAGNOSTICS_FILL( gUdPx,'Um_dPhiX',k,1,2,bi,bj,myThid )
+        CALL DIAGNOSTICS_FILL( gVdPy,'Vm_dPhiY',k,1,2,bi,bj,myThid )
+      ENDIF
       IF ( momViscosity .AND. useDiagnostics ) THEN
         CALL DIAGNOSTICS_FILL( guDissip,'Um_Diss ',k,1,2,bi,bj,myThid )
         CALL DIAGNOSTICS_FILL( gvDissip,'Vm_Diss ',k,1,2,bi,bj,myThid )
