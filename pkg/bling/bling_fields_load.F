@@ -5,7 +5,7 @@
 
 CBOP
       SUBROUTINE BLING_FIELDS_LOAD (
-     I           myTime, myIter, myThid)
+     I           myTime, myIter, myThid )
 
 C     *========================================================*
 C     | subroutine bling_fields_load
@@ -23,6 +23,7 @@ C     === Global variables ===
 #include "GRID.h"
 #ifdef ALLOW_EXF
 # include "EXF_PARAM.h"
+# include "EXF_INTERP_SIZE.h"
 # include "EXF_FIELDS.h"
 #endif
 #include "BLING_VARS.h"
