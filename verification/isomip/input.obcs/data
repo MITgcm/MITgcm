@@ -19,9 +19,10 @@
  HeatCapacity_Cp = 3974.0,
  rhoConst=1030.,
  gravity=9.81,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
 # this is needed to test the balancing code
  useRealFreshWaterFlux = .TRUE.,
- exactConserv=.TRUE.,
  select_rStar=2,
  nonlinFreeSurf=4,
  hFacInf=0.02,
@@ -42,7 +43,7 @@
 # Time stepping parameters
  &PARM03
  nIter0=0,
- nTimeSteps=20,
+ nTimeSteps=12,
  deltaT=1800.0,
  abEps=0.1,
  cAdjFreq = -1.,
