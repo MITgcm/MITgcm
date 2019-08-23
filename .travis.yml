@@ -42,7 +42,7 @@ jobs:
       script: . tools/ci/runtr.sh
 
     - env:
-      - MITGCM_EXP="isomip" MITGCM_PRECS="16 16 16"
+      - MITGCM_EXP="isomip" MITGCM_PRECS="16 16 16 16"
       script: . tools/ci/runtr.sh
     - env:
       - MITGCM_EXP="global_ocean.90x40x15" MITGCM_PRECS="16 16 16"

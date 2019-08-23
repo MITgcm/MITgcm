@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/obcs:
+  - new feature to balance surface flux of freshwater or ice shelf mass by
+    outflow through open boundary conditions:
+    * requires splitting S/R obcs_calc to move call to S/R obcs_balance and S/R
+      obcs_add_tides after S/R external_forcing_surf call in do_oceanic_phys.F
+    * add contribution for EmPmR of the current time step and the
+      shelficeMassDynTendency (new S/R shelfice_netmassflux_surf).
+  - add new secondary test exp. "isomip.obcs" to text this new feature.
 o pkg/mom_common & model/src:
   - new S/R MOM_U/V_BOTDRAG_COEF used both for explicit and implicit bottom drag
     computation (thus replacing both MOM_U/V_BOTTOMDRAG in explicit case and
