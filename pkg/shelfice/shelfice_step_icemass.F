@@ -3,6 +3,12 @@
 # include "STREAMICE_OPTIONS.h"
 #endif
 
+C--   File shelfice_step_icemass.F:
+C--    Contents:
+C--    o SHELFICE_STEP_ICEMASS
+C--    o SHELFICE_NETMASSFLUX_SURF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C !ROUTINE: SHELFICE_STEP_ICEMASS
 
@@ -95,6 +101,7 @@ C     i,j, bi,bj  :: loop indices
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C !ROUTINE: SHELFICE_NETMASSFLUX_SURF
 
@@ -144,6 +151,7 @@ C     i,j, bi,bj  :: loop indices
 #ifdef ALLOW_STREAMICE
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
+          shelfIceNetMassFluxTile(bi,bj) = 0. _d 0
           DO j=1,sNy
            DO i=1,sNx
             IF ( streamice_hmask(i,j,bi,bj).EQ.1 .OR.
