@@ -37,6 +37,7 @@ C     == Global variables ==
 #include "GRID.h"
 #include "SURFACE.h"
 #include "DYNVARS.h"
+#include "FFIELDS.h"
 #ifdef ALLOW_MOM_COMMON
 # include "MOM_VISC.h"
 #endif
@@ -108,6 +109,7 @@ C     vort3BC  :: same as vort3  but account for no-slip BC
       _RL strainBC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Nsquare (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL cDrag   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL omega3  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vort3   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -274,7 +276,7 @@ c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
       CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ke(:,:) =
+CADJ STORE KE(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 CADJ STORE vort3(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
@@ -344,7 +346,7 @@ C-    mask strain and account for no-slip / free-slip BC in strainBC:
          ENDDO
         ENDDO
 #ifdef ALLOW_LEITH_QG
-        IF ( viscC2LeithQG.NE.0. ) THEN
+        IF ( viscC2LeithQG.NE.zeroRL ) THEN
           CALL MOM_VISC_QGL_STRETCH(bi,bj,k,
      O                            stretching, Nsquare,
      I                            myTime, myIter, myThid )
@@ -378,6 +380,10 @@ C--    Calculate Lateral Viscosities
        ENDDO
        IF ( useVariableVisc ) THEN
 C-     uses vort3BC & strainBC which account for no-slip / free-slip BC
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KE(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
          CALL MOM_CALC_VISC( bi, bj, k,
      O            viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
      I            hDiv, vort3BC, tension, strainBC, stretching,
@@ -456,14 +462,14 @@ C---  Other dissipation terms in Zonal momentum equation
 
 C--   Vertical flux (fVer is at upper face of "u" cell)
 C     Eddy component of vertical flux (interior component only) -> vrF
-      IF ( .NOT.implicitViscosity ) THEN
-       CALL MOM_U_RVISCFLUX(bi,bj,k+1,uVel,kappaRU,vrF,myThid)
+       IF ( .NOT.implicitViscosity ) THEN
+        CALL MOM_U_RVISCFLUX(bi,bj,k+1,uVel,kappaRU,vrF,myThid)
 C     Combine fluxes
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         fVerUkp(i,j) = ArDudrFac*vrF(i,j)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          fVerUkp(i,j) = ArDudrFac*vrF(i,j)
+         ENDDO
         ENDDO
-       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE fVerUkp(:,:) =
@@ -472,128 +478,164 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 
 C--   Tendency is minus divergence of the fluxes
 C     vert.visc.flx is scaled by deepFac2F (deep-atmos) and rhoFac (anelastic)
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         guDiss(i,j) = guDiss(i,j)
-     &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
-     &   *recip_rAw(i,j,bi,bj)
-     &   *( fVerUkp(i,j) - fVerUkm(i,j) )*rkSign
-     &   *recip_deepFac2C(k)*recip_rhoFacC(k)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          guDiss(i,j) = guDiss(i,j)
+     &    -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &    *recip_rAw(i,j,bi,bj)
+     &    *( fVerUkp(i,j) - fVerUkm(i,j) )*rkSign
+     &    *recip_deepFac2C(k)*recip_rhoFacC(k)
+         ENDDO
         ENDDO
-       ENDDO
-      ENDIF
+       ENDIF
 
 C-- No-slip and drag BCs appear as body forces in cell abutting topography
-      IF ( no_slip_sides ) THEN
+       IF ( no_slip_sides ) THEN
 C-     No-slip BCs impose a drag at walls...
-       CALL MOM_U_SIDEDRAG( bi, bj, k,
-     I          uFld, del2u, h0FacZ,
-     I          viscAh_Z, viscA4_Z,
-     I          useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
-     O          vF,
-     I          myThid )
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         guDiss(i,j) = guDiss(i,j)+vF(i,j)
+        CALL MOM_U_SIDEDRAG( bi, bj, k,
+     I           uFld, del2u, h0FacZ,
+     I           viscAh_Z, viscA4_Z,
+     I           useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
+     O           vF,
+     I           myThid )
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          guDiss(i,j) = guDiss(i,j)+vF(i,j)
+         ENDDO
         ENDDO
-       ENDDO
-      ENDIF
+       ENDIF
 
 C-    No-slip BCs impose a drag at bottom
-      IF ( bottomDragTerms ) THEN
-       CALL MOM_U_BOTTOMDRAG( bi, bj, k,
-     I            uFld, vFld, KE, kappaRU,
-     O            vF,
-     I            myThid )
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         guDiss(i,j) = guDiss(i,j)+vF(i,j)
+       IF ( bottomDragTerms ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KE(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
+        CALL MOM_U_BOTDRAG_COEFF( bi, bj, k, .TRUE.,
+     I                  uFld, vFld, kappaRU, KE,
+     O                  cDrag,
+     I                  myIter, myThid )
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+           gUdiss(i,j) = gUdiss(i,j)
+     &                 - cDrag(i,j)*uFld(i,j)
+     &                 *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+         ENDDO
         ENDDO
-       ENDDO
-      ENDIF
+        IF ( useDiagnostics ) THEN
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           botDragU(i,j,bi,bj) = botDragU(i,j,bi,bj)
+     &                         - cDrag(i,j)*uFld(i,j)*rUnit2mass
+          ENDDO
+         ENDDO
+        ENDIF
+       ENDIF
 #ifdef ALLOW_SHELFICE
-      IF ( useShelfIce ) THEN
-       CALL SHELFICE_U_DRAG( bi, bj, k,
-     I            uFld, vFld, KE, kappaRU,
-     O            vF,
-     I            myThid )
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         guDiss(i,j) = guDiss(i,j) + vF(i,j)
+       IF ( useShelfIce ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KE(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
+        CALL SHELFICE_U_DRAG( bi, bj, k,
+     I                uFld, vFld, KE, kappaRU,
+     O                vF,
+     I                myThid )
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          guDiss(i,j) = guDiss(i,j) + vF(i,j)
+         ENDDO
         ENDDO
-       ENDDO
-      ENDIF
+       ENDIF
 #endif /* ALLOW_SHELFICE */
 
 C---  Other dissipation terms in Meridional momentum equation
 
 C--   Vertical flux (fVer is at upper face of "v" cell)
 C     Eddy component of vertical flux (interior component only) -> vrF
-      IF ( .NOT.implicitViscosity ) THEN
-       CALL MOM_V_RVISCFLUX(bi,bj,k+1,vVel,kappaRV,vrF,myThid)
+       IF ( .NOT.implicitViscosity ) THEN
+        CALL MOM_V_RVISCFLUX(bi,bj,k+1,vVel,kappaRV,vrF,myThid)
 C     Combine fluxes -> fVerV
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         fVerVkp(i,j) = ArDvdrFac*vrF(i,j)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          fVerVkp(i,j) = ArDvdrFac*vrF(i,j)
+         ENDDO
         ENDDO
-       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE fVerVkp(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 #endif
 C--   Tendency is minus divergence of the fluxes
 C     vert.visc.flx is scaled by deepFac2F (deep-atmos) and rhoFac (anelastic)
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gvDiss(i,j) = gvDiss(i,j)
-     &   -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
-     &   *recip_rAs(i,j,bi,bj)
-     &   *( fVerVkp(i,j) - fVerVkm(i,j) )*rkSign
-     &   *recip_deepFac2C(k)*recip_rhoFacC(k)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gvDiss(i,j) = gvDiss(i,j)
+     &    -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &    *recip_rAs(i,j,bi,bj)
+     &    *( fVerVkp(i,j) - fVerVkm(i,j) )*rkSign
+     &    *recip_deepFac2C(k)*recip_rhoFacC(k)
+         ENDDO
         ENDDO
-       ENDDO
-      ENDIF
+       ENDIF
 
 C-- No-slip and drag BCs appear as body forces in cell abutting topography
-      IF ( no_slip_sides ) THEN
+       IF ( no_slip_sides ) THEN
 C-     No-slip BCs impose a drag at walls...
-       CALL MOM_V_SIDEDRAG( bi, bj, k,
-     I          vFld, del2v, h0FacZ,
-     I          viscAh_Z, viscA4_Z,
-     I          useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
-     O          vF,
-     I          myThid )
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gvDiss(i,j) = gvDiss(i,j)+vF(i,j)
+        CALL MOM_V_SIDEDRAG( bi, bj, k,
+     I           vFld, del2v, h0FacZ,
+     I           viscAh_Z, viscA4_Z,
+     I           useHarmonicVisc, useBiharmonicVisc, useVariableVisc,
+     O           vF,
+     I           myThid )
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gvDiss(i,j) = gvDiss(i,j)+vF(i,j)
+         ENDDO
         ENDDO
-       ENDDO
-      ENDIF
+       ENDIF
 
 C-    No-slip BCs impose a drag at bottom
-      IF ( bottomDragTerms ) THEN
-       CALL MOM_V_BOTTOMDRAG( bi, bj, k,
-     I            uFld, vFld, KE, kappaRV,
-     O            vF,
-     I            myThid )
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gvDiss(i,j) = gvDiss(i,j)+vF(i,j)
+       IF ( bottomDragTerms ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KE(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
+        CALL MOM_V_BOTDRAG_COEFF( bi, bj, k, .TRUE.,
+     I                  uFld, vFld, kappaRV, KE,
+     O                  cDrag,
+     I                  myIter, myThid )
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+           gvDiss(i,j) = gvDiss(i,j)
+     &                 - cDrag(i,j)*vFld(i,j)
+     &                 *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+         ENDDO
         ENDDO
-       ENDDO
-      ENDIF
+        IF ( useDiagnostics ) THEN
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           botDragV(i,j,bi,bj) = botDragV(i,j,bi,bj)
+     &                         - cDrag(i,j)*vFld(i,j)*rUnit2mass
+          ENDDO
+         ENDDO
+        ENDIF
+       ENDIF
 #ifdef ALLOW_SHELFICE
-      IF ( useShelfIce ) THEN
-       CALL SHELFICE_V_DRAG( bi, bj, k,
-     I            uFld, vFld, KE, kappaRV,
-     O            vF,
-     I            myThid )
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gvDiss(i,j) = gvDiss(i,j) + vF(i,j)
+       IF ( useShelfIce ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KE(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
+        CALL SHELFICE_V_DRAG( bi, bj, k,
+     I                uFld, vFld, KE, kappaRV,
+     O                vF,
+     I                myThid )
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gvDiss(i,j) = gvDiss(i,j) + vF(i,j)
+         ENDDO
         ENDDO
-       ENDDO
-      ENDIF
+       ENDIF
 #endif /* ALLOW_SHELFICE */
 
 C--   if (momViscosity) end of block.
@@ -925,7 +967,7 @@ C--   Set du/dt & dv/dt on boundaries to zero
         CALL DIAGNOSTICS_FILL(tension, 'Tension ',k,1,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(strainBC,'Strain  ',k,1,2,bi,bj,myThid)
 C         stretching will be zero, unless using QG Leith
-        IF (viscC2LeithQG .NE. 0) THEN
+        IF ( viscC2LeithQG.NE.zeroRL ) THEN
           CALL DIAGNOSTICS_FILL(stretching,
      I                          'Stretch ',k,1,2,bi,bj,myThid)
         ENDIF

@@ -1,4 +1,7 @@
 #include "BLING_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 CBOP
       subroutine BLING_MAIN( PTR_DIC, PTR_ALK, PTR_O2,
@@ -36,8 +39,7 @@ C     === Global variables ===
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #ifdef ALLOW_EXF
-# include "EXF_OPTIONS.h"
-# include "EXF_PARAM.h"
+# include "EXF_INTERP_SIZE.h"
 # include "EXF_FIELDS.h"
 #endif
 #ifdef ALLOW_AUTODIFF
