@@ -1,7 +1,4 @@
 #include "EXF_OPTIONS.h"
-#ifdef ALLOW_EXCH2
-# include "W2_OPTIONS.h"
-#endif /* ALLOW_EXCH2 */
 
       SUBROUTINE EXF_READPARMS( myThid )
 
@@ -39,32 +36,25 @@ C     ==================================================================
 C     SUBROUTINE exf_readparms
 C     ==================================================================
 
-      implicit none
+      IMPLICIT NONE
 
 C     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-#ifdef USE_EXF_INTERPOLATION
-# ifdef ALLOW_EXCH2
-# include "W2_EXCH2_SIZE.h"
-# include "W2_EXCH2_TOPOLOGY.h"
-# endif /* ALLOW_EXCH2 */
-# include "SET_GRID.h"
-#endif /* USE_EXF_INTERPOLATION */
 c#include "cal.h"
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
+#include "EXF_INTERP_SIZE.h"
+#include "EXF_INTERP_PARAM.h"
 
 C     == routine arguments ==
       INTEGER myThid
 
 C     == local variables ==
 #ifdef USE_EXF_INTERPOLATION
-      INTEGER gridNx, gridNy
       INTEGER j
-      _RL inp_lon0, inp_lat0, inp_dLon, inp_dLat
 #endif /* USE_EXF_INTERPOLATION */
       INTEGER iUnit
       LOGICAL exf_verbose
@@ -82,8 +72,9 @@ C     Surface flux data.
      &      exf_iprec    ,   exf_iprec_obcs  , exf_yftype,
      &      exf_verbose  ,   exf_debugLev    , exf_monFreq,
      & useExfYearlyFields,  twoDigitYear,
-     & useStabilityFct_overIce, readStressOnAgrid, readStressOnCgrid,
-     & rotateStressOnAgrid, useAtmWind, useRelativeWind, noNegativeEvap,
+     & readStressOnAgrid, rotateStressOnAgrid, readStressOnCgrid,
+     & useAtmWind,          useRelativeWind  , noNegativeEvap,
+     & useStabilityFct_overIce, diags_opOceWeighted,
      & select_ZenAlbedo, useExfZenIncoming,
      & hu, ht, umin, atmrho, atmcp, cen2kel, gravity_mks,
      & cdrag_1, cdrag_2, cdrag_3, cstanton_1, cstanton_2, cdalton,
@@ -287,16 +278,6 @@ C     Surface flux data.
      &        siobWperiod,   siobWrepCycle
 #endif /* ALLOW_OBCS */
 
-#ifdef USE_EXF_INTERPOLATION
-# ifdef ALLOW_EXCH2
-      gridNx = exch2_mydNx(1)
-      gridNy = exch2_mydNy(1)
-# else /* ALLOW_EXCH2 */
-      gridNx = Nx
-      gridNy = Ny
-# endif /* ALLOW_EXCH2 */
-#endif /* USE_EXF_INTERPOLATION */
-
       IF ( .NOT.useEXF ) THEN
 C-    pkg EXF is not used
         _BEGIN_MASTER(myThid)
@@ -311,6 +292,10 @@ C     print a (weak) warning if data.exf is found
 
 C     Set default values.
 
+#ifdef USE_EXF_INTERPOLATION
+C     define interpolation default input-grid
+      CALL EXF_INIT_INTERP( myThid )
+#endif /* USE_EXF_INTERPOLATION */
 c     exf_verbose        = debugMode
       exf_verbose        = .FALSE.
       exf_debugLev       = debugLevel
@@ -319,7 +304,7 @@ c     exf_verbose        = debugMode
       select_ZenAlbedo   = 0
       useExfZenIncoming  = .FALSE.
       readStressOnAgrid  = .FALSE.
-      rotateStressOnAgrid = .FALSE.
+      rotateStressOnAgrid= .FALSE.
       readStressOnCgrid  = .FALSE.
 #ifdef ALLOW_ATM_WIND
       useAtmWind         = .TRUE.
@@ -328,6 +313,8 @@ c     exf_verbose        = debugMode
 #endif
       useRelativeWind    = .FALSE.
       noNegativeEvap     = .FALSE.
+      useStabilityFct_overIce = .FALSE.
+      diags_opOceWeighted= .TRUE.
 
 C-  default value should be set to main model parameter:
 c     cen2kel     =  celsius2K
@@ -361,7 +348,6 @@ c     humid_fac   =  atm_Rq     <- default is zero !!!
       hu             =       10.000  _d 0
       ht             =        2.000  _d 0
       umin           =        0.5    _d 0
-      useStabilityFct_overIce = .FALSE.
       exf_iceCd        = 1.63 _d -3
       exf_iceCe        = 1.63 _d -3
       exf_iceCh        = 1.63 _d -3
@@ -726,13 +712,6 @@ C     Output scaling factors.
       exf_outscal_areamask =  1. _d 0
 
 #ifdef USE_EXF_INTERPOLATION
-C--   set default input location to match (in case of simple Lat-Lonp grid)
-C     model grid cell-center position (leading to trivial interpolation)
-      inp_lon0 = xgOrigin + delX(1)*exf_half
-      inp_lat0 = ygOrigin + delY(1)*exf_half
-      inp_dLon = delX(1)
-      inp_dLat = delY(1)
-
       ustress_lon0   = inp_lon0
       uwind_lon0     = inp_lon0
       vstress_lon0   = inp_lon0
@@ -779,52 +758,52 @@ C     model grid cell-center position (leading to trivial interpolation)
       apressure_lat0 = inp_lat0
       tidePot_lat0   = inp_lat0
       areamask_lat0  = inp_lat0
-      ustress_nlon   = gridNx
-      ustress_nlat   = gridNy
-      vstress_nlon   = gridNx
-      vstress_nlat   = gridNy
-      hflux_nlon     = gridNx
-      hflux_nlat     = gridNy
-      sflux_nlon     = gridNx
-      sflux_nlat     = gridNy
-      swflux_nlon    = gridNx
-      swflux_nlat    = gridNy
-      runoff_nlon    = gridNx
-      runoff_nlat    = gridNy
-      saltflx_nlon   = gridNx
-      saltflx_nlat   = gridNy
-      atemp_nlon     = gridNx
-      atemp_nlat     = gridNy
-      aqh_nlon       = gridNx
-      aqh_nlat       = gridNy
-      hs_nlon        = gridNx
-      hs_nlat        = gridNy
-      hl_nlon        = gridNx
-      hl_nlat        = gridNy
-      evap_nlon      = gridNx
-      evap_nlat      = gridNy
-      precip_nlon    = gridNx
-      precip_nlat    = gridNy
-      snowprecip_nlon= gridNx
-      snowprecip_nlat= gridNy
-      uwind_nlon     = gridNx
-      uwind_nlat     = gridNy
-      vwind_nlon     = gridNx
-      vwind_nlat     = gridNy
-      wspeed_nlon    = gridNx
-      wspeed_nlat    = gridNy
-      lwflux_nlon    = gridNx
-      lwflux_nlat    = gridNy
-      swdown_nlon    = gridNx
-      swdown_nlat    = gridNy
-      lwdown_nlon    = gridNx
-      lwdown_nlat    = gridNy
-      apressure_nlon = gridNx
-      apressure_nlat = gridNy
-      tidePot_nlon   = gridNx
-      tidePot_nlat   = gridNy
-      areamask_nlon  = gridNx
-      areamask_nlat  = gridNy
+      ustress_nlon   = inp_gNx
+      ustress_nlat   = inp_gNy
+      vstress_nlon   = inp_gNx
+      vstress_nlat   = inp_gNy
+      hflux_nlon     = inp_gNx
+      hflux_nlat     = inp_gNy
+      sflux_nlon     = inp_gNx
+      sflux_nlat     = inp_gNy
+      swflux_nlon    = inp_gNx
+      swflux_nlat    = inp_gNy
+      runoff_nlon    = inp_gNx
+      runoff_nlat    = inp_gNy
+      saltflx_nlon   = inp_gNx
+      saltflx_nlat   = inp_gNy
+      atemp_nlon     = inp_gNx
+      atemp_nlat     = inp_gNy
+      aqh_nlon       = inp_gNx
+      aqh_nlat       = inp_gNy
+      hs_nlon        = inp_gNx
+      hs_nlat        = inp_gNy
+      hl_nlon        = inp_gNx
+      hl_nlat        = inp_gNy
+      evap_nlon      = inp_gNx
+      evap_nlat      = inp_gNy
+      precip_nlon    = inp_gNx
+      precip_nlat    = inp_gNy
+      snowprecip_nlon= inp_gNx
+      snowprecip_nlat= inp_gNy
+      uwind_nlon     = inp_gNx
+      uwind_nlat     = inp_gNy
+      vwind_nlon     = inp_gNx
+      vwind_nlat     = inp_gNy
+      wspeed_nlon    = inp_gNx
+      wspeed_nlat    = inp_gNy
+      lwflux_nlon    = inp_gNx
+      lwflux_nlat    = inp_gNy
+      swdown_nlon    = inp_gNx
+      swdown_nlat    = inp_gNy
+      lwdown_nlon    = inp_gNx
+      lwdown_nlat    = inp_gNy
+      apressure_nlon = inp_gNx
+      apressure_nlat = inp_gNy
+      tidePot_nlon   = inp_gNx
+      tidePot_nlat   = inp_gNy
+      areamask_nlon  = inp_gNx
+      areamask_nlat  = inp_gNy
       ustress_lon_inc   = inp_dLon
       vstress_lon_inc   = inp_dLon
       hflux_lon_inc     = inp_dLon
@@ -857,52 +836,47 @@ C     model grid cell-center position (leading to trivial interpolation)
       climsss_lat0    = inp_lat0
       climustr_lat0   = inp_lat0
       climvstr_lat0   = inp_lat0
-      climsst_nlon    = gridNx
-      climsst_nlat    = gridNy
-      climsss_nlon    = gridNx
-      climsss_nlat    = gridNy
-      climustr_nlon   = gridNx
-      climustr_nlat   = gridNy
-      climvstr_nlon   = gridNx
-      climvstr_nlat   = gridNy
+      climsst_nlon    = inp_gNx
+      climsst_nlat    = inp_gNy
+      climsss_nlon    = inp_gNx
+      climsss_nlat    = inp_gNy
+      climustr_nlon   = inp_gNx
+      climustr_nlat   = inp_gNy
+      climvstr_nlon   = inp_gNx
+      climvstr_nlat   = inp_gNy
       climsst_lon_inc = inp_dLon
       climsss_lon_inc = inp_dLon
       climustr_lon_inc= inp_dLon
       climvstr_lon_inc= inp_dLon
 
       DO j=1,MAX_LAT_INC
-        IF (j.LT.gridNy) THEN
-          inp_dLat = (delY(j) + delY(j+1))*exf_half
-        ELSE
-          inp_dLat = 0.
-        ENDIF
-        ustress_lat_inc(j)   = inp_dLat
-        vstress_lat_inc(j)   = inp_dLat
-        hflux_lat_inc(j)     = inp_dLat
-        sflux_lat_inc(j)     = inp_dLat
-        swflux_lat_inc(j)    = inp_dLat
-        runoff_lat_inc(j)    = inp_dLat
-        saltflx_lat_inc(j)   = inp_dLat
-        atemp_lat_inc(j)     = inp_dLat
-        aqh_lat_inc(j)       = inp_dLat
-        hs_lat_inc(j)        = inp_dLat
-        hl_lat_inc(j)        = inp_dLat
-        evap_lat_inc(j)      = inp_dLat
-        precip_lat_inc(j)    = inp_dLat
-        snowprecip_lat_inc(j)= inp_dLat
-        uwind_lat_inc(j)     = inp_dLat
-        vwind_lat_inc(j)     = inp_dLat
-        wspeed_lat_inc(j)    = inp_dLat
-        lwflux_lat_inc(j)    = inp_dLat
-        swdown_lat_inc(j)    = inp_dLat
-        lwdown_lat_inc(j)    = inp_dLat
-        apressure_lat_inc(j) = inp_dLat
-        tidePot_lat_inc(j)   = inp_dLat
-        areamask_lat_inc(j)  = inp_dLat
-        climsst_lat_inc(j)   = inp_dLat
-        climsss_lat_inc(j)   = inp_dLat
-        climustr_lat_inc(j)  = inp_dLat
-        climvstr_lat_inc(j)  = inp_dLat
+        ustress_lat_inc(j)   = inp_dLat(j)
+        vstress_lat_inc(j)   = inp_dLat(j)
+        hflux_lat_inc(j)     = inp_dLat(j)
+        sflux_lat_inc(j)     = inp_dLat(j)
+        swflux_lat_inc(j)    = inp_dLat(j)
+        runoff_lat_inc(j)    = inp_dLat(j)
+        saltflx_lat_inc(j)   = inp_dLat(j)
+        atemp_lat_inc(j)     = inp_dLat(j)
+        aqh_lat_inc(j)       = inp_dLat(j)
+        hs_lat_inc(j)        = inp_dLat(j)
+        hl_lat_inc(j)        = inp_dLat(j)
+        evap_lat_inc(j)      = inp_dLat(j)
+        precip_lat_inc(j)    = inp_dLat(j)
+        snowprecip_lat_inc(j)= inp_dLat(j)
+        uwind_lat_inc(j)     = inp_dLat(j)
+        vwind_lat_inc(j)     = inp_dLat(j)
+        wspeed_lat_inc(j)    = inp_dLat(j)
+        lwflux_lat_inc(j)    = inp_dLat(j)
+        swdown_lat_inc(j)    = inp_dLat(j)
+        lwdown_lat_inc(j)    = inp_dLat(j)
+        apressure_lat_inc(j) = inp_dLat(j)
+        tidePot_lat_inc(j)   = inp_dLat(j)
+        areamask_lat_inc(j)  = inp_dLat(j)
+        climsst_lat_inc(j)   = inp_dLat(j)
+        climsss_lat_inc(j)   = inp_dLat(j)
+        climustr_lat_inc(j)  = inp_dLat(j)
+        climvstr_lat_inc(j)  = inp_dLat(j)
       ENDDO
 
       ustress_interpMethod   = 12
@@ -1053,6 +1027,7 @@ C--   Retired parameters
 
 C--   Derive other parameters:
       IF ( exf_verbose ) exf_debugLev = MAX( exf_debugLev, debLevD )
+      IF ( .NOT.(useThSIce.OR.useSEAICE) ) diags_opOceWeighted=.FALSE.
       hq = ht
       stressIsOnCgrid = readStressOnCgrid
 #if ( defined (ALLOW_BULKFORMULAE) )

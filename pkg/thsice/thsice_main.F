@@ -69,8 +69,23 @@ c     _RL evpAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 c     _RL flxAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 c     _RL flxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tauFac
+#ifdef ALLOW_EXF
+      INTEGER grpDiag
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_EXF
+      IF ( useEXF .AND. useDiagnostics ) THEN
+C-    Fill-in EXF surface flux diags, weighted by open-ocean fraction
+        grpDiag = 2
+        IF ( thSIce_skipThermo ) grpDiag = -2
+        CALL EXF_WEIGHT_SFX_DIAGS(
+     I                  iceMask, grpDiag, myTime, myIter, myThid )
+        IF ( .NOT.useSEAICE ) CALL EXF_WEIGHT_SFX_DIAGS(
+     I                       iceMask, -1, myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_EXF */
 
 C-    Only compute/update seaice fields over the interior
 C     (excluding overlap) and apply exchanges when needed

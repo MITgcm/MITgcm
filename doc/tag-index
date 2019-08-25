@@ -38,6 +38,88 @@ o pkg/shelfice,model/src
     shelficeBoundaryLayer
   - verification/shelfice_remeshing/*: new verification experiment
     to test remeshing functionality
+=======
+o pkg/obcs:
+  - new feature to balance surface flux of freshwater or ice shelf mass by
+    outflow through open boundary conditions:
+    * requires splitting S/R obcs_calc to move call to S/R obcs_balance and S/R
+      obcs_add_tides after S/R external_forcing_surf call in do_oceanic_phys.F
+    * add contribution for EmPmR of the current time step and the
+      shelficeMassDynTendency (new S/R shelfice_netmassflux_surf).
+  - add new secondary test exp. "isomip.obcs" to text this new feature.
+o pkg/mom_common & model/src:
+  - new S/R MOM_U/V_BOTDRAG_COEF used both for explicit and implicit bottom drag
+    computation (thus replacing both MOM_U/V_BOTTOMDRAG in explicit case and
+    MOM_U/V_BOTDRAG_IMPL in implicit case) to return a drag coefficient.
+    This modification affects results at machine truncation level.
+  - change diagnostics 'Um_dPHdx' & 'Vm_dPHdy' to 'Um_dPhiX' & 'Vm_dPhiY'
+    for full pressure gradient tendencies (including surf & NH contribution);
+  - remove bottom drag tendency diags (UBotDrag & VBotDrag); add bottom stress
+    diagnostics and implicit viscous tendency diagnostics, both accurate also
+    if using implicit bottom drag (selectImplicitDrag=2).
+o pkg/exf:
+  - re-arrange EXF interpolation header files: move setting of "MAX_LAT_INC"
+    from EXF_PARAM.h to EXF_INTERP_SIZE.h (more logical place). But to avoid
+    having to include EXF_INTERP_SIZE.h each time EXF_PARAM.h is included,
+    move EXF interpolation parameters outside EXF_PARAM.h in new header file:
+    EXF_INTERP_PARAM.h
+  - add S/R to define input grid setting (stored in EXF_INTERP_PARAM.h) to be
+    used for EXF interpolated fields as default input grid.
+o compon_interf pkgs:
+  - fix bi loop range in few initialisation subroutines (2 in each pkg),
+    fixing issue #270
+
+checkpoint67k (2019/07/19)
+o model/src:
+  - fix format in printing 1 error message from S/R SET_PARMS
+o pkg/bling:
+  - add missing components of SIBLING
+  - add Manizza et al 2005 light attenuation. Enable with PHYTO_SELF_SHADING
+  - Replace hard coding of max mixing depth with runtime parameter MLmix_max
+o pkg/ctrl:
+  - fix reccord number setting in S/R CTRL_GET_GEN_REC ("startrec" substracted
+    for no reason).
+o doc:
+  - add a sub-section about optim_m1qn3
+o pkg/ctrl:
+  - fix in rescaling option for control vector ("doscaling/noscaling" option,
+    S/R CTRL_MAP_INI_GENARR & CTRL_MAP_INI_GENTIM2D); proper counting of
+    non-zero control vector when weight-mask is different from ocean-mask.
+    Expect differences only when (a) weight-mask is different from ocean mask
+    and (b) xx_genarr2d_preproc='noscaling' (doscaling=.false.).
+o pkg/exf:
+  - new run-time parameter "diags_opOceWeighted" (default=T) to weight some exf
+    surface diagnostics (all net and upward fluxes) with open-ocean fraction.
+    Option is turned off when no sea-ice pkg (seaice or thsice) is used.
+  - new S/R EXF_WEIGHT_SFX_DIAGS to do some exf diags as open-ocean weighted
+    according to input argument ice fraction. Called from the right location
+    in time-stepping to get diagnostics that are consistent with wind-stress
+    and buoyancy fluxes that ocean receive.
+
+checkpoint67j (2019/06/18)
+o pkg/bling:
+  - Cleanly seperate NBLING (default), BLING_V1 (enabled with USE_BLING_V1),
+    and also add Silica option (enabled with USE_SIBLING);
+  - New algorithm for calculating mixed layer depth (old enabled with
+    BLING_USE_THRESHOLD_MLD);
+  - Options for updated carbon chemistry (from J. Lauderdale) enabled with
+    CARBONCHEM_SOLVESAPHE or CARBONCHEM_TOTALPHSCALE ;
+  - And other minor spring cleaning changes;
+  - update calls in pkg/gchem for BLING(V1) or NBLING (with Silica).
+o pkg/salt_plume:
+  - fix calculation index range in salt_plume_apply.F (#ifdef SALT_PLUME_VOLUME)
+o pkg/ecco:
+  - fix/simplify local file names in ecco_cost_init_barfiles.F (within
+    #ifdef ALLOW_GENCOST_CONTRIBUTION ).
+o pkg/mom_vecinv:
+  - add 2 Coriolis schemes which satisfy: d/dt U = f V ; d/dt V = -f U
+    (with U,V = vertically integrated flow).
+  - add new run-time coriolis-scheme selector "selectCoriScheme" to replace
+    "useJamartWetPoints" and "useEnergyConservingCoriolis"; but keep these 2
+    in namelist (backward compatible) to set "selectCoriScheme" accordingly.
+o pkg/ctrl:
+  - Fix bug in ctrl_map_ini_genarr.F regarding missing initialization of
+    igen_uvel & igen_vvel (just like all the other variables).
 o pkg/dic:
   - Implement SolveSAPHE (Munhoven, 2013), a robust algorithm to calculate
     oceanic pH/pCO2 ; compiled when CARBONCHEM_SOLVESAPHE is defined (in
@@ -47,7 +129,6 @@ o pkg/dic:
   - Change experiment "so_box_biogeo" to compile with CARBONCHEM_SOLVESAPHE
     defined and add secondary test "saphe" (dir: input.saphe) to this experiment
     to test GENERAL pH solver (selectPHsolver=1).
->>>>>>> master
 o pkg/seaice:
   - add alternative version of seaice thermodynamics two routines that provide
     accurate adjoint. Switched by defining CPP option: ALLOW_SEAICE_GROWTH_ADX
@@ -77,7 +158,6 @@ o model/src:
 o verification/verification_parser.py
   - ensure Travis test suite fails when a build or a run fails.
 
->>>>>>> 351257375525bb8f9dab9a7ac2318d70e2505f80
 checkpoint67h (2019/03/21)
 o tools/genmake2:
   - fix option "-nocat4ad" for latest version of TAF: now needs to add TAF
@@ -88,7 +168,6 @@ o model/src:
 o tools/genmake2:
   - allow to skip "check_fortran_compiler" part (as, e.g., in opt-file:
      tools/build_options/linux_ia64_cray_archer).
->>>>>>> master
 o verification/tutorial_barotropic_gyre:
   - add 1rst tutorial documentation to new manual and update corresponding setup
 o pkg/atm_phys:
@@ -103,7 +182,6 @@ o pkg/atm_phys:
   - also avoid division by zero in Rel-Humid diagnostics (atm_phys_driver.F)
 o pkg/seaice:
   - fix missing update of sIceLoad in the case usePW79thermodynamics=F.
->>>>>>> master
 o pkg/dic:
   - Adjust unit conversions for dissociation coefficients aks, aksi, and akf
     (#define CARBONCHEM_TOTALPHSCALE).
@@ -158,7 +236,6 @@ o eesupp & model:
   - add entry points for 2-way nesting pkgs.
 o pkg/dic:
   - fix out-of-bounds error in S/R CAR_FLUX_OMEGA_TOP (#define CAR_DISS)
->>>>>>> master
 o pkg/streamice:
   - new implementation of grounding line smoothing by smoothing of basal
      traction in partly grounded cell, in streamice_upd_ffrac_uncoupled.F
@@ -230,12 +307,11 @@ o pkg/seaice: some new and hopefully more sensible defaults:
 o pkg/dic:
   - Promote constants in S/R CARBON_COEFFS_PRESSURE_DEP and
     S/R CAR_FLUX_OMEGA_TOP to double precision.
->>>>>>> master
 o pkg/seaice:
   - fix bug in seaice B-grid code (call to seaice_advdiff, see issue #134);
     Note: B-grid code not tested in any verification exp. (only compiled in one)
     so no need to update any output.txt
-o pkg/diagnostics
+o pkg/diagnostics:
   - Print adjoint variables for theta, salt, uvel, vvel, wvel, and etan
     through diagnostics package.
 o pkg/shelfice:

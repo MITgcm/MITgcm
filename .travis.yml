@@ -1,11 +1,13 @@
 # Travis file for running some basic set of testreport checks on each commit
 language: python
 
-services: 
+services:
  - docker
 
 before_install:
     # Set up environment needed to run testreport code tests
+  - docker pull mitgcm/mitgcm-openad-test:centos-test
+  - docker run -i -t -v `pwd`:/MITgcm -d --name openad-testing --ulimit stack=-1:-1 --rm mitgcm/mitgcm-openad-test:centos-test /bin/bash
   - docker pull mitgcm/testreport-images:fc11-base-20170715
   - docker run  -v `pwd`:/MITgcm --name fc11-testreport -t -d mitgcm/testreport-images:fc11-base-20170715 /bin/bash
   - docker exec -i fc11-testreport rpm -vv --rebuilddb
@@ -14,16 +16,19 @@ before_install:
   - docker exec -i fc11-testreport yum install python-pip
   - docker exec -i fc11-testreport yum install gcc-gfortran
   - docker exec -i fc11-testreport yum install python-argparse
-  # set options for Travis script
   - echo `pwd`
-  - export MITGCM_TROPT="-devel -of=../tools/build_options/linux_amd64_gfortran"
-  - export MITGCM_DECMD="docker exec -i fc11-testreport bash -c"
 
 jobs:
   include:
     # run the tests
     - stage: code tests
       env:
+      - MITGCM_EXP="global_ocean.90x40x15" MITGCM_PRECS="16"
+        MITGCM_DECMD="docker exec -i openad-testing bash -lc"
+        MITGCM_TROPT="-oad -devel -of=../tools/build_options/linux_amd64_gfortran"
+        MITGCM_INPUT_DIR_PAT='/input_oad.*'
+      script: . tools/ci/runtr.sh
+    - env:
       - MITGCM_EXP="offline_exf_seaice" MITGCM_PRECS="16 16 16 16 16"
       script: . tools/ci/runtr.sh
     - env:
@@ -35,8 +40,9 @@ jobs:
     - env:
       - MITGCM_EXP="aim.5l_cs" MITGCM_PRECS="14 16"
       script: . tools/ci/runtr.sh
+
     - env:
-      - MITGCM_EXP="isomip" MITGCM_PRECS="16 16 16"
+      - MITGCM_EXP="isomip" MITGCM_PRECS="16 16 16 16"
       script: . tools/ci/runtr.sh
     - env:
       - MITGCM_EXP="global_ocean.90x40x15" MITGCM_PRECS="16 16 16"
