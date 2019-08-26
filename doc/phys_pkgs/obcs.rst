@@ -143,6 +143,8 @@ their default values.
 | :varlink:`OBCS_balanceFacE`,   |               |                                                                                                     |
 | :varlink:`OBCS_balanceFacW`    |               |                                                                                                     |
 +--------------------------------+---------------+-----------------------------------------------------------------------------------------------------+
+| :varlink:`OBCSbalanceSurf`     | FALSE         | include surface mass flux in balance                                                                |
++--------------------------------+---------------+-----------------------------------------------------------------------------------------------------+
 | :varlink:`useOrlanskiNorth`,   | FALSE         | Turn on Orlanski boundary conditions for individual boundary.                                       |
 | :varlink:`useOrlanskiSouth`,   |               |                                                                                                     |
 | :varlink:`useOrlanskiEast`,    |               |                                                                                                     |
@@ -475,7 +477,12 @@ this combination of flags is *not* useful if you want to simulate, for example,
 a sector of the Southern Ocean with a strong ACC entering through the
 western and leaving through the eastern boundary, because the value of
 ''-1'' for these flags will make sure that the strong inflow is removed.
-Clearly, global balancing with :code:`OBCS_balanceFacE/W/N/S` :math:`\ge 0` is the preferred method.
+Clearly, gobal balancing with :code:`OBCS_balanceFacE/W/N/S` :math:`\ge 0` 
+is the preferred method.
+
+With runtime parameter :code:`OBCSbalanceSurf=.TRUE.`, the surface mass flux
+contribution, say, from surface freshwater flux :code:`EmPmR` is included in
+the balancing scheme.
 
 
 OBCS\_APPLY\_*:
