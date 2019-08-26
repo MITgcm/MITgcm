@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o QG-Leith viscosity:
+  - pkg/mom_common: bug fix for QG Leith viscosity
+  - pkg/gmredi: bug fix for QG Leith coefficient
+  - update output of experiments MLAdjust.QGLeith & MLAdjust.QGLthGM
 o pkg/obcs:
   - new feature to balance surface flux of freshwater or ice shelf mass by
     outflow through open boundary conditions:
