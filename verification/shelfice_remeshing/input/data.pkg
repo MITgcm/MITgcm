@@ -1,10 +1,7 @@
 # Packages
  &PACKAGES
-#useKPP=.true.,
- useOBCS=.true.,
- useMNC=.FALSE.,
- useShelfIce=.true.,
- useStreamIce=.true.,
-#useSEAICE=.true.,
- useDiagnostics = .true.,
+ useOBCS      = .TRUE.,
+ useShelfIce  = .TRUE.,
+ useStreamIce = .TRUE.,
+ useDiagnostics=.TRUE.,
  &
