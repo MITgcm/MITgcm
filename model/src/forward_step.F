@@ -303,6 +303,7 @@ C     == Global variables ==
 #  include "PTRACERS_FIELDS.h"
 # endif
 # ifdef ALLOW_GCHEM
+#  include "GCHEM_SIZE.h"
 #  include "GCHEM_FIELDS.h"
 # endif
 # ifdef ALLOW_CFC
@@ -424,14 +425,14 @@ c**************************************
 c**************************************
 #endif
 
-#ifdef ALLOW_SHELFICE
 #ifdef ALLOW_SHELFICE_REMESHING
-C-- Remesh shelfice
+      IF ( useShelfIce ) THEN
+C--   Remesh shelfice
         CALL TIMER_START('SHELFICE_REMESHING     [FORWARD_STEP]',myThid)
-        CALL SHELFICE_REMESHING (myTime, myIter, myThid )
+        CALL SHELFICE_REMESHING ( myTime, myIter, myThid )
         CALL TIMER_STOP('SHELFICE_REMESHING     [FORWARD_STEP]',myThid)
+      ENDIF
 #endif /* ALLOW_SHELFICE_REMESHING */
-#endif /* ALLOW_SHELFICE */
 
 C--   Reset geometric factors (hFacC,W,S & recip_hFac) to their current values:
 C     added to simplify adjoint derivation - no effect in forward run
