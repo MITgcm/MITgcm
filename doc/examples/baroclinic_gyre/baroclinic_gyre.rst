@@ -4,7 +4,6 @@
 Baroclinic Ocean Gyre
 =====================
 
-
 (in directory: :filelink:`verification/tutorial_baroclinic_gyre`)
 
 This section describes an example experiment using MITgcm to simulate a
@@ -58,7 +57,6 @@ equivalent to either in-situ temperature, :math:`T`, or potential
 temperature, :math:`\theta`. For consistency with later examples, in
 which the equation of state is non-linear, here we use the variable :math:`\theta` to
 represent temperature. 
-
 
   .. figure:: figs/baroclinic_gyre_config.png
       :width: 95%
@@ -301,7 +299,6 @@ experiment. Below we describe these customizations in detail.
 Compile-time Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
  
-
 File :filelink:`code/packages.conf <verification/tutorial_baroclinic_gyre/code/packages.conf>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -393,7 +390,6 @@ File :filelink:`code/DIAGNOSTICS_SIZE.h <verification/tutorial_baroclinic_gyre/c
     :linenos:
     :caption: verification/tutorial_baroclinic_gyre/code/DIAGNOSTICS_SIZE.h
 
-
 In the default version :filelink:`/pkg/diagnostics/DIAGNOSTICS_SIZE.h` the storage array for diagnostics is purposely
 set quite small, in other words forcing the user to assess how many diagnostics will be computed and thus choose an appropriate 
 size for a storage array. In the above file we have modified the value of parameter :varlink:`numDiags`:
@@ -405,7 +401,6 @@ size for a storage array. In the above file we have modified the value of parame
 
 from its default value ``1*Nr``, which would only allow a single 3-D diagnostic to be computed and saved, to ``20*Nr``,
 which will permit up to some combination of up to 20 3-D diagnostics or 300 2-D diagnostic fields. 
-
 
 Run-time Configuration
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -577,7 +572,6 @@ PARM03 - Time stepping parameters
        :end-at: monitorSelect
        :lineno-match:
 
-
 - The parameter :varlink:`tauThetaClimRelax` sets the time scale, in seconds,
   for restoring potential temperature in the model's top surface layer (see :eq:`baroc_restore_theta`).
   Our choice here of 2,592,000 seconds is equal to 30 days.
@@ -586,7 +580,6 @@ PARM03 - Time stepping parameters
        :start-at: tauTheta
        :end-at: tauTheta
        :lineno-match:
-
 
 PARM04 - Gridding parameters
 ############################ 
@@ -624,8 +617,7 @@ PARM04 - Gridding parameters
        :start-at: delR
        :end-at: delR
        :lineno-match:
- 
- 
+  
 PARM05 - Input datasets
 #######################
 
@@ -644,7 +636,6 @@ PARM05 - Input datasets
        :end-at: thetaClimFile
        :lineno-match:
 
-
 File :filelink:`input/data.pkg <verification/tutorial_baroclinic_gyre/input/data.pkg>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -661,7 +652,7 @@ Otherwise, only standard packages (i.e., those compiled in MITgcm by default) ar
 
 .. _baroc_datamnc:
 
-File :filelink:`input/data.pkg <verification/tutorial_baroclinic_gyre/input/data.mnc>`
+File :filelink:`input/data.mnc <verification/tutorial_baroclinic_gyre/input/data.mnc>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data.mnc
@@ -672,8 +663,14 @@ This file sets parameters which affect package :filelink:`pkg/mnc` behavior; in 
 (many packages look for file ``data.«PACKAGENAME»`` and will terminate if not present).
 Here, we are using default settings except for parameter :varlink:`monitor_mnc`:
 we are specifying NOT to create separate `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_
-output files for :filelink:`pkg/monitor` output, but rather to include this monitor output in the standard output file (see :numref:`baro_gyre_build_run`).
+output files for :filelink:`pkg/monitor` output, but rather to include this monitor output in the standard output file
+(see :numref:`baro_gyre_build_run`). Comment out the lines setting parameters
+:varlink:`mnc_use_outdir` and :varlink:`mnc_outdir_str` (these settings
+dump mnc output into a subdirectory, which is required for automated testing purposes).
 See :numref:`pkg_mnc_inputs` for a complete listing of :filelink:`pkg/mnc` namelist parameters and their default settings.
+Note that unlike raw binary output, which overwrites any existing files, when using mnc output the model
+will terminate with error if one attempts to overwrite an
+existing file (i.e., if re-running in a previous run directory, delete all ``*.nc`` files before restarting).
 
 .. _baroc_diags_list:    
 
@@ -704,11 +701,14 @@ The above lines tell MITgcm that our first list will consist of three diagnostic
   - MXLDEPTH - the depth of the mixed layer (m), as defined here by a given magnitude decrease
     in density from the surface (we'll use the model default for :math:`\Delta  \rho`)
  
+Note that all these diagnostic
+fields are 2-D output. **2-D and 3-D diagnostics CANNOT be mixed in a diagnostics list.**
 These variables are specified in parameter :varlink:`fields`: the first index is specified as ``1:«NUMBER_OF_DIAGS»``, the second index
 designates this for diagnostics list 1. Next, the output filename for diagnostics list 1 is specified  in variable :varlink:`fileName`. Finally,
-for this list we specify variable :varlink:`frequency` to provide time-averaged output every 31,104,000 seconds, i.e., once per year. Had we entered
-a negative value for :varlink:`frequency`, MITgcm would have instead written snapshot data at this interval. Finally, note that all these diagnostic
-fields are 2-D output. 2-D and 3-D diagnostics CANNOT be mixed in a diagnostics list. Next, we set up a second diagnostics list for several 3-D diagnostics.
+for this list we specify variable :varlink:`frequency` to provide time-averaged output every 31,104,000 seconds,
+i.e., once per year. Had we entered
+a negative value for :varlink:`frequency`, MITgcm would have instead written snapshot data at this interval.
+Next, we set up a second diagnostics list for several 3-D diagnostics.
 
 .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data.diagnostics
     :start-at: fields(1:5,2
@@ -757,7 +757,6 @@ and multiple lists of diagnostics (i.e., separate output files) can be specified
 can be mixed in a list.
 As noted, it is possible to select limited horizontal regions of interest, in addition to the full domain calculation.
 
-
 File :filelink:`input/eedata <verification/tutorial_baroclinic_gyre/input/eedata>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/eedata
@@ -773,7 +772,7 @@ File ``input/bathy.bin``, ``input/windx_cosy.bin``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The purpose and format of these files is similar to tutorial :ref:`Barotropic Ocean Gyre <baro_gyre_bathy_file>`.
-The matlab program :filelink:`verification/tutorial_baroclinic_gyre/input/gendata.m`
+The matlab script :filelink:`verification/tutorial_baroclinic_gyre/input/gendata.m`
 was used to generate these files.
 
 
@@ -795,7 +794,8 @@ Output Files
 ~~~~~~~~~~~~
 
 As in tutorial :ref:`sec_eg_baro`, standard output is produced (redirected into file ``output.txt`` as specified in :numref:`baro_gyre_build_run`); like before, this file
-includes model startup information, parameters, etc. (see :numref:`barotropic_gyre_std_out`). And because we set ``monitor_mnc=.FALSE.`` in :ref:`data.mnc <baroc_datamnc>`,
+includes model startup information, parameters, etc. (see :numref:`barotropic_gyre_std_out`).
+And because we set :varlink:`monitor_mnc` ``=.FALSE.`` in :ref:`data.mnc <baroc_datamnc>`,
 our standard output file will include all monitor statistics output. Note monitor statistics and cg2d
 information are evaluated over the global domain, despite the bifurcation of the grid into four separate tiles.
 As before, the file ``STDERR.0000`` will contain a log of any run-time errors. 
@@ -830,9 +830,7 @@ For help using this utility, type ``gluemncbig --help``; note a python installat
 The files ``grid.nc``, ``state.nc``, etc. are concatenated from the separate ``t001``, ``t002``, ``t003``, ``t004`` files
 into global grid files of horizontal dimension 62\ :math:`\times`\ 62.
 
-
 Let's proceed through the netcdf output that is produced.
-
 
   - ``grid.nc`` - includes all the model grid variables used by MITgcm.
     This includes the grid cell center points and separation (:varlink:`XC`, :varlink:`YC`, :varlink:`dxC`, :varlink:`dyC`),
@@ -847,7 +845,6 @@ Let's proceed through the netcdf output that is produced.
     and are dimensioned +1 larger than the standard array size; for example, ``Xp1`` is the longitude of the gridcell left corner, and
     includes an extra data point for the last gridcell's right corner longitude.
     
-
   - ``state.nc`` - includes snapshots of state variables U, V, W, Temp, S, and Eta
     at model times T in seconds (variable iter(T) stores the model iteration corresponding with these model times).
     Also included are vector forms of grid variables X, Y, Z, Xp1, Yp1, and Zl.
@@ -857,7 +854,6 @@ Let's proceed through the netcdf output that is produced.
     Snapshots of model state are written for model iterations 0, 25920, 51840, ...
     according to our ``data`` file parameter choice :varlink:`dumpFreq` (:varlink:`dumpFreq`/:varlink:`deltaT` = 25920).
     
-
   - ``surfDiag.nc`` - includes output diagnostics as specified from list 1 in :ref:`data.diagnostics <baroc_diags_list>`.
     Here we specified that list 1 include 2-D diagnostics ``ETAN``, ``TRELAX``, and ``MXLDEPTH``.
     Also includes an array of model times corresponding to the end of the time-average period, the iteration
@@ -879,7 +875,7 @@ Let's proceed through the netcdf output that is produced.
     ergo they are not included in file ``state.nc``. Like ``state.nc`` output however
     these fields are written at interval according to
     :varlink:`dumpFreq`, except are not written out at time :varlink:`nIter0` (i.e., have one time
-    record fewer than ``state.nc``). (when writing standary binary output, these filenames begin as ``PH`` and ``PHL`` respectively)
+    record fewer than ``state.nc``). Also note when writing standard binary output, these filenames begin as ``PH`` and ``PHL`` respectively.
 
 The hydrostatic pressure potential anomaly :math:`\phi'` is computed as follows:
 
@@ -895,7 +891,6 @@ Several additional files are output in standard binary format. These are:
 
 .. math:: \rho_{ref}(k) = \rho_0  \left( 1 - \alpha_{\theta} (\theta_{ref}(k) - \theta_{ref}(1)) \right)
 
-
 ``PHrefC.data, PHrefC.meta, PHrefF.data, PHrefF.meta`` - these are 1-D (k=1...\ :varlink:`Nr` for PHrefC and
 k=1...\ :varlink:`Nr`\ +1 for PHrefF) arrays containing a reference
 hydrostatic “pressure potential” :math:`\phi = p/\rho_c` (see :numref:`finding_the_pressure_field`).
@@ -910,7 +905,6 @@ but are of greater utility using a non-linear equation of state.
 ``pickup.ckptA.001.001.data``, ``pickup.ckptA.001.001.meta``, ``pickup.0000518400.001.001.data``, ``pickup.0000518400.001.001.meta`` etc. - as 
 described in detail in :ref:`tutorial Barotropic Gyre <barot_describe_checkp>`,
 these are temporary and permanent checkpoint files,  output in binary format. Note that separate checkpoint files are written for each model tile.
-
 
 And finally, because we are using the diagnostics package, upon startup the file ``available_diagnostics.log``
 will be generated. This (plain text) file contains a list of all diagnostics available for output in this setup, including a description of each diagnostic and its units,
@@ -1067,7 +1061,6 @@ statistics could be computed using our annual mean :ref:`Diagnostics Package Cho
 to the higher frequency of output without taxing our storage requirements,
 isn't it simpler to let MITgcm do the statistical number crunching than to write matlab or python code?)
 
-
 Load diagnostics ``TRELAX_ave``, ``THETA_lv_avg``, and ``THETA_lv_std`` from file ``dynStDiag.nc``.
 In :numref:`baroclinic_gyre_trelax_timeseries`\a
 we plot the global model surface mean heat flux (``TRELAX_ave``) as a function of time.
@@ -1106,7 +1099,6 @@ integrate the solution further and/or examine and calculate the meridional overt
 
       a\) Surface heat flux due to temperature restoring, negative values indicate heat flux out of the ocean; b) and c) potential temperature mean and standard deviation by level, respectively.
 
-
 Next, let's examine the effect of wind stress on the ocean's upper layers.
 Given the orientation of the wind stress and its variation over a full sine wave as shown in :numref:`baroclinic_gyre_config`
 (crudely mimicking easterlies in the tropics, mid-latitude westerlies, and polar easterlies),
@@ -1138,9 +1130,7 @@ depth can be easily visualized by loading diagnostic ``MXLDEPTH``).
 So what happened to our model solution subpolar gyre? Let's compute depth-integrated velocity :math:`u_{bt}, v_{bt}`
 and use it calculate the barotropic transport streamfunction:
 
-
 .. math:: u_{bt} = - \frac{\partial \Psi}{\partial y}, \phantom{WW} v_{bt} = \frac{\partial \Psi}{\partial x}
-
 
 Compute :math:`u_{bt}` by summing the diagnostic ``UVEL`` multiplied by gridcell depth
 (``grid.nc`` variable :varlink:`drF`, i.e.,
@@ -1150,7 +1140,6 @@ will need to load ``grid.nc`` variable :varlink:`dyG`, the separation between gr
 A plot of the resulting :math:`\Psi` field is shown in :numref:`baroclinic_gyre_psi`.
 Note one could also cumulative sum :math:`v_{bt}` times the grid spacing in the :math:`x`-direction and obtain a similar result.
 
-
  .. figure:: figs/baroc_psi.png
       :width: 75%
       :align: center
@@ -1158,7 +1147,6 @@ Note one could also cumulative sum :math:`v_{bt}` times the grid spacing in the 
       :name: baroclinic_gyre_psi
 
       Barotropic streamfunction (Sv) as computed over year 100.
-
 
 When velocities are integrated over depth, the subpolar gyre is readily apparent,
 as might be expected given our wind stress forcing profile. The pattern in :numref:`baroclinic_gyre_psi` in fact resembles

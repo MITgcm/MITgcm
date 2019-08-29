@@ -10,7 +10,6 @@ the choice of input/output fields and their on-disk format.
 
 .. _sub_outp_pkg_diagnostics:
 
-
 pkg/diagnostics – A Flexible Infrastructure
 ===========================================
 
