@@ -1,4 +1,6 @@
 # Travis file for running some basic set of testreport checks on each commit
+dist: xenial
+
 language: python
 
 services:
