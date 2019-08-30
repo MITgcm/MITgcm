@@ -48,7 +48,7 @@ CEOP
      &     SHELFICEDragQuadratic, SHELFICEselectDragQuadr,
      &     SHELFICEthetaSurface,
      &     useISOMIPTD,
-     &     SHELFICEconserve, SHELFICEboundaryLayer,
+     &     SHELFICEconserve, SHELFICEboundaryLayer, SHELFICErealFWflux,
      &     SHELFICEwriteState,
      &     SHELFICE_dumpFreq,
      &     SHELFICE_taveFreq,
@@ -62,12 +62,12 @@ CEOP
      &     SHELFICEuseGammaFrict, SHELFICE_oldCalcUStar,
      &     shiCdrag, shiZetaN, shiRc,
      &     shiPrandtl, shiSchmidt, shiKinVisc,
-     &     SHELFICERemeshFrequency, SHELFICESplitThreshold,
-     &     SHELFICEMergeThreshold, SHELFICErealfwflux
 #ifdef ALLOW_COST
-     &     , mult_shelfice
-     &     , mult_shifwflx, wshifwflx0, shifwflx_errfile
+     &     mult_shelfice,
+     &     mult_shifwflx, wshifwflx0, shifwflx_errfile,
 #endif
+     &     SHELFICEremeshFrequency,
+     &     SHELFICEsplitThreshold, SHELFICEmergeThreshold
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -92,8 +92,8 @@ C Set defaults values for parameters in SHELFICE.h
       useISOMIPTD              = .FALSE.
       SHELFICEconserve         = .FALSE.
       SHELFICEboundaryLayer    = .FALSE.
-      SHELFICEMassStepping     = .FALSE.
       SHELFICErealFWflux       = .FALSE.
+      SHELFICEMassStepping     = .FALSE.
       SHELFICEDynMassOnly      = .FALSE.
       SHELFICEtopoFile         = ' '
       SHELFICEmassFile         = ' '
@@ -117,9 +117,9 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEadvDiffHeatFlux  = .FALSE.
       SHELFICEuseGammaFrict    = .FALSE.
       SHELFICE_oldCalcUStar    = .FALSE.
-      SHELFICERemeshFrequency  = 2592000.
-      SHELFICESplitThreshold   = 5
-      SHELFICEMergeThreshold   = -8
+      SHELFICEremeshFrequency  = 0.
+      SHELFICEsplitThreshold   = 5.
+      SHELFICEmergeThreshold   = -8.
 C these params. are default of Holland and Jenkins (1999)
       shiCdrag                 = 0.0015 _d 0
       shiZetaN                 = 0.052 _d 0

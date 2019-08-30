@@ -6,6 +6,7 @@ C     !ROUTINE: SHELFICE_READ_PICKUP
 
 C     !INTERFACE:
       SUBROUTINE SHELFICE_READ_PICKUP( myThid )
+c     SUBROUTINE SHELFICE_READ_PICKUP( myIter, myThid )
 
 C     !DESCRIPTION:
 C     Reads current state of SHELFICE from a pickup file
@@ -16,7 +17,7 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "SHELFICE.h"
-#include "SURFACE.h"
+
 C     !INPUT PARAMETERS:
 C     myIter            :: time-step number
 C     myThid            :: thread number
@@ -116,29 +117,33 @@ c         CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
        IF ( nbFields.EQ.0 ) THEN
-C---   Old way to read pickup:
+C---  Old way to read pickup:
 
        ELSE
-C---   New way to read SHELFICE pickup:
+C---  New way to read SHELFICE pickup:
         nj = 0
-C---    read SHELFICE 3-D fields for restart
+C-    read SHELFICE 3-D fields for restart
         nj = nj*Nr
-C---    read STREAMICE 2-D fields for restart
+C-    read STREAMICE 2-D fields for restart
 
-        CALL READ_MFLDS_3D_RL( 'SHI_mass', shelfIceMass,
+        IF ( SHELFICEMassStepping ) THEN
+          CALL READ_MFLDS_3D_RL( 'SHI_mass', shelfIceMass,
      &                                 nj, fp, 1 , myIter, myThid )
+        ENDIF ! SHELFICEMassStepping
 
 #ifdef ALLOW_SHELFICE_REMESHING
-        CALL READ_MFLDS_3D_RL( 'R_Shelfi', R_shelfice,
+        IF ( SHELFICEremeshFrequency.GT.zeroRL ) THEN
+          CALL READ_MFLDS_3D_RL( 'R_Shelfi', R_shelfice,
      &                                 nj, fp, 1 , myIter, myThid )
-C        CALL READ_MFLDS_3D_RL( 'RMinSurf', Rmin_surf,
-C     &                                 nj, fp, 1 , myIter, myThid )
-#endif
+C         CALL READ_MFLDS_3D_RL( 'RMinSurf', Rmin_surf,
+C    &                                 nj, fp, 1 , myIter, myThid )
+        ENDIF ! shelfice-remeshing
+#endif /* ALLOW_SHELFICE_REMESHING */
 
 C--    end: new way to read pickup file
        ENDIF
 
-C--    Check for missing fields:
+C--   Check for missing fields:
        nMissing = missFldDim
        CALL READ_MFLDS_CHECK(
      O                     missFldList,
@@ -162,16 +167,13 @@ C--    Check for missing fields:
         STOP 'ABNORMAL END: S/R SHELFICE_READ_PICKUP'
        ENDIF
 
-C--    Update overlap regions:
+C--   Update overlap regions:
 
         CALL EXCH_XY_RL( shelfIceMass, myThid )
 #ifdef ALLOW_SHELFICE_REMESHING
         CALL EXCH_XY_RL( R_shelfice, myThid )
-        CALL EXCH_XY_RL( Rmin_surf, myThid )
+c       CALL EXCH_XY_RL( Rmin_surf, myThid )
 #endif
-        
-
-c       CALL EXCH_XY_RL( myPa_Surf2, myThid )
 
 #endif /* ALLOW_SHELFICE */
 

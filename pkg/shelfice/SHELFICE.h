@@ -25,18 +25,17 @@ C                                 following Jenkins et al. (2001, JPO), def: F
 C     SHELFICEMassStepping     :: flag to step forward ice shelf mass/thickness
 C                                 accounts for melting/freezing & dynamics
 C                                 (from file or from coupling), def: F
-C     SHELFICEDynMassOnly      :: step ice mass ONLY with 
-C                                 Shelficemassdyntendency, not melting/freezing 
-C                                 def: F
+C     SHELFICEDynMassOnly      :: step ice mass ONLY with Shelficemassdyntendency
+C                                 (not melting/freezing) def: F
 C     SHELFICEboundaryLayer    :: turn on vertical merging of cells to for a
 C                                 boundary layer of drF thickness, def: F
+C     SHELFICErealFWflux       :: ensure vert advective flux at bdry uses top
+C                                 cell value rather than "boundary layer" value
+C                                 def: F
 C     SHELFICEadvDiffHeatFlux  :: use advective-diffusive heat flux into the
 C                                 ice shelf instead of default diffusive heat
 C                                 flux, see Holland and Jenkins (1999),
 C                                 eq.21,22,26,31; def: F
-C     SHELFICErealFWflux       :: ensure vert advective flux at bdry uses top
-C                                 cell value rather than "boundary layer" value
-C                                 def: F  
 C     SHELFICEheatTransCoeff   :: constant heat transfer coefficient that
 C                                 determines heat flux into shelfice
 C                                 (def: 1e-4 m/s)
@@ -56,10 +55,10 @@ C     shiPrandtl, shiSchmidt   :: constant Prandtl (13.8) and Schmidt (2432.0)
 C                                 numbers used to compute gammaTurb
 C     shiKinVisc               :: constant kinetic viscosity used to compute
 C                                 gammaTurb (def: 1.95e-5)
-C     SHELFICERemeshFrequency  :: Frequency (in seconds) of call to
-C                                 SHELFICE_REMESHING; def 2592000
-C     SHELFICESplitThreshold   :: Max size of etaN allowed before a remesh
-C     SHELFICEMergeThreshold   :: Min size of etaN allowed before a remesh
+C     SHELFICEremeshFrequency  :: Frequency (in seconds) of call to
+C                                 SHELFICE_REMESHING (def: 0. --> no remeshing)
+C     SHELFICEsplitThreshold   :: Max size of etaN allowed before a remesh
+C     SHELFICEmergeThreshold   :: Min size of etaN allowed before a remesh
 C     -----------------------------------------------------------------------
 C     SHELFICEDragLinear       :: linear drag at bottom shelfice (1/s)
 C     SHELFICEDragQuadratic    :: quadratic drag at bottom shelfice (default
@@ -93,8 +92,6 @@ C     shelficeForcingT       :: analogue of surfaceForcingT
 C                               units are  r_unit.Kelvin/s (=Kelvin.m/s if r=z)
 C     shelficeForcingS       :: analogue of surfaceForcingS
 C                               units are  r_unit.psu/s (=psu.m/s if r=z)
-C     conserve_ssh           :: KS16. Use the obcs to conserve net open
-C                               ocean eta to 0m
 C-----------------------------------------------------------------------
 C \ev
 CEOP
@@ -114,9 +111,8 @@ CEOP
      &     SHELFICEDragLinear, SHELFICEDragQuadratic,
      &     shiCdrag, shiZetaN, shiRc,
      &     shiPrandtl, shiSchmidt, shiKinVisc,
-     &     SHELFICERemeshFrequency,
-     &     SHELFICESplitThreshold,
-     &     SHELFICEMergeThreshold
+     &     SHELFICEremeshFrequency,
+     &     SHELFICEsplitThreshold, SHELFICEmergeThreshold
 
       _RL SHELFICE_dumpFreq, SHELFICE_taveFreq
       _RL SHELFICEheatTransCoeff
@@ -130,10 +126,9 @@ CEOP
       _RL SHELFICEthetaSurface
       _RL shiCdrag, shiZetaN, shiRc
       _RL shiPrandtl, shiSchmidt, shiKinVisc
-      _RL SHELFICERemeshFrequency
-      _RL SHELFICESplitThreshold
-      _RL SHELFICEMergeThreshold
-  
+      _RL SHELFICEremeshFrequency
+      _RL SHELFICEsplitThreshold
+      _RL SHELFICEmergeThreshold
 
       COMMON /SHELFICE_FIELDS_RL/
      &     shelficeMass, shelficeMassInit,
@@ -168,6 +163,7 @@ CEOP
       LOGICAL useISOMIPTD
       LOGICAL SHELFICEconserve
       LOGICAL SHELFICEboundaryLayer
+      LOGICAL SHELFICErealFWflux
       LOGICAL no_slip_shelfice
       LOGICAL SHELFICEwriteState
       LOGICAL SHELFICE_dump_mdsio
@@ -179,12 +175,12 @@ CEOP
       LOGICAL SHELFICE_oldCalcUStar
       LOGICAL SHELFICEMassStepping
       LOGICAL SHELFICEDynMassOnly
-      LOGICAL SHELFICErealfwflux
       COMMON /SHELFICE_PARMS_L/
      &     SHELFICEisOn,
      &     useISOMIPTD,
      &     SHELFICEconserve,
      &     SHELFICEboundaryLayer,
+     &     SHELFICErealFWflux,
      &     no_slip_shelfice,
      &     SHELFICEwriteState,
      &     SHELFICE_dump_mdsio,
@@ -195,8 +191,7 @@ CEOP
      &     SHELFICEuseGammaFrict,
      &     SHELFICE_oldCalcUStar,
      &     SHELFICEMassStepping,
-     &     SHELFICEDynMassOnly,
-     &     SHELFICErealfwflux 
+     &     SHELFICEDynMassOnly
 
       CHARACTER*(MAX_LEN_FNAM) SHELFICEloadAnomalyFile
       CHARACTER*(MAX_LEN_FNAM) SHELFICEmassFile

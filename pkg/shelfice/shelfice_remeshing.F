@@ -1,17 +1,14 @@
 #include "SHELFICE_OPTIONS.h"
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: SHELFICE_REMESHING
 C     !INTERFACE:
       SUBROUTINE SHELFICE_REMESHING(
-     I    myTime, myIter, myThid )
+     I                    myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE SHELFICE_REMESHING
-C     | o If SHELFICERemeshFrequencey is a multiple of mytime,
+C     | o When myTime is a multiple of SHELFICEremeshFrequency
 C     |   checks if etaN under shelfice triggers a remesh
 C     *==========================================================*
 C     \ev
@@ -19,19 +16,18 @@ C     \ev
 C     !CALLING SEQUENCE:
 C     SHELFICE_REMESHING
 C       |
-C       |-- SHELFICE_UPDATE_MASKS_REMESH
+C       |-- SHELFICE_REMESH_C_MASK
 C       |    |
 C       |    |-- SHELFICE_REMESH_UVMASKS
-C       |    |-- OBCS_UPDATE_REMESH (called only if horiz remeshing)
-C       |    |-- CALC_SURF_DR
 C       |    |-- CALC_SURF_DR
 C       |    |-- UPDATE_SURF_DR
+C       |    |-- CALC_SURF_DR
 C       |
-C       |-- SHELFICE_REMESH_UPDATE_RMINSURF
+C       |-- SHELFICE_REMESH_RMINSURF
 C       |
 C       |-- UPDATE_CG2D
 C       |
-C       |-- SHELFICE_INTEGR_CONT_REMESH
+C       |-- SHELFICE_REMESH_CALC_W
 
 C     !USES:
       IMPLICIT NONE
@@ -40,36 +36,39 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#include "SURFACE.h"
-#include "GRID.h"
-#include "CG2D.h" 
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE.h"
-#endif /* ALLOW_SHELFICE */
+#include "SHELFICE.h"
 
-      INTEGER myThid
-      INTEGER myIter
+C     !INPUT/OUTPUT PARAMETERS:
+C     myTime    :: Current time in simulation
+C     myIter    :: Current iteration number
+C     myThid    :: my Thread Id number
       _RL myTime
+      INTEGER myIter
+      INTEGER myThid
 
-#ifdef ALLOW_SHELFICE
 #ifdef ALLOW_SHELFICE_REMESHING
+C     !FUNCTIONS:
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
-      INTEGER k, bi, bj, i, j
-      Real*8 addMass(1)
-      Real*8 rStarDhDt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+C     !LOCAL VARIABLES:
+c     INTEGER k, bi, bj, i, j
+CEOP
 
-        IF ((myTime/ShelficeRemeshFrequency) .EQ.
-     &     INT (myTime/ShelficeRemeshFrequency) .AND. myTime
-     &      .NE. 0.0        ) THEN
-         CALL SHELFICE_REMESH_C_MASK (mytime, myiter, myThid)
-         CALL SHELFICE_REMESH_RMINSURF(myTime, myIter, myThid)
-C-- DNG: CALC_SURF_DR is called twice as the hfac_surfNm1 etc fields
-C-- must be initialised since maskC has changed
-         CALL UPDATE_CG2D(myTime,myIter, myThid)
-         CALL SHELFICE_REMESH_CALC_W (uVel ,vVel, myThid)
-        ENDIF 
+      IF ( SHELFICEremeshFrequency.GT.zeroRL
+     &                        .AND. myTime.GT.baseTime ) THEN
+       IF (  DIFFERENT_MULTIPLE( SHELFICEremeshFrequency,
+     &                           myTime, deltaTClock ) ) THEN
+c     IF ((myTime/ShelficeRemeshFrequency) .EQ.
+c    &     INT (myTime/ShelficeRemeshFrequency) .AND. myTime
+c    &      .NE. 0.0        ) THEN
+         CALL SHELFICE_REMESH_C_MASK  ( myTime, myIter, myThid )
+         CALL SHELFICE_REMESH_RMINSURF( myTime, myIter, myThid )
+         CALL UPDATE_CG2D             ( myTime, myIter, myThid )
+         CALL SHELFICE_REMESH_CALC_W( uVel, vVel, myThid )
+       ENDIF
+      ENDIF
 #endif /* ALLOW_SHELFICE_REMESHING */
-#endif /* ALLOW_SHELFICE */
 
       RETURN
       END
