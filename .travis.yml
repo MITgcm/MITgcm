@@ -27,7 +27,7 @@ jobs:
         MITGCM_DECMD="docker exec -i openad-testing bash -lc"
         MITGCM_TROPT="-oad -devel -of=../tools/build_options/linux_amd64_gfortran"
         MITGCM_INPUT_DIR_PAT='/input_oad.*'
-      script: . tools/ci/runtr.sh
+      script: travis_wait . tools/ci/runtr.sh
     - env:
       - MITGCM_EXP="offline_exf_seaice" MITGCM_PRECS="16 16 16 16 16"
       script: . tools/ci/runtr.sh
