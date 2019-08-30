@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67l (2019/08/29)
 o QG-Leith viscosity:
   - pkg/mom_common: bug fix for QG Leith viscosity
   - pkg/gmredi: bug fix for QG Leith coefficient
