@@ -85,16 +85,19 @@ C     drKp1, recip_drLoc
       _RL sLoc(1:sNx,1:sNy)
       _RL pLoc(1:sNx,1:sNy)
       _RL uLoc(1:sNx,1:sNy)
-      _RL vLoc(1:sNx,1:sNy) 
-C--  DNG: TOPDR averages U/V over boundary layer at U/V points, then averages
-C--  (as opposed to averaging horizontally then vertically)  
+      _RL vLoc(1:sNx,1:sNy)
+      _RL velSq(1:sNx,1:sNy)
 #ifdef SHI_USTAR_TOPDR
+C--  TOPDR averages U/V over boundary layer at U/V points, then averages
+C    (as opposed to averaging horizontally then vertically)
       _RL u_topdr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_topdr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif    
-      _RL velSq(1:sNx,1:sNy)
+#endif
       _RL thetaFreeze, saltFreeze, recip_Cp
-      _RL freshWaterFlux, convertFW2SaltLoc
+      _RL freshWaterFlux
+#ifdef ALLOW_ISOMIP_TD
+      _RL convertFW2SaltLoc
+#endif
       _RL a0, a1, a2, b, c0
       _RL eps1, eps2, eps3, eps3a, eps4, eps5, eps6, eps7, eps8
       _RL cFac, rFac, dFac, fwflxFac, realFWfac
@@ -111,7 +114,7 @@ C--  (as opposed to averaging horizontally then vertically)
 #ifdef ALLOW_DIAGNOSTICS
       _RL uStarDiag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* ALLOW_DIAGNOSTICS */
-#endif
+#endif /*SHI_ALLOW_GAMMAFRICT */
 
 #ifndef ALLOW_OPENAD
       _RL SW_TEMP
@@ -119,11 +122,7 @@ C--  (as opposed to averaging horizontally then vertically)
 #endif
 
 #ifdef ALLOW_SHIFWFLX_CONTROL
-      _RL xx_shifwflx_loc(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-
-#ifdef ALLOW_SHELFICE_REMESHING
-      _RL GrdFactor(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_shifwflx_loc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -183,14 +182,14 @@ C     with "real fresh water flux" (affecting ETAN),
 C     there is more to modify
       rFac = 1. _d 0
       IF ( SHELFICEconserve .AND. useRealFreshWaterFlux ) rFac = 0. _d 0
+      realFWfac = 0. _d 0
+      IF ( SHELFICErealFWflux ) realFWfac = 1. _d 0
 C     heat flux into the ice shelf, default is diffusive flux
 C     (Holland and Jenkins, 1999, eq.21)
       dFac = 0. _d 0
       IF ( SHELFICEadvDiffHeatFlux ) dFac = 1. _d 0
       fwflxFac = 0. _d 0
 C     linear dependence of freezing point on salinity
-      realFWfac = 0. _d 0
-      IF ( SHELFICErealFWflux ) realFWfac = 1. _d 0
       a0 = -0.0575   _d  0
       a1 =  0.0      _d -0
       a2 =  0.0      _d -0
@@ -249,9 +248,9 @@ C     where this value is part of the protocol
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
-C--  DNG: TOPDR averages U/V over boundary layer at U/V points, then averages
-C--  (as opposed to averaging horizontally then vertically)
 #ifdef SHI_USTAR_TOPDR
+C--  TOPDR averages U/V over boundary layer at U/V points, then averages
+C--  (as opposed to averaging horizontally then vertically)
         IF ( SHELFICEBoundaryLayer ) THEN
 C--   average over boundary layer width
          DO J = 1, sNy+1
@@ -262,7 +261,7 @@ C--   average over boundary layer width
          ENDDO
         ENDIF
 #endif
-   
+
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef SHI_ALLOW_GAMMAFRICT
         act1 = bi - myBxLo(myThid)
@@ -325,53 +324,51 @@ C-    Original averaging expression for uStar:
           ENDDO
          ENDDO
         ENDIF
-C--  DNG: TOPDR averages U/V over boundary layer at U/V points, then averages
-C--  (as opposed to averaging horizontally then vertically)
 #ifdef SHI_USTAR_TOPDR
-c    Average at u- and v- points over deltaR. use later to override uLoc/vLoc
+C--  TOPDR averages U/V over boundary layer at U/V points, then averages
+C    (as opposed to averaging horizontally then vertically)
+C    Average at u- and v- points over deltaR. use later to override uLoc/vLoc
         IF ( SHELFICEBoundaryLayer ) THEN
          DO J = 1, sNy+1
           DO I = 1, sNx+1
-           K = ksurfW(I,J,bi,bj)
+           K = kSurfW(I,J,bi,bj)
            Kp1 = K+1
            IF (K.lt.Nr) then
             drKp1 = drF(K)*(1. _d 0-_hFacW(I,J,K,bi,bj))
             drKp1 = MIN( drKp1, drF(Kp1)*_hFacW(I,J,Kp1,bi,bj))
             drKp1 = max (drKp1, 0. _d 0)
-            recip_drLoc = 1.0 / 
+            recip_drLoc = 1.0 /
      &       (drF(K)*_hFacW(I,J,K,bi,bj)+drKp1)
-            u_topdr(I,J,bi,bj) = 
-     &       (drF(K)*_hFacW(I,J,K,bi,bj)*uVel(I,J,K,bi,bj) + 
-     &        drKp1*uVel(I,J,Kp1,bi,bj)) 
+            u_topdr(I,J,bi,bj) =
+     &       (drF(K)*_hFacW(I,J,K,bi,bj)*uVel(I,J,K,bi,bj) +
+     &        drKp1*uVel(I,J,Kp1,bi,bj))
      &      * recip_drLoc
-C zero out u_topdr under grounded ice as uLoc is average of u_topdr
-C in adjacent cells.
-!#ifdef ALLOW_SHELFICE_GROUNDED_ICE
-!           u_topdr(i,j,bi,bj) =
-!     &       u_topdr(i,j,bi,bj)*(GrdFactor(i,j,bi,bj)*0.5+0.5)
-!#endif
+C zero out u_topdr under grounded ice as uLoc is average of u_topdr in adjacent cells.
+c#ifdef ALLOW_SHELFICE_GROUNDED_ICE
+c           u_topdr(i,j,bi,bj) =
+c     &       u_topdr(i,j,bi,bj)*(GrdFactor(i,j,bi,bj)*0.5+0.5)
+c#endif
            ELSE
             u_topdr(I,J,bi,bj) = 0. _d 0
            ENDIF
-           
-           K = ksurfS(I,J,bi,bj)
+
+           K = kSurfS(I,J,bi,bj)
            Kp1 = K+1
            IF (K.lt.Nr) then
             drKp1 = drF(K)*(1. _d 0-_hFacS(I,J,K,bi,bj))
             drKp1 = MIN( drKp1, drF(Kp1)*_hFacS(I,J,Kp1,bi,bj))
             drKp1 = max (drKp1, 0. _d 0)
-            recip_drLoc = 1.0 / 
+            recip_drLoc = 1.0 /
      &       (drF(K)*_hFacS(I,J,K,bi,bj)+drKp1)
-            v_topdr(I,J,bi,bj) = 
-     &       (drF(K)*_hFacS(I,J,K,bi,bj)*vVel(I,J,K,bi,bj) + 
-     &        drKp1*vVel(I,J,Kp1,bi,bj)) 
+            v_topdr(I,J,bi,bj) =
+     &       (drF(K)*_hFacS(I,J,K,bi,bj)*vVel(I,J,K,bi,bj) +
+     &        drKp1*vVel(I,J,Kp1,bi,bj))
      &      * recip_drLoc
-C zero out v_topdr under grounded ice as uLoc is average of v_topdr
-C in adjacent cells.
-!#ifdef ALLOW_SHELFICE_GROUNDED_ICE
-!           v_topdr(i,j,bi,bj) =
-!     &       v_topdr(i,j,bi,bj)*(GrdFactor(i,j,bi,bj)*0.5+0.5)
-!#endif
+C zero out v_topdr under grounded ice as uLoc is average of v_topdr in adjacent cells.
+c#ifdef ALLOW_SHELFICE_GROUNDED_ICE
+c           v_topdr(i,j,bi,bj) =
+c     &       v_topdr(i,j,bi,bj)*(GrdFactor(i,j,bi,bj)*0.5+0.5)
+c#endif
            ELSE
             v_topdr(I,J,bi,bj) = 0. _d 0
            ENDIF
@@ -416,18 +413,16 @@ C--   lower cell may not be as thick as required
          ENDDO
         ENDIF
 
-C--  DNG: TOPDR averages U/V over boundary layer at U/V points, then averages
-C--  (as opposed to averaging horizontally then vertically)
 #ifdef SHI_USTAR_TOPDR
+C--  TOPDR averages U/V over boundary layer at U/V points, then averages
+C    (as opposed to averaging horizontally then vertically)
         IF ( SHELFICEBoundaryLayer ) THEN
          DO J = 1, sNy
           DO I = 1, sNx
-           uLoc(I,J) = 
-C halfRL*
-     &     halfRL*(u_topdr(I,J,bi,bj) + u_topdr(I+1,J,bi,bj))
-           vLoc(I,J) = 
-C halfRL*
-     &     halfRL*(v_topdr(I,J,bi,bj) + v_topdr(I,J+1,bi,bj))
+           uLoc(I,J) = halfRL
+     &               *(u_topdr(I,J,bi,bj) + u_topdr(I+1,J,bi,bj))
+           vLoc(I,J) = halfRL
+     &               *(v_topdr(I,J,bi,bj) + v_topdr(I,J+1,bi,bj))
            velSq(I,J) = uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)
           ENDDO
          ENDDO
@@ -718,8 +713,8 @@ C     Friction velocity
      &  CALL DIAGNOSTICS_FILL(uStarDiag,'SHIuStar',0,1,0,1,1,myThid)
 #endif /* SHI_ALLOW_GAMMAFRICT */
 #ifdef ALLOW_SHELFICE_REMESHING
-       CALL DIAGNOSTICS_FILL(R_shelfice,'SHIRshel',
-     &      0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL_RS( R_shelfice, 'SHIRshel',
+     &                           0, 1, 0, 1, 1, myThid )
 #endif
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */

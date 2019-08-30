@@ -95,11 +95,10 @@ C     (calling SHELFICE_FORCING_T & _S from APPLY_FORCING_T & _S)
 
         ENDIF
 
-! DNG ALLOW PmE to be used even if boundary layer is being used, as long as 
-! SHELFICErealFWflux is set to account for advective flux
-
-        IF ( useRealFreshWaterFlux.and.
-     &    (SHELFICErealFWflux.or.(.not.shelficeboundarylayer))) THEN
+        IF ( useRealFreshWaterFlux .AND. ( SHELFICErealFWflux .OR.
+     &                             .NOT.SHELFICEboundaryLayer ) ) THEN
+C-    Allows PmE to be used even if boundary layer is being used,
+C     as long as SHELFICErealFWflux is set to account for advective flux
 #ifdef ALLOW_AUTODIFF
           STOP 'RealFreshWaterFlux disabled in SHELFICE_FORCING_SURF'
 #else /* ALLOW_AUTODIFF */
@@ -113,11 +112,6 @@ c           ENDIF
           ENDDO
 #endif /* ALLOW_AUTODIFF */
         ENDIF
-
-
-
-C--   end if not SHELFICEboundaryLayer
-!        ENDIF
 
 #ifdef EXACT_CONSERV
         IF ( staggerTimeStep ) THEN
