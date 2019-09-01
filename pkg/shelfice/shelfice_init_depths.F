@@ -67,10 +67,10 @@ C-     end setup R_shelfIce in the interior
       ENDIF
 
 #ifdef ALLOW_SHELFICE_REMESHING
-       IF ( SHELFICEremeshFrequency.GT.zeroRL
-     &      .AND. ( startTime.NE.baseTime .OR. nIter0.NE.0
-     &              .OR. pickupSuff.NE.' ' ) ) THEN
-          CALL SHELFICE_READ_PICKUP ( myThid )
+      IF ( SHELFICEremeshFrequency.GT.zeroRL .AND.
+     &     ( nIter0.NE.0 .OR. startTime.NE.baseTime
+     &                   .OR. pickupSuff.NE.' ') ) THEN
+        CALL SHELFICE_READ_PICKUP( 0, nIter0, myThid )
       ENDIF
 #endif /* ALLOW_SHELFICE_REMESHING */
 
