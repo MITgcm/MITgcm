@@ -113,6 +113,7 @@ C-  increment eta and decrement R_shelfice and Ro_sur
              etaH(i,j,bi,bj) = etaH(i,j,bi,bj) + adjust
              etaHnm1(i,j,bi,bj) = etaHnm1(i,j,bi,bj) + adjust
              R_shelfice(i,j,bi,bj) = R_shelfice(i,j,bi,bj)-adjust
+             Ro_surf(i,j,bi,bj) = Ro_surf(i,j,bi,bj) - adjust
 
 C-  first find the volume of new cell -- taking bathy into account
              IF (k+1 .LT. klowc(i,j,bi,bj)) THEN
