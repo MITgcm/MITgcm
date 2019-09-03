@@ -1,14 +1,10 @@
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE_OPTIONS.h"
-#endif
+#include "SHELFICE_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: SHELFICE_REMESH_RMINSURF
 C     !INTERFACE:
       SUBROUTINE SHELFICE_REMESH_RMINSURF(
-     I    myTime, myIter, myThid)
+     I                    myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE SHELFICE_REMESH_RMINSURF
@@ -23,25 +19,24 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "SURFACE.h"
 #include "GRID.h"
+#include "SURFACE.h"
 
-      INTEGER myThid
-      INTEGER myIter
       _RL myTime
+      INTEGER myIter
+      INTEGER myThid
 
-#ifdef ALLOW_SHELFICE
-#ifdef ALLOW_SHELFICE_REMESHING 
+#ifdef NONLIN_FRSURF
+#ifdef ALLOW_SHELFICE_REMESHING
       _RL Rmin_tmp
       _RL hfacInfMom
       INTEGER bi, bj
-      INTEGER I, J, Ks
+      INTEGER i, j, ks
 
       hFacInfMOM = hFacInf
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
-
 C-- Compute the mimimum value of r_surf (used for computing hFac_surfC)
          DO j=1,sNy
           DO i=1,sNx
@@ -64,13 +59,13 @@ C-- Compute the mimimum value of r_surf (used for computing hFac_surfC)
            ENDIF
           ENDDO
          ENDDO
-
 C-    end bi,bj loop.
        ENDDO
       ENDDO
 
       CALL EXCH_XY_RL( Rmin_surf, myThid )
-#endif
-#endif
+
+#endif /* ALLOW_SHELFICE_REMESHING */
+#endif /* NONLIN_FRSURF */
       RETURN
       END
