@@ -1,8 +1,4 @@
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE_OPTIONS.h"
-#endif
+#include "SHELFICE_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: UPD_MASKS_REMESH
@@ -47,13 +43,10 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-
 #ifdef ALLOW_SHELFICE
 #ifdef ALLOW_SHELFICE_REMESHING
 
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 
       IF ( selectSigmaCoord.EQ.0 ) THEN
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -281,7 +274,6 @@ c     CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpFld,0,myThid)
 c     CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
 c     CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW,0,myThid)
 c     CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS,0,myThid)
-
 
 C--   Masks and reciprocals of hFac[CWS]
       DO bj = myByLo(myThid), myByHi(myThid)
