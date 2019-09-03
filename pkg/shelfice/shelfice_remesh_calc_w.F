@@ -3,7 +3,6 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
-
 CBOP
 C     !ROUTINE: SHELFICE_REMESH_CALC_W
 C     !INTERFACE:
@@ -46,15 +45,17 @@ C     Local variables
 C     bi,bj    :: tile index
 C     i,j,k    :: Loop counters
       INTEGER k,bi,bj
-#ifdef EXACT_CONSERV
+#ifdef ALLOW_OBCS
       INTEGER i, j
-#else /* EXACT_CONSERV */
-# ifdef ALLOW_OBCS
-      INTEGER i, j
-# endif
-#endif /* EXACT_CONSERV */
+#endif
+#ifndef ALLOW_ADDFLUID
       _RL addMass(1)
+#endif /* ndef ALLOW_ADDFLUID */
+#if (defined NONLIN_FRSURF) && !(defined DISABLE_RSTAR_CODE)
       _RL rStarDhDt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#else
+      _RL rStarDhDt(1)
+#endif
 CEOP
 
 C--   Start bi,bj loops
