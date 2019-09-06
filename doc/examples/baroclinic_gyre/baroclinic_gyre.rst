@@ -85,10 +85,10 @@ For this problem the implicit free surface, **HPE**
 form of the equations (see :numref:`hydro_and_quasihydro`; :numref:`press_meth_linear`)
 described in Marshall et al. (1997) :cite:`marshall:97a` are
 employed. The flow is three-dimensional with just temperature,
-:math:`\theta`, as an active tracer. A
-horizontal Laplacian operator :math:`\nabla_{h}^2` provides viscous
-dissipation and provides a diffusive sub-grid scale closure for the
-temperature equation. A wind-stress momentum forcing is added to the
+:math:`\theta`, as an active tracer. 
+The viscous and diffusive terms provides viscous dissipation
+and a diffusive sub-grid scale closure for the momentum and temperature equations, respectively.
+A wind-stress momentum forcing is added to the
 momentum equation for the zonal flow, :math:`u`. Other terms in the
 model are explicitly switched off for this experiment configuration (see
 :numref:`sec_eg_baroclinic_code_config`). This yields an active set of
@@ -97,15 +97,16 @@ coordinates as follows:
 
 .. math::
    \frac{Du}{Dt} - fv -\frac{uv}{a}\tan{\varphi} + 
-   \frac{1}{\rho_c a \cos{\varphi}}\frac{\partial p^{\prime}}{\partial \lambda} - 
-   A_{h}\nabla_{h}^2u - A_{z}\frac{\partial^{2}u}{\partial z^{2}} 
+   \frac{1}{\rho_c a \cos{\varphi}}\frac{\partial p^{\prime}}{\partial \lambda} + 
+   \nabla_{h} \cdot (-A_{h}\nabla_{h} u) + \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial u}{\partial z} \right)
    = {\mathcal{F}_u} = \frac{\tau_{\lambda}}{\rho_{c}\Delta z_{s}}
    :label: baroc_gyre_umom
 
 .. math::
    \frac{Dv}{Dt} + fu + \frac{u^2}{a}\tan{\varphi} +
-   \frac{1}{\rho_c a}\frac{\partial p^{\prime}}{\partial \varphi} - 
-   A_{h}\nabla_{h}^2v - A_{z}\frac{\partial^{2}v}{\partial z^{2}} = {\mathcal{F}_v} = 0
+   \frac{1}{\rho_c a}\frac{\partial p^{\prime}}{\partial \varphi} + 
+   \nabla_{h} \cdot (-A_{h}\nabla_{h} v) + \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial v}{\partial z} \right)
+   = {\mathcal{F}_v} = 0
    :label: baroc_gyre_vmom
 
 .. math::
@@ -114,8 +115,8 @@ coordinates as follows:
    :label: baroc_gyre_cont
 
 .. math::
-   \frac{D\theta}{Dt} -
-   \kappa_{h}\nabla_{h}^2\theta  - \kappa_{z}\frac{\partial^{2}\theta}{\partial z^{2}} = {\mathcal F}_\theta
+   \frac{D\theta}{Dt} + \nabla_{h} \cdot (-\kappa_{h}\nabla_{h} \theta)
+   + \frac{\partial}{\partial z} \left( -\kappa_{z}\frac{\partial \theta}{\partial z} \right) = {\mathcal F}_\theta
    :label: barooc_gyre_theta
 
 .. math::
