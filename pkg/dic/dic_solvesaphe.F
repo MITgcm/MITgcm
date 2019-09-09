@@ -822,7 +822,7 @@ C Convert to the total pH scale
       IF ( selectHFconst.EQ.1 ) THEN
            akf (i,j,bi,bj) = akf (i,j,bi,bj)/total2free
       ENDIF
-           akw (i,j,bi,bj) = akw (i,j,bi,bj)/total2free
+           akw (i,j,bi,bj) = akw (i,j,bi,bj)/total2sw
 
 C -----------------------------------------------------------------------
 C       Calculate the stoichiometric solubility product
