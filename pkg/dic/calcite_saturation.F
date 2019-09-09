@@ -55,10 +55,9 @@ c zbase                   :: depth of bottom of current productive layer
        _RL alklocal
        _RL pCO2local
        _RL pHlocal
-#ifdef CARBONCHEM_SOLVESAPHE
-      _RL surftemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL surfsalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif
+       _RL surftemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+       _RL surfsalt(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
        INTEGER CO3ITER
        INTEGER CO3ITERmax
 CEOP
@@ -72,14 +71,13 @@ cmick....................................................
 c determine carbonate ion concentration through full domain
 c determine calcite saturation state
        DO k=1,Nr
-#ifdef CARBONCHEM_SOLVESAPHE
-      DO j=jmin,jmax
+        DO j=jmin,jmax
          DO i=imin,imax
             surftemp(i,j) = theta(i,j,k,bi,bj)
             surfsalt(i,j) = salt (i,j,k,bi,bj)
          ENDDO
         ENDDO
-
+#ifdef CARBONCHEM_SOLVESAPHE
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL(
      &   'DIC_COEFFS_DEEP',myThid)
@@ -100,7 +98,7 @@ C Now correct the coefficients for pressure dependence
      &   'CARBON_COEFFS_PRESSURE_DEP',myThid)
 #endif
         CALL CARBON_COEFFS_PRESSURE_DEP(
-     I                       theta,salt,
+     I                       surftemp,surfsalt,
      I                       bi,bj,iMin,iMax,jMin,jMax,
      I                       k,myThid)
 #endif
