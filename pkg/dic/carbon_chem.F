@@ -1138,7 +1138,7 @@ C Pressure correct akf on the free scale before converting back to total
 C------------------------------------------------------------------------
 C Convert pressure corrected ak1 and ak2 from the seawater pH scale to the total scale
            ak1(i,j,bi,bj)  = ak1(i,j,bi,bj)/total2sw
-           ak2(i,j,bi,bj)  = ak1(i,j,bi,bj)/total2sw
+           ak2(i,j,bi,bj)  = ak2(i,j,bi,bj)/total2sw
 
 C------------------------------------------------------------------------
 C Pressure correct akb on the seawater scale before converting back to total scale
