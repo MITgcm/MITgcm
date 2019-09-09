@@ -622,12 +622,12 @@ PARM04 - Gridding parameters
 PARM05 - Input datasets
 #######################
 
-- Similar to tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`, these lines specify filenames for the bathymetry
-  file and for surface wind stress forcing fields.
+- Similar to tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`, these lines specify filenames for bathymetry
+  and surface wind stress forcing files.
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
        :start-at: bathyFile
-       :end-at: meridWindFile
+       :end-at: zonalWindFile
        :lineno-match:
  
 - This line specifies parameter :varlink:`thetaClimFile`, the filename for the (2-D) restoring temperature field.
