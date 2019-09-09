@@ -568,8 +568,11 @@ c add Bennington
 #ifdef CARBONCHEM_TOTALPHSCALE
 c pH scale converstions
         _RL total2free
+        _RL free2total
         _RL free2sw        
+        _RL sw2free
         _RL total2sw
+        _RL sw2total
 #endif
         INTEGER i
         INTEGER j
@@ -734,16 +737,23 @@ C------------------------------------------------------------------------
 C Convert between pH scales, we want everything to end up on the total scale
 C ak1 and ak2 are on seawater scale and aks is on the free scale
            total2free = 1. _d 0/
-     &                 (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj)) 
+     &                 (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
+     
+           free2total = (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj)) 
 
            free2sw = 1. _d 0 
      &                 + st(i,j,bi,bj)/ aks(i,j,bi,bj) 
      &                 + ft(i,j,bi,bj)/(akf(i,j,bi,bj)*total2free) 
-           total2sw = total2free * free2sw                         
+     
+           sw2free = 1. _d 0 / free2sw
+           
+           total2sw = total2free * free2sw            
+           
+           sw2total = 1. _d 0 / total2sw
 
-           ak1(i,j,bi,bj)  = ak1(i,j,bi,bj)/total2sw
-           ak2(i,j,bi,bj)  = ak2(i,j,bi,bj)/total2sw
-           aks(i,j,bi,bj)  = aks(i,j,bi,bj)/total2free     
+           ak1(i,j,bi,bj)  = ak1(i,j,bi,bj)*sw2total
+           ak2(i,j,bi,bj)  = ak2(i,j,bi,bj)*sw2total
+           aks(i,j,bi,bj)  = aks(i,j,bi,bj)*free2total     
 #endif
          else
 c add Bennington
@@ -877,8 +887,11 @@ c pH scale converstions
         _RL free2sw_surf       
         _RL total2sw_surf
         _RL total2free
+        _RL free2total
         _RL free2sw        
+        _RL sw2free
         _RL total2sw
+        _RL sw2total
 #endif
 C.....................................................................
 C OCMIP note:
@@ -1120,11 +1133,14 @@ C Pressure correct aks on native free pH scale
 
            total2free = 1. _d 0/
      &                 (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj)) 
+     
+           free2total = (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
+           
 C free2sw has an additional component from fluoride           
            free2sw    = 1. _d 0 
      &                 + st(i,j,bi,bj)/ aks(i,j,bi,bj) 
            
-           aks(i,j,bi,bj) = aks(i,j,bi,bj)/total2free
+           aks(i,j,bi,bj) = aks(i,j,bi,bj)*free2total
            
 C------------------------------------------------------------------------
 C Pressure correct akf on the free scale before converting back to total
@@ -1139,12 +1155,17 @@ C Pressure correct akf on the free scale before converting back to total
 C free2sw has an additional component from fluoride, add it here           
            free2sw = free2sw 
      &               + ft(i,j,bi,bj)/(akf(i,j,bi,bj)*total2free) 
+     
+           sw2free  = 1. _d 0 / free2sw
+           
            total2sw = total2free * free2sw                        
 
+           sw2total = 1. _d 0 / total2sw
+           
 C------------------------------------------------------------------------
 C Convert pressure corrected ak1 and ak2 from the seawater pH scale to the total scale
-           ak1(i,j,bi,bj)  = ak1(i,j,bi,bj)/total2sw
-           ak2(i,j,bi,bj)  = ak2(i,j,bi,bj)/total2sw
+           ak1(i,j,bi,bj)  = ak1(i,j,bi,bj)*sw2total
+           ak2(i,j,bi,bj)  = ak2(i,j,bi,bj)*sw2total
 
 C------------------------------------------------------------------------
 C Pressure correct akb on the seawater scale before converting back to total scale
@@ -1153,7 +1174,7 @@ C Pressure correct akb on the seawater scale before converting back to total sca
             pfactor = - (dv/(bigR*tk))*pressc
      &                + (0.5*dk/(bigR*tk))*pressc*pressc
             akb(i,j,bi,bj) = total2sw_surf*akb(i,j,bi,bj)*exp(pfactor)
-            akb(i,j,bi,bj) = akb(i,j,bi,bj)/total2sw
+            akb(i,j,bi,bj) = akb(i,j,bi,bj)*sw2total
 
 C------------------------------------------------------------------------
 C Pressure correct ak1p on the seawater scale before converting back to total scale
@@ -1162,7 +1183,7 @@ C Pressure correct ak1p on the seawater scale before converting back to total sc
             pfactor = - (dv/(bigR*tk))*pressc
      &                + (0.5*dk/(bigR*tk))*pressc*pressc
             ak1p(i,j,bi,bj) = total2sw_surf*ak1p(i,j,bi,bj)*exp(pfactor)
-            ak1p(i,j,bi,bj) = ak1p(i,j,bi,bj)/total2sw
+            ak1p(i,j,bi,bj) = ak1p(i,j,bi,bj)*sw2total
 
 C------------------------------------------------------------------------
 C Pressure correct ak2p on the seawater scale before converting back to total scale
@@ -1171,7 +1192,7 @@ C Pressure correct ak2p on the seawater scale before converting back to total sc
             pfactor = - (dv/(bigR*tk))*pressc
      &                + (0.5*dk/(bigR*tk))*pressc*pressc
             ak2p(i,j,bi,bj) = total2sw_surf*ak2p(i,j,bi,bj)*exp(pfactor)
-            ak2p(i,j,bi,bj) = ak2p(i,j,bi,bj)/total2sw
+            ak2p(i,j,bi,bj) = ak2p(i,j,bi,bj)*sw2total
             
 C------------------------------------------------------------------------
 C Pressure correct ak3p on the seawater scale before converting back to total scale
@@ -1180,7 +1201,7 @@ C Pressure correct ak3p on the seawater scale before converting back to total sc
             pfactor = - (dv/(bigR*tk))*pressc
      &                + (0.5*dk/(bigR*tk))*pressc*pressc
             ak3p(i,j,bi,bj) = total2sw_surf*ak3p(i,j,bi,bj)*exp(pfactor)
-            ak3p(i,j,bi,bj) = ak3p(i,j,bi,bj)/total2sw
+            ak3p(i,j,bi,bj) = ak3p(i,j,bi,bj)*sw2total
             
 C------------------------------------------------------------------------
 C Pressure correct akw on the seawater scale before converting back to total scale
@@ -1189,7 +1210,7 @@ C Pressure correct akw on the seawater scale before converting back to total sca
             pfactor = - (dv/(bigR*tk))*pressc
      &                + (0.5*dk/(bigR*tk))*pressc*pressc
             akw(i,j,bi,bj) = total2sw_surf*akw(i,j,bi,bj)*exp(pfactor)
-            akw(i,j,bi,bj) = akw(i,j,bi,bj)/total2sw
+            akw(i,j,bi,bj) = akw(i,j,bi,bj)*sw2total
 
 C------------------------------------------------------------------------
 C Pressure correct aksi on the seawater scale before converting back to total scale
@@ -1199,7 +1220,7 @@ C Estimated from the effect on akb
             pfactor = - (dv/(bigR*tk))*pressc
      &                + (0.5*dk/(bigR*tk))*pressc*pressc
             aksi(i,j,bi,bj) = total2sw_surf*aksi(i,j,bi,bj)*exp(pfactor)
-            aksi(i,j,bi,bj) = aksi(i,j,bi,bj)/total2sw
+            aksi(i,j,bi,bj) = aksi(i,j,bi,bj)*sw2total
 #endif
 
 C------------------------------------------------------------------------
