@@ -226,7 +226,7 @@ C                  p_flutot*(1. _d 0-1. _d 0)      ! n = 1, m = 1
 C      END SUBROUTINE ANW_INFSUP
 C      =========================================================================
 
-C INTERFACE: ==========================================================
+C      =========================================================================
       SUBROUTINE CALC_PCO2_SOLVESAPHE(
      I                    t,s,z_dictot,z_po4tot,z_siltot,z_alktot,
      U                    pHlocal,z_pco2,z_co3,
@@ -523,7 +523,8 @@ C       pH scale  : N/A
            Rgas = 83.1451 _d 0  ! bar*cm3/(mol*K)
            RT = Rgas*t_k
            delta = (57.7 _d 0 - 0.118 _d 0*t_k)
-           B1 = -1636.75 _d 0 + 12.0408 _d 0*t_k - 0.0327957 _d 0*t_k*t_k
+           B1 = -1636.75 _d 0 + 12.0408 _d 0*t_k 
+                - 0.0327957 _d 0*t_k*t_k
            B  = B1 + 3.16528 _d 0*t_k*t_k*t_k*(0.00001 _d 0)
 
 C   "x2" term often neglected (assumed=1) in applications of Weiss's (1974) eq.9
@@ -1033,6 +1034,7 @@ C       References: Millero (1995) for pressure correction
            pfac   = (-zdvi + zdki*pressc/2. _d 0)*pressc/zrt
            akf(i,j,bi,bj) = total2free_surf*akf(i,j,bi,bj) * exp(pfac)
 
+C free2sw has an additional component from fluoride add it here
            free2sw = free2sw
      &               + ft(i,j,bi,bj)/akf(i,j,bi,bj)
            total2sw = total2free * free2sw

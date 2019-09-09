@@ -963,14 +963,16 @@ c Following Takahashi (1981) GEOSECS report - quoting Culberson and
 c Pytkowicz (1968)
 c pressc = pressure in bars
            ak1(i,j,bi,bj) = ak1(i,j,bi,bj)*
-     &         exp( (24.2 _d 0-0.085 _d 0*t)*(pressc-1.0 _d 0)/(83.143 _d 0*tk) )
+     &         exp( (24.2 _d 0-0.085 _d 0*t)
+     &             *(pressc-1.0 _d 0)/(83.143 _d 0*tk) )
 c FIRST GO FOR K2: According to GEOSECS (1982) report
 c          ak2(i,j,bi,bj) = ak2(i,j,bi,bj)*
 c    &             exp( (26.4-0.040*t)*(pressc-1.0)/(83.143*tk) )
 c SECOND GO FOR K2: corrected coeff according to CO2sys documentation
 c                   E. Lewis and D. Wallace (1998) ORNL/CDIAC-105
            ak2(i,j,bi,bj) = ak2(i,j,bi,bj)*
-     &         exp( (16.4 _d 0-0.040 _d 0*t)*(pressc-1.0 _d 0)/(83.143 _d 0*tk) )
+     &         exp( (16.4 _d 0-0.040 _d 0*t)
+     &             *(pressc-1.0 _d 0)/(83.143 _d 0*tk) )
 C------------------------------------------------------------------------
 C kb = [H][BO2]/[HBO2]
 C Millero p.669 (1995) using data from dickson (1990)
@@ -1054,8 +1056,8 @@ C The constant 148.9652 is an approximation to convert to the total pH scale
 C  (Dickson et al., 2007). Use Millero's 148.9802 constant to stay on the seawater
 C  pH scale (everything else is the same).
            akw(i,j,bi,bj) = exp(-13847.26 _d 0*invtk + 148.9652 _d 0 -
-     &          23.6521 _d 0*dlogtk +
-     &          (118.67 _d 0*invtk - 5.977 _d 0 + 1.0495 _d 0 * dlogtk) *
+     &          23.6521 _d 0*dlogtk + (118.67 _d 0*invtk
+     &          - 5.977 _d 0 + 1.0495 _d 0 * dlogtk) *
      &          sqrts - 0.01615 _d 0 * s)
 C------------------------------------------------------------------------
 C ks = [H][SO4]/[HSO4]
@@ -1064,8 +1066,10 @@ C On the free pH scale
 C Note: converted here from mol/kg-H2O to mol/kg-SW
            aks(i,j,bi,bj)=exp(-4276.1 _d 0*invtk + 141.328 _d 0 -
      &          23.093 _d 0*dlogtk +
-     &          (-13856 _d 0*invtk + 324.57 _d 0 - 47.986 _d 0*dlogtk)*sqrtis +
-     &          (35474 _d 0*invtk - 771.54 _d 0 + 114.723 _d 0*dlogtk)*is -
+     &          (-13856 _d 0*invtk + 324.57 _d 0 - 47.986 _d 0*dlogtk)
+     &          *sqrtis +
+     &          (35474 _d 0*invtk - 771.54 _d 0 + 114.723 _d 0*dlogtk)
+     &          *is -
      &          2698 _d 0*invtk*is**1.5 _d 0 + 1776 _d 0*invtk*is2 +
      &          log(1.0 _d 0 - 0.001005 _d 0*s))
 C------------------------------------------------------------------------
@@ -1075,7 +1079,8 @@ C Note: converted here from mol/kg-H2O to mol/kg-SW
            akf(i,j,bi,bj)=exp(1590.2 _d 0*invtk - 12.641 _d 0 
      &          + 1.525 _d 0*sqrtis      
      &          + log(1.0 _d 0 - 0.001005 _d 0*s)
-     &          + log(1.0 _d 0 + (0.1400 _d 0/96.062 _d 0)*(scl)/aks(i,j,bi,bj)))
+     &          + log(1.0 _d 0 + (0.1400 _d 0/96.062 _d 0)
+     &          *(scl)/aks(i,j,bi,bj)))
 C------------------------------------------------------------------------
 C Calculate concentrations for borate, sulfate, and fluoride
 C Uppstrom (1974)
@@ -1129,8 +1134,9 @@ C Pressure correct akf on the free scale before converting back to total
            pfactor = -(dv/(bigR*tk))*pressc
      &               +(0.5*dk/(bigR*tk))*pressc*pressc
            akf(i,j,bi,bj) = akf(i,j,bi,bj) * exp(pfactor)
-           akf(i,j,bi,bj) = akf(i,j,bi,bj)/total2free        
-        
+           akf(i,j,bi,bj) = akf(i,j,bi,bj)*free2total        
+
+C free2sw has an additional component from fluoride, add it here           
            free2sw = free2sw 
      &               + ft(i,j,bi,bj)/(akf(i,j,bi,bj)*total2free) 
            total2sw = total2free * free2sw                        
