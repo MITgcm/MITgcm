@@ -45,16 +45,12 @@ C     bi,bj   :: tile indices
 C     i,j,k   :: Loop counters
       INTEGER bi, bj
       INTEGER i, j, k
-      _RL hFacCtmp
-      _RL hFacMnSz
       _RL adjust
       _RL stag_fac
       _RL salt_int, theta_int, newvol, eta_old, vel_int
       _RL tmpVar
-      _RS maskS_old (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
-      _RS maskW_old (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
-      _RL hFacS_old (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
-      _RL hFacW_old (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RS hFacS_old(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RS hFacW_old(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
 
       stag_fac = 0.0
       IF (staggerTimestep) stag_fac = 1.0
@@ -89,10 +85,10 @@ C     also need to increment geometric factors and masks
 C     maskC, hFacC, hFac_surfC, kSurfC, kTopC, recip_hFacC
               IF (k .LT. klowc(i,j,bi,bj)) THEN
                h0FacC(i,j,k,bi,bj) = 1.
-              else
+              ELSE
                h0FacC(i,j,k,bi,bj) = (rF(k)-r_low(i,j,bi,bj)) *
      &          recip_drF(k)
-              endif
+              ENDIF
                h0FacC(i,j,k-1,bi,bj) = 1.
              ENDIF
             ENDIF
@@ -118,9 +114,9 @@ C-  increment eta and decrement R_shelfice and Ro_sur
 C-  first find the volume of new cell -- taking bathy into account
              IF (k+1 .LT. klowc(i,j,bi,bj)) THEN
               newvol = drF(k+1) + etaH(i,j,bi,bj)
-             else
+             ELSE
               newvol = rF(k+1)-r_low(i,j,bi,bj) + etaH(i,j,bi,bj)
-             endif
+             ENDIF
              salt_int = salt(i,j,k,bi,bj) *
      &         (stag_fac * hFac_surfC(i,j,bi,bj) +
      &          (1-stag_fac) * hFacC(i,j,k,bi,bj)) * drF(k) +
@@ -145,10 +141,10 @@ C     maskC, hFacC, hFac_surfC, kSurfC, kTopC, recip_hFacC
              IF (k+1 .LT. klowc(i,j,bi,bj)) THEN
               h0FacC(i,j,k+1,bi,bj) = (drF(k+1) + 0*eta_old) *
      &          recip_drF(k+1)
-             else
+             ELSE
                h0FacC(i,j,k+1,bi,bj) = (rF(k+1)-r_low(i,j,bi,bj)+
      &          0*eta_old) * recip_drF(k+1)
-             endif
+             ENDIF
             ENDIF
            ENDIF
           ENDIF
@@ -266,10 +262,8 @@ c       ENDDO
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           hFacW_old (i,j,k,bi,bj) = hFacW(i,j,k,bi,bj)
-           hFacS_old (i,j,k,bi,bj) = hFacS(i,j,k,bi,bj)
-           maskW_old (i,j,k,bi,bj) = maskW(i,j,k,bi,bj)
-           maskS_old (i,j,k,bi,bj) = maskS(i,j,k,bi,bj)
+           hFacW_old(i,j,k,bi,bj) = hFacW(i,j,k,bi,bj)
+           hFacS_old(i,j,k,bi,bj) = hFacS(i,j,k,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -294,10 +288,10 @@ c       CALL OBCS_UPDATE_REMESH( myThid )
          DO j=1,sNy
           DO i=1,sNx
 
-            IF (maskW(i,j,k,bi,bj).EQ.0.0 .AND.
-     &         maskW_old (i,j,k,bi,bj).EQ.1.0) THEN
-             newvol = hFacW(i,j,k+1,bi,bj) * drF(k+1)
-             vel_int = hFacW_old (i,j,k,bi,bj) * drF(k) *
+            IF ( maskW(i,j,k,bi,bj).EQ.zeroRS .AND.
+     &           hFacW_old(i,j,k,bi,bj).NE.zeroRS ) THEN
+             newvol = hFacW(i,j,k+1,bi,bj)*drF(k+1)
+             vel_int = hFacW_old(i,j,k,bi,bj)*drF(k) *
      &         uVel(i,j,k,bi,bj) +
      &        hFacW_old (i,j,k+1,bi,bj) * drF(k+1) *
      &         uVel(i,j,k+1,bi,bj)
@@ -305,21 +299,21 @@ c       CALL OBCS_UPDATE_REMESH( myThid )
              uVel(i,j,k+1,bi,bj) = vel_int / newvol
 #ifdef ALLOW_ADAMSBASHFORTH_3
 #else
-             vel_int = hFacW_old (i,j,k,bi,bj) * drF(k) *
+             vel_int = hFacW_old(i,j,k,bi,bj)*drF(k) *
      &         guNm1(i,j,k,bi,bj) +
-     &        hFacW_old (i,j,k+1,bi,bj) * drF(k+1) *
+     &        hFacW_old (i,j,k+1,bi,bj)*drF(k+1) *
      &         guNm1(i,j,k+1,bi,bj)
              guNm1(i,j,k,bi,bj) = 0.0
              guNm1(i,j,k+1,bi,bj) = vel_int / newvol
 #endif
             ENDIF
 
-            IF (maskS(i,j,k,bi,bj).EQ.0.0 .AND.
-     &         maskS_old(i,j,k,bi,bj).EQ.1.0) THEN
-             newvol = hFacS(i,j,k+1,bi,bj) * drF(k+1)
-             vel_int = hFacS_old (i,j,k,bi,bj) * drF(k) *
+            IF ( maskS(i,j,k,bi,bj).EQ.zeroRS .AND.
+     &           hFacS_old(i,j,k,bi,bj).NE.zeroRS ) THEN
+             newvol = hFacS(i,j,k+1,bi,bj)*drF(k+1)
+             vel_int = hFacS_old (i,j,k,bi,bj)*drF(k) *
      &         vVel(i,j,k,bi,bj) +
-     &        hFacS_old (i,j,k+1,bi,bj) * drF(k+1) *
+     &        hFacS_old(i,j,k+1,bi,bj)*drF(k+1) *
      &         vVel(i,j,k+1,bi,bj)
              vVel(i,j,k,bi,bj) = 0.0
              vVel(i,j,k+1,bi,bj) = vel_int / newvol
@@ -341,16 +335,16 @@ c       CALL OBCS_UPDATE_REMESH( myThid )
         DO k=1,Nr-1
          DO j=1,sNy
           DO i=1,sNx
-            IF (maskW(i,j,k,bi,bj).EQ.1.0 .AND.
-     &         maskW_old (i,j,k,bi,bj).EQ.0.0) THEN
+            IF ( maskW(i,j,k,bi,bj).EQ.oneRS .AND.
+     &           hFacW_old(i,j,k,bi,bj).EQ.zeroRS ) THEN
              uVel(i,j,k,bi,bj) = uVel(i,j,k+1,bi,bj)
 #ifdef ALLOW_ADAMSBASHFORTH_3
 #else
              guNm1(i,j,k,bi,bj) = guNm1(i,j,k+1,bi,bj)
 #endif
             ENDIF
-            IF (maskS(i,j,k,bi,bj).EQ.1.0 .AND.
-     &         maskS_old (i,j,k,bi,bj).EQ.0.0) THEN
+            IF ( maskS(i,j,k,bi,bj).EQ.oneRS .AND.
+     &           hFacS_old(i,j,k,bi,bj).EQ.zeroRS ) THEN
              vVel(i,j,k,bi,bj) = vVel(i,j,k+1,bi,bj)
 #ifdef ALLOW_ADAMSBASHFORTH_3
 #else
