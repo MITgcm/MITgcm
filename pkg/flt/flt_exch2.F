@@ -109,11 +109,7 @@ C          stop the float:
                iNew = ipart(ip,bi,bj) - DFLOAT(sNx)
                fltbuf_send(ic+1,bi,bj,W2_EAST) =   npart(ip,bi,bj)
                fltbuf_send(ic+2,bi,bj,W2_EAST) =  tstart(ip,bi,bj)
-#ifdef DEVEL_FLT_EXCH2
                fltbuf_send(ic+3,bi,bj,W2_EAST) =   ipart(ip,bi,bj)
-#else
-               fltbuf_send(ic+3,bi,bj,W2_EAST) =   iNew
-#endif
                fltbuf_send(ic+4,bi,bj,W2_EAST) =   jpart(ip,bi,bj)
                fltbuf_send(ic+5,bi,bj,W2_EAST) =   kpart(ip,bi,bj)
                fltbuf_send(ic+6,bi,bj,W2_EAST) =  kfloat(ip,bi,bj)
@@ -142,11 +138,7 @@ C          stop the float:
                iNew = ipart(ip,bi,bj) + DFLOAT(sNx)
                fltbuf_send(ic+1,bi,bj,W2_WEST) =   npart(ip,bi,bj)
                fltbuf_send(ic+2,bi,bj,W2_WEST) =  tstart(ip,bi,bj)
-#ifdef DEVEL_FLT_EXCH2
                fltbuf_send(ic+3,bi,bj,W2_WEST) =   ipart(ip,bi,bj)
-#else
-               fltbuf_send(ic+3,bi,bj,W2_WEST) =   iNew
-#endif
                fltbuf_send(ic+4,bi,bj,W2_WEST) =   jpart(ip,bi,bj)
                fltbuf_send(ic+5,bi,bj,W2_WEST) =   kpart(ip,bi,bj)
                fltbuf_send(ic+6,bi,bj,W2_WEST) =  kfloat(ip,bi,bj)
@@ -235,11 +227,7 @@ C          stop the float:
                fltbuf_send(ic+1,bi,bj,W2_NORTH) =   npart(ip,bi,bj)
                fltbuf_send(ic+2,bi,bj,W2_NORTH) =  tstart(ip,bi,bj)
                fltbuf_send(ic+3,bi,bj,W2_NORTH) =   ipart(ip,bi,bj)
-#ifdef DEVEL_FLT_EXCH2
                fltbuf_send(ic+4,bi,bj,W2_NORTH) =   jpart(ip,bi,bj)
-#else
-               fltbuf_send(ic+4,bi,bj,W2_NORTH) =   jNew
-#endif
                fltbuf_send(ic+5,bi,bj,W2_NORTH) =   kpart(ip,bi,bj)
                fltbuf_send(ic+6,bi,bj,W2_NORTH) =  kfloat(ip,bi,bj)
                fltbuf_send(ic+7,bi,bj,W2_NORTH) =     iup(ip,bi,bj)
@@ -273,11 +261,7 @@ C          stop the float:
                fltbuf_send(ic+1,bi,bj,W2_SOUTH) =   npart(ip,bi,bj)
                fltbuf_send(ic+2,bi,bj,W2_SOUTH) =  tstart(ip,bi,bj)
                fltbuf_send(ic+3,bi,bj,W2_SOUTH) =   ipart(ip,bi,bj)
-#ifdef DEVEL_FLT_EXCH2
                fltbuf_send(ic+4,bi,bj,W2_SOUTH) =   jpart(ip,bi,bj)
-#else
-               fltbuf_send(ic+4,bi,bj,W2_SOUTH) =   jNew
-#endif
                fltbuf_send(ic+5,bi,bj,W2_SOUTH) =   kpart(ip,bi,bj)
                fltbuf_send(ic+6,bi,bj,W2_SOUTH) =  kfloat(ip,bi,bj)
                fltbuf_send(ic+7,bi,bj,W2_SOUTH) =     iup(ip,bi,bj)

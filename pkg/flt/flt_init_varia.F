@@ -53,7 +53,7 @@ C     == local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(10) suff
-#ifdef DEVEL_FLT_EXCH2
+#ifdef HACK_INI_FLT_EXCH2
       INTEGER iG,jG,i,j
 #endif
 
@@ -182,7 +182,7 @@ C--   then try to read from a tiled file:
 
         DO bj = 1,nSy
          DO bi = 1,nSx
-#ifdef DEVEL_FLT_EXCH2
+#ifdef HACK_INI_FLT_EXCH2
           iG=bi+(myXGlobalLo-1)/sNx
           jG=bj+(myYGlobalLo-1)/sNy
           WRITE(msgBuf,'(A,I4,A,I4)') 'iG,jG=',iG,',',jG
