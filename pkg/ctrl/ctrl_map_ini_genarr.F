@@ -202,6 +202,8 @@ C     == local variables ==
       logical dowc01
       logical dosmooth
       logical doscaling
+      logical dolog10ctrl
+      _RL log10initval
       _RL xx_gen  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RS dummyRS(1)
       character*(80) fnamegenIn
@@ -212,7 +214,6 @@ C     == local variables ==
       integer ilgen
       logical doglobalread
       logical ladinit
-      logical dolog10ctrl
 CEOP
 
 c--   Now, read the control vector.
@@ -251,7 +252,7 @@ c--   Now, read the control vector.
           if (xx_genarr2d_preproc(k2,iarr).EQ.'noscaling') then
              doscaling=.FALSE.
           endif
-          if (xx_genarr2d_preproc(k2,iarr).eq.'log10ctrl') then
+          if (xx_genarr2d_preproc_c(k2,iarr).eq.'log10ctrl') then
 c             fld := log10(xx_gen)
 c               with initial guess for xx_gen set to log10initval
 c               passed to data.ctrl, (default = 0.0)
