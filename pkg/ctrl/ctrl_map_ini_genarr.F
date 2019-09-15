@@ -309,6 +309,7 @@ c or in case of log10ctrl, fld = 10^(xx_gen)
                  fld(i,j,bi,bj)=fld(i,j,bi,bj)+xx_gen(i,j,bi,bj)
                 else
                  fld(i,j,bi,bj)=xx_gen(i,j,bi,bj)
+                endif
               enddo
             enddo
         enddo
@@ -373,6 +374,8 @@ C     == local variables ==
       logical dowc01
       logical dosmooth
       logical doscaling
+      logical dolog10ctrl
+      _RL log10initval
       _RL xx_gen  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RS dummyRS(1)
       character*(80) fnamegenIn
@@ -407,6 +410,8 @@ c--   Now, read the control vector.
       dosmooth=.false.
       dowc01  = .false.
       doscaling=.true.
+      dolog10ctrl=.false.
+      log10initval=0. _d 0
 
       numsmo=1
       do k2 = 1, maxCtrlProc
@@ -423,6 +428,13 @@ c--   Now, read the control vector.
           endif
           if (xx_genarr3d_preproc(k2,iarr).EQ.'noscaling') then
              doscaling=.FALSE.
+          endif
+          if (xx_genarr3d_preproc_c(k2,iarr).eq.'log10ctrl') then
+c             fld := log10(xx_gen)
+c               with initial guess for xx_gen set to log10initval
+c               passed to data.ctrl, (default = 0.0)
+              dolog10ctrl=.true.
+              log10initval = xx_genarr3d_preproc_r(k2,iarr)
           endif
       enddo
 
@@ -477,12 +489,23 @@ c scale param adjustment
                  IF (doscaling) then
                   xx_gen(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
      &                     /sqrt( wgenarr3d(i,j,k,bi,bj,iarr) )
+                  if (dolog10ctrl) then
+                   xx_gen(i,j,k,bi,bj) =
+     &                  xx_gen(i,j,k,bi,bj) + log10initval
+                   xx_gen(i,j,k,bi,bj) = 10.0 ** xx_gen(i,j,k,bi,bj)
+                  endif ! log10ctrls
                  ENDIF
                 else
                   xx_gen(i,j,k,bi,bj)=0.
                 endif
 c add to model parameter
-                fld(i,j,k,bi,bj)=fld(i,j,k,bi,bj)+xx_gen(i,j,k,bi,bj)
+c or in case of log10ctrl, fld = 10^(xx_gen)
+                if ( .not. dolog10ctrl ) then
+                 fld(i,j,k,bi,bj)=fld(i,j,k,bi,bj)+xx_gen(i,j,k,bi,bj)
+                else
+                 fld(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
+                endif
+
               enddo
             enddo
           enddo
