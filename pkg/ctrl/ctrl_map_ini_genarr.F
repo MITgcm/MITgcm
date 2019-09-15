@@ -37,6 +37,9 @@ C     == global variables ==
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_FIELDS.h"
 #endif
+#ifdef ALLOW_SHI2D_CONTROL
+# include "SHELFICE.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
@@ -49,6 +52,9 @@ C     == local variables ==
 #endif
 #ifdef ALLOW_GENARR2D_CONTROL
       integer igen_etan,igen_bdrag,igen_geoth
+# ifdef ALLOW_SHI2D_CONTROL
+      integer igen_shiCoeffT, igen_shiCoeffS
+# endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 #ifdef ALLOW_GENARR3D_CONTROL
       integer igen_theta0, igen_salt0
@@ -66,6 +72,10 @@ C--   generic 2D control variables
       igen_etan=0
       igen_bdrag=0
       igen_geoth=0
+#ifdef ALLOW_SHI2D_CONTROL
+      igen_shiCoeffT=0
+      igen_shiCoeffS=0
+#endif
       DO iarr = 1, maxCtrlArr2D
       if (xx_genarr2d_weight(iarr).NE.' ') then
         if (xx_genarr2d_file(iarr)(1:7).EQ.'xx_etan')
@@ -74,6 +84,12 @@ C--   generic 2D control variables
      &     igen_bdrag=iarr
         if (xx_genarr2d_file(iarr)(1:13).EQ.'xx_geothermal')
      &     igen_geoth=iarr
+#ifdef ALLOW_SHI2D_CONTROL
+        if (xx_genarr2d_file(iarr)(1:12).EQ.'xx_shicoefft')
+     &     igen_shiCoeffT=iarr
+        if (xx_genarr2d_file(iarr)(1:12).EQ.'xx_shicoeffs')
+     &     igen_shiCoeffS=iarr
+#endif
       endif
       ENDDO
 
@@ -88,6 +104,12 @@ C--   generic 2D control variables
       if (igen_geoth.GT.0)
      &  call ctrl_map_genarr2d(geothermalFlux,igen_geoth,myThid)
 #endif
+#ifdef ALLOW_SHI2D_CONTROL
+      if (igen_shiCoeffT.GT.0)
+     &  call ctrl_map_genarr2d(shiTransCoeffT,igen_shiCoeffT,myThid)
+      if (igen_shiCoeffS.GT.0)
+     &  call ctrl_map_genarr2d(shiTransCoeffS,igen_shiCoeffS,myThid)
+#endif /* ALLOW_SHI2D_CONTROL */
 
 #endif /* ALLOW_GENARR2D_CONTROL */
 
@@ -214,6 +236,9 @@ C     == local variables ==
       integer ilgen
       logical doglobalread
       logical ladinit
+#ifdef ALLOW_SHI2D_CONTROL
+      _RL localmask (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
 CEOP
 
 c--   Now, read the control vector.
@@ -278,19 +303,39 @@ c               passed to data.ctrl, (default = 0.0)
       CALL READ_REC_XY_RL( fnamegenIn, xx_gen, 1, 1, myThid)
 #endif
 
-#ifdef ALLOW_SMOOTH
+#ifdef ALLOW_SHI2D_CONTROL
+c--   set local mask
+      call ecco_zero(localmask,Nr,zeroRL,myThid)
+      if (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff') then
+        call ecco_cprsrl(maskSHI,nr,localmask,nr,myThid)
+      else
+        call ecco_cprsrl(maskC,nr,localmask,nr,myThid)
+      endif
+# ifdef ALLOW_SMOOTH
       IF (useSMOOTH) THEN
-       IF (dowc01) call smooth_correl2d(xx_gen,maskC,numsmo,mythid)
-       IF (dosmooth) call smooth2d(xx_gen,maskC,numsmo,mythid)
+       IF (dowc01) call smooth_correl2d(xx_gen,localmask,numsmo,mythid)
+       IF (dosmooth) call smooth2d(xx_gen,localmask,numsmo,mythid)
       ENDIF
-#endif
+# endif
+#else
+# ifdef ALLOW_SMOOTH
+       IF (useSMOOTH) THEN
+        IF (dowc01) call smooth_correl2d(xx_gen,maskC,numsmo,mythid)
+        IF (dosmooth) call smooth2d(xx_gen,maskC,numsmo,mythid)
+       ENDIF
+# endif
+#endif /* ALLOW_SHI2D_CONTROL */
 
       DO bj=myByLo(myThid), myByHi(myThid)
         DO bi=myBxLo(myThid), myBxHi(myThid)
             DO j = 1,sNy
               DO i = 1,sNx
 c scale param adjustment
+#ifdef ALLOW_SHI2D_CONTROL
+                if ( (localmask(i,j,1,bi,bj).NE.0.).AND.
+#else
                 if ( (maskC(i,j,1,bi,bj).NE.0.).AND.
+#endif
      &               (wgenarr2d(i,j,bi,bj,iarr).GT.0.) ) then
                  IF (doscaling) then
                   xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)
@@ -316,7 +361,12 @@ c or in case of log10ctrl, fld = 10^(xx_gen)
       enddo
 
 c avoid param out of [boundsVec(1) boundsVec(4)]
+#ifdef ALLOW_SHI2D_CONTROL
+      CALL CTRL_BOUND_2D(fld,localmask,xx_genarr2d_bounds(1,iarr),
+     &  myThid)
+#else
       CALL CTRL_BOUND_2D(fld,maskC,xx_genarr2d_bounds(1,iarr),myThid)
+#endif
 
       CALL EXCH_XY_RL( fld, mythid )
 

@@ -60,6 +60,7 @@ c     == local variables ==
       integer endrec
       integer diffrec
       integer iarr
+      character*(1) ncvargrdTmp(maxcvars)
 
       _RL dummy
       _RL loctmp3d (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
@@ -819,15 +820,23 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_GENARR2D_CONTROL
        do iarr = 1, maxCtrlArr2D
-#ifndef ALLOW_OPENAD
+        ncvargrdtmp='c'
+# ifdef ALLOW_SHI2D_CONTROL
+C       Under iceshelf, use maskSHI for these
+        if (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff') then
+            ncvargrdtmp='i'
+        endif
+# endif /* ALLOW_SHI2D_CONTROL */
+
+# ifndef ALLOW_OPENAD
         if (xx_genarr2d_weight(iarr).NE.' ')
      &  call ctrl_init_ctrlvar (
-#else
+# else
         call ctrl_init_ctrlvar (
-#endif
+# endif
      &       xx_genarr2d_file(iarr)(1:MAX_LEN_FNAM),
      &       100+iarr, 200+iarr, 1, 1, 1,
-     &       snx, sny, 1, xx_genarr2d_grid(iarr), 'xy', myThid )
+     &       snx, sny, 1, ncvargrdtmp, 'xy', myThid )
 
        enddo
 #endif /* ALLOW_GENARR2D_CONTROL */

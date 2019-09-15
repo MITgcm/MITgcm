@@ -307,5 +307,16 @@ c       Warn user: doscaling must be true to do log10 ctrl
         enddo
 #endif
 
+#ifdef ALLOW_SHI2D_CONTROL
+# ifndef ALLOW_GENARR2D_CONTROL
+         WRITE(msgBuf,'(3A)')
+     &        'ALLOW_SHI2D_CONTROL: used for 2D control var ',
+     &        'of 2D wet points with pkg/shelfice only works with ',
+     &        'ALLOW_GENARR2D_CONTROL'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         STOP 'ABNORMAL END: S/R CTRL_CHECK'
+# endif
+#endif
+
       RETURN
       END
