@@ -266,12 +266,33 @@ C     which in turn require a particular set of input fields
 #endif
 #endif
 #endif
+
 #ifdef ALLOW_GENARR2D_CONTROL
 c       Warn user: doscaling must be true to do log10 ctrl
         do iarr = 1, maxCtrlArr2D
           do k2 = 1, maxCtrlProc
             if ( (xx_genarr2d_preproc(k2,iarr).eq.'noscaling') .and.
      &         (xx_genarr2d_preproc_c(k2,iarr).eq.'log10ctrl') ) then
+              write(msgBuf,'(2A)')
+     &        'CTRL_CHECK: conflicting ',
+     &        'preproc_c & preproc flags '
+              call print_error( msgBuf, myThid )
+              write(msgBuf,'(A,I2,A)')
+     &        'log10ctrl and noscaling set for xx_genarr2d(',iarr,
+     &        '). '
+              call print_error( msgBuf, myThid )
+              STOP 'ABNORMAL END: S/R CTRL_CHECK'
+            endif
+          enddo
+        enddo
+#endif 
+
+#ifdef ALLOW_GENARR3D_CONTROL
+c       Warn user: doscaling must be true to do log10 ctrl
+        do iarr = 1, maxCtrlArr3D
+          do k2 = 1, maxCtrlProc
+            if ( (xx_genarr3d_preproc(k2,iarr).eq.'noscaling') .and.
+     &         (xx_genarr3d_preproc_c(k2,iarr).eq.'log10ctrl') ) then
               write(msgBuf,'(2A)')
      &        'CTRL_CHECK: conflicting ',
      &        'preproc_c & preproc flags '
