@@ -212,6 +212,7 @@ C     == local variables ==
       integer ilgen
       logical doglobalread
       logical ladinit
+      logical dolog10ctrl
 CEOP
 
 c--   Now, read the control vector.
@@ -231,6 +232,8 @@ c--   Now, read the control vector.
       dosmooth=.false.
       dowc01  = .false.
       doscaling=.true.
+      dolog10ctrl=.false.
+      log10initval=0. _d 0
 
       numsmo=1
       do k2 = 1, maxCtrlProc
@@ -247,6 +250,13 @@ c--   Now, read the control vector.
           endif
           if (xx_genarr2d_preproc(k2,iarr).EQ.'noscaling') then
              doscaling=.FALSE.
+          endif
+          if (xx_genarr2d_preproc(k2,iarr).eq.'log10ctrl') then
+c             fld := log10(xx_gen)
+c               with initial guess for xx_gen set to log10initval
+c               passed to data.ctrl, (default = 0.0)
+              dolog10ctrl=.true.
+              log10initval = xx_genarr2d_preproc_r(k2,iarr)
           endif
       enddo
 
@@ -284,12 +294,20 @@ c scale param adjustment
                  IF (doscaling) then
                   xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)
      &                     /sqrt( wgenarr2d(i,j,bi,bj,iarr) )
+                  if (dolog10ctrl) then
+                   xx_gen(i,j,bi,bj) = xx_gen(i,j,bi,bj) + log10initval
+                   xx_gen(i,j,bi,bj) = 10.0 ** xx_gen(i,j,bi,bj)
+                  endif ! log10ctrls
                  ENDIF
                 else
                   xx_gen(i,j,bi,bj)=0.
                 endif
 c add to model parameter
-                fld(i,j,bi,bj)=fld(i,j,bi,bj)+xx_gen(i,j,bi,bj)
+c or in case of log10ctrl, fld = 10^(xx_gen)
+                if ( .not. dolog10ctrl ) then
+                 fld(i,j,bi,bj)=fld(i,j,bi,bj)+xx_gen(i,j,bi,bj)
+                else
+                 fld(i,j,bi,bj)=xx_gen(i,j,bi,bj)
               enddo
             enddo
         enddo
