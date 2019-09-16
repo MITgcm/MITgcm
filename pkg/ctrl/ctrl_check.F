@@ -34,7 +34,7 @@ C     msgBuf     :: Informational/error message buffer
 
 #ifndef ALLOW_OPENAD
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
-      INTEGER iarr
+      integer iarr, k2
 #endif
 #endif
 
@@ -285,7 +285,7 @@ c       Warn user: doscaling must be true to do log10 ctrl
             endif
           enddo
         enddo
-#endif 
+#endif
 
 #ifdef ALLOW_GENARR3D_CONTROL
 c       Warn user: doscaling must be true to do log10 ctrl
@@ -305,7 +305,7 @@ c       Warn user: doscaling must be true to do log10 ctrl
             endif
           enddo
         enddo
-#endif 
+#endif
 
       RETURN
       END
