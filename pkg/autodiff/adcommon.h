@@ -215,4 +215,14 @@ c     _RL adgt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       common /adgrid_r_w/ adhfacw
 #endif /* ALLOW_DEPTH_CONTROL */
 
+#ifdef ALLOW_SHI2D_CONTROL
+      common /adshelfice_fields_rl/ 
+     &  adshelficeforcingt, adshelficeforcings,
+     &  adshitranscoefft, adshitranscoeffs
+      _RL adshelficeforcings(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL adshelficeforcingt(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL adshitranscoeffs(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL adshitranscoefft(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+
 #endif /* ALLOW_AUTODIFF_MONITOR */
