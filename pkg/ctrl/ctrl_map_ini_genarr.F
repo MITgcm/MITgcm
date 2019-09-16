@@ -54,6 +54,7 @@ C     == local variables ==
       integer igen_etan,igen_bdrag,igen_geoth
 # ifdef ALLOW_SHI2D_CONTROL
       integer igen_shiCoeffT, igen_shiCoeffS
+      integer i, j, bi, bj
 # endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 #ifdef ALLOW_GENARR3D_CONTROL
@@ -107,8 +108,22 @@ C--   generic 2D control variables
 #ifdef ALLOW_SHI2D_CONTROL
       if (igen_shiCoeffT.GT.0)
      &  call ctrl_map_genarr2d(shiTransCoeffT,igen_shiCoeffT,myThid)
+
       if (igen_shiCoeffS.GT.0)
      &  call ctrl_map_genarr2d(shiTransCoeffS,igen_shiCoeffS,myThid)
+      elseif (igen_shiCoeffS.eq.0) then
+          ! shiCoeffS unset, set based on salt/heat ratio here
+          do bj = myByLo(myThid), myByHi(myThid)
+           do bi = myBxLo(myThid), myBxHi(myThid)
+            do j = 1-OLy,sNy+OLy
+             do i = 1-OLx,sNx+OLx
+              shiTransCoeffS(i,j,bi,bj) =
+     &          SHELFICEsaltToHeatRatio*shiTransCoeffT(i,j,bi,bj)
+              enddo
+             enddo
+            enddo
+           enddo
+      endif
 #endif /* ALLOW_SHI2D_CONTROL */
 
 #endif /* ALLOW_GENARR2D_CONTROL */

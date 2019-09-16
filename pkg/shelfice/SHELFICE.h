@@ -39,12 +39,15 @@ C     SHELFICEadvDiffHeatFlux  :: use advective-diffusive heat flux into the
 C                                 shelf instead of default diffusive heat
 C                                 flux, see Holland and Jenkins (1999),
 C                                 eq.21,22,26,31; def: F
+C     SHELFICEsaltToHeatRatio  :: constant ratio giving
+C                                 SHELFICEsaltTransCoeff/SHELFICEheatTransCoeff
+C                                 (def: 5.05e-3)
 C     SHELFICEheatTransCoeff   :: constant heat transfer coefficient that
 C                                 determines heat flux into shelfice
 C                                 (def: 1e-4 m/s)
 C     SHELFICEsaltTransCoeff   :: constant salinity transfer coefficient that
 C                                 determines salt flux into shelfice
-C                                 (def: 5.05e-3 * 1e-4 m/s)
+C                                 (def: SHELFICEsaltToHeatRatio * SHELFICEheatTransCoeff)
 C     -----------------------------------------------------------------------
 C     SHELFICEuseGammaFrict    :: use velocity dependent exchange coefficients,
 C                                 see Holland and Jenkins (1999), eq.11-18,
@@ -114,6 +117,7 @@ CEOP
 
       COMMON /SHELFICE_PARMS_R/
      &     SHELFICE_dumpFreq, SHELFICE_taveFreq,
+     &     SHELFICEsaltToHeatRatio,
      &     SHELFICEheatTransCoeff, SHELFICEsaltTransCoeff,
      &     rhoShelfice, SHELFICEkappa,
      &     SHELFICElatentHeat,
@@ -126,6 +130,7 @@ CEOP
      &     SHELFICEsplitThreshold, SHELFICEmergeThreshold
 
       _RL SHELFICE_dumpFreq, SHELFICE_taveFreq
+      _RL SHELFICEsaltToHeatRatio
       _RL SHELFICEheatTransCoeff
       _RL SHELFICEsaltTransCoeff
       _RL SHELFICElatentHeat
