@@ -27,10 +27,9 @@ c     == global variables ==
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_FIELDS.h"
 #endif
-#ifdef ALLOW_GENCOST_CONTRIBUTION
-# ifdef ALLOW_SHELFICE
-#  include "SHELFICE.h"
-# endif
+#if (defined ALLOW_GENCOST_CONTRIBUTION) && (defined ALLOW_SHELFICE)
+# include "SHELFICE_OPTIONS.h"
+# include "SHELFICE.h"
 #endif
 
 c     == routine arguments ==
