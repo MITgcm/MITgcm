@@ -27,6 +27,11 @@ c     == global variables ==
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_FIELDS.h"
 #endif
+#ifdef ALLOW_GENCOST_CONTRIBUTION
+# ifdef ALLOW_SHELFICE
+#  include "SHELFICE.h"
+# endif
+#endif
 
 c     == routine arguments ==
 
@@ -170,6 +175,15 @@ c-- init
 
 #ifdef ALLOW_GENCOST_CONTRIBUTION
 
+cts ---
+c First: Fill the following SCALAR masks & weights for each (i,j,k,bi,bj) grid cell
+c   tmpvol - 3D cell volume 
+c   tmpmsk - mask for the gencost_barfile field (e.g. theta)
+c            Either: expand from 2D mask gencost_mskCsurf across nonzero
+c            entries of gencost_mskVertical (Nr x NGENCOST array)
+c            or
+c            copy from 3D mask gencost_mskC
+cts ---
       do kgen=1,NGENCOST
 
       itr = gencost_itracer(kgen)
@@ -203,6 +217,14 @@ c
 #endif
             endif
 c
+cts ---
+c Now: at each (i,j,k,bi,bj) fill the SCALAR variables 
+c   tmpfld - from 3D field theta, salt, ptracer
+c            or
+c            from 2D field with eta, shelfice
+c
+c   tmpmsk2 - 1 or 0 weighting for areavolTile
+cts ---
             tmpfld=0. _d 0
             tmpmsk2=0. _d 0
             if (gencost_barfile(kgen)(1:15).EQ.'m_boxmean_theta') then
@@ -220,22 +242,72 @@ c
 #endif
             endif
 c
+cts ---
+c Fill 3D field
+c       gencost_store - masked field of interest * grid cell volume
+c                       note: this accumulates along z dim
+c
+c Fill tile field (1 val per tile)
+c       areavolTile - volume of each tile, this gets summed to a global
+c                     value
+cts ---
             gencost_storefld(i,j,bi,bj,kgen) =
      &          gencost_storefld(i,j,bi,bj,kgen)
      &          +tmpmsk*tmpfld*tmpvol
             areavolTile(bi,bj)=areavolTile(bi,bj)
      &          +tmpmsk2*eccoVol_0(i,j,k,bi,bj)
 c
-          enddo
+          enddo ! Ends do k=1,nr
 c---------
+#ifndef ALLOW_SHELFICE
           tmpmsk=maskC(i,j,1,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
+#else
+c see shelfice_init_fixed.F for maskSHI definition
+c 1 where iceshelf is present over wet grid cell, 0 otherwise
+          tmpmsk=maskSHI(i,j,1,bi,bj)*
+     &           gencost_mskCsurf(i,j,bi,bj,kgen)
+#endif
           tmpfld=0. _d 0
           tmpmsk2=0. _d 0
           if (gencost_barfile(kgen)(1:13).EQ.'m_boxmean_eta') then
             tmpfld=m_eta(i,j,bi,bj)
             if (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
           endif
+cts ---
+c Shelfice:
+c   Simply accumulate shelfice FWF or HF into tmpfld here
+c   This will fill gencost_storefld with this value *rA
+c   For FreshWaterFlux
+c           gencost_storefld = shelficefreshwaterflux / rho * rA
+c                            = [kg/m^2/s] / [kg/m^3] * [m^2]
+c                            = [m^3/s]
 c
+c   For heatflux
+c           gencost_storefld = shelficeheatflux * rA
+c                            = [W/m^2] *[m^2]
+c                            = [W]
+cts ---
+          if (gencost_barfile(kgen)(1:18).EQ.'m_boxmean_shelfice') then
+
+            tmpmsk=maskSHI(i,j,1,bi,bj)*
+     &             gencost_mskCsurf(i,j,bi,bj,kgen)
+
+            if (gencost_name(kgen)(1:12).EQ.'shelfice_fwf') then
+              tmpfld=shelficeFreshWaterFlux(i,j,bi,bj) / rhoConstFresh 
+            elseif (gencost_name(kgen)(1:11).EQ.'shelfice_hf') then
+              tmpfld=shelficeHeatFlux(i,j,bi,bj) 
+            endif
+            if (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
+          endif
+
+
+cts ---
+c Fill 2D field
+c   gencost_store - masked field of interest * rA
+c
+c Fill tile field (1 val per tile)
+c       areavolTile - total rA on each tile for mskC != 0
+cts ---
           gencost_storefld(i,j,bi,bj,kgen) =
      &        gencost_storefld(i,j,bi,bj,kgen)
      &        +tmpmsk*tmpfld*rA(i,j,bi,bj)
@@ -306,7 +378,16 @@ c---------
        enddo
       enddo
 
-      if (gencost_barfile(kgen)(1:9).EQ.'m_boxmean') then
+cts ---
+c Divide all values in gencost_storefld by 
+c   areavolGlob: scalar representing global volume of
+c                quantity of interest. 
+c
+c Note: for shelfice, don't take this final average to make
+c       comparable to shelfice_cost_final. 
+cts ---
+      if (gencost_barfile(kgen)(1:9).EQ.'m_boxmean' .and. 
+     &    gencost_name(kgen)(1:8).NE.'shelfice') then
         CALL GLOBAL_SUM_TILE_RL( areavolTile, areavolGlob, myThid )
         CALL ecco_div( gencost_storefld(1-OLx,1-OLy,1,1,kgen),
      &                 1, areavolGlob, myThid )
