@@ -109,8 +109,8 @@ C--   generic 2D control variables
       if (igen_shiCoeffT.GT.0)
      &  call ctrl_map_genarr2d(shiTransCoeffT,igen_shiCoeffT,myThid)
 
-      if (igen_shiCoeffS.GT.0)
-     &  call ctrl_map_genarr2d(shiTransCoeffS,igen_shiCoeffS,myThid)
+      if (igen_shiCoeffS.GT.0) then
+        call ctrl_map_genarr2d(shiTransCoeffS,igen_shiCoeffS,myThid)
       elseif (igen_shiCoeffS.eq.0) then
           ! shiCoeffS unset, set based on salt/heat ratio here
           do bj = myByLo(myThid), myByHi(myThid)
@@ -220,6 +220,9 @@ C     == global variables ==
 #include "optim.h"
 #include "CTRL_GENARR.h"
 #include "ctrl_dummy.h"
+#ifdef ALLOW_SHI2D_CONTROL
+# include "SHELFICE.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
