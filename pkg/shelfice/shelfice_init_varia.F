@@ -55,7 +55,7 @@ CEOP
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j = 1-OLy, sNy+OLy
            DO i = 1-OLx, sNx+OLx
-            shiTransCoeffS(i,j,bi,bj) = 5.05 _d -3 *
+            shiTransCoeffS(i,j,bi,bj) = SHELFICEsaltToHeatRatio *
      &                                  shiTransCoeffT(i,j,bi,bj)
            ENDDO
           ENDDO
