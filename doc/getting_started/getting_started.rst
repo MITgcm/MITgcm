@@ -1131,20 +1131,28 @@ NetCDF output
 Similar scripts for `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output (e.g., :filelink:`utils/matlab/rdmnc.m`) are available and they
 are described in :numref:`pkg_mnc`.
 
+.. _sec_python:
+
 Python
 ~~~~~~
+
+Install the python package with utilities for MITgcm from the `Python Package Index <https://pypi.org>`_:
+
+::
+
+    pip install --user MITgcmutils
+
+The repository also includes a copy of this package under :filelink:`utils/python`.
 
 Raw binary output
 ^^^^^^^^^^^^^^^^^
 
-The repository includes `Python <https://www.python.org/>`_ scripts
-for reading binary :filelink:`/pkg/mdsio` format under :filelink:`utils/python`.
 The following example shows how to load in some data:
 
 ::
 
     # python
-    import mds
+    from MITgcmutils import mds
 
     Eta = mds.rdmds('Eta', itrs=10)
 
@@ -1159,7 +1167,8 @@ is currently produced with one file per processor. This means the individual til
 need to be stitched together to create a single
 `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file that spans the model domain. The script
 :filelink:`utils/python/MITgcmutils/scripts/gluemncbig` can do
-this efficiently from the command line.
+this efficiently from the command line.  If you have install the MITgcmutils package,
+a copy of gluemncbig should be on your path.
 
 The following example shows how to use the `xarray python package <http://xarray.pydata.org/>`_ to read
 the resulting `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file into `Python <https://www.python.org/>`_:
