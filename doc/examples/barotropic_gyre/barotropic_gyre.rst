@@ -14,7 +14,7 @@ may which to consult one of the standard texts on these subjects,
 such as Vallis (2017) :cite:`vallis:17` or Cushman-Roisin and Beckers (2011) :cite:`cushmanroisin:11`.
 
 In this experiment the model is configured to represent a rectangular enclosed box of fluid, :math:`1200 \times 1200` km
-in lateral extent. The fluid depth :math:`D =`  5 km. The fluid is forced by a zonal wind stress, :math:`\tau_x`, that varies
+in lateral extent. The fluid depth :math:`H =`  5 km. The fluid is forced by a zonal wind stress, :math:`\tau_x`, that varies
 sinusoidally in the north-south direction and is constant in time. Topologically the grid is Cartesian and the Coriolis parameter :math:`f` is
 defined according to a mid-latitude beta-plane equation
 
@@ -38,7 +38,7 @@ where :math:`L_{y}` is the lateral domain extent and
 :numref:`baro_simulation_config` summarizes the configuration simulated.
 
 
-  .. figure:: figs/new_barotropic_gyre.*
+  .. figure:: figs/new_barotropic_gyre.png
       :width: 100%
       :align: center
       :alt: barotropic gyre configuration
@@ -60,7 +60,7 @@ equations for this configuration as follows:
 
 .. math::
    \frac{Du}{Dt} - fv + g\frac{\partial \eta}{\partial x} - A_{h}\nabla_{h}^2u
-   = \frac{\tau_{x}}{\rho_{c}D}
+   = \frac{\tau_{x}}{\rho_{c}H}
    :label: baro_model_eq_u
 
 .. math::
@@ -108,7 +108,7 @@ maximum horizontal flow speed is:
 
     S_{a} = 2 \left( \frac{ |u| \Delta t}{ \Delta x} \right) < 0.5 \text{ for stability}
 
-The 2 factor on the left is because we have a 2D problem
+The 2 factor on the left is because we have a 2-D problem
 (in contrast with the more familiar 1D canonical stability analysis); the right hand side is 0.5 
 due to our default use of Adams-Bashforth2 (see :numref:`adams-bashforth`) rather than the more familiar
 value of 1 that one would obtain using a forward Euler scheme.
@@ -347,7 +347,7 @@ PARM01 - Continuous equation parameters
 PARM02 - Elliptic solver parameters
 ################################### 
 
-- The first line sets the tolerance (parameter :varlink:`cg2dTargetResidual`) that the 2D conjugate gradient solver,
+- The first line sets the tolerance (parameter :varlink:`cg2dTargetResidual`) that the 2-D conjugate gradient solver,
   the iterative method used in the pressure method algorithm, will use to test for convergence.
   The second line sets parameter :varlink:`cg2dMaxIters`, the maximum
   number of iterations.
@@ -533,13 +533,13 @@ customizations for this experiment.
 File ``input/bathy.bin``
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-This file is a 2D(:math:`x,y`) map of bottom bathymetry, specified as the :math:`z`-coordinate of the solid bottom boundary.
+This file is a 2-D(:math:`x,y`) map of bottom bathymetry, specified as the :math:`z`-coordinate of the solid bottom boundary.
 Here, the value is set to -5000 m everywhere except along the N, S, E, and W edges of the array, where the
 value is set to 0 (i.e., “land”).   As discussed in :numref:`sec_baro_num_config`, the domain in MITgcm is assumed doubly periodic
 (i.e., periodic in both :math:`x`- and :math:`y`-directions), so boundary walls
 are necessary to set up our enclosed box domain. 
 The points are ordered from low to high coordinates in both axes (varying fastest in :math:`x`), as a raw binary
-stream of data that is enumerated in the same way as standard MITgcm 2D horizontal arrays.
+stream of data that is enumerated in the same way as standard MITgcm 2-D horizontal arrays.
 By default, this file is assumed to
 contain 32-bit (single precision) binary numbers.
 The matlab program :filelink:`verification/tutorial_barotropic_gyre/input/gendata.m`
@@ -551,10 +551,10 @@ was used to generate this bathymetry file.
 File ``input/windx_cosy.bin``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Similar to file ``input/bathy.bin``, this file is a 2D(:math:`x,y`)
+Similar to file ``input/bathy.bin``, this file is a 2-D(:math:`x,y`)
 map of :math:`\tau_{x}` wind stress values, formatted in the same manner.
 The units are Nm\ :sup:`--2`. Although :math:`\tau_{x}` is only a function of :math:`y` in this experiment,
-this file must still define a complete 2D map in order
+this file must still define a complete 2-D map in order
 to be compatible with the standard code for loading forcing fields 
 in MITgcm. The matlab program :filelink:`verification/tutorial_barotropic_gyre/input/gendata.m`
 was used to generate this wind stress file. To run the barotropic jet variation of this tutorial example (see :numref:`baro_jet_solution`),
@@ -654,17 +654,17 @@ staggering of model variables.
   These variables effectively contain the configuration bathymetric (or topographic) information.
 - ``Depth`` - bathymetry depths
 
-All these files contain 2D(:math:`x,y`) data except ``RC``, ``RF``, ``DRC``, ``DRF``, which are 1D(:math:`z`), 
+All these files contain 2-D(:math:`x,y`) data except ``RC``, ``RF``, ``DRC``, ``DRF``, which are 1-D(:math:`z`), 
 and ``hFacC``, ``hFacS``, ``hFacW``, which contain 3D(:math:`x,y,z`) data. Units for the grid files depends on one's choice of model grid;
 here, they are all in given in meters (or :math:`\text{m}^2` for areas).
 
 .. _tut_barotropic_tilenaming:
 
-All the 2D grid data files contain ``.001.001`` in their filename, e.g., ``DXC.001.001.data`` -- this is the tile number in ``.XXX.YYY`` format.
+All the 2-D grid data files contain ``.001.001`` in their filename, e.g., ``DXC.001.001.data`` -- this is the tile number in ``.XXX.YYY`` format.
 Here, we have just a single tile in both x and y, so both tile numbers are ``001``.
 Using multiple tiles, the default is that the local tile grid information
 would be output separately for each tile (as an example, see the baroclinic gyre tutorial,
-which is set up using multiple tiles), producing multiple files for each 2D grid variable.
+which is set up using multiple tiles), producing multiple files for each 2-D grid variable.
 
 
 **State Variable Snapshot Data**:
@@ -681,7 +681,7 @@ you will see it is all zeroes. More interesting is the free-surface
 height after some time steps have occurred. Snapshots are written according
 to our parameter choice :varlink:`dumpFreq`, here set to 15,552,000 seconds, which is every 12960 time steps.
 We will examine the model solutions in :numref:`barotropic_gyre_solution`.
-The free-surface height is a 2D(:math:`x,y`) field.
+The free-surface height is a 2-D(:math:`x,y`) field.
 
 Snapshot files exist for other prognostic model variables, in particular
 filenames starting with ``U`` (:varlink:`uVel`),
@@ -689,7 +689,7 @@ filenames starting with ``U`` (:varlink:`uVel`),
 given our setup, these latter two fields
 remain uniform in space and time, thus not very interesting until we
 explore a baroclinic gyre setup in tutorial_baroclinic_gyre.
-These are all 3D(:math:`x,y,z`) fields. The format for the file names is similar
+These are all 3-D(:math:`x,y,z`) fields. The format for the file names is similar
 to the free-surface height files. Also dumped are snapshots
 of diagnosed vertical velocity ``W`` (:varlink:`wVel`) (note that in non-hydrostatic
 simulations, ``W`` is a fully prognostic model variable).
@@ -763,7 +763,7 @@ line  ``# momAdvection=.FALSE.,`` in file ``data`` and re-run the model. Any exi
 For the linearized equations, the Munk layer (equilibrium) analytical solution is given by:
 
 .. math:: 
-   \eta(x,y) = \frac{\tau_o}{\rho_c g D} \frac{f}{\beta} \left(1 - \frac{x}{L_x}\right) \pi \sin(\pi \frac{y}{L_y})
+   \eta(x,y) = \frac{\tau_o}{\rho_c g H} \frac{f}{\beta} \left(1 - \frac{x}{L_x}\right) \pi \sin(\pi \frac{y}{L_y})
    \left[1 - \exp({\frac{-x}{2\delta_m}}) \left(\cos\frac{\sqrt{3}x}{2\delta_m} + \frac{1}{\sqrt{3}} \sin\frac{\sqrt{3}x}{2\delta_m} \right) \right]
  
 

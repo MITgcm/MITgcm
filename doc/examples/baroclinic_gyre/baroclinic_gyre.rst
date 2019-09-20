@@ -70,7 +70,7 @@ represent temperature.
 Temperature is restored in the surface layer to a linear profile:
 
 .. math::
-   {\cal F}_\theta = \frac{1}{\tau_{\theta}} (\theta-\theta^*), \phantom{WWW} 
+   {\cal F}_\theta = - \frac{1}{\tau_{\theta}} (\theta-\theta^*), \phantom{WWW} 
    \theta^* = \frac{\theta_{max} - \theta_{min}}{L_\varphi} (\varphi - \varphi_o)
    :label: baroc_restore_theta
 
@@ -99,24 +99,25 @@ coordinates as follows:
    \frac{Du}{Dt} - fv -\frac{uv}{a}\tan{\varphi} + 
    \frac{1}{\rho_c a \cos{\varphi}}\frac{\partial p^{\prime}}{\partial \lambda} + 
    \nabla_{h} \cdot (-A_{h}\nabla_{h} u) + \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial u}{\partial z} \right)
-   = {\mathcal{F}_u} = \frac{\tau_{\lambda}}{\rho_{c}\Delta z_{s}}
+   =  \mathcal{F}_u
    :label: baroc_gyre_umom
 
 .. math::
    \frac{Dv}{Dt} + fu + \frac{u^2}{a}\tan{\varphi} +
    \frac{1}{\rho_c a}\frac{\partial p^{\prime}}{\partial \varphi} + 
    \nabla_{h} \cdot (-A_{h}\nabla_{h} v) + \frac{\partial}{\partial z} \left( -A_{z}\frac{\partial v}{\partial z} \right)
-   = {\mathcal{F}_v} = 0
+   = \mathcal{F}_v
    :label: baroc_gyre_vmom
 
 .. math::
-   \frac{\partial \eta}{\partial t} + \frac{1}{a \cos{\varphi}}  \left( \frac{\partial D \widehat{u}}{\partial \lambda} +
-   \frac{\partial D \widehat{v} \cos{\varphi}}{\partial \varphi} \right) = 0
+   \frac{\partial \eta}{\partial t} + \frac{1}{a \cos{\varphi}}  \left( \frac{\partial H \widehat{u}}{\partial \lambda} +
+   \frac{\partial H \widehat{v} \cos{\varphi}}{\partial \varphi} \right) = 0
    :label: baroc_gyre_cont
 
 .. math::
    \frac{D\theta}{Dt} + \nabla_{h} \cdot (-\kappa_{h}\nabla_{h} \theta)
-   + \frac{\partial}{\partial z} \left( -\kappa_{z}\frac{\partial \theta}{\partial z} \right) = {\mathcal F}_\theta
+   + \frac{\partial}{\partial z} \left( -\kappa_{z}\frac{\partial \theta}{\partial z} \right)
+   = \mathcal{F}_\theta
    :label: barooc_gyre_theta
 
 .. math::
@@ -130,14 +131,23 @@ vector :math:`\vec{u}` on the sphere
 and can be set differently than :math:`\rho_0` in :eq:`rhoprime_lineareos`),
 :math:`A_h` and :math:`A_v` are horizontal and vertical viscosity, and 
 :math:`\kappa_h` and :math:`\kappa_v` are horizontal and vertical diffusivity, respectively. 
-The terms :math:`D\widehat{u}` and :math:`D\widehat{v}` are the components of the
+The terms :math:`H\widehat{u}` and :math:`H\widehat{v}` are the components of the
 vertical integral term given in equation :eq:`free-surface` and explained
 in more detail in :numref:`press_meth_linear`.
 However, for the problem presented here, the continuity relation
 :eq:`baroc_gyre_cont` differs from the general form
 given in :numref:`press_meth_linear`, equation :eq:`linear-free-surface=P-E`
 because the source terms
-:math:`{\mathcal P}-{\mathcal E}+{\mathcal R}` are all :math:`0`.
+:math:`{\mathcal P}-{\mathcal E}+{\mathcal R}` are all zero.
+
+The forcing terms :math:`\mathcal{F}_u`, :math:`\mathcal{F}_v`, and :math:`\mathcal{F}_\theta` are 
+applied as source terms in the model surface layer and are zero in the interior.
+The windstress forcing, :math:`{\mathcal F}_u` and :math:`{\mathcal F}_v`, is
+applied in the zonal and meridional momentum
+equations, respectively; in this configuration, :math:`\mathcal{F}_u = \frac{\tau_x}{\rho_c\Delta z_s}`
+(where :math:`\Delta z_s` is the depth of the surface model gridcell), and
+:math:`\mathcal{F}_v = 0`. Similarly, :math:`\mathcal{F}_\theta` is applied in the temperature equation,
+as given by :eq:`baroc_restore_theta`.
 
 In :eq:`baroc_gyre_press` the pressure field, :math:`p^{\prime}`, is separated into a barotropic
 part due to variations in sea-surface height, :math:`\eta`, and a
@@ -145,12 +155,6 @@ hydrostatic part due to variations in density, :math:`\rho^{\prime}`,
 integrated through the water column. Note the :math:`g` in the first term on the right hand side is
 MITgcm parameter :varlink:`gBaro` whereas in the seond term :math:`g` is parameter :varlink:`gravity`;
 allowing for different gravity constants here is useful, for example, if one wanted to slow down external gravity waves.
-
-The windstress forcing, :math:`{\mathcal F}_u` and :math:`{\mathcal F}_v`, is
-applied in the surface layer by a source term in the zonal and meridional momentum
-equations, respectively. In the ocean interior these terms are zero. Similarly, the forcing
-term in the temperature equation :math:`{\mathcal F}_{\theta}` is applied as a source term to
-surface layer and is zero in the interior.
 
 In the momentum equations, lateral and vertical boundary conditions for
 the :math:`\nabla_{h}^{2}` and
@@ -222,9 +226,9 @@ CFL condition (and again assuming our solution will achieve maximum :math:`| u |
 we choose the same time step as in tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`,
 :math:`\Delta t` = 1200 s (= 20 minutes), resulting in :math:`S_{a} = 0.08`. 
 Also note this time step is stable for propagation of internal gravity waves:
-approximating the propagation speed as :math:`\sqrt{g' H}` where :math:`g'` is reduced gravity (our maximum
+approximating the propagation speed as :math:`\sqrt{g' h}` where :math:`g'` is reduced gravity (our maximum
 :math:`\Delta \rho` using our linear equation of state is
-:math:`\rho_{0} \alpha_{\theta} \Delta \theta = 6` kg/m\ :sup:`3`) and :math:`H` is the upper layer depth
+:math:`\rho_{0} \alpha_{\theta} \Delta \theta = 6` kg/m\ :sup:`3`) and :math:`h` is the upper layer depth
 (we'll assume 150 m), produces an estimated propagation speed generally less than :math:`| u | = 3` ms\ :sup:`--1`
 (see Adcroft 1995 :cite:`adcroft:95` or Gill 1982 :cite:`gill:82`), thus still comfortably below the threshold.
 
@@ -612,7 +616,7 @@ PARM04 - Gridding parameters
 
 - This line sets parameter :varlink:`delR`, the vertical grid spacing in the :math:`z`-coordinate (i.e., :math:`\Delta z`),
   to a vector of 15 depths (in meters), from 50 m in the surface layer to a bottom layer depth of 190 m. The sum of these
-  specified depths equals 1800 m, the full depth of our idealized ocean sector.
+  specified depths equals 1800 m, the full depth :math:`H` of our idealized ocean sector.
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
        :start-at: delR
@@ -1190,9 +1194,9 @@ between 200 m and 400 m depth, with weak stratification below the thermocline.
 What sets the penetration depth of the subtropical gyre? Following a simple advective scaling argument
 (see Vallis (2017) :cite:`vallis:17` or Cushman-Roisin and Beckers (2011) :cite:`cushmanroisin:11`;
 this is obtained via thermal wind and the linearized barotropic vorticity equation),
-the depth of the thermocline :math:`H` should scale as:
+the depth of the thermocline :math:`h` should scale as:
 
-.. math:: H = \left( \frac{w_e f^2 L_x}{\beta \Delta b} \right) ^2 = \left( \frac{(\tau / L_y) f L_x}{\beta \rho'} \right) ^2
+.. math:: h = \left( \frac{w_e f^2 L_x}{\beta \Delta b} \right) ^2 = \left( \frac{(\tau / L_y) f L_x}{\beta \rho'} \right) ^2
 
 
 where :math:`w_e` is a representive value for Ekman pumping, :math:`\Delta b = g \rho' / \rho_0`
@@ -1200,7 +1204,7 @@ is the variation in buoyancy across the gyre,
 and :math:`L_x` and :math:`L_y` are length scales in the
 :math:`x` and :math:`y` directions, respectively.
 Plugging in applicable values at :math:`30^{\circ}`\ N, 
-we obtain an estimate for :math:`H` of 200 m, which agrees quite well with that observed in :numref:`baroclinic_gyre_thetaplots`\b.
+we obtain an estimate for :math:`h` of 200 m, which agrees quite well with that observed in :numref:`baroclinic_gyre_thetaplots`\b.
 
 
 
