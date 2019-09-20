@@ -57,5 +57,5 @@
  &PARM05
  bathyFile='bathy.bin',
  zonalWindFile='windx_cosy.bin',
- thetaClimFile='Trest.bin',
+ thetaClimFile='SST_relax.bin',
  &

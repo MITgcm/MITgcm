@@ -25,4 +25,4 @@ fid=fopen('windx_cosy.bin','w',ieee); fwrite(fid,tau,accuracy); fclose(fid);
 %restoring temperature
 Tmax=30;Tmin=0;
 Trest=(Tmax-Tmin)/(ny-2)*((yo+dy*(ny-2)-Y));
-fid=fopen('Trest.bin','w',ieee); fwrite(fid,Trest,accuracy); fclose(fid);
+fid=fopen('SST_relax.bin','w',ieee); fwrite(fid,Trest,accuracy); fclose(fid);

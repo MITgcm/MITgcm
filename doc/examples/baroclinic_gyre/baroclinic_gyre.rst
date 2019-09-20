@@ -200,10 +200,9 @@ and :math:`\frac{\partial p^{'}}{\partial \varphi}`, are found by
 summing pressure due to surface elevation :math:`\eta` and the
 hydrostatic pressure, as discussed in :numref:`baroc_eq_solved`.
 The hydrostatic part of the pressure is
-diagnosed explicitly by integrating density. The sea-surface height,
-:math:`\eta`, is diagnosed using an implicit scheme. The pressure
-field solution method is described in
-:numref:`press_meth_linear` and :numref:`finding_the_pressure_field`.
+diagnosed explicitly by integrating density.
+The sea-surface height is found by solving implicitly the 2-D (elliptic) surface pressure equation
+(see :numref:`press_meth_linear`).
 
 Numerical Stability Criteria
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -217,10 +216,10 @@ in the grid :math:`\Delta x` spacing.
 In order to choose an appropriate time step, note that our smallest gridcells (i.e., in the far north)
 have :math:`\Delta x \approx 29` km, which
 is similar to our grid spacing in tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`. Thus, using the advective
-CFL condition (and again assuming our solution will achieve maximum :math:`| u | = 1` ms\ :sup:`--1`)
+CFL condition, first assuming our solution will achieve maximum horizontal advection :math:`|c_{max}|` ~ 1 ms\ :sup:`-1`)
 
 .. math::
-   S_{a} = 2 \left( \frac{ |u| \Delta t}{ \Delta x} \right) < 0.5 \text{ for stability}
+   S_{a} = 2 \left( \frac{ |c_{max}| \Delta t}{ \Delta x} \right) < 0.5 \text{ for stability}
    :label: eq_baroc_cfl_stability
 
 we choose the same time step as in tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`,
@@ -229,7 +228,7 @@ Also note this time step is stable for propagation of internal gravity waves:
 approximating the propagation speed as :math:`\sqrt{g' h}` where :math:`g'` is reduced gravity (our maximum
 :math:`\Delta \rho` using our linear equation of state is
 :math:`\rho_{0} \alpha_{\theta} \Delta \theta = 6` kg/m\ :sup:`3`) and :math:`h` is the upper layer depth
-(we'll assume 150 m), produces an estimated propagation speed generally less than :math:`| u | = 3` ms\ :sup:`--1`
+(we'll assume 150 m), produces an estimated propagation speed generally less than :math:`|c_{max}| = 3` ms\ :sup:`--1`
 (see Adcroft 1995 :cite:`adcroft:95` or Gill 1982 :cite:`gill:82`), thus still comfortably below the threshold.
 
 Using our chosen value of :math:`\Delta t`, numerical stability for inertial oscillations using Adams-Bashforth II
@@ -295,8 +294,9 @@ The experiment files
  - :filelink:`verification/tutorial_baroclinic_gyre/input/eedata`
  - verification/tutorial_baroclinic_gyre/input/bathy.bin
  - verification/tutorial_baroclinic_gyre/input/windx_cosy.bin
+ - verification/tutorial_baroclinic_gyre/input/SST_relax.bin
  
-contain the code customizations and parameter settings for this 
+contain the code customizations, parameter settings, and input data files for this 
 experiment. Below we describe these customizations in detail.
 
 .. _tut_baroc_code_config:
@@ -311,11 +311,10 @@ File :filelink:`code/packages.conf <verification/tutorial_baroclinic_gyre/code/p
     :linenos:
     :caption: verification/tutorial_baroclinic_gyre/code/packages.conf
 
-Here we specify which MITgcm packages we want to include in our configuration. ``gfd`` is a pre-defined "package group" (see :ref:`using_packages`)
-of standard packages necessary for most typical geophysical fluid dynamics setups 
-(click :ref:`here <default_pkg_list>` for a list of these packages;
-package groups are defined in :filelink:`/pkg/pkg_groups`); in fact, if no ``packages.conf`` file is specified
-(e.g., none was specified in tutorial :ref:`sec_eg_baro`), ``gfd`` is the default selection of included packages.
+Here we specify which MITgcm packages we want to include in our configuration. ``gfd``
+is a pre-defined "package group" (see :ref:`using_packages`)
+of standard packages necessary for most setups; it is also the :ref:`default compiled packages <default_pkg_list>` setting
+and the minimum set of packages necessary for GFD-type setups.  
 In addition to package group ``gfd`` we include two additional packages (individual packages, not package groups), :filelink:`mnc </pkg/mnc>`
 and :filelink:`diagnostics </pkg/diagnostics>`. Package :filelink:`mnc </pkg/mnc>` is required
 for output to be dumped in `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ format. Package :filelink:`diagnostics </pkg/diagnostics>`
@@ -459,13 +458,14 @@ PARM01 - Continuous equation parameters
        :lineno-match:
 
 - By default, MITgcm does not apply any parameterization to mix statically unstable columns of water. In a coarse resolution, hydrostatic
-  configuration, typically such a parameterization is desired. Although a traditional convective adjustment scheme is available
-  (this can be employed through the :varlink:`cAdjFreq` parameter, see :numref:`ocean_convection_parms`), we recommend a scheme which
+  configuration, typically such a parameterization is desired. We recommend a scheme which
   simply applies (presumably, large) vertical diffusivity between statically unstable grid cells in the vertical. This vertical diffusivity
   is set by parameter :varlink:`ivdc_kappa`, which here we set to :math:`1.0` m\ :sup:`2` s\ :sup:`--1`. This scheme requires that
   :varlink:`implicitDiffusion` is set to ``.TRUE.`` (see :numref:`implicit-backward-stepping`; more specifically, applying a 
   large vertical diffusivity to represent convective mixing requires the use of an implicit
-  time-stepping method for vertical diffusion, rather than Adams Bashforth II).
+  time-stepping method for vertical diffusion, rather than Adams Bashforth II). 
+  Alternatively, a traditional convective adjustment scheme is available; this can be activated
+  through the :varlink:`cAdjFreq` parameter, see :numref:`ocean_convection_parms`.
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
        :start-at: ivdc
@@ -653,7 +653,7 @@ package :filelink:`mnc <pkg/mnc>` (see :numref:`pkg_mnc`) specifies that model o
 and package :filelink:`diagnostics <pkg/diagnostics>` (see :numref:`sub_outp_pkg_diagnostics`) allows user-selectable diagnostic output.
 The boolean parameters set are :varlink:`useMNC` and :varlink:`useDiagnostics`, respectively. 
 Note these add-on packages also need to be specified when the model is compiled, see :numref:`tut_baroc_code_config`.
-Otherwise, only standard packages (i.e., those compiled in MITgcm by default) are required for this setup.
+Apart from these two additional packages, only standard packages (i.e., those compiled in MITgcm by default) are required for this setup.
 
 .. _baroc_datamnc:
 
@@ -758,8 +758,7 @@ Options for namelist :varlink:`DIAG_STATIS_PARMS` are set as follows:
 The syntax here is analogous with :varlink:`DIAGNOSTICS_LIST` namelist parameters, except the parameter names begin with ``stat``
 (here, :varlink:`stat_fields`, :varlink:`stat_fName`, :varlink:`stat_freq`). Frequency can be set to snapshot or time-averaged output,
 and multiple lists of diagnostics (i.e., separate output files) can be specified. The only major difference from
-:varlink:`DIAGNOSTICS_LIST` syntax is that 2-D and 3-D diagnostics
-can be mixed in a list.
+:varlink:`DIAGNOSTICS_LIST` syntax is that 2-D and 3-D diagnostics can be mixed in a list.
 As noted, it is possible to select limited horizontal regions of interest, in addition to the full domain calculation.
 
 File :filelink:`input/eedata <verification/tutorial_baroclinic_gyre/input/eedata>`
@@ -773,13 +772,18 @@ As shown, this file is configured for a single-threaded run, but will be modifie
 
 .. _baroc_gyre_bathy_file:
 
-File ``input/bathy.bin``, ``input/windx_cosy.bin``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Files ``input/bathy.bin``, ``input/windx_cosy.bin``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The purpose and format of these files is similar to tutorial :ref:`Barotropic Ocean Gyre <baro_gyre_bathy_file>`.
 The matlab script :filelink:`verification/tutorial_baroclinic_gyre/input/gendata.m`
 was used to generate these files.
 
+File ``input/SST_relax.bin``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This file specifies a 2-D(:math:`x,y`) map of surface relaxation temperature values, enumerated in the same way as standard MITgcm 2-D horizontal arrays,
+as generated by :filelink:`verification/tutorial_baroclinic_gyre/input/gendata.m`.
 
 .. _building_tutorial_baroc:
 
@@ -798,22 +802,30 @@ will cut down run time significantly.
 Output Files
 ~~~~~~~~~~~~
 
-As in tutorial :ref:`sec_eg_baro`, standard output is produced (redirected into file ``output.txt`` as specified in :numref:`baro_gyre_build_run`); like before, this file
+As in tutorial :ref:`sec_eg_baro`, standard output is produced (redirected into
+file ``output.txt`` as specified in :numref:`baro_gyre_build_run`); like before, this file
 includes model startup information, parameters, etc. (see :numref:`barotropic_gyre_std_out`).
 And because we set :varlink:`monitor_mnc` ``=.FALSE.`` in :ref:`data.mnc <baroc_datamnc>`,
 our standard output file will include all monitor statistics output. Note monitor statistics and cg2d
 information are evaluated over the global domain, despite the bifurcation of the grid into four separate tiles.
 As before, the file ``STDERR.0000`` will contain a log of any run-time errors. 
 
-With :filelink:`pkg/mnc` compiled and activated in ``data.pkg``, other output is in `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ format: grid information,
-snapshot output specified in ``data``, diagnostics output specified in ``data.diagnostics`` and separate files containing hydrostatic pressure data (see below).
-There are two notable differences from standard binary output. Recall that we specified that the grid was subdivided into four separate tiles (in :ref:`SIZE.h <baroc_code_size>`); 
+With :filelink:`pkg/mnc` compiled and activated in ``data.pkg``, other output is
+in `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ format: grid information,
+snapshot output specified in ``data``, diagnostics output specified in ``data.diagnostics``
+and separate files containing hydrostatic pressure data (see below).
+There are two notable differences from standard binary output. Recall that we specified
+that the grid was subdivided into four separate tiles (in :ref:`SIZE.h <baroc_code_size>`); 
 instead of a ``.XXX.YYY.`` file naming scheme for different tiles (as discussed :ref:`here <tut_barotropic_tilenaming>`),
-with :filelink:`pkg/nmc` the file names contain ``.t«nnn».`` where «nnn» is the tile number. Secondly, model data from multiple
-time snapshots (or periods) is included in a single file. Although an iteration number is still part of the file name (here, ``0000000000``),
+with :filelink:`pkg/nmc` the file names contain ``.t«nnn».`` where «nnn» is the
+tile number. Secondly, model data from multiple
+time snapshots (or periods) is included in a single file. Although an iteration
+number is still part of the file name (here, ``0000000000``),
 this is the iteration number at the start of the run (instead of
-marking the specific iteration number for the data contained in the file, as the case for standard binary output). Note that if you dump data frequently, standard binary can produce
-huge quantities of separate files, whereas using `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ will greatly reduce the number of files. On the other hand, the 
+marking the specific iteration number for the data contained in the file, as the case
+for standard binary output). Note that if you dump data frequently, standard binary can produce
+huge quantities of separate files, whereas using `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_
+will greatly reduce the number of files. On the other hand, the 
 `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ files created can instead become quite large.
 
 

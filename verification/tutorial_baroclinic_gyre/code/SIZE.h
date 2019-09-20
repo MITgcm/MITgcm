@@ -61,4 +61,3 @@ C                routine buffers.
       INTEGER MAX_OLY
       PARAMETER ( MAX_OLX = OLx,
      &            MAX_OLY = OLy )
-

@@ -109,7 +109,7 @@ maximum horizontal flow speed is:
     S_{a} = 2 \left( \frac{ |u| \Delta t}{ \Delta x} \right) < 0.5 \text{ for stability}
 
 The 2 factor on the left is because we have a 2-D problem
-(in contrast with the more familiar 1D canonical stability analysis); the right hand side is 0.5 
+(in contrast with the more familiar 1-D canonical stability analysis); the right hand side is 0.5 
 due to our default use of Adams-Bashforth2 (see :numref:`adams-bashforth`) rather than the more familiar
 value of 1 that one would obtain using a forward Euler scheme.
 In our configuration, let’s assume our solution will achieve a maximum :math:`| u | = 1` ms\ :sup:`--1`
