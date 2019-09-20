@@ -337,9 +337,20 @@ run the model on a single processor, a multi-tiled setup
 is required when we demonstrate how to run the model using either
 `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ or using multiple threads.
 
+The following lines calculate the horizontal size of the global model domain (NOT to be edited).
+Our values for :filelink:`SIZE.h <verification/tutorial_baroclinic_gyre/code/SIZE.h>` parameters
+below must multiply so that our horizontal model domain is 62\ :math:`\times`\ 62:
 
-- Although our model domain is 62\ :math:`\times`\ 62 in the horizontal, here we set the size of a single tile to be one-half that
-  in both :math:`x` and :math:`y`. Thus, the model requires four of these tiles to cover the full ocean sector domain. Note that the grid
+ .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/code/SIZE.h
+       :start-at: sNx*nSx
+       :end-at: sNy*nSy
+       :lineno-match:
+
+Now let's look at all individual :filelink:`SIZE.h <verification/tutorial_baroclinic_gyre/code/SIZE.h>` parameter settings.
+
+- Although our model domain is 62\ :math:`\times`\ 62, here we specify the size of a single tile to be one-half that
+  in both :math:`x` and :math:`y`. Thus, the model requires four of these tiles to cover the full ocean sector domain
+  (see below, where we set :varlink:`nSx` and :varlink:`nSy`). Note that the grid
   can only be subdivided into tiles in the horizontal dimensions, not in the vertical.
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/code/SIZE.h
