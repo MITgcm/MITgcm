@@ -536,7 +536,8 @@ def pcol(*arguments, **kwargs):
         zz = np.copy(f[2][t][nn:,:])
         # need to mask some zz-values so that there is no erroneous wrap-around
         zz = np.ma.masked_where(xx>rangle,zz)
-        xx = np.where(xx>rangle,np.nan,xx)
+#       cannot have NaN's in coordinate arrays
+#        xx = np.where(xx>rangle,np.nan,xx)
         #
         if mapit: x, y = m(_sqCoord(xx),_sqCoord(yy))
         else:     x, y =   _sqCoord(xx),_sqCoord(yy)

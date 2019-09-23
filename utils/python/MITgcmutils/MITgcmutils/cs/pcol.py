@@ -86,7 +86,7 @@ def pcol( x, y, data, projection=None, vmin=None, vmax=None, **kwargs):
             # otherwise use full figure
             geom = ((1,1,1))
         ax = fig.add_subplot(geom[0],geom[1],geom[2],projection = '3d',
-                             axisbg='None')
+                             facecolor='None')
         # define color range
         tmp = data - data.min()
         N = tmp/tmp.max()       
@@ -173,7 +173,7 @@ def pcol( x, y, data, projection=None, vmin=None, vmax=None, **kwargs):
                                                   **kwargs))
 
     if mapit == -1: 
-        ax.axis('image')
+#        ax.axis('image')
         ax.set_axis_off()
 #        ax.set_visible=False
         # add a reasonable colormap
