@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o doc:
+  - add rtfd config file to control build behaviour and options.
+
 checkpoint67l (2019/08/29)
 o QG-Leith viscosity:
   - pkg/mom_common: bug fix for QG Leith viscosity
