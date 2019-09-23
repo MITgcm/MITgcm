@@ -314,7 +314,7 @@ class MNCVariable(object):
                     s[self._Xdim] = slice(self._i0[i], self._ie[i])
                 if self._Ydim is not None:
                     s[self._Ydim] = slice(self._j0[i], self._je[i])
-                res[s] = nc.variables[self._name][:]
+                res[tuple(s)] = nc.variables[self._name][:]
 
             return res
         else:
@@ -340,7 +340,7 @@ class MNCVariable(object):
                     e = np.clip(je, J0, Je)
                     sres[self._Ydim] = slice(max(-a, 0), (e - J0)//Js)
                     s[self._Ydim] = slice(max(J0 - j0, b), max(Je - j0, 0), Js)
-                res[sres] = nc.variables[self._name][s]
+                res[tuple(sres)] = nc.variables[self._name][tuple(s)]
 
             return res.reshape(resshape)
 
@@ -357,7 +357,7 @@ class MNCVariable(object):
                 s[self._Xdim] = slice(self._i0[i], self._ie[i])
             if self._Ydim is not None:
                 s[self._Ydim] = slice(self._j0[i], self._je[i])
-            res[fn][s] = nc.variables[self._name][:]
+            res[fn][tuple(s)] = nc.variables[self._name][:]
         for f in range(self._nf):
             res[f] = res[f][ind]
 
@@ -373,7 +373,7 @@ class MNCVariable(object):
                     s[self._Xdim] = slice(self._i0[i], self._ie[i])
                 if self._Ydim is not None:
                     s[self._Ydim] = slice(self._j0[i], self._je[i])
-                res[s] = nc.variables[self._name][:]
+                res[tuple(s)] = nc.variables[self._name][:]
 
         return res
 
