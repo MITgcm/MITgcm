@@ -613,9 +613,9 @@ PARM04 - Gridding parameters
   Our ocean sector domain starts at :math:`0^\circ` longitude and :math:`15^\circ` N; accounting for a surrounding land
   row of cells, we thus set the origin in longitude to :math:`-1.0^\circ` and in latitude to :math:`14.0^\circ`.
   Again note that our origin specifies the southern and western edges of the gridcell, not the cell center location.
-  Setting the origin in latitude is critical given that it affects the initialization of the Coriolis force
-  (the default value for :varlink:`ygOrigin` is :math:`0.0^\circ`),
-  whereas setting :varlink:`xgOrigin` is optional given that absolute longitude does not appear in the equation discretization.
+  Setting the origin in latitude is critical given that it affects the Coriolis parameter :math:`f`
+  (which appears in :eq:`baroc_gyre_umom` and :eq:`baroc_gyre_vmom`); the default value for :varlink:`ygOrigin` is :math:`0.0^\circ`.
+  Note that setting :varlink:`xgOrigin` is optional, given that absolute longitude does not appear in the equation discretization.
  
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
        :start-at: delX
@@ -906,9 +906,9 @@ The hydrostatic pressure potential anomaly :math:`\phi'` is computed as follows:
 
 .. math:: \phi' = \frac{1}{\rho_c} \left( \rho_c g \eta + \int_{z}^{0} (\rho - \rho_0) g dz \right)
 
-following :eq:`rho_lineareos`, :eq:`rhoprime_lineareos` and :eq:`baroc_gyre_press`. Note that the linearized free surface
-contains water of density :math:`\rho_c` and that its contribution to :math:`\phi'` is the from the full weight of the water in the free surface,
-(i.e., no reference density is subtracted), in contrast with contributions below the free surface.
+following :eq:`rho_lineareos`, :eq:`rhoprime_lineareos` and :eq:`baroc_gyre_press`. Note that with the linear free surface approximation,
+the contribution of the free surface position :math:`\eta` to :math:`\phi'` involves the constant density :math:`\rho_c`
+and not the density anomaly :math:`\rho'`, in contrast with contributions from below :math:`z=0`.
 
 Several additional files are output in standard binary format. These are:
 
@@ -955,7 +955,7 @@ if instead you wanted to re-compile in your existing build directory, you should
      % make depend
      % make
 
-Note we have added the option ``-mpi`` to the line which generates the makefile.
+Note we have added the option ``-mpi`` to the :filelink:`genmake2 <tools/genmake2>` command that generates the makefile.
 A successful build requires MPI libraries installed on your system, and you may need to add to your ``$PATH`` environment variable
 and/or set environment variable ``$MPI_INC_DIR`` (for more details, see :numref:`build_mpi`). If there is a problem
 finding `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_  libraries, :filelink:`genmake2 <tools/genmake2>` output will complain.
@@ -1082,10 +1082,7 @@ will be on the former; this component of the solution equilibrates on a time sca
 more or less, whereas the deep cell depends on a slower, diffusive timescale.
 We will begin by examining some of our :ref:`Diagnostics Per Level Statistics <baroc_stat_diags>` output, to assess
 how close we are to equilibration at different ocean model levels. Recall we've requested
-these statistics to be computed monthly. Alternatively, with some additional calculations, similar
-statistics could be computed using our annual mean :ref:`Diagnostics Package Choices <baroc_diags_parms>` (but hey, in addition
-to the higher frequency of output without taxing our storage requirements,
-isn't it simpler to let MITgcm do the statistical number crunching than to write matlab or python code?)
+these statistics to be computed monthly. 
 
 Load diagnostics ``TRELAX_ave``, ``THETA_lv_avg``, and ``THETA_lv_std`` from file ``dynStDiag.nc``.
 In :numref:`baroclinic_gyre_trelax_timeseries`\a
@@ -1153,18 +1150,18 @@ depth can be easily visualized by loading diagnostic ``MXLDEPTH``).
 
       Contours of free surface height (m) averaged over year 100; shading is surface heat flux due to temperature restoring (W/m\ :sup:`2`), red indicating heat release out of the ocean.
 
-So what happened to our model solution subpolar gyre? Let's compute depth-integrated velocity :math:`u_{bt}, v_{bt}`
-and use it calculate the barotropic transport streamfunction:
+So what happened to our model solution subpolar gyre? Let's compute depth-integrated velocity :math:`U_{bt}, V_{bt}`
+(units: m\ :sup:`2` s\ :sup:`-1`) and use it calculate the barotropic transport streamfunction:
 
-.. math:: u_{bt} = - \frac{\partial \Psi}{\partial y}, \phantom{WW} v_{bt} = \frac{\partial \Psi}{\partial x}
+.. math:: U_{bt} = - \frac{\partial \Psi}{\partial y}, \phantom{WW} V_{bt} = \frac{\partial \Psi}{\partial x}
 
-Compute :math:`u_{bt}` by summing the diagnostic ``UVEL`` multiplied by gridcell depth
+Compute :math:`U_{bt}` by summing the diagnostic ``UVEL`` multiplied by gridcell depth
 (``grid.nc`` variable :varlink:`drF`, i.e.,
 the separation between gridcell faces in the vertical). Now do a cumulative sum of
-:math:`-u_{bt}` times the gridcell spacing the in the :math:`y` direction (you
+:math:`-U_{bt}` times the gridcell spacing the in the :math:`y` direction (you
 will need to load ``grid.nc`` variable :varlink:`dyG`, the separation between gridcell faces in :math:`y`).
 A plot of the resulting :math:`\Psi` field is shown in :numref:`baroclinic_gyre_psi`.
-Note one could also cumulative sum :math:`v_{bt}` times the grid spacing in the :math:`x`-direction and obtain a similar result.
+Note one could also cumulative sum :math:`V_{bt}` times the grid spacing in the :math:`x`-direction and obtain a similar result.
 
  .. figure:: figs/baroc_psi.png
       :width: 75%

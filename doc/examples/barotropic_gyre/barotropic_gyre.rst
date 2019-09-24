@@ -69,7 +69,7 @@ equations for this configuration as follows:
    :label: baro_model_eq_v
 
 .. math::
-    \frac{\partial \eta}{\partial t} + \nabla_{h}\cdot \vec{u}
+    \frac{\partial \eta}{\partial t} + \nabla_{h}\cdot H \vec{u}
     = 0
     :label: baro_model_eq_eta
 
