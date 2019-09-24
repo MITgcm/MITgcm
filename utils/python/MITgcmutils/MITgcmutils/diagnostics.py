@@ -25,9 +25,9 @@ def readstats(fname):
 
     Notes
     -----
-    - The 5 columns of the resulting arrays are average, std.dev, min, max
-    and total volume.
+    - The 5 columns of the resulting arrays are average, std.dev, min, max and total volume.
     - There is a record (or dictionary key) for each field found in the file.
+
     '''
     nk = 0
     flds = []
