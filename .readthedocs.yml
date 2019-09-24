@@ -18,3 +18,7 @@ formats:
 python:
   install:
     - requirements: doc/requirements.txt
+    - method: pip
+      path: utils/python/MITgcmutils
+      extra_requirements:
+        - plot
