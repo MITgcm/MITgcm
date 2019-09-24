@@ -28,7 +28,8 @@ layer_centres = (layer_bounds[1:] + layer_bounds[:-1])/2
 # Load model output
 
 ds = xmitgcm.open_mdsdataset('../run/Diags', grid_dir='../run',
-                             prefix=['state', '2D_diags', 'heat_3D', 'heat_2D', 'layDiag'])
+                             prefix=['state', '2D_diags', 'heat_3D', 'heat_2D', 'layDiag'],
+                             delta_t=1000)
 # pkg/layers doesn't give a nice name for the layer coordinate
 # We're using temperature to define the layers, so let's call it 'temperature'
 ds = ds.rename({'_UNKNOWN_':'temperature'})
@@ -36,7 +37,8 @@ ds = ds.assign_coords(temperature=layer_centres)
 
 
 ds_GM = xmitgcm.open_mdsdataset('../run_GM/Diags', grid_dir='../run_GM/',
-                                prefix=['state', '2D_diags', 'heat_3D', 'heat_2D', 'layDiag', 'GM_diags'])
+                                prefix=['state', '2D_diags', 'heat_3D', 'heat_2D', 'layDiag', 'GM_diags'],
+                                delta_t=1000)
 # pkg/layers doesn't give a nice name for the layer coordinate
 ds_GM = ds_GM.rename({'_UNKNOWN_':'temperature'})
 ds_GM = ds_GM.assign_coords(temperature=layer_centres)
@@ -316,7 +318,7 @@ fig.suptitle('Eulerian-mean overturning streamfunction (Sv) in depth space')
 # plot residual overturning from pkg/layers
 fig, axarr = plt.subplots(1, 2, sharey=True, figsize=(10,5))
 
-t = -1
+t = -10
 (ds['LaVH1TH'][t:,::-1,:,:].mean(dim=['time'])*ds['dxG']/1e6).sum(dim=['XC']).cumsum(
     dim='temperature').plot.contourf(
                         levels=np.linspace(-2.3,2.3,24), ax=axarr[0],)
@@ -339,7 +341,7 @@ X, Y = np.meshgrid(ds['temperature'], ds['YG']/1e3)
 fig, axarr = plt.subplots(1, 2, sharey=True, figsize=(14,5))
 fig.subplots_adjust(wspace=0.)
 
-t = -1
+t = -10
 
 im = axarr[0].contourf(Y, -ds['LaHs1TH'][t:,::-1,:,:].cumsum(dim='temperature').mean(dim=['XC', 'time']).values.T,
               (ds['LaVH1TH'][t:,::-1,:,:].mean(dim=['time'])*ds['dxG']/1e6).sum(
