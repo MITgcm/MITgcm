@@ -20,4 +20,4 @@ There is comparison output in the directory:
   results/output.txt
 
 Comments:
-  The input data is real*8 and generated using the python notebook config.ipynb
+  The input data is real*8 and generated using the python scritp config.py
