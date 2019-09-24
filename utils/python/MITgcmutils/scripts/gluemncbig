@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Usage: gluemncbig [-2] [-q] [--verbose] [--many] [-v <vars>] -o <outfile> <files>
+"""Usage: gluemncbig [-2] [-q] [--verbose] [--help] [--many] [-v <vars>] -o <outfile> <files>
 
  -v <vars>  comma-separated list of variable names or glob patterns
  -2         write a NetCDF version 2 (64-Bit Offset) file allowing for large records
@@ -9,6 +9,7 @@
             uses less memory
  -q         suppress progress messages
  --verbose  report variables
+ --help     show this help text
 
 All files must have the same variables.
 Each variable (or 1 record of it) must fit in memory.
@@ -1221,14 +1222,19 @@ if __name__ == '__main__':
 
     # parse command-line arguments
     try:
-        optlist,fnames = getopt(sys.argv[1:], '2qo:v:', ['many', 'verbose'])
+        optlist,fnames = getopt(sys.argv[1:], '2qho:v:', ['many', 'verbose', 'help'])
     except GetoptError as e:
         sys.exit('Error: ' + str(e) + '\n\n' + __doc__)
+
+    opts = dict(optlist)
+
+    if '--help' in opts or '-h' in opts:
+        print(__doc__)
+        sys.exit()
 
     if not fnames:
         sys.exit('You need to specify at least one input file.')
 
-    opts = dict(optlist)
     outname = opts.get('-o')
     version = '-2' in opts and 2 or 1
     progress = '-q' not in opts

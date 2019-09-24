@@ -5,24 +5,35 @@ import matplotlib.pyplot as plt
 import matplotlib.tri as tri
 
 def contourf(*arguments, **kwargs):
-    """Call signatures::
-
-    contourf(X, Y, C, N, **kwargs)
-    contourf(X, Y, C, V, **kwargs)
-    
+    """
     Create a contourf plot of a 2-D llc array (with tricontour).
-    
-    *C* is the array of color values.
 
-    *N* is the number of levels
+    Call signatures::
 
-    *V* is a list of levels
-    
-    *X* and *Y*, specify the (*x*, *y*) coordinates of
-    the grid points
+        contourf(X, Y, C, N, **kwargs)
 
-    **kwargs are passed to tricontour.
-    
+        contourf(X, Y, C, V, **kwargs)
+
+    Parameters
+    ----------
+    X : array-like
+        x coordinates of the grid points
+
+    Y : array-like
+        y coordinates of the grid points
+
+    C : array-like
+        array of color values.
+
+    N : int
+        number of levels
+
+    V : list of float
+        list of levels
+
+    kwargs
+        passed to tricontour.
+
     """
 
     arglen = len(arguments)
@@ -61,24 +72,35 @@ def contourf(*arguments, **kwargs):
     return h
 
 def contour(*arguments, **kwargs):
-    """Call signatures::
-
-    contour(X, Y, C, N, **kwargs)
-    contour(X, Y, C, V, **kwargs)
-    
+    """
     Create a contour plot of a 2-D llc array (with tricontour).
-    
-    *C* is the array of color values.
 
-    *N* is the number of levels
+    Call signatures::
 
-    *V* is a list of levels
-    
-    *X* and *Y*, specify the (*x*, *y*) coordinates of
-    the grid points
+        contour(X, Y, C, N, **kwargs)
 
-    **kwargs are passed to tricontour.
-    
+        contour(X, Y, C, V, **kwargs)
+
+    Parameters
+    ----------
+    X : array-like
+        x coordinates of the grid points
+
+    Y : array-like
+        y coordinates of the grid points
+
+    C : array-like
+        array of color values.
+
+    N : int
+        number of levels
+
+    V : list of float
+        list of levels
+
+    kwargs
+        passed to tricontour.
+
     """
 
     arglen = len(arguments)
@@ -334,24 +356,33 @@ def _sqData(a):
     return b
 
 def pcol(*arguments, **kwargs):
-    """Call signatures::
-
-    pcol(X, Y, C, **kwargs)
-    
-    pcol(X, Y, C, m, **kwargs)
-    
+    """
     Create a pseudo-color plot of a 2-D llc array (with plt.pcolormesh).
-    
-    *m* if given is the map projection to use
+
+    Call signatures::
+
+        pcol(X, Y, C, **kwargs)
+
+        pcol(X, Y, C, m, **kwargs)
+
+    Parameters
+    ----------
+    X : array-like
+        x coordinates of the grid point corners (G-points)
+
+    Y : array-like
+        y coordinates of the grid point corners (G-points)
+
+    C : array-like
+        array of color values.
+
+    m : Basemap instance, optional
+        map projection to use.
         NOTE: currently not all projections work
 
-    *C* is the array of color values.
+    kwargs
+        passed to plt.pcolormesh.
 
-    *X* and *Y*, specify the (*x*, *y*) coordinates of
-    the grid point corners (G-points)
-
-    **kwargs are passed to plt.pcolormesh.
-    
     """
 
     arglen = len(arguments)
