@@ -55,7 +55,7 @@
 # Time stepping parameters
  &PARM03
  nIter0=0,
-# nTimeSteps=200,
+ nTimeSteps=200,
  deltaT=1000.0,
  pChkptFreq=31104000.0,
  chkptFreq=15552000.0,
@@ -64,7 +64,7 @@
  monitorSelect=2,
  tauThetaClimRelax=864000.,
 #-for longer run (30.0 yr):
- nTimeSteps=933120,
+# nTimeSteps=933120,
 # monitorFreq=864000.,
  &
 
