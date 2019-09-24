@@ -17,9 +17,9 @@
 # state variables
  frequency(3) =864000.,
  filename(3) = 'Diags/state',
- fields(1:8,3) =    'THETA   ', 'VVEL    ', 'UVEL    ',
+ fields(1:9,3) =    'THETA   ', 'VVEL    ', 'UVEL    ',
                     'WVEL    ', 'momVort3', 'momHDiv ',
-                    'CONVADJ ', 'PsiVEL  ',
+                    'CONVADJ ', 'PsiVEL  ', 'VAHDLTHQ',
 
 # 2D state variables
  frequency(4) = 864000.,
@@ -32,7 +32,7 @@
  fields(1:2,5) = 'GM_PsiX ', 'GM_PsiY ',
 
 # Residual mean flow
- fields(1:3,6) = 'LaVH1TH ', 'LaHs1TH ', 'LaVa1TH ' 
+ fields(1:3,6) = 'LaVH1TH ', 'LaHs1TH ', 'LaVa1TH '
  fileName(6) = 'Diags/layDiag',
  frequency(6) = 864000.,
 
