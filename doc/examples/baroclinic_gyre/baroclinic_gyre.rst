@@ -1073,8 +1073,9 @@ Model solution
 
 In this section, we will examine details of the model solution,
 using annual mean time average data provided in diagnostics files ``dynStDiag.nc``, ``dynDiag.nc``, and ``surfDiag.nc``.
-See companion :filelink:`matlab file <../../../verification/tutorial_baroclinic_gyre/input/matlab_plots.m>`
-or python file which show example code to create figures plotted in this section.
+See companion :filelink:`matlab file <../../../verification/tutorial_baroclinic_gyre/analysis/matlab_plots.m>`
+or :filelink:`python file <../../../verification/tutorial_baroclinic_gyre/analysis/plotting_codes.py>`
+which shows example code to create figures plotted in this section.
 
 Our ocean sector model is forced mechanically by wind stress and thermodynamically
 though temperature relaxation at the surface. As such,
