@@ -160,9 +160,7 @@ In the momentum equations, lateral and vertical boundary conditions for
 the :math:`\nabla_{h}^{2}` and
 :math:`\frac{\partial^{2}}{\partial z^{2}}` operators are specified in the
 runtime configuration - see :numref:`sec_eg_baroclinic_code_config`.
-For temperature, the boundary condition is
-“zero-flux”, e.g., :math:`\frac{\partial \theta}{\partial \varphi}=
-\frac{\partial \theta}{\partial \lambda}=\frac{\partial \theta}{\partial z}=0`.
+For temperature, the boundary condition along the bottom and sidewalls is zero-flux.
 
 Discrete Numerical Configuration
 --------------------------------
@@ -460,8 +458,7 @@ PARM01 - Continuous equation parameters
 - These lines set parameters :varlink:`diffKhT` and :varlink:`diffKrT`,
   the horizontal and vertical Laplacian temperature diffusivities respectively,
   to :math:`1000` m\ :sup:`2` s\ :sup:`--1` and :math:`1 \times 10^{-5}` m\ :sup:`2` s\ :sup:`--1`.The boundary condition on this
-  operator is :math:`\frac{\partial}{\partial x}=\frac{\partial}{\partial y}=\frac{\partial}{\partial z}=0` at
-  all boundaries.
+  operator is zero-flux at all boundaries.
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
        :start-at: diffKhT
