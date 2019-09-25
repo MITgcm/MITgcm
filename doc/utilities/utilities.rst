@@ -1,6 +1,8 @@
 Utilities
 *********
 
+.. _MITgcmutils:
+
 MITgcmutils
 ===========
 

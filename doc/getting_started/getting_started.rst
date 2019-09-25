@@ -1136,13 +1136,7 @@ are described in :numref:`pkg_mnc`.
 Python
 ~~~~~~
 
-Install the python package with utilities for MITgcm from the `Python Package Index <https://pypi.org>`_:
-
-::
-
-    pip install --user MITgcmutils
-
-The repository also includes a copy of this package under :filelink:`utils/python`.
+Install the MITgcmutils python package following the instructions in :numref:`MITgcmutils`.
 
 Raw binary output
 ^^^^^^^^^^^^^^^^^
@@ -1156,8 +1150,8 @@ The following example shows how to load in some data:
 
     Eta = mds.rdmds('Eta', itrs=10)
 
-The docstring for ``mds.rdmds`` (see file :filelink:`utils/python/MITgcmutils/MITgcmutils/mds.py`)
-contains much more detail about using this function and the options that it takes.
+For more information about using this function and the options that it takes,
+see the API docs, :meth:`MITgcmutils.mds.rdmds`.
 
 NetCDF output
 ^^^^^^^^^^^^^
@@ -1168,7 +1162,8 @@ need to be stitched together to create a single
 `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file that spans the model domain. The script
 :filelink:`utils/python/MITgcmutils/scripts/gluemncbig` can do
 this efficiently from the command line.  If you have install the MITgcmutils package,
-a copy of gluemncbig should be on your path.
+a copy of gluemncbig should be on your path.  For usage information, see
+:numref:`gluemncbig`.
 
 The following example shows how to use the `xarray python package <http://xarray.pydata.org/>`_ to read
 the resulting `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file into `Python <https://www.python.org/>`_:
