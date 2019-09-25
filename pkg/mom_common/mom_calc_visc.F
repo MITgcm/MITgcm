@@ -546,7 +546,8 @@ C This is the vector magnitude of grad(div.v) squared
      &     SQRT(leithD2fac*grdDiv)*L3
           viscA4_ZLthD(i,j)=
      &     SQRT(leithD4fac*grdDiv)*L5
-          viscAh_ZLthQG(i,j)=leithQG2fac*(grdVrt + grdDiv)*L3
+          viscAh_ZLthQG(i,j)=
+     &     SQRT(leithQG2fac*(grdVrt + grdDiv))*L3
 
          ELSEIF (calcLeith) THEN
 C but this approximation will work on cube (and differs by 4X)

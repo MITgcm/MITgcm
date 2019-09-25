@@ -21,6 +21,8 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
+#include "EXF_INTERP_SIZE.h"
+#include "EXF_INTERP_PARAM.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===

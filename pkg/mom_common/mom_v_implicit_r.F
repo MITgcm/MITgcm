@@ -23,6 +23,7 @@ C     == Global data ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#include "FFIELDS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
@@ -41,6 +42,8 @@ C c5d       :: main diagonal       of the pentadiagonal matrix
 C d5d       :: 1rst upper diagonal of the pentadiagonal matrix
 C e5d       :: 2nd  upper diagonal of the pentadiagonal matrix
 C rTrans    :: vertical volume transport at interface k
+C cDrag     :: bottom drag coefficient
+C KE2d      :: horizontal Kinetic Energy
 C diagonalNumber :: number of non-zero diagonals in the matrix
 C errCode   :: > 0 if singular matrix
       INTEGER iMin,iMax,jMin,jMax
@@ -54,12 +57,16 @@ c     _RL a5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL d5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 c     _RL e5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL cDrag (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL KE2d  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rCenter, rUpwind, upwindFac
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
       LOGICAL     DIAGNOSTICS_IS_ON
       EXTERNAL    DIAGNOSTICS_IS_ON
-      _RL vf (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL recip_dT
+      _RL delVdt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL vf    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
 CEOP
 
@@ -68,6 +75,7 @@ C     Solve for V-component :
 C----------------------------
 
 C--   Initialise
+      diagonalNumber = 1
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
@@ -79,7 +87,24 @@ c        e5d(i,j,k) = 0. _d 0
         ENDDO
        ENDDO
       ENDDO
-      diagonalNumber = 1
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+         KE2d (i,j) = 0. _d 0
+         cDrag(i,j) = 0. _d 0
+       ENDDO
+      ENDDO
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics .AND. ( implicitViscosity .OR.
+     &                            selectImplicitDrag.GE.1 ) ) THEN
+       DO k=1,Nr
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+           delVdt(i,j,k) = gV(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
       IF ( implicitViscosity .AND. Nr.GT.1 ) THEN
 
@@ -124,14 +149,35 @@ C--   end if implicitDiffusion
       ENDIF
 
       IF ( selectImplicitDrag.GE.1 ) THEN
+C--   Add bottom drag coeff to main diagonal "c5d":
        IF ( no_slip_bottom .OR. selectBotDragQuadr.GE.0
      &                     .OR. bottomDragLinear.NE.0. ) THEN
-        CALL MOM_V_BOTDRAG_IMPL(
-     I                     uVel(1-OLx,1-OLy,1,bi,bj),
-     I                     vVel(1-OLx,1-OLy,1,bi,bj),
+        DO k=1,Nr
+          CALL MOM_V_BOTDRAG_COEFF( bi, bj, k, .FALSE.,
+     I                     uVel(1-OLx,1-OLy,k,bi,bj),
+     I                     vVel(1-OLx,1-OLy,k,bi,bj),
      I                     kappaRV,
-     U                     c5d,
-     I                     bi, bj, myIter, myThid )
+     U                     KE2d,
+     O                     cDrag,
+     I                     myIter, myThid )
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+             c5d(i,j,k) = c5d(i,j,k)
+     &                  + cDrag(i,j)*deltaTMom
+     &                  *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+           ENDDO
+          ENDDO
+C--   Save (in 2-D array) drag-coeff for diagnostics of bottom-stress
+          IF ( useDiagnostics ) THEN
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx+1,sNx+OLx
+              botDragV(i,j,bi,bj) = botDragV(i,j,bi,bj)
+     &                            + cDrag(i,j)*rUnit2mass
+            ENDDO
+           ENDDO
+          ENDIF
+C-   End k loop
+        ENDDO
        ENDIF
       ENDIF
 
@@ -276,10 +322,28 @@ C--   Solve tri-diagonal system :
 #endif /* ALLOW_SOLVE4_PS_AND_DRAG */
 
 #ifdef ALLOW_DIAGNOSTICS
+C--   Diagnostics of momentum dissipation/viscous tendency, implicit part:
+      IF ( useDiagnostics .AND. ( implicitViscosity .OR.
+     &                            selectImplicitDrag.GE.1 ) ) THEN
+       diagName = 'Vm_ImplD'
+       IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
+         recip_dT = 0. _d 0
+         IF ( deltaTMom.GT.zeroRL ) recip_dT = oneRL / deltaTMom
+         DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            delVdt(i,j,k) = ( gV(i,j,k,bi,bj)-delVdt(i,j,k) )*recip_dT
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(delVdt,diagName, 0,Nr, 2,bi,bj, myThid)
+       ENDIF
+      ENDIF
+
 C--   Diagnostics of vertical viscous flux:
       IF ( useDiagnostics .AND. implicitViscosity ) THEN
-        diagName = 'VISrI_Vm'
-        IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
+       diagName = 'VISrI_Vm'
+       IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
          DO k= 1,Nr
           IF ( k.EQ.1 ) THEN
 C-  Note: Needs to call DIAGNOSTICS_FILL at level k=1 even if array == 0
@@ -302,7 +366,7 @@ C         otherwise counter is not incremented !!
           ENDIF
           CALL DIAGNOSTICS_FILL(vf,diagName, k,1, 2,bi,bj, myThid)
          ENDDO
-        ENDIF
+       ENDIF
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
