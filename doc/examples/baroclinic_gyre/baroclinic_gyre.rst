@@ -1148,7 +1148,7 @@ depth can be easily visualized by loading diagnostic ``MXLDEPTH``).
       :alt: baroclinic gyre free surface and relaxation
       :name: baroclinic_gyre_trelax_freesurface
 
-      Contours of free surface height (m) averaged over year 100; shading is surface heat flux due to temperature restoring (W/m\ :sup:`2`), red indicating heat release out of the ocean.
+      Contours of free surface height (m) averaged over year 100; shading is surface heat flux due to temperature restoring (W/m\ :sup:`2`), blue indicating cooling.
 
 So what happened to our model solution subpolar gyre? Let's compute depth-integrated velocity :math:`U_{bt}, V_{bt}`
 (units: m\ :sup:`2` s\ :sup:`-1`) and use it calculate the barotropic transport streamfunction:
