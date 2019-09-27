@@ -43,8 +43,13 @@ CEOP
 C     !LOCAL VARIABLES:
 C     bi,bj   :: tile indices
 C     i,j,k   :: Loop counters
+C     ioUnit  :: temp for writing msg unit
+C     msgBuf  :: Informational/error message buffer
       INTEGER bi, bj
       INTEGER i, j, k
+      LOGICAL prtFirst
+      INTEGER ioUnit
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL adjust
       _RL stag_fac
       _RL salt_int, theta_int, newvol, eta_old, vel_int
@@ -52,6 +57,9 @@ C     i,j,k   :: Loop counters
       _RS hFacS_old(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS hFacW_old(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
 
+      prtFirst = .TRUE.
+      ioUnit = -1
+      IF ( debugLevel.GE.debLevC ) ioUnit = standardMessageUnit
       stag_fac = 0.0
       IF (staggerTimestep) stag_fac = 1.0
 
@@ -64,46 +72,82 @@ C-- Update etaN
 C-- SPLIT CELLS
           IF ( R_shelfice(i,j,bi,bj) .LT. 0.0) THEN
            k  = MAX(1,kTopC(i,j,bi,bj))
-           IF (k.GT.1) THEN
-            IF (hFac_surfC(i,j,bi,bj)
-     &      .GT. SHELFICEsplitThreshold ) THEN
-             IF ((hFac_surfC(i,j,bi,bj)-1)*drF(k)*recip_drF(k-1)
-     &       .GT. SHELFICEmergeThreshold ) THEN
-              adjust = rF(k-1) - R_shelfice(i,j,bi,bj)
-              eta_old = etah(i,j,bi,bj)
+           IF ( k.GT.1 .AND.
+     &          hFac_surfC(i,j,bi,bj).GT.SHELFICEsplitThreshold ) THEN
+            IF ( (hFac_surfC(i,j,bi,bj)-1)*drF(k)*recip_drF(k-1)
+     &           .GT. SHELFICEmergeThreshold ) THEN
+
+             adjust = rF(k-1) - R_shelfice(i,j,bi,bj)
+             eta_old = etaH(i,j,bi,bj)
+             IF ( ioUnit.GE.0 ) THEN
+              IF ( prtFirst ) THEN
+               WRITE(msgBuf,'(A,I10)') 'SHI_REMESH at it=', myIter
+               CALL PRINT_MESSAGE( msgBuf,ioUnit,SQUEEZE_RIGHT,myThid )
+               prtFirst = .FALSE.
+              ENDIF
+              WRITE(msgBuf,'(A,2I5,2I4,A,1P2E12.3)') '--> REMESH in:',
+     &            i, j, bi, bj, ' , x,y=', XC(i,j,bi,bj),YC(i,j,bi,bj)
+              CALL PRINT_MESSAGE( msgBuf,ioUnit,SQUEEZE_RIGHT,myThid )
+              WRITE(msgBuf,'(2A,I4,3(A,1P1E12.3))') ' before:',
+     &        '  ks=', kSurfC(i,j,bi,bj), ' Ro_s=', Ro_surf(i,j,bi,bj),
+     &        ' eta=', etaH(i,j,bi,bj), ' hFac=', hFac_surfC(i,j,bi,bj)
+              CALL PRINT_MESSAGE( msgBuf,ioUnit,SQUEEZE_RIGHT,myThid )
+             ENDIF
 C-  decrement eta and increment R_shelfice and Ro_surf
-              etaN(i,j,bi,bj) = etaN(i,j,bi,bj)- adjust
-              etaH(i,j,bi,bj) = etaH(i,j,bi,bj)- adjust
-              etaHnm1(i,j,bi,bj) = etaHnm1(i,j,bi,bj)- adjust
-              R_shelfIce(i,j,bi,bj) = R_shelfIce(i,j,bi,bj)+adjust
-              Ro_surf(i,j,bi,bj) = Ro_surf(i,j,bi,bj)+adjust
+             etaN(i,j,bi,bj) = etaN(i,j,bi,bj)- adjust
+             etaH(i,j,bi,bj) = etaH(i,j,bi,bj)- adjust
+             etaHnm1(i,j,bi,bj) = etaHnm1(i,j,bi,bj)- adjust
+             R_shelfIce(i,j,bi,bj) = R_shelfIce(i,j,bi,bj)+adjust
+             Ro_surf(i,j,bi,bj) = Ro_surf(i,j,bi,bj)+adjust
 C-  initialise new cell-centered variables from values below
-              salt(i,j,k-1,bi,bj)=salt(i,j,k,bi,bj)
-              theta(i,j,k-1,bi,bj)=theta(i,j,k,bi,bj)
+             salt(i,j,k-1,bi,bj)=salt(i,j,k,bi,bj)
+             theta(i,j,k-1,bi,bj)=theta(i,j,k,bi,bj)
 
 C     also need to increment geometric factors and masks
 C     maskC, hFacC, hFac_surfC, kSurfC, kTopC, recip_hFacC
-              IF (k .LT. klowc(i,j,bi,bj)) THEN
+             IF (k .LT. klowc(i,j,bi,bj)) THEN
                h0FacC(i,j,k,bi,bj) = 1.
-              ELSE
+             ELSE
                h0FacC(i,j,k,bi,bj) = (rF(k)-r_low(i,j,bi,bj)) *
      &          recip_drF(k)
-              ENDIF
-               h0FacC(i,j,k-1,bi,bj) = 1.
              ENDIF
+             h0FacC(i,j,k-1,bi,bj) = 1.
+             IF ( ioUnit.GE.0 ) THEN
+              WRITE(msgBuf,'(2A,I4,3(A,1P1E12.3))') ' after :',
+     &        '  ks=', k-1, ' Ro_s=', Ro_surf(i,j,bi,bj),
+     &        ' eta=', etaH(i,j,bi,bj), ' hFac=',
+     &           h0FacC(i,j,k-1,bi,bj)+etaH(i,j,bi,bj)*recip_drF(k-1)
+              CALL PRINT_MESSAGE( msgBuf,ioUnit,SQUEEZE_RIGHT,myThid )
+             ENDIF
+
             ENDIF
            ENDIF
           ENDIF
 
 C-- MERGE CELLS
-          IF (kTopC(i,j,bi,bj) .LT.kLowC (i,j,bi,bj))THEN
+          IF ( kTopC(i,j,bi,bj).LT.kLowC (i,j,bi,bj) ) THEN
            k = MAX(1,kTopC(i,j,bi,bj))
-           IF (hFac_surfC(i,j,bi,bj) .LT.
-     &      SHELFICEmergeThreshold ) THEN
-            IF ((hFac_surfC(i,j,bi,bj)*drF(k)*recip_drF(k+1)+1) .LT.
-     &       SHELFICEsplitThreshold ) THEN
+           IF ( hFac_surfC(i,j,bi,bj) .LT.
+     &          SHELFICEmergeThreshold ) THEN
+            IF ( (hFac_surfC(i,j,bi,bj)*drF(k)*recip_drF(k+1)+1) .LT.
+     &          SHELFICEsplitThreshold ) THEN
+
              adjust = R_shelfice(i,j,bi,bj)-rF(k+1)
-             eta_old = etah(i,j,bi,bj)
+             eta_old = etaH(i,j,bi,bj)
+             IF ( ioUnit.GE.0 ) THEN
+              IF ( prtFirst ) THEN
+               WRITE(msgBuf,'(A,I10)') 'SHI_REMESH at it=', myIter
+               CALL PRINT_MESSAGE( msgBuf,ioUnit,SQUEEZE_RIGHT,myThid )
+               prtFirst = .FALSE.
+              ENDIF
+              WRITE(msgBuf,'(A,2I5,2I4,A,1P2E12.3)') '--> REMESH in:',
+     &            i, j, bi, bj, ' , x,y=', XC(i,j,bi,bj),YC(i,j,bi,bj)
+              CALL PRINT_MESSAGE( msgBuf,ioUnit,SQUEEZE_RIGHT,myThid )
+              WRITE(msgBuf,'(2A,I4,3(A,1P1E12.3))') ' before:',
+     &        '  ks=', kSurfC(i,j,bi,bj), ' Ro_s=', Ro_surf(i,j,bi,bj),
+     &        ' eta=', etaH(i,j,bi,bj), ' hFac=', hFac_surfC(i,j,bi,bj)
+              CALL PRINT_MESSAGE( msgBuf,ioUnit,SQUEEZE_RIGHT,myThid )
+             ENDIF
 C-  increment eta and decrement R_shelfice and Ro_sur
              etaN(i,j,bi,bj) = etaN(i,j,bi,bj) + adjust
              etaH(i,j,bi,bj) = etaH(i,j,bi,bj) + adjust
@@ -145,13 +189,27 @@ C     maskC, hFacC, hFac_surfC, kSurfC, kTopC, recip_hFacC
                h0FacC(i,j,k+1,bi,bj) = (rF(k+1)-r_low(i,j,bi,bj)+
      &          0*eta_old) * recip_drF(k+1)
              ENDIF
+             IF ( ioUnit.GE.0 ) THEN
+              WRITE(msgBuf,'(2A,I4,3(A,1P1E12.3))') ' after :',
+     &        '  ks=', k+1, ' Ro_s=', Ro_surf(i,j,bi,bj),
+     &        ' eta=', etaH(i,j,bi,bj), ' hFac=',
+     &           h0FacC(i,j,k+1,bi,bj)+etaH(i,j,bi,bj)*recip_drF(k+1)
+              CALL PRINT_MESSAGE( msgBuf,ioUnit,SQUEEZE_RIGHT,myThid )
+             ENDIF
+
             ENDIF
            ENDIF
           ENDIF
+
          ENDDO
         ENDDO
        ENDDO
       ENDDO
+      IF ( ioUnit.GE.0 .AND. .NOT. prtFirst ) THEN
+        WRITE(msgBuf,'(A,I10,A)') 'SHI_REMESH at it=', myIter,
+     &                            ' : end of report'
+        CALL PRINT_MESSAGE( msgBuf,ioUnit,SQUEEZE_RIGHT,myThid )
+      ENDIF
 
       CALL EXCH_XYZ_RS( h0FacC, myThid )
 
