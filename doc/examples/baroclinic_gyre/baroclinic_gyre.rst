@@ -674,16 +674,17 @@ File :filelink:`input/data.mnc <verification/tutorial_baroclinic_gyre/input/data
 
 This file sets parameters which affect package :filelink:`pkg/mnc` behavior; in fact, with :filelink:`pkg/mnc` enabled, it is required
 (many packages look for file ``data.«PACKAGENAME»`` and will terminate if not present).
-Here, we are using default settings except for parameter :varlink:`monitor_mnc`:
+By setting the parameter :varlink:`monitor_mnc` to ``.FALSE.``
 we are specifying NOT to create separate `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_
 output files for :filelink:`pkg/monitor` output, but rather to include this monitor output in the standard output file
-(see :numref:`baro_gyre_build_run`). Comment out the lines setting parameters
-:varlink:`mnc_use_outdir` and :varlink:`mnc_outdir_str` (these settings
-dump mnc output into a subdirectory, which is required for automated testing purposes).
-See :numref:`pkg_mnc_inputs` for a complete listing of :filelink:`pkg/mnc` namelist parameters and their default settings.
-Note that unlike raw binary output, which overwrites any existing files, when using mnc output the model
-will terminate with error if one attempts to overwrite an
-existing file (i.e., if re-running in a previous run directory, delete all ``*.nc`` files before restarting).
+(see :numref:`baro_gyre_build_run`). See :numref:`pkg_mnc_inputs` for a complete
+listing of :filelink:`pkg/mnc` namelist parameters and their default settings.
+
+
+Note that unlike raw binary output, which overwrites any existing files, when using mnc output the model will create new directories if the parameters
+:varlink:`mnc_use_outdir` and :varlink:`mnc_outdir_str` are set. However, if those parameters are not set the model will terminate with an error if one attempts
+to overwrite an existing file (i.e., if re-running in a previous
+run directory, one needs to delete all ``*.nc`` files before restarting).
 
 .. _baroc_diags_list:    
 
@@ -844,12 +845,12 @@ To accomplish this, we will make use of utility script :filelink:`utils/python/M
 ::
 
     % ln -s ../../../utils/python/MITgcmutils/scripts/gluemncbig .
-    % ./gluemncbig -o grid.nc grid.t*.nc
-    % ./gluemncbig -o state.nc state*.t*.nc
-    % ./gluemncbig -o dynDiag.nc dynDiag*.t*.nc
-    % ./gluemncbig -o surfDiag.nc surfDiag*.t*.nc
-    % ./gluemncbig -o phiHyd.nc phiHyd*.t*.nc
-    % ./gluemncbig -o phiHydLow.nc phiHydLow*.t*.nc
+    % ./gluemncbig -o grid.nc mnc_test_*/grid.t*.nc
+    % ./gluemncbig -o state.nc mnc_test_*/state*.t*.nc
+    % ./gluemncbig -o dynDiag.nc mnc_test_*/dynDiag*.t*.nc
+    % ./gluemncbig -o surfDiag.nc mnc_test_*/surfDiag*.t*.nc
+    % ./gluemncbig -o phiHyd.nc mnc_test_*/phiHyd*.t*.nc
+    % ./gluemncbig -o phiHydLow.nc mnc_test_*/phiHydLow*.t*.nc
 
 
 For help using this utility, type ``gluemncbig --help``; note a python installation must for available for this script to work.
