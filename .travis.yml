@@ -73,25 +73,11 @@ jobs:
     - stage: test documentation
       env:
       - BUILD="html"
-      python: "2.7"
-      script:
-        - tools/ci/install_doc_dependencies.sh > /dev/null
-        - cd doc
-        - sphinx-build -nWa -b ${BUILD} -d _build/doctrees . _build/html
-    - env:
-      - BUILD="html"
       python: "3.6"
       script:
         - tools/ci/install_doc_dependencies.sh > /dev/null
         - cd doc
-        - sphinx-build -nWa -b ${BUILD} -d _build/doctrees . _build/html
-    - env:
-      - BUILD="latexpdf"
-      python: "2.7"
-      script:
-        - tools/ci/install_doc_dependencies.sh > /dev/null
-        - cd doc
-        - make clean ${BUILD} LATEXOPTS="-interaction=nonstopmode -halt-on-error"
+        - sphinx-build -Wa -b ${BUILD} -d _build/doctrees . _build/html
     - env:
       - BUILD="latexpdf"
       python: "3.6"
