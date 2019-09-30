@@ -2,36 +2,44 @@
 Introduction
 ------------
 
-This section describes the :filelink:`pkg/flt` package. Just below is a
-reformatted and slightly updated version of the original documentation,
-from `Arne Biastoch` and `Alistair Adcroft` back in the Summer of 2001,
-found in `pkg/flt/README`.
+This section describes the :filelink:`pkg/flt` package and is largely based on the original documentation provided by `Arne Biastoch` and `Alistair Adcroft` circa 2001.
+:filelink:`pkg/flt` computes float trajectories and simulates the behavior of profiling floats during a model run.
+Profiling floats (e.g.) Argo) typically drift at depth and go back to the surface at pre-defined time intervals.
+However, :filelink:`pkg/flt` can also simulate observing devices such as non-profiling floats or surface drifters.
 
-This package allows the advection of floats during a model run.
-Although originally intended to simulate PALACE floats
-(floats that drift in at depth and to the surface at a defined
-time interval) it can also run ALACE floats (non-profiling)
-and surface drifters as well as sample moorings (simply a
-non-advective, profiling float).
-The stepping of the float advection is done using a second
-order Runga-Kutta scheme (Press et al., 1992, Numerical
-Recipes), whereby velocities and positions are bilinear
-interpolated between the grid points.
-The package has only few interfaces to the model. Despite a
-general introduction of the flag useFLT and an initialization in
-packages_init_fixed.F the interfaces are in:
+The package's core functionalities are operated by the `flt_main` call in `forward_step` (see below for details). Checkpointing is supported via `flt_write_pickup` called in `packages_write_pickup`.
 
-- forward_step.F calls `flt_main`
-- write_checkpoint.F calls `flt_write_pickup`
+Time-stepping of float locations is based on a second- or fourth-order Runga-Kutta scheme (Press et al., 1992, Numerical Recipes).
+Velocities and positions are interpolated between grid points to the simulated device location, and various types of noise can be added the simulated displacements.
+Spatial interpolation is bilinear close to boundaries and otherwise a polynomial interpolation. Float positions are expressed in local grid index space.
 
-1. Compile-time options in `FLT_OPTIONS.h` include:
 
-#define FLT_NOISE
-   to add white noise to the advection velocity
-#undef ALLOW_3D_FLT
-   to allow three-dimensional float advection (not tested yet!) instead of drifting on a pre-defined (integer) vertical level.
+Compile-time options in `FLT_OPTIONS.h`
+---------------------------------------
 
-2. Compile-time options in `FLT.h` include:
+.. tabularcolumns:: |\Y{.4}|L|L|
+
+
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| CPP Flag Name                                 | Default | Description                                                                                                          |
++===============================================+=========+======================================================================================================================+
+| :varlink:`ALLOW_3D_FLT`                       | #define | allow three-dimensional float displacements                                                                          |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| :varlink:`USE_FLT_ALT_NOISE`                  | #define | use alternative method of adding random noise                                                                        |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| :varlink:`ALLOW_FLT_3D_NOISE`                 | #define | add noise also to the vertical velocity of 3D floats                                                                 |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| :varlink:`FLT_SECOND_ORDER_RUNGE_KUTTA`       | #undef  | revert to old second-order Runge-Kutta                                                                               |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| :varlink:`FLT_WITHOUT_X_PERIODICITY`          | #undef  | prevent floats to re-enter the opposite side of a periodic domain                                                    |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| :varlink:`FLT_WITHOUT_Y_PERIODICITY`          | #undef  | prevent floats to re-enter the opposite side of a periodic domain                                                    |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+| :varlink:`DEVEL_FLT_EXCH2`                    | #undef  | allow experimentation with pkg/flt + exch2 despite incomplete implementation                                         |
++-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+
+Compile-time parameters in `FLT_SIZE.h` include:
+------------------------------------------------
 
 parameter (`max_npart_tile` = 300)
    is the maximum number of floats per tile. Should be smaller
@@ -45,7 +53,8 @@ parameter (`max_npart_exch` = 50)
    timestep. Should be generally small because only few floats
    leave the tile exactly at the same time.
 
-3. Run-time options in `data.flt` include
+Run-time options in `data.flt` include:
+---------------------------------------
 
 `flt_int_traj`
    is the time interval in seconds to sample float position and dynamic variables (T,S,U,V,Eta).
@@ -55,31 +64,50 @@ parameter (`max_npart_exch` = 50)
    is the time interval in seconds to sample a whole profile of T,S,U,V (as well as
    positions and Eta). This has to chosen at least as small as the shortest profiling interval.
 
-*Notes:* All profiling intervals have to be an integer multiple of this interval.
-The profile is always taken over the whole water column.
-For example, let's assume that one wants a first set of floats with
-5 days profiling interval and 24 hours surface time, and another one
-with 10 days profiling interval and 12 hours surface time.
-To capture all of the floats motions, one then would have to set
-`flt_int_traj=43200` and `flt_int_prof=432000`.
-
 `flt_noise`
 	If `FLT_NOISE` is defined then this is the amplitude that is added to the advection velocity by the random number generator.
 
 `flt_file`
    is the base filename of the float positions without tile information and ending (e.g. `float_pos`)
 
-3. Input files
+`flt_selectTrajOutp`
+   selects variables to output following float trajectories (=0 : none ; =1 : position only ; =2 : +p,u,v,t,s)
 
-The initialization is written in a way that it first looks for a
-global file (e.g. `float_pos.data`). A global file is mainly used
-for first-time initialization. If that not exists the routine looks
-for local files (e.g. `float_pos.001.001.data`, etc.) that have
-been used for storing the float positions for restart (note that
-float restarts are ALWAYS local files).
-The structure of the file is always the same. Each float contains
-a 9 element double precision record of a
-direct access file. The records are:
+flt_selectProfOutp`
+   selects variables to output when floats profile (=0 : none ; =1 : position only ; =2 : +p,u,v,t,s)
+
+`flt_deltaT`
+	 is equal to `deltaTClock` by default
+
+`FLT_Iter0`
+   is the time step when floats are initialized
+
+`mapIniPos2Index`
+   converts float initial positions to local, fractional indices (`.TRUE.` by default)
+
+*Notes:* `flt_int_prof` is the time between getting profiles, not the the return  cycle of the float to the surface. The latter can be specified individually for every float. Because the mechanism
+for returning to the surface is called in the profiling routine flt_int_prof has to be the minimum of all iup(max_npart). The subsampling of profiles can be done later in the analysis.
+
+*Notes:* All profiling intervals have to be an integer multiple of `flt_int_prof`. The profile is always taken over the whole water column.
+For example, let's assume that one wants a first set of floats with 5 days profiling interval and 24 hours surface time, and another one with 10 days profiling interval and 12 hours surface time.
+To capture all of the floats motions, one then would have to set `flt_int_traj=43200` and `flt_int_prof=432000`.
+
+Input Files
+-----------
+
+If `nIter0.EQ.FLT_Iter0` then `flt_init_varia` first looks for a global file (e.g. `float_pos.data`).
+If that file does not exists then `flt_init_varia` looks for local files (e.g. `float_pos.001.001.data`, etc.)
+or for local pickup files that have been generated during a previous model run (e.g. `pickup_flt.ckptA.001.001.data`, etc.).
+
+
+The first line of these input file provides:
+
+- the number of floats on that tile in the first record
+- the total number of floats in the sixth record
+
+*Notes:* when using a global file at first-time initialization both fields should be the same.
+
+Afterwards the input files contain one 9-element double-precision record for each float:
 
 ::
 
@@ -102,39 +130,56 @@ direct access file. The records are:
 	tend    end date of integration of float (in s)
           - If tend=-1 floats are integrated till the end of the integration
 
-In addition the first line of the file contains a record with
+*Notes:* an example how to write a float file (`write_float.F`) is included in the verification experiment documented below.
 
-- the number of floats on that tile in the first record
-- the total number of floats in the sixth record
+Output Files
+------------
 
-At first-time initialization in a global file both fields should be the same.
-An example how to write a float file (`write_float.F`) is included in the
-verification experiment (see below).
+The output consists of 3 sets of local files:
 
-4. Output/Visualization
+- `pickup_flt*` : last positions of floats that can be used for restart
+- `float_trajectories*` : trajectories of floats and actual values at depth
+- `float_profiles*` : profiles throughout the whole water column
 
-The output always consists of 3 series of local files:
-
-- files with last positions of floats that can be used for restart
-- files with trajectories of floats and actual values at depth
-- files with profiles throughout the whole water column
-
-Examples and conversion routines for the second and third series
-into NetCDF are included in `verification/flt_example/aux/`.
-
-5. Verification Experiment
-
-The verification experiment is based on `exp4` (flow over a
-Gaussian in a channel). There are, however, two main differences
-to the original experiment:
-
-- The domain has closed boundaries. Currently the float package
-  is not able to treat floats that leave the domain via open boundaries
-- There is an additional wind forcing to speed up the currents
-  to get significant advection rates in time
-
-Package Folder Contents
+Verification Experiment
 -----------------------
+
+The verification experiment is based on `exp4` (flow over a Gaussian in a channel). The two main difference is that an additional wind forcing was introduced to speed up the currents.
+
+A few utilities are included that were supposedly used to prepare input for `pkg/flt` and / or visualize its output:
+
+::
+
+	extra/cvfloat.F90
+	extra/cvprofiles.F
+	extra/write_float.F
+	input/convert_ini.m
+	input/read_flt_traj.m
+
+Algorithm details
+-----------------
+
+A summary of what `flt_main.F` currently does is as follows:
+
+::
+
+		CALL FLT_RUNGA4
+		  CALL FLT_TRILINEAR
+		  or CALL FLT_BILINEAR
+		or CALL FLT_RUNGA2
+		  CALL FLT_TRILINEAR
+		  or CALL FLT_BILINEAR
+		CALL FLT_EXCH2
+		  CALL EXCH2_SEND_PUT_VEC_RL
+		  CALL EXCH2_RECV_GET_VEC_RL
+		or CALL FLT_EXCHG
+		  CALL EXCH_SEND_PUT_VEC_X_RL
+		  CALL EXCH_RECV_GET_VEC_X_RL
+		  CALL EXCH_SEND_PUT_VEC_Y_RL
+		  CALL EXCH_RECV_GET_VEC_Y_RL
+		CALL FLT_UP
+		CALL FLT_DOWN
+		CALL FLT_TRAJ
 
 A summary of included fortran files is provided inside `flt_main.F`:
 
@@ -162,53 +207,3 @@ A summary of included fortran files is provided inside `flt_main.F`:
 	C     o flt_interp_linear  - contains blinear interpolation scheme
 	C     o flt_mapping        - contains mapping functions & subroutine
 	C     o flt_mdsreadvector  - modified mdsreadvector to read files
-
-The main computation is done by `flt_main.F` which steps floats forward in time
-and samples the model state at float position every flt_int_traj time steps.
-The code can also moves the float up and down and samples vertical profiles.
-The original developers, in the early 2000s, noted that:
-
-- Uses 2nd or fourth order Runga-Kutta
-- Spatial interpolation is bilinear close to boundaries and otherwise a polynomial interpolation.
-- Particles are kept in grid space (with position of dp taken as x(south), y(east) grid cell point)
-- Calls profile every `flt_int_prof` time steps; in that event the profile over the whole water column is written to file and the float might be moved upwards to the surface (depending on its configuration).
-
-A summary of what `flt_main.F` currently does is as follows:
-
-::
-
-		CALL FLT_RUNGA4
-		  CALL FLT_TRILINEAR
-		  or CALL FLT_BILINEAR
-		or CALL FLT_RUNGA2
-		  CALL FLT_TRILINEAR
-		  or CALL FLT_BILINEAR
-		CALL FLT_EXCH2
-		  CALL EXCH2_SEND_PUT_VEC_RL
-		  CALL EXCH2_RECV_GET_VEC_RL
-		or CALL FLT_EXCHG
-		  CALL EXCH_SEND_PUT_VEC_X_RL
-		  CALL EXCH_RECV_GET_VEC_X_RL
-		  CALL EXCH_SEND_PUT_VEC_Y_RL
-		  CALL EXCH_RECV_GET_VEC_Y_RL
-		CALL FLT_UP
-		CALL FLT_DOWN
-		CALL FLT_TRAJ
-
-
-`verification/flt_example/`
----------------------------
-
-This verification experiment has been used to test `pkg/flt`. It also contains
-a few utility and documentation pieces that seem worth mentioning here. These
-were supposedly used to prepare input for `pkg/flt` and / or visualize its
-output. Not sure if any of these has recently been tested.
-
-::
-
-	extra/cvfloat.F90
-	extra/cvprofiles.F
-	extra/Makefile
-	extra/write_float.F
-	input/convert_ini.m
-	input/read_flt_traj.m
