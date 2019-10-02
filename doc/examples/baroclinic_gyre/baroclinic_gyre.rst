@@ -444,11 +444,9 @@ PARM01 - Continuous equation parameters
        :lineno-match:
 
 - These lines set parameters to specify the boundary conditions for momentum on the model domain sidewalls and bottom.
-  Parameter :varlink:`no_slip_sides` is set to ``.TRUE.``, i.e., no-slip lateral boundary conditions (the default),
-    which will yield a Munk (1950) :cite:`munk:50` western boundary solution.
+  Parameter :varlink:`no_slip_sides` is set to ``.TRUE.``, i.e., no-slip lateral boundary conditions (the default), which will yield a Munk (1950) :cite:`munk:50` western boundary solution.
   Parameter :varlink:`no_slip_bottom` is set to ``.FALSE.``, i.e., free-slip bottom boundary condition (default is true).
-  If instead of a Munk layer we desired a Stommel (1948) :cite:`stommel:48` western boundary layer solution, we would
-    opt for free-slip lateral boundary conditions and no-slip conditions along the bottom.
+  If instead of a Munk layer we desired a Stommel (1948) :cite:`stommel:48` western boundary layer solution, we would opt for free-slip lateral boundary conditions and no-slip conditions along the bottom.
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
        :start-at: slip_sides
@@ -469,10 +467,11 @@ PARM01 - Continuous equation parameters
   configuration, typically such a parameterization is desired. We recommend a scheme which
   simply applies (presumably, large) vertical diffusivity between statically unstable grid cells in the vertical. This vertical diffusivity
   is set by parameter :varlink:`ivdc_kappa`, which here we set to :math:`1.0` m\ :sup:`2` s\ :sup:`--1`. This scheme requires that
-  :varlink:`implicitDiffusion` is set to ``.TRUE.`` (see :numref:`implicit-backward-stepping`; more specifically, applying a
-    large vertical diffusivity to represent convective mixing requires the use of an implicit
+  :varlink:`implicitDiffusion` is set to ``.TRUE.`` (see :numref:`implicit-backward-stepping`;
+  more specifically, applying a large vertical diffusivity to represent convective mixing
+  requires the use of an implicit
   time-stepping method for vertical diffusion, rather than Adams Bashforth II).
-    Alternatively, a traditional convective adjustment scheme is available; this can be activated
+  Alternatively, a traditional convective adjustment scheme is available; this can be activated
   through the :varlink:`cAdjFreq` parameter, see :numref:`ocean_convection_parms`.
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
@@ -490,7 +489,7 @@ PARM01 - Continuous equation parameters
   see use in :eq:`rho_lineareos` and :eq:`rhoprime_lineareos`.
   Second, the model will use these reference temperatures for its initial state, as we are not providing a pickup file
   nor specifying an initial temperature hydrographic file (in later tutorials we will demonstrate how to do so).
-    For each depth level the initial and reference profiles will be uniform in :math:`x` and :math:`y`.
+  For each depth level the initial and reference profiles will be uniform in :math:`x` and :math:`y`.
   Note when checking static stability or computing :math:`N^2`, the density gradient resulting from these specified reference levels
   is added to :math:`\partial \rho' / \partial z` from :eq:`rhoprime_lineareos`.
   Finally, we set the thermal expansion coefficient :math:`\alpha_{\theta}` (:varlink:`tAlpha`)
@@ -508,7 +507,7 @@ PARM01 - Continuous equation parameters
   i.e., the density of water at tRef(k=1). This value will also be used
   as :math:`\rho_c` (parameter :varlink:`rhoConst`) in :eq:`baroc_gyre_umom`-:eq:`baroc_gyre_press`,
   lacking a separate explicit assignment of :varlink:`rhoConst` in ``data``.
-    Note this value is the model default value for :varlink:`rhoNil`.
+  Note this value is the model default value for :varlink:`rhoNil`.
 
   .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/input/data
        :start-at: rhoNil
@@ -631,7 +630,7 @@ PARM04 - Gridding parameters
        :end-at: delR
        :lineno-match:
 
- PARM05 - Input datasets
+PARM05 - Input datasets
 #######################
 
 - Similar to tutorial :ref:`Barotropic Ocean Gyre <barotropic_gyre_stab_crit>`, these lines specify filenames for bathymetry
@@ -872,16 +871,16 @@ Let's proceed through the netcdf output that is produced.
     and are dimensioned +1 larger than the standard array size; for example, ``Xp1`` is the longitude of the gridcell left corner, and
     includes an extra data point for the last gridcell's right corner longitude.
 
-        - ``state.nc`` - includes snapshots of state variables U, V, W, Temp, S, and Eta
+  - ``state.nc`` - includes snapshots of state variables U, V, W, Temp, S, and Eta
     at model times T in seconds (variable iter(T) stores the model iteration corresponding with these model times).
     Also included are vector forms of grid variables X, Y, Z, Xp1, Yp1, and Zl.
-    As mentioned, in model output-by-tile files, e.g., ``state.0000000000.t001.nc``,
-        the iteration number ``0000000000`` is the parameter :varlink:`nIter0` for the model run
+    As mentioned, in model output-by-tile files, e.g., ``state.0000000000.t001.nc``, the iteration number ``0000000000`` is the parameter :varlink:`nIter0` for the model run
     (recall, we initialized our model with :varlink:`nIter0` =0).
     Snapshots of model state are written for model iterations 0, 25920, 51840, ...
     according to our ``data`` file parameter choice :varlink:`dumpFreq` (:varlink:`dumpFreq`/:varlink:`deltaT` = 25920).
 
-        - ``surfDiag.nc`` - includes output diagnostics as specified from list 1 in :ref:`data.diagnostics <baroc_diags_list>`.
+  - ``surfDiag.nc`` - includes output diagnostics as specified from list 1 in
+    :ref:`data.diagnostics <baroc_diags_list>`.
     Here we specified that list 1 include 2-D diagnostics ``ETAN``, ``TRELAX``, and ``MXLDEPTH``.
     Also includes an array of model times corresponding to the end of the time-average period, the iteration
     number corresponding to these model times, and vector forms of grid variables which describe these data.
