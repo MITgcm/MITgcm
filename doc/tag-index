@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o doc & verification/tutorial_baroclinic_gyre:
+  - split doc for tutorial experiments into separate files
+  - update configuration for baroclinic gyre tutorial
+  - update documentation for baroclinic gyre tutorial
+  - formatting and font changes in algorithm chapter
 o doc:
   - add rtfd config file to control build behaviour and options.
 
