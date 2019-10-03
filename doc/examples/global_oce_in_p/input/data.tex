@@ -1,0 +1,96 @@
+\begin{verbatim}
+     1	# ====================
+     2	# | Model parameters |
+     3	# ====================
+     4	#
+     5	# Continuous equation parameters
+     6	 &PARM01
+     7	 tRef=15*20.,
+     8	 sRef=15*35.,
+     9	 viscAh =3.E5,
+    10	 no_slip_sides=.TRUE.,
+    11	 viscAr =1.721611620915750e5,
+    12	#viscAz =1.67E-3,
+    13	 no_slip_bottom=.FALSE.,
+    14	 diffKhT=1.E3, 
+    15	 diffKrT=5.154525811125000e3,
+    16	#diffKzT=0.5E-4,
+    17	 diffKhS=1.E3,  
+    18	 diffKrS=5.154525811125000e3,
+    19	#diffKzS=0.5E-4,
+    20	 implicitDiffusion=.TRUE.,
+    21	 ivdc_kappa=1.030905162225000e9,
+    22	#ivdc_kappa=10.0,
+    23	 gravity=9.81,
+    24	 gravitySign=-1.D0,
+    25	 rhonil=1035.,
+    26	 buoyancyRelation='OCEANICP',
+    27	 eosType='JMD95P',
+    28	 rigidLid=.FALSE.,
+    29	 implicitFreeSurface=.TRUE.,
+    30	 exactConserv=.TRUE.,
+    31	 nonlinFreeSurf=3,
+    32	 hFacInf=0.2,
+    33	 hFacSup=2.0,
+    34	 useRealFreshWaterFlux=.FALSE.,
+    35	 readBinaryPrec=64,
+    36	 writeBinaryPrec=64,
+    37	 cosPower=0.5,
+    38	 &
+    39	
+    40	# Elliptic solver parameters
+    41	 &PARM02
+    42	 cg2dMaxIters=200,
+    43	 cg2dTargetResidual=1.E-9,
+    44	 &
+    45	
+    46	# Time stepping parameters
+    47	 &PARM03
+    48	 startTime =           0.,
+    49	 endTime   =     8640000.,
+    50	#endTime   = 62208000000.,
+    51	 deltaTmom      =   1200.0,
+    52	 deltaTtracer   = 172800.0,
+    53	 deltaTfreesurf = 172800.0,
+    54	 deltaTClock    = 172800.0,
+    55	 pChkptFreq  = 3110400000.,
+    56	 dumpFreq    = 3110400000.,
+    57	 taveFreq    = 3110400000.,
+    58	 monitorFreq =   31104000.,
+    59	 periodicExternalForcing=.TRUE.,
+    60	 externForcingPeriod=2592000.,
+    61	 externForcingCycle=31104000.,
+    62	 tauThetaClimRelax=5184000.0,
+    63	 abEps=0.1,
+    64	 &
+    65	
+    66	# Gridding parameters
+    67	 &PARM04
+    68	 usingCartesianGrid=.FALSE.,
+    69	 usingSphericalPolarGrid=.TRUE.,
+    70	 dXspacing=4.,
+    71	 dYspacing=4.,
+    72	 Ro_SeaLevel=53023122.566084,
+    73	 groundAtK1=.TRUE.,
+    74	 delR=7103300.720021, 6570548.440790, 6041670.010249,
+    75	      5516436.666057, 4994602.034410, 4475903.435290,
+    76	      3960063.245801, 3446790.312651, 2935781.405664,
+    77	      2426722.705046, 1919291.315988, 1413156.804970,
+    78	      1008846.750166,  705919.025481,  504089.693499,
+    79	 ygOrigin=-80.,
+    80	 &
+    81	
+    82	# Input datasets
+    83	 &PARM05
+    84	 topoFile       ='topog.bin',
+    85	 pLoadFile      ='deltageopotjmd95.bin',
+    86	 hydrogThetaFile='lev_t.bin',
+    87	 hydrogSaltFile ='lev_s.bin',
+    88	 zonalWindFile  ='trenberth_taux.bin',
+    89	 meridWindFile  ='trenberth_tauy.bin',
+    90	 thetaClimFile  ='lev_sst.bin',
+    91	#saltClimFile   ='lev_sss.bin',
+    92	 surfQFile      ='shi_qnet.bin',
+    93	 EmPmRFile      ='shi_empmr.bin',
+    94	 &
+\end{verbatim}
