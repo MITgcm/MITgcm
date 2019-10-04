@@ -16,9 +16,7 @@ Surface Driven Convection
 This experiment, :numref:`tut_deep_cvct_config`, showcasing
 MITgcm’s non-hydrostatic capability, was designed to explore the
 temporal and spatial characteristics of convection plumes as they might
-exist during a period of oceanic deep convection. The files for this
-experiment can be found in the verification directory under
-tutorial\_deep\_convection. It is
+exist during a period of oceanic deep convection. It is
 
 -  non-hydrostatic
 
@@ -47,7 +45,7 @@ used in this experiment is linear
 
 .. math::
     \rho = \rho_{0} ( 1 - \alpha_{\theta}\theta^{'} )
-    :label: eg-bconv-linear1_eos}
+    :label: eg-bconv-linear1_eos
 
 which is implemented in the model as a density anomaly equation
 
@@ -110,7 +108,6 @@ solved in this configuration as follows:
 .. math::
 
    \begin{aligned}
-   \label{eq:eg-bconv-model_equations}
    \frac{Du}{Dt} - fv + 
      \frac{1}{\rho}\frac{\partial p^{'}}{\partial x} - 
      \nabla_{h}\cdot A_{h}\nabla_{h}u - 
@@ -155,7 +152,7 @@ solved in this configuration as follows:
    {\cal F}_\theta & \text{(surface)} \\
    0 & \text{(interior)}
    \end{cases}
-   \label{eq:eg-bconv-theta_equations}\end{aligned}
+   \end{aligned}
 
 where :math:`u=\frac{Dx}{Dt}`, :math:`v=\frac{Dy}{Dt}` and
 :math:`w=\frac{Dz}{Dt}` are the components of the flow vector in

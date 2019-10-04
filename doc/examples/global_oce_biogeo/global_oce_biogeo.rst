@@ -63,7 +63,7 @@ comes from chemical and biological sources and sinks. For any tracer
 .. math::
 
    \frac{\partial A}{\partial t}=-\nabla \cdot (\vec{u^{*}} A)+\nabla \cdot
-     (\mathbf{K}\nabla A)+S_A \nonumber \label{lEtrac}
+     (\mathbf{K}\nabla A)+S_A \nonumber
 
 where :math:`\vec{u^{*}}` is the transformed Eulerian mean circulation
 (which includes Eulerian and eddy-induced advection), :math:`\mathbf{K}`
@@ -74,8 +74,8 @@ The sources and sinks are:
 
 .. math::
    \begin{aligned}
-   S_{DIC} & = &  F_{CO_2} + V_{CO_2} + r_{C:P} S_{PO_4}  + J_{Ca} \label{lEsdic} \\
-   S_{ALK} & = &  V_{ALK}-r_{N:P} S_{PO_4}  + 2 J_{Ca} \label{lEsalk} \\
+   S_{DIC} & = &  F_{CO_2} + V_{CO_2} + r_{C:P} S_{PO_4}  + J_{Ca} \\
+   S_{ALK} & = &  V_{ALK}-r_{N:P} S_{PO_4}  + 2 J_{Ca}  \\
    S_{PO_4}& = &  -f_{DOP} J_{prod} - \frac{\partial F_P}{\partial z} + \kappa_{remin} [DOP]\\
    S_{DOP} & = &  f_{DOP} J_{prod} -\kappa_{remin} [DOP] \\
    S_{O_2} & = & \left\{ \begin{array}{ll}

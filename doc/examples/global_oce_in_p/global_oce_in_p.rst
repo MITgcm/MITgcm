@@ -603,7 +603,7 @@ configuration are
 
    ::
 
-        delR=7103300.720021, \ldots 
+        delR=7103300.720021, ... 
 
    set the layer thickness in pressure units, starting with the bottom
    layer.
