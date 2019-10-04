@@ -349,7 +349,7 @@ the model domain.
 
        Annual mean of meridional wind stress component (N m\ :sup:`-2`)
 
-  .. figure:: figs/qnet.png
+  .. figure:: ../global_oce_in_p/figs/qnet.png
        :width: 90%
        :align: center
        :alt: forcing qnet field
@@ -357,7 +357,7 @@ the model domain.
 
        Annual mean heat flux (W m\ :sup:`-2`)
 
-  .. figure:: figs/emp.png
+  .. figure:: ../global_oce_in_p/figs/emp.png
        :width: 90%
        :align: center
        :alt: forcing emp field
