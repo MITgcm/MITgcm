@@ -71,79 +71,79 @@ addition to numbers, e.g., the diagnostic for the 100th ptracer is TRAC0a, etc.
 
 ::
 
-   ---------------------------------------------------------------------------------
-   Num |<-Name->|Levs|  mate |<- code ->|<--  Units   -->|<- Tile (max=80c)
-   ---------------------------------------------------------------------------------
-   215 |TRAC01  | 15 |       |SMR     MR|mol/m^3         |Dissolved Inorganic Carbon (DIC) [mol C/m^3] concentration
-   216 |UTRAC01 | 15 |   217 |UUr     MR|mol/m^3.m/s     |Zonal Mass-Weighted Transp of DIC
-   217 |VTRAC01 | 15 |   216 |VVr     MR|mol/m^3.m/s     |Merid Mass-Weighted Transp of DIC
-   218 |WTRAC01 | 15 |       |WM      MR|mol/m^3.m/s     |Vert  Mass-Weighted Transp of DIC
-   219 |ForcTr01| 15 |       |SMR     MR|mol/m^3/s       |DIC forcing tendency
-   220 |AB_gTr01| 15 |       |SMR     MR|mol/m^3/s       |DIC tendency from Adams-Bashforth
-   221 |Tp_gTr01| 15 |       |SMR     MR|mol/m^3/s       |DIC tendency before gchem_forcing_sep
-   222 |ADVrTr01| 15 |       |WM      LR|mol/m^3.m^3/s   |Vertical   Advective Flux of DIC
-   223 |ADVxTr01| 15 |   224 |UU      MR|mol/m^3.m^3/s   |Zonal      Advective Flux of DIC
-   224 |ADVyTr01| 15 |   223 |VV      MR|mol/m^3.m^3/s   |Meridional Advective Flux of DIC
-   225 |DFrETr01| 15 |       |WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of DIC (Explicit part)
-   226 |DFxETr01| 15 |   227 |UU      MR|mol/m^3.m^3/s   |Zonal      Diffusive Flux of DIC
-   227 |DFyETr01| 15 |   226 |VV      MR|mol/m^3.m^3/s   |Meridional Diffusive Flux of DIC
-   228 |DFrITr01| 15 |       |WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of DIC (Implicit part)
-   229 |TRAC02  | 15 |       |SMR     MR|mol/m^3         |Alkalinity (Alk) [mol eq/m^3] concentration
-   230 |UTRAC02 | 15 |   231 |UUr     MR|mol/m^3.m/s     |Zonal Mass-Weighted Transp of Alk
-   231 |VTRAC02 | 15 |   230 |VVr     MR|mol/m^3.m/s     |Merid Mass-Weighted Transp of Alk
-   232 |WTRAC02 | 15 |       |WM      MR|mol/m^3.m/s     |Vert  Mass-Weighted Transp of Alk
-   233 |ForcTr02| 15 |       |SMR     MR|mol/m^3/s       |Alk forcing tendency
-   234 |AB_gTr02| 15 |       |SMR     MR|mol/m^3/s       |Alk tendency from Adams-Bashforth
-   235 |Tp_gTr02| 15 |       |SMR     MR|mol/m^3/s       |Alk tendency before gchem_forcing_sep
-   236 |ADVrTr02| 15 |       |WM      LR|mol/m^3.m^3/s   |Vertical   Advective Flux of Alk
-   237 |ADVxTr02| 15 |   238 |UU      MR|mol/m^3.m^3/s   |Zonal      Advective Flux of Alk
-   238 |ADVyTr02| 15 |   237 |VV      MR|mol/m^3.m^3/s   |Meridional Advective Flux of Alk
-   239 |DFrETr02| 15 |       |WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of Alk (Explicit part)
-   240 |DFxETr02| 15 |   241 |UU      MR|mol/m^3.m^3/s   |Zonal      Diffusive Flux of Alk
-   241 |DFyETr02| 15 |   240 |VV      MR|mol/m^3.m^3/s   |Meridional Diffusive Flux of Alk
-   242 |DFrITr02| 15 |       |WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of Alk (Implicit part)
-   243 |TRAC03  | 15 |       |SMR     MR|mol/m^3         |Phosphate (PO4) [mol P/m^3] concentration
-   244 |UTRAC03 | 15 |   245 |UUr     MR|mol/m^3.m/s     |Zonal Mass-Weighted Transp of PO4
-   245 |VTRAC03 | 15 |   244 |VVr     MR|mol/m^3.m/s     |Merid Mass-Weighted Transp of PO4
-   246 |WTRAC03 | 15 |       |WM      MR|mol/m^3.m/s     |Vert  Mass-Weighted Transp of PO4
-   247 |ForcTr03| 15 |       |SMR     MR|mol/m^3/s       |PO4 forcing tendency
-   248 |AB_gTr03| 15 |       |SMR     MR|mol/m^3/s       |PO4 tendency from Adams-Bashforth
-   249 |Tp_gTr03| 15 |       |SMR     MR|mol/m^3/s       |PO4 tendency before gchem_forcing_sep
-   250 |ADVrTr03| 15 |       |WM      LR|mol/m^3.m^3/s   |Vertical   Advective Flux of PO4
-   251 |ADVxTr03| 15 |   252 |UU      MR|mol/m^3.m^3/s   |Zonal      Advective Flux of PO4
-   252 |ADVyTr03| 15 |   251 |VV      MR|mol/m^3.m^3/s   |Meridional Advective Flux of PO4
-   253 |DFrETr03| 15 |       |WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of PO4 (Explicit part)
-   254 |DFxETr03| 15 |   255 |UU      MR|mol/m^3.m^3/s   |Zonal      Diffusive Flux of PO4
-   255 |DFyETr03| 15 |   254 |VV      MR|mol/m^3.m^3/s   |Meridional Diffusive Flux of PO4
-   256 |DFrITr03| 15 |       |WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of PO4 (Implicit part)
-   257 |TRAC04  | 15 |       |SMR     MR|mol/m^3         |Dissolved Organic Phosphorus (DOP) [mol P/m^3] concentration
-   258 |UTRAC04 | 15 |   259 |UUr     MR|mol/m^3.m/s     |Zonal Mass-Weighted Transp of DOP
-   259 |VTRAC04 | 15 |   258 |VVr     MR|mol/m^3.m/s     |Merid Mass-Weighted Transp of DOP
-   260 |WTRAC04 | 15 |       |WM      MR|mol/m^3.m/s     |Vert  Mass-Weighted Transp of DOP
-   261 |ForcTr04| 15 |       |SMR     MR|mol/m^3/s       |DOP forcing tendency
-   262 |AB_gTr04| 15 |       |SMR     MR|mol/m^3/s       |DOP tendency from Adams-Bashforth
-   263 |Tp_gTr04| 15 |       |SMR     MR|mol/m^3/s       |DOP tendency before gchem_forcing_sep
-   264 |ADVrTr04| 15 |       |WM      LR|mol/m^3.m^3/s   |Vertical   Advective Flux of DOP
-   265 |ADVxTr04| 15 |   266 |UU      MR|mol/m^3.m^3/s   |Zonal      Advective Flux of DOP
-   266 |ADVyTr04| 15 |   265 |VV      MR|mol/m^3.m^3/s   |Meridional Advective Flux of DOP
-   267 |DFrETr04| 15 |       |WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of DOP (Explicit part)
-   268 |DFxETr04| 15 |   269 |UU      MR|mol/m^3.m^3/s   |Zonal      Diffusive Flux of DOP
-   269 |DFyETr04| 15 |   268 |VV      MR|mol/m^3.m^3/s   |Meridional Diffusive Flux of DOP
-   270 |DFrITr04| 15 |       |WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of DOP (Implicit part)
-   271 |TRAC05  | 15 |       |SMR     MR|mol/m^3         |Dissolved Oxygen (O2) [mol O/m^3] concentration
-   272 |UTRAC05 | 15 |   273 |UUr     MR|mol/m^3.m/s     |Zonal Mass-Weighted Transp of O2
-   273 |VTRAC05 | 15 |   272 |VVr     MR|mol/m^3.m/s     |Merid Mass-Weighted Transp of O2
-   274 |WTRAC05 | 15 |       |WM      MR|mol/m^3.m/s     |Vert  Mass-Weighted Transp of O2
-   275 |ForcTr05| 15 |       |SMR     MR|mol/m^3/s       |O2 forcing tendency
-   276 |AB_gTr05| 15 |       |SMR     MR|mol/m^3/s       |O2 tendency from Adams-Bashforth
-   277 |Tp_gTr05| 15 |       |SMR     MR|mol/m^3/s       |O2 tendency before gchem_forcing_sep
-   278 |ADVrTr05| 15 |       |WM      LR|mol/m^3.m^3/s   |Vertical   Advective Flux of O2
-   279 |ADVxTr05| 15 |   280 |UU      MR|mol/m^3.m^3/s   |Zonal      Advective Flux of O2
-   280 |ADVyTr05| 15 |   279 |VV      MR|mol/m^3.m^3/s   |Meridional Advective Flux of O2
-   281 |DFrETr05| 15 |       |WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of O2 (Explicit part)
-   282 |DFxETr05| 15 |   283 |UU      MR|mol/m^3.m^3/s   |Zonal      Diffusive Flux of O2
-   283 |DFyETr05| 15 |   282 |VV      MR|mol/m^3.m^3/s   |Meridional Diffusive Flux of O2
-   284 |DFrITr05| 15 |       |WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of O2 (Implicit part)
+   ---------------------------------------------------------------
+   <-Name->|<- code ->|<--  Units   -->|<- Tile (max=80c)
+   ---------------------------------------------------------------
+   TRAC01  |SMR     MR|mol/m^3         |Dissolved Inorganic Carbon (DIC) [mol C/m^3] concentration
+   UTRAC01 |UUr     MR|mol/m^3.m/s     |Zonal Mass-Weighted Transp of DIC
+   VTRAC01 |VVr     MR|mol/m^3.m/s     |Merid Mass-Weighted Transp of DIC
+   WTRAC01 |WM      MR|mol/m^3.m/s     |Vert  Mass-Weighted Transp of DIC
+   ForcTr01|SMR     MR|mol/m^3/s       |DIC forcing tendency
+   AB_gTr01|SMR     MR|mol/m^3/s       |DIC tendency from Adams-Bashforth
+   Tp_gTr01|SMR     MR|mol/m^3/s       |DIC total transport tendency (before gchem_forcing_sep)
+   ADVrTr01|WM      LR|mol/m^3.m^3/s   |Vertical   Advective Flux of DIC
+   ADVxTr01|UU      MR|mol/m^3.m^3/s   |Zonal      Advective Flux of DIC
+   ADVyTr01|VV      MR|mol/m^3.m^3/s   |Meridional Advective Flux of DIC
+   DFrETr01|WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of DIC (Explicit part)
+   DFxETr01|UU      MR|mol/m^3.m^3/s   |Zonal      Diffusive Flux of DIC
+   DFyETr01|VV      MR|mol/m^3.m^3/s   |Meridional Diffusive Flux of DIC
+   DFrITr01|WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of DIC (Implicit part)
+   TRAC02  |SMR     MR|mol/m^3         |Alkalinity (Alk) [mol eq/m^3] concentration
+   UTRAC02 |UUr     MR|mol/m^3.m/s     |Zonal Mass-Weighted Transp of Alk
+   VTRAC02 |VVr     MR|mol/m^3.m/s     |Merid Mass-Weighted Transp of Alk
+   WTRAC02 |WM      MR|mol/m^3.m/s     |Vert  Mass-Weighted Transp of Alk
+   ForcTr02|SMR     MR|mol/m^3/s       |Alk forcing tendency
+   AB_gTr02|SMR     MR|mol/m^3/s       |Alk tendency from Adams-Bashforth
+   Tp_gTr02|SMR     MR|mol/m^3/s       |Alk total transport tendency (before gchem_forcing_sep)
+   ADVrTr02|WM      LR|mol/m^3.m^3/s   |Vertical   Advective Flux of Alk
+   ADVxTr02|UU      MR|mol/m^3.m^3/s   |Zonal      Advective Flux of Alk
+   ADVyTr02|VV      MR|mol/m^3.m^3/s   |Meridional Advective Flux of Alk
+   DFrETr02|WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of Alk (Explicit part)
+   DFxETr02|UU      MR|mol/m^3.m^3/s   |Zonal      Diffusive Flux of Alk
+   DFyETr02|VV      MR|mol/m^3.m^3/s   |Meridional Diffusive Flux of Alk
+   DFrITr02|WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of Alk (Implicit part)
+   TRAC03  |SMR     MR|mol/m^3         |Phosphate (PO4) [mol P/m^3] concentration
+   UTRAC03 |UUr     MR|mol/m^3.m/s     |Zonal Mass-Weighted Transp of PO4
+   VTRAC03 |VVr     MR|mol/m^3.m/s     |Merid Mass-Weighted Transp of PO4
+   WTRAC03 |WM      MR|mol/m^3.m/s     |Vert  Mass-Weighted Transp of PO4
+   ForcTr03|SMR     MR|mol/m^3/s       |PO4 forcing tendency
+   AB_gTr03|SMR     MR|mol/m^3/s       |PO4 tendency from Adams-Bashforth
+   Tp_gTr03|SMR     MR|mol/m^3/s       |PO4 total transport tendency (before gchem_forcing_sep)
+   ADVrTr03|WM      LR|mol/m^3.m^3/s   |Vertical   Advective Flux of PO4
+   ADVxTr03|UU      MR|mol/m^3.m^3/s   |Zonal      Advective Flux of PO4
+   ADVyTr03|VV      MR|mol/m^3.m^3/s   |Meridional Advective Flux of PO4
+   DFrETr03|WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of PO4 (Explicit part)
+   DFxETr03|UU      MR|mol/m^3.m^3/s   |Zonal      Diffusive Flux of PO4
+   DFyETr03|VV      MR|mol/m^3.m^3/s   |Meridional Diffusive Flux of PO4
+   DFrITr03|WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of PO4 (Implicit part)
+   TRAC04  |SMR     MR|mol/m^3         |Dissolved Organic Phosphorus (DOP) [mol P/m^3] concentration
+   UTRAC04 |UUr     MR|mol/m^3.m/s     |Zonal Mass-Weighted Transp of DOP
+   VTRAC04 |VVr     MR|mol/m^3.m/s     |Merid Mass-Weighted Transp of DOP
+   WTRAC04 |WM      MR|mol/m^3.m/s     |Vert  Mass-Weighted Transp of DOP
+   ForcTr04|SMR     MR|mol/m^3/s       |DOP forcing tendency
+   AB_gTr04|SMR     MR|mol/m^3/s       |DOP tendency from Adams-Bashforth
+   Tp_gTr04|SMR     MR|mol/m^3/s       |DOP total transport tendency (before gchem_forcing_sep)
+   ADVrTr04|WM      LR|mol/m^3.m^3/s   |Vertical   Advective Flux of DOP
+   ADVxTr04|UU      MR|mol/m^3.m^3/s   |Zonal      Advective Flux of DOP
+   ADVyTr04|VV      MR|mol/m^3.m^3/s   |Meridional Advective Flux of DOP
+   DFrETr04|WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of DOP (Explicit part)
+   DFxETr04|UU      MR|mol/m^3.m^3/s   |Zonal      Diffusive Flux of DOP
+   DFyETr04|VV      MR|mol/m^3.m^3/s   |Meridional Diffusive Flux of DOP
+   DFrITr04|WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of DOP (Implicit part)
+   TRAC05  |SMR     MR|mol/m^3         |Dissolved Oxygen (O2) [mol O/m^3] concentration
+   UTRAC05 |UUr     MR|mol/m^3.m/s     |Zonal Mass-Weighted Transp of O2
+   VTRAC05 |VVr     MR|mol/m^3.m/s     |Merid Mass-Weighted Transp of O2
+   WTRAC05 |WM      MR|mol/m^3.m/s     |Vert  Mass-Weighted Transp of O2
+   ForcTr05|SMR     MR|mol/m^3/s       |O2 forcing tendency
+   AB_gTr05|SMR     MR|mol/m^3/s       |O2 tendency from Adams-Bashforth
+   Tp_gTr05|SMR     MR|mol/m^3/s       |O2 total transport tendency (before gchem_forcing_sep)
+   ADVrTr05|WM      LR|mol/m^3.m^3/s   |Vertical   Advective Flux of O2
+   ADVxTr05|UU      MR|mol/m^3.m^3/s   |Zonal      Advective Flux of O2
+   ADVyTr05|VV      MR|mol/m^3.m^3/s   |Meridional Advective Flux of O2
+   DFrETr05|WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of O2 (Explicit part)
+   DFxETr05|UU      MR|mol/m^3.m^3/s   |Zonal      Diffusive Flux of O2
+   DFyETr05|VV      MR|mol/m^3.m^3/s   |Meridional Diffusive Flux of O2
+   DFrITr05|WM      LR|mol/m^3.m^3/s   |Vertical Diffusive Flux of O2 (Implicit part)
 
 Do’s and Don’ts
 +++++++++++++++
