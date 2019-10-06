@@ -19,7 +19,7 @@ Welcome to MITgcm's user manual
 .. toctree::
    :maxdepth: 3
    :caption: Contents:
-   :numbered: 4
+   :numbered: 5
 
    overview/overview
    algorithm/algorithm

@@ -77,7 +77,7 @@ jobs:
       script:
         - tools/ci/install_doc_dependencies.sh > /dev/null
         - cd doc
-        - sphinx-build -nWa -b ${BUILD} -d _build/doctrees . _build/html
+        - sphinx-build -Wa -b ${BUILD} -d _build/doctrees . _build/html
     - env:
       - BUILD="latexpdf"
       python: "3.6"
