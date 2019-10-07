@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ptracers:
+  - new diagnostics Tp_gTr01, ... for ptracer total transport tendencies
+    (before gchem_forcing_sep); this includes advection and diffusion terms,
+    but also anything added in gchem_add_tendency.
 o doc & verification/tutorial_baroclinic_gyre:
   - split doc for tutorial experiments into separate files
   - update configuration for baroclinic gyre tutorial
