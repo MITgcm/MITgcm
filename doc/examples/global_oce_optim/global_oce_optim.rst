@@ -37,7 +37,7 @@ point :math:`i`. The differences are weighted by an *a priori*
 uncertainty :math:`\sigma_i^T` on observations (as provided by
 Levitus and Boyer (1994a)
 :cite:`levitus:94a`). The error :math:`\sigma_i^T` is only a
-function of depth and varies from 0.5 at the surface to 0.05 K at the
+function of depth and varies from 0.5 K at the surface to 0.05 K at the
 bottom of the ocean, mainly reflecting the decreasing temperature
 variance with depth (see :numref:`tut_global_optim_errors`\ a). A value of :math:`J_1` of order 1
 means that the model is, on average, within observational uncertainties.
@@ -92,8 +92,8 @@ or less almost everywhere except in the Pacific equatorial cold tongue.
 Comparison of the initial temperature error (top, right) and heat flux
 adjustment (bottom, left) shows that the system basically increased the
 heat flux out of the ocean where temperatures were too warm and
-vice-versa. Obviously, heat flux uncertainties are not the sole
-responsible for temperature errors and the heat flux adjustment partly
+vice-versa. Obviously, heat flux uncertainties are not solely
+responsible for temperature errors, and the heat flux adjustment partly
 compensates the poor representation of narrow currents (Western boundary
 currents, equatorial currents) at :math:`4\times4^\circ` resolution.
 This is allowed by the large *a priori* error on the heat flux :numref:`tut_global_optim_errors`.
@@ -233,7 +233,7 @@ its adjoint (``mitgcmuv_ad``) and 2) the line-search algorithm
 Compilation of MITgcm and its adjoint: ``mitcgmuv_ad``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Before compiling, first note that, in the directory :filelink:`code_ad <verification/tutorial_global_oce_optim/code_ad/>`, two files
+Before compiling, first note that in the directory :filelink:`code_ad <verification/tutorial_global_oce_optim/code_ad/>`, two files
 must be updated:
 
 -  :filelink:`code_ad/code_ad_diff.list <verification/tutorial_global_oce_optim/code_ad/code_ad_diff.list>` which lists new subroutines to be compiled by the

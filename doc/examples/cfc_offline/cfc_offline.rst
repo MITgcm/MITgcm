@@ -116,7 +116,7 @@ counter) should be made equal to the value assigned to :varlink:`deltatTtracer`.
 
 :varlink:`periodicExternalForcing` is a flag telling the model whether to
 cyclically re-use forcing data where there is external forcing
-(see :ref:`tut_offline_example2` below). Where there is no external forcing, as
+(see :numref:`tut_offline_example2` below). Where there is no external forcing, as
 here, but where there is to be cyclic re-use of the offline flow and
 mixing fields, :varlink:`periodicExternalForcing` must be assigned the value ``.TRUE.``.
 
@@ -173,7 +173,7 @@ in the discrete grid. Here the total model depth is 5200 m.
         ygOrigin=-90.,
 
 This line sets the southern boundary of the modeled domain to
--90\ :sup:`o` latitude N (90\ :sup:`o`\  S). This value
+-90\ :sup:`o` latitude N (= 90\ :sup:`o`\  S). This value
 affects both the generation of the locally orthogonal grid that the
 model uses internally and affects the initialization of the Coriolis
 force. Note: it is not required to set a longitude boundary, since the
@@ -244,9 +244,9 @@ and convective mixing histories of a prior forward integration of the
 MITgcm, required for the offline package. Based on the values of :varlink:`deltaToffline`,
 :varlink:`offlineForcingPeriod` and :varlink:`offlineForcingCycle` specified in
 :filelink:`verification/tutorial_cfc_offline/input/input_off`,
-since :varlink:`offlineForcingCycle` corresponds to 12 forcing
+since :varlink:`offlineForcingCycle` corresponds to twelve forcing
 periods :varlink:`offlineForcingPeriod` and since :varlink:`offlineIter0` is zero, there
-needs to be 12 :varlink:`uVeltave`, 12 :varlink:`vVeltave`, 12 :varlink:`wVeltave` and 12 :varlink:`Convtave` files
+needs to be twelve :varlink:`uVeltave`, twelve :varlink:`vVeltave`, twelve :varlink:`wVeltave` and twelve ``Convtave`` files
 each having a 10 digit sequence identifier between 0000000001 to
 0000000012, that is, a total of 48 files.
 
@@ -288,9 +288,9 @@ model data in seconds.
 
 :varlink:`offlineForcingCycle` sets the forcing cycle length associated with the
 offline model data in seconds. In this example the offline forcing cycle
-is 6 days, or 12 offline forcing periods. Together :varlink:`deltatToffline`,
+is 6 days, or twelve offline forcing periods. Together :varlink:`deltatToffline`,
 :varlink:`offlineForcingPeriod` and :varlink:`offlineForcingCycle` determine the value of the
-10 digit sequencing tag the model expects files in
+ten digit sequencing tag the model expects files in
 :filelink:`input_tutorial/data.off <verification/tutorial_cfc_offline/input_tutorial/data.off>`
 to have.
 
@@ -471,7 +471,7 @@ are required. In addition, you will also need to copy ``.data`` and ``.meta`` fi
 A more complicated example
 --------------------------
 
-The last example demonstrated simple advection of a passive tracer using
+The previous example demonstrated simple advection of a passive tracer using
 the offline form of the MITgcm. Now we present a more complicated
 example in which the model is used to explore contamination of the
 global ocean through surface exposure to CFCs during the last century.

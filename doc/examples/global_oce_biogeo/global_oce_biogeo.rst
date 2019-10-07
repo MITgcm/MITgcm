@@ -148,18 +148,18 @@ The modifications to the code (in
 The input fields needed for this run (in
 :filelink:`verification/tutorial_global_oce_biogeo/input`) are:
 
--  :filelink:`input/data <verification/tutorial_global_oce_biogeo/input/data>`: specifies the main parameters for the experiment, some
+-  :filelink:`input/data <verification/tutorial_global_oce_biogeo/input/data>`: specifies the main parameters for the experiment. Some
    parameters that may be useful to know: :varlink:`nTimeSteps` number timesteps
    model will run, change to 720 to run for a year :varlink:`taveFreq` frequency
    with which time averages are done, change to 31104000 for annual
    averages.
 
--  :filelink:`input/data.diagnostics <verification/tutorial_global_oce_biogeo/input/data.diagnostics>`: species details of diagnostic pkg output
+-  :filelink:`input/data.diagnostics <verification/tutorial_global_oce_biogeo/input/data.diagnostics>`: specifies details of diagnostic pkg output
 
--  :filelink:`input/data.gchem <verification/tutorial_global_oce_biogeo/input/data.gchem>`: specifics files and other details needed in the
+-  :filelink:`input/data.gchem <verification/tutorial_global_oce_biogeo/input/data.gchem>`: specifies details needed in the
    biogeochemistry model run
 
--  :filelink:`input/data.gmredi <verification/tutorial_global_oce_biogeo/input/data.gmredi>`: species details for the GM parameterization
+-  :filelink:`input/data.gmredi <verification/tutorial_global_oce_biogeo/input/data.gmredi>`: specifies details for the GM parameterization
 
 -  :filelink:`input/data.pkg <verification/tutorial_global_oce_biogeo/input/data.pkg>`: set true or false for various packages to be used
 

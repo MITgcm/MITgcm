@@ -93,7 +93,7 @@ Configuration
 
 The topography, spatial grid, forcing and initial conditions are all
 specified in binary data files generated using matlab script 
-:filelink:`verification/tutorial_plume_on_slope/input/gendata.m` and detailed in :ref:`tut_plume_on_slope_config`. Other model
+:filelink:`verification/tutorial_plume_on_slope/input/gendata.m` and detailed in :numref:`tut_plume_on_slope_config`. Other model
 parameters are specified in :filelink:`input/data <verification/tutorial_plume_on_slope/input/data>` and 
 :filelink:`input/data.obcs <verification/tutorial_plume_on_slope/input/data.obcs>` and detailed in :numref:`tut_plume_on_slope_mod_parms`.
 
@@ -194,8 +194,8 @@ where
    x_q & = & 2500 + Lx/2 \;\; \mbox{(m)} \\
    L_q & = & 100 \;\; \mbox{(m)}\end{aligned}
 
-Here, :math:`Q_o`, is the maximum heat flux, :math:`x_q` is the
-position of the cut-off and :math:`L_q` is the width of the cut-off.
+Here, :math:`Q_o` is the maximum heat flux, :math:`x_q` is the
+position of the cut-off, and :math:`L_q` is the width of the cut-off.
 
 The initial temperature field is unstratified but with random
 perturbations, to induce convection early on in the run. The random

@@ -224,7 +224,7 @@ evaluates to 0.6 at a latitude of
 stability, but the zonal grid spacing :math:`\Delta x` is smallest at
 :math:`\phi` = 80\ :sup:`o` where :math:`\Delta
 x=r\cos(\phi)\Delta \phi\approx` 77 km and the stability criterion
-is already met one grid cell equatorwards (at :math:`\phi` = 76\ :sup:`o`.
+is already met one grid cell equatorwards (at :math:`\phi` = 76\ :sup:`o`).
 
 The vertical dissipation coefficient,
 :math:`A_{z}`, is set to :math:`1\times10^{-3}` m\ :sup:`2` s\ :sup:`-1`.
@@ -479,7 +479,7 @@ configuration are
 
        cg2dTargetResidual=1.E-13,
 
-   Sets the tolerance which the two-dimensional, conjugate gradient
+   Sets the tolerance which the 2-D conjugate gradient
    solver will use to test for convergence in
    :eq:`elliptic-backward-free-surface` to :math:`1 \times 10^{-13}`.
    Solver will iterate until tolerance falls below this value or until
@@ -594,7 +594,7 @@ The units are N m\ :sup:`-2`.
 File ``input/bathymetry.bin``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``input/bathymetry.bin`` file specifies a two-dimensional
+The ``input/bathymetry.bin`` file specifies a 2-D
 (:math:`x,y`) map of depth values. For this experiment values range
 between 0 and -5200 m, and have been derived
 from `ETOPO5 <https://www.ngdc.noaa.gov/mgg/global/etopo5.HTML>`_. The file contains a raw binary stream of data that is
@@ -637,10 +637,10 @@ Four lines are customized in this file for the current experiment
        nSx=2,
        nPx=1,
 
-   theses lines set, respectively, the number of tiles per process and the number of processes
+   these lines set, respectively, the number of tiles per process and the number of processes
    along the :math:`x`-coordinate axis. Therefore,
-   the total number of grid points along the x-coordinate axis
-   corresponding to the full domain extent is :math:`Nx=sNx*sNx*nPx=90`.
+   the total number of grid points along the :math:`x`-coordinate axis
+   corresponding to the full domain extent is :math:`Nx=sNx*nSx*nPx=90`.
 
 -  Line 55,
 

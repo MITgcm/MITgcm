@@ -36,8 +36,8 @@ The use of the :math:`p^*` coordinate with 20 equally spaced levels
 :math:`0` at the top of the atmosphere) follows the choice of
 Held and Suarez (1994) :cite:`held-suar:94`. Note that without topography, the
 :math:`p^*` coordinate and the normalized pressure coordinate
-(:math:`\sigma_p`) coincide exactly. No viscosity and zero diffusion are
-used here, but an 8\ :sup:`th` order Shapiro (1970) :cite:`shapiro:70`
+(:math:`\sigma_p`) coincide exactly. Both viscosity and diffusivity are
+set to zero here, but an 8\ :sup:`th` order Shapiro (1970) :cite:`shapiro:70`
 filter is applied to both momentum and potential temperature, to remove
 selectively grid scale noise. Apart from the horizontal grid, this
 experiment is made very similar to the grid-point model case used in
@@ -52,8 +52,8 @@ Forcing
 The model is forced by relaxation to a radiative equilibrium temperature
 from Held and Suarez (1994) :cite:`held-suar:94`. A linear frictional drag
 (Rayleigh damping) is applied in the lower part of the atmosphere and
-account for surface friction and momentum dissipation in the boundary
-layer. Altogether, this yields the following forcing
+accounts for surface friction and momentum dissipation in the boundary
+layer. Altogether, this yields the following forcing from
 Held and Suarez (1994) :cite:`held-suar:94` that is applied to the fluid:
 
 .. math::
@@ -85,7 +85,7 @@ where :math:`p^*` is the pressure level of the cell center and
 which is constant and uniform here (:math:`= 10^5 {\rm Pa}`), in the
 absence of topography.
 
-The Equilibrium temperature :math:`\theta_{eq}` and relaxation time
+The equilibrium temperature :math:`\theta_{eq}` and relaxation time
 scale :math:`k_{\theta}` are set to:
 
 .. math::
@@ -104,8 +104,8 @@ with:
 .. math::
 
    \begin{aligned}
-    \Delta T_y = 60.K & k_a = 1/(40 \cdot 86400) ~{\rm s}^{-1}\\
-   \Delta \theta_z = 10.K & k_s = 1/(4 \cdot 86400) ~{\rm s}^{-1}\end{aligned}
+    \Delta T_y = 60 \text{ K, }  k_a &= 1/(40 \cdot 86400) ~{\rm s}^{-1}\\
+   \Delta \theta_z = 10 \text{ K, }  k_s &= 1/(4 \cdot 86400) ~{\rm s}^{-1}\end{aligned}
 
 Initial conditions correspond to a resting state with horizontally
 uniform stratified fluid. The initial temperature profile is simply the
@@ -129,8 +129,8 @@ The vector-invariant form of the momentum equation (see :numref:`vec_invar_mom_e
 is used so that no explicit metrics are necessary.
 
 Applying the vector-invariant discretization to the atmospheric
-equations :eq:`atmos-prime`, and adding the forcing term
-(:eq:`eg-hs-global_forcing\_fv`, :eq:`eg-hs-global_forcing_ft`) on the
+equations :eq:`atmos-prime`, and adding the forcing terms
+:eq:`eg-hs-global_forcing\_fv`, :eq:`eg-hs-global_forcing_ft` on the
 right-hand-side, leads to the set of equations that are solved in this
 configuration:
 
@@ -166,7 +166,7 @@ coordinate, :math:`\zeta` is the relative vorticity and :math:`f` the
 Coriolis parameter, :math:`\hat{\mathbf{k}}` is the vertical unity
 vector, :math:`\rm{KE}` is the kinetic energy, :math:`\Phi` is the geopotential, and
 :math:`\Pi` the Exner function
-(:math:`\Pi = C_p (p/p_c)^\kappa` with :math:`p_c = 10^5` Pa. Primed variables
+(:math:`\Pi = C_p (p/p_c)^\kappa` with :math:`p_c = 10^5` Pa). Primed variables
 correspond to anomaly from the resting, uniformly
 stratified state.
 
@@ -262,7 +262,7 @@ configuration are:
         tRef=295.2, 295.5, 295.9, 296.3, 296.7, 297.1, 297.6, 298.1, 298.7, 299.3,
              300.0, 300.7, 301.9, 304.1, 308.0, 315.1, 329.5, 362.3, 419.2, 573.8,
 
-   set reference values for potential temperature (in Kelvin units) at
+   set reference values for potential temperature (in kelvins) at
    each model level. The entries are ordered like model level, from
    surface up to the top. Density is calculated from anomalies at each
    level evaluated with respect to the reference values set here.
@@ -472,7 +472,7 @@ configuration are:
 
    Sets the time interval, in seconds, between two consecutive “temporary”
    pickups (“checkpoint frequency”) to one month. The “temporary” pickup
-   file name is alternatively “ckptA” and “ckptB” ; these pickups (as
+   file name is alternatively “ckptA” and “ckptB”; these pickups (as
    opposed to the permanent ones) are designed to be over-written by the
    model as the simulation progresses.
 
@@ -482,7 +482,7 @@ configuration are:
 
         dumpFreq=2592000.,
 
-   Set the frequency (in seconds) for the snap-shot output to 1 month.
+   Set the frequency (in seconds) for the snapshot output to 1 month.
 
 -  Line 51,
 
@@ -532,7 +532,7 @@ configuration are:
        #topoFile='topo.cs.bin'
 
    This commented out line would set the file name of a 2-D
-   orography file, in meters units, to ``topo.cs.bin``.
+   orography file, in units of meters, to ``topo.cs.bin``.
 
 Other lines in the file :filelink:`input/data <verification/tutorial_held_suarez_cs/input/data>`
 are standard values that are
@@ -609,7 +609,7 @@ parameters that are significant for this configuration are:
         nShapT=0,
         nShapUV=4,
 
-   These lines select the order of the Shapiro filter for active tracer
+   These lines select the order of the Shapiro filter for active tracers
    (:math:`\theta` and :math:`q`) and momentum (:math:`u,v`)
    respectively. In this case, no filter is applied to active tracers.
    Regarding the momentum, this sets the integer parameter :math:`n` to
@@ -623,7 +623,7 @@ parameters that are significant for this configuration are:
         nShapUVPhys=4,
 
    This line selects the order of the physical space filter (filter
-   function S2g, see :numref:`shapiro_filter`, that applies to
+   function S2g, see :numref:`shapiro_filter`) that applies to
    :math:`u,v`. The difference :varlink:`nShapUV` - :varlink:`nShapUVPhys` corresponds to
    the order of the computational filter (filter function S2c, see :numref:`shapiro_filter`).
 
@@ -635,9 +635,9 @@ parameters that are significant for this configuration are:
        #Shap_uvtau=1800.,
 
    These commented lines would have set the time scale of the filter (in
-   seconds), for :math:`\theta` and :math:`q` and for :math:`u` and
-   :math:`v` respectively, to 5400 s (90 min) and 1800 s (30 min)
-   respectively. Without explicitly setting those timescales, the
+   seconds), for :math:`\theta`, :math:`q` and for :math:`u`,
+   :math:`v` respectively, to 5400 s (90 min) and 1800 s (30 min).
+   Without explicitly setting those timescales, the
    default is used, which corresponds to the model timestep.
 
 
@@ -693,7 +693,7 @@ Four lines are customized in this file for the current experiment
         nSx=6, 
 
    sets the number of tiles in the :math:`x`-direction, for the model domain
-   decomposition. In this simple case (one processor and one tile per
+   decomposition. In this simple case (single processor, with one tile per
    face), this number corresponds to the total number of faces.
 
 -  Line 55,
@@ -765,7 +765,7 @@ that are used for this configuration are
 File :filelink:`code/CPP_OPTIONS.h <verification/tutorial_held_suarez_cs/code/CPP_OPTIONS.h>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This file uses standard default except for:
+This file uses the standard default except for:
 
 ::
 
@@ -781,22 +781,20 @@ Other files relevant to this experiment are
 
 -  :filelink:`code/apply_forcing.F <verification/tutorial_held_suarez_cs/code/apply_forcing.F>`
 
--  ``input/grid\_cs32.face00[n].bin``, with :math:`n=1,2,3,4,5,6`
+-  ``input/grid_cs32.face00[n].bin``, with :math:`n=1,2,3,4,5,6`
 
-contain the code customizations and binary input files for this
-experiments. Below we describe the customizations to these files
-associated with this experiment.
+contain the code customizations and binary input files for this experiment. 
 The file :filelink:`apply_forcing.F <verification/tutorial_held_suarez_cs/code/apply_forcing.F>`
 contains four subroutines that
-calculate the forcing terms (right-hand side term) in the momentum
+calculate the forcing terms (i.e., right-hand side terms) in the momentum
 equation :eq:`eg-hs-global_forcing_fv`, :varlink:`EXTERNAL_FORCING_U`
 and :varlink:`EXTERNAL_FORCING_V` and in the potential temperature equation
 :eq:`eg-hs-global_forcing_ft`, :varlink:`EXTERNAL_FORCING_T`. The
 water-vapor forcing subroutine (:varlink:`EXTERNAL_FORCING_S`) is left
 empty for this experiment.
-The grid-files ``input/grid\_cs32.face00[n].bin``, with
+The grid-files ``input/grid_cs32.face00[n].bin``, with
 :math:`n=1,2,3,4,5,6`, are binary files (direct-access, big-endian
-64 bits real) that contains all the cubed-sphere grid lengths, areas
+64 bit reals) that contains all the cubed-sphere grid lengths, areas
 and grid-point positions, with one file per face. Each file contains
 18 2-D arrays (dimension 33 :math:`\times` 33) that correspond to the
 model variables: *XC YC DXF DYF RA XG YG DXV DYU RAZ DXC DYC RAW RAS

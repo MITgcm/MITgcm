@@ -46,7 +46,7 @@ In general, the tracer problem we want to solve can be written
    :label: eg-adv-gyre-generic-tracer
 
 where :math:`C` is the tracer concentration in a model cell, :math:`U=(u,v,w)`
-is the model three-dimensional flow field. In
+is the model 3-D flow field. In
 :eq:`eg-adv-gyre-generic-tracer`, :math:`S` represents
 source, sink and tendency terms not associated with advective transport.
 Example of terms in :math:`S` include (i) air-sea fluxes for a dissolved
@@ -110,7 +110,7 @@ Comparison of different advection schemes
 
    Dye evolving in a double gyre with different advection schemes. The
    figure shows the dye concentration one year after injection into a
-   single grid cell near the left boundary. Stream lines are also shown.
+   single grid cell near the left boundary.
 
 .. figure:: figs/adv_gyre_stats.png
    :width: 100%

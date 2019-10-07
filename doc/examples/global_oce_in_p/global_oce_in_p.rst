@@ -622,7 +622,7 @@ configuration are
         surfQFile      ='shi_qnet.bin',
         EmPmRFile      ='shi_empmr.bin',
 
-   This line specifies the names of the files holding the bathymetry
+   These lines specify the names of the files holding the bathymetry
    data set, the time-independent geopotential height anomaly at the
    bottom, initial conditions of temperature and salinity, wind stress
    forcing fields, sea surface temperature climatology, heat flux, and
@@ -681,9 +681,10 @@ highest index to the surface layer.
 Files ``input/trenberth_taux.bin`` and ``input/trenberth_tauy.bin``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The files ``input/trenberth_taux.bin`` and  ``input/trenberth_tauy.bin`` specify twelve
-2-D (:math:`x,y,t`) maps of zonal and meridional wind stress
-values, :math:`\tau_{x}` and :math:`\tau_{y}`, respectively.  These are monthly mean
+The files ``input/trenberth_taux.bin`` and  ``input/trenberth_tauy.bin`` contain twelve
+2-D (:math:`x,y`) maps of zonal and meridional wind stress
+values, :math:`\tau_{x}` and :math:`\tau_{y}`, respectively, in 3-D arrays (:math:`x,y,t`).
+These are monthly mean
 values from Trenberth et al. (1990) :cite:`trenberth:90`, units of N m\ :sup:`-2`.
 
 File ``input/lev_sst.bin``
@@ -691,7 +692,7 @@ File ``input/lev_sst.bin``
 
 The file ``input/lev_sst.bin`` contains twelve monthly surface temperature
 climatologies from Levitus and Boyer (1994b) :cite:`levitus:94b` in a 3-D
-array (:math:`x,y,t`).
+arrays (:math:`x,y,t`).
 
 Files ``input/shi_qnet.bin`` and ``input/shi_empmr.bin``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

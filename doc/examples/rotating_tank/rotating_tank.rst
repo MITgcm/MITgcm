@@ -179,9 +179,9 @@ are
   This line sets the vertical grid spacing between each of 29
   :math:`z`-coordinate lines in the discrete grid to 0.005 m (= 5 mm).
 
- - Line 64,
+- Line 64,
 
-   ::
+  ::
 
      bathyFile='bathyPolR.bin',
 
@@ -240,9 +240,9 @@ customizations for this experiment.
 File ``input/thetaPolR.bin``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This file specifies a 3-D :math:`x,y,z` 
+This file specifies a 3-D :math:`(x,y,z)` 
 map of initial values of :math:`\theta` in degrees Celsius.  This particular 
-experiment is set to random values x around 20 :sup:`o`\ C to provide initial 
+experiment is set to random values around 20 :sup:`o`\ C to provide initial 
 perturbations.
 
 File ``input/bathyPolR.bin``

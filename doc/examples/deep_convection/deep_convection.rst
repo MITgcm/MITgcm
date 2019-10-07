@@ -22,11 +22,11 @@ exist during a period of oceanic deep convection. It is
 
 -  doubly-periodic with cubic geometry
 
--  has 50 m resolution in :math:`x, y, z`
+-  discretized with 50 m resolution in :math:`x, y, z`
 
 -  Cartesian
 
--  is on an :math:`f`-plane
+-  on an :math:`f`-plane
 
 -  using a linear equation of state
 
@@ -40,7 +40,7 @@ periodic.
 The experiment has 20 levels in the vertical, each of equal thickness
 :math:`\Delta z =` 50 m (the horizontal resolution is also 50 m). The
 fluid is initially unstratified with a uniform reference potential
-temperature :math:`\theta =` 20 :math:`^o`\ C. The equation of state
+temperature :math:`\theta =` 20 :sup:`o`\ C. The equation of state
 used in this experiment is linear
 
 .. math::
@@ -55,7 +55,7 @@ which is implemented in the model as a density anomaly equation
 
 with :math:`\rho_{0}=1000\,{\rm kg\,m}^{-3}` and
 :math:`\alpha_{\theta}=2\times10^{-4}\,{\rm degrees}^{-1}`. Integrated
-forward in this configuration the model state variable **theta** is
+forward in this configuration, the model state variable :varlink:`theta` is
 equivalent to either in-situ temperature, :math:`T`, or potential
 temperature, :math:`\theta`. For consistency with other examples, in
 which the equation of state is non-linear, we use :math:`\theta` to
@@ -96,7 +96,7 @@ Equations solved
 The model is configured in non-hydrostatic form, that is, all terms in
 the Navier Stokes equations are retained and the pressure field is
 found, subject to appropriate boundary conditions, through inversion of
-a three-dimensional elliptic equation.
+a 3-D elliptic equation.
 
 The implicit free surface form of the pressure equation described in
 Marshall et. al (1997) :cite:`marshall:97a` is employed. A
@@ -164,7 +164,7 @@ the momentum equations and continuity (see :numref:`finding_the_pressure_field`)
 Discrete numerical configuration
 --------------------------------
 
-The domain is discretised with a uniform grid spacing in each direction.
+The domain is discretized with a uniform grid spacing in each direction.
 There are 64 grid cells in directions :math:`x` and :math:`y` and 20
 vertical levels thus the domain comprises a total of just over 80,000
 gridpoints.
@@ -234,7 +234,7 @@ dimensions.
 
    ::
 
-        sNx=64, 
+        sNx=50, 
 
    this line sets the lateral domain extent in grid points for the axis
    aligned with the :math:`x`-coordinate.
@@ -243,7 +243,7 @@ dimensions.
 
    ::
 
-        sNy=64, 
+        sNy=50, 
 
    this line sets the lateral domain extent in grid points for the axis
    aligned with the :math:`y`-coordinate.
@@ -252,7 +252,7 @@ dimensions.
 
    ::
 
-        Nr=20,   
+        Nr=50,   
 
    this line sets the vertical domain extent in grid points.
 
@@ -519,7 +519,7 @@ configuration are
        surfQfile='Qsurf.bin'
 
    This line specifies the name of the file from which the surface heat
-   flux is read. This file is a two-dimensional (:math:`x,y`) map. It is
+   flux is read. This file is a 2-D (:math:`x,y`) map. It is
    assumed to contain 64-bit binary numbers giving the value of
    :math:`Q` (W m\ :math:`^2`) to be applied in each surface grid cell,
    ordered with the :math:`x` coordinate varying fastest. The points are
@@ -543,7 +543,7 @@ customizations for this experiment.
 File ``input/Qsurf.bin``
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-The file ``input/Qsurf.bin`` specifies a two-dimensional (:math:`x,y`) map
+The file ``input/Qsurf.bin`` specifies a 2-D (:math:`x,y`) map
 of heat flux values where
 :math:`Q = Q_o \times ( 0.5 + \mbox{random number between 0 and 1})`.
 
