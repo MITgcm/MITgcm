@@ -43,15 +43,15 @@ def contourf(*arguments, **kwargs):
         x = arguments[0].flatten()
         y = arguments[1].flatten()
 
-        # Create the Triangulation; 
-        # no triangles so Delaunay triangulation created. 
+        # Create the Triangulation;
+        # no triangles so Delaunay triangulation created.
         triang = tri.Triangulation(x, y)
         ntri = triang.triangles.shape[0]
 
         # Mask off unwanted triangles.
         mask = np.where(data[triang.triangles].prod(axis=1)==0., 1, 0)
         triang.set_mask(mask)
-            
+
         if arglen == 3:
             h = plt.tricontourf(triang, data, **kwargs)
         elif arglen == 4:
@@ -110,15 +110,15 @@ def contour(*arguments, **kwargs):
         x = arguments[0].flatten()
         y = arguments[1].flatten()
 
-        # Create the Triangulation; 
-        # no triangles so Delaunay triangulation created. 
+        # Create the Triangulation;
+        # no triangles so Delaunay triangulation created.
         triang = tri.Triangulation(x, y)
         ntri = triang.triangles.shape[0]
 
         # Mask off unwanted triangles.
         mask = np.where(data[triang.triangles].prod(axis=1)==0., 1, 0)
         triang.set_mask(mask)
-                        
+
         if arglen == 3:
             h = plt.tricontour(triang, data, **kwargs)
         elif arglen == 4:
@@ -127,7 +127,7 @@ def contour(*arguments, **kwargs):
             print("wrong number of arguments")
             print("need at least 3 or 4 arguments")
             sys.exit(__doc__)
-        
+
         # show the triangles for debugging
         #plt.triplot(triang, color='0.7')
 
@@ -143,17 +143,17 @@ def flat(fld, **kwargs):
     only fields with 2 to 5 dimensions are allowed"""
 
     ndims = len(fld.shape)
-    if ndims == 2: 
+    if ndims == 2:
         gfld = _flat2D(fld, **kwargs)
-    elif ndims == 3: 
-        gfld = [ _flat2D(fld[a,:,:], **kwargs) 
-                 for a in range(fld.shape[0]) ] 
-    elif ndims == 4: 
-        gfld = [ [ _flat2D(fld[a,b,:,:], **kwargs) 
-                   for b in range(fld.shape[1]) ] 
+    elif ndims == 3:
+        gfld = [ _flat2D(fld[a,:,:], **kwargs)
                  for a in range(fld.shape[0]) ]
-    elif ndims == 5: 
-        gfld = [ [ [ _flat2D(fld[a,b,c,:,:], **kwargs) 
+    elif ndims == 4:
+        gfld = [ [ _flat2D(fld[a,b,:,:], **kwargs)
+                   for b in range(fld.shape[1]) ]
+                 for a in range(fld.shape[0]) ]
+    elif ndims == 5:
+        gfld = [ [ [ _flat2D(fld[a,b,c,:,:], **kwargs)
                      for c in range(fld.shape[2]) ]
                    for b in range(fld.shape[1]) ]
                  for a in range(fld.shape[0]) ]
@@ -172,7 +172,7 @@ def _flat2D(fld, center='Atlantic'):
     nx = fld.shape[1]
     ny = fld.shape[0]
     n = ny//nx//4
-    
+
     # eastern and western hemispheres
     eastern=np.concatenate((fld[:n*nx,:],fld[n*nx:2*(n*nx)]),axis=1)
     tmp    = fld[2*(n*nx)+nx:,        ::-1]
@@ -198,12 +198,12 @@ def _flat2D(fld, center='Atlantic'):
     else:
         gfld = np.concatenate( ( np.concatenate((western,arcticw)),
                                  np.concatenate((eastern,arctice)) ), axis=1)
-    
+
     return gfld
 
 def _mds2D(fld,center='Atlantic'):
     """convert global 2D 'flat field' to mds 2D data"""
-    
+
     ni = fld.shape[-1]
     nj = fld.shape[-2]
     nx = ni//4
@@ -228,21 +228,21 @@ def _mds2D(fld,center='Atlantic'):
     return mdsfld
 
 def mds(fld,center='Atlantic'):
-    """convert global 'flat field in mds data;
+    """convert global 'flat' field into mds data;
     only fields with 2 to 5 dimensions are allowed"""
 
     ndims = len(fld.shape)
-    if ndims == 2: 
+    if ndims == 2:
         mdsfld = _mds2D(fld, **kwargs)
-    elif ndims == 3: 
-        mdsfld = [ _mds2D(fld[a,:,:], **kwargs) 
-                 for a in range(fld.shape[0]) ] 
-    elif ndims == 4: 
-        mdsfld = [ [ _mds2D(fld[a,b,:,:], **kwargs) 
-                   for b in range(fld.shape[1]) ] 
+    elif ndims == 3:
+        mdsfld = [ _mds2D(fld[a,:,:], **kwargs)
                  for a in range(fld.shape[0]) ]
-    elif ndims == 5: 
-        mdsfld = [ [ [ _mds2D(fld[a,b,c,:,:], **kwargs) 
+    elif ndims == 4:
+        mdsfld = [ [ _mds2D(fld[a,b,:,:], **kwargs)
+                   for b in range(fld.shape[1]) ]
+                 for a in range(fld.shape[0]) ]
+    elif ndims == 5:
+        mdsfld = [ [ [ _mds2D(fld[a,b,c,:,:], **kwargs)
                      for c in range(fld.shape[2]) ]
                    for b in range(fld.shape[1]) ]
                  for a in range(fld.shape[0]) ]
@@ -252,12 +252,12 @@ def mds(fld,center='Atlantic'):
         sys.exit(__doc__)
 
     mdsfld = np.array(mdsfld)
-    
+
     return mdsfld
 
 def faces(fld):
     """convert mds multidimensional data into a list with 6 faces"""
-    
+
     ndim = len(fld.shape)
     if ndim == 2:
         f = _faces2D(fld)
@@ -307,7 +307,7 @@ def faces(fld):
 def faces2mds(ff):
     """convert 6 faces to mds 2D data,
     inverse opertation of llc.faces"""
-    
+
     ndims = len(ff[0].shape)
     shp = list(ff[0].shape)
     shp[-2]=2*ff[0].shape[-2]
@@ -318,11 +318,11 @@ def faces2mds(ff):
 
 def _faces2D(fld):
     """convert mds 2D data into a list with 6 faces"""
-    
+
     nx = fld.shape[-1]
     ny = fld.shape[-2]
     n = ny//nx//4
-    
+
     # divide into faces
     f = []
     f.append(fld[:n*nx,:])
@@ -340,17 +340,11 @@ def _faces2D(fld):
 
 
 def _sqCoord(a):
-    b = np.copy(np.squeeze(a))
-    # it appears to be important, that here we do not mask the array
-    # but reset zeros to NaN (only used for coordinate arrays!!!)
-#    b = np.ma.masked_where(b==0., b)
-#    b[b==0.] = np.NaN
+    b = np.squeeze(a)
     return b
 
 def _sqData(a):
     b = np.copy(np.squeeze(a))
-    # it appears to be important, that here we do not mask the array
-    # but reset zeros to NaN (only used for coordinate arrays!!!)
     b = np.ma.masked_where(b==0., b)
     b = np.ma.masked_where(np.isnan(b), b)
     return b
@@ -398,14 +392,14 @@ def pcol(*arguments, **kwargs):
 
     if mapit:
         # not all projections work, catch few of these here
-        if ( (m.projection == 'hammer') | 
-             (m.projection == 'robin')  | 
-             (m.projection == 'moll')   | 
+        if ( (m.projection == 'hammer') |
+             (m.projection == 'robin')  |
+             (m.projection == 'moll')   |
              (m.projection == 'cea') ):
             sys.exit("selected projection '"+m.projection
                      +"' is not supported")
 
-        # these projections use simple code for the Arctic face; 
+        # these projections use simple code for the Arctic face;
         # all others require more complicted methods
         stereographicProjection = (m.projection == 'npaeqd')  | \
                                   (m.projection == 'spaeqd')  | \
@@ -417,7 +411,7 @@ def pcol(*arguments, **kwargs):
     else:
         stereographicProjection = False
 
-            
+
     xg = arguments[0]
     yg = arguments[1]
     data = arguments[2]
@@ -425,7 +419,7 @@ def pcol(*arguments, **kwargs):
     nx = data.shape[-1]
     ny = data.shape[-2]
     n = ny//nx//4
-    
+
     # color range
     cax = [data.min(),data.max()]
     # overwrite if necessary
@@ -453,7 +447,7 @@ def pcol(*arguments, **kwargs):
 #            for j in range(nx):
 #                if f0[0][t][j,i]==0:f0[0][t][j,239]
 #                if f0[1][t][j,i]==0:f0[1][t][j,239]
-        
+
     # find the missing corners by interpolation
     fo = []
     fo.append( (f0[0][0][-1,0]+f0[0][2][-1,0]+f0[0][4][-1,0])/3. )
@@ -483,13 +477,13 @@ def pcol(*arguments, **kwargs):
             if k==2: tmp = np.atleast_2d(np.append(f0[k][3+tp][:1,::-1],fe[k]))
             else:    tmp = np.atleast_2d(np.append(fe[k],f0[k][3+tp][:1,::-1]))
             f[k][t] = np.concatenate((f[k][t],tmp.transpose()),axis=1)
-        
+
     # we do not really have a sixth face so we overwrite the southernmost row
     # of face 4 and 5 by a hack:
     for t in [3,4]:
         f[0][t][:,-1] = f[0][t][:,-2]
         f[1][t][:,-1] = -90. # degree = south pole
- 
+
     # make sure that only longitudes of one sign are on individual lateral faces
     i0 = f[0][3]<0.
     f[0][3][i0] = f[0][3][i0]+360.
@@ -500,13 +494,13 @@ def pcol(*arguments, **kwargs):
         else:     x, y =   _sqCoord(f[0][t]), _sqCoord(f[1][t])
         ph.append(plt.pcolormesh(x,y,_sqData(f[2][t]), **kwargs))
     # plot more lateral faces to be able to select the longitude range later
-    for t in [1,3,4]: 
+    for t in [1,3,4]:
         f[0][t] = f[0][t]+ (-1)**t*360.
         if mapit: x, y = m(_sqCoord(f[0][t]), _sqCoord(f[1][t]))
         else:     x, y =   _sqCoord(f[0][t]), _sqCoord(f[1][t])
         ph.append(plt.pcolormesh(x,y,_sqData(f[2][t]), **kwargs))
 
-    # Arctic face is special, because of the rotation of the grid by 
+    # Arctic face is special, because of the rotation of the grid by
     # rangle = 7deg (seems to be the default)
     t = 2
 
@@ -530,14 +524,10 @@ def pcol(*arguments, **kwargs):
         else:     x, y =   _sqCoord(xx),_sqCoord(yy)
         ph.append(plt.pcolormesh(x,y,_sqData(zz), **kwargs))
         # second half of Arctic tile
-        nn = nx//2-1
+        nn = nx//2
         xx = np.copy(f[0][t][nn:,:])
         yy = np.copy(f[1][t][nn:,:])
         zz = np.copy(f[2][t][nn:,:])
-        # need to mask some zz-values so that there is no erroneous wrap-around
-        zz = np.ma.masked_where(xx>rangle,zz)
-#       cannot have NaN's in coordinate arrays
-#        xx = np.where(xx>rangle,np.nan,xx)
         #
         if mapit: x, y = m(_sqCoord(xx),_sqCoord(yy))
         else:     x, y =   _sqCoord(xx),_sqCoord(yy)
@@ -556,4 +546,3 @@ def pcol(*arguments, **kwargs):
         im.set_clim(cax[0],cax[1])
 
     return ph
-
