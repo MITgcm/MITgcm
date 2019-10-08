@@ -1161,7 +1161,7 @@ is currently produced with one file per processor. This means the individual til
 need to be stitched together to create a single
 `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file that spans the model domain. The script
 :filelink:`utils/python/MITgcmutils/scripts/gluemncbig` can do
-this efficiently from the command line.  If you have install the MITgcmutils package,
+this efficiently from the command line.  If you have installed the MITgcmutils package,
 a copy of gluemncbig should be on your path.  For usage information, see
 :numref:`gluemncbig`.
 
@@ -2753,4 +2753,3 @@ produces a more coding-oriented set of print statements (e.g., entering and exit
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`maxLengthPrt1D`              | EEPARMS   | 65                                               | maximum number of 1D array elements to print to standard output                                         |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-
