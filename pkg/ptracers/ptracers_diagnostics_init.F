@@ -143,7 +143,7 @@ C--    add diagnostics for Forcing and Adams-Bashforth tendency increment
 
        diagName  = 'Tp_g'//diagSufx
        WRITE(diagTitle,'(2A)') locName(1:ilnb),
-     &          'total transport tendency (before gchem_forcing_sep)'
+     &         ' total transport tendency (before gchem_forcing_sep)'
        diagCode  = 'SMR     MR      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
