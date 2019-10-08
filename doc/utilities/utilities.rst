@@ -78,6 +78,8 @@ llc
 gluemncbig
 ----------
 
-This command line script is part of MITgcmutils and provides a convenient method for stitching together NetCDF files into a single file covering the model domain. Be careful though - the resulting files can get very large.
+This command line script is part of MITgcmutils and provides a convenient method
+for stitching together NetCDF files into a single file covering the model domain.
+Be careful though - the resulting files can get very large.
 
-.. program-output:: gluemncbig --help
+.. program-output:: ../utils/python/MITgcmutils/scripts/gluemncbig --help
