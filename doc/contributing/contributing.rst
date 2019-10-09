@@ -1463,7 +1463,10 @@ To do this you will need a working python installation with the following module
 
  - sphinx
  - sphinxcontrib-bibtex
+ - sphinxcontrib-programoutput
  - sphinx_rtd_theme
+ - numpy
+ - matplotlib
 
 Once these modules are installed you can build the html version of the manual by running ``make html`` in the ``doc`` directory. 
 

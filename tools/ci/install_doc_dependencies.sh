@@ -6,4 +6,3 @@ sudo apt-get install texlive-fonts-recommended
 sudo apt-get install latexmk
 pip install -r doc/requirements.txt
 pip install sphinx_rtd_theme
-pip install utils/python/MITgcmutils[plot]
