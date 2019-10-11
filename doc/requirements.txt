@@ -2,4 +2,3 @@ sphinx
 sphinxcontrib-bibtex
 sphinxcontrib-programoutput
 numpy
-matplotlib
