@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o doc/examples:
+  - Convert remaining old doc tutorials from latex to rst files and add them
+    to current MITgcm documentation.
 o pkg/ptracers:
   - new diagnostics Tp_gTr01, ... for ptracer total transport tendencies
     (before gchem_forcing_sep); this includes advection and diffusion terms,

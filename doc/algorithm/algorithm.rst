@@ -1635,6 +1635,7 @@ Mom Diagnostics
     VISrE_Vm| 15 |WV      LR      |m^4/s^2         |Vertical   Viscous Flux of V momentum (Explicit part)
     VISrI_Vm| 15 |WV      LR      |m^4/s^2         |Vertical   Viscous Flux of V momentum (Implicit part)
 
+.. _vec_invar_mom_eqs:
 
 Vector invariant momentum equations
 ===================================
