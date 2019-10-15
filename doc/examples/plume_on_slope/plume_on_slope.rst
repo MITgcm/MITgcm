@@ -11,7 +11,6 @@ Gravity Plume On a Continental Slope
 
        Temperature after 23 hours of cooling. The cold dense water is mixed with ambient water as it accelerates down the slope and hence is warmer than the unmixed plume.
 
-
 An important test of any ocean model is the ability to represent the
 flow of dense fluid down a slope. One example of such a flow is a
 non-rotating gravity plume on a continental slope, forced by a limited
@@ -22,7 +21,7 @@ radiate transients at the deep water end. (Dense flow down a slope can
 also be forced by a dense inflow prescribed on the continental shelf;
 this configuration is being implemented by the DOME (Dynamics of
 Overflow Mixing and Entrainment) collaboration to compare solutions in
-different models). 
+different models).
 
 The fluid is initially unstratified. The surface buoyancy loss
 :math:`B_0` (dimensions of L\ :math:`^2`\ T\ :math:`^{-3}`) over a
@@ -92,11 +91,10 @@ Configuration
 -------------
 
 The topography, spatial grid, forcing and initial conditions are all
-specified in binary data files generated using matlab script 
+specified in binary data files generated using matlab script
 :filelink:`verification/tutorial_plume_on_slope/input/gendata.m` and detailed in :numref:`tut_plume_on_slope_config`. Other model
-parameters are specified in :filelink:`input/data <verification/tutorial_plume_on_slope/input/data>` and 
+parameters are specified in :filelink:`input/data <verification/tutorial_plume_on_slope/input/data>` and
 :filelink:`input/data.obcs <verification/tutorial_plume_on_slope/input/data.obcs>` and detailed in :numref:`tut_plume_on_slope_mod_parms`.
-
 
 .. _tut_plume_on_slope_config:
 
@@ -111,7 +109,7 @@ Binary input data
 
        Horizontal grid spacing, :math:`\Delta x`, in the across-slope direction for the gravity plume experiment.
 
-|  
+|
 
    .. figure:: figs/Depth.png
        :width: 80%
@@ -121,7 +119,7 @@ Binary input data
 
        Topography, :math:`h(x)`, used for the gravity plume experiment.
 
-|  
+|
 
    .. figure:: figs/Qsurf.png
        :width: 80%
@@ -130,8 +128,6 @@ Binary input data
        :name: Q-plume-on-slope
 
        Upward surface heat flux, :math:`Q(x)`, used as forcing in the gravity plume experiment.
-
-
 
 The domain is :math:`200` m deep and :math:`6.4` km across. Uniform
 resolution of :math:`60\times3^1/_3` m is used in the vertical and
@@ -258,7 +254,6 @@ Model parameters
   +-----------------------+---------------------------------------------------------+----------------------------------------------+
   | :math:`\Delta x`      |  13.3333 - 39.5 m                                       | horizontal grid spacing                      |
   +-----------------------+---------------------------------------------------------+----------------------------------------------+
-  
 
 The model parameters (:numref:`tut_plume_parm_table`) are specified in
 :filelink:`input/data <verification/tutorial_plume_on_slope/input/data>`

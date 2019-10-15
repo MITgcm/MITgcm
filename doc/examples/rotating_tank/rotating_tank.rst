@@ -13,12 +13,10 @@ vertical levels of 0.5 cm each.  This is a typical laboratory setup for
 illustrating principles of GFD, as well as for a laboratory data
 assimilation project.
 
-
 example illustration from GFD lab here
 
 Equations Solved
 ----------------
-
 
 Discrete Numerical Configuration
 --------------------------------
@@ -32,9 +30,7 @@ radial rows to represent the central of the annulus.  Vertically the
 model is configured with 29 layers of uniform 0.5 cm
 thickness.
 
-
 something about heat flux
-
 
 .. _sec_eg_tank_code_config:
 
@@ -52,7 +48,7 @@ directory :filelink:`verification/rotating_tank/`.  The experiment files
  - :filelink:`verification/rotating_tank/code/CPP_OPTIONS.h`
  - :filelink:`verification/rotating_tank/code/SIZE.h`
 
-contain the code customizations and parameter settings for this 
+contain the code customizations and parameter settings for this
 experiments. Below we describe the customizations
 to these files associated with this experiment.
 
@@ -63,18 +59,16 @@ File :filelink:`input/data <verification/rotating_tank/input/data>`
     :linenos:
     :caption: verification/rotating_tank/input/data
 
-This file specifies the main parameters 
+This file specifies the main parameters
 for the experiment. The parameters that are significant for this configuration
 are
 
-
-- Lines 9-10, 
+- Lines 9-10,
 
   ::
 
       viscAh=5.0E-6,
       viscAz=5.0E-6,
-
 
   These lines set the Laplacian friction coefficient in the horizontal
   and vertical, respectively.  Note that they are several orders of
@@ -90,7 +84,6 @@ are
       diffKhS=1.0E-6,
       diffKzS=1.0E-6,
 
-
   These lines set horizontal and vertical diffusion coefficients for
   temperature and salinity.  Similar to the friction coefficients, the
   values are a couple of orders of magnitude less than most
@@ -100,7 +93,7 @@ are
 
   ::
 
-      f0=0.5, 
+      f0=0.5,
 
   this line sets the Coriolis term, and represents a tank spinning at about 2.4 rpm.
 
@@ -108,8 +101,8 @@ are
 
   ::
 
-      rigidLid=.TRUE., 
-      implicitFreeSurface=.FALSE., 
+      rigidLid=.TRUE.,
+      implicitFreeSurface=.FALSE.,
 
   These lines activate  the rigid lid formulation of the surface
   pressure inverter and suppress the implicit free surface form
@@ -128,7 +121,6 @@ are
   temperature fields as indicated below, and other variables will be
   initialized to their defaults.
 
-
 - Line 43,
 
   ::
@@ -146,7 +138,7 @@ are
 
      usingCylindricalGrid=.TRUE.,
 
-  This line requests that the simulation be performed in a 
+  This line requests that the simulation be performed in a
   cylindrical coordinate system.
 
 - Line 55,
@@ -155,7 +147,7 @@ are
 
      dXspacing=3,
 
-  This line sets the azimuthal grid spacing between each 
+  This line sets the azimuthal grid spacing between each
   :math:`x`-coordinate line
   in the discrete grid. The syntax indicates that the discrete grid
   should be comprised of 120 grid lines each separated by 3\ :sup:`o`.
@@ -165,7 +157,6 @@ are
   ::
 
      dYspacing=0.01,
-
 
   This line sets the radial cylindrical grid spacing between each
   :math:`a`-coordinate line in the discrete grid to 1 cm.
@@ -188,13 +179,13 @@ are
   This line specifies the name of the file from which the domain
   'bathymetry' (i.e., tank depth) is read. This file is a 2-D
   (:math:`a,\phi`) map of
-  depths. This file is assumed to contain 64-bit binary numbers 
-  giving the depth of the model at each grid cell, ordered with the :math:`\phi` 
+  depths. This file is assumed to contain 64-bit binary numbers
+  giving the depth of the model at each grid cell, ordered with the :math:`\phi`
   coordinate varying fastest. The points are ordered from low coordinate
   to high coordinate for both axes.  The units and orientation of the
   depths in this file are the same as used in the MITgcm code. In this
   experiment, a depth of 0 m indicates an area outside of the tank
-  and a depth of -0.145 m indicates the tank itself. 
+  and a depth of -0.145 m indicates the tank itself.
 
 - Line 63,
 
@@ -202,11 +193,11 @@ are
 
      hydrogThetaFile='thetaPol.bin',
 
-  This line specifies the name of the file from which the initial values 
+  This line specifies the name of the file from which the initial values
   of temperature
   are read. This file is a 3-D
-  (:math:`x,y,z`) map and is enumerated and formatted in the same manner as the 
-  bathymetry file. 
+  (:math:`x,y,z`) map and is enumerated and formatted in the same manner as the
+  bathymetry file.
 
 - Lines 65 and 66
 
@@ -219,11 +210,8 @@ are
   and exterior walls of the tank -- typically taken to be icewater on
   the inside and room temperature on the outside.
 
-
-
 Other lines in the file :filelink:`verification/rotating_tank/input/data` are standard values
 that are described in :numref:`customize_model`.
-
 
 File - :filelink:`input/data.pkg <verification/rotating_tank/input/data.pkg>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -240,15 +228,15 @@ customizations for this experiment.
 File ``input/thetaPolR.bin``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This file specifies a 3-D :math:`(x,y,z)` 
-map of initial values of :math:`\theta` in degrees Celsius.  This particular 
-experiment is set to random values around 20 :sup:`o`\ C to provide initial 
+This file specifies a 3-D :math:`(x,y,z)`
+map of initial values of :math:`\theta` in degrees Celsius.  This particular
+experiment is set to random values around 20 :sup:`o`\ C to provide initial
 perturbations.
 
 File ``input/bathyPolR.bin``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This file specifies a 2-D :math:`(x,y)` 
+This file specifies a 2-D :math:`(x,y)`
 map of depth values. For this experiment values are either
 0 m  or -delZ m, corresponding respectively to outside or inside of
 the tank. The file contains a raw binary stream of data that is enumerated
@@ -262,7 +250,6 @@ File :filelink:`code/SIZE.h <verification/rotating_tank/code/SIZE.h>`
     :caption: verification/rotating_tank/code/SIZE.h
 
 Two lines are customized in this file for the current experiment
-
 
 - Line 45,
 
@@ -278,17 +265,15 @@ Two lines are customized in this file for the current experiment
 
   ::
 
-      sNy=31, 
+      sNy=31,
 
   this line sets
   the lateral domain extent in grid points for the
   axis aligned with the :math:`y`-coordinate.
-
 
 File :filelink:`code/CPP_OPTIONS.h <verification/rotating_tank/code/CPP_OPTIONS.h>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This file uses standard default values and does not contain
 customizations for this experiment.
-
 

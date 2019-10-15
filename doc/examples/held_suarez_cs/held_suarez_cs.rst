@@ -63,7 +63,7 @@ Held and Suarez (1994) :cite:`held-suar:94` that is applied to the fluid:
 .. math::
    {\cal F}_{\theta} = -k_{\theta}(\varphi,p)[\theta-\theta_{eq}(\varphi,p)]
   :label: eg-hs-global_forcing_ft
- 
+
 where :math:`\vec{\cal F}_\mathbf{v}`, :math:`{\cal F}_{\theta}`, are
 the forcing terms in the zonal and meridional momentum and in the
 potential temperature equations, respectively. The term
@@ -90,12 +90,12 @@ scale :math:`k_{\theta}` are set to:
 
 .. math::
    \theta_{eq}(\varphi,p^*)  = \max \{ 200 (P^{0}_{s}/p^*)^\kappa,
-   \nonumber \hspace{2mm} 315 - \Delta T_y~\sin^2(\varphi) 
+   \nonumber \hspace{2mm} 315 - \Delta T_y~\sin^2(\varphi)
      - \Delta \theta_z \cos^2(\varphi) \log(p^*/P^{0}_s) \}
    :label: eg-hs-define_Teq
 
 .. math::
-   k_{\theta}(\varphi,p^*) = 
+   k_{\theta}(\varphi,p^*) =
    k_a + (k_s -k_a)~\cos^4(\varphi)~\max \{ 0,\nonumber \hspace{2mm} (p^*/P^{0}_{s}-\sigma_{b})/(1-\sigma_{b}) \}
    :label: eg-hs-define_kT
 
@@ -139,26 +139,23 @@ configuration:
    +(f + \zeta)\hat{\mathbf{k}} \times \vec{\mathbf{v}}_h
    +\mathbf{\nabla }_{p} (\rm{KE})
    + \omega \frac{\partial \vec{\mathbf{v}}_h }{\partial p}
-   +\mathbf{\nabla }_p \Phi ^{\prime } 
+   +\mathbf{\nabla }_p \Phi ^{\prime }
    = -k_\mathbf{v}\vec{\mathbf{v}}_h
    :label: eg-hs-model_equations
 
 .. math::
-   \frac{\partial \Phi ^{\prime }}{\partial p} 
+   \frac{\partial \Phi ^{\prime }}{\partial p}
    +\frac{\partial \Pi }{\partial p}\theta ^{\prime } =0
-   
 
 .. math::
    \mathbf{\nabla }_{p}\cdot \vec{\mathbf{v}}_h+\frac{\partial \omega }{
    \partial p} =0
-   
 
 .. math::
-   \frac{\partial \theta }{\partial t} 
+   \frac{\partial \theta }{\partial t}
    + \mathbf{\nabla }_{p}\cdot (\theta \vec{\mathbf{v}}_h)
    + \frac{\partial (\theta \omega)}{\partial p}
    = -k_{\theta}[\theta-\theta_{eq}]
-
 
 where :math:`\vec{\mathbf{v}}_h` and :math:`\omega = \frac{Dp}{Dt}` are
 the horizontal velocity vector and the vertical velocity in pressure
@@ -194,7 +191,7 @@ The numerical stability for inertial oscillations
     S_{i} = f^{2} {\Delta t}^2
     :label: eg-hs-inertial_stability
 
-evaluates to :math:`4 \times10^{-3}` at the poles, for 
+evaluates to :math:`4 \times10^{-3}` at the poles, for
 :math:`f=2\Omega\sin(\pi / 2) = 1.45\times10^{-4}~{\rm s}^{-1}`, which
 is well below the :math:`S_{i} < 1` upper limit for stability.
 The advective CFL (Adcroft 1995 :cite:`adcroft:95`) for a extreme maximum
@@ -204,7 +201,7 @@ smallest horizontal grid spacing :math:`\Delta x = 1.1\times10^5 {\rm m}`:
 .. math::
    S_{a} = \frac{| \vec{u} | \Delta t}{ \Delta x}
    :label: eg-hs-cfl_stability
- 
+
 evaluates to 0.37, which is close to the stability limit of 0.5.
 The stability parameter for internal gravity waves propagating with a
 maximum speed of :math:`c_{g}=100~{\rm m/s}` (Adcroft 1995 :cite:`adcroft:95`)
@@ -517,10 +514,10 @@ configuration are:
    ::
 
         delR=20*50.E2,
- 
+
    This line sets the increments in pressure
    units to 20 equally thick levels of
-   :math:`50 \times 10^2` Pa each. 
+   :math:`50 \times 10^2` Pa each.
    This defines the origin (interface :math:`k=1`) of the vertical
    pressure axis, with decreasing pressure as the level index
    :math:`k` increases.
@@ -578,15 +575,12 @@ configuration are
 
    This line  would select :filelink:`pkg/mnc` for I/O but is commented out.
 
-
-
 File :filelink:`input/data.shap <verification/tutorial_held_suarez_cs/input/data.shap>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: ../../../verification/tutorial_held_suarez_cs/input/data.shap
     :linenos:
     :caption: verification/tutorial_held_suarez_cs/input/data.shap
-
 
 This file specifies the parameters that
 the model uses for the Shapiro filter package
@@ -640,14 +634,12 @@ parameters that are significant for this configuration are:
    Without explicitly setting those timescales, the
    default is used, which corresponds to the model timestep.
 
-
 File :filelink:`input/eedata <verification/tutorial_held_suarez_cs/input/eedata>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: ../../../verification/tutorial_held_suarez_cs/input/eedata
     :linenos:
     :caption: verification/tutorial_held_suarez_cs/input/eedata
-
 
 This file uses standard default values except line 6:
 
@@ -665,14 +657,13 @@ File :filelink:`code/SIZE.h <verification/tutorial_held_suarez_cs/code/SIZE.h>`
     :linenos:
     :caption: verification/tutorial_held_suarez_cs/code/SIZE.h
 
-
 Four lines are customized in this file for the current experiment
 
 -  Line 45,
 
    ::
 
-        sNx=32, 
+        sNx=32,
 
    sets the lateral domain extent in grid points along the :math:`x`-direction,
    for one face.
@@ -681,7 +672,7 @@ Four lines are customized in this file for the current experiment
 
    ::
 
-        sNy=32, 
+        sNy=32,
 
    sets the lateral domain extent in grid points along the :math:`y`-direction,
    for one face.
@@ -690,7 +681,7 @@ Four lines are customized in this file for the current experiment
 
    ::
 
-        nSx=6, 
+        nSx=6,
 
    sets the number of tiles in the :math:`x`-direction, for the model domain
    decomposition. In this simple case (single processor, with one tile per
@@ -700,7 +691,7 @@ Four lines are customized in this file for the current experiment
 
    ::
 
-        Nr=20,   
+        Nr=20,
 
    sets the vertical domain extent in grid points.
 
@@ -769,12 +760,12 @@ This file uses the standard default except for:
 
 ::
 
-    #define NONLIN_FRSURF 
+    #define NONLIN_FRSURF
 
 This line enables the non-linear free-surface part of the code,
 which is required for the :math:`p^*` coordinate formulation.
 
-Other Files 
+Other Files
 ~~~~~~~~~~~~
 
 Other files relevant to this experiment are
@@ -783,7 +774,7 @@ Other files relevant to this experiment are
 
 -  ``input/grid_cs32.face00[n].bin``, with :math:`n=1,2,3,4,5,6`
 
-contain the code customizations and binary input files for this experiment. 
+contain the code customizations and binary input files for this experiment.
 The file :filelink:`apply_forcing.F <verification/tutorial_held_suarez_cs/code/apply_forcing.F>`
 contains four subroutines that
 calculate the forcing terms (i.e., right-hand side terms) in the momentum

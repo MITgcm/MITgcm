@@ -15,7 +15,7 @@ additional relaxation toward climatological sea surface temperature and
 salinity (Levitus and Boyer (1994a,b) :cite:`levitus:94a,levitus:94b`). It uses the Gent and
 McWilliams (1990) :cite:`gen-mcw:90` eddy parameterization scheme,
 has an implicit free-surface, implicit vertical diffusion and uses the
-convective adjustment scheme. 
+convective adjustment scheme.
 
 The biogeochemical model considers the coupled cycles of carbon, oxygen,
 phosphorus and alkalinity. A simplified parameterization of biological
@@ -50,7 +50,6 @@ dissolved organic phosphorus (:math:`DOP`) and dissolved oxygen
        :name: tut_biogeochem_co2flux
 
        Modeled annual mean air-sea CO\ :sub:`2` flux (mol C m\ :sup:`-2` y\ :sup:`-1`) for pre-industrial steady-state. Positive indicates flux of CO\ :sub:`2` from ocean to the atmosphere (out-gassing), contour interval is 1 mol C m\ :sup:`-2` y\ :sup:`-1`.
-
 
 Equations Solved
 ----------------

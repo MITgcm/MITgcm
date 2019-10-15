@@ -4,7 +4,6 @@ Surface Driven Convection
 
 (in directory: :filelink:`verification/tutorial_deep_convection/`)
 
-
    .. figure:: figs/simulation_config.png
        :width: 80%
        :align: center
@@ -108,45 +107,45 @@ solved in this configuration as follows:
 .. math::
 
    \begin{aligned}
-   \frac{Du}{Dt} - fv + 
-     \frac{1}{\rho}\frac{\partial p^{'}}{\partial x} - 
-     \nabla_{h}\cdot A_{h}\nabla_{h}u - 
-     \frac{\partial}{\partial z}A_{z}\frac{\partial u}{\partial z} 
+   \frac{Du}{Dt} - fv +
+     \frac{1}{\rho}\frac{\partial p^{'}}{\partial x} -
+     \nabla_{h}\cdot A_{h}\nabla_{h}u -
+     \frac{\partial}{\partial z}A_{z}\frac{\partial u}{\partial z}
     & = &
    \begin{cases}
    0 & \text{(surface)} \\
    0 & \text{(interior)}
    \end{cases}
    \\
-   \frac{Dv}{Dt} + fu + 
-     \frac{1}{\rho}\frac{\partial p^{'}}{\partial y} - 
-     \nabla_{h}\cdot A_{h}\nabla_{h}v - 
-     \frac{\partial}{\partial z}A_{z}\frac{\partial v}{\partial z} 
+   \frac{Dv}{Dt} + fu +
+     \frac{1}{\rho}\frac{\partial p^{'}}{\partial y} -
+     \nabla_{h}\cdot A_{h}\nabla_{h}v -
+     \frac{\partial}{\partial z}A_{z}\frac{\partial v}{\partial z}
    & = &
    \begin{cases}
    0 & \text{(surface)} \\
    0 & \text{(interior)}
    \end{cases}
    \\
-   \frac{Dw}{Dt} + g \frac{\rho^{'}}{\rho} + 
-     \frac{1}{\rho}\frac{\partial p^{'}}{\partial z} - 
-     \nabla_{h}\cdot A_{h}\nabla_{h}w - 
-     \frac{\partial}{\partial z}A_{z}\frac{\partial w}{\partial z} 
+   \frac{Dw}{Dt} + g \frac{\rho^{'}}{\rho} +
+     \frac{1}{\rho}\frac{\partial p^{'}}{\partial z} -
+     \nabla_{h}\cdot A_{h}\nabla_{h}w -
+     \frac{\partial}{\partial z}A_{z}\frac{\partial w}{\partial z}
    & = &
    \begin{cases}
    0 & \text{(surface)} \\
    0 & \text{(interior)}
    \end{cases}
    \\
-   \frac{\partial u}{\partial x} + 
-   \frac{\partial v}{\partial y} + 
-   \frac{\partial w}{\partial z} + 
+   \frac{\partial u}{\partial x} +
+   \frac{\partial v}{\partial y} +
+   \frac{\partial w}{\partial z} +
    &=&
    0
    \\
    \frac{D\theta}{Dt} -
     \nabla_{h}\cdot K_{h}\nabla_{h}\theta
-    - \frac{\partial}{\partial z}K_{z}\frac{\partial\theta}{\partial z} 
+    - \frac{\partial}{\partial z}K_{z}\frac{\partial\theta}{\partial z}
    & = &
    \begin{cases}
    {\cal F}_\theta & \text{(surface)} \\
@@ -187,7 +186,6 @@ at a resolution of 50 m, the implied maximum timestep for stability,
 
 .. math::
     \delta t_u = \frac{\Delta x}{| \vec{u} |} = 50 s
- 
 
 The choice of :math:`\delta t = 10` s is a safe 20 percent of this
 maximum.
@@ -213,7 +211,6 @@ The model configuration for this experiment resides under the directory
 contain the code customizations and parameter settings for this
 experiment. Below we describe these experiment-specific customizations.
 
-
 File :filelink:`code/CPP_OPTIONS.h <verification/tutorial_deep_convection/code/CPP_OPTIONS.h>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -234,7 +231,7 @@ dimensions.
 
    ::
 
-        sNx=50, 
+        sNx=50,
 
    this line sets the lateral domain extent in grid points for the axis
    aligned with the :math:`x`-coordinate.
@@ -243,7 +240,7 @@ dimensions.
 
    ::
 
-        sNy=50, 
+        sNy=50,
 
    this line sets the lateral domain extent in grid points for the axis
    aligned with the :math:`y`-coordinate.
@@ -252,10 +249,9 @@ dimensions.
 
    ::
 
-        Nr=50,   
+        Nr=50,
 
    this line sets the vertical domain extent in grid points.
-
 
 File :filelink:`input/data <verification/tutorial_deep_convection/input/data>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -293,7 +289,7 @@ configuration are
    example, density is independent of salinity, an appropriately defined
    initial salinity could provide a useful passive tracer. For each
    depth level the initial and reference profiles will be uniform in
-   :math:`x` and :math:`y`. 
+   :math:`x` and :math:`y`.
 
 -  Line 9,
 
@@ -303,7 +299,7 @@ configuration are
 
    this line sets the horizontal Laplacian dissipation coefficient to
    0.1 :math:`{\rm m^{2}s^{-1}}`. Boundary conditions for this operator
-   are specified later. 
+   are specified later.
 
 -  Line 10,
 
@@ -313,7 +309,7 @@ configuration are
 
    this line sets the vertical Laplacian frictional dissipation
    coefficient to 0.1 :math:`{\rm m^{2}s^{-1}}`. Boundary conditions for
-   this operator are specified later. 
+   this operator are specified later.
 
 -  Line 11,
 
@@ -325,7 +321,7 @@ configuration are
    horizontal Laplacian friction operator e.g.
    :math:`\frac{\partial u}{\partial y}`\ =0 along boundaries in
    :math:`y` and :math:`\frac{\partial v}{\partial x}`\ =0 along
-   boundaries in :math:`x`. 
+   boundaries in :math:`x`.
 
 -  Lines 12,
 
@@ -336,7 +332,7 @@ configuration are
    this line selects a no-slip boundary condition for the bottom
    boundary condition in the vertical Laplacian friction operator e.g.,
    :math:`u=v=0` at :math:`z=-H`, where :math:`H` is the local depth of
-   the domain. 
+   the domain.
 
 -  Line 13,
 
@@ -348,7 +344,7 @@ configuration are
    to 0.1 :math:`\rm m^{2}s^{-1}`. The boundary condition on this
    operator is
    :math:`\frac{\partial}{\partial x}=\frac{\partial}{\partial y}=0` at
-   all boundaries. 
+   all boundaries.
 
 -  Line 14,
 
@@ -359,8 +355,7 @@ configuration are
    this line sets the vertical diffusion coefficient for temperature to
    0.1 :math:`{\rm m^{2}s^{-1}}`. The boundary condition on this
    operator is :math:`\frac{\partial}{\partial z}` = 0 on all
-   boundaries. 
-
+   boundaries.
 
 -  Line 15,
 
@@ -403,8 +398,8 @@ configuration are
 
    ::
 
-       rigidLid=.FALSE., 
-       implicitFreeSurface=.TRUE., 
+       rigidLid=.FALSE.,
+       implicitFreeSurface=.TRUE.,
 
    Selects the barotropic pressure equation to be the implicit free
    surface formulation.
@@ -424,7 +419,6 @@ configuration are
        nonHydrostatic=.TRUE.,
 
    Selects for non-hydrostatic code.
-
 
 -  Line 33,
 
@@ -452,7 +446,7 @@ configuration are
 
    This line sets the maximum number of iterations the
    3-D conjugate gradient solver will use to 40,
-   **irrespective of the convergence criteria being met**. 
+   **irrespective of the convergence criteria being met**.
 
 -  Line 36,
 
@@ -465,7 +459,6 @@ configuration are
    :math:`1 \times 10^{-9}`. The solver will iterate until the tolerance
    falls below this value or until the maximum number of solver
    iterations is reached.
-
 
 -  Line43,
 
@@ -526,7 +519,7 @@ configuration are
    ordered from low coordinate to high coordinate for both axes. The
    matlab program :filelink:`input/gendata.m <verification/tutorial_deep_convection/input/gendata.m>`
    shows how to generate the surface
-   heat flux file used in the example. 
+   heat flux file used in the example.
 
 File :filelink:`input/data.pkg <verification/tutorial_deep_convection/input/data.pkg>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

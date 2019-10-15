@@ -24,7 +24,7 @@ passive tracer. In the lower panel, the frames of the movie show the
 changing monthly surface evolution where the initial tracer field had a
 global distribution.
 
-The second experiment, a more complicated example exploring contamination of the global ocean 
+The second experiment, a more complicated example exploring contamination of the global ocean
 through surface exposure to CFCs during the last century, is described after this more simple first example.
 The run configuration for this second experiment is specified in directory :filelink:`verification/tutorial_cfc_offline/input`.
 
@@ -96,7 +96,7 @@ prescribed to run for 4 timesteps; for a longer run, increase :varlink:`nTimeste
 
 :varlink:`deltaTtracer` is the tracer timestep in seconds, in this case, 12 hours
 (43200 seconds = 12 hours). Note that :varlink:`deltatTracer` must be specified in
-:filelink:`input_tutorial/data <verification/tutorial_cfc_offline/input_tutorial/data>` as well as 
+:filelink:`input_tutorial/data <verification/tutorial_cfc_offline/input_tutorial/data>` as well as
 specified in  :varlink:`deltaToffline` in :filelink:`input_tutorial/data.off <verification/tutorial_cfc_offline/input_tutorial/data.off>`.
 
 -  Line 21,
@@ -159,8 +159,8 @@ internal grid based on spherical polar geometry.
 
    ::
 
-        delR=  50.,  70., 100., 140., 190., 
-              240., 290., 340., 390., 440., 
+        delR=  50.,  70., 100., 140., 190.,
+              240., 290., 340., 390., 440.,
               490., 540., 590., 640., 690.,
 
 This line sets the vertical grid spacing between each :math:`z`-coordinate line
@@ -343,7 +343,7 @@ agree with the value specified in :filelink:`code/PTRACERS_SIZE.h <verification/
         PTRACERS_Iter0= 4248000,
 
 :varlink:`PTRACERS_Iter0` specifies the iteration at which the tracer is to be
-introduced. 
+introduced.
 
 -  Lines 6 and 13,
 
@@ -395,7 +395,6 @@ File :filelink:`input_tutorial/eedata <verification/tutorial_cfc_offline/input_t
 This file uses standard default values and does not contain
 customizations for this experiment.
 
-
 File :filelink:`code/packages.conf <verification/tutorial_cfc_offline/code/packages.conf>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -404,7 +403,7 @@ File :filelink:`code/packages.conf <verification/tutorial_cfc_offline/code/packa
     :caption: verification/tutorial_cfc_offline/code/packages.conf
 
 This file is used to invoke the model components required for a
-particular implementation of the MITgcm. 
+particular implementation of the MITgcm.
 
 .. _tut_offline_ptracers_size:
 
@@ -431,14 +430,13 @@ File :filelink:`code/SIZE.h <verification/tutorial_cfc_offline/code/SIZE.h>`
     :linenos:
     :caption: verification/tutorial_cfc_offline/code/SIZE.h
 
-
 Several lines are customized in this file for the current experiment:
 
 -  Line 45,
 
    ::
 
-        sNx=64, 
+        sNx=64,
 
    this line sets the lateral domain extent in grid points for the axis
    aligned with the :math:`x`-coordinate.
@@ -447,7 +445,7 @@ Several lines are customized in this file for the current experiment:
 
    ::
 
-        sNy=64, 
+        sNy=64,
 
    this line sets the lateral domain extent in grid points for the axis
    aligned with the :math:`y`-coordinate.
@@ -456,7 +454,7 @@ Several lines are customized in this file for the current experiment:
 
    ::
 
-        Nr=15,   
+        Nr=15,
 
    this line sets the vertical domain extent in grid points.
 
@@ -518,7 +516,7 @@ A single line must be added (under ``PARM01``, line 21) from the previous exampl
      &
 
 When :filelink:`pkg/gmredi` is used, the flag :varlink:`implicitDiffusion` must be assigned
-the value ``.TRUE.`` 
+the value ``.TRUE.``
 
 In this example the starting timestep nIter0 is set to 4269600 requiring
 model access to pickup files with the suffix 0004269600. The model will
@@ -530,7 +528,6 @@ assigned to the frequency with which dumps are written (:varlink:`dumpFreq`) and
 time averaging (:varlink:`taveFreq`) is performed. However, since the model always
 dumps the state of the model when it stops without error, a dump will be
 written with suffix 0004269604 upon completion.
-
 
 File :filelink:`input/data.off <verification/tutorial_cfc_offline/input/data.off>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -554,7 +551,6 @@ File :filelink:`input/data.pkg <verification/tutorial_cfc_offline/input/data.pkg
 .. literalinclude:: ../../../verification/tutorial_cfc_offline/input/data.pkg
     :linenos:
     :caption: verification/tutorial_cfc_offline/input/data.pkg
-
 
 This file specifies which
 MITgcm packages are to be used. It now invokes
@@ -594,7 +590,6 @@ to zero.
 
          PTRACERS_useGMRedi(n)=.TRUE. ,
          PTRACERS_useKPP(n)=.FALSE. ,
-        
 
 Setting flag :varlink:`PTRACERS_useGMRedi`\ (n) to ``.TRUE.`` identifies that :filelink:`/pkg/gmredi`
 is to be used. Setting flag :varlink:`PTRACERS_useKPP`\ (n) to ``.FALSE.``
@@ -605,7 +600,6 @@ explicitly turns off KPP mixing.
    ::
 
         PTRACERS_initialFile(n)=' ',
-        
 
 Since this is a ‘pickup’ run the initial tracer files
 :varlink:`PTRACERS_initialFile` are not needed.
@@ -637,7 +631,6 @@ File :filelink:`input/cfc1112.atm <verification/tutorial_cfc_offline/input/cfc11
 This is a ASCII data file containing the CFC source
 functions over the northern and southern hemispheres annually from 1931
 through 1998.
-
 
 Running the Experiment
 ~~~~~~~~~~~~~~~~~~~~~~

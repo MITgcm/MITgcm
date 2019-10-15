@@ -1,4 +1,4 @@
-Sensitivity of Air-Sea Exchange to Tracer Injection Site 
+Sensitivity of Air-Sea Exchange to Tracer Injection Site
 =========================================================
 
 (in directory: :filelink:`verification/tutorial_tracer_adjsens/`)
@@ -28,7 +28,7 @@ ocean interior, the tracer is passively advected by the ocean model
 currents. The full equation for the time evolution
 
 .. math::
-   \frac{\partial C}{\partial t} \, = \, 
+   \frac{\partial C}{\partial t} \, = \,
    -U\cdot \nabla C \, - \, \mu C \, + \, \Gamma(C) \,+ \, S
    :label: carbon_ddt
 
@@ -89,7 +89,6 @@ Code configuration
 The code customization routines are in
 :filelink:`verification/tutorial_tracer_adjsens/code_ad`:
 
-
 -  :filelink:`verification/tutorial_tracer_adjsens/code_ad/COST_OPTIONS.h`
 
 -  :filelink:`verification/tutorial_tracer_adjsens/code_ad/CTRL_OPTIONS.h`
@@ -113,7 +112,6 @@ The code customization routines are in
 -  :filelink:`verification/tutorial_tracer_adjsens/code_ad/ptracers_forcing_surf.F`
 
 -  :filelink:`verification/tutorial_tracer_adjsens/code_ad/packages.conf`
-
 
 The runtime flag and parameters settings are contained in :filelink:`verification/tutorial_tracer_adjsens/input/`
 and :filelink:`verification/tutorial_tracer_adjsens/input_ad/`, together with the forcing fields and and
@@ -151,12 +149,12 @@ this experiment.
 File :filelink:`code_ad/COST_OPTIONS.h /<verification/tutorial_tracer_adjsens/code_ad/COST_OPTIONS.h>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This file contains package-specific CPP-options (see :numref:`pkg_cost_description`). 
+This file contains package-specific CPP-options (see :numref:`pkg_cost_description`).
 
 File :filelink:`code_ad/CTRL_OPTIONS.h /<verification/tutorial_tracer_adjsens/code_ad/CTRL_OPTIONS.h>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This file contains package-specific CPP-options (see :numref:`sec:pkg:ctrl`). 
+This file contains package-specific CPP-options (see :numref:`sec:pkg:ctrl`).
 
 File :filelink:`code_ad/CPP_OPTIONS.h /<verification/tutorial_tracer_adjsens/code_ad/CPP_OPTIONS.h>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -246,7 +244,7 @@ The CPP options of several AD-related packages are grouped in this file:
    +-----------------------------------------------+----------------------------------------+
    | ``#undef`` :varlink:`ALLOW_KAPGM_CONTROL`     | isopycnal diffusivity                  |
    +-----------------------------------------------+----------------------------------------+
- 
+
 File :filelink:`SIZE.h <verification/tutorial_tracer_adjsens/code_ad/SIZE.h>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -316,9 +314,9 @@ indices relevant for storing ky computations.
 
    | :varlink:`nchklev_1` * :varlink:`nchklev_2` * :varlink:`nchklev_3` :math:`\ge` :varlink:`nTimeSteps`
 
-   | where :varlink:`nTimeSteps` is either specified in :filelink:`input_ad/data <verification/tutorial_tracer_adjsens/input_ad/data>` 
+   | where :varlink:`nTimeSteps` is either specified in :filelink:`input_ad/data <verification/tutorial_tracer_adjsens/input_ad/data>`
      or computed via:
-  
+
    | :varlink:`nTimeSteps` = (:varlink:`endTime` - :varlink:`startTime` )/ :varlink:`deltaTClock`.
 
 -  |  ``#undef`` :varlink:`ALLOW_TAMC_CHECKPOINTING`
@@ -351,12 +349,10 @@ TAMC:
 TAF:
 
   ::
-  
+
      -input «variable names» -output «variable name» -i4 -r4 ...
      -toplevel «S/R name» -reverse «file names»
      -flow taf_flow.log -nonew_arg
-
-
 
 -  ``-toplevel «S/R name»``
 
@@ -364,12 +360,12 @@ TAF:
    flow analysis is performed.
 
 -  ``input «variable names»``
-   
+
    List of independent variables :math:`u` with respect to which the
    dependent variable :math:`J` is differentiated.
 
 -  ``-output «variable name»``
-   
+
    Dependent variable :math:`J` which is to be differentiated.
 
 -  ``-reverse «file names»``
@@ -394,13 +390,13 @@ TAF:
  
 
 -  ``-flow taf_flow.log``
-   
+
    Will cause TAF to produce a flow listing file named ``taf_flow.log``
    in which the set of active and passive variables are identified for
    each subroutine.
 
 - ``-nonew_arg``
-    
+
   The default in the order of the parameter list of adjoint routines
   has changed. Before TAF 1.3 the default was compatible with the
   TAMC-generated list. As of TAF 1.3 the order of adjoint routine

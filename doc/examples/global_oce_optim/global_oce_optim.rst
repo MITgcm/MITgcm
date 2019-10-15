@@ -15,7 +15,7 @@ realistic geography and bathymetry on a :math:`4\times4^\circ` spherical
 polar grid, we estimate a time-independent surface heat flux adjustment
 :math:`Q_\mathrm{netm}` that attempts to bring the model climatology
 into consistency with observations (Levitus and Boyer (1994a,b)
-:cite:`levitus:94a,levitus:94b`). 
+:cite:`levitus:94a,levitus:94b`).
 
 This adjustment :math:`Q_\mathrm{netm}` (a 2-D field only function of
 longitude and latitude) is the control variable of an optimization
@@ -50,7 +50,6 @@ means that the model is, on average, within observational uncertainties.
 
        *A priori* errors on potential temperature (left, in :sup:`o`\ C) and surface heat flux
        (right, in W m\ :sup:`-2`) used to compute the cost terms :math:`J_1` and :math:`J_2`, respectively.
-
 
 The cost function also places constraints on the adjustment to insure it
 is “reasonable”, i.e., of order of the uncertainties on the observed
@@ -111,7 +110,6 @@ large temperature errors remains after optimization.
        Averaged difference between model and observed potential temperatures at the surface (in :math:`^\circ`\ C)
        before optimization (iteration 0, top right) and after optimization (iteration 15, bottom right).
        Contour intervals for heat flux and temperature are 25 W m\ :sup:`-2` and 1 :sup:`o`\ C, respectively. A positive flux is out of the ocean.
-
 
 Implementation of the control variable and the cost function
 ------------------------------------------------------------
@@ -197,7 +195,6 @@ Compilation-time customizations in :filelink:`code_ad <verification/tutorial_glo
 In :filelink:`code_ad/CTRL_OPTIONS.h <verification/tutorial_global_oce_optim/code_ad//CTRL_OPTIONS.h>`:
 
 -  ``#define`` :varlink:`ALLOW_ECCO_OPTIMIZATION`
-
 
 .. _tut_global_oce_runsect:
 
@@ -297,7 +294,6 @@ iteration number is set to 0 in :filelink:`input_ad/data.optim <verification/tut
 ::
 
     % ./mitgcmuv_ad
-
 
 The output files ``adxx_hfluxm.0000000000.*`` and ``xx_hfluxm.0000000000.*``
 contain the sensitivity of the cost function to :math:`Q_\mathrm{netm}`

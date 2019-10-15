@@ -17,7 +17,6 @@ so that, at this resolution, the
 configuration can be integrated forward for thousands of years on a
 single processor desktop computer.
 
-
 Overview
 --------
 
@@ -153,10 +152,9 @@ of equations solved in this configuration as follows:
      \mathcal{F}_v & \text{(surface)} \\
      0 & \text{(interior)}
    \end{cases}
-   
 
 .. math::
-      \frac{\partial \eta}{\partial t} + \nabla_{h}\cdot \vec{u} = 0 
+      \frac{\partial \eta}{\partial t} + \nabla_{h}\cdot \vec{u} = 0
 
 .. math::
    :label: eg-global-model_equations_ts
@@ -233,7 +231,7 @@ The associated stability limit
 .. math::
    S_{l} = 4 \frac{A_{z} \Delta t_{v}}{{\Delta z}^2}
    :label: eg-global-laplacian_stability_z
- 
+
 evaluates to 0.0029 for the smallest
 model level spacing (:math:`\Delta z_{1}` = 50 m) which is well
 below the upper stability limit.
@@ -453,7 +451,6 @@ configuration are
    diffusivity of 100 m\ :sup:`2`/s in case of instable
    stratification.
 
-
 -  Line 28,
 
    ::
@@ -570,7 +567,6 @@ configuration are
 Other lines in the file :filelink:`input/data <verification/tutorial_global_oce_latlon/input/data>`
 are standard values that are described in the :numref:`customize_model`.
 
-
 File :filelink:`input/data.pkg <verification/tutorial_global_oce_latlon/input/data.pkg>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -608,7 +604,6 @@ File :filelink:`code/SIZE.h <verification/tutorial_global_oce_latlon/code/SIZE.h
 .. literalinclude:: ../../../verification/tutorial_global_oce_latlon/code/SIZE.h
     :linenos:
     :caption: verification/tutorial_global_oce_latlon/code/SIZE.h
-
 
 Four lines are customized in this file for the current experiment
 

@@ -36,13 +36,13 @@ yields the following forcing applied in the model surface layer.
 .. math::
    {\cal F}_{u} = g\frac{\tau_{x}}{\Delta p_{s}}
   :label: eg-global_forcing_fu_pcoord
-   
+
 .. math::
    {\cal F}_{v} = g\frac{\tau_{y}}{\Delta p_{s}}
    :label: eg-global_forcing_fv_pcoord
-  
+
 .. math::
-   {\cal F}_{\theta} = - g\lambda_{\theta} ( \theta - \theta^{\ast} ) 
+   {\cal F}_{\theta} = - g\lambda_{\theta} ( \theta - \theta^{\ast} )
     - \frac{1}{C_{p} \Delta p_{s}}{\cal Q}
    :label: eg-global_forcing_ft_pcoord
 
@@ -50,7 +50,7 @@ yields the following forcing applied in the model surface layer.
    {\cal F}_{s} =
     + g\rho_{FW}\frac{S}{\rho\Delta p_{s}}({\cal E} - {\cal P} - {\cal R})
    :label: eg-global_forcing_fs_pcoord
-  
+
 where :math:`{\cal F}_{u}`, :math:`{\cal F}_{v}`,
 :math:`{\cal F}_{\theta}`, :math:`{\cal F}_{s}` are the forcing terms in
 the zonal and meridional momentum and in the potential temperature and
@@ -137,26 +137,25 @@ of equations solved in this configuration as follows:
 .. math::
    :label: eg-global-model_equations_pcoord_uv
 
-   \frac{Du}{Dt} - fv + 
-     \frac{1}{\rho}\frac{\partial \Phi^{'}}{\partial x} - 
-     \nabla_{h}\cdot A_{h}\nabla_{h}u - 
-     (g\rho_0)^2\frac{\partial}{\partial p}A_{r}\frac{\partial u}{\partial p} 
+   \frac{Du}{Dt} - fv +
+     \frac{1}{\rho}\frac{\partial \Phi^{'}}{\partial x} -
+     \nabla_{h}\cdot A_{h}\nabla_{h}u -
+     (g\rho_0)^2\frac{\partial}{\partial p}A_{r}\frac{\partial u}{\partial p}
     &=
    \begin{cases}
    {\cal F}_u & \text{(surface)} \\
    0 & \text{(interior)}
    \end{cases}
    \\
-   \frac{Dv}{Dt} + fu + 
-     \frac{1}{\rho}\frac{\partial \Phi^{'}}{\partial y} - 
-     \nabla_{h}\cdot A_{h}\nabla_{h}v - 
-     (g\rho_0)^2\frac{\partial}{\partial p}A_{r}\frac{\partial v}{\partial p} 
+   \frac{Dv}{Dt} + fu +
+     \frac{1}{\rho}\frac{\partial \Phi^{'}}{\partial y} -
+     \nabla_{h}\cdot A_{h}\nabla_{h}v -
+     (g\rho_0)^2\frac{\partial}{\partial p}A_{r}\frac{\partial v}{\partial p}
    &=
    \begin{cases}
    {\cal F}_v & \text{(surface)} \\
    0 & \text{(interior)}
    \end{cases}
-   
 
 .. math::
   \frac{\partial p_{b}}{\partial t} + \nabla_{h}\cdot \vec{u} = 0
@@ -166,7 +165,7 @@ of equations solved in this configuration as follows:
 
    \frac{D\theta}{Dt} -
     \nabla_{h}\cdot K_{h}\nabla_{h}\theta
-    - (g\rho_0)^2\frac{\partial}{\partial p}\Gamma(K_{r})\frac{\partial\theta}{\partial p} 
+    - (g\rho_0)^2\frac{\partial}{\partial p}\Gamma(K_{r})\frac{\partial\theta}{\partial p}
    &=
    \begin{cases}
    {\cal F}_\theta & \text{(surface)} \\
@@ -175,7 +174,7 @@ of equations solved in this configuration as follows:
    \\
    \frac{D s}{Dt} -
     \nabla_{h}\cdot K_{h}\nabla_{h}s
-    - (g\rho_0)^2\frac{\partial}{\partial p}\Gamma(K_{r})\frac{\partial S}{\partial p} 
+    - (g\rho_0)^2\frac{\partial}{\partial p}\Gamma(K_{r})\frac{\partial S}{\partial p}
    &=
    \begin{cases}
    {\cal F}_s & \text{(surface)} \\
@@ -197,7 +196,6 @@ equation is started at the bottom of the domain. The condition of
 :math:`p=0` at the sea surface requires a time-independent integration
 constant for the height anomaly due to density variations
 :math:`\Phi_{-H}'^{(0)}`, which is provided as an input field.
-
 
 .. _sec_eg-globalpressure-config:
 
@@ -283,7 +281,6 @@ shows the depth contours of the model domain.
 
        Annual mean of meridional wind stress component (N m\ :sup:`-2`)
 
-
   .. figure:: figs/qnet.png
        :width: 90%
        :align: center
@@ -318,7 +315,7 @@ File :filelink:`input/data <verification/tutorial_global_oce_in_p/input/data>`
 This file specifies the main parameters
 for the experiment. The parameters that are significant for this
 configuration are
- 
+
 -  Line 9–10,
 
    ::
@@ -430,12 +427,11 @@ configuration are
    Other model choices for equations of state do not make sense in this
    configuration.
 
-  
 -  Line 28-29,
 
    ::
 
-         implicitFreeSurface=.TRUE., 
+         implicitFreeSurface=.TRUE.,
 
    Selects the barotropic pressure equation to be the implicit free
    surface formulation.
@@ -603,7 +599,7 @@ configuration are
 
    ::
 
-        delR=7103300.720021, ... 
+        delR=7103300.720021, ...
 
    set the layer thickness in pressure units, starting with the bottom
    layer.
@@ -632,7 +628,6 @@ configuration are
 
 Other lines in the file :filelink:`input/data <verification/tutorial_global_oce_in_p/input/data>`
 are standard values that are described in the :numref:`customize_model`.
-
 
 File :filelink:`input/data.pkg <verification/tutorial_global_oce_in_p/input/data.pkg>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -725,6 +720,6 @@ This file uses standard default values except for:
    horizontal mass divergence in the free surface.
 
 -  ``#define`` :varlink:`NONLIN_FRSURF`
-   
+
    enables the nonlinear free surface.
 
