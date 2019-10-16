@@ -710,11 +710,11 @@ binary data in ``Eta.0000077760.001.001.data`` is as simple as:
    contourf(XC/1000,YC/1000,Eta,[-.04:.01:.04]); colorbar;
    colormap((flipud(hot))); set(gca,'XLim',[0 1200]); set(gca,'YLim',[0 1200])
 
-or using python (you will need to copy :filelink:`utils/python/MITgcmutils/MITgcmutils/mds.py` to your run directory before proceeding):
+or using python (you will need to install the MITgcmutils package, see :numref:`sec_python`):
 
 ::
 
-   import mds
+   from MITgcmutils import mds
    import matplotlib.pyplot as plt
    XC = mds.rdmds('XC'); YC = mds.rdmds('YC')
    Eta = mds.rdmds('Eta', 77760)

@@ -1463,8 +1463,10 @@ To do this you will need a working python installation with the following module
 
  - sphinx
  - sphinxcontrib-bibtex
+ - sphinxcontrib-programoutput
  - sphinx_rtd_theme
-
+ - numpy
+ 
 Once these modules are installed you can build the html version of the manual by running ``make html`` in the ``doc`` directory. 
 
 To build the pdf version of the manual you will also need a working version of LaTeX that includes
@@ -1479,11 +1481,24 @@ Reviewing pull requests
 =======================
 
 The only people with write access to the main repository are a small number of core MITgcm developers. They are the people that
-will eventually merge your pull requests. However, before your PR gets merged, it will undergo the automated testing on Travis-CI, and it will be assessed by the MITgcm community.
+will eventually merge your pull requests. However, before your PR gets merged,
+it will undergo the automated testing on Travis-CI, and it will be assessed by the MITgcm community.
 
 **Everyone can review and comment on pull requests.** Even if you are not one of the core developers you can still comment on a pull request.
 
-To test pull requests locally you should download the pull request branch. You can do this either by cloning the branch from the pull request:
+The simplest way to examine a pull request is to `use GitHub <https://github.com/MITgcm/MITgcm/pulls>`_. You can look at changes made to files
+(GitHub will show you a standard linux ``diff`` for each file changed), read though commit messages, and/or peruse any comments
+the MITgcm community has made regarding this pull request.
+
+If you are reviewing changes to the documentation, most likely you will also want to review the rendered manual in html format.
+While this is not available at GitHub, you can view html builds based on the pull request documentation
+using `this link <https://readthedocs.org/projects/mitgcm/builds>`_ at readthedocs.org. Here you will need to click on the appropriate
+pull request (as labeled by the pull request number), then click on "View docs"
+(not the green button near the top of the page, but the text in the middle of the page
+on the right side).
+
+Finally, if you want to test pull requests locally (i.e., to compile or run the code),
+you should download the pull request branch. You can do this either by cloning the branch from the pull request:
 
 ::
     

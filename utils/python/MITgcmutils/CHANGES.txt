@@ -1,0 +1,5 @@
+- Fix some deprecation warnings from numpy and matplotlib
+- Change doc strings to numpy format so they work with autodoc
+
+Version 0.1.0, 2019-09-17
+Initial release
