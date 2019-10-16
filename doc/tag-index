@@ -1,6 +1,19 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67m (2019/10/16)
+o doc/examples:
+  - Convert remaining old doc tutorials from latex to rst files and add them
+    to current MITgcm documentation.
+o pkg/ptracers:
+  - new diagnostics Tp_gTr01, ... for ptracer total transport tendencies
+    (before gchem_forcing_sep); this includes advection and diffusion terms,
+    but also anything added in gchem_add_tendency.
+o doc & verification/tutorial_baroclinic_gyre:
+  - split doc for tutorial experiments into separate files
+  - update configuration for baroclinic gyre tutorial
+  - update documentation for baroclinic gyre tutorial
+  - formatting and font changes in algorithm chapter
 o doc:
   - add rtfd config file to control build behaviour and options.
 
