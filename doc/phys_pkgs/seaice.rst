@@ -521,7 +521,7 @@ depends on both thickness :math:`h` and compactness (concentration)
 with the constants :math:`P^{\ast}` (run-time parameter
 :varlink:`SEAICE_strength`) and :math:`C^{\ast}` (run-time parameter
 :varlink:`SEAICE_cStar`). The nonlinear bulk and shear viscosities
-:math:`\eta` and :math:`\zeta` are functions of ice strain rate
+:math:`\zeta` and :math:`\eta` are functions of ice strain rate
 invariants and ice strength such that the principal components of the
 stress lie on an elliptical yield curve with the ratio of major to
 minor axis :math:`e` equal to :math:`2`; they are given by:
