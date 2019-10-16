@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67m (2019/10/16)
 o doc/examples:
   - Convert remaining old doc tutorials from latex to rst files and add them
     to current MITgcm documentation.
