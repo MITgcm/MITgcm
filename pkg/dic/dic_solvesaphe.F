@@ -527,7 +527,7 @@ C       pH scale  : N/A
            RT = Rgas*t_k
            delta = (57.7 _d 0 - 0.118 _d 0*t_k)
            B1 = -1636.75 _d 0 + 12.0408 _d 0*t_k 
-                - 0.0327957 _d 0*t_k*t_k
+     &                  - 0.0327957 _d 0*t_k*t_k
            B  = B1 + 3.16528 _d 0*t_k*t_k*t_k*(0.00001 _d 0)
 
 C   "x2" term often neglected (assumed=1) in applications of Weiss's (1974) eq.9
