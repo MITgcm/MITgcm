@@ -10,8 +10,12 @@ C                            All files are direct access files.
 C     Routines:
 C     o  ACTIVE_READ_3D_RL  : Basic routine to handle active 3D read operations
 C     o  ACTIVE_READ_3D_RS  : Basic routine to handle active 3D read operations
+C     o  ACTIVE_READ_1D_RL  : Basic routine to handle active 1D read operations
+C     o  ACTIVE_READ_1D_RS  : Basic routine to handle active 1D read operations
 C     o  ACTIVE_WRITE_3D_RL : Basic routine to handle active 3D write operations
 C     o  ACTIVE_WRITE_3D_RS : Basic routine to handle active 3D write operations
+C     o  ACTIVE_WRITE_1D_RL  : Basic routine to handle active 1D write operations
+C     o  ACTIVE_WRITE_1D_RS  : Basic routine to handle active 1D write operations
 C
 C        changed: Christian Eckert eckert@mit.edu 24-Apr-2000
 C        - Added routines that do active writes on tiles
@@ -383,6 +387,322 @@ C     Read the active variable from file.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
+C     !ROUTINE: ACTIVE_READ_1D_RL
+C     !INTERFACE:
+      SUBROUTINE ACTIVE_READ_1D_RL(
+     I                          activeVar_file,
+     O                          active_var,
+     I                          active_var_length,
+     I                          lAdInit,
+     I                          iRec,
+     I                          theSimulationMode,
+     I                          myOptimIter,
+     I                          myThid )
+C     !DESCRIPTION: \bv
+C     ==================================================================
+C     SUBROUTINE ACTIVE_READ_1D_RL
+C     ==================================================================
+C     o Read an active 1D _RL vector from file.
+C     o Read the same 1D vector to all tiles/processes, so global by
+C       nature
+C     Modified from 3D: Tim Smith tsmith@oden.utexas.edu Oct-2019
+C     ==================================================================
+C     SUBROUTINE ACTIVE_READ_1D_RL
+C     ==================================================================
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#include "ctrl.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     activeVar_file :: filename
+C     active_var     :: vector
+C     active_var_length :: number of elements in active variable
+C     useCurrentDir  :: always read from the current directory
+C                        (even if "mdsioLocalDir" is set)
+C     lAdInit        :: initialisation of corresponding adjoint variable
+C                        and write to active file
+C     theSimulationMode :: forward, tangent linear, or reverse mode simulation
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
+      CHARACTER*(*) activeVar_file
+      _RL      active_var(*)
+      INTEGER  active_var_length
+      LOGICAL  lAdInit
+      INTEGER  iRec
+      INTEGER  theSimulationMode
+      INTEGER  myOptimIter
+      INTEGER  myThid
+
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+      CHARACTER*(2)  adpref
+      CHARACTER*(80) adfname
+      INTEGER i, bi, bj
+      INTEGER prec
+      INTEGER il
+      INTEGER ioUnit
+      _RS  dummyRS(1)
+      _RL  active_data_t(*)
+CEOP
+
+C     force 64-bit io
+      prec = ctrlprec
+
+C     set these to zero otherwise looks for tiled file
+      bi=0
+      bj=0
+
+C     ioUnit = 0 => open, read, and close the file... see
+C     mdsio_readvec_loc
+      ioUnit = 0
+      adpref = 'ad'
+      il = ILNBLNK( activeVar_file )
+      WRITE(adfname(1:80),'(80a)') ' '
+      WRITE(adfname(1:il+2),'(2A)') adpref, activeVar_file(1:il)
+
+C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
+
+C     Read the active variable from file.
+      CALL mds_readvec_loc(
+     I                activeVar_file, prec, ioUnit,
+     I                'RL', active_var_length,
+     O                active_var, dummyRS,
+     I                bi, bj,
+     I                iRec, myThid )
+
+        IF ( lAdInit ) THEN
+C     Initialise the corresponding adjoint variable on the
+C     adjoint variable file. These files are tiled.
+
+          do i = 1, active_var_length
+            active_data_t(i) = 0. _d 0
+          enddo
+          CALL mds_writevec_loc(
+     I                adfname, prec, ioUnit,
+     I                'RL', active_var_length,
+     O                active_data_t, dummyRS,
+     I                bi, bj,
+     I                iRec, myOptimIter, myThid )
+
+        ENDIF
+
+      ENDIF
+
+C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. REVERSE_SIMULATION) THEN
+
+        CALL mds_readvec_loc(
+     I                activeVar_file, prec, ioUnit,
+     I                'RL', active_var_length,
+     O                active_data_t, dummyRS,
+     I                bi, bj,
+     I                iRec, myThid )
+
+C     Add active_var from appropriate location to data.
+        do i = 1, active_var_length
+          active_data_t(i) = active_data_t(i) + active_var(i)
+        enddo
+
+C     Store the result on disk.
+        CALL mds_writevec_loc(
+     I                activeVar_file, prec, ioUnit,
+     I                'RL', active_var_length,
+     O                active_data_t, dummyRS,
+     I                bi, bj,
+     I                iRec, myOptimIter myThid )
+
+C     Set active_var to zero.
+        do i = 1, active_var_length
+          active_data_t(i) = 0. _d 0
+        enddo
+
+      ENDIF
+
+C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
+C     Read the active variable from file.
+      CALL mds_readvec_loc(
+     I                activeVar_file, prec, ioUnit,
+     I                'RL', active_var_length,
+     O                active_var, dummyRS,
+     I                bi, bj,
+     I                iRec, myThid )
+      ENDIF
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: ACTIVE_READ_1D_RS
+C     !INTERFACE:
+      SUBROUTINE ACTIVE_READ_1D_RS(
+     I                          activeVar_file,
+     O                          active_var,
+     I                          active_var_length,
+     I                          lAdInit,
+     I                          iRec,
+     I                          theSimulationMode,
+     I                          myOptimIter,
+     I                          myThid )
+C     !DESCRIPTION: \bv
+C     ==================================================================
+C     SUBROUTINE ACTIVE_READ_1D_RS
+C     ==================================================================
+C     o Read an active 1D _RS vector from file.
+C     o Read the same 1D vector to all tiles/processes, so global by
+C       nature
+C     Modified from 3D: Tim Smith tsmith@oden.utexas.edu Oct-2019
+C     ==================================================================
+C     SUBROUTINE ACTIVE_READ_1D_RS
+C     ==================================================================
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == global variables ==
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#include "ctrl.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     activeVar_file :: filename
+C     active_var     :: vector
+C     active_var_length :: number of elements in active variable
+C     useCurrentDir  :: always read from the current directory
+C                        (even if "mdsioLocalDir" is set)
+C     lAdInit        :: initialisation of corresponding adjoint variable
+C                        and write to active file
+C     theSimulationMode :: forward, tangent linear, or reverse mode simulation
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
+      CHARACTER*(*) activeVar_file
+      _RS      active_var(*)
+      INTEGER  active_var_length
+      LOGICAL  lAdInit
+      INTEGER  iRec
+      INTEGER  theSimulationMode
+      INTEGER  myOptimIter
+      INTEGER  myThid
+
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
+C     !LOCAL VARIABLES:
+      CHARACTER*(2)  adpref
+      CHARACTER*(80) adfname
+      INTEGER i, bi, bj
+      INTEGER prec
+      INTEGER il
+      INTEGER ioUnit
+      _RS  active_data_t(*)
+      _RL  dummyRL(1)
+CEOP
+
+C     force 64-bit io
+      prec = ctrlprec
+
+C     set these to zero otherwise looks for tiled file
+      bi=0
+      bj=0
+
+C     ioUnit = 0 => open, read, and close the file... see
+C     mdsio_readvec_loc
+      ioUnit = 0
+      adpref = 'ad'
+      il = ILNBLNK( activeVar_file )
+      WRITE(adfname(1:80),'(80a)') ' '
+      WRITE(adfname(1:il+2),'(2A)') adpref, activeVar_file(1:il)
+
+C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
+
+C     Read the active variable from file.
+      CALL mds_readvec_loc(
+     I                activeVar_file, prec, ioUnit,
+     I                'RS', active_var_length,
+     O                dummyRL, active_var,
+     I                bi, bj,
+     I                iRec, myThid )
+
+        IF ( lAdInit ) THEN
+C     Initialise the corresponding adjoint variable on the
+C     adjoint variable file. These files are tiled.
+
+          do i = 1, active_var_length
+            active_data_t(i) = 0. _d 0
+          enddo
+          CALL mds_writevec_loc(
+     I                adfname, prec, ioUnit,
+     I                'RS', active_var_length,
+     O                dummyRL, active_data_t,
+     I                bi, bj,
+     I                iRec, myOptimIter, myThid )
+
+        ENDIF
+
+      ENDIF
+
+C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. REVERSE_SIMULATION) THEN
+
+        CALL mds_readvec_loc(
+     I                activeVar_file, prec, ioUnit,
+     I                'RS', active_var_length,
+     O                dummyRL, active_data_t,
+     I                bi, bj,
+     I                iRec, myThid )
+
+C     Add active_var from appropriate location to data.
+        do i = 1, active_var_length
+          active_data_t(i) = active_data_t(i) + active_var(i)
+        enddo
+
+C     Store the result on disk.
+        CALL mds_writevec_loc(
+     I                activeVar_file, prec, ioUnit,
+     I                'RS', active_var_length,
+     O                dummyRL, active_data_t,
+     I                bi, bj,
+     I                iRec, myOptimIter myThid )
+
+C     Set active_var to zero.
+        do i = 1, active_var_length
+          active_data_t(i) = 0. _d 0
+        enddo
+
+      ENDIF
+
+C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
+      IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
+C     Read the active variable from file.
+      CALL mds_readvec_loc(
+     I                activeVar_file, prec, ioUnit,
+     I                'RS', active_var_length,
+     O                dummyRL, active_var,
+     I                bi, bj,
+     I                iRec, myThid )
+      ENDIF
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
 C     !ROUTINE: ACTIVE_WRITE_3D_RL
 C     !INTERFACE:
       SUBROUTINE ACTIVE_WRITE_3D_RL(
@@ -618,3 +938,4 @@ C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
 
       RETURN
       END
+
