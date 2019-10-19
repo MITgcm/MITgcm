@@ -425,7 +425,7 @@ C conversions for different pH scales
       _RL sw2free
       _RL total2sw
       _RL sw2total
-      
+
         do i=imin,imax
          do j=jmin,jmax
           if (hFacC(i,j,1,bi,bj).gt.0. _d 0) then
@@ -526,7 +526,7 @@ C       pH scale  : N/A
            Rgas = 83.1451 _d 0  ! bar*cm3/(mol*K)
            RT = Rgas*t_k
            delta = (57.7 _d 0 - 0.118 _d 0*t_k)
-           B1 = -1636.75 _d 0 + 12.0408 _d 0*t_k 
+           B1 = -1636.75 _d 0 + 12.0408 _d 0*t_k
      &                  - 0.0327957 _d 0*t_k*t_k
            B  = B1 + 3.16528 _d 0*t_k*t_k*t_k*(0.00001 _d 0)
 
@@ -803,14 +803,14 @@ C pH scale conversion factors and conversions. Everything on total pH scale
            total2free = 1. _d 0/
      &                 (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
 
-           free2total = (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj)) 
+           free2total = (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
 
            free2sw = 1. _d 0
      &                 + (st(i,j,bi,bj)/ aks(i,j,bi,bj))
      &                 + (ft(i,j,bi,bj)/(akf(i,j,bi,bj)*total2free))
 
            sw2free = 1. _d 0 / free2sw
-           
+
            total2sw = total2free * free2sw
 
            sw2total = 1. _d 0 / total2sw
@@ -954,7 +954,7 @@ C pH scale converstions
       _RL sw2free
       _RL total2sw
       _RL sw2total
-      
+
 c determine pressure (bar) from depth
 c 1 BAR at z=0m (atmos pressure)
 c use UPPER surface of cell so top layer pressure = 0 bar
@@ -1031,13 +1031,13 @@ C       sulfate (bisulfate).  Ref: Millero (1995) for pressure correction
 
            total2free = 1. _d 0/
      &                 (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
-     
+
            free2total = (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
 
 C free2sw has an additional component from fluoride
            free2sw    = 1. _d 0
      &                 + st(i,j,bi,bj)/ aks(i,j,bi,bj)
-     
+
            aks(i,j,bi,bj) = aks(i,j,bi,bj)*free2total
 
 C -----------------------------------------------------------------------
@@ -1051,12 +1051,12 @@ C       References: Millero (1995) for pressure correction
 C free2sw has an additional component from fluoride add it here
            free2sw = free2sw
      &               + ft(i,j,bi,bj)/akf(i,j,bi,bj)
-     
+
            sw2free = 1. _d 0 / free2sw
-           
+
            total2sw = total2free * free2sw
 
-           sw2total = 1. _d 0 / total2sw 
+           sw2total = 1. _d 0 / total2sw
 
            akf(i,j,bi,bj) = akf(i,j,bi,bj)*free2total
 
@@ -1068,7 +1068,7 @@ C       References: Millero (1982) pressure correction
            pfac = (-zdvi + zdki*pressc/2. _d 0)*pressc/zrt
            ak1(i,j,bi,bj) = (total2sw_surf*ak1(i,j,bi,bj)
      &                      * exp(pfac))*sw2total
-     
+
 C -----------------------------------------------------------------------
 C       Apply pressure dependence to 2nd dissociation constant of carbonic acid
 C       References: Millero (1979) pressure correction
