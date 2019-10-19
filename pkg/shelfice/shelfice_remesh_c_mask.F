@@ -59,7 +59,7 @@ C     msgBuf  :: Informational/error message buffer
 
       prtFirst = .TRUE.
       ioUnit = -1
-      IF ( debugLevel.GE.debLevC ) ioUnit = standardMessageUnit
+      IF ( debugLevel.GE.debLevB ) ioUnit = standardMessageUnit
       stag_fac = 0.0
       IF (staggerTimestep) stag_fac = 1.0
 
@@ -206,8 +206,7 @@ C     maskC, hFacC, hFac_surfC, kSurfC, kTopC, recip_hFacC
        ENDDO
       ENDDO
       IF ( ioUnit.GE.0 .AND. .NOT. prtFirst ) THEN
-        WRITE(msgBuf,'(A,I10,A)') 'SHI_REMESH at it=', myIter,
-     &                            ' : end of report'
+        WRITE(msgBuf,'(A,A)') 'SHI_REMESH :', ' end of report'
         CALL PRINT_MESSAGE( msgBuf,ioUnit,SQUEEZE_RIGHT,myThid )
       ENDIF
 
