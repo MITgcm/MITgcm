@@ -35,11 +35,8 @@ C Apr 2011: fix vapour bug (following Bennington)
 C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
-#include "FFIELDS.h"
 #include "DIC_VARS.h"
 
 C     == Routine arguments ==
@@ -358,11 +355,8 @@ C !USES: ===============================================================
 
 C     == GLobal variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
-#include "FFIELDS.h"
 #include "DIC_VARS.h"
 
 C     == Routine arguments ==
@@ -522,12 +516,11 @@ C !USES: ===============================================================
         IMPLICIT NONE
 C     == GLobal variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "FFIELDS.h"
 #include "DIC_VARS.h"
+
 C     == Routine arguments ==
 C ttemp and stemp are local theta and salt arrays
 C dont really need to pass T and S in, could use theta, salt in
@@ -586,7 +579,7 @@ C....................................................................
 
         do i=imin,imax
          do j=jmin,jmax
-          if (hFacC(i,j,1,bi,bj).gt.0. _d 0) then
+          IF ( maskC(i,j,1,bi,bj).EQ.oneRS ) THEN
            t = ttemp(i,j)
            s = stemp(i,j)
 C terms used more than once for:
@@ -751,7 +744,7 @@ C ak1 and ak2 are on seawater scale and aks is on the free scale
            ak2(i,j,bi,bj)  = ak2(i,j,bi,bj)*sw2total
            aks(i,j,bi,bj)  = aks(i,j,bi,bj)*free2total
 #endif
-         else
+          ELSE
 c add Bennington
            fugf(i,j,bi,bj)=0. _d 0
            ff(i,j,bi,bj)=0. _d 0
@@ -769,9 +762,9 @@ c add Bennington
            bt(i,j,bi,bj) = 0. _d 0
            st(i,j,bi,bj) = 0. _d 0
            ft(i,j,bi,bj) = 0. _d 0
-         endif
-         end do
-        end do
+          ENDIF
+         enddo
+        enddo
 
         RETURN
         END
@@ -826,12 +819,11 @@ C !USES: ===============================================================
         IMPLICIT NONE
 C     == GLobal variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "FFIELDS.h"
 #include "DIC_VARS.h"
+
 C     == Routine arguments ==
 C ttemp and stemp are local theta and salt arrays
 C dont really need to pass T and S in, could use theta, salt in
@@ -915,14 +907,14 @@ c        write(6,*)'Klevel ',klevel
             cdepth = bdepth + 0.5 _d 0*drF(k)
             bdepth = bdepth + drF(k)
             pressc = 1. _d 0 + 0.1 _d 0*cdepth
-        end do
+        enddo
 cmick...................................................
 c        write(6,*)'depth,pressc ',cdepth,pressc
 cmick....................................................
 
         do i=imin,imax
          do j=jmin,jmax
-          if (hFacC(i,j,Klevel,bi,bj).gt.0. _d 0) then
+          IF ( maskC(i,j,Klevel,bi,bj).EQ.oneRS ) THEN
            t = ttemp(i,j)
            s = stemp(i,j)
 C terms used more than once for:
@@ -1265,7 +1257,7 @@ c alternative pressure dependence from Ingle (1975)
             Ksp_TP_Calc(i,j,bi,bj) = Ksp_T_Calc*10**(xvalue)
 
 C------------------------------------------------------------------------
-         else
+          ELSE
             ff(i,j,bi,bj)=0. _d 0
             ak0(i,j,bi,bj)= 0. _d 0
             ak1(i,j,bi,bj)= 0. _d 0
@@ -1282,9 +1274,9 @@ C------------------------------------------------------------------------
             st(i,j,bi,bj) = 0. _d 0
             ft(i,j,bi,bj) = 0. _d 0
             Ksp_TP_Calc(i,j,bi,bj) = 0. _d 0
-         endif
-         end do
-        end do
+          ENDIF
+         enddo
+        enddo
 
-        return
-        end
+        RETURN
+        END
