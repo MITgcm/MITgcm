@@ -90,28 +90,35 @@ C     For TLM, g_xx_ files should be seeded with ones
      &                  fname(2), fillvalue, ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
-     &           call ctrl_set_globfld_xyz( fname(1), ivarindex, mythid)
+     &           call ctrl_set_globfld_xyz( 
+     &                  fname(1), fillvalue, ivarindex, mythid)
          else if ( whichxyz .EQ. 'xy') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
-     &           call ctrl_set_globfld_xy( fname(2), ivarindex, mythid)
+     &          call ctrl_set_globfld_xy( 
+     &                  fname(2), fillvalue, ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
-     &           call ctrl_set_globfld_xy( fname(1), ivarindex, mythid )
+     &           call ctrl_set_globfld_xy( 
+     &                  fname(1), ivarindex, mythid )
          else if ( whichxyz .EQ. 'xz') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
-     &           call ctrl_set_globfld_xz( fname(2), ivarindex, mythid)
+     &          call ctrl_set_globfld_xz( 
+     &                  fname(2), fillvalue, ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
-     &           call ctrl_set_globfld_xz( fname(1), ivarindex, mythid )
+     &           call ctrl_set_globfld_xz( 
+     &                  fname(1), ivarindex, mythid )
          else if ( whichxyz .EQ. 'yz') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
-     &           call ctrl_set_globfld_yz( fname(2), ivarindex, mythid)
+     &          call ctrl_set_globfld_yz( 
+     &                  fname(2), fillvalue, ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
-     &           call ctrl_set_globfld_yz( fname(1), ivarindex, mythid )
+     &           call ctrl_set_globfld_yz( 
+     &                  fname(1), ivarindex, mythid )
          else
             STOP 'whichxyz option not implemented'
          end if
