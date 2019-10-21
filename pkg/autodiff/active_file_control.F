@@ -520,7 +520,7 @@ C     Store the result on disk.
      I                'RL', active_var_length,
      O                active_data_t, dummyRS,
      I                bi, bj,
-     I                iRec, myOptimIter myThid )
+     I                iRec, myOptimIter, myThid )
 
 C     Set active_var to zero.
         do i = 1, active_var_length
@@ -678,7 +678,7 @@ C     Store the result on disk.
      I                'RS', active_var_length,
      O                dummyRL, active_data_t,
      I                bi, bj,
-     I                iRec, myOptimIter myThid )
+     I                iRec, myOptimIter, myThid )
 
 C     Set active_var to zero.
         do i = 1, active_var_length
