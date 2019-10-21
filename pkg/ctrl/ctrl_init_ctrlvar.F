@@ -54,6 +54,7 @@ c     == routine arguments ==
 c     == local variables ==
       character*( 80) fname(3)
       logical  exst
+      _RL fillvalue
 
 c     _BEGIN_MASTER( mythid )
       ncvarindex(ivarindex)    = ncvarindex_loc
@@ -75,12 +76,18 @@ c     _BEGIN_MASTER( mythid )
       inquire( file='costfinal', exist=exst )
 c     _END_MASTER( mythid )
 
+C     In an adjoint run, adxx_ files should be seeded with zeros
+C     For TLM, g_xx_ files should be seeded with ones
+      fillvalue = 0. _d 0
+      if (yadprefix.eq.'g_') fillvalue = 1. _d 0
+
       IF ( .NOT. exst) THEN
 
          if ( whichxyz .EQ. '3d') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
-     &           call ctrl_set_globfld_xyz( fname(2), ivarindex, mythid)
+     &          call ctrl_set_globfld_xyz( 
+     &                  fname(2), fillvalue, ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xyz( fname(1), ivarindex, mythid)
