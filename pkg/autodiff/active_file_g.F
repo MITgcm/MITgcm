@@ -415,6 +415,8 @@ C     active_var:      array
 C     g_active_var:    tangent linear  array
 C     active_var_length: array length
 C     iRec:            record number
+C     lAdInit:         initialisation of corresponding adjoint
+C                      variable and write to active file
 C     myOptimIter:     number of optimization iteration (default: 0)
 C     myThid:          thread number for this instance
       CHARACTER*(*) active_var_file
@@ -424,6 +426,7 @@ C     myThid:          thread number for this instance
       INTEGER iRec
       INTEGER myOptimIter
       INTEGER myThid
+      LOGICAL lAdInit
       _RL     dummy
       _RL     g_dummy
 
