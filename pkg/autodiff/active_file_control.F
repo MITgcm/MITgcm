@@ -947,7 +947,6 @@ C     !INTERFACE:
      I                          activeVar_file,
      O                          active_var,
      I                          active_var_length,
-     I                          lAdInit,
      I                          iRec,
      I                          theSimulationMode,
      I                          myOptimIter,
@@ -980,15 +979,12 @@ C     active_var     :: vector
 C     active_var_length :: number of elements in active variable
 C     useCurrentDir  :: always read from the current directory
 C                        (even if "mdsioLocalDir" is set)
-C     lAdInit        :: initialisation of corresponding adjoint variable
-C                        and write to active file
 C     theSimulationMode :: forward, tangent linear, or reverse mode simulation
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
       CHARACTER*(*) activeVar_file
       _RL      active_var(*)
       INTEGER  active_var_length
-      LOGICAL  lAdInit
       INTEGER  iRec
       INTEGER  theSimulationMode
       INTEGER  myOptimIter
@@ -1086,7 +1082,6 @@ C     !INTERFACE:
      I                          activeVar_file,
      O                          active_var,
      I                          active_var_length,
-     I                          lAdInit,
      I                          iRec,
      I                          theSimulationMode,
      I                          myOptimIter,
@@ -1119,15 +1114,12 @@ C     active_var     :: vector
 C     active_var_length :: number of elements in active variable
 C     useCurrentDir  :: always read from the current directory
 C                        (even if "mdsioLocalDir" is set)
-C     lAdInit        :: initialisation of corresponding adjoint variable
-C                        and write to active file
 C     theSimulationMode :: forward, tangent linear, or reverse mode simulation
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
       CHARACTER*(*) activeVar_file
       _RS      active_var(*)
       INTEGER  active_var_length
-      LOGICAL  lAdInit
       INTEGER  iRec
       INTEGER  theSimulationMode
       INTEGER  myOptimIter
