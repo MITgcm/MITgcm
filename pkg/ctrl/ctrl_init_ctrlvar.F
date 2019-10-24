@@ -85,8 +85,7 @@ C     For TLM, g_xx_ files should be seeded with ones
 
          if ( whichxyz .EQ. '3d') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
-            if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
-     &          call ctrl_set_globfld_xyz( 
+            call ctrl_set_globfld_xyz(
      &                  fname(2), fillvalue, ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
@@ -94,8 +93,7 @@ C     For TLM, g_xx_ files should be seeded with ones
      &                  fname(1), 0. _d 0, ivarindex, mythid)
          else if ( whichxyz .EQ. 'xy') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
-            if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
-     &          call ctrl_set_globfld_xy( 
+            call ctrl_set_globfld_xy(
      &                  fname(2), fillvalue, ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
@@ -103,8 +101,7 @@ C     For TLM, g_xx_ files should be seeded with ones
      &                  fname(1), 0. _d 0, ivarindex, mythid )
          else if ( whichxyz .EQ. 'xz') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
-            if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
-     &          call ctrl_set_globfld_xz( 
+            call ctrl_set_globfld_xz(
      &                  fname(2), fillvalue, ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
@@ -112,8 +109,7 @@ C     For TLM, g_xx_ files should be seeded with ones
      &                  fname(1), 0. _d 0, ivarindex, mythid )
          else if ( whichxyz .EQ. 'yz') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
-            if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
-     &          call ctrl_set_globfld_yz( 
+            call ctrl_set_globfld_yz(
      &                  fname(2), fillvalue, ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
