@@ -1,6 +1,15 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/*/results/output.txt:
+  - update reference machine from baudelaire.mit.edu (running fc13)
+    to villon.mit.edu (running Ubuntu 18 LTS) and update few output.txt
+  - change travis Docker settings accordingly + update documentation.
+
+checkpoint67m (2019/10/16)
+o doc/examples:
+  - Convert remaining old doc tutorials from latex to rst files and add them
+    to current MITgcm documentation.
 o pkg/ptracers:
   - new diagnostics Tp_gTr01, ... for ptracer total transport tendencies
     (before gchem_forcing_sep); this includes advection and diffusion terms,

@@ -44,22 +44,33 @@ class MNC:
 
     Parameters
     ----------
-    fpatt     :: glob pattern for tile files
-    layout    :: which global layout to use:
-                 'model' : use layout implied by Nx, Ny
-                 'exch2' : use exch2 global layout
-                 'faces' : variables are lists of exch2 faces
-                 default is to use exch2 layout if present, model otherwise
+    fpatt : string
+        glob pattern for tile files
+    layout : string
+        which global layout to use:
 
-    Example:
+        'model'
+            use layout implied by Nx, Ny
+        'exch2'
+            use exch2 global layout
+        'faces'
+            variables are lists of exch2 faces
 
-    nc = mnc_files('mnc_*/state.0000000000.t*.nc')
-    temp = nc.variables['Temp'][:]
-    salt = nv.variables['S'][:]
-    nc.close()
+        default is to use exch2 layout if present, model otherwise
 
+    Example
+    -------
+    >>> nc = mnc_files('mnc_*/state.0000000000.t*.nc')
+    >>> temp = nc.variables['Temp'][:]
+    >>> salt = nv.variables['S'][:]
+    >>> nc.close()
     temp and salt are now assembled (global) arrays of shape (Nt, Nr, Ny, Nx)
     where Nt is the number iterations found in the file (in this case probably 1).
+
+    Notes
+    -----
+    The multitime option is not implemented, i.e., MNC cannot read files split
+    in time.
     """
 
     # avoid problems with __del__
@@ -303,7 +314,7 @@ class MNCVariable(object):
                     s[self._Xdim] = slice(self._i0[i], self._ie[i])
                 if self._Ydim is not None:
                     s[self._Ydim] = slice(self._j0[i], self._je[i])
-                res[s] = nc.variables[self._name][:]
+                res[tuple(s)] = nc.variables[self._name][:]
 
             return res
         else:
@@ -329,7 +340,7 @@ class MNCVariable(object):
                     e = np.clip(je, J0, Je)
                     sres[self._Ydim] = slice(max(-a, 0), (e - J0)//Js)
                     s[self._Ydim] = slice(max(J0 - j0, b), max(Je - j0, 0), Js)
-                res[sres] = nc.variables[self._name][s]
+                res[tuple(sres)] = nc.variables[self._name][tuple(s)]
 
             return res.reshape(resshape)
 
@@ -346,7 +357,7 @@ class MNCVariable(object):
                 s[self._Xdim] = slice(self._i0[i], self._ie[i])
             if self._Ydim is not None:
                 s[self._Ydim] = slice(self._j0[i], self._je[i])
-            res[fn][s] = nc.variables[self._name][:]
+            res[fn][tuple(s)] = nc.variables[self._name][:]
         for f in range(self._nf):
             res[f] = res[f][ind]
 
@@ -362,7 +373,7 @@ class MNCVariable(object):
                     s[self._Xdim] = slice(self._i0[i], self._ie[i])
                 if self._Ydim is not None:
                     s[self._Ydim] = slice(self._j0[i], self._je[i])
-                res[s] = nc.variables[self._name][:]
+                res[tuple(s)] = nc.variables[self._name][:]
 
         return res
 
@@ -374,24 +385,34 @@ mnc_files.__doc__ = MNC.__doc__
 
 
 def rdmnc(fpatt, varnames=None, iters=None, slices=Ellipsis, layout=None):
-    ''' Read one or more variables from an mnc file set. 
-    
+    '''
+    Read one or more variables from an mnc file set.
+
     Parameters
     ----------
-    fpatt    :: glob pattern for netcdf files comprising the set
-    varnames :: list of variables to read (default all)
-    iters    :: list of iterations (not time) to read
-    slices   :: tuple of slices to read from each variable
-                (typically given as numpy.s_[...])
+    fpatt : string
+        glob pattern for netcdf files comprising the set
+    varnames : list of strings, optional
+        list of variables to read (default all)
+    iters : list of int, optional
+        list of iterations (not time) to read
+    slices : tuple of slice objects
+        tuple of slices to read from each variable
+        (typically given as numpy.s_[...])
 
-    Returns a dictionary of arrays.
+    Returns
+    -------
+    dict of numpy arrays
+        dictionary of variable arrays
 
-    Example:
+    Example
+    -------
+    >>> S = rdmnc("mnc_*/state.0000000000.*', ['U', 'V'], slices=numpy.s_[..., 10:-10, 10:-10])
+    >>> u = S['U']
+    >>> v = S['V']
 
-    S = rdmnc("mnc_*/state.0000000000.*', ['U', 'V'], slices=numpy.s_[..., 10:-10, 10:-10])
-    u = S['U']
-    v = S['V']
-
+    Notes
+    -----
     Can currently read only one file set (i.e., 1 file per tile),
     not several files split in time.
 

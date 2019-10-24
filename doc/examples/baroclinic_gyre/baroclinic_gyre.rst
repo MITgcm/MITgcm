@@ -66,7 +66,6 @@ represent temperature.
 
       Schematic of simulation domain and wind-stress forcing function for baroclinic gyre numerical experiment. The domain is enclosed by solid walls.
 
-
 Temperature is restored in the surface layer to a linear profile:
 
 .. math::
@@ -679,7 +678,6 @@ output files for :filelink:`pkg/monitor` output, but rather to include this moni
 (see :numref:`baro_gyre_build_run`). See :numref:`pkg_mnc_inputs` for a complete
 listing of :filelink:`pkg/mnc` namelist parameters and their default settings.
 
-
 Note that unlike raw binary output, which overwrites any existing files, when using mnc output the model will create new directories if the parameters
 :varlink:`mnc_use_outdir` and :varlink:`mnc_outdir_str` are set. However, if those parameters are not set the model will terminate with an error if one attempts
 to overwrite an existing file (i.e., if re-running in a previous
@@ -836,7 +834,6 @@ huge quantities of separate files, whereas using `netCDF <http://www.unidata.uca
 will greatly reduce the number of files. On the other hand, the
 `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ files created can instead become quite large.
 
-
 To more easily process and plot our results as a single array over the full domain,
 we will first reassemble the individual tiles into a new `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ format global data file.
 To accomplish this, we will make use of utility script :filelink:`utils/python/MITgcmutils/scripts/gluemncbig`. From the output run directory, type:
@@ -850,7 +847,6 @@ To accomplish this, we will make use of utility script :filelink:`utils/python/M
     % ./gluemncbig -o surfDiag.nc mnc_test_*/surfDiag*.t*.nc
     % ./gluemncbig -o phiHyd.nc mnc_test_*/phiHyd*.t*.nc
     % ./gluemncbig -o phiHydLow.nc mnc_test_*/phiHydLow*.t*.nc
-
 
 For help using this utility, type ``gluemncbig --help``; note a python installation must for available for this script to work.
 The files ``grid.nc``, ``state.nc``, etc. are concatenated from the separate ``t001``, ``t002``, ``t003``, ``t004`` files
@@ -964,7 +960,6 @@ finding `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_  librar
 Several lines in :filelink:`verification/tutorial_barotropic_gyre/code/SIZE.h_mpi` are different from the standard version.
 First, we change :varlink:`nSx` and :varlink:`nSy` to 1, so that each process integrates the model for a single tile.
 
-
    .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/code/SIZE.h_mpi
        :start-at: nSx =
        :end-at: nSy =
@@ -987,7 +982,6 @@ Finally, to run the model (from your run directory), using four processes runnin
 ::
 
      % mpirun -np 4 ../build_mpi/mitgcmuv
-
 
 On some systems the `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
 run command (and the subsequent command-line option ``-np``) might be something other than ``mpirun``; ask your local system administrator.
@@ -1016,13 +1010,11 @@ how many threads at compile-time (unlike `MPI <https://en.wikipedia.org/wiki/Mes
 information to be set in :filelink:`SIZE.h <verification/tutorial_baroclinic_gyre/code/SIZE.h>`).
 Create and navigate into a new build directory ``build_openmp`` and type:
 
-
   ::
 
      % ../../../tools/genmake2 -mods ../code -omp -of=«/PATH/TO/OPTFILE»
      % make depend
      % make
-
 
 In a run directory, overwrite the contents of :filelink:`eedata <verification/tutorial_baroclinic_gyre/input/eedata>` with file
 :filelink:`verification/tutorial_baroclinic_gyre/input/eedata.mth`. The parameter :varlink:`nTy` is changed; we now specify to
@@ -1114,7 +1106,6 @@ to the meridional overturning circulation.
 We leave it as an exercise to the reader to
 integrate the solution further and/or examine and calculate the meridional overturning circulation strength over time.
 
-
   .. figure:: figs/trelax_theta_timeseries.png
       :width: 100%
       :align: center
@@ -1192,7 +1183,6 @@ Read in diagnostic ``THETA`` from the file ``dynDiag.nc``. :numref:`baroclinic_g
 at 220 m depth (vertical level k=4). :numref:`baroclinic_gyre_thetaplots`\b shows a slice in the :math:`xz` plane at :math:`28.5^{\circ}`\ N
 (:math:`y`-dimension j=15), through the center of the subtropical gyre.
 
-
  .. figure:: figs/baroc_thetaplots.png
       :width: 100%
       :align: center
@@ -1200,8 +1190,6 @@ at 220 m depth (vertical level k=4). :numref:`baroclinic_gyre_thetaplots`\b sho
       :name: baroclinic_gyre_thetaplots
 
       Contour plot of potential temperature at year 100 a) at a depth of 220 m and b) through a section at :math:`28.5^{\circ}`\ N. Contour interval is 2K.
-
-
 
 The dynamics of the subtropical gyre are governed by
 Ventilated Thermocline Theory (see, for example, Pedlosky (1996) :cite:`pedlosky:96` or
@@ -1217,22 +1205,10 @@ the depth of the thermocline :math:`h` should scale as:
 
 .. math:: h = \left( \frac{w_e f^2 L_x}{\beta \Delta b} \right) ^2 = \left( \frac{(\tau / L_y) f L_x}{\beta \rho'} \right) ^2
 
-
 where :math:`w_e` is a representive value for Ekman pumping, :math:`\Delta b = g \rho' / \rho_0`
 is the variation in buoyancy across the gyre,
 and :math:`L_x` and :math:`L_y` are length scales in the
 :math:`x` and :math:`y` directions, respectively.
 Plugging in applicable values at :math:`30^{\circ}`\ N,
 we obtain an estimate for :math:`h` of 200 m, which agrees quite well with that observed in :numref:`baroclinic_gyre_thetaplots`\b.
-
-
-
-
-
-
-
-
-
-
-
 

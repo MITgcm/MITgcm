@@ -1131,25 +1131,27 @@ NetCDF output
 Similar scripts for `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output (e.g., :filelink:`utils/matlab/rdmnc.m`) are available and they
 are described in :numref:`pkg_mnc`.
 
+.. _sec_python:
+
 Python
 ~~~~~~
+
+Install the MITgcmutils python package following the instructions in :numref:`MITgcmutils`.
 
 Raw binary output
 ^^^^^^^^^^^^^^^^^
 
-The repository includes `Python <https://www.python.org/>`_ scripts
-for reading binary :filelink:`/pkg/mdsio` format under :filelink:`utils/python`.
 The following example shows how to load in some data:
 
 ::
 
     # python
-    import mds
+    from MITgcmutils import mds
 
     Eta = mds.rdmds('Eta', itrs=10)
 
-The docstring for ``mds.rdmds`` (see file :filelink:`utils/python/MITgcmutils/MITgcmutils/mds.py`)
-contains much more detail about using this function and the options that it takes.
+For more information about using this function and the options that it takes,
+see the API docs, :meth:`MITgcmutils.mds.rdmds`.
 
 NetCDF output
 ^^^^^^^^^^^^^
@@ -1159,7 +1161,9 @@ is currently produced with one file per processor. This means the individual til
 need to be stitched together to create a single
 `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file that spans the model domain. The script
 :filelink:`utils/python/MITgcmutils/scripts/gluemncbig` can do
-this efficiently from the command line.
+this efficiently from the command line.  If you have installed the MITgcmutils package,
+a copy of gluemncbig should be on your path.  For usage information, see
+:numref:`gluemncbig`.
 
 The following example shows how to use the `xarray python package <http://xarray.pydata.org/>`_ to read
 the resulting `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file into `Python <https://www.python.org/>`_:
@@ -2749,4 +2753,3 @@ produces a more coding-oriented set of print statements (e.g., entering and exit
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`maxLengthPrt1D`              | EEPARMS   | 65                                               | maximum number of 1D array elements to print to standard output                                         |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-
