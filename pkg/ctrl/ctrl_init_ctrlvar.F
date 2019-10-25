@@ -77,7 +77,8 @@ c     _BEGIN_MASTER( mythid )
 c     _END_MASTER( mythid )
 
 C     In an adjoint run, adxx_ files should be seeded with zeros
-C     For TLM, g_xx_ files should be seeded with ones
+C     For TLM, g_xx_ files should be seeded with ones, which
+C     can later be modified by a weight mask in ctrl_map*
       fillvalue = 0. _d 0
       if (yadprefix.eq.'g_') fillvalue = 1. _d 0
 
@@ -85,7 +86,8 @@ C     For TLM, g_xx_ files should be seeded with ones
 
          if ( whichxyz .EQ. '3d') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
-            call ctrl_set_globfld_xyz(
+            if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
+     &           call ctrl_set_globfld_xyz(
      &                  fname(2), fillvalue, ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
@@ -93,7 +95,8 @@ C     For TLM, g_xx_ files should be seeded with ones
      &                  fname(1), 0. _d 0, ivarindex, mythid)
          else if ( whichxyz .EQ. 'xy') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
-            call ctrl_set_globfld_xy(
+            if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
+     &           call ctrl_set_globfld_xy(
      &                  fname(2), fillvalue, ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
@@ -101,7 +104,8 @@ C     For TLM, g_xx_ files should be seeded with ones
      &                  fname(1), 0. _d 0, ivarindex, mythid )
          else if ( whichxyz .EQ. 'xz') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
-            call ctrl_set_globfld_xz(
+            if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
+     &           call ctrl_set_globfld_xz(
      &                  fname(2), fillvalue, ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
@@ -109,7 +113,8 @@ C     For TLM, g_xx_ files should be seeded with ones
      &                  fname(1), 0. _d 0, ivarindex, mythid )
          else if ( whichxyz .EQ. 'yz') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
-            call ctrl_set_globfld_yz(
+            if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
+     &           call ctrl_set_globfld_yz(
      &                  fname(2), fillvalue, ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
