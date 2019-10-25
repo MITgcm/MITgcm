@@ -181,6 +181,9 @@ C     [0,1]         :: End points for interpolation
 #ifdef SHORTWAVE_HEATING
      &               , Qsw0, Qsw1
 #endif
+#ifdef ALLOW_GEOTHERMAL_FLUX
+     &               , geothflux0, geothflux1
+#endif
 #ifdef ATMOSPHERIC_LOADING
      &               , pLoad0, pLoad1
 #endif
@@ -206,6 +209,10 @@ C     [0,1]         :: End points for interpolation
 #ifdef SHORTWAVE_HEATING
       _RS  Qsw1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  Qsw0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+#ifdef ALLOW_GEOTHERMAL_FLUX
+      _RS  geothflux1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  geothflux0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 #endif /* EXCLUDE_FFIELDS_LOAD */
 
