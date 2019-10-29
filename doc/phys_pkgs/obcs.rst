@@ -203,6 +203,9 @@ their default values.
 Defining open boundary positions
 ++++++++++++++++++++++++++++++++
 
+Simple open boundaries
+######################
+
 There are four open boundaries (OBs): Northern, Southern, Eastern, and
 Western. All OB locations are specified by their absolute meridional
 (Northern/Southern) or zonal (Eastern/Western) indices. Thus, for each
@@ -270,6 +273,37 @@ boundary points:
 
 
 .. _ssub_phys_pkg_obcs_equations:
+
+More complex open boundary geometry
+###################################
+
+OBs are not restricted to single rows or columns. Each OB 
+can be distributed in different rows and columns resulting 
+in OB consisting of the combination of different types of 
+open boundaries (i.e. N, S, E and W). :numref:`fig_obcsexample` displays 
+such an OB located on the left-bottom corner of a domain. 
+Note there are five boundary points defined by southern and 
+western boundaries. In particular, there are five southern 
+boundary (blue lines) and two western boundaries points (red lines).
+For the boundary displayed in :numref:`fig_obcsexample` and the 
+same dimensions as in the previous example (i.e. :math:`120 \times 144` grid points), 
+the namelist looks like this:
+
+::
+
+      OB Iwest = 1*0,1*5,142*0,
+      OB Jsouth =2*3,3*2,115*0,
+
+
+.. figure:: figs/obcsexample.*
+    :width: 70%
+    :align: center
+    :alt: Example boundary
+    :name: fig_obcsexample
+
+    Example boundary with more than one row. The dark grey, light grey, 
+    and white boxes are points outside the domain, OB points, and ocean points, 
+    respectively. The black dots mark the OB index to write into the namelist.
 
 Equations and key routines
 ++++++++++++++++++++++++++
