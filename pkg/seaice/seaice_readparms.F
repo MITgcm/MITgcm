@@ -809,13 +809,6 @@ C     JFNK problem (and Krylov solver is not used)
       IF ( SEAICEuseJFNK .AND. .NOT. SEAICEusePicardAsPrecon )
      &     SEAICEuseKrylov = .FALSE.
 
-CMLC     Set different defaults for different solvers
-CML      IF ( SEAICEnonLinIterMax .EQ. UNSET_I ) THEN
-CMLC     two nonlinear iterations correspond to the original modified
-CMLC     Euler time stepping scheme of Zhang+Hibler (1997)
-CML       IF ( SEAICEuseLSR ) SEAICEnonLinIterMax = 2
-CML       IF ( SEAICEuseJFNK.OR.SEAICEuseKrylov ) SEAICEnonLinIterMax = 10
-CML      ENDIF
 C     Make sure that we have least two pseudo time steps for Picard-LSR
       IF ( SEAICEuseLSR .AND. .NOT. SEAICEusePicardAsPrecon )
      &     SEAICEnonLinIterMax = MAX(SEAICEnonLinIterMax,2)
