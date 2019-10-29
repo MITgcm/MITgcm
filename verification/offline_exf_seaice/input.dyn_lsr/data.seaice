@@ -13,6 +13,8 @@
  HsnowFile = 'const_00.bin',
  SEAICEwriteState   = .TRUE.,
  SEAICE_monFreq = 1800.,
+# old defaults
+ SEAICEnonLinIterMax = 2,
  &
 
  &SEAICE_PARM03

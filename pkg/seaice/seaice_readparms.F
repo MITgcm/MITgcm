@@ -227,8 +227,8 @@ C--   set default sea ice parameters
       SEAICEuseTEM       = .FALSE.
       SEAICEuseMetricTerms = .TRUE.
       SEAICEuseEVPpickup = .TRUE.
-      SEAICEuseEVPstar   = .FALSE.
-      SEAICEuseEVPrev    = .FALSE.
+      SEAICEuseEVPstar   = .TRUE.
+      SEAICEuseEVPrev    = .TRUE.
       SEAICErestoreUnderIce = .FALSE.
       SEAICE_growMeltByConv = .FALSE.
       SEAICE_salinityTracer = .FALSE.
@@ -486,7 +486,7 @@ C     LSR parameters
       SEAICE_LSRrelaxU = 0.95 _d 0
       SEAICE_LSRrelaxV = 0.95 _d 0
       SOLV_NCHECK= 2
-      SEAICEnonLinIterMax = UNSET_I
+      SEAICEnonLinIterMax = 10
       SEAICElinearIterMax = UNSET_I
       SEAICEpreconNL_Iter =  0
       SEAICEpreconLinIter = 10
@@ -495,7 +495,7 @@ C     LSR parameters
 #else
       LSR_mixIniGuess = -1
 #endif
-      LSR_ERROR  = 0.0001    _d 0
+      LSR_ERROR  = 0.00001    _d 0
       SEAICEuseMultiTileSolver = .FALSE.
 
       SEAICE_area_floor = siEPS
@@ -713,18 +713,15 @@ C     yet been tried nor thought through.
       ENDIF
       SEAICEuseEVP = .FALSE.
 #ifdef SEAICE_ALLOW_EVP
-C     There are four ways to turn on EVP
+C     There are three ways to turn on EVP
 C     1. original EVP (Hunke, 2001)
-      IF ( SEAICE_deltaTevp .NE. UNSET_RL )      SEAICEuseEVP = .TRUE.
+      IF ( SEAICE_deltaTevp .NE. UNSET_RL ) SEAICEuseEVP = .TRUE.
 C     2. modified EVP (Lemieux et al., 2012) or revised EVP (Bouillon
 C     et al., 2014) by setting alpha and beta
       IF ( SEAICE_evpAlpha  .NE. UNSET_RL
-     &  .OR. SEAICE_evpBeta .NE. UNSET_RL )  SEAICEuseEVPstar = .TRUE.
+     &  .OR. SEAICE_evpBeta .NE. UNSET_RL ) SEAICEuseEVP = .TRUE.
 C     3. adaptive EVP
-      IF ( SEAICEaEVPcoeff  .NE. UNSET_RL )  SEAICEuseEVPstar = .TRUE.
-C     4. modified EVP* (Lemieux et al., 2012) or revised EVP (Bouillon
-C     et al., 2014) by explicitly setting up specific flags
-      IF ( SEAICEuseEVPstar.OR.SEAICEuseEVPrev ) SEAICEuseEVP = .TRUE.
+      IF ( SEAICEaEVPcoeff  .NE. UNSET_RL ) SEAICEuseEVP = .TRUE.
 C     if EVP is turned on, a couple of parameters need to be computed
       IF ( SEAICEuseEVP ) THEN
        IF (    (SEAICE_deltaTdyn/SEAICE_deltaTevp) .NE.
@@ -759,6 +756,9 @@ C     derive other parameters
        ELSE
         SEAICE_evpTauRelax = 0.5 _d 0 *SEAICE_evpAlpha*SEAICE_deltaTevp
        ENDIF
+C     determine number of internal steps
+       IF ( SEAICEnEVPstarSteps.EQ.UNSET_I )
+     &      SEAICEnEVPstarSteps = INT(SEAICE_deltaTdyn/SEAICE_deltaTevp)
 C     this turns on adaptive EVP
        IF ( SEAICEaEVPcoeff .NE. UNSET_RL ) THEN
         IF ( SEAICEaEVPcStar  .EQ.UNSET_RL) SEAICEaEVPcStar   =4. _d 0
@@ -809,13 +809,13 @@ C     JFNK problem (and Krylov solver is not used)
       IF ( SEAICEuseJFNK .AND. .NOT. SEAICEusePicardAsPrecon )
      &     SEAICEuseKrylov = .FALSE.
 
-C     Set different defaults for different solvers
-      IF ( SEAICEnonLinIterMax .EQ. UNSET_I ) THEN
-C     two nonlinear iterations correspond to the original modified
-C     Euler time stepping scheme of Zhang+Hibler (1997)
-       IF ( SEAICEuseLSR ) SEAICEnonLinIterMax = 2
-       IF ( SEAICEuseJFNK.OR.SEAICEuseKrylov ) SEAICEnonLinIterMax = 10
-      ENDIF
+CMLC     Set different defaults for different solvers
+CML      IF ( SEAICEnonLinIterMax .EQ. UNSET_I ) THEN
+CMLC     two nonlinear iterations correspond to the original modified
+CMLC     Euler time stepping scheme of Zhang+Hibler (1997)
+CML       IF ( SEAICEuseLSR ) SEAICEnonLinIterMax = 2
+CML       IF ( SEAICEuseJFNK.OR.SEAICEuseKrylov ) SEAICEnonLinIterMax = 10
+CML      ENDIF
 C     Make sure that we have least two pseudo time steps for Picard-LSR
       IF ( SEAICEuseLSR .AND. .NOT. SEAICEusePicardAsPrecon )
      &     SEAICEnonLinIterMax = MAX(SEAICEnonLinIterMax,2)

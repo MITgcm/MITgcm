@@ -11,6 +11,8 @@
  SEAICEwriteState   = .TRUE.,
  SEAICE_monFreq = 21600.,
  SEAICE_monFreq = 1800.,
+# old defaults
+ SEAICEnonLinIterMax = 2,
  &
 
  &SEAICE_PARM03

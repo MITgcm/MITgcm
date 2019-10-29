@@ -25,6 +25,7 @@
  SEAICE_waterDrag = 0.005339805825242718,
  SEAICE_Olx = 0,
  SEAICE_Oly = 0,
+ SEAICEnonLinIterMax = 2,
  &
 
  &SEAICE_PARM03

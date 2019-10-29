@@ -769,18 +769,7 @@ C     end if usePW79thermodynamics
 
 #ifdef SEAICE_ALLOW_EVP
 # ifdef ALLOW_AUTODIFF_TAMC
-      IF ( INT(SEAICE_deltaTdyn/SEAICE_deltaTevp).GT.nEVPstepMax ) THEN
-       WRITE(msgBuf,'(A)')
-     &      'SEAICE_ALLOW_EVP: need to set nEVPstepMax to >= nEVPstep'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A,I4)')
-     &      'nEVPstep = INT(SEAICE_deltaTdyn/SEAICE_deltaTevp) = ',
-     &      INT(SEAICE_deltaTdyn/SEAICE_deltaTevp)
-       CALL PRINT_ERROR( msgBuf, myThid )
-       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-      ENDIF
-      IF ( SEAICEnEVPstarSteps.NE.UNSET_I .AND.
-     &     SEAICEnEVPstarSteps.GT.nEVPstepMax ) THEN
+      IF ( SEAICEnEVPstarSteps.GT.nEVPstepMax ) THEN
        WRITE(msgBuf,'(A)')
      &      'SEAICE_CHECK: need to set nEVPstepMax to >= '//
      &      'SEAICEnEVPstarSteps'
@@ -792,9 +781,10 @@ C     end if usePW79thermodynamics
       ENDIF
 # endif
       IF ( .NOT.(SEAICEuseEVPstar.OR.SEAICEuseEVPrev)
-     &     .AND. SEAICEnEVPstarSteps.NE.UNSET_I ) THEN
+     &     .AND. SEAICEnEVPstarSteps.NE.
+     &     INT(SEAICE_deltaTdyn/SEAICE_deltaTevp) ) THEN
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEnEVPstarSteps is '//
-     &      'set, but SEAICEuseEVPstar = .FALSE.'
+     &      'set in namelist, but SEAICEuseEVPstar = .FALSE.'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF

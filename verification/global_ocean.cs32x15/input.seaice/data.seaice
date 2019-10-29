@@ -14,6 +14,8 @@
  SEAICEheatConsFix     = .TRUE.,
 #SEAICE_monFreq        = 2592000.,
 #SEAICEwriteState      = .TRUE.,
+# old defaults
+ SEAICEnonLinIterMax   = 2,
  &
 
  &SEAICE_PARM03
