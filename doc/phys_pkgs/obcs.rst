@@ -6,22 +6,21 @@ OBCS: Open boundary conditions for regional modeling
 Authors:
 Alistair Adcroft, Patrick Heimbach, Samar Katiwala, Martin Losch
 
-
 .. _ssub_pkg_obcs_intro:
 
 Introduction
 ++++++++++++
 
-The OBCS-package is fundamental to regional ocean modeling with the
+The OBCS-package (:filelink:`pkg/obcs`) is fundamental to regional ocean modeling with the
 MITgcm, but there are so many details to be considered in regional
 ocean modeling that this package cannot accommodate all imaginable and
 possible options. Therefore, for a regional simulation with very
 particular details it is recommended to familiarize oneself not only
-with the compile- and runtime-options of this package, but also with
+with the compile-time and run-time options of this package, but also with
 the code itself. In many cases it will be necessary to adapt the
 obcs-code (in particular :filelink:`S/R OBCS_CALC
 <pkg/obcs/obcs_calc.F>`) to the application in question; in these cases
-the obcs-package (together with the rbcs-package
+:filelink:`pkg/obcs` (together with the :filelink:`pkg/rbcs`, see
 :numref:`sub_phys_pkg_rbcs`) is a very useful infrastructure for
 implementing special regional models.
 
@@ -30,8 +29,8 @@ implementing special regional models.
 OBCS configuration and compiling
 ++++++++++++++++++++++++++++++++
 
-As with all MITgcm packages OBCS can be turned on or off
-at compile time
+As with all MITgcm packages, OBCS can be turned on or off
+at compile-time
 
  - using the :code:`packages.conf` file by adding :code:`obcs` to it
  - or using :code:`genmake2` adding :code:`-enable=obcs` or :code:`-disable=obcs` switches
@@ -39,16 +38,11 @@ at compile time
 
    - Two alternatives are available for prescribing open boundary values, which differ in the way how OB's are treated in time:
 
-     - Simple time-management (e.g., constant in time, or cyclic with fixed frequency) is provided through :filelink:`S/R obcs_fields_load <pkg/obcs/obcs_fields_load.F>`.
-     - More sophisticated 'real-time' (i.e. calendar time) management is available through :code:`obcs_prescribe_read`.
-   - The latter case requires packages :code:`cal` and :code:`exf` to be enabled.
+     - Simple time-management (e.g., constant in time, or cyclic with fixed frequency) is provided through :filelink:`S/R OBCS_FIELDS_LOAD <pkg/obcs/obcs_fields_load.F>`
+     - More sophisticated 'real-time' (i.e. calendar time) management is available through :filelink:`S/R OBCS_PRESCRIBE_READ <pkg/obcs/obcs_prescribe_read.F>`
+   - The latter case requires packages :filelink:`pkg/cal` and :filelink:`pkg/exf` to be enabled.
 
-
-
-
-(see also :numref:`building_code`).
-
-Parts of the OBCS code can be enabled or disabled at compile time
+Parts of the OBCS code can be enabled or disabled at compile-time
 via CPP preprocessor flags. These options are set in
 :filelink:`OBCS_OPTIONS.h <pkg/obcs/OBCS_OPTIONS.h>`. :numref:`pkg_obcs_cpp_opts` summarizes these options.
 
@@ -91,12 +85,13 @@ Run-time parameters
 +++++++++++++++++++
 
 
-Run-time parameters are set in files :code:`data.pkg` :code:`data.obcs` and
-:code:`data.exf`  if 'real-time' prescription is requested
-(i.e., package :ref:`exf <sub_phys_pkg_exf>` enabled). These parameter files are read in S/Rs :filelink:`packages_readparms.F <model/src/packages_readparms.F>`
-:filelink:`obcs_readparms.F <pkg/obcs/obcs_readparms.F>` and
-:filelink:`exf_readparms.F <pkg/exf/exf_readparms.F>` respectively.
-Run-time parameters may be broken into 3 categories:
+Run-time parameters are set in files :code:`data.pkg`, :code:`data.obcs`, and
+:code:`data.exf` if 'real-time' prescription is requested
+(i.e., :filelink:`pkg/exf` enabled). These parameter files are
+read in S/Rs :filelink:`PACKAGES_READPARMS <model/src/packages_readparms.F>`,
+:filelink:`OBCS_READPARMS <pkg/obcs/obcs_readparms.F>`, and
+:filelink:`EXF_READPARMS <pkg/exf/exf_readparms.F>`, respectively.
+Run-time parameters may be broken into three categories:
 
  #. switching on/off the package at runtime
  #. OBCS package flags and parameters
@@ -216,7 +211,9 @@ array :varlink:`OB_Ieast`\(Ny) / :varlink:`OB_Iwest`\(Ny). Positions
 determined in this way allows Northern/Southern OBs to be at variable
 :math:`j` (or :math:`y`) positions and Eastern/Western OBs at variable
 :math:`i` (or :math:`x`) positions. Here indices refer to tracer points
-on the C-grid. A zero (0) element in ``OB_I...`` / ``OB_J...`` means there is no corresponding OB in that column/row. By default all elements in ``OB_I...`` / ``OB_J...`` are zero. For a Northern/Southern OB, the OB V-point is to the South/North. For an Eastern/Western OB, the OB U-point is to the West/East. For example
+on the C-grid. A zero (0) element in ``OB_I...`` / ``OB_J...`` means there is no corresponding OB in that column/row.
+By default all elements in ``OB_I...`` / ``OB_J...`` are zero. For a Northern/Southern OB, the OB V-point is to the South/North.
+For an Eastern/Western OB, the OB U-point is to the West/East. For example
 
 
 :code:`OB_Jnorth(3)=34`  means that:
@@ -237,13 +234,16 @@ on the C-grid. A zero (0) element in ``OB_I...`` / ``OB_J...`` means there is no
   - :code:`V(1,10)`  is a an OB point
 
 
-For convenience, negative values for :varlink:`Jnorth` / :varlink:`Ieast` refer to points relative to the Northern/Eastern edges of the model, e.g. ``OB_Jnorth(3)=-1`` means that the point ``(3,Ny)`` is a northern OB and ``OB_Ieast(3)=-5`` means that the point ``(3,Nx-5)`` is an eastern OB.
+For convenience, negative values for :varlink:`OB_Jnorth` / :varlink:`OB_Ieast` refer to points relative to the
+Northern/Eastern edges of the model, e.g. ``OB_Jnorth(3)=-1`` means that the point ``(3,Ny)`` is a northern OB
+and ``OB_Ieast(3)=-5`` means that the point ``(3,Nx-5)`` is an eastern OB.
 
 
 Simple examples
 ###############
 
-For a model grid with :math:`N_x \times N_y = 120 \times 144` horizontal grid points with four open boundaries along the four edges of the domain the simplest way of specifying the boundary points in is:
+For a model grid with :math:`N_x \times N_y = 120 \times 144` horizontal grid points with four open boundaries
+along the four edges of the domain, the simplest way of specifying the boundary points:
 
 ::
 
@@ -254,7 +254,8 @@ For a model grid with :math:`N_x \times N_y = 120 \times 144` horizontal grid po
     # or OB_Jnorth = 120*144,
       OB_Jsouth = 120*1,
 
-When the boundaries are in single rows or columns as in the above example, the same can be achieved with the convenient parameters :varlink:`OB_singleJnorth` / :varlink:`OB_singleJsouth` / :varlink:`OB_singleIeast` / :varlink:`OB_singleIwest`:
+When the boundaries are in single rows or columns as in the above example, the same can be achieved with
+the convenient parameters :varlink:`OB_singleJnorth` / :varlink:`OB_singleJsouth` / :varlink:`OB_singleIeast` / :varlink:`OB_singleIwest`:
 
 ::
 
@@ -270,14 +271,13 @@ boundary points:
 
       OB_Jsouth(1:50) = 50*1,
 
-
 A more complex example
 ######################
 
 Open boundaries are not restricted to single rows or columns. Each OB
 can be distributed in different rows and columns resulting
 in OBs consisting of the combination of different types of
-open boundaries (i.e. N, S, E and W). :numref:`fig_obcsexample` displays
+open boundaries (i.e., N, S, E and W). :numref:`fig_obcsexample` displays
 such an OB located on the left-bottom corner of a domain.
 Note there are five boundary points defined by southern and
 western boundaries. In particular, there are five southern
@@ -360,12 +360,12 @@ open boundary:
 
 -  If a non-linear free surface is used
    (:numref:`nonlinear-freesurface`), additional files
-   ``OB[N/S/E/W]etaFile`` for the sea surface height $\eta$ with
+   ``OB[N/S/E/W]etaFile`` for the sea surface height :math:`\eta` with
    dimension :math:`(N_{x/y}\times\mbox{time levels})` may be specified.
 
 - If non-hydrostatic dynamics are used
   (:numref:`non-hydrostatic`), additional files
-  ``OB[N/S/E/W]wFile`` for the vertical velocity $w$ with
+  ``OB[N/S/E/W]wFile`` for the vertical velocity :math:`w` with
   dimensions :math:`(N_{x/y}\times N_r\times\mbox{time levels})` can be
   specified.
 
@@ -374,21 +374,21 @@ open boundary:
   (:varlink:`HEFF`), seaice salinity, snow and ice velocities
   :math:`(N_{x/y}\times\mbox{time levels})` can be specified.
 
-As in :filelink:`S/R external_fields_load
-<model/src/external_fields_load.F>` or the :filelink:`exf
-<pkg/exf>`\ -package, the code reads two time levels for each
+As in :filelink:`external_fields_load.F
+<model/src/external_fields_load.F>` or as done in :filelink:`pkg/exf`,
+the code reads two time levels for each
 variable, e.g., :varlink:`OBNu0` and :varlink:`OBNu1`, and
 interpolates linearly between these time levels to obtain the value
-:varlink:`OBNu` at the current model time (step). When the
-:filelink:`exf <pkg/exf>`\ -package is used, the time levels are
+:varlink:`OBNu` at the current model time (step). When
+:filelink:`pkg/exf` is used, the time levels are
 controlled for each boundary separately in the same way as the
-:filelink:`exf <pkg/exf>`\ -fields in ``data.exf``, namelist
-``EXF_NML_OBCS``. The runtime flags follow the above naming
+:filelink:`pkg/exf` fields in ``data.exf``, namelist
+``EXF_NML_OBCS``. The run-time flags follow the above naming
 conventions, e.g., for the western boundary the corresponding flags
-are :varlink:`OBCWstartdate1`, :varlink:`OBCWstartdate2` and
-:varlink:`OBCWperiod`. Sea-ice boundary values are controlled
+are :varlink:`OBCSWstartdate1`, :varlink:`OBCSWstartdate2` and
+:varlink:`OBCSWperiod`. Sea-ice boundary values are controlled
 separately with :varlink:`siobWstartdate1`, :varlink:`siobWstartdate2`
-and :varlink:`siobWperiod`.  When the :filelink:`exf <pkg/exf>`-package
+and :varlink:`siobWperiod`.  When :filelink:`pkg/exf`
 is not used the time levels are controlled by the runtime flags
 :varlink:`externForcingPeriod` and :varlink:`externForcingCycle` in
 ``data``; see :filelink:`verification/exp4/input/data` for an example.
@@ -414,10 +414,12 @@ eastern or western boundary):
    velocity at timestep :math:`n` on the boundary. :math:`(u')^{n}` is
    computed in the previous time step :math:`n` from the intermediate
    velocity :math:`u^*` prior to the correction step (see
-   :numref:`time_stepping` eq. :eq:`ustar-backward-free-surface`). (This velocity is not
+   :numref:`time_stepping` equation :eq:`ustar-backward-free-surface`). (This velocity is not
    available at the beginning of the next time step :math:`n+1`, when
-   S/Rs :filelink:`OBCS_CALC <pkg/obcs/obcs_calc.F>`/:filelink:`OBCS_CALC_STEVENS <pkg/obcs/obcs_calc_stevens.F>` are called, therefore it needs to
-   be saved in :filelink:`S/R DYNAMICS <model/src/dynamics.F>` by calling :filelink:`S/R OBCS_SAVE_UV_N <pkg/obcs/obcs_save_uv_n.F>` and also
+   S/Rs :filelink:`OBCS_CALC <pkg/obcs/obcs_calc.F>` and :filelink:`OBCS_CALC_STEVENS <pkg/obcs/obcs_calc_stevens.F>`
+   are called, therefore it needs to
+   be saved in :filelink:`S/R DYNAMICS <model/src/dynamics.F>` by
+   calling :filelink:`S/R OBCS_SAVE_UV_N <pkg/obcs/obcs_save_uv_n.F>` and also
    stored in a separate restart files
    ``pickup_stevens[N/S/E/W].${iteration}.data``)
 
@@ -430,7 +432,7 @@ eastern or western boundary):
         \chi^{n})
 
    where :math:`\tau_\chi` is the relaxation time scale (either
-   :varlink:`TrelaxStevens` or :varlink:`T/SrelaxStevens`). The new
+   :varlink:`TrelaxStevens` or :varlink:`SrelaxStevens`). The new
    :math:`\chi^{n+1}` is then subject to the advection by
    :math:`u^{n+1}`.
 
@@ -472,7 +474,7 @@ Special cases where the current implementation is not complete:
 :filelink:`OBCS\_BALANCE\_FLOW <pkg/obcs/obcs_balance_flow.F>`:
 ###############################################################
 
-When turned on (:varlink:`ALLOW_OBCS_BALANCE` defined in
+When turned on (CPP option :varlink:`ALLOW_OBCS_BALANCE` defined in
 :filelink:`OBCS_OPTIONS.h <pkg/obcs/OBCS_OPTIONS.h>` and
 :varlink:`useOBCSbalance` set to ``.TRUE.`` in
 ``data.obcs/OBCS_PARM01``), this routine balances the net flow across
@@ -485,7 +487,7 @@ This behavior can be controlled with the runtime flags
 :varlink:`OBCS_balanceFacE`, and :varlink:`OBCS_balanceFacW`. The
 values of these flags determine how the net inflow is redistributed as
 small correction velocities between the individual sections. A value
-``-1`` balances an individual boundary, values :math:`>0` determine
+-1 balances an individual boundary, values >0 determine
 the relative size of the correction. For example, the values
 
 ::
@@ -522,8 +524,8 @@ This also ensures a net total inflow of zero through all boundaries, but
 this combination of flags is *not* useful if you want to simulate, for example,
 a sector of the Southern Ocean with a strong ACC entering through the
 western and leaving through the eastern boundary, because the value of
-"-1" for these flags will make sure that the strong inflow is removed.
-Clearly, gobal balancing with ``OBCS_balanceFacE/W/N/S`` :math:`\ge 0`
+-1 for these flags will make sure that the strong inflow is removed.
+Clearly, global balancing with ``OBCS_balanceFacE/W/N/S`` :math:`\ge 0`
 is the preferred method.
 
 Setting runtime parameter :varlink:`OBCSbalanceSurf` to ``TRUE.``, the
@@ -538,7 +540,7 @@ OBCS\_APPLY\_*:
 :filelink:`OBCS\_SPONGE <pkg/obcs/obcs_sponge.F>`:
 ##################################################
 
-The sponge layer code (turned on with :varlink:`ALLOW_OBCS_SPONGE` and
+The sponge layer code (turned on with CPP option :varlink:`ALLOW_OBCS_SPONGE` and run-time parameter
 :varlink:`useOBCSsponge`) adds a relaxation term to the right-hand-side of
 the momentum and tracer equations. The variables are relaxed towards
 the boundary values with a relaxation time scale that increases
@@ -562,8 +564,8 @@ of grid points), :math:`\delta{L}\in[0,L]`
 :math:`\tau_{i}` (runtime parameters :varlink:`Urelaxobcsinner` and
 :varlink:`Vrelaxobcsinner`) the relaxation time scales on the boundary
 and at the interior termination of the sponge layer. The parameters
-:varlink:`Urelaxobcsbound/inner` set the relaxation time scales for
-the Eastern and Western boundaries, :varlink:`Vrelaxobcsbound/inner`
+:varlink:`Urelaxobcsbound` and :varlink:`Urelaxobcsinner` set the relaxation time scales for
+the Eastern and Western boundaries, :varlink:`Vrelaxobcsbound` and :varlink:`Vrelaxobcsinner`
 for the Northern and Southern boundaries.
 
 
@@ -593,7 +595,7 @@ Flow chart
 OBCS diagnostics
 ++++++++++++++++
 
-Diagnostics output is available via the diagnostics package (see :numref:`outp_pack`). Available output fields are summarized below:
+Diagnostics output is available via the diagnostics package (see :numref:`sub_outp_pkg_diagnostics`). Available output fields are summarized below:
 
 ::
 
@@ -608,18 +610,17 @@ Experiments and tutorials that use obcs
 +++++++++++++++++++++++++++++++++++++++
 
 In the directory :filelink:`verification` the following experiments use
-:filelink:`obcs <pkg/obcs>`:
+:filelink:`pkg/obcs`:
 
 
 -  :filelink:`exp4 <verification/exp4>`: box with 4 open boundaries, simulating flow over a Gaussian bump
    based on  also tests Stevens-boundary conditions;
 
 -  :filelink:`dome <verification/dome>`: based on the project “Dynamics of Overflow Mixing and Entrainment”
-   (http://www.rsmas.miami.edu/personal/tamay/DOME/dome.html) uses
-   Orlanski-BCs;
+   uses Orlanski-BCs;
 
--  :filelink:`internal_wave <verification/internal_wave>`: uses a heavily modified :filelink:`S/R OBCS_CALC <pkg/obcs/obcs_calc.F>`
+-  :filelink:`internal_wave <verification/internal_wave>`: uses a heavily modified :filelink:`S/R OBCS_CALC <verification/internal_wave/code/obcs_calc.F>`
 
 -  :filelink:`seaice_obcs <verification/seaice_obcs>`: simple example who to use the sea-ice related code based on :filelink:`lab_sea <verification/lab_sea>`;
 
--  :filelink:`tutorial_plume_on_slope <verification/tutorial_plume_on_slope>`: uses Orlanski-BCs.
+-  Tutorial :ref:`Gravity Plume on a Continental Slope <tutorial_plume_on_slope>`: uses Orlanski-BCs.
