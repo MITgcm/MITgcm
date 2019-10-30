@@ -794,8 +794,8 @@ In addition, there are several housekeeping ``make clean`` options that might be
 
 .. _build_mpi:
 
-Building  with MPI
-------------------
+Building with MPI
+-----------------
 
 Building MITgcm to use `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
 libraries can be complicated due to the
@@ -1131,25 +1131,27 @@ NetCDF output
 Similar scripts for `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ output (e.g., :filelink:`utils/matlab/rdmnc.m`) are available and they
 are described in :numref:`pkg_mnc`.
 
+.. _sec_python:
+
 Python
 ~~~~~~
+
+Install the MITgcmutils python package following the instructions in :numref:`MITgcmutils`.
 
 Raw binary output
 ^^^^^^^^^^^^^^^^^
 
-The repository includes `Python <https://www.python.org/>`_ scripts
-for reading binary :filelink:`/pkg/mdsio` format under :filelink:`utils/python`.
 The following example shows how to load in some data:
 
 ::
 
     # python
-    import mds
+    from MITgcmutils import mds
 
     Eta = mds.rdmds('Eta', itrs=10)
 
-The docstring for ``mds.rdmds`` (see file :filelink:`utils/python/MITgcmutils/MITgcmutils/mds.py`)
-contains much more detail about using this function and the options that it takes.
+For more information about using this function and the options that it takes,
+see the API docs, :meth:`MITgcmutils.mds.rdmds`.
 
 NetCDF output
 ^^^^^^^^^^^^^
@@ -1159,7 +1161,9 @@ is currently produced with one file per processor. This means the individual til
 need to be stitched together to create a single
 `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file that spans the model domain. The script
 :filelink:`utils/python/MITgcmutils/scripts/gluemncbig` can do
-this efficiently from the command line.
+this efficiently from the command line.  If you have installed the MITgcmutils package,
+a copy of gluemncbig should be on your path.  For usage information, see
+:numref:`gluemncbig`.
 
 The following example shows how to use the `xarray python package <http://xarray.pydata.org/>`_ to read
 the resulting `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ file into `Python <https://www.python.org/>`_:
@@ -1295,6 +1299,8 @@ newer users of the MITgcm are encouraged to jump to :numref:`customize_model` wh
    |                                               |         | (note, CPP option for tracer diffusivity set independently in                                                        |
    |                                               |         | :filelink:`GAD_OPTIONS.h <pkg/generic_advdiff/GAD_OPTIONS.h>`)                                                       |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+
+.. _default_pkg_list:
 
 By default, MITgcm includes several core packages, i.e., these packages are enabled during
 :filelink:`genmake2 <tools/genmake2>` execution if a file ``packages.conf`` is not found.
@@ -1948,9 +1954,12 @@ equations and the various (momentum) advection schemes are covered in :numref:`d
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`use3dCoriolis`               | PARM01    | TRUE                                             | include :math:`\cos{\varphi}` Coriolis terms on/off flag                                                |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`useJamartWetPoints`          | PARM01    | FALSE                                            | use Jamart & Ozer ’86 wetpoints method for (boundary) Coriolis terms on/off flag                        |
-   +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`useEnergyConservingCoriolis` | PARM01    | FALSE                                            | use energy-conserving discretization of Coriolis terms (momentum flux-form) on/off flag                 |
+   | :varlink:`selectCoriScheme`            | PARM01    | 0                                                | Coriolis scheme selector                                                                                |
+   |                                        |           |                                                  |                                                                                                         |
+   |                                        |           |                                                  | - 0: original scheme                                                                                    |
+   |                                        |           |                                                  | - 1: wet-point averaging method                                                                         |
+   |                                        |           |                                                  | - 2: Flux-Form: energy conserving; Vector-Inv: hFac weighted average                                    |
+   |                                        |           |                                                  | - 3: Flux-Form: energy conserving using wet-point method; Vector-Inv: energy conserving with hFac weight|
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`vectorInvariantMomentum`     | PARM01    | FALSE                                            | use vector-invariant form of momentum equations flag                                                    |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -2315,6 +2324,8 @@ parameterization for advection and mixing of oceanic tracers is described in :nu
    | :varlink:`BL79LatVary`                 | PARM01    | 3.0E+01                                          | transition from diffKrBLEQ to diffKrBL79 parms at this latitude;                                        |
    |                                        |           |                                                  | requires #define :varlink:`ALLOW_BL79_LAT_VARY`                                                         |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
+.. _ocean_convection_parms:
 
 Ocean Convection
 ~~~~~~~~~~~~~~~~     
@@ -2742,4 +2753,3 @@ produces a more coding-oriented set of print statements (e.g., entering and exit
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`maxLengthPrt1D`              | EEPARMS   | 65                                               | maximum number of 1D array elements to print to standard output                                         |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-

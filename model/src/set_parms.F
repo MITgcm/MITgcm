@@ -70,25 +70,25 @@ C--   On/Off flags for each terms of the momentum equation
 
 #ifndef ALLOW_3D_VISCAH
        IF ( viscAhDfile.NE.' ' .OR. viscAhZfile.NE.' ' ) THEN
-        WRITE(msgBuf,'(2A)') 'SET_PARAMS: ',
+        WRITE(msgBuf,'(2A)') 'SET_PARMS: ',
      &      'viscAhDfile and viscAhZfile cannot be used with'
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)') 'SET_PARAMS: ',
+        WRITE(msgBuf,'(2A)') 'SET_PARMS: ',
      &      '"#undef ALLOW_3D_VISCAH" in MOM_COMMON_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R SET_PARAMS'
+        STOP 'ABNORMAL END: S/R SET_PARMS'
 c       errCount = errCount + 1
        ENDIF
 #endif
 #ifndef ALLOW_3D_VISCA4
        IF ( viscA4Dfile.NE.' ' .OR. viscA4Zfile.NE.' ' ) THEN
-        WRITE(msgBuf,'(2A)') 'SET_PARAMS: ',
+        WRITE(msgBuf,'(2A)') 'SET_PARMS: ',
      &      'viscA4Dfile and viscA4Zfile cannot be used with'
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(2A)') 'SET_PARAMS: ',
+        WRITE(msgBuf,'(2A)') 'SET_PARMS: ',
      &      '"#undef ALLOW_3D_VISCA4" in MOM_COMMON_OPTIONS.h'
         CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R SET_PARAMS'
+        STOP 'ABNORMAL END: S/R SET_PARMS'
        ENDIF
 #endif
 
@@ -238,19 +238,19 @@ C     set default according to EOS type (as it was until chkpt65t)
           ENDIF
         ELSEIF ( selectP_inEOS_Zc.LT.0
      &      .OR. selectP_inEOS_Zc.GT.3 ) THEN
-          WRITE(msgBuf,'(A,I9,A)') 'SET_PARAMS: selectP_inEOS_Zc=',
+          WRITE(msgBuf,'(A,I9,A)') 'SET_PARMS: selectP_inEOS_Zc=',
      &                  selectP_inEOS_Zc, ' : invalid selection'
           CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R SET_PARAMS'
+          STOP 'ABNORMAL END: S/R SET_PARMS'
         ELSEIF ( .NOT.nonHydrostatic ) THEN
           selectP_inEOS_Zc = MIN( selectP_inEOS_Zc, 2 )
         ENDIF
         IF ( ( eosType .EQ. 'LINEAR' .OR.  eosType .EQ. 'POLY3 ' )
      &      .AND. selectP_inEOS_Zc.NE.0  ) THEN
-          WRITE(msgBuf,'(A,I9,A)') 'SET_PARAMS: selectP_inEOS_Zc=',
+          WRITE(msgBuf,'(A,I9,2A)') 'SET_PARMS: selectP_inEOS_Zc=',
      &     selectP_inEOS_Zc, ' : invalid with eosType=', eosType
           CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R SET_PARAMS'
+          STOP 'ABNORMAL END: S/R SET_PARMS'
         ENDIF
       ELSE
         selectP_inEOS_Zc = -1

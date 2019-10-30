@@ -5,10 +5,10 @@
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // execution environment starting up...
 (PID.TID 0000.0001) 
-(PID.TID 0000.0001) // MITgcmUV version:  checkpoint65z
+(PID.TID 0000.0001) // MITgcmUV version:  checkpoint67g
 (PID.TID 0000.0001) // Build user:        jmc
 (PID.TID 0000.0001) // Build host:        baudelaire
-(PID.TID 0000.0001) // Build date:        Thu Oct  6 12:56:54 EDT 2016
+(PID.TID 0000.0001) // Build date:        Fri Jan 25 16:57:09 EST 2019
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -50,6 +50,8 @@
 (PID.TID 0000.0001)                   /*  "mpirun -np 64 ......"                    */
 (PID.TID 0000.0001) useCoupler=    F ;/* Flag used to control communications with   */
 (PID.TID 0000.0001)                   /*  other model components, through a coupler */
+(PID.TID 0000.0001) useNest2W_parent =    F ;/* Control 2-W Nesting comm */
+(PID.TID 0000.0001) useNest2W_child  =    F ;/* Control 2-W Nesting comm */
 (PID.TID 0000.0001) debugMode =    F ; /* print debug msg. (sequence of S/R calls)  */
 (PID.TID 0000.0001) printMapIncludesZeros=    F ; /* print zeros in Std.Output maps */
 (PID.TID 0000.0001) maxLengthPrt1D=   65 /* maxLength of 1D array printed to StdOut */
@@ -484,6 +486,12 @@
 (PID.TID 0000.0001) // ===================================
 (PID.TID 0000.0001) // DIC package parameters :
 (PID.TID 0000.0001) // ===================================
+(PID.TID 0000.0001) Using Follows et al. (2006) for pH/pCO2
+(PID.TID 0000.0001) Using Munhoven (2013) Solvesaphe carbon coefficients
+(PID.TID 0000.0001) Using Millero (1995)/Mehrbach K1 and K2 coefficients
+(PID.TID 0000.0001) Using Dickson and Riley (1979) KF coefficient
+(PID.TID 0000.0001) Using Uppstrom (1974) BT estimation from salinity
+(PID.TID 0000.0001) Using Riley (1965) FT estimation from salinity
 (PID.TID 0000.0001) permil = /* Ref. density to convert mol/m3 to mol/kg */
 (PID.TID 0000.0001)                 9.760858955588092E-04
 (PID.TID 0000.0001)     ;
@@ -542,7 +550,7 @@
 (PID.TID 0000.0001)                 1.000000000000000E-02
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) fesedflux_pcm = /* Sediment Fe flux = fesedflux_pcm*pflux+FeIntSec */
-(PID.TID 0000.0001)                 6.415094339622642E-06
+(PID.TID 0000.0001)                 7.208000000000001E-02
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) FeIntSec = /* Sediment Fe flux = fesedflux_pcm * pflux + FeIntSec */
 (PID.TID 0000.0001)                 5.787037037037037E-12
@@ -610,6 +618,12 @@
 (PID.TID 0000.0001) dic_pCO2 = /* Atmospheric pCO2 to be read in data.dic */
 (PID.TID 0000.0001)                 2.780000000000000E-04
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) GCHEM_TR_REGISTER:  Start registering GCHEM tracers
+(PID.TID 0000.0001)   DIC_TR_REGISTER:  number of DIC tracers=    5
+(PID.TID 0000.0001)   DIC_TR_REGISTER:   starting at pTrc num=    1
+(PID.TID 0000.0001)   DIC_TR_REGISTER:  Numb. Trac & SepForc Trac:    5    5
+(PID.TID 0000.0001) GCHEM_TR_REGISTER:  Numb. Trac & SepForc Trac:    5    5
+(PID.TID 0000.0001) 
 (PID.TID 0000.0001)  DIAGNOSTICS_READPARMS: opening data.diagnostics
 (PID.TID 0000.0001)  OPEN_COPY_DATA_FILE: opening file data.diagnostics
 (PID.TID 0000.0001) // =======================================================
@@ -1260,7 +1274,7 @@
 (PID.TID 0000.0001) implicSurfPress =  /* Surface Pressure implicit factor (0-1)*/
 (PID.TID 0000.0001)                 1.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) implicDiv2Dflow =  /* Barot. Flow Div. implicit factor (0-1)*/
+(PID.TID 0000.0001) implicDiv2DFlow =  /* Barot. Flow Div. implicit factor (0-1)*/
 (PID.TID 0000.0001)                 1.000000000000000E+00
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) uniformLin_PhiSurf = /* use uniform Bo_surf on/off flag*/
@@ -1354,8 +1368,9 @@
 (PID.TID 0000.0001) implicitViscosity = /* Implicit viscosity on/off flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) implBottomFriction= /* Implicit bottom friction on/off flag */
-(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001) selectImplicitDrag= /* Implicit bot Drag options (0,1,2)*/
+(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)     0= Expl. ; 1= Impl. on provis. Vel ; 2= Fully Impl (with surf.P)
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) metricTerms =  /* metric-Terms on/off flag */
 (PID.TID 0000.0001)                   T
@@ -1409,6 +1424,9 @@
 (PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) momForcing =  /* Momentum forcing on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) momTidalForcing = /* Momentum Tidal forcing on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) momPressureForcing =  /* Momentum pressure term on/off flag */
@@ -1474,6 +1492,12 @@
 (PID.TID 0000.0001) writeBinaryPrec = /* Precision used for writing binary files */
 (PID.TID 0000.0001)                      32
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  rwSuffixType =   /* select format of mds file suffix */
+(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)    = 0 : myIter (I10.10) ;   = 1 : 100*myTime (100th sec) ;
+(PID.TID 0000.0001)    = 2 : myTime (seconds);   = 3 : myTime/360 (10th of hr);
+(PID.TID 0000.0001)    = 4 : myTime/3600 (hours)
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001)  globalFiles = /* write "global" (=not per tile) files */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
@@ -1491,6 +1515,9 @@
 (PID.TID 0000.0001)    debLevD =  4 ; /* level of enhanced debug prt (add DEBUG_STATS prt) */
 (PID.TID 0000.0001)    debLevE =  5 ; /* level of extensive debug printing */
 (PID.TID 0000.0001) debugLevel =  /* select debug printing level */
+(PID.TID 0000.0001)                       2
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001)  plotLevel =  /* select PLOT_FIELD printing level */
 (PID.TID 0000.0001)                       2
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) //
@@ -1589,9 +1616,6 @@
 (PID.TID 0000.0001) pickup_read_mdsio =   /* Model IO flag. */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) pickup_write_immed =   /* Model IO flag. */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) writePickupAtEnd =   /* Model IO flag. */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
@@ -1642,6 +1666,18 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) usingCurvilinearGrid = /* Curvilinear coordinates flag ( True/False ) */
 (PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useMin4hFacEdges = /* set hFacW,S as minimum of adjacent hFacC factor */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) interViscAr_pCell = /* account for partial-cell in interior vert. viscosity */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) interDiffKr_pCell = /* account for partial-cell in interior vert. diffusion */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) pCellMix_select = /* option to enhance mixing near surface & bottom */
+(PID.TID 0000.0001)                       0
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) selectSigmaCoord = /* Hybrid-Sigma Vert. Coordinate option */
 (PID.TID 0000.0001)                       0
@@ -2593,7 +2629,9 @@
 (PID.TID 0000.0001)                 1.234567000000000E+05
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001)  -----------------------------------
-(PID.TID 0000.0001) GCHEM_CHECK: #define ALLOW_GCHEM
+(PID.TID 0000.0001) GCHEM_CHECK  --> Starts to check GCHEM set-up
+(PID.TID 0000.0001) GCHEM_CHECK  <-- Ends Normally
+(PID.TID 0000.0001) 
 (PID.TID 0000.0001) GAD_CHECK: #define ALLOW_GENERIC_ADVDIFF
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Check Model config. (CONFIG_CHECK):
@@ -2681,18 +2719,6 @@ listId=   1 ; file name: dynStDiag
  DIC_SURFFORCING_INIT, it=         0 : Reading new data, i0,i1=   12    1
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1_box.bin
 (PID.TID 0000.0001)  MDS_READ_FIELD: opening global file: sillev1_box.bin
- QQ: pCO2 approximation method
- QQ first guess pH   8.1637133788875307        7.1431403160095215        34.126777648925781        2.0606358051300049       9.85530205070972443E-004  4.03098273091018200E-003   2.2758305072784424     
- QQ: pCO2 approximation method
- QQ first guess pH   8.1546759036690801        3.4060642719268799        34.014770507812500        2.1126744747161865       1.39696174301207066E-003  1.10853351652622223E-002   2.2971801757812500     
- QQ: pCO2 approximation method
- QQ first guess pH   8.1582613570988922       0.99534881114959717        33.835666656494141        2.1458561420440674       1.57552247401326895E-003  4.38664574176073074E-002   2.3155810832977295     
- QQ: pCO2 approximation method
- QQ first guess pH   8.1244484992974151        20.386993408203125        35.004978179931641        1.9606319665908813       1.24419326311908662E-004  2.27088015526533127E-003   2.2702202796936035     
- QQ: pCO2 approximation method
- QQ first guess pH   8.1677309914425074        23.352397918701172        36.335987091064453        2.0139851570129395       1.06049788882955909E-004  2.86025227978825569E-003   2.4057466983795166     
- QQ: pCO2 approximation method
- QQ first guess pH   8.1339770997970255        21.511417388916016        36.076831817626953        2.0278112888336182       2.15065476368181407E-004  1.35848834179341793E-003   2.3724699020385742     
  OBCS_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  OBCS_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
 (PID.TID 0000.0001)  MDS_READ_SEC_YZ: opening global file: U_obE.bin
@@ -2897,7 +2923,7 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   4.3053560479973E-02
 (PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   1.1918591217244E-04
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR ptracers field statistics
+(PID.TID 0000.0001) // End MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
  EXTERNAL_FIELDS_LOAD,         0 : iP,iLd,i0,i1=   12    0   12    1 ; Wght=  0.5000000000  0.5000000000
  EXTERNAL_FIELDS_LOAD, it=         0 : Reading new data, i0,i1=   12    1 (prev=   12    0 )
@@ -3046,10 +3072,10 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.3591394065065E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9367506949055E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425287455242E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.5984850990976E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0685652560330E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9367468190859E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425286776439E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.5985030967224E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0685672569172E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.4116828127977E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   2.1899459792551E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3520451784955E+00
@@ -3071,7 +3097,7 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   4.3051033243526E-02
 (PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   1.1897591872251E-04
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR ptracers field statistics
+(PID.TID 0000.0001) // End MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
  EXTERNAL_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
  DIC_FIELDS_LOAD,         1 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4833333333  0.5166666667
@@ -3199,10 +3225,10 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.3591400243659E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9367311267284E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425273773449E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.5988104792487E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0677478239901E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9367234059120E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425272419765E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.5988463896051E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0677519610214E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.4116833437261E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   2.1899799234254E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3520454966752E+00
@@ -3224,7 +3250,7 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   4.3048525270866E-02
 (PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   1.1876374153122E-04
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR ptracers field statistics
+(PID.TID 0000.0001) // End MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
  EXTERNAL_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
  DIC_FIELDS_LOAD,         2 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4666666667  0.5333333333
@@ -3352,10 +3378,10 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.3591406099243E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9367115796712E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425260263250E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.5991307275572E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0670393450731E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9367000414469E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425258236048E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.5991845293954E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0670456839041E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.4116839442188E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   2.1900145684893E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3520458155371E+00
@@ -3377,7 +3403,7 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   4.3046032949387E-02
 (PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   1.1857347653469E-04
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR ptracers field statistics
+(PID.TID 0000.0001) // End MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
  EXTERNAL_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
  DIC_FIELDS_LOAD,         3 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4500000000  0.5500000000
@@ -3505,10 +3531,10 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.3591411850250E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9366920753005E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425246902989E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.5994460046657E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0662883757231E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9366767492923E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425244205039E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.5995176416205E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0662969766410E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.4116845439974E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   2.1900506623788E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3520461389524E+00
@@ -3530,7 +3556,7 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   4.3043561864795E-02
 (PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   1.1837744056211E-04
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR ptracers field statistics
+(PID.TID 0000.0001) // End MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
  EXTERNAL_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
  DIC_FIELDS_LOAD,         4 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4333333333  0.5666666667
@@ -3658,10 +3684,10 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.3591417566308E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9366726095445E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425233499732E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.5997616492116E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0655374872138E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9366535242235E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425230133041E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.5998510837635E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0655483997763E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.4116851531351E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   2.1900884869865E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3520464542293E+00
@@ -3683,7 +3709,7 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   4.3041094943624E-02
 (PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   1.1818374735142E-04
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR ptracers field statistics
+(PID.TID 0000.0001) // End MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
  EXTERNAL_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
  DIC_FIELDS_LOAD,         5 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4166666667  0.5833333333
@@ -3811,10 +3837,10 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.3591423273499E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9366531841977E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425219892264E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.6000825324323E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0647898748374E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9366303684604E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425215859189E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.6001897188580E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0648031508964E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.4116857829109E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   2.1901274555592E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3520467503756E+00
@@ -3836,7 +3862,7 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   4.3038612322839E-02
 (PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   1.1799274470709E-04
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR ptracers field statistics
+(PID.TID 0000.0001) // End MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
  EXTERNAL_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
  DIC_FIELDS_LOAD,         6 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.4000000000  0.6000000000
@@ -3964,10 +3990,10 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.3591428986190E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9366337958317E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425205997402E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.6004112469775E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0639965656403E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9366072781304E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425201300109E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.6005361445601E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0640122520229E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.4116864372710E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   2.1901664360926E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3520470240000E+00
@@ -3989,7 +4015,7 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   4.3036101568632E-02
 (PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   1.1779545872810E-04
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR ptracers field statistics
+(PID.TID 0000.0001) // End MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
  EXTERNAL_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
  DIC_FIELDS_LOAD,         7 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3833333333  0.6166666667
@@ -4117,10 +4143,10 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.3591434704407E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9366144421370E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425191819564E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.6007477824348E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0632244691105E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9365842508754E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425186460287E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.6008903490249E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0632426086053E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.4116871152751E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   2.1902043877327E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3520472770727E+00
@@ -4142,7 +4168,7 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   4.3033560541227E-02
 (PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   1.1760435248651E-04
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR ptracers field statistics
+(PID.TID 0000.0001) // End MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
  EXTERNAL_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
  DIC_FIELDS_LOAD,         8 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3666666667  0.6333333333
@@ -4270,10 +4296,10 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.3591440416048E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9365951205352E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425177420834E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.6010904141717E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0624658033343E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9365612838846E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425171401753E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.6012506088298E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0624864376437E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.4116878145545E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   2.1902408235866E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3520475136113E+00
@@ -4295,7 +4321,7 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   4.3030995534209E-02
 (PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   1.1741788079132E-04
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR ptracers field statistics
+(PID.TID 0000.0001) // End MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
  EXTERNAL_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
  DIC_FIELDS_LOAD,         9 : iP,iLd,i0,i1=   12    1   12    1 ; Wght=  0.3500000000  0.6500000000
@@ -4423,10 +4449,10 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) // Begin MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON trcstat_ptracer01_max        =   2.3591446107018E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9365758293339E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425162886886E+00
-(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.6014367651417E-02
-(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0617171236885E-04
+(PID.TID 0000.0001) %MON trcstat_ptracer01_min        =   1.9365383753400E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_mean       =   2.2425156210184E+00
+(PID.TID 0000.0001) %MON trcstat_ptracer01_sd         =   7.6016145466746E-02
+(PID.TID 0000.0001) %MON trcstat_ptracer01_del2       =   1.0617402841436E-04
 (PID.TID 0000.0001) %MON trcstat_ptracer02_max        =   2.4116885332542E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_min        =   2.1902759013826E+00
 (PID.TID 0000.0001) %MON trcstat_ptracer02_mean       =   2.3520477378309E+00
@@ -4448,7 +4474,7 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) %MON trcstat_ptracer05_sd         =   4.3028416473433E-02
 (PID.TID 0000.0001) %MON trcstat_ptracer05_del2       =   1.1723518895981E-04
 (PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // End MONITOR ptracers field statistics
+(PID.TID 0000.0001) // End MONITOR ptracer field statistics
 (PID.TID 0000.0001) // =======================================================
  Computing Diagnostic #     46  VVELMASS     Counter:      10   Parms: VVr     MR      
            Vector  Mate for  VVELMASS     Diagnostic #     45  UVELMASS exists 
@@ -4510,153 +4536,153 @@ listId=   1 ; file name: dynStDiag
 (PID.TID 0000.0001) DIAGSTATS_CLOSE_IO: close file: dynStDiag.0000000000.txt , unit=     9
 (PID.TID 0000.0001) %CHECKPOINT        10 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   7.8108129239408299
-(PID.TID 0000.0001)         System time:  4.99920011498034000E-002
-(PID.TID 0000.0001)     Wall clock time:   8.0088520050048828
+(PID.TID 0000.0001)           User time:   7.9117969479411840
+(PID.TID 0000.0001)         System time:  3.49949994124472141E-002
+(PID.TID 0000.0001)     Wall clock time:   7.9651150703430176
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  8.19880029885098338E-002
-(PID.TID 0000.0001)         System time:  1.09979999251663685E-002
-(PID.TID 0000.0001)     Wall clock time:  0.15273189544677734
+(PID.TID 0000.0001)           User time:  7.49889966100454330E-002
+(PID.TID 0000.0001)         System time:  8.99899983778595924E-003
+(PID.TID 0000.0001)     Wall clock time:  8.34639072418212891E-002
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:   7.7288249209523201
-(PID.TID 0000.0001)         System time:  3.89940012246370316E-002
-(PID.TID 0000.0001)     Wall clock time:   7.8560841083526611
+(PID.TID 0000.0001)           User time:   7.8368079513311386
+(PID.TID 0000.0001)         System time:  2.59959995746612549E-002
+(PID.TID 0000.0001)     Wall clock time:   7.8816120624542236
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.13897899538278580
-(PID.TID 0000.0001)         System time:  2.19969991594552994E-002
-(PID.TID 0000.0001)     Wall clock time:  0.20808601379394531
+(PID.TID 0000.0001)           User time:  0.11798200011253357
+(PID.TID 0000.0001)         System time:  1.29979997873306274E-002
+(PID.TID 0000.0001)     Wall clock time:  0.13144612312316895
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   7.5898459255695343
-(PID.TID 0000.0001)         System time:  1.69970020651817322E-002
-(PID.TID 0000.0001)     Wall clock time:   7.6479680538177490
+(PID.TID 0000.0001)           User time:   7.7188259512186050
+(PID.TID 0000.0001)         System time:  1.29979997873306274E-002
+(PID.TID 0000.0001)     Wall clock time:   7.7501358985900879
 (PID.TID 0000.0001)          No. starts:           1
 (PID.TID 0000.0001)           No. stops:           1
 (PID.TID 0000.0001)   Seconds in section "MAIN_DO_LOOP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:   7.5898459255695343
-(PID.TID 0000.0001)         System time:  1.69970020651817322E-002
-(PID.TID 0000.0001)     Wall clock time:   7.6478698253631592
+(PID.TID 0000.0001)           User time:   7.7188259512186050
+(PID.TID 0000.0001)         System time:  1.29979997873306274E-002
+(PID.TID 0000.0001)     Wall clock time:   7.7500383853912354
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [MAIN_DO_LOOP]":
-(PID.TID 0000.0001)           User time:   7.5898459255695343
-(PID.TID 0000.0001)         System time:  1.69970020651817322E-002
-(PID.TID 0000.0001)     Wall clock time:   7.6476955413818359
+(PID.TID 0000.0001)           User time:   7.7188259512186050
+(PID.TID 0000.0001)         System time:  1.29979997873306274E-002
+(PID.TID 0000.0001)     Wall clock time:   7.7498581409454346
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.15197712182998657
+(PID.TID 0000.0001)           User time:  0.14997735619544983
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.15024471282958984
+(PID.TID 0000.0001)     Wall clock time:  0.14966011047363281
 (PID.TID 0000.0001)          No. starts:          20
 (PID.TID 0000.0001)           No. stops:          20
 (PID.TID 0000.0001)   Seconds in section "LOAD_FIELDS_DRIVER  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  8.99788737297058105E-003
-(PID.TID 0000.0001)         System time:  2.00000405311584473E-003
-(PID.TID 0000.0001)     Wall clock time:  1.13620758056640625E-002
+(PID.TID 0000.0001)           User time:  8.99910926818847656E-003
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  9.16218757629394531E-003
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FLDS_LOAD [LOAD_FLDS_DRIVER]":
-(PID.TID 0000.0001)           User time:  7.99795985221862793E-003
+(PID.TID 0000.0001)           User time:  6.99919462203979492E-003
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  7.26127624511718750E-003
+(PID.TID 0000.0001)     Wall clock time:  6.00647926330566406E-003
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  9.25064086914062500E-005
+(PID.TID 0000.0001)     Wall clock time:  9.36985015869140625E-005
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.55091711878776550
-(PID.TID 0000.0001)         System time:  9.99998301267623901E-004
-(PID.TID 0000.0001)     Wall clock time:  0.55442309379577637
+(PID.TID 0000.0001)           User time:  0.55291675031185150
+(PID.TID 0000.0001)         System time:   0.0000000000000000
+(PID.TID 0000.0001)     Wall clock time:  0.55383706092834473
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "GCHEM_CALC_TENDENCY [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  8.96453857421875000E-005
+(PID.TID 0000.0001)     Wall clock time:  9.01222229003906250E-005
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:   4.3143445551395416
+(PID.TID 0000.0001)           User time:   4.4053300023078918
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:   4.3215110301971436
+(PID.TID 0000.0001)     Wall clock time:   4.4148681163787842
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.89986026287078857
+(PID.TID 0000.0001)           User time:  0.91886049509048462
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.90257883071899414
+(PID.TID 0000.0001)     Wall clock time:  0.92138671875000000
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.31895399093627930
+(PID.TID 0000.0001)           User time:  0.31895166635513306
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.31977415084838867
+(PID.TID 0000.0001)     Wall clock time:  0.32043766975402832
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "MOM_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  3.09945940971374512E-002
+(PID.TID 0000.0001)           User time:  4.49916124343872070E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  3.28347682952880859E-002
+(PID.TID 0000.0001)     Wall clock time:  4.37760353088378906E-002
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "INTEGR_CONTINUITY   [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  5.19917011260986328E-002
+(PID.TID 0000.0001)           User time:  5.39925098419189453E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  5.29174804687500000E-002
+(PID.TID 0000.0001)     Wall clock time:  5.30340671539306641E-002
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "TRC_CORRECTION_STEP [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  9.51290130615234375E-005
+(PID.TID 0000.0001)     Wall clock time:  9.10758972167968750E-005
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "GCHEM_FORCING_SEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.17697256803512573
+(PID.TID 0000.0001)           User time:  0.18097382783889771
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.17754411697387695
+(PID.TID 0000.0001)     Wall clock time:  0.18425202369689941
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  8.59869718551635742E-002
+(PID.TID 0000.0001)           User time:  8.69860649108886719E-002
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  8.59322547912597656E-002
+(PID.TID 0000.0001)     Wall clock time:  8.57927799224853516E-002
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.22096830606460571
+(PID.TID 0000.0001)           User time:  0.22196632623672485
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  0.22332739830017090
+(PID.TID 0000.0001)     Wall clock time:  0.22359299659729004
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.76488286256790161
-(PID.TID 0000.0001)         System time:  7.99899920821189880E-003
-(PID.TID 0000.0001)     Wall clock time:  0.79715847969055176
+(PID.TID 0000.0001)           User time:  0.76188212633132935
+(PID.TID 0000.0001)         System time:  8.99899937212467194E-003
+(PID.TID 0000.0001)     Wall clock time:  0.77216196060180664
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "PTRACERS_RESET      [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:   0.0000000000000000
 (PID.TID 0000.0001)         System time:   0.0000000000000000
-(PID.TID 0000.0001)     Wall clock time:  1.03235244750976563E-004
+(PID.TID 0000.0001)     Wall clock time:  1.03950500488281250E-004
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001)   Seconds in section "DO_WRITE_PICKUP     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.09977722167968750E-002
-(PID.TID 0000.0001)         System time:  4.99900057911872864E-003
-(PID.TID 0000.0001)     Wall clock time:  1.59199237823486328E-002
+(PID.TID 0000.0001)           User time:  1.29981040954589844E-002
+(PID.TID 0000.0001)         System time:  2.00000032782554626E-003
+(PID.TID 0000.0001)     Wall clock time:  1.57191753387451172E-002
 (PID.TID 0000.0001)          No. starts:          10
 (PID.TID 0000.0001)           No. stops:          10
 (PID.TID 0000.0001) // ======================================================

@@ -225,10 +225,9 @@ C-    viscosity and diffusivity default value:
       multiDimAdvection   = .TRUE.
       useMultiDimAdvec    = .FALSE.
       useCDscheme         = .FALSE.
-      useEnergyConservingCoriolis = .FALSE.
-      useJamartWetPoints  = .FALSE.
-      useJamartMomAdv     = .FALSE.
+      selectCoriScheme    = UNSET_I
       selectVortScheme    = UNSET_I
+      useJamartMomAdv     = .FALSE.
       upwindVorticity     = .FALSE.
       highOrderVorticity  = .FALSE.
       useAbsVorticity     = .FALSE.

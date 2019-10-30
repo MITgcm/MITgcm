@@ -4,21 +4,30 @@ import numpy as np
 nstats = 5
 
 def readstats(fname):
-    ''' locals,totals,itrs = readstats(fname)
-    
+    '''
+    locals,totals,itrs = readstats(fname)
+
     Read a diagstats text file into record arrays (or dictionaries).
+
+    Parameters
+    ----------
+    fname : string
+        name of diagstats file to read
 
     Returns
     -------
-    locals :: record array (or dictionary of arrays) of local statistics,
-              shape (len(itrs), Nr, 5)
-    totals :: record array (or dictionary of arrays) of column integrals,
-              shape (len(itrs), 5)
-    itrs   :: iteration numbers found in the file
-    
-    The 5 columns of the resulting arrays are average, std.dev, min, max
-    and total volume.
-    There is a record (or dictionary key) for each field found in the file.
+    locals : record array or dict of arrays
+        local statistics, shape (len(itrs), Nr, 5)
+    totals : record array or dict of arrays
+        column integrals, shape (len(itrs), 5)
+    itrs : list of int
+        iteration numbers found in the file
+
+    Notes
+    -----
+    - The 5 columns of the resulting arrays are average, std.dev, min, max and total volume.
+    - There is a record (or dictionary key) for each field found in the file.
+
     '''
     nk = 0
     flds = []
@@ -73,6 +82,4 @@ def readstats(fname):
         totals = dict((k,np.array(res[k])[0]) for k in flds)
         locals = dict((k,np.array(res[k])[1:]) for k in flds)
         return locals,totals,itrs
-        
-
 

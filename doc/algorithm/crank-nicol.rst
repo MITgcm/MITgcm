@@ -34,7 +34,7 @@ Equations :eq:`ustar-backward-free-surface` –
    \epsilon_{fs} \frac{ {\eta}^{n+1} - {\eta}^{n} }{ \Delta t}
    + {\bf \nabla}_h \cdot \int_{R_{fixed}}^{R_o}
    [ \beta \vec{\bf v}^{n+1} + (1-\beta) \vec{\bf v}^{n}] dr
-   = \epsilon_{fw} (P-E)
+   = \epsilon_{fw} ({\mathcal{P-E}})
    :label: eta-n+1-CrankNick
 
 We set
@@ -47,7 +47,7 @@ We set
      + \Delta t {\bf \nabla}_h {\phi'_{hyd}}^{(n+1/2)}
      \\
      {\eta}^* & = &
-     \epsilon_{fs} {\eta}^{n} + \epsilon_{fw} \Delta t (P-E)
+     \epsilon_{fs} {\eta}^{n} + \epsilon_{fw} \Delta t ({\mathcal{P-E}})
      - \Delta t {\bf \nabla}_h \cdot \int_{R_{fixed}}^{R_o}
      [ \beta \vec{\bf v}^* + (1-\beta) \vec{\bf v}^{n}] dr\end{aligned}
 
@@ -69,12 +69,12 @@ and then to compute (:filelink:`CORRECTION_STEP <model/src/correction_step.F>`):
 Notes:
 
 #. The RHS term of equation :eq:`eta-n+1-CrankNick` corresponds the
-   contribution of fresh water flux (P-E) to the free-surface variations
+   contribution of fresh water flux ({\mathcal{P-E}}) to the free-surface variations
    (:math:`\epsilon_{fw}=1`, :varlink:`useRealFreshWaterFlux` =.TRUE. in parameter
    file ``data``). In order to remain consistent with the tracer equation,
    specially in the non-linear free-surface formulation, this term is
    also affected by the Crank-Nicolson time stepping. The RHS reads:
-   :math:`\epsilon_{fw} ( \beta (P-E)^{n+1/2} + (1-\beta) (P-E)^{n-1/2} )`
+   :math:`\epsilon_{fw} ( \beta ({\mathcal{P-E}})^{n+1/2} + (1-\beta) ({\mathcal{P-E}})^{n-1/2} )`
  
 
 #. The stability criteria with Crank-Nicolson time stepping for the pure

@@ -130,11 +130,11 @@ c They provide the fields to be stored.
 #   endif
 #  endif
 #  ifdef ALLOW_EXF
-#   include "EXF_FIELDS.h"
-#   include "EXF_PARAM.h"
 #   ifdef ALLOW_BULKFORMULAE
 #    include "EXF_CONSTANTS.h"
 #   endif
+#   include "EXF_INTERP_SIZE.h"
+#   include "EXF_FIELDS.h"
 #  endif /* ALLOW_EXF */
 #  ifdef ALLOW_BLING
 #   include "BLING_VARS.h"
