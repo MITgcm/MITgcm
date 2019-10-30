@@ -324,7 +324,8 @@ salinity array at the Southern OB, the array name is
 :varlink:`OBSs`. Values filled are either
 
 -  constant vertical :math:`T,S` profiles as specified in file data
-   (tRef(Nr), sRef(Nr)) with zero velocities :math:`U,V`
+   (:varlink:`tRef`\ (Nr), :varlink:`sRef`\ (Nr)) with zero velocities
+   :math:`U,V`
 
 -  :math:`T,S,U,V` values determined via Orlanski radiation conditions
    (see below)
@@ -338,9 +339,11 @@ salinity array at the Southern OB, the array name is
 :filelink:`ORLANSKI <pkg/obcs/ORLANSKI.h>`:
 ###########################################
 
-Orlanski radiation conditions :cite:`orl:76` examples can be found in example configurations
-:filelink:`dome <verification/dome>` (http://www.rsmas.miami.edu/personal/tamay/DOME/dome.html)
-and :filelink:`plume\_on\_slope <verification/tutorial\_plume\_on\_slope>`.
+Orlanski radiation conditions :cite:`orl:76` examples can be found in
+example configurations :filelink:`dome <verification/dome>`
+(http://www.rsmas.miami.edu/personal/tamay/DOME/dome.html) and
+:filelink:`plume_on_slope <verification/tutorial_plume_on_slope>`
+(also described as a tutorial in :numref:`tutorial_plume_on_slope`).
 
 
 :filelink:`OBCS\_PRESCRIBE\_READ <pkg/obcs/obcs\_prescibe\_read.F>`:
