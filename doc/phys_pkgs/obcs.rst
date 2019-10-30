@@ -626,4 +626,4 @@ In the directory :filelink:`verification` the following experiments use
 
 -  :filelink:`seaice_obcs <verification/seaice_obcs>`: simple example who to use the sea-ice related code based on :filelink:`lab_sea <verification/lab_sea>`;
 
--  Tutorial :ref:`Gravity Plume on a Continental Slope <tutorial_plume_on_slope>`: uses Orlanski-BCs.
+-  Tutorial :ref:`tutorial_plume_on_slope`: uses Orlanski-BCs.
