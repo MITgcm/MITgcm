@@ -340,10 +340,9 @@ salinity array at the Southern OB, the array name is
 ###########################################
 
 Orlanski radiation conditions :cite:`orl:76` examples can be found in
-example configurations :filelink:`dome <verification/dome>`
-(http://www.rsmas.miami.edu/personal/tamay/DOME/dome.html) and
-:filelink:`plume_on_slope <verification/tutorial_plume_on_slope>`
-(also described as a tutorial in :numref:`tutorial_plume_on_slope`).
+example configurations :filelink:`verification/dome` and
+:filelink:`verification/tutorial_plume_on_slope`
+(as described in detail in :numref:`tutorial_plume_on_slope`).
 
 
 :filelink:`OBCS\_PRESCRIBE\_READ <pkg/obcs/obcs\_prescibe\_read.F>`:
