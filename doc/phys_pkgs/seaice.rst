@@ -146,9 +146,9 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_deltaTevp`        | 0.0                          | EVP sub-cycling time step (s); values :math:`>` 0 turn on EVP           |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICEuseEVPstar`        | FALSE                        | use modified EVP\* instead of EVP, following :cite:`lemieux12`          |
+  | :varlink:`SEAICEuseEVPstar`        | TRUE                         | use modified EVP\* instead of EVP, following :cite:`lemieux12`          |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICEuseEVPrev`         | FALSE                        | "revisited form" variation on EVP\*, following :cite:`bouillon13`       |
+  | :varlink:`SEAICEuseEVPrev`         | TRUE                         | "revisited form" variation on EVP\*, following :cite:`bouillon13`       |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEnEVPstarSteps`     | unset                        | number of modified EVP\* iterations                                     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -176,7 +176,7 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_OLy`              | :varlink:`OLy` - 2           | overlap for LSR-solver or preconditioner, :math:`y`-dimension           |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICEnonLinIterMax`     | 2/10                         |  maximum number of non-linear (outer loop) iterations (LSR/JFNK)        |
+  | :varlink:`SEAICEnonLinIterMax`     | 10                         |  maximum number of non-linear (outer loop) iterations                     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICElinearIterMax`     | 1500/10                      | maximum number of linear iterations (LSR/JFNK)                          |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -263,7 +263,7 @@ General flags and parameters
   | :varlink:`HsaltFile`               | unset                        | filename for initial eff. sea ice salinity field :varlink:`HSALT`       |
   |                                    |                              | (g/m\ :sup:`2`)                                                         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`LSR_ERROR`               | 1.0E-04                      | sets accuracy of LSR solver                                             |
+  | :varlink:`LSR_ERROR`               | 1.0E-05                      | sets accuracy of LSR solver                                             |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`DIFF1`                   | 0.0                          | parameter used in advect.F                                              |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -599,7 +599,7 @@ after only a few nonlinear steps and the calculation continues with
 the next time level. This method is the default method in
 MITgcm. The number of nonlinear iteration steps or pseudo-time steps
 can be controlled by the run-time parameter :varlink:`SEAICEnonLinIterMax`
-(default is 2).
+(default is 10).
 
 In order to overcome the poor convergence of the Picard-solver,
 Lemieux et al. (2010) :cite:`lemieux10` introduced a Jacobian-free Newton-Krylov solver for
@@ -792,25 +792,34 @@ timescale :math:`T` for elastic waves
 :math:`T=E_{0}\Delta{t}` with the tunable parameter :math:`E_0<1` and
 the external (long) timestep :math:`\Delta{t}`.
 :math:`E_{0} = \frac{1}{3}` is the default value in the code and close
-to what and recommend.
+to what Hunke and Dukowicz (1997) :cite:`hun97` recommend.
 
-To use the EVP solver, make sure that both ``#define`` :varlink:`SEAICE_CGRID` and
-``#define`` :varlink:`SEAICE_ALLOW_EVP` are set in
-:filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`
-(both are defined by default). The solver is turned on by setting the sub-cycling time
-step :varlink:`SEAICE_deltaTevp` to a value larger than zero. The choice of
-this time step is under debate.  Hunke and Dukowicz (1997) :cite:`hun97` recommend order 120
-time steps for the EVP solver within one model time step
-:math:`\Delta{t}` (:varlink:`deltaTmom`). One can also choose order 120 time
-steps within the forcing time scale, but then we recommend adjusting
-the damping time scale :math:`T` accordingly, by setting either :varlink:`SEAICE_elasticParm` (:math:`E_{0}`),
-so that :math:`E_{0}\Delta{t}=` forcing time scale, or directly :varlink:`SEAICE_evpTauRelax` (:math:`T`)
-to the forcing time scale. (**NOTE**: with the improved EVP variants of the next section,
+We do not recommend to use the EVP solver in its original
+form. Instead, use mEVP or aEVP instead (see
+:numref:`para_phys_pkg_seaice_EVPstar`). If you really need to use the
+original EVP solver, make sure that both ``#define``
+:varlink:`SEAICE_CGRID` and ``#define`` :varlink:`SEAICE_ALLOW_EVP`
+are set in :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`
+(both are defined by default). By default, the runtime parameters
+:varlink:`SEAICEuseEVPstar` and :varlink:`SEAICEuseEVPrev` are set to
+``TRUE``, which already improves the behavoir of EVP, but for the
+original EVP they should be set to ``FALSE``.  The solver is turned on
+by setting the sub-cycling time step :varlink:`SEAICE_deltaTevp` to a
+value larger than zero. The choice of this time step is under debate.
+Hunke and Dukowicz (1997) :cite:`hun97` recommend order 120 time steps
+for the EVP solver within one model time step :math:`\Delta{t}`
+(:varlink:`deltaTmom`). One can also choose order 120 time steps
+within the forcing time scale, but then we recommend adjusting the
+damping time scale :math:`T` accordingly, by setting either
+:varlink:`SEAICE_elasticParm` (:math:`E_{0}`), so that
+:math:`E_{0}\Delta{t}=` forcing time scale, or directly
+:varlink:`SEAICE_evpTauRelax` (:math:`T`) to the forcing time
+scale. (**NOTE**: with the improved EVP variants of the next section,
 the above recommendations are obsolete. Use mEVP or aEVP instead.)
 
 .. _para_phys_pkg_seaice_EVPstar:
 
-More stable variants of Elastic-Viscous-Plastic Dynamics: EVP\* , mEVP, and aEVP
+More stable variants of Elastic-Viscous-Plastic Dynamics: EVP\*, mEVP, and aEVP
 --------------------------------------------------------------------------------
 
 The genuine EVP scheme appears to give noisy solutions (see Hunke 2001, Lemieux et al. 2012,
@@ -832,10 +841,11 @@ definition of a residual :math:`|\mathbf{u}^{p+1}-\mathbf{u}^{p}|`
 that, as :math:`\mathbf{u}^{p+1} \rightarrow \mathbf{u}^{n+1}`,
 converges to :math:`0`. In this way EVP can be re-interpreted as a
 pure iterative solver where the sub-cycling has no association with
-time-relation (through :math:`\Delta{t}_{\mathrm{EVP}}`). Using the
-terminology of Kimmritz et al. 2015 :cite:`kimmritz15`, the evolution
-equations of stress :math:`\sigma_{ij}` and momentum
-:math:`\mathbf{u}` can be written as:
+time-relation (through :math:`\Delta{t}_{\mathrm{EVP}}`). With
+the default setting of :varlink:`SEAICEuseEVPstar` ``=.TRUE.`` (default), this form of
+EVP is used.  Using the terminology of Kimmritz et al. 2015
+:cite:`kimmritz15`, the evolution equations of stress
+:math:`\sigma_{ij}` and momentum :math:`\mathbf{u}` can be written as:
 
 .. math::
    \sigma_{ij}^{p+1}=\sigma_{ij}^p+\frac{1}{\alpha}
@@ -852,26 +862,31 @@ equations of stress :math:`\sigma_{ij}` and momentum
 
 :math:`\mathbf{R}` contains all terms in the momentum equations except
 for the rheology terms and the time derivative; :math:`\alpha` and
-:math:`\beta` are free parameters (:varlink:`SEAICE_evpAlpha`, :varlink:`SEAICE_evpBeta`)
-that replace the time stepping parameters :varlink:`SEAICE_deltaTevp`
-(:math:`\Delta{t}_{\mathrm{EVP}}`), :varlink:`SEAICE_elasticParm` (:math:`E_{0}`),
-or :varlink:`SEAICE_evpTauRelax` (:math:`T`). :math:`\alpha` and :math:`\beta` determine
-the speed of convergence and the stability. Usually, it makes sense to use
-:math:`\alpha = \beta`, and :varlink:`SEAICEnEVPstarSteps` :math:`\gg (\alpha,\,\beta)`
-(Kimmritz et al. 2015 :cite:`kimmritz15`). Currently,
-there is no termination criterion and the number of mEVP iterations is
-fixed to :varlink:`SEAICEnEVPstarSteps`.
+:math:`\beta` are free parameters (:varlink:`SEAICE_evpAlpha`,
+:varlink:`SEAICE_evpBeta`) that replace the time stepping parameters
+:varlink:`SEAICE_deltaTevp` (:math:`\Delta{t}_{\mathrm{EVP}}`),
+:varlink:`SEAICE_elasticParm` (:math:`E_{0}`), or
+:varlink:`SEAICE_evpTauRelax` (:math:`T`). :math:`\alpha` and
+:math:`\beta` determine the speed of convergence and the
+stability. Usually, it makes sense to use :math:`\alpha = \beta`, and
+:varlink:`SEAICEnEVPstarSteps` :math:`\gg (\alpha,\,\beta)` (Kimmritz
+et al. 2015 :cite:`kimmritz15`). Currently, there is no termination
+criterion and the number of mEVP iterations is fixed to
+:varlink:`SEAICEnEVPstarSteps`.
 
-In order to use mEVP in MITgcm, set :varlink:`SEAICEuseEVPstar` ``= .TRUE.,``
-in ``data.seaice``. If :varlink:`SEAICEuseEVPrev` ``=.TRUE.,`` the actual form of
-equations :eq:`eq_evpstarsigma` and :eq:`eq_evpstarmom` is used with fewer
-implicit terms and the factor of :math:`e^{2}` dropped in the stress
-equations :eq:`eq_evpstresstensor2` and
+In order to use mEVP in MITgcm, make sure that
+:varlink:`SEAICEuseEVPstar` ``= .TRUE.,`` (default, or set in
+``data.seaice``). By default :varlink:`SEAICEuseEVPrev` ``=.TRUE.,`` and the
+actual form of equations :eq:`eq_evpstarsigma` and :eq:`eq_evpstarmom`
+is used with fewer implicit terms and the factor of :math:`e^{2}`
+dropped in the stress equations :eq:`eq_evpstresstensor2` and
 :eq:`eq_evpstresstensor12`. Although this modifies the original
-EVP-equations, it turns out to improve convergence (Bouillon et al. 2013 :cite:`bouillon13`).
+EVP-equations, it turns out to improve convergence (Bouillon et
+al. 2013 :cite:`bouillon13`).
 
-Another variant is the aEVP scheme (Kimmritz et al. 2016 :cite:`kimmritz16`), where the value
-of :math:`\alpha` is set dynamically based on the stability criterion
+The aEVP scheme is an enhanced variant of mEVP (Kimmritz et al. 2016
+:cite:`kimmritz16`), where the value of :math:`\alpha` is set
+dynamically based on the stability criterion
 
 .. math::
    \alpha = \beta = \max\left( \tilde{c} \pi\sqrt{c \frac{\zeta}{A_{c}}
@@ -887,8 +902,15 @@ To use aEVP in MITgcm set :varlink:`SEAICEaEVPcoeff` :math:`= \tilde{c}`;
 this also sets the default values of :varlink:`SEAICEaEVPcStar` (:math:`c=4`)
 and :varlink:`SEAICEaEVPalphaMin` (:math:`\alpha_{\min}=5`). Good convergence
 has been obtained with these values (Kimmritz et al. 2016 :cite:`kimmritz16`):
-:varlink:`SEAICEaEVPcoeff` :math:`= 0.5`, :varlink:`SEAICEnEVPstarSteps` :math:`= 500`,
-:varlink:`SEAICEuseEVPstar` ``= .TRUE.``, :varlink:`SEAICEuseEVPrev` ``= .TRUE.``.
+
+::
+
+   SEAICEaEVPcoeff      = 0.5,
+   SEAICEnEVPstarSteps  = 500,
+   # The following two parameters are required by mEVP and aEVP,
+   # but they are TRUE by default:
+   SEAICEuseEVPstar     = .TRUE.,
+   SEAICEuseEVPrev      = .TRUE.,
 
 Note, that probably because of the C-grid staggering of velocities and
 stresses, mEVP may not converge as successfully as in Kimmritz et al. (2015) :cite:`kimmritz15`, see also Kimmritz et al. (2016) :cite:`kimmritz16`,
