@@ -291,7 +291,6 @@ the namelist looks like this:
       OB_Iwest  = 1*0,1*5,142*0,
       OB_Jsouth = 2*3,3*2,115*0,
 
-
 .. figure:: figs/obcsexample.*
     :width: 70%
     :align: center
@@ -301,6 +300,11 @@ the namelist looks like this:
     Example boundary with more than one row. The dark grey, light grey,
     and white boxes are points outside the domain, OB points, and ocean points,
     respectively. The black dots mark the OB index to write into the namelist.
+
+For an even more complicated open boundary geometry, e.g., delimiting a concave interior domain
+(:varlink:`OB_Ieast` :math:`\leq` :varlink:`OB_Iwest`), one might need to also specify the
+interior domain through an additional input file :varlink:`insideOBmaskFile` for the interior
+mask (:math:`=1` inside, :math:`=0` outside).
 
 .. _ssub_phys_pkg_obcs_equations:
 
