@@ -1,3 +1,5 @@
+.. _tutorial_plume_on_slope:
+
 Gravity Plume On a Continental Slope
 ====================================
 
