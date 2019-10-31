@@ -51,11 +51,13 @@ CADJ &     key = ikey_dynamics,kind = isbyte
 #else /* NONLIN_FRSURF */
 
 CADJ STORE etaH = comlev1, key = ikey_dynamics, kind = isbyte
-# if ( defined(ALLOW_DEPTH_CONTROL) || defined(ALLOW_SEAICE) )
+# if ( defined ALLOW_ECCO || defined ALLOW_SEAICE || defined ALLOW_DEPTH_CONTROL )
 CADJ STORE theta, salt = comlev1, key = ikey_dynamics,kind = isbyte
+# endif /* ALLOW_ECCO or ALLOW_SEAICE or ALLOW_DEPTH_CONTROL */
+# if ( defined ALLOW_SEAICE || defined ALLOW_DEPTH_CONTROL )
 CADJ STORE surfaceForcingTice = comlev1,
 CADJ &     key = ikey_dynamics,kind = isbyte
-# endif /* ALLOW_DEPTH_CONTROL or ALLOW_SEAICE */
+# endif /* ALLOW_SEAICE or ALLOW_DEPTH_CONTROL */
 
 #endif /* NONLIN_FRSURF */
 
