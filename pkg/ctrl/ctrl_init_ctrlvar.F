@@ -54,6 +54,7 @@ c     == routine arguments ==
 
 c     == local variables ==
       character*( 80) fname(3), gfname
+      character*(max_len_mbuf) msgbuf
       logical  exst, g_exst
 
 C     == external ==
@@ -90,9 +91,15 @@ C     initialize to zero and warn user
         write(gfname(1:il+5),'(2a)') fname(2)(1:il),'.data'
         inquire(file=gfname,exist=g_exst)
         if (.not. g_exst) then
-            write(msgbuf,'(5A)')'** WARNING ** CTRL_INIT_CTRLVAR: ',
-     &          'could not find ', gfname, ' for TLM perturbation ',
+            write(msgbuf,'(3A)')'** WARNING ** CTRL_INIT_CTRLVAR: ',
+     &          'could not find ', gfname(1:il+5)
+            call print_message( msgbuf, errorMessageUnit,
+     &      squeeze_right, myThid )
+            write(msgbuf,'(3A)')'** WARNING ** ',
+     &          'for TLM perturbation ',
      &          'so will initialize this file with all zeros'
+            call print_message( msgbuf, errorMessageUnit,
+     &      squeeze_right, myThid )
         endif
       endif
 
