@@ -26,7 +26,6 @@
  SEAICE_Oly = 0,
  SEAICEetaZmethod = 0,
  SEAICE_waterDrag  = 0.005355404089581304,
- SEAICEnonLinIterMax = 2,
  LSR_ERROR           = 1.E-4,
  &
 

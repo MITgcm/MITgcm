@@ -176,7 +176,7 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_OLy`              | :varlink:`OLy` - 2           | overlap for LSR-solver or preconditioner, :math:`y`-dimension           |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICEnonLinIterMax`     | 10                         |  maximum number of non-linear (outer loop) iterations                     |
+  | :varlink:`SEAICEnonLinIterMax`     | 2/10                         |  maximum number of non-linear (outer loop) iterations (LSR/JFNK)        |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICElinearIterMax`     | 1500/10                      | maximum number of linear iterations (LSR/JFNK)                          |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -589,17 +589,18 @@ The solution vector :math:`\mathbf{x}` consists of the two velocity
 components :math:`u` and :math:`v` that contain the velocity variables
 at all grid points and at one time level. The standard (and default)
 method for solving Eq. :eq:`eq_matrixmom` in the sea ice component of
-MITgcm is an iterative Picard solver: in the
-:math:`k`-th iteration a linearized form
-:math:`\mathbf{A}(\mathbf{x}^{k-1})\,\mathbf{x}^{k} =
-\mathbf{b}(\mathbf{x}^{k-1})` is solved (in the case of MITgcm it
-is a Line Successive (over) Relaxation (LSR) algorithm). Picard
-solvers converge slowly, but in practice the iteration is generally terminated
+MITgcm is an iterative Picard solver: in the :math:`k`-th iteration a
+linearized form :math:`\mathbf{A}(\mathbf{x}^{k-1})\,\mathbf{x}^{k} =
+\mathbf{b}(\mathbf{x}^{k-1})` is solved (in the case of MITgcm it is a
+Line Successive (over) Relaxation (LSR) algorithm). Picard solvers
+converge slowly, but in practice the iteration is generally terminated
 after only a few nonlinear steps and the calculation continues with
-the next time level. This method is the default method in
-MITgcm. The number of nonlinear iteration steps or pseudo-time steps
-can be controlled by the run-time parameter :varlink:`SEAICEnonLinIterMax`
-(default is 10).
+the next time level. This method is the default method in MITgcm. The
+number of nonlinear iteration steps or pseudo-time steps can be
+controlled by the run-time parameter :varlink:`SEAICEnonLinIterMax`.
+This parameter's default is 2, but using a number of at least 10 is
+recommended for better solutions that are converged at least in an
+energy norm sense (Zhang and Hibler 1997) :cite:`zhang97`.
 
 In order to overcome the poor convergence of the Picard-solver,
 Lemieux et al. (2010) :cite:`lemieux10` introduced a Jacobian-free Newton-Krylov solver for

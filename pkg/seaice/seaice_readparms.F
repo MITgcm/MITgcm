@@ -486,7 +486,7 @@ C     LSR parameters
       SEAICE_LSRrelaxU = 0.95 _d 0
       SEAICE_LSRrelaxV = 0.95 _d 0
       SOLV_NCHECK= 2
-      SEAICEnonLinIterMax = 10
+      SEAICEnonLinIterMax = UNSET_I
       SEAICElinearIterMax = UNSET_I
       SEAICEpreconNL_Iter =  0
       SEAICEpreconLinIter = 10
@@ -809,6 +809,13 @@ C     JFNK problem (and Krylov solver is not used)
       IF ( SEAICEuseJFNK .AND. .NOT. SEAICEusePicardAsPrecon )
      &     SEAICEuseKrylov = .FALSE.
 
+C     Set different defaults for different solvers
+      IF ( SEAICEnonLinIterMax .EQ. UNSET_I ) THEN
+C     two nonlinear iterations correspond to the original modified
+C     Euler time stepping scheme of Zhang+Hibler (1997)
+       IF ( SEAICEuseLSR ) SEAICEnonLinIterMax = 2
+       IF ( SEAICEuseJFNK.OR.SEAICEuseKrylov ) SEAICEnonLinIterMax = 10
+      ENDIF
 C     Make sure that we have least two pseudo time steps for Picard-LSR
       IF ( SEAICEuseLSR .AND. .NOT. SEAICEusePicardAsPrecon )
      &     SEAICEnonLinIterMax = MAX(SEAICEnonLinIterMax,2)

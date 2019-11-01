@@ -17,5 +17,4 @@
  SEAICEetaZmethod = 0,
  SEAICE_drag = 0.002,
  SEAICE_waterDrag = 0.005314009661835749,
- SEAICEnonLinIterMax = 2,
  &
