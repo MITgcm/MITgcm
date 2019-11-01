@@ -2,7 +2,7 @@ C
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_globfld_xyz(
-     I     fname, fillvalue, ivartype, myThid )
+     I     fname, ivartype, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_set_globfld_xyz
@@ -28,7 +28,6 @@ c     == global variables ==
 c     == routine arguments ==
 
       character*( 80)   fname
-      _RL fillvalue
       integer ivartype
       integer myThid
 
@@ -64,7 +63,7 @@ c     Initialise temporary file
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-                globfld3d(i,j,k,bi,bj) = fillvalue
+                globfld3d(i,j,k,bi,bj) = 0. _d 0
               enddo
             enddo
           enddo
