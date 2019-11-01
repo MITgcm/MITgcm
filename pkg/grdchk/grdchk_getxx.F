@@ -106,7 +106,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_theta_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xyz(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_theta_file(1:il),'.',optimcycle
@@ -119,7 +118,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_salt_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xyz(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_salt_file(1:il),'.',optimcycle
@@ -132,7 +130,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_uvel_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xyz(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_uvel_file(1:il),'.',optimcycle
@@ -145,7 +142,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_vvel_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xyz(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_vvel_file(1:il),'.',optimcycle
@@ -158,7 +154,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_hflux_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_hflux_file(1:il),'.',optimcycle
@@ -171,7 +166,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_sflux_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_sflux_file(1:il),'.',optimcycle
@@ -184,7 +178,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_tauu_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_tauu_file(1:il),'.',optimcycle
@@ -197,7 +190,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_tauv_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_tauv_file(1:il),'.',optimcycle
@@ -210,7 +202,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_atemp_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_atemp_file(1:il),'.',optimcycle
@@ -223,7 +214,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_aqh_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_aqh_file(1:il),'.',optimcycle
@@ -236,7 +226,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_uwind_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_uwind_file(1:il),'.',optimcycle
@@ -249,7 +238,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_vwind_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_vwind_file(1:il),'.',optimcycle
@@ -264,7 +252,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_obcsn_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xz(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_obcsn_file(1:il),'.',optimcycle
@@ -277,7 +264,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_obcss_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xz(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_obcss_file(1:il),'.',optimcycle
@@ -290,7 +276,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_obcsw_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_yz(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_obcsw_file(1:il),'.',optimcycle
@@ -303,7 +288,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_obcse_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_yz(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_obcse_file(1:il),'.',optimcycle
@@ -318,7 +302,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_diffkr_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xyz(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_diffkr_file(1:il),'.',optimcycle
@@ -331,7 +314,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_kapgm_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xyz(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_kapgm_file(1:il),'.',optimcycle
@@ -344,7 +326,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_kapredi_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xyz(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_kapredi_file(1:il),'.',optimcycle
@@ -357,7 +338,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_tr1_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xyz(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_tr1_file(1:il),'.',optimcycle
@@ -370,7 +350,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_sst_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_sst_file(1:il),'.',optimcycle
@@ -383,7 +362,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_sss_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_sss_file(1:il),'.',optimcycle
@@ -396,7 +374,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_depth_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_depth_file(1:il),'.',optimcycle
@@ -410,7 +387,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_efluxy_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xyz(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_efluxy_file(1:il),'.',optimcycle
@@ -424,7 +400,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_efluxp_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xyz(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_efluxp_file(1:il),'.',optimcycle
@@ -437,7 +412,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_bottomdrag_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_bottomdrag_file(1:il),'.',optimcycle
@@ -450,7 +424,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_hfluxm_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_hfluxm_file(1:il),'.',optimcycle
@@ -463,7 +436,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_gen2d_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_gen2d_file(1:il),'.',optimcycle
@@ -476,7 +448,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_gen3d_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xyz(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_gen3d_file(1:il),'.',optimcycle
@@ -489,7 +460,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_precip_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_precip_file(1:il),'.',optimcycle
@@ -502,7 +472,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_swflux_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_swflux_file(1:il),'.',optimcycle
@@ -515,7 +484,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_swdown_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_swdown_file(1:il),'.',optimcycle
@@ -528,7 +496,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_lwflux_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_lwflux_file(1:il),'.',optimcycle
@@ -541,7 +508,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_lwdown_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_lwdown_file(1:il),'.',optimcycle
@@ -554,7 +520,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_evap_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_evap_file(1:il),'.',optimcycle
@@ -567,7 +532,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_snowprecip_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_snowprecip_file(1:il),'.',optimcycle
@@ -580,7 +544,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_apressure_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_apressure_file(1:il),'.',optimcycle
@@ -593,7 +556,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_runoff_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_runoff_file(1:il),'.',optimcycle
@@ -606,7 +568,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_siarea_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_siarea_file(1:il),'.',optimcycle
@@ -619,7 +580,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_siheff_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_siheff_file(1:il),'.',optimcycle
@@ -632,7 +592,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_sihsnow_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_sihsnow_file(1:il),'.',optimcycle
@@ -645,7 +604,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_shifwflx_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_shifwflx_file(1:il),'.',optimcycle
@@ -658,7 +616,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_etan_file(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_etan_file(1:il),'.',optimcycle
@@ -676,7 +633,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_genarr2d_file(iarr)(1:il),'.',optimcycle
-          call ctrl_set_globfld_xy(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_genarr2d_file(iarr)(1:il),'.',optimcycle
@@ -694,7 +650,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_genarr3d_file(iarr)(1:il),'.',optimcycle
-          call ctrl_set_globfld_xyz(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_genarr3d_file(iarr)(1:il),'.',optimcycle
@@ -712,7 +667,6 @@ c--   == end of interface ==
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
      &           yadmark, xx_gentim2d_file(iarr)(1:il),'.',optimcycle
-          call ctrl_set_globfld_xyz(fname,0. _d 0,grdchkvarindex,myThid)
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_gentim2d_file(iarr)(1:il),'.',optimcycle

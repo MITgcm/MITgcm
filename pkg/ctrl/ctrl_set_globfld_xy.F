@@ -2,7 +2,7 @@ C
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_globfld_xy(
-     I     fname, fillvalue, ivartype, myThid )
+     I     fname, ivartype, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_set_globfld_xy
@@ -16,8 +16,6 @@ c     changed: heimbach@mit.edu 17-Jun-2003
 c              merged changes from Armin to replace write of
 c              nr * globfld2d by 1 * globfld3d
 c              (ad hoc fix to speed up global I/O)
-c     changed: tsmith@oden.utexas.edu 21-Oct-2019
-c              making more flexible for TLM
 c
 c     ==================================================================
 
@@ -35,7 +33,6 @@ c     == global variables ==
 c     == routine arguments ==
 
       character*( 80)   fname
-      _RL fillvalue
       integer ivartype
       integer myThid
 
@@ -71,7 +68,7 @@ c     Initialise temporary file
         do bi = itlo,ithi
            do j = jmin,jmax
              do i = imin,imax
-                globfld2d(i,j,bi,bj) = fillvalue
+                globfld2d(i,j,bi,bj) = 0. _d 0
              enddo
            enddo
         enddo
@@ -82,7 +79,7 @@ c     Initialise temporary file
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-                globfld3d(i,j,k,bi,bj) = fillvalue
+                globfld3d(i,j,k,bi,bj) = 0. _d 0
               enddo
             enddo
           enddo
