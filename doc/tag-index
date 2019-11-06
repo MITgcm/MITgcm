@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/dic:
+  - Fix carbonate chemistry coefficient issues (#269). This affects results when
+    either CARBONCHEM_TOTALPHSCALE or CARBONCHEM_SOLVESAPHE are defined.
+    Update output of verification experiment "so_box_biogeo".
 o doc:
   - fix description of zero-layer thermoydnamics
 o verification/*/results/output.txt:
