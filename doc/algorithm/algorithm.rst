@@ -278,7 +278,7 @@ The rigid-lid approximation can be easily replaced by a linearization of
 the free-surface equation which can be written:
 
 .. math::
-   \partial_t \eta + \partial_x H \widehat{u} + \partial_y H \widehat{v} = P-E+R
+   \partial_t \eta + \partial_x H \widehat{u} + \partial_y H \widehat{v} = {\mathcal{P-E+R}}
    :label: linear-free-surface=P-E
 
 which differs from the depth integrated continuity equation with
@@ -293,7 +293,7 @@ method is then replaced by the time discretization of
    \eta^{n+1}
    + \Delta t \partial_x H \widehat{u^{n+1}}
    + \Delta t \partial_y H \widehat{v^{n+1}}
-   = \eta^{n} + \Delta t ( P - E )
+   = \eta^{n} + \Delta t ( {\mathcal{P-E}})
    :label: discrete-time-backward-free-surface
 
 where the use of flow at time level :math:`n+1` makes the method
@@ -316,7 +316,7 @@ re-arranged as follows:
    :label: vstar-backward-free-surface
 
 .. math::
-   \eta^* = \epsilon_{fs} ( \eta^{n} + \Delta t (P-E) )
+   \eta^* = \epsilon_{fs} ( \eta^{n} + \Delta t ({\mathcal{P-E}}) )
             - \Delta t ( \partial_x H \widehat{u^{*}}
                             + \partial_y H \widehat{v^{*}} )
    :label: etastar-backward-free-surface
@@ -533,7 +533,7 @@ follow equations:
    :label: vstarstar-sync
 
 .. math::
-   \eta^* = \epsilon_{fs} \left( \eta^{n} + \Delta t (P-E) \right)- \Delta t
+   \eta^* = \epsilon_{fs} \left( \eta^{n} + \Delta t ({\mathcal{P-E}}) \right)- \Delta t
      \nabla \cdot H \widehat{ \vec{\bf v}^{**} }
    :label: nstar-sync
 
@@ -656,7 +656,7 @@ position in time of variables appropriately:
    :label: vstarstar-staggered
 
 .. math::
-   \eta^*  = \epsilon_{fs} \left( \eta^{n-1/2} + \Delta t (P-E)^n \right)- \Delta t
+   \eta^*  = \epsilon_{fs} \left( \eta^{n-1/2} + \Delta t ({\mathcal{P-E}})^n \right)- \Delta t
      \nabla \cdot H \widehat{ \vec{\bf v}^{**} }
    :label: nstar-staggered
 
@@ -834,7 +834,7 @@ following equations:
    :label: wstar-nh
 
 .. math::
-   \eta^* ~ = ~ \epsilon_{fs} \left( \eta^{n} + \Delta t (P-E) \right)
+   \eta^* ~ = ~ \epsilon_{fs} \left( \eta^{n} + \Delta t ({\mathcal{P-E}}) \right)
    - \Delta t \left( \partial_x H \widehat{u^{*}}
                        + \partial_y H \widehat{v^{*}} \right)
    :label: etastar-nh
@@ -898,7 +898,7 @@ where
 .. math::
    {\eta}^* = \epsilon_{fs} \: {\eta}^{n} -
    \Delta t {\bf \nabla}_h \cdot \int_{R_{fixed}}^{R_o} \vec{\bf v}^* dr
-   \: + \: \epsilon_{fw} \Delta t (P-E)^{n}
+   \: + \: \epsilon_{fw} \Delta t ({\mathcal{P-E}})^{n}
    :label: eq-solve2D_rhs
 
 .. admonition:: S/R  :filelink:`SOLVE_FOR_PRESSURE <model/src/solve_for_pressure.F>`
@@ -1027,7 +1027,7 @@ continuity equation which can be summarized as:
 .. math::
    \delta_i \Delta y_g \Delta r_f h_w u +
    \delta_j \Delta x_g \Delta r_f h_s v +
-   \delta_k {\cal A}_c w  = {\cal A}_c \delta_k (P-E)_{r=0}
+   \delta_k {\cal A}_c w  = {\cal A}_c \delta_k (\mathcal{P-E})_{r=0}
    :label: discrete-continuity
 
 where the continuity equation has been most naturally discretized by
@@ -1049,10 +1049,10 @@ the vertical to yield the free-surface equation:
 .. math::
   {\cal A}_c \partial_t \eta + \delta_i \sum_k \Delta y_g \Delta r_f h_w
    u + \delta_j \sum_k \Delta x_g \Delta r_f h_s v = {\cal
-   A}_c(P-E)_{r=0}
+   A}_c(\mathcal{P-E})_{r=0}
   :label: discrete-freesurface
 
-The source term :math:`P-E` on the rhs of continuity accounts for the
+The source term :math:`\mathcal{P-E}` on the rhs of continuity accounts for the
 local addition of volume due to excess precipitation and run-off over
 evaporation and only enters the top-level of the ocean model.
 
@@ -1635,6 +1635,7 @@ Mom Diagnostics
     VISrE_Vm| 15 |WV      LR      |m^4/s^2         |Vertical   Viscous Flux of V momentum (Explicit part)
     VISrI_Vm| 15 |WV      LR      |m^4/s^2         |Vertical   Viscous Flux of V momentum (Implicit part)
 
+.. _vec_invar_mom_eqs:
 
 Vector invariant momentum equations
 ===================================
