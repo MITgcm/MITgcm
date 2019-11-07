@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics:
+  - add diagnostics for thickness factor hFacC, hFacW & hFacS.
 o pkg/dic:
   - Fix carbonate chemistry coefficient issues (#269). This affects results when
     either CARBONCHEM_TOTALPHSCALE or CARBONCHEM_SOLVESAPHE are defined.
