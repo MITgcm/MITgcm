@@ -238,7 +238,7 @@ C Using it in Leith serves to damp instabilities in w.
      &                     + (divDy(i,j+1)*divDy(i,j+1)
      &                        + divDy(i,j)*divDy(i,j) )  )
 
-              LeithQG_K(i,j,k) = leithQG2fac*SQRT(grdVrt+grdDiv)*L3
+              LeithQG_K(i,j,k) = SQRT(leithQG2fac*(grdVrt+grdDiv))*L3
 
             ELSE
 C but this approximation will work on cube (and differs by as much as 4X)

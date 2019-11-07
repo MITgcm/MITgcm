@@ -8,15 +8,8 @@ before_install:
     # Set up environment needed to run testreport code tests
   - docker pull mitgcm/mitgcm-openad-test:centos-test
   - docker run -i -t -v `pwd`:/MITgcm -d --name openad-testing --ulimit stack=-1:-1 --rm mitgcm/mitgcm-openad-test:centos-test /bin/bash
-  - docker pull mitgcm/testreport-images:fc11-base-20170715
-  - docker run  -v `pwd`:/MITgcm --name fc11-testreport -t -d mitgcm/testreport-images:fc11-base-20170715 /bin/bash
-  - docker exec -i fc11-testreport rpm -vv --rebuilddb
-  - docker exec -i fc11-testreport df -h
-  - docker exec -i fc11-testreport ls -altr /MITgcm
-  - docker exec -i fc11-testreport yum install python-pip
-  - docker exec -i fc11-testreport yum install gcc-gfortran
-  - docker exec -i fc11-testreport yum install python-argparse
-  - echo `pwd`
+  - docker pull mitgcm/testreport-images:ubuntu_18_04_villon
+  - docker run  -v `pwd`:/MITgcm --name ubuntu_18_04-testreport -t -d mitgcm/testreport-images:ubuntu_18_04_villon /bin/bash
 
 jobs:
   include:
@@ -27,7 +20,7 @@ jobs:
         MITGCM_DECMD="docker exec -i openad-testing bash -lc"
         MITGCM_TROPT="-oad -devel -of=../tools/build_options/linux_amd64_gfortran"
         MITGCM_INPUT_DIR_PAT='/input_oad.*'
-      script: . tools/ci/runtr.sh
+      script: travis_wait . tools/ci/runtr.sh
     - env:
       - MITGCM_EXP="offline_exf_seaice" MITGCM_PRECS="16 16 16 16 16"
       script: . tools/ci/runtr.sh
@@ -68,30 +61,16 @@ jobs:
     # - stage: summary of code tests
     # disabled because jobs do not share data
     # Generate a summary
-    #  script: docker exec -i fc11-testreport bash -c "cd /MITgcm/verification; ./testreport ${MITGCM_TROPT} -q"
+    #  script: docker exec -i ubuntu_18_04-testreport bash -c "cd /MITgcm/verification; ./testreport ${MITGCM_TROPT} -q"
     # build documentation
     - stage: test documentation
       env:
-      - BUILD="html"
-      python: "2.7"
-      script:
-        - tools/ci/install_doc_dependencies.sh > /dev/null
-        - cd doc
-        - sphinx-build -nWa -b ${BUILD} -d _build/doctrees . _build/html
-    - env:
       - BUILD="html"
       python: "3.6"
       script:
         - tools/ci/install_doc_dependencies.sh > /dev/null
         - cd doc
-        - sphinx-build -nWa -b ${BUILD} -d _build/doctrees . _build/html
-    - env:
-      - BUILD="latexpdf"
-      python: "2.7"
-      script:
-        - tools/ci/install_doc_dependencies.sh > /dev/null
-        - cd doc
-        - make clean ${BUILD} LATEXOPTS="-interaction=nonstopmode -halt-on-error"
+        - sphinx-build -Wa -b ${BUILD} -d _build/doctrees . _build/html
     - env:
       - BUILD="latexpdf"
       python: "3.6"

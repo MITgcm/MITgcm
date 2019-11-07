@@ -226,7 +226,7 @@ C                  p_flutot*(1. _d 0-1. _d 0)      ! n = 1, m = 1
 C      END SUBROUTINE ANW_INFSUP
 C      =========================================================================
 
-C INTERFACE: ==========================================================
+C      =========================================================================
       SUBROUTINE CALC_PCO2_SOLVESAPHE(
      I                    t,s,z_dictot,z_po4tot,z_siltot,z_alktot,
      U                    pHlocal,z_pco2,z_co3,
@@ -420,8 +420,11 @@ C LOCAL VARIABLES
       _RL Rgas
 C conversions for different pH scales
       _RL total2free
+      _RL free2total
       _RL free2sw
+      _RL sw2free
       _RL total2sw
+      _RL sw2total
 
         do i=imin,imax
          do j=jmin,jmax
@@ -523,7 +526,8 @@ C       pH scale  : N/A
            Rgas = 83.1451 _d 0  ! bar*cm3/(mol*K)
            RT = Rgas*t_k
            delta = (57.7 _d 0 - 0.118 _d 0*t_k)
-           B1 = -1636.75 _d 0 + 12.0408 _d 0*t_k - 0.0327957 _d 0*t_k*t_k
+           B1 = -1636.75 _d 0 + 12.0408 _d 0*t_k
+     &                  - 0.0327957 _d 0*t_k*t_k
            B  = B1 + 3.16528 _d 0*t_k*t_k*t_k*(0.00001 _d 0)
 
 C   "x2" term often neglected (assumed=1) in applications of Weiss's (1974) eq.9
@@ -799,30 +803,36 @@ C pH scale conversion factors and conversions. Everything on total pH scale
            total2free = 1. _d 0/
      &                 (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
 
+           free2total = (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
+
            free2sw = 1. _d 0
      &                 + (st(i,j,bi,bj)/ aks(i,j,bi,bj))
      &                 + (ft(i,j,bi,bj)/(akf(i,j,bi,bj)*total2free))
 
+           sw2free = 1. _d 0 / free2sw
+
            total2sw = total2free * free2sw
+
+           sw2total = 1. _d 0 / total2sw
 
            aphscale(i,j,bi,bj) = 1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj)
 
       IF ( selectK1K2const.NE.2 .AND. selectK1K2const.NE.4 ) THEN
 C Convert to the total pH scale
-           ak1(i,j,bi,bj)  = ak1(i,j,bi,bj)/total2sw
-           ak2(i,j,bi,bj)  = ak2(i,j,bi,bj)/total2sw
+           ak1(i,j,bi,bj)  = ak1(i,j,bi,bj)*sw2total
+           ak2(i,j,bi,bj)  = ak2(i,j,bi,bj)*sw2total
       ENDIF
-           ak1p(i,j,bi,bj) = ak1p(i,j,bi,bj)/total2sw
-           ak2p(i,j,bi,bj) = ak2p(i,j,bi,bj)/total2sw
-           ak3p(i,j,bi,bj) = ak3p(i,j,bi,bj)/total2sw
-           aksi(i,j,bi,bj) = aksi(i,j,bi,bj)/total2sw
-           akn (i,j,bi,bj) = akn (i,j,bi,bj)/total2sw
-           akhs(i,j,bi,bj) = akhs(i,j,bi,bj)/total2sw
-           aks (i,j,bi,bj) = aks (i,j,bi,bj)/total2free
+           ak1p(i,j,bi,bj) = ak1p(i,j,bi,bj)*sw2total
+           ak2p(i,j,bi,bj) = ak2p(i,j,bi,bj)*sw2total
+           ak3p(i,j,bi,bj) = ak3p(i,j,bi,bj)*sw2total
+           aksi(i,j,bi,bj) = aksi(i,j,bi,bj)*sw2total
+           akn (i,j,bi,bj) = akn (i,j,bi,bj)*sw2total
+           akhs(i,j,bi,bj) = akhs(i,j,bi,bj)*sw2total
+           aks (i,j,bi,bj) = aks (i,j,bi,bj)*free2total
       IF ( selectHFconst.EQ.1 ) THEN
-           akf (i,j,bi,bj) = akf (i,j,bi,bj)/total2free
+           akf (i,j,bi,bj) = akf (i,j,bi,bj)*free2total
       ENDIF
-           akw (i,j,bi,bj) = akw (i,j,bi,bj)/total2free
+           akw (i,j,bi,bj) = akw (i,j,bi,bj)*sw2total
 
 C -----------------------------------------------------------------------
 C       Calculate the stoichiometric solubility product
@@ -939,8 +949,11 @@ C pH scale converstions
       _RL free2sw_surf
       _RL total2sw_surf
       _RL total2free
+      _RL free2total
       _RL free2sw
+      _RL sw2free
       _RL total2sw
+      _RL sw2total
 
 c determine pressure (bar) from depth
 c 1 BAR at z=0m (atmos pressure)
@@ -1019,11 +1032,13 @@ C       sulfate (bisulfate).  Ref: Millero (1995) for pressure correction
            total2free = 1. _d 0/
      &                 (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
 
+           free2total = (1. _d 0 + st(i,j,bi,bj)/aks(i,j,bi,bj))
+
 C free2sw has an additional component from fluoride
            free2sw    = 1. _d 0
      &                 + st(i,j,bi,bj)/ aks(i,j,bi,bj)
 
-           aks(i,j,bi,bj) = aks(i,j,bi,bj)/total2free
+           aks(i,j,bi,bj) = aks(i,j,bi,bj)*free2total
 
 C -----------------------------------------------------------------------
 C       Apply pressure dependence to dissociation constant for hydrogen fluoride
@@ -1033,11 +1048,17 @@ C       References: Millero (1995) for pressure correction
            pfac   = (-zdvi + zdki*pressc/2. _d 0)*pressc/zrt
            akf(i,j,bi,bj) = total2free_surf*akf(i,j,bi,bj) * exp(pfac)
 
+C free2sw has an additional component from fluoride add it here
            free2sw = free2sw
      &               + ft(i,j,bi,bj)/akf(i,j,bi,bj)
+
+           sw2free = 1. _d 0 / free2sw
+
            total2sw = total2free * free2sw
 
-           akf(i,j,bi,bj) = akf(i,j,bi,bj)/total2free
+           sw2total = 1. _d 0 / total2sw
+
+           akf(i,j,bi,bj) = akf(i,j,bi,bj)*free2total
 
 C -----------------------------------------------------------------------
 C       Apply pressure dependence to 1rst dissociation constant of carbonic acid
@@ -1045,8 +1066,8 @@ C       References: Millero (1982) pressure correction
            zdvi =  -25.50 _d 0 -0.151 _d 0*zds + 0.1271 _d 0*t
            zdki = ( -3.08 _d 0 -0.578 _d 0*zds + 0.0877 _d 0*t)*1. _d -3
            pfac = (-zdvi + zdki*pressc/2. _d 0)*pressc/zrt
-           ak1(i,j,bi,bj) = (total2free_surf*ak1(i,j,bi,bj)
-     &                      * exp(pfac))/total2sw
+           ak1(i,j,bi,bj) = (total2sw_surf*ak1(i,j,bi,bj)
+     &                      * exp(pfac))*sw2total
 
 C -----------------------------------------------------------------------
 C       Apply pressure dependence to 2nd dissociation constant of carbonic acid
@@ -1054,8 +1075,8 @@ C       References: Millero (1979) pressure correction
            zdvi = -15.82 _d 0 + 0.321 _d 0*zds - 0.0219 _d 0*t
            zdki = ( 1.13 _d 0 - 0.314 _d 0*zds - 0.1475 _d 0*t)*1. _d -3
            pfac = (-zdvi + zdki*pressc/2. _d 0)*pressc/zrt
-           ak2(i,j,bi,bj) = (total2free_surf*ak2(i,j,bi,bj)
-     &                      * exp(pfac))/total2sw
+           ak2(i,j,bi,bj) = (total2sw_surf*ak2(i,j,bi,bj)
+     &                      * exp(pfac))*sw2total
 
 C -----------------------------------------------------------------------
 C       Apply pressure dependence to the boric acid dissociation constant KB
@@ -1064,8 +1085,8 @@ C       References: Millero (1979) pressure correction
      &                 - 0.002608 _d 0*t*t
            zdki      = (-2.84 _d 0 + 0.354 _d 0*zds)*1. _d -3
            pfac =  (-zdvi + zdki*pressc/2. _d 0)*pressc/zrt
-           akb(i,j,bi,bj) = (total2free_surf*akb(i,j,bi,bj)
-     &                      * exp(pfac))/total2sw
+           akb(i,j,bi,bj) = (total2sw_surf*akb(i,j,bi,bj)
+     &                      * exp(pfac))*sw2total
 
 C -----------------------------------------------------------------------
 C       Apply pressure dependence to water dissociation constant Kw in
@@ -1073,8 +1094,8 @@ C       (mol/kg-SW)^2. Ref.: Millero (pers. comm. 1996) for pressure correction
            zdvi    =  -20.02 _d 0 + 0.1119 _d 0*t - 0.1409 _d -2*t*t
            zdki    = ( -5.13 _d 0 + 0.0794 _d 0*t)*1. _d -3
            pfac = (-zdvi + zdki*pressc/2. _d 0)*pressc/zrt
-           akw(i,j,bi,bj) = (total2free_surf*akw(i,j,bi,bj)
-     &                      * exp(pfac))/total2sw
+           akw(i,j,bi,bj) = (total2sw_surf*akw(i,j,bi,bj)
+     &                      * exp(pfac))*sw2total
 
 C -----------------------------------------------------------------------
 C       Apply pressure dependence to the first dissociation constant
@@ -1083,8 +1104,8 @@ C       References: Millero (1995) for pressure correction
            zdvi      =  -14.51 _d 0 + 0.1211 _d 0*t - 0.321 _d -3*t*t
            zdki      = ( -2.67 _d 0 + 0.0427 _d 0*t)*1. _d -3
            pfac = (-zdvi + zdki*pressc/2. _d 0)*pressc/zrt
-           ak1p(i,j,bi,bj) = (total2free_surf*ak1p(i,j,bi,bj)
-     &                       * exp(pfac))/total2sw
+           ak1p(i,j,bi,bj) = (total2sw_surf*ak1p(i,j,bi,bj)
+     &                       * exp(pfac))*sw2total
 
 C -----------------------------------------------------------------------
 C       Apply pressure dependence to the second dissociation constant
@@ -1093,8 +1114,8 @@ C       References: Millero (1995) for pressure correction
            zdvi       =  -23.12 _d 0 + 0.1758 _d 0*t -2.647 _d -3*t*t
            zdki       = ( -5.15 _d 0 +   0.09 _d 0*t)*1. _d -3
            pfac = (-zdvi + zdki*pressc/2. _d 0)*pressc/zrt
-           ak2p(i,j,bi,bj) = (total2free_surf*ak2p(i,j,bi,bj)
-     &                       * exp(pfac))/total2sw
+           ak2p(i,j,bi,bj) = (total2sw_surf*ak2p(i,j,bi,bj)
+     &                       * exp(pfac))*sw2total
 
 C -----------------------------------------------------------------------
 C       Apply pressure dependence to the third dissociation constant
@@ -1103,8 +1124,8 @@ C       References: Millero (1995) for pressure correction
            zdvi      =  -26.57 _d 0 + 0.2020 _d 0*t -3.042 _d -3*t*t
            zdki      = ( -4.08 _d 0 + 0.0714 _d 0*t)*1. _d -3
            pfac = (-zdvi + zdki*pressc/2. _d 0)*pressc/zrt
-           ak3p(i,j,bi,bj) = (total2free_surf*ak3p(i,j,bi,bj)
-     &                       * exp(pfac))/total2sw
+           ak3p(i,j,bi,bj) = (total2sw_surf*ak3p(i,j,bi,bj)
+     &                       * exp(pfac))*sw2total
 
 C -----------------------------------------------------------------------
 C       Apply pressure dependence to the first dissociation constant
@@ -1115,8 +1136,8 @@ C        correction estimated to be the same as borate (Millero, 1995)
      &                 - 0.002608 _d 0*t*t
            zdki      = (-2.84 _d 0 + 0.354 _d 0*zds)*1. _d -3
            pfac =  (-zdvi + zdki*pressc/2. _d 0)*pressc/zrt
-           aksi(i,j,bi,bj) = (total2free_surf*aksi(i,j,bi,bj)
-     &                       * exp(pfac))/total2sw
+           aksi(i,j,bi,bj) = (total2sw_surf*aksi(i,j,bi,bj)
+     &                       * exp(pfac))*sw2total
 
 C -----------------------------------------------------------------------
 C       Apply pressure dependence to the dissociation constant of hydrogen
@@ -1125,8 +1146,8 @@ C       References: Millero (1995) for pressure correction
            zdvi         =  -14.80 _d 0 + t*(0.0020 _d 0 - t*0.400 _d -3)
            zdki         = (  2.89 _d 0 + t*0.054 _d 0)*1. _d -3
            pfac  = (-zdvi + zdki*pressc/2. _d 0)*pressc/zrt
-           akhs(i,j,bi,bj) = (total2free_surf*akhs(i,j,bi,bj)
-     &                       * exp(pfac))/total2sw
+           akhs(i,j,bi,bj) = (total2sw_surf*akhs(i,j,bi,bj)
+     &                       * exp(pfac))*sw2total
 
 C -----------------------------------------------------------------------
 C       Apply pressure dependence to the dissociation constant
@@ -1135,8 +1156,8 @@ C       References: Millero (1995) for pressure correction
            zdvi         =  -26.43 _d 0 + t*(0.0889 _d 0 - t*0.905 _d -3)
            zdki         = ( -5.03 _d 0 + t*0.0814 _d 0)*1. _d -3
            pfac  = (-zdvi + zdki*pressc/2. _d 0)*pressc/zrt
-           akn(i,j,bi,bj) = (total2free_surf*akn(i,j,bi,bj)
-     &                      * exp(pfac))/total2sw
+           akn(i,j,bi,bj) = (total2sw_surf*akn(i,j,bi,bj)
+     &                      * exp(pfac))*sw2total
 
 C -----------------------------------------------------------------------
 C       Apply pressure dependence to the stoichiometric solubility product
