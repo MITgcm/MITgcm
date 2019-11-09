@@ -25,6 +25,10 @@ CADJ STORE saltflux1 = tapelev2, key = ilev_2
 CADJ STORE qsw0 = tapelev2, key = ilev_2
 CADJ STORE qsw1 = tapelev2, key = ilev_2
 #endif
+# ifdef ALLOW_GEOTHERMAL_FLUX
+CADJ STORE geothFlux0 = tapelev2, key = ilev_2
+CADJ STORE geothFlux1 = tapelev2, key = ilev_2
+# endif
 #ifdef ATMOSPHERIC_LOADING
 CADJ STORE pload0 = tapelev2, key = ilev_2
 CADJ STORE pload1 = tapelev2, key = ilev_2
