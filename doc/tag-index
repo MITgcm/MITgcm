@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - allows to specify time-dependent (periodic) geothermal heat-flux
+    with "periodicExternalForcing".
 o pkg/diagnostics:
   - add diagnostics for thickness factor hFacC, hFacW & hFacS.
 o pkg/dic:
