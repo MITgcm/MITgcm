@@ -99,10 +99,10 @@ CADJ STORE SSS0      = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE SSS1      = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE saltFlux0 = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE saltFlux1 = comlev1, key = ikey_dynamics, kind = isbyte
-#ifdef SHORTWAVE_HEATING
+# ifdef SHORTWAVE_HEATING
 CADJ STORE Qsw0      = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE Qsw1      = comlev1, key = ikey_dynamics, kind = isbyte
-#endif
+# endif
 # ifdef ALLOW_GEOTHERMAL_FLUX
 CADJ STORE geothFlux0 = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE geothFlux1 = comlev1, key = ikey_dynamics, kind = isbyte
