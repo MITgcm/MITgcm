@@ -1,6 +1,15 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - allows to specify time-dependent (periodic) geothermal heat-flux
+    with "periodicExternalForcing".
+o pkg/diagnostics:
+  - add diagnostics for thickness factor hFacC, hFacW & hFacS.
+o pkg/dic:
+  - Fix carbonate chemistry coefficient issues (#269). This affects results when
+    either CARBONCHEM_TOTALPHSCALE or CARBONCHEM_SOLVESAPHE are defined.
+    Update output of verification experiment "so_box_biogeo".
 o doc:
   - fix description of zero-layer thermoydnamics
 o verification/*/results/output.txt:

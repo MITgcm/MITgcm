@@ -103,6 +103,10 @@ CADJ STORE saltFlux1 = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE Qsw0      = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE Qsw1      = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
+# ifdef ALLOW_GEOTHERMAL_FLUX
+CADJ STORE geothFlux0 = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE geothFlux1 = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
 # ifdef ATMOSPHERIC_LOADING
 CADJ STORE pLoad0    = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE pLoad1    = comlev1, key = ikey_dynamics, kind = isbyte
