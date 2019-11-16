@@ -1,0 +1,24 @@
+# ===================================
+# | Parameters for SHELFICE package |
+# ===================================
+ &SHELFICE_PARM01
+#SHELFICEwriteState = .TRUE.,
+#mult_shelfice=1.,
+ SHELFICEconserve = .TRUE.,
+#SHELFICEboundaryLayer = .TRUE.,
+#SHELFICErealFWflux=.TRUE.,
+ SHELFICEtopoFile='shelficeTopo.Lin.bin',
+ SHELFICEmassFile='shelficeMass.Lin.bin',
+ SHELFICEuseGammaFrict = .TRUE.,
+ SHELFICEDragQuadratic = 0.0015,
+ shiCdrag = 0.0015,
+ SHELFICEMassStepping = .TRUE.,
+ SHELFICEselectDragQuadr=2,
+ SHELFICEMassDynTendFile='shelfice_dMdt.r02.bin',
+#--
+ SHELFICERemeshFrequency = 600.0,
+#- need to satisfy: splitThrs > 1 + mergeThrs / Sdz
+#       with: Sdz = min{ delR(k+1)/delR(k) }_[k=1:Nr-1]
+ SHELFICEsplitThreshold =1.12,
+ SHELFICEmergeThreshold =0.10,
+ &
