@@ -30,11 +30,9 @@ C     myThid    ::  my Thread Id number
 C     !LOCAL VARIABLES:
 C     bi, bj    :: tile indices
 C     i, j, k   :: Loop counters
-C     tmpFld    :: Temporary array used to compute & write Total Depth
 C     tmpVar*   :: Temporary array used to integrate column thickness
       INTEGER bi, bj
       INTEGER i, j, k
-      _RS tmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tmpVar1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tmpVar2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hFacMnSz, hFacCtmp
@@ -270,7 +268,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Write to disk: Total Column Thickness & hFac(C,W,S):
 C     This I/O is now done in write_grid.F
-c     CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpFld,0,myThid)
 c     CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
 c     CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW,0,myThid)
 c     CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS,0,myThid)
