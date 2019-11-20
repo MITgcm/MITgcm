@@ -21,10 +21,8 @@ C     allow friction velocity-dependent transfer coefficient
 C     following Holland and Jenkins, JPO, 1999
 #define SHI_ALLOW_GAMMAFRICT
 
-C     For uStar in SHELFICEboundaryLayer: average vertically and then horizontally
-#define SHI_USTAR_TOPDR
-
-C     Need a description here !!!
+C     allow (vertical) remeshing whenever ocean top thickness factor
+C     exceeds thresholds
 #define ALLOW_SHELFICE_REMESHING
 
 #endif /* ALLOW_SHELFICE */
