@@ -3,11 +3,11 @@ Simplified experiment to test pkg/shelfice vertical remeshing code
 ===============================================================================
 
 Specific options:
-* Use a 2-D (y z) slice southern ocean (lat-long grid) domain with 
+* Use a 2-D (y z) slice southern ocean (lat-long grid) domain with
   flat bottom and Open Boundary at Northern edge; uniform horiz and
   vertical resolution.
-* shelfice pkg is used with SHELFICEuseGammaFrict=T but without 
-  SHELFICEboundaryLayer. To avoid horizontal noise in solution next to a  
+* shelfice pkg is used with SHELFICEuseGammaFrict=T but without
+  SHELFICEboundaryLayer. To avoid horizontal noise in solution next to a
   large jump in top grid-cell thickness, vertical viscosity and diffusivity
   are increased wherever the top grid-cell is too thin (pCellMix_select=20)
   and are treated implicitly (implicitDiffusion=implicitViscosity=T).
@@ -16,7 +16,7 @@ Specific options:
   (SHELFICEMassStepping=T) as a result of melting and prescribed external
   tendency (SHELFICEMassDynTendFile).
 
-IMPORTANT: 
+IMPORTANT:
   In order to experience several remeshing event during a very short test run,
   the ice-mass tendency forcing has been set to to un-realistically large value.
 
@@ -24,9 +24,9 @@ Input files:
 * generated from matlab script: gendata.n
 
 Sequence of runs:
-* From resting initial conditions, model was integrated for 1 day (-> iter=2880) 
+* From resting initial conditions, model was integrated for 1 day (-> iter=2880)
   without SHELFICEMassDynTendFile.
-  Then, with SHELFICEMassDynTendFile, run just 18.it to generated current pickup 
+  Then, with SHELFICEMassDynTendFile, run just 18.it to generated current pickup
   files (at iter=2898).
 * During current short test run (20.iter long), 4 remeshing event occurs,
   ( grep -A4 'SHI_REMESH at' output.txt )
