@@ -48,7 +48,8 @@ CEOP
      &     SHELFICEDragQuadratic, SHELFICEselectDragQuadr,
      &     SHELFICEthetaSurface,
      &     useISOMIPTD,
-     &     SHELFICEconserve, SHELFICEboundaryLayer, SHELFICErealFWflux,
+     &     SHELFICEconserve, SHELFICEboundaryLayer,
+     &     SHI_withBL_realFWflux, SHI_withBL_uStarTopDz,
      &     SHELFICEwriteState,
      &     SHELFICE_dumpFreq,
      &     SHELFICE_taveFreq,
@@ -92,7 +93,8 @@ C Set defaults values for parameters in SHELFICE.h
       useISOMIPTD              = .FALSE.
       SHELFICEconserve         = .FALSE.
       SHELFICEboundaryLayer    = .FALSE.
-      SHELFICErealFWflux       = .FALSE.
+      SHI_withBL_realFWflux    = .FALSE.
+      SHI_withBL_uStarTopDz    = .FALSE.
       SHELFICEMassStepping     = .FALSE.
       SHELFICEDynMassOnly      = .FALSE.
       SHELFICEtopoFile         = ' '
@@ -118,8 +120,8 @@ C Set defaults values for parameters in SHELFICE.h
       SHELFICEuseGammaFrict    = .FALSE.
       SHELFICE_oldCalcUStar    = .FALSE.
       SHELFICEremeshFrequency  = 0.
-      SHELFICEsplitThreshold   = 5.
-      SHELFICEmergeThreshold   = -8.
+      SHELFICEsplitThreshold   = hFacMin*1.1 _d 0 + 1. _d 0
+      SHELFICEmergeThreshold   = hFacMin*0.9 _d 0
 C these params. are default of Holland and Jenkins (1999)
       shiCdrag                 = 0.0015 _d 0
       shiZetaN                 = 0.052 _d 0
@@ -169,6 +171,11 @@ C Now set-up any remaining parameters that result from the input parameters
 
 C New calcUstar expression not available with SHELFICEboundaryLayer:
       IF ( SHELFICEboundaryLayer ) SHELFICE_oldCalcUStar = .TRUE.
+C  specific options within SHELFICEboundaryLayer:
+      SHI_withBL_realFWflux = SHI_withBL_realFWflux .AND.
+     &    SHELFICEboundaryLayer .AND. useRealFreshWaterFlux
+      SHI_withBL_uStarTopDz = SHI_withBL_uStarTopDz .AND.
+     &    SHELFICEboundaryLayer .AND. SHELFICEuseGammaFrict
 
 C Set quadratic bottom drag depending on choices:
       IF ( SHELFICEDragQuadratic .EQ. UNSET_RL) THEN
