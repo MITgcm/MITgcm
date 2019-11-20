@@ -1,11 +1,11 @@
-#:::====================
+# ====================
 # | Model parameters |
 # ====================
 #
 # Continuous equation parameters
  &PARM01
- Tref = 90*-1.9,
- Sref = 90*34.4,
+ tRef = 90*-1.9,
+ sRef = 90*34.4,
  viscAr=1.E-3,
  viscAhGrid=0.2,
  viscA4Grid=0.02,
@@ -23,12 +23,6 @@
 ### momImplVertAdv=.TRUE.,
  tempImplVertAdv=.TRUE.,
  saltImplVertAdv=.TRUE.,
- eosType='JMD95Z',
- HeatCapacity_Cp= 3974.0,
- rhoConst=1000.,
- rhoNil=1000.,
- gravity=9.81,
- gBaro=9.81,
 #ivdc_kappa = 0.005.,
  implicitDiffusion = .TRUE.,
  implicitViscosity = .TRUE.,
@@ -39,7 +33,13 @@
  hFacInf=0.2,
  hFacSup=2.0,
  hFacMin=0.2,
-#allowFreezing = .TRUE.,
+#-
+ eosType='JMD95Z',
+ HeatCapacity_Cp= 3974.0,
+ rhoConst=1000.,
+ gravity=9.81,
+#- fCori is used in shelfice_thermodynamics.F when SHELFICEuseGammaFrict=T
+#  so that useCoriolis=F is not enough to cancel completly rotation
  useCoriolis=.FALSE.,
  selectCoriMap = 0,
  f0 = 0.0,
@@ -48,7 +48,7 @@
 #writeBinaryPrec=64,
  useSingleCpuIO=.TRUE.,
  globalFiles=.TRUE.,
- debuglevel = 1,
+ plotLevel = 0,
  &
 
 # Elliptic solver parameters
@@ -57,7 +57,7 @@
  cg2dTargetResidual=1.E-11,
  &
 
-#Time stepping parameters
+# Time stepping parameters
  &PARM03
  nIter0=11395,
  nTimeSteps=20,
