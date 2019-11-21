@@ -287,6 +287,12 @@ CADJ STORE recip_hFacC = tapelev_init, key = 1
 # ifdef ALLOW_GENTIM2D_CONTROL
 CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 # endif
+# ifdef ALLOW_SHI2D_CONTROL
+CADJ STORE shelficeFreshwaterFlux = tapelev_init, key=1
+CADJ STORE shelficeHeatFlux = tapelev_init, key=1
+CADJ STORE shiTransCoeffT = tapelev_init, key=1
+CADJ STORE shiTransCoeffS = tapelev_init, key=1
+# endif
 #endif
 
 #ifdef ALLOW_OPENAD

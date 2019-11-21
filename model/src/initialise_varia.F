@@ -88,6 +88,9 @@ C     == Global variables ==
 # include "GRID.h"
 # include "FFIELDS.h"
 # include "CTRL_FIELDS.h"
+# ifdef ALLOW_SHI2D_CONTROL
+#  include "SHELFICE.h"
+# endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -175,6 +178,12 @@ C--   Initialize variable data for packages
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef NONLIN_FRSURF
 CADJ STORE recip_hFacC = tapelev_init, key = 1
+# endif
+# ifdef ALLOW_SHI2D_CONTROL
+CADJ STORE shelficeFreshwaterFlux = tapelev_init, key = 1
+CADJ STORE shelficeHeatFlux = tapelev_init, key = 1
+CADJ STORE shiTransCoeffT = tapelev_init, key = 1
+CADJ STORE shiTransCoeffS = tapelev_init, key = 1
 # endif
 #endif
       CALL PACKAGES_INIT_VARIABLES( myThid )
