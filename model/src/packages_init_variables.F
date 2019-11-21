@@ -504,7 +504,6 @@ CADJ STORE uvel = tapelev_init, key = 1
 CADJ STORE vvel = tapelev_init, key = 1
 #  endif
 # endif
-#endif
       IF ( useECCO ) CALL ECCO_INIT_VARIA( myThid )
 #endif
 
