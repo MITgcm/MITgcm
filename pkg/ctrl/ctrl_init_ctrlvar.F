@@ -101,6 +101,8 @@ C     initialize to zero and warn user
             CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                          SQUEEZE_RIGHT, myThid )
         endif
+      else
+        g_exst = .FALSE.
       endif
 
       IF ( .NOT. exst) THEN
