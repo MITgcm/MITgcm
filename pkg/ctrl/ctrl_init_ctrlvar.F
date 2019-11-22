@@ -54,12 +54,12 @@ c     == routine arguments ==
 
 c     == local variables ==
       character*( 80) fname(3), gfname
-      character*(max_len_mbuf) msgbuf
+      character*(MAX_LEN_MBUF) msgBuf
       logical  exst, g_exst
 
 C     == external ==
-      integer ilnblnk
-      external ilnblnk
+      integer ILNBLNK
+      external ILNBLNK
 C     == end of interface ==
 
 c     _BEGIN_MASTER( mythid )
@@ -86,20 +86,20 @@ C     In an adjoint run, adxx_ files should always be initialized with zeros
 C     For TLM, all zeros means zero sensitivity, so check
 C     for existing perturbation file g_xx_, otherwise
 C     initialize to zero and warn user
-      if (yadprefix.eq.'g_') then 
-        il = ilnblnk(fname(2))
+      if (yadprefix.eq.'g_') then
+        il = ILNBLNK(fname(2))
         write(gfname(1:il+5),'(2a)') fname(2)(1:il),'.data'
         inquire(file=gfname,exist=g_exst)
         if (.not. g_exst) then
-            write(msgbuf,'(3A)')'** WARNING ** CTRL_INIT_CTRLVAR: ',
+            write(msgBuf,'(3A)')'** WARNING ** CTRL_INIT_CTRLVAR: ',
      &          'could not find ', gfname(1:il+5)
-            call print_message( msgbuf, errorMessageUnit,
-     &      squeeze_right, myThid )
-            write(msgbuf,'(3A)')'** WARNING ** ',
+            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
+            write(msgBuf,'(3A)')'** WARNING ** ',
      &          'for TLM perturbation ',
      &          'so will initialize this file with all zeros'
-            call print_message( msgbuf, errorMessageUnit,
-     &      squeeze_right, myThid )
+            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
         endif
       endif
 
@@ -107,28 +107,28 @@ C     initialize to zero and warn user
 
          if ( whichxyz .EQ. '3d') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
-            if ( yadprefix.EQ.'ad' .or. .not.(g_exst .or. doAdmTlm) )
+            if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
      &           call ctrl_set_globfld_xyz( fname(2), ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xyz( fname(1), ivarindex, mythid)
          else if ( whichxyz .EQ. 'xy') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
-            if ( yadprefix.EQ.'ad' .or. .not.(g_exst .or. doAdmTlm) )
+            if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
      &           call ctrl_set_globfld_xy( fname(2), ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xy( fname(1), ivarindex, mythid )
          else if ( whichxyz .EQ. 'xz') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
-            if ( yadprefix.EQ.'ad' .or. .not.(g_exst .or. doAdmTlm) )
+            if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
      &           call ctrl_set_globfld_xz( fname(2), ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xz( fname(1), ivarindex, mythid )
          else if ( whichxyz .EQ. 'yz') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
-            if ( yadprefix.EQ.'ad' .or. .not.(g_exst .or. doAdmTlm) )
+            if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
      &           call ctrl_set_globfld_yz( fname(2), ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
