@@ -146,19 +146,13 @@ CADJ STORE OBWsn1 = tapelev4, key = ilev_4
 #
 # endif /* ALLOW_SEAICE */
 
-# if (defined ALLOW_SHELFICE || defined ALLOW_SEAICE) && (defined NONLIN_FRSURF)
-#  ifdef ALLOW_OBCS_NORTH
+# if (defined ALLOW_SEAICE || defined ALLOW_SHELFICE)
+#  if (defined NONLIN_FRSURF && defined ALLOW_OBCS_PRESCRIBE)
 CADJ STORE obneta0,obneta1 = tapelev4, key = ilev_4
-#  endif
-#  ifdef ALLOW_OBCS_SOUTH
 CADJ STORE obseta0,obseta1 = tapelev4, key = ilev_4
-#  endif
-#  ifdef ALLOW_OBCS_EAST
 CADJ STORE obeeta0,obeeta1 = tapelev4, key = ilev_4
-#  endif
-#  ifdef ALLOW_OBCS_WEST
 CADJ STORE obweta0,obweta1 = tapelev4, key = ilev_4
 #  endif
 # endif
-#
+
 #endif  /* ALLOW_OBCS */
