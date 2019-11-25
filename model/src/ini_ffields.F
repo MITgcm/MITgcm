@@ -76,6 +76,10 @@ C-    Time reccord loaded from file:
           Qsw0            (i,j,bi,bj) = 0. _d 0
           Qsw1            (i,j,bi,bj) = 0. _d 0
 #endif
+#ifdef ALLOW_GEOTHERMAL_FLUX
+          geothFlux0      (i,j,bi,bj) = 0. _d 0
+          geothFlux1      (i,j,bi,bj) = 0. _d 0
+#endif
 #ifdef ATMOSPHERIC_LOADING
           pLoad0          (i,j,bi,bj) = 0. _d 0
           pLoad1          (i,j,bi,bj) = 0. _d 0

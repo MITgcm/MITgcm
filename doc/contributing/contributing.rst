@@ -6,7 +6,6 @@ Contributing to the MITgcm
 The MITgcm is an open source project that relies on the participation of its users,
 and we welcome contributions. This chapter sets out how you can contribute to the MITgcm.
 
-
 Bugs and feature requests
 =========================
 
@@ -22,7 +21,7 @@ include as much detail as possible. At a minimum your ticket should include:
 
 To request a new feature, or guidance on how to implement it yourself, please
 open a ticket with the following details:
- 
+
  - a clear explanation of what the feature will do; and
  - a summary of the equations to be solved.
 
@@ -38,7 +37,6 @@ wish to skip the quickstart guide and use the detailed instructions. All
 contributions to the source code are expected to conform with the
 :ref:`sec_code_style_guide`. Contributions to the manual should follow
 the same procedure and conform with :numref:`contrib_manual`.
-
 
 Quickstart Guide
 ----------------
@@ -82,7 +80,7 @@ issues addressed using the syntax ``#«ISSUE_NUMBER»``.
 **7.** On GitHub, go to your fork and hit the compare and pull request (PR) button,
 provide the requested information about your PR (in particular, a non-trivial change to the model
 requires a suggested addition to :filelink:`doc/tag-index`)
-and wait for the MITgcm head developers to review your proposed changes. 
+and wait for the MITgcm head developers to review your proposed changes.
 In general the MITgcm code reviewers try to respond to a new PR within
 a week. The reviewers may accept the PR as is, or may request edits and
 changes. Occasionally the review team will reject changes that are not
@@ -105,10 +103,8 @@ should always be to your development branch, not the master branch.
     % git checkout «YOUR_NEWBRANCH_NAME»
     % git merge master
 
-
 If you prefer, you can rebase rather than merge in the final step above;
-just be careful regarding your rebase syntax!   
-
+just be careful regarding your rebase syntax!
 
 Detailed guide for those less familiar with Git and GitHub
 ----------------------------------------------------------
@@ -123,7 +119,7 @@ keeping track of bug fixes and new features submitted by the global
 network of MITgcm contributors would be virtually impossible. If you
 are familiar with the older form of version control used by the
 MITgcm (CVS), there are many similarities, but we now take advantage
-of the modern capabilities offered by Git.  
+of the modern capabilities offered by Git.
 
 Git itself is open source linux software (typically included with any
 new linux installation, check with your sys-admin if it seems to be
@@ -150,7 +146,7 @@ The utility of #1 is fairly obvious. For #2 and #3, without GitHub, one might en
 emailing the maintainers for inclusion in the main repository. Instead, GitHub effectively does something like this for you in a
 much more elegant way.  Note unlike using (linux terminal command) git, GitHub commands are NOT typed in a terminal, but are
 typically invoked by hitting a button on the web interface, or clicking on a webpage link etc. To contribute edits to MITgcm,
-you need to obtain a github account. It’s free; do this first if you don’t have one already. 
+you need to obtain a github account. It’s free; do this first if you don’t have one already.
 
 Before you start working with git, make sure you identify yourself. From your terminal, type:
 
@@ -171,7 +167,6 @@ To better understand this process, :numref:`git_setup` shows a conceptual map of
 the main MITgcm repository sourcecode “upstream” (i.e., owned by the MITgcm maintainers) in the GitHub cloud, a copy of the
 repository “origin” owned by you, also residing in the GitHub cloud, and a local copy on your personal computer or compute cluster
 (where you intend to compile and run). The Git and GitHub commands to create this setup are explained more fully below.
-
 
  .. figure:: figs/git_setup.*
     :width: 70%
@@ -194,7 +189,6 @@ have vanished, first check which branch you are on (``git status`` is a
 useful command here), all is probably not lost. NOTE: for a file to be “assigned” to a specific Git branch,
 Git must first be “made aware” of the file, which occurs after a ``git add`` and ``git commit`` (see :ref:`below <doing_stuff_in_git>`).
 Prior to this, the file will appear in the current folder independently, i.e., regardless of which git branch you are on.
-
 
 A detailed explanation of steps for contributing MITgcm repository edits:
 
@@ -242,7 +236,7 @@ will list what remotes have been set up.
 **4.**  Next make a new branch.
 
 ::
-  
+
     % git fetch upstream
     % git checkout -b «YOUR_NEWBRANCH_NAME» upstream/master
 
@@ -254,18 +248,17 @@ start additional, separate development projects (on a separate, new branch).
 Note that this second command above not only creates this new branch,
 from the ``upstream/master`` branch, it also switches you onto this newly
 created branch.  Naming the branch something descriptive like ‘newfeature’
-or ‘bugfix’ (preferably, be even more descriptive) is helpful. 
- 
+or ‘bugfix’ (preferably, be even more descriptive) is helpful.
+
 .. _doing_stuff_in_git:
 
-**5.** Doing stuff! This usually comes in one of three flavors: 
+**5.** Doing stuff! This usually comes in one of three flavors:
 
-|   i) cosmetic changes, formatting, documentation, etc.; 
-|   ii) fixing bug(s), or any change to the code which results in different numerical output; or 
+|   i) cosmetic changes, formatting, documentation, etc.;
+|   ii) fixing bug(s), or any change to the code which results in different numerical output; or
 |   iii) adding a feature or new package.
-| 
+|
 |   To do this you should:
-
 
     - edit the relevant file(s) and/or create new files. Refer to :ref:`sec_code_style_guide` for details on expected documentation
       standards and code style requirements. Of course, changes should be thoroughly tested to ensure they compile and run successfully!
@@ -281,11 +274,11 @@ or ‘bugfix’ (preferably, be even more descriptive) is helpful.
       It is good practice to link with known issues using the syntax ``#ISSUE_NUMBER`` in either the summary line or detailed comment.
       Note that all the changes do not have to be handled in a single commit (i.e. you can git add some files, do a commit,
       than continue anew by adding different files, do another commit etc.); the ``git commit`` command itself does
-      not (yet) submit anything to maintainers.  
+      not (yet) submit anything to maintainers.
     - if you are fixing a more involved bug or adding a new feature, such that many changes are required,
       it is preferable to break your contribution into multiple commits (each documented separately) rather than submitting one massive commit;
       each commit should encompass a single conceptual change to the code base, regardless of how many files it touches.
-      This will allow the MITgcm maintainers to more easily understand your proposed changes and will expedite the review process. 
+      This will allow the MITgcm maintainers to more easily understand your proposed changes and will expedite the review process.
 
 When your changes are tested and documented, continue on to step #6, but read all of step #6 and #7 before proceeding;
 you might want to do an optional “bring my development branch up to date” sequence of steps before step #6.
@@ -302,7 +295,7 @@ In contrast with some models that opt for static, major releases, the MITgcm is 
 It is very possible that some of your edits occur to files that have also been modified by others. Your local clone however will not
 know anything about any changes that may have occurred to the MITgcm repo in the cloud, which may cause an issue in step #7 below,
 when one of three things will occur:
- 
+
    - the files you have modified in your development have **NOT** been modified in the main repo during this elapsed time,
      thus git will have no conflicts in trying to update (i.e. merge) your changes into the main repo.
    - during the elapsed time, the files you have modified have also been edited/updated in the main repo,
@@ -327,7 +320,7 @@ Development branch code update recipe:
     % git push origin master
     % git checkout «YOUR_NEWBRANCH_NAME»
     % git merge master
-    
+
 This first command switches you from your development branch to the master branch. The second command above will synchronize
 your local master branch with the main MITgcm repository master branch (i.e. “pull” any new changes that might have occurred
 in the upstream repository into your local clone). Note you should not have made any changes to your clone’s master branch;
@@ -337,7 +330,7 @@ master branch to your local clone’s master branch (which you just updated). Th
 the second ``git checkout`` command. Finally, the last command will merge any changes into your development branch.
 If conflicts occur that git cannot resolve, git will provide you a list of the problematic file names, and in these files,
 areas of conflict will be demarcated. You will need to edit these files at these problem spots (while removing git’s demarcation text),
-then do a ``git add «FILENAME»`` for each of these files, followed by a final ``git commit`` to finish off the merger. 
+then do a ``git add «FILENAME»`` for each of these files, followed by a final ``git commit`` to finish off the merger.
 
 Some additional ``git diff`` commands to help sort out file changes, in case you want to assess the scope of development changes,
 are as follows. ``git diff master upstream/master`` will show you all differences between your local master branch and the main
@@ -345,11 +338,10 @@ MITgcm repo, i.e., so you can peruse what parallel MITgcm changes have occurred 
 you have not yet updated your clone’s master branch).
 You can check for differences on individual files via ``git diff master upstream/master  «FILENAME»``.
 If you want to see all differences in files you have modified during your development, the command
-is ``git diff master``. Similarly, to see a combined list of both your changes and those occurring to the main repo, ``git diff upstream/master``. 
+is ``git diff master``. Similarly, to see a combined list of both your changes and those occurring to the main repo, ``git diff upstream/master``.
 
 Aside comment: if you are familiar with git, you might realize there is an alternate way to merge, using the “rebase” syntax.
 If you know what you are doing, feel free to use this command instead of our suggested merge command above.
-
 
 **7.** Finally create a “pull request” (a.k.a. “PR”; in other words, you are requesting that the maintainers pull your changes into the main code repository).
 In GitHub, go to the fork of the project that you made (https://github.com/«GITHUB_USERNAME»/MITgcm.git).
@@ -360,7 +352,7 @@ the code or documentation, we will note this in the MITgcm change log, :filelink
 changes in :filelink:`doc/tag-index`; we will not accept the PR if this field is left blank. The maintainers will now be notified
 and be able to peruse your changes! In general, the maintainers will try to respond to a new PR within
 a week. While the PR remains open, you can go back to step #5 and make additional edits, git adds,
-git commits, and then redo step #6; such changes will be added to the PR (and maintainers re-notified), no need to redo step #7. 
+git commits, and then redo step #6; such changes will be added to the PR (and maintainers re-notified), no need to redo step #7.
 
 Your pull request remains open until either the maintainers fully accept and
 merge your code changes into the main repository, or decide to reject your changes.
@@ -368,14 +360,14 @@ Occasionally, the review team will reject changes that are not
 sufficiently aligned with and do not fit with the code structure;
 the review team is always happy to discuss their decisions, but wants to
 avoid people investing extensive additional effort in code that has a fundamental design flaw.
-But much more likely than outright rejection, you will instead be asked to respond to feedback, 
+But much more likely than outright rejection, you will instead be asked to respond to feedback,
 modify your code changes in some way, and/or clean up your code to better satisfy our style requirements, etc.,
-and the pull request will remain open.  
+and the pull request will remain open.
 In some cases, the maintainers might take initiative to make some changes to your pull request
 (such changes can then be incorporated back into your local branch simply by typing ``git pull`` from your branch), but
 more typically you will be asked to undertake the majority of the necessary changes.
 
-It is possible for other users (besides the maintainers) to examine 
+It is possible for other users (besides the maintainers) to examine
 or even download your pull request; see :ref:`sec_pullreq`.
 
 The current review team is Jean-Michel Campin, Ed Doddridge, Chris
@@ -418,9 +410,8 @@ Package structure
    Therefore, in the MITgcm core code (or code from other included packages), calls to package-specific
    subroutines and package-specific header file ``#include`` statements
    must be protected within ``#ifdef ALLOW_${PKG}`` ... ... ``#endif /* ALLOW_${PKG} */``
-   (see :ref:`below <example_pkg_call_from_outside>`) to ensure that the model compiles when this ${pkg} 
+   (see :ref:`below <example_pkg_call_from_outside>`) to ensure that the model compiles when this ${pkg}
    is not compiled.
-
 
 •  Run-time state: The core driver part of the model can check
    for a run-time on/off switch of individual package(s)
@@ -441,11 +432,10 @@ Package structure
    by other packages to check dependencies and requirements
    from other packages (see :numref:`package_boot_sequence`).
 
-
 In order for a package’s run-time state ``use${Pkg}`` to be set to true (i.e., “on”),
 the code build must have its compile-time state ``ALLOW_${PKG}`` defined (i.e., “included”),
 else mitgcmuv will terminate (cleanly) during initialization. A package’s run-time state
-is not permitted to change during a model run. 
+is not permitted to change during a model run.
 
 Every call to a package routine from **outside** the package
 requires a check on BOTH compile-time and run-time states:
@@ -460,20 +450,19 @@ requires a check on BOTH compile-time and run-time states:
          .
    #ifdef ALLOW_${PKG}
    #  include "${PKG}_PARAMS.h"
-   #endif 
+   #endif
          .
          .
          .
 
    #ifdef ALLOW_${PKG}
-         IF ( use${Pkg} ) THEN    
+         IF ( use${Pkg} ) THEN
             .
             .
             CALL ${PKG}_DO_SOMETHING(...)
             .
-         ENDIF 
+         ENDIF
    #endif
-
 
 **Within** an individual package, the header file ``${PKG}_OPTIONS.h``
 is used to set CPP flags specific to that package. This header file should include
@@ -485,7 +474,7 @@ is used to set CPP flags specific to that package. This header file should inclu
    #define ${PKG}_OPTIONS_H
    #include "PACKAGES_CONFIG.h"
    #include "CPP_OPTIONS.h"
-  
+
    #ifdef ALLOW_${PKG}
          .
          .
@@ -496,7 +485,6 @@ is used to set CPP flags specific to that package. This header file should inclu
          .
    #endif /* ALLOW_${PKG} */
    #endif /* ${PKG}_OPTIONS_H */
- 
 
 See for example :filelink:`GMREDI_OPTIONS.h <pkg/gmredi/GMREDI_OPTIONS.h>`.
 
@@ -533,7 +521,6 @@ All packages follow a required "boot" sequence outlined here:
               IF ( use${Pkg} ) CALL ${PKG}_INIT_VARIA( )
            #endif
 
-
 - :filelink:`PACKAGES_BOOT() <model/src/packages_boot.F>`
    determines the logical state of all ``use${Pkg}`` variables, as defined in the file ``data.pkg``.
 
@@ -550,7 +537,7 @@ All packages follow a required "boot" sequence outlined here:
    ${PKG}_INIT_FIXED is called in S/R :filelink:`packages_init_fixed.F <model/src/packages_init_fixed.F>`,
    which in turn is called from S/R :filelink:`initialise_fixed.F <model/src/initialise_fixed.F>`.
    Note: some packages instead use ``CALL ${PKG}_INITIALISE``  (or the old form ``CALL ${PKG}_INIT``).
-   
+
 - ${PKG}_CHECK()
    is responsible for validating
    basic package setup and inter-package dependencies.
@@ -571,13 +558,12 @@ All packages follow a required "boot" sequence outlined here:
    Note: the name ${PKG}_INIT_VARIA is not yet standardized across all packages;
    one can find other S/R names such as ${PKG}_INI_VARS or ${PKG}_INIT_VARIABLES or ${PKG}_INIT.
 
- 
 Package S/R calls
 -----------------
 
 Calls to package subroutines within the core code timestepping
-loop can vary. Below we show an example of calls to do calculations, generate output 
-and dump the package state (for pickup): 
+loop can vary. Below we show an example of calls to do calculations, generate output
+and dump the package state (for pickup):
 
 ::
 
@@ -598,7 +584,7 @@ and dump the package state (for pickup):
 
 - ${PKG}_DO_SOMETHING()
    refers to any local package source code file, which may be called from any :filelink:`model/src` routine
-   (or, from any subroutine in another package). An specific example would be the 
+   (or, from any subroutine in another package). An specific example would be the
    S/R call :filelink:`gmredi_calc_tensor.F <pkg/gmredi/gmredi_calc_tensor.F>` from within the core S/R
    :filelink:`model/src/do_oceanic_phys.F`.
 
@@ -608,7 +594,7 @@ and dump the package state (for pickup):
    May also call other output routines (e.g., CALL ${PKG}_MONITOR)
    and write snapshot fields that are held in common blocks. Other
    temporary fields are directly dumped to file where they are available.
-   Note that :filelink:`pkg/diagnostics` output of ${PKG} variables 
+   Note that :filelink:`pkg/diagnostics` output of ${PKG} variables
    is generated in :filelink:`pkg/diagnostics` subroutines.
    ${PKG}_OUTPUT() is called in S/R :filelink:`do_the_model_io.F <model/src/do_the_model_io.F>`
    NOTE: 1) the S/R ${PKG}_DIAGS is used in some packages
@@ -633,19 +619,16 @@ as essentially an existing package (i.e., all package variables defined, proper 
 does not do anything. Thus, we suggest you start with this “blank” package’s code infrastructure and add your new package functionality
 to it, perusing the existing mypackage routines and editing as necessary, rather than creating a new package from scratch.
 
-
 .. _code_testing_protocols:
 
 MITgcm code testing protocols
 =============================
-
 
 :filelink:`verification` directory  includes  many examples
 intended  for  regression  testing (some of which are tutorial experiments presented in detail in :numref:`chap_modelExamples`).
 Each  one  of  these  test-experiment  directories  contains  "known-good"  standard output  files (see :numref:`reference_output`)
 along  with  all  the  input  (including  both  code  and  data  files)  required  for  their  re-calculation.  Also  included  in
 :filelink:`verification` is the shell script :filelink:`testreport <verification/testreport>` to perform regression tests.
-
 
 Test-experiment directory content
 ---------------------------------
@@ -666,17 +649,16 @@ directory TESTDIR/code/
    Contains the test-experiment specific source code (i.e., files that have been modified from the standard
    MITgcm repository version) used to build the MITgcm executable (``mitgcmuv``)
    for forward-test (using ``genmake2 -mods=../code``).
- 
+
    It  can  also  contain  specific  source  files  with  the  suffix  ``_mpi``  to  be  used  in  place  of  the  corresponding  file
    (without suffix) for an MPI test (see :numref:`testreport_utility`). The presence or absence of ``SIZE.h_mpi``
-   determines whether or not an MPI test on this test-experiment is performed or skipped. 
+   determines whether or not an MPI test on this test-experiment is performed or skipped.
    Note that the original ``code/SIZE.h_mpi``
    is not directly used as :filelink:`SIZE.h <model/inc/SIZE.h>` to build an MPI-executable; instead, a local copy
    ``build/SIZE.h.mpi`` is derived from ``code/SIZE.h_mpi`` by adjusting the number
    of processors (:varlink:`nPx`, :varlink:`nPy`) according  to «NUMBER_OF_PROCS»
    (see :numref:`testreport_utility`, ``testreport -MPI``); then it is
-   linked to :filelink:`SIZE.h <model/inc/SIZE.h>` (``ln -s SIZE.h.mpi SIZE.h``) before building the MPI-executable. 
-
+   linked to :filelink:`SIZE.h <model/inc/SIZE.h>` (``ln -s SIZE.h.mpi SIZE.h``) before building the MPI-executable.
 
 directory TESTDIR/code_ad/
    Contains  the  test-experiment  specific  source  code  used  to  build  the  MITgcm  executable  (``mitgcmuv_ad``)  for
@@ -691,7 +673,7 @@ directory TESTDIR/input/
    Contains the input and parameter files used to run the primary forward test of this test-experiment.
 
    It can also contain specific parameter files with the suffix ``.mpi`` to be used in place of the corresponding file
-   (without suffix) for MPI tests, or with suffix ``.mth`` to be used for 
+   (without suffix) for MPI tests, or with suffix ``.mth`` to be used for
    multi-threaded tests (see :numref:`testreport_utility`). The presence or absence of
    ``eedata.mth`` determines whether or not a multi-threaded test on this test-experiment is
    performed or skipped, respectively.
@@ -717,17 +699,17 @@ directory TESTDIR/input_ad.«OTHER»/
     Contains the input and parameter files used to run the secondary OTHER adjoint test of this test-experiment. It
     can also contain specific parameter files with the suffix ``.mpi`` and shell script ``prepare_run`` (see above).
 
-directory «TESTDIR»/results/ 
+directory «TESTDIR»/results/
   Contains reference standard output used for test comparison.
   ``results/output.txt`` and ``results/output_adm.txt``,
   respectively, correspond to primary forward and adjoint test run on the reference
-  platform  (currently baudelaire.mit.edu) on one processor  (no  MPI,  single  thread)  using  the
+  platform  (currently villon.mit.edu) on one processor  (no  MPI,  single  thread)  using  the
   reference  compiler  (currently  the  `GNU  Fortran  compiler gfortran <https://gcc.gnu.org/fortran>`_).
   The  presence  of  these  output files  determines
   whether or not :filelink:`testreport <verification/testreport>`
   is testing or skipping this test-experiment. Reference standard output for secondary tests
   (``results/output.«OTHER».txt`` or ``results/output_adm.«OTHER».txt``) are also expected here.
-  
+
 directory TESTDIR/run/
     Initially empty directory where :filelink:`testreport <verification/testreport>`
     will run the MITgcm executable for primary forward and adjoint tests.
@@ -773,8 +755,7 @@ script can be run with a command line as simple as:
 ::
 
    % cd verification
-   % ./testreport -optfile ../tools/build_options/linux_amd64_gfortran 
-
+   % ./testreport -optfile ../tools/build_options/linux_amd64_gfortran
 
 The :filelink:`testreport <verification/testreport>` script accepts a number of command-line options which can be listed using the
 ``-help`` option. The most important ones are:
@@ -805,8 +786,8 @@ The :filelink:`testreport <verification/testreport>` script accepts a number of 
 
 ``-MPI «NUMBER_OF_PROCS»`` (or ``-mpi``)
    If the necessary file ``«TESTDIR»/code/SIZE.h_mpi`` exists, then use it (and all
-   ``TESTDIR/code/*_mpi`` files) for  an  MPI-enabled  run.  The option 
-   ``-MPI`` followed  by  the  maximum  number  of  processors  enables to  
+   ``TESTDIR/code/*_mpi`` files) for  an  MPI-enabled  run.  The option
+   ``-MPI`` followed  by  the  maximum  number  of  processors  enables to
    build  and  run  each  test-experiment  using  different  numbers
    of  MPI  processors (specific number chosen by:
    multiple  of nPx*nPy from ``«TESTDIR»/code/SIZE.h_mpi`` and not larger than
@@ -814,12 +795,12 @@ The :filelink:`testreport <verification/testreport>` script accepts a number of 
    build and run on 2 MPI processors (equivalent to ``-MPI 2``).
 
    Note that the use of MPI typically requires a special command option (see "-command" below) to invoke the
-   MPI executable. 
+   MPI executable.
 
 ``-command=’«SOME COMMANDS TO RUN»’``
    For some tests, particularly MPI runs, a specific command might be needed to run the executable.
-   This option allows a more general command (or shell script) to be invoked.  
-   
+   This option allows a more general command (or shell script) to be invoked.
+
    The default here is for «SOME COMMANDS TO RUN» to be replaced by
    ``mpirun -np TR_NPROC mitgcmuv``. If on your system you require
    something other than ``mpirun``, you will need to use the option
@@ -843,22 +824,21 @@ The :filelink:`testreport <verification/testreport>` script accepts a number of 
 Additional :filelink:`testreport <verification/testreport>` options are available
 to pass options to :filelink:`genmake2 <tools/genmake2>` (called during :filelink:`testreport <verification/testreport>` execution)
 as well as additional options to skip specific steps of the
-:filelink:`testreport <verification/testreport>` shell script. See 
+:filelink:`testreport <verification/testreport>` shell script. See
 ``testreport -help`` for a detailed list.
-
 
 In the :filelink:`verification/` directory, the :filelink:`testreport <verification/testreport>` script will create an output
 directory «tr_NAME_DATE_N», with your computer hostname substituted for
 NAME, the current date for DATE, followed by a suffix number N to distinguish
 from previous :filelink:`testreport <verification/testreport>`
 output directories. Unless you specify otherwise using the ``-tdir`` or ``-skipdir`` options described above,
-all sub-directories (i.e., TESTDIR experiments) in :filelink:`verification` will be tested. 
+all sub-directories (i.e., TESTDIR experiments) in :filelink:`verification` will be tested.
 :filelink:`testreport <verification/testreport>` writes progress to the screen (stdout) and
 reports into the «tr_NAME_DATE_N/TESTDIR» sub-directories as it runs. In particular,
 one can find, in each TESTDIR subdirectory, a
 ``summary.txt`` file in addition to log and/or error file(s) (depending how the run failed, if this occurred).
-``summary.txt``  contains information about the run and a comparison of the current 
-output with “reference output” (see :ref:`below <reference_output>` for information on how this reference output is generated). 
+``summary.txt``  contains information about the run and a comparison of the current
+output with “reference output” (see :ref:`below <reference_output>` for information on how this reference output is generated).
 The test comparison involves several output model variables. By default, for a forward test, these are the 2D
 solver initial residual ``cg2d_init_res`` and 3D state variables
 (T, S, U, V) from :filelink:`pkg/monitor` output; by default
@@ -876,7 +856,6 @@ files located in all TESTDIR sub-directories
 note this file is overwritten upon subsequent :filelink:`testreport <verification/testreport>` runs).
 :numref:`testreport_output` shows an excerpt from the composite ``summary.txt``, created by running the full testreport suite (in the example here, on a linux cluster, using gfortran):
 
-
 .. figure:: figs/testreport_output.*
     :width: 100%
     :align: center
@@ -884,7 +863,6 @@ note this file is overwritten upon subsequent :filelink:`testreport <verificatio
     :name: testreport_output
 
     Example output from testreport ``summary.txt``
-
 
 The four columns on the left are build/run results (successful=Y, unsuccessful=N). Explanation of these columns is as follows:
 
@@ -904,7 +882,7 @@ in a given experiment and check digit match on their concentration values.
 A match to near-full machine precision is 15-16 digits; this generally will occur when a similar type of computer,
 similar operating system, and similar version of Fortran compiler are used for the test. Otherwise, different round-off can occur,
 and due to the chaotic nature of ocean and climate models, fewer digits (typically, 10-13 digits) are matched. A match of 22 digits generally is
-due to output being exactly 0.0. In some experiments, some variables may not be used or meaningful, which causes the ‘0’ and ‘4’ match results 
+due to output being exactly 0.0. In some experiments, some variables may not be used or meaningful, which causes the ‘0’ and ‘4’ match results
 in several of the adjustment experiments above.
 
 While the significant digit match for many variables is tested and displayed in ``summary.txt``,
@@ -915,7 +893,7 @@ For example, see above for experiment :filelink:`advect_cs <verification/advect_
 pass/fail is assessed on the cg2d monitor output.
 See the :filelink:`testreport <verification/testreport>` script for a list of
 permissible variables to test and a guide to their abbreviations. See ``tr_checklist`` files in the input subdirectories of several TESTDIR
-experiments (e.g., :filelink:`verification/advect_xz/input/tr_checklist`) for examples of syntax (note, a ``+`` after a variable in a ``tr_checklist file`` is shorthand to compare the 
+experiments (e.g., :filelink:`verification/advect_xz/input/tr_checklist`) for examples of syntax (note, a ``+`` after a variable in a ``tr_checklist file`` is shorthand to compare the
 mean, minimum, maximum, and standard deviation for the variable).
 
 .. _reference_output:
@@ -923,22 +901,20 @@ mean, minimum, maximum, and standard deviation for the variable).
 Reference Output
 ~~~~~~~~~~~~~~~~
 
-Reference output is currently generated using the linux server ``baudelaire.mit.edu`` which employs an Intel Xeon Westmere processor running Fedora Core 13.
+Reference output is currently generated using the linux server ``villon.mit.edu`` which employs an Intel Haswell processor running Ubuntu 18.04.3 LTS.
 For each verification experiment in the MITgcm repository, this reference output is stored in the file ``«TESTDIR»/results/output.txt``,
 which is the standard output generated by running :filelink:`testreport <verification/testreport>`
-(using a single process) on ``baudelaire.mit.edu`` using the gfortran (`GNU Fortran <https://gcc.gnu.org/fortran>`_) compiler version 4.4.5.
+(using a single process) on ``villon.mit.edu`` using the gfortran (`GNU Fortran <https://gcc.gnu.org/fortran>`_) compiler version 7.4.0.
 
 Using a different gfortran version (or a different Fortran compiler entirely), and/or running with MPI,
 a different operating system, or a different processor (cpu) type will generally result in output that differs to machine precision.
 The greater the number of such differences between your platform and this reference platform, typically the fewer digits of matching output precision.
 
-
-
 The do_tst_2+2 utility
 ----------------------
 
 The shell script :filelink:`tools/do_tst_2+2` can be used to check the accuracy of the restart procedure.
-For each experiment that has been run through testreport, 
+For each experiment that has been run through testreport,
 :filelink:`do_tst_2+2 <tools/do_tst_2+2>` executes three additional short runs using the tools/tst2+2 script.
 The first run makes use of the pickup files output
 from the run executed by :filelink:`testreport <verification/testreport>` to restart and run
@@ -946,7 +922,7 @@ for four time steps, writing pickup files upon completion. The second run
 is similar except only two time steps are executed, writing pickup files.
 The third run restarts from the end of the second run, executing two additional time steps,
 writing pickup files upon completion.
-In order to successfully pass :filelink:`do_tst_2+2 <tools/do_tst_2+2>`, not only must all three runs execute and complete successfully, 
+In order to successfully pass :filelink:`do_tst_2+2 <tools/do_tst_2+2>`, not only must all three runs execute and complete successfully,
 but the pickups generated at the end the first run must be identical to the pickup files from the end of the third run.
 Note that a prerequisite to running :filelink:`do_tst_2+2 <tools/do_tst_2+2>`
 is running :filelink:`testreport <verification/testreport>`, both to build the executables used by :filelink:`do_tst_2+2 <tools/do_tst_2+2>`,
@@ -958,7 +934,6 @@ The :filelink:`tools/do_tst_2+2` script should be called from the :filelink:`ver
 
    % cd verification
    % ../tools/do_tst_2+2
-
 
 The :filelink:`do_tst_2+2 <tools/do_tst_2+2>` script accepts a number of command-line options which can be listed using the
 ``-help`` option. The most important ones are:
@@ -998,20 +973,17 @@ Note however this directory is deleted by default
 upon :filelink:`do_tst_2+2 <tools/do_tst_2+2>` completion, but can be saved
 by adding the :filelink:`do_tst_2+2 <tools/do_tst_2+2>` command line option ``-a NONE``.
 
-
 Daily Testing of MITgcm
 -----------------------
 
 On a daily basis, MITgcm runs a full suite of :filelink:`testreport <verification/testreport>`
 (i.e., forward and adjoint runs, single process, single-threaded and mpi) on an array of different
 clusters, running using different operating systems, testing several different Fortran compilers.
-The reference machine ``baudelaire.mit.edu`` is one of such daily test machines.
+The reference machine ``villon.mit.edu`` is one of such daily test machines.
 When changes in output occur from previous runs, even if as minor as changes
 in numeric output to machine precision, MITgcm maintainers are automatically notified.
 
-Links to summary results from the daily testing are posted at http://mitgcm.org/public/testing.html. 
-
-
+Links to summary results from the daily testing are posted at http://mitgcm.org/public/testing.html.
 
 Required Testing for MITgcm Code Contributors
 ---------------------------------------------
@@ -1037,12 +1009,11 @@ Before submitting your pull request for approval, if you have made any changes t
 
 - Switch to your pull request branch, and repeat the :filelink:`testreport <verification/testreport>` sequence using the same options.
 
-- From the verification directory, type ``diff tr_out_master.txt tr_out.txt`` 
+- From the verification directory, type ``diff tr_out_master.txt tr_out.txt``
   which will report any differences in :filelink:`testreport <verification/testreport>` output from the above tests.
   If no differences occur (other than timestamp-related), see below if you are required
   to do a :filelink:`do_tst_2+2 <tools/do_tst_2+2>` test; otherwise, you
   are clear for submitting your pull request.
-
 
 Differences might occur due to one or more of the following reasons:
 
@@ -1053,7 +1024,7 @@ Differences might occur due to one or more of the following reasons:
   and a remedy, before the pull request should be submitted.
 
 - You have made changes which require changes to input parameters
-  (e.g., renaming a namelist parameter, changing the units or function of an input parameter, etc.) 
+  (e.g., renaming a namelist parameter, changing the units or function of an input parameter, etc.)
   This by definition is a “breaking change”, which must be noted when completing the PR template -- but should not deter you from
   submitting your PR. Ultimately, you and the maintainers will likely have to make changes to one or more verification experiments, but as a first
   step we will want to review your PR.
@@ -1061,7 +1032,7 @@ Differences might occur due to one or more of the following reasons:
 - You have made algorithmic changes which change model output in some or all setups; this too is a “breaking change” that should be noted in
   the PR template. As usual recourse, if the PR is accepted, the maintainers will re-generate reference output and push to the affected
   ``«TESTDIR»/results/`` directories when the PR is merged.
- 
+
 Most typically, running testreport using a single process is a sufficient test. However, any code changes which call MITgcm
 routines (such as :filelink:`eesupp/src/global_sum.F`) employing low-level MPI-directives
 should run :filelink:`testreport <verification/testreport>` with the ``-mpi`` option enabled.
@@ -1074,7 +1045,6 @@ you are also required to also complete a :filelink:`do_tst_2+2 <tools/do_tst_2+2
 pull request branch (after you have run :filelink:`testreport <verification/testreport>` on both branches).
 Verify that the output ``tst_2+2_out.txt`` file is identical between branches, similar to the above procedure for the file ``tr_out.txt``.
 If the files differ, attempt to identify and fix what is causing the problem.
-
 
 Automatic testing with Travis-CI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1093,7 +1063,6 @@ appropriate edits to your pull request, re-``git add`` and re-``git commit`` any
 `Travis-CI <https://travis-ci.org>`_ will re-run its tests.
 
 The maintainers will not review your PR until all `Travis-CI <https://travis-ci.org>`_ tests pass.
-
 
 .. _contrib_manual:
 
@@ -1121,7 +1090,7 @@ section, prior to writing and formatting your own manual text.
 
 The manual can be viewed either of two ways: interactively (i.e., web-based),
 as hosted by read-the-docs (https://readthedocs.org/),
-requiring an html format build, or downloaded as a pdf file. 
+requiring an html format build, or downloaded as a pdf file.
 When you have completed your documentation edits, you should double
 check both versions are to your satisfaction, particularly noting that
 figure sizing and placement may be rendered differently in the pdf build.
@@ -1150,11 +1119,11 @@ the rst (inline) directive is ``:numref:`«LABELNAME»```. For example,
 this syntax would write out ``Figure XX`` on a line (assuming «LABELNAME» referred to a figure),
 and when clicked, would relocate your position
 in the manual to figure XX.  Section headings can also be referenced
-so that the name is written out instead of the section number, instead using this 
+so that the name is written out instead of the section number, instead using this
 directive ``:ref:`«LABELNAME»```.
 
 Equation references have a slightly different inline syntax: ``:eq:`«LABELNAME»```
-will produce a clickable equation number reference,  surrounded by parentheses. 
+will produce a clickable equation number reference,  surrounded by parentheses.
 
 For instructions how to assign a label to tables and figures, see
 :ref:`below <how_to_figures>`. To label a section heading,
@@ -1163,7 +1132,6 @@ Note the necessary leading underscore. You can also place a clickable
 link to *any* spot in the text (e.g., mid-section),
 using this same syntax to make the label, using the syntax
 ``:ref:`«SOME TEXT TO CLICK ON» <«LABELNAME»>``` for the link.
-
 
 Citations
 ---------
@@ -1184,7 +1152,6 @@ standard reference infomation. An example JGR journal article reference is
 reproduced below; note the «BIB_REFERENCE» here is “bryan:79” so the syntax in the rst file format would be ``“Bryan and Lewis (1979) :cite:`bryan:79```,
 which will appear in the manual as Bryan and Lewis (1979) :cite:`bryan:79`.
 
-
 | @Article{bryan:79,
 |   author =	 {Bryan, K. and L.J. Lewis},
 |   title =	 {A water mass model of the world ocean},
@@ -1196,7 +1163,6 @@ which will appear in the manual as Bryan and Lewis (1979) :cite:`bryan:79`.
 |   year =	 1979,
 | }
 
-
 Other embedded links
 --------------------
 
@@ -1204,7 +1170,7 @@ Other embedded links
 If you want to have a different,
 clickable text link instead of displaying the full URL, the syntax
 is ```«CLICKABLE TEXT» <«URL»>`_``  (the ‘<’ and ‘>’ are literal characters,
-and note the trailing underscore). 
+and note the trailing underscore).
 For this kind of link, the clickable text has to be unique for each URL.  If
 you would like to use non-unique text (like ‘click here’), you should use
 an ‘anonymous reference’ with a double trailing underscore:
@@ -1242,7 +1208,6 @@ Separate equations, which will be typeset on their own lines, are produced with:
      «LATEX_HERE»
      :label: «EQN_LABEL_HERE»
 
-
 Labelled separate equations are assigned an equation number, which may be
 referenced elsewhere in the document (see :numref:`referencing`). Omitting the ``:label:`` above
 will still produce an equation on its own line, except without an equation label.
@@ -1269,8 +1234,6 @@ latex equations/labels (pandoc has the unfortunate tendency to add
 extra spaces, sometimes confusing the rst ``:math:`` directive, other
 times creating issues with indentation).
 
-
-
 .. _how_to_figures:
 
 Figures
@@ -1289,7 +1252,7 @@ The syntax to insert a figure is as follows::
 ``figure::``: The figure file is located in subdirectory ``pathname`` above; in practice, we have located figure files in subdirectories ``figs``
 off each manual chapter subdirectory.
 The wild-card ``*`` is used here so that different file formats can be used in the build process.
-For vector graphic images, save a ``pdf`` for the pdf build plus a ``svg`` file for the html build. 
+For vector graphic images, save a ``pdf`` for the pdf build plus a ``svg`` file for the html build.
 For bitmapped images, ``gif``, ``png``, or ``jpeg`` formats can be used for both builds,
 no wild-card necessary, just substitute the actual extension
 (see `here <http://www.sphinx-doc.org/en/stable/builders.html>`__ for more info
@@ -1304,13 +1267,11 @@ on compatible formats). [Note: A repository for figure source .eps needs to be c
 
 Note the indentation and line spacing employed above.
 
-
 Tables
 ------
 
 There are two syntaxes for tables in reStructuredText. Grid tables are more flexible but cumbersome to create. Simple
 tables are easy to create but limited (no row spans, etc.).  The raw rst syntax is shown first, then the output.
-
 
 Grid Table Example:
 
@@ -1340,21 +1301,20 @@ Grid Table Example:
 | body row 4 |            | - blocks. |
 +------------+------------+-----------+
 
-
 Simple Table Example:
 
 ::
 
-    =====  =====  ======                                        
-       Inputs     Output                                        
-    ------------  ------                                        
-      A      B    A or B                                        
-    =====  =====  ======                                        
-    False  False  False                                         
-    True   False  True                                          
-    False  True   True                                          
-    True   True   True                                          
-    =====  =====  ======                                        
+    =====  =====  ======
+       Inputs     Output
+    ------------  ------
+      A      B    A or B
+    =====  =====  ======
+    False  False  False
+    True   False  True
+    False  True   True
+    True   True   True
+    =====  =====  ======
 
 =====  =====  ======
    Inputs     Output
@@ -1370,13 +1330,11 @@ True   True   True
 Note that the spacing of your tables in your ``.rst`` file(s) will not match the generated output; rather,
 when you build the final output, the rst builder (Sphinx) will determine how wide the columns need to be and space them appropriately.
 
-
 Other text blocks
 -----------------
 
 Conventionally, we have used the rst ‘inline literal’ syntax around any literal computer text (commands, labels, literal computer syntax etc.)
 Surrounding text with double back-quotes `````` results in output html ``like this``.
-
 
 To set several lines apart in an whitespace box, e.g. useful for showing lines in from a terminal session, rst uses ``::`` to set off a ‘literal block’.
 For example::
@@ -1384,22 +1342,19 @@ For example::
    ::
 
        % unix_command_foo
-       % unix_command_fum 
-
-
+       % unix_command_fum
 
 (note the ``::`` would not appear in the output html or pdf) A splashier way to outline a block, including a box label,
 is to employ what is termed in rst as an ‘admonition block’.
-In the manual these are used to show calling trees and for describing subroutine inputs and outputs. An example of 
+In the manual these are used to show calling trees and for describing subroutine inputs and outputs. An example of
 a subroutine input/output block is as follows:
-
 
 .. admonition:: This is an admonition block showing subroutine in/out syntax
    :class: note
 
    |   .. admonition:: :filelink:`SUBROUTINE_NAME </model/src/subroutine_name.F>`
    |     :class: note
-   | 
+   |
    |     | :math:`var1` : **VAR1** ( :filelink:`WHERE_VAR1_DEFINED.h </model/inc/where_var1_defined.h>`)
    |     | :math:`var2` : **VAR1** ( :filelink:`WHERE_VAR2_DEFINED.h </model/inc/where_var2_defined.h>` )
    |     | :math:`var3` : **VAR1** ( :filelink:`WHERE_VAR3_DEFINED.h </model/inc/where_var3_defined.h>` )
@@ -1408,7 +1363,7 @@ An example of a subroutine in/out admonition box in the documentation is :ref:`h
 
 An example of a calling tree in the documentation is :ref:`here <call-tree-press-meth>`.
 
-To show text from a separate file (e.g., to show lines of code, show comments from a Fortran file, show a parameter file etc.), 
+To show text from a separate file (e.g., to show lines of code, show comments from a Fortran file, show a parameter file etc.),
 use the ``literalinclude`` directive. Example usage is shown here:
 
    ::
@@ -1420,8 +1375,8 @@ use the ``literalinclude`` directive. Example usage is shown here:
 Unlike the ``:filelink:`` and ``:varlink:`` directives, which assume a file path starting at the top of the MITgcm repository,
 one must specify the path relative to the current directory of the file (for example, from the doc directory, it would require
 ``../../`` at the start of the file path to specify the base directory of the MITgcm repository).
-Note one can instead use ``:start-after:`` and ``:end-before:`` to get text from the file between (not including) those lines. 
-If one omits the ``start-at`` or ``start-after``, etc. options the whole file is shown. 
+Note one can instead use ``:start-after:`` and ``:end-before:`` to get text from the file between (not including) those lines.
+If one omits the ``start-at`` or ``start-after``, etc. options the whole file is shown.
 More details for this directive can be found `here <http://www.sphinx-doc.org/en/stable/markup/code.html#directive-literalinclude>`__.
 Example usage in this documentation is :ref:`here <model_main_call_tree>`,
 where the lines to generate this are:
@@ -1432,14 +1387,12 @@ where the lines to generate this are:
             :start-at: C Invocation from WRAPPER level...
             :end-at: C    |                 :: events.
 
-
 .. _subsec_manual_style_guide:
-
 
 Other style conventions
 -----------------------
 
-Units should be typeset in normal text, with a space between a numeric value and the unit, and exponents added with the ``:sup:`` command. 
+Units should be typeset in normal text, with a space between a numeric value and the unit, and exponents added with the ``:sup:`` command.
 
 ::
 
@@ -1449,7 +1402,6 @@ will produce 9.8 m/s\ :sup:`2`. If the exponent is negative use two dashes ``--`
 The backslash removes the space between the unit and the exponent. Similarly, for subscripts the command is ``:sub:``.
 
 Alternatively, latex ``:math:`` directives (see :ref:`above <symbolic_notation>`) may also be used to display units, using the ``\text{}`` syntax to display non-italic characters.
-
 
 - Todo: determine how to break up sections into smaller files
 
@@ -1463,15 +1415,15 @@ To do this you will need a working python installation with the following module
 
  - sphinx
  - sphinxcontrib-bibtex
+ - sphinxcontrib-programoutput
  - sphinx_rtd_theme
+ - numpy
 
-Once these modules are installed you can build the html version of the manual by running ``make html`` in the ``doc`` directory. 
+Once these modules are installed you can build the html version of the manual by running ``make html`` in the ``doc`` directory.
 
 To build the pdf version of the manual you will also need a working version of LaTeX that includes
 `several packages <http://www.sphinx-doc.org/en/master/usage/builders/index.html#sphinx.builders.latex.LaTeXBuilder>`_ that are
 not always found in minimal LaTeX installations. The command to build the pdf version is ``make latexpdf``, which should also be run in the ``doc`` directory.
-
-
 
 .. _sec_pullreq:
 
@@ -1479,14 +1431,27 @@ Reviewing pull requests
 =======================
 
 The only people with write access to the main repository are a small number of core MITgcm developers. They are the people that
-will eventually merge your pull requests. However, before your PR gets merged, it will undergo the automated testing on Travis-CI, and it will be assessed by the MITgcm community.
+will eventually merge your pull requests. However, before your PR gets merged,
+it will undergo the automated testing on Travis-CI, and it will be assessed by the MITgcm community.
 
 **Everyone can review and comment on pull requests.** Even if you are not one of the core developers you can still comment on a pull request.
 
-To test pull requests locally you should download the pull request branch. You can do this either by cloning the branch from the pull request:
+The simplest way to examine a pull request is to `use GitHub <https://github.com/MITgcm/MITgcm/pulls>`_. You can look at changes made to files
+(GitHub will show you a standard linux ``diff`` for each file changed), read though commit messages, and/or peruse any comments
+the MITgcm community has made regarding this pull request.
+
+If you are reviewing changes to the documentation, most likely you will also want to review the rendered manual in html format.
+While this is not available at GitHub, you can view html builds based on the pull request documentation
+using `this link <https://readthedocs.org/projects/mitgcm/builds>`_ at readthedocs.org. Here you will need to click on the appropriate
+pull request (as labeled by the pull request number), then click on "View docs"
+(not the green button near the top of the page, but the text in the middle of the page
+on the right side).
+
+Finally, if you want to test pull requests locally (i.e., to compile or run the code),
+you should download the pull request branch. You can do this either by cloning the branch from the pull request:
 
 ::
-    
+
     git clone -b «THEIR_DEVELOPMENT_BRANCHNAME» https://github.com/«THEIR_GITHUB_USERNAME»/MITgcm.git
 
 where «THEIR_GITHUB_USERNAME» is replaced by the username of the person proposing the pull request,
@@ -1496,22 +1461,21 @@ Alternatively, you can add the repository of the user proposing the pull request
 your existing local repository. Navigate to your local repository and type
 
 ::
-    
+
     git remote add «THEIR_GITHUB_USERNAME» https://github.com/«THEIR_GITHUB_USERNAME»/MITgcm.git
 
 where «THEIR_GITHUB_USERNAME» is replaced by the user name of the person who has made the
 pull request. Then download their pull request changes
 
 ::
-    
-    git fetch «THEIR_GITHUB_USERNAME» 
+
+    git fetch «THEIR_GITHUB_USERNAME»
 
 and switch to the desired branch
 
 ::
-    
-    git checkout --track «THEIR_GITHUB_USERNAME»/«THEIR_DEVELOPMENT_BRANCHNAME»
 
+    git checkout --track «THEIR_GITHUB_USERNAME»/«THEIR_DEVELOPMENT_BRANCHNAME»
 
 You now have a local copy of the code from the pull request and can run tests locally.
 If you have write access to the main repository you can push fixes or changes directly
