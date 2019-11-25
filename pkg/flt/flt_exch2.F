@@ -43,7 +43,7 @@ C     == local variables ==
       INTEGER imax, imax2, m
       INTEGER N, nT, ipass, myFace
       INTEGER e2_msgHandles( 2, W2_maxNeighbours, nSx, nSy )
-      _RL ilo, ihi, jlo, jhi, iNew, jNew
+      _RL ilo, ihi, jlo, jhi
       PARAMETER(imax=9)
       PARAMETER(imax2=imax*max_npart_exch)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -106,7 +106,6 @@ C          stop the float:
               IF ( icountE.LE.max_npart_exch ) THEN
 
                ic = (icountE-1)*imax
-               iNew = ipart(ip,bi,bj) - DFLOAT(sNx)
                fltbuf_send(ic+1,bi,bj,W2_EAST) =   npart(ip,bi,bj)
                fltbuf_send(ic+2,bi,bj,W2_EAST) =  tstart(ip,bi,bj)
                fltbuf_send(ic+3,bi,bj,W2_EAST) =   ipart(ip,bi,bj)
@@ -135,7 +134,6 @@ C          stop the float:
               IF ( icountW.LE.max_npart_exch ) THEN
 
                ic = (icountW-1)*imax
-               iNew = ipart(ip,bi,bj) + DFLOAT(sNx)
                fltbuf_send(ic+1,bi,bj,W2_WEST) =   npart(ip,bi,bj)
                fltbuf_send(ic+2,bi,bj,W2_WEST) =  tstart(ip,bi,bj)
                fltbuf_send(ic+3,bi,bj,W2_WEST) =   ipart(ip,bi,bj)
@@ -223,7 +221,6 @@ C          stop the float:
               IF ( icountN.LE.max_npart_exch ) THEN
 
                ic = (icountN-1)*imax
-               jNew = jpart(ip,bi,bj) - DFLOAT(sNy)
                fltbuf_send(ic+1,bi,bj,W2_NORTH) =   npart(ip,bi,bj)
                fltbuf_send(ic+2,bi,bj,W2_NORTH) =  tstart(ip,bi,bj)
                fltbuf_send(ic+3,bi,bj,W2_NORTH) =   ipart(ip,bi,bj)
@@ -257,7 +254,6 @@ C          stop the float:
               IF ( icountS.LE.max_npart_exch ) THEN
 
                ic = (icountS-1)*imax
-               jNew = jpart(ip,bi,bj) + DFLOAT(sNy)
                fltbuf_send(ic+1,bi,bj,W2_SOUTH) =   npart(ip,bi,bj)
                fltbuf_send(ic+2,bi,bj,W2_SOUTH) =  tstart(ip,bi,bj)
                fltbuf_send(ic+3,bi,bj,W2_SOUTH) =   ipart(ip,bi,bj)
