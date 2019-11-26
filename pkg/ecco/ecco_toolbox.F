@@ -1228,13 +1228,13 @@ CEOP
 c--        Test for missing values.
            if (localweight(i,j,k,bi,bj) .lt. -9900.) then
              localweight(i,j,k,bi,bj) = 0. _d 0
-           endif
 c--        Convert to weight
-           if (localweight(i,j,k,bi,bj) .ne. 0.) then
+           elseif ( localweight(i,j,k,bi,bj).ne.0. .AND. dosumsq ) then
               localweight(i,j,k,bi,bj) =
-     &             1./localweight(i,j,k,bi,bj)
-              if (dosumsq) localweight(i,j,k,bi,bj) =
-     &             localweight(i,j,k,bi,bj)*localweight(i,j,k,bi,bj)
+     &          oneRL/localweight(i,j,k,bi,bj)/localweight(i,j,k,bi,bj)
+           elseif ( localweight(i,j,k,bi,bj).ne.0. ) then
+              localweight(i,j,k,bi,bj) =
+     &           oneRL/localweight(i,j,k,bi,bj)
            endif
           enddo
          enddo
