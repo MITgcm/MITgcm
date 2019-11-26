@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67n (2019/11/26)
 o pkg/ctrl:
   - add doc & storage dir for initial velocity control option.
 o pkg/autodiff:
