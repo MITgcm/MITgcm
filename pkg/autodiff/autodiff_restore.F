@@ -93,7 +93,6 @@ C-      2D arrays
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
           etaN(I,J,bi,bj)               = StoreDynVars2D(I,J,bi,bj,1)
-          surfaceforcingTice(I,J,bi,bj) = StoreDynVars2D(I,J,bi,bj,2)
           taux0(I,J,bi,bj) = StoreDynVars2D(I,J,bi,bj,3)
           taux1(I,J,bi,bj) = StoreDynVars2D(I,J,bi,bj,4)
           tauy0(I,J,bi,bj) = StoreDynVars2D(I,J,bi,bj,5)
