@@ -286,18 +286,19 @@ C jmc: moved here before any freezing/seaice pkg adjustment of surf-fluxes
 #endif /* ALLOW_OCN_COMPON_INTERF */
 
 #ifdef ALLOW_AUTODIFF
-# ifdef ALLOW_SALT_PLUME
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
+          adjustColdSST_diag(i,j,bi,bj) = 0. _d 0
+# ifdef ALLOW_SALT_PLUME
           saltPlumeDepth(i,j,bi,bj) = 0. _d 0
           saltPlumeFlux(i,j,bi,bj)  = 0. _d 0
+# endif
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-# endif
 #endif /* ALLOW_AUTODIFF */
 
 #if (defined (ALLOW_SIGMAR_COST_CONTRIBUTION) || defined (ALLOW_LEITH_QG))
@@ -927,8 +928,6 @@ CADJ &     = comlev1_bibj, key=itdkey, kind=isbyte
 CADJ STORE surfaceForcingS(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, kind=isbyte
 CADJ STORE surfaceForcingT(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=itdkey, kind=isbyte
-CADJ STORE surfaceForcingTice(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
