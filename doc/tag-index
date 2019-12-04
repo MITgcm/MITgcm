@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+  - Tangent Linear mode: allows to initialise g_xx fields with user-provided
+    g_xx file (default unchanged, i.e., initialised to zero).
+
 checkpoint67n (2019/11/26)
 o pkg/ctrl:
   - add doc & storage dir for initial velocity control option.
