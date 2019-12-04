@@ -760,15 +760,15 @@ contains
       if (value.lt.-23.0) then
           CALL PRINT_ERROR( 'In: dargan_bettsmiller '//  &
                             'lcltable: value too low', myThid)
-          WRITE(errorMessageUnit,'(A,3I4,I6,1PE14.6)')   &
-            'i,j,bj,myIter,value=',i,j,bj,myIter,value
+          WRITE(errorMessageUnit,'(A,4I4,I6,1PE14.6)')   &
+            'i,j,bi,bj,myIter,value=',i,j,bi,bj,myIter,value
 !         STOP 'ABNORMAL END: S/R LCLTABL (dargan_bettsmiller_mod)'
       endif
       if (value.gt.-10.4) then
           CALL PRINT_ERROR( 'In: dargan_bettsmiller '//  &
                             'lcltable: value too high', myThid)
-          WRITE(errorMessageUnit,'(A,3I4,I6,1PE14.6)')   &
-            'i,j,bj,myIter,value=',i,j,bj,myIter,value
+          WRITE(errorMessageUnit,'(A,4I4,I6,1PE14.6)')   &
+            'i,j,bi,bj,myIter,value=',i,j,bi,bj,myIter,value
 !         STOP 'ABNORMAL END: S/R LCLTABL (dargan_bettsmiller_mod)'
       endif
       ival = floor(10.*(v1 + 23.0))

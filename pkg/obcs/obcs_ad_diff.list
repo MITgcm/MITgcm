@@ -4,11 +4,11 @@ obcs_apply_seaice.f
 obcs_apply_uvice.f
 obcs_apply_r_star.f
 obcs_apply_surf_dr.f
-obcs_apply_ts.f	
-obcs_apply_uv.f	
+obcs_apply_ts.f
+obcs_apply_uv.f
 obcs_apply_w.f
 obcs_apply_ptracer.f
-obcs_calc.f	
+obcs_calc.f
 obcs_calc_stevens.f
 obcs_copy_uv_n.f
 obcs_save_uv_n.f
@@ -20,8 +20,9 @@ obcs_fields_load.f
 obcs_init_variables.f
 obcs_prescribe_read.f
 obcs_read_pickup.f
-obcs_sponge.f	
+obcs_sponge.f
 obcs_balance_flow.f
+obcs_adjust.f
 orlanski_east.f
 orlanski_north.f
 orlanski_south.f

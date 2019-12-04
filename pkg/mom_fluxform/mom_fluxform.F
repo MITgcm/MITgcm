@@ -138,17 +138,18 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL  vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  rTransU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  rTransV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL       KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL    cDrag(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL strain(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL    vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL   strain(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL Nsquare(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  Nsquare(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  uDudxFac
       _RL  AhDudxFac
       _RL  vDudyFac
@@ -586,21 +587,35 @@ C-     No-slip BCs impose a drag at walls...
      I        myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
-           gUdiss(i,j) = gUdiss(i,j) + vF(i,j)
+           guDiss(i,j) = guDiss(i,j) + vF(i,j)
           ENDDO
          ENDDO
         ENDIF
 C-    No-slip BCs impose a drag at bottom
         IF (bottomDragTerms) THEN
-         CALL MOM_U_BOTTOMDRAG( bi, bj, k,
-     I              uFld, vFld, KE, kappaRU,
-     O              vF,
-     I              myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KE(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
+         CALL MOM_U_BOTDRAG_COEFF( bi, bj, k, .TRUE.,
+     I                   uFld, vFld, kappaRU, KE,
+     O                   cDrag,
+     I                   myIter, myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
-           gUdiss(i,j) = gUdiss(i,j) + vF(i,j)
+            guDiss(i,j) = guDiss(i,j)
+     &                  - cDrag(i,j)*uFld(i,j)
+     &                  *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
           ENDDO
          ENDDO
+         IF ( useDiagnostics ) THEN
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+            botDragU(i,j,bi,bj) = botDragU(i,j,bi,bj)
+     &                          - cDrag(i,j)*uFld(i,j)*rUnit2mass
+           ENDDO
+          ENDDO
+         ENDIF
         ENDIF
 
 #ifdef ALLOW_SHELFICE
@@ -611,7 +626,7 @@ C-    No-slip BCs impose a drag at bottom
      I              myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
-           gUdiss(i,j) = gUdiss(i,j) + vF(i,j)
+           guDiss(i,j) = guDiss(i,j) + vF(i,j)
           ENDDO
          ENDDO
         ENDIF
@@ -824,15 +839,29 @@ C-     No-slip BCs impose a drag at walls...
         ENDIF
 C-    No-slip BCs impose a drag at bottom
         IF (bottomDragTerms) THEN
-         CALL MOM_V_BOTTOMDRAG( bi, bj, k,
-     I              uFld, vFld, KE, kappaRV,
-     O              vF,
-     I              myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KE(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
+         CALL MOM_V_BOTDRAG_COEFF( bi, bj, k, .TRUE.,
+     I                   uFld, vFld, kappaRV, KE,
+     O                   cDrag,
+     I                   myIter, myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
-           gvDiss(i,j) = gvDiss(i,j) + vF(i,j)
+            gvDiss(i,j) = gvDiss(i,j)
+     &                  - cDrag(i,j)*vFld(i,j)
+     &                  *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
           ENDDO
          ENDDO
+         IF ( useDiagnostics ) THEN
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+            botDragV(i,j,bi,bj) = botDragV(i,j,bi,bj)
+     &                          - cDrag(i,j)*vFld(i,j)*rUnit2mass
+           ENDDO
+          ENDDO
+         ENDIF
         ENDIF
 
 #ifdef ALLOW_SHELFICE

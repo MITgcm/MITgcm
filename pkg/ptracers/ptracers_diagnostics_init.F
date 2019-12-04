@@ -141,6 +141,13 @@ C--    add diagnostics for Forcing and Adams-Bashforth tendency increment
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+       diagName  = 'Tp_g'//diagSufx
+       WRITE(diagTitle,'(2A)') locName(1:ilnb),
+     &         ' total transport tendency (before gchem_forcing_sep)'
+       diagCode  = 'SMR     MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I           diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--    Add diagnostics of advective & diffusive flux:

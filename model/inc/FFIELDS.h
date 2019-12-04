@@ -9,7 +9,7 @@ C     | FFIELDS.h
 C     | o Model forcing fields
 C     *==========================================================*
 C     | More flexible surface forcing configurations are
-C     | available via pkg/exf and pkg/seaice
+C     | available via, e.g., pkg/exf
 C     *==========================================================*
 C     \ev
 CEOP
@@ -181,6 +181,9 @@ C     [0,1]         :: End points for interpolation
 #ifdef SHORTWAVE_HEATING
      &               , Qsw0, Qsw1
 #endif
+#ifdef ALLOW_GEOTHERMAL_FLUX
+     &               , geothFlux0, geothFlux1
+#endif
 #ifdef ATMOSPHERIC_LOADING
      &               , pLoad0, pLoad1
 #endif
@@ -199,13 +202,17 @@ C     [0,1]         :: End points for interpolation
       _RS  saltFlux1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SST1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SSS1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef SHORTWAVE_HEATING
+      _RS  Qsw0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  Qsw1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+#ifdef ALLOW_GEOTHERMAL_FLUX
+      _RS  geothFlux0(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  geothFlux1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 #ifdef ATMOSPHERIC_LOADING
       _RS  pLoad0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  pLoad1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-#ifdef SHORTWAVE_HEATING
-      _RS  Qsw1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  Qsw0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 #endif /* EXCLUDE_FFIELDS_LOAD */
 
@@ -246,5 +253,13 @@ C              Units are r_unit.K/s (=Kelvin.m/s if r=z) (>0 for ocean warming).
       _RL  surfaceForcingT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  surfaceForcingS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  surfaceForcingTice(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+C     botDragU :: bottom stress (for diagnostics), Zonal component
+C                Units are N/m^2 ;   > 0 increase uVel @ bottom
+C     botDragV :: bottom stress (for diagnostics), Merid. component
+C                Units are N/m^2 ;   > 0 increase vVel @ bottom
+      COMMON /FFIELDS_bottomStress/ botDragU, botDragV
+      _RS  botDragU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  botDragV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

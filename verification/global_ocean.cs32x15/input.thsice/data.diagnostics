@@ -33,7 +33,7 @@
                    'THETA   ','UTHMASS ','VTHMASS ','WTHMASS ',
                    'SALT    ','USLTMASS','VSLTMASS','WSLTMASS',
 # do not specify levels => all levels are selected
-   fileName(2) = 'dynDiag',
+#  fileName(2) = 'dynDiag',
   frequency(2) = 1555200000.,
 
   fields(1:12,3) = 'DRHODR  ','RHOAnoma','CONVADJ ',
@@ -64,18 +64,41 @@
  averagingFreq(5) = 2592000.,
    repeatCycle(5) = 12,
 #--- to check conservation of Volume, Heat & Salt (with z*+realFW+AB_2):
-  fields(1:2,6)  = 'ETAN    ','oceFWflx',
-   fileName(6) = 'surfInst',
-  frequency(6) = -777600.,
-  timePhase(6) = 0.,
-  fields(1,7)  = 'ETAN    ',
-   fileName(7) = 'etaInst',
-  frequency(7) = -777600.,
-  timePhase(7) = 86400.,
-  fields(1:2,8)  = 'THETA   ','SALT    ',
-   fileName(8) = 'dynInst',
-  frequency(8) = -777600.,
-  timePhase(8) = 0.,
+# fields(1:2,6)  = 'ETAN    ','oceFWflx',
+#  fileName(6) = 'surfInst',
+# frequency(6) = -777600.,
+# timePhase(6) = 0.,
+# fields(1,7)  = 'ETAN    ',
+#  fileName(7) = 'etaInst',
+# frequency(7) = -777600.,
+# timePhase(7) = 86400.,
+# fields(1:2,8)  = 'THETA   ','SALT    ',
+#  fileName(8) = 'dynInst',
+# frequency(8) = -777600.,
+# timePhase(8) = 0.,
+
+#--- for momentum budget:
+  fields(1:18,6) = 'UVEL    ','VVEL    ','TOTUTEND','TOTVTEND',
+                   'Um_Advec','Vm_Advec','Um_dPHdx','Vm_dPHdy',
+                   'Um_Ext  ','Vm_Ext  ','Um_Diss ','Vm_Diss ',
+                   'Um_ImplD','Vm_ImplD',
+                   'AB_gU   ','AB_gV   ',
+                   'VISrI_Um','VISrI_Vm',
+#                  'UBotDrag','VBotDrag',
+#                  'Um_Cori ','Vm_Cori ','Um_AdvZ3','Vm_AdvZ3',
+#                  'Um_AdvRe','Vm_AdvRe','USidDrag','VSidDrag',
+#                  'Um_dPhiX','Vm_dPhiY','momKE   ',
+   fileName(6) = 'momDiag',
+  fileFlags(6) = 'D       ',
+  frequency(6) = -1728000.,
+
+  fields(1:6,7)  = 'ETAN    ','PHI_SURF',
+                   'oceTAUX ','oceTAUY ',
+                   'botTauX ','botTauY ',
+   fileName(7) = 'srfDiag',
+  fileFlags(7) = 'D       ',
+  frequency(7) = -1728000.,
+
  &
 
 #--------------------

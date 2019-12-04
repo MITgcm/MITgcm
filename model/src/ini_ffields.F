@@ -76,6 +76,10 @@ C-    Time reccord loaded from file:
           Qsw0            (i,j,bi,bj) = 0. _d 0
           Qsw1            (i,j,bi,bj) = 0. _d 0
 #endif
+#ifdef ALLOW_GEOTHERMAL_FLUX
+          geothFlux0      (i,j,bi,bj) = 0. _d 0
+          geothFlux1      (i,j,bi,bj) = 0. _d 0
+#endif
 #ifdef ATMOSPHERIC_LOADING
           pLoad0          (i,j,bi,bj) = 0. _d 0
           pLoad1          (i,j,bi,bj) = 0. _d 0
@@ -127,6 +131,8 @@ C-    Intermediate surface forcing arrays
           surfaceForcingTice  (i,j,bi,bj) = 0. _d 0
           lambdaThetaClimRelax(i,j,bi,bj) = 0. _d 0
           lambdaSaltClimRelax (i,j,bi,bj) = 0. _d 0
+          botDragU        (i,j,bi,bj) = 0. _d 0
+          botDragV        (i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
 
