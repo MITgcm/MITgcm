@@ -1,6 +1,15 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67n (2019/11/26)
+o pkg/ctrl:
+  - add doc & storage dir for initial velocity control option.
+o pkg/autodiff:
+  - sort out checkpoint_lev1_dir header file for when pkg/ecco is used
+    with #undef NONLIN_FRSURF ; similar update in pkg/cd_code & pkg/ptracers;
+    this fixes issue #68.
+  - clean-up and fix pkg/autodiff checkpoint_lev?_dir to be able to compile
+    with #define EXCLUDE_FFIELDS_LOAD.
 o model/src:
   - allows to specify time-dependent (periodic) geothermal heat-flux
     with "periodicExternalForcing".

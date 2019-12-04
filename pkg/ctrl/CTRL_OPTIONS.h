@@ -32,6 +32,8 @@ C-- Package-specific Options & Macros go here
 C       >>> Initial values.
 #undef ALLOW_THETA0_CONTROL
 #undef ALLOW_SALT0_CONTROL
+#undef ALLOW_UVEL0_CONTROL
+#undef ALLOW_VVEL0_CONTROL
 #undef ALLOW_TR10_CONTROL
 #undef ALLOW_TAUU0_CONTROL
 #undef ALLOW_TAUV0_CONTROL
