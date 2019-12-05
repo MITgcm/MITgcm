@@ -1,4 +1,7 @@
 #include "SMOOTH_OPTIONS.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 
       subroutine smooth_filtervar3D (smoothOpNb,myThid)
 
@@ -16,6 +19,9 @@ C     *==========================================================*
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SMOOTH.h"
+#if (defined ALLOW_SHI2D_CONTROL) || (defined ALLOW_SHIFWFLX_CONTROL)
+# include "SHELFICE.h"
+#endif
 
       integer smoothOpNb, myThid
 
@@ -30,11 +36,36 @@ C     *==========================================================*
       _RL smoothTmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL smoothTmpMean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL smoothTmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS smooth3Dmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
       jtlo = mybylo(myThid)
       jthi = mybyhi(myThid)
       itlo = mybxlo(myThid)
       ithi = mybxhi(myThid)
+
+c allow a different mask other than maskC
+
+        DO bj = jtlo,jthi
+         DO bi = itlo,ithi
+          DO k = 1,Nr
+           DO j = 1,sNy
+            DO i = 1,sNx
+             if (smooth3DmaskName(smoothOpNb)(1:5).eq.'maskC') then
+              smooth3Dmask(i,j,k,bi,bj) = maskC(i,j,k,bi,bj)
+             elseif (smooth3DmaskName(smoothOpNb)(1:5).eq.'maskW') then
+              smooth3Dmask(i,j,k,bi,bj) = maskW(i,j,k,bi,bj)
+             elseif (smooth3DmaskName(smoothOpNb)(1:5).eq.'maskS') then
+              smooth3Dmask(i,j,k,bi,bj) = maskS(i,j,k,bi,bj)
+#if (defined ALLOW_SHI2D_CONTROL) || (defined ALLOW_SHIFWFLX_CONTROL)
+             elseif (smooth3DmaskName(smoothOpNb)(1:5).eq.'maskI') then
+              smooth3Dmask(i,j,k,bi,bj) = maskSHI(i,j,k,bi,bj)
+#endif
+             endif
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
 
 c if smooth3Dfilter(smoothOpNb)=0: the filter variance field
 c has been computed earlier and is already in the run directory
@@ -213,7 +244,7 @@ c fill smoothTmpFld with random numbers:
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            smoothTmpFld(i,j,k,bi,bj)   = 0. _d 0
-           if (maskC(i,j,k,bi,bj).NE.0) then
+           if (smooth3dmask(i,j,k,bi,bj).NE.0) then
            smoothTmpFld(i,j,k,bi,bj)=port_rand_norm()
            endif
 c division by sqrt(volume):
@@ -254,7 +285,7 @@ c compute variance and convert it to normalization factor:
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           if (maskC(i,j,k,bi,bj).NE.0) then
+           if (smooth3dmask(i,j,k,bi,bj).NE.0) then
            smooth3Dnorm(i,j,k,bi,bj)=
      & 1/sqrt ( nbRand/(nbRand-1)* ( smoothTmpVar(i,j,k,bi,bj) -
      & smoothTmpMean(i,j,k,bi,bj)*smoothTmpMean(i,j,k,bi,bj)
