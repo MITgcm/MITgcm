@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification:
+  - new experiment "global_oce_biogeo_bling" move here from verification_other.
 o pkg/cheapaml:
   - rewrite advection-diffusion of BL atmospheric variables to use Flux-Form
     formulation. Affects results (unless cartesian grid is used).
