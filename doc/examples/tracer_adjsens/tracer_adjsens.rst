@@ -1,5 +1,7 @@
-Sensitivity of Air-Sea Exchange to Tracer Injection Site
-=========================================================
+.. _sec_tracer_adj_sens:
+
+Adjoint Sensitivity Analysis for Tracer Injection
+=================================================
 
 (in directory: :filelink:`verification/tutorial_tracer_adjsens/`)
 

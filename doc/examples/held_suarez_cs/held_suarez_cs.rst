@@ -1,5 +1,7 @@
-Held-Suarez atmospheric simulation on cube-sphere grid
-======================================================
+.. _sec_held_suarez_cs:
+
+Held-Suarez Atmosphere
+======================
 
 (in directory: :filelink:`verification/tutorial_held_suarez_cs/`)
 

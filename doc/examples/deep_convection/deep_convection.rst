@@ -1,6 +1,7 @@
+.. _sec_deep_convection:
 
-Surface Driven Convection
-=========================
+Deep Convection
+===============
 
 (in directory: :filelink:`verification/tutorial_deep_convection/`)
 

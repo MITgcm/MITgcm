@@ -1,3 +1,4 @@
+.. _sec_gyre_advection:
 
 Ocean Gyre Advection Schemes
 ============================

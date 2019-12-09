@@ -1,3 +1,4 @@
+.. _sec_global_oce_in_p_coor:
 
 Global Ocean Simulation in Pressure Coordinates
 ===============================================
