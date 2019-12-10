@@ -25,6 +25,9 @@ c     == global variables ==
 # include "ctrl_dummy.h"
 # include "CTRL_GENARR.h"
 #endif
+#ifdef ALLOW_SHI2D_CONTROL
+# include "SHELFICE_OPTIONS.h"
+#endif
 
 c     == routine arguments ==
 
@@ -43,6 +46,7 @@ c     == local variables ==
       integer iarr
       logical dodimensionalcost
       integer k2
+      _RL localmask (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 #endif
 
 c     == end of interface ==
@@ -99,6 +103,13 @@ c--   Evaluate the individual cost function contributions.
       enddo
 
       if (xx_genarr2d_weight(iarr).NE.' ') then
+       call ecco_zero(localmask,Nr,zeroRL,myThid)
+       call ecco_cprsrl(maskC,Nr,localmask,Nr,myThid)
+#ifdef ALLOW_SHI2D_CONTROL
+       if (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff') then
+        call ecco_cprsrl(maskSHI,Nr,localmask,Nr,myThid)
+       endif
+#endif
       call ctrl_cost_gen2d (
      &     1,1,
      &     xx_genarr2d_file(iarr),xx_genarr2d_dummy(iarr),
@@ -109,7 +120,8 @@ c--   Evaluate the individual cost function contributions.
      &     zeroRL, num_zero_mean, objf_zero_mean,
      &     objf_zero_smoo, zeroRL, zeroRL,
 #endif /* ECCO_CTRL_DEPRECATED */
-     &     maskC, myThid )
+     &     localmask, myThid )
+
       endif
 
       enddo
