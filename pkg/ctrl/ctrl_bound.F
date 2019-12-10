@@ -73,7 +73,7 @@ C     !ROUTINE: CTRL_BOUND_2D
 C     !INTERFACE:
       SUBROUTINE CTRL_BOUND_2D(
      U                fieldCur,
-     I                maskFld3d, boundsVec, myThid )
+     I                mask2D, boundsVec, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | started: Gael Forget gforget@mit.edu 20-Aug-2007
@@ -89,8 +89,8 @@ C     !USES:
 #include "EEPARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-      _RL fieldCur (1-Olx:sNx+Olx,1-Oly:sNy+Oly,   nSx,nSy)
-      _RS maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL fieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RS mask2D  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL boundsVec(5)
       INTEGER myThid
 
@@ -105,7 +105,7 @@ CEOP
 
           DO j = 1-OLy,sNy+OLy
            DO i = 1-OLx,sNx+OLx
-             IF (maskFld3d(i,j,1,bi,bj).NE.0.) THEN
+             IF (mask2D(i,j,bi,bj).NE.0.) THEN
               IF (fieldCur(i,j,bi,bj).GT.boundsVec(4)) THEN
                fieldCur(i,j,bi,bj)=boundsVec(4)
               ENDIF

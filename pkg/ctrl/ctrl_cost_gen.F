@@ -32,7 +32,7 @@ C     !INTERFACE:
      I                       xx_gen_remo_intercept,
      I                       xx_gen_remo_slope,
 #endif /* ECCO_CTRL_DEPRECATED */
-     I                       xx_gen_mask,
+     I                       xx_gen_mask2D,
      I                       myThid
      &                         )
 
@@ -77,7 +77,7 @@ c     == routine arguments ==
       _RL xx_gen_remo_intercept
       _RL xx_gen_remo_slope
 #endif /* ECCO_CTRL_DEPRECATED */
-      _RS xx_gen_mask(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL xx_gen_mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       integer myThid
 
 #ifdef ALLOW_CTRL
@@ -175,11 +175,10 @@ c--     Loop over this thread tiles.
           do bi = itlo,ithi
 
 c--         Determine the weights to be used.
-            kk = 1
             fctile = 0. _d 0
             do j = jmin,jmax
               do i = imin,imax
-                if (xx_gen_mask(i,j,kk,bi,bj) .ne. 0. _d 0) then
+                if (xx_gen_mask2D(i,j,bi,bj) .ne. 0. _d 0) then
 
                 tmpx = tmpfld2d(i,j,bi,bj)
                 IF ( dodimensionalcost ) THEN
@@ -236,14 +235,13 @@ c--     Loop over this thread tiles.
        do bj = jtlo,jthi
         do bi = itlo,ithi
 c--     Determine the weights to be used.
-        kk = 1
         fctilem = 0. _d 0
         do j = jmin,jmax
           do i = imin,imax
             xx_mean(i,j,bi,bj)
      &            = xx_mean(i,j,bi,bj)/float(nrec)
             tmpx = xx_mean(i,j,bi,bj)/xx_gen_wmean
-            if (xx_gen_mask(i,j,kk,bi,bj) .ne. 0. _d 0) then
+            if (xx_gen_mask2d(i,j,bi,bj) .ne. 0. _d 0) then
 #ifdef ALLOW_ECCO
               if ( ABS(R_low(i,j,bi,bj)) .LT. 100.  _d 0)
      &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/100.  _d 0
@@ -279,11 +277,10 @@ c--     Loop over this thread tiles.
           do bi = itlo,ithi
 
 c--         Determine the weights to be used.
-            kk = 1
             fctile = 0. _d 0
             do j = jmin,jmax
               do i = imin,imax
-                if (xx_gen_mask(i,j,kk,bi,bj) .ne. 0. _d 0) then
+                if (xx_gen_mask2d(i,j,bi,bj) .ne. 0. _d 0) then
 
                 IF ( dodimensionalcost ) THEN
                   tmpx = tmpfld2d(i,j,bi,bj)
@@ -349,7 +346,7 @@ c--         Determine the weights to be used.
             fctile = 0. _d 0
             do j = jmin,jmax
               do i = imin,imax
-                if (xx_gen_mask(i,j,kk,bi,bj) .ne. 0. _d 0) then
+                if (xx_gen_mask2d(i,j,bi,bj) .ne. 0. _d 0) then
                   tmpx =
      &                 ( tmpfld2d(i+2,j,bi,bj)-tmpfld2d(i+1,j,bi,bj) )
      &                   *maskW(i+1,j,kk,bi,bj)*maskW(i+2,j,kk,bi,bj)
@@ -444,7 +441,7 @@ c     == routine arguments ==
       logical dodimensionalcost
       _RL num_gen(nsx,nsy)
       _RL objf_gen(nsx,nsy)
-      _RS xx_gen_mask(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL xx_gen_mask(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       INTEGER myThid
 
 #ifdef ALLOW_CTRL

@@ -63,6 +63,7 @@ C     == local variables ==
       logical dosmooth
       logical doscaling
       _RL     xx_gen(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RS dummyRS(1)
 #ifdef ALLOW_ECCO
       _RL     xx_gen_tmp(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -308,10 +309,13 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
      &    .FALSE.,'RL',1,1,1,wgentim2d(1-Olx,1-Oly,1,1,iarr),
      &    dummyRS,jrec,myThid )
 
+C --- Get appropriate mask
+      call ctrl_get_mask2D(xx_gentim2d_file(iarr), mask2D, myThid)
+
 #ifdef ALLOW_SMOOTH
          IF (useSMOOTH) THEN
-          IF (dowc01) call smooth_correl2d(xx_gen,maskC,numsmo,mythid)
-          IF (dosmooth) call smooth2d(xx_gen,maskC,numsmo,mythid)
+          IF (dowc01) call smooth_correl2d(xx_gen,mask2D,numsmo,mythid)
+          IF (dosmooth) call smooth2d(xx_gen,mask2D,numsmo,mythid)
          ENDIF
 #endif /* ALLOW_SMOOTH */
 
@@ -319,7 +323,7 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
           DO bi=myBxLo(myThid), myBxHi(myThid)
            DO j = 1,sNy
             DO i = 1,sNx
-             if ((maskC(i,j,1,bi,bj).NE.0.).AND.
+             if ((mask2D(i,j,bi,bj).NE.0.).AND.
      &           (wgentim2d(i,j,bi,bj,iarr).GT.0.)) then
                IF (doscaling) then
                 xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)
@@ -334,7 +338,7 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
          ENDDO
 #endif /* ALLOW_OPENAD */
 
-         CALL CTRL_BOUND_2D(xx_gen,maskC,
+         CALL CTRL_BOUND_2D(xx_gen,mask2D,
      &        xx_gentim2d_bounds(1,iarr),myThid)
 
          CALL EXCH_XY_RL ( xx_gen , myThid )

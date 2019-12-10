@@ -16,7 +16,7 @@ C     *==========================================================*
 c#include "tamc.h"
 #include "SMOOTH.h"
 
-      _RL mask_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RL mask_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL fld_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       integer smoothOpNb
       integer nbt_in

@@ -43,8 +43,11 @@ C     *==========================================================*
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
 
-c allow a different mask other than maskC
-
+c --- allow a different mask other than maskC
+c     Note: this is essentially a copy of ctrl_get_mask
+c     but is repeated here for package independence
+c     since this subroutine is typically used simply to get
+c     filter variance without actually running the model
       DO bj = jtlo,jthi
        DO bi = itlo,ithi
         DO j = 1,sNy

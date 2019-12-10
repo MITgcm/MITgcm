@@ -4,7 +4,7 @@
 #endif
 
       subroutine smooth_diff2D (
-     U     fld_in,mask_in,nbt_in,mythid)
+     U     fld_in,smooth2Dmask,nbt_in,mythid)
 
 C     *==========================================================*
 C     | SUBROUTINE smooth_diff2D
@@ -29,7 +29,6 @@ C     *==========================================================*
 
       _RL smooth2Dmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      _RL mask_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
       _RL fld_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gt_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL gtm1_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -61,7 +60,6 @@ c       in order not to overwrite the same tape
          DO i = 1,sNx
            gt_in(i,j,bi,bj)   = 0. _d 0
            gtm1_in(i,j,bi,bj)   = 0. _d 0
-           smooth2Dmask(i,j,bi,bj) = mask_in(i,j,1,bi,bj)
          ENDDO
         ENDDO
        ENDDO

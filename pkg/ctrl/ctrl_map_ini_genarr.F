@@ -254,9 +254,7 @@ C     == local variables ==
       integer ilgen
       logical doglobalread
       logical ladinit
-#ifdef ALLOW_SHI2D_CONTROL
-      _RL localmask (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-#endif
+      _RL mask2d (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 CEOP
 
 c--   Now, read the control vector.
@@ -321,70 +319,49 @@ c               passed to data.ctrl, (default = 0.0)
       CALL READ_REC_XY_RL( fnamegenIn, xx_gen, 1, 1, myThid)
 #endif
 
-#ifdef ALLOW_SHI2D_CONTROL
-c--   set local mask
-      call ecco_zero(localmask,Nr,zeroRL,myThid)
-      if (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff') then
-        call ecco_cprsrl(maskSHI,nr,localmask,nr,myThid)
-      else
-        call ecco_cprsrl(maskC,nr,localmask,nr,myThid)
-      endif
-# ifdef ALLOW_SMOOTH
+C --- Get appropriate mask for ctrl variable
+      call ctrl_get_mask2d(xx_genarr2d_file(iarr), mask2D, myThid)
+
+C --- Do any smoothing
+#ifdef ALLOW_SMOOTH
       IF (useSMOOTH) THEN
-       IF (dowc01) call smooth_correl2d(xx_gen,localmask,numsmo,mythid)
-       IF (dosmooth) call smooth2d(xx_gen,localmask,numsmo,mythid)
+       IF (dowc01) call smooth_correl2d(xx_gen,mask2D,numsmo,mythid)
+       IF (dosmooth) call smooth2d(xx_gen,mask2D,numsmo,mythid)
       ENDIF
-# endif
-#else
-# ifdef ALLOW_SMOOTH
-       IF (useSMOOTH) THEN
-        IF (dowc01) call smooth_correl2d(xx_gen,maskC,numsmo,mythid)
-        IF (dosmooth) call smooth2d(xx_gen,maskC,numsmo,mythid)
-       ENDIF
-# endif
-#endif /* ALLOW_SHI2D_CONTROL */
+#endif
 
       DO bj=myByLo(myThid), myByHi(myThid)
-        DO bi=myBxLo(myThid), myBxHi(myThid)
-            DO j = 1,sNy
-              DO i = 1,sNx
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+        DO j = 1,sNy
+         DO i = 1,sNx
 c scale param adjustment
-#ifdef ALLOW_SHI2D_CONTROL
-                if ( (localmask(i,j,1,bi,bj).NE.0.).AND.
-#else
-                if ( (maskC(i,j,1,bi,bj).NE.0.).AND.
-#endif
-     &               (wgenarr2d(i,j,bi,bj,iarr).GT.0.) ) then
-                 IF (doscaling) then
-                  xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)
-     &                     /sqrt( wgenarr2d(i,j,bi,bj,iarr) )
-                  if (dolog10ctrl) then
-                   xx_gen(i,j,bi,bj) = xx_gen(i,j,bi,bj) + log10initval
-                   xx_gen(i,j,bi,bj) = 10.0 ** xx_gen(i,j,bi,bj)
-                  endif ! log10ctrls
-                 ENDIF
-                else
-                  xx_gen(i,j,bi,bj)=0.
-                endif
+          if ( (mask2D(i,j,bi,bj).NE.0.).AND.
+     &         (wgenarr2d(i,j,bi,bj,iarr).GT.0.) ) then
+            IF (doscaling) then
+             xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)
+     &                /sqrt( wgenarr2d(i,j,bi,bj,iarr) )
+             if (dolog10ctrl) then
+              xx_gen(i,j,bi,bj) = xx_gen(i,j,bi,bj) + log10initval
+              xx_gen(i,j,bi,bj) = 10.0 ** xx_gen(i,j,bi,bj)
+             endif ! log10ctrls
+            ENDIF ! doscaling
+          else
+            xx_gen(i,j,bi,bj)=0.
+          endif
 c add to model parameter
 c or in case of log10ctrl, fld = 10^(xx_gen)
-                if ( .not. dolog10ctrl ) then
-                 fld(i,j,bi,bj)=fld(i,j,bi,bj)+xx_gen(i,j,bi,bj)
-                else
-                 fld(i,j,bi,bj)=xx_gen(i,j,bi,bj)
-                endif
-              enddo
-            enddo
+          if ( .not. dolog10ctrl ) then
+           fld(i,j,bi,bj)=fld(i,j,bi,bj)+xx_gen(i,j,bi,bj)
+          else
+           fld(i,j,bi,bj)=xx_gen(i,j,bi,bj)
+          endif
+         enddo
         enddo
+       enddo
       enddo
 
 c avoid param out of [boundsVec(1) boundsVec(4)]
-#ifdef ALLOW_SHI2D_CONTROL
-      CALL CTRL_BOUND_2D(fld,localmask,xx_genarr2d_bounds(1,iarr),
-     &  myThid)
-#else
-      CALL CTRL_BOUND_2D(fld,maskC,xx_genarr2d_bounds(1,iarr),myThid)
-#endif
+      CALL CTRL_BOUND_2D(fld,mask2D,xx_genarr2d_bounds(1,iarr),myThid)
 
       CALL EXCH_XY_RL( fld, mythid )
 
@@ -454,26 +431,14 @@ C     == local variables ==
       integer ilgen
       logical doglobalread
       logical ladinit
-#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
-      _RL localmask  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-#endif
+      _RL mask3D(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 CEOP
 
 c--   Now, read the control vector.
       doglobalread = .false.
       ladinit      = .false.
 
-      DO bj=myByLo(myThid), myByHi(myThid)
-       DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO k = 1,nr
-         DO j = 1-OLy,sNy+OLy
-          DO i = 1-OLx,sNx+OLx
-           xx_gen(i,j,k,bi,bj)=0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
+      call ctrl_zero(xx_gen, Nr, 0. _d 0, myThid) 
 
       dosmooth=.false.
       dowc01  = .false.
@@ -530,63 +495,44 @@ c               passed to data.ctrl, (default = 0.0)
       ENDIF
 #endif
 
-#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
-c--   set local mask
-      call ecco_zero(localmask,Nr,zeroRL,myThid)
-      if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_uvel') then
-        call ecco_cprsrl(maskW,nr,localmask,nr,myThid)
-      else if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_vvel') then
-        call ecco_cprsrl(maskS,nr,localmask,nr,myThid)
-      else
-        call ecco_cprsrl(maskC,nr,localmask,nr,myThid)
-      endif
-#endif
+C --- Get appropriate mask
+      call ctrl_get_mask3d(xx_genarr3d_file(iarr), mask3D, myThid)
 
       DO bj=myByLo(myThid), myByHi(myThid)
-        DO bi=myBxLo(myThid), myBxHi(myThid)
-          do k = 1,nr
-            DO j = 1,sNy
-              DO i = 1,sNx
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nr
+         DO j = 1,sNy
+          DO i = 1,sNx
 c scale param adjustment
-#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
-                if ( (localmask(i,j,k,bi,bj).NE.0.).AND.
-#else
-                if ( (maskC(i,j,k,bi,bj).NE.0.).AND.
-#endif
-     &               (wgenarr3d(i,j,k,bi,bj,iarr).GT.0.) ) then
-                 IF (doscaling) then
-                  xx_gen(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
-     &                     /sqrt( wgenarr3d(i,j,k,bi,bj,iarr) )
-                  if (dolog10ctrl) then
-                   xx_gen(i,j,k,bi,bj) =
-     &                  xx_gen(i,j,k,bi,bj) + log10initval
-                   xx_gen(i,j,k,bi,bj) = 10.0 ** xx_gen(i,j,k,bi,bj)
-                  endif ! log10ctrls
-                 ENDIF
-                else
-                  xx_gen(i,j,k,bi,bj)=0.
-                endif
+            if ( (mask3D(i,j,k,bi,bj).NE.0.).AND.
+     &           (wgenarr3d(i,j,k,bi,bj,iarr).GT.0.) ) then
+             IF (doscaling) then
+              xx_gen(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
+     &                 /sqrt( wgenarr3d(i,j,k,bi,bj,iarr) )
+              if (dolog10ctrl) then
+               xx_gen(i,j,k,bi,bj) =
+     &              xx_gen(i,j,k,bi,bj) + log10initval
+               xx_gen(i,j,k,bi,bj) = 10.0 ** xx_gen(i,j,k,bi,bj)
+              endif ! log10ctrls
+             ENDIF ! doscaling
+            else
+              xx_gen(i,j,k,bi,bj)=0.
+            endif
 c add to model parameter
 c or in case of log10ctrl, fld = 10^(xx_gen)
-                if ( .not. dolog10ctrl ) then
-                 fld(i,j,k,bi,bj)=fld(i,j,k,bi,bj)+xx_gen(i,j,k,bi,bj)
-                else
-                 fld(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
-                endif
-
-              enddo
-            enddo
+            if ( .not. dolog10ctrl ) then
+             fld(i,j,k,bi,bj)=fld(i,j,k,bi,bj)+xx_gen(i,j,k,bi,bj)
+            else
+             fld(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
+            endif
           enddo
+         enddo
         enddo
+       enddo
       enddo
 
 c avoid param out of [boundsVec(1) boundsVec(4)]
-#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
-      CALL CTRL_BOUND_3D(fld,localmask,
-     &     xx_genarr3d_bounds(1,iarr),myThid)
-#else
-      CALL CTRL_BOUND_3D(fld,maskC,xx_genarr3d_bounds(1,iarr),myThid)
-#endif
+      CALL CTRL_BOUND_3D(fld,mask3D,xx_genarr3d_bounds(1,iarr),myThid)
 
 C The tile exchange for xx_uvel and xx_vvel will be
 C  done in CTRL_MAP_INI_GENARR.F when both
