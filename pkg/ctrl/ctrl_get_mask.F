@@ -44,7 +44,7 @@ C --- Initialize to zero (covers overlap region)
       call ctrl_zero(mask3D, Nr, zeroRL, myThid)
 
 C --- Set to maskC by default
-      call ctrl_cprsrl(maskC, Nr, mask3D, myThid)
+      call ctrl_cprsrl(maskC, Nr, mask3D, Nr, myThid)
       
 C --- Test special cases
 #if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
@@ -113,7 +113,7 @@ C --- Initialize to zero (covers overlap region)
       call ctrl_zero(mask3D, Nr, zeroRL, myThid)
 
 C --- Set to maskC by default
-      call ctrl_cprsrl(maskC, Nr, mask3D, myThid)
+      call ctrl_cprsrl(maskC, Nr, mask3D, Nr, myThid)
       
 C --- Test special cases
 #if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
