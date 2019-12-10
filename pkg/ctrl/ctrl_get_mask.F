@@ -56,7 +56,11 @@ C --- Test special cases
 #endif
 
 C --- Get overlaps
-      CALL EXCH_XYZ_RL( mask3D, myThid )
+      if ((xx_filename(1:7).ne.'xx_uvel') .and.
+     &    (xx_filename(1:7).ne.'xx_vvel')) then
+       CALL EXCH_XYZ_RL( mask3D, myThid )
+      endif
+
 
       RETURN
       END
