@@ -1,5 +1,7 @@
 #include "CTRL_OPTIONS.h"
-#include "EXF_OPTIONS.h"
+#ifdef ALLOW_EXF
+# include "EXF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CTRL_GET_MASK3D
@@ -138,15 +140,19 @@ C --- Shelfice
 
 C --- Wind stress. Wind speed always uses maskC 
 #ifndef ALLOW_ROTATE_UV_CONTROLS
-      if (stressIsOnCgrid) then
-       if (xx_filename(1:7).EQ.'xx_tauu') then
-         doExch = .FALSE.
-         call ctrl_cprsrl(maskW,Nr,mask3D,Nr,myThid)
-       else if (xx_filename(1:7).EQ.'xx_tauv') then
-         doExch = .FALSE.
-         call ctrl_cprsrl(maskS,Nr,mask3D,Nr,myThid)
+# ifdef ALLOW_EXF
+       if (stressIsOnCgrid) then
+# endif
+        if (xx_filename(1:7).EQ.'xx_tauu') then
+          doExch = .FALSE.
+          call ctrl_cprsrl(maskW,Nr,mask3D,Nr,myThid)
+        else if (xx_filename(1:7).EQ.'xx_tauv') then
+          doExch = .FALSE.
+          call ctrl_cprsrl(maskS,Nr,mask3D,Nr,myThid)
+        endif
+# ifdef ALLOW_EXF
        endif
-      endif
+# endif
 #endif
 
 C --- Set 2D mask for output
