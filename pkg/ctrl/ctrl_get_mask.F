@@ -120,7 +120,7 @@ C --- Set to maskC by default
       call ctrl_cprsrl(maskC, Nr, mask3D, Nr, myThid)
       
 C --- Test special cases
-#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
+#ifdef ALLOW_SHI2D_CONTROL
       if (xx_filename(1:11).EQ.'xx_shicoeff') then
         call ctrl_cprsrl(maskSHI,Nr,mask3D,Nr,myThid)
       endif
