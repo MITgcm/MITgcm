@@ -261,9 +261,6 @@ c-- initialize local arrays
               ersob(i,j,bi,bj) = 0. _d 0
               gfoma(i,j,bi,bj) = 0. _d 0
               gfoob(i,j,bi,bj) = 0. _d 0
-
-              ! for smoothing
-              mask2D(i,j,bi,bj) = maskC(i,j,1,bi,bj)
             enddo
           enddo
         enddo
@@ -350,7 +347,7 @@ c--   Read mean field and mask
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              if ( (mask2D(i,j,bi,bj) .eq. 0.).OR.
+              if ( (maskC(i,j,1,bi,bj) .eq. 0.).OR.
 #ifndef ALLOW_SHALLOW_ALTIMETRY
      &             (R_low(i,j,bi,bj).GT.-200.).OR.
 #endif
@@ -445,8 +442,10 @@ c--   Compute mean_slaobs_mdt: sample mean SLA over the time period of mdt.
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
+               ! mask2D for smoothing. here to avoid TAF recomp
+               mask2D(i,j,bi,bj) = maskC(i,j,1,bi,bj)
                if ( ( mean_slaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
-     &              ( mask2D(i,j,bi,bj) .NE. 0. ).AND.
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ).AND.
      &              ( mdtma(i,j,bi,bj) .NE. 0. ) ) then
                   mean_slaobs_mdt(i,j,bi,bj) =
      &                 mean_slaobs_mdt(i,j,bi,bj) /
@@ -486,7 +485,7 @@ c--   re-reference mdt:
           do j = jmin,jmax
             do i = imin,imax
                if ( ( mdtma(i,j,bi,bj) .NE. 0. ).AND.
-     &              ( mask2D(i,j,bi,bj) .NE. 0. ).AND.
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ).AND.
      &              ( doReference ) ) then
                   mdtob(i,j,bi,bj) = mdtob(i,j,bi,bj)
      &                 -mean_slaobs_mdt(i,j,bi,bj)
@@ -664,7 +663,7 @@ c--   END loop over records for the first time.
                endif
 
                if ( ( mean_psMssh_all_NUM(i,j,bi,bj) .GT. 0 ).AND.
-     &              ( mask2D(i,j,bi,bj) .NE. 0. )
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. )
      &              ) then
                   mean_psMslaobs(i,j,bi,bj) =
      &                 mean_psMssh_all(i,j,bi,bj) /
@@ -676,7 +675,7 @@ c--   END loop over records for the first time.
                endif
 
                if ( ( mean_psMssh_all_NUM(i,j,bi,bj) .GT. num0 ).AND.
-     &              ( mask2D(i,j,bi,bj) .NE. 0. ) .AND.
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
      &              ( mdtma(i,j,bi,bj) .NE. 0. ).AND.
      &              ( doReference ) ) then
                   mean_slaobs_model(i,j,bi,bj) =
@@ -689,7 +688,7 @@ c--   END loop over records for the first time.
                   offset=offset+RA(i,j,bi,bj)*mean_psMssh_all(i,j,bi,bj)
                   offset_sum=offset_sum+RA(i,j,bi,bj)
                elseif ( ( mdtma(i,j,bi,bj) .NE. 0. ) .AND.
-     &              ( mask2D(i,j,bi,bj) .NE. 0. ).AND.
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ).AND.
      &              ( .NOT.doReference ) ) then
                   mean_slaobs_model(i,j,bi,bj) = 0.d0
                   mean_psMssh_all(i,j,bi,bj) = 0. _d 0
@@ -772,7 +771,7 @@ c--   subtract offset from mean_psMssh_all and psmean
 
                if ( (mean_psMssh_all_NUM(i,j,bi,bj) .GT. num0) .AND.
      &              ( mdtma(i,j,bi,bj) .NE. 0. ) .AND.
-     &              ( mask2D(i,j,bi,bj) .NE. 0. ) .AND.
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
      &              ( doReference ) ) then
 c use the re-referencing approach
                    mean_psMssh_all(i,j,bi,bj) =
@@ -780,7 +779,7 @@ c use the re-referencing approach
                    mean_psMssh_all_MSK(i,j,bi,bj) = 1. _d 0
 
                elseif ( ( mdtma(i,j,bi,bj) .NE. 0. ) .AND.
-     &              ( mask2D(i,j,bi,bj) .NE. 0. ) .AND.
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. ) .AND.
      &              ( .NOT.doReference ) ) then
 c use the simpler approach
                    mean_psMssh_all(i,j,bi,bj) =
@@ -792,7 +791,7 @@ c use the simpler approach
                    mean_psMssh_all_MSK(i,j,bi,bj) = 0. _d 0
                endif
 
-               if ( mask2D(i,j,bi,bj) .NE. 0. )
+               if ( maskc(i,j,1,bi,bj) .NE. 0. )
      &            psmean(i,j,bi,bj)=psmean(i,j,bi,bj)-offset
 
             enddo
@@ -1025,7 +1024,7 @@ c ------------------------------------------------------
             do j = jmin,jmax
               do i = imin,imax
                if ( ( anom_psMslaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
-     &              ( mask2D(i,j,bi,bj) .NE. 0. )
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. )
      &            ) then
                   anom_psMslaobs(i,j,bi,bj) =
      &                 anom_psMslaobs(i,j,bi,bj) /
@@ -1054,7 +1053,7 @@ c ----------------------------------------
             do j = jmin,jmax
               do i = imin,imax
                if ( ( anom_psMslaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
-     &              ( mask2D(i,j,bi,bj) .NE. 0. )
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. )
      &            ) then
                   slaoffset=slaoffset+RA(i,j,bi,bj)*
      &                      anom_psMslaobs(i,j,bi,bj)
@@ -1101,8 +1100,10 @@ c--   Subtract slaoffset from anom_psMslaobs
           do bi = itlo,ithi
             do j = jmin,jmax
               do i = imin,imax
+               ! mask2D for smoothing. here to avoid TAF recomp
+               mask2D(i,j,bi,bj) = maskC(i,j,1,bi,bj)
                if ( ( anom_psMslaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
-     &              ( mask2D(i,j,bi,bj) .NE. 0. )
+     &              ( maskc(i,j,1,bi,bj) .NE. 0. )
      &            ) then
                   anom_psMslaobs(i,j,bi,bj) =
      &                 anom_psMslaobs(i,j,bi,bj) - slaoffset

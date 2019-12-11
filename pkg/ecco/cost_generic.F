@@ -253,7 +253,7 @@ c     == local variables ==
       _RL localdifsum   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL localdifnum   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
-      _RL mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       _RL fac
 
@@ -322,6 +322,7 @@ c--   Assign mask
       endif
 
 
+
 c-- set nrecloop to nrecloc
       nrecloop=nrecloc
 
@@ -373,13 +374,9 @@ c--     Compute masked model-data difference
      &    call ecco_addmask(localdif,difmask, nnzobs,localdifsum,
      &    localdifnum, nnzobs,myThid)
 
-        if (addVariaCost) then
-
 #ifdef ALLOW_SMOOTH
-        if ( useSMOOTH.AND.dosmooth.AND.
-     &     (nnzbar.EQ.1).AND.(nnzobs.EQ.1) ) then
 c--      For 2D smooth routines, use mask2D
-c--      should this be ylocmask? 
+c--      should this be ylocmask?
 C--      for now, use maskC to reproduce old behavior
          do bj = myByLo(myThid), myByHi(myThid)
           do bi = myBxLo(myThid), myBxHi(myThid)
@@ -390,10 +387,15 @@ C--      for now, use maskC to reproduce old behavior
            enddo
           enddo
          enddo
+#endif
 
-         call smooth_hetero2d(localdif,mask2D,
-     &      posproc_c(k2smooth),posproc_i(k2smooth),myThid)
-         endif
+        if (addVariaCost) then
+
+#ifdef ALLOW_SMOOTH
+        if ( useSMOOTH.AND.dosmooth.AND.
+     &     (nnzbar.EQ.1).AND.(nnzobs.EQ.1) )
+     &  call smooth_hetero2d(localdif,mask2D,
+     &     posproc_c(k2smooth),posproc_i(k2smooth),myThid)
 #endif
 
 c--     Compute normalized model-obs cost function

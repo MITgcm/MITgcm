@@ -170,8 +170,9 @@ c--     Compute the mean over all bpdat records.
          do bi = itlo,ithi
            do j = 1,sNy
             do i = 1,sNx
+
               if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
-     &             (mask2D(i,j,bi,bj).NE. 0. _d 0) ) then
+     &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
                 bpdifmean(i,j,bi,bj) = bpdifmean(i,j,bi,bj) +
      &              ( fac*locbpbar(i,j,bi,bj) - locbpdat(i,j,bi,bj) )
                 bpdatmean(i,j,bi,bj) = bpdatmean(i,j,bi,bj) +
@@ -224,8 +225,10 @@ c--    Compute field of anomalies
          do bi = itlo,ithi
            do j = 1,sNy
             do i = 1,sNx
+              ! mask2D for smoothing. here to avoid TAF recomp
+              mask2D(i,j,bi,bj)=maskC(i,j,1,bi,bj)
               if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
-     &             (mask2D(i,j,bi,bj).NE. 0. _d 0) ) then
+     &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
                 bpdifanom(i,j,bi,bj) =
      &              ( fac*locbpbar(i,j,bi,bj) - locbpdat(i,j,bi,bj) )
      &              - bpdifmean(i,j,bi,bj)
@@ -249,7 +252,7 @@ c--    Remove global mean value
            do j = 1,sNy
             do i = 1,sNx
               if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
-     &             (mask2D(i,j,bi,bj).NE. 0. _d 0) ) then
+     &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
                 offset  = offset + RA(i,j,bi,bj)*bpdifanom(i,j,bi,bj)
                 offset_sum = offset_sum + RA(i,j,bi,bj)
               endif
@@ -267,7 +270,7 @@ c--    Remove global mean value
             do i = 1,sNx
               if ( (offset_sum.GT. 0. _d 0).AND.
      &             (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
-     &             (mask2D(i,j,bi,bj).NE. 0. _d 0) ) then
+     &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
                 bpdifanom(i,j,bi,bj) = bpdifanom(i,j,bi,bj)
      &                               - offset/offset_sum
               endif
@@ -313,7 +316,7 @@ c--    Compute cost function
 c-- map to global cost variables
               if ( (locwbp(i,j,bi,bj).NE. 0. _d 0).AND.
      &             (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
-     &             (mask2D(i,j,bi,bj).NE. 0. _d 0) ) then
+     &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
                  junk = bpdifanom(i,j,bi,bj)
                  objf_gencost(kgen,bi,bj) = objf_gencost(kgen,bi,bj)
      &               + junk*junk*locwbp(i,j,bi,bj)
