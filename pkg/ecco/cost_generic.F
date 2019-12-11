@@ -233,6 +233,7 @@ c     == local variables ==
       integer bi,bj
       integer itlo,ithi
       integer jtlo,jthi
+      integer i,j
       integer irec, jrec
       integer il, k2
       integer localrec, obsrec
@@ -251,6 +252,8 @@ c     == local variables ==
       _RL localdifmsk   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL localdifsum   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL localdifnum   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+
+      _RL mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
       _RL fac
 
@@ -318,6 +321,7 @@ c--   Assign mask
          STOP 'cost_generic: wrong ylocmask'
       endif
 
+
 c-- set nrecloop to nrecloc
       nrecloop=nrecloc
 
@@ -373,9 +377,23 @@ c--     Compute masked model-data difference
 
 #ifdef ALLOW_SMOOTH
         if ( useSMOOTH.AND.dosmooth.AND.
-     &     (nnzbar.EQ.1).AND.(nnzobs.EQ.1) )
-     &  call smooth_hetero2d(localdif,maskc,
-     &     posproc_c(k2smooth),posproc_i(k2smooth),myThid)
+     &     (nnzbar.EQ.1).AND.(nnzobs.EQ.1) ) then
+c--      For 2D smooth routines, use mask2D
+c--      should this be ylocmask? 
+C--      for now, use maskC to reproduce old behavior
+         do bj = myByLo(myThid), myByHi(myThid)
+          do bi = myBxLo(myThid), myBxHi(myThid)
+           do j = 1-OLy,sNy+OLy
+            do i = 1-OLx,sNx+OLx
+             mask2D(i,j,bi,bj) = maskC(i,j,1,bi,bj)
+            enddo
+           enddo
+          enddo
+         enddo
+
+         call smooth_hetero2d(localdif,mask2D,
+     &      posproc_c(k2smooth),posproc_i(k2smooth),myThid)
+         endif
 #endif
 
 c--     Compute normalized model-obs cost function

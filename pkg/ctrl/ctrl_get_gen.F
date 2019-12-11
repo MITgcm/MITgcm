@@ -76,9 +76,11 @@ c     == local variables ==
       logical ladinit
 
       character*(80) fnamegen
+      _RL mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_SMOOTH_CTRL2D
       _RS dummyRS(1)
+
 #endif
 #endif
 #ifndef ECCO_CTRL_DEPRECATED
@@ -110,6 +112,9 @@ c     == end of interface ==
 c--   Now, read the control vector.
       doglobalread = .false.
       ladinit      = .false.
+
+C --- Get the appropriate mask for this field
+      call ctrl_get_mask2d( xx_gen_file, mask2D, myThid)
 
       if ( (optimcycle .ge. 0).AND.(.NOT.ctrlUseGen) ) then
         ilgen=ilnblnk( xx_gen_file )
@@ -150,6 +155,8 @@ cc#else
 #endif
 cc#endif /* ALLOW_OPENAD */
 
+
+
 #ifdef ECCO_CTRL_DEPRECATED
 #ifdef ALLOW_CTRL_SMOOTH
         if ( xx_gen_file .EQ. xx_tauu_file .OR.
@@ -160,7 +167,7 @@ cc#endif /* ALLOW_OPENAD */
 
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_SMOOTH_CTRL2D
-        if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
+        if (useSMOOTH) call smooth2D(xx_gen1,mask2D,1,mythid)
         write(fnamegeneric(1:80),'(2a,i10.10)')
      &    xx_gen_file(1:ilgen),'.smooth.',optimcycle
         CALL MDS_WRITE_FIELD(fnamegeneric,ctrlprec,.FALSE.,.FALSE.,
@@ -196,7 +203,7 @@ cc#endif /* ALLOW_OPENAD */
 
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_SMOOTH_CTRL2D
-        if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
+        if (useSMOOTH) call smooth2D(xx_gen1,mask2D,1,mythid)
         write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_gen_file(1:ilgen),'.smooth.',optimcycle
         CALL MDS_WRITE_FIELD(fnamegeneric,ctrlprec,.FALSE.,.FALSE.,
@@ -275,14 +282,13 @@ CMLCML)
       do bj = jtlo,jthi
         do bi = itlo,ithi
 c--       Calculate mask for tracer cells (0 => land, 1 => water).
-          k = 1
           do j = 1,sny
             do i = 1,snx
               genfld(i,j,bi,bj) = genfld (i,j,bi,bj)
      &              + gensign*genfac            *xx_gen0(i,j,bi,bj)
      &              + gensign*(1. _d 0 - genfac)*xx_gen1(i,j,bi,bj)
               genfld(i,j,bi,bj) =
-     &             genmask(i,j,k,bi,bj)*( genfld (i,j,bi,bj) -
+     &             mask2D(i,j,bi,bj)*( genfld (i,j,bi,bj) -
      &             ( xx_gen_remo_intercept +
      &               xx_gen_remo_slope*(mytime-starttime) ) )
             enddo

@@ -54,6 +54,7 @@ c     == local variables ==
       _RL locbpdat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL locbpmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL locwbp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       _RL bpdifmean ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL bpdifanom ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
@@ -115,6 +116,9 @@ cgf convert phibot from m2/s2 to cm
              locbpbar(i,j,bi,bj) = 0. _d 0
              locbpdat(i,j,bi,bj) = 0. _d 0
              locbpmask(i,j,bi,bj) = 0. _d 0
+
+             ! For smoothing routines
+             mask2D(i,j,bi,bj) = maskC(i,j,1,bi,bj)
            enddo
           enddo
         enddo
@@ -167,7 +171,7 @@ c--     Compute the mean over all bpdat records.
            do j = 1,sNy
             do i = 1,sNx
               if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
-     &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
+     &             (mask2D(i,j,bi,bj).NE. 0. _d 0) ) then
                 bpdifmean(i,j,bi,bj) = bpdifmean(i,j,bi,bj) +
      &              ( fac*locbpbar(i,j,bi,bj) - locbpdat(i,j,bi,bj) )
                 bpdatmean(i,j,bi,bj) = bpdatmean(i,j,bi,bj) +
@@ -221,7 +225,7 @@ c--    Compute field of anomalies
            do j = 1,sNy
             do i = 1,sNx
               if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
-     &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
+     &             (mask2D(i,j,bi,bj).NE. 0. _d 0) ) then
                 bpdifanom(i,j,bi,bj) =
      &              ( fac*locbpbar(i,j,bi,bj) - locbpdat(i,j,bi,bj) )
      &              - bpdifmean(i,j,bi,bj)
@@ -245,7 +249,7 @@ c--    Remove global mean value
            do j = 1,sNy
             do i = 1,sNx
               if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
-     &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
+     &             (mask2D(i,j,bi,bj).NE. 0. _d 0) ) then
                 offset  = offset + RA(i,j,bi,bj)*bpdifanom(i,j,bi,bj)
                 offset_sum = offset_sum + RA(i,j,bi,bj)
               endif
@@ -263,7 +267,7 @@ c--    Remove global mean value
             do i = 1,sNx
               if ( (offset_sum.GT. 0. _d 0).AND.
      &             (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
-     &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
+     &             (mask2D(i,j,bi,bj).NE. 0. _d 0) ) then
                 bpdifanom(i,j,bi,bj) = bpdifanom(i,j,bi,bj)
      &                               - offset/offset_sum
               endif
@@ -284,13 +288,13 @@ c--    Smooth field of anomalies
 
 #ifdef ALLOW_SMOOTH
         if ( useSMOOTH )
-     &   call smooth_basic2D(bpdifanom,maskc,300000. _d 0,3000,myThid)
+     &   call smooth_basic2D(bpdifanom,mask2D,300000. _d 0,3000,myThid)
 #endif
 
         if (gencost_outputlevel(kgen).GT.0) then
 #ifdef ALLOW_SMOOTH
          if ( useSMOOTH )
-     &   call smooth_basic2D(bpdatanom,maskc,300000. _d 0,3000,myThid)
+     &   call smooth_basic2D(bpdatanom,mask2D,300000. _d 0,3000,myThid)
 #endif
 
          write(fname4test(1:80),'(1a)') 'bpdifanom_smooth'
@@ -309,7 +313,7 @@ c--    Compute cost function
 c-- map to global cost variables
               if ( (locwbp(i,j,bi,bj).NE. 0. _d 0).AND.
      &             (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
-     &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
+     &             (mask2D(i,j,bi,bj).NE. 0. _d 0) ) then
                  junk = bpdifanom(i,j,bi,bj)
                  objf_gencost(kgen,bi,bj) = objf_gencost(kgen,bi,bj)
      &               + junk*junk*locwbp(i,j,bi,bj)

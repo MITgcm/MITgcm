@@ -282,6 +282,7 @@ c     == local variables ==
 
       character*( 80) fnamegeneric
       _RS dummyRS(1)
+      _RL mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
 c     == external ==
 
@@ -316,6 +317,7 @@ c--   only do interior, and exchange outside
          DO i = 1-OLx,sNx+OLx
            xxFld2d(i,j,bi,bj)=0. _d 0
            wFld2d(i,j,bi,bj)=0. _d 0
+           mask2D(i,j,bi,bj)=maskFld3D(i,j,1,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -343,7 +345,7 @@ c avoid xx larger than boundsVec(5) X uncertainty
         do bi = itlo,ithi
             do j = jmin,jmax
               do i = imin,imax
-      if ( (maskFld3d(i,j,1,bi,bj).NE.0.).AND.
+      if ( (mask2D(i,j,bi,bj).NE.0.).AND.
      & (wFld2d(i,j,bi,bj).GT.0.) ) then
        tmpMax=boundsVec(5)/sqrt(wFld2d(i,j,bi,bj))
       if ( abs(xxFld2d(i,j,bi,bj)).GT.tmpMax ) then
@@ -360,7 +362,7 @@ c avoid xx larger than boundsVec(5) X uncertainty
 
 #ifdef ALLOW_SMOOTH
 # ifdef ALLOW_SMOOTH_CTRL2D
-      if (useSMOOTH) call smooth2d(xxFld2d,maskFld3d,paramSmooth,mythid)
+      if (useSMOOTH) call smooth2d(xxFld2d,mask2D,paramSmooth,mythid)
       write(fnamegeneric(1:80),'(2a,i10.10)')
      & xxFileCur(1:il),'.smooth.',optimcycle
       CALL MDS_WRITE_FIELD(fnamegeneric,ctrlprec,.FALSE.,.FALSE.,
@@ -384,7 +386,7 @@ c avoid xx larger than boundsVec(5) X uncertainty
 #ifdef ALLOW_SMOOTH
 c apply Weaver And Courtier correlation operator
       if ( paramSmooth.NE.0 .AND. useSMOOTH ) then
-       call smooth_correl2d(xxFld2d,maskFld3d,paramSmooth,mythid)
+       call smooth_correl2d(xxFld2d,mask2D,paramSmooth,mythid)
       endif
 #endif
 
@@ -393,7 +395,7 @@ c apply Weaver And Courtier correlation operator
             do j = jmin,jmax
               do i = imin,imax
 c scale param adjustment
-      if ( (maskFld3d(i,j,1,bi,bj).NE.0.)
+      if ( (mask2D(i,j,bi,bj).NE.0.)
      & .AND. (wFld2d(i,j,bi,bj).GT.0.) ) then
       xxFld2d(i,j,bi,bj)=xxFld2d(i,j,bi,bj)
      & /sqrt( wFld2d(i,j,bi,bj) )
@@ -409,7 +411,7 @@ c scale param adjustment
 
       ENDIF !IF ( .NOT.ctrlSmoothCorrel2D ) THEN
 
-      CALL CTRL_BOUND_2D(paramFld2d,maskFld3d,boundsVec,myThid)
+      CALL CTRL_BOUND_2D(paramFld2d,mask2D,boundsVec,myThid)
 
       IF ( ctrlSmoothCorrel2D ) THEN
         write(fnamegeneric(1:80),'(2a,i10.10)')

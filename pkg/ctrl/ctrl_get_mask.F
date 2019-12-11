@@ -1,4 +1,5 @@
 #include "CTRL_OPTIONS.h"
+#include "EXF_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: CTRL_GET_MASK3D
@@ -37,8 +38,11 @@ C     == routine arguments ==
 C     !LOCAL VARIABLES:
 C     == local variables ==
       integer i, j, bi, bj
+      logical doExch
 
 CEOP
+
+      doExch=.TRUE.
 
 C --- Initialize to zero (covers overlap region)
       call ctrl_zero(mask3D, Nr, zeroRL, myThid)
@@ -46,20 +50,19 @@ C --- Initialize to zero (covers overlap region)
 C --- Set to maskC by default
       call ctrl_cprsrl(maskC, Nr, mask3D, Nr, myThid)
       
-C --- Test special cases
+C --- Initial velocity
 #if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
       if (xx_filename(1:7).EQ.'xx_uvel') then
+        doExch=.FALSE.
         call ctrl_cprsrl(maskW,Nr,mask3D,Nr,myThid)
       else if (xx_filename(1:7).EQ.'xx_vvel') then
+        doExch=.FALSE.
         call ctrl_cprsrl(maskS,Nr,mask3D,Nr,myThid)
       endif
 #endif
 
 C --- Get overlaps
-      if ((xx_filename(1:7).ne.'xx_uvel') .and.
-     &    (xx_filename(1:7).ne.'xx_vvel')) then
-       CALL EXCH_XYZ_RL( mask3D, myThid )
-      endif
+      if (doExch) CALL EXCH_XYZ_RL( mask3D, myThid )
 
 
       RETURN
@@ -99,6 +102,9 @@ C     == global variables ==
 #  include "SHELFICE.h"
 # endif
 #endif
+#ifdef ALLOW_EXF
+# include "EXF_PARAM.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
@@ -110,8 +116,11 @@ C     !LOCAL VARIABLES:
 C     == local variables ==
       _RL mask3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       integer i, j, bi, bj
+      logical doExch
 
 CEOP
+
+      doExch = .TRUE.
 
 C --- Initialize to zero (covers overlap region)
       call ctrl_zero(mask3D, Nr, zeroRL, myThid)
@@ -119,10 +128,24 @@ C --- Initialize to zero (covers overlap region)
 C --- Set to maskC by default
       call ctrl_cprsrl(maskC, Nr, mask3D, Nr, myThid)
       
-C --- Test special cases
-#ifdef ALLOW_SHI2D_CONTROL
-      if (xx_filename(1:11).EQ.'xx_shicoeff') then
+C --- Shelfice
+#if (defined ALLOW_SHI2D_CONTROL) || (defined ALLOW_SHIFWFLX_CONTROL)
+      if ((xx_filename(1:11).EQ.'xx_shicoeff').or.
+     &    (xx_filename(1:11).EQ.'xx_shifwflx')) then
         call ctrl_cprsrl(maskSHI,Nr,mask3D,Nr,myThid)
+      endif
+#endif
+
+C --- Wind stress. Wind speed always uses maskC 
+#ifndef ALLOW_ROTATE_UV_CONTROLS
+      if (stressIsOnCgrid) then
+       if (xx_filename(1:7).EQ.'xx_tauu') then
+         doExch = .FALSE.
+         call ctrl_cprsrl(maskW,Nr,mask3D,Nr,myThid)
+       else if (xx_filename(1:7).EQ.'xx_tauv') then
+         doExch = .FALSE.
+         call ctrl_cprsrl(maskS,Nr,mask3D,Nr,myThid)
+       endif
       endif
 #endif
 
@@ -138,7 +161,7 @@ C --- Set 2D mask for output
       enddo
 
 C --- Get overlaps
-      CALL EXCH_XY_RL( mask2D, myThid )
+      if (doExch) CALL EXCH_XY_RL( mask2D, myThid )
       
 
       RETURN

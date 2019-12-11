@@ -62,6 +62,7 @@ c     == local variables ==
       _RL nb_sst (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL msk_sst (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tmp_sst (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL mask2D (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL spval
 
       _RL junk,junkweight
@@ -173,6 +174,8 @@ cgf =======================================================
               obs_sst(i,j,bi,bj)  = 0. _d 0
               nb_sst(i,j,bi,bj)  = 0. _d 0
               msk_sst(i,j,bi,bj)  = 0. _d 0
+
+              mask2D(i,j,bi,bj) = maskC(i,j,1,bi,bj)
             enddo
            enddo
           enddo
@@ -249,7 +252,7 @@ c accumulate obs and misfit:
                do j = jmin,jmax
                 do i = imin,imax
                  if ( (tmp_sst(i,j,bi,bj).GT.spval).AND.
-     &                (maskc(i,j,1,bi,bj).EQ.1.) ) then
+     &                (mask2D(i,j,bi,bj).EQ.1.) ) then
                   anom_sst(i,j,bi,bj)= anom_sst(i,j,bi,bj)+
      &               mybar(i,j,bi,bj)-tmp_sst(i,j,bi,bj)
                   obs_sst(i,j,bi,bj)= obs_sst(i,j,bi,bj)+
@@ -293,13 +296,13 @@ c ----------------------------------------
 #endif
 
          if ( useSMOOTH.AND.(k2_lsc.GT.0) )
-     &     call smooth_hetero2d(anom_sst,maskc,
+     &     call smooth_hetero2d(anom_sst,mask2D,
      &     gencost_posproc_c(k2_lsc,kgen_lsc),
      &     gencost_posproc_i(k2_lsc,kgen_lsc),myThid)
 
 #ifdef ALLOW_GENCOST_SSTV4_OUTPUT
          if ( useSMOOTH.AND.(k2_lsc.GT.0) )
-     &     call smooth_hetero2d(obs_sst,maskc,
+     &     call smooth_hetero2d(obs_sst,mask2D,
      &     gencost_posproc_c(k2_lsc,kgen_lsc),
      &     gencost_posproc_i(k2_lsc,kgen_lsc),myThid)
 
@@ -320,7 +323,7 @@ c ------------------------------------
             do i = imin,imax
              junk = anom_sst(i,j,bi,bj)
              junkweight = gencost_weight(i,j,bi,bj,kgen_lsc)*
-     &          maskc(i,j,1,bi,bj)
+     &          mask2D(i,j,bi,bj)
              objf_gencost(kgen_lsc,bi,bj) =
      &          objf_gencost(kgen_lsc,bi,bj)
      &            +junk*junk*junkweight/ndaysaveRL
@@ -404,7 +407,7 @@ c compute misfit:
            do j = jmin,jmax
             do i = imin,imax
              if ( (tmp_sst(i,j,bi,bj).GT.spval).AND.
-     &            (maskc(i,j,1,bi,bj).EQ.1.) ) then
+     &            (mask2D(i,j,bi,bj).EQ.1.) ) then
               anom_sst(i,j,bi,bj) =
      &               mybar(i,j,bi,bj)-tmp_sst(i,j,bi,bj)
               msk_sst(i,j,bi,bj) = 1. _d 0
@@ -431,7 +434,7 @@ c compute cost:
             do i = imin,imax
              junk = anom_sst(i,j,bi,bj)
              junkweight = gencost_weight(i,j,bi,bj,kgen)*
-     &          maskc(i,j,1,bi,bj)*msk_sst(i,j,bi,bj)
+     &          mask2D(i,j,bi,bj)*msk_sst(i,j,bi,bj)
              objf_gencost(kgen,bi,bj) =
      &          objf_gencost(kgen,bi,bj)+junk*junk*junkweight
              if (junkweight.GT.0.)
