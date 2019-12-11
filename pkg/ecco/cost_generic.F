@@ -393,9 +393,11 @@ C--      for now, use maskC to reproduce old behavior
 
 #ifdef ALLOW_SMOOTH
         if ( useSMOOTH.AND.dosmooth.AND.
-     &     (nnzbar.EQ.1).AND.(nnzobs.EQ.1) )
-     &  call smooth_hetero2d(localdif,mask2D,
+     &     (nnzbar.EQ.1).AND.(nnzobs.EQ.1) ) then
+CADJ STORE mask2D = tapelev_init, key = 1
+        call smooth_hetero2d(localdif,mask2D,
      &     posproc_c(k2smooth),posproc_i(k2smooth),myThid)
+        endif
 #endif
 
 c--     Compute normalized model-obs cost function

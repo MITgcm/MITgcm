@@ -325,7 +325,9 @@ C --- Get appropriate mask for ctrl variable
 C --- Do any smoothing
 #ifdef ALLOW_SMOOTH
       IF (useSMOOTH) THEN
+CADJ STORE mask2D = tapelev_init, key = 1
        IF (dowc01) call smooth_correl2d(xx_gen,mask2D,numsmo,mythid)
+CADJ STORE mask2D = tapelev_init, key = 1
        IF (dosmooth) call smooth2d(xx_gen,mask2D,numsmo,mythid)
       ENDIF
 #endif
