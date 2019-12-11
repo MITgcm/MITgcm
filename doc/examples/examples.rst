@@ -11,7 +11,7 @@ and are documented in sections :numref:`sec_eg_baro` -
 :numref:`sec_eg_tank`. The other examples follow the same general
 structure as the tutorial examples, see below.  All example experiments are
 located in subdirectories under the directory :filelink:`verification`.
-A complete list of experiments, with brief description, is provided in section xx.
+A complete list of experiments, with brief description, is provided in :numref:`subsec_add_expts`.
 
 Each example experiment directory has the following subdirectories:
 
@@ -182,6 +182,8 @@ the penetration of CFCs into the ocean interior during the last century. The mod
 Laboratory rotating tank simulation, using a cylindrical coordinate system at laboratory scale of 46 cm diameter and 14.5 cm deep.
 This is a typical laboratory setup for illustrating principles of geophysical fluid mechanics. An annulus of fluid is heated differentially
 on the interior and exterior walls of the tank.
+
+.. _subsec_add_expts:
 
 Additional Example Experiments
 ==============================
@@ -544,10 +546,11 @@ directories ``coad_oad`` and ``input_oad`` respectively.
 #. :filelink:`tutorial_dic_adjoffline <verification/tutorial_dic_adjoffline>` - TAF adjoint setup of offline form of MITgcm dynamics coupled
    to the dissolved inorganic carbon biogeochemistry model. (**NOT an actual tutorial**)
 
-#. :filelink:`tutorial_global_oce_biogeo <verification/tutorial_global_oce_biogeo>` - TAF and OpenAD adjoint setup (note: adjoint setups not described in tutorial).
+#. :filelink:`tutorial_global_oce_biogeo <verification/tutorial_global_oce_biogeo>` - TAF and OpenAD adjoint setups
+   (note: adjoint setups not described in :ref:`sub_global_oce_biogeo`).
 
 #. :filelink:`tutorial_global_oce_optim <verification/tutorial_global_oce_optim>` - TAF and OpenAD adjoint setups. Global ocean state estimation at
-   :math:`4^\circ` resolution, optimizing surface ocean heat flux.
+   :math:`4^\circ` resolution, optimizing surface ocean heat flux. This experiment is described in :numref:`sec_global_oce_optim`.
 
 #. :filelink:`tutorial_tracer_adjsens <verification/tutorial_tracer_adjsens>` - TAF and OpenAD adjoint setups.
    Sensitivity of surface passive tracer outgassing to interior ocean injection site.
