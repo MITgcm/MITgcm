@@ -1,0 +1,52 @@
+#! /usr/bin/env bash
+
+#- in order to save disc space, take *.bin files
+#- from this dir:
+fromDir="../../../verification/tutorial_global_oce_biogeo/input"
+
+fileList=`( cd $fromDir ; echo *.bin )`
+
+#echo 'fileList=' $fileList
+
+#- and do a symbolic link in the current directory 
+#   (if the file does not already exist)
+if test -d $fromDir ; then
+  lnkList='files:'
+  for xx in $fileList
+  do
+    if test -r ${fromDir}/$xx ; then 
+      if test ! -r $xx ; then 
+        lnkList=${lnkList}" "$xx
+        ln -sf ${fromDir}/$xx .
+      fi
+    fi
+  done
+  echo ' link' $lnkList "from dir:" $fromDir
+else
+  echo " Error:" $fromDir "not a directory"
+fi
+
+#- And also from this dir:
+fromDir="../input"
+
+fileList=`( cd $fromDir ; echo *.bin )`
+
+#echo 'fileList=' $fileList
+
+#- and do a symbolic link in the current directory 
+#   (if the file does not already exist)
+if test -d $fromDir ; then
+  lnkList='files:'
+  for xx in $fileList
+  do
+    if test -r ${fromDir}/$xx ; then 
+      if test ! -r $xx ; then 
+        lnkList=${lnkList}" "$xx
+        ln -sf ${fromDir}/$xx .
+      fi
+    fi
+  done
+  echo ' link' $lnkList "from dir:" $fromDir
+else
+  echo " Error:" $fromDir "not a directory"
+fi
