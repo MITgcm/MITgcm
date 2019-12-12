@@ -394,7 +394,7 @@ For many experiments, additional information is provided in a ``README`` file lo
 
    - sea ice thermodynamics-only using (:filelink:`pkg/seaice`) (:filelink:`input.thermo <verification/offline_exf_seaice/input.thermo>`)
 
-   - sea ice thermodynamics-only using (:filelink:`pkg/seaice`) (:filelink:`input.thsice <verification/offline_exf_seaice/input.thsice>`).
+   - sea ice thermodynamics-only using (:filelink:`pkg/thsice`) (:filelink:`input.thsice <verification/offline_exf_seaice/input.thsice>`).
 
 #. :filelink:`seaice_itd <verification/seaice_itd>` - Seaice example using ice thickness distribution (ITD); otherwise
    very similar to :filelink:`offline_exf_seaice <verification/offline_exf_seaice>`.
