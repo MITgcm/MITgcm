@@ -11,7 +11,8 @@ and are documented in sections :numref:`sec_eg_baro` -
 :numref:`sec_eg_tank`. The other examples follow the same general
 structure as the tutorial examples, see below.  All example experiments are
 located in subdirectories under the directory :filelink:`verification`.
-A complete list of experiments, with brief description, is provided in :numref:`subsec_add_expts`.
+A list of additional experiments (i.e, not documented as full tutorials), with brief description,
+is provided in :numref:`subsec_add_expts_fwd` and :numref:`subsec_add_expts_adj`.
 
 Each example experiment directory has the following subdirectories:
 
@@ -75,6 +76,7 @@ The tutorial experiments are as follows.
 Single layer ocean gyre (barotropic with free-surface), using a Cartesian grid. If you are new to MITgcm, start here,
 as no prior experience with MITgcm is assumed. Introduces building and running the model, with description of model output files and
 simple methods to load and plot model output.
+(in directory :filelink:`tutorial_barotropic_gyre <verification/tutorial_barotropic_gyre>`)
 
 .. toctree::
    :maxdepth: 1
@@ -84,6 +86,7 @@ simple methods to load and plot model output.
 Ocean double-gyre using spherical coordinates (i.e., latitude-longitude coordinates) with 15 vertical layers. Second introductory tutorial, assumes you have read through
 :ref:`sec_eg_baro`. Introduces using `NetCDF <http://www.unidata.ucar.edu/software/netcdf>`_  for model output,
 and how to use the :ref:`diagnostics package <sub_outp_pkg_diagnostics>` to customize output and its writing frequency.
+(in directory :filelink:`tutorial_baroclinic_gyre <verification/tutorial_baroclinic_gyre>`)
 
 .. toctree::
    :maxdepth: 1
@@ -92,6 +95,7 @@ and how to use the :ref:`diagnostics package <sub_outp_pkg_diagnostics>` to cust
 
 Short tutorial comparing the results using different advection schemes in a single-layer, ocean double-gyre.
 Demonstrates the importance of carefully selecting an advection scheme for a specific setup.
+(in directory :filelink:`tutorial_advection_in_gyre <verification/tutorial_advection_in_gyre>`)
 
 .. toctree::
    :maxdepth: 1
@@ -101,6 +105,7 @@ Demonstrates the importance of carefully selecting an advection scheme for a spe
 Coarse resolution (4\ :sup:`o`\ x4\ :sup:`o`) global ocean simulation, using a spherical ocean grid with 15 vertical layers.
 Monthly climatological forcing of of wind stress, heat and freshwater fluxes is employed, with surface restoring
 of temperature and salinity. Simulates the large-scale ocean circulation.
+(in directory :filelink:`tutorial_global_oce_latlon <verification/tutorial_global_oce_latlon>`)
 
 .. toctree::
    :maxdepth: 1
@@ -110,6 +115,7 @@ of temperature and salinity. Simulates the large-scale ocean circulation.
 Global ocean simulation with a similar configuration as :ref:`sec_global_oce_latlon` except pressure is used as the vertical coordinate
 instead of the traditional height coordinate (exploiting MITgcm's height–pressure coordinate coding isomorphism).
 In this configuration the model does **NOT** make the  Boussinesq approximation.
+(in directory :filelink:`tutorial_global_oce_in_p <verification/tutorial_global_oce_in_p>`)
 
 .. toctree::
    :maxdepth: 1
@@ -118,6 +124,7 @@ In this configuration the model does **NOT** make the  Boussinesq approximation.
 
 Simulates (dry) 3-D atmosphere dynamics using Held and Suarez forcing on a (global) cubed sphere grid. The vertical coordinate
 is a rescaled pressure coordinate (:math:`p^*`) with 20 levels; orography is flat. Radiation effects are represented by Newtonian cooling.
+(in directory :filelink:`tutorial_held_suarez_cs <verification/tutorial_held_suarez_cs>`)
 
 .. toctree::
    :maxdepth: 1
@@ -127,6 +134,7 @@ is a rescaled pressure coordinate (:math:`p^*`) with 20 levels; orography is fla
 Non-uniformly surface-forced ocean deep convection in a doubly periodic box. This tutorial showcases MITgcm's non-hydrostatic
 capability in a spatially small domain (3 km x 3 km x 1 km deep), exploring the temporal and spatial characteristics of convection
 plumes as they might exist during a period of oceanic deep convection.
+(in directory :filelink:`tutorial_deep_convection <verification/tutorial_deep_convection>`)
 
 .. toctree::
    :maxdepth: 1
@@ -135,6 +143,7 @@ plumes as they might exist during a period of oceanic deep convection.
 
 Non-hydrostatic simulation of a non-rotating gravity plume descending down a continental slope, forced by surface cooling. Model domain is 2-D with
 open boundaries conditions used in a the deep-water end of the domain.
+(in directory :filelink:`tutorial_plume_on_slope <verification/tutorial_plume_on_slope>`)
 
 .. toctree::
    :maxdepth: 1
@@ -144,6 +153,7 @@ open boundaries conditions used in a the deep-water end of the domain.
 Global ocean simulation (similar to tutorial :ref:`sec_global_oce_latlon` except using 2.8\ :sup:`o`\ x2.8\ :sup:`o` resolution) which includes
 a dissolved inorganic carbon biogeochemistry model. The biogeochemical model considers the coupled cycles of carbon, oxygen, phosphorus and alkalinity, which are
 included as passive tracers. A simplified parameterization of biological production is also included.
+(in directory :filelink:`tutorial_global_oce_biogeo <verification/tutorial_global_oce_biogeo>`)
 
 .. toctree::
    :maxdepth: 1
@@ -154,7 +164,8 @@ This tutorial illustrates the optimization capacity of the MITgcm,
 running the adjoint of a global ocean simulation (model setup similar to :ref:`sec_global_oce_latlon`).
 This adjoint run optimizes a time-independent surface heat flux (i.e., the control variable) which brings
 the model climatology closest to observed climatology, using a cost function
-based on gridpoint error in temperature.
+based on gridpoint error in temperature. TAF and OpenAD adjoint setups.
+(in directory :filelink:`tutorial_global_oce_optim <verification/tutorial_global_oce_optim>`)
 
 .. toctree::
    :maxdepth: 1
@@ -163,7 +174,8 @@ based on gridpoint error in temperature.
 
 A second experiment demonstrating MITgcm's adjoint capabilities, here examining the sensitivity of surface outgassing of a passive tracer
 as a function of tracer injection site location within the ocean interior. The global (4\ :sup:`o`\ x4\ :sup:`o`) ocean setup from tutorial :ref:`sec_global_oce_latlon`
-is again used for this tutorial.
+is again used for this tutorial. TAF and OpenAD adjoint setups.
+(in directory :filelink:`tutorial_tracer_adjsens <verification/tutorial_tracer_adjsens>`)
 
 .. toctree::
    :maxdepth: 1
@@ -173,23 +185,23 @@ is again used for this tutorial.
 This tutorial contains an experiment which uses MITgcm in offline mode (i.e., with prescribed ocean dynamics terms,
 from a prior forward integration of MITgcm), simulating
 the penetration of CFCs into the ocean interior during the last century. The model domain is global with 2.8\ :sup:`o`\ x2.8\ :sup:`o` resolution.
+(in directory :filelink:`tutorial_cfc_offline <verification/tutorial_cfc_offline>`)
 
 .. toctree::
    :maxdepth: 1
 
    rotating_tank/rotating_tank.rst
 
-Laboratory rotating tank simulation, using a cylindrical coordinate system at laboratory scale of 46 cm diameter and 14.5 cm deep.
+Laboratory rotating tank simulation,
+using a cylindrical coordinate system at laboratory scale of 46 cm diameter and 14.5 cm deep.
 This is a typical laboratory setup for illustrating principles of geophysical fluid mechanics. An annulus of fluid is heated differentially
 on the interior and exterior walls of the tank.
+(in directory :filelink:`rotating_tank <verification/rotating_tank>`) 
 
-.. _subsec_add_expts:
+.. _subsec_add_expts_fwd:
 
-Additional Example Experiments
-==============================
-
-Forward Model Setups
---------------------
+Additional Example Experiments: Forward Model Setups
+====================================================
 
 For many experiments, additional information is provided in a ``README`` file located in the respective experiment's subdirectory.
 
@@ -428,6 +440,10 @@ For many experiments, additional information is provided in a ``README`` file lo
 #. :filelink:`solid-body.cs-32x32x1 <verification/solid-body.cs-32x32x1>` - Solid body rotation test for cube sphere
    grid.
 
+#. :filelink:`tutorial_deep_convection <verification/tutorial_deep_convection>` - Also contains an additional setup
+   using the Smagorinisky (1963) :cite:`smag:63` viscosity scheme (:filelink:`input.smag3d <verification/tutorial_deep_convection/input.smag3d>`)
+   not described in tutorial :ref:`sec_deep_convection`.
+
 #. :filelink:`vermix <verification/vermix>` - Simple test in a small domain (3 columns) for ocean
    vertical mixing schemes. The standard setup (:filelink:`input <verification/vermix/input>`) uses the :ref:`KPP scheme <sub_phys_pkg_kpp>`
    Large et al. (1994) :cite:`lar-eta:94`. Also contains additional setups:
@@ -446,46 +462,10 @@ For many experiments, additional information is provided in a ``README`` file lo
    - with Pacanowski and Philander (1981) :cite:`pacanowski:81` (:filelink:`pkg/pp81`)
      scheme (:filelink:`input.pp81 <verification/vermix/input.pp81>`).
 
-#. :filelink:`rotating_tank <verification/rotating_tank>` - Rotating tank simulation in cylindrical
-   coordinates, tutorial experiment. This experiment is described in detail in :numref:`sec_eg_tank`.
+.. _subsec_add_expts_adj:
 
-#. :filelink:`tutorial_advection_in_gyre <verification/tutorial_advection_in_gyre>` - Test of various advection schemes in
-   a single-layer double-gyre experiment. This experiment is described
-   in detail in :numref:`sec_gyre_advection`.
-
-#. :filelink:`tutorial_baroclinic_gyre <verification/tutorial_baroclinic_gyre>` - 15 layer, ocean double gyre. This
-   experiment is described in detail in :numref:`tutorial_baroclinic_gyre`.
-
-#. :filelink:`tutorial_barotropic_gyre <verification/tutorial_barotropic_gyre>` - Single layer ocean gyre,
-   barotropic with free-surface. This experiment is described in :numref:`sec_eg_baro`.
-
-#. :filelink:`tutorial_cfc_offline <verification/tutorial_cfc_offline>` - Offline form of the MITgcm to study
-   penetration of CFCs into the ocean interior. This experiment is described in :numref:`sec_eg_offline_cfc`.
-
-#. :filelink:`tutorial_deep_convection <verification/tutorial_deep_convection>` - Non-uniformly forced ocean deep convection
-   in a doubly periodic box. This experiment is described in :numref:`sec_deep_convection`. Also contains an additional setup
-   using the Smagorinisky (1963) :cite:`smag:63` viscosity scheme (:filelink:`input.smag3d <verification/tutorial_deep_convection/input.smag3d>`)
-   not described in the tutorial.
-
-#. :filelink:`tutorial_global_oce_biogeo <verification/tutorial_global_oce_biogeo>` - Global ocean model coupled to the dissolved
-   inorganic carbon biogeochemistry model. This experiment is described
-   in :numref:`sub_global_oce_biogeo`.
-
-#. :filelink:`tutorial_global_oce_in_p <verification/tutorial_global_oce_in_p>` - Global ocean simulation in pressure
-   coordinate (non-Boussinesq ocean model). This experiment is described in :numref:`sec_global_oce_in_p_coor`.
-
-#. :filelink:`tutorial_global_oce_latlon <verification/tutorial_global_oce_in_p>` - 4x4 degree global ocean simulation
-   with steady climatological forcing. This experiment is described in :numref:`sec_global_oce_latlon`.
-
-#. :filelink:`tutorial_held_suarez_cs <verification/tutorial_held_suarez_cs>` - 3-D atmosphere dynamics using Held and
-   Suarez (1994) forcing on cubed sphere grid. This experiment is
-   described in detail in :numref:`sec_held_suarez_cs`.
-
-#. :filelink:`tutorial_plume_on_slope <verification/tutorial_plume_on_slope>` - Gravity Plume on a continental slope.
-   This experiment is described in detail in :numref:`tutorial_plume_on_slope`.
-
-Adjoint Model Setups
---------------------
+Additional Example Experiments: Adjoint Model Setups
+====================================================
 
 Unless stated otherwise, the physical setup of the adjoint run is identical to the forward run, see description above.
 TAF adjoint setups require building with directory ``code_ad`` with input directory ``input_ad``, whereas OpenAD requires
@@ -544,16 +524,10 @@ directories ``coad_oad`` and ``input_oad`` respectively.
 #. :filelink:`OpenAD <verification/OpenAD>` - Simple adjoint experiment (used also to test OpenAD compiler).
 
 #. :filelink:`tutorial_dic_adjoffline <verification/tutorial_dic_adjoffline>` - TAF adjoint setup of offline form of MITgcm dynamics coupled
-   to the dissolved inorganic carbon biogeochemistry model. (**NOT an actual tutorial**)
+   to the dissolved inorganic carbon biogeochemistry model. (current NOT documented as a tutorial experiment)
 
 #. :filelink:`tutorial_global_oce_biogeo <verification/tutorial_global_oce_biogeo>` - TAF and OpenAD adjoint setups
-   (note: adjoint setups not described in :ref:`sub_global_oce_biogeo`).
+   (note: adjoint setups not described in tutorial :ref:`sub_global_oce_biogeo`).
 
-#. :filelink:`tutorial_global_oce_optim <verification/tutorial_global_oce_optim>` - TAF and OpenAD adjoint setups. Global ocean state estimation at
-   :math:`4^\circ` resolution, optimizing surface ocean heat flux. This experiment is described in :numref:`sec_global_oce_optim`.
-
-#. :filelink:`tutorial_tracer_adjsens <verification/tutorial_tracer_adjsens>` - TAF and OpenAD adjoint setups.
-   Sensitivity of surface passive tracer outgassing to interior ocean injection site.
-   This experiement is described in :numref:`sec_tracer_adj_sens`. Also contains an additional TAF setup using Second Order Moment (SOM)
-   advection scheme (:filelink:`input_ad.som81 <verification/tutorial_tracer_adjsens/input_ad.som81>`) not described in tutorial.
-
+#. :filelink:`tutorial_tracer_adjsens <verification/tutorial_tracer_adjsens>` - Also contains an additional TAF setup using Second Order Moment (SOM)
+   advection scheme (:filelink:`input_ad.som81 <verification/tutorial_tracer_adjsens/input_ad.som81>`) not described in tutorial :ref:`sec_tracer_adj_sens`.

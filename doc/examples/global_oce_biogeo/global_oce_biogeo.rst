@@ -1,7 +1,7 @@
 .. _sub_global_oce_biogeo:
 
-Biogeochemistry Tutorial
-========================
+Biogeochemistry Simulation
+==========================
 
 (in directory: :filelink:`verification/tutorial_global_oce_biogeo/`)
 
