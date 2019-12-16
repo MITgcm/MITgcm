@@ -1,5 +1,6 @@
 #!/bin/bash
 #
+#  Build options for version 10 and older of intel compiler on Linux AMD64 platform
 #
 # Composed and tested by ce107 on ross/weddell (Opteron system)
 # Should work fine on EM64T and other AMD64 compatible Intel systems
