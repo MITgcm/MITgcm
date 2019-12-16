@@ -37,14 +37,15 @@ C     !LOCAL VARIABLES:
 C     bi, bj    :: tile indices
 C     i, j, k   :: Loop counters
 C     tmpFld    :: Temporary array used to compute & write Total Depth
-C     tmpVar*   :: Temporary array used to integrate column thickness
+C     tmpVar    :: Temporary array used to integrate column thickness
+C     rEmpty    :: empty column r-position
       INTEGER bi, bj
       INTEGER i, j, k
 c     _RS tmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL tmpVar1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tmpVar2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hFacMnSz, hFacCtmp
       _RL hFac1tmp, hFac2tmp
+      _RS rEmpty
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -63,17 +64,18 @@ C---  r-coordinate with partial-cell or full cell mask
 
 C--   Initialise rLow & reference rSurf at Western & Southern edges (U & V pts)
 C     Note: not final value since these estimates ignore hFacMin constrain
+      rEmpty = rF(1)
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
         i = 1-OLx
         DO j=1-OLy,sNy+OLy
-           rLowW (i,j,bi,bj) = rF(1)
-           rSurfW(i,j,bi,bj) = rF(1)
+           rLowW (i,j,bi,bj) = rEmpty
+           rSurfW(i,j,bi,bj) = rEmpty
         ENDDO
         j = 1-OLy
         DO i=1-OLx,sNx+OLx
-           rLowS (i,j,bi,bj) = rF(1)
-           rSurfS(i,j,bi,bj) = rF(1)
+           rLowS (i,j,bi,bj) = rEmpty
+           rSurfS(i,j,bi,bj) = rEmpty
         ENDDO
         DO j=1-OLy,sNy+OLy
          DO i=2-OLx,sNx+OLx
@@ -128,19 +130,19 @@ C      o Impose minimum fraction and/or size (dimensional)
 C-    Re-calculate lower-R Boundary position, taking into account hFacC
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-           tmpVar1(i,j) = 0.
+           tmpVar(i,j) = 0.
          ENDDO
         ENDDO
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           tmpVar1(i,j) = tmpVar1(i,j) + drF(k)*hFacC(i,j,k,bi,bj)
+           tmpVar(i,j) = tmpVar(i,j) + drF(k)*hFacC(i,j,k,bi,bj)
           ENDDO
          ENDDO
         ENDDO
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-           R_low(i,j,bi,bj) = rF(1) - tmpVar1(i,j)
+           R_low(i,j,bi,bj) = rF(1) - tmpVar(i,j)
          ENDDO
         ENDDO
 
@@ -175,7 +177,7 @@ C     initialize Total column fluid thickness and surface k index
 C       Note: if no fluid (continent) ==> kSurf = Nr+1
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          tmpVar2(i,j) = 0.
+          tmpVar(i,j) = 0.
           kSurfC(i,j,bi,bj) = Nr+1
           kLowC (i,j,bi,bj) = 0
          ENDDO
@@ -183,7 +185,7 @@ C       Note: if no fluid (continent) ==> kSurf = Nr+1
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           tmpVar2(i,j) = tmpVar2(i,j) + drF(k)*hFacC(i,j,k,bi,bj)
+           tmpVar(i,j) = tmpVar(i,j) + drF(k)*hFacC(i,j,k,bi,bj)
            IF ( hFacC(i,j,k,bi,bj).NE.zeroRS ) kLowC(i,j,bi,bj) = k
           ENDDO
          ENDDO
@@ -197,7 +199,7 @@ C       Note: if no fluid (continent) ==> kSurf = Nr+1
         ENDDO
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          Ro_surf(i,j,bi,bj) = R_low(i,j,bi,bj) + tmpVar2(i,j)
+          Ro_surf(i,j,bi,bj) = R_low(i,j,bi,bj) + tmpVar(i,j)
           maskInC(i,j,bi,bj) = 0.
           IF ( kSurfC(i,j,bi,bj).LE.Nr ) maskInC(i,j,bi,bj) = 1.
 c         k = MAX( 0, kLowC (i,j,bi,bj) - kSurfC(i,j,bi,bj) + 1 )
@@ -227,13 +229,13 @@ C--   Calculate quantities derived from XY depth map
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
 C         Total fluid column thickness (r_unit) :
-          tmpVar1(i,j) = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
-c         tmpFld(i,j,bi,bj) = tmpVar1(i,j)
+          tmpVar(i,j) = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
+c         tmpFld(i,j,bi,bj) = tmpVar(i,j)
 C         Inverse of fluid column thickness (1/r_unit)
-          IF ( tmpVar1(i,j) .LE. zeroRL ) THEN
+          IF ( tmpVar(i,j) .LE. zeroRL ) THEN
            recip_Rcol(i,j,bi,bj) = 0.
           ELSE
-           recip_Rcol(i,j,bi,bj) = 1. _d 0 / tmpVar1(i,j)
+           recip_Rcol(i,j,bi,bj) = 1. _d 0 / tmpVar(i,j)
           ENDIF
          ENDDO
         ENDDO
@@ -353,62 +355,48 @@ C     integrated level thickness ( =Sum_k(drF*hFac) )
         ENDDO
 
 c       IF ( useShelfIce ) THEN
-C--   Adjust rLow & reference rSurf at Western & Southern edges (U & V pts)
+C--   Adjust reference rSurf at Western & Southern edges (U & V pts)
 C     to get consistent column thickness from Sum_k(hFac*drF) and rSurf-rLow
 
-C-    Total column thickness at Western & Southern edges
+C-    Total column thickness at Western edge
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            tmpVar1(i,j) = 0. _d 0
-            tmpVar2(i,j) = 0. _d 0
+            tmpVar(i,j) = 0. _d 0
           ENDDO
          ENDDO
          DO k=1,Nr
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            tmpVar1(i,j) = tmpVar1(i,j) + drF(k)*hFacW(i,j,k,bi,bj)
-            tmpVar2(i,j) = tmpVar2(i,j) + drF(k)*hFacS(i,j,k,bi,bj)
+            tmpVar(i,j) = tmpVar(i,j) + drF(k)*hFacW(i,j,k,bi,bj)
            ENDDO
           ENDDO
          ENDDO
+C-    Adjust rSurf at W edge (correct for the difference)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+             rSurfW(i,j,bi,bj) = rLowW(i,j,bi,bj) + tmpVar(i,j)
+          ENDDO
+         ENDDO
 
-         IF ( useMin4hFacEdges ) THEN
-C-    Adjust only rSurf at W and S edges (correct for the difference)
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             rSurfW(i,j,bi,bj) = rLowW(i,j,bi,bj) + tmpVar1(i,j)
-             rSurfS(i,j,bi,bj) = rLowS(i,j,bi,bj) + tmpVar2(i,j)
-            ENDDO
+C-    Total column thickness at Southern edges
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            tmpVar(i,j) = 0. _d 0
+          ENDDO
+         ENDDO
+         DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            tmpVar(i,j) = tmpVar(i,j) + drF(k)*hFacS(i,j,k,bi,bj)
            ENDDO
-         ELSE
-C-    Adjust both rLow and rSurf at W & S edges (split correction by half)
-C     adjust rSurfW and rLowW:
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             tmpVar1(i,j) = rLowW(i,j,bi,bj) + tmpVar1(i,j)
-             tmpVar1(i,j) = ( tmpVar1(i,j) -rSurfW(i,j,bi,bj) )*halfRL
-            ENDDO
-           ENDDO
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             rSurfW(i,j,bi,bj) = rSurfW(i,j,bi,bj) + tmpVar1(i,j)
-             rLowW (i,j,bi,bj) = rLowW (i,j,bi,bj) - tmpVar1(i,j)
-            ENDDO
-           ENDDO
-C     Adjust rSurfS and rLowS:
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             tmpVar2(i,j) = rLowS(i,j,bi,bj) + tmpVar2(i,j)
-             tmpVar2(i,j) = ( tmpVar2(i,j) -rSurfS(i,j,bi,bj) )*halfRL
-            ENDDO
-           ENDDO
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             rSurfS(i,j,bi,bj) = rSurfS(i,j,bi,bj) + tmpVar2(i,j)
-             rLowS (i,j,bi,bj) = rLowS (i,j,bi,bj) - tmpVar2(i,j)
-            ENDDO
-           ENDDO
-         ENDIF
+          ENDDO
+         ENDDO
+C-    Adjust rSurf at S edge (correct for the difference)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+             rSurfS(i,j,bi,bj) = rLowS(i,j,bi,bj) + tmpVar(i,j)
+          ENDDO
+         ENDDO
 
 C-    end if useShelfIce
 c       ENDIF
@@ -420,11 +408,6 @@ C-    end bi,bj loops.
       CALL EXCH_UV_XYZ_RS( hFacW,  hFacS, .FALSE., myThid )
       CALL EXCH_UV_XY_RS( rSurfW, rSurfS, .FALSE., myThid )
       CALL EXCH_UV_XY_RS(  rLowW,  rLowS, .FALSE., myThid )
-
-C--   Additional closing of Western and Southern grid-cell edges: for example,
-C     a) might add some "thin walls" in specific location
-C--   b) close non-periodic N & S boundaries of lat-lon grid at the N/S poles.
-      CALL ADD_WALLS2MASKS( myThid )
 
 C--   Calculate surface k index for interface W & S (U & V points)
       DO bj=myByLo(myThid), myByHi(myThid)
@@ -445,6 +428,12 @@ C--   Calculate surface k index for interface W & S (U & V points)
         ENDDO
        ENDDO
       ENDDO
+
+C--   Additional closing of Western and Southern grid-cell edges: for example,
+C     a) might add some "thin walls" in specific location
+C     b) close non-periodic N & S boundaries of lat-lon grid at the N/S poles.
+C     new: location now reccorded as kSurfW/S = Nr+2
+      CALL ADD_WALLS2MASKS( rEmpty, myThid )
 
       ELSE
 #ifndef DISABLE_SIGMA_CODE
