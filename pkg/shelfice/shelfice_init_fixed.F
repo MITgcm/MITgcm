@@ -269,6 +269,16 @@ c     ENDIF
        diagCode  = 'SM      L1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#ifdef ALLOW_SHELFICE_REMESHING
+       diagName  = 'SHIRshel'
+       diagTitle = 'depth of shelfice'
+       diagUnits = 'm               '
+       diagCode  = 'SM      L1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
+
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_SHELFICE */
