@@ -387,6 +387,7 @@ C-      2D arrays
           StoreOBCSN(I,K,bi,bj,2)  = OBNv(I,K,bi,bj)
           StoreOBCSN(I,K,bi,bj,3)  = OBNt(I,K,bi,bj)
           StoreOBCSN(I,K,bi,bj,4)  = OBNs(I,K,bi,bj)
+#  ifdef ALLOW_OBCS_PRESCRIBE
           StoreOBCSN(I,K,bi,bj,5)  = OBNu0(I,K,bi,bj)
           StoreOBCSN(I,K,bi,bj,6)  = OBNv0(I,K,bi,bj)
           StoreOBCSN(I,K,bi,bj,7)  = OBNt0(I,K,bi,bj)
@@ -395,6 +396,7 @@ C-      2D arrays
           StoreOBCSN(I,K,bi,bj,10) = OBNv1(I,K,bi,bj)
           StoreOBCSN(I,K,bi,bj,11) = OBNt1(I,K,bi,bj)
           StoreOBCSN(I,K,bi,bj,12) = OBNs1(I,K,bi,bj)
+#  endif
 #  ifdef ALLOW_OBCSN_CONTROL
           StoreOBCSN(I,K,bi,bj,13) = xx_obcsn0(I,K,bi,bj,1)
           StoreOBCSN(I,K,bi,bj,14) = xx_obcsn0(I,K,bi,bj,2)
@@ -431,6 +433,7 @@ C-      2D arrays
           StoreOBCSS(I,K,bi,bj,2)  = OBSv(I,K,bi,bj)
           StoreOBCSS(I,K,bi,bj,3)  = OBSt(I,K,bi,bj)
           StoreOBCSS(I,K,bi,bj,4)  = OBSs(I,K,bi,bj)
+#  ifdef ALLOW_OBCS_PRESCRIBE
           StoreOBCSS(I,K,bi,bj,5)  = OBSu0(I,K,bi,bj)
           StoreOBCSS(I,K,bi,bj,6)  = OBSv0(I,K,bi,bj)
           StoreOBCSS(I,K,bi,bj,7)  = OBSt0(I,K,bi,bj)
@@ -439,6 +442,7 @@ C-      2D arrays
           StoreOBCSS(I,K,bi,bj,10) = OBSv1(I,K,bi,bj)
           StoreOBCSS(I,K,bi,bj,11) = OBSt1(I,K,bi,bj)
           StoreOBCSS(I,K,bi,bj,12) = OBSs1(I,K,bi,bj)
+#  endif
 #  ifdef ALLOW_OBCSS_CONTROL
           StoreOBCSS(I,K,bi,bj,13) = xx_obcss0(I,K,bi,bj,1)
           StoreOBCSS(I,K,bi,bj,14) = xx_obcss0(I,K,bi,bj,2)
@@ -475,6 +479,7 @@ C-      2D arrays
           StoreOBCSE(J,K,bi,bj,2)  = OBEv(J,K,bi,bj)
           StoreOBCSE(J,K,bi,bj,3)  = OBEt(J,K,bi,bj)
           StoreOBCSE(J,K,bi,bj,4)  = OBEs(J,K,bi,bj)
+#  ifdef ALLOW_OBCS_PRESCRIBE
           StoreOBCSE(J,K,bi,bj,5)  = OBEu0(J,K,bi,bj)
           StoreOBCSE(J,K,bi,bj,6)  = OBEv0(J,K,bi,bj)
           StoreOBCSE(J,K,bi,bj,7)  = OBEt0(J,K,bi,bj)
@@ -483,6 +488,7 @@ C-      2D arrays
           StoreOBCSE(J,K,bi,bj,10) = OBEv1(J,K,bi,bj)
           StoreOBCSE(J,K,bi,bj,11) = OBEt1(J,K,bi,bj)
           StoreOBCSE(J,K,bi,bj,12) = OBEs1(J,K,bi,bj)
+#  endif
 #  ifdef ALLOW_OBCSE_CONTROL
           StoreOBCSE(J,K,bi,bj,13) = xx_obcse0(J,K,bi,bj,1)
           StoreOBCSE(J,K,bi,bj,14) = xx_obcse0(J,K,bi,bj,2)
@@ -519,6 +525,7 @@ C-      2D arrays
           StoreOBCSW(J,K,bi,bj,2)  = OBWv(J,K,bi,bj)
           StoreOBCSW(J,K,bi,bj,3)  = OBWt(J,K,bi,bj)
           StoreOBCSW(J,K,bi,bj,4)  = OBWs(J,K,bi,bj)
+#  ifdef ALLOW_OBCS_PRESCRIBE
           StoreOBCSW(J,K,bi,bj,5)  = OBWu0(J,K,bi,bj)
           StoreOBCSW(J,K,bi,bj,6)  = OBWv0(J,K,bi,bj)
           StoreOBCSW(J,K,bi,bj,7)  = OBWt0(J,K,bi,bj)
@@ -527,6 +534,7 @@ C-      2D arrays
           StoreOBCSW(J,K,bi,bj,10) = OBWv1(J,K,bi,bj)
           StoreOBCSW(J,K,bi,bj,11) = OBWt1(J,K,bi,bj)
           StoreOBCSW(J,K,bi,bj,12) = OBWs1(J,K,bi,bj)
+#  endif
 #  ifdef ALLOW_OBCSW_CONTROL
           StoreOBCSW(J,K,bi,bj,13) = xx_obcsw0(J,K,bi,bj,1)
           StoreOBCSW(J,K,bi,bj,14) = xx_obcsw0(J,K,bi,bj,2)

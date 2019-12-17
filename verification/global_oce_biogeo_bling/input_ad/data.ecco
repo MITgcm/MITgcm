@@ -1,0 +1,29 @@
+# ******************
+# ECCO cost function
+# ******************
+#
+ &ECCO_COST_NML
+#
+ using_cost_seaice = .FALSE.,
+ using_cost_sst = .FALSE.,
+ using_cost_altim = .FALSE.,
+#
+ cost_iprec  = 32,
+ cost_yftype = 'RL',
+#
+ &
+
+ &ECCO_GENCOST_NML
+# SST
+ gencost_avgperiod(1)  = 'day',
+ gencost_barfile(1) = 'm_sst_day',
+ gencost_datafile(1) = 'lev_clim_temp.bin',
+ gencost_errfile(1) = 'wt_ones.bin',
+ gencost_name(1) = 'sst-MW',
+ gencost_spmin(1) = -1.8,
+ gencost_spmax(1) = 40.,
+ gencost_spzero(1) = 0.,
+ gencost_outputlevel(1)=1,
+ mult_gencost(1) = 0.1,
+#
+ &

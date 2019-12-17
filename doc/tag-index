@@ -1,6 +1,41 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - change S/R ECCO_READWEI to read in uncertainty file and compute weight
+    as 1/sigma if nosumsq is provided as a preprocessing option, or 1/sigma^2
+    if not. This is the expected behavior based on the "generic cost function"
+    section of the documentation.
+o verification:
+  - new experiment "global_oce_biogeo_bling" move here from verification_other.
+o pkg/cheapaml:
+  - rewrite advection-diffusion of BL atmospheric variables to use Flux-Form
+    formulation. Affects results (unless cartesian grid is used).
+  - apply special treatment of diffusive flux at Northern & Southern boundaries
+    only if .NOT.cheapamlYperiodic (previously unconditional, gad_diff_2d_y.F);
+  - Skip calls to AB-2 when using "useFluxLimit=T" option since advection scheme
+    used then is DST3FL which does not need AB at all. Affects results if
+    useFluxLimit=T" is used.
+  - clean-up (rename/remove all "gad_*.F" files) and simplify by using few more
+    pkg/generic_advdiff S/R (instead of local copies).
+  - update output of experiment "cheapAML_box" (and in separated PR, experiment
+    "offline_cheapaml" in verification_other)
+o pkg/ctrl:
+  - Tangent Linear mode: allows to initialise g_xx fields with user-provided
+    g_xx file (default unchanged, i.e., initialised to zero).
+
+checkpoint67n (2019/11/26)
+o pkg/ctrl:
+  - add doc & storage dir for initial velocity control option.
+o pkg/autodiff:
+  - sort out checkpoint_lev1_dir header file for when pkg/ecco is used
+    with #undef NONLIN_FRSURF ; similar update in pkg/cd_code & pkg/ptracers;
+    this fixes issue #68.
+  - clean-up and fix pkg/autodiff checkpoint_lev?_dir to be able to compile
+    with #define EXCLUDE_FFIELDS_LOAD.
+o model/src:
+  - allows to specify time-dependent (periodic) geothermal heat-flux
+    with "periodicExternalForcing".
 o pkg/diagnostics:
   - add diagnostics for thickness factor hFacC, hFacW & hFacS.
 o pkg/dic:

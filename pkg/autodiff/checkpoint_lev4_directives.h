@@ -7,6 +7,7 @@ c
 c
 CADJ STORE etan  = tapelev4, key = ilev_4
 CADJ STORE surfaceforcingTice = tapelev4, key = ilev_4
+#ifndef EXCLUDE_FFIELDS_LOAD
 CADJ STORE taux0 = tapelev4, key = ilev_4
 CADJ STORE taux1 = tapelev4, key = ilev_4
 CADJ STORE tauy0 = tapelev4, key = ilev_4
@@ -21,14 +22,19 @@ CADJ STORE sss0 = tapelev4, key = ilev_4
 CADJ STORE sss1 = tapelev4, key = ilev_4
 CADJ STORE saltflux0 = tapelev4, key = ilev_4
 CADJ STORE saltflux1 = tapelev4, key = ilev_4
-#ifdef SHORTWAVE_HEATING
+# ifdef SHORTWAVE_HEATING
 CADJ STORE qsw0 = tapelev4, key = ilev_4
 CADJ STORE qsw1 = tapelev4, key = ilev_4
-#endif
-#ifdef ATMOSPHERIC_LOADING
+# endif
+# ifdef ALLOW_GEOTHERMAL_FLUX
+CADJ STORE geothFlux0 = tapelev4, key = ilev_4
+CADJ STORE geothFlux1 = tapelev4, key = ilev_4
+# endif
+# ifdef ATMOSPHERIC_LOADING
 CADJ STORE pload0 = tapelev4, key = ilev_4
 CADJ STORE pload1 = tapelev4, key = ilev_4
-#endif
+# endif
+#endif /* ndef EXCLUDE_FFIELDS_LOAD */
 #ifdef EXACT_CONSERV
 CADJ STORE etaH = tapelev4, key = ilev_4
 CADJ STORE dEtaHdt = tapelev4, key = ilev_4
