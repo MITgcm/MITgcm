@@ -52,6 +52,11 @@ C     print shelfice summary here before checking the parameter combinations
        CALL WRITE_0D_L( SHELFICEboundaryLayer, INDEX_NONE,
      &   'SHELFICEboundaryLayer =',
      &   ' /* use simple boundary layer scheme to suppress noise */')
+       IF ( SHELFICEboundaryLayer ) THEN
+        CALL WRITE_0D_L( SHI_withBL_realFWflux, INDEX_NONE,
+     &   'SHI_withBL_realFWflux =',
+     &   ' /* use real FW Flux in boundary layer scheme */')
+       ENDIF
        CALL WRITE_0D_L( SHELFICEadvDiffHeatFlux, INDEX_NONE,
      &   'SHELFICEadvDiffHeatFlux =',
      &   ' /* use adv.-diff. instead of just diff. heat flux into'//
@@ -87,8 +92,14 @@ C     print shelfice summary here before checking the parameter combinations
      &   'SHELFICEuseGammaFrict =',
      &   ' /* use velocity dependent exchange coefficients */')
        IF ( SHELFICEuseGammaFrict ) THEN
-        CALL WRITE_0D_L( SHELFICE_oldCalcUStar, INDEX_NONE,
+        IF ( SHELFICEboundaryLayer ) THEN
+         CALL WRITE_0D_L( SHI_withBL_uStarTopDz, INDEX_NONE,
+     &   'SHI_withBL_uStarTopDz =',
+     &   ' /* compute uStar from top Dz averaged uVel,vVel */')
+        ELSE
+         CALL WRITE_0D_L( SHELFICE_oldCalcUStar, INDEX_NONE,
      &   'SHELFICE_oldCalcUStar =', ' /* use old uStar expression */')
+        ENDIF
         CALL WRITE_0D_RL( shiCdrag, INDEX_NONE,
      & 'shiCdrag   =', ' /* quadr. drag coefficient for uStar */')
         CALL WRITE_0D_RL( shiZetaN, INDEX_NONE,
@@ -102,6 +113,18 @@ C     print shelfice summary here before checking the parameter combinations
         CALL WRITE_0D_RL( shiKinVisc, INDEX_NONE,
      & 'shiKinVisc =', ' /* const. kin. viscosity for gammaTurb */')
        ENDIF
+
+      CALL WRITE_0D_RL( SHELFICEremeshFrequency, INDEX_NONE,
+     &   'SHELFICEremeshFrequency =',
+     &   ' /* Frequency (in s) of Remeshing */')
+      IF ( SHELFICEremeshFrequency .GT. zeroRL ) THEN
+        CALL WRITE_0D_RL( SHELFICEsplitThreshold, INDEX_NONE,
+     &   'SHELFICEsplitThreshold =',
+     &   ' /* hFac remesh threshold above which cell splits */')
+        CALL WRITE_0D_RL( SHELFICEmergeThreshold, INDEX_NONE,
+     &   'SHELFICEmergeThreshold =',
+     &   ' /* hFac remesh threshold below which cell merges */')
+      ENDIF
 
       CALL WRITE_0D_C( SHELFICEloadAnomalyFile, -1, INDEX_NONE,
      &  'SHELFICEloadAnomalyFile =',
@@ -135,53 +158,7 @@ C-    I/O parameters:
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT, myThid )
 
-C     Consistent choice of parameter:
-      IF ( SHELFICEmassFile.NE.' ' .AND. SHELFICEloadAnomalyFile.NE.' '
-     &   ) THEN
-         WRITE(msgBuf,'(2A)') 'SHELFICE_CHECK: cannot specify both',
-     &      ' SHELFICEmassFile and SHELFICEloadAnomalyFile'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         errCount = errCount + 1
-      ENDIF
-
-C     So far, SHELFICE works only with oceanic z-coordinates
-      IF ( buoyancyRelation .NE. 'OCEANIC' ) THEN
-         WRITE(msgBuf,'(A)')
-     &      'SHELFICE works only with buoyancyRelation = ''OCEANIC'''
-         CALL PRINT_ERROR( msgBuf, myThid )
-         errCount = errCount + 1
-      ENDIF
-
-      IF ( selectNHfreeSurf.NE.0 ) THEN
-C--   Non-Hydrostatic Free-Surf below Ice-Shelf:
-C     a) there is a practical implementation issue (kSurf > 1) that has to be
-C        fixed before removing this stop.
-C     b) In general, should also account for the vertical acceleration of the
-C        Ice-shelf mass above Free-Surf in NH.Free-Surf equation (less obvious).
-C        Ignore this term for now; as a consequence, might over-estimate
-C        d.Eta/dt below Ice-Shelf.
-         WRITE(msgBuf,'(2A,I3,A)') 'Current nonHydrostatic',
-     &    ' Free-Surf option (selectNHfreeSurf=',selectNHfreeSurf,' )'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         WRITE(msgBuf,'(A)') ' not compatible with SHELFICE code'
-         CALL PRINT_ERROR( msgBuf, myThid )
-         errCount = errCount + 1
-      ENDIF
-
-C     SHELFICE may not work with many other packages,
-C     e.g. vertical mixing schemes, in particular KPP will not work properly,
-C     as KPP requires surface fluxes at the surface, whereas shelfice will
-C     provide interfacial fluxes at some depth. Richardson flux number based
-C     schemes such as Packanowski-Philander (PP81) should be no problem.
-CML#ifdef ALLOW_KPP
-CML      IF ( useKPP ) THEN
-CML         WRITE(msgBuf,'(A)')
-CML     &      'SHELFICE and KPP cannot be turned on at the same time'
-CML         CALL PRINT_ERROR( msgBuf , 1)
-CML         errCount = errCount + 1
-CML      ENDIF
-CML#endif ALLOW_KPP
-
+C-    Check that CPP option is "defined" when corresponding run-time parameter is on
 #ifndef ALLOW_ISOMIP_TD
       IF ( useISOMIPTD ) THEN
        WRITE(msgBuf,'(A,A,A)')
@@ -217,6 +194,79 @@ CML#endif ALLOW_KPP
        errCount = errCount + 1
       ENDIF
 #endif /* SHI_ALLOW_GAMMAFRICT */
+
+#ifndef ALLOW_SHELFICE_REMESHING
+      IF ( SHELFICEremeshFrequency.GT.zeroRL ) THEN
+       WRITE(msgBuf,'(A,A,A)')
+     &      'Run-time SHELFICEremeshFrequency was set ( > 0 )'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,A,A)')
+     &      'when CPP flag ALLOW_SHELFICE_REMESHING is unset'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+      ENDIF
+#endif /* ALLOW_SHELFICE_REMESHING */
+
+C     Consistent choice of parameter:
+
+      IF ( SHELFICEmassFile.NE.' ' .AND. SHELFICEloadAnomalyFile.NE.' '
+     &   ) THEN
+         WRITE(msgBuf,'(2A)') 'SHELFICE_CHECK: cannot specify both',
+     &      ' SHELFICEmassFile and SHELFICEloadAnomalyFile'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         errCount = errCount + 1
+      ENDIF
+
+C     So far, SHELFICE works only with oceanic z-coordinates
+      IF ( buoyancyRelation .NE. 'OCEANIC' ) THEN
+         WRITE(msgBuf,'(A)')
+     &      'SHELFICE works only with buoyancyRelation = ''OCEANIC'''
+         CALL PRINT_ERROR( msgBuf, myThid )
+         errCount = errCount + 1
+      ENDIF
+
+      IF ( selectNHfreeSurf.NE.0 ) THEN
+C--   Non-Hydrostatic Free-Surf below Ice-Shelf:
+C     a) there is a practical implementation issue (kSurf > 1) that has to be
+C        fixed before removing this stop.
+C     b) In general, should also account for the vertical acceleration of the
+C        Ice-shelf mass above Free-Surf in NH.Free-Surf equation (less obvious).
+C        Ignore this term for now; as a consequence, might over-estimate
+C        d.Eta/dt below Ice-Shelf.
+         WRITE(msgBuf,'(2A,I3,A)') 'Current nonHydrostatic',
+     &    ' Free-Surf option (selectNHfreeSurf=',selectNHfreeSurf,' )'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(A)') ' not compatible with SHELFICE code'
+         CALL PRINT_ERROR( msgBuf, myThid )
+         errCount = errCount + 1
+      ENDIF
+
+      IF ( SHELFICEremeshFrequency.GT.zeroRL ) THEN
+       IF ( nonlinFreeSurf.LE.0 ) THEN
+        WRITE(msgBuf,'(A,A,A)')
+     &     'remeshing requires Non-Lin Free-Surf (nonlinFreeSurf > 0)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ELSEIF ( select_rStar.GT.0 ) THEN
+        WRITE(msgBuf,'(A,A,A)')
+     &     'remeshing not implemented for r-Star coordinate ',
+     &     '(select_rStar > 0)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+      ENDIF
+
+C     SHELFICE may not work with many other packages,
+C     e.g. vertical mixing schemes, in particular KPP will not work properly,
+C     as KPP requires surface fluxes at the surface, whereas shelfice will
+C     provide interfacial fluxes at some depth. Richardson flux number based
+C     schemes such as Packanowski-Philander (PP81) should be no problem.
+CML      IF ( useKPP ) THEN
+CML         WRITE(msgBuf,'(A)')
+CML     &      'SHELFICE and KPP cannot be turned on at the same time'
+CML         CALL PRINT_ERROR( msgBuf , 1)
+CML         errCount = errCount + 1
+CML      ENDIF
 
       IF ( errCount.GE.1 ) THEN
         WRITE(msgBuf,'(A,I3,A)')

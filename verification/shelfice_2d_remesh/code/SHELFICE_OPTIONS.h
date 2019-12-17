@@ -15,7 +15,7 @@ C     *==========================================================*
 C     Package-specific Options & Macros go here
 
 C     allow code for simple ISOMIP thermodynamics
-#define ALLOW_ISOMIP_TD
+#undef ALLOW_ISOMIP_TD
 
 C     allow friction velocity-dependent transfer coefficient
 C     following Holland and Jenkins, JPO, 1999
@@ -23,7 +23,7 @@ C     following Holland and Jenkins, JPO, 1999
 
 C     allow (vertical) remeshing whenever ocean top thickness factor
 C     exceeds thresholds
-#undef ALLOW_SHELFICE_REMESHING
+#define ALLOW_SHELFICE_REMESHING
 
 #endif /* ALLOW_SHELFICE */
 #endif /* SHELFICE_OPTIONS_H */
