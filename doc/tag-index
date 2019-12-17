@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - change S/R ECCO_READWEI to read in uncertainty file and compute weight
+    as 1/sigma if nosumsq is provided as a preprocessing option, or 1/sigma^2
+    if not. This is the expected behavior based on the "generic cost function"
+    section of the documentation.
 o verification:
   - new experiment "global_oce_biogeo_bling" move here from verification_other.
 o pkg/cheapaml:
