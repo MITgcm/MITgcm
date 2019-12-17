@@ -1,12 +1,12 @@
 #include "GAD_OPTIONS.h"
 
 CBOP
-C !ROUTINE: GAD_2d_CALC_RHS
+C !ROUTINE: CHEAPAML_CALC_RHS
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_2d_CALC_RHS(
-     I           bi,bj,iMin,iMax,jMin,jMax,
-     I           uTrans,vTrans,
+      SUBROUTINE CHEAPAML_CALC_RHS(
+     I           bi,bj, iMin,iMax,jMin,jMax,
+     I           uTrans, vTrans,
      I           uVel, vVel,
      I           diffKh, Tracer,
      I           deltaTtracer, zu,
@@ -42,7 +42,6 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "SURFACE.h"
 #include "GAD.h"
 
 C !INPUT PARAMETERS: ===================================================
@@ -88,25 +87,26 @@ C fVer             :: vertical fluxes
 C af               :: advective fluxes
 C df               :: diffusive flux
 C localT           :: local copy of tracer field
-C localW           :: local vertical velocity
+C horizDiv         :: divergence of the horizontal wind
 C maskLocW         :: local copy of West Face Land Mask
 C maskLocS         :: local copy of South Face Land Mask
 
-      INTEGER i,j,iG,jG, ii, jj
+      INTEGER i,j, iG,jG, ii, jj
       _RL fZon  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fMer  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL fVer  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL af    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL localT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL localW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL horizDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
+C--   Initialize fluxes
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-          df(i,j)        = 0. _d 0
+          df(i,j)   = 0. _d 0
+          fZon(i,j) = 0. _d 0
+          fMer(i,j) = 0. _d 0
         ENDDO
       ENDDO
 
@@ -119,19 +119,11 @@ C--   and compute w
       ENDDO
       DO j=1-OLy,sNy+OLy-1
         DO i=1-OLx,sNx+OLx-1
-          localW(i,j)=-(recip_dxC(i,j,bi,bj)
-     &      *(uVel(i+1,j,bi,bj)-uVel(i,j,bi,bj))
-     &     + (vVel(i,j+1,bi,bj)-vVel(i,j,bi,bj))*recip_dyC(i,j,bi,bj)
-     &                 )*2. _d 0 *zu
-          wvel(i,j,bi,bj) = localW(i,j)/2. _d 0 /zu
-        ENDDO
-      ENDDO
-
-C--   Initialize net flux in X direction
-      DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-          fZon(i,j) = 0. _d 0
-          af(i,j)   = 0. _d 0
+          horizDiv(i,j) = (
+     &       ( uTrans(i+1,j) - uTrans(i,j) )
+     &     + ( vTrans(i,j+1) - vTrans(i,j) )
+     &                    )*recip_rA(i,j,bi,bj)
+          wVel(i,j,bi,bj) = -horizDiv(i,j)
         ENDDO
       ENDDO
 
@@ -168,36 +160,25 @@ C     change to allow advection on land
         ENDDO
         CALL GAD_DST3FL_ADV_X(
      I     bi,bj,1,.TRUE., deltaTtracer,
-     I     uTrans, uTrans,
+     I     uTrans, uVel(1-OLx,1-OLy,bi,bj),
      I     maskLocW, localT,
-     O     af,
+     O     fZon,
      I     myThid )
       ELSE
-        CALL GAD_C2_2d_ADV_X(bi,bj,uVel,localT,af,myThid)
+        CALL GAD_C2_ADV_X( bi,bj,1,uTrans,localT,fZon,myThid )
       ENDIF
 
-      DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-          fZon(i,j)=fZon(i,j)+af(i,j)
-        ENDDO
-      ENDDO
-
 C     -    Diffusive flux in X
-      IF (diffKh.NE.0.) THEN
-        CALL GAD_DIFF_2d_X(bi,bj,diffKh,localT,df,myThid)
-      ELSE
+      IF ( diffKh.NE.zeroRL ) THEN
+        CALL GAD_DIFF_X( bi,bj,1, dyG(1-OLx,1-OLy,bi,bj),
+     I                   diffKh, localT,
+     O                   df, myThid )
         DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            df(i,j) = 0. _d 0
+            fZon(i,j) = fZon(i,j) + df(i,j)
           ENDDO
         ENDDO
       ENDIF
-
-      DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-          fZon(i,j) = fZon(i,j) + df(i,j)
-        ENDDO
-      ENDDO
 
 C     repair boundary tracer values
       IF(.NOT.cheapamlXperiodic)THEN
@@ -220,15 +201,6 @@ C     repair boundary tracer values
         ENDDO
        ENDDO
       ENDIF
-
-C--   Initialize net flux in Y direction
-      DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-          fMer(i,j) = 0. _d 0
-          af(i,j)   = 0. _d 0
-          df(i,j)   = 0. _d 0
-        ENDDO
-      ENDDO
 
 C     -    Advective flux in Y
 
@@ -265,82 +237,46 @@ C Change to allow advection on land
         ENDDO
         CALL GAD_DST3FL_ADV_Y(
      I     bi,bj,1,.TRUE., deltaTtracer,
-     I     vTrans, vTrans,
+     I     vTrans, vVel(1-OLx,1-OLy,bi,bj),
      I     maskLocS, localT,
-     O     af,
+     O     fMer,
      I     myThid )
       ELSE
-        CALL GAD_C2_2d_ADV_Y(bi,bj,vVel,localT,af,myThid)
+        CALL GAD_C2_ADV_Y( bi,bj,1,vTrans,localT,fMer,myThid )
       ENDIF
 
-      DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-          fMer(i,j) = fMer(i,j) + af(i,j)
-        ENDDO
-      ENDDO
-
 C     -    Diffusive flux in Y
-      IF (diffKh.NE.0.) THEN
-        CALL GAD_DIFF_2d_Y(bi,bj,diffKh,localT,df,myThid)
-      ELSE
+      IF ( diffKh.NE.zeroRL ) THEN
+        CALL GAD_DIFF_Y( bi,bj,1, dxG(1-OLx,1-OLy,bi,bj),
+     I                   diffKh, localT,
+     O                   df, myThid )
+        IF ( .NOT.cheapamlYperiodic ) THEN
+         DO j=1,sNy+1
+          jG = myYGlobalLo-1+(bj-1)*sNy+j
+          IF ( jG.EQ.1 .OR. jG.EQ.Ny ) THEN
+C- Note: conditions above ire strange. Instead, should it be:
+c         IF ( jG.EQ.1 .OR. jG.EQ.Ny+1 ) THEN
+           DO i=1-OLx,sNx+OLx
+            df(i,j) = 0. _d 0
+           ENDDO
+          ENDIF
+         ENDDO
+        ENDIF
         DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            df(i,j) = 0. _d 0
+            fMer(i,j) = fMer(i,j) + df(i,j)
           ENDDO
         ENDDO
       ENDIF
 
-      DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-          fMer(i,j) = fMer(i,j) + df(i,j)
-        ENDDO
-      ENDDO
-
-C--   Initialize net flux in R direction
-      DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-          fVer(i,j) = 0. _d 0
-          af(i,j) = 0. _d 0
-        ENDDO
-      ENDDO
-
-C     -    Advective flux in R
-C          at top of the cell
-
-      IF (useFluxLimit) THEN
-        CALL CHEAPAML_GAD_DST3FL_ADV_R(
-     I           bi,bj,deltaTtracer,
-     I           localW,
-     I           localT,
-     O           af,
-     I           myThid )
-      ELSE
-        CALL CHEAPAML_GAD_C2_ADV_R(
-     I           bi,bj,
-     I           localW,
-     I           localT,
-     O           af,
-     I           myThid )
-      ENDIF
-
-      DO j=1-OLy,sNy+OLy-1
-        DO i=1-OLx,sNx+OLx-1
-          fVer(i,j) = fVer(i,j) + af(i,j)
-        ENDDO
-      ENDDO
-
-C     no need to repair localT
-
 C--   Divergence of fluxes
       DO j=1-OLy,sNy+OLy-1
         DO i=1-OLx,sNx+OLx-1
-          gTracer(i,j,bi,bj)=
-     &       -(recip_dxC(i,j,bi,bj)
-     &         *(fZon(i+1,j)-fZon(i,j))
-     &        +recip_dyC(i,j,bi,bj)
-     &         *(fMer(i,j+1)-fMer(i,j))
-     &        +1. _d 0/2. _d 0/zu*fVer(i,j)
-     &        )
+          gTracer(i,j,bi,bj) =
+     &       -( ( fZon(i+1,j) - fZon(i,j) )
+     &        + ( fMer(i,j+1) - fMer(i,j) )
+     &        )*recip_rA(i,j,bi,bj)
+     &       + horizDiv(i,j)*localT(i,j)
         ENDDO
       ENDDO
 

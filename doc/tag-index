@@ -1,6 +1,49 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice:
+  - addition of functionality described in Jordan et al (2017), "Ocean-Forced
+    Ice-Shelf Thinning in a Synchronously Coupled Ice-Ocean Model";
+    allows "remeshing" of grid-cells in vertical in response to changing free
+    surface due to ice shelf mass change:
+    At SHELFICEremeshFrequency interval, checks for cells that are too thick or
+    too thin and adjusts R_surf & eta accordingly, and updates state variables ;
+  - new main remeshing S/R SHELFICE_REMESHING calling additional S/R in files
+     shelfice_remesh_c_mask.F, shelfice_remesh_uvmasks.F,
+     shelfice_remesh_rminsurf.F and shelfice_remesh_calc_w.F
+    and called directly from top of FORWARD_STEP ;
+  - all new code and call protected under #define ALLOW_SHELFICE_REMESHING ;
+  - add field "R_shelfice" to pkg/shelfice pickup files for restart ;
+  - verification/shelfice_2d_remesh/*: new verification experiment
+    to test remeshing functionality.
+  - additional options to SHELFICEboundaryLayer:
+    a) SHI_withBL_uStarTopDz, to compute uStar from uVel,vVel avergaged over
+       top Dz thickness first and then average horizontally ;
+    b) SHI_withBL_realFWflux, to use real Fresh-Water flux (and adjust
+       advective surface flux) with SHELFICEboundaryLayer.
+o pkg/ecco:
+  - change S/R ECCO_READWEI to read in uncertainty file and compute weight
+    as 1/sigma if nosumsq is provided as a preprocessing option, or 1/sigma^2
+    if not. This is the expected behavior based on the "generic cost function"
+    section of the documentation.
+o verification:
+  - new experiment "global_oce_biogeo_bling" move here from verification_other.
+o pkg/cheapaml:
+  - rewrite advection-diffusion of BL atmospheric variables to use Flux-Form
+    formulation. Affects results (unless cartesian grid is used).
+  - apply special treatment of diffusive flux at Northern & Southern boundaries
+    only if .NOT.cheapamlYperiodic (previously unconditional, gad_diff_2d_y.F);
+  - Skip calls to AB-2 when using "useFluxLimit=T" option since advection scheme
+    used then is DST3FL which does not need AB at all. Affects results if
+    useFluxLimit=T" is used.
+  - clean-up (rename/remove all "gad_*.F" files) and simplify by using few more
+    pkg/generic_advdiff S/R (instead of local copies).
+  - update output of experiment "cheapAML_box" (and in separated PR, experiment
+    "offline_cheapaml" in verification_other)
+o pkg/ctrl:
+  - Tangent Linear mode: allows to initialise g_xx fields with user-provided
+    g_xx file (default unchanged, i.e., initialised to zero).
+
 checkpoint67n (2019/11/26)
 o pkg/ctrl:
   - add doc & storage dir for initial velocity control option.
