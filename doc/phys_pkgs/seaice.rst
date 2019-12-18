@@ -18,7 +18,7 @@ CPP options enable or disable different aspects of the package
 (:numref:`ssub_phys_pkg_seaice_config`). Run-time options, flags, filenames and
 field-related dates/times are set in ``data.seaice`` (:numref:`ssub_phys_pkg_seaice_runtime`).
 A description of key subroutines is given in
-:numref:`ssub_phys_pkg_seaice_subroutines`. 
+:numref:`ssub_phys_pkg_seaice_subroutines`.
 Available diagnostics output is listed in
 :numref:`ssub_phys_pkg_seaice_diagnostics`.
 
@@ -73,7 +73,7 @@ options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
 
 .. _ssub_phys_pkg_seaice_runtime:
 
-Run-time parameters 
+Run-time parameters
 ===================
 
 Run-time parameters (see :numref:`tab_phys_pkg_seaice_runtimeparms`) are set in
@@ -280,7 +280,7 @@ General flags and parameters
   | :varlink:`IMAX_TICE`               | 10                           | number of iterations for ice surface temperature solution               |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_EPS`              | 1.0E-10                      | a "small number" used in various routines                               |
-  +------------------------------------+------------------------------+-------------------------------------------------------------------------+  
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_area_reg`         | 1.0E-5                       | minimum concentration to regularize ice thickness                       |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_hice_reg`         | 0.05                         | minimum ice thickness (m) for regularization                            |
@@ -329,7 +329,7 @@ All parameters are non-dimensional unless indicated.
   | :varlink:`SEAICEmuRidging`         | 3.0                          | similar to :varlink:`SEAICEhStar` for                                   |
   |                                    |                              | :cite:`lipscomb:07` ridging function                                    |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICEmaxRaft`           | 1.0                          | regularization parameter for rafting                                    | 
+  | :varlink:`SEAICEmaxRaft`           | 1.0                          | regularization parameter for rafting                                    |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEsnowFracRidge`     | 0.5                          | fraction of snow that remains on ridged ice                             |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -341,7 +341,7 @@ All parameters are non-dimensional unless indicated.
   | :varlink:`Hlimit_c2`,              | 15.0,                        | determine :varlink:`Hlimit` from a simple function                      |
   | :varlink:`Hlimit_c3`               | 3.0                          | following :cite:`lipscomb:01`                                           |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
- 
+
 
 .. _ssub_phys_pkg_seaice_descr:
 
@@ -410,7 +410,7 @@ storage in ice.
 
 The Winton (2000) sea-ice thermodynamics have been ported to MITgcm; they currently
 reside under :filelink:`pkg/thsice`, described in :numref:`sub_phys_pkg_thsice`.
-It is fully compatible with the packages :filelink:`seaice <pkg/seaice>` and :filelink:`exf <pkg/exf>`. 
+It is fully compatible with the packages :filelink:`seaice <pkg/seaice>` and :filelink:`exf <pkg/exf>`.
 When turned on together with :filelink:`seaice <pkg/seaice>`, the zero-layer
 thermodynamics are replaced by the Winton thermodynamics. In order to use
 package :filelink:`seaice <pkg/seaice>` with the thermodynamics of :filelink:`pkg/thsice`,
@@ -492,20 +492,20 @@ Viscous-Plastic (VP) Rheology
 -----------------------------
 
 For an isotropic system the stress tensor :math:`\sigma_{ij}`
-(:math:`i,j=1,2`) can be related to the ice strain rate and strength 
+(:math:`i,j=1,2`) can be related to the ice strain rate and strength
 by a nonlinear viscous-plastic (VP) constitutive law:
 
 .. math::
-   \sigma_{ij}=2\eta(\dot{\epsilon}_{ij},P)\dot{\epsilon}_{ij} 
+   \sigma_{ij}=2\eta(\dot{\epsilon}_{ij},P)\dot{\epsilon}_{ij}
    + \left[\zeta(\dot{\epsilon}_{ij},P) -
-       \eta(\dot{\epsilon}_{ij},P)\right]\dot{\epsilon}_{kk}\delta_{ij}  
+       \eta(\dot{\epsilon}_{ij},P)\right]\dot{\epsilon}_{kk}\delta_{ij}
    - \frac{P}{2}\delta_{ij}
    :label: eq_vpequation
 
 The ice strain rate is given by
 
 .. math::
-   \dot{\epsilon}_{ij} = \frac{1}{2}\left( 
+   \dot{\epsilon}_{ij} = \frac{1}{2}\left(
        \frac{\partial{u_{i}}}{\partial{x_{j}}} +
        \frac{\partial{u_{j}}}{\partial{x_{i}}}\right)
 
@@ -518,10 +518,10 @@ depends on both thickness :math:`h` and compactness (concentration)
 
    P_{\max} = P^{\ast}c\,h\,\exp\{-C^{\ast}\cdot(1-c)\},
 
-with the constants :math:`P^{\ast}` (run-time parameter 
+with the constants :math:`P^{\ast}` (run-time parameter
 :varlink:`SEAICE_strength`) and :math:`C^{\ast}` (run-time parameter
 :varlink:`SEAICE_cStar`). The nonlinear bulk and shear viscosities
-:math:`\eta` and :math:`\zeta` are functions of ice strain rate
+:math:`\zeta` and :math:`\eta` are functions of ice strain rate
 invariants and ice strength such that the principal components of the
 stress lie on an elliptical yield curve with the ratio of major to
 minor axis :math:`e` equal to :math:`2`; they are given by:
@@ -539,7 +539,7 @@ with the abbreviation
     \Delta =  \left[
     \left(\dot{\epsilon}_{11}+\dot{\epsilon}_{22}\right)^2
     + e^{-2}\left( \left(\dot{\epsilon}_{11}-\dot{\epsilon}_{22} \right)^2
-      + \dot{\epsilon}_{12}^2 \right) 
+      + \dot{\epsilon}_{12}^2 \right)
     \right]^{\frac{1}{2}}
 
 The bulk viscosities are bounded above by imposing both a minimum
@@ -565,7 +565,7 @@ bounding :math:`\zeta` by a smooth (differentiable) expression:
    \zeta &= \zeta_{\max}\tanh\left(\frac{P}{2\,\min(\Delta,\Delta_{\min})
          \,\zeta_{\max}}\right)\\
    &= \frac{P}{2\Delta^\ast}
-   \tanh\left(\frac{\Delta^\ast}{\min(\Delta,\Delta_{\min})}\right) 
+   \tanh\left(\frac{\Delta^\ast}{\min(\Delta,\Delta_{\min})}\right)
    \end{split}
    :label: eq_zetaregsmooth
 
@@ -582,7 +582,7 @@ written as
 
 .. math::
    :label: eq_matrixmom
-	   
+
      \mathbf{A}(\mathbf{x})\,\mathbf{x} = \mathbf{b}(\mathbf{x}).
 
 The solution vector :math:`\mathbf{x}` consists of the two velocity
@@ -674,7 +674,7 @@ equation :eq:`eq_jfnklin` becomes
 The Krylov method iteratively improves the approximate solution
 to :eq:`eq_jfnklinpc` in subspace
 (:math:`\mathbf{r}_0`, :math:`\mathbf{J}\mathbf{P}^{-1}\mathbf{r}_0`,
-:math:`(\mathbf{J}\mathbf{P}^{-1})^2\mathbf{r}_0`, :math:`\dots`, 
+:math:`(\mathbf{J}\mathbf{P}^{-1})^2\mathbf{r}_0`, :math:`\dots`,
 :math:`(\mathbf{J}\mathbf{P}^{-1})^m\mathbf{r}_0`)
 with increasing :math:`m`;
 :math:`\mathbf{r}_0 = -\mathbf{F}(\mathbf{x}^{k-1}) -\mathbf{J}(\mathbf{x}^{k-1})\,\delta\mathbf{x}^{k}_{0}`
@@ -708,12 +708,12 @@ Within a nonlinear iteration, the linear FGMRES solver is terminated
 when the residual is smaller than :math:`\gamma_k\|\mathbf{F}(\mathbf{x}^{k-1})\|` where :math:`\gamma_k` is determined by
 
 .. math::
- 	 \gamma_k = 
-      \begin{cases} 
-	 \gamma_0 &\text{for $\|\mathbf{F}(\mathbf{x}^{k-1})\| \geq r$},  \\ 
+ 	 \gamma_k =
+      \begin{cases}
+	 \gamma_0 &\text{for $\|\mathbf{F}(\mathbf{x}^{k-1})\| \geq r$},  \\
     \max\left(\gamma_{\min},
     \frac{\|\mathbf{F}(\mathbf{x}^{k-1})\|}
-    {\|\mathbf{F}(\mathbf{x}^{k-2})\|}\right)  
+    {\|\mathbf{F}(\mathbf{x}^{k-2})\|}\right)
    &\text{for $\|\mathbf{F}(\mathbf{x}^{k-1})\| < r$,}
     \end{cases}
    :label: eq_jfnkgammalin
@@ -748,8 +748,8 @@ resulting elastic-viscous-plastic (EVP) and VP models are identical at steady st
 
 .. math::
    \frac{1}{E}\frac{\partial\sigma_{ij}}{\partial{t}} +
-    \frac{1}{2\eta}\sigma_{ij} 
-    + \frac{\eta - \zeta}{4\zeta\eta}\sigma_{kk}\delta_{ij}  
+    \frac{1}{2\eta}\sigma_{ij}
+    + \frac{\eta - \zeta}{4\zeta\eta}\sigma_{kk}\delta_{ij}
     + \frac{P}{4\zeta}\delta_{ij}
     = \dot{\epsilon}_{ij}.
    :label: eq_evpequation
@@ -962,16 +962,16 @@ are discretized as:
 .. math::
    \begin{aligned}
      \dot{\epsilon}_{11} &= \partial_{1}{u}_{1} + k_{2}u_{2} \\ \notag
-     => (\epsilon_{11})_{i,j}^C &= \frac{u_{i+1,j}-u_{i,j}}{\Delta{x}_{i,j}^{F}} 
-      + k_{2,i,j}^{C}\frac{v_{i,j+1}+v_{i,j}}{2} \\ 
+     => (\epsilon_{11})_{i,j}^C &= \frac{u_{i+1,j}-u_{i,j}}{\Delta{x}_{i,j}^{F}}
+      + k_{2,i,j}^{C}\frac{v_{i,j+1}+v_{i,j}}{2} \\
      \dot{\epsilon}_{22} &= \partial_{2}{u}_{2} + k_{1}u_{1} \\\notag
-     => (\epsilon_{22})_{i,j}^C &= \frac{v_{i,j+1}-v_{i,j}}{\Delta{y}_{i,j}^{F}} 
-      + k_{1,i,j}^{C}\frac{u_{i+1,j}+u_{i,j}}{2} \\ 
+     => (\epsilon_{22})_{i,j}^C &= \frac{v_{i,j+1}-v_{i,j}}{\Delta{y}_{i,j}^{F}}
+      + k_{1,i,j}^{C}\frac{u_{i+1,j}+u_{i,j}}{2} \\
       \dot{\epsilon}_{12} = \dot{\epsilon}_{21} &= \frac{1}{2}\biggl(
       \partial_{1}{u}_{2} + \partial_{2}{u}_{1} - k_{1}u_{2} - k_{2}u_{1}
       \biggr) \\ \notag
      => (\epsilon_{12})_{i,j}^Z &= \frac{1}{2}
-     \biggl( \frac{v_{i,j}-v_{i-1,j}}{\Delta{x}_{i,j}^V} 
+     \biggl( \frac{v_{i,j}-v_{i-1,j}}{\Delta{x}_{i,j}^V}
       + \frac{u_{i,j}-u_{i,j-1}}{\Delta{y}_{i,j}^U} \\\notag
      &\phantom{=\frac{1}{2}\biggl(}
       - k_{1,i,j}^{Z}\frac{v_{i,j}+v_{i-1,j}}{2}
@@ -1029,7 +1029,7 @@ widths. For the :math:`u`-equation (:math:`\alpha=1`) we have:
      \biggr\} \\ \notag
      =& \frac{1}{A_{i,j}^w} \biggl\{
      (\Delta{x}_2\sigma_{11})_{i,j}^C -
-     (\Delta{x}_2\sigma_{11})_{i-1,j}^C 
+     (\Delta{x}_2\sigma_{11})_{i-1,j}^C
      \\\notag
      \phantom{=}& \phantom{\frac{1}{A_{i,j}^w} \biggl\{}
      + (\Delta{x}_1\sigma_{21})_{i,j+1}^Z - (\Delta{x}_1\sigma_{21})_{i,j}^Z
@@ -1054,9 +1054,9 @@ with
      \frac{u_{i,j}-u_{i,j-1}}{\Delta{y}_{i,j}^{U}} \\ \notag
      & + \Delta{x}_{i,j}^{V}\overline{\eta}^{Z}_{i,j}
      \frac{v_{i,j}-v_{i-1,j}}{\Delta{x}_{i,j}^{V}} \\ \notag
-     & - \Delta{x}_{i,j}^{V}\overline{\eta}^{Z}_{i,j} 
+     & - \Delta{x}_{i,j}^{V}\overline{\eta}^{Z}_{i,j}
      k_{2,i,j}^{Z}\frac{u_{i,j}+u_{i,j-1}}{2} \\ \notag
-     & - \Delta{x}_{i,j}^{V}\overline{\eta}^{Z}_{i,j} 
+     & - \Delta{x}_{i,j}^{V}\overline{\eta}^{Z}_{i,j}
      k_{1,i,j}^{Z}\frac{v_{i,j}+v_{i-1,j}}{2}\end{aligned}
 
 Similarly, we have for the :math:`v`-equation (:math:`\alpha=2`):
@@ -1065,7 +1065,7 @@ Similarly, we have for the :math:`v`-equation (:math:`\alpha=2`):
    \begin{aligned}
      (\nabla\sigma)_{2}: \phantom{=}&
      \frac{1}{A_{i,j}^s}
-     \int_{\mathrm{cell}}(\partial_1\sigma_{12}+\partial_2\sigma_{22})\,dx_1\,dx_2 
+     \int_{\mathrm{cell}}(\partial_1\sigma_{12}+\partial_2\sigma_{22})\,dx_1\,dx_2
      \\\notag
      =& \frac{1}{A_{i,j}^s} \biggl\{
      \int_{x_2}^{x_2+\Delta{x}_2}\sigma_{12}dx_2\biggl|_{x_{1}}^{x_{1}+\Delta{x}_{1}}
@@ -1088,12 +1088,12 @@ with
    \begin{aligned}
      (\Delta{x}_1\sigma_{12})_{i,j}^Z =& \phantom{+}
      \Delta{y}_{i,j}^{U}\overline{\eta}^{Z}_{i,j}
-     \frac{u_{i,j}-u_{i,j-1}}{\Delta{y}_{i,j}^{U}} 
+     \frac{u_{i,j}-u_{i,j-1}}{\Delta{y}_{i,j}^{U}}
      \\\notag &
      + \Delta{y}_{i,j}^{U}\overline{\eta}^{Z}_{i,j}
      \frac{v_{i,j}-v_{i-1,j}}{\Delta{x}_{i,j}^{V}} \\\notag
      &- \Delta{y}_{i,j}^{U}\overline{\eta}^{Z}_{i,j}
-     k_{2,i,j}^{Z}\frac{u_{i,j}+u_{i,j-1}}{2} 
+     k_{2,i,j}^{Z}\frac{u_{i,j}+u_{i,j-1}}{2}
      \\\notag &
      - \Delta{y}_{i,j}^{U}\overline{\eta}^{Z}_{i,j}
      k_{1,i,j}^{Z}\frac{v_{i,j}+v_{i-1,j}}{2} \\ \notag
@@ -1122,52 +1122,36 @@ Thermodynamics
 
 **NOTE: THIS SECTION IS STILL NOT COMPLETE**
 
-In its original formulation the sea ice model uses simple
-thermodynamics following the appendix of Semtner (1976) :cite:`sem76`. This
-formulation does not allow storage of heat, that is, the heat capacity
-of ice is zero. Upward conductive heat flux is parameterized assuming
-a linear temperature profile and together with a constant ice
-conductivity. It is expressed as :math:`(K/h)(T_{w}-T_{0})`, where
-:math:`K` is the ice conductivity, :math:`h` the ice thickness, and
-:math:`T_{w}-T_{0}` the difference between water and ice surface
-temperatures. This type of model is often refered to as a “zero-layer”
-model. The surface heat flux is computed in a similar way to that of
-Parkinson and Washington (1979) :cite:`parkinson:79` and Manabe et al. (1979) :cite:`manabe:79`.
-All fluxes are assumed to instanteously reach a stationary balance
-(:math:`\partial T_{0}/\partial t = 0`):
+In its original formulation the sea ice model uses simple 0-layer thermodynamics following the appendix of Semtner (1976) :cite:`sem76`. This formulation neglects storage of heat, that is, the heat capacity of ice is zero, and all internal heat sources so that the heat equation reduces to a constant conductive heat flux. This constant upward conductive heat flux together with a constant ice conductivity implies a linear temperature profile.
+The boundary conditions for the heat equations are: at the bottom of the ice :math:`T|_{bottom} = T_{fr}` (freezing point temperature of sea water), and at the surface: :math:`Q_{top} = \frac{\partial{T}}{\partial{z}} = (K/h)(T_{0}-T_{fr})`, where :math:`K` is the ice conductivity, :math:`h` the ice thickness, and :math:`T_{0}-T_{fr}` the difference between the ice surface temperature and the water temperature at the bottom of the ice (at the freezing point). The surface heat flux :math:`Q_{top}` is computed in a similar way to that of Parkinson and Washington (1979) :cite:`parkinson:79` and Manabe et al. (1979) :cite:`manabe:79`. The resulting equation for surface temperature is
 
 .. math::
    \begin{aligned}
-   \rho\,c_p \frac{\partial T_{0}}{\partial t} = 0 =& \frac{K}{h}(T_{w}-T_{0})
-   + Q_{SW\downarrow}(1-\mathrm{albedo}) + \epsilon Q_{LW\downarrow} - Q_{LW\uparrow}(T_{0}) \\
-   &+ Q_{LH}(T_{0}) + Q_{SH}(T_{0})
+   \frac{K}{h}(T_{0}-T_{fr}) &= Q_{SW\downarrow}(1-\mathrm{albedo}) \\
+   & + \epsilon Q_{LW\downarrow} - Q_{LW\uparrow}(T_{0}) \\
+   & + Q_{LH}(T_{0}) + Q_{SH}(T_{0}),
    \end{aligned}
    :label: eq_zerolayerheatbalance
-	   
+
 where :math:`\epsilon` is the emissivity of the surface (snow or ice),
 :math:`Q_{S/LW\downarrow}` the downwelling shortwave and longwave
 radiation to be prescribed, and :math:`Q_{LW\uparrow}=\epsilon\sigma_B
 T_{0}^4` the emitted long wave radiation with the Stefan-Boltzmann
 constant :math:`\sigma_B`. With explicit expressions in :math:`T_0`
-for the turbulent fluxes of latent heat:
+for the turbulent fluxes of latent and sensible heat
 
 .. math::
-   Q_{LH} = \rho_\mathrm{air} C_E (\Lambda_v + \Lambda_f) |\mathbf{U}_\mathrm{air}|\left[ q_\mathrm{air} - q_\mathrm{sat}(T_0)\right] 
+   \begin{aligned}
+   Q_{LH} &= \rho_\mathrm{air} C_E (\Lambda_v + \Lambda_f)
+   |\mathbf{U}_\mathrm{air}|
+   \left[ q_\mathrm{air} - q_\mathrm{sat}(T_0)\right] \\
+   Q_{SH} &= \rho_\mathrm{air} c_p C_E |\mathbf{U}_\mathrm{air}|
+   \left[ T_\mathrm{10m} - T_{0} \right],
+   \end{aligned}
 
-where :math:`\rho_\mathrm{air}` is the air density (parameter :varlink:`SEAICE_rhoAir`),
-:math:`C_E` is the ice-ocean transfer coefficient for sensible and latent heat (parameter :varlink:`SEAICE_dalton`),
-:math:`\Lambda_v` and :math:`\Lambda_f` are the latent heat of vaporization and fusion, respectively
-(parameters :varlink:`SEAICE_lhEvap` and :varlink:`SEAICE_lhFusion`). Similarly, for sensible heat:
-
-.. math::
-   Q_{SH}= \rho_\mathrm{air} c_p C_E |\mathbf{U}_\mathrm{air}|\left[ T_\mathrm{10m} - T_{0} \right]
-
-where :math:`c_p` is the specific heat of air (parameter :varlink:`SEAICE_cpAir`).
 :eq:`eq_zerolayerheatbalance` can be solved for
-:math:`T_0` with an iterative Ralphson-Newton method which usually
-converges very quickly, in less that 10 iterations. For the latent heat
-:math:`Q_{LH}` a choice can be made between the old polynomial
-expression for saturation humidity :math:`q_\mathrm{sat}(T_0)` (by
+:math:`T_0` with an iterative Ralphson-Newton method, which usually
+converges very quickly in less that 10 iterations. In these equations, :math:`\rho_\mathrm{air}` is the air density (parameter :varlink:`SEAICE_rhoAir`), :math:`C_E` is the ice-ocean transfer coefficient for sensible and latent heat (parameter :varlink:`SEAICE_dalton`), :math:`\Lambda_v` and :math:`\Lambda_f` are the latent heat of vaporization and fusion, respectively (parameters :varlink:`SEAICE_lhEvap` and :varlink:`SEAICE_lhFusion`), and :math:`c_p` is the specific heat of air (parameter :varlink:`SEAICE_cpAir`). For the latent heat :math:`Q_{LH}` a choice can be made between the old polynomial expression for saturation humidity :math:`q_\mathrm{sat}(T_0)` (by
 setting :varlink:`useMaykutSatVapPoly` to ``.TRUE.``) and the default
 exponential relation approximation that is more accurate at low
 temperatures.
@@ -1305,7 +1289,7 @@ equation
 
 
 Here :math:`f=\frac{\mathrm{d} h}{\mathrm{d} t}` is the thermodynamic growth rate and :math:`\Psi`
-a function describing the mechanical redistribution of sea ice during ridging or lead opening. 
+a function describing the mechanical redistribution of sea ice during ridging or lead opening.
 
 The mechanical redistribution function :math:`\Psi` generates open water in divergent motion
 and creates ridged ice during convergent motion. The ridging process depends on total strain
@@ -1318,7 +1302,7 @@ For the ITD model, the ridging mode in convergence
 
 .. math::
    \omega_r(h)= \frac{-a(h)+n(h)}{N}
-   
+
 gives the effective change for the ice volume with thickness between :math:`h` and :math:`h+\textrm{d} h`
 as the normalized difference between the ice :math:`n(h)` generated by ridging and the ice :math:`a(h)` participating in ridging.
 
@@ -1335,12 +1319,12 @@ relative amount of ice of thickness :math:`h` weighted by an exponential functio
 
 .. math::
    b(h) = b_0 \exp [ -G(h)/a^*]
-   
+
 where :math:`G(h)=\int_0^h g(h) \textrm{d} h` is the cumulative thickness distribution function,
 :math:`b_0` a normalization factor, and :math:`a^*` (:varlink:`SEAICEaStar`) the exponential constant
 that determines which relative amount of thicker and thinner ice take part in ridging.
 
-With :varlink:`SEAICEredistFunc` =1 in ``data.seaice``, the ice generated by ridging is calculated as 
+With :varlink:`SEAICEredistFunc` =1 in ``data.seaice``, the ice generated by ridging is calculated as
 
 .. math::
    n(h) = \int_0^\infty  a(h_1)\gamma(h_1,h) \textrm{d} h_1
@@ -1349,14 +1333,14 @@ where the density function :math:`\gamma(h_1,h)` of resulting
 thickness :math:`h` for ridged ice with an original thickness of :math:`h_1` is taken as
 
 .. math::
-   \gamma(h_1, h) = \frac{1}{k \lambda} \exp\left[{\frac{-(h-h_{\min})}{\lambda}}\right] 
+   \gamma(h_1, h) = \frac{1}{k \lambda} \exp\left[{\frac{-(h-h_{\min})}{\lambda}}\right]
 
 for :math:`h \geq h_{\min}`, with :math:`\gamma(h_1,h)=0` for :math:`h < h_{\min}`.
 In this parameterization, the normalization factor :math:`k=\frac{h_{\min} + \lambda}{h_1}`,
 the e-folding scale :math:`\lambda = \mu h_1^{1/2}` and the minimum ridge thickness
 :math:`h_{\min}=\min(2h_1,h_1 + h_{\textrm{raft}})` all depend on the original thickness :math:`h_1`.
 The maximal ice thickness allowed to raft :math:`h_{\textrm{raft}}` is constant
-(:varlink:`SEAICEmaxRaft`, default =1 m) and :math:`\mu` (:varlink:`SEAICEmuRidging`) is a tunable parameter. 
+(:varlink:`SEAICEmaxRaft`, default =1 m) and :math:`\mu` (:varlink:`SEAICEmuRidging`) is a tunable parameter.
 
 In the numerical model these equations are discretized into a set of :math:`n`
 (:varlink:`nITD` defined in :filelink:`SEAICE_SIZE.h <pkg/seaice/SEAICE_SIZE.h>`) thickness categories employing the
@@ -1398,9 +1382,9 @@ by considering the production of potential energy and the frictional energy loss
 The physical constant :math:`C_p = \rho_i (\rho_w - \rho_i) \hat{g} / (2 \rho_w)` is a
 combination of the gravitational acceleration :math:`\hat{g}` and the densities :math:`\rho_i`,
 :math:`\rho_w` of ice and water, and :math:`C_f` (:varlink:`SEAICE_cf`) is a scaling factor relating
-the amount of work against gravity necessary for ridging to the amount of work against friction. 
+the amount of work against gravity necessary for ridging to the amount of work against friction.
 To calculate the integral, this parameterization needs information about the ITD in each grid cell,
-while the default parameterization :eq:`eq_icestrength` can be used for both ITD and single thickness category models. 
+while the default parameterization :eq:`eq_icestrength` can be used for both ITD and single thickness category models.
 In contrast to :eq:`eq_icestrength`, which is based on the plausible assumption that thick
 and compact ice is stronger than thin and loose drifting ice, this parameterization :eq:`eq_rothrock`
 clearly contains the more physical assumptions about energy conservation.
@@ -1437,7 +1421,7 @@ Top-level routine: :filelink:`pkg/seaice/seaice_model.F`
     c  |     DYNSOLVER
     c  |   #ENDIF
     c  |
-    c  |-- if ( useOBCS ) 
+    c  |-- if ( useOBCS )
     c  |     OBCS_APPLY_UVICE
     c  |
     c  |-- if ( SEAICEadvHeff .OR. SEAICEadvArea .OR. SEAICEadvSnow .OR. SEAICEadvSalt )
@@ -1445,10 +1429,10 @@ Top-level routine: :filelink:`pkg/seaice/seaice_model.F`
     c  |
     c  |   SEAICE_REG_RIDGE
     c  |
-    c  |-- if ( usePW79thermodynamics ) 
+    c  |-- if ( usePW79thermodynamics )
     c  |     SEAICE_GROWTH
     c  |
-    c  |-- if ( useOBCS ) 
+    c  |-- if ( useOBCS )
     c  |     if ( SEAICEadvHeff ) OBCS_APPLY_HEFF
     c  |     if ( SEAICEadvArea ) OBCS_APPLY_AREA
     c  |     if ( SEAICEadvSALT ) OBCS_APPLY_HSALT
@@ -1569,6 +1553,3 @@ Experiments and tutorials that use seaice
 - :filelink:`verification/seaice_itd`, based on :filelink:`offline_exf_seaice <verification/offline_exf_seaice>`, tests ice thickness distribution
 - :filelink:`verification/global_ocean.cs32x15`, global cubed-sphere-experiment with combinations of :filelink:`pkg/seaice` and :filelink:`pkg/thsice`
 - :filelink:`verification/1D_ocean_ice_column`, just thermodynamics
-
-
-

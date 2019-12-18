@@ -13,7 +13,7 @@ if [ -z "${MITGCM_TROPT}" ]; then
  export MITGCM_TROPT='-devel -of=../tools/build_options/linux_amd64_gfortran'
 fi
 if [ -z "${MITGCM_DECMD}" ]; then
- export MITGCM_DECMD='docker exec -i fc11-testreport bash -c'
+ export MITGCM_DECMD='docker exec -i ubuntu_18_04-testreport bash -c'
 fi
 if [ -z "${MITGCM_INPUT_DIR_PAT}" ]; then
  export MITGCM_INPUT_DIR_PAT='/input.*'

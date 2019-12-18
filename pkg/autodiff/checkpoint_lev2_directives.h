@@ -1,5 +1,5 @@
 c
-c     store directives for checkpoint level 4
+c     store directives for checkpoint level 2
 c
 c     created: heimbach@mit.edu 10-Jan-2002
 c
@@ -7,6 +7,7 @@ c
 c
 CADJ STORE etan  = tapelev2, key = ilev_2
 CADJ STORE surfaceforcingTice = tapelev2, key = ilev_2
+#ifndef EXCLUDE_FFIELDS_LOAD
 CADJ STORE taux0 = tapelev2, key = ilev_2
 CADJ STORE taux1 = tapelev2, key = ilev_2
 CADJ STORE tauy0 = tapelev2, key = ilev_2
@@ -21,14 +22,19 @@ CADJ STORE sss0 = tapelev2, key = ilev_2
 CADJ STORE sss1 = tapelev2, key = ilev_2
 CADJ STORE saltflux0 = tapelev2, key = ilev_2
 CADJ STORE saltflux1 = tapelev2, key = ilev_2
-#ifdef SHORTWAVE_HEATING
+# ifdef SHORTWAVE_HEATING
 CADJ STORE qsw0 = tapelev2, key = ilev_2
 CADJ STORE qsw1 = tapelev2, key = ilev_2
-#endif
-#ifdef ATMOSPHERIC_LOADING
+# endif
+# ifdef ALLOW_GEOTHERMAL_FLUX
+CADJ STORE geothFlux0 = tapelev2, key = ilev_2
+CADJ STORE geothFlux1 = tapelev2, key = ilev_2
+# endif
+# ifdef ATMOSPHERIC_LOADING
 CADJ STORE pload0 = tapelev2, key = ilev_2
 CADJ STORE pload1 = tapelev2, key = ilev_2
-#endif
+# endif
+#endif /* ndef EXCLUDE_FFIELDS_LOAD */
 #ifdef EXACT_CONSERV
 CADJ STORE etaH = tapelev2, key = ilev_2
 CADJ STORE dEtaHdt = tapelev2, key = ilev_2
