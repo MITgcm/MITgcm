@@ -326,7 +326,7 @@ For many experiments, additional information is provided in a ``README`` file lo
    :filelink:`global_ocean.90x40x15 <verification/global_ocean.90x40x15>` experiment.
 
 #. :filelink:`global_with_exf <verification/global_with_exf>` - Global ocean experiment (at 4\ :sup:`o`\ x4\ :sup:`o`) on a lat-lon grid
-   using the :filelink:`exf <pkg/exf>` package. Similar to :ref:`tutorial_global_oce_latlon <sec_global_oce_latlon>`
+   using the :filelink:`exf <pkg/exf>` package with :filelink:`exf <pkg/exf> interpolation. Similar to :ref:`tutorial_global_oce_latlon <sec_global_oce_latlon>`
    experiment. Also contains a secondary setup with yearly :filelink:`exf <pkg/exf>` fields
    (:filelink:`input.yearly <verification/global_with_exf/input.yearly>`).
 
@@ -475,14 +475,10 @@ Unless stated otherwise, the physical setup of the adjoint run is identical to t
 TAF adjoint setups require building with directory ``code_ad`` with input directory ``input_ad``, whereas OpenAD requires
 directories ``coad_oad`` and ``input_oad`` respectively.
 
-#. :filelink:`1D_ocean_ice_column <verification/1D_ocean_ice_column>` - Based on standard forward experiment, TAF adjoint setup.
+#. :filelink:`1D_ocean_ice_column <verification/1D_ocean_ice_column>` - Based on standard forward experiment, TAF adjoint setup, uses package :filelink:`ecco <pkg/ecco>`.
 
 #. :filelink:`bottom_ctrl_5x5 <verification/bottom_ctrl_5x5>` - TAF adjoint test using the bottom topography as the
-   control parameter.
-
-#. :filelink:`front_relax <verification/front_relax>` - Based on standard forward experiment, TAF adjoint setup.
-
-#. :filelink:`global_oce_biogeo_bling <verification/global_oce_biogeo_bling>` - Based on standard forward experiment, TAF adjoint setup.
+   control parameter, uses package :filelink:`ecco <pkg/ecco>`.
 
 #. :filelink:`global_ocean.90x40x15 <verification/global_ocean.90x40x15>` - Based on standard forward experiment,
    TAF and OpenAD adjoint setups. Also contains additional TAF adjoint setups:
@@ -506,6 +502,8 @@ directories ``coad_oad`` and ``input_oad`` respectively.
 
 #. :filelink:`global_ocean_ebm <verification/global_ocean_ebm>` - Based on standard forward experiment, TAF adjoint setup.
 
+#. :filelink:`global_oce_biogeo_bling <verification/global_oce_biogeo_bling>` - Based on standard forward experiment, TAF adjoint setup, uses package :filelink:`ecco <pkg/ecco>`.
+
 #. :filelink:`global_with_exf <verification/global_with_exf>` - Based on standard forward experiment, TAF adjoint setup.
 
 #. :filelink:`halfpipe_streamice<verification/halfpipe_streamice>` - Based on standard forward experiment, TAF and OpenAD adjoint setups.
@@ -516,7 +514,7 @@ directories ``coad_oad`` and ``input_oad`` respectively.
    Also contains additional TAF adjoint setup
    with “htd” (Hellmer's thermodynamics, Hellmer 1989 :cite:`hellmer:89`) (:filelink:`input_ad.htd <verification/isomip/input_ad.htd>`).
 
-#. :filelink:`lab_sea <verification/lab_sea>` - Based on standard forward experiment, TAF adjoint setup.
+#. :filelink:`lab_sea <verification/lab_sea>` - Based on standard forward experiment, TAF adjoint setup, uses package :filelink:`ecco <pkg/ecco>`.
    Also contains additional TAF adjoint setups:
 
    - without seaice dynamics (:filelink:`input_ad.noseaicedyn <verification/lab_sea/input_ad.noseaicedyn>`).
@@ -524,7 +522,7 @@ directories ``coad_oad`` and ``input_oad`` respectively.
    - without seaice altogether (:filelink:`input_ad.noseaice <verification/lab_sea/input_ad.noseaice>`).
 
 #. :filelink:`obcs_ctrl <verification/obcs_ctrl>` - Adjoint test using open boundary conditions as
-   control parameters.
+   control parameters, uses package :filelink:`ecco <pkg/ecco>`.
 
 #. :filelink:`offline_exf_seaice <verification/offline_exf_seaice>` - Based on standard forward experiment, TAF adjoint setup.
    Also contains additional TAF adjoint setup
@@ -537,7 +535,7 @@ directories ``coad_oad`` and ``input_oad`` respectively.
 
    - using package :filelink:`kpp <pkg/kpp>` (:filelink:`input_oad.kpp <verification/OpenAD/input_oad.kpp>`).
 
-#. :filelink:`tutorial_dic_adjoffline <verification/tutorial_dic_adjoffline>` - TAF adjoint setup of offline form of MITgcm dynamics coupled
+#. :filelink:`tutorial_dic_adjoffline <verification/tutorial_dic_adjoffline>` - TAF adjoint setup of offline form of passive tracers coupled
    to the dissolved inorganic carbon biogeochemistry model. (current NOT documented as a tutorial experiment)
 
 #. :filelink:`tutorial_global_oce_biogeo <verification/tutorial_global_oce_biogeo>` - Based on forward experiment described
