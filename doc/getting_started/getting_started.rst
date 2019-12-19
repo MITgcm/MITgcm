@@ -2760,19 +2760,40 @@ MITgcm Input Data File Format
 =============================
 
 MITgcm input files for grid-related data (e.g., :varlink:`delXFile`), forcing fields (e.g., :varlink:`tauThetaClimRelax`),
-parameter fields (e.g., :varlink:`viscAhZfile`), etc. are assumed to be in binary format.
+parameter fields (e.g., :varlink:`viscAhZfile`), etc. are assumed to
+be in "flat" or "unblocked" `binary format <https://en.wikipedia.org/wiki/Binary_file>`_ .
 For historical reasons, MITgcm files use big-endian `byte ordering <https://en.wikipedia.org/wiki/Endianness>`_,
-*NOT* little-endian which is the more common default for today's computers. Thus, some care is required to create MITgcm-readable input files.
+**NOT** little-endian which is the more common default for today's computers. Thus, some care is required to create MITgcm-readable input files.
 
 
 - Using `MATLAB <https://www.mathworks.com/products/matlab.html>`_: 
   When writing binary files, MATLAB's `fopen <https://www.mathworks.com/help/matlab/ref/fopen.html>`_ command
-  includes a MACHINEFORMAT option 'b' which instructs MATLAB to read or write using big-endian byte ordering.
+  includes a MACHINEFORMAT option \\'b\\' which instructs MATLAB to read or write using big-endian byte ordering.
   2-D arrays should be index-ordered in MATLAB as (:math:`x`, :math:`y`) and 3-D arrays as
   (:math:`x`, :math:`y`, :math:`z`); data is ordered from low to high in each index, with :math:`x` varying most rapidly.
 
+  An example to create a bathymetry file (from tutorial :ref:`sec_eg_baro`, a simple enclosed, flat-bottom domain) is as follows:
+
+  ::
+
+     ieee='b'; % big endian format
+     accuracy='real*4'; % this is single precision
+
+     Ho=5000;  % ocean depth in meters
+     nx=62; % number of gridpoints in x-direction
+     ny=62; % number of gridpoints in y-direction
+
+     % Flat bottom at z=-Ho
+     h=-Ho*ones(nx,ny);
+
+     % Walls (surrounding domain) - generate bathymetry file
+     h([1 end],:)=0;
+     h(:,[1 end])=0;
+     fid=fopen('bathy.bin','w',ieee); fwrite(fid,h,accuracy); fclose(fid);
+
 - Using `Python <https://www.python.org/>`_:
-  Any python script used to generate MITgcm input files must manually swap the byte ordering before writing. This can be accomplished with the command:
+  Any Python script used to generate MITgcm input files must manually swap the byte ordering before writing.
+  This can be accomplished with the command:
 
   ::
 
@@ -2784,12 +2805,37 @@ For historical reasons, MITgcm files use big-endian `byte ordering <https://en.w
 
       data.astype('>f4').tofile('data.bin')
 
-  Note that 2-D and 3-D arrays should be index-ordered as (:math:`y`, :math:`x`) and (:math:`z`, :math:`y`, :math:`x`), respectively, to be written in proper ordering for MITgcm.    
+  Note that 2-D and 3-D arrays should be index-ordered as (:math:`y`, :math:`x`) and (:math:`z`, :math:`y`, :math:`x`),
+  respectively, to be written in proper ordering for MITgcm.
+
+  The above MATLAB example translated to Python is as follows:
+
+  ::
+
+     import numpy as np
+     import sys
+     Ho=5000;  # ocean depth in meters
+     nx=62; # number of gridpoints in x-direction
+     ny=62; # number of gridpoints in y-direction
+
+     # Flat bottom at z=-Ho
+     h=-Ho*np.ones((ny,nx));
+
+     # Walls (surrounding domain) - generate bathymetry file
+     h[:,(0,-1)]=0;
+     h[(0,-1),:]=0;
+     # save as single precision with big-endian byte-ordering
+     h.astype('>f4').tofile('bathy.bin')
+
+  A more complicated example of using Python to generate input date is provided in
+  :filelink:`verification/seaice_itd/input/gendata.py`.
 
 - Using `Fortran <https://en.wikipedia.org/wiki/Fortran>`_:
+  To create flat binary files in Fortran, open with
+  syntax ``OPEN(..., ACCESS='DIRECT', ...)`` (i.e., **NOT** ``ACCESS='SEQUENTIAL'`` which includes additional metadata).
   By default Fortran will use the local computer system's native byte ordering for reading and writing binary files,
   which for most systems will be little-endian. One therefore has two options:
-  after creating a binary file in Fortran, use MATLAB or python (or some other utility) to read in and swap the bytes in the process of writing a new file;
+  after creating a binary file in Fortran, use MATLAB or Python (or some other utility) to read in and swap the bytes in the process of writing a new file;
   or, determine if your local Fortran has
   a compiler flag to control byte-ordering of binary files.
   Similar to MATLAB, 2-D and 3-D arrays in Fortran should be index-ordered as (:math:`x`, :math:`y`) and (:math:`x`, :math:`y`, :math:`z`), respectively.
@@ -2797,5 +2843,5 @@ For historical reasons, MITgcm files use big-endian `byte ordering <https://en.w
 Using `NetCDF <http://www.unidata.ucar.edu/software/netcdf>`_ format for input files is only
 partially implemented at present in MITgcm, and use is thus discouraged.
 
-Input files are by default single-precision real numbers (32-bit), but can be switched to double precision by setting
+Input files are by default single-precision real numbers (32-bit, ``real*4``), but can be switched to double precision by setting
 namelist parameter :varlink:`readBinaryPrec` (``PARM01`` in file ``data``) to a value of 64.
