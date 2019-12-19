@@ -294,9 +294,6 @@ For many experiments, additional information is provided in a ``README`` file lo
    - with mixed-layer eddy parameterization (Ferrari and McWilliams
      2008 :cite:`ferrari:08`) (:filelink:`input.mxl <verification/front_relax/input.mxl>`).
 
-#. :filelink:`global_oce_biogeo_bling  <verification/global_oce_biogeo_bling >` - Global ocean biogeochemistry simulation,
-   based on :ref:`sub_global_oce_biogeo` but using package :filelink:`bling <pkg/bling>` instead of the :ref:`DIC <sub_pkg_dic>` package.
-
 #. :filelink:`global_ocean.90x40x15 <verification/global_ocean.90x40x15>` - Global ocean simulation at 4\ :sup:`o`\ x4\ :sup:`o`
    resolution. Similar to :ref:`tutorial_global_oce_latlon <sec_global_oce_latlon>`, but using
    :math:`z^*` coordinates with quasi-non-hydrostatic and
@@ -325,8 +322,11 @@ For many experiments, additional information is provided in a ``README`` file lo
    coupled to a zonally averaged atmospheric energy balance model. Similar to
    :filelink:`global_ocean.90x40x15 <verification/global_ocean.90x40x15>` experiment.
 
+#. :filelink:`global_oce_biogeo_bling  <verification/global_oce_biogeo_bling >` - Global ocean biogeochemistry simulation,
+   based on :ref:`sub_global_oce_biogeo` but using package :filelink:`bling <pkg/bling>` instead of the :ref:`DIC <sub_pkg_dic>` package.
+
 #. :filelink:`global_with_exf <verification/global_with_exf>` - Global ocean experiment (at 4\ :sup:`o`\ x4\ :sup:`o`) on a lat-lon grid
-   using the :filelink:`exf <pkg/exf>` package with :filelink:`exf <pkg/exf> interpolation. Similar to :ref:`tutorial_global_oce_latlon <sec_global_oce_latlon>`
+   using the :filelink:`exf <pkg/exf>` package with :filelink:`exf <pkg/exf>` interpolation. Similar to :ref:`tutorial_global_oce_latlon <sec_global_oce_latlon>`
    experiment. Also contains a secondary setup with yearly :filelink:`exf <pkg/exf>` fields
    (:filelink:`input.yearly <verification/global_with_exf/input.yearly>`).
 
@@ -514,7 +514,8 @@ directories ``coad_oad`` and ``input_oad`` respectively.
    Also contains additional TAF adjoint setup
    with “htd” (Hellmer's thermodynamics, Hellmer 1989 :cite:`hellmer:89`) (:filelink:`input_ad.htd <verification/isomip/input_ad.htd>`).
 
-#. :filelink:`lab_sea <verification/lab_sea>` - Based on standard forward experiment, TAF adjoint setup, uses package :filelink:`ecco <pkg/ecco>`.
+#. :filelink:`lab_sea <verification/lab_sea>` - Based on standard forward experiment, TAF adjoint setup, uses
+   package :filelink:`ecco <pkg/ecco>` and :ref:`divided adjoint (DIVA) <sec_autodiff_diva>`.
    Also contains additional TAF adjoint setups:
 
    - without seaice dynamics (:filelink:`input_ad.noseaicedyn <verification/lab_sea/input_ad.noseaicedyn>`).
