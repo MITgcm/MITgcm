@@ -537,7 +537,7 @@ directories ``coad_oad`` and ``input_oad`` respectively.
    - using package :filelink:`kpp <pkg/kpp>` (:filelink:`input_oad.kpp <verification/OpenAD/input_oad.kpp>`).
 
 #. :filelink:`tutorial_dic_adjoffline <verification/tutorial_dic_adjoffline>` - TAF adjoint setup of offline form of passive tracers coupled
-   to the dissolved inorganic carbon biogeochemistry model. (current NOT documented as a tutorial experiment)
+   to the dissolved inorganic carbon biogeochemistry model (currently NOT documented as a tutorial experiment).
 
 #. :filelink:`tutorial_global_oce_biogeo <verification/tutorial_global_oce_biogeo>` - Based on forward experiment described
    in :numref:`sub_global_oce_biogeo`, TAF and OpenAD adjoint setups.
