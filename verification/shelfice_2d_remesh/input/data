@@ -28,6 +28,7 @@
 #saltImplVertAdv=.TRUE.,
  implicitDiffusion = .TRUE.,
  implicitViscosity = .TRUE.,
+ selectImplicitDrag = 2,
  implicitFreeSurface=.TRUE.,
  useRealFreshWaterFlux = .TRUE.,
  exactConserv=.TRUE.,
