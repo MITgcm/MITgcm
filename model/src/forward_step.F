@@ -40,6 +40,9 @@
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
@@ -115,6 +118,8 @@ C     !CALLING SEQUENCE:
 C     FORWARD_STEP
 C       |
 C       |-- AUTODIFF_INADMODE_UNSET
+C       |
+C       |-- SHELFICE_REMESHING
 C       |
 C       |-- RESET_NLFS_VARS
 C       |-- UPDATE_R_STAR
@@ -419,6 +424,15 @@ c**************************************
 #include "checkpoint_lev1_template.h"
 c**************************************
 #endif
+
+#ifdef ALLOW_SHELFICE_REMESHING
+      IF ( useShelfIce ) THEN
+C--   Remesh shelfice
+        CALL TIMER_START('SHELFICE_REMESHING     [FORWARD_STEP]',myThid)
+        CALL SHELFICE_REMESHING ( myTime, myIter, myThid )
+        CALL TIMER_STOP('SHELFICE_REMESHING     [FORWARD_STEP]',myThid)
+      ENDIF
+#endif /* ALLOW_SHELFICE_REMESHING */
 
 C--   Reset geometric factors (hFacC,W,S & recip_hFac) to their current values:
 C     added to simplify adjoint derivation - no effect in forward run
