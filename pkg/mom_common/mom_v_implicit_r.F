@@ -149,7 +149,8 @@ C--   end if implicitDiffusion
       ENDIF
 
       IF ( selectImplicitDrag.GE.1 ) THEN
-C--   Add bottom drag coeff to main diagonal "c5d":
+C--   Add bottom and top drag coeff to main diagonal "c5d":
+
        IF ( no_slip_bottom .OR. selectBotDragQuadr.GE.0
      &                     .OR. bottomDragLinear.NE.0. ) THEN
         DO k=1,Nr
@@ -179,6 +180,31 @@ C--   Save (in 2-D array) drag-coeff for diagnostics of bottom-stress
 C-   End k loop
         ENDDO
        ENDIF
+
+#ifdef ALLOW_SHELFICE
+       IF ( useShelfIce ) THEN
+C--   Add shelfice drag coeff to main diagonal "c5d":
+        DO k=1,Nr
+          CALL SHELFICE_V_DRAG_COEFF( bi, bj, k, .FALSE.,
+     I                     uVel(1-OLx,1-OLy,k,bi,bj),
+     I                     vVel(1-OLx,1-OLy,k,bi,bj),
+     I                     kappaRV,
+     U                     KE2d,
+     O                     cDrag,
+     I                     myIter, myThid )
+          DO j=jMin,jMax
+           DO i=iMin,iMax
+             c5d(i,j,k) = c5d(i,j,k)
+     &                  + cDrag(i,j)*deltaTMom
+     &                  *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+           ENDDO
+          ENDDO
+C-   End k loop
+        ENDDO
+       ENDIF
+#endif /* ALLOW_SHELFICE */
+
+C--   end if selectImplicitDrag > 0
       ENDIF
 
       IF ( momImplVertAdv .AND. Nr.GT.1 ) THEN
