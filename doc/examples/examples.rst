@@ -71,7 +71,7 @@ Each example experiment directory has the following subdirectories:
 
 .. raw:: html
 
-   <h2> The tutorial experiments are as follows:</h2>`
+   <h2> The tutorial experiments are as follows:</h2>
 
 .. toctree::
    :maxdepth: 1
