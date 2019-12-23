@@ -71,137 +71,166 @@ Each example experiment directory has the following subdirectories:
    (and run ``../input/prepare_run``). Following this procedure, file links
    from ``input.«OTHER»`` will NOT be overwritten by identically named files in ``input``.
 
-The tutorial experiments are as follows.
+.. raw:: html
+
+   <h2> The tutorial experiments are as follows.</h2>`
 
 .. toctree::
    :maxdepth: 1
 
    barotropic_gyre/barotropic_gyre.rst
 
-In directory :filelink:`tutorial_barotropic_gyre <verification/tutorial_barotropic_gyre>`:
-Single layer ocean gyre (barotropic with free-surface), using a Cartesian grid. If you are new to MITgcm, start here,
-as no prior experience with MITgcm is assumed. Introduces building and running the model, with description of model output files and
-simple methods to load and plot model output.
+.. only:: html
+
+   In directory :filelink:`tutorial_barotropic_gyre <verification/tutorial_barotropic_gyre>`:
+   Single layer ocean gyre (barotropic with free-surface), using a Cartesian grid. If you are new to MITgcm, start here,
+   as no prior experience with MITgcm is assumed. Introduces building and running the model, with description of model output files and
+   simple methods to load and plot model output.
 
 .. toctree::
    :maxdepth: 1
 
    baroclinic_gyre/baroclinic_gyre.rst
 
-In directory :filelink:`tutorial_baroclinic_gyre <verification/tutorial_baroclinic_gyre>`:
-Ocean double-gyre using spherical coordinates (i.e., latitude-longitude coordinates) with 15 vertical layers. Second introductory tutorial, assumes you have read through
-:ref:`sec_eg_baro`. Introduces using `NetCDF <http://www.unidata.ucar.edu/software/netcdf>`_  for model output,
-and how to use the :ref:`diagnostics package <sub_outp_pkg_diagnostics>` to customize output and its writing frequency.
+.. only:: html
+
+   In directory :filelink:`tutorial_baroclinic_gyre <verification/tutorial_baroclinic_gyre>`:
+   Ocean double-gyre using spherical coordinates (i.e., latitude-longitude coordinates) with 15 vertical layers. Second introductory tutorial, assumes you have read through
+   :ref:`sec_eg_baro`. Introduces using `NetCDF <http://www.unidata.ucar.edu/software/netcdf>`_  for model output,
+   and how to use the :ref:`diagnostics package <sub_outp_pkg_diagnostics>` to customize output and its writing frequency.
 
 .. toctree::
    :maxdepth: 1
 
    advection_in_gyre/advection_in_gyre.rst
 
-In directory :filelink:`tutorial_advection_in_gyre <verification/tutorial_advection_in_gyre>`:
-Short tutorial comparing the results using different advection schemes in a single-layer, ocean double-gyre.
-Demonstrates the importance of carefully selecting an advection scheme for a specific setup.
+.. only:: html
+
+   In directory :filelink:`tutorial_advection_in_gyre <verification/tutorial_advection_in_gyre>`:
+   Short tutorial comparing the results using different advection schemes in a single-layer, ocean double-gyre.
+   Demonstrates the importance of carefully selecting an advection scheme for a specific setup.
 
 .. toctree::
    :maxdepth: 1
 
    global_oce_latlon/global_oce_latlon.rst
 
-In directory :filelink:`tutorial_global_oce_latlon <verification/tutorial_global_oce_latlon>`:
-Coarse resolution (4\ :sup:`o`\ x4\ :sup:`o`) global ocean simulation, using a spherical ocean grid with 15 vertical layers.
-Monthly climatological forcing of of wind stress, heat and freshwater fluxes is employed, with surface restoring
-of temperature and salinity. Simulates the large-scale ocean circulation.
+.. only:: html
+
+   In directory :filelink:`tutorial_global_oce_latlon <verification/tutorial_global_oce_latlon>`:
+   Coarse resolution (4\ :sup:`o`\ x4\ :sup:`o`) global ocean simulation, using a spherical ocean grid with 15 vertical layers.
+   Monthly climatological forcing of of wind stress, heat and freshwater fluxes is employed, with surface restoring
+   of temperature and salinity. Simulates the large-scale ocean circulation.
 
 .. toctree::
    :maxdepth: 1
 
    global_oce_in_p/global_oce_in_p.rst
 
-In directory :filelink:`tutorial_global_oce_in_p <verification/tutorial_global_oce_in_p>`:
-Global ocean simulation with a similar configuration as :ref:`sec_global_oce_latlon` except pressure is used as the vertical coordinate
-instead of the traditional height coordinate (exploiting MITgcm's height–pressure coordinate coding isomorphism).
-In this configuration the model does **NOT** make the  Boussinesq approximation.
+.. only:: html
+
+   In directory :filelink:`tutorial_global_oce_in_p <verification/tutorial_global_oce_in_p>`:
+   Global ocean simulation with a similar configuration as :ref:`sec_global_oce_latlon` except pressure is used as the vertical coordinate
+   instead of the traditional height coordinate (exploiting MITgcm's height–pressure coordinate coding isomorphism).
+   In this configuration the model does **NOT** make the  Boussinesq approximation.
 
 .. toctree::
    :maxdepth: 1
 
    held_suarez_cs/held_suarez_cs.rst
 
-In directory :filelink:`tutorial_held_suarez_cs <verification/tutorial_held_suarez_cs>`:
-Simulates (dry) 3-D atmosphere dynamics using Held and Suarez forcing on a (global) cubed sphere grid. The vertical coordinate
-is a rescaled pressure coordinate (:math:`p^*`) with 20 levels; orography is flat. Radiation effects are represented by Newtonian cooling.
+.. only:: html
+
+   In directory :filelink:`tutorial_held_suarez_cs <verification/tutorial_held_suarez_cs>`:
+   Simulates (dry) 3-D atmosphere dynamics using Held and Suarez forcing on a (global) cubed sphere grid. The vertical coordinate
+   is a rescaled pressure coordinate (:math:`p^*`) with 20 levels; orography is flat. Radiation effects are represented by Newtonian cooling.
 
 .. toctree::
    :maxdepth: 1
 
    deep_convection/deep_convection.rst
 
-In directory :filelink:`tutorial_deep_convection <verification/tutorial_deep_convection>`:
-Non-uniformly surface-forced ocean deep convection in a doubly periodic box. This tutorial showcases MITgcm's non-hydrostatic
-capability in a spatially small domain (3 km x 3 km x 1 km deep), exploring the temporal and spatial characteristics of convection
-plumes as they might exist during a period of oceanic deep convection.
+.. only:: html
+
+   In directory :filelink:`tutorial_deep_convection <verification/tutorial_deep_convection>`:
+   Non-uniformly surface-forced ocean deep convection in a doubly periodic box. This tutorial showcases MITgcm's non-hydrostatic
+   capability in a spatially small domain (3 km x 3 km x 1 km deep), exploring the temporal and spatial characteristics of convection
+   plumes as they might exist during a period of oceanic deep convection.
 
 .. toctree::
    :maxdepth: 1
 
    plume_on_slope/plume_on_slope.rst
 
-In directory :filelink:`tutorial_plume_on_slope <verification/tutorial_plume_on_slope>`:
-Non-hydrostatic simulation of a non-rotating gravity plume descending down a continental slope, forced by surface cooling. Model domain is 2-D with
-open boundaries conditions used in a the deep-water end of the domain.
+.. only:: html
+
+   In directory :filelink:`tutorial_plume_on_slope <verification/tutorial_plume_on_slope>`:
+   Non-hydrostatic simulation of a non-rotating gravity plume descending down a continental slope, forced by surface cooling. Model domain is 2-D with
+   open boundaries conditions used in a the deep-water end of the domain.
 
 .. toctree::
    :maxdepth: 1
 
    global_oce_biogeo/global_oce_biogeo.rst
 
-In directory :filelink:`tutorial_global_oce_biogeo <verification/tutorial_global_oce_biogeo>`:
-Global ocean simulation (similar to tutorial :ref:`sec_global_oce_latlon` except using 2.8\ :sup:`o`\ x2.8\ :sup:`o` resolution) which includes
-a dissolved inorganic carbon biogeochemistry model. The biogeochemical model considers the coupled cycles of carbon, oxygen, phosphorus and alkalinity, which are
-included as passive tracers. A simplified parameterization of biological production is also included.
+.. only:: html
+
+   In directory :filelink:`tutorial_global_oce_biogeo <verification/tutorial_global_oce_biogeo>`:
+   Global ocean simulation (similar to tutorial :ref:`sec_global_oce_latlon` except using 2.8\ :sup:`o`\ x2.8\ :sup:`o` resolution) which includes
+   a dissolved inorganic carbon biogeochemistry model. The biogeochemical model considers the coupled cycles of carbon, oxygen, phosphorus and alkalinity, which are
+   included as passive tracers. A simplified parameterization of biological production is also included.
 
 .. toctree::
    :maxdepth: 1
 
    global_oce_optim/global_oce_optim.rst
 
-In directory :filelink:`tutorial_global_oce_optim <verification/tutorial_global_oce_optim>`:
-This tutorial illustrates the optimization capacity of the MITgcm,
-running the adjoint of a global ocean simulation (model setup similar to :ref:`sec_global_oce_latlon`).
-This adjoint run optimizes a time-independent surface heat flux (i.e., the control variable) which brings
-the model climatology closest to observed climatology, using a cost function
-based on gridpoint error in temperature. TAF and OpenAD adjoint setups.
+.. only:: html
+
+   In directory :filelink:`tutorial_global_oce_optim <verification/tutorial_global_oce_optim>`:
+   This tutorial illustrates the optimization capacity of the MITgcm,
+   running the adjoint of a global ocean simulation (model setup similar to :ref:`sec_global_oce_latlon`).
+   This adjoint run optimizes a time-independent surface heat flux (i.e., the control variable) which brings
+   the model climatology closest to observed climatology, using a cost function
+   based on gridpoint error in temperature. TAF and OpenAD adjoint setups.
 
 .. toctree::
    :maxdepth: 1
 
    tracer_adjsens/tracer_adjsens.rst
 
-In directory :filelink:`tutorial_tracer_adjsens <verification/tutorial_tracer_adjsens>`:
-A second experiment demonstrating MITgcm's adjoint capabilities, here examining the sensitivity of surface outgassing of a passive tracer
-as a function of tracer injection site location within the ocean interior. The global (4\ :sup:`o`\ x4\ :sup:`o`) ocean setup from tutorial :ref:`sec_global_oce_latlon`
-is again used for this tutorial. TAF and OpenAD adjoint setups.
+.. only:: html
+
+   In directory :filelink:`tutorial_tracer_adjsens <verification/tutorial_tracer_adjsens>`:
+   A second experiment demonstrating MITgcm's adjoint capabilities, here examining the sensitivity of surface outgassing of a passive tracer
+   as a function of tracer injection site location within the ocean interior. The global (4\ :sup:`o`\ x4\ :sup:`o`)
+   ocean setup from tutorial :ref:`sec_global_oce_latlon`
+   is again used for this tutorial. TAF and OpenAD adjoint setups.
 
 .. toctree::
    :maxdepth: 1
 
    cfc_offline/cfc_offline.rst
 
-In directory :filelink:`tutorial_cfc_offline <verification/tutorial_cfc_offline>`:
-This tutorial contains an experiment which uses MITgcm in offline mode (i.e., with prescribed ocean dynamics terms,
-from a prior forward integration of MITgcm), simulating
-the penetration of CFCs into the ocean interior during the last century. The model domain is global with 2.8\ :sup:`o`\ x2.8\ :sup:`o` resolution.
+.. only:: html
+
+   In directory :filelink:`tutorial_cfc_offline <verification/tutorial_cfc_offline>`:
+   This tutorial contains an experiment which uses MITgcm in offline mode (i.e., with prescribed ocean dynamics terms,
+   from a prior forward integration of MITgcm), simulating
+   the penetration of CFCs into the ocean interior during the last century. The model domain is global with 2.8\ :sup:`o`\ x2.8\ :sup:`o` resolution.
 
 .. toctree::
    :maxdepth: 1
 
    rotating_tank/rotating_tank.rst
 
-In directory :filelink:`rotating_tank <verification/rotating_tank>`:
-Laboratory rotating tank simulation,
-using a cylindrical coordinate system at laboratory scale of 46 cm diameter and 14.5 cm deep.
-This is a typical laboratory setup for illustrating principles of geophysical fluid mechanics. An annulus of fluid is heated differentially
-on the interior and exterior walls of the tank.
+.. only:: html
+
+   In directory :filelink:`rotating_tank <verification/rotating_tank>`:
+   Laboratory rotating tank simulation,
+   using a cylindrical coordinate system at laboratory scale of 46 cm diameter and 14.5 cm deep.
+   This is a typical laboratory setup for illustrating principles of geophysical fluid mechanics. An annulus of fluid is heated differentially
+   on the interior and exterior walls of the tank.
 
 .. _subsec_add_expts_fwd:
 
