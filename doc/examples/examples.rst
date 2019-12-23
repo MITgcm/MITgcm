@@ -31,13 +31,11 @@ Each example experiment directory has the following subdirectories:
    -  ``code/SIZE.h``: declares the size of underlying computational grid.
       This file is compiled instead of the MITgcm repository version :filelink:`model/inc/SIZE.h`.
 
-   -  ``code/CPP_OPTIONS.h``: declares CPP keys relative to the
-      “numerical model” part of the code. This file is compiled instead of the MITgcm repository version
-      :filelink:`model/inc/CPP_OPTIONS.h`. (note, missing from some experiments which use the standard repository version).
-
-   -  Other files and subroutines specific to the experiment
-      (i.e., containing changes from the standard repository version)
-      might be present in ``code``, depending on the particular experiment.
+   -  The ``code/`` directory may include other files and subroutines specific to the experiment,
+      i.e., containing changes from the standard repository version.
+      For example, some experiments contains CPP header options files to enable or disable
+      some parts of the code at compile time; the most common ones would be :filelink:`model/inc/CPP_OPTIONS.h`
+      for core model options  and «PKG»_OPTIONS.h for individual packages.
 
 -  ``input``: contains the input data files required to run the example.
    At a minimum, the ``input`` directory contains the following files:
@@ -73,7 +71,7 @@ Each example experiment directory has the following subdirectories:
 
 .. raw:: html
 
-   <h2> The tutorial experiments are as follows.</h2>`
+   <h2> The tutorial experiments are as follows:</h2>`
 
 .. toctree::
    :maxdepth: 1
@@ -462,7 +460,7 @@ For many experiments, additional information is provided in a ``README`` file lo
    - includes tidal velocity forcing (:filelink:`input.tides <verification/seaice_obcs/input.tides>`).
 
 #. :filelink:`shelfice_2d_remesh <verification/shelfice_2d_remesh>` - Simple experiment to test (:filelink:`pkg/shelfice`)
-   vertical remeshing code in 2-D idealized-geometry set-up.
+   vertical remeshing code in 2-D idealized-geometry setup.
 
 #. :filelink:`short_surf_wave <verification/short_surf_wave>` - Short surface wave adjustment (non-hydrostatic)
    in homogeneous 2-D vertical section (:math:`x-z`).
