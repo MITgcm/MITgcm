@@ -461,6 +461,9 @@ For many experiments, additional information is provided in a ``README`` file lo
 
    - includes tidal velocity forcing (:filelink:`input.tides <verification/seaice_obcs/input.tides>`).
 
+#. :filelink:`shelfice_2d_remesh <verification/shelfice_2d_remesh>` - Simple experiment to test (:filelink:`pkg/shelfice`)
+   vertical remeshing code in 2-D idealized-geometry set-up.
+
 #. :filelink:`short_surf_wave <verification/short_surf_wave>` - Short surface wave adjustment (non-hydrostatic)
    in homogeneous 2-D vertical section (:math:`x-z`).
 
