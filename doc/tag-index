@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67o (2019/12/23)
 o pkg/shelfice:
   - implement implicit ice-shelf drag, in the same way as implicit bottom drag,
     using the same run-time switch "selectImplicitDrag".
