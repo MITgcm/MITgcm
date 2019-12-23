@@ -7,5 +7,6 @@ shelfice_init_varia.f
 shelfice_read_pickup.f
 shelfice_step_icemass.f
 shelfice_thermodynamics.f
-shelfice_u_drag.f
-shelfice_v_drag.f
+shelfice_u_drag_coeff.f
+shelfice_v_drag_coeff.f
+shelfice_diagnostics_drag.f

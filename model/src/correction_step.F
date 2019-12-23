@@ -283,6 +283,15 @@ C         kSurfS = Nr+1 if dry column
      &                             0, 1, 1, bi, bj, myThid )
        ENDIF
       ENDIF
+
+# ifdef ALLOW_SHELFICE
+      IF ( useShelfIce .AND. useDiagnostics ) THEN
+        CALL SHELFICE_DIAGNOSTICS_DRAG(
+     I                uVel(1-OLx,1-OLy,1,bi,bj),
+     I                vVel(1-OLx,1-OLy,1,bi,bj),
+     I                bi, bj, myIter, myThid )
+      ENDIF
+# endif /* ALLOW_SHELFICE */
 #endif /* ALLOW_DIAGNOSTICS */
 
       RETURN

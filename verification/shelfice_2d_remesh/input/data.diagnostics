@@ -75,8 +75,8 @@
 #- regional mask: =1 : under-ice ; =2 : open-ocean
   diagSt_regMaskFile='under_Ice_mask.bin',
   nSetRegMskFile=1,
-  set_regMask(1)= 1,  1,
-  val_regMask(1)= 1., 2.,
+  set_regMask(1:2)= 1,  1,
+  val_regMask(1:2)= 1., 2.,
 #---
  stat_fields(1:6,1) = 'ETAN    ','THETA   ','SALT    ',
                       'UVEL    ','VVEL    ','WVEL    ',
