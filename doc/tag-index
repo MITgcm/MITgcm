@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67o (2019/12/23)
+o pkg/shelfice:
+  - implement implicit ice-shelf drag, in the same way as implicit bottom drag,
+    using the same run-time switch "selectImplicitDrag".
+  - change 3-D diagnostics of ice-shelf drag tendency (SHIUDrag & SHIVDrag) to
+    2-D diagnostics of ice-shelf drag stress (SHI_TauX & SHI_TauY).
+  - update 4 forward reference output files of experiment "isomip".
+  - switch on implicit drag in experiment shelfice_2d_remesh (to get it tested).
 o pkg/shelfice:
   - addition of functionality described in Jordan et al (2017), "Ocean-Forced
     Ice-Shelf Thinning in a Synchronously Coupled Ice-Ocean Model";

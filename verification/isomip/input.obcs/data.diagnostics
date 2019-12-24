@@ -20,16 +20,17 @@
  &DIAGNOSTICS_LIST
 # diag_mnc     = .FALSE.,
 #--
-  fields(1:13,1) = 'ETAN    ','ETANSQ  ','DETADT2 ',
+  fields(1:14,1) = 'ETAN    ','ETANSQ  ','DETADT2 ',
                    'SHIuStar','SHIgammT','SHIgammS',
                    'SHIfwFlx','SHIhtFlx','SHIForcT','SHIForcS',
                    'TFLUX   ','SFLUX   ',
+                   'SHI_TauX','SHI_TauY',
 #  fileName(1) = 'surfDiag',
   frequency(1) =  86400.,
 
-  fields(1:11,2) = 'UVEL    ','VVEL    ','WVEL    ','PHIHYD  ',
+  fields(1:9,2)  = 'UVEL    ','VVEL    ','WVEL    ','PHIHYD  ',
                    'VVELMASS','UVELMASS','WVELSQ  ',
-                   'THETA   ','SALT    ','SHIUDrag','SHIVDrag',
+                   'THETA   ','SALT    ',
 # do not specify levels => all levels are selected
    fileName(2) = 'dynDiag',
   frequency(2) =  5184000.,
