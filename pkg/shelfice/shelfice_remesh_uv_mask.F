@@ -75,8 +75,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
         DO j=1-OLy,sNy+OLy
          DO i=2-OLx,sNx+OLx
-c          rLowW(i,j,bi,bj)  =
-c    &           MAX(   R_low(i-1,j,bi,bj),   R_low(i,j,bi,bj) )
            rSurfW(i,j,bi,bj) =
      &           MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
            rSurfW(i,j,bi,bj) =
@@ -85,8 +83,6 @@ c    &           MAX(   R_low(i-1,j,bi,bj),   R_low(i,j,bi,bj) )
         ENDDO
         DO j=2-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-c          rLowS(i,j,bi,bj)  =
-c    &           MAX(   R_low(i,j-1,bi,bj),   R_low(i,j,bi,bj) )
            rSurfS(i,j,bi,bj) =
      &           MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
            rSurfS(i,j,bi,bj) =
