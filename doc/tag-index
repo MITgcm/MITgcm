@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o doc:
+  - new front-page to tutorial chapter, also listing all verif experiments ;
+  - add new section in ch3 about input file format.
+
 checkpoint67o (2019/12/23)
 o pkg/shelfice:
   - implement implicit ice-shelf drag, in the same way as implicit bottom drag,
