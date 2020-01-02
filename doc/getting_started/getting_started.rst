@@ -82,7 +82,7 @@ key though your GitHub account user settings.
 
 The fully git-aware download is over several hundred MB, which is considerable
 if one has limited internet download speed. In comparison, the one-time
-download zip file (`Method 2`_, below) is order 100MB. However, one can
+download zip file (`Method 2`_, below) is order 100 MB. However, one can
 obtain a truncated, yet still git-aware copy of the current code by adding
 the option ``--depth=1`` to the git clone command above; all files will be
 present, but it will not include the full git history. However, the repository
@@ -1091,7 +1091,7 @@ can thus be browsed and/or plotted using tools such as:
    is a very convenient and quick way to plot `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_
    data and it runs on most platforms. `Panoply <https://www.giss.nasa.gov/tools/panoply/>`_ is a similar alternative.
 
--  `MATLAB <https://www.mathworks.com/>`_, `GrADS <http://cola.gmu.edu/grads/>`_,
+-  `MATLAB <https://www.mathworks.com/products/matlab.html>`_, `GrADS <http://cola.gmu.edu/grads/>`_,
    `IDL <http://www.harrisgeospatial.com/SoftwareTechnology/IDL.aspx>`_ and other common post-processing environments provide
    built-in `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ interfaces.
 
@@ -1104,12 +1104,12 @@ MATLAB
 Raw binary output
 ^^^^^^^^^^^^^^^^^
 
-The repository includes a few `MATLAB <https://www.mathworks.com/>`_ utilities to read binary output
-files written in the :filelink:`/pkg/mdsio` format. The `MATLAB <https://www.mathworks.com/>`_ scripts are located in the
+The repository includes a few `MATLAB <https://www.mathworks.com/products/matlab.html>`_ utilities to read binary output
+files written in the :filelink:`/pkg/mdsio` format. The `MATLAB <https://www.mathworks.com/products/matlab.html>`_ scripts are located in the
 directory :filelink:`utils/matlab` under the root tree. The script :filelink:`utils/matlab/rdmds.m`
 reads the data. Look at the comments inside the script to see how to use it.
 
-Some examples of reading and visualizing some output in `Matlab <https://www.mathworks.com/>`_:
+Some examples of reading and visualizing some output in `MATLAB <https://www.mathworks.com/products/matlab.html>`_:
 
 ::
 
@@ -1122,8 +1122,12 @@ Some examples of reading and visualizing some output in `Matlab <https://www.mat
     >> imagesc(eta');axis ij;colorbar;
     >> title('Surface height at iter=10');
 
-    >> eta=rdmds('Eta',[0:10:100]);
-    >> for n=1:11; imagesc(eta(:,:,n)');axis ij;colorbar;pause(.5);end
+    >> [eta,iters,M]=rdmds('Eta',NaN); % this will read all dumped iterations
+    >> % iter numbers put in variable 'iters'; 'M' is a character string w/metadata
+    >> for n=1:length(iters); imagesc(eta(:,:,n)');axis ij;colorbar;pause(.5);end
+
+Typing ``help rdmds`` in `MATLAB <https://www.mathworks.com/products/matlab.html>`_ will pull up further
+information on how to use the :filelink:`rdmds <utils/matlab/rdmds.m>` utility.
 
 NetCDF output
 ^^^^^^^^^^^^^
@@ -1150,7 +1154,7 @@ The following example shows how to load in some data:
 
     Eta = mds.rdmds('Eta', itrs=10)
 
-For more information about using this function and the options that it takes,
+For more information about this function and its options,
 see the API docs, :meth:`MITgcmutils.mds.rdmds`.
 
 NetCDF output
@@ -1189,8 +1193,8 @@ the “overlap” region of each tile (in :math:`x` and :math:`y`), the number o
 and the number of processes (using `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_)
 in the :math:`x` and :math:`y` dimensions all need to be specified in :filelink:`SIZE.h <model/inc/SIZE.h>`.
 From these parameters, global domain-size variables :varlink:`Nx`, :varlink:`Ny` are computed by the model.
-See a more detailed discussion of :filelink:`SIZE.h <model/inc/SIZE.h>` parameters in the :ref:`barotropic gyre tutorial <sec_eg_baro_code_config>`
-and a more technical discussion in :numref:`specify_decomp`.
+See a more technical discussion of :filelink:`SIZE.h <model/inc/SIZE.h>` parameters in in :numref:`specify_decomp`, and
+a detailed explanation of an example :filelink:`SIZE.h <model/inc/SIZE.h>` setup in tutorial :ref:`Baroclinic Ocean Gyre <baroc_code_size>`.
 
 +----------------------------------------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | Parameter                              | Default :filelink:`SIZE.h <model/inc/SIZE.h>`    | Description                                                                                             |
@@ -1397,12 +1401,12 @@ For a Cartesian or spherical grid, the southern boundary is
 defined through the variable :varlink:`ygOrigin` which corresponds to the
 latitude of the southern most gridcell face (Cartesian, meters; spherical, degrees).
 For a cyclindrical grid, a positive :varlink:`ygOrigin` (m) adds an inner cylindrical boundary at the center of the tank. The resolution
-along the :math:`x` and :math:`y` directions is controlled by the 1D arrays :varlink:`delX` (meters for a Cartesian grid, degrees otherwise)
+along the :math:`x` and :math:`y` directions is controlled by the 1-D arrays :varlink:`delX` (meters for a Cartesian grid, degrees otherwise)
 and :varlink:`delY` (meters for Cartesian and cyclindrical grids, degrees spherical). On a spherical polar grid, you
 might decide to set the variable :varlink:`cosPower` which is set to 0
 by default and which represents :math:`n` in :math:`(\cos\varphi)^n`, the power of cosine of latitude to
 multiply horizontal viscosity and tracer diffusivity.
-The vertical grid spacing is set through the 1D array
+The vertical grid spacing is set through the 1-D array
 :varlink:`delR` (:math:`z`-coordinates: in meters; :math:`p`-coordinates, in Pa).
 Using a curvilinear grid requires complete specification of all horizontal MITgcm grid variables,
 either through a default filename (link to new doc section)
@@ -1488,7 +1492,7 @@ set a reference geopotential (after gravity scaling) at the top of the ocean or 
 Topography - Full and Partial Cells
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For the ocean, the topography is read from a file that contains a 2D(:math:`x,y`)
+For the ocean, the topography is read from a file that contains a 2-D(:math:`x,y`)
 map of bathymetry, in meters for :math:`z`-coordinates, in pascals for :math:`p`-coordinates.
 The bathymetry is specified by entering the vertical position of the ocean floor relative to the surface, so by convention in
 :math:`z`-coordinates bathymetry is specified as negative numbers (“depth” is defined as positive-definite) whereas in :math:`p`-coordinates
@@ -1688,13 +1692,13 @@ Pressure Solver
 ~~~~~~~~~~~~~~~
 
 By default, a hydrostatic
-simulation is assumed and a 2D elliptic equation is used to invert
+simulation is assumed and a 2-D elliptic equation is used to invert
 the pressure field. If using a non-hydrostatic configuration, the pressure field is
-inverted through a 3D elliptic equation (note this capability
+inverted through a 3-D elliptic equation (note this capability
 is not yet available for the atmosphere). The parameters controlling the behavior of the
 elliptic solvers are the variables :varlink:`cg2dMaxIters` and
-:varlink:`cg2dTargetResidual` for the 2D case and :varlink:`cg3dMaxIters` and
-:varlink:`cg3dTargetResidual` for the 3D case.
+:varlink:`cg2dTargetResidual` for the 2-D case and :varlink:`cg3dMaxIters` and
+:varlink:`cg3dTargetResidual` for the 3-D case.
 
 .. tabularcolumns:: |\Y{.2}|\Y{.1}|\Y{.2}|\Y{.525}|
 
@@ -1783,7 +1787,7 @@ available:
   :varlink:`tAlpha` (in K\ :sup:`--1`) and :varlink:`sBeta` (in psu\ :sup:`--1`).
   Because the model equations are written in terms of
   perturbations, a reference thermodynamic state needs to be specified.
-  This is done through the 1D arrays :varlink:`tRef` and :varlink:`sRef`. :varlink:`tRef`
+  This is done through the 1-D arrays :varlink:`tRef` and :varlink:`sRef`. :varlink:`tRef`
   specifies the reference potential temperature profile (in
   :sup:`o`\ C for the ocean and K for the atmosphere)
   starting from the level k=1. Similarly, :varlink:`sRef` specifies the reference
@@ -1996,7 +2000,7 @@ Initialization
 
 The initial horizontal velocity components can be specified from
 binary files :varlink:`uVelInitFile` and :varlink:`vVelInitFile`. These files
-should contain 3D data ordered in an (:math:`x,y,r`) fashion with k=1 as the
+should contain 3-D data ordered in an (:math:`x,y,r`) fashion with k=1 as the
 first vertical level (surface level). If no file names are provided,
 the velocity is initialized to zero. The initial vertical velocity
 is always derived from the horizontal velocity using the continuity
@@ -2238,7 +2242,7 @@ Initialization
 
 The initial tracer data can be contained in the binary files
 :varlink:`hydrogThetaFile` and :varlink:`hydrogSaltFile`. These files should
-contain 3D data ordered in an (:math:`x,y,r`) fashion with k=1 as the first
+contain 3-D data ordered in an (:math:`x,y,r`) fashion with k=1 as the first
 vertical level. If no file names are provided, the tracers are then
 initialized with the values of :varlink:`tRef` and :varlink:`sRef` discussed in :numref:`parms-eos`.
 In this case, the initial tracer data are uniform in :math:`x` and :math:`y` for each depth level.
@@ -2377,7 +2381,7 @@ components of the wind stress, respectively (if you want the stress
 to be along the direction of only one of the model horizontal axes,
 you only need to generate one file). The format of the files is
 similar to the bathymetry file. The zonal (meridional) stress data
-are assumed to be in pascals and located at U-points (V-points). See the matlab
+are assumed to be in pascals and located at U-points (V-points). See the MATLAB
 program ``gendata.m`` in the ``input`` directories of
 ``verification`` for several tutorial example
 (e.g. :filelink:`gendata.m <verification/tutorial_barotropic_gyre/input/gendata.m>`
@@ -2408,11 +2412,11 @@ Tracer Forcing
 
 A combination of flux data and relaxation terms can be used for
 driving the tracer equations. For potential temperature, heat flux
-data (in W/m\ :sup:`2`) can be stored in the 2D binary file
+data (in W/m\ :sup:`2`) can be stored in the 2-D binary file
 :varlink:`surfQnetfile`. Alternatively or in addition, the forcing can be
 specified through a relaxation term. The SST data to which the model
 surface temperatures are restored are stored in
-the 2D binary file :varlink:`thetaClimFile`. The corresponding relaxation
+the 2-D binary file :varlink:`thetaClimFile`. The corresponding relaxation
 time scale coefficient is set through the variable
 :varlink:`tauThetaClimRelax` (in seconds). The same procedure applies for
 salinity with the variable names :varlink:`EmPmRfile`, :varlink:`saltClimFile`,
@@ -2753,3 +2757,95 @@ produces a more coding-oriented set of print statements (e.g., entering and exit
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`maxLengthPrt1D`              | EEPARMS   | 65                                               | maximum number of 1D array elements to print to standard output                                         |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
+
+.. _sec_mitgcm_inp_file_format:
+
+MITgcm Input Data File Format
+=============================
+
+MITgcm input files for grid-related data (e.g., :varlink:`delXFile`), forcing fields (e.g., :varlink:`tauThetaClimRelax`),
+parameter fields (e.g., :varlink:`viscAhZfile`), etc. are assumed to
+be in "flat" or "unblocked" `binary format <https://en.wikipedia.org/wiki/Binary_file>`_ .
+For historical reasons, MITgcm files use big-endian `byte ordering <https://en.wikipedia.org/wiki/Endianness>`_,
+**NOT** little-endian which is the more common default for today's computers. Thus, some care is required to create MITgcm-readable input files.
+
+
+- Using `MATLAB <https://www.mathworks.com/products/matlab.html>`_: 
+  When writing binary files, MATLAB's `fopen <https://www.mathworks.com/help/matlab/ref/fopen.html>`_ command
+  includes a MACHINEFORMAT option \\'b\\' which instructs MATLAB to read or write using big-endian byte ordering.
+  2-D arrays should be index-ordered in MATLAB as (:math:`x`, :math:`y`) and 3-D arrays as
+  (:math:`x`, :math:`y`, :math:`z`); data is ordered from low to high in each index, with :math:`x` varying most rapidly.
+
+  An example to create a bathymetry file (from tutorial :ref:`sec_eg_baro`, a simple enclosed, flat-bottom domain) is as follows:
+
+  ::
+
+     ieee='b'; % big endian format
+     accuracy='real*4'; % this is single precision
+
+     Ho=5000;  % ocean depth in meters
+     nx=62; % number of gridpoints in x-direction
+     ny=62; % number of gridpoints in y-direction
+
+     % Flat bottom at z=-Ho
+     h=-Ho*ones(nx,ny);
+
+     % Walls (surrounding domain) - generate bathymetry file
+     h([1 end],:)=0;
+     h(:,[1 end])=0;
+     fid=fopen('bathy.bin','w',ieee); fwrite(fid,h,accuracy); fclose(fid);
+
+- Using `Python <https://www.python.org/>`_:
+  Any Python script used to generate MITgcm input files must manually swap the byte ordering before writing.
+  This can be accomplished with the command:
+
+  ::
+
+      if sys.byteorder == 'little': data.byteswap(True)
+
+  or, convert as follows while writing an array to a file:
+
+  ::
+
+      data.astype('>f4').tofile('data.bin')
+
+  Note that 2-D and 3-D arrays should be index-ordered as (:math:`y`, :math:`x`) and (:math:`z`, :math:`y`, :math:`x`),
+  respectively, to be written in proper ordering for MITgcm.
+
+  The above MATLAB example translated to Python is as follows:
+
+  ::
+
+     import numpy as np
+     import sys
+     Ho=5000;  # ocean depth in meters
+     nx=62; # number of gridpoints in x-direction
+     ny=62; # number of gridpoints in y-direction
+
+     # Flat bottom at z=-Ho
+     h=-Ho*np.ones((ny,nx));
+
+     # Walls (surrounding domain) - generate bathymetry file
+     h[:,(0,-1)]=0;
+     h[(0,-1),:]=0;
+     # save as single precision with big-endian byte-ordering
+     h.astype('>f4').tofile('bathy.bin')
+
+  A more complicated example of using Python to generate input date is provided in
+  :filelink:`verification/seaice_itd/input/gendata.py`.
+
+- Using `Fortran <https://en.wikipedia.org/wiki/Fortran>`_:
+  To create flat binary files in Fortran, open with
+  syntax ``OPEN(..., ACCESS='DIRECT', ...)`` (i.e., **NOT** ``ACCESS='SEQUENTIAL'`` which includes additional metadata).
+  By default Fortran will use the local computer system's native byte ordering for reading and writing binary files,
+  which for most systems will be little-endian. One therefore has two options:
+  after creating a binary file in Fortran, use MATLAB or Python (or some other utility) to read in and swap the bytes in the process of writing a new file;
+  or, determine if your local Fortran has
+  a compiler flag to control byte-ordering of binary files.
+  Similar to MATLAB, 2-D and 3-D arrays in Fortran should be index-ordered as (:math:`x`, :math:`y`) and (:math:`x`, :math:`y`, :math:`z`), respectively.
+
+Using `NetCDF <http://www.unidata.ucar.edu/software/netcdf>`_ format for input files is only
+partially implemented at present in MITgcm, and use is thus discouraged.
+
+Input files are by default single-precision real numbers (32-bit, ``real*4``), but can be switched to double precision by setting
+namelist parameter :varlink:`readBinaryPrec` (``PARM01`` in file ``data``) to a value of 64.
