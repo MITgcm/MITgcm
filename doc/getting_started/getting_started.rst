@@ -1122,8 +1122,12 @@ Some examples of reading and visualizing some output in `MATLAB <https://www.mat
     >> imagesc(eta');axis ij;colorbar;
     >> title('Surface height at iter=10');
 
-    >> eta=rdmds('Eta',[0:10:100]);
-    >> for n=1:11; imagesc(eta(:,:,n)');axis ij;colorbar;pause(.5);end
+    >> [eta,iters,M]=rdmds('Eta',NaN); % this will read all dumped iterations
+    >> % iter numbers put in variable 'iters'; 'M' is a character string w/metadata
+    >> for n=1:length(iters); imagesc(eta(:,:,n)');axis ij;colorbar;pause(.5);end
+
+Typing ``help rdmds`` in `MATLAB <https://www.mathworks.com/products/matlab.html>`_ will pull up further
+information on how to use the :filelink:`rdmds <utils/matlab/rdmds.m>` utility.
 
 NetCDF output
 ^^^^^^^^^^^^^
