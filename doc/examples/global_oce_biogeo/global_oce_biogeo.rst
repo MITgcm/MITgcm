@@ -1,5 +1,7 @@
-Biogeochemistry Tutorial
-========================
+.. _sub_global_oce_biogeo:
+
+Biogeochemistry Simulation
+==========================
 
 (in directory: :filelink:`verification/tutorial_global_oce_biogeo/`)
 
@@ -29,7 +31,7 @@ empirical power law relationship determined by Martin et al. (1987]) :cite:`mart
 fate of carbon is linked to that of phosphorus by the Redfield ratio.
 Carbonate chemistry is explicitly solved (see Follow et al. 2006)
 :cite:`follows:06`) and the air-sea exchange of
-CO\ :sup:`2` is parameterized with a uniform gas transfer coefficient
+CO\ :sub:`2` is parameterized with a uniform gas transfer coefficient
 following Wanninkhof (1992) :cite:`wannink:92`. Oxygen is also linked to
 phosphorus by the Redfield ratio, and oxygen air-sea exchange also
 follows Wanninkhof (1992) :cite:`wannink:92`. For more details see
