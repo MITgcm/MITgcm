@@ -465,6 +465,19 @@ C--   Check parameter consistency :
         errCount = errCount + 1
       ENDIF
 
+#ifndef ALLOW_LEITH_QG
+C     Check that Leith QG viscosity coefficeint is zero if the
+C     QGLeith code has not been compiled.
+
+      IF (viscC2LeithQG.NE.0)  THEN
+        WRITE(msgBuf,'(A,A)')
+     &  'CONFIG_CHECK: must #define ALLOW_LEITH_QG in ',
+     &  'MOM_COMMON_OPTIONS.h in order to use viscC2LeithQG'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* ALLOW_LEITH_QG */
+
 #ifndef DISCONNECTED_TILES
 C     Overlaps cannot be larger than interior tile except for special cases
       IF ( sNx.LT.OLx ) THEN
