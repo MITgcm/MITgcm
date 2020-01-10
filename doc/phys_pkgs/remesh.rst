@@ -148,7 +148,7 @@ To allow this, :varlink:`pkg/streamice` must be enabled. Please see the :filelin
 Diagnostics
 ===========
 
-In addition to the diagnostics from :filelink:`pkg/SHELFICE`, remeshing adds one additional diagnostic: :varlink:`SHIRshel`,
+In addition to the diagnostics from :filelink:`pkg/SHELFICE`, remeshing adds one additional diagnostic: ``SHIRshel``,
 the "reference" elevation of the ice shelf base (`d` in :numref:`figremesh1`).
 
 Experiments that use Remeshing

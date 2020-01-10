@@ -362,7 +362,7 @@ time discretization of the explicit terms. We have historically used the
 quasi-second order Adams-Bashforth method (AB-II) for all explicit terms in both
 the momentum and tracer equations. This is still the default mode of
 operation but it is now possible to use alternate schemes for tracers
-(see :numref:`tracer_eqns`), or a :math:`3^{rd}` order Adams-Bashforth method (AB-III). 
+(see :numref:`tracer_eqns`), or a 3rd order Adams-Bashforth method (AB-III). 
 In the previous sections, we summarized an explicit scheme as:
 
 .. math::
