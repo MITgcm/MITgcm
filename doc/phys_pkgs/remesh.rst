@@ -28,8 +28,13 @@ Compile-time options
 
 Shelfice remeshing requires that :filelink:`pkg/shelfice` be enabled, which is done by adding ``shelfice`` to ``packages.conf``
 (see Section :numref:`building_code`). Nonlinear free surface is required, which is enabled by adding ``#define``  :varlink:`NONLIN_FRSURF`
-to :filelink:`CPP_OPTIONS.h <model/inc/CPP_OPTIONS.h>`. Additionally, ``#define`` :varlink:`ALLOW_SHELFICE_REMESHING` must be
-added to :filelink:`SHELFICE_OPTIONS.h <pkg/shelfice/SHELFICE_OPTIONS.h>`
+to :filelink:`CPP_OPTIONS.h <model/inc/CPP_OPTIONS.h>`. Additionally,
+
+-  ``#define`` :varlink:`ALLOW_SHELFICE_REMESHING` must be added to :filelink:`SHELFICE_OPTIONS.h <pkg/shelfice/SHELFICE_OPTIONS.h>`;
+
+-  If :varlink:`SHI_ALLOW_GAMMAFRICT` is defined in :filelink:`SHELFICE_OPTIONS.h <pkg/shelfice/SHELFICE_OPTIONS.h>`
+   we recommend also setting run-time parameter :varlink:`SHI_withBL_uStarTopDz` to ``.true.``, which will limit spurious features
+   in the melt rate as explained in :numref:`ssub_phys_remesh_topdr`.
 
 .. _ssub_phys_remeshing_runtime:
 
@@ -46,6 +51,9 @@ to shelfice remeshing. In addition, :varlink:`nonlinFreeSurf`\ ``=4`` should be 
   |     Name                              |      Default value           |  Description                                                                                                             |
   +=======================================+==============================+==========================================================================================================================+
   | :varlink:`SHI_withBL_realFWflux`      |   FALSE                      | Necessary for mass/volume-conservative freezing/melting when :varlink:`SHELFICEboundaryLayer` ``= .true.``               |
+  +---------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------------+
+  | :varlink:`SHI_withBL_uStarTopDz`      |   FALSE                      | With :varlink:`SHELFICEboundaryLayer` ``= .true.`` compute :math:`u^*` from uVel,vVel                                    |
+  |                                       |                              | averaged over top :math:`\Delta z` thickness                                                                             |
   +---------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------------+
   | :varlink:`SHELFICEmassFile`           |   :kbd:`' '`                 | Initialization file for ice shelf mass (kg m\ :sup:`-2`)                                                                 |
   +---------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------------+
@@ -124,7 +132,9 @@ When :varlink:`SHI_ALLOW_GAMMAFRICT` is defined and :varlink:`SHELFICEuseGammaFr
 near-ice velocities are used to calculate exchange coefficients of heat and salt, which can lead to spurious
 features where there is a change in the level of the top fluid cell. In the default formulation velocities
 (or rather square velocities) are first averaged horizontally from cell faces to cell centers, and then
-vertically over a distance :math:`\Delta z`.
+vertically over a distance :math:`\Delta z`. The run-time parameter :varlink:`SHI_withBL_uStarTopDz`\ ``= .true.`` reverses
+this order: velocities are first averaged vertically, and then horizontally. In some cases this has been found
+to give less spurious variability, but either can be used.
 
 Coupling with :filelink:`pkg/streamice`
 =======================================
