@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/flt:
+  - improve pkg/flt doc and CPP brackets
 o doc:
   - new front-page to tutorial chapter, also listing all verif experiments ;
   - add new section in ch3 about input file format.
