@@ -516,12 +516,10 @@ Here, the value is set to -5000 m everywhere except along the N, S, E, and W edg
 value is set to 0 (i.e., “land”).   As discussed in :numref:`sec_baro_num_config`, the domain in MITgcm is assumed doubly periodic
 (i.e., periodic in both :math:`x`- and :math:`y`-directions), so boundary walls
 are necessary to set up our enclosed box domain.
-The points are ordered from low to high coordinates in both axes (varying fastest in :math:`x`), as a raw binary
-stream of data that is enumerated in the same way as standard MITgcm 2-D horizontal arrays.
-By default, this file is assumed to
-contain 32-bit (single precision) binary numbers.
 The matlab program :filelink:`verification/tutorial_barotropic_gyre/input/gendata.m`
-was used to generate this bathymetry file.
+was used to generate this bathymetry file. By default, this file is assumed to
+contain 32-bit (single precision) binary numbers.
+See :numref:`sec_mitgcm_inp_file_format` for additional information on MITgcm input data file format specifications.
 
 .. _baro_gyre_windx_cosy:
 

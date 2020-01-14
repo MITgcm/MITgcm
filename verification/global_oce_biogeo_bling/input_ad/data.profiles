@@ -1,0 +1,11 @@
+# ******************
+# PROFILES cost f',tion
+# ******************
+ &PROFILES_NML
+# profilesDir = 'PROF',
+ profilesfiles(1) = 'sample_prof',
+# has T, S, and pH constraints. 
+ mult_profiles(1,1)   = 0.0,
+ mult_profiles(1,2)   = 0.0,
+ mult_profiles(1,14)   = 1.0,
+ &

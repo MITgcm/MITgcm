@@ -86,17 +86,11 @@ C     set coefficients to constant values
        ENDDO
       ENDDO
 
-      IF (shelficeMassStepping) THEN
-
-      IF ( .NOT. ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
-     &     .AND. pickupSuff .EQ. ' ') ) THEN
-
-          CALL SHELFICE_READ_PICKUP ( myThid )
-
+      IF ( SHELFICEMassStepping .AND.
+     &     ( nIter0.NE.0 .OR. startTime.NE.baseTime
+     &                   .OR. pickupSuff.NE.' ') ) THEN
+        CALL SHELFICE_READ_PICKUP( 1, nIter0, myThid )
       ENDIF
-    
-      ENDIF
-
 
 #ifdef ALLOW_COST
       DO bj = myByLo(myThid), myByHi(myThid)

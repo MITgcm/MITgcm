@@ -907,7 +907,7 @@ features and limitations:
     called “network byte order”) data. By handling byte-swapping within
     the model, MITgcm output is more easily ported between different
     machines, architectures, compilers, etc. Byteswapping can be turned
-    on/off at compile time within :filelink:`pkg/mdsio`` using the ``_BYTESWAPIO``
+    on/off at compile time within :filelink:`pkg/mdsio` using the ``_BYTESWAPIO``
     CPP macro which is usually set within a :filelink:`genmake2 <tools/genmake2>` options file or
     ``optfile`` (see :numref:`genmake2_optfiles`).
     Additionally, some compilers may have byte-swap options that are
@@ -1176,9 +1176,9 @@ available parameters currently include:
 +---------------------------------+---------+------------+----------------------------------------------+
 | :varlink:`monitor_mnc`          | L       | .TRUE.     | write :filelink:`pkg/monitor` output w/MNC   |
 +---------------------------------+---------+------------+----------------------------------------------+
-| :varlink:`timeave_mnc`          | L       | .TRUE.     | write :filelink:`pkg/timeave`` output w/MNC  |
+| :varlink:`timeave_mnc`          | L       | .TRUE.     | write :filelink:`pkg/timeave` output w/MNC   |
 +---------------------------------+---------+------------+----------------------------------------------+
-| :varlink:`autodiff_mnc`         | L       | .TRUE.     | write :filelink:`pkg/autodiff`` output w/MNC |
+| :varlink:`autodiff_mnc`         | L       | .TRUE.     | write :filelink:`pkg/autodiff` output w/MNC  |
 +---------------------------------+---------+------------+----------------------------------------------+
 | :varlink:`mnc_max_fsize`        | R       | 2.1e+09    | max allowable file size (<2GB)               |
 +---------------------------------+---------+------------+----------------------------------------------+

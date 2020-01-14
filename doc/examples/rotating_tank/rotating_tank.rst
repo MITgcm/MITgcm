@@ -1,7 +1,7 @@
 .. _sec_eg_tank:
 
-A Rotating Tank in Cylindrical Coordinates
-==========================================
+Rotating Tank
+=============
 
   (in directory: :filelink:`verification/rotating_tank/`)
 
