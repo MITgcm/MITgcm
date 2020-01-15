@@ -287,20 +287,20 @@ C     Calculate the 3D diffusivity as per Bates et al. (2013)
 #endif
 
 #ifdef ALLOW_GM_LEITH_QG
-C   Use Leith QG viscosity in GMRedi scheme
-      IF (GM_useLeithQG) THEN
-        DO k=1,Nr
-          DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-              GM_LeithQG_K(i,j,k,bi,bj) = 0. _d 0
-            ENDDO
+# ifdef ALLOW_AUTODIFF
+      DO k=1,Nr
+        DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            GM_LeithQG_K(i,j,k,bi,bj) = 0. _d 0
           ENDDO
         ENDDO
-        IF ( viscC2LeithQG.NE.0. ) THEN
+      ENDDO
+# endif
+      IF ( GM_useLeithQG ) THEN
+C   Use Leith QG viscosity in GMRedi scheme
           CALL GMREDI_CALC_QGLEITH(
      O                GM_LeithQG_K(1-OLx,1-OLy,1,bi,bj),
      I                bi, bj, myTime, myIter, myThid )
-        ENDIF
       ENDIF
 #endif /* ALLOW_GM_LEITH_QG */
 
@@ -1117,26 +1117,26 @@ C--   Time-average
       IF ( taveFreq.GT.0. ) THEN
 
          CALL TIMEAVE_CUMULATE( GM_Kwx_T, Kwx, Nr,
-     &                          deltaTclock, bi, bj, myThid )
+     &                          deltaTClock, bi, bj, myThid )
          CALL TIMEAVE_CUMULATE( GM_Kwy_T, Kwy, Nr,
-     &                          deltaTclock, bi, bj, myThid )
+     &                          deltaTClock, bi, bj, myThid )
          CALL TIMEAVE_CUMULATE( GM_Kwz_T, Kwz, Nr,
-     &                          deltaTclock, bi, bj, myThid )
+     &                          deltaTClock, bi, bj, myThid )
 #ifdef GM_VISBECK_VARIABLE_K
        IF ( GM_Visbeck_alpha.NE.0. ) THEN
          CALL TIMEAVE_CUMULATE( Visbeck_K_T, VisbeckK, 1,
-     &                          deltaTclock, bi, bj, myThid )
+     &                          deltaTClock, bi, bj, myThid )
        ENDIF
 #endif
 #ifdef GM_BOLUS_ADVEC
        IF ( GM_AdvForm ) THEN
          CALL TIMEAVE_CUMULATE( GM_PsiXtave, GM_PsiX, Nr,
-     &                          deltaTclock, bi, bj, myThid )
+     &                          deltaTClock, bi, bj, myThid )
          CALL TIMEAVE_CUMULATE( GM_PsiYtave, GM_PsiY, Nr,
-     &                          deltaTclock, bi, bj, myThid )
+     &                          deltaTClock, bi, bj, myThid )
        ENDIF
 #endif
-       GM_timeAve(bi,bj) = GM_timeAve(bi,bj)+deltaTclock
+       GM_timeAve(bi,bj) = GM_timeAve(bi,bj)+deltaTClock
 
       ENDIF
 #endif /* ALLOW_TIMEAVE */
