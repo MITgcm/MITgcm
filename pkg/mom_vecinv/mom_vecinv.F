@@ -108,7 +108,9 @@ C     vort3BC  :: same as vort3  but account for no-slip BC
       _RL strain  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL strainBC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_LEITH_QG
       _RL Nsquare (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
       _RL cDrag   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL omega3  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -210,7 +212,9 @@ c       viscA4_D(i,j) = 0.
         strain(i,j)  = 0. _d 0
         strainBC(i,j)= 0. _d 0
         stretching(i,j) = 0. _d 0
+#ifdef ALLOW_LEITH_QG
         Nsquare(i,j) = 0. _d 0
+#endif
         tension(i,j) = 0. _d 0
 #ifdef ALLOW_AUTODIFF
         hFacZ(i,j)   = 0. _d 0
