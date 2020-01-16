@@ -224,7 +224,7 @@ Each example experiment directory has the following subdirectories:
 
 .. only:: html
 
-   In directory :filelink:`rotating_tank <verification/rotating_tank>`:
+   In directory :filelink:`tutorial_rotating_tank <verification/tutorial_rotating_tank>`:
    Laboratory rotating tank simulation,
    using a cylindrical coordinate system at laboratory scale of 46 cm diameter and 14.5 cm deep.
    This is a typical laboratory setup for illustrating principles of geophysical fluid mechanics. An annulus of fluid is heated differentially
