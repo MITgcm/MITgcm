@@ -3,7 +3,7 @@
 Rotating Tank
 =============
 
-  (in directory: :filelink:`verification/rotating_tank/`)
+  (in directory: :filelink:`verification/tutorial_rotating_tank/`)
 
 This example configuration demonstrates using the MITgcm to simulate a
 laboratory demonstration using a differentially heated rotating
@@ -38,26 +38,26 @@ Code Configuration
 ------------------
 
 The model configuration for this experiment resides under the
-directory :filelink:`verification/rotating_tank/`.  The experiment files
+directory :filelink:`verification/tutorial_rotating_tank/`.  The experiment files
 
- - :filelink:`verification/rotating_tank/input/data`
- - :filelink:`verification/rotating_tank/input/data.pkg`
- - :filelink:`verification/rotating_tank/input/eedata`
- - ``verification/rotating_tank/input/bathyPolR.bin``
- - ``verification/rotating_tank/input/thetaPolR.bin``
- - :filelink:`verification/rotating_tank/code/CPP_OPTIONS.h`
- - :filelink:`verification/rotating_tank/code/SIZE.h`
+ - :filelink:`verification/tutorial_rotating_tank/input/data`
+ - :filelink:`verification/tutorial_rotating_tank/input/data.pkg`
+ - :filelink:`verification/tutorial_rotating_tank/input/eedata`
+ - ``verification/tutorial_rotating_tank/input/bathyPolR.bin``
+ - ``verification/tutorial_rotating_tank/input/thetaPolR.bin``
+ - :filelink:`verification/tutorial_rotating_tank/code/CPP_OPTIONS.h`
+ - :filelink:`verification/tutorial_rotating_tank/code/SIZE.h`
 
 contain the code customizations and parameter settings for this
 experiments. Below we describe the customizations
 to these files associated with this experiment.
 
-File :filelink:`input/data <verification/rotating_tank/input/data>`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+File :filelink:`input/data <verification/tutorial_rotating_tank/input/data>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ../../../verification/rotating_tank/input/data
+.. literalinclude:: ../../../verification/tutorial_rotating_tank/input/data
     :linenos:
-    :caption: verification/rotating_tank/input/data
+    :caption: verification/tutorial_rotating_tank/input/data
 
 This file specifies the main parameters
 for the experiment. The parameters that are significant for this configuration
@@ -210,17 +210,17 @@ are
   and exterior walls of the tank -- typically taken to be icewater on
   the inside and room temperature on the outside.
 
-Other lines in the file :filelink:`verification/rotating_tank/input/data` are standard values
-that are described in :numref:`customize_model`.
+Other lines in the file :filelink:`verification/tutorial_rotating_tank/input/data` are
+standard values that are described in :numref:`customize_model`.
 
-File - :filelink:`input/data.pkg <verification/rotating_tank/input/data.pkg>`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+File - :filelink:`input/data.pkg <verification/tutorial_rotating_tank/input/data.pkg>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This file uses standard default values and does not contain
 customizations for this experiment.
 
-File - :filelink:`input/eedata <verification/rotating_tank/input/eedata>`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+File - :filelink:`input/eedata <verification/tutorial_rotating_tank/input/eedata>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This file uses standard default values and does not contain
 customizations for this experiment.
@@ -242,12 +242,12 @@ map of depth values. For this experiment values are either
 the tank. The file contains a raw binary stream of data that is enumerated
 in the same way as standard MITgcm 2-D, horizontal arrays.
 
-File :filelink:`code/SIZE.h <verification/rotating_tank/code/SIZE.h>`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+File :filelink:`code/SIZE.h <verification/tutorial_rotating_tank/code/SIZE.h>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ../../../verification/rotating_tank/code/SIZE.h
+.. literalinclude:: ../../../verification/tutorial_rotating_tank/code/SIZE.h
     :linenos:
-    :caption: verification/rotating_tank/code/SIZE.h
+    :caption: verification/tutorial_rotating_tank/code/SIZE.h
 
 Two lines are customized in this file for the current experiment
 
@@ -271,8 +271,8 @@ Two lines are customized in this file for the current experiment
   the lateral domain extent in grid points for the
   axis aligned with the :math:`y`-coordinate.
 
-File :filelink:`code/CPP_OPTIONS.h <verification/rotating_tank/code/CPP_OPTIONS.h>`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+File :filelink:`code/CPP_OPTIONS.h <verification/tutorial_rotating_tank/code/CPP_OPTIONS.h>`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This file uses standard default values and does not contain
 customizations for this experiment.

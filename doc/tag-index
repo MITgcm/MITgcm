@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification:
+  - rename dir "rotating_tank" to "tutorial_rotating_tank".
 o pkg/flt:
   - improve pkg/flt doc and CPP brackets
 o doc:
