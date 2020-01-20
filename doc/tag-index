@@ -1,6 +1,15 @@
     Notes on tags used in MITgcmUV
     ==============================
-
+o model/src:
+  - additional QGLeith config checks
+o pkg/gmredi:
+  - improve error handling
+  - additional QGLeith config checks
+  - standardise variable name capitalizations
+o pkg/mom_common:
+  - reorganize viscosity variable declarations
+o pkg/mom_common, mom_vecinv, mom_fluxform
+  - protect QGLeith code with ifdefs
 o doc:
   - new front-page to tutorial chapter, also listing all verif experiments ;
   - add new section in ch3 about input file format.
