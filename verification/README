@@ -1,6 +1,0 @@
-See Chapter 4 of the online documentation https://mitgcm.readthedocs.io/en/latest/examples/examples.html#
-for documentation of MITgcm Tutorial Example Experiments.
-
-A list of additional verification experiments in this directory, which brief description, is presented for forward model setups in
-https://mitgcm.readthedocs.io/en/latest/examples/examples.html#subsec-add-expts-fwd
-and for adjoint model setups in https://mitgcm.readthedocs.io/en/latest/examples/examples.html#subsec-add-expts-adj
