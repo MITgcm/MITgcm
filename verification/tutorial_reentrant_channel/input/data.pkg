@@ -1,0 +1,9 @@
+# Packages
+ &PACKAGES
+ useRBCS=.TRUE.,
+ useGMRedi=.TRUE.,
+# for non_GM run, uncomment below 
+# useGMRedi=.FALSE.,
+ useDiagnostics=.TRUE.,
+ useLayers=.TRUE.,
+ &

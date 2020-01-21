@@ -1,0 +1,39 @@
+# Diagnostic Package Choices
+#
+ &diagnostics_list
+ 
+# 2D diagnostics
+ fields(1:3,1) = 'TRELAX  ','MXLDEPTH', 'ETAN    ',
+ frequency(1) = 31104000.,
+ filename(1) = 'Diags/2D_diags',
+
+# 3D state variables
+ fields(1:8,2) =   'THETA   ', 'VVEL    ', 'UVEL    ',
+                   'WVEL    ', 'momVort3', 'momHDiv ',
+                   'CONVADJ ', 'PsiVEL  ',
+ frequency(2) = 31104000.,
+ filename(2) = 'Diags/state',
+ 
+# Heat budget terms
+ fields(1:7,3) = 'ADVx_TH ', 'ADVy_TH ', 'ADVr_TH ',
+                 'DFxE_TH ', 'DFyE_TH ', 'DFrI_TH ',
+                 'DFrE_TH ',
+ frequency(3) = 31104000.,
+ filename(3) = 'Diags/heat_3D',
+
+# Residual mean flow - Layers Package
+ fields(1:3,4) = 'LaVH1TH ', 'LaHs1TH ', 'LaVa1TH ' 
+ frequency(4) = 31104000.,
+ fileName(4) = 'Diags/layDiag',
+ 
+# GM diagnostics
+ fields(1:2,5) = 'GM_PsiX ', 'GM_PsiY ',
+ frequency(5) = 31104000.,
+ filename(5) = 'Diags/GM_diags',
+ &
+
+ &DIAG_STATIS_PARMS
+ stat_fields(1:2,1) =  'THETA   ','TRELAX  ',
+ stat_freq(1) = 864000.,
+ stat_fName(1) = 'dynStDiag',
+ &
