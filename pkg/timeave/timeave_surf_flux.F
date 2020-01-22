@@ -48,7 +48,7 @@ C-    uFlux (surface momentum flux [Pa=N/m2], positive <-> increase u)
         ENDDO
        ENDDO
        CALL TIMEAVE_CUMUL_1T(uFluxtave,tmpFld,1,
-     &                                   deltaTclock, bi, bj, myThid)
+     &                                   deltaTClock, bi, bj, myThid)
 
 C-    vFlux (surface momentum flux [Pa=N/m2], positive <-> increase v)
        DO j=1,sNy
@@ -57,7 +57,7 @@ C-    vFlux (surface momentum flux [Pa=N/m2], positive <-> increase v)
         ENDDO
        ENDDO
        CALL TIMEAVE_CUMUL_1T(vFluxtave,tmpFld,1,
-     &                                   deltaTclock, bi, bj, myThid)
+     &                                   deltaTClock, bi, bj, myThid)
 
 C     tFlux (=Heat flux [W/m2], positive <-> increasing Theta)
        DO j=1,sNy
@@ -66,7 +66,7 @@ C     tFlux (=Heat flux [W/m2], positive <-> increasing Theta)
 #ifdef SHORTWAVE_HEATING
      &    -Qsw(i,j,bi,bj)+
 #endif
-     &    (surfaceForcingT(i,j,bi,bj)+surfaceForcingTice(I,J,bi,bj))
+     &    (surfaceForcingT(i,j,bi,bj)+adjustColdSST_diag(I,J,bi,bj))
      &    *HeatCapacity_Cp*rUnit2mass
         ENDDO
        ENDDO
@@ -82,7 +82,7 @@ C     tFlux (=Heat flux [W/m2], positive <-> increasing Theta)
        ENDIF
 #endif /* NONLIN_FRSURF */
        CALL TIMEAVE_CUMUL_1T( tFluxtave, tmpFld, 1,
-     &                                   deltaTclock, bi, bj, myThid)
+     &                                   deltaTClock, bi, bj, myThid)
 
 C     sFlux (=salt flux [psu.kg/m2/s], positive <-> increasing Theta)
        DO j=1,sNy
@@ -103,7 +103,7 @@ C     sFlux (=salt flux [psu.kg/m2/s], positive <-> increasing Theta)
        ENDIF
 #endif /* NONLIN_FRSURF */
        CALL TIMEAVE_CUMUL_1T( sFluxtave, tmpFld, 1,
-     &                                   deltaTclock, bi, bj, myThid)
+     &                                   deltaTClock, bi, bj, myThid)
 
 #endif /* ALLOW_TIMEAVE */
 

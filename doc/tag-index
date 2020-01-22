@@ -1,15 +1,18 @@
     Notes on tags used in MITgcmUV
     ==============================
+
 o model/src:
-  - additional QGLeith config checks
+  - rename array "surfaceForcingTice" to "adjustColdSST_diag" and change the
+    description to better reflect what it is: a diagnostic for SST adjustment.
+  - remove most of the TAF storage directive for "adjustColdSST_diag" that were
+    not necessary once it's properly initialized.
 o pkg/gmredi:
   - improve error handling
   - additional QGLeith config checks
   - standardise variable name capitalizations
-o pkg/mom_common:
-  - reorganize viscosity variable declarations
-o pkg/mom_common, mom_vecinv, mom_fluxform
+o pkg/mom_common, mom_vecinv, mom_fluxform:
   - protect QGLeith code with ifdefs
+  - additional QGLeith config checks (in model/src/config_check.F)
 o verification:
   - rename dir "rotating_tank" to "tutorial_rotating_tank".
 o pkg/flt:
