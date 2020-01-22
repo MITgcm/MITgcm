@@ -810,8 +810,8 @@ the above recommendations are obsolete. Use mEVP or aEVP instead.)
 
 .. _para_phys_pkg_seaice_EVPstar:
 
-More stable variants of Elastic-Viscous-Plastic Dynamics: EVP\* , mEVP, and aEVP
---------------------------------------------------------------------------------
+More stable variants of Elastic-Viscous-Plastic Dynamics: EVP\*, mEVP, and aEVP
+-------------------------------------------------------------------------------
 
 The genuine EVP scheme appears to give noisy solutions (see Hunke 2001, Lemieux et al. 2012,
 Bouillon et a1. 2013 :cite:`hun01,lemieux12,bouillon13`). This has led to a modified EVP or EVP\*

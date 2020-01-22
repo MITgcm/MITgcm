@@ -2387,3 +2387,11 @@ be written as:
      \vec{N_Q}_z &= J^B_z + J^F_z  \\
      J^B_z &= -\frac{f}{h}\left( \frac{\alpha Q_{net}}{C_w}-\rho_0 \beta S_{net}\right) \\
      J^F_z &= \frac{1}{\rho\delta_e} \vec{k}\times\tau\cdot\nabla\sigma_m \end{aligned}
+
+.. _sub_outp_pkg_flt:
+
+pkg/flt – Simulation of float / parcel displacements
+====================================================
+
+.. include:: flt.rst
+

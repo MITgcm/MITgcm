@@ -97,6 +97,12 @@ C     shelficeForcingT       :: analogue of surfaceForcingT
 C                               units are  r_unit.Kelvin/s (=Kelvin.m/s if r=z)
 C     shelficeForcingS       :: analogue of surfaceForcingS
 C                               units are  r_unit.psu/s (=psu.m/s if r=z)
+#ifdef ALLOW_DIAGNOSTICS
+C     shelficeDragU          :: Ice-Shelf stress (for diagnostics), Zonal comp.
+C                               Units are N/m^2 ;   > 0 increase top uVel
+C     shelficeDragV          :: Ice-Shelf stress (for diagnostics), Merid. comp.
+C                               Units are N/m^2 ;   > 0 increase top vVel
+#endif /* ALLOW_DIAGNOSTICS */
 C-----------------------------------------------------------------------
 C \ev
 CEOP
@@ -163,6 +169,12 @@ CEOP
       COMMON /SHELFICE_MASKS_CTRL/ maskSHI
       _RS maskSHI  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* ALLOW_SHIFWFLX_CONTROL */
+
+#ifdef ALLOW_DIAGNOSTICS
+      COMMON /SHELFICE_DIAG_DRAG/ shelficeDragU, shelficeDragV
+      _RS shelficeDragU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS shelficeDragV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* ALLOW_DIAGNOSTICS */
 
       LOGICAL SHELFICEisOn
       LOGICAL useISOMIPTD

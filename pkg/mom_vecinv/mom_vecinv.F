@@ -108,7 +108,9 @@ C     vort3BC  :: same as vort3  but account for no-slip BC
       _RL strain  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL strainBC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_LEITH_QG
       _RL Nsquare (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
       _RL cDrag   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL omega3  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -210,7 +212,9 @@ c       viscA4_D(i,j) = 0.
         strain(i,j)  = 0. _d 0
         strainBC(i,j)= 0. _d 0
         stretching(i,j) = 0. _d 0
+#ifdef ALLOW_LEITH_QG
         Nsquare(i,j) = 0. _d 0
+#endif
         tension(i,j) = 0. _d 0
 #ifdef ALLOW_AUTODIFF
         hFacZ(i,j)   = 0. _d 0
@@ -532,18 +536,20 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
         ENDIF
        ENDIF
 #ifdef ALLOW_SHELFICE
-       IF ( useShelfIce ) THEN
+       IF ( useShelfIce .AND. selectImplicitDrag.EQ.0 ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE KE(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 #endif
-        CALL SHELFICE_U_DRAG( bi, bj, k,
-     I                uFld, vFld, KE, kappaRU,
-     O                vF,
-     I                myThid )
+        CALL SHELFICE_U_DRAG_COEFF( bi, bj, k, .TRUE.,
+     I                  uFld, vFld, kappaRU, KE,
+     O                  cDrag,
+     I                  myIter, myThid )
         DO j=jMin,jMax
          DO i=iMin,iMax
-          guDiss(i,j) = guDiss(i,j) + vF(i,j)
+           gUdiss(i,j) = gUdiss(i,j)
+     &                 - cDrag(i,j)*uFld(i,j)
+     &                 *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
          ENDDO
         ENDDO
        ENDIF
@@ -621,18 +627,20 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
         ENDIF
        ENDIF
 #ifdef ALLOW_SHELFICE
-       IF ( useShelfIce ) THEN
+       IF ( useShelfIce .AND. selectImplicitDrag.EQ.0 ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE KE(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 #endif
-        CALL SHELFICE_V_DRAG( bi, bj, k,
-     I                uFld, vFld, KE, kappaRV,
-     O                vF,
-     I                myThid )
+        CALL SHELFICE_V_DRAG_COEFF( bi, bj, k, .TRUE.,
+     I                  uFld, vFld, kappaRV, KE,
+     O                  cDrag,
+     I                  myIter, myThid )
         DO j=jMin,jMax
          DO i=iMin,iMax
-          gvDiss(i,j) = gvDiss(i,j) + vF(i,j)
+           gvDiss(i,j) = gvDiss(i,j)
+     &                 - cDrag(i,j)*vFld(i,j)
+     &                 *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
          ENDDO
         ENDDO
        ENDIF

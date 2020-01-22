@@ -18,11 +18,11 @@
  OBCSprintDiags = .FALSE.,
  &
 
-# Orlanski parameters
- &OBCS_PARM02
+# Orlanski parameters (skipped with #undef ALLOW_ORLANSKI)
+#&OBCS_PARM02
 #Cmax=0.45,
 #cVelTimeScale=1000.,
- &
+#&
 
 # Sponge layer parameters
  &OBCS_PARM03
