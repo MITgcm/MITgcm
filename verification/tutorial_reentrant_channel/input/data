@@ -96,8 +96,8 @@
 
 # Input datasets
  &PARM05
- bathyFile='bathy.bin'
- zonalWindFile='zonal_wind.bin',
- thetaClimFile='SST_relax.bin',
- hydrogThetaFile='temperature.bin',
+ bathyFile='bathy.50km.bin'
+ zonalWindFile='zonal_wind.50km.bin',
+ thetaClimFile='SST_relax.50km.bin',
+ hydrogThetaFile='temperature.50km.bin',
  &

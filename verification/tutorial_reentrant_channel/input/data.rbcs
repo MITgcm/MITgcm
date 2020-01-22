@@ -2,8 +2,8 @@
  &RBCS_PARM01
  useRBCtemp=.TRUE.,
  tauRelaxT=864000.,
- relaxMaskFile='T_relax_mask.bin'
- relaxTFile='temperature.bin',
+ relaxMaskFile='T_relax_mask.50km.bin'
+ relaxTFile='temperature.50km.bin',
  &
 
 # RBCS for pTracers (read this namelist only when ptracers pkg is compiled)
