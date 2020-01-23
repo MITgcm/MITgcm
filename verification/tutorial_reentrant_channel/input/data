@@ -35,7 +35,7 @@
  staggerTimeStep=.TRUE.,
 # 
 #######################################################
-# for non-GM run, set horizontal diffusivity non-zero: 
+# for non-GM coarse run, set horizontal diffusivity non-zero: 
 # diffKhT=1000.,
 #
 # uncomment the following for eddy-permitting run:
