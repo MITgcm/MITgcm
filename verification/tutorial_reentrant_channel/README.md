@@ -4,7 +4,7 @@ Tutorial Example: "Reentrant channel"
 
 Configure and compile the code:
   cd build
-  ../../../tools/genmake2 -mpi -mods ../code [-of my_platform_optionFile]
+  ../../../tools/genmake2 -mods ../code [-of my_platform_optionFile]
   make depend
   make
   cd ..
@@ -20,4 +20,4 @@ There is comparison output in the directory:
   results/output.txt
 
 Comments:
-  The input data is real*4 and generated using the MATLAB script gendata.m.
+  The input data is real*4 and generated using the MATLAB script gendata_50km.m.
