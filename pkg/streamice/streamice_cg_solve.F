@@ -100,7 +100,7 @@ C     LOCAL VARIABLES
 
 #ifdef ALLOW_PETSC
 
-      if (streamice_use_petsc) then
+      if (streamice_use_petsc.and.petscFlag.eq.1) then
 
       CALL STREAMICE_CG_SOLVE_PETSC(
      U         cg_Uin,     ! x-velocities

@@ -59,8 +59,10 @@ C     iUnit      :: Work variable for IO unit number
      &     streamice_kx_b_init, streamice_ky_b_init,
      &     STREAMICEbasalTracConfig,
      &     STREAMICEBdotConfig,
+     &     STREAMICEAdotConfig,
      &     STREAMICEbasalTracFile,
      &     STREAMICEBdotFile,
+     &     STREAMICEAdotFile,
      &     STREAMICEBdotTimeDepFile,
      &     STREAMICEvelOptimFile,
      &     STREAMICEtopogFile,
@@ -96,6 +98,7 @@ C     iUnit      :: Work variable for IO unit number
      &     STREAMICE_chkfixedptconvergence,
      &     STREAMICE_chkresidconvergence,
      &     STREAMICE_alt_driving_stress,
+     &     STREAMICE_allow_reg_coulomb
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      &     streamice_buttr_width,
      &     useStreamiceFlowlineButtr,
@@ -115,7 +118,7 @@ C     iUnit      :: Work variable for IO unit number
 #ifdef ALLOW_PETSC
       NAMELIST /STREAMICE_PARMPETSC/
      &     PETSC_PRECOND_TYPE, PETSC_SOLVER_TYPE, 
-     &     streamice_use_petsc
+     &     streamice_use_petsc, streamice_maxnliter_petsc
 #endif
 
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
@@ -196,7 +199,7 @@ C--   Default values for STREAMICE
       eps_glen_min = 1.0e-12
       eps_u_min = 1.0e-6
       C_basal_fric_const = 31.71 ! Pa (m/a)-1n
-      n_basal_friction = 1.
+      n_basal_friction = -1.
       streamice_vel_update = deltaT ! seconds
       streamice_cg_tol = 1e-6
       streamice_nonlin_tol = 1e-6
@@ -211,6 +214,7 @@ C--   Default values for STREAMICE
 #endif
       streamice_max_cg_iter = 2000
       streamice_max_nl_iter = 100
+      streamice_maxnliter_petsc = -1
       streamice_maxcgiter_cpl = 0
       streamice_maxnliter_cpl = 0
 #ifdef ALLOW_OPENAD
@@ -245,7 +249,9 @@ C--   Default values for STREAMICE
       STREAMICEsigcoordFile = ' '
       STREAMICEbasalTracConfig = 'UNIFORM'
       STREAMICEBdotConfig = ''
+      STREAMICEAdotConfig = ''
       STREAMICEBdotFile = ''
+      STREAMICEAdotFile = ''
       STREAMICEBdotTimeDepFile = ' '
       STREAMICEbasalTracFile = ' '
       STREAMICEvelOptimFile = ''
@@ -314,6 +320,7 @@ C--   Default values for STREAMICE
       STREAMICE_chkfixedptconvergence = .true.
       STREAMICE_chkresidconvergence = .true.
       STREAMICE_alt_driving_stress = .FALSE.
+      STREAMICE_allow_reg_coulomb = .FALSE.
       STREAMICE_h_ctrl_const_surf = .FALSE.
       STREAMICE_allow_cpl = .false.
 !       STREAMICE_hybrid_stress= .FALSE.
@@ -449,6 +456,12 @@ C-    Set Output type flags :
      &       .AND. STREAMICE_tave_mnc ) STREAMICE_tave_mdsio = .FALSE.
         IF ( .NOT.outputTypesInclusive
      &       .AND. STREAMICE_dump_mnc ) STREAMICE_dump_mdsio = .FALSE.
+      ENDIF
+#endif
+
+#ifdef ALLOW_PETSC
+      IF (streamice_maxnliter_petsc.eq.-1) then
+       streamice_maxnliter_petsc = streamice_max_nl_iter
       ENDIF
 #endif
 

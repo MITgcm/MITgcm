@@ -397,6 +397,26 @@ C The 0 is the "iteration" argument. The ' ' is an empty suffix
 
 ! finish initialize melt rates
 
+! initialize SMB rates
+
+      IF ( STREAMICEAdotConfig.EQ.'FILE' ) THEN
+
+       IF ( STREAMICEAdotFile .NE. ' ' ) THEN
+        _BARRIER
+
+        CALL READ_FLD_XY_RL( STREAMICEAdotFile, ' ',
+     &      ADOT_streamice, 0, myThid )
+
+       ELSE
+        WRITE(msgBuf,'(A)') 'INIT ADOT - FILENAME MISSING'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+       ENDIF
+
+      ENDIF
+
+! finish initialize SMB rates
+
 ! initialize basal traction
 
       IF ( STREAMICEbasalTracConfig.EQ.'FILE' ) THEN

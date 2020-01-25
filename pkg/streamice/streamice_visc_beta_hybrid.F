@@ -44,6 +44,12 @@ C     LOCAL VARIABLES
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
       _RL buttr_param, pwr
 #endif
+#ifdef STREAMICE_COULOMB_SLIDING
+      _RL effective_stress, hf
+      _RL ETA_GL_STREAMICE
+      external ETA_GL_STREAMICE
+#endif
+
 
       _RL STREAMICE_BSTRESS_EXP
 !       _RL total_vol_out
@@ -223,10 +229,38 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
 
            unorm = sqrt(ub**2+vb**2+eps_u_min**2)
 
+#ifndef STREAMICE_COULOMB_SLIDING
+
            fb = C_basal_friction(i,j,bi,bj)**2 *
      &      STREAMICE_BSTRESS_EXP (unorm,n_basal_friction) *
      &      streamice_basal_geom(i,j,bi,bj) *
      &      float_frac_streamice(i,j,bi,bj)
+
+#else
+          
+           IF (streamice_allow_reg_coulomb) 
+           hf = max (0.0, -1.0 *streamice_density_ocean_avg
+     &        / streamice_density * R_low_si(i,j,bi,bj))
+           
+           effective_stress = streamice_density * gravity * 
+     &      ETA_GL_STREAMICE (
+     &       H_streamice(i,j,bi,bj)-hf,
+     &       0. _d 0,
+     &       1. _d 0,
+     &       0. _d 0,
+     &       streamice_smooth_gl_width)
+           effective_stress= max(0.0, effective_stress)
+           fb = C_basal_friction(i,j,bi,bj)**2 *
+     &      unorm ** n_basal_friction * 
+     &      .5 * effective_stress /
+     &      (C_basal_friction(i,j,bi,bj)**(2/n_basal_friction)*unorm+
+     &       (0.5 * effective_stress) ** (1/n_basal_friction)) ** 
+     &        n_basal_friction *
+     &      streamice_basal_geom(i,j,bi,bj) *
+     &      float_frac_streamice(i,j,bi,bj) / unorm
+           ENDIF
+
+#endif
 
            tau_beta_eff_streamice(i,j,bi,bj) =
      &       fb /

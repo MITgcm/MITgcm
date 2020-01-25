@@ -417,11 +417,38 @@ rethought if the effects of tides are to be considered.
 :math:`\vec{\tau}_b` has the form
 
 .. math::
-   \vec{\tau}_b = C (|\vec{u}|^2+u_{min}^2)^{\frac{m-1}{2}}\vec{u}
+   \vec{\tau}_b = C (|\vec{u}|^2+u_{min}^2)^{\frac{m-1}{2}}\vec{u}.
    :label: tau_eqn
  
 Again, the form is slightly different if a hybrid formulation is to be
-used.
+used, and the velocity refers to sliding velocity (:math:`u_b`).
+
+An alternative to the above "power law" sliding parameterisation can be used by
+defining the :varlink:`STREAMICE_COULOMB_SLIDING` CPP option and setting the 
+:varlink:`streamice_allow_reg_coulomb` to ``.TRUE.``:
+
+.. math::
+   \vec{\tau}_b = C\frac{|u|^{1/3}N}{4\left[C^3|u|+(0.25N)^3\right]^{1/3}}u^{-1}\vec{u}
+   :label: coul_eqn
+
+where :math:`u` is shorthand for the regularised norm in :eq:`tau_eqn`. 
+:math:`N` is effective pressure:
+
+.. math::
+   N = \rho_i g (H - H_f),
+   :label: eff_press
+
+with :math:`H_f` the floatation thickness 
+
+.. math::
+   h_f = max\left(0,-\frac{\rho_w}{\rho_i}z_b\right).
+   :label: eff_press
+
+This formulation was used in the MISMIP+ intercomparison tests :cite:`asay-davis:2016`.
+:eq:`eff_press` assumes complete hydraulic connectivity to the ocean throughout 
+the domain, which is likely only true within a few tens of kilometers of the 
+grounding line, though far from the grounding line the velocity-strengthening
+term character will become dominant.
 
 The momentum equations are solved together with appropriate boundary
 conditions, discussed below. In the case of a calving front boundary

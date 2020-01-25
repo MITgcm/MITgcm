@@ -56,7 +56,6 @@ C     LOCAL VARIABLES
 
 !       _RL taudx (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 !       _RL taudy (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
       IF (STREAMICE_alt_driving_stress) THEN
        CALL STREAMICE_DRIVING_STRESS_FD (myThid)
       ELSEIF (STREAMICE_ppm_driving_stress) THEN
@@ -128,7 +127,6 @@ C     LOCAL VARIABLES
       if (STREAMICE_chkresidconvergence .or.
      &    (streamice_maxnliter_cpl.eq.0 .and. myIter.eq.0)) then
 
-
         CALL STREAMICE_GET_VEL_RESID_ERR ( err_init, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -151,7 +149,6 @@ C START NL ITER. LOOP
 C-------------------------------------------------------------------
 
       DO iter=1,maxNLIter
-
 
 C     To avoid using "exit", loop goes through all iterations
 C       but after convergence loop does nothing
@@ -211,6 +208,15 @@ C       but after convergence loop does nothing
 !$TAF STORE visc_streamice = comlev1_stream_nl, key=ikey_nl
 !$TAF STORE zu_old_si = comlev1_stream_nl, key=ikey_nl
 !$TAF STORE zv_old_si = comlev1_stream_nl, key=ikey_nl
+#endif
+
+      petscFlag = 0
+#ifdef ALLOW_PETSC
+      if (streamice_use_petsc) then
+        if (iter .le. streamice_maxnliter_petsc) then
+          petscFlag = 1
+        endif
+      endif
 #endif
 
        CALL STREAMICE_CG_WRAPPER(

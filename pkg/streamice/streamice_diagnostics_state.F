@@ -111,6 +111,8 @@ C     === Global variables ===
      &      0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(surf_el_streamice,'SI_selev',
      &      0,1,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(bdot_streamice,'BDOT_SI ',
+      &      0,1,0,1,1,myThid)
 
 #endif
 

@@ -96,7 +96,8 @@ C     -------------------------- INT PARAMS ------------------------------------
       COMMON /STREAMICE_PARMS_I/
      &     streamice_max_cg_iter, streamice_max_nl_iter,
      &     streamice_vel_upd_counter, streamice_nstep_velocity,
-     &     streamice_maxcgiter_cpl, streamice_maxnliter_cpl
+     &     streamice_maxcgiter_cpl, streamice_maxnliter_cpl,
+     &     streamice_maxnliter_Petsc, petscFlag
 #ifdef ALLOW_OPENAD
      &     ,streamice_smooth_thick_adjoint
 #endif
@@ -105,6 +106,7 @@ C     -------------------------- INT PARAMS ------------------------------------
       INTEGER streamice_max_cg_iter, streamice_max_nl_iter
       INTEGER streamice_vel_upd_counter, streamice_nstep_velocity
       INTEGER streamice_maxcgiter_cpl, streamice_maxnliter_cpl
+      INTEGER streamice_maxnliter_Petsc, petscFlag
 #ifdef ALLOW_OPENAD
       INTEGER streamice_smooth_thick_adjoint
 #endif
@@ -129,9 +131,11 @@ C     -------------------------- CHAR PARAMS -----------------------------------
       CHARACTER*(MAX_LEN_FNAM) STREAMICEbasalTracConfig
       CHARACTER*(MAX_LEN_FNAM) STREAMICEGlenConstConfig
       CHARACTER*(MAX_LEN_FNAM) STREAMICEBdotConfig
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEAdotConfig
       CHARACTER*(MAX_LEN_FNAM) STREAMICEbasalTracFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEGlenConstFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEBdotFile
+      CHARACTER*(MAX_LEN_FNAM) STREAMICEAdotFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEBdotTimeDepFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEvelOptimFile
       CHARACTER*(MAX_LEN_FNAM) STREAMICEtopogFile
@@ -190,6 +194,7 @@ C     -------------------------- CHAR PARAMS -----------------------------------
      &     STREAMICEdelsigFile,
      &     STREAMICEbasalTracConfig,
      &     STREAMICEBdotConfig,
+     &     STREAMICEAdotConfig,
      &     STREAMICEbasalTracFile,
      &     STREAMICEvelOptimFile,
      &     STREAMICEtopogFile,
@@ -212,6 +217,7 @@ C     -------------------------- CHAR PARAMS -----------------------------------
      &     STREAMICEvShearTimeDepFile,
      &     STREAMICEGlenConstFile,
      &     STREAMICEBdotFile,
+     &     STREAMICEABdotFile,
      &     STREAMICEBdotTimeDepFile,
      &     STREAMICEGlenConstConfig,
      &     STREAMICEcostMaskFile,
@@ -253,6 +259,7 @@ C     -------------------------- LOGICAL PARAMS --------------------------------
       LOGICAL STREAMICE_use_petsc
       LOGICAL STREAMICE_apply_firn_correction
       LOGICAL STREAMICE_alt_driving_stress
+      LOGICAL STREAMICE_allow_reg_coulomb
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP) )
 #ifdef ALLOW_PETSC
       LOGICAL STREAMICE_need2createmat
