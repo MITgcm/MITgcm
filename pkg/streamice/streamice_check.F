@@ -46,27 +46,15 @@ C     msgBuf   :: Informational/error message buffer
      &   'STREAMICE_CHECK: STREAMICE_COULOMB_SLIDING must be defined'
         CALL PRINT_ERROR( msgBuf, myThid )
 
-      ELSEIF (n_basal_friction.eq.-1.0) THEN
-
-       WRITE(msgBuf,'(A)')
-     &   'STREAMICE_CHECK: n_basal_friction must be nonnegative number'
-        CALL PRINT_ERROR( msgBuf, myThid )
-
-      ENDIF
-
-#else
-
-      IF (STREAMICE_allow_reg_coulomb .AND. 
-     &     n_basal_friction.ne.-1.0) THEN
-
-       WRITE(msgBuf,'(A)')
-     &   'STREAMICE_CHECK: n_basal_friction cannot be initialised with
-     &     regularised coulomb sliding'
-        CALL PRINT_ERROR( msgBuf, myThid )
-
       ENDIF
 
 #endif
+
+      IF(n_basal_friction .lt. 0.0) THEN
+       WRITE(msgBuf,'(A)')
+     &   'STREAMICE_CHECK: n_basal_friction must be nonnegative number'
+        CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
 
 C-   write out integer parameters
 

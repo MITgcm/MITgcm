@@ -51,6 +51,8 @@ CPP flags. These options are set in :filelink:`STREAMICE_OPTIONS.h <pkg/streamic
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`ALLOW_PETSC`                        | #undef  | enable interface to PETSc for velocity solver matrix solve                                                           |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`COULOMB_SLIDING`                    | #undef  | enable basal sliding of the form :eq:`coul_eqn`                                                                      |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 
 .. | :varlink:`STREAMICE_SMOOTH_FLOATATION`        | #undef  | subgrid parameterization of transition across the grounding line                                                     |
 .. +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
@@ -87,7 +89,7 @@ General :filelink:`pkg/streamice` parameters are set under :varlink:`STREAMICE_P
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
    | :varlink:`eps_u_min`                      |     1e-6                     | minimum speed in nonlinear sliding law (:math:`u_0`, m/yr)                                                         |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`n_basal_friction`               |     1                        | exponent in nonlinear sliding law (non-dim.)                                                                       |
+   | :varlink:`n_basal_friction`               |     0                        | exponent in nonlinear sliding law (non-dim.)                                                                       |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
    | :varlink:`streamice_cg_tol`               |     1e-6                     | tolerance of conjugate gradient of linear solve of Picard iteration for velocity                                   |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
@@ -182,6 +184,8 @@ General :filelink:`pkg/streamice` parameters are set under :varlink:`STREAMICE_P
    | :varlink:`streamice_forcing_period`       |   0                          | file input frequency for streamice time-dependent forcing fields (s)                                               |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
    | :varlink:`streamice_smooth_gl_width`      |   0                          | thickness range parameter in basal traction smoothing across grounding line  (m)                                   |
+   +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`streamice_allow_reg_coulomb`    |   FALSE                      | use regularised Coulomb sliding (:eq:`coul_eqn`). Requires :varlink:`COULOMB_SLIDING` CPP option.                  |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
  
 .. _ssub_phys_pkg_streamice_domain_setup:
@@ -428,27 +432,27 @@ defining the :varlink:`STREAMICE_COULOMB_SLIDING` CPP option and setting the
 :varlink:`streamice_allow_reg_coulomb` to ``.TRUE.``:
 
 .. math::
-   \vec{\tau}_b = C\frac{|u|^{1/3}N}{4\left[C^3|u|+(0.25N)^3\right]^{1/3}}u^{-1}\vec{u}
+   \vec{\tau}_b = C\frac{|u|^{m}N}{4\left[C^{1/m}|u|+(0.25N)^{1/m}\right]^{m}}u^{-1}\vec{u}
    :label: coul_eqn
 
-where :math:`u` is shorthand for the regularised norm in :eq:`tau_eqn`. 
-:math:`N` is effective pressure:
+where :math:`u` is shorthand for the regularised norm in :eq:`tau_eqn` (or for :math:`u_b` if a hybrid formulation is used). 
+:math:`m` is the same exponent as in :eq:`tau_eqn`. :math:`N` is effective pressure:
 
 .. math::
-   N = \rho_i g (H - H_f),
+   N = \rho g (h - h_f),
    :label: eff_press
 
-with :math:`H_f` the floatation thickness 
+with :math:`h_f` the floatation thickness 
 
 .. math::
-   h_f = max\left(0,-\frac{\rho_w}{\rho_i}z_b\right).
-   :label: eff_press
+   h_f = max\left(0,-\frac{\rho_w}{\rho}R\right),
 
-This formulation was used in the MISMIP+ intercomparison tests :cite:`asay-davis:2016`.
+where :math:`R` is bed elevation. This formulation was used in the MISMIP+ intercomparison tests :cite:`asay-davis:2016`.
 :eq:`eff_press` assumes complete hydraulic connectivity to the ocean throughout 
 the domain, which is likely only true within a few tens of kilometers of the 
-grounding line, though far from the grounding line the velocity-strengthening
-term character will become dominant.
+grounding line. With this sliding relation, Coulomb sliding is predominant near the grounding line, with 
+the yield strength proportional to height above floatation. Further inland sliding transitions to 
+the power law relation in :eq:`tau_eqn`.
 
 The momentum equations are solved together with appropriate boundary
 conditions, discussed below. In the case of a calving front boundary
@@ -466,8 +470,8 @@ condition (CFBC), the boundary condition has the following form:
    \left(\rho h^2 - \rho_w b^2\right)n_y. 
    :label: cfbc_y
  
-Here :math:`\vec{n}` is the normal to the boundary, and :math:`R(x,y)`
-is the bathymetry.
+Here :math:`\vec{n}` is the normal to the boundary, and :math:`b`
+is ice base.
 
 Hybrid SIA-SSA stress balance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
