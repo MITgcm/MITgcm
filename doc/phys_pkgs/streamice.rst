@@ -432,7 +432,7 @@ defining the :varlink:`STREAMICE_COULOMB_SLIDING` CPP option and setting the
 :varlink:`streamice_allow_reg_coulomb` to ``.TRUE.``:
 
 .. math::
-   \vec{\tau}_b = C\frac{|u|^{m}N}{4\left[C^{1/m}|u|+(0.25N)^{1/m}\right]^{m}}u^{-1}\vec{u}
+   \vec{\tau}_b = C\frac{|u|^{m}N}{2\left[C^{1/m}|u|+(0.5N)^{1/m}\right]^{m}}u^{-1}\vec{u}
    :label: coul_eqn
 
 where :math:`u` is shorthand for the regularised norm in :eq:`tau_eqn` (or for :math:`u_b` if a hybrid formulation is used). 
