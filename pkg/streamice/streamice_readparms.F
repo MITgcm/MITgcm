@@ -98,7 +98,7 @@ C     iUnit      :: Work variable for IO unit number
      &     STREAMICE_chkfixedptconvergence,
      &     STREAMICE_chkresidconvergence,
      &     STREAMICE_alt_driving_stress,
-     &     STREAMICE_allow_reg_coulomb
+     &     STREAMICE_allow_reg_coulomb,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      &     streamice_buttr_width,
      &     useStreamiceFlowlineButtr,

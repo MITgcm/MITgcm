@@ -217,7 +217,7 @@ C     -------------------------- CHAR PARAMS -----------------------------------
      &     STREAMICEvShearTimeDepFile,
      &     STREAMICEGlenConstFile,
      &     STREAMICEBdotFile,
-     &     STREAMICEABdotFile,
+     &     STREAMICEAdotFile,
      &     STREAMICEBdotTimeDepFile,
      &     STREAMICEGlenConstConfig,
      &     STREAMICEcostMaskFile,
