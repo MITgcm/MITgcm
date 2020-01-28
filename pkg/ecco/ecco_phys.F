@@ -286,14 +286,15 @@ c           gencost_storefld = shelficeheatflux * rA
 c                            = [W/m^2] *[m^2]
 c                            = [W]
 cts ---
-          if (gencost_barfile(kgen)(1:18).EQ.'m_boxmean_shelfice') then
+          if((gencost_barfile(kgen)(1:16).EQ.'m_boxmean_shifwf').or.
+     &       (gencost_barfile(kgen)(1:16).EQ.'m_boxmean_shihtf')) then
 
             tmpmsk=maskSHI(i,j,1,bi,bj)*
      &             gencost_mskCsurf(i,j,bi,bj,kgen)
 
-            if (gencost_name(kgen)(1:12).EQ.'shelfice_fwf') then
+            if (gencost_barfile(kgen)(11:16).EQ.'shifwf') then
               tmpfld=shelficeFreshWaterFlux(i,j,bi,bj) / rhoConstFresh 
-            elseif (gencost_name(kgen)(1:11).EQ.'shelfice_hf') then
+            elseif (gencost_name(kgen)(11:16).EQ.'shihtf') then
               tmpfld=shelficeHeatFlux(i,j,bi,bj) 
             endif
             if (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
@@ -386,7 +387,7 @@ c Note: for shelfice, don't take this final average to make
 c       comparable to shelfice_cost_final. 
 cts ---
       if (gencost_barfile(kgen)(1:9).EQ.'m_boxmean' .and. 
-     &    gencost_name(kgen)(1:8).NE.'shelfice') then
+     &    gencost_barfile(kgen)(11:13).NE.'shi') then
         CALL GLOBAL_SUM_TILE_RL( areavolTile, areavolGlob, myThid )
         CALL ecco_div( gencost_storefld(1-OLx,1-OLy,1,1,kgen),
      &                 1, areavolGlob, myThid )
