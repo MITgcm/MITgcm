@@ -13,7 +13,7 @@ Configure and compile the code:
 
 To run:
 ```
-cd run
+  cd run
   ln -s ../input/* .
   ln -s ../build/mitgcmuv .
   ./mitgcmuv > output.txt
@@ -21,9 +21,7 @@ cd run
 ```
 
 There is comparison output in the directory:
-```
 results/output.txt
-```
 
 Comments:
   The input data is real*4 and generated using the MATLAB script gendata_50km.m.
