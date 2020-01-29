@@ -1,3 +1,5 @@
+% generate support data files for tutorial Southern Ocean Reentrant Channel
+% hard-coded for 50km resolution, 20x40 horizonal resolution
 
 % grid depths generated Using the hyperbolic tangent method of Stewart et al. (2017) DOI: 10.1016/j.ocemod.2017.03.012
 % to design an optimal grid. https://github.com/kialstewart/vertical_grid_for_ocean_models
@@ -37,7 +39,7 @@ fid=fopen('zonal_wind.50km.bin','w','b');fwrite(fid,taux,'float32');fclose(fid);
 % note we implement "sponge layer" with full restoring at N boundary row (y=40),
 % weaker restoring at row just south of N boundary (y=39)
 % mask set to zero in surface layer (where core model SST restoring applied)
-mask=zeros(20,40,49); mask(:,40,2:49)= 1.0; mask(:,39,2:49) = 0.25;
+mask=zeros(20,40,length(z)); mask(:,40,2:length(z))= 1.0; mask(:,39,2:length(z)) = 0.25;
 fid=fopen('T_relax_mask.50km.bin','w','b');fwrite(fid,mask,'float32');fclose(fid);
 
 % 2-D SST field for relaxation
