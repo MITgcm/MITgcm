@@ -94,6 +94,20 @@ C       code is being compiled
       ENDIF
 #endif
 
+#ifndef ALLOW_LEITH_QG
+C     Check that Leith QG viscosity coefficeint is zero if the
+C     QGLeith code has not been compiled.
+      IF ( viscC2LeithQG.NE.zeroRL )  THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &  'must #define ALLOW_LEITH_QG in MOM_COMMON_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &  ' in order to use QG-Leith (viscC2LeithQG > 0)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* ALLOW_LEITH_QG */
+
 #ifndef ALLOW_SMAG_3D
       IF ( useSmag3D ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',

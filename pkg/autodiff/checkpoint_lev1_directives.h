@@ -35,8 +35,6 @@ CADJ STORE hfac_surfNm1S = comlev1, key = ikey_dynamics, kind = isbyte
 
 CADJ STORE theta, salt   = comlev1, key = ikey_dynamics,kind = isbyte
 CADJ STORE uVel, vVel    = comlev1, key = ikey_dynamics,kind = isbyte
-CADJ STORE surfaceForcingTice = comlev1,
-CADJ &     key = ikey_dynamics,kind = isbyte
 
 # ifndef DISABLE_RSTAR_CODE
 CADJ STORE rStarFacC = comlev1, key = ikey_dynamics, kind = isbyte
@@ -54,10 +52,6 @@ CADJ STORE etaH = comlev1, key = ikey_dynamics, kind = isbyte
 # if ( defined ALLOW_ECCO || defined ALLOW_SEAICE || defined ALLOW_DEPTH_CONTROL )
 CADJ STORE theta, salt = comlev1, key = ikey_dynamics,kind = isbyte
 # endif /* ALLOW_ECCO or ALLOW_SEAICE or ALLOW_DEPTH_CONTROL */
-# if ( defined ALLOW_SEAICE || defined ALLOW_DEPTH_CONTROL )
-CADJ STORE surfaceForcingTice = comlev1,
-CADJ &     key = ikey_dynamics,kind = isbyte
-# endif /* ALLOW_SEAICE or ALLOW_DEPTH_CONTROL */
 
 #endif /* NONLIN_FRSURF */
 
