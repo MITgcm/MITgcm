@@ -15,4 +15,4 @@ C      layers_maxNum  :: max number of tracer fields used for layer averaging
       PARAMETER( Nlayers = 37 )
       PARAMETER( FineGridFact = 10 )
       PARAMETER( FineGridMax = Nr * FineGridFact )
-      PARAMETER( layers_maxNum = 3 )
+      PARAMETER( layers_maxNum = 1 )
