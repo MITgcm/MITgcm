@@ -4,12 +4,12 @@
 # Viscosity
  viscAh=2000.,
  viscAr=3.E-3,
+ implicitViscosity=.TRUE.,
 # Diffusivity and convection
  diffKhT=0.,
  diffKrT=1.E-5,
  ivdc_kappa=1.,
  implicitDiffusion=.TRUE.,
- implicitViscosity=.TRUE.,
 # Coriolis parameter
  f0=-1.363e-4,
  beta=1.313e-11,

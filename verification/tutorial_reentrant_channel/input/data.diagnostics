@@ -10,9 +10,8 @@
  filename(1) = '2D_diags',
 
 # 3D state variables
- fields(1:8,2) =   'THETA   ', 'VVEL    ', 'UVEL    ',
-                   'WVEL    ', 'momVort3', 'momHDiv ',
-                   'CONVADJ ', 'PsiVEL  ',
+ fields(1:5,2) =   'THETA   ', 'VVEL    ', 'UVEL    ',
+                   'WVEL    ', 'CONVADJ ',
  frequency(2) = 31104000.,
  filename(2) = 'state',
  
@@ -34,6 +33,12 @@
  fields(1:2,5) = 'GM_PsiX ', 'GM_PsiY ',
  frequency(5) = 31104000.,
  filename(5) = 'GM_diags',
+ 
+# Eddy-permitting run, diagnose vorticity
+# these diagnostics not computed using uniform Ah
+# fields(1:2,6) = 'momVort3', 'momHDiv ',
+# frequency(6) = 31104000.,
+# filename(6) = 'state_vort',
  &
 
  &DIAG_STATIS_PARMS
