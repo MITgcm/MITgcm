@@ -1,4 +1,3 @@
-
 .. _sec_global_oce_latlon:
 
 Global Ocean Simulation

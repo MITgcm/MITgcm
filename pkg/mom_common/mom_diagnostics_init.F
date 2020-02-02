@@ -195,6 +195,7 @@ C--   add diagnostics for viscosity coefficients:
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+#ifdef ALLOW_LEITH_QG
       diagName  = 'VAHZLTHQ'
       diagTitle = 'LeithQG Harm Visc Coefficient (m2/s) (Zeta Pt)'
       diagUnits = 'm^2/s           '
@@ -208,6 +209,7 @@ C--   add diagnostics for viscosity coefficients:
       diagCode  = 'SM      MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
 
       diagName  = 'VAHZSMAG'
       diagTitle = 'Smagorinsky Harm Visc Coefficient (m2/s) (Zeta Pt)'

@@ -1,6 +1,26 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - rename array "surfaceForcingTice" to "adjustColdSST_diag" and change the
+    description to better reflect what it is: a diagnostic for SST adjustment.
+  - remove most of the TAF storage directive for "adjustColdSST_diag" that were
+    not necessary once it's properly initialized.
+o pkg/gmredi:
+  - improve error handling
+  - additional QGLeith config checks
+  - standardise variable name capitalizations
+o pkg/mom_common, mom_vecinv, mom_fluxform:
+  - protect QGLeith code with ifdefs
+  - additional QGLeith config checks (in model/src/config_check.F)
+o verification:
+  - rename dir "rotating_tank" to "tutorial_rotating_tank".
+o pkg/flt:
+  - improve pkg/flt doc and CPP brackets
+o doc:
+  - new front-page to tutorial chapter, also listing all verif experiments ;
+  - add new section in ch3 about input file format.
+
 checkpoint67o (2019/12/23)
 o pkg/shelfice:
   - implement implicit ice-shelf drag, in the same way as implicit bottom drag,
