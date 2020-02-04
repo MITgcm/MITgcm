@@ -391,13 +391,13 @@ C-    fortran format to write 1 or 2 indices:
       IF    ( nDup .EQ. 1 ) THEN
        WRITE(msgBuf,'(A,I9,A)') '              ',xOld,punc
        IF ( index_type .NE. INDEX_NONE )
-     &  WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)')
-     &  commOpen,index_lab,iLo,commClose
+     &    WRITE(msgBuf(45:),fmt1)
+     &    commOpen,index_lab,iLo,commClose
       ELSEIF( nDup .GT. 1 ) THEN
        WRITE(msgBuf,'(I5,'' '',A,I9,A)') nDup,'@',xOld,punc
        IF ( index_type .NE. INDEX_NONE )
-     &  WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)')
-     &  commOpen,index_lab,iLo,':',iHi,commClose
+     &    WRITE(msgBuf(45:),fmt2)
+     &    commOpen,index_lab,iLo,':',iHi,commClose
       ENDIF
       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
 
