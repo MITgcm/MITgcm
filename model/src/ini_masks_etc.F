@@ -83,8 +83,6 @@ C     Note: not final value since these estimates ignore hFacMin constrain
      &           MAX(   R_low(i-1,j,bi,bj),   R_low(i,j,bi,bj) )
            rSurfW(i,j,bi,bj) =
      &           MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
-           rSurfW(i,j,bi,bj) =
-     &           MAX( rSurfW(i,j,bi,bj), rLowW(i,j,bi,bj) )
          ENDDO
         ENDDO
         DO j=2-OLy,sNy+OLy
@@ -93,8 +91,6 @@ C     Note: not final value since these estimates ignore hFacMin constrain
      &           MAX(   R_low(i,j-1,bi,bj),   R_low(i,j,bi,bj) )
            rSurfS(i,j,bi,bj) =
      &           MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
-           rSurfS(i,j,bi,bj) =
-     &           MAX( rSurfS(i,j,bi,bj), rLowS(i,j,bi,bj) )
          ENDDO
         ENDDO
        ENDDO
@@ -114,14 +110,11 @@ C      o Non-dimensional distance between grid bound. and domain lower_R bound.
 C      o Select between, closed, open or partial (0,1,0-1)
            hFacCtmp = MIN( MAX( hFacCtmp, zeroRL ) , oneRL )
 C      o Impose minimum fraction and/or size (dimensional)
-           IF ( hFacCtmp.LT.hFacMnSz ) THEN
-            IF ( hFacCtmp.LT.hFacMnSz*halfRL ) THEN
+           IF ( hFacCtmp.LT.hFacMnSz*halfRL .OR.
+     &          R_low(i,j,bi,bj).GE.Ro_surf(i,j,bi,bj) ) THEN
              hFacC(i,j,k,bi,bj) = 0.
-            ELSE
-             hFacC(i,j,k,bi,bj) = hFacMnSz
-            ENDIF
            ELSE
-             hFacC(i,j,k,bi,bj) = hFacCtmp
+             hFacC(i,j,k,bi,bj) = MAX( hFacCtmp, hFacMnSz )
            ENDIF
           ENDDO
          ENDDO
@@ -159,14 +152,10 @@ C      o Reduce the previous fraction : substract the outside part.
 C      o set to zero if empty Column :
            hFacCtmp = MAX( hFacCtmp, zeroRL )
 C      o Impose minimum fraction and/or size (dimensional)
-           IF ( hFacCtmp.LT.hFacMnSz ) THEN
-            IF ( hFacCtmp.LT.hFacMnSz*halfRL ) THEN
+           IF ( hFacCtmp.LT.hFacMnSz*halfRL ) THEN
              hFacC(i,j,k,bi,bj) = 0.
-            ELSE
-             hFacC(i,j,k,bi,bj) = hFacMnSz
-            ENDIF
            ELSE
-             hFacC(i,j,k,bi,bj) = hFacCtmp
+             hFacC(i,j,k,bi,bj) = MAX( hFacCtmp, hFacMnSz )
            ENDIF
           ENDDO
          ENDDO
@@ -285,7 +274,8 @@ C      o Non-dimensional distance between grid bound. and domain lower_R bound.
             hFacCtmp = MIN( hFac1tmp, oneRL )
 c           hFacCtmp = MAX( hFacCtmp, zeroRL )
 C      o Impose minimum fraction and/or size (dimensional)
-            IF ( hFacCtmp.LT.hFacMnSz*halfRL ) THEN
+            IF ( hFacCtmp.LT.hFacMnSz*halfRL .OR.
+     &           rLowW(i,j,bi,bj).GE.rSurfW(i,j,bi,bj) ) THEN
               hFac1tmp = 0.
             ELSE
               hFac1tmp = MAX( hFacCtmp, hFacMnSz )
@@ -309,7 +299,8 @@ C      o Non-dimensional distance between grid bound. and domain lower_R bound.
             hFacCtmp = MIN( hFac1tmp, oneRL )
 c           hFacCtmp = MAX( hFacCtmp, zeroRL )
 C      o Impose minimum fraction and/or size (dimensional)
-            IF ( hFacCtmp.LT.hFacMnSz*halfRL ) THEN
+            IF ( hFacCtmp.LT.hFacMnSz*halfRL .OR.
+     &           rLowS(i,j,bi,bj).GE.rSurfS(i,j,bi,bj) ) THEN
               hFac1tmp = 0.
             ELSE
               hFac1tmp = MAX( hFacCtmp, hFacMnSz )
