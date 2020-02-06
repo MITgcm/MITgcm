@@ -80,7 +80,11 @@ C     i,j,bi,bj,ksrf :: loop indices
       _RL     tmp, hActual, hCrit, recip_k1, u0sq, fac, rFac
 CEOP
 
-      kSrf=1
+      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+       kSrf = Nr
+      ELSE
+       kSrf = 1
+      ENDIF
 C     some abbreviations
       u0sq     = SEAICEbasalDragU0*SEAICEbasalDragU0
       recip_k1 = 0. _d 0

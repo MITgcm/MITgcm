@@ -138,7 +138,7 @@ C     backward difference extrapolation factors
         bdfFac = 0.5 _d 0
        ENDIF
       ENDIF
-      bdfAlpha = 1. _d 0 + bdfFac 
+      bdfAlpha = 1. _d 0 + bdfFac
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -153,9 +153,9 @@ C     backward difference extrapolation factors
 C     cycle ice velocities
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
-          duIcNm1(I,J,bi,bj) = uIce(I,J,bi,bj) * bdfAlpha 
+          duIcNm1(I,J,bi,bj) = uIce(I,J,bi,bj) * bdfAlpha
      &         + ( uIce(I,J,bi,bj) - uIceNm1(I,J,bi,bj) ) * bdfFac
-          dvIcNm1(I,J,bi,bj) = vIce(I,J,bi,bj) * bdfAlpha 
+          dvIcNm1(I,J,bi,bj) = vIce(I,J,bi,bj) * bdfAlpha
      &         + ( vIce(I,J,bi,bj) - vIceNm1(I,J,bi,bj) ) * bdfFac
           uIceNm1(I,J,bi,bj) = uIce(I,J,bi,bj)
           vIceNm1(I,J,bi,bj) = vIce(I,J,bi,bj)
@@ -261,7 +261,7 @@ C
      I        FGMRESeps,SEAICElinearIterMax,iOutFGMRES,
      U        iCode,
      I        myThid)
-C     
+C
          IF ( iCode .EQ. 0 ) THEN
 C     map sol(ution) vector to du/vIce
           CALL SEAICE_MAP2VEC(nVec,duIce,dvIce,sol,.FALSE.,myThid)

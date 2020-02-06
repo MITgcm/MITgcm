@@ -28,7 +28,7 @@ C     SItrAREA   - history of AREA evolution during seaice_growth
      &        SItracer, SItrBucket, SItrHEFF, SItrAREA
 
 C     SItrFromOcean0    - for new ice from ocean freeze - constant tracer value
-C     SItrFromOceanFrac - for new ice from ocean freeze - fraction of ocean tracer 
+C     SItrFromOceanFrac - for new ice from ocean freeze - fraction of ocean tracer
 C     SItrFromFlood0    - for new ice from snow flood   - constant tracer value
 C     SItrFromFloodFrac - for new ice from snow flood   - fraction of ocean tracer
 C     SItrExpand0       - for ice cover thermo. exans.  - constant tracer value
@@ -36,7 +36,7 @@ C     SItrExpand0       - for ice cover thermo. exans.  - constant tracer value
      &    SItrFromFlood0(SItrMaxNum), SItrFromFloodFrac(SItrMaxNum),
      &    SItrExpand0(SItrMaxNum)
       COMMON /SEAICE_TRACER_CONST_R/
-     &    SItrFromOcean0, SItrFromOceanFrac, SItrFromFlood0, 
+     &    SItrFromOcean0, SItrFromOceanFrac, SItrFromFlood0,
      &    SItrFromFloodFrac, SItrExpand0
 
 C     SItrFile        - File containing initial sea ice tracer

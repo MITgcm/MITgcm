@@ -81,7 +81,7 @@ C     division by zero is not possible
             DO i=1,sNx
              tmp = 1. _d 0
 #ifdef SEAICE_ITD
-             IF (AREA(I,J,bi,bj) .GT. ZERO) 
+             IF (AREA(I,J,bi,bj) .GT. ZERO)
      &            tmp=AREAITD(I,J,K,bi,bj)/AREA(I,J,bi,bj)
 #endif /* SEAICE_ITD */
              tIce(I,J,bi,bj) = tIce(I,J,bi,bj)
@@ -207,11 +207,11 @@ C     principle stress components
             DO i=1,sNx
              sigp   = sig11(I,J) + sig22(I,J)
              sigm   = sig11(I,J) - sig22(I,J)
-C     This should be the way of computing sig12 at C-points, 
+C     This should be the way of computing sig12 at C-points,
 C            sigTmp = 0.25 _d 0 *
 C    &            ( sig12(I  ,J  ) + sig12(I+1,J  )
 C    &            + sig12(I  ,J+1) + sig12(I+1,J+1) )
-C     but sig12 = 2*etaZ*e12, and because of strong gradients in eta, 
+C     but sig12 = 2*etaZ*e12, and because of strong gradients in eta,
 C     etaZ can be very large for a cell with small eta and the straightforward
 C     way of averaging mixes large etaZ with small press0, so we have to do it
 C     in different way to get meaningfull sig12C (=sigTmp):
@@ -237,7 +237,7 @@ C     endif SEAICEuseEVP
           DO j=1,sNy
            DO i=1,sNx
             sigm = e11(I,J,bi,bj) - e22(I,J,bi,bj)
-            sigTmp = 
+            sigTmp =
      &           ( e12(I,  J,  bi,bj)**2 + e12(I+1,J,  bi,bj)**2
      &           + e12(I+1,J+1,bi,bj)**2 + e12(I  ,J+1,bi,bj)**2 )
 C     shear deformation as sqrt((e11-e22)**2 + 4*e12**2); the 4 pulled into

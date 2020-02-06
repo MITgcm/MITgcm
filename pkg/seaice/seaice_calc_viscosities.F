@@ -123,14 +123,14 @@ C     (and energy conserving)
           deltaCsq = ep*ep+recip_e2*(em*em+4. _d 0*e12Csq(i,j))
 CML The old formulation does not ensure that deltaC**2 is always positive,
 CML but in case you need it to reproduce old results, here it is:
-CML          deltaCsq = 
+CML          deltaCsq =
 CML     &         (e11(i,j,bi,bj)**2+e22(i,j,bi,bj)**2)*(ONE+recip_e2)
 CML     &         + 4. _d 0*recip_e2*e12Csq(i,j)
 CML     &         + 2. _d 0*e11(i,j,bi,bj)*e22(i,j,bi,bj)*(ONE-recip_e2)
 #ifdef ALLOW_AUTODIFF_TAMC
 C     avoid sqrt of 0
           deltaC(I,J,bi,bj) = 0. _d 0
-          IF ( deltaCsq .GT. 0. _d 0 ) 
+          IF ( deltaCsq .GT. 0. _d 0 )
      &         deltaC(I,J,bi,bj) = SQRT(deltaCsq)
 #else
           deltaC(I,J,bi,bj) = SQRT(deltaCsq)
@@ -151,7 +151,7 @@ C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
           zeta (I,J,bi,bj) = ZMAX(I,J,bi,bj)
      &         *(1. _d 0 - argTmp)/(1. _d 0 + argTmp)
 #else
-          zeta (I,J,bi,bj) = HALF*( press0(I,J,bi,bj) 
+          zeta (I,J,bi,bj) = HALF*( press0(I,J,bi,bj)
      &         * ( 1. _d 0 + tnsFac(I,J,bi,bj) )
      &         )/deltaCreg
 C     put min and max viscosities in

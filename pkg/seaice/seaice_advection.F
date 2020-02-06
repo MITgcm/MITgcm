@@ -48,7 +48,7 @@ C !USES: ===============================================================
 #include "GRID.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
-#include "SEAICE.h"      
+#include "SEAICE.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
 #endif

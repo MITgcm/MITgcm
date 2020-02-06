@@ -79,14 +79,18 @@ c     == external functions ==
 
 c     == end of interface ==
 
+      if ( buoyancyRelation .EQ. 'OCEANICP' ) then
+       kSrf = Nr
+      else
+       kSrf = 1
+      endif
       if ( myTime .GT. (endTime - lastinterval) ) then
          tempVar = 1. _d 0/
      &             ( ( 1. _d 0 + min(endTime-startTime,lastinterval) )
      &             / deltaTClock )
 
-         kSrf = 1
 cph(
-      write(standardMessageUnit,*) 'ph-ice B ', myiter, 
+      write(standardMessageUnit,*) 'ph-ice B ', myiter,
      &        theta(4,4,kSrf,1,1), area(4,4,1,1), heff(4,4,1,1)
 cph)
          if ( cost_ice_flag .eq. 1 ) then

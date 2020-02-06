@@ -172,19 +172,19 @@ c$$$     &         - hFacU * k2AtZ(i,j,bi,bj) * uave(i,j)
            hFacV = hFacV*( SIMaskV(i-2,j,bi,bj)*SIMaskV(i-1,j,bi,bj)
      &                   + SIMaskV(i+1,j,bi,bj)*SIMaskV(i  ,j,bi,bj) )
 C     right hand sided dv/dx = (9*v(i,j)-v(i+1,j))/(4*dxv(i,j)-dxv(i+1,j))
-C     according to a Taylor expansion to 2nd order. We assume that dxv 
+C     according to a Taylor expansion to 2nd order. We assume that dxv
 C     varies very slowly, so that the denominator simplifies to 3*dxv(i,j),
 C     then dv/dx = (6*v(i,j)+3*v(i,j)-v(i+1,j))/(3*dxv(i,j))
 C                = 2*v(i,j)/dxv(i,j) + (3*v(i,j)-v(i+1,j))/(3*dxv(i,j))
 C     the left hand sided dv/dx is analogously
 C                = - 2*v(i-1,j)/dxv(i,j) - (3*v(i-1,j)-v(i-2,j))/(3*dxv(i,j))
 C     the first term is the first order part, which is already added.
-C     For e12 we only need 0.5 of this gradient and vave = is either 
+C     For e12 we only need 0.5 of this gradient and vave = is either
 C     0.5*v(i,j) or 0.5*v(i-1,j) near the boundary so that we need an
 C     extra factor of 2. This explains the six. du/dy is analogous.
 C     The masking is ugly, but hopefully effective.
            e12Loc(i,j,bi,bj) = e12Loc(i,j,bi,bj) + 0.5 _d 0 * (
-     &            _recip_dyU(i,j,bi,bj) * ( 6.0 _d 0 * uave(i,j) 
+     &            _recip_dyU(i,j,bi,bj) * ( 6.0 _d 0 * uave(i,j)
      &          - uFld(i,j-2,bi,bj)*SIMaskU(i,j-1,bi,bj)
      &          - uFld(i,j+1,bi,bj)*SIMaskU(i,j  ,bi,bj) ) * hFacU
      &          + _recip_dxV(i,j,bi,bj) * ( 6.0 _d 0 * vave(i,j)

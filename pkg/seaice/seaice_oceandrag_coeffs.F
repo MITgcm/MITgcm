@@ -45,7 +45,7 @@ C     === Routine arguments ===
 C     myTime :: Simulation time
 C     myIter :: Simulation timestep number
 C     myThid :: my Thread Id. number
-C     iStep  :: current sub-time step iterate 
+C     iStep  :: current sub-time step iterate
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -67,7 +67,11 @@ C     i,j,bi,bj,ksrf :: loop indices
       _RL     dragCoeff
 CEOP
 
-      kSrf=1
+      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+       kSrf = Nr
+      ELSE
+       kSrf = 1
+      ENDIF
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -99,7 +103,7 @@ C     non-linear water drag coefficients CwatC (DWATN)
            dragCoeff = SEAICE_waterDrag      *rhoConst
           ENDIF
           CwatC(I,J,bi,bj) = 0.25 _d 0
-C     This is the AD-proof version of 
+C     This is the AD-proof version of
 C         IF ( dragCoeff * SQRT(TEMPVAR) .GT. 0.25 _d 0 )
 C     which was previously implemented as
 C         IF ( TEMPVAR .GT. (0.25 _d 0/dragCoeff)**2 )
