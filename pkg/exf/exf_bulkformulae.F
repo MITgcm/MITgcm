@@ -236,7 +236,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
       ENDIF
 
-C-- Set surface parameters :
+      IF ( usingPCoords ) THEN
+       kSrf   = Nr
+       ksrfp1 = Nr-1
+      ELSE
+       ksrf   = 1
+       ksrfp1 = 2
+      ENDIF
+
+C--   Set surface parameters :
       zwln = LOG(hu/zref)
       ztln = LOG(ht/zref)
       czol = hu*karman*gravity_mks
@@ -254,8 +262,7 @@ C--    HPF directive to help TAMC
 CHPF$  INDEPENDENT
 #endif
        DO bi = myBxLo(myThid),myBxHi(myThid)
-        ksrf   = 1
-        ksrfp1 = 2
+
         DO j = 1,sNy
          DO i = 1,sNx
 
