@@ -29,10 +29,9 @@ C     myThid -  Number of this instance of GGL90_INIT
 #ifdef ALLOW_GGL90
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     bi,bj,I,J,K,Km1 - Loop counters
+C     bi,bj,I,J,K - Loop counters
       INTEGER bi, bj
       INTEGER I, J, K
-      INTEGER Km1
 CEOP
 
 C--   Over all tiles
@@ -41,7 +40,6 @@ C--   Over all tiles
 
 C-      3D arrays
         DO K=1,Nr
-         Km1 = MAX(K-1,1)
          DO J=1-OLy,sNy+OLy
           DO I=1-OLx,sNx+OLx
            GGL90viscArU(I,J,K,bi,bj) = 0. _d 0

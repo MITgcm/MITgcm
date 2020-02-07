@@ -1,7 +1,7 @@
 #include "GGL90_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 
+CBOP
 C !ROUTINE: GGL90_DIAGNOSTICS_INIT
 C !INTERFACE:
       SUBROUTINE GGL90_DIAGNOSTICS_INIT( myThid )
