@@ -51,6 +51,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j :: Loop counters
       INTEGER i,j,k
+      INTEGER kSrf,kTop,kBottom,kDir,deltaK,kp1
       LOGICAL calcMixLayerDepth
       INTEGER method
       _RL     rhoBigNb
@@ -74,6 +75,19 @@ CEOP
 #endif
       IF ( calcMixLayerDepth ) THEN
 
+        IF ( usingPCoords ) THEN
+         kSrf    = Nr
+         kTop    = Nr
+         kBottom =  2
+         kDir    = -1
+         deltaK  =  1
+        ELSE
+         kSrf    =  1
+         kTop    =  2
+         kBottom = Nr
+         kDir    =  1
+         deltaK  =  0
+        ENDIF
 C--   Select which "method" to use:
        method = 0
        IF ( hMixCriteria.LT.0. ) method = 1
@@ -91,7 +105,7 @@ c       hMixCriteria  = -0.8 _d 0
 c       dRhoSmall = 1. _d -6
         rhoBigNb  = rhoConst*1. _d 10
         CALL FIND_ALPHA(
-     I            bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1, 1,
+     I            bi, bj, 1-OLx, sNx+OLx, 1-OLy, sNy+OLy, kSrf, kSrf,
      O            rhoMxL, myThid )
 
         DO j=1-Oly,sNy+Oly
@@ -99,13 +113,13 @@ c       dRhoSmall = 1. _d -6
            rhoKm1(i,j) = rhoSurf(i,j)
            rhoMxL(i,j) = rhoSurf(i,j)
      &                 + MAX( rhoMxL(i,j)*hMixCriteria, dRhoSmall )
-           hMixLayer(i,j,bi,bj) = rF(1)-R_low(i,j,bi,bj)
+           hMixLayer(i,j,bi,bj) = rF(kSrf+deltaK)-R_low(i,j,bi,bj)
          ENDDO
         ENDDO
-        DO k = 2,Nr
+        DO k = kTop,kBottom,kDir
 C-    potential density (reference level = surface level)
          CALL FIND_RHO_2D(
-     I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1,
+     I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, kSrf,
      I        theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
      O        rhoLoc,
      I        k, bi, bj, myThid )
@@ -120,7 +134,10 @@ C-    potential density (reference level = surface level)
              ELSE
               tmpFac = 0.
              ENDIF
-             hMixLayer(i,j,bi,bj) = rF(1)-rC(k-1)+tmpFac*drC(k)
+             hMixLayer(i,j,bi,bj) = ( rF(kSrf+deltaK)-rC(k-1+deltaK) )
+     &                              * ( -gravitySign )
+     &                              + tmpFac*drC(k)
+CML     &                            - gravitySign*tmpFac*drC(k)
              rhoMxL(i,j) = rhoBigNb
            ELSE
              rhoKm1(i,j) = rhoLoc(i,j)
@@ -135,45 +152,52 @@ C--   Second method :
 C     where the local stratification exceed the mean stratification above
 C     (from surface down to here) by factor hMixCriteria
 
+        IF ( usingPCoords ) THEN
+         kTop    = Nr-1
+        ELSE
+         kBottom = Nr-1
+        ENDIF
 c       hMixCriteria  = 1.5 _d 0
 c       dRhoSmall = 1. _d -2
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
            IF ( klowC(i,j,bi,bj) .GT. 0 ) THEN
-            hMixLayer(i,j,bi,bj) = drF(1)
+            hMixLayer(i,j,bi,bj) = drF(kSrf)
             rhoMxL(i,j) = 1.
            ELSE
-            hMixLayer(i,j,bi,bj) = rF(1)
+            hMixLayer(i,j,bi,bj) = rF(kSrf+deltaK)
             rhoMxL(i,j) = -1.
            ENDIF
          ENDDO
         ENDDO
-        DO k = 2,Nr-1
+        DO k = kTop,kBottom,kDir
 C-    potential density (reference level = surface level)
          CALL FIND_RHO_2D(
-     I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1,
+     I        1-OLx, sNx+OLx, 1-OLy, sNy+OLy, kSrf,
      I        theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
      O        rhoLoc,
      I        k, bi, bj, myThid )
 
+         kp1 = k+kDir
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
            IF ( k.LT.klowC(i,j,bi,bj)
      &          .AND. rhoMxL(i,j).GE.0. ) THEN
              sigmAv = ( rhoLoc(i,j)-rhoSurf(i,j)+dRhoSmall )
-     &              / ( rC(1)-rC(k) )
-             IF ( -sigmaR(i,j,k+1).GT.sigmAv*hMixCriteria ) THEN
+     &              / ( rC(k)-rC(kSrf) ) * gravitySign
+             IF ( gravitySign * sigmaR(i,j,kp1)
+     &            .GT.sigmAv*hMixCriteria ) THEN
                tmpFac = 0. _d 0
                IF ( sigmAv.GT.0. _d 0 ) THEN
-                 tmpFac = hMixCriteria*sigmaR(i,j,k)/sigmaR(i,j,k+1)
+                 tmpFac = hMixCriteria*sigmaR(i,j,k)/sigmaR(i,j,kp1)
                  IF ( tmpFac .GT. 1. _d 0 ) THEN
                    tmpFac = 1. _d 0
      &             + ( tmpFac - 1. _d 0 )/( hMixCriteria - 1. _d 0 )
                  ENDIF
                  tmpFac = MAX( 0. _d 0, MIN( tmpFac, 2. _d 0 ) )
                ENDIF
-               hMixLayer(i,j,bi,bj) = rF(1)-rF(k+1)
-     &                              - drF(k)*tmpFac*0.5 _d 0
+               hMixLayer(i,j,bi,bj) = ( rF(kSrf+deltaK)-rF(k+1-deltaK)
+     &              - drF(k)*tmpFac*0.5 _d 0 ) * ( -gravitySign )
                rhoMxL(i,j) = -1.
              ENDIF
            ENDIF
@@ -196,9 +220,9 @@ C-    potential density (reference level = surface level)
      &                                  hMixLayer(i,j+1,bi,bj) )
      &                  )
      &                 /(hMixSmooth +
-     &                       tmpFac * ( maskC(i-1,j,1,bi,bj) + 
+     &                       tmpFac * ( maskC(i-1,j,1,bi,bj) +
      &                                  maskC(i+1,j,1,bi,bj) +
-     &                                  maskC(i,j-1,1,bi,bj) + 
+     &                                  maskC(i,j-1,1,bi,bj) +
      &                                  maskC(i,j+1,1,bi,bj) )
      &                  ) * maskC(i,j,1,bi,bj)
          ENDDO

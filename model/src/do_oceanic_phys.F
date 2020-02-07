@@ -206,6 +206,7 @@ C     jMin, jMax       are applied.
 C     bi, bj        :: tile indices
 C     msgBuf        :: Temp. for building output string
 C     i,j,k         :: loop indices
+C     kSrf          :: surface index
       _RL rhoKp1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhoKm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sigmaX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -214,7 +215,7 @@ C     i,j,k         :: loop indices
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       INTEGER bi, bj
-      INTEGER i, j, k
+      INTEGER i, j, k, kSrf
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER doDiagsRho
       LOGICAL calcGMRedi, calcKPP, calcConvect
@@ -231,6 +232,9 @@ CEOP
 C--   dummy statement to end declaration part
       itdkey = 1
 #endif /* ALLOW_AUTODIFF_TAMC */
+
+      kSrf = 1
+      IF ( usingPCoords ) kSrf = Nr
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('DO_OCEANIC_PHYS',myThid)
@@ -880,25 +884,25 @@ CADJ &     = comlev1_bibj, key=itdkey, kind=isbyte
 C--     Diagnose Mixed Layer Depth:
         IF ( calcGMRedi .OR. MOD(doDiagsRho,2).EQ.1 ) THEN
           CALL CALC_OCE_MXLAYER(
-     I              rhoInSitu(1-OLx,1-OLy,1,bi,bj), sigmaR,
+     I              rhoInSitu(1-OLx,1-OLy,kSrf,bi,bj), sigmaR,
      I              bi, bj, myTime, myIter, myThid )
         ENDIF
 
 #ifdef ALLOW_SALT_PLUME
         IF ( useSALT_PLUME ) THEN
           CALL SALT_PLUME_CALC_DEPTH(
-     I              rhoInSitu(1-OLx,1-OLy,1,bi,bj), sigmaR,
+     I              rhoInSitu(1-OLx,1-OLy,kSrf,bi,bj), sigmaR,
      I              bi, bj, myTime, myIter, myThid )
 #ifdef SALT_PLUME_VOLUME
           CALL SALT_PLUME_VOLFRAC(
      I              bi, bj, myTime, myIter, myThid )
 C-- get forcings for kpp
           CALL SALT_PLUME_APPLY(
-     I              1, bi, bj, recip_hFacC(1-OLx,1-OLy,1,bi,bj),
+     I              1, bi, bj, recip_hFacC(1-OLx,1-OLy,kSrf,bi,bj),
      I              theta, 0,
      I              myTime, myIter, myThid )
           CALL SALT_PLUME_APPLY(
-     I              2, bi, bj, recip_hFacC(1-OLx,1-OLy,1,bi,bj),
+     I              2, bi, bj, recip_hFacC(1-OLx,1-OLy,kSrf,bi,bj),
      I              salt, 0,
      I              myTime, myIter, myThid )
 C-- need to call this S/R from here to apply just before kpp
