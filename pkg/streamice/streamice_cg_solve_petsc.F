@@ -334,7 +334,7 @@ C     LOCAL VARIABLES
        call KSPSetType(ksp, KSPGMRES, ierr)
        CASE ('BICG')
        PRINT *, "PETSC SOLVER: SELECTED BICG"
-       call KSPSetType(ksp, KSPBICG, ierr)
+       call KSPSetType(ksp, KSPBCGS, ierr)
        CASE DEFAULT
        PRINT *, "PETSC SOLVER: SELECTED DEFAULT"
        call KSPSetType(ksp, KSPCG, ierr)
@@ -343,8 +343,8 @@ C     LOCAL VARIABLES
 
       call KSPGetPC(ksp, pc, ierr)
       call KSPSetTolerances(ksp,tolerance,
-     &     PETSC_DEFAULT_DOUBLE_PRECISION,     
-     &     PETSC_DEFAULT_DOUBLE_PRECISION,
+     &     PETSC_DEFAULT_REAL,     
+     &     PETSC_DEFAULT_REAL,
      &     maxiter,ierr)
 
       SELECT CASE (PETSC_PRECOND_TYPE)
@@ -372,7 +372,7 @@ C     LOCAL VARIABLES
        call PCGAMGSetSymGraph(pc, PETSC_TRUE,ierr)
        call PCGAMGSetNSmooths(pc, 0,ierr)
        call PCGAMGSetThreshold(pc, .001,ierr)
-!       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
+       call PCGAMGSetReuseInterpolation(pc,PETSC_FALSE,ierr)
        call kspsetup (ksp, ierr)
 
        CASE ('MUMPS')
