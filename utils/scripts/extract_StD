@@ -1,10 +1,10 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
 # $Header: /u/gcmpack/MITgcm_contrib/jmc_script/extract_StD,v 1.3 2008/05/29 23:47:13 jmc Exp $
 # $Name:  $
 
 add=0 ; mut=0 ;
-if [ $# -ge 3 ] 
+if [ $# -ge 3 ]
 then
  if test $1 = '-a' ; then add=1; shift; fi
  if test $1 = '-s' ; then mut=1; shift; fi
@@ -36,7 +36,7 @@ then listV=`sed -n '/^# Fields /s/# Fields       ://p' $inpFil`
 else
  shift; shift; shift; listV=$*
 fi
-if test $mut = 0 ; then 
+if test $mut = 0 ; then
  grep '^# Fields ' $inpFil
  echo 'selected var:' $listV
 #echo 'sufx, tmpFil:' $sufx $tmpFil
@@ -87,7 +87,7 @@ do
   then flag=0
     outFil=${prfx}'_head'.$sufx
     nLin=`sed -n "/^# end of header/=" $inpFil`
-    head -$nLin $inpFil > $tmpFil 
+    head -$nLin $inpFil > $tmpFil
     if test -f $outFil -a $add = 0 ; then rm -f $outFil ; fi
     if test -f $outFil
     then
@@ -121,7 +121,7 @@ do
   echo "/^ field : $var /{" > $sedFil
   if test $nLev = 1 ; then k=0 ; else k=-1 ; fi
   while [ $k -le $nLev ]
-  do 
+  do
    echo "N" >> $sedFil
    k=`expr $k + 1`
   done
@@ -132,7 +132,7 @@ do
   if test $mut = 0 ; then head -1 $tmpFil ; fi
   if test -f $outFil -a $add = 0 ; then rm -f $outFil ; fi
   touch $outFil
-  sed '/^ k /d' $tmpFil | sed '/^ field /d' >> $outFil 
+  sed '/^ k /d' $tmpFil | sed '/^ field /d' >> $outFil
   rm -f $sedFil $tmpFil
  fi
 done
