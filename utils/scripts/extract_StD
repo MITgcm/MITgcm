@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-# $Header: /u/gcmpack/MITgcm_contrib/jmc_script/extract_StD,v 1.3 2008/05/29 23:47:13 jmc Exp $
+# $Header: /u/gcmpack/MITgcm_contrib/jmc_script/extract_StD,v 1.4 2020/02/11 22:17:43 jmc Exp $
 # $Name:  $
 
 add=0 ; mut=0 ;
