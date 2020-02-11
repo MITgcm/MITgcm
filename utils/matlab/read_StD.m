@@ -15,7 +15,7 @@ function [nIt,rList,tim,vvA,listV,listK]=read_StD(namF,sufx,listV);
 %  vvA      = 5 dims output array:
 %           ( kLev, time_rec, region_rec, [ave,std,min,max,vol], var_rec )
 
-% $Header: /home/ubuntu/mnt/e9_copy/MITgcm_contrib/jmc_script/read_StD.m,v 1.6 2019/04/01 22:04:43 jmc Exp $
+% $Header: /u/gcmpack/MITgcm_contrib/jmc_script/read_StD.m,v 1.6 2019/04/01 22:04:43 jmc Exp $
 % $Name:  $
 
 %- Remove insignificant whitespace:
