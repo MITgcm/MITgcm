@@ -4,8 +4,7 @@
  useGMRedi=.TRUE.,
  useDiagnostics=.TRUE.,
  useLayers=.TRUE.,
-#
-#######################################################
-# for non-GM or eddy-permitting run, deactivate GMRedi package: 
+#---------------------------------------
+#- for non-GM or eddy-permitting run, deactivate GMRedi package:
 # useGMRedi=.FALSE.,
  &
