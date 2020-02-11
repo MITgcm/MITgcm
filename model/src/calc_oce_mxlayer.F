@@ -51,7 +51,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j :: Loop counters
       INTEGER i,j,k
-      INTEGER kSrf,kTop,kBottom,kDir,deltaK,klow
+      INTEGER kSrf,kTop,kBottom,kDir,deltaK,klow,kup
       LOGICAL calcMixLayerDepth, kk
       INTEGER method
       _RL     rhoBigNb
@@ -136,8 +136,8 @@ C-    potential density (reference level = surface level)
               tmpFac = 0.
              ENDIF
              hMixLayer(i,j,bi,bj) = -gravitySign *
-     &                             ( rF(kSrf+deltaK)-rC(k-1+deltaK) )
-     &                             + tmpFac*drC(k)
+     &                             ( rF(kSrf+deltaK)-rC(k-kDir) )
+     &                             + tmpFac*drC(k+deltaK)
              rhoMxL(i,j) = rhoBigNb
            ELSE
              rhoKm1(i,j) = rhoLoc(i,j)
@@ -178,7 +178,8 @@ C-    potential density (reference level = surface level)
      O        rhoLoc,
      I        k, bi, bj, myThid )
 
-         klow = k+kDir
+         kup  = k+deltaK
+         klow = k+kDir+deltaK
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
            kk = k.LT.klowC(i,j,bi,bj).AND.k.GT.kSurfC(i,j,bi,bj)
@@ -189,7 +190,7 @@ C-    potential density (reference level = surface level)
      &            .GT.sigmAv*hMixCriteria ) THEN
                tmpFac = 0. _d 0
                IF ( sigmAv.GT.0. _d 0 ) THEN
-                 tmpFac = hMixCriteria*sigmaR(i,j,k)/sigmaR(i,j,klow)
+                 tmpFac = hMixCriteria*sigmaR(i,j,kup)/sigmaR(i,j,klow)
                  IF ( tmpFac .GT. 1. _d 0 ) THEN
                    tmpFac = 1. _d 0
      &             + ( tmpFac - 1. _d 0 )/( hMixCriteria - 1. _d 0 )
@@ -197,7 +198,7 @@ C-    potential density (reference level = surface level)
                  tmpFac = MAX( 0. _d 0, MIN( tmpFac, 2. _d 0 ) )
                ENDIF
                hMixLayer(i,j,bi,bj) = -gravitySign *
-     &                               ( rF(kSrf+deltaK)-rF(k+1-deltaK) )
+     &                               ( rF(kSrf+deltaK)-rF(klow) )
      &                               - drF(k)*tmpFac*0.5 _d 0
                rhoMxL(i,j) = -1.
              ENDIF
