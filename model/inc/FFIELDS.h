@@ -230,29 +230,29 @@ C            - Qnet (+Qsw) plus temp. relaxation*drF(1)
 C                -> calculate        -lambda*(T(model)-T(clim))
 C            Qnet assumed to be net heat flux including ShortWave rad.
 C                -> usage in gT:     gT = gT + surfaceforcingT/drF [K/s]
-C     surfaceForcingTice
-C            - equivalent Temperature flux in the top level that corresponds
-C              to the melting or freezing of sea-ice.
-C              Note that the surface level temperature is modified
-C              directly by the sea-ice model in order to maintain
-C              water temperature under sea-ice at the freezing
-C              point.  But we need to keep track of the
-C              equivalent amount of heat that this surface-level
-C              temperature change implies because it is used by
-C              the KPP package (kpp_calc.F and kpp_transport_t.F).
-C              Units are r_unit.K/s (=Kelvin.m/s if r=z) (>0 for ocean warming).
+C     adjustColdSST_diag :: diagnostic field for how much too cold (below
+C              Tfreezing) SST has been adjusted (with allowFreezing=T).
+C              > 0 for increase of SST (up to Tfreezing).
+C              Units are r_unit.K/s (=Kelvin.m/s if r=z).
+C        Note: 1) allowFreezing option is a crude hack to fix too cold SST that
+C              results from missing seaice component. It should never be used
+C              with any seaice component, neither current seaice pkg (pkg/seaice
+C              or pkg/thsice) nor a seaice component from atmos model when
+C              coupled to it.
+C              2) this diagnostic is currently used by KPP package (kpp_calc.F
+C              and kpp_transport_t.F) although it is not very clear it should.
 
       COMMON /SURFACE_FORCING/
      &                         surfaceForcingU,
      &                         surfaceForcingV,
      &                         surfaceForcingT,
      &                         surfaceForcingS,
-     &                         surfaceForcingTice
+     &                         adjustColdSST_diag
       _RL  surfaceForcingU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  surfaceForcingV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  surfaceForcingT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  surfaceForcingS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  surfaceForcingTice(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  adjustColdSST_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C     botDragU :: bottom stress (for diagnostics), Zonal component
 C                Units are N/m^2 ;   > 0 increase uVel @ bottom

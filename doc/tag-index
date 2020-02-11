@@ -1,6 +1,31 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/streamice:
+  - add option to specify "regularised coulomb" sliding law to better reflect
+    dependence on subglacial water pressure close to the grounding line
+  - above requires CPP option (due to new arrays) STREAMICE_COULOMB_SLIDING
+    and r/t param streamice_allow_reg_coulomb
+  - add parameter STREAMICEAdotFile to specify surface mass balance
+  - add parameter streamice_maxnliter_Petsc to specify maximum no. of 
+    linear solves using PETSc in a single time step (not incl. in doc
+    since PETSc is not part of standard build
+o model/src:
+  - rename array "surfaceForcingTice" to "adjustColdSST_diag" and change the
+    description to better reflect what it is: a diagnostic for SST adjustment.
+  - remove most of the TAF storage directive for "adjustColdSST_diag" that were
+    not necessary once it's properly initialized.
+o pkg/gmredi:
+  - improve error handling
+  - additional QGLeith config checks
+  - standardise variable name capitalizations
+o pkg/mom_common, mom_vecinv, mom_fluxform:
+  - protect QGLeith code with ifdefs
+  - additional QGLeith config checks (in model/src/config_check.F)
+o verification:
+  - rename dir "rotating_tank" to "tutorial_rotating_tank".
+o pkg/flt:
+  - improve pkg/flt doc and CPP brackets
 o doc:
   - new front-page to tutorial chapter, also listing all verif experiments ;
   - add new section in ch3 about input file format.

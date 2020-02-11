@@ -6,7 +6,6 @@ c
 #ifdef AUTODIFF_USE_OLDSTORE_2D
 c
 CADJ STORE etan  = tapelev4, key = ilev_4
-CADJ STORE surfaceforcingTice = tapelev4, key = ilev_4
 #ifndef EXCLUDE_FFIELDS_LOAD
 CADJ STORE taux0 = tapelev4, key = ilev_4
 CADJ STORE taux1 = tapelev4, key = ilev_4
