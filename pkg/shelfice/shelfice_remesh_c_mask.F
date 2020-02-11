@@ -14,9 +14,9 @@ C     |   hFac is too large and hence splits into two cells,
 C     |   and cells where hFac is too small, and merges cell with
 C     |   below.
 C     | o Update surface ref position Ro_surf and anomaly Eta
-C     |   as well as R_shelfice.
+C     |   as well as R_shelfIce.
 C     | o Recomputes h0FacC using formula from initialisation
-C     |   based on new R_shelfice
+C     |   based on new R_shelfIce
 C     *==========================================================*
 C     \ev
 
@@ -96,7 +96,7 @@ C-- SPLIT CELLS
              k1 = ks
              k2 = ks-1
              kSurfC(i,j,bi,bj) = k2
-             adjust = rF(k2) - R_shelfice(i,j,bi,bj)
+             adjust = rF(k2) - R_shelfIce(i,j,bi,bj)
 #ifdef SHELFICE_REMESH_PRINT
              prtPoint = ( ioUnit.GE.0 ) .AND.
      &          ( i.GE.1 .AND. i.LE.sNx .AND. j.GE.1 .AND. j.LE.sNy )
@@ -115,7 +115,7 @@ C-- SPLIT CELLS
               CALL PRINT_MESSAGE( msgBuf,ioUnit,SQUEEZE_RIGHT,myThid )
              ENDIF
 #endif /* SHELFICE_REMESH_PRINT */
-C-    decrement eta and increment R_shelfice and Ro_surf
+C-    decrement eta and increment R_shelfIce and Ro_surf
              etaN(i,j,bi,bj) = etaN(i,j,bi,bj)- adjust
              etaH(i,j,bi,bj) = etaH(i,j,bi,bj)- adjust
              etaHnm1(i,j,bi,bj) = etaHnm1(i,j,bi,bj)- adjust
@@ -154,7 +154,7 @@ C-- MERGE CELLS
              k1 = ks
              k2 = ks+1
              kSurfC(i,j,bi,bj) = k2
-             adjust = R_shelfice(i,j,bi,bj)-rF(k2)
+             adjust = R_shelfIce(i,j,bi,bj)-rF(k2)
 #ifdef SHELFICE_REMESH_PRINT
              prtPoint = ( ioUnit.GE.0 ) .AND.
      &          ( i.GE.1 .AND. i.LE.sNx .AND. j.GE.1 .AND. j.LE.sNy )
@@ -173,11 +173,11 @@ C-- MERGE CELLS
               CALL PRINT_MESSAGE( msgBuf,ioUnit,SQUEEZE_RIGHT,myThid )
              ENDIF
 #endif /* SHELFICE_REMESH_PRINT */
-C-    increment eta and decrement R_shelfice and Ro_sur
+C-    increment eta and decrement R_shelfIce and Ro_surf
              etaN(i,j,bi,bj) = etaN(i,j,bi,bj) + adjust
              etaH(i,j,bi,bj) = etaH(i,j,bi,bj) + adjust
              etaHnm1(i,j,bi,bj) = etaHnm1(i,j,bi,bj) + adjust
-             R_shelfice(i,j,bi,bj) = R_shelfice(i,j,bi,bj)-adjust
+             R_shelfIce(i,j,bi,bj) = R_shelfIce(i,j,bi,bj)-adjust
              Ro_surf(i,j,bi,bj) = Ro_surf(i,j,bi,bj) - adjust
 
 C-    Compute merging weights for tracer in new (=k2) top cell, accounting
