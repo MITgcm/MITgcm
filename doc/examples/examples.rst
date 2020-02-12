@@ -19,6 +19,7 @@ Each example is briefly described below.
 
    barotropic_gyre/barotropic_gyre.rst
    baroclinic_gyre/baroclinic_gyre.rst
+   reentrant_channel/reentrant_channel.rst
    advection_in_gyre/advection_in_gyre.rst
    global_oce_latlon/global_oce_latlon.rst
    global_oce_in_p/global_oce_in_p.rst

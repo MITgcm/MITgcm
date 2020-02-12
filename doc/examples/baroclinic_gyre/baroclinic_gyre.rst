@@ -267,7 +267,7 @@ Finally, stability of vertical diffusion of momentum:
    :label: baroc_laplacian_v_stability
 
 Here we will choose :math:`A_{v} = 1\times10^{-2}` m\ :sup:`2` s\ :sup:`--1`,
-so :math:`S_{lv}` evaluates to 0.02 for our maximum :math:`\Delta z`,
+so :math:`S_{lv}` evaluates to 0.02 for our minimum :math:`\Delta z`,
 well below the stability threshold. Note if we were to use Adams Bashforth II for diffusion of tracers
 the same check would apply, with :math:`\kappa_{v}` replacing :math:`A_{v}`. However, we will instead choose
 an implicit scheme for computing vertical diffusion of tracers (see :numref:`baroc_input_data`), which is unconditionally stable.
@@ -887,8 +887,6 @@ Let's proceed through the netcdf output that is produced.
     we specified in list 2 of :ref:`data.diagnostics <baroc_diags_list>`:
     ``THETA``, ``PHIHYD``, ``UVEL``, ``VVEL``, ``WVEL``.
 
-.. _phi_hyd_discussion:
-
   - ``phiHyd.nc``, ``phiHydLow.nc`` - these files contain a snapshot 3-D field of hydrostatic
     pressure potential anomaly (:math:`p'/\rho_c`, see :numref:`finding_the_pressure_field`)
     and a snapshot 2-D field of bottom hydrostatic pressure potential anomaly, respectively.
@@ -898,6 +896,8 @@ Let's proceed through the netcdf output that is produced.
     these fields are written at interval according to
     :varlink:`dumpFreq`, except are not written out at time :varlink:`nIter0` (i.e., have one time
     record fewer than ``state.nc``). Also note when writing standard binary output, these filenames begin as ``PH`` and ``PHL`` respectively.
+
+.. _phi_hyd_discussion:
 
 The hydrostatic pressure potential anomaly :math:`\phi'` is computed as follows:
 
