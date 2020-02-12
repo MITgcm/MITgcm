@@ -47,6 +47,8 @@ cif   penetrating the model shallowest layer
       _RL swfracba(2)
       _RL tmpFac
 #endif /* SHORTWAVE_HEATING */
+C     local copy of surface layer thickness in meters
+      _RL deltaZloc
 
       IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
        kSurface        = Nr
@@ -83,16 +85,20 @@ C     restart parameter
 #endif /* SHORTWAVE_HEATING */
 
 C--   Set mcPheePiston coeff (if still unset)
+       deltaZloc = drF(kSurface)
+       IF ( buoyancyRelation .EQ. 'OCEANICP' )
+     &      deltaZloc = drF(kSurface) * recip_rhoConst * recip_gravity
       IF ( SEAICE_mcPheePiston.EQ.UNSET_RL ) THEN
         IF ( SEAICE_availHeatFrac.NE.UNSET_RL ) THEN
           SEAICE_mcPheePiston = SEAICE_availHeatFrac
-     &                        * drF(kSurface)/SEAICE_deltaTtherm
+     &                        * deltaZloc/SEAICE_deltaTtherm
         ELSE
           SEAICE_mcPheePiston = MCPHEE_TAPER_FAC
      &                        * STANTON_NUMBER * USTAR_BASE
           SEAICE_mcPheePiston = MIN( SEAICE_mcPheePiston,
-     &                          drF(kSurface)/SEAICE_deltaTtherm )
+     &                          deltaZloc/SEAICE_deltaTtherm )
         ENDIF
+
       ENDIF
 
 C--   SItracer specifications for basic tracers

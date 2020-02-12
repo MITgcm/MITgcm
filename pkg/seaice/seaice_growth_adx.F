@@ -301,6 +301,8 @@ c     recip_multDim        = 1./float(SEAICE_multDim)
 
 C     Cutoff for iceload
       heffTooHeavy=drF(kSurface) / 5. _d 0
+      IF ( buoyancyRelation .EQ. 'OCEANICP' )
+     &     heffTooHeavy = heffTooHeavy * recip_rhoConst * recip_gravity
 
 C     RATIO OF SEA ICE DENSITY to SNOW DENSITY
       ICE2SNOW     = SEAICE_rhoIce/SEAICE_rhoSnow
