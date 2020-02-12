@@ -498,6 +498,12 @@ C--   Initialise pkg/profiles
 
 C--   Initialise pkg/ecco (and related pkgs components)
 #ifdef ALLOW_ECCO
+# ifdef ALLOW_AUTODIFF_TAMC
+#  if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
+CADJ STORE uvel = tapelev_init, key = 1
+CADJ STORE vvel = tapelev_init, key = 1
+#  endif
+# endif
       IF ( useECCO ) CALL ECCO_INIT_VARIA( myThid )
 #endif
 

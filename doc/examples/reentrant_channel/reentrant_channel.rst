@@ -657,10 +657,10 @@ the index is still required.
     :end-at: 10.0,
     :lineno-match:
 
-File :filelink:`input/data.gmredi <verification/tutorial_reentrant_channel/input.GM/data.gmredi>`
+File :filelink:`input/data.gmredi <verification/tutorial_reentrant_channel/input/data.gmredi>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input.GM/data.gmredi
+.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.gmredi
     :linenos:
     :caption: verification/tutorial_reentrant_channel/input.GM/data.gmredi
 
@@ -674,7 +674,7 @@ Note that this file is ignored with :filelink:`pkg/gmredi` disabled (in :filelin
   it would not serve any purpose (i.e., diffusion of temperature
   along surfaces of constant temperature has no impact).
 
-.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input.GM/data.gmredi
+.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.gmredi
     :start-at: 1000.,
     :end-at: 1000.,
     :lineno-match:
@@ -684,7 +684,7 @@ Note that this file is ignored with :filelink:`pkg/gmredi` disabled (in :filelin
   tapering scheme (or alternatively, the more simple slope clipping approach), and why such a scheme is necessary, are described in the
   :ref:`GMRedi package documentation <sub_phys_pkg_gmredi>`.
 
-.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input.GM/data.gmredi
+.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.gmredi
     :start-at: dm95
     :end-at: dm95
     :lineno-match:
@@ -699,7 +699,7 @@ Note that this file is ignored with :filelink:`pkg/gmredi` disabled (in :filelin
   purposes, the bolus form permits a straightforward calculation of the actual advective transport (from the GM part),
   whereas obtaining this transport using the skew-flux form is less straightforward due to discretization issues.
 
-.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input.GM/data.gmredi
+.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.gmredi
     :start-at: TRUE
     :end-at: TRUE
     :lineno-match:

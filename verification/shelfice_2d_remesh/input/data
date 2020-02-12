@@ -1,0 +1,109 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef = 90*-1.9,
+ sRef = 90*34.4,
+ eosType='JMD95Z',
+ HeatCapacity_Cp = 3974.0,
+ rhoConst=1030.,
+ gravity=9.81,
+ viscAr=1.E-3,
+ viscAh= 300.,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ diffKhT= 10.,
+ diffKrT=5.E-5,
+ diffKhS= 10.,
+ diffKrS=5.E-5,
+ bottomDragQuadratic=2.5E-3,
+ staggerTimestep = .TRUE.,
+ tempAdvScheme=77,
+ saltAdvScheme=77,
+ vectorInvariantMomentum = .TRUE.,
+# momImplVertAdv=.TRUE.,
+#tempImplVertAdv=.TRUE.,
+#saltImplVertAdv=.TRUE.,
+ implicitDiffusion = .TRUE.,
+ implicitViscosity = .TRUE.,
+ selectImplicitDrag = 2,
+ implicitFreeSurface=.TRUE.,
+ useRealFreshWaterFlux = .TRUE.,
+ exactConserv=.TRUE.,
+# start NLFS (without rstar)
+ nonlinFreeSurf=4,
+ hFacInf=0.05,
+ hFacSup=2.0,
+# end NLFS
+ hFacMin=0.10,
+#integr_GeoPot = 1,
+ ivdc_kappa = 1.,
+ useJamartWetPoints=.TRUE.,
+ selectBotDragQuadr=1,
+#bottomVisc_pCell=.TRUE.,
+#-
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ useSingleCpuIO=.TRUE.,
+#globalFiles=.TRUE.,
+ debuglevel = 2,
+ plotLevel = 0,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=300,
+ cg2dTargetResidual=1.E-11,
+#printResidualFreq=100,
+ &
+
+#Time stepping parameters
+ &PARM03
+#nIter0=2880,
+#nTimeSteps=288,
+#startTime=0.,
+#endTime=2592000.,
+ deltaT=300.0,
+ forcing_In_AB  = .FALSE.,
+ abEps=0.1,
+ pChkptFreq= 2592000.,
+ chkptFreq = 2592000.,
+ dumpFreq =  86400.,
+ monitorFreq= 7200.,
+ monitorSelect=1,
+ monitorFreq=1800.,
+ dumpFreq = 10800.,
+#- for testing purpose:
+ nIter0=2898,
+ nTimeSteps=20,
+#dumpFreq = 1200.,
+ monitorFreq=1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.FALSE.,
+ usingSphericalPolarGrid=.TRUE.,
+ delR=90*10.,
+ delX=1*.125,
+ delY=200*.0078125,
+ xgOrigin = 0.,
+ ygOrigin = -75.5,
+ pCellMix_select=20,
+ pcellMix_delR = 10.,
+#interViscAr_pCell = .TRUE.,
+#interDiffKr_pCell = .TRUE.,
+ pCellMix_viscAr = 90*1.E-3,
+ pCellMix_diffKr = 90*1.E-4,
+# current default: diffKzT=5.E-5, viscAz=1.E-3,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile='bathy_flat.bin',
+ hydrogThetaFile='temp_ini.bin',	
+ hydrogSaltFile ='salt_ini.bin',
+# pSurfInitFile ='etai_ini.bin'
+ &
