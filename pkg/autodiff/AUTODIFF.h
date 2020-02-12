@@ -1,36 +1,36 @@
 #ifdef ALLOW_AUTODIFF_WHTAPEIO
       COMMON /AUTODIFF_WHTAPEIO_I/
      &  tapeFileCounter, tapeMaxCounter, tapeFileUnit, tapeFileUnitS
-      integer tapeFileCounter, tapeMaxCounter
-      integer tapeFileUnit, tapeFileUnitS(4)
-      COMMON /AUTODIFF_WHTAPEIO_L/ 
+      INTEGER tapeFileCounter, tapeMaxCounter
+      INTEGER tapeFileUnit, tapeFileUnitS(4)
+      COMMON /AUTODIFF_WHTAPEIO_L/
      &  tapeConcatIO, tapeSingleCpuIO, tapeBufferIO
       logical tapeConcatIO, tapeSingleCpuIO, tapeBufferIO
 #endif
 
 c ad dump record number (used only if dumpAdByRec is true)
-      integer dumpAdRecMn
-      integer dumpAdRecDy
-      integer dumpAdRecSi
-      integer dumpAdRecEt
-      COMMON /AUTODIFF_DUMP_AD_REC/ 
+      INTEGER dumpAdRecMn
+      INTEGER dumpAdRecDy
+      INTEGER dumpAdRecSi
+      INTEGER dumpAdRecEt
+      COMMON /AUTODIFF_DUMP_AD_REC/
      &       dumpAdRecMn, dumpAdRecDy, dumpAdRecSi,
      &       dumpAdRecEt
 
-      integer ilev_1
-      integer ilev_2
-      integer ilev_3
-      integer ilev_4
-      integer max_lev2
-      integer max_lev3
-      integer max_lev4
-      integer NDV3D, NDV2D, NEXF1, NEXF2, NCTRL1, NOB, NSI
+      INTEGER ilev_1
+      INTEGER ilev_2
+      INTEGER ilev_3
+      INTEGER ilev_4
+      INTEGER max_lev2
+      INTEGER max_lev3
+      INTEGER max_lev4
+      INTEGER NDV3D, NDV2D, NEXF1, NEXF2, NCTRL1, NOB, NSI
 #ifdef ALLOW_ADAMSBASHFORTH_3
       PARAMETER (NDV3D  = 14)
 #else
       PARAMETER (NDV3D  = 10)
 #endif
-      PARAMETER (NDV2D  = 23)
+      PARAMETER (NDV2D  = 22)
       PARAMETER (NEXF1  = 23)
       PARAMETER (NEXF2  = 24)
       PARAMETER (NCTRL1 = 20)
@@ -43,8 +43,8 @@ c ad dump record number (used only if dumpAdByRec is true)
       _RL StoreEXF1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,NEXF1)
       _RL StoreEXF2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,NEXF2)
       _RL StoreCTRLS1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,NCTRL1)
-      _RL StoreOBCSN(1-Olx:sNx+Olx,Nr,nSx,nSy,NOB)
-      _RL StoreOBCSS(1-Olx:sNx+Olx,Nr,nSx,nSy,NOB)
+      _RL StoreOBCSN(1-OLx:sNx+OLx,Nr,nSx,nSy,NOB)
+      _RL StoreOBCSS(1-OLx:sNx+OLx,Nr,nSx,nSy,NOB)
       _RL StoreOBCSE(1-OLy:sNy+OLy,Nr,nSx,nSy,NOB)
       _RL StoreOBCSW(1-OLy:sNy+OLy,Nr,nSx,nSy,NOB)
       _RL StoreSEAICE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,NSI)
