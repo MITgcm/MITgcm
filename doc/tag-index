@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification:
+  - new reentrant channel tutorial experiment, doc will follow soon.
+
 checkpoint67p (2020/02/12)
 o model/src:
   - rename array "surfaceForcingTice" to "adjustColdSST_diag" and change the
