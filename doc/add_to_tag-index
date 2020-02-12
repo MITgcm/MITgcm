@@ -1,0 +1,10 @@
+o pkg/streamice:
+  - add option to specify "regularised coulomb" sliding law to better reflect
+    dependence on subglacial water pressure close to the grounding line
+  - above requires CPP option (due to new arrays) STREAMICE_COULOMB_SLIDING
+    and r/t param streamice_allow_reg_coulomb
+  - add parameter STREAMICEAdotFile to specify surface mass balance
+  - add parameter streamice_maxnliter_Petsc to specify maximum no. of 
+    linear solves using PETSc in a single time step (not incl. in doc
+    since PETSc is not part of standard build
+
