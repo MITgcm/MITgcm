@@ -257,12 +257,12 @@ experiment. Below we describe these customizations in detail.
 Compile-time Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-File :filelink:`code/packages.conf <verification/tutorial_reentrant_channe/code/packages.conf>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File :filelink:`code/packages.conf <verification/tutorial_reentrant_channel/code/packages.conf>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../../verification/tutorial_reentrant_channel/code/packages.conf
     :linenos:
-    :caption: verification/tutorial_reentrant_channe/code/packages.conf
+    :caption: verification/tutorial_reentrant_channel/code/packages.conf
 
 In addition to the pre-defined standard package group ``gfd``, we define four additional
 packages. 
@@ -691,13 +691,13 @@ Note that this file is ignored with :filelink:`pkg/gmredi` disabled (in :filelin
 
 - We select the advective or "bolus" form of the parameterization,
   which specifies that GM fluxes are parameterized into a :ref:`bolus advective transport <GM_bolus_desc>`, rather
-  than implemented as a :ref:`"skew-flux" transport <sub_gmredi_skewflux>` via added terms
-  in the diffusion tensor (see Griffies 1998 :cite:`gr:98`). The skew-flux form is the package default.
+  than implemented as a :ref:`"skewflux" transport <sub_gmredi_skewflux>` via added terms
+  in the diffusion tensor (see Griffies 1998 :cite:`gr:98`). The skew flux form is the package default.
   Analytically, these forms are identical, but in practice are discretized differently,
   and can lead to noticeably different solutions in some setups (anecdotally,
   particularly where you have steeply sloping isopycnals near boundaries). For diagnostic
   purposes, the bolus form permits a straightforward calculation of the actual advective transport (from the GM part),
-  whereas obtaining this transport using the skew-flux form is less straightforward due to discretization issues.
+  whereas obtaining this transport using the skew flux form is less straightforward due to discretization issues.
 
 .. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.gmredi
     :start-at: TRUE
@@ -820,7 +820,7 @@ As in tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`,
 we will make use of the 'Diagnostic Per Level Statistics' to assess equilibrium; specifically,
 we will look at the change in surface (restoring) heat flux over time, as well as the potential temperature field.
 In this tutorial we use standard :ref:`native Fortan (binary) output <pkg_mdsio>` files (using :filelink:`pkg/mdsio`)
-rather than NetCDF output (as done in tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`).
+rather than `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_  output (as done in tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`).
 Important note: when using :filelink:`pkg/mdsio`, the statistical diagnostics output is written in plain text,
 NOT binary format. An advantage is that this permits a simple unix ``cat`` or ``more`` command to display the file to the terminal window
 as integration proceeds, i.e., for a quick check that results look reasonable. The disadvantage however is that some additional parsing
@@ -895,7 +895,7 @@ temperature structure of the model solution is sensitive to our mesoscale eddy p
       Zonal-mean temperature (shaded) and zonal-mean mixed layer depth (black line) averaged over simulation year 30.
       Left plot is from non-GM run, right using GM.
 
-:numref:`channel_bt_psi` plots the barotropic streamfunction without GM (left) and with GM (right).
+:numref:`channel_bt_psi` shows the barotropic streamfunction without GM (left) and with GM (right).
 The pattern is quite similar in both simulations,
 characterized by a jet centered in the latitude bands with the deep notch, with some deflection
 to the south after the jet squeezes through the notch. There is a balance between
@@ -910,21 +910,21 @@ the ocean is much more stratified, with dynamics presumably more baroclinic.
       :alt: BT streamfunction
       :name: channel_bt_psi
 
-      Barotropic streamfunction averaged over over simulation year 30. Left plot is from non-GM run, right using GM.
+      Barotropic streamfunction averaged over over simulation year 30. Left plot is from non-GM run, right using GM. Contour interval is 20 Sv.
 
 :numref:`channel_MOC_eul` shows the Eulerian meridional overturning circulation for the non-GM run (left) and GM run (right).
 Again, they appear quite similar; what we are observing here is known as a "Deacon Cell" (Deacon 1937 :cite:`deacon:37`; Bryan 1991 :cite:`bryan:91`) forced by surface Ekman transport to the north
-(see also Doos and Webb 1994, Speer et al. 2000), with downwelling in the northern half of the basin and upwelling in the south. The magnitude of this cell,
+(see also Döös and Webb 1994 :cite:`doos:94`, Speer et al. 2000 :cite:`speer:00`), with downwelling in the northern half of the basin and upwelling in the south. The magnitude of this cell,
 on the order of 1-2 Sverdrups, may not seem very impressive, but it is important to consider our zonal domain spans only about 1/20th of the
-60th parallel south; scaled up, the magnitude of this cell is quite large. Also note some local recirculation in the latitude bands where the ridge slopes
-to the deep notch.
-The centers of these recirculations are deep, where stratification is quite weak, so much of water recirculated here falls within a very narrow density class.
+60th parallel south; scaled up, the magnitude of this cell is quite large. Some local recirculation occurs in the latitude bands where the ridge slopes
+down to the center of the deep notch.
+The centers of these recirculations occur in the bottom 2000 m, where stratification is quite weak, so much of water recirculated here falls within a very narrow density class.
 The deep ridge effectively creates east-west sidewalls at depth, thus able to support an overturning in thermal wind balance, whereas no sidewalls exist in
-the upper portion of the water column. There is little overturning associated with the deep jet flowing through the notch center (where the bottom is flat).
+the upper portion of the water column. There is little overturning associated with the deep jet flowing through the flat bottom of the notch.
 
-Also worth noting is that we see some evidence of noise in the :numref:`channel_MOC_eul`, in the jaggedy contours, despite our rather
-large choice of Ah=2000 m2/s for (uniform) horizontal viscosity and our higher-order advective scheme. These noise
-artifacts increase fairly dramatically for smaller choices of Ah, although as tested the solution remains stable for viscosity decreased an order of magnitude.
+Also worth noting is that we see some evidence of noise (jaggedy contours) in :numref:`channel_MOC_eul`, despite our rather
+large choice of :math:`A_{h}`\ =2000 m\ :sup:`2` s\ :sup:`--1` for (uniform) horizontal viscosity and our higher-order advective scheme. These noise
+artifacts increase fairly dramatically for smaller choices of :math:`A_{h}`, although we tested the solution remains stable for :math:`A_{h}` decreased by an order of magnitude.
 
   .. figure:: figs/MOC_EUL.png
       :width: 100%
@@ -935,23 +935,23 @@ artifacts increase fairly dramatically for smaller choices of Ah, although as te
       Eulerian meridional overturning circulation (shaded) averaged over simulation year 30. Left plot is from non-GM run, right using GM. Contour interval is 0.5 Sv.
 
 When using :filelink:`pkg/gmredi`, it is often desirable to diagnose an eddy bolus velocity,
-or a bolus transport, in order to compute the "residual circulation",
-the Lagrangian transport in the ocean (i.e., which effects tracer transport; see, for example, Wolfe 2014 OM).
-Unfortunately the bolus velocity is not available to output directly from MITgcm,
-but must be computed from other GM diagnostics, which differ if the :ref:`skew-flux <sub_gmredi_skewflux>`
+or a bolus transport, in order to compute the *residual circulation* (Ferrari 2003 :cite:`ferrari:03`),
+the Lagrangian transport in the ocean (i.e., which effects tracer transport; see, for example, Wolfe 2014 :cite:`wolfe:14`).
+Unfortunately the bolus velocity is not directly available from MITgcm,
+but must be computed from other GM diagnostics, which differ if the :ref:`skew flux <sub_gmredi_skewflux>`
 or :ref:`bolus/advective <GM_bolus_desc>` form of GM is selected.
 Here we choose the later form in :filelink:`data.gmredi <verification/tutorial_reentrant_channel/input.GM/data.gmredi>` (``GM_AdvForm =.TRUE.``),
-for which a bolus streamfunction diagnostic is available from which the bolus velocity is readily computed
+for which a bolus streamfunction diagnostic is available, thus the bolus velocity can be readily computed
 (see analysis.m file; obtaining the bolus velocity, for reasons of gridding,
-is a bit more straightforward using the advective form). In :numref:`channel_MOC_EULpBOL` we've added the
-bolus velocity to the Eulerian velocity. We see that the meridional overturning cell has weakened
-in magnitude, particularly in the northern half of the domain. The eddy parameterization will function to flatten sloping isopycnals
-as seen in :numref:`channel_zm_temp_ml`, creating a bolus overturning circulation in the opposite
+is a bit more straightforward using the advective form). In :numref:`channel_MOC_EULpBOL` we've computed and added the
+bolus velocity to the Eulerian velocity. We see that the upper meridional overturning cell has weakened
+in magnitude, particularly in the northern half of the domain. The eddy parameterization will attempt to flatten sloping isopycnals
+seen in :numref:`channel_zm_temp_ml`, creating a bolus overturning circulation in the opposite
 sense to the Deacon Cell. The magnitude of the GM thickness diffusion effectively
 controls the strength of the eddy transport; here we observed only partial cancellation of the Deacon Cell
-shown in :numref:`channel_MOC_eul`. This observation of near-cancellation
-of the SO Deacon Cell in global general circulation models, specifically using the GM parameterization,
-was first reported in Danabasoglu et al. 1994 (Science).
+shown in :numref:`channel_MOC_eul`. In global ocean general circulation models, an observation of near-cancellation
+in the Southern Ocean Deacon Cell when the GM parameterization was used
+was first reported in Danabasoglu et al. (1994) :cite:`danabasoglu:94`.
 
   .. figure:: figs/MOC_EULpBOL.png
       :width: 50%
@@ -961,23 +961,27 @@ was first reported in Danabasoglu et al. 1994 (Science).
 
       Meridional overturning circulation (shaded) from GM simulation including bolus advective transport, averaged over simulation year 30. Contour interval is 0.5 Sv.
 
-Now let's use :filelink:`pkg/layers` output to examine the residual meridional overturning circulation, :numref:`channel_bt_MOC_res_T`.
-Here we integrate the time- and zonal-mean transport in
+Now let's use :filelink:`pkg/layers` output to examine the residual meridional overturning circulation, shown in :numref:`channel_bt_MOC_res_T`.
+We integrate the time- and zonal-mean transport in
 isopycnal layers (see :numref:`layers_trans_schematic`) to obtain a streamfunction in density coordinates. 
-See Abernathy et al. 2011 for a more detailed explanation of this calculation, the tried-and-true approach to diagnose this circulation in the eddy-permitting regime,
-as we will require in :numref:`reentrant_channel_soln_eddy` to compare to these solutions.
+See Abernathy et al. (2011) :cite:`abernathy:11` for a more detailed explanation of this calculation;
+this approach is the tried-and-true method to diagnose the residual circulation in an eddy-permitting regime,
+as required when we run this setup at higher resolution (:numref:`reentrant_channel_soln_eddy`).
 Note that :filelink:`pkg/layers` automatically includes bolus transport from :filelink:`pkg/gmredi` in its
 calculations, assuming GM is used.
-With temperature as the ordinate on this plot, vertical flows reflect diabatic processes. The green dashed lines represent the maximum and minimum
+With temperature as the ordinate in :numref:`channel_bt_MOC_res_T`, vertical flows reflect diabatic processes. The green dashed lines represent the maximum and minimum
 SST for a given latitude band, thus representing upper layer circulation within this band. On the left side, without GM, we again see a robust Deacon cell,
 with a strong diabatic component, presumably due to horizontal diffusion occurring across sloping isopycnals (i.e. the so-called "Veronis effect", see
-Veronis 1975 as well as numerous papers prior to the wide-spread adoption of the GM parameterization in ocean models). [As an aside, it is for lack of a better name
-that we label this left plot, lacking either eddies or GM, as the residual circulation, as indeed it is identical to the Eulerian circulation in density coordinates].
-On the right side, the solution with GM, the Deacon cell is much weaker (due to partial cancellation from the bolus circulation, as noted earlier), and we also note
-the streamfunction of this cell run "horizontally" in the plot. We see some evidence for a deep cell, in the lowest temperature classes, that is not apparent in the
-Eulerian MOC. One might ask: what happened to the deep recirculating cells seen in :numref:`channel_MOC_EULpBOL`? Recall that our discretization of temperature layers is fairly
-crude, 0.25 K in the coldest temperatures, and presumably much of this recirculation is "lost" as recirculation within a single density class. If this deep circulation was of interest,
-one could simply re-run the model with finer resolution at depth (and/or if more layers are used, LAYER_SIZE.h needs to be changed and the model recompiled).
+Veronis (1975) :cite:`veronis:75` as well as other numerous papers prior to the wide-spread adoption of the GM parameterization in ocean models). [As an aside, it is for lack of a better name
+that we label this left plot of :numref:`channel_bt_MOC_res_T`, lacking either eddies or GM, as the residual circulation,
+as indeed it is identical to the Eulerian circulation in density coordinates].
+On the right side, with GM, the Deacon cell is much weaker due to partial cancellation from the bolus circulation, as noted earlier, but also note
+that interior contours of streamfunction run roughly horizontal in the plot. We see some evidence of a deep cell in the lowest temperature classes, less obvious in the
+Eulerian MOC :numref:`channel_MOC_eul`. One might ask: what happened to the deep recirculating cells seen in :numref:`channel_MOC_EULpBOL`?
+Recall that our discretization of temperature layers is fairly
+crude, 0.25 K in the coldest temperatures, and presumably much of this recirculation is "lost" as recirculation within a single density class. If this deep circulation were of interest,
+one could simply re-run the model with finer resolution at depth (perhaps increasing the number of layers used,
+which requires changing :filelink:`LAYERS_SIZE.h <verification/tutorial_reentrant_channel/code/LAYERS_SIZE.h>` and recompiling).
 
   .. figure:: figs/MOC_RES.png
       :width: 100%
@@ -988,11 +992,11 @@ one could simply re-run the model with finer resolution at depth (and/or if more
       Residual meridional overturning circulation (shaded) as computed in density (i.e., temperature) coordinates, averaged over simulation year 30. Contour interval is 0.5 Sv.
       Green dashed curves show maximum and minimum SST in each latitude band. Left plot is from non-GM run, right using GM. 
 
-Finally, let's convert our layers-output residual MOC back into depth coordinates, as shown in :numref:`channel_bt_MOC_res_Ttoz`.
-Solid lines show contours of zonal mean temperature. On the left, consistent with previous analyses, we see a smalle, upper ocean counter-clockwise
+Finally, let's convert the residual circulatiom shown in :numref:`channel_bt_MOC_res_T` back into depth coordinates, see :numref:`channel_bt_MOC_res_Ttoz`.
+Solid lines now display contours of zonal mean temperature. On the left, consistent with previous analyses, we see a small, upper ocean counter-clockwise
 circulation in the southern sector, where deep mixed layers occur (:numref:`channel_zm_temp_ml`), with the dominant feature again
-being the Deacon cell. In contrast, using GM, we see a weak residual clockwise cell aligned along temperature surfaces in the thermocline, with a weak
-deep counter-clockwise cell aligned with the coldest temperature contour (i.e., the aforementioned deep cell).
+being the (clockwise) Deacon cell. In contrast, using GM, we see a weak residual clockwise cell aligned along temperature surfaces in the thermocline, with a weak
+deep counter-clockwise cell aligned with the coldest temperature contour (i.e., the deep cell seen in :numref:`channel_bt_MOC_res_T`).
 
   .. figure:: figs/MOC_RES_Z.png
       :width: 100%
@@ -1001,7 +1005,7 @@ deep counter-clockwise cell aligned with the coldest temperature contour (i.e., 
       :name: channel_bt_MOC_res_Ttoz
 
       Residual meridional overturning circulation (shaded) as computed in density coordinates and converted back into depth coordinates, averaged over simulation year 30.
-      Black lines show zonal mean temperature, contour interval 1 :sup:`o`\C. Left plot is from non-GM run, right using GM. Contour interval is 0.5 Sv.
+      Black lines show zonal mean temperature, contour interval 1 :sup:`o`\C. Left plot is from non-GM run, right using GM.
  
 
 .. _reentrant_channel_soln_eddy:
@@ -1014,23 +1018,27 @@ Eddy Permitting Solution
     <iframe width="700" height="350" src="https://www.youtube.com/embed/gO3fvRJ3FUE?rel=0&vq=hd720&autoplay=1&loop=1&playlist=gO3fvRJ3FUE"
     frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-In this section we discuss the solution with the horizontal grid space reduced from 50 km to 5 km, which is sufficiently resolved to
-permit eddies to form in the model solution (see movie above, which shows SST, surface relative vorticity, and surface current speed,
+.. only:: latex
+
+   .. image:: figs/eddymovie_still.png
+
+In this section we discuss a model solution with the horizontal grid space reduced from 50 km to 5 km, which is sufficiently resolved to
+permit eddies to form (see movie above, which shows SST, surface relative vorticity, and surface current speed,
 left to right, over a representative year toward the end of the 30-year simulation).
-Vertical resolution is unchanged from the 50 km simulation.
-While we provide instructions on how to compile and run using this new configuration,
+Vertical resolution is unchanged.
+While we provide instructions on how to compile and run in this new configuration,
 it will require parallelizing (using `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_)
-on a few hundred processor cores or else a 30-year integration will take on the order of a week to a month
-(using a single processor, even longer!) -- in other words, this requires a large cluster or high-performance computing (HPC) facility to run efficiently.
+on at least a hundred processor cores or else a 30-year integration will take on the order of a month or longer
+-- in other words, this requires a large cluster or high-performance computing (HPC) facility to run efficiently.
 
 Running with higher resolution requires re-compiling the code after changing the tile size and number of processors, see 
-:filelink:`code/SIZE.h_eddy <verification/tutorial_reentrant_channel/code/SIZE.h_eddy>` (as configured here, for 400 processors).
+:filelink:`code/SIZE.h_eddy <verification/tutorial_reentrant_channel/code/SIZE.h_eddy>` (as configured here, for 100 processors;
+for faster results change the tile size and use 200 or even 400 processors).
 Note we will NOT enable :filelink:`pkg/gmredi` in our eddy run, so it can be eliminated from the list in
-:filelink:`packages.conf <verification/tutorial_reentrant_channe/code/packages.conf>`, or if kept,
-make sure to deactivate in :filelink:`data.pkg <verification/tutorial_reentrant_channel/input/data.pkg>` by setting
-:varlink:`useGMRedi`\ ``=.FALSE.`` (warning: do not include this line if ``gmredi`` removed
-from :filelink:`packages.conf <verification/tutorial_reentrant_channe/code/packages.conf>`,
-the model will not recognize this parameter and will terminate with error). In conjunction with the change
+:filelink:`packages.conf <verification/tutorial_reentrant_channe/code/packages.conf>` [#]_
+(make sure to set :varlink:`useGMRedi`\ ``=.FALSE.`` in :filelink:`data.pkg <verification/tutorial_reentrant_channel/input/data.pkg>`).
+
+In conjunction with the change
 in :filelink:`code/SIZE.h_eddy <verification/tutorial_reentrant_channel/code/SIZE.h_eddy>`,
 uncomment these lines in ``PARM04`` in :filelink:`data <verification/tutorial_reentrant_channel/input/data>`:
 
@@ -1039,22 +1047,22 @@ uncomment these lines in ``PARM04`` in :filelink:`data <verification/tutorial_re
    delX=200*5.E3,
    delY=400*5.E3,
 
-to specify 5 km resolution in 200 and 400 grid cells in :math:`x` and :math:`y` respectively. New files for bathymetry, forcing fields, and initial temperature
-can be generated using the MATLAB program :filelink:`verification/tutorial_reentrant_channel/input/gendata.5km.m` (don't forget to change the filenames in ``PARM05``
+to specify 5 km resolution in 200 :math:`\times` 400 grid cells in :math:`x` and :math:`y`. New files for bathymetry, forcing fields, and initial temperature
+can be generated using the `MATLAB <https://www.mathworks.com/>`_ program :filelink:`verification/tutorial_reentrant_channel/input/gendata_5km.m` (don't forget to change the filenames in ``PARM05``
 in :filelink:`data <verification/tutorial_reentrant_channel/input/data>`).
 
 Running at higher resolution requires a smaller time step for stability. Revisiting :numref:`sec_tutSOch_num_stab`, to maintain advective stability
-(CFL condition, :eq:`eq_SOch_cfl_stability`) one could simply decrease the time step by the same factor of 10 decrease in :math:`\Delta x` -- stability
+(CFL condition, :eq:`eq_SOch_cfl_stability`) one could simply decrease the time step by the same factor of 10 decrease as :math:`\Delta x` -- stability
 of inertial oscillations is not longer a limiting factor, given a smaller :math:`\Delta t` in :eq:`eq_SOCh_inertial_stability` -- 
 but to speed things up we'd like to keep :math:`\Delta t` as large as possible. With a rich eddying solution, however, is it clear that horizontal velocity
-will remain order ~1 ms\ :sup:`-1`? As a compromise, we suggest setting parameter :varlink:`DeltaT`\ ``=250.,`` in
-:filelink:`data <verification/tutorial_reentrant_channel/input/data>`, which we found to be stable. With this choice, a 30-year integration
-requires setting :varlink:`nTimeSteps`\ ``=3732480,``. 
+will remain order ~1 ms\ :sup:`-1`? As a compromise, we suggest setting parameter :varlink:`DeltaT`\ ``=250.`` (seconds) in
+:filelink:`data <verification/tutorial_reentrant_channel/input/data>`, which we found to be stable. For this choice, a 30-year integration
+requires setting :varlink:`nTimeSteps`\ ``=3732480``. 
 
 While it would be possible to decrease (spatially uniform) harmonic viscosity to more
 a more appropriate value for this resolution, or perhaps use bi-harmonic viscosity
 (see :numref:`fluxform_lat_dissip`), we will make use of one of the nonlinear viscosity schemes described in :numref:`nonlinear_vis_schemes`, geared
-to large eddy simulations, where viscosity is a function of the resolved motions. Here, we will make use of
+toward large eddy simulations, where viscosity is a function of the resolved motion. Here, we employ
 the :ref:`Leith viscosity <leith_viscosity>` (Leith 1968, Leith 1996 :cite:`leith:68` :cite:`leith:96`).
 Set the following parameters in ``PARM01`` of :filelink:`data <verification/tutorial_reentrant_channel/input/data>`:
 
@@ -1064,7 +1072,7 @@ Set the following parameters in ``PARM01`` of :filelink:`data <verification/tuto
    useFullLeith=.TRUE.,
    viscAhGridMax = 0.5,
 
-(and make sure to comment out the line :varlink:`viscAh` ``=2000.`` ).
+(and comment out the line :varlink:`viscAh` ``=2000.`` ).
 :varlink:`viscC2Leith` is a scaling coefficient which we set to 1.0, :varlink:`useFullLeith` ``=.TRUE.`` uses unapproximated gradients in
 the Leith formulation (see :numref:`leith_viscosity`). Parameter :varlink:`viscAhGridMax` places a maximum limit on the Leith viscosity so that
 the CFL condition is obeyed (see :numref:`CFL_constraint_visc` and :eq:`eq_SOch__laplacian_stability` in discussion of :ref:`sec_tutSOch_num_stab`).
@@ -1073,13 +1081,13 @@ to over 100 m\ :sup:`2` s\ :sup:`--1` in jets. Note that while it would have bee
 not really designed to be used at such a large :math:`\Delta x`, and the :math:`A_{h}` it generates
 about an order of magnitude below the constant :math:`A_{h} = 2000` m\ :sup:`2` s\ :sup:`--1` employed in the coarse model runs, resulting in a very noisy solution.
 
-Finally, we suggest adding the parameter :varlink:`useSingleCpuIO` ``=.TRUE.,`` in ``PARM01`` of :filelink:`data <verification/tutorial_reentrant_channel/input/data>`.
+Finally, we suggest adding the parameter :varlink:`useSingleCpuIO` ``=.TRUE.`` in ``PARM01`` of :filelink:`data <verification/tutorial_reentrant_channel/input/data>`.
 This will produce global output files generated by the master `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_ processor,
 rather than a copious amount of single-tile files (each processor dumping output for its specific sub-domain).
 
-To compare the eddying solution with the coarse-resolution simulations, we need to take a fairly long time average; even year-to-year there is noticeably variability in
-the solution. :numref:`channel_zm_temp_MOC_eddy` through :numref:`channel_MOC_eddy_layers` plot similar figures as shown in :numref:`reentrant_channel_solution`, showing a time mean over
-the last five  years of the simulation.
+To compare the eddying solution with the coarse-resolution simulations, we need to take a fairly long time average; even in annual means there is noticeably variability in
+the solution. :numref:`channel_zm_temp_MOC_eddy` through :numref:`channel_MOC_eddy_layers` plot similar figures as :numref:`channel_zm_temp_ml`-:numref:`channel_bt_MOC_res_Ttoz`,
+showing a time mean over the last five years of the simulation.
 
   .. figure:: figs/MOC_EUL_ztemp_eddy.png
       :width: 100%
@@ -1096,7 +1104,7 @@ the last five  years of the simulation.
       :alt: BT streamfunction
       :name: channel_bt_psi_eddy
 
-      Barotropic streamfunction from eddying simulation averaged over years 26-30.
+      Barotropic streamfunction from eddying simulation averaged over years 26-30. Contour interval is 20 Sv.
 
   .. figure:: figs/MOC_RES_EDDY.png
       :width: 100%
@@ -1109,38 +1117,47 @@ the last five  years of the simulation.
       Right: Residual meridional overturning circulation (shaded) as computed in density coordinates and converted back into depth coordinates, from eddying simulation averaged over years 26-30.
       Black lines show zonal mean temperature, contour interval 1 :sup:`o`\C. 
 
-All things considered, our coarse resolution solutions are not a bad likeness of the (time mean)
+In general, our coarse resolution solutions are not a bad likeness of the (time mean)
 eddying solution, particularly when we use :filelink:`pkg/gmredi`
 to parameterize mesoscale eddies. More detailed comments comparing these solutions are as follows:
 
 - The superiority of the GM solution is clear in the plot of zonal mean temperature
   (:numref:`channel_zm_temp_MOC_eddy` left panel vs. :numref:`channel_zm_temp_ml`).
   Differences among the Eulerian MOC plots (:numref:`channel_zm_temp_MOC_eddy` right panel
-  vs. :numref:`channel_MOC_eul`) are less obvious, except to note that in the more stratified
+  vs. :numref:`channel_MOC_eul`) are less obvious, but note that in the more stratified
   northern section of the domain, the eddying MOC looks more like the coarse "Eulerian + Bolus" GM solution (:numref:`channel_MOC_EULpBOL`).
 
 - A large anticyclonic barotropic vortex is present away from the topographic ridge as shown in a plot
   of the barotropic streamfunction (:numref:`channel_bt_psi_eddy`; recall, our domain is
   located in the Southern Hemisphere, so anticyclonic is counter-clockwise). As such, the flow passing through the deep notch is somewhat
-  less than observed in the coarse solution (:numref:`channel_bt_psi`). Yet, similar
+  less than obtained in the coarse solution (:numref:`channel_bt_psi`). Yet, similar
   constraints on barotropic potential vorticity conservation lead to a similar overall pattern.
 
-- Examining the residual MOC generated from :filelink:`pkg/layers` diagnostics (see :numref:`channel_MOC_eddy_layers`
+- Examining the residual circulation generated from :filelink:`pkg/layers` diagnostics (see :numref:`channel_MOC_eddy_layers`
   vs. :numref:`channel_bt_MOC_res_T`, :numref:`channel_bt_MOC_res_Ttoz`),
-  the non-GM solution seems quite poor, which would certainly have implications on tracer transport had they been
-  included in the model solution. In the GM solution, eddies seem to only partially
+  the non-GM solution seems quite poor, which would certainly have implications on tracer transport had any addition tracers been
+  included in the simulation. In the GM solution, eddies seem to only partially
   cancel the cell forced by northward Ekman transport (Deacon Cell). In the eddying solution, the residual circulation
-  is oriented in the opposite sense: the relaxation of baroclinicity associated with
-  the northern sponge layer overwhelms the Deacon Cell. This would seem to suggest than our parameterization of eddies in GM, or more specifically,
+  is oriented in the opposite sense: eddy fluxes resulting from baroclinic instability due to
+  the northern sponge layer (stratification) overwhelms the Deacon Cell.
+  This would seem to suggest than our parameterization of eddies by GM, or more specifically,
   our choice for parameter :varlink:`GM_background_K` of 1000 m\ :sup:`2` s\ :sup:`--1`, may be too low, at least for this idealized setup!
   Parameterizing eddies in the Southern Ocean is a topical research question, but some studies suggest
   this value of GM thickness diffusivity may indeed be low for values in the Southern Ocean
-  (e.g., Ferreira et al. 2005 JPO). A weak residual deep cell, oriented with rising flow along the sponge layer, is also present.
+  (e.g., Ferriera et al. 2005 :cite:`ferriera:05`). A weak residual deep cell, oriented with rising flow along the sponge layer, is also present.
   Note that the area enclosed by the dashed green lines in :numref:`channel_MOC_eddy_layers`
   is quite large, due to episodic large deviations in SST associated with eddies.
 
-- As might be suggested by the orientation of the residual MOC, in the eddying solution temperature relaxation in the sponge layer is associated with heat gain in the thermocline.
-  In the coarse runs, however, this relaxation is effectively cooling, particularly in the non-GM run.
+- As might be suggested by the orientation of the residual MOC, in the eddying solution temperature relaxation
+  in the sponge layer is associated with heat gain in the thermocline.
+  In the coarse runs, however, the sponge layer is effectively cooling, particularly in the non-GM run.
   Unfortunately, at this time there is no diagnostic available in :filelink:`pkg/rbcs` which tabulates these fluxes, so to determine this information,
   one must compare model potential temperature to the restored temperature.
+
+.. [#] Note it is not stricly necessary to remove :filelink:`pkg/gmredi` from your high-resolution build -- however, if kept in the list of packages included in
+       :filelink:`packages.conf <verification/tutorial_reentrant_channe/code/packages.conf>`, it then becomes necessary to deactivate
+       in :filelink:`data.pkg <verification/tutorial_reentrant_channel/input/data.pkg>` for this run by setting
+       :varlink:`useGMRedi`\ ``=.FALSE.``.  If by chance you set a use«PKG» flag to ``.TRUE.`` in :filelink:`data.pkg <verification/tutorial_reentrant_channel/input/data.pkg>`
+       but have not included the package in the build, the model will terminate with error on startup. But you can alway set a use«PKG» flag to ``.FALSE.`` whether or not the package
+       is included in the build.
 
