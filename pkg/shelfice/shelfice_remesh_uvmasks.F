@@ -37,6 +37,7 @@ C     tmpVar*   :: Temporary array used to integrate column thickness
       _RL tmpVar2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hFacMnSz, hFacCtmp
       _RL hFac1tmp, hFac2tmp
+      _RS rEmpty
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -184,7 +185,8 @@ C-    Total column thickness at Western & Southern edges
           ENDDO
          ENDDO
 
-         IF ( useMin4hFacEdges ) THEN
+c        IF ( useMin4hFacEdges ) THEN
+         IF ( .TRUE. ) THEN
 C-    Adjust only rSurf at W and S edges (correct for the difference)
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
@@ -233,11 +235,6 @@ C-    end bi,bj loops.
       CALL EXCH_UV_XY_RS( rSurfW, rSurfS, .FALSE., myThid )
       CALL EXCH_UV_XY_RS(  rLowW,  rLowS, .FALSE., myThid )
 
-C--   Additional closing of Western and Southern grid-cell edges: for example,
-C     a) might add some "thin walls" in specific location
-C--   b) close non-periodic N & S boundaries of lat-lon grid at the N/S poles.
-      CALL ADD_WALLS2MASKS( myThid )
-
 C--   Calculate surface k index for interface W & S (U & V points)
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -259,6 +256,13 @@ C--   Calculate surface k index for interface W & S (U & V points)
         ENDDO
        ENDDO
       ENDDO
+
+C--   Additional closing of Western and Southern grid-cell edges: for example,
+C     a) might add some "thin walls" in specific location
+C     b) close non-periodic N & S boundaries of lat-lon grid at the N/S poles.
+C     new: location now reccorded as kSurfW/S = Nr+2
+      rEmpty = rF(1)
+      CALL ADD_WALLS2MASKS( rEmpty, myThid )
 
       ELSE
 
