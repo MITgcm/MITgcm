@@ -128,7 +128,7 @@ C-    Intermediate surface forcing arrays
           surfaceForcingV (i,j,bi,bj) = 0. _d 0
           surfaceForcingT (i,j,bi,bj) = 0. _d 0
           surfaceForcingS (i,j,bi,bj) = 0. _d 0
-          surfaceForcingTice  (i,j,bi,bj) = 0. _d 0
+          adjustColdSST_diag  (i,j,bi,bj) = 0. _d 0
           lambdaThetaClimRelax(i,j,bi,bj) = 0. _d 0
           lambdaSaltClimRelax (i,j,bi,bj) = 0. _d 0
           botDragU        (i,j,bi,bj) = 0. _d 0

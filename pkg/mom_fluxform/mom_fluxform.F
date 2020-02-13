@@ -149,7 +149,9 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL   strain(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_LEITH_QG
       _RL  Nsquare(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
       _RL  uDudxFac
       _RL  AhDudxFac
       _RL  vDudyFac
@@ -213,7 +215,9 @@ c       KE(i,j)     = 0.
         strain(i,j) = 0.
         tension(i,j)= 0.
         stretching(i,j) = 0.
-        Nsquare(i,j)    = 0.
+#ifdef ALLOW_LEITH_QG
+        Nsquare(i,j) = 0.
+#endif
         guDiss(i,j) = 0.
         gvDiss(i,j) = 0.
        ENDDO
@@ -323,7 +327,7 @@ C     anelastic: transports are scaled by rhoFacC (~ mass transport)
      I                          Nsquare, uFld,vFld,vort3,
      I                          myTime, myIter, myThid )
         ENDIF
-#endif
+#endif /* ALLOW_LEITH_QG */
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
            IF ( hFacZ(i,j).EQ.0. ) THEN

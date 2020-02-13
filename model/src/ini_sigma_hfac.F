@@ -63,8 +63,8 @@ C-    Remove column (mask=0) thinner than hFacMin*rFullDepth
 C       ensures hFac > hFacMin (assuming we use pure Sigma)
 C Note: because of unfortunate hFacMin default value (=1) (would produce
 C       unexpected empty column), for now, use hFacInf instead of hFacMin
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
            tmpFld(i,j) = Ro_surf(i,j,bi,bj)-R_low(i,j,bi,bj)
 c          IF ( tmpFld(i,j).LT.hFacMin*rFullDepth )
            IF ( tmpFld(i,j).LT.hFacInf*rFullDepth )
@@ -77,8 +77,8 @@ c     IF ( useShelfIce ) THEN
 c     ENDIF
 c#endif /* ALLOW_SHELFICE */
 C-    Set (or reset) other 2-D cell-centered fields
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
            IF ( tmpFld(i,j).GT.0. _d 0 ) THEN
              kSurfC (i,j,bi,bj) = 1
              kLowC  (i,j,bi,bj) = Nr
@@ -96,8 +96,8 @@ C-    Set (or reset) other 2-D cell-centered fields
         ENDDO
 C-    Set 3-D hFacC
         DO k=1, Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            IF ( maskInC(i,j,bi,bj).NE.0. _d 0 ) THEN
              hFactmp = ( dAHybSigF(k)*rFullDepth
      &                 + dBHybSigF(k)*tmpFld(i,j)
@@ -129,19 +129,19 @@ C--   Set Western & Southern fields (at U and V points)
        DO bi=myBxLo(myThid), myBxHi(myThid)
 C-    set 2-D mask and rLow & reference rSurf at Western & Southern edges
         i = 1-OlX
-        DO j=1-Oly,sNy+Oly
+        DO j=1-OLy,sNy+OLy
            rSurfW(i,j,bi,bj) = rEmpty
            rLowW (i,j,bi,bj) = rEmpty
            maskInW(i,j,bi,bj)= 0.
         ENDDO
-        j = 1-Oly
-        DO i=1-Olx,sNx+Olx
+        j = 1-OLy
+        DO i=1-OLx,sNx+OLx
            rSurfS(i,j,bi,bj) = rEmpty
            rLowS (i,j,bi,bj) = rEmpty
            maskInS(i,j,bi,bj)= 0.
         ENDDO
-        DO j=1-Oly,sNy+Oly
-         DO i=2-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=2-OLx,sNx+OLx
            maskInW(i,j,bi,bj)= maskInC(i-1,j,bi,bj)*maskInC(i,j,bi,bj)
            rSurfW(i,j,bi,bj) =
      &               ( Ro_surf(i-1,j,bi,bj)
@@ -163,8 +163,8 @@ c    &                 )*recip_rAw(i,j,bi,bj)*0.5 _d 0
            ENDIF
          ENDDO
         ENDDO
-        DO j=2-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=2-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
            maskInS(i,j,bi,bj)= maskInC(i,j-1,bi,bj)*maskInC(i,j,bi,bj)
            rSurfS(i,j,bi,bj) =
      &               ( Ro_surf(i,j-1,bi,bj)
@@ -192,26 +192,12 @@ c    &                 )*recip_rAs(i,j,bi,bj)*0.5 _d 0
       CALL EXCH_UV_XY_RS( rLowW,   rLowS,   .FALSE., myThid )
       CALL EXCH_UV_XY_RS( maskInW, maskInS, .FALSE., myThid )
 
-C--   The following block allows thin walls representation of non-periodic
-C     boundaries such as happen on the lat-lon grid at the N/S poles.
-C     We should really supply a flag for doing this.
-      DO bj=myByLo(myThid), myByHi(myThid)
-       DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-           IF (dyG(i,j,bi,bj).EQ.0.) maskInW(i,j,bi,bj) = 0.
-           IF (dxG(i,j,bi,bj).EQ.0.) maskInS(i,j,bi,bj) = 0.
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
 C-    Set hFacW and hFacS (at U and V points)
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
         DO k=1, Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             hFactmp =
      &          ( dAHybSigF(k)*rFullDepth
      &          + dBHybSigF(k)*( rSurfW(i,j,bi,bj)-rLowW(i,j,bi,bj) )
@@ -221,8 +207,8 @@ C-    Set hFacW and hFacS (at U and V points)
          ENDDO
         ENDDO
         DO k=1, Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
             hFactmp =
      &          ( dAHybSigF(k)*rFullDepth
      &          + dBHybSigF(k)*( rSurfS(i,j,bi,bj)-rLowS(i,j,bi,bj) )
@@ -232,8 +218,8 @@ C-    Set hFacW and hFacS (at U and V points)
          ENDDO
         ENDDO
 C-    Set surface k index for interface W & S (U & V points)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
            kSurfW(i,j,bi,bj) = Nr+1
            kSurfS(i,j,bi,bj) = Nr+1
            IF ( maskInW(i,j,bi,bj).NE.0. ) kSurfW(i,j,bi,bj) = 1
@@ -243,6 +229,12 @@ C-    Set surface k index for interface W & S (U & V points)
 C-    end bi,bj loops.
        ENDDO
       ENDDO
+
+C--   Additional closing of Western and Southern grid-cell edges: for example,
+C     a) might add some "thin walls" in specific location
+C     b) close non-periodic N & S boundaries of lat-lon grid at the N/S poles.
+C     new: location now reccorded as kSurfW/S = Nr+2
+      CALL ADD_WALLS2MASKS( rEmpty, myThid )
 
       RETURN
       END

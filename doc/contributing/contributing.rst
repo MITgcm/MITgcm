@@ -645,7 +645,7 @@ different parameters and input files, with a primary input set-up (e.g., ``input
 results (e.g., ``results/output.txt`` or ``results/output_adm.txt``)  and with one or several secondary inputs
 (e.g., ``input.«OTHER»/`` or ``input_ad.«OTHER»/``) and corresponding results (e.g., ``results/output.«OTHER».txt`` or ``results/output_adm.«OTHER».txt``).
 
-directory TESTDIR/code/
+directory «TESTDIR»/code/
    Contains the test-experiment specific source code (i.e., files that have been modified from the standard
    MITgcm repository version) used to build the MITgcm executable (``mitgcmuv``)
    for forward-test (using ``genmake2 -mods=../code``).
@@ -660,7 +660,7 @@ directory TESTDIR/code/
    (see :numref:`testreport_utility`, ``testreport -MPI``); then it is
    linked to :filelink:`SIZE.h <model/inc/SIZE.h>` (``ln -s SIZE.h.mpi SIZE.h``) before building the MPI-executable.
 
-directory TESTDIR/code_ad/
+directory «TESTDIR»/code_ad/
    Contains  the  test-experiment  specific  source  code  used  to  build  the  MITgcm  executable  (``mitgcmuv_ad``)  for
    adjoint-test  (using ``genmake2 -mods=../code_ad``).  It  can  also  contain  specific  source  files  with  the  suffix
    ``_mpi`` (see above).
@@ -683,11 +683,11 @@ directory TESTDIR/input/
    :filelink:`testreport <verification/testreport>` runs this script in
    directory ``TESTDIR/run/`` after linking all the input files from ``TESTDIR/input/``.
 
-directory TESTDIR/input_ad/
+directory «TESTDIR»/input_ad/
    Contains the input and parameter files used to run the primary adjoint test of this test-experiment. It can also
    contain specific parameter files with the suffix ``.mpi`` and shell script ``prepare_run`` as described above.
 
-directory TESTDIR/input.«OTHER»/
+directory «TESTDIR»/input.«OTHER»/
     Contains the input and parameter files used to run the secondary OTHER forward test of this test-experiment.
     It can also contain specific parameter files with suffix ``.mpi`` or ``.mth`` and shell script
     ``prepare_run`` (see above).
@@ -695,7 +695,7 @@ directory TESTDIR/input.«OTHER»/
     The presence or absence the file ``eedata.mth`` determines whether or not a secondary multi-threaded test on this
     test-experiment is performed or skipped.
 
-directory TESTDIR/input_ad.«OTHER»/
+directory «TESTDIR»/input_ad.«OTHER»/
     Contains the input and parameter files used to run the secondary OTHER adjoint test of this test-experiment. It
     can also contain specific parameter files with the suffix ``.mpi`` and shell script ``prepare_run`` (see above).
 
@@ -710,7 +710,7 @@ directory «TESTDIR»/results/
   is testing or skipping this test-experiment. Reference standard output for secondary tests
   (``results/output.«OTHER».txt`` or ``results/output_adm.«OTHER».txt``) are also expected here.
 
-directory TESTDIR/run/
+directory «TESTDIR»/run/
     Initially empty directory where :filelink:`testreport <verification/testreport>`
     will run the MITgcm executable for primary forward and adjoint tests.
 
@@ -726,7 +726,7 @@ directory TESTDIR/run/
 
     The sequence for an adjoint test is similar, with ``../input_ad/`` replacing ``../input/``.
 
-directory TESTDIR/tr_run.«OTHER»/
+directory «TESTDIR»/tr_run.«OTHER»/
     Directory created by :filelink:`testreport <verification/testreport>`
     to run the MITgcm executable for secondary "OTHER" forward or adjoint tests.
 

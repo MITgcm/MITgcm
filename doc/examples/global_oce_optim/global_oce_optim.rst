@@ -1,3 +1,5 @@
+.. _sec_global_oce_optim:
+
 Global Ocean State Estimation
 =============================
 

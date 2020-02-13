@@ -359,10 +359,11 @@ Explicit time-stepping: Adams-Bashforth
 
 In describing the the pressure method above we deferred describing the
 time discretization of the explicit terms. We have historically used the
-quasi-second order Adams-Bashforth method for all explicit terms in both
+quasi-second order Adams-Bashforth method (AB-II) for all explicit terms in both
 the momentum and tracer equations. This is still the default mode of
 operation but it is now possible to use alternate schemes for tracers
-(see :numref:`tracer_eqns`). In the previous sections, we summarized an explicit scheme as:
+(see :numref:`tracer_eqns`), or a 3rd order Adams-Bashforth method (AB-III). 
+In the previous sections, we summarized an explicit scheme as:
 
 .. math::
    \tau^{*} = \tau^{n} + \Delta t G_\tau^{(n+1/2)}
@@ -372,8 +373,13 @@ where :math:`\tau` could be any prognostic variable (:math:`u`,
 :math:`v`, :math:`\theta` or :math:`S`) and :math:`\tau^*` is an
 explicit estimate of :math:`\tau^{n+1}` and would be exact if not for
 implicit-in-time terms. The parenthesis about :math:`n+1/2` indicates
-that the term is explicit and extrapolated forward in time and for this
-we use the quasi-second order Adams-Bashforth method:
+that the term is explicit and extrapolated forward in time. Below we describe
+in more detail the AB-II and AB-III schemes.
+
+Adams-Bashforth II
+------------------
+
+The quasi-second order Adams-Bashforth scheme is formulated as follows:
 
 .. math::
    G_\tau^{(n+1/2)} = ( 3/2 + \epsilon_{AB}) G_\tau^n
@@ -404,7 +410,6 @@ point.
 A stability analysis for a relaxation equation should be given at this
 point.
 
-
   .. figure:: figs/oscil+damp_AB2.*
     :width: 80%
     :align: center
@@ -412,6 +417,84 @@ point.
     :name: oscil+damp_AB2
 
     Oscillatory and damping response of quasi-second order Adams-Bashforth scheme for different values of the  :math:`\epsilon _{AB}` parameter (0.0, 0.1, 0.25, from top to bottom) The analytical solution (in black), the physical mode (in blue) and the numerical mode (in red) are represented with a CFL step of 0.1. The left column represents the oscillatory response on the complex plane for CFL ranging from 0.1 up to 0.9. The right column represents the damping response amplitude (y-axis) function of the CFL (x-axis).
+
+Adams-Bashforth III
+-------------------
+
+The 3rd order Adams-Bashforth time stepping (AB-III) provides several
+advantages (see, e.g., Durran 1991 :cite:`durran:91`) compared to the
+default quasi-second order Adams-Bashforth method:
+
+-  higher accuracy;
+
+-  stable with a longer time-step;
+
+-  no additional computation (just requires the storage of one
+   additional time level).
+
+The 3rd order Adams-Bashforth can be used to extrapolate
+forward in time the tendency (replacing :eq:`adams-bashforth2`)
+as:
+
+.. math::
+   G_\tau^{(n+1/2)} = ( 1 + \alpha_{AB} + \beta_{AB}) G_\tau^n
+   - ( \alpha_{AB} + 2 \beta_{AB}) G_\tau^{n-1}
+   + \beta_{AB} G_\tau^{n-2}
+   :label: adams-bashforth3
+
+3rd order accuracy is obtained with
+:math:`(\alpha_{AB},\,\beta_{AB}) = (1/2,\,5/12)`. Note that selecting
+:math:`(\alpha_{AB},\,\beta_{AB}) = (1/2+\epsilon_{AB},\,0)` one
+recovers AB-II. The AB-III time stepping improves the
+stability limit for an oscillatory problem like advection or Coriolis.
+As seen from :numref:`ab3_oscill_response`, it remains stable up to a
+CFL of 0.72, compared to only 0.50 with AB-II and
+:math:`\epsilon_{AB} = 0.1`. It is interesting to note that the
+stability limit can be further extended up to a CFL of 0.786 for an
+oscillatory problem (see :numref:`ab3_oscill_response`) using
+:math:`(\alpha_{AB},\,\beta_{AB}) = (0.5,\,0.2811)` but then the scheme
+is only second order accurate.
+
+However, the behavior of the AB-III for a damping problem (like diffusion)
+is less favorable, since the stability limit is reduced to 0.54 only
+(and 0.64 with :math:`\beta_{AB} = 0.2811`) compared to 1.0 (and 0.9 with
+:math:`\epsilon_{AB} = 0.1`) with the AB-II (see
+:numref:`ab3_damp_response`).
+
+A way to enable the use of a longer time step is to keep the dissipation
+terms outside the AB extrapolation (setting :varlink:`momDissip_In_AB` to ``.FALSE.``
+in main parameter file ``data``, namelist ``PARM03``, thus returning to
+a simple forward time-stepping for dissipation, and to use AB-III only for
+advection and Coriolis terms.
+
+The AB-III time stepping is activated by defining the option ``#define``
+:varlink:`ALLOW_ADAMSBASHFORTH_3` in :filelink:`CPP_OPTIONS.h <model/inc/CPP_OPTIONS.h>`. The parameters
+:math:`\alpha_{AB},\beta_{AB}` can be set from the main parameter file
+``data`` (namelist ``PARM03``) and their default values correspond to
+the 3rd order Adams-Bashforth. A simple example is provided in
+:filelink:`verification/advect_xy/input.ab3_c4`.
+
+AB-III is not yet available for the vertical momentum equation
+(non-hydrostatic) nor for passive tracers.
+
+  .. figure:: figs/stab_AB3_oscil.*
+    :width: 80%
+    :align: center
+    :alt: ab3_stability_analysis
+    :name: ab3_oscill_response
+
+    Oscillatory response of third order Adams-Bashforth scheme for different values of the :math:`(\alpha_{AB},\,\beta_{AB})` parameters.
+    The analytical solution (in black), the physical mode (in blue) and the numerical mode (in red) are represented with a CFL step of 0.1.
+
+  .. figure:: figs/stab_AB3_dampR.*
+    :width: 80%
+    :align: center
+    :alt: ab3_damping_analysis
+    :name: ab3_damp_response
+
+    Damping response of third order Adams-Bashforth scheme for different values of the :math:`(\alpha_{AB},\,\beta_{AB})` parameters.
+    The analytical solution (in black), the physical mode (in blue) and the numerical mode (in red) are represented with a CFL step of 0.1.
+
 
 .. _implicit-backward-stepping:
 

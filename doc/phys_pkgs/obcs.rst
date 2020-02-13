@@ -70,8 +70,7 @@ via CPP preprocessor flags. These options are set in
 +--------------------------+---------+----------------------------------------------------------------------------------------------------------+
 | ALLOW_ORLANSKI           | #define | enable Orlanski radiation conditions at OB's                                                             |
 +--------------------------+---------+----------------------------------------------------------------------------------------------------------+
-| ALLOW_OBCS_STEVENS       | #undef  | enable Stevens (1990) boundary conditions at OB's  (currently only implemented for eastern and western   |
-|                          |         | boundaries and NOT for ptracers)                                                                         |
+| ALLOW_OBCS_STEVENS       | #undef  | enable Stevens (1990) boundary conditions at OB's (currently NOT implemented for ptracers)               |
 +--------------------------+---------+----------------------------------------------------------------------------------------------------------+
 | ALLOW_OBCS_SEAICE_SPONGE | #undef  | Include hooks to sponge layer treatment of pkg/seaice variables                                          |
 +--------------------------+---------+----------------------------------------------------------------------------------------------------------+
