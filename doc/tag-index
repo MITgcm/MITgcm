@@ -1,6 +1,31 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - Fix for special value of R_low with pkg/shelfice:
+    When bathymetry field value is just rF(k)+hFacMindrF(k)/2, R_low will
+    deepen (by hFacMindrF(k)/2 ) to satisfy the hFacMin criteria. In this case:
+      o if R_shelfIce value (from file) was exactly equal to initial bathymetry
+        depth, original code would create a very thin grid cell of thickness
+        factor hFacMin. Fix this problem by preventing deepening of R_low when
+        initial R_low >= R_shelfIce.
+      o if R_shelfIce value is deeper than original value, the problem does not
+        show up for hFacC (column remains dry) but because of erroneous resetting
+        of rSurfW/S (to be the MAX of rSurfW/S, rLowW/S) this could trigger the
+        same type of artificial deepening at Western and Southern column edges
+        (for hFacW and hFacS). Remove early resetting of rSurfW/S to fix this
+        second issue (see issue #324).
+  - Simplify correction for miss-match between Sum of level thickness at
+    W & S edges and top minus bottom r-position: only adjust rSurfW/S
+    (and not rLowW/S) as done previously for the case useMin4hFacEdges=T;
+  - Non-lin free-surf in r coordinate: for consistency, use rSurfW & rSurfS
+    (which account for adjustment, if any) instead of MIN of adjacent Ro_surf
+    when calculating new thickness factor: hFac_surfW & hFac_surfS ;
+  - Make thin-wall implementation available for sigma-coordinate ;
+  - Record thin-wall position as kSurfW/S = Nr+2 (instead of = Nr+1 for
+    a dry column).
+o tools/build_options:
+    rename optfile "linux_amd64_ifort" to "linux_amd64_ifort10-"
 o verification:
   - new reentrant channel tutorial experiment, doc will follow soon.
 
