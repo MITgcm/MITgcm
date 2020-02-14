@@ -319,7 +319,7 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
        DO j=jMin,jMax
         DO i=iMin,iMax
          GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        GGL90mixingLengthMin+drF(k)*recip_coordFac)
+     &        GGL90mixingLengthMin+drF(k-delK)*recip_coordFac)
         ENDDO
        ENDDO
        DO k=kBot-kDir,kTop,-kDir
@@ -602,6 +602,7 @@ C--   Lower diagonal
        km1=MAX(2,k-1)
        DO j=jMin,jMax
         DO i=iMin,iMax
+         IF ( usingPCoords) km1=MIN(Nr,MAX(kSurfC(i,j,bi,bj),k-1))
 C-    We keep recip_hFacC in the diffusive flux calculation,
 C-    but no hFacC in TKE volume control
 C-    No need for maskC(k-1) with recip_hFacC(k-1)
@@ -620,13 +621,10 @@ C--   Upper diagonal
        ENDDO
       ENDDO
       DO k=2,Nr
+       kp1=MIN(k+1,Nr)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( usingPCoords) THEN
-          kp1=MAX(1,MIN(MIN(kSurfC(i,j,bi,bj),k+1),Nr))
-         ELSE
-          kp1=MAX(1,MIN(klowC(i,j,bi,bj),k+1))
-         ENDIF
+         IF ( .NOT.usingPCoords ) kp1=MAX(1,MIN(klowC(i,j,bi,bj),k+1))
 C-    We keep recip_hFacC in the diffusive flux calculation,
 C-    but no hFacC in TKE volume control
 C-    No need for maskC(k) with recip_hFacC(k)
