@@ -102,10 +102,10 @@ C     Blanke and Delecluse (1993, JPO) use
 C     Blanke and Delecluse (1993, JPO) use
       GGL90TKEsurfMin      = 1.0 _d -04
       GGL90TKEbottom       = UNSET_RL
-      GGL90viscMax         = 1. _d 2 * (rhoConst*mass2rUnit)**2
-      GGL90diffMax         = 1. _d 2 * (rhoConst*mass2rUnit)**2
+      GGL90viscMax         = 1. _d 2
+      GGL90diffMax         = 1. _d 2
       GGL90diffTKEh        = 0.0 _d 0
-      GGL90mixingLengthMin = 1.0 _d -08  * rhoConst*mass2rUnit
+      GGL90mixingLengthMin = 1.0 _d -08
       mxlMaxFlag           = 0
       mxlSurfFlag          = .FALSE.
       GGL90TKEFile         = ' '
@@ -295,16 +295,14 @@ C--   print TKE vertical mixing parameters to stdout for better debugging
      &     'GGL90TKEbottom =',
      &     '   /* GGL90 bottom kinetic energy ( m^2/s^2 ) */')
       CALL WRITE_0D_RL( GGL90viscMax, INDEX_NONE,'GGL90viscMax =',
-     &     '   /* GGL90 upper limit for viscosity ('
-     &     //rUnits//'^2/s ) */')
+     &     '   /* GGL90 upper limit for viscosity (m^2/s ) */')
       CALL WRITE_0D_RL( GGL90diffMax, INDEX_NONE,'GGL90diffMax =',
-     &     '   /* GGL90 upper limit for diffusivity ('
-     &     //rUnits//'^2/s ) */')
+     &     '   /* GGL90 upper limit for diffusivity (m^2/s ) */')
       CALL WRITE_0D_RL( GGL90diffTKEh, INDEX_NONE,'GGL90diffTKEh =',
      &     '   /* GGL90 horizontal diffusivity for TKE ( m^2/s ) */')
       CALL WRITE_0D_RL( GGL90mixingLengthMin, INDEX_NONE,
      &     'GGL90mixingLengthMin =',
-     &     '   /* GGL90 minimum mixing length ('//rUnits//') */')
+     &     '   /* GGL90 minimum mixing length (m) */')
       CALL WRITE_0D_I(mxlMaxFlag, INDEX_NONE, 'mxlMaxFlag =',
      &     '   /* Flag for limiting mixing-length method */')
       CALL WRITE_0D_L(mxlSurfFlag,INDEX_NONE,
