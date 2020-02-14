@@ -217,11 +217,19 @@ C--   interface of dynamics with atmopheric forcing fields (wind/stress)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C--   Compute surface pressure at z==0:
 C-    use actual sea surface height for tilt computations
-        DO j=1-OLy,sNy+OLy
+        IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+         DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            phiSurf(i,j) = Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
+           phiSurf(i,j) = phiHydLow(i,j,bi,bj)
           ENDDO
-        ENDDO
+         ENDDO
+        ELSE
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           phiSurf(i,j) = Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
 #ifdef ATMOSPHERIC_LOADING
 C-    add atmospheric loading and Sea-Ice loading
         IF ( useRealFreshWaterFlux ) THEN
