@@ -71,7 +71,7 @@
    title({'Free surface height (contours, CI .1 m)';'and TRELAX (shading, W/m^2)'})
    xlabel('Longitude');ylabel('Latitude')
 %  note we have used routine pcolor here with Xp1, Yp1, which are the locations of
-%  the lower left corners of grid cells (here, both length 63 as
+%  the lower left corners of grid cells, aka the vorticity points (here, both length 63 as
 %  they include the ending right and upper locations of the grid,
 %  respectively). Alternative one could plot shading using contourf with 'LineStyle'
 %  set to 'none' using dimensions X and Y, the grid cell center points.
@@ -84,7 +84,7 @@
    set(gca,'XLim',[0 60]);set(gca,'Ylim',[15 75])
    title('Barotropic Streamfunction (Sv)')
    xlabel('Longitude');ylabel('Latitude')
-%  note psi is computed and plotted at the velocity points and is dimensioned 63x63
+%  note psi is computed and plotted at the vorticity points (i.e. cell corners) and is dimensioned 63x63
 %  cumsum is done in y-direction; we have a wall at southern boundary (i.e. no reentrant flow from north), so we need to
 %  add a row of zeros to specify psi(j=1).   
    
