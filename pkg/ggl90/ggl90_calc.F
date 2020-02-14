@@ -624,7 +624,7 @@ C--   Upper diagonal
        kp1=MIN(k+1,Nr)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( .NOT.usingPCoords ) kp1=MAX(1,MIN(klowC(i,j,bi,bj),k+1))
+         IF ( usingZCoords ) kp1=MAX(1,MIN(klowC(i,j,bi,bj),k+1))
 C-    We keep recip_hFacC in the diffusive flux calculation,
 C-    but no hFacC in TKE volume control
 C-    No need for maskC(k) with recip_hFacC(k)
