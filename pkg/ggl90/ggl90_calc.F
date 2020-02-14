@@ -521,8 +521,6 @@ CML         IDEMIX_RiNumber = 1./GGL90eps
           prTemp = 1. _d 0
           IF ( RiNumber .GE. 0.2 _d 0 ) prTemp = 5. _d 0 * RiNumber
           TKEPrandtlNumber(i,j,k) = MIN(10. _d 0,prTemp)
-CML          print *, 'ml-prandtl:',i,j,k,RiNumber,NSquare(i,j,k),
-CML     &         verticalShear(i,j)
          ENDDO
         ENDDO
 #ifdef ALLOW_GGL90_IDEMIX
@@ -578,6 +576,14 @@ C--    Add horiz. diffusion tendency
 
 C--   end of k loop
       ENDDO
+      IF ( usingPCoords ) THEN
+C     impose TKE(1) = 0.
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         GGL90TKE(i,j,1,bi,bj) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDIF
 
 C     ==============================================
 C     Implicit time step to update TKE for k=1,Nr;
@@ -651,7 +657,7 @@ C      Neumann bottom boundary condition for TKE: no flux from bottom
        DO j=jMin,jMax
         DO i=iMin,iMax
          IF ( usingPCoords ) THEN
-          kBottom=MIN(MAX(kSurfC(i,j,bi,bj),1),Nr)
+          kBottom=MIN(MAX(kSurfC(i,j,bi,bj)+1,2),Nr)
          ELSE
           kBottom   = MAX(kLowC(i,j,bi,bj),1)
          ENDIF
@@ -672,6 +678,14 @@ C--   Center diagonal
         ENDDO
        ENDDO
       ENDDO
+      IF ( usingPCoords ) THEN
+C     impose TKE(1) = 0.
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         b3d(i,j,1) = 1. _d 0
+        ENDDO
+       ENDDO
+      ENDIF
 C     end set up matrix
 C
 
@@ -684,7 +698,7 @@ C     estimate friction velocity uStar from surface forcing
      &              + surfaceForcingU(i+1,j,  bi,bj) ) )**2
      &  + ( .5 _d 0*( surfaceForcingV(i,  j,  bi,bj)
      &              + surfaceForcingV(i,  j+1,bi,bj) ) )**2
-     &                     )
+     &                     )*recip_coordFac
        ENDDO
       ENDDO
 C     Dirichlet surface boundary condition for TKE
@@ -694,9 +708,6 @@ C     Dirichlet surface boundary condition for TKE
          GGL90TKE(i,j,kSrf,bi,bj) = GGL90TKE(i,j,kSrf,bi,bj)
      &        - c3d(i,j,kSrf) * maskC(i,j,kSrf,bi,bj)
      &        *MAX(GGL90TKEsurfMin,GGL90m2*uStarSquare(i,j))
-CML         print *, 'ml-c3d ',i,j,a3d(i,j,kSrf),b3d(i,j,kSrf),
-CML     &        c3d(i,j,kSrf),GGL90TKE(i,j,kSrf,bi,bj),
-CML     &        KappaE(i,j,Nr),KappaE(i,j,Nr-1)
          c3d(i,j,kSrf) = 0. _d 0
         ENDDO
        ENDDO
@@ -718,7 +729,7 @@ C      Dirichlet bottom boundary condition for TKE = GGL90TKEbottom
        DO j=jMin,jMax
         DO i=iMin,iMax
          IF ( usingPCoords ) THEN
-          kBottom=MIN(MAX(kSurfC(i,j,bi,bj),1),Nr)
+          kBottom=MIN(MAX(kSurfC(i,j,bi,bj)+1,2),Nr)
          ELSE
           kBottom   = MAX(kLowC(i,j,bi,bj),1)
          ENDIF
@@ -737,12 +748,13 @@ C     solve tri-diagonal system
      O                        errCode,
      I                        bi, bj, myThid )
 
-      DO k=1,Nr
-       km1 = MAX(1,k-1)
+      DO k=2,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
-C     impose minimum TKE to avoid numerical undershoots below zero
-         GGL90TKE(i,j,k,bi,bj) = maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
+C     impose minimum TKE to avoid numerical undershoots below zero;
+C     level k=1 is either prescribed surface boundary condition (z-coords) or
+C     bottom boundary conditions, which by definition is zero
+         GGL90TKE(i,j,k,bi,bj) = maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
      &                  *MAX( GGL90TKE(i,j,k,bi,bj), GGL90TKEmin )
         ENDDO
        ENDDO
@@ -884,7 +896,6 @@ C     diagnose surface flux of TKE
      &                         GGL90TKE(i,j,kp1,bi,bj))
      &         *recip_drF(kSrf)*recip_hFacC(i,j,kSrf,bi,bj)
      &         *KappaE(i,j,kp1)
-     &         *recip_coordFac
           ENDDO
          ENDDO
         ENDIF
@@ -900,6 +911,7 @@ C     diagnose work done by the wind
      &              +surfaceForcingU(i+1,j,bi,bj)*uVel(i+1,j,k,bi,bj))
      &    + halfRL*( surfaceForcingV(i,j,  bi,bj)*vVel(i,j  ,k,bi,bj)
      &              +surfaceForcingV(i,j+1,bi,bj)*vVel(i,j+1,k,bi,bj))
+          surf_flx_tke(i,j) = surf_flx_tke(i,j) *recip_coordFac
          ENDDO
         ENDDO
         CALL DIAGNOSTICS_FILL( surf_flx_tke,'GGL90tau',
