@@ -883,7 +883,7 @@ C     diagnose surface flux of TKE
      &          - GGL90TKE(i,j,kSrf,bi,bj) )
      &          *recip_drF(kSrf)*recip_hFacC(i,j,kSrf,bi,bj)
      &          *KappaE(i,j,kSrf)
-     &          *recip_coordFac
+     &          *coordFac
           ENDDO
          ENDDO
         ELSE
