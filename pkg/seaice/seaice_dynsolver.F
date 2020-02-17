@@ -231,8 +231,10 @@ C-    use actual sea surface height for tilt computations
          ENDDO
         ENDIF
 #ifdef ATMOSPHERIC_LOADING
-C-    add atmospheric loading and Sea-Ice loading
-        IF ( useRealFreshWaterFlux ) THEN
+C--   add atmospheric loading and Sea-Ice loading as it is done for phi0surf
+C--   in S/R external_forcing_surf
+        IF ( usingZCoords ) THEN
+         IF ( useRealFreshWaterFlux ) THEN
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             phiSurf(i,j) = phiSurf(i,j)
@@ -241,13 +243,17 @@ C-    add atmospheric loading and Sea-Ice loading
      &                     )*recip_rhoConst
            ENDDO
           ENDDO
-        ELSE
+         ELSE
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
             phiSurf(i,j) = phiSurf(i,j)
      &                   + pload(i,j,bi,bj)*recip_rhoConst
            ENDDO
           ENDDO
+         ENDIF
+C       ELSEIF ( usingPCoords ) THEN
+C     The true atmospheric P-loading is not yet implemented for P-coord
+C     (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
         ENDIF
 #endif /* ATMOSPHERIC_LOADING */
 C--   basic forcing by wind stress
