@@ -807,6 +807,9 @@ are discussed in :ref:`this section <reentrant_channel_soln_eddy>`.
 Model Solution
 --------------
 
+See :filelink:`verification/tutorial_reentrant_channel/analysis/matlab_plots.m` for `MATLAB <https://www.mathworks.com/>`_
+analysis code to compute and plot :numref:`channel_zm_temp_ml` through :numref:`channel_MOC_eddy_layers`.
+
 .. _reentrant_channel_solution:
 
 Coarse Resolution Solution
@@ -942,7 +945,8 @@ but must be computed from other GM diagnostics, which differ if the :ref:`skew f
 or :ref:`bolus/advective <GM_bolus_desc>` form of GM is selected.
 Here we choose the later form in :filelink:`data.gmredi <verification/tutorial_reentrant_channel/input.GM/data.gmredi>` (``GM_AdvForm =.TRUE.``),
 for which a bolus streamfunction diagnostic is available, thus the bolus velocity can be readily computed
-(see analysis.m file; obtaining the bolus velocity, for reasons of gridding,
+(see :filelink:`matlab_plots.m <verification/tutorial_reentrant_channel/analysis/matlab_plots.m>`;
+obtaining the bolus velocity, for reasons of gridding,
 is a bit more straightforward using the advective form). In :numref:`channel_MOC_EULpBOL` we've computed and added the
 bolus velocity to the Eulerian velocity. We see that the upper meridional overturning cell has weakened
 in magnitude, particularly in the northern half of the domain. The eddy parameterization will attempt to flatten sloping isopycnals
