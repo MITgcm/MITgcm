@@ -178,6 +178,9 @@ C          read from file (and anyway, pressure loading is meaningless here)
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
              phi0surf(i,j,bi,bj) = pLoad(i,j,bi,bj)
+C     reset pLoad, so that it does not do any harm (for example in the
+C     sea-ice model in pressure coordinates
+             pLoad(i,j,bi,bj)    = 0. _d 0
            ENDDO
           ENDDO
          ENDDO
