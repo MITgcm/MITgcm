@@ -1,0 +1,49 @@
+# Diagnostic Package Choices
+#
+ &diagnostics_list
+# write pkg diagnostics output to separate subdirectory
+ diagMdsDir = 'Diags'
+
+# 2D diagnostics
+ fields(1:3,1) = 'TRELAX  ','MXLDEPTH', 'ETAN    ',
+ frequency(1) = 31104000.,
+ filename(1) = '2D_diags',
+
+# 3D state variables
+ fields(1:5,2) =   'THETA   ', 'VVEL    ', 'UVEL    ',
+                   'WVEL    ', 'CONVADJ ',
+ frequency(2) = 31104000.,
+ filename(2) = 'state',
+
+# Heat budget terms
+ fields(1:7,3) = 'ADVx_TH ', 'ADVy_TH ', 'ADVr_TH ',
+                 'DFxE_TH ', 'DFyE_TH ', 'DFrI_TH ',
+                 'DFrE_TH ',
+ frequency(3) = 31104000.,
+ filename(3) = 'heat_3D',
+
+# Residual mean flow - Layers Package
+ fields(1:3,4) = 'LaVH1TH ', 'LaHs1TH ', 'LaVa1TH '
+ frequency(4) = 31104000.,
+ fileName(4) = 'layDiag',
+
+# GM diagnostics
+#- Note: comment out this diagnostics list below if useGMRedi=.FALSE.
+#        or you will get warnings messages in STDERR
+ fields(1:2,5) = 'GM_PsiX ', 'GM_PsiY ',
+ frequency(5) = 31104000.,
+ filename(5) = 'GM_diags',
+
+#---------------------------------------
+#- Eddy-permitting run, diagnose vorticity (not computed when using uniform Ah)
+# fields(1:2,6) = 'momVort3', 'momHDiv ',
+# frequency(6) = 31104000.,
+# filename(6) = 'state_vort',
+ &
+
+ &DIAG_STATIS_PARMS
+# Statistical diagnostics output
+ stat_fields(1:2,1) =  'THETA   ','TRELAX  ',
+ stat_freq(1) = 864000.,
+ stat_fName(1) = 'dynStDiag',
+ &
