@@ -206,9 +206,9 @@ C     Initialize local fields
         uStarSquare(i,j)   = 0. _d 0
         verticalShear(i,j) = 0. _d 0
         totalDepth(i,j)    = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
-        rMixingLength(i,j,1) = 0. _d 0
-        mxLength_Dn(i,j,1) = GGL90mixingLengthMin
-        SQRTTKE(i,j,1) = SQRT( GGL90TKE(i,j,1,bi,bj) )
+        rMixingLength(i,j,1)  = 0. _d 0
+        mxLength_Dn(i,j,kSrf) = GGL90mixingLengthMin
+        SQRTTKE(i,j,1)        = SQRT( GGL90TKE(i,j,1,bi,bj) )
 #ifdef ALLOW_GGL90_HORIZDIFF
         xA(i,j)  = 0. _d 0
         yA(i,j)  = 0. _d 0
@@ -326,7 +326,7 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
        DO j=jMin,jMax
         DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &       GGL90mixingLengthMin+drF(k)*recip_coordFac)
+     &       GGL90mixingLengthMin+drF(k-delK)*recip_coordFac)
         ENDDO
        ENDDO
        DO k=kBot-kDir,kTop,-kDir
@@ -334,7 +334,7 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
         DO j=jMin,jMax
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
-     &        GGL90mixingLength(i,j,kp1)+drF(k)*recip_coordFac)
+     &        GGL90mixingLength(i,j,kp1)+drF(k-delK)*recip_coordFac)
          ENDDO
         ENDDO
        ENDDO
