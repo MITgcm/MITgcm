@@ -372,7 +372,7 @@ C     LOCAL VARIABLES
        call PCGAMGSetSymGraph(pc, PETSC_TRUE,ierr)
        call PCGAMGSetNSmooths(pc, 0,ierr)
        call PCGAMGSetThreshold(pc, .001,ierr)
-       call PCGAMGSetReuseInterpolation(pc,PETSC_FALSE,ierr)
+!       call PCGAMGSetReuseProl(pc,PETSC_FALSE,ierr)
        call kspsetup (ksp, ierr)
 
        CASE ('MUMPS')
