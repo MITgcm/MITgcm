@@ -257,7 +257,6 @@ C- ensure mixing between first and second level
       ENDIF
 
 C--   Impose upper and lower bound for mixing length
-C--   Impose minimum mixing length to avoid division by zero
       IF ( mxlMaxFlag .EQ. 0 ) THEN
 
        DO k=2,Nr
@@ -266,16 +265,6 @@ C--   Impose minimum mixing length to avoid division by zero
           MaxLength=totalDepth(i,j)*recip_coordFac
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
      &                                   MaxLength)
-         ENDDO
-        ENDDO
-       ENDDO
-
-       DO k=2,Nr
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
-     &                                   GGL90mixingLengthMin)
-          rMixingLength(i,j,k) = 1. _d 0 / GGL90mixingLength(i,j,k)
          ENDDO
         ENDDO
        ENDDO
@@ -290,16 +279,6 @@ C--   Impose minimum mixing length to avoid division by zero
 c         MaxLength=MAX(MaxLength,20. _d 0)
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
      &                                   MaxLength)
-         ENDDO
-        ENDDO
-       ENDDO
-
-       DO k=2,Nr
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
-     &                                   GGL90mixingLengthMin)
-          rMixingLength(i,j,k) = 1. _d 0 / GGL90mixingLength(i,j,k)
          ENDDO
         ENDDO
        ENDDO
@@ -328,16 +307,6 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
      &        GGL90mixingLength(i,j,kp1)+drF(k)*recip_coordFac)
-         ENDDO
-        ENDDO
-       ENDDO
-
-       DO k=2,Nr
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
-     &                                   GGL90mixingLengthMin)
-          rMixingLength(i,j,k) = 1. _d 0 / GGL90mixingLength(i,j,k)
          ENDDO
         ENDDO
        ENDDO
@@ -384,6 +353,20 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
 
       ELSE
        STOP 'GGL90_CALC: Wrong mxlMaxFlag (mixing length limit)'
+      ENDIF
+C--   Impose minimum mixing length to avoid division by zero
+C     and compute inverse
+      IF ( mxlMaxFlag.NE.3 ) THEN
+C     for mxlMaxFlag=3, this has already been done
+       DO k=2,Nr
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
+     &                                   GGL90mixingLengthMin)
+          rMixingLength(i,j,k) = 1. _d 0 / GGL90mixingLength(i,j,k)
+         ENDDO
+        ENDDO
+       ENDDO
       ENDIF
 
 C     start "proper" k-loop (the code above was moved out and up to
