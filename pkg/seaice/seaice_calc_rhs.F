@@ -58,7 +58,7 @@ C     fractional area at velocity points
       _RL areaS(1:sNx,1:sNy)
 CEOP
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      IF ( usingPCoords ) THEN
        kSrf = Nr
       ELSE
        kSrf = 1

@@ -285,7 +285,7 @@ C ===================================================================
 C =================PART 0: constants and initializations=============
 C ===================================================================
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      IF ( usingPCoords ) THEN
        kSurface        = Nr
       ELSE
        kSurface        = 1
@@ -301,7 +301,7 @@ c     recip_multDim        = 1./float(SEAICE_multDim)
 
 C     Cutoff for iceload
       heffTooHeavy=drF(kSurface) / 5. _d 0
-      IF ( buoyancyRelation .EQ. 'OCEANICP' )
+      IF ( usingPCoords )
      &     heffTooHeavy = heffTooHeavy * recip_rhoConst * recip_gravity
 
 C     RATIO OF SEA ICE DENSITY to SNOW DENSITY

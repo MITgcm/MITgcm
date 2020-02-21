@@ -79,7 +79,7 @@ c     == external functions ==
 
 c     == end of interface ==
 
-      if ( buoyancyRelation .EQ. 'OCEANICP' ) then
+      if ( usingPCoords ) then
        kSrf = Nr
       else
        kSrf = 1

@@ -48,7 +48,7 @@ C     === Local variables ===
       _RL uice_cntr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vice_cntr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      IF ( usingPCoords ) THEN
        kSrf = Nr
       ELSE
        kSrf = 1

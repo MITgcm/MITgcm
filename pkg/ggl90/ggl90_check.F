@@ -92,9 +92,9 @@ C     GGL90 needs implicit vertical diffusion and viscosity
 
 #ifdef ALLOW_GGL90_IDEMIX
 C     So far, GGL90 works only with oceanic z-coordinates
-      IF ( buoyancyRelation .NE. 'OCEANIC' ) THEN
+      IF ( usingPCoords ) THEN
        WRITE(msgBuf,'(A)')
-     & 'GGL90/IDEMIX works only with buoyancyRelation = ''OCEANIC'''
+     & 'GGL90/IDEMIX works only with z-coordinates'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R GGL90_CHECK'
       ENDIF

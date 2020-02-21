@@ -253,7 +253,7 @@ CADJ &     key = itmpkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     surface level
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      IF ( usingPCoords ) THEN
        kSrf = Nr
       ELSE
        kSrf = 1
@@ -2016,4 +2016,3 @@ C     relaxation with WFAV
 
       RETURN
       END
-

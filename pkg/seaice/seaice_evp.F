@@ -180,7 +180,7 @@ C     set tuning parameters for adaptive EVP
      &  .AND. DIFFERENT_MULTIPLE( SEAICE_monFreq, myTime, deltaTClock )
 #endif /* ALLOW_SEAICE_EVP_RESIDUAL */
 C     surface level
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      IF ( usingPCoords ) THEN
        kSrf = Nr
       ELSE
        kSrf = 1

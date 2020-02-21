@@ -53,7 +53,7 @@ C     kSrf      :: vertical index of surface layer
 CEOP
 
 C     surrface level
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      IF ( usingPCoords ) THEN
        kSrf = Nr
       ELSE
        kSrf = 1

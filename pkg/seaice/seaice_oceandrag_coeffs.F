@@ -67,7 +67,7 @@ C     i,j,bi,bj,ksrf :: loop indices
       _RL     dragCoeff
 CEOP
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      IF ( usingPCoords ) THEN
        kSrf = Nr
       ELSE
        kSrf = 1

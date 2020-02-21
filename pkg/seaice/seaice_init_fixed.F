@@ -50,7 +50,7 @@ cif   penetrating the model shallowest layer
 C     local copy of surface layer thickness in meters
       _RL deltaZloc
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      IF ( usingPCoords ) THEN
        kSurface        = Nr
       ELSE
        kSurface        = 1
@@ -86,7 +86,7 @@ C     restart parameter
 
 C--   Set mcPheePiston coeff (if still unset)
        deltaZloc = drF(kSurface)
-       IF ( buoyancyRelation .EQ. 'OCEANICP' )
+       IF ( usingPCoords )
      &      deltaZloc = drF(kSurface) * recip_rhoConst * recip_gravity
       IF ( SEAICE_mcPheePiston.EQ.UNSET_RL ) THEN
         IF ( SEAICE_availHeatFrac.NE.UNSET_RL ) THEN
@@ -244,7 +244,7 @@ C--   Summarise pkg/seaice configuration
       CALL SEAICE_SUMMARY( myThid )
 
 C--   Initialise grid parameters that do no change during the integration
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      IF ( usingPCoords ) THEN
        kSurface = Nr
       ELSE
        kSurface = 1

@@ -80,7 +80,7 @@ C     i,j,bi,bj,ksrf :: loop indices
       _RL     tmp, hActual, hCrit, recip_k1, u0sq, fac, rFac
 CEOP
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      IF ( usingPCoords ) THEN
        kSrf = Nr
       ELSE
        kSrf = 1

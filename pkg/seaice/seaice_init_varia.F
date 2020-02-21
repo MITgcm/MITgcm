@@ -50,7 +50,7 @@ C     i,j,k,bi,bj :: Loop counters
       _RL recip_tensilDepth
 #endif
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      IF ( usingPCoords ) THEN
        kSurface = Nr
       ELSE
        kSurface = 1

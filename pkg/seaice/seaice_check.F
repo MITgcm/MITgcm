@@ -61,7 +61,7 @@ C     msgBuf     :: Informational/error message buffer
       EXTERNAL ILNBLNK
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      IF ( usingPCoords ) THEN
        kSurface        = Nr
       ELSE
        kSurface        = 1
@@ -118,7 +118,7 @@ C--   check ice cover fraction formula
 C--   check concistency of turbulent flux term etc. specification
 
        SEAICE_mcphee_max=drF(kSurface)/SEAICE_deltaTtherm
-       IF ( buoyancyRelation .EQ. 'OCEANICP' ) SEAICE_mcphee_max
+       IF ( usingPCoords ) SEAICE_mcphee_max
      &      = SEAICE_mcphee_max * recip_rhoConst * recip_gravity
        IF ( SEAICE_mcPheePiston .LT. 0. _d 0 .OR.
      &      SEAICE_mcPheePiston .GT. SEAICE_mcphee_max ) THEN
