@@ -239,7 +239,7 @@ C--   in S/R external_forcing_surf
            DO i=1-OLx,sNx+OLx
             phiSurf(i,j) = phiSurf(i,j)
      &                   + ( pload(i,j,bi,bj)
-     &                      +sIceLoad(i,j,bi,bj)*gravity
+     &                      +sIceLoad(i,j,bi,bj)*gravity*sIceLoadFac
      &                     )*recip_rhoConst
            ENDDO
           ENDDO

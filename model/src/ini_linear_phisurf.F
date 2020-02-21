@@ -197,15 +197,22 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Initialise phi0surf: used for atmos. surf. P-loading (ocean, z-coord)
 C                               or topographic geopotential anom. (p-coord)
 
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-             phi0surf(i,j,bi,bj) = 0.
-           ENDDO
-          ENDDO
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          phi0surf(i,j,bi,bj) = 0.
          ENDDO
         ENDDO
+       ENDDO
+      ENDDO
+
+#ifdef ATMOSPHERIC_LOADING
+      IF ( geoPotAnomFile .NE. ' '  ) THEN
+       CALL READ_FLD_XY_RS( geoPotAnomFile, ' ', phi0Surf, 0, myThid )
+      ENDIF
+      CALL EXCH_XY_RS( phi0Surf  , myThid )
+#endif
 
       IF ( fluidIsAir .AND. topoFile.NE.' ' ) THEN
 
