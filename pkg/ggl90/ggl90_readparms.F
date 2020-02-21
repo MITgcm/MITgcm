@@ -39,7 +39,6 @@ C     msgBuf      - Informational/error message buffer
 C     errIO       - IO error flag
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*2 rUnits
       INTEGER errIO, iUnit, iL
 
 C--   GGL90 vertical mixing parameters
@@ -255,8 +254,6 @@ C Now set-up any remaining parameters that result from the input parameters
        STOP 'ABNORMAL END: S/R GGL90_READPARMS'
       ENDIF
 
-      rUnits = ' m'
-      IF ( usingPCoords ) rUnits = 'Pa'
 C--   print TKE vertical mixing parameters to stdout for better debugging
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
