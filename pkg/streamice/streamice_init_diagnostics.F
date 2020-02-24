@@ -20,17 +20,15 @@ C     !USES:
 #include "STREAMICE_BDRY.h"
 #include "GRID.h"
 
+C     myThid ::  my Thread Id number
       INTEGER myThid
 
 #ifdef ALLOW_STREAMICE
-
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_DIAGNOSTICS
 
-C     myThid ::  my Thread Id number
-
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER       diagNum
-      INTEGER       diagMate
+c     INTEGER       diagMate
       CHARACTER*8   diagName
       CHARACTER*16  diagCode
       CHARACTER*16  diagUnits
@@ -145,8 +143,7 @@ C     myThid ::  my Thread Id number
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , 1)
 
-
-#endif
-#endif
+#endif /* ALLOW_DIAGNOSTICS */
+#endif /* ALLOW_STREAMICE */
       RETURN
       END
