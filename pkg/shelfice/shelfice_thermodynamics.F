@@ -695,7 +695,7 @@ C     Friction velocity
      &  CALL DIAGNOSTICS_FILL(uStarDiag,'SHIuStar',0,1,0,1,1,myThid)
 #endif /* SHI_ALLOW_GAMMAFRICT */
 #ifdef ALLOW_SHELFICE_REMESHING
-       CALL DIAGNOSTICS_FILL_RS( R_shelfice, 'SHIRshel',
+       CALL DIAGNOSTICS_FILL_RS( R_shelfIce, 'SHIRshel',
      &                           0, 1, 0, 1, 1, myThid )
 #endif
       ENDIF

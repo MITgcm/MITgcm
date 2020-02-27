@@ -142,10 +142,8 @@ C-    read SHELFICE 2-D fields for restart
 
 #ifdef ALLOW_SHELFICE_REMESHING
         IF ( seqFlag.EQ.0 .AND. SHELFICEremeshFrequency.GT.zeroRL ) THEN
-          CALL READ_MFLDS_3D_RL( 'R_Shelfi', R_shelfice,
-     &                                 nj, fp, 1 , nIter0, myThid )
-C         CALL READ_MFLDS_3D_RL( 'RMinSurf', Rmin_surf,
-C    &                                 nj, fp, 1 , nIter0, myThid )
+          CALL READ_MFLDS_LEV_RS( 'R_Shelfi', R_shelfIce,
+     &                            nj, fp, 1, 1, 1, nIter0, myThid )
         ENDIF
 #endif /* ALLOW_SHELFICE_REMESHING */
 
@@ -182,8 +180,7 @@ C--   Update overlap regions:
       ENDIF
 #ifdef ALLOW_SHELFICE_REMESHING
       IF ( seqFlag.EQ.0 .AND. SHELFICEremeshFrequency.GT.zeroRL ) THEN
-        CALL EXCH_XY_RL( R_shelfice, myThid )
-c       CALL EXCH_XY_RL( Rmin_surf, myThid )
+        CALL EXCH_XY_RS( R_shelfIce, myThid )
       ENDIF
 #endif
 
