@@ -51,7 +51,7 @@ CPP flags. These options are set in :filelink:`STREAMICE_OPTIONS.h <pkg/streamic
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`ALLOW_PETSC`                        | #undef  | enable interface to PETSc for velocity solver matrix solve                                                           |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`COULOMB_SLIDING`                    | #undef  | enable basal sliding of the form :eq:`coul_eqn`                                                                      |
+   | :varlink:`STREAMICE_COULOMB_SLIDING`          | #undef  | enable basal sliding of the form :eq:`coul_eqn`                                                                      |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 
 .. | :varlink:`STREAMICE_SMOOTH_FLOATATION`        | #undef  | subgrid parameterization of transition across the grounding line                                                     |
@@ -179,13 +179,13 @@ General :filelink:`pkg/streamice` parameters are set under :varlink:`STREAMICE_P
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
    | :varlink:`streamicevShearTimeDepFile`     |     :kbd:`' '`               | time-dependent version of :varlink:`streamicevShearStressFile`                                                     |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`streamice_adot_uniform`         |   0                          | time/space uniform surface accumulation rate (m/yr)                                                                | 
+   | :varlink:`streamice_adot_uniform`         |   0                          | time/space uniform surface accumulation rate (m/yr)                                                                |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
    | :varlink:`streamice_forcing_period`       |   0                          | file input frequency for streamice time-dependent forcing fields (s)                                               |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
    | :varlink:`streamice_smooth_gl_width`      |   0                          | thickness range parameter in basal traction smoothing across grounding line  (m)                                   |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`streamice_allow_reg_coulomb`    |   FALSE                      | use regularised Coulomb sliding (:eq:`coul_eqn`). Requires :varlink:`COULOMB_SLIDING` CPP option.                  |
+   | :varlink:`streamice_allow_reg_coulomb`    |   FALSE                      | use regularized Coulomb sliding :eq:`coul_eqn`. Requires :varlink:`STREAMICE_COULOMB_SLIDING` CPP option.          |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
  
 .. _ssub_phys_pkg_streamice_domain_setup:
@@ -315,13 +315,13 @@ Parameters to initialize boundary conditions (defined under :varlink:`STREAMICE_
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
    | :varlink:`max_y_CFBC_WEST`                |   0                          | northern limit of calving front condition region on eastern boundary (m)                                           |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`flux_bdry_val_SOUTH`            |   0                          | volume flux per width entering at flux-boundary on southern boundary (m\ :sup:`2`\ /a)                             |  
+   | :varlink:`flux_bdry_val_SOUTH`            |   0                          | volume flux per width entering at flux-boundary on southern boundary (m\ :sup:`2`\ /a)                             |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`flux_bdry_val_NORTH`            |   0                          | volume flux per width entering at flux-boundary on southern boundary (m\ :sup:`2`\ /a)                             |  
+   | :varlink:`flux_bdry_val_NORTH`            |   0                          | volume flux per width entering at flux-boundary on southern boundary (m\ :sup:`2`\ /a)                             |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`flux_bdry_val_EAST`             |   0                          | volume flux per width entering at flux-boundary on southern boundary (m\ :sup:`2`\ /a)                             |  
+   | :varlink:`flux_bdry_val_EAST`             |   0                          | volume flux per width entering at flux-boundary on southern boundary (m\ :sup:`2`\ /a)                             |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`flux_bdry_val_WEST`             |   0                          | volume flux per width entering at flux-boundary on southern boundary (m\ :sup:`2`\ /a)                             |  
+   | :varlink:`flux_bdry_val_WEST`             |   0                          | volume flux per width entering at flux-boundary on southern boundary (m\ :sup:`2`\ /a)                             |
    +-------------------------------------------+------------------------------+--------------------------------------------------------------------------------------------------------------------+
 
   
@@ -427,15 +427,15 @@ rethought if the effects of tides are to be considered.
 Again, the form is slightly different if a hybrid formulation is to be
 used, and the velocity refers to sliding velocity (:math:`u_b`).
 
-An alternative to the above "power law" sliding parameterisation can be used by
-defining the :varlink:`STREAMICE_COULOMB_SLIDING` CPP option and setting the 
+An alternative to the above "power law" sliding parameterization can be used by
+defining the :varlink:`STREAMICE_COULOMB_SLIDING` CPP option and setting 
 :varlink:`streamice_allow_reg_coulomb` to ``.TRUE.``:
 
 .. math::
    \vec{\tau}_b = C\frac{|u|^{m}N}{2\left[C^{1/m}|u|+(0.5N)^{1/m}\right]^{m}}u^{-1}\vec{u}
    :label: coul_eqn
 
-where :math:`u` is shorthand for the regularised norm in :eq:`tau_eqn` (or for :math:`u_b` if a hybrid formulation is used). 
+where :math:`u` is shorthand for the regularized norm in :eq:`tau_eqn` (or for :math:`u_b` if a hybrid formulation is used). 
 :math:`m` is the same exponent as in :eq:`tau_eqn`. :math:`N` is effective pressure:
 
 .. math::
@@ -447,7 +447,7 @@ with :math:`h_f` the floatation thickness
 .. math::
    h_f = max\left(0,-\frac{\rho_w}{\rho}R\right),
 
-where :math:`R` is bed elevation. This formulation was used in the MISMIP+ intercomparison tests :cite:`asay-davis:2016`.
+where :math:`R` is bed elevation. This formulation was used in the MISMIP+ intercomparison tests :cite:`asay-davis:16`.
 :eq:`eff_press` assumes complete hydraulic connectivity to the ocean throughout 
 the domain, which is likely only true within a few tens of kilometers of the 
 grounding line. With this sliding relation, Coulomb sliding is predominant near the grounding line, with 
