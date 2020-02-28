@@ -54,8 +54,8 @@ C     myThid :: My Thread Id number
 C     !LOCAL VARIABLES :
 C     === Local variables ===
       INTEGER iMin ,iMax ,jMin ,jMax
-      INTEGER i, j, k, kp1, km1, kBottom
-      INTEGER kSrf, kTop, kBot, kDir, delK
+      INTEGER i, j, k, kp1, km1
+      INTEGER kSrf, kTop, kBot
       INTEGER errCode
       _RL  fxa,fxb,fxc,cstar
       _RL  coordFac, recip_coordFac
@@ -82,15 +82,9 @@ CEOP
       IF ( usingPCoords ) THEN
        kSrf = Nr
        kTop = Nr
-       kBot =  2
-       kDir = -1
-       delK =  1
       ELSE
        kSrf =  1
        kTop =  2
-       kBot = Nr
-       kDir =  1
-       delK =  0
       ENDIF
 
       coordFac = 1. _d 0
@@ -240,13 +234,13 @@ c      inject at bottom box only
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
          IF ( usingPCoords ) THEN
-          kBottom=MIN(MAX(kSurfC(i,j,bi,bj)+1,2),Nr)
+          kBot=MIN(kSurfC(i,j,bi,bj)+1,Nr)
          ELSE
-          kBottom   = MAX(kLowC(i,j,bi,bj),1)
+          kBot   = MAX(kLowC(i,j,bi,bj),1)
          ENDIF
-         forc(i,j,kbottom)=forc(i,j,kbottom)
-     &     + gm_forc(i,j)*recip_drC(kbottom)*coordFac
-     &                  *recip_hFacI(i,j,kbottom)
+         forc(i,j,kBot)=forc(i,j,kBot)
+     &     + gm_forc(i,j)*recip_drC(kBot)*coordFac
+     &                  *recip_hFacI(i,j,kBot)
         ENDDO
        ENDDO
       endif
@@ -317,6 +311,7 @@ c      solve vertical diffusion implicitly
 c-----------------------------------------------------------------------
 
 C     delta_k = dt tau_v /drF_k (c_k+c_k+1)/2
+C     delta(1) and delta(Nr) are zero by initialisation
       DO k=2,Nr-1
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -326,30 +321,30 @@ C     delta_k = dt tau_v /drF_k (c_k+c_k+1)/2
         ENDDO
        ENDDO
       ENDDO
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-         delta(i,j,1)  = 0. _d 0
-         delta(i,j,Nr) = 0. _d 0
-         IF ( usingPCoords ) THEN
-          kBottom=MIN(MAX(kSurfC(i,j,bi,bj)+1,2),Nr)
-         ELSE
-          kBottom   = MAX(kLowC(i,j,bi,bj),1)
-         ENDIF
-         delta(i,j,kBottom) = 0. _d 0
+      IF ( usingPCoords ) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         kBot = MIN(kSurfC(i,j,bi,bj),Nr)
+         delta(i,j,kBot) = 0. _d 0
+        ENDDO
        ENDDO
-      ENDDO
+      ELSE
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         kBot = MAX(kLowC(i,j,bi,bj),1)
+         delta(i,j,kBot) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDIF
 
 C--   Lower diagonal  for E_(k-1) : -delta_k-1 c_k-1/drC_k
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-         a3d(i,j,1) = 0. _d 0
-       ENDDO
-      ENDDO
+C     but leaving the contribution of c0_k-1 for later
       DO k=2,Nr
+       km1=MAX(k-1,2)
        DO j=jMin,jMax
         DO i=iMin,iMax
 C-       No need for maskC(k-1) with recip_hFacC(k-1) in delta(k-1)
-         a3d(i,j,k) = -delta(i,j,k-1)!*c0(i,j,km1)
+         a3d(i,j,k) = -delta(i,j,km1)
      &        *recip_drC(k)*coordFac*recip_hFacI(i,j,k)
      &        *maskC(i,j,k,bi,bj)
         ENDDO
@@ -357,143 +352,106 @@ C-       No need for maskC(k-1) with recip_hFacC(k-1) in delta(k-1)
       ENDDO
 
 C--   Upper diagonal for E_(k+1):  delta_k c_k+1/drC_k
+C     but leaving the contribution of c0_k+1 for later
       DO k=2,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
 C-       No need for maskC(k) with recip_hFacC(k) in delta(k)
-         c3d(i,j,k) = -delta(i,j,k)!*c0(i,j,kp1)
+         c3d(i,j,k) = -delta(i,j,k)
      &        *recip_drC(k)*coordFac*recip_hFacI(i,j,k)
      &        *maskC(i,j,k-1,bi,bj)
         ENDDO
        ENDDO
       ENDDO
-      DO j=jMin,jMax ! c3d at bottom is zero
+
+C     treat bottom and surface boundaries for coeffients
+C     of upper and lower diagonal by masking
+      kp1=MIN(2,Nr)
+      IF ( usingPCoords ) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+C     a3d at bottom is zero
+         kBot=MIN(kSurfC(i,j,bi,bj)+1,Nr)
+         a3d(i,j,kBot) = 0. _d 0
+C     for p-coords, c3d is zero at the surface, too
+         c3d(i,j,Nr)      = 0. _d 0
+        ENDDO
+       ENDDO
+      ELSEIF ( usingZCoords ) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+C     c3d at bottom is zero
+         kBot = MAX(kLowC(i,j,bi,bj),1)
+         c3d(i,j,kBot) = 0. _d 0
+C     for z-coords, a3d is zero at the surface (level 2), too
+         a3d(i,j,kp1)     = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDIF
+C     For k=1 there is nothing to solve for
+      DO j=jMin,jMax
        DO i=iMin,iMax
-         c3d(i,j,1) = 0. _d 0
-         IF ( usingPCoords ) THEN
-          kBottom=MIN(MAX(kSurfC(i,j,bi,bj)+1,2),Nr)
-         ELSE
-          kBottom   = MAX(kLowC(i,j,bi,bj),1)
-         ENDIF
-         c3d(i,j,kBottom) = 0. _d 0
+C     so that both off-diagonal coefficients are zero
+        a3d(i,j,1) = 0. _d 0
+        c3d(i,j,1) = 0. _d 0
+C     and the main diagonal is one (for stability)
+        b3d(i,j,1) = 1. _d 0
        ENDDO
       ENDDO
 
 C--   Center diagonal
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-         b3d(i,j,1) = 1. _d 0
-       ENDDO
-      ENDDO
       DO k=2,Nr
-       km1=MAX(k-1,2)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( usingPCoords ) km1=MIN(Nr,MAX(kSurfC(i,j,bi,bj),k-1))
          b3d(i,j,k) = 1. _d 0+dTtracerLev(k)*IDEMIX_tau_d(i,j,k,bi,bj)
      &         *IDEMIX_E(i,j,k,bi,bj)
-     &         *maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
+     &         *maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
      &        - ( a3d(i,j,k) + c3d(i,j,k) ) * c0(i,j,k)
         ENDDO
        ENDDO
       ENDDO
-C     complete computation of lower and upper diagonal
+
+C--   Complete computation of lower and upper diagonal after they have
+C     been used for the center diagonal: add the contribution of c0_k+/-1
       DO k=2,Nr
        kp1=MIN(k+1,Nr)
+       km1=MAX(k-1,2)
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( usingZCoords ) kp1=MAX( 1,MIN( klowC(i,j,bi,bj),k+1))
-         a3d(i,j,k) = a3d(i,j,k)*c0(i,j,k-1)
+         IF ( usingZCoords ) kp1=MAX(1,MIN(klowC(i,j,bi,bj),k+1))
+         a3d(i,j,k) = a3d(i,j,k)*c0(i,j,km1)
          c3d(i,j,k) = c3d(i,j,k)*c0(i,j,kp1)
         ENDDO
        ENDDO
       ENDDO
 
-c     at surface and bottom
+C--   Apply flux boundary condition
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        IDEMIX_E(i,j,kTop,bi,bj) = IDEMIX_E(i,j,kTop,bi,bj)
+     &       +dTtracerLev(kTop)*IDEMIX_F_s(i,j,bi,bj)
+     &       *recip_drC(kTop)*coordFac*recip_hFacI(i,j,kTop)
+     &       *maskC(i,j,kTop,bi,bj)
+       ENDDO
+      ENDDO
       IF ( usingZCoords) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-C     bottom
-         k   = MAX(kLowC(i,j,bi,bj),1)
-         km1 = MAX(k-1,2)
-         b3d(i,j,k) = 1. _d 0+dTtracerLev(k)*IDEMIX_tau_d(i,j,k,bi,bj)
-     &        *IDEMIX_E(i,j,k,bi,bj)
-     &        *maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
-C-       No need for maskC(k-1) with recip_hFacC(k-1) in delta(k-1)
-CML     &       - a3d(i,j,k) * c0(i,j,k)
-     &        + delta(i,j,km1)*c0(i,j,k)
-     &          *recip_drC(k)*coordFac*recip_hFacI(i,j,k)
-     &          *maskC(i,j,k,bi,bj)
-C     surface
-         k=kTop
-         b3d(i,j,k) = 1. _d 0+dTtracerLev(k)*IDEMIX_tau_d(i,j,k,bi,bj)
-     &        *IDEMIX_E(i,j,k,bi,bj)
-     &        *maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
-C-       No need for maskC(k) with recip_hFacC(k) in delta(k)
-CML     &       - c3d(i,j,k) * c0(i,j,k)
-     &        + delta(i,j,k)*c0(i,j,k)
-     &          *recip_drC(k)*coordFac*recip_hFacI(i,j,k)
-     &          *maskC(i,j,km1,bi,bj)
+         kBot = MAX(kLowC(i,j,bi,bj),1)
+         IDEMIX_E(i,j,kBot,bi,bj) = IDEMIX_E(i,j,kBot,bi,bj)
+     &        -dTtracerLev(kBot)*IDEMIX_F_b(i,j,bi,bj)
+     &        *recip_drC(kBot)*coordFac*recip_hFacI(i,j,kBot)
+     &        *maskC(i,j,kBot,bi,bj)
         ENDDO
        ENDDO
       ELSEIF ( usingPCoords ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-C     bottom
-         k   = MIN(MAX(kSurfC(i,j,bi,bj)+1,2),Nr)
-CML         print *,'ml-ksurfc: ', i,j,ksurfc(i,j,bi,bj),k
-         km1 = MIN(k-1,2)
-         b3d(i,j,k) = 1. _d 0+dTtracerLev(k)*IDEMIX_tau_d(i,j,k,bi,bj)
-     &        *IDEMIX_E(i,j,k,bi,bj)
-     &        *maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
-     &       - a3d(i,j,k) * c0(i,j,k)
-C-       No need for maskC(k-1) with recip_hFacC(k-1) in delta(k-1)
-CML     &        + delta(i,j,km1)*c0(i,j,k)
-CML     &          *recip_drC(k)*coordFac*recip_hFacI(i,j,k)
-CML     &          *maskC(i,j,k,bi,bj)
-C     surface
-         k=kTop
-         b3d(i,j,k) = 1. _d 0+dTtracerLev(k)*IDEMIX_tau_d(i,j,k,bi,bj)
-     &        *IDEMIX_E(i,j,k,bi,bj)
-     &        *maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
-     &       - c3d(i,j,k) * c0(i,j,k)
-C-       No need for maskC(k) with recip_hFacC(k) in delta(k)
-CML     &        + delta(i,j,k)*c0(i,j,k)
-CML     &          *recip_drC(k)*coordFac*recip_hFacI(i,j,k)
-CML     &          *maskC(i,j,km1,bi,bj)
-        ENDDO
-       ENDDO
-      ENDIF
-
-C     Apply flux boundary condition
-      IF ( usingZCoords) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         k = kTop
-         IDEMIX_E(i,j,k,bi,bj)  =  IDEMIX_E(i,j,k,bi,bj)
-     &        +dTtracerLev(k)*IDEMIX_F_s(i,j,bi,bj)
-     &        *recip_drC(k)*coordFac*recip_hFacI(i,j,k)
-     &        *maskC(i,j,k,bi,bj)
-         k = MAX(kLowC(i,j,bi,bj),1)
-         IDEMIX_E(i,j,k,bi,bj) = IDEMIX_E(i,j,k,bi,bj)
-     &        -dTtracerLev(k)*IDEMIX_F_b(i,j,bi,bj)
-     &        *recip_drC(k)*coordFac*recip_hFacI(i,j,k)
-     &        *maskC(i,j,k,bi,bj)
-        ENDDO
-       ENDDO
-      ELSEIF ( usingPCoords ) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         k = kTop
-         IDEMIX_E(i,j,k,bi,bj)  =  IDEMIX_E(i,j,k,bi,bj)
-     &        +dTtracerLev(k)*IDEMIX_F_s(i,j,bi,bj)
-     &        *recip_drC(k)*coordFac*recip_hFacI(i,j,k)
-     &        *maskC(i,j,k,bi,bj)
-         k = MIN(MAX(kSurfC(i,j,bi,bj)+1,2),Nr)
-         IDEMIX_E(i,j,k,bi,bj) = IDEMIX_E(i,j,k,bi,bj)
-     &        -dTtracerLev(k)*IDEMIX_F_b(i,j,bi,bj)
-     &        *recip_drC(k)*coordFac*recip_hFacI(i,j,k)
-     &        *maskC(i,j,k,bi,bj)
+         kBot = MIN(kSurfC(i,j,bi,bj)+1,Nr)
+         IDEMIX_E(i,j,kBot,bi,bj) = IDEMIX_E(i,j,kBot,bi,bj)
+     &        -dTtracerLev(kBot)*IDEMIX_F_b(i,j,bi,bj)
+     &        *recip_drC(kBot)*coordFac*recip_hFacI(i,j,kBot)
+     &        *maskC(i,j,kBot,bi,bj)
         ENDDO
        ENDDO
       ENDIF
