@@ -812,22 +812,39 @@ CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey,kind=isbyte
 CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey,kind=isbyte
 CADJ STORE rhokm1 (bi,bj)       = comlev1_bibj_k, key=kkey,kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-             CALL FIND_RHO_2D(
+             IF ( usingZCoords ) THEN
+              CALL FIND_RHO_2D(
      I                 iMin, iMax, jMin, jMax, k,
      I                 theta(1-OLx,1-OLy,k-1,bi,bj),
      I                 salt (1-OLx,1-OLy,k-1,bi,bj),
      O                 rhoKm1,
      I                 k-1, bi, bj, myThid )
+             ELSE
+              CALL FIND_RHO_2D(
+     I                 iMin, iMax, jMin, jMax, k-1,
+     I                 theta(1-OLx,1-OLy,k,bi,bj),
+     I                 salt (1-OLx,1-OLy,k,bi,bj),
+     O                 rhoKp1,
+     I                 k, bi, bj, myThid )
+             ENDIF
             ENDIF
 #ifdef ALLOW_DEBUG
             IF (debugMode) CALL DEBUG_CALL('GRAD_SIGMA',myThid)
 #endif
 cph Avoid variable aliasing for adjoint !!!
-            DO j=jMin,jMax
-             DO i=iMin,iMax
-              rhoKp1(i,j) = rhoInSitu(i,j,k,bi,bj)
+            IF ( usingZCoords ) THEN
+             DO j=jMin,jMax
+              DO i=iMin,iMax
+               rhoKp1(i,j) = rhoInSitu(i,j,k,bi,bj)
+              ENDDO
              ENDDO
-            ENDDO
+            ELSE
+             DO j=jMin,jMax
+              DO i=iMin,iMax
+               rhoKm1(i,j) = rhoInSitu(i,j,k-1,bi,bj)
+              ENDDO
+             ENDDO
+            ENDIF
             CALL GRAD_SIGMA(
      I             bi, bj, iMin, iMax, jMin, jMax, k,
      I             rhoInSitu(1-OLx,1-OLy,k,bi,bj), rhoKm1, rhoKp1,
