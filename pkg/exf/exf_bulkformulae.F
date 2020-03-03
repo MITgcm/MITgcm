@@ -237,7 +237,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDIF
 
       IF ( usingPCoords ) THEN
-       kSrf   = Nr
+       ksrf   = Nr
        ksrfp1 = Nr-1
       ELSE
        ksrf   = 1

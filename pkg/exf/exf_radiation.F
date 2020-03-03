@@ -62,7 +62,7 @@ C     swflux = - ( 1 - albedo ) * swdown
       kl = 2
       IF ( usingPCoords ) THEN
        ks = Nr
-       kl = 2
+       kl = Nr-1
       ENDIF
 
       IF ( lwfluxfile .EQ. ' ' .AND. lwdownfile .NE. ' ' ) THEN
