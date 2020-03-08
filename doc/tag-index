@@ -1,6 +1,23 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice, remeshing code:
+  - simplify/clarify merging S/R call sequence: all done/called from main
+    remeshing S/R SHELFICE_REMESHING :
+      - remesh_c_mask : now only update geometry & surface fields at grid-cell
+        center and compute merging remeshing weights for tracers;
+      - remesh_uv_mask : now only update geometry & surface fields at grid-cell
+        edges and prepare merging remeshing weights for velocity;
+        also fix thin-wall setting without reading again thin-wall files ;
+      - calls directly CALC_SURF_DR and UPDATE_SURF_DR
+  - move adjustment of state variables into (new) dedicated
+    S/R SHELFICE_REMESH_STATE and change loop range so that no further EXCH
+    calls are needed ; also add missing code for ALLOW_ADAMSBASHFORTH_3 ;
+  - move update of Rmin_surf (formerly in shelfice_remesh_rminsurf.F)
+    before first call to S/R CALC_SURF_DR (where Rmin_surf is used)
+    and in-line S/R SHELFICE_REMESH_RMINSURF into shelfice_remesh_uv_mask.F
+  - add argument "wFld" and "myIter" to S/R SHELFICE_REMESH_CALC_W
+  - fix so that it compiles and run when _RS is real*4 (#undef REAL4_IS_SLOW).
 o model/src:
   - Fix for special value of R_low with pkg/shelfice:
     When bathymetry field value is just rF(k)+hFacMindrF(k)/2, R_low will
