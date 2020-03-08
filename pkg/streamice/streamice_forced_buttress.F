@@ -138,10 +138,10 @@ C     LOCAL VARIABLES
              do k=0,1
               if (streamice_umask(i+1,j+k,bi,bj).eq.1.0) then
 
-               if ((j+k).eq.10) then
-                print *, "GOT HERE 1", unconf_stress,
-     &               taudx_SI(i+1,j+k,bi,bj)
-               endif
+!               if ((j+k).eq.10) then
+!                print *, "GOT HERE 1", unconf_stress,
+!     &               taudx_SI(i+1,j+k,bi,bj)
+!               endif
 
                taudx_SI(i+1,j+k,bi,bj) = taudx_SI(i+1,j+k,bi,bj) +
      &          (streamice_u_normal_pert(i+1,j,bi,bj)  + 
@@ -153,9 +153,9 @@ C     LOCAL VARIABLES
      &          streamice_v_shear_stress(i+1,j,bi,bj)) *
      &          .5 * unconf_stress * dyG(i+1,j,bi,bj)
 
-               if ((j+k).eq.10) then
-                print *, "GOT HERE 1", taudx_SI(i+1,j+k,bi,bj)
-               endif
+!               if ((j+k).eq.10) then
+!                print *, "GOT HERE 1", taudx_SI(i+1,j+k,bi,bj)
+!               endif
 
               endif
              enddo

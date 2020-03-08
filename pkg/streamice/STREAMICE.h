@@ -279,7 +279,7 @@ C     STREAMICE_ADV_SCHEME        :: DST3 -- 3rd order direct ST
 C                                    o/w 2nd order flux limited
 C     PETSC_SOLVER_TYPE           :: CG, BICG, GMRES
 C       see https://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/KSP/
-        default: CG
+C        default: CG
 C     PETSC_PRECOND_TYPE          :: JACOBI -- a jacobi precond 
 C                                       (equiv to no petsc)
 C                                    BLOCKJACOBI -- block incomplete
@@ -436,7 +436,7 @@ C     STREAMICE_alt_driving_stress    :: use finite difference based
 C                                        driving stress
 C                                        (overrides above option)
 C     STREAMICE_chkfixedptconvergence :: terminate velocity iteration
-                                         based on fp_error
+C                                         based on fp_error
 C     STREAMICE_chkresidconvergence   :: terminate velocity iteration 
 C                                        based on residual error
 C     STREAMICE_allow_cpl             :: enable streamice-ocean 
