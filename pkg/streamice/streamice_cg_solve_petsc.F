@@ -337,8 +337,9 @@ c     &              A_vv(i,j,bi,bj,colx,coly),INSERT_VALUES,ierr)
      &                             PETSC_NULL_INTEGER,
      &                             subksp,ierr);
        call KSPGetPC (subksp, subpc, ierr)
-       call PCSetType (subpc, PCILU, ierr)
-c       call PCFactorSetLevels(subpc,0,ierr)
+       call PCSetType (subpc, PCICC, ierr)
+       call PCFactorSetLevels(subpc,streamice_petsc_pcfactorlevels,
+     &  ierr)
        CASE ('JACOBI')
        PRINT *, "PETSC PRECOND: SELECTED JACOBI"
        call PCSetType(pc, PCJACOBI, ierr)

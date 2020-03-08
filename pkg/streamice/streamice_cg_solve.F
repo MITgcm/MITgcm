@@ -93,7 +93,11 @@ c#endif
 
 #ifdef ALLOW_PETSC
 
+#ifndef ALLOW_OPENAD
       if (streamice_use_petsc.and.petscFlag.eq.1) then
+#else
+      if (streamice_use_petsc) then
+#endif
 
       CALL STREAMICE_CG_SOLVE_PETSC(
      U         cg_Uin,     ! x-velocities

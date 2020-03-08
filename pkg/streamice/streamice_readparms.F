@@ -118,7 +118,8 @@ c     INTEGER iarr, tarr
 #ifdef ALLOW_PETSC
       NAMELIST /STREAMICE_PARMPETSC/
      &     PETSC_PRECOND_TYPE, PETSC_SOLVER_TYPE,
-     &     streamice_use_petsc, streamice_maxnliter_petsc
+     &     streamice_use_petsc, streamice_maxnliter_petsc,
+     &     streamice_petsc_pcfactorlevels
 #endif
 
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
@@ -217,6 +218,7 @@ C--   Default values for STREAMICE
       streamice_maxnliter_petsc = -1
       streamice_maxcgiter_cpl = 0
       streamice_maxnliter_cpl = 0
+      streamice_petsc_pcfactorlevels = 0
 #ifdef ALLOW_OPENAD
       streamice_smooth_thick_adjoint = 0
 #endif
