@@ -124,6 +124,8 @@ C     Regularization values squared
       _RL area_reg_sq, hice_reg_sq
 C     pathological cases thresholds
       _RL heffTooHeavy
+C     local copy of surface layer thickness in meters
+      _RL dzLoc
 
 C     Helper variables: reciprocal of some constants
       _RL recip_multDim
@@ -323,9 +325,11 @@ C =================PART 0: constants and initializations=============
 C ===================================================================
 
       IF ( usingPCoords ) THEN
-       kSurface        = Nr
+       kSurface = Nr
+       dzLoc    = drF(kSurface)*recip_rhoConst*recip_gravity
       ELSE
-       kSurface        = 1
+       kSurface = 1
+       dzLoc    = drF(kSurface)
       ENDIF
 
 C     avoid unnecessary divisions in loops
@@ -337,9 +341,7 @@ c     recip_multDim        = 1./float(SEAICE_multDim)
       recip_rhoIce      = ONE / SEAICE_rhoIce
 
 C     Cutoff for iceload
-      heffTooHeavy=drF(kSurface) / 5. _d 0
-      IF ( usingPCoords )
-     &     heffTooHeavy = heffTooHeavy * recip_rhoConst * recip_gravity
+      heffTooHeavy=dzLoc / 5. _d 0
 C     RATIO OF SEA ICE DENSITY to SNOW DENSITY
       ICE2SNOW     = SEAICE_rhoIce/SEAICE_rhoSnow
       SNOW2ICE     = ONE / ICE2SNOW
@@ -1040,7 +1042,7 @@ C efficiency of turbulent fluxes : dependency to sign of THETA-TBC
           IF ( theta(I,J,kSurface,bi,bj) .GE. tempFrz ) THEN
            tmpscal1 = SEAICE_mcPheePiston
           ELSE
-           tmpscal1 =SEAICE_frazilFrac*drF(kSurface)/SEAICE_deltaTtherm
+           tmpscal1 =SEAICE_frazilFrac*dzLoc/SEAICE_deltaTtherm
           ENDIF
 C efficiency of turbulent fluxes : dependency to AREA (McPhee cases)
           IF ( (AREApreTH(I,J) .GT. 0. _d 0).AND.
