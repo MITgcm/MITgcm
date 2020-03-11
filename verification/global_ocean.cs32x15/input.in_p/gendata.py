@@ -14,10 +14,12 @@ import sys, os
 import MITgcmutils as mit
 
 # some helper routines
-def sq(a):
-    a = np.squeeze(a)
-    masked_array=np.ma.masked_where(a==0., a)
-    return masked_array
+def sqinf(a):
+    """ replace zeros by Inf
+    """
+    b = np.copy(np.squeeze(a))
+    b[b==0] = np.Inf
+    return b
 
 def readfield(fname,dims,datatype):
     """Call signatures::
@@ -54,7 +56,7 @@ def writefield(fname,data):
     Write unblocked binary data.
     """
 
-    if True: pass
+    if False: pass
     else:
         if sys.byteorder == 'little': data.byteswap(True)
 
@@ -191,12 +193,13 @@ for k in range(nr-4,0,-3):
 dp3d = np.tile(dp.reshape((nr,1,1)),(1,ny,nx))
 # this is the correct way of computing the geopotential anomaly
 # (if integr_geoPot = 1)
-geopotanom = -((1./sq(rhoInSitu) - 1/rhoConst)*mskz*dp3d).sum(axis=0)
+recip_rho = 1./sqinf(rhoInSitu)
+geopotanom = -((recip_rho - 1/rhoConst)*mskz*dp3d).sum(axis=0)
 # this is equivalent
-geopotanom1= b/rhoConst-(1./sq(rhoInSitu)*mskz*dp3d).sum(axis=0)
+geopotanom1= b/rhoConst-(recip_rho*mskz*dp3d).sum(axis=0)
 # these are approximation that are not quite accurate
 geopotanom2= ((rhoInSitu - rhoConst)*mskz*dz3d).sum(axis=0)*gravity/rhoConst
-geopotanom3= -((1./sq(rhoInSitu) - 1/rhoConst)*grho*mskz*dz3d).sum(axis=0)
+geopotanom3= -((recip_rho - 1/rhoConst)*grho*mskz*dz3d).sum(axis=0)
 
 # the correct version
 writefield('geopotanom.bin',geopotanom)
@@ -214,7 +217,7 @@ writefield('geopotanom.bin',geopotanom)
 # writefield('pickup.0000072000',p)
 
 # plot field
-plt.clf()
-mit.cs.pcol(xg,yg,geopotanom)
-plt.colorbar(orientation='horizontal')
-plt.show()
+#plt.clf()
+#mit.cs.pcol(xg,yg,geopotanom)
+#plt.colorbar(orientation='horizontal')
+#plt.show()
