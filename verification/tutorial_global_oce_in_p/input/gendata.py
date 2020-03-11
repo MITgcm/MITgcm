@@ -140,18 +140,6 @@ dz3d = np.tile(delz.reshape((nr,1,1)),(1,ny,nx))
 pc = np.copy(pc3d)
 pc,pf,rhoInSitu = calc_hydrostatic_pressure(s,t,pc,dz3d)
 
-# this is the correct way of computing the geopotential anomaly
-# (if integr_geoPot = 1)
-geopotanom = -((1./sq(rhoInSitu) - 1/rhoConst)*mskz*dp3d).sum(axis=0)
-# this is equivalent
-geopotanom1= b/rhoConst-(1./sq(rhoInSitu)*mskz*dp3d).sum(axis=0)
-# these are approximation that are not quite accurate
-geopotanom2= ((rhoInSitu - rhoConst)*mskz*dz3d).sum(axis=0)*gravity/rhoConst
-geopotanom3= -((1./sq(rhoInSitu) - 1/rhoConst)*grho*mskz*dz3d).sum(axis=0)
-
-# the correct version
-writefield('geopotanom.bin',geopotanom)
-
 # the new pressure also implies different delp, here computed as an average
 # over the model domain
 pm = np.zeros((nr,))
@@ -197,3 +185,22 @@ dp[1:] = pm[1:]-pm[:-1]
 print(' delRc = %14f, %14f, %14f,'%(dp[-1],dp[-2],dp[-3]))
 for k in range(nr-4,0,-3):
     print('         %14f, %14f, %14f,'%(dp[k],dp[k-1],dp[k-2]))
+
+dp3d = np.tile(dp.reshape((nr,1,1)),(1,ny,nx))
+# this is the correct way of computing the geopotential anomaly
+# (if integr_geoPot = 1)
+geopotanom = -((1./sq(rhoInSitu) - 1/rhoConst)*mskz*dp3d).sum(axis=0)
+# this is equivalent
+geopotanom1= b/rhoConst-(1./sq(rhoInSitu)*mskz*dp3d).sum(axis=0)
+# these are approximation that are not quite accurate
+geopotanom2= ((rhoInSitu - rhoConst)*mskz*dz3d).sum(axis=0)*gravity/rhoConst
+geopotanom3= -((1./sq(rhoInSitu) - 1/rhoConst)*grho*mskz*dz3d).sum(axis=0)
+
+# the correct version
+writefield('geopotanom.bin',geopotanom)
+
+# plot field
+import matplotlib.pyplot as plt
+xg = mit.rdmds('../run/XG')
+yg = mit.rdmds('../run/YG')
+plt.clf(); plt.pcolormesh(xg,yg,geopotanom); plt.colorbar()
