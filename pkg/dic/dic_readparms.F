@@ -48,9 +48,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- Abiotic dic parameters:
 C permil   :: set carbon mol/m3 <---> mol/kg conversion factor
 C             default permil = 1024.5 kg/m3
-C Pa2Atm   :: Conversion factor for atmospheric pressure pLoad (when coupled
-C             to atmospheric model) into Atm. Default assumes pLoad in Pascal
-C             1 Atm = 1.01325e5 Pa = 1013.25 mb
+C Pa2Atm   :: Conversion factor for atmospheric pressure anomaly pLoad (when
+C             coupled to atmospheric model) into Atm.
+C             Default assumes pLoad in Pascal: 1 Atm = 1.01325e5 Pa = 1013.25 mb
 C  selectBTconst :: estimates borate concentration from salinity:
 C     =1 :: use default formulation of Uppström (1974)(same as S/R CARBON_COEFFS)
 C     =2 :: use new formulation from Lee et al (2010)
