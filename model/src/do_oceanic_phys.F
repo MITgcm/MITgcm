@@ -606,13 +606,13 @@ C This is currently used by GMRedi, IVDC, MXL-depth  and Diagnostics
          ENDDO
         ENDDO
 
-#ifdef ALLOW_AUTODIFF
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           rhoKm1 (i,j)   = 0. _d 0
           rhoKp1 (i,j)   = 0. _d 0
          ENDDO
         ENDDO
+#ifdef ALLOW_AUTODIFF
 cph all the following init. are necessary for TAF
 cph although some of these are re-initialised later.
         DO k=1,Nr
@@ -826,6 +826,11 @@ CADJ STORE rhokm1 (bi,bj)       = comlev1_bibj_k, key=kkey,kind=isbyte
      I                 salt (1-OLx,1-OLy,k,bi,bj),
      O                 rhoKp1,
      I                 k, bi, bj, myThid )
+              DO j=jMin,jMax
+               DO i=iMin,iMax
+                rhoKm1(i,j) = rhoInSitu(i,j,k-1,bi,bj)
+               ENDDO
+              ENDDO
              ENDIF
             ENDIF
 #ifdef ALLOW_DEBUG
@@ -836,12 +841,6 @@ cph Avoid variable aliasing for adjoint !!!
              DO j=jMin,jMax
               DO i=iMin,iMax
                rhoKp1(i,j) = rhoInSitu(i,j,k,bi,bj)
-              ENDDO
-             ENDDO
-            ELSE
-             DO j=jMin,jMax
-              DO i=iMin,iMax
-               rhoKm1(i,j) = rhoInSitu(i,j,k-1,bi,bj)
               ENDDO
              ENDDO
             ENDIF
