@@ -229,16 +229,17 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
 
            unorm = sqrt(ub**2+vb**2+eps_u_min**2)
 
-#ifndef STREAMICE_COULOMB_SLIDING
-
+#ifdef STREAMICE_COULOMB_SLIDING
+          IF (.not.streamice_allow_reg_coulomb) THEN
+#endif
            fb = C_basal_friction(i,j,bi,bj)**2 *
      &      STREAMICE_BSTRESS_EXP (unorm,n_basal_friction) *
      &      streamice_basal_geom(i,j,bi,bj) *
      &      float_frac_streamice(i,j,bi,bj)
 
-#else
+#ifdef STREAMICE_COULOMB_SLIDING
+          ELSE
 
-           IF (streamice_allow_reg_coulomb)
            hf = max (0.0, -1.0 *streamice_density_ocean_avg
      &        / streamice_density * R_low_si(i,j,bi,bj))
 
@@ -258,7 +259,7 @@ CADJ &     = comlev1_stream_hybrid, key=ikey_1
      &        n_basal_friction *
      &      streamice_basal_geom(i,j,bi,bj) *
      &      float_frac_streamice(i,j,bi,bj) / unorm
-           ENDIF
+          ENDIF
 
 #endif
 
