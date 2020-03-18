@@ -153,7 +153,7 @@ for k in range(nr):
     sm[k] = (s[k,:,:]*racz).sum()/racz.sum()
     rhom[k] = (rhoInSitu[k,:,:]*racz).sum()/racz.sum()
 
-# hydrostatic pressure from averaged temperatuer and salinity profiles
+# hydrostatic pressure from averaged temperature and salinity profiles
 pmm = np.copy(pm)
 pmm,pff,rr = calc_hydrostatic_pressure(sm,tm,pmm,delz)
 # this is very similar to diff(pfm), see below
@@ -201,6 +201,26 @@ writefield('geopotanom.bin',geopotanom)
 
 # plot field
 import matplotlib.pyplot as plt
+
 xg = mit.rdmds('../run/XG')
 yg = mit.rdmds('../run/YG')
-plt.clf(); plt.pcolormesh(xg,yg,geopotanom); plt.colorbar()
+f1=plt.figure()
+f1.clf()
+plt.pcolormesh(xg,yg,geopotanom)
+plt.colorbar()
+
+
+f2=plt.figure()
+f2.clf()
+kindex = -(np.arange(15)+1)
+plt.plot((delp/delz)/gravity,kindex,'x-',label='from delR in "data"')
+plt.plot((np.diff(pff)/delz)/gravity,kindex,':',label='from mean T/S profile')
+plt.plot((np.diff(pfm)/delz)/gravity,kindex,'-.',label='from mean density profile')
+plt.ylabel('k-level')
+plt.title('(delP/delZ)/gravity')
+plt.grid()
+plt.plot([rhoConst,rhoConst],[-1,-15],'--')
+plt.text(rhoConst,-15,'rhoConst=1035.',rotation=270)
+plt.legend()
+
+plt.show()
