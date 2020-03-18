@@ -536,8 +536,14 @@ C     Ocean: Add temperature surface forcing (e.g., heat-flux) in surface level
 #ifdef SHORTWAVE_HEATING
 C Penetrating SW radiation
 c     IF ( usePenetratingSW ) THEN
-       swfracb(1)=abs(rF(kLev))
-       swfracb(2)=abs(rF(kLev+1))
+       IF ( usingZCoords ) THEN
+        swfracb(1)=abs(rF(kLev))
+        swfracb(2)=abs(rF(kLev+1))
+       ELSEIF ( kSurface .EQ. Nr ) THEN
+C     this is the oceanic pressure coordinate case
+        swfracb(1)=abs(rF(kLev))*recip_rhoConst*recip_gravity
+        swfracb(2)=abs(rF(kLev+1))*recip_rhoConst*recip_gravity
+       ENDIF
        CALL SWFRAC(
      I             2, minusOne,
      U             swfracb,
@@ -545,15 +551,17 @@ c     IF ( usePenetratingSW ) THEN
        kp1 = kLev+1
        IF (kLev.EQ.Nr) THEN
         kp1 = kLev
-        swfracb(2)=0. _d 0
+        IF ( usingZCoords ) swfracb(2)=0. _d 0
+       ELSEIF ( kLev.EQ.1 .AND. usingPCoords ) THEN
+        swfracb(1) = 0. _d 0
        ENDIF
        DO j=1,sNy
         DO i=1,sNx
          gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
-     &   -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,kLev,bi,bj)
-     &                   -swfracb(2)*maskC(i,j,kp1, bi,bj))
-     &    *recip_Cp*mass2rUnit
-     &    *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+     &        -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,kLev,bi,bj)
+     &                        -swfracb(2)*maskC(i,j,kp1, bi,bj))
+     &        *recip_Cp*mass2rUnit * gravitySign
+     &        *recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
 c     ENDIF
@@ -777,6 +785,7 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
      &        +SsurfCor*recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
          ENDDO
         ENDDO
+       ENDIF
       ENDIF
 
 #ifdef ALLOW_SHELFICE
