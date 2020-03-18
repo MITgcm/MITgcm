@@ -62,19 +62,35 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        DO bi=myBxLo(myThid), myBxHi(myThid)
          wT_Tile(bi,bj) = 0.
          wS_Tile(bi,bj) = 0.
-         DO j=1,sNy
-          DO i=1,sNx
-             ks = ksurfC(i,j,bi,bj)
-             IF (ks.LE.Nr) THEN
-                wT_Tile(bi,bj) = wT_Tile(bi,bj)
+         IF (usingZCoords) THEN
+          DO j=1,sNy
+           DO i=1,sNx
+            ks = ksurfC(i,j,bi,bj)
+            IF (ks.LE.Nr) THEN
+             wT_Tile(bi,bj) = wT_Tile(bi,bj)
      &           + rA(i,j,bi,bj)*wVelFld(i,j,ks,bi,bj)
      &                          *thetaFld(i,j,ks,bi,bj)
-                wS_Tile(bi,bj) = wS_Tile(bi,bj)
+             wS_Tile(bi,bj) = wS_Tile(bi,bj)
      &           + rA(i,j,bi,bj)*wVelFld(i,j,ks,bi,bj)
      &                          *saltFld(i,j,ks,bi,bj)
-             ENDIF
+            ENDIF
+           ENDDO
           ENDDO
-         ENDDO
+         ELSEIF (usingPCoords) THEN
+          DO j=1,sNy
+           DO i=1,sNx
+            ks = kLowC(i,j,bi,bj)
+            IF (ks.GE.1) THEN
+             wT_Tile(bi,bj) = wT_Tile(bi,bj)
+     &           + rA(i,j,bi,bj)*wVelFld(i,j,ks,bi,bj)
+     &                          *thetaFld(i,j,ks,bi,bj)
+             wS_Tile(bi,bj) = wS_Tile(bi,bj)
+     &           + rA(i,j,bi,bj)*wVelFld(i,j,ks,bi,bj)
+     &                          *saltFld(i,j,ks,bi,bj)
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDIF
 c#ifdef ALLOW_AUTODIFF_TAMC
 c        wT_Mean = wT_Mean + wT_Tile(bi,bj)
 c        wS_Mean = wS_Mean + wS_Tile(bi,bj)

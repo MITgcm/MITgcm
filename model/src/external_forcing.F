@@ -514,14 +514,23 @@ C     Ocean: Add temperature surface forcing (e.g., heat-flux) in surface level
       ENDIF
 
       IF (linFSConserveTr) THEN
-       DO j=1,sNy
-        DO i=1,sNx
+       IF ( usingZCoords ) THEN
+        DO j=1,sNy
+         DO i=1,sNx
           IF (kLev .EQ. kSurfC(i,j,bi,bj)) THEN
-            gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
+           gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
      &        +TsurfCor*recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
           ENDIF
+         ENDDO
         ENDDO
-       ENDDO
+       ELSEIF ( kSurface .EQ. Nr .AND. kLev .EQ. Nr ) THEN
+        DO j=1,sNy
+         DO i=1,sNx
+          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
+     &        +TsurfCor*recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+         ENDDO
+        ENDDO
+       ENDIF
       ENDIF
 
 #ifdef SHORTWAVE_HEATING
@@ -752,14 +761,22 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
       ENDIF
 
       IF (linFSConserveTr) THEN
-       DO j=1,sNy
-        DO i=1,sNx
+       IF ( usingZCoords ) THEN
+        DO j=1,sNy
+         DO i=1,sNx
           IF (kLev .EQ. kSurfC(i,j,bi,bj)) THEN
-            gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
+           gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
      &        +SsurfCor*recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
           ENDIF
+         ENDDO
         ENDDO
-       ENDDO
+       ELSEIF ( kSurface .EQ. Nr .AND. kLev .EQ. Nr ) THEN
+        DO j=1,sNy
+         DO i=1,sNx
+          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
+     &        +SsurfCor*recip_drF(kLev)*_recip_hFacC(i,j,kLev,bi,bj)
+         ENDDO
+        ENDDO
       ENDIF
 
 #ifdef ALLOW_SHELFICE

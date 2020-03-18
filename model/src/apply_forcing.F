@@ -642,14 +642,23 @@ C     Ocean: Add temperature surface forcing (e.g., heat-flux) in surface level
       ENDIF
 
       IF (linFSConserveTr) THEN
-       DO j=0,sNy+1
-        DO i=0,sNx+1
+       IF ( usingZCoords ) THEN
+        DO j=0,sNy+1
+         DO i=0,sNx+1
           IF (k .EQ. kSurfC(i,j,bi,bj)) THEN
-            gT_arr(i,j) = gT_arr(i,j)
+           gT_arr(i,j) = gT_arr(i,j)
      &        +TsurfCor*recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
           ENDIF
+         ENDDO
         ENDDO
-       ENDDO
+       ELSEIF ( kSurface .EQ. Nr .AND. k .EQ. Nr ) THEN
+        DO j=0,sNy+1
+         DO i=0,sNx+1
+          gT_arr(i,j) = gT_arr(i,j)
+     &        +TsurfCor*recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+       ENDIF
       ENDIF
 
 #ifdef ALLOW_GEOTHERMAL_FLUX
@@ -664,14 +673,36 @@ C     Ocean: Add temperature surface forcing (e.g., heat-flux) in surface level
          ENDIF
         ENDDO
        ENDDO
+      ELSEIF ( kSurface .EQ. Nr ) THEN
+C     this is oceanic pressure coordinate case
+C     where the flux at the bottom is applied as kSurfC
+       DO j=0,sNy+1
+        DO i=0,sNx+1
+         IF ( k.EQ.kSurfC(i,j,bi,bj) ) THEN
+          gT_arr(i,j)=gT_arr(i,j)
+     &      + geothermalFlux(i,j,bi,bj)
+     &        *recip_Cp*mass2rUnit
+     &        *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+         ENDIF
+        ENDDO
+       ENDDO
+      ELSE
+       STOP 'Ooops, geothermal heat flux not implemented '//
+     &      'for .NOT.usingZCoords and .not.kSurface.EQ.Nr'
       ENDIF
 #endif /* ALLOW_GEOTHERMAL_FLUX */
 
 #ifdef SHORTWAVE_HEATING
 C Penetrating SW radiation
 c     IF ( usePenetratingSW ) THEN
-       swfracb(1)=abs(rF(k))
-       swfracb(2)=abs(rF(k+1))
+       IF ( usingZCoords ) THEN
+        swfracb(1)=abs(rF(k))
+        swfracb(2)=abs(rF(k+1))
+       ELSEIF ( kSurface .EQ. Nr ) THEN
+C     this is the oceanic pressure coordinate case
+        swfracb(1)=abs(rF(k))*recip_rhoConst*recip_gravity
+        swfracb(2)=abs(rF(k+1))*recip_rhoConst*recip_gravity
+       ENDIF
        CALL SWFRAC(
      I             2, minusOne,
      U             swfracb,
@@ -679,15 +710,17 @@ c     IF ( usePenetratingSW ) THEN
        kp1 = k+1
        IF (k.EQ.Nr) THEN
         kp1 = k
-        swfracb(2)=0. _d 0
+        IF ( usingZCoords ) swfracb(2)=0. _d 0
+       ELSEIF (k.EQ.1 .AND. usingPCoords ) THEN
+        swfracb(1) = 0. _d 0
        ENDIF
        DO j=0,sNy+1
         DO i=0,sNx+1
          gT_arr(i,j) = gT_arr(i,j)
-     &   -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,k,bi,bj)
-     &                   -swfracb(2)*maskC(i,j,kp1, bi,bj))
-     &    *recip_Cp*mass2rUnit
-     &    *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+     &        + Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,k,bi,bj)
+     &                         -swfracb(2)*maskC(i,j,kp1, bi,bj))
+     &        *recip_Cp*mass2rUnit * gravitySign
+     &        *recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
         ENDDO
        ENDDO
 c     ENDIF
@@ -923,14 +956,23 @@ C     Ocean: Add salinity surface forcing (e.g., fresh-water) in surface level
       ENDIF
 
       IF (linFSConserveTr) THEN
-       DO j=0,sNy+1
-        DO i=0,sNx+1
+       IF ( usingZCoords ) THEN
+        DO j=0,sNy+1
+         DO i=0,sNx+1
           IF (k .EQ. kSurfC(i,j,bi,bj)) THEN
             gS_arr(i,j) = gS_arr(i,j)
      &        +SsurfCor*recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
           ENDIF
+         ENDDO
         ENDDO
-       ENDDO
+       ELSEIF ( kSurface .EQ. Nr .AND. k .EQ. Nr ) THEN
+        DO j=0,sNy+1
+         DO i=0,sNx+1
+          gS_arr(i,j) = gS_arr(i,j)
+     &        +SsurfCor*recip_drF(k)*_recip_hFacC(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+       ENDIF
       ENDIF
 
 #ifdef ALLOW_SHELFICE
