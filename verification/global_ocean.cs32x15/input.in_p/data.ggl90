@@ -24,6 +24,6 @@
  &GGL90_PARM02
  IDEMIX_include_GM_bottom = .FALSE.,
  IDEMIX_include_GM        = .FALSE.,
-#IDEMIX_tidal_file  = 'tidal_energy.bin',
-#IDEMIX_wind_file   = 'wind_energy.bin',
+ IDEMIX_tidal_file  = 'idemix_tidal_forcing.192x32.bin',
+ IDEMIX_wind_file   = 'idemix_wind_forcing.192x32.bin',
  &
