@@ -106,9 +106,12 @@ nn=32
 ny=nn
 nx=6*nn
 
+# from now on we assume that ./testreport has been run for this experiment
+# and that we have output available in ../tr_run.seaice
 # bathymetry
 prec = 'float64'
-b=readfield('../input/bathy_Hmin50.bin',[nn,nn*6],prec)
+#b=readfield('../input/bathy_Hmin50.bin',[nn,nn*6],prec)
+b= - mit.rdmds('../tr_run.seaice/Depth')
 writefield('bathy_Hmin50.bin',-b*grho)
 
 # hydrography
