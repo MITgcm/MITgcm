@@ -635,16 +635,21 @@ C-    No need for maskC(k) with recip_hFacC(k)
 
       IF (.NOT.GGL90_dirichlet) THEN
 C      Neumann bottom boundary condition for TKE: no flux from bottom
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         IF ( usingPCoords ) THEN
+       IF ( usingPCoords ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
           kBottom=MIN(MAX(kSurfC(i,j,bi,bj)+1,2),Nr)
-         ELSE
-          kBottom   = MAX(kLowC(i,j,bi,bj),1)
-         ENDIF
-         c3d(i,j,kBottom) = 0. _d 0
+          a3d(i,j,kBottom) = 0. _d 0
+         ENDDO
         ENDDO
-       ENDDO
+       ELSE
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          kBottom   = MAX(kLowC(i,j,bi,bj),1)
+          c3d(i,j,kBottom) = 0. _d 0
+         ENDDO
+        ENDDO
+       ENDIF
       ENDIF
 
 C--   Center diagonal
@@ -707,18 +712,25 @@ C     Dirichlet surface boundary condition for TKE
 
       IF (GGL90_dirichlet) THEN
 C      Dirichlet bottom boundary condition for TKE = GGL90TKEbottom
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         IF ( usingPCoords ) THEN
+       IF ( usingPCoords ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
           kBottom=MIN(MAX(kSurfC(i,j,bi,bj)+1,2),Nr)
-         ELSE
-          kBottom   = MAX(kLowC(i,j,bi,bj),1)
-         ENDIF
-         GGL90TKE(i,j,kBottom,bi,bj) = GGL90TKE(i,j,kBottom,bi,bj)
-     &                               - GGL90TKEbottom*c3d(i,j,kBottom)
-         c3d(i,j,kBottom) = 0. _d 0
+          GGL90TKE(i,j,kBottom,bi,bj) = GGL90TKE(i,j,kBottom,bi,bj)
+     &                                - GGL90TKEbottom*a3d(i,j,kBottom)
+          a3d(i,j,kBottom) = 0. _d 0
+         ENDDO
         ENDDO
-       ENDDO
+       ELSE
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          kBottom   = MAX(kLowC(i,j,bi,bj),1)
+          GGL90TKE(i,j,kBottom,bi,bj) = GGL90TKE(i,j,kBottom,bi,bj)
+     &                                - GGL90TKEbottom*c3d(i,j,kBottom)
+          c3d(i,j,kBottom) = 0. _d 0
+         ENDDO
+        ENDDO
+       ENDIF
       ENDIF
 
 C     solve tri-diagonal system
