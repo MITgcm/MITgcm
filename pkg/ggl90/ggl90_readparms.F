@@ -314,7 +314,7 @@ C--   print TKE vertical mixing parameters to stdout for better debugging
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       CALL WRITE_0D_L(GGL90_dirichlet,INDEX_NONE,
-     & 'GGL90writeState =', '   /* GGL90 Boundary condition flag */')
+     & 'GGL90_dirichlet =', '   /* GGL90 Boundary condition flag */')
 #ifdef ALLOW_GGL90_IDEMIX
 c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
