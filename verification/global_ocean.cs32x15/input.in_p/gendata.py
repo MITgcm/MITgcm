@@ -3,8 +3,6 @@
 ######################## -*- coding: utf-8 -*-
 
 # simple script to generate p-coordinate specific input from standard experiment
-# but unfortunately this script does not reproduce the values in
-# tutorial_global_oce_in_p, yet
 
 import numpy as np
 import matplotlib.pyplot as plt
