@@ -120,10 +120,11 @@ s=readfield('../input/lev_S_cs_15k.bin',[nr,nn,nn*6],prec)
 writefield('lev_T_cs_15k.bin',t[::-1,:,:])
 writefield('lev_S_cs_15k.bin',s[::-1,:,:])
 
-mskz = mit.rdmds('../tr_run.seaice/hFacC')
+hfz = mit.rdmds('../tr_run.seaice/hFacC')
 rac  = mit.rdmds('../tr_run.seaice/RAC')
 xg = mit.rdmds('../tr_run.seaice/XG')
 yg = mit.rdmds('../tr_run.seaice/YG')
+mskz = np.copy(hfz)
 mskz[mskz!=0] = 1.
 # create geopotential anomaly file:
 delz = np.asarray([50., 70., 100., 140., 190.,
@@ -197,12 +198,12 @@ dp3d = np.tile(dp.reshape((nr,1,1)),(1,ny,nx))
 # this is the correct way of computing the geopotential anomaly
 # (if integr_geoPot = 1)
 recip_rho = 1./sqinf(rhoInSitu)
-geopotanom = -((recip_rho - 1/rhoConst)*mskz*dp3d).sum(axis=0)
+geopotanom = -((recip_rho - 1/rhoConst)*hfz*dp3d).sum(axis=0)
 # this is equivalent
-geopotanom1= b/rhoConst-(recip_rho*mskz*dp3d).sum(axis=0)
+geopotanom1= b/rhoConst-(recip_rho*hfz*dp3d).sum(axis=0)
 # these are approximation that are not quite accurate
-geopotanom2= ((rhoInSitu - rhoConst)*mskz*dz3d).sum(axis=0)*gravity/rhoConst
-geopotanom3= -((recip_rho - 1/rhoConst)*grho*mskz*dz3d).sum(axis=0)
+geopotanom2= ((rhoInSitu - rhoConst)*hfz*dz3d).sum(axis=0)*gravity/rhoConst
+geopotanom3= -((recip_rho - 1/rhoConst)*grho*hfz*dz3d).sum(axis=0)
 
 # the correct version
 writefield('geopotanom.bin',geopotanom)
