@@ -1,4 +1,4 @@
-﻿.. _sec_eg_reentrant_channel:
+.. _sec_eg_reentrant_channel:
 
 Southern Ocean Reentrant Channel Example
 ========================================
@@ -12,25 +12,35 @@ sinusoidally in the north-south direction and is constant in time,
 and by temperature relaxation at the surface and northern boundary.
 The grid is Cartesian and the Coriolis parameter :math:`f` is
 defined according to a mid-latitude beta-plane equation :math:`f(y) = f_{0}+\beta y` ;
-here we choose :math:`f_0 < 0` to place our domain in the Southern Hemisphere. A linear EOS is used with density only depending on T, and there is no sea ice.
+here we choose :math:`f_0 < 0` to place our domain in the Southern Hemisphere.
+A linear EOS is used with density only depending on T, and there is no sea ice.
 
-Although important aspects of the of the Southern Ocean and Antarctic Circumpolar Current were realized in the early 20th Century
-(e.g., Sverdrup 1933 :cite:`sverdrup:33`),
+Although important aspects of the of the Southern Ocean and Antarctic Circumpolar Current
+were realized in the early 20th Century (e.g., Sverdrup 1933 :cite:`sverdrup:33`),
 understanding this system has been a major research focus in recent decades. Many significant breakthroughs in understanding its
-dynamics, role in the global ocean circulation, and role in the climate system have been achieved (e.g., Marshall and Radko 2003 :cite:`marshall:03`;
-Olbers and Visbeck 2004 :cite:`olbers:04`; Marshall and Speer 2012 :cite:`marshall:12`;  Nikurashin and Vallis 2012 :cite:`nikurashin:12`;
+dynamics, role in the global ocean circulation, and role in the climate system
+have been achieved (e.g., Marshall and Radko 2003 :cite:`marshall:03`;
+Olbers and Visbeck 2004 :cite:`olbers:04`; Marshall and Speer 2012 :cite:`marshall:12`;
+Nikurashin and Vallis 2012 :cite:`nikurashin:12`;
 Armour et al. 2016 :cite:`armour:16`;Sallée 2018 :cite:`sallee:18`).
-Much of this understanding came about using simple, idealized reentrant channel models in the spirit of the model described in this tutorial.
-The configuration here is fairly close to that employed in Abernathy et al. (2011) :cite:`abernathy:11` (using the MITgcm) with some important differences,
+Much of this understanding came about using simple, idealized reentrant channel models
+in the spirit of the model described in this tutorial.
+The configuration here is fairly close to that employed in Abernathy et al. (2011) :cite:`abernathy:11`
+(using the MITgcm) with some important differences,
 such as our introduction of a deep north-south ridge.
 
 We assume the reader is familiar with a basic MITgcm
-setup, as introduced in :ref:`tutorial Barotropic Ocean Gyre <sec_eg_baro>` and :ref:`tutorial Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`.
+setup, as introduced in tutorial :ref:`Barotropic Ocean Gyre <sec_eg_baro>`
+and tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`.
 Although the setup here is again quite idealized, we introduce many new features and capabilities of MITgcm.
 Novel aspects include using MITgcm packages
 to augment the physical modeling capabilities, discussion of partial cells to represent topography, and an introduction to
 the layers diagnostics package (:filelink:`/pkg/layers`). Our initial focus is on running and comparing coarse-resolution
-solutions with and without activating the Gent-McWilliams (1990) :cite:`gen-mcw:90` mesoscale eddy parameterization (:filelink:`/pkg/gmredi`).
+solutions with and without activating the Gent-McWilliams ("GM") (1990)
+:cite:`gen-mcw:90` mesoscale eddy parameterization (:filelink:`/pkg/gmredi`).
+As first noted in Danabashoglu et al. (1994) :cite:`danabasoglu:94`,
+use of GM in coarse resolution models improves global temperature distribution, poleward and surface heat fluxes, and locations
+of deep-water formation (see also the Gent 2011 :cite:`gent:11` perspective on two decades GM usage in ocean models).
 At the end of this tutorial, we will describe how to increase resolution to an eddy-permitting regime, detailing the few
 necessary changes in code and parameters, and examine this high-resolution solution.
 In our discussion, our focus will be on highlighting how the representation of mesoscale eddies
@@ -43,8 +53,12 @@ The sinusoidal wind-stress variations are defined thus:
    \tau_x(y) = \tau_{0}\sin \left( \frac{y}{2 L_y} \pi \right),
 
 where :math:`L_{y}` is the lateral domain extent and
-:math:`\tau_0` is set to :math:`0.2 \text{ N m}^{-2}`. Surface temperature restoring varies linearly from 10 :sup:`o`\ C at the northern boundary
-to -2 :sup:`o`\ C at the southern end. A wall is placed at the southern boundary of our domain, thus our setup is only reentrant in the east-west direction.
+:math:`\tau_0` is set to :math:`0.2 \text{ N m}^{-2}`. Surface temperature restoring
+varies linearly from 10 :sup:`o`\ C at the northern boundary
+to -2 :sup:`o`\ C at the southern end. A wall is placed at the southern boundary of our domain,
+thus our setup is only reentrant in the east-west direction. Because MITgcm assumes a periodic
+domain in both the east-west and north-south directions, our southern wall effectively functions as a wall
+at the northern boundary as well.
 The full water column in the northern boundary is a "sponge layer"; 
 relaxing temperature though the full water column will partially constrain the stratification,
 and in the eddy-permitting solution will absorb any eddies reaching the northern boundary (truly acting as a "sponge").
@@ -60,12 +74,14 @@ which permits a vigorous zonal barotropic jet. Shaved cells are used to represen
       :name: channel_simulation_config
 
       Schematic of simulation domain, bottom topography, and wind-stress forcing function for the idealized reentrant channel numerical setup.
-      A full-depth solid wall at :math:`y=` 0 is not shown.
+      A full-depth solid wall at :math:`y=` 0 is not shown; because MITgcm is also periodic in the north-south direction, this acts as a wall
+      on the north boundary.
 
 Similar to both tutorial :ref:`Barotropic Ocean Gyre <sec_eg_baro>` and tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`,
-we use a linear equation of state in temperature only
-(i.e., temperature is our only model tracer field). :numref:`channel_simulation_temp_ic` shows initial conditions in temperature at
-the northern and southern end of the domain. Temperature decreases exponentially from the relaxation SST profile to -2 :sup:`o`\ C at depth :math:`H`.
+we use a linear equation of state which is a function of temperature only
+(temperature is our only model tracer field). :numref:`channel_simulation_temp_ic` shows initial conditions in temperature at
+the northern and southern end of the domain. Initial temperature decreases exponentially from the relaxation SST profile
+to -2 :sup:`o`\ C at depth :math:`H`.
 Note that this same northern boundary profile is used to restore temperature in the model's sponge layer, as discussed above. 
 
  .. figure:: figs/temp_ic.png
@@ -124,7 +140,7 @@ Discrete Numerical Configuration
 
 The coarse-resolution domain is discretized with a uniform Cartesian grid spacing in the horizontal set to :math:`\Delta x=\Delta y=50` km,
 so that there are 20 grid cells in the :math:`x` direction and 40 in the :math:`y` direction.
-There are 49 layers in the vertical, ranging from 5.5 m depth at the surface to 149 m at depth.
+There are 49 levels in the vertical, ranging from 5.5 m depth at the surface to 149 m at depth.
 An "optimal grid" vertical spacing here was generated using the hyperbolic tangent method of Stewart et al. (2017) :cite:`stewart:17`,
 implemented in Python at https://github.com/kialstewart/vertical_grid_for_ocean_models,
 based on input parameters of ocean depth (4000 m), minimum (surface) depth (5 m),
@@ -136,9 +152,15 @@ of solution fidelity and stability. Although our topography is idealized, the to
 not *a priori* discretized to levels matching the vertical grid, and we make
 use of MITgcm's ability to represent "partial cells" (see :numref:`sec_topo_partial_cells`).
 
-Otherwise, the numerical configuration is similar to that of tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`).
-Potential temperature :math:`\theta` is solved prognostically,
-using Adams-Bashforth II time stepping (:numref:`adams-bashforth`, :numref:`sub_tracer_eqns_ab`).
+Otherwise, the numerical configuration is similar to that of tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`),
+with an important difference: we use a high-order
+advection scheme ("7th order one-step method w/limiter", :varlink:`tempAdvScheme` parameter code 7) for potential temperature
+instead of :ref:`center second-ordered differences <adv_cent_2ord>`
+(which is used in tutorials :ref:`Barotropic Ocean Gyre <sec_eg_baro>`
+and :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>` and is the model default).
+This will enable us to use the same numerical scheme in both coarse-resolution and eddy-permitting simulations.
+Note that this advection scheme does NOT use :ref:`Adams-Bashforth <adams-bashforth>` time stepping for potential temperature, instead
+using its own time stepping scheme.
 The fixed flux form of the momentum equations are solved, as described in :numref:`flux-form_momentum_equations`,
 with an implicit linear free surface (:numref:`press_meth_linear`). Laplacian diffusion of tracers and momentum is employed.
 The pressure forces that drive
@@ -149,7 +171,7 @@ hydrostatic pressure, as discussed in :numref:`baroc_eq_solved`.
 The sea-surface height is found by solving implicitly the 2-D (elliptic) surface pressure equation
 (see :numref:`press_meth_linear`).
 
-Changes in the numerical configuration for the eddy-permitting simulation are discussed in :numref:`reentrant_channel_soln_eddy`.
+Additional changes in the numerical configuration for the eddy-permitting simulation are discussed in :numref:`reentrant_channel_soln_eddy`.
 
 .. _sec_tutSOch_num_stab:
 
@@ -159,11 +181,7 @@ Numerical Stability Criteria
 The numerical considerations behind our setup are not trivial.
 We do not wish the thermocline to be diffused away by numerics.
 Accordingly, we employ a vertical diffusivity acting on temperature typical of background values
-observed in the ocean, :math:`1 \times 10^{-5}` m\ :sup:`2` s\ :sup:`--1`). We also use a high-order
-advection scheme for potential temperature (unlike tutorial :ref:`Barotropic Ocean Gyre <sec_eg_baro>`
-and tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`,
-where we used the model default, a simple :ref:`center second-ordered differences <adv_cent_2ord>` scheme).
-This will enable us to use the same numerical scheme in both coarse-resolution and eddy-permitting simulations.
+observed in the ocean, :math:`1 \times 10^{-5}` m\ :sup:`2` s\ :sup:`--1`). 
 We now examine numerical stability criteria to help choose and assess parameters for our coarse resolution study:
 parameters used in the eddy-permitting setup are discussed in :numref:`reentrant_channel_soln_eddy`.
 
@@ -179,19 +197,23 @@ CFL condition :eq:`eq_SOch_cfl_stability` and the stability of inertial oscillat
     S_{i} = f {\Delta t} < 0.5 \text{ for stability}
     :label: eq_SOCh_inertial_stability
 
-where :math:`|c_{max}|` is the maximum horizontal advection. We anticipate :math:`|c_{max}|` of order ~ 1 ms\ :sup:`-1`.
+where :math:`|c_{max}|` is the maximum horizontal velocity. We anticipate :math:`|c_{max}|` of order ~ 1 ms\ :sup:`-1`.
 Note that barotropic currents of this speed over a jet of order ~ 100 km in lateral scale will result in a
 barotropic flow of the order of hundreds of Sverdups. At a resolution of 50 km, :eq:`eq_SOch_cfl_stability` then
 implies that the timestep must be less than 12000 s and  :eq:`eq_SOCh_inertial_stability` implies a timestep less than 3500 s.
 Here we make a conservative choice of :math:`\Delta t = 1000` s to keep  :math:`f {\Delta t}` under 0.20.
 
-How shall we set the horizontal viscosity? From the numerical stability criteria
+How shall we set the horizontal viscosity? From the numerical stability criteria:
 
 .. math::
-    S_{l} = 2 \left( 4 \frac{A_{h} \Delta t}{{\Delta x}^2} \right)  < 0.6 \text{ for stability}
+    S_{l} = 4 A_{h} \Delta t \left( \frac{1}{{\Delta x}^2} + \frac{1}{{\Delta y}^2} \right)  < 1.0 \text{ for stability}
     :label: eq_SOch__laplacian_stability
 
-with :math:`\Delta t = 1000` s, we can choose :math:`A_{h}` to be as large as order
+Note that the threshold in :eq:`eq_SOch__laplacian_stability` is < 1.0 instead of < 0.6 due to our
+specification (in :filelink:`input/data <verification/tutorial_reentrant_channel/input/data>`)
+that momentum dissipation NOT be solved using Adams-Bashforth, as
+discussed :ref:`below <momDissip_not_in_AB>`.
+With :math:`\Delta t = 1000` s, we can choose :math:`A_{h}` to be as large as order
 :math:`1 \times 10^{5}` m\ :sup:`2` s\ :sup:`--1`. However, such a value would result in a
 very viscous solution. We anticipate a boundary current along the deep ridge and sloping notch on a scale given by Munk scaling:
 
@@ -203,18 +225,25 @@ We can set :math:`A_{h}` to as low as 100 m\ :sup:`2` s\ :sup:`--1` and still co
 Munk boundary layer on our grid. However, guided by an ensemble of runs exploring parameter space,
 we found the solution with :math:`A_{h} = 100 ` m\ :sup:`2` s\ :sup:`--1`, while stable, was rather noisy.
 As a compromise, a value of :math:`A_{h} = 2000` m\ :sup:`2` s\ :sup:`--1` reduced solution noise
-whilst also controlling the strength of the barotropic current. This is the value used here.
+whilst also controlling the strength of the barotropic current. This is the value used here. 
+Also note with this choice :math:`A_{h} / \Delta x` gives a velocity
+scaling of 4 cm/s,  a reasonable value.
 
-For :math:`A_{v}` we choose as large a value as possible whilst satisfying the stability condition: 
+Using Adams-Bashforth for vertical momentum, the stability condition is: 
 
 .. math::
    S_{lv} = 4 \frac{A_{v} \Delta t}{{\Delta z}^2} < 0.6 \text{ for stability}
    :label: eq_SOch__laplacian_v_stability
 
-We set :math:`A_{v} = 3\times10^{-3}` m\ :sup:`2` s\ :sup:`--1`,
-thus :math:`S_{lv}` giving 0.4 for our minimum :math:`\Delta z`, only slightly below the stability threshold.
-We therefore treat vertical momentum diffusion using an implicit backward method (see :numref:`implicit-backward-stepping`).
-This implicit scheme is also used for vertical diffusion of tracers where, because it is unconditionally stable,
+Given that out vertical resolution is quite fine near the surface (5 m), :eq:`eq_SOch__laplacian_v_stability` effectively limits
+our choice for :math:`A_{v}` to small values unless we solve implicitly (set :varlink:`implicitViscosity` to ``.TRUE.``  in
+:filelink:`input/data <verification/tutorial_reentrant_channel/input/data>`),
+which is unconditionally stable (see :numref:`implicit-backward-stepping`).  
+For simplicity, and given that away from the equator coarse resolution models are typically not 
+very sensitive to the value of vertical viscosity, we pick a constant value of :math:`A_{v} = 3\times10^{-3}` m\ :sup:`2` s\ :sup:`--1`
+over the full domain, somewhere in between (in geometric mean sense) typical values
+found in the mixed layer (:math:`\sim 10^{-2}`) and in the deep ocean (:math:`\sim 10^{-4}`) (Roach et al. 2015 :cite:`roach:15`)
+Note this implicit scheme is also used for vertical diffusion of tracers where, because it is unconditionally stable,
 it can also be used to represent convective adjustment.
 
 .. _sec_eg_reentrant_channel_config:
@@ -260,24 +289,27 @@ In addition to the pre-defined standard package group ``gfd``, we define four ad
 - Package :filelink:`pkg/rbcs` (see :ref:`sub_phys_pkg_rbcs`):
   The default MITgcm code library permits relaxation boundary conditions only at the ocean surface;
   in the setup here, we relax temperature over the full-depth :math:`xz` plane
-  along our domain's northern border. By including the :filelink:`pkg/rbcs` code library in our model build, we can relax selected fields (tracers or
+  along our domain's northern border. By including the :filelink:`pkg/rbcs` code library in our model build,
+  we can relax selected fields (tracers or
   horizontal velocities) in any 3-D location. 
 
 - Package :filelink:`pkg/gmredi` (see :ref:`sub_phys_pkg_gmredi`):
   This implements the Gent and McWilliams parameterization (as first described in Gent and McWilliams 1990 :cite:`gen-mcw:90`)
   of geostrophic eddies. This mixes along sloping neutral surfaces (here, just :math:`T` surfaces).
   It is used instead of large prescribed diffusivities aligned in the horizontal plane (parameter :varlink:`diffKh`).
-  In :numref:`reentrant_channel_solution` we will illustrate the marked improvement in the solution resulting from the use of this parameterization.
+  In :numref:`reentrant_channel_solution` we will illustrate the marked improvement
+  in the solution resulting from the use of this parameterization.
 
 We also include two packages which augment MITgcm's diagnostic capabilities.
 
 - Package :filelink:`pkg/diagnostics`:
-  This selects which fields to output, and at what frequencies. This was introduced in tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`.
+  This selects which fields to output, and at what frequencies. This was introduced in
+  tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`.
 
 - Package :filelink:`pkg/layers`:
   This calculates the thickness and transport of layers of specified density (or temperature, or salinity;
   here, temperature and density are aligned because of our simple equation of state).
-  Further explanation of :filelink:`pkg/layers` parameter options and output is given in :ref:`below <tut_SO_layers>`.
+  Further explanation of :filelink:`pkg/layers` parameter options and output is given :ref:`below <tut_SO_layers>`.
 
 File :filelink:`code/SIZE.h <verification/tutorial_reentrant_channel/code/SIZE.h>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -459,6 +491,8 @@ PARM03 - Time stepping parameters
        :start-at: tauTheta
        :end-at: tauTheta
        :lineno-match:
+
+.. _momDissip_not_in_AB:
 
 - This instructs the model to NOT use Adams-Bashforth to compute momentum tendency equations (the default is to use Adams-Bashforth);
   instead, dissipation is computed using a explicit, forward, first-order scheme.
@@ -801,7 +835,7 @@ or you will get (non-fatal) warning messages in ``STDERR``.
 
 In :numref:`reentrant_channel_soln_eddy` we will present results with
 the resolution increased by an order of magnitude, eddy-permitting. Additional required changes to the code and parameters
-are discussed in :ref:`this section <reentrant_channel_soln_eddy>`.
+are discussed.
 
 Model Solution
 --------------
@@ -871,11 +905,17 @@ In the first decade there is rapid adjustment, with a much slower trend in both 
 in years 10-30. In the mean there remains a significant heat flux into the ocean in the run without GM (solid),
 whereas with GM (dashed) the net heat uptake is also positive, but smaller. The panels
 on the right show potential temperature at the surface, mid-level (270 m) and at depth. Note in particular the warming trend at depth
-in the run without GM. The SST series display a much less obvious trend. Examining these results, we see that after 30 years our run
-is not at full equilibrium, as might be expected given a long timescale for vertical diffusion, but at least the upper ocean seems
-roughly in a quasi-steady state. And, we infer that less surface heating is penetrating to depth in the GM solution. This difference
+in the run without GM. The SST series display a much less obvious trend (as might be expected given rapid restoring of SST).
+Examining these results, we see that after 30 years our run
+is not at full equilibrium, presumably due to the long timescale for vertical diffusion.
+And, we infer that less surface heating is penetrating to depth in the GM solution. This difference
 is also obvious in :numref:`channel_zm_temp_ml` where we plot zonal mean temperature: note the deeper thermocline in the left panel
-(without GM), in addition to the deeper mixed layer (and warmer surface) in the southern half of the model domain. Clearly, the
+(without GM), in addition to the deeper mixed layer (and warmer surface) in the southern half of the model domain. The differences
+in convective adjustment are remarkable, as shown in :numref:`convadj_comparison`; here we plot a plan view of diagnostic
+``CONVADJ``, which is the fraction of the time steps a grid cell is convectively unstable, at 92 m depth.
+Note that at this depth, convection is limited to grid cells near the southern boundary in the GM run, whereas a significant portion of the domain
+is convecting in the non-GM run: as discussed in Gent (2011) :cite:`gent:11`, the Deacon cell advects cold water northward
+at the surface, resulting in unstable water columns and excessively deep mixed layers. Clearly, the
 temperature structure of the model solution is sensitive to our mesoscale eddy parameterization (we will explore this further).
 
   .. figure:: figs/STDIAGS_hf_temp.png
@@ -895,6 +935,15 @@ temperature structure of the model solution is sensitive to our mesoscale eddy p
       :name: channel_zm_temp_ml
 
       Zonal-mean temperature (shaded) and zonal-mean mixed layer depth (black line) averaged over simulation year 30.
+      Left plot is from non-GM run, right using GM.
+
+  .. figure:: figs/cvctadj.png
+      :width: 100%
+      :align: center
+      :alt: convective adjustment index
+      :name: convadj_comparison
+
+      Convective adjustment index: 0= never convectively unstable during year 30, 1= always convectively unstable.
       Left plot is from non-GM run, right using GM.
 
 :numref:`channel_bt_psi` shows the barotropic streamfunction without GM (left) and with GM (right).
@@ -1007,7 +1056,8 @@ deep counter-clockwise cell aligned with the coldest temperature contour (i.e., 
       :alt: Residual MOC from layers converted to depth space
       :name: channel_bt_MOC_res_Ttoz
 
-      Residual meridional overturning circulation (shaded) as computed in density coordinates and converted back into depth coordinates, averaged over simulation year 30.
+      Residual meridional overturning circulation (shaded) as computed in density coordinates and
+      converted back into (zonal mean) depth coordinates, averaged over simulation year 30.
       Black lines show zonal mean temperature, contour interval 1 :sup:`o`\C. Left plot is from non-GM run, right using GM.
  
 
@@ -1026,8 +1076,8 @@ Eddy Permitting Solution
    .. image:: figs/eddymovie_still.png
 
 In this section we discuss a model solution with the horizontal grid space reduced from 50 km to 5 km, which is sufficiently resolved to
-permit eddies to form (see movie above, which shows SST, surface relative vorticity, and surface current speed,
-left to right, over a representative year toward the end of the 30-year simulation).
+permit eddies to form (see above, which shows SST, surface relative vorticity, and surface current speed,
+left to right, toward the end of the 30-year simulation).
 Vertical resolution is unchanged.
 While we provide instructions on how to compile and run in this new configuration,
 it will require parallelizing (using `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_)
@@ -1102,7 +1152,7 @@ showing a time mean over the last five years of the simulation.
       Right: Eulerian meridional overturning circulation (shaded) from eddying simulation averaged over years 26-30. Contour interval is 0.5 Sv.
 
   .. figure:: figs/BTpsi_eddy.png
-      :width: 50%
+      :width: 55%
       :align: center
       :alt: BT streamfunction
       :name: channel_bt_psi_eddy
