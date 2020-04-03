@@ -23,6 +23,9 @@ C !INTERFACE: ==========================================================
      O     boplume,
 #endif /* ALLOW_SALT_PLUME */
      O     dVsq,
+#ifdef KPP_ESTIMATE_UREF
+     I     dbloc, work1,
+#endif /* KPP_ESTIMATE_UREF */
      I     ikppkey, iMin, iMax, jMin, jMax, bi, bj, myTime, myThid )
 
 C !DESCRIPTION: \bv
@@ -111,6 +114,10 @@ C                            at grid levels for bldepth             (m^2/s^2)
       _RL ustar ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bo    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bosol ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+#ifdef KPP_ESTIMATE_UREF
+      _RL dbloc ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
+      integer work1 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy            )
+#endif /* KPP_ESTIMATE_UREF */
 #ifdef ALLOW_SALT_PLUME
       _RL SPforcS     (1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr       )
       _RL SPforcT     (1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr       )

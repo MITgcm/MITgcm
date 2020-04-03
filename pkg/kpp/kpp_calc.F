@@ -439,6 +439,9 @@ c------------------------------------------------------------------------
      O     boplume,
 #endif /* ALLOW_SALT_PLUME */
      O     dVsq,
+#ifdef KPP_ESTIMATE_UREF
+     I     dbloc, work1,
+#endif /* KPP_ESTIMATE_UREF */
      I     ikppkey, iMin, iMax, jMin, jMax, bi, bj, myTime, myThid )
 
 CMLcph(
