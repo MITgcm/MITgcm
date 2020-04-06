@@ -307,7 +307,6 @@ C
 #ifdef ADVECT_PHYTO
       _RL phy_adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
-CAV(
 #ifdef SIZE_DEP_LIM
       _RL k_NO3_sm
       _RL k_NO3_lg
@@ -328,14 +327,6 @@ CAV(
       _RL mu_sm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL mu_lg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
-#ifdef SIMPLE_LIGHT_LIM
-      _RL kPAR
-      _RL kPAR_sm
-      _RL kPAR_lg
-      _RL irrk_sm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL irrk_lg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-#endif
-CAV)
 CEOP
 
 c  Initialize output and diagnostics
@@ -717,31 +708,9 @@ c  phytoplankton ability to use light (eg Stzrepek & Harrison, Nature 2004).
 c  Use same thetamax for diazotrophs, since their extra Fe requirement
 c  is for nitrogenase, not for the photosystem.
 
-CAV(
-#ifdef SIMPLE_LIGHT_LIM
-c          kPAR = 0.012 ! (uE/m/s)-1
-c          kPAR_sm = 0.02 ! (uE/m/s)-1
-c          kPAR_lg = 0.01 ! (uE/m/s)-1
-c !!!! isn't it (uE/m2/s)-1 ????
-c          [moles photons / m2 / d] = [W / m2] * 2.77e18 / 6.022e23 * 86400
-c          [u moles photons / m2 / s] = [W / m2] * 1e6 * 2.77e18 / 6.022e23 
-          kPAR = 0.012 *1 _d 6*2.77 _d 18/6.022 _d 23 ! (W/m2)-1
-          kPAR_sm = 0.02 *1 _d 6*2.77 _d 18/6.022 _d 23 ! (W/m2)-1
-          kPAR_lg = 0.01 *1 _d 6*2.77 _d 18/6.022 _d 23 ! (W/m2)-1
-
-
-          irrk(i,j,k) = 1/kPAR
-          irrk_sm(i,j,k) = 1/kPAR_sm
-          irrk_lg(i,j,k) = 1/kPAR_lg
-#else
-CAV)
           irrk(i,j,k) = Pc_m
      &             /(epsln + alpha_photo_2d(i,j,bi,bj)*theta_Fe_max)
      &             + irr_mem(i,j,k,bi,bj)/2. _d 0
-
-CAV(
-#endif
-CAV)
 
           light_lim(i,j,k) = ( 1. _d 0 - exp(-irr_eff(i,j,k,bi,bj)
      &               /(epsln + irrk(i,j,k))))
@@ -837,17 +806,9 @@ ckFe: 1.6e-10
      &           * min(NO3_lim_lg(i,j,k), PO4_lim_lg(i,j,k), 
      &           Fe_lim_lg(i,j,k)) * maskC(i,j,k,bi,bj)
 
-#ifdef SIMPLE_LIGHT_LIM
-          light_lim_sm(i,j,k) = ( 1. _d 0 - exp(-irr_eff(i,j,k)
-     &               /(epsln + irrk_sm(i,j,k))))
-
-          light_lim_lg(i,j,k) = ( 1. _d 0 - exp(-irr_eff(i,j,k)
-     &               /(epsln + irrk_lg(i,j,k))))
-#else
           light_lim_sm(i,j,k) = light_lim(i,j,k)
 
           light_lim_lg(i,j,k) = light_lim(i,j,k)
-#endif
 
           mu_sm(i,j,k) = Pc_m_sm * light_lim_sm(i,j,k)
           mu_lg(i,j,k) = Pc_m_lg * light_lim_lg(i,j,k)
