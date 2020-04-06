@@ -433,15 +433,15 @@ c------------------------------------------------------------------------
 #ifdef ALLOW_SALT_PLUME
      I     temp1, temp2,
 #endif /* ALLOW_SALT_PLUME */
+#ifdef KPP_ESTIMATE_UREF
+     I     dbloc,
+#endif /* KPP_ESTIMATE_UREF */
      I     ttalpha, ssbeta,
      O     ustar, bo, bosol,
 #ifdef ALLOW_SALT_PLUME
      O     boplume,
 #endif /* ALLOW_SALT_PLUME */
      O     dVsq,
-#ifdef KPP_ESTIMATE_UREF
-     I     dbloc, work1,
-#endif /* KPP_ESTIMATE_UREF */
      I     ikppkey, iMin, iMax, jMin, jMax, bi, bj, myTime, myThid )
 
 CMLcph(
