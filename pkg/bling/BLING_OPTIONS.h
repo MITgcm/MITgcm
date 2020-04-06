@@ -88,6 +88,12 @@ C NOTE: Has NO effect when CARBONCHEM_SOLVESAPHE is defined (different
 C  coeffs are used).
 #undef CARBONCHEM_TOTALPHSCALE
 
+C When calculating the fraction of sinking organic matter, use model biomass diagnostics.
+#define NEW_FRAC_EXP
+
+C Assume different nutrient limitations for small and large phytoplankton.
+#define SIZE_DEP_LIM
+
 #endif /* ALLOW_BLING */
 #endif /* BLING_OPTIONS_H */
 

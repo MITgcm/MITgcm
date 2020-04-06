@@ -197,9 +197,7 @@ C
       _RL theta_Fe_inv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL irrk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL irr_inst(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL irr_eff(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL mld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL mu(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL mu_diaz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL PtoN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL FetoN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -235,7 +233,6 @@ C
       _RL P_remindvm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL Fe_remindvm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL POC_flux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL NPP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL NCP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL depth_l
       _RL PONflux_u
@@ -310,6 +307,35 @@ C
 #ifdef ADVECT_PHYTO
       _RL phy_adj(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
+CAV(
+#ifdef SIZE_DEP_LIM
+      _RL k_NO3_sm
+      _RL k_NO3_lg
+      _RL k_PO4_sm
+      _RL k_PO4_lg
+      _RL k_Fe_sm
+      _RL k_Fe_lg
+      _RL light_lim_sm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL light_lim_lg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL NO3_lim_sm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL NO3_lim_lg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL PO4_lim_sm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL PO4_lim_lg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL Fe_lim_sm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL Fe_lim_lg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL Pc_m_sm
+      _RL Pc_m_lg
+      _RL mu_sm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL mu_lg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#endif
+#ifdef SIMPLE_LIGHT_LIM
+      _RL kPAR
+      _RL kPAR_sm
+      _RL kPAR_lg
+      _RL irrk_sm(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL irrk_lg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#endif
+CAV)
 CEOP
 
 c  Initialize output and diagnostics
@@ -347,8 +373,8 @@ c  Initialize output and diagnostics
               theta_Fe_inv(i,j,k)   = 0. _d 0
               irrk(i,j,k)           = 0. _d 0
               irr_inst(i,j,k)       = 0. _d 0
-              irr_eff(i,j,k)        = 0. _d 0
-              mu(i,j,k)             = 0. _d 0
+              irr_eff(i,j,k,bi,bj)        = 0. _d 0
+              mu(i,j,k,bi,bj)             = 0. _d 0
               mu_diaz(i,j,k)        = 0. _d 0
               PtoN(i,j,k)           = 0. _d 0
               FetoN(i,j,k)          = 0. _d 0
@@ -382,7 +408,7 @@ c  Initialize output and diagnostics
               P_remindvm(i,j,k)     = 0. _d 0
               Fe_remindvm(i,j,k)    = 0. _d 0
               POC_flux(i,j,k)       = 0. _d 0
-              NPP(i,j,k)            = 0. _d 0
+              NPP(i,j,k,bi,bj)            = 0. _d 0
               NCP(i,j,k)            = 0. _d 0
               Fe_sed(i,j,k)         = 0. _d 0
               Fe_ads_org(i,j,k)     = 0. _d 0
@@ -525,7 +551,7 @@ c  light availability for biological production
 
       CALL BLING_LIGHT(
      I                    mld,
-     U                    irr_inst, irr_eff,
+     U                    irr_inst,
      I                    bi, bj, imin, imax, jmin, jmax,
      I                    myTime, myIter, myThid )
 
@@ -540,7 +566,7 @@ c  timescale is set by gamma_irr_mem.
         DO i=imin,imax
 
           irr_mem(i,j,k,bi,bj) = irr_mem(i,j,k,bi,bj) +
-     &           (irr_eff(i,j,k) - irr_mem(i,j,k,bi,bj))*
+     &           (irr_eff(i,j,k,bi,bj) - irr_mem(i,j,k,bi,bj))*
      &           min( 1. _d 0, gamma_irr_mem*PTRACERS_dTLev(k) )
 
         ENDDO
@@ -583,6 +609,8 @@ c  Iron limitation
 #ifdef USE_SIBLING
           Si_lim(i,j,k) = PTR_Si(i,j,k)/(PTR_Si(i,j,k)+k_Si)
 #endif
+
+
 
 c ---------------------------------------------------------------------
 c  Temperature functionality of growth and grazing
@@ -689,16 +717,39 @@ c  phytoplankton ability to use light (eg Stzrepek & Harrison, Nature 2004).
 c  Use same thetamax for diazotrophs, since their extra Fe requirement
 c  is for nitrogenase, not for the photosystem.
 
+CAV(
+#ifdef SIMPLE_LIGHT_LIM
+c          kPAR = 0.012 ! (uE/m/s)-1
+c          kPAR_sm = 0.02 ! (uE/m/s)-1
+c          kPAR_lg = 0.01 ! (uE/m/s)-1
+c !!!! isn't it (uE/m2/s)-1 ????
+c          [moles photons / m2 / d] = [W / m2] * 2.77e18 / 6.022e23 * 86400
+c          [u moles photons / m2 / s] = [W / m2] * 1e6 * 2.77e18 / 6.022e23 
+          kPAR = 0.012 *1 _d 6*2.77 _d 18/6.022 _d 23 ! (W/m2)-1
+          kPAR_sm = 0.02 *1 _d 6*2.77 _d 18/6.022 _d 23 ! (W/m2)-1
+          kPAR_lg = 0.01 *1 _d 6*2.77 _d 18/6.022 _d 23 ! (W/m2)-1
+
+
+          irrk(i,j,k) = 1/kPAR
+          irrk_sm(i,j,k) = 1/kPAR_sm
+          irrk_lg(i,j,k) = 1/kPAR_lg
+#else
+CAV)
           irrk(i,j,k) = Pc_m
      &             /(epsln + alpha_photo_2d(i,j,bi,bj)*theta_Fe_max)
      &             + irr_mem(i,j,k,bi,bj)/2. _d 0
 
-          light_lim(i,j,k) = ( 1. _d 0 - exp(-irr_eff(i,j,k)
+CAV(
+#endif
+CAV)
+
+          light_lim(i,j,k) = ( 1. _d 0 - exp(-irr_eff(i,j,k,bi,bj)
      &               /(epsln + irrk(i,j,k))))
+
 
 c  Carbon-specific photosynthesis rate
 
-          mu(i,j,k) = Pc_m * light_lim(i,j,k)
+          mu(i,j,k,bi,bj) = Pc_m * light_lim(i,j,k)
 
 #ifdef USE_SIBLING
           mu_diatom(i,j,k) = Pc_m_diatom * light_lim(i,j,k)
@@ -730,14 +781,83 @@ c  results in increase Si:P of uptake.
      &                   Si_lim(i,j,k) * max(SitoN_uptake_min,
      &                   (1. / epsln + SitoN_uptake_scale + min(
      &                   PO4_lim(i,j,k), Fe_lim(i,j,k) ) * (1. -
-     &                   exp(-irr_eff(i,j,k)/(epsln + irrk(i,j,k) )) ))
+     &              exp(-irr_eff(i,j,k,bi,bj)/(epsln + irrk(i,j,k) )) ))
      &                   **SitoN_uptake_exp))
 #endif
 
 c  Nutrient uptake
 
-          N_uptake(i,j,k) = mu(i,j,k) * (Phy_sm_local(i,j,k)
+          N_uptake(i,j,k) = mu(i,j,k,bi,bj) * (Phy_sm_local(i,j,k)
      &                      + Phy_lg_local(i,j,k))
+
+
+CAV(
+#ifdef SIZE_DEP_LIM
+
+cav Darwin (uM)
+ckPO4: sm/lg 2.4e-2 4.5e-2
+ckNO3: 0.4, 0.73
+ckSi: 0, 2
+ckFe: 3e-5, 5.6e-5
+
+cav Topaz (mol/kg)
+ckPO4: 2e-7, 6e-7
+ckNO3: 2e-6, 6e-6
+ckFe: 3e-9, 9e-9
+
+cav BLING (mol/kg)
+ckPO4: 1e-8
+ckNO3: 2e-6
+ckFe: 1.6e-10
+
+          k_NO3_sm = 2.0 _d -6 / permil
+          k_NO3_lg = 6.0 _d -6 / permil
+          k_PO4_sm = 1.0 _d -8 / permil
+          k_PO4_lg = 3.0 _d -8 / permil
+          k_Fe_sm = 1.6 _d -10 / permil
+          k_Fe_lg = 4.8 _d -10 / permil
+
+          NO3_lim_sm(i,j,k) = PTR_NO3(i,j,k)/(PTR_NO3(i,j,k)+k_NO3_sm)
+
+          PO4_lim_sm(i,j,k) = PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+k_PO4_sm)
+
+          Fe_lim_sm(i,j,k) = PTR_FE(i,j,k)/(PTR_FE(i,j,k)+k_Fe_sm)
+
+          NO3_lim_lg(i,j,k) = PTR_NO3(i,j,k)/(PTR_NO3(i,j,k)+k_NO3_lg)
+
+          PO4_lim_lg(i,j,k) = PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+k_PO4_lg)
+
+          Fe_lim_lg(i,j,k) = PTR_FE(i,j,k)/(PTR_FE(i,j,k)+k_Fe_lg)
+
+          Pc_m_sm = Pc_0_2d(i,j,bi,bj) * expkT(i,j,k)
+     &           * min(NO3_lim_sm(i,j,k), PO4_lim_sm(i,j,k), 
+     &           Fe_lim_sm(i,j,k)) * maskC(i,j,k,bi,bj)
+
+          Pc_m_lg = Pc_0_2d(i,j,bi,bj) * expkT(i,j,k)
+     &           * min(NO3_lim_lg(i,j,k), PO4_lim_lg(i,j,k), 
+     &           Fe_lim_lg(i,j,k)) * maskC(i,j,k,bi,bj)
+
+#ifdef SIMPLE_LIGHT_LIM
+          light_lim_sm(i,j,k) = ( 1. _d 0 - exp(-irr_eff(i,j,k)
+     &               /(epsln + irrk_sm(i,j,k))))
+
+          light_lim_lg(i,j,k) = ( 1. _d 0 - exp(-irr_eff(i,j,k)
+     &               /(epsln + irrk_lg(i,j,k))))
+#else
+          light_lim_sm(i,j,k) = light_lim(i,j,k)
+
+          light_lim_lg(i,j,k) = light_lim(i,j,k)
+#endif
+
+          mu_sm(i,j,k) = Pc_m_sm * light_lim_sm(i,j,k)
+          mu_lg(i,j,k) = Pc_m_lg * light_lim_lg(i,j,k)
+
+          N_uptake(i,j,k) = mu_sm(i,j,k) * Phy_sm_local(i,j,k)
+     &                      + mu_lg(i,j,k) * Phy_lg_local(i,j,k)
+
+#endif
+CAV)
+
 
           N_fix(i,j,k) = mu_diaz(i,j,k) * Phy_diaz_local(i,j,k)
 
@@ -748,7 +868,7 @@ c  Nutrient uptake
      &                       N_fix(i,j,k)) * FetoN(i,j,k)
 
 #ifdef USE_SIBLING
-          Si_uptake(i,j,k) = mu(i,j,k) * Phy_diatom_local(i,j,k)
+          Si_uptake(i,j,k) = mu(i,j,k,bi,bj) * Phy_diatom_local(i,j,k)
      &                       * SitoN_uptake(i,j,k)
 #endif
 
@@ -760,8 +880,17 @@ c  phytoplankton, which gave a reasonably good fit to the global
 c  observational synthesis of Dunne (2009). This is consistent
 c  with the findings of Jin et al. (GBC,2006).
 
-          CaCO3_uptake(i,j,k) = mu(i,j,k) * Phy_sm_local(i,j,k)
+          CaCO3_uptake(i,j,k) = mu(i,j,k,bi,bj) * Phy_sm_local(i,j,k)
      &                          * phi_sm_2d(i,j,bi,bj) * CatoN
+
+CAV(
+#ifdef SIZE_NUT_LIM
+
+          CaCO3_uptake(i,j,k) = mu_sm(i,j,k) * Phy_sm_local(i,j,k)
+     &                          * phi_sm_2d(i,j,bi,bj) * CatoN
+
+#endif
+CAV)
 
          ENDIF
         ENDDO
@@ -796,13 +925,13 @@ c  biomass, which is required to calculate the uptake fluxes.
          IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
 
           Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) +
-     &                Phy_lg_local(i,j,k)*(mu(i,j,k) - lambda_0
+     &                Phy_lg_local(i,j,k)*(mu(i,j,k,bi,bj) - lambda_0
      &                * expkT(i,j,k) *
      &                (Phy_lg_local(i,j,k)/pivotal)**(1. / 3.))
      &                * PTRACERS_dTLev(k)
 
           Phy_sm_local(i,j,k) = Phy_sm_local(i,j,k) +
-     &                Phy_sm_local(i,j,k)*(mu(i,j,k) - lambda_0
+     &                Phy_sm_local(i,j,k)*(mu(i,j,k,bi,bj) - lambda_0
      &                * expkT(i,j,k) * (Phy_sm_local(i,j,k)/pivotal))
      &                * PTRACERS_dTLev(k)
 
@@ -810,6 +939,25 @@ c  biomass, which is required to calculate the uptake fluxes.
      &                Phy_diaz_local(i,j,k)*(mu_diaz(i,j,k) - lambda_0
      &                * expkT(i,j,k) * (Phy_diaz_local(i,j,k)/pivotal))
      &                * PTRACERS_dTLev(k)
+
+
+CAV(
+#ifdef SIZE_DEP_LIM
+
+          Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) +
+     &                Phy_lg_local(i,j,k)*(mu_lg(i,j,k) - lambda_0
+     &                * expkT(i,j,k) *
+     &                (Phy_lg_local(i,j,k)/pivotal)**(1. / 3.))
+     &                * PTRACERS_dTLev(k)
+
+          Phy_sm_local(i,j,k) = Phy_sm_local(i,j,k) +
+     &                Phy_sm_local(i,j,k)*(mu_sm(i,j,k) - lambda_0
+     &                * expkT(i,j,k) * (Phy_sm_local(i,j,k)/pivotal))
+     &                * PTRACERS_dTLev(k)
+
+#endif
+CAV)
+
 
 #ifdef USE_SIBLING
 c  For now: assuming that all large phyto are diatoms
@@ -898,10 +1046,30 @@ c  phytoplankton.
 
 c  sinking fraction: particulate organic matter
 
+#ifdef NEW_FRAC_EXP
+cav fraction that does into POM is
+cav (assume diaz has same export frac as small phyto)
+cav e^kT * [phi_lg * B_lg/Btot + phi_sm * B_sm/Btot + phi_sm * Bdiaz/Bto]
+
+          frac_exp = (phi_sm_2d(i,j,bi,bj) * (phyto_sm(i,j,k,bi,bj) +
+     &      phyto_diaz(i,j,k,bi,bj)) + phi_lg_2d(i,j,bi,bj) *
+     &      phyto_lg(i,j,k,bi,bj)) /
+     &      (phyto_sm(i,j,k,bi,bj) + phyto_diaz(i,j,k,bi,bj) +
+     &      phyto_lg(i,j,k,bi,bj)) *
+     &      exp(kappa_remin * theta(i,j,k,bi,bj))
+
+#else
+
+cav this is from blingv1, where B_sm and B_lg are diagnosed from
+cav the value of mu...
+
           frac_exp = (phi_sm_2d(i,j,bi,bj) + phi_lg_2d(i,j,bi,bj) *
-     &           (mu(i,j,k)/(epsln + lambda_0*expkT(i,j,k)))**2.)/
-     &           (1. + (mu(i,j,k)/(epsln + lambda_0*expkT(i,j,k)))**2.)*
+     &           (mu(i,j,k,bi,bj)/(epsln + lambda_0*expkT(i,j,k)))**2.)/
+     &           (1. + (mu(i,j,k,bi,bj)/
+     &           (epsln + lambda_0*expkT(i,j,k)))**2.)*
      &           exp(kappa_remin * theta(i,j,k,bi,bj))
+
+#endif
 
 #ifdef USE_BLING_DVM
           N_dvm(i,j,k) = phi_dvm * frac_exp *
@@ -1539,6 +1707,7 @@ c  Oxic
      &                   + (1. _d 0 - phi_DOM_2d(i,j,bi,bj))
      &                   * (N_reminp(i,j,k) + N_remindvm(i,j,k))
      &                   + DON_remin(i,j,k)
+     &                   - N_den_benthic(i,j,k)
           ENDIF
 
 c  Iron
@@ -1575,6 +1744,7 @@ c  If oxic
      &                  -O2toN * ((1. _d 0 - phi_DOM_2d(i,j,bi,bj))
      &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))
      &                  + DON_remin(i,j,k) +  N_recycle(i,j,k))
+     &                  + N_den_benthic(i,j,k) * 1.25 _d 0
 c  If anoxic but NO3 concentration is very low
 c  (generate negative O2; proxy for HS-).
           ELSEIF (PTR_NO3(i,j,k) .lt. oxic_min) THEN
@@ -1582,7 +1752,6 @@ c  (generate negative O2; proxy for HS-).
      &                  -O2toN * ((1. _d 0 - phi_DOM_2d(i,j,bi,bj))
      &                  * (N_reminp(i,j,k) + N_remindvm(i,j,k))
      &                  + DON_remin(i,j,k) +  N_recycle(i,j,k))
-     &                  + N_den_benthic(i,j,k) * 1.25 _d 0
           ENDIF
 
 #ifdef USE_SIBLING
@@ -1594,7 +1763,7 @@ c  Carbon flux diagnostic
 
           POC_flux(i,j,k) = CtoN * N_spm(i,j,k)
 
-          NPP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)) * CtoN
+          NPP(i,j,k,bi,bj) = (N_uptake(i,j,k) + N_fix(i,j,k)) * CtoN
 
           NCP(i,j,k) = (N_uptake(i,j,k) + N_fix(i,j,k)
      &                   - N_recycle(i,j,k)
@@ -1636,6 +1805,8 @@ c 3d global variables
         CALL DIAGNOSTICS_FILL(chl,    'BLGCHL  ',0,Nr,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(poc,    'BLGPOC  ',0,Nr,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(irr_mem,'BLGIMEM ',0,Nr,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(irr_eff,'BLGIEFF ',0,Nr,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(mu,     'BLGMU   ',0,Nr,1,bi,bj,myThid)
 c 3d local variables
         CALL DIAGNOSTICS_FILL(G_DIC   ,'BLGBIOC ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(G_ALK   ,'BLGBIOAL',0,Nr,2,bi,bj,myThid)
@@ -1650,7 +1821,6 @@ c 3d local variables
         CALL DIAGNOSTICS_FILL(Phy_diaz_local,'BLGPDIA ',0,Nr,2,bi,bj,
      &       myThid)
         CALL DIAGNOSTICS_FILL(irrk,    'BLGIRRK ',0,Nr,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(irr_eff, 'BLGIEFF ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(irr_inst,'BLGIRRIS',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(theta_Fe,'BLGCHL2C',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(theta_Fe_inv,'BLGC2CHL',0,Nr,2,bi,bj,
@@ -1703,7 +1873,6 @@ c 3d local variables
         CALL DIAGNOSTICS_FILL(P_remindvm,'BLGPRD  ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(P_reminp, 'BLGPREM ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(P_uptake, 'BLGPUP  ',0,Nr,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(mu,       'BLGMU   ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(mu_diaz,  'BLGMUDIA',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(CaCO3_diss,  'BLGCCdis',0,Nr,2,bi,bj,
      &       myThid)
