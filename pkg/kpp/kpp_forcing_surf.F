@@ -363,7 +363,6 @@ C     Estimate reference velocity uRef and vRef.
         uRef(i,j) = p5 * ( uVel(i,j,1,bi,bj) + uVel(ip1,j,1,bi,bj) )
         vRef(i,j) = p5 * ( vVel(i,j,1,bi,bj) + vVel(i,jp1,1,bi,bj) )
         IF ( zRef(i,j) .LT. drF(1) ) THEN
-         print *, 'ml-kpp5 ', i,j
          ustarX = ( surfForcU(i,  j,bi,bj) +
      &        surfForcU(ip1,j,bi,bj) ) * p5 *recip_drF(1)
          ustarY = ( surfForcV(i,j,  bi,bj) +
