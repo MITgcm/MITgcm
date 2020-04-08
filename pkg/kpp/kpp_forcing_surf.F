@@ -129,7 +129,7 @@ C Local constants
       _RL        p0    , p5    , p125
       PARAMETER( p0=0.0, p5=0.5, p125=0.125 )
       INTEGER i, j, k, im1, ip1, jm1, jp1
-      _RL tempvar2
+      _RL tempvar2, epsLoc, epsLocSq, zFac
       _RL recip_Cp
 
       _RL work3 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
@@ -141,7 +141,6 @@ C Local constants
       _RL zRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL uRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL vRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _RL zF    ( Nr+1 )
 #endif
 #ifdef ALLOW_SALT_PLUME
 #ifdef SALT_PLUME_VOLUME
@@ -168,18 +167,21 @@ C------------------------------------------------------------------------
       recip_Cp = 1. _d 0 / HeatCapacity_Cp
 C initialize arrays to zero
       DO j = 1-OLy, sNy+OLy
-         DO i = 1-OLx, sNx+OLx
-            ustar(i,j) = p0
-            bo   (I,J) = p0
-            bosol(I,J) = p0
-#ifdef ALLOW_SALT_PLUME
-            DO k = 1, Nr
-               boplume(I,J,k) = p0
-            ENDDO
-            boplume(I,J,Nrp1) = p0
-#endif /* ALLOW_SALT_PLUME */
-         ENDDO
+       DO i = 1-OLx, sNx+OLx
+        ustar(i,j) = p0
+        bo   (I,J) = p0
+        bosol(I,J) = p0
+       ENDDO
       ENDDO
+#ifdef ALLOW_SALT_PLUME
+      DO k = 1, Nrp1
+       DO j = 1-OLy, sNy+OLy
+        DO i = 1-OLx, sNx+OLx
+         boplume(I,J,k) = p0
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* ALLOW_SALT_PLUME */
 
       DO j = jmin, jmax
        jp1 = j + 1
@@ -195,13 +197,13 @@ C initialize arrays to zero
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ store work3 = comlev1_kpp, key = ikppkey
 #endif
+      epsLocSq = phepsi*phepsi*drF(1)*drF(1)
+      epsLoc   = SQRT ( p5*phepsi*drF(1) )
       DO j = jmin, jmax
-       jp1 = j + 1
        DO i = imin, imax
-        ip1 = i+1
 
-        if ( work3(i,j) .lt. (phepsi*phepsi*drF(1)*drF(1)) ) then
-           ustar(i,j) = SQRT( phepsi * p5 * drF(1) )
+        if ( work3(i,j) .lt. epsLocSq ) then
+           ustar(i,j) = epsLoc
         else
            tempVar2 =  SQRT( work3(i,j) ) * p5
            ustar(i,j) = SQRT( tempVar2 )
@@ -211,17 +213,22 @@ CADJ store work3 = comlev1_kpp, key = ikppkey
       ENDDO
 
       DO j = jmin, jmax
-       jp1 = j + 1
        DO i = imin, imax
-        ip1 = i+1
+C     rhoSurf = dRho + rhoConst > 0 always, so we are safe here
+        work3(i,j) = 1. _d 0 / rhoSurf(I,J)
+       ENDDO
+      ENDDO
+
+      DO j = jmin, jmax
+       DO i = imin, imax
         bo(I,J) = - gravity *
      &       ( TTALPHA(I,J,1) * (surfForcT(i,j,bi,bj)+
      &       surfForcTice(i,j,bi,bj)) +
      &       SSBETA(I,J,1) * surfForcS(i,j,bi,bj) )
-     &       / rhoSurf(I,J)
+     &       * work3(I,J)
         bosol(I,J) = gravity * TTALPHA(I,J,1) * Qsw(i,j,bi,bj) *
      &       recip_Cp*recip_rhoConst
-     &       / rhoSurf(I,J)
+     &       * work3(I,J)
        ENDDO
       ENDDO
 
@@ -230,29 +237,30 @@ Catn: need check sign of SPforcT
 Cnote: on input, if notdef salt_plume_volume, SPforc[S,T](k>1)=!0
       IF ( useSALT_PLUME ) THEN
 #ifdef SALT_PLUME_VOLUME
-         DO j = jmin, jmax
-            DO i = imin, imax
-             DO k = 1, Nr
-              kp1 = k+1
-              temparray(I,J) = - gravity *
+       DO k = 1, Nr
+        kp1 = k+1
+        DO j = jmin, jmax
+         DO i = imin, imax
+          temparray(I,J) = - gravity *
      &            ( SSBETA(I,J,k) * SPforcS(i,j,k) +
      &              TTALPHA(I,J,k)* SPforcT(i,j,k) / HeatCapacity_Cp )
-     &              * recip_rhoConst / rhoSurf(I,J)
-              boplume(I,J,kp1) = boplume(I,J,k)+temparray(I,J)
-             ENDDO
-            ENDDO
+     &              * recip_rhoConst * work3(I,J)
+          boplume(I,J,kp1) = boplume(I,J,k)+temparray(I,J)
          ENDDO
+        ENDDO
+       ENDDO
 #else /* SALT_PLUME_VOLUME */
-         DO j = jmin, jmax
-          DO i = imin, imax
-           DO k = 2, Nrp1
-            boplume(I,J,k) = 0. _d 0
-           ENDDO
-           boplume(I,J,1) = - gravity * SSBETA(I,J,1)
+       DO j = jmin, jmax
+        DO i = imin, imax
+CML     already initialized
+CML         DO k = 2, Nrp1
+CML          boplume(I,J,k) = 0. _d 0
+CML         ENDDO
+         boplume(I,J,1) = - gravity * SSBETA(I,J,1)
      &              * SPforcS(i,j,1)
-     &              * recip_rhoConst / rhoSurf(I,J)
-          ENDDO
-         ENDDO
+     &              * recip_rhoConst * work3(I,J)
+        ENDDO
+       ENDDO
 
 #endif /* SALT_PLUME_VOLUME */
       ENDIF
@@ -299,9 +307,7 @@ C     thickness in the model.  First determine mixed layer depth hMix.
 C     Second zRef = espilon * hMix.  Third determine roughness length
 C     scale z0.  Third estimate reference velocity.
 
-      DO k = 1, Nr
-       zF(k) = ABS(rF(k))
-      ENDDO
+      zFac = ABS(rF(3)) * LOG ( rF(3) / rF(2) ) * recip_drF(2)
       DO j = jmin, jmax
        jp1 = j + 1
        DO i = imin, imax
@@ -327,10 +333,10 @@ C     Linearly interpolate to find hMix.
         ELSEIF ( k .LT. nzmax(i,j,bi,bj) ) THEN
          dBdz1 = dbloc(i,j,k-1) / drC(k  )
          dBdz2 = dbloc(i,j,k  ) / drC(k+1)
-         zRef(i,j) = zF(k) + drF(k) * (dB_dz - dBdz1) /
+         zRef(i,j) = ABS(rF(k)) + drF(k) * (dB_dz - dBdz1) /
      &        MAX ( phepsi, dBdz2 - dBdz1 )
         ELSE
-         zRef(i,j) = zF(k+1)
+         zRef(i,j) = ABS(rF(k+1))
         ENDIF
 
 C     Compute roughness length scale z0 subject to 0 < z0
@@ -348,11 +354,11 @@ C     Compute roughness length scale z0 subject to 0 < z0
         ELSE
          tempVar2 = SQRT ( tempVar1 )
         ENDIF
-        z0(i,j) = zF(2) *
-     &       ( zF(3) * LOG ( zF(3) / zF(2) ) /
-     &       ( zF(3) - zF(2) ) -
-     &       tempVar2 * vonK /
-     &       MAX ( ustar(i,j), phepsi ) )
+C     ustar > sqrt(0.5*drF(1)*phepsi) by definition, so I do not know
+C     why this extra max function call is required. Too small ustar
+C     will lead to negative z0, which is caught in the next line
+        z0(i,j) = drF(1) * ( zFac - tempVar2 * vonK / ustar(i,j) )
+CML     &       ( zFac - tempVar2 * vonK / MAX ( ustar(i,j), phepsi ) )
         z0(i,j) = MAX ( z0(i,j), phepsi )
 
 C     zRef is set to 0.1 * hMix subject to z0 <= zRef <= drF(1)
@@ -374,8 +380,8 @@ C     Estimate reference velocity uRef and vRef.
           tempVar2 = SQRT ( tempVar1 )
          endif
          tempVar2 = ustar(i,j) *
-     &        ( LOG ( zRef(i,j) / zF(2) ) +
-     &        z0(i,j) / zRef(i,j) - z0(i,j) / zF(2) ) /
+     &        ( LOG ( zRef(i,j) * recip_drF(1) ) +
+     &        z0(i,j) / zRef(i,j) - z0(i,j) * recip_drF(1) ) /
      &        vonK / tempVar2
          uRef(i,j) = uRef(i,j) + ustarX * tempVar2
          vRef(i,j) = vRef(i,j) + ustarY * tempVar2
