@@ -556,10 +556,10 @@ c-----------------------------------------------------------------------
 c     zero out land values and transfer to global variables
 c-----------------------------------------------------------------------
 
-      DO j = jmin, jmax
-       DO i = imin, imax
-        DO k = 1, Nr
-         km1 = max(1,k-1)
+      DO k = 1, Nr
+       km1 = max(1,k-1)
+       DO j = jmin, jmax
+        DO i = imin, imax
          KPPviscAz(i,j,k,bi,bj) = vddiff(i,j,k-1,1) * maskC(i,j,k,bi,bj)
      &        * maskC(i,j,km1,bi,bj)
          KPPdiffKzS(i,j,k,bi,bj)= vddiff(i,j,k-1,2) * maskC(i,j,k,bi,bj)
@@ -569,12 +569,15 @@ c-----------------------------------------------------------------------
          KPPghat(i,j,k,bi,bj)   = ghat(i,j,k)       * maskC(i,j,k,bi,bj)
      &        * maskC(i,j,km1,bi,bj)
         ENDDO
-        k = 1
+       ENDDO
+      ENDDO
+      k = 1
+      DO j = jmin, jmax
+       DO i = imin, imax
 #ifdef ALLOW_SHELFICE
         if ( useShelfIce ) k = kTopC(i,j,bi,bj)
 #endif /* ALLOW_SHELFICE */
         KPPhbl(i,j,bi,bj) = hbl(i,j) * maskC(i,j,k,bi,bj)
-
        ENDDO
       ENDDO
 
