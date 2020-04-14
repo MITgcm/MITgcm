@@ -129,7 +129,7 @@ C Local constants
       _RL        p0    , p5    , p125
       PARAMETER( p0=0.0, p5=0.5, p125=0.125 )
       INTEGER i, j, k, im1, ip1, jm1, jp1
-      _RL tempvar2
+      _RL tempvar2, epsLoc, epsLocSq
       _RL recip_Cp
 
       _RL work3 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
@@ -197,17 +197,17 @@ C initialize arrays to zero
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ store work3 = comlev1_kpp, key = ikppkey
 #endif
+      epsLocSq = phepsi*phepsi*drF(1)*drF(1)
+      epsLoc   = SQRT ( p5*phepsi*drF(1) )
       DO j = jmin, jmax
-       jp1 = j + 1
        DO i = imin, imax
-        ip1 = i+1
 
-        if ( work3(i,j) .lt. (phepsi*phepsi*drF(1)*drF(1)) ) then
-           ustar(i,j) = SQRT( phepsi * p5 * drF(1) )
-        else
+        IF ( work3(i,j) .lt. epsLocSq ) THEN
+           ustar(i,j) = epsLoc
+        ELSE
            tempVar2 =  SQRT( work3(i,j) ) * p5
            ustar(i,j) = SQRT( tempVar2 )
-        endif
+        ENDIF
 
        ENDDO
       ENDDO
@@ -223,9 +223,7 @@ CML       ENDDO
 CML      ENDDO
 
       DO j = jmin, jmax
-       jp1 = j + 1
        DO i = imin, imax
-        ip1 = i+1
         bo(I,J) = - gravity *
      &       ( TTALPHA(I,J,1) * (surfForcT(i,j,bi,bj)+
      &       surfForcTice(i,j,bi,bj)) +
