@@ -135,6 +135,10 @@ C Local constants
       _RL work3 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 
 #ifdef KPP_ESTIMATE_UREF
+c     z0     (nx,ny)       - Roughness length                             (m)
+c     zRef   (nx,ny)       - Reference depth: Hmix * epsilon              (m)
+c     uRef   (nx,ny)       - Reference zonal velocity                   (m/s)
+c     vRef   (nx,ny)       - Reference meridional velocity              (m/s)
       INTEGER kTmp
       _RL tempvar1, dBdz1, dBdz2, ustarX, ustarY, zFac
       _RL z0    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
