@@ -202,12 +202,12 @@ CADJ store work3 = comlev1_kpp, key = ikppkey
       DO j = jmin, jmax
        DO i = imin, imax
 
-        if ( work3(i,j) .lt. epsLocSq ) then
+        IF ( work3(i,j) .lt. epsLocSq ) THEN
            ustar(i,j) = epsLoc
-        else
+        ELSE
            tempVar2 =  SQRT( work3(i,j) ) * p5
            ustar(i,j) = SQRT( tempVar2 )
-        endif
+        ENDIF
 
        ENDDO
       ENDDO
