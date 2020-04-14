@@ -20,9 +20,6 @@ C !INTERFACE: ==========================================================
 #ifdef ALLOW_SALT_PLUME
      I     SPforcS,SPforcT,
 #endif /* ALLOW_SALT_PLUME */
-#ifdef KPP_ESTIMATE_UREF
-     I     dbloc,
-#endif /* KPP_ESTIMATE_UREF */
      I     ttalpha, ssbeta,
      O     ustar, bo, bosol,
 #ifdef ALLOW_SALT_PLUME
