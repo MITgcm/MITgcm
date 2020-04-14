@@ -167,18 +167,21 @@ C------------------------------------------------------------------------
       recip_Cp = 1. _d 0 / HeatCapacity_Cp
 C initialize arrays to zero
       DO j = 1-OLy, sNy+OLy
-         DO i = 1-OLx, sNx+OLx
-            ustar(i,j) = p0
-            bo   (I,J) = p0
-            bosol(I,J) = p0
-#ifdef ALLOW_SALT_PLUME
-            DO k = 1, Nr
-               boplume(I,J,k) = p0
-            ENDDO
-            boplume(I,J,Nrp1) = p0
-#endif /* ALLOW_SALT_PLUME */
-         ENDDO
+       DO i = 1-OLx, sNx+OLx
+        ustar(i,j) = p0
+        bo   (I,J) = p0
+        bosol(I,J) = p0
+       ENDDO
       ENDDO
+#ifdef ALLOW_SALT_PLUME
+      DO k = 1, Nrp1
+       DO j = 1-OLy, sNy+OLy
+        DO i = 1-OLx, sNx+OLx
+         boplume(I,J,k) = p0
+        ENDDO
+       ENDDO
+      ENDDO
+#endif /* ALLOW_SALT_PLUME */
 
       DO j = jmin, jmax
        jp1 = j + 1
@@ -209,6 +212,16 @@ CADJ store work3 = comlev1_kpp, key = ikppkey
        ENDDO
       ENDDO
 
+C     I would like to replace 4 instances of 1/rhoSurf by multiplication
+C     but this changes results in lab_sea.hb87/salt_plume, natl_box, and
+C     seaice_obcs, so maybe later
+CML      DO j = jmin, jmax
+CML       DO i = imin, imax
+CMLC     rhoSurf = dRho + rhoConst > 0 always, so we are safe here
+CML        work3(i,j) = 1. _d 0 / rhoSurf(I,J)
+CML       ENDDO
+CML      ENDDO
+
       DO j = jmin, jmax
        jp1 = j + 1
        DO i = imin, imax
@@ -218,9 +231,11 @@ CADJ store work3 = comlev1_kpp, key = ikppkey
      &       surfForcTice(i,j,bi,bj)) +
      &       SSBETA(I,J,1) * surfForcS(i,j,bi,bj) )
      &       / rhoSurf(I,J)
+CML  &       * work3(I,J)
         bosol(I,J) = gravity * TTALPHA(I,J,1) * Qsw(i,j,bi,bj) *
      &       recip_Cp*recip_rhoConst
      &       / rhoSurf(I,J)
+CML  &       * work3(I,J)
        ENDDO
       ENDDO
 
@@ -229,30 +244,33 @@ Catn: need check sign of SPforcT
 Cnote: on input, if notdef salt_plume_volume, SPforc[S,T](k>1)=!0
       IF ( useSALT_PLUME ) THEN
 #ifdef SALT_PLUME_VOLUME
-         DO j = jmin, jmax
-            DO i = imin, imax
-             DO k = 1, Nr
-              kp1 = k+1
-              temparray(I,J) = - gravity *
+       DO k = 1, Nr
+        kp1 = k+1
+        DO j = jmin, jmax
+         DO i = imin, imax
+          temparray(I,J) = - gravity *
      &            ( SSBETA(I,J,k) * SPforcS(i,j,k) +
      &              TTALPHA(I,J,k)* SPforcT(i,j,k) / HeatCapacity_Cp )
      &              * recip_rhoConst / rhoSurf(I,J)
-              boplume(I,J,kp1) = boplume(I,J,k)+temparray(I,J)
-             ENDDO
-            ENDDO
+CML  &              * recip_rhoConst * work3(I,J)
+          boplume(I,J,kp1) = boplume(I,J,k)+temparray(I,J)
          ENDDO
+        ENDDO
+       ENDDO
 #else /* SALT_PLUME_VOLUME */
-         DO j = jmin, jmax
-          DO i = imin, imax
-           DO k = 2, Nrp1
-            boplume(I,J,k) = 0. _d 0
-           ENDDO
-           boplume(I,J,1) = - gravity * SSBETA(I,J,1)
+       DO j = jmin, jmax
+        DO i = imin, imax
+C     initialization has been done already and does not have to be
+C     repeated here (and definitely not inside the i/j loops)
+CML         DO k = 2, Nrp1
+CML          boplume(I,J,k) = 0. _d 0
+CML         ENDDO
+         boplume(I,J,1) = - gravity * SSBETA(I,J,1)
      &              * SPforcS(i,j,1)
      &              * recip_rhoConst / rhoSurf(I,J)
-          ENDDO
-         ENDDO
-
+CML  &              * recip_rhoConst * work3(I,J)
+        ENDDO
+       ENDDO
 #endif /* SALT_PLUME_VOLUME */
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
@@ -263,10 +281,10 @@ CADJ store ustar = comlev1_kpp, key = ikppkey
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-         CALL DIAGNOSTICS_FILL(bo     ,'KPPbo   ',0,1,2,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(bosol  ,'KPPbosol',0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(bo     ,'KPPbo   ',0,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(bosol  ,'KPPbosol',0,1,2,bi,bj,myThid)
 #ifdef ALLOW_SALT_PLUME
-         CALL DIAGNOSTICS_FILL(boplume,'KPPboplm',0,Nr,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(boplume,'KPPboplm',0,Nr,2,bi,bj,myThid)
 #endif /* ALLOW_SALT_PLUME */
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
@@ -310,7 +328,7 @@ C     dB/dz exceeds 5.2e-5 s^-2.
         DO k = 1, Nr
          IF ( k .LT. nzmax(i,j,bi,bj) .AND.
      &        maskC(I,J,k,bi,bj) .GT. 0. .AND.
-     &        dbloc(i,j,k) / drC(k+1) .GT. dB_dz )
+     &        dbloc(i,j,k) * recip_drC(k+1) .GT. dB_dz )
      &        kTmp = k
         ENDDO
 
@@ -319,11 +337,11 @@ C     Linearly interpolate to find hMix.
         IF ( k .EQ. 0 .OR. nzmax(i,j,bi,bj) .EQ. 1 ) THEN
          zRef(i,j) = p0
         ELSEIF ( k .EQ. 1) THEN
-         dBdz2 = dbloc(i,j,1) / drC(2)
+         dBdz2 = dbloc(i,j,1) *recip_drC(2)
          zRef(i,j) = drF(1) * dB_dz / dBdz2
         ELSEIF ( k .LT. nzmax(i,j,bi,bj) ) THEN
-         dBdz1 = dbloc(i,j,k-1) / drC(k  )
-         dBdz2 = dbloc(i,j,k  ) / drC(k+1)
+         dBdz1 = dbloc(i,j,k-1) * recip_drC(k  )
+         dBdz2 = dbloc(i,j,k  ) * recip_drC(k+1)
          zRef(i,j) = ABS(rF(k)) + drF(k) * (dB_dz - dBdz1) /
      &        MAX ( phepsi, dBdz2 - dBdz1 )
         ELSE
@@ -345,8 +363,11 @@ C     Compute roughness length scale z0 subject to 0 < z0
         ELSE
          tempVar2 = SQRT ( tempVar1 )
         ENDIF
-        z0(i,j) = drF(1) *
-     &       ( zFac - tempVar2 * vonK / MAX ( ustar(i,j), phepsi ) )
+C     ustar > sqrt(0.5*drF(1)*phepsi) by definition, so I do not know
+C     why this extra max function call is required. Too small ustar
+C     will lead to negative z0, which is caught in the next line
+        z0(i,j) = drF(1) * ( zFac - tempVar2 * vonK / ustar(i,j) )
+CML     &       ( zFac - tempVar2 * vonK / MAX ( ustar(i,j), phepsi ) )
         z0(i,j) = MAX ( z0(i,j), phepsi )
 
 C     zRef is set to 0.1 * hMix subject to z0 <= zRef <= drF(1)
