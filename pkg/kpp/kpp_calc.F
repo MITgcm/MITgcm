@@ -170,10 +170,6 @@ c     vddiff (nx,ny,Nrp2,3)- vert. diff. on next row for temperature  (m^2/s)
 c     ghat   (nx,ny,Nr)    - nonlocal transport coefficient           (s/m^2)
 c     hbl    (nx,ny)       - mixing layer depth                           (m)
 c     kmtj   (nx,ny)       - maximum number of wet levels in each column
-c     z0     (nx,ny)       - Roughness length                             (m)
-c     zRef   (nx,ny)       - Reference depth: Hmix * epsilon              (m)
-c     uRef   (nx,ny)       - Reference zonal velocity                   (m/s)
-c     vRef   (nx,ny)       - Reference meridional velocity              (m/s)
 
       integer work1 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy            )
       _RL worka ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
@@ -201,19 +197,8 @@ cph(
       _RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
       _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
 cph)
-#ifdef KPP_ESTIMATE_UREF
-      _RL z0    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _RL zRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _RL uRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _RL vRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-#endif /* KPP_ESTIMATE_UREF */
-
       integer i, j, k, kp1, km1, im1, ip1, jm1, jp1
       integer ikppkey
-
-#ifdef KPP_ESTIMATE_UREF
-      _RL tempvar1, dBdz1, dBdz2, ustarX, ustarY
-#endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -430,6 +415,9 @@ c------------------------------------------------------------------------
      I     work2, surfaceForcingU, surfaceForcingV,
      I     surfaceForcingT, surfaceForcingS, adjustColdSST_diag,
      I     Qsw,
+#ifdef KPP_ESTIMATE_UREF
+     I     dbloc,
+#endif /* KPP_ESTIMATE_UREF */
 #ifdef ALLOW_SALT_PLUME
      I     temp1, temp2,
 #endif /* ALLOW_SALT_PLUME */

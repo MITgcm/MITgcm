@@ -14,6 +14,9 @@ C !INTERFACE: ==========================================================
      I     rhoSurf, surfForcU, surfForcV,
      I     surfForcT, surfForcS, surfForcTice,
      I     Qsw,
+#ifdef KPP_ESTIMATE_UREF
+     I     dbloc,
+#endif /* KPP_ESTIMATE_UREF */
 #ifdef ALLOW_SALT_PLUME
      I     SPforcS,SPforcT,
 #endif /* ALLOW_SALT_PLUME */
@@ -111,6 +114,9 @@ C                            at grid levels for bldepth             (m^2/s^2)
       _RL ustar ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bo    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bosol ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
+#ifdef KPP_ESTIMATE_UREF
+      _RL dbloc ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
+#endif /* KPP_ESTIMATE_UREF */
 #ifdef ALLOW_SALT_PLUME
       _RL SPforcS     (1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr       )
       _RL SPforcT     (1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr       )
@@ -129,7 +135,8 @@ C Local constants
       _RL work3 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 
 #ifdef KPP_ESTIMATE_UREF
-      _RL tempvar1, dBdz1, dBdz2, ustarX, ustarY
+      INTEGER kTmp
+      _RL tempvar1, dBdz1, dBdz2, ustarX, ustarY, zFac
       _RL z0    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL zRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL uRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
@@ -291,6 +298,7 @@ C     thickness in the model.  First determine mixed layer depth hMix.
 C     Second zRef = espilon * hMix.  Third determine roughness length
 C     scale z0.  Third estimate reference velocity.
 
+      zFac = ABS(rF(3)) * LOG ( rF(3) / rF(2) ) * recip_drF(2)
       DO j = jmin, jmax
        jp1 = j + 1
        DO i = imin, imax
@@ -298,16 +306,16 @@ C     scale z0.  Third estimate reference velocity.
 
 C     Determine mixed layer depth hMix as the shallowest depth at which
 C     dB/dz exceeds 5.2e-5 s^-2.
-        work1(i,j) = nzmax(i,j,bi,bj)
+        kTmp = nzmax(i,j,bi,bj)
         DO k = 1, Nr
          IF ( k .LT. nzmax(i,j,bi,bj) .AND.
      &        maskC(I,J,k,bi,bj) .GT. 0. .AND.
      &        dbloc(i,j,k) / drC(k+1) .GT. dB_dz )
-     &        work1(i,j) = k
+     &        kTmp = k
         ENDDO
 
 C     Linearly interpolate to find hMix.
-        k = work1(i,j)
+        k = kTmp
         IF ( k .EQ. 0 .OR. nzmax(i,j,bi,bj) .EQ. 1 ) THEN
          zRef(i,j) = p0
         ELSEIF ( k .EQ. 1) THEN
@@ -316,10 +324,10 @@ C     Linearly interpolate to find hMix.
         ELSEIF ( k .LT. nzmax(i,j,bi,bj) ) THEN
          dBdz1 = dbloc(i,j,k-1) / drC(k  )
          dBdz2 = dbloc(i,j,k  ) / drC(k+1)
-         zRef(i,j) = rF(k) + drF(k) * (dB_dz - dBdz1) /
+         zRef(i,j) = ABS(rF(k)) + drF(k) * (dB_dz - dBdz1) /
      &        MAX ( phepsi, dBdz2 - dBdz1 )
         ELSE
-         zRef(i,j) = rF(k+1)
+         zRef(i,j) = ABS(rF(k+1))
         ENDIF
 
 C     Compute roughness length scale z0 subject to 0 < z0
@@ -337,11 +345,8 @@ C     Compute roughness length scale z0 subject to 0 < z0
         ELSE
          tempVar2 = SQRT ( tempVar1 )
         ENDIF
-        z0(i,j) = rF(2) *
-     &       ( rF(3) * LOG ( rF(3) / rF(2) ) /
-     &       ( rF(3) - rF(2) ) -
-     &       tempVar2 * vonK /
-     &       MAX ( ustar(i,j), phepsi ) )
+        z0(i,j) = drF(1) *
+     &       ( zFac - tempVar2 * vonK / MAX ( ustar(i,j), phepsi ) )
         z0(i,j) = MAX ( z0(i,j), phepsi )
 
 C     zRef is set to 0.1 * hMix subject to z0 <= zRef <= drF(1)
@@ -363,8 +368,8 @@ C     Estimate reference velocity uRef and vRef.
           tempVar2 = SQRT ( tempVar1 )
          endif
          tempVar2 = ustar(i,j) *
-     &        ( LOG ( zRef(i,j) / rF(2) ) +
-     &        z0(i,j) / zRef(i,j) - z0(i,j) / rF(2) ) /
+     &        ( LOG ( zRef(i,j) * recip_drF(1) ) +
+     &        z0(i,j) / zRef(i,j) - z0(i,j) * recip_drF(1) ) /
      &        vonK / tempVar2
          uRef(i,j) = uRef(i,j) + ustarX * tempVar2
          vRef(i,j) = vRef(i,j) + ustarY * tempVar2
