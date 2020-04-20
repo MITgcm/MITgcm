@@ -343,10 +343,6 @@ C             enpg(I.J)=-rho_ice*h*g*(u*divhx+v*divhy)
          ENDDO
         ENDDO
 
-C          CALL DIAGNOSTICS_FILL(enpa,'SIenpa  ',0,1,3,bi,bj,myThid)
-C          CALL DIAGNOSTICS_FILL(enpw,'SIenpw  ',0,1,3,bi,bj,myThid)
-C          CALL DIAGNOSTICS_FILL(enpg,'SIenpg  ',0,1,3,bi,bj,myThid)
-C          CALL DIAGNOSTICS_FILL(enph,'SIenph  ',0,1,3,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(enpi,  'SIenpi  ',0,1,3,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(enpot, 'SIenpot ',0,1,3,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(pRfric,'SIpRfric',0,1,3,bi,bj,myThid)
