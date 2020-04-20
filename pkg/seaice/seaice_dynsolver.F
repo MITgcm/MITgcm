@@ -67,6 +67,15 @@ C     bi,bj  :: tile counters
       INTEGER i, j, bi, bj
       _RL phiSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL mask_uice, mask_vice
+#ifdef ALLOW_DIAGNOSTICS
+      _RL enpa  (1:sNx,1:sNy)
+      _RL enpw  (1:sNx,1:sNy)
+      _RL enpg  (1:sNx,1:sNy)
+      _RL areaW, areaS, COSWAT, SINWAT
+      INTEGER kSrf
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif /*  ALLOW_DIAGNOSTICS */
 
 C Initialise local variables in common block
       IF ( myIter.EQ.nIter0 ) THEN
@@ -282,7 +291,6 @@ C--   now add in tilt
 
 #ifdef SEAICE_ALLOW_DYNAMICS
       IF ( SEAICEuseDYNAMICS ) THEN
-
 #ifdef SEAICE_ALLOW_FREEDRIFT
        IF ( SEAICEuseFREEDRIFT .OR. SEAICEuseEVP
      &                         .OR. LSR_mixIniGuess.EQ.0 ) THEN
@@ -402,6 +410,103 @@ c in open water areas (drift of zero thickness ice)
 #endif /* SEAICE_ALLOW_CLIPVELS */
 #endif /* SEAICE_ALLOW_DYNAMICS */
 
-#endif /* SEAICE_CGRID */
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+C     surrface level
+       kSrf = 1
+C     introduce turning angle (default is zero)
+       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
+       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         IF ( DIAGNOSTICS_IS_ON('SIenpa  ',myThid) ) THEN
+          DO j=1,sNy+1
+           DO i=1,sNx+1
+            areaW = 0.5 _d 0 * (AREA(I,J,bi,bj) + AREA(I-1,J,bi,bj))
+     &         * SEAICEstressFactor
+            areaS = 0.5 _d 0 * (AREA(I,J,bi,bj) + AREA(I,J-1,bi,bj))
+     &         * SEAICEstressFactor
+            TAUX(I,J,bi,bj) = TAUX(I,J,bi,bj)*areaW
+            TAUY(I,J,bi,bj) = TAUY(I,J,bi,bj)*areaS
+           ENDDO
+          ENDDO
+          DO j=1,sNy
+           DO i=1,sNx
+            enpa(I,J)= 0.5 _d 0 * (
+     &             UICE(I,  J,bi,bj)*TAUX(I,  J,bi,bj)
+     &           + UICE(I+1,J,bi,bj)*TAUX(I+1,J,bi,bj)
+     &           + VICE(I,J,  bi,bj)*TAUY(I,J,  bi,bj)
+     &           + VICE(I,J+1,bi,bj)*TAUY(I,J+1,bi,bj) )
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(enpa,'SIenpa  ',0,1,3,bi,bj,myThid)
+         ENDIF
+                IF ( DIAGNOSTICS_IS_ON('SIenpw  ',myThid) ) THEN
+          DO j=1,sNy+1
+           DO i=1,sNx+1
+            areaW = 0.5 _d 0 * (AREA(I,J,bi,bj) + AREA(I-1,J,bi,bj))
+     &         * SEAICEstressFactor
+            areaS = 0.5 _d 0 * (AREA(I,J,bi,bj) + AREA(I,J-1,bi,bj))
+     &         * SEAICEstressFactor
+            TAUX(I,J,bi,bj) = areaW *
+     &           HALF*( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) )*
+     &         COSWAT *
+     &         ( uIce(I,J,bi,bj)-uVel(I,J,kSrf,bi,bj) )
+     &         - SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 *
+     &         ( DWATN(I  ,J,bi,bj) *
+     &         0.5 _d 0*(vIce(I  ,J  ,bi,bj)-vVel(I  ,J  ,kSrf,bi,bj)
+     &                  +vIce(I  ,J+1,bi,bj)-vVel(I  ,J+1,kSrf,bi,bj))
+     &         + DWATN(I-1,J,bi,bj) *
+     &         0.5 _d 0*(vIce(I-1,J  ,bi,bj)-vVel(I-1,J  ,kSrf,bi,bj)
+     &                  +vIce(I-1,J+1,bi,bj)-vVel(I-1,J+1,kSrf,bi,bj))
+     &         )
+            TAUY(I,J,bi,bj) = areaS *
+     &           HALF*( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) )*
+     &         COSWAT *
+     &         ( vIce(I,J,bi,bj)-vVel(I,J,kSrf,bi,bj) )
+     &         + SIGN(SINWAT,  _fCori(I,J,bi,bj)) * 0.5 _d 0 *
+     &         ( DWATN(I,J  ,bi,bj) *
+     &         0.5 _d 0*(uIce(I  ,J  ,bi,bj)-uVel(I  ,J  ,kSrf,bi,bj)
+     &                  +uIce(I+1,J  ,bi,bj)-uVel(I+1,J  ,kSrf,bi,bj))
+     &         + DWATN(I,J-1,bi,bj) *
+     &         0.5 _d 0*(uIce(I  ,J-1,bi,bj)-uVel(I  ,J-1,kSrf,bi,bj)
+     &                  +uIce(I+1,J-1,bi,bj)-uVel(I+1,J-1,kSrf,bi,bj))
+     &         )
+           ENDDO
+          ENDDO
+          DO j=1,sNy
+           DO i=1,sNx
+            enpw(I,J)= - 0.5 _d 0 * (
+     &             UICE(I,  J,bi,bj)*TAUX(I,  J,bi,bj)
+     &           + UICE(I+1,J,bi,bj)*TAUX(I+1,J,bi,bj)
+     &           + VICE(I,J,  bi,bj)*TAUY(I,J,  bi,bj)
+     &           + VICE(I,J+1,bi,bj)*TAUY(I,J+1,bi,bj) )
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(enpw,'SIenpw  ',0,1,3,bi,bj,myThid)
+       ENDIF
+           IF ( DIAGNOSTICS_IS_ON('SIenpg  ',myThid) ) THEN
+         DO j=1,sNy
+           DO i=1,sNx
+              enpg (I,J) = - 0.5 _d 0 * (
+     &             (seaiceMassU(I,J,bi,bj)*_recip_dxC(I,J,bi,bj)
+     &           * ( phiSurf   (I,J )-      phiSurf  (I-1,J))
+     &           * ( UICE (     I,J,bi,bj)+  UICE(    I+1,J,bi,bj))
+     &             -0.5 _d 0*
+     &             seaiceMassV (I,J,bi,bj)* _recip_dyC(I,J,bi,bj)
+     &           *( phiSurf(I,J)   -   phiSurf(I,J-1) ))
+     &           * (  VICE(I,J,bi,bj) + VICE(I,J+1,bi,bj)))
+           ENDDO
+         ENDDO
+            CALL DIAGNOSTICS_FILL(enpg,'SIenpg  ',0,1,3,bi,bj,myThid)
+           ENDIF
+        ENDDO
+      ENDDO
+      ENDIF
+
+#endif   /*  ALLOW_DIAGNOSTICS */
+#endif  /* SEAICE_CGRID */
+
+
       RETURN
       END

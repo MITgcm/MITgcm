@@ -46,6 +46,14 @@ C     == Local variables ==
       _RL sig22(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
       _RL sig12(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
       _RL sigp, sigm, sigTmp, recip_prs
+      _RL enph  (1:sNx,1:sNy)
+      _RL enpk  (1:sNx,1:sNy)
+      _RL enpg  (1:sNx,1:sNy)
+      _RL enpi  (1:sNx,1:sNy)
+      _RL enpot (1:sNx,1:sNy)
+      _RL PRfric(1:sNx,1:sNy)
+      _RL PSfric(1:sNx,1:sNy)
+      _RL divSq, shearSq
 #endif
       INTEGER k
       _RL recip_multDim
@@ -81,7 +89,7 @@ C     division by zero is not possible
             DO i=1,sNx
              tmp = 1. _d 0
 #ifdef SEAICE_ITD
-             IF (AREA(I,J,bi,bj) .GT. ZERO) 
+             IF (AREA(I,J,bi,bj) .GT. ZERO)
      &            tmp=AREAITD(I,J,K,bi,bj)/AREA(I,J,bi,bj)
 #endif /* SEAICE_ITD */
              tIce(I,J,bi,bj) = tIce(I,J,bi,bj)
@@ -207,11 +215,11 @@ C     principle stress components
             DO i=1,sNx
              sigp   = sig11(I,J) + sig22(I,J)
              sigm   = sig11(I,J) - sig22(I,J)
-C     This should be the way of computing sig12 at C-points, 
+C     This should be the way of computing sig12 at C-points,
 C            sigTmp = 0.25 _d 0 *
 C    &            ( sig12(I  ,J  ) + sig12(I+1,J  )
 C    &            + sig12(I  ,J+1) + sig12(I+1,J+1) )
-C     but sig12 = 2*etaZ*e12, and because of strong gradients in eta, 
+C     but sig12 = 2*etaZ*e12, and because of strong gradients in eta,
 C     etaZ can be very large for a cell with small eta and the straightforward
 C     way of averaging mixes large etaZ with small press0, so we have to do it
 C     in different way to get meaningfull sig12C (=sigTmp):
@@ -237,7 +245,7 @@ C     endif SEAICEuseEVP
           DO j=1,sNy
            DO i=1,sNx
             sigm = e11(I,J,bi,bj) - e22(I,J,bi,bj)
-            sigTmp = 
+            sigTmp =
      &           ( e12(I,  J,  bi,bj)**2 + e12(I+1,J,  bi,bj)**2
      &           + e12(I+1,J+1,bi,bj)**2 + e12(I  ,J+1,bi,bj)**2 )
 C     shear deformation as sqrt((e11-e22)**2 + 4*e12**2); the 4 pulled into
@@ -292,7 +300,65 @@ C     average B-grid velocities to C-grid points
         ENDIF
 C     endif useDiagnostics
       ENDIF
+
+#ifdef SEAICE_CGRID
+C     To calculate sea ice energy diagnostics
+
+      IF ( .NOT. ( DIAGNOSTICS_IS_ON('SIsig1  ',myThid) .OR.
+     &             DIAGNOSTICS_IS_ON('SIsig2  ',myThid) .OR.
+     &             DIAGNOSTICS_IS_ON('SIshear ',myThid) ) ) THEN
+C     recompute strainrates from up-to-date velocities
+       CALL SEAICE_CALC_STRAINRATES(
+     I        uIce, vIce,
+     O        e11, e22, e12,
+     I        0, myTime, myIter, myThid )
+      ENDIF
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1,sNy
+         DO i=1,sNx
+C             taux0=fu(I,J,bi,bj)
+C             tauy0=fv(I,J,bi,bj)
+C             fu0=fu(I,J,bi,bj)
+C             fv0=fv(I,J,bi,bj)
+C
+C             enpa(I,J)=u*taux0+v*tauy0
+C             enpw(I,J)=-u*fu0-v*fv0
+C             enph(I,J)=1./2.*rho_ice*(u**2+v**2)*(Sh-etano*(divux+divuy))
+C             enpg(I.J)=-rho_ice*h*g*(u*divhx+v*divhy)
+          enpi(I,J)= 0.5 _d 0 * (
+     &               UICE(I,  J,bi,bj)*stressDivergenceX(I,  J,bi,bj)
+     &              +UICE(I+1,J,bi,bj)*stressDivergenceX(I+1,J,bi,bj)
+     &              +VICE(I,J,  bi,bj)*stressDivergenceY(I,J,  bi,bj)
+     &              +VICE(I,J+1,bi,bj)*stressDivergenceY(I,J+1,bi,bj) )
+          divSq      = e11(I,J,bi,bj) + e22(I,J,bi,bj)
+          enpot(I,J) = 0.5 _d 0 * press0(I,J,bi,bj) * divSq
+          divSq      = divSq * divSq
+          shearSq    = (e11(I,J,bi,bj) - e22(I,J,bi,bj))**2 +
+     &           ( e12(I,  J,  bi,bj)**2 + e12(I+1,J,  bi,bj)**2
+     &           + e12(I+1,J+1,bi,bj)**2 + e12(I  ,J+1,bi,bj)**2 )
+          pRfric(I,J)=-zeta(I,J,bi,bj) * divSq
+          pSfric(I,J)=-eta(I,J,bi,bj) * shearSq
+         ENDDO
+        ENDDO
+
+C          CALL DIAGNOSTICS_FILL(enpa,'SIenpa  ',0,1,3,bi,bj,myThid)
+C          CALL DIAGNOSTICS_FILL(enpw,'SIenpw  ',0,1,3,bi,bj,myThid)
+C          CALL DIAGNOSTICS_FILL(enpg,'SIenpg  ',0,1,3,bi,bj,myThid)
+C          CALL DIAGNOSTICS_FILL(enph,'SIenph  ',0,1,3,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(enpi,  'SIenpi  ',0,1,3,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(enpot, 'SIenpot ',0,1,3,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(pRfric,'SIpRfric',0,1,3,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(pSfric,'SIpSfric',0,1,3,bi,bj,myThid)
+
+       ENDDO
+      ENDDO
+#endif /* SEAICE_CGRID */
+
+
 #endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END
+
