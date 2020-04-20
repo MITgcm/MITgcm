@@ -161,8 +161,6 @@ C       but after convergence loop does nothing
 c$TAF STORE cgtol = comlev1_stream_nl, key=ikey_nl
 c$TAF STORE err_max = comlev1_stream_nl, key=ikey_nl
 c$TAF STORE err_max_fp = comlev1_stream_nl, key=ikey_nl
-c$TAF STORE err_tempu = comlev1_stream_nl, key=ikey_nl
-c$TAF STORE err_tempv = comlev1_stream_nl, key=ikey_nl
 c$TAF STORE err_lastchange = comlev1_stream_nl, key=ikey_nl
 c$TAF STORE ru_old_si = comlev1_stream_nl, key=ikey_nl
 c$TAF STORE rv_old_si = comlev1_stream_nl, key=ikey_nl
@@ -194,8 +192,6 @@ c$TAF STORE CONVERGED = comlev1_stream_nl, key=ikey_nl
 #ifdef ALLOW_AUTODIFF_TAMC
 c$TAF STORE cgtol = comlev1_stream_nl, key=ikey_nl
 c$TAF STORE err_max = comlev1_stream_nl, key=ikey_nl
-c$TAF STORE err_tempu = comlev1_stream_nl, key=ikey_nl
-c$TAF STORE err_tempv = comlev1_stream_nl, key=ikey_nl
 c$TAF STORE err_lastchange = comlev1_stream_nl, key=ikey_nl
 c$TAF STORE ru_old_si = comlev1_stream_nl, key=ikey_nl
 c$TAF STORE rv_old_si = comlev1_stream_nl, key=ikey_nl
