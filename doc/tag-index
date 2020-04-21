@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67q (2020/03/19)
 o pkg/shelfice, remeshing code:
   - simplify/clarify merging S/R call sequence: all done/called from main
     remeshing S/R SHELFICE_REMESHING :
