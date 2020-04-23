@@ -483,5 +483,11 @@ C     Estimate reference velocity uRef and vRef.
 
 #endif /* KPP_ESTIMATE_UREF */
 
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       CALL DIAGNOSTICS_FILL(dVsq,  'KPPdVsq ',0,Nr,2,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
       RETURN
       END

@@ -141,6 +141,20 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+        diagName  = 'KPPshsq '
+        diagTitle = 'Local shear (V(k-1)-V(k))^2'
+        diagUnits = 'm^2/s^2         '
+        diagCode  = 'SM P    UR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+        diagName  = 'KPPdVsq '
+        diagTitle = 'Shear relative to surface (V(ksrf)-V(k))**2'
+        diagUnits = 'm^2/s^2         '
+        diagCode  = 'SM P    UR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I       diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
 #ifndef EXCLUDE_KPP_DOUBLEDIFF
         diagName  = 'KPPnuddt'
         diagTitle = 'Vertical double diffusion coefficient for heat'

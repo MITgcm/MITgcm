@@ -310,19 +310,19 @@ c     horizontally smooth density related quantities with 121 filters
 
       DO k = 1, Nr
        km1 = max(1,k-1)
+       kp1 = min(Nr,k+1)
        DO j = 1-OLy, sNy+OLy
         DO i = 1-OLx, sNx+OLx
 
 c     zero out dbloc over land points (so that the convective
-c     part of the interior mixing can be diagnosed)
-CML   I am not sure if the masking for dbloc and ghat (=smoothed dbloc)
-CML   are correct because they are defined at the bottom of the cell
-CML   rather than the (MITgcm-standard) top of the cell. I think it should be
-CML   maskC(k)*mask(k+1) for these variables.
+c     part of the interior mixing can be diagnosed).
+c     ML: Note that dbloc and ghat (=smoothed dbloc) are defined at the
+c     bottom  bottom of the cell rather than the (MITgcm-standard) top
+c     of the cell; therefore the proper masking is maskC(k)*mask(k+1)
          dbloc(i,j,k) = dbloc(i,j,k) * maskC(i,j,k,bi,bj)
-     &        * maskC(i,j,km1,bi,bj)
+     &        * maskC(i,j,kp1,bi,bj)
          ghat(i,j,k)  = ghat(i,j,k)  * maskC(i,j,k,bi,bj)
-     &        * maskC(i,j,km1,bi,bj)
+     &        * maskC(i,j,kp1,bi,bj)
          Ritop(i,j,k) = Ritop(i,j,k) * maskC(i,j,k,bi,bj)
      &        * maskC(i,j,km1,bi,bj)
          if(k.eq.nzmax(i,j,bi,bj)) then
@@ -489,6 +489,11 @@ c     shsq computation
        ENDDO
       ENDDO
 
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       CALL DIAGNOSTICS_FILL(shsq,  'KPPshsq ',0,Nr,2,bi,bj,myThid)
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 cph(
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifdef KPP_AUTODIFF_EXCESSIVE_STORE
