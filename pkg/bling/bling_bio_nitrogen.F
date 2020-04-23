@@ -364,8 +364,8 @@ c  Initialize output and diagnostics
               theta_Fe_inv(i,j,k)   = 0. _d 0
               irrk(i,j,k)           = 0. _d 0
               irr_inst(i,j,k)       = 0. _d 0
-              irr_eff(i,j,k,bi,bj)        = 0. _d 0
-              mu(i,j,k,bi,bj)             = 0. _d 0
+              irr_eff(i,j,k,bi,bj)  = 0. _d 0
+              mu(i,j,k,bi,bj)       = 0. _d 0
               mu_diaz(i,j,k)        = 0. _d 0
               PtoN(i,j,k)           = 0. _d 0
               FetoN(i,j,k)          = 0. _d 0
@@ -399,7 +399,7 @@ c  Initialize output and diagnostics
               P_remindvm(i,j,k)     = 0. _d 0
               Fe_remindvm(i,j,k)    = 0. _d 0
               POC_flux(i,j,k)       = 0. _d 0
-              NPP(i,j,k,bi,bj)            = 0. _d 0
+              NPP(i,j,k,bi,bj)      = 0. _d 0
               NCP(i,j,k)            = 0. _d 0
               Fe_sed(i,j,k)         = 0. _d 0
               Fe_ads_org(i,j,k)     = 0. _d 0
@@ -1025,9 +1025,9 @@ cav this is from blingv1, where B_sm and B_lg are diagnosed from
 cav the value of mu...
 
           frac_exp = (phi_sm_2d(i,j,bi,bj) + phi_lg_2d(i,j,bi,bj) *
-     &           (mu(i,j,k,bi,bj)/(epsln + lambda_0*expkT(i,j,k)))**2.)/
+     &           (mu(i,j,k,bi,bj)/(epsln + lambda_0*expkT(i,j,k)))**2)/
      &           (1. + (mu(i,j,k,bi,bj)/
-     &           (epsln + lambda_0*expkT(i,j,k)))**2.)*
+     &           (epsln + lambda_0*expkT(i,j,k)))**2)*
      &           exp(kappa_remin * theta(i,j,k,bi,bj))
 
 #endif
