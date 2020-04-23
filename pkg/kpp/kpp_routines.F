@@ -415,7 +415,6 @@ c wm, ws    : turbulent velocity scales         (m/s)
 #ifdef ALLOW_DIAGNOSTICS
 c     KPPBFSFC - Bo+radiation absorbed to d=hbf*hbl + plume (m^2/s^3)
       _RL KPPBFSFC(imt,Nr)
-      _RL KPPRi(imt,Nr)
 #endif /* ALLOW_DIAGNOSTICS */
 
 c find bulk Richardson number at every grid level until > Ricr
@@ -441,7 +440,6 @@ c     initialize hbl and kbl to bottomed out values
       do kl = 1, Nr
          do i = 1, imt
             KPPBFSFC(i,kl) = 0. _d 0
-            KPPRi(i,kl) = 0. _d 0
          enddo
       enddo
 #endif /* ALLOW_DIAGNOSTICS */
@@ -544,6 +542,11 @@ c-----------------------------------------------------------------------
             bvsq = p5 *
      1           ( dbloc(i,kl-1) / (zgrid(kl-1)-zgrid(kl  ))+
      2             dbloc(i,kl  ) / (zgrid(kl  )-zgrid(kl+1)))
+CMLC     Van Roekel et al 2018 suggest this, but our solution is
+CMLC     probably OK, too:
+CML            bvsq = MAX
+CML     1           ( dbloc(i,kl-1) / (zgrid(kl-1)-zgrid(kl  )),
+CML     2             dbloc(i,kl  ) / (zgrid(kl  )-zgrid(kl+1)))
 
             if (bvsq .eq. 0. _d 0) then
               vtsq = 0. _d 0
@@ -564,11 +567,12 @@ c     ph: test for zero nominator
 c
 
             tempVar1  = dvsq(i,kl) + vtsq
+#ifdef KPP_SMOOTH_REGULARISATION
+            tempVar2 = tempVar1 + phepsi
+#else
             tempVar2 = max(tempVar1, phepsi)
+#endif /* KPP_SMOOTH_REGULARISATION */
             Rib(i,kl) = Ritop(i,kl) / tempVar2
-#ifdef ALLOW_DIAGNOSTICS
-            KPPRi(i,kl) = Rib(i,kl)
-#endif
 
          end do
       end do
@@ -576,7 +580,7 @@ c
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
          CALL DIAGNOSTICS_FILL(KPPBFSFC,'KPPbfsfc',0,Nr,2,bi,bj,myThid)
-         CALL DIAGNOSTICS_FILL(KPPRi   ,'KPPRi   ',0,Nr,2,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(Rib     ,'KPPRi   ',0,Nr,2,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
@@ -609,6 +613,9 @@ c     linearly interpolate to find hbl where Rib = Ricr
             tempVar1 = (Rib(i,kl)-Rib(i,kl-1))
             hbl(i) = -zgrid(kl-1) + (zgrid(kl-1)-zgrid(kl)) *
      1           (Ricr - Rib(i,kl-1)) / tempVar1
+C     this is the MOM5 formulation, (nearly) identical results
+CML            hbl(i) = ((Rib(i,kl-1)-Ricr)*zgrid(kl) -
+CML     1           (Rib(i,kl)-Ricr)*zgrid(kl-1))/tempVar1
          endif
       end do
 
@@ -1029,7 +1036,11 @@ C     break data flow dependence on diffus
                diffus(i,ki,2) = diffus(i,ki-1,2)
             else
                diffus(i,ki,1) = dblocSm(i,ki) * (zgrid(ki)-zgrid(ki+1))
-     &              / max( Shsq(i,ki), phepsi )
+#ifdef KPP_SMOOTH_REGULARISATION
+     &            / ( Shsq(i,ki) + phepsi**2 )
+#else
+     &            / max( Shsq(i,ki), phepsi )
+#endif
                diffus(i,ki,2) = dbloc(i,ki)   / (zgrid(ki)-zgrid(ki+1))
             endif
          end do
@@ -1046,11 +1057,17 @@ c     vertically smooth Ri
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ store diffus(:,:,1) = kpp_ri_tape_mr
 CADJ &  , key=mr, shape=(/ (sNx+2*OLx)*(sNy+2*OLy),Nr+2 /)
+CMLCADJ store diffus(:,:,2) = kpp_ri_tape_mr
+CMLCADJ &  , key=mr, shape=(/ (sNx+2*OLx)*(sNy+2*OLy),Nr+2 /)
 #endif
 
          call z121 (
      U     diffus(1,0,1),
      I     myThid )
+C     it may also make sense to smooth buoyancy vertically
+CML         call z121 (
+CML     U     diffus(1,0,2),
+CML     I     myThid )
       end do
 #endif
 
@@ -1073,7 +1090,12 @@ c  evaluate f of smooth Ri for shear instability, store in fRi
             ratio = min ( Rig / Riinfty , c1 )
             fRi   = c1 - ratio * ratio
             fRi   = fRi * fRi * fRi
-
+#ifdef KPP_SCALE_SHEARMIXING
+C     reduce shear mixing when there is no shear (Polzin, 1996, JPO, 1409-1425)
+C     importend from MOM5 code
+            fRi   = fRi * shsq(i,ki)*shsq(i,ki)
+     &           /(shsq(i,ki)*shsq(i,ki) + 1. _d -16)
+#endif
 c ----------------------------------------------------------------------
 c            evaluate diffusivities and viscosity
 c    mixing due to internal waves, and shear and static instability
@@ -1398,10 +1420,27 @@ c-----------------------------------------------------------------------
 c find the interior viscosities and derivatives at hbl(i)
 c-----------------------------------------------------------------------
 
+C     initialise diffusivities (*h) and derivatives (*p)
+#ifdef KPP_DO_NOT_MATCH_DIFFUSIVITIES
+         visch  = 0.
+         difsh  = 0.
+         difth  = 0.
+         viscp  = 0.
+         difsp  = 0.
+         diftp  = 0.
+#else /* DO_MATCH_DIFFUSIVITIES */
+# ifdef KPP_DO_NOT_MATCH_DERIVATIVES
+         viscp  = 0.
+         difsp  = 0.
+         diftp  = 0.
+# else /*  DO_MATCH_DERIVATIVES */
          delhat = 0.5*hwide(kn) - zgrid(kn) - hbl(i)
          R      = 1.0 - delhat / hwide(kn)
          dvdzup = (diffus(i,kn-1,1) - diffus(i,kn  ,1)) / hwide(kn)
          dvdzdn = (diffus(i,kn  ,1) - diffus(i,kn+1,1)) / hwide(kn+1)
+CML   This is the same as:
+CML      viscp  = (1.-R) * MAX(dvdzup,0.) + R  * MAX(dvdzdn,0.)
+CML   why do we need that here?
          viscp  = 0.5 * ( (1.-R) * (dvdzup + abs(dvdzup)) +
      1                        R  * (dvdzdn + abs(dvdzdn))  )
 
@@ -1414,13 +1453,18 @@ c-----------------------------------------------------------------------
          dvdzdn = (diffus(i,kn  ,3) - diffus(i,kn+1,3)) / hwide(kn+1)
          diftp  = 0.5 * ( (1.-R) * (dvdzup + abs(dvdzup)) +
      1                        R  * (dvdzdn + abs(dvdzdn))  )
-
+# endif /* KPP_DO_NOT_MATCH_DERIVATIVES */
          visch  = diffus(i,kn,1) + viscp * delhat
          difsh  = diffus(i,kn,2) + difsp * delhat
          difth  = diffus(i,kn,3) + diftp * delhat
+#endif /* KPP_DO_NOT_MATCH_DIFFUSIVITIES */
 
          f1 = stable(i) * conc1 * bfsfc(i) /
+#ifdef KPP_SMOOTH_REGULARISATION
+     &        (ustar(i)**4 + phepsi)
+#else
      &        max(ustar(i)**4,phepsi)
+#endif
          gat1m(i) = visch / hbl(i) / wm(i)
          dat1m(i) = -viscp / wm(i) + f1 * visch
 
@@ -1506,8 +1550,11 @@ c     nonlocal transport term = ghat * <ws>o
 c-----------------------------------------------------------------------
 
             tempVar = ws(i) * hbl(i)
+#ifdef KPP_SMOOTH_REGULARISATION
+            ghat(i,ki) = (1.-stable(i)) * cg / (phepsi+tempVar)
+#else
             ghat(i,ki) = (1.-stable(i)) * cg / max(phepsi,tempVar)
-
+#endif
          end do
       end do
 
@@ -1608,6 +1655,10 @@ c     fraction hbl lies beteen zgrid neighbors
             do md = 1, mdiff
                dkmp5         =      casea(i)  * diffus(i,ki,md) +
      1                         (1.- casea(i)) * blmc  (i,ki,md)
+C     I think that this is meant here, but I cannot be sure because there
+C     there is no reference for this. In MOM6/CVMix, the square is outside
+C     of the parentheses
+CML               dstar         = (1.- delta**2) * dkm1(i,md)
                dstar         = (1.- delta)**2 * dkm1(i,md)
      &                       + delta**2 * dkmp5
                blmc(i,ki,md) = (1.- delta)*diffus(i,ki,md)
@@ -1699,6 +1750,7 @@ c calculate density, alpha, beta in surface layer, and set dbsfc to zero
 
       kkppkey = (ikppkey-1)*Nr + 1
 
+      K = 1
 #ifdef KPP_AUTODIFF_MORE_STORE
 CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k,
 CADJ &     key=kkppkey, kind=isbyte
@@ -1707,9 +1759,9 @@ CADJ &     key=kkppkey, kind=isbyte
 #endif /* KPP_AUTODIFF_MORE_STORE */
       CALL FIND_RHO_2D(
      I     1-OLx, sNx+OLx, 1-OLy, sNy+OLy, 1,
-     I     theta(1-OLx,1-OLy,1,bi,bj), salt(1-OLx,1-OLy,1,bi,bj),
+     I     theta(1-OLx,1-OLy,k,bi,bj), salt(1-OLx,1-OLy,k,bi,bj),
      O     WORK1,
-     I     1, bi, bj, myThid )
+     I     k, bi, bj, myThid )
 #ifdef KPP_AUTODIFF_MORE_STORE
 CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k,
 CADJ &     key=kkppkey, kind=isbyte
@@ -1726,12 +1778,12 @@ CADJ &     key=kkppkey, kind=isbyte
      O     WORK3, myThid )
 
       DO J = 1-OLy, sNy+OLy
-         DO I = 1-OLx, sNx+OLx
-            RHO1(I,J)      = WORK1(I,J) + rhoConst
-            TTALPHA(I,J,1) = WORK2(I,J)
-            SSBETA(I,J,1)  = WORK3(I,J)
-            DBSFC(I,J,1)   = 0.
-         END DO
+       DO I = 1-OLx, sNx+OLx
+        RHO1(I,J)      = WORK1(I,J) + rhoConst
+        TTALPHA(I,J,1) = WORK2(I,J)
+        SSBETA(I,J,1)  = WORK3(I,J)
+        DBSFC(I,J,1)   = 0.
+       END DO
       END DO
 
 c calculate alpha, beta, and gradients in interior layers
