@@ -317,6 +317,9 @@ C     estimating a surface velocity that is independent of first level
 C     thickness in the model.  First determine mixed layer depth hMix.
 C     Second zRef = espilon * hMix.  Third determine roughness length
 C     scale z0.  Third estimate reference velocity.
+CML   Comment: so far this code only handles the case of coarse resolution.
+CML   High resolution, i.e. the case zref=hMix*epsilon > drF(1), is not
+CML   handled by this code.
 
       zFac = ABS(rF(3)) * LOG ( rF(3) / rF(2) ) * recip_drF(2)
       DO j = jmin, jmax
@@ -327,7 +330,7 @@ C     scale z0.  Third estimate reference velocity.
 C     Determine mixed layer depth hMix as the shallowest depth at which
 C     dB/dz exceeds 5.2e-5 s^-2.
         kTmp = nzmax(i,j,bi,bj)
-        DO k = 1, Nr
+        DO k = Nr, 1, -1
          IF ( k .LT. nzmax(i,j,bi,bj) .AND.
      &        maskC(I,J,k,bi,bj) .GT. 0. .AND.
      &        dbloc(i,j,k) * recip_drC(k+1) .GT. dB_dz )
@@ -374,6 +377,7 @@ CML     &       ( zFac - tempVar2 * vonK / MAX ( ustar(i,j), phepsi ) )
 
 C     zRef is set to 0.1 * hMix subject to z0 <= zRef <= drF(1)
         zRef(i,j) = MAX ( epsilon * zRef(i,j), z0(i,j) )
+CML   with this statement the high resolution case zRef > drF(1) is ruled out
         zRef(i,j) = MIN ( zRef(i,j), drF(1) )
 
 C     Estimate reference velocity uRef and vRef.
