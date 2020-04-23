@@ -1371,9 +1371,14 @@ c     ws(imt), wm(imt)           turbulent velocity scales             (m/s)
       _RL dat1m(imt), dat1s(imt), dat1t(imt)
       _RL ws(imt), wm(imt)
       integer i, kn, ki, kl
-      _RL R, dvdzup, dvdzdn, viscp
-      _RL difsp, diftp, visch, difsh, difth
-      _RL f1, sig, a1, a2, a3, delhat
+#ifndef KPP_DO_NOT_MATCH_DIFFUSIVITIES
+# ifndef KPP_DO_NOT_MATCH_DERIVATIVES
+      _RL R, dvdzup, dvdzdn
+# endif
+      _RL delhat
+#endif
+      _RL viscp, difsp, diftp, visch, difsh, difth
+      _RL f1, sig, a1, a2, a3
       _RL Gm, Gs, Gt
       _RL tempVar
 
@@ -1433,6 +1438,7 @@ C     initialise diffusivities (*h) and derivatives (*p)
          viscp  = 0.
          difsp  = 0.
          diftp  = 0.
+         delhat = 0.
 # else /*  DO_MATCH_DERIVATIVES */
          delhat = 0.5*hwide(kn) - zgrid(kn) - hbl(i)
          R      = 1.0 - delhat / hwide(kn)
