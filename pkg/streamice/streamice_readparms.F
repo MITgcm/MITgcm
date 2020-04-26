@@ -99,6 +99,7 @@ c     INTEGER iarr, tarr
      &     STREAMICE_chkresidconvergence,
      &     STREAMICE_alt_driving_stress,
      &     STREAMICE_allow_reg_coulomb,
+     &     STREAMICE_use_log_ctrl,
 #ifdef STREAMICE_FLOWLINE_BUTTRESS
      &     streamice_buttr_width,
      &     useStreamiceFlowlineButtr,
@@ -325,6 +326,7 @@ c      STREAMICE_construct_matrix = .TRUE.
       STREAMICE_allow_reg_coulomb = .FALSE.
       STREAMICE_h_ctrl_const_surf = .FALSE.
       STREAMICE_allow_cpl = .false.
+      STREAMICE_use_log_ctrl = .false.
 c       STREAMICE_hybrid_stress= .FALSE.
 
       min_x_noflow_NORTH = 0.

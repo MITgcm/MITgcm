@@ -32,7 +32,7 @@ C     !INPUT/OUTPUT ARGUMENTS
 C     LOCAL VARIABLES
       INTEGER i, j, bi, bj, k, l
       _RL ux, uy, vx, vy, exx, eyy, exy, second_inv, unorm
-      _RL umid, vmid
+      _RL umid, vmid, C_fric_val, Bglen_val
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -88,17 +88,33 @@ C     LOCAL VARIABLES
      &      sqrt(exx**2+eyy**2+exx*eyy+exy**2+eps_glen_min**2)
 
 
-           visc_streamice(i,j,bi,bj) = 
 #ifdef STREAMICE_3D_GLEN_CONST
-     &      .5 * (B_glen(i,j,1,bi,bj))**2 *
+           IF (.not.STREAMICE_use_log_ctrl) THEN
+            Bglen_val = B_glen(i,j,1,bi,bj)**2
+           ELSE
+            Bglen_val = exp(B_glen(i,j,1,bi,bj))
+           ENDIF
 #else
-     &      .5 * (B_glen(i,j,bi,bj))**2 *
+           IF (.not.STREAMICE_use_log_ctrl) THEN
+            Bglen_val = B_glen(i,j,bi,bj)**2
+           ELSE
+            Bglen_val = exp(B_glen(i,j,bi,bj))
+           ENDIF
 #endif
+
+           visc_streamice(i,j,bi,bj) = 
+     &      .5 * Bglen_val * 
      &      second_inv**((1-n_glen)/n_glen) * H_streamice(i,j,bi,bj)
+
+           if (.not.STREAMICE_use_log_ctrl) THEN
+            C_fric_val = C_basal_friction(i,j,bi,bj)**2
+           else
+            C_fric_val = exp(C_basal_friction(i,j,bi,bj))
+           endif
 
            unorm = sqrt(umid**2+vmid**2+eps_u_min**2)
            tau_beta_eff_streamice(i,j,bi,bj) = 
-     &       C_basal_friction(i,j,bi,bj)**2 *
+     &       C_fric_val *
      &       unorm ** (n_basal_friction-1.0) *
      &       float_frac_streamice (i,j,bi,bj)
            
