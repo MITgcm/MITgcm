@@ -89,7 +89,7 @@ C-    sea-ice loading (expressed in Mass of ice+snow / area unit, [kg/m2])
        CALL DIAGNOSTICS_FILL_RS( sIceLoad,'sIceLoad',0,1,0,1,1,myThid )
 
       IF ( fluidIsWater ) THEN
-C-    pLoad (Atmospheric pressure loading [Pa=N/m2])
+C-    pLoad (Atmospheric pressure anomaly relative to surf_pRef [Pa=N/m2])
        CALL DIAGNOSTICS_FILL_RS( pLoad,   'atmPload',0,1,0,1,1,myThid )
 
 C-    oceFreez (= heating from freezing of sea-water, if allowFreezing=T)
