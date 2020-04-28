@@ -294,7 +294,7 @@ cts ---
 
             if (gencost_barfile(kgen)(11:16).EQ.'shifwf') then
               tmpfld=shelficeFreshWaterFlux(i,j,bi,bj) / rhoConstFresh 
-            elseif (gencost_name(kgen)(11:16).EQ.'shihtf') then
+            elseif (gencost_barfile(kgen)(11:16).EQ.'shihtf') then
               tmpfld=shelficeHeatFlux(i,j,bi,bj) 
             endif
             if (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
