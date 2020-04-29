@@ -69,7 +69,9 @@ C     iStart, iEnd :: String indexing variables
 C     idString     :: Temp. for building prefix.
       INTEGER iStart
       INTEGER iEnd
-      CHARACTER*9 idString
+      INTEGER iTmp
+      CHARACTER*13 fmtStr
+      CHARACTER*13 idString
 CEOP
 
 C--   Find beginning and end of message
@@ -105,13 +107,18 @@ C$OMP CRITICAL
        _BEGIN_CRIT(myThid)
 # endif
 #endif
-       WRITE(idString,'(I4.4,A,I4.4)') myProcId,'.',myThid
+       iTmp = MAX(4,1 + INT(LOG10(DFLOAT(nPx*nPy))))
+       WRITE(fmtStr,'(4(A,I1),A)')
+     &      '(I',iTmp,'.',iTmp,',A,I',iTmp,'.',iTmp,')'
+       WRITE(idString,fmtStr) myProcId,'.',myThid
+       iTmp = ILNBLNK( idString )
        IF ( message .EQ. ' ' ) THEN
         WRITE(unit,'(A,A,A,A,A,A)',ERR=999)
-     &   '(',PROCESS_HEADER,' ',idString,')',' '
+     &   '(',PROCESS_HEADER,' ',idString(1:iTmp),')',' '
        ELSE
         WRITE(unit,'(A,A,A,A,A,A,A)',ERR=999)
-     &   '(',PROCESS_HEADER,' ',idString,')',' ',message(iStart:iEnd)
+     &   '(',PROCESS_HEADER,' ',idString(1:iTmp),')',' ',
+     &   message(iStart:iEnd)
        ENDIF
        IF ( debugMode ) THEN
         CALL MDS_FLUSH( unit, myThid )
@@ -197,7 +204,9 @@ C     iStart, iEnd :: Temps. for string indexing
 C     idString     :: Temp. for building message prefix
 c     INTEGER iStart
       INTEGER iEnd
-      CHARACTER*9 idString
+      INTEGER iTmp
+      CHARACTER*13 fmtStr
+      CHARACTER*13 idString
 CEOP
 
 C--   Find beginning and end of message
@@ -226,15 +235,19 @@ C$OMP CRITICAL
 #endif
        IF ( pidIO .EQ. myProcId ) THEN
 C--    Write multi-process format
-         WRITE(idString,'(I4.4,A,I4.4)') myProcId,'.',myThid
+         iTmp = MAX(4,1 + INT(LOG10(DFLOAT(nPx*nPy))))
+         WRITE(fmtStr,'(4(A,I1),A)')
+     &        '(I',iTmp,'.',iTmp,',A,I',iTmp,'.',iTmp,')'
+         WRITE(idString,fmtStr) myProcId,'.',myThid
+         iTmp = ILNBLNK( idString )
 
          IF ( iEnd.EQ.0 ) THEN
           WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)',ERR=999)
-     &    '(',PROCESS_HEADER,idString,')',ERROR_HEADER,' ',
+     &    '(',PROCESS_HEADER,idString(1:iTmp),')',ERROR_HEADER,' ',
      &    ' '
          ELSE
           WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)',ERR=999)
-     &    '(',PROCESS_HEADER,idString,')',ERROR_HEADER,' ',
+     &    '(',PROCESS_HEADER,idString(1:iTmp),')',ERROR_HEADER,' ',
      &        message(1:iEnd)
 c    &    message(iStart:iEnd)
          ENDIF
