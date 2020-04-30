@@ -70,6 +70,7 @@ CEOP
 #ifdef ALLOW_DIAGNOSTICS
       _RL HEFFpre(1:sNx,1:sNy,nSx,nSy)
       _RL enph   (1:sNx,1:sNy)
+      _RL deltaH (1:sNx,1:sNy)
       _RL recip_deltaTtherm
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
@@ -248,7 +249,6 @@ C     because of ugly time level business
 #endif
        ELSE
 #endif /* DISABLE_SEAICE_GROWTH */
-      IF ( DIAGNOSTICS_IS_ON('SIenph  ',myThid) ) THEN
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1,sNy
@@ -269,7 +269,6 @@ c#endif
          ENDDO
         ENDDO
        ENDIF 
-       ENDIF
 
 #ifdef ALLOW_SITRACER
 # ifdef ALLOW_AUTODIFF_TAMC
@@ -358,9 +357,11 @@ c       CALL DIAGNOSTICS_FILL_RS(FV   ,'SIfv    ',0,1 ,0,1,1,myThid)
      &                  UICE (I,J,bi,bj)**2 + UICE (I+1,J,  bi,bj)**2
      &                + VICE (I,J,bi,bj)**2 + VICE (I,  J+1,bi,bj)**2)
      &                * (HEFF(I,J,bi,bj)    - HEFFpre(I,J,bi,bj))
+            deltaH(I,J) = (HEFF(I,J,bi,bj) - HEFFpre(I,J,bi,bj))
            ENDDO
           ENDDO
-            CALL DIAGNOSTICS_FILL(enph,'SIenph  ',0,1,3,bi,bj,myThid)
+            CALL DIAGNOSTICS_FILL(enph,  'SIenph  ',0,1,3,bi,bj,myThid)
+            CALL DIAGNOSTICS_FILL(deltaH,'SIdeltaH',0,1,3,bi,bj,myThid)
           ENDDO
         ENDDO
        ENDIF
