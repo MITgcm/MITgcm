@@ -377,8 +377,9 @@ CML     &       ( zFac - tempVar2 * vonK / MAX ( ustar(i,j), phepsi ) )
 
 C     zRef is set to 0.1 * hMix subject to z0 <= zRef <= drF(1)
         zRef(i,j) = MAX ( epsilon * zRef(i,j), z0(i,j) )
-CML   with this statement the high resolution case zRef > drF(1) is ruled out
-        zRef(i,j) = MIN ( zRef(i,j), drF(1) )
+C     with this statement the high resolution case zRef > drF(1) is ruled out
+C     so we comment it out
+CML        zRef(i,j) = MIN ( zRef(i,j), drF(1) )
 
 C     Estimate reference velocity uRef and vRef.
         uRef(i,j) = p5 * ( uVel(i,j,1,bi,bj) + uVel(ip1,j,1,bi,bj) )
@@ -400,6 +401,25 @@ C     Estimate reference velocity uRef and vRef.
      &        vonK / tempVar2
          uRef(i,j) = uRef(i,j) + ustarX * tempVar2
          vRef(i,j) = vRef(i,j) + ustarY * tempVar2
+        ELSEIF ( zRef(i,j) .GE. drF(1) ) THEN
+C     if zref > drF(1), average over zref
+         uRef(i,j) = uRef(i,j)*drF(1)
+         vRef(i,j) = vRef(i,j)*drF(1)
+         k = 2
+         DO WHILE ( ABS(rF(k+1)) .LE. zRef(i,j) )
+          uRef(i,j) = uRef(i,j) + drF(k) * p5
+     &         * ( uVel(i,j,k,bi,bj) + uVel(ip1,j,k,bi,bj) )
+          vRef(i,j) = vRef(i,j) + drF(k) * p5
+     &         * ( vVel(i,j,k,bi,bj) + vVel(i,jp1,k,bi,bj) )
+          k = k+1
+         ENDDO
+C     now k should be the index of the layer into which zref reaches
+         uRef(i,j) = uRef(i,j) + MAX(0.,zref(i,j)-ABS(rF(k))) * p5
+     &        * ( uVel(i,j,k,bi,bj) + uVel(ip1,j,k,bi,bj) )
+         vRef(i,j) = vRef(i,j) + MAX(0.,zref(i,j)-ABS(rF(k))) * p5
+     &        * ( vVel(i,j,k,bi,bj) + vVel(i,jp1,k,bi,bj) )
+         uRef(i,j) = uRef(i,j)/zRef(i,j)
+         vRef(i,j) = vRef(i,j)/zRef(i,j)
         ENDIF
 
        ENDDO
