@@ -130,13 +130,6 @@ C=============== state variables ============
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIenpk  '
-      diagTitle = 'SEAICE the rate of change of KE per unit area'
-      diagUnits = 'W/m^2           '
-      diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
       diagName  = 'SIenpa  '
       diagTitle = 'SEAICE power input by surface wind stresses'
       diagUnits = 'W/m^2           '
@@ -152,7 +145,7 @@ C=============== state variables ============
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'SIenph  '
-      diagTitle = 'SEAICE power due to chagne in inertia'
+      diagTitle = 'SEAICE power due to change in inertia'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
