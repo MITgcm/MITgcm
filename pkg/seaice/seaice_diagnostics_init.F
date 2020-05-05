@@ -193,13 +193,6 @@ C=============== state variables ============
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIdeltaH'
-      diagTitle = 'SEAICE deltaH thickness'
-      diagUnits = 'm               '
-      diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
 
 #ifdef ALLOW_SITRACER
       DO iTr = 1, SItrNumInUse
