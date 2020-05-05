@@ -68,9 +68,9 @@ C     bi,bj  :: tile counters
       _RL phiSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL mask_uice, mask_vice
 #ifdef ALLOW_DIAGNOSTICS
-      _RL enpa  (1:sNx,1:sNy)
-      _RL enpw  (1:sNx,1:sNy)
-      _RL enpg  (1:sNx,1:sNy)
+      _RL eTmp  (1:sNx,1:sNy)
+CML      _RL enpw  (1:sNx,1:sNy)
+CML      _RL enpg  (1:sNx,1:sNy)
       _RL areaW, areaS, COSWAT, SINWAT
       INTEGER kSrf
       LOGICAL  DIAGNOSTICS_IS_ON
@@ -412,14 +412,9 @@ c in open water areas (drift of zero thickness ice)
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-C     surrface level
-       kSrf = 1
-C     introduce turning angle (default is zero)
-       SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
-       COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         IF ( DIAGNOSTICS_IS_ON('SIenpa  ',myThid) ) THEN
+       IF ( DIAGNOSTICS_IS_ON('SIenpa  ',myThid) ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1,sNy+1
            DO i=1,sNx+1
             areaW = 0.5 _d 0 * (AREA(I,J,bi,bj) + AREA(I-1,J,bi,bj))
@@ -432,16 +427,25 @@ C     introduce turning angle (default is zero)
           ENDDO
           DO j=1,sNy
            DO i=1,sNx
-            enpa(I,J)= 0.5 _d 0 * (
+            eTmp(I,J)= 0.5 _d 0 * (
      &             UICE(I,  J,bi,bj)*TAUX(I,  J,bi,bj)
      &           + UICE(I+1,J,bi,bj)*TAUX(I+1,J,bi,bj)
      &           + VICE(I,J,  bi,bj)*TAUY(I,J,  bi,bj)
      &           + VICE(I,J+1,bi,bj)*TAUY(I,J+1,bi,bj) )
            ENDDO
           ENDDO
-          CALL DIAGNOSTICS_FILL(enpa,'SIenpa  ',0,1,3,bi,bj,myThid)
-         ENDIF
-                IF ( DIAGNOSTICS_IS_ON('SIenpw  ',myThid) ) THEN
+          CALL DIAGNOSTICS_FILL(eTmp,'SIenpa  ',0,1,3,bi,bj,myThid)
+         ENDDO
+        ENDDO
+       ENDIF
+       IF ( DIAGNOSTICS_IS_ON('SIenpw  ',myThid) ) THEN
+C     surface level
+        kSrf = 1
+C     introduce turning angle (default is zero)
+        SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
+        COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
           DO j=1,sNy+1
            DO i=1,sNx+1
             areaW = 0.5 _d 0 * (AREA(I,J,bi,bj) + AREA(I-1,J,bi,bj))
@@ -476,32 +480,42 @@ C     introduce turning angle (default is zero)
           ENDDO
           DO j=1,sNy
            DO i=1,sNx
-            enpw(I,J)= - 0.5 _d 0 * (
+            eTmp(I,J)= - 0.5 _d 0 * (
      &             UICE(I,  J,bi,bj)*TAUX(I,  J,bi,bj)
      &           + UICE(I+1,J,bi,bj)*TAUX(I+1,J,bi,bj)
      &           + VICE(I,J,  bi,bj)*TAUY(I,J,  bi,bj)
      &           + VICE(I,J+1,bi,bj)*TAUY(I,J+1,bi,bj) )
            ENDDO
           ENDDO
-          CALL DIAGNOSTICS_FILL(enpw,'SIenpw  ',0,1,3,bi,bj,myThid)
-       ENDIF
-           IF ( DIAGNOSTICS_IS_ON('SIenpg  ',myThid) ) THEN
-         DO j=1,sNy
-           DO i=1,sNx
-              enpg (I,J) = - 0.5 _d 0 * (
-     &             (seaiceMassU(I,J,bi,bj)*_recip_dxC(I,J,bi,bj)
-     &           * ( phiSurf   (I,J )-      phiSurf  (I-1,J))
-     &           * ( UICE (     I,J,bi,bj)+  UICE(    I+1,J,bi,bj))
-     &             -0.5 _d 0*
-     &             seaiceMassV (I,J,bi,bj)* _recip_dyC(I,J,bi,bj)
-     &           *( phiSurf(I,J)   -   phiSurf(I,J-1) ))
-     &           * (  VICE(I,J,bi,bj) + VICE(I,J+1,bi,bj)))
-           ENDDO
+          CALL DIAGNOSTICS_FILL(eTmp,'SIenpw  ',0,1,3,bi,bj,myThid)
          ENDDO
-            CALL DIAGNOSTICS_FILL(enpg,'SIenpg  ',0,1,3,bi,bj,myThid)
-           ENDIF
         ENDDO
-      ENDDO
+       ENDIF
+       IF ( SEAICEuseTilt
+     &      .AND. DIAGNOSTICS_IS_ON('SIenpg  ',myThid) ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy+1,sNy+OLy
+           DO i=1-OLx+1,sNx+OLx
+            TAUX(I,J,bi,bj)=
+     &           - seaiceMassU(I,J,bi,bj)*_recip_dxC(I,J,bi,bj)
+     &           *( phiSurf(I,J)-phiSurf(I-1,J) ) * UICE(I,J,bi,bj)
+            TAUY(I,J,bi,bj)=
+     &           - seaiceMassV(I,J,bi,bj)* _recip_dyC(I,J,bi,bj)
+     &           *( phiSurf(I,J)-phiSurf(I,J-1) ) * VICE(I,J,bi,bj)
+           ENDDO
+          ENDDO
+          DO j=1,sNy
+           DO i=1,sNx
+            eTmp(I,J) = 0.5 _d 0 *
+     &           ( TAUX(I,J,bi,bj) + TAUX(I+1,J,bi,bj)
+     &           + TAUY(I,J,bi,bj) + TAUY(I,J+1,bi,bj) )
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(eTmp,'SIenpg  ',0,1,3,bi,bj,myThid)
+         ENDDO
+        ENDDO
+       ENDIF
       ENDIF
 
 #endif   /*  ALLOW_DIAGNOSTICS */
