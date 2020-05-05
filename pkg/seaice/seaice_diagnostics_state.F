@@ -4,7 +4,7 @@ CBOP
 C     !ROUTINE: SEAICE_DIAGNOSTICS_STATE
 C     !INTERFACE:
       SUBROUTINE SEAICE_DIAGNOSTICS_STATE(
-     I                      myTime, myIter, myThid )
+     I                      seqFlag, myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R  SEAICE_DIAGNOSTICS_STATE
@@ -28,32 +28,29 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
 C     myTime  :: time counter for this thread
 C     myIter  :: iteration counter for this thread
-C     bi,bj   :: tile indices
 C     myThid  :: thread number for this instance of the routine.
+C     seqFlag :: flag that indicate where this S/R is called from:
+C             :: =0 called from the beginning of forward_step
+C             :: =1 called from the middle of forward_step
+C             :: =2 called from the end of forward_step
       _RL  myTime
       INTEGER myIter
       INTEGER myThid
+      INTEGER seqFlag
 CEOP
 
 #ifdef ALLOW_DIAGNOSTICS
 C     == Local variables ==
+C     bi,bj   :: tile indices
       INTEGER i,j,bi,bj
       _RL tIce (1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
 #ifdef SEAICE_CGRID
-      _RL sig1(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
-      _RL sig2(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
+      _RL sig1 (1:sNx,1:sNy)
+      _RL sig2 (1:sNx,1:sNy)
       _RL sig11(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
       _RL sig22(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
       _RL sig12(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
       _RL sigp, sigm, sigTmp, recip_prs
-      _RL enph  (1:sNx,1:sNy)
-      _RL enpk  (1:sNx,1:sNy)
-      _RL enpg  (1:sNx,1:sNy)
-      _RL enpi  (1:sNx,1:sNy)
-      _RL enpot (1:sNx,1:sNy)
-      _RL PRfric(1:sNx,1:sNy)
-      _RL PSfric(1:sNx,1:sNy)
-      _RL divSq, shearSq
 #endif
       INTEGER k
       _RL recip_multDim
@@ -66,8 +63,7 @@ C     == Local variables ==
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
 
-      IF ( useDiagnostics ) THEN
-
+      IF ( useDiagnostics .AND. seqFlag .EQ. 0 ) THEN
        CALL DIAGNOSTICS_FILL( AREA, 'SIarea  ', 0, 1, 0, 1,1, myThid )
        CALL DIAGNOSTICS_FILL( HEFF, 'SIheff  ', 0, 1, 0, 1,1, myThid )
        CALL DIAGNOSTICS_FILL( UICE, 'SIuice  ', 0, 1, 0, 1,1, myThid )
@@ -113,23 +109,68 @@ C     division by zero is not possible
 #endif
 
 #ifdef ALLOW_SITRACER
-      DO iTracer = 1, SItrNumInUse
-       WRITE(diagName,'(A4,I2.2,A2)') 'SItr',iTracer,'  '
-       if (SItrMate(iTracer).EQ.'HEFF') then
-        CALL DIAGNOSTICS_FRACT_FILL(
-     I       SItracer(1-OLx,1-OLy,1,1,iTracer), HEFF,
-     I       ONE, 1, diagName, 0, 1, 0, 1, 1, myThid )
-       else
-        CALL DIAGNOSTICS_FRACT_FILL(
-     I       SItracer(1-OLx,1-OLy,1,1,iTracer), AREA,
-     I       ONE, 1, diagName, 0, 1, 0, 1, 1, myThid )
-       endif
-      ENDDO
+       DO iTracer = 1, SItrNumInUse
+        WRITE(diagName,'(A4,I2.2,A2)') 'SItr',iTracer,'  '
+        IF (SItrMate(iTracer).EQ.'HEFF') THEN
+         CALL DIAGNOSTICS_FRACT_FILL(
+     I        SItracer(1-OLx,1-OLy,1,1,iTracer), HEFF,
+     I        ONE, 1, diagName, 0, 1, 0, 1, 1, myThid )
+        ELSE
+         CALL DIAGNOSTICS_FRACT_FILL(
+     I        SItracer(1-OLx,1-OLy,1,1,iTracer), AREA,
+     I        ONE, 1, diagName, 0, 1, 0, 1, 1, myThid )
+        ENDIF
+       ENDDO
 #endif
 #ifdef SEAICE_VARIABLE_SALINITY
        CALL DIAGNOSTICS_FILL(HSALT  ,'SIhsalt ',0,1 ,0,1,1,myThid)
 #endif
-
+C
+       IF ( DIAGNOSTICS_IS_ON('SIuheff ',myThid) ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j = 1,sNy
+           DO i = 1,sNx+1
+            tIce(i,j,bi,bj) =
+#ifdef SEAICE_CGRID
+     &           UICE(i,j,bi,bj)
+#else
+C     average B-grid velocities to C-grid points
+     &           0.5 _d 0*(UICE(i,j,bi,bj)+UICE(i,j+1,bi,bj))
+#endif /* SEAICE_CGRID */
+     &           *0.5 _d 0*(HEFF(i,j,bi,bj)+HEFF(i-1,j,bi,bj))
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL DIAGNOSTICS_FILL(tIce,'SIuheff ',0,1,0,1,1,myThid)
+       ENDIF
+       IF ( DIAGNOSTICS_IS_ON('SIvheff ',myThid) ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j = 1,sNy+1
+           DO i = 1,sNx
+            tIce(i,j,bi,bj) =
+#ifdef SEAICE_CGRID
+     &           VICE(i,j,bi,bj)
+#else
+C     average B-grid velocities to C-grid points
+     &           0.5 _d 0*(VICE(i,j,bi,bj)+VICE(i+1,j,bi,bj))
+#endif /* SEAICE_CGRID */
+     &           *0.5 _d 0*(HEFF(i,j,bi,bj)+HEFF(i,j-1,bi,bj))
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        CALL DIAGNOSTICS_FILL(tIce,'SIvheff ',0,1,0,1,1,myThid)
+       ENDIF
+C     allowDiagnostics and seqFlag = 0
+      ENDIF
+C
+C     derived diagnostics require a full state that will only be availabe
+C     after seaice_model has been called
+C
+      IF ( useDiagnostics .AND. seqFlag .EQ. 1 ) THEN
        CALL DIAGNOSTICS_FILL(zeta   ,'SIzeta  ',0,1 ,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(eta    ,'SIeta   ',0,1 ,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(press  ,'SIpress ',0,1 ,0,1,1,myThid)
@@ -186,8 +227,8 @@ C     PRESS = PRESS(n-1), n = number of sub-cycling steps
              sig2(I,J) = 0.5*(sigp - sigTmp)*recip_prs
             ENDDO
            ENDDO
-           CALL DIAGNOSTICS_FILL(sig1,'SIsig1  ',0,1,2,bi,bj,myThid)
-           CALL DIAGNOSTICS_FILL(sig2,'SIsig2  ',0,1,2,bi,bj,myThid)
+           CALL DIAGNOSTICS_FILL(sig1,'SIsig1  ',0,1,3,bi,bj,myThid)
+           CALL DIAGNOSTICS_FILL(sig2,'SIsig2  ',0,1,3,bi,bj,myThid)
           ENDDO
          ENDDO
         ELSE
@@ -234,127 +275,103 @@ C     in different way to get meaningfull sig12C (=sigTmp):
              sig2(I,J) = 0.5*(sigp - sigTmp)*recip_prs
             ENDDO
            ENDDO
-           CALL DIAGNOSTICS_FILL(sig1,'SIsig1  ',0,1,2,bi,bj,myThid)
-           CALL DIAGNOSTICS_FILL(sig2,'SIsig2  ',0,1,2,bi,bj,myThid)
+           CALL DIAGNOSTICS_FILL(sig1,'SIsig1  ',0,1,3,bi,bj,myThid)
+           CALL DIAGNOSTICS_FILL(sig2,'SIsig2  ',0,1,3,bi,bj,myThid)
           ENDDO
          ENDDO
 C     endif SEAICEuseEVP
         ENDIF
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
-            sigm = e11(I,J,bi,bj) - e22(I,J,bi,bj)
-            sigTmp =
-     &           ( e12(I,  J,  bi,bj)**2 + e12(I+1,J,  bi,bj)**2
-     &           + e12(I+1,J+1,bi,bj)**2 + e12(I  ,J+1,bi,bj)**2 )
+        IF ( DIAGNOSTICS_IS_ON('SIshear ',myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+             sigm = e11(I,J,bi,bj) - e22(I,J,bi,bj)
+             sigTmp =
+     &            ( e12(I,  J,  bi,bj)**2 + e12(I+1,J,  bi,bj)**2
+     &            + e12(I+1,J+1,bi,bj)**2 + e12(I  ,J+1,bi,bj)**2 )
 C     shear deformation as sqrt((e11-e22)**2 + 4*e12**2); the 4 pulled into
 C     the average
-            sig1(I,J) = sqrt(sigm*sigm + sigTmp)
+             sig1(I,J) = sqrt(sigm*sigm + sigTmp)
+            ENDDO
            ENDDO
+           CALL DIAGNOSTICS_FILL(sig1,'SIshear ',0,1,3,bi,bj,myThid)
           ENDDO
-          CALL DIAGNOSTICS_FILL(sig1,'SIshear ',0,1,2,bi,bj,myThid)
          ENDDO
-        ENDDO
+        ENDIF
 C     endif DIAGNOSTICS_IS_ON(SIsig1/2)
        ENDIF
-#endif /* SEAICE_CGRID */
-C     abuse press as a temporary field
-        IF ( DIAGNOSTICS_IS_ON('SIuheff ',myThid) ) THEN
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j = 1,sNy
-            DO i = 1,sNx+1
-             press(i,j,bi,bj) =
-#ifdef SEAICE_CGRID
-     &            UICE(i,j,bi,bj)
-#else
-C     average B-grid velocities to C-grid points
-     &            0.5 _d 0*(UICE(i,j,bi,bj)+UICE(i,j+1,bi,bj))
-#endif /* SEAICE_CGRID */
-     &            *0.5 _d 0*(HEFF(i,j,bi,bj)+HEFF(i-1,j,bi,bj))
-            ENDDO
+C
+C     Sea ice energy diagnostics
+C
+       IF ( ( DIAGNOSTICS_IS_ON('SIenpot ',myThid) .OR.
+     &        DIAGNOSTICS_IS_ON('SIpRfric',myThid) .OR.
+     &        DIAGNOSTICS_IS_ON('SIpSfric',myThid) ) .AND. .NOT.
+     &      ( DIAGNOSTICS_IS_ON('SIsig1  ',myThid) .OR.
+     &        DIAGNOSTICS_IS_ON('SIsig2  ',myThid) .OR.
+     &        DIAGNOSTICS_IS_ON('SIshear ',myThid) )
+     &      ) THEN
+C     recompute strainrates from up-to-date velocities
+C     if we have not yet done so
+        CALL SEAICE_CALC_STRAINRATES(
+     I       uIce, vIce,
+     O       e11, e22, e12,
+     I       0, myTime, myIter, myThid )
+       ENDIF
+
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         IF ( DIAGNOSTICS_IS_ON('SIenpi  ',myThid) ) THEN
+          DO J=1,sNy
+           DO I=1,sNx
+            sig1(I,J)  = 0.5 _d 0 * (
+     &            UICE(I,  J,bi,bj)*stressDivergenceX(I,  J,bi,bj)
+     &           +UICE(I+1,J,bi,bj)*stressDivergenceX(I+1,J,bi,bj)
+     &           +VICE(I,J,  bi,bj)*stressDivergenceY(I,J,  bi,bj)
+     &           +VICE(I,J+1,bi,bj)*stressDivergenceY(I,J+1,bi,bj) )
            ENDDO
           ENDDO
-         ENDDO
-         CALL DIAGNOSTICS_FILL(press,'SIuheff ',0,1,0,1,1,myThid)
-        ENDIF
-        IF ( DIAGNOSTICS_IS_ON('SIvheff ',myThid) ) THEN
-         DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-           DO j = 1,sNy+1
-            DO i = 1,sNx
-             press(i,j,bi,bj) =
-#ifdef SEAICE_CGRID
-     &            VICE(i,j,bi,bj)
-#else
-C     average B-grid velocities to C-grid points
-     &            0.5 _d 0*(VICE(i,j,bi,bj)+VICE(i+1,j,bi,bj))
-#endif /* SEAICE_CGRID */
-     &            *0.5 _d 0*(HEFF(i,j,bi,bj)+HEFF(i,j-1,bi,bj))
-            ENDDO
-           ENDDO
+          CALL DIAGNOSTICS_FILL(sig1,'SIenpi  ',0,1,3,bi,bj,myThid)
+         ENDIF
+         IF ( DIAGNOSTICS_IS_ON('SIenpot ',myThid) ) THEN
+          DO J=1,sNy
+           DO I=1,sNx
+            sig1(I,J) = 0.5 _d 0 * press0(I,J,bi,bj) *
+     &           ( e11(I,J,bi,bj) + e22(I,J,bi,bj) )
           ENDDO
          ENDDO
-         CALL DIAGNOSTICS_FILL(press,'SIvheff ',0,1,0,1,1,myThid)
+         CALL DIAGNOSTICS_FILL(sig1,'SIenpot ',0,1,3,bi,bj,myThid)
         ENDIF
+        IF ( DIAGNOSTICS_IS_ON('SIpRfric',myThid) ) THEN
+         DO J=1,sNy
+          DO I=1,sNx
+           sig1(I,J) = - zeta(I,J,bi,bj)
+     &          * ( e11(I,J,bi,bj) + e22(I,J,bi,bj) )
+     &          * ( e11(I,J,bi,bj) + e22(I,J,bi,bj) )
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(sig1,'SIpRfric',0,1,3,bi,bj,myThid)
+        ENDIF
+        IF ( DIAGNOSTICS_IS_ON('SIpRfric',myThid) ) THEN
+         DO J=1,sNy
+          DO I=1,sNx
+           sig1(I,J) = - eta(I,J,bi,bj)
+     &          * ( (e11(I,J,bi,bj) - e22(I,J,bi,bj))**2 +
+     &            ( e12(I,  J,  bi,bj)**2 + e12(I+1,J,  bi,bj)**2
+     &            + e12(I+1,J+1,bi,bj)**2 + e12(I  ,J+1,bi,bj)**2 )
+     &          )
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(sig1,'SIpSfric',0,1,3,bi,bj,myThid)
+        ENDIF
+        ENDDO
+       ENDDO
+#endif /* SEAICE_CGRID */
+C
 C     endif useDiagnostics
       ENDIF
-
-#ifdef SEAICE_CGRID
-C     To calculate sea ice energy diagnostics
-
-      IF ( .NOT. ( DIAGNOSTICS_IS_ON('SIsig1  ',myThid) .OR.
-     &             DIAGNOSTICS_IS_ON('SIsig2  ',myThid) .OR.
-     &             DIAGNOSTICS_IS_ON('SIshear ',myThid) ) ) THEN
-C     recompute strainrates from up-to-date velocities
-       CALL SEAICE_CALC_STRAINRATES(
-     I        uIce, vIce,
-     O        e11, e22, e12,
-     I        0, myTime, myIter, myThid )
-      ENDIF
-
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
-C             taux0=fu(I,J,bi,bj)
-C             tauy0=fv(I,J,bi,bj)
-C             fu0=fu(I,J,bi,bj)
-C             fv0=fv(I,J,bi,bj)
-C
-C             enpa(I,J)=u*taux0+v*tauy0
-C             enpw(I,J)=-u*fu0-v*fv0
-C             enph(I,J)=1./2.*rho_ice*(u**2+v**2)*(Sh-etano*(divux+divuy))
-C             enpg(I.J)=-rho_ice*h*g*(u*divhx+v*divhy)
-          enpi(I,J)= 0.5 _d 0 * (
-     &               UICE(I,  J,bi,bj)*stressDivergenceX(I,  J,bi,bj)
-     &              +UICE(I+1,J,bi,bj)*stressDivergenceX(I+1,J,bi,bj)
-     &              +VICE(I,J,  bi,bj)*stressDivergenceY(I,J,  bi,bj)
-     &              +VICE(I,J+1,bi,bj)*stressDivergenceY(I,J+1,bi,bj) )
-          divSq      = e11(I,J,bi,bj) + e22(I,J,bi,bj)
-          enpot(I,J) = 0.5 _d 0 * press0(I,J,bi,bj) * divSq
-          divSq      = divSq * divSq
-          shearSq    = (e11(I,J,bi,bj) - e22(I,J,bi,bj))**2 +
-     &           ( e12(I,  J,  bi,bj)**2 + e12(I+1,J,  bi,bj)**2
-     &           + e12(I+1,J+1,bi,bj)**2 + e12(I  ,J+1,bi,bj)**2 )
-          pRfric(I,J)=-zeta(I,J,bi,bj) * divSq
-          pSfric(I,J)=-eta(I,J,bi,bj) * shearSq
-         ENDDO
-        ENDDO
-
-        CALL DIAGNOSTICS_FILL(enpi,  'SIenpi  ',0,1,3,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(enpot, 'SIenpot ',0,1,3,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(pRfric,'SIpRfric',0,1,3,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(pSfric,'SIpSfric',0,1,3,bi,bj,myThid)
-
-       ENDDO
-      ENDDO
-#endif /* SEAICE_CGRID */
-
 
 #endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END
-
