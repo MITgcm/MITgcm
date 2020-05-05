@@ -116,17 +116,6 @@ C-    Fill-in EXF wind-stess diags, weighted by open-ocean fraction
         ENDDO    
        ENDDO
       ENDDO
-#ifdef ALLOW_DIAGNOSTICS
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1,sNy
-          DO i=1,sNx
-             HEFFpre(I,J,bi,bj)=HEFF(I,J,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-      ENDDO
-#endif       
 CADJ STORE uwind = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vwind = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte
@@ -199,7 +188,17 @@ C--   Only call advection of heff, area, snow, and salt and
 C--   growth for the generic 0-layer thermodynamics of seaice
 C--   if useThSice=.false., otherwise the 3-layer Winton thermodynamics
 C--   (called from DO_OCEANIC_PHYSICS) take care of this
-
+#ifdef ALLOW_DIAGNOSTICS
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1,sNy
+          DO i=1,sNx
+             HEFFpre(I,J,bi,bj)=HEFF(I,J,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDDO
+#endif  
 C NOW DO ADVECTION and DIFFUSION
       IF ( SEAICEadvHeff .OR. SEAICEadvArea .OR. SEAICEadvSnow
      &        .OR. SEAICEadvSalt ) THEN
