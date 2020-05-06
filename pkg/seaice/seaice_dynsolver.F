@@ -69,13 +69,11 @@ C     bi,bj  :: tile counters
       _RL mask_uice, mask_vice
 #ifdef ALLOW_DIAGNOSTICS
       _RL eTmp  (1:sNx,1:sNy)
-CML      _RL enpw  (1:sNx,1:sNy)
-CML      _RL enpg  (1:sNx,1:sNy)
       _RL areaW, areaS, COSWAT, SINWAT
       INTEGER kSrf
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
-#endif /*  ALLOW_DIAGNOSTICS */
+#endif /* ALLOW_DIAGNOSTICS */
 
 C Initialise local variables in common block
       IF ( myIter.EQ.nIter0 ) THEN
