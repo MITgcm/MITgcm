@@ -415,7 +415,7 @@ c in open water areas (drift of zero thickness ice)
 
 #ifdef ALLOW_DIAGNOSTICS
 C     diagnostics related to mechanics/dynamics/momentum equations
-      IF ( useDiagnostics ) THEN
+      IF ( useDiagnostics .AND. SEAICEuseDYNAMICS ) THEN
        CALL DIAGNOSTICS_FILL(zeta   ,'SIzeta  ',0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(eta    ,'SIeta   ',0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(press  ,'SIpress ',0,1,0,1,1,myThid)
@@ -449,6 +449,7 @@ C     first recompute strainrates from up-to-date velocities
        IF ( DIAGNOSTICS_IS_ON('SIsig1  ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIsig2  ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIshear ',myThid) .OR.
+     &      DIAGNOSTICS_IS_ON('SIenpi  ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIenpot ',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIpRfric',myThid) .OR.
      &      DIAGNOSTICS_IS_ON('SIpSfric',myThid)      ) THEN
@@ -549,13 +550,19 @@ C
 C     most of the energy diagnostics
 C
          IF ( DIAGNOSTICS_IS_ON('SIenpi  ',myThid) ) THEN
+C     compute internal stresses with updated ice velocities
+          IF ( .NOT. SEAICEuseFREEDRIFT )
+     &         CALL SEAICE_CALC_STRESSDIV(
+     I         e11, e22, e12, press, zeta, eta, etaZ,
+     O         stressDivergenceX, stressDivergenceY,
+     I         bi, bj, myTime, myIter, myThid )
           DO J=1,sNy
            DO I=1,sNx
             sig1(I,J)  = 0.5 _d 0 * (
-     &            UICE(I,  J,bi,bj)*stressDivergenceX(I,  J,bi,bj)
-     &           +UICE(I+1,J,bi,bj)*stressDivergenceX(I+1,J,bi,bj)
-     &           +VICE(I,J,  bi,bj)*stressDivergenceY(I,J,  bi,bj)
-     &           +VICE(I,J+1,bi,bj)*stressDivergenceY(I,J+1,bi,bj) )
+     &            uIce(I,  J,bi,bj)*stressDivergenceX(I,  J,bi,bj)
+     &           +uIce(I+1,J,bi,bj)*stressDivergenceX(I+1,J,bi,bj)
+     &           +vIce(I,J,  bi,bj)*stressDivergenceY(I,J,  bi,bj)
+     &           +vIce(I,J+1,bi,bj)*stressDivergenceY(I,J+1,bi,bj) )
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig1,'SIenpi  ',0,1,3,bi,bj,myThid)
@@ -605,10 +612,10 @@ C
           DO j=1,sNy
            DO i=1,sNx
             sig1(I,J)= 0.5 _d 0 * (
-     &             UICE(I,  J,bi,bj)*TAUX(I,  J,bi,bj)
-     &           + UICE(I+1,J,bi,bj)*TAUX(I+1,J,bi,bj)
-     &           + VICE(I,J,  bi,bj)*TAUY(I,J,  bi,bj)
-     &           + VICE(I,J+1,bi,bj)*TAUY(I,J+1,bi,bj) )
+     &             uIce(I,  J,bi,bj)*TAUX(I,  J,bi,bj)
+     &           + uIce(I+1,J,bi,bj)*TAUX(I+1,J,bi,bj)
+     &           + vIce(I,J,  bi,bj)*TAUY(I,J,  bi,bj)
+     &           + vIce(I,J+1,bi,bj)*TAUY(I,J+1,bi,bj) )
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig1,'SIenpa  ',0,1,3,bi,bj,myThid)
@@ -654,10 +661,10 @@ C     introduce turning angle (default is zero)
           DO j=1,sNy
            DO i=1,sNx
             sig1(I,J)= - 0.5 _d 0 * (
-     &             UICE(I,  J,bi,bj)*TAUX(I,  J,bi,bj)
-     &           + UICE(I+1,J,bi,bj)*TAUX(I+1,J,bi,bj)
-     &           + VICE(I,J,  bi,bj)*TAUY(I,J,  bi,bj)
-     &           + VICE(I,J+1,bi,bj)*TAUY(I,J+1,bi,bj) )
+     &             uIce(I,  J,bi,bj)*TAUX(I,  J,bi,bj)
+     &           + uIce(I+1,J,bi,bj)*TAUX(I+1,J,bi,bj)
+     &           + vIce(I,J,  bi,bj)*TAUY(I,J,  bi,bj)
+     &           + vIce(I,J+1,bi,bj)*TAUY(I,J+1,bi,bj) )
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig1,'SIenpw  ',0,1,3,bi,bj,myThid)
@@ -668,10 +675,10 @@ C     introduce turning angle (default is zero)
            DO i=1-OLx+1,sNx+OLx
             TAUX(I,J,bi,bj)=
      &           - seaiceMassU(I,J,bi,bj)*_recip_dxC(I,J,bi,bj)
-     &           *( phiSurf(I,J)-phiSurf(I-1,J) ) * UICE(I,J,bi,bj)
+     &           *( phiSurf(I,J)-phiSurf(I-1,J) ) * uIce(I,J,bi,bj)
             TAUY(I,J,bi,bj)=
      &           - seaiceMassV(I,J,bi,bj)* _recip_dyC(I,J,bi,bj)
-     &           *( phiSurf(I,J)-phiSurf(I,J-1) ) * VICE(I,J,bi,bj)
+     &           *( phiSurf(I,J)-phiSurf(I,J-1) ) * vIce(I,J,bi,bj)
            ENDDO
           ENDDO
           DO j=1,sNy

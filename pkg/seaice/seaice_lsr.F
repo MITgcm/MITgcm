@@ -971,7 +971,7 @@ C--   Compute residual norm and print
 C     end outer ipass pseudo-time stepping loop
       ENDDO
 
-      IF ( useHB87StressCoupling .OR. useDiagnostics ) THEN
+      IF ( useHB87StressCoupling ) THEN
 # ifdef ALLOW_AUTODIFF_TAMC
 C     These directives do not remove any recomputation warnings but avoid
 C     recomputing the entire LSR loop before evaluating this code block
@@ -2016,4 +2016,3 @@ C     relaxation with WFAV
 
       RETURN
       END
-
