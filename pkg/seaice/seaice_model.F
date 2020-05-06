@@ -354,8 +354,8 @@ c       CALL DIAGNOSTICS_FILL_RS(FV   ,'SIfv    ',0,1 ,0,1,1,myThid)
             DO i=1,sNx
              hTmp(I,J,bi,bj) = 0.5 _d 0 * SEAICE_rhoIce
      &            * 0.5 _d 0 * (
-     &              UICE (I,J,bi,bj)**2 + UICE (I+1,J,  bi,bj)**2
-     &            + VICE (I,J,bi,bj)**2 + VICE (I,  J+1,bi,bj)**2 )
+     &              uIce (I,J,bi,bj)**2 + uIce (I+1,J,  bi,bj)**2
+     &            + vIce (I,J,bi,bj)**2 + vIce (I,  J+1,bi,bj)**2 )
      &            * (HEFF(I,J,bi,bj) - hTmp(I,J,bi,bj))
      &             *recip_deltaTtherm
             ENDDO
