@@ -105,7 +105,7 @@ C     force 64-bit io
 
       adpref = 'ad'
       il = ILNBLNK( activeVar_file )
-      WRITE(adfname(1:80),'(80a)') ' '
+      WRITE(adfname,'(A)') ' '
       WRITE(adfname(1:il+2),'(2A)') adpref, activeVar_file(1:il)
 
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
@@ -287,7 +287,7 @@ C     force 64-bit io
 
       adpref = 'ad'
       il = ILNBLNK( activeVar_file )
-      WRITE(adfname(1:80),'(80a)') ' '
+      WRITE(adfname,'(A)') ' '
       WRITE(adfname(1:il+2),'(2A)') adpref, activeVar_file(1:il)
 
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
@@ -405,6 +405,8 @@ C     ==================================================================
 C     o Read an active 1D _RL vector from file.
 C     o Read the same 1D vector to all tiles/processes, so global by
 C       nature
+C     o Note: rely on implicit dynamical allocation (local array size
+C       is an argument of this S/R) for local array "active_data_t"
 C     Modified from 3D: Tim Smith tsmith@oden.utexas.edu Oct-2019
 C     ==================================================================
 C     SUBROUTINE ACTIVE_READ_1D_RL
@@ -462,12 +464,11 @@ C     set these to zero otherwise looks for tiled file
       bi=0
       bj=0
 
-C     ioUnit = 0 => open, read, and close the file... see
-C     mdsio_readvec_loc
+C     ioUnit = 0 => open, read, and close the file... see mdsio_readvec_loc
       ioUnit = 0
       adpref = 'ad'
       il = ILNBLNK( activeVar_file )
-      WRITE(adfname(1:80),'(80a)') ' '
+      WRITE(adfname,'(A)') ' '
       WRITE(adfname(1:il+2),'(2A)') adpref, activeVar_file(1:il)
 
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
@@ -563,6 +564,8 @@ C     ==================================================================
 C     o Read an active 1D _RS vector from file.
 C     o Read the same 1D vector to all tiles/processes, so global by
 C       nature
+C     o Note: rely on implicit dynamical allocation (local array size
+C       is an argument of this S/R) for local array "active_data_t"
 C     Modified from 3D: Tim Smith tsmith@oden.utexas.edu Oct-2019
 C     ==================================================================
 C     SUBROUTINE ACTIVE_READ_1D_RS
@@ -620,12 +623,11 @@ C     set these to zero otherwise looks for tiled file
       bi=0
       bj=0
 
-C     ioUnit = 0 => open, read, and close the file... see
-C     mdsio_readvec_loc
+C     ioUnit = 0 => open, read, and close the file... see mdsio_readvec_loc
       ioUnit = 0
       adpref = 'ad'
       il = ILNBLNK( activeVar_file )
-      WRITE(adfname(1:80),'(80a)') ' '
+      WRITE(adfname,'(A)') ' '
       WRITE(adfname(1:il+2),'(2A)') adpref, activeVar_file(1:il)
 
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
@@ -990,16 +992,9 @@ C     myThid         :: thread number for this instance
       INTEGER  myOptimIter
       INTEGER  myThid
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
-      CHARACTER*(2)  adpref
-      CHARACTER*(80) adfname
       INTEGER i, bi, bj
       INTEGER prec
-      INTEGER il
       INTEGER ioUnit
       _RS  dummyRS(1)
       _RL  active_data_t(active_var_length)
@@ -1008,18 +1003,12 @@ CEOP
 C     force 64-bit io
       prec = ctrlprec
 
-C     set these to zero otherwise looks mdsio_read/writevec_loc
-C     looks for tiled file
+C     set these to zero otherwise mdsio_read/writevec_loc looks for tiled file
       bi=0
       bj=0
 
-C     ioUnit = 0 => open, read, and close the file... see
-C     mdsio_readvec_loc
+C     ioUnit = 0 => open, read, and close the file... see mdsio_readvec_loc
       ioUnit = 0
-      adpref = 'ad'
-      il = ILNBLNK( activeVar_file )
-      WRITE(adfname(1:80),'(80a)') ' '
-      WRITE(adfname(1:il+2),'(2A)') adpref, activeVar_file(1:il)
 
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
@@ -1125,36 +1114,23 @@ C     myThid         :: thread number for this instance
       INTEGER  myOptimIter
       INTEGER  myThid
 
-C     !FUNCTIONS:
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-
 C     !LOCAL VARIABLES:
-      CHARACTER*(2)  adpref
-      CHARACTER*(80) adfname
       INTEGER i, bi, bj
       INTEGER prec
-      INTEGER il
       INTEGER ioUnit
-      _RL  dummyRL(1)
       _RS  active_data_t(active_var_length)
+      _RL  dummyRL(1)
 CEOP
 
 C     force 64-bit io
       prec = ctrlprec
 
-C     set these to zero otherwise looks mdsio_read/writevec_loc
-C     looks for tiled file
+C     set these to zero otherwise mdsio_read/writevec_loc looks for tiled file
       bi=0
       bj=0
 
-C     ioUnit = 0 => open, read, and close the file... see
-C     mdsio_readvec_loc
+C     ioUnit = 0 => open, read, and close the file... see mdsio_readvec_loc
       ioUnit = 0
-      adpref = 'ad'
-      il = ILNBLNK( activeVar_file )
-      WRITE(adfname(1:80),'(80a)') ' '
-      WRITE(adfname(1:il+2),'(2A)') adpref, activeVar_file(1:il)
 
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
