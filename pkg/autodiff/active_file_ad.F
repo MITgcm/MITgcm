@@ -74,19 +74,19 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     adactive_var:    array
-C     iRec:            record number
-C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
-C     doglobalread:    flag for global or local read/write
-C                      (default: .false.)
-C     lAdInit:         initialisation of corresponding adjoint
-C                      variable and write to active file
+C     active_var_file:: filename
+C     adactive_var   :: array
+C     iRec           :: record number
+C     myIter         :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
+C     doglobalread   :: flag for global or local read/write
+C                       (default: .false.)
+C     lAdInit        :: initialisation of corresponding adjoint
+C                       variable and write to active file
       CHARACTER*(*) active_var_file
       _RL     adactive_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iRec
-      INTEGER myIter,myThid
+      INTEGER myIter, myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
@@ -163,19 +163,19 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     adactive_var:    array
-C     iRec:            record number
-C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
-C     doglobalread:    flag for global or local read/write
-C                      (default: .false.)
-C     lAdInit:         initialisation of corresponding adjoint
-C                      variable and write to active file
+C     active_var_file:: filename
+C     adactive_var   :: array
+C     iRec           :: record number
+C     myIter         :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
+C     doglobalread   :: flag for global or local read/write
+C                       (default: .false.)
+C     lAdInit        :: initialisation of corresponding adjoint
+C                       variable and write to active file
       CHARACTER*(*) active_var_file
       _RL     adactive_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
-      INTEGER myIter,myThid
+      INTEGER myIter, myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
@@ -252,19 +252,19 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     adactive_var:    array
-C     iRec:            record number
-C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
-C     doglobalread:    flag for global or local read/write
-C                      (default: .false.)
-C     lAdInit:         initialisation of corresponding adjoint
-C                      variable and write to active file
+C     active_var_file:: filename
+C     adactive_var   :: array
+C     iRec           :: record number
+C     myIter         :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
+C     doglobalread   :: flag for global or local read/write
+C                       (default: .false.)
+C     lAdInit        :: initialisation of corresponding adjoint
+C                       variable and write to active file
       CHARACTER*(*) active_var_file
       _RL     adactive_var(1-OLx:sNx+OLx,Nr,nSx,nSy)
       INTEGER iRec
-      INTEGER myIter,myThid
+      INTEGER myIter, myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
@@ -341,19 +341,19 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     adactive_var:    array
-C     iRec:            record number
-C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
-C     doglobalread:    flag for global or local read/write
-C                      (default: .false.)
-C     lAdInit:         initialisation of corresponding adjoint
-C                      variable and write to active file
+C     active_var_file:: filename
+C     adactive_var   :: array
+C     iRec           :: record number
+C     myIter         :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
+C     doglobalread   :: flag for global or local read/write
+C                       (default: .false.)
+C     lAdInit        :: initialisation of corresponding adjoint
+C                       variable and write to active file
       CHARACTER*(*) active_var_file
       _RL     adactive_var(1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
-      INTEGER myIter,myThid
+      INTEGER myIter, myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
@@ -430,19 +430,19 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     adactive_var:    array
-C     active_var_length:    length of array
-C     iRec:            record number
-C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
-C     lAdInit:         initialisation of corresponding adjoint
-C                      variable and write to active file
+C     active_var_file:: filename
+C     adactive_var:  :: array
+C     active_var_length :: length of array
+C     iRec           :: record number
+C     myIter         :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
+C     lAdInit        :: initialisation of corresponding adjoint
+C                       variable and write to active file
       CHARACTER*(*) active_var_file
       _RL     adactive_var(*)
       INTEGER active_var_length
       INTEGER iRec
-      INTEGER myIter,myThid
+      INTEGER myIter, myThid
       LOGICAL lAdInit
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
@@ -493,7 +493,6 @@ C     !INTERFACE:
      &                            )
 #endif
 
-
 C     !DESCRIPTION: \bv
 C     ==================================================================
 C     SUBROUTINE adactive_write_xy
@@ -511,15 +510,15 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     adactive_var:    array
-C     iRec:            record number
-C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     active_var_file:: filename
+C     adactive_var   :: array
+C     iRec           :: record number
+C     myIter         :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     adactive_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iRec
-      INTEGER myIter,myThid
+      INTEGER myIter, myThid
       _RL     dummy
 
 C     !FUNCTIONS:
@@ -575,7 +574,6 @@ C     !INTERFACE:
      &                             )
 #endif
 
-
 C     !DESCRIPTION: \bv
 C     ==================================================================
 C     SUBROUTINE adactive_write_xyz
@@ -593,15 +591,15 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     adactive_var:    array
-C     iRec:            record number
-C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     active_var_file:: filename
+C     adactive_var   :: array
+C     iRec           :: record number
+C     myIter         :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     adactive_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
-      INTEGER myIter,myThid
+      INTEGER myIter, myThid
       _RL dummy
 
 C     !FUNCTIONS:
@@ -674,15 +672,15 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     adactive_var:    array
-C     iRec:            record number
-C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     active_var_file:: filename
+C     adactive_var   :: array
+C     iRec           :: record number
+C     myIter         :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     adactive_var(1-OLx:sNx+OLx,Nr,nSx,nSy)
       INTEGER iRec
-      INTEGER myIter,myThid
+      INTEGER myIter, myThid
       _RL dummy
 
 C     !FUNCTIONS:
@@ -738,7 +736,6 @@ C     !INTERFACE:
      &                             )
 #endif
 
-
 C     !DESCRIPTION: \bv
 C     ==================================================================
 C     SUBROUTINE adactive_write_yz
@@ -756,15 +753,15 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     adactive_var:    array
-C     iRec:            record number
-C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     active_var_file:: filename
+C     adactive_var   :: array
+C     iRec           :: record number
+C     myIter         :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     adactive_var(1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
-      INTEGER myIter,myThid
+      INTEGER myIter, myThid
       _RL dummy
 
 C     !FUNCTIONS:
@@ -822,7 +819,6 @@ C     !INTERFACE:
      &                             )
 #endif
 
-
 C     !DESCRIPTION: \bv
 C     ==================================================================
 C     SUBROUTINE adactive_write_1d
@@ -840,16 +836,17 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     adactive_var:    array
-C     iRec:            record number
-C     myIter:          number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     active_var_file:: filename
+C     adactive_var   :: array
+C     active_var_length :: length of array
+C     iRec           :: record number
+C     myIter         :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     adactive_var(*)
       INTEGER active_var_length
       INTEGER iRec
-      INTEGER myIter,myThid
+      INTEGER myIter, myThid
       _RL dummy
 
 C     !FUNCTIONS:

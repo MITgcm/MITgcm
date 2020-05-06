@@ -474,7 +474,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
 
 C     Read the active variable from file.
-      CALL mds_readvec_loc(
+        CALL MDS_READVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RL', active_var_length,
      O                active_var, dummyRS,
@@ -485,10 +485,10 @@ C     Read the active variable from file.
 C     Initialise the corresponding adjoint variable on the
 C     adjoint variable file. These files are tiled.
 
-          do i = 1, active_var_length
+          DO i = 1, active_var_length
             active_data_t(i) = 0. _d 0
-          enddo
-          CALL mds_writevec_loc(
+          ENDDO
+          CALL MDS_WRITEVEC_LOC(
      I                adfname, prec, ioUnit,
      I                'RL', active_var_length,
      O                active_data_t, dummyRS,
@@ -502,7 +502,7 @@ C     adjoint variable file. These files are tiled.
 C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. REVERSE_SIMULATION) THEN
 
-        CALL mds_readvec_loc(
+        CALL MDS_READVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RL', active_var_length,
      O                active_data_t, dummyRS,
@@ -510,12 +510,12 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
      I                iRec, myThid )
 
 C     Add active_var from appropriate location to data.
-        do i = 1, active_var_length
+        DO i = 1, active_var_length
           active_data_t(i) = active_data_t(i) + active_var(i)
-        enddo
+        ENDDO
 
 C     Store the result on disk.
-        CALL mds_writevec_loc(
+        CALL MDS_WRITEVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RL', active_var_length,
      O                active_data_t, dummyRS,
@@ -523,16 +523,16 @@ C     Store the result on disk.
      I                iRec, myOptimIter, myThid )
 
 C     Set active_var to zero.
-        do i = 1, active_var_length
+        DO i = 1, active_var_length
           active_data_t(i) = 0. _d 0
-        enddo
+        ENDDO
 
       ENDIF
 
 C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
 C     Read the active variable from file.
-      CALL mds_readvec_loc(
+        CALL MDS_READVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RL', active_var_length,
      O                active_var, dummyRS,
@@ -632,7 +632,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
 
 C     Read the active variable from file.
-      CALL mds_readvec_loc(
+        CALL MDS_READVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RS', active_var_length,
      O                dummyRL, active_var,
@@ -643,10 +643,10 @@ C     Read the active variable from file.
 C     Initialise the corresponding adjoint variable on the
 C     adjoint variable file. These files are tiled.
 
-          do i = 1, active_var_length
+          DO i = 1, active_var_length
             active_data_t(i) = 0. _d 0
-          enddo
-          CALL mds_writevec_loc(
+          ENDDO
+          CALL MDS_WRITEVEC_LOC(
      I                adfname, prec, ioUnit,
      I                'RS', active_var_length,
      O                dummyRL, active_data_t,
@@ -660,7 +660,7 @@ C     adjoint variable file. These files are tiled.
 C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. REVERSE_SIMULATION) THEN
 
-        CALL mds_readvec_loc(
+        CALL MDS_READVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RS', active_var_length,
      O                dummyRL, active_data_t,
@@ -668,12 +668,12 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
      I                iRec, myThid )
 
 C     Add active_var from appropriate location to data.
-        do i = 1, active_var_length
+        DO i = 1, active_var_length
           active_data_t(i) = active_data_t(i) + active_var(i)
-        enddo
+        ENDDO
 
 C     Store the result on disk.
-        CALL mds_writevec_loc(
+        CALL MDS_WRITEVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RS', active_var_length,
      O                dummyRL, active_data_t,
@@ -681,16 +681,16 @@ C     Store the result on disk.
      I                iRec, myOptimIter, myThid )
 
 C     Set active_var to zero.
-        do i = 1, active_var_length
+        DO i = 1, active_var_length
           active_data_t(i) = 0. _d 0
-        enddo
+        ENDDO
 
       ENDIF
 
 C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
 C     Read the active variable from file.
-      CALL mds_readvec_loc(
+        CALL MDS_READVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RS', active_var_length,
      O                dummyRL, active_var,
@@ -1008,7 +1008,7 @@ CEOP
 C     force 64-bit io
       prec = ctrlprec
 
-C     set these to zero otherwise looks mdsio_read/writevec_loc 
+C     set these to zero otherwise looks mdsio_read/writevec_loc
 C     looks for tiled file
       bi=0
       bj=0
@@ -1025,7 +1025,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
 
 C     Read the active variable from file.
-      CALL mds_writevec_loc(
+        CALL MDS_WRITEVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RL', active_var_length,
      O                active_var, dummyRS,
@@ -1037,7 +1037,7 @@ C     Read the active variable from file.
 C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. REVERSE_SIMULATION) THEN
 
-        CALL mds_readvec_loc(
+        CALL MDS_READVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RL', active_var_length,
      O                active_data_t, dummyRS,
@@ -1045,13 +1045,13 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
      I                iRec, myThid )
 
 C     Add active_var from appropriate location to data.
-        do i = 1, active_var_length
+        DO i = 1, active_var_length
           active_var(i) = active_var(i) + active_data_t(i)
           active_data_t(i) = 0. _d 0
-        enddo
+        ENDDO
 
 C     Store the result on disk.
-        CALL mds_writevec_loc(
+        CALL MDS_WRITEVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RL', active_var_length,
      O                active_data_t, dummyRS,
@@ -1063,7 +1063,7 @@ C     Store the result on disk.
 C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
 C     Read the active variable from file.
-      CALL mds_writevec_loc(
+        CALL MDS_WRITEVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RL', active_var_length,
      O                active_var, dummyRS,
@@ -1143,7 +1143,7 @@ CEOP
 C     force 64-bit io
       prec = ctrlprec
 
-C     set these to zero otherwise looks mdsio_read/writevec_loc 
+C     set these to zero otherwise looks mdsio_read/writevec_loc
 C     looks for tiled file
       bi=0
       bj=0
@@ -1160,7 +1160,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
 
 C     Read the active variable from file.
-      CALL mds_writevec_loc(
+        CALL MDS_WRITEVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RS', active_var_length,
      O                dummyRL, active_var,
@@ -1172,7 +1172,7 @@ C     Read the active variable from file.
 C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. REVERSE_SIMULATION) THEN
 
-        CALL mds_readvec_loc(
+        CALL MDS_READVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RL', active_var_length,
      O                dummyRL, active_data_t,
@@ -1180,10 +1180,10 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
      I                iRec, myThid )
 
 C     Add active_var from appropriate location to data.
-        do i = 1, active_var_length
+        DO i = 1, active_var_length
           active_var(i) = active_var(i) + active_data_t(i)
           active_data_t(i) = 0. _d 0
-        enddo
+        ENDDO
 
 C     Store the result on disk.
         CALL mds_writevec_loc(
@@ -1198,7 +1198,7 @@ C     Store the result on disk.
 C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
 C     Read the active variable from file.
-      CALL mds_writevec_loc(
+        CALL MDS_WRITEVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RL', active_var_length,
      O                dummyRL, active_var,

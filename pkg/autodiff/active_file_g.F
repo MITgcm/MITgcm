@@ -9,13 +9,13 @@ C    o  g_active_read_xy         - Read  an active 2D variable from file.
 C    o  g_active_read_xyz        - Read  an active 3D variable from file.
 C    o  g_active_read_xz         - Read  an active 2D xz-slice from file.
 C    o  g_active_read_yz         - Read  an active 2D yz-slice from file.
-C    o  g_active_read_1D         - Read  an active 1D vector from file.
+C    o  g_active_read_1d         - Read  an active 1D vector from file.
 C
 C    o  g_active_write_xy        - Write an active 2D variable to a file.
 C    o  g_active_write_xyz       - Write an active 3D variable to a file.
 C    o  g_active_write_xz        - Write an active 2D xz-slice to a file.
 C    o  g_active_write_yz        - Write an active 2D yz-slice to a file.
-C    o  g_active_write_1D        - Write an active 1D vector to a file.
+C    o  g_active_write_1d        - Write an active 1D vector to a file.
 C
 C        changed: Christian Eckert eckert@mit.edu 24-Apr-2000
 C                 - Added routines that do active writes on tiles
@@ -62,23 +62,24 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     active_var:      array
-C     iRec:            record number
-C     myOptimIter:     number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
-C     doglobalread:    flag for global or local read/write
-C                      (default: .false.)
-C     lAdInit:         initialisation of corresponding adjoint
-C                      variable and write to active file
+C     active_var_file:: filename
+C     active_var     :: array
+C     g_active_var   :: tangent linear  array
+C     iRec           :: record number
+C     doglobalread   :: flag for global or local read/write
+C                       (default: .false.)
+C     lAdInit        :: initialisation of corresponding adjoint
+C                       variable and write to active file
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL     g_active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iRec
-      INTEGER myOptimIter
-      INTEGER myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
+      INTEGER myOptimIter
+      INTEGER myThid
       _RL     dummy, g_dummy
 
 C     !FUNCTIONS:
@@ -149,23 +150,24 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     active_var:      array
-C     iRec:            record number
-C     myOptimIter:     number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
-C     doglobalread:    flag for global or local read/write
-C                      (default: .false.)
-C     lAdInit:         initialisation of corresponding adjoint
-C                      variable and write to active file
+C     active_var_file:: filename
+C     active_var     :: array
+C     g_active_var   :: tangent linear  array
+C     iRec           :: record number
+C     doglobalread   :: flag for global or local read/write
+C                       (default: .false.)
+C     lAdInit        :: initialisation of corresponding adjoint
+C                       variable and write to active file
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
       _RL active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL g_active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
-      INTEGER myOptimIter
-      INTEGER myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
+      INTEGER myOptimIter
+      INTEGER myThid
       _RL     dummy, g_dummy
 
 C     !FUNCTIONS:
@@ -236,23 +238,24 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     active_var:      array
-C     iRec:            record number
-C     myOptimIter:     number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
-C     doglobalread:    flag for global or local read/write
-C                      (default: .false.)
-C     lAdInit:         initialisation of corresponding adjoint
-C                      variable and write to active file
+C     active_var_file:: filename
+C     active_var     :: array
+C     g_active_var   :: tangent linear  array
+C     iRec           :: record number
+C     doglobalread   :: flag for global or local read/write
+C                       (default: .false.)
+C     lAdInit        :: initialisation of corresponding adjoint
+C                       variable and write to active file
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     active_var(1-OLx:sNx+OLx,nSx,nSy)
       _RL     g_active_var(1-OLx:sNx+OLx,nSx,nSy)
       INTEGER iRec
-      INTEGER myOptimIter
-      INTEGER myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
+      INTEGER myOptimIter
+      INTEGER myThid
       _RL     dummy, g_dummy
 
 C     !FUNCTIONS:
@@ -323,23 +326,24 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     active_var:      array
-C     iRec:            record number
-C     myOptimIter:     number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
-C     doglobalread:    flag for global or local read/write
-C                      (default: .false.)
-C     lAdInit:         initialisation of corresponding adjoint
-C                      variable and write to active file
+C     active_var_file:: filename
+C     active_var     :: array
+C     g_active_var   :: tangent linear  array
+C     iRec           :: record number
+C     doglobalread   :: flag for global or local read/write
+C                       (default: .false.)
+C     lAdInit        :: initialisation of corresponding adjoint
+C                       variable and write to active file
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     active_var(1-OLy:sNy+OLy,nSx,nSy)
       _RL     g_active_var(1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iRec
-      INTEGER myOptimIter
-      INTEGER myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
+      INTEGER myOptimIter
+      INTEGER myThid
       _RL     dummy, g_dummy
 
 C     !FUNCTIONS:
@@ -410,23 +414,23 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     active_var:      array
-C     g_active_var:    tangent linear  array
-C     active_var_length: array length
-C     iRec:            record number
-C     lAdInit:         initialisation of corresponding adjoint
-C                      variable and write to active file
-C     myOptimIter:     number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     active_var_file:: filename
+C     active_var     :: array
+C     g_active_var   :: tangent linear  array
+C     active_var_length :: array length
+C     iRec           :: record number
+C     lAdInit        :: initialisation of corresponding adjoint
+C                       variable and write to active file
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     active_var(*)
       _RL     g_active_var(*)
       INTEGER active_var_length
       INTEGER iRec
+      LOGICAL lAdInit
       INTEGER myOptimIter
       INTEGER myThid
-      LOGICAL lAdInit
       _RL     dummy
       _RL     g_dummy
 
@@ -438,7 +442,6 @@ C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
       CHARACTER*(80) fname
       INTEGER il
-
 CEOP
 
       pref = 'g_'
@@ -493,11 +496,12 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     active_var:      array
-C     iRec:            record number
-C     myOptimIter:     number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     active_var_file:: filename
+C     active_var     :: array
+C     g_active_var   :: tangent linear  array
+C     iRec           :: record number
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL     g_active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -575,11 +579,12 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     active_var:      array
-C     iRec:            record number
-C     myOptimIter:     number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     active_var_file:: filename
+C     active_var     :: array
+C     g_active_var   :: tangent linear  array
+C     iRec           :: record number
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
       _RL active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL g_active_var(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -657,11 +662,12 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     active_var:      array
-C     iRec:            record number
-C     myOptimIter:     number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     active_var_file:: filename
+C     active_var     :: array
+C     g_active_var   :: tangent linear  array
+C     iRec           :: record number
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     active_var(1-OLx:sNx+OLx,nSx,nSy)
       _RL     g_active_var(1-OLx:sNx+OLx,nSx,nSy)
@@ -739,11 +745,12 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     active_var:      array
-C     iRec:            record number
-C     myOptimIter:     number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     active_var_file:: filename
+C     active_var     :: array
+C     g_active_var   :: tangent linear  array
+C     iRec           :: record number
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     active_var(1-OLy:sNy+OLy,nSx,nSy)
       _RL     g_active_var(1-OLy:sNy+OLy,nSx,nSy)
@@ -822,13 +829,13 @@ C     == global variables ==
 #include "SIZE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     active_var_file: filename
-C     active_var:      array
-C     g_active_var:    tangent linear  array
-C     active_var_length: array length
-C     iRec:            record number
-C     myOptimIter:     number of optimization iteration (default: 0)
-C     myThid:          thread number for this instance
+C     active_var_file:: filename
+C     active_var     :: array
+C     g_active_var   :: tangent linear  array
+C     active_var_length :: array length
+C     iRec           :: record number
+C     myOptimIter    :: number of optimization iteration (default: 0)
+C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     active_var(*)
       _RL     g_active_var(*)
@@ -847,7 +854,6 @@ C     !LOCAL VARIABLES:
       CHARACTER*(2) pref
       CHARACTER*(80) fname
       INTEGER il
-
 CEOP
 
       pref = 'g_'
