@@ -352,7 +352,7 @@ C     if we have not yet done so
          ENDDO
          CALL DIAGNOSTICS_FILL(sig1,'SIpRfric',0,1,3,bi,bj,myThid)
         ENDIF
-        IF ( DIAGNOSTICS_IS_ON('SIpRfric',myThid) ) THEN
+        IF ( DIAGNOSTICS_IS_ON('SIpSfric',myThid) ) THEN
          DO J=1,sNy
           DO I=1,sNx
            sig1(I,J) = - eta(I,J,bi,bj)
