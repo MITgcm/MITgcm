@@ -96,7 +96,7 @@ CEOP
 
       pref = 'g_'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname,'(A)') ' '
       WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
       myNr = 1
       useCurrentDir = .FALSE.
@@ -184,7 +184,7 @@ CEOP
 
       pref = 'g_'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname,'(A)') ' '
       WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
       myNr = Nr
       useCurrentDir = .FALSE.
@@ -249,8 +249,8 @@ C                       variable and write to active file
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
-      _RL     active_var(1-OLx:sNx+OLx,nSx,nSy)
-      _RL     g_active_var(1-OLx:sNx+OLx,nSx,nSy)
+      _RL     active_var(1-OLx:sNx+OLx,Nr,nSx,nSy)
+      _RL     g_active_var(1-OLx:sNx+OLx,Nr,nSx,nSy)
       INTEGER iRec
       LOGICAL doglobalread
       LOGICAL lAdInit
@@ -272,7 +272,7 @@ CEOP
 
       pref = 'g_'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname,'(A)') ' '
       WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
       myNr = Nr
       useCurrentDir = .FALSE.
@@ -337,8 +337,8 @@ C                       variable and write to active file
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
-      _RL     active_var(1-OLy:sNy+OLy,nSx,nSy)
-      _RL     g_active_var(1-OLy:sNy+OLy,nSx,nSy)
+      _RL     active_var(1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL     g_active_var(1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
       LOGICAL doglobalread
       LOGICAL lAdInit
@@ -360,7 +360,7 @@ CEOP
 
       pref = 'g_'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname,'(A)') ' '
       WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
       myNr = Nr
       useCurrentDir = .FALSE.
@@ -446,7 +446,7 @@ CEOP
 
       pref = 'g_'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname,'(A)') ' '
       WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
 
       CALL ACTIVE_READ_1D_RL(
@@ -526,7 +526,7 @@ CEOP
 
       pref = 'g_'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname,'(A)') ' '
       WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
       myNr = 1
       globalFile = .FALSE.
@@ -609,7 +609,7 @@ CEOP
 
       pref = 'g_'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname,'(A)') ' '
       WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
       myNr = Nr
       globalFile = .FALSE.
@@ -669,8 +669,8 @@ C     iRec           :: record number
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
-      _RL     active_var(1-OLx:sNx+OLx,nSx,nSy)
-      _RL     g_active_var(1-OLx:sNx+OLx,nSx,nSy)
+      _RL     active_var(1-OLx:sNx+OLx,Nr,nSx,nSy)
+      _RL     g_active_var(1-OLx:sNx+OLx,Nr,nSx,nSy)
       INTEGER iRec
       INTEGER myOptimIter
       INTEGER myThid
@@ -692,7 +692,7 @@ CEOP
 
       pref = 'g_'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname,'(A)') ' '
       WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
       myNr = Nr
       globalFile = .FALSE.
@@ -752,8 +752,8 @@ C     iRec           :: record number
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
-      _RL     active_var(1-OLy:sNy+OLy,nSx,nSy)
-      _RL     g_active_var(1-OLy:sNy+OLy,nSx,nSy)
+      _RL     active_var(1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL     g_active_var(1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
       INTEGER myOptimIter
       INTEGER myThid
@@ -775,7 +775,7 @@ CEOP
 
       pref = 'g_'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname,'(A)') ' '
       WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
       myNr = Nr
       globalFile = .FALSE.
@@ -858,7 +858,7 @@ CEOP
 
       pref = 'g_'
       il   = ILNBLNK( active_var_file )
-      WRITE(fname(1:80),'(A)') ' '
+      WRITE(fname,'(A)') ' '
       WRITE(fname(1:2+il),'(2A)') pref, active_var_file(1:il)
 
       CALL ACTIVE_WRITE_1D_RL(

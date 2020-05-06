@@ -204,7 +204,7 @@ C                       variable and write to active file
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
-      _RL     active_var(1-OLx:sNx+OLx,nSx,nSy)
+      _RL     active_var(1-OLx:sNx+OLx,Nr,nSx,nSy)
       INTEGER iRec
       LOGICAL doglobalread
       LOGICAL lAdInit
@@ -270,7 +270,7 @@ C                       variable and write to active file
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
-      _RL     active_var(1-OLy:sNy+OLy,nSx,nSy)
+      _RL     active_var(1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
       LOGICAL doglobalread
       LOGICAL lAdInit
@@ -513,7 +513,7 @@ C     iRec           :: record number
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
-      _RL     active_var(1-OLx:sNx+OLx,nSx,nSy)
+      _RL     active_var(1-OLx:sNx+OLx,Nr,nSx,nSy)
       INTEGER iRec
       INTEGER myOptimIter
       INTEGER myThid
@@ -574,7 +574,7 @@ C     iRec           :: record number
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
-      _RL     active_var(1-OLy:sNy+OLy,nSx,nSy)
+      _RL     active_var(1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
       INTEGER myOptimIter
       INTEGER myThid
