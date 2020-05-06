@@ -68,7 +68,12 @@ C     bi,bj  :: tile counters
       _RL phiSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL mask_uice, mask_vice
 #ifdef ALLOW_DIAGNOSTICS
-      _RL eTmp  (1:sNx,1:sNy)
+      _RL sig1 (1:sNx,1:sNy)
+      _RL sig2 (1:sNx,1:sNy)
+      _RL sig11(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
+      _RL sig22(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
+      _RL sig12(1-oLx:sNx+oLx,1-oLy:sNy+oLy)
+      _RL sigp, sigm, sigTmp, recip_prs
       _RL areaW, areaS, COSWAT, SINWAT
       INTEGER kSrf
       LOGICAL  DIAGNOSTICS_IS_ON
@@ -409,41 +414,211 @@ c in open water areas (drift of zero thickness ice)
 #endif /* SEAICE_ALLOW_DYNAMICS */
 
 #ifdef ALLOW_DIAGNOSTICS
+C     diagnostics related to mechanics/dynamics/momentum equations
       IF ( useDiagnostics ) THEN
-       IF ( DIAGNOSTICS_IS_ON('SIenpa  ',myThid) ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
+       CALL DIAGNOSTICS_FILL(zeta   ,'SIzeta  ',0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(eta    ,'SIeta   ',0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(press  ,'SIpress ',0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(deltaC ,'SIdelta ',0,1,0,1,1,myThid)
+       IF ( DIAGNOSTICS_IS_ON('SItensil',myThid) ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+C     use sig1 as a temporary field
+          DO j=1,sNy
+           DO i=1,sNx
+            IF ( tensileStrFac(I,J,bi,bj) .EQ. 1. _d 0) THEN
+C     This special case of tensile strength equal to compressive strength
+C     is not very physical and should actually not happen but you never know;
+C     in this case, press = P-T = P*(1-k) = 0. and we have to use press0 to
+C     get something
+             sig1(I,J) = press0(I,J,bi,bj)
+            ELSE
+C     This is more complicated than you think because press = P-T = P*(1-k),
+C     but we are looking for T = k*P = k*press/(1-k)
+             sig1(I,J) = tensileStrFac(I,J,bi,bj)
+     &            *press(I,J,bi,bj)/(1. _d 0 - tensileStrFac(I,J,bi,bj))
+            ENDIF
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(sig1,'SItensil',0,1,3,bi,bj,myThid)
+         ENDDO
+        ENDDO
+       ENDIF
+C     If any of the stress or energy diagnostics are required,
+C     first recompute strainrates from up-to-date velocities
+       IF ( DIAGNOSTICS_IS_ON('SIsig1  ',myThid) .OR.
+     &      DIAGNOSTICS_IS_ON('SIsig2  ',myThid) .OR.
+     &      DIAGNOSTICS_IS_ON('SIshear ',myThid) .OR.
+     &      DIAGNOSTICS_IS_ON('SIenpot ',myThid) .OR.
+     &      DIAGNOSTICS_IS_ON('SIpRfric',myThid) .OR.
+     &      DIAGNOSTICS_IS_ON('SIpSfric',myThid)      ) THEN
+        CALL SEAICE_CALC_STRAINRATES(
+     I       uIce, vIce,
+     O       e11, e22, e12,
+     I       0, myTime, myIter, myThid )
+C     but use old viscosities and pressure for the
+C     principle stress components
+CML     CALL SEAICE_CALC_VISCOSITIES(
+CML  I     e11, e22, e12, zMin, zMax, HEFFM, press0, tensileStrFac,
+CML  O     eta, etaZ, zeta, zetaZ, press, deltaC,
+CML  I     0, myTime, myIter, myThid )
+       ENDIF
+C
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+C
+C     stress diagnostics
+C
+         IF ( DIAGNOSTICS_IS_ON('SIsig1  ',myThid) .OR.
+     &        DIAGNOSTICS_IS_ON('SIsig2  ',myThid)      ) THEN
+#ifdef SEAICE_ALLOW_EVP
+C     This could go directly into EVP, but to keep a better eye on it,
+C     I would like to keep it here.
+          IF ( SEAICEuseEVP ) THEN
+C     for EVP compute principle stress components from recent
+C     stress state and normalize with latest
+C     PRESS = PRESS(n-1), n = number of sub-cycling steps
+           DO j=1,sNy
+            DO i=1,sNx
+             sigp = seaice_sigma1(I,J,bi,bj)
+             sigm = seaice_sigma2(I,J,bi,bj)
+             sig12(I,J) = 0.25 _d 0 *
+     &            ( seaice_sigma12(I,  J,  bi,bj)
+     &            + seaice_sigma12(I+1,J,  bi,bj)
+     &            + seaice_sigma12(I+1,J+1,bi,bj)
+     &            + seaice_sigma12(I  ,J+1,bi,bj) )
+             sigTmp = SQRT( sigm*sigm + 4. _d 0*sig12(I,J)*sig12(I,J) )
+             recip_prs = 0. _d 0
+             IF ( press0(I,J,bi,bj) .GT. 1. _d -13 )
+     &            recip_prs = 1./press0(I,J,bi,bj)
+             sig1(I,J) = 0.5*(sigp + sigTmp)*recip_prs
+             sig2(I,J) = 0.5*(sigp - sigTmp)*recip_prs
+            ENDDO
+           ENDDO
+          ELSE
+#else
+          IF ( .TRUE. ) THEN
+#endif /* SEAICE_ALLOW_EVP */
+           CALL SEAICE_CALC_STRESS(
+     I          e11, e22, e12, press, zeta, eta, etaZ,
+     O          sig11, sig22, sig12,
+     I          bi, bj, myTime, myIter, myThid )
+           DO j=1,sNy
+            DO i=1,sNx
+             sigp   = sig11(I,J) + sig22(I,J)
+             sigm   = sig11(I,J) - sig22(I,J)
+C     This should be the way of computing sig12 at C-points,
+C            sigTmp = 0.25 _d 0 *
+C    &            ( sig12(I  ,J  ) + sig12(I+1,J  )
+C    &            + sig12(I  ,J+1) + sig12(I+1,J+1) )
+C     but sig12 = 2*etaZ*e12, and because of strong gradients in eta,
+C     etaZ can be very large for a cell with small eta and the straightforward
+C     way of averaging mixes large etaZ with small press0, so we have to do it
+C     in different way to get meaningfull sig12C (=sigTmp):
+             sigTmp = 2.*eta(I,J,bi,bj) * 0.25 _d 0 *
+     &            (e12(I,J,bi,bj) + e12(I+1,J,bi,bj)
+     &            +e12(I,J+1,bi,bj)+e12(I+1,J+1,bi,bj))
+             sigTmp = SQRT( sigm*sigm + 4.*sigTmp*sigTmp )
+             recip_prs = 0. _d 0
+             IF ( press0(I,J,bi,bj) .GT. 1. _d -13 )
+     &            recip_prs = 1./press0(I,J,bi,bj)
+             sig1(I,J) = 0.5*(sigp + sigTmp)*recip_prs
+             sig2(I,J) = 0.5*(sigp - sigTmp)*recip_prs
+            ENDDO
+           ENDDO
+          ENDIF
+          CALL DIAGNOSTICS_FILL(sig1,'SIsig1  ',0,1,3,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(sig2,'SIsig2  ',0,1,3,bi,bj,myThid)
+         ENDIF
+C
+         IF ( DIAGNOSTICS_IS_ON('SIshear ',myThid) ) THEN
+          DO j=1,sNy
+           DO i=1,sNx
+            sigm = e11(I,J,bi,bj) - e22(I,J,bi,bj)
+            sigTmp =
+     &           ( e12(I,  J,  bi,bj)**2 + e12(I+1,J,  bi,bj)**2
+     &           + e12(I+1,J+1,bi,bj)**2 + e12(I  ,J+1,bi,bj)**2 )
+C     shear deformation as sqrt((e11-e22)**2 + 4*e12**2); the 4 pulled into
+C     the average
+            sig1(I,J) = sqrt(sigm*sigm + sigTmp)
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(sig1,'SIshear ',0,1,3,bi,bj,myThid)
+         ENDIF
+C
+C     most of the energy diagnostics
+C
+         IF ( DIAGNOSTICS_IS_ON('SIenpi  ',myThid) ) THEN
+          DO J=1,sNy
+           DO I=1,sNx
+            sig1(I,J)  = 0.5 _d 0 * (
+     &            UICE(I,  J,bi,bj)*stressDivergenceX(I,  J,bi,bj)
+     &           +UICE(I+1,J,bi,bj)*stressDivergenceX(I+1,J,bi,bj)
+     &           +VICE(I,J,  bi,bj)*stressDivergenceY(I,J,  bi,bj)
+     &           +VICE(I,J+1,bi,bj)*stressDivergenceY(I,J+1,bi,bj) )
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(sig1,'SIenpi  ',0,1,3,bi,bj,myThid)
+         ENDIF
+         IF ( DIAGNOSTICS_IS_ON('SIenpot ',myThid) ) THEN
+          DO J=1,sNy
+           DO I=1,sNx
+            sig1(I,J) = 0.5 _d 0 * press0(I,J,bi,bj) *
+     &           ( e11(I,J,bi,bj) + e22(I,J,bi,bj) )
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(sig1,'SIenpot ',0,1,3,bi,bj,myThid)
+         ENDIF
+         IF ( DIAGNOSTICS_IS_ON('SIpRfric',myThid) ) THEN
+          DO J=1,sNy
+           DO I=1,sNx
+            sig1(I,J) = - zeta(I,J,bi,bj)
+     &           * ( e11(I,J,bi,bj) + e22(I,J,bi,bj) )
+     &           * ( e11(I,J,bi,bj) + e22(I,J,bi,bj) )
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(sig1,'SIpRfric',0,1,3,bi,bj,myThid)
+         ENDIF
+         IF ( DIAGNOSTICS_IS_ON('SIpSfric',myThid) ) THEN
+          DO J=1,sNy
+           DO I=1,sNx
+            sig1(I,J) = - eta(I,J,bi,bj)
+     &        * ( (e11(I,J,bi,bj) - e22(I,J,bi,bj))**2 +
+     &            ( e12(I,  J,  bi,bj)**2 + e12(I+1,J,  bi,bj)**2
+     &            + e12(I+1,J+1,bi,bj)**2 + e12(I  ,J+1,bi,bj)**2 )
+     &          )
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(sig1,'SIpSfric',0,1,3,bi,bj,myThid)
+         ENDIF
+         IF ( DIAGNOSTICS_IS_ON('SIenpa  ',myThid) ) THEN
           DO j=1,sNy+1
            DO i=1,sNx+1
             areaW = 0.5 _d 0 * (AREA(I,J,bi,bj) + AREA(I-1,J,bi,bj))
-     &         * SEAICEstressFactor
+     &           * SEAICEstressFactor
             areaS = 0.5 _d 0 * (AREA(I,J,bi,bj) + AREA(I,J-1,bi,bj))
-     &         * SEAICEstressFactor
+     &           * SEAICEstressFactor
             TAUX(I,J,bi,bj) = TAUX(I,J,bi,bj)*areaW
             TAUY(I,J,bi,bj) = TAUY(I,J,bi,bj)*areaS
            ENDDO
           ENDDO
           DO j=1,sNy
            DO i=1,sNx
-            eTmp(I,J)= 0.5 _d 0 * (
+            sig1(I,J)= 0.5 _d 0 * (
      &             UICE(I,  J,bi,bj)*TAUX(I,  J,bi,bj)
      &           + UICE(I+1,J,bi,bj)*TAUX(I+1,J,bi,bj)
      &           + VICE(I,J,  bi,bj)*TAUY(I,J,  bi,bj)
      &           + VICE(I,J+1,bi,bj)*TAUY(I,J+1,bi,bj) )
            ENDDO
           ENDDO
-          CALL DIAGNOSTICS_FILL(eTmp,'SIenpa  ',0,1,3,bi,bj,myThid)
-         ENDDO
-        ENDDO
-       ENDIF
-       IF ( DIAGNOSTICS_IS_ON('SIenpw  ',myThid) ) THEN
+          CALL DIAGNOSTICS_FILL(sig1,'SIenpa  ',0,1,3,bi,bj,myThid)
+         ENDIF
+         IF ( DIAGNOSTICS_IS_ON('SIenpw  ',myThid) ) THEN
 C     surface level
-        kSrf = 1
+          kSrf = 1
 C     introduce turning angle (default is zero)
-        SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
-        COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
+          SINWAT=SIN(SEAICE_waterTurnAngle*deg2rad)
+          COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
           DO j=1,sNy+1
            DO i=1,sNx+1
             areaW = 0.5 _d 0 * (AREA(I,J,bi,bj) + AREA(I-1,J,bi,bj))
@@ -478,21 +653,17 @@ C     introduce turning angle (default is zero)
           ENDDO
           DO j=1,sNy
            DO i=1,sNx
-            eTmp(I,J)= - 0.5 _d 0 * (
+            sig1(I,J)= - 0.5 _d 0 * (
      &             UICE(I,  J,bi,bj)*TAUX(I,  J,bi,bj)
      &           + UICE(I+1,J,bi,bj)*TAUX(I+1,J,bi,bj)
      &           + VICE(I,J,  bi,bj)*TAUY(I,J,  bi,bj)
      &           + VICE(I,J+1,bi,bj)*TAUY(I,J+1,bi,bj) )
            ENDDO
           ENDDO
-          CALL DIAGNOSTICS_FILL(eTmp,'SIenpw  ',0,1,3,bi,bj,myThid)
-         ENDDO
-        ENDDO
-       ENDIF
-       IF ( SEAICEuseTilt
-     &      .AND. DIAGNOSTICS_IS_ON('SIenpg  ',myThid) ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
+          CALL DIAGNOSTICS_FILL(sig1,'SIenpw  ',0,1,3,bi,bj,myThid)
+         ENDIF
+         IF ( SEAICEuseTilt
+     &        .AND. DIAGNOSTICS_IS_ON('SIenpg  ',myThid) ) THEN
           DO j=1-OLy+1,sNy+OLy
            DO i=1-OLx+1,sNx+OLx
             TAUX(I,J,bi,bj)=
@@ -505,18 +676,20 @@ C     introduce turning angle (default is zero)
           ENDDO
           DO j=1,sNy
            DO i=1,sNx
-            eTmp(I,J) = 0.5 _d 0 *
+            sig1(I,J) = 0.5 _d 0 *
      &           ( TAUX(I,J,bi,bj) + TAUX(I+1,J,bi,bj)
      &           + TAUY(I,J,bi,bj) + TAUY(I,J+1,bi,bj) )
            ENDDO
           ENDDO
-          CALL DIAGNOSTICS_FILL(eTmp,'SIenpg  ',0,1,3,bi,bj,myThid)
-         ENDDO
+          CALL DIAGNOSTICS_FILL(sig1,'SIenpg  ',0,1,3,bi,bj,myThid)
+         ENDIF
+C     bi/bj-loop
         ENDDO
-       ENDIF
+       ENDDO
+C     useDiagnostics
       ENDIF
 
-#endif   /*  ALLOW_DIAGNOSTICS */
+#endif   /* ALLOW_DIAGNOSTICS */
 #endif  /* SEAICE_CGRID */
 
 

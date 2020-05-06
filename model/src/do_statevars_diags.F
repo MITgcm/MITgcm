@@ -92,9 +92,8 @@ C                    and stagger/synchronous TimeStep
 #endif /* ALLOW_BBL */
 
 #ifdef ALLOW_SEAICE
-       IF ( seqFlag.LE.1 .AND. useSEAICE ) THEN
-         CALL SEAICE_DIAGNOSTICS_STATE(
-     &       seqFlag, myTime, myIter, myThid )
+       IF ( seqFlag.LE.0 .AND. useSEAICE ) THEN
+         CALL SEAICE_DIAGNOSTICS_STATE( myTime, myIter, myThid )
        ENDIF
 #endif /* ALLOW_SEAICE */
 
