@@ -1162,7 +1162,7 @@ C     Add active_var from appropriate location to data.
         ENDDO
 
 C     Store the result on disk.
-        CALL mds_writevec_loc(
+        CALL MDS_WRITEVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RL', active_var_length,
      O                dummyRL, active_data_t,
