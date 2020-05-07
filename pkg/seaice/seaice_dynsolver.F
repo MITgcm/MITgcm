@@ -547,7 +547,7 @@ C     the average
           CALL DIAGNOSTICS_FILL(sig1,'SIshear ',0,1,3,bi,bj,myThid)
          ENDIF
 C
-C     most of the energy diagnostics
+C     most of the energy diagnostics, re-use sig11, sig22, sig1 as tmp-arrays
 C
          IF ( DIAGNOSTICS_IS_ON('SIenpi  ',myThid) ) THEN
 C     compute internal stresses with updated ice velocities
@@ -605,17 +605,17 @@ C     compute internal stresses with updated ice velocities
      &           * SEAICEstressFactor
             areaS = 0.5 _d 0 * (AREA(I,J,bi,bj) + AREA(I,J-1,bi,bj))
      &           * SEAICEstressFactor
-            TAUX(I,J,bi,bj) = TAUX(I,J,bi,bj)*areaW
-            TAUY(I,J,bi,bj) = TAUY(I,J,bi,bj)*areaS
+            sig11(I,J) = TAUX(I,J,bi,bj)*areaW
+            sig22(I,J) = TAUY(I,J,bi,bj)*areaS
            ENDDO
           ENDDO
           DO j=1,sNy
            DO i=1,sNx
             sig1(I,J)= 0.5 _d 0 * (
-     &             uIce(I,  J,bi,bj)*TAUX(I,  J,bi,bj)
-     &           + uIce(I+1,J,bi,bj)*TAUX(I+1,J,bi,bj)
-     &           + vIce(I,J,  bi,bj)*TAUY(I,J,  bi,bj)
-     &           + vIce(I,J+1,bi,bj)*TAUY(I,J+1,bi,bj) )
+     &             uIce(I,  J,bi,bj)*sig11(I,  J)
+     &           + uIce(I+1,J,bi,bj)*sig11(I+1,J)
+     &           + vIce(I,J,  bi,bj)*sig22(I,J  )
+     &           + vIce(I,J+1,bi,bj)*sig22(I,J+1) )
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig1,'SIenpa  ',0,1,3,bi,bj,myThid)
@@ -632,7 +632,7 @@ C     introduce turning angle (default is zero)
      &         * SEAICEstressFactor
             areaS = 0.5 _d 0 * (AREA(I,J,bi,bj) + AREA(I,J-1,bi,bj))
      &         * SEAICEstressFactor
-            TAUX(I,J,bi,bj) = areaW *
+            sig11(I,J) = areaW *
      &           HALF*( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) )*
      &         COSWAT *
      &         ( uIce(I,J,bi,bj)-uVel(I,J,kSrf,bi,bj) )
@@ -644,7 +644,7 @@ C     introduce turning angle (default is zero)
      &         0.5 _d 0*(vIce(I-1,J  ,bi,bj)-vVel(I-1,J  ,kSrf,bi,bj)
      &                  +vIce(I-1,J+1,bi,bj)-vVel(I-1,J+1,kSrf,bi,bj))
      &         )
-            TAUY(I,J,bi,bj) = areaS *
+            sig22(I,J) = areaS *
      &           HALF*( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) )*
      &         COSWAT *
      &         ( vIce(I,J,bi,bj)-vVel(I,J,kSrf,bi,bj) )
@@ -661,10 +661,10 @@ C     introduce turning angle (default is zero)
           DO j=1,sNy
            DO i=1,sNx
             sig1(I,J)= - 0.5 _d 0 * (
-     &             uIce(I,  J,bi,bj)*TAUX(I,  J,bi,bj)
-     &           + uIce(I+1,J,bi,bj)*TAUX(I+1,J,bi,bj)
-     &           + vIce(I,J,  bi,bj)*TAUY(I,J,  bi,bj)
-     &           + vIce(I,J+1,bi,bj)*TAUY(I,J+1,bi,bj) )
+     &             uIce(I,  J,bi,bj)*sig11(I,  J)
+     &           + uIce(I+1,J,bi,bj)*sig11(I+1,J)
+     &           + vIce(I,J,  bi,bj)*sig22(I,J  )
+     &           + vIce(I,J+1,bi,bj)*sig22(I,J+1) )
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig1,'SIenpw  ',0,1,3,bi,bj,myThid)
@@ -673,19 +673,18 @@ C     introduce turning angle (default is zero)
      &        .AND. DIAGNOSTICS_IS_ON('SIenpg  ',myThid) ) THEN
           DO j=1-OLy+1,sNy+OLy
            DO i=1-OLx+1,sNx+OLx
-            TAUX(I,J,bi,bj)=
+            sig11(I,J)=
      &           - seaiceMassU(I,J,bi,bj)*_recip_dxC(I,J,bi,bj)
      &           *( phiSurf(I,J)-phiSurf(I-1,J) ) * uIce(I,J,bi,bj)
-            TAUY(I,J,bi,bj)=
+            sig22(I,J)=
      &           - seaiceMassV(I,J,bi,bj)* _recip_dyC(I,J,bi,bj)
      &           *( phiSurf(I,J)-phiSurf(I,J-1) ) * vIce(I,J,bi,bj)
            ENDDO
           ENDDO
           DO j=1,sNy
            DO i=1,sNx
-            sig1(I,J) = 0.5 _d 0 *
-     &           ( TAUX(I,J,bi,bj) + TAUX(I+1,J,bi,bj)
-     &           + TAUY(I,J,bi,bj) + TAUY(I,J+1,bi,bj) )
+            sig1(I,J) = 0.5 _d 0 * ( sig11(I,J) + sig11(I+1,J)
+     &                             + sig22(I,J) + sig22(I,J+1) )
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig1,'SIenpg  ',0,1,3,bi,bj,myThid)
