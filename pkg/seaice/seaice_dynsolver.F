@@ -438,7 +438,7 @@ C     but we are looking for T = k*P = k*press/(1-k)
             ENDIF
            ENDDO
           ENDDO
-          CALL DIAGNOSTICS_FILL(sig1,'SItensil',0,1,3,bi,bj,myThid)
+          CALL DIAGNOSTICS_FILL(sig1,'SItensil',0,1,2,bi,bj,myThid)
          ENDDO
         ENDDO
        ENDIF
