@@ -489,13 +489,15 @@ C     adjoint variable file. These files are tiled.
           DO i = 1, active_var_length
             active_data_t(i) = 0. _d 0
           ENDDO
-          CALL MDS_WRITEVEC_LOC(
+          IF ( myProcId.EQ.0 ) THEN
+            CALL MDS_WRITEVEC_LOC(
      I                adfname, prec, ioUnit,
      I                'RL', active_var_length,
      O                active_data_t, dummyRS,
      I                bi, bj,
      I                iRec, myOptimIter, myThid )
 
+          ENDIF
         ENDIF
 
       ENDIF
@@ -516,12 +518,14 @@ C     Add active_var from appropriate location to data.
         ENDDO
 
 C     Store the result on disk.
-        CALL MDS_WRITEVEC_LOC(
+        IF ( myProcId.EQ.0 ) THEN
+          CALL MDS_WRITEVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RL', active_var_length,
      O                active_data_t, dummyRS,
      I                bi, bj,
      I                iRec, myOptimIter, myThid )
+        ENDIF
 
 C     Set active_var to zero.
         DO i = 1, active_var_length
@@ -648,13 +652,15 @@ C     adjoint variable file. These files are tiled.
           DO i = 1, active_var_length
             active_data_t(i) = 0. _d 0
           ENDDO
-          CALL MDS_WRITEVEC_LOC(
+          IF ( myProcId.EQ.0 ) THEN
+            CALL MDS_WRITEVEC_LOC(
      I                adfname, prec, ioUnit,
      I                'RS', active_var_length,
      O                dummyRL, active_data_t,
      I                bi, bj,
      I                iRec, myOptimIter, myThid )
 
+          ENDIF
         ENDIF
 
       ENDIF
@@ -675,13 +681,15 @@ C     Add active_var from appropriate location to data.
         ENDDO
 
 C     Store the result on disk.
-        CALL MDS_WRITEVEC_LOC(
+        IF ( myProcId.EQ.0 ) THEN
+          CALL MDS_WRITEVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RS', active_var_length,
      O                dummyRL, active_data_t,
      I                bi, bj,
      I                iRec, myOptimIter, myThid )
 
+        ENDIF
 C     Set active_var to zero.
         DO i = 1, active_var_length
           active_data_t(i) = 0. _d 0
@@ -1014,13 +1022,15 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
 
 C     Read the active variable from file.
-        CALL MDS_WRITEVEC_LOC(
+        IF ( myProcId.EQ.0 ) THEN
+          CALL MDS_WRITEVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RL', active_var_length,
      O                active_var, dummyRS,
      I                bi, bj,
      I                iRec, myOptimIter, myThid )
 
+        ENDIF
       ENDIF
 
 C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
@@ -1040,24 +1050,27 @@ C     Add active_var from appropriate location to data.
         ENDDO
 
 C     Store the result on disk.
-        CALL MDS_WRITEVEC_LOC(
+        IF ( myProcId.EQ.0 ) THEN
+          CALL MDS_WRITEVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RL', active_var_length,
      O                active_data_t, dummyRS,
      I                bi, bj,
      I                iRec, myOptimIter, myThid )
-
+        ENDIF
       ENDIF
 
 C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
 C     Read the active variable from file.
-        CALL MDS_WRITEVEC_LOC(
+        IF ( myProcId.EQ.0 ) THEN
+          CALL MDS_WRITEVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RL', active_var_length,
      O                active_var, dummyRS,
      I                bi, bj,
      I                iRec, myOptimIter, myThid )
+        ENDIF
       ENDIF
 
       RETURN
@@ -1136,13 +1149,15 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
 
 C     Read the active variable from file.
-        CALL MDS_WRITEVEC_LOC(
+        IF ( myProcId.EQ.0 ) THEN
+          CALL MDS_WRITEVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RS', active_var_length,
      O                dummyRL, active_var,
      I                bi, bj,
      I                iRec, myOptimIter, myThid )
 
+        ENDIF
       ENDIF
 
 C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
@@ -1162,24 +1177,28 @@ C     Add active_var from appropriate location to data.
         ENDDO
 
 C     Store the result on disk.
-        CALL MDS_WRITEVEC_LOC(
+        IF ( myProcId.EQ.0 ) THEN
+          CALL MDS_WRITEVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RL', active_var_length,
      O                dummyRL, active_data_t,
      I                bi, bj,
      I                iRec, myOptimIter, myThid )
 
+        ENDIF
       ENDIF
 
 C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. TANGENT_SIMULATION) THEN
 C     Read the active variable from file.
-        CALL MDS_WRITEVEC_LOC(
+        IF ( myProcId.EQ.0 ) THEN
+          CALL MDS_WRITEVEC_LOC(
      I                activeVar_file, prec, ioUnit,
      I                'RL', active_var_length,
      O                dummyRL, active_var,
      I                bi, bj,
      I                iRec, myOptimIter, myThid )
+        ENDIF
       ENDIF
 
       RETURN
