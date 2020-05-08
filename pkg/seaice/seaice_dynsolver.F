@@ -556,14 +556,18 @@ C     compute internal stresses with updated ice velocities
      I         bi, bj, myTime, myIter, myThid )
           DO J=1,sNy
            DO I=1,sNx
-            sig1(I,J)  = 0.5 _d 0 * (
-     &            uIce(I,  J,bi,bj)*stressDivergenceX(I,  J,bi,bj)
-     &           +uIce(I+1,J,bi,bj)*stressDivergenceX(I+1,J,bi,bj)
-     &           +vIce(I,J,  bi,bj)*stressDivergenceY(I,J,  bi,bj)
-     &           +vIce(I,J+1,bi,bj)*stressDivergenceY(I,J+1,bi,bj) )
+            sig1(I,J) = uIce(I,J,bi,bj)*stressDivergenceX(I,J,bi,bj)
+            sig2(I,J) = vIce(I,J,bi,bj)*stressDivergenceY(I,J,bi,bj)
            ENDDO
           ENDDO
-          CALL DIAGNOSTICS_FILL(sig1,'SIenpi  ',0,1,2,bi,bj,myThid)
+C     average from velocity points to pressure points
+          DO j=1,sNy
+           DO i=1,sNx
+            sig12(I,J)= 0.5 _d 0 * ( sig1(I,J) + sig1(I+1,J)
+     &                             + sig2(I,J) + sig2(I,J+1) )
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(sig12,'SIenpi  ',0,1,2,bi,bj,myThid)
          ENDIF
          IF ( DIAGNOSTICS_IS_ON('SIenpot ',myThid) ) THEN
           DO J=1,sNy
@@ -603,16 +607,15 @@ C     compute internal stresses with updated ice velocities
      &           * SEAICEstressFactor
             areaS = 0.5 _d 0 * (AREA(I,J,bi,bj) + AREA(I,J-1,bi,bj))
      &           * SEAICEstressFactor
-            sig1(I,J) = TAUX(I,J,bi,bj)*areaW
-            sig2(I,J) = TAUY(I,J,bi,bj)*areaS
+            sig1(I,J) = TAUX(I,J,bi,bj)*areaW * uIce(I,J,bi,bj)
+            sig2(I,J) = TAUY(I,J,bi,bj)*areaS * vIce(I,J,bi,bj)
            ENDDO
           ENDDO
+C     average from velocity points to pressure points
           DO j=1,sNy
            DO i=1,sNx
-            sig12(I,J)= 0.5 _d 0 * ( uIce(I,  J,bi,bj)*sig1(I,  J)
-     &                             + uIce(I+1,J,bi,bj)*sig1(I+1,J)
-     &                             + vIce(I,J,  bi,bj)*sig2(I,J  )
-     &                             + vIce(I,J+1,bi,bj)*sig2(I,J+1) )
+            sig12(I,J)= 0.5 _d 0 * ( sig1(I,J) + sig1(I+1,J)
+     &                             + sig2(I,J) + sig2(I,J+1) )
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig12,'SIenpa  ',0,1,2,bi,bj,myThid)
@@ -641,6 +644,7 @@ C     introduce turning angle (default is zero)
      &         0.5 _d 0*(vIce(I-1,J  ,bi,bj)-vVel(I-1,J  ,kSrf,bi,bj)
      &                  +vIce(I-1,J+1,bi,bj)-vVel(I-1,J+1,kSrf,bi,bj))
      &         )
+            sig1(I,J) = sig1(I,J) * uIce(I,J,bi,bj)
             sig2(I,J) = areaS *
      &           HALF*( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) )*
      &         COSWAT *
@@ -653,14 +657,14 @@ C     introduce turning angle (default is zero)
      &         0.5 _d 0*(uIce(I  ,J-1,bi,bj)-uVel(I  ,J-1,kSrf,bi,bj)
      &                  +uIce(I+1,J-1,bi,bj)-uVel(I+1,J-1,kSrf,bi,bj))
      &         )
+            sig2(I,J) = sig2(I,J) * vIce(I,J,bi,bj)
            ENDDO
           ENDDO
+C     average from velocity points to pressure points
           DO j=1,sNy
            DO i=1,sNx
-            sig12(I,J)= - 0.5 _d 0 * ( uIce(I,  J,bi,bj)*sig1(I,  J)
-     &                               + uIce(I+1,J,bi,bj)*sig1(I+1,J)
-     &                               + vIce(I,J,  bi,bj)*sig2(I,J  )
-     &                               + vIce(I,J+1,bi,bj)*sig2(I,J+1) )
+            sig12(I,J)= - 0.5 _d 0 * ( sig1(I,J) + sig1(I+1,J)
+     &                               + sig2(I,J) + sig2(I,J+1) )
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig12,'SIenpw  ',0,1,2,bi,bj,myThid)
@@ -677,6 +681,7 @@ C     introduce turning angle (default is zero)
      &           *( phiSurf(I,J)-phiSurf(I,J-1) ) * vIce(I,J,bi,bj)
            ENDDO
           ENDDO
+C     average from velocity points to pressure points
           DO j=1,sNy
            DO i=1,sNx
             sig12(I,J) = 0.5 _d 0 * ( sig1(I,J) + sig1(I+1,J)
