@@ -188,6 +188,7 @@ CADJ STORE shiTransCoeffT = tapelev_init, key = 1
 CADJ STORE shiTransCoeffS = tapelev_init, key = 1
 #  else
 CADJ STORE shiCDragFld = tapelev_init, key = 1
+#  endif
 # endif
 #endif
       CALL PACKAGES_INIT_VARIABLES( myThid )
