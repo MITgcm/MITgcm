@@ -90,6 +90,7 @@ C     == Global variables ==
 # include "CTRL_FIELDS.h"
 # ifdef ALLOW_SHI2D_CONTROL
 #  include "SHELFICE.h"
+#  include "SHELFICE_OPTIONS.h"
 # endif
 #endif
 
@@ -182,8 +183,11 @@ CADJ STORE recip_hFacC = tapelev_init, key = 1
 # ifdef ALLOW_SHI2D_CONTROL
 CADJ STORE shelficeFreshwaterFlux = tapelev_init, key = 1
 CADJ STORE shelficeHeatFlux = tapelev_init, key = 1
+#  ifndef SHI_ALLOW_GAMMAFRICT
 CADJ STORE shiTransCoeffT = tapelev_init, key = 1
 CADJ STORE shiTransCoeffS = tapelev_init, key = 1
+#  else
+CADJ STORE shiCDragFld = tapelev_init, key = 1
 # endif
 #endif
       CALL PACKAGES_INIT_VARIABLES( myThid )
