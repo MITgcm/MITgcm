@@ -39,6 +39,7 @@ C     == global variables ==
 #endif
 #ifdef ALLOW_SHI2D_CONTROL
 # include "SHELFICE.h"
+# include "SHELFICE_OPTIONS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -53,7 +54,7 @@ C     == local variables ==
 #ifdef ALLOW_GENARR2D_CONTROL
       integer igen_etan,igen_bdrag,igen_geoth
 # ifdef ALLOW_SHI2D_CONTROL
-      integer igen_shiCoeffT, igen_shiCoeffS
+      integer igen_shiCoeffT, igen_shiCoeffS, igen_shiCDrag
       integer i, j, bi, bj
 # endif
 #endif /* ALLOW_GENARR2D_CONTROL */
@@ -76,6 +77,7 @@ C--   generic 2D control variables
 #ifdef ALLOW_SHI2D_CONTROL
       igen_shiCoeffT=0
       igen_shiCoeffS=0
+      igen_shiCDrag=0
 #endif
       DO iarr = 1, maxCtrlArr2D
       if (xx_genarr2d_weight(iarr).NE.' ') then
@@ -86,10 +88,15 @@ C--   generic 2D control variables
         if (xx_genarr2d_file(iarr)(1:13).EQ.'xx_geothermal')
      &     igen_geoth=iarr
 #ifdef ALLOW_SHI2D_CONTROL
+# ifndef SHI_ALLOW_GAMMAFRICT
         if (xx_genarr2d_file(iarr)(1:12).EQ.'xx_shicoefft')
      &     igen_shiCoeffT=iarr
         if (xx_genarr2d_file(iarr)(1:12).EQ.'xx_shicoeffs')
      &     igen_shiCoeffS=iarr
+# else
+        if (xx_genarr2d_file(iarr)(1:11).EQ.'xx_shicdrag')
+     &     igen_shiCDrag=iarr
+# endif
 #endif
       endif
       ENDDO
@@ -106,6 +113,7 @@ C--   generic 2D control variables
      &  call ctrl_map_genarr2d(geothermalFlux,igen_geoth,myThid)
 #endif
 #ifdef ALLOW_SHI2D_CONTROL
+# ifndef SHI_ALLOW_GAMMAFRICT
       if (igen_shiCoeffT.GT.0)
      &  call ctrl_map_genarr2d(shiTransCoeffT,igen_shiCoeffT,myThid)
 
@@ -124,6 +132,10 @@ C--   generic 2D control variables
             enddo
            enddo
       endif
+# else
+      if (igen_shiCDrag.GT.0)
+     &  call ctrl_map_genarr2d(shiCDragFld,igen_shiCDrag,myThid)
+# endif /* SHI_ALLOW_GAMMAFRICT */
 #endif /* ALLOW_SHI2D_CONTROL */
 
 #endif /* ALLOW_GENARR2D_CONTROL */

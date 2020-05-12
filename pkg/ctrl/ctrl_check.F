@@ -22,6 +22,9 @@ C     === Global variables ===
 #endif
 #include "CTRL_SIZE.h"
 #include "CTRL_GENARR.h"
+#ifdef ALLOW_SHI2D_CONTROL
+# include "SHELFICE_OPTIONS.h"
+#endif
 
 C     === Routine arguments ===
 C     myThid     :: my Thread Id number
@@ -315,6 +318,42 @@ c       Warn user: doscaling must be true to do log10 ctrl
      &        'ALLOW_GENARR2D_CONTROL'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R CTRL_CHECK'
+# endif
+
+C Can't have shiTransCoeffT/S as control variables in gammafrict form 
+# ifdef SHI_ALLOW_GAMMAFRICT
+        do iarr = 1, maxCtrlArr2D
+          if ( (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff')) then
+              write(msgBuf,'(2A,I2,A)')
+     &        'shiTransCoeffT or S set as control variable for ',
+     &        'xx_genarr2d(', iarr,
+     &        '). '
+              call print_error( msgBuf, myThid )
+              write(msgBuf,'(2A)')
+     &        'Cannot use shiTransCoeffT/S when SHI_ALLOW_GAMMAFRICT ',
+     &        'is defined'
+              call print_error( msgBuf, myThid )
+              STOP 'ABNORMAL END: S/R CTRL_CHECK'
+          endif
+        enddo
+# else
+
+C Can't have shiCDrag as control variable without gammafrict form 
+C this could be changed to control cdrag for momentum equation...
+        do iarr = 1, maxCtrlArr2D
+          if ( (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
+              write(msgBuf,'(2A,I2,A)')
+     &        'shiCDrag set as control variable for ',
+     &        'xx_genarr2d(', iarr,
+     &        '). '
+              call print_error( msgBuf, myThid )
+              write(msgBuf,'(2A)')
+     &        'Cannot use shiCDrag when SHI_ALLOW_GAMMAFRICT ',
+     &        'is NOT defined'
+              call print_error( msgBuf, myThid )
+              STOP 'ABNORMAL END: S/R CTRL_CHECK'
+          endif
+        enddo
 # endif
 #endif
 

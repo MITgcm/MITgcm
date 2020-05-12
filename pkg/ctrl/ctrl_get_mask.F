@@ -133,6 +133,7 @@ C --- Set to maskC by default
 C --- Shelfice
 #if (defined ALLOW_SHI2D_CONTROL) || (defined ALLOW_SHIFWFLX_CONTROL)
       if ((xx_filename(1:11).EQ.'xx_shicoeff').or.
+     &    (xx_filename(1:11).EQ.'xx_shicdrag').or.
      &    (xx_filename(1:11).EQ.'xx_shifwflx')) then
         call ctrl_cprsrl(maskSHI,Nr,mask3D,Nr,myThid)
       endif

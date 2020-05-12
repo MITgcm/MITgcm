@@ -268,23 +268,6 @@ CML         CALL PRINT_ERROR( msgBuf , 1)
 CML         errCount = errCount + 1
 CML      ENDIF
 
-#if (defined ALLOW_SHI2D_CONTROL) && (defined SHI_ALLOW_GAMMAFRICT)
-        WRITE(msgBuf,'(A,A,A)')
-     &       'Cannot use shiTransCoeff(T/S) control variables with '
-     &       'SHI_ALLOW_GAMMAFRICT defined in SHELFICE_OPTIONS.h '
-     &       'because shiTransCoeffT/S get reset in shelfice_thermo.F'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-
-        if ( SHELFICEuseGammaFrict ) then
-          WRITE(msgBuf,'(A,A,A)')
-     &         'Cannot use shiTransCoeff(T/S) control variables with '
-     &         'SHELFICEuseGammaFrict=.true. in data.shelfice '
-          CALL PRINT_ERROR( msgBuf, myThid )
-          errCount = errCount + 1
-        endif
-#endif /* ALLOW_SHI2D_CONTROL && SHI_ALLOW_GAMMAFRICT */
-
       IF ( errCount.GE.1 ) THEN
         WRITE(msgBuf,'(A,I3,A)')
      &       'SHELFICE_CHECK: detected', errCount,' fatal error(s)'
