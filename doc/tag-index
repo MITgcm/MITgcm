@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  - add active read and write routines for global 1D vectors, to be used for
+    compressed cost function vectors (note: not used yet, example to come soon).
 o model/src & pkg/exf:
   - Reference atmospheric pressure for seawater EOS was assumed but was not
     explicitly set. New constant "eosRefP0" is added to make this more clear ;
