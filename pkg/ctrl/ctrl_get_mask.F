@@ -100,7 +100,7 @@ C     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_SHELFICE
-# ifdef ALLOW_SHI2D_CONTROL
+# if (defined ALLOW_SHI2D_CONTROL) || (defined ALLOW_SHIFWFLX_CONTROL)
 #  include "SHELFICE.h"
 # endif
 #endif
