@@ -270,6 +270,13 @@ c     ENDIF
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+       diagName  = 'SHICDrag'
+       diagTitle = 'Shelfice drag coefficient for u* parameterization'
+       diagUnits = '1             '
+       diagCode  = 'SM      L1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
 #ifdef ALLOW_SHELFICE_REMESHING
        diagName  = 'SHIRshel'
        diagTitle = 'depth of shelfice'
@@ -280,19 +287,29 @@ c     ENDIF
 #endif
 
 # if (defined ALLOW_AUTODIFF) && (defined ALLOW_SHI2D_CONTROL)
+#  ifndef SHI_ALLOW_GAMMAFRICT
        diagName  = 'ADJshict'
-       diagTitle = 'dJ/dgammaT: Sensitivity to heat transfer coeff'
+       diagTitle = 'dJ/dgammaT: Sens. to shelfice heat transfer coeff'
        diagUnits = 'dJ/(m/s)        '
        diagCode  = 'SM A    M1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
        diagName  = 'ADJshics'
-       diagTitle = 'dJ/dgammaS: Sensitivity to salt transfer coeff'
+       diagTitle = 'dJ/dgammaS: Sens. to shelfice salt transfer coeff'
        diagUnits = 'dJ/(m/s)        '
        diagCode  = 'SM A    M1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#  else
+       diagName  = 'ADJshicd'
+       diagTitle = 'dJ/dcDrag: Sensitivity to shelfice u* drag coeff'
+       diagUnits = 'dJ/1          '
+       diagCode  = 'SM A    M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#  endif
 # endif
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */

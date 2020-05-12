@@ -706,10 +706,14 @@ C     Transfer coefficients
      &      0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(shiTransCoeffS,'SHIgammS',
      &      0,1,0,1,1,myThid)
+
 C     Friction velocity
 #ifdef SHI_ALLOW_GAMMAFRICT
-       IF ( SHELFICEuseGammaFrict )
-     &  CALL DIAGNOSTICS_FILL(uStarDiag,'SHIuStar',0,1,0,1,1,myThid)
+       IF ( SHELFICEuseGammaFrict ) THEN
+        CALL DIAGNOSTICS_FILL(uStarDiag,'SHIuStar',0,1,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(shiCDragFld,'SHICDrag',
+     &      0,1,0,1,1,myThid)
+       ENDIF
 #endif /* SHI_ALLOW_GAMMAFRICT */
 #ifdef ALLOW_SHELFICE_REMESHING
        CALL DIAGNOSTICS_FILL_RS( R_shelfIce, 'SHIRshel',

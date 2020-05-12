@@ -66,6 +66,9 @@ C- Note: Since OpenAD uses modules, the ordering of included headers matters
 #  include "DIAGNOSTICS_SIZE.h"
 #  include "DIAGNOSTICS.h"
 # endif
+# ifdef ALLOW_SHI2D_CONTROL
+#  include "SHELFICE_OPTIONS.h"
+# endif
 #endif /* ALLOW_AUTODIFF_MONITOR */
 
 C     !INPUT/OUTPUT PARAMETERS:
