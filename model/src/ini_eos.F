@@ -32,10 +32,14 @@ C     == Routine arguments ==
 C     myThid -  Number of this instance of INI_CORI
       INTEGER myThid
 
+C     !FUNCTIONS
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,k    :: Loop counters
-      INTEGER  i, k
+      INTEGER  i, k, iLen
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       IF ( .NOT.fluidIsWater ) RETURN
@@ -44,6 +48,8 @@ C     i,k    :: Loop counters
       _BEGIN_MASTER(myThid)
 
       equationOfState = eosType
+      iLen = ILNBLNK(equationOfState)
+      iLen = MAX(iLen,1)
 
       DO k = 1,6
          eosJMDCFw(k) = 0. _d 0
@@ -70,6 +76,11 @@ C     i,k    :: Loop counters
          teos(k)        = 0. _d 0
       ENDDO
 
+C     For all current EOS that explicitly depend on pressure ('UNESCO',
+C     'JMD95','MDJWF' & 'TEOS10' ), the input pressure is assumed to be
+C     relative to reference atmospheric pressure of 1.atm = 101325 Pa
+      eosRefP0 = 101325. _d 0
+
       IF ( equationOfState .EQ. 'LINEAR' ) THEN
          IF ( tAlpha .EQ. UNSET_RL ) tAlpha = 2.  _d -4
          IF ( sBeta  .EQ. UNSET_RL ) sBeta  = 7.4 _d -4
@@ -79,10 +90,10 @@ C     i,k    :: Loop counters
          IF (k.NE.Nr) THEN
             WRITE(msgBuf,'(A)')
      &           'ini_eos: attempt to read POLY3.COEFFS failed'
-            CALL PRINT_ERROR( msgBuf , myThid )
+            CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(A)')
      &           '           because bad # of levels in data'
-            CALL PRINT_ERROR( msgBuf , myThid )
+            CALL PRINT_ERROR( msgBuf, myThid )
             STOP 'Bad data in POLY3.COEFFS'
          ENDIF
          READ(37,*) (eosRefT(k),eosRefS(k),eosSig0(k),k=1,Nr)
@@ -94,22 +105,22 @@ C     i,k    :: Loop counters
       ELSEIF ( equationOfState .EQ. 'JMD95Z'
      &    .OR. equationOfState .EQ. 'JMD95P'
      &    .OR. equationOfState .EQ. 'UNESCO' ) THEN
-C
-C     Jackett & McDougall (1995, JPO) equation of state
+
+C     Jackett & McDougall (1995, JAOT) equation of state
 C     rho = R(salinity, potential temperature, pressure)
 C     pressure needs to be available (from the previous
 C     time step to linearize the problem)
-C
+
          IF ( equationOfState .EQ. 'JMD95Z' .AND. usingPCoords ) THEN
             WRITE(msgBuf,'(A)')
      &      'ini_eos: equation of state ''JMD95Z'' should not'
-            CALL PRINT_ERROR( msgBuf , myThid )
+            CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(A)')
      &      '         be used together with pressure coordinates.'
-            CALL PRINT_ERROR( msgBuf , myThid )
+            CALL PRINT_ERROR( msgBuf, myThid )
             WRITE(msgBuf,'(A)')
      &      '         Use only ''JMD95P'' with ''OCEANICP''.'
-            CALL PRINT_ERROR( msgBuf , myThid )
+            CALL PRINT_ERROR( msgBuf, myThid )
             STOP 'ABNORMAL END: S/R INI_EOS'
          ENDIF
 
@@ -167,24 +178,24 @@ C     5. secant bulk modulus K of sea water at p
             WRITE(msgBuf,'(a)')
      &           'WARNING WARNING WARNING WARNING WARNING WARNING '
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &           SQUEEZE_RIGHT , myThid )
+     &                          SQUEEZE_RIGHT, myThid )
             WRITE(msgBuf,'(a,a)')
      &           'WARNING: using the UNESCO formula with potential ',
      &           'temperature'
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &           SQUEEZE_RIGHT , myThid )
+     &                          SQUEEZE_RIGHT, myThid )
             WRITE(msgBuf,'(a)')
      &           'WARNING: can result in density errors of up to 5%'
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &           SQUEEZE_RIGHT , myThid )
+     &                          SQUEEZE_RIGHT, myThid )
             WRITE(msgBuf,'(a)')
      &           'WARNING: (see Jackett and McDougall 1995, JAOT)'
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &           SQUEEZE_RIGHT , myThid )
+     &                          SQUEEZE_RIGHT, myThid )
             WRITE(msgBuf,'(a)')
      &           'WARNING WARNING WARNING WARNING WARNING WARNING '
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &           SQUEEZE_RIGHT , myThid )
+     &                          SQUEEZE_RIGHT, myThid )
 
 C     3. secant bulk modulus K of fresh water at p = 0
             eosJMDCKFw(1) =   1.965221 _d +04
@@ -233,7 +244,6 @@ C     5. secant bulk modulus K of sea water at p
          eosMDJWFnum( 9) =  5.18761880 _d -06
          eosMDJWFnum(10) = -3.24041825 _d -08
          eosMDJWFnum(11) = -1.23869360 _d -11
-
 
          eosMDJWFden( 0) =  1.00000000 _d +00
          eosMDJWFden( 1) =  7.28606739 _d -03
@@ -298,14 +308,14 @@ C     5. secant bulk modulus K of sea water at p
        teos(45) = -1.864826425365600 _d -14
        teos(46) =  1.119522344879478 _d -14
        teos(47) = -1.200507748551599 _d -15
-       teos(48) =  6.057902487546866 _d -17 
+       teos(48) =  6.057902487546866 _d -17
 
       ELSEIF( equationOfState .EQ. 'IDEALG' ) THEN
 
       ELSE
 
-         WRITE(msgbuf,'(3A)') ' INI_EOS: equationOfState = "',
-     &        equationOfState,'"'
+         WRITE(msgBuf,'(3A)') 'INI_EOS: eosType= "',
+     &                     equationOfState(1:iLen), '" not valid'
          CALL PRINT_ERROR( msgbuf, myThid )
          STOP 'ABNORMAL END: S/R INI_EOS'
 
@@ -340,7 +350,6 @@ C     !USES:
 #include "PARAMS.h"
 #include "EOS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -358,17 +367,17 @@ C     i,j,k
       _RL tFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL pFld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rhoLoc (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoLoc (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL bulkMod(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-      INTEGER ncheck, kcheck
+      INTEGER ncheck, kcheck, k1c, k2c, iLen
       PARAMETER ( ncheck = 20 )
       _RL tLoc(ncheck), ptLoc(ncheck), sLoc(ncheck), pLoc(ncheck)
       _RL rLoc(ncheck), bLoc(ncheck)
-      _RS mskSave
-      _RS rC_Save
+      _RL surf_pRef_save, rhoDif
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(13) blkWrd
 
       DATA tLoc
      &     /3.25905152915860 _d 0, 20.38687090048638 _d 0,
@@ -403,7 +412,7 @@ C     i,j,k
      &       0.  _d 0,  0. _d 0,
      &      35.  _d 0, 35. _d 0,
      &      34.7392 _d 0, 34.4652 _d 0,
-     &      34.7738 _d 0, 34.8435 _d 0, 
+     &      34.7738 _d 0, 34.8435 _d 0,
      &      34.8637 _d 0, 34.8739 _d 0, 34.8776 _d 0/
      &     pLoc
      &     /300. _d 5,  200. _d 5,
@@ -442,6 +451,7 @@ C     i,j,k
      &         -1.00000 _d 0,    -1.00000 _d 0,
      &         -1.00000 _d 0/
 
+      blkWrd = '             '
       bi   = 1
       bj   = 1
       k    = 1
@@ -459,18 +469,44 @@ C     check nonlinear EOS
      &        'EOS_CHECK: Check the equation of state: Type ',
      &        equationOfState
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , myThid )
-C-    to get the right pressure out of S/R PRESSURE_FOR_EOS:
-        mskSave = maskC(i,j,k,bi,bj)
-        rC_Save = rC(k)
-        maskC(i,j,k,bi,bj) = 1.
-        totPhiHyd(i,j,k,bi,bj) = 0.
-C-    + set rC accordingly
-        DO kcheck = 1,ncheck
-          IF ( usingZCoords ) THEN
-            rC(k) = -pLoc(kcheck)*recip_rhoConst*recip_gravity
-          ELSE
-            rC(k) =  pLoc(kcheck)
+     &                      SQUEEZE_RIGHT, myThid )
+        IF ( equationOfState.EQ.'JMD95Z' .OR.
+     &       equationOfState.EQ.'JMD95P' ) THEN
+          WRITE(msgBuf,'(A)')
+     &         'EOS_CHECK: check Rho values for eosType=JMD95:'
+          k1c = 1
+          k2c = 1
+        ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
+          WRITE(msgBuf,'(A)')
+     &         'EOS_CHECK: check Rho values for eosType=MDJWF:'
+          k1c = 2
+          k2c = 5
+        ELSEIF ( equationOfState.EQ.'UNESCO' ) THEN
+          WRITE(msgBuf,'(A)')
+     &         'EOS_CHECK: check Rho & K values for eosType=UNESCO:'
+          k1c = 6
+          k2c = 13
+        ELSEIF ( equationOfState.EQ.'TEOS10' ) THEN
+          WRITE(msgBuf,'(A)')
+     &         'EOS_CHECK: check Rho values for eosType=TEOS10:'
+          k1c = 14
+          k2c = ncheck
+        ELSE
+          WRITE(msgBuf,'(3A)') 'EOS_CHECK: Invalid eosType= ',
+     &          equationOfState
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R EOS_CHECK'
+        ENDIF
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+C-    Will use "surf_pRef" to get the right pressure out of S/R PRESSURE_FOR_EOS
+C     --> save current value into "surf_pRef_save"
+        surf_pRef_save = surf_pRef
+        DO kcheck = k1c, k2c
+
+          surf_pRef = eosRefP0 + pLoc(kcheck)
+          IF ( usingPCoords ) THEN
+            surf_pRef = surf_pRef - rC(k)
           ENDIF
           IF ( equationOfState.NE.'UNESCO' ) THEN
              tFld(i,j) = ptLoc(kcheck)
@@ -486,68 +522,60 @@ C-    + set rC accordingly
      I           tFld, sFld,
      O           rhoLoc,
      I           k, bi, bj, myThid )
+          rhoDif = rhoLoc(i,j) + rhoConst - rLoc(kcheck)
 
-          IF ( equationOfState.EQ.'MDJWF' .OR.
-     &         equationOfState.EQ.'TEOS10' ) THEN
-            bulkMod(i,j) = -1. _d 0
-          ELSE
+          IF ( equationOfState.EQ.'UNESCO' ) THEN
             CALL FIND_BULKMOD(
      I           iMin, iMax, jMin, jMax,
      I           pFld, tFld, sFld,
      O           bulkMod,
      I           myThid )
-          ENDIF
-
-          IF ( kcheck .EQ. 1 ) THEN
-           WRITE(msgBuf,'(A)') 
-     &          'EOS_CHECK: check values for eosType=JMD95:'
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &          SQUEEZE_RIGHT , myThid )
-          ELSEIF ( kcheck .EQ. 2 ) THEN
-           WRITE(msgBuf,'(A)') 
-     &          'EOS_CHECK: check values for eosType=MDJWF:'
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &          SQUEEZE_RIGHT , myThid )
-          ELSEIF ( kcheck .EQ. 6 ) THEN
-           WRITE(msgBuf,'(A)') 
-     &          'EOS_CHECK: check values for eosType=UNESCO:'
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &          SQUEEZE_RIGHT , myThid )
-          ELSEIF ( kcheck .EQ. 14 ) THEN
-           WRITE(msgBuf,'(A)') 
-     &          'EOS_CHECK: check values for eosType=TEOS10:'
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &          SQUEEZE_RIGHT , myThid )
-          ENDIF
-          WRITE(msgBuf,'(2(A,F4.1),A,F5.0,2A,F10.5,1X,F11.5)')
-     &         'rho(', sFld(i,j), ' PSU,',
-     &         tFld(i,j), ' degC,',
-     &         pLoc(kcheck)*SItoBar, ' bar)',
-     &         ' = ', rLoc(kcheck), bLoc(kcheck)
-          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &         SQUEEZE_RIGHT , myThid )
-          WRITE(msgBuf,'(A,F10.5,1X,F11.5)')
+C-    Reference value
+            WRITE(msgBuf,'(2(A,F4.1),A,F5.0,2A,F10.5,A,F11.5)')
+     &           'rho(', sFld(i,j), ' PSU,',
+     &           tFld(i,j), ' degC,',
+     &           pLoc(kcheck)*SItoBar, ' bar)',
+     &           ' = ', rLoc(kcheck), ' ', bLoc(kcheck)
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
+            WRITE(msgBuf,'(A,F10.5,A,F11.5,A,1PE10.3)')
+     &           ' rho(find_rho_2d)                 = ',
+     &           rhoLoc(i,j)+rhoConst, ' ', bulkMod(i,j), ' ', rhoDif
+            iLen = LEN( blkWrd )
+          ELSE
+C-    Reference value
+            WRITE(msgBuf,'(2(A,F4.1),A,F5.0,2A,F10.5,A,F11.5)')
+     &           'rho(', sFld(i,j), ' PSU,',
+     &           tFld(i,j), ' degC,',
+     &           pLoc(kcheck)*SItoBar, ' bar)',
+     &           ' = ', rLoc(kcheck)
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid )
+            WRITE(msgBuf,'(A,F10.5,A,1PE10.3)')
      &         ' rho(find_rho_2d)                 = ',
-     &         rhoLoc(i,j)+rhoConst, bulkMod(i,j)
+     &         rhoLoc(i,j)+rhoConst, ' ', rhoDif
+            iLen = 1
+          ENDIF
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &         SQUEEZE_RIGHT , myThid )
+     &                        SQUEEZE_RIGHT, myThid )
 
+          surf_pRef = eosRefP0
           CALL FIND_RHO_SCALAR( tFld(i,j), sLoc(kcheck),
      &         pLoc(kcheck), rhoLoc(i,j), myThid )
-          WRITE(msgBuf,'(A,F10.5,1X,F11.5)')
+          rhoDif = rhoLoc(i,j) - rLoc(kcheck)
+          WRITE(msgBuf,'(A,F10.5,A,1PE10.3)')
      &         ' rho(find_rho_scalar)             = ',
-     &         rhoLoc(i,j)
+     &         rhoLoc(i,j), blkWrd(1:iLen), rhoDif
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &         SQUEEZE_RIGHT , myThid )
+     &                        SQUEEZE_RIGHT, myThid )
 
         ENDDO
-C     end check nonlinear EOS
-        maskC(i,j,k,bi,bj) = mskSave
-        rC(k) = rC_Save
+C     end check nonlinear EOS ; restore surf_pRef value
+        surf_pRef = surf_pRef_save
 
         WRITE(msgBuf,'(A)') 'EOS_CHECK: Done'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , myThid )
+     &                      SQUEEZE_RIGHT, myThid )
 
       ENDIF
 #endif /* INCLUDE_EOS_CHECK */
