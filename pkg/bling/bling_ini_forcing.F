@@ -83,7 +83,7 @@ c set reasonable values to those that need at least something
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-             atm_pco2(i,j,bi,bj) = bling_pCO2*maskC(i,j,1,bi,bj)
+             apco2(i,j,bi,bj) = bling_pCO2*maskC(i,j,1,bi,bj)
              wind(i,j,bi,bj)     = 5. _d 0*maskC(i,j,1,bi,bj)
              atmosP(i,j,bi,bj)   = 1. _d 0*maskC(i,j,1,bi,bj)
              fIce(i,j,bi,bj)     = 0. _d 0
@@ -100,7 +100,7 @@ c set reasonable values to those that need at least something
       CALL EXF_INIT_FLD(
      I     'apco2', apco2file, apco2mask,
      I     apco2period, exf_inscal_apco2, apco2const,
-     O     atm_pco2, apco20, apco21,
+     O     apco2, apco20, apco21,
 # ifdef USE_EXF_INTERPOLATION
      I     apco2_lon0, apco2_lon_inc,
      I     apco2_lat0, apco2_lat_inc,

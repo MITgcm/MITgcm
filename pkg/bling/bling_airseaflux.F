@@ -237,7 +237,7 @@ c make sure Schmidt number is not negative (will happen if temp>39C)
 
 C First determine local saturation pCO2
 c Correct for atmospheric pressure
-              pCO2sat(i,j) = atm_pco2(i,j,bi,bj) * AtmosP(i,j,bi,bj)
+              pCO2sat(i,j) = apco2(i,j,bi,bj) * AtmosP(i,j,bi,bj)
 
 C then account for Schmidt number
               Kwexch(i,j) = Kwexch_Pre(i,j)

@@ -274,7 +274,7 @@ C-----------------------------------------------------------
         CALL DIAGNOSTICS_FILL(fluxCO2 ,'BLGCFLX ',0,1 ,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(fluxO2  ,'BLGOFLX ',0,1 ,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(surf_Fe ,'BLGSURFE',0,1, 2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(atm_pco2,'BLGapco2',0,1, 1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(apco2,'BLGapco2',0,1, 1,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
