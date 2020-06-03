@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - fix character length when checking for m_trHeat, m_trSalt & m_horflux_vol.
 o pkg/autodiff:
   - add active read and write routines for global 1D vectors, to be used for
     compressed cost function vectors (note: not used yet, example to come soon).
