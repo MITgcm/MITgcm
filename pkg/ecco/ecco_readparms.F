@@ -726,7 +726,7 @@ C--   load masks if needed:
       do k=1,NGENCOST
            kk=gencost_msk_pointer3d(k)
            if ( ( gencost_mask(k) .NE. ' ' ).AND.
-     &          (gencost_flag(k).EQ.-3 .or. 
+     &          (gencost_flag(k).EQ.-3 .or.
      &           gencost_flag(k).eq.-4     ) ) then
 c
             il = ilnblnk(gencost_mask(k))
