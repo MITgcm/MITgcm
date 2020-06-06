@@ -49,10 +49,13 @@ C     myThid     :: my Thread Id. number
 CEOP
 
 #ifdef SEAICE_CGRID
-
 C     !FUNCTIONS:
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif /* ALLOW_DIAGNOSTICS */
 
 C     !LOCAL VARIABLES:
 C     === In Local common block ===
@@ -74,8 +77,9 @@ C     bi,bj  :: tile counters
       _RL sigp, sigm, sigTmp, recip_prs
       _RL areaW, areaS, COSWAT, SINWAT
       INTEGER kSrf
-      LOGICAL  DIAGNOSTICS_IS_ON
-      EXTERNAL DIAGNOSTICS_IS_ON
+      LOGICAL diag_SIsig1_isOn, diag_SIsig2_isOn, diag_SIshear_isOn
+      LOGICAL diag_SIenpi_isOn, diag_SIenpot_isOn
+      LOGICAL diag_SIpRfric_isOn, diag_SIpSfric_isOn
 #endif /* ALLOW_DIAGNOSTICS */
 
 C Initialise local variables in common block
@@ -424,7 +428,7 @@ C     diagnostics related to mechanics/dynamics/momentum equations
 C     use sig1 as a temporary field
           DO j=1,sNy
            DO i=1,sNx
-            IF ( tensileStrFac(I,J,bi,bj) .EQ. 1. _d 0) THEN
+            IF ( tensileStrFac(I,J,bi,bj) .EQ. oneRL ) THEN
 C     This special case of tensile strength equal to compressive strength
 C     is not very physical and should actually not happen but you never know;
 C     in this case, press = P-T = P*(1-k) = 0. and we have to use press0 to
@@ -444,13 +448,17 @@ C     but we are looking for T = k*P = k*press/(1-k)
        ENDIF
 C     If any of the stress or energy diagnostics are required,
 C     first recompute strainrates from up-to-date velocities
-       IF ( DIAGNOSTICS_IS_ON('SIsig1  ',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIsig2  ',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIshear ',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIenpi  ',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIenpot ',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIpRfric',myThid) .OR.
-     &      DIAGNOSTICS_IS_ON('SIpSfric',myThid)      ) THEN
+       diag_SIsig1_isOn   = DIAGNOSTICS_IS_ON('SIsig1  ',myThid)
+       diag_SIsig2_isOn   = DIAGNOSTICS_IS_ON('SIsig2  ',myThid)
+       diag_SIshear_isOn  = DIAGNOSTICS_IS_ON('SIshear ',myThid)
+       diag_SIenpi_isOn   = DIAGNOSTICS_IS_ON('SIenpi  ',myThid)
+       diag_SIenpot_isOn  = DIAGNOSTICS_IS_ON('SIenpot ',myThid)
+       diag_SIpRfric_isOn = DIAGNOSTICS_IS_ON('SIpRfric',myThid)
+       diag_SIpSfric_isOn = DIAGNOSTICS_IS_ON('SIpSfric',myThid)
+       IF ( diag_SIsig1_isOn .OR. diag_SIsig2_isOn .OR.
+     &      diag_SIshear_isOn .OR. diag_SIenpi_isOn .OR.
+     &      diag_SIenpot_isOn .OR. diag_SIpRfric_isOn .OR.
+     &      diag_SIpSfric_isOn ) THEN
         CALL SEAICE_CALC_STRAINRATES(
      I       uIce, vIce,
      O       e11, e22, e12,
@@ -468,8 +476,7 @@ C
 C
 C     stress diagnostics
 C
-         IF ( DIAGNOSTICS_IS_ON('SIsig1  ',myThid) .OR.
-     &        DIAGNOSTICS_IS_ON('SIsig2  ',myThid)      ) THEN
+         IF ( diag_SIsig1_isOn .OR. diag_SIsig2_isOn ) THEN
 #ifdef SEAICE_ALLOW_EVP
 C     This could go directly into EVP, but to keep a better eye on it,
 C     I would like to keep it here.
@@ -489,9 +496,9 @@ C     PRESS = PRESS(n-1), n = number of sub-cycling steps
              sigTmp = SQRT( sigm*sigm + 4. _d 0*sig12(I,J)*sig12(I,J) )
              recip_prs = 0. _d 0
              IF ( press0(I,J,bi,bj) .GT. 1. _d -13 )
-     &            recip_prs = 1./press0(I,J,bi,bj)
-             sig1(I,J) = 0.5*(sigp + sigTmp)*recip_prs
-             sig2(I,J) = 0.5*(sigp - sigTmp)*recip_prs
+     &            recip_prs = 1. _d 0 / press0(I,J,bi,bj)
+             sig1(I,J) = 0.5 _d 0*(sigp + sigTmp)*recip_prs
+             sig2(I,J) = 0.5 _d 0*(sigp - sigTmp)*recip_prs
             ENDDO
            ENDDO
           ELSE
@@ -514,15 +521,15 @@ C     but sig12 = 2*etaZ*e12, and because of strong gradients in eta,
 C     etaZ can be very large for a cell with small eta and the straightforward
 C     way of averaging mixes large etaZ with small press0, so we have to do it
 C     in different way to get meaningfull sig12C (=sigTmp):
-             sigTmp = 2.*eta(I,J,bi,bj) * 0.25 _d 0 *
+             sigTmp = 2. _d 0 * eta(I,J,bi,bj) * 0.25 _d 0 *
      &            (e12(I,J,bi,bj) + e12(I+1,J,bi,bj)
      &            +e12(I,J+1,bi,bj)+e12(I+1,J+1,bi,bj))
-             sigTmp = SQRT( sigm*sigm + 4.*sigTmp*sigTmp )
+             sigTmp = SQRT( sigm*sigm + 4. _d 0*sigTmp*sigTmp )
              recip_prs = 0. _d 0
              IF ( press0(I,J,bi,bj) .GT. 1. _d -13 )
-     &            recip_prs = 1./press0(I,J,bi,bj)
-             sig1(I,J) = 0.5*(sigp + sigTmp)*recip_prs
-             sig2(I,J) = 0.5*(sigp - sigTmp)*recip_prs
+     &            recip_prs = 1. _d 0 / press0(I,J,bi,bj)
+             sig1(I,J) = 0.5 _d 0*(sigp + sigTmp)*recip_prs
+             sig2(I,J) = 0.5 _d 0*(sigp - sigTmp)*recip_prs
             ENDDO
            ENDDO
           ENDIF
@@ -530,7 +537,7 @@ C     in different way to get meaningfull sig12C (=sigTmp):
           CALL DIAGNOSTICS_FILL(sig2,'SIsig2  ',0,1,2,bi,bj,myThid)
          ENDIF
 C
-         IF ( DIAGNOSTICS_IS_ON('SIshear ',myThid) ) THEN
+         IF ( diag_SIshear_isOn  ) THEN
           DO j=1,sNy
            DO i=1,sNx
             sigm = e11(I,J,bi,bj) - e22(I,J,bi,bj)
@@ -547,7 +554,7 @@ C     the average
 C
 C     most of the energy diagnostics, re-use sig1, sig2, sig12 as tmp-arrays
 C
-         IF ( DIAGNOSTICS_IS_ON('SIenpi  ',myThid) ) THEN
+         IF ( diag_SIenpi_isOn ) THEN
 C     compute internal stresses with updated ice velocities
           IF ( .NOT. SEAICEuseFREEDRIFT )
      &         CALL SEAICE_CALC_STRESSDIV(
@@ -569,7 +576,7 @@ C     average from velocity points to pressure points
           ENDDO
           CALL DIAGNOSTICS_FILL(sig12,'SIenpi  ',0,1,2,bi,bj,myThid)
          ENDIF
-         IF ( DIAGNOSTICS_IS_ON('SIenpot ',myThid) ) THEN
+         IF ( diag_SIenpot_isOn ) THEN
           DO J=1,sNy
            DO I=1,sNx
             sig1(I,J) = 0.5 _d 0 * press0(I,J,bi,bj) *
@@ -578,7 +585,7 @@ C     average from velocity points to pressure points
           ENDDO
           CALL DIAGNOSTICS_FILL(sig1,'SIenpot ',0,1,2,bi,bj,myThid)
          ENDIF
-         IF ( DIAGNOSTICS_IS_ON('SIpRfric',myThid) ) THEN
+         IF ( diag_SIpRfric_isOn ) THEN
           DO J=1,sNy
            DO I=1,sNx
             sig1(I,J) = - zeta(I,J,bi,bj)
@@ -588,7 +595,7 @@ C     average from velocity points to pressure points
           ENDDO
           CALL DIAGNOSTICS_FILL(sig1,'SIpRfric',0,1,2,bi,bj,myThid)
          ENDIF
-         IF ( DIAGNOSTICS_IS_ON('SIpSfric',myThid) ) THEN
+         IF ( diag_SIpSfric_isOn ) THEN
           DO J=1,sNy
            DO I=1,sNx
             sig1(I,J) = - eta(I,J,bi,bj)
@@ -698,7 +705,6 @@ C     useDiagnostics
 
 #endif   /* ALLOW_DIAGNOSTICS */
 #endif  /* SEAICE_CGRID */
-
 
       RETURN
       END

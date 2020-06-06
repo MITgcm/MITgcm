@@ -68,10 +68,11 @@ C     i,j,bi,bj :: Loop counters
 #endif
 CEOP
 #ifdef ALLOW_DIAGNOSTICS
-      _RL hTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL recip_deltaTtherm
       LOGICAL  DIAGNOSTICS_IS_ON
       EXTERNAL DIAGNOSTICS_IS_ON
+      LOGICAL  diag_SIenph_isOn
+      _RL hTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL recip_deltaTtherm
 #endif
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER( 'SEAICE_MODEL', myThid )
@@ -187,17 +188,19 @@ C--   growth for the generic 0-layer thermodynamics of seaice
 C--   if useThSice=.false., otherwise the 3-layer Winton thermodynamics
 C--   (called from DO_OCEANIC_PHYSICS) take care of this
 #ifdef ALLOW_DIAGNOSTICS
-       IF ( useDiagnostics
-     &      .AND. DIAGNOSTICS_IS_ON('SIenph  ',myThid) ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            hTmp(I,J,bi,bj)=HEFF(I,J,bi,bj)
+       IF ( useDiagnostics ) THEN
+        diag_SIenph_isOn = DIAGNOSTICS_IS_ON('SIenph  ',myThid)
+        IF ( diag_SIenph_isOn ) THEN
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             hTmp(I,J,bi,bj)=HEFF(I,J,bi,bj)
+            ENDDO
            ENDDO
           ENDDO
          ENDDO
-        ENDDO
+        ENDIF
        ENDIF
 #endif
 C NOW DO ADVECTION and DIFFUSION
@@ -334,7 +337,7 @@ c      ENDIF
 #endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiagnostics ) THEN
+       IF ( useDiagnostics ) THEN
 C     diagnostics for "non-state variables" that are modified by
 C     the seaice model
 # ifdef ALLOW_EXF
@@ -346,8 +349,8 @@ c       CALL DIAGNOSTICS_FILL_RS(FV   ,'SIfv    ',0,1 ,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL_RS(EmPmR,'SIempmr ',0,1 ,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL_RS(Qnet ,'SIqnet  ',0,1 ,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL_RS(Qsw  ,'SIqsw   ',0,1 ,0,1,1,myThid)
-        IF ( DIAGNOSTICS_IS_ON('SIenph  ',myThid) ) THEN
-         recip_deltaTtherm = 1. / SEAICE_deltaTtherm
+        IF ( diag_SIenph_isOn ) THEN
+         recip_deltaTtherm = 1. _d 0 / SEAICE_deltaTtherm
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO j=1,sNy
