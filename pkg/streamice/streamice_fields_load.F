@@ -308,6 +308,7 @@ C-      endif 1rst iter.
          ENDDO
         ENDDO
 
+#ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
       CALL EXCH_XY_RL 
      & (streamice_v_shear_stress, myThid)
       CALL EXCH_XY_RL 
@@ -316,6 +317,7 @@ C-      endif 1rst iter.
      & (streamice_v_normal_stress, myThid)
       CALL EXCH_XY_RL 
      & (streamice_u_normal_stress, myThid)
+#endif
 
        _EXCH_XY_RL(bdot_streamice, mythid )
 #ifdef ALLOW_STREAMICE_FLUX_CONTROL
