@@ -77,7 +77,7 @@ C     bi,bj  :: tile counters
       _RL sigp, sigm, sigTmp, recip_prs
       _RL areaW, areaS, COSWAT, SINWAT
       INTEGER kSrf
-      LOGICAL diag_SIsig1_isOn, diag_SIsig2_isOn, diag_SIshear_isOn
+      LOGICAL diag_SIsigma_isOn, diag_SIshear_isOn
       LOGICAL diag_SIenpi_isOn, diag_SIenpot_isOn
       LOGICAL diag_SIpRfric_isOn, diag_SIpSfric_isOn
 #endif /* ALLOW_DIAGNOSTICS */
@@ -458,17 +458,16 @@ C     but we are looking for T = k*P = k*press/(1-k)
        ENDIF
 C     If any of the stress or energy diagnostics are required,
 C     first recompute strainrates from up-to-date velocities
-       diag_SIsig1_isOn   = DIAGNOSTICS_IS_ON('SIsig1  ',myThid)
-       diag_SIsig2_isOn   = DIAGNOSTICS_IS_ON('SIsig2  ',myThid)
+       diag_SIsigma_isOn  = DIAGNOSTICS_IS_ON('SIsig1  ',myThid)
+     &                 .OR. DIAGNOSTICS_IS_ON('SIsig2  ',myThid)
        diag_SIshear_isOn  = DIAGNOSTICS_IS_ON('SIshear ',myThid)
        diag_SIenpi_isOn   = DIAGNOSTICS_IS_ON('SIenpi  ',myThid)
        diag_SIenpot_isOn  = DIAGNOSTICS_IS_ON('SIenpot ',myThid)
        diag_SIpRfric_isOn = DIAGNOSTICS_IS_ON('SIpRfric',myThid)
        diag_SIpSfric_isOn = DIAGNOSTICS_IS_ON('SIpSfric',myThid)
-       IF ( diag_SIsig1_isOn .OR. diag_SIsig2_isOn .OR.
-     &      diag_SIshear_isOn .OR. diag_SIenpi_isOn .OR.
-     &      diag_SIenpot_isOn .OR. diag_SIpRfric_isOn .OR.
-     &      diag_SIpSfric_isOn ) THEN
+       IF ( diag_SIsigma_isOn  .OR. diag_SIshear_isOn .OR.
+     &      diag_SIenpi_isOn   .OR. diag_SIenpot_isOn .OR.
+     &      diag_SIpRfric_isOn .OR. diag_SIpSfric_isOn ) THEN
 # ifdef ALLOW_AUTODIFF
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -499,7 +498,7 @@ C
 C
 C     stress diagnostics
 C
-         IF ( diag_SIsig1_isOn .OR. diag_SIsig2_isOn ) THEN
+         IF ( diag_SIsigma_isOn ) THEN
 #ifdef SEAICE_ALLOW_EVP
 C     This could go directly into EVP, but to keep a better eye on it,
 C     I would like to keep it here.
