@@ -96,13 +96,13 @@ C Initialise local variables in common block
        ENDDO
       ENDIF
 
-# ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF
 C Following re-initialisation breaks some "artificial" AD dependencies
 C incured by IF (DIFFERENT_MULTIPLE ... statement
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy+1,sNy+OLy
-         DO i=1-OLx+1,sNx+OLx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           PRESS0(i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
      &         *EXP(-SEAICE_cStar*(ONE-AREA(i,j,bi,bj)))
           ZMAX(I,J,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
@@ -114,10 +114,20 @@ C incured by IF (DIFFERENT_MULTIPLE ... statement
           uice_fd(i,j,bi,bj)= 0. _d 0
           vice_fd(i,j,bi,bj)= 0. _d 0
 #endif
+          e11  (i,j,bi,bj)  = 0. _d 0
+          e22  (i,j,bi,bj)  = 0. _d 0
+          e12  (i,j,bi,bj)  = 0. _d 0
+          ETA  (i,j,bi,bj)  = 0. _d 0
+          ZETA (i,j,bi,bj)  = 0. _d 0
+          etaZ (i,j,bi,bj)  = 0. _d 0
+          zetaZ(i,j,bi,bj)  = 0. _d 0
+          press(i,j,bi,bj)  = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
       ENDDO
+# endif /* ALLOW_AUTODIFF */
+# ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE uice    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vice    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE uicenm1 = comlev1, key=ikey_dynamics, kind=isbyte
@@ -165,7 +175,7 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
        ENDDO
       ENDDO
 
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
       IF ( SEAICE_maskRHS ) THEN
 C     dynamic masking of areas with no ice, not recommended
 C     and only kept for testing purposes
@@ -195,7 +205,7 @@ C     and only kept for testing purposes
        ENDDO
        CALL EXCH_UV_XY_RL( seaiceMaskU, seaiceMaskV, .FALSE., myThid )
       ENDIF
-#endif /* ndef ALLOW_AUTODIFF_TAMC */
+#endif /* ndef ALLOW_AUTODIFF */
 
 C--   NOW SET UP FORCING FIELDS
 
@@ -206,7 +216,7 @@ C     initialise fields
          DO i=1-OLx,sNx+OLx
           TAUX (I,J,bi,bj)= 0. _d 0
           TAUY (I,J,bi,bj)= 0. _d 0
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
 # ifdef SEAICE_ALLOW_EVP
           stressDivergenceX(I,J,bi,bj) = 0. _d 0
           stressDivergenceY(I,J,bi,bj) = 0. _d 0
@@ -342,25 +352,25 @@ C     Picard solver with LSR scheme (Zhang-J/Hibler 1997), ported to a C-grid
        ENDIF
 
 #ifdef SEAICE_ALLOW_KRYLOV
-# ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF
        STOP 'Adjoint does not work with Picard-Krylov solver.'
 # else
        IF ( SEAICEuseKrylov ) THEN
 C     Picard solver with Matrix-free Krylov solver (Lemieux et al. 2008)
         CALL SEAICE_KRYLOV( myTime, myIter, myThid )
        ENDIF
-# endif /*  ALLOW_AUTODIFF_TAMC */
+# endif /*  ALLOW_AUTODIFF */
 #endif /* SEAICE_ALLOW_KRYLOV */
 
 #ifdef SEAICE_ALLOW_JFNK
-# ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_AUTODIFF
        STOP 'Adjoint does not work with JFNK solver.'
 # else
        IF ( SEAICEuseJFNK ) THEN
 C     Jacobian-free Newton Krylov solver (Lemieux et al. 2010, 2012)
         CALL SEAICE_JFNK( myTime, myIter, myThid )
        ENDIF
-# endif /*  ALLOW_AUTODIFF_TAMC */
+# endif /*  ALLOW_AUTODIFF */
 #endif /* SEAICE_ALLOW_JFNK */
 
 C End of IF (SEAICEuseDYNAMICS ...
@@ -459,6 +469,19 @@ C     first recompute strainrates from up-to-date velocities
      &      diag_SIshear_isOn .OR. diag_SIenpi_isOn .OR.
      &      diag_SIenpot_isOn .OR. diag_SIpRfric_isOn .OR.
      &      diag_SIpSfric_isOn ) THEN
+# ifdef ALLOW_AUTODIFF
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            e11(i,j,bi,bj) = 0. _d 0
+            e22(i,j,bi,bj) = 0. _d 0
+            e12(i,j,bi,bj) = 0. _d 0
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+# endif /*  ALLOW_AUTODIFF */
         CALL SEAICE_CALC_STRAINRATES(
      I       uIce, vIce,
      O       e11, e22, e12,
