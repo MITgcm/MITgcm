@@ -186,7 +186,6 @@ C=============== state variables ============
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-
 #ifdef ALLOW_SITRACER
       DO iTr = 1, SItrNumInUse
 

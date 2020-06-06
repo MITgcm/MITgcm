@@ -38,7 +38,7 @@ CEOP
 C     == Local variables ==
 C     bi,bj   :: tile indices
       INTEGER i,j,bi,bj
-      _RL tIce (1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
+      _RL tIce (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER k
       _RL recip_multDim
       _RL tmp
