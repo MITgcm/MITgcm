@@ -78,13 +78,17 @@ C>>>ToM
           vice_fd(i,j,bi,bj)=0. _d 0
 #endif
 C
-          uIceNm1(i,j,bi,bj)=0. _d 0
-          vIceNm1(i,j,bi,bj)=0. _d 0
-          ETA (i,j,bi,bj)   = 0. _d 0
-          etaZ(i,j,bi,bj)   = 0. _d 0
-          ZETA(i,j,bi,bj)   = 0. _d 0
-          FORCEX(i,j,bi,bj) = 0. _d 0
-          FORCEY(i,j,bi,bj) = 0. _d 0
+          uIceNm1(i,j,bi,bj) = 0. _d 0
+          vIceNm1(i,j,bi,bj) = 0. _d 0
+          e11    (i,j,bi,bj) = 0. _d 0
+          e22    (i,j,bi,bj) = 0. _d 0
+          e12    (i,j,bi,bj) = 0. _d 0
+          deltaC (i,j,bi,bj) = 0. _d 0
+          ETA    (i,j,bi,bj) = 0. _d 0
+          etaZ   (i,j,bi,bj) = 0. _d 0
+          ZETA   (i,j,bi,bj) = 0. _d 0
+          FORCEX (i,j,bi,bj) = 0. _d 0
+          FORCEY (i,j,bi,bj) = 0. _d 0
 #ifdef SEAICE_CGRID
           seaiceMassC(i,j,bi,bj)=0. _d 0
           seaiceMassU(i,j,bi,bj)=0. _d 0
@@ -97,25 +101,26 @@ C
           seaice_sigma12(i,j,bi,bj) = 0. _d 0
 # endif /* SEAICE_ALLOW_EVP */
 #else /* SEAICE_CGRID */
-          uIceC(i,j,bi,bj)  = 0. _d 0
-          vIceC(i,j,bi,bj)  = 0. _d 0
-          AMASS(i,j,bi,bj)  = 0. _d 0
-          DAIRN(i,j,bi,bj)  = 0. _d 0
-          WINDX(i,j,bi,bj)  = 0. _d 0
-          WINDY(i,j,bi,bj)  = 0. _d 0
-          GWATX(i,j,bi,bj)  = 0. _d 0
-          GWATY(i,j,bi,bj)  = 0. _d 0
+          uIceC(i,j,bi,bj)   = 0. _d 0
+          vIceC(i,j,bi,bj)   = 0. _d 0
+          AMASS(i,j,bi,bj)   = 0. _d 0
+          DAIRN(i,j,bi,bj)   = 0. _d 0
+          WINDX(i,j,bi,bj)   = 0. _d 0
+          WINDY(i,j,bi,bj)   = 0. _d 0
+          GWATX(i,j,bi,bj)   = 0. _d 0
+          GWATY(i,j,bi,bj)   = 0. _d 0
 #endif /* SEAICE_CGRID */
-          DWATN(i,j,bi,bj)  = 0. _d 0
+          DWATN(i,j,bi,bj)   = 0. _d 0
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
-          CbotC(i,j,bi,bj)  = 0. _d 0
+          CbotC(i,j,bi,bj)   = 0. _d 0
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
-          PRESS0(i,j,bi,bj) = 0. _d 0
-          FORCEX0(i,j,bi,bj)= 0. _d 0
-          FORCEY0(i,j,bi,bj)= 0. _d 0
-          ZMAX(i,j,bi,bj)   = 0. _d 0
-          ZMIN(i,j,bi,bj)   = 0. _d 0
-          HSNOW(i,j,bi,bj)  = 0. _d 0
+          PRESS0(i,j,bi,bj)  = 0. _d 0
+          PRESS (i,j,bi,bj)  = 0. _d 0
+          FORCEX0(i,j,bi,bj) = 0. _d 0
+          FORCEY0(i,j,bi,bj) = 0. _d 0
+          ZMAX(i,j,bi,bj)    = 0. _d 0
+          ZMIN(i,j,bi,bj)    = 0. _d 0
+          HSNOW(i,j,bi,bj)   = 0. _d 0
           tensileStrFac(i,j,bi,bj) = 0. _d 0
 CToM<<<
 #ifdef SEAICE_ITD
