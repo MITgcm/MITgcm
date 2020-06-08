@@ -195,7 +195,7 @@ C--   (called from DO_OCEANIC_PHYSICS) take care of this
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
-             hTmp(I,J,bi,bj)=HEFF(I,J,bi,bj)
+             hTmp(i,j,bi,bj)=HEFF(i,j,bi,bj)
             ENDDO
            ENDDO
           ENDDO
@@ -355,11 +355,11 @@ c       CALL DIAGNOSTICS_FILL_RS(FV   ,'SIfv    ',0,1 ,0,1,1,myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
            DO j=1,sNy
             DO i=1,sNx
-             hTmp(I,J,bi,bj) = 0.5 _d 0 * SEAICE_rhoIce
+             hTmp(i,j,bi,bj) = 0.5 _d 0 * SEAICE_rhoIce
      &            * 0.5 _d 0 * (
-     &              uIce (I,J,bi,bj)**2 + uIce (I+1,J,  bi,bj)**2
-     &            + vIce (I,J,bi,bj)**2 + vIce (I,  J+1,bi,bj)**2 )
-     &            * (HEFF(I,J,bi,bj) - hTmp(I,J,bi,bj))
+     &              uIce (i,j,bi,bj)**2 + uIce (i+1,j,  bi,bj)**2
+     &            + vIce (i,j,bi,bj)**2 + vIce (i,  j+1,bi,bj)**2 )
+     &            * (HEFF(i,j,bi,bj) - hTmp(i,j,bi,bj))
      &             *recip_deltaTtherm
             ENDDO
            ENDDO

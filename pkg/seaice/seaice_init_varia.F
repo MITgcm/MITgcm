@@ -383,11 +383,11 @@ C--   Read initial snow thickness from file if available.
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           AREAITD(I,J,1,bi,bj)   = AREA(I,J,bi,bj)
-           HEFFITD(I,J,1,bi,bj)   = HEFF(I,J,bi,bj)
-           HSNOWITD(I,J,1,bi,bj)  = HSNOW(I,J,bi,bj)
-           opnWtrFrac(I,J,bi,bj)  = 1. _d 0 - AREA(I,J,bi,bj)
-           fw2ObyRidge(I,J,bi,bj) = 0. _d 0
+           AREAITD(i,j,1,bi,bj)   = AREA(i,j,bi,bj)
+           HEFFITD(i,j,1,bi,bj)   = HEFF(i,j,bi,bj)
+           HSNOWITD(i,j,1,bi,bj)  = HSNOW(i,j,bi,bj)
+           opnWtrFrac(i,j,bi,bj)  = 1. _d 0 - AREA(i,j,bi,bj)
+           fw2ObyRidge(i,j,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
          CALL SEAICE_ITD_REDIST(bi, bj, baseTime, nIter0, myThid)
@@ -487,7 +487,7 @@ C---  Complete initialization
           ETA(i,j,bi,bj)    = ZETA(i,j,bi,bj)/SEAICE_eccen**2
           PRESS0(i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
      &         *EXP(-SEAICE_cStar*(ONE-AREA(i,j,bi,bj)))
-          ZMAX(I,J,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
+          ZMAX(i,j,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
           ZMIN(i,j,bi,bj)   = SEAICE_zetaMin
           PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
          ENDDO

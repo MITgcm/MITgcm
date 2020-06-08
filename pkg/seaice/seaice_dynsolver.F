@@ -71,6 +71,10 @@ C     bi,bj  :: tile counters
       _RL phiSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL mask_uice, mask_vice
 #ifdef ALLOW_DIAGNOSTICS
+# ifdef ALLOW_AUTODIFF
+      _RL strDivX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL strDivY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+# endif /* ALLOW_AUTODIFF */
       _RL sig1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig2   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig12  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -105,23 +109,19 @@ C incured by IF (DIFFERENT_MULTIPLE ... statement
          DO i=1-OLx,sNx+OLx
           PRESS0(i,j,bi,bj) = SEAICE_strength*HEFF(i,j,bi,bj)
      &         *EXP(-SEAICE_cStar*(ONE-AREA(i,j,bi,bj)))
-          ZMAX(I,J,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
+          ZMAX(i,j,bi,bj)   = SEAICE_zetaMaxFac*PRESS0(i,j,bi,bj)
           ZMIN(i,j,bi,bj)   = SEAICE_zetaMin
           PRESS0(i,j,bi,bj) = PRESS0(i,j,bi,bj)*HEFFM(i,j,bi,bj)
           TAUX(i,j,bi,bj)   = 0. _d 0
           TAUY(i,j,bi,bj)   = 0. _d 0
-#ifdef SEAICE_ALLOW_FREEDRIFT
+# ifdef SEAICE_ALLOW_FREEDRIFT
           uice_fd(i,j,bi,bj)= 0. _d 0
           vice_fd(i,j,bi,bj)= 0. _d 0
-#endif
-          e11  (i,j,bi,bj)  = 0. _d 0
-          e22  (i,j,bi,bj)  = 0. _d 0
-          e12  (i,j,bi,bj)  = 0. _d 0
-          ETA  (i,j,bi,bj)  = 0. _d 0
-          ZETA (i,j,bi,bj)  = 0. _d 0
-          etaZ (i,j,bi,bj)  = 0. _d 0
-          zetaZ(i,j,bi,bj)  = 0. _d 0
-          press(i,j,bi,bj)  = 0. _d 0
+# endif
+# ifdef ALLOW_DIAGNOSTICS
+          strDivX(i,j,bi,bj)= 0. _d 0
+          strDivY(i,j,bi,bj)= 0. _d 0
+# endif
          ENDDO
         ENDDO
        ENDDO
@@ -150,23 +150,23 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
-          seaiceMassC(I,J,bi,bj)=SEAICE_rhoIce*HEFF(i,j,bi,bj)
-          seaiceMassU(I,J,bi,bj)=SEAICE_rhoIce*HALF*(
+          seaiceMassC(i,j,bi,bj)=SEAICE_rhoIce*HEFF(i,j,bi,bj)
+          seaiceMassU(i,j,bi,bj)=SEAICE_rhoIce*HALF*(
      &          HEFF(i,j,bi,bj) + HEFF(i-1,j  ,bi,bj) )
-          seaiceMassV(I,J,bi,bj)=SEAICE_rhoIce*HALF*(
+          seaiceMassV(i,j,bi,bj)=SEAICE_rhoIce*HALF*(
      &          HEFF(i,j,bi,bj) + HEFF(i  ,j-1,bi,bj) )
          ENDDO
         ENDDO
         IF ( SEAICEaddSnowMass ) THEN
          DO j=1-OLy+1,sNy+OLy
           DO i=1-OLx+1,sNx+OLx
-           seaiceMassC(I,J,bi,bj)=seaiceMassC(I,J,bi,bj)
+           seaiceMassC(i,j,bi,bj)=seaiceMassC(i,j,bi,bj)
      &          +                 SEAICE_rhoSnow*HSNOW(i,j,bi,bj)
-           seaiceMassU(I,J,bi,bj)=seaiceMassU(I,J,bi,bj)
+           seaiceMassU(i,j,bi,bj)=seaiceMassU(i,j,bi,bj)
      &         +                  SEAICE_rhoSnow*HALF*(
      &          HSNOW(i,j,bi,bj) + HSNOW(i-1,j  ,bi,bj) )
 
-           seaiceMassV(I,J,bi,bj)=seaiceMassV(I,J,bi,bj)
+           seaiceMassV(i,j,bi,bj)=seaiceMassV(i,j,bi,bj)
      &         +                  SEAICE_rhoSnow*HALF*(
      &          HSNOW(i,j,bi,bj) + HSNOW(i  ,j-1,bi,bj) )
           ENDDO
@@ -183,21 +183,21 @@ C     and only kept for testing purposes
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy+1,sNy+OLy
           DO i=1-OLx+1,sNx+OLx
-           seaiceMaskU(I,J,bi,bj)=AREA(i,j,bi,bj)+AREA(I-1,J,bi,bj)
+           seaiceMaskU(i,j,bi,bj)=AREA(i,j,bi,bj)+AREA(i-1,j,bi,bj)
            mask_uice=HEFFM(i,j,bi,bj)+HEFFM(i-1,j  ,bi,bj)
-           IF ( (seaiceMaskU(I,J,bi,bj) .GT. 0. _d 0) .AND.
+           IF ( (seaiceMaskU(i,j,bi,bj) .GT. 0. _d 0) .AND.
      &         (mask_uice .GT. 1.5 _d 0) ) THEN
-            seaiceMaskU(I,J,bi,bj) = 1. _d 0
+            seaiceMaskU(i,j,bi,bj) = 1. _d 0
            ELSE
-            seaiceMaskU(I,J,bi,bj) = 0. _d 0
+            seaiceMaskU(i,j,bi,bj) = 0. _d 0
            ENDIF
-           seaiceMaskV(I,J,bi,bj)=AREA(i,j,bi,bj)+AREA(I,J-1,bi,bj)
+           seaiceMaskV(i,j,bi,bj)=AREA(i,j,bi,bj)+AREA(i,j-1,bi,bj)
            mask_vice=HEFFM(i,j,bi,bj)+HEFFM(i  ,j-1,bi,bj)
-           IF ( (seaiceMaskV(I,J,bi,bj) .GT. 0. _d 0) .AND.
+           IF ( (seaiceMaskV(i,j,bi,bj) .GT. 0. _d 0) .AND.
      &         (mask_vice .GT. 1.5 _d 0) ) THEN
-            seaiceMaskV(I,J,bi,bj) = 1. _d 0
+            seaiceMaskV(i,j,bi,bj) = 1. _d 0
            ELSE
-            seaiceMaskV(I,J,bi,bj) = 0. _d 0
+            seaiceMaskV(i,j,bi,bj) = 0. _d 0
            ENDIF
           ENDDO
          ENDDO
@@ -214,12 +214,12 @@ C     initialise fields
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          TAUX (I,J,bi,bj)= 0. _d 0
-          TAUY (I,J,bi,bj)= 0. _d 0
+          TAUX (i,j,bi,bj)= 0. _d 0
+          TAUY (i,j,bi,bj)= 0. _d 0
 #ifdef ALLOW_AUTODIFF
 # ifdef SEAICE_ALLOW_EVP
-          stressDivergenceX(I,J,bi,bj) = 0. _d 0
-          stressDivergenceY(I,J,bi,bj) = 0. _d 0
+          stressDivergenceX(i,j,bi,bj) = 0. _d 0
+          stressDivergenceY(i,j,bi,bj) = 0. _d 0
 # endif
 #endif
          ENDDO
@@ -270,17 +270,17 @@ C--   basic forcing by wind stress
         IF ( SEAICEscaleSurfStress ) THEN
          DO j=1-OLy+1,sNy+OLy
           DO i=1-OLx+1,sNx+OLx
-           FORCEX0(I,J,bi,bj)=TAUX(I,J,bi,bj)
-     &          * 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I-1,J,bi,bj))
-           FORCEY0(I,J,bi,bj)=TAUY(I,J,bi,bj)
-     &          * 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-1,bi,bj))
+           FORCEX0(i,j,bi,bj)=TAUX(i,j,bi,bj)
+     &          * 0.5 _d 0*(AREA(i,j,bi,bj)+AREA(i-1,j,bi,bj))
+           FORCEY0(i,j,bi,bj)=TAUY(i,j,bi,bj)
+     &          * 0.5 _d 0*(AREA(i,j,bi,bj)+AREA(i,j-1,bi,bj))
           ENDDO
          ENDDO
         ELSE
          DO j=1-OLy+1,sNy+OLy
           DO i=1-OLx+1,sNx+OLx
-           FORCEX0(I,J,bi,bj)=TAUX(I,J,bi,bj)
-           FORCEY0(I,J,bi,bj)=TAUY(I,J,bi,bj)
+           FORCEX0(i,j,bi,bj)=TAUX(i,j,bi,bj)
+           FORCEY0(i,j,bi,bj)=TAUY(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF
@@ -289,11 +289,11 @@ C--   basic forcing by wind stress
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
 C--   now add in tilt
-          FORCEX0(I,J,bi,bj)=FORCEX0(I,J,bi,bj)
-     &         -seaiceMassU(I,J,bi,bj)*_recip_dxC(I,J,bi,bj)
+          FORCEX0(i,j,bi,bj)=FORCEX0(i,j,bi,bj)
+     &         -seaiceMassU(i,j,bi,bj)*_recip_dxC(i,j,bi,bj)
      &         *( phiSurf(i,j)-phiSurf(i-1,j) )
-          FORCEY0(I,J,bi,bj)=FORCEY0(I,J,bi,bj)
-     &         -seaiceMassV(I,J,bi,bj)* _recip_dyC(I,J,bi,bj)
+          FORCEY0(i,j,bi,bj)=FORCEY0(i,j,bi,bj)
+     &         -seaiceMassV(i,j,bi,bj)* _recip_dyC(i,j,bi,bj)
      &         *( phiSurf(i,j)-phiSurf(i,j-1) )
          ENDDO
         ENDDO
@@ -468,19 +468,6 @@ C     first recompute strainrates from up-to-date velocities
        IF ( diag_SIsigma_isOn  .OR. diag_SIshear_isOn .OR.
      &      diag_SIenpi_isOn   .OR. diag_SIenpot_isOn .OR.
      &      diag_SIpRfric_isOn .OR. diag_SIpSfric_isOn ) THEN
-# ifdef ALLOW_AUTODIFF
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-            e11(i,j,bi,bj) = 0. _d 0
-            e22(i,j,bi,bj) = 0. _d 0
-            e12(i,j,bi,bj) = 0. _d 0
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-# endif /*  ALLOW_AUTODIFF */
         CALL SEAICE_CALC_STRAINRATES(
      I       uIce, vIce,
      O       e11, e22, e12,
@@ -508,19 +495,19 @@ C     stress state and normalize with latest
 C     PRESS = PRESS(n-1), n = number of sub-cycling steps
            DO j=1,sNy
             DO i=1,sNx
-             sigp = seaice_sigma1(I,J,bi,bj)
-             sigm = seaice_sigma2(I,J,bi,bj)
-             sig12(I,J) = 0.25 _d 0 *
-     &            ( seaice_sigma12(I,  J,  bi,bj)
-     &            + seaice_sigma12(I+1,J,  bi,bj)
-     &            + seaice_sigma12(I+1,J+1,bi,bj)
-     &            + seaice_sigma12(I  ,J+1,bi,bj) )
-             sigTmp = SQRT( sigm*sigm + 4. _d 0*sig12(I,J)*sig12(I,J) )
+             sigp = seaice_sigma1(i,j,bi,bj)
+             sigm = seaice_sigma2(i,j,bi,bj)
+             sig12(i,j) = 0.25 _d 0 *
+     &            ( seaice_sigma12(i  ,j  ,bi,bj)
+     &            + seaice_sigma12(i+1,j  ,bi,bj)
+     &            + seaice_sigma12(i+1,j+1,bi,bj)
+     &            + seaice_sigma12(i  ,j+1,bi,bj) )
+             sigTmp = SQRT( sigm*sigm + 4. _d 0*sig12(i,j)*sig12(i,j) )
              recip_prs = 0. _d 0
-             IF ( press0(I,J,bi,bj) .GT. 1. _d -13 )
-     &            recip_prs = 1. _d 0 / press0(I,J,bi,bj)
-             sig1(I,J) = 0.5 _d 0*(sigp + sigTmp)*recip_prs
-             sig2(I,J) = 0.5 _d 0*(sigp - sigTmp)*recip_prs
+             IF ( press0(i,j,bi,bj) .GT. 1. _d -13 )
+     &            recip_prs = 1. _d 0 / press0(i,j,bi,bj)
+             sig1(i,j) = 0.5 _d 0*(sigp + sigTmp)*recip_prs
+             sig2(i,j) = 0.5 _d 0*(sigp - sigTmp)*recip_prs
             ENDDO
            ENDDO
           ELSE
@@ -533,25 +520,25 @@ C     PRESS = PRESS(n-1), n = number of sub-cycling steps
      I          bi, bj, myTime, myIter, myThid )
            DO j=1,sNy
             DO i=1,sNx
-             sigp   = sig1(I,J) + sig2(I,J)
-             sigm   = sig1(I,J) - sig2(I,J)
+             sigp   = sig1(i,j) + sig2(i,j)
+             sigm   = sig1(i,j) - sig2(i,j)
 C     This should be the way of computing sig12 at C-points,
 C            sigTmp = 0.25 _d 0 *
-C    &            ( sig12(I  ,J  ) + sig12(I+1,J  )
-C    &            + sig12(I  ,J+1) + sig12(I+1,J+1) )
+C    &            ( sig12(i  ,j  ) + sig12(i+1,j  )
+C    &            + sig12(i  ,j+1) + sig12(i+1,j+1) )
 C     but sig12 = 2*etaZ*e12, and because of strong gradients in eta,
 C     etaZ can be very large for a cell with small eta and the straightforward
 C     way of averaging mixes large etaZ with small press0, so we have to do it
 C     in different way to get meaningfull sig12C (=sigTmp):
-             sigTmp = 2. _d 0 * eta(I,J,bi,bj) * 0.25 _d 0 *
-     &            (e12(I,J,bi,bj) + e12(I+1,J,bi,bj)
-     &            +e12(I,J+1,bi,bj)+e12(I+1,J+1,bi,bj))
+             sigTmp = 2. _d 0 * eta(i,j,bi,bj) * 0.25 _d 0 *
+     &            (e12(i,j,bi,bj) + e12(i+1,j,bi,bj)
+     &            +e12(i,j+1,bi,bj)+e12(i+1,j+1,bi,bj))
              sigTmp = SQRT( sigm*sigm + 4. _d 0*sigTmp*sigTmp )
              recip_prs = 0. _d 0
-             IF ( press0(I,J,bi,bj) .GT. 1. _d -13 )
-     &            recip_prs = 1. _d 0 / press0(I,J,bi,bj)
-             sig1(I,J) = 0.5 _d 0*(sigp + sigTmp)*recip_prs
-             sig2(I,J) = 0.5 _d 0*(sigp - sigTmp)*recip_prs
+             IF ( press0(i,j,bi,bj) .GT. 1. _d -13 )
+     &            recip_prs = 1. _d 0 / press0(i,j,bi,bj)
+             sig1(i,j) = 0.5 _d 0*(sigp + sigTmp)*recip_prs
+             sig2(i,j) = 0.5 _d 0*(sigp - sigTmp)*recip_prs
             ENDDO
            ENDDO
           ENDIF
@@ -562,13 +549,13 @@ C
          IF ( diag_SIshear_isOn  ) THEN
           DO j=1,sNy
            DO i=1,sNx
-            sigm = e11(I,J,bi,bj) - e22(I,J,bi,bj)
+            sigm = e11(i,j,bi,bj) - e22(i,j,bi,bj)
             sigTmp =
-     &           ( e12(I,  J,  bi,bj)**2 + e12(I+1,J,  bi,bj)**2
-     &           + e12(I+1,J+1,bi,bj)**2 + e12(I  ,J+1,bi,bj)**2 )
+     &           ( e12(i  ,j  ,bi,bj)**2 + e12(i+1,j  ,bi,bj)**2
+     &           + e12(i+1,j+1,bi,bj)**2 + e12(i  ,j+1,bi,bj)**2 )
 C     shear deformation as sqrt((e11-e22)**2 + 4*e12**2); the 4 pulled into
 C     the average
-            sig1(I,J) = sqrt(sigm*sigm + sigTmp)
+            sig1(i,j) = sqrt(sigm*sigm + sigTmp)
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig1,'SIshear ',0,1,2,bi,bj,myThid)
@@ -578,52 +565,63 @@ C     most of the energy diagnostics, re-use sig1, sig2, sig12 as tmp-arrays
 C
          IF ( diag_SIenpi_isOn ) THEN
 C     compute internal stresses with updated ice velocities
+C     TAF gets confused when we use stressDivergenceX/Y as temporary arrays
+C     therefore we need to use new arrays
           IF ( .NOT. SEAICEuseFREEDRIFT )
      &         CALL SEAICE_CALC_STRESSDIV(
      I         e11, e22, e12, press, zeta, eta, etaZ,
+# ifdef ALLOW_AUTODIFF
+     O         strDivX, strDivY,
+# else /* not ALLOW_AUTODIFF */
      O         stressDivergenceX, stressDivergenceY,
+# endif /* ALLOW_AUTODIFF */
      I         bi, bj, myTime, myIter, myThid )
-          DO J=1,sNy
-           DO I=1,sNx
-            sig1(I,J) = uIce(I,J,bi,bj)*stressDivergenceX(I,J,bi,bj)
-            sig2(I,J) = vIce(I,J,bi,bj)*stressDivergenceY(I,J,bi,bj)
+          DO j=1,sNy
+           DO i=1,sNx
+# ifdef ALLOW_AUTODIFF
+            sig1(i,j) = uIce(i,j,bi,bj)*strDivX(i,j,bi,bj)
+            sig2(i,j) = vIce(i,j,bi,bj)*strDivY(i,j,bi,bj)
+# else /* not ALLOW_AUTODIFF */
+            sig1(i,j) = uIce(i,j,bi,bj)*stressDivergenceX(i,j,bi,bj)
+            sig2(i,j) = vIce(i,j,bi,bj)*stressDivergenceY(i,j,bi,bj)
+# endif /* ALLOW_AUTODIFF */
            ENDDO
           ENDDO
 C     average from velocity points to pressure points
           DO j=1,sNy
            DO i=1,sNx
-            sig12(I,J)= 0.5 _d 0 * ( sig1(I,J) + sig1(I+1,J)
-     &                             + sig2(I,J) + sig2(I,J+1) )
+            sig12(i,j)= 0.5 _d 0 * ( sig1(i,j) + sig1(i+1,j)
+     &                             + sig2(i,j) + sig2(i,j+1) )
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig12,'SIenpi  ',0,1,2,bi,bj,myThid)
          ENDIF
          IF ( diag_SIenpot_isOn ) THEN
-          DO J=1,sNy
-           DO I=1,sNx
-            sig1(I,J) = 0.5 _d 0 * press0(I,J,bi,bj) *
-     &           ( e11(I,J,bi,bj) + e22(I,J,bi,bj) )
+          DO j=1,sNy
+           DO i=1,sNx
+            sig1(i,j) = 0.5 _d 0 * press0(i,j,bi,bj) *
+     &           ( e11(i,j,bi,bj) + e22(i,j,bi,bj) )
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig1,'SIenpot ',0,1,2,bi,bj,myThid)
          ENDIF
          IF ( diag_SIpRfric_isOn ) THEN
-          DO J=1,sNy
-           DO I=1,sNx
-            sig1(I,J) = - zeta(I,J,bi,bj)
-     &           * ( e11(I,J,bi,bj) + e22(I,J,bi,bj) )
-     &           * ( e11(I,J,bi,bj) + e22(I,J,bi,bj) )
+          DO j=1,sNy
+           DO i=1,sNx
+            sig1(i,j) = - zeta(i,j,bi,bj)
+     &           * ( e11(i,j,bi,bj) + e22(i,j,bi,bj) )
+     &           * ( e11(i,j,bi,bj) + e22(i,j,bi,bj) )
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig1,'SIpRfric',0,1,2,bi,bj,myThid)
          ENDIF
          IF ( diag_SIpSfric_isOn ) THEN
-          DO J=1,sNy
-           DO I=1,sNx
-            sig1(I,J) = - eta(I,J,bi,bj)
-     &        * ( (e11(I,J,bi,bj) - e22(I,J,bi,bj))**2 +
-     &            ( e12(I,  J,  bi,bj)**2 + e12(I+1,J,  bi,bj)**2
-     &            + e12(I+1,J+1,bi,bj)**2 + e12(I  ,J+1,bi,bj)**2 )
+          DO j=1,sNy
+           DO i=1,sNx
+            sig1(i,j) = - eta(i,j,bi,bj)
+     &        * ( (e11(i,j,bi,bj) - e22(i,j,bi,bj))**2 +
+     &            ( e12(i  ,j  ,bi,bj)**2 + e12(i+1,j  ,bi,bj)**2
+     &            + e12(i+1,j+1,bi,bj)**2 + e12(i  ,j+1,bi,bj)**2 )
      &          )
            ENDDO
           ENDDO
@@ -632,19 +630,19 @@ C     average from velocity points to pressure points
          IF ( DIAGNOSTICS_IS_ON('SIenpa  ',myThid) ) THEN
           DO j=1,sNy+1
            DO i=1,sNx+1
-            areaW = 0.5 _d 0 * (AREA(I,J,bi,bj) + AREA(I-1,J,bi,bj))
+            areaW = 0.5 _d 0 * (AREA(i,j,bi,bj) + AREA(i-1,j,bi,bj))
      &           * SEAICEstressFactor
-            areaS = 0.5 _d 0 * (AREA(I,J,bi,bj) + AREA(I,J-1,bi,bj))
+            areaS = 0.5 _d 0 * (AREA(i,j,bi,bj) + AREA(i,j-1,bi,bj))
      &           * SEAICEstressFactor
-            sig1(I,J) = TAUX(I,J,bi,bj)*areaW * uIce(I,J,bi,bj)
-            sig2(I,J) = TAUY(I,J,bi,bj)*areaS * vIce(I,J,bi,bj)
+            sig1(i,j) = TAUX(i,j,bi,bj)*areaW * uIce(i,j,bi,bj)
+            sig2(i,j) = TAUY(i,j,bi,bj)*areaS * vIce(i,j,bi,bj)
            ENDDO
           ENDDO
 C     average from velocity points to pressure points
           DO j=1,sNy
            DO i=1,sNx
-            sig12(I,J)= 0.5 _d 0 * ( sig1(I,J) + sig1(I+1,J)
-     &                             + sig2(I,J) + sig2(I,J+1) )
+            sig12(i,j)= 0.5 _d 0 * ( sig1(i,j) + sig1(i+1,j)
+     &                             + sig2(i,j) + sig2(i,j+1) )
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig12,'SIenpa  ',0,1,2,bi,bj,myThid)
@@ -657,43 +655,43 @@ C     introduce turning angle (default is zero)
           COSWAT=COS(SEAICE_waterTurnAngle*deg2rad)
           DO j=1,sNy+1
            DO i=1,sNx+1
-            areaW = 0.5 _d 0 * (AREA(I,J,bi,bj) + AREA(I-1,J,bi,bj))
+            areaW = 0.5 _d 0 * (AREA(i,j,bi,bj) + AREA(i-1,j,bi,bj))
      &         * SEAICEstressFactor
-            areaS = 0.5 _d 0 * (AREA(I,J,bi,bj) + AREA(I,J-1,bi,bj))
+            areaS = 0.5 _d 0 * (AREA(i,j,bi,bj) + AREA(i,j-1,bi,bj))
      &         * SEAICEstressFactor
-            sig1(I,J) = areaW *
-     &           HALF*( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) )*
+            sig1(i,j) = areaW *
+     &           HALF*( DWATN(i,j,bi,bj)+DWATN(i-1,j,bi,bj) )*
      &         COSWAT *
-     &         ( uIce(I,J,bi,bj)-uVel(I,J,kSrf,bi,bj) )
-     &         - SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 *
-     &         ( DWATN(I  ,J,bi,bj) *
-     &         0.5 _d 0*(vIce(I  ,J  ,bi,bj)-vVel(I  ,J  ,kSrf,bi,bj)
-     &                  +vIce(I  ,J+1,bi,bj)-vVel(I  ,J+1,kSrf,bi,bj))
-     &         + DWATN(I-1,J,bi,bj) *
-     &         0.5 _d 0*(vIce(I-1,J  ,bi,bj)-vVel(I-1,J  ,kSrf,bi,bj)
-     &                  +vIce(I-1,J+1,bi,bj)-vVel(I-1,J+1,kSrf,bi,bj))
+     &         ( uIce(i,j,bi,bj)-uVel(i,j,kSrf,bi,bj) )
+     &         - SIGN(SINWAT, _fCori(i,j,bi,bj)) * 0.5 _d 0 *
+     &         ( DWATN(i  ,j,bi,bj) *
+     &         0.5 _d 0*(vIce(i  ,j  ,bi,bj)-vVel(i  ,j  ,kSrf,bi,bj)
+     &                  +vIce(i  ,j+1,bi,bj)-vVel(i  ,j+1,kSrf,bi,bj))
+     &         + DWATN(i-1,j,bi,bj) *
+     &         0.5 _d 0*(vIce(i-1,j  ,bi,bj)-vVel(i-1,j  ,kSrf,bi,bj)
+     &                  +vIce(i-1,j+1,bi,bj)-vVel(i-1,j+1,kSrf,bi,bj))
      &         )
-            sig1(I,J) = sig1(I,J) * uIce(I,J,bi,bj)
-            sig2(I,J) = areaS *
-     &           HALF*( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) )*
+            sig1(i,j) = sig1(i,j) * uIce(i,j,bi,bj)
+            sig2(i,j) = areaS *
+     &           HALF*( DWATN(i,j,bi,bj)+DWATN(i,j-1,bi,bj) )*
      &         COSWAT *
-     &         ( vIce(I,J,bi,bj)-vVel(I,J,kSrf,bi,bj) )
-     &         + SIGN(SINWAT,  _fCori(I,J,bi,bj)) * 0.5 _d 0 *
-     &         ( DWATN(I,J  ,bi,bj) *
-     &         0.5 _d 0*(uIce(I  ,J  ,bi,bj)-uVel(I  ,J  ,kSrf,bi,bj)
-     &                  +uIce(I+1,J  ,bi,bj)-uVel(I+1,J  ,kSrf,bi,bj))
-     &         + DWATN(I,J-1,bi,bj) *
-     &         0.5 _d 0*(uIce(I  ,J-1,bi,bj)-uVel(I  ,J-1,kSrf,bi,bj)
-     &                  +uIce(I+1,J-1,bi,bj)-uVel(I+1,J-1,kSrf,bi,bj))
+     &         ( vIce(i,j,bi,bj)-vVel(i,j,kSrf,bi,bj) )
+     &         + SIGN(SINWAT,  _fCori(i,j,bi,bj)) * 0.5 _d 0 *
+     &         ( DWATN(i,j  ,bi,bj) *
+     &         0.5 _d 0*(uIce(i  ,j  ,bi,bj)-uVel(i  ,j  ,kSrf,bi,bj)
+     &                  +uIce(i+1,j  ,bi,bj)-uVel(i+1,j  ,kSrf,bi,bj))
+     &         + DWATN(i,j-1,bi,bj) *
+     &         0.5 _d 0*(uIce(i  ,j-1,bi,bj)-uVel(i  ,j-1,kSrf,bi,bj)
+     &                  +uIce(i+1,j-1,bi,bj)-uVel(i+1,j-1,kSrf,bi,bj))
      &         )
-            sig2(I,J) = sig2(I,J) * vIce(I,J,bi,bj)
+            sig2(i,j) = sig2(i,j) * vIce(i,j,bi,bj)
            ENDDO
           ENDDO
 C     average from velocity points to pressure points
           DO j=1,sNy
            DO i=1,sNx
-            sig12(I,J)= - 0.5 _d 0 * ( sig1(I,J) + sig1(I+1,J)
-     &                               + sig2(I,J) + sig2(I,J+1) )
+            sig12(i,j)= - 0.5 _d 0 * ( sig1(i,j) + sig1(i+1,j)
+     &                               + sig2(i,j) + sig2(i,j+1) )
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig12,'SIenpw  ',0,1,2,bi,bj,myThid)
@@ -702,19 +700,19 @@ C     average from velocity points to pressure points
      &        .AND. DIAGNOSTICS_IS_ON('SIenpg  ',myThid) ) THEN
           DO j=1-OLy+1,sNy+OLy
            DO i=1-OLx+1,sNx+OLx
-            sig1(I,J)=
-     &           - seaiceMassU(I,J,bi,bj)*_recip_dxC(I,J,bi,bj)
-     &           *( phiSurf(I,J)-phiSurf(I-1,J) ) * uIce(I,J,bi,bj)
-            sig2(I,J)=
-     &           - seaiceMassV(I,J,bi,bj)* _recip_dyC(I,J,bi,bj)
-     &           *( phiSurf(I,J)-phiSurf(I,J-1) ) * vIce(I,J,bi,bj)
+            sig1(i,j)=
+     &           - seaiceMassU(i,j,bi,bj)*_recip_dxC(i,j,bi,bj)
+     &           *( phiSurf(i,j)-phiSurf(i-1,j) ) * uIce(i,j,bi,bj)
+            sig2(i,j)=
+     &           - seaiceMassV(i,j,bi,bj)* _recip_dyC(i,j,bi,bj)
+     &           *( phiSurf(i,j)-phiSurf(i,j-1) ) * vIce(i,j,bi,bj)
            ENDDO
           ENDDO
 C     average from velocity points to pressure points
           DO j=1,sNy
            DO i=1,sNx
-            sig12(I,J) = 0.5 _d 0 * ( sig1(I,J) + sig1(I+1,J)
-     &                              + sig2(I,J) + sig2(I,J+1) )
+            sig12(i,j) = 0.5 _d 0 * ( sig1(i,j) + sig1(i+1,j)
+     &                              + sig2(i,j) + sig2(i,j+1) )
            ENDDO
           ENDDO
           CALL DIAGNOSTICS_FILL(sig12,'SIenpg  ',0,1,2,bi,bj,myThid)

@@ -62,7 +62,7 @@ C     bi,bj   :: tile indices
 C     use tIce as a temporary field, as it is done in seaice_growth
           DO j=1,sNy
            DO i=1,sNx
-            tIce(I,J,bi,bj) = 0. _d 0
+            tIce(i,j,bi,bj) = 0. _d 0
            ENDDO
           ENDDO
 C     division by zero is not possible
@@ -72,11 +72,11 @@ C     division by zero is not possible
             DO i=1,sNx
              tmp = 1. _d 0
 #ifdef SEAICE_ITD
-             IF (AREA(I,J,bi,bj) .GT. ZERO)
-     &            tmp=AREAITD(I,J,K,bi,bj)/AREA(I,J,bi,bj)
+             IF (AREA(i,j,bi,bj) .GT. ZERO)
+     &            tmp=AREAITD(i,j,K,bi,bj)/AREA(i,j,bi,bj)
 #endif /* SEAICE_ITD */
-             tIce(I,J,bi,bj) = tIce(I,J,bi,bj)
-     &            + TICES(I,J,K,bi,bj)*tmp*recip_multDim
+             tIce(i,j,bi,bj) = tIce(i,j,bi,bj)
+     &            + TICES(i,j,K,bi,bj)*tmp*recip_multDim
             ENDDO
            ENDDO
           ENDDO
