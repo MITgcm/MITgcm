@@ -912,7 +912,7 @@ C
      &       snx, sny, 1, 'c', 'xy', myThid )
 C
         call ctrl_init_ctrlvar (
-     &       xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
+     &       xx_gentim2d_file(iarr)(1:ilgen),
      &       300+iarr, 400+iarr,
      &       diffrec, startrec, endrec,
      &       snx, sny, 1, 'c', 'xy', myThid )
