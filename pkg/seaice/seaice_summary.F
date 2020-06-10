@@ -144,6 +144,8 @@ C--  Seaice-Dynamics parameters
      & 'SEAICE_waterDrag  =', ' /* water-ice drag */')
       CALL WRITE_0D_RL( SEAICE_waterDrag_south  ,INDEX_NONE,
      & 'SEAICE_waterDrag_south =', ' /* Southern Ocean waterDrag */')
+      CALL WRITE_0D_RL( SEAICEdWatMin ,INDEX_NONE,
+     & 'SEAICEdWatMin =', ' /* minimum linear water-ice drag */')
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
       IF ( SEAICEbasalDragK2 .NE. 0. _d 0 ) THEN
        CALL WRITE_0D_RL( SEAICE_cBasalStar ,INDEX_NONE,

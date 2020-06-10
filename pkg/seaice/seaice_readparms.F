@@ -138,7 +138,7 @@ C--   SEAICE parameters
      & SEAICE_doOpenWaterGrowth, SEAICE_doOpenWaterMelt,
      & SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
      & SEAICE_cpAir, SEAICEscaleSurfStress,
-     & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
+     & SEAICE_drag, SEAICE_waterDrag, SEAICEdWatMin, SEAICE_dryIceAlb,
      & SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb, HO,
      & SEAICE_drag_south, SEAICE_waterDrag_south,
      & SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
@@ -367,6 +367,7 @@ C        c1=1.5/N, c2=42*c1, c3=3.3
       SEAICE_drag        = 0.001  _d 0
       OCEAN_drag         = 0.001  _d 0
       SEAICE_waterDrag   = 0.0055 _d 0
+      SEAICEdWatMin      = 0.25   _d 0
       SEAICE_dryIceAlb   = 0.75   _d 0
       SEAICE_wetIceAlb   = 0.66   _d 0
       SEAICE_drySnowAlb  = 0.84   _d 0
@@ -1339,6 +1340,38 @@ C     in case of large values
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
+C--   Some sanity checks for SEAICEdWatMin
+      IF ( SEAICEdWatMin .LT. 0. _d 0 ) THEN
+       WRITE(msgBuf,'(A,A,F5.2,A)') 'SEAICE_READPARMS: ',
+     &      'SEAICEdWatMin (= ', SEAICEdWatMin, ') may not be < 0.'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+      ENDIF
+      IF ( SEAICE_waterDrag .EQ. 0. _d 0
+     &     .AND. SEAICEdWatMin .GT. 0. _d 0) THEN
+       WRITE(msgBuf,'(A,A,F5.2)') '** WARNING ** SEAICE_READPARMS: ',
+     &      'SEAICE_waterDrag  = ', SEAICE_waterDrag
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,A,F5.2)') '** WARNING ** SEAICE_READPARMS: ',
+     &      'but SEAICEdWatMin = ', SEAICEdWatMin
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(A,A)') '** WARNING ** SEAICE_READPARMS: ',
+     &      'so that the ice-ocean drag will be non-zero'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
+#ifdef SEAICE_ALLOW_FREEDRIFT
+      IF ( SEAICE_waterDrag_South .EQ. 0. _d 0
+     &     .OR.  SEAICE_waterDrag .EQ. 0. _d 0 ) THEN
+       WRITE(msgBuf,'(A,A,A)') 'SEAICE_READPARMS: ',
+     &      'When SEAICE_ALLOW_FREEDRIFT is defined, ',
+     &      'SEAICE_waterDrag or SEAICE_waterDragSouth may not be zero.'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+      ENDIF
+#endif /* SEAICE_ALLOW_FREEDRIFT */
 
       IF ( DIFF1 .EQ. UNSET_RL ) THEN
         DIFF1 = 0. _d 0
