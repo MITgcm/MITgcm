@@ -576,8 +576,8 @@ C     therefore we need to use new arrays
      O         stressDivergenceX, stressDivergenceY,
 # endif /* ALLOW_AUTODIFF */
      I         bi, bj, myTime, myIter, myThid )
-          DO j=1,sNy
-           DO i=1,sNx
+          DO j=1,sNy+1
+           DO i=1,sNx+1
 # ifdef ALLOW_AUTODIFF
             sig1(i,j) = uIce(i,j,bi,bj)*strDivX(i,j,bi,bj)
             sig2(i,j) = vIce(i,j,bi,bj)*strDivY(i,j,bi,bj)
