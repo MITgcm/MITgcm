@@ -72,7 +72,7 @@ c     == local variables ==
 
 #ifdef ALLOW_GENTIM2D_CONTROL
       CHARACTER*(MAX_LEN_FNAM) fnamegen
-      INTEGER ilgen, k2, diffrecFull, endrecFull
+      INTEGER ilgen, ilfnam, k2, diffrecFull, endrecFull
 #endif
 
 c     == external ==
@@ -897,16 +897,18 @@ C
 C
         write(fnamegen(1:MAX_LEN_FNAM),'(2a)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.effective'
+        ilfnam=ilnblnk(fnamegen)
         call ctrl_init_ctrlvar (
-     &       fnamegen(1:ilgen+10),
+     &       fnamegen(1:ilfnam),
      &       300+iarr, 400+iarr,
      &       diffrecFull, startrec, endrecFull,
      &       snx, sny, 1, 'c', 'xy', myThid )
 C
         write(fnamegen(1:MAX_LEN_FNAM),'(2a)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.tmp'
+        ilfnam=ilnblnk(fnamegen)
         call ctrl_init_ctrlvar (
-     &       fnamegen(1:ilgen+4),
+     &       fnamegen(1:ilfnam),
      &       300+iarr, 400+iarr,
      &       diffrecFull, startrec, endrecFull,
      &       snx, sny, 1, 'c', 'xy', myThid )
