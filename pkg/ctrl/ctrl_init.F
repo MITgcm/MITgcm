@@ -819,13 +819,14 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_GENARR2D_CONTROL
        do iarr = 1, maxCtrlArr2D
+        ilgen=ilnblnk( xx_genarr2d_file(iarr) )
 #ifndef ALLOW_OPENAD
         if (xx_genarr2d_weight(iarr).NE.' ')
      &  call ctrl_init_ctrlvar (
 #else
         call ctrl_init_ctrlvar (
 #endif
-     &       xx_genarr2d_file(iarr)(1:MAX_LEN_FNAM),
+     &       xx_genarr2d_file(iarr)(1:ilgen),
      &       100+iarr, 200+iarr, 1, 1, 1,
      &       snx, sny, 1, 'c', 'xy', myThid )
 
@@ -836,13 +837,14 @@ c----------------------------------------------------------------------
 c--
 #ifdef ALLOW_GENARR3D_CONTROL
        do iarr = 1, maxCtrlArr3D
+        ilgen=ilnblnk( xx_genarr3d_file(iarr) )
 #ifndef ALLOW_OPENAD
         if (xx_genarr3d_weight(iarr).NE.' ')
      &  call ctrl_init_ctrlvar (
 #else
         call ctrl_init_ctrlvar (
 #endif
-     &       xx_genarr3d_file(iarr)(1:MAX_LEN_FNAM),
+     &       xx_genarr3d_file(iarr)(1:ilgen),
      &       200+iarr, 300+iarr, 1, 1, 1,
      &       snx, sny, nr, 'c', '3d', myThid )
        enddo
@@ -859,8 +861,8 @@ c--
           xx_gentim2d_startdate2(iarr)=startdate_2
         endif
 #endif
-
-        call ctrl_init_rec ( xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
+        ilgen=ilnblnk( xx_gentim2d_file(iarr) )
+        call ctrl_init_rec ( xx_gentim2d_file(iarr)(1:ilgen),
      I       xx_gentim2d_startdate1(iarr), 
      I       xx_gentim2d_startdate2(iarr), 
      I       xx_gentim2d_period(iarr), 
@@ -893,20 +895,18 @@ C
          endif
         enddo
 C
-        ilgen=ilnblnk( xx_gentim2d_file(iarr) )
         write(fnamegen(1:MAX_LEN_FNAM),'(2a)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.effective'
         call ctrl_init_ctrlvar (
-     &       fnamegen(1:MAX_LEN_FNAM),
+     &       fnamegen(1:ilgen+10),
      &       300+iarr, 400+iarr,
      &       diffrecFull, startrec, endrecFull,
      &       snx, sny, 1, 'c', 'xy', myThid )
 C
-        ilgen=ilnblnk( xx_gentim2d_file(iarr) )
         write(fnamegen(1:MAX_LEN_FNAM),'(2a)')
      &       xx_gentim2d_file(iarr)(1:ilgen),'.tmp'
         call ctrl_init_ctrlvar (
-     &       fnamegen(1:MAX_LEN_FNAM),
+     &       fnamegen(1:ilgen+4),
      &       300+iarr, 400+iarr,
      &       diffrecFull, startrec, endrecFull,
      &       snx, sny, 1, 'c', 'xy', myThid )
