@@ -713,14 +713,15 @@ c  ice/atmosphere interface for each thickness category
 c =======================================================================
 
         DO IT=1,SEAICE_multDim
-         CALL SEAICE_SOLVE4TEMP_ADX(
+         CALL SEAICE_SOLVE4TEMP(
      I        UG, hiceActualMult(1,1,IT), hsnowActualMult(1,1,IT),
 #ifdef SEAICE_CAP_SUBLIM
          This error is put here intentionally, because SEAICE_CAP_SUBLIM
-         cannot be defined together with SEAICE_ALLOW_GROWTH_ADX
+         cannot be defined together with ALLOW_SEAICE_GROWTH_ADX
      I        latentHeatFluxMaxMult(1,1,IT),
 #endif
-     U        ticeInMult(1,1,IT), ticeOutMult(1,1,IT),
+     I        ticeInMult(1,1,IT),
+     O        ticeOutMult(1,1,IT),
      O        F_io_net_mult(1,1,IT),
      O        F_ia_net_mult(1,1,IT),
      O        F_ia_mult(1,1,IT),
@@ -1308,7 +1309,7 @@ c    This seems to be in m/s, original time level 2 for area
 c    Only the precip and evap need to be area weighted.  The runoff
 c    and freshwater contribs from ice and snow melt are already mean
 c    weighted
-          EmPmR(I,J,bi,bj)  = maskC(I,J,kSurface,bi,bj)*(
+          EmPmR(I,J,bi,bj)  = HEFFM(I,J,bi,bj)*(
      &         ( EVAP(I,J,bi,bj) - PRECIP(I,J,bi,bj) )
      &         * ( ONE - AREApreTH(I,J) )
      &         - PrecipRateOverIceSurfaceToSea(I,J)*AREApreTH(I,J)
@@ -1320,7 +1321,7 @@ c    weighted
      &           *recip_deltaTtherm ) * rhoConstFresh
      &         +( SIheffNeg(I,J,bi,bj)*SEAICE_rhoIce
      &          + SIhsnwNeg(I,J,bi,bj)*SEAICE_rhoSnow)
-     &          *recip_deltaTtherm * maskC(I,J,kSurface,bi,bj)
+     &          *recip_deltaTtherm * HEFFM(I,J,bi,bj)
 
 CAB   Budget test , adding the energy stored in snow melt to qnet
 C     Moved bunch of these to line 780
@@ -1330,16 +1331,16 @@ C     Moved bunch of these to line 780
      &         *(F_ia_net(I,J)
      &         + F_io_net(I,J) + QSWI(I,J))
      &         +( ONE - AREApreTH(I,J)) *  F_ao(I,J))
-     &         *maskC(I,J,kSurface,bi,bj)
+     &         *HEFFM(I,J,bi,bj)
      &         +(SIheffNeg(I,J,bi,bj)*recip_QI
      &         +( SIhsnwNeg(I,J,bi,bj) - ActualNewTotalSnowMelt(I,J)
      &          + SnowAccOverIce(I,J) )*recip_QS)
-     &         * recip_deltaTtherm * maskC(I,J,kSurface,bi,bj)
+     &         * recip_deltaTtherm * HEFFM(I,J,bi,bj)
 
           SIaaflux(I,J,bi,bj) =  -EmPmR(I,J,bi,bj)
      &         * HeatCapacity_Cp *theta(I,J,kSurface,bi,bj)
 
-          SIatmFW(I,J,bi,bj) = maskC(I,J,kSurface,bi,bj)*(
+          SIatmFW(I,J,bi,bj) = HEFFM(I,J,bi,bj)*(
      &         EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
      &         - PRECIP(I,J,bi,bj)
 #ifdef ALLOW_RUNOFF
