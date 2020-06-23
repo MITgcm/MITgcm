@@ -952,7 +952,7 @@ c         with area converts to mean snow thickness.
 #ifdef ALLOW_SALT_PLUME
 # ifdef SALT_PLUME_IN_LEADS
 C     avoid repetitive division by a constant
-        tmpcal0 = 5. _d 0 / (ONE - SPinflectionPoint)
+        tmpscal0 = 5. _d 0 / (ONE - SPinflectionPoint)
 C     Now that we know the thickness tendency terms, we can calculate
 C     the saltPlumeFlux
         DO J=1,sNy
