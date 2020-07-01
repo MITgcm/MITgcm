@@ -457,6 +457,16 @@ C- note: air and seaice (+ snow ?) density are used in both dynamics & thermo
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
       ELSE
+#ifdef ALLOW_SEAICE_GROWTH_ADX
+      WRITE(msgBuf,'(A)')
+     &      'ALLOW_SEAICE_GROWTH_ADX defined, '//
+     &      'using seaice_growth_adx code'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT, myThid )
+#endif /* ALLOW_SEAICE_GROWTH_ADX */
 
       CALL WRITE_0D_RL( SEAICE_lhEvap     ,INDEX_NONE,
      & 'SEAICE_lhEvap     =', ' /* latent heat of evaporation */')
