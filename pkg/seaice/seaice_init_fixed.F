@@ -47,6 +47,9 @@ cif   penetrating the model shallowest layer
       _RL swfracba(2)
       _RL tmpFac
 #endif /* SHORTWAVE_HEATING */
+#ifndef SEAICE_CGRID
+      _RL mask_uice
+#endif
 
       IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
        kSurface        = Nr
