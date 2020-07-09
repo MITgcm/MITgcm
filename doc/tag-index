@@ -1,6 +1,40 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67r (2020/06/04)
+o pkg/ecco:
+  - fix character length when checking for m_trHeat, m_trSalt & m_horflux_vol.
+o pkg/autodiff:
+  - add active read and write routines for global 1D vectors, to be used for
+    compressed cost function vectors (note: not used yet, example to come soon).
+o model/src & pkg/exf:
+  - Reference atmospheric pressure for seawater EOS was assumed but was not
+    explicitly set. New constant "eosRefP0" is added to make this more clear ;
+  - Add main model reference surface pressure (surf_pRef) so that pLoad
+    is now defined as the atmospheric pressure anomaly relative to surf_pRef ;
+  - Account for differences in 2 ref pressure in EOS S/R ;
+  - Fix few EOS references (in comments) ; fix and simplify S/R EOS_CHECK ;
+  - Keep exf "apressure" field unchanged (still full atmospheric surface
+    pressure) but now initialised to "surf_pRef" and fill "pLoad" with atmos.
+    pressure anomaly relative to surf_pRef.
+o pkg/streamice:
+  - add option to specify "regularised coulomb" sliding law to better reflect
+    dependence on subglacial water pressure close to the grounding line ;
+  - above requires CPP option (due to new arrays) STREAMICE_COULOMB_SLIDING
+    and r/t param streamice_allow_reg_coulomb ;
+  - add diagnostic for streamice melt rate (BDOT_SI )
+  - add parameter STREAMICEAdotFile to specify surface mass balance ;
+  - add parameter streamice_maxnliter_Petsc to specify maximum no. of
+    linear solves using PETSc in a single time step (not incl. in doc
+    since PETSc is not part of standard build) ;
+  - update references to PETSC_DEFAULT_DOUBLE_PRECISION to PETSC_DEFAULT_REAL in
+    streamice_cg_solve_petsc.F; former seems to be deprecated in some versions
+    of PETSc while latter is backward compatible ;
+  - for BJACOBI (block jacobi) PETSc preconditioner, use PCICC (incomplete
+    cholesky) rather than PCILU (incomplete LU) ;
+  - for BJACOBI add parameter streamice_petsc_pcfactorlevels to control level
+    of factor fill-in.
+
 checkpoint67q (2020/03/19)
 o pkg/shelfice, remeshing code:
   - simplify/clarify merging S/R call sequence: all done/called from main

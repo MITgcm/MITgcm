@@ -1,8 +1,6 @@
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 C CPP options file for STREAMICE
-C
 C Use this file for selecting options within package "streamice"
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifndef STREAMICE_OPTIONS_H
 #define STREAMICE_OPTIONS_H
@@ -15,14 +13,20 @@ C Place CPP define/undef flag here
 
 #define STREAMICE_CONSTRUCT_MATRIX
 #undef STREAMICE_HYBRID_STRESS
+#undef STREAMICE_FLOWLINE_BUTTRESS
 #undef USE_ALT_RLOW
 #undef STREAMICE_GEOM_FILE_SETUP
 C   The following will taper basal stress in a cell based
-C   on height above floatation, and option (2) will also 
+C   on height above floatation, and option (2) will also
 C   smooth surface elevation across grounding line;
 C   only one should be defined
 #undef STREAMICE_SMOOTH_FLOATATION
 #undef STREAMICE_SMOOTH_FLOATATION2
+
+#undef ALLOW_PETSC
+#undef ALLOW_STREAMICE_2DTRACER
+#undef STREAMICE_TRACER_AB
+#undef STREAMICE_SERIAL_TRISOLVE
 
 #endif /* ALLOW_STREAMICE */
 #endif /* STREAMICE_OPTIONS_H */
