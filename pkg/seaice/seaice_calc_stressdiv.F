@@ -78,14 +78,14 @@ C     compute divergence of stress tensor
        DO i=1,sNx+1
         stressDivergenceX(i,j,bi,bj) =
      &       ( sig11(i  ,j  ) * _dyF(i  ,j,bi,bj)
-     &       - sig11(i-1,J  ) * _dyF(i-1,J,bi,bj)
+     &       - sig11(i-1,j  ) * _dyF(i-1,j,bi,bj)
      &       + sig12(i  ,j+1) * _dxV(i,j+1,bi,bj)
      &       - sig12(i  ,j  ) * _dxV(i,j  ,bi,bj)
      &       ) * recip_rAw(i,j,bi,bj)
         stressDivergenceY(i,j,bi,bj) =
      &       ( sig22(i  ,j  ) * _dxF(i,j  ,bi,bj)
      &       - sig22(i  ,j-1) * _dxF(i,j-1,bi,bj)
-     &       + sig12(i+1,J  ) * _dyU(i+1,J,bi,bj)
+     &       + sig12(i+1,j  ) * _dyU(i+1,j,bi,bj)
      &       - sig12(i  ,j  ) * _dyU(i  ,j,bi,bj)
      &       ) * recip_rAs(i,j,bi,bj)
        ENDDO

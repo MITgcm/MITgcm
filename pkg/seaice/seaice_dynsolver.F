@@ -438,17 +438,17 @@ C     diagnostics related to mechanics/dynamics/momentum equations
 C     use sig1 as a temporary field
           DO j=1,sNy
            DO i=1,sNx
-            IF ( tensileStrFac(I,J,bi,bj) .EQ. oneRL ) THEN
+            IF ( tensileStrFac(i,j,bi,bj) .EQ. oneRL ) THEN
 C     This special case of tensile strength equal to compressive strength
 C     is not very physical and should actually not happen but you never know;
 C     in this case, press = P-T = P*(1-k) = 0. and we have to use press0 to
 C     get something
-             sig1(I,J) = press0(I,J,bi,bj)
+             sig1(i,j) = press0(i,j,bi,bj)
             ELSE
 C     This is more complicated than you think because press = P-T = P*(1-k),
 C     but we are looking for T = k*P = k*press/(1-k)
-             sig1(I,J) = tensileStrFac(I,J,bi,bj)
-     &            *press(I,J,bi,bj)/(1. _d 0 - tensileStrFac(I,J,bi,bj))
+             sig1(i,j) = tensileStrFac(i,j,bi,bj)
+     &            *press(i,j,bi,bj)/(1. _d 0 - tensileStrFac(i,j,bi,bj))
             ENDIF
            ENDDO
           ENDDO
