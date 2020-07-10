@@ -1,4 +1,7 @@
 #include "BLING_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
       subroutine BLING_LIGHT(
@@ -45,7 +48,7 @@ C     irr_mem       :: Phyto irradiance memory
 #ifdef USE_QSW
 #include "FFIELDS.h"
 #endif
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
 
@@ -85,21 +88,21 @@ C     === Local variables ===
 #ifdef PHYTO_SELF_SHADING
       _RL k0_rd, chi_rd, e_rd
       _RL k0_bg, chi_bg, e_bg
-      _RL kChl_rd   (1-OLx:SNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL kChl_bg   (1-OLx:SNx+OLx,1-OLy:sNy+OLy,Nr) 
+      _RL kChl_rd   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL kChl_bg   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL atten_rd
       _RL atten_bg
-      _RL irr_rd    (1-OLx:SNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL irr_bg    (1-OLx:SNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL irr_rd    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL irr_bg    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
       INTEGER i,j,k
-       LOGICAL QSW_underice
+      LOGICAL QSW_underice
 CEOP
 
        DO k=1,Nr
         DO j=jmin,jmax
           DO i=imin,imax
-              irr_eff(i,j,k,bi,bj)        = 0. _d 0
+              irr_eff(i,j,k,bi,bj) = 0. _d 0
 #ifdef PHYTO_SELF_SHADING
               irr_rd(i,j,k)        = 0. _d 0
               irr_bg(i,j,k)        = 0. _d 0
@@ -192,16 +195,20 @@ c  taken into account
 
         DO k=1,Nr
 
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef PHYTO_SELF_SHADING
 CADJ STORE irr_bg      = comlev1, key = ikey_dynamics, kind=isbyte
 CADJ STORE irr_rd      = comlev1, key = ikey_dynamics, kind=isbyte
+# endif /* PHYTO_SELF_SHADING */
+#endif /* ALLOW_AUTODIFF_TAMC */
 
          IF (hFacC(i,j,k,bi,bj).gt.0) THEN
 #ifdef PHYTO_SELF_SHADING
 
 c  Use bio-optical model of Manizza et al. (2005) to account for
-c  effect of self-shading on ligt available for phytoplankton 
+c  effect of self-shading on ligt available for phytoplankton
 c  growth. As written this DOES NOT feedback onto the absorption
-c  of shortwave radiation calculated in the physical model, which 
+c  of shortwave radiation calculated in the physical model, which
 c  is instead calculated in the subroutine swfrac
 
 c  Specify co-efficients for bio-optical model {kChl = k0 +chi[chl]^e}
@@ -236,7 +243,7 @@ c  Light attenuation from one more layer
      &       + kChl_bg(i,j,k-1)*drF(k-1)/2. _d 0*hFacC(i,j,k-1,bi,bj)
 c  Irradiance in middle of layer k
           irr_rd(i,j,k) = irr_rd(i,j,k-1)*exp(-atten_rd)
-          irr_bg(i,j,k) = irr_bg(i,j,k-1)*exp(-atten_bg) 
+          irr_bg(i,j,k) = irr_bg(i,j,k-1)*exp(-atten_bg)
           irr_inst(i,j,k) = irr_rd(i,j,k) + irr_bg(i,j,k)
          ENDIF
 
@@ -295,4 +302,3 @@ c  Inside mixed layer, effective light is set to mean mixed layer light
 
       RETURN
       END
-
