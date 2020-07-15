@@ -109,7 +109,7 @@ C-    try to get cube size from number of tiles, assuming a regular Cube
      &     ' facet-dims Unset; assume nRd=nGr=nBl=', nRd
           CALL PRINT_MESSAGE( msgBuf, W2_oUnit,SQUEEZE_RIGHT,myThid )
         ELSE
-          WRITE(msgBuf,'(3(A,I4),A,I10,A,I6,A)')
+          WRITE(msgBuf,'(A,I8,2(A,I4),A,I10,A,I6,A)')
      &     ' nTiles*sNx*sNy=', exch2_nTiles,' x',sNx,' x',sNy,' =',nGr
           CALL PRINT_MESSAGE( msgBuf, W2_oUnit,SQUEEZE_RIGHT,myThid )
           WRITE(msgBuf,'(A,I6,A,I10)')

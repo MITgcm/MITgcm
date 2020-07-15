@@ -219,12 +219,12 @@ C-      end N,S,E,W Edge loop
         ENDDO
         exch2_nNeighbours(is) = nbNeighb
         IF ( prtFlag ) THEN
-         WRITE(W2_oUnit,'(A,I5,A,I3,A,4(A,I2))')
+         WRITE(W2_oUnit,'(A,I8,A,I3,A,4(A,I2))')
      &    'Tile',is,' : nbNeighb=',nbNeighb,' ; is-at-Facet-Edge:',
      &        ' N=', exch2_isNedge(is), ' , S=', exch2_isSedge(is),
      &      ' , E=', exch2_isEedge(is), ' , W=', exch2_isWedge(is)
          DO ns=1,MIN(nbNeighb,W2_maxNeighbours)
-          WRITE(W2_oUnit,'(A,I3,A,I5,2(A,2I6),A,4I3,A,2I6,A)')
+          WRITE(W2_oUnit,'(A,I3,A,I8,2(A,2I6),A,4I3,A,2I6,A)')
      &     ' ns:',ns,' it=',exch2_neighbourId(ns,is),
      &     ', iLo,iHi=', exch2_iLo(ns,is), exch2_iHi(ns,is),
      &     ', jLo,jHi=', exch2_jLo(ns,is), exch2_jHi(ns,is)
@@ -280,10 +280,10 @@ c         i  = tile_edge2edge(nt,it)/10
             exch2_opposingSend(ns,is) = nt
            ELSE
             nn = exch2_opposingSend(ns,is)
-            WRITE(msgBuf,'(A,I5,2(A,I3),A,I5)') 'Tile',is,' neighb:',
-     &      ns,' (',tile_edge2edge(ns,is),' ) has multiple connection'
+            WRITE(msgBuf,'(A,I8,2(A,I3),A)') 'Tile',is,' neighb:',
+     &      ns,' (',tile_edge2edge(ns,is),' ) has multiple connections'
             CALL PRINT_ERROR( msgBuf, myThid )
-            WRITE(msgBuf,'(A,I5,5(A,I3))') ' with tile', it, ' :',
+            WRITE(msgBuf,'(A,I8,5(A,I3))') ' with tile', it, ' :',
      &      nn,' (',tile_edge2edge(nn,it),' ) and',
      &      nt,' (',tile_edge2edge(nt,it),' )'
             CALL PRINT_ERROR( msgBuf, myThid )
@@ -292,7 +292,7 @@ c         i  = tile_edge2edge(nt,it)/10
           ENDIF
         ENDDO
         IF ( exch2_opposingSend(ns,is).EQ.0 ) THEN
-            WRITE(msgBuf,'(A,I5,2(A,I3),A,I5)') 'Tile',is,' neighb:',
+            WRITE(msgBuf,'(A,I8,2(A,I3),A,I8)') 'Tile',is,' neighb:',
      &      ns,' (',tile_edge2edge(ns,is),' ) no connection from',it
             CALL PRINT_ERROR( msgBuf, myThid )
             errCnt = errCnt + 1
@@ -315,16 +315,16 @@ C--  Check opposingSend reciprocity:
         ii = exch2_neighbourId(nt,it)
         nn = exch2_opposingSend(nt,it)
         IF ( ii.NE.is .OR. nn.NE.ns ) THEN
-          WRITE(msgBuf,'(A,I5,2(A,I3),A)') 'Tile',is,' neighb:',
+          WRITE(msgBuf,'(A,I8,2(A,I3),A)') 'Tile',is,' neighb:',
      &      ns,' (',tile_edge2edge(ns,is),' ) connected'
           CALL PRINT_ERROR( msgBuf, myThid )
-          WRITE(msgBuf,'(A,I5,5(A,I3))') ' with tile', it, ' :',
+          WRITE(msgBuf,'(A,I8,5(A,I3))') ' with tile', it, ' :',
      &      nt,' (',tile_edge2edge(nt,it),' )'
           CALL PRINT_ERROR( msgBuf, myThid )
-          WRITE(msgBuf,'(A,I5,2(A,I3),A)') ' but',it,' neighb:',
+          WRITE(msgBuf,'(A,I8,2(A,I3),A)') ' but',it,' neighb:',
      &      nt,' (',tile_edge2edge(nt,it),' ) connected'
           CALL PRINT_ERROR( msgBuf, myThid )
-          WRITE(msgBuf,'(A,I5,3(A,I3))') ' with tile', ii, ' :',
+          WRITE(msgBuf,'(A,I8,3(A,I3))') ' with tile', ii, ' :',
      &      nn,' (',tile_edge2edge(nn,ii),' )'
           CALL PRINT_ERROR( msgBuf, myThid )
           errCnt = errCnt + 1

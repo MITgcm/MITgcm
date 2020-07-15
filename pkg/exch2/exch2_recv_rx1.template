@@ -80,18 +80,18 @@ C      Setup MPI stuff here
        CALL MPI_Recv( e2Bufr1_RX, iBufr, theType, sProc,
      &                theTag, MPI_COMM_MODEL, mpiStatus, mpiRc )
 #ifdef W2_E2_DEBUG_ON
-       WRITE(msgBuf,'(A,I4,A,I4,A)')
+       WRITE(msgBuf,'(A,I8,A,I8,A)')
      &   ' RECV FROM TILE=', soT, ' (proc = ',sProc,')'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      I                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,I4,A,I4,A)')
+       WRITE(msgBuf,'(A,I8,A,I8,A)')
      &   '  INTO TILE=', thisTile, ' (proc = ',tProc,')'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      I                     SQUEEZE_RIGHT, myThid )
        WRITE(msgBuf,'(A,I10)') '            TAG=', theTag
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      I                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,I4)')  '            NEL=', iBufr
+       WRITE(msgBuf,'(A,I8)')  '            NEL=', iBufr
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      I                     SQUEEZE_RIGHT, myThid )
 #endif /* W2_E2_DEBUG_ON */
