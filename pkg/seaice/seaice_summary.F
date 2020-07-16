@@ -178,6 +178,8 @@ C--  Seaice-Dynamics parameters
      & 'SEAICEpresPow1 =', ' /* exponent for Heff>SEAICEpresH0 */')
        CALL WRITE_0D_I ( SEAICEetaZmethod,  INDEX_NONE,
      & 'SEAICEetaZmethod =', ' /* method computing eta at Z-point */')
+      CALL WRITE_0D_RL( SEAICE_zetaMaxFac  ,INDEX_NONE,
+     & 'SEAICE_zetaMaxFac =', ' /* factor for upper viscosity bound */')
       CALL WRITE_0D_RL( SEAICE_zetaMin  ,INDEX_NONE,
      & 'SEAICE_zetaMin    =', ' /* lower bound for viscosity */')
       CALL WRITE_0D_RL( SEAICE_eccen,INDEX_NONE,'SEAICE_eccen    =',

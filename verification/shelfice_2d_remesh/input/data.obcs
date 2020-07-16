@@ -1,0 +1,32 @@
+# Open-boundaries
+ &OBCS_PARM01
+ OB_Jnorth=1*200,
+ useOBCSprescribe=.TRUE.,
+#OBWuFile='uVel_obc.bin',
+ OBNvFile='vVel_obc.bin',
+ OBNtFile='temp_obc.bin',
+ OBNsFile='salt_obc.bin',
+ OBCS_u1_adv_T=1,
+ OBCS_u1_adv_S=1,
+#--
+ useOBCSsponge=.TRUE.,
+ useLinearSponge = .TRUE.,
+#- default is =T for these specific switches:
+#OBCSsponge_VatNS=.TRUE.,
+ OBCSsponge_UatNS=.FALSE.,
+#--
+ OBCSprintDiags = .FALSE.,
+ &
+
+# Orlanski parameters (skipped with #undef ALLOW_ORLANSKI)
+#&OBCS_PARM02
+#Cmax=0.45,
+#cVelTimeScale=1000.,
+#&
+
+# Sponge layer parameters
+ &OBCS_PARM03
+ spongeThickness = 10,
+ Vrelaxobcsbound = 864000.,
+ Urelaxobcsbound = 864000.,
+ &

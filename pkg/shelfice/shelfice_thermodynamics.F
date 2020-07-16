@@ -74,6 +74,7 @@ C                           eq21)
 C                         1 for advective and diffusive heat flux (eq22, 26, 31)
 C     fwflxFac         :: only effective for dFac=1, 1 if we expect a melting
 C                         fresh water flux, 0 otherwise
+C     rFWinBL          :: = 1 when realFreshWaterFlux is used with BoundaryLayer
 C     auxiliary variables and abbreviations:
 C     a0, a1, a2, b, c0
 C     eps1, eps2, eps3, eps3a, eps4, eps5, eps6, eps7, eps8
@@ -84,14 +85,17 @@ C     drKp1, recip_drLoc
       _RL tLoc(1:sNx,1:sNy)
       _RL sLoc(1:sNx,1:sNy)
       _RL pLoc(1:sNx,1:sNy)
-      _RL uLoc(1:sNx,1:sNy)
-      _RL vLoc(1:sNx,1:sNy)
+      _RL uLoc(1:sNx+1,1:sNy+1)
+      _RL vLoc(1:sNx+1,1:sNy+1)
       _RL velSq(1:sNx,1:sNy)
       _RL thetaFreeze, saltFreeze, recip_Cp
-      _RL freshWaterFlux, convertFW2SaltLoc
+      _RL freshWaterFlux
+#ifdef ALLOW_ISOMIP_TD
+      _RL convertFW2SaltLoc
+#endif
       _RL a0, a1, a2, b, c0
       _RL eps1, eps2, eps3, eps3a, eps4, eps5, eps6, eps7, eps8
-      _RL cFac, rFac, dFac, fwflxFac
+      _RL cFac, rFac, dFac, fwflxFac, rFWinBL
       _RL aqe, bqe, cqe, discrim, recip_aqe
       _RL drKp1, recip_drLoc
       _RL recip_latentHeat
@@ -101,11 +105,12 @@ C     drKp1, recip_drLoc
       _RL shiPr, shiSc, shiLo, recip_shiKarman, shiTwoThirds
       _RL gammaTmoleT, gammaTmoleS, gammaTurb, gammaTurbConst
       _RL ustar, ustarSq, etastar
+      _RL u_tmp, v_tmp
       PARAMETER ( shiTwoThirds = 0.66666666666666666666666666667D0 )
 #ifdef ALLOW_DIAGNOSTICS
       _RL uStarDiag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* ALLOW_DIAGNOSTICS */
-#endif
+#endif /*SHI_ALLOW_GAMMAFRICT */
 
 #ifndef ALLOW_OPENAD
       _RL SW_TEMP
@@ -113,7 +118,7 @@ C     drKp1, recip_drLoc
 #endif
 
 #ifdef ALLOW_SHIFWFLX_CONTROL
-      _RL xx_shifwflx_loc(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_shifwflx_loc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -169,10 +174,11 @@ C     are we doing the conservative form of Jenkins et al. (2001)?
       recip_Cp = 1. _d 0 / HeatCapacity_Cp
       cFac = 0. _d 0
       IF ( SHELFICEconserve ) cFac = 1. _d 0
-C     with "real fresh water flux" (affecting ETAN),
-C     there is more to modify
+C     with "real fresh water flux" (affecting ETAN), there is more to modify
       rFac = 1. _d 0
       IF ( SHELFICEconserve .AND. useRealFreshWaterFlux ) rFac = 0. _d 0
+      rFWinBL = 0. _d 0
+      IF ( SHI_withBL_realFWflux ) rFWinBL = 1. _d 0
 C     heat flux into the ice shelf, default is diffusive flux
 C     (Holland and Jenkins, 1999, eq.21)
       dFac = 0. _d 0
@@ -225,7 +231,7 @@ C     where this value is part of the protocol
        ENDDO
       ENDDO
 #ifdef ALLOW_CTRL
-      if (useCTRL) CALL CTRL_GET_GEN (
+      IF (useCTRL) CALL CTRL_GET_GEN (
      &     xx_shifwflx_file, xx_shifwflxstartdate, xx_shifwflxperiod,
      &     maskSHI, xx_shifwflx_loc, xx_shifwflx0, xx_shifwflx1,
      &     xx_shifwflx_dummy,
@@ -236,6 +242,7 @@ C     where this value is part of the protocol
 #endif /* ALLOW_SHIFWFLX_CONTROL */
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
+
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef SHI_ALLOW_GAMMAFRICT
         act1 = bi - myBxLo(myThid)
@@ -259,9 +266,31 @@ C--   underneath the ice
 c         pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*1. _d -4
           tLoc(I,J) = theta(I,J,K,bi,bj)
           sLoc(I,J) = MAX(salt(I,J,K,bi,bj), zeroRL)
+          velSq(I,J)= 0.
          ENDDO
         ENDDO
-        IF ( .NOT.SHELFICE_oldCalcUStar ) THEN
+        DO J = 1, sNy+1
+         DO I = 1, sNx+1
+          uLoc(I,J) = 0.
+          vLoc(I,J) = 0.
+         ENDDO
+        ENDDO
+#ifdef SHI_ALLOW_GAMMAFRICT
+        IF ( SHELFICEuseGammaFrict .AND. SHELFICE_oldCalcUStar ) THEN
+C-    Original averaging expression for uStar:
+         DO J = 1, sNy
+          DO I = 1, sNx
+           K = MAX(1,kTopC(I,J,bi,bj))
+           uLoc(I,J) = recip_hFacC(I,J,K,bi,bj) * halfRL *
+     &         ( uVel(I,  J,K,bi,bj) * _hFacW(I,  J,K,bi,bj)
+     &         + uVel(I+1,J,K,bi,bj) * _hFacW(I+1,J,K,bi,bj) )
+           vLoc(I,J) = recip_hFacC(I,J,K,bi,bj) * halfRL *
+     &         ( vVel(I,J,  K,bi,bj) * _hFacS(I,J,  K,bi,bj)
+     &         + vVel(I,J+1,K,bi,bj) * _hFacS(I,J+1,K,bi,bj) )
+           velSq(I,J) = uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)
+          ENDDO
+         ENDDO
+        ELSEIF ( SHELFICEuseGammaFrict ) THEN
 C-    New (more accurate) averaging expression for uStar:
          DO J = 1, sNy
           DO I = 1, sNx
@@ -283,21 +312,9 @@ C-    New (more accurate) averaging expression for uStar:
      &                               )/tmpFac
           ENDDO
          ENDDO
-        ELSE
-C-    Original averaging expression for uStar:
-         DO J = 1, sNy
-          DO I = 1, sNx
-           K = MAX(1,kTopC(I,J,bi,bj))
-           uLoc(I,J) = recip_hFacC(I,J,K,bi,bj) * halfRL *
-     &         ( uVel(I,  J,K,bi,bj) * _hFacW(I,  J,K,bi,bj)
-     &         + uVel(I+1,J,K,bi,bj) * _hFacW(I+1,J,K,bi,bj) )
-           vLoc(I,J) = recip_hFacC(I,J,K,bi,bj) * halfRL *
-     &         ( vVel(I,J,  K,bi,bj) * _hFacS(I,J,  K,bi,bj)
-     &         + vVel(I,J+1,K,bi,bj) * _hFacS(I,J+1,K,bi,bj) )
-           velSq(I,J) = uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)
-          ENDDO
-         ENDDO
         ENDIF
+#endif /* SHI_ALLOW_GAMMAFRICT */
+
         IF ( SHELFICEBoundaryLayer ) THEN
 C--   average over boundary layer width
          DO J = 1, sNy
@@ -334,14 +351,75 @@ C--   lower cell may not be as thick as required
          ENDDO
         ENDIF
 
+#ifdef SHI_ALLOW_GAMMAFRICT
+        IF ( SHI_withBL_uStarTopDz ) THEN
+C--  TOPDR averages U/V over boundary layer at U/V points, then averages
+C    (as opposed to averaging horizontally then vertically)
+C    Average at u- and v- points over deltaR. use later to override uLoc/vLoc
+         DO J = 1, sNy+1
+          DO I = 1, sNx+1
+           K = kSurfW(I,J,bi,bj)
+           IF (K.LT.Nr) THEN
+            Kp1 = K+1
+            drKp1 = drF(K)*( 1. _d 0 - _hFacW(I,J,K,bi,bj) )
+            drKp1 = MIN( drKp1, drF(Kp1) * _hFacW(I,J,Kp1,bi,bj) )
+            drKp1 = MAX( drKp1, 0. _d 0 )
+            recip_drLoc = 1. _d 0
+     &                  / ( drF(K)*_hFacW(I,J,K,bi,bj) + drKp1 )
+            uLoc(I,J) = ( drF(K)*_hFacW(I,J,K,bi,bj)*uVel(I,J,K,bi,bj)
+     &                  + drKp1*uVel(I,J,Kp1,bi,bj)
+     &                  )*recip_drLoc
+c           u_topDr(I,J) =
+c    &           ( uVel(I,J,K,bi,bj)*drF(K)*_hFacW(I,J,K,bi,bj)
+c    &           + uVel(I,J,Kp1,bi,bj)*drKp1
+c    &           )*recip_drLoc
+           ELSEIF (K.EQ.Nr) THEN
+            uLoc(I,J) = uVel(I,J,K,bi,bj)
+           ELSE
+            uLoc(I,J) = 0. _d 0
+           ENDIF
+
+           K = kSurfS(I,J,bi,bj)
+           IF (K.LT.Nr) THEN
+            Kp1 = K+1
+            drKp1 = drF(K)*( 1. _d 0 - _hFacS(I,J,K,bi,bj) )
+            drKp1 = MIN( drKp1, drF(Kp1) * _hFacS(I,J,Kp1,bi,bj) )
+            drKp1 = MAX( drKp1, 0. _d 0 )
+            recip_drLoc = 1. _d 0
+     &                  / ( drF(K)*_hFacS(I,J,K,bi,bj) + drKp1 )
+            vLoc(I,J) = ( drF(K)*_hFacS(I,J,K,bi,bj)*vVel(I,J,K,bi,bj)
+     &                  + drKp1*vVel(I,J,Kp1,bi,bj)
+     &                  )*recip_drLoc
+c           v_topDr(I,J) =
+c    &           ( vVel(I,J,K,bi,bj)*drF(K)*_hFacS(I,J,K,bi,bj)
+c    &           + vVel(I,J,Kp1,bi,bj)*drKp1
+c    &           )*recip_drLoc
+           ELSEIF (K.EQ.Nr) THEN
+            vLoc(I,J) = vVel(I,J,K,bi,bj)
+           ELSE
+            vLoc(I,J) = 0. _d 0
+           ENDIF
+
+          ENDDO
+         ENDDO
+         DO J = 1, sNy
+          DO I = 1, sNx
+           u_tmp = halfRL*( uLoc(I,J) + uLoc(I+1,J) )
+           v_tmp = halfRL*( vLoc(I,J) + vLoc(I,J+1) )
+           velSq(I,J) = u_tmp*u_tmp + v_tmp*v_tmp
+          ENDDO
+         ENDDO
+        ENDIF
+#endif /* SHI_ALLOW_GAMMAFRICT */
+
 C--   turn potential temperature into in-situ temperature relative
 C--   to the surface
         DO J = 1, sNy
          DO I = 1, sNx
-#ifndef ALLOW_OPENAD
-          tLoc(I,J) = SW_TEMP(sLoc(I,J),tLoc(I,J),pLoc(I,J),zeroRL)
-#else
+#ifdef ALLOW_OPENAD
           CALL SW_TEMP(sLoc(I,J),tLoc(I,J),pLoc(I,J),zeroRL,tLoc(I,J))
+#else
+          tLoc(I,J) = SW_TEMP(sLoc(I,J),tLoc(I,J),pLoc(I,J),zeroRL)
 #endif
          ENDDO
         ENDDO
@@ -544,14 +622,20 @@ C--   implies melting and due to upward (positive) heat flux
      &             - HeatCapacity_Cp*( thetaFreeze - rFac*tLoc(I,J) ) )
             shelfIceFreshWaterFlux(I,J,bi,bj) = freshWaterFlux
 C--   compute surface tendencies
+C--   DNG: correction to use cell value for flux rather than BL values
+C--        in order to conserve salt and temp even with real FW Flux
             shelficeForcingT(i,j,bi,bj) =
      &           ( shiTransCoeffT(i,j,bi,bj)
-     &           - cFac*shelfIceFreshWaterFlux(I,J,bi,bj)*mass2rUnit )
-     &           * ( thetaFreeze - tLoc(I,J) )
+     &           - cFac*freshWaterFlux*mass2rUnit
+     &           )*( thetaFreeze - tLoc(I,J) )
+     &           - rFWinBL*freshWaterFlux*mass2rUnit
+     &            *( tLoc(I,J) - theta(I,J,K,bi,bj) )
             shelficeForcingS(i,j,bi,bj) =
      &           ( shiTransCoeffS(i,j,bi,bj)
-     &           - cFac*shelfIceFreshWaterFlux(I,J,bi,bj)*mass2rUnit )
-     &           * ( saltFreeze - sLoc(I,J) )
+     &           - cFac*freshWaterFlux*mass2rUnit
+     &           )*( saltFreeze - sLoc(I,J) )
+     &           - rFWinBL*freshWaterFlux*mass2rUnit
+     &            *( sLoc(I,J) - salt(I,J,K,bi,bj) )
            ELSE
             shelfIceHeatFlux      (I,J,bi,bj) = 0. _d 0
             shelfIceFreshWaterFlux(I,J,bi,bj) = 0. _d 0
@@ -560,8 +644,9 @@ C--   compute surface tendencies
            ENDIF
           ENDDO
          ENDDO
-        ENDIF
 C     endif (not) useISOMIPTD
+        ENDIF
+C     end bi,bj loops
        ENDDO
       ENDDO
 
@@ -609,6 +694,10 @@ C     Friction velocity
        IF ( SHELFICEuseGammaFrict )
      &  CALL DIAGNOSTICS_FILL(uStarDiag,'SHIuStar',0,1,0,1,1,myThid)
 #endif /* SHI_ALLOW_GAMMAFRICT */
+#ifdef ALLOW_SHELFICE_REMESHING
+       CALL DIAGNOSTICS_FILL_RS( R_shelfIce, 'SHIRshel',
+     &                           0, 1, 0, 1, 1, myThid )
+#endif
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 

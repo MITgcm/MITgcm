@@ -1,0 +1,139 @@
+#! /usr/bin/env bash
+
+# $Header: /u/gcmpack/MITgcm_contrib/jmc_script/extract_StD,v 1.4 2020/02/11 22:17:43 jmc Exp $
+# $Name:  $
+
+add=0 ; mut=0 ;
+if [ $# -ge 3 ]
+then
+ if test $1 = '-a' ; then add=1; shift; fi
+ if test $1 = '-s' ; then mut=1; shift; fi
+ if test $add = 0  ; then if test $1 = '-a' ; then add=1; shift; fi ; fi
+fi
+
+case $# in
+0|1|2) echo "Usage: `basename $0` [-a][-s] input_fil out_pfix out_sfix [field_name_list]"
+       echo "   from ASCII Diagnostics-Stats file (=input_fil) and for each field"
+       echo "   (in field_name_list), extract the associated numerical values and"
+       echo "   put them in a separated file: {out_pfix}_{VAR}.{out_sfix}"
+       echo "   -a : append to output_file ; -s : silent mode "
+       echo "   '=' as out_pfix -> take {input_fil} basename "
+       exit 9 ;;
+    *) ;;
+esac
+
+inpFil=$1
+if test $2 = '='
+then prfx=`basename $inpFil | sed 's/\..*\.txt//'`
+else prfx=$2 ; fi
+sufx=$3
+tmpFil='TTT.'$$
+tmpfil='ttt.'$$
+
+echo 'output pre,sufix:' $prfx','$sufx '; input file:' $inpFil
+if test $# = '3'
+then listV=`sed -n '/^# Fields /s/# Fields       ://p' $inpFil`
+else
+ shift; shift; shift; listV=$*
+fi
+if test $mut = 0 ; then
+ grep '^# Fields ' $inpFil
+ echo 'selected var:' $listV
+#echo 'sufx, tmpFil:' $sufx $tmpFil
+fi
+
+flag=1;
+for vv in $listV
+do
+ case $vv in
+   'Eta') var='ETAN'     ; vfl=$vv ;;
+              'ETAN'     ) var=$vv ; vfl='Eta';;
+     'T') var='THETA'    ; vfl=$vv ;;
+              'THETA'    ) var=$vv ; vfl='T' ;;
+     'S') var='SALT'     ; vfl=$vv  ;;
+              'SALT'     ) var=$vv ; vfl='S' ;;
+     'U') var='UVEL'     ; vfl=$vv  ;;
+              'UVEL'     ) var=$vv ; vfl='U' ;;
+     'V') var='VVEL'     ; vfl=$vv  ;;
+              'VVEL'     ) var=$vv ; vfl='V' ;;
+     'W') var='WVEL'     ; vfl=$vv  ;;
+              'WVEL'     ) var=$vv ; vfl='W' ;;
+   'Phi') var='PHIHYD'   ; vfl=$vv  ;;
+              'PHIHYD'   ) var=$vv ; vfl='Phi';;
+   'Et2') var='ETANSQ'   ; vfl=$vv ;;
+              'ETANSQ'   ) var=$vv ; vfl='Et2';;
+    'T2') var='THETASQ'  ; vfl=$vv ;;
+              'THETASQ'  ) var=$vv ; vfl='T2' ;;
+    'S2') var='SALTSQ'   ; vfl=$vv  ;;
+              'SALTSQ'   ) var=$vv ; vfl='S2' ;;
+    'U2') var='UVELSQ'   ; vfl=$vv  ;;
+              'UVELSQ'   ) var=$vv ; vfl='U2' ;;
+    'V2') var='VVELSQ'   ; vfl=$vv  ;;
+              'VVELSQ'   ) var=$vv ; vfl='V2' ;;
+    'W2') var='WVELSQ'   ; vfl=$vv  ;;
+              'WVELSQ'   ) var=$vv ; vfl='W2' ;;
+       *)  var=$vv ; vfl=$vv ;;
+ esac
+#echo 'grep -m 1' "^ field : ${var} " $inpFil
+#grep -m 1 "^ field : ${var} " $inpFil
+ nLev=`grep -m 1 "^ field : ${var} " $inpFil | sed 's/.*=//'`
+ if test ${nLev}'xx' = 'xx'
+ then
+  echo 'WARNING variable:' $var 'not found in file' $inpFil
+ else
+#echo 'nLev=' $nLev
+#- first variable: extract Header, then Iter Numbers:
+  if test $flag = 1
+  then flag=0
+    outFil=${prfx}'_head'.$sufx
+    nLin=`sed -n "/^# end of header/=" $inpFil`
+    head -$nLin $inpFil > $tmpFil
+    if test -f $outFil -a $add = 0 ; then rm -f $outFil ; fi
+    if test -f $outFil
+    then
+      diff $tmpFil $outFil > /dev/null
+      out=$?
+      if test $out != '0'
+      then
+        echo 'WARNNING : get Different header file:' $outFil
+        cat $tmpFil >> $outFil
+      fi
+      rm -f $tmpFil
+    else mv $tmpFil $outFil
+      if test $mut = 0 ; then echo 'extract Header (' $nLin 'lines )  ==> ' $outFil ; fi
+    fi
+#----
+    outFil=${prfx}'_Iter'.$sufx
+    if test $mut = 0 ; then echo 'extract Iteration Nb ==> outFil=' $outFil ; fi
+    if test -f $outFil -a $add = 0 ; then rm -f $outFil ; fi
+    touch $outFil
+    rList=`sed -n '/^# Regions /s/# Regions      ://p' $inpFil`
+    for j in $rList ; do jj=$j ; done
+    grep "^ field : ${var} " $inpFil | grep "$j ; nb.Lev =" | \
+                  sed 's/.*Iter =//' | sed 's/; region.*//g' >> $outFil
+  fi
+#----
+  outFil=${prfx}'_'$vfl.$sufx
+  if test $mut = 0 ; then echo 'extract variable:' $var ', outFil=' $outFil ; fi
+#- echo set of sed instruction to file sedFil :
+  sedFil=$tmpFil.$vv
+  rm -f $sedFil
+  echo "/^ field : $var /{" > $sedFil
+  if test $nLev = 1 ; then k=0 ; else k=-1 ; fi
+  while [ $k -le $nLev ]
+  do
+   echo "N" >> $sedFil
+   k=`expr $k + 1`
+  done
+  echo "p" >> $sedFil
+  echo "}" >> $sedFil
+#- extract records of variable "var" using sed command & sedFil
+  sed -n -f $sedFil $inpFil > $tmpFil
+  if test $mut = 0 ; then head -1 $tmpFil ; fi
+  if test -f $outFil -a $add = 0 ; then rm -f $outFil ; fi
+  touch $outFil
+  sed '/^ k /d' $tmpFil | sed '/^ field /d' >> $outFil
+  rm -f $sedFil $tmpFil
+ fi
+done
+exit

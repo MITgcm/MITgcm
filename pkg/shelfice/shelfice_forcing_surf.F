@@ -45,7 +45,11 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j   :: Loop counters
       INTEGER i, j
+      LOGICAL SHI_useRealFWflux
 CEOP
+
+      SHI_useRealFWflux = useRealFreshWaterFlux .AND.
+     &  ( .NOT.SHELFICEboundaryLayer .OR. SHI_withBL_realFWflux )
 
 c     DO bj=myByLo(myThid),myByHi(myThid)
 c      DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -83,7 +87,6 @@ C--   Forcing term
         IF ( .NOT.SHELFICEboundaryLayer ) THEN
 C-    for now, forcing using SHELFICEboundaryLayer is done separately
 C     (calling SHELFICE_FORCING_T & _S from APPLY_FORCING_T & _S)
-
          DO j=1,sNy
           DO i=1,sNx
            IF ( kTopC(i,j,bi,bj).NE.0 ) THEN
@@ -92,8 +95,11 @@ C     (calling SHELFICE_FORCING_T & _S from APPLY_FORCING_T & _S)
            ENDIF
           ENDDO
          ENDDO
+        ENDIF
 
-         IF ( useRealFreshWaterFlux ) THEN
+        IF ( SHI_useRealFWflux ) THEN
+C-    Allows PmE to be used even if boundary layer is being used,
+C     as long as SHI_withBL_realFWflux is set to account for advective flux
 #ifdef ALLOW_AUTODIFF
           STOP 'RealFreshWaterFlux disabled in SHELFICE_FORCING_SURF'
 #else /* ALLOW_AUTODIFF */
@@ -106,9 +112,6 @@ c           ENDIF
            ENDDO
           ENDDO
 #endif /* ALLOW_AUTODIFF */
-         ENDIF
-
-C--   end if not SHELFICEboundaryLayer
         ENDIF
 
 #ifdef EXACT_CONSERV
@@ -129,6 +132,17 @@ C--   end if not SHELFICEboundaryLayer
            ENDDO
           ENDDO
         ENDIF
+
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( useDiagnostics ) THEN
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+             shelficeDragU(i,j,bi,bj) = 0.
+             shelficeDragV(i,j,bi,bj) = 0.
+           ENDDO
+          ENDDO
+         ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 c      ENDDO
 c     ENDDO

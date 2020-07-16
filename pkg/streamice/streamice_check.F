@@ -28,14 +28,32 @@ CEOP
 C     !LOCAL VARIABLES:
 C     msgBuf   :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*(10) fname
-      INTEGER m,n,k
+c     CHARACTER*(10) fname
+c     INTEGER m,n,k
 
       _BEGIN_MASTER(myThid)
 
        WRITE(msgBuf,'(A)') 'STREAMICE_CHECK: #define STREAMICE'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , 1)
+
+#ifndef STREAMICE_COULOMB_SLIDING
+
+      IF (STREAMICE_allow_reg_coulomb) THEN
+
+       WRITE(msgBuf,'(A)')
+     &   'STREAMICE_CHECK: STREAMICE_COULOMB_SLIDING must be defined'
+        CALL PRINT_ERROR( msgBuf, myThid )
+
+      ENDIF
+
+#endif
+
+      IF(n_basal_friction .lt. 0.0) THEN
+       WRITE(msgBuf,'(A)')
+     &   'STREAMICE_CHECK: n_basal_friction must be nonnegative number'
+        CALL PRINT_ERROR( msgBuf, myThid )
+      ENDIF
 
 C-   write out integer parameters
 
@@ -48,7 +66,6 @@ C-   write out integer parameters
        CALL WRITE_0D_I( streamice_nstep_velocity, INDEX_NONE,
      &  ' # of timesteps per velocity solve  =',
      &  ' /* user defined parameter */')
-
 
 C-   write out real parameters
 
@@ -238,7 +255,6 @@ C-   write out real parameters
      & ' val (m^2/a) for west flux bdry =',
      & ' /* user defined parameter */')
 
-
 C-   write out logical parameters
 
        CALL WRITE_0D_L( STREAMICE_dump_mdsio, INDEX_NONE,
@@ -249,8 +265,8 @@ C-   write out logical parameters
      & ' streamice_dump_mnc =', ' /* user defined parameter */')
        CALL WRITE_0D_L( STREAMICE_tave_mnc, INDEX_NONE,
      & ' streamice_tave_mnc =', ' /* user defined parameter */')
-!       CALL WRITE_0D_L( STREAMICE_GL_regularize, INDEX_NONE,
-!     & ' streamice_GL_regularize =', ' /* user defined parameter */')
+c       CALL WRITE_0D_L( STREAMICE_GL_regularize, INDEX_NONE,
+c     & ' streamice_GL_regularize =', ' /* user defined parameter */')
        CALL WRITE_0D_L( STREAMICE_move_front, INDEX_NONE,
      & ' streamice_move_front =', ' /* user defined parameter */')
        CALL WRITE_0D_L( STREAMICE_calve_to_mask, INDEX_NONE,
@@ -275,27 +291,27 @@ C-     For example, require this package to use tempStepping
 
 C    write init_thickness array to a binary file
 
-!        CALL WRITE_FLD_XY_RL ( "H_streamIce", "init",
-!      & H_streamIce, 0, myThid )
-!        CALL WRITE_FLD_XY_RL ( "area_shelf_streamice", "init",
-!      & area_shelf_streamice, 0, myThid )
-!        CALL WRITE_FLD_XY_RL ( "STREAMICE_hmask", "init",
-!      & STREAMICE_hmask, 0, myThid )
-!        CALL WRITE_FLD_XY_RL ( "base_el_streamice", "init",
-!      & base_el_streamice, 0, myThid )
-!        CALL WRITE_FLD_XY_RL ( "ssurf_el_streamice", "init",
-!      & surf_el_streamice, 0, myThid )
+c        CALL WRITE_FLD_XY_RL ( "H_streamIce", "init",
+c      & H_streamIce, 0, myThid )
+c        CALL WRITE_FLD_XY_RL ( "area_shelf_streamice", "init",
+c      & area_shelf_streamice, 0, myThid )
+c        CALL WRITE_FLD_XY_RL ( "STREAMICE_hmask", "init",
+c      & STREAMICE_hmask, 0, myThid )
+c        CALL WRITE_FLD_XY_RL ( "base_el_streamice", "init",
+c      & base_el_streamice, 0, myThid )
+c        CALL WRITE_FLD_XY_RL ( "ssurf_el_streamice", "init",
+c      & surf_el_streamice, 0, myThid )
 
-!       DO m=1,4
-!        DO n=1,4
-!         DO k=1,2
-!          WRITE(fname,'(A,I1,A,I1,A,I1)')
-!     &     "Dphi_", m, "_", n, "_", k
-!          CALL WRITE_FLD_XY_RL (fname, "",
-!     &     Dphi(:,:,:,:,m,n,k),0,myThid)
-!         ENDDO
-!        ENDDO
-!       ENDDO
+c       DO m=1,4
+c        DO n=1,4
+c         DO k=1,2
+c          WRITE(fname,'(A,I1,A,I1,A,I1)')
+c     &     "Dphi_", m, "_", n, "_", k
+c          CALL WRITE_FLD_XY_RL (fname, "",
+c     &     Dphi(:,:,:,:,m,n,k),0,myThid)
+c         ENDDO
+c        ENDDO
+c       ENDDO
 
        CALL WRITE_FLD_XY_RL ( "k1AtC_str", "out",
      & k1AtC_str, 0, myThid )

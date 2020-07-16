@@ -149,7 +149,9 @@ C     uDudxFac, AhDudxFac, etc ... individual term parameters for switching term
       _RL   strain(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL stretching(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_LEITH_QG
       _RL  Nsquare(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
       _RL  uDudxFac
       _RL  AhDudxFac
       _RL  vDudyFac
@@ -213,7 +215,9 @@ c       KE(i,j)     = 0.
         strain(i,j) = 0.
         tension(i,j)= 0.
         stretching(i,j) = 0.
-        Nsquare(i,j)    = 0.
+#ifdef ALLOW_LEITH_QG
+        Nsquare(i,j) = 0.
+#endif
         guDiss(i,j) = 0.
         gvDiss(i,j) = 0.
        ENDDO
@@ -323,7 +327,7 @@ C     anelastic: transports are scaled by rhoFacC (~ mass transport)
      I                          Nsquare, uFld,vFld,vort3,
      I                          myTime, myIter, myThid )
         ENDIF
-#endif
+#endif /* ALLOW_LEITH_QG */
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
            IF ( hFacZ(i,j).EQ.0. ) THEN
@@ -592,10 +596,9 @@ C-     No-slip BCs impose a drag at walls...
          ENDDO
         ENDIF
 C-    No-slip BCs impose a drag at bottom
-        IF (bottomDragTerms) THEN
+        IF ( bottomDragTerms ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KE(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE KE(:,:) = comlev1_bibj_k, key = imomkey, byte = isbyte
 #endif
          CALL MOM_U_BOTDRAG_COEFF( bi, bj, k, .TRUE.,
      I                   uFld, vFld, kappaRU, KE,
@@ -619,14 +622,19 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
         ENDIF
 
 #ifdef ALLOW_SHELFICE
-        IF (useShelfIce) THEN
-         CALL SHELFICE_U_DRAG( bi, bj, k,
-     I              uFld, vFld, KE, kappaRU,
-     O              vF,
-     I              myThid )
+        IF ( useShelfIce .AND. selectImplicitDrag.EQ.0 ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KE(:,:) = comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
+         CALL SHELFICE_U_DRAG_COEFF( bi, bj, k, .TRUE.,
+     I                   uFld, vFld, kappaRU, KE,
+     O                   cDrag,
+     I                   myIter, myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
-           guDiss(i,j) = guDiss(i,j) + vF(i,j)
+            guDiss(i,j) = guDiss(i,j)
+     &                  - cDrag(i,j)*uFld(i,j)
+     &                  *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
           ENDDO
          ENDDO
         ENDIF
@@ -838,10 +846,9 @@ C-     No-slip BCs impose a drag at walls...
          ENDDO
         ENDIF
 C-    No-slip BCs impose a drag at bottom
-        IF (bottomDragTerms) THEN
+        IF ( bottomDragTerms ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KE(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE KE(:,:) = comlev1_bibj_k, key = imomkey, byte = isbyte
 #endif
          CALL MOM_V_BOTDRAG_COEFF( bi, bj, k, .TRUE.,
      I                   uFld, vFld, kappaRV, KE,
@@ -865,14 +872,19 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
         ENDIF
 
 #ifdef ALLOW_SHELFICE
-        IF (useShelfIce) THEN
-         CALL SHELFICE_V_DRAG( bi, bj, k,
-     I              uFld, vFld, KE, kappaRV,
-     O              vF,
-     I              myThid )
+        IF ( useShelfIce .AND. selectImplicitDrag.EQ.0 ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KE(:,:) = comlev1_bibj_k, key = imomkey, byte = isbyte
+#endif
+         CALL SHELFICE_V_DRAG_COEFF( bi, bj, k, .TRUE.,
+     I                   uFld, vFld, kappaRV, KE,
+     O                   cDrag,
+     I                   myIter, myThid )
          DO j=jMin,jMax
           DO i=iMin,iMax
-           gvDiss(i,j) = gvDiss(i,j) + vF(i,j)
+            gvDiss(i,j) = gvDiss(i,j)
+     &                  - cDrag(i,j)*vFld(i,j)
+     &                  *_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
           ENDDO
          ENDDO
         ENDIF

@@ -1,6 +1,178 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - Add new mechanical energy diagnostics ;
+  - Move computation of stress diagnostics to seaice_dynsolver.F ; this change
+    affects diagnostics SIpress, SItensil, SIpress, SIzeta, SIdelta, SIshear,
+    because they are now filled after the current time step update, when they
+    are actually available. Note: previously, for the first time step, these
+    variables (and diagnostics) were not properly defined (or zero).
+
+checkpoint67r (2020/06/04)
+o pkg/ecco:
+  - fix character length when checking for m_trHeat, m_trSalt & m_horflux_vol.
+o pkg/autodiff:
+  - add active read and write routines for global 1D vectors, to be used for
+    compressed cost function vectors (note: not used yet, example to come soon).
+o model/src & pkg/exf:
+  - Reference atmospheric pressure for seawater EOS was assumed but was not
+    explicitly set. New constant "eosRefP0" is added to make this more clear ;
+  - Add main model reference surface pressure (surf_pRef) so that pLoad
+    is now defined as the atmospheric pressure anomaly relative to surf_pRef ;
+  - Account for differences in 2 ref pressure in EOS S/R ;
+  - Fix few EOS references (in comments) ; fix and simplify S/R EOS_CHECK ;
+  - Keep exf "apressure" field unchanged (still full atmospheric surface
+    pressure) but now initialised to "surf_pRef" and fill "pLoad" with atmos.
+    pressure anomaly relative to surf_pRef.
+o pkg/streamice:
+  - add option to specify "regularised coulomb" sliding law to better reflect
+    dependence on subglacial water pressure close to the grounding line ;
+  - above requires CPP option (due to new arrays) STREAMICE_COULOMB_SLIDING
+    and r/t param streamice_allow_reg_coulomb ;
+  - add diagnostic for streamice melt rate (BDOT_SI )
+  - add parameter STREAMICEAdotFile to specify surface mass balance ;
+  - add parameter streamice_maxnliter_Petsc to specify maximum no. of
+    linear solves using PETSc in a single time step (not incl. in doc
+    since PETSc is not part of standard build) ;
+  - update references to PETSC_DEFAULT_DOUBLE_PRECISION to PETSC_DEFAULT_REAL in
+    streamice_cg_solve_petsc.F; former seems to be deprecated in some versions
+    of PETSc while latter is backward compatible ;
+  - for BJACOBI (block jacobi) PETSc preconditioner, use PCICC (incomplete
+    cholesky) rather than PCILU (incomplete LU) ;
+  - for BJACOBI add parameter streamice_petsc_pcfactorlevels to control level
+    of factor fill-in.
+
+checkpoint67q (2020/03/19)
+o pkg/shelfice, remeshing code:
+  - simplify/clarify merging S/R call sequence: all done/called from main
+    remeshing S/R SHELFICE_REMESHING :
+      - remesh_c_mask : now only update geometry & surface fields at grid-cell
+        center and compute merging remeshing weights for tracers;
+      - remesh_uv_mask : now only update geometry & surface fields at grid-cell
+        edges and prepare merging remeshing weights for velocity;
+        also fix thin-wall setting without reading again thin-wall files ;
+      - calls directly CALC_SURF_DR and UPDATE_SURF_DR
+  - move adjustment of state variables into (new) dedicated
+    S/R SHELFICE_REMESH_STATE and change loop range so that no further EXCH
+    calls are needed ; also add missing code for ALLOW_ADAMSBASHFORTH_3 ;
+  - move update of Rmin_surf (formerly in shelfice_remesh_rminsurf.F)
+    before first call to S/R CALC_SURF_DR (where Rmin_surf is used)
+    and in-line S/R SHELFICE_REMESH_RMINSURF into shelfice_remesh_uv_mask.F
+  - add argument "wFld" and "myIter" to S/R SHELFICE_REMESH_CALC_W
+  - fix so that it compiles and run when _RS is real*4 (#undef REAL4_IS_SLOW).
+o model/src:
+  - Fix for special value of R_low with pkg/shelfice:
+    When bathymetry field value is just rF(k)+hFacMindrF(k)/2, R_low will
+    deepen (by hFacMindrF(k)/2 ) to satisfy the hFacMin criteria. In this case:
+      o if R_shelfIce value (from file) was exactly equal to initial bathymetry
+        depth, original code would create a very thin grid cell of thickness
+        factor hFacMin. Fix this problem by preventing deepening of R_low when
+        initial R_low >= R_shelfIce.
+      o if R_shelfIce value is deeper than original value, the problem does not
+        show up for hFacC (column remains dry) but because of erroneous resetting
+        of rSurfW/S (to be the MAX of rSurfW/S, rLowW/S) this could trigger the
+        same type of artificial deepening at Western and Southern column edges
+        (for hFacW and hFacS). Remove early resetting of rSurfW/S to fix this
+        second issue (see issue #324).
+  - Simplify correction for miss-match between Sum of level thickness at
+    W & S edges and top minus bottom r-position: only adjust rSurfW/S
+    (and not rLowW/S) as done previously for the case useMin4hFacEdges=T;
+  - Non-lin free-surf in r coordinate: for consistency, use rSurfW & rSurfS
+    (which account for adjustment, if any) instead of MIN of adjacent Ro_surf
+    when calculating new thickness factor: hFac_surfW & hFac_surfS ;
+  - Make thin-wall implementation available for sigma-coordinate ;
+  - Record thin-wall position as kSurfW/S = Nr+2 (instead of = Nr+1 for
+    a dry column).
+o tools/build_options:
+    rename optfile "linux_amd64_ifort" to "linux_amd64_ifort10-"
+o verification:
+  - new reentrant channel tutorial experiment, doc will follow soon.
+
+checkpoint67p (2020/02/12)
+o model/src:
+  - rename array "surfaceForcingTice" to "adjustColdSST_diag" and change the
+    description to better reflect what it is: a diagnostic for SST adjustment.
+  - remove most of the TAF storage directive for "adjustColdSST_diag" that were
+    not necessary once it's properly initialized.
+o pkg/gmredi:
+  - improve error handling
+  - additional QGLeith config checks
+  - standardise variable name capitalizations
+o pkg/mom_common, mom_vecinv, mom_fluxform:
+  - protect QGLeith code with ifdefs
+  - additional QGLeith config checks (in model/src/config_check.F)
+o verification:
+  - rename dir "rotating_tank" to "tutorial_rotating_tank".
+o pkg/flt:
+  - improve pkg/flt doc and CPP brackets
+o doc:
+  - new front-page to tutorial chapter, also listing all verif experiments ;
+  - add new section in ch3 about input file format.
+
+checkpoint67o (2019/12/23)
+o pkg/shelfice:
+  - implement implicit ice-shelf drag, in the same way as implicit bottom drag,
+    using the same run-time switch "selectImplicitDrag".
+  - change 3-D diagnostics of ice-shelf drag tendency (SHIUDrag & SHIVDrag) to
+    2-D diagnostics of ice-shelf drag stress (SHI_TauX & SHI_TauY).
+  - update 4 forward reference output files of experiment "isomip".
+  - switch on implicit drag in experiment shelfice_2d_remesh (to get it tested).
+o pkg/shelfice:
+  - addition of functionality described in Jordan et al (2017), "Ocean-Forced
+    Ice-Shelf Thinning in a Synchronously Coupled Ice-Ocean Model";
+    allows "remeshing" of grid-cells in vertical in response to changing free
+    surface due to ice shelf mass change:
+    At SHELFICEremeshFrequency interval, checks for cells that are too thick or
+    too thin and adjusts R_surf & eta accordingly, and updates state variables ;
+  - new main remeshing S/R SHELFICE_REMESHING calling additional S/R in files
+     shelfice_remesh_c_mask.F, shelfice_remesh_uvmasks.F,
+     shelfice_remesh_rminsurf.F and shelfice_remesh_calc_w.F
+    and called directly from top of FORWARD_STEP ;
+  - all new code and call protected under #define ALLOW_SHELFICE_REMESHING ;
+  - add field "R_shelfice" to pkg/shelfice pickup files for restart ;
+  - verification/shelfice_2d_remesh/*: new verification experiment
+    to test remeshing functionality.
+  - additional options to SHELFICEboundaryLayer:
+    a) SHI_withBL_uStarTopDz, to compute uStar from uVel,vVel avergaged over
+       top Dz thickness first and then average horizontally ;
+    b) SHI_withBL_realFWflux, to use real Fresh-Water flux (and adjust
+       advective surface flux) with SHELFICEboundaryLayer.
+o pkg/ecco:
+  - change S/R ECCO_READWEI to read in uncertainty file and compute weight
+    as 1/sigma if nosumsq is provided as a preprocessing option, or 1/sigma^2
+    if not. This is the expected behavior based on the "generic cost function"
+    section of the documentation.
+o verification:
+  - new experiment "global_oce_biogeo_bling" move here from verification_other.
+o pkg/cheapaml:
+  - rewrite advection-diffusion of BL atmospheric variables to use Flux-Form
+    formulation. Affects results (unless cartesian grid is used).
+  - apply special treatment of diffusive flux at Northern & Southern boundaries
+    only if .NOT.cheapamlYperiodic (previously unconditional, gad_diff_2d_y.F);
+  - Skip calls to AB-2 when using "useFluxLimit=T" option since advection scheme
+    used then is DST3FL which does not need AB at all. Affects results if
+    useFluxLimit=T" is used.
+  - clean-up (rename/remove all "gad_*.F" files) and simplify by using few more
+    pkg/generic_advdiff S/R (instead of local copies).
+  - update output of experiment "cheapAML_box" (and in separated PR, experiment
+    "offline_cheapaml" in verification_other)
+o pkg/ctrl:
+  - Tangent Linear mode: allows to initialise g_xx fields with user-provided
+    g_xx file (default unchanged, i.e., initialised to zero).
+
+checkpoint67n (2019/11/26)
+o pkg/ctrl:
+  - add doc & storage dir for initial velocity control option.
+o pkg/autodiff:
+  - sort out checkpoint_lev1_dir header file for when pkg/ecco is used
+    with #undef NONLIN_FRSURF ; similar update in pkg/cd_code & pkg/ptracers;
+    this fixes issue #68.
+  - clean-up and fix pkg/autodiff checkpoint_lev?_dir to be able to compile
+    with #define EXCLUDE_FFIELDS_LOAD.
+o model/src:
+  - allows to specify time-dependent (periodic) geothermal heat-flux
+    with "periodicExternalForcing".
 o pkg/diagnostics:
   - add diagnostics for thickness factor hFacC, hFacW & hFacS.
 o pkg/dic:

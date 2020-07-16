@@ -40,6 +40,9 @@
 #ifdef ALLOW_STREAMICE
 # include "STREAMICE_OPTIONS.h"
 #endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
 #endif
@@ -115,6 +118,8 @@ C     !CALLING SEQUENCE:
 C     FORWARD_STEP
 C       |
 C       |-- AUTODIFF_INADMODE_UNSET
+C       |
+C       |-- SHELFICE_REMESHING
 C       |
 C       |-- RESET_NLFS_VARS
 C       |-- UPDATE_R_STAR
@@ -420,6 +425,15 @@ c**************************************
 c**************************************
 #endif
 
+#ifdef ALLOW_SHELFICE_REMESHING
+      IF ( useShelfIce ) THEN
+C--   Remesh shelfice
+        CALL TIMER_START('SHELFICE_REMESHING     [FORWARD_STEP]',myThid)
+        CALL SHELFICE_REMESHING ( myTime, myIter, myThid )
+        CALL TIMER_STOP('SHELFICE_REMESHING     [FORWARD_STEP]',myThid)
+      ENDIF
+#endif /* ALLOW_SHELFICE_REMESHING */
+
 C--   Reset geometric factors (hFacC,W,S & recip_hFac) to their current values:
 C     added to simplify adjoint derivation - no effect in forward run
 #ifdef NONLIN_FRSURF
@@ -582,8 +596,6 @@ C--     Step forward fields and calculate time tendency terms.
       CALL TIMER_STOP ('DO_ATMOSPHERIC_PHYS [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE surfaceForcingTice = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
 # ifdef ALLOW_KPP
 CADJ STORE uVel, vVel = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
@@ -676,10 +688,12 @@ CADJ STORE surfaceForcingS    = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE surfaceForcingT    = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
-CADJ STORE surfaceForcingTice = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
 CADJ STORE IVDConvCount       = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
+# ifdef ALLOW_KPP
+CADJ STORE adjustColdSST_diag = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+# endif
 # ifdef ALLOW_PTRACERS
 CADJ STORE surfaceForcingPTr  = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
