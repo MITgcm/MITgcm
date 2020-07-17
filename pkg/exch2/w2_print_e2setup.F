@@ -223,6 +223,5 @@ c    &     ', oi,oj=', exch2_oi(ns,is), exch2_oj(ns,is),')'
        CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
       ENDIF
 
-
       RETURN
       END

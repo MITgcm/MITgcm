@@ -126,7 +126,6 @@ C-    try to get cube size from number of tiles, assuming a regular Cube
        STOP 'ABNORMAL END: S/R W2_SET_CS6_FACETS (Dims are missing)'
       ENDIF
 
-
 C--   Set facet dimension : 1rst 3 are known:
       facet_dims(1) = nRd
       facet_dims(2) = nGr
