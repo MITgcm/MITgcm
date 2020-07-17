@@ -6,7 +6,7 @@
 CBOP
       subroutine BLING_LIGHT(
      I           mld,
-     U           irr_inst,
+     U           irr_inst, irr_eff,
      I           bi, bj, imin, imax, jmin, jmax,
      I           myTime, myIter, myThid)
 
@@ -69,6 +69,7 @@ C     === Output ===
 C      irr_inst     :: instantaneous light
 C      irr_eff      :: effective light for photosynthesis
       _RL irr_inst  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL irr_eff   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 C     === Local variables ===
       _RL solar, albedo
@@ -284,13 +285,13 @@ c  Mean irradiance in the mixed layer
         DO i=imin,imax
 
          IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
-          irr_eff(i,j,k,bi,bj) = irr_inst(i,j,k)
+          irr_eff(i,j,k) = irr_inst(i,j,k)
 
 #ifdef ML_MEAN_LIGHT
 c  Inside mixed layer, effective light is set to mean mixed layer light
          IF ((-rf(k+1) .le. mld(i,j)).and.
      &               (-rf(k+1).lt.MLmix_max)) THEN
-           irr_eff(i,j,k,bi,bj) = irr_mix(i,j)
+           irr_eff(i,j,k) = irr_mix(i,j)
           ENDIF
 #endif
 
