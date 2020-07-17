@@ -282,12 +282,11 @@ C--    Print summary of processor mapping on standard output
      &   '======= Starting MPI parallel Run ========='
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_BOTH , myThid )
-       iTmp = MAX(3,1 + INT(LOG10(DFLOAT(nPx*nPy))))
-       WRITE(fmtStr,'(A,I1,A)') '(A,I',iTmp,',A,A)'
-       WRITE(msgBuf,fmtStr) ' My Processor Name (len:',
+       WRITE(msgBuf,'(A,I3,A,A)') ' My Processor Name (len:',
      &  mpilProcNam, ' ) = ', mpiProcNam(1:mpilProcNam)
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
+       iTmp = MAX(3,1 + INT(LOG10(DFLOAT(nPx*nPy))))
        WRITE(fmtStr,'(4(A,I1),A)')
      &  '(A,I',iTmp,',A,I',iTmp,',A,I',iTmp,',A,I',iTmp,',A)'
        WRITE(msgBuf,fmtStr) ' Located at (', mpiPx,',',mpiPy,
