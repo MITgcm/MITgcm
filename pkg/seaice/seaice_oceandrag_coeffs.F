@@ -72,7 +72,7 @@ CEOP
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+Oly-1
+        DO j=1-OLy,sNy+OLy-1
          DO i=1-OLx,sNx+OLy-1
 C     non-linear water drag coefficients CwatC (DWATN)
 #ifdef OBCS_UVICE_OLD
@@ -87,7 +87,7 @@ C     non-linear water drag coefficients CwatC (DWATN)
           tempVar = 0.25 _d 0*(
      &            ( ( uIceLoc(i  ,j,bi,bj)-uVel(i  ,j,kSrf,bi,bj) )
      &             *maskInW( i ,j,bi,bj)
-     &             +( uIceLoc(i+1,J,bi,bj)-uVel(i+1,j,kSrf,bi,bj) )
+     &             +( uIceLoc(i+1,j,bi,bj)-uVel(i+1,j,kSrf,bi,bj) )
      &             *maskInW(i+1,j,bi,bj) )**2
      &          + ( ( vIceLoc(i,j  ,bi,bj)-vVel(i,j  ,kSrf,bi,bj) )
      &             *maskInS(i, j ,bi,bj)
