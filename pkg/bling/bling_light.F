@@ -103,7 +103,7 @@ CEOP
        DO k=1,Nr
         DO j=jmin,jmax
           DO i=imin,imax
-              irr_eff(i,j,k,bi,bj) = 0. _d 0
+              irr_eff(i,j,k) = 0. _d 0
 #ifdef PHYTO_SELF_SHADING
               irr_rd(i,j,k)        = 0. _d 0
               irr_bg(i,j,k)        = 0. _d 0
