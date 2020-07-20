@@ -604,8 +604,6 @@ c  Iron limitation
           Si_lim(i,j,k) = PTR_Si(i,j,k)/(PTR_Si(i,j,k)+k_Si)
 #endif
 
-
-
 c ---------------------------------------------------------------------
 c  Temperature functionality of growth and grazing
 
@@ -718,7 +716,6 @@ c  is for nitrogenase, not for the photosystem.
           light_lim(i,j,k) = ( 1. _d 0 - exp(-irr_eff(i,j,k)
      &               /(epsln + irrk(i,j,k))))
 
-
 c  Carbon-specific photosynthesis rate
 
           mu(i,j,k) = Pc_m * light_lim(i,j,k)
@@ -762,7 +759,6 @@ c  Nutrient uptake
           N_uptake(i,j,k) = mu(i,j,k) * (Phy_sm_local(i,j,k)
      &                      + Phy_lg_local(i,j,k))
 
-
 CAV(
 #ifdef SIZE_DEP_LIM
 
@@ -802,11 +798,11 @@ ckFe: 1.6e-10
           Fe_lim_lg(i,j,k) = PTR_FE(i,j,k)/(PTR_FE(i,j,k)+k_Fe_lg)
 
           Pc_m_sm = Pc_0_2d(i,j,bi,bj) * expkT(i,j,k)
-     &           * min(NO3_lim_sm(i,j,k), PO4_lim_sm(i,j,k), 
+     &           * min(NO3_lim_sm(i,j,k), PO4_lim_sm(i,j,k),
      &           Fe_lim_sm(i,j,k)) * maskC(i,j,k,bi,bj)
 
           Pc_m_lg = Pc_0_2d(i,j,bi,bj) * expkT(i,j,k)
-     &           * min(NO3_lim_lg(i,j,k), PO4_lim_lg(i,j,k), 
+     &           * min(NO3_lim_lg(i,j,k), PO4_lim_lg(i,j,k),
      &           Fe_lim_lg(i,j,k)) * maskC(i,j,k,bi,bj)
 
           light_lim_sm(i,j,k) = light_lim(i,j,k)
@@ -821,7 +817,6 @@ ckFe: 1.6e-10
 
 #endif
 CAV)
-
 
           N_fix(i,j,k) = mu_diaz(i,j,k) * Phy_diaz_local(i,j,k)
 
@@ -904,7 +899,6 @@ c  biomass, which is required to calculate the uptake fluxes.
      &                * expkT(i,j,k) * (Phy_diaz_local(i,j,k)/pivotal))
      &                * PTRACERS_dTLev(k)
 
-
 CAV(
 #ifdef SIZE_DEP_LIM
 
@@ -921,7 +915,6 @@ CAV(
 
 #endif
 CAV)
-
 
 #ifdef USE_SIBLING
 c  For now: assuming that all large phyto are diatoms
@@ -1783,7 +1776,7 @@ c 3d local variables
         CALL DIAGNOSTICS_FILL(Phy_diaz_local,'BLGPDIA ',0,Nr,2,bi,bj,
      &       myThid)
         CALL DIAGNOSTICS_FILL(irrk,    'BLGIRRK ',0,Nr,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(irr_eff,'BLGIEFF ',0,Nr,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(irr_eff, 'BLGIEFF ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(irr_inst,'BLGIRRIS',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(theta_Fe,'BLGCHL2C',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(theta_Fe_inv,'BLGC2CHL',0,Nr,2,bi,bj,
@@ -1836,7 +1829,7 @@ c 3d local variables
         CALL DIAGNOSTICS_FILL(P_remindvm,'BLGPRD  ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(P_reminp, 'BLGPREM ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(P_uptake, 'BLGPUP  ',0,Nr,2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(mu,     'BLGMU   ',0,Nr,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(mu,       'BLGMU   ',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(mu_diaz,  'BLGMUDIA',0,Nr,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(CaCO3_diss,  'BLGCCdis',0,Nr,2,bi,bj,
      &       myThid)
