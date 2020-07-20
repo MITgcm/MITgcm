@@ -887,16 +887,9 @@ c  Note that the phytoplankton concentrations here are not part of the
 c  conserved nutrient pools: they are only used to keep track of the
 c  biomass, which is required to calculate the uptake fluxes.
 
-#ifdef ALLOW_AUTODIFF_TAMC
-c CADJ STORE Phy_sm_local   = comlev1_bibj, key=itdkey, kind=isbyte
-c CADJ STORE Phy_lg_local   = comlev1_bibj, key=itdkey, kind=isbyte
-c CADJ STORE Phy_diaz_local = comlev1_bibj, key=itdkey, kind=isbyte
-#endif
-
       DO k=1,Nr
        DO j=jmin,jmax
         DO i=imin,imax
-
          IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
 
           Phy_lg_local(i,j,k) = Phy_lg_local(i,j,k) +
@@ -915,6 +908,20 @@ c CADJ STORE Phy_diaz_local = comlev1_bibj, key=itdkey, kind=isbyte
      &                * expkT(i,j,k) * (Phy_diaz_local(i,j,k)/pivotal))
      &                * PTRACERS_dTLev(k)
 
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDDO
+
+#if ( ( defined SIZE_DEP_LIM ) || ( defined USE_SIBLING ) )
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE Phy_sm_local   = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE Phy_lg_local   = comlev1_bibj, key=itdkey, kind=isbyte
+#endif
+      DO k=1,Nr
+       DO j=jmin,jmax
+        DO i=imin,imax
+         IF (hFacC(i,j,k,bi,bj) .gt. 0. _d 0) THEN
 CAV(
 #ifdef SIZE_DEP_LIM
 
@@ -949,6 +956,7 @@ c     &                * PTRACERS_dTLev(k)
         ENDDO
        ENDDO
       ENDDO
+#endif /* SIZE_DEP_LIM or USE_SIBLING */
 
 c  Separate loop for adjoint stores
 #ifdef ALLOW_AUTODIFF_TAMC
