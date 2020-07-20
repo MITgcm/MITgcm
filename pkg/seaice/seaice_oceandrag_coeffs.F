@@ -68,7 +68,7 @@ C     i,j,bi,bj,ksrf :: loop indices
 CEOP
 
       kSrf    = 1
-      tempMin = SEAICEdWatMin**2
+      tempMin = SEAICEdWatMin*SEAICEdWatMin
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -105,7 +105,7 @@ C         IF ( dragCoeff * SQRT(tempVar) .GT. SEAICEdWatMin )
 C     which was previously implemented as
 C         IF ( tempVar .GT. (SEAICEdWatMin/dragCoeff)**2 )
 C     I like this better:
-          IF ( dragCoeff**2 * tempVar .GT. tempMin )
+          IF ( dragCoeff*dragCoeff * tempVar .GT. tempMin )
      &         CwatC(i,j,bi,bj) = dragCoeff*SQRT(tempVar)
           CwatC(i,j,bi,bj) = CwatC(i,j,bi,bj) * HEFFMLoc(i,j,bi,bj)
          ENDDO

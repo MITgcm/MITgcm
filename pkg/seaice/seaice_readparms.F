@@ -1340,38 +1340,6 @@ C     in case of large values
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
       ENDIF
-C--   Some sanity checks for SEAICEdWatMin
-      IF ( SEAICEdWatMin .LT. 0. _d 0 ) THEN
-       WRITE(msgBuf,'(A,A,F5.2,A)') 'SEAICE_READPARMS: ',
-     &      'SEAICEdWatMin (= ', SEAICEdWatMin, ') may not be < 0.'
-       CALL PRINT_ERROR( msgBuf , myThid)
-       STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
-      ENDIF
-      IF ( SEAICE_waterDrag .EQ. 0. _d 0
-     &     .AND. SEAICEdWatMin .GT. 0. _d 0) THEN
-       WRITE(msgBuf,'(A,A,F5.2)') '** WARNING ** SEAICE_READPARMS: ',
-     &      'SEAICE_waterDrag  = ', SEAICE_waterDrag
-       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A,F5.2)') '** WARNING ** SEAICE_READPARMS: ',
-     &      'but SEAICEdWatMin = ', SEAICEdWatMin
-       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-       WRITE(msgBuf,'(A,A)') '** WARNING ** SEAICE_READPARMS: ',
-     &      'so that the ice-ocean drag will be non-zero'
-       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                     SQUEEZE_RIGHT, myThid )
-      ENDIF
-#ifdef SEAICE_ALLOW_FREEDRIFT
-      IF ( SEAICE_waterDrag_South .EQ. 0. _d 0
-     &     .OR.  SEAICE_waterDrag .EQ. 0. _d 0 ) THEN
-       WRITE(msgBuf,'(A,A,A)') 'SEAICE_READPARMS: ',
-     &      'When SEAICE_ALLOW_FREEDRIFT is defined, ',
-     &      'SEAICE_waterDrag or SEAICE_waterDragSouth may not be zero.'
-       CALL PRINT_ERROR( msgBuf , myThid)
-       STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
-      ENDIF
-#endif /* SEAICE_ALLOW_FREEDRIFT */
 
       IF ( DIFF1 .EQ. UNSET_RL ) THEN
         DIFF1 = 0. _d 0
