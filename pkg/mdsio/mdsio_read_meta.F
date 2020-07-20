@@ -303,7 +303,7 @@ C-    Read the number of records
           IF ( iL.GE.25 ) THEN
             READ(lineBuf(15:iL),'(I10)') nRecords
           ELSE
-            READ(lineBuf(15:iL),'(I5)') nRecords
+            READ(lineBuf(15:iL),'(I6)') nRecords
           ENDIF
           iL = 0
          ENDIF
