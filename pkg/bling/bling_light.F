@@ -4,7 +4,7 @@
 #endif
 
 CBOP
-      subroutine BLING_LIGHT(
+      SUBROUTINE BLING_LIGHT(
      I           mld,
      U           irr_inst, irr_eff,
      I           bi, bj, imin, imax, jmin, jmax,
@@ -99,6 +99,12 @@ C     === Local variables ===
       INTEGER i,j,k
       LOGICAL QSW_underice
 CEOP
+
+#ifdef PHYTO_SELF_SHADING
+# ifdef ALLOW_AUTODIFF_TAMC
+      itdkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
+# endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* PHYTO_SELF_SHADING */
 
        DO k=1,Nr
         DO j=jmin,jmax
@@ -196,12 +202,12 @@ c  taken into account
 
         DO k=1,Nr
 
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifdef PHYTO_SELF_SHADING
-CADJ STORE irr_bg      = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE irr_rd      = comlev1, key = ikey_dynamics, kind=isbyte
-# endif /* PHYTO_SELF_SHADING */
-#endif /* ALLOW_AUTODIFF_TAMC */
+#ifdef PHYTO_SELF_SHADING
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE irr_bg = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE irr_rd = comlev1_bibj, key=itdkey, kind=isbyte
+# endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* PHYTO_SELF_SHADING */
 
          IF (hFacC(i,j,k,bi,bj).gt.0) THEN
 #ifdef PHYTO_SELF_SHADING

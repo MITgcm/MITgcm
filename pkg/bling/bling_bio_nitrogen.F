@@ -1,7 +1,10 @@
 #include "BLING_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
-      subroutine BLING_BIO_NITROGEN(
+      SUBROUTINE BLING_BIO_NITROGEN(
      I           PTR_O2, PTR_FE, PTR_PO4, PTR_DOP,
      I           PTR_NO3, PTR_DON,
 #ifdef USE_SIBLING
@@ -51,7 +54,7 @@ C *** if ADVECT_PHYTO, these are fraction of total biomass instead ***
 #include "BLING_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
 
@@ -332,6 +335,10 @@ C
 #endif
 CEOP
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      itdkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
+#endif
+
 c  Initialize output and diagnostics
        DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -486,6 +493,11 @@ c  This has not been thoroughly tested, and care should be
 c  taken with its interpretation.
 
 #ifdef ML_MEAN_PHYTO
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE Phy_sm_local   = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE Phy_lg_local   = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE Phy_diaz_local = comlev1_bibj, key=itdkey, kind=isbyte
+#endif
       DO j=jmin,jmax
        DO i=imin,imax
 
@@ -815,7 +827,7 @@ ckFe: 1.6e-10
           N_uptake(i,j,k) = mu_sm(i,j,k) * Phy_sm_local(i,j,k)
      &                      + mu_lg(i,j,k) * Phy_lg_local(i,j,k)
 
-#endif
+#endif /* SIZE_DEP_LIM */
 CAV)
 
           N_fix(i,j,k) = mu_diaz(i,j,k) * Phy_diaz_local(i,j,k)
@@ -844,10 +856,8 @@ c  with the findings of Jin et al. (GBC,2006).
 
 CAV(
 #ifdef SIZE_NUT_LIM
-
           CaCO3_uptake(i,j,k) = mu_sm(i,j,k) * Phy_sm_local(i,j,k)
      &                          * phi_sm_2d(i,j,bi,bj) * CatoN
-
 #endif
 CAV)
 
@@ -876,6 +886,12 @@ c  competition between diazotrophs and other phytoplankton.
 c  Note that the phytoplankton concentrations here are not part of the
 c  conserved nutrient pools: they are only used to keep track of the
 c  biomass, which is required to calculate the uptake fluxes.
+
+#ifdef ALLOW_AUTODIFF_TAMC
+c CADJ STORE Phy_sm_local   = comlev1_bibj, key=itdkey, kind=isbyte
+c CADJ STORE Phy_lg_local   = comlev1_bibj, key=itdkey, kind=isbyte
+c CADJ STORE Phy_diaz_local = comlev1_bibj, key=itdkey, kind=isbyte
+#endif
 
       DO k=1,Nr
        DO j=jmin,jmax
@@ -935,9 +951,11 @@ c     &                * PTRACERS_dTLev(k)
       ENDDO
 
 c  Separate loop for adjoint stores
-CADJ STORE Phy_sm_local = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE Phy_lg_local = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE Phy_diaz_local  = comlev1, key = ikey_dynamics, kind=isbyte
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE Phy_sm_local   = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE Phy_lg_local   = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE Phy_diaz_local = comlev1_bibj, key=itdkey, kind=isbyte
+#endif
 
       DO k=1,Nr
        DO j=jmin,jmax
