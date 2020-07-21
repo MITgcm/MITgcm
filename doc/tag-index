@@ -1,6 +1,16 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - Replace hard-coded minimum for DWATN by runtime parameter "SEAICEdWatMin":
+    * allows to have zero drag by setting both SEAICEdWatMin and
+      SEAICE_waterDrag to zero. Non-zero drag had been implemented because
+      previous LSR solver could not handle zero entries on the main diagonal.
+    * this fixes a bug (unexpected behavior) reported at MITgcm-support by
+      Kaley Shrestha, but also allows to modify the somewhat arbitrary
+      default minimum value of SEAICEdWatMin = 0.25 ;
+    * freedrift code still requires non-zero drag coefficients,
+      S/R SEAICE_CHECK catches this case.
 o verification/*/packages.conf
   - Cleaning verification experiment "packages.conf":
     1) add a 1 line description at the top
