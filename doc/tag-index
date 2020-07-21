@@ -1,6 +1,34 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/*/packages.conf
+  - Cleaning verification experiment "packages.conf":
+    1) add a 1 line description at the top
+    2) use pkg group "adjoint" in some experiments
+    3) use similar ordering of pkgs in packages.conf:
+      a) eesupp pkgs (e.g., exch2, coupler-pkgs)
+      b) dyn-core pkgs (e.g., gfd pkgs, mom pkgs, cd_code, gad, obcs ...)
+      c) SGS-scheme (+ atm physics) pkgs (filters, gmredi, vert.mixing ...)
+      d) forcing pkgs (e.g., rbcs, exf, cal, ebm, cheapaml)
+      e) other component pkgs (e.g., ice, land, ptracers, biogeo, flt)
+      f) diagnostics pkgs (e.g., sbo, profiles, layers, diagnostics, timeave)
+      g) I/O pkgs, e.g., mnc (+ mypackage at the end)
+      -- blank line --
+      h) adjoint related pkgs (e.g., autodiff, ctrl, cost ...)
+    4) remove unused pkgs: kpp, sbo, timeave ; this results in reduced number of
+       TAF recomputation warning for AD exp: bottom_ctrl_5x5 & global_ocean_ebm;
+o tools/build_options:
+  - add a symbolic link for optfile "linux_amd64_ifort" to "linux_amd64_ifort11"
+o doc:
+  - fix link and plot in doc/examples/baroclinic_gyre
+o pkg/seaice:
+  - Add new mechanical energy diagnostics ;
+  - Move computation of stress diagnostics to seaice_dynsolver.F ; this change
+    affects diagnostics SIpress, SItensil, SIpress, SIzeta, SIdelta, SIshear,
+    because they are now filled after the current time step update, when they
+    are actually available. Note: previously, for the first time step, these
+    variables (and diagnostics) were not properly defined (or zero).
+
 checkpoint67r (2020/06/04)
 o pkg/ecco:
   - fix character length when checking for m_trHeat, m_trSalt & m_horflux_vol.

@@ -47,6 +47,9 @@ cif   penetrating the model shallowest layer
       _RL swfracba(2)
       _RL tmpFac
 #endif /* SHORTWAVE_HEATING */
+#ifndef SEAICE_CGRID
+      _RL mask_uice
+#endif
 
       IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
        kSurface        = Nr
@@ -277,10 +280,10 @@ C     coefficients for metric terms
 #ifdef SEAICE_CGRID
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          k1AtC(I,J,bi,bj) = 0.0 _d 0
-          k1AtZ(I,J,bi,bj) = 0.0 _d 0
-          k2AtC(I,J,bi,bj) = 0.0 _d 0
-          k2AtZ(I,J,bi,bj) = 0.0 _d 0
+          k1AtC(i,j,bi,bj) = 0.0 _d 0
+          k1AtZ(i,j,bi,bj) = 0.0 _d 0
+          k2AtC(i,j,bi,bj) = 0.0 _d 0
+          k2AtZ(i,j,bi,bj) = 0.0 _d 0
          ENDDO
         ENDDO
         IF ( usingSphericalPolarGrid .AND. SEAICEuseMetricTerms ) THEN
@@ -292,8 +295,8 @@ C     can be the geographical coordinates and not the correct grid
 C     coordinates when the grid is rotated (phi/theta/psiEuler .NE. 0)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = - _tanPhiAtU(I,J,bi,bj)*recip_rSphere
-           k2AtZ(I,J,bi,bj) = - _tanPhiAtV(I,J,bi,bj)*recip_rSphere
+           k2AtC(i,j,bi,bj) = - _tanPhiAtU(i,j,bi,bj)*recip_rSphere
+           k2AtZ(i,j,bi,bj) = - _tanPhiAtV(i,j,bi,bj)*recip_rSphere
           ENDDO
          ENDDO
         ELSEIF ( usingCurvilinearGrid .AND. SEAICEuseMetricTerms ) THEN
@@ -301,42 +304,42 @@ C     compute metric term coefficients from finite difference
 C     approximation
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx-1
-           k1AtC(I,J,bi,bj) = _recip_dyF(I,J,bi,bj)
-     &          * ( _dyG(I+1,J,bi,bj) - _dyG(I,J,bi,bj) )
-     &          * _recip_dxF(I,J,bi,bj)
+           k1AtC(i,j,bi,bj) = _recip_dyF(i,j,bi,bj)
+     &          * ( _dyG(i+1,j,bi,bj) - _dyG(i,j,bi,bj) )
+     &          * _recip_dxF(i,j,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx+1,sNx+OLx
-           k1AtZ(I,J,bi,bj) = _recip_dyU(I,J,bi,bj)
-     &          * ( _dyC(I,J,bi,bj) - _dyC(I-1,J,bi,bj) )
-     &          * _recip_dxV(I,J,bi,bj)
+           k1AtZ(i,j,bi,bj) = _recip_dyU(i,j,bi,bj)
+     &          * ( _dyC(i,j,bi,bj) - _dyC(i-1,j,bi,bj) )
+     &          * _recip_dxV(i,j,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy,sNy+OLy-1
           DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = _recip_dxF(I,J,bi,bj)
-     &          * ( _dxG(I,J+1,bi,bj) - _dxG(I,J,bi,bj) )
-     &          * _recip_dyF(I,J,bi,bj)
+           k2AtC(i,j,bi,bj) = _recip_dxF(i,j,bi,bj)
+     &          * ( _dxG(i,j+1,bi,bj) - _dxG(i,j,bi,bj) )
+     &          * _recip_dyF(i,j,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy+1,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           k2AtZ(I,J,bi,bj) = _recip_dxV(I,J,bi,bj)
-     &          * ( _dxC(I,J,bi,bj) - _dxC(I,J-1,bi,bj) )
-     &          * _recip_dyU(I,J,bi,bj)
+           k2AtZ(i,j,bi,bj) = _recip_dxV(i,j,bi,bj)
+     &          * ( _dxC(i,j,bi,bj) - _dxC(i,j-1,bi,bj) )
+     &          * _recip_dyU(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF
 #else /* not SEAICE_CGRID */
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          k1AtC(I,J,bi,bj) = 0.0 _d 0
-          k1AtU(I,J,bi,bj) = 0.0 _d 0
-          k1AtV(I,J,bi,bj) = 0.0 _d 0
-          k2AtC(I,J,bi,bj) = 0.0 _d 0
-          k2AtU(I,J,bi,bj) = 0.0 _d 0
-          k2AtV(I,J,bi,bj) = 0.0 _d 0
+          k1AtC(i,j,bi,bj) = 0.0 _d 0
+          k1AtU(i,j,bi,bj) = 0.0 _d 0
+          k1AtV(i,j,bi,bj) = 0.0 _d 0
+          k2AtC(i,j,bi,bj) = 0.0 _d 0
+          k2AtU(i,j,bi,bj) = 0.0 _d 0
+          k2AtV(i,j,bi,bj) = 0.0 _d 0
          ENDDO
         ENDDO
         IF ( usingSphericalPolarGrid .AND. SEAICEuseMetricTerms ) THEN
@@ -348,9 +351,9 @@ C     can be the geographical coordinates and not the correct grid
 C     coordinates when the grid is rotated (phi/theta/psiEuler .NE. 0)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = - _tanPhiAtU(I,J,bi,bj)*recip_rSphere
-           k2AtU(I,J,bi,bj) = - _tanPhiAtU(I,J,bi,bj)*recip_rSphere
-           k2AtV(I,J,bi,bj) = - _tanPhiAtV(I,J,bi,bj)*recip_rSphere
+           k2AtC(i,j,bi,bj) = - _tanPhiAtU(i,j,bi,bj)*recip_rSphere
+           k2AtU(i,j,bi,bj) = - _tanPhiAtU(i,j,bi,bj)*recip_rSphere
+           k2AtV(i,j,bi,bj) = - _tanPhiAtV(i,j,bi,bj)*recip_rSphere
           ENDDO
          ENDDO
         ELSEIF ( usingCurvilinearGrid .AND. SEAICEuseMetricTerms ) THEN
@@ -358,44 +361,44 @@ C     compute metric term coefficients from finite difference
 C     approximation
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx-1
-           k1AtC(I,J,bi,bj) = _recip_dyF(I,J,bi,bj)
-     &          * ( _dyG(I+1,J,bi,bj) - _dyG(I,J,bi,bj) )
-     &          * _recip_dxF(I,J,bi,bj)
+           k1AtC(i,j,bi,bj) = _recip_dyF(i,j,bi,bj)
+     &          * ( _dyG(i+1,j,bi,bj) - _dyG(i,j,bi,bj) )
+     &          * _recip_dxF(i,j,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx+1,sNx+OLx
-           k1AtU(I,J,bi,bj) = _recip_dyG(I,J,bi,bj)
-     &          * ( _dyF(I,J,bi,bj) - _dyF(I-1,J,bi,bj) )
-     &          * _recip_dxC(I,J,bi,bj)
+           k1AtU(i,j,bi,bj) = _recip_dyG(i,j,bi,bj)
+     &          * ( _dyF(i,j,bi,bj) - _dyF(i-1,j,bi,bj) )
+     &          * _recip_dxC(i,j,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx-1
-           k1AtV(I,J,bi,bj) = _recip_dyC(I,J,bi,bj)
-     &          * ( _dyU(I+1,J,bi,bj) - _dyU(I,J,bi,bj) )
-     &          * _recip_dxG(I,J,bi,bj)
+           k1AtV(i,j,bi,bj) = _recip_dyC(i,j,bi,bj)
+     &          * ( _dyU(i+1,j,bi,bj) - _dyU(i,j,bi,bj) )
+     &          * _recip_dxG(i,j,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy,sNy+OLy-1
           DO i=1-OLx,sNx+OLx
-           k2AtC(I,J,bi,bj) = _recip_dxF(I,J,bi,bj)
-     &          * ( _dxG(I,J+1,bi,bj) - _dxG(I,J,bi,bj) )
-     &          * _recip_dyF(I,J,bi,bj)
+           k2AtC(i,j,bi,bj) = _recip_dxF(i,j,bi,bj)
+     &          * ( _dxG(i,j+1,bi,bj) - _dxG(i,j,bi,bj) )
+     &          * _recip_dyF(i,j,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy,sNy+OLy-1
           DO i=1-OLx,sNx+OLx
-           k2AtU(I,J,bi,bj) = _recip_dxC(I,J,bi,bj)
-     &          * ( _dxV(I,J+1,bi,bj) - _dxV(I,J,bi,bj) )
-     &          * _recip_dyG(I,J,bi,bj)
+           k2AtU(i,j,bi,bj) = _recip_dxC(i,j,bi,bj)
+     &          * ( _dxV(i,j+1,bi,bj) - _dxV(i,j,bi,bj) )
+     &          * _recip_dyG(i,j,bi,bj)
           ENDDO
          ENDDO
          DO j=1-OLy+1,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           k2AtV(I,J,bi,bj) = _recip_dxG(I,J,bi,bj)
-     &          * ( _dxF(I,J,bi,bj) - _dxF(I,J-1,bi,bj) )
-     &          * _recip_dyC(I,J,bi,bj)
+           k2AtV(i,j,bi,bj) = _recip_dxG(i,j,bi,bj)
+     &          * ( _dxF(i,j,bi,bj) - _dxF(i,j-1,bi,bj) )
+     &          * _recip_dyC(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDIF
