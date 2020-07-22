@@ -97,6 +97,7 @@ c set reasonable values to those that need at least something
 
 #ifdef ALLOW_EXF
       IF ( useEXF ) THEN
+       IF ( apco2file .NE. ' ' ) THEN
       CALL EXF_INIT_FLD(
      I     'apco2', apco2file, apco2mask,
      I     apco2period, exf_inscal_apco2, apco2const,
@@ -107,6 +108,7 @@ c set reasonable values to those that need at least something
      I     apco2_nlon, apco2_nlat, xC, yC, apco2_interpMethod,
 # endif
      I     myThid )
+       ENDIF
       ENDIF
 #endif /* ALLOW_EXF */
 
