@@ -29,8 +29,8 @@ C Use Liebig function instead of geometric mean of the
 C nutrient limitations to calculate maximum phyto growth rate
 #define MIN_NUT_LIM
 
-C Allow different phytoplankton groups to have different growth rates and nutrient/light limitations
-C Parameters implemented have yet to be tuned
+C Allow different phytoplankton groups to have different growth rates and 
+C nutrient/light limitations. Parameters implemented have yet to be tuned.
 #undef SIZE_NUT_LIM
 
 C Assume that phytoplankton in the mixed layer experience
