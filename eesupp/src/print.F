@@ -67,9 +67,11 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     iStart, iEnd :: String indexing variables
 C     idString     :: Temp. for building prefix.
+C     fmtStr, iTmp :: Temp. for building prefix.
+C     itmpThid     :: Temp. for building prefix.
       INTEGER iStart
       INTEGER iEnd
-      INTEGER iTmp
+      INTEGER iTmp, itmpThid
       CHARACTER*13 fmtStr
       CHARACTER*13 idString
 CEOP
@@ -107,9 +109,11 @@ C$OMP CRITICAL
        _BEGIN_CRIT(myThid)
 # endif
 #endif
-       iTmp = MAX(4,1 + INT(LOG10(DFLOAT(nPx*nPy))))
+       iTmp     = MAX(4,1 + INT(LOG10(DFLOAT(nPx*nPy))))
+       itmpThid = 1 + INT(LOG10(DFLOAT(MAX_NO_THREADS)))
+       iTmpThid = MAX(iTmpThid,MIN(4,8-iTmp))
        WRITE(fmtStr,'(4(A,I1),A)')
-     &      '(I',iTmp,'.',iTmp,',A,I',iTmp,'.',iTmp,')'
+     &      '(I',iTmp,'.',iTmp,',A,I',iTmpThid,'.',iTmpThid,')'
        WRITE(idString,fmtStr) myProcId,'.',myThid
        iTmp = ILNBLNK( idString )
        IF ( message .EQ. ' ' ) THEN
@@ -202,9 +206,11 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     iStart, iEnd :: Temps. for string indexing
 C     idString     :: Temp. for building message prefix
+C     fmtStr, iTmp :: Temp. for building prefix.
+C     itmpThid     :: Temp. for building prefix.
 c     INTEGER iStart
       INTEGER iEnd
-      INTEGER iTmp
+      INTEGER iTmp, itmpThid
       CHARACTER*13 fmtStr
       CHARACTER*13 idString
 CEOP
@@ -235,9 +241,11 @@ C$OMP CRITICAL
 #endif
        IF ( pidIO .EQ. myProcId ) THEN
 C--    Write multi-process format
-         iTmp = MAX(4,1 + INT(LOG10(DFLOAT(nPx*nPy))))
+         iTmp     = MAX(4,1 + INT(LOG10(DFLOAT(nPx*nPy))))
+         itmpThid = 1 + INT(LOG10(DFLOAT(MAX_NO_THREADS)))
+         iTmpThid = MAX(iTmpThid,MIN(4,8-iTmp))
          WRITE(fmtStr,'(4(A,I1),A)')
-     &        '(I',iTmp,'.',iTmp,',A,I',iTmp,'.',iTmp,')'
+     &        '(I',iTmp,'.',iTmp,',A,I',iTmpThid,'.',iTmpThid,')'
          WRITE(idString,fmtStr) myProcId,'.',myThid
          iTmp = ILNBLNK( idString )
 
