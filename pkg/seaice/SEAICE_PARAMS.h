@@ -354,11 +354,14 @@ C     SEAICE_rhoAir      :: density of air                              (kg/m^3)
 C     SEAICE_rhoIce      :: density of sea ice                          (kg/m^3)
 C     SEAICE_rhoSnow     :: density of snow                             (kg/m^3)
 C     ICE2WATR           :: ratio of sea ice density to water density
-C     OCEAN_drag         :: air-ocean drag coefficient
 C     SEAICE_cpAir       :: specific heat of air                        (J/kg/K)
 C
-C     SEAICE_drag        :: air-ice drag coefficient (default 0.001)
-C     SEAICE_waterDrag   :: water-ice drag coefficient * water density (default 5.5)
+C     OCEAN_drag         :: unitless air-ocean drag coefficient (default 0.001)
+C     SEAICE_drag        :: unitless air-ice drag coefficient   (default 0.001)
+C     SEAICE_waterDrag   :: unitless water-ice drag coefficient (default 0.0055)
+C     SEAICEdWatMin      :: minimum linear water-ice drag applied to DWATN
+C                           (default 0.25 m/s)
+C
 C     SEAICE_dryIceAlb   :: winter albedo
 C     SEAICE_wetIceAlb   :: summer albedo
 C     SEAICE_drySnowAlb  :: dry snow albedo
@@ -470,8 +473,9 @@ C
       _RL SEAICE_initialHEFF
       _RL SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR
       _RL SEAICE_cpAir
-      _RL SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb
-      _RL SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb, HO
+      _RL SEAICE_drag, SEAICE_waterDrag, SEAICEdWatMin
+      _RL SEAICE_dryIceAlb, SEAICE_wetIceAlb
+      _RL SEAICE_drySnowAlb, SEAICE_wetSnowAlb, HO
       _RL SEAICE_drag_south, SEAICE_waterDrag_south
       _RL SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south
       _RL SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south
@@ -524,8 +528,9 @@ C
      &    SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      &    SEAICE_initialHEFF,
      &    SEAICE_rhoAir, SEAICE_rhoIce, SEAICE_rhoSnow, ICE2WATR,
-     &    SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
-     &    SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb, HO,
+     &    SEAICE_drag, SEAICE_waterDrag, SEAICEdWatMin,
+     &    SEAICE_dryIceAlb, SEAICE_wetIceAlb,
+     &    SEAICE_drySnowAlb, SEAICE_wetSnowAlb, HO,
      &    SEAICE_drag_south, SEAICE_waterDrag_south,
      &    SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
      &    SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,

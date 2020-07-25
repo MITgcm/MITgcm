@@ -709,8 +709,8 @@ c identified three dimensional variables
      &        (gencost_barfile(k)(1:7).EQ.'m_kapgm').OR.
      &        (gencost_barfile(k)(1:9).EQ.'m_kapredi').OR.
      &        (gencost_barfile(k)(1:7).EQ.'m_trVol').OR.
-     &        (gencost_barfile(k)(1:9).EQ.'m_trHeat').OR.
-     &        (gencost_barfile(k)(1:9).EQ.'m_trSalt')
+     &        (gencost_barfile(k)(1:8).EQ.'m_trHeat').OR.
+     &        (gencost_barfile(k)(1:8).EQ.'m_trSalt')
      &       )
      &        gencost_is3d(k)=.TRUE.
 
@@ -726,7 +726,7 @@ C--   load masks if needed:
       do k=1,NGENCOST
            kk=gencost_msk_pointer3d(k)
            if ( ( gencost_mask(k) .NE. ' ' ).AND.
-     &          (gencost_flag(k).EQ.-3 .or. 
+     &          (gencost_flag(k).EQ.-3 .or.
      &           gencost_flag(k).eq.-4     ) ) then
 c
             il = ilnblnk(gencost_mask(k))

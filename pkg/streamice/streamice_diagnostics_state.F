@@ -20,15 +20,14 @@ C     === Global variables ===
 #include "STREAMICE.h"
 
       _RL myTime
-      INTEGER myIter, myThid, i, j, bi, bj
+      INTEGER myIter, myThid
 
 #ifdef ALLOW_STREAMICE
-
+#ifdef ALLOW_DIAGNOSTICS
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-#ifdef ALLOW_DIAGNOSTICS
-
 #ifdef ALLOW_OPENAD
+      INTEGER i, j, bi, bj
 
       _RL u_streamice_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_streamice_diag(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -55,11 +54,11 @@ C     === Global variables ===
            h_streamice_diag(i,j,bi,bj) = H_streamice(i,j,bi,bj)%v
            area_diag(i,j,bi,bj) = area_shelf_streamice(i,j,bi,bj)%v
 #ifdef STREAMICE_SMOOTH_FLOATATION2
-           float_frac_diag(i,j,bi,bj) = 
+           float_frac_diag(i,j,bi,bj) =
      &         float_frac_streamice(i,j,bi,bj)%v
 #endif
            surf_diag(i,j,bi,bj) =
-     &         surf_el_streamice(i,j,bi,bj)%v       
+     &         surf_el_streamice(i,j,bi,bj)%v
 #ifdef STREAMICE_HYBRID_STRESS
            streamice_taubx_diag(i,j,bi,bj) =
      $         streamice_taubx(i,j,bi,bj)%v
@@ -77,7 +76,7 @@ C     === Global variables ===
        ENDDO
       ENDDO
 
-#endif
+#endif /* ALLOW_OPENAD */
 
       IF ( useDiagnostics ) THEN
        WRITE(msgBuf,'(A)') 'CALLING FILL DIAGNOSTICS'
@@ -111,6 +110,8 @@ C     === Global variables ===
      &      0,1,0,1,1,myThid)
        CALL DIAGNOSTICS_FILL(surf_el_streamice,'SI_selev',
      &      0,1,0,1,1,myThid)
+        CALL DIAGNOSTICS_FILL(bdot_streamice,'BDOT_SI ',
+     &      0,1,0,1,1,myThid)
 
 #endif
 
@@ -123,7 +124,6 @@ C     === Global variables ===
      &      0,1,0,1,1,myThid)
 #endif
 #endif
-
 
        CALL DIAGNOSTICS_FILL_RS(STREAMICE_hmask,'SI_hmask',
      &      0,1,0,1,1,myThid)
@@ -165,11 +165,9 @@ C     === Global variables ===
 #endif
 #endif
 
-
       ENDIF
 
-
 #endif /* ALLOW_DIAGNOSTICS */
-#endif
+#endif /* ALLOW_STREAMICE */
       RETURN
       END
