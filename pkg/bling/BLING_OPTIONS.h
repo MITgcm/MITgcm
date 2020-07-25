@@ -29,7 +29,7 @@ C Use Liebig function instead of geometric mean of the
 C nutrient limitations to calculate maximum phyto growth rate
 #define MIN_NUT_LIM
 
-C Allow different phytoplankton groups to have different growth rates and 
+C Allow different phytoplankton groups to have different growth rates and
 C nutrient/light limitations. Parameters implemented have yet to be tuned.
 #undef SIZE_NUT_LIM
 
@@ -47,8 +47,6 @@ C MLD is calculated using the second derivative of rho(z)
 C Determine PAR from shortwave radiation Qsw;
 C otherwise determined from date and latitude
 #define USE_QSW
-C use penetrating fraction instead of exponential attenuation
-#undef USE_QSW_Z
 
 C Light absorption scheme from Manizza et al. (2005),
 C with self shading from phytoplankton
