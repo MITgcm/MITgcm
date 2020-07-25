@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/bling:
+  - cleaning: remove USE_QSW_Z code ;
+  - few more CPP options (NEW_FRAC_EXP & SIZE_DEP_LIM defined, SIZE_NUT_LIM
+    undef) related to phytoplankton size and sinking organic matter ;
+  - fix tiled TAF storage directives (were not right for multi-tile per proc);
+    update ADM reference output of experiment global_oce_biogeo_bling (now
+    gradient check are identical whether run on 1 proc - 4 tiles or 4 procs
+    1 tile each).
 o pkg/seaice:
   - Replace hard-coded minimum for DWATN by runtime parameter "SEAICEdWatMin":
     * allows to have zero drag by setting both SEAICEdWatMin and
