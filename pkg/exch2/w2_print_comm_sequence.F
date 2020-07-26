@@ -100,10 +100,10 @@ C        Tile XX sends to points i=ilo:ihi,j=jlo:jhi in tile YY
          iLen = ILNBLNK(msgBuf)
          WRITE(W2_oUnit,'(A)') msgBuf(1:iLen)
 #endif
-         WRITE(msgBuf,'(4(A,I4),A,I8,A,I8,A)')
-     &    '                        to pts i=',targetIlo,':',targetIhi,
-     &                                 ', j=',targetJlo,':',targetJhi,
-     &                 ' in tile ',targetTile,' (pr=',targetProc,')'
+         WRITE(msgBuf,'(26X,4(A,I4),A,I8,A,I8,A)')
+     &    '    to pts i=',targetIlo,':',targetIhi,
+     &             ', j=',targetJlo,':',targetJhi,
+     &    ' in tile ',targetTile,' (pr=',targetProc,')'
 #ifdef W2_PRINT_PREFIX
          CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
 #else
