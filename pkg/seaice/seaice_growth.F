@@ -491,8 +491,8 @@ C for lateral melt parameterization:
          ENDDO
         ENDDO
 #if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
-        DO J=1-oLy,sNy+oLy
-         DO I=1-oLx,sNx+oLx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
           frWtrAtm(I,J,bi,bj)        = 0.0 _d 0
          ENDDO
         ENDDO
