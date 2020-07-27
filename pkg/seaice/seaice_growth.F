@@ -2661,8 +2661,8 @@ C           no qnet or tflux adjustement is needed
        ENDDO
        IF ( balancePrintMean ) THEN
         _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(a,a,e24.17)') 'rm Global mean of ',
-     &       'SIatmFW = ', tmpscal0
+        WRITE(msgBuf,'(a,a,e24.17,1x,e24.17)') 'rm Global mean of ',
+     &       'SIatmFW = ', myTime, tmpscal0
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         _END_MASTER( myThid )
@@ -2682,8 +2682,8 @@ C           no qnet or tflux adjustement is needed
        ENDDO
        IF ( balancePrintMean ) THEN
         _BEGIN_MASTER( myThid )
-        WRITE(msgBuf,'(a,a,e24.17)') 'rm Global mean of ',
-     &       'SItflux = ', tmpscal2
+        WRITE(msgBuf,'(a,a,e24.17,1x,e24.17)') 'rm Global mean of ',
+     &       'SItflux = ', myTime, tmpscal2
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         _END_MASTER( myThid )
