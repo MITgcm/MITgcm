@@ -717,7 +717,7 @@ c =======================================================================
      I        UG, hiceActualMult(1,1,IT), hsnowActualMult(1,1,IT),
 #ifdef SEAICE_CAP_SUBLIM
          This error is put here intentionally, because SEAICE_CAP_SUBLIM
-         cannot be defined together with ALLOW_SEAICE_GROWTH_ADX
+         cannot be defined together with SEAICE_USE_GROWTH_ADX
      I        latentHeatFluxMaxMult(1,1,IT),
 #endif
      I        ticeInMult(1,1,IT),

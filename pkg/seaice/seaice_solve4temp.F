@@ -16,9 +16,9 @@ C     !INTERFACE:
 #endif
      I   TSURFin,
      O   TSURFout,
-#ifdef ALLOW_SEAICE_GROWTH_ADX
+#ifdef SEAICE_USE_GROWTH_ADX
      O   F_io_net, F_ia_net,
-#endif /* ALLOW_SEAICE_GROWTH_ADX */
+#endif /* SEAICE_USE_GROWTH_ADX */
      O   F_ia, IcePenetSW,
      O   FWsublim,
      I   bi, bj, myTime, myIter, myThid )
