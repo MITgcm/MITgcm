@@ -71,7 +71,7 @@ C     fmtStr, iTmp :: Temp. for building prefix.
 C     iTmpThid     :: Temp. for building prefix.
       INTEGER iStart
       INTEGER iEnd
-      INTEGER iTmp, ItmpThid
+      INTEGER iTmp, iTmpThid
       CHARACTER*13 fmtStr
       CHARACTER*13 idString
 CEOP
