@@ -2,10 +2,12 @@
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
-#include "PTRACERS_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
-      subroutine BLING_AIRSEAFLUX(
+      SUBROUTINE BLING_AIRSEAFLUX(
      I           PTR_DIC, PTR_ALK, PTR_O2, PTR_PO4,
 #ifdef USE_SIBLING
      I           PTR_SI,
@@ -38,7 +40,7 @@ C     === Global variables ===
 # include "EXF_INTERP_SIZE.h"
 #endif
 #include "BLING_VARS.h"
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
 
@@ -109,6 +111,10 @@ C o2 solubility relation coefficients
       _RL oCnew
 CEOP
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      itdkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
+#endif
+
 C----------------------------------------------------------------------
 C First, carbon
 C----------------------------------------------------------------------
@@ -167,7 +173,9 @@ C Schmidt number is accounted for later
 
 c pCO2 solver...
 
-CADJ STORE ph = comlev1, key = ikey_dynamics
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ph(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, kind=isbyte
+#endif
 
 C$TAF LOOP = parallel
        DO j=jmin,jmax
@@ -237,7 +245,7 @@ c make sure Schmidt number is not negative (will happen if temp>39C)
 
 C First determine local saturation pCO2
 c Correct for atmospheric pressure
-              pCO2sat(i,j) = atm_pco2(i,j,bi,bj) * AtmosP(i,j,bi,bj)
+              pCO2sat(i,j) = apco2(i,j,bi,bj) * AtmosP(i,j,bi,bj)
 
 C then account for Schmidt number
               Kwexch(i,j) = Kwexch_Pre(i,j)

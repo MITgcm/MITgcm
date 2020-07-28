@@ -3,12 +3,12 @@ C   Carbon chemistry variables
 C ==========================================================
 
        COMMON /CARBON_NEEDS/
-     &                      atm_pCO2, AtmosP, pH, pCO2, FluxCO2,
+     &                      apCO2, AtmosP, pH, pCO2, FluxCO2,
      &                      wind, FIce, Silica
 #ifdef ALLOW_EXF
      &                      , apco20, apco21
 #endif
-      _RL  atm_pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  apCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  AtmosP(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  pH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  pCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

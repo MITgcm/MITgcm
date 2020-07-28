@@ -2,9 +2,12 @@
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
-      subroutine BLING_MAIN( PTR_DIC, PTR_ALK, PTR_O2,
+      SUBROUTINE BLING_MAIN( PTR_DIC, PTR_ALK, PTR_O2,
 #ifndef USE_BLING_V1
      U           PTR_NO3, PTR_PO4, PTR_FE,
      U           PTR_DON, PTR_DOP,
@@ -42,10 +45,10 @@ C     === Global variables ===
 # include "EXF_INTERP_SIZE.h"
 # include "EXF_FIELDS.h"
 #endif
-#ifdef ALLOW_AUTODIFF
+#include "BLING_VARS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
-#include "BLING_VARS.h"
 
 C     === Routine arguments ===
 C     bi,bj         :: tile indices
@@ -118,6 +121,9 @@ CEOP
 c-----------------------------------------------------------
 c  Initialize local variables
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      itdkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
+#endif
       DO j=jmin,jmax
        DO i=imin,imax
         surf_DIC(i,j)        = 0. _d 0
@@ -158,8 +164,9 @@ c  carbon and oxygen air-sea interaction
      I                       bi, bj, imin, imax, jmin, jmax,
      I                       myTime, myIter, myThid)
 
-CADJ STORE ph = comlev1, key = ikey_dynamics,
-CADJ &    kind = isbyte
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ph(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, kind=isbyte
+#endif
 
 c-----------------------------------------------------------
 c  determine calcite saturation for remineralization
@@ -274,7 +281,7 @@ C-----------------------------------------------------------
         CALL DIAGNOSTICS_FILL(fluxCO2 ,'BLGCFLX ',0,1 ,1,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(fluxO2  ,'BLGOFLX ',0,1 ,2,bi,bj,myThid)
         CALL DIAGNOSTICS_FILL(surf_Fe ,'BLGSURFE',0,1, 2,bi,bj,myThid)
-        CALL DIAGNOSTICS_FILL(atm_pco2,'BLGapco2',0,1, 1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(apco2,'BLGapco2',0,1, 1,bi,bj,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 

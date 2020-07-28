@@ -1,6 +1,58 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/bling:
+  - cleaning: remove USE_QSW_Z code ;
+  - few more CPP options (NEW_FRAC_EXP & SIZE_DEP_LIM defined, SIZE_NUT_LIM
+    undef) related to phytoplankton size and sinking organic matter ;
+  - fix tiled TAF storage directives (were not right for multi-tile per proc);
+    update ADM reference output of experiment global_oce_biogeo_bling (now
+    gradient check are identical whether run on 1 proc - 4 tiles or 4 procs
+    1 tile each).
+o pkg/seaice:
+  - Replace hard-coded minimum for DWATN by runtime parameter "SEAICEdWatMin":
+    * allows to have zero drag by setting both SEAICEdWatMin and
+      SEAICE_waterDrag to zero. Non-zero drag had been implemented because
+      previous LSR solver could not handle zero entries on the main diagonal.
+    * this fixes a bug (unexpected behavior) reported at MITgcm-support by
+      Kaley Shrestha, but also allows to modify the somewhat arbitrary
+      default minimum value of SEAICEdWatMin = 0.25 ;
+    * freedrift code still requires non-zero drag coefficients,
+      S/R SEAICE_CHECK catches this case.
+o verification/*/packages.conf
+  - Cleaning verification experiment "packages.conf":
+    1) add a 1 line description at the top
+    2) use pkg group "adjoint" in some experiments
+    3) use similar ordering of pkgs in packages.conf:
+      a) eesupp pkgs (e.g., exch2, coupler-pkgs)
+      b) dyn-core pkgs (e.g., gfd pkgs, mom pkgs, cd_code, gad, obcs ...)
+      c) SGS-scheme (+ atm physics) pkgs (filters, gmredi, vert.mixing ...)
+      d) forcing pkgs (e.g., rbcs, exf, cal, ebm, cheapaml)
+      e) other component pkgs (e.g., ice, land, ptracers, biogeo, flt)
+      f) diagnostics pkgs (e.g., sbo, profiles, layers, diagnostics, timeave)
+      g) I/O pkgs, e.g., mnc (+ mypackage at the end)
+      -- blank line --
+      h) adjoint related pkgs (e.g., autodiff, ctrl, cost ...)
+    4) remove unused pkgs: kpp, sbo, timeave ; this results in reduced number of
+       TAF recomputation warning for AD exp: bottom_ctrl_5x5 & global_ocean_ebm;
+o tools/build_options:
+  - add a symbolic link for optfile "linux_amd64_ifort" to "linux_amd64_ifort11"
+o doc:
+  - fix link and plot in doc/examples/baroclinic_gyre
+o pkg/seaice:
+  - Add new mechanical energy diagnostics ;
+  - Move computation of stress diagnostics to seaice_dynsolver.F ; this change
+    affects diagnostics SIpress, SItensil, SIpress, SIzeta, SIdelta, SIshear,
+    because they are now filled after the current time step update, when they
+    are actually available. Note: previously, for the first time step, these
+    variables (and diagnostics) were not properly defined (or zero).
+
+checkpoint67r (2020/06/04)
+o pkg/ecco:
+  - fix character length when checking for m_trHeat, m_trSalt & m_horflux_vol.
+o pkg/autodiff:
+  - add active read and write routines for global 1D vectors, to be used for
+    compressed cost function vectors (note: not used yet, example to come soon).
 o model/src & pkg/exf:
   - Reference atmospheric pressure for seawater EOS was assumed but was not
     explicitly set. New constant "eosRefP0" is added to make this more clear ;

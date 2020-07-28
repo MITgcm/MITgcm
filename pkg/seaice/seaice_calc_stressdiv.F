@@ -74,18 +74,18 @@ C     i,j       :: inner loop counters
 
 C     compute divergence of stress tensor
 
-      DO J=1,sNy
-       DO I=1,sNx
+      DO j=1,sNy+1
+       DO i=1,sNx+1
         stressDivergenceX(i,j,bi,bj) =
      &       ( sig11(i  ,j  ) * _dyF(i  ,j,bi,bj)
-     &       - sig11(i-1,J  ) * _dyF(i-1,J,bi,bj)
+     &       - sig11(i-1,j  ) * _dyF(i-1,j,bi,bj)
      &       + sig12(i  ,j+1) * _dxV(i,j+1,bi,bj)
      &       - sig12(i  ,j  ) * _dxV(i,j  ,bi,bj)
      &       ) * recip_rAw(i,j,bi,bj)
         stressDivergenceY(i,j,bi,bj) =
      &       ( sig22(i  ,j  ) * _dxF(i,j  ,bi,bj)
      &       - sig22(i  ,j-1) * _dxF(i,j-1,bi,bj)
-     &       + sig12(i+1,J  ) * _dyU(i+1,J,bi,bj)
+     &       + sig12(i+1,j  ) * _dyU(i+1,j,bi,bj)
      &       - sig12(i  ,j  ) * _dyU(i  ,j,bi,bj)
      &       ) * recip_rAs(i,j,bi,bj)
        ENDDO
@@ -161,8 +161,8 @@ C     compute components of stress tensor from current strain rate tensor
        ENDDO
       ENDDO
 
-      DO j=0,sNy
-       DO i=0,sNx
+      DO j=0,sNy+1
+       DO i=0,sNx+1
         eplus = e11(i,j,bi,bj) + e22(i,j,bi,bj)
         eminus= e11(i,j,bi,bj) - e22(i,j,bi,bj)
         sig11(i,j) = zeta(i,j,bi,bj)*eplus + eta(i,j,bi,bj)*eminus
@@ -172,8 +172,8 @@ C     compute components of stress tensor from current strain rate tensor
        ENDDO
       ENDDO
 
-      DO j=1,sNy+1
-       DO i=1,sNx+1
+      DO j=1,sNy+2
+       DO i=1,sNx+2
         sig12(i,j) = 2. _d 0 * e12(i,j,bi,bj) * etaZ(i,j,bi,bj)
        ENDDO
       ENDDO
