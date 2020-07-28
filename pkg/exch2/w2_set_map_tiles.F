@@ -90,10 +90,10 @@ C--   Check that tile dims divide facet dims
       ENDIF
 C--   Check that domain size and (SIZE.h + blankList) match:
       IF ( tCnt.NE.exch2_nTiles ) THEN
-        WRITE(msgBuf,'(A,I6,A)')
+        WRITE(msgBuf,'(A,I8,A)')
      &   'W2_SET_MAP_TILES: Domain Total # of tiles =', tCnt, ' does'
         CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A,I6)')
+        WRITE(msgBuf,'(A,I8)')
      &   'W2_SET_MAP_TILES:  not match (SIZE.h+blankList)=',exch2_nTiles
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R W2_SET_MAP_TILES'
@@ -160,7 +160,7 @@ C--   Set tiles mapping within facet (sub-domain) and within Global Map
         fNy = facet_dims( 2*j )
         nbTx = fNx/tNx
         nbTy = fNy/tNy
-        WRITE(W2_oUnit,'(A,I3,2(A,I6),A,I5,2(A,I4),A)')
+        WRITE(W2_oUnit,'(A,I3,2(A,I6),A,I8,2(A,I4),A)')
      &    '- facet', j, ' : X-size=', fNx, ' , Y-size=', fNy,
      &    ' ;', nbTx*nbTy, ' tiles (Tx,Ty=', nbTx,',',nbTy,')'
 c       CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
@@ -202,7 +202,7 @@ C         Compact format: piled in the Y direction
             exch2_tyGlobalo( tId ) = 1 + ii/W2_mapIO
           ENDIF
           IF ( prtFlag )
-     &    WRITE(W2_oUnit,'(A,I5,3(A,I3),2A,2I5,2A,2I8)') '  tile',tId,
+     &    WRITE(W2_oUnit,'(A,I8,3(A,I3),2A,2I5,2A,2I8)') '  tile',tId,
      &    ' on facet', exch2_myFace(tId),' (',tx,',',ty,'):',
      &         ' offset=', exch2_tBasex(tId), exch2_tBasey(tId),' ;',
      &    ' on Glob.Map=', exch2_txGlobalo(tId),exch2_tyGlobalo(tId)

@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o eesupp/src:
+  - Improve formatting of output for large grids and many processors:
+    adjust formats to actual length of nPx*nPy or Nx and Ny but
+    keep minimal lengths to avoid changing the format for smaller domains;
+  - also increase number of digits for printing tile & proc number in pkg/exch2
+    log files and report to STDOUT.
 o pkg/bling:
   - cleaning: remove USE_QSW_Z code ;
   - few more CPP options (NEW_FRAC_EXP & SIZE_DEP_LIM defined, SIZE_NUT_LIM

@@ -35,6 +35,8 @@ C     !LOCAL VARIABLES:
       INTEGER stdUnit, iLen
       INTEGER myThid
       INTEGER ii, I, J
+      CHARACTER*(10) fmtStr
+      INTEGER iTmp
 
 C     Set dummy myThid value (we are not multi-threaded here)
       myThid = 1
@@ -81,8 +83,9 @@ C     Set W2-EXCH2 parameters
 
 C     Open message output-file (if needed)
       IF ( W2_printMsg .LT. 0 ) THEN
-        WRITE(fName,'(A,I4.4,A)')
-     &     'w2_tile_topology.',myProcId,'.log'
+        iTmp = MAX(4,1 + INT(LOG10(DFLOAT(nPx*nPy))))
+        WRITE(fmtStr,'(2(A,I1),A)') '(A,I',iTmp,'.',iTmp,',A)'
+        WRITE(fName,fmtStr) 'w2_tile_topology.',myProcId,'.log'
         iLen = ILNBLNK(fName)
         CALL MDSFINDUNIT( W2_oUnit, myThid )
         OPEN( W2_oUnit, file=fName(1:iLen),
