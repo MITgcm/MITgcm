@@ -1146,14 +1146,8 @@ c     Sanity checks
 
            AREA(I,J,bi,bj)       = 0. _d 0
            HEFF(I,J,bi,bj)       = 0. _d 0
-           hiceActual(I,J)       = 0. _d 0
            HSNOW(I,J,bi,bj)      = 0. _d 0
-           hsnowActual(I,J)      = 0. _d 0
 
-          ELSE
-c     recalcuate the actual ice and snow thicknesses
-           hiceActual(I,J)  =  HEFF(I,J,bi,bj)/AREA(I,J,bi,bj)
-           hsnowActual(I,J) = HSNOW(I,J,bi,bj)/AREA(I,J,bi,bj)
           ENDIF
 
          ENDDO
@@ -1350,17 +1344,6 @@ CAB
          ENDDO
         ENDDO
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hiceActual       = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE hsnowActual      = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE AREApreTH        = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE HEFF(:,:,bi,bj)  = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE HSNOW(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE AREA(:,:,bi,bj)  = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE salt(:,:,kSurface,bi,bj)
-CADJ &                      = comlev1_bibj,key=iicekey,byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     Sea Ice Load on the sea surface.
