@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67s (2020/07/30)
 o eesupp/src:
   - Improve formatting of output for large grids and many processors:
     adjust formats to actual length of nPx*nPy or Nx and Ny but
