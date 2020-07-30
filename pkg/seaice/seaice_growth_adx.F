@@ -83,7 +83,6 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 C     constants
       _RL tempFrz, ICE2SNOW, SNOW2ICE, surf_theta
       _RL QI, QS
-      _RL RHOSW
       _RL lhSublim
 
 C     Regularization values squared
@@ -309,8 +308,6 @@ C  Heat Flux * QI = [W] [m^3/kg] [kg/J] = [m^3/s] or [m/s] per unit area
 C  Heat Flux * QS = [W] [m^3/kg] [kg/J] = [m^3/s] or [m/s] per unit area
       QS           = ONE/(SEAICE_rhoSnow*SEAICE_lhFusion)
 
-c     A reference seawater density (kg m^-3)
-      RHOSW = 1026. _d 0
 C     ICE LATENT HEAT CONSTANT
       lhSublim = SEAICE_lhEvap + SEAICE_lhFusion
 
@@ -891,7 +888,8 @@ c     inflection point
         tmpscal0 = 0.4 _d 0
 c     steepness/inflection point
         tmpscal1 = 7.0 _d 0/tmpscal0
-
+c     avoid recomputing constant coefficients
+        tmpscal2 = STANTON_NUMBER*USTAR_BASE*rhoConst*HeatCapacity_Cp
 C     Calcuate the heat fluxes from the ocean to the sea ice
         DO J=1,sNy
          DO I=1,sNx
@@ -914,8 +912,7 @@ c          ELSE
 c            MLTF = MCPHEE_TAPER_FAC
 c          ENDIF
 
-          F_mi(I,J) = -STANTON_NUMBER * USTAR_BASE * RHOSW *
-     &      HeatCapacity_Cp * (surf_theta - tempFrz) * MLTF(I,J)
+          F_mi(I,J) = - tmpscal2 * (surf_theta - tempFrz) * MLTF(I,J)
 
           IceGrowthRateMixedLayer (I,J) = F_mi(I,J) * QI
 
