@@ -47,13 +47,13 @@ CADJ SUBROUTINE mds_read_sec_yz  REQUIRED
 C----------------------------------------
 C subroutine mds_write_sec_xz
 C----------------------------------------
-CADJ SUBROUTINE mds_write_sec_xz  INPUT  = 1,2,3,4,5,6,7,8,9,10,11
+CADJ SUBROUTINE mds_write_sec_xz  INPUT  = 1,2,3,4,5,6,7,8,9,10,11,12,13
 CADJ SUBROUTINE mds_write_sec_xz  OUTPUT =
 
 C----------------------------------------
 C subroutine mds_write_sec_yz
 C----------------------------------------
-CADJ SUBROUTINE mds_write_sec_yz  INPUT  = 1,2,3,4,5,6,7,8,9,10,11
+CADJ SUBROUTINE mds_write_sec_yz  INPUT  = 1,2,3,4,5,6,7,8,9,10,11,12,13
 CADJ SUBROUTINE mds_write_sec_yz  OUTPUT =
 
 C----------------------------------------

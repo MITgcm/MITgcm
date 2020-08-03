@@ -655,7 +655,7 @@ c     ENDIF
 #ifdef ALLOW_MDSIO
       CALL MDS_WRITE_SEC_XZ(
      I                       fName, fPrec, globalFile, useCurrentDir,
-     I                       fType, nNz,
+     I                       fType, nNz, 1, nNz,
      I                       dummyRL, field,
      I                       iRec, myIter, myThid )
 #endif
@@ -721,7 +721,7 @@ c     ENDIF
 #ifdef ALLOW_MDSIO
       CALL MDS_WRITE_SEC_XZ(
      I                       fName, fPrec, globalFile, useCurrentDir,
-     I                       fType, nNz,
+     I                       fType, nNz, 1, nNz,
      I                       field, dummyRS,
      I                       iRec, myIter, myThid )
 #endif
@@ -788,7 +788,7 @@ c     ENDIF
 #ifdef ALLOW_MDSIO
       CALL MDS_WRITE_SEC_YZ(
      I                       fName, fPrec, globalFile, useCurrentDir,
-     I                       fType, nNz,
+     I                       fType, nNz, 1, nNz,
      I                       dummyRL, field,
      I                       iRec, myIter, myThid )
 #endif
@@ -855,7 +855,7 @@ c     ENDIF
 #ifdef ALLOW_MDSIO
       CALL MDS_WRITE_SEC_YZ(
      I                       fName, fPrec, globalFile, useCurrentDir,
-     I                       fType, nNz,
+     I                       fType, nNz, 1, nNz,
      I                       field, dummyRS,
      I                       iRec, myIter, myThid )
 #endif
