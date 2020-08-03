@@ -79,7 +79,8 @@ C     bi,bj  :: tile counters
       _RL sig2   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig12  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sigp, sigm, sigTmp, recip_prs
-      _RL areaW, areaS, COSWAT, SINWAT
+      _RL areaW, areaS, COSWAT
+      _RS SINWAT
       INTEGER kSrf
       LOGICAL diag_SIsigma_isOn, diag_SIshear_isOn
       LOGICAL diag_SIenpi_isOn, diag_SIenpot_isOn
