@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - fix diagnostics additions (from PR #348) for case _RS is real*4.
+
 checkpoint67s (2020/07/30)
 o eesupp/src:
   - Improve formatting of output for large grids and many processors:
