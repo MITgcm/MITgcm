@@ -245,7 +245,7 @@ C Check first for global file with simple name (ie. fName)
         IF (exst) THEN
           IF ( debugLevel .GE. debLevB ) THEN
             WRITE(msgBuf,'(A,A)')
-     &      ' MDS_READ_FIELD: opening global file: ',dataFName(1:IL)
+     &      ' MDS_READ_SEC_XZ: opening global file: ',dataFName(1:IL)
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                          SQUEEZE_RIGHT, myThid)
           ENDIF
@@ -259,7 +259,7 @@ C If negative check for global file with MDS name (ie. fName.data)
           IF (exst) THEN
            IF ( debugLevel .GE. debLevB ) THEN
             WRITE(msgBuf,'(A,A)')
-     &      ' MDS_READ_FIELD: opening global file: ',dataFName(1:IL+5)
+     &      ' MDS_READ_SEC_XZ: opening global file: ',dataFName(1:IL+5)
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                          SQUEEZE_RIGHT, myThid)
            ENDIF
@@ -854,7 +854,7 @@ C Check first for global file with simple name (ie. fName)
         IF (exst) THEN
           IF ( debugLevel .GE. debLevB ) THEN
             WRITE(msgBuf,'(A,A)')
-     &      ' MDS_READ_FIELD: opening global file: ',dataFName(1:IL)
+     &      ' MDS_READ_SEC_YZ: opening global file: ',dataFName(1:IL)
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                          SQUEEZE_RIGHT, myThid)
           ENDIF
@@ -868,7 +868,7 @@ C If negative check for global file with MDS name (ie. fName.data)
           IF (exst) THEN
            IF ( debugLevel .GE. debLevB ) THEN
             WRITE(msgBuf,'(A,A)')
-     &      ' MDS_READ_FIELD: opening global file: ',dataFName(1:IL+5)
+     &      ' MDS_READ_SEC_YZ: opening global file: ',dataFName(1:IL+5)
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                          SQUEEZE_RIGHT, myThid)
            ENDIF
