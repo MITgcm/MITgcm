@@ -112,7 +112,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
 C     Read the active variable from file.
         CALL MDS_READ_SEC_XZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      O                active_var, dummyRS,
      I                iRec, myThid )
 
@@ -145,7 +145,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_SEC_XZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      O                active_data_t, dummyRS,
      I                iRec, myThid )
 
@@ -187,7 +187,7 @@ C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
 C     Read the active variable from file.
         CALL MDS_READ_SEC_XZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      O                active_var, dummyRS,
      I                iRec, myThid )
       ENDIF
@@ -288,7 +288,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
 C     Read the active variable from file.
         CALL MDS_READ_SEC_XZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      O                dummyRL, active_var,
      I                iRec, myThid )
 
@@ -321,7 +321,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_SEC_XZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      O                dummyRL, active_data_t,
      I                iRec, myThid )
 
@@ -363,7 +363,7 @@ C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
 C     Read the active variable from file.
         CALL MDS_READ_SEC_XZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      O                dummyRL, active_var,
      I                iRec, myThid )
       ENDIF
@@ -463,7 +463,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
 C     Read the active variable from file.
         CALL MDS_READ_SEC_YZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      O                active_var, dummyRS,
      I                iRec, myThid )
 
@@ -496,7 +496,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_SEC_YZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      O                active_data_t, dummyRS,
      I                iRec, myThid )
 
@@ -538,7 +538,7 @@ C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
 C     Read the active variable from file.
         CALL MDS_READ_SEC_YZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      O                active_var, dummyRS,
      I                iRec, myThid )
       ENDIF
@@ -639,7 +639,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
 C     Read the active variable from file.
         CALL MDS_READ_SEC_YZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      O                dummyRL, active_var,
      I                iRec, myThid )
 
@@ -672,7 +672,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_SEC_YZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      O                dummyRL, active_data_t,
      I                iRec, myThid )
 
@@ -714,7 +714,7 @@ C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
 C     Read the active variable from file.
         CALL MDS_READ_SEC_YZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      O                dummyRL, active_var,
      I                iRec, myThid )
       ENDIF
@@ -803,7 +803,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_SEC_XZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      O                active_data_t, dummyRS,
      I                iRec, myThid )
 
@@ -920,7 +920,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_SEC_XZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      O                dummyRL, active_data_t,
      I                iRec, myThid )
 
@@ -1037,7 +1037,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_SEC_YZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RL', myNr,
+     I                'RL', myNr, 1, myNr,
      O                active_data_t, dummyRS,
      I                iRec, myThid )
 
@@ -1154,7 +1154,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
 
         CALL MDS_READ_SEC_YZ(
      I                activeVar_file, prec, useCurrentDir,
-     I                'RS', myNr,
+     I                'RS', myNr, 1, myNr,
      O                dummyRL, active_data_t,
      I                iRec, myThid )
 

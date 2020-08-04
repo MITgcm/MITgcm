@@ -562,7 +562,7 @@ c     ENDIF
 #ifdef ALLOW_MDSIO
       CALL MDS_READ_SEC_XZ(
      I                      fName, fPrec, useCurrentDir,
-     I                      fType, nNz,
+     I                      fType, nNz, 1, nNz,
      O                      dummyRL, field,
      I                      iRec, myThid )
 #endif
@@ -624,7 +624,7 @@ c     ENDIF
 #ifdef ALLOW_MDSIO
       CALL MDS_READ_SEC_XZ(
      I                      fName, fPrec, useCurrentDir,
-     I                      fType, nNz,
+     I                      fType, nNz, 1, nNz,
      O                      field, dummyRS,
      I                      iRec, myThid )
 #endif
@@ -687,7 +687,7 @@ c     ENDIF
 #ifdef ALLOW_MDSIO
       CALL MDS_READ_SEC_YZ(
      I                      fName, fPrec, useCurrentDir,
-     I                      fType, nNz,
+     I                      fType, nNz, 1, nNz,
      O                      dummyRL, field,
      I                      iRec, myThid )
 #endif
@@ -750,7 +750,7 @@ c     ENDIF
 #ifdef ALLOW_MDSIO
       CALL MDS_READ_SEC_YZ(
      I                      fName, fPrec, useCurrentDir,
-     I                      fType, nNz,
+     I                      fType, nNz, 1, nNz,
      O                      field, dummyRS,
      I                      iRec, myThid )
 #endif
