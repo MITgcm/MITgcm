@@ -291,10 +291,12 @@ C Master thread of process 0, only, opens a global file
        ENDIF
 
 C Gather array and write it to file, one vertical level at a time
-       DO k=kLo,kHi
-        zeroBuff = k.EQ.kLo
-C-      copy from fldRL/RS(level=k) to 2-D "local":
-        IF ( filePrec.EQ.precFloat32 ) THEN
+      DO k=kLo,kHi
+       zeroBuff = k.EQ.kLo
+C-     copy from fldRL/RS(level=k) to 2-D "local":
+       IF ( filePrec.EQ.precFloat32 ) THEN
+         DO bj=1,nSy
+         DO bi=1,nSx
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_SEG4toRS_2D( sNx*nSx, oLx, kSize, bi, bj, k,
      &                            .FALSE., r4seg, fldRS )
@@ -308,6 +310,8 @@ C-      copy from fldRL/RS(level=k) to 2-D "local":
             CALL ALL_PROC_DIE( myThid )
             STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_XZ'
           ENDIF
+         ENDDO
+         ENDDO
 C Wait for all threads to finish filling shared buffer
           CALL BAR2( myThid )
 #ifdef ALLOW_EXCH2
@@ -328,6 +332,8 @@ C Wait for all threads to finish filling shared buffer
 #endif
 
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
+         DO bj=1,nSy
+         DO bi=1,nSx
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_SEG8toRS_2D( sNx*nSx, oLx, kSize, bi, bj, k,
      I                         .FALSE., r8seg, fldRS )
@@ -341,6 +347,8 @@ C Wait for all threads to finish filling shared buffer
             CALL ALL_PROC_DIE( myThid )
             STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_XZ'
           ENDIF
+         ENDDO
+         ENDDO
 C Wait for all threads to finish filling shared buffer
           CALL BAR2( myThid )
 #ifdef ALLOW_EXCH2
@@ -428,6 +436,8 @@ C  to continue to acces 3-D buffer while this thread is filling it.
 C---    Copy from fldRL/RS to 3-D buffer (multi-threads):
        DO k=kLo,kHi
         zeroBuff = k.EQ.kLo
+        DO bj=1,nSy
+        DO bi=1,nSx
 C-      copy from fldRL/RS(level=k) to 2-D "local":
         IF ( filePrec.EQ.precFloat32 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
@@ -466,6 +476,8 @@ C-      copy from fldRL/RS(level=k) to 2-D "local":
           CALL ALL_PROC_DIE( myThid )
           STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_XZ'
         ENDIF
+        ENDDO
+        ENDDO
 C-     end of k loop
        ENDDO
 
@@ -555,12 +567,15 @@ C If we are writing to a tiled MDS file then we open each one here
            ENDIF
            fileIsOpen=.TRUE.
 
-           irec = k+kSize*(irecord-1)
-           IF ( filePrec.EQ.precFloat32 ) THEN
-             WRITE(dUnit,rec=irec) r4seg
-           ELSE
-             WRITE(dUnit,rec=irec) r8seg
-           ENDIF
+           DO k=kLo,kHi
+            irec = k+kSize*(irecord-1)
+            IF ( filePrec.EQ.precFloat32 ) THEN
+              WRITE(dUnit,rec=irec) r4seg
+            ELSE
+              WRITE(dUnit,rec=irec) r8seg
+            ENDIF
+C End of k loop
+           ENDDO
 
 C here We close the tiled MDS file
            IF ( fileIsOpen ) THEN
@@ -926,10 +941,13 @@ C Master thread of process 0, only, opens a global file
        ENDIF
 
 C Gather array and write it to file, one vertical level at a time
-       DO k=kLo,kHi
-        zeroBuff = k.EQ.kLo
-C-      copy from fldRL/RS(level=k) to 2-D "local":
-        IF ( filePrec.EQ.precFloat32 ) THEN
+
+      DO k=kLo,kHi
+       zeroBuff = k.EQ.kLo
+C-     copy from fldRL/RS(level=k) to 2-D "local":
+       IF ( filePrec.EQ.precFloat32 ) THEN
+         DO bj=1,nSy
+         DO bi=1,nSx
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_SEG4toRS_2D( sNy*nSy, oLy, kSize, bi, bj, k,
      &                            .FALSE., r4seg, fldRS )
@@ -943,6 +961,8 @@ C-      copy from fldRL/RS(level=k) to 2-D "local":
             CALL ALL_PROC_DIE( myThid )
             STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_YZ'
           ENDIF
+         ENDDO
+         ENDDO
 C Wait for all threads to finish filling shared buffer
           CALL BAR2( myThid )
 #ifdef ALLOW_EXCH2
@@ -963,6 +983,8 @@ C Wait for all threads to finish filling shared buffer
 #endif
 
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
+         DO bj=1,nSy
+         DO bi=1,nSx
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_SEG8toRS_2D( sNy*nSy, oLy, kSize, bi, bj, k,
      I                         .FALSE., r8seg, fldRS )
@@ -976,6 +998,8 @@ C Wait for all threads to finish filling shared buffer
             CALL ALL_PROC_DIE( myThid )
             STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_YZ'
           ENDIF
+         ENDDO
+         ENDDO
 C Wait for all threads to finish filling shared buffer
           CALL BAR2( myThid )
 #ifdef ALLOW_EXCH2
@@ -1063,6 +1087,9 @@ C  to continue to acces 3-D buffer while this thread is filling it.
 C---    Copy from fldRL/RS to 3-D buffer (multi-threads):
        DO k=kLo,kHi
         zeroBuff = k.EQ.kLo
+        DO bj=1,nSy
+        DO bi=1,nSx
+
 C-      copy from fldRL/RS(level=k) to 2-D "local":
         IF ( filePrec.EQ.precFloat32 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
@@ -1101,6 +1128,8 @@ C-      copy from fldRL/RS(level=k) to 2-D "local":
           CALL ALL_PROC_DIE( myThid )
           STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_YZ'
         ENDIF
+        ENDDO
+        ENDDO
 C-     end of k loop
        ENDDO
 
@@ -1133,8 +1162,8 @@ C If we are writing to a global file then we open it here
         ENDIF
 
 C Loop over all tiles
-        DO bj=1,nSx
-         DO bi=1,nSy
+        DO bj=1,nSy
+         DO bi=1,nSx
 
           tNy = sNy
           global_nTy = ySize/sNy
@@ -1190,12 +1219,15 @@ C If we are writing to a tiled MDS file then we open each one here
            ENDIF
            fileIsOpen=.TRUE.
 
-           irec = k+kSize*(irecord-1)
-           IF ( filePrec.EQ.precFloat32 ) THEN
-             WRITE(dUnit,rec=irec) r4seg
-           ELSE
-             WRITE(dUnit,rec=irec) r8seg
-           ENDIF
+           DO k=kLo,kHi
+            irec = k+kSize*(irecord-1)
+            IF ( filePrec.EQ.precFloat32 ) THEN
+              WRITE(dUnit,rec=irec) r4seg
+            ELSE
+              WRITE(dUnit,rec=irec) r8seg
+            ENDIF
+C End of k loop
+           ENDDO
 
 C here We close the tiled MDS file
            IF ( fileIsOpen ) THEN
