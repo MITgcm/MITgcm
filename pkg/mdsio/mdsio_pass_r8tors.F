@@ -117,3 +117,107 @@ CEOP
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C !ROUTINE: MDS_PASS_YZ_R8toRS
+C !INTERFACE:
+      SUBROUTINE MDS_PASS_YZ_R8toRS(
+     U                            buffer, arrFld,
+     I                            oL, nNz, kLo, kSize,
+     I                            biArg, bjArg, copyTo, myThid )
+
+C !DESCRIPTION:
+C     Transfert 2-D, yz slice real*8 buffer to 2-D RS model array, or the reverse,
+C      depending on "copyTo" value. Apply transfert to tile biArg,bjArg
+C      only or to all myThid tiles if called with biArg=bjArg=0.
+
+C     !USES:
+      IMPLICIT NONE
+
+C Global variables / common blocks
+#include "EEPARAMS.h"
+#include "SIZE.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C Routine arguments
+C buffer  (real*8) :: buffer 2-D array (Input/Output if copyTo=T/F)
+C arrFld   ( RS )  :: model 2-D tiled array (Output/Input if copyTo=T/F)
+C oL     (integer):: Overlap size (dim-1) of buffer to copy - to/from - arrFld
+C nNz     (integer):: Number of levels to - fill in / extract from - arrFld
+C kLo     (integer):: 1rst level to - fill in / extract from - arrFld
+C kSize   (integer):: third dimension of 3-D array "arrFld"
+C biArg   (integer):: tile X-index to - fill in / extract from - tiled buffer
+C bjArg   (integer):: tile Y-index to - fill in / extract from - tiled buffer
+C copyTo  (logical):: if =T, copy 2-D -> 3-D ; if =F: copy 2-D <- 3-D
+C myThid  (integer):: my Thread Id number
+      INTEGER oL
+      INTEGER nNz, kSize
+      Real*8 buffer(1-oL:sNy+oL,nNz,nSx,nSy)
+      _RS    arrFld(1-OLy:sNy+OLy,kSize,nSx,nSy)
+      INTEGER kLo
+      INTEGER biArg
+      INTEGER bjArg
+      LOGICAL copyTo
+      INTEGER myThid
+
+C !LOCAL VARIABLES:
+C   i,j,k :: loop indices
+C   bi,bj :: tile indices
+      INTEGER i,j,k,bi,bj
+      INTEGER kLev
+CEOP
+      IF ( oL.LT.0 .OR. oL.GT.OLy ) THEN
+        STOP 'ABNORMAL END: MDS_PASS_YZ_R8toRL invalid oL,oL Arg'
+      ENDIF
+
+      IF ( biArg.EQ.0 .AND. bjArg.EQ.0 ) THEN
+        IF ( copyTo ) THEN
+          DO bj = myByLo(myThid), myByHi(myThid)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO k=1,nNz
+             kLev = kLo+k-1
+             DO j=1-oL,sNy+oL
+               arrFld(j,kLev,bi,bj) = buffer(j,k,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+        ELSE
+          DO bj = myByLo(myThid), myByHi(myThid)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO k=1,nNz
+             kLev = kLo+k-1
+             DO j=1-oL,sNy+oL
+               buffer(j,k,bi,bj) = arrFld(j,kLev,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+        ENDIF
+      ELSEIF ( biArg.GE.1 .AND. biArg.LE.nSx
+     &   .AND. bjArg.GE.1 .AND. bjArg.LE.nSy ) THEN
+        bi = biArg
+        bj = bjArg
+        IF ( copyTo ) THEN
+          DO k=1,nNz
+            kLev = kLo+k-1
+            DO j=1-oL,sNy+oL
+              arrFld(j,kLev,1,1) = buffer(j,k,bi,bj)
+            ENDDO
+          ENDDO
+        ELSE
+          DO k=1,nNz
+            kLev = kLo+k-1
+            DO j=1-oL,sNy+oL
+              buffer(j,k,bi,bj) = arrFld(j,kLev,1,1)
+            ENDDO
+          ENDDO
+        ENDIF
+      ELSE
+        STOP 'ABNORMAL END: MDS_PASS_YZ_R8toRS invalid bi,bj Arg'
+      ENDIF
+
+      RETURN
+      END
