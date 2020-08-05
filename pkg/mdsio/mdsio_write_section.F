@@ -776,19 +776,19 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       INTEGER xSize, ySize
       INTEGER irecord
       INTEGER iG,jG,bi,bj
-      INTEGER i1,i2,i,j,k,nNz
+      INTEGER i1,i2,i,j,k,nNz,np
       INTEGER irec,dUnit,IL,pIL
       INTEGER dimList(3,2), nDims, map2gl(2)
       INTEGER length_of_rec
       INTEGER bBij
       INTEGER tNy, global_nTy
       INTEGER tBy, iGjLoc, jGjLoc
-      REAL*4 r4seg(sNy,nSx,nSy)
-      REAL*8 r8seg(sNy,nSx,nSy)
-      REAL*4 y_layer_buffer_r4( Ny )
-      REAL*8 y_layer_buffer_r8( Ny )
-      REAL*4 yz_buffer_r4( sNy*Nr*nSx*nSy )
-      REAL*8 yz_buffer_r8( sNy*Nr*nSx*nSy )
+      _R4 r4seg(sNy,nSx,nSy)
+      _R8 r8seg(sNy,nSx,nSy)
+      _R4 y_layer_buffer_r4( Ny )
+      _R8 y_layer_buffer_r8( Ny )
+      _R4 yz_buffer_r4( sNy*Nr*nSx*nSy )
+      _R8 yz_buffer_r8( sNy*Nr*nSx*nSy )
 #ifdef ALLOW_EXCH2
       INTEGER tN
       REAL*4 y_layer_buffer_exch2_r4(exch2_global_Ny)
@@ -824,6 +824,15 @@ C Assume nothing
       nNz = 1 + kHi - kLo
       irecord = ABS(jrecord)
       writeMetaF = jrecord.GT.0
+
+C Initialize buffer
+      DO bj = 1,nSy
+       DO bi = 1,nSx
+        DO j = 1,sNy
+         r8seg(j,bi,bj) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDDO
 
 C Only do I/O if I am the master thread (and mpi process 0 IF useSingleCpuIO):
       iAmDoingIO = MASTER_CPU_IO(myThid)
@@ -926,6 +935,23 @@ C Assign a free unit number as the I/O channel for this routine
 C- endif iAmDoingIO
       ENDIF
 
+C If option globalFile is desired but does not work or if
+C globalFile is too slow, then try using single-CPU I/O.
+      IF (useSingleCpuIO) THEN
+
+C Master thread of process 0, only, opens a global file
+       IF ( iAmDoingIO ) THEN
+         WRITE(dataFName,'(2a)') fName(1:IL),'.data'
+         length_of_rec = MDS_RECLEN( filePrec, ySize, myThid )
+         IF (irecord .EQ. 1) THEN
+          OPEN( dUnit, file=dataFName, status=_NEW_STATUS,
+     &        access='direct', recl=length_of_rec )
+         ELSE
+          OPEN( dUnit, file=dataFName, status=_OLD_STATUS,
+     &        access='direct', recl=length_of_rec )
+         ENDIF
+       ENDIF
+
 C Gather array and write it to file, one vertical level at a time
 
       DO k=kLo,kHi
@@ -1025,98 +1051,7 @@ C  shared buffer can again be modified by any thread
         CALL BAR2( myThid )
 
        IF ( iAmDoingIO ) THEN
-         irec = 1 + k-kLo + (irecord-1)*kSize
-         IF ( debugLevel .GE. debLevC ) THEN
-           WRITE(msgBuf,'(A,I8,A,I8)')
-     &       ' MDS_WRITE_SEC_YZ: irec: ', irec,
-     &       ' SIZE(ylayerbuffer_r8): ', SIZE(y_layer_buffer_r8)
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                         SQUEEZE_RIGHT, myThid )
-           do j=1,Ny
-           WRITE(msgBuf,'(A,F8.2)')
-     &       ' MDS_WRITE_SEC_YZ: : ybuffer(j): ',y_layer_buffer_r8(j)
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                         SQUEEZE_RIGHT, myThid )
-           enddo
-         ENDIF
-       ENDIF
-
-C Gather array and write it to file, one vertical level at a time
-
-      DO k=kLo,kHi
-       zeroBuff = k.EQ.kLo
-C-     copy from fldRL/RS(level=k) to 2-D "local":
-       IF ( filePrec.EQ.precFloat32 ) THEN
-         IF ( arrType.EQ.'RS' ) THEN
-           CALL MDS_PASS_YZ_R4toRS( r4seg, fldRS, 
-     I             0, 1, k, kSize, 0, 0, .FALSE., myThid )
-         ELSEIF ( arrType.EQ.'RL' ) THEN
-           CALL MDS_PASS_YZ_R4toRL( r4seg, fldRL, 
-     I             0, 1, k, kSize, 0, 0, .FALSE., myThid )
-         ELSE
-           WRITE(msgBuf,'(2A)')
-     &     ' MDS_WRITE_SEC_YZ: illegal value for arrType=', arrType
-           CALL PRINT_ERROR( msgBuf, myThid )
-           CALL ALL_PROC_DIE( myThid )
-           STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_YZ'
-         ENDIF
-C Wait for all threads to finish filling shared buffer
-          CALL BAR2( myThid )
-#ifdef ALLOW_EXCH2
-          IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
-            CALL GATHER_YZ_R4( y_layer_buffer_r4, r4seg, myThid )
-#ifdef ALLOW_EXCH2
-          ELSE
-            CALL GATHER_YZ_R4( y_layer_buffer_exch2_r4, r4seg, myThid )
-          ENDIF
-#endif
-
-       ELSEIF ( filePrec.EQ.precFloat64 ) THEN
-         IF ( arrType.EQ.'RS' ) THEN
-           CALL MDS_PASS_YZ_R8toRS( r8seg, fldRS,
-     I            0, 1, k, kSize, 0, 0, .FALSE., myThid )
-         ELSEIF ( arrType.EQ.'RL' ) THEN
-           CALL MDS_PASS_YZ_R8toRL( r8seg, fldRL,
-     I            0, 1, k, kSize, 0, 0, .FALSE., myThid )
-         ELSE
-           WRITE(msgBuf,'(2A)')
-     &     ' MDS_WRITE_SEC_YZ: illegal value for arrType=', arrType
-           CALL PRINT_ERROR( msgBuf, myThid )
-           CALL ALL_PROC_DIE( myThid )
-           STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_YZ'
-         ENDIF
-         IF ( debugLevel .GE. debLevC ) THEN
-           WRITE(msgBuf,'(A,I8)')
-     &       ' MDS_WRITE_SEC_YZ: SIZE(ylayerbuffer_r8): ', 
-     &          SIZE(y_layer_buffer_r8)
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                         SQUEEZE_RIGHT, myThid )
-         ENDIF
-C Wait for all threads to finish filling shared buffer
-         CALL BAR2( myThid )
-#ifdef ALLOW_EXCH2
-         IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
-           CALL GATHER_YZ_R8( y_layer_buffer_r8, r8seg, myThid )
-#ifdef ALLOW_EXCH2
-         ELSE
-           CALL GATHER_YZ_R8( y_layer_buffer_exch2_r8, r8seg, myThid )
-         ENDIF
-#endif
-       ELSE
-         WRITE(msgBuf,'(A,I6)')
-     &     ' MDS_WRITE_SEC_YZ: illegal value for filePrec=',filePrec
-         CALL PRINT_ERROR( msgBuf, myThid )
-         CALL ALL_PROC_DIE( myThid )
-         STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_YZ'
-       ENDIF
-C Make other threads wait for "gather" completion so that after this,
-C  shared buffer can again be modified by any thread
-        CALL BAR2( myThid )
-
-       IF ( iAmDoingIO ) THEN
-         irec = 1 + k-kLo + (irecord-1)*kSize
+         irec = 1 + (k-kLo) + (irecord-1)*nNz
          IF ( debugLevel .GE. debLevC ) THEN
            WRITE(msgBuf,'(A,I8,A,I8)')
      &       ' MDS_WRITE_SEC_YZ: irec: ', irec,
@@ -1327,7 +1262,7 @@ C Create meta-file for each tile if we are tiling
            jG=bj+(myYGlobalLo-1)/sNy
            WRITE(metaFname,'(2A,I3.3,A,I3.3,A)')
      &              pfName(1:pIL),'.',iG,'.',jG,'.meta'
-           dimList(1,1) = ySize
+           dimList(1,1) = Ny
            dimList(2,1) = tBy + 1
            dimList(3,1) = tBy + tNy
            dimList(1,2) = nNz
@@ -1367,9 +1302,12 @@ C Create meta-file for the global-file (also if useSingleCpuIO)
       IF ( writeMetaF .AND. iAmDoingIO .AND.
      &    (globalFile .OR. useSingleCpuIO) ) THEN
          WRITE(metaFName,'(2A)') fName(1:IL),'.meta'
-         dimList(1,1) = ySize
+         dimList(1,1) = Ny
          dimList(2,1) = 1
-         dimList(3,1) = ySize
+         dimList(3,1) = Ny
+         ! dimList(1,2) = nPx
+         ! dimList(2,2) = 1
+         ! dimList(3,2) = nPx
          dimList(1,2) = nNz
          dimList(2,2) = 1
          dimList(3,2) = nNz
