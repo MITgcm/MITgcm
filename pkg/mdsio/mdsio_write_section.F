@@ -1058,8 +1058,8 @@ c           global_nTx = exch2_global_Nx/tNx
             tBy = exch2_tyGlobalo(tN) - 1
             IF   ( exch2_mydNy(tN) .GT. ySize ) THEN
 C-          face x-size larger than glob-size : fold it
-              iGjLoc = 0
-              jGjLoc = exch2_mydNy(tN) / ySize
+              iGjLoc = exch2_mydNx(tN)
+              jGjLoc = 0
             ELSE
 C-          default (face fit into global-IO-array)
               iGjLoc = 0

@@ -6,7 +6,6 @@ C--   o MDS_READ_SEC_XZ
 C--   o MDS_READ_SEC_YZ
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 CBOP
 C !ROUTINE: MDS_READ_SEC_XZ
 C !INTERFACE:
@@ -118,14 +117,14 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       INTEGER bBij
       INTEGER tNx, global_nTx
       INTEGER tBx, iGjLoc, jGjLoc
-      REAL*4 r4seg(sNx)
-      REAL*8 r8seg(sNx)
-      REAL*4 x_layer_buffer_r4(Nx)
-      REAL*8 x_layer_buffer_r8(Nx)
+      _R4 r4seg(sNx,nSx,nSy)
+      _R8 r8seg(sNx,nSx,nSy)
+      _R4 x_buffer_r4(Nx)
+      _R8 x_buffer_r8(Nx)
+      _R4 xz_buffer_r4( sNx*Nr*nSx )
+      _R8 xz_buffer_r8( sNx*Nr*nSx )
 #ifdef ALLOW_EXCH2
       INTEGER tN
-      REAL*4 x_layer_buffer_exch2_r4(exch2_global_Nx)
-      REAL*8 x_layer_buffer_exch2_r8(exch2_global_Nx)
 #endif /* ALLOW_EXCH2 */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -270,56 +269,48 @@ C If negative check for global file with MDS name (ie. fName.data)
 C- endif iAmDoingIO
       ENDIF
 
-C If option globalFile is desired but does not work or if
-C globalFile is too slow, then try using single-CPU I/O.
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       IF (useSingleCpuIO) THEN
 
 C Master thread of process 0, only, opens a global file
        IF ( iAmDoingIO ) THEN
-         WRITE(dataFName,'(2a)') fName(1:IL),'.data'
-         length_of_rec = MDS_RECLEN( filePrec, sNx, myThid )
-         OPEN( dUnit, file=dataFName, status=_OLD_STATUS,
-     &       access='direct', recl=length_of_rec )
+C If global file is visible to process 0, then open it here.
+C Otherwise stop program.
+         IF ( globalFile) THEN
+          length_of_rec = MDS_RECLEN( filePrec, xSize, myThid )
+          OPEN( dUnit, file=dataFName, status='old',
+     &         access='direct', recl=length_of_rec )
+         ELSE
+          WRITE(msgBuf,'(2A)')
+     &      ' MDS_READ_SEC_XZ: filename: ', dataFName(1:IL+5)
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid)
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(A)')
+     &      ' MDS_READ_SEC_XZ: File does not exist'
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid)
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R MDS_READ_SEC_XZ'
+         ENDIF
+C- endif iAmDoingIO
        ENDIF
 
-C master thread of process 0, only ,read from file
        DO k=kLo,kHi
 
+C master thread of process 0, only ,read from file
         IF ( iAmDoingIO ) THEN
           irec = 1 + k-kLo + (irecord-1)*kSize
           IF ( filePrec.EQ.precFloat32 ) THEN
-
-#ifdef ALLOW_EXCH2
-           IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
-# ifdef _BYTESWAPIO
-            CALL MDS_BYTESWAPR4( xSize, x_layer_buffer_r4 )
-# endif
-            WRITE(dUnit,rec=irec) x_layer_buffer_r4
-#ifdef ALLOW_EXCH2
-           ELSE
-# ifdef _BYTESWAPIO
-            CALL MDS_BYTESWAPR4( xSize, x_layer_buffer_exch2_r4 )
-# endif
-            WRITE(dUnit,rec=irec) x_layer_buffer_exch2_r4
-           ENDIF
+            READ(dUnit,rec=irec) x_buffer_r4
+#ifdef _BYTESWAPIO
+            CALL MDS_BYTESWAPR4( xSize, x_buffer_r4 )
 #endif
           ELSE
-
-#ifdef ALLOW_EXCH2
-           IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
-# ifdef _BYTESWAPIO
-            CALL MDS_BYTESWAPR8( xSize, x_layer_buffer_r8 )
-# endif
-            WRITE(dUnit,rec=irec) x_layer_buffer_r8
-#ifdef ALLOW_EXCH2
-           ELSE
-# ifdef _BYTESWAPIO
-            CALL MDS_BYTESWAPR8( xSize, x_layer_buffer_exch2_r8 )
-# endif
-            WRITE(dUnit,rec=irec) x_layer_buffer_exch2_r8
-           ENDIF
+            READ(dUnit,rec=irec) x_buffer_r8
+#ifdef _BYTESWAPIO
+            CALL MDS_BYTESWAPR8( xSize, x_buffer_r8 )
 #endif
           ENDIF
 C-      end if iAmDoingIO
@@ -331,31 +322,19 @@ C  to access shared buffer while master thread is loading data into
         CALL BAR2( myThid )
 
         IF ( filePrec.EQ.precFloat32 ) THEN
-#ifdef ALLOW_EXCH2
-          IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
-            CALL SCATTER_VEC_R4( 
-     I                         x_layer_buffer_r4,
-     O                         r4seg, 
-     I                         sNx, myThid ) 
-#ifdef ALLOW_EXCH2
-          ELSE
-
-            CALL SCATTER_VEC_R4( 
-     I                         x_layer_buffer_exch2_r4,
-     O                         r4seg, 
-     I                         sNx, myThid ) 
-          ENDIF
-#endif
+          CALL SCATTER_XZ_R4( 
+     U                       x_buffer_r4,
+     O                       r4seg,
+     I                       xSize,
+     I                       useExch2ioLayOut, .FALSE., myThid )
+C All threads wait for Master to finish loading into shared buffer
           CALL BAR2( myThid )
-          DO bj=1,sNy
-          DO bi=1,sNx
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_SEG4toRS_2D( sNx, oLx, kSize, bi, bj, k,
-     &                            .TRUE., r4seg, fldRS )
+            CALL MDS_PASS_XZ_R4toRS( r4seg, fldRS,
+     &              0, 1, k, kSize, 0, 0, .TRUE., myThid)
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_SEG4toRS_2D( sNx, oLx, kSize, bi, bj, k,
-     &                            .TRUE., r4seg, fldRL )
+            CALL MDS_PASS_XZ_R4toRL( r4seg, fldRL,
+     &              0, 1, k, kSize, 0, 0, .TRUE., myThid)
           ELSE
             WRITE(msgBuf,'(2A)')
      &      ' MDS_READ_SEC_XZ: illegal value for arrType=', arrType
@@ -363,53 +342,28 @@ C  to access shared buffer while master thread is loading data into
             CALL ALL_PROC_DIE( myThid )
             STOP 'ABNORMAL END: S/R MDS_READ_SEC_XZ'
           ENDIF
-          ENDDO
-          ENDDO
-
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
-#ifdef ALLOW_EXCH2
-          IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
-            CALL SCATTER_VEC_R8( 
-     I                         x_layer_buffer_r8,
-     O                         r8seg, 
-     I                         sNx, myThid ) 
-#ifdef ALLOW_EXCH2
-          ELSE
-
-            CALL SCATTER_VEC_R8( 
-     I                          x_layer_buffer_exch2_r8,
-     O                          r8seg, 
-     I                          sNx, myThid ) 
-          ENDIF
-#endif
+          CALL SCATTER_XZ_R8( 
+     U                       x_buffer_r8,
+     O                       r8seg,
+     I                       xSize,
+     I                       useExch2ioLayOut, .FALSE., myThid )
+C All threads wait for Master to finish loading into shared buffer
           CALL BAR2( myThid )
-          DO bj=1,sNy
-          DO bi=1,sNx
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_SEG8toRS_2D( sNx, oLx, kSize, bi, bj, k,
-     I                         .TRUE., r8seg, fldRS )
+            CALL MDS_PASS_XZ_R8toRS( r8seg, fldRS,
+     &              0, 1, k, kSize, 0, 0, .TRUE., myThid)
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_SEG8toRS_2D( sNx, oLx, kSize, bi, bj, k,
-     I                         .TRUE., r8seg, fldRL )
+            CALL MDS_PASS_XZ_R8toRL( r8seg, fldRL,
+     &              0, 1, k, kSize, 0, 0, .TRUE., myThid)
           ELSE
-            WRITE(msgBuf,'(2A)')
-     &      ' MDS_READ_SEC_XZ: illegal value for arrType=', arrType
+            WRITE(msgBuf,'(A,I6)')
+     &        ' MDS_READ_SEC_XZ: illegal value for filePrec=',filePrec
             CALL PRINT_ERROR( msgBuf, myThid )
             CALL ALL_PROC_DIE( myThid )
             STOP 'ABNORMAL END: S/R MDS_READ_SEC_XZ'
           ENDIF
-          ENDDO
-          ENDDO
-
-        ELSE
-          WRITE(msgBuf,'(A,I6)')
-     &      ' MDS_READ_SEC_XZ: illegal value for filePrec=',filePrec
-          CALL PRINT_ERROR( msgBuf, myThid )
-          CALL ALL_PROC_DIE( myThid )
-          STOP 'ABNORMAL END: S/R MDS_READ_SEC_XZ'
         ENDIF
-
 C-     end of k loop
        ENDDO
 
@@ -429,7 +383,7 @@ C Only do I/O if I am the master thread
 C If we are reading from a global file then we open it here
         IF (globalFile) THEN
           length_of_rec = MDS_RECLEN( filePrec, sNx, myThid )
-          OPEN( dUnit, file=dataFName, status=_OLD_STATUS,
+          OPEN( dUnit, file=dataFName, status='old',
      &            access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
         ENDIF
@@ -437,10 +391,16 @@ C If we are reading from a global file then we open it here
 C Loop over all tiles
         DO bj=1,nSy
          DO bi=1,nSx
+          bBij = sNx*nNz*( bi-1 + (bj-1)*nSx )
+
+          IF (globalFile) THEN
+C--- Case of 1 Global file:
 
           tNx = sNx
           global_nTx = xSize/sNx
           tBx = myXGlobalLo-1 + (bi-1)*sNx
+          iGjLoc = 0
+          jGjLoc = 1
 #ifdef ALLOW_EXCH2
           IF ( useExch2ioLayOut ) THEN
             tN = W2_myTileList(bi,bj)
@@ -460,16 +420,15 @@ C-          default (face fit into global-IO-array)
           ENDIF
 #endif /* ALLOW_EXCH2 */
 
-          IF (globalFile) THEN
-C--- Case of 1 Global file:
-
            DO k=kLo,kHi
             irec = 1 + tBx/tNx
      &           +( k-kLo + (irecord-1)*kSize )*global_nTx
+            i1 = bBij + 1 + (k-kLo)*sNx
+            i2 = bBij +           k*sNx
             IF ( filePrec.EQ.precFloat32 ) THEN
-             READ(dUnit,rec=irec) r4seg
+             READ(dUnit,rec=irec) (xz_buffer_r4(i),i=i1,i2)
             ELSE
-             READ(dUnit,rec=irec) r8seg
+             READ(dUnit,rec=irec) (xz_buffer_r8(i),i=i1,i2)
             ENDIF
 C End of k loop
            ENDDO
@@ -490,7 +449,7 @@ C If we are writing to a tiled MDS file then we open each one here
               CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                  SQUEEZE_RIGHT, myThid)
             ENDIF
-            length_of_rec = MDS_RECLEN( filePrec, sNx, myThid )
+            length_of_rec = MDS_RECLEN( filePrec, sNx*nNz, myThid )
             OPEN( dUnit, file=dataFName, status=_OLD_STATUS,
      &            access='direct', recl=length_of_rec )
             fileIsOpen=.TRUE.
@@ -509,14 +468,12 @@ C If we are writing to a tiled MDS file then we open each one here
             STOP 'ABNORMAL END: S/R MDS_READ_SEC_XZ'
            ENDIF
 
-           DO k=kLo,kHi
-            irec = k+kSize*(irecord-1)
-            IF ( filePrec.EQ.precFloat32 ) THEN
-              READ(dUnit,rec=irec) r4seg
-            ELSE
-              READ(dUnit,rec=irec) r8seg
-            ENDIF
-           ENDDO
+           irec = irecord
+           IF ( filePrec.EQ.precFloat32 ) THEN
+             READ(dUnit,rec=irec) xz_buffer_r4
+           ELSE
+             READ(dUnit,rec=irec) xz_buffer_r8
+           ENDIF
 
 C here We close the tiled MDS file
            IF ( fileIsOpen ) THEN
@@ -539,9 +496,9 @@ C If global file was opened then close it
 
 #ifdef _BYTESWAPIO
         IF ( filePrec.EQ.precFloat32 ) THEN
-          CALL MDS_BYTESWAPR4( sNx, r4seg )
+          CALL MDS_BYTESWAPR4( sNx*nNz*nSx, xz_buffer_r4 )
         ELSE
-          CALL MDS_BYTESWAPR8( sNx, r8seg )
+          CALL MDS_BYTESWAPR8( sNx*nNz*nSx, xz_buffer_r8 )
         ENDIF
 #endif
 
@@ -551,57 +508,44 @@ C- endif iAmDoingIO
 C Wait for all threads to finish filling shared buffer
        CALL BAR2( myThid )
 
+C-     copy from fldRL/RS(level=k) to 2-D "local":
+       IF ( filePrec.EQ.precFloat32 ) THEN
+         IF ( arrType.EQ.'RS' ) THEN
+           CALL MDS_PASS_XZ_R4toRS( xz_buffer_r4, fldRS,
+     I              0, nNz, kLo, kSize, 0, 0, .TRUE., myThid )
+         ELSEIF ( arrType.EQ.'RL' ) THEN
+           CALL MDS_PASS_XZ_R4toRL( xz_buffer_r4, fldRL,
+     I              0, nNz, kLo, kSize, 0, 0, .TRUE., myThid )
+         ELSE
+           WRITE(msgBuf,'(2A)')
+     &     ' MDS_READ_SEC_XZ: illegal value for arrType=', arrType
+           CALL PRINT_ERROR( msgBuf, myThid )
+           CALL ALL_PROC_DIE( myThid )
+           STOP 'ABNORMAL END: S/R MDS_READ_SEC_XZ'
+         ENDIF
 
+       ELSEIF ( filePrec.EQ.precFloat64 ) THEN
+         IF ( arrType.EQ.'RS' ) THEN
+           CALL MDS_PASS_XZ_R8toRS( xz_buffer_r8, fldRS,
+     I              0, nNz, kLo, kSize, 0, 0, .TRUE., myThid )
+         ELSEIF ( arrType.EQ.'RL' ) THEN
+           CALL MDS_PASS_XZ_R8toRL( xz_buffer_r8, fldRL,
+     I              0, nNz, kLo, kSize, 0, 0, .TRUE., myThid )
+         ELSE
+           WRITE(msgBuf,'(2A)')
+     &     ' MDS_READ_SEC_XZ: illegal value for arrType=', arrType
+           CALL PRINT_ERROR( msgBuf, myThid )
+           CALL ALL_PROC_DIE( myThid )
+           STOP 'ABNORMAL END: S/R MDS_READ_SEC_XZ'
+         ENDIF
 
-       DO k=kLo,kHi
-        DO bj=1,nSy
-         DO bi=1,nSx
-C-      copy from fldRL/RS(level=k) to 2-D "local":
-        IF ( filePrec.EQ.precFloat32 ) THEN
-          IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_SEG4toRS_2D( sNx, oLx, kSize, bi, bj, k,
-     &                            .TRUE., r4seg, fldRS )
-          ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_SEG4toRS_2D( sNx, oLx, kSize, bi, bj, k,
-     &                            .TRUE., r4seg, fldRL )
-          ELSE
-            WRITE(msgBuf,'(2A)')
-     &      ' MDS_READ_SEC_XZ: illegal value for arrType=', arrType
-            CALL PRINT_ERROR( msgBuf, myThid )
-            CALL ALL_PROC_DIE( myThid )
-            STOP 'ABNORMAL END: S/R MDS_READ_SEC_XZ'
-          ENDIF
-
-        ELSEIF ( filePrec.EQ.precFloat64 ) THEN
-          IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_SEG8toRS_2D( sNx, oLx, kSize, bi, bj, k,
-     I                         .TRUE., r8seg, fldRS )
-          ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_SEG8toRS_2D( sNx, oLx, kSize, bi, bj, k,
-     I                         .TRUE., r8seg, fldRL )
-          ELSE
-            WRITE(msgBuf,'(2A)')
-     &      ' MDS_READ_SEC_XZ: illegal value for arrType=', arrType
-            CALL PRINT_ERROR( msgBuf, myThid )
-            CALL ALL_PROC_DIE( myThid )
-            STOP 'ABNORMAL END: S/R MDS_READ_SEC_XZ'
-          ENDIF
-
-        ELSE
-          WRITE(msgBuf,'(A,I6)')
-     &      ' MDS_READ_SEC_XZ: illegal value for filePrec=',filePrec
-          CALL PRINT_ERROR( msgBuf, myThid )
-          CALL ALL_PROC_DIE( myThid )
-          STOP 'ABNORMAL END: S/R MDS_READ_SEC_XZ'
-        ENDIF
-
-
-C End of bi,bj loops
-         ENDDO
-        ENDDO
-
-C-     end of k loop
-       ENDDO
+       ELSE
+         WRITE(msgBuf,'(A,I6)')
+     &     ' MDS_READ_SEC_XZ: illegal value for filePrec=',filePrec
+         CALL PRINT_ERROR( msgBuf, myThid )
+         CALL ALL_PROC_DIE( myThid )
+         STOP 'ABNORMAL END: S/R MDS_READ_SEC_XZ'
+       ENDIF
 
       CALL BAR2( myThid )
 
@@ -612,7 +556,6 @@ C     if useSingleCpuIO / else / end
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 
 CBOP
 C !ROUTINE: MDS_READ_SEC_YZ
@@ -1018,8 +961,8 @@ c           global_nTx = exch2_global_Nx/tNx
             tBy = exch2_tyGlobalo(tN) - 1
             IF   ( exch2_mydNy(tN) .GT. ySize ) THEN
 C-          face x-size larger than glob-size : fold it
-              iGjLoc = 0
-              jGjLoc = exch2_mydNy(tN) / ySize
+              iGjLoc = exch2_mydNx(tN)
+              jGjLoc = 0
             ELSE
 C-          default (face fit into global-IO-array)
               iGjLoc = 0
