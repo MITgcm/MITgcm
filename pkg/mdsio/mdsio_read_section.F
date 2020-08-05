@@ -938,10 +938,10 @@ C  to access shared buffer while master thread is loading data into
 C All threads wait for Master to finish loading into shared buffer
           CALL BAR2( myThid )
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_YZ_R4toRS( y_buffer_r4, fldRS,
+            CALL MDS_PASS_YZ_R4toRS( r4seg, fldRS,
      &              0, 1, k, kSize, 0, 0, .TRUE., myThid)
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_YZ_R4toRL( y_buffer_r4, fldRL,
+            CALL MDS_PASS_YZ_R4toRL( r4seg, fldRL,
      &              0, 1, k, kSize, 0, 0, .TRUE., myThid)
           ELSE
             WRITE(msgBuf,'(2A)')
@@ -959,10 +959,10 @@ C All threads wait for Master to finish loading into shared buffer
 C All threads wait for Master to finish loading into shared buffer
           CALL BAR2( myThid )
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_YZ_R8toRS( y_buffer_r8, fldRS,
+            CALL MDS_PASS_YZ_R8toRS( r8seg, fldRS,
      &              0, 1, k, kSize, 0, 0, .TRUE., myThid)
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_YZ_R8toRL( y_buffer_r8, fldRL,
+            CALL MDS_PASS_YZ_R8toRL( r8seg, fldRL,
      &              0, 1, k, kSize, 0, 0, .TRUE., myThid)
           ELSE
             WRITE(msgBuf,'(A,I6)')
@@ -972,7 +972,6 @@ C All threads wait for Master to finish loading into shared buffer
             STOP 'ABNORMAL END: S/R MDS_READ_SEC_YZ'
           ENDIF
         ENDIF
-
 C-     end of k loop
        ENDDO
 

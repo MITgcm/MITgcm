@@ -29,7 +29,7 @@ C     !USES:
 C     !INPUT/OUTPUT PARAMETERS:
 C gloBuff   ( _R8 ) :: full-domain 2D IO-buffer array              (Input)
 C myField   ( _R8 ) :: tiled, local (i.e. my Proc. tiles) 2D array (Output)
-C ySize    (integer):: global buffer 1st  dim (y)
+C ySize    (integer):: global buffer 2nd  dim (y)
 C useExch2GlobLayOut:: =T: Use Exch2 global-map layout (only with EXCH2)
 C zeroBuff (logical):: =T: reset the buffer to zero after copy
 C myThid   (integer):: my Thread Id number
@@ -62,7 +62,7 @@ C !LOCAL VARIABLES:
 #ifdef ALLOW_USE_MPI
       IF ( usingMPI ) THEN
 
-       lbuff = nSx*sNy*nSy
+       lbuff = sNy*nSy
        isource = 0
        itag  = 0
 
@@ -79,13 +79,17 @@ C--   Process 0 extract the local arrays from the global buffer.
           DO bj=1,nSy
            DO bi=1,nSx
              tN = W2_procTileList(bi,bj,np)
-             IF  ( exch2_tNy(tN) .GT. ySize ) THEN
+             IF   ( exch2_mydNx(tN) .GT. xSize ) THEN
+C-           face x-size larger than glob-size : fold it
+               iGjLoc = 0
+               jGjLoc = exch2_mydNx(tN) / xSize
+             ELSEIF ( exch2_tNy(tN) .GT. ySize ) THEN
 C-           tile y-size larger than glob-size : make a long line
-               !iGjLoc = exch2_mydNx(tN)
+               iGjLoc = exch2_mydNx(tN)
                jGjLoc = 0
              ELSE
 C-           default (face fit into global-IO-array)
-               !iGjLoc = 0
+               iGjLoc = 0
                jGjLoc = 1
              ENDIF
 
@@ -124,7 +128,7 @@ C        end if-else useExch2GlobLayOut
 
 C--   Process 0 sends local arrays to all other processes
          pId = np - 1
-         CALL MPI_SEND (temp, lbuff, _MPI_TYPE_R4,
+         CALL MPI_SEND (temp, lbuff, _MPI_TYPE_R8,
      &           pId, itag, MPI_COMM_MODEL, ierr)
 
 C-      end loop on np
@@ -133,7 +137,7 @@ C-      end loop on np
        ELSE
 
 C--   All proceses except 0 receive local array from process 0
-         CALL MPI_RECV (myField, lbuff, _MPI_TYPE_R4,
+         CALL MPI_RECV (myField, lbuff, _MPI_TYPE_R8,
      &        isource, itag, MPI_COMM_MODEL, istatus, ierr)
 
        ENDIF
@@ -150,7 +154,7 @@ C--   Process 0 fills-in its local data
           DO bj=1,nSy
            DO bi=1,nSx
              tN = W2_myTileList(bi,bj)
-             IF  ( exch2_tNy(tN) .GT. ySize ) THEN
+             IF ( exch2_tNy(tN) .GT. ySize ) THEN
 C-           tile y-size larger than glob-size : make a long line
                !iGjLoc = exch2_mydNx(tN)
                jGjLoc = 0
@@ -176,7 +180,7 @@ C     An alternative to zeroBuff when writing to file,
 C     which could be faster if we do less read than write.
           IF ( zeroBuff ) THEN
             DO j=1,ySize
-             gloBuff(j) = 0.
+              gloBuff(j) = 0.
             ENDDO
           ENDIF
 
