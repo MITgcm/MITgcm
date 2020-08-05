@@ -51,17 +51,13 @@ C !LOCAL VARIABLES:
       INTEGER tN
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_USE_MPI
-      INTEGER np, pId, myProcRow
+      INTEGER np, pId
       _R8     temp(1:sNy,nSx,nSy)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER lbuff, idest, itag, ready_to_receive
 #endif /* ALLOW_USE_MPI */
 
       _BEGIN_MASTER( myThid )
-
-      DO jG = 1,ySize
-        gloBuff(j)=0.
-      ENDDO
 
       IF( myProcId .EQ. 0 ) THEN
 C--   Process 0 fills-in its local data
@@ -142,7 +138,7 @@ C--   Process 0 polls and receives data from each process in turn
          CALL MPI_SEND (ready_to_receive, 1, MPI_INTEGER,
      &           pId, itag, MPI_COMM_MODEL, ierr)
 #endif
-         CALL MPI_RECV (temp, lbuff, _MPI_TYPE_R4,
+         CALL MPI_RECV (temp, lbuff, _MPI_TYPE_R8,
      &           pId, itag, MPI_COMM_MODEL, istatus, ierr)
 
 C--   Process 0 gathers the local arrays into the global buffer.
@@ -154,11 +150,9 @@ C--   Process 0 gathers the local arrays into the global buffer.
              tN = W2_procTileList(bi,bj,np)
              IF  ( exch2_tNy(tN) .GT. ySize ) THEN
 C-           tile y-size larger than glob-size : make a long line
-               !iGjLoc = exch2_mydNx(tN)
                jGjLoc = 0
              ELSE
 C-           default (face fit into global-IO-array)
-               !iGjLoc = 0
                jGjLoc = 1
              ENDIF
 
@@ -179,8 +173,7 @@ C-           default (face fit into global-IO-array)
 #endif /* ALLOW_EXCH2 */
 
           !myProcRow = INT((mpi_myXGlobalLo(np)-1)/(nSx*sNx))
-          jBase = (mpi_myYGlobalLo(np)-1)
-          !print *, jBase
+          jBase = mpi_myYGlobalLo(np)-1
 
           DO bj=1,nSy
            DO bi=1,nSx
@@ -191,7 +184,6 @@ C-           default (face fit into global-IO-array)
              IF (ABS(temp(j,bi,bj)).gt.0. _d 0) THEN
                jG = jBase+(bj-1)*sNy+j
                gloBuff(jG) = temp(j,bi,bj)
-               print *, 'np, jG, globuff(jg): ',np, jG, gloBuff(jg)
              ENDIF
             ENDDO
 
@@ -211,7 +203,7 @@ C--   All proceses except 0 wait to be polled then send local array
          CALL MPI_RECV (ready_to_receive, 1, MPI_INTEGER,
      &        idest, itag, MPI_COMM_MODEL, istatus, ierr)
 #endif
-         CALL MPI_SEND (myField, lbuff, _MPI_TYPE_R4,
+         CALL MPI_SEND (myField, lbuff, _MPI_TYPE_R8,
      &        idest, itag, MPI_COMM_MODEL, ierr)
 
        ENDIF

@@ -825,15 +825,6 @@ C Assume nothing
       irecord = ABS(jrecord)
       writeMetaF = jrecord.GT.0
 
-C Initialize buffer
-      DO bj = 1,nSy
-       DO bi = 1,nSx
-        DO j = 1,sNy
-         r8seg(j,bi,bj) = 0. _d 0
-        ENDDO
-       ENDDO
-      ENDDO
-
 C Only do I/O if I am the master thread (and mpi process 0 IF useSingleCpuIO):
       iAmDoingIO = MASTER_CPU_IO(myThid)
 
@@ -955,6 +946,11 @@ C Master thread of process 0, only, opens a global file
 C Gather array and write it to file, one vertical level at a time
 
       DO k=kLo,kHi
+C Initialize buffer
+       DO j = 1,ySize
+        y_layer_buffer_r4(j)=0.
+        y_layer_buffer_r8(j)=0.
+       ENDDO
        zeroBuff = k.EQ.kLo
 C-     copy from fldRL/RS(level=k) to 2-D "local":
        IF ( filePrec.EQ.precFloat32 ) THEN
