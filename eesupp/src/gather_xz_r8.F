@@ -75,20 +75,12 @@ C     safer to reset to zero to avoid unknown values in output file
           DO bj=1,nSy
            DO bi=1,nSx
              tN = W2_myTileList(bi,bj)
-             IF  ( exch2_tNx(tN) .GT. xSize ) THEN
-C-           tile y-size larger than glob-size : make a long line
-               iGjLoc = exch2_mydNx(tN)
-               !jGjLoc = 0
-             ELSE
-C-           default (face fit into global-IO-array)
-               iGjLoc = 0
-               !jGjLoc = 1
-             ENDIF
+             iGjLoc = 0
 
-             DO i=1,sNx
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
+             DO i=1,sNx
                iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
                gloBuff(iG) = myField(i,bi,bj)
              ENDDO
@@ -105,10 +97,11 @@ C-           default (face fit into global-IO-array)
 
           DO bj=1,nSy
            DO bi=1,nSx
-            DO i=1,sNx
+
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
+            DO i=1,sNx
                iG = iBase+(bi-1)*sNx+i
                gloBuff(iG) = myField(i,bi,bj)
             ENDDO
@@ -148,18 +141,12 @@ C--   Process 0 gathers the local arrays into the global buffer.
           DO bj=1,nSy
            DO bi=1,nSx
              tN = W2_procTileList(bi,bj,np)
-             IF  ( exch2_tNx(tN) .GT. xSize ) THEN
-C-           tile y-size larger than glob-size : make a long line
-               iGjLoc = 0
-             ELSE
-C-           default (face fit into global-IO-array)
-               iGjLoc = 1
-             ENDIF
+             iGjLoc = 0
 
-             DO i=1,sNx
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
+             DO i=1,sNx
               iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
               gloBuff(iG) = temp(i,bi,bj)
              ENDDO
