@@ -51,13 +51,17 @@ C !LOCAL VARIABLES:
       INTEGER tN
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_USE_MPI
-      INTEGER np, pId
+      INTEGER np, pId, myProcRow
       _R8     temp(1:sNy,nSx,nSy)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER lbuff, idest, itag, ready_to_receive
 #endif /* ALLOW_USE_MPI */
 
       _BEGIN_MASTER( myThid )
+
+      DO jG = 1,ySize
+        gloBuff(j)=0.
+      ENDDO
 
       IF( myProcId .EQ. 0 ) THEN
 C--   Process 0 fills-in its local data
@@ -109,8 +113,8 @@ C-           default (face fit into global-IO-array)
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-              jG = jBase+(bj-1)*sNy+j
-              gloBuff(jG) = myField(j,bi,bj)
+               jG = jBase+(bj-1)*sNy+j
+               gloBuff(jG) = myField(j,bi,bj)
             ENDDO
            ENDDO
           ENDDO
@@ -174,17 +178,23 @@ C-           default (face fit into global-IO-array)
          IF (.TRUE.) THEN
 #endif /* ALLOW_EXCH2 */
 
-          jBase = mpi_myYGlobalLo(np)-1
+          !myProcRow = INT((mpi_myXGlobalLo(np)-1)/(nSx*sNx))
+          jBase = (mpi_myYGlobalLo(np)-1)
+          !print *, jBase
 
           DO bj=1,nSy
            DO bi=1,nSx
-             DO j=1,sNy
+            DO j=1,sNy
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-              jG = jBase+(bj-1)*sNy+j
-              gloBuff(jG) = temp(j,bi,bj)
-             ENDDO
+             IF (ABS(temp(j,bi,bj)).gt.0. _d 0) THEN
+               jG = jBase+(bj-1)*sNy+j
+               gloBuff(jG) = temp(j,bi,bj)
+               print *, 'np, jG, globuff(jg): ',np, jG, gloBuff(jg)
+             ENDIF
+            ENDDO
+
            ENDDO
           ENDDO
 
