@@ -109,8 +109,8 @@ C-           default (face fit into global-IO-array)
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-              jG = jBase+(bj-1)*sNy+j
-              gloBuff(jG) = myField(j,bi,bj)
+               jG = jBase+(bj-1)*sNy+j
+               gloBuff(jG) = myField(j,bi,bj)
             ENDDO
            ENDDO
           ENDDO
@@ -124,7 +124,7 @@ C-    end if myProcId = 0
 #ifdef ALLOW_USE_MPI
       IF ( usingMPI ) THEN
 
-       lbuff = sNy*nSx*nSy
+       lbuff = sNy*nSy
        idest = 0
        itag  = 0
        ready_to_receive = 0
@@ -150,11 +150,9 @@ C--   Process 0 gathers the local arrays into the global buffer.
              tN = W2_procTileList(bi,bj,np)
              IF  ( exch2_tNy(tN) .GT. ySize ) THEN
 C-           tile y-size larger than glob-size : make a long line
-               !iGjLoc = exch2_mydNx(tN)
                jGjLoc = 0
              ELSE
 C-           default (face fit into global-IO-array)
-               !iGjLoc = 0
                jGjLoc = 1
              ENDIF
 
@@ -178,13 +176,16 @@ C-           default (face fit into global-IO-array)
 
           DO bj=1,nSy
            DO bi=1,nSx
-             DO j=1,sNy
+            DO j=1,sNy
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-              jG = jBase+(bj-1)*sNy+j
-              gloBuff(jG) = temp(j,bi,bj)
-             ENDDO
+             IF (ABS(temp(j,bi,bj)).gt.0. _d 0) THEN
+               jG = jBase+(bj-1)*sNy+j
+               gloBuff(jG) = temp(j,bi,bj)
+             ENDIF
+            ENDDO
+
            ENDDO
           ENDDO
 
