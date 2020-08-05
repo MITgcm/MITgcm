@@ -2,12 +2,12 @@
 #include "CPP_EEOPTIONS.h"
 
 CBOP
-C !ROUTINE: SCATTER_YZ_R4
+C !ROUTINE: SCATTER_XZ_R4
 C !INTERFACE:
-      SUBROUTINE SCATTER_YZ_R4(
+      SUBROUTINE SCATTER_XZ_R4(
      I                  gloBuff,
      O                  myField,
-     I                  ySize,
+     I                  xSize,
      I                  useExch2GlobLayOut,
      I                  zeroBuff,
      I                  myThid )
@@ -29,14 +29,14 @@ C     !USES:
 C     !INPUT/OUTPUT PARAMETERS:
 C gloBuff   ( _R4 ) :: full-domain 2D IO-buffer array              (Input)
 C myField   ( _R4 ) :: tiled, local (i.e. my Proc. tiles) 2D array (Output)
-C ySize    (integer):: global buffer 2nd  dim (y)
+C xSize    (integer):: global buffer 2nd  dim (y)
 C useExch2GlobLayOut:: =T: Use Exch2 global-map layout (only with EXCH2)
 C zeroBuff (logical):: =T: reset the buffer to zero after copy
 C myThid   (integer):: my Thread Id number
 
-      INTEGER ySize
-      _R4     gloBuff(ySize)
-      _R4     myField(1:sNy,nSx,nSy)
+      INTEGER xSize
+      _R4     gloBuff(xSize)
+      _R4     myField(1:sNx,nSx,nSy)
       LOGICAL useExch2GlobLayOut
       LOGICAL zeroBuff
       INTEGER myThid
@@ -52,7 +52,7 @@ C !LOCAL VARIABLES:
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_USE_MPI
       INTEGER np, pId
-      _R4     temp(1:sNy,nSx,nSy)
+      _R4     temp(1:sNx,nSx,nSy)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER lbuff, isource, itag
 #endif /* ALLOW_USE_MPI */
@@ -62,7 +62,7 @@ C !LOCAL VARIABLES:
 #ifdef ALLOW_USE_MPI
       IF ( usingMPI ) THEN
 
-       lbuff = sNy*nSy
+       lbuff = sNx*nSx
        isource = 0
        itag  = 0
 
@@ -79,20 +79,14 @@ C--   Process 0 extract the local arrays from the global buffer.
           DO bj=1,nSy
            DO bi=1,nSx
              tN = W2_procTileList(bi,bj,np)
-             IF ( exch2_tNy(tN) .GT. ySize ) THEN
-C-           tile y-size larger than glob-size : make a long line
-               jGjLoc = 0
-             ELSE
-C-           default (face fit into global-IO-array)
-               jGjLoc = 1
-             ENDIF
+             iGjLoc=0
 
-             DO j=1,sNy
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-              jG=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
-              temp(j,bi,bj) = gloBuff(jG)
+             DO i=1,sNx
+              iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
+              temp(i,bi,bj) = gloBuff(iG)
              ENDDO
 
            ENDDO
@@ -103,16 +97,17 @@ C-           default (face fit into global-IO-array)
          IF (.TRUE.) THEN
 #endif /* ALLOW_EXCH2 */
 
-          jBase = mpi_myYGlobalLo(np)-1
+          iBase = mpi_myXGlobalLo(np)-1
 
           DO bj=1,nSy
            DO bi=1,nSx
-             DO j=1,sNy
+
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-              jG = jBase+(bj-1)*sNy+j
-              temp(j,bi,bj) = gloBuff(jG)
+             DO i=1,sNx
+              iG = jBase+(bi-1)*sNx+i
+              temp(i,bi,bj) = gloBuff(iG)
              ENDDO
            ENDDO
           ENDDO
@@ -148,20 +143,14 @@ C--   Process 0 fills-in its local data
           DO bj=1,nSy
            DO bi=1,nSx
              tN = W2_myTileList(bi,bj)
-             IF ( exch2_tNy(tN) .GT. ySize ) THEN
-C-           tile y-size larger than glob-size : make a long line
-               jGjLoc = 0
-             ELSE
-C-           default (face fit into global-IO-array)
-               jGjLoc = 1
-             ENDIF
+             iGjLoc = 0
 
-             DO j=1,sNy
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-              jG=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
-              myField(j,bi,bj) = gloBuff(jG)
+             DO i=1,sNx
+              iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
+              myField(i,bi,bj) = gloBuff(iG)
              ENDDO
 
            ENDDO
@@ -171,8 +160,8 @@ C--   After the copy from the buffer, reset to zero.
 C     An alternative to zeroBuff when writing to file,
 C     which could be faster if we do less read than write.
           IF ( zeroBuff ) THEN
-            DO j=1,ySize
-              gloBuff(j) = 0.
+            DO i=1,xSize
+              gloBuff(i) = 0.
             ENDDO
           ENDIF
 
@@ -181,16 +170,17 @@ C     which could be faster if we do less read than write.
         IF (.TRUE.) THEN
 #endif /* ALLOW_EXCH2 */
 
-          jBase = myYGlobalLo-1
+          iBase = myXGlobalLo-1
 
           DO bj=1,nSy
            DO bi=1,nSx
-             DO j=1,sNy
+
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-              jG = jBase+(bj-1)*sNy+j
-              myField(j,bi,bj) = gloBuff(jG)
+             DO i=1,sNx
+              iG = iBase+(bi-1)*sNx+i
+              myField(i,bi,bj) = gloBuff(iG)
              ENDDO
            ENDDO
           ENDDO

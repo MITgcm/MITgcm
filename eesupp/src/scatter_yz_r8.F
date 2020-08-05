@@ -79,17 +79,11 @@ C--   Process 0 extract the local arrays from the global buffer.
           DO bj=1,nSy
            DO bi=1,nSx
              tN = W2_procTileList(bi,bj,np)
-             IF   ( exch2_mydNx(tN) .GT. xSize ) THEN
-C-           face x-size larger than glob-size : fold it
-               iGjLoc = 0
-               jGjLoc = exch2_mydNx(tN) / xSize
-             ELSEIF ( exch2_tNy(tN) .GT. ySize ) THEN
+             IF ( exch2_tNy(tN) .GT. ySize ) THEN
 C-           tile y-size larger than glob-size : make a long line
-               iGjLoc = exch2_mydNx(tN)
                jGjLoc = 0
              ELSE
 C-           default (face fit into global-IO-array)
-               iGjLoc = 0
                jGjLoc = 1
              ENDIF
 
@@ -156,11 +150,9 @@ C--   Process 0 fills-in its local data
              tN = W2_myTileList(bi,bj)
              IF ( exch2_tNy(tN) .GT. ySize ) THEN
 C-           tile y-size larger than glob-size : make a long line
-               !iGjLoc = exch2_mydNx(tN)
                jGjLoc = 0
              ELSE
 C-           default (face fit into global-IO-array)
-               !iGjLoc = 0
                jGjLoc = 1
              ENDIF
 
