@@ -130,16 +130,17 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       INTEGER irec,dUnit,IL,pIL
       INTEGER dimList(3,2), nDims, map2gl(2)
       INTEGER length_of_rec
+      INTEGER bBij
       INTEGER tNx, global_nTx
       INTEGER tBx, iGjLoc, jGjLoc
-      REAL*4 r4seg(sNx)
-      REAL*8 r8seg(sNx)
-      REAL*4 x_layer_buffer_r4(Nx)
-      REAL*8 x_layer_buffer_r8(Nx)
+      _R4 r4seg(sNx,nSx,nSy)
+      _R8 r8seg(sNx,nSx,nSy)
+      _R4 x_buffer_r4( Nx )
+      _R8 x_buffer_r8( Nx )
+      _R4 xz_buffer_r4( sNx*Nr*nSx )
+      _R8 xz_buffer_r8( sNx*Nr*nSx )
 #ifdef ALLOW_EXCH2
       INTEGER tN
-      REAL*4 x_layer_buffer_exch2_r4(exch2_global_Nx)
-      REAL*8 x_layer_buffer_exch2_r8(exch2_global_Nx)
 #endif /* ALLOW_EXCH2 */
       _RL dummyRL(1)
       CHARACTER*8 blank8c
@@ -280,7 +281,7 @@ C globalFile is too slow, then try using single-CPU I/O.
 C Master thread of process 0, only, opens a global file
        IF ( iAmDoingIO ) THEN
          WRITE(dataFName,'(2a)') fName(1:IL),'.data'
-         length_of_rec = MDS_RECLEN( filePrec, sNx, myThid )
+         length_of_rec = MDS_RECLEN( filePrec, xSize, myThid )
          IF (irecord .EQ. 1) THEN
           OPEN( dUnit, file=dataFName, status=_NEW_STATUS,
      &        access='direct', recl=length_of_rec )
@@ -292,131 +293,81 @@ C Master thread of process 0, only, opens a global file
 
 C Gather array and write it to file, one vertical level at a time
       DO k=kLo,kHi
+C Initialize buffer
+       DO j = 1,xSize
+        x_buffer_r4(j)=0.
+        x_buffer_r8(j)=0.
+       ENDDO
        zeroBuff = k.EQ.kLo
 C-     copy from fldRL/RS(level=k) to 2-D "local":
        IF ( filePrec.EQ.precFloat32 ) THEN
-         DO bj=1,nSy
-         DO bi=1,nSx
-          IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_SEG4toRS_2D( sNx, oLx, kSize, bi, bj, k,
-     &                            .FALSE., r4seg, fldRS )
-          ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_SEG4toRS_2D( sNx, oLx, kSize, bi, bj, k,
-     &                            .FALSE., r4seg, fldRL )
-          ELSE
-            WRITE(msgBuf,'(2A)')
-     &      ' MDS_WRITE_SEC_XZ: illegal value for arrType=', arrType
-            CALL PRINT_ERROR( msgBuf, myThid )
-            CALL ALL_PROC_DIE( myThid )
-            STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_XZ'
-          ENDIF
-         ENDDO
-         ENDDO
+         IF ( arrType.EQ.'RS' ) THEN
+           CALL MDS_PASS_XZ_R4toRS( r4seg, fldRS, 
+     I             0, 1, k, kSize, 0, 0, .FALSE., myThid )
+         ELSEIF ( arrType.EQ.'RL' ) THEN
+           CALL MDS_PASS_XZ_R4toRL( r4seg, fldRL, 
+     I             0, 1, k, kSize, 0, 0, .FALSE., myThid )
+         ELSE
+           WRITE(msgBuf,'(2A)')
+     &     ' MDS_WRITE_SEC_XZ: illegal value for arrType=', arrType
+           CALL PRINT_ERROR( msgBuf, myThid )
+           CALL ALL_PROC_DIE( myThid )
+           STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_XZ'
+         ENDIF
 C Wait for all threads to finish filling shared buffer
           CALL BAR2( myThid )
-#ifdef ALLOW_EXCH2
-          IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
-            CALL GATHER_VEC_R4( 
-     O                         x_layer_buffer_r4,
-     I                         r4seg, 
-     I                         sNx, myThid ) 
-#ifdef ALLOW_EXCH2
-          ELSE
-
-            CALL GATHER_VEC_R4( 
-     O                         x_layer_buffer_exch2_r4,
-     I                         r4seg, 
-     I                         sNx, myThid ) 
-          ENDIF
-#endif
-
-        ELSEIF ( filePrec.EQ.precFloat64 ) THEN
-         DO bj=1,nSy
-         DO bi=1,nSx
-          IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_SEG8toRS_2D( sNx, oLx, kSize, bi, bj, k,
-     I                         .FALSE., r8seg, fldRS )
-          ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_SEG8toRS_2D( sNx, oLx, kSize, bi, bj, k,
-     I                         .FALSE., r8seg, fldRL )
-          ELSE
-            WRITE(msgBuf,'(2A)')
-     &      ' MDS_WRITE_SEC_XZ: illegal value for arrType=', arrType
-            CALL PRINT_ERROR( msgBuf, myThid )
-            CALL ALL_PROC_DIE( myThid )
-            STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_XZ'
-          ENDIF
-         ENDDO
-         ENDDO
+          CALL GATHER_XZ_R4(
+     O                      x_buffer_r4,
+     I                      r4seg,
+     I                      xSize,
+     I                      useExch2ioLayout, zeroBuff, myThid )
+       ELSEIF ( filePrec.EQ.precFloat64 ) THEN
+         IF ( arrType.EQ.'RS' ) THEN
+           CALL MDS_PASS_XZ_R8toRS( r8seg, fldRS,
+     I            0, 1, k, kSize, 0, 0, .FALSE., myThid )
+         ELSEIF ( arrType.EQ.'RL' ) THEN
+           CALL MDS_PASS_XZ_R8toRL( r8seg, fldRL,
+     I            0, 1, k, kSize, 0, 0, .FALSE., myThid )
+         ELSE
+           WRITE(msgBuf,'(2A)')
+     &     ' MDS_WRITE_SEC_XZ: illegal value for arrType=', arrType
+           CALL PRINT_ERROR( msgBuf, myThid )
+           CALL ALL_PROC_DIE( myThid )
+           STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_XZ'
+         ENDIF
 C Wait for all threads to finish filling shared buffer
-          CALL BAR2( myThid )
-#ifdef ALLOW_EXCH2
-          IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
-            CALL GATHER_VEC_R8( 
-     O                         x_layer_buffer_r8,
-     I                         r8seg, 
-     I                         sNx, myThid ) 
-#ifdef ALLOW_EXCH2
-          ELSE
-
-            CALL GATHER_VEC_R8( 
-     O                          x_layer_buffer_exch2_r8,
-     I                          r8seg, 
-     I                          sNx, myThid ) 
-          ENDIF
-#endif
-        ELSE
-          WRITE(msgBuf,'(A,I6)')
-     &      ' MDS_WRITE_SEC_XZ: illegal value for filePrec=',filePrec
-          CALL PRINT_ERROR( msgBuf, myThid )
-          CALL ALL_PROC_DIE( myThid )
-          STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_XZ'
-        ENDIF
+         CALL BAR2( myThid )
+         CALL GATHER_XZ_R8(
+     O                     x_buffer_r8,
+     I                     r8seg,
+     I                     xSize,
+     I                     useExch2ioLayout, zeroBuff, myThid )
+       ELSE
+         WRITE(msgBuf,'(A,I6)')
+     &     ' MDS_WRITE_SEC_XZ: illegal value for filePrec=',filePrec
+         CALL PRINT_ERROR( msgBuf, myThid )
+         CALL ALL_PROC_DIE( myThid )
+         STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_XZ'
+       ENDIF
 C Make other threads wait for "gather" completion so that after this,
 C  shared buffer can again be modified by any thread
         CALL BAR2( myThid )
 
-        IF ( iAmDoingIO ) THEN
-          irec = 1 + k-kLo + (irecord-1)*kSize
-          IF ( filePrec.EQ.precFloat32 ) THEN
-
-#ifdef ALLOW_EXCH2
-           IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
+       IF ( iAmDoingIO ) THEN
+         irec = 1 + (k-kLo) + (irecord-1)*nNz
+         IF ( filePrec.EQ.precFloat32 ) THEN
 # ifdef _BYTESWAPIO
-            CALL MDS_BYTESWAPR4( xSize, x_layer_buffer_r4 )
+           CALL MDS_BYTESWAPR4( xSize, x_buffer_r4 )
 # endif
-            WRITE(dUnit,rec=irec) x_layer_buffer_r4
-#ifdef ALLOW_EXCH2
-           ELSE
+           WRITE(dUnit,rec=irec) x_buffer_r4
+         ELSE
 # ifdef _BYTESWAPIO
-            CALL MDS_BYTESWAPR4( xSize, x_layer_buffer_exch2_r4 )
+           CALL MDS_BYTESWAPR8( xSize, x_buffer_r8 )
 # endif
-            WRITE(dUnit,rec=irec) x_layer_buffer_exch2_r4
-           ENDIF
-#endif
-          ELSE
-
-#ifdef ALLOW_EXCH2
-           IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
-# ifdef _BYTESWAPIO
-            CALL MDS_BYTESWAPR8( xSize, x_layer_buffer_r8 )
-# endif
-            WRITE(dUnit,rec=irec) x_layer_buffer_r8
-#ifdef ALLOW_EXCH2
-           ELSE
-# ifdef _BYTESWAPIO
-            CALL MDS_BYTESWAPR8( xSize, x_layer_buffer_exch2_r8 )
-# endif
-            WRITE(dUnit,rec=irec) x_layer_buffer_exch2_r8
-           ENDIF
-#endif
-          ENDIF
+           WRITE(dUnit,rec=irec) x_buffer_r8
+         ENDIF
 C-      end if iAmDoingIO
-        ENDIF
+       ENDIF
 C-     end of k loop
        ENDDO
 
@@ -431,21 +382,16 @@ C---  else .NOT.useSingleCpuIO
 
 C Wait for all thread to finish. This prevents other threads (e.g., master)
 C  to continue to acces 3-D buffer while this thread is filling it.
-        CALL BAR2( myThid )
+       CALL BAR2( myThid )
 
-C---    Copy from fldRL/RS to 3-D buffer (multi-threads):
-       DO k=kLo,kHi
-        zeroBuff = k.EQ.kLo
-        DO bj=1,nSy
-        DO bi=1,nSx
-C-      copy from fldRL/RS(level=k) to 2-D "local":
+C---    Copy from fldRL/RS to 2-D buffer (multi-threads):
         IF ( filePrec.EQ.precFloat32 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_SEG4toRS_2D( sNx, oLx, kSize, bi, bj, k,
-     &                            .FALSE., r4seg, fldRS )
+            CALL MDS_PASS_XZ_R4toRS( xz_buffer_r4, fldRS,
+     I              0, nNz, kLo, kSize, 0, 0, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_SEG4toRS_2D( sNx, oLx, kSize, bi, bj, k,
-     &                            .FALSE., r4seg, fldRL )
+            CALL MDS_PASS_XZ_R4toRL( xz_buffer_r4, fldRL,
+     I              0, nNz, kLo, kSize, 0, 0, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(2A)')
      &      ' MDS_WRITE_SEC_XZ: illegal value for arrType=', arrType
@@ -456,11 +402,11 @@ C-      copy from fldRL/RS(level=k) to 2-D "local":
 
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_SEG8toRS_2D( sNx, oLx, kSize, bi, bj, k,
-     I                         .FALSE., r8seg, fldRS )
+            CALL MDS_PASS_XZ_R8toRS( xz_buffer_r8, fldRS,
+     I              0, nNz, kLo, kSize, 0, 0, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_SEG8toRS_2D( sNx, oLx, kSize, bi, bj, k,
-     I                         .FALSE., r8seg, fldRL )
+            CALL MDS_PASS_XZ_R8toRL( xz_buffer_r8, fldRL,
+     I              0, nNz, kLo, kSize, 0, 0, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(2A)')
      &      ' MDS_WRITE_SEC_XZ: illegal value for arrType=', arrType
@@ -468,7 +414,6 @@ C-      copy from fldRL/RS(level=k) to 2-D "local":
             CALL ALL_PROC_DIE( myThid )
             STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_XZ'
           ENDIF
-
         ELSE
           WRITE(msgBuf,'(A,I6)')
      &      ' MDS_WRITE_SEC_XZ: illegal value for filePrec=',filePrec
@@ -476,10 +421,6 @@ C-      copy from fldRL/RS(level=k) to 2-D "local":
           CALL ALL_PROC_DIE( myThid )
           STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_XZ'
         ENDIF
-        ENDDO
-        ENDDO
-C-     end of k loop
-       ENDDO
 
 C Wait for all threads to finish filling shared buffer
        CALL BAR2( myThid )
@@ -489,9 +430,9 @@ C Only do I/O if I am the master thread
 
 #ifdef _BYTESWAPIO
         IF ( filePrec.EQ.precFloat32 ) THEN
-          CALL MDS_BYTESWAPR4( sNx, r4seg )
+          CALL MDS_BYTESWAPR4( sNx*nNz*nSx, xz_buffer_r4 )
         ELSE
-          CALL MDS_BYTESWAPR8( sNx, r8seg )
+          CALL MDS_BYTESWAPR8( sNx*nNz*nSx, xz_buffer_r8 )
         ENDIF
 #endif
 
@@ -512,10 +453,11 @@ C If we are writing to a global file then we open it here
 C Loop over all tiles
         DO bj=1,nSy
          DO bi=1,nSx
+          bBij = sNx*nNz*( bi-1 + (bj-1)*nSx )
 
           tNx = sNx
           global_nTx = xSize/sNx
-          tBx = myXGlobalLo-1 + (bi-1)*sNx
+          tBx = myXGlobalLo-1 + (bj-1)*sNx
 #ifdef ALLOW_EXCH2
           IF ( useExch2ioLayOut ) THEN
             tN = W2_myTileList(bi,bj)
@@ -541,10 +483,12 @@ C--- Case of 1 Global file:
            DO k=kLo,kHi
             irec = 1 + tBx/tNx
      &           +( k-kLo + (irecord-1)*kSize )*global_nTx
+            i1 = bBij + 1 + (k-kLo)*sNx
+            i2 = bBij +           k*sNx
             IF ( filePrec.EQ.precFloat32 ) THEN
-             WRITE(dUnit,rec=irec) r4seg
+             WRITE(dUnit,rec=irec) (xz_buffer_r4(i),i=i1,i2)
             ELSE
-             WRITE(dUnit,rec=irec) r8seg
+             WRITE(dUnit,rec=irec) (xz_buffer_r8(i),i=i1,i2)
             ENDIF
 C End of k loop
            ENDDO
@@ -557,7 +501,7 @@ C If we are writing to a tiled MDS file then we open each one here
            jG=bj+(myYGlobalLo-1)/sNy
            WRITE(dataFName,'(2A,I3.3,A,I3.3,A)')
      &            pfName(1:pIL),'.',iG,'.',jG,'.data'
-           length_of_rec = MDS_RECLEN( filePrec, sNx, myThid )
+           length_of_rec = MDS_RECLEN( filePrec, sNx*nNz, myThid )
            IF (irecord .EQ. 1) THEN
             OPEN( dUnit, file=dataFName, status=_NEW_STATUS,
      &            access='direct', recl=length_of_rec )
@@ -567,15 +511,12 @@ C If we are writing to a tiled MDS file then we open each one here
            ENDIF
            fileIsOpen=.TRUE.
 
-           DO k=kLo,kHi
-            irec = k+kSize*(irecord-1)
-            IF ( filePrec.EQ.precFloat32 ) THEN
-              WRITE(dUnit,rec=irec) r4seg
-            ELSE
-              WRITE(dUnit,rec=irec) r8seg
-            ENDIF
-C End of k loop
-           ENDDO
+           irec = irecord
+           IF ( filePrec.EQ.precFloat32 ) THEN
+             WRITE(dUnit,rec=irec) xz_buffer_r4
+           ELSE
+             WRITE(dUnit,rec=irec) xz_buffer_r8
+           ENDIF
 
 C here We close the tiled MDS file
            IF ( fileIsOpen ) THEN
@@ -592,7 +533,7 @@ C Create meta-file for each tile if we are tiling
            jG=bj+(myYGlobalLo-1)/sNy
            WRITE(metaFname,'(2A,I3.3,A,I3.3,A)')
      &              pfName(1:pIL),'.',iG,'.',jG,'.meta'
-           dimList(1,1) = xSize
+           dimList(1,1) = Nx
            dimList(2,1) = tBx + 1
            dimList(3,1) = tBx + tNx
            dimList(1,2) = nNz
@@ -632,9 +573,9 @@ C Create meta-file for the global-file (also if useSingleCpuIO)
       IF ( writeMetaF .AND. iAmDoingIO .AND.
      &    (globalFile .OR. useSingleCpuIO) ) THEN
          WRITE(metaFName,'(2A)') fName(1:IL),'.meta'
-         dimList(1,1) = xSize
+         dimList(1,1) = Nx
          dimList(2,1) = 1
-         dimList(3,1) = xSize
+         dimList(3,1) = Nx
          dimList(1,2) = nNz
          dimList(2,2) = 1
          dimList(3,2) = nNz
@@ -776,7 +717,7 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       INTEGER xSize, ySize
       INTEGER irecord
       INTEGER iG,jG,bi,bj
-      INTEGER i1,i2,i,j,k,nNz,np
+      INTEGER i1,i2,i,j,k,nNz
       INTEGER irec,dUnit,IL,pIL
       INTEGER dimList(3,2), nDims, map2gl(2)
       INTEGER length_of_rec
@@ -785,14 +726,12 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       INTEGER tBy, iGjLoc, jGjLoc
       _R4 r4seg(sNy,nSx,nSy)
       _R8 r8seg(sNy,nSx,nSy)
-      _R4 y_layer_buffer_r4( Ny )
-      _R8 y_layer_buffer_r8( Ny )
-      _R4 yz_buffer_r4( sNy*Nr*nSx*nSy )
-      _R8 yz_buffer_r8( sNy*Nr*nSx*nSy )
+      _R4 y_buffer_r4( Ny )
+      _R8 y_buffer_r8( Ny )
+      _R4 yz_buffer_r4( sNy*Nr*nSy )
+      _R8 yz_buffer_r8( sNy*Nr*nSy )
 #ifdef ALLOW_EXCH2
       INTEGER tN
-      REAL*4 y_layer_buffer_exch2_r4(exch2_global_Ny)
-      REAL*8 y_layer_buffer_exch2_r8(exch2_global_Ny)
 #endif /* ALLOW_EXCH2 */
       _RL dummyRL(1)
       CHARACTER*8 blank8c
@@ -944,12 +883,11 @@ C Master thread of process 0, only, opens a global file
        ENDIF
 
 C Gather array and write it to file, one vertical level at a time
-
       DO k=kLo,kHi
 C Initialize buffer
        DO j = 1,ySize
-        y_layer_buffer_r4(j)=0.
-        y_layer_buffer_r8(j)=0.
+        y_buffer_r4(j)=0.
+        y_buffer_r8(j)=0.
        ENDDO
        zeroBuff = k.EQ.kLo
 C-     copy from fldRL/RS(level=k) to 2-D "local":
@@ -969,28 +907,11 @@ C-     copy from fldRL/RS(level=k) to 2-D "local":
          ENDIF
 C Wait for all threads to finish filling shared buffer
           CALL BAR2( myThid )
-#ifdef ALLOW_EXCH2
-          IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
-            CALL GATHER_YZ_R4(
-     O                        y_layer_buffer_r4,
-     I                        r4seg,
-     I                        ySize,
-     I                        useExch2ioLayout,
-     I                        zeroBuff,
-     I                        myThid )
-#ifdef ALLOW_EXCH2
-          ELSE
-            CALL GATHER_YZ_R4(
-     O                        y_layer_buffer_exch2_r4,
-     I                        r4seg,
-     I                        ySize,
-     I                        useExch2ioLayout,
-     I                        zeroBuff,
-     I                        myThid )
-          ENDIF
-#endif
-
+          CALL GATHER_YZ_R4(
+     O                      y_buffer_r4,
+     I                      r4seg,
+     I                      ySize,
+     I                      useExch2ioLayout, zeroBuff, myThid )
        ELSEIF ( filePrec.EQ.precFloat64 ) THEN
          IF ( arrType.EQ.'RS' ) THEN
            CALL MDS_PASS_YZ_R8toRS( r8seg, fldRS,
@@ -1005,36 +926,13 @@ C Wait for all threads to finish filling shared buffer
            CALL ALL_PROC_DIE( myThid )
            STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_YZ'
          ENDIF
-         IF ( debugLevel .GE. debLevC ) THEN
-           WRITE(msgBuf,'(A,I8)')
-     &       ' MDS_WRITE_SEC_YZ: SIZE(ylayerbuffer_r8): ', 
-     &          SIZE(y_layer_buffer_r8)
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                         SQUEEZE_RIGHT, myThid )
-         ENDIF
 C Wait for all threads to finish filling shared buffer
          CALL BAR2( myThid )
-#ifdef ALLOW_EXCH2
-          IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
-            CALL GATHER_YZ_R8(
-     O                        y_layer_buffer_r8,
-     I                        r8seg,
-     I                        ySize,
-     I                        useExch2ioLayout,
-     I                        zeroBuff,
-     I                        myThid )
-#ifdef ALLOW_EXCH2
-          ELSE
-            CALL GATHER_YZ_R8(
-     O                        y_layer_buffer_exch2_r8,
-     I                        r8seg,
-     I                        ySize,
-     I                        useExch2ioLayout,
-     I                        zeroBuff,
-     I                        myThid )
-          ENDIF
-#endif
+         CALL GATHER_YZ_R8(
+     O                     y_buffer_r8,
+     I                     r8seg,
+     I                     ySize,
+     I                     useExch2ioLayout, zeroBuff, myThid )
        ELSE
          WRITE(msgBuf,'(A,I6)')
      &     ' MDS_WRITE_SEC_YZ: illegal value for filePrec=',filePrec
@@ -1048,46 +946,16 @@ C  shared buffer can again be modified by any thread
 
        IF ( iAmDoingIO ) THEN
          irec = 1 + (k-kLo) + (irecord-1)*nNz
-         IF ( debugLevel .GE. debLevC ) THEN
-           WRITE(msgBuf,'(A,I8,A,I8)')
-     &       ' MDS_WRITE_SEC_YZ: irec: ', irec,
-     &       ' SIZE(ylayerbuffer_r8): ', SIZE(y_layer_buffer_r8)
-           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                         SQUEEZE_RIGHT, myThid )
-         ENDIF
          IF ( filePrec.EQ.precFloat32 ) THEN
-#ifdef ALLOW_EXCH2
-           IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
 # ifdef _BYTESWAPIO
-             CALL MDS_BYTESWAPR4( ySize, y_layer_buffer_r4 )
+           CALL MDS_BYTESWAPR4( ySize, y_buffer_r4 )
 # endif
-             WRITE(dUnit,rec=irec) y_layer_buffer_r4
-#ifdef ALLOW_EXCH2
-           ELSE
-# ifdef _BYTESWAPIO
-             CALL MDS_BYTESWAPR4( ySize, y_layer_buffer_exch2_r4 )
-# endif
-             WRITE(dUnit,rec=irec) y_layer_buffer_exch2_r4
-           ENDIF
-#endif
+           WRITE(dUnit,rec=irec) y_buffer_r4
          ELSE
-
-#ifdef ALLOW_EXCH2
-           IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
 # ifdef _BYTESWAPIO
-             CALL MDS_BYTESWAPR8( ySize, y_layer_buffer_r8 )
+           CALL MDS_BYTESWAPR8( ySize, y_buffer_r8 )
 # endif
-             WRITE(dUnit,rec=irec) y_layer_buffer_r8
-#ifdef ALLOW_EXCH2
-           ELSE
-# ifdef _BYTESWAPIO
-             CALL MDS_BYTESWAPR8( ySize, y_layer_buffer_exch2_r8 )
-# endif
-             WRITE(dUnit,rec=irec) y_layer_buffer_exch2_r8
-           ENDIF
-#endif
+           WRITE(dUnit,rec=irec) y_buffer_r8
          ENDIF
 C-      end if iAmDoingIO
        ENDIF
@@ -1137,7 +1005,6 @@ C---    Copy from fldRL/RS to 2-D buffer (multi-threads):
             CALL ALL_PROC_DIE( myThid )
             STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_YZ'
           ENDIF
-
         ELSE
           WRITE(msgBuf,'(A,I6)')
      &      ' MDS_WRITE_SEC_YZ: illegal value for filePrec=',filePrec
@@ -1204,12 +1071,11 @@ C-          default (face fit into global-IO-array)
           IF (globalFile) THEN
 C--- Case of 1 Global file:
 
-Cts --- TODO: check this!
            DO k=kLo,kHi
             irec = 1 + tBy/tNy
      &           +( k-kLo + (irecord-1)*kSize )*global_nTy
-            i1 = bBij + 1 + (k-kLo)*sNx*sNy
-            i2 = bBij +           k*sNx*sNy
+            i1 = bBij + 1 + (k-kLo)*sNy
+            i2 = bBij +           k*sNy
             IF ( filePrec.EQ.precFloat32 ) THEN
              WRITE(dUnit,rec=irec) (yz_buffer_r4(i),i=i1,i2)
             ELSE
@@ -1301,9 +1167,6 @@ C Create meta-file for the global-file (also if useSingleCpuIO)
          dimList(1,1) = Ny
          dimList(2,1) = 1
          dimList(3,1) = Ny
-         ! dimList(1,2) = nPx
-         ! dimList(2,2) = 1
-         ! dimList(3,2) = nPx
          dimList(1,2) = nNz
          dimList(2,2) = 1
          dimList(3,2) = nNz
