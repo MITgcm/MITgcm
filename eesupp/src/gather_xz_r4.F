@@ -2,12 +2,12 @@
 #include "CPP_EEOPTIONS.h"
 
 CBOP
-C !ROUTINE: GATHER_YZ_R8
+C !ROUTINE: GATHER_XZ_R4
 C !INTERFACE:
-      SUBROUTINE GATHER_YZ_R8(
+      SUBROUTINE GATHER_XZ_R4(
      O                  gloBuff,
      I                  myField,
-     I                  ySize,
+     I                  xSize,
      I                  useExch2GlobLayOut,
      I                  zeroBuff,
      I                  myThid )
@@ -27,16 +27,16 @@ C     !USES:
 #endif /* ALLOW_EXCH2 */
 
 C     !INPUT/OUTPUT PARAMETERS:
-C gloBuff   ( _R8 ) :: full-domain 2D IO-buffer array             (Output)
-C myField   ( _R8 ) :: tiled, local (i.e. my Proc. tiles) 2D array (Input)
-C ySize    (integer):: global buffer 1rst dim (y)
+C gloBuff   ( _R4 ) :: full-domain 2D IO-buffer array             (Output)
+C myField   ( _R4 ) :: tiled, local (i.e. my Proc. tiles) 2D array (Input)
+C xSize    (integer):: global buffer 1rst dim (y)
 C useExch2GlobLayOut:: =T: Use Exch2 global-map layout (only with EXCH2)
 C zeroBuff (logical):: =T: initialise the buffer to zero before copy
 C myThid   (integer):: my Thread Id number
 
-      INTEGER ySize
-      _R8     gloBuff(ySize)
-      _R8     myField(1:sNy,nSx,nSy)
+      INTEGER xSize
+      _R4     gloBuff(xSize)
+      _R4     myField(1:sNx,nSx,nSy)
       LOGICAL useExch2GlobLayOut
       LOGICAL zeroBuff
       INTEGER myThid
@@ -52,7 +52,7 @@ C !LOCAL VARIABLES:
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_USE_MPI
       INTEGER np, pId
-      _R8     temp(1:sNy,nSx,nSy)
+      _R4     temp(1:sNx,nSx,nSy)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER lbuff, idest, itag, ready_to_receive
 #endif /* ALLOW_USE_MPI */
@@ -67,30 +67,30 @@ C--   Process 0 fills-in its local data
 C--   If using blank-tiles, buffer will not be completely filled;
 C     safer to reset to zero to avoid unknown values in output file
           IF ( zeroBuff ) THEN
-            DO j=1,ySize
-               gloBuff(j) = 0.
+            DO i=1,xSize
+               gloBuff(i) = 0.
             ENDDO
           ENDIF
 
           DO bj=1,nSy
            DO bi=1,nSx
              tN = W2_myTileList(bi,bj)
-             IF  ( exch2_tNy(tN) .GT. ySize ) THEN
+             IF  ( exch2_tNx(tN) .GT. xSize ) THEN
 C-           tile y-size larger than glob-size : make a long line
-               !iGjLoc = exch2_mydNx(tN)
-               jGjLoc = 0
+               iGjLoc = exch2_mydNx(tN)
+               !jGjLoc = 0
              ELSE
 C-           default (face fit into global-IO-array)
-               !iGjLoc = 0
-               jGjLoc = 1
+               iGjLoc = 0
+               !jGjLoc = 1
              ENDIF
 
-             DO j=1,sNy
+             DO i=1,sNx
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-               jG=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
-               gloBuff(jG) = myField(j,bi,bj)
+               iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
+               gloBuff(iG) = myField(i,bi,bj)
              ENDDO
 
            ENDDO
@@ -101,16 +101,16 @@ C-           default (face fit into global-IO-array)
         IF (.TRUE.) THEN
 #endif /* ALLOW_EXCH2 */
 
-          jBase = myYGlobalLo-1
+          iBase = myXGlobalLo-1
 
           DO bj=1,nSy
            DO bi=1,nSx
-            DO j=1,sNy
+            DO i=1,sNx
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-               jG = jBase+(bj-1)*sNy+j
-               gloBuff(jG) = myField(j,bi,bj)
+               iG = iBase+(bi-1)*sNx+i
+               gloBuff(iG) = myField(i,bi,bj)
             ENDDO
            ENDDO
           ENDDO
@@ -124,7 +124,7 @@ C-    end if myProcId = 0
 #ifdef ALLOW_USE_MPI
       IF ( usingMPI ) THEN
 
-       lbuff = sNy*nSy
+       lbuff = sNx*nSx
        idest = 0
        itag  = 0
        ready_to_receive = 0
@@ -138,7 +138,7 @@ C--   Process 0 polls and receives data from each process in turn
          CALL MPI_SEND (ready_to_receive, 1, MPI_INTEGER,
      &           pId, itag, MPI_COMM_MODEL, ierr)
 #endif
-         CALL MPI_RECV (temp, lbuff, _MPI_TYPE_R8,
+         CALL MPI_RECV (temp, lbuff, _MPI_TYPE_R4,
      &           pId, itag, MPI_COMM_MODEL, istatus, ierr)
 
 C--   Process 0 gathers the local arrays into the global buffer.
@@ -148,20 +148,20 @@ C--   Process 0 gathers the local arrays into the global buffer.
           DO bj=1,nSy
            DO bi=1,nSx
              tN = W2_procTileList(bi,bj,np)
-             IF  ( exch2_tNy(tN) .GT. ySize ) THEN
+             IF  ( exch2_tNx(tN) .GT. xSize ) THEN
 C-           tile y-size larger than glob-size : make a long line
-               jGjLoc = 0
+               iGjLoc = 0
              ELSE
 C-           default (face fit into global-IO-array)
-               jGjLoc = 1
+               iGjLoc = 1
              ENDIF
 
-             DO j=1,sNy
+             DO i=1,sNx
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-              jG=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
-              gloBuff(jG) = temp(j,bi,bj)
+              iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
+              gloBuff(iG) = temp(i,bi,bj)
              ENDDO
 
            ENDDO
@@ -172,17 +172,17 @@ C-           default (face fit into global-IO-array)
          IF (.TRUE.) THEN
 #endif /* ALLOW_EXCH2 */
 
-          jBase = mpi_myYGlobalLo(np)-1
+          iBase = mpi_myXGlobalLo(np)-1
 
           DO bj=1,nSy
            DO bi=1,nSx
-            DO j=1,sNy
+            DO i=1,sNx
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-             IF (ABS(temp(j,bi,bj)).gt.0. _d 0) THEN
-               jG = jBase+(bj-1)*sNy+j
-               gloBuff(jG) = temp(j,bi,bj)
+             IF (ABS(temp(i,bi,bj)).gt.0. _d 0) THEN
+               iG = iBase+(bi-1)*sNx+i
+               gloBuff(iG) = temp(i,bi,bj)
              ENDIF
             ENDDO
 
@@ -202,7 +202,7 @@ C--   All proceses except 0 wait to be polled then send local array
          CALL MPI_RECV (ready_to_receive, 1, MPI_INTEGER,
      &        idest, itag, MPI_COMM_MODEL, istatus, ierr)
 #endif
-         CALL MPI_SEND (myField, lbuff, _MPI_TYPE_R8,
+         CALL MPI_SEND (myField, lbuff, _MPI_TYPE_R4,
      &        idest, itag, MPI_COMM_MODEL, ierr)
 
        ENDIF
