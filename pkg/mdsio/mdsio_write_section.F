@@ -926,20 +926,118 @@ C Assign a free unit number as the I/O channel for this routine
 C- endif iAmDoingIO
       ENDIF
 
-C If option globalFile is desired but does not work or if
-C globalFile is too slow, then try using single-CPU I/O.
-      IF (useSingleCpuIO) THEN
+C Gather array and write it to file, one vertical level at a time
 
-C Master thread of process 0, only, opens a global file
-       IF ( iAmDoingIO ) THEN
-         WRITE(dataFName,'(2a)') fName(1:IL),'.data'
-         length_of_rec = MDS_RECLEN( filePrec, ySize, myThid )
-         IF (irecord .EQ. 1) THEN
-          OPEN( dUnit, file=dataFName, status=_NEW_STATUS,
-     &        access='direct', recl=length_of_rec )
+      DO k=kLo,kHi
+       zeroBuff = k.EQ.kLo
+C-     copy from fldRL/RS(level=k) to 2-D "local":
+       IF ( filePrec.EQ.precFloat32 ) THEN
+         IF ( arrType.EQ.'RS' ) THEN
+           CALL MDS_PASS_YZ_R4toRS( r4seg, fldRS, 
+     I             0, 1, k, kSize, 0, 0, .FALSE., myThid )
+         ELSEIF ( arrType.EQ.'RL' ) THEN
+           CALL MDS_PASS_YZ_R4toRL( r4seg, fldRL, 
+     I             0, 1, k, kSize, 0, 0, .FALSE., myThid )
          ELSE
-          OPEN( dUnit, file=dataFName, status=_OLD_STATUS,
-     &        access='direct', recl=length_of_rec )
+           WRITE(msgBuf,'(2A)')
+     &     ' MDS_WRITE_SEC_YZ: illegal value for arrType=', arrType
+           CALL PRINT_ERROR( msgBuf, myThid )
+           CALL ALL_PROC_DIE( myThid )
+           STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_YZ'
+         ENDIF
+C Wait for all threads to finish filling shared buffer
+          CALL BAR2( myThid )
+#ifdef ALLOW_EXCH2
+          IF ( .not.W2_useE2ioLayOut ) THEN
+#endif
+            CALL GATHER_YZ_R4(
+     O                        y_layer_buffer_r4,
+     I                        r4seg,
+     I                        ySize,
+     I                        useExch2ioLayout,
+     I                        zeroBuff,
+     I                        myThid )
+#ifdef ALLOW_EXCH2
+          ELSE
+            CALL GATHER_YZ_R4(
+     O                        y_layer_buffer_exch2_r4,
+     I                        r4seg,
+     I                        ySize,
+     I                        useExch2ioLayout,
+     I                        zeroBuff,
+     I                        myThid )
+          ENDIF
+#endif
+
+       ELSEIF ( filePrec.EQ.precFloat64 ) THEN
+         IF ( arrType.EQ.'RS' ) THEN
+           CALL MDS_PASS_YZ_R8toRS( r8seg, fldRS,
+     I            0, 1, k, kSize, 0, 0, .FALSE., myThid )
+         ELSEIF ( arrType.EQ.'RL' ) THEN
+           CALL MDS_PASS_YZ_R8toRL( r8seg, fldRL,
+     I            0, 1, k, kSize, 0, 0, .FALSE., myThid )
+         ELSE
+           WRITE(msgBuf,'(2A)')
+     &     ' MDS_WRITE_SEC_YZ: illegal value for arrType=', arrType
+           CALL PRINT_ERROR( msgBuf, myThid )
+           CALL ALL_PROC_DIE( myThid )
+           STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_YZ'
+         ENDIF
+         IF ( debugLevel .GE. debLevC ) THEN
+           WRITE(msgBuf,'(A,I8)')
+     &       ' MDS_WRITE_SEC_YZ: SIZE(ylayerbuffer_r8): ', 
+     &          SIZE(y_layer_buffer_r8)
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+         ENDIF
+C Wait for all threads to finish filling shared buffer
+         CALL BAR2( myThid )
+#ifdef ALLOW_EXCH2
+          IF ( .not.W2_useE2ioLayOut ) THEN
+#endif
+            CALL GATHER_YZ_R8(
+     O                        y_layer_buffer_r8,
+     I                        r8seg,
+     I                        ySize,
+     I                        useExch2ioLayout,
+     I                        zeroBuff,
+     I                        myThid )
+#ifdef ALLOW_EXCH2
+          ELSE
+            CALL GATHER_YZ_R8(
+     O                        y_layer_buffer_exch2_r8,
+     I                        r8seg,
+     I                        ySize,
+     I                        useExch2ioLayout,
+     I                        zeroBuff,
+     I                        myThid )
+          ENDIF
+#endif
+       ELSE
+         WRITE(msgBuf,'(A,I6)')
+     &     ' MDS_WRITE_SEC_YZ: illegal value for filePrec=',filePrec
+         CALL PRINT_ERROR( msgBuf, myThid )
+         CALL ALL_PROC_DIE( myThid )
+         STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_YZ'
+       ENDIF
+C Make other threads wait for "gather" completion so that after this,
+C  shared buffer can again be modified by any thread
+        CALL BAR2( myThid )
+
+       IF ( iAmDoingIO ) THEN
+         irec = 1 + k-kLo + (irecord-1)*kSize
+         IF ( debugLevel .GE. debLevC ) THEN
+           WRITE(msgBuf,'(A,I8,A,I8)')
+     &       ' MDS_WRITE_SEC_YZ: irec: ', irec,
+     &       ' SIZE(ylayerbuffer_r8): ', SIZE(y_layer_buffer_r8)
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           do j=1,Ny
+           WRITE(msgBuf,'(A,F8.2)')
+     &       ' MDS_WRITE_SEC_YZ: : ybuffer(j): ',y_layer_buffer_r8(j)
+           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                         SQUEEZE_RIGHT, myThid )
+           enddo
          ENDIF
        ENDIF
 
