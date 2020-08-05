@@ -725,16 +725,14 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       INTEGER bBij
       INTEGER tNy, global_nTy
       INTEGER tBy, iGjLoc, jGjLoc
-      REAL*4 r4seg(sNy,nSx,nSy)
-      REAL*8 r8seg(sNy,nSx,nSy)
-      REAL*4 y_layer_buffer_r4(Ny)
-      REAL*8 y_layer_buffer_r8(Ny)
-      REAL*4 yz_buffer_r4( sNy*Nr*nSx*nSy )
-      REAL*8 yz_buffer_r8( sNy*Nr*nSx*nSy )
+      _R4 r4seg(sNy,nSx,nSy)
+      _R8 r8seg(sNy,nSx,nSy)
+      _R4 y_buffer_r4(Ny)
+      _R8 y_buffer_r8(Ny)
+      _R4 yz_buffer_r4( sNy*Nr*nSy )
+      _R8 yz_buffer_r8( sNy*Nr*nSy )
 #ifdef ALLOW_EXCH2
       INTEGER tN
-      REAL*4 y_layer_buffer_exch2_r4(exch2_global_Ny)
-      REAL*8 y_layer_buffer_exch2_r8(exch2_global_Ny)
 #endif /* ALLOW_EXCH2 */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -913,37 +911,14 @@ C master thread of process 0, only ,read from file
         IF ( iAmDoingIO ) THEN
           irec = 1 + k-kLo + (irecord-1)*kSize
           IF ( filePrec.EQ.precFloat32 ) THEN
-#ifdef ALLOW_EXCH2
-            IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
-# ifdef _BYTESWAPIO
-              CALL MDS_BYTESWAPR4( ySize, y_layer_buffer_r4 )
-# endif
-              WRITE(dUnit,rec=irec) y_layer_buffer_r4
-#ifdef ALLOW_EXCH2
-            ELSE
-# ifdef _BYTESWAPIO
-              CALL MDS_BYTESWAPR4( ySize, y_layer_buffer_exch2_r4 )
-# endif
-             WRITE(dUnit,rec=irec) y_layer_buffer_exch2_r4
-            ENDIF
+            READ(dUnit,rec=irec) y_buffer_r4
+#ifdef _BYTESWAPIO
+            CALL MDS_BYTESWAPR4( ySize, y_buffer_r4 )
 #endif
           ELSE
-
-#ifdef ALLOW_EXCH2
-            IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
-# ifdef _BYTESWAPIO
-              CALL MDS_BYTESWAPR8( ySize, y_layer_buffer_r8 )
-# endif
-              WRITE(dUnit,rec=irec) y_layer_buffer_r8
-#ifdef ALLOW_EXCH2
-            ELSE
-# ifdef _BYTESWAPIO
-              CALL MDS_BYTESWAPR8( ySize, y_layer_buffer_exch2_r8 )
-# endif
-              WRITE(dUnit,rec=irec) y_layer_buffer_exch2_r8
-            ENDIF
+            READ(dUnit,rec=irec) y_buffer_r8
+#ifdef _BYTESWAPIO
+            CALL MDS_BYTESWAPR8( ySize, y_buffer_r8 )
 #endif
           ENDIF
 C-      end if iAmDoingIO
@@ -955,21 +930,18 @@ C  to access shared buffer while master thread is loading data into
         CALL BAR2( myThid )
 
         IF ( filePrec.EQ.precFloat32 ) THEN
-#ifdef ALLOW_EXCH2
-          IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
-            CALL SCATTER_YZ_R4( y_layer_buffer_r4, r4seg, myThid )
-#ifdef ALLOW_EXCH2
-          ELSE
-            CALL SCATTER_YZ_R4( y_layer_exch2_buffer_r4, r4seg, myThid )
-          ENDIF
-#endif
+          CALL SCATTER_YZ_R4( 
+     U                       y_buffer_r4,
+     O                       r4seg,
+     I                       ySize,
+     I                       useExch2ioLayOut, .FALSE., myThid )
+C All threads wait for Master to finish loading into shared buffer
           CALL BAR2( myThid )
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_YZ_R4toRS( y_layer_buffer_r4, fldRS,
+            CALL MDS_PASS_YZ_R4toRS( y_buffer_r4, fldRS,
      &              0, 1, k, kSize, 0, 0, .TRUE., myThid)
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_YZ_R4toRL( y_layer_buffer_r4, fldRL,
+            CALL MDS_PASS_YZ_R4toRL( y_buffer_r4, fldRL,
      &              0, 1, k, kSize, 0, 0, .TRUE., myThid)
           ELSE
             WRITE(msgBuf,'(2A)')
@@ -979,23 +951,19 @@ C  to access shared buffer while master thread is loading data into
             STOP 'ABNORMAL END: S/R MDS_READ_SEC_YZ'
           ENDIF
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
-#ifdef ALLOW_EXCH2
-          IF ( .not.W2_useE2ioLayOut ) THEN
-#endif
-            CALL SCATTER_YZ_R8( y_layer_buffer_r8, r8seg, myThid )
-#ifdef ALLOW_EXCH2
-          ELSE
-            CALL SCATTER_YZ_R8( y_layer_exch2_buffer_r8, r8seg, myThid )
-          ENDIF
-#endif
+          CALL SCATTER_YZ_R8( 
+     U                       y_buffer_r8,
+     O                       r8seg,
+     I                       ySize,
+     I                       useExch2ioLayOut, .FALSE., myThid )
+C All threads wait for Master to finish loading into shared buffer
           CALL BAR2( myThid )
           IF ( arrType.EQ.'RS' ) THEN
-            CALL MDS_PASS_YZ_R8toRS( y_layer_buffer_r8, fldRS,
+            CALL MDS_PASS_YZ_R8toRS( y_buffer_r8, fldRS,
      &              0, 1, k, kSize, 0, 0, .TRUE., myThid)
           ELSEIF ( arrType.EQ.'RL' ) THEN
-            CALL MDS_PASS_YZ_R8toRL( y_layer_buffer_r8, fldRL,
+            CALL MDS_PASS_YZ_R8toRL( y_buffer_r8, fldRL,
      &              0, 1, k, kSize, 0, 0, .TRUE., myThid)
-
           ELSE
             WRITE(msgBuf,'(A,I6)')
      &        ' MDS_READ_SEC_YZ: illegal value for filePrec=',filePrec
@@ -1061,12 +1029,11 @@ C-          default (face fit into global-IO-array)
           ENDIF
 #endif /* ALLOW_EXCH2 */
 
-Cts --- TODO: check this!
            DO k=kLo,kHi
             irec = 1 + tBy/tNy
      &           +( k-kLo + (irecord-1)*kSize )*global_nTy
-            i1 = bBij + 1 + (k-kLo)*sNx*sNy
-            i2 = bBij +           k*sNx*sNy
+            i1 = bBij + 1 + (k-kLo)*sNy
+            i2 = bBij +           k*sNy
             IF ( filePrec.EQ.precFloat32 ) THEN
              READ(dUnit,rec=irec) (yz_buffer_r4(i),i=i1,i2)
             ELSE
@@ -1138,9 +1105,9 @@ C If global file was opened then close it
 
 #ifdef _BYTESWAPIO
         IF ( filePrec.EQ.precFloat32 ) THEN
-          CALL MDS_BYTESWAPR4( sNy*nNz*nSx*nSy, yz_buffer_r4 )
+          CALL MDS_BYTESWAPR4( sNy*nNz*nSy, yz_buffer_r4 )
         ELSE
-          CALL MDS_BYTESWAPR8( sNy*nNz*nSx*nSy, yz_buffer_r8 )
+          CALL MDS_BYTESWAPR8( sNy*nNz*nSy, yz_buffer_r8 )
         ENDIF
 #endif
 
