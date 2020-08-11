@@ -1,0 +1,18 @@
+ &RBCS_PARM01
+#
+ relaxMaskFile(1)  = ' ',
+ relaxMaskFile(2)  = ' ',
+ relaxMaskFile(3)  = 'traceramask.bin ',
+ relaxMaskFile(4)  = ' ',
+ relaxMaskFile(5)  = ' ',
+ relaxMaskFile(6)  = ' ',
+ relaxMaskFile(7)  = ' ',
+ useRBCtemp=.FALSE.,
+ useRBCsalt=.FALSE.,
+ /
+#
+ &RBCS_PARM02
+  tauRelaxPTR(1)=43200.,
+  relaxPtracerFile(1)='traceramask.bin',
+  useRBCptrnum(1)=.TRUE.,
+ /
