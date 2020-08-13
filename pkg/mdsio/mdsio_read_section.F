@@ -121,8 +121,8 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       _R8 r8seg(sNx,nSx,nSy)
       _R4 x_buffer_r4(Nx)
       _R8 x_buffer_r8(Nx)
-      _R4 xz_buffer_r4( sNx*Nr*nSx )
-      _R8 xz_buffer_r8( sNx*Nr*nSx )
+      _R4 xz_buffer_r4( sNx*Nr )
+      _R8 xz_buffer_r8( sNx*Nr )
 #ifdef ALLOW_EXCH2
       INTEGER tN
 #endif /* ALLOW_EXCH2 */
@@ -496,9 +496,9 @@ C If global file was opened then close it
 
 #ifdef _BYTESWAPIO
         IF ( filePrec.EQ.precFloat32 ) THEN
-          CALL MDS_BYTESWAPR4( sNx*nNz*nSx, xz_buffer_r4 )
+          CALL MDS_BYTESWAPR4( sNx*nNz, xz_buffer_r4 )
         ELSE
-          CALL MDS_BYTESWAPR8( sNx*nNz*nSx, xz_buffer_r8 )
+          CALL MDS_BYTESWAPR8( sNx*nNz, xz_buffer_r8 )
         ENDIF
 #endif
 
@@ -672,8 +672,8 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       _R8 r8seg(sNy,nSx,nSy)
       _R4 y_buffer_r4(Ny)
       _R8 y_buffer_r8(Ny)
-      _R4 yz_buffer_r4( sNy*Nr*nSy )
-      _R8 yz_buffer_r8( sNy*Nr*nSy )
+      _R4 yz_buffer_r4( sNy*Nr )
+      _R8 yz_buffer_r8( sNy*Nr )
 #ifdef ALLOW_EXCH2
       INTEGER tN
 #endif /* ALLOW_EXCH2 */
@@ -1047,9 +1047,9 @@ C If global file was opened then close it
 
 #ifdef _BYTESWAPIO
         IF ( filePrec.EQ.precFloat32 ) THEN
-          CALL MDS_BYTESWAPR4( sNy*nNz*nSy, yz_buffer_r4 )
+          CALL MDS_BYTESWAPR4( sNy*nNz, yz_buffer_r4 )
         ELSE
-          CALL MDS_BYTESWAPR8( sNy*nNz*nSy, yz_buffer_r8 )
+          CALL MDS_BYTESWAPR8( sNy*nNz, yz_buffer_r8 )
         ENDIF
 #endif
 
