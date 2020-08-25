@@ -360,7 +360,7 @@ This formulation can be used for all cases for which
 formulation it is obvious that melting (:math:`q<0`) leads to a
 reduction of salinity.
 
-The default value of :varlink:`SHELFICEconserve` ``=.FALSE.`` removes the contribution :math:`q ( X_{b}-X )` from
+The default value of :varlink:`SHELFICEconserve` ``=.FALSE.`` removes the contribution :math:`q\, ( X_{b}-X )` from
 :eq:`jenkinsbc`, making the boundary conditions for temperature
 non-conservative.
 
