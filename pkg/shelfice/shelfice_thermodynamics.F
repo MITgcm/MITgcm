@@ -77,7 +77,7 @@ C                         fresh water flux, 0 otherwise
 C     rFWinBL          :: = 1 when realFreshWaterFlux is used with BoundaryLayer
 C     auxiliary variables and abbreviations:
 C     a0, a1, a2, b, c0
-C     eps1, eps2, eps3, eps3a, eps4, eps5, eps6, eps7, eps8
+C     eps1, eps2, eps3, eps3a, eps4, eps6, eps7, eps8
 C     aqe, bqe, cqe, discrim, recip_aqe
 C     drKp1, recip_drLoc
       INTEGER I,J,K,Kp1
@@ -94,7 +94,7 @@ C     drKp1, recip_drLoc
       _RL convertFW2SaltLoc
 #endif
       _RL a0, a1, a2, b, c0
-      _RL eps1, eps2, eps3, eps3a, eps4, eps5, eps6, eps7, eps8
+      _RL eps1, eps2, eps3, eps3a, eps4, eps6, eps7, eps8
       _RL cFac, rFac, dFac, fwflxFac, rFWinBL
       _RL aqe, bqe, cqe, discrim, recip_aqe
       _RL drKp1, recip_drLoc
@@ -534,8 +534,6 @@ C     a few abbreviations
      &           *shiTransCoeffT(i,j,bi,bj)
             eps2 = rUnit2mass*SHELFICElatentHeat
      &           *shiTransCoeffS(i,j,bi,bj)
-            eps5 = rUnit2mass*HeatCapacity_Cp
-     &           *shiTransCoeffS(i,j,bi,bj)
 
 C     solve quadratic equation for salinity at shelfice-ocean interface
 C     note: this part of the code is not very intuitive as it involves
@@ -577,7 +575,6 @@ c           bqe = eps1*eps6 + eps3*eps7 - eps2
              print *, 'ml-shelfice: eps2    = ', eps2
              print *, 'ml-shelfice: eps3    = ', eps3
              print *, 'ml-shelfice: eps4    = ', eps4
-             print *, 'ml-shelfice: eps5    = ', eps5
              print *, 'ml-shelfice: eps6    = ', eps6
              print *, 'ml-shelfice: eps7    = ', eps7
              print *, 'ml-shelfice: eps8    = ', eps8
