@@ -3,7 +3,7 @@ SHELFICE Package
 
 Authors: Martin Losch, Jean-Michel Campin
 
-Introduction 
+Introduction
 ~~~~~~~~~~~~
 
 :filelink:`pkg/shelfice` provides a thermodynamic model for basal melting
@@ -56,14 +56,14 @@ via CPP preprocessor flags. These options are set in :filelink:`SHELFICE_OPTIONS
 SHELFICE Run-time Parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:filelink:`pkg/shelfice` is switched on/off at run-time by setting :varlink:`useSHELFICE` to ``.TRUE.`` in file ``data.pkg``. 
+:filelink:`pkg/shelfice` is switched on/off at run-time by setting :varlink:`useSHELFICE` to ``.TRUE.`` in file ``data.pkg``.
 Run-time parameters are set in file ``data.shelfice`` (read in :filelink:`pkg/shelfice/shelfice_readparms.F`),as listed below.
 
 The data file specifying under-ice topography of ice shelves (:varlink:`SHELFICEtopoFile`) is in meters; upwards is positive,
 and as for the bathymetry files, negative values are required for topography below the sea-level.
 The data file for the pressure load anomaly at the bottom of the ice shelves :varlink:`SHELFICEloadAnomalyFile` is in pressure
 units (Pa). This field is absolutely required to avoid large
-excursions of the free surface during initial adjustment processes, 
+excursions of the free surface during initial adjustment processes,
 obtained by integrating an approximate density from the surface at
 :math:`z=0` down to the bottom of the last fully dry cell within the
 ice shelf, see :eq:`surfacepressure`. Note however the file :varlink:`SHELFICEloadAnomalyFile` must
@@ -171,7 +171,7 @@ reference density :math:`\rho_{0}` from :math:`p_{tot}`.
 and after rearranging
 
 .. math::
-   p'_{tot} = p'_{top} + g \rho_0 \eta + \, \int_z^{\eta-h}{g (\rho-\rho_0) \, dz} + \, p_{NH} 
+   p'_{tot} = p'_{top} + g \rho_0 \eta + \, \int_z^{\eta-h}{g (\rho-\rho_0) \, dz} + \, p_{NH}
 
 with :math:`p'_{tot} = p_{tot} + g\,\rho_0\,z` and
 :math:`p'_{top} = p_{top} -
@@ -194,7 +194,7 @@ cell :math:`k` as
 
 .. math::
    p'_{k} = p'_{top} + g\rho_{n}\eta +
-   g\,\sum_{k'=n}^{k}\left((\rho_{k'}-\rho_{0})\Delta{z_{k'}} 
+   g\,\sum_{k'=n}^{k}\left((\rho_{k'}-\rho_{0})\Delta{z_{k'}}
      \frac{1+H(k'-k)}{2}\right)
    :label: discretizedpressure
 
@@ -245,7 +245,7 @@ layer :math:`k+1`) yields
 
 .. math::
    g_{\theta,k+1}^*
-   = \frac{Q}{\rho_{0} c_{p} \Delta{z}_{k}} 
+   = \frac{Q}{\rho_{0} c_{p} \Delta{z}_{k}}
    \frac{ \Delta{z}_{k} ( 1- h_{k} )}{\Delta{z}_{k+1}}
    :label: tendencykp1
 
@@ -278,7 +278,7 @@ melting) is included in the boundary conditions for the temperature and
 salinity equation as an advective flux:
 
 .. math::
-   {\rho}K\frac{\partial{X}}{\partial{z}}\biggl|_{b} 
+   {\rho}K\frac{\partial{X}}{\partial{z}}\biggl|_{b}
    = (\rho\gamma_{X}-q) ( X_{b} - X )
    :label: jenkinsbc
 
@@ -323,7 +323,7 @@ assumed to be the in-situ freezing point temperature of sea-water
 .. math::
    T_{f} = (0.0901 - 0.0575\ S_{b})^{\circ}
    - 7.61 \times 10^{-4}\frac{\text{K}}{\text{dBar}}\ p_{b}
-   :label: helmerfreeze
+   :label: hellmerfreeze
 
 with the salinity :math:`S_{b}` and the pressure :math:`p_{b}` (in dBar)
 in the cell at the ice-water interface. From the salt budget, the salt
@@ -392,6 +392,57 @@ The shelfice package and experiments demonstrating its strengths and
 weaknesses are also described in Losch (2008) :cite:`losch:08`. However,
 note that unfortunately the description of the thermodynamics in the
 appendix of Losch (2008) is wrong.
+
+Solving the three-equations system
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+There has been some confusion about the 3-equation system, so we document the solution in the code here: We use :eq:`hellmerfreeze` :math:`T_{b} = a_{0} S_{b} + \epsilon_{4}` to eliminate :math:`T_{b}` from :eq:`hellmerheatbalance` and find an expression for the freshwater flux :math:`q`:
+
+.. math::
+   \begin{aligned}
+   -Lq &= \epsilon_{1} (T - a_{0} S_{b} - \epsilon_{4})
+   + \epsilon_{3} (T_{S} - a_{0} S_{b} - \epsilon_{4}) \\
+   \Leftrightarrow Lq &=  a_{0}\,(\epsilon_{1} + \epsilon_{3})\,S_{b}
+     + \epsilon_{q}
+   \end{aligned}
+   :label: solvedmeltrate
+
+to be substituted into :eq:`hellmersaltbalance`:
+
+.. math::
+   \begin{aligned}
+   \epsilon_{2}\,(S - S_{b}) &= - Lq\,(S_{b}-S_{I})
+   = - (a_{0}\,(\epsilon_{1} + \epsilon_{3})\,S_{b}
+     + \epsilon_{q})\,(S_{b}-S_{I}) \\
+   \Leftrightarrow 0 &= a_{0}\,(\epsilon_{1} + \epsilon_{3})\,S_{b}^{2}
+   + \{ \epsilon_{q}  - \epsilon_{2}
+     - a_{0}\,(\epsilon_{1} + \epsilon_{3})\,S_{I} \}\,S_{b}
+     + \epsilon_{2}\,S - \epsilon_{q}\,S_{I}
+   \end{aligned}
+
+where the abbrevations :math:`\epsilon_{1} = c_{p} \rho \gamma_{T}`,
+:math:`\epsilon_{2} = \rho L \gamma_{S}`, :math:`\epsilon_{3} =
+\frac{\rho_{I} c_{p,I} \kappa}{h}`, :math:`\epsilon_{4}=b_{0}p +
+c_{0}`, :math:`\epsilon_{q} = \epsilon_{1}\,(\epsilon_{4} - T) +
+\epsilon_{3}\,(\epsilon_{4} - T_{S})` have been introduced. The
+quadratic equation in :math:`S_{b}` is solved and the smaller
+non-negative root is used. In the MITgcm-code, the ice shelf salinity
+:math:`S_{I}` is always zero and the quadratic equation simplifies to
+
+.. math::
+   \begin{aligned}
+   0 &= a_{0}\,(\epsilon_{1} + \epsilon_{3})\,S_{b}^{2}
+   + (\epsilon_{q}  - \epsilon_{2}) \,S_{b} + \epsilon_{2}\,S \\
+     S_{b} &= \frac{\epsilon_{2} - \epsilon_{q}\mp
+     \sqrt{(\epsilon_{q}  - \epsilon_{2})^2
+     - 4\, a_{0}\,(\epsilon_{1} + \epsilon_{3})\,\epsilon_{2}}}
+     {2\,a_{0}\,(\epsilon_{1} + \epsilon_{3})}
+   \end{aligned}
+
+With :math:`S_b`, the boundary layer temperature :math:`T_b` and the
+meltrate :math:`q` are known through :eq:`hellmerfreeze` and
+:eq:`solvedmeltrate`.
+
 
 .. _shelfice_subroutines:
 
