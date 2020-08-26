@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src
+  - fix 2 missing TAF initialisation directives in file "the_main_loop.F"; this allows to use
+    TAF recent version 5.0.9 (that does check for missing initialisation).
 o pkg/seaice:
   - fix diagnostics additions (from PR #348) for case _RS is real*4.
 
