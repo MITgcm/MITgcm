@@ -1,6 +1,3 @@
-C $Header: /home/ubuntu/mnt/e9_copy/MITgcm/pkg/shelfice/shelfice_init_depths.F,v 1.1 2017/04/10 23:50:41 jmc Exp $
-C $Name:  $
-
 #include "SHELFICE_OPTIONS.h"
 
 CBOP
@@ -69,6 +66,14 @@ C      CALL READ_FLD_XY_RS( SHELFICEtopoFile, ' ', R_shelfIce,
 C    &                      0, myThid )
 C-     end setup R_shelfIce in the interior
       ENDIF
+
+#ifdef ALLOW_SHELFICE_REMESHING
+      IF ( SHELFICEremeshFrequency.GT.zeroRL .AND.
+     &     ( nIter0.NE.0 .OR. startTime.NE.baseTime
+     &                   .OR. pickupSuff.NE.' ') ) THEN
+        CALL SHELFICE_READ_PICKUP( 0, nIter0, myThid )
+      ENDIF
+#endif /* ALLOW_SHELFICE_REMESHING */
 
 C- fill in the overlap (+ BARRIER):
       _EXCH_XY_RS( R_shelfIce, myThid )

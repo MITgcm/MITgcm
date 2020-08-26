@@ -1,6 +1,3 @@
-C $Header: /home/ubuntu/mnt/e9_copy/MITgcm/pkg/shelfice/shelfice_thermodynamics.F,v 1.47 2015/12/17 01:52:05 jmc Exp $
-C $Name:  $
-
 #include "SHELFICE_OPTIONS.h"
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"

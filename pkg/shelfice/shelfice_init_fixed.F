@@ -1,6 +1,3 @@
-C $Header: /home/ubuntu/mnt/e9_copy/MITgcm/pkg/shelfice/shelfice_init_fixed.F,v 1.18 2017/04/10 23:49:35 jmc Exp $
-C $Name:  $
-
 #include "SHELFICE_OPTIONS.h"
 #ifdef ALLOW_COST
 # include "COST_OPTIONS.h"
@@ -91,7 +88,7 @@ C-----------------------------------------------------------------------
         DO j = 1-OLy, sNy+OLy
          DO i = 1-OLx, sNx+OLx
           IF ( kSurfC(i,j,bi,bj).LE.Nr .AND.
-     &         R_shelfIce(i,j,bi,bj).LT.zeroRS ) THEN
+     &         Ro_surf(i,j,bi,bj).LT.rF(1) ) THEN
             kTopC(i,j,bi,bj) = kSurfC(i,j,bi,bj)
           ELSE
             kTopC(i,j,bi,bj) = 0
@@ -483,6 +480,11 @@ C output the masks
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+       diagName  = 'SHI_TauX'
+       diagTitle =
+     &     'Ice shelf bottom stress, zonal  comp., >0 increases uVel'
+       diagUnits = 'N/m^2           '
+       diagCode  = 'UU      L1      '
        diagName  = 'SHIhtFlx'
        diagTitle = 'Ice shelf heat flux  (positive upward)'
        diagUnits = 'W/m^2           '
@@ -525,8 +527,6 @@ C     diagCode  = 'SMR     MR      '
 C     CALL DIAGNOSTICS_ADDTOLIST( diagNum,
 C    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-
-
        diagName  = 'SHIUDrag'
        diagTitle = 'U momentum tendency from ice shelf drag'
        diagUnits = 'm/s^2           '
@@ -534,6 +534,12 @@ C    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
        diagMate  = diagNum + 2
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+       diagName  = 'SHI_TauY'
+       diagTitle =
+     &     'Ice shelf bottom stress, merid. comp., >0 increases vVel'
+       diagUnits = 'N/m^2           '
+       diagCode  = 'VV      L1      '
 
        diagName  = 'SHIVDrag'
        diagTitle = 'V momentum tendency from ice shelf drag'
@@ -614,14 +620,21 @@ C    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif
 
-
-
        diagName  = 'SHIuStar'
        diagTitle = 'Friction velocity at bottom of ice shelf'
        diagUnits = 'm/s             '
        diagCode  = 'SM      L1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#ifdef ALLOW_SHELFICE_REMESHING
+       diagName  = 'SHIRshel'
+       diagTitle = 'depth of shelfice'
+       diagUnits = 'm               '
+       diagCode  = 'SM      L1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
 
        diagName  = 'SHI_mass'
        diagTitle = 'dynamic ice shelf mass for surface load anomaly'

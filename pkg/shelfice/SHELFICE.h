@@ -1,6 +1,3 @@
-C $Header: /home/ubuntu/mnt/e9_copy/MITgcm/pkg/shelfice/SHELFICE.h,v 1.21 2015/11/02 21:27:42 dimitri Exp $
-C $Name:  $
-
 #ifdef ALLOW_SHELFICE
 
 CBOP
@@ -32,6 +29,12 @@ C     SHELFICEDynMassOnly      :: step ice mass ONLY with Shelficemassdyntendenc
 C                                 (not melting/freezing) def: F
 C     SHELFICEboundaryLayer    :: turn on vertical merging of cells to for a
 C                                 boundary layer of drF thickness, def: F
+C     SHI_withBL_realFWflux    :: with above BL, allow to use real-FW flux (and
+C                                 adjust advective flux at boundary accordingly)
+C                                 def: F
+C     SHI_withBL_uStarTopDz    :: with SHELFICEboundaryLayer, compute uStar from
+C                                 uVel,vVel avergaged over top Dz thickness;
+C                                 def: F
 C     SHELFICEadvDiffHeatFlux  :: use advective-diffusive heat flux into the
 C                                 ice shelf instead of default diffusive heat
 C                                 flux, see Holland and Jenkins (1999),
@@ -55,6 +58,12 @@ C     shiPrandtl, shiSchmidt   :: constant Prandtl (13.8) and Schmidt (2432.0)
 C                                 numbers used to compute gammaTurb
 C     shiKinVisc               :: constant kinetic viscosity used to compute
 C                                 gammaTurb (def: 1.95e-5)
+C     SHELFICEremeshFrequency  :: Frequency (in seconds) of call to
+C                                 SHELFICE_REMESHING (def: 0. --> no remeshing)
+C     SHELFICEsplitThreshold   :: Thickness fraction remeshing threshold above
+C                                  which top-cell splits (no unit)
+C     SHELFICEmergeThreshold   :: Thickness fraction remeshing threshold below
+C                                  which top-cell merges with below (no unit)
 C     -----------------------------------------------------------------------
 C     SHELFICEDragLinear       :: linear drag at bottom shelfice (1/s)
 C     SHELFICEDragQuadratic    :: quadratic drag at bottom shelfice (default
@@ -74,7 +83,7 @@ C     SHELFICE_dumpFreq        :: analoguous to dumpFreq (= default)
 C     SHELFICE_taveFreq        :: analoguous to taveFreq (= default)
 C
 C--   Fields
-C     kTopC                  :: index of the top "wet cell" beneath the ice shelf (2D)
+C     kTopC                  :: index of the top "wet cell" (2D)
 C     K_icefront             :: index of the bottommost ice front cell (2D) 
 C     R_shelfIce             :: shelfice topography [m]
 C     shelficeMassInit       :: ice-shelf mass (per unit area) (kg/m^2)
@@ -89,6 +98,13 @@ C     shelficeForcingT       :: analogue of surfaceForcingT
 C                               units are  r_unit.Kelvin/s (=Kelvin.m/s if r=z)
 C     shelficeForcingS       :: analogue of surfaceForcingS
 C                               units are  r_unit.psu/s (=psu.m/s if r=z)
+#ifdef ALLOW_DIAGNOSTICS
+C     shelficeDragU          :: Ice-Shelf stress (for diagnostics), Zonal comp.
+C                               Units are N/m^2 ;   > 0 increase top uVel
+C     shelficeDragV          :: Ice-Shelf stress (for diagnostics), Merid. comp.
+C                               Units are N/m^2 ;   > 0 increase top vVel
+#endif /* ALLOW_DIAGNOSTICS */
+
 C-----------------------------------------------------------------------
 C \ev
 CEOP
@@ -104,13 +120,15 @@ CEOP
      &     SHELFICE_dumpFreq, SHELFICE_taveFreq,
      &     SHELFICEheatTransCoeff, SHELFICEsaltTransCoeff,
      &     rhoShelfice, SHELFICEkappa,
-     &     SHELFICElatentHeat, 
+     &     SHELFICElatentHeat,
      &     SHELFICEheatCapacity_Cp,
      &     SHELFICEthetaSurface,
      &     SHELFICEsalinity,
      &     SHELFICEDragLinear, SHELFICEDragQuadratic,
      &     shiCdrag, shiZetaN, shiRc,
      &     shiPrandtl, shiSchmidt, shiKinVisc,
+     &     SHELFICEremeshFrequency,
+     &     SHELFICEsplitThreshold, SHELFICEmergeThreshold,
      &     iceFrontThetaHorizDiffusionLength,
      &     iceFrontThetaInterior
 
@@ -127,6 +145,9 @@ CEOP
       _RL SHELFICEsalinity
       _RL shiCdrag, shiZetaN, shiRc
       _RL shiPrandtl, shiSchmidt, shiKinVisc
+      _RL SHELFICEremeshFrequency
+      _RL SHELFICEsplitThreshold
+      _RL SHELFICEmergeThreshold
       _RL iceFrontThetaHorizDiffusionLength
       _RL iceFrontThetaInterior
       
@@ -215,6 +236,8 @@ C      icefrontwidth_arr: ice-front width in meters
       LOGICAL useISOMIPTD
       LOGICAL SHELFICEconserve
       LOGICAL SHELFICEboundaryLayer
+      LOGICAL SHI_withBL_realFWflux
+      LOGICAL SHI_withBL_uStarTopDz
       LOGICAL no_slip_shelfice
       LOGICAL SHELFICEwriteState
       LOGICAL SHELFICE_dump_mdsio
@@ -231,6 +254,8 @@ C      icefrontwidth_arr: ice-front width in meters
      &     useISOMIPTD,
      &     SHELFICEconserve,
      &     SHELFICEboundaryLayer,
+     &     SHI_withBL_realFWflux,
+     &     SHI_withBL_uStarTopDz,
      &     no_slip_shelfice,
      &     SHELFICEwriteState,
      &     SHELFICE_dump_mdsio,

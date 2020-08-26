@@ -1,6 +1,3 @@
-C $Header: /home/ubuntu/mnt/e9_copy/MITgcm/pkg/shelfice/shelfice_forcing_surf.F,v 1.3 2015/02/14 22:28:57 jmc Exp $
-C $Name:  $
-
 #include "SHELFICE_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -48,7 +45,11 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i,j   :: Loop counters
       INTEGER i, j
+      LOGICAL SHI_useRealFWflux
 CEOP
+
+      SHI_useRealFWflux = useRealFreshWaterFlux .AND.
+     &  ( .NOT.SHELFICEboundaryLayer .OR. SHI_withBL_realFWflux )
 
 c     DO bj=myByLo(myThid),myByHi(myThid)
 c      DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -60,6 +61,9 @@ C--   Zero out surface forcing terms below ice-shelf
             surfaceForcingT(i,j,bi,bj) = 0.
             surfaceForcingS(i,j,bi,bj) = 0.
             EmPmR(i,j,bi,bj) = 0.
+            Qsw  (i,j,bi,bj) = 0.
+C-    just for consistent diagnostics, also reset Qnet:
+            Qnet (i,j,bi,bj) = 0.
           ENDIF
          ENDDO
         ENDDO
@@ -95,8 +99,12 @@ C     (calling SHELFICE_FORCING_T & _S from APPLY_FORCING_T & _S)
            ENDIF
           ENDDO
          ENDDO
+        ENDIF
 
-         IF ( useRealFreshWaterFlux ) THEN
+        IF ( SHI_useRealFWflux ) THEN
+C-    Allows PmE to be used even if boundary layer is being used,
+C     as long as SHI_withBL_realFWflux is set to account for advective flux
+
 #ifdef ALLOW_AUTODIFF
           STOP 'RealFreshWaterFlux disabled in SHELFICE_FORCING_SURF'
 #else /* ALLOW_AUTODIFF */
