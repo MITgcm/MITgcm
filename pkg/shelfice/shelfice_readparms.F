@@ -67,7 +67,7 @@ CEOP
      &     shiCdrag, shiZetaN, shiRc,
      &     shiPrandtl, shiSchmidt, shiKinVisc,
 #ifdef ALLOW_COST
-     &     mult_shelfice
+     &     mult_shelfice,
      &     mult_shifwflx, wshifwflx0, shifwflx_errfile,
 #endif
      &     SHELFICEremeshFrequency,
@@ -108,7 +108,7 @@ C Set defaults values for parameters in SHELFICE.h
       ICEFRONTlengthFile       = ' '
       ICEFRONTdepthFile        = ' '
       SHELFICElatentHeat       =  334.0 _d 3
-      SHELFICEheatCapacity_Cp  = 2000.0 _d 0
+      SHELFICEHeatCapacity_Cp  = 2000.0 _d 0
       rhoShelfIce              =  917.0 _d 0
       SHELFICEheatTransCoeff   =    1.0 _d -04
       SHELFICEsaltTransCoeff   = UNSET_RL

@@ -201,6 +201,12 @@ CEOP
       _RS maskSHI  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* ALLOW_SHIFWFLX_CONTROL */
 
+#ifdef ALLOW_DIAGNOSTICS
+      COMMON /SHELFICE_DIAG_DRAG/ shelficeDragU, shelficeDragV
+      _RS shelficeDragU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS shelficeDragV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* ALLOW_DIAGNOSTICS */
+
 C ow - 06/29/2018
 C ow - maskSHI above is not consistent with the spirit of gencost. 
 C ow -   Use the following masks below instead. 

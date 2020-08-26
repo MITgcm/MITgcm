@@ -24,11 +24,11 @@ C     allow friction velocity-dependent transfer coefficient
 C     following Holland and Jenkins, JPO, 1999
 #define SHI_ALLOW_GAMMAFRICT
 
--C     allow (vertical) remeshing whenever ocean top thickness factor
--C     exceeds thresholds
--#undef ALLOW_SHELFICE_REMESHING
--C     and allow to print message to STDOUT when this happens
--#define SHELFICE_REMESH_PRINT
+C     allow (vertical) remeshing whenever ocean top thickness factor
+C     exceeds thresholds
+#undef ALLOW_SHELFICE_REMESHING
+C     and allow to print message to STDOUT when this happens
+#define SHELFICE_REMESH_PRINT
 
 CC use 3d shiTransCoeffT and shiTransCoeffS
 C#define ALLOW_shiTransCoeff_3d

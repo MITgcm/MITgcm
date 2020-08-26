@@ -119,7 +119,7 @@ C     like ctrl_get_gen and ctrl_set_unpack_xy require 3D masks.
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           IF ( R_shelfIce(i,j,bi,bj).LT.zeroRS
+           IF ( Ro_surf(i,j,bi,bj).LT.rF(1)
      &          .AND. hFacC(i,j,k,bi,bj).NE.zeroRS ) THEN
             maskSHI(i,j,k,bi,bj) = 1. _d 0
             maskSHI(i,j,1,bi,bj) = 1. _d 0
