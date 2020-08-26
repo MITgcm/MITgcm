@@ -634,6 +634,13 @@ C    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+       diagName  = 'SHI_mass'
+       diagTitle = 'dynamic ice shelf mass for surface load anomaly'
+       diagUnits = 'kg/m^2          '
+       diagCode  = 'SM      L1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
 #ifdef ALLOW_SHELFICE_REMESHING
        diagName  = 'SHIRshel'
        diagTitle = 'depth of shelfice'
@@ -643,12 +650,6 @@ C    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif
 
-       diagName  = 'SHI_mass'
-       diagTitle = 'dynamic ice shelf mass for surface load anomaly'
-       diagUnits = 'kg/m^2          '
-       diagCode  = 'SM      L1      '
-       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_SHELFICE */
