@@ -74,48 +74,72 @@ that is different from :math:`\rho_{0}`, the anomaly is zero.
 
 .. tabularcolumns:: |\Y{.27}|\Y{.21}|\Y{.205}|\Y{.34}|
 
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| Parameter                              | Group           | Default                                    | Description                                                                                             |
-+========================================+=================+============================================+=========================================================================================================+
-| :varlink:`useISOMIPTD`                 | SHELFICE_PARM01 | FALSE                                      | use simplified ISOMIP thermodynamics on/off flag                                                        |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`SHELFICEconserve`            | SHELFICE_PARM01 | FALSE                                      | use conservative form of temperature boundary conditions on/off flag                                    |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`SHELFICEboundaryLayer`       | SHELFICE_PARM01 | FALSE                                      | use simple boundary layer mixing parameterization on/off flag                                           |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`SHELFICEloadAnomalyFile`     | SHELFICE_PARM01 | :kbd:`' '`                                 | initial geopotential anomaly                                                                            |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`SHELFICEtopoFile`            | SHELFICE_PARM01 | :kbd:`' '`                                 | filename for under-ice topography of ice shelves                                                        |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`SHELFICElatentHeat`          | SHELFICE_PARM01 | 334.0E+03                                  | latent heat of fusion (J/kg)                                                                            |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`SHELFICEHeatCapacity_Cp`     | SHELFICE_PARM01 | 2000.0E+00                                 | specific heat capacity of ice (J/kg/K)                                                                  |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`rhoShelfIce`                 | SHELFICE_PARM01 | 917.0E+00                                  | (constant) mean density of ice shelf (kg/m\ :sup:`3`)                                                   |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`SHELFICEheatTransCoeff`      | SHELFICE_PARM01 | 1.0E-04                                    | transfer coefficient (exchange velocity) for temperature (m/s)                                          |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`SHELFICEsaltTransCoeff`      | SHELFICE_PARM01 | 5.05E-03 :math:`\times`                    | transfer coefficient (exchange velocity) for salinity (m/s)                                             |
-|                                        |                 | :varlink:`SHELFICEheatTransCoeff`          |                                                                                                         |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`SHELFICEkappa`               | SHELFICE_PARM01 | 1.54E-06                                   | temperature diffusion coefficient of the ice shelf (m\ :sup:`2`\ /s)                                    |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`SHELFICEthetaSurface`        | SHELFICE_PARM01 | -20.0E+00                                  | (constant) surface temperature above the ice shelf (:sup:`o`\ C)                                        |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`no_slip_shelfice`            | SHELFICE_PARM01 | :varlink:`no_slip_bottom`	                | slip along bottom of ice shelf on/off flag                                                              |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`SHELFICEDragLinear`          | SHELFICE_PARM01 | :varlink:`bottomDragLinear`                | linear drag coefficient at bottom ice shelf (m/s)                                                       |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`SHELFICEDragQuadratic`       | SHELFICE_PARM01 | :varlink:`bottomDragQuadratic`             | quadratic drag coefficient at bottom ice shelf (non-dim.)                                               |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`SHELFICEwriteState`          | SHELFICE_PARM01 | FALSE                                      | write ice shelf state to file on/off flag                                                               |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`SHELFICE_dumpFreq`           | SHELFICE_PARM01 | :varlink:`dumpFreq`                        | dump frequency (s)                                                                                      |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`SHELFICE_dump_mnc`           | SHELFICE_PARM01 | :varlink:`snapshot_mnc`                    | write snapshot using MNC  on/off flag                                                                   |
-+----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+.. table:: Run-time parameters and default values
+   :class: longtable
+   :name: tab_phys_pkg_shelfice_runtimeparms
 
-
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | Parameter                              | Group           | Default                                    | Description                                                                                             |
+   +========================================+=================+============================================+=========================================================================================================+
+   | :varlink:`useISOMIPTD`                 | SHELFICE_PARM01 | FALSE                                      | use simplified ISOMIP thermodynamics on/off flag                                                        |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEconserve`            | SHELFICE_PARM01 | FALSE                                      | use conservative form of temperature boundary conditions on/off flag                                    |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEboundaryLayer`       | SHELFICE_PARM01 | FALSE                                      | use simple boundary layer mixing parameterization on/off flag                                           |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHI_withBL_realFWflux`       | SHELFICE_PARM01 | FALSE                                      | with above BL, allow to use real-FW flux                                                                |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHI_withBL_uStarTopDz`       | SHELFICE_PARM01 | FALSE                                      | with SHELFICEboundaryLayer, compute uStar from uVel,vVel avergaged over top Dz thickness                |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEloadAnomalyFile`     | SHELFICE_PARM01 | :kbd:`' '`                                 | initial geopotential anomaly                                                                            |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEtopoFile`            | SHELFICE_PARM01 | :kbd:`' '`                                 | filename for under-ice topography of ice shelves                                                        |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEmassFile`            | SHELFICE_PARM01 | :kbd:`' '`                                 | filename for mass of ice shelves                                                                        |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEMassDynTendFile`     | SHELFICE_PARM01 | :kbd:`' '`                                 | filename for mass tendency of ice shelves                                                               |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICETransCoeffTFile`     | SHELFICE_PARM01 | :kbd:`' '`                                 | filename for spatially varying transfer coefficients                                                    |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICElatentHeat`          | SHELFICE_PARM01 | 334.0E+03                                  | latent heat of fusion (J/kg)                                                                            |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEHeatCapacity_Cp`     | SHELFICE_PARM01 | 2000.0E+00                                 | specific heat capacity of ice (J/kg/K)                                                                  |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`rhoShelfIce`                 | SHELFICE_PARM01 | 917.0E+00                                  | (constant) mean density of ice shelf (kg/m\ :sup:`3`)                                                   |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEheatTransCoeff`      | SHELFICE_PARM01 | 1.0E-04                                    | transfer coefficient (exchange velocity) for temperature (m/s)                                          |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEsaltTransCoeff`      | SHELFICE_PARM01 | 5.05E-03 :math:`\times`                    | transfer coefficient (exchange velocity) for salinity (m/s)                                             |
+   |                                        |                 | :varlink:`SHELFICEheatTransCoeff`          |                                                                                                         |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEkappa`               | SHELFICE_PARM01 | 1.54E-06                                   | temperature diffusion coefficient of the ice shelf (m\ :sup:`2`\ /s)                                    |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEthetaSurface`        | SHELFICE_PARM01 | -20.0E+00                                  | (constant) surface temperature above the ice shelf (:sup:`o`\ C)                                        |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`no_slip_shelfice`            | SHELFICE_PARM01 | :varlink:`no_slip_bottom`	                | slip along bottom of ice shelf on/off flag                                                         |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEDragLinear`          | SHELFICE_PARM01 | :varlink:`bottomDragLinear`                | linear drag coefficient at bottom ice shelf (m/s)                                                       |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEDragQuadratic`       | SHELFICE_PARM01 | :varlink:`bottomDragQuadratic`             | quadratic drag coefficient at bottom ice shelf (non-dim.)                                               |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEselectDragQuadr`     | SHELFICE_PARM01 | -1                                         | select form of quadract drag coefficent (non-dim.)                                                      |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEMassStepping`        | SHELFICE_PARM01 | FALSE                                      | recalculate ice shelf mass at every time step                                                           |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEDynMassOnly`         | SHELFICE_PARM01 | FALSE                                      | if SHELFICEmassStepping = True, exclude freshwater flux contribution                                    |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEadvDiffHeatFlux`     | SHELFICE_PARM01 | FALSE                                      | use advective-diffusive heat flux into ice shelf instead of default diffusive heat flux                 |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEuseGammaFrict`       | SHELFICE_PARM01 | FALSE                                      | use velocity dependent exchange coefficients (Holland and Jenkins, 1999)                                |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICE_oldCalcUSta`        | SHELFICE_PARM01 | FALSE                                      | use old uStar averaging expression                                                                      |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICEwriteState`          | SHELFICE_PARM01 | FALSE                                      | write ice shelf state to file on/off flag                                                               |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICE_dumpFreq`           | SHELFICE_PARM01 | :varlink:`dumpFreq`                        | dump frequency (s)                                                                                      |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
+   | :varlink:`SHELFICE_dump_mnc`           | SHELFICE_PARM01 | :varlink:`snapshot_mnc`                    | write snapshot using MNC  on/off flag                                                                   |
+   +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
 SHELFICE Description
 ~~~~~~~~~~~~~~~~~~~~
@@ -364,35 +388,6 @@ The default value of :varlink:`SHELFICEconserve` ``=.FALSE.`` removes the contri
 :eq:`jenkinsbc`, making the boundary conditions for temperature
 non-conservative.
 
-ISOMIP-Thermodynamics
-^^^^^^^^^^^^^^^^^^^^^
-
-A simpler formulation follows the ISOMIP protocol. The
-freezing and melting in the boundary layer between ice shelf and ocean
-is parameterized following Grosfeld et al. (1997) :cite:`grosfeld:97`. In this
-formulation :eq:`hellmerheatbalance` reduces to
-
-.. math::
-   c_{p} \rho \gamma_T (T - T_{b})  = -Lq
-   :label: isomipheatbalance
-
-and the fresh water flux :math:`q` is computed from
-
-.. math::
-   q = - \frac{c_{p} \rho \gamma_T (T - T_{b})}{L}
-   :label: isomipfwflx
-
-In order to use this formulation, set run-time parameter :varlink:`useISOMIPTD` ``=.TRUE.`` in
-``data.shelfice``.
-
-Remark
-^^^^^^
-
-The shelfice package and experiments demonstrating its strengths and
-weaknesses are also described in Losch (2008) :cite:`losch:08`. However,
-note that unfortunately the description of the thermodynamics in the
-appendix of Losch (2008) is wrong.
-
 Solving the three-equations system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -443,6 +438,48 @@ With :math:`S_b`, the boundary layer temperature :math:`T_b` and the
 meltrate :math:`q` are known through :eq:`hellmerfreeze` and
 :eq:`solvedmeltrate`.
 
+ISOMIP-Thermodynamics
+^^^^^^^^^^^^^^^^^^^^^
+
+A simpler formulation follows the ISOMIP protocol. The
+freezing and melting in the boundary layer between ice shelf and ocean
+is parameterized following Grosfeld et al. (1997) :cite:`grosfeld:97`. In this
+formulation :eq:`hellmerheatbalance` reduces to
+
+.. math::
+   c_{p} \rho \gamma_T (T - T_{b})  = -Lq
+   :label: isomipheatbalance
+
+and the fresh water flux :math:`q` is computed from
+
+.. math::
+   q = - \frac{c_{p} \rho \gamma_T (T - T_{b})}{L}
+   :label: isomipfwflx
+
+In order to use this formulation, set run-time parameter :varlink:`useISOMIPTD` ``=.TRUE.`` in
+``data.shelfice``.
+
+Exchange coefficients
+^^^^^^^^^^^^^^^^^^^^^
+
+The default exchange coefficents :math:`\gamma_{T/S}` are constant and
+set by the runtime parameters :varlink:`SHELFICEheatTransCoeff` and
+:varlink:`SHELFICEsaltTransCoeff` (see
+:numref:`tab_phys_pkg_shelfice_runtimeparms`). If
+:varlink:`SHELFICEuseGammaFrict` ``=.TRUE.``, exchange coefficients
+are computed from drag laws and friction velocities estimated from
+ocean speeds following Holland and Jenkins (1999)
+:cite:`holland:99`. This computation can be modified using runtime
+parameters and user is referred to S/R
+:filelink:`pkg/shelfice/shelfice_readparms.F` for details.
+
+Remark
+^^^^^^
+
+The shelfice package and experiments demonstrating its strengths and
+weaknesses are also described in Losch (2008) :cite:`losch:08`. However,
+note that unfortunately the description of the thermodynamics in the
+appendix of Losch (2008) is wrong.
 
 .. _shelfice_subroutines:
 
