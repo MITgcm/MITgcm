@@ -298,5 +298,4 @@ C      icefrontwidth_arr: ice-front width in meters
      &     ICEFRONTlengthFile,
      &     ICEFRONTdepthFile
 
-
 #endif /* ALLOW_SHELFICE */

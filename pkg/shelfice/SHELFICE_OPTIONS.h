@@ -14,7 +14,7 @@ C     *==========================================================*
 #ifdef ALLOW_SHELFICE
 C     Package-specific Options & Macros go here
 
-C     allow Ian Fenty's shelfice/icefront merged code
+C     allow shelfice/icefront merged code
 #define shelfice_new_thermo
 
 C     allow code for simple ISOMIP thermodynamics
