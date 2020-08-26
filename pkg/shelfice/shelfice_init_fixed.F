@@ -480,6 +480,13 @@ C output the masks
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+       diagName  = 'SHIhtFlx'
+       diagTitle = 'Ice shelf heat flux  (positive upward)'
+       diagUnits = 'W/m^2           '
+       diagCode  = 'SM      L1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
        diagName  = 'SHIICFfwFlx'
        diagTitle = 'total ice shelf and front FW flux (+ upward)'
        diagUnits = 'kg/m^2/s        '
@@ -493,6 +500,20 @@ C output the masks
        diagCode  = 'SM      L1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ICFfwFlx'
+      diagTitle = 'Ice front freshwater flux (+ve increases ocean salt)'
+      diagUnits = 'kg/m^2/s        '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ICFhtFlx'
+      diagTitle = 'Ice front heat flux  (+ve cools ocean)'
+      diagUnits = 'W/m^2           '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
        diagName  = 'SHI_TauX'
        diagTitle =
@@ -511,20 +532,6 @@ C output the masks
        diagMate  = diagNum
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
-
-      diagName  = 'ICFfwFlx'
-      diagTitle = 'Ice front freshwater flux (+ve increases ocean salt)'
-      diagUnits = 'kg/m^2/s        '
-      diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-
-      diagName  = 'ICFhtFlx'
-      diagTitle = 'Ice front heat flux  (+ve cools ocean)'
-      diagUnits = 'W/m^2           '
-      diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
 C     diagName  = 'THETA   '
 C     diagTitle = 'Potential Temperature'
