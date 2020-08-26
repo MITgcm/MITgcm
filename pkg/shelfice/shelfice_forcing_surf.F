@@ -133,6 +133,15 @@ C--   end if not SHELFICEboundaryLayer
         ENDIF
 #endif /* EXACT_CONSERV */
 
+        IF ( usingZCoords ) THEN
+          DO j = jMin, jMax
+           DO i = iMin, iMax
+             phi0surf(i,j,bi,bj) = phi0surf(i,j,bi,bj)
+     &         + shelficeLoadAnomaly(i,j,bi,bj)*recip_rhoConst
+           ENDDO
+          ENDDO
+        ENDIF
+
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
           DO j=1-OLy,sNy+OLy
@@ -143,15 +152,6 @@ C--   end if not SHELFICEboundaryLayer
           ENDDO
          ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-
-        IF ( usingZCoords ) THEN
-          DO j = jMin, jMax
-           DO i = iMin, iMax
-             phi0surf(i,j,bi,bj) = phi0surf(i,j,bi,bj)
-     &         + shelficeLoadAnomaly(i,j,bi,bj)*recip_rhoConst
-           ENDDO
-          ENDDO
-        ENDIF
 
 c      ENDDO
 c     ENDDO
