@@ -4,7 +4,7 @@ CBOP
 C     !ROUTINE: PRESSURE_FOR_EOS
 C     !INTERFACE:
       SUBROUTINE PRESSURE_FOR_EOS(
-     I        bi, bj, iMin, iMax, jMin, jMax,  k,
+     I        bi, bj, iMin, iMax, jMin, jMax,  k, dpRef,
      O        locPres,
      I        myThid )
 C     !DESCRIPTION: \bv
@@ -12,6 +12,11 @@ C     *==========================================================*
 C     | SUBROUTINE PRESSURE_FOR_EOS
 C     | o Provide a local copy of the total pressure
 C     |   at cell center (level k) for use in EOS funct. of P
+C     | Note: Since most seawater EOS are formulated as function
+C     |   of pressure anomaly relative to a reference P, this
+C     |   S/R allows to account for this reference Pressure (or
+C     |   different ref P) by adding a pressure shift "dpRef"
+C     |   to the output pressure.
 C     *==========================================================*
 C     \ev
 
@@ -30,11 +35,15 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     bi,bj, k  :: tile and level indices
-C     iMin,iMax,jMin,jMax :: computational domain
-C     myThid - Thread number for this instance of the routine.
+C     bi, bj, k :: tile and level indices
+C     iMin,iMax :: computational domain, first index range
+C     jMin,jMax :: computational domain, second index range
+C     dpRef     :: shift applied to output pressure [Pa]
+C     locPres   :: total pressure for use in EOS [Pa]
+C     myThid    :: my Thread Id number
       INTEGER bi, bj, k
       INTEGER iMin,iMax,jMin,jMax
+      _RL dpRef
       _RL locPres(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
@@ -44,9 +53,8 @@ C     i,j :: loop index
       INTEGER  i,j
 CEOP
 
-C
-C     provide the pressure for use in the equation of state
-C
+C     Provide the pressure for use in the equation of state
+
       IF ( usingZCoords ) THEN
 C     in Z coordinates the pressure is rho0 * (hydrostatic) Potential
 #ifdef ALLOW_NONHYDROSTATIC
@@ -57,8 +65,7 @@ C-     use full (hydrostatic+non-hydrostatic) dynamical pressure:
             locPres(i,j) = rhoConst*(
      &                   totPhiHyd(i,j,k,bi,bj)
      &                 +( phi_nh(i,j,k,bi,bj) - dPhiNH(i,j,bi,bj) )
-     &                 + phiRef(2*k) )
-c    &                             *maskC(i,j,k,bi,bj)
+     &                 + phiRef(2*k) ) + dpRef
           ENDDO
          ENDDO
        ELSEIF ( selectP_inEOS_Zc.EQ.2 ) THEN
@@ -74,8 +81,7 @@ C----------
           DO i=1-OLx,sNx+OLx
             locPres(i,j) = rhoConst*(
      &                   totPhiHyd(i,j,k,bi,bj)
-     &                 + phiRef(2*k) )
-c    &                             *maskC(i,j,k,bi,bj)
+     &                 + phiRef(2*k) ) + dpRef
           ENDDO
          ENDDO
 c      ELSEIF ( selectP_inEOS_Zc.EQ.1 ) THEN
@@ -86,16 +92,14 @@ C-     use horizontally uniform reference pressure pRef
 C      (solution of: pRef = integral{-g*rho(Tref,Sref,pRef)*dz} )
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            locPres(i,j) = pRef4EOS(k)
-c    &                              *maskC(i,j,k,bi,bj)
+            locPres(i,j) = pRef4EOS(k) + dpRef
           ENDDO
          ENDDO
        ELSE
 C-     simplest case: -g*rhoConst*z
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            locPres(i,j) = rhoConst*phiRef(2*k)
-c    &                              *maskC(i,j,k,bi,bj)
+            locPres(i,j) = rhoConst*phiRef(2*k) + dpRef
           ENDDO
          ENDDO
        ENDIF
@@ -104,8 +108,7 @@ C     in P coordinates the pressure is just the coordinate of
 C     the tracer point
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            locPres(i,j) = rC(k)
-c    &                   * maskC(i,j,k,bi,bj)
+            locPres(i,j) = rC(k) + dpRef
           ENDDO
          ENDDO
       ENDIF

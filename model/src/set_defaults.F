@@ -101,6 +101,7 @@ C--   Set default "physical" parameters
       nh_Am2              = 1. _d 0
       gravity             = 9.81 _d 0
       gBaro               = UNSET_RL
+      surf_pRef           = 101325. _d 0
       rhoNil              = 999.8 _d 0
       rhoConst            = UNSET_RL
 C-- jmc : the default is to set rhoConstFresh to rhoConst (=rhoNil by default)
