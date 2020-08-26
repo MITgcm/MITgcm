@@ -90,7 +90,6 @@ C--   Forcing term
         IF ( .NOT.SHELFICEboundaryLayer ) THEN
 C-    for now, forcing using SHELFICEboundaryLayer is done separately
 C     (calling SHELFICE_FORCING_T & _S from APPLY_FORCING_T & _S)
-
          DO j=1,sNy
           DO i=1,sNx
            IF ( kTopC(i,j,bi,bj).NE.0 ) THEN
@@ -119,8 +118,6 @@ c           ENDIF
 #endif /* ALLOW_AUTODIFF */
          ENDIF
 
-C--   end if not SHELFICEboundaryLayer
-        ENDIF
 #endif /* shelfice_new_thermo */
 
 #ifdef EXACT_CONSERV
@@ -150,7 +147,7 @@ C--   end if not SHELFICEboundaryLayer
              shelficeDragV(i,j,bi,bj) = 0.
            ENDDO
           ENDDO
-         ENDIF
+        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
 c      ENDDO
