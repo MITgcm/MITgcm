@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o optim:
+  - fix a small bug by initialising myX/YglobalLo=1 in optim_nummod.F
 o tools/do_tst_2+2:
   - for sending restart test output, add same hack in "send" option as in
     testreport, allowing to use "scp" (instead of an email).
