@@ -80,10 +80,13 @@
    figure
    ubt=squeeze(sum(UVEL.*permute(repmat(drF,[1 63 62 100]),[2 3 1 4]),3)); % depth-integrated u velocity
    psi=cumsum(-ubt.*repmat(dyG,[1 1 100]), 2); % compute barotropic streamfunction
-   clabel(contourf(Xp1,Y,psi(:,:,100)'/1e6,[-35:5:35],'k'));colorbar
+   clabel(contourf(Xp1,Yp1,[zeros(63,1) psi(:,:,100)]'/1e6,[-35:5:35],'k'));colorbar
    set(gca,'XLim',[0 60]);set(gca,'Ylim',[15 75])
    title('Barotropic Streamfunction (Sv)')
    xlabel('Longitude');ylabel('Latitude')
+%  note psi is computed and plotted at the grid cell corners and is dimensioned 63x63
+%  cumsum is done in y-direction; we have a wall at southern boundary (i.e. no reentrant flow from north), so we need to
+%  add a row of zeros to specify psi(j=1).   
    
 % figure 4.9 - potential temperature at 220m depth and xz slice at 28.5N,
 %  yr. 100

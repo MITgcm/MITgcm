@@ -121,13 +121,12 @@ C                  > 0 for increase in theta (ocean warming)
 C                  Typical range: 50 < lwdown < 450
 C                  Input/output field
 C
-C     apressure :: Atmospheric pressure field in N/m^2
-C                  > 0 for ????
-C                  Typical range: ???? < apressure < ????
+C     apressure :: Atmospheric surface pressure field in Pa
+C                  Typical range: 88000 < apressure < 108000
 C                  Input field
 C
 C     tidePot   :: Tidal geopotential forcing in m^2/s^2
-C                  Typical range: -10 < apressure < +10
+C                  Typical range: -10 < tidePot < +10
 C                  Input field
 
 C     NOTES:

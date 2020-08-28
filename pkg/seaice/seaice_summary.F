@@ -141,9 +141,12 @@ C--  Seaice-Dynamics parameters
       CALL WRITE_0D_RL( SEAICE_drag_south       ,INDEX_NONE,
      & 'SEAICE_drag_south      =', ' /* Southern Ocean SEAICE_drag */')
       CALL WRITE_0D_RL( SEAICE_waterDrag  ,INDEX_NONE,
-     & 'SEAICE_waterDrag  =', ' /* water-ice drag */')
+     & 'SEAICE_waterDrag  =', ' /* water-ice drag (no units) */')
       CALL WRITE_0D_RL( SEAICE_waterDrag_south  ,INDEX_NONE,
-     & 'SEAICE_waterDrag_south =', ' /* Southern Ocean waterDrag */')
+     & 'SEAICE_waterDrag_south =',
+     & ' /* Southern Ocean waterDrag (no units) */')
+      CALL WRITE_0D_RL( SEAICEdWatMin ,INDEX_NONE, 'SEAICEdWatMin =',
+     & ' /* minimum linear water-ice drag (in m/s) */')
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
       IF ( SEAICEbasalDragK2 .NE. 0. _d 0 ) THEN
        CALL WRITE_0D_RL( SEAICE_cBasalStar ,INDEX_NONE,
@@ -178,6 +181,8 @@ C--  Seaice-Dynamics parameters
      & 'SEAICEpresPow1 =', ' /* exponent for Heff>SEAICEpresH0 */')
        CALL WRITE_0D_I ( SEAICEetaZmethod,  INDEX_NONE,
      & 'SEAICEetaZmethod =', ' /* method computing eta at Z-point */')
+      CALL WRITE_0D_RL( SEAICE_zetaMaxFac  ,INDEX_NONE,
+     & 'SEAICE_zetaMaxFac =', ' /* factor for upper viscosity bound */')
       CALL WRITE_0D_RL( SEAICE_zetaMin  ,INDEX_NONE,
      & 'SEAICE_zetaMin    =', ' /* lower bound for viscosity */')
       CALL WRITE_0D_RL( SEAICE_eccen,INDEX_NONE,'SEAICE_eccen    =',

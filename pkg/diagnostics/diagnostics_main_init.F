@@ -622,7 +622,7 @@ C--   surface fluxes:
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'atmPload'
-      diagTitle = 'Atmospheric pressure loading'
+      diagTitle = 'Atmospheric pressure loading anomaly (vs surf_pRef)'
       diagUnits = 'Pa              '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
