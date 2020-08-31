@@ -318,14 +318,15 @@ File :filelink:`code/SIZE.h <verification/tutorial_reentrant_channel/code/SIZE.h
     :linenos:
     :caption: verification/tutorial_reentrant_channel/code/SIZE.h
 
-Our model tile size is defined above to be 20 :math:`\times` 10 gridpoints, so four tiles are required
-to span the full domain in :math:`y` (i.e., :varlink:`nSy` =4). Note that our overlap sizes (:varlink:`OLx`, :varlink:`OLy`)
-are set to 4 in this tutorial, as required by our choice of advection scheme
-(see discussion in :numref:`sec_tutSOch_num_stab` and :numref:`adv_scheme_summary` from which this required overlap can be obtained);
+Our model tile size is defined above to be 20 :math:`\times` 10 gridpoints, so four tiles (i.e., :varlink:`nSy` =4)
+are required to span the full domain in :math:`y`.
+Note that our overlap sizes (:varlink:`OLx`, :varlink:`OLy`) are set to 4 in this tutorial,
+as required by our choice of advection scheme (see discussion in :numref:`sec_tutSOch_num_stab`
+and :numref:`adv_scheme_summary` from which this required overlap can be obtained);
 in tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>` this was set to 2,
 which is the mimimum required for the default :ref:`center second-ordered differences <adv_cent_2ord>` scheme.
 For this setup we will specify a reasonably high resolution
-in the vertical, using 49 gridpoints.
+in the vertical, using 49 levels.
 
 File :filelink:`code/DIAGNOSTICS_SIZE.h <verification/tutorial_reentrant_channel/code/DIAGNOSTICS_SIZE.h>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -411,7 +412,7 @@ PARM01 - Continuous equation parameters
   not be used for this purpose (as it was in tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`).
   Thus, :varlink:`tRef` is only employed here as a reference to compute density anomalies. In principle, one could
   define :varlink:`tRef` to a more representative array of values at each level, but for most applications any
-  gain is numerical accuracy is small, and a single representative value suffices.
+  gain in numerical accuracy is small, and a single representative value suffices.
 
   .. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data
        :start-at: rhoConst
@@ -494,10 +495,12 @@ PARM03 - Time stepping parameters
 
 .. _momDissip_not_in_AB:
 
-- This instructs the model to NOT use Adams-Bashforth to compute momentum tendency equations (the default is to use Adams-Bashforth);
+- This instructs the model to NOT apply Adams-Bashforth scheme to the viscosity tendency and other dissipation terms
+  (such as side grad and bottom drag) in the momentum equations (the default is to use Adams-Bashforth for all terms);
   instead, dissipation is computed using a explicit, forward, first-order scheme.
-  For our coarse resolution setup with uniform harmonic viscosity, this setting is not strictly necessary (and does not noticeably change results).
-  However, for our eddy-permitting run we will use a difference scheme for setting viscosity, and for stability requires this setting.
+  For our coarse resolution setup with uniform harmonic viscosity, this setting is not strictly necessary 
+  (and does not noticeably change results). However, for our eddy-permitting run we will use a difference 
+  scheme for setting viscosity, and for stability requires this setting.
 
   .. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data
        :start-at: momDissip
@@ -516,9 +519,9 @@ PARM04 - Gridding parameters
        :end-at: delY
        :lineno-match:
 
-- We set the vertical grid spacing for 49 vertical levels, ranging from depths of approximately 5.5 m at the 
-  surface to 149 m at depth. When varying cell depths in this manner, one must be careful that vertical grid
-  spacing increases monotonically with depth; see :numref:`sec_SOch_num_config` for details on how this specific grid spacing was generated.
+- We set the vertical grid spacing for 49 vertical levels, ranging from thickness of approximately 5.5 m at the 
+  surface to 149 m at depth. When varying cell thickness in this manner, one must be careful that vertical grid
+  spacing varies smoothly with depth; see :numref:`sec_SOch_num_config` for details on how this specific grid spacing was generated.
 
   .. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data
        :start-at: delR
@@ -726,7 +729,10 @@ Note that this file is ignored with :filelink:`pkg/gmredi` disabled (in :filelin
   which specifies that GM fluxes are parameterized into a :ref:`bolus advective transport <GM_bolus_desc>`, rather
   than implemented as a :ref:`"skewflux" transport <sub_gmredi_skewflux>` via added terms
   in the diffusion tensor (see Griffies 1998 :cite:`gr:98`). The skewflux form is the package default.
-  Analytically, these forms are identical, but in practice are discretized differently. This can lead to noticeably different solutions in some setups (anecdotally,
+  Analytically, these forms are identical, but in practice are discretized differently. 
+  For instance, the bolus form will, by default, advect tracers with combined eulerian and bolus transport
+  (i.e, residual transport) which then inherits the higher order precision of the selected advection scheme 7.
+  This can lead to noticeably different solutions in some setups (anecdotally,
   particularly where you have steeply sloping isopycnals near boundaries). For diagnostic
   purposes, the bolus form permits a straightforward calculation of the actual advective transport (from the GM part),
   whereas obtaining this transport using the skewflux form is less straightforward due to discretization issues.
@@ -1112,7 +1118,7 @@ will remain order ~1 ms\ :sup:`-1`? As a compromise, we suggest setting paramete
 :filelink:`data <verification/tutorial_reentrant_channel/input/data>`, which we found to be stable. For this choice, a 30-year integration
 requires setting :varlink:`nTimeSteps`\ ``=3732480``. 
 
-While it would be possible to decrease (spatially uniform) harmonic viscosity to more
+While it would be possible to decrease (spatially uniform) harmonic viscosity to
 a more appropriate value for this resolution, or perhaps use bi-harmonic viscosity
 (see :numref:`fluxform_lat_dissip`), we will make use of one of the nonlinear viscosity schemes described in :numref:`nonlinear_vis_schemes`, geared
 toward large eddy simulations, where viscosity is a function of the resolved motion. Here, we employ
