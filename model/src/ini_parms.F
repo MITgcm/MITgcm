@@ -193,7 +193,7 @@ C--   Continuous equation parameters
      & viscA4ReMax, viscAhReMax,
      & cosPower, viscAstrain, viscAtension,
      & diffKhT, diffK4T, diffKhS, diffK4S,
-     & tRef, sRef, tRefFile, sRefFile, rhoRefFile,
+     & surf_pRef, tRef, sRef, tRefFile, sRefFile, rhoRefFile,
      & eosType, selectP_inEOS_Zc, integr_GeoPot, selectFindRoSurf,
      & HeatCapacity_Cp, celsius2K, atm_Cp, atm_Rd, atm_Rq, atm_Po,
      & no_slip_sides, sideDragFactor, no_slip_bottom, bottomVisc_pCell,

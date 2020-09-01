@@ -220,7 +220,7 @@ C  saturation state
 
            else
 
-             pH(i,j,k,bi,bj) = 0. _d 0
+             pH(i,j,k,bi,bj) = 8. _d 0
              omegaC(i,j,k,bi,bj)  = 0. _d 0
              omegaAr(i,j,k,bi,bj) = 0. _d 0
 

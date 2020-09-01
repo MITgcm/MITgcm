@@ -246,13 +246,19 @@ CEOP
 c--   Initialize storage for the cost function evaluation.
 CADJ  INIT dummytape = common, 1
 c--   Initialize storage for the outermost loop.
-# ifndef ALLOW_AUTODIFF_WHTAPEIO
-CADJ  INIT tapelev_init   = USER
-CADJ  INIT tapelev_ini_bibj_k   = USER
-# else
+# ifdef ALLOW_AUTODIFF_WHTAPEIO
 CADJ  INIT tapelev_init   = common, 1
+# else
+CADJ  INIT tapelev_init       = USER
+CADJ  INIT tapelev_ini_bibj   = USER
+CADJ  INIT tapelev_ini_bibj_k = USER
 # endif
-c
+# ifdef ALLOW_ECCO
+#  ifdef ECCO_CTRL_DEPRECATED
+CADJ  INIT onetape = USER
+#  endif
+# endif
+
 # ifdef ALLOW_TAMC_CHECKPOINTING
 #  if (defined (AUTODIFF_2_LEVEL_CHECKPOINT))
 CADJ  INIT tapelev2 = USER
@@ -262,7 +268,7 @@ CADJ  INIT tapelev4 = USER
 CADJ  INIT tapelev3 = USER
 #  endif
 # endif
-#endif
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF
       nIter0 = NINT( (startTime-baseTime)/deltaTClock )
@@ -328,12 +334,14 @@ C--   Set initial conditions (variable arrays)
       CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', myThid)
       CALL INITIALISE_VARIA( myThid )
       CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', myThid)
-#ifdef ECCO_CTRL_DEPRECATED
-#ifdef ALLOW_ECCO
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_ECCO
+#  ifdef ECCO_CTRL_DEPRECATED
 cph: avoid renewed call of initialise_varia in recomputation loop
 cph: in some circumstances
 CADJ STORE sbar_gen,tbar_gen  = onetape
-#endif
+#  endif
+# endif
 #endif
 
 #ifdef ALLOW_SHOWFLOPS
@@ -423,58 +431,58 @@ c**************************************
 
 # endif /* ALLOW_TAMC_CHECKPOINTING */
 
+# ifdef ALLOW_AUTODIFF_TAMC
 c**************************************
-c--
 c--       Initialize storage for the innermost loop.
 c--       Always check common block sizes for the checkpointing!
 c--
 CADJ INIT comlev1        = COMMON,nchklev_1
-CADJ INIT comlev1_bibj   = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt
-CADJ INIT comlev1_bibj_k = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt
+CADJ INIT comlev1_bibj   = COMMON,nchklev_1*nSx*nSy*nthreads_chkpt
+CADJ INIT comlev1_bibj_k = COMMON,nchklev_1*nSx*nSy*Nr*nthreads_chkpt
 c--
-#ifdef ALLOW_CTRL
+#  ifdef ALLOW_CTRL
 CADJ INIT ctrltape       = COMMON,1
-#endif
+#  endif
 c--
 #   ifdef ALLOW_KPP
-CADJ INIT comlev1_kpp    = COMMON,nchklev_1*nsx*nsy
-CADJ INIT comlev1_kpp_k  = COMMON,nchklev_1*nsx*nsy*nr
+CADJ INIT comlev1_kpp    = COMMON,nchklev_1*nSx*nSy
+CADJ INIT comlev1_kpp_k  = COMMON,nchklev_1*nSx*nSy*Nr
 #   endif /* ALLOW_KPP */
 c--
 #   ifdef ALLOW_GMREDI
 CADJ INIT comlev1_gmredi_k_gad
-CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass
+CADJ &    = COMMON,nchklev_1*nSx*nSy*Nr*nthreads_chkpt*maxpass
 #   endif /* ALLOW_GMREDI */
 c--
 #   ifdef ALLOW_PTRACERS
 CADJ INIT comlev1_bibj_ptracers = COMMON,
-CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*PTRACERS_num
+CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*PTRACERS_num
 CADJ INIT comlev1_bibj_k_ptracers = COMMON,
-CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*PTRACERS_num*nr
+CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*PTRACERS_num*Nr
 #   endif /* ALLOW_PTRACERS */
 c--
 #   ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ INIT comlev1_bibj_gad = COMMON,
-CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*maxpass
+CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*maxpass
 CADJ INIT comlev1_bibj_k_gad = COMMON,
-CADJ &    nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass
+CADJ &    nchklev_1*nSx*nSy*Nr*nthreads_chkpt*maxpass
 CADJ INIT comlev1_bibj_k_gad_pass = COMMON,
-CADJ &    nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass*maxpass
+CADJ &    nchklev_1*nSx*nSy*Nr*nthreads_chkpt*maxpass*maxpass
 #   endif /* DISABLE_MULTIDIM_ADVECTION */
 c--
 #   ifdef ALLOW_MOM_COMMON
 #   ifndef AUTODIFF_DISABLE_LEITH
 CADJ INIT comlev1_mom_ijk_loop
 CADJ &     = COMMON,nchklev_1*
-CADJ &       (snx+2*olx)*nsx*(sny+2*oly)*nsy*nr*nthreads_chkpt
+CADJ &       (sNx+2*OLx)*nSx*(sNy+2*OLy)*nSy*Nr*nthreads_chkpt
 #   endif /* AUTODIFF_DISABLE_LEITH */
 #   endif /* ALLOW_MOM_COMMON */
 c--
 #   if (defined (ALLOW_EXF) && defined (ALLOW_BULKFORMULAE))
 CADJ INIT comlev1_exf_1
-CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
+CADJ &     = COMMON,nchklev_1*sNx*nSx*sNy*nSy*nthreads_chkpt
 CADJ INIT comlev1_exf_2
-CADJ &     = COMMON,niter_bulk*nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
+CADJ &     = COMMON,niter_bulk*nchklev_1*sNx*nSx*sNy*nSy*nthreads_chkpt
 #   endif /* ALLOW_BULKFORMULAE */
 c--
 #   ifdef ALLOW_SEAICE
@@ -483,52 +491,52 @@ CADJ INIT comlev1_dynsol = COMMON,nchklev_1*MPSEUDOTIMESTEPS
 #     ifdef SEAICE_LSR_ADJOINT_ITER
 CADJ INIT comlev1_lsr = COMMON,nchklev_1*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
 CADJ INIT comlev1_bibj_lsr = COMMON,
-CADJ &  nchklev_1*nsx*nsy*nthreads_chkpt*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
+CADJ &  nchklev_1*nSx*nSy*nthreads_chkpt*MPSEUDOTIMESTEPS*SOLV_MAX_FIXED
 #     else /* make the common blocks smaller to reduce memory footprint */
 CADJ INIT comlev1_lsr = COMMON,nchklev_1*MPSEUDOTIMESTEPS
 CADJ INIT comlev1_bibj_lsr = COMMON,
-CADJ &  nsx*nsy*nthreads_chkpt*nchklev_1*MPSEUDOTIMESTEPS
+CADJ &  nSx*nSy*nthreads_chkpt*nchklev_1*MPSEUDOTIMESTEPS
 #     endif
 #    endif
 #    ifdef SEAICE_ALLOW_EVP
 CADJ INIT comlev1_evp = COMMON,nEVPstepMax*nchklev_1
 CADJ INIT comlev1_bibj_evp = COMMON,
-CADJ &  nsx*nsy*nthreads_chkpt*nEVPstepMax*nchklev_1
+CADJ &  nSx*nSy*nthreads_chkpt*nEVPstepMax*nchklev_1
 #    endif
 CML#   ifdef SEAICE_MULTICATEGORY
 CMLCADJ INIT comlev1_multdim
-CMLCADJ &    = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt*nitd
+CMLCADJ &    = COMMON,nchklev_1*nSx*nSy*nthreads_chkpt*nitd
 CML#   endif
 #    ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ INIT comlev1_bibj_k_gadice = COMMON,
-CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*maxpass
+CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*maxpass
 CADJ INIT comlev1_bibj_k_gadice_pass = COMMON,
-CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*maxpass*maxpass
+CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*maxpass*maxpass
 #    endif /* DISABLE_MULTIDIM_ADVECTION */
 # endif /* ALLOW_SEAICE */
 c--
 #   ifdef ALLOW_THSICE
 CADJ INIT comlev1_thsice_1 = COMMON,
-CADJ &    nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
+CADJ &    nchklev_1*sNx*nSx*sNy*nSy*nthreads_chkpt
 CADJ INIT comlev1_thsice_2 = COMMON,
-CADJ &    nchklev_1*snx*nsx*sny*nsy*nlyr*nthreads_chkpt
+CADJ &    nchklev_1*sNx*nSx*sNy*nSy*nlyr*nthreads_chkpt
 CADJ INIT comlev1_thsice_3 = COMMON,
-CADJ &    nchklev_1*snx*nsx*sny*nsy*MaxTsf*nthreads_chkpt
+CADJ &    nchklev_1*sNx*nSx*sNy*nSy*MaxTsf*nthreads_chkpt
 CADJ INIT comlev1_thsice_4 = COMMON,
-CADJ &    nchklev_1*nsx*nsy*maxpass*nthreads_chkpt
+CADJ &    nchklev_1*nSx*nSy*maxpass*nthreads_chkpt
 CADJ INIT comlev1_thsice_5 = COMMON,
-CADJ &    nchklev_1*snx*nsx*sny*nsy*MaxTsf*(niter_bulk+1)*nthreads_chkpt
+CADJ &    nchklev_1*sNx*nSx*sNy*nSy*MaxTsf*(niter_bulk+1)*nthreads_chkpt
 CADJ INIT comlev1_thsice_s4t = COMMON,
-CADJ &    nchklev_1*nsx*nsy*maxtsf*nthreads_chkpt
+CADJ &    nchklev_1*nSx*nSy*maxtsf*nthreads_chkpt
 #   endif /* ALLOW_THSICE */
 c--
 #   ifdef ALLOW_STREAMICE
 CADJ INIT comlev1_stream_nl = COMMON,nchklev_1*streamice_max_nl
 CADJ INIT comlev1_stream_front = COMMON,nchklev_1*4
 CADJ INIT comlev1_stream_ij
-CADJ &     = COMMON,nchklev_1*4*(snx+2)*nsx*(sny+2)*nsy
+CADJ &     = COMMON,nchklev_1*4*(sNx+2)*nSx*(sNy+2)*nSy
 CADJ INIT comlev1_stream_hybrid
-CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nr*nthreads_chkpt
+CADJ &     = COMMON,nchklev_1*sNx*nSx*sNy*nSy*Nr*nthreads_chkpt
 #   endif
 c--
 #   ifdef ALLOW_CG2D_NSA
@@ -537,6 +545,7 @@ CADJ &     = COMMON,nchklev_1*nthreads_chkpt
 CADJ INIT comlev1_cg2d_iter
 CADJ &     = COMMON,nchklev_1*nthreads_chkpt*numItersMax
 #   endif
+# endif /* ALLOW_AUTODIFF_TAMC */
 c--
 c**************************************
 
