@@ -9,4 +9,6 @@
  useISOMIPTD = .FALSE.,
  no_slip_shelfice = .false.,
  SHELFICEwriteState = .TRUE.,
+ ICEFRONTdepthFile  = 'frontdepth.xuyun',
+ ICEFRONTlengthFile = 'frontcircum.xuyun',
  &

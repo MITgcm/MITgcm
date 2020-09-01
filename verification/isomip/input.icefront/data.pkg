@@ -1,6 +1,5 @@
 # Packages
  &PACKAGES
- useDiagnostics = .TRUE., 
+ useDiagnostics = .TRUE.,
  useShelfIce=.true.,
- useIcefront=.true.,
  &
