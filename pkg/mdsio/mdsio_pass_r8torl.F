@@ -163,9 +163,9 @@ C myThid  (integer):: my Thread Id number
       INTEGER myThid
 
 C !LOCAL VARIABLES:
-C   i,j,k :: loop indices
+C   i,k   :: loop indices
 C   bi,bj :: tile indices
-      INTEGER i,j,k,bi,bj
+      INTEGER i,k,bi,bj
       INTEGER kLev
 CEOP
       IF ( oL.LT.0 .OR. oL.GT.OLy ) THEN
@@ -267,9 +267,9 @@ C myThid  (integer):: my Thread Id number
       INTEGER myThid
 
 C !LOCAL VARIABLES:
-C   i,j,k :: loop indices
+C   j,k   :: loop indices
 C   bi,bj :: tile indices
-      INTEGER i,j,k,bi,bj
+      INTEGER j,k,bi,bj
       INTEGER kLev
 CEOP
       IF ( oL.LT.0 .OR. oL.GT.OLy ) THEN
