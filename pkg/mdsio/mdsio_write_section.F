@@ -72,7 +72,7 @@ C   Therefore, the 3-D buffer is considered to be owned by master-thread and
 C   any access by other than master thread is put between BARRIER (protected).
 C
 C Modified: 06/02/00 spk@ocean.mit.edu
-C Modified: 08/03/20 - style copied from mdsio_write_field timsmith204@utexas.edu 
+C Modified: 08/03/20 - style copied from mdsio_write_field timsmith204@utexas.edu
 CEOP
 
 C !USES:
@@ -137,8 +137,8 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       _R8 r8seg(sNx,nSx,nSy)
       _R4 x_buffer_r4( Nx )
       _R8 x_buffer_r8( Nx )
-      _R4 xz_buffer_r4( sNx*Nr )
-      _R8 xz_buffer_r8( sNx*Nr )
+      _R4 xz_buffer_r4( sNx*Nr*nSx*nSy )
+      _R8 xz_buffer_r8( sNx*Nr*nSx*nSy )
 #ifdef ALLOW_EXCH2
       INTEGER tN
 #endif /* ALLOW_EXCH2 */
@@ -302,10 +302,10 @@ C Initialize buffer
 C-     copy from fldRL/RS(level=k) to 2-D "local":
        IF ( filePrec.EQ.precFloat32 ) THEN
          IF ( arrType.EQ.'RS' ) THEN
-           CALL MDS_PASS_XZ_R4toRS( r4seg, fldRS, 
+           CALL MDS_PASS_XZ_R4toRS( r4seg, fldRS,
      I             0, 1, k, kSize, 0, 0, .FALSE., myThid )
          ELSEIF ( arrType.EQ.'RL' ) THEN
-           CALL MDS_PASS_XZ_R4toRL( r4seg, fldRL, 
+           CALL MDS_PASS_XZ_R4toRL( r4seg, fldRL,
      I             0, 1, k, kSize, 0, 0, .FALSE., myThid )
          ELSE
            WRITE(msgBuf,'(2A)')
@@ -512,10 +512,12 @@ C If we are writing to a tiled MDS file then we open each one here
            fileIsOpen=.TRUE.
 
            irec = irecord
+           i1 = bBij + 1
+           i2 = bBij + sNx*nNz
            IF ( filePrec.EQ.precFloat32 ) THEN
-             WRITE(dUnit,rec=irec) xz_buffer_r4
+            WRITE(dUnit,rec=irec) (xz_buffer_r4(i),i=i1,i2)
            ELSE
-             WRITE(dUnit,rec=irec) xz_buffer_r8
+            WRITE(dUnit,rec=irec) (xz_buffer_r8(i),i=i1,i2)
            ENDIF
 
 C here We close the tiled MDS file
@@ -663,7 +665,7 @@ C   Therefore, the 3-D buffer is considered to be owned by master-thread and
 C   any access by other than master thread is put between BARRIER (protected).
 C
 C Modified: 06/02/00 spk@ocean.mit.edu
-C Modified: 08/03/20 - style copied from mdsio_write_field timsmith204@utexas.edu 
+C Modified: 08/03/20 - style copied from mdsio_write_field timsmith204@utexas.edu
 CEOP
 
 C !USES:
@@ -728,8 +730,8 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       _R8 r8seg(sNy,nSx,nSy)
       _R4 y_buffer_r4( Ny )
       _R8 y_buffer_r8( Ny )
-      _R4 yz_buffer_r4( sNy*Nr )
-      _R8 yz_buffer_r8( sNy*Nr )
+      _R4 yz_buffer_r4( sNy*Nr*nSx*nSy )
+      _R8 yz_buffer_r8( sNy*Nr*nSx*nSy )
 #ifdef ALLOW_EXCH2
       INTEGER tN
 #endif /* ALLOW_EXCH2 */
@@ -893,10 +895,10 @@ C Initialize buffer
 C-     copy from fldRL/RS(level=k) to 2-D "local":
        IF ( filePrec.EQ.precFloat32 ) THEN
          IF ( arrType.EQ.'RS' ) THEN
-           CALL MDS_PASS_YZ_R4toRS( r4seg, fldRS, 
+           CALL MDS_PASS_YZ_R4toRS( r4seg, fldRS,
      I             0, 1, k, kSize, 0, 0, .FALSE., myThid )
          ELSEIF ( arrType.EQ.'RL' ) THEN
-           CALL MDS_PASS_YZ_R4toRL( r4seg, fldRL, 
+           CALL MDS_PASS_YZ_R4toRL( r4seg, fldRL,
      I             0, 1, k, kSize, 0, 0, .FALSE., myThid )
          ELSE
            WRITE(msgBuf,'(2A)')
@@ -1103,10 +1105,14 @@ C If we are writing to a tiled MDS file then we open each one here
            fileIsOpen=.TRUE.
 
            irec = irecord
+           i1 = bBij + 1
+           i2 = bBij + sNy*nNz
            IF ( filePrec.EQ.precFloat32 ) THEN
-             WRITE(dUnit,rec=irec) yz_buffer_r4
+            WRITE(dUnit,rec=irec) (yz_buffer_r4(i),i=i1,i2)
            ELSE
-             WRITE(dUnit,rec=irec) yz_buffer_r8
+            print *, irec, bi, bj, i1, i2,
+     &           yz_buffer_r8(i1), yz_buffer_r8(i2)
+            WRITE(dUnit,rec=irec) (yz_buffer_r8(i),i=i1,i2)
            ENDIF
 
 C here We close the tiled MDS file
