@@ -1110,8 +1110,6 @@ C If we are writing to a tiled MDS file then we open each one here
            IF ( filePrec.EQ.precFloat32 ) THEN
             WRITE(dUnit,rec=irec) (yz_buffer_r4(i),i=i1,i2)
            ELSE
-            print *, irec, bi, bj, i1, i2,
-     &           yz_buffer_r8(i1), yz_buffer_r8(i2)
             WRITE(dUnit,rec=irec) (yz_buffer_r8(i),i=i1,i2)
            ENDIF
 
