@@ -121,8 +121,8 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       _R8 r8seg(sNx,nSx,nSy)
       _R4 x_buffer_r4(Nx)
       _R8 x_buffer_r8(Nx)
-      _R4 xz_buffer_r4( sNx*Nr )
-      _R8 xz_buffer_r8( sNx*Nr )
+      _R4 xz_buffer_r4( sNx*Nr*nSx*nSy )
+      _R8 xz_buffer_r8( sNx*Nr*nSx*nSy )
 #ifdef ALLOW_EXCH2
       INTEGER tN
 #endif /* ALLOW_EXCH2 */
@@ -469,10 +469,12 @@ C If we are writing to a tiled MDS file then we open each one here
            ENDIF
 
            irec = irecord
+           i1 = bBij + 1
+           i2 = bBij + sNy*nNz
            IF ( filePrec.EQ.precFloat32 ) THEN
-             READ(dUnit,rec=irec) xz_buffer_r4
+             READ(dUnit,rec=irec) (xz_buffer_r4(i),i=i1,i2)
            ELSE
-             READ(dUnit,rec=irec) xz_buffer_r8
+             READ(dUnit,rec=irec) (xz_buffer_r8(i),i=i1,i2)
            ENDIF
 
 C here We close the tiled MDS file
@@ -672,8 +674,8 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       _R8 r8seg(sNy,nSx,nSy)
       _R4 y_buffer_r4(Ny)
       _R8 y_buffer_r8(Ny)
-      _R4 yz_buffer_r4( sNy*Nr )
-      _R8 yz_buffer_r8( sNy*Nr )
+      _R4 yz_buffer_r4( sNy*Nr*nSx*nSy )
+      _R8 yz_buffer_r8( sNy*Nr*nSx*nSy )
 #ifdef ALLOW_EXCH2
       INTEGER tN
 #endif /* ALLOW_EXCH2 */
@@ -1020,10 +1022,12 @@ C If we are writing to a tiled MDS file then we open each one here
            ENDIF
 
            irec = irecord
+           i1 = bBij + 1
+           i2 = bBij + sNy*nNz
            IF ( filePrec.EQ.precFloat32 ) THEN
-             READ(dUnit,rec=irec) yz_buffer_r4
+             READ(dUnit,rec=irec) (yz_buffer_r4(i),i=i1,i2)
            ELSE
-             READ(dUnit,rec=irec) yz_buffer_r8
+             READ(dUnit,rec=irec) (yz_buffer_r8(i),i=i1,i2)
            ENDIF
 
 C here We close the tiled MDS file
