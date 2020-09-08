@@ -98,12 +98,8 @@ CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
 CADJ &     = tapelev3, key = ilev_3
 # endif
 
-# ifdef ALLOW_CG2D_NSA
-CADJ STORE aW2d, aS2d, aC2d =
-CADJ &     tapelev3, key = ilev_3
-CADJ STORE pc, ps, pw =
-CADJ &     tapelev3, key = ilev_3
-# endif
+CADJ STORE aW2d, aS2d, aC2d = tapelev3, key = ilev_3
+CADJ STORE pc, ps, pw       = tapelev3, key = ilev_3
 
 #endif /* NONLIN_FRSURF */
 
@@ -162,10 +158,6 @@ CADJ &     tapelev3, key = ilev_3
 #ifdef ALLOW_OFFLINE
 # include "offline_ad_check_lev3_dir.h"
 #endif /* ALLOW_OFFLINE */
-
-#ifdef ALLOW_GCHEM
-# include "gchem_ad_check_lev3_dir.h"
-#endif
 
 #ifdef ALLOW_CFC
 # include "cfc_ad_check_lev3_dir.h"

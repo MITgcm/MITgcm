@@ -1,6 +1,6 @@
 #include "AUTODIFF_OPTIONS.h"
 
-      SUBROUTINE AUTODIFF_INADMODE_SET( myThid )
+      SUBROUTINE AUTODIFF_INADMODE_SET( myTime, myIter, myThid )
 C     *==========================================================*
 C     | SUBROUTINE AUTODIFF_INADMODE_SET
 C     *==========================================================*
@@ -14,6 +14,8 @@ C     == Global variables ===
 C     == Routine arguments ==
 C     myThid :: my Thread Id number
       INTEGER myThid
+      INTEGER myIter
+      _RL myTime
 
       RETURN
       END

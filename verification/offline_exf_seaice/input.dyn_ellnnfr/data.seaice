@@ -1,0 +1,20 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+ usePW79thermodynamics=.FALSE.,
+ SEAICE_strength    = 2.6780e+04,
+ OCEAN_drag         = 8.1541e-04,
+ SEAICE_no_Slip     = .FALSE.,
+ LSR_ERROR          = 1.E-12,
+ SEAICElinearIterMax= 1500,
+ LSR_mixIniGuess    = 1,
+ SEAICEadvScheme    = 41,
+ AreaFile  = 'const100.bin',
+ HeffFile  = 'const+20.bin',
+ HsnowFile = 'const_00.bin',
+ SEAICEwriteState   = .TRUE.,
+ SEAICE_monFreq = 1800.,
+ SEAICE_eccfr = 1.0,
+ &
+ 
+ &SEAICE_PARM03
+ &

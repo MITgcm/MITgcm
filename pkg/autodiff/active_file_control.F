@@ -93,6 +93,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*(80) adfname
       INTEGER bi,bj
       INTEGER i,j,k
+      INTEGER jRec
       INTEGER prec
       INTEGER il
       LOGICAL w_globFile
@@ -102,6 +103,7 @@ CEOP
 
 C     force 64-bit io
       prec = ctrlprec
+      jRec = -ABS(iRec)
 
       adpref = 'ad'
       il = ILNBLNK( activeVar_file )
@@ -173,7 +175,7 @@ C     Store the result on disk.
      I                activeVar_file, prec, w_globFile, useCurrentDir,
      I                'RL', Nr, 1, myNr,
      I                active_data_t, dummyRS,
-     I                iRec, myOptimIter, myThid )
+     I                jRec, myOptimIter, myThid )
 
 C     Set active_var to zero.
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -275,6 +277,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*(80) adfname
       INTEGER bi,bj
       INTEGER i,j,k
+      INTEGER jRec
       INTEGER prec
       INTEGER il
       LOGICAL w_globFile
@@ -284,6 +287,7 @@ CEOP
 
 C     force 64-bit io
       prec = ctrlprec
+      jRec = -ABS(iRec)
 
       adpref = 'ad'
       il = ILNBLNK( activeVar_file )
@@ -355,7 +359,7 @@ C     Store the result on disk.
      I                activeVar_file, prec, w_globFile, useCurrentDir,
      I                'RS', Nr, 1, myNr,
      I                dummyRL, active_data_t,
-     I                iRec, myOptimIter, myThid )
+     I                jRec, myOptimIter, myThid )
 
 C     Set active_var to zero.
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -450,6 +454,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*(2)  adpref
       CHARACTER*(80) adfname
       INTEGER i, bi, bj
+      INTEGER jRec
       INTEGER prec
       INTEGER il
       INTEGER ioUnit
@@ -459,6 +464,7 @@ CEOP
 
 C     force 64-bit io
       prec = ctrlprec
+      jRec = -ABS(iRec)
 
 C     set these to zero otherwise looks for tiled file
       bi=0
@@ -524,7 +530,7 @@ C     Store the result on disk.
      I                'RL', active_var_length,
      O                active_data_t, dummyRS,
      I                bi, bj,
-     I                iRec, myOptimIter, myThid )
+     I                jRec, myOptimIter, myThid )
         ENDIF
 
 C     Set active_var to zero.
@@ -613,6 +619,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*(2)  adpref
       CHARACTER*(80) adfname
       INTEGER i, bi, bj
+      INTEGER jRec
       INTEGER prec
       INTEGER il
       INTEGER ioUnit
@@ -622,6 +629,7 @@ CEOP
 
 C     force 64-bit io
       prec = ctrlprec
+      jRec = -ABS(iRec)
 
 C     set these to zero otherwise looks for tiled file
       bi=0
@@ -687,7 +695,7 @@ C     Store the result on disk.
      I                'RS', active_var_length,
      O                dummyRL, active_data_t,
      I                bi, bj,
-     I                iRec, myOptimIter, myThid )
+     I                jRec, myOptimIter, myThid )
 
         ENDIF
 C     Set active_var to zero.
@@ -770,6 +778,7 @@ C     myThid         :: thread number for this instance
 C     !LOCAL VARIABLES:
       INTEGER  i,j,k
       INTEGER  bi,bj
+      INTEGER  jRec
       INTEGER  prec
       _RS  dummyRS(1)
       _RL  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -777,6 +786,7 @@ CEOP
 
 C     force 64-bit io
       prec = ctrlprec
+      jRec = -ABS(iRec)
 
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
@@ -814,7 +824,7 @@ C     Add active_var from appropriate location to data.
      I                activeVar_file, prec, globalFile, useCurrentDir,
      I                'RL', Nr, 1, myNr,
      I                active_data_t, dummyRS,
-     I                iRec, myOptimIter, myThid )
+     I                jRec, myOptimIter, myThid )
 
       ENDIF
 
@@ -889,6 +899,7 @@ C     myThid         :: thread number for this instance
 C     !LOCAL VARIABLES:
       INTEGER  i,j,k
       INTEGER  bi,bj
+      INTEGER  jRec
       INTEGER  prec
       _RS  active_data_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  dummyRL(1)
@@ -896,6 +907,7 @@ CEOP
 
 C     force 64-bit io
       prec = ctrlprec
+      jRec = -ABS(iRec)
 
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
@@ -933,7 +945,7 @@ C     Add active_var from appropriate location to data.
      I                activeVar_file, prec, globalFile, useCurrentDir,
      I                'RS', Nr, 1, myNr,
      I                dummyRL, active_data_t,
-     I                iRec, myOptimIter, myThid )
+     I                jRec, myOptimIter, myThid )
 
       ENDIF
 
@@ -1002,6 +1014,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       INTEGER i, bi, bj
+      INTEGER jRec
       INTEGER prec
       INTEGER ioUnit
       _RS  dummyRS(1)
@@ -1010,6 +1023,7 @@ CEOP
 
 C     force 64-bit io
       prec = ctrlprec
+      jRec = -ABS(iRec)
 
 C     set these to zero otherwise mdsio_read/writevec_loc looks for tiled file
       bi=0
@@ -1056,7 +1070,7 @@ C     Store the result on disk.
      I                'RL', active_var_length,
      O                active_data_t, dummyRS,
      I                bi, bj,
-     I                iRec, myOptimIter, myThid )
+     I                jRec, myOptimIter, myThid )
         ENDIF
       ENDIF
 
@@ -1129,6 +1143,7 @@ C     myThid         :: thread number for this instance
 
 C     !LOCAL VARIABLES:
       INTEGER i, bi, bj
+      INTEGER jRec
       INTEGER prec
       INTEGER ioUnit
       _RS  active_data_t(active_var_length)
@@ -1137,6 +1152,7 @@ CEOP
 
 C     force 64-bit io
       prec = ctrlprec
+      jRec = -ABS(iRec)
 
 C     set these to zero otherwise mdsio_read/writevec_loc looks for tiled file
       bi=0
@@ -1183,7 +1199,7 @@ C     Store the result on disk.
      I                'RL', active_var_length,
      O                dummyRL, active_data_t,
      I                bi, bj,
-     I                iRec, myOptimIter, myThid )
+     I                jRec, myOptimIter, myThid )
 
         ENDIF
       ENDIF

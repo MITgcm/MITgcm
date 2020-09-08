@@ -1085,7 +1085,7 @@ c    mixing due to internal waves, and shear and static instability
             diffus(i,ki,3) = diffusKzT(i,kp1)
 #else /* EXCLUDE_KPP_SHEAR_MIX */
 # ifdef ALLOW_AUTODIFF
-            if ( inAdMode ) then
+            if ( inAdMode .AND. .NOT. inAdExact ) then
               diffus(i,ki,1) = viscArNr(1)
               diffus(i,ki,2) = diffusKzS(i,kp1)
               diffus(i,ki,3) = diffusKzT(i,kp1)
@@ -1644,7 +1644,7 @@ c               g * [ drho{1,k}/rho{1,k} - drho{k,k}/rho{k,k} ]         (m/s^2)
 c      ttalpha= thermal expansion coefficient without 1/rho factor
 c               d(rho) / d(potential temperature)                    (kg/m^3/C)
 c      ssbeta = salt expansion coefficient without 1/rho factor
-c               d(rho) / d(salinity)                               (kg/m^3/PSU)
+c               d(rho) / d(salinity)                          ((kg/m^3)/(g/kg))
 c
 c     see also subroutines find_rho.F find_alpha.F find_beta.F
 c
@@ -1849,7 +1849,7 @@ c
 c      ttalpha= thermal expansion coefficient without 1/rho factor
 c               d(rho) / d(potential temperature)                    (kg/m^3/C)
 c      ssbeta = salt expansion coefficient without 1/rho factor
-c               d(rho) / d(salinity)                               (kg/m^3/PSU)
+c               d(rho) / d(salinity)                          ((kg/m^3)/(g/kg))
 c     output: updated
 c     kappaRT/S :: background diffusivities for temperature and salinity
 c

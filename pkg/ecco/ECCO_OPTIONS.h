@@ -43,11 +43,6 @@ C allow for In-Situ Profiles cost function contribution
 C cost function output format
 #undef ALLOW_ECCO_OLD_FC_PRINT
 
-C re-activate deprecated codes (just in case ... but not recommended)
-#undef ECCO_CTRL_DEPRECATED
-
-
-
 C-- real options?
 
 C include dump of snap shots for checks
@@ -64,9 +59,6 @@ C generate more text in STDOUT.0000
 
 C allow cost function term for sigmaR
 #undef ALLOW_SIGMAR_COST_CONTRIBUTION
-
-
-
 
 C--  fake options (only used to be printed in S/R ECCO_SUMMARY):
 

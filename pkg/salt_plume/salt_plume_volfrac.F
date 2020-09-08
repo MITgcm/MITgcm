@@ -11,13 +11,13 @@ C     *==========================================================*
 C     | SUBROUTINE SALT_PLUME_VOLFRAC
 C     | o Compute saltplume penetration.
 C     *==========================================================*
-C     | Compute fraction of volume flux associated with saltplume 
-C     | flux penetrating through the entire water columns due to 
+C     | Compute fraction of volume flux associated with saltplume
+C     | flux penetrating through the entire water columns due to
 C     | rejected salt during freezing.
-C     | 
+C     |
 C     | For example, if surface value is Saltplume0,
 C     | and each level gets equal fraction 1/5 down to SPDepth=5,
-C     | SALT_PLUME_VOLFRAC will report 
+C     | SALT_PLUME_VOLFRAC will report
 C     | dSPvolkLev2Above[2to1,3to2,4to3,5to4,6to5] = [4/5,3/5,2/5,1/5,  0]
 C     | dSPvolSurf2kLev [1to1,1to2,1to3,1to4,1to5] = [1/5,1/5,1/5,1/5,1/5]
 C     | sum [into5] = 1to5 + 6to5 - 5to4 = 1/5 +   0 - 1/5 = 0
@@ -120,23 +120,23 @@ C reinitialize dMbdt = 0
 
 C Now calculating dplumek, dSPvolumeUp, dSPvolSurf2kLev
 C units:
-C Sbrine=dsb/dt*dt/(rhoConst*SPalpha*drF)[psu kg/m2/s*s/(kg/m3*m)]=[psu]
+C Sbrine=dsb/dt*dt/(rhoConst*SPalpha*drF)[g/m2/s*s/(kg/m3*m)]=[g/kg]
 C SPplumek : fraction : unitless
-C SaltPlumeFlux: dsb/dt [psu.kg/m^2/s = g/m^2/s]
+C SaltPlumeFlux: dsb/dt [g/kg.kg/m^2/s = g/m^2/s]
 C brine_mass_flux dMb/dt = dsb/dt / Sbrine [kg/m2/s]
 C                        = dsb/dt / (dsb/dt*dt/(rhoConst*SPalpha*drF))
 C                        = rhoConst*SPalpha*drF/dt [kg/m3 m/s]=[kg/m2/s]
 C dVbrine/dt = dMb/dt 1/rhoConst [m/s]
 
-C has 2 ways to define brine properties: either provide 
+C has 2 ways to define brine properties: either provide
 C (A) SPalpha: vol frac or (B) SPbrineSalt: brine salinity.
-C (A) SPalpha:  can calc SPbrineSalt as fxn of dhice/dt, 
+C (A) SPalpha:  can calc SPbrineSalt as fxn of dhice/dt,
 C     constrained by SPbrineSaltmax:
 C     SPbrineSalt=SaltPlumeFlux/rhoConst/SPalpha/drF(1)*dt
 C     SPbrineSalt=min(SPbrineSalt,SPbrineSaltmax)
 C     dMbdt = saltPlumeFlux / SPbrineSalt
 C           = rhoConst*SPalpha*drF(1)/dt <-- a function of SPalpha
-C (B) SPbrinesalt provided 
+C (B) SPbrinesalt provided
 C     dMbdt = saltPlumeFlux / SPbrineSalt <-- fxn of SPbrineSalt
 
 C Assuming we go with (B) here:

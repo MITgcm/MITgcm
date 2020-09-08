@@ -38,18 +38,18 @@ C       default is 1.0
 C     SPsalFRAC: fraction of the salt by-product of seaice growth (not melt) that
 C       will be re-distributed vertically according to the salt_plume_frac.F
 C       Its default is 1. (for 100% effect), and its range is [0. 1.]
-C     SPinflectionPoint: the inflection point of a nonlinear function 
+C     SPinflectionPoint: the inflection point of a nonlinear function
 C       f(AREA) controlling saltPlumeFlux. f(AREA) is a logistic curve
 C       (sigmoid) with range [0. 1.] and f(SPinflectionPoint) == 0.5.
 C       Usage: pkg/salt_plume activates when AREA>=SPinflectionPoint.
-C       To assure only narrow leads generate plumes: 
+C       To assure only narrow leads generate plumes:
 C       set SPinflectionPoint >= 0.8.
 C     SPalpha :: fraction of grid volume designated to be brine, [0. 1.]
 C       If grid cell 18km x 18km x 10m, take SPalpha=0.001 gives
 C       volume of 0.001*drF(1)*[dx*dy] of brine. Thus SPbrineSalt
 C       can be calc as adding SaltPlumeFlux into this fractional vol.
 C       Default: 0.008 -> SPbrineSalt ~37 if SSS is ~32.
-C     SPbrineSconst :: salinity of brine pocket [psu]
+C     SPbrineSconst :: salinity of brine pocket (g/kg)
 
       _RL SaltPlumeCriterion, SPovershoot
 #ifdef SALT_PLUME_SPLIT_BASIN
@@ -59,7 +59,7 @@ C     SPbrineSconst :: salinity of brine pocket [psu]
 #endif /* SALT_PLUME_SPLIT_BASIN */
 #ifdef SALT_PLUME_VOLUME
      &   , SPbrineSconst, SPbrineSaltmax
-#endif /* SALT_PLUME_VOLUME */ 
+#endif /* SALT_PLUME_VOLUME */
 #ifdef SALT_PLUME_IN_LEADS
      &   , SPinflectionPoint
 #endif /* SALT_PLUME_IN_LEADS */
@@ -74,18 +74,16 @@ C     SPbrineSconst :: salinity of brine pocket [psu]
 C--   SALT_PLUME 2-dim. fields
 C     SaltPlumeDepth :: depth of penetration of salt plumes
 C                       rejected during sea ice growth
-C     saltPlumeFlux :: Net downward salt flux in psu.kg/m^2/s
-C              Note: a) only used when salty sea-ice forms.
-C                    b) units: when salinity (unit= psu) is expressed
-C                       in g/kg, saltPlumeFlux unit becomes g/m^2/s.
+C     saltPlumeFlux :: Net downward salt flux in g/m^2/s
+C              Note: only used when salty sea-ice forms.
 C              > 0 for increasing in SSS.
 C              Southwest C-grid tracer point
 C     dSPvolSurf2kLev :: downward volume frac from klev=1 associated w/ saltPlumeFlux
 C     dSPvolBelow2kLev:: upward volume frac from grid below (RETIRED)
 C     dSPvolkLev2Above:: upward volume frac to grid above
 C     SPbrineVolFlux  :: brine Vol associated w/ SPbrineSconst & saltPlumeFlux
-C     SPforcingS      :: 3D forcingS associated w/ saltPlumeFlux [g/m2/s]
-C     SPforcingT      :: 3D forcingT associated w/ saltPlumeFlux [W/m2]
+C     SPforcingS      :: 3D forcingS associated w/ saltPlumeFlux in g/m^2/s
+C     SPforcingT      :: 3D forcingT associated w/ saltPlumeFlux in W/m^2
 C     SPkBottom       :: bottom kLev associated with SaltPlumeDepth
 
       _RL SaltPlumeDepth (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

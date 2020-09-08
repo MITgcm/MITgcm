@@ -6,4 +6,5 @@
  useECCO        = .TRUE.,
  useGrdchk      = .TRUE.,
  usePROFILEs    = .TRUE.,
+ useDIAGNOSTICS = .TRUE.,
  &

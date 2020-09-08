@@ -61,7 +61,7 @@ C   Therefore, the 3-D buffer is considered to be owned by master-thread and
 C   any access by other than master thread is put between BARRIER (protected).
 C
 C Modified: 06/02/00 spk@ocean.mit.edu
-C Modified: 08/03/20 - style copied from mdsio_read_field timsmith204@utexas.edu 
+C Modified: 08/03/20 - style copied from mdsio_read_field timsmith204@utexas.edu
 CEOP
 
 C !USES:
@@ -121,8 +121,8 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       _R8 r8seg(sNx,nSx,nSy)
       _R4 x_buffer_r4(Nx)
       _R8 x_buffer_r8(Nx)
-      _R4 xz_buffer_r4( sNx*Nr )
-      _R8 xz_buffer_r8( sNx*Nr )
+      _R4 xz_buffer_r4( sNx*Nr*nSx*nSy )
+      _R8 xz_buffer_r8( sNx*Nr*nSx*nSy )
 #ifdef ALLOW_EXCH2
       INTEGER tN
 #endif /* ALLOW_EXCH2 */
@@ -316,13 +316,13 @@ C master thread of process 0, only ,read from file
 C-      end if iAmDoingIO
         ENDIF
 
-        
+
 C wait for all thread to finish. this prevents other threads to continue
 C  to access shared buffer while master thread is loading data into
         CALL BAR2( myThid )
 
         IF ( filePrec.EQ.precFloat32 ) THEN
-          CALL SCATTER_XZ_R4( 
+          CALL SCATTER_XZ_R4(
      U                       x_buffer_r4,
      O                       r4seg,
      I                       xSize,
@@ -343,7 +343,7 @@ C All threads wait for Master to finish loading into shared buffer
             STOP 'ABNORMAL END: S/R MDS_READ_SEC_XZ'
           ENDIF
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
-          CALL SCATTER_XZ_R8( 
+          CALL SCATTER_XZ_R8(
      U                       x_buffer_r8,
      O                       r8seg,
      I                       xSize,
@@ -469,10 +469,12 @@ C If we are writing to a tiled MDS file then we open each one here
            ENDIF
 
            irec = irecord
+           i1 = bBij + 1
+           i2 = bBij + sNy*nNz
            IF ( filePrec.EQ.precFloat32 ) THEN
-             READ(dUnit,rec=irec) xz_buffer_r4
+             READ(dUnit,rec=irec) (xz_buffer_r4(i),i=i1,i2)
            ELSE
-             READ(dUnit,rec=irec) xz_buffer_r8
+             READ(dUnit,rec=irec) (xz_buffer_r8(i),i=i1,i2)
            ENDIF
 
 C here We close the tiled MDS file
@@ -612,7 +614,7 @@ C   Therefore, the 3-D buffer is considered to be owned by master-thread and
 C   any access by other than master thread is put between BARRIER (protected).
 C
 C Modified: 06/02/00 spk@ocean.mit.edu
-C Modified: 08/03/20 - style copied from mdsio_read_field timsmith204@utexas.edu 
+C Modified: 08/03/20 - style copied from mdsio_read_field timsmith204@utexas.edu
 CEOP
 
 C !USES:
@@ -672,8 +674,8 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       _R8 r8seg(sNy,nSx,nSy)
       _R4 y_buffer_r4(Ny)
       _R8 y_buffer_r8(Ny)
-      _R4 yz_buffer_r4( sNy*Nr )
-      _R8 yz_buffer_r8( sNy*Nr )
+      _R4 yz_buffer_r4( sNy*Nr*nSx*nSy )
+      _R8 yz_buffer_r8( sNy*Nr*nSx*nSy )
 #ifdef ALLOW_EXCH2
       INTEGER tN
 #endif /* ALLOW_EXCH2 */
@@ -867,13 +869,13 @@ C master thread of process 0, only ,read from file
 C-      end if iAmDoingIO
         ENDIF
 
-        
+
 C wait for all thread to finish. this prevents other threads to continue
 C  to access shared buffer while master thread is loading data into
         CALL BAR2( myThid )
 
         IF ( filePrec.EQ.precFloat32 ) THEN
-          CALL SCATTER_YZ_R4( 
+          CALL SCATTER_YZ_R4(
      U                       y_buffer_r4,
      O                       r4seg,
      I                       ySize,
@@ -894,7 +896,7 @@ C All threads wait for Master to finish loading into shared buffer
             STOP 'ABNORMAL END: S/R MDS_READ_SEC_YZ'
           ENDIF
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
-          CALL SCATTER_YZ_R8( 
+          CALL SCATTER_YZ_R8(
      U                       y_buffer_r8,
      O                       r8seg,
      I                       ySize,
@@ -1020,10 +1022,12 @@ C If we are writing to a tiled MDS file then we open each one here
            ENDIF
 
            irec = irecord
+           i1 = bBij + 1
+           i2 = bBij + sNy*nNz
            IF ( filePrec.EQ.precFloat32 ) THEN
-             READ(dUnit,rec=irec) yz_buffer_r4
+             READ(dUnit,rec=irec) (yz_buffer_r4(i),i=i1,i2)
            ELSE
-             READ(dUnit,rec=irec) yz_buffer_r8
+             READ(dUnit,rec=irec) (yz_buffer_r8(i),i=i1,i2)
            ENDIF
 
 C here We close the tiled MDS file
