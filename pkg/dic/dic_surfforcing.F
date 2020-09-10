@@ -146,7 +146,7 @@ C to total pressure (in Atm)
 C Note: it is assumed the reference atmospheric pressure is 1Atm=1013mb
 C       rather than the actual ref. pressure from Atm. model so that on
 C       average AtmosP is about 1 Atm.
-                AtmosP(i,j,bi,bj)= 1. _d 0 + pLoad(i,j,bi,bj)/Pa2Atm
+          AtmosP(i,j,bi,bj)= ( surf_pRef + pLoad(i,j,bi,bj) )/Pa2Atm
 #endif
 
 C Pre-compute part of exchange coefficient: pisvel*(1-fice)

@@ -201,12 +201,12 @@ c     WRITE(msgBuf,'(2A)') 'W2_SET_TILE2TILES:',
        IF ( js.NE.0 ) THEN
         IF ( exch2_nNeighbours(is).GT.exch2_nNeighbours(it) ) it = is
         IF ( prtFlag ) THEN
-         WRITE(W2_oUnit,'(A,I5,A,I3,A,4(A,I2))') 'Tile',is,
+         WRITE(W2_oUnit,'(A,I8,A,I3,A,4(A,I2))') 'Tile',is,
      &    ' : nbNeighb=',exch2_nNeighbours(is),' ; is-at-Facet-Edge:',
      &        ' N=', exch2_isNedge(is), ' , S=', exch2_isSedge(is),
      &      ' , E=', exch2_isEedge(is), ' , W=', exch2_isWedge(is)
          DO ns=1,exch2_nNeighbours(is)
-          WRITE(W2_oUnit,'(A,I3,A,I5,2(A,2I6),A,4I3,A,2I6,A)')
+          WRITE(W2_oUnit,'(A,I3,A,I8,2(A,2I6),A,4I3,A,2I6,A)')
      &     ' ns:',ns,' it=',exch2_neighbourId(ns,is),
      &     ', iLo,iHi=', exch2_iLo(ns,is), exch2_iHi(ns,is),
      &     ', jLo,jHi=', exch2_jLo(ns,is), exch2_jHi(ns,is)
@@ -222,7 +222,6 @@ c    &     ', oi,oj=', exch2_oi(ns,is), exch2_oj(ns,is),')'
      &  ' ) =', exch2_nNeighbours(it)
        CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
       ENDIF
-
 
       RETURN
       END

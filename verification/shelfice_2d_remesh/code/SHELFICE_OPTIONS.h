@@ -24,6 +24,8 @@ C     following Holland and Jenkins, JPO, 1999
 C     allow (vertical) remeshing whenever ocean top thickness factor
 C     exceeds thresholds
 #define ALLOW_SHELFICE_REMESHING
+C     and allow to print message to STDOUT when this happens
+#define SHELFICE_REMESH_PRINT
 
 #endif /* ALLOW_SHELFICE */
 #endif /* SHELFICE_OPTIONS_H */

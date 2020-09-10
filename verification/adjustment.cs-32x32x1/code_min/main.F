@@ -181,8 +181,9 @@ C--      Invoke nThreads instances of the numerical model
 #elif (defined (ALLOW_HESSIAN_CODE))
           CALL HESSIAN_MAIN(myThid)
 #else
-          WRITE(0,'(3(A,I4))') '-- PId=', myProcId, ' , TId=', myThid,
-     &                         ' : ===> Skip THE_MODEL_MAIN call <==='
+          WRITE(0,'(A,I8,A,I4,A)')
+     &         '-- PId=', myProcId, ' , TId=', myThid,
+     &         ' : ===> Skip THE_MODEL_MAIN call <==='
 c         CALL THE_MODEL_MAIN(myThid)
 #endif
          ENDIF

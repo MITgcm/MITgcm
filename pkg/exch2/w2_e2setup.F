@@ -65,7 +65,7 @@ C--   Count Nb of Blank-Tiles and set Number of tiles:
          DO j=1,nBlankTiles
           IF ( blankList(i).EQ.blankList(j) ) THEN
            addBlank = .FALSE.
-           WRITE(msgBuf,'(A,I5,A,2I3,A)')
+           WRITE(msgBuf,'(A,I8,A,2I8,A)')
      &     '** WARNING ** W2_E2SETUP: #', blankList(i),
      &     ' appears several times in blankList (',j,i,')'
            CALL PRINT_MESSAGE( msgBuf, W2_oUnit,SQUEEZE_RIGHT,myThid )
@@ -92,7 +92,7 @@ C--   Count Nb of Blank-Tiles and set Number of tiles:
       CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
 
       IF ( exch2_nTiles.GT.W2_maxNbTiles ) THEN
-        WRITE(msgBuf,'(3(A,I7))') 'W2_E2SETUP: Number of Tiles=',
+        WRITE(msgBuf,'(3(A,I8))') 'W2_E2SETUP: Number of Tiles=',
      &             exch2_nTiles, ' >', W2_maxNbTiles, ' =W2_maxNbTiles'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(2A)') 'Must increase "W2_maxNbTiles"',
@@ -104,10 +104,10 @@ C--   Count Nb of Blank-Tiles and set Number of tiles:
 C--   Check blankList:
       DO i=1,nBlankTiles
        IF ( blankList(i).LT.1 .OR. blankList(i).GT.exch2_nTiles ) THEN
-         WRITE(msgBuf,'(A,I5,A,I8)')
+         WRITE(msgBuf,'(A,I8,A,I8)')
      &     'W2_E2SETUP: Invalid blankTile number (i=', i,
      &     ' )=', blankList(i)
-         WRITE(msgBuf,'(A,I7,A,I4,A)') 'W2_E2SETUP:', blankList(i),
+         WRITE(msgBuf,'(A,I8,A,I8,A)') 'W2_E2SETUP:', blankList(i),
      &                    ' = Invalid blankTile number (i=', i, ')'
          CALL PRINT_ERROR( msgBuf, myThid )
          STOP 'ABNORMAL END: S/R W2_E2SETUP (blankList error)'

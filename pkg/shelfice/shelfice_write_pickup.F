@@ -88,15 +88,9 @@ C-    switch to 2-D fields:
 
         j = j + 1
         nj = nj-1
-        CALL WRITE_REC_3D_RL( fn, fp, 1, R_shelfice,
+        CALL WRITE_REC_3D_RS( fn, fp, 1, R_shelfIce,
      &                        nj, myIter, myThid )
         IF (j.LE.listDim) wrFldList(j) = 'R_Shelfi'
-
-C        j = j + 1
-C        nj = nj-1
-C        CALL WRITE_REC_3D_RL( fn, fp, 1, Rmin_surf,
-C     &                        nj, myIter, myThid )
-C        IF (j.LE.listDim) wrFldList(j) = 'RMinSurf'
 
       ENDIF ! shelfice-remeshing
 #endif /* ALLOW_SHELFICE_REMESHING */
