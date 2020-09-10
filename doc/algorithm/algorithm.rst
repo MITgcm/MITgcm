@@ -1284,6 +1284,8 @@ momentum correctly conserves kinetic energy.
 
     | :math:`uv, vv, wv` : :varlink:`fZon`, :varlink:`fMer`, :varlink:`fVerVkp` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
+.. _fluxform_cor_terms:
+
 Coriolis terms
 --------------
 
@@ -1444,6 +1446,7 @@ in the past, used a different discretization in the model which is:
 
     | :math:`G_u^{metric}, G_v^{metric}` : :varlink:`mT` ( local to :filelink:`MOM_FLUXFORM.F <pkg/mom_fluxform/mom_fluxform.F>` )
 
+.. _fluxform_lat_dissip:
 
 Lateral dissipation
 -------------------
@@ -2201,6 +2204,7 @@ SHAP Diagnostics
     SHAP_dU |  5 |UU   148MR  |m/s^2    |Zonal Wind Tendency due to Shapiro Filter
     SHAP_dV |  5 |VV   147MR  |m/s^2    |Meridional Wind Tendency due to Shapiro Filter
 
+.. _nonlinear_vis_schemes:
 
 Nonlinear Viscosities for Large Eddy Simulation
 ===============================================
@@ -2428,14 +2432,16 @@ vertical viscosity should be used:
 
 This vertical viscosity is currently not implemented in MITgcm.
 
+.. _leith_viscosity:
+
 Leith Viscosity
 ~~~~~~~~~~~~~~~
 
-Leith (1968, 1996) :cite:`leith:68` :cite:`leith:96` notes that 2-d turbulence is
-quite different from 3-d. In two-dimensional turbulence, energy cascades
+Leith (1968, 1996) :cite:`leith:68` :cite:`leith:96` notes that 2-D turbulence is
+quite different from 3-D. In 2-D turbulence, energy cascades
 to larger scales, so there is no concern about resolving the scales of
 energy dissipation. Instead, another quantity, enstrophy, (which is the
-vertical component of vorticity squared) is conserved in 2-d turbulence,
+vertical component of vorticity squared) is conserved in 2-D turbulence,
 and it cascades to smaller scales where it is dissipated.
 
 Following a similar argument to that above about energy flux, the
@@ -2462,7 +2468,9 @@ enstrophy-dissipation and the resulting eddy viscosity are
    - {\frac{\partial{\overline {\tilde u}}}{\partial{y}}}\right)\right]^2}
    :label: Leith3
 
-The runtime flag :varlink:`useFullLeith` controls whether or not to calculate the full gradients for the Leith viscosity (.TRUE.) or to use an approximation (.FALSE.). The only reason to set :varlink:`useFullLeith` = .FALSE. is if your simulation fails when computing the gradients. This can occur when using the cubed sphere and other complex grids.
+The runtime flag :varlink:`useFullLeith` controls whether or not to calculate the full gradients for the Leith viscosity (.TRUE.)
+or to use an approximation (.FALSE.). The only reason to set :varlink:`useFullLeith` = .FALSE. is if your simulation fails when
+computing the gradients. This can occur when using the cubed sphere and other complex grids.
 
 Modified Leith Viscosity
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2581,6 +2589,7 @@ must also be defined in a (``-mods``) copy of :filelink:`GMREDI_OPTIONS.h<pkg/gm
 when the model is compiled, and the runtime parameter :varlink:`GM_useLeithQG` set to .TRUE. in ``data.gmredi``.
 This will use the value of :varlink:`viscC2LeithQG` specified in the ``data`` input file to compute the coefficient.
 
+.. _CFL_constraint_visc:
 
 Courant–Freidrichs–Lewy Constraint on Viscosity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
