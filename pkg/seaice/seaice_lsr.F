@@ -312,17 +312,13 @@ C     This is the modified Euler step
       ELSE
 C     This is the case for SEAICEnonLinIterMax > 2, and here we use
 C     a different iterative scheme. u/vIceC = u/vIce is unstable, and
-C     different stabilisation methods are possible. The most stable and
-C     fastest one in simple tests is this
-       uIceC = HALF*( uIceC + uIceNm1 )
-       vIceC = HALF*( vIceC + vIceNm1 )
-C     other options
+C     different stabilisation methods are possible.
 C     This is stable but slow to converge.
 C      uIceC = HALF*( uIce + uIceNm1 )
 C      vIceC = HALF*( vIce + vIceNm1 )
-C     This is slightly faster the the previous one.
-C      uIceC = HALF*( uIce + uIceC )
-C      vIceC = HALF*( vIce + vIceC )
+C     This converges slightly faster the the previous one.
+       uIceC = HALF*( uIce + uIceC )
+       vIceC = HALF*( vIce + vIceC )
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
