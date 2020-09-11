@@ -76,7 +76,7 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j,bi,bj  :: Loop counters
 
-      INTEGER ipass, ipass0
+      INTEGER ipass
       INTEGER i, j, m, bi, bj
       INTEGER iMin, iMax, jMin, jMax
       INTEGER ICOUNT1, ICOUNT2, linearIterLoc, nonLinIterLoc
@@ -218,10 +218,24 @@ CML         areaMinLoc = SEAICE_EPS
        ENDDO
       ENDDO
 
-      ipass0 = 2
-C     modify time stepping a little if more than the default
-C     modified Eulerian time step is used.
-      IF ( nonLinIterLoc.GT.2 ) ipass0 = 1
+C     this is the rhs contribution of the time derivative and
+C     does not change in the iteration
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          uIceNm1(I,J,bi,bj) = uIce(I,J,bi,bj)
+          vIceNm1(I,J,bi,bj) = vIce(I,J,bi,bj)
+          FORCEX0(I,J,bi,bj)=FORCEX0(I,J,bi,bj)
+     &         +seaiceMassU(I,J,bi,bj)*recip_deltaT
+     &         *uIceNm1(i,j,bi,bj)
+          FORCEY0(I,J,bi,bj)=FORCEY0(I,J,bi,bj)
+     &         +seaiceMassV(I,J,bi,bj)*recip_deltaT
+     &         *vIceNm1(i,j,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
       DO ipass=1,MPSEUDOTIMESTEPS
        itmpkey = (ikey_dynamics-1)*MPSEUDOTIMESTEPS + ipass
@@ -269,21 +283,19 @@ C SET SOME VALUES
       S2A=0.80 _d 0
 
       IF ( ipass .EQ. 1 ) THEN
-C NOW DO PREDICTOR TIME STEP
+C     This is the predictor time step
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           uIceNm1(I,J,bi,bj) = uIce(I,J,bi,bj)
-           vIceNm1(I,J,bi,bj) = vIce(I,J,bi,bj)
-           uIceC  (I,J,bi,bj) = uIce(I,J,bi,bj)
-           vIceC  (I,J,bi,bj) = vIce(I,J,bi,bj)
+           uIceC(I,J,bi,bj) = uIce(I,J,bi,bj)
+           vIceC(I,J,bi,bj) = vIce(I,J,bi,bj)
           ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ELSE
-C NOW DO MODIFIED EULER STEP
+      ELSEIF ( ipass .EQ. 2 .AND. SEAICEnonLinIterMax .LE. 2 ) THEN
+C     This is the modified Euler step
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
@@ -296,19 +308,20 @@ C NOW DO MODIFIED EULER STEP
          ENDDO
         ENDDO
        ENDDO
-      ENDIF
-      IF ( ipass .GT. ipass0 ) THEN
-C     for additional (pseudo-time)steps update u/vIceNm1
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           uIceNm1(i,j,bi,bj)=uIce(I,J,bi,bj)
-           vIceNm1(i,j,bi,bj)=vIce(I,J,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
+      ELSE
+C     This is the case for SEAICEnonLinIterMax > 2, and here we use
+C     a different iterative scheme. u/vIceC = u/vIce is unstable, and
+C     different stabilisation methods are possible. The most stable and
+C     fastest one in simple tests is this
+       uIceC = HALF*( uIceC + uIceNm1 )
+       vIceC = HALF*( vIceC + vIceNm1 )
+C     other options
+C     This is stable but slow to converge.
+C      uIceC = HALF*( uIce + uIceNm1 )
+C      vIceC = HALF*( vIce + vIceNm1 )
+C     This is slightly faster the the previous one.
+C      uIceC = HALF*( uIce + uIceC )
+C      vIceC = HALF*( vIce + vIceC )
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -416,17 +429,11 @@ C-    add Coriolis term
      &         *0.5 _d 0*( uIceC(i  ,j-1,bi,bj)+uIceC(i+1,j-1,bi,bj) ) )
          ENDDO
         ENDDO
-C      this is the rhs contribution of the time derivative
+C      mask the forcing so far
         DO j=jMin,jMax
          DO i=iMin,iMax
-          FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
-     &         +seaiceMassU(I,J,bi,bj)*recip_deltaT
-     &         *uIceNm1(i,j,bi,bj)
-          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
-     &         +seaiceMassV(I,J,bi,bj)*recip_deltaT
-     &         *vIceNm1(i,j,bi,bj)
-          FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)* seaiceMaskU(I,J,bi,bj)
-          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)* seaiceMaskV(I,J,bi,bj)
+          FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj) * seaiceMaskU(I,J,bi,bj)
+          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj) * seaiceMaskV(I,J,bi,bj)
          ENDDO
         ENDDO
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
