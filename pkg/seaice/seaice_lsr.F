@@ -328,6 +328,8 @@ C       ipass index is part of itmpkey
 C     * this storing is still outside the lsr iteration loop
 CADJ STORE uice = comlev1_dynsol, kind=isbyte, key = itmpkey
 CADJ STORE vice = comlev1_dynsol, kind=isbyte, key = itmpkey
+CADJ STORE uicec = comlev1_dynsol, kind=isbyte, key = itmpkey
+CADJ STORE vicec = comlev1_dynsol, kind=isbyte, key = itmpkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       CALL SEAICE_CALC_STRAINRATES(
