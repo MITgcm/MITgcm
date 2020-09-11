@@ -226,12 +226,13 @@ C     does not change in the iteration
          DO i=1-OLx,sNx+OLx
           uIceNm1(I,J,bi,bj) = uIce(I,J,bi,bj)
           vIceNm1(I,J,bi,bj) = vIce(I,J,bi,bj)
-          FORCEX0(I,J,bi,bj)=FORCEX0(I,J,bi,bj)
-     &         +seaiceMassU(I,J,bi,bj)*recip_deltaT
-     &         *uIceNm1(i,j,bi,bj)
-          FORCEY0(I,J,bi,bj)=FORCEY0(I,J,bi,bj)
-     &         +seaiceMassV(I,J,bi,bj)*recip_deltaT
-     &         *vIceNm1(i,j,bi,bj)
+C     this contribution should be here, but that changes results
+CML          FORCEX0(I,J,bi,bj)=FORCEX0(I,J,bi,bj)
+CML     &         +seaiceMassU(I,J,bi,bj)*recip_deltaT
+CML     &         *uIceNm1(i,j,bi,bj)
+CML          FORCEY0(I,J,bi,bj)=FORCEY0(I,J,bi,bj)
+CML     &         +seaiceMassV(I,J,bi,bj)*recip_deltaT
+CML     &         *vIceNm1(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -432,6 +433,15 @@ C-    add Coriolis term
 C      mask the forcing so far
         DO j=jMin,jMax
          DO i=iMin,iMax
+C     this is the rhs contribution of the time derivative and it
+C     should be outside of the nonlinear loop, but for some reason
+C     this changes the results, so we leave it here for now.
+          FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
+     &         +seaiceMassU(I,J,bi,bj)*recip_deltaT
+     &         *uIceNm1(i,j,bi,bj)
+          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
+     &         +seaiceMassV(I,J,bi,bj)*recip_deltaT
+     &         *vIceNm1(i,j,bi,bj)
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj) * seaiceMaskU(I,J,bi,bj)
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj) * seaiceMaskV(I,J,bi,bj)
          ENDDO
