@@ -139,6 +139,12 @@ C     (no serious problems expected if missing, but get a non-perfect restart)
      &      'restart with AddMass == 0'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
+         ELSEIF ( missFldList(j).EQ.'SmagDiff' ) THEN
+          IF ( .NOT.pickupStrictlyMatch ) THEN
+           WRITE(msgBuf,'(4A)') '** WARNING ** CHECK_PICKUP: ',
+     &      'restart with zero Smag-3D Diffusivity for first time-step'
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ENDIF
          ELSEIF ( missFldList(j).EQ.'FricHeat' ) THEN
           IF ( .NOT.pickupStrictlyMatch ) THEN
            WRITE(msgBuf,'(4A)') '** WARNING ** CHECK_PICKUP: ',

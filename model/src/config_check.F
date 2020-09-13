@@ -119,6 +119,17 @@ C     QGLeith code has not been compiled.
         errCount = errCount + 1
       ENDIF
 #endif
+#ifndef ALLOW_SMAG_3D_DIFFUSIVITY
+      IF ( smag3D_diffCoeff.NE.zeroRL ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &  'Cannot use smag3D_diffCoeff > 0 when compiled with'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &  '"#undef ALLOW_SMAG_3D_DIFFUSIVITY" in CPP_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif
 
 #ifndef ALLOW_NONHYDROSTATIC
       IF (use3Dsolver) THEN
