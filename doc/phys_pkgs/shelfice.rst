@@ -10,9 +10,9 @@ Introduction
 underneath floating ice shelves.
 
 CPP options enable or disable different aspects of the package
-(:numref:`shelfice_config`). Run-Time options, flags, filenames and
+(:numref:`shelfice_config`). Run-time options, flags, filenames and
 field-related dates/times are described in :numref:`shelfice_runtime`. A description of key subroutines is given
-in :numref:`shelfice_subroutines`. Available diagnostics output is listed in Section
+in :numref:`shelfice_subroutines`. Available diagnostics output is listed in
 :numref:`shelfice_diagnostics`.
 
 
@@ -39,7 +39,6 @@ via CPP preprocessor flags. These options are set in :filelink:`SHELFICE_OPTIONS
 
 .. tabularcolumns:: |\Y{.475}|\Y{.1}|\Y{.45}|
 
-
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 | CPP Flag Name                                 | Default | Description                                                                                                          |
 +===============================================+=========+======================================================================================================================+
@@ -50,10 +49,9 @@ via CPP preprocessor flags. These options are set in :filelink:`SHELFICE_OPTIONS
 | :varlink:`SHI_ALLOW_GAMMAFRICT`               | #define | allow friction velocity-dependent transfer coefficient following Holland and Jenkins (1999) :cite:`holland:99`       |
 +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 
-
 .. _shelfice_runtime:
 
-SHELFICE Run-time Parameters
+SHELFICE run-time parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :filelink:`pkg/shelfice` is switched on/off at run-time by setting :varlink:`useSHELFICE` to ``.TRUE.`` in file ``data.pkg``.
@@ -75,8 +73,8 @@ that is different from :math:`\rho_{0}`, the anomaly is zero.
 .. tabularcolumns:: |\Y{.27}|\Y{.21}|\Y{.205}|\Y{.34}|
 
 .. table:: Run-time parameters and default values
-   :class: longtable
    :name: tab_phys_pkg_shelfice_runtimeparms
+   :class: longtable
 
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | Parameter                              | Group           | Default                                    | Description                                                                                             |
@@ -87,9 +85,9 @@ that is different from :math:`\rho_{0}`, the anomaly is zero.
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`SHELFICEboundaryLayer`       | SHELFICE_PARM01 | FALSE                                      | use simple boundary layer mixing parameterization on/off flag                                           |
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`SHI_withBL_realFWflux`       | SHELFICE_PARM01 | FALSE                                      | with above BL, allow to use real-FW flux                                                                |
+   | :varlink:`SHI_withBL_realFWflux`       | SHELFICE_PARM01 | FALSE                                      | with :varlink:`SHELFICEboundaryLayer`, allow to use real-FW flux                                        |
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`SHI_withBL_uStarTopDz`       | SHELFICE_PARM01 | FALSE                                      | with SHELFICEboundaryLayer, compute uStar from uVel,vVel avergaged over top Dz thickness                |
+   | :varlink:`SHI_withBL_uStarTopDz`       | SHELFICE_PARM01 | FALSE                                      | with :varlink:`SHELFICEboundaryLayer`, compute uStar from uVel,vVel averaged over top Dz thickness      |
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`SHELFICEloadAnomalyFile`     | SHELFICE_PARM01 | :kbd:`' '`                                 | initial geopotential anomaly                                                                            |
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -116,23 +114,23 @@ that is different from :math:`\rho_{0}`, the anomaly is zero.
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`SHELFICEthetaSurface`        | SHELFICE_PARM01 | -20.0E+00                                  | (constant) surface temperature above the ice shelf (:sup:`o`\ C)                                        |
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`no_slip_shelfice`            | SHELFICE_PARM01 | :varlink:`no_slip_bottom`	                | slip along bottom of ice shelf on/off flag                                                         |
+   | :varlink:`no_slip_shelfice`            | SHELFICE_PARM01 | :varlink:`no_slip_bottom`                  | slip along bottom of ice shelf on/off flag                                                              |
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`SHELFICEDragLinear`          | SHELFICE_PARM01 | :varlink:`bottomDragLinear`                | linear drag coefficient at bottom ice shelf (m/s)                                                       |
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`SHELFICEDragQuadratic`       | SHELFICE_PARM01 | :varlink:`bottomDragQuadratic`             | quadratic drag coefficient at bottom ice shelf (non-dim.)                                               |
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`SHELFICEselectDragQuadr`     | SHELFICE_PARM01 | -1                                         | select form of quadract drag coefficent (non-dim.)                                                      |
+   | :varlink:`SHELFICEselectDragQuadr`     | SHELFICE_PARM01 | -1                                         | select form of quadratic drag coefficient (non-dim.)                                                    |
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`SHELFICEMassStepping`        | SHELFICE_PARM01 | FALSE                                      | recalculate ice shelf mass at every time step                                                           |
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`SHELFICEDynMassOnly`         | SHELFICE_PARM01 | FALSE                                      | if SHELFICEmassStepping = True, exclude freshwater flux contribution                                    |
+   | :varlink:`SHELFICEDynMassOnly`         | SHELFICE_PARM01 | FALSE                                      | if :varlink:`SHELFICEmassStepping` = TRUE, exclude freshwater flux contribution                         |
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`SHELFICEadvDiffHeatFlux`     | SHELFICE_PARM01 | FALSE                                      | use advective-diffusive heat flux into ice shelf instead of default diffusive heat flux                 |
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`SHELFICEuseGammaFrict`       | SHELFICE_PARM01 | FALSE                                      | use velocity dependent exchange coefficients (Holland and Jenkins, 1999)                                |
+   | :varlink:`SHELFICEuseGammaFrict`       | SHELFICE_PARM01 | FALSE                                      | use velocity dependent exchange coefficients (Holland and Jenkins 1999 :cite:`holland:99`)              |
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`SHELFICE_oldCalcUSta`        | SHELFICE_PARM01 | FALSE                                      | use old uStar averaging expression                                                                      |
+   | :varlink:`SHELFICE_oldCalcUStar`       | SHELFICE_PARM01 | FALSE                                      | use old uStar averaging expression                                                                      |
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`SHELFICEwriteState`          | SHELFICE_PARM01 | FALSE                                      | write ice shelf state to file on/off flag                                                               |
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -141,7 +139,7 @@ that is different from :math:`\rho_{0}`, the anomaly is zero.
    | :varlink:`SHELFICE_dump_mnc`           | SHELFICE_PARM01 | :varlink:`snapshot_mnc`                    | write snapshot using MNC  on/off flag                                                                   |
    +----------------------------------------+-----------------+--------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
-SHELFICE Description
+SHELFICE description
 ~~~~~~~~~~~~~~~~~~~~
 
 In the light of isomorphic equations for pressure and height
@@ -224,14 +222,16 @@ cell :math:`k` as
 
 where :math:`H(k'-k)=1` for :math:`k'<k` and :math:`0` otherwise.
 
-
  .. figure:: figs/gridschematic.*
     :width: 80%
     :align: center
     :alt: schematic of vertical section of grid
     :name: shelfice_grid
 
-    Schematic of a vertical section of the grid at the base of an ice shelf. Grid lines are thin; the thick line is the model’s representation of the ice shelf-water interface. Plus signs mark the position of pressure points for pressure gradient computations. The letters A, B, and C mark specific grid cells for reference. :math:`h_k` is the fractional cell thickness so that :math:`h_k \Delta z_k` is the actual cell thickness.
+    Schematic of a vertical section of the grid at the base of an ice shelf. Grid lines are thin;
+    the thick line is the model’s representation of the ice shelf-water interface. Plus signs mark the position
+    of pressure points for pressure gradient computations. The letters A, B, and C mark specific grid cells for
+    reference. :math:`h_k` is the fractional cell thickness so that :math:`h_k \Delta z_k` is the actual cell thickness.
 
 
 Setting :varlink:`SHELFICEboundaryLayer` ``=.TRUE.`` introduces a simple boundary layer that reduces the potential
@@ -278,7 +278,7 @@ cell :math:`k+1` that is part of the boundary layer with tendency
 :math:`g_{\theta,k}^*` and the part with no tendency. Salinity is
 treated in the same way. The momentum equations are not modified.
 
-Three-Equations-Thermodynamics
+Three-equations thermodynamics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Freezing and melting form a boundary layer between ice shelf and ocean.
@@ -391,7 +391,9 @@ non-conservative.
 Solving the three-equations system
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-There has been some confusion about the 3-equation system, so we document the solution in the code here: We use :eq:`hellmerfreeze` :math:`T_{b} = a_{0} S_{b} + \epsilon_{4}` to eliminate :math:`T_{b}` from :eq:`hellmerheatbalance` and find an expression for the freshwater flux :math:`q`:
+There has been some confusion about the three-equations system, so we document the solution in the code here:
+We use :eq:`hellmerfreeze` :math:`T_{b} = a_{0} S_{b} + \epsilon_{4}` to eliminate :math:`T_{b}`
+from :eq:`hellmerheatbalance` and find an expression for the freshwater flux :math:`q`:
 
 .. math::
    \begin{aligned}
@@ -421,7 +423,7 @@ where the abbrevations :math:`\epsilon_{1} = c_{p} \rho \gamma_{T}`,
 c_{0}`, :math:`\epsilon_{q} = \epsilon_{1}\,(\epsilon_{4} - T) +
 \epsilon_{3}\,(\epsilon_{4} - T_{S})` have been introduced. The
 quadratic equation in :math:`S_{b}` is solved and the smaller
-non-negative root is used. In the MITgcm-code, the ice shelf salinity
+non-negative root is used. In the MITgcm code, the ice shelf salinity
 :math:`S_{I}` is always zero and the quadratic equation simplifies to
 
 .. math::
@@ -435,10 +437,10 @@ non-negative root is used. In the MITgcm-code, the ice shelf salinity
    \end{aligned}
 
 With :math:`S_b`, the boundary layer temperature :math:`T_b` and the
-meltrate :math:`q` are known through :eq:`hellmerfreeze` and
+melt rate :math:`q` are known through :eq:`hellmerfreeze` and
 :eq:`solvedmeltrate`.
 
-ISOMIP-Thermodynamics
+ISOMIP thermodynamics
 ^^^^^^^^^^^^^^^^^^^^^
 
 A simpler formulation follows the ISOMIP protocol. The
@@ -477,8 +479,8 @@ Remark
 ^^^^^^
 
 The shelfice package and experiments demonstrating its strengths and
-weaknesses are also described in Losch (2008) :cite:`losch:08`. However,
-note that unfortunately the description of the thermodynamics in the
+weaknesses are also described in Losch (2008) :cite:`losch:08`. Unfortunately however,
+the description of the thermodynamics in the
 appendix of Losch (2008) is wrong.
 
 .. _shelfice_subroutines:
