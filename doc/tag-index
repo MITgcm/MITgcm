@@ -1,7 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
+
 o doc:
   - add new SO channel tutorial
+  - update pkg/shelfice documentation
 o optim:
   - fix a small bug by initialising myX/YglobalLo=1 in optim_nummod.F
 o tools/do_tst_2+2:
