@@ -421,18 +421,6 @@ C     Orlanski and prescribed boundary conditions
       ENDIF
 #endif /* ALLOW_OBCS_STEVENS */
 
-#ifdef ALLOW_OBCS_BALANCE
-      IF ( useOBCSbalance ) THEN
-        CALL OBCS_BALANCE_FLOW( futureTime, futureIter, myThid )
-      ENDIF
-#endif /* ALLOW_OBCS_BALANCE */
-
-#ifdef ALLOW_OBCS_TIDES
-      IF ( useOBCStides ) THEN
-        CALL OBCS_ADD_TIDES( futureTime, futureIter, myThid )
-      ENDIF
-#endif /* ALLOW_OBCS_TIDES */
-
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('OBCS_CALC',myThid)
 #endif

@@ -554,6 +554,15 @@ c     IF ( useDiagnotics ) THEN
 #endif
 #endif
 
+#ifdef ALLOW_GM_LEITH_QG
+        diagName  = 'GM_LTHQG'
+        diagTitle = 'QGLeith viscosity used as kappa_GM in GMRedi'
+        diagUnits = 'm^2/s           '
+        diagCode  = 'SM      MR      '
+        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I    diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
+
 c     ENDIF
 
 #endif /* ALLOW_DIAGNOSTICS */

@@ -300,7 +300,11 @@ C-    Read (old format) precision of the file
 C-    Read the number of records
          IF ( nRecords.EQ.0 .AND.
      &        iL.GE.20 .AND. lineBuf(1:12).EQ.' nrecords = ' ) THEN
-          READ(lineBuf(15:iL),'(I5)') nRecords
+          IF ( iL.GE.25 ) THEN
+            READ(lineBuf(15:iL),'(I10)') nRecords
+          ELSE
+            READ(lineBuf(15:iL),'(I5)') nRecords
+          ENDIF
           iL = 0
          ENDIF
 

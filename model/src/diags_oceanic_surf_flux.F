@@ -89,12 +89,12 @@ C-    sea-ice loading (expressed in Mass of ice+snow / area unit, [kg/m2])
        CALL DIAGNOSTICS_FILL_RS( sIceLoad,'sIceLoad',0,1,0,1,1,myThid )
 
       IF ( fluidIsWater ) THEN
-C-    pLoad (Atmospheric pressure loading [Pa=N/m2])
+C-    pLoad (Atmospheric pressure anomaly relative to surf_pRef [Pa=N/m2])
        CALL DIAGNOSTICS_FILL_RS( pLoad,   'atmPload',0,1,0,1,1,myThid )
 
 C-    oceFreez (= heating from freezing of sea-water, if allowFreezing=T)
        tmpFac = HeatCapacity_Cp*rUnit2mass
-       CALL DIAGNOSTICS_SCALE_FILL( surfaceForcingTice,tmpFac,1,
+       CALL DIAGNOSTICS_SCALE_FILL( adjustColdSST_diag,tmpFac,1,
      &                             'oceFreez',0, 1,0,1,1,myThid )
 
 C-    surForcT (=model surface forcing for Temperature [W/m2], >0 increases T
@@ -119,7 +119,7 @@ C-    TFLUX (=total heat flux, match heat-content variations, [W/m2])
 #ifdef SHORTWAVE_HEATING
      &      -Qsw(i,j,bi,bj)+
 #endif
-     &      (surfaceForcingT(i,j,bi,bj)+surfaceForcingTice(i,j,bi,bj))
+     &      (surfaceForcingT(i,j,bi,bj)+adjustColdSST_diag(i,j,bi,bj))
      &      *HeatCapacity_Cp*rUnit2mass
           ENDDO
          ENDDO

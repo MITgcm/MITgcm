@@ -8,7 +8,9 @@ Vertical grid
     :alt: vgrid-accur-center
     :name: vgrid-accur-center
 
-    Two versions of the vertical grid. a) The cell centered approach where the interface depths are specified and the tracer points centered in between the interfaces. b) The interface centered approach where tracer levels are specified and the w-interfaces are centered in between.
+    Two versions of the vertical grid. a) The cell centered approach where the interface depths are specified
+    and the tracer points centered in between the interfaces. b) The interface centered approach where tracer
+    levels are specified and the w-interfaces are centered in between.
 
 As for the horizontal grid, we use the suffixes “c” and “f” to indicates
 faces and centers. :numref:`vgrid-accur-center` (a) shows the default vertical grid
@@ -52,6 +54,7 @@ center, :math:`Nr-1` center to center, and center to bottom distances.
     | :math:`\Delta r_f , \Delta r_c` : :varlink:`drF`, :varlink:`drC` ( :filelink:`GRID.h <model/inc/GRID.h>` )
     | :math:`\Delta r_f^{-1} , \Delta r_c^{-1}` : :varlink:`recip_drF`, :varlink:`recip_drC` ( :filelink:`GRID.h <model/inc/GRID.h>` )
 
+.. _sec_topo_partial_cells:
 
 Topography: partially filled cells
 ----------------------------------

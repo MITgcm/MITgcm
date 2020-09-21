@@ -26,5 +26,8 @@ C Prevent floats to re-enter the opposite side of a periodic domain (stop instea
 #undef FLT_WITHOUT_X_PERIODICITY
 #undef FLT_WITHOUT_Y_PERIODICITY
 
+C Allow experimentation with pkg/flt + exch2 despite incomplete implementation
+#undef DEVEL_FLT_EXCH2
+
 #endif /* ALLOW_FLT */
 #endif /* FLT_OPTIONS_H */

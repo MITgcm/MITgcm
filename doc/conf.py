@@ -18,7 +18,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.join(os.path.abspath('.'), '_extensions'))
+sys.path.insert(0, os.path.abspath('_extensions'))
+sys.path.insert(0, os.path.abspath('../utils/python/MITgcmutils'))
 
 
 # -- General configuration ------------------------------------------------
@@ -31,10 +32,14 @@ sys.path.insert(0, os.path.join(os.path.abspath('.'), '_extensions'))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
+    'sphinx.ext.napoleon',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinxcontrib.bibtex',
+    'sphinxcontrib.programoutput',
     'mitgcm']
+
+autodoc_mock_imports = ['matplotlib', 'mpl_toolkits']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

@@ -52,9 +52,9 @@ C      - for both   :: =0 : no exch ; =1 : apply adexch ;
 C      *AdVarExch - :: =2 : do adexch on a local copy.
 C     SEAICEapproxLevInAd :: level of approximation in seaice adjoint
 C       -1 (and .NOT.useSEAICEinAdMode) : use seaice_fake adjoint
-C       0 (and .NOT.useSEAICEinAdMode)  : omit all of seaice thermo adjoint 
+C       0 (and .NOT.useSEAICEinAdMode)  : omit all of seaice thermo adjoint
 C       0 (and useSEAICEinAdMode)       : use all of seaice thermo adjoint
-C       >= 1 (and useSEAICEinAdMode)    : omit pieces of seaice thermo adjoint 
+C       >= 1 (and useSEAICEinAdMode)    : omit pieces of seaice thermo adjoint
       INTEGER dumpAdVarExch
       INTEGER mon_AdVarExch
       INTEGER SEAICEapproxLevInAd
@@ -63,8 +63,12 @@ C       >= 1 (and useSEAICEinAdMode)    : omit pieces of seaice thermo adjoint
 
 C--   COMMON /AUTODIFF_PARM_R/ "Real" valued parameters used by the pkg.
 C     viscFacInAd :: viscosity factor for adjoint
+C     SIregFacInAd :: Factor for over shoots in AD
+C     SIregFacInFw :: Factor for over shoots in FW
       _RL viscFacInAd
-      COMMON /AUTODIFF_PARM_R/ viscFacInAd
+      _RL SIregFacInAd, SIregFacInFw
+      COMMON /AUTODIFF_PARM_R/
+     &  viscFacInAd, SIregFacInAd, SIregFacInFw
 
 C--   COMMON /AUTODIFF_PARM_C/ Character valued parameters used by the pkg.
 

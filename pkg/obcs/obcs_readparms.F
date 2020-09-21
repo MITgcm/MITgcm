@@ -165,7 +165,8 @@ C     retired parameters
      &          OBCSsponge_UatNS, OBCSsponge_UatEW,
      &          OBCSsponge_VatNS, OBCSsponge_VatEW,
      &          OBCSsponge_Theta, OBCSsponge_Salt, useLinearSponge,
-     &          useOBCSbalance, useOBCStides, useOBCSprescribe,
+     &          useOBCSbalance, OBCSbalanceSurf,
+     &          useOBCStides, useOBCSprescribe,
      &          OBCS_balanceFacN, OBCS_balanceFacS,
      &          OBCS_balanceFacE, OBCS_balanceFacW,
      &          useOBCSYearlyFields, OBCSfixTopo,
@@ -267,6 +268,7 @@ C--   Default flags and values for OBCS
       OBCSsponge_Salt    =.TRUE.
       useLinearSponge    =.FALSE.
       useOBCSbalance     =.FALSE.
+      OBCSbalanceSurf    =.FALSE.
       OBCS_balanceFacN   = 1. _d 0
       OBCS_balanceFacS   = 1. _d 0
       OBCS_balanceFacE   = 1. _d 0
@@ -560,6 +562,7 @@ c       write(*,*) 'OB Iw =',OB_Iwest
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       ENDIF
+      OBCSbalanceSurf = OBCSbalanceSurf .AND. useOBCSbalance
 
 C--   Continue master-thread only since global OB indices (+ OB_indexUnset)
 C     are not shared (not in common block).

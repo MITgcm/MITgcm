@@ -6,9 +6,9 @@ Generic Advection/Diffusion
 
 The generic_advdiff package contains high-level subroutines to solve
 the advection-diffusion equation of any tracer, either active (potential
-temperature, salinity or water vapor) or passive (see pkg/ptracers).
-(see also sections [sec:tracer:sub:`e`\ quations] to
-[sec:tracer:sub:`a`\ dvection\ :sub:`s`\ chemes]).
+temperature, salinity or water vapor) or passive (see :ref:`pkg/ptracer <sub_phys_pkg_ptracers>`).
+(see also :numref:`tracer_eqns` and
+:numref:`advection_schemes`).
 
 Introduction
 ++++++++++++
@@ -22,19 +22,19 @@ second order, centered fourth order and upwind biased third order
 schemes are known as linear methods and require some stable
 time-stepping method such as Adams-Bashforth. Alternatives such as
 flux-limited schemes are stable in the forward sense and are best
-combined with the multi-dimensional method provided in gad\_advection.
+combined with the multi-dimensional method provided in :filelink:`gad\_advection <pkg/generic_advdiff/gad_advection.F>`.
 
 Key subroutines, parameters and files
 +++++++++++++++++++++++++++++++++++++
 
 There are two high-level routines:
 
--  GAD\_CALC\_RHS calculates all fluxes at time level “n” and is used
+-  :filelink:`GAD\_CALC\_RHS <pkg/generic_advdiff/gad_calc_rhs.F>` calculates all fluxes at time level “n” and is used
    for the standard linear schemes. This must be used in conjuction with
    Adams–Bashforth time stepping. Diffusive and parameterized fluxes are
    always calculated here.
 
--  GAD\_ADVECTION calculates just the advective fluxes using the
+-  :filelink:`GAD\_ADVECTION <pkg/generic_advdiff/gad_advection.F>` calculates just the advective fluxes using the
    non-linear schemes and can not be used in conjuction with
    Adams–Bashforth time stepping.
 
@@ -96,14 +96,10 @@ GAD Diagnostics
 Experiments and tutorials that use GAD
 ++++++++++++++++++++++++++++++++++++++
 
--  Offline tutorial, in tutorial\_offline verification directory,
-   described in section [sec:eg-offline]
+-  Baroclinic gyre experiment, in :filelink:`tutorial\_baroclinic\_gyre <verification/tutorial_baroclinic_gyre>`
+   verification directory.
 
--  Baroclinic gyre experiment, in tutorial\_baroclinic\_gyre
-   verification directory, described in section [sec:eg-fourlayer]
-
--  Tracer Sensitivity tutorial, in tutorial\_tracer\_adjsens
-   verification directory, described in section
-   [sec:eg-simple-tracer-adjoint]
+-  Tracer Sensitivity tutorial, in :filelink:`tutorial\_tracer\_adjsens <verification/tutorial_tracer_adjsens>`
+   verification directory.
 
 

@@ -622,7 +622,7 @@ C--   surface fluxes:
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
 
       diagName  = 'atmPload'
-      diagTitle = 'Atmospheric pressure loading'
+      diagTitle = 'Atmospheric pressure loading anomaly (vs surf_pRef)'
       diagUnits = 'Pa              '
       diagCode  = 'SM      U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -737,6 +737,31 @@ c     diagTitle = 'Free-Surface r-Position (Pressure, Height) (Pa,m)'
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      IF ( nonlinFreeSurf.GT.0 ) THEN
+       diagName  = 'hFactorC'
+       diagTitle = 'Center cell-thickness fraction [-]'
+       diagUnits = '1               '
+       diagCode  = 'SMr     MR      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'hFactorW'
+       diagTitle = 'Western-Edge cell-thickness fraction [-]'
+       diagUnits = '1               '
+       diagCode  = 'SUr     MR      '
+       diagMate  = diagNum + 2
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+       diagName  = 'hFactorS'
+       diagTitle = 'Southern-Edge cell-thickness fraction [-]'
+       diagUnits = '1               '
+       diagCode  = 'SVr     MR      '
+       diagMate  = diagNum
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+      ENDIF
 
       diagName  = 'TOTUTEND'
       diagTitle = 'Tendency of Zonal Component of Velocity'

@@ -53,9 +53,6 @@ C     == local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(10) suff
-#ifdef DEVEL_FLT_EXCH2
-      INTEGER iG,jG,i,j
-#endif
 
 C     number of active record in the file (might be lower than the
 C     total number of records because the tile could have contained
@@ -182,32 +179,6 @@ C--   then try to read from a tiled file:
 
         DO bj = 1,nSy
          DO bi = 1,nSx
-#ifdef DEVEL_FLT_EXCH2
-          iG=bi+(myXGlobalLo-1)/sNx
-          jG=bj+(myYGlobalLo-1)/sNy
-          WRITE(msgBuf,'(A,I4,A,I4)') 'iG,jG=',iG,',',jG
-          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                       SQUEEZE_RIGHT, myThid )
-c
-           npart_tile(bi,bj) = 6*6
-           max_npart  = 6*6*10
-           npart_read = 1
-c
-           DO j=1,6
-            DO i=1,6
-             ip=i+(j-1)*6
-             npart(ip,bi,bj)  = (iG-1)*6*6+ip
-             tstart(ip,bi,bj) = -1. _d 0
-             ipart(ip,bi,bj)  = 1+5*(i-1)
-             jpart(ip,bi,bj)  = 1+5*(j-1)
-             kpart(ip,bi,bj)  = 1. _d 0
-             kfloat(ip,bi,bj) = 0. _d 0
-             iup(  ip,bi,bj)  = 0. _d 0
-             itop( ip,bi,bj)  = 0. _d 0
-             tend( ip,bi,bj)  = -1. _d 0
-            ENDDO
-           ENDDO
-#else
            ioUnit = -1
 C-    read actual number floats from file
            CALL MDS_READVEC_LOC( fn, fp, ioUnit,
@@ -249,7 +220,6 @@ C     belong to this current tile (=> do not no check)
              tend( ip,bi,bj)  = tmp(9)
            ENDDO
            CLOSE( ioUnit )
-#endif
 C-      end bi,bj loops
          ENDDO
         ENDDO

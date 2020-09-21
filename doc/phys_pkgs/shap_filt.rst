@@ -2,23 +2,20 @@ Shapiro Filter
 --------------
 
 
-(in directory: pkg/shap_filt/)
+(in directory: :filelink:`pkg/shap_filt/`)
 
 Key subroutines, parameters and files
 +++++++++++++++++++++++++++++++++++++
 
-Implementation of filter is described in section [sec:shapiro-filter].
+Implementation of filter is described in :numref:`shapiro_filter`.
 
 Experiments and tutorials that use shap filter
 ++++++++++++++++++++++++++++++++++++++++++++++
 
--  Held Suarez tutorial, in tutorial_held_suarez_cs verification
-   directory, described in section [sec:eg-hs]
+-  Held Suarez tutorial, in :filelink:`verification/tutorial_held_suarez_cs`.
 
--  other Held Suarez verification experiments (hs94.128x64x5, hs94.1x64x5, hs94.cs-32x32x5)
+-  Other Held Suarez verification experiments (:filelink:`hs94.128x64x5 <verification/hs94.128x64x5>`, :filelink:`hs94.1x64x5 <verification/hs94.1x64x5>`, :filelink:`hs94.cs-32x32x5 <verification/hs94.cs-32x32x5>`)
 
--  AIM verification experiments (aim.5l_cs, aim.5l_Equatorial_Channel, aim.5l_LatLon)
+-  AIM verification experiments (:filelink:`aim.5l_cs <verification/aim.5l_cs>`, :filelink:`aim.5l_Equatorial_Channel <verification/aim.5l_Equatorial_Channel>`, :filelink:`aim.5l_LatLon <verification/aim.5l_LatLon>`)
 
--  fizhi verification experiments (fizhi-cs-32x32x40, fizhi-cs-aqualev20, fizhi-gridalt-hs)
-
-
+-  Fizhi verification experiments (:filelink:`fizhi-cs-32x32x40 <verification/fizhi-cs-32x32x40>`, :filelink:`fizhi-cs-aqualev20 <verification/fizhi-cs-aqualev20>`, :filelink:`fizhi-gridalt-hs <verification/fizhi-gridalt-hs>`)

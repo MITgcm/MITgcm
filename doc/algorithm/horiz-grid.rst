@@ -1,3 +1,4 @@
+.. _spatial_discrete_horizontal_grid:
 
 Horizontal grid
 ---------------
@@ -28,7 +29,8 @@ the actual geographic orientation of model quantities.
     :align: center
     :alt: hgrid-abcd
     :name: hgrid-abcd
-       Staggering of horizontal grid descriptors (lengths and areas). The grid lines indicate the tracer cell boundaries and are the reference grid for all panels. a) The area of a tracer cell, :math:`A_c`, is bordered by the lengths :math:`\Delta x_g` and :math:`\Delta y_g`. b) The area of a vorticity cell, :math:`A_\zeta`, is bordered by the lengths :math:`\Delta x_c` and :math:`\Delta y_c`. c) The area of a u cell, :math:`A_w`, is bordered by the lengths :math:`\Delta x_v` and :math:`\Delta y_f`. d) The area of a v cell, :math:`A_s`, is bordered by the lengths :math:`\Delta x_f` and :math:`\Delta y_u`.
+   
+    Staggering of horizontal grid descriptors (lengths and areas). The grid lines indicate the tracer cell boundaries and are the reference grid for all panels. a) The area of a tracer cell, :math:`A_c`, is bordered by the lengths :math:`\Delta x_g` and :math:`\Delta y_g`. b) The area of a vorticity cell, :math:`A_\zeta`, is bordered by the lengths :math:`\Delta x_c` and :math:`\Delta y_c`. c) The area of a u cell, :math:`A_w`, is bordered by the lengths :math:`\Delta x_v` and :math:`\Delta y_f`. d) The area of a v cell, :math:`A_s`, is bordered by the lengths :math:`\Delta x_f` and :math:`\Delta y_u`.
 
 :numref:`hgrid-abcd` (a) shows the tracer cell (synonymous with the continuity
 cell). The length of the southern edge, :math:`\Delta x_g`, western

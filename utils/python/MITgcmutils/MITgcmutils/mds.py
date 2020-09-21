@@ -51,7 +51,7 @@ def strip_comments(text):
 
 _string_pattern = re.compile(r"'(.*)'$")
 
-def parse1(s): 
+def _parse1(s):
     """ convert one item to appropriate type """
     m = _string_pattern.match(s)
     if m:
@@ -123,7 +123,7 @@ def parsemeta(metafile):
 
         if opening == '[':
             # [] can contain any type of values, separated by commas
-            val = [ parse1(s) for s in re.split(r'[, ] *',line) ]
+            val = [ _parse1(s) for s in re.split(r'[, ] *',line) ]
         else:
             # {} can only contain single quote-delimited strings separated by space
             val = [ s.rstrip() for s in re.split(r"'  *'", line.strip("'")) ]
@@ -142,7 +142,7 @@ def warning(*args):
     sys.stderr.write(' '.join([str(s) for s in args]) + '\n')
 
 
-def aslist(i):
+def _aslist(i):
     """ if iterable, turn into list, otherwise put into list """
     try:
         res = list(i)
@@ -201,67 +201,84 @@ _typesuffixes = {'float32':'f4',
 def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
           returnmeta=False,astype=float,region=None,lev=(),
           usememmap=False,mm=False,squeeze=True,verbose=False):
-    """ a     = rdmds(fname,...)
-    a     = rdmds(fname,itrs,...)
-    a,its,meta = rdmds(fname,...,returnmeta=True)
-
+    """
     Read meta-data files as written by MITgcm.
 
-    Without itrs, will try to read
+    Call signatures:
 
-      fname.meta or fname.001.001.meta, ...
+        a = rdmds(fname,...)
 
-    If itrs is a list of integers of an integer, it will read the corresponding
+        a,its,meta = rdmds(fname,...,returnmeta=True)
 
-      fname.000000iter.meta, ...
+    Parameters
+    ----------
+    fname : string
+        name of file to read, without the '.data' or '.meta' suffix.  If itrs is
+        given, the iteration number is added to `fname` as well.  `fname` may
+        contain shell wildcards, which is useful for tile files organized into
+        directories, e.g.,
 
-    If itrs is NaN, it will read all iterations for which files are found.
-    If itrs is Inf, it will read the highest iteration found.
+          T = rdmds('prefix*/T', 2880)
 
-    fname may contain shell wildcards, which is useful for tile files organized
-    into directories, e.g.,
+        will read prefix0000/T.0000002880.*, prefix0001/T.0000002880.*, ...
+        (and any others that match the wildcard, so be careful how you name things!)
 
-      T = rdmds('prefix*/T', 2880)
+    itrs : int or list of ints or np.NaN or np.Inf
+        Iteration number(s).  With itrs=-1, will try to read
 
-    will read prefix0000/T.0000002880.*, prefix0001/T.0000002880.*, ...
-    (and any others that match the wildcard, so be careful how you name things!)
+          fname.meta or fname.001.001.meta, ...
 
-    Returns:
+        If itrs is a list of integers of an integer, it will read the corresponding
 
-        a    :: numpy array of the data read
-        its  :: list of iteration numbers read (only if itrs=NaN or Inf)
-        meta :: dictionary of metadata (only if returnmeta=True)
+          fname.000000iter.meta, ...
 
-    Keyword arguments:
+        If itrs is np.NaN, it will read all iterations for which files are found.
+        If itrs is np.Inf, it will read the highest iteration found.
 
-        machineformat :: endianness ('b' or 'l', default 'b')
-        rec           :: list of records to read (default all)
-                         useful for pickups and multi-field diagnostics files
-        fill_value    :: fill value for missing (blank) tiles (default 0)
-        astype        :: data type to return (default: double precision)
-                         None: keep data type/precision of file
-        region        :: (x0,x1,y0,y1) read only this region (default (0,nx,0,ny))
-        lev           :: list of levels to read, or, for multiple dimensions
-                         (excluding x,y), tuple(!) of lists (see examples below)
-        usememmap     :: if True, use a memory map for reading data (default False)
-                         recommended when using lev, or region with global files
-                         to save memory and, possibly, time
+    machineformat : int
+        endianness ('b' or 'l', default 'b')
+    rec : list of int or None
+        list of records to read (default all)
+        useful for pickups and multi-field diagnostics files
+    fill_value : float
+        fill value for missing (blank) tiles (default 0)
+    astype : data type
+        data type to return (default: double precision)
+        None: keep data type/precision of file
+    region : tuple of int
+        (x0,x1,y0,y1) read only this region (default (0,nx,0,ny))
+    lev : list of int or tuple of lists of int
+        list of levels to read, or, for multiple dimensions
+        (excluding x,y), tuple(!) of lists (see examples below)
+    usememmap : bool
+        if True, use a memory map for reading data (default False)
+        recommended when using lev, or region with global files
+        to save memory and, possibly, time
 
-    Examples:
+    Returns
+    -------
+    a : array_like
+        numpy array of the data read
+    its : list of int
+        list of iteration numbers read (only if returnmeta=True)
+    meta : dict
+        dictionary of metadata (only if returnmeta=True)
 
-        XC = rdmds('XC')
-        XC = rdmds('res_*/XC')
-        T = rdmds('T.0000002880')
-        T = rdmds('T',2880)
-        T2 = rdmds('T',[2880,5760])
-        T,its = rdmds('T',numpy.Inf)
-        VVEL = rdmds('pickup',2880,rec=range(50,100))
-        a5 = rdmds('diags',2880,rec=0,lev=[5])
-        a = rdmds('diags',2880,rec=0,lev=([0],[0,1,5,6,7]))
-        from numpy import r_
-        a = rdmds('diags',2880,rec=0,lev=([0],r_[:2,5:8]))  # same as previous
-        a = rdmds('diags',2880,rec=0)[0, [0,1,5,6,7], ...]  # same, but less efficient
-        a = rdmds('diags',2880)[0, 0, [0,1,5,6,7], ...]     # even less efficient
+    Examples
+    --------
+    >>> XC = rdmds('XC')
+    >>> XC = rdmds('res_*/XC')
+    >>> T = rdmds('T.0000002880')
+    >>> T = rdmds('T',2880)
+    >>> T2 = rdmds('T',[2880,5760])
+    >>> T,its = rdmds('T',numpy.Inf)
+    >>> VVEL = rdmds('pickup',2880,rec=range(50,100))
+    >>> a5 = rdmds('diags',2880,rec=0,lev=[5])
+    >>> a = rdmds('diags',2880,rec=0,lev=([0],[0,1,5,6,7]))
+    >>> from numpy import r_
+    >>> a = rdmds('diags',2880,rec=0,lev=([0],r_[:2,5:8]))  # same as previous
+    >>> a = rdmds('diags',2880,rec=0)[0, [0,1,5,6,7], ...]  # same, but less efficient
+    >>> a = rdmds('diags',2880)[0, 0, [0,1,5,6,7], ...]     # even less efficient
     """
     import functools
     usememmap = usememmap or mm
@@ -293,13 +310,13 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
         itrsislist = np.iterable(itrs)
 
     # always make itrs a list
-    itrs = aslist(itrs)
+    itrs = _aslist(itrs)
 
     allrec = rec is None
-    reclist = aslist(rec)
+    reclist = _aslist(rec)
     if not isinstance(lev,tuple):
         lev = (lev,)
-    levs = tuple( aslist(l) for l in lev )
+    levs = tuple( _aslist(l) for l in lev )
     levdims = tuple(len(l) for l in levs)
     levinds = np.ix_(*levs)
     nlev = len(levdims)
@@ -482,28 +499,43 @@ def rdmds(fnamearg,itrs=-1,machineformat='b',rec=None,fill_value=0,
 def wrmds(fbase, arr, itr=None, dataprec='float32', ndims=None, nrecords=None,
           times=None, fields=None, simulation=None, machineformat='b',
           deltat=None, dimlist=None):
-    ''' wrmds(fbase, arr, itr=None, ...)
+    '''Write an array to an mds meta/data file set.
 
-    Write array arr to an mds meta/data file set.  If itr is given,
-    the files will be named fbase.0000000itr.data and fbase.0000000itr.meta,
-    otherwise just fbase.data and fbase.meta.
+    If itr is given, the files will be named fbase.0000000itr.data and
+    fbase.0000000itr.meta, otherwise just fbase.data and fbase.meta.
 
     Parameters
     ----------
-    dataprec      :: precision of resulting file ('float32' or 'float64')
-    ndims         :: number of non-record dimensions; extra (leading) dimensions
-                     will be folded into 1 record dimension
-    nrecords      :: number of records; will fold as many leading dimensions as
-                     necessary (has to match shape!)
-    times         :: times to write into meta file.  Either a single float or a list 
-                     of two for a time interval
-    fields        :: list of fields
-    simulation    :: string describing the simulation
-    machineformat :: 'b' or 'l' for big or little endian
-    deltat        :: time step; provide in place of either times or itr to have one
-                     computed from the other
-    dimlist       :: dimensions as will be stored in file (only useful when passing
-                     meta data from an existing file to wrmds as **kwargs)
+    fbase : string
+        Name of file to write, without the '.data' or '.meta' suffixes,
+        and without the iteration number if itr is give
+    arr : array_like
+        Numpy array to write
+    itr : int or None
+        If given, this iteration number will be appended to the file name
+    dataprec : string
+        precision of resulting file ('float32' or 'float64')
+    ndims : int
+        number of non-record dimensions; extra (leading) dimensions
+        will be folded into 1 record dimension
+    nrecords : int
+        number of records; will fold as many leading dimensions as
+        necessary (has to match shape!)
+    times : float or list of floats
+        times to write into meta file.  Either a single float or a list
+        of two for a time interval
+    fields : list of strings
+        list of fields
+    simulation : string
+        string describing the simulation
+    machineformat : string
+        'b' or 'l' for big or little endian
+    deltat : float
+        time step; provide in place of either times or itr to have one
+        computed from the other
+    dimlist : tuple
+        dimensions as will be stored in file (only useful when passing
+        meta data from an existing file to wrmds as keyword args)
     '''
     if type(dataprec) == type([]): dataprec, = dataprec
     if type(ndims) == type([]): ndims, = ndims

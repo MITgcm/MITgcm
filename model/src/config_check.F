@@ -94,6 +94,20 @@ C       code is being compiled
       ENDIF
 #endif
 
+#ifndef ALLOW_LEITH_QG
+C     Check that Leith QG viscosity coefficeint is zero if the
+C     QGLeith code has not been compiled.
+      IF ( viscC2LeithQG.NE.zeroRL )  THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &  'must #define ALLOW_LEITH_QG in MOM_COMMON_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &  ' in order to use QG-Leith (viscC2LeithQG > 0)'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif /* ALLOW_LEITH_QG */
+
 #ifndef ALLOW_SMAG_3D
       IF ( useSmag3D ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
@@ -437,10 +451,11 @@ C--   Check parameter consistency :
         errCount = errCount + 1
       ENDIF
       IF ( ( OLx.LT.3 .OR. OLy.LT.3 ) .AND.
-     &     ( viscC2leithD.NE.0. .OR. viscC4leithD.NE.0. )
+     &     ( viscC2leithD.NE.0. .OR. viscC4leithD.NE.0. .OR.
+     &       viscC2LeithQG.NE.0.)
      &   ) THEN
         WRITE(msgBuf,'(A,A)')
-     &  'CONFIG_CHECK: cannot use Leith Visc.(div.part) with',
+     &  'CONFIG_CHECK: cannot use Leith Visc.(div.part or QG) with',
      &  ' overlap (OLx,OLy) smaller than 3'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
@@ -450,6 +465,16 @@ C--   Check parameter consistency :
         WRITE(msgBuf,'(A,A)')
      &  'CONFIG_CHECK: cannot use Smag-3D + CD-scheme with',
      &  ' overlap (OLx,OLy) smaller than 3'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+
+      IF ( ( viscC4leithD.NE.0. .OR. viscC4leith.NE.0. .OR.
+     &       viscC2leithD.NE.0. .OR. viscC2leith.NE.0.)
+     &     .AND. (viscC2LeithQG.NE.0) ) THEN
+        WRITE(msgBuf,'(A,A)')
+     &  'CONFIG_CHECK: cannot use LeithQG in conjunction with',
+     &  ' either standard Leith or LeithD'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF

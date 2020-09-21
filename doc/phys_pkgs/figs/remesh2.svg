@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+
+<!-- Page 1 -->
+<svg x="0" y="0" width="1123" height="474" viewBox="0 0 1123 474" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+style="display: block;margin-left: auto;margin-right: auto;">
+<defs>
+
+<style type="text/css"><![CDATA[
+text { white-space: pre; }
+path, image { pointer-events: none; }
+
+.s1_1{
+font-size: 27.50px;
+font-family: Calibri_b;
+fill: #000000;
+}
+.s2_1{
+font-size: 18.33px;
+font-family: Calibri_b;
+fill: #000000;
+}
+.s3_1{
+font-size: 27.50px;
+font-family: Calibri_l;
+fill: #000000;
+}
+.s4_1{
+font-size: 36.67px;
+font-family: Calibri_b;
+fill: #000000;
+}
+
+.g0_1{
+fill: none;
+stroke: #5B9BD5;
+stroke-width: 0.73333335;
+stroke-linecap: butt;
+stroke-linejoin: miter;
+stroke-miterlimit: 8;
+}
+.g1_1{
+fill: #E7E6E6;
+}
+.g2_1{
+fill: none;
+stroke: #000000;
+stroke-width: 3.1166666;
+stroke-linecap: butt;
+stroke-linejoin: miter;
+stroke-miterlimit: 8;
+stroke-dasharray: 4,4;
+}
+.g3_1{
+fill: none;
+stroke: #000000;
+stroke-width: 3.1166666;
+stroke-linecap: butt;
+stroke-linejoin: miter;
+stroke-miterlimit: 8;
+}
+.g4_1{
+}
+.g5_1{
+fill: none;
+stroke: #000000;
+stroke-width: 1.4666667;
+stroke-linecap: butt;
+stroke-linejoin: miter;
+stroke-miterlimit: 8;
+}
+
+]]></style>
+
+</defs>
+<path d="M0,0
+L0,474
+L1123,474
+L1123,0 Z " 
+fill="#FFFFFF" stroke="none" />
+<path d="M13.4,13.2V273M346.3,14.5v61" class="g0_1" />
+<path fill-rule="evenodd" d="M11.7,75.4H358.2L11.7,295.5Z" class="g1_1" />
+<path d="M43.2,200.7h86.6" class="g2_1" />
+<path d="M216.4,200.7H303M131.4,287.4H218m.1,86.5h86.6M216.4,287.4H303m-258.2,0h86.6m0,86.5H218m-173.2,0h86.6M304.6,133V373.9M218.3,133V373.9M43.2,241.5V375.1M131.4,200.7v86.6m0,.1V374" class="g3_1" />
+<path fill-rule="evenodd" d="M11.7,12.5h350V75.9H11.7V12.5Z" class="g1_1" />
+<path fill-rule="evenodd" d="M382.1,31.2H728.6L382.1,251.3Z" class="g1_1" />
+<path d="M580.9,194.8h86.6M495.8,284.3h86.6m.1,86.5h86.7M580.9,284.3h86.6m-258.2,0h86.6m-.1,86.5h86.6m-173.1,0h86.6M409.3,197.7v86.6m0,0v86.6" class="g3_1" />
+<path fill-rule="evenodd" d="M381,14.3H727.5V33H381V14.3Z" class="g1_1" />
+<path fill-rule="evenodd" d="M749.6,30.1h346.5L749.6,250.2Z" class="g1_1" />
+<path d="M865.1,192h86.6m.1,0h86.6M866.7,278.8h86.6m-.1,86.5h86.7M951.8,278.8h86.6m-258.2,0h86.6m-.1,86.5h86.6m-173.1,0h86.6M780.2,187.5V366.6M866.7,192v86.7m0,.1v86.6" class="g3_1" />
+<path fill-rule="evenodd" d="M748.2,11.7h346.5V30.4H748.2V11.7Z" class="g1_1" />
+<path d="M218.1,114.1h86.6m277.8,-1.8h86.7m284,-4.4h86.7M133.7,200.7h86.7m188.9,-5.5h86.6m284.3,-4.4h86.6m-.1,-82.9h86.6" class="g2_1" />
+<path d="M866.7,141.8v51.5m-1.6,-53h86.6M495.8,151h86.6m-86.6,-1.9v220" class="g3_1" />
+<path d="M495.8,195h86.6" class="g2_1" />
+<path d="M582.5,86.8h86.7M582.5,85V370.8M667.4,87V372.2M1038.3,80.8V363.6M954,80.8l-.8,284.1m0,-282.5h86.7" class="g3_1" />
+<path d="M866.7,107.5v86.6" class="g2_1" />
+<path d="M780.2,196.6h86.6m-457.5,2.8h86.6M218.1,133h86.6M43.2,241.5h86.6m1.6,-55H218" class="g3_1" />
+<path d="M304.6,114.7v86.6M218.1,114.7v86.6M131.4,186.4V273" class="g2_1" />
+<text x="75" y="406" dx="0,-0.1,0.1,0" class="s1_1">i=1 </text>
+<text x="166" y="406" dx="0,-0.1,0.1,0" class="s1_1">i=2 </text>
+<text x="250" y="406" dx="0,-0.1,0.1" class="s1_1">i=3</text>
+<text x="799" y="400" dx="0,-0.1,0.1,0" class="s1_1">i=1 </text>
+<text x="890" y="400" dx="0,-0.1,0.1,0" class="s1_1">i=2 </text>
+<text x="974" y="400" dx="0,-0.1,0.1" class="s1_1">i=3</text>
+<text x="438" y="405" dx="0,-0.1,0.1,0" class="s1_1">i=1 </text>
+<text x="529" y="405" dx="0,-0.1,0.1,0" class="s1_1">i=2 </text>
+<text x="613" y="405" dx="0,-0.1,0.1" class="s1_1">i=3</text>
+<path d="M43.2,200.7v86.6" class="g2_1" />
+<text x="310" y="176" dx="0,0,0.1" class="s1_1">k=1</text>
+<text x="309" y="251" dx="0,0,0.1" class="s1_1">k=2</text>
+<text x="310" y="337" dx="0,0,0.1" class="s1_1">k=3</text>
+<text x="671" y="169" dx="0,0,0.1" class="s1_1">k=1</text>
+<text x="673" y="252" dx="0,0,0.1" class="s1_1">k=2</text>
+<text x="673" y="335" dx="0,0,0.1" class="s1_1">k=3</text>
+<text x="1043" y="331" dx="0,0,0.1" class="s1_1">k=3</text>
+<text x="1042" y="247" dx="0,0,0.1" class="s1_1">k=2</text>
+<text x="1044" y="166" dx="0,0,0.1" class="s1_1">k=1</text>
+<path d="M259.5,209v70.5" class="g3_1" />
+<path fill-rule="evenodd" d="M264.2,277.9l-4.7,9.4l-4.7,-9.4Z" class="g4_1" />
+<path fill-rule="evenodd" d="M254.8,210.6l4.7,-9.4l4.7,9.4Z" class="g4_1" />
+<path d="M624,203.9v70.4" class="g3_1" />
+<path fill-rule="evenodd" d="M628.7,272.8l-4.7,9.3l-4.7,-9.3Z" class="g4_1" />
+<path fill-rule="evenodd" d="M619.3,205.4l4.7,-9.3l4.7,9.3Z" class="g4_1" />
+<path d="M996.3,200.7v70.5" class="g3_1" />
+<path fill-rule="evenodd" d="M1001,269.7l-4.7,9.3l-4.6,-9.3Z" class="g4_1" />
+<path fill-rule="evenodd" d="M991.7,202.3l4.6,-9.3l4.7,9.3Z" class="g4_1" />
+<path d="M197.4,192.3v85.3" class="g3_1" />
+<path fill-rule="evenodd" d="M202,276.1l-4.6,9.3l-4.7,-9.3Z" class="g4_1" />
+<path fill-rule="evenodd" d="M192.7,193.9l4.7,-9.4l4.6,9.4Z" class="g4_1" />
+<path d="M562.7,158.6V275.8" class="g3_1" />
+<path fill-rule="evenodd" d="M567.4,274.2l-4.7,9.4l-4.6,-9.4Z" class="g4_1" />
+<path fill-rule="evenodd" d="M558.1,160.1l4.6,-9.3l4.7,9.3Z" class="g4_1" />
+<path d="M929.4,147.4V183" class="g3_1" />
+<path fill-rule="evenodd" d="M934.1,181.5l-4.7,9.3l-4.7,-9.3Z" class="g4_1" />
+<path fill-rule="evenodd" d="M924.7,149l4.7,-9.4l4.7,9.4Z" class="g4_1" />
+<path d="M923,198.5v70.2" class="g3_1" />
+<path fill-rule="evenodd" d="M927.7,267.2l-4.7,9.3l-4.7,-9.3Z" class="g4_1" />
+<path fill-rule="evenodd" d="M918.3,200.1l4.7,-9.3l4.7,9.3Z" class="g4_1" />
+<text x="139" y="237" class="s1_1">h</text>
+<text x="153" y="243" class="s2_1">c</text>
+<text x="165" y="237" class="s3_1">Δ</text>
+<text x="181" y="237" class="s1_1">z</text>
+<text x="497" y="231" class="s1_1">h</text>
+<text x="512" y="238" class="s2_1">c</text>
+<text x="524" y="231" class="s3_1">Δ</text>
+<text x="540" y="231" class="s1_1">z</text>
+<text x="869" y="231" class="s1_1">h</text>
+<text x="883" y="238" class="s2_1">c</text>
+<text x="895" y="231" class="s3_1">Δ</text>
+<text x="911" y="231" class="s1_1">z</text>
+<text x="869" y="165" class="s1_1">h</text>
+<text x="884" y="172" class="s2_1">c</text>
+<text x="891" y="165" class="s3_1">Δ</text>
+<text x="907" y="165" class="s1_1">z</text>
+<text x="630" y="240" class="s3_1">Δ</text>
+<text x="645" y="240" class="s1_1">z</text>
+<text x="264" y="251" class="s3_1">Δ</text>
+<text x="280" y="251" class="s1_1">z</text>
+<text x="1000" y="241" class="s3_1">Δ</text>
+<text x="1015" y="241" class="s1_1">z</text>
+<path d="M381,253.8L728.6,31.2M10.6,296.9L358.2,74.2M747.6,251.8L1095.2,29.2" class="g5_1" />
+<path d="M13.5,11.3H360V449.6H13.5V11.3Zm367.9,1.4H727.7V449.1H381.4V12.7ZM748.6,11.6h346.5V448.2H748.6V11.6Z" class="g3_1" />
+<text x="26" y="49" dx="0,0.1,0" class="s4_1">(a)</text>
+<text x="392" y="54" dx="0,0.1,0" class="s4_1">(b)</text>
+<text x="761" y="50" dx="0,0.1,0.1" class="s4_1">(c)</text>
+<text x="843" y="115" class="s1_1">d</text>
+<text x="387" y="201" class="s1_1">d</text>
+<text x="25" y="207" class="s1_1">d</text>
+
+
+<!-- Any embedded fonts defined here -->
+<style type="text/css" ><![CDATA[
+
+@font-face {
+	font-family: Calibri_b;
+	src: url("fonts/Calibri_b.woff") format("woff");
+}
+
+@font-face {
+	font-family: Calibri_l;
+	src: url("fonts/Calibri_l.woff") format("woff");
+}
+
+]]></style>
+
+</svg>

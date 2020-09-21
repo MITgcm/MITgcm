@@ -193,6 +193,7 @@ C     saltAdvScheme       :: Salt. Horiz.advection scheme selector
 C     saltVertAdvScheme   :: Salt. Vert. Advection scheme selector
 C     selectKEscheme      :: Kinetic Energy scheme selector (Vector Inv.)
 C     selectVortScheme    :: Scheme selector for Vorticity term (Vector Inv.)
+C     selectCoriScheme    :: Scheme selector for Coriolis term
 C     selectBotDragQuadr  :: quadratic bottom drag discretisation option:
 C                           =0: average KE from grid center to U & V location
 C                           =1: use local velocity norm @ U & V location
@@ -229,7 +230,7 @@ C-    plotLevel           :: controls printing of field maps ; higher -> more fl
      &        momForcingOutAB, tracForcingOutAB,
      &        tempAdvScheme, tempVertAdvScheme,
      &        saltAdvScheme, saltVertAdvScheme,
-     &        selectKEscheme, selectVortScheme,
+     &        selectKEscheme, selectVortScheme, selectCoriScheme,
      &        selectBotDragQuadr, pCellMix_select,
      &        readBinaryPrec, writeBinaryPrec, writeStatePrec,
      &        rwSuffixType, monitorSelect, debugLevel, plotLevel
@@ -257,6 +258,7 @@ C-    plotLevel           :: controls printing of field maps ; higher -> more fl
       INTEGER saltAdvScheme, saltVertAdvScheme
       INTEGER selectKEscheme
       INTEGER selectVortScheme
+      INTEGER selectCoriScheme
       INTEGER selectBotDragQuadr
       INTEGER pCellMix_select
       INTEGER readBinaryPrec
@@ -315,7 +317,6 @@ C     use3dCoriolis :: Turns the 3-D coriolis terms (in Omega.cos Phi) on - off
 C     useCDscheme   :: use CD-scheme to calculate Coriolis terms.
 C     vectorInvariantMomentum :: use Vector-Invariant form (mom_vecinv package)
 C                                (default = F = use mom_fluxform package)
-C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart & Ozer 1986)
 C     useJamartMomAdv :: Use wet-point method for V.I. non-linear term
 C     upwindVorticity :: bias interpolation of vorticity in the Coriolis term
 C     highOrderVorticity :: use 3rd/4th order interp. of vorticity (V.I., advection)
@@ -421,8 +422,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & momPressureForcing, metricTerms, useNHMTerms,
      & useCoriolis, use3dCoriolis,
      & useCDscheme, vectorInvariantMomentum,
-     & useEnergyConservingCoriolis, useJamartWetPoints, useJamartMomAdv,
-     & upwindVorticity, highOrderVorticity,
+     & useJamartMomAdv, upwindVorticity, highOrderVorticity,
      & useAbsVorticity, upwindShear,
      & momStepping, calc_wVelocity, tempStepping, saltStepping,
      & addFrictionHeating, temp_stayPositive, salt_stayPositive,
@@ -486,8 +486,6 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL use3dCoriolis
       LOGICAL useCDscheme
       LOGICAL vectorInvariantMomentum
-      LOGICAL useEnergyConservingCoriolis
-      LOGICAL useJamartWetPoints
       LOGICAL useJamartMomAdv
       LOGICAL upwindVorticity
       LOGICAL highOrderVorticity
@@ -606,6 +604,7 @@ C     rhoConstFresh :: Constant reference density for fresh water (rain)
 C     thetaConst :: Constant reference for potential temperature
 C     tRef       :: reference vertical profile for potential temperature
 C     sRef       :: reference vertical profile for salinity/specific humidity
+C     surf_pRef  :: surface reference pressure ( Pa )
 C     pRef4EOS   :: reference pressure used in EOS (case selectP_inEOS_Zc=1)
 C     phiRef     :: reference potential (press/rho, geopot) profile (m^2/s^2)
 C     dBdrRef    :: vertical gradient of reference buoyancy  [(m/s/r)^2]:
@@ -657,6 +656,7 @@ C                   (act on Vorticity  part) ( m^4/s )
 C     smag3D_coeff :: Isotropic 3-D Smagorinsky coefficient (-)
 C     viscC2leith  :: Leith non-dimensional viscosity factor (grad(vort))
 C     viscC2leithD :: Modified Leith non-dimensional visc. factor (grad(div))
+C     viscC2LeithQG:: QG Leith non-dimensional viscosity factor
 C     viscC4leith  :: Leith non-dimensional viscosity factor (grad(vort))
 C     viscC4leithD :: Modified Leith non-dimensional viscosity factor (grad(div))
 C     viscC2smag   :: Smagorinsky non-dimensional viscosity factor (harmonic)
@@ -804,7 +804,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & f0, beta, fPrime, omega, rotationPeriod,
      & viscFacAdj, viscAh, viscAhW, smag3D_coeff,
      & viscAhMax, viscAhGrid, viscAhGridMax, viscAhGridMin,
-     & viscC2leith, viscC2leithD,
+     & viscC2leith, viscC2leithD, viscC2LeithQG,
      & viscC2smag, viscC4smag,
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
      & viscA4, viscA4W, viscA4Max,
@@ -824,7 +824,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & gravFacC, recip_gravFacC, gravFacF, recip_gravFacF,
      & rhoNil, rhoConst, recip_rhoConst, rho1Ref,
      & rhoFacC, recip_rhoFacC, rhoFacF, recip_rhoFacF, rhoConstFresh,
-     & thetaConst, tRef, sRef, pRef4EOS, phiRef, dBdrRef,
+     & thetaConst, tRef, sRef, surf_pRef, pRef4EOS, phiRef, dBdrRef,
      & rVel2wUnit, wUnit2rVel, mass2rUnit, rUnit2mass,
      & baseTime, startTime, endTime,
      & chkPtFreq, pChkPtFreq, dumpFreq, adjDumpFreq,
@@ -888,6 +888,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL viscAhGrid, viscAhGridMax, viscAhGridMin
       _RL viscC2leith
       _RL viscC2leithD
+      _RL viscC2LeithQG
       _RL viscC2smag
       _RL viscA4
       _RL viscA4W
@@ -934,7 +935,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL thetaConst
       _RL tRef(Nr)
       _RL sRef(Nr)
-      _RL pRef4EOS(Nr)
+      _RL surf_pRef, pRef4EOS(Nr)
       _RL phiRef(2*Nr+1)
       _RL dBdrRef(Nr)
       _RL rVel2wUnit(Nr+1), wUnit2rVel(Nr+1)

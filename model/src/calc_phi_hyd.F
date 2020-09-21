@@ -9,7 +9,6 @@ C     !ROUTINE: CALC_PHI_HYD
 C     !INTERFACE:
       SUBROUTINE CALC_PHI_HYD(
      I                         bi, bj, iMin, iMax, jMin, jMax, k,
-     I                         tFld, sFld,
      U                         phiHydF,
      O                         phiHydC, dPhiHydX, dPhiHydY,
      I                         myTime, myIter, myThid )
@@ -20,8 +19,6 @@ C     | o Integrate the hydrostatic relation to find the Hydros. |
 C     *==========================================================*
 C     |    Potential (ocean: Pressure/rho ; atmos = geopotential)
 C     | On entry:
-C     |   tFld,sFld     are the current thermodynamics quantities
-C     |                 (unchanged on exit)
 C     |   phiHydF(i,j) is the hydrostatic Potential anomaly
 C     |                at middle between tracer points k-1,k
 C     | On exit:
@@ -53,8 +50,6 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     bi, bj, k  :: tile and level indices
 C     iMin,iMax,jMin,jMax :: computational domain
-C     tFld       :: potential temperature
-C     sFld       :: salinity
 C     phiHydF    :: hydrostatic potential anomaly at middle between
 C                   2 centers (entry: Interf_k ; output: Interf_k+1)
 C     phiHydC    :: hydrostatic potential anomaly at cell center
@@ -63,8 +58,6 @@ C     myTime     :: current time
 C     myIter     :: current iteration number
 C     myThid     :: thread number for this instance of the routine.
       INTEGER bi,bj,iMin,iMax,jMin,jMax,k
-      _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL phiHydF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiHydC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dPhiHydX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -154,15 +147,15 @@ CADJ GENERAL
 C---    Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
           kkey = (ikey-1)*Nr + k
-CADJ STORE tFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
 CADJ &     kind = isbyte
-CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
 CADJ &     kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL FIND_RHO_2D(
      I              iMin, iMax, jMin, jMax, k,
-     I              tFld(1-OLx,1-OLy,k,bi,bj),
-     I              sFld(1-OLx,1-OLy,k,bi,bj),
+     I              theta(1-OLx,1-OLy,k,bi,bj),
+     I              salt(1-OLx,1-OLy,k,bi,bj),
      O              alphaRho,
      I              k, bi, bj, myThid )
         ELSE
@@ -316,15 +309,15 @@ CADJ GENERAL
 C--     Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
           kkey = (ikey-1)*Nr + k
-CADJ STORE tFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
 CADJ &     kind = isbyte
-CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
 CADJ &     kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL FIND_RHO_2D(
      I              iMin, iMax, jMin, jMax, k,
-     I              tFld(1-OLx,1-OLy,k,bi,bj),
-     I              sFld(1-OLx,1-OLy,k,bi,bj),
+     I              theta(1-OLx,1-OLy,k,bi,bj),
+     I              salt(1-OLx,1-OLy,k,bi,bj),
      O              alphaRho,
      I              k, bi, bj, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -441,8 +434,8 @@ C-      horizontally uniform (tRef) reference state
           ENDIF
           DO j=jMin,jMax
            DO i=iMin,iMax
-            alphaRho(i,j) = ( tFld(i,j,k,bi,bj)
-     &                        *( sFld(i,j,k,bi,bj)*atm_Rq + oneRL )
+            alphaRho(i,j) = ( theta(i,j,k,bi,bj)
+     &                        *( salt(i,j,k,bi,bj)*atm_Rq + oneRL )
      &                      - thetaRef )*maskC(i,j,k,bi,bj)
            ENDDO
           ENDDO
@@ -621,7 +614,7 @@ C--   r-coordinate and r*-coordinate cases:
        IF ( momPressureForcing ) THEN
         CALL CALC_GRAD_PHI_HYD(
      I                         k, bi, bj, iMin,iMax, jMin,jMax,
-     I                         phiHydC, alphaRho, tFld, sFld,
+     I                         phiHydC, alphaRho,
      O                         dPhiHydX, dPhiHydY,
      I                         myTime, myIter, myThid)
        ENDIF
@@ -657,7 +650,7 @@ C       = Top atmosphere height (Atmos, P-coord.)
       IF (useDiagPhiRlow) THEN
         CALL DIAGS_PHI_RLOW(
      I                      k, bi, bj, iMin,iMax, jMin,jMax,
-     I                      phiHydF, phiHydC, alphaRho, tFld, sFld,
+     I                      phiHydF, phiHydC, alphaRho,
      I                      myTime, myIter, myThid)
       ENDIF
 

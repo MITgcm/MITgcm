@@ -141,10 +141,10 @@ c     == end of interface ==
      &  xx_lwdownstartdate1, xx_lwdownstartdate2, xx_lwdownperiod,
      &  xx_evap_file, xx_evap_remo_intercept, xx_evap_remo_slope,
      &  xx_evapstartdate1, xx_evapstartdate2, xx_evapperiod,
-     &  xx_snowprecip_file, xx_snowprecip_remo_intercept, 
+     &  xx_snowprecip_file, xx_snowprecip_remo_intercept,
      &  xx_snowprecip_remo_slope,  xx_snowprecipperiod,
      &  xx_snowprecipstartdate1, xx_snowprecipstartdate2,
-     &  xx_apressure_file, xx_apressure_remo_intercept, 
+     &  xx_apressure_file, xx_apressure_remo_intercept,
      &  xx_apressure_remo_slope, xx_apressureperiod,
      &  xx_apressurestartdate1, xx_apressurestartdate2,
      &  xx_runoff_file, xx_runoff_remo_intercept, xx_runoff_remo_slope,
@@ -165,8 +165,8 @@ c     == end of interface ==
      &  xx_depth_file, xx_efluxy_file, xx_efluxp_file,
      &  xx_bottomdrag_file, xx_edtaux_file, xx_edtauy_file,
      &  xx_uvel_file, xx_vvel_file, xx_etan_file,
-     &  xx_shifwflx_file, 
-     &  xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope, 
+     &  xx_shifwflx_file,
+     &  xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope,
      &  xx_shifwflxstartdate1, xx_shifwflxstartdate2, xx_shifwflxperiod,
      &  doInitXX, doPackDiag, doZscaleUnpack, doZscalePack,
      &  doMainUnpack, doMainPack, doAdmtlmBypassAD, delZexp,
@@ -181,6 +181,13 @@ c     == end of interface ==
      &                      numiter, nfunc, fmin, iprint,
      &                      epsf, epsx, epsg,
      &                      nupdate, eps
+
+c--   Initialise myx/ygloballo to one. In the MITgcm they are set in
+c     ini_procs.F according to the current mpi-process, but here we
+c     can just set them to 1 because we do not anticipate to ever run
+c     this program in a multprocessor environment.
+      myygloballo = 1
+      myxgloballo = 1
 
 c--   Preset the optimization parameters.
       optimcycle =  0

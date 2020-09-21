@@ -4,7 +4,7 @@
  viscAh=4.E2,
  f0=1.E-4,
  beta=1.E-11,
- rhoNil=1000.,
+ rhoConst=1000.,
  gBaro=9.81,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,

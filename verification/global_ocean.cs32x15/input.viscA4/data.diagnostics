@@ -1,0 +1,72 @@
+# Diagnostic Package Choices
+#--------------------
+#  dumpAtLast (logical): always write output at the end of simulation (default=F)
+#  diag_mnc   (logical): write to NetCDF files (default=useMNC)
+#--for each output-stream:
+#  fileName(n) : prefix of the output file name (max 80c long) for outp.stream n
+#  frequency(n):< 0 : write snap-shot output every |frequency| seconds
+#               > 0 : write time-average output every frequency seconds
+#  timePhase(n)     : write at time = timePhase + multiple of |frequency|
+#    averagingFreq  : frequency (in s) for periodic averaging interval
+#    averagingPhase : phase     (in s) for periodic averaging interval
+#    repeatCycle    : number of averaging intervals in 1 cycle
+#  levels(:,n) : list of levels to write to file (Notes: declared as REAL)
+#                when this entry is missing, select all common levels of this list
+#  fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+#                (see "available_diagnostics.log" file for the full list of diags)
+#  missing_value(n) : missing value for real-type fields in output file "n"
+#  fileFlags(n)     : specific code (8c string) for output file "n"
+#--------------------
+ &DIAGNOSTICS_LIST
+# diag_mnc     = .FALSE.,
+# dumpAtLast   = .TRUE.,
+#--
+  fields(1:4,1)  = 'ETAN    ','PHI_SURF',
+                   'oceTAUX ','oceTAUY ',
+#                  'botTauX ','botTauY ',
+   fileName(1) = 'srfDiag',
+  fileFlags(1) = 'D       ',
+  frequency(1) = -36000.,
+
+  fields(1:14,6) = 'UVEL    ','VVEL    ','TOTUTEND','TOTVTEND',
+                   'Um_Advec','Vm_Advec','Um_dPHdx','Vm_dPHdy',
+                   'Um_Ext  ','Vm_Ext  ','Um_Diss ','Vm_Diss ',
+#                  'Um_ImplD','Vm_ImplD',
+                   'AB_gU   ','AB_gV   ',
+#                  'VISrI_Um','VISrI_Vm',
+#                  'UBotDrag','VBotDrag',
+#                  'Um_Cori ','Vm_Cori ','Um_AdvZ3','Vm_AdvZ3',
+#                  'Um_AdvRe','Vm_AdvRe','USidDrag','VSidDrag',
+#                  'Um_dPhiX','Vm_dPhiY','momKE   ',
+   fileName(6) = 'momDiag',
+  fileFlags(6) = 'D       ',
+  frequency(6) = -36000.,
+#
+  fields(1:1,7)  = 'PHI_NH  ',
+   fileName(7) = 'pnhDiag',
+  fileFlags(7) = 'D       ',
+  timePhase(7) =  21600.,
+  frequency(7) = -36000.,
+
+ &
+
+#--------------------
+# Parameter for Diagnostics of per level statistics:
+#--------------------
+#  diagSt_mnc (logical): write stat-diags to NetCDF files (default=diag_mnc)
+#  diagSt_regMaskFile : file containing the region-mask to read-in
+#  nSetRegMskFile   : number of region-mask sets within the region-mask file
+#  set_regMask(i)   : region-mask set-index that identifies the region "i"
+#  val_regMask(i)   : region "i" identifier value in the region mask
+#--for each output-stream:
+#  stat_fName(n) : prefix of the output file name (max 80c long) for outp.stream n
+#  stat_freq(n):< 0 : write snap-shot output every |stat_freq| seconds
+#               > 0 : write time-average output every stat_freq seconds
+#  stat_phase(n)    : write at time = stat_phase + multiple of |stat_freq|
+#  stat_region(:,n) : list of "regions" (default: 1 region only=global)
+#  stat_fields(:,n) : list of selected diagnostics fields (8.c) in outp.stream n
+#                (see "available_diagnostics.log" file for the full list of diags)
+#--------------------
+ &DIAG_STATIS_PARMS
+ &
+

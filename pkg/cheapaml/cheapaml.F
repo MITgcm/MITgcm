@@ -88,7 +88,6 @@ C     surfDrag   :: surface drag coeff (for wind stress)
 C temp var
         _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-
 C useful values
 C inverse of time step
         deltaTm=1. _d 0/deltaT
@@ -108,7 +107,6 @@ C--   fill-in diagnostics for cheapAML state variables:
      & CALL DIAGNOSTICS_FILL( Qair, 'CH_QAIR ', 0,1,0,1,1, myThid )
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
-
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -139,11 +137,11 @@ C compute advective and diffusive flux divergence
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
              gTair(i,j,bi,bj)=0. _d 0
-             uTrans(i,j)=uWind(i,j,bi,bj)
-             vTrans(i,j)=vWind(i,j,bi,bj)
+             uTrans(i,j) = uWind(i,j,bi,bj)*dyG(i,j,bi,bj)
+             vTrans(i,j) = vWind(i,j,bi,bj)*dxG(i,j,bi,bj)
            ENDDO
           ENDDO
-          CALL GAD_2d_CALC_RHS(
+          CALL CHEAPAML_CALC_RHS(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy,
      I           uTrans, vTrans,
      I           uWind, vWind,
@@ -153,12 +151,14 @@ C compute advective and diffusive flux divergence
      O           wWind,
      U           gTair,
      I           myTime, myIter, myThid )
-         startAB = cheapTairStartAB + nt - 1
-         CALL ADAMS_BASHFORTH2(
+         IF  (.NOT.useFluxLimit ) THEN
+           startAB = cheapTairStartAB + nt - 1
+           CALL ADAMS_BASHFORTH2(
      I           bi, bj, 1, 1,
      U           gTair(1-OLx,1-OLy,bi,bj),
      U           gTairm(1-OLx,1-OLy,bi,bj), tmpFld,
      I           startAB, myIter, myThid )
+         ENDIF
          CALL CHEAPAML_TIMESTEP(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
      I           gTair,
@@ -177,11 +177,11 @@ C do water
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
              gqair(i,j,bi,bj)=0. _d 0
-             uTrans(i,j)=uWind(i,j,bi,bj)
-             vTrans(i,j)=vWind(i,j,bi,bj)
+             uTrans(i,j) = uWind(i,j,bi,bj)*dyG(i,j,bi,bj)
+             vTrans(i,j) = vWind(i,j,bi,bj)*dxG(i,j,bi,bj)
            ENDDO
           ENDDO
-          CALL GAD_2d_CALC_RHS(
+          CALL CHEAPAML_CALC_RHS(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy,
      I           uTrans, vTrans,
      I           uWind, vWind,
@@ -191,12 +191,14 @@ C do water
      O           wWind,
      U           gqair,
      I           myTime, myIter, myThid )
-          startAB = cheapTairStartAB + nt - 1
-          CALL ADAMS_BASHFORTH2(
+          IF  (.NOT.useFluxLimit ) THEN
+           startAB = cheapTairStartAB + nt - 1
+           CALL ADAMS_BASHFORTH2(
      I           bi, bj, 1, 1,
      U           gqair(1-OLx,1-OLy,bi,bj),
      U           gqairm(1-OLx,1-OLy,bi,bj), tmpFld,
      I           startAB, myIter, myThid )
+          ENDIF
           CALL CHEAPAML_TIMESTEP(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
      I           gqair,
@@ -216,11 +218,11 @@ C     do tracer
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
              gCheaptracer(i,j,bi,bj)=0. _d 0
-             uTrans(i,j)=uWind(i,j,bi,bj)
-             vTrans(i,j)=vWind(i,j,bi,bj)
+             uTrans(i,j) = uWind(i,j,bi,bj)*dyG(i,j,bi,bj)
+             vTrans(i,j) = vWind(i,j,bi,bj)*dxG(i,j,bi,bj)
            ENDDO
           ENDDO
-          CALL GAD_2d_CALC_RHS(
+          CALL CHEAPAML_CALC_RHS(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy,
      I           uTrans, vTrans,
      I           uWind, vWind,
@@ -230,12 +232,14 @@ C     do tracer
      O           wWind,
      U           gCheaptracer,
      I           myTime, myIter, myThid )
-          startAB = cheapTracStartAB + nt - 1
-          CALL ADAMS_BASHFORTH2(
+          IF  (.NOT.useFluxLimit ) THEN
+           startAB = cheapTracStartAB + nt - 1
+           CALL ADAMS_BASHFORTH2(
      I           bi, bj, 1, 1,
      U           gCheaptracer(1-OLx,1-OLy,bi,bj),
      U           gCheaptracerm(1-OLx,1-OLy,bi,bj), tmpFld,
      I           startAB, myIter, myThid )
+          ENDIF
           CALL CHEAPAML_TIMESTEP(
      I           bi, bj, 1-OLx,sNx+OLx, 1-OLy,sNy+OLy, deltaTtracer,
      I           gCheaptracer,
@@ -301,7 +305,6 @@ C     now continue with diabatic forcing
              ENDDO
            ENDDO
 
-         
          IF (useRelativeWind) THEN
            DO j = 1-OLy, sNy+OLy
              DO i = 1-OLx, sNx+OLx
@@ -338,10 +341,8 @@ C     now continue with diabatic forcing
              ENDDO
            ENDDO
 
-         ENDIF           
+         ENDIF
 
-
-           
          IF ( useThSIce ) THEN
            CALL CHEAPAML_SEAICE(
      I                    solar(1-OLx,1-OLy,bi,bj),
@@ -493,7 +494,7 @@ C     Convective precip
 
               cheapPrecip(i,j,bi,bj) = precip*1200/CheapHgrid(i,j,bi,bj)
             ENDIF
-              
+
               entrain = cdq(i,j)*q*0.25
 
 c           gqair(i,j,bi,bj)=(evp-precip-entrain)/CheapHgrid(i,j,bi,bj)
@@ -625,7 +626,7 @@ c     CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
 
         IF ( .NOT.useStressOption .AND. FluxFormula.EQ.'COARE3' ) THEN
           IF (useRelativeWind) THEN
-            
+
           DO j = 1-OLy+1,sNy+OLy
           DO i = 1-OLx+1,sNx+OLx
             fu(i,j,bi,bj) = maskW(i,j,1,bi,bj)*0.5 _d 0
@@ -690,7 +691,6 @@ c     CALL PLOT_FIELD_XYRS( Qnet, 'S/R CHEAPAML Qnet',1,myThid)
 #endif /* INCONSISTENT_WIND_LOCATION */
          ENDIF !relative wind
 
-         
        ELSE
 Cswd move wind stresses to u and v points
          DO j = 1-OLy,sNy+OLy
@@ -710,7 +710,6 @@ Cswd move wind stresses to u and v points
 C--   end bi,bj loops
        ENDDO
       ENDDO
-
 
 #ifdef ALLOW_DIAGNOSTICS
 C- note: with thSIce, CH_QNET and CH_EmP correspond to the fluxes over the

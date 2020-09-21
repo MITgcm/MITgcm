@@ -23,6 +23,10 @@ Simple set-up to test flow-dependent horizontal viscosity implementation.
 ----------------------------------------------------------------------------------
  .AhStTn   | Vector-Inv. | Strain-Tens |  FullLeith   |   viscC2   |    Yes      |
 ----------------------------------------------------------------------------------
+ .QGLeith  | Vector-Inv. |  Vort-Div   |  FullLeith   |   viscC2   |    Yes      |
+----------------------------------------------------------------------------------
+ .QGLthGM  | Vector-Inv. |  Vort-Div   |  FullLeith   |   viscC2   |    Yes      |
+----------------------------------------------------------------------------------
 
 Notes:
 1) Stain-Tension viscosity formulation is used when setting

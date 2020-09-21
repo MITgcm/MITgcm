@@ -286,6 +286,24 @@ C     Calculate the 3D diffusivity as per Bates et al. (2013)
       ENDIF
 #endif
 
+#ifdef ALLOW_GM_LEITH_QG
+# ifdef ALLOW_AUTODIFF
+      DO k=1,Nr
+        DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            GM_LeithQG_K(i,j,k,bi,bj) = 0. _d 0
+          ENDDO
+        ENDDO
+      ENDDO
+# endif
+      IF ( GM_useLeithQG ) THEN
+C   Use Leith QG viscosity in GMRedi scheme
+          CALL GMREDI_CALC_QGLEITH(
+     O                GM_LeithQG_K(1-OLx,1-OLy,1,bi,bj),
+     I                bi, bj, myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_GM_LEITH_QG */
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- 1rst loop on k : compute Tensor Coeff. at W points.
 
@@ -551,6 +569,11 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef GM_VISBECK_VARIABLE_K
      &           + VisbeckK(i,j,bi,bj)*(1. _d 0 + GM_skewflx)
 #endif
+#ifdef ALLOW_GM_LEITH_QG
+     &           + op5*( GM_LeithQG_K(i,j,k,bi,bj)
+     &                 + GM_LeithQG_K(i,j,km1,bi,bj) )
+     &                *(1. _d 0 + GM_skewflx)
+#endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &           + op5*(K3D(i,j,k,bi,bj)+K3D(i,j,km1,bi,bj))
      &             *(1. _d 0 + GM_skewflx)
@@ -569,6 +592,10 @@ CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
      &                     + VisbeckK(i,j,bi,bj)
+#endif
+#ifdef ALLOW_GM_LEITH_QG
+     &                     + op5*( GM_LeithQG_K(i,j,k,bi,bj)
+     &                           + GM_LeithQG_K(i,j,km1,bi,bj) )
 #endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &                     + op5*(K3D(i,j,k,bi,bj)+K3D(i,j,km1,bi,bj))
@@ -728,6 +755,9 @@ c      IF ( GM_nonUnitDiag ) THEN
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))
 #endif
+#ifdef ALLOW_GM_LEITH_QG
+     &     +op5*(GM_LeithQG_K(i,j,k,bi,bj)+GM_LeithQG_K(i-1,j,k,bi,bj))
+#endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &     +op5*(K3D(i,j,k,bi,bj)+K3D(i-1,j,k,bi,bj))
 #endif
@@ -780,6 +810,10 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))*GM_advect
 #endif
+#ifdef ALLOW_GM_LEITH_QG
+     &     +op5*( GM_LeithQG_K(i,j,k,bi,bj)
+     &          + GM_LeithQG_K(i-1,j,k,bi,bj) )*GM_advect
+#endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &     +op5*(K3D(i,j,k,bi,bj)+K3D(i-1,j,k,bi,bj))*GM_advect
 #endif
@@ -807,7 +841,11 @@ C         store in tmp1k Kuz_Redi
      &        *op5*(GM_isoFac2d(i-1,j,bi,bj)+GM_isoFac2d(i,j,bi,bj))
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
-     &     +(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))*0.5 _d 0
+     &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))
+#endif
+#ifdef ALLOW_GM_LEITH_QG
+     &     +op5*( GM_LeithQG_K(i,j,k,bi,bj)
+     &          + GM_LeithQG_K(i-1,j,k,bi,bj) )
 #endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &     +op5*(K3D(i,j,k,bi,bj)+K3D(i-1,j,k,bi,bj))
@@ -946,6 +984,9 @@ c      IF ( GM_nonUnitDiag ) THEN
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
 #endif
+#ifdef ALLOW_GM_LEITH_QG
+     &     +op5*(GM_LeithQG_K(i,j,k,bi,bj)+GM_LeithQG_K(i,j-1,k,bi,bj))
+#endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &     +op5*(K3D(i,j,k,bi,bj)+K3D(i,j-1,k,bi,bj))
 #endif
@@ -998,6 +1039,10 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef GM_VISBECK_VARIABLE_K
      &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))*GM_advect
 #endif
+#ifdef ALLOW_GM_LEITH_QG
+     &     +op5*( GM_LeithQG_K(i,j,k,bi,bj)
+     &          + GM_LeithQG_K(i,j-1,k,bi,bj) )*GM_advect
+#endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &     +op5*(K3D(i,j,k,bi,bj)+K3D(i,j-1,k,bi,bj))*GM_advect
 #endif
@@ -1025,7 +1070,11 @@ C         store in tmp1k Kvz_Redi
      &        *op5*(GM_isoFac2d(i,j-1,bi,bj)+GM_isoFac2d(i,j,bi,bj))
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
-     &     +(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))*0.5 _d 0
+     &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
+#endif
+#ifdef ALLOW_GM_LEITH_QG
+     &     +op5*( GM_LeithQG_K(i,j,k,bi,bj)
+     &          + GM_LeithQG_K(i,j-1,k,bi,bj) )
 #endif
 #if ((defined GM_K3D) && ! (defined GM_K3D_PASSIVE))
      &     +op5*(K3D(i,j,k,bi,bj)+K3D(i,j-1,k,bi,bj))
@@ -1068,26 +1117,26 @@ C--   Time-average
       IF ( taveFreq.GT.0. ) THEN
 
          CALL TIMEAVE_CUMULATE( GM_Kwx_T, Kwx, Nr,
-     &                          deltaTclock, bi, bj, myThid )
+     &                          deltaTClock, bi, bj, myThid )
          CALL TIMEAVE_CUMULATE( GM_Kwy_T, Kwy, Nr,
-     &                          deltaTclock, bi, bj, myThid )
+     &                          deltaTClock, bi, bj, myThid )
          CALL TIMEAVE_CUMULATE( GM_Kwz_T, Kwz, Nr,
-     &                          deltaTclock, bi, bj, myThid )
+     &                          deltaTClock, bi, bj, myThid )
 #ifdef GM_VISBECK_VARIABLE_K
        IF ( GM_Visbeck_alpha.NE.0. ) THEN
          CALL TIMEAVE_CUMULATE( Visbeck_K_T, VisbeckK, 1,
-     &                          deltaTclock, bi, bj, myThid )
+     &                          deltaTClock, bi, bj, myThid )
        ENDIF
 #endif
 #ifdef GM_BOLUS_ADVEC
        IF ( GM_AdvForm ) THEN
          CALL TIMEAVE_CUMULATE( GM_PsiXtave, GM_PsiX, Nr,
-     &                          deltaTclock, bi, bj, myThid )
+     &                          deltaTClock, bi, bj, myThid )
          CALL TIMEAVE_CUMULATE( GM_PsiYtave, GM_PsiY, Nr,
-     &                          deltaTclock, bi, bj, myThid )
+     &                          deltaTClock, bi, bj, myThid )
        ENDIF
 #endif
-       GM_timeAve(bi,bj) = GM_timeAve(bi,bj)+deltaTclock
+       GM_timeAve(bi,bj) = GM_timeAve(bi,bj)+deltaTClock
 
       ENDIF
 #endif /* ALLOW_TIMEAVE */

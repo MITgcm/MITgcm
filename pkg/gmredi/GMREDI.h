@@ -24,6 +24,7 @@ C     GM_K3D_surfK     :: Imposes a constant K in the surface layer
 C     GM_K3D_constRedi :: Imposes a constant K for the Redi isoneutral diffusivity
 C     GM_K3D_use_constK:: Imposes a constant K for the eddy transport
 C     GM_K3D_smooth    :: Expand PV closure in terms of baroclinic modes (=.FALSE. for debugging only!)
+C     GM_useLeithQG    :: add Leith QG viscosity to GMRedi tensor
       LOGICAL GM_AdvForm
       LOGICAL GM_AdvSeparate
       LOGICAL GM_useBVP
@@ -39,6 +40,7 @@ C     GM_K3D_smooth    :: Expand PV closure in terms of baroclinic modes (=.FALS
       LOGICAL GM_K3D_use_constK
       LOGICAL GM_K3D_beta_eq_0
       LOGICAL GM_K3D_smooth
+      LOGICAL GM_useLeithQG
       COMMON /GM_PARAMS_L/
      &                   GM_AdvForm, GM_AdvSeparate,
      &                   GM_useBVP,  GM_useSubMeso,
@@ -46,7 +48,7 @@ C     GM_K3D_smooth    :: Expand PV closure in terms of baroclinic modes (=.FALS
      &                   GM_InMomAsStress,
      &                   GM_useK3D, GM_K3D_smooth, GM_K3D_use_constK,
      &                   GM_K3D_beta_eq_0, GM_K3D_ThickSheet,
-     &                   GM_K3D_surfK, GM_K3D_constRedi
+     &                   GM_K3D_surfK, GM_K3D_constRedi, GM_useLeithQG
 
 C--   GM/Redi Integer-type parameters
 C     GM_BVP_modeNumber :: vertical mode number used for speed "c" in BVP transport
@@ -188,7 +190,6 @@ C     (derived from previous block and not directly user configured)
      &                   GM_skewflx, GM_advect,
      &                   GM_BVP_rModeNumber, GM_BVP_cHat2Min
 
-
 C--   COMMON /GM_COEFFICIENTS/ GM/Redi scaling coefficients
 C     defined at grid-cell center (tracer location)
 C     GM_isoFac2d  :: 2.D horiz scaling factor [-] of Isopycnal diffusivity
@@ -272,6 +273,13 @@ C     gradf        :: gradient of the Coriolis paramater at a cell centre, 1/(m*
 
       COMMON /GM_K3D/ K3D, modesC, modesW, modesS, Rdef, gradf
 #endif
+
+#ifdef ALLOW_GM_LEITH_QG
+C     GM_LeithQG_K :: Horizontal LeithQG viscosity, to add to GM coefficient
+      _RL GM_LeithQG_K(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      COMMON /GM_LEITH_QG/ GM_LeithQG_K
+#endif /* ALLOW_GM_LEITH_QG */
+
 #endif /* ALLOW_GMREDI */
 
 CEH3 ;;; Local Variables: ***

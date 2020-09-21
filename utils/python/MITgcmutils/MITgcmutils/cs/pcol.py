@@ -4,38 +4,43 @@ from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 
 def pcol( x, y, data, projection=None, vmin=None, vmax=None, **kwargs):
-    """function h=pcol(x,y,v)
-    function h=pcol(x,y,v, projection = mp )
-    
-    plots 2D scalar fields v on the MITgcm cubed sphere grid with pcolormesh.
-    x,y are really 'xg', and 'yg', that is, they should be the coordinates
-    of the points one half grid cell to the left and bottom, that is
-    vorticity points for tracers, etc. 
-    
-    If present, 'projection' (a basemap instance) is used to transform 
-    coordinates. Unfortunatly, cylindrical and conic maps are limited to 
-    the [-180 180] range. 
-    projection = 'sphere' results in a 3D visualization on the sphere
-    without any specific projection. Good for debugging.
+    """
+    Plots 2D scalar fields on the MITgcm cubed sphere grid with pcolormesh.
 
-    Example script to use pcol.py:
+    Parameters
+    ----------
+    x : array_like
+        'xg', that is, x coordinate of the points one half grid cell to the
+        left and bottom, that is vorticity points for tracers, etc.
+    y : array_like
+        'yg', that is, y coordinate of same points
+    data : array_like
+        scalar field at tracer points
+    projection : Basemap instance, optional
+        used to transform if present.
+        Unfortunatly, cylindrical and conic maps are limited to
+        the [-180 180] range.
+        projection = 'sphere' results in a 3D visualization on the sphere
+        without any specific projection. Good for debugging.
 
-    from mpl_toolkits.basemap import Basemap
-    import MITgcmutils as mit
-    import matplotlib.pyplot as plt
-    from sq import sq
-
-    x=mit.rdmds('XG'); y=mit.rdmds('YG'); e=mit.rdmds('Eta',np.Inf)
-    fig = plt.figure();
-    mp = Basemap(projection='moll',lon_0 = 0.,
-                 resolution = 'l', area_thresh = 1000.)
-    plt.clf()
-    h = mit.cs.pcol(x,y,sq(e), projection = mp)
-    mp.fillcontinents(color = 'grey')
-    mp.drawmapboundary()
-    mp.drawmeridians(np.arange(0, 360, 30))
-    mp.drawparallels(np.arange(-90, 90, 30))
-    plt.show()
+    Example
+    -------
+    >>> from mpl_toolkits.basemap import Basemap
+    >>> import MITgcmutils as mit
+    >>> import matplotlib.pyplot as plt
+    >>> from sq import sq
+    >>>
+    >>> x=mit.rdmds('XG'); y=mit.rdmds('YG'); e=mit.rdmds('Eta',np.Inf)
+    >>> fig = plt.figure();
+    >>> mp = Basemap(projection='moll',lon_0 = 0.,
+    >>>              resolution = 'l', area_thresh = 1000.)
+    >>> plt.clf()
+    >>> h = mit.cs.pcol(x,y,sq(e), projection = mp)
+    >>> mp.fillcontinents(color = 'grey')
+    >>> mp.drawmapboundary()
+    >>> mp.drawmeridians(np.arange(0, 360, 30))
+    >>> mp.drawparallels(np.arange(-90, 90, 30))
+    >>> plt.show()
 
     """
 
@@ -81,7 +86,7 @@ def pcol( x, y, data, projection=None, vmin=None, vmax=None, **kwargs):
             # otherwise use full figure
             geom = ((1,1,1))
         ax = fig.add_subplot(geom[0],geom[1],geom[2],projection = '3d',
-                             axisbg='None')
+                             facecolor='None')
         # define color range
         tmp = data - data.min()
         N = tmp/tmp.max()       
@@ -168,7 +173,7 @@ def pcol( x, y, data, projection=None, vmin=None, vmax=None, **kwargs):
                                                   **kwargs))
 
     if mapit == -1: 
-        ax.axis('image')
+#        ax.axis('image')
         ax.set_axis_off()
 #        ax.set_visible=False
         # add a reasonable colormap

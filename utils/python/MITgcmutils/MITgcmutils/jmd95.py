@@ -6,12 +6,7 @@ import sys
 import numpy as np
 
 __doc__ = """
-Density of Sea Water using Jackett and McDougall 1995 (JAOT 12) polynomial
-
-Functions:
-
-dens :: computes in-situ density from salinity, potential temperature
-        and pressure
+Density of Sea Water using the Jackett and McDougall 1995 (JAOT 12) polynomial
 """
 
 # coefficients nonlinear equation of state in pressure coordinates for
@@ -70,31 +65,34 @@ eosJMDCKP = [     3.186519e+00,
 
 def densjmd95(s,theta,p):
     """
-    densjmd95    Density of sea water
-   =========================================================================
+    Computes in-situ density of sea water
 
-    USAGE:  dens = densjmd95(s,theta,p)
+    Density of Sea Water using Jackett and McDougall 1995 (JAOT 12)
+    polynomial (modified UNESCO polynomial).
 
-    DESCRIPTION:
-       Density of Sea Water using Jackett and McDougall 1995 (JAOT 12)
-       polynomial (modified UNESCO polynomial).
+    Parameters
+    ----------
+    s : array_like
+        salinity [psu (PSS-78)]
+    theta : array_like
+        potential temperature [degree C (IPTS-68)];
+        same shape as s
+    p : array_like
+        pressure [dbar]; broadcastable to shape of s
 
-    INPUT:  (all must have same dimensions)
-      S     = salinity    [psu      (PSS-78)]
-      Theta = potential temperature [degree C (IPTS-68)]
-      P     = pressure    [dbar]
-          (P may have dims 1x1, mx1, 1xn or mxn for S(mxn) )
+    Returns
+    -------
+    dens : array
+        density [kg/m^3]
 
-    OUTPUT:
-      dens = density  [kg/m^3]
+    Example
+    -------
+    >>> densjmd95(35.5, 3., 3000.)
+    1041.83267
 
+    Notes
+    -----
     AUTHOR:  Martin Losch 2002-08-09  (mlosch@mit.edu)
-
-    check value
-    S     = 35.5 PSU
-    Theta = 3 degC
-    P     = 3000 dbar
-    rho   = 1041.83267 kg/m^3
 
     Jackett and McDougall, 1995, JAOT 12(4), pp. 381-388
     """
@@ -152,7 +150,7 @@ def densjmd95(s,theta,p):
 
 
 def bulkmodjmd95(s,theta,p):
-    """ bulkmod = bulkmodjmd95(s,theta,p)
+    """ Compute bulk modulus
     """
     # make sure arguments are floating point
     s = np.asfarray(s)

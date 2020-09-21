@@ -3,7 +3,6 @@
 # ====================
 #
 # Continuous equation parameters
-#
 #   tRef            - Reference vertical potential temperature          (deg C)
 #   sRef            - Reference vertical salinity                         (PSU)
 #   viscAh          - Horizontal eddy viscosity coefficient             (m^2/s)
@@ -45,22 +44,18 @@
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  eosType='JMD95Z',
- saltStepping=.TRUE.,
- tempStepping=.TRUE.,
- momStepping=.TRUE.,
- useEnergyConservingCoriolis=.TRUE.,
+ selectCoriScheme=2,
  implicitDiffusion=.TRUE.,
  implicitViscosity=.TRUE.,
  staggerTimeStep=.TRUE.,
  tempAdvScheme =7,
  saltAdvScheme =7,
  convertFW2Salt=-1,
- allowFreezing=.FALSE.,
 #- set wrong celsius2K to reproduce old results:
  celsius2K=273.16,
- HeatCapacity_Cp = 3986.D0,
+ HeatCapacity_Cp = 3986.E0,
  gravity         = 9.8156,
- rhoConst        = 1027.D0,
+ rhoConst        = 1027.E0,
  rhoConstFresh   = 999.8,
  useSingleCpuIO=.TRUE.,
  readBinaryPrec=32,
@@ -68,7 +63,6 @@
  &
 
 # Elliptic solver parameters
-#
 #   cg2dMaxIters       - Maximum number of 2d solver iterations
 #   cg2dTargetResidual - Solver target residual
 #
@@ -78,7 +72,6 @@
  &
 
 # Time stepping parameters
-#
 #   startTime         - Integration starting time                (s)
 #   endTime           - Integration ending time                  (s)
 #   deltaTMom         - Timestep for momemtum equations          (s)
@@ -94,9 +87,7 @@
  &PARM03
  startTime=3600.0,
  endTime=21600.,
- deltaTmom=3600.0,
- deltaTtracer=3600.0,
- deltaTClock =3600.0,
+ deltaT= 3600.0,
  cAdjFreq=0.,
  abEps=0.1,
  forcing_In_AB = .FALSE.,
@@ -109,7 +100,6 @@
  &
 
 # Gridding parameters
-#
 #   usingSphericalPolarGrid - On/Off flag for spherical polar coordinates
 #   delX                    - Zonal grid spacing         (degrees)
 #   delY                    - Meridional grid spacing    (degrees)
@@ -129,7 +119,6 @@
  &
 
 # Input datasets
-#
 #   bathyFile       - File containing bathymetry
 #   hydrogThetaFile - File containing initial potential temperature data
 #   hydrogSaltFile  - File containing initial salinity data

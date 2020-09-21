@@ -145,15 +145,15 @@ C--   Set diagnostic suffix for the current tracer
 C-- initializing:
         Nrp1=Nr+1
         DO k=1,Nr
-         DO j=1,OLy
-          DO i=1,OLx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            plumetend(i,j,k) = 0. _d 0
            work(i,j,k) = tracer(i,j,k,bi,bj)
           ENDDO
          ENDDO
         ENDDO
-        DO j=1,OLy
-         DO i=1,OLx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
            work(i,j,Nrp1) = 0. _d 0
          ENDDO
         ENDDO

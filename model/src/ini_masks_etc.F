@@ -37,14 +37,15 @@ C     !LOCAL VARIABLES:
 C     bi, bj    :: tile indices
 C     i, j, k   :: Loop counters
 C     tmpFld    :: Temporary array used to compute & write Total Depth
-C     tmpVar*   :: Temporary array used to integrate column thickness
+C     tmpVar    :: Temporary array used to integrate column thickness
+C     rEmpty    :: empty column r-position
       INTEGER bi, bj
       INTEGER i, j, k
 c     _RS tmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL tmpVar1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tmpVar2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL hFacMnSz, hFacCtmp
+      _RL tmpVar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL hFacMnSz, hFac_loc
       _RL hFac1tmp, hFac2tmp
+      _RS rEmpty
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -63,17 +64,18 @@ C---  r-coordinate with partial-cell or full cell mask
 
 C--   Initialise rLow & reference rSurf at Western & Southern edges (U & V pts)
 C     Note: not final value since these estimates ignore hFacMin constrain
+      rEmpty = rF(1)
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
         i = 1-OLx
         DO j=1-OLy,sNy+OLy
-           rLowW (i,j,bi,bj) = rF(1)
-           rSurfW(i,j,bi,bj) = rF(1)
+           rLowW (i,j,bi,bj) = rEmpty
+           rSurfW(i,j,bi,bj) = rEmpty
         ENDDO
         j = 1-OLy
         DO i=1-OLx,sNx+OLx
-           rLowS (i,j,bi,bj) = rF(1)
-           rSurfS(i,j,bi,bj) = rF(1)
+           rLowS (i,j,bi,bj) = rEmpty
+           rSurfS(i,j,bi,bj) = rEmpty
         ENDDO
         DO j=1-OLy,sNy+OLy
          DO i=2-OLx,sNx+OLx
@@ -81,8 +83,6 @@ C     Note: not final value since these estimates ignore hFacMin constrain
      &           MAX(   R_low(i-1,j,bi,bj),   R_low(i,j,bi,bj) )
            rSurfW(i,j,bi,bj) =
      &           MIN( Ro_surf(i-1,j,bi,bj), Ro_surf(i,j,bi,bj) )
-           rSurfW(i,j,bi,bj) =
-     &           MAX( rSurfW(i,j,bi,bj), rLowW(i,j,bi,bj) )
          ENDDO
         ENDDO
         DO j=2-OLy,sNy+OLy
@@ -91,8 +91,6 @@ C     Note: not final value since these estimates ignore hFacMin constrain
      &           MAX(   R_low(i,j-1,bi,bj),   R_low(i,j,bi,bj) )
            rSurfS(i,j,bi,bj) =
      &           MIN( Ro_surf(i,j-1,bi,bj), Ro_surf(i,j,bi,bj) )
-           rSurfS(i,j,bi,bj) =
-     &           MAX( rSurfS(i,j,bi,bj), rLowS(i,j,bi,bj) )
          ENDDO
         ENDDO
        ENDDO
@@ -108,18 +106,15 @@ C     taking into account the lower_R Boundary (Bathymetry / Top of Atmos)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
 C      o Non-dimensional distance between grid bound. and domain lower_R bound.
-           hFacCtmp = (rF(k)-R_low(i,j,bi,bj))*recip_drF(k)
+           hFac_loc = (rF(k)-R_low(i,j,bi,bj))*recip_drF(k)
 C      o Select between, closed, open or partial (0,1,0-1)
-           hFacCtmp = MIN( MAX( hFacCtmp, zeroRL ) , oneRL )
+           hFac_loc = MIN( MAX( hFac_loc, zeroRL ) , oneRL )
 C      o Impose minimum fraction and/or size (dimensional)
-           IF ( hFacCtmp.LT.hFacMnSz ) THEN
-            IF ( hFacCtmp.LT.hFacMnSz*halfRL ) THEN
-             hFacC(i,j,k,bi,bj) = 0.
-            ELSE
-             hFacC(i,j,k,bi,bj) = hFacMnSz
-            ENDIF
+           IF ( hFac_loc.LT.hFacMnSz*halfRL .OR.
+     &          R_low(i,j,bi,bj).GE.Ro_surf(i,j,bi,bj) ) THEN
+             hFacC(i,j,k,bi,bj) = zeroRS
            ELSE
-             hFacC(i,j,k,bi,bj) = hFacCtmp
+             hFacC(i,j,k,bi,bj) = MAX( hFac_loc, hFacMnSz )
            ENDIF
           ENDDO
          ENDDO
@@ -128,19 +123,19 @@ C      o Impose minimum fraction and/or size (dimensional)
 C-    Re-calculate lower-R Boundary position, taking into account hFacC
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-           tmpVar1(i,j) = 0.
+           tmpVar(i,j) = 0. _d 0
          ENDDO
         ENDDO
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           tmpVar1(i,j) = tmpVar1(i,j) + drF(k)*hFacC(i,j,k,bi,bj)
+           tmpVar(i,j) = tmpVar(i,j) + drF(k)*hFacC(i,j,k,bi,bj)
           ENDDO
          ENDDO
         ENDDO
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-           R_low(i,j,bi,bj) = rF(1) - tmpVar1(i,j)
+           R_low(i,j,bi,bj) = rF(1) - tmpVar(i,j)
          ENDDO
         ENDDO
 
@@ -151,20 +146,16 @@ C     taking into account the Reference (=at rest) Surface Position Ro_surf
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
 C      o Non-dimensional distance between grid boundary and model surface
-           hFacCtmp = (rF(k)-Ro_surf(i,j,bi,bj))*recip_drF(k)
+           hFac_loc = (rF(k)-Ro_surf(i,j,bi,bj))*recip_drF(k)
 C      o Reduce the previous fraction : substract the outside part.
-           hFacCtmp = hFacC(i,j,k,bi,bj) - MAX( hFacCtmp, zeroRL )
+           hFac_loc = hFacC(i,j,k,bi,bj) - MAX( hFac_loc, zeroRL )
 C      o set to zero if empty Column :
-           hFacCtmp = MAX( hFacCtmp, zeroRL )
+           hFac_loc = MAX( hFac_loc, zeroRL )
 C      o Impose minimum fraction and/or size (dimensional)
-           IF ( hFacCtmp.LT.hFacMnSz ) THEN
-            IF ( hFacCtmp.LT.hFacMnSz*halfRL ) THEN
-             hFacC(i,j,k,bi,bj) = 0.
-            ELSE
-             hFacC(i,j,k,bi,bj) = hFacMnSz
-            ENDIF
+           IF ( hFac_loc.LT.hFacMnSz*halfRL ) THEN
+             hFacC(i,j,k,bi,bj) = zeroRS
            ELSE
-             hFacC(i,j,k,bi,bj) = hFacCtmp
+             hFacC(i,j,k,bi,bj) = MAX( hFac_loc, hFacMnSz )
            ENDIF
           ENDDO
          ENDDO
@@ -175,7 +166,7 @@ C     initialize Total column fluid thickness and surface k index
 C       Note: if no fluid (continent) ==> kSurf = Nr+1
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          tmpVar2(i,j) = 0.
+          tmpVar(i,j) = 0. _d 0
           kSurfC(i,j,bi,bj) = Nr+1
           kLowC (i,j,bi,bj) = 0
          ENDDO
@@ -183,7 +174,7 @@ C       Note: if no fluid (continent) ==> kSurf = Nr+1
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           tmpVar2(i,j) = tmpVar2(i,j) + drF(k)*hFacC(i,j,k,bi,bj)
+           tmpVar(i,j) = tmpVar(i,j) + drF(k)*hFacC(i,j,k,bi,bj)
            IF ( hFacC(i,j,k,bi,bj).NE.zeroRS ) kLowC(i,j,bi,bj) = k
           ENDDO
          ENDDO
@@ -197,7 +188,7 @@ C       Note: if no fluid (continent) ==> kSurf = Nr+1
         ENDDO
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          Ro_surf(i,j,bi,bj) = R_low(i,j,bi,bj) + tmpVar2(i,j)
+          Ro_surf(i,j,bi,bj) = R_low(i,j,bi,bj) + tmpVar(i,j)
           maskInC(i,j,bi,bj) = 0.
           IF ( kSurfC(i,j,bi,bj).LE.Nr ) maskInC(i,j,bi,bj) = 1.
 c         k = MAX( 0, kLowC (i,j,bi,bj) - kSurfC(i,j,bi,bj) + 1 )
@@ -227,13 +218,13 @@ C--   Calculate quantities derived from XY depth map
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
 C         Total fluid column thickness (r_unit) :
-          tmpVar1(i,j) = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
-c         tmpFld(i,j,bi,bj) = tmpVar1(i,j)
+          tmpVar(i,j) = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
+c         tmpFld(i,j,bi,bj) = tmpVar(i,j)
 C         Inverse of fluid column thickness (1/r_unit)
-          IF ( tmpVar1(i,j) .LE. zeroRL ) THEN
-           recip_Rcol(i,j,bi,bj) = 0.
+          IF ( tmpVar(i,j) .LE. zeroRL ) THEN
+           recip_Rcol(i,j,bi,bj) = zeroRS
           ELSE
-           recip_Rcol(i,j,bi,bj) = 1. _d 0 / tmpVar1(i,j)
+           recip_Rcol(i,j,bi,bj) = 1. _d 0 / tmpVar(i,j)
           ENDIF
          ENDDO
         ENDDO
@@ -252,14 +243,14 @@ C-    Method-1: use simply minimum of adjacent hFacC factor
 
          DO k=1, Nr
           DO j=1-OLy,sNy+OLy
-           hFacW(1-OLx,j,k,bi,bj) = 0.
+           hFacW(1-OLx,j,k,bi,bj) = zeroRS
            DO i=2-OLx,sNx+OLx
             hFacW(i,j,k,bi,bj) =
      &        MIN( hFacC(i,j,k,bi,bj), hFacC(i-1,j,k,bi,bj) )
            ENDDO
           ENDDO
           DO i=1-OLx,sNx+OLx
-            hFacS(i,1-OLy,k,bi,bj) = 0.
+            hFacS(i,1-OLy,k,bi,bj) = zeroRS
           ENDDO
           DO j=2-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
@@ -280,23 +271,24 @@ C               by applying same rules as for hFacC
            DO i=1-OLx,sNx+OLx
 C      o Non-dimensional distance between grid bound. and domain lower_R bound.
             hFac1tmp = ( rF(k) - rLowW(i,j,bi,bj) )*recip_drF(k)
-            hFacCtmp = MIN( hFac1tmp, oneRL )
-c           hFacCtmp = MAX( hFacCtmp, zeroRL )
+            hFac_loc = MIN( hFac1tmp, oneRL )
+c           hFac_loc = MAX( hFac_loc, zeroRL )
 C      o Impose minimum fraction and/or size (dimensional)
-            IF ( hFacCtmp.LT.hFacMnSz*halfRL ) THEN
-              hFac1tmp = 0.
+            IF ( hFac_loc.LT.hFacMnSz*halfRL .OR.
+     &           rLowW(i,j,bi,bj).GE.rSurfW(i,j,bi,bj) ) THEN
+              hFac1tmp = 0. _d 0
             ELSE
-              hFac1tmp = MAX( hFacCtmp, hFacMnSz )
+              hFac1tmp = MAX( hFac_loc, hFacMnSz )
             ENDIF
 C      o Reduce the previous fraction : substract the outside fraction
 C        (i.e., beyond reference (=at rest) surface position rSurfW)
             hFac2tmp = ( rF(k) -rSurfW(i,j,bi,bj) )*recip_drF(k)
-            hFacCtmp = hFac1tmp - MAX( hFac2tmp, zeroRL )
+            hFac_loc = hFac1tmp - MAX( hFac2tmp, zeroRL )
 C      o Impose minimum fraction and/or size (dimensional)
-            IF ( hFacCtmp.LT.hFacMnSz*halfRL ) THEN
-              hFacW(i,j,k,bi,bj) = 0.
+            IF ( hFac_loc.LT.hFacMnSz*halfRL ) THEN
+              hFacW(i,j,k,bi,bj) = zeroRS
             ELSE
-              hFacW(i,j,k,bi,bj) = MAX( hFacCtmp, hFacMnSz )
+              hFacW(i,j,k,bi,bj) = MAX( hFac_loc, hFacMnSz )
             ENDIF
            ENDDO
           ENDDO
@@ -304,23 +296,24 @@ C      o Impose minimum fraction and/or size (dimensional)
            DO i=1-OLx,sNx+OLx
 C      o Non-dimensional distance between grid bound. and domain lower_R bound.
             hFac1tmp = ( rF(k) - rLowS(i,j,bi,bj) )*recip_drF(k)
-            hFacCtmp = MIN( hFac1tmp, oneRL )
-c           hFacCtmp = MAX( hFacCtmp, zeroRL )
+            hFac_loc = MIN( hFac1tmp, oneRL )
+c           hFac_loc = MAX( hFac_loc, zeroRL )
 C      o Impose minimum fraction and/or size (dimensional)
-            IF ( hFacCtmp.LT.hFacMnSz*halfRL ) THEN
-              hFac1tmp = 0.
+            IF ( hFac_loc.LT.hFacMnSz*halfRL .OR.
+     &           rLowS(i,j,bi,bj).GE.rSurfS(i,j,bi,bj) ) THEN
+              hFac1tmp = 0. _d 0
             ELSE
-              hFac1tmp = MAX( hFacCtmp, hFacMnSz )
+              hFac1tmp = MAX( hFac_loc, hFacMnSz )
             ENDIF
 C      o Reduce the previous fraction : substract the outside fraction
 C        (i.e., beyond reference (=at rest) surface position rSurfS)
             hFac2tmp = ( rF(k) -rSurfS(i,j,bi,bj) )*recip_drF(k)
-            hFacCtmp = hFac1tmp - MAX( hFac2tmp, zeroRL )
+            hFac_loc = hFac1tmp - MAX( hFac2tmp, zeroRL )
 C      o Impose minimum fraction and/or size (dimensional)
-            IF ( hFacCtmp.LT.hFacMnSz*halfRL ) THEN
-              hFacS(i,j,k,bi,bj) = 0.
+            IF ( hFac_loc.LT.hFacMnSz*halfRL ) THEN
+              hFacS(i,j,k,bi,bj) = zeroRS
             ELSE
-              hFacS(i,j,k,bi,bj) = MAX( hFacCtmp, hFacMnSz )
+              hFacS(i,j,k,bi,bj) = MAX( hFac_loc, hFacMnSz )
             ENDIF
            ENDDO
           ENDDO
@@ -353,62 +346,48 @@ C     integrated level thickness ( =Sum_k(drF*hFac) )
         ENDDO
 
 c       IF ( useShelfIce ) THEN
-C--   Adjust rLow & reference rSurf at Western & Southern edges (U & V pts)
+C--   Adjust reference rSurf at Western & Southern edges (U & V pts)
 C     to get consistent column thickness from Sum_k(hFac*drF) and rSurf-rLow
 
-C-    Total column thickness at Western & Southern edges
+C-    Total column thickness at Western edge
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-            tmpVar1(i,j) = 0. _d 0
-            tmpVar2(i,j) = 0. _d 0
+            tmpVar(i,j) = 0. _d 0
           ENDDO
          ENDDO
          DO k=1,Nr
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            tmpVar1(i,j) = tmpVar1(i,j) + drF(k)*hFacW(i,j,k,bi,bj)
-            tmpVar2(i,j) = tmpVar2(i,j) + drF(k)*hFacS(i,j,k,bi,bj)
+            tmpVar(i,j) = tmpVar(i,j) + drF(k)*hFacW(i,j,k,bi,bj)
            ENDDO
           ENDDO
          ENDDO
+C-    Adjust rSurf at W edge (correct for the difference)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+             rSurfW(i,j,bi,bj) = rLowW(i,j,bi,bj) + tmpVar(i,j)
+          ENDDO
+         ENDDO
 
-         IF ( useMin4hFacEdges ) THEN
-C-    Adjust only rSurf at W and S edges (correct for the difference)
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             rSurfW(i,j,bi,bj) = rLowW(i,j,bi,bj) + tmpVar1(i,j)
-             rSurfS(i,j,bi,bj) = rLowS(i,j,bi,bj) + tmpVar2(i,j)
-            ENDDO
+C-    Total column thickness at Southern edges
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+            tmpVar(i,j) = 0. _d 0
+          ENDDO
+         ENDDO
+         DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            tmpVar(i,j) = tmpVar(i,j) + drF(k)*hFacS(i,j,k,bi,bj)
            ENDDO
-         ELSE
-C-    Adjust both rLow and rSurf at W & S edges (split correction by half)
-C     adjust rSurfW and rLowW:
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             tmpVar1(i,j) = rLowW(i,j,bi,bj) + tmpVar1(i,j)
-             tmpVar1(i,j) = ( tmpVar1(i,j) -rSurfW(i,j,bi,bj) )*halfRL
-            ENDDO
-           ENDDO
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             rSurfW(i,j,bi,bj) = rSurfW(i,j,bi,bj) + tmpVar1(i,j)
-             rLowW (i,j,bi,bj) = rLowW (i,j,bi,bj) - tmpVar1(i,j)
-            ENDDO
-           ENDDO
-C     Adjust rSurfS and rLowS:
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             tmpVar2(i,j) = rLowS(i,j,bi,bj) + tmpVar2(i,j)
-             tmpVar2(i,j) = ( tmpVar2(i,j) -rSurfS(i,j,bi,bj) )*halfRL
-            ENDDO
-           ENDDO
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             rSurfS(i,j,bi,bj) = rSurfS(i,j,bi,bj) + tmpVar2(i,j)
-             rLowS (i,j,bi,bj) = rLowS (i,j,bi,bj) - tmpVar2(i,j)
-            ENDDO
-           ENDDO
-         ENDIF
+          ENDDO
+         ENDDO
+C-    Adjust rSurf at S edge (correct for the difference)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+             rSurfS(i,j,bi,bj) = rLowS(i,j,bi,bj) + tmpVar(i,j)
+          ENDDO
+         ENDDO
 
 C-    end if useShelfIce
 c       ENDIF
@@ -421,11 +400,6 @@ C-    end bi,bj loops.
       CALL EXCH_UV_XY_RS( rSurfW, rSurfS, .FALSE., myThid )
       CALL EXCH_UV_XY_RS(  rLowW,  rLowS, .FALSE., myThid )
 
-C--   Additional closing of Western and Southern grid-cell edges: for example,
-C     a) might add some "thin walls" in specific location
-C--   b) close non-periodic N & S boundaries of lat-lon grid at the N/S poles.
-      CALL ADD_WALLS2MASKS( myThid )
-
 C--   Calculate surface k index for interface W & S (U & V points)
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -437,14 +411,20 @@ C--   Calculate surface k index for interface W & S (U & V points)
            IF (hFacW(i,j,k,bi,bj).NE.zeroRS) kSurfW(i,j,bi,bj) = k
            IF (hFacS(i,j,k,bi,bj).NE.zeroRS) kSurfS(i,j,bi,bj) = k
           ENDDO
-          maskInW(i,j,bi,bj)= 0.
-          IF ( kSurfW(i,j,bi,bj).LE.Nr ) maskInW(i,j,bi,bj)= 1.
-          maskInS(i,j,bi,bj)= 0.
-          IF ( kSurfS(i,j,bi,bj).LE.Nr ) maskInS(i,j,bi,bj)= 1.
+          maskInW(i,j,bi,bj)= zeroRS
+          IF ( kSurfW(i,j,bi,bj).LE.Nr ) maskInW(i,j,bi,bj)= oneRS
+          maskInS(i,j,bi,bj)= zeroRS
+          IF ( kSurfS(i,j,bi,bj).LE.Nr ) maskInS(i,j,bi,bj)= oneRS
          ENDDO
         ENDDO
        ENDDO
       ENDDO
+
+C--   Additional closing of Western and Southern grid-cell edges: for example,
+C     a) might add some "thin walls" in specific location
+C     b) close non-periodic N & S boundaries of lat-lon grid at the N/S poles.
+C     new: location now reccorded as kSurfW/S = Nr+2
+      CALL ADD_WALLS2MASKS( rEmpty, myThid )
 
       ELSE
 #ifndef DISABLE_SIGMA_CODE
@@ -476,24 +456,24 @@ C--   Masks and reciprocals of hFac[CWS]
           DO i=1-OLx,sNx+OLx
            IF ( hFacC(i,j,k,bi,bj).NE.zeroRS ) THEN
             recip_hFacC(i,j,k,bi,bj) = 1. _d 0 / hFacC(i,j,k,bi,bj)
-            maskC(i,j,k,bi,bj) = 1.
+            maskC(i,j,k,bi,bj) = oneRS
            ELSE
-            recip_hFacC(i,j,k,bi,bj) = 0.
-            maskC(i,j,k,bi,bj) = 0.
+            recip_hFacC(i,j,k,bi,bj) = zeroRS
+            maskC(i,j,k,bi,bj) = zeroRS
            ENDIF
            IF ( hFacW(i,j,k,bi,bj).NE.zeroRS ) THEN
             recip_hFacW(i,j,k,bi,bj) = 1. _d 0 / hFacW(i,j,k,bi,bj)
-            maskW(i,j,k,bi,bj) = 1.
+            maskW(i,j,k,bi,bj) = oneRS
            ELSE
-            recip_hFacW(i,j,k,bi,bj) = 0.
-            maskW(i,j,k,bi,bj) = 0.
+            recip_hFacW(i,j,k,bi,bj) = zeroRS
+            maskW(i,j,k,bi,bj) = zeroRS
            ENDIF
            IF ( hFacS(i,j,k,bi,bj).NE.zeroRS ) THEN
             recip_hFacS(i,j,k,bi,bj) = 1. _d 0 / hFacS(i,j,k,bi,bj)
-            maskS(i,j,k,bi,bj) = 1.
+            maskS(i,j,k,bi,bj) = oneRS
            ELSE
-            recip_hFacS(i,j,k,bi,bj) = 0.
-            maskS(i,j,k,bi,bj) = 0.
+            recip_hFacS(i,j,k,bi,bj) = zeroRS
+            maskS(i,j,k,bi,bj) = zeroRS
            ENDIF
           ENDDO
          ENDDO

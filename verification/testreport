@@ -828,7 +828,7 @@ runmodel()
 	#- Divided Adjoint Run:
 	#  get the number of additional runs (add_DIVA_runs) from file "run_ADM_DIVA"
 	    if test $KIND = 2 -a -f run_ADM_DIVA ; then
-	      adm_diva_nb=`sed -n '/^ *add_DIVA_runs\>.*=/p' run_ADM_DIVA | sed 's/ //g'`
+	      adm_diva_nb=`sed -n '/^ *add_DIVA_runs *=/p' run_ADM_DIVA | sed 's/ //g'`
 	      echo " Divided Adjoint Run: $adm_diva_nb" >> $RUNLOG
 	      eval "let $adm_diva_nb"
 	      if [ $add_DIVA_runs -ge 1 ] ; then

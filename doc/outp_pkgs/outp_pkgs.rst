@@ -8,6 +8,8 @@ MITgcm includes several packages related to input and output during a
 model integration. The packages described in this chapter are related to
 the choice of input/output fields and their on-disk format.
 
+.. _sub_outp_pkg_diagnostics:
+
 pkg/diagnostics – A Flexible Infrastructure
 ===========================================
 
@@ -905,7 +907,7 @@ features and limitations:
     called “network byte order”) data. By handling byte-swapping within
     the model, MITgcm output is more easily ported between different
     machines, architectures, compilers, etc. Byteswapping can be turned
-    on/off at compile time within :filelink:`pkg/mdsio`` using the ``_BYTESWAPIO``
+    on/off at compile time within :filelink:`pkg/mdsio` using the ``_BYTESWAPIO``
     CPP macro which is usually set within a :filelink:`genmake2 <tools/genmake2>` options file or
     ``optfile`` (see :numref:`genmake2_optfiles`).
     Additionally, some compilers may have byte-swap options that are
@@ -1174,9 +1176,9 @@ available parameters currently include:
 +---------------------------------+---------+------------+----------------------------------------------+
 | :varlink:`monitor_mnc`          | L       | .TRUE.     | write :filelink:`pkg/monitor` output w/MNC   |
 +---------------------------------+---------+------------+----------------------------------------------+
-| :varlink:`timeave_mnc`          | L       | .TRUE.     | write :filelink:`pkg/timeave`` output w/MNC  |
+| :varlink:`timeave_mnc`          | L       | .TRUE.     | write :filelink:`pkg/timeave` output w/MNC   |
 +---------------------------------+---------+------------+----------------------------------------------+
-| :varlink:`autodiff_mnc`         | L       | .TRUE.     | write :filelink:`pkg/autodiff`` output w/MNC |
+| :varlink:`autodiff_mnc`         | L       | .TRUE.     | write :filelink:`pkg/autodiff` output w/MNC  |
 +---------------------------------+---------+------------+----------------------------------------------+
 | :varlink:`mnc_max_fsize`        | R       | 2.1e+09    | max allowable file size (<2GB)               |
 +---------------------------------+---------+------------+----------------------------------------------+
@@ -2385,3 +2387,11 @@ be written as:
      \vec{N_Q}_z &= J^B_z + J^F_z  \\
      J^B_z &= -\frac{f}{h}\left( \frac{\alpha Q_{net}}{C_w}-\rho_0 \beta S_{net}\right) \\
      J^F_z &= \frac{1}{\rho\delta_e} \vec{k}\times\tau\cdot\nabla\sigma_m \end{aligned}
+
+.. _sub_outp_pkg_flt:
+
+pkg/flt – Simulation of float / parcel displacements
+====================================================
+
+.. include:: flt.rst
+

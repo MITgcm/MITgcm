@@ -29,6 +29,8 @@ C     == Global variables ===
 
 #include "EXF_PARAM.h"
 #include "EXF_CONSTANTS.h"
+#include "EXF_INTERP_SIZE.h"
+#include "EXF_INTERP_PARAM.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid   :: my Thread Id number
@@ -684,7 +686,6 @@ C     !USES:
 C     == Global variables ===
 #include "EEPARAMS.h"
 #include "EXF_INTERP_SIZE.h"
-#include "EXF_PARAM.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     fldName          :: field short name (to print mesg)

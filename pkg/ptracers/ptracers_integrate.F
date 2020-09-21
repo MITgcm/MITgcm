@@ -89,6 +89,7 @@ C  fVer             :: passive tracer vertical flux
 C  gTracer          :: passive tracer tendency
 C  gTrForc          :: passive tracer forcing tendency
 C  gTr_AB           :: Adams-Bashforth tracer tendency increment
+C  gTr_trp          :: passive tracer total transport tendency before gchem
       INTEGER iTracer
       INTEGER iMin,iMax,jMin,jMax
       INTEGER i, j, k
@@ -111,9 +112,11 @@ C  gTr_AB           :: Adams-Bashforth tracer tendency increment
       INTEGER iterNb
       _RL dummy(Nr)
 #ifdef ALLOW_DIAGNOSTICS
+      _RL gTr_trp (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL recip_dt
       CHARACTER*8 diagName
       CHARACTER*4 diagSufx
-      LOGICAL diagForcing, diagAB_tend
+      LOGICAL diagForcing, diagAB_tend, diagTrp_tend
 #endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
@@ -159,6 +162,7 @@ C-    Initialise tracer tendency to zero
 #ifdef ALLOW_DIAGNOSTICS
         diagForcing = .FALSE.
         diagAB_tend = .FALSE.
+        diagTrp_tend = .FALSE.
         IF ( useDiagnostics ) THEN
           diagSufx = GAD_DIAG_SUFX( GAD_TR, myThid )
           diagName = 'Forc'//diagSufx
@@ -166,6 +170,8 @@ C-    Initialise tracer tendency to zero
           diagName = 'AB_g'//diagSufx
           IF ( PTRACERS_AdamsBashGtr(iTracer) )
      &    diagAB_tend = DIAGNOSTICS_IS_ON( diagName, myThid )
+          diagName = 'Tp_g'//diagSufx
+          diagTrp_tend = DIAGNOSTICS_IS_ON( diagName, myThid )
         ENDIF
 #endif
 
@@ -455,6 +461,26 @@ c       IF ( PTRACERS_ImplVertAdv(iTracer) ) THEN
      U         gTracer,
      I         myThid )
         ENDIF
+
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( diagTrp_tend ) THEN
+         diagName = 'Tp_g'//diagSufx
+         DO k=1,Nr
+          IF ( PTRACERS_dTLev(k).NE.zeroRL ) THEN
+            recip_dt = oneRL/PTRACERS_dTLev(k)
+          ELSE
+            recip_dt = 0. _d 0
+          ENDIF
+          DO j=1,sNy
+           DO i=1,sNx
+            gTr_trp(i,j) = ( gTracer(i,j,k)
+     &                     - pTracer(i,j,k,bi,bj,iTracer) )*recip_dt
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL( gTr_trp,diagName,k,1,2,bi,bj,myThid )
+         ENDDO
+        ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
         IF ( PTRACERS_AdamsBash_Tr(iTracer) ) THEN
 C--   Save current tracer field (for AB on tracer) and then update tracer
