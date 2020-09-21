@@ -204,7 +204,7 @@ do
       if test "x$OPTFILE" = x -a -f $xx/$bldDir/Makefile ; then
         comm=`grep '^# OPTFILE=' $xx/$bldDir/Makefile 2>/dev/null | head -1 | sed 's/^# //'`
         echo "from '$xx/$bldDir/Makefile', extract:" > $DRESULTS/genmake_state
-	awk "/^# executed by:/ {print;getline;print}" $xx/$bldDir/Makefile >> $DRESULTS/genmake_state
+        awk "/^# executed by:/ {print;getline;print}" $xx/$bldDir/Makefile >> $DRESULTS/genmake_state
         echo " $comm" >> $DRESULTS/genmake_state
         eval $comm
         gmkLog=$xx/$bldDir/genmake.log
