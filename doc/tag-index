@@ -1,6 +1,16 @@
     Notes on tags used in MITgcmUV
     ==============================
-
+o doc:
+  - add new SO channel tutorial
+o optim:
+  - fix a small bug by initialising myX/YglobalLo=1 in optim_nummod.F
+o tools/do_tst_2+2:
+  - for sending restart test output, add same hack in "send" option as in
+    testreport, allowing to use "scp" (instead of an email).
+o model/src:
+  - fix 2 missing TAF initialisation directives in file "the_main_loop.F";
+    this allows to use TAF recent version 5.0.9 (that does check for missing
+    initialisation).
 o pkg/seaice:
   - fix diagnostics additions (from PR #348) for case _RS is real*4.
 
