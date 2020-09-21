@@ -229,22 +229,24 @@ whilst also controlling the strength of the barotropic current. This is the valu
 Also note with this choice :math:`A_{h} / \Delta x` gives a velocity
 scaling of 4 cm/s,  a reasonable value.
 
-Using Adams-Bashforth for vertical momentum, the stability condition is: 
+Regarding the vertical viscosity, we choose to solve this term implicitly (Euler backward
+time-stepping) by setting :varlink:`implicitViscosity` to ``.TRUE.`` in
+:filelink:`input/data <verification/tutorial_reentrant_channel/input/data>`, which results in no
+additional stability constraint on the model timestep (see :numref:`implicit-backward-stepping`).
+Otherwise, given that our vertical resolution is quite fine near the surface (approximately 5 m),
+the following stability criteria would have applied:
 
 .. math::
-   S_{lv} = 4 \frac{A_{v} \Delta t}{{\Delta z}^2} < 0.6 \text{ for stability}
+   S_{lv} = 4 \frac{A_{v} \Delta t}{{\Delta z}^2} < 1.0 \text{ for stability}
    :label: eq_SOch__laplacian_v_stability
 
-Given that out vertical resolution is quite fine near the surface (5 m), :eq:`eq_SOch__laplacian_v_stability` effectively limits
-our choice for :math:`A_{v}` to small values unless we solve implicitly (set :varlink:`implicitViscosity` to ``.TRUE.``  in
-:filelink:`input/data <verification/tutorial_reentrant_channel/input/data>`),
-which is unconditionally stable (see :numref:`implicit-backward-stepping`).  
+which effectively would limit our choice for :math:`A_{v}` to very small values.
 For simplicity, and given that away from the equator coarse resolution models are typically not 
 very sensitive to the value of vertical viscosity, we pick a constant value of :math:`A_{v} = 3\times10^{-3}` m\ :sup:`2` s\ :sup:`--1`
 over the full domain, somewhere in between (in geometric mean sense) typical values
 found in the mixed layer (:math:`\sim 10^{-2}`) and in the deep ocean (:math:`\sim 10^{-4}`) (Roach et al. 2015 :cite:`roach:15`)
-Note this implicit scheme is also used for vertical diffusion of tracers where, because it is unconditionally stable,
-it can also be used to represent convective adjustment.
+Note this implicit scheme is also used for vertical diffusion of tracers, for which
+it can also be used to represent convective adjustment (again, because it is unconditionally stable regardless of diffusivity value).
 
 .. _sec_eg_reentrant_channel_config:
 
@@ -256,14 +258,14 @@ The model configuration for this experiment resides under the directory :filelin
 The experiment files
 
  - :filelink:`verification/tutorial_reentrant_channel/code/SIZE.h`
- - :filelink:`verification/tutorial_reentrant_channel/code/DIAGNOSTICS_SIZE.h`
  - :filelink:`verification/tutorial_reentrant_channel/code/LAYERS_SIZE.h`
+ - :filelink:`verification/tutorial_reentrant_channel/code/DIAGNOSTICS_SIZE.h`
  - :filelink:`verification/tutorial_reentrant_channel/input/data`
  - :filelink:`verification/tutorial_reentrant_channel/input/data.pkg`
- - :filelink:`verification/tutorial_reentrant_channel/input/data.rbcs`
- - :filelink:`verification/tutorial_reentrant_channel/input/data.diagnostics`
- - :filelink:`verification/tutorial_reentrant_channel/input/data.layers`
  - :filelink:`verification/tutorial_reentrant_channel/input/data.gmredi`
+ - :filelink:`verification/tutorial_reentrant_channel/input/data.rbcs`
+ - :filelink:`verification/tutorial_reentrant_channel/input/data.layers`
+ - :filelink:`verification/tutorial_reentrant_channel/input/data.diagnostics`
  - :filelink:`verification/tutorial_reentrant_channel/input/eedata`
  - verification/tutorial_reentrant_channel/input/bathy.50km.bin
  - verification/tutorial_reentrant_channel/input/zonal_wind.50km.bin
@@ -286,13 +288,6 @@ File :filelink:`code/packages.conf <verification/tutorial_reentrant_channel/code
 
 In addition to the pre-defined standard package group ``gfd``, we define four additional packages. 
 
-- Package :filelink:`pkg/rbcs` (see :ref:`sub_phys_pkg_rbcs`):
-  The default MITgcm code library permits relaxation boundary conditions only at the ocean surface;
-  in the setup here, we relax temperature over the full-depth :math:`xz` plane
-  along our domain's northern border. By including the :filelink:`pkg/rbcs` code library in our model build,
-  we can relax selected fields (tracers or
-  horizontal velocities) in any 3-D location. 
-
 - Package :filelink:`pkg/gmredi` (see :ref:`sub_phys_pkg_gmredi`):
   This implements the Gent and McWilliams parameterization (as first described in Gent and McWilliams 1990 :cite:`gen-mcw:90`)
   of geostrophic eddies. This mixes along sloping neutral surfaces (here, just :math:`T` surfaces).
@@ -300,16 +295,23 @@ In addition to the pre-defined standard package group ``gfd``, we define four ad
   In :numref:`reentrant_channel_solution` we will illustrate the marked improvement
   in the solution resulting from the use of this parameterization.
 
-We also include two packages which augment MITgcm's diagnostic capabilities.
+- Package :filelink:`pkg/rbcs` (see :ref:`sub_phys_pkg_rbcs`):
+  The default MITgcm code library permits relaxation boundary conditions only at the ocean surface;
+  in the setup here, we relax temperature over the full-depth :math:`xz` plane
+  along our domain's northern border. By including the :filelink:`pkg/rbcs` code library in our model build,
+  we can relax selected fields (tracers or
+  horizontal velocities) in any 3-D location. 
 
-- Package :filelink:`pkg/diagnostics`:
-  This selects which fields to output, and at what frequencies. This was introduced in
-  tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`.
+We also include two packages which augment MITgcm's diagnostic capabilities.
 
 - Package :filelink:`pkg/layers`:
   This calculates the thickness and transport of layers of specified density (or temperature, or salinity;
   here, temperature and density are aligned because of our simple equation of state).
   Further explanation of :filelink:`pkg/layers` parameter options and output is given :ref:`below <tut_SO_layers>`.
+
+- Package :filelink:`pkg/diagnostics`:
+  This selects which fields to output, and at what frequencies. This was introduced in
+  tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`.
 
 File :filelink:`code/SIZE.h <verification/tutorial_reentrant_channel/code/SIZE.h>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -328,15 +330,6 @@ which is the mimimum required for the default :ref:`center second-ordered differ
 For this setup we will specify a reasonably high resolution
 in the vertical, using 49 levels.
 
-File :filelink:`code/DIAGNOSTICS_SIZE.h <verification/tutorial_reentrant_channel/code/DIAGNOSTICS_SIZE.h>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. literalinclude:: ../../../verification/tutorial_reentrant_channel/code/DIAGNOSTICS_SIZE.h
-    :linenos:
-    :caption: verification/tutorial_reentrant_channel/code/DIAGNOSTICS_SIZE.h
-
-Here the parameter :varlink:`numDiags` has been changed to allow a combination of up to 35 3-D diagnostic fields or 1715 (=35*49) 2-D fields.
-
 File :filelink:`code/LAYERS_SIZE.h <verification/tutorial_reentrant_channel/code/LAYERS_SIZE.h>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -349,6 +342,15 @@ The model default is 20 layers. Here we set ``PARAMETER(`` :varlink:`Nlayers` ``
 In making this choice, one needs to ensure sufficiently fine layer bounds in the density (or temperature) range of interest,
 while also possible to specify fairly coarse bounds in other density ranges.
 The specific temperatures defining layer bounds will be prescribed in :filelink:`input/data.layers <verification/tutorial_reentrant_channel/input/data.layers>`
+
+File :filelink:`code/DIAGNOSTICS_SIZE.h <verification/tutorial_reentrant_channel/code/DIAGNOSTICS_SIZE.h>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. literalinclude:: ../../../verification/tutorial_reentrant_channel/code/DIAGNOSTICS_SIZE.h
+    :linenos:
+    :caption: verification/tutorial_reentrant_channel/code/DIAGNOSTICS_SIZE.h
+
+Here the parameter :varlink:`numDiags` has been changed to allow a combination of up to 35 3-D diagnostic fields or 1715 (=35*49) 2-D fields.
 
 Run-time Configuration
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -476,7 +478,8 @@ PARM03 - Time stepping parameters
        :end-at:  nTimeSteps=933
        :lineno-match:
 
-- Remaining time stepping parameters are as described in earlier tutorials.
+- Remaining time stepping parameters are as described in earlier tutorials. See :numref:`sec_tutSOch_num_stab`
+  for a discussion on our choice of :varlink:`deltaT`.
 
   .. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data
        :start-at: deltaT
@@ -555,143 +558,22 @@ File :filelink:`input/data.pkg <verification/tutorial_reentrant_channel/input/da
     :linenos:
     :caption: verification/tutorial_reentrant_channel/input/data.pkg
 
-- These first two lines affect the model physics packages we've included in our build, :filelink:`pkg/rbcs`
-  and :filelink:`pkg/gmredi`. In our standard configuration, we will activate both (but in an second run, we will opt to NOT
+- These first two lines affect the model physics packages we've included in our build, :filelink:`pkg/gmredi`
+  and :filelink:`pkg/rbcs`. In our standard configuration, we will activate both (but in an second run, we will opt to NOT
   activate :filelink:`pkg/gmredi`).
 
   .. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.pkg
-       :start-at: useRBCS
-       :end-at: useGMRedi
+       :start-at: useGMRedi
+       :end-at: useRBCS
        :lineno-match:
 
-- These lines instruct the model to activate both diagnostics packages we've included in our build, :filelink:`pkg/diagnostics`
-  and :filelink:`pkg/layers`. 
+- These lines instruct the model to activate both diagnostics packages we've included in our build, :filelink:`pkg/layers`
+  and :filelink:`pkg/diagnostics`.
 
   .. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.pkg
-       :start-at: useDiag
-       :end-at: useLay
+       :start-at: useLay
+       :end-at: useDiag
        :lineno-match:
-
-File :filelink:`input/data.rbcs <verification/tutorial_reentrant_channel/input/data.rbcs>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.rbcs
-    :linenos:
-    :caption: verification/tutorial_reentrant_channel/input/data.rbcs
-
-Setting parameter :varlink:`useRBCtemp` to ``.TRUE.`` instructs :filelink:`pkg/rbcs` that we will be restoring temperature
-(and by default, it will not restore salinity, nor velocity, nor any other passive tracers). :varlink:`tauRelaxT` sets the relaxation timescale for
-3-D temperature restoring to 864,000 s or 10 days.
-The remaining two parameters
-are a filename for a 3-D mask of gridpoint locations to restore (:varlink:`relaxMaskFile`),
-and a filename for a 3-D field of restoring temperature values (:varlink:`relaxTFile`). See :ref:`below <reentrant_channel_ rbcsfiles>` for further description
-of these fields.
-
-File :filelink:`input/data.diagnostics <verification/tutorial_reentrant_channel/input/data.diagnostics>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.diagnostics
-    :linenos:
-    :caption: verification/tutorial_reentrant_channel/input/data.diagnostics
-
-DIAGNOSTICS_LIST - Diagnostic Package Choices
-#############################################
-
-See tutorial :ref:`Baroclinic Ocean Gyre <baroc_diags_list>` for a detailed explanation of parameter settings
-to customize :filelink:`data.diagnostics <verification/tutorial_reentrant_channel/input/data.diagnostics>` to a desired set of output diagnostics.
-
-We have divided the output diagnostics into several separate lists
-(recall, 2-D output fields cannot be mixed with 3-D fields!!!) The first
-two lists are quite similar to what used in tutorial :ref:`Baroclinic Ocean Gyre <baroc_diags_list>`: specifically,
-several key 2-D diagnostics are in one file (surface restoring heat flux, mixed layer depth, and free surface height),
-and several 3-D diagnostics and state variables in another (theta, velocity components, convective adjustment index).
-
-In diagnostics list 3, we specify horizontal advective heat fluxes
-(``ADVx_TH`` and ``ADVy_TH`` in :math:`x` and :math:`y` directions, respectively), vertical advective heat flux (``ADVr_TH``),
-horizontal diffusive heat fluxes (``DFxE_TH`` and ``DFyE_TH``), and vertical diffusive heat flux (``DFrI_TH`` and ``DFrE_TH``). Note the latter is
-broken into separate implicit and explicit  components, respectively, the latter of which will only be non-zero if :filelink:`pkg/gmredi` activated.
-Although we will not examine these 3-D diagnostics below when :ref:`describing the model solution <reentrant_channel_solution>`,
-they are needed to compute a zonally-averaged meridional heat transport in any diagnostic attempt at reconciling a heat budget of the model solution.
-
-.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.diagnostics
-    :start-at: fields(1:7,3
-    :end-at: filename(3
-    :lineno-match:
-
-.. _tut_SO_layers:
-
-In diagnostics list 4, we specify several :varlink:`pkg/layers` diagnostics. :varlink:`pkg/layers`
-consists of in-line calculations which separate water masses into
-specified layers, either by temperature, salinity, or density. In our setup we use a linear equation of state based solely on temperature,
-so we will diagnose layers of temperature in the model solution, as shown in :numref:`layers_trans_schematic`.
-
-.. figure:: figs/layers_trans.png
-      :width: 60%
-      :align: center
-      :alt: layers schematic
-      :name: layers_trans_schematic
-
-      Schematic of :filelink:`pkg/layers` diagnostics.
-
-.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.diagnostics
-    :start-at: fields(1:3,4
-    :end-at: fileName(4
-    :lineno-match:
-
-Diagnostic ``LaVH1TH`` is the integrated meridional mass transport in the layer;
-here we request an annual mean time average (via the ``frequency`` parameter setting),
-which will effectively output the quantity :math:`\overline{vh}` (m\ :sup:`2` s\ :sup:`-1`).
-``LaHs1TH`` is the layer thickness :math:`h` (m) calculated at "v" points (see :numref:`spatial_discrete_horizontal_grid`).
-``LaVa1TH`` is the layer average meridional velocity :math:`v` (m/s).
-These diagnostics are all 3-D fields, albeit the vertical dimension here is the layer discretization
-in temperature space, which will be defined in :filelink:`data.layers <verification/tutorial_reentrant_channel/input/data.layers>`.
-See :numref:`reentrant_channel_solution` for examples using these diagnostics to
-calculate the residual circulation and the meridional overturning circulation in density coordinates.
-
-
-DIAG_STATIS_PARMS - Diagnostic Per Level Statistics
-###################################################
-
-Here we specify statistical diagnostics of potential temperature and surface relaxation heat flux, output every ten days,
-to assess how well the model has equilibrated. See tutorial :ref:`Baroclinic Ocean Gyre <baroc_diags_list>` for a more complete description of syntax
-and output produced by these diagnostics.
-
-File :filelink:`input/data.layers <verification/tutorial_reentrant_channel/input/data.layers>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.layers
-    :linenos:
-    :caption: verification/tutorial_reentrant_channel/input/data.layers
-
-Note that parameters here include an array index of 1; it is possible to diagnose layers in both temperature and salinity simultaneously,
-for example, in which case one would add a second set of parameters with array index 2. Even though :varlink:`layers_maxNum` is set to 1
-(i.e, only allows a for single layers coordinate) in :filelink:`LAYERS_SIZE.h <verification/tutorial_reentrant_channel/code/LAYERS_SIZE.h>`,
-the index is still required.
-
-- The parameter :varlink:`layers_name` is set to ``'TH'`` which specifies temperature as our layers coordinate.
-  
-.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.layers
-    :start-at: layers_name
-    :end-at: layers_name
-    :lineno-match:
-
-- Parameter :varlink:`layers_bounds` specifies the discretization of the layers coordinate system;
-  we span from the lowest possible model temperature (i.e., the coldest restoring temperature at the
-  surface or northern boundary, -2 :sup:`o`\ C) to the warmest model temperature (i.e., the warmest
-  restoring temperature, 10 :sup:`o`\ C). The number of values here must be :varlink:`Nlayers` +1, as specified
-  in :filelink:`LAYERS_SIZE.h <verification/tutorial_reentrant_channel/code/LAYERS_SIZE.h>`.
-  Here, :varlink:`Nlayers` is set to 37, so we have 38 discrete :varlink:`layers_bounds`). 
-  :filelink:`pkg/layers` will not complain if the discretization does not span the full range of
-  existing water in the model ocean; it will simply ignore water masses (and their transport) that
-  fall outside the specified range in :varlink:`layers_bounds`.
-  Also note that the range must be monotonically *increasing*, even if this results in a layers
-  coordinate k=1:\ :varlink:`Nlayers` that proceeds in the opposite sense as the depth coordinate
-  (i.e., the k=1 layers coordinate is at the ocean bottom, whereas the k=1 depth coordinate refers to the ocean surface layer).
-
-.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.layers
-    :start-at: layers_bound
-    :end-at: 10.0,
-    :lineno-match:
 
 File :filelink:`input/data.gmredi <verification/tutorial_reentrant_channel/input/data.gmredi>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -742,6 +624,129 @@ Note that this file is ignored with :filelink:`pkg/gmredi` disabled (in :filelin
     :end-at: TRUE
     :lineno-match:
 
+.. _tut_so_channel_rbcs:
+
+File :filelink:`input/data.rbcs <verification/tutorial_reentrant_channel/input/data.rbcs>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.rbcs
+    :linenos:
+    :caption: verification/tutorial_reentrant_channel/input/data.rbcs
+
+Setting parameter :varlink:`useRBCtemp` to ``.TRUE.`` instructs :filelink:`pkg/rbcs` that we will be restoring temperature
+(and by default, it will not restore salinity, nor velocity, nor any other passive tracers). :varlink:`tauRelaxT` sets the relaxation timescale for
+3-D temperature restoring to 864,000 s or 10 days.
+The remaining two parameters
+are a filename for a 3-D mask of gridpoint locations to restore (:varlink:`relaxMaskFile`),
+and a filename for a 3-D field of restoring temperature values (:varlink:`relaxTFile`). See :ref:`below <reentrant_channel_ rbcsfiles>` for further description
+of these fields.
+
+File :filelink:`input/data.layers <verification/tutorial_reentrant_channel/input/data.layers>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.layers
+    :linenos:
+    :caption: verification/tutorial_reentrant_channel/input/data.layers
+
+:varlink:`pkg/layers` consists of in-line calculations which separate water masses into
+specified layers, either by temperature, salinity, or density. 
+Note that parameters here include an array index of 1; it is possible to diagnose layers in both temperature and salinity simultaneously,
+for example, in which case one would add a second set of parameters with array index 2. Even though :varlink:`layers_maxNum` is set to 1
+(i.e, only allows a for single layers coordinate) in :filelink:`LAYERS_SIZE.h <verification/tutorial_reentrant_channel/code/LAYERS_SIZE.h>`,
+the index is still required.
+
+- The parameter :varlink:`layers_name` is set to ``'TH'`` which specifies temperature as our layers coordinate.
+  
+.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.layers
+    :start-at: layers_name
+    :end-at: layers_name
+    :lineno-match:
+
+- Parameter :varlink:`layers_bounds` specifies the discretization of the layers coordinate system;
+  we span from the lowest possible model temperature (i.e., the coldest restoring temperature at the
+  surface or northern boundary, -2 :sup:`o`\ C) to the warmest model temperature (i.e., the warmest
+  restoring temperature, 10 :sup:`o`\ C). The number of values here must be :varlink:`Nlayers` +1, as specified
+  in :filelink:`LAYERS_SIZE.h <verification/tutorial_reentrant_channel/code/LAYERS_SIZE.h>`.
+  Here, :varlink:`Nlayers` is set to 37, so we have 38 discrete :varlink:`layers_bounds`). 
+  :filelink:`pkg/layers` will not complain if the discretization does not span the full range of
+  existing water in the model ocean; it will simply ignore water masses (and their transport) that
+  fall outside the specified range in :varlink:`layers_bounds`.
+  Also note that the range must be monotonically *increasing*, even if this results in a layers
+  coordinate k=1:\ :varlink:`Nlayers` that proceeds in the opposite sense as the depth coordinate
+  (i.e., the k=1 layers coordinate is at the ocean bottom, whereas the k=1 depth coordinate refers to the ocean surface layer).
+
+.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.layers
+    :start-at: layers_bound
+    :end-at: 10.0,
+    :lineno-match:
+
+File :filelink:`input/data.diagnostics <verification/tutorial_reentrant_channel/input/data.diagnostics>`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.diagnostics
+    :linenos:
+    :caption: verification/tutorial_reentrant_channel/input/data.diagnostics
+
+DIAGNOSTICS_LIST - Diagnostic Package Choices
+#############################################
+
+See tutorial :ref:`Baroclinic Ocean Gyre <baroc_diags_list>` for a detailed explanation of parameter settings
+to customize :filelink:`data.diagnostics <verification/tutorial_reentrant_channel/input/data.diagnostics>` to a desired set of output diagnostics.
+
+We have divided the output diagnostics into several separate lists
+(recall, 2-D output fields cannot be mixed with 3-D fields!!!) The first
+two lists are quite similar to what used in tutorial :ref:`Baroclinic Ocean Gyre <baroc_diags_list>`: specifically,
+several key 2-D diagnostics are in one file (surface restoring heat flux, mixed layer depth, and free surface height),
+and several 3-D diagnostics and state variables in another (theta, velocity components, convective adjustment index).
+
+In diagnostics list 3, we specify horizontal advective heat fluxes
+(``ADVx_TH`` and ``ADVy_TH`` in :math:`x` and :math:`y` directions, respectively), vertical advective heat flux (``ADVr_TH``),
+horizontal diffusive heat fluxes (``DFxE_TH`` and ``DFyE_TH``), and vertical diffusive heat flux (``DFrI_TH`` and ``DFrE_TH``). Note the latter is
+broken into separate implicit and explicit  components, respectively, the latter of which will only be non-zero if :filelink:`pkg/gmredi` activated.
+Although we will not examine these 3-D diagnostics below when :ref:`describing the model solution <reentrant_channel_solution>`,
+the zonal terms are needed to compute zonally-averaged meridional heat transport, and all terms needed for a
+diagnostic attempt at reconciling a heat budget of the model solution.
+
+.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.diagnostics
+    :start-at: fields(1:7,3
+    :end-at: filename(3
+    :lineno-match:
+
+.. _tut_SO_layers:
+
+In diagnostics list 4, we specify several :varlink:`pkg/layers` diagnostics. In our setup we use a linear equation of state based solely on temperature,
+so we will diagnose layers of temperature in the model solution, as shown in :numref:`layers_trans_schematic`.
+
+.. figure:: figs/layers_trans.png
+      :width: 60%
+      :align: center
+      :alt: layers schematic
+      :name: layers_trans_schematic
+
+      Schematic of :filelink:`pkg/layers` diagnostics.
+
+.. literalinclude:: ../../../verification/tutorial_reentrant_channel/input/data.diagnostics
+    :start-at: fields(1:3,4
+    :end-at: fileName(4
+    :lineno-match:
+
+Diagnostic ``LaVH1TH`` is the integrated meridional mass transport in the layer;
+here we request an annual mean time average (via the ``frequency`` parameter setting),
+which will effectively output the quantity :math:`\overline{vh}` (m\ :sup:`2` s\ :sup:`-1`).
+``LaHs1TH`` is the layer thickness :math:`h` (m) calculated at "v" points (see :numref:`spatial_discrete_horizontal_grid`).
+``LaVa1TH`` is the layer average meridional velocity :math:`v` (m/s).
+These diagnostics are all 3-D fields, albeit the vertical dimension here is the layer discretization
+in temperature space, which was defined in :filelink:`data.layers <verification/tutorial_reentrant_channel/input/data.layers>`.
+See :numref:`reentrant_channel_solution` for examples using these diagnostics to
+calculate the residual circulation and the meridional overturning circulation in density coordinates.
+
+
+DIAG_STATIS_PARMS - Diagnostic Per Level Statistics
+###################################################
+
+Here we specify statistical diagnostics of potential temperature and surface relaxation heat flux, output every ten days,
+to assess how well the model has equilibrated. See tutorial :ref:`Baroclinic Ocean Gyre <baroc_diags_list>` for a more complete description of syntax
+and output produced by these diagnostics.
 
 File :filelink:`input/eedata <verification/tutorial_reentrant_channel/input/eedata>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -787,7 +792,8 @@ File ``input/zonal_wind.50km.bin``, ``input/SST_relax.50km.bin``
 
 These files are 2-D(:math:`x,y`)
 maps of zonal wind stress :math:`\tau_{x}` (Nm\ :sup:`--2`) and surface relaxation temperature (:sup:`o`\ C),
-as generated by program :filelink:`verification/tutorial_reentrant_channel/input/gendata_50km.m`. 
+as generated by program :filelink:`verification/tutorial_reentrant_channel/input/gendata_50km.m`.
+Note that a 2-D(:math:`x,y`) file is expected even though  as specified, both :math:`\tau_{x}` and SST field are only :math:`f(y)`.
 
 .. _reentrant_channel_ rbcsfiles:
 
@@ -795,7 +801,8 @@ File ``input/temperature.50km.bin``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This file specifies a 3-D(:math:`x,y,z`) map of temperature (:sup:`o`\ C),
-as generated by :filelink:`verification/tutorial_reentrant_channel/input/gendata_50km.m`.
+as generated by :filelink:`verification/tutorial_reentrant_channel/input/gendata_50km.m` (see :numref:`channel_simulation_temp_ic`).
+Note again a 3-D(:math:`x,y,z`) file is expected despite temperature begin only :math:`f(y,z)`.
 This file is used here for two purposes: first, as specified in
 :filelink:`input/data <verification/tutorial_reentrant_channel/input/data>`, these values are used for temperature initial conditions;
 secondly, this file was also specified in :filelink:`input/data.rbcs <verification/tutorial_reentrant_channel/input/data.rbcs>`
@@ -1194,7 +1201,7 @@ to parameterize mesoscale eddies. More detailed comments comparing these solutio
 
 - Examining the residual circulation generated from :filelink:`pkg/layers` diagnostics (see :numref:`channel_MOC_eddy_layers`
   vs. :numref:`channel_bt_MOC_res_T`, :numref:`channel_bt_MOC_res_Ttoz`),
-  the non-GM solution seems quite poor, which would certainly have implications on tracer transport had any addition tracers been
+  the non-GM solution seems quite poor, which would certainly have implications on tracer transport had any additional tracers been
   included in the simulation. In the GM solution, eddies seem to only partially
   cancel the cell forced by northward Ekman transport (Deacon Cell). In the eddying solution, the residual circulation
   is oriented in the opposite sense: eddy fluxes resulting from baroclinic instability due to
@@ -1210,8 +1217,14 @@ to parameterize mesoscale eddies. More detailed comments comparing these solutio
 - As might be suggested by the orientation of the residual MOC, in the eddying solution temperature relaxation
   in the sponge layer is associated with heat gain in the thermocline.
   In the coarse runs, however, the sponge layer is effectively cooling, particularly in the non-GM run.
-  Unfortunately, at this time there is no diagnostic available in :filelink:`pkg/rbcs` which tabulates these fluxes, so to determine this information,
-  one must compare model potential temperature to the restored temperature.
+  Although at present there is no diagnostic available in :filelink:`pkg/rbcs` which directly tabulates these fluxes, 
+  computing them is quite simple: the heat flux (in watts) into a grid cell in the sponge layer is computed as
+  :math:`\rho \text{C}_p {\cal V}_\theta * \frac{\theta (i,j,k) - \theta_{rbc} (i,j,k)}{\tau_T}`
+  where :math:`\text{C}_p` is :varlink:`HeatCapacity_Cp` (3994.0 J kg\ :sup:`-1`\ K\ :sup:`-1` by default), :math:`{\cal V}_\theta` is the grid cell volume
+  (:varlink:`dxG`\ (i,j) * :varlink:`dyG`\ (i,j) * :varlink:`drF`\ (k) * :varlink:`hFacC`\ (i,j,k); see :numref:`reentrant_channel_bathy_file` for definition of :varlink:`hFacC`),
+  :math:`\theta (i,j,k)` is gridpoint potential temperature (:sup:`o`\ C),
+  :math:`\theta (i,j,k)_{rbc}` is gridpoint relaxation potential temperature (:sup:`o`\ C, as prescribed in file ``input/temperature.50km.bin``),
+  and :math:`\tau_T` is the restoring timescale :varlink:`tauRelaxT` (as set in :ref:`data.rbcs <tut_so_channel_rbcs>` to 864,000 seconds or 10 days).
 
 .. [#] Note it is not stricly necessary to remove :filelink:`pkg/gmredi` from your high-resolution build -- however, if kept in the list of packages included in
        :filelink:`packages.conf <verification/tutorial_reentrant_channe/code/packages.conf>`, it then becomes necessary to deactivate
