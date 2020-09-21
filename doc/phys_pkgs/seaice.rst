@@ -289,6 +289,8 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_useMultDimSnow`   | TRUE                         | use same fixed pdf for snow as for multi-thickness-category ice         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICE_eccen`            | 2.0                          | Ellipse aspect ratio e                                                  |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
 
 
 The following dynamical ice thickness distribution and ridging parameters in :numref:`tab_phys_pkg_seaice_ridging`
@@ -524,7 +526,8 @@ with the constants :math:`P^{\ast}` (run-time parameter
 :math:`\zeta` and :math:`\eta` are functions of ice strain rate
 invariants and ice strength such that the principal components of the
 stress lie on an elliptical yield curve with the ratio of major to
-minor axis :math:`e` equal to :math:`2`; they are given by:
+minor axis :math:`e` (run-time parameter
+:varlink:`SEAICE_eccen`) equal to :math:`2`; they are given by:
 
 .. math::
    \begin{aligned}
