@@ -1,5 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
+o 2+2 tests:
+ - bug fix: replace some non-standard sed command with POSIX compatible syntax
 o doc:
   - add new SO channel tutorial
 o optim:
