@@ -1,7 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
-o tools/do_tst_2+2 and tst_2+2:
+
+o tools/do_tst_2+2 & tst_2+2:
   - bug fix: replace some non-standard sed command with POSIX compatible syntax
+  - remove second blank at beginning of 2 new lines in file "data".
 o doc:
   - add new SO channel tutorial
   - update pkg/shelfice documentation
