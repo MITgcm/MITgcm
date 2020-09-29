@@ -175,16 +175,20 @@ C
 cph break artificial dependencies
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        deltaC (:,:,bi,bj) = 0. _d 0
-        press  (:,:,bi,bj) = 0. _d 0
-        zeta   (:,:,bi,bj) = 0. _d 0
-        zetaZ  (:,:,bi,bj) = 0. _d 0
-        eta    (:,:,bi,bj) = 0. _d 0
-        etaZ   (:,:,bi,bj) = 0. _d 0
-        uIceC  (:,:,bi,bj) = 0. _d 0
-        vIceC  (:,:,bi,bj) = 0. _d 0
-        uIceNm1(:,:,bi,bj) = 0. _d 0
-        vIceNm1(:,:,bi,bj) = 0. _d 0
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          deltaC (i,j,bi,bj) = 0. _d 0
+          press  (i,j,bi,bj) = 0. _d 0
+          zeta   (i,j,bi,bj) = 0. _d 0
+          zetaZ  (i,j,bi,bj) = 0. _d 0
+          eta    (i,j,bi,bj) = 0. _d 0
+          etaZ   (i,j,bi,bj) = 0. _d 0
+          uIceC  (i,j,bi,bj) = 0. _d 0
+          vIceC  (i,j,bi,bj) = 0. _d 0
+          uIceNm1(i,j,bi,bj) = 0. _d 0
+          vIceNm1(i,j,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
        ENDDO
       ENDDO
 #endif
@@ -192,8 +196,12 @@ cph break artificial dependencies
 C     initialise fractional areas at velocity points
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        areaW(:,:,bi,bj) = 1. _d 0
-        areaS(:,:,bi,bj) = 1. _d 0
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          areaW(i,j,bi,bj) = 1. _d 0
+          areaS(i,j,bi,bj) = 1. _d 0
+          ENDDO
+         ENDDO
         areaMinLoc = 0. _d 0
         IF ( SEAICEscaleSurfStress ) THEN
          areaMinLoc = 1. _d -10
@@ -214,15 +222,19 @@ C     this is the rhs contribution of the time derivative and
 C     does not change in the iteration
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        uIceNm1(:,:,bi,bj) = uIce(:,:,bi,bj)
-        vIceNm1(:,:,bi,bj) = vIce(:,:,bi,bj)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          uIceNm1(i,j,bi,bj) = uIce(i,j,bi,bj)
+          vIceNm1(i,j,bi,bj) = vIce(i,j,bi,bj)
 C     this contribution should be here, but that changes results
-CML        FORCEX0(:,:,bi,bj)=FORCEX0(:,:,bi,bj)
-CML     &       +seaiceMassU(:,:,bi,bj)*recip_deltaT
-CML     &       *uIceNm1(:,:,bi,bj)
-CML        FORCEY0(:,:,bi,bj)=FORCEY0(:,:,bi,bj)
-CML     &       +seaiceMassV(:,:,bi,bj)*recip_deltaT
-CML     &       *vIceNm1(:,:,bi,bj)
+CML          FORCEX0(i,j,bi,bj)=FORCEX0(i,j,bi,bj)
+CML     &         +seaiceMassU(i,j,bi,bj)*recip_deltaT
+CML     &         *uIceNm1(i,j,bi,bj)
+CML          FORCEY0(i,j,bi,bj)=FORCEY0(i,j,bi,bj)
+CML     &         +seaiceMassV(i,j,bi,bj)*recip_deltaT
+CML     &         *vIceNm1(i,j,bi,bj)
+         ENDDO
+        ENDDO
        ENDDO
       ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -275,25 +287,38 @@ C SET SOME VALUES
        DO bi=myBxLo(myThid),myBxHi(myThid)
         IF ( ipass .EQ. 1 ) THEN
 C     This is the predictor time step
-         uIceC(:,:,bi,bj) = uIce(:,:,bi,bj)
-         vIceC(:,:,bi,bj) = vIce(:,:,bi,bj)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uIceC(i,j,bi,bj) = uIce(i,j,bi,bj)
+           vIceC(i,j,bi,bj) = vIce(i,j,bi,bj)
+          ENDDO
+         ENDDO
         ELSEIF ( ipass .EQ. 2 .AND. SEAICEnonLinIterMax .LE. 2 ) THEN
 C     This is the modified Euler step
-         uIce (:,:,bi,bj)=HALF*( uIce(:,:,bi,bj) + uIceNm1(:,:,bi,bj) )
-         vIce (:,:,bi,bj)=HALF*( vIce(:,:,bi,bj) + vIceNm1(:,:,bi,bj) )
-         uIceC(:,:,bi,bj)=uIce(:,:,bi,bj)
-         vIceC(:,:,bi,bj)=vIce(:,:,bi,bj)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uIce (i,j,bi,bj)=HALF*( uIce(i,j,bi,bj)+uIceNm1(i,j,bi,bj) )
+           vIce (i,j,bi,bj)=HALF*( vIce(i,j,bi,bj)+vIceNm1(i,j,bi,bj) )
+           uIceC(i,j,bi,bj)=uIce(i,j,bi,bj)
+           vIceC(i,j,bi,bj)=vIce(i,j,bi,bj)
+          ENDDO
+         ENDDO
         ELSE
 C     This is the case for SEAICEnonLinIterMax > 2, and here we use
 C     a different iterative scheme. u/vIceC = u/vIce is unstable, and
 C     different stabilisation methods are possible.
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
 C     This is stable but slow to converge.
-C        uIceC(:,:,bi,bj) = HALF*( uIce(:,:,bi,bj)+uIceNm1(:,:,bi,bj) )
-C        vIceC(:,:,bi,bj) = HALF*( vIce(:,:,bi,bj)+vIceNm1(:,:,bi,bj) )
+C          uIceC(i,j,bi,bj) = HALF*(uIce(i,j,bi,bj)+uIceNm1(i,j,bi,bj))
+C          vIceC(i,j,bi,bj) = HALF*(vIce(i,j,bi,bj)+vIceNm1(i,j,bi,bj))
 C     This converges slightly faster the the previous one.
-         uIceC(:,:,bi,bj) = HALF*( uIce(:,:,bi,bj) + uIceC(:,:,bi,bj) )
-         vIceC(:,:,bi,bj) = HALF*( vIce(:,:,bi,bj) + vIceC(:,:,bi,bj) )
+           uIceC(i,j,bi,bj) = HALF*( uIce(i,j,bi,bj)+uIceC(i,j,bi,bj) )
+           vIceC(i,j,bi,bj) = HALF*( vIce(i,j,bi,bj)+vIceC(i,j,bi,bj) )
+          ENDDO
+         ENDDO
         ENDIF
+C     bi/bj-loops
        ENDDO
       ENDDO
 
@@ -345,10 +370,14 @@ C
           zetaMinusEta(i,j,bi,bj) = ZETA(i,j,bi,bj)-ETA (i,j,bi,bj)
          ENDDO
         ENDDO
-        dragSym(:,:,bi,bj) = DWATN(:,:,bi,bj)*COSWAT
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          dragSym(i,j,bi,bj) = DWATN(i,j,bi,bj)*COSWAT
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
-     &       +CbotC(:,:,bi,bj)
+     &         +CbotC(i,j,bi,bj)
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
+         ENDDO
+        ENDDO
        ENDDO
       ENDDO
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -446,8 +475,12 @@ C
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef SEAICE_ALLOW_MOM_ADVECTION
         IF ( SEAICEmomAdvection ) THEN
-         gUmom(:,:) = 0. _d 0
-         gVmom(:,:) = 0. _d 0
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           gUmom(i,j) = 0. _d 0
+           gVmom(i,j) = 0. _d 0
+          ENDDO
+         ENDDO
          CALL SEAICE_MOM_ADVECTION(
      I        bi,bj,iMin,iMax,jMin,jMax,
      I        uIceC, vIceC,
@@ -754,7 +787,7 @@ C     end bi,bj-loops
 CADJ STORE uice(:,:,bi,bj) = comlev1_bibj_lsr,kind=isbyte,key=itmpkey3
 CADJ STORE vice(:,:,bi,bj) = comlev1_bibj_lsr,kind=isbyte,key=itmpkey3
 #endif /* ALLOW_AUTODIFF_TAMC */
-C-jmc: get less TAF warnings when always (no if doIterate) saving uIce,vIce:
+C-jmc: get fewer TAF warnings when always (no if doIterate) saving uIce,vIce:
 C     save u/vIce prior to iteration
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
@@ -1489,8 +1522,12 @@ C     i,j  :: Loop counters
 CEOP
 
       kSrf = 1
-      sig11(:,:) = 0. _d 0
-      sig12(:,:) = 0. _d 0
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        sig11(i,j) = 0. _d 0
+        sig12(i,j) = 0. _d 0
+       ENDDO
+      ENDDO
 C     contribution of sigma11 to rhs
       DO j=jMin,jMax
        DO i=iMin-1,iMax
@@ -1616,8 +1653,12 @@ C     i,j  :: Loop counters
 CEOP
 
       kSrf = 1
-      sig22(:,:) = 0. _d 0
-      sig12(:,:) = 0. _d 0
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        sig22(i,j) = 0. _d 0
+        sig12(i,j) = 0. _d 0
+       ENDDO
+      ENDDO
 
 C     contribution of sigma22 to rhs
       DO j=jMin-1,jMax
@@ -1756,8 +1797,12 @@ C     i,j  :: Loop counters
       _RL CUU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     Need to initialize local arrays
-      URT(:,:) = 0. _d 0
-      CUU(:,:) = 0. _d 0
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        URT(i,j) = 0. _d 0
+        CUU(i,j) = 0. _d 0
+       ENDDO
+      ENDDO
 #ifdef SEAICE_LSR_ZEBRA
       DO k=0,1
       jMinLoc = jMin+k
@@ -1897,8 +1942,12 @@ C     i,j  :: Loop counters
       _RL CVV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     Need to initialize local arrays
-      VRT(:,:) = 0. _d 0
-      CVV(:,:) = 0. _d 0
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        VRT(i,j) = 0. _d 0
+        CVV(i,j) = 0. _d 0
+       ENDDO
+      ENDDO
 #ifdef SEAICE_LSR_ZEBRA
       DO k=0,1
       iMinLoc = iMin+k
