@@ -144,7 +144,6 @@ C--   generic 2D control variables
 
 c-- docycle
 
-        replicated_nrec=endrec
         replicated_nrec=diffrec
         replicated_ntimes=0
         do k2 = 1, maxCtrlProc
