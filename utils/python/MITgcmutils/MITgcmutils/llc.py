@@ -630,6 +630,10 @@ def div(*arguments):
         nt, nk, nju, niu, njv, niv =  _getDims(u,v)
         hfw = np.ones((nk,nju,niu))
         hfs = np.ones((nk,njv,niv))
+    elif arglen == 6:
+        u,v,hfw,hfs,dxg,dyg = arguments[:]
+        nt, nk, nju, niu, njv, niv =  _getDims(u,v)
+        rac = dxg*dyg
     else:
         raise ValueError('wrong number of arguments')
 
@@ -652,8 +656,8 @@ def div(*arguments):
             uflx = faces(np.zeros((nju,niv)))
             vflx = faces(np.zeros((nju,niv)))
             for iface in range(len(uf)-1):
-                uflx[iface] = uf[iface]*dxgf[iface]*hfwf[iface]
-                vflx[iface] = vf[iface]*dxgf[iface]*hfwf[iface]
+                uflx[iface] = uf[iface]*dygf[iface]*hfwf[iface]
+                vflx[iface] = vf[iface]*dxgf[iface]*hfsf[iface]
 
             divf = faces(np.zeros((nju,niu)))
             for iface in range(len(uf)-1):
@@ -733,10 +737,10 @@ def uv2c(*arguments):
                     uk[:,-1] = uf[3][:,   0] + uf[iface][:,-1]
                     vk[-1,:] = uf[4][::-1,0] + vf[iface][-1,:]
                 if iface==3:
-                    uk[:,-1] = 2.*uk[:,-1] # hack
+                    uk[:,-1] = 0. # hack
                     vk[-1,:] = vf[4][0,:]    + vf[iface][-1,:]
                 if iface==4:
-                    uk[:,-1] = 2.*uk[:,-1] # hack
+                    uk[:,-1] = 0. # hack
                     vk[-1,:] = uf[0][::-1,0] + vf[iface][-1,:]
                 # putting it all together
                 ucf[iface] = 0.5*uk
