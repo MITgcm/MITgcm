@@ -546,3 +546,203 @@ def pcol(*arguments, **kwargs):
         im.set_clim(cax[0],cax[1])
 
     return ph
+
+def _getDims(u,v):
+    lenu = len(np.shape(u))
+    nt = 1
+    nk = 1
+    if lenu == 2:
+        nju, niu = np.shape(u)
+        njv, niv = np.shape(v)
+    elif lenu == 3:
+        nk, nju, niu = np.shape(u)
+        nk, njv, niv = np.shape(v)
+    elif lenu == 4:
+        nt, nk, nju, niu = np.shape(u)
+        nt, nk, njv, niv = np.shape(v)
+    else:
+        raise ValueError('Can only handle 2 to 4 dimensions')
+
+    if nju!=13*niu:
+        raise ValueError('nju=%i not equal 13*niu, niu=%i\n'%(nju,niu) +
+                         'This is not and NOT an llc grid.')
+
+    return nt, nk, nju, niu, njv, niv
+
+def div(*arguments):
+    """
+    Compute divergence of vector field on llc grid
+
+    Call signatures::
+
+       divergence = div(U,V,HFW,HFS,DXG,DYG,RAC)
+       divergence = div(U,V)
+       divergence = div(U,V,DXG,DYG)
+       divergence = div(U,V,DXG,DYG,RAC)
+
+    Parameters
+    ----------
+    U   : array-like (timelevel,depthlevel,jpoint,jpoint)
+          x-component of vector field at u-point
+
+    V   : array-like
+          y-component of vector field at v-point
+
+    HFW : array-like (depthlevel,jpoint,jpoint)
+          hFac at u-point
+
+    HFS : array-like (jpoint,jpoint)
+          hFac at v-point
+
+    DXG : array-like (jpoint,jpoint)
+          grid spacing in x across v-point
+
+    DYG : array-like (depthlevel,jpoint,jpoint)
+          grid spacing in y across u-point
+
+    RAC : array-like (jpoint,jpoint)
+          grid cell area
+
+    """
+
+    arglen = len(arguments)
+    if arglen > 7:
+        raise ValueError('too many arguments, maximum of 7 allowed')
+    elif arglen == 7:
+        u,v,hfw,hfs,dxg,dyg,rac = arguments[:]
+        nt, nk, nju, niu, njv, niv =  _getDims(u,v)
+    elif arglen == 2:
+        u,v = arguments[:]
+        nt, nk, nju, niu, njv, niv =  _getDims(u,v)
+        hfw = np.ones((nk,nju,niu))
+        hfs = np.ones((nk,njv,niv))
+        dxg = np.ones((nju,niu))
+        dyg = np.ones((njv,niv))
+        rac = dxg*dyg
+    elif arglen == 4:
+        u,v,dxg,dyg = arguments[:]
+        nt, nk, nju, niu, njv, niv =  _getDims(u,v)
+        hfw = np.ones((nk,nju,niu))
+        hfs = np.ones((nk,njv,niv))
+        rac = dxg*dyg
+    elif arglen == 5:
+        u,v,dxg,dyg,rac = arguments[:]
+        nt, nk, nju, niu, njv, niv =  _getDims(u,v)
+        hfw = np.ones((nk,nju,niu))
+        hfs = np.ones((nk,njv,niv))
+    else:
+        raise ValueError('wrong number of arguments')
+
+    u   = u.reshape(nt,nk,nju,niu)
+    v   = v.reshape(nt,nk,njv,niv)
+    hfw = hfw.reshape(nk,nju,niu)
+    hfs = hfs.reshape(nk,njv,niv)
+
+    dxgf = faces(dxg)
+    dygf = faces(dyg)
+    racf = faces(rac)
+
+    divergence = np.zeros(u.shape)
+    for t in range(0,nt):
+        for k in range(0,nk):
+            uf   = faces(u[t,k,:,:])
+            vf   = faces(v[t,k,:,:])
+            hfwf = faces(hfw[k,:,:])
+            hfsf = faces(hfs[k,:,:])
+            uflx = faces(np.zeros((nju,niv)))
+            vflx = faces(np.zeros((nju,niv)))
+            for iface in range(len(uf)-1):
+                uflx[iface] = uf[iface]*dxgf[iface]*hfwf[iface]
+                vflx[iface] = vf[iface]*dxgf[iface]*hfwf[iface]
+
+            divf = faces(np.zeros((nju,niu)))
+            for iface in range(len(uf)-1):
+                du   = np.roll(uflx[iface],-1,axis=-1)-uflx[iface]
+                dv   = np.roll(vflx[iface],-1,axis=-2)-vflx[iface]
+                # now take care of the connectivity
+                if iface==0:
+                    du[:,-1] = uflx[1][:,   0] - uflx[iface][:,-1]
+                    dv[-1,:] = uflx[2][::-1,0] - vflx[iface][-1,:]
+                if iface==1:
+                    du[:,-1] = vflx[3][0,::-1] - uflx[iface][:,-1]
+                    dv[-1,:] = vflx[2][0,:]    - vflx[iface][-1,:]
+                if iface==2:
+                    du[:,-1] = uflx[3][:,   0] - uflx[iface][:,-1]
+                    dv[-1,:] = uflx[4][::-1,0] - vflx[iface][-1,:]
+                if iface==3:
+                    du[:,-1] = 0. # hack
+                    dv[-1,:] = vflx[4][0,:]    - vflx[iface][-1,:]
+                if iface==4:
+                    du[:,-1] = 0. # hack
+                    dv[-1,:] = uflx[0][::-1,0] - vflx[iface][-1,:]
+                # putting it all together
+                divf[iface] = (du + dv)/racf[iface]
+
+            divergence[t,k,:,:] = faces2mds(divf)
+
+    return np.squeeze(divergence)
+
+
+def uv2c(*arguments):
+    """
+    Average vector component (u,v) to center points on llc grid
+
+    Call signatures::
+
+       uc,vc = uv2c(U,V)
+
+    Parameters
+    ----------
+    U   : array-like (timelevel,depthlevel,jpoint,jpoint)
+          x-component of vector field at u-point
+
+    V   : array-like
+          y-component of vector field at v-point
+
+    """
+
+    arglen = len(arguments)
+    if arglen == 2:
+        u,v = arguments[:]
+        nt, nk, nju, niu, njv, niv =  _getDims(u,v)
+    else:
+        raise ValueError('wrong number of arguments, only 2 allowed')
+
+    u   = u.reshape(nt,nk,nju,niu)
+    v   = v.reshape(nt,nk,njv,niv)
+
+    uc = np.zeros(u.shape)
+    vc = np.zeros(v.shape)
+    for t in range(0,nt):
+        for k in range(0,nk):
+            uf  = faces(u[t,k,:,:])
+            vf  = faces(v[t,k,:,:])
+            ucf = faces(np.zeros((nju,niu)))
+            vcf = faces(np.zeros((njv,niv)))
+            for iface in range(len(uf)-1):
+                uk = np.roll(uf[iface],-1,axis=-1)+uf[iface]
+                vk = np.roll(vf[iface],-1,axis=-2)+vf[iface]
+                # now take care of the connectivity
+                if iface==0:
+                    uk[:,-1] = uf[1][:,   0] + uf[iface][:,-1]
+                    vk[-1,:] = uf[2][::-1,0] + vf[iface][-1,:]
+                if iface==1:
+                    uk[:,-1] = vf[3][0,::-1] + uf[iface][:,-1]
+                    vk[-1,:] = vf[2][0,:]    + vf[iface][-1,:]
+                if iface==2:
+                    uk[:,-1] = uf[3][:,   0] + uf[iface][:,-1]
+                    vk[-1,:] = uf[4][::-1,0] + vf[iface][-1,:]
+                if iface==3:
+                    uk[:,-1] = 2.*uk[:,-1] # hack
+                    vk[-1,:] = vf[4][0,:]    + vf[iface][-1,:]
+                if iface==4:
+                    uk[:,-1] = 2.*uk[:,-1] # hack
+                    vk[-1,:] = uf[0][::-1,0] + vf[iface][-1,:]
+                # putting it all together
+                ucf[iface] = 0.5*uk
+                vcf[iface] = 0.5*vk
+
+            uc[t,k,:,:] = faces2mds(ucf)
+            vc[t,k,:,:] = faces2mds(vcf)
+
+    return np.squeeze(uc), np.squeeze(vc)
