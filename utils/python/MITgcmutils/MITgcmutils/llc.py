@@ -654,27 +654,16 @@ def div(*arguments):
     hfw = hfw.reshape(nk,nju,niu)
     hfs = hfs.reshape(nk,njv,niv)
 
-    dxgf = faces(dxg)
-    dygf = faces(dyg)
     racf = faces(rac)
-
     divergence = np.zeros(u.shape)
-    for t in range(0,nt):
-        for k in range(0,nk):
-            uf   = faces(u[t,k,:,:])
-            vf   = faces(v[t,k,:,:])
-            hfwf = faces(hfw[k,:,:])
-            hfsf = faces(hfs[k,:,:])
-            uflx = faces(np.zeros((nju,niv)))
-            vflx = faces(np.zeros((nju,niv)))
-            for iface in range(len(uf)-1):
-                uflx[iface] = uf[iface]*dygf[iface]*hfwf[iface]
-                vflx[iface] = vf[iface]*dxgf[iface]*hfsf[iface]
-
+    for t in range(nt):
+        for k in range(nk):
+            uflx = faces(u[t,k,:,:]*hfw[k,:,:]*dyg)
+            vflx = faces(v[t,k,:,:]*hfs[k,:,:]*dxg)
             divf = faces(np.zeros((nju,niu)))
-            for iface in range(len(uf)-1):
-                du   = np.roll(uflx[iface],-1,axis=-1)-uflx[iface]
-                dv   = np.roll(vflx[iface],-1,axis=-2)-vflx[iface]
+            for iface in range(len(uflx)-1):
+                du = np.roll(uflx[iface],-1,axis=-1)-uflx[iface]
+                dv = np.roll(vflx[iface],-1,axis=-2)-vflx[iface]
                 # now take care of the connectivity
                 if iface==0:
                     du[:,-1] = uflx[1][:,   0] - uflx[iface][:,-1]
@@ -729,8 +718,8 @@ def uv2c(*arguments):
 
     uc = np.zeros(u.shape)
     vc = np.zeros(v.shape)
-    for t in range(0,nt):
-        for k in range(0,nk):
+    for t in range(nt):
+        for k in range(nk):
             uf  = faces(u[t,k,:,:])
             vf  = faces(v[t,k,:,:])
             ucf = faces(np.zeros((nju,niu)))
@@ -754,7 +743,7 @@ def uv2c(*arguments):
                 if iface==4:
                     uk[:,-1] = 0. # hack
                     vk[-1,:] = uf[0][::-1,0] + vf[iface][-1,:]
-                # putting it all together
+                #
                 ucf[iface] = 0.5*uk
                 vcf[iface] = 0.5*vk
 
