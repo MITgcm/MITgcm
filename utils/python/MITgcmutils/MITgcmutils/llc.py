@@ -548,20 +548,32 @@ def pcol(*arguments, **kwargs):
     return ph
 
 def _getDims(u,v):
+    """
+    Retrieve dimensions of input fields and do some sanity checks
+    """
+
     lenu = len(np.shape(u))
     nt = 1
     nk = 1
+    ntt = 1
+    nkk = 1
     if lenu == 2:
         nju, niu = np.shape(u)
         njv, niv = np.shape(v)
     elif lenu == 3:
         nk, nju, niu = np.shape(u)
-        nk, njv, niv = np.shape(v)
+        nkk,njv, niv = np.shape(v)
     elif lenu == 4:
         nt, nk, nju, niu = np.shape(u)
-        nt, nk, njv, niv = np.shape(v)
+        ntt,nkk,njv, niv = np.shape(v)
     else:
         raise ValueError('Can only handle 2 to 4 dimensions')
+
+    if nju!=njv or niu!=niv or nk!=nkk or nt!=ntt:
+        raise ValueError('input arrays must have the same dimensions.\n'
+                         + 'u.shape = (%i,%i,%i,%i)\n'%(nt,nk,nju,niu)
+                         + 'v.shape = (%i,%i,%i,%i)'%(ntt,nkk,njv,niv)
+                         )
 
     if nju!=13*niu:
         raise ValueError('nju=%i not equal 13*niu, niu=%i\n'%(nju,niu) +
