@@ -43,11 +43,11 @@ C myThid   (integer):: my Thread Id number
 CEOP
 
 C !LOCAL VARIABLES:
-      INTEGER i,j,bi,bj
-      INTEGER iG, jG
-      INTEGER iBase, jBase
+      INTEGER i,bi,bj
+      INTEGER iG
+      INTEGER iBase
 #ifdef ALLOW_EXCH2
-      INTEGER iGjLoc, jGjLoc
+      INTEGER iGjLoc
       INTEGER tN
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_USE_MPI

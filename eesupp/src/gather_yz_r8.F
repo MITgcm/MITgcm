@@ -43,11 +43,11 @@ C myThid   (integer):: my Thread Id number
 CEOP
 
 C !LOCAL VARIABLES:
-      INTEGER i,j,bi,bj
-      INTEGER iG, jG
-      INTEGER iBase, jBase
+      INTEGER j,bi,bj
+      INTEGER jG
+      INTEGER jBase
 #ifdef ALLOW_EXCH2
-      INTEGER iGjLoc, jGjLoc
+      INTEGER jGjLoc
       INTEGER tN
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_USE_MPI
@@ -77,11 +77,9 @@ C     safer to reset to zero to avoid unknown values in output file
              tN = W2_myTileList(bi,bj)
              IF  ( exch2_tNy(tN) .GT. ySize ) THEN
 C-           tile y-size larger than glob-size : make a long line
-               !iGjLoc = exch2_mydNx(tN)
                jGjLoc = 0
              ELSE
 C-           default (face fit into global-IO-array)
-               !iGjLoc = 0
                jGjLoc = 1
              ENDIF
 
