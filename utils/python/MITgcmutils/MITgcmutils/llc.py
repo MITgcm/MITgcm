@@ -579,88 +579,83 @@ def _getDims(u,v):
         raise ValueError('nju=%i not equal 13*niu, niu=%i\n'%(nju,niu) +
                          'This is not and NOT an llc grid.')
 
-    return nt, nk, nju, niu, njv, niv
+    return nt, nk, nju, niu
 
-def div(*arguments):
+def div(*args, dxg=None, dyg=None, rac=None, hfw=None, hfs=None):
     """
     Compute divergence of vector field on llc grid
 
     Call signatures::
 
-       divergence = div(U,V,HFW,HFS,DXG,DYG,RAC)
-       divergence = div(U,V)
-       divergence = div(U,V,DXG,DYG)
-       divergence = div(U,V,DXG,DYG,RAC)
+       divergence = div(U, V, dxg=DXG, dyg=DYG, rac=RAC, hfw=HFW, hfs=HFS)
+       divergence = div(U, V)
+       divergence = div(U, V, dxg=DXG, dyg=DYG)
+       divergence = div(U, V, dxg=DXG, dyg=DYG, rac=RAC)
+       divergence = div(U, V, dxg=DXG, dyg=DYG, hfw=HFW, hfs=HFS)
 
     Parameters
     ----------
-    U   : array-like (timelevel,depthlevel,jpoint,jpoint)
+    U   : array-like (timelevel,depthlevel,jpoint,ipoint)
           x-component of vector field at u-point
 
-    V   : array-like
+    V   : array-like (timelevel,depthlevel,jpoint,ipoint)
           y-component of vector field at v-point
 
-    HFW : array-like (depthlevel,jpoint,jpoint)
+    optional parameters (default to one)
+    ------------------------------------
+    HFW : array-like (depthlevel,jpoint,ipoint)
           hFac at u-point
 
-    HFS : array-like (jpoint,jpoint)
+    HFS : array-like (depthlevel,jpoint,ipoint)
           hFac at v-point
 
-    DXG : array-like (jpoint,jpoint)
+    DXG : array-like (jpoint,ipoint)
           grid spacing in x across v-point
 
-    DYG : array-like (depthlevel,jpoint,jpoint)
+    DYG : array-like (depthlevel,jpoint,ipoint)
           grid spacing in y across u-point
 
-    RAC : array-like (jpoint,jpoint)
-          grid cell area
+    RAC : array-like (jpoint,ipoint)
+          grid cell area, default: RAC = DXG*DYG
 
     """
 
-    arglen = len(arguments)
-    if arglen > 7:
-        raise ValueError('too many arguments, maximum of 7 allowed')
-    elif arglen == 7:
-        u,v,hfw,hfs,dxg,dyg,rac = arguments[:]
-        nt, nk, nju, niu, njv, niv =  _getDims(u,v)
-    elif arglen == 2:
-        u,v = arguments[:]
-        nt, nk, nju, niu, njv, niv =  _getDims(u,v)
-        hfw = np.ones((nk,nju,niu))
-        hfs = np.ones((nk,njv,niv))
-        dxg = np.ones((nju,niu))
-        dyg = np.ones((njv,niv))
-        rac = dxg*dyg
-    elif arglen == 4:
-        u,v,dxg,dyg = arguments[:]
-        nt, nk, nju, niu, njv, niv =  _getDims(u,v)
-        hfw = np.ones((nk,nju,niu))
-        hfs = np.ones((nk,njv,niv))
-        rac = dxg*dyg
-    elif arglen == 5:
-        u,v,dxg,dyg,rac = arguments[:]
-        nt, nk, nju, niu, njv, niv =  _getDims(u,v)
-        hfw = np.ones((nk,nju,niu))
-        hfs = np.ones((nk,njv,niv))
-    elif arglen == 6:
-        u,v,hfw,hfs,dxg,dyg = arguments[:]
-        nt, nk, nju, niu, njv, niv =  _getDims(u,v)
-        rac = dxg*dyg
+    arglen = len(args)
+    if arglen == 2:
+        u,v = args[:]
     else:
-        raise ValueError('wrong number of arguments')
+        print(__doc__)
+        raise ValueError('need two 2 arguments u and v + *kwargs')
 
-    u   = u.reshape(nt,nk,nju,niu)
-    v   = v.reshape(nt,nk,njv,niv)
-    hfw = hfw.reshape(nk,nju,niu)
-    hfs = hfs.reshape(nk,njv,niv)
+    nt, nk, nj, ni =  _getDims(u,v)
 
-    racf = faces(rac)
+    if dxg is None:
+        dxg = np.ones((nj,ni))
+
+    if dyg is None:
+        dyg = np.ones((nj,ni))
+
+    if rac is None:
+        rac = dxg*dyg
+
+    if hfw is None:
+        hfw = np.ones((nk,nj,ni))
+
+    if hfs is None:
+        hfs = np.ones((nk,nj,ni))
+
+    u   = u.reshape(nt,nk,nj,ni)
+    v   = v.reshape(nt,nk,nj,ni)
+    hfw = hfw.reshape(nk,nj,ni)
+    hfs = hfs.reshape(nk,nj,ni)
+
+    recip_racf = faces(1./np.where(rac==0.,np.Inf,rac))
     divergence = np.zeros(u.shape)
     for t in range(nt):
         for k in range(nk):
             uflx = faces(u[t,k,:,:]*hfw[k,:,:]*dyg)
             vflx = faces(v[t,k,:,:]*hfs[k,:,:]*dxg)
-            divf = faces(np.zeros((nju,niu)))
+            divf = faces(np.zeros((nj,ni)))
             for iface in range(len(uflx)-1):
                 du = np.roll(uflx[iface],-1,axis=-1)-uflx[iface]
                 dv = np.roll(vflx[iface],-1,axis=-2)-vflx[iface]
@@ -681,14 +676,14 @@ def div(*arguments):
                     du[:,-1] = 0. # hack
                     dv[-1,:] = uflx[0][::-1,0] - vflx[iface][-1,:]
                 # putting it all together
-                divf[iface] = (du + dv)/racf[iface]
+                divf[iface] = (du + dv)*recip_racf[iface]
 
             divergence[t,k,:,:] = faces2mds(divf)
 
     return np.squeeze(divergence)
 
 
-def uv2c(*arguments):
+def uv2c(*args):
     """
     Average vector component (u,v) to center points on llc grid
 
@@ -698,23 +693,23 @@ def uv2c(*arguments):
 
     Parameters
     ----------
-    U   : array-like (timelevel,depthlevel,jpoint,jpoint)
+    U   : array-like (timelevel,depthlevel,jpoint,ipoint)
           x-component of vector field at u-point
 
-    V   : array-like
+    V   : array-like (timelevel,depthlevel,jpoint,ipoint)
           y-component of vector field at v-point
 
     """
 
-    arglen = len(arguments)
+    arglen = len(args)
     if arglen == 2:
-        u,v = arguments[:]
-        nt, nk, nju, niu, njv, niv =  _getDims(u,v)
+        u,v = args[:]
+        nt, nk, nj, ni =  _getDims(u,v)
     else:
         raise ValueError('wrong number of arguments, only 2 allowed')
 
-    u   = u.reshape(nt,nk,nju,niu)
-    v   = v.reshape(nt,nk,njv,niv)
+    u   = u.reshape(nt,nk,nj,ni)
+    v   = v.reshape(nt,nk,nj,ni)
 
     uc = np.zeros(u.shape)
     vc = np.zeros(v.shape)
@@ -722,8 +717,8 @@ def uv2c(*arguments):
         for k in range(nk):
             uf  = faces(u[t,k,:,:])
             vf  = faces(v[t,k,:,:])
-            ucf = faces(np.zeros((nju,niu)))
-            vcf = faces(np.zeros((njv,niv)))
+            ucf = faces(np.zeros((nj,ni)))
+            vcf = faces(np.zeros((nj,ni)))
             for iface in range(len(uf)-1):
                 uk = np.roll(uf[iface],-1,axis=-1)+uf[iface]
                 vk = np.roll(vf[iface],-1,axis=-2)+vf[iface]
