@@ -581,17 +581,17 @@ def _getDims(u,v):
 
     return nt, nk, nju, niu
 
-def div(*args, dxg=None, dyg=None, rac=None, hfw=None, hfs=None):
+def div(u, v, dxg=None, dyg=None, rac=None, hfw=None, hfs=None):
     """
     Compute divergence of vector field on llc grid
 
     Call signatures::
 
-       divergence = div(U, V, dxg=DXG, dyg=DYG, rac=RAC, hfw=HFW, hfs=HFS)
+       divergence = div(U, V, DXG, DYG, RAC, HFW, HFS)
        divergence = div(U, V)
-       divergence = div(U, V, dxg=DXG, dyg=DYG)
-       divergence = div(U, V, dxg=DXG, dyg=DYG, rac=RAC)
-       divergence = div(U, V, dxg=DXG, dyg=DYG, hfw=HFW, hfs=HFS)
+       divergence = div(U, V, DXG, DYG)
+       divergence = div(U, V, DXG, DYG, RAC)
+       divergence = div(U, V, DXG, DYG, hfw=HFW, hfs=HFS)
 
     Parameters
     ----------
@@ -620,14 +620,9 @@ def div(*args, dxg=None, dyg=None, rac=None, hfw=None, hfs=None):
 
     """
 
-    arglen = len(args)
-    if arglen == 2:
-        u,v = args[:]
-    else:
-        print(__doc__)
-        raise ValueError('need two 2 arguments u and v + *kwargs')
-
     nt, nk, nj, ni =  _getDims(u,v)
+
+    ushape = u.shape
 
     if dxg is None:
         dxg = np.ones((nj,ni))
@@ -680,10 +675,10 @@ def div(*args, dxg=None, dyg=None, rac=None, hfw=None, hfs=None):
 
             divergence[t,k,:,:] = faces2mds(divf)
 
-    return np.squeeze(divergence)
+    return divergence.reshape(ushape)
 
 
-def uv2c(*args):
+def uv2c(u,v):
     """
     Average vector component (u,v) to center points on llc grid
 
@@ -701,12 +696,8 @@ def uv2c(*args):
 
     """
 
-    arglen = len(args)
-    if arglen == 2:
-        u,v = args[:]
-        nt, nk, nj, ni =  _getDims(u,v)
-    else:
-        raise ValueError('wrong number of arguments, only 2 allowed')
+    nt, nk, nj, ni =  _getDims(u,v)
+    ushape = u.shape
 
     u   = u.reshape(nt,nk,nj,ni)
     v   = v.reshape(nt,nk,nj,ni)
@@ -745,4 +736,4 @@ def uv2c(*args):
             uc[t,k,:,:] = faces2mds(ucf)
             vc[t,k,:,:] = faces2mds(vcf)
 
-    return np.squeeze(uc), np.squeeze(vc)
+    return uc.reshape(ushape), vc.reshape(ushape)
