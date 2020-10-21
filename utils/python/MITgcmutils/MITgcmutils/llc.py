@@ -595,29 +595,26 @@ def div(u, v, dxg=None, dyg=None, rac=None, hfw=None, hfs=None):
 
     Parameters
     ----------
-    U   : array-like (timelevel,depthlevel,jpoint,ipoint)
+    u   : array-like (timelevel,depthlevel,jpoint,ipoint)
           x-component of vector field at u-point
 
-    V   : array-like (timelevel,depthlevel,jpoint,ipoint)
+    v   : array-like (timelevel,depthlevel,jpoint,ipoint)
           y-component of vector field at v-point
 
-    optional parameters (default to one)
-    ------------------------------------
-    HFW : array-like (depthlevel,jpoint,ipoint)
-          hFac at u-point
+    dxg : array-like (jpoint,ipoint), optional
+          grid spacing in x across v-point, defaults to one
 
-    HFS : array-like (depthlevel,jpoint,ipoint)
-          hFac at v-point
+    dyg : array-like (jpoint,ipoint), optional
+          grid spacing in y across u-point, defaults to one
 
-    DXG : array-like (jpoint,ipoint)
-          grid spacing in x across v-point
+    rac : array-like (jpoint,ipoint), optional
+          grid cell area, defaults to dxg*dyg
 
-    DYG : array-like (depthlevel,jpoint,ipoint)
-          grid spacing in y across u-point
+    hfw : array-like (depthlevel,jpoint,ipoint), optional
+          hFac at u-point, defaults to one
 
-    RAC : array-like (jpoint,ipoint)
-          grid cell area, default: RAC = DXG*DYG
-
+    hfs : array-like (depthlevel,jpoint,ipoint), optional
+          hFac at v-point, defaults to one
     """
 
     nt, nk, nj, ni =  _getDims(u,v)
