@@ -129,7 +129,7 @@ C !INTERFACE:
      I                            biArg, bjArg, copyTo, myThid )
 
 C !DESCRIPTION:
-C     Transfert 2-D, yz slice real*4 buffer to 2-D RS model array, or the reverse,
+C     Transfert 2-D, yz slice real*8 buffer to 2-D RS model array, or the reverse,
 C      depending on "copyTo" value. Apply transfert to tile biArg,bjArg
 C      only or to all myThid tiles if called with biArg=bjArg=0.
 
@@ -142,7 +142,7 @@ C Global variables / common blocks
 
 C     !INPUT/OUTPUT PARAMETERS:
 C Routine arguments
-C buffer  (real*4) :: buffer 2-D array (Input/Output if copyTo=T/F)
+C buffer  (real*8) :: buffer 2-D array (Input/Output if copyTo=T/F)
 C arrFld   ( RS )  :: model 2-D tiled array (Output/Input if copyTo=T/F)
 C oL     (integer):: Overlap size (dim-1) of buffer to copy - to/from - arrFld
 C nNz     (integer):: Number of levels to - fill in / extract from - arrFld
@@ -155,7 +155,7 @@ C myThid  (integer):: my Thread Id number
       INTEGER oL
       INTEGER nNz, kSize
       _R8 buffer(1-oL:sNx+oL,nNz,nSx,nSy)
-      _RS    arrFld(1-OLy:sNx+OLy,kSize,nSx,nSy)
+      _RS    arrFld(1-OLx:sNx+OLx,kSize,nSx,nSy)
       INTEGER kLo
       INTEGER biArg
       INTEGER bjArg
@@ -168,7 +168,7 @@ C   bi,bj :: tile indices
       INTEGER i,k,bi,bj
       INTEGER kLev
 CEOP
-      IF ( oL.LT.0 .OR. oL.GT.OLy ) THEN
+      IF ( oL.LT.0 .OR. oL.GT.OLx ) THEN
         STOP 'ABNORMAL END: MDS_PASS_XZ_R8toRS invalid oL,oL Arg'
       ENDIF
 

@@ -155,7 +155,7 @@ C myThid  (integer):: my Thread Id number
       INTEGER oL
       INTEGER nNz, kSize
       _R4 buffer(1-oL:sNx+oL,nNz,nSx,nSy)
-      _RS    arrFld(1-OLy:sNx+OLy,kSize,nSx,nSy)
+      _RS    arrFld(1-OLx:sNx+OLx,kSize,nSx,nSy)
       INTEGER kLo
       INTEGER biArg
       INTEGER bjArg
@@ -168,7 +168,7 @@ C   bi,bj :: tile indices
       INTEGER i,k,bi,bj
       INTEGER kLev
 CEOP
-      IF ( oL.LT.0 .OR. oL.GT.OLy ) THEN
+      IF ( oL.LT.0 .OR. oL.GT.OLx ) THEN
         STOP 'ABNORMAL END: MDS_PASS_XZ_R4toRL invalid oL,oL Arg'
       ENDIF
 
