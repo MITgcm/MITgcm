@@ -36,14 +36,14 @@ C myThid   (integer):: my Thread Id number
 
       INTEGER ySize
       _R4     gloBuff(ySize)
-      _R4     myField(1:sNy,nSx,nSy)
+      _R4     myField(1:sNy,nSy)
       LOGICAL useExch2GlobLayOut
       LOGICAL zeroBuff
       INTEGER myThid
 CEOP
 
 C !LOCAL VARIABLES:
-      INTEGER j,bi,bj
+      INTEGER j,bj
       INTEGER jG
       INTEGER jBase
 #ifdef ALLOW_EXCH2
@@ -52,7 +52,7 @@ C !LOCAL VARIABLES:
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_USE_MPI
       INTEGER np, pId
-      _R4     temp(1:sNy,nSx,nSy)
+      _R4     temp(1:sNy,nSy)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER lbuff, idest, itag, ready_to_receive
 #endif /* ALLOW_USE_MPI */
@@ -73,25 +73,23 @@ C     safer to reset to zero to avoid unknown values in output file
           ENDIF
 
           DO bj=1,nSy
-           DO bi=1,nSx
-             tN = W2_myTileList(bi,bj)
-             IF  ( exch2_tNy(tN) .GT. ySize ) THEN
-C-           tile y-size larger than glob-size : make a long line
-               jGjLoc = 0
-             ELSE
-C-           default (face fit into global-IO-array)
-               jGjLoc = 1
-             ENDIF
+            tN = W2_myTileList(1,bj) !TODO: bi arg?
+            IF  ( exch2_tNy(tN) .GT. ySize ) THEN
+C-          tile y-size larger than glob-size : make a long line
+              jGjLoc = 0
+            ELSE
+C-          default (face fit into global-IO-array)
+              jGjLoc = 1
+            ENDIF
 
-             DO j=1,sNy
+            DO j=1,sNy
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-               jG=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
-               gloBuff(jG) = myField(j,bi,bj)
-             ENDDO
+              jG=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
+              gloBuff(jG) = myField(j,bj)
+            ENDDO
 
-           ENDDO
           ENDDO
 
         ELSE
@@ -102,14 +100,12 @@ C-           default (face fit into global-IO-array)
           jBase = myYGlobalLo-1
 
           DO bj=1,nSy
-           DO bi=1,nSx
-            DO j=1,sNy
+           DO j=1,sNy
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-               jG = jBase+(bj-1)*sNy+j
-               gloBuff(jG) = myField(j,bi,bj)
-            ENDDO
+              jG = jBase+(bj-1)*sNy+j
+              gloBuff(jG) = myField(j,bj)
            ENDDO
           ENDDO
 
@@ -144,25 +140,23 @@ C--   Process 0 gathers the local arrays into the global buffer.
          IF ( useExch2GlobLayOut ) THEN
 
           DO bj=1,nSy
-           DO bi=1,nSx
-             tN = W2_procTileList(bi,bj,np)
-             IF  ( exch2_tNy(tN) .GT. ySize ) THEN
-C-           tile y-size larger than glob-size : make a long line
-               jGjLoc = 0
-             ELSE
-C-           default (face fit into global-IO-array)
-               jGjLoc = 1
-             ENDIF
+            tN = W2_procTileList(bj,np) !TODO: bi arg?
+            IF  ( exch2_tNy(tN) .GT. ySize ) THEN
+C-          tile y-size larger than glob-size : make a long line
+              jGjLoc = 0
+            ELSE
+C-          default (face fit into global-IO-array)
+              jGjLoc = 1
+            ENDIF
 
-             DO j=1,sNy
+            DO j=1,sNy
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-              jG=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
-              gloBuff(jG) = temp(j,bi,bj)
-             ENDDO
+             jG=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
+             gloBuff(jG) = temp(j,bj)
+            ENDDO
 
-           ENDDO
           ENDDO
 
          ELSE
@@ -173,16 +167,14 @@ C-           default (face fit into global-IO-array)
           jBase = mpi_myYGlobalLo(np)-1
 
           DO bj=1,nSy
-           DO bi=1,nSx
-            DO j=1,sNy
+           DO j=1,sNy
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-             IF (ABS(temp(j,bi,bj)).gt.0.) THEN
-               jG = jBase+(bj-1)*sNy+j
-               gloBuff(jG) = temp(j,bi,bj)
-             ENDIF
-            ENDDO
+            IF (ABS(temp(j,bj)).gt.0.) THEN
+              jG = jBase+(bj-1)*sNy+j
+              gloBuff(jG) = temp(j,bj)
+            ENDIF
 
            ENDDO
           ENDDO

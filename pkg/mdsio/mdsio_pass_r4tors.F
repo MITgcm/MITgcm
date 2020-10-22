@@ -126,7 +126,8 @@ C !INTERFACE:
       SUBROUTINE MDS_PASS_XZ_R4toRS(
      U                            buffer, arrFld,
      I                            oL, nNz, kLo, kSize,
-     I                            biArg, bjArg, copyTo, myThid )
+     I                            biArg, bjArg, bjBufferSize,
+     I                            copyTo, myThid )
 
 C !DESCRIPTION:
 C     Transfert 2-D, yz slice real*4 buffer to 2-D RS model array, or the reverse,
@@ -154,7 +155,8 @@ C copyTo  (logical):: if =T, copy 2-D -> 3-D ; if =F: copy 2-D <- 3-D
 C myThid  (integer):: my Thread Id number
       INTEGER oL
       INTEGER nNz, kSize
-      _R4 buffer(1-oL:sNx+oL,nNz,nSx,nSy)
+      INTEGER bjBufferSize
+      _R4 buffer(1-oL:sNx+oL,nNz,nSx,bjBufferSize)
       _RS    arrFld(1-OLx:sNx+OLx,kSize,nSx,nSy)
       INTEGER kLo
       INTEGER biArg
@@ -166,6 +168,7 @@ C !LOCAL VARIABLES:
 C   i,k   :: loop indices
 C   bi,bj :: tile indices
       INTEGER i,k,bi,bj
+      INTEGER bjBuff
       INTEGER kLev
 CEOP
       IF ( oL.LT.0 .OR. oL.GT.OLx ) THEN
@@ -175,22 +178,32 @@ CEOP
       IF ( biArg.EQ.0 .AND. bjArg.EQ.0 ) THEN
         IF ( copyTo ) THEN
           DO bj = myByLo(myThid), myByHi(myThid)
+           IF (bjBufferSize.EQ.1) THEN
+               bjBuff=1
+           ELSE
+               bjBuff=bj
+           ENDIF
            DO bi = myBxLo(myThid), myBxHi(myThid)
             DO k=1,nNz
              kLev = kLo+k-1
              DO i=1-oL,sNx+oL
-               arrFld(i,kLev,bi,bj) = buffer(i,k,bi,bj)
+               arrFld(i,kLev,bi,bj) = buffer(i,k,bi,bjBuff)
              ENDDO
             ENDDO
            ENDDO
           ENDDO
         ELSE
           DO bj = myByLo(myThid), myByHi(myThid)
+           IF (bjBufferSize.EQ.1) THEN
+               bjBuff=1
+           ELSE
+               bjBuff=bj
+           ENDIF
            DO bi = myBxLo(myThid), myBxHi(myThid)
             DO k=1,nNz
              kLev = kLo+k-1
              DO i=1-oL,sNx+oL
-               buffer(i,k,bi,bj) = arrFld(i,kLev,bi,bj)
+               buffer(i,k,bi,bjBuff) = arrFld(i,kLev,bi,bj)
              ENDDO
             ENDDO
            ENDDO
@@ -230,7 +243,8 @@ C !INTERFACE:
       SUBROUTINE MDS_PASS_YZ_R4toRS(
      U                            buffer, arrFld,
      I                            oL, nNz, kLo, kSize,
-     I                            biArg, bjArg, copyTo, myThid )
+     I                            biArg, bjArg, biBufferSize,
+     I                            copyTo, myThid )
 
 C !DESCRIPTION:
 C     Transfert 2-D, yz slice real*4 buffer to 2-D RS model array, or the reverse,
@@ -258,7 +272,8 @@ C copyTo  (logical):: if =T, copy 2-D -> 3-D ; if =F: copy 2-D <- 3-D
 C myThid  (integer):: my Thread Id number
       INTEGER oL
       INTEGER nNz, kSize
-      _R4 buffer(1-oL:sNy+oL,nNz,nSx,nSy)
+      INTEGER biBufferSize
+      _R4 buffer(1-oL:sNy+oL,nNz,biBufferSize,nSy)
       _RS    arrFld(1-OLy:sNy+OLy,kSize,nSx,nSy)
       INTEGER kLo
       INTEGER biArg
@@ -270,6 +285,7 @@ C !LOCAL VARIABLES:
 C   j,k   :: loop indices
 C   bi,bj :: tile indices
       INTEGER j,k,bi,bj
+      INTEGER biBuff
       INTEGER kLev
 CEOP
       IF ( oL.LT.0 .OR. oL.GT.OLy ) THEN
@@ -280,10 +296,15 @@ CEOP
         IF ( copyTo ) THEN
           DO bj = myByLo(myThid), myByHi(myThid)
            DO bi = myBxLo(myThid), myBxHi(myThid)
+            IF (biBufferSize.EQ.1) THEN
+                biBuff = 1
+            ELSE
+                biBuff = bi
+            ENDIF
             DO k=1,nNz
              kLev = kLo+k-1
              DO j=1-oL,sNy+oL
-               arrFld(j,kLev,bi,bj) = buffer(j,k,bi,bj)
+               arrFld(j,kLev,bi,bj) = buffer(j,k,biBuff,bj)
              ENDDO
             ENDDO
            ENDDO
@@ -291,10 +312,15 @@ CEOP
         ELSE
           DO bj = myByLo(myThid), myByHi(myThid)
            DO bi = myBxLo(myThid), myBxHi(myThid)
+            IF (biBufferSize.EQ.1) THEN
+                biBuff = 1
+            ELSE
+                biBuff = bi
+            ENDIF
             DO k=1,nNz
              kLev = kLo+k-1
              DO j=1-oL,sNy+oL
-               buffer(j,k,bi,bj) = arrFld(j,kLev,bi,bj)
+               buffer(j,k,biBuff,bj) = arrFld(j,kLev,bi,bj)
              ENDDO
             ENDDO
            ENDDO

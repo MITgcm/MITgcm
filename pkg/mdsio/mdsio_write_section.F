@@ -133,8 +133,8 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       INTEGER bBij
       INTEGER tNx, global_nTx
       INTEGER tBx, iGjLoc, jGjLoc
-      _R4 r4seg(1:sNx,nSx,nSy)
-      _R8 r8seg(1:sNx,nSx,nSy)
+      _R4 r4seg(1:sNx,nSx)
+      _R8 r8seg(1:sNx,nSx)
       _R4 x_buffer_r4( Nx )
       _R8 x_buffer_r8( Nx )
       _R4 xz_buffer_r4( sNx*Nr*nSx*nSy )
@@ -303,10 +303,10 @@ C-     copy from fldRL/RS(level=k) to 2-D "local":
        IF ( filePrec.EQ.precFloat32 ) THEN
          IF ( arrType.EQ.'RS' ) THEN
            CALL MDS_PASS_XZ_R4toRS( r4seg, fldRS,
-     I             0, 1, k, kSize, 0, 0, .FALSE., myThid )
+     I             0, 1, k, kSize, 0, 0, 1, .FALSE., myThid )
          ELSEIF ( arrType.EQ.'RL' ) THEN
            CALL MDS_PASS_XZ_R4toRL( r4seg, fldRL,
-     I             0, 1, k, kSize, 0, 0, .FALSE., myThid )
+     I             0, 1, k, kSize, 0, 0, 1, .FALSE., myThid )
          ELSE
            WRITE(msgBuf,'(2A)')
      &     ' MDS_WRITE_SEC_XZ: illegal value for arrType=', arrType
@@ -324,10 +324,10 @@ C Wait for all threads to finish filling shared buffer
        ELSEIF ( filePrec.EQ.precFloat64 ) THEN
          IF ( arrType.EQ.'RS' ) THEN
            CALL MDS_PASS_XZ_R8toRS( r8seg, fldRS,
-     I            0, 1, k, kSize, 0, 0, .FALSE., myThid )
+     I            0, 1, k, kSize, 0, 0, 1, .FALSE., myThid )
          ELSEIF ( arrType.EQ.'RL' ) THEN
            CALL MDS_PASS_XZ_R8toRL( r8seg, fldRL,
-     I            0, 1, k, kSize, 0, 0, .FALSE., myThid )
+     I            0, 1, k, kSize, 0, 0, 1, .FALSE., myThid )
          ELSE
            WRITE(msgBuf,'(2A)')
      &     ' MDS_WRITE_SEC_XZ: illegal value for arrType=', arrType
@@ -388,10 +388,10 @@ C---    Copy from fldRL/RS to 2-D buffer (multi-threads):
         IF ( filePrec.EQ.precFloat32 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_XZ_R4toRS( xz_buffer_r4, fldRS,
-     I              0, nNz, kLo, kSize, 0, 0, .FALSE., myThid )
+     I              0, nNz, kLo, kSize, 0, 0, nSy, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_XZ_R4toRL( xz_buffer_r4, fldRL,
-     I              0, nNz, kLo, kSize, 0, 0, .FALSE., myThid )
+     I              0, nNz, kLo, kSize, 0, 0, nSy, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(2A)')
      &      ' MDS_WRITE_SEC_XZ: illegal value for arrType=', arrType
@@ -403,10 +403,10 @@ C---    Copy from fldRL/RS to 2-D buffer (multi-threads):
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_XZ_R8toRS( xz_buffer_r8, fldRS,
-     I              0, nNz, kLo, kSize, 0, 0, .FALSE., myThid )
+     I              0, nNz, kLo, kSize, 0, 0, nSy, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_XZ_R8toRL( xz_buffer_r8, fldRL,
-     I              0, nNz, kLo, kSize, 0, 0, .FALSE., myThid )
+     I              0, nNz, kLo, kSize, 0, 0, nSy, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(2A)')
      &      ' MDS_WRITE_SEC_XZ: illegal value for arrType=', arrType
@@ -726,8 +726,8 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       INTEGER bBij
       INTEGER tNy, global_nTy
       INTEGER tBy, iGjLoc, jGjLoc
-      _R4 r4seg(1:sNy,nSx,nSy)
-      _R8 r8seg(1:sNy,nSx,nSy)
+      _R4 r4seg(1:sNy,nSy)
+      _R8 r8seg(1:sNy,nSy)
       _R4 y_buffer_r4( Ny )
       _R8 y_buffer_r8( Ny )
       _R4 yz_buffer_r4( sNy*Nr*nSx*nSy )
@@ -896,10 +896,10 @@ C-     copy from fldRL/RS(level=k) to 2-D "local":
        IF ( filePrec.EQ.precFloat32 ) THEN
          IF ( arrType.EQ.'RS' ) THEN
            CALL MDS_PASS_YZ_R4toRS( r4seg, fldRS,
-     I             0, 1, k, kSize, 0, 0, .FALSE., myThid )
+     I             0, 1, k, kSize, 0, 0, 1, .FALSE., myThid )
          ELSEIF ( arrType.EQ.'RL' ) THEN
            CALL MDS_PASS_YZ_R4toRL( r4seg, fldRL,
-     I             0, 1, k, kSize, 0, 0, .FALSE., myThid )
+     I             0, 1, k, kSize, 0, 0, 1, .FALSE., myThid )
          ELSE
            WRITE(msgBuf,'(2A)')
      &     ' MDS_WRITE_SEC_YZ: illegal value for arrType=', arrType
@@ -917,10 +917,10 @@ C Wait for all threads to finish filling shared buffer
        ELSEIF ( filePrec.EQ.precFloat64 ) THEN
          IF ( arrType.EQ.'RS' ) THEN
            CALL MDS_PASS_YZ_R8toRS( r8seg, fldRS,
-     I            0, 1, k, kSize, 0, 0, .FALSE., myThid )
+     I            0, 1, k, kSize, 0, 0, 1, .FALSE., myThid )
          ELSEIF ( arrType.EQ.'RL' ) THEN
            CALL MDS_PASS_YZ_R8toRL( r8seg, fldRL,
-     I            0, 1, k, kSize, 0, 0, .FALSE., myThid )
+     I            0, 1, k, kSize, 0, 0, 1, .FALSE., myThid )
          ELSE
            WRITE(msgBuf,'(2A)')
      &     ' MDS_WRITE_SEC_YZ: illegal value for arrType=', arrType
@@ -981,10 +981,10 @@ C---    Copy from fldRL/RS to 2-D buffer (multi-threads):
         IF ( filePrec.EQ.precFloat32 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_YZ_R4toRS( yz_buffer_r4, fldRS,
-     I              0, nNz, kLo, kSize, 0, 0, .FALSE., myThid )
+     I              0, nNz, kLo, kSize, 0, 0, nSx, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_YZ_R4toRL( yz_buffer_r4, fldRL,
-     I              0, nNz, kLo, kSize, 0, 0, .FALSE., myThid )
+     I              0, nNz, kLo, kSize, 0, 0, nSx, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(2A)')
      &      ' MDS_WRITE_SEC_YZ: illegal value for arrType=', arrType
@@ -996,10 +996,10 @@ C---    Copy from fldRL/RS to 2-D buffer (multi-threads):
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_YZ_R8toRS( yz_buffer_r8, fldRS,
-     I              0, nNz, kLo, kSize, 0, 0, .FALSE., myThid )
+     I              0, nNz, kLo, kSize, 0, 0, nSx, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_YZ_R8toRL( yz_buffer_r8, fldRL,
-     I              0, nNz, kLo, kSize, 0, 0, .FALSE., myThid )
+     I              0, nNz, kLo, kSize, 0, 0, nSx, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(2A)')
      &      ' MDS_WRITE_SEC_YZ: illegal value for arrType=', arrType

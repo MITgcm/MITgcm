@@ -36,14 +36,14 @@ C myThid   (integer):: my Thread Id number
 
       INTEGER xSize
       _R8     gloBuff(xSize)
-      _R8     myField(1:sNx,nSx,nSy)
+      _R8     myField(1:sNx,nSx)
       LOGICAL useExch2GlobLayOut
       LOGICAL zeroBuff
       INTEGER myThid
 CEOP
 
 C !LOCAL VARIABLES:
-      INTEGER i,bi,bj
+      INTEGER i,bi
       INTEGER iG
       INTEGER iBase
 #ifdef ALLOW_EXCH2
@@ -52,7 +52,7 @@ C !LOCAL VARIABLES:
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_USE_MPI
       INTEGER np, pId
-      _R8     temp(1:sNx,nSx,nSy)
+      _R8     temp(1:sNx,nSx)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER lbuff, idest, itag, ready_to_receive
 #endif /* ALLOW_USE_MPI */
@@ -72,19 +72,15 @@ C     safer to reset to zero to avoid unknown values in output file
             ENDDO
           ENDIF
 
-          DO bj=1,nSy
-           DO bi=1,nSx
-             tN = W2_myTileList(bi,bj)
-             iGjLoc = 0
-
+          DO bi=1,nSx
+           tN = W2_myTileList(bi,1) ! TODO: bj arg?
+           iGjLoc = 0
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-             DO i=1,sNx
-               iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
-               gloBuff(iG) = myField(i,bi,bj)
-             ENDDO
-
+           DO i=1,sNx
+             iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
+             gloBuff(iG) = myField(i,bi)
            ENDDO
           ENDDO
 
@@ -95,16 +91,13 @@ C     safer to reset to zero to avoid unknown values in output file
 
           iBase = myXGlobalLo-1
 
-          DO bj=1,nSy
-           DO bi=1,nSx
-
+          DO bi=1,nSx
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-            DO i=1,sNx
-               iG = iBase+(bi-1)*sNx+i
-               gloBuff(iG) = myField(i,bi,bj)
-            ENDDO
+           DO i=1,sNx
+            iG = iBase+(bi-1)*sNx+i
+            gloBuff(iG) = myField(i,bi)
            ENDDO
           ENDDO
 
@@ -138,20 +131,17 @@ C--   Process 0 gathers the local arrays into the global buffer.
 #ifdef ALLOW_EXCH2
          IF ( useExch2GlobLayOut ) THEN
 
-          DO bj=1,nSy
-           DO bi=1,nSx
-             tN = W2_procTileList(bi,bj,np)
-             iGjLoc = 0
+          DO bi=1,nSx
+            tN = W2_procTileList(bi,1,np) ! TODO: bj arg
+            iGjLoc = 0
 
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-             DO i=1,sNx
-              iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
-              gloBuff(iG) = temp(i,bi,bj)
-             ENDDO
-
-           ENDDO
+            DO i=1,sNx
+             iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
+             gloBuff(iG) = temp(i,bi)
+            ENDDO
           ENDDO
 
          ELSE
@@ -161,18 +151,15 @@ C--   Process 0 gathers the local arrays into the global buffer.
 
           iBase = mpi_myXGlobalLo(np)-1
 
-          DO bj=1,nSy
-           DO bi=1,nSx
-            DO i=1,sNx
+          DO bi=1,nSx
+           DO i=1,sNx
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-             IF (DABS(temp(i,bi,bj)).gt.0. _d 0) THEN
-               iG = iBase+(bi-1)*sNx+i
-               gloBuff(iG) = temp(i,bi,bj)
-             ENDIF
-            ENDDO
-
+            IF (DABS(temp(i,bi)).gt.0.) THEN
+              iG = iBase+(bi-1)*sNx+i
+              gloBuff(iG) = temp(i,bi)
+            ENDIF
            ENDDO
           ENDDO
 
