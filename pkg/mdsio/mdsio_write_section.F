@@ -296,7 +296,7 @@ C Gather array and write it to file, one vertical level at a time
 C Initialize buffer
        DO j = 1,xSize
         x_buffer_r4(j)=0.
-        x_buffer_r8(j)=0.
+        x_buffer_r8(j)=0. _d 0
        ENDDO
        zeroBuff = k.EQ.kLo
 C-     copy from fldRL/RS(level=k) to 2-D "local":
@@ -889,7 +889,7 @@ C Gather array and write it to file, one vertical level at a time
 C Initialize buffer
        DO j = 1,ySize
         y_buffer_r4(j)=0.
-        y_buffer_r8(j)=0.
+        y_buffer_r8(j)=0. _d 0
        ENDDO
        zeroBuff = k.EQ.kLo
 C-     copy from fldRL/RS(level=k) to 2-D "local":

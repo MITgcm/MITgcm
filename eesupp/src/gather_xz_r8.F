@@ -167,7 +167,7 @@ C--   Process 0 gathers the local arrays into the global buffer.
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-             IF (ABS(temp(i,bi,bj)).gt.0. _d 0) THEN
+             IF (DABS(temp(i,bi,bj)).gt.0. _d 0) THEN
                iG = iBase+(bi-1)*sNx+i
                gloBuff(iG) = temp(i,bi,bj)
              ENDIF
