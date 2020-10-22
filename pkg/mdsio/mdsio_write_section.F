@@ -133,8 +133,8 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       INTEGER bBij
       INTEGER tNx, global_nTx
       INTEGER tBx, iGjLoc, jGjLoc
-      _R4 r4seg(sNx,nSx,nSy)
-      _R8 r8seg(sNx,nSx,nSy)
+      _R4 r4seg(1:sNx,nSx,nSy)
+      _R8 r8seg(1:sNx,nSx,nSy)
       _R4 x_buffer_r4( Nx )
       _R8 x_buffer_r8( Nx )
       _R4 xz_buffer_r4( sNx*Nr*nSx*nSy )
@@ -726,8 +726,8 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       INTEGER bBij
       INTEGER tNy, global_nTy
       INTEGER tBy, iGjLoc, jGjLoc
-      _R4 r4seg(sNy,nSx,nSy)
-      _R8 r8seg(sNy,nSx,nSy)
+      _R4 r4seg(1:sNy,nSx,nSy)
+      _R8 r8seg(1:sNy,nSx,nSy)
       _R4 y_buffer_r4( Ny )
       _R8 y_buffer_r8( Ny )
       _R4 yz_buffer_r4( sNy*Nr*nSx*nSy )
