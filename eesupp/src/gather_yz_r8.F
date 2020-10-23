@@ -171,7 +171,7 @@ C-          default (face fit into global-IO-array)
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-            IF (DABS(temp(j,bj)).gt.0.) THEN
+            IF (ABS(temp(j,bj)).gt.0. _d 0) THEN
               jG = jBase+(bj-1)*sNy+j
               gloBuff(jG) = temp(j,bj)
             ENDIF
