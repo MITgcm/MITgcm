@@ -269,6 +269,23 @@ C If negative check for global file with MDS name (ie. fName.data)
 C- endif iAmDoingIO
       ENDIF
 
+C Initialize buffers
+      DO bi=1,nSx
+       DO i = 1,sNx
+        r4Seg(i,bi) = 0.
+        r8Seg(i,bi) = 0. _d 0
+       ENDDO
+      ENDDO
+      DO i = 1, xSize
+       x_buffer_r4(i) = 0.
+       x_buffer_r8(i) = 0. _d 0
+      ENDDO
+      DO i = 1, sNx*nNz*nSx*nSy
+       xz_buffer_r4(i) = 0.
+       xz_buffer_r8(i) = 0. _d 0
+      ENDDO
+
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF (useSingleCpuIO) THEN
@@ -470,7 +487,7 @@ C If we are writing to a tiled MDS file then we open each one here
 
            irec = irecord
            i1 = bBij + 1
-           i2 = bBij + sNy*nNz
+           i2 = bBij + sNx*nNz
            IF ( filePrec.EQ.precFloat32 ) THEN
              READ(dUnit,rec=irec) (xz_buffer_r4(i),i=i1,i2)
            ELSE
@@ -498,9 +515,9 @@ C If global file was opened then close it
 
 #ifdef _BYTESWAPIO
         IF ( filePrec.EQ.precFloat32 ) THEN
-          CALL MDS_BYTESWAPR4( sNx*nNz, xz_buffer_r4 )
+          CALL MDS_BYTESWAPR4( sNx*nNz*nSx*nSy, xz_buffer_r4 )
         ELSE
-          CALL MDS_BYTESWAPR8( sNx*nNz, xz_buffer_r8 )
+          CALL MDS_BYTESWAPR8( sNx*nNz*nSx*nSy, xz_buffer_r8 )
         ENDIF
 #endif
 
@@ -822,6 +839,22 @@ C If negative check for global file with MDS name (ie. fName.data)
 C- endif iAmDoingIO
       ENDIF
 
+C Initialize buffers
+      DO bj=1,nSy
+       DO j = 1,sNy
+        r4Seg(j,bj) = 0.
+        r8Seg(j,bj) = 0. _d 0
+       ENDDO
+      ENDDO
+      DO j = 1, ySize
+       y_buffer_r4(j) = 0.
+       y_buffer_r8(j) = 0. _d 0
+      ENDDO
+      DO j = 1, sNy*nNz*nSx*nSy
+       yz_buffer_r4(j) = 0.
+       yz_buffer_r8(j) = 0. _d 0
+      ENDDO
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF (useSingleCpuIO) THEN
@@ -1051,9 +1084,9 @@ C If global file was opened then close it
 
 #ifdef _BYTESWAPIO
         IF ( filePrec.EQ.precFloat32 ) THEN
-          CALL MDS_BYTESWAPR4( sNy*nNz, yz_buffer_r4 )
+          CALL MDS_BYTESWAPR4( sNy*nNz*nSx*nSy, yz_buffer_r4 )
         ELSE
-          CALL MDS_BYTESWAPR8( sNy*nNz, yz_buffer_r8 )
+          CALL MDS_BYTESWAPR8( sNy*nNz*nSx*nSy, yz_buffer_r8 )
         ENDIF
 #endif
 
