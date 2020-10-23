@@ -320,12 +320,12 @@ C master thread of process 0, only ,read from file
         IF ( iAmDoingIO ) THEN
           irec = 1 + k-kLo + (irecord-1)*kSize
           IF ( filePrec.EQ.precFloat32 ) THEN
-            READ(dUnit,rec=irec) x_buffer_r4
+            READ(dUnit,rec=irec) ( x_buffer_r4(i), i=1,xSize )
 #ifdef _BYTESWAPIO
             CALL MDS_BYTESWAPR4( xSize, x_buffer_r4 )
 #endif
           ELSE
-            READ(dUnit,rec=irec) x_buffer_r8
+            READ(dUnit,rec=irec) ( x_buffer_r8(i), i=1,xSize )
 #ifdef _BYTESWAPIO
             CALL MDS_BYTESWAPR8( xSize, x_buffer_r8 )
 #endif
@@ -889,12 +889,12 @@ C master thread of process 0, only ,read from file
         IF ( iAmDoingIO ) THEN
           irec = 1 + k-kLo + (irecord-1)*kSize
           IF ( filePrec.EQ.precFloat32 ) THEN
-            READ(dUnit,rec=irec) y_buffer_r4
+            READ(dUnit,rec=irec) ( y_buffer_r4(i), i=1,ySize )
 #ifdef _BYTESWAPIO
             CALL MDS_BYTESWAPR4( ySize, y_buffer_r4 )
 #endif
           ELSE
-            READ(dUnit,rec=irec) y_buffer_r8
+            READ(dUnit,rec=irec) ( y_buffer_r8(i), i=1,ySize )
 #ifdef _BYTESWAPIO
             CALL MDS_BYTESWAPR8( ySize, y_buffer_r8 )
 #endif

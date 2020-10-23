@@ -370,12 +370,12 @@ C  shared buffer can again be modified by any thread
 # ifdef _BYTESWAPIO
            CALL MDS_BYTESWAPR4( xSize, x_buffer_r4 )
 # endif
-           WRITE(dUnit,rec=irec) x_buffer_r4
+           WRITE(dUnit,rec=irec) ( x_buffer_r4(i), i=1,xSize )
          ELSE
 # ifdef _BYTESWAPIO
            CALL MDS_BYTESWAPR8( xSize, x_buffer_r8 )
 # endif
-           WRITE(dUnit,rec=irec) x_buffer_r8
+           WRITE(dUnit,rec=irec) ( x_buffer_r8(i), i=1,xSize )
          ENDIF
 C-      end if iAmDoingIO
        ENDIF
@@ -974,12 +974,12 @@ C  shared buffer can again be modified by any thread
 # ifdef _BYTESWAPIO
            CALL MDS_BYTESWAPR4( ySize, y_buffer_r4 )
 # endif
-           WRITE(dUnit,rec=irec) y_buffer_r4
+           WRITE(dUnit,rec=irec) ( y_buffer_r4(i), i=1,ySize )
          ELSE
 # ifdef _BYTESWAPIO
            CALL MDS_BYTESWAPR8( ySize, y_buffer_r8 )
 # endif
-           WRITE(dUnit,rec=irec) y_buffer_r8
+           WRITE(dUnit,rec=irec) ( y_buffer_r8(i), i=1,ySize )
          ENDIF
 C-      end if iAmDoingIO
        ENDIF
