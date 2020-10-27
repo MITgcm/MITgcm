@@ -130,7 +130,7 @@ C=============== state variables ============
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIenpa  '
+        diagName  = 'SIenpa  '
       diagTitle = 'SEAICE power input by surface wind stresses'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      M1      '
@@ -182,6 +182,34 @@ C=============== state variables ============
       diagName  = 'SIpSfric'
       diagTitle = 'SEAICE dissipation in shearing by internal stresses'
       diagUnits = 'W/m^2           '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SIcoast '
+      diagTitle = 'mask for coastline seaice/land'
+      diagUnits = 'none            '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SIcoastu'
+      diagTitle = 'tmpx mask for coastline seaice/land'
+      diagUnits = 'none            '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SISidex '
+      diagTitle = 'SEAICE coast side drag on x direction'
+      diagUnits = 'N/m^2           '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SISidey '
+      diagTitle = 'SEAICE coast side drag on y direction'
+      diagUnits = 'N/m^2           '
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )

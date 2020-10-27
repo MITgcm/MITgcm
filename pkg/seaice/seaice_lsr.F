@@ -76,7 +76,7 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j,bi,bj  :: Loop counters
 
-      INTEGER ipass
+      INTEGER ipass, ipass0
       INTEGER i, j, m, bi, bj
       INTEGER iMin, iMax, jMin, jMax
       INTEGER ICOUNT1, ICOUNT2, linearIterLoc, nonLinIterLoc
@@ -198,45 +198,30 @@ C     initialise fractional areas at velocity points
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          areaW(i,j,bi,bj) = 1. _d 0
-          areaS(i,j,bi,bj) = 1. _d 0
+          areaW(I,J,bi,bj) = 1. _d 0
+          areaS(I,J,bi,bj) = 1. _d 0
          ENDDO
         ENDDO
         areaMinLoc = 0. _d 0
         IF ( SEAICEscaleSurfStress ) THEN
          areaMinLoc = 1. _d -10
 CML         areaMinLoc = SEAICE_EPS
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-           areaW(i,j,bi,bj) =
-     &          0.5 _d 0*(AREA(i,j,bi,bj)+AREA(i-1,j,bi,bj))
-           areaS(i,j,bi,bj) =
-     &          0.5 _d 0*(AREA(i,j,bi,bj)+AREA(i,j-1,bi,bj))
+         DO J=jMin,jMax
+          DO I=iMin,iMax
+           areaW(I,J,bi,bj) =
+     &          0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I-1,J,bi,bj))
+           areaS(I,J,bi,bj) =
+     &          0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-1,bi,bj))
           ENDDO
          ENDDO
         ENDIF
        ENDDO
       ENDDO
 
-C     this is the rhs contribution of the time derivative and
-C     does not change in the iteration
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          uIceNm1(i,j,bi,bj) = uIce(i,j,bi,bj)
-          vIceNm1(i,j,bi,bj) = vIce(i,j,bi,bj)
-C     this contribution should be here, but that changes results
-CML          FORCEX0(i,j,bi,bj)=FORCEX0(i,j,bi,bj)
-CML     &         +seaiceMassU(i,j,bi,bj)*recip_deltaT
-CML     &         *uIceNm1(i,j,bi,bj)
-CML          FORCEY0(i,j,bi,bj)=FORCEY0(i,j,bi,bj)
-CML     &         +seaiceMassV(i,j,bi,bj)*recip_deltaT
-CML     &         *vIceNm1(i,j,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
+      ipass0 = 2
+C     modify time stepping a little if more than the default
+C     modified Eulerian time step is used.
+      IF ( nonLinIterLoc.GT.2 ) ipass0 = 1
 #ifdef ALLOW_AUTODIFF_TAMC
       DO ipass=1,MPSEUDOTIMESTEPS
        itmpkey = (ikey_dynamics-1)*MPSEUDOTIMESTEPS + ipass
@@ -284,41 +269,46 @@ C SET SOME VALUES
       S2A=0.80 _d 0
 
       IF ( ipass .EQ. 1 ) THEN
-C     This is the predictor time step
+C NOW DO PREDICTOR TIME STEP
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           uIceC(i,j,bi,bj) = uIce(i,j,bi,bj)
-           vIceC(i,j,bi,bj) = vIce(i,j,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ELSEIF ( ipass .EQ. 2 .AND. SEAICEnonLinIterMax .LE. 2 ) THEN
-C     This is the modified Euler step
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           uIce (i,j,bi,bj)=HALF*(uIce(i,j,bi,bj)+uIceNm1(i,j,bi,bj))
-           vIce (i,j,bi,bj)=HALF*(vIce(i,j,bi,bj)+vIceNm1(i,j,bi,bj))
-           uIceC(i,j,bi,bj)=uIce(i,j,bi,bj)
-           vIceC(i,j,bi,bj)=vIce(i,j,bi,bj)
+           uIceNm1(I,J,bi,bj) = uIce(I,J,bi,bj)
+           vIceNm1(I,J,bi,bj) = vIce(I,J,bi,bj)
+           uIceC  (I,J,bi,bj) = uIce(I,J,bi,bj)
+           vIceC  (I,J,bi,bj) = vIce(I,J,bi,bj)
           ENDDO
          ENDDO
         ENDDO
        ENDDO
       ELSE
-C     This is the case for SEAICEnonLinIterMax > 2, and here we use
-C     a different iterative scheme. u/vIceC = u/vIce is unstable, and
-C     different stabilisation methods are possible.
-C     This is stable but slow to converge.
-C      uIceC = HALF*( uIce + uIceNm1 )
-C      vIceC = HALF*( vIce + vIceNm1 )
-C     This converges slightly faster the the previous one.
-       uIceC = HALF*( uIce + uIceC )
-       vIceC = HALF*( vIce + vIceC )
+C NOW DO MODIFIED EULER STEP
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uIce (I,J,bi,bj)=HALF*(uIce(I,J,bi,bj)+uIceNm1(i,j,bi,bj))
+           vIce (I,J,bi,bj)=HALF*(vIce(I,J,bi,bj)+vIceNm1(i,j,bi,bj))
+           uIceC(I,J,bi,bj)=uIce(I,J,bi,bj)
+           vIceC(I,J,bi,bj)=vIce(I,J,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+      IF ( ipass .GT. ipass0 ) THEN
+C     for additional (pseudo-time)steps update u/vIceNm1
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           uIceNm1(i,j,bi,bj)=uIce(I,J,bi,bj)
+           vIceNm1(i,j,bi,bj)=vIce(I,J,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -328,8 +318,6 @@ C       ipass index is part of itmpkey
 C     * this storing is still outside the lsr iteration loop
 CADJ STORE uice = comlev1_dynsol, kind=isbyte, key = itmpkey
 CADJ STORE vice = comlev1_dynsol, kind=isbyte, key = itmpkey
-CADJ STORE uicec = comlev1_dynsol, kind=isbyte, key = itmpkey
-CADJ STORE vicec = comlev1_dynsol, kind=isbyte, key = itmpkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       CALL SEAICE_CALC_STRAINRATES(
@@ -358,22 +346,30 @@ CADJ STORE vicec = comlev1_dynsol, kind=isbyte, key = itmpkey
      O     CbotC,
      I     ipass, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
+
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      CALL SEAICE_SIDEDRAG_STRESS(
+     I     uIceC, vIceC,
+     I     SImaskU, SImaskV, AREA,
+     O     SideDragx, SideDragy,
+     I     ipass, myTime, myIter, myThid )
+#endif /* SEAICE_ALLOW_SIDEDRAG */
 C
 C     some abbreviations
 C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=jMin-1,jMax
-         DO i=iMin-1,iMax
-          etaPlusZeta (i,j,bi,bj) = ETA (i,j,bi,bj)+ZETA(i,j,bi,bj)
-          zetaMinusEta(i,j,bi,bj) = ZETA(i,j,bi,bj)-ETA (i,j,bi,bj)
+        DO J=jMin-1,jMax
+         DO I=iMin-1,iMax
+          etaPlusZeta (I,J,bi,bj) = ETA (I,J,bi,bj)+ZETA(I,J,bi,bj)
+          zetaMinusEta(I,J,bi,bj) = ZETA(I,J,bi,bj)-ETA (I,J,bi,bj)
          ENDDO
         ENDDO
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          dragSym(i,j,bi,bj) = DWATN(i,j,bi,bj)*COSWAT
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
+          dragSym(I,J,bi,bj) = DWATN(I,J,bi,bj)*COSWAT
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
-     &         +CbotC(i,j,bi,bj)
+     &         +CbotC(I,J,bi,bj)
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
          ENDDO
         ENDDO
@@ -385,63 +381,60 @@ C     Set up of right hand sides of momentum equations starts here
 C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=jMin,jMax
-         DO i=iMin,iMax
+        DO J=jMin,jMax
+         DO I=iMin,iMax
 C     set up anti symmetric drag force and add in current force
 C     ( remember to average to correct velocity points )
-          FORCEX(i,j,bi,bj)=FORCEX0(i,j,bi,bj)+
-     &         ( 0.5 _d 0 * ( DWATN(i,j,bi,bj)+DWATN(i-1,j,bi,bj) ) *
-     &         COSWAT * uVel(i,j,kSrf,bi,bj)
-     &         - SIGN(SINWAT, _fCori(i,j,bi,bj))* 0.5 _d 0 *
-     &         ( DWATN(i  ,j,bi,bj) * 0.5 _d 0 *
-     &          (vVel(i  ,j  ,kSrf,bi,bj)-vIceC(i  ,j  ,bi,bj)
-     &          +vVel(i  ,j+1,kSrf,bi,bj)-vIceC(i  ,j+1,bi,bj))
-     &         + DWATN(i-1,j,bi,bj) * 0.5 _d 0 *
-     &          (vVel(i-1,j  ,kSrf,bi,bj)-vIceC(i-1,j  ,bi,bj)
-     &          +vVel(i-1,j+1,kSrf,bi,bj)-vIceC(i-1,j+1,bi,bj))
-     &         ) ) * areaW(i,j,bi,bj)
-          FORCEY(i,j,bi,bj)=FORCEY0(i,j,bi,bj)+
-     &         ( 0.5 _d 0 * ( DWATN(i,j,bi,bj)+DWATN(i,j-1,bi,bj) ) *
-     &         COSWAT * vVel(i,j,kSrf,bi,bj)
-     &         + SIGN(SINWAT, _fCori(i,j,bi,bj)) * 0.5 _d 0 *
-     &         ( DWATN(i,j  ,bi,bj) * 0.5 _d 0 *
-     &          (uVel(i  ,j  ,kSrf,bi,bj)-uIceC(i  ,j  ,bi,bj)
-     &          +uVel(i+1,j  ,kSrf,bi,bj)-uIceC(i+1,j  ,bi,bj))
-     &         + DWATN(i,j-1,bi,bj) * 0.5 _d 0 *
-     &          (uVel(i  ,j-1,kSrf,bi,bj)-uIceC(i  ,j-1,bi,bj)
-     &          +uVel(i+1,j-1,kSrf,bi,bj)-uIceC(i+1,j-1,bi,bj))
-     &         ) ) * areaS(i,j,bi,bj)
+          FORCEX(I,J,bi,bj)=FORCEX0(I,J,bi,bj)+
+     &         ( 0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I-1,J,bi,bj) ) *
+     &         COSWAT * uVel(I,J,kSrf,bi,bj)
+     &         - SIGN(SINWAT, _fCori(I,J,bi,bj))* 0.5 _d 0 *
+     &         ( DWATN(I  ,J,bi,bj) * 0.5 _d 0 *
+     &          (vVel(I  ,J  ,kSrf,bi,bj)-vIceC(I  ,J  ,bi,bj)
+     &          +vVel(I  ,J+1,kSrf,bi,bj)-vIceC(I  ,J+1,bi,bj))
+     &         + DWATN(I-1,J,bi,bj) * 0.5 _d 0 *
+     &          (vVel(I-1,J  ,kSrf,bi,bj)-vIceC(I-1,J  ,bi,bj)
+     &          +vVel(I-1,J+1,kSrf,bi,bj)-vIceC(I-1,J+1,bi,bj))
+     &         ) ) * areaW(I,J,bi,bj)
+          FORCEY(I,J,bi,bj)=FORCEY0(I,J,bi,bj)+
+     &         ( 0.5 _d 0 * ( DWATN(I,J,bi,bj)+DWATN(I,J-1,bi,bj) ) *
+     &         COSWAT * vVel(I,J,kSrf,bi,bj)
+     &         + SIGN(SINWAT, _fCori(I,J,bi,bj)) * 0.5 _d 0 *
+     &         ( DWATN(I,J  ,bi,bj) * 0.5 _d 0 *
+     &          (uVel(I  ,J  ,kSrf,bi,bj)-uIceC(I  ,J  ,bi,bj)
+     &          +uVel(I+1,J  ,kSrf,bi,bj)-uIceC(I+1,J  ,bi,bj))
+     &         + DWATN(I,J-1,bi,bj) * 0.5 _d 0 *
+     &          (uVel(I  ,J-1,kSrf,bi,bj)-uIceC(I  ,J-1,bi,bj)
+     &          +uVel(I+1,J-1,kSrf,bi,bj)-uIceC(I+1,J-1,bi,bj))
+     &         ) ) * areaS(I,J,bi,bj)
          ENDDO
         ENDDO
         DO j=jMin,jMax
          DO i=iMin,iMax
 C-    add Coriolis term
-          FORCEX(i,j,bi,bj) = FORCEX(i,j,bi,bj) + HALF*
-     &         ( seaiceMassC(i  ,j,bi,bj) * _fCori(i  ,j,bi,bj)
+          FORCEX(I,J,bi,bj) = FORCEX(I,J,bi,bj) + HALF*
+     &         ( seaiceMassC(I  ,J,bi,bj) * _fCori(I  ,J,bi,bj)
      &          *0.5 _d 0*( vIceC( i ,j,bi,bj)+vIceC( i ,j+1,bi,bj) )
-     &         + seaiceMassC(i-1,j,bi,bj) * _fCori(i-1,j,bi,bj)
+     &         + seaiceMassC(I-1,J,bi,bj) * _fCori(I-1,J,bi,bj)
      &          *0.5 _d 0*( vIceC(i-1,j,bi,bj)+vIceC(i-1,j+1,bi,bj) ) )
-          FORCEY(i,j,bi,bj) = FORCEY(i,j,bi,bj) - HALF*
-     &         ( seaiceMassC(i,j  ,bi,bj) * _fCori(i,j  ,bi,bj)
+          FORCEY(I,J,bi,bj) = FORCEY(I,J,bi,bj) - HALF*
+     &         ( seaiceMassC(I,J  ,bi,bj) * _fCori(I,J  ,bi,bj)
      &         *0.5 _d 0*( uIceC(i  ,j  ,bi,bj)+uIceC(i+1,  j,bi,bj) )
-     &         + seaiceMassC(i,j-1,bi,bj) * _fCori(i,j-1,bi,bj)
+     &         + seaiceMassC(I,J-1,bi,bj) * _fCori(I,J-1,bi,bj)
      &         *0.5 _d 0*( uIceC(i  ,j-1,bi,bj)+uIceC(i+1,j-1,bi,bj) ) )
          ENDDO
         ENDDO
-C      mask the forcing so far
+C      this is the rhs contribution of the time derivative
         DO j=jMin,jMax
          DO i=iMin,iMax
-C     this is the rhs contribution of the time derivative and it
-C     should be outside of the nonlinear loop, but for some reason
-C     this changes the results, so we leave it here for now.
-          FORCEX(i,j,bi,bj)=FORCEX(i,j,bi,bj)
-     &         +seaiceMassU(i,j,bi,bj)*recip_deltaT
+          FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
+     &         +seaiceMassU(I,J,bi,bj)*recip_deltaT
      &         *uIceNm1(i,j,bi,bj)
-          FORCEY(i,j,bi,bj)=FORCEY(i,j,bi,bj)
-     &         +seaiceMassV(i,j,bi,bj)*recip_deltaT
+          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
+     &         +seaiceMassV(I,J,bi,bj)*recip_deltaT
      &         *vIceNm1(i,j,bi,bj)
-          FORCEX(i,j,bi,bj)=FORCEX(i,j,bi,bj) * seaiceMaskU(i,j,bi,bj)
-          FORCEY(i,j,bi,bj)=FORCEY(i,j,bi,bj) * seaiceMaskV(i,j,bi,bj)
+          FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)* seaiceMaskU(I,J,bi,bj)
+          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)* seaiceMaskV(I,J,bi,bj)
          ENDDO
         ENDDO
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -450,7 +443,10 @@ C     u-equation
 C
         DO j=jMin,jMax
          DO i=iMin,iMax
-          rhsU(i,j,bi,bj) = FORCEX(i,j,bi,bj)
+          rhsU(I,J,bi,bj) = FORCEX(I,J,bi,bj)
+c#ifdef SEAICE_ALLOW_SIDEDRAG
+c     &                      +SideDragx(I,J,bi,bj)
+c#endif /* SEAICE_ALLOW_SIDEDRAG */
          ENDDO
         ENDDO
         CALL SEAICE_LSR_RHSU(
@@ -463,7 +459,10 @@ C     v-equation
 C
         DO j=jMin,jMax
          DO i=iMin,iMax
-          rhsV(i,j,bi,bj) = FORCEY(i,j,bi,bj)
+          rhsV(I,J,bi,bj) = FORCEY(I,J,bi,bj)
+c#ifdef SEAICE_ALLOW_SIDEDRAG
+c     &                     +SideDragy(I,J,bi,bj)
+c#endif /* SEAICE_ALLOW_SIDEDRAG */ 
          ENDDO
         ENDDO
         CALL SEAICE_LSR_RHSV(
@@ -474,10 +473,10 @@ C
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef SEAICE_ALLOW_MOM_ADVECTION
         IF ( SEAICEmomAdvection ) THEN
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           gUmom(i,j) = 0. _d 0
-           gVmom(i,j) = 0. _d 0
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
+           gUmom(I,J) = 0. _d 0
+           gVmom(I,J) = 0. _d 0
           ENDDO
          ENDDO
          CALL SEAICE_MOM_ADVECTION(
@@ -485,10 +484,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I        uIceC, vIceC,
      O        gUmom, gVmom,
      I        myTime, myIter, myThid )
-         DO j=jMin,jMax
-          DO i=jMin,jMax
-           rhsU(i,j,bi,bj) = rhsU(i,j,bi,bj) + gUmom(i,j)
-           rhsV(i,j,bi,bj) = rhsV(i,j,bi,bj) + gVmom(i,j)
+         DO J=jMin,jMax
+          DO I=jMin,jMax
+           rhsU(I,J,bi,bj) = rhsU(I,J,bi,bj) + gUmom(I,J)
+           rhsV(I,J,bi,bj) = rhsV(I,J,bi,bj) + gVmom(I,J)
           ENDDO
          ENDDO
         ENDIF
@@ -512,30 +511,45 @@ C
 C--     prevent tri-diagonal solver from modifying OB values:
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=jMin,jMax
-         DO i=iMin,iMax
+        DO J=jMin,jMax
+         DO I=iMin,iMax
           IF ( maskInC(i,j,bi,bj)*maskInC(i-1,j,bi,bj) .EQ. 0. ) THEN
-           AU(i,j,bi,bj)   = ZERO
-           BU(i,j,bi,bj)   = ONE
-           CU(i,j,bi,bj)   = ZERO
-           uRt1(i,j,bi,bj) = ZERO
-           uRt2(i,j,bi,bj) = ZERO
-           rhsU(i,j,bi,bj) = uIce(i,j,bi,bj)
+           AU(I,J,bi,bj)   = ZERO
+           BU(I,J,bi,bj)   = ONE
+           CU(I,J,bi,bj)   = ZERO
+           uRt1(I,J,bi,bj) = ZERO
+           uRt2(I,J,bi,bj) = ZERO
+           rhsU(I,J,bi,bj) = uIce(I,J,bi,bj)
           ENDIF
           IF ( maskInC(i,j,bi,bj)*maskInC(i,j-1,bi,bj) .EQ. 0. ) THEN
-           AV(i,j,bi,bj)   = ZERO
-           BV(i,j,bi,bj)   = ONE
-           CV(i,j,bi,bj)   = ZERO
-           vRt1(i,j,bi,bj) = ZERO
-           vRt2(i,j,bi,bj) = ZERO
-           rhsV(i,j,bi,bj) = vIce(i,j,bi,bj)
+           AV(I,J,bi,bj)   = ZERO
+           BV(I,J,bi,bj)   = ONE
+           CV(I,J,bi,bj)   = ZERO
+           vRt1(I,J,bi,bj) = ZERO
+           vRt2(I,J,bi,bj) = ZERO
+           rhsV(I,J,bi,bj) = vIce(I,J,bi,bj)
           ENDIF
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 #endif /* OBCS_UVICE_OLD */
-
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+           BU(I,J,bi,bj) = BU(I,J,bi,bj) + seaiceMaskU(I,J,bi,bj)
+     &                   * SideDragX(I,J,bi,bj)
+     &                   * areaW(I,J,bi,bj)
+           BV(I,J,bi,bj) = BV(I,J,bi,bj) + seaiceMaskV(I,J,bi,bj)
+     &                   * SideDragY(I,J,bi,bj)
+     &                   * areaS(I,J,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+#endif /* SEAICE_ALLOW_SIDEDRAG */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DEBUG
@@ -726,8 +740,8 @@ CADJ STORE uice, vice = comlev1_lsr, kind=isbyte, key = itmpkey2
              DO i=iMin,iMax
               vTmp(i,j,bi,bj)  = vIce(i,j,bi,bj)
               rhsVy(i,j,bi,bj) = ( rhsV(i,j,bi,bj)
-     &             + vRt1(i,j,bi,bj)*vIce(i-1,j,bi,bj)
-     &             + vRt2(i,j,bi,bj)*vIce(i+1,j,bi,bj)
+     &             + vRt1(i,j,bi,bj)*vIce(i-1,J,bi,bj)
+     &             + vRt2(i,j,bi,bj)*vIce(i+1,J,bi,bj)
      &                           )*seaiceMaskU(i,j,bi,bj)
              ENDDO
             ENDDO
@@ -790,8 +804,8 @@ C-jmc: get less TAF warnings when always (no if doIterate) saving uIce,vIce:
 C     save u/vIce prior to iteration
           DO j=1-OLy,sNy+OLy
            DO i=1-OLx,sNx+OLx
-            uTmp(i,j,bi,bj)=uIce(i,j,bi,bj)
-            vTmp(i,j,bi,bj)=vIce(i,j,bi,bj)
+            uTmp(I,J,bi,bj)=uIce(I,J,bi,bj)
+            vTmp(I,J,bi,bj)=vIce(I,J,bi,bj)
            ENDDO
           ENDDO
 
@@ -823,10 +837,10 @@ C     end bi,bj-loops
          S1=ZERO
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
-           DO j=1,sNy
-            DO i=1,sNx
-             UERR=(uIce(i,j,bi,bj)-uTmp(i,j,bi,bj))
-     &               * seaiceMaskU(i,j,bi,bj)
+           DO J=1,sNy
+            DO I=1,sNx
+             UERR=(uIce(I,J,bi,bj)-uTmp(I,J,bi,bj))
+     &               * seaiceMaskU(I,J,bi,bj)
              S1=MAX(ABS(UERR),S1)
             ENDDO
            ENDDO
@@ -848,10 +862,10 @@ C SAFEGUARD AGAINST BAD FORCING ETC
          S2=ZERO
          DO bj=myByLo(myThid),myByHi(myThid)
           DO bi=myBxLo(myThid),myBxHi(myThid)
-           DO j=1,sNy
-            DO i=1,sNx
-             UERR=(vIce(i,j,bi,bj)-vTmp(i,j,bi,bj))
-     &               * seaiceMaskV(i,j,bi,bj)
+           DO J=1,sNy
+            DO I=1,sNx
+             UERR=(vIce(I,J,bi,bj)-vTmp(I,J,bi,bj))
+     &               * seaiceMaskV(I,J,bi,bj)
              S2=MAX(ABS(UERR),S2)
             ENDDO
            ENDDO
@@ -935,10 +949,10 @@ C--   Calculate final residual of the linearised system
 C     APPLY MASKS
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          uIce(i,j,bi,bj)=uIce(i,j,bi,bj)* seaiceMaskU(i,j,bi,bj)
-          vIce(i,j,bi,bj)=vIce(i,j,bi,bj)* seaiceMaskV(i,j,bi,bj)
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
+          uIce(I,J,bi,bj)=uIce(I,J,bi,bj)* seaiceMaskU(I,J,bi,bj)
+          vIce(I,J,bi,bj)=vIce(I,J,bi,bj)* seaiceMaskV(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -981,7 +995,6 @@ C--   Compute residual norm and print
        _END_MASTER( myThid )
       ENDIF
 #endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
-
       ENDIF
 C     end outer ipass pseudo-time stepping loop
       ENDDO
@@ -1259,63 +1272,63 @@ C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         IF ( SEAICEscaleSurfStress ) THEN
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-           areaW(i,j) = 0.5 _d 0*(AREA(i,j,bi,bj)+AREA(i-1,j,bi,bj))
-           areaS(i,j) = 0.5 _d 0*(AREA(i,j,bi,bj)+AREA(i,j-1,bi,bj))
+         DO J=jMin,jMax
+          DO I=iMin,iMax
+           areaW(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I-1,J,bi,bj))
+           areaS(I,J) = 0.5 _d 0*(AREA(I,J,bi,bj)+AREA(I,J-1,bi,bj))
           ENDDO
          ENDDO
         ELSE
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-           areaW(i,j) = 1. _d 0
-           areaS(i,j) = 1. _d 0
+         DO J=jMin,jMax
+          DO I=iMin,iMax
+           areaW(I,J) = 1. _d 0
+           areaS(I,J) = 1. _d 0
           ENDDO
          ENDDO
         ENDIF
 C
-C     coefficients of uIce(i,j) and vIce(i,j) belonging to ...
+C     coefficients of uIce(I,J) and vIce(I,J) belonging to ...
 C
-        DO j=jMin,jMax
-         DO i=iMin-1,iMax
+        DO J=jMin,jMax
+         DO I=iMin-1,iMax
 C     ... d/dx (eta+zeta) d/dx u
-          UXX(i,j) = _dyF(i,j,bi,bj) * etaPlusZeta(i,j,bi,bj)
-     &         * _recip_dxF(i,j,bi,bj)
+          UXX(I,J) = _dyF(I,J,bi,bj) * etaPlusZeta(I,J,bi,bj)
+     &         * _recip_dxF(I,J,bi,bj)
 C     ... d/dx (zeta-eta) k1 u
-          UXM(i,j) = _dyF(i,j,bi,bj) * zetaMinusEta(i,j,bi,bj)
-     &         * k1AtC(i,j,bi,bj) * 0.5 _d 0
+          UXM(I,J) = _dyF(I,J,bi,bj) * zetaMinusEta(I,J,bi,bj)
+     &         * k1AtC(I,J,bi,bj) * 0.5 _d 0
          ENDDO
         ENDDO
-        DO j=jMin,jMax+1
-         DO i=iMin,iMax
+        DO J=jMin,jMax+1
+         DO I=iMin,iMax
 C     ... d/dy eta d/dy u
-          UYY(i,j) = _dxV(i,j,bi,bj) *
-     &         ( etaZloc(i,j,bi,bj) + strImpCplFac*zetaZloc(i,j,bi,bj) )
-     &         * _recip_dyU(i,j,bi,bj)
+          UYY(I,J) = _dxV(I,J,bi,bj) *
+     &         ( etaZloc(I,J,bi,bj) + strImpCplFac*zetaZloc(I,J,bi,bj) )
+     &         * _recip_dyU(I,J,bi,bj)
 C     ... d/dy eta k2 u
-          UYM(i,j) = _dxV(i,j,bi,bj) * etaZloc(i,j,bi,bj)
-     &         * k2AtZ(i,j,bi,bj) * 0.5 _d 0
+          UYM(I,J) = _dxV(I,J,bi,bj) * etaZloc(I,J,bi,bj)
+     &         * k2AtZ(I,J,bi,bj) * 0.5 _d 0
          ENDDO
         ENDDO
-        DO j=jMin,jMax
-         DO i=iMin,iMax+1
+        DO J=jMin,jMax
+         DO I=iMin,iMax+1
 C     ... d/dx eta dv/dx
-          VXX(i,j) = _dyU(i,j,bi,bj) *
-     &         ( etaZloc(i,j,bi,bj) + strImpCplFac*zetaZloc(i,j,bi,bj) )
-     &         * _recip_dxV(i,j,bi,bj)
+          VXX(I,J) = _dyU(I,J,bi,bj) *
+     &         ( etaZloc(I,J,bi,bj) + strImpCplFac*zetaZloc(I,J,bi,bj) )
+     &         * _recip_dxV(I,J,bi,bj)
 C     ... d/dx eta k1 v
-          VXM(i,j) = _dyU(i,j,bi,bj) * etaZloc(i,j,bi,bj)
-     &         * k1AtZ(i,j,bi,bj) * 0.5 _d 0
+          VXM(I,J) = _dyU(I,J,bi,bj) * etaZloc(I,J,bi,bj)
+     &         * k1AtZ(I,J,bi,bj) * 0.5 _d 0
          ENDDO
         ENDDO
-        DO j=jMin-1,jMax
-         DO i=iMin,iMax
+        DO J=jMin-1,jMax
+         DO I=iMin,iMax
 C     ... d/dy eta+zeta dv/dy
-          VYY(i,j) = _dxF(i,j,bi,bj) * etaPlusZeta(i,j,bi,bj)
-     &         * _recip_dyF(i,j,bi,bj)
+          VYY(I,J) = _dxF(I,J,bi,bj) * etaPlusZeta(I,J,bi,bj)
+     &         * _recip_dyF(I,J,bi,bj)
 C     ... d/dy (zeta-eta) k2 v
-          VYM(i,j) = _dxF(i,j,bi,bj) * zetaMinusEta(i,j,bi,bj)
-     &         * k2AtC(i,j,bi,bj) * 0.5 _d 0
+          VYM(I,J) = _dxF(I,J,bi,bj) * zetaMinusEta(I,J,bi,bj)
+     &         * k2AtC(I,J,bi,bj) * 0.5 _d 0
          ENDDO
         ENDDO
 
@@ -1323,62 +1336,62 @@ C--   Coefficients for solving uIce :
 
 C     assemble coefficient matrix, beware of sign convention: because this
 C     is the left hand side we calculate -grad(sigma), but the coefficients
-C     of U(i,j+/-1) are counted on the right hand side
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-C     coefficients for UICE(i-1,j)
-          AU(i,j,bi,bj)= ( - UXX(i-1,j) + UXM(i-1,j) )
-     &         * seaiceMaskU(i,j,bi,bj)
-C     coefficients for UICE(i+1,j)
-          CU(i,j,bi,bj)= ( - UXX(i  ,j) - UXM(i  ,j) )
-     &         * seaiceMaskU(i,j,bi,bj)
-C     coefficients for UICE(i,j)
-          BU(i,j,bi,bj)=(ONE - seaiceMaskU(i,j,bi,bj)) +
-     &         ( UXX(i-1,j) + UXX(i,j) + UYY(i,j+1) + UYY(i,j)
-     &         + UXM(i-1,j) - UXM(i,j) + UYM(i,j+1) - UYM(i,j)
-     &         ) * seaiceMaskU(i,j,bi,bj)
-C     coefficients of uIce(i,j-1)
-          uRt1(i,j,bi,bj)= UYY(i,j  ) + UYM(i,j  )
-C     coefficients of uIce(i,j+1)
-          uRt2(i,j,bi,bj)= UYY(i,j+1) - UYM(i,j+1)
+C     of U(I,J+/-1) are counted on the right hand side
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+C     coefficients for UICE(I-1,J)
+          AU(I,J,bi,bj)= ( - UXX(I-1,J) + UXM(I-1,J) )
+     &         * seaiceMaskU(I,J,bi,bj)
+C     coefficients for UICE(I+1,J)
+          CU(I,J,bi,bj)= ( - UXX(I  ,J) - UXM(I  ,J) )
+     &         * seaiceMaskU(I,J,bi,bj)
+C     coefficients for UICE(I,J)
+          BU(I,J,bi,bj)=(ONE - seaiceMaskU(I,J,bi,bj)) +
+     &         ( UXX(I-1,J) + UXX(I,J) + UYY(I,J+1) + UYY(I,J)
+     &         + UXM(I-1,J) - UXM(I,J) + UYM(I,J+1) - UYM(I,J)
+     &         ) * seaiceMaskU(I,J,bi,bj)
+C     coefficients of uIce(I,J-1)
+          uRt1(I,J,bi,bj)= UYY(I,J  ) + UYM(I,J  )
+C     coefficients of uIce(I,J+1)
+          uRt2(I,J,bi,bj)= UYY(I,J+1) - UYM(I,J+1)
          ENDDO
         ENDDO
 
 C     apply boundary conditions according to slip factor
 C     for no slip, set u on boundary to zero: u(j+/-1)=-u(j)
 C     for the free slip case sigma_12 = 0
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          hFacM = seaiceMaskU(i,j-1,bi,bj)
-          hFacP = seaiceMaskU(i,j+1,bi,bj)
-C     copy contributions to coefficient of U(i,j)
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          hFacM = seaiceMaskU(I,J-1,bi,bj)
+          hFacP = seaiceMaskU(I,J+1,bi,bj)
+C     copy contributions to coefficient of U(I,J)
 C     beware of sign convection: uRt1/2 have the opposite sign convention
 C     than BU, hence the minus sign
-          BU(i,j,bi,bj)=BU(i,j,bi,bj) + seaiceMaskU(i,j,bi,bj) *
-     &         ( ( 1. _d 0 - hFacM ) * ( UYY(i  ,j  ) + UYM(i  ,j  ) )
-     &         + ( 1. _d 0 - hFacP ) * ( UYY(i  ,j+1) - UYM(i  ,j+1) ) )
-C     reset coefficients of U(i,j-1) and U(i,j+1)
-          uRt1(i,j,bi,bj) = uRt1(i,j,bi,bj) * hFacM
-          uRt2(i,j,bi,bj) = uRt2(i,j,bi,bj) * hFacP
+          BU(I,J,bi,bj)=BU(I,J,bi,bj) + seaiceMaskU(I,J,bi,bj) *
+     &         ( ( 1. _d 0 - hFacM ) * ( UYY(I  ,J  ) + UYM(I  ,J  ) )
+     &         + ( 1. _d 0 - hFacP ) * ( UYY(I  ,J+1) - UYM(I  ,J+1) ) )
+C     reset coefficients of U(I,J-1) and U(I,J+1)
+          uRt1(I,J,bi,bj) = uRt1(I,J,bi,bj) * hFacM
+          uRt2(I,J,bi,bj) = uRt2(I,J,bi,bj) * hFacP
          ENDDO
         ENDDO
 
 C     now we need to normalize everything by the grid cell area
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          AU(i,j,bi,bj)   = AU(i,j,bi,bj)   * recip_rAw(i,j,bi,bj)
-          CU(i,j,bi,bj)   = CU(i,j,bi,bj)   * recip_rAw(i,j,bi,bj)
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          AU(I,J,bi,bj)   = AU(I,J,bi,bj)   * recip_rAw(I,J,bi,bj)
+          CU(I,J,bi,bj)   = CU(I,J,bi,bj)   * recip_rAw(I,J,bi,bj)
 C     here we need to add the contribution from the time derivative (in
 C     bdfAlphaOverDt) and the symmetric drag term; must be done after
 C     normalizing
-          BU(i,j,bi,bj)    = BU(i,j,bi,bj)  * recip_rAw(i,j,bi,bj)
-     &         + seaiceMaskU(i,j,bi,bj) *
-     &         ( bdfAlphaOverDt*seaiceMassU(i,j,bi,bj)
-     &         + 0.5 _d 0 * ( dragSym(i,  J,bi,bj)
-     &                      + dragSym(i-1,j,bi,bj) )*areaW(i,j)
+          BU(I,J,bi,bj)    = BU(I,J,bi,bj)  * recip_rAw(I,J,bi,bj)
+     &         + seaiceMaskU(I,J,bi,bj) *
+     &         ( bdfAlphaOverDt*seaiceMassU(I,J,bi,bj)
+     &         + 0.5 _d 0 * ( dragSym(I,  J,bi,bj)
+     &                      + dragSym(I-1,J,bi,bj) )*areaW(I,J)
      &         )
-          uRt1(i,j,bi,bj) = uRt1(i,j,bi,bj) * recip_rAw(i,j,bi,bj)
-          uRt2(i,j,bi,bj) = uRt2(i,j,bi,bj) * recip_rAw(i,j,bi,bj)
+          uRt1(I,J,bi,bj) = uRt1(I,J,bi,bj) * recip_rAw(I,J,bi,bj)
+          uRt2(I,J,bi,bj) = uRt2(I,J,bi,bj) * recip_rAw(I,J,bi,bj)
          ENDDO
         ENDDO
 
@@ -1386,62 +1399,62 @@ C--   Coefficients for solving uIce :
 
 C     assemble coefficient matrix, beware of sign convention: because this
 C     is the left hand side we calculate -grad(sigma), but the coefficients
-C     of V(i+/-1,j) are counted on the right hand side
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-C     coefficients for VICE(i,j-1)
-          AV(i,j,bi,bj)=( - VYY(i,j-1) + VYM(i,j-1)
-     &         ) * seaiceMaskV(i,j,bi,bj)
-C     coefficients for VICE(i,j+1)
-          CV(i,j,bi,bj)=( - VYY(i,j  ) - VYM(i,j  )
-     &         ) * seaiceMaskV(i,j,bi,bj)
-C     coefficients for VICE(i,j)
-          BV(i,j,bi,bj)= (ONE - seaiceMaskV(i,j,bi,bj)) +
-     &         ( VXX(i,j) + VXX(i+1,j) + VYY(i,j) + VYY(i,j-1)
-     &         - VXM(i,j) + VXM(i+1,j) - VYM(i,j) + VYM(i,j-1)
-     &         ) * seaiceMaskV(i,j,bi,bj)
-C     coefficients for V(i-1,j)
-          vRt1(i,j,bi,bj) = VXX(i  ,j) + VXM(i  ,j)
-C     coefficients for V(i+1,j)
-          vRt2(i,j,bi,bj) = VXX(i+1,j) - VXM(i+1,j)
+C     of V(I+/-1,J) are counted on the right hand side
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+C     coefficients for VICE(I,J-1)
+          AV(I,J,bi,bj)=( - VYY(I,J-1) + VYM(I,J-1)
+     &         ) * seaiceMaskV(I,J,bi,bj)
+C     coefficients for VICE(I,J+1)
+          CV(I,J,bi,bj)=( - VYY(I,J  ) - VYM(I,J  )
+     &         ) * seaiceMaskV(I,J,bi,bj)
+C     coefficients for VICE(I,J)
+          BV(I,J,bi,bj)= (ONE - seaiceMaskV(I,J,bi,bj)) +
+     &         ( VXX(I,J) + VXX(I+1,J) + VYY(I,J) + VYY(I,J-1)
+     &         - VXM(I,J) + VXM(I+1,J) - VYM(I,J) + VYM(I,J-1)
+     &         ) * seaiceMaskV(I,J,bi,bj)
+C     coefficients for V(I-1,J)
+          vRt1(I,J,bi,bj) = VXX(I  ,J) + VXM(I  ,J)
+C     coefficients for V(I+1,J)
+          vRt2(I,J,bi,bj) = VXX(I+1,J) - VXM(I+1,J)
          ENDDO
         ENDDO
 
 C     apply boundary conditions according to slip factor
 C     for no slip, set u on boundary to zero: v(i+/-1)=-v(i)
 C     for the free slip case sigma_12 = 0
-        DO j=jMin,jMax
-         DO i=iMin,iMax
+        DO J=jMin,jMax
+         DO I=iMin,iMax
           hFacM = seaiceMaskV(i-1,j,bi,bj)
           hFacP = seaiceMaskV(i+1,j,bi,bj)
-C     copy contributions to coefficient of V(i,j)
+C     copy contributions to coefficient of V(I,J)
 C     beware of sign convection: vRt1/2 have the opposite sign convention
 C     than BV, hence the minus sign
-          BV(i,j,bi,bj)=BV(i,j,bi,bj) + seaiceMaskV(i,j,bi,bj) *
-     &         ( ( 1. _d 0 - hFacM ) * ( VXX(i  ,j) + VXM(i  ,j) )
-     &         + ( 1. _d 0 - hFacP ) * ( VXX(i+1,j) - VXM(i+1,j) ) )
-C     reset coefficients of V(i-1,j) and V(i+1,j)
-          vRt1(i,j,bi,bj) = vRt1(i,j,bi,bj) * hFacM
-          vRt2(i,j,bi,bj) = vRt2(i,j,bi,bj) * hFacP
+          BV(I,J,bi,bj)=BV(I,J,bi,bj) + seaiceMaskV(I,J,bi,bj) *
+     &         ( ( 1. _d 0 - hFacM ) * ( VXX(I  ,J) + VXM(I  ,J) )
+     &         + ( 1. _d 0 - hFacP ) * ( VXX(I+1,J) - VXM(I+1,J) ) )
+C     reset coefficients of V(I-1,J) and V(I+1,J)
+          vRt1(I,J,bi,bj) = vRt1(I,J,bi,bj) * hFacM
+          vRt2(I,J,bi,bj) = vRt2(I,J,bi,bj) * hFacP
          ENDDO
         ENDDO
 
 C     now we need to normalize everything by the grid cell area
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          AV(i,j,bi,bj)   = AV(i,j,bi,bj)   * recip_rAs(i,j,bi,bj)
-          CV(i,j,bi,bj)   = CV(i,j,bi,bj)   * recip_rAs(i,j,bi,bj)
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          AV(I,J,bi,bj)   = AV(I,J,bi,bj)   * recip_rAs(I,J,bi,bj)
+          CV(I,J,bi,bj)   = CV(I,J,bi,bj)   * recip_rAs(I,J,bi,bj)
 C     here we need add the contribution from the time derivative (in
 C     bdfAlphaOverDt) and the symmetric drag term; must be done after
 C     normalizing
-          BV(i,j,bi,bj)   = BV(i,j,bi,bj)   * recip_rAs(i,j,bi,bj)
-     &         + seaiceMaskV(i,j,bi,bj) *
-     &         ( bdfAlphaOverDt*seaiceMassV(i,j,bi,bj)
-     &         + 0.5 _d 0 * ( dragSym(i,j,  bi,bj)
-     &                      + dragSym(i,j-1,bi,bj) )*areaS(i,j)
+          BV(I,J,bi,bj)   = BV(I,J,bi,bj)   * recip_rAs(I,J,bi,bj)
+     &         + seaiceMaskV(I,J,bi,bj) *
+     &         ( bdfAlphaOverDt*seaiceMassV(I,J,bi,bj)
+     &         + 0.5 _d 0 * ( dragSym(I,J,  bi,bj)
+     &                      + dragSym(I,J-1,bi,bj) )*areaS(I,J)
      &         )
-          vRt1(i,j,bi,bj) = vRt1(i,j,bi,bj) * recip_rAs(i,j,bi,bj)
-          vRt2(i,j,bi,bj) = vRt2(i,j,bi,bj) * recip_rAs(i,j,bi,bj)
+          vRt1(I,J,bi,bj) = vRt1(I,J,bi,bj) * recip_rAs(I,J,bi,bj)
+          vRt2(I,J,bi,bj) = vRt2(I,J,bi,bj) * recip_rAs(I,J,bi,bj)
          ENDDO
         ENDDO
 
@@ -1454,10 +1467,10 @@ C     but for safety lets call this routine whenever SEAICE_OLx/y > 0
 C     &       (SEAICE_OLx.EQ.OLx-2 .OR. SEAICE_OLy.EQ.OLy-2) ) THEN
 C     When scaling the surface ice-ocean stress by AREA, then there will
 C     be many cases of zero diagonal entries.
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-           IF (BU(i,j,bi,bj).EQ.0 _d 0) BU(i,j,bi,bj) = 1. _d 0
-           IF (BV(i,j,bi,bj).EQ.0 _d 0) BV(i,j,bi,bj) = 1. _d 0
+         DO J=jMin,jMax
+          DO I=iMin,iMax
+           IF (BU(I,J,bi,bj).EQ.0 _d 0) BU(I,J,bi,bj) = 1. _d 0
+           IF (BV(I,J,bi,bj).EQ.0 _d 0) BV(I,J,bi,bj) = 1. _d 0
           ENDDO
          ENDDO
         ENDIF
@@ -1513,7 +1526,7 @@ C
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j  :: Loop counters
-      INTEGER i,j
+      INTEGER I,J
       INTEGER kSrf
       _RL hFacM
       _RL sig11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -1521,41 +1534,41 @@ C     i,j  :: Loop counters
 CEOP
 
       kSrf = 1
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        sig11(i,j) = 0. _d 0
-        sig12(i,j) = 0. _d 0
+      DO J=1-OLy,sNy+OLy
+       DO I=1-OLx,sNx+OLx
+        sig11(I,J) = 0. _d 0
+        sig12(I,J) = 0. _d 0
        ENDDO
       ENDDO
 C     contribution of sigma11 to rhs
-      DO j=jMin,jMax
-       DO i=iMin-1,iMax
-        sig11(i,j) = zetaMinusEta(i,j,bi,bj)
-     &       * ( vIceC(i,j+1,bi,bj) - vIceC(i,j,bi,bj) )
-     &       * _recip_dyF(i,j,bi,bj)
-     &       + etaPlusZeta(i,j,bi,bj) * k2AtC(i,j,bi,bj)
-     &       * 0.5 _d 0 * ( vIceC(i,j+1,bi,bj) + vIceC(i,j,bi,bj) )
-     &       - 0.5 _d 0 * pressLoc(i,j,bi,bj)
+      DO J=jMin,jMax
+       DO I=iMin-1,iMax
+        sig11(I,J) = zetaMinusEta(I,J,bi,bj)
+     &       * ( vIceC(I,J+1,bi,bj) - vIceC(I,J,bi,bj) )
+     &       * _recip_dyF(I,J,bi,bj)
+     &       + etaPlusZeta(I,J,bi,bj) * k2AtC(I,J,bi,bj)
+     &       * 0.5 _d 0 * ( vIceC(I,J+1,bi,bj) + vIceC(I,J,bi,bj) )
+     &       - 0.5 _d 0 * pressLoc(I,J,bi,bj)
        ENDDO
       ENDDO
 C     contribution of sigma12 to rhs of u-equation
-      DO j=jMin,jMax+1
-       DO i=iMin,iMax
-        hFacM = seaiceMaskV(i,j,bi,bj) - seaiceMaskV(i-1,j,bi,bj)
-        sig12(i,j) = etaZloc(i,j,bi,bj) * (
-     &       ( vIceC(i,j,bi,bj) - vIceC(i-1,j,bi,bj) )
-     &       * _recip_dxV(i,j,bi,bj)
-     &       - k1AtZ(i,j,bi,bj)
-     &       * 0.5 _d 0 * ( vIceC(i,j,bi,bj) + vIceC(i-1,j,bi,bj) )
+      DO J=jMin,jMax+1
+       DO I=iMin,iMax
+        hFacM = seaiceMaskV(I,J,bi,bj) - seaiceMaskV(I-1,J,bi,bj)
+        sig12(I,J) = etaZloc(I,J,bi,bj) * (
+     &       ( vIceC(I,J,bi,bj) - vIceC(I-1,J,bi,bj) )
+     &       * _recip_dxV(I,J,bi,bj)
+     &       - k1AtZ(I,J,bi,bj)
+     &       * 0.5 _d 0 * ( vIceC(I,J,bi,bj) + vIceC(I-1,J,bi,bj) )
      &       )
 C     free slip conditions (sig12=0) are taken care of by masking sig12
-     &       *HEFFM(i  ,j  ,bi,bj)*HEFFM(i-1,j  ,bi,bj)
-     &       *HEFFM(i  ,j-1,bi,bj)*HEFFM(i-1,j-1,bi,bj)
+     &       *HEFFM(I  ,J  ,bi,bj)*HEFFM(I-1,J  ,bi,bj)
+     &       *HEFFM(I  ,J-1,bi,bj)*HEFFM(I-1,J-1,bi,bj)
 C     no slip boundary conditions (v(i-1)=-v(i))
 C     v(i)+v(i-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with v(i)-v(i-1)
-     &       + etaZloc(i,j,bi,bj) * _recip_dxV(i,j,bi,bj)
-     &       * ( vIceC(i,j,bi,bj) + vIceC(i-1,j,bi,bj) )
+     &       + etaZloc(I,J,bi,bj) * _recip_dxV(I,J,bi,bj)
+     &       * ( vIceC(I,J,bi,bj) + vIceC(I-1,J,bi,bj) )
      &       * hFacM * 2. _d 0
        ENDDO
       ENDDO
@@ -1564,35 +1577,35 @@ C     only need to deal with v(i)-v(i-1)
 C     strictly speaking, this is not a contribution to sig12, but for
 C     convenience we add the explicit term -zetaZ*du/dy here;
 C     we do not have to add any metric terms, because they cancel.
-       DO j=jMin,jMax+1
-        DO i=iMin,iMax
-         hFacM = seaiceMaskV(i,j,bi,bj) - seaiceMaskV(i-1,j,bi,bj)
-         sig12(i,j) = sig12(i,j) - zetaZloc(i,j,bi,bj) * (
-     &        ( uIceC(i,j,bi,bj) - uIceC(i,j-1,bi,bj) )
-     &        * _recip_dyU(i,j,bi,bj)
+       DO J=jMin,jMax+1
+        DO I=iMin,iMax
+         hFacM = seaiceMaskV(I,J,bi,bj) - seaiceMaskV(I-1,J,bi,bj)
+         sig12(I,J) = sig12(I,J) - zetaZloc(I,J,bi,bj) * (
+     &        ( uIceC(I,J,bi,bj) - uIceC(I,J-1,bi,bj) )
+     &        * _recip_dyU(I,J,bi,bj)
      &        )
 C     free slip conditions (sig12=0) are taken care of by masking sig12
-     &        *HEFFM(i  ,j  ,bi,bj)*HEFFM(i-1,j  ,bi,bj)
-     &        *HEFFM(i  ,j-1,bi,bj)*HEFFM(i-1,j-1,bi,bj)
+     &        *HEFFM(I  ,J  ,bi,bj)*HEFFM(I-1,J  ,bi,bj)
+     &        *HEFFM(I  ,J-1,bi,bj)*HEFFM(I-1,J-1,bi,bj)
 C     no slip boundary conditions (u(j-1)=-u(j))
 C     u(j)+u(j-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with u(j)-u(j-1)
-     &        - zetaZloc(i,j,bi,bj) * _recip_dyU(i,j,bi,bj)
-     &        * ( uIceC(i,j,bi,bj) + uIceC(i,j-1,bi,bj) )
+     &        - zetaZloc(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
+     &        * ( uIceC(I,J,bi,bj) + uIceC(I,J-1,bi,bj) )
      &        * hFacM * 2. _d 0
         ENDDO
        ENDDO
       ENDIF
 
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO J=jMin,jMax
+       DO I=iMin,iMax
 C     contribution to the rhs part of grad(sigma)_x
-        rhsU(i,j,bi,bj) = rhsU(i,j,bi,bj)
-     &       + recip_rAw(i,j,bi,bj) * seaiceMaskU(i,j,bi,bj) *
-     &       ( _dyF(i  ,j  ,bi,bj)*sig11(i  ,j  )
-     &       - _dyF(i-1,j  ,bi,bj)*sig11(i-1,j  )
-     &       + _dxV(i  ,j+1,bi,bj)*sig12(i  ,j+1)
-     &       - _dxV(i  ,j  ,bi,bj)*sig12(i  ,j  ) )
+        rhsU(I,J,bi,bj) = rhsU(I,J,bi,bj)
+     &       + recip_rAw(I,J,bi,bj) * seaiceMaskU(I,J,bi,bj) *
+     &       ( _dyF(I  ,J  ,bi,bj)*sig11(I  ,J  )
+     &       - _dyF(I-1,J  ,bi,bj)*sig11(I-1,J  )
+     &       + _dxV(I  ,J+1,bi,bj)*sig12(I  ,J+1)
+     &       - _dxV(I  ,J  ,bi,bj)*sig12(I  ,J  ) )
        ENDDO
       ENDDO
 
@@ -1644,7 +1657,7 @@ C
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j  :: Loop counters
-      INTEGER i,j
+      INTEGER I,J
       INTEGER kSrf
       _RL hFacM
       _RL sig22(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -1652,42 +1665,42 @@ C     i,j  :: Loop counters
 CEOP
 
       kSrf = 1
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        sig22(i,j) = 0. _d 0
-        sig12(i,j) = 0. _d 0
+      DO J = 1-OLy,sNy+OLy
+       DO I = 1-OLx,sNx+OLx
+        sig22(I,J) = 0. _d 0
+        sig12(I,J) = 0. _d 0
        ENDDO
       ENDDO
 
 C     contribution of sigma22 to rhs
-      DO j=jMin-1,jMax
-       DO i=iMin,iMax
-        sig22(i,j) = zetaMinusEta(i,j,bi,bj)
-     &       * ( uIceC(i+1,j,bi,bj) - uIceC(i,j,bi,bj) )
-     &       * _recip_dxF(i,j,bi,bj)
-     &       + etaPlusZeta(i,j,bi,bj) * k1AtC(i,j,bi,bj)
-     &       * 0.5 _d 0 * ( uIceC(i+1,j,bi,bj) + uIceC(i,j,bi,bj) )
-     &       - 0.5 _d 0 * pressLoc(i,j,bi,bj)
+      DO J=jMin-1,jMax
+       DO I=iMin,iMax
+        sig22(I,J) = zetaMinusEta(I,J,bi,bj)
+     &       * ( uIceC(I+1,J,bi,bj) - uIceC(I,J,bi,bj) )
+     &       * _recip_dxF(I,J,bi,bj)
+     &       + etaPlusZeta(I,J,bi,bj) * k1AtC(I,J,bi,bj)
+     &       * 0.5 _d 0 * ( uIceC(I+1,J,bi,bj) + uIceC(I,J,bi,bj) )
+     &       - 0.5 _d 0 * pressLoc(I,J,bi,bj)
        ENDDO
       ENDDO
 C     contribution of sigma12 to rhs of v-equation
-      DO j=jMin,jMax
-       DO i=iMin,iMax+1
+      DO J=jMin,jMax
+       DO I=iMin,iMax+1
         hFacM = seaiceMaskU(i,j,bi,bj) - seaiceMaskU(i,j-1,bi,bj)
-        sig12(i,j) = etaZloc(i,j,bi,bj) * (
-     &       ( uIceC(i,j,bi,bj) - uIceC(i,j-1,bi,bj) )
-     &       * _recip_dyU(i,j,bi,bj)
-     &       - k2AtZ(i,j,bi,bj)
-     &       * 0.5 _d 0 * ( uIceC(i,j,bi,bj) + uIceC(i,j-1,bi,bj) )
+        sig12(I,J) = etaZloc(I,J,bi,bj) * (
+     &       ( uIceC(I,J,bi,bj) - uIceC(I,J-1,bi,bj) )
+     &       * _recip_dyU(I,J,bi,bj)
+     &       - k2AtZ(I,J,bi,bj)
+     &       * 0.5 _d 0 * ( uIceC(I,J,bi,bj) + uIceC(I,J-1,bi,bj) )
      &       )
 C     free slip conditions (sig12=0) are taken care of by masking sig12,
-     &       *HEFFM(i  ,j  ,bi,bj)*HEFFM(i-1,j  ,bi,bj)
-     &       *HEFFM(i  ,j-1,bi,bj)*HEFFM(i-1,j-1,bi,bj)
+     &       *HEFFM(I  ,J  ,bi,bj)*HEFFM(I-1,J  ,bi,bj)
+     &       *HEFFM(I  ,J-1,bi,bj)*HEFFM(I-1,J-1,bi,bj)
 C     no slip boundary conditions (u(j-1)=-u(j))
 C     u(j)+u(j-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with u(j)-u(j-1)
-     &       + etaZloc(i,j,bi,bj) * _recip_dyU(i,j,bi,bj)
-     &       * ( uIceC(i,j,bi,bj) + uIceC(i,j-1,bi,bj) )
+     &       + etaZloc(I,J,bi,bj) * _recip_dyU(I,J,bi,bj)
+     &       * ( uIceC(I,J,bi,bj) + uIceC(I,J-1,bi,bj) )
      &         * hFacM * 2. _d 0
        ENDDO
       ENDDO
@@ -1696,35 +1709,35 @@ C     only need to deal with u(j)-u(j-1)
 C     strictly speaking, this is not a contribution to sig12, but for
 C     convenience we add the explicit term -zetaZ*dv/dx here;
 C     we do not have to add any metric terms, because they cancel.
-       DO j=jMin,jMax
-        DO i=iMin,iMax+1
+       DO J=jMin,jMax
+        DO I=iMin,iMax+1
          hFacM = seaiceMaskU(i,j,bi,bj) - seaiceMaskU(i,j-1,bi,bj)
-         sig12(i,j) = sig12(i,j) - zetaZloc(i,j,bi,bj) * (
-     &        ( vIceC(i,j,bi,bj) - vIceC(i-1,j,bi,bj) )
-     &        * _recip_dxV(i,j,bi,bj)
+         sig12(I,J) = sig12(I,J) - zetaZloc(I,J,bi,bj) * (
+     &        ( vIceC(I,J,bi,bj) - vIceC(I-1,J,bi,bj) )
+     &        * _recip_dxV(I,J,bi,bj)
      &        )
 C     free slip conditions (sig12=0) are taken care of by masking sig12
-     &        *HEFFM(i  ,j  ,bi,bj)*HEFFM(i-1,j  ,bi,bj)
-     &        *HEFFM(i  ,j-1,bi,bj)*HEFFM(i-1,j-1,bi,bj)
+     &        *HEFFM(I  ,J  ,bi,bj)*HEFFM(I-1,J  ,bi,bj)
+     &        *HEFFM(I  ,J-1,bi,bj)*HEFFM(I-1,J-1,bi,bj)
 C     no slip boundary conditions (v(i-1)=-v(i))
 C     v(i)+v(i-1) = 0 is also taken care of by masking sig12, so that we
 C     only need to deal with v(i)-v(i-1)
-     &        - zetaZloc(i,j,bi,bj) * _recip_dxV(i,j,bi,bj)
-     &        * ( vIceC(i,j,bi,bj) + vIceC(i-1,j,bi,bj) )
+     &        - zetaZloc(I,J,bi,bj) * _recip_dxV(I,J,bi,bj)
+     &        * ( vIceC(I,J,bi,bj) + vIceC(I-1,J,bi,bj) )
      &        * hFacM * 2. _d 0
         ENDDO
        ENDDO
       ENDIF
 
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO J=jMin,jMax
+       DO I=iMin,iMax
 C     contribution to the rhs part of grad(sigma)_y
-        rhsV(i,j,bi,bj) = rhsV(i,j,bi,bj)
-     &       + recip_rAs(i,j,bi,bj) * seaiceMaskV(i,j,bi,bj) *
-     &       ( _dyU(i+1,j  ,bi,bj) * sig12(i+1,j  )
-     &       - _dyU(i  ,j  ,bi,bj) * sig12(i  ,j  )
-     &       + _dxF(i  ,j  ,bi,bj) * sig22(i  ,j  )
-     &       - _dxF(i  ,j-1,bi,bj) * sig22(i  ,j-1) )
+        rhsV(I,J,bi,bj) = rhsV(I,J,bi,bj)
+     &       + recip_rAs(I,J,bi,bj) * seaiceMaskV(I,J,bi,bj) *
+     &       ( _dyU(I+1,J  ,bi,bj) * sig12(I+1,J  )
+     &       - _dyU(I  ,J  ,bi,bj) * sig12(I  ,J  )
+     &       + _dxF(I  ,J  ,bi,bj) * sig22(I  ,J  )
+     &       - _dxF(I  ,J-1,bi,bj) * sig22(I  ,J-1) )
        ENDDO
       ENDDO
 
@@ -1783,10 +1796,10 @@ CEOP
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j  :: Loop counters
-      INTEGER i,j,iM
+      INTEGER I,J,IM
       INTEGER jMinLoc, jStep
 #ifdef SEAICE_LSR_ZEBRA
-      INTEGER k
+      INTEGER K
       PARAMETER ( jStep = 2 )
 #else
       PARAMETER ( jStep = 1 )
@@ -1796,64 +1809,64 @@ C     i,j  :: Loop counters
       _RL CUU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     Need to initialize local arrays
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        URT(i,j) = 0. _d 0
-        CUU(i,j) = 0. _d 0
+      DO J = 1-OLy,sNy+OLy
+       DO I = 1-OLx,sNx+OLx
+        URT(I,J) = 0. _d 0
+        CUU(I,J) = 0. _d 0
        ENDDO
       ENDDO
 #ifdef SEAICE_LSR_ZEBRA
-      DO k=0,1
-      jMinLoc = jMin+k
+      DO K=0,1
+      jMinLoc = jMin+K
 #else
       jMinLoc = jMin
 #endif /* SEAICE_LSR_ZEBRA */
-      DO j=jMinLoc,jMax,jStep
-       DO i=iMin,iMax
+      DO J=jMinLoc,jMax,jStep
+       DO I=iMin,iMax
         AA3 = 0. _d 0
-        IF (i.EQ.iMin) AA3 = AA3 - AU(i,j,bi,bj)*uIce(i-1,j,bi,bj)
-        IF (i.EQ.iMax) AA3 = AA3 - CU(i,j,bi,bj)*uIce(i+1,j,bi,bj)
+        IF (I.EQ.iMin) AA3 = AA3 - AU(I,J,bi,bj)*uIce(I-1,J,bi,bj)
+        IF (I.EQ.iMax) AA3 = AA3 - CU(I,J,bi,bj)*uIce(I+1,J,bi,bj)
 
-        URT(i,j)=rhsU(i,j,bi,bj)
+        URT(I,J)=rhsU(I,J,bi,bj)
      &       + AA3
-     &       + uRt1(i,j,bi,bj)*uIce(i,j-1,bi,bj)
-     &       + uRt2(i,j,bi,bj)*uIce(i,j+1,bi,bj)
-        URT(i,j)=URT(i,j)* seaiceMaskU(i,j,bi,bj)
+     &       + uRt1(I,J,bi,bj)*uIce(I,J-1,bi,bj)
+     &       + uRt2(I,J,bi,bj)*uIce(I,J+1,bi,bj)
+        URT(I,J)=URT(I,J)* seaiceMaskU(I,J,bi,bj)
        ENDDO
 C     beginning of tridiagnoal solver
-       DO i=iMin,iMax
-        CUU(i,j)=CU(i,j,bi,bj)
+       DO I=iMin,iMax
+        CUU(I,J)=CU(I,J,bi,bj)
        ENDDO
-       CUU(iMin,j)=CUU(iMin,j)/BU(iMin,j,bi,bj)
-       URT(iMin,j)=URT(iMin,j)/BU(iMin,j,bi,bj)
+       CUU(iMin,J)=CUU(iMin,J)/BU(iMin,J,bi,bj)
+       URT(iMin,J)=URT(iMin,J)/BU(iMin,J,bi,bj)
 #ifdef SEAICE_VECTORIZE_LSR
       ENDDO
 C     start a new loop with reversed order to support automatic vectorization
 CADJ loop = sequential
-      DO i=iMin+1,iMax
-       iM=i-1
-       DO j=jMinLoc,jMax,jStep
+      DO I=iMin+1,iMax
+       IM=I-1
+       DO J=jMinLoc,jMax,jStep
 #else /* do not SEAICE_VECTORIZE_LSR */
 CADJ loop = sequential
-       DO i=iMin+1,iMax
-        iM=i-1
+       DO I=iMin+1,iMax
+        IM=I-1
 #endif /* SEAICE_VECTORIZE_LSR */
-        bet      = BU(i,j,bi,bj)-AU(i,j,bi,bj)*CUU(iM,j)
-        CUU(i,j) = CUU(i,j)/bet
-        URT(i,j) = (URT(i,j)-AU(i,j,bi,bj)*URT(iM,j))/bet
+        bet      = BU(I,J,bi,bj)-AU(I,J,bi,bj)*CUU(IM,J)
+        CUU(I,J) = CUU(I,J)/bet
+        URT(I,J) = (URT(I,J)-AU(I,J,bi,bj)*URT(IM,J))/bet
        ENDDO
 #ifdef SEAICE_VECTORIZE_LSR
       ENDDO
 CADJ loop = sequential
-      DO i=iMin,iMax-1
-       iM=sNx-I
-       DO j=jMinLoc,jMax,jStep
+      DO I=iMin,iMax-1
+       IM=sNx-I
+       DO J=jMinLoc,jMax,jStep
 #else
 CADJ loop = sequential
-       DO i=iMin,iMax-1
-        iM=sNx-I
+       DO I=iMin,iMax-1
+        IM=sNx-I
 #endif /* SEAICE_VECTORIZE_LSR */
-        URT(iM,j)=URT(iM,j)-CUU(iM,j)*URT(iM+1,j)
+        URT(IM,J)=URT(IM,J)-CUU(IM,J)*URT(IM+1,J)
        ENDDO
 #ifdef SEAICE_VECTORIZE_LSR
       ENDDO
@@ -1862,11 +1875,11 @@ C     end of tridiagnoal solver, solution is URT
 C     relaxation with WFAU
 #ifdef SEAICE_VECTORIZE_LSR
 C     go back to original order
-      DO j=jMinLoc,jMax,jStep
+      DO J=jMinLoc,jMax,jStep
 #endif /* SEAICE_VECTORIZE_LSR */
-       DO i=iMin,iMax
-        uIce(i,j,bi,bj)=uTmp(i,j,bi,bj)
-     &       +WFAU*(URT(i,j)-uTmp(i,j,bi,bj))
+       DO I=iMin,iMax
+        uIce(I,J,bi,bj)=uTmp(I,J,bi,bj)
+     &       +WFAU*(URT(I,J)-uTmp(I,J,bi,bj))
        ENDDO
       ENDDO
 #ifdef SEAICE_LSR_ZEBRA
@@ -1928,10 +1941,10 @@ CEOP
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j  :: Loop counters
-      INTEGER i,j,jM
+      INTEGER I,J,JM
       INTEGER iMinLoc, iStep
 #ifdef SEAICE_LSR_ZEBRA
-      INTEGER k
+      INTEGER K
       PARAMETER ( iStep = 2 )
 #else
       PARAMETER ( iStep = 1 )
@@ -1941,85 +1954,85 @@ C     i,j  :: Loop counters
       _RL CVV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     Need to initialize local arrays
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        VRT(i,j) = 0. _d 0
-        CVV(i,j) = 0. _d 0
+      DO J = 1-OLy,sNy+OLy
+       DO I = 1-OLx,sNx+OLx
+        VRT(I,J) = 0. _d 0
+        CVV(I,J) = 0. _d 0
        ENDDO
       ENDDO
 #ifdef SEAICE_LSR_ZEBRA
-      DO k=0,1
-      iMinLoc = iMin+k
+      DO K=0,1
+      iMinLoc = iMin+K
 #else
       iMinLoc = iMin
 #endif /*  SEAICE_LSR_ZEBRA */
 #ifdef SEAICE_VECTORIZE_LSR
-      DO j=jMin,jMax
-       DO i=iMinLoc,iMax,iStep
+      DO J=jMin,jMax
+       DO I=iMinLoc,iMax,iStep
 #else
-      DO i=iMinLoc,iMax,iStep
-       DO j=jMin,jMax
+      DO I=iMinLoc,iMax,iStep
+       DO J=jMin,jMax
 #endif /* SEAICE_VECTORIZE_LSR */
         AA3 = 0. _d 0
-        IF (j.EQ.jMin) AA3 = AA3 - AV(i,j,bi,bj)*vIce(i,j-1,bi,bj)
-        IF (j.EQ.jMax) AA3 = AA3 - CV(i,j,bi,bj)*vIce(i,j+1,bi,bj)
+        IF (J.EQ.jMin) AA3 = AA3 - AV(I,J,bi,bj)*vIce(I,J-1,bi,bj)
+        IF (J.EQ.jMax) AA3 = AA3 - CV(I,J,bi,bj)*vIce(I,J+1,bi,bj)
 
-        VRT(i,j)=rhsV(i,j,bi,bj)
+        VRT(I,J)=rhsV(I,J,bi,bj)
      &       + AA3
-     &       + vRt1(i,j,bi,bj)*vIce(i-1,j,bi,bj)
-     &       + vRt2(i,j,bi,bj)*vIce(i+1,j,bi,bj)
-        VRT(i,j)=VRT(i,j)* seaiceMaskV(i,j,bi,bj)
+     &       + vRt1(I,J,bi,bj)*vIce(I-1,J,bi,bj)
+     &       + vRt2(I,J,bi,bj)*vIce(I+1,J,bi,bj)
+        VRT(I,J)=VRT(I,J)* seaiceMaskV(I,J,bi,bj)
 
 C     beginning of tridiagnoal solver
-        CVV(i,j)=CV(i,j,bi,bj)
+        CVV(I,J)=CV(I,J,bi,bj)
        ENDDO
 #ifdef SEAICE_VECTORIZE_LSR
       ENDDO
-      DO i=iMinLoc,iMax,iStep
+      DO I=iMinLoc,iMax,iStep
 #endif /* SEAICE_VECTORIZE_LSR */
-       CVV(i,jMin)=CVV(i,jMin)/BV(i,jMin,bi,bj)
-       VRT(i,jMin)=VRT(i,jMin)/BV(i,jMin,bi,bj)
+       CVV(I,jMin)=CVV(I,jMin)/BV(I,jMin,bi,bj)
+       VRT(I,jMin)=VRT(I,jMin)/BV(I,jMin,bi,bj)
 #ifdef SEAICE_VECTORIZE_LSR
       ENDDO
 C     start a new loop with reversed order to support automatic vectorization
 CADJ loop = sequential
-      DO j=jMin+1,jMax
-       jM=j-1
-       DO i=iMinLoc,iMax,iStep
+      DO J=jMin+1,jMax
+       JM=J-1
+       DO I=iMinLoc,iMax,iStep
 #else /* do not SEAICE_VECTORIZE_LSR */
 CADJ loop = sequential
-       DO j=jMin+1,jMax
-        jM=j-1
+       DO J=jMin+1,jMax
+        JM=J-1
 #endif /* SEAICE_VECTORIZE_LSR */
-        bet      = BV(i,j,bi,bj)-AV(i,j,bi,bj)*CVV(i,jM)
-        CVV(i,j) = CVV(i,j)/bet
-        VRT(i,j) = (VRT(i,j)-AV(i,j,bi,bj)*VRT(i,jM))/bet
+        bet      = BV(I,J,bi,bj)-AV(I,J,bi,bj)*CVV(I,JM)
+        CVV(I,J) = CVV(I,J)/bet
+        VRT(I,J) = (VRT(I,J)-AV(I,J,bi,bj)*VRT(I,JM))/bet
        ENDDO
 #ifdef SEAICE_VECTORIZE_LSR
       ENDDO
 C     go back to original order
 CADJ loop = sequential
-      DO j=jMin,jMax-1
-       jM=sNy-j
-       DO i=iMinLoc,iMax,iStep
+      DO J=jMin,jMax-1
+       JM=sNy-J
+       DO I=iMinLoc,iMax,iStep
 #else
 CADJ loop = sequential
-       DO j=jMin,jMax-1
-        jM=sNy-j
+       DO J=jMin,jMax-1
+        JM=sNy-J
 #endif /* SEAICE_VECTORIZE_LSR */
-        VRT(i,jM)=VRT(i,jM)-CVV(i,jM)*VRT(i,jM+1)
+        VRT(I,JM)=VRT(I,JM)-CVV(I,JM)*VRT(I,JM+1)
        ENDDO
 #ifdef SEAICE_VECTORIZE_LSR
       ENDDO
 C     end of tridiagnoal solver, solution is VRT
 C     relaxation with WFAV
-      DO j=jMin,jMax
-       DO i=iMinLoc,iMax,iStep
+      DO J=jMin,jMax
+       DO I=iMinLoc,iMax,iStep
 #else
-       DO j=jMin,jMax
+       DO J=jMin,jMax
 #endif /* SEAICE_VECTORIZE_LSR */
-        vIce(i,j,bi,bj)=vTmp(i,j,bi,bj)
-     &       +WFAV*(VRT(i,j)-vTmp(i,j,bi,bj))
+        vIce(I,J,bi,bj)=vTmp(I,J,bi,bj)
+     &       +WFAV*(VRT(I,J)-vTmp(I,J,bi,bj))
        ENDDO
       ENDDO
 #ifdef SEAICE_LSR_ZEBRA

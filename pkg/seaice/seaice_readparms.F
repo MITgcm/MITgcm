@@ -144,6 +144,7 @@ C--   SEAICE parameters
      & SEAICE_dryIceAlb_south, SEAICE_wetIceAlb_south,
      & SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
      & SEAICE_cBasalStar, SEAICEbasalDragU0, SEAICEbasalDragK1,
+     & SEAICESideDrag,
      & SEAICEbasalDragK2, SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
      & SEAICE_strength, SEAICE_cStar, SEAICE_eccen,
      & SEAICEpressReplFac, SEAICE_tensilFac, SEAICE_tensilDepth,
@@ -367,6 +368,7 @@ C        c1=1.5/N, c2=42*c1, c3=3.3
       SEAICE_drag        = 0.001  _d 0
       OCEAN_drag         = 0.001  _d 0
       SEAICE_waterDrag   = 0.0055 _d 0
+      SEAICESideDrag     = 0.001  _d 0
       SEAICEdWatMin      = 0.25   _d 0
       SEAICE_dryIceAlb   = 0.75   _d 0
       SEAICE_wetIceAlb   = 0.66   _d 0

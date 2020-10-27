@@ -481,6 +481,7 @@ C
       _RL SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south
       _RL SEAICE_cBasalStar, SEAICEbasalDragU0
       _RL SEAICEbasalDragK1, SEAICEbasalDragK2
+      _RL SEAICESideDrag
       _RL SEAICE_wetAlbTemp, SEAICE_waterAlbedo
       _RL SEAICE_strength, SEAICE_cStar, SEAICEpressReplFac
       _RL SEAICE_tensilFac, SEAICE_tensilDepth, SEAICE_eccen
@@ -536,6 +537,7 @@ C
      &    SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
      &    SEAICE_cBasalStar, SEAICEbasalDragU0,
      &    SEAICEbasalDragK1, SEAICEbasalDragK2,
+     &    SEAICESideDrag,
      &    SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
      &    SEAICE_strength, SEAICE_cStar, SEAICE_eccen,
      &    SEAICEpressReplFac, SEAICE_tensilFac, SEAICE_tensilDepth,
@@ -588,6 +590,11 @@ C                          calculate Hlimit in seaice_init_fixed.F
      &     Hlimit,
      &     Hlimit_c1,Hlimit_c2,Hlimit_c3
 #endif /* SEAICE_ITD */
+
+C#ifdef SEAICE_ALLOW_SIDEDRAG 
+C      COMMON/SEAICE_SIDEDRAG_PARM/ SEAICESideDrag 
+C      _RL SEAICESideDrag 
+C#endif /* SEAICE_ALLOW_SIDEDRAG_PARM */
 
 C--   Constants used by sea-ice model
       _RL         ZERO           , ONE           , TWO
