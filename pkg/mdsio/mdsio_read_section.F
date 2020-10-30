@@ -318,7 +318,7 @@ C- endif iAmDoingIO
 
 C master thread of process 0, only ,read from file
         IF ( iAmDoingIO ) THEN
-          irec = 1 + k-kLo + (irecord-1)*kSize
+          irec = 1 + k-kLo + (irecord-1)*nNz
           IF ( filePrec.EQ.precFloat32 ) THEN
             READ(dUnit,rec=irec) ( x_buffer_r4(i), i=1,xSize )
 #ifdef _BYTESWAPIO
@@ -439,7 +439,7 @@ C-          default (face fit into global-IO-array)
 
            DO k=kLo,kHi
             irec = 1 + tBx/tNx
-     &           +( k-kLo + (irecord-1)*kSize )*global_nTx
+     &           +( k-kLo + (irecord-1)*nNz )*global_nTx
             i1 = bBij + 1 + (k-kLo)*sNx
             i2 = bBij +           k*sNx
             IF ( filePrec.EQ.precFloat32 ) THEN
@@ -865,7 +865,7 @@ C If global file is visible to process 0, then open it here.
 C Otherwise stop program.
          IF ( globalFile) THEN
           length_of_rec = MDS_RECLEN( filePrec, ySize, myThid )
-          OPEN( dUnit, file=dataFName, status='old',
+          OPEN( dUnit, file=dataFName, status=_OLD_STATUS,
      &         access='direct', recl=length_of_rec )
          ELSE
           WRITE(msgBuf,'(2A)')
@@ -887,7 +887,7 @@ C- endif iAmDoingIO
 
 C master thread of process 0, only ,read from file
         IF ( iAmDoingIO ) THEN
-          irec = 1 + k-kLo + (irecord-1)*kSize
+          irec = 1 + k-kLo + (irecord-1)*nNz
           IF ( filePrec.EQ.precFloat32 ) THEN
             READ(dUnit,rec=irec) ( y_buffer_r4(i), i=1,ySize )
 #ifdef _BYTESWAPIO
@@ -1008,7 +1008,7 @@ C-          default (face fit into global-IO-array)
 
            DO k=kLo,kHi
             irec = 1 + tBy/tNy
-     &           +( k-kLo + (irecord-1)*kSize )*global_nTy
+     &           +( k-kLo + (irecord-1)*nNz )*global_nTy
             i1 = bBij + 1 + (k-kLo)*sNy
             i2 = bBij +           k*sNy
             IF ( filePrec.EQ.precFloat32 ) THEN

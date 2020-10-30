@@ -493,7 +493,7 @@ C--- Case of 1 Global file:
 
            DO k=kLo,kHi
             irec = 1 + tBx/tNx
-     &           +( k-kLo + (irecord-1)*kSize )*global_nTx
+     &           +( k-kLo + (irecord-1)*nNz )*global_nTx
             i1 = bBij + 1 + (k-kLo)*sNx
             i2 = bBij +           k*sNx
             IF ( filePrec.EQ.precFloat32 ) THEN
@@ -1097,7 +1097,7 @@ C--- Case of 1 Global file:
 
            DO k=kLo,kHi
             irec = 1 + tBy/tNy
-     &           +( k-kLo + (irecord-1)*kSize )*global_nTy
+     &           +( k-kLo + (irecord-1)*nNz )*global_nTy
             i1 = bBij + 1 + (k-kLo)*sNy
             i2 = bBij +           k*sNy
             IF ( filePrec.EQ.precFloat32 ) THEN
