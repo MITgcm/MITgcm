@@ -16,6 +16,7 @@ C !INTERFACE:
      I   arrType,
      I   kSize,kLo,kHi,
      O   fldRL, fldRS,
+     I   slice,
      I   irecord,
      I   myThid )
 
@@ -32,6 +33,7 @@ C kLo       (integer) :: 1rst vertical level (of array fldRL/RS) to write
 C kHi       (integer) :: last vertical level (of array fldRL/RS) to write
 C fldRL       ( RL )  :: array to write if arrType="RL", fldRL(:,:,kSize,:,:)
 C fldRS       ( RS )  :: array to write if arrType="RS", fldRS(:,:,kSize,:,:)
+C slice     (char(5)) :: 'north' or 'south' denoting slice contained in fld
 C irecord   (integer) :: record number to write
 C myThid    (integer) :: thread identifier
 C
@@ -87,6 +89,7 @@ C !INPUT PARAMETERS:
       LOGICAL useCurrentDir
       CHARACTER*(2) arrType
       INTEGER kSize, kLo, kHi
+      CHARACTER*(5) slice
       INTEGER irecord
       INTEGER myThid
 C !OUTPUT PARAMETERS:
@@ -117,8 +120,8 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       INTEGER bBij
       INTEGER tNx, global_nTx
       INTEGER tBx, iGjLoc, jGjLoc
-      _R4 r4seg(1:sNx,nSx)
-      _R8 r8seg(1:sNx,nSx)
+      _R4 r4seg(1:sNx,nSx,nSy)
+      _R8 r8seg(1:sNx,nSx,nSy)
       _R4 x_buffer_r4(Nx)
       _R8 x_buffer_r8(Nx)
       _R4 xz_buffer_r4( sNx*Nr*nSx*nSy )
@@ -223,6 +226,16 @@ C check for 3-D Buffer size:
         CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R MDS_READ_SEC_XZ'
       ENDIF
+C check slice is north or south
+      IF ((slice(1:5).NE.'north').AND.(slice(1:5).NE.'south')) THEN
+          WRITE(msgBuf,'(3A)')
+     &    ' MDS_READ_SEC_XZ: slice must be "north" or "south", ',
+     &    ' input provided: slice = ', slice
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid)
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R MDS_READ_SEC_XZ'
+      ENDIF
 
 C Only do I/O if I am the master thread
       IF ( iAmDoingIO ) THEN
@@ -266,14 +279,17 @@ C If negative check for global file with MDS name (ie. fName.data)
           ENDIF
         ENDIF
 
+
 C- endif iAmDoingIO
       ENDIF
 
 C Initialize buffers
-      DO bi=1,nSx
-       DO i = 1,sNx
-        r4Seg(i,bi) = 0.
-        r8Seg(i,bi) = 0. _d 0
+      DO bj=1,nSy
+       DO bi=1,nSx
+        DO i = 1,sNx
+         r4Seg(i,bi,bj) = 0.
+         r8Seg(i,bi,bj) = 0. _d 0
+        ENDDO
        ENDDO
       ENDDO
       DO i = 1, xSize
@@ -342,16 +358,16 @@ C  to access shared buffer while master thread is loading data into
           CALL SCATTER_XZ_R4(
      U                       x_buffer_r4,
      O                       r4seg,
-     I                       xSize,
+     I                       xSize, slice,
      I                       useExch2ioLayOut, .FALSE., myThid )
 C All threads wait for Master to finish loading into shared buffer
           CALL BAR2( myThid )
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_XZ_R4toRS( r4seg, fldRS,
-     &              0, 1, k, kSize, 0, 0, 1, .TRUE., myThid)
+     &              0, 1, k, kSize, 0, 0, slice, .TRUE., myThid)
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_XZ_R4toRL( r4seg, fldRL,
-     &              0, 1, k, kSize, 0, 0, 1, .TRUE., myThid)
+     &              0, 1, k, kSize, 0, 0, slice, .TRUE., myThid)
           ELSE
             WRITE(msgBuf,'(2A)')
      &      ' MDS_READ_SEC_XZ: illegal value for arrType=', arrType
@@ -363,16 +379,16 @@ C All threads wait for Master to finish loading into shared buffer
           CALL SCATTER_XZ_R8(
      U                       x_buffer_r8,
      O                       r8seg,
-     I                       xSize,
+     I                       xSize, slice,
      I                       useExch2ioLayOut, .FALSE., myThid )
 C All threads wait for Master to finish loading into shared buffer
           CALL BAR2( myThid )
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_XZ_R8toRS( r8seg, fldRS,
-     &              0, 1, k, kSize, 0, 0, 1, .TRUE., myThid)
+     &              0, 1, k, kSize, 0, 0, slice, .TRUE., myThid)
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_XZ_R8toRL( r8seg, fldRL,
-     &              0, 1, k, kSize, 0, 0, 1, .TRUE., myThid)
+     &              0, 1, k, kSize, 0, 0, slice, .TRUE., myThid)
           ELSE
             WRITE(msgBuf,'(A,I6)')
      &        ' MDS_READ_SEC_XZ: illegal value for filePrec=',filePrec
@@ -531,10 +547,10 @@ C-     copy from fldRL/RS(level=k) to 2-D "local":
        IF ( filePrec.EQ.precFloat32 ) THEN
          IF ( arrType.EQ.'RS' ) THEN
            CALL MDS_PASS_XZ_R4toRS( xz_buffer_r4, fldRS,
-     I              0, nNz, kLo, kSize, 0, 0, nSy, .TRUE., myThid )
+     I              0, nNz, kLo, kSize, 0, 0, slice, .TRUE., myThid )
          ELSEIF ( arrType.EQ.'RL' ) THEN
            CALL MDS_PASS_XZ_R4toRL( xz_buffer_r4, fldRL,
-     I              0, nNz, kLo, kSize, 0, 0, nSy, .TRUE., myThid )
+     I              0, nNz, kLo, kSize, 0, 0, slice, .TRUE., myThid )
          ELSE
            WRITE(msgBuf,'(2A)')
      &     ' MDS_READ_SEC_XZ: illegal value for arrType=', arrType
@@ -546,10 +562,10 @@ C-     copy from fldRL/RS(level=k) to 2-D "local":
        ELSEIF ( filePrec.EQ.precFloat64 ) THEN
          IF ( arrType.EQ.'RS' ) THEN
            CALL MDS_PASS_XZ_R8toRS( xz_buffer_r8, fldRS,
-     I              0, nNz, kLo, kSize, 0, 0, nSy, .TRUE., myThid )
+     I              0, nNz, kLo, kSize, 0, 0, slice, .TRUE., myThid )
          ELSEIF ( arrType.EQ.'RL' ) THEN
            CALL MDS_PASS_XZ_R8toRL( xz_buffer_r8, fldRL,
-     I              0, nNz, kLo, kSize, 0, 0, nSy, .TRUE., myThid )
+     I              0, nNz, kLo, kSize, 0, 0, slice, .TRUE., myThid )
          ELSE
            WRITE(msgBuf,'(2A)')
      &     ' MDS_READ_SEC_XZ: illegal value for arrType=', arrType
@@ -796,6 +812,16 @@ C check for 3-D Buffer size:
         CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R MDS_READ_SEC_YZ'
       ENDIF
+C check slice is east or west
+      IF ((slice(1:4).NE.'east').AND.(slice(1:4).NE.'west')) THEN
+          WRITE(msgBuf,'(3A)')
+     &    ' MDS_READ_SEC_YZ: slice must be "east" or "west", ',
+     &    ' input provided: slice = ', slice
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid)
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R MDS_READ_SEC_YZ'
+      ENDIF
 
 C Only do I/O if I am the master thread
       IF ( iAmDoingIO ) THEN
@@ -838,16 +864,7 @@ C If negative check for global file with MDS name (ie. fName.data)
            globalFile = .TRUE.
           ENDIF
         ENDIF
-C check slice is east or west
-      IF ((slice(1:4).NE.'east').AND.(slice(1:4).NE.'west')) THEN
-          WRITE(msgBuf,'(3A)')
-     &    ' MDS_READ_SEC_YZ: slice must be "east" or "west", ',
-     &    ' input provided: slice = ', slice
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                      SQUEEZE_RIGHT, myThid)
-        CALL ALL_PROC_DIE( myThid )
-        STOP 'ABNORMAL END: S/R MDS_READ_SEC_YZ'
-      ENDIF
+
 
 C- endif iAmDoingIO
       ENDIF

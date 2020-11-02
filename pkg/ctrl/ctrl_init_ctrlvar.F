@@ -124,10 +124,12 @@ C     initialize to zero and warn user
          else if ( whichxyz(1:2) .EQ. 'xz') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
-     &           call ctrl_set_globfld_xz( fname(2), ivarindex, mythid)
+     &           call ctrl_set_globfld_xz( fname(2), ivarindex,
+     &                                     whichxyz(3),mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
-     &           call ctrl_set_globfld_xz( fname(1), ivarindex, mythid )
+     &           call ctrl_set_globfld_xz( fname(1), ivarindex,
+     &                                     whichxyz(3),mythid)
          else if ( whichxyz(1:2) .EQ. 'yz') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )

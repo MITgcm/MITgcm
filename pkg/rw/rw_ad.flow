@@ -97,13 +97,13 @@ CADJ SUBROUTINE set_write_global_sec  OUTPUT =
 C----------------------------------------
 C subroutine  write_rec_xz_rs
 C----------------------------------------
-CADJ SUBROUTINE write_rec_xz_rs  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE write_rec_xz_rs  INPUT  = 1,2,3,4,5,6,7,8
 CADJ SUBROUTINE write_rec_xz_rs  OUTPUT =
 
 C----------------------------------------
 C subroutine  write_rec_xz_rl
 C----------------------------------------
-CADJ SUBROUTINE write_rec_xz_rl  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE write_rec_xz_rl  INPUT  = 1,2,3,4,5,6,7,8
 CADJ SUBROUTINE write_rec_xz_rl  OUTPUT =
 
 C----------------------------------------

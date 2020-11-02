@@ -112,11 +112,13 @@ CEOP
      &                 REVERSE_SIMULATION, myIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
+        IF (arrShape(3).EQ.'N') slice = 'north'
+        IF (arrShape(3).EQ.'S') slice = 'south'
 
         CALL ACTIVE_READ_XZ_RL(
      &                 fName, adactive_var, globalFile,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 REVERSE_SIMULATION, myIter, myThid )
+     &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
         IF (arrShape(3).EQ.'E') slice = 'east '
@@ -232,11 +234,13 @@ CEOP
      &                 REVERSE_SIMULATION, myIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
+        IF (arrShape(3).EQ.'N') slice = 'north'
+        IF (arrShape(3).EQ.'S') slice = 'south'
 
         CALL ACTIVE_READ_XZ_RS(
      &                 fName, adactive_var, globalFile,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 REVERSE_SIMULATION, myIter, myThid )
+     &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
         IF (arrShape(3).EQ.'E') slice = 'east '
@@ -345,11 +349,13 @@ CEOP
      &                 REVERSE_SIMULATION, myIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
+        IF (arrShape(3).EQ.'N') slice = 'north'
+        IF (arrShape(3).EQ.'S') slice = 'south'
 
         CALL ACTIVE_WRITE_XZ_RL(
      &                 fName, adactive_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
-     &                 REVERSE_SIMULATION, myIter, myThid )
+     &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
         IF (arrShape(3).EQ.'E') slice = 'east '
@@ -458,11 +464,13 @@ CEOP
      &                 REVERSE_SIMULATION, myIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
+        IF (arrShape(3).EQ.'N') slice = 'north'
+        IF (arrShape(3).EQ.'S') slice = 'south'
 
         CALL ACTIVE_WRITE_XZ_RS(
      &                 fName, adactive_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
-     &                 REVERSE_SIMULATION, myIter, myThid )
+     &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
         IF (arrShape(3).EQ.'E') slice = 'east '

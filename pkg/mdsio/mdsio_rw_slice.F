@@ -21,6 +21,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I   arrType,
      I   nNz,
      |   arr,
+     I   slice,
      I   irecord,
      I   myThid )
 
@@ -31,6 +32,7 @@ C filePrec   integer :: number of bits per word in file (32 or 64)
 C arrType    char(2) :: declaration of "arr": either "RS" or "RL"
 C nNz        integer :: size of third dimension: normally either 1 or Nr
 C arr         RS/RL  :: array to write, arr(:,:,nNz,:,:)
+C slice      char(5) :: slice is either 'north' or 'south'
 C irecord    integer :: record number to read
 C myThid     integer :: thread identifier
 C
@@ -51,6 +53,7 @@ C Routine arguments
       CHARACTER*(2) arrType
       INTEGER nNz
       _RL     arr(*)
+      CHARACTER*(5) slice
       INTEGER irecord
       INTEGER myThid
 
@@ -63,12 +66,12 @@ C Local variables
         CALL MDS_READ_SEC_XZ(
      I                fName, filePrec, .FALSE., arrType, nNz, 1, nNz,
      O                arr, dummyRS,
-     I                irecord, myThid )
+     I                slice, irecord, myThid )
       ELSE
         CALL MDS_READ_SEC_XZ(
      I                fName, filePrec, .FALSE., arrType, nNz, 1, nNz,
      O                dummyRL, arr,
-     I                irecord, myThid )
+     I                slice, irecord, myThid )
       ENDIF
 
 #else /* ALLOW_AUTODIFF */
@@ -86,8 +89,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I   arrType,
      I   nNz,
      |   arr,
-     I   irecord,
      I   slice,
+     I   irecord,
      I   myThid )
 
 C Arguments:
@@ -131,12 +134,12 @@ C Local variables
         CALL MDS_READ_SEC_YZ(
      I                fName, filePrec, .FALSE., arrType, nNz, 1, nNz,
      O                arr, dummyRS,
-     I                irecord, slice, myThid )
+     I                slice, irecord, myThid )
       ELSE
         CALL MDS_READ_SEC_YZ(
      I                fName, filePrec, .FALSE., arrType, nNz, 1, nNz,
      O                dummyRL, arr,
-     I                irecord, slice, myThid )
+     I                slice, irecord, myThid )
       ENDIF
 
 #else /* ALLOW_AUTODIFF */
@@ -154,6 +157,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I   arrType,
      I   nNz,
      |   arr,
+     I   slice,
      I   irecord,
      I   myThid )
 
@@ -164,6 +168,7 @@ C filePrec   integer :: number of bits per word in file (32 or 64)
 C arrType    char(2) :: declaration of "arr": either "RS" or "RL"
 C nNz        integer :: size of third dimension: normally either 1 or Nr
 C arr         RS/RL  :: array to write, arr(:,:,nNz,:,:)
+C slice      char(5) :: slice is either 'north' or 'south'
 C irecord    integer :: record number to read
 C myThid     integer :: thread identifier
 C
@@ -184,6 +189,7 @@ C Routine arguments
       CHARACTER*(2) arrType
       INTEGER nNz
       _RL     arr(*)
+      CHARACTER*(5) slice
       INTEGER irecord
       INTEGER myThid
 
@@ -196,12 +202,12 @@ C Local variables
         CALL MDS_READ_SEC_XZ(
      I                fName, filePrec, .TRUE., arrType, nNz, 1, nNz,
      O                arr, dummyRS,
-     I                irecord, myThid )
+     I                slice, irecord, myThid )
       ELSE
         CALL MDS_READ_SEC_XZ(
      I                fName, filePrec, .TRUE., arrType, nNz, 1, nNz,
      O                dummyRL, arr,
-     I                irecord, myThid )
+     I                slice, irecord, myThid )
       ENDIF
 
 #else /* ALLOW_AUTODIFF */
@@ -219,8 +225,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I   arrType,
      I   nNz,
      |   arr,
-     I   irecord,
      I   slice,
+     I   irecord,
      I   myThid )
 
 C Arguments:
@@ -251,8 +257,8 @@ C Routine arguments
       CHARACTER*(2) arrType
       INTEGER nNz
       _RL     arr(*)
-      INTEGER irecord
       CHARACTER*(5) slice
+      INTEGER irecord
       INTEGER myThid
 
 #ifdef ALLOW_AUTODIFF
@@ -264,7 +270,7 @@ C Local variables
         CALL MDS_READ_SEC_YZ(
      I                fName, filePrec, .TRUE., arrType, nNz, 1, nNz,
      O                arr, dummyRS,
-     I                irecord, slice, myThid )
+     I                slice, irecord, myThid )
       ELSE
         CALL MDS_READ_SEC_YZ(
      I                fName, filePrec, .TRUE., arrType, nNz, 1, nNz,
@@ -289,6 +295,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I   nNz,
      I   arr,
      I   irecord,
+     I   slice,
      I   myIter,
      I   myThid )
 
@@ -301,6 +308,7 @@ C arrType    char(2) :: declaration of "arr": either "RS" or "RL"
 C nNz        integer :: size of third dimension: normally either 1 or Nr
 C arr         RS/RL  :: array to write, arr(:,:,nNzdim,:,:)
 C irecord    integer :: record number to write
+C slice      char(5) :: slice is either 'north' or 'south'
 C myIter     integer :: time step number
 C myThid     integer :: thread identifier
 C
@@ -323,6 +331,7 @@ C Routine arguments
       INTEGER nNz
       _RL     arr(*)
       INTEGER irecord
+      CHARACTER*(5) slice
       INTEGER myIter
       INTEGER myThid
 
@@ -335,12 +344,12 @@ C Local variables
         CALL MDS_WRITE_SEC_XZ(
      I                 fName, filePrec, globalFile, .FALSE.,
      I                 arrType, nNz, 1, nNz, arr, dummyRS,
-     I                 irecord, myIter, myThid )
+     I                 irecord, slice, myIter, myThid )
       ELSE
         CALL MDS_WRITE_SEC_XZ(
      I                 fName, filePrec, globalFile, .FALSE.,
      I                 arrType, nNz, 1, nNz, dummyRL, arr,
-     I                 irecord, myIter, myThid )
+     I                 irecord, slice, myIter, myThid )
       ENDIF
 
 #else /* ALLOW_AUTODIFF */
@@ -434,6 +443,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I   nNz,
      I   arr,
      I   irecord,
+     I   slice,
      I   myIter,
      I   myThid )
 
@@ -446,6 +456,7 @@ C arrType    char(2) :: declaration of "arr": either "RS" or "RL"
 C nNz        integer :: size of third dimension: normally either 1 or Nr
 C arr         RS/RL  :: array to write, arr(:,:,nNzdim,:,:)
 C irecord    integer :: record number to write
+C slice      char(5) :: denotes either "north" or "south
 C myIter     integer :: time step number
 C myThid     integer :: thread identifier
 C
@@ -468,6 +479,7 @@ C Routine arguments
       INTEGER nNz
       _RL     arr(*)
       INTEGER irecord
+      CHARACTER*(5) slice
       INTEGER myIter
       INTEGER myThid
 
@@ -480,12 +492,12 @@ C Local variables
         CALL MDS_WRITE_SEC_XZ(
      I                 fName, filePrec, globalFile, .TRUE.,
      I                 arrType, nNz, 1, nNz, arr, dummyRS,
-     I                 irecord, myIter, myThid )
+     I                 irecord, slice, myIter, myThid )
       ELSE
         CALL MDS_WRITE_SEC_XZ(
      I                 fName, filePrec, globalFile, .TRUE.,
      I                 arrType, nNz, 1, nNz, dummyRL, arr,
-     I                 irecord, myIter, myThid )
+     I                 irecord, slice, myIter, myThid )
       ENDIF
 
 #else /* ALLOW_AUTODIFF */

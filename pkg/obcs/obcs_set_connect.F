@@ -82,7 +82,8 @@ C     single (Master) thread (output only available to Master Thread)
       fp = readBinaryPrec
       _BARRIER
       IF ( OBNconnectFile.NE.' ' ) THEN
-        CALL READ_REC_XZ_RS( OBNconnectFile, fp,Nr, tmpXZ, 1,0,myThid )
+        CALL READ_REC_XZ_RS( OBNconnectFile, fp,Nr, tmpXZ,1,'north',
+     &                      0,myThid )
         _BEGIN_MASTER(myThid)
         DO bj = 1,nSy
          DO bi = 1,nSx
@@ -99,7 +100,8 @@ C     single (Master) thread (output only available to Master Thread)
         prtMsg = 1
       ENDIF
       IF ( OBSconnectFile.NE.' ' ) THEN
-        CALL READ_REC_XZ_RS( OBSconnectFile, fp,Nr, tmpXZ, 1,0,myThid )
+        CALL READ_REC_XZ_RS( OBSconnectFile, fp,Nr, tmpXZ, 1,'south',
+     &                      0,myThid )
         _BEGIN_MASTER(myThid)
         DO bj = 1,nSy
          DO bi = 1,nSx

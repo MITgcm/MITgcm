@@ -2,7 +2,7 @@ C
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_globfld_xz(
-     I     fname, ivartype, myThid )
+     I     fname, ivartype, xzloc, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_set_globfld_xz
@@ -34,6 +34,7 @@ c     == routine arguments ==
 
       character*( 80)   fname
       integer ivartype
+      character*(1) xzloc
       integer myThid
 
 c     == local variables ==
@@ -46,6 +47,7 @@ c     == local variables ==
       integer jmin,jmax
       integer imin,imax
       integer irec,nrec_nl
+      CHARACTER*(5) slice
 
       _RL globfld3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
       _RL globfldxz(1-OLx:sNx+OLx,nr,nSx,nSy)
@@ -62,6 +64,9 @@ c     == end of interface ==
       jmax = sNy+OLy
       imin = 1-OLx
       imax = sNx+OLx
+
+      if (yzloc.EQ.'n') slice = 'north'
+      if (yzloc.EQ.'s') slice = 'south'
 
 c     Initialise temporary file
       do bj = jtlo,jthi
@@ -97,13 +102,13 @@ C     method that works for .not.useSingleCPUio cannot be used
       do irec = 1, nrec_nl
         CALL WRITE_REC_3D_RL( fname, ctrlprec, Nr,
      &                        globfld3d,
-     &                        irec, optimcycle, myThid )
+     &                        irec, slice, optimcycle, myThid )
       enddo
 
       do irec = nrec_nl*Ny+1, ncvarrecs(ivartype)
         CALL MDSWRITEFIELDXZ( fname, ctrlprec, .FALSE., 'RL',
      &                        Nr, globfldxz,
-     &                        irec, optimcycle, myThid )
+     &                        irec, slice, optimcycle, myThid )
       enddo
 
       RETURN

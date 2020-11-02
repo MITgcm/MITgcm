@@ -7,7 +7,7 @@ C !INTERFACE:
       SUBROUTINE GATHER_XZ_R4(
      O                  gloBuff,
      I                  myField,
-     I                  xSize,
+     I                  xSize, slice,
      I                  useExch2GlobLayOut,
      I                  zeroBuff,
      I                  myThid )
@@ -25,25 +25,28 @@ C     !USES:
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #endif /* ALLOW_EXCH2 */
+#include "OBCS_GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C gloBuff   ( _R4 ) :: full-domain 2D IO-buffer array             (Output)
 C myField   ( _R4 ) :: tiled, local (i.e. my Proc. tiles) 2D array (Input)
 C xSize    (integer):: global buffer 1rst dim (y)
+C slice    (char(5)):: denoting north or south slice
 C useExch2GlobLayOut:: =T: Use Exch2 global-map layout (only with EXCH2)
 C zeroBuff (logical):: =T: initialise the buffer to zero before copy
 C myThid   (integer):: my Thread Id number
 
       INTEGER xSize
       _R4     gloBuff(xSize)
-      _R4     myField(1:sNx,nSx)
+      _R4     myField(1:sNx,nSx,nSy)
+      CHARACTER*(5) slice
       LOGICAL useExch2GlobLayOut
       LOGICAL zeroBuff
       INTEGER myThid
 CEOP
 
 C !LOCAL VARIABLES:
-      INTEGER i,bi
+      INTEGER i,bi,bj
       INTEGER iG
       INTEGER iBase
 #ifdef ALLOW_EXCH2
@@ -52,7 +55,7 @@ C !LOCAL VARIABLES:
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_USE_MPI
       INTEGER np, pId
-      _R4     temp(1:sNx,nSx)
+      _R4     temp(1:sNx,nSx,nSy)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER lbuff, idest, itag, ready_to_receive
 #endif /* ALLOW_USE_MPI */
@@ -72,15 +75,20 @@ C     safer to reset to zero to avoid unknown values in output file
             ENDDO
           ENDIF
 
-          DO bi=1,nSx
-           tN = W2_myTileList(bi,1) ! TODO: bj arg?
-           iGjLoc = 0
+          DO bj=1,nSy
+           DO bi=1,nSx
+            IF (((slice(1:5).EQ.'north').AND.(tileHasOBN(bi,bj))).OR.
+     &          ((slice(1:5).EQ.'south').AND.(tileHasOBS(bi,bj)))) THEN
+             tN = W2_myTileList(bi,bj)
+             iGjLoc = 0
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-           DO i=1,sNx
-             iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
-             gloBuff(iG) = myField(i,bi)
+             DO i=1,sNx
+              iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
+              gloBuff(iG) = myField(i,bi,bj)
+             ENDDO
+            ENDIF
            ENDDO
           ENDDO
 
@@ -91,13 +99,18 @@ C     safer to reset to zero to avoid unknown values in output file
 
           iBase = myXGlobalLo-1
 
-          DO bi=1,nSx
+          DO bj=1,nSy
+           DO bi=1,nSx
+            IF (((slice(1:5).EQ.'north').AND.(tileHasOBN(bi,bj))).OR.
+     &          ((slice(1:5).EQ.'south').AND.(tileHasOBS(bi,bj)))) THEN
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-           DO i=1,sNx
-            iG = iBase+(bi-1)*sNx+i
-            gloBuff(iG) = myField(i,bi)
+             iG = iBase+(bi-1)*sNx
+             DO i=1,sNx
+              gloBuff(iG+i) = myField(i,bi,bj)
+             ENDDO
+            ENDIF
            ENDDO
           ENDDO
 
@@ -110,7 +123,7 @@ C-    end if myProcId = 0
 #ifdef ALLOW_USE_MPI
       IF ( usingMPI ) THEN
 
-       lbuff = sNx*nSx
+       lbuff = sNx*nSx*nSy
        idest = 0
        itag  = 0
        ready_to_receive = 0
@@ -131,17 +144,21 @@ C--   Process 0 gathers the local arrays into the global buffer.
 #ifdef ALLOW_EXCH2
          IF ( useExch2GlobLayOut ) THEN
 
-          DO bi=1,nSx
-            tN = W2_procTileList(bi,1,np) ! TODO: bj arg
-            iGjLoc = 0
-
+          DO bj=1,nSy
+           DO bi=1,nSx
+            IF (((slice(1:5).EQ.'north').AND.(tileHasOBN(bi,bj))).OR.
+     &          ((slice(1:5).EQ.'south').AND.(tileHasOBS(bi,bj)))) THEN
+             tN = W2_procTileList(bi,bj,np)
+             iGjLoc = 0
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-            DO i=1,sNx
-             iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
-             gloBuff(iG) = temp(i,bi)
-            ENDDO
+             DO i=1,sNx
+              iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
+              gloBuff(iG) = temp(i,bi,bj)
+             ENDDO
+            ENDIF
+           ENDDO
           ENDDO
 
          ELSE
@@ -151,14 +168,17 @@ C--   Process 0 gathers the local arrays into the global buffer.
 
           iBase = mpi_myXGlobalLo(np)-1
 
-          DO bi=1,nSx
-           DO i=1,sNx
+          DO bj=1,nSy
+           DO bi=1,nSx
+            IF (((slice(1:5).EQ.'north').AND.(tileHasOBN(bi,bj))).OR.
+     &          ((slice(1:5).EQ.'south').AND.(tileHasOBS(bi,bj)))) THEN
+             iG = iBase+(bi-1)*sNx
+             DO i=1,sNx
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-            IF (ABS(temp(i,bi)).gt.0.) THEN
-              iG = iBase+(bi-1)*sNx+i
-              gloBuff(iG) = temp(i,bi)
+              gloBuff(iG+i) = temp(i,bi,bj)
+             ENDDO
             ENDIF
            ENDDO
           ENDDO

@@ -19,6 +19,7 @@ C !INTERFACE:
      I   kSize,kLo,kHi,
      I   fldRL, fldRS,
      I   jrecord,
+     I   slice,
      I   myIter,
      I   myThid )
 
@@ -37,6 +38,7 @@ C kHi       (integer) :: last vertical level (of array fldRL/RS) to write
 C fldRL       ( RL )  :: array to write if arrType="RL", fldRL(:,:,kSize,:,:)
 C fldRS       ( RS )  :: array to write if arrType="RS", fldRS(:,:,kSize,:,:)
 C irecord   (integer) :: record number to write
+C slice     (char(5)) :: 'north' or 'south' denoting slice contained in fld
 C myIter    (integer) :: time step number
 C myThid    (integer) :: thread identifier
 C
@@ -102,6 +104,7 @@ C !INPUT PARAMETERS:
       _RL fldRL(*)
       _RS fldRS(*)
       INTEGER jrecord
+      CHARACTER*(5) slice
       INTEGER myIter
       INTEGER myThid
 C !OUTPUT PARAMETERS:
@@ -133,8 +136,8 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       INTEGER bBij
       INTEGER tNx, global_nTx
       INTEGER tBx, iGjLoc, jGjLoc
-      _R4 r4seg(1:sNx,nSx)
-      _R8 r8seg(1:sNx,nSx)
+      _R4 r4seg(1:sNx,nSx,nSy)
+      _R8 r8seg(1:sNx,nSx,nSy)
       _R4 x_buffer_r4( Nx )
       _R8 x_buffer_r8( Nx )
       _R4 xz_buffer_r4( sNx*Nr*nSx*nSy )
@@ -249,6 +252,16 @@ C check for 3-D Buffer size:
         CALL ALL_PROC_DIE( myThid )
         STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_XZ'
       ENDIF
+C check slice is north or south
+      IF ((slice(1:5).NE.'north').AND.(slice(1:5).NE.'south')) THEN
+          WRITE(msgBuf,'(3A)')
+     &    ' MDS_WRITE_SEC_XZ: slice must be "north" or "south", ',
+     &    ' input provided: slice = ', slice
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid)
+        CALL ALL_PROC_DIE( myThid )
+        STOP 'ABNORMAL END: S/R MDS_WRITE_SEC_XZ'
+      ENDIF
 
 C Only do I/O if I am the master thread
       IF ( iAmDoingIO ) THEN
@@ -275,10 +288,12 @@ C- endif iAmDoingIO
       ENDIF
 
 C Initialize buffers
-      DO bi=1,nSx
-       DO i = 1,sNx
-        r4Seg(i,bi) = 0.
-        r8Seg(i,bi) = 0. _d 0
+      DO bj=1,nSy
+       DO bi=1,nSx
+        DO i = 1,sNx
+         r4Seg(i,bi,bj) = 0.
+         r8Seg(i,bi,bj) = 0. _d 0
+        ENDDO
        ENDDO
       ENDDO
       DO i = 1, xSize
@@ -314,10 +329,10 @@ C-     copy from fldRL/RS(level=k) to 2-D "local":
        IF ( filePrec.EQ.precFloat32 ) THEN
          IF ( arrType.EQ.'RS' ) THEN
            CALL MDS_PASS_XZ_R4toRS( r4seg, fldRS,
-     I             0, 1, k, kSize, 0, 0, 1, .FALSE., myThid )
+     I             0, 1, k, kSize, 0, 0, slice, .FALSE., myThid )
          ELSEIF ( arrType.EQ.'RL' ) THEN
            CALL MDS_PASS_XZ_R4toRL( r4seg, fldRL,
-     I             0, 1, k, kSize, 0, 0, 1, .FALSE., myThid )
+     I             0, 1, k, kSize, 0, 0, slice, .FALSE., myThid )
          ELSE
            WRITE(msgBuf,'(2A)')
      &     ' MDS_WRITE_SEC_XZ: illegal value for arrType=', arrType
@@ -330,15 +345,15 @@ C Wait for all threads to finish filling shared buffer
           CALL GATHER_XZ_R4(
      O                      x_buffer_r4,
      I                      r4seg,
-     I                      xSize,
+     I                      xSize, slice,
      I                      useExch2ioLayout, zeroBuff, myThid )
        ELSEIF ( filePrec.EQ.precFloat64 ) THEN
          IF ( arrType.EQ.'RS' ) THEN
            CALL MDS_PASS_XZ_R8toRS( r8seg, fldRS,
-     I            0, 1, k, kSize, 0, 0, 1, .FALSE., myThid )
+     I            0, 1, k, kSize, 0, 0, slice, .FALSE., myThid )
          ELSEIF ( arrType.EQ.'RL' ) THEN
            CALL MDS_PASS_XZ_R8toRL( r8seg, fldRL,
-     I            0, 1, k, kSize, 0, 0, 1, .FALSE., myThid )
+     I            0, 1, k, kSize, 0, 0, slice, .FALSE., myThid )
          ELSE
            WRITE(msgBuf,'(2A)')
      &     ' MDS_WRITE_SEC_XZ: illegal value for arrType=', arrType
@@ -351,7 +366,7 @@ C Wait for all threads to finish filling shared buffer
          CALL GATHER_XZ_R8(
      O                     x_buffer_r8,
      I                     r8seg,
-     I                     xSize,
+     I                     xSize, slice,
      I                     useExch2ioLayout, zeroBuff, myThid )
        ELSE
          WRITE(msgBuf,'(A,I6)')
@@ -399,10 +414,10 @@ C---    Copy from fldRL/RS to 2-D buffer (multi-threads):
         IF ( filePrec.EQ.precFloat32 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_XZ_R4toRS( xz_buffer_r4, fldRS,
-     I              0, nNz, kLo, kSize, 0, 0, nSy, .FALSE., myThid )
+     I              0, nNz, kLo, kSize, 0, 0, slice, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_XZ_R4toRL( xz_buffer_r4, fldRL,
-     I              0, nNz, kLo, kSize, 0, 0, nSy, .FALSE., myThid )
+     I              0, nNz, kLo, kSize, 0, 0, slice, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(2A)')
      &      ' MDS_WRITE_SEC_XZ: illegal value for arrType=', arrType
@@ -414,10 +429,10 @@ C---    Copy from fldRL/RS to 2-D buffer (multi-threads):
         ELSEIF ( filePrec.EQ.precFloat64 ) THEN
           IF ( arrType.EQ.'RS' ) THEN
             CALL MDS_PASS_XZ_R8toRS( xz_buffer_r8, fldRS,
-     I              0, nNz, kLo, kSize, 0, 0, nSy, .FALSE., myThid )
+     I              0, nNz, kLo, kSize, 0, 0, slice, .FALSE., myThid )
           ELSEIF ( arrType.EQ.'RL' ) THEN
             CALL MDS_PASS_XZ_R8toRL( xz_buffer_r8, fldRL,
-     I              0, nNz, kLo, kSize, 0, 0, nSy, .FALSE., myThid )
+     I              0, nNz, kLo, kSize, 0, 0, slice, .FALSE., myThid )
           ELSE
             WRITE(msgBuf,'(2A)')
      &      ' MDS_WRITE_SEC_XZ: illegal value for arrType=', arrType

@@ -515,7 +515,7 @@ C     !INTERFACE:
       SUBROUTINE READ_REC_XZ_RS(
      I                           fName, fPrec, nNz,
      O                           field,
-     I                           iRec, myIter, myThid )
+     I                           iRec, slice, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C READ_REC_XZ_RS is a "front-end" interface to the low-level I/O
@@ -535,6 +535,7 @@ C Arguments
       INTEGER nNz
       _RS field(1-Olx:sNx+Olx,nNz,nSx,nSy)
       INTEGER iRec
+      CHARACTER*(5) slice
       INTEGER myIter
       INTEGER myThid
 
@@ -564,7 +565,7 @@ c     ENDIF
      I                      fName, fPrec, useCurrentDir,
      I                      fType, nNz, 1, nNz,
      O                      dummyRL, field,
-     I                      iRec, myThid )
+     I                      slice, iRec, myThid )
 #endif
       RETURN
       END
@@ -576,7 +577,7 @@ C     !INTERFACE:
       SUBROUTINE READ_REC_XZ_RL(
      I                           fName, fPrec, nNz,
      O                           field,
-     I                           iRec, myIter, myThid )
+     I                           iRec, slice, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C READ_REC_XZ_RL is a "front-end" interface to the low-level I/O
@@ -597,6 +598,7 @@ C Arguments
       INTEGER nNz
       _RL field(1-Olx:sNx+Olx,nNz,nSx,nSy)
       INTEGER iRec
+      CHARACTER*(5) slice
       INTEGER myIter
       INTEGER myThid
 
@@ -626,7 +628,7 @@ c     ENDIF
      I                      fName, fPrec, useCurrentDir,
      I                      fType, nNz, 1, nNz,
      O                      field, dummyRS,
-     I                      iRec, myThid )
+     I                      slice, iRec, myThid )
 #endif
       RETURN
       END

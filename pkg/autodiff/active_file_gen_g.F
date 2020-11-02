@@ -103,15 +103,17 @@ CEOP
      &                 TANGENT_SIMULATION, myOptimIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
+        IF (arrShape(3).EQ.'N') slice = 'north'
+        IF (arrShape(3).EQ.'S') slice = 'south'
 
         CALL ACTIVE_READ_XZ_RL(
      &                 activeVar_file, active_var, globalFile,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+     &                 FORWARD_SIMULATION, slice, myOptimIter, myThid )
         CALL ACTIVE_READ_XZ_RL(
      &                 fName, g_active_var, globalFile,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 TANGENT_SIMULATION, myOptimIter, myThid )
+     &                 TANGENT_SIMULATION, slice, myOptimIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
         IF (arrShape(3).EQ.'E') slice = 'east '
@@ -222,15 +224,17 @@ CEOP
      &                 TANGENT_SIMULATION, myOptimIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
+        IF (arrShape(3).EQ.'N') slice = 'north'
+        IF (arrShape(3).EQ.'S') slice = 'south'
 
         CALL ACTIVE_READ_XZ_RS(
      &                 activeVar_file, active_var, globalFile,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+     &                 FORWARD_SIMULATION, slice, myOptimIter, myThid )
         CALL ACTIVE_READ_XZ_RS(
      &                 fName, g_active_var, globalFile,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 TANGENT_SIMULATION, myOptimIter, myThid )
+     &                 TANGENT_SIMULATION, slice, myOptimIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
         IF (arrShape(3).EQ.'E') slice = 'east '
@@ -337,15 +341,17 @@ CEOP
      &                 TANGENT_SIMULATION, myOptimIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
+        IF (arrShape(3).EQ.'N') slice = 'north'
+        IF (arrShape(3).EQ.'S') slice = 'south'
 
         CALL ACTIVE_WRITE_XZ_RL(
      &                 activeVar_file, active_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
-     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+     &                 FORWARD_SIMULATION, slice, myOptimIter, myThid )
         CALL ACTIVE_WRITE_XZ_RL(
      &                 fName, g_active_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
-     &                 TANGENT_SIMULATION, myOptimIter, myThid )
+     &                 TANGENT_SIMULATION, slice, myOptimIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
         IF (arrShape(3).EQ.'E') slice = 'east '
@@ -452,15 +458,17 @@ CEOP
      &                 TANGENT_SIMULATION, myOptimIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
+        IF (arrShape(3).EQ.'N') slice = 'north'
+        IF (arrShape(3).EQ.'S') slice = 'south'
 
         CALL ACTIVE_WRITE_XZ_RS(
      &                 activeVar_file, active_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
-     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+     &                 FORWARD_SIMULATION, slice, myOptimIter, myThid )
         CALL ACTIVE_WRITE_XZ_RS(
      &                 fName, g_active_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
-     &                 TANGENT_SIMULATION, myOptimIter, myThid )
+     &                 TANGENT_SIMULATION, slice, myOptimIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
         IF (arrShape(3).EQ.'E') slice = 'east '

@@ -604,7 +604,7 @@ C     !INTERFACE:
       SUBROUTINE WRITE_REC_XZ_RS(
      I                            fName, fPrec, nNz,
      I                            field,
-     I                            iRec, myIter, myThid )
+     I                            iRec, slice, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C WRITE_REC_XZ_RS is a "front-end" interface to the low-level I/O
@@ -624,6 +624,7 @@ C Arguments
       INTEGER nNz
       _RS field(1-Olx:sNx+Olx,nNz,nSx,nSy)
       INTEGER iRec
+      CHARACTER*(5) slice
       INTEGER myIter
       INTEGER myThid
 
@@ -657,7 +658,7 @@ c     ENDIF
      I                       fName, fPrec, globalFile, useCurrentDir,
      I                       fType, nNz, 1, nNz,
      I                       dummyRL, field,
-     I                       iRec, myIter, myThid )
+     I                       iRec, slice, myIter, myThid )
 #endif
       RETURN
       END
@@ -669,7 +670,7 @@ C     !INTERFACE:
       SUBROUTINE WRITE_REC_XZ_RL(
      I                            fName, fPrec, nNz,
      I                            field,
-     I                            iRec, myIter, myThid )
+     I                            iRec, slice, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C WRITE_REC_XZ_RL is a "front-end" interface to the low-level I/O
@@ -690,6 +691,7 @@ C Arguments
       INTEGER nNz
       _RL field(1-Olx:sNx+Olx,nNz,nSx,nSy)
       INTEGER iRec
+      CHARACTER*(5) slice
       INTEGER myIter
       INTEGER myThid
 
@@ -723,7 +725,7 @@ c     ENDIF
      I                       fName, fPrec, globalFile, useCurrentDir,
      I                       fType, nNz, 1, nNz,
      I                       field, dummyRS,
-     I                       iRec, myIter, myThid )
+     I                       iRec, slice, myIter, myThid )
 #endif
       RETURN
       END

@@ -217,6 +217,7 @@ C     !INTERFACE:
      I                              iRec,
      I                              doglobalread,
      I                              lAdInit,
+     I                              slice,
      I                              myIter,
      I                              myThid,
      I                              adactive_var
@@ -228,6 +229,7 @@ C     !INTERFACE:
      I                              iRec,
      I                              doglobalread,
      I                              lAdInit,
+     I                              slice,
      I                              myIter,
      I                              myThid,
      I                              dummy,
@@ -255,6 +257,7 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
 C     adactive_var   :: array
 C     iRec           :: record number
+C     slice          :: 'north' or 'south'
 C     myIter         :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
 C     doglobalread   :: flag for global or local read/write
@@ -267,6 +270,7 @@ C                       variable and write to active file
       INTEGER myIter, myThid
       LOGICAL doglobalread
       LOGICAL lAdInit
+      CHARACTER*(5) slice
       _RL  dummy, addummy ! Tags for IO: ctrl input and adjoint (gradient) output
 
 C     !FUNCTIONS:
@@ -291,7 +295,7 @@ CEOP
       CALL ACTIVE_READ_XZ_RL(
      &                 fname, adactive_var, doglobalread,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 REVERSE_SIMULATION, myIter, myThid )
+     &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       RETURN
       END
@@ -643,6 +647,7 @@ C     !INTERFACE:
       subroutine adactive_write_xz(
      I                               active_var_file,
      I                               iRec,
+     I                               slice,
      I                               myIter,
      I                               myThid,
      U                               adactive_var,
@@ -653,6 +658,7 @@ C     !INTERFACE:
      I                               active_var_file,
      U                               adactive_var,
      I                               iRec,
+     I                               slice,
      I                               myIter,
      I                               myThid,
      I                               dummy
@@ -679,6 +685,7 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
 C     adactive_var   :: array
 C     iRec           :: record number
+C     slice          :: 'north' or 'south'
 C     myIter         :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
@@ -686,6 +693,7 @@ C     myThid         :: thread number for this instance
       INTEGER iRec
       INTEGER myIter, myThid
       _RL dummy
+      CHARACTER*(5) slice
 
 C     !FUNCTIONS:
       INTEGER  ILNBLNK
@@ -711,7 +719,7 @@ CEOP
       CALL ACTIVE_WRITE_XZ_RL(
      &                 fname, adactive_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
-     &                 REVERSE_SIMULATION, myIter, myThid )
+     &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       RETURN
       END

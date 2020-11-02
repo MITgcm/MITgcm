@@ -61,10 +61,14 @@ C     nNz   :: number of levels to process
 C     == local variables ==
 
       CHARACTER*(128) obcs_file0, obcs_file1
+      CHARACTER*(5) slice
       INTEGER bi, bj
       INTEGER i, k
 
 C     == end of interface ==
+
+      IF (obcsmask.EQ.'N') slice = 'north'
+      IF (obcsmask.EQ.'S') slice = 'south'
 
       IF ( obcs_file .NE. ' ' ) THEN
 
@@ -78,7 +82,7 @@ C     == end of interface ==
 
             _BARRIER
             CALL READ_REC_XZ_RL( obcs_file0, exf_iprec_obcs, nNz,
-     &                           obcs_xz_1, count0, myIter, myThid )
+     &                        obcs_xz_1, count0, slice, myIter, myThid )
             _BARRIER
          ENDIF
 
@@ -93,7 +97,7 @@ C     == end of interface ==
 
             _BARRIER
             CALL READ_REC_XZ_RL( obcs_file1, exf_iprec_obcs, nNz,
-     &                           obcs_xz_1, count1, myIter, myThid )
+     &                        obcs_xz_1, count1, slice, myIter, myThid )
             _BARRIER
          ENDIF
 
@@ -188,7 +192,7 @@ C     == end of interface ==
 
             _BARRIER
             CALL READ_REC_YZ_RL( obcs_file0, exf_iprec_obcs, nNz,
-     &                           obcs_yz_1, count0, myIter, myThid )
+     &                       obcs_yz_1, count0, slice, myIter, myThid )
             _BARRIER
          ENDIF
 
@@ -203,7 +207,7 @@ C     == end of interface ==
 
             _BARRIER
             CALL READ_REC_YZ_RL( obcs_file1, exf_iprec_obcs, nNz,
-     &                           obcs_yz_1, count1, myIter, myThid )
+     &                       obcs_yz_1, count1, slice, myIter, myThid )
             _BARRIER
          ENDIF
 
@@ -279,6 +283,7 @@ C     == local variables ==
 
       CHARACTER*(128) obcs_file0, obcs_file1
       INTEGER bi, bj, i
+      CHARACTER*(5) slice
 
 C     == end of interface ==
 

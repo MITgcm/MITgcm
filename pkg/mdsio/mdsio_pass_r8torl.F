@@ -126,8 +126,8 @@ C !INTERFACE:
       SUBROUTINE MDS_PASS_XZ_R8toRL(
      U                            buffer, arrFld,
      I                            oL, nNz, kLo, kSize,
-     I                            biArg, bjArg, bjBufferSize,
-     I                            copyTo, myThid )
+     I                            biArg, bjArg,
+     I                            slice, copyTo, myThid )
 
 C !DESCRIPTION:
 C     Transfert 2-D, xz slice real*8 buffer to 2-D RL model array, or the reverse,
@@ -140,6 +140,7 @@ C     !USES:
 C Global variables / common blocks
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "OBCS_GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C Routine arguments
@@ -151,16 +152,17 @@ C kLo     (integer):: 1rst level to - fill in / extract from - arrFld
 C kSize   (integer):: third dimension of 3-D array "arrFld"
 C biArg   (integer):: tile X-index to - fill in / extract from - tiled buffer
 C bjArg   (integer):: tile Y-index to - fill in / extract from - tiled buffer
+C slice   (char(5)):: denoting north or south slice
 C copyTo  (logical):: if =T, copy 2-D -> 3-D ; if =F: copy 2-D <- 3-D
 C myThid  (integer):: my Thread Id number
       INTEGER oL
       INTEGER nNz, kSize
-      INTEGER bjBufferSize
-      _R8 buffer(1-oL:sNx+oL,nNz,nSx,bjBufferSize)
+      _R8 buffer(1-oL:sNx+oL,nNz,nSx,nSy)
       _RL    arrFld(1-OLx:sNx+OLx,kSize,nSx,nSy)
       INTEGER kLo
       INTEGER biArg
       INTEGER bjArg
+      CHARACTER*(5) slice
       LOGICAL copyTo
       INTEGER myThid
 
@@ -168,7 +170,6 @@ C !LOCAL VARIABLES:
 C   i,k   :: loop indices
 C   bi,bj :: tile indices
       INTEGER i,k,bi,bj
-      INTEGER bjBuff
       INTEGER kLev
 CEOP
       IF ( oL.LT.0 .OR. oL.GT.OLx ) THEN
@@ -178,34 +179,30 @@ CEOP
       IF ( biArg.EQ.0 .AND. bjArg.EQ.0 ) THEN
         IF ( copyTo ) THEN
           DO bj = myByLo(myThid), myByHi(myThid)
-           IF (bjBufferSize.EQ.1) THEN
-               bjBuff=1
-           ELSE
-               bjBuff=bj
-           ENDIF
            DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO k=1,nNz
-             kLev = kLo+k-1
-             DO i=1-oL,sNx+oL
-               arrFld(i,kLev,bi,bj) = buffer(i,k,bi,bjBuff)
+            IF (((slice(1:5).EQ.'north').AND.(tileHasOBN(bi,bj))).OR.
+     &          ((slice(1:5).EQ.'south').AND.(tileHasOBS(bi,bj)))) THEN
+             DO k=1,nNz
+              kLev = kLo+k-1
+              DO i=1-oL,sNx+oL
+                arrFld(i,kLev,bi,bj) = buffer(i,k,bi,bj)
+              ENDDO
              ENDDO
-            ENDDO
+            ENDIF
            ENDDO
           ENDDO
         ELSE
           DO bj = myByLo(myThid), myByHi(myThid)
-           IF (bjBufferSize.EQ.1) THEN
-               bjBuff=1
-           ELSE
-               bjBuff=bj
-           ENDIF
            DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO k=1,nNz
-             kLev = kLo+k-1
-             DO i=1-oL,sNx+oL
-               buffer(i,k,bi,bjBuff) = arrFld(i,kLev,bi,bj)
+            IF (((slice(1:5).EQ.'north').AND.(tileHasOBN(bi,bj))).OR.
+     &          ((slice(1:5).EQ.'south').AND.(tileHasOBS(bi,bj)))) THEN
+             DO k=1,nNz
+              kLev = kLo+k-1
+              DO i=1-oL,sNx+oL
+                buffer(i,k,bi,bj) = arrFld(i,kLev,bi,bj)
+              ENDDO
              ENDDO
-            ENDDO
+            ENDIF
            ENDDO
           ENDDO
         ENDIF

@@ -710,9 +710,15 @@ ce      --> this index does not exist yet.
 
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
       elseif ( grdchkvarindex.EQ.11 .OR. grdchkvarindex.EQ.12) then
+         if (grdchkvarindex.EQ.11) then
          call active_read_xz( fname, tmpfldxz, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
+     &                        doglobalread, ladinit, 'north',optimcycle,
      &                        mythid, dummy)
+         else
+         call active_read_xz( fname, tmpfldxz, icvrec,
+     &                        doglobalread, ladinit, 'south',optimcycle,
+     &                        mythid, dummy)
+         endif
          if ( myProcId .EQ. grdchkwhichproc )
      &   xx_comp_ref = tmpfldxz( itilepos,layer,itile,jtile )
          if ( myProcId .EQ. grdchkwhichproc )
@@ -732,7 +738,7 @@ ce      --> this index does not exist yet.
      &                        mythid, dummy)
          else
          call active_read_yz( fname, tmpfldyz, icvrec,
-     &                        doglobalread, ladinit, optimcycle,'east ',
+     &                        doglobalread, ladinit, optimcycle,'west ',
      &                        mythid, dummy)
          endif
          if ( myProcId .EQ. grdchkwhichproc )

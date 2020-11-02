@@ -101,13 +101,13 @@ c       ENDIF
 #ifdef ALLOW_OBCS_NORTH
 C     Write Northern OB arrays
         WRITE(fn,'(A,A)') 'obcs_N.', suff
-        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNu,1,myIter,myThid)
-        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNv,2,myIter,myThid)
-        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNt,3,myIter,myThid)
-        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNs,4,myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNu,1,'north',myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNv,2,'north',myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNt,3,'north',myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNs,4,'north',myIter,myThid)
 # ifdef ALLOW_NONHYDROSTATIC
        IF ( nonHydrostatic ) THEN
-        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNw,5,myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBNw,5,'north',myIter,myThid)
        ENDIF
 # endif
 #endif
@@ -115,13 +115,13 @@ C     Write Northern OB arrays
 #ifdef ALLOW_OBCS_SOUTH
 C     Write Southern OB arrays
         WRITE(fn,'(A,A)') 'obcs_S.', suff
-        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSu,1,myIter,myThid)
-        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSv,2,myIter,myThid)
-        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSt,3,myIter,myThid)
-        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSs,4,myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSu,1,'south',myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSv,2,'south',myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSt,3,'south',myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSs,4,'south',myIter,myThid)
 # ifdef ALLOW_NONHYDROSTATIC
        IF ( nonHydrostatic ) THEN
-        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSw,5,myIter,myThid)
+        CALL WRITE_REC_XZ_RL(fn,prec,Nr,OBSw,5,'south',myIter,myThid)
        ENDIF
 # endif
 #endif
@@ -129,13 +129,13 @@ C     Write Southern OB arrays
 #ifdef ALLOW_OBCS_EAST
 C     Write Eastern OB arrays
         WRITE(fn,'(A,A)') 'obcs_E.', suff
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEu,1,myIter,'east ', myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEv,2,myIter,'east ', myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEt,3,myIter,'east ',myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEs,4,myIter,'east ',myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEu,1,'east',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEv,2,'east',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEt,3,'east',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEs,4,'east',myIter,myThid)
 # ifdef ALLOW_NONHYDROSTATIC
        IF ( nonHydrostatic ) THEN
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEw,5,myIter,'east ',myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBEw,5,'east',myIter,myThid)
        ENDIF
 # endif
 #endif
@@ -143,13 +143,13 @@ C     Write Eastern OB arrays
 #ifdef ALLOW_OBCS_WEST
 C     Write Western OB arrays
         WRITE(fn,'(A,A)') 'obcs_W.', suff
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWu,1,myIter,'west ',myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWv,2,myIter,'west ',myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWt,3,myIter,'west ',myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWs,4,myIter,'west ',myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWu,1,'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWv,2,'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWt,3,'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWs,4,'west ',myIter,myThid)
 # ifdef ALLOW_NONHYDROSTATIC
        IF ( nonHydrostatic ) THEN
-        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWw,5,myIter,'west ',myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec,Nr,OBWw,5,'west ',myIter,myThid)
        ENDIF
 # endif
 #endif

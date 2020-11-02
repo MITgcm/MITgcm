@@ -162,6 +162,7 @@ C     !INTERFACE:
      I                           iRec,
      I                           doglobalread,
      I                           lAdInit,
+     I                           slice,
      I                           myOptimIter,
      I                           myThid
      I                         , dummy
@@ -196,6 +197,7 @@ C                      variable and write to active file
       CHARACTER*(*) active_var_file
       _RL     active_var(1-OLx:sNx+OLx,nSx,nSy)
       INTEGER iRec
+      CHARACTER*(5) slice
       INTEGER myOptimIter
       INTEGER myThid
       LOGICAL doglobalread
@@ -212,7 +214,7 @@ CEOP
       CALL ACTIVE_READ_XZ_RL(
      &                 active_var_file, active_var, doglobalread,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+     &                 FORWARD_SIMULATION, slice, myOptimIter, myThid )
 
       RETURN
       END
@@ -409,6 +411,7 @@ C     !INTERFACE:
      I                            active_var_file,
      I                            active_var,
      I                            iRec,
+     I                            slice,
      I                            myOptimIter,
      I                            myThid
      I                         , dummy
@@ -439,6 +442,7 @@ C     myThid:          thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     active_var(1-OLx:sNx+OLx,nSx,nSy)
       INTEGER iRec
+      CHARACTER*(5) slice
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
@@ -455,7 +459,7 @@ CEOP
       CALL ACTIVE_WRITE_XZ_RL(
      &                 active_var_file, active_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
-     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+     &                 FORWARD_SIMULATION, slice, myOptimIter, myThid )
 
       RETURN
       END
