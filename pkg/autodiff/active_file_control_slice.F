@@ -384,6 +384,7 @@ C     !INTERFACE:
      I                          iRec,
      I                          myNr,
      I                          theSimulationMode,
+     I                          slice,
      I                          myOptimIter,
      I                          myThid )
 C     !DESCRIPTION: \bv
@@ -420,6 +421,7 @@ C                        and write to active file
 C     iRec           :: record number
 C     myNr           :: vertical array dimension
 C     theSimulationMode :: forward mode or reverse mode simulation
+C     slice          :: either 'east' or 'west'
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
       CHARACTER*(*) activeVar_file
@@ -430,6 +432,7 @@ C     myThid         :: thread number for this instance
       LOGICAL  lAdInit
       INTEGER  iRec
       INTEGER  theSimulationMode
+      CHARACTER*(5)  slice
       INTEGER  myOptimIter
       INTEGER  myThid
 
@@ -465,7 +468,7 @@ C     Read the active variable from file.
      I                activeVar_file, prec, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      O                active_var, dummyRS,
-     I                iRec, myThid )
+     I                iRec, slice, myThid )
 
         IF ( lAdInit ) THEN
 C     Initialise the corresponding adjoint variable on the
@@ -485,7 +488,7 @@ C     adjoint variable file. These files are tiled.
      I                adfname, prec, globalFile, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      I                active_data_t, dummyRS,
-     I                iRec, myOptimIter, myThid )
+     I                iRec, slice, myOptimIter, myThid )
 
         ENDIF
 
@@ -498,7 +501,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
      I                activeVar_file, prec, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      O                active_data_t, dummyRS,
-     I                iRec, myThid )
+     I                iRec, slice, myThid )
 
 C     Add active_var from appropriate location to data.
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -518,7 +521,7 @@ C     Store the result on disk.
      I                activeVar_file, prec, w_globFile, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      I                active_data_t, dummyRS,
-     I                iRec, myOptimIter, myThid )
+     I                iRec, slice, myOptimIter, myThid )
 
 C     Set active_var to zero.
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -540,7 +543,7 @@ C     Read the active variable from file.
      I                activeVar_file, prec, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      O                active_var, dummyRS,
-     I                iRec, myThid )
+     I                iRec, slice, myThid )
       ENDIF
 
       RETURN
@@ -559,6 +562,7 @@ C     !INTERFACE:
      I                          iRec,
      I                          myNr,
      I                          theSimulationMode,
+     I                          slice,
      I                          myOptimIter,
      I                          myThid )
 
@@ -596,6 +600,7 @@ C                        and write to active file
 C     iRec           :: record number
 C     myNr           :: vertical array dimension
 C     theSimulationMode :: forward mode or reverse mode simulation
+C     slice          :: either 'east' or 'west'
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
       CHARACTER*(*) activeVar_file
@@ -606,6 +611,7 @@ C     myThid         :: thread number for this instance
       LOGICAL  lAdInit
       INTEGER  iRec
       INTEGER  theSimulationMode
+      CHARACTER*(5)  slice
       INTEGER  myOptimIter
       INTEGER  myThid
 
@@ -641,7 +647,7 @@ C     Read the active variable from file.
      I                activeVar_file, prec, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      O                dummyRL, active_var,
-     I                iRec, myThid )
+     I                iRec, slice, myThid )
 
         IF ( lAdInit ) THEN
 C     Initialise the corresponding adjoint variable on the
@@ -661,7 +667,7 @@ C     adjoint variable file. These files are tiled.
      I                adfname, prec, globalFile, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      I                dummyRL, active_data_t,
-     I                iRec, myOptimIter, myThid )
+     I                iRec, slice, myOptimIter, myThid )
 
         ENDIF
 
@@ -674,7 +680,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
      I                activeVar_file, prec, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      O                dummyRL, active_data_t,
-     I                iRec, myThid )
+     I                iRec, slice, myThid )
 
 C     Add active_var from appropriate location to data.
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -694,7 +700,7 @@ C     Store the result on disk.
      I                activeVar_file, prec, w_globFile, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      I                dummyRL, active_data_t,
-     I                iRec, myOptimIter, myThid )
+     I                iRec, slice, myOptimIter, myThid )
 
 C     Set active_var to zero.
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -716,7 +722,7 @@ C     Read the active variable from file.
      I                activeVar_file, prec, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      O                dummyRL, active_var,
-     I                iRec, myThid )
+     I                iRec, slice, myThid )
       ENDIF
 
       RETURN
@@ -968,6 +974,7 @@ C     !INTERFACE:
      I                          iRec,
      I                          myNr,
      I                          theSimulationMode,
+     I                          slice,
      I                          myOptimIter,
      I                          myThid )
 
@@ -1000,6 +1007,7 @@ C                        (even if "mdsioLocalDir" is set)
 C     iRec           :: record number
 C     myNr           :: vertical array dimension
 C     theSimulationMode :: forward mode or reverse mode simulation
+C     slice          :: either 'east' or 'west'
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
       CHARACTER*(*) activeVar_file
@@ -1009,6 +1017,7 @@ C     myThid         :: thread number for this instance
       LOGICAL  useCurrentDir
       INTEGER  iRec
       INTEGER  theSimulationMode
+      CHARACTER*(5) slice
       INTEGER  myOptimIter
       INTEGER  myThid
 
@@ -1029,7 +1038,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
      I                activeVar_file, prec, globalFile, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      I                active_var, dummyRS,
-     I                iRec, myOptimIter, myThid )
+     I                iRec, slice, myOptimIter, myThid )
       ENDIF
 
 C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
@@ -1039,7 +1048,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
      I                activeVar_file, prec, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      O                active_data_t, dummyRS,
-     I                iRec, myThid )
+     I                iRec, slice, myThid )
 
 C     Add active_var from appropriate location to data.
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -1057,7 +1066,7 @@ C     Add active_var from appropriate location to data.
      I                activeVar_file, prec, globalFile, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      I                active_data_t, dummyRS,
-     I                iRec, myOptimIter, myThid )
+     I                iRec, slice, myOptimIter, myThid )
 
       ENDIF
 
@@ -1067,7 +1076,7 @@ C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
      I                activeVar_file, prec, globalFile, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      I                active_var, dummyRS,
-     I                iRec, myOptimIter, myThid )
+     I                iRec, slice, myOptimIter, myThid )
       ENDIF
 
       RETURN
@@ -1085,6 +1094,7 @@ C     !INTERFACE:
      I                          iRec,
      I                          myNr,
      I                          theSimulationMode,
+     I                          slice,
      I                          myOptimIter,
      I                          myThid )
 
@@ -1117,6 +1127,7 @@ C                        (even if "mdsioLocalDir" is set)
 C     iRec           :: record number
 C     myNr           :: vertical array dimension
 C     theSimulationMode :: forward mode or reverse mode simulation
+C     slice          :: either "east" or "west"
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
       CHARACTER*(*) activeVar_file
@@ -1126,6 +1137,7 @@ C     myThid         :: thread number for this instance
       LOGICAL  useCurrentDir
       INTEGER  iRec
       INTEGER  theSimulationMode
+      CHARACTER*(5) slice
       INTEGER  myOptimIter
       INTEGER  myThid
 
@@ -1146,7 +1158,7 @@ C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
      I                activeVar_file, prec, globalFile, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      I                dummyRL, active_var,
-     I                iRec, myOptimIter, myThid )
+     I                iRec, slice, myOptimIter, myThid )
       ENDIF
 
 C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
@@ -1156,7 +1168,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
      I                activeVar_file, prec, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      O                dummyRL, active_data_t,
-     I                iRec, myThid )
+     I                iRec, slice, myThid )
 
 C     Add active_var from appropriate location to data.
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -1174,7 +1186,7 @@ C     Add active_var from appropriate location to data.
      I                activeVar_file, prec, globalFile, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      I                dummyRL, active_data_t,
-     I                iRec, myOptimIter, myThid )
+     I                iRec, slice, myOptimIter, myThid )
 
       ENDIF
 
@@ -1184,7 +1196,7 @@ C     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
      I                activeVar_file, prec, globalFile, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      I                dummyRL, active_var,
-     I                iRec, myOptimIter, myThid )
+     I                iRec, slice, myOptimIter, myThid )
       ENDIF
 
       RETURN

@@ -78,7 +78,7 @@ C     myThid         :: my Thread Id number
 C     dummy          :: (needed for 2nd derivative code)
       CHARACTER*(*) activeVar_file
       _RL     adactive_var(*)
-      CHARACTER*(2) arrShape
+      CHARACTER*(3) arrShape
       INTEGER myNr
       INTEGER iRec
       LOGICAL globalFile
@@ -94,6 +94,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  pref
+      CHARACTER*(5)  slice
       CHARACTER*(80) fName
       INTEGER il
 CEOP
@@ -103,26 +104,28 @@ CEOP
       WRITE(fName(1:80),'(A)') ' '
       WRITE(fName(1:2+il),'(2A)') pref, activeVar_file(1:il)
 
-      IF ( arrShape.EQ.'XY' ) THEN
+      IF ( arrShape(1:2).EQ.'XY' ) THEN
 
         CALL ACTIVE_READ_3D_RL(
      &                 fName, adactive_var, globalFile,
      &                 useCurrentDir, lAdInit, iRec, myNr,
      &                 REVERSE_SIMULATION, myIter, myThid )
 
-      ELSEIF ( arrShape.EQ.'XZ' ) THEN
+      ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
 
         CALL ACTIVE_READ_XZ_RL(
      &                 fName, adactive_var, globalFile,
      &                 useCurrentDir, lAdInit, iRec, myNr,
      &                 REVERSE_SIMULATION, myIter, myThid )
 
-      ELSEIF ( arrShape.EQ.'YZ' ) THEN
+      ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
+        IF (arrShape(3).EQ.'E') slice = 'east '
+        IF (arrShape(3).EQ.'W') slice = 'west '
 
         CALL ACTIVE_READ_YZ_RL(
      &                 fName, adactive_var, globalFile,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 REVERSE_SIMULATION, myIter, myThid )
+     &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       ELSE
         STOP
@@ -195,7 +198,7 @@ C     myThid         :: my Thread Id number
 C     dummy          :: (needed for 2nd derivative code)
       CHARACTER*(*) activeVar_file
       _RS     adactive_var(*)
-      CHARACTER*(2) arrShape
+      CHARACTER*(3) arrShape
       INTEGER myNr
       INTEGER iRec
       LOGICAL globalFile
@@ -211,6 +214,7 @@ C     !FUNCTIONS:
 
 C     !LOCAL VARIABLES:
       CHARACTER*(2)  pref
+      CHARACTER*(5)  slice
       CHARACTER*(80) fName
       INTEGER il
 CEOP
@@ -220,26 +224,28 @@ CEOP
       WRITE(fName(1:80),'(A)') ' '
       WRITE(fName(1:2+il),'(2A)') pref, activeVar_file(1:il)
 
-      IF ( arrShape.EQ.'XY' ) THEN
+      IF ( arrShape(1:2).EQ.'XY' ) THEN
 
         CALL ACTIVE_READ_3D_RS(
      &                 fName, adactive_var, globalFile,
      &                 useCurrentDir, lAdInit, iRec, myNr,
      &                 REVERSE_SIMULATION, myIter, myThid )
 
-      ELSEIF ( arrShape.EQ.'XZ' ) THEN
+      ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
 
         CALL ACTIVE_READ_XZ_RS(
      &                 fName, adactive_var, globalFile,
      &                 useCurrentDir, lAdInit, iRec, myNr,
      &                 REVERSE_SIMULATION, myIter, myThid )
 
-      ELSEIF ( arrShape.EQ.'YZ' ) THEN
+      ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
+        IF (arrShape(3).EQ.'E') slice = 'east '
+        IF (arrShape(3).EQ.'W') slice = 'west '
 
         CALL ACTIVE_READ_YZ_RS(
      &                 fName, adactive_var, globalFile,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 REVERSE_SIMULATION, myIter, myThid )
+     &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       ELSE
         STOP
@@ -304,7 +310,7 @@ C     myThid         :: my Thread Id number
 C     dummy          :: (needed for 2nd derivative code)
       CHARACTER*(*) activeVar_file
       _RL     adactive_var(*)
-      CHARACTER*(2) arrShape
+      CHARACTER*(3) arrShape
       INTEGER myNr
       INTEGER iRec
       LOGICAL useCurrentDir
@@ -319,6 +325,7 @@ C     !FUNCTIONS:
 C     !LOCAL VARIABLES:
 C     globalFile     :: used for writing global (if =T) or tiled files
       CHARACTER*(2)  pref
+      CHARACTER*(5)  slice
       CHARACTER*(80) fName
       INTEGER il
       LOGICAL globalFile
@@ -330,26 +337,28 @@ CEOP
       WRITE(fName(1:2+il),'(2A)') pref, activeVar_file(1:il)
       globalFile = .FALSE.
 
-      IF ( arrShape.EQ.'XY' ) THEN
+      IF ( arrShape(1:2).EQ.'XY' ) THEN
 
         CALL ACTIVE_WRITE_3D_RL(
      &                 fName, adactive_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
      &                 REVERSE_SIMULATION, myIter, myThid )
 
-      ELSEIF ( arrShape.EQ.'XZ' ) THEN
+      ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
 
         CALL ACTIVE_WRITE_XZ_RL(
      &                 fName, adactive_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
      &                 REVERSE_SIMULATION, myIter, myThid )
 
-      ELSEIF ( arrShape.EQ.'YZ' ) THEN
+      ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
+        IF (arrShape(3).EQ.'E') slice = 'east '
+        IF (arrShape(3).EQ.'W') slice = 'west '
 
         CALL ACTIVE_WRITE_YZ_RL(
      &                 fName, adactive_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
-     &                 REVERSE_SIMULATION, myIter, myThid )
+     &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       ELSE
         STOP
@@ -414,7 +423,7 @@ C     myThid         :: my Thread Id number
 C     dummy          :: (needed for 2nd derivative code)
       CHARACTER*(*) activeVar_file
       _RS     adactive_var(*)
-      CHARACTER*(2) arrShape
+      CHARACTER*(3) arrShape
       INTEGER myNr
       INTEGER iRec
       LOGICAL useCurrentDir
@@ -429,6 +438,7 @@ C     !FUNCTIONS:
 C     !LOCAL VARIABLES:
 C     globalFile     :: used for writing global (if =T) or tiled files
       CHARACTER*(2)  pref
+      CHARACTER*(5)  slice
       CHARACTER*(80) fName
       INTEGER il
       LOGICAL globalFile
@@ -440,26 +450,28 @@ CEOP
       WRITE(fName(1:2+il),'(2A)') pref, activeVar_file(1:il)
       globalFile = .FALSE.
 
-      IF ( arrShape.EQ.'XY' ) THEN
+      IF ( arrShape(1:2).EQ.'XY' ) THEN
 
         CALL ACTIVE_WRITE_3D_RS(
      &                 fName, adactive_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
      &                 REVERSE_SIMULATION, myIter, myThid )
 
-      ELSEIF ( arrShape.EQ.'XZ' ) THEN
+      ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
 
         CALL ACTIVE_WRITE_XZ_RS(
      &                 fName, adactive_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
      &                 REVERSE_SIMULATION, myIter, myThid )
 
-      ELSEIF ( arrShape.EQ.'YZ' ) THEN
+      ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
+        IF (arrShape(3).EQ.'E') slice = 'east '
+        IF (arrShape(3).EQ.'W') slice = 'west '
 
         CALL ACTIVE_WRITE_YZ_RS(
      &                 fName, adactive_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
-     &                 REVERSE_SIMULATION, myIter, myThid )
+     &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       ELSE
         STOP

@@ -277,7 +277,7 @@ cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         if (iobcs.eq.3) then
           call active_read_yz( fnamefldw, tmpfldyz, irec, doglobalread,
-     &                         ladinit, optimcycle, mythid
+     &                         ladinit, 'west ', optimcycle, mythid
      &                       , xx_obcsw_dummy )
 
 cgg  At this point, do not be concerned with the overlap halos.
@@ -320,7 +320,7 @@ cgg   Assume that nobcs=4, and V velocity is the 4th record. I cannot
 cgg   think of a more general way to do this.
         if (iobcs.eq.3) then
           call active_read_yz( fnameflde, tmpfldyz, irec, doglobalread,
-     &                         ladinit, optimcycle, mythid
+     &                         ladinit, 'east ',optimcycle, mythid
      &                       , xx_obcse_dummy )
 
 cgg  At this point, do not be concerned with the overlap halos.

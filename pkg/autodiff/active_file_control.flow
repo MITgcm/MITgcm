@@ -59,13 +59,13 @@ cadj SUBROUTINE active_read_xz_rs OUTPUT  =    2
 c----------------------------------------
 c subroutine active_read_yz_rl
 c----------------------------------------
-cadj SUBROUTINE active_read_yz_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+cadj SUBROUTINE active_read_yz_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
 cadj SUBROUTINE active_read_yz_rl OUTPUT  =    2
 
 c----------------------------------------
 c subroutine active_read_yz_rs
 c----------------------------------------
-cadj SUBROUTINE active_read_yz_rs INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+cadj SUBROUTINE active_read_yz_rs INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
 cadj SUBROUTINE active_read_yz_rs OUTPUT  =    2
 
 c----------------------------------------
@@ -107,12 +107,12 @@ cadj SUBROUTINE active_write_xz_rs OUTPUT  =    2
 c----------------------------------------
 c subroutine active_write_yz_rl
 c----------------------------------------
-cadj SUBROUTINE active_write_yz_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
+cadj SUBROUTINE active_write_yz_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 cadj SUBROUTINE active_write_yz_rl OUTPUT  =    2
 
 c----------------------------------------
 c subroutine active_write_yz_rs
 c----------------------------------------
-cadj SUBROUTINE active_write_yz_rs INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
+cadj SUBROUTINE active_write_yz_rs INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 cadj SUBROUTINE active_write_yz_rs OUTPUT  =    2
 

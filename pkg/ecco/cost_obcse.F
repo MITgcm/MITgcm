@@ -152,7 +152,7 @@ c--   Loop over records.
       do irec = 1,nrec
 
         call active_read_yz( fnamefld, tmpfield, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid
+     &                       ladinit, 'east ', optimcycle, mythid
      &        , xx_obcse_dummy )
 
 cgg    Need to solve for iobcs would have been.
@@ -162,7 +162,7 @@ cgg    Need to solve for iobcs would have been.
 
           call active_read_yz( 'maskobcse', maskyz,
      &                         iobcs,
-     &                         doglobalread, ladinit, 0,
+     &                         doglobalread, ladinit, 'east ', 0,
      &                         mythid, dummy )
 
 c--     Loop over this thread s tiles.

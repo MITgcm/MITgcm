@@ -726,9 +726,15 @@ ce      --> this index does not exist yet.
 
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
       elseif ( grdchkvarindex.EQ.13 .OR. grdchkvarindex.EQ.14) then
+         if (grdchkvarindex.EQ.14) then
          call active_read_yz( fname, tmpfldyz, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
+     &                        doglobalread, ladinit, optimcycle,'east ',
      &                        mythid, dummy)
+         else
+         call active_read_yz( fname, tmpfldyz, icvrec,
+     &                        doglobalread, ladinit, optimcycle,'east ',
+     &                        mythid, dummy)
+         endif
          if ( myProcId .EQ. grdchkwhichproc )
      &   xx_comp_ref = tmpfldyz( jtilepos,layer,itile,jtile )
          if ( myProcId .EQ. grdchkwhichproc )

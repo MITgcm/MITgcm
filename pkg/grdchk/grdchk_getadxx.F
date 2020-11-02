@@ -518,9 +518,15 @@ c--   == end of interface ==
 
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
       elseif ( grdchkvarindex.EQ.13 .OR. grdchkvarindex.EQ.14) then
-         call active_read_yz( fname, tmpfldyz, icvrec,
-     &                        doglobalread, ladinit, optimcycle,
+         if (grdchkvarindex.EQ.14) then
+          call active_read_yz(fname, tmpfldyz, icvrec,
+     &                        doglobalread, ladinit, 'east ',optimcycle,
      &                        mythid, dummy)
+         else
+          call active_read_yz(fname, tmpfldyz, icvrec,
+     &                        doglobalread, ladinit, 'west ',optimcycle,
+     &                        mythid, dummy)
+         endif
          if ( myProcId .EQ. grdchkwhichproc )
      &   xx_comp = tmpfldyz( jtilepos,layer,itile,jtile )
 #endif

@@ -116,7 +116,8 @@ C     single (Master) thread (output only available to Master Thread)
         prtMsg = 1
       ENDIF
       IF ( OBEconnectFile.NE.' ' ) THEN
-        CALL READ_REC_YZ_RS( OBEconnectFile, fp,Nr, tmpYZ, 1,0,myThid )
+        CALL READ_REC_YZ_RS( OBEconnectFile, fp,Nr, tmpYZ, 1,'east ',
+     &                      0,myThid )
         _BEGIN_MASTER(myThid)
         DO bj = 1,nSy
          DO bi = 1,nSx
@@ -133,7 +134,8 @@ C     single (Master) thread (output only available to Master Thread)
         prtMsg = 1
       ENDIF
       IF ( OBWconnectFile.NE.' ' ) THEN
-        CALL READ_REC_YZ_RS( OBWconnectFile, fp,Nr, tmpYZ, 1,0,myThid )
+        CALL READ_REC_YZ_RS( OBWconnectFile, fp,Nr, tmpYZ, 1,'west ',
+     &                      0,myThid )
         _BEGIN_MASTER(myThid)
         DO bj = 1,nSy
          DO bi = 1,nSx

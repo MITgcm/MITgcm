@@ -139,7 +139,7 @@ C     Western OB
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_MSG('OBCS_CALC: West',myThid)
 #endif
-      IF (useOrlanskiWest) THEN
+      IF (useOrlanskiWest .and. tileHasOBW(bi,bj)) THEN
 #ifdef ALLOW_ORLANSKI
         CALL ORLANSKI_WEST(
      &          bi, bj, futureTime,

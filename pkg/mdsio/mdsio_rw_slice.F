@@ -87,6 +87,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I   nNz,
      |   arr,
      I   irecord,
+     I   slice,
      I   myThid )
 
 C Arguments:
@@ -97,6 +98,7 @@ C arrType    char(2) :: declaration of "arr": either "RS" or "RL"
 C nNz        integer :: size of third dimension: normally either 1 or Nr
 C arr         RS/RL  :: array to write, arr(:,:,nNz,:,:)
 C irecord    integer :: record number to read
+C slice      char(5) :: slice is either 'east' or 'west'
 C myThid     integer :: thread identifier
 C
 C Routine now calls MDS_READ_SEC_YZ, just a way to add extra arguments
@@ -117,6 +119,7 @@ C Routine arguments
       INTEGER nNz
       _RL     arr(*)
       INTEGER irecord
+      CHARACTER*(5) slice
       INTEGER myThid
 
 #ifdef ALLOW_AUTODIFF
@@ -128,12 +131,12 @@ C Local variables
         CALL MDS_READ_SEC_YZ(
      I                fName, filePrec, .FALSE., arrType, nNz, 1, nNz,
      O                arr, dummyRS,
-     I                irecord, myThid )
+     I                irecord, slice, myThid )
       ELSE
         CALL MDS_READ_SEC_YZ(
      I                fName, filePrec, .FALSE., arrType, nNz, 1, nNz,
      O                dummyRL, arr,
-     I                irecord, myThid )
+     I                irecord, slice, myThid )
       ENDIF
 
 #else /* ALLOW_AUTODIFF */
@@ -217,6 +220,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I   nNz,
      |   arr,
      I   irecord,
+     I   slice,
      I   myThid )
 
 C Arguments:
@@ -227,6 +231,7 @@ C arrType    char(2) :: declaration of "arr": either "RS" or "RL"
 C nNz        integer :: size of third dimension: normally either 1 or Nr
 C arr         RS/RL  :: array to write, arr(:,:,nNz,:,:)
 C irecord    integer :: record number to read
+C slice      char(5) :: slice is either 'east' or 'west'
 C myThid     integer :: thread identifier
 C
 C Routine now calls MDS_READ_SEC_YZ, just a way to add extra arguments
@@ -247,6 +252,7 @@ C Routine arguments
       INTEGER nNz
       _RL     arr(*)
       INTEGER irecord
+      CHARACTER*(5) slice
       INTEGER myThid
 
 #ifdef ALLOW_AUTODIFF
@@ -258,12 +264,12 @@ C Local variables
         CALL MDS_READ_SEC_YZ(
      I                fName, filePrec, .TRUE., arrType, nNz, 1, nNz,
      O                arr, dummyRS,
-     I                irecord, myThid )
+     I                irecord, slice, myThid )
       ELSE
         CALL MDS_READ_SEC_YZ(
      I                fName, filePrec, .TRUE., arrType, nNz, 1, nNz,
      O                dummyRL, arr,
-     I                irecord, myThid )
+     I                irecord, slice, myThid )
       ENDIF
 
 #else /* ALLOW_AUTODIFF */
@@ -299,7 +305,7 @@ C myIter     integer :: time step number
 C myThid     integer :: thread identifier
 C
 C Routine now calls MDS_WRITE_REC_XZ, just a way to add extra arguments
-C to the argument list. 
+C to the argument list.
 C The 1rst new argument (useCurrentDir=.FALSE.) allows to write files to
 C the "mdsioLocalDir" directory (if it is set).
 C The 2nd new argument avoid argument array of undefined type (RL/RS).
@@ -354,6 +360,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I   nNz,
      I   arr,
      I   irecord,
+     I   slice,
      I   myIter,
      I   myThid )
 
@@ -366,11 +373,12 @@ C arrType    char(2) :: declaration of "arr": either "RS" or "RL"
 C nNz        integer :: size of third dimension: normally either 1 or Nr
 C arr         RS/RL  :: array to write, arr(:,:,nNzdim,:,:)
 C irecord    integer :: record number to write
+C slice      char(5) :: slice is either 'east' or 'west'
 C myIter     integer :: time step number
 C myThid     integer :: thread identifier
 C
 C Routine now calls MDS_WRITE_REC_YZ, just a way to add extra arguments
-C to the argument list. 
+C to the argument list.
 C The 1rst new argument (useCurrentDir=.FALSE.) allows to write files to
 C the "mdsioLocalDir" directory (if it is set).
 C The 2nd new argument avoid argument array of undefined type (RL/RS).
@@ -388,6 +396,7 @@ C Routine arguments
       INTEGER nNz
       _RL     arr(*)
       INTEGER irecord
+      CHARACTER*(5) slice
       INTEGER myIter
       INTEGER myThid
 
@@ -400,12 +409,12 @@ C Local variables
         CALL MDS_WRITE_SEC_YZ(
      I                 fName, filePrec, globalFile, .FALSE.,
      I                 arrType, nNz, 1, nNz, arr, dummyRS,
-     I                 irecord, myIter, myThid )
+     I                 irecord, slice, myIter, myThid )
       ELSE
         CALL MDS_WRITE_SEC_YZ(
      I                 fName, filePrec, globalFile, .FALSE.,
      I                 arrType, nNz, 1, nNz, dummyRL, arr,
-     I                 irecord, myIter, myThid )
+     I                 irecord, slice, myIter, myThid )
       ENDIF
 
 #else /* ALLOW_AUTODIFF */
@@ -441,7 +450,7 @@ C myIter     integer :: time step number
 C myThid     integer :: thread identifier
 C
 C Routine now calls MDS_WRITE_REC_XZ, just a way to add extra arguments
-C to the argument list. 
+C to the argument list.
 C The 1rst new argument (useCurrentDir=.TRUE.) forces to ignore the
 C "mdsioLocalDir" parameter and to always write to the current directory.
 C The 2nd new argument avoid argument array of undefined type (RL/RS).
@@ -496,6 +505,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I   nNz,
      I   arr,
      I   irecord,
+     I   slice,
      I   myIter,
      I   myThid )
 
@@ -512,7 +522,7 @@ C myIter     integer :: time step number
 C myThid     integer :: thread identifier
 C
 C Routine now calls MDS_WRITE_REC_YZ, just a way to add extra arguments
-C to the argument list. 
+C to the argument list.
 C The 1rst new argument (useCurrentDir=.TRUE.) forces to ignore the
 C "mdsioLocalDir" parameter and to always write to the current directory.
 C The 2nd new argument avoid argument array of undefined type (RL/RS).
@@ -530,6 +540,7 @@ C Routine arguments
       INTEGER nNz
       _RL     arr(*)
       INTEGER irecord
+      CHARACTER*(5) slice
       INTEGER myIter
       INTEGER myThid
 
@@ -542,12 +553,12 @@ C Local variables
         CALL MDS_WRITE_SEC_YZ(
      I                 fName, filePrec, globalFile, .TRUE.,
      I                 arrType, nNz, 1, nNz, arr, dummyRS,
-     I                 irecord, myIter, myThid )
+     I                 irecord, slice, myIter, myThid )
       ELSE
         CALL MDS_WRITE_SEC_YZ(
      I                 fName, filePrec, globalFile, .TRUE.,
      I                 arrType, nNz, 1, nNz, dummyRL, arr,
-     I                 irecord, myIter, myThid )
+     I                 irecord, slice, myIter, myThid )
       ENDIF
 
 #else /* ALLOW_AUTODIFF */

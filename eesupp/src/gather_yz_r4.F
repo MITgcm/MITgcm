@@ -7,7 +7,7 @@ C !INTERFACE:
       SUBROUTINE GATHER_YZ_R4(
      O                  gloBuff,
      I                  myField,
-     I                  ySize,
+     I                  ySize, slice,
      I                  useExch2GlobLayOut,
      I                  zeroBuff,
      I                  myThid )
@@ -25,25 +25,28 @@ C     !USES:
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #endif /* ALLOW_EXCH2 */
+#include "OBCS_GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C gloBuff   ( _R4 ) :: full-domain 2D IO-buffer array             (Output)
 C myField   ( _R4 ) :: tiled, local (i.e. my Proc. tiles) 2D array (Input)
 C ySize    (integer):: global buffer 1rst dim (y)
+C slice    (char(5)):: denoting east or west slice
 C useExch2GlobLayOut:: =T: Use Exch2 global-map layout (only with EXCH2)
 C zeroBuff (logical):: =T: initialise the buffer to zero before copy
 C myThid   (integer):: my Thread Id number
 
       INTEGER ySize
       _R4     gloBuff(ySize)
-      _R4     myField(1:sNy,nSy)
+      _R4     myField(1:sNy,nSx,nSy)
+      CHARACTER*(5) slice
       LOGICAL useExch2GlobLayOut
       LOGICAL zeroBuff
       INTEGER myThid
 CEOP
 
 C !LOCAL VARIABLES:
-      INTEGER j,bj
+      INTEGER j,bi,bj
       INTEGER jG
       INTEGER jBase
 #ifdef ALLOW_EXCH2
@@ -52,7 +55,7 @@ C !LOCAL VARIABLES:
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_USE_MPI
       INTEGER np, pId
-      _R4     temp(1:sNy,nSy)
+      _R4     temp(1:sNy,nSx,nSy)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER lbuff, idest, itag, ready_to_receive
 #endif /* ALLOW_USE_MPI */
@@ -73,23 +76,28 @@ C     safer to reset to zero to avoid unknown values in output file
           ENDIF
 
           DO bj=1,nSy
-            tN = W2_myTileList(1,bj) !TODO: bi arg?
-            IF  ( exch2_tNy(tN) .GT. ySize ) THEN
-C-          tile y-size larger than glob-size : make a long line
-              jGjLoc = 0
-            ELSE
-C-          default (face fit into global-IO-array)
-              jGjLoc = 1
-            ENDIF
+           DO bi=1,nSx
+            IF (((slice(1:4).EQ.'east').AND.(tileHasOBE(bi,bj))).OR.
+     &          ((slice(1:4).EQ.'west').AND.(tileHasOBW(bi,bj)))) THEN
 
-            DO j=1,sNy
+             tN = W2_myTileList(bi,bj)
+             IF  ( exch2_tNy(tN) .GT. ySize ) THEN
+C-           tile y-size larger than glob-size : make a long line
+              jGjLoc = 0
+             ELSE
+C-           default (face fit into global-IO-array)
+              jGjLoc = 1
+             ENDIF
+
+             DO j=1,sNy
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
               jG=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
-              gloBuff(jG) = myField(j,bj)
-            ENDDO
-
+              gloBuff(jG) = myField(j,bi,bj)
+             ENDDO
+            ENDIF
+           ENDDO
           ENDDO
 
         ELSE
@@ -100,12 +108,17 @@ C-          default (face fit into global-IO-array)
           jBase = myYGlobalLo-1
 
           DO bj=1,nSy
-           DO j=1,sNy
+           DO bi=1,nSx
+            IF (((slice(1:4).EQ.'east').AND.(tileHasOBE(bi,bj))).OR.
+     &          ((slice(1:4).EQ.'west').AND.(tileHasOBW(bi,bj)))) THEN
+             jG = jBase+(bj-1)*sNy
+             DO j=1,sNy
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-              jG = jBase+(bj-1)*sNy+j
-              gloBuff(jG) = myField(j,bj)
+              gloBuff(jG+j) = myField(j,bi,bj)
+             ENDDO
+            ENDIF
            ENDDO
           ENDDO
 
@@ -118,7 +131,7 @@ C-    end if myProcId = 0
 #ifdef ALLOW_USE_MPI
       IF ( usingMPI ) THEN
 
-       lbuff = sNy*nSy
+       lbuff = sNy*nSx*nSy
        idest = 0
        itag  = 0
        ready_to_receive = 0
@@ -140,23 +153,27 @@ C--   Process 0 gathers the local arrays into the global buffer.
          IF ( useExch2GlobLayOut ) THEN
 
           DO bj=1,nSy
-            tN = W2_procTileList(bj,np) !TODO: bi arg?
-            IF  ( exch2_tNy(tN) .GT. ySize ) THEN
+           DO bi=1,nSx
+            IF (((slice(1:4).EQ.'east').AND.(tileHasOBE(bi,bj))).OR.
+     &          ((slice(1:4).EQ.'west').AND.(tileHasOBW(bi,bj)))) THEN
+             tN = W2_procTileList(bi,bj,np)
+             IF  ( exch2_tNy(tN) .GT. ySize ) THEN
 C-          tile y-size larger than glob-size : make a long line
               jGjLoc = 0
-            ELSE
+             ELSE
 C-          default (face fit into global-IO-array)
               jGjLoc = 1
-            ENDIF
+             ENDIF
 
-            DO j=1,sNy
+             DO j=1,sNy
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-             jG=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
-             gloBuff(jG) = temp(j,bj)
-            ENDDO
-
+              jG=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
+              gloBuff(jG) = temp(j,bi,bj)
+             ENDDO
+            ENDIF
+           ENDDO
           ENDDO
 
          ELSE
@@ -167,15 +184,17 @@ C-          default (face fit into global-IO-array)
           jBase = mpi_myYGlobalLo(np)-1
 
           DO bj=1,nSy
-           DO j=1,sNy
+           DO bi=1,nSx
+            IF (((slice(1:4).EQ.'east').AND.(tileHasOBE(bi,bj))).OR.
+     &          ((slice(1:4).EQ.'west').AND.(tileHasOBW(bi,bj)))) THEN
+             jG = jBase+(bj-1)*sNy
+             DO j=1,sNy
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-            IF (ABS(temp(j,bj)).gt.0.) THEN
-              jG = jBase+(bj-1)*sNy+j
-              gloBuff(jG) = temp(j,bj)
+              gloBuff(jG+j) = temp(j,bi,bj)
+             ENDDO
             ENDIF
-
            ENDDO
           ENDDO
 

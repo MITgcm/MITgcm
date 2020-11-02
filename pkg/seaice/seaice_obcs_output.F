@@ -85,21 +85,21 @@ C     Write Sea-Ice OB arrays
 # endif
 # ifdef ALLOW_OBCS_EAST
         WRITE(fn,'(2A)') 'seaice_ob_E.', suff
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEa,    1,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEh,    2,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEsl,   3,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEsn,   4,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEuice, 5,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEvice, 6,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEa,   1,'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEh,   2,'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEsl,  3,'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEsn,  4,'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEuice,5,'east ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBEvice,6,'east ',myIter,myThid)
 # endif
 # ifdef ALLOW_OBCS_WEST
         WRITE(fn,'(2A)') 'seaice_ob_W.', suff
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWa,    1,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWh,    2,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWsl,   3,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWsn,   4,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWuice, 5,myIter,myThid)
-        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWvice, 6,myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWa,   1,'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWh,   2,'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWsl,  3,'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWsn,  4,'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWuice,5,'west ',myIter,myThid)
+        CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWvice,6,'west ',myIter,myThid)
 # endif
 
        _BARRIER

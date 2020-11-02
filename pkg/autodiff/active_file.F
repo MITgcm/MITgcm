@@ -237,6 +237,7 @@ C     !INTERFACE:
      I                           iRec,
      I                           doglobalread,
      I                           lAdInit,
+     I                           slice,
      I                           myOptimIter,
      I                           myThid,
      I                           dummy
@@ -267,6 +268,7 @@ C     doglobalread   :: flag for global or local read/write
 C                       (default: .false.)
 C     lAdInit        :: initialisation of corresponding adjoint
 C                       variable and write to active file
+C     slice          :: 'east' or 'west'
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
@@ -274,6 +276,7 @@ C     myThid         :: thread number for this instance
       INTEGER iRec
       LOGICAL doglobalread
       LOGICAL lAdInit
+      CHARACTER*(5) slice
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
@@ -288,7 +291,7 @@ CEOP
       CALL ACTIVE_READ_YZ_RL(
      &                 active_var_file, active_var, doglobalread,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+     &                 FORWARD_SIMULATION, slice, myOptimIter, myThid )
 
       RETURN
       END
@@ -544,6 +547,7 @@ C     !INTERFACE:
      I                            active_var_file,
      I                            active_var,
      I                            iRec,
+     I                            slice,
      I                            myOptimIter,
      I                            myThid,
      I                            dummy
@@ -571,11 +575,13 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     active_var_file:: filename
 C     active_var     :: array
 C     iRec           :: record number
+C     slice          :: 'east' or 'west'
 C     myOptimIter    :: number of optimization iteration (default: 0)
 C     myThid         :: thread number for this instance
       CHARACTER*(*) active_var_file
       _RL     active_var(1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
+      CHARACTER*(5) slice
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
@@ -592,7 +598,7 @@ CEOP
       CALL ACTIVE_WRITE_YZ_RL(
      &                 active_var_file, active_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
-     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+     &                 FORWARD_SIMULATION, slice, myOptimIter, myThid )
 
       RETURN
       END

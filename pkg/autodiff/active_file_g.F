@@ -301,6 +301,7 @@ C     !INTERFACE:
      I                           iRec,
      I                           doglobalread,
      I                           lAdInit,
+     I                           slice,
      I                           myOptimIter,
      I                           myThid,
      I                           dummy,
@@ -342,6 +343,7 @@ C     myThid         :: thread number for this instance
       INTEGER iRec
       LOGICAL doglobalread
       LOGICAL lAdInit
+      CHARACTER*(5) slice
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy, g_dummy
@@ -368,12 +370,12 @@ CEOP
       CALL ACTIVE_READ_YZ_RL(
      &                 active_var_file, active_var, doglobalread,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+     &                 FORWARD_SIMULATION, slice, myOptimIter, myThid )
 
       CALL ACTIVE_READ_YZ_RL(
      &                 fname, g_active_var, doglobalread,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 TANGENT_SIMULATION, myOptimIter, myThid )
+     &                 TANGENT_SIMULATION, slice, myOptimIter, myThid )
 
       RETURN
       END
@@ -720,6 +722,7 @@ C     !INTERFACE:
      I                            active_var,
      I                            g_active_var,
      I                            iRec,
+     I                            slice,
      I                            myOptimIter,
      I                            myThid,
      I                            dummy,
@@ -755,6 +758,7 @@ C     myThid         :: thread number for this instance
       _RL     active_var(1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL     g_active_var(1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iRec
+      CHARACTER*(5) slice
       INTEGER myOptimIter
       INTEGER myThid
       _RL     dummy
@@ -784,12 +788,12 @@ CEOP
       CALL ACTIVE_WRITE_YZ_RL(
      &                 active_var_file, active_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
-     &                 FORWARD_SIMULATION, myOptimIter, myThid )
+     &                 FORWARD_SIMULATION, slice, myOptimIter, myThid )
 
       CALL ACTIVE_WRITE_YZ_RL(
      &                 fname, g_active_var, globalFile,
      &                 useCurrentDir, iRec, myNr,
-     &                 TANGENT_SIMULATION, myOptimIter, myThid )
+     &                 TANGENT_SIMULATION, slice, myOptimIter, myThid )
 
       RETURN
       END

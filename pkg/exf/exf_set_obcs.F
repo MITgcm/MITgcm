@@ -168,10 +168,13 @@ C     nNz   :: number of levels to process
 C     == local variables ==
 
       CHARACTER*(128) obcs_file0, obcs_file1
+      CHARACTER*(5) slice
       INTEGER bi, bj
       INTEGER j, k
 
 C     == end of interface ==
+      IF (obcsmask.EQ.'E') slice = 'east '
+      IF (obcsmask.EQ.'W') slice = 'west '
 
       IF ( obcs_file .NE. ' ' ) THEN
 

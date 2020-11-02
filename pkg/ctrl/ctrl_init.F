@@ -379,7 +379,7 @@ c--   Western obc.
      I     myThid )
       call ctrl_init_ctrlvar (
      &     xx_obcsw_file, 13, 113, diffrec, startrec, endrec,
-     &     1, sny, nr, 'm', 'yz', myThid )
+     &     1, sny, nr, 'm', 'yzw', myThid )
 #endif  /* ALLOW_OBCSW_CONTROL */
 
 c----------------------------------------------------------------------
@@ -392,7 +392,7 @@ c--   Eastern obc.
      I     myThid )
       call ctrl_init_ctrlvar (
      &     xx_obcse_file, 14, 114, diffrec, startrec, endrec,
-     &     1, sny, nr, 'm', 'yz', myThid )
+     &     1, sny, nr, 'm', 'yze', myThid )
 #endif /* ALLOW_OBCSE_CONTROL */
 
 c----------------------------------------------------------------------
