@@ -10,9 +10,9 @@ CBOP
 C     !ROUTINE: SEAICE_SIDEDRAG
 C     !INTERFACE:
       SUBROUTINE SEAICE_SIDEDRAG_STRESS(
-     I     uIceLoc, vIceLoc, 
+     I     uIce, vIce, 
      I     SIMaskULoc, SIMaskVLoc, AREALoc,
-     O     SideDragxloc,SideDragyloc,
+     O     SideDragXloc,SideDragYloc,
      I     iStep, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
@@ -41,19 +41,19 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     u/vIceLoc :: local copies of the current ice velocity
 C     SIMaskU/V :: local copy of land-sea masks in u/v direction
-C     SideDragx :: side drag in x direction
-C     SideDragy :: side drag in y direction
+C     SideDragXloc :: side drag in x direction
+C     SideDragYloc :: side drag in y direction
 C     iStep     :: current sub-time step iterate
 C     myTime    :: Simulation time
 C     myIter    :: Simulation timestep number
 C     myThid    :: my Thread Id. number
-      _RL uIceLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL vIceLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL uIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SIMaskULoc  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SIMaskVLoc  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL AREALoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SideDragxloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SideDragyloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SideDragXloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SideDragYloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL coastX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL coastY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       
@@ -101,15 +101,15 @@ c      ENDDO
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          SideDragx(I,J,bi,bj) = 0. _d 0
-          SideDragy(I,J,bi,bj) = 0. _d 0
+          SideDragXloc(I,J,bi,bj) = 0. _d 0
+          SideDragYloc(I,J,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
         DO j=1-OLy,sNy+OLy-1
          DO i=1-OLx,sNx+OLx-1
           uSpd(i,j) = 0.5 _d 0 *
-     &          sqrt((uIceLoc(i,  j,bi,bj)+uIceLoc(i+1,j,  bi,bj))**2
-     &        +      (vIceLoc(i,  j,bi,bj)+vIceLoc(i,  j+1,bi,bj))**2)
+     &          sqrt((uIce(i,  j,bi,bj)+uIce(i+1,j,  bi,bj))**2
+     &        +      (vIce(i,  j,bi,bj)+vIce(i,  j+1,bi,bj))**2)
          ENDDO
         ENDDO
 C calculate the sidedrag coeff  
@@ -136,10 +136,10 @@ C     &        - SIMaskVLoc(i,j,bi,bj)
 C     &        - SIMaskVLoc(i+1,j,bi,bj) ) * SIMaskVLoc(i,j,bi,bj)
 
 
-          SideDragxloc(I,J,bi,bj) = SEAICE_rhoIce * SEAICESideDrag 
+          SideDragXloc(I,J,bi,bj) = SEAICE_rhoIce * SEAICESideDrag 
      &                             * tmpx * coastX(I,J,bi,bj)
 c * uIceLoc(i,j,bi,bj)
-          SideDragyloc(I,J,bi,bj) = SEAICE_rhoIce * SEAICESideDrag  
+          SideDragYloc(I,J,bi,bj) = SEAICE_rhoIce * SEAICESideDrag  
      &                             * tmpy * coastY(I,J,bi,bj)
 c * vIceLoc(i,j,bi,bj)
           ENDIF
@@ -147,11 +147,6 @@ c * vIceLoc(i,j,bi,bj)
         ENDDO
        ENDDO
       ENDDO
-      CALL DIAGNOSTICS_FILL(SideDragxloc,'SISidex ',0,1,0,1,1,myThid)
-      CALL DIAGNOSTICS_FILL(SideDragyloc,'SISidey ',0,1,0,1,1,myThid)
-      CALL DIAGNOSTICS_FILL(coastX,'SIcoastu',0,1,0,1,1,myThid)
-      CALL DIAGNOSTICS_FILL(cOASTy,'SIcoast ',0,1,0,1,1,myThid)
-
 
 #endif /* SEAICE_ALLOW_SIDEDRAG */
 

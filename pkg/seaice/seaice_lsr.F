@@ -507,6 +507,23 @@ C
      O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
      I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
 
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+           BU(I,J,bi,bj) = BU(I,J,bi,bj) + seaiceMaskU(I,J,bi,bj)
+     &                   * SideDragX(I,J,bi,bj)
+     &                   * areaW(I,J,bi,bj)
+           BV(I,J,bi,bj) = BV(I,J,bi,bj) + seaiceMaskV(I,J,bi,bj)
+     &                   * SideDragY(I,J,bi,bj)
+     &                   * areaS(I,J,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+#endif /* SEAICE_ALLOW_SIDEDRAG */
+
 #ifndef OBCS_UVICE_OLD
 C--     prevent tri-diagonal solver from modifying OB values:
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -534,22 +551,7 @@ C--     prevent tri-diagonal solver from modifying OB values:
        ENDDO
       ENDDO
 #endif /* OBCS_UVICE_OLD */
-#ifdef SEAICE_ALLOW_SIDEDRAG
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=jMin,jMax
-         DO I=iMin,iMax
-           BU(I,J,bi,bj) = BU(I,J,bi,bj) + seaiceMaskU(I,J,bi,bj)
-     &                   * SideDragX(I,J,bi,bj)
-     &                   * areaW(I,J,bi,bj)
-           BV(I,J,bi,bj) = BV(I,J,bi,bj) + seaiceMaskV(I,J,bi,bj)
-     &                   * SideDragY(I,J,bi,bj)
-     &                   * areaS(I,J,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-#endif /* SEAICE_ALLOW_SIDEDRAG */
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_DEBUG
@@ -1025,6 +1027,11 @@ C     and evaluate divergence of stress and apply to forcing
        ENDDO
 C     endif  useHB87StressCoupling
       ENDIF
+
+      CALL DIAGNOSTICS_FILL(SideDragX,'SISidex ',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(SideDragY,'SISidey ',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(BU,'SIcoastu',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(BV,'SIcoast ',0,1,0,1,1,myThid)
 
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
