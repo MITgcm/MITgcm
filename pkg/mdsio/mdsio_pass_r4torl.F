@@ -192,6 +192,13 @@ CEOP
                 arrFld(i,kLev,bi,bj) = buffer(i,k,bi,bj)
               ENDDO
              ENDDO
+            ELSE
+             DO k=1,nNz
+              kLev = kLo+k-1
+              DO i=1-oL,sNx+oL
+                arrFld(i,kLev,bi,bj) = UNSET_RL
+              ENDDO
+             ENDDO
             ENDIF
            ENDDO
           ENDDO
@@ -204,6 +211,12 @@ CEOP
               kLev = kLo+k-1
               DO i=1-oL,sNx+oL
                 buffer(i,k,bi,bj) = arrFld(i,kLev,bi,bj)
+              ENDDO
+             ENDDO
+            ELSE
+             DO k=1,nNz
+              DO i=1-oL,sNx+oL
+                buffer(i,k,bi,bj) = UNSET_FLOAT4
               ENDDO
              ENDDO
             ENDIF
@@ -309,6 +322,13 @@ CEOP
                 arrFld(j,kLev,bi,bj) = buffer(j,k,bi,bj)
               ENDDO
              ENDDO
+            ELSE
+             DO k=1,nNz
+              kLev = kLo+k-1
+              DO j=1-oL,sNy+oL
+                arrFld(j,kLev,bi,bj) = UNSET_RL
+              ENDDO
+             ENDDO
             ENDIF
            ENDDO
           ENDDO
@@ -321,6 +341,12 @@ CEOP
               kLev = kLo+k-1
               DO j=1-oL,sNy+oL
                 buffer(j,k,bi,bj) = arrFld(j,kLev,bi,bj)
+              ENDDO
+             ENDDO
+            ELSE
+             DO k=1,nNz
+              DO j=1-oL,sNy+oL
+                buffer(j,k,bi,bj) = UNSET_FLOAT4
               ENDDO
              ENDDO
             ENDIF

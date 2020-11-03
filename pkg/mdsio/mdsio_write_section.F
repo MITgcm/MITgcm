@@ -288,14 +288,7 @@ C- endif iAmDoingIO
       ENDIF
 
 C Initialize buffers
-      DO bj=1,nSy
-       DO bi=1,nSx
-        DO i = 1,sNx
-         r4Seg(i,bi,bj) = 0.
-         r8Seg(i,bi,bj) = 0. _d 0
-        ENDDO
-       ENDDO
-      ENDDO
+C r4seg/r8seg get filled in pass routine
       DO i = 1, xSize
        x_buffer_r4(i) = 0.
        x_buffer_r8(i) = 0. _d 0
@@ -345,7 +338,7 @@ C Wait for all threads to finish filling shared buffer
           CALL GATHER_XZ_R4(
      O                      x_buffer_r4,
      I                      r4seg,
-     I                      xSize, slice,
+     I                      xSize,
      I                      useExch2ioLayout, zeroBuff, myThid )
        ELSEIF ( filePrec.EQ.precFloat64 ) THEN
          IF ( arrType.EQ.'RS' ) THEN
@@ -366,7 +359,7 @@ C Wait for all threads to finish filling shared buffer
          CALL GATHER_XZ_R8(
      O                     x_buffer_r8,
      I                     r8seg,
-     I                     xSize, slice,
+     I                     xSize,
      I                     useExch2ioLayout, zeroBuff, myThid )
        ELSE
          WRITE(msgBuf,'(A,I6)')
@@ -907,14 +900,7 @@ C- endif iAmDoingIO
       ENDIF
 
 C Initialize buffers
-      DO bj=1,nSy
-       DO bi=1,nSx
-        DO j = 1,sNy
-         r4Seg(j,bi,bj) = 0.
-         r8Seg(j,bi,bj) = 0. _d 0
-        ENDDO
-       ENDDO
-      ENDDO
+C r4seg/r8seg get filled in pass routine
       DO j = 1, ySize
        y_buffer_r4(j) = 0.
        y_buffer_r8(j) = 0. _d 0
@@ -964,7 +950,7 @@ C Wait for all threads to finish filling shared buffer
           CALL GATHER_YZ_R4(
      O                      y_buffer_r4,
      I                      r4seg,
-     I                      ySize, slice,
+     I                      ySize,
      I                      useExch2ioLayout, zeroBuff, myThid )
        ELSEIF ( filePrec.EQ.precFloat64 ) THEN
          IF ( arrType.EQ.'RS' ) THEN
@@ -985,7 +971,7 @@ C Wait for all threads to finish filling shared buffer
          CALL GATHER_YZ_R8(
      O                     y_buffer_r8,
      I                     r8seg,
-     I                     ySize, slice,
+     I                     ySize,
      I                     useExch2ioLayout, zeroBuff, myThid )
        ELSE
          WRITE(msgBuf,'(A,I6)')

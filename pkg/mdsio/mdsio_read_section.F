@@ -284,14 +284,7 @@ C- endif iAmDoingIO
       ENDIF
 
 C Initialize buffers
-      DO bj=1,nSy
-       DO bi=1,nSx
-        DO i = 1,sNx
-         r4Seg(i,bi,bj) = 0.
-         r8Seg(i,bi,bj) = 0. _d 0
-        ENDDO
-       ENDDO
-      ENDDO
+C r4seg/r8seg get filled in pass routine
       DO i = 1, xSize
        x_buffer_r4(i) = 0.
        x_buffer_r8(i) = 0. _d 0
@@ -358,7 +351,7 @@ C  to access shared buffer while master thread is loading data into
           CALL SCATTER_XZ_R4(
      U                       x_buffer_r4,
      O                       r4seg,
-     I                       xSize, slice,
+     I                       xSize,
      I                       useExch2ioLayOut, .FALSE., myThid )
 C All threads wait for Master to finish loading into shared buffer
           CALL BAR2( myThid )
@@ -379,7 +372,7 @@ C All threads wait for Master to finish loading into shared buffer
           CALL SCATTER_XZ_R8(
      U                       x_buffer_r8,
      O                       r8seg,
-     I                       xSize, slice,
+     I                       xSize,
      I                       useExch2ioLayOut, .FALSE., myThid )
 C All threads wait for Master to finish loading into shared buffer
           CALL BAR2( myThid )
@@ -870,14 +863,7 @@ C- endif iAmDoingIO
       ENDIF
 
 C Initialize buffers
-      DO bj=1,nSy
-       DO bi=1,nSx
-        DO j = 1,sNy
-         r4Seg(j,bi,bj) = 0.
-         r8Seg(j,bi,bj) = 0. _d 0
-        ENDDO
-       ENDDO
-      ENDDO
+C r4seg/r8seg get filled in pass routine
       DO j = 1, ySize
        y_buffer_r4(j) = 0.
        y_buffer_r8(j) = 0. _d 0
@@ -943,7 +929,7 @@ C  to access shared buffer while master thread is loading data into
           CALL SCATTER_YZ_R4(
      U                       y_buffer_r4,
      O                       r4seg,
-     I                       ySize, slice,
+     I                       ySize,
      I                       useExch2ioLayOut, .FALSE., myThid )
 C All threads wait for Master to finish loading into shared buffer
           CALL BAR2( myThid )
@@ -964,7 +950,7 @@ C All threads wait for Master to finish loading into shared buffer
           CALL SCATTER_YZ_R8(
      U                       y_buffer_r8,
      O                       r8seg,
-     I                       ySize, slice,
+     I                       ySize,
      I                       useExch2ioLayOut, .FALSE., myThid )
 C All threads wait for Master to finish loading into shared buffer
           CALL BAR2( myThid )
