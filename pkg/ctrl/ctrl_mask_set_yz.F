@@ -56,6 +56,7 @@ c     == local variables ==
       _RL     gg       (1-oly:sny+oly,nr,nsx,nsy)
 
       character*( 80)   fname
+      character*(  5)   slice
 
 c     == external ==
 
@@ -122,6 +123,8 @@ c--               South mask for V
       il=ilnblnk( ymaskobcs )
       write(fname(1:80),'(80a)') ' '
       write(fname(1:80),'(a)') ymaskobcs
+      if (ip1.eq.1) slice = 'east '
+      if (ip1.eq.0) slice = 'west '
 
       do iobcs = 1,nobcs
         do bj = jtlo,jthi
@@ -133,7 +136,7 @@ c--               South mask for V
             enddo
           enddo
         enddo
-        call active_write_yz( fname, gg, iobcs, 0, mythid, dummy)
+        call active_write_yz( fname, gg, iobcs, slice, 0, mythid, dummy)
       enddo
 #endif
 

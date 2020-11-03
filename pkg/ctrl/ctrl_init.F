@@ -353,7 +353,7 @@ c--   Northern obc.
      I     myThid )
       call ctrl_init_ctrlvar (
      &     xx_obcsn_file, 11, 111, diffrec, startrec, endrec,
-     &     snx, 1, nr, 'm', 'xz', myThid )
+     &     snx, 1, nr, 'm', 'xzn', myThid )
 #endif /* ALLOW_OBCSN_CONTROL */
 
 c----------------------------------------------------------------------
@@ -366,7 +366,7 @@ c--   Southern obc.
      I     myThid )
       call ctrl_init_ctrlvar (
      &     xx_obcss_file, 12, 112, diffrec, startrec, endrec,
-     &     snx, 1, nr, 'm', 'xz', myThid )
+     &     snx, 1, nr, 'm', 'xzs', myThid )
 #endif /* ALLOW_OBCSS_CONTROL */
 
 c----------------------------------------------------------------------

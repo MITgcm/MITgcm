@@ -189,7 +189,7 @@ cgg   &                                        *   maskxz (i,k,bi,bj)
 
         call active_read_xz( fnameobcss, tmpfldxz,
      &                       (obcsscount1-1)*nobcs+iobcs,
-     &                       doglobalread, ladinit, optimcycle,
+     &                       doglobalread, ladinit, 'south', optimcycle,
      &                       mythid, xx_obcss_dummy )
 
         do bj = jtlo,jthi
