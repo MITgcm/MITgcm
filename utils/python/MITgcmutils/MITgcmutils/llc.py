@@ -583,7 +583,7 @@ def _getDims(u,v):
 
 def div(u, v, dxg=None, dyg=None, rac=None, hfw=None, hfs=None):
     """
-    Compute divergence of vector field on llc grid
+    Compute divergence of vector field (U,V) on llc grid
 
     Call signatures::
 
@@ -734,3 +734,91 @@ def uv2c(u,v):
             vc[t,k,:,:] = faces2mds(vcf)
 
     return uc.reshape(ushape), vc.reshape(ushape)
+
+def grad(X, dxc=None, dyc=None, hfw=None, hfs=None):
+    """
+    Compute horizontal gradient of scalar field X on llc grid
+
+    Call signatures::
+
+       dXdx, dXdy = div(X, DXC, DYC, HFW, HFS)
+       dXdx, dXdy = div(X)
+       dXdx, dXdy = div(X, DXC, DYC)
+       dXdx, dXdy = div(X, hfw=HFW, hfs=HFS)
+
+    Parameters
+    ----------
+    X   : array-like (timelevel,depthlevel,jpoint,ipoint)
+          scalar field at c-point
+
+    dxc : array-like (jpoint,ipoint), optional
+          grid spacing in x across u-point, defaults to one
+
+    dyc : array-like (jpoint,ipoint), optional
+          grid spacing in y across v-point, defaults to one
+
+    hfw : array-like (depthlevel,jpoint,ipoint), optional
+          hFac at u-point, defaults to one
+
+    hfs : array-like (depthlevel,jpoint,ipoint), optional
+          hFac at v-point, defaults to one
+    """
+
+    nt, nk, nj, ni =  _getDims(X,X)
+    if dxc is None:
+        dxc = np.ones((nj,ni))
+
+    if dyc is None:
+        dyc = np.ones((nj,ni))
+
+    if hfw is None:
+        hfw = np.ones((nk,nj,ni))
+
+    if hfs is None:
+        hfs = np.ones((nk,nj,ni))
+
+    mskw=np.where(hfw>0.,1.,0.).reshape(nk,nj,ni)
+    msks=np.where(hfs>0.,1.,0.).reshape(nk,nj,ni)
+
+    xshape = X.shape
+
+    X   = X.reshape(nt,nk,nj,ni)
+
+    dXdx = np.zeros(X.shape)
+    dXdy = np.zeros(X.shape)
+
+    rdxf = faces(1./np.where(dxc==0.,np.Inf,dxc))
+    rdyf = faces(1./np.where(dyc==0.,np.Inf,dyc))
+    for t in range(nt):
+        for k in range(nk):
+            xf  = faces(X[t,k,:,:])
+            duf = faces(np.zeros((nj,ni)))
+            dvf = faces(np.zeros((nj,ni)))
+            for iface in range(len(xf)-1):
+                du = (xf[iface] - np.roll(xf[iface],1,axis=-1))*rdxf[iface]
+                dv = (xf[iface] - np.roll(xf[iface],1,axis=-2))*rdyf[iface]
+                # now take care of the connectivity
+                if iface==0:
+                    du[:,0] = (xf[0][:,0] - xf[4][-1,::-1])*rdxf[0][:,0]
+                    dv[0,:] = 0. # hack
+                if iface==1:
+                    du[:,0] = (xf[1][:,0] - xf[0][:,   -1])*rdxf[1][:,0]
+                    dv[0,:] = 0. # hack
+                if iface==2:
+                    du[:,0] = (xf[2][:,0] - xf[0][-1,::-1])*rdxf[2][:,0]
+                    dv[0,:] = (xf[2][0,:] - xf[1][-1,   :])*rdxf[2][0,:]
+                if iface==3:
+                    du[:,0] = (xf[3][:,0] - xf[2][:   ,-1])*rdxf[3][:,0]
+                    dv[0,:] = (xf[3][0,:] - xf[1][::-1,-1])*rdyf[3][0,:]
+                if iface==4:
+                    du[:,0] = (xf[4][:,0] - xf[2][-1,::-1])*rdxf[4][:,0]
+                    dv[0,:] = (xf[4][0,:] - xf[3][-1,   :])*rdyf[4][0,:]
+
+                duf[iface]=du
+                dvf[iface]=dv
+
+            dXdx[t,k,:,:] = faces2mds(duf)*mskw[k,:,:]
+            dXdy[t,k,:,:] = faces2mds(dvf)*msks[k,:,:]
+
+
+    return dXdx.reshape(xshape), dXdy.reshape(xshape)
