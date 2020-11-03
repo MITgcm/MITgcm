@@ -85,8 +85,8 @@ CEOP
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
-        IF (arrShape(3).EQ.'N') slice = 'north'
-        IF (arrShape(3).EQ.'S') slice = 'south'
+        IF (arrShape(3:3).EQ.'N') slice = 'north'
+        IF (arrShape(3:3).EQ.'S') slice = 'south'
 
         CALL ACTIVE_READ_XZ_RL(
      &                 activeVar_file, active_var, globalFile,
@@ -94,8 +94,8 @@ CEOP
      &                 FORWARD_SIMULATION, slice, myOptimIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
-        IF (arrShape(3).EQ.'E') slice = 'east '
-        IF (arrShape(3).EQ.'W') slice = 'west '
+        IF (arrShape(3:3).EQ.'E') slice = 'east '
+        IF (arrShape(3:3).EQ.'W') slice = 'west '
 
         CALL ACTIVE_READ_YZ_RL(
      &                 activeVar_file, active_var, globalFile,
@@ -180,8 +180,8 @@ CEOP
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
-        IF (arrShape(3).EQ.'N') slice = 'north'
-        IF (arrShape(3).EQ.'S') slice = 'south'
+        IF (arrShape(3:3).EQ.'N') slice = 'north'
+        IF (arrShape(3:3).EQ.'S') slice = 'south'
 
         CALL ACTIVE_READ_XZ_RS(
      &                 activeVar_file, active_var, globalFile,
@@ -189,8 +189,8 @@ CEOP
      &                 FORWARD_SIMULATION, slice, myOptimIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
-          IF (arrShape(3).EQ.'E') slice = 'east '
-          IF (arrShape(3).EQ.'W') slice = 'west '
+          IF (arrShape(3:3).EQ.'E') slice = 'east '
+          IF (arrShape(3:3).EQ.'W') slice = 'west '
 
         CALL ACTIVE_READ_YZ_RS(
      &                 activeVar_file, active_var, globalFile,
@@ -263,7 +263,7 @@ C     globalFile     :: used for writing global (if =T) or tiled files
 CEOP
 
       globalFile = .FALSE.
-      IF ( arrShape(1:@).EQ.'XY' ) THEN
+      IF ( arrShape(1:2).EQ.'XY' ) THEN
 
         CALL ACTIVE_WRITE_3D_RL(
      &                 activeVar_file, active_var, globalFile,
@@ -271,8 +271,8 @@ CEOP
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
-        IF (arrShape(3).EQ.'N') slice = 'north'
-        IF (arrShape(3).EQ.'S') slice = 'south'
+        IF (arrShape(3:3).EQ.'N') slice = 'north'
+        IF (arrShape(3:3).EQ.'S') slice = 'south'
 
         CALL ACTIVE_WRITE_XZ_RL(
      &                 activeVar_file, active_var, globalFile,
@@ -280,8 +280,8 @@ CEOP
      &                 FORWARD_SIMULATION, slice, myOptimIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
-        IF (arrShape(3).EQ.'E') slice = 'east '
-        IF (arrShape(3).EQ.'W') slice = 'west '
+        IF (arrShape(3:3).EQ.'E') slice = 'east '
+        IF (arrShape(3:3).EQ.'W') slice = 'west '
 
         CALL ACTIVE_WRITE_YZ_RL(
      &                 activeVar_file, active_var, globalFile,
@@ -362,8 +362,8 @@ CEOP
      &                 FORWARD_SIMULATION, myOptimIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
-        IF (arrShape(3).EQ.'N') slice = 'north'
-        IF (arrShape(3).EQ.'S') slice = 'south'
+        IF (arrShape(3:3).EQ.'N') slice = 'north'
+        IF (arrShape(3:3).EQ.'S') slice = 'south'
 
         CALL ACTIVE_WRITE_XZ_RS(
      &                 activeVar_file, active_var, globalFile,
@@ -371,8 +371,8 @@ CEOP
      &                 FORWARD_SIMULATION, slice, myOptimIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
-        IF (arrShape(3).EQ.'E') slice = 'east '
-        IF (arrShape(3).EQ.'W') slice = 'west '
+        IF (arrShape(3:3).EQ.'E') slice = 'east '
+        IF (arrShape(3:3).EQ.'W') slice = 'west '
 
         CALL ACTIVE_WRITE_YZ_RS(
      &                 activeVar_file, active_var, globalFile,

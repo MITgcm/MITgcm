@@ -65,8 +65,8 @@ c     == end of interface ==
       imin = 1-OLx
       imax = sNx+OLx
 
-      if (yzloc.EQ.'n') slice = 'north'
-      if (yzloc.EQ.'s') slice = 'south'
+      if (xzloc.EQ.'n') slice = 'north'
+      if (xzloc.EQ.'s') slice = 'south'
 
 c     Initialise temporary file
       do bj = jtlo,jthi

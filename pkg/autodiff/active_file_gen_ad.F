@@ -112,8 +112,8 @@ CEOP
      &                 REVERSE_SIMULATION, myIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
-        IF (arrShape(3).EQ.'N') slice = 'north'
-        IF (arrShape(3).EQ.'S') slice = 'south'
+        IF (arrShape(3:3).EQ.'N') slice = 'north'
+        IF (arrShape(3:3).EQ.'S') slice = 'south'
 
         CALL ACTIVE_READ_XZ_RL(
      &                 fName, adactive_var, globalFile,
@@ -121,8 +121,8 @@ CEOP
      &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
-        IF (arrShape(3).EQ.'E') slice = 'east '
-        IF (arrShape(3).EQ.'W') slice = 'west '
+        IF (arrShape(3:3).EQ.'E') slice = 'east '
+        IF (arrShape(3:3).EQ.'W') slice = 'west '
 
         CALL ACTIVE_READ_YZ_RL(
      &                 fName, adactive_var, globalFile,
@@ -234,8 +234,8 @@ CEOP
      &                 REVERSE_SIMULATION, myIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
-        IF (arrShape(3).EQ.'N') slice = 'north'
-        IF (arrShape(3).EQ.'S') slice = 'south'
+        IF (arrShape(3:3).EQ.'N') slice = 'north'
+        IF (arrShape(3:3).EQ.'S') slice = 'south'
 
         CALL ACTIVE_READ_XZ_RS(
      &                 fName, adactive_var, globalFile,
@@ -243,8 +243,8 @@ CEOP
      &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
-        IF (arrShape(3).EQ.'E') slice = 'east '
-        IF (arrShape(3).EQ.'W') slice = 'west '
+        IF (arrShape(3:3).EQ.'E') slice = 'east '
+        IF (arrShape(3:3).EQ.'W') slice = 'west '
 
         CALL ACTIVE_READ_YZ_RS(
      &                 fName, adactive_var, globalFile,
@@ -349,8 +349,8 @@ CEOP
      &                 REVERSE_SIMULATION, myIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
-        IF (arrShape(3).EQ.'N') slice = 'north'
-        IF (arrShape(3).EQ.'S') slice = 'south'
+        IF (arrShape(3:3).EQ.'N') slice = 'north'
+        IF (arrShape(3:3).EQ.'S') slice = 'south'
 
         CALL ACTIVE_WRITE_XZ_RL(
      &                 fName, adactive_var, globalFile,
@@ -358,8 +358,8 @@ CEOP
      &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
-        IF (arrShape(3).EQ.'E') slice = 'east '
-        IF (arrShape(3).EQ.'W') slice = 'west '
+        IF (arrShape(3:3).EQ.'E') slice = 'east '
+        IF (arrShape(3:3).EQ.'W') slice = 'west '
 
         CALL ACTIVE_WRITE_YZ_RL(
      &                 fName, adactive_var, globalFile,
@@ -464,8 +464,8 @@ CEOP
      &                 REVERSE_SIMULATION, myIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'XZ' ) THEN
-        IF (arrShape(3).EQ.'N') slice = 'north'
-        IF (arrShape(3).EQ.'S') slice = 'south'
+        IF (arrShape(3:3).EQ.'N') slice = 'north'
+        IF (arrShape(3:3).EQ.'S') slice = 'south'
 
         CALL ACTIVE_WRITE_XZ_RS(
      &                 fName, adactive_var, globalFile,
@@ -473,8 +473,8 @@ CEOP
      &                 REVERSE_SIMULATION, slice, myIter, myThid )
 
       ELSEIF ( arrShape(1:2).EQ.'YZ' ) THEN
-        IF (arrShape(3).EQ.'E') slice = 'east '
-        IF (arrShape(3).EQ.'W') slice = 'west '
+        IF (arrShape(3:3).EQ.'E') slice = 'east '
+        IF (arrShape(3:3).EQ.'W') slice = 'west '
 
         CALL ACTIVE_WRITE_YZ_RS(
      &                 fName, adactive_var, globalFile,
