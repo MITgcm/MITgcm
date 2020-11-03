@@ -25,7 +25,9 @@ C     !USES:
 #include "W2_EXCH2_SIZE.h"
 #include "W2_EXCH2_TOPOLOGY.h"
 #endif /* ALLOW_EXCH2 */
-#include "OBCS_GRID.h"
+#ifdef ALLOW_OBCS
+# include "OBCS_GRID.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C gloBuff   ( _R8 ) :: full-domain 2D IO-buffer array             (Output)
@@ -59,6 +61,8 @@ C !LOCAL VARIABLES:
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER lbuff, idest, itag, ready_to_receive
 #endif /* ALLOW_USE_MPI */
+
+#ifdef ALLOW_OBCS
 
       _BEGIN_MASTER( myThid )
 
@@ -205,6 +209,7 @@ C--   All proceses except 0 wait to be polled then send local array
 #endif /* ALLOW_USE_MPI */
 
       _END_MASTER( myThid )
+#endif
 
       RETURN
       END

@@ -140,7 +140,9 @@ C     !USES:
 C Global variables / common blocks
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "OBCS_GRID.h"
+#ifdef ALLOW_OBCS
+# include "OBCS_GRID.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C Routine arguments
@@ -165,6 +167,8 @@ C myThid  (integer):: my Thread Id number
       CHARACTER*(5) slice
       LOGICAL copyTo
       INTEGER myThid
+
+#ifdef ALLOW_OBCS
 
 C !LOCAL VARIABLES:
 C   i,k   :: loop indices
@@ -228,6 +232,7 @@ CEOP
       ELSE
         STOP 'ABNORMAL END: MDS_PASS_XZ_R8toRL invalid bi,bj Arg'
       ENDIF
+#endif
 
       RETURN
       END
@@ -254,7 +259,9 @@ C     !USES:
 C Global variables / common blocks
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "OBCS_GRID.h"
+#ifdef ALLOW_OBCS
+# include "OBCS_GRID.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C Routine arguments
@@ -279,6 +286,8 @@ C myThid  (integer):: my Thread Id number
       CHARACTER*(5) slice
       LOGICAL copyTo
       INTEGER myThid
+
+#ifdef ALLOW_OBCS
 
 C !LOCAL VARIABLES:
 C   j,k   :: loop indices
@@ -342,6 +351,7 @@ CEOP
       ELSE
         STOP 'ABNORMAL END: MDS_PASS_YZ_R8toRL invalid bi,bj Arg'
       ENDIF
+#endif
 
       RETURN
       END
