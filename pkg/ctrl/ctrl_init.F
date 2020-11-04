@@ -275,7 +275,7 @@ c--   initial forcing only
 
 #if (defined (ALLOW_UWIND_CONTROL))
 #ifdef ALLOW_EXF
-      IF ( useAtmWind ) THEN
+      IF ( useAtmWind ) THEN 
 #endif
 c--   Zonal wind speed.
       call ctrl_init_rec ( xx_uwind_file,
@@ -353,7 +353,7 @@ c--   Northern obc.
      I     myThid )
       call ctrl_init_ctrlvar (
      &     xx_obcsn_file, 11, 111, diffrec, startrec, endrec,
-     &     snx, 1, nr, 'm', 'xzn', myThid )
+     &     snx, 1, nr, 'm', 'xz', myThid )
 #endif /* ALLOW_OBCSN_CONTROL */
 
 c----------------------------------------------------------------------
@@ -366,7 +366,7 @@ c--   Southern obc.
      I     myThid )
       call ctrl_init_ctrlvar (
      &     xx_obcss_file, 12, 112, diffrec, startrec, endrec,
-     &     snx, 1, nr, 'm', 'xzs', myThid )
+     &     snx, 1, nr, 'm', 'xz', myThid )
 #endif /* ALLOW_OBCSS_CONTROL */
 
 c----------------------------------------------------------------------
@@ -379,7 +379,7 @@ c--   Western obc.
      I     myThid )
       call ctrl_init_ctrlvar (
      &     xx_obcsw_file, 13, 113, diffrec, startrec, endrec,
-     &     1, sny, nr, 'm', 'yzw', myThid )
+     &     1, sny, nr, 'm', 'yz', myThid )
 #endif  /* ALLOW_OBCSW_CONTROL */
 
 c----------------------------------------------------------------------
@@ -392,7 +392,7 @@ c--   Eastern obc.
      I     myThid )
       call ctrl_init_ctrlvar (
      &     xx_obcse_file, 14, 114, diffrec, startrec, endrec,
-     &     1, sny, nr, 'm', 'yze', myThid )
+     &     1, sny, nr, 'm', 'yz', myThid )
 #endif /* ALLOW_OBCSE_CONTROL */
 
 c----------------------------------------------------------------------
@@ -861,11 +861,11 @@ c--
 #endif
 
         call ctrl_init_rec ( xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
-     I       xx_gentim2d_startdate1(iarr),
-     I       xx_gentim2d_startdate2(iarr),
-     I       xx_gentim2d_period(iarr),
+     I       xx_gentim2d_startdate1(iarr), 
+     I       xx_gentim2d_startdate2(iarr), 
+     I       xx_gentim2d_period(iarr), 
      I       1,
-     O       xx_gentim2d_startdate(1,iarr),
+     O       xx_gentim2d_startdate(1,iarr), 
      O       diffrec, startrec, endrec,
      I       myThid )
 C

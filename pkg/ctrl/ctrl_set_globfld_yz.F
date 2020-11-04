@@ -2,7 +2,7 @@ C
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_globfld_yz(
-     I     fname, ivartype, yzloc,myThid )
+     I     fname, ivartype, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_set_globfld_yz
@@ -34,7 +34,6 @@ c     == routine arguments ==
 
       character*( 80)   fname
       integer ivartype
-      CHARACTER*(1) yzloc
       integer myThid
 
 c     == local variables ==
@@ -48,6 +47,7 @@ c     == local variables ==
       integer imin,imax
       integer irec,nrec_nl
       CHARACTER*(5) slice
+
 
       _RL globfld3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
       _RL globfldyz(1-OLy:sNy+OLy,nr,nSx,nSy)
@@ -65,8 +65,8 @@ c     == end of interface ==
       imin = 1-OLx
       imax = sNx+OLx
 
-      if (yzloc.EQ.'e') slice = 'east '
-      if (yzloc.EQ.'w') slice = 'west '
+      if (ivartype.eq.13) slice = 'west '
+      if (ivartype.eq.14) slice = 'east '
 
 c     Initialise temporary file
       do bj = jtlo,jthi

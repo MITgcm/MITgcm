@@ -48,7 +48,7 @@ c     == routine arguments ==
       integer ncvarymax_loc
       integer ncvarnrmax_loc
       character ncvargrd_loc*1
-      character*(3) whichxyz
+      character whichxyz*2
       integer mythid
       integer il
 
@@ -107,38 +107,34 @@ C     initialize to zero and warn user
 
       IF ( .NOT. exst) THEN
 
-         if ( whichxyz(1:2) .EQ. '3d') then
+         if ( whichxyz .EQ. '3d') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
      &           call ctrl_set_globfld_xyz( fname(2), ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xyz( fname(1), ivarindex, mythid)
-         else if ( whichxyz(1:2) .EQ. 'xy') then
+         else if ( whichxyz .EQ. 'xy') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
      &           call ctrl_set_globfld_xy( fname(2), ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
      &           call ctrl_set_globfld_xy( fname(1), ivarindex, mythid )
-         else if ( whichxyz(1:2) .EQ. 'xz') then
+         else if ( whichxyz .EQ. 'xz') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
-     &           call ctrl_set_globfld_xz( fname(2), ivarindex,
-     &                                     whichxyz(3:3),mythid)
+     &           call ctrl_set_globfld_xz( fname(2), ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
-     &           call ctrl_set_globfld_xz( fname(1), ivarindex,
-     &                                     whichxyz(3:3),mythid)
-         else if ( whichxyz(1:2) .EQ. 'yz') then
+     &           call ctrl_set_globfld_xz( fname(1), ivarindex, mythid )
+         else if ( whichxyz .EQ. 'yz') then
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
             if ( yadprefix.EQ.'ad' .OR. .NOT.(g_exst .OR. doAdmTlm) )
-     &           call ctrl_set_globfld_yz( fname(2), ivarindex,
-     &                                     whichxyz(3:3),mythid)
+     &           call ctrl_set_globfld_yz( fname(2), ivarindex, mythid)
 #endif
             if ( ( doInitXX .AND. optimcycle.eq.0 ) .OR. doAdmTlm )
-     &           call ctrl_set_globfld_yz( fname(1), ivarindex,
-     &                                     whichxyz(3:3),mythid)
+     &           call ctrl_set_globfld_yz( fname(1), ivarindex, mythid )
          else
             STOP 'whichxyz option not implemented'
          end if

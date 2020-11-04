@@ -2,7 +2,7 @@ C
 #include "CTRL_OPTIONS.h"
 
       subroutine ctrl_set_globfld_xz(
-     I     fname, ivartype, xzloc, myThid )
+     I     fname, ivartype, myThid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_set_globfld_xz
@@ -34,7 +34,6 @@ c     == routine arguments ==
 
       character*( 80)   fname
       integer ivartype
-      character*(1) xzloc
       integer myThid
 
 c     == local variables ==
@@ -65,8 +64,8 @@ c     == end of interface ==
       imin = 1-OLx
       imax = sNx+OLx
 
-      if (xzloc.EQ.'n') slice = 'north'
-      if (xzloc.EQ.'s') slice = 'south'
+      if (ivartype.eq.11) slice = 'north'
+      if (ivartype.eq.12) slice = 'south'
 
 c     Initialise temporary file
       do bj = jtlo,jthi
@@ -102,7 +101,7 @@ C     method that works for .not.useSingleCPUio cannot be used
       do irec = 1, nrec_nl
         CALL WRITE_REC_3D_RL( fname, ctrlprec, Nr,
      &                        globfld3d,
-     &                        irec, slice, optimcycle, myThid )
+     &                        irec, optimcycle, myThid )
       enddo
 
       do irec = nrec_nl*Ny+1, ncvarrecs(ivartype)
