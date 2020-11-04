@@ -395,22 +395,7 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE viscAh_Z(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE viscAh_D(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE viscA4_Z(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE viscA4_D(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-#endif
-
-#ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hDiv(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE vort3(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE hFacZ(:,:) =
 CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 #endif
 
@@ -419,12 +404,6 @@ C      Calculate del^2 u and del^2 v for bi-harmonic term
          CALL MOM_VI_DEL2UV(bi,bj,k,hDiv,vort3,hFacZ,
      O                      del2u,del2v,
      I                      myThid)
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE del2u(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-CADJ STORE del2v(:,:) =
-CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
-#endif
          CALL MOM_CALC_HDIV(bi,bj,k,2,del2u,del2v,dStar,myThid)
          CALL MOM_CALC_RELVORT3(bi,bj,k,
      &                          del2u,del2v,hFacZ,zStar,myThid)
