@@ -36,8 +36,8 @@ C     iUnit      :: Work variable for IO unit number
      &       useKPPinAdMode, useGGL90inAdMode,
      &       useGMRediInAdMode, useSALT_PLUMEinAdMode,
      &       useSEAICEinAdMode, useSmoothCorrel2DinAdMode,
-     &       inAdExact, SEAICEapproxLevInAd, viscFacInAd,
-     &       SIregFacInAd, SIregFacInFw,
+     &       inAdExact, SEAICEapproxLevInAd,
+     &       viscFacInAd, viscFacInFw, SIregFacInAd, SIregFacInFw,
      &       SEAICEuseFREEDRIFTswitchInAd, SEAICEuseDYNAMICSswitchInAd
 
       IF ( .NOT.useAUTODIFF ) THEN
@@ -68,6 +68,7 @@ C--   default : write one file per record
       useSALT_PLUMEinAdMode = .TRUE.
       inAdExact          = .TRUE.
       SEAICEapproxLevInAd = 0
+      viscFacInFw        = 1. _d 0
       viscFacInAd        = 1. _d 0
       SIregFacInAd       = UNSET_RL
       SIregFacInFw       = UNSET_RL
@@ -123,6 +124,9 @@ C     store value of usePKG as it will be set in S/R ADAUTODIFF_INADMODE_SET
       useGGL90inAdMode  = useGGL90inAdMode  .AND. useGGL90
       useSALT_PLUMEinAdMode = useSALT_PLUMEinAdMode .AND. useSALT_PLUME
 
+C     set this parameter to something we want to be able specify in a namelist
+      viscFacAdj = viscFacInFw
+
 #ifdef ALLOW_SEAICE
 c     level of approximation in seaice thermodynamics adjoint
       if (useSEAICEinFwdMode.AND.(.NOT.useSEAICEinAdMode))
@@ -169,6 +173,8 @@ C--   Print out some kee parameters :
      &  'dumpAdVarExch =', ' /* control adexch before dumpinp */')
        CALL WRITE_0D_I( mon_AdVarExch, INDEX_NONE,
      &  'mon_AdVarExch =', ' /* control adexch before monitor */')
+       CALL WRITE_0D_RL( viscFacInFw, INDEX_NONE,
+     &  'viscFacInFw =', ' /* viscosity factor for forward model */')
        CALL WRITE_0D_RL( viscFacInAd, INDEX_NONE,
      &  'viscFacInAd =', ' /* viscosity factor for adjoint */')
       WRITE(msgBuf,'(A)') ' '

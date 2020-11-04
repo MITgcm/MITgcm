@@ -48,7 +48,7 @@ C     myThid :: my Thread Id number
       SEAICEadjMODE=0
       SINegFac      = SIregFacInFw
 #endif /* ALLOW_SEAICE */
-      viscFacAdj=1. _d 0
+      viscFacAdj=viscFacInFw
 
       IF ( debugLevel.GE.debLevC ) THEN
        WRITE(msgBuf,'(A,L5)')
