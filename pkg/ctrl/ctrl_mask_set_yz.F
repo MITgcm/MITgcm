@@ -123,8 +123,8 @@ c--               South mask for V
       il=ilnblnk( ymaskobcs )
       write(fname(1:80),'(80a)') ' '
       write(fname(1:80),'(a)') ymaskobcs
-      if (ip1.eq.1) slice = 'east '
-      if (ip1.eq.0) slice = 'west '
+      if (ip1.eq.1) slice = 'west '
+      if (ip1.eq.0) slice = 'east '
 
       do iobcs = 1,nobcs
         do bj = jtlo,jthi
