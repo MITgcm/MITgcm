@@ -182,6 +182,21 @@ C--   Print out some kee parameters :
      &                    SQUEEZE_RIGHT, myThid )
 
 C--   Check parameters :
+      IF ( viscFacInAd .NE. 1. _d 0 .OR. viscFacInFw .NE. 1. _d 0 ) THEN
+#ifndef AUTODIFF_ALLOW_VISCFACADJ
+       WRITE(msgBuf,'(2A)') 'AUTODIFF_READPARMS: ',
+     &'To use viscFacInFw/viscFacInAd, define AUTODIFF_ALLOW_VISCFACADJ'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+#endif /* AUTODIFF_ALLOW_VISCFACADJ */
+CML#if (!defined ALLOW_3D_VISCAH) || (!defined ALLOW_3D_VISCA4)
+CML       WRITE(msgBuf,'(2A)') 'AUTODIFF_READPARMS: ',
+CML     &      'To use viscFacInFw/viscFacInAd, '//
+CML     &      'define ALLOW_3D_VISCA4 and/or ALLOW_3D_VISCA4'
+CML       CALL PRINT_ERROR( msgBuf, myThid )
+CML       errCount = errCount + 1
+CML#endif /* ALLOW_3D_VISCA */
+      ENDIF
 #ifdef ALLOW_SEAICE
       IF ( SEAICEuseFREEDRIFTswitchInAd .AND. .NOT.useSEAICE ) THEN
         WRITE(msgBuf,'(2A)') 'AUTODIFF_READPARMS: ',

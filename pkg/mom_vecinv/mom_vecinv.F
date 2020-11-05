@@ -392,6 +392,21 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
      O            viscAh_Z, viscAh_D, viscA4_Z, viscA4_D,
      I            hDiv, vort3BC, tension, strainBC, stretching,
      I            KE, hfacZ, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifndef AUTODIFF_ALLOW_VISCFACADJ
+C     These store directive must not be here, if you want to recompute
+C     these viscosity coefficients with a modified viscFacAdj = viscFacInAd
+C     because the store directives intentionally prevent the recomputation.
+CADJ STORE viscAh_Z(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE viscAh_D(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE viscA4_Z(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+CADJ STORE viscA4_D(:,:) =
+CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
+# endif /* AUTODIFF_ALLOW_VISCFACADJ */
+#endif /* ALLOW_AUTODIFF_TAMC */
        ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
