@@ -41,8 +41,7 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     u/vIceLoc :: local copies of the current ice velocity
 C     SIMaskU/V :: local copy of land-sea masks in u/v direction
-C     SideDragXloc :: side drag in x direction
-C     SideDragYloc :: side drag in y direction
+C     SideDragloc :: side drag in x direction
 C     iStep     :: current sub-time step iterate
 C     myTime    :: Simulation time
 C     myIter    :: Simulation timestep number
@@ -126,23 +125,29 @@ c        tmpy = sqrt(vIceLoc(i,j,bi,bj)**2+ (0.25 _d 0*
 c     &           (uIceLoc(i,  j,  bi,bj)+uIceLoc(i,  j-1,bi,bj)+
 c     &            uIceLoc(i+1,j-1,bi,bj)+uIceLoc(i+1,j,bi,bj)))**2) 
 
-C         mskU = ( 3. _d 0
-C     &        - SIMaskULoc(i,j-1,bi,bj)
-C     &        - SIMaskULoc(i,j,bi,bj)
-C     &        - SIMaskULoc(i,j+1,bi,bj)) * SIMaskULoc(i,j,bi,bj)
-C         mskV = ( 3. _d 0
-C     &        - SIMaskVLoc(i-1,j,bi,bj)
-C     &        - SIMaskVLoc(i,j,bi,bj)
-C     &        - SIMaskVLoc(i+1,j,bi,bj) ) * SIMaskVLoc(i,j,bi,bj)
+         mskU = ( 3. _d 0
+     &        - SIMaskULoc(i,j-1,bi,bj)
+     &        - SIMaskULoc(i,j,bi,bj)
+     &        - SIMaskULoc(i,j+1,bi,bj)) * SIMaskULoc(i,j,bi,bj)
+         mskV = ( 3. _d 0
+     &        - SIMaskVLoc(i-1,j,bi,bj)
+     &        - SIMaskVLoc(i,j,bi,bj)
+     &        - SIMaskVLoc(i+1,j,bi,bj) ) * SIMaskVLoc(i,j,bi,bj)
 
 
-          SideDragXloc(I,J,bi,bj) = SEAICE_rhoIce * SEAICESideDrag 
-     &                             * tmpx * coastX(I,J,bi,bj)
+         SideDragXloc(I,J,bi,bj) = SEAICE_rhoIce * SEAICESideDrag 
+     &                             * tmpx * mskU
+* coastX(I,J,bi,bj)
 c * uIceLoc(i,j,bi,bj)
           SideDragYloc(I,J,bi,bj) = SEAICE_rhoIce * SEAICESideDrag  
-     &                             * tmpy * coastY(I,J,bi,bj)
+     &                             * tmpy * mskV
+c  coastY(I,J,bi,bj)
 c * vIceLoc(i,j,bi,bj)
-          ENDIF
+
+c          tmp = sqrt(coastX(i,j,bi,bj)**2 + coastY(i,j,bi,bj)**2)
+c         SideDragloc(i,j,bi,bj) = SEAICE_rhoIce * tmp * SEAICESideDrag 
+c     &                            * sqrt(tmpx**2 + tmpy**2)  
+         ENDIF 
          ENDDO
         ENDDO
        ENDDO

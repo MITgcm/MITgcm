@@ -143,8 +143,8 @@ C     in analogy to the maximal compressive stress PRESS0
       _RL CbotC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
 #ifdef SEAICE_ALLOW_SIDEDRAG 
-      COMMON/SEAICE_SIDEDRAG/SideDragx,SideDragy
-      _RL SideDragx  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON/SEAICE_SIDEDRAG/SideDragX,SideDragY
+      _RL SideDragX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SideDragy  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* SEAICE_ALLOW_SIDEDRAG */
 

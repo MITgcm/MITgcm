@@ -351,7 +351,7 @@ CADJ STORE vice = comlev1_dynsol, kind=isbyte, key = itmpkey
       CALL SEAICE_SIDEDRAG_STRESS(
      I     uIceC, vIceC,
      I     SImaskU, SImaskV, AREA,
-     O     SideDragx, SideDragy,
+     O     SideDragX,SideDragY,
      I     ipass, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_SIDEDRAG */
 C
@@ -371,6 +371,10 @@ C
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
      &         +CbotC(I,J,bi,bj)
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
+c#ifdef SEAICE_ALLOW_SIDEDRAG
+c     &         +SideDrag(I,J,bi,bj)
+c#endif /* SEAICE_ALLOW_SIDEDRAG */
+
          ENDDO
         ENDDO
        ENDDO
@@ -1030,8 +1034,12 @@ C     endif  useHB87StressCoupling
 
       CALL DIAGNOSTICS_FILL(SideDragX,'SISidex ',0,1,0,1,1,myThid)
       CALL DIAGNOSTICS_FILL(SideDragY,'SISidey ',0,1,0,1,1,myThid)
-      CALL DIAGNOSTICS_FILL(BU,'SIcoastu',0,1,0,1,1,myThid)
-      CALL DIAGNOSTICS_FILL(BV,'SIcoast ',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(BU,       'SIBu    ',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(BV,       'SIBv    ',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(FORCEX,   'SIForcex',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(FORCEY,   'SIForcey',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(dragSym,  'SIDragsm',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(Cbotc,    'SICbotc ',0,1,0,1,1,myThid)
 
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
