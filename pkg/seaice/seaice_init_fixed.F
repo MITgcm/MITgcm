@@ -50,7 +50,10 @@ cif   penetrating the model shallowest layer
 #ifndef SEAICE_CGRID
       _RL mask_uice
 #endif
-
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      LOGICAL writefld
+      INTEGER myIter,surf
+#endif
       IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
        kSurface        = Nr
       ELSE
@@ -275,6 +278,45 @@ C-    loops on tile indices bi,bj:
          ENDDO
         ENDDO
 #endif /* ndef SEAICE_CGRID */
+
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      CALL READ_FLD_XY_RS('coast_length_36km_x',
+     &                    ' ',LcoastX,0,myThid)
+
+      CALL READ_FLD_XY_RS('coast_length_36km_y',
+     &                    ' ',LcoastY,0,myThid)
+
+       DO j=1-OLy+1,sNy+OLy
+        DO i=1-OLx+1,sNx+OLx
+c          NcoastX(i,j,bi,bj) = LcoastX/_dxG(i,j,bi,bj)
+c          NcoastY(i,j,bi,bj) = LcoastY/_dyG(i,j,bi,bj)       
+           NcoastX(i,j,bi,bj) = LcoastX(i,j,bi,bj)/MAXVAL(LcoastX)
+           NcoastY(i,j,bi,bj) = LcoastY(i,j,bi,bj)/MAXVAL(LcoastY)
+        ENDDO
+       ENDDO
+     
+      writefld = .TRUE.
+      IF ( writefld ) THEN
+       CALL WRITE_FLD_XY_RS( 'coast_lengthX',' ', LcoastX, -1, myThid )
+       CALL WRITE_FLD_XY_RS( 'coast_lengthY',' ', LcoastY, -1, myThid )
+
+      surf = 1
+      IF ( surf.GE.1 ) THEN
+       CALL WRITE_FLD_XY_RL( 'Nlized_coastX',' ', NcoastX, '.', myThid )
+       CALL WRITE_FLD_XY_RL( 'Nlized_coastY',' ', NcoastY, '.', myThid )
+
+c         mskU = ( 3. _d 0
+c     &        - SIMaskU(i,j-1,bi,bj)
+c     &        - SIMaskU(i,j,bi,bj)
+c     &        - SIMaskU(i,j+1,bi,bj)) * SIMaskU(i,j,bi,bj)
+c         mskV = ( 3. _d 0
+c     &        - SIMaskV(i-1,j,bi,bj)
+c     &        - SIMaskV(i,j,bi,bj)
+c     &        - SIMaskV(i+1,j,bi,bj) ) * SIMaskV(i,j,bi,bj)
+
+#endif /* SEAICE_ALLOW_SIDEDRAG */
+
+
 
 C     coefficients for metric terms
 #ifdef SEAICE_CGRID

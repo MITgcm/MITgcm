@@ -53,9 +53,6 @@ C     myThid    :: my Thread Id. number
       _RL AREALoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SideDragXloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SideDragYloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL coastX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL coastY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      
 
       INTEGER iStep
       _RL     myTime
@@ -69,12 +66,6 @@ C     i,j,bi,bj,ksrf :: loop indices
 c      INTEGER kSrf
       _RL    tmp, tmpx, tmpy, mskU, mskV
       _RL    uSpd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-
-      CALL READ_FLD_XY_RS('coast_length_36km_x',
-     &                    ' ',coastX,0,myThid) 
-
-      CALL READ_FLD_XY_RS('coast_length_36km_y',
-     &                    ' ',coastY,0,myThid) 
 
 c      kSrf = 1
 c      IF ( usingPcoords ) kSrf = Nr
@@ -125,28 +116,12 @@ c        tmpy = sqrt(vIceLoc(i,j,bi,bj)**2+ (0.25 _d 0*
 c     &           (uIceLoc(i,  j,  bi,bj)+uIceLoc(i,  j-1,bi,bj)+
 c     &            uIceLoc(i+1,j-1,bi,bj)+uIceLoc(i+1,j,bi,bj)))**2) 
 
-         mskU = ( 3. _d 0
-     &        - SIMaskULoc(i,j-1,bi,bj)
-     &        - SIMaskULoc(i,j,bi,bj)
-     &        - SIMaskULoc(i,j+1,bi,bj)) * SIMaskULoc(i,j,bi,bj)
-         mskV = ( 3. _d 0
-     &        - SIMaskVLoc(i-1,j,bi,bj)
-     &        - SIMaskVLoc(i,j,bi,bj)
-     &        - SIMaskVLoc(i+1,j,bi,bj) ) * SIMaskVLoc(i,j,bi,bj)
-
 
          SideDragXloc(I,J,bi,bj) = SEAICE_rhoIce * SEAICESideDrag 
-     &                             * tmpx * mskU
-* coastX(I,J,bi,bj)
-c * uIceLoc(i,j,bi,bj)
-          SideDragYloc(I,J,bi,bj) = SEAICE_rhoIce * SEAICESideDrag  
-     &                             * tmpy * mskV
-c  coastY(I,J,bi,bj)
-c * vIceLoc(i,j,bi,bj)
+     &                             * tmpx * NcoastX(i,j,bi,bj)
+         SideDragYloc(I,J,bi,bj) = SEAICE_rhoIce * SEAICESideDrag  
+     &                             * tmpy * NcoastY(i,j,bi,bj)
 
-c          tmp = sqrt(coastX(i,j,bi,bj)**2 + coastY(i,j,bi,bj)**2)
-c         SideDragloc(i,j,bi,bj) = SEAICE_rhoIce * tmp * SEAICESideDrag 
-c     &                            * sqrt(tmpx**2 + tmpy**2)  
          ENDIF 
          ENDDO
         ENDDO
