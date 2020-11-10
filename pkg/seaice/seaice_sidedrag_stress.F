@@ -53,6 +53,8 @@ C     myThid    :: my Thread Id. number
       _RL AREALoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SideDragXloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SideDragYloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL NcoastX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL NcoastY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       INTEGER iStep
       _RL     myTime

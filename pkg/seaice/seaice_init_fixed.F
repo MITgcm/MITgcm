@@ -295,15 +295,15 @@ c          NcoastY(i,j,bi,bj) = LcoastY/_dyG(i,j,bi,bj)
         ENDDO
        ENDDO
      
-      writefld = .TRUE.
-      IF ( writefld ) THEN
+c      writefld = .TRUE.
+c      IF ( writefld ) THEN
        CALL WRITE_FLD_XY_RS( 'coast_lengthX',' ', LcoastX, -1, myThid )
        CALL WRITE_FLD_XY_RS( 'coast_lengthY',' ', LcoastY, -1, myThid )
 
-      surf = 1
-      IF ( surf.GE.1 ) THEN
-       CALL WRITE_FLD_XY_RL( 'Nlized_coastX',' ', NcoastX, '.', myThid )
-       CALL WRITE_FLD_XY_RL( 'Nlized_coastY',' ', NcoastY, '.', myThid )
+c      surf = 1
+c      IF ( surf.GE.1 ) THEN
+       CALL WRITE_FLD_XY_RL( 'Nlized_coastX',' ', NcoastX,-1, myThid )
+       CALL WRITE_FLD_XY_RL( 'Nlized_coastY',' ', NcoastY,-1, myThid )
 
 c         mskU = ( 3. _d 0
 c     &        - SIMaskU(i,j-1,bi,bj)
