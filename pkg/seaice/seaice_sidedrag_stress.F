@@ -10,8 +10,8 @@ CBOP
 C     !ROUTINE: SEAICE_SIDEDRAG
 C     !INTERFACE:
       SUBROUTINE SEAICE_SIDEDRAG_STRESS(
-     I     uIce, vIce, 
-     I     SIMaskULoc, SIMaskVLoc, AREALoc,
+     I     uIceloc, vIceloc, 
+     I     NcoastXloc, NcoastYloc, AREALoc,
      O     SideDragXloc,SideDragYloc,
      I     iStep, myTime, myIter, myThid )
 
@@ -36,25 +36,25 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
+c#include "SEAICE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     u/vIceLoc :: local copies of the current ice velocity
-C     SIMaskU/V :: local copy of land-sea masks in u/v direction
-C     SideDragloc :: side drag in x direction
+C     NcoastX/V :: local copy of normalized coast length
+C     SideDraXloc :: side drag in x direction
+C     SideDraYloc :: side drag in y direction
 C     iStep     :: current sub-time step iterate
 C     myTime    :: Simulation time
 C     myIter    :: Simulation timestep number
 C     myThid    :: my Thread Id. number
-      _RL uIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL vIce(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SIMaskULoc  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL SIMaskVLoc  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL uIceloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vIceloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL AREALoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SideDragXloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SideDragYloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL NcoastX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL NcoastY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL NcoastXloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL NcoastYloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       INTEGER iStep
       _RL     myTime
@@ -66,7 +66,7 @@ C     === local variables ===
 C     i,j,bi,bj,ksrf :: loop indices
       INTEGER i,j,bi,bj
 c      INTEGER kSrf
-      _RL    tmp, tmpx, tmpy, mskU, mskV
+      _RL    tmp, tmpx, tmpy
       _RL    uSpd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 c      kSrf = 1
@@ -100,8 +100,8 @@ c      ENDDO
         DO j=1-OLy,sNy+OLy-1
          DO i=1-OLx,sNx+OLx-1
           uSpd(i,j) = 0.5 _d 0 *
-     &          sqrt((uIce(i,  j,bi,bj)+uIce(i+1,j,  bi,bj))**2
-     &        +      (vIce(i,  j,bi,bj)+vIce(i,  j+1,bi,bj))**2)
+     &          sqrt((uIceloc(i,  j,bi,bj)+uIceloc(i+1,j,  bi,bj))**2
+     &        +      (vIceloc(i,  j,bi,bj)+vIceloc(i,  j+1,bi,bj))**2)
          ENDDO
         ENDDO
 C calculate the sidedrag coeff  
@@ -120,9 +120,9 @@ c     &            uIceLoc(i+1,j-1,bi,bj)+uIceLoc(i+1,j,bi,bj)))**2)
 
 
          SideDragXloc(I,J,bi,bj) = SEAICE_rhoIce * SEAICESideDrag 
-     &                             * tmpx * NcoastX(i,j,bi,bj)
+     &                             * tmpx * NcoastXloc(i,j,bi,bj)
          SideDragYloc(I,J,bi,bj) = SEAICE_rhoIce * SEAICESideDrag  
-     &                             * tmpy * NcoastY(i,j,bi,bj)
+     &                             * tmpy * NcoastYloc(i,j,bi,bj)
 
          ENDIF 
          ENDDO

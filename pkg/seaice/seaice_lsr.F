@@ -350,7 +350,7 @@ CADJ STORE vice = comlev1_dynsol, kind=isbyte, key = itmpkey
 #ifdef SEAICE_ALLOW_SIDEDRAG
       CALL SEAICE_SIDEDRAG_STRESS(
      I     uIceC, vIceC,
-     I     SImaskU, SImaskV, AREA,
+     I     NcoastX, NcoastY, AREA,
      O     SideDragX,SideDragY,
      I     ipass, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_SIDEDRAG */

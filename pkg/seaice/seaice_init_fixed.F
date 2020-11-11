@@ -53,6 +53,8 @@ cif   penetrating the model shallowest layer
 #ifdef SEAICE_ALLOW_SIDEDRAG
       LOGICAL writefld
       INTEGER myIter,surf
+      _RL LcoastX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL LcoastY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
       IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
        kSurface        = Nr
@@ -280,25 +282,25 @@ C-    loops on tile indices bi,bj:
 #endif /* ndef SEAICE_CGRID */
 
 #ifdef SEAICE_ALLOW_SIDEDRAG
-      CALL READ_FLD_XY_RS('coast_length_36km_x',
+      CALL READ_FLD_XY_RL('coast_length_36km_x',
      &                    ' ',LcoastX,0,myThid)
 
-      CALL READ_FLD_XY_RS('coast_length_36km_y',
+      CALL READ_FLD_XY_RL('coast_length_36km_y',
      &                    ' ',LcoastY,0,myThid)
 
        DO j=1-OLy+1,sNy+OLy
         DO i=1-OLx+1,sNx+OLx
-c          NcoastX(i,j,bi,bj) = LcoastX/_dxG(i,j,bi,bj)
-c          NcoastY(i,j,bi,bj) = LcoastY/_dyG(i,j,bi,bj)       
-           NcoastX(i,j,bi,bj) = LcoastX(i,j,bi,bj)/MAXVAL(LcoastX)
-           NcoastY(i,j,bi,bj) = LcoastY(i,j,bi,bj)/MAXVAL(LcoastY)
+          NcoastX(i,j,bi,bj) = LcoastX(i,j,bi,bj)/_dxG(i,j,bi,bj)
+          NcoastY(i,j,bi,bj) = LcoastY(i,j,bi,bj)/_dyG(i,j,bi,bj)       
+c           NcoastX(i,j,bi,bj) = REAL(LcoastX(i,j,bi,bj)/MAXVAL(LcoastX))
+c           NcoastY(i,j,bi,bj) = REAL(LcoastY(i,j,bi,bj)/MAXVAL(LcoastY))
         ENDDO
        ENDDO
      
 c      writefld = .TRUE.
 c      IF ( writefld ) THEN
-       CALL WRITE_FLD_XY_RS( 'coast_lengthX',' ', LcoastX, -1, myThid )
-       CALL WRITE_FLD_XY_RS( 'coast_lengthY',' ', LcoastY, -1, myThid )
+       CALL WRITE_FLD_XY_RL( 'coast_lengthX',' ', LcoastX, -1, myThid )
+       CALL WRITE_FLD_XY_RL( 'coast_lengthY',' ', LcoastY, -1, myThid )
 
 c      surf = 1
 c      IF ( surf.GE.1 ) THEN
