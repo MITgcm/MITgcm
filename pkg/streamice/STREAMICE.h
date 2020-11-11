@@ -624,7 +624,7 @@ C    REAL ARRAYS
      &     C_basal_friction,
 c     &     A_glen,
      &     B_glen,
-     &     BDOT_streamice, ADOT_streamice,  BDOT_pert,! mass balances in meters per year
+     &     BDOT_streamice, ADOT_streamice,BDOT_pert,ADOT_pert, ! mass balances in meters per year
      &     streamice_sigma_coord, streamice_delsigma,
      &     H_streamice_prev,
      &     u_new_si, v_new_si
@@ -783,6 +783,7 @@ C  IMPORTANT: MELT RATE IN METERS PER YEAR
 C  POSITIVE WHERE MELTING
       _RL BDOT_streamice (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BDOT_pert (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL ADOT_pert (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL H_streamice_prev (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL v_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL u_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
