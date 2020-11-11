@@ -80,6 +80,8 @@ Redi projection tensor then becomes:
    \end{array}
    \right)
 
+.. _GM_bolus_desc:  
+
 GM parameterization
 +++++++++++++++++++
 
@@ -157,6 +159,8 @@ streamfunction are:
    -F_x^\star
    \end{array}
    \right).
+
+.. _sub_gmredi_skewflux:
 
 Griffies Skew Flux
 ++++++++++++++++++
@@ -253,7 +257,6 @@ non-zero elements in the :math:`z`-row.
   :math:`S_y`: **SlopeY** (argument on exit)
 
 
-
 Variable :math:`\kappa_{GM}`
 ++++++++++++++++++++++++++++
 
@@ -283,6 +286,8 @@ the formula for :math:`\kappa_{GM}` gives:
    \kappa_{GM} = \alpha L^2 \overline{ \frac{M^2}{N} }^z =
    \alpha L^2 \overline{ \frac{M^2}{N^2} N }^z =
    \alpha L^2 \overline{ |S| N }^z
+
+.. _sub_gmredi_tapering_stability:
 
 Tapering and stability
 ++++++++++++++++++++++

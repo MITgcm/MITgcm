@@ -104,7 +104,7 @@ C- West :
          ENDDO
 
          IF ( errN+errS+errW+errE .GE. 1 ) THEN
-          WRITE(msgBuf,'(2A,I6,A,2(I4,A))')
+          WRITE(msgBuf,'(2A,I8,A,2(I4,A))')
      &        '** WARNING ** EXCH2_CHECK_DEPTHS: ',
      &        'tile #', tId, ' (bi,bj=', bi, ',', bj, ' ):'
           CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,

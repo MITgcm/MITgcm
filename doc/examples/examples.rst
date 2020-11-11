@@ -100,6 +100,20 @@ Each example experiment directory has the following subdirectories:
 .. toctree::
    :maxdepth: 1
 
+   reentrant_channel/reentrant_channel.rst
+
+.. only:: html
+
+   In directory :filelink:`tutorial_reentrant channel <verification/tutorial_reentrant_channel>`:
+   Reentrant channel in the Southern Ocean with idealized topography, 49 vertical layers. Tutorial compares solution using coarse horizontal resolution,
+   with and without GM parameterization (:filelink:`pkg/gmredi`),
+   versus a high-resolution, eddy-permitting configuration. Third and final introductory tutorial,
+   assumes reader is familiar with MITgcm basics described in tutorials :ref:`sec_eg_baro` and :ref:`tutorial_baroclinic_gyre`.
+   Also introduces :filelink:`pkg/layers` and :filelink:`pkg/rbcs`.
+
+.. toctree::
+   :maxdepth: 1
+
    advection_in_gyre/advection_in_gyre.rst
 
 .. only:: html

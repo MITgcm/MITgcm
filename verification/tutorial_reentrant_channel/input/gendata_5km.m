@@ -23,6 +23,7 @@ rF=-[0 cumsum(dz)]; % z-coordinates of vertical cell faces
 z=diff(rF)./2 + rF(1:49); % z-coordinates of vertical cell centers
 H=-sum(dz); %max depth of vertical grid 
 
+%bathymetry -- flat bottom with idealized mid-depth ridge
 bathy=H*ones(200,400);
 bathy(56:135,:)=bathy(56:135,:)+2000*repmat(sin(0:pi/79:pi),[400 1])'; %ridge running N-S through middle of domain
 bathy(56:135,136:185)=H + repmat(2000*sin(0:pi/79:pi),[50 1])'.*repmat((186-(136:185))/51,[80 1]); %sloping notch cutting through ridge

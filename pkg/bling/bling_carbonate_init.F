@@ -139,6 +139,12 @@ C =================================================================
           ft(i,j,bi,bj)=0. _d 0
           st(i,j,bi,bj)=0. _d 0
           bt(i,j,bi,bj)=0. _d 0
+#ifdef CARBONCHEM_SOLVESAPHE
+          cat(i,j,bi,bj)=0. _d 0
+          akn(i,j,bi,bj)=0. _d 0
+          akhs(i,j,bi,bj)=0. _d 0
+          aphscale(i,j,bi,bj)=0. _d 0
+#endif
          ENDDO
         ENDDO
        ENDDO
@@ -171,8 +177,13 @@ C set guess of pH for first step here
      &                          * maskC(i,j,k,bi,bj)
              alktmp(i,j) = PTRACER(i,j,k,bi,bj,2)
      &                          * maskC(i,j,k,bi,bj)
+#ifndef USE_BLING_V1
              phostmp(i,j) = PTRACER(i,j,k,bi,bj,5)
      &                          * maskC(i,j,k,bi,bj)
+#else
+             phostmp(i,j) = PTRACER(i,j,k,bi,bj,4)
+     &                          * maskC(i,j,k,bi,bj)
+#endif
 #ifdef USE_SIBLING
              sitmp(i,j) = PTRACER(i,j,k,bi,bj,9)
      &                          * maskC(i,j,k,bi,bj)

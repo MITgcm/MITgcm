@@ -67,10 +67,11 @@ C     lambdaSaltClimRelax :: Inverse time scale for relaxation ( 1/s ).
 
 C     phiTide2d :: vertically uniform (2d-map), time-dependent geopotential
 C                  anomaly (e.g., tidal forcing); Units are m^2/s^2
-C     pLoad :: for the ocean:      atmospheric pressure at z=eta
+C     pLoad :: for the ocean:      atmospheric pressure anomaly (relative to
+C                                   "surf_pRef") at z=eta
 C                Units are           Pa=N/m^2
-C              for the atmosphere: geopotential of the orography
-C                Units are           meters (converted)
+C              for the atmosphere (hack): geopotential anomaly of the orography
+C                Units are           m^2/s^2
 C     sIceLoad :: sea-ice loading, expressed in Mass of ice+snow / area unit
 C                Units are           kg/m^2
 C              Note: only used with Sea-Ice & RealFreshWater formulation

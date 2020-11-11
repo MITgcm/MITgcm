@@ -505,7 +505,7 @@ c-- (upper/lower-case matters) in cost_gencost_customize
      &          (gencost_barfile(k)(1:13).EQ.'m_boxmean_eta').OR.
      &          (gencost_barfile(k)(1:14).EQ.'m_boxmean_salt').OR.
      &          (gencost_barfile(k)(1:17).EQ.'m_boxmean_ptracer').OR.
-     &          (gencost_barfile(k)(1:14).EQ.'m_horflux_vol')
+     &          (gencost_barfile(k)(1:13).EQ.'m_horflux_vol')
      &        )) then
             using_gencost(k)=.FALSE.
             il=ilnblnk(gencost_barfile(k))
@@ -535,34 +535,34 @@ c-- not checked here. also not checked for variwei at the moment
 
 C ---
 C Warn the user that this is a less tested objective function
-C TBD: Write a more consistent transport objective function 
+C TBD: Write a more consistent transport objective function
 C ---
 
           if (gencost_barfile(k)(1:7).eq.'m_trVol') then
-           WRITE(msgBuf,'(A)') 
+           WRITE(msgBuf,'(A)')
      &   '** WARNING ** ECCO_CHECK: cost_gencost_transp.F not tested.'
            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
-           WRITE(msgBuf,'(A)') 
+           WRITE(msgBuf,'(A)')
      &   ' See m_horflux_vol via cost_gencost_boxmean.F.'
            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
           elseif( (gencost_barfile(k)(1:8).eq.'m_trHeat').or.
      &            (gencost_barfile(k)(1:8).eq.'m_trSalt') ) then
-           WRITE(msgBuf,'(2A)') 
+           WRITE(msgBuf,'(2A)')
      &   '** WARNING ** ECCO_CHECK: m_tr[Heat,Salt] to be used with',
      &   ' caution because:'
            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
-           WRITE(msgBuf,'(A)') 
+           WRITE(msgBuf,'(A)')
      &  '  (1) advection inconsistent unless ENUM_CENTERED_2ND is used'
            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
-           WRITE(msgBuf,'(A)') 
+           WRITE(msgBuf,'(A)')
      &  '  (2) bolus velocities not included'
            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
-           WRITE(msgBuf,'(A)') 
+           WRITE(msgBuf,'(A)')
      &  '  (3) diffusion components not included'
            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
