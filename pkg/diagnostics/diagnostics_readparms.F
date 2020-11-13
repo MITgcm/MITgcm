@@ -194,7 +194,7 @@ C-    Track diagnostics pkg activation status:
      &     ' DIAGNOSTICS_READPARMS: opening data.diagnostics'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,SQUEEZE_RIGHT,1)
 
-      CALL OPEN_COPY_DATA_FILE('data.diagnostics',
+      CALL OPEN_COPY_DATA_FILE('/tmp/namelist/data.diagnostics',
      &     'DIAGNOSTICS_READPARMS', ku, myThid )
 
       WRITE(msgBuf,'(2A)') 'S/R DIAGNOSTICS_READPARMS,',

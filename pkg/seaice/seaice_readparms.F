@@ -629,7 +629,7 @@ C     Open and read the data.seaice file
      &                    SQUEEZE_RIGHT , myThid)
 
       CALL OPEN_COPY_DATA_FILE(
-     I                          'data.seaice', 'SEAICE_READPARMS',
+     I              '/tmp/namelist/data.seaice', 'SEAICE_READPARMS',
      O                          iUnit,
      I                          myThid )
 
