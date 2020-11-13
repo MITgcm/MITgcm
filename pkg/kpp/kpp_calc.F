@@ -406,33 +406,63 @@ c     dVsq in the subroutine that does the surface related stuff
 c     (admittedly this is a bit messy)
 c------------------------------------------------------------------------
 
+!#ifdef ALLOW_SALT_PLUME
+!      DO j=jMin,jMax
+!       DO i=iMin,iMax
+!#ifndef SALT_PLUME_VOLUME
+!        temp1(i,j,1) = saltPlumeFlux(i,j,bi,bj)
+!        temp2(i,j,1) = 0. _d 0
+!        DO k=2,Nr
+!         temp1(i,j,k) = 0. _d 0
+!         temp2(i,j,k) = 0. _d 0
+!        ENDDO
+!#else /* def SALT_PLUME_VOLUME */
+!        DO k=1,Nr
+!         temp1(i,j,k) = SPforcingS(i,j,k,bi,bj)
+!         temp2(i,j,k) = SPforcingT(i,j,k,bi,bj)
+!        ENDDO
+!#endif /* SALT_PLUME_VOLUME */
+!       ENDDO
+!      ENDDO
+!#endif /* ALLOW_SALT_PLUME */
+
+
 #ifdef ALLOW_SALT_PLUME
-      DO j=jMin,jMax
-       DO i=iMin,iMax
 #ifndef SALT_PLUME_VOLUME
-        temp1(i,j,1) = saltPlumeFlux(i,j,bi,bj)
-        temp2(i,j,1) = 0. _d 0
-        DO k=2,Nr
-         temp1(i,j,k) = 0. _d 0
-         temp2(i,j,k) = 0. _d 0
-        ENDDO
+!      DO k=1,Nr
+!       DO j=jMin,jMax
+!        DO i=iMin,iMax
+!         temp1(i,j,k) = 0.D0
+!         temp2(i,j,k) = 0.D0
+!        ENDDO
+!       ENDDO
+!      ENDDO
+      !DO j=jMin,jMax
+      ! DO i=iMin,iMax
+      !  temp1(i,j,1) = saltPlumeFlux(i,j,bi,bj)
+      ! ENDDO
+      !ENDDO
 #else /* def SALT_PLUME_VOLUME */
-        DO k=1,Nr
+      DO k=1,Nr
+       DO j=jMin,jMax
+        DO i=iMin,iMax
          temp1(i,j,k) = SPforcingS(i,j,k,bi,bj)
          temp2(i,j,k) = SPforcingT(i,j,k,bi,bj)
         ENDDO
-#endif /* SALT_PLUME_VOLUME */
        ENDDO
       ENDDO
+#endif /* SALT_PLUME_VOLUME */
 #endif /* ALLOW_SALT_PLUME */
+
+
 
       CALL KPP_FORCING_SURF(
      I     work2, surfaceForcingU, surfaceForcingV,
      I     surfaceForcingT, surfaceForcingS, adjustColdSST_diag,
      I     Qsw,
-#ifdef ALLOW_SALT_PLUME
+#ifdef ALLOW_SALT_PLUME_VOLUME
      I     temp1, temp2,
-#endif /* ALLOW_SALT_PLUME */
+#endif /* ALLOW_SALT_PLUME_VOLUME */
      I     ttalpha, ssbeta,
      O     ustar, bo, bosol,
 #ifdef ALLOW_SALT_PLUME
@@ -564,10 +594,32 @@ c-----------------------------------------------------------------------
 c     zero out land values and transfer to global variables
 c-----------------------------------------------------------------------
 
-      DO j = jmin, jmax
-       DO i = imin, imax
-        DO k = 1, Nr
-         km1 = max(1,k-1)
+!      DO j = jmin, jmax
+!       DO i = imin, imax
+!        DO k = 1, Nr
+!         km1 = max(1,k-1)
+!         KPPviscAz(i,j,k,bi,bj) = vddiff(i,j,k-1,1) * maskC(i,j,k,bi,bj)
+!     &        * maskC(i,j,km1,bi,bj)
+!         KPPdiffKzS(i,j,k,bi,bj)= vddiff(i,j,k-1,2) * maskC(i,j,k,bi,bj)
+!     &        * maskC(i,j,km1,bi,bj)
+!         KPPdiffKzT(i,j,k,bi,bj)= vddiff(i,j,k-1,3) * maskC(i,j,k,bi,bj)
+!     &        * maskC(i,j,km1,bi,bj)
+!         KPPghat(i,j,k,bi,bj)   = ghat(i,j,k)       * maskC(i,j,k,bi,bj)
+!     &        * maskC(i,j,km1,bi,bj)
+!        ENDDO
+!        k = 1
+!#ifdef ALLOW_SHELFICE
+!        if ( useShelfIce ) k = kTopC(i,j,bi,bj)
+!#endif /* ALLOW_SHELFICE */
+!        KPPhbl(i,j,bi,bj) = hbl(i,j) * maskC(i,j,k,bi,bj)
+!
+!       ENDDO
+!      ENDDO
+
+      DO k = 1, Nr
+       km1 = max(1,k-1)
+       DO j = jmin, jmax
+        DO i = imin, imax
          KPPviscAz(i,j,k,bi,bj) = vddiff(i,j,k-1,1) * maskC(i,j,k,bi,bj)
      &        * maskC(i,j,km1,bi,bj)
          KPPdiffKzS(i,j,k,bi,bj)= vddiff(i,j,k-1,2) * maskC(i,j,k,bi,bj)
@@ -577,12 +629,16 @@ c-----------------------------------------------------------------------
          KPPghat(i,j,k,bi,bj)   = ghat(i,j,k)       * maskC(i,j,k,bi,bj)
      &        * maskC(i,j,km1,bi,bj)
         ENDDO
+       ENDDO
+      ENDDO
+
+      DO j = jmin, jmax
+       DO i = imin, imax
         k = 1
 #ifdef ALLOW_SHELFICE
         if ( useShelfIce ) k = kTopC(i,j,bi,bj)
 #endif /* ALLOW_SHELFICE */
         KPPhbl(i,j,bi,bj) = hbl(i,j) * maskC(i,j,k,bi,bj)
-
        ENDDO
       ENDDO
 
