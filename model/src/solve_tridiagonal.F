@@ -208,15 +208,15 @@ C--   Update array
 #else  /* ndef SOLVE_DIAGONAL_KINNER */
 
 C--   Init. + copy to temp. array
-      DO k=1,Nr
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         c3d_prime(i,j,k) = 0. _d 0
-         y3d_prime(i,j,k) = 0. _d 0
-         y3d_m1(i,j,k) = y3d(i,j,k)
-        ENDDO
-       ENDDO
-      ENDDO
+!      DO k=1,Nr
+!       DO j=1-OLy,sNy+OLy
+!        DO i=1-OLx,sNx+OLx
+!         c3d_prime(i,j,k) = 0. _d 0
+!         y3d_prime(i,j,k) = 0. _d 0
+!         y3d_m1(i,j,k) = y3d(i,j,k)
+!        ENDDO
+!       ENDDO
+!      ENDDO
 
 CADJ loop = sequential
 C--   Forward sweep
@@ -224,6 +224,9 @@ C--   Forward sweep
 
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
+         c3d_prime(i,j,k) = 0. _d 0
+         y3d_prime(i,j,k) = 0. _d 0
+         y3d_m1(i,j,k) = y3d(i,j,k)
 c      DO j=jMin,jMax
 c       DO i=iMin,iMax
          IF ( k.EQ.1 ) THEN
