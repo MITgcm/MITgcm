@@ -1,0 +1,12 @@
+qsub -I -V -l select=1:ncpus=28:model=bro -q devel
+mp
+ml comp-intel/2020.4.304 mpi-hpe/mpt.2.23 hdf4/4.2.12 szip/2.1.1 hdf5/1.8.18_mpt netcdf/4.4.1.1_mpt
+cd MITgcm/build_testCaseRiftAVX2
+../tools/genmake2 -mods /nobackupp8/dkokron/Projects/MITgcm/code_testCaseRift -mpi -optfile ../tools/build_options/linux_amd64_ifort+mpi_pleiades.dkokron
+make depend >& /dev/null
+make >& make.log
+
+
+
+# MPI-OpenMP hybrid
+/nobackupp16/swbuild/dkokron/MITgcm/tools/genmake2 -rootdir /nobackupp16/swbuild/dkokron/MITgcm -mods /nobackupp8/dkokron/Projects/MITgcm/llc_hires/llc_540/code -mpi -omp -optfile /nobackupp16/swbuild/dkokron/MITgcm/tools/build_options/linux_amd64_ifort+mpi_pleiades.dkokron ; make depend > & /dev/null ; make > & make.log
