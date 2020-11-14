@@ -11,7 +11,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE EXF_SET_OBCS_XZ (
      U       obcs_fld_xz, obcs_xz_0, obcs_xz_1,
-     I       obcs_file, obcsmask, nNz,
+     I       obcs_file, obcsmask, obName, nNz,
      I       fac, first, changed, useYearlyFields, obcs_period,
      I       count0, count1, year0, year1,
      I       myTime, myIter, myThid )
@@ -47,6 +47,7 @@ C     nNz   :: number of levels to process
 
       CHARACTER*(128) obcs_file
       CHARACTER*1 obcsmask
+      CHARACTER*1 obName
       LOGICAL first, changed
       LOGICAL useYearlyFields
       _RL     obcs_period
@@ -67,8 +68,8 @@ C     == local variables ==
 
 C     == end of interface ==
 
-      IF (obcsmask.EQ.'N') slice = 'north'
-      IF (obcsmask.EQ.'S') slice = 'south'
+      IF (obName.EQ.'N') slice = 'north'
+      IF (obName.EQ.'S') slice = 'south'
 
       IF ( obcs_file .NE. ' ' ) THEN
 
@@ -124,7 +125,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE EXF_SET_OBCS_YZ (
      U       obcs_fld_yz, obcs_yz_0, obcs_yz_1,
-     I       obcs_file, obcsmask, nNz,
+     I       obcs_file, obcsmask, obName, nNz,
      I       fac, first, changed, useYearlyFields, obcs_period,
      I       count0, count1, year0, year1,
      I       myTime, myIter, myThid)
@@ -158,6 +159,7 @@ C     nNz   :: number of levels to process
       _RL obcs_yz_1(1-OLy:sNy+OLy,nNz,nSx,nSy)
       CHARACTER*(MAX_LEN_FNAM) obcs_file
       CHARACTER*1 obcsmask
+      CHARACTER*1 obName
       LOGICAL first, changed
       LOGICAL useYearlyFields
       _RL     obcs_period
@@ -177,8 +179,8 @@ C     == local variables ==
       INTEGER j, k
 
 C     == end of interface ==
-      IF (obcsmask.EQ.'E') slice = 'east '
-      IF (obcsmask.EQ.'W') slice = 'west '
+      IF (obName.EQ.'E') slice = 'east '
+      IF (obName.EQ.'W') slice = 'west '
 
       IF ( obcs_file .NE. ' ' ) THEN
 
