@@ -183,7 +183,7 @@ C-----------------------------------------------------------------------
       IF ( useDiag4AdjOutp ) THEN
 
 C --- 1. Grab modelEnd, necessary input for diagnostics routines
-        modelEnd = myTime.EQ.endTime .OR. myIter.EQ.nEndIter
+        modelEnd = myTime.EQ.startTime .OR. myIter.EQ.nIter0
         CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
 
         IF ( dumpAdVarExch.EQ.2 ) THEN
@@ -239,8 +239,7 @@ C -     TAF
 #  endif /* ALLOW_OPENAD */
         ENDIF
 
-C --- 4. Write the fields out
-        CALL DIAGNOSTICS_WRITE_ADJ( modelEnd, myTime, myIter, myThid )
+
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
@@ -919,6 +918,10 @@ C     endif mnc
 cph        IF ( useEXF ) CALL EXF_AD_DUMP( myTime, myIter, myThid )
 #endif
 
+        CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
+
+      ENDIF
+
 #ifdef ALLOW_SEAICE
         IF ( useSEAICE )
      &   CALL SEAICE_AD_DUMP( myTime, myIter, myThid )
@@ -929,9 +932,15 @@ cph        IF ( useEXF ) CALL EXF_AD_DUMP( myTime, myIter, myThid )
      &   CALL PTRACERS_AD_DUMP( myTime, myIter, myThid )
 #endif
 
-        CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
+C --- Write the fields out here, in case of stragglers in ptracers or seaice
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiag4AdjOutp ) THEN
+       CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
+       CALL DIAGNOSTICS_WRITE_ADJ( modelEnd, myTime, myIter, myThid )
+       CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
       ENDIF
+#endif
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
 #endif /* ALLOW_ADJOINT_RUN */

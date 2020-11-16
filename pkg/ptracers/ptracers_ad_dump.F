@@ -3,6 +3,9 @@
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
+#ifdef ALLOW_DIAGNOSTICS
+# include "DIAG_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: ptracers_ad_dump
@@ -33,7 +36,12 @@ C     == Global variables ===
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
+#include "AUTODIFF_PARAMS.h"
 # include "ptracers_adcommon.h"
+#endif
+#ifdef ALLOW_DIAGNOSTICS
+# include "DIAGNOSTICS_SIZE.h"
+# include "DIAGNOSTICS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -58,7 +66,27 @@ C     msgBuf :: Error message buffer
       CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_FNAM) prefix
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL doExch
+      _RS dumRS(1)
+      _RL var3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 CEOP
+
+C     Handle exchange options
+      doExch = DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
+#ifdef ALLOW_DIAGNOSTICS
+      doExch = doExch.OR.useDiag4AdjOutp
+#endif
+      IF (doExch) THEN
+       IF (dumpAdVarExch.EQ.1) THEN
+        DO ip = 1, PTRACERS_numInUse
+#ifdef AUTODIFF_TAMC_COMPATIBILITY
+         CALL ADEXCH_XYZ_RL(myThid, adptracer(1-OLx,1-OLy,1,1,1,ip))
+#else
+         CALL ADEXCH_3D_RL(adptracer(1-OLx,1-OLy,1,1,1,ip), Nr, myThid)
+#endif
+        ENDDO
+       ENDIF
+      ENDIF
 
       IF (
      &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
@@ -82,15 +110,41 @@ C <<==  uncomment the line above
          WRITE(prefix,'(A10,A2,A1)')
      &          'ADJptracer', PTRACERS_ioLabel(ip), '.'
 
-         CALL WRITE_FLD_XYZ_RL(
-     &        prefix, suff,
-     &        adptracer(1-OLx,1-OLy,1,1,1,ip), 1, myThid )
+         IF (dumpAdVarExch.NE.2) THEN
+          CALL WRITE_FLD_XYZ_RL(
+     &         prefix, suff,
+     &         adptracer(1-OLx,1-OLy,1,1,1,ip), 1, myThid )
+         ELSE
+          CALL COPY_ADVAR_OUTP(dumRS, adptracer(1-OLx,1-OLy,1,1,1,ip),
+     &                        var3D, Nr, 12, myThid)
+          CALL WRITE_FLD_XYZ_RL(prefix, suff, var3D, 1, myThid )
+         ENDIF
 
         ENDDO
 
         CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
       ENDIF
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiag4AdjOutp ) THEN
+        CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
+
+        DO ip = 1, PTRACERS_numInUse
+         WRITE(prefix,'(A6,A2)') 'ADJptr', PTRACERS_ioLabel(ip)
+         IF (dumpAdVarExch.NE.2) THEN
+          CALL DIAGNOSTICS_FILL( adptracer(1-OLx,1-OLy,1,1,1,ip),
+     &           prefix, 0, Nr, 0, 1, 1, myThid )
+         ELSE
+          CALL COPY_ADVAR_OUTP(dumRS, adptracer(1-OLx,1-OLy,1,1,1,ip),
+     &                        var3D, Nr, 12, myThid)
+          CALL DIAGNOSTICS_FILL( var3D, prefix, 0, Nr, 0, 1, 1, myThid )
+         ENDIF
+        ENDDO
+
+        CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
+      ENDIF
+#endif
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
 #endif /* ALLOW_ADJOINT_RUN */
