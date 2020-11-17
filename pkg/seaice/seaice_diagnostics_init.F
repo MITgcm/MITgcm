@@ -130,7 +130,7 @@ C=============== state variables ============
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-      diagName  = 'SIenpa  '
+        diagName  = 'SIenpa  '
       diagTitle = 'SEAICE power input by surface wind stresses'
       diagUnits = 'W/m^2           '
       diagCode  = 'SM      M1      '
@@ -185,6 +185,77 @@ C=============== state variables ============
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SIBu    '
+      diagTitle = 'u coefficient'
+      diagUnits = 'none            '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SIBv    '
+      diagTitle = 'v coefficient'
+      diagUnits = 'none            '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SISidex '
+      diagTitle = 'SEAICE coast side drag on x direction'
+      diagUnits = 'N/m^2           '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SISidey '
+      diagTitle = 'SEAICE coast side drag on y direction'
+      diagUnits = 'N/m^2           '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SIForcex'
+      diagTitle = 'Forcex'
+      diagUnits = 'none            '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SIForcey'
+      diagTitle = 'FORCEY'
+      diagUnits = '                '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SICbotc '
+      diagTitle = 'SEAICE basal drag coefficient'
+      diagUnits = '                '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SIDragsm'
+      diagTitle = 'SEAICE symetric drag'
+      diagUnits = '                '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SICoastx'
+      diagTitle = 'SEAICE coast length X'
+      diagUnits = '                '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'SICoasty'
+      diagTitle = 'SEAICE coast length y'
+      diagUnits = '                '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
 
 #ifdef ALLOW_SITRACER
       DO iTr = 1, SItrNumInUse

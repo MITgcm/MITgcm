@@ -50,7 +50,12 @@ cif   penetrating the model shallowest layer
 #ifndef SEAICE_CGRID
       _RL mask_uice
 #endif
-
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      LOGICAL writefld
+      INTEGER myIter,surf
+      _RL LcoastX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL LcoastY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
       IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
        kSurface        = Nr
       ELSE
@@ -275,6 +280,48 @@ C-    loops on tile indices bi,bj:
          ENDDO
         ENDDO
 #endif /* ndef SEAICE_CGRID */
+
+#ifdef SEAICE_ALLOW_SIDEDRAG
+c      CALL READ_FLD_XY_RL('coast_length_36km_x',
+c     &                    ' ',LcoastX,0,myThid)
+c
+c     CALL READ_FLD_XY_RL('coast_length_36km_y',
+c     &                    ' ',LcoastY,0,myThid)
+c
+c       DO j=1-OLy+1,sNy+OLy
+c        DO i=1-OLx+1,sNx+OLx
+c          NcoastX(i,j,bi,bj) = LcoastX(i,j,bi,bj)/_dxG(i,j,bi,bj)
+c          NcoastY(i,j,bi,bj) = LcoastY(i,j,bi,bj)/_dyG(i,j,bi,bj)       
+cc           NcoastX(i,j,bi,bj) = REAL(LcoastX(i,j,bi,bj)/MAXVAL(LcoastX))
+cc           NcoastY(i,j,bi,bj) = REAL(LcoastY(i,j,bi,bj)/MAXVAL(LcoastY))
+c        ENDDO
+c       ENDDO
+     
+c      writefld = .TRUE.
+c      IF ( writefld ) THEN
+c       CALL WRITE_FLD_XY_RL( 'coast_lengthX',' ', LcoastX, -1, myThid )
+c       CALL WRITE_FLD_XY_RL( 'coast_lengthY',' ', LcoastY, -1, myThid )
+
+c      surf = 1
+c      IF ( surf.GE.1 ) THEN
+c       CALL WRITE_FLD_XY_RL( 'Nlized_coastX',' ', NcoastX,-1, myThid )
+c       CALL WRITE_FLD_XY_RL( 'Nlized_coastY',' ', NcoastY,-1, myThid )
+
+         NcoastX = ( 3. _d 0
+     &        - SIMaskU(i,j-1,bi,bj)
+     &        - SIMaskU(i,j,bi,bj)
+     &        - SIMaskU(i,j+1,bi,bj)) * SIMaskU(i,j,bi,bj)
+         NcoastY = ( 3. _d 0
+     &        - SIMaskV(i-1,j,bi,bj)
+     &        - SIMaskV(i,j,bi,bj)
+     &        - SIMaskV(i+1,j,bi,bj) ) * SIMaskV(i,j,bi,bj)
+
+
+       CALL WRITE_FLD_XY_RL( 'Nlized_coastX',' ', NcoastX,-1, myThid )
+       CALL WRITE_FLD_XY_RL( 'Nlized_coastY',' ', NcoastY,-1, myThid )
+#endif /* SEAICE_ALLOW_SIDEDRAG */
+
+
 
 C     coefficients for metric terms
 #ifdef SEAICE_CGRID

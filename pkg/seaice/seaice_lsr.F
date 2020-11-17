@@ -117,6 +117,7 @@ C     abbreviations
       _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     symmetric drag coefficient
       _RL dragSym     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cosdiag     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     intermediate time level centered (C) between n and n-1
       _RL uIceC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -346,6 +347,14 @@ CADJ STORE vice = comlev1_dynsol, kind=isbyte, key = itmpkey
      O     CbotC,
      I     ipass, myTime, myIter, myThid )
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
+
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      CALL SEAICE_SIDEDRAG_STRESS(
+     I     uIceC, vIceC,
+     I     NcoastX, NcoastY, AREA,
+     O     SideDragX,SideDragY,
+     I     ipass, myTime, myIter, myThid )
+#endif /* SEAICE_ALLOW_SIDEDRAG */
 C
 C     some abbreviations
 C
@@ -359,10 +368,14 @@ C
         ENDDO
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
-          dragSym(I,J,bi,bj) = DWATN(I,J,bi,bj)*COSWAT
+          dragSym(I,J,bi,bj) =  DWATN(I,J,bi,bj) *COSWAT
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
      &         +CbotC(I,J,bi,bj)
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
+c#ifdef SEAICE_ALLOW_SIDEDRAG
+c     &         +SideDrag(I,J,bi,bj)
+c#endif /* SEAICE_ALLOW_SIDEDRAG */
+          cosdiag(i,j,bi,bj) = COSWAT
          ENDDO
         ENDDO
        ENDDO
@@ -436,6 +449,9 @@ C
         DO j=jMin,jMax
          DO i=iMin,iMax
           rhsU(I,J,bi,bj) = FORCEX(I,J,bi,bj)
+c#ifdef SEAICE_ALLOW_SIDEDRAG
+c     &                      +SideDragx(I,J,bi,bj)
+c#endif /* SEAICE_ALLOW_SIDEDRAG */
          ENDDO
         ENDDO
         CALL SEAICE_LSR_RHSU(
@@ -449,6 +465,9 @@ C
         DO j=jMin,jMax
          DO i=iMin,iMax
           rhsV(I,J,bi,bj) = FORCEY(I,J,bi,bj)
+c#ifdef SEAICE_ALLOW_SIDEDRAG
+c     &                     +SideDragy(I,J,bi,bj)
+c#endif /* SEAICE_ALLOW_SIDEDRAG */ 
          ENDDO
         ENDDO
         CALL SEAICE_LSR_RHSV(
@@ -492,6 +511,27 @@ C
      I     etaPlusZeta, zetaMinusEta, etaZ, zetaZ, dragSym,
      O     AU, BU, CU, AV, BV, CV, uRt1, uRt2, vRt1, vRt2,
      I     iMin, iMax, jMin, jMax, myTime, myIter, myThid )
+
+#ifdef SEAICE_ALLOW_SIDEDRAG
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=jMin,jMax
+         DO I=iMin,iMax
+          SideDragX(i,j,bi,bj) = SideDragX(i,j,bi,bj) 
+     &                          + DWATN(i,j,bi,bj) * COSWAT
+          SideDragY(i,j,bi,bj) = SideDragY(i,j,bi,bj) 
+     &                          + DWATN(i,j,bi,bj) * COSWAT
+           BU(I,J,bi,bj) = BU(I,J,bi,bj) + seaiceMaskU(I,J,bi,bj)
+     &                   * SideDragX(I,J,bi,bj) 
+     &                   * areaW(I,J,bi,bj) 
+           BV(I,J,bi,bj) = BV(I,J,bi,bj) + seaiceMaskV(I,J,bi,bj)
+     &                   * SideDragY(I,J,bi,bj)
+     &                   * areaS(I,J,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+#endif /* SEAICE_ALLOW_SIDEDRAG */
 
 #ifndef OBCS_UVICE_OLD
 C--     prevent tri-diagonal solver from modifying OB values:
@@ -966,7 +1006,6 @@ C--   Compute residual norm and print
        _END_MASTER( myThid )
       ENDIF
 #endif /* SEAICE_ALLOW_CHECK_LSR_CONVERGENCE */
-
       ENDIF
 C     end outer ipass pseudo-time stepping loop
       ENDDO
@@ -997,6 +1036,15 @@ C     and evaluate divergence of stress and apply to forcing
        ENDDO
 C     endif  useHB87StressCoupling
       ENDIF
+
+      CALL DIAGNOSTICS_FILL(SideDragX,'SISidex ',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(SideDragY,'SISidey ',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(BU,       'SIBu    ',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(BV,       'SIBv    ',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(DWATN,   'SIForcex',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(cosdiag,   'SIForcey',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(dragSym,  'SIDragsm',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(Cbotc,    'SICbotc ',0,1,0,1,1,myThid)
 
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
