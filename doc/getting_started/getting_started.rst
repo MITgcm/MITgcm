@@ -2822,16 +2822,16 @@ For historical reasons, MITgcm files use big-endian `byte ordering <https://en.w
 
      import numpy as np
      import sys
-     Ho=5000;  # ocean depth in meters
-     nx=62; # number of gridpoints in x-direction
-     ny=62; # number of gridpoints in y-direction
+     Ho=5000 # ocean depth in meters
+     nx=62 # number of gridpoints in x-direction
+     ny=62 # number of gridpoints in y-direction
 
      # Flat bottom at z=-Ho
-     h=-Ho*np.ones((ny,nx));
+     h=-Ho*np.ones((ny,nx))
 
      # Walls (surrounding domain) - generate bathymetry file
-     h[:,(0,-1)]=0;
-     h[(0,-1),:]=0;
+     h[:,(0,-1)]=0
+     h[(0,-1),:]=0
      # save as single precision with big-endian byte-ordering
      h.astype('>f4').tofile('bathy.bin')
 

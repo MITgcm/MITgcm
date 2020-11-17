@@ -13,13 +13,15 @@ h([1 end],:)=0;
 h(:,[1 end])=0;
 fid=fopen('bathy.bin','w',ieee); fwrite(fid,h,accuracy); fclose(fid);
 
-% Wind-stress
+% Zonal wind-stress, located at u-points
 tauMax=0.1; % wind stress maximum
-x=((0:nx-1)-0.5)/(nx-2); % x-coordinate, centered at grid u-point
-y=((0:ny-1)-0.5)/(ny-2); % y-coordinate, centered at grid v-point
+x=(-1:nx-2)/(nx-2); % x-coordinate, located at XG points
+y=((0:ny-1)-0.5)/(ny-2); % y-coordinate, located at YC points
 [X,Y]=ndgrid(x,y);
 
 tau=-tauMax*cos(pi*Y); % generate file for -cos(y) profile between 0-1200km
 fid=fopen('windx_cosy.bin','w',ieee); fwrite(fid,tau,accuracy); fclose(fid);
 tau=tauMax*sin(pi*Y); % generate file for sin(y) profile between 0-1200km
 fid=fopen('windx_siny.bin','w',ieee); fwrite(fid,tau,accuracy); fclose(fid);
+
+% Meridional wind-stress, if desired, would be located at v-points (XC, YG)
