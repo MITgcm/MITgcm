@@ -117,6 +117,7 @@ C     abbreviations
       _RL zetaMinusEta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     symmetric drag coefficient
       _RL dragSym     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cosdiag     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     intermediate time level centered (C) between n and n-1
       _RL uIceC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vIceC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -367,14 +368,14 @@ C
         ENDDO
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
-          dragSym(I,J,bi,bj) = DWATN(I,J,bi,bj)*COSWAT
+          dragSym(I,J,bi,bj) =  DWATN(I,J,bi,bj) *COSWAT
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
      &         +CbotC(I,J,bi,bj)
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
 c#ifdef SEAICE_ALLOW_SIDEDRAG
 c     &         +SideDrag(I,J,bi,bj)
 c#endif /* SEAICE_ALLOW_SIDEDRAG */
-
+          cosdiag(i,j,bi,bj) = COSWAT
          ENDDO
         ENDDO
        ENDDO
@@ -516,9 +517,13 @@ C
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=jMin,jMax
          DO I=iMin,iMax
+          SideDragX(i,j,bi,bj) = SideDragX(i,j,bi,bj) 
+     &                          + DWATN(i,j,bi,bj) * COSWAT
+          SideDragY(i,j,bi,bj) = SideDragY(i,j,bi,bj) 
+     &                          + DWATN(i,j,bi,bj) * COSWAT
            BU(I,J,bi,bj) = BU(I,J,bi,bj) + seaiceMaskU(I,J,bi,bj)
-     &                   * SideDragX(I,J,bi,bj)
-     &                   * areaW(I,J,bi,bj)
+     &                   * SideDragX(I,J,bi,bj) 
+     &                   * areaW(I,J,bi,bj) 
            BV(I,J,bi,bj) = BV(I,J,bi,bj) + seaiceMaskV(I,J,bi,bj)
      &                   * SideDragY(I,J,bi,bj)
      &                   * areaS(I,J,bi,bj)
@@ -1036,8 +1041,8 @@ C     endif  useHB87StressCoupling
       CALL DIAGNOSTICS_FILL(SideDragY,'SISidey ',0,1,0,1,1,myThid)
       CALL DIAGNOSTICS_FILL(BU,       'SIBu    ',0,1,0,1,1,myThid)
       CALL DIAGNOSTICS_FILL(BV,       'SIBv    ',0,1,0,1,1,myThid)
-      CALL DIAGNOSTICS_FILL(FORCEX,   'SIForcex',0,1,0,1,1,myThid)
-      CALL DIAGNOSTICS_FILL(FORCEY,   'SIForcey',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(DWATN,   'SIForcex',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(cosdiag,   'SIForcey',0,1,0,1,1,myThid)
       CALL DIAGNOSTICS_FILL(dragSym,  'SIDragsm',0,1,0,1,1,myThid)
       CALL DIAGNOSTICS_FILL(Cbotc,    'SICbotc ',0,1,0,1,1,myThid)
 

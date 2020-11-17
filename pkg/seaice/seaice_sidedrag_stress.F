@@ -36,7 +36,7 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "SEAICE_SIZE.h"
 #include "SEAICE_PARAMS.h"
-c#include "SEAICE.h"
+#include "SEAICE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -123,7 +123,6 @@ c     &            uIceLoc(i+1,j-1,bi,bj)+uIceLoc(i+1,j,bi,bj)))**2)
      &                             * tmpx * NcoastXloc(i,j,bi,bj)
          SideDragYloc(I,J,bi,bj) = SEAICE_rhoIce * SEAICESideDrag  
      &                             * tmpy * NcoastYloc(i,j,bi,bj)
-
          ENDIF 
          ENDDO
         ENDDO
