@@ -305,7 +305,10 @@ c     &        - SIMaskV(i+1,j,bi,bj) ) * SIMaskV(i,j,bi,bj)
 
         ENDDO
        ENDDO
-     
+    
+       NcoastX = NcoastX * SIMaskU
+       NcoastY = NcoastY * SIMaskV
+ 
        CALL WRITE_FLD_XY_RL( 'coast_lengthX',' ', LcoastX, -1, myThid )
        CALL WRITE_FLD_XY_RL( 'coast_lengthY',' ', LcoastY, -1, myThid )
        CALL WRITE_FLD_XY_RL( 'Nlized_coastX',' ', NcoastX,-1, myThid )
