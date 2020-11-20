@@ -10,7 +10,7 @@ CBOP
 C     !ROUTINE: SEAICE_SIDEDRAG
 C     !INTERFACE:
       SUBROUTINE SEAICE_SIDEDRAG_STRESS(
-     I     uIceloc, vIceloc, 
+     I     uIceloc, vIceloc,
      I     NcoastXloc, NcoastYloc, AREALoc,
      O     SideDragXloc,SideDragYloc,
      I     iStep, myTime, myIter, myThid )
@@ -48,13 +48,13 @@ C     iStep     :: current sub-time step iterate
 C     myTime    :: Simulation time
 C     myIter    :: Simulation timestep number
 C     myThid    :: my Thread Id. number
-      _RL uIceloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL vIceloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL AREALoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL uIceloc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vIceloc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL AREALoc     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SideDragXloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL SideDragYloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL NcoastXloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL NcoastYloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL NcoastXloc  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL NcoastYloc  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       INTEGER iStep
       _RL     myTime
@@ -65,65 +65,47 @@ C     myThid    :: my Thread Id. number
 C     === local variables ===
 C     i,j,bi,bj,ksrf :: loop indices
       INTEGER i,j,bi,bj
-c      INTEGER kSrf
       _RL    tmp, tmpx, tmpy
       _RL    uSpd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-c      kSrf = 1
-c      IF ( usingPcoords ) kSrf = Nr
-C     get the coastline mask
-c      DO bj=myByLo(myThid),myByHi(myThid)
-c       DO bi=myBxLo(myThid),myBxHi(myThid)
-c        DO j=1-OLy+1,sNy+OLy-1
-c         DO i=1-OLx+1,sNx+OLx-1
-c           coastline(I,J,bi,bj)= 0. _d 0
-c           IF (maskC(I,J,kSrf,bi,bj) .EQ. 0. _d 0) THEN
-c             tmp=maskC(I-1,J,kSrf,bi,bj) + maskC(I+1,J,kSrf,bi,bj)
-c     &         + maskC(I,J-1,kSrf,bi,bj) + maskC(I,J+1,kSrf,bi,bj)  
-c             IF (tmp .GT. 0. _d 0) THEN
-c                coastline(I,J,bi,bj)=1. _d 0
-c             ENDIF
-c           ENDIF
-c         ENDDO
-c       ENDDO
-c       ENDDO
-c      ENDDO
-
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+C     initialize fields
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          SideDragXloc(I,J,bi,bj) = 0. _d 0
-          SideDragYloc(I,J,bi,bj) = 0. _d 0
+          SideDragXloc(i,j,bi,bj) = 0. _d 0
+          SideDragYloc(i,j,bi,bj) = 0. _d 0
+          uSpd(i,j)               = 0. _d 0
          ENDDO
         ENDDO
+
         DO j=1-OLy,sNy+OLy-1
          DO i=1-OLx,sNx+OLx-1
           uSpd(i,j) = 0.5 _d 0 *
-     &          sqrt((uIceloc(i,  j,bi,bj)+uIceloc(i+1,j,  bi,bj))**2
-     &        +      (vIceloc(i,  j,bi,bj)+vIceloc(i,  j+1,bi,bj))**2)
+     &          SQRT((uIceloc(i,  j,bi,bj)+uIceloc(i+1,j,  bi,bj))**2
+     &              +(vIceloc(i,  j,bi,bj)+vIceloc(i,  j+1,bi,bj))**2)
          ENDDO
         ENDDO
-C calculate the sidedrag coeff  
+C calculate the sidedrag coeff
         DO j=1-OLy+1,sNy+OLy-1
          DO i=1-OLx+1,sNx+OLx-1
-          IF ( AREALoc(I,J,bi,bj) .GT. 0.01 _d 0 ) THEN
+          IF ( AREALoc(i,j,bi,bj) .GT. 0.01 _d 0 ) THEN
            tmpx = 0.5 _d 0 * ( uSpd(i,j) + uSpd(i-1,j) )
            tmpy = 0.5 _d 0 * ( uSpd(i,j) + uSpd(i,j-1) )
-c Another way get |u|, |v|
+c Another way to get |u|, |v|
 c        tmpx = sqrt(uIceLoc(i,j,bi,bj)**2+ (0.25 _d 0*
 c     &           (vIceLoc(i,  j,  bi,bj)+vIceLoc(i-1,j,bi,bj)+
-c     &            vIceLoc(i-1,j+1,bi,bj)+vIceLoc(i,  j+1,bi,bj)))**2) 
+c     &            vIceLoc(i-1,j+1,bi,bj)+vIceLoc(i,  j+1,bi,bj)))**2)
 c        tmpy = sqrt(vIceLoc(i,j,bi,bj)**2+ (0.25 _d 0*
 c     &           (uIceLoc(i,  j,  bi,bj)+uIceLoc(i,  j-1,bi,bj)+
-c     &            uIceLoc(i+1,j-1,bi,bj)+uIceLoc(i+1,j,bi,bj)))**2) 
+c     &            uIceLoc(i+1,j-1,bi,bj)+uIceLoc(i+1,j,bi,bj)))**2)
 
 
-         SideDragXloc(I,J,bi,bj) = SEAICE_rhoIce * SEAICESideDrag 
-     &                             * tmpx * NcoastXloc(i,j,bi,bj)
-         SideDragYloc(I,J,bi,bj) = SEAICE_rhoIce * SEAICESideDrag  
-     &                             * tmpy * NcoastYloc(i,j,bi,bj)
-         ENDIF 
+           SideDragXloc(i,j,bi,bj) = SEAICE_rhoIce * SEAICESideDrag
+     &                              * tmpx * NcoastXloc(i,j,bi,bj)
+           SideDragYloc(i,j,bi,bj) = SEAICE_rhoIce * SEAICESideDrag
+     &                              * tmpy * NcoastYloc(i,j,bi,bj)
+          ENDIF
          ENDDO
         ENDDO
        ENDDO

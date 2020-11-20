@@ -467,7 +467,7 @@ C
           rhsV(I,J,bi,bj) = FORCEY(I,J,bi,bj)
 c#ifdef SEAICE_ALLOW_SIDEDRAG
 c     &                     +SideDragy(I,J,bi,bj)
-c#endif /* SEAICE_ALLOW_SIDEDRAG */ 
+c#endif /* SEAICE_ALLOW_SIDEDRAG */
          ENDDO
         ENDDO
         CALL SEAICE_LSR_RHSV(
@@ -517,16 +517,12 @@ C
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=jMin,jMax
          DO I=iMin,iMax
-          SideDragX(i,j,bi,bj) = SideDragX(i,j,bi,bj) 
-     &                          + DWATN(i,j,bi,bj) * COSWAT
-          SideDragY(i,j,bi,bj) = SideDragY(i,j,bi,bj) 
-     &                          + DWATN(i,j,bi,bj) * COSWAT
-           BU(I,J,bi,bj) = BU(I,J,bi,bj) + seaiceMaskU(I,J,bi,bj)
-     &                   * SideDragX(I,J,bi,bj) 
-     &                   * areaW(I,J,bi,bj) 
-           BV(I,J,bi,bj) = BV(I,J,bi,bj) + seaiceMaskV(I,J,bi,bj)
-     &                   * SideDragY(I,J,bi,bj)
-     &                   * areaS(I,J,bi,bj)
+          BU(I,J,bi,bj) = BU(I,J,bi,bj) + seaiceMaskU(I,J,bi,bj)
+     &                  * SideDragX(I,J,bi,bj)
+     &                  * areaW(I,J,bi,bj)
+          BV(I,J,bi,bj) = BV(I,J,bi,bj) + seaiceMaskV(I,J,bi,bj)
+     &                  * SideDragY(I,J,bi,bj)
+     &                  * areaS(I,J,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -1037,14 +1033,18 @@ C     and evaluate divergence of stress and apply to forcing
 C     endif  useHB87StressCoupling
       ENDIF
 
+#ifdef SEAICE_ALLOW_SIDEDRAG
       CALL DIAGNOSTICS_FILL(SideDragX,'SISidex ',0,1,0,1,1,myThid)
       CALL DIAGNOSTICS_FILL(SideDragY,'SISidey ',0,1,0,1,1,myThid)
+#endif /* SEAICE_ALLOW_SIDEDRAG */
       CALL DIAGNOSTICS_FILL(BU,       'SIBu    ',0,1,0,1,1,myThid)
       CALL DIAGNOSTICS_FILL(BV,       'SIBv    ',0,1,0,1,1,myThid)
-      CALL DIAGNOSTICS_FILL(DWATN,   'SIForcex',0,1,0,1,1,myThid)
-      CALL DIAGNOSTICS_FILL(cosdiag,   'SIForcey',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(DWATN,    'SIForcex',0,1,0,1,1,myThid)
+      CALL DIAGNOSTICS_FILL(cosdiag,  'SIForcey',0,1,0,1,1,myThid)
       CALL DIAGNOSTICS_FILL(dragSym,  'SIDragsm',0,1,0,1,1,myThid)
+#ifdef SEAICE_ALLOW_BOTTOMDRAG
       CALL DIAGNOSTICS_FILL(Cbotc,    'SICbotc ',0,1,0,1,1,myThid)
+#endif /* SEAICE_ALLOW_BOTTOMDRAG */
 
 #endif /* SEAICE_ALLOW_DYNAMICS */
 #endif /* SEAICE_CGRID */
