@@ -45,7 +45,6 @@ C     !USES:
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
 #include "PARAMS.h"
 #include "CG2D.h"
 
@@ -69,7 +68,6 @@ C     myThid    :: Thread on which I am working.
       INTEGER numIters
       INTEGER nIterMin
       INTEGER myThid
-      INTEGER mpiRC
 
 C     !LOCAL VARIABLES:
 C     === Local variables ====
@@ -190,15 +188,8 @@ C--   Initial residual calculation
       CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, err_sq, 0, 0, myThid)
       CALL GLOBAL_SUM_SINGLECPU_RL(cg2d_b, sumRHS, OLx, OLy, myThid)
 #else
-      err_sq=sum(errTile)
-      CALL MPI_Allreduce( MPI_IN_PLACE, err_sq, 1,
-     &           MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_MODEL, mpiRC )
-      !CALL GLOBAL_SUM_TILE_RL( errTile,    err_sq, myThid )
-
-      sumRHS=sum(sumRHStile)
-      CALL MPI_Allreduce( MPI_IN_PLACE, sumRHS, 1,
-     &           MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_MODEL, mpiRC )
-      !CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
+      CALL GLOBAL_SUM_TILE_RL( errTile,    err_sq, myThid )
+      CALL GLOBAL_SUM_TILE_RL( sumRHStile, sumRHS, myThid )
 #endif
       actualIts = 0
       firstResidual = SQRT(err_sq)
@@ -255,10 +246,7 @@ CcnhDebugEnds
 #ifdef CG2D_SINGLECPU_SUM
        CALL GLOBAL_SUM_SINGLECPU_RL( localBuf,eta_qrN,0,0,myThid )
 #else
-       eta_qrN=sum(eta_qrNtile)
-       CALL MPI_Allreduce( MPI_IN_PLACE, eta_qrN, 1,
-     &           MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_MODEL, mpiRC )
-       !CALL GLOBAL_SUM_TILE_RL( eta_qrNtile,eta_qrN,myThid )
+       CALL GLOBAL_SUM_TILE_RL( eta_qrNtile,eta_qrN,myThid )
 #endif
        cgBeta   = eta_qrN/eta_qrNM1
 CcnhDebugStarts
@@ -310,10 +298,7 @@ C==    q = A.s
 #ifdef CG2D_SINGLECPU_SUM
        CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, alpha, 0, 0, myThid)
 #else
-       alpha=sum(alphaTile)
-       CALL MPI_Allreduce( MPI_IN_PLACE, alpha, 1,
-     &           MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_MODEL, mpiRC )
-       !CALL GLOBAL_SUM_TILE_RL( alphaTile,  alpha,  myThid )
+       CALL GLOBAL_SUM_TILE_RL( alphaTile,  alpha,  myThid )
 #endif
 CcnhDebugStarts
 c      WRITE(*,*) ' CG2D: Iteration ', it2d-1,
@@ -345,10 +330,7 @@ C      Now compute "interior" points.
 #ifdef CG2D_SINGLECPU_SUM
        CALL GLOBAL_SUM_SINGLECPU_RL(localBuf, err_sq, 0, 0, myThid)
 #else
-       err_sq=sum(errTile)
-       CALL MPI_Allreduce( MPI_IN_PLACE, err_sq, 1,
-     &           MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_MODEL, mpiRC )
-       !CALL GLOBAL_SUM_TILE_RL( errTile,    err_sq,    myThid )
+       CALL GLOBAL_SUM_TILE_RL( errTile,    err_sq,    myThid )
 #endif
        IF ( printResidual ) THEN
         IF ( MOD( it2d-1, printResidualFreq ).EQ.0 ) THEN
