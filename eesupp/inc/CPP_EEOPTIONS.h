@@ -130,13 +130,31 @@ C--   disconnect tiles (no exchange between tiles, just fill-in edges
 C     assuming locally periodic subdomain)
 #undef DISCONNECTED_TILES
 
+C--   Always cumulate as fast a possible applying MPI allreduce on a single value
+#define GLOBAL_SUM_GIDDYUP
+
 C--   Always cumulate tile local-sum in the same order by applying MPI allreduce
 C     to array of tiles ; can get slower with large number of tiles (big set-up)
-#define GLOBAL_SUM_ORDER_TILES
+#undef GLOBAL_SUM_ORDER_TILES
 
 C--   Alternative way of doing global sum without MPI allreduce call
 C     but instead, explicit MPI send & recv calls. Expected to be slower.
 #undef GLOBAL_SUM_SEND_RECV
+
+#if defined(GLOBAL_SUM_GIDDYUP)
+#undef GLOBAL_SUM_ORDER_TILES
+#undef GLOBAL_SUM_SEND_RECV
+#endif
+
+#if defined(GLOBAL_SUM_ORDER_TILES)
+#undef GLOBAL_SUM_SEND_RECV
+#undef GLOBAL_SUM_GIDDYUP
+#endif
+
+#if defined (GLOBAL_SUM_SEND_RECV)
+#undef GLOBAL_SUM_ORDER_TILES
+#undef GLOBAL_SUM_GIDDYUP
+#endif
 
 C--   Alternative way of doing global sum on a single CPU
 C     to eliminate tiling-dependent roundoff errors. Note: This is slow.
