@@ -281,42 +281,6 @@ C-    loops on tile indices bi,bj:
         ENDDO
 #endif /* ndef SEAICE_CGRID */
 
-#ifdef SEAICE_ALLOW_SIDEDRAG
-       CALL READ_FLD_XY_RL('coast_length_36km_x',
-     &                    ' ',LcoastX,0,myThid)
-
-       CALL READ_FLD_XY_RL('coast_length_36km_y',
-     &                    ' ',LcoastY,0,myThid)
-
-       DO j=1-OLy+1,sNy+OLy
-        DO i=1-OLx+1,sNx+OLx
-         NcoastX(i,j,bi,bj) = LcoastX(i,j,bi,bj)/_dxG(i,j,bi,bj)
-         NcoastY(i,j,bi,bj) = LcoastY(i,j,bi,bj)/_dyG(i,j,bi,bj)       
-cc           NcoastX(i,j,bi,bj) = REAL(LcoastX(i,j,bi,bj)/MAXVAL(LcoastX))
-cc           NcoastY(i,j,bi,bj) = REAL(LcoastY(i,j,bi,bj)/MAXVAL(LcoastY))
-c         NcoastX(i,j,bi,bj) = ( 3. _d 0
-c     &        - SIMaskU(i,j-1,bi,bj)
-c     &        - SIMaskU(i,j,bi,bj)
-c     &        - SIMaskU(i,j+1,bi,bj)) * SIMaskU(i,j,bi,bj)
-c         NcoastY(i,j,bi,bj) = ( 3. _d 0
-c     &        - SIMaskV(i-1,j,bi,bj)
-c     &        - SIMaskV(i,j,bi,bj)
-c     &        - SIMaskV(i+1,j,bi,bj) ) * SIMaskV(i,j,bi,bj)
-
-        ENDDO
-       ENDDO
-    
-       NcoastX = NcoastX * SIMaskU
-       NcoastY = NcoastY * SIMaskV
- 
-       CALL WRITE_FLD_XY_RL( 'coast_lengthX',' ', LcoastX, -1, myThid )
-       CALL WRITE_FLD_XY_RL( 'coast_lengthY',' ', LcoastY, -1, myThid )
-       CALL WRITE_FLD_XY_RL( 'Nlized_coastX',' ', NcoastX,-1, myThid )
-       CALL WRITE_FLD_XY_RL( 'Nlized_coastY',' ', NcoastY,-1, myThid )
-#endif /* SEAICE_ALLOW_SIDEDRAG */
-
-
-
 C     coefficients for metric terms
 #ifdef SEAICE_CGRID
         DO j=1-OLy,sNy+OLy
@@ -447,6 +411,58 @@ C     approximation
 C-    end bi,bj loops
        ENDDO
       ENDDO
+
+#ifdef SEAICE_ALLOW_SIDEDRAG
+
+      IF ( .TRUE. ) THEN
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
+          NcoastX(i,j,bi,bj) = ( 3. _d 0
+     &         - SIMaskU(i,j-1,bi,bj)
+     &         - SIMaskU(i,j,bi,bj)
+     &         - SIMaskU(i,j+1,bi,bj)) * SIMaskU(i,j,bi,bj)
+          NcoastY(i,j,bi,bj) = ( 3. _d 0
+     &         - SIMaskV(i-1,j,bi,bj)
+     &         - SIMaskV(i,j,bi,bj)
+     &         - SIMaskV(i+1,j,bi,bj) ) * SIMaskV(i,j,bi,bj)
+
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+      CALL READ_FLD_XY_RL('coast_length_36km_x',' ',LcoastX,0,myThid)
+      CALL READ_FLD_XY_RL('coast_length_36km_y',' ',LcoastY,0,myThid)
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1,sNy
+         DO i=1,sNx
+          NcoastX(i,j,bi,bj) = LcoastX(i,j,bi,bj)
+     &         * _recip_dxG(i,j,bi,bj)
+          NcoastY(i,j,bi,bj) = LcoastY(i,j,bi,bj)
+     &         * _recip_dyG(i,j,bi,bj)
+cc           NcoastX(i,j,bi,bj) = REAL(LcoastX(i,j,bi,bj)/MAXVAL(LcoastX))
+cc           NcoastY(i,j,bi,bj) = REAL(LcoastY(i,j,bi,bj)/MAXVAL(LcoastY))
+          NcoastX(i,j,bi,bj) = NcoastX(i,j,bi,bj) * SIMaskU(i,j,bi,bj)
+          NcoastY(i,j,bi,bj) = NcoastY(i,j,bi,bj) * SIMaskV(i,j,bi,bj)      
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+      ENDIF
+
+C     fill all overlaps
+      CALL EXCH_UV_XY_RL( NcoastX, NcoastY, .FALSE., myThid )
+
+      CALL WRITE_FLD_XY_RL( 'coast_lengthX',' ', LcoastX, -1, myThid )
+      CALL WRITE_FLD_XY_RL( 'coast_lengthY',' ', LcoastY, -1, myThid )
+      CALL WRITE_FLD_XY_RL( 'Nlized_coastX',' ', NcoastX,-1, myThid )
+      CALL WRITE_FLD_XY_RL( 'Nlized_coastY',' ', NcoastY,-1, myThid )
+#endif /* SEAICE_ALLOW_SIDEDRAG */
 
 #ifdef ALLOW_SHELFICE
       IF ( useShelfIce ) THEN
