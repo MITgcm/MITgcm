@@ -808,6 +808,8 @@ This file is used here for two purposes: first, as specified in
 secondly, this file was also specified in :filelink:`input/data.rbcs <verification/tutorial_reentrant_channel/input/data.rbcs>`
 as a 3-D field used for temperature relaxation purposes.
 
+.. _reentrant_channel_ rbcsmaskfile:
+
 File ``input/T_relax_mask.50km.bin``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -1113,13 +1115,16 @@ uncomment these lines in ``PARM04`` in :filelink:`data <verification/tutorial_re
    delX=200*5.E3,
    delY=400*5.E3,
 
-to specify 5 km resolution in 200 :math:`\times` 400 grid cells in :math:`x` and :math:`y`. New files for bathymetry, forcing fields, and initial temperature
-can be generated using the `MATLAB <https://www.mathworks.com/>`_ program :filelink:`verification/tutorial_reentrant_channel/input/gendata_5km.m` (don't forget to change the filenames in ``PARM05``
-in :filelink:`data <verification/tutorial_reentrant_channel/input/data>`).
+to specify 5 km resolution in 200 :math:`\times` 400 grid cells in :math:`x` and :math:`y`.
+New files for bathymetry, forcing fields, and initial temperature
+can be generated using the `MATLAB <https://www.mathworks.com/>`_ program
+:filelink:`verification/tutorial_reentrant_channel/input/gendata_5km.m`
+(don't forget to change the filenames in :filelink:`data.rbcs <verification/tutorial_reentrant_channel/input/data.rbcs>`
+and ``PARM05`` in :filelink:`data <verification/tutorial_reentrant_channel/input/data>`).
 
 Running at higher resolution requires a smaller time step for stability. Revisiting :numref:`sec_tutSOch_num_stab`, to maintain advective stability
 (CFL condition, :eq:`eq_SOch_cfl_stability`) one could simply decrease the time step by the same factor of 10 decrease as :math:`\Delta x` -- stability
-of inertial oscillations is not longer a limiting factor, given a smaller :math:`\Delta t` in :eq:`eq_SOCh_inertial_stability` -- 
+of inertial oscillations is no longer a limiting factor, given a smaller :math:`\Delta t` in :eq:`eq_SOCh_inertial_stability` -- 
 but to speed things up we'd like to keep :math:`\Delta t` as large as possible. With a rich eddying solution, however, is it clear that horizontal velocity
 will remain order ~1 ms\ :sup:`-1`? As a compromise, we suggest setting parameter :varlink:`DeltaT`\ ``=250.`` (seconds) in
 :filelink:`data <verification/tutorial_reentrant_channel/input/data>`, which we found to be stable. For this choice, a 30-year integration
@@ -1219,12 +1224,16 @@ to parameterize mesoscale eddies. More detailed comments comparing these solutio
   In the coarse runs, however, the sponge layer is effectively cooling, particularly in the non-GM run.
   Although at present there is no diagnostic available in :filelink:`pkg/rbcs` which directly tabulates these fluxes, 
   computing them is quite simple: the heat flux (in watts) into a grid cell in the sponge layer is computed as
-  :math:`\rho \text{C}_p {\cal V}_\theta * \frac{\theta (i,j,k) - \theta_{rbc} (i,j,k)}{\tau_T}`
+  :math:`\rho \text{C}_p {\cal V}_\theta * \frac{\theta (i,j,k) - \theta_{rbc} (i,j,k)}{\tau_T} * M_{rbc}`
   where :math:`\text{C}_p` is :varlink:`HeatCapacity_Cp` (3994.0 J kg\ :sup:`-1`\ K\ :sup:`-1` by default), :math:`{\cal V}_\theta` is the grid cell volume
-  (:varlink:`dxG`\ (i,j) * :varlink:`dyG`\ (i,j) * :varlink:`drF`\ (k) * :varlink:`hFacC`\ (i,j,k); see :numref:`reentrant_channel_bathy_file` for definition of :varlink:`hFacC`),
+  (:varlink:`dxG`\ (i,j) * :varlink:`dyG`\ (i,j) * :varlink:`drF`\ (k) * :varlink:`hFacC`\ (i,j,k);
+  see :numref:`reentrant_channel_bathy_file` for definition of :varlink:`hFacC`),
   :math:`\theta (i,j,k)` is gridpoint potential temperature (:sup:`o`\ C),
-  :math:`\theta (i,j,k)_{rbc}` is gridpoint relaxation potential temperature (:sup:`o`\ C, as prescribed in file ``input/temperature.50km.bin``),
-  and :math:`\tau_T` is the restoring timescale :varlink:`tauRelaxT` (as set in :ref:`data.rbcs <tut_so_channel_rbcs>` to 864,000 seconds or 10 days).
+  :math:`\theta (i,j,k)_{rbc}` is gridpoint relaxation potential temperature (:sup:`o`\ C,
+  as prescribed in file ``input/temperature.5km.bin`` or ``input/temperature.50km.bin``),
+  :math:`\tau_T` is the restoring timescale :varlink:`tauRelaxT` (as set in :ref:`data.rbcs <tut_so_channel_rbcs>` to 864,000 seconds or 10 days),
+  and :math:`M_{rbc}` is a 3-D restoring mask (values between 0.0 and 1.0 as discussed
+  :ref:`above <reentrant_channel_ rbcsmaskfile>`) as specified in file ``T_relax_mask.5km.bin`` or ``T_relax_mask.50km.bin``.
 
 .. [#] Note it is not stricly necessary to remove :filelink:`pkg/gmredi` from your high-resolution build -- however, if kept in the list of packages included in
        :filelink:`packages.conf <verification/tutorial_reentrant_channe/code/packages.conf>`, it then becomes necessary to deactivate
