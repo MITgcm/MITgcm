@@ -414,7 +414,6 @@ C-    end bi,bj loops
 
 #ifdef SEAICE_ALLOW_SIDEDRAG
 
-      IF ( .TRUE. ) THEN
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy+1,sNy+OLy-1
@@ -433,6 +432,8 @@ C-    end bi,bj loops
        ENDDO
       ENDDO
 
+      IF ( .TRUE. ) THEN
+      
       CALL READ_FLD_XY_RL('coast_length_36km_x',' ',LcoastX,0,myThid)
       CALL READ_FLD_XY_RL('coast_length_36km_y',' ',LcoastY,0,myThid)
 
