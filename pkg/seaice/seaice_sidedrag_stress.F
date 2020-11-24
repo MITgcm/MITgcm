@@ -67,7 +67,9 @@ C     i,j,bi,bj,ksrf :: loop indices
       INTEGER i,j,bi,bj
       _RL    tmp, tmpx, tmpy
       _RL    uSpd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     u_0
 
+         u_0 = 0.0001 _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C     initialize fields
@@ -102,9 +104,13 @@ c     &            uIceLoc(i+1,j-1,bi,bj)+uIceLoc(i+1,j,bi,bj)))**2)
 
 
            SideDragXloc(i,j,bi,bj) = SEAICE_rhoIce * SEAICESideDrag
-     &                              * tmpx * NcoastXloc(i,j,bi,bj)
+     &                              * 1/(tmpx + u_0)
+     &                              * NcoastXloc(i,j,bi,bj)
+     &                              * seaiceMassU(i,j,bi,bj)     
            SideDragYloc(i,j,bi,bj) = SEAICE_rhoIce * SEAICESideDrag
-     &                              * tmpy * NcoastYloc(i,j,bi,bj)
+     &                              * 1/(tmpy + u_0)
+     &                              * NcoastYloc(i,j,bi,bj)
+     &                              * seaiceMassV(i,j,bi,bj) 
           ENDIF
          ENDDO
         ENDDO

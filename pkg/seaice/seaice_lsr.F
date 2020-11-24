@@ -519,10 +519,8 @@ C
          DO I=iMin,iMax
           BU(I,J,bi,bj) = BU(I,J,bi,bj) + seaiceMaskU(I,J,bi,bj)
      &                  * SideDragX(I,J,bi,bj)
-     &                  * areaW(I,J,bi,bj)
           BV(I,J,bi,bj) = BV(I,J,bi,bj) + seaiceMaskV(I,J,bi,bj)
      &                  * SideDragY(I,J,bi,bj)
-     &                  * areaS(I,J,bi,bj)
           ENDDO
          ENDDO
         ENDDO

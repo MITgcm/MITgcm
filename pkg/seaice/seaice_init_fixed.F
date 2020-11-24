@@ -448,7 +448,7 @@ C-    end bi,bj loops
 cc           NcoastX(i,j,bi,bj) = REAL(LcoastX(i,j,bi,bj)/MAXVAL(LcoastX))
 cc           NcoastY(i,j,bi,bj) = REAL(LcoastY(i,j,bi,bj)/MAXVAL(LcoastY))
           NcoastX(i,j,bi,bj) = NcoastX(i,j,bi,bj) * SIMaskU(i,j,bi,bj)
-          NcoastY(i,j,bi,bj) = NcoastY(i,j,bi,bj) * SIMaskV(i,j,bi,bj)      
+          NcoastY(i,j,bi,bj) = NcoastY(i,j,bi,bj) * SIMaskV(i,j,bi,bj)  
          ENDDO
         ENDDO
        ENDDO
