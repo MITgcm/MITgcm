@@ -787,32 +787,32 @@ def grad(X, dxc=None, dyc=None, hfw=None, hfs=None):
     dXdx = np.zeros(X.shape)
     dXdy = np.zeros(X.shape)
 
-    rdxf = faces(1./np.where(dxc==0.,np.Inf,dxc))
-    rdyf = faces(1./np.where(dyc==0.,np.Inf,dyc))
+    rdxc = faces(1./np.where(dxc==0.,np.Inf,dxc))
+    rdyc = faces(1./np.where(dyc==0.,np.Inf,dyc))
     for t in range(nt):
         for k in range(nk):
             xf  = faces(X[t,k,:,:])
             duf = faces(np.zeros((nj,ni)))
             dvf = faces(np.zeros((nj,ni)))
             for iface in range(len(xf)-1):
-                du = (xf[iface] - np.roll(xf[iface],1,axis=-1))*rdxf[iface]
-                dv = (xf[iface] - np.roll(xf[iface],1,axis=-2))*rdyf[iface]
+                du = (xf[iface] - np.roll(xf[iface],1,axis=-1))*rdxc[iface]
+                dv = (xf[iface] - np.roll(xf[iface],1,axis=-2))*rdyc[iface]
                 # now take care of the connectivity
                 if iface==0:
-                    du[:,0] = (xf[0][:,0] - xf[4][-1,::-1])*rdxf[0][:,0]
+                    du[:,0] = (xf[0][:,0] - xf[4][-1,::-1])*rdxc[0][:,0]
                     dv[0,:] = 0. # hack
                 if iface==1:
-                    du[:,0] = (xf[1][:,0] - xf[0][:,   -1])*rdxf[1][:,0]
+                    du[:,0] = (xf[1][:,0] - xf[0][:,   -1])*rdxc[1][:,0]
                     dv[0,:] = 0. # hack
                 if iface==2:
-                    du[:,0] = (xf[2][:,0] - xf[0][-1,::-1])*rdxf[2][:,0]
-                    dv[0,:] = (xf[2][0,:] - xf[1][-1,   :])*rdxf[2][0,:]
+                    du[:,0] = (xf[2][:,0] - xf[0][-1,::-1])*rdxc[2][:,0]
+                    dv[0,:] = (xf[2][0,:] - xf[1][-1,   :])*rdxc[2][0,:]
                 if iface==3:
-                    du[:,0] = (xf[3][:,0] - xf[2][:   ,-1])*rdxf[3][:,0]
-                    dv[0,:] = (xf[3][0,:] - xf[1][::-1,-1])*rdyf[3][0,:]
+                    du[:,0] = (xf[3][:,0] - xf[2][:   ,-1])*rdxc[3][:,0]
+                    dv[0,:] = (xf[3][0,:] - xf[1][::-1,-1])*rdyc[3][0,:]
                 if iface==4:
-                    du[:,0] = (xf[4][:,0] - xf[2][-1,::-1])*rdxf[4][:,0]
-                    dv[0,:] = (xf[4][0,:] - xf[3][-1,   :])*rdyf[4][0,:]
+                    du[:,0] = (xf[4][:,0] - xf[2][-1,::-1])*rdxc[4][:,0]
+                    dv[0,:] = (xf[4][0,:] - xf[3][-1,   :])*rdyc[4][0,:]
 
                 duf[iface]=du
                 dvf[iface]=dv
