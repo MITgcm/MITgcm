@@ -67,7 +67,13 @@ C     i,j,bi,bj :: Loop counters
       _RL vLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 CEOP
-
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+      LOGICAL  diag_SIenph_isOn
+      _RL hTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL recip_deltaTtherm
+#endif
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER( 'SEAICE_MODEL', myThid )
 #endif
@@ -181,7 +187,22 @@ C--   Only call advection of heff, area, snow, and salt and
 C--   growth for the generic 0-layer thermodynamics of seaice
 C--   if useThSice=.false., otherwise the 3-layer Winton thermodynamics
 C--   (called from DO_OCEANIC_PHYSICS) take care of this
-
+#ifdef ALLOW_DIAGNOSTICS
+       IF ( useDiagnostics ) THEN
+        diag_SIenph_isOn = DIAGNOSTICS_IS_ON('SIenph  ',myThid)
+        IF ( diag_SIenph_isOn ) THEN
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+             hTmp(i,j,bi,bj)=HEFF(i,j,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
+       ENDIF
+#endif
 C NOW DO ADVECTION and DIFFUSION
       IF ( SEAICEadvHeff .OR. SEAICEadvArea .OR. SEAICEadvSnow
      &        .OR. SEAICEadvSalt ) THEN
@@ -328,6 +349,24 @@ c       CALL DIAGNOSTICS_FILL_RS(FV   ,'SIfv    ',0,1 ,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL_RS(EmPmR,'SIempmr ',0,1 ,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL_RS(Qnet ,'SIqnet  ',0,1 ,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL_RS(Qsw  ,'SIqsw   ',0,1 ,0,1,1,myThid)
+        IF ( diag_SIenph_isOn ) THEN
+         recip_deltaTtherm = 1. _d 0 / SEAICE_deltaTtherm
+         DO bj=myByLo(myThid),myByHi(myThid)
+          DO bi=myBxLo(myThid),myBxHi(myThid)
+           DO j=1,sNy
+            DO i=1,sNx
+             hTmp(i,j,bi,bj) = 0.5 _d 0 * SEAICE_rhoIce
+     &            * 0.5 _d 0 * (
+     &              uIce (i,j,bi,bj)**2 + uIce (i+1,j,  bi,bj)**2
+     &            + vIce (i,j,bi,bj)**2 + vIce (i,  j+1,bi,bj)**2 )
+     &            * (HEFF(i,j,bi,bj) - hTmp(i,j,bi,bj))
+     &             *recip_deltaTtherm
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL(hTmp,'SIenph  ',0,1,0,1,1,myThid)
+        ENDIF
        ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 

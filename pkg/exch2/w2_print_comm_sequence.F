@@ -90,7 +90,7 @@ C     Send loop for cell centered
          sourceIhi=pi(1)*(targetIhi+itb)+pi(2)*(targetJhi+jtb)+oi-isb
          sourceJhi=pj(1)*(targetIhi+itb)+pj(2)*(targetJhi+jtb)+oj-jsb
 C        Tile XX sends to points i=ilo:ihi,j=jlo:jhi in tile YY
-         WRITE(msgBuf,'(A,I6,A,I4,A,4(A,I4))')
+         WRITE(msgBuf,'(A,I8,A,I8,A,4(A,I4))')
      &    'Tile', myTileId,' (pr=',sourceProc,')',
      &    ' sends pts i=',sourceIlo,':',sourceIhi,
      &             ', j=',sourceJlo,':',sourceJhi
@@ -100,10 +100,10 @@ C        Tile XX sends to points i=ilo:ihi,j=jlo:jhi in tile YY
          iLen = ILNBLNK(msgBuf)
          WRITE(W2_oUnit,'(A)') msgBuf(1:iLen)
 #endif
-         WRITE(msgBuf,'(4(A,I4),A,I6,A,I4,A)')
-     &    '                        to pts i=',targetIlo,':',targetIhi,
-     &                                 ', j=',targetJlo,':',targetJhi,
-     &                 ' in tile ',targetTile,' (pr=',targetProc,')'
+         WRITE(msgBuf,'(26X,4(A,I4),A,I8,A,I8,A)')
+     &    '    to pts i=',targetIlo,':',targetIhi,
+     &             ', j=',targetJlo,':',targetJhi,
+     &    ' in tile ',targetTile,' (pr=',targetProc,')'
 #ifdef W2_PRINT_PREFIX
          CALL PRINT_MESSAGE( msgBuf, W2_oUnit, SQUEEZE_RIGHT, myThid )
 #else
@@ -133,7 +133,7 @@ C        Get the range of points associated with that entry
      O              iStride, jStride,
      I              myThid )
 C        Tile XX receives points i=ilo:ihi,j=jlo:jhi in tile YY
-         WRITE(msgBuf,'(A,I6,A,I4,A,4(A,I4),A,I6,A,I4,A)')
+         WRITE(msgBuf,'(A,I8,A,I8,A,4(A,I4),A,I8,A,I8,A)')
      &    'Tile', myTileId,' (pr=',sourceProc,')',
      &    ' recv pts i=',targetIlo,':',targetIhi,
      &            ', j=',targetJlo, ':',targetJhi,

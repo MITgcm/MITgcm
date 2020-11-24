@@ -253,7 +253,7 @@ C--   record "missing corner" tile
      &                     .AND. exch2_myFace(tN).NE.0 ) W2_tMC1 = tN
         ENDIF
        ENDDO
-       IF ( myProcId.EQ.0 ) WRITE(W2_oUnit,'(3(A,I6))')
+       IF ( myProcId.EQ.0 ) WRITE(W2_oUnit,'(3(A,I8))')
      &   ' missing-corner Tile for CUMUL-SUM (nTiles=', exch2_nTiles,
      &   ' ): W2_tMC1=', W2_tMC1, ' , W2_tMC2=', W2_tMC2
       ENDIF
@@ -338,16 +338,16 @@ C-    Finally, account for cumulated sum at facet origin:
       ENDDO
 
       IF (prtFlag) THEN
-       WRITE(W2_oUnit,'(A,I6,A)')
+       WRITE(W2_oUnit,'(A,I8,A)')
      &    ' Tile Matrix for CUMUL-SUM (nTiles=', exch2_nTiles, ' ):'
        DO j=1,exch2_nTiles
         DO is=1,exch2_nTiles,10
          ie = MIN(is+9,exch2_nTiles)
          IF ( is.EQ.1 ) THEN
-          WRITE(W2_oUnit,'(3(I6,A),10(2I3,A))') j,' ,',is,' ->',ie,' :',
+          WRITE(W2_oUnit,'(3(I8,A),10(2I3,A))') j,' ,',is,' ->',ie,' :',
      &     (W2_cumSum_tiles(1,i,j),W2_cumSum_tiles(2,i,j),' ,',i=is,ie)
          ELSE
-          WRITE(W2_oUnit,'(8X,2(I6,A),10(2I3,A))') is,' ->',ie,' :',
+          WRITE(W2_oUnit,'(8X,2(I8,A),10(2I3,A))') is,' ->',ie,' :',
      &     (W2_cumSum_tiles(1,i,j),W2_cumSum_tiles(2,i,j),' ,',i=is,ie)
          ENDIF
         ENDDO

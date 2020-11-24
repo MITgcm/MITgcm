@@ -128,7 +128,7 @@ c     ENDIF
       oj  = exch2_oj(nN,thisTile)
 #ifdef W2_E2_DEBUG_ON
       IF ( ABS(W2_printMsg).GE.2 ) THEN
-        WRITE(msgBuf,'(2A,I5,I3,A,I5)') 'EXCH2_AD_PUT_RX1',
+        WRITE(msgBuf,'(2A,I8,I3,A,I8)') 'EXCH2_AD_PUT_RX1',
      &    ' sourceTile,neighb=', thisTile, nN, ' : targetTile=', tgT
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      I                      SQUEEZE_BOTH, myThid )
