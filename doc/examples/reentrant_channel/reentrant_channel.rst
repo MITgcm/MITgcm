@@ -672,6 +672,7 @@ the index is still required.
   :filelink:`pkg/layers` will not complain if the discretization does not span the full range of
   existing water in the model ocean; it will simply ignore water masses (and their transport) that
   fall outside the specified range in :varlink:`layers_bounds`.
+  (This will make it impossible to close the layer volume budget.)
   Also note that the range must be monotonically *increasing*, even if this results in a layers
   coordinate k=1:\ :varlink:`Nlayers` that proceeds in the opposite sense as the depth coordinate
   (i.e., the k=1 layers coordinate is at the ocean bottom, whereas the k=1 depth coordinate refers to the ocean surface layer).
@@ -1242,4 +1243,3 @@ to parameterize mesoscale eddies. More detailed comments comparing these solutio
        :varlink:`useGMRedi`\ ``=.FALSE.``.  If by chance you set a use«PKG» flag to ``.TRUE.`` in :filelink:`data.pkg <verification/tutorial_reentrant_channel/input/data.pkg>`
        but have not included the package in the build, the model will terminate with error on startup. But you can alway set a use«PKG» flag to ``.FALSE.`` whether or not the package
        is included in the build.
-
