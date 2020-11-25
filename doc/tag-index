@@ -1,7 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
-o pkg/seaice
+o pkg/kpp:
+  - with CPP-option KPP_ESTIMATE_UREF, fix compilation errors + fix mixed layer
+    depth determination ;
+  - define KPP_ESTIMATE_UREF in verification/vermix ;
+  - a little bit of cleanup.
+o pkg/seaice:
   - small modifications of seaice_growth_adx.F to avoid recomputation warnings
     and to avoid potentially inefficient code ;
   - remove duplicate version of seaice_solve4temp ;
