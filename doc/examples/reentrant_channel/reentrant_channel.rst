@@ -648,7 +648,8 @@ File :filelink:`input/data.layers <verification/tutorial_reentrant_channel/input
     :linenos:
     :caption: verification/tutorial_reentrant_channel/input/data.layers
 
-:varlink:`pkg/layers` consists of in-line calculations which separate water masses into
+:varlink:`pkg/layers` consists of online calculations which separate water masses into
+
 specified layers, either by temperature, salinity, or density. 
 Note that parameters here include an array index of 1; it is possible to diagnose layers in both temperature and salinity simultaneously,
 for example, in which case one would add a second set of parameters with array index 2. Even though :varlink:`layers_maxNum` is set to 1
@@ -1241,5 +1242,4 @@ to parameterize mesoscale eddies. More detailed comments comparing these solutio
        :varlink:`useGMRedi`\ ``=.FALSE.``.  If by chance you set a use«PKG» flag to ``.TRUE.`` in :filelink:`data.pkg <verification/tutorial_reentrant_channel/input/data.pkg>`
        but have not included the package in the build, the model will terminate with error on startup. But you can alway set a use«PKG» flag to ``.FALSE.`` whether or not the package
        is included in the build.
-
 
