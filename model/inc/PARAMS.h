@@ -604,6 +604,7 @@ C     rhoConstFresh :: Constant reference density for fresh water (rain)
 C     thetaConst :: Constant reference for potential temperature
 C     tRef       :: reference vertical profile for potential temperature
 C     sRef       :: reference vertical profile for salinity/specific humidity
+C     surf_pRef  :: surface reference pressure ( Pa )
 C     pRef4EOS   :: reference pressure used in EOS (case selectP_inEOS_Zc=1)
 C     phiRef     :: reference potential (press/rho, geopot) profile (m^2/s^2)
 C     dBdrRef    :: vertical gradient of reference buoyancy  [(m/s/r)^2]:
@@ -823,7 +824,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & gravFacC, recip_gravFacC, gravFacF, recip_gravFacF,
      & rhoNil, rhoConst, recip_rhoConst, rho1Ref,
      & rhoFacC, recip_rhoFacC, rhoFacF, recip_rhoFacF, rhoConstFresh,
-     & thetaConst, tRef, sRef, pRef4EOS, phiRef, dBdrRef,
+     & thetaConst, tRef, sRef, surf_pRef, pRef4EOS, phiRef, dBdrRef,
      & rVel2wUnit, wUnit2rVel, mass2rUnit, rUnit2mass,
      & baseTime, startTime, endTime,
      & chkPtFreq, pChkPtFreq, dumpFreq, adjDumpFreq,
@@ -934,7 +935,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL thetaConst
       _RL tRef(Nr)
       _RL sRef(Nr)
-      _RL pRef4EOS(Nr)
+      _RL surf_pRef, pRef4EOS(Nr)
       _RL phiRef(2*Nr+1)
       _RL dBdrRef(Nr)
       _RL rVel2wUnit(Nr+1), wUnit2rVel(Nr+1)
