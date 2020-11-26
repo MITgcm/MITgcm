@@ -52,6 +52,7 @@ C     myThid    :: Thread on which I am working.
       INTEGER myThid
 
 #ifdef ALLOW_AUTODIFF_TAMC
+#ifdef NONLIN_FRSURF
 C     directly imported from TAF-generated code, make sure that they are
 C     consistent with what is found in S/R update_cg2d_ad
       _RL ac2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -62,6 +63,7 @@ C     consistent with what is found in S/R update_cg2d_ad
       _RL pw_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       common /cg2d_i_r_ad/
      &     aw2d_ad, as2d_ad, ac2d_ad, pw_ad, ps_ad, pc_ad
+#endif /* NONLIN_FRSURF */
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
@@ -84,6 +86,7 @@ C--   Call the single reduce CG solver
      O      firstResidual, minResidualSq, lastResidual,
      U      numIters, nIterMin,
      I      myThid )
+      ELSE
 #else
       IF (.TRUE.) THEN
 C--   Call the default CG solver
@@ -101,12 +104,14 @@ C     the solution, because we fake the AD code of cg2d.
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
+#ifdef NONLIN_FRSURF
           ac2d_ad  (i,j,bi,bj) = 0. _d 0
           as2d_ad  (i,j,bi,bj) = 0. _d 0
           aw2d_ad  (i,j,bi,bj) = 0. _d 0
           pc_ad    (i,j,bi,bj) = 0. _d 0
           ps_ad    (i,j,bi,bj) = 0. _d 0
           pw_ad    (i,j,bi,bj) = 0. _d 0
+#endif /* NONLIN_FRSURF */
 C     Here, cg2d_x_ad is also reset to zero, because we assume that the
 C     solution of the self-adjoint solver does not depend in the intial
 C     conditions so that no sensitivities should be passed back to the caller.
