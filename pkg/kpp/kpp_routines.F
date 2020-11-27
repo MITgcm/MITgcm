@@ -1758,9 +1758,9 @@ c calculate density, alpha, beta in surface layer, and set dbsfc to zero
 
       K = 1
 #ifdef KPP_AUTODIFF_MORE_STORE
-CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k,
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_kpp_k,
 CADJ &     key=kkppkey, kind=isbyte
-CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k,
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_kpp_k,
 CADJ &     key=kkppkey, kind=isbyte
 #endif /* KPP_AUTODIFF_MORE_STORE */
       CALL FIND_RHO_2D(
@@ -1769,9 +1769,9 @@ CADJ &     key=kkppkey, kind=isbyte
      O     WORK1,
      I     k, bi, bj, myThid )
 #ifdef KPP_AUTODIFF_MORE_STORE
-CADJ STORE theta(:,:,1,bi,bj) = comlev1_kpp_k,
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_kpp_k,
 CADJ &     key=kkppkey, kind=isbyte
-CADJ STORE salt (:,:,1,bi,bj) = comlev1_kpp_k,
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_kpp_k,
 CADJ &     key=kkppkey, kind=isbyte
 #endif /* KPP_AUTODIFF_MORE_STORE */
 
