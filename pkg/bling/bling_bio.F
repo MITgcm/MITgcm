@@ -1,7 +1,10 @@
 #include "BLING_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
-      subroutine BLING_BIO(
+      SUBROUTINE BLING_BIO(
      I           PTR_O2, PTR_FE, PTR_PO4, PTR_DOP,
      O           G_DIC, G_ALK, G_O2, G_FE,
      O           G_PO4, G_DOP,
@@ -39,7 +42,7 @@ C *** if ADVECT_PHYTO, these are fraction of total biomass instead ***
 #include "BLING_VARS.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 #endif
 
@@ -198,6 +201,10 @@ C
       _RL tmp_ML
 #endif
 CEOP
+
+#ifdef ALLOW_AUTODIFF_TAMC
+      itdkey = bi + (bj - 1)*nSx + (ikey_dynamics - 1)*nSx*nSy
+#endif
 
 c ---------------------------------------------------------------------
 c  Initialize output and diagnostics
@@ -531,8 +538,10 @@ c  limitation, with a maximum Fe:P uptake ratio of Fe2p_max
       ENDDO
 
 c  Separate loop for adjoint stores
-CADJ STORE Phy_sm_local = comlev1, key = ikey_dynamics, kind=isbyte
-CADJ STORE Phy_lg_local = comlev1, key = ikey_dynamics, kind=isbyte
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE Phy_sm_local   = comlev1_bibj, key=itdkey, kind=isbyte
+CADJ STORE Phy_lg_local   = comlev1_bibj, key=itdkey, kind=isbyte
+#endif
 
       DO k=1,Nr
        DO j=jmin,jmax

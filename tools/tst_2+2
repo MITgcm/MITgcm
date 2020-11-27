@@ -170,9 +170,11 @@ done
 if [ $prt -ge 2 ] ; then echo ' ' ; fi
 # add nIter0 & nTimeSteps in namelist "PARM03":
 Dbl=`expr $Nit \* 2`
-sed "/^ *\&PARM03/a \ nTimeSteps=$Dbl," data.tst > data.tmp_$$
+sed -e "/^ *\&PARM03/a\\
+\ nTimeSteps=$Dbl," data.tst > data.tmp_$$
 mv -f data.tmp_$$ data.tst
-sed "/^ *\&PARM03/a \ nIter0=$iter," data.tst > data.tmp_$$
+sed -e "/^ *\&PARM03/a\\
+\ nIter0=$iter," data.tst > data.tmp_$$
 mv -f data.tmp_$$ data.tst
 echo "prepare file 'data.tst' : done"
 if  [ $prt -ge 1 ] ; then

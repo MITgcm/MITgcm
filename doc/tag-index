@@ -1,6 +1,125 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/kpp:
+  - with CPP-option KPP_ESTIMATE_UREF, fix compilation errors + fix mixed layer
+    depth determination ;
+  - define KPP_ESTIMATE_UREF in verification/vermix ;
+  - a little bit of cleanup.
+o pkg/seaice:
+  - small modifications of seaice_growth_adx.F to avoid recomputation warnings
+    and to avoid potentially inefficient code ;
+  - remove duplicate version of seaice_solve4temp ;
+  - exclude code of seaice_growth.F if ALLOW_SEAICE_GROWTH_ADX defined ;
+  - switch on SEAICE_USE_GROWTH_ADX AD in experiment offline_exf_seaice and
+    update "output_adm.txt".
+o eesupp/src:
+  - add missing "stdio.h" in src code setdir.c
+o tools/do_tst_2+2 & tst_2+2:
+  - bug fix: replace some non-standard sed command with POSIX compatible syntax
+  - remove second blank at beginning of 2 new lines in file "data".
+o doc:
+  - add new SO channel tutorial
+  - update pkg/shelfice documentation
+o optim:
+  - fix a small bug by initialising myX/YglobalLo=1 in optim_nummod.F
+o tools/do_tst_2+2:
+  - for sending restart test output, add same hack in "send" option as in
+    testreport, allowing to use "scp" (instead of an email).
+o model/src:
+  - fix 2 missing TAF initialisation directives in file "the_main_loop.F";
+    this allows to use TAF recent version 5.0.9 (that does check for missing
+    initialisation).
+o pkg/seaice:
+  - fix diagnostics additions (from PR #348) for case _RS is real*4.
+
+checkpoint67s (2020/07/30)
+o eesupp/src:
+  - Improve formatting of output for large grids and many processors:
+    adjust formats to actual length of nPx*nPy or Nx and Ny but
+    keep minimal lengths to avoid changing the format for smaller domains;
+  - also increase number of digits for printing tile & proc number in pkg/exch2
+    log files and report to STDOUT.
+o pkg/bling:
+  - cleaning: remove USE_QSW_Z code ;
+  - few more CPP options (NEW_FRAC_EXP & SIZE_DEP_LIM defined, SIZE_NUT_LIM
+    undef) related to phytoplankton size and sinking organic matter ;
+  - fix tiled TAF storage directives (were not right for multi-tile per proc);
+    update ADM reference output of experiment global_oce_biogeo_bling (now
+    gradient check are identical whether run on 1 proc - 4 tiles or 4 procs
+    1 tile each).
+o pkg/seaice:
+  - Replace hard-coded minimum for DWATN by runtime parameter "SEAICEdWatMin":
+    * allows to have zero drag by setting both SEAICEdWatMin and
+      SEAICE_waterDrag to zero. Non-zero drag had been implemented because
+      previous LSR solver could not handle zero entries on the main diagonal.
+    * this fixes a bug (unexpected behavior) reported at MITgcm-support by
+      Kaley Shrestha, but also allows to modify the somewhat arbitrary
+      default minimum value of SEAICEdWatMin = 0.25 ;
+    * freedrift code still requires non-zero drag coefficients,
+      S/R SEAICE_CHECK catches this case.
+o verification/*/packages.conf
+  - Cleaning verification experiment "packages.conf":
+    1) add a 1 line description at the top
+    2) use pkg group "adjoint" in some experiments
+    3) use similar ordering of pkgs in packages.conf:
+      a) eesupp pkgs (e.g., exch2, coupler-pkgs)
+      b) dyn-core pkgs (e.g., gfd pkgs, mom pkgs, cd_code, gad, obcs ...)
+      c) SGS-scheme (+ atm physics) pkgs (filters, gmredi, vert.mixing ...)
+      d) forcing pkgs (e.g., rbcs, exf, cal, ebm, cheapaml)
+      e) other component pkgs (e.g., ice, land, ptracers, biogeo, flt)
+      f) diagnostics pkgs (e.g., sbo, profiles, layers, diagnostics, timeave)
+      g) I/O pkgs, e.g., mnc (+ mypackage at the end)
+      -- blank line --
+      h) adjoint related pkgs (e.g., autodiff, ctrl, cost ...)
+    4) remove unused pkgs: kpp, sbo, timeave ; this results in reduced number of
+       TAF recomputation warning for AD exp: bottom_ctrl_5x5 & global_ocean_ebm;
+o tools/build_options:
+  - add a symbolic link for optfile "linux_amd64_ifort" to "linux_amd64_ifort11"
+o doc:
+  - fix link and plot in doc/examples/baroclinic_gyre
+o pkg/seaice:
+  - Add new mechanical energy diagnostics ;
+  - Move computation of stress diagnostics to seaice_dynsolver.F ; this change
+    affects diagnostics SIpress, SItensil, SIpress, SIzeta, SIdelta, SIshear,
+    because they are now filled after the current time step update, when they
+    are actually available. Note: previously, for the first time step, these
+    variables (and diagnostics) were not properly defined (or zero).
+
+checkpoint67r (2020/06/04)
+o pkg/ecco:
+  - fix character length when checking for m_trHeat, m_trSalt & m_horflux_vol.
+o pkg/autodiff:
+  - add active read and write routines for global 1D vectors, to be used for
+    compressed cost function vectors (note: not used yet, example to come soon).
+o model/src & pkg/exf:
+  - Reference atmospheric pressure for seawater EOS was assumed but was not
+    explicitly set. New constant "eosRefP0" is added to make this more clear ;
+  - Add main model reference surface pressure (surf_pRef) so that pLoad
+    is now defined as the atmospheric pressure anomaly relative to surf_pRef ;
+  - Account for differences in 2 ref pressure in EOS S/R ;
+  - Fix few EOS references (in comments) ; fix and simplify S/R EOS_CHECK ;
+  - Keep exf "apressure" field unchanged (still full atmospheric surface
+    pressure) but now initialised to "surf_pRef" and fill "pLoad" with atmos.
+    pressure anomaly relative to surf_pRef.
+o pkg/streamice:
+  - add option to specify "regularised coulomb" sliding law to better reflect
+    dependence on subglacial water pressure close to the grounding line ;
+  - above requires CPP option (due to new arrays) STREAMICE_COULOMB_SLIDING
+    and r/t param streamice_allow_reg_coulomb ;
+  - add diagnostic for streamice melt rate (BDOT_SI )
+  - add parameter STREAMICEAdotFile to specify surface mass balance ;
+  - add parameter streamice_maxnliter_Petsc to specify maximum no. of
+    linear solves using PETSc in a single time step (not incl. in doc
+    since PETSc is not part of standard build) ;
+  - update references to PETSC_DEFAULT_DOUBLE_PRECISION to PETSC_DEFAULT_REAL in
+    streamice_cg_solve_petsc.F; former seems to be deprecated in some versions
+    of PETSc while latter is backward compatible ;
+  - for BJACOBI (block jacobi) PETSc preconditioner, use PCICC (incomplete
+    cholesky) rather than PCILU (incomplete LU) ;
+  - for BJACOBI add parameter streamice_petsc_pcfactorlevels to control level
+    of factor fill-in.
+
 checkpoint67q (2020/03/19)
 o pkg/shelfice, remeshing code:
   - simplify/clarify merging S/R call sequence: all done/called from main

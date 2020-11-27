@@ -204,7 +204,7 @@ do
       if test "x$OPTFILE" = x -a -f $xx/$bldDir/Makefile ; then
         comm=`grep '^# OPTFILE=' $xx/$bldDir/Makefile 2>/dev/null | head -1 | sed 's/^# //'`
         echo "from '$xx/$bldDir/Makefile', extract:" > $DRESULTS/genmake_state
-        sed -n '/^# executed by:/,+1 p' $xx/$bldDir/Makefile >> $DRESULTS/genmake_state
+        awk "/^# executed by:/ {print;getline;print}" $xx/$bldDir/Makefile >> $DRESULTS/genmake_state
         echo " $comm" >> $DRESULTS/genmake_state
         eval $comm
         gmkLog=$xx/$bldDir/genmake.log
@@ -271,10 +271,12 @@ if test "x$ADDRESS" != xNONE -a "x$ADDRESS" != x ; then
       fi
     fi
     if test "x$SENDCMD" != x ; then
-        #echo " run: $SENDCMD -s MITgcm-test -m 3555000  ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESS"
+        SendOpt='' ; headCMD=`echo $SENDCMD | awk '{print $1}'`
+        if test $headCMD != 'scp' ; then SendOpt='-s MITgcm-test -m 3555000' ; fi
+        #echo " run: $SENDCMD $SendOpt ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESSES"
         tar -cf  ${SAVDIR}/${DRESULTS}".tar" $DRESULTS > /dev/null 2>&1 \
             && gzip  ${SAVDIR}/${DRESULTS}".tar" \
-            && $SENDCMD -s MITgcm-test -m 3555000  ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESS
+            && $SENDCMD $SendOpt ${SAVDIR}/${DRESULTS}".tar.gz" $ADDRESS
         out=$?
         if test "x$out" != x0 ; then
             echo

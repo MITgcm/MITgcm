@@ -61,8 +61,8 @@ C     kRef :: Pressure reference level
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j
-      _RL refTemp,refSalt,sigRef,tP,sP,deltaSig,dRho
-      _RL oneMinusKap, facPres, theta_v
+      _RL refTemp, refSalt, sigRef, tP, sP, deltaSig, dRho
+      _RL dp0, oneMinusKap, facPres, theta_v
       _RL locPres(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhoP0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL bulkMod(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -146,9 +146,10 @@ C **********
       ELSEIF ( equationOfState(1:5).EQ.'JMD95'
      &      .OR. equationOfState.EQ.'UNESCO' ) THEN
 C     nonlinear equation of state in pressure coordinates
+         dp0 = surf_pRef - eosRefP0
 
          CALL PRESSURE_FOR_EOS(
-     I             bi, bj, iMin, iMax, jMin, jMax, kRef,
+     I             bi, bj, iMin, iMax, jMin, jMax, kRef, dp0,
      O             locPres,
      I             myThid )
 
@@ -181,9 +182,10 @@ C     density of sea water at pressure p
          ENDDO
 
       ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
+         dp0 = surf_pRef - eosRefP0
 
          CALL PRESSURE_FOR_EOS(
-     I             bi, bj, iMin, iMax, jMin, jMax, kRef,
+     I             bi, bj, iMin, iMax, jMin, jMax, kRef, dp0,
      O             locPres,
      I             myThid )
 
@@ -210,9 +212,10 @@ c#endif /* ALLOW_AUTODIFF_TAMC */
          ENDDO
 
       ELSEIF ( equationOfState.EQ.'TEOS10' ) THEN
+         dp0 = surf_pRef - eosRefP0
 
          CALL PRESSURE_FOR_EOS(
-     I             bi, bj, iMin, iMax, jMin, jMax, kRef,
+     I             bi, bj, iMin, iMax, jMin, jMax, kRef, dp0,
      O             locPres,
      I             myThid )
 
@@ -235,7 +238,7 @@ c#endif /* ALLOW_AUTODIFF_TAMC */
       ELSEIF( equationOfState .EQ. 'IDEALG' ) THEN
 
          CALL PRESSURE_FOR_EOS(
-     I             bi, bj, iMin, iMax, jMin, jMax, kRef,
+     I             bi, bj, iMin, iMax, jMin, jMax, kRef, zeroRL,
      O             locPres,
      I             myThid )
 
@@ -836,6 +839,8 @@ C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | o SUBROUTINE FIND_RHO_SCALAR
 C     |   Calculates rho(S,T,p)
+C     | Note: for seawater EOS, p is pressure (Pa) relative to
+C     |   reference surface pressure "surf_pRef"
 C     *==========================================================*
 C     \ev
 
@@ -856,7 +861,7 @@ C     == Routine arguments ==
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       _RL t1, t2, t3, t4, s1, s3o2, p1, p2, sp5, p1t1
-      _RL ct, sa, sqrtsa, p
+      _RL dp0, ct, sa, sqrtsa, p
       _RL rfresh, rsalt, rhoP0
       _RL bMfresh, bMsalt, bMpres, BulkMod
       _RL rhoNum, rhoDen, den, epsln
@@ -915,6 +920,7 @@ CEOP
       rhoNum  = 0. _d 0
       rhoDen  = 0. _d 0
       den     = 0. _d 0
+      dp0     = surf_pRef - eosRefP0
 
       t1 = tLoc
       t2 = t1*t1
@@ -959,7 +965,7 @@ C     nonlinear equation of state in pressure coordinates
 
          s3o2 = s1*SQRT(s1)
 
-         p1 = pLoc*SItoBar
+         p1 = ( pLoc + dp0 )*SItoBar
          p2 = p1*p1
 
 C     density of freshwater at the surface
@@ -1092,7 +1098,7 @@ C     density of sea water at pressure p
 
        sp5 = SQRT(s1)
 
-       p1   = pLoc*SItodBar
+       p1 = ( pLoc + dp0 )*SItodBar
        p1t1 = p1*t1
 
        rhoNum = eosMDJWFnum(0)
@@ -1129,7 +1135,7 @@ C     density of sea water at pressure p
         sa     = 0. _d 0
         sqrtsa = 0. _d 0
        ENDIF
-       p       = pLoc*SItodBar
+       p = ( pLoc + dp0 )*SItodBar
 
        rhoNum = teos(01)
      &   + ct*(teos(02) + ct*(teos(03) + teos(04)*ct))

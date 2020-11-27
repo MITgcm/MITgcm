@@ -57,6 +57,8 @@ C                       an MPI datatype - can be bytes of datatype units.
       INTEGER elStride
       INTEGER np, pId, itemp(2)
       INTEGER ierr
+      INTEGER iTmp, jTmp
+      CHARACTER*(23) fmtStr
 #endif /* ALLOW_USE_MPI */
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER myThid
@@ -284,30 +286,34 @@ C--    Print summary of processor mapping on standard output
      &  mpilProcNam, ' ) = ', mpiProcNam(1:mpilProcNam)
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
-       WRITE(msgBuf,'(A,I3,A,I3,A,I3,A,I3,A)') ' Located at (',
-     &  mpiPx,',',mpiPy,
+       iTmp = MAX(3,1 + INT(LOG10(DFLOAT(nPx*nPy))))
+       WRITE(fmtStr,'(4(A,I1),A)')
+     &  '(A,I',iTmp,',A,I',iTmp,',A,I',iTmp,',A,I',iTmp,',A)'
+       WRITE(msgBuf,fmtStr) ' Located at (', mpiPx,',',mpiPy,
      &  ') on processor grid (0:',nPx-1,',0:',nPy-1,')'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
-       WRITE(msgBuf,'(A,I6,A,I6,A,I6,A,I6,A)') ' Origin at  (',
+       iTmp = MAX(6,1 + INT(LOG10(DFLOAT(nPx*sNx*nSx))))
+       jTmp = MAX(6,1 + INT(LOG10(DFLOAT(nPy*sNy*nSy))))
+       WRITE(fmtStr,'(4(A,I1),A)')
+     &  '(A,I',iTmp,',A,I',jTmp,',A,I',iTmp,',A,I',jTmp,',A)'
+       WRITE(msgBuf,fmtStr) ' Origin at  (',
      &  mpiXGlobalLo,',',mpiYGLobalLo,
      &  ') on global grid (1:',nPx*sNx*nSx,',1:',nPy*sNy*nSy,')'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
-       WRITE(msgBuf,'(A,I4.4)')
-     &   ' North neighbor = processor ', mpiPidN
+       iTmp = MAX(4,1 + INT(LOG10(DFLOAT(nPx*nPy))))
+       WRITE(fmtStr,'(2(A,I1),A)') '(A,I',iTmp,'.',iTmp,')'
+       WRITE(msgBuf,fmtStr) ' North neighbor = processor ', mpiPidN
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
-       WRITE(msgBuf,'(A,I4.4)')
-     &   ' South neighbor = processor ', mpiPidS
+       WRITE(msgBuf,fmtStr) ' South neighbor = processor ', mpiPidS
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
-       WRITE(msgBuf,'(A,I4.4)')
-     &   '  East neighbor = processor ', mpiPidE
+       WRITE(msgBuf,fmtStr) '  East neighbor = processor ', mpiPidE
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
-       WRITE(msgBuf,'(A,I4.4)')
-     &   '  West neighbor = processor ', mpiPidW
+       WRITE(msgBuf,fmtStr) '  West neighbor = processor ', mpiPidW
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                     SQUEEZE_RIGHT , myThid )
 

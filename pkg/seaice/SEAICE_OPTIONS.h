@@ -158,9 +158,9 @@ C     the ocean at the end of seaice_growth in a conservative manner.
 C     SEAICE_CAP_SUBLIM is not needed as of now, but kept just in case.
 #undef SEAICE_CAP_SUBLIM
 
-C--   Enable the adjointable sea-ice thermodynamic model
-C     uses seaice_growth_adx.F and seaice_solve4temp_adx.F
-#undef ALLOW_SEAICE_GROWTH_ADX
+C--   Use the adjointable sea-ice thermodynamic model
+C     in seaice_growth_adx.F instead of seaice_growth.F
+#undef SEAICE_USE_GROWTH_ADX
 
 C--   Enable free drift code
 #undef SEAICE_ALLOW_FREEDRIFT
