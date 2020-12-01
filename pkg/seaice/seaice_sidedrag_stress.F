@@ -104,11 +104,11 @@ c     &            uIceLoc(i+1,j-1,bi,bj)+uIceLoc(i+1,j,bi,bj)))**2)
 
 
            SideDragXloc(i,j,bi,bj) = SEAICE_rhoIce * SEAICESideDrag
-     &                              * 1/(tmpx + u_0)
+     &                              * 1. _d 0/(tmpx + u_0)
      &                              * NcoastXloc(i,j,bi,bj)
      &                              * seaiceMassU(i,j,bi,bj)     
            SideDragYloc(i,j,bi,bj) = SEAICE_rhoIce * SEAICESideDrag
-     &                              * 1/(tmpy + u_0)
+     &                              * 1. _d 0/(tmpy + u_0)
      &                              * NcoastYloc(i,j,bi,bj)
      &                              * seaiceMassV(i,j,bi,bj) 
           ENDIF
