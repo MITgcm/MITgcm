@@ -122,6 +122,14 @@ cph      PARAMETER( maxpass     = PTRACERS_num + 2 )
       INTEGER iikey, kkey, passkey, igadkey,
      &        itdkey, idynkey, igmkey
 
+#ifdef ALLOW_CG2D_NSA
+C     Parameter that is needed for the tape complev_cg2d_iter
+C     cannot be smaller than the allowed number of iterations in cg2d
+C     (numItersMax >= cg2dMaxIters in data-file)
+      INTEGER numItersMax
+      PARAMETER ( numItersMax = 200 )
+#endif
+
 c     ================================================================
 c     END OF HEADER TAMC
 c     ================================================================
