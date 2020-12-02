@@ -959,7 +959,7 @@ A successful build requires MPI libraries installed on your system, and you may 
 and/or set environment variable ``$MPI_INC_DIR`` (for more details, see :numref:`build_mpi`). If there is a problem
 finding `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_  libraries, :filelink:`genmake2 <tools/genmake2>` output will complain.
 
-Several lines in :filelink:`verification/tutorial_barotropic_gyre/code/SIZE.h_mpi` are different from the standard version.
+Several lines in :filelink:`verification/tutorial_baroclinic_gyre/code/SIZE.h_mpi` are different from the standard version.
 First, we change :varlink:`nSx` and :varlink:`nSy` to 1, so that each process integrates the model for a single tile.
 
    .. literalinclude:: ../../../verification/tutorial_baroclinic_gyre/code/SIZE.h_mpi
@@ -1137,7 +1137,7 @@ where deeper mixed layers occur (not shown, but variations in mixed layer
 depth can be easily visualized by loading diagnostic ``MXLDEPTH``).
 
  .. figure:: figs/trelax_freesurface.png
-      :width: 100%
+      :width: 90%
       :align: center
       :alt: baroclinic gyre free surface and relaxation
       :name: baroclinic_gyre_trelax_freesurface
@@ -1202,7 +1202,7 @@ the presence of a thermocline, i.e., the bunching up of the contours
 between 200 m and 400 m depth, with weak stratification below the thermocline.
 What sets the penetration depth of the subtropical gyre? Following a simple advective scaling argument
 (see Vallis (2017) :cite:`vallis:17` or Cushman-Roisin and Beckers (2011) :cite:`cushmanroisin:11`;
-this is obtained via thermal wind and the linearized barotropic vorticity equation),
+this scaling is obtained via thermal wind and the linearized barotropic vorticity equation),
 the depth of the thermocline :math:`h` should scale as:
 
 .. math:: h = \left( \frac{w_e f^2 L_x}{\beta \Delta b} \right) ^2 = \left( \frac{(\tau / L_y) f L_x}{\beta \rho'} \right) ^2
