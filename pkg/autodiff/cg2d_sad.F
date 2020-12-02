@@ -44,9 +44,7 @@ C                  Out: iteration number corresponding to lowest residual
 C     myThid    :: Thread on which I am working.
       _RL  cg2d_b_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cg2d_x_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  firstResidual
-      _RL  minResidualSq
-      _RL  lastResidual
+c     _RL  firstResidual, minResidualSq, lastResidual
       INTEGER numIters
       INTEGER nIterMin
       INTEGER myThid
@@ -55,21 +53,22 @@ C     myThid    :: Thread on which I am working.
 #ifdef NONLIN_FRSURF
 C     directly imported from TAF-generated code, make sure that they are
 C     consistent with what is found in S/R update_cg2d_ad
-      _RL ac2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL as2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL aw2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pc_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL ps_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL pw_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      common /cg2d_i_r_ad/
-     &     aw2d_ad, as2d_ad, ac2d_ad, pw_ad, ps_ad, pc_ad
+      _RL aW2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL aS2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL aC2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL pW_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL pS_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL pC_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      COMMON /CG2D_I_R_AD/
+     &     aW2d_ad, aS2d_ad, aC2d_ad, pW_ad, pS_ad, pC_ad
 #endif /* NONLIN_FRSURF */
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     bi,bj  :: tile indices
-C     i,j,k  :: Loop counters
+C     i,j    :: Loop counters
       INTEGER i,j,bi,bj
+      _RL  firstResidual, minResidualSq, lastResidual
 CEOP
 
 C--   mark output of cg2d as being called from here
@@ -92,11 +91,11 @@ C--   Call the single reduce CG solver
       IF (.TRUE.) THEN
 #endif /* ALLOW_SRCG */
 C--   Call the default CG solver
-      CALL CG2D(
-     U     cg2d_x_ad, cg2d_b_ad,
-     O     firstResidual, minResidualSq, lastResidual,
-     U     numIters, nIterMin,
-     I     myThid )
+       CALL CG2D(
+     U      cg2d_x_ad, cg2d_b_ad,
+     O      firstResidual, minResidualSq, lastResidual,
+     U      numIters, nIterMin,
+     I      myThid )
       ENDIF
 
 C     Initialise AD fields to zero. They will not have any effect on
@@ -106,12 +105,12 @@ C     the solution, because we fake the AD code of cg2d.
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
 #ifdef NONLIN_FRSURF
-          ac2d_ad  (i,j,bi,bj) = 0. _d 0
-          as2d_ad  (i,j,bi,bj) = 0. _d 0
-          aw2d_ad  (i,j,bi,bj) = 0. _d 0
-          pc_ad    (i,j,bi,bj) = 0. _d 0
-          ps_ad    (i,j,bi,bj) = 0. _d 0
-          pw_ad    (i,j,bi,bj) = 0. _d 0
+          aW2d_ad  (i,j,bi,bj) = 0. _d 0
+          aS2d_ad  (i,j,bi,bj) = 0. _d 0
+          aC2d_ad  (i,j,bi,bj) = 0. _d 0
+          pW_ad    (i,j,bi,bj) = 0. _d 0
+          pS_ad    (i,j,bi,bj) = 0. _d 0
+          pC_ad    (i,j,bi,bj) = 0. _d 0
 #endif /* NONLIN_FRSURF */
 C     Here, cg2d_x_ad is also reset to zero, because we assume that the
 C     solution of the self-adjoint solver does not depend in the intial
