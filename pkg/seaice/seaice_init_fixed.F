@@ -432,11 +432,11 @@ C-    end bi,bj loops
        ENDDO
       ENDDO
 
-      IF ( .TRUE. ) THEN
+      IF ( .FALSE. ) THEN
       
       CALL READ_FLD_XY_RL('coast_length_36km_x',' ',LcoastX,0,myThid)
       CALL READ_FLD_XY_RL('coast_length_36km_y',' ',LcoastY,0,myThid)
-
+      
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
@@ -453,8 +453,8 @@ cc           NcoastY(i,j,bi,bj) = REAL(LcoastY(i,j,bi,bj)/MAXVAL(LcoastY))
         ENDDO
        ENDDO
       ENDDO
-
       ENDIF
+      
 
 C     fill all overlaps
       CALL EXCH_UV_XY_RL( NcoastX, NcoastY, .FALSE., myThid )
