@@ -84,6 +84,22 @@ C--   Map thSice-variables to HEFF and AREA
        CALL SEAICE_MAP_THSICE( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_THSICE */
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       diag_SIenph_isOn = DIAGNOSTICS_IS_ON('SIenph  ',myThid)
+       IF ( diag_SIenph_isOn ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            hTmp(i,j,bi,bj)=HEFF(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef ALLOW_EXF
       IF ( useEXF ) THEN
@@ -180,22 +196,6 @@ C--   Only call advection of heff, area, snow, and salt and
 C--   growth for the generic 0-layer thermodynamics of seaice
 C--   if useThSice=.false., otherwise the 3-layer Winton thermodynamics
 C--   (called from DO_OCEANIC_PHYSICS) take care of this
-#ifdef ALLOW_DIAGNOSTICS
-       IF ( useDiagnostics ) THEN
-        diag_SIenph_isOn = DIAGNOSTICS_IS_ON('SIenph  ',myThid)
-        IF ( diag_SIenph_isOn ) THEN
-         DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             hTmp(i,j,bi,bj)=HEFF(i,j,bi,bj)
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDIF
-       ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
 C NOW DO ADVECTION and DIFFUSION
        IF ( SEAICEadvHeff .OR. SEAICEadvArea .OR. SEAICEadvSnow
      &        .OR. SEAICEadvSalt ) THEN
@@ -208,16 +208,6 @@ C NOW DO ADVECTION and DIFFUSION
         CALL SEAICE_ADVDIFF( uLoc, vLoc, myTime, myIter, myThid )
 #endif /* SEAICE_CGRID */
        ENDIF
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE area  = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE hsnow = comlev1, key=ikey_dynamics, kind=isbyte
-# ifdef SEAICE_VARIABLE_SALINITY
-CADJ STORE hsalt = comlev1, key=ikey_dynamics, kind=isbyte
-# endif
-C     Note: This store has the effect that seaice_advdiff is not called
-C     from seaice_model_ad anymore. Instead, the stored values are used.
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     After advection, the sea ice variables may have unphysical values
 C     e.g., < 0, that are regularized here. Concentration as a special case
