@@ -72,11 +72,13 @@ C     this barrier is not necessary:
 c     CALL BAR2( myThid )
 
 C--   write local sum into shared-buffer array
+#ifndef GLOBAL_SUM_GIDDYUP
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
          shareBufGSR8(bi,bj) = phiTile(bi,bj)
        ENDDO
       ENDDO
+#endif
 
 C--   Master thread cannot start until everyone is ready:
       CALL BAR2( myThid )
