@@ -33,6 +33,8 @@ Yp1=grid['Yp1'][:] # y-location of gridcell lower left corner (1-D version of YG
 
 
 ###########   load diagnostics   ########### 
+
+# unit for temperature is degrees Celsius, velocity in m/s, surface height in m, heat flux in W/m^2
    
 # load statistical diagnostic output (monthly time-averaged output)
 # only one output region is defined, global (the default)
@@ -51,7 +53,7 @@ VVEL=dynDiag['VVEL'][:]      # (time, depth, y, x); y dim. is 63, includes north
 THETA=dynDiag['THETA'][:]    # (time, depth, y, x)
  
 
-########### plot diagnostics   ########### 
+###########   plot diagnostics   ########### 
 
 # figure 4.6 - time series of global mean TRELAX and THETA by level
 #
@@ -61,10 +63,10 @@ plt.plot(np.linspace(1/12,100,1200),TRELAX_ave[:,0,0],'b',linewidth=4);plt.grid(
 plt.title('a) Net Heat Flux into Ocean (TRELAX_ave)')
 plt.xlabel('Time (yrs)'); plt.ylabel('$\mathregular{W/m^2}$')
 plt.xlim(0,100);plt.ylim(-400,0)
-#  Aternatively, a global mean TRELAX (annual mean) could be computed as following,
+#  Alternatively, a global mean area-weighted TRELAX (annual mean) could be computed as following,
 #  using HfacC[0,:,:] i.e. HfacC in the surface layer, as a land-ocean mask.
-TRELAX_ave_ann= (TRELAX[:,0,:,:]*np.tile(rA*HFacC[0,:,:],(100,1,1))).sum(2).sum(1) \
-                / (np.tile(rA*HFacC[0,:,:],(100,1,1))).sum(2).sum(1)
+ocean_area= (rA*HFacC[0,:,:]).sum(1).sum(0) # compute total surface area of ocean points
+TRELAX_ave_ann= (TRELAX[:,0,:,:]*np.tile(rA*HFacC[0,:,:],(100,1,1))).sum(2).sum(1)/ocean_area
 plt.plot(np.linspace(0.5,99.5,100),TRELAX_ave_ann,'m--',linewidth=4)
 plt.subplot(223)
 plt.plot(np.linspace(1/12,100,1200),THETA_lv_ave[:,0,0],'c',linewidth=4,label='$\mathregular{T_{surf}}$');plt.grid('both')
@@ -82,7 +84,7 @@ plt.xlabel('Time (years)');plt.ylabel('$\mathregular{^oC}$');
 plt.xlim(0,100);plt.ylim(0,8);plt.legend()
 plt.show()
 
-# figure 4.7 - 2-D plot of TRELAX and contours of free surface height (ETAN) at t=100 yrs
+# figure 4.7 - 2-D plot of TRELAX and contours of free surface height (ETAN) at t=100 yrs.
 #
 plt.figure(figsize=(10,8)) 
 plt.pcolormesh(Xp1,Yp1,TRELAX[-1,0,:,:],cmap='RdBu_r')
@@ -98,11 +100,11 @@ plt.show()
 #  using dimensions X and Y, the grid cell center points (see fig 4.9).
 #  Also note we mask the land values when contouring the free surface height.
 
-# figure 4.8 - barotropic streamfunction at t=100 yrs
+# figure 4.8 - barotropic streamfunction at t=100 yrs.
 #
 plt.figure(figsize=(10,8))
 ubt= (UVEL*np.transpose(np.tile(drF,(100,62,63,1)),(0,3,1,2))).sum(1) # depth-integrated u velocity
-psi= (-ubt*np.tile(dyG,(100,1,1))).cumsum(1)/1e6  # compute streamfunction in Sv
+psi= (-ubt*np.tile(dyG,(100,1,1))).cumsum(1)/1.e6  # compute streamfunction in Sv (for each year)
 plt.contourf(Xp1,Yp1,np.concatenate((np.zeros((63,1)).T,psi[-1,:,:])),np.arange(-35,40,5),cmap='RdYlBu_r')
 plt.colorbar()
 cs=plt.contour(Xp1,Yp1,np.concatenate((np.zeros((63,1)).T,psi[-1,:,:])),np.arange(-35,40,5),colors='black')
@@ -110,11 +112,11 @@ plt.clabel(cs, fmt = '%.0f')
 plt.xlim(0,60);plt.ylim(15,75)
 plt.title('Barotropic Streamfunction (Sv)');plt.xlabel('Longitude');plt.ylabel('Latitude');
 plt.show()
-#  Note psi is computed and plotted at the grid cell corners and is dimensioned 63x63
+#  Note psi is computed and plotted at the grid cell corners and is dimensioned 62x63
 #  cumsum is done in y-direction; we have a wall at southern boundary
 #  (i.e. no reentrant flow from north), so we need to add a row of zeros to specify psi(j=0).   
 
-# figure 4.9 - potential temperature at 220m depth and xz slice at 28.5N at t=100 yrs.
+# figure 4.9 - potential temperature at 220m depth (k=3) and xz slice at 28.5N (j=14) at t=100 yrs.
 plt.figure(figsize=(16,6))
 plt.subplot(121)
 # here, we use pcolor and provide the corner points XG,YG to locate individual gridcell
@@ -126,10 +128,10 @@ plt.title('a) THETA 220m Depth ($\mathregular{^oC}$)')
 plt.xlim(0,60);plt.ylim(15,75);
 plt.xlabel('Longitude');plt.ylabel('Latitude');
 plt.subplot(122);
-# here, our limited vertical resolution makes for an ugly pcolor plot, we'll shade using contour instead
+# Here, our limited vertical resolution makes for an ugly pcolor plot, we'll shade using contour instead
 # providing the centers of the vertical grid cells and cell centers in the x-dimension,
 # also masking out land cells at the boundary, which results in slight white space at the domain edges.
-# Using pcolor syntax, providing location of vertical cell "faces" RF: plt.pcolormesh(Xp1,RF,THETA[-1,:,14,:],cmap='coolwarm')
+# If using pcolor, provide location of vertical cell "faces" RF: plt.pcolormesh(Xp1,RF,THETA[-1,:,14,:],cmap='coolwarm')
 plt.contourf(X,RC,np.ma.array(THETA[-1,:,14,:],mask=(HFacC[:,14,:]==0)),np.arange(0,30,.2),cmap='coolwarm')
 plt.colorbar()
 plt.contour(X,RC,np.ma.array(THETA[-1,:,14,:],mask=(HFacC[:,14,:]==0)),np.arange(0,32,2),colors='black')
@@ -137,3 +139,26 @@ plt.title('b) THETA at 28.5N ($\mathregular{^oC}$)');plt.xlim(0,60)
 plt.xlabel('Longitude');plt.ylabel('Depth (m)');
 plt.show()
 # one approach to avoid the white space at boundaries is to copy neighboring tracer values to land cells prior to contouring
+
+# The gluemncbig steps outlined in tutorial section 4.2.4.1 can be avoided by using the python package MITgcmutils
+# Loading up variables to plot, in place of above, can be accomplished as follows:
+#
+# from MITgcmutils import mnc
+# grid=mnc.mnc_files('mnc_test_*/grid.t*.nc')
+# XC=grid.variables['XC'][:]
+# ...
+# dynStDiag=mnc.mnc_files('mnc_test_*/dynStDiag.0000000000.t*.nc')
+# TRELAX_ave=dynStDiag.variables['TRELAX_ave'][:]
+# ...
+# surfDiag=mnc.mnc_files('mnc_test_*/surfDiag.0000000000.t*.nc')
+# TRELAX=surfDiag.variables['TRELAX'][:]
+# ...
+# dynDiag=mnc.mnc_files('mnc_test_*/dynDiag.0000000000.t*.nc')
+# THETA=dynDiag.variables['THETA'][:]
+# ...
+
+# An advantage here is that you aren't required to waste disk space assembling glued files
+# See MITgcm users guide chapter 11 for reference information on MITgcmutils
+# Note mnc_file() will not generally work with wildcard mnc_test_* directories from multiple runs are present
+# unless you pass it the specific directories to read, e.g. from a 4-core mpi run in mnc_test_0009 through mnc_test_0012:
+# dynStDiag=mnc.mnc_files('mnc_test_{0009..0012}/dynStDiag.0000000000.t*.nc')

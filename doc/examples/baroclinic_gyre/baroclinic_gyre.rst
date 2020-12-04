@@ -678,10 +678,17 @@ output files for :filelink:`pkg/monitor` output, but rather to include this moni
 (see :numref:`baro_gyre_build_run`). See :numref:`pkg_mnc_inputs` for a complete
 listing of :filelink:`pkg/mnc` namelist parameters and their default settings.
 
-Note that unlike raw binary output, which overwrites any existing files, when using mnc output the model will create new directories if the parameters
-:varlink:`mnc_use_outdir` and :varlink:`mnc_outdir_str` are set. However, if those parameters are not set the model will terminate with an error if one attempts
-to overwrite an existing file (i.e., if re-running in a previous
-run directory, one needs to delete all ``*.nc`` files before restarting).
+Unlike raw binary output, which overwrites any existing files, when using mnc output the model will create new directories if the parameters
+:varlink:`mnc_use_outdir` and :varlink:`mnc_outdir_str` are set, as above; the model will append a 4-digit number to :varlink:`mnc_outdir_str`,
+starting at 0001, incrementing as needed if existing directories already exist.
+If these parameters are NOT set, the model will terminate with an error if one attempts
+to overwrite an existing  ``.nc`` file (in other words, to re-run in an previous run directory,
+one must delete all ``*.nc`` files before restarting). Note that our subdirectory name choice ``mnc_test_`` is required
+by :ref:`MITgcm automated testing <code_testing_protocols>` protocols, and can be changed to something more mnemonic, if desired.
+
+In general, it is good practice to write diagnostic output into subdirectories, to keep the top run directory
+less "cluttered"; some unix file systems do not respond well when very large numbers of files are produced, which can
+occur in setups divided into many tiles and/or when many diagnostics are selected for output.
 
 .. _baroc_diags_list:
 
@@ -837,8 +844,11 @@ will greatly reduce the number of files. On the other hand, the
 `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ files created can instead become quite large.
 
 To more easily process and plot our results as a single array over the full domain,
-we will first reassemble the individual tiles into a new `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ format global data file.
-To accomplish this, we will make use of utility script :filelink:`utils/python/MITgcmutils/scripts/gluemncbig`. From the output run directory, type:
+we will first reassemble the individual tiles into new `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ format global data files.
+To accomplish this, we will make use of utility script :filelink:`utils/python/MITgcmutils/scripts/gluemncbig`.
+From the output run (top) directory, type:
+
+.. _baroc_gluemnc_steps:
 
 ::
 
@@ -849,10 +859,18 @@ To accomplish this, we will make use of utility script :filelink:`utils/python/M
     % ./gluemncbig -o surfDiag.nc mnc_test_*/surfDiag*.t*.nc
     % ./gluemncbig -o phiHyd.nc mnc_test_*/phiHyd*.t*.nc
     % ./gluemncbig -o phiHydLow.nc mnc_test_*/phiHydLow*.t*.nc
+    % ln -s mnc_test_0001/dynStDiag.0000000000.t001.nc dynStDiag.nc
 
 For help using this utility, type ``gluemncbig --help``; note a python installation must for available for this script to work.
 The files ``grid.nc``, ``state.nc``, etc. are concatenated from the separate ``t001``, ``t002``, ``t003``, ``t004`` files
-into global grid files of horizontal dimension 62\ :math:`\times`\ 62.
+into global grid files of horizontal dimension 62\ :math:`\times`\ 62. ``gluemncbig`` is a fairly intelligent script, and by inserting the wildcards
+in the path/filename specification, it will grab the most recent run (in case you have started up runs multiple times in this directory,
+thus having ``mnc_test_0001``, ``mnc_test_0002``, etc. directories present; see :numref:`baroc_datamnc`).
+Note that the last line above is simply making
+a link to a file in the ``mnc_test_0001`` output subdirectory; this is the :ref:`statistical-dynamical diagnostics <baroc_stat_diags>`
+output, which is already assembled over the global domain (and also note here we are required to be specific which ``mnc_test_`` directory to link from).
+For convenience we simply place the link at the top level
+of the run directory, where the other assembled ``.nc`` files are saved by ``gluemncbig``.
 
 Let's proceed through the netcdf output that is produced.
 
@@ -888,6 +906,14 @@ Let's proceed through the netcdf output that is produced.
   - ``dynDiag.nc`` - similar to ``surfDiag.nc`` except this file contains the time-averaged 3-D diagnostics
     we specified in list 2 of :ref:`data.diagnostics <baroc_diags_list>`:
     ``THETA``, ``PHIHYD``, ``UVEL``, ``VVEL``, ``WVEL``.
+
+  - ``dynStDiag.nc`` - includes output statistical-dynamical diagnostics as specified in the ``DIAG_STATIS_PARMS`` section of
+    :filelink:`data.diagnostics <verification/tutorial_baroclinic_gyre/input/data.diagnostics>`. Like ``surfDiag.nc`` it also
+    includes an array of model times and corresponding iteration numbers for each time-average period end. Output variables are 3-D:
+    (time, region, depth). In :filelink:`data.diagnostics <verification/tutorial_baroclinic_gyre/input/data.diagnostics>`,
+    we have not defined any additional regions (and by default only global output is produced, "region 1"). Depth-integrated statistics
+    are computed (in which case the depth subscript has a range of one element; this is also the case for surface diagnostics such as ``TRELAX``),
+    but output is also tabulated at each depth for some variables (i.e., the depth subscript will range from 1 to :varlink:`Nr`).
 
   - ``phiHyd.nc``, ``phiHydLow.nc`` - these files contain a snapshot 3-D field of hydrostatic
     pressure potential anomaly (:math:`p'/\rho_c`, see :numref:`finding_the_pressure_field`)
@@ -934,7 +960,7 @@ And finally, because we are using the diagnostics package, upon startup the file
 will be generated. This (plain text) file contains a list of all diagnostics available for output in this setup, including a description of each diagnostic and its units,
 and the number of levels for which the diagnostic is available (i.e., 2-D or 3-D field).  This list of available diagnostics will change based
 on what packages are included in the setup. For example, if your setup includes a seaice package, many seaice diagnostics
-will be listed in ``available_diagnostics.log`` that are not available for our :ref:`tutorial Baroclinic Gyre <tutorial_baroclinic_gyre>` setup.
+will be listed in ``available_diagnostics.log`` that are not available for the :ref:`tutorial Baroclinic Gyre <tutorial_baroclinic_gyre>` setup.
 
 .. _baroc_mpi:
 
@@ -988,10 +1014,19 @@ Finally, to run the model (from your run directory), using four processes runnin
 On some systems the `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_
 run command (and the subsequent command-line option ``-np``) might be something other than ``mpirun``; ask your local system administrator.
 When using a large `HPC <https://en.wikipedia.org/wiki/Supercomputer>`_ cluster,
-prior steps might be required to allocate four processors to your job, and/or it might be necessary to
+prior steps might be required to allocate four processor cores to your job, and/or it might be necessary to
 write this command within a batch scheduler script; again, check with your local system documentation or system administrator.
-If four processors are not available when you execute the above ``mpirun`` command, an error will occur.
-It is no longer necessary to redirect standard output
+If four cores are not available when you execute the above ``mpirun`` command, an error will occur.
+
+When running in parallel, :filelink:`pkg/mnc` output will create separate output subdirectories for each
+process, assuming option :varlink:`mnc_use_outdir`
+is set to ``TRUE`` (here, by specifying ``-np 4`` four directories will be created, one for each
+tile --  ``mnc_test_00001`` through ``mnc_test_00004`` -- the first time
+the model is run). The (global) statistical-dynamical diagnostics output file will be written in only the first of these directories.
+The ``gluemncbig`` steps outlined :ref:`above <baroc_gluemnc_steps>` remain unchanged (if in doubt, one can always
+tell ``gluemncbig`` which specific directories to read,
+e.g. in bash ``mnc_test_{0009..0012}`` will grab only directories 0009, 0010, 0011, 0012).
+Also note it is no longer necessary to redirect standard output
 to a file such as ``output.txt``; rather, separate ``STDOUT.xxxx`` and ``STDERR.xxxx``
 files are created by each process, where ``xxxx`` is the process number (starting from ``0000``).
 Other than some additional `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_-related information, the standard output content is identical to
@@ -1114,7 +1149,8 @@ integrate the solution further and/or examine and calculate the meridional overt
       :alt: baroclinic gyre surface heat flux
       :name: baroclinic_gyre_trelax_timeseries
 
-      a\) Surface heat flux due to temperature restoring, negative values indicate heat flux out of the ocean; b) and c) potential temperature mean and standard deviation by level, respectively.
+      a\) Surface heat flux due to temperature restoring, negative values indicate heat flux out of the ocean;
+      b) and c) potential temperature mean and standard deviation by level, respectively.
 
 Next, let's examine the effect of wind stress on the ocean's upper layers.
 Given the orientation of the wind stress and its variation over a full sine wave as shown in :numref:`baroclinic_gyre_config`
@@ -1137,12 +1173,13 @@ where deeper mixed layers occur (not shown, but variations in mixed layer
 depth can be easily visualized by loading diagnostic ``MXLDEPTH``).
 
  .. figure:: figs/trelax_freesurface.png
-      :width: 90%
+      :width: 80%
       :align: center
       :alt: baroclinic gyre free surface and relaxation
       :name: baroclinic_gyre_trelax_freesurface
 
-      Contours of free surface height (m) averaged over year 100; shading is surface heat flux due to temperature restoring (W/m\ :sup:`2`), blue indicating cooling.
+      Contours of free surface height (m) averaged over year 100; shading is surface heat flux due to
+      temperature restoring (W/m\ :sup:`2`), blue indicating cooling.
 
 So what happened to our model solution subpolar gyre? Let's compute depth-integrated velocity :math:`U_{bt}, V_{bt}`
 (units: m\ :sup:`2` s\ :sup:`-1`) and use it calculate the barotropic transport streamfunction:
@@ -1158,7 +1195,7 @@ A plot of the resulting :math:`\Psi` field is shown in :numref:`baroclinic_gyre_
 Note one could also cumulative sum :math:`V_{bt}` times the grid spacing in the :math:`x`-direction and obtain a similar result.
 
  .. figure:: figs/baroc_psi.png
-      :width: 75%
+      :width: 80%
       :align: center
       :alt: baroclinic gyre barotropic streamfunction
       :name: baroclinic_gyre_psi
