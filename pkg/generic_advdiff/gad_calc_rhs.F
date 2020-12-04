@@ -142,7 +142,7 @@ C locABT           :: local copy of (AB-extrapolated) tracer field
       _RL locABT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL advFac, rAdvFac
 #ifdef GAD_SMOLARKIEWICZ_HACK
-      _RL outFlux, trac, fac, gTrFac
+      _RL outFlux, trac, gTrFac
 #endif
 #ifdef ALLOW_DIAGNOSTICS
       CHARACTER*8 diagName
@@ -732,14 +732,14 @@ coj   SmolarkiewiczMaxFrac, scale them down
          IF (outFlux.GT.0. _d 0 .AND.
      &       outFlux.GT.SmolarkiewiczMaxFrac*trac) THEN
 coj   If tracer is already negative, scale flux to zero
-           fac = MAX(0. _d 0,SmolarkiewiczMaxFrac*trac/outFlux)
+           gTrFac = MAX(0. _d 0,SmolarkiewiczMaxFrac*trac/outFlux)
 
-           IF (fZon(i+1,j).GT.0. _d 0) fZon(i+1,j)=fac*fZon(i+1,j)
-           IF (-fZon(i,j) .GT.0. _d 0) fZon(i,j)  =fac*fZon(i,j)
-           IF (fMer(i,j+1).GT.0. _d 0) fMer(i,j+1)=fac*fMer(i,j+1)
-           IF (-fMer(i,j) .GT.0. _d 0) fMer(i,j)  =fac*fMer(i,j)
+           IF (fZon(i+1,j).GT.0. _d 0) fZon(i+1,j)=gTrFac*fZon(i+1,j)
+           IF (-fZon(i,j) .GT.0. _d 0) fZon(i,j)  =gTrFac*fZon(i,j)
+           IF (fMer(i,j+1).GT.0. _d 0) fMer(i,j+1)=gTrFac*fMer(i,j+1)
+           IF (-fMer(i,j) .GT.0. _d 0) fMer(i,j)  =gTrFac*fMer(i,j)
            IF (-fVerT(i,j,kUp)*rkSign .GT.0. _d 0)
-     &       fVerT(i,j,kUp)=fac*fVerT(i,j,kUp)
+     &       fVerT(i,j,kUp)=gTrFac*fVerT(i,j,kUp)
 
            IF (k.LT.Nr .AND. fVerT(i,j,kDown)*rkSign.GT.0. _d 0) THEN
 coj   Down flux is special: it has already been applied in lower layer,
@@ -751,7 +751,7 @@ coj   undo down flux, ...
      &         *recip_rhoFacC(k+1)
      &         *( -fVerT(i,j,kDown)*rkSign )
 coj   ... scale ...
-             fVerT(i,j,kDown)=fac*fVerT(i,j,kDown)
+             fVerT(i,j,kDown)=gTrFac*fVerT(i,j,kDown)
 coj   ... and reapply
              gTracer(i,j,k+1) = gTracer(i,j,k+1)
      &        +_recip_hFacC(i,j,k+1,bi,bj)*recip_drF(k+1)

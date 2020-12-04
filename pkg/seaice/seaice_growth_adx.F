@@ -12,13 +12,12 @@
 CBOP
 C     !ROUTINE: SEAICE_GROWTH_ADX
 C     !INTERFACE:
-      SUBROUTINE SEAICE_GROWTH_ADX
-     I  ( myTime, myIter, myThid )
+      SUBROUTINE SEAICE_GROWTH_ADX( myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE seaice_growth_adx
-C     | o Adjointable seaice thermodynamic code based on.
-C     |   Ian Fenty's code with modifications for nonlinear free
+C     | o Adjointable seaice thermodynamic code based on
+C     |   Ian Fentys code with modifications for nonlinear free
 C     |   surface budget closure by A.Bigdeli.
 C     *==========================================================*
 C     \ev
@@ -56,6 +55,7 @@ C     myThid :: Thread no. that called this routine.
       INTEGER myIter, myThid
 CEOP
 
+#ifdef SEAICE_USE_GROWTH_ADX
 #if (defined ALLOW_EXF) && (defined ALLOW_ATM_TEMP)
 C     !FUNCTIONS:
 #ifdef ALLOW_DIAGNOSTICS
@@ -84,7 +84,6 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 C     constants
       _RL tempFrz, ICE2SNOW, SNOW2ICE, surf_theta
       _RL QI, QS
-      _RL RHOSW
       _RL lhSublim
 
 C     Regularization values squared
@@ -97,6 +96,13 @@ C     Helper variables: reciprocal of some constants
       _RL recip_multDim
       _RL recip_deltaTtherm
       _RL recip_rhoIce
+      _RL recip_QI
+      _RL recip_QS
+      _RL recip_HO
+      _RL recip_HO_south
+      _RL rhoFresh2rhoSnow
+      _RL rhoSnow2rhoFresh
+      _RL rhoIce2rhoFresh
 
 C     facilitate multi-category snow implementation
       _RL pFac, pFacSnow
@@ -174,16 +180,16 @@ C     Sea ice growth rates (m/s)
       _RL NetEnergyFluxOutOfOcean       (1:sNx,1:sNy)
 
 CAB   Terms for closing the budget
-       _RL SItflux     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-       _RL SIaaflux    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-       _RL SIatmFW     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SItflux     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SIaaflux    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SIatmFW     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CAB these two terms are placeholders for extra bits from advection,
 C   used in budget
-       _RL SIheffNeg   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-       _RL SIhsnwNeg   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SIheffNeg   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL SIhsnwNeg   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 CAB
-       _RL d_HEFFbyFlood                (1:sNx,1:sNy)
+      _RL d_HEFFbyFlood                (1:sNx,1:sNy)
 
 C     The energy taken out of the ocean which is not converted
 C     to sea ice (Joules)
@@ -275,9 +281,8 @@ C     S_a_from_IGROW : d(AREA)/dt [from ice growth rate from ice-atm fluxes]
       _RL S_a_IGRNE                     (1:sNx,1:sNy)
 
 C     Factor by which we increase the upper ocean friction velocity (u*) when
-
 C     ice is absent in a grid cell  (dimensionless)
-      _RL MLTF                          (1:sNx,1:sNy)
+      _RL MLTF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -291,14 +296,6 @@ C ===================================================================
        kSurface        = 1
       ENDIF
 
-C     avoid unnecessary divisions in loops
-      recip_multDim        = SEAICE_multDim
-      recip_multDim        = ONE / recip_multDim
-C     above/below: double/single precision calculation of recip_multDim
-c     recip_multDim        = 1./float(SEAICE_multDim)
-      recip_deltaTtherm = ONE / SEAICE_deltaTtherm
-      recip_rhoIce      = ONE / SEAICE_rhoIce
-
 C     Cutoff for iceload
       heffTooHeavy=drF(kSurface) / 5. _d 0
 
@@ -311,10 +308,23 @@ C  Heat Flux * QI = [W] [m^3/kg] [kg/J] = [m^3/s] or [m/s] per unit area
 C  Heat Flux * QS = [W] [m^3/kg] [kg/J] = [m^3/s] or [m/s] per unit area
       QS           = ONE/(SEAICE_rhoSnow*SEAICE_lhFusion)
 
-c     A reference seawater density (kg m^-3)
-      RHOSW = 1026. _d 0
 C     ICE LATENT HEAT CONSTANT
       lhSublim = SEAICE_lhEvap + SEAICE_lhFusion
+
+C     avoid unnecessary divisions in loops
+      recip_multDim     = SEAICE_multDim
+      recip_multDim     = ONE / recip_multDim
+C     above/below: double/single precision calculation of recip_multDim
+c     recip_multDim     = 1./float(SEAICE_multDim)
+      recip_deltaTtherm = ONE / SEAICE_deltaTtherm
+      recip_rhoIce      = ONE / SEAICE_rhoIce
+      recip_QI          = ONE / QI
+      recip_QS          = ONE / QS
+      recip_HO          = ONE / HO
+      recip_HO_south    = ONE / HO_south
+      rhoFresh2rhoSnow  = rhoConstFresh / SEAICE_rhoSnow
+      rhoSnow2rhoFresh  = ONE / rhoFresh2rhoSnow
+      rhoIce2rhoFresh   = SEAICE_rhoIce / rhoConstFresh
 
 C     regularization constants
       area_reg_sq = SEAICE_area_reg * SEAICE_area_reg
@@ -337,16 +347,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                       + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-cph-test(
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE area = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE heff = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE area  = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE heff  = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE hsnow = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE qnet = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE qsw = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE qnet  = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE qsw   = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE tices = comlev1_bibj, key = iicekey, byte = isbyte
 #endif
-cph-test)
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C array initializations
 C =====================
@@ -412,8 +422,6 @@ C NEW VARIABLE NAMES
           S_h(I,J)       = 0.0 _d 0
           S_hsnow(I,J)   = 0.0 _d 0
 
-          MLTF(I,J)      = 0.0 _d 0
-
           d_HEFFbyFlood(I,J) = 0.0 _d 0
 
 #ifdef ALLOW_SALT_PLUME
@@ -448,8 +456,10 @@ CAB
         DO J=1,sNy
          DO I=1,sNx
 
-          HEFF(I,J,bi,bj) = MAX(ZERO, HEFF(I,J,bi,bj))
-          AREA(I,J,bi,bj) = MAX(ZERO, AREA(I,J,bi,bj))
+          tmpscal0 = HEFF(I,J,bi,bj)
+          HEFF(I,J,bi,bj) = MAX(ZERO, tmpscal0)
+          tmpscal1 = AREA(I,J,bi,bj)
+          AREA(I,J,bi,bj) = MAX(ZERO, tmpscal1)
 
           IF (HEFF(I,J,bi,bj) .LE. ZERO) then
              AREA(I,J, bi,bj)  = ZERO
@@ -505,7 +515,7 @@ c           hiceActual(I,J) = SQRT(tmpscal2 * tmpscal2 + hice_reg_sq)
 
 c          hsnowActual calculated with the regularized AREA (no lower bound)
 c          hsnowActual(I,J) = HSNWpreTH(I,J) / tmpscal1
-c          actually I don't think we need to regularize this.
+c          actually I do not think we need to regularize this.
            hsnowActual(I,J) = HSNWpreTH(I,J) / AREApreTH(I,J)
 
 c          regularize the inverse of hiceActual by hice_reg
@@ -526,17 +536,6 @@ C =============================================================================
 C Part 2: Precipitation as snow or rain over ice
 C =============================================================================
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE SnowAccRateOverIce = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE SnowAccOverIce     = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE PrecipRateOverIceSurfaceToSea   =
-CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE PRECIP(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE AREApreTH = comlev1_bibj, key = iicekey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
         DO J=1,sNy
          DO I=1,sNx
 c        if we have ice and the temperature of the ice is below the freezing point
@@ -548,11 +547,11 @@ c use either prescribed snowfall or PRECIP rate
            IF ( snowPrecipFile .NE. ' ' ) THEN
 c    rate of snow accumulation in m/s over ice
 c                      y [m/s] \approx 1.0 [kg/m^3] / 0.9 [m^3/kg] * x [m/s]
-             SnowAccRateOverIce(I,J) = rhoConstFresh/SEAICE_rhoSnow *
+             SnowAccRateOverIce(I,J) = rhoFresh2rhoSnow *
      &               snowPrecip(i,j,bi,bj)
 
            ELSE
-             SnowAccRateOverIce(I,J) = rhoConstFresh/SEAICE_rhoSnow *
+             SnowAccRateOverIce(I,J) = rhoFresh2rhoSnow *
      &           PRECIP(i,j,bi,bj)
 
            ENDIF
@@ -592,15 +591,6 @@ C =============================================================================
 c           Retrieve the air-sea heat and shortwave radiative fluxes
 C =============================================================================
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE qnet(:,:,bi,bj) = comlev1_bibj, key = iicekey,byte=isbyte
-CADJ STORE qsw(:,:,bi,bj)  = comlev1_bibj, key = iicekey,byte=isbyte
-cCADJ STORE UG = comlev1_bibj, key = iicekey,byte=isbyte
-cCADJ STORE TmixLoc = comlev1_bibj, key = iicekey,byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
         CALL SEAICE_BUDGET_OCEAN(
      I       UG,
      I       TmixLoc,
@@ -636,13 +626,9 @@ c not included without #define SHORTWAVE_HEATING
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hsnowActual = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE hiceActual  = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE UG          = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE tices(:,:,:,bi,bj)
-CADJ &     = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE salt(:,:,kSurface,bi,bj) = comlev1_bibj,
-CADJ &                     key = iicekey, byte = isbyte
+CADJ STORE salt(:,:,kSurface,bi,bj)
+CADJ &                  = comlev1_bibj,key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -676,24 +662,13 @@ c find actual snow and ice thickness within categories categories
             hsnowActualMult(I,J,IT)  = hsnowActual(I,J)*pFacSnow
           ENDDO
          ENDDO
-
-       ENDDO /* multDim */
+C     multDim-loop
+        ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE hiceActualMult = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE hsnowActualMult= comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE ticeOutMult    = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE F_io_net_mult   =
-CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE F_ia_net_mult   =
-CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE F_ia_mult       =
-CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE QSWI_mult       =
-CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE FWsublim_mult   =
-CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -703,9 +678,15 @@ c  ice/atmosphere interface for each thickness category
 c =======================================================================
 
         DO IT=1,SEAICE_multDim
-         CALL SEAICE_SOLVE4TEMP_ADX(
+         CALL SEAICE_SOLVE4TEMP(
      I        UG, hiceActualMult(1,1,IT), hsnowActualMult(1,1,IT),
-     U        ticeInMult(1,1,IT), ticeOutMult(1,1,IT),
+#ifdef SEAICE_CAP_SUBLIM
+         This error is put here intentionally, because SEAICE_CAP_SUBLIM
+         cannot be defined together with SEAICE_USE_GROWTH_ADX
+     I        latentHeatFluxMaxMult(1,1,IT),
+#endif
+     I        ticeInMult(1,1,IT),
+     O        ticeOutMult(1,1,IT),
      O        F_io_net_mult(1,1,IT),
      O        F_ia_net_mult(1,1,IT),
      O        F_ia_mult(1,1,IT),
@@ -713,24 +694,6 @@ c =======================================================================
      O        FWsublim_mult(1,1,IT),
      I        bi, bj, myTime, myIter, myThid )
         ENDDO
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hiceActualMult = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE hsnowActualMult= comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE ticeOutMult    = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE F_io_net_mult  =
-CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE F_ia_net_mult   =
-CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE F_ia_mult       =
-CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE QSWI_mult       =
-CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE FWsublim_mult   =
-CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 c =======================================================================
 c  record the ice surface temperature in each category
@@ -761,21 +724,10 @@ C     update TICES
          ENDDO
         ENDDO
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE AREApreTH = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE F_io_net  = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE F_ia_net  = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE F_ia      = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE QSWI      = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE FWSublim  = comlev1_bibj, key = iicekey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
         DO J=1,sNy
          DO I=1,sNx
 c          If there is heat flux convergence at the snow surface,
-c          use that energy to melt snow before melting ice.  It's
+c          use that energy to melt snow before melting ice.  It is
 c          possible that some snow will remain after melting,
 c          which will drive F_ia_net to zero, or that all of the
 c          snow will be melted, leaving a nonzero F_ia_net to melt
@@ -811,7 +763,7 @@ c           SurfHeatFluxConvergToSnowMelt is the part of the total heat
 c           flux convergence which melts snow.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CCHECK: HSNOW ACTUAL SHOULDN'T BE REGULARIZED FOR THIS
+CCHECK: HSNOW ACTUAL SHOULD NOT BE REGULARIZED FOR THIS
             IF (PotSnowMeltFromSurf(I,J) .GE. hsnowActual(I,J)) THEN
 
 c           Snow melt and melt rate [m] (actual snow thickness)
@@ -819,10 +771,10 @@ c           Snow melt and melt rate [m] (actual snow thickness)
 
 c             SnowMeltRateFromSurface(I,J) =
               SnowMeltRateFromSurface(I,J) =
-     &           SnowMeltFromSurface(I,J) / SEAICE_deltaTtherm
+     &           SnowMeltFromSurface(I,J) * recip_deltaTtherm
 
               SurfHeatFluxConvergToSnowMelt(I,J) =
-     &          - hsnowActual(I,J)/QS/SEAICE_deltaTtherm
+     &          - hsnowActual(I,J)*recip_QS*recip_deltaTtherm
            ELSE
 c             In this case there will be snow remaining after melting.
 c             All of the surface heat convergence will be redirected to
@@ -852,60 +804,34 @@ c          new ice accretion at the base less the rate due to surface melt
          ENDDO
         ENDDO
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE AREApreTH = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE SnowMeltRateFromSurface   = comlev1_bibj,
-CADJ &                       key = iicekey, byte = isbyte
-CADJ STORE IceGrowthRateUnderExistingIce  = comlev1_bibj,
-CADJ &                       key = iicekey, byte = isbyte
-CADJ STORE IceGrowthRateFromSurface = comlev1_bibj,
-CADJ &                       key = iicekey, byte = isbyte
-CADJ STORE NetExistingIceGrowthRate  = comlev1_bibj,
-CADJ &                       key = iicekey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE AREApreTH = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE theta(:,:,kSurface,bi,bj) = comlev1_bibj,
-CADJ &                       key = iicekey, byte = isbyte
-CADJ STORE salt(:,:,kSurface,bi,bj) = comlev1_bibj,
-CADJ &                       key = iicekey, byte = isbyte
-#endif
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-C       Calcuate the heat fluxes from the ocean to the sea ice
+c     inflection point
+        tmpscal0 = 0.4 _d 0
+c     steepness/inflection point
+        tmpscal1 = 7.0 _d 0/tmpscal0
+c     avoid recomputing constant coefficients
+        tmpscal2 = STANTON_NUMBER*USTAR_BASE*rhoConst*HeatCapacity_Cp
+C     Calcuate the heat fluxes from the ocean to the sea ice
         DO J=1,sNy
          DO I=1,sNx
 c
-c         Bound the ocean temperature to be at or above the freezing point.
+c     Bound the ocean temperature to be at or above the freezing point.
           tempFrz = SEAICE_tempFrz0 +
      &              SEAICE_dTempFrz_dS * salt(I,J,kSurface,bi,bj)
 
           surf_theta = max(theta(I,J,kSurface,bi,bj), tempFrz)
 
-c         inflection point
-          tmpscal0 = 0.4 _d 0
+C     MCPHEE_TAPER_FAC = 12.5 (CONSTANT PARAMETER)
+          MLTF = ONE + (MCPHEE_TAPER_FAC - ONE)
+     &         / ( ONE + EXP( (AREApreTH(I,J) - tmpscal0)*tmpscal1 ) )
 
-c         steepness
-          tmpscal1 = 7.0 _d 0
+C          IF (AREApreTH(I,J) .GT. ZERO) THEN
+CC     If ice is present, MixedLayerTurbulenceFactor = 1.0, else 12.50
+C           MLTF = ONE
+C          ELSE
+C           MLTF = MCPHEE_TAPER_FAC
+C          ENDIF
 
-          MLTF(I,J) = ONE + (12.5 - ONE) *
-     &         (ONE + EXP(  (AREApreTH(I,J) - tmpscal0)
-     &                     * tmpscal1/tmpscal0))**(-ONE)
-
-c          IF (AREApreTH(I,J) .GT. ZERO) THEN
-c
-c           If ice is present, MixedLayerTurbulenceFactor = 1.0, else 12.50
-c            MLTF = ONE
-c          ELSE
-c            MLTF = 12.5 _d 0
-c          ENDIF
-
-          F_mi(I,J) = -STANTON_NUMBER * USTAR_BASE * RHOSW *
-     &      HeatCapacity_Cp * (surf_theta - tempFrz) * MLTF(I,J)
+          F_mi(I,J) = - tmpscal2 * (surf_theta - tempFrz) * MLTF
 
           IceGrowthRateMixedLayer (I,J) = F_mi(I,J) * QI
 
@@ -914,10 +840,10 @@ c          ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE AREApreTH   = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE F_mi        = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE IceGrowthRateMixedLayer =
-CADJ &     comlev1_bibj,key = iicekey, byte = isbyte
+CADJ STORE NetExistingIceGrowthRate
+CADJ &             = comlev1_bibj, key = iicekey, byte = isbyte
+CADJ STORE IceGrowthRateMixedLayer
+CADJ &             = comlev1_bibj, key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -940,76 +866,64 @@ c         with area converts to mean snow thickness.
         ENDDO
 
 #ifdef ALLOW_SALT_PLUME
-#ifdef SALT_PLUME_IN_LEADS
-C       Now that we know the thickness tendency terms, we can calculate the saltPlumeFlux
+# ifdef SALT_PLUME_IN_LEADS
+C     avoid repetitive division by a constant
+        tmpscal0 = 5. _d 0 / (ONE - SPinflectionPoint)
+C     Now that we know the thickness tendency terms, we can calculate
+C     the saltPlumeFlux
         DO J=1,sNy
          DO I=1,sNx
 
-c            It is assumed that ice production in leads can generate
-c            salt plumes.  The fraction of the salt sent to the plume package
-c            from ice produced in leads (defined as the open water
-c            fraction) is a nonlinear function of ice concentration, AREA.
+c     It is assumed that ice production in leads can generate
+c     salt plumes. The fraction of the salt sent to the plume package
+c     from ice produced in leads (defined as the open water
+c     fraction) is a nonlinear function of ice concentration, AREA.
 c
-c            Specifically, function is a logistic curve (sigmoid) with a range and
-c            domain {0,1}.  The function, f(AREA), has a single free parameter,
-c            SEAICE_plumeInflectionPoint, the inflection point of the curve.
-c            By construction, the function has the following properties:
-c            f(1) \approx 1.0
-c            f(SEAICE_plumeInflectionPoint) = 0.5
-c            f(0) \approx 0.0 (when SEAICE_plumeInflectionPoint \geq 0.5)
-c            f(0) > 0.0 (when SEAICE_plumeInflectionPoint < 0.5)
+c     Specifically, function is a logistic curve (sigmoid) with a range and
+c     domain {0,1}. The function, f(AREA), has a single free parameter,
+c     SEAICE_plumeInflectionPoint, the inflection point of the curve.
+c     By construction, the function has the following properties:
+c     f(1) \approx 1.0
+c     f(SEAICE_plumeInflectionPoint) = 0.5
+c     f(0) \approx 0.0 (when SEAICE_plumeInflectionPoint \geq 0.5)
+c     f(0) > 0.0 (when SEAICE_plumeInflectionPoint < 0.5)
 c
-c            As AREA --> 1, the open water fraction occurs
-c            in narrow leads, new ice production become spatially non-uniform,
-c            and the assumptions motivating KPP no longer hold.  To treat
-c            overturning in a more physically realistic way, the salt produced
-c            in the leads should be sent to depth via the plume package.  To assure
-c            only narrow leads generate plumes, choose a SEAICE_plumeInflectionPoint
-c            of > 0.8.
+c     As AREA --> 1, the open water fraction occurs in narrow leads,
+c     new ice production become spatially non-uniform, and the assumptions
+c     motivating KPP no longer hold. To treat overturning in a more
+c     physically realistic way, the salt produced in the leads should
+c     be sent to depth via the plume package. To assure only narrow leads
+c     generate plumes, choose a SEAICE_plumeInflectionPoint of > 0.8.
 
-c            Ensure that there is already ice present or that the total ice
-c            ice tendency term is positive.  We don't want to release
-c            salt if sea ice is not established in the cell.
+c     Ensure that there is already ice present or that the total ice
+c     ice tendency term is positive.  We do not want to release
+c     salt if sea ice is not established in the cell.
 
-             IF ((AREApreTH(I,J) .GT. ZERO) .OR.
-     &           (S_h(I,J)           .GT. ZERO)) THEN
+          IF (AREApreTH(I,J) .GT. ZERO .OR. S_h(I,J) .GT. ZERO ) THEN
 
-              leadPlumeFraction(I,J) =
-     &         (ONE + EXP( ( SPinflectionPoint -
-     &                       AREApreTH(I,J)
-     &                     ) * 5. _d 0/
-     &                     (ONE - SPinflectionPoint)
-     &                   )
-     &         )**(-ONE)
+           leadPlumeFraction(I,J) = ONE
+     &          / ( ONE + EXP( ( SPinflectionPoint - AREApreTH(I,J) )
+     &                         * tmpscal0 )
+     &            )
 
-c            Only consider positive ice growth rate in leads for salt production
-             IceGrowthRateInLeads(I,J) = max( ZERO,
-     &      (ONE - AREApreTH(I,J)) * IceGrowthRateOpenWater(I,J))
+c     Only consider positive ice growth rate in leads for salt production
+           IceGrowthRateInLeads(I,J) = max( ZERO,
+     &          (ONE - AREApreTH(I,J)) * IceGrowthRateOpenWater(I,J))
 
-              saltPlumeFlux(I,J,bi,bj) = leadPlumeFraction(I,J) *
-     &            HEFFM(I,J,bi,bj)*IceGrowthRateInLeads(I,J)*
-     &            ICE2WATR*rhoConstFresh*
-     &            (salt(I,J,kSurface,bi,bj) - SEAICE_salt0)
-             ELSE
+           saltPlumeFlux(I,J,bi,bj) = leadPlumeFraction(I,J) *
+     &          HEFFM(I,J,bi,bj)*IceGrowthRateInLeads(I,J)*
+     &          ICE2WATR*rhoConstFresh*
+     &          (salt(I,J,kSurface,bi,bj) - SEAICE_salt0)
+          ELSE
 
-              saltPlumeFlux(I,J,bi,bj) = ZERO
+           saltPlumeFlux(I,J,bi,bj) = ZERO
 
-             ENDIF
+          ENDIF
 
          ENDDO
         ENDDO
 #endif /* SALT_PLUME_IN_LEADS */
 #endif /* ALLOW_SALT_PLUME */
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE AREApreTH = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE HEFFpreTH = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE S_a       = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE S_h       = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE S_hsnow   = comlev1_bibj, key = iicekey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 c       Caculate dA/dt (S_a)
         DO J=1,sNy
@@ -1017,17 +931,17 @@ c       Caculate dA/dt (S_a)
 
           S_a(I,J) =  0. _d 0
 
-c         Caculate the ice area growth rate from the open water fluxes.
-c         First, determine whether the open water growth rate is positive or
-c         negative.  If positive, make sure that ice is present or that the
-c         net ice thickness growth rate is positive before extending ice cover
+c     Caculate the ice area growth rate from the open water fluxes.
+c     First, determine whether the open water growth rate is positive or
+c     negative.  If positive, make sure that ice is present or that the
+c     net ice thickness growth rate is positive before extending ice cover
 
-c         this is the geometric term: Area/(2*Heff),
-c         with Area/Heff regularized as Area/(Heff^2 + epsilon^2)
-c         Area/(Heff^2 + ep^2) = recip_hiceActual
-c         epsilon = SEAICE_hice_reg
+c     this is the geometric term: Area/(2*Heff),
+c     with Area/Heff regularized as Area/(Heff^2 + epsilon^2)
+c     Area/(Heff^2 + ep^2) = recip_hiceActual
+c     epsilon = SEAICE_hice_reg
 
-          tmpscal0 = recip_hiceActual(I,J) / 2.0 _d 0
+          tmpscal0 = 0.5 _d 0 * recip_hiceActual(I,J)
 
 C    -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 C         /* IceGrowthRateOpenWater */
@@ -1036,23 +950,23 @@ C         /* IceGrowthRateOpenWater */
 
 c         Expand ice cover if the open water growth rate is positive
           IF ( IceGrowthRateOpenWater(I,J) .GT. ZERO) THEN
-            IF ((AREApreTH(I,J) .GT. ZERO)   .OR.
-     &          (S_h(I,J)       .GT. ZERO))  THEN
-c           Determine which hemisphere for hemisphere-dependent
-c           "lead closing variable", HO
-              IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
-                S_a_IGROW(I,J) = (ONE - AREApreTH(I,J)) *
-     &             IceGrowthRateOpenWater(I,J)/HO_south
-              ELSE
-                S_a_IGROW(I,J) = (ONE - AREApreTH(I,J)) *
-     &             IceGrowthRateOpenWater(I,J)/HO
-              ENDIF
+           IF ( AREApreTH(I,J) .GT. ZERO   .OR.
+     &          S_h(I,J)       .GT. ZERO )  THEN
+c     Determine which hemisphere for hemisphere-dependent
+c     "lead closing variable", HO
+            IF ( YC(I,J,bi,bj) .LT. ZERO ) THEN
+             S_a_IGROW(I,J) = (ONE - AREApreTH(I,J)) *
+     &            IceGrowthRateOpenWater(I,J)*recip_HO_south
+            ELSE
+             S_a_IGROW(I,J) = (ONE - AREApreTH(I,J)) *
+     &            IceGrowthRateOpenWater(I,J)*recip_HO
             ENDIF
+           ENDIF
 
 C    -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 c         Contract ice cover if the open water growth rate is negative
           ELSE
-             S_a_IGROW(I,J) = tmpscal0 *
+           S_a_IGROW(I,J) = tmpscal0 *
      &          IceGrowthRateOpenWater(I,J) * (ONE - AREApreTH(I,J))
           ENDIF
 
@@ -1064,7 +978,7 @@ C         Contract ice if the IceGrowthRateMixedLayer is negative
           S_a_IGRML(I,J) = ZERO
 
           IF ( IceGrowthRateMixedLayer(I,J) .LE. ZERO)  THEN
-             S_a_IGRML(I,J) = tmpscal0 * IceGrowthRateMixedLayer(I,J)
+           S_a_IGRML(I,J) = tmpscal0 * IceGrowthRateMixedLayer(I,J)
           ENDIF
 
           S_a(I,J) = S_a(I,J) + S_a_IGRML(I,J)
@@ -1074,10 +988,10 @@ C    -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 C         Contract ice if the NetExistingIceGrowthRate is negative
 C         /* NetExistingIceGrowthRate */
           S_a_IGRNE(I,J) = ZERO
-          IF ( (NetExistingIceGrowthRate(I,J) .LE. ZERO) .AND.
-     &         (HEFFpreTH(I,J)                .GT. ZERO) ) THEN
+          IF ( NetExistingIceGrowthRate(I,J) .LE. ZERO .AND.
+     &         HEFFpreTH(I,J)                .GT. ZERO ) THEN
 
-            S_a_IGRNE(I,J) =
+           S_a_IGRNE(I,J) =
      &       tmpscal0 * NetExistingIceGrowthRate(I,J) * AREApreTH(I,J)
 
           ENDIF
@@ -1087,124 +1001,97 @@ C         /* NetExistingIceGrowthRate */
          ENDDO /* I,J */
         ENDDO /* I,J */
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE AREApreTH    = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE HEFFpreTH    = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE HSNWpreTH    = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE S_a          = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE S_h          = comlev1_bibj, key = iicekey, byte = isbyte
-CADJ STORE S_hsnow      = comlev1_bibj, key = iicekey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 C       Update the area, heff, and hsnow
         DO J=1,sNy
          DO I=1,sNx
-           HEFF(I,J,bi,bj)  = HEFFpreTH(I,J) +
-     &           SEAICE_deltaTtherm * S_h(I,J)
+          HEFF(I,J,bi,bj)  = HEFFpreTH(I,J) +
+     &         SEAICE_deltaTtherm * S_h(I,J)
 
-           AREA(I,J,bi,bj)  = AREApreTH(I,J) +
-     &           SEAICE_deltaTtherm * S_a(I,J)
+          AREA(I,J,bi,bj)  = AREApreTH(I,J) +
+     &         SEAICE_deltaTtherm * S_a(I,J)
 
-           HSNOW(I,J,bi,bj) = HSNWpreTH(I,J) +
-     &           SEAICE_deltaTtherm * S_hsnow(I,J)
+          HSNOW(I,J,bi,bj) = HSNWpreTH(I,J) +
+     &         SEAICE_deltaTtherm * S_hsnow(I,J)
          ENDDO
         ENDDO
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE AREApreTH        = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE HEFFpreTH        = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE HSNWpreTH        = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE AREA (:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE HEFF (:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE HSNOW(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
         DO J=1,sNy
-          DO I=1,sNx
-c           Bound area, heff, and hsnow
-             AREA(I,J,bi,bj)  = MIN(ONE,  AREA(I,J,bi,bj))
-             AREA(I,J,bi,bj)  = MAX(ZERO, AREA(I,J,bi,bj))
-             HEFF(I,J,bi,bj)  = MAX(ZERO, HEFF(I,J,bi,bj))
-             HSNOW(I,J,bi,bj) = MAX(ZERO, HSNOW(I,J,bi,bj))
+         DO I=1,sNx
+c     Bound area, heff, and hsnow
+          tmpscal0 = AREA(I,J,bi,bj)
+          AREA(I,J,bi,bj)  = MIN(ONE,  tmpscal0)
+          tmpscal1 = AREA(I,J,bi,bj)
+          AREA(I,J,bi,bj)  = MAX(ZERO, tmpscal1)
+          tmpscal2 = HEFF(I,J,bi,bj)
+          HEFF(I,J,bi,bj)  = MAX(ZERO, tmpscal2)
+          tmpscal3 = HSNOW(I,J,bi,bj)
+          HSNOW(I,J,bi,bj) = MAX(ZERO, tmpscal3)
 
-c            Sanity checks
-             IF (HEFF(I,J,bi,bj) .LE. ZERO .OR.
-     &           AREA(I,J,bi,bj) .LE. ZERO) THEN
+c     Sanity checks
+          IF ( HEFF(I,J,bi,bj) .LE. ZERO .OR.
+     &         AREA(I,J,bi,bj) .LE. ZERO ) THEN
 
-                  AREA(I,J,bi,bj)       = 0. _d 0
-                  HEFF(I,J,bi,bj)       = 0. _d 0
-                  hiceActual(I,J)       = 0. _d 0
-                  HSNOW(I,J,bi,bj)      = 0. _d 0
-                  hsnowActual(I,J)      = 0. _d 0
+           AREA(I,J,bi,bj)       = 0. _d 0
+           HEFF(I,J,bi,bj)       = 0. _d 0
+           HSNOW(I,J,bi,bj)      = 0. _d 0
 
-             ELSE
-c                 recalcuate the actual ice and snow thicknesses
-                  hiceActual(I,J)  =  HEFF(I,J,bi,bj)/AREA(I,J,bi,bj)
-                  hsnowActual(I,J) = HSNOW(I,J,bi,bj)/AREA(I,J,bi,bj)
-             ENDIF
+          ENDIF
 
-          ENDDO
+         ENDDO
         ENDDO
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE AREA (:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE HEFF (:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE HSNOW(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE salt(:,:,kSurface,bi,bj) = comlev1_bibj,
-CADJ &                       key = iicekey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
         DO J=1,sNy
-          DO I=1,sNx
+         DO I=1,sNx
 
 c         THE EFFECTIVE SHORTWAVE HEATING RATE
 #ifdef SHORTWAVE_HEATING
-            QSW(I,J,bi,bj)  =
+          QSW(I,J,bi,bj)  =
      &         QSWI(I,J)  * (      AREApreTH(I,J)) +
      &         QSWO(I,J)  * (ONE - AREApreTH(I,J))
 #else
-            QSW(I,J,bi,bj) = 0. _d 0
+          QSW(I,J,bi,bj) = 0. _d 0
 #endif
-#ifdef ALLOW_SEAICE_FLOODING
+         ENDDO
+        ENDDO
+
         IF(SEAICEuseFlooding) THEN
+C     convert snow to ice if submerged.
+         DO J=1,sNy
+          DO I=1,sNx
+           tmpscal0           = ( HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
+     &              +HEFF(I,J,bi,bj)*SEAICE_rhoIce )*recip_rhoConst
+           d_HEFFbyFlood(I,J) = MAX(0. _d 0,tmpscal0-HEFF(I,J,bi,bj))
+           HEFF(I,J,bi,bj)    = HEFF(I,J,bi,bj) + d_HEFFbyFlood(I,J)
+           HSNOW(I,J,bi,bj)   = HSNOW(I,J,bi,bj)
+     &                           - d_HEFFbyFlood(I,J)*ICE2SNOW
+          ENDDO
+         ENDDO
+c     SEAICEuseFlooding
+        ENDIF
 
-           tmpscal0 = (HSNOW(I,J,bi,bj)*SEAICE_rhoSnow
-     &              +HEFF(I,J,bi,bj)*SEAICE_rhoIce)*recip_rhoConst
-          d_HEFFbyFlood(I,J) = MAX(tmpscal0 - HEFF(I,J,bi,bj), 0. _d 0)
-                      HEFF(I,J,bi,bj)=HEFF(I,J,bi,bj)+d_HEFFbyFlood(I,J)
-                      HSNOW(I,J,bi,bj) = HSNOW(I,J,bi,bj)-
-     &                 d_HEFFbyFlood(I,J)*ICE2SNOW
-c SEAICEuseFlooding
-           ENDIF
-c ALLOW_SEAICE_FLOODING
-#endif
+        DO J=1,sNy
+         DO I=1,sNx
 
-c           The actual ice volume change over the time step
-            ActualNewTotalVolumeChange(I,J) =
-     &        HEFF(I,J,bi,bj) - HEFFpreTH(I,J)
+c     The actual ice volume change over the time step
+          ActualNewTotalVolumeChange(I,J) =
+     &         HEFF(I,J,bi,bj) - HEFFpreTH(I,J)
 
-c           The net average snow thickness melt that is actually realized. e.g.
-c           hsnow_orig  = 0.25 m (e.g. 1 m of ice over a cell 1/4 covered in snow)
-c           hsnow_new   = 0.20 m
-c           snow accum  = 0.05 m
-c           melt = 0.25 + 0.05 - 0.2 = 0.1 m
+c     The net average snow thickness melt that is actually realized. e.g.
+c     hsnow_orig  = 0.25 m (e.g. 1 m of ice over a cell 1/4 covered in snow)
+c     hsnow_new   = 0.20 m
+c     snow accum  = 0.05 m
+c     melt = 0.25 + 0.05 - 0.2 = 0.1 m
 
-c           since this is in mean snow thickness it might have been  0.4 of actual
-c           snow thickness over the 1/4 of the cell which is ice covered.
-            ActualNewTotalSnowMelt(I,J) =
-     &                 HSNWpreTH(I,J) +
-     &                 SnowAccOverIce(I,J) -
-     &                 HSNOW(I,J,bi,bj)
+c     since this is in mean snow thickness it might have been  0.4 of actual
+c     snow thickness over the 1/4 of the cell which is ice covered.
+          ActualNewTotalSnowMelt(I,J) =
+     &         HSNWpreTH(I,J) +
+     &         SnowAccOverIce(I,J) -
+     &         HSNOW(I,J,bi,bj)
 
-c           The energy required to melt or form the new ice volume
-            EnergyInNewTotalIceVolume(I,J) =
-     &          ActualNewTotalVolumeChange(I,J)/QI
+c     The energy required to melt or form the new ice volume
+          EnergyInNewTotalIceVolume(I,J) =
+     &         ActualNewTotalVolumeChange(I,J)*recip_QI
 c
 
 c     This is the net energy flux out of the ice+ocean system
@@ -1221,7 +1108,7 @@ c
 c     So if we are freezing, F_io_net = the conductive flux and there
 c     is energy balance at ice surface, F_ia_net =0.  If we are melting,
 c     there is a convergence of energy into the ice from above
-            NetEnergyFluxOutOfOcean(I,J) = SEAICE_deltaTtherm *
+          NetEnergyFluxOutOfOcean(I,J) = SEAICE_deltaTtherm *
      &               ( AREApreTH(I,J) *
      &                 (F_ia_net(I,J) + F_io_net(I,J) + QSWI(I,J))
      &         +     ( ONE - AREApreTH(I,J)) *  F_ao(I,J))
@@ -1231,7 +1118,7 @@ c     ML temperature.  If the net energy flux is exactly balanced by the
 c     latent energy of fusion in the new ice created then we will not
 c     change the ML temperature at all.
 
-            ResidualEnergyOutOfOcean(I,J) =
+          ResidualEnergyOutOfOcean(I,J) =
      &             NetEnergyFluxOutOfOcean(I,J) -
      &             EnergyInNewTotalIceVolume(I,J)
 
@@ -1239,127 +1126,105 @@ C     NOW FORMULATE QNET
 C     THIS QNET DETERMINES THE TEMPERATURE CHANGE
 C     QNET IS A DEPTH AVERAGED HEAT FLUX FOR THE OCEAN COLUMN
 
-            QNET(I,J,bi,bj) =
-     &             ResidualEnergyOutOfOcean(I,J) / SEAICE_deltaTtherm
+          QNET(I,J,bi,bj) =
+     &             ResidualEnergyOutOfOcean(I,J) * recip_deltaTtherm
 
-c    Like snow melt, if there is melting, this quantity is positive.
-c    The change of freshwater content is per unit area over the entire
-c    cell, not just over the ice covered bits.  This term is only used
-c    to calculate freshwater fluxes for the purpose of changing the
-c    salinity of the liquid cell.  In the case of non-zero ice salinity,
-c    the amount of freshwater is reduced by the ratio of ice salinity
-c    to water cell salinity.
-            IF  (salt(I,J,kSurface,bi,bj) .GE. SEAICE_salt0 .AND.
-     &           salt(I,J,kSurface,bi,bj) .GT. 0. _d 0) THEN
+c     Like snow melt, if there is melting, this quantity is positive.
+c     The change of freshwater content is per unit area over the entire
+c     cell, not just over the ice covered bits.  This term is only used
+c     to calculate freshwater fluxes for the purpose of changing the
+c     salinity of the liquid cell.  In the case of non-zero ice salinity,
+c     the amount of freshwater is reduced by the ratio of ice salinity
+c     to water cell salinity.
+          IF  (salt(I,J,kSurface,bi,bj) .GE. SEAICE_salt0 .AND.
+     &         salt(I,J,kSurface,bi,bj) .GT. 0. _d 0) THEN
 
-                 FreshwaterContribFromIce(I,J) =
+           FreshwaterContribFromIce(I,J) =
      &            - ActualNewTotalVolumeChange(I,J) *
-     &              SEAICE_rhoICE/rhoConstFresh
+     &              rhoIce2rhoFresh
 C     &             * (ONE - SEAICE_salt0/salt(I,J,kSurface,bi,bj))
 
-            ELSE
-C    If the liquid cell has a lower salinity than the specified
-c    salinity of sea ice then assume the sea ice is completely fresh
-                 FreshwaterContribFromIce(I,J) =
+          ELSE
+C     If the liquid cell has a lower salinity than the specified
+c     salinity of sea ice then assume the sea ice is completely fresh
+           FreshwaterContribFromIce(I,J) =
      &             -ActualNewTotalVolumeChange(I,J) *
-     &              SEAICE_rhoIce/rhoConstFresh
-            ENDIF
+     &              rhoIce2rhoFresh
+          ENDIF
 CAB
           tmpscal3 = max( 0. _d 0,
      &                    min(SEAICE_salt0,salt(I,J,kSurface,bi,bj)) )
-CAB Salt in ice + ridgi - ice from snow flood
-         tmpscal2 = (ActualNewTotalVolumeChange(I,J)+
+CAB   Salt in ice + ridgid - ice from snow flood
+          tmpscal2 = (ActualNewTotalVolumeChange(I,J)+
      &                   SIheffNeg(I,J,bi,bj)+
      &                  0.0 )
      &                   * tmpscal3
      &                   * HEFFM(I,J,bi,bj)
-     &                   / SEAICE_deltaTtherm * SEAICE_rhoIce
+     &                   * recip_deltaTtherm * SEAICE_rhoIce
 
-CAB test for getting the lines
-
-             saltflux(I,J,bi,bj) = tmpscal2
+CAB   test for getting the lines
+          saltflux(I,J,bi,bj) = tmpscal2
 CAB
 
-c    The freshwater contribution from snow comes only in the form of melt
-c    unlike ice, which takes freshwater upon growth and yields freshwater
-c    upon melt.  This is why the the actual new average snow melt was determined.
-c    In m/m^2 over the entire cell.
-             FreshwaterContribFromSnowMelt(I,J) =
-     &          ActualNewTotalSnowMelt(I,J)*SEAICE_rhoSnow/rhoConstFresh
+c     The freshwater contribution from snow comes only in the form of melt
+c     unlike ice, which takes freshwater upon growth and yields freshwater
+c     upon melt.  This is why the the actual new average snow melt was
+c     determined. In m/m^2 over the entire cell.
+          FreshwaterContribFromSnowMelt(I,J) =
+     &         ActualNewTotalSnowMelt(I,J)*rhoSnow2rhoFresh
 
 c    This seems to be in m/s, original time level 2 for area
 c    Only the precip and evap need to be area weighted.  The runoff
 c    and freshwater contribs from ice and snow melt are already mean
 c    weighted
-             EmPmR(I,J,bi,bj)  = maskC(I,J,kSurface,bi,bj)*(
-     &       ( EVAP(I,J,bi,bj) - PRECIP(I,J,bi,bj) )
-     &          * ( ONE - AREApreTH(I,J) )
-     &          - PrecipRateOverIceSurfaceToSea(I,J)*AREApreTH(I,J)
+          EmPmR(I,J,bi,bj)  = HEFFM(I,J,bi,bj)*(
+     &         ( EVAP(I,J,bi,bj) - PRECIP(I,J,bi,bj) )
+     &         * ( ONE - AREApreTH(I,J) )
+     &         - PrecipRateOverIceSurfaceToSea(I,J)*AREApreTH(I,J)
 #ifdef ALLOW_RUNOFF
-     &          - RUNOFF(I,J,bi,bj)
+     &         - RUNOFF(I,J,bi,bj)
 #endif
-     &          - (FreshwaterContribFromIce(I,J) +
-     &             FreshwaterContribFromSnowMelt(I,J)) /
-     &             SEAICE_deltaTtherm ) * rhoConstFresh
-     &            +( SIheffNeg(I,J,bi,bj)*SEAICE_rhoIce
-     &            + SIhsnwNeg(I,J,bi,bj)*SEAICE_rhoSnow)
-     &            /SEAICE_deltaTtherm * maskC(I,J,kSurface,bi,bj)
+     &         - (FreshwaterContribFromIce(I,J) +
+     &            FreshwaterContribFromSnowMelt(I,J))
+     &           *recip_deltaTtherm ) * rhoConstFresh
+     &         +( SIheffNeg(I,J,bi,bj)*SEAICE_rhoIce
+     &          + SIhsnwNeg(I,J,bi,bj)*SEAICE_rhoSnow)
+     &          *recip_deltaTtherm * HEFFM(I,J,bi,bj)
 
-CAB Budget test , adding the energy stored in snow melt to qnet
-CMoved bunch of these to line 780
+CAB   Budget test , adding the energy stored in snow melt to qnet
+C     Moved bunch of these to line 780
 
-       SItflux(I,J,bi,bj) = 0.0 +
-     &   (AREApreTH(I,J)
-     &     *(F_ia_net(I,J)
-     &     + F_io_net(I,J) + QSWI(I,J))
-     &  +( ONE - AREApreTH(I,J)) *  F_ao(I,J))
-     &    *maskC(I,J,kSurface,bi,bj)
-     &  +(SIheffNeg(I,J,bi,bj)/QI
-     &  +(SIhsnwNeg(I,J,bi,bj)
-     &  -ActualNewTotalSnowMelt(I,J) +SnowAccOverIce(I,J))/QS)
-     &  / SEAICE_deltaTtherm * maskC(I,J,kSurface,bi,bj)
+          SItflux(I,J,bi,bj) = 0.0 +
+     &         (AREApreTH(I,J)
+     &         *(F_ia_net(I,J)
+     &         + F_io_net(I,J) + QSWI(I,J))
+     &         +( ONE - AREApreTH(I,J)) *  F_ao(I,J))
+     &         *HEFFM(I,J,bi,bj)
+     &         +(SIheffNeg(I,J,bi,bj)*recip_QI
+     &         +( SIhsnwNeg(I,J,bi,bj) - ActualNewTotalSnowMelt(I,J)
+     &          + SnowAccOverIce(I,J) )*recip_QS)
+     &         * recip_deltaTtherm * HEFFM(I,J,bi,bj)
 
-       SIaaflux(I,J,bi,bj) =  -EmPmR(I,J,bi,bj)
-     &     * HeatCapacity_Cp *theta(I,J,kSurface,bi,bj)
+          SIaaflux(I,J,bi,bj) =  -EmPmR(I,J,bi,bj)
+     &         * HeatCapacity_Cp *theta(I,J,kSurface,bi,bj)
 
-      SIatmFW(I,J,bi,bj) = maskC(I,J,kSurface,bi,bj)*(
-     &          EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
-     &          - PRECIP(I,J,bi,bj)
+          SIatmFW(I,J,bi,bj) = HEFFM(I,J,bi,bj)*(
+     &         EVAP(I,J,bi,bj)*( ONE - AREApreTH(I,J) )
+     &         - PRECIP(I,J,bi,bj)
 #ifdef ALLOW_RUNOFF
      &          - RUNOFF(I,J,bi,bj)
 #endif /* ALLOW_RUNOFF */
      &           )*rhoConstFresh
-C     &     +    FWsublim(i,j)* SEAICE_rhoIce * recip_deltaTtherm
-C  a_FWbySublim(
+     &     +    FWsublim(i,j)* SEAICE_rhoIce * recip_deltaTtherm
 CAB
 
          ENDDO
         ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hiceActual       = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE hsnowActual      = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE AREApreTH        = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE HEFF(:,:,bi,bj)  = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE HSNOW(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE AREA(:,:,bi,bj)  = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE salt(:,:,kSurface,bi,bj) = comlev1_bibj,
-CADJ &                       key = iicekey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hiceActual       = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE hsnowActual      = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE heff(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-C Sea Ice Load on the sea surface.
-C =================================
+C     Sea Ice Load on the sea surface.
+C     =================================
         IF ( useRealFreshWaterFlux ) THEN
          DO J=1,sNy
           DO I=1,sNx
@@ -1377,84 +1242,84 @@ C =================================
         ENDIF
 
 #ifdef SEAICE_DEBUG
-            DO j=1,sNy
-               DO i=1,sNx
+        DO j=1,sNy
+         DO i=1,sNx
 
-               IF ( (i .EQ. SEAICE_debugPointI)   .and.
-     &              (j .EQ. SEAICE_debugPointJ) ) THEN
+          IF ( (i .EQ. SEAICE_debugPointI)   .and.
+     &         (j .EQ. SEAICE_debugPointJ) ) THEN
 
-                  print *,'ifice: myTime,myIter:',myTime,myIter
+           print *,'ifice: myTime,myIter:',myTime,myIter
 
-                  print  '(A,2i4,2(1x,1P3E15.4))',
-     &                 'ifice i j --------------  ',i,j
+           print  '(A,2i4,2(1x,1P3E15.4))',
+     &          'ifice i j --------------  ',i,j
 
-                  print  '(A,2i4,2(1x,1P3E15.4))',
-     &                 'ifice i j F(mi ao), rHIA  ',
-     &                 i,j, F_mi(i,j), F_ao(i,j),
-     &                 recip_hiceActual(i,j)
+           print  '(A,2i4,2(1x,1P3E15.4))',
+     &          'ifice i j F(mi ao), rHIA  ',
+     &          i,j, F_mi(i,j), F_ao(i,j),
+     &          recip_hiceActual(i,j)
 
-                  print  '(A,2i4,2(1x,1P3E15.4))',
-     &                 'ifice i j Fi(a,ant2/1 ont)',
-     &                 i,j, F_ia(i,j),
-     &                 F_ia_net_before_snow(i,j),
-     &                 F_ia_net(i,j),
-     &                 F_io_net(i,j)
+           print  '(A,2i4,2(1x,1P3E15.4))',
+     &          'ifice i j Fi(a,ant2/1 ont)',
+     &          i,j, F_ia(i,j),
+     &          F_ia_net_before_snow(i,j),
+     &          F_ia_net(i,j),
+     &          F_io_net(i,j)
 
-                  print  '(A,2i4,2(1x,1P3E15.4))',
-     &                 'ifice i j AREA2/1 HEFF2/1 ',i,j,
-     &                 AREApreTH(I,J),
-     &                 AREA(i,j,bi,bj),
-     &                 HEFFpreTH(I,J),
-     &                 HEFF(i,j,bi,bj)
+           print  '(A,2i4,2(1x,1P3E15.4))',
+     &          'ifice i j AREA2/1 HEFF2/1 ',i,j,
+     &          AREApreTH(I,J),
+     &          AREA(i,j,bi,bj),
+     &          HEFFpreTH(I,J),
+     &          HEFF(i,j,bi,bj)
 
-                  print  '(A,2i4,2(1x,1P3E15.4))',
-     &                 'ifice i j HSNOW2/1 TMX    ',i,j,
-     &                 HSNWpreTH(I,J),
-     &                 HSNOW(I,J,bi,bj),
-     &                 theta(I,J,kSurface,bi,bj)
+           print  '(A,2i4,2(1x,1P3E15.4))',
+     &          'ifice i j HSNOW2/1 TMX    ',i,j,
+     &          HSNWpreTH(I,J),
+     &          HSNOW(I,J,bi,bj),
+     &          theta(I,J,kSurface,bi,bj)
 
-                  print  '(A,2i4,2(1x,1P3E15.4))',
-     &                 'ifice i j TI ATP LWD      ',i,j,
-     &                 TICES(i,j,1, bi,bj) - celsius2k,
-     &                 ATEMP(i,j,bi,bj) - celsius2k,
-     &                 LWDOWN(i,j,bi,bj)
+           print  '(A,2i4,2(1x,1P3E15.4))',
+     &          'ifice i j TI ATP LWD      ',i,j,
+     &          TICES(i,j,1, bi,bj) - celsius2k,
+     &          ATEMP(i,j,bi,bj) - celsius2k,
+     &          LWDOWN(i,j,bi,bj)
 
-                  print  '(A,2i4,2(1x,1P3E15.4))',
-     &                 'ifice i j S_a(tot,OW,ML,NE',i,j,
-     &                 S_a(i,j),
-     &                 S_a_IGROW(I,J),
-     &                 S_a_IGRML(I,J),
-     &                 S_a_IGRNE(I,J)
+           print  '(A,2i4,2(1x,1P3E15.4))',
+     &          'ifice i j S_a(tot,OW,ML,NE',i,j,
+     &          S_a(i,j),
+     &          S_a_IGROW(I,J),
+     &          S_a_IGRML(I,J),
+     &          S_a_IGRNE(I,J)
 
-                  print  '(A,2i4,2(1x,1P3E15.4))',
-     &                 'ifice i j S_a S_h S_hsnow ',i,j,
-     &                 S_a(i,j),
-     &                 S_h(i,j),
-     &                 S_hsnow(i,j)
+           print  '(A,2i4,2(1x,1P3E15.4))',
+     &          'ifice i j S_a S_h S_hsnow ',i,j,
+     &          S_a(i,j),
+     &          S_h(i,j),
+     &          S_hsnow(i,j)
 
-                  print  '(A,2i4,2(1x,1P3E15.4))',
-     &                 'ifice i j IGR(ML OW ICE)  ',i,j,
-     &                 IceGrowthRateMixedLayer(i,j),
-     &                 IceGrowthRateOpenWater(i,j),
-     &                 NetExistingIceGrowthRate(i,j)
+           print  '(A,2i4,2(1x,1P3E15.4))',
+     &          'ifice i j IGR(ML OW ICE)  ',i,j,
+     &          IceGrowthRateMixedLayer(i,j),
+     &          IceGrowthRateOpenWater(i,j),
+     &          NetExistingIceGrowthRate(i,j)
 
-                  print  '(A,2i4,2(1x,1P3E15.4))',
-     &                 'ifice i j IVC(A ENIN)     ',i,j,
-     &                 ActualNewTotalVolumeChange(i,j),
-     &                 EnergyInNewTotalIceVolume(i,j)
-c     &                 ExpectedIceVolumeChange(i,j),
+           print  '(A,2i4,2(1x,1P3E15.4))',
+     &          'ifice i j IVC(A ENIN)     ',i,j,
+     &          ActualNewTotalVolumeChange(i,j),
+     &          EnergyInNewTotalIceVolume(i,j)
+c     &          ExpectedIceVolumeChange(i,j),
 
-                  print  '(A,2i4,2(1x,1P3E15.4))',
-     &                 'ifice i j EF(NOS RE) QNET ',i,j,
-     &                 NetEnergyFluxOutOfOcean(i,j),
-     &                 ResidualEnergyOutOfOcean(i,j),
-     &                 QNET(I,J,bi,bj)
+           print  '(A,2i4,2(1x,1P3E15.4))',
+     &          'ifice i j EF(NOS RE) QNET ',i,j,
+     &          NetEnergyFluxOutOfOcean(i,j),
+     &          ResidualEnergyOutOfOcean(i,j),
+     &          QNET(I,J,bi,bj)
 
-                  print  '(A,2i4,3(1x,1P3E15.4))',
-     &                 'ifice i j QSW QSWO QSWI   ',i,j,
-     &                 QSW(i,j,bi,bj),
-     &                 QSWO(i,j),
-     &                 QSWI(i,j)
+           print  '(A,2i4,3(1x,1P3E15.4))',
+     &          'ifice i j QSW QSWO QSWI   ',i,j,
+     &          QSW(i,j,bi,bj),
+     &          QSWO(i,j),
+     &          QSWI(i,j)
 
 c                  print  '(A,2i4,3(1x,1P3E15.4))',
 c     &                 'ifice i j SW(BML IML SW)  ',i,j,
@@ -1478,50 +1343,50 @@ c                  print  '(A,2i4,3(1x,1P3E15.4))',
 c     &                 'ifice i j ptc(niv)        ',i,j,
 c     &                 PredTempChangeFromNewIceVol(i,j)
 
-                  print  '(A,2i4,3(1x,1P3E15.4))',
-     &                 'ifice i j EmPmR EVP PRE RU',i,j,
-     &                 EmPmR(I,J,bi,bj),
-     &                 EVAP(I,J,bi,bj),
-     &                 PRECIP(I,J,bi,bj),
-     &                 RUNOFF(I,J,bi,bj)
+           print  '(A,2i4,3(1x,1P3E15.4))',
+     &          'ifice i j EmPmR EVP PRE RU',i,j,
+     &          EmPmR(I,J,bi,bj),
+     &          EVAP(I,J,bi,bj),
+     &          PRECIP(I,J,bi,bj),
+     &          RUNOFF(I,J,bi,bj)
 
-                  print  '(A,2i4,3(1x,1P3E15.4))',
-     &                 'ifice i j PRROIS,SAOI(R .)',i,j,
-     &                 PrecipRateOverIceSurfaceToSea(I,J),
-     &                 SnowAccRateOverIce(I,J),
-     &                 SnowAccOverIce(I,J)
+           print  '(A,2i4,3(1x,1P3E15.4))',
+     &          'ifice i j PRROIS,SAOI(R .)',i,j,
+     &          PrecipRateOverIceSurfaceToSea(I,J),
+     &          SnowAccRateOverIce(I,J),
+     &          SnowAccOverIce(I,J)
 
-                  print  '(A,2i4,4(1x,1P3E15.4))',
-     &                 'ifice i j SM(PM PMR . .R) ',i,j,
-     &                 PotSnowMeltFromSurf(I,J),
-     &                 PotSnowMeltRateFromSurf(I,J),
-     &                 SnowMeltFromSurface(I,J),
-     &                 SnowMeltRateFromSurface(I,J)
+           print  '(A,2i4,4(1x,1P3E15.4))',
+     &          'ifice i j SM(PM PMR . .R) ',i,j,
+     &          PotSnowMeltFromSurf(I,J),
+     &          PotSnowMeltRateFromSurf(I,J),
+     &          SnowMeltFromSurface(I,J),
+     &          SnowMeltRateFromSurface(I,J)
 
-                  print  '(A,2i4,4(1x,1P3E15.4))',
-     &                 'ifice i j TotSnwMlt       ',i,j,
-     &                 ActualNewTotalSnowMelt(I,J)
+           print  '(A,2i4,4(1x,1P3E15.4))',
+     &          'ifice i j TotSnwMlt       ',i,j,
+     &          ActualNewTotalSnowMelt(I,J)
 c     &                 ExpectedSnowVolumeChange(I,J)
 
-                  print  '(A,2i4,4(1x,1P3E15.4))',
-     &                 'ifice i j fw(CFICE, CFSM) ',i,j,
-     &                 FreshwaterContribFromIce(I,J),
-     &                 FreshwaterContribFromSnowMelt(I,J)
+           print  '(A,2i4,4(1x,1P3E15.4))',
+     &          'ifice i j fw(CFICE, CFSM) ',i,j,
+     &          FreshwaterContribFromIce(I,J),
+     &          FreshwaterContribFromSnowMelt(I,J)
 
-                  print  '(A,2i4,2(1x,1P3E15.4))',
-     &                 'ifice i j --------------  ',i,j
+           print  '(A,2i4,2(1x,1P3E15.4))',
+     &          'ifice i j --------------  ',i,j
 
-               ENDIF
+          ENDIF
 
-               ENDDO
-            ENDDO
+         ENDDO
+        ENDDO
 #endif /* SEAICE_DEBUG */
 
 C close bi,bj loops
        ENDDO
       ENDDO
 
-        _BEGIN_MASTER( myThid )
+      _BEGIN_MASTER( myThid )
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
 C these diags need to be done outside of the bi,bj loop so that
@@ -1536,28 +1401,27 @@ CAB
 C       CALL DIAGNOSTICS_FILL(SIacSubl,
 C     &        'SIacSubl',0,1,3,bi,bj,myThid)
 
-       CALL DIAGNOSTICS_FILL(SItflux,
-     &        'SItflux ',0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(SItflux, 'SItflux ',0,1,0,1,1,myThid)
 
-       CALL DIAGNOSTICS_FILL(SIaaflux,
-     &        'SIaaflux',0,1,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(SIaaflux,'SIaaflux',0,1,0,1,1,myThid)
 
-        tmpscal1= - 1. _d 0
-        CALL DIAGNOSTICS_SCALE_FILL(SIatmFW,
-     &        tmpscal1,1,'SIatmFW ',0,1,0,1,1,myThid)
+       tmpscal1= - 1. _d 0
+       CALL DIAGNOSTICS_SCALE_FILL(SIatmFW,
+     &      tmpscal1,1,'SIatmFW ',0,1,0,1,1,myThid)
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 
-C        WRITE(msgBuf,'(a,a,e24.17)') 'SINegFac ',
+C      WRITE(msgBuf,'(a,a,e24.17)') 'SINegFac ',
 C     &       ' = ', SINegFac
-C        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+C      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
 C     &                      SQUEEZE_RIGHT, myThid )
 C
-        _END_MASTER( myThid )
+      _END_MASTER( myThid )
 
 #else  /* ALLOW_EXF and ALLOW_ATM_TEMP */
-      STOP 'SEAICE_GROWTH not compiled without EXF and ALLOW_ATM_TEMP'
+      STOP 'SEAICE_GROWTH_ADX not compiled with EXF and ALLOW_ATM_TEMP'
 #endif /* ALLOW_EXF and ALLOW_ATM_TEMP */
+#endif /* SEAICE_USE_GROWTH_ADX */
 
       RETURN
       END
