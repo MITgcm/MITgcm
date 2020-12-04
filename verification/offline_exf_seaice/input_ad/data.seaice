@@ -5,22 +5,21 @@
  SEAICE_tempFrz0    = 0.0,
  SEAICE_dTempFrz_dS = -5.4e-02,
 #seaice growth parameters
- SEAICE_frazilFrac  = 1.,
  HO = 0.2,
- SEAICE_areaLossFormula = 2,
- SEAICE_growMeltByConv = .TRUE.,
- SEAICE_doOpenWaterMelt = .TRUE.,
+# these have no effect in seaice_growth_adx, so we comment it out
+#SEAICE_frazilFrac  = 1.,
+#SEAICE_areaLossFormula = 2,
+#SEAICE_growMeltByConv = .TRUE.,
+#SEAICE_doOpenWaterMelt = .TRUE.,
 #- same mcPheePiston value as in thsice with surf-current=0.2 m/s
- SEAICE_mcPheePiston= 8.7854425e-5,
- SEAICEuseFlooding  = .TRUE.,
- SEAICE_salt0       = 4.,
+#SEAICE_mcPheePiston= 8.7854425e-5,
 #SEAICE_saltFrac    = 0.3,
+ SEAICE_salt0       = 4.,
 #simplest (constant) albedo scheme
  SEAICE_dryIceAlb   = 0.6,
  SEAICE_wetIceAlb   = 0.6,
  SEAICE_drySnowAlb  = 0.6,
  SEAICE_wetSnowAlb  = 0.6,
-#SEAICE_waterAlbedo = 0.1,
 #
  SEAICE_strength    = 2.6780e+04,
  OCEAN_drag         = 8.1541e-04,
@@ -29,8 +28,10 @@
  LSR_ERROR          = 1.E-12,
  SEAICElinearIterMax= 1500,
  LSR_mixIniGuess    = 1,
- SEAICEadvScheme    = 77,
- SEAICEadvSnow      = .TRUE.,
+# this is default anyway, so we comment it out
+#SEAICEuseFlooding  = .TRUE.,
+#SEAICEadvScheme    = 77,
+#SEAICEadvSnow      = .TRUE.,
 #SEAICEadvSalt      = .TRUE.,
  SEAICE_no_Slip     = .FALSE.,
 #
@@ -38,8 +39,6 @@
  HsaltFile          = 'const_00.bin',
  AreaFile           = 'ice0_area.bin',
  HeffFile           = 'ice0_heff.bin',
-#SEAICE_initialHEFF = 0.2,
-#uIceFile           = 'const_00.bin',
  SEAICEwriteState   = .TRUE.,
  SEAICE_monFreq = 43200.,
  &
