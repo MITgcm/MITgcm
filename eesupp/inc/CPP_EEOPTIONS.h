@@ -131,7 +131,7 @@ C     assuming locally periodic subdomain)
 #undef DISCONNECTED_TILES
 
 C--   Always cumulate as fast a possible applying MPI allreduce on a single value
-#define GLOBAL_SUM_GIDDYUP
+#undef GLOBAL_SUM_GIDDYUP
 
 C--   Always cumulate tile local-sum in the same order by applying MPI allreduce
 C     to array of tiles ; can get slower with large number of tiles (big set-up)
