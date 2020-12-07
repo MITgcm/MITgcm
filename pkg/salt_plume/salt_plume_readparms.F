@@ -83,7 +83,7 @@ C--   Default values for SALT_PLUME
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
       CALL OPEN_COPY_DATA_FILE(
-     I                     'data.salt_plume', 'SALT_PLUME_READPARMS',
+     I         '/tmp/namelist/data.salt_plume', 'SALT_PLUME_READPARMS',
      O                     iUnit,
      I                     myThid )
 

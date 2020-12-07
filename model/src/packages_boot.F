@@ -102,7 +102,7 @@ C     data.pkg namelists
      &                    SQUEEZE_RIGHT , myThid )
 
       CALL OPEN_COPY_DATA_FILE(
-     I                          'data.pkg', 'PACKAGES_BOOT',
+     I                       '/tmp/namelist/data.pkg', 'PACKAGES_BOOT',
      O                          iUnit,
      I                          myThid )
 
