@@ -53,6 +53,11 @@ C     == Local variables ==
 #endif
 #ifndef OLD_GRID_IO
       INTEGER iG, jG, iL, iLen
+#if 1
+      INTEGER dUnit, length_of_rec, tN, dNx, dNy, tBx, tBy, tNx, tNY
+      INTEGER  MDS_RECLEN
+      EXTERNAL MDS_RECLEN
+#endif
       CHARACTER*(MAX_LEN_FNAM) fName
       CHARACTER*(MAX_LEN_MBUF) tmpBuf
       INTEGER  ILNBLNK
@@ -291,6 +296,99 @@ C-    Tile Id number = Bi + (Bj-1)*(nSx*nPx)  with tile global-indices Bi,Bj
         WRITE(msgBuf,'(A)') '  =>'
 
 #ifdef ALLOW_MDSIO
+#if 1
+        tN  = W2_myTileList(bi,bj)
+        dNx = exch2_mydnx(tN)
+        dNy = exch2_mydny(tN)
+        tBx = exch2_tbasex(tN)
+        tBy = exch2_tbasey(tN)
+        tNx = exch2_tnx(tN)
+        tNy = exch2_tny(tN)
+        CALL MDSFINDUNIT( dUnit, myThid )
+        length_of_rec = MDS_RECLEN( fp, (dNx+1), myThid )
+        OPEN( dUnit, file=trim(fName), status='old', action='read',
+     &             access='direct', recl=length_of_rec )
+
+        CALL MDS_FACEF_READ_RS2( dUnit, fp, 1, length_of_rec, xC,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid )
+        iL = ILNBLNK(msgBuf)
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'xC'
+        CALL MDS_FACEF_READ_RS2( dUnit, fp, 2, length_of_rec, yC,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid )
+        iL = ILNBLNK(tmpBuf)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'yC'
+        CALL MDS_FACEF_READ_RS2( dUnit, fp, 3, length_of_rec, dxF,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid )
+        iL = ILNBLNK(msgBuf)
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'dxF'
+        CALL MDS_FACEF_READ_RS2( dUnit, fp, 4, length_of_rec, dyF,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid )
+        iL = ILNBLNK(tmpBuf)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'dyF'
+        CALL MDS_FACEF_READ_RS2( dUnit, fp, 5,  length_of_rec, rA,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid )
+        iL = ILNBLNK(msgBuf)
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'rA'
+        CALL MDS_FACEF_READ_RS2( dUnit, fp, 6,  length_of_rec, xG,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid )
+        iL = ILNBLNK(tmpBuf)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'xG'
+        CALL MDS_FACEF_READ_RS2( dUnit, fp, 7,  length_of_rec, yG,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid )
+        iL = ILNBLNK(msgBuf)
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'yG'
+        CALL MDS_FACEF_READ_RS2( dUnit, fp, 8, length_of_rec, dxV,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid )
+        iL = ILNBLNK(tmpBuf)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'dxV'
+        CALL MDS_FACEF_READ_RS2( dUnit, fp, 9, length_of_rec, dyU,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid )
+        iL = ILNBLNK(msgBuf)
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'dyU'
+        CALL MDS_FACEF_READ_RS2( dUnit, fp,10, length_of_rec, rAz,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid )
+        iL = ILNBLNK(tmpBuf)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'rAz'
+        CALL MDS_FACEF_READ_RS2( dUnit, fp,11, length_of_rec, dxC,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid )
+        iL = ILNBLNK(msgBuf)
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'dxC'
+        CALL MDS_FACEF_READ_RS2( dUnit, fp,12, length_of_rec, dyC,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid )
+        iL = ILNBLNK(tmpBuf)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'dyC'
+        CALL MDS_FACEF_READ_RS2( dUnit, fp,13, length_of_rec, rAw,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid )
+        iL = ILNBLNK(msgBuf)
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'rAw'
+        CALL MDS_FACEF_READ_RS2( dUnit, fp,14, length_of_rec, rAs,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid )
+        iL = ILNBLNK(tmpBuf)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'rAs'
+        CALL MDS_FACEF_READ_RS2( dUnit, fp,15, length_of_rec, dxG,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid )
+        iL = ILNBLNK(msgBuf)
+        WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'dxG'
+        CALL MDS_FACEF_READ_RS2( dUnit, fp,16, length_of_rec, dyG,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid )
+        iL = ILNBLNK(tmpBuf)
+        WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'dyG'
+
+        iLen = ILNBLNK(horizGridFile)
+        IF ( iLen.GT.0 ) THEN
+         CALL MDS_FACEF_READ_RS2(dUnit,fp,17,length_of_rec, angleCosC,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid)
+         iL = ILNBLNK(msgBuf)
+         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'AngleCS'
+         CALL MDS_FACEF_READ_RS2(dUnit,fp,18,length_of_rec, angleSinC,
+     &                  dNx, dNy, tBx, tBy, tNx, tNY, bi, bj, myThid)
+         iL = ILNBLNK(tmpBuf)
+         WRITE(msgBuf,'(A,1X,A)') tmpBuf(1:iL),'AngleSN'
+         anglesAreSet = .TRUE.
+        ELSE
+         anglesAreSet = .FALSE.
+        ENDIF
+#else
         CALL MDS_FACEF_READ_RS( fName, fp, 1,  xC, bi, bj, myThid )
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'xC'
@@ -352,6 +450,7 @@ C-    Tile Id number = Bi + (Bj-1)*(nSx*nPx)  with tile global-indices Bi,Bj
         ELSE
          anglesAreSet = .FALSE.
         ENDIF
+#endif
 #else /* ALLOW_MDSIO */
         WRITE(msgBuf,'(2A)')
      &   'INI_CURVILINEAR_GRID: Needs to compile MDSIO pkg'
