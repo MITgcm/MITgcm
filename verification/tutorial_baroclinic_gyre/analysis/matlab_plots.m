@@ -9,7 +9,7 @@ matlab_colormaps;
 % assumes output in separated tiles pre-concatenated into global files (used script utils/python/MITgcmutils/scripts/gluemncbig)
 % and moved into the top directory (see MITgcm user manual section 4.2.4.1)
 
-% using a spherical polar grid, all X,Y variables are in longitude, latitude coordinates
+% Using a spherical polar grid, all X,Y variables are in longitude, latitude coordinates
 % vertical grid provided in meters, area in m^2
 
 %  1-D fields
@@ -35,7 +35,8 @@ matlab_colormaps;
 %%%%%%%%%%%   load diagnostics   %%%%%%%%%%%
 
 % unit for temperature is degrees Celsius, velocity in m/s, surface height in m, heat flux in W/m^2
-   
+% see run output file available_diagnostics.log
+  
 % load statistical diagnostic output (monthly time-averaged output)
 % only one output region is defined, global (the default)
    TRELAX_ave=ncread('dynStDiag.nc','TRELAX_ave');     % (depth, region, time); depth=1 (surface-only), region=1 (global) 
@@ -55,42 +56,42 @@ matlab_colormaps;
 % figure 4.6 - time series of global mean TRELAX and THETA by level
 %
    figure
-   subplot(2,2,1);plot(1/12:1/12:100,squeeze(TRELAX_ave(1,1,:)),'b','LineWidth',[4]); grid on; hold on;
+%  Plot time axis as the mid-point of the (monthly) time average period.         
+   subplot(2,2,1);plot((1/12:1/12:100)-1/24,squeeze(TRELAX_ave(1,1,:)),'b','LineWidth',[4]); grid on; hold on;
          title('Net Heat Flux into Ocean (TRELAX\_ave)','FontSize',18);set(gca,'Fontsize',18)
          xlabel('Time (yrs)');ylabel('W/m^2'); set(gca,'YLim',[-400 0])
 %  Alternatively, a global mean area-weighted TRELAX (annual mean) could be computed as following,
 %  using HfacC(:,:,1) i.e. HfacC in the surface layer, as a land-ocean mask.
-         ocean_area=sum(sum(rA.*HFacC(:,:,1))); % compute total surface area of ocean points
-         TRELAX_ave_ann=squeeze(sum(sum(TRELAX(:,:,1,:).*repmat(rA.*HFacC(:,:,1),[1 1 1 100]))))/ocean_area;
-         plot(0.5:1:99.5,TRELAX_ave_ann,'m--','LineWidth',[2]);
-   subplot(2,2,3);plot(1/12:1/12:100,squeeze(THETA_lv_ave(1,1,:)),'c','LineWidth',[4]); grid on; hold on
-         plot(1/12:1/12:100,squeeze(THETA_lv_ave(5,1,:)),'g','LineWidth',[4])
-         plot(1/12:1/12:100,squeeze(THETA_lv_ave(15,1,:)),'r','LineWidth',[4])
+         total_ocn_area=sum(sum(rA.*HFacC(:,:,1))); % compute total surface area of ocean points
+         TRELAX_ave_ann=squeeze(sum(sum(TRELAX(:,:,1,:).*repmat(rA.*HFacC(:,:,1),[1 1 1 100]))))/total_ocn_area;
+         plot((1:100)-0.5,TRELAX_ave_ann,'m--','LineWidth',[2]); % plot annual averages at mid-year
+   subplot(2,2,3);plot((1/12:1/12:100)-1/24,squeeze(THETA_lv_ave(1,1,:)),'c','LineWidth',[4]); grid on; hold on
+         plot((1/12:1/12:100)-1/24,squeeze(THETA_lv_ave(5,1,:)),'g','LineWidth',[4])
+         plot((1/12:1/12:100)-1/24,squeeze(THETA_lv_ave(15,1,:)),'r','LineWidth',[4])
          title('Mean Potential Temp. by Level (THETA\_lv\_avg)','FontSize',18)
          xlabel('Time (yrs)');ylabel('^oC');legend('T_{surf}','T_{300m}','T_{abyss}');set(gca,'Fontsize',16)
-   subplot(2,2,4);plot(1/12:1/12:100,squeeze(THETA_lv_std(1,:)),'c','LineWidth',[4]); grid on; hold on
-         plot(1/12:1/12:100,squeeze(THETA_lv_std(5,:)),'g','LineWidth',[4])
-         plot(1/12:1/12:100,squeeze(THETA_lv_std(15,:)),'r','LineWidth',[4])
+   subplot(2,2,4);plot((1/12:1/12:100)-1/24,squeeze(THETA_lv_std(1,:)),'c','LineWidth',[4]); grid on; hold on
+         plot((1/12:1/12:100)-1/24,squeeze(THETA_lv_std(5,:)),'g','LineWidth',[4])
+         plot((1/12:1/12:100)-1/24,squeeze(THETA_lv_std(15,:)),'r','LineWidth',[4])
          title('Std. Dev. Potential Temp. by Level (THETA\_lv\_std)','FontSize',18);set(gca,'Fontsize',16)
          xlabel('Time (yrs)');ylabel('^oC');legend('T_{surf}','T_{300m}','T_{abyss}')
                     
 % figure 4.7 - 2-D plot of TRELAX and contours of free surface height (ETAN) at t=100 yrs
 %
    figure
-   pcolor(Xp1(1:end-1),Yp1(1:end-1),TRELAX(:,:,1,end)');colorbar;shading flat;colormap(redtoblue)
+   pcolor(Xp1(1:end-1),Yp1(1:end-1),TRELAX(:,:,1,end)');colorbar;shading flat;colormap(bluetored)
    set(gca,'CLim',[-250 250]); hold on
    mask=HFacC;mask(mask==0)=NaN; % create a 3-D land mask, with land points set to NaN
    contour(X,Y,mask(:,:,1)'.*ETAN(:,:,1,end)',[-.6:.1:.6],'k'); set(gca,'XLim',[0 60]); set(gca,'YLim',[15 75])
    title({'Free surface height (contours, CI .1 m)';'and TRELAX (shading, W/m^2)'})
    xlabel('Longitude');ylabel('Latitude')
-%  Note we have used routine pcolor here with Xp1, Yp1, which are the locations of
-%  the lower left corners of grid cells (here, both length 63 as
-%  they include the ending right and upper locations of the grid,
-%  respectively). Alternative one could plot shading using contourf with 'LineStyle'
-%  set to 'none' using dimensions X and Y, the grid cell center points. (see fig 4.9).
-%  Also note we mask the land values when contouring the free surface height.
+% Note we have used routine pcolor here with Xp1, Yp1, which are the locations of the lower left corners
+% of grid cells (here, both length 63 as they include the ending right and upper locations of the grid,
+% respectively). Alternative one could plot shading using contourf with 'LineStyle'
+% set to 'none' with dimensions X and Y, the grid cell center locations.
+% Also note we mask the land values when contouring the free surface height.
 
-% figure 4.8 - barotropic streamfunction at t=100 yrs.
+% figure 4.8 - barotropic streamfunction at t=100 yrs. (w/overlaid labeled contours)
 %
    figure
    ubt=squeeze(sum(UVEL.*permute(repmat(drF,[1 63 62 100]),[2 3 1 4]),3)); % depth-integrated u velocity
@@ -99,15 +100,17 @@ matlab_colormaps;
    set(gca,'XLim',[0 60]);set(gca,'Ylim',[15 75]);set(gca,'Clim',[-35 35]);
    title('Barotropic Streamfunction (Sv)')
    xlabel('Longitude');ylabel('Latitude')
-%  Note psi is computed and plotted at the grid cell corners and is dimensioned 63x62
-%  cumsum is done in y-direction; we have a wall at southern boundary
-%  (i.e. no reentrant flow from north), so we need to add a row of zeros to specify psi(j=1).   
+% Note psi is computed and plotted at the grid cell corners and is dimensioned 63x62 (ie. missing a row in y)
+% cumsum is done in y-direction; we have a wall at southern boundary
+% (i.e. no reentrant flow from north), so we need to add a row of zeros to specify psi(j=1).   
    
 % figure 4.9 - potential temperature at 220m depth (k=4) and xz slice at 28.5N (j=15) at t=100 yrs.
    figure
+% again we use pcolor for the plan view and provide the corner points XG,YG
    subplot(1,2,1); pcolor(Xp1(1:end-1),Yp1(1:end-1),THETA(:,:,4,end)'); hold on
          colorbar;colormap(coolwarm);shading flat;
-% but to overlay contours we provide the cell centers and mask out the boundary/land cells
+% but to overlay contours we provide the cell centers and mask out boundary/land cells
+% also note we are passing contour 2-D arrays XC,YC so no transpose on THETA needed
          contour(XC,YC,mask(:,:,4).*THETA(:,:,4,100),[0:2:30],'k');
          set(gca,'XLim',[0 60]);set(gca,'Ylim',[15 75]);set(gca,'Clim',[0 30]);
          title('a) THETA 220m Depth (^oC)'); set(gca,'CLim',[0 30])
@@ -116,11 +119,14 @@ matlab_colormaps;
 % Here, our limited vertical resolution makes for an ugly pcolor plot, we'll shade using contourf instead
 % providing the centers of the vertical grid cells and cell centers in the x-dimension,
 % also masking out land cells at the boundary, which results in slight white space at the domain edges.
-% If using pcolor, provide location of vertical cell "faces" RF: 
-% pcolor(Xp1(1:62),RF(1:15),squeeze(THETA(:,15,:,end))');shading flat;colormap(coolwarm)
-% and note that matlab cuts out the bottom layer of valid temperature (the ending column) in its pcolor plot
          contourf(X,RC,squeeze(mask(:,15,:).*THETA(:,15,:,end))',0:2:30);colorbar
          title('b) THETA at 28.5N (^oC)');set(gca,'CLim',[0 30])
-         set(gca,'XLim',[0 60])
+         set(gca,'XLim',[0 60]);set(gca,'YLim',[-1800 0]);
          xlabel('Longitude');ylabel('Depth (m)')
-% one approach to avoid the white space at boundaries is to copy neighboring tracer values to land cells prior to contouring
+% One approach to avoiding the white space at boundaries/top/bottom (this occurs because contour plot
+% uses data at cell centers, with values masked/undefined beyond the cell centers toward boundaries)
+% is to copy neighboring tracer values to land cells prior to contouring (and don't mask),
+% and augment a row of z=0 data at the ocean surface and a row at the ocean bottom.
+% To instead plot using pcolor, provide location of vertical cell "faces" RF: 
+% RF=ncread('grid.nc','RF');pcolor(Xp1(1:62),RF(1:15),squeeze(THETA(:,15,:,end))');shading flat;colormap(coolwarm)
+% and note that matlab cuts out the bottom layer of valid temperature data (the ending column) using pcolor
