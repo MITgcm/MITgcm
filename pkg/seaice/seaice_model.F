@@ -179,7 +179,7 @@ C     has the effect that seaice_dynsolver is not called from seaice_model_ad
 C     anymore. This is important because with the numerous tricks to avoid
 C     complicated code in the backward integration (see pkg/autodiff),
 C     the extra call would update the ice velocities with the wrong
-C     set of flags values.
+C     set of flag values.
 #endif /* ALLOW_AUTODIFF_TAMC && SEAICE_ALLOW_DYNAMICS && SEAICE_CGRID */
 
 #ifdef ALLOW_THSICE
@@ -208,6 +208,16 @@ C NOW DO ADVECTION and DIFFUSION
         CALL SEAICE_ADVDIFF( uLoc, vLoc, myTime, myIter, myThid )
 #endif /* SEAICE_CGRID */
        ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE area  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE hsnow = comlev1, key=ikey_dynamics, kind=isbyte
+# ifdef SEAICE_VARIABLE_SALINITY
+CADJ STORE hsalt = comlev1, key=ikey_dynamics, kind=isbyte
+# endif
+C     Note: This store has the effect that seaice_advdiff is not called
+C     from seaice_model_ad anymore. Instead, the stored values are used.
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     After advection, the sea ice variables may have unphysical values
 C     e.g., < 0, that are regularized here. Concentration as a special case
