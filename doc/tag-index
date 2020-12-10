@@ -1,6 +1,29 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff: fix flow directives for self-adjoint cg2d
+ - new self-adjoint cg2d routine cg2d_sad.F mimics AD-code, but neglects
+   (purposefully) the proper sensitivity propagation
+ - extra storage of cg2d solver coefficients and preconditioner is required
+ - change 2 AD-verification experments (global_ocean.cs32x15 and
+   global_ocean.cs32x15.seaice) to test this code a little better:
+   use full NLFS and nchklev_1 = 2
+
+checkpoint67t (2020/11/30)
+o pkg/kpp:
+  - with CPP-option KPP_ESTIMATE_UREF, fix compilation errors + fix mixed layer
+    depth determination ;
+  - define KPP_ESTIMATE_UREF in verification/vermix ;
+  - a little bit of cleanup.
+o pkg/seaice:
+  - small modifications of seaice_growth_adx.F to avoid recomputation warnings
+    and to avoid potentially inefficient code ;
+  - remove duplicate version of seaice_solve4temp ;
+  - exclude code of seaice_growth.F if ALLOW_SEAICE_GROWTH_ADX defined ;
+  - switch on SEAICE_USE_GROWTH_ADX AD in experiment offline_exf_seaice and
+    update "output_adm.txt".
+o eesupp/src:
+  - add missing "stdio.h" in src code setdir.c
 o tools/do_tst_2+2 & tst_2+2:
   - bug fix: replace some non-standard sed command with POSIX compatible syntax
   - remove second blank at beginning of 2 new lines in file "data".
