@@ -7,8 +7,9 @@ Baroclinic Ocean Gyre
 (in directory: :filelink:`verification/tutorial_baroclinic_gyre`)
 
 This section describes an example experiment using MITgcm to simulate a
-baroclinic, wind and buoyancy-forced, double-gyre ocean circulation. Unlike tutorial barotropic gyre,
-which used a Cartesian grid and a single vertical layer, here the grid employs spherical polar coordinates with 15 vertical layers.
+baroclinic, wind and buoyancy-forced, double-gyre ocean circulation. Unlike tutorial
+:ref:`Barotropic Ocean Gyre <sec_eg_baro>`, which used a Cartesian grid and a single vertical
+layer, here the grid employs spherical polar coordinates with 15 vertical layers.
 The configuration is similar to the double-gyre setup first solved numerically
 in Cox and Bryan (1984) :cite:`cox:84`: the model is configured to
 represent an enclosed sector of fluid on a sphere, spanning the tropics to mid-latitudes,
@@ -1025,12 +1026,12 @@ tile --  ``mnc_test_00001`` through ``mnc_test_00004`` -- the first time
 the model is run). The (global) statistical-dynamical diagnostics output file will be written in only the first of these directories.
 The ``gluemncbig`` steps outlined :ref:`above <baroc_gluemnc_steps>` remain unchanged (if in doubt, one can always
 tell ``gluemncbig`` which specific directories to read,
-e.g. in bash ``mnc_test_{0009..0012}`` will grab only directories 0009, 0010, 0011, 0012).
+e.g., in bash ``mnc_test_{0009..0012}`` will grab only directories 0009, 0010, 0011, 0012).
 Also note it is no longer necessary to redirect standard output
 to a file such as ``output.txt``; rather, separate ``STDOUT.xxxx`` and ``STDERR.xxxx``
 files are created by each process, where ``xxxx`` is the process number (starting from ``0000``).
-Other than some additional `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_-related information, the standard output content is identical to
-that from the single-process run.
+Other than some additional `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_-related information,
+the standard output content is identical to that from the single-process run.
 
 .. _baroc_openmp:
 
@@ -1095,14 +1096,18 @@ to do so in matlab (reading in files using  :filelink:`utils/matlab/rdmds.m`), o
 One additional difference between :filelink:`pkg/msdio` and
 :filelink:`pkg/mnc` is that :ref:`Diagnostics Per Level Statistics <baroc_stat_diags>` are written in plain text, not binary, with :filelink:`pkg/msdio`.
 
+.. _baroclinic_gyre_solution:
+
 Model solution
 --------------
 
 In this section, we will examine details of the model solution,
-using annual mean time average data provided in diagnostics files ``dynStDiag.nc``, ``dynDiag.nc``, and ``surfDiag.nc``.
-See companion :filelink:`matlab file <verification/tutorial_baroclinic_gyre/analysis/matlab_plots.m>`
-or :filelink:`python file <verification/tutorial_baroclinic_gyre/analysis/plotting_codes.py>`
-which shows example code to create figures plotted in this section.
+using monthly and annual mean time average data provided in diagnostics files ``dynStDiag.nc``, ``dynDiag.nc``, and ``surfDiag.nc``.
+See companion :filelink:`matlab <verification/tutorial_baroclinic_gyre/analysis/matlab_plots.m>`
+or :filelink:`python <verification/tutorial_baroclinic_gyre/analysis/python_plots.py>`
+(or :filelink:`python using xarray <verification/tutorial_baroclinic_gyre/analysis/python_xr_plots.py>`)
+script which shows the code to read output `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ files
+and create figures shown in this section.
 
 Our ocean sector model is forced mechanically by wind stress and thermodynamically
 though temperature relaxation at the surface. As such,
@@ -1160,7 +1165,7 @@ Let's begin by examining the free surface solution (load diagnostics ``ETAN`` an
 In :numref:`baroclinic_gyre_trelax_freesurface` we show contours of free surface height
 (``ETAN``; this is what we plotted in our :ref:`barotropic gyre tutorial solution <barotropic_gyre_solution>`)
 overlaying a 2-D color plot of ``TRELAX``
-(red is where heat is released from the ocean, blue where heat enters the ocean), averaged over year 100.
+(blue is where heat is released from the ocean, red where heat enters the ocean), averaged over year 100.
 Note that a subtropical gyre is readily apparent, as suggested by geostropic currents in balance with
 the free surface elevation (not shown, but the reader is encouraged to load diagnostics ``UVEL`` and ``VVEL``
 and plot the circulation at various levels). Heat is entering the ocean mainly along the southern boundary,

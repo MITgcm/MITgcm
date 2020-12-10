@@ -711,16 +711,20 @@ binary data in ``Eta.0000077760.001.001.data`` is as simple as:
    contourf(XC/1000,YC/1000,Eta,[-.04:.01:.04]); colorbar;
    colormap((flipud(hot))); set(gca,'XLim',[0 1200]); set(gca,'YLim',[0 1200])
 
-or using python (you will need to install the MITgcmutils package, see :numref:`sec_python`):
+or using python (you will need to install the MITgcmutils package, see :numref:`MITgcmutils`):
 
 ::
 
    from MITgcmutils import mds
+   import numpy as np
    import matplotlib.pyplot as plt
    XC = mds.rdmds('XC'); YC = mds.rdmds('YC')
    Eta = mds.rdmds('Eta', 77760)
-   plt.contourf(XC, YC, Eta, np.linspace(-0.02, 0.05,8), cmap='hot_r')
+   plt.contourf(XC/1000, YC/1000, Eta, np.linspace(-0.02, 0.05,8), cmap='hot_r')
    plt.colorbar(); plt.show()
+
+(for a more involved example with detailed explanations how to read in model output, 
+perform calculations using these data, and make plots, see tutorial :ref:`Baroclinic Ocean Gyre <baroclinic_gyre_solution>`)
 
 Let’s simplify the example by considering the linear problem where we neglect the advection of momentum terms.
 In other words, replace :math:`\frac{Du}{Dt}` and :math:`\frac{Dv}{Dt}` with
