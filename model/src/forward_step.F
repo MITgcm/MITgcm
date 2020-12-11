@@ -364,7 +364,7 @@ C     == Global variables ==
 # ifdef ALLOW_OFFLINE
 #  include "OFFLINE.h"
 # endif
-# ifdef ALLOW_CG2D_NSA
+# if (defined ALLOW_CG2D_NSA) || (defined NONLIN_FRSURF)
 #  include "CG2D.h"
 # endif
 #endif /* ALLOW_AUTODIFF */
