@@ -1324,7 +1324,12 @@ These default packages are as follows:
 Additional CPP options that affect the model core code are set in files ``${PKG}_OPTIONS.h`` located in these packages' directories. Similarly, optional (non-default) packages
 also include package-specific CPP options that must be set in files ``${PKG}_OPTIONS.h``.
 
-The file  :filelink:`eesupp/inc/CPP_EEOPTIONS.h`  does not contain any CPP options that typically will need to be modified by users.
+Preprocessor Execution Environment Options
+------------------------------------------
+
+Document relevant options is file :filelink:`eesupp/inc/CPP_EEOPTIONS.h` here
+make table with GLOBAL_SUM_ORDER_TILES, GLOBAL_SUM_ORDER_TILES, COMPONENT_MODULE others?
+additional discussion of GLOBAL_SUM_ORDER_TILES, GLOBAL_SUM_ORDER_TILES as per PR #388
 
 .. _customize_model:
 
