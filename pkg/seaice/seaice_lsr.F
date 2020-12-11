@@ -227,10 +227,10 @@ C     does not change in the iteration
           uIceNm1(i,j,bi,bj) = uIce(i,j,bi,bj)
           vIceNm1(i,j,bi,bj) = vIce(i,j,bi,bj)
 C     this contribution should be here, but that changes results
-CML          FORCEX0(i,j,bi,bj)=FORCEX0(i,j,bi,bj)
+CML          FORCEX0(i,j,bi,bj) = FORCEX0(i,j,bi,bj)
 CML     &         +seaiceMassU(i,j,bi,bj)*recip_deltaT
 CML     &         *uIceNm1(i,j,bi,bj)
-CML          FORCEY0(i,j,bi,bj)=FORCEY0(i,j,bi,bj)
+CML          FORCEY0(i,j,bi,bj) = FORCEY0(i,j,bi,bj)
 CML     &         +seaiceMassV(i,j,bi,bj)*recip_deltaT
 CML     &         *vIceNm1(i,j,bi,bj)
          ENDDO
@@ -386,11 +386,24 @@ C     Set up of right hand sides of momentum equations starts here
 C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+C     this is the rhs contribution of the time derivative and it
+C     could be moved outside of the nonlinear loop.
+          FORCEX(i,j,bi,bj) = FORCEX0(i,j,bi,bj)
+     &         +seaiceMassU(i,j,bi,bj)*recip_deltaT
+     &         *uIceNm1(i,j,bi,bj)
+          FORCEY(i,j,bi,bj) = FORCEY0(i,j,bi,bj)
+     &         +seaiceMassV(i,j,bi,bj)*recip_deltaT
+     &         *vIceNm1(i,j,bi,bj)
+         ENDDO
+        ENDDO
         DO j=jMin,jMax
          DO i=iMin,iMax
 C     set up anti symmetric drag force and add in current force
 C     ( remember to average to correct velocity points )
-          FORCEX(i,j,bi,bj)=FORCEX0(i,j,bi,bj)+
+c         FORCEX(i,j,bi,bj) = FORCEX0(i,j,bi,bj)+
+          FORCEX(i,j,bi,bj) = FORCEX(i,j,bi,bj)+
      &         ( 0.5 _d 0 * ( DWATN(i,j,bi,bj)+DWATN(i-1,j,bi,bj) ) *
      &         COSWAT * uVel(i,j,kSrf,bi,bj)
      &         - SIGN(SINWAT, _fCori(i,j,bi,bj))* 0.5 _d 0 *
@@ -401,7 +414,8 @@ C     ( remember to average to correct velocity points )
      &          (vVel(i-1,j  ,kSrf,bi,bj)-vIceC(i-1,j  ,bi,bj)
      &          +vVel(i-1,j+1,kSrf,bi,bj)-vIceC(i-1,j+1,bi,bj))
      &         ) ) * areaW(i,j,bi,bj)
-          FORCEY(i,j,bi,bj)=FORCEY0(i,j,bi,bj)+
+c         FORCEY(i,j,bi,bj) = FORCEY0(i,j,bi,bj)+
+          FORCEY(i,j,bi,bj) = FORCEY(i,j,bi,bj)+
      &         ( 0.5 _d 0 * ( DWATN(i,j,bi,bj)+DWATN(i,j-1,bi,bj) ) *
      &         COSWAT * vVel(i,j,kSrf,bi,bj)
      &         + SIGN(SINWAT, _fCori(i,j,bi,bj)) * 0.5 _d 0 *
@@ -432,17 +446,8 @@ C-    add Coriolis term
 C      mask the forcing so far
         DO j=jMin,jMax
          DO i=iMin,iMax
-C     this is the rhs contribution of the time derivative and it
-C     should be outside of the nonlinear loop, but for some reason
-C     this changes the results, so we leave it here for now.
-          FORCEX(i,j,bi,bj)=FORCEX(i,j,bi,bj)
-     &         +seaiceMassU(i,j,bi,bj)*recip_deltaT
-     &         *uIceNm1(i,j,bi,bj)
-          FORCEY(i,j,bi,bj)=FORCEY(i,j,bi,bj)
-     &         +seaiceMassV(i,j,bi,bj)*recip_deltaT
-     &         *vIceNm1(i,j,bi,bj)
-          FORCEX(i,j,bi,bj)=FORCEX(i,j,bi,bj) * seaiceMaskU(i,j,bi,bj)
-          FORCEY(i,j,bi,bj)=FORCEY(i,j,bi,bj) * seaiceMaskV(i,j,bi,bj)
+          FORCEX(i,j,bi,bj) = FORCEX(i,j,bi,bj)*seaiceMaskU(i,j,bi,bj)
+          FORCEY(i,j,bi,bj) = FORCEY(i,j,bi,bj)*seaiceMaskV(i,j,bi,bj)
          ENDDO
         ENDDO
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
