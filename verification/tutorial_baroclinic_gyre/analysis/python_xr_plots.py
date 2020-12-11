@@ -57,10 +57,16 @@ surfDiag = xr.open_dataset('surfDiag.nc')
 # TRELAX:       (time, depth, y, x); depth=0 (surface-only)
 # ETAN:         (time, depth, y, x); depth=0 (surface-only)
 dynDiag = xr.open_dataset('dynDiag.nc')
+dynDiag = dynDiag.rename({'Zmd000015':'Z'})
 # UVEL:         (time, depth, y, x); x dim. is 63, includes eastern edge
 # VVEL:         (time, depth, y, x); y dim. is 63, includes northern edge
 # THETA:        (time, depth, y, x)
- 
+# Note the Z dimension here has a different name, we rename to the standard name 'Z'
+# which will make life easier when we do some calculations using the raw data.
+# This is because /pkg/diagnostics has an option to allow specific levels of a 3-D variable
+# to be output. If 'levels' are selected, the following additional statement is needed:
+#  dynDiag['Z'] = grid['Z'][dynDiag.diag_levels.astype(int)-1]
+
 
 ###########   plot diagnostics   ########### 
 
@@ -115,7 +121,7 @@ plt.show()
 # figure 4.8 - barotropic streamfunction at t=100 yrs. (w/overlaid labeled contours)
 #
 plt.figure(figsize=(10,8))
-ubt = (dynDiag.UVEL.rename({'Zmd000015':'Z'})*grid.drF).sum(dim='Z') # again note that a np.tile not needed to broadcast 1-D drF
+ubt = (dynDiag.UVEL*grid.drF).sum(dim='Z') # again note that a np.tile not needed to broadcast 1-D drF
 psi = (-ubt*grid.dyG).cumsum(dim='Y')/1.e6
 psi.pad(Y=1,constant_values=0)[-1,:-1,:].assign_coords(Y=grid.Yp1.values).plot.contourf(levels=np.linspace(-30, 30, 13), cmap='RdYlBu_r')
 cs=psi.pad(Y=1,constant_values=0)[-1,:-1,:].assign_coords(Y=grid.Yp1.values).plot.contour(levels=np.arange(-35,40,5), colors='k')
@@ -143,14 +149,13 @@ plt.title('THETA at 220 m depth')
 
 plt.subplot(122)
 # Here, our limited vertical resolution makes for an ugly pcolor plot, so we'll shade using contour instead.
-# Need to rename the DataArray coordinate Zmd000015 to Z to get depths plotted correctly (as MITgcm RC, cell centers in vertical).
 # also masking out land cells at the boundary, which results in slight white space at the domain edges.
-dynDiag.THETA[-1,:,14,:].rename({'Zmd000015':'Z'}).where(grid.HFacC[:,14,:]!=0).plot.contourf(levels=np.arange(0,30,.2),cmap='coolwarm')
-dynDiag.THETA[-1,:,14,:].rename({'Zmd000015':'Z'}).where(grid.HFacC[:,14,:]!=0).plot.contour(levels=np.arange(0,30,2),colors='k')
+dynDiag.THETA[-1,:,14,:].where(grid.HFacC[:,14,:]!=0).plot.contourf(levels=np.arange(0,30,.2),cmap='coolwarm')
+dynDiag.THETA[-1,:,14,:].where(grid.HFacC[:,14,:]!=0).plot.contour(levels=np.arange(0,30,2),colors='k')
 plt.title('THETA at 28.5 N');plt.xlim(0,60);plt.ylim(-1800,0)
 plt.show()
 # One approach to avoiding the white space at boundaries/top/bottom (this occurs because contour plot
 # uses data at cell centers, with values masked/undefined beyond the cell centers toward boundaries)
 # is to copy neighboring tracer values to land cells prior to contouring (and then do not mask the data, but set xlim and ylim),
 # and augment a row of z=0 data at the ocean surface and a row at the ocean bottom.
-# To use pcolor instead: dynDiag.THETA[-1,:,14,:].assign_coords(Zmd000015=grid.RC.values).plot(cmap='coolwarm')
+# To use pcolor instead: dynDiag.THETA[-1,:,14,:].assign_coords(Z=grid.RC.values).plot(cmap='coolwarm')
