@@ -59,3 +59,39 @@ jobs:
         MITGCM_PRECS: ${{ matrix.precs }}
        run: |
          . tools/ci/runtr.sh
+
+ test_openad:
+   runs-on: ubuntu-latest
+
+   strategy:
+     matrix:
+      include:
+        - exp: "global_ocean.90x40x15"
+          precs: "16"
+
+   continue-on-error: true
+
+   steps:
+
+     - name: Checkout
+       uses: actions/checkout@v2.2.0
+
+     - name: Set up compilers
+       run: |
+         sudo apt-get update
+         sudo apt-get -qq install gfortran
+
+     - name: Get a docker image and set it running
+       run: |
+         docker pull mitgcm/mitgcm-openad-test:centos-test
+         docker run -i -t -v `pwd`:/MITgcm -d --name openad-testing --ulimit stack=-1:-1 --rm mitgcm/mitgcm-openad-test:centos-test /bin/bash
+
+     - name: Run testreport
+       env:
+        MITGCM_EXP: ${{ matrix.exp }}
+        MITGCM_PRECS: ${{ matrix.precs }}
+        MITGCM_DECMD: "docker exec -i openad-testing bash -lc"
+        MITGCM_TROPT: "-oad -devel -of=../tools/build_options/linux_amd64_gfortran"
+        MITGCM_INPUT_DIR_PAT: '/input_oad.*'
+       run: |
+         . tools/ci/runtr.sh
