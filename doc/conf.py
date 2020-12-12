@@ -39,6 +39,8 @@ extensions = ['sphinx.ext.autodoc',
     'sphinxcontrib.programoutput',
     'mitgcm']
 
+bibtex_bibfiles = ['manual_references.bib']
+
 autodoc_mock_imports = ['matplotlib', 'mpl_toolkits']
 
 # Add any paths that contain templates here, relative to this directory.
