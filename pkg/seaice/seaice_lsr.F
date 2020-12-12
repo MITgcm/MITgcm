@@ -218,21 +218,20 @@ CML         areaMinLoc = SEAICE_EPS
        ENDDO
       ENDDO
 
-C     this is the rhs contribution of the time derivative and
-C     does not change in the iteration
+C     This is the rhs contribution of the time derivative.
+C     We add it here, because it does not change in the iteration.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           uIceNm1(i,j,bi,bj) = uIce(i,j,bi,bj)
           vIceNm1(i,j,bi,bj) = vIce(i,j,bi,bj)
-C     this contribution should be here, but that changes results
-CML          FORCEX0(i,j,bi,bj) = FORCEX0(i,j,bi,bj)
-CML     &         +seaiceMassU(i,j,bi,bj)*recip_deltaT
-CML     &         *uIceNm1(i,j,bi,bj)
-CML          FORCEY0(i,j,bi,bj) = FORCEY0(i,j,bi,bj)
-CML     &         +seaiceMassV(i,j,bi,bj)*recip_deltaT
-CML     &         *vIceNm1(i,j,bi,bj)
+          FORCEX0(i,j,bi,bj) = FORCEX0(i,j,bi,bj)
+     &         +seaiceMassU(i,j,bi,bj)*recip_deltaT
+     &         *uIceNm1(i,j,bi,bj)
+          FORCEY0(i,j,bi,bj) = FORCEY0(i,j,bi,bj)
+     &         +seaiceMassV(i,j,bi,bj)*recip_deltaT
+     &         *vIceNm1(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -312,7 +311,7 @@ C     different stabilisation methods are possible.
 C     This is stable but slow to converge.
 C          uIceC(i,j,bi,bj) = HALF*(uIce(i,j,bi,bj)+uIceNm1(i,j,bi,bj))
 C          vIceC(i,j,bi,bj) = HALF*(vIce(i,j,bi,bj)+vIceNm1(i,j,bi,bj))
-C     This converges slightly faster the the previous one.
+C     This converges slightly faster than the previous lines.
            uIceC(i,j,bi,bj) = HALF*( uIce(i,j,bi,bj)+uIceC(i,j,bi,bj) )
            vIceC(i,j,bi,bj) = HALF*( vIce(i,j,bi,bj)+vIceC(i,j,bi,bj) )
           ENDDO
@@ -386,24 +385,11 @@ C     Set up of right hand sides of momentum equations starts here
 C
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-C     this is the rhs contribution of the time derivative and it
-C     could be moved outside of the nonlinear loop.
-          FORCEX(i,j,bi,bj) = FORCEX0(i,j,bi,bj)
-     &         +seaiceMassU(i,j,bi,bj)*recip_deltaT
-     &         *uIceNm1(i,j,bi,bj)
-          FORCEY(i,j,bi,bj) = FORCEY0(i,j,bi,bj)
-     &         +seaiceMassV(i,j,bi,bj)*recip_deltaT
-     &         *vIceNm1(i,j,bi,bj)
-         ENDDO
-        ENDDO
         DO j=jMin,jMax
          DO i=iMin,iMax
 C     set up anti symmetric drag force and add in current force
 C     ( remember to average to correct velocity points )
-c         FORCEX(i,j,bi,bj) = FORCEX0(i,j,bi,bj)+
-          FORCEX(i,j,bi,bj) = FORCEX(i,j,bi,bj)+
+          FORCEX(i,j,bi,bj) = FORCEX0(i,j,bi,bj)+
      &         ( 0.5 _d 0 * ( DWATN(i,j,bi,bj)+DWATN(i-1,j,bi,bj) ) *
      &         COSWAT * uVel(i,j,kSrf,bi,bj)
      &         - SIGN(SINWAT, _fCori(i,j,bi,bj))* 0.5 _d 0 *
@@ -414,8 +400,7 @@ c         FORCEX(i,j,bi,bj) = FORCEX0(i,j,bi,bj)+
      &          (vVel(i-1,j  ,kSrf,bi,bj)-vIceC(i-1,j  ,bi,bj)
      &          +vVel(i-1,j+1,kSrf,bi,bj)-vIceC(i-1,j+1,bi,bj))
      &         ) ) * areaW(i,j,bi,bj)
-c         FORCEY(i,j,bi,bj) = FORCEY0(i,j,bi,bj)+
-          FORCEY(i,j,bi,bj) = FORCEY(i,j,bi,bj)+
+          FORCEY(i,j,bi,bj) = FORCEY0(i,j,bi,bj)+
      &         ( 0.5 _d 0 * ( DWATN(i,j,bi,bj)+DWATN(i,j-1,bi,bj) ) *
      &         COSWAT * vVel(i,j,kSrf,bi,bj)
      &         + SIGN(SINWAT, _fCori(i,j,bi,bj)) * 0.5 _d 0 *
