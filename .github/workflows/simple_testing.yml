@@ -17,6 +17,11 @@ jobs:
        run: |
          sudo apt-get update
          sudo apt-get -qq install gfortran
+     
+     - name: Get a docker image and set it running (if this works!)
+       run: |
+         docker pull mitgcm/testreport-images:ubuntu_18_04_villon
+         docker run  -v `pwd`:/MITgcm --name ubuntu_18_04-testreport -t -d mitgcm/testreport-images:ubuntu_18_04_villon /bin/bash
          
      - name: Run a test
        env: 
