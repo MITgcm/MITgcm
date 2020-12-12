@@ -17,4 +17,11 @@ jobs:
        run: |
          sudo apt-get update
          sudo apt-get -qq install gfortran
+         
+     - name: Run a test
+       env: 
+        MITGCM_EXP: "tutorial_deep_convection" 
+        MITGCM_PRECS: "16 16"
+       run: |
+         . tools/ci/runtr.sh
     
