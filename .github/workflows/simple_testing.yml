@@ -7,7 +7,37 @@ on:
 jobs:
  test_report:
    runs-on: ubuntu-latest
-   
+
+   strategy:
+     matrix:
+      include:
+        - exp: "offline_exf_seaice"
+          precs: "16 16 16 16 16"
+        - exp: "global_ocean.cs32x15"
+          precs: "16 16 16 16 16"
+        - exp: "tutorial_deep_convection"
+          precs: "16 16"
+        - exp: "aim.5l_cs"
+          precs: "14 16"
+        - exp: "isomip"
+          precs: "16 16 16 16"
+        - exp: "global_ocean.90x40x15"
+          precs: "16 16 16"
+        - exp: "tutorial_plume_on_slope"
+          precs: "16"
+        - exp: "tutorial_advection_in_gyre"
+          precs: "16"
+        - exp: "hs94.cs-32x32x5"
+          precs: "13 16"
+        - exp: "tutorial_global_oce_biogeo"
+          precs: "16"
+        - exp: "tutorial_global_oce_in_p"
+          precs: "16"
+        - exp: "tutorial_cfc_offline"
+          precs: "16"
+
+   continue-on-error: true
+
    steps:
    
      - name: Checkout
@@ -25,8 +55,7 @@ jobs:
          
      - name: Run a test
        env: 
-        MITGCM_EXP: "tutorial_deep_convection" 
-        MITGCM_PRECS: "16 16"
+        MITGCM_EXP: ${{ matrix.exp }}
+        MITGCM_PRECS: ${{ matrix.precs }}
        run: |
          . tools/ci/runtr.sh
-    
