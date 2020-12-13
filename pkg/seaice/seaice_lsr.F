@@ -123,6 +123,9 @@ C     intermediate time level centered (C) between n and n-1
 C     auxillary fields
       _RL uTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL vTmp (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     auxillary fields to store intermediate FORCEX/Y0
+      _RL fxTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL fyTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 C     fractional area at velocity points
       _RL areaW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL areaS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -218,18 +221,24 @@ CML         areaMinLoc = SEAICE_EPS
        ENDDO
       ENDDO
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uice    = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vice    = comlev1, key=ikey_dynamics, kind=isbyte
+#endif /*  ALLOW_AUTODIFF_TAMC */
 C     This is the rhs contribution of the time derivative.
 C     We add it here, because it does not change in the iteration.
+C     We store this update on a local field to avoid touching FORCEX/Y0.
+C     As a side effect, this avoids TAF recomputation warnings.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           uIceNm1(i,j,bi,bj) = uIce(i,j,bi,bj)
           vIceNm1(i,j,bi,bj) = vIce(i,j,bi,bj)
-          FORCEX0(i,j,bi,bj) = FORCEX0(i,j,bi,bj)
+          fxTmp  (i,j,bi,bj) = FORCEX0(i,j,bi,bj)
      &         +seaiceMassU(i,j,bi,bj)*recip_deltaT
      &         *uIceNm1(i,j,bi,bj)
-          FORCEY0(i,j,bi,bj) = FORCEY0(i,j,bi,bj)
+          fyTmp  (i,j,bi,bj) = FORCEY0(i,j,bi,bj)
      &         +seaiceMassV(i,j,bi,bj)*recip_deltaT
      &         *vIceNm1(i,j,bi,bj)
          ENDDO
@@ -389,7 +398,7 @@ C
          DO i=iMin,iMax
 C     set up anti symmetric drag force and add in current force
 C     ( remember to average to correct velocity points )
-          FORCEX(i,j,bi,bj) = FORCEX0(i,j,bi,bj)+
+          FORCEX(i,j,bi,bj) = fxTmp(i,j,bi,bj)+
      &         ( 0.5 _d 0 * ( DWATN(i,j,bi,bj)+DWATN(i-1,j,bi,bj) ) *
      &         COSWAT * uVel(i,j,kSrf,bi,bj)
      &         - SIGN(SINWAT, _fCori(i,j,bi,bj))* 0.5 _d 0 *
@@ -400,7 +409,7 @@ C     ( remember to average to correct velocity points )
      &          (vVel(i-1,j  ,kSrf,bi,bj)-vIceC(i-1,j  ,bi,bj)
      &          +vVel(i-1,j+1,kSrf,bi,bj)-vIceC(i-1,j+1,bi,bj))
      &         ) ) * areaW(i,j,bi,bj)
-          FORCEY(i,j,bi,bj) = FORCEY0(i,j,bi,bj)+
+          FORCEY(i,j,bi,bj) = fyTmp(i,j,bi,bj)+
      &         ( 0.5 _d 0 * ( DWATN(i,j,bi,bj)+DWATN(i,j-1,bi,bj) ) *
      &         COSWAT * vVel(i,j,kSrf,bi,bj)
      &         + SIGN(SINWAT, _fCori(i,j,bi,bj)) * 0.5 _d 0 *
