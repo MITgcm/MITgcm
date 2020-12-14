@@ -1,6 +1,6 @@
-# For testing do on every push
 on:
   push:
+  pull_request:
 
 jobs:
  test_report:
