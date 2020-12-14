@@ -3,7 +3,7 @@ on:
   pull_request:
 
 jobs:
- test_report:
+ forward:
    runs-on: ubuntu-latest
 
    strategy:
@@ -58,7 +58,7 @@ jobs:
        run: |
          . tools/ci/runtr.sh
 
- test_openad:
+ openad:
    runs-on: ubuntu-latest
 
    strategy:
@@ -94,7 +94,7 @@ jobs:
        run: |
          . tools/ci/runtr.sh
 
- doc_test_html:
+ doc_html:
    runs-on: ubuntu-latest
 
    continue-on-error: true
@@ -116,7 +116,7 @@ jobs:
          cd doc
          sphinx-build -Wa -b html -d _build_doctrees . _build/html
 
- doc_test_latex:
+ doc_latex:
    runs-on: ubuntu-latest
 
    continue-on-error: true
