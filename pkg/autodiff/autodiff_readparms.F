@@ -1,4 +1,7 @@
 #include "AUTODIFF_OPTIONS.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_COMMON_OPTIONS.h"
+#endif /* ALLOW_MOM_COMMON */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
@@ -189,13 +192,31 @@ C--   Check parameters :
        CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1
 #endif /* AUTODIFF_ALLOW_VISCFACADJ */
-CML#if (!defined ALLOW_3D_VISCAH) || (!defined ALLOW_3D_VISCA4)
-CML       WRITE(msgBuf,'(2A)') 'AUTODIFF_READPARMS: ',
-CML     &      'To use viscFacInFw/viscFacInAd, '//
-CML     &      'define ALLOW_3D_VISCA4 and/or ALLOW_3D_VISCA4'
-CML       CALL PRINT_ERROR( msgBuf, myThid )
-CML       errCount = errCount + 1
-CML#endif /* ALLOW_3D_VISCA */
+#if (!defined ALLOW_3D_VISCAH && !defined ALLOW_3D_VISCA4)
+       WRITE(msgBuf,'(2A)') 'AUTODIFF_READPARMS: ',
+     &      'To use viscFacInFw/viscFacInAd, '//
+     &      'define ALLOW_3D_VISCA4 and/or ALLOW_3D_VISCA4'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+#endif /* ALLOW_3D_VISCA */
+#ifdef ALLOW_3D_VISCAH
+       IF ( viscAhDfile .EQ. ' ' .AND. viscAhZfile .EQ. ' ' ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** AUTODIFF_READPARMS: ',
+     &       'For viscFacInFw/viscFacInAd to have any effect, '//
+     &       'specify at least one of viscAh[D/Z]file'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
+       ENDIF
+#endif /* ALLOW_3D_VISCAH */
+#ifdef ALLOW_3D_VISCA4
+       IF ( viscA4Dfile .EQ. ' ' .AND. viscA4Zfile .EQ. ' ' ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** AUTODIFF_READPARMS: ',
+     &       'For viscFacInFw/viscFacInAd to have any effect, '//
+     &       'specify at least one of viscA4[D/Z]file'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
+       ENDIF
+#endif /* ALLOW_3D_VISCA4 */
       ENDIF
 #ifdef ALLOW_SEAICE
       IF ( SEAICEuseFREEDRIFTswitchInAd .AND. .NOT.useSEAICE ) THEN
