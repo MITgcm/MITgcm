@@ -1327,9 +1327,41 @@ also include package-specific CPP options that must be set in files ``${PKG}_OPT
 Preprocessor Execution Environment Options
 ------------------------------------------
 
-Document relevant options is file :filelink:`eesupp/inc/CPP_EEOPTIONS.h` here
-make table with GLOBAL_SUM_ORDER_TILES, GLOBAL_SUM_ORDER_TILES, COMPONENT_MODULE others?
-additional discussion of GLOBAL_SUM_ORDER_TILES, GLOBAL_SUM_ORDER_TILES as per PR #388
+The file :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>` in the directory
+:filelink:`eesupp/inc/` contains a number of CPP flags related to the execution environment where the model will run. Many of these flags were intended for very specific platform
+environments, and not meant to be changed for more general environments. Below we describe the user-editable CPP flags,
+i.e., other flags in :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>` not mentioned below should NOT be changed:
+
+.. tabularcolumns:: |\Y{.475}|\Y{.1}|\Y{.45}|
+
+.. table::
+   :class: longtable
+   :name: cpp_eeopt_flags
+
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | CPP Flag Name                                 | Default | Description                                                                                                          |
+   +===============================================+=========+======================================================================================================================+
+   | :varlink:`GLOBAL_SUM_ORDER_TILES`             | #define | always cumulate tile local-sum in the same order by applying MPI allreduce to array of tiles                         |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`GLOBAL_SUM_SEND_RECV`               | #undef  | alternative way of doing global sum without MPI allreduce call                                                       |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`COMPONENT_MODULE`                   | #undef  | control use of communication with other components, i.e., sets component to work with a coupler interface            |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`SINGLE_DISK_IO`                     | #undef  | to write STDOUT, STDERR and scratch files from process 0 only                                                        |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`FAST_BYTESWAP`                      | #undef  | alternative formulation of BYTESWAP, faster than compiler flag -byteswapio on the Altix platform                     |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`USE_FORTRAN_SCRATCH_FILES`          | #undef  | flag to turn on old default of opening scratch files with the STATUS='SCRATCH' option                                |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+
+The default setting of ``#define``  :varlink:`GLOBAL_SUM_ORDER_TILES`
+in :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>` provides a way to achieve numerically
+reproducible global sums.  As implemented however, this approach will
+increase network traffic and computations in a way that scales
+quadratically with `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_  process count.  Profiling has shown that letting the
+code fall through to a baseline approach that simply uses `MPI_Allreduce() <https://www.open-mpi.org/doc/v3.0/man3/MPI_Allreduce.3.php>`_
+can provide significantly improved performance for certain simulations.
+The fall-though approach is activated by ``#undef`` both :varlink:`GLOBAL_SUM_ORDER_TILES` and :varlink:`GLOBAL_SUM_SEND_RECV`.
 
 .. _customize_model:
 
