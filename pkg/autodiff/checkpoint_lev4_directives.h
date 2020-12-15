@@ -98,12 +98,8 @@ CADJ STORE rstardhcdt,rstardhsdt,rstardhwdt
 CADJ &     = tapelev4, key = ilev_4
 # endif
 
-# ifdef ALLOW_CG2D_NSA
-CADJ STORE aW2d, aS2d, aC2d =
-CADJ &     tapelev4, key = ilev_4
-CADJ STORE pc, ps, pw =
-CADJ &     tapelev4, key = ilev_4
-# endif
+CADJ STORE aW2d, aS2d, aC2d = tapelev4, key = ilev_4
+CADJ STORE pc, ps, pw       = tapelev4, key = ilev_4
 
 #endif /* NONLIN_FRSURF */
 

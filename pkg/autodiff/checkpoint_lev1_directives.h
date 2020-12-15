@@ -33,6 +33,9 @@ CADJ STORE hfac_surfNm1C = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE hfac_surfNm1W = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE hfac_surfNm1S = comlev1, key = ikey_dynamics, kind = isbyte
 
+CADJ STORE aW2d,aS2d,aC2d= comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE pW, pS, pC    = comlev1, key = ikey_dynamics, kind = isbyte
+
 CADJ STORE theta, salt   = comlev1, key = ikey_dynamics,kind = isbyte
 CADJ STORE uVel, vVel    = comlev1, key = ikey_dynamics,kind = isbyte
 

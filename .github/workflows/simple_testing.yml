@@ -1,0 +1,32 @@
+name: Initial testing of switching to github actions for CI
+
+# For testing do on every push
+on:
+  push:
+
+jobs:
+ test_report:
+   runs-on: ubuntu-latest
+   
+   steps:
+   
+     - name: Checkout
+       uses: actions/checkout@v2.2.0
+   
+     - name: Set up compilers
+       run: |
+         sudo apt-get update
+         sudo apt-get -qq install gfortran
+     
+     - name: Get a docker image and set it running (if this works!)
+       run: |
+         docker pull mitgcm/testreport-images:ubuntu_18_04_villon
+         docker run  -v `pwd`:/MITgcm --name ubuntu_18_04-testreport -t -d mitgcm/testreport-images:ubuntu_18_04_villon /bin/bash
+         
+     - name: Run a test
+       env: 
+        MITGCM_EXP: "tutorial_deep_convection" 
+        MITGCM_PRECS: "16 16"
+       run: |
+         . tools/ci/runtr.sh
+    

@@ -171,6 +171,10 @@ C--   Print out some kee parameters :
      &  'mon_AdVarExch =', ' /* control adexch before monitor */')
        CALL WRITE_0D_RL( viscFacInAd, INDEX_NONE,
      &  'viscFacInAd =', ' /* viscosity factor for adjoint */')
+       CALL WRITE_0D_RL( SIregFacInAd, INDEX_NONE,
+     &  'SIregFacInAd =', ' /* sea ice factor for adjoint model */')
+       CALL WRITE_0D_RL( SIregFacInFw, INDEX_NONE,
+     &  'SIregFacInFw =', ' /* sea ice factor for forward model */')
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
