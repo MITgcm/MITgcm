@@ -49,7 +49,7 @@ c     == end of interface ==
 
       do k = 1, NGENCOST
 
-         if ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 ) 
+         if ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 )
      &   .AND.( .NOT.gencost_is1d(k) ) ) then
 
 
@@ -80,7 +80,7 @@ c     == end of interface ==
      &     gencost_spmin(k), gencost_spmax(k), gencost_spzero(k),
      &     gencost_preproc(1,k), gencost_preproc_c(1,k),
      &     gencost_preproc_i(1,k), gencost_preproc_r(1,k),
-     &     gencost_posproc(1,k), gencost_posproc_c(1,k), 
+     &     gencost_posproc(1,k), gencost_posproc_c(1,k),
      &     gencost_posproc_i(1,k), gencost_posproc_r(1,k),
      &     gencost_outputlevel(k), gencost_name(k),
      &     objf_gencost(1,1,k), num_gencost(1,1,k),
@@ -93,6 +93,7 @@ c     == end of interface ==
       call cost_gencost_glbmean( mythid )
       call cost_gencost_boxmean( mythid )
       call cost_gencost_bpv4( mythid )
+      call cost_gencost_moc( mythid )
       IF (using_cost_transp) call cost_gencost_transp( mythid )
       IF (using_cost_altim) call cost_gencost_sshv4( mythid )
       IF (using_cost_sst) call cost_gencost_sstv4( mythid )

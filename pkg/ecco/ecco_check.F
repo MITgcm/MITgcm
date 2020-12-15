@@ -526,9 +526,10 @@ c-- (upper/lower-case matters) in cost_gencost_customize
 c---------------- block -4 ----------------------------
 c-- transs: require [mask,bar][W,S]file, can have datafile, but
 c-- not checked here. also not checked for variwei at the moment
-         elseif ( gencost_flag(k).eq. -4 ) then
+         elseif ( (gencost_flag(k).eq. -4) .or.
+     &            (gencost_flag(k).eq. -5) ) then
           WRITE(msgBuf,'(A,i3,L5)')
-     &     'ecco_check for gencost transp; k,using_gencost(k): ,',
+     &     'ecco_check for gencost transp & moc; k,using_gencost(k): ,',
      &     k,using_gencost(k)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT , myThid)
@@ -540,7 +541,7 @@ C ---
 
           if (gencost_barfile(k)(1:7).eq.'m_trVol') then
            WRITE(msgBuf,'(A)')
-     &   '** WARNING ** ECCO_CHECK: cost_gencost_transp.F not tested.'
+     &  '** WARNING ** ECCO_CHECK: cost_gencost_transp/moc.F not tested'
            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
            WRITE(msgBuf,'(A)')
@@ -572,8 +573,8 @@ C ---
 C Note to user: use gencost_mask not errfile
 C ---
           if(gencost_errfile(k) .ne. ' ') then
-            WRITE(msgBuf,'(3A)') 'S/R ECCO_CHECK: transp now ',
-     &        ' uses gencost_mask instead of gencost_errfile --',
+            WRITE(msgBuf,'(3A)') 'S/R ECCO_CHECK: transp & moc now ',
+     &        ' use gencost_mask instead of gencost_errfile --',
      &        ' please update data.ecco accordingly'
             CALL PRINT_ERROR( msgBuf, myThid )
             STOP 'ABNORMAL END: S/R ECCO_CHECK'
