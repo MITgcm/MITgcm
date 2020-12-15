@@ -1420,9 +1420,10 @@ To do this you will need a working python installation with the following packag
  - numpy
 
 There are many tools available to create a python environment with these packages on your local machine (e.g., using ``pip install``)
-and if you are comfortable doing so on your own, go ahead.
+and if you are comfortable doing so on your own, go ahead. Note that as of this writing (December 2020), sphinxcontrib-bibtex versions
+2.0.0 and higher are not supported (we suggest using version 1.0.0).
 
-However, if you are new or less experienced with python, we suggest the following steps:
+However, if you are new to python, or less experienced, we suggest the following steps:
 
 #. Get miniforge from https://github.com/conda-forge/miniforge/#download (for linux, win, or mac). Follow the instructions
    to run the installer from a terminal window. Make sure to say "yes" when it asks to initialize Miniforge3 --  that way
