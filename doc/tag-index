@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o utils/python/MITgcmutils
+ - add code to compute horizontal divergence of a vector field, gradient of a
+   scalar field, and averages to c-points on an llc grid.
 o pkg/seaice:
  - fix bug in seaice_lsr, spotted by Martin Vancoppenolle, that lead to solving
    stationary momentum equations (du/dt -> 0) for SEAICEnonLinIterMax>2 ;
