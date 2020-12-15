@@ -30,7 +30,6 @@ C allow use of legacy ecco/ctrl codes
 #define ECCO_CTRL_DEPRECATED
 
 #undef EXCLUDE_CTRL_PACK
-#define  CTRL_SET_PREC_32
 #define  ALLOW_NONDIMENSIONAL_CONTROL_IO
 
 C       >>> Initial values.

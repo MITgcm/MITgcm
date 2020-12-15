@@ -1,8 +1,8 @@
  &ctrl_nml
   doMainUnpack=.FALSE.,
   doMainPack=.FALSE.,
+  ctrlprec = 32,
  /
 #
  &ctrl_packnames
  /
-
