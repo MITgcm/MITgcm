@@ -1,4 +1,4 @@
 sphinx>2
-sphinxcontrib-bibtex
+sphinxcontrib-bibtex<2
 sphinxcontrib-programoutput
 numpy
