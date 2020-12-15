@@ -457,7 +457,7 @@ def pcol(*arguments, **kwargs):
     fe.append( (f0[0][1][0,-1]+f0[0][3][0,-1])/2. )
     fe.append( (f0[1][1][0,-1]+f0[1][3][0,-1])/2. )
     fe.append( np.NaN )
-    f  = np.copy(f0)
+    f = np.array(f0, dtype=object)
     # fill some gaps at the face boundaries, but only for the coordinate arrays (k=0,1)
     for t in [0,2,4]:
         tp = 2*(t//2)
