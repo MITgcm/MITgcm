@@ -93,13 +93,13 @@ C     fac scales the soft maximum for more accuracy
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLy
+         DO i=1-OLx,sNx+OLx
           CbotLoc(I,J,bi,bj) = 0. _d 0
           tmpFld(I,J)      = 0. _d 0
          ENDDO
         ENDDO
         DO j=1-OLy,sNy+OLy-1
-         DO i=1-OLx,sNx+OLy-1
+         DO i=1-OLx,sNx+OLx-1
           IF ( AREALoc(I,J,bi,bj) .GT. 0.01 _d 0 ) THEN
 #ifdef OBCS_UVICE_OLD
            tmp = 0.25 _d 0*(
@@ -122,7 +122,7 @@ C     fac scales the soft maximum for more accuracy
         DO k=1,nITD
 #endif /* SEAICE_ITD */
          DO j=1-OLy,sNy+OLy-1
-          DO i=1-OLx,sNx+OLy-1
+          DO i=1-OLx,sNx+OLx-1
            IF ( AREALoc(I,J,bi,bj) .GT. 0.01 _d 0 ) THEN
 CML           hActual = HEFFLoc(i,j,bi,bj)
 CML     &          /SQRT( AREAITDLoc(i,j,bi,bj)**2 + area_reg_sq )
