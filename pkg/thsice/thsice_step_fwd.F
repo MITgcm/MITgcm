@@ -2,6 +2,9 @@
 #ifdef ALLOW_ATM2D
 # include "ctrparam.h"
 #endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: THSICE_STEP_FWD

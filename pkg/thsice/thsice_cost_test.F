@@ -1,4 +1,10 @@
 #include "THSICE_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
+#ifdef ALLOW_COST
+# include "COST_OPTIONS.h"
+#endif
 
       subroutine thsice_cost_test( mytime, myiter, mythid )
 
