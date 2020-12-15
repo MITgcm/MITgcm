@@ -458,12 +458,12 @@ def pcol(*arguments, **kwargs):
     fe.append( (f0[1][1][0,-1]+f0[1][3][0,-1])/2. )
     fe.append( np.NaN )
     f  = np.copy(f0)
-    # fill some gaps at the face boundaries
+    # fill some gaps at the face boundaries, but only for the coordinate arrays (k=0,1)
     for t in [0,2,4]:
         tp = 2*(t//2)
         tpp = tp
         if tp==4: tpp = tp-6
-        for k in [0,1,2]:
+        for k in [0,1]:
             tp = min(tp,3)
             f[k][t] = np.concatenate((f0[k][t],f0[k][1+tp][:,:1]),axis=1)
             if k==2: tmp = np.atleast_2d(np.append(f0[k][2+tpp][::-1,:1],fo[k]))
@@ -472,7 +472,7 @@ def pcol(*arguments, **kwargs):
 
     for t in [1,3]:
         tp = 2*(t//2)
-        for k in [0,1,2]:
+        for k in [0,1]:
             f[k][t] = np.concatenate((f0[k][t],f0[k][2+tp][:1,:]),axis=0)
             if k==2: tmp = np.atleast_2d(np.append(f0[k][3+tp][:1,::-1],fe[k]))
             else:    tmp = np.atleast_2d(np.append(fe[k],f0[k][3+tp][:1,::-1]))
@@ -513,7 +513,8 @@ def pcol(*arguments, **kwargs):
         nn = nx//2+1
         xx = np.copy(f[0][t][:nn,:])
         yy = np.copy(f[1][t][:nn,:])
-        zz = np.copy(f[2][t][:nn,:])
+        # make sure that the data have one columns/rows fewer that the coordinates
+        zz = np.copy(f[2][t][:nn-1,:])
         xx = np.where(xx<rangle,xx+360,xx)
         if mapit: x, y = m(_sqCoord(xx),_sqCoord(yy))
         else:     x, y =   _sqCoord(xx),_sqCoord(yy)
