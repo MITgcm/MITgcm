@@ -141,6 +141,7 @@ c--   Read the namelist input.
 cHFLUXM_CONTROL
      &  ,xx_hfluxm_file
 cHFLUXM_CONTROL
+     &  ,ctrlprec
 
       namelist /ctrl_packnames/
      &  yadmark, yctrlid, yctrlposunpack, yctrlpospack,
@@ -212,6 +213,14 @@ c--     Set default values.
 
         delZexp = 0.
         forcingPrecond = 1. _d 0
+
+#ifdef CTRL_SET_PREC_32
+C     for backward compatibility set default value to 32 if this
+C     flag is defined
+        ctrlprec = 32
+#else
+        ctrlprec = 64
+#endif
 
         xx_theta_file      = 'xx_theta'
         xx_salt_file       = 'xx_salt'
