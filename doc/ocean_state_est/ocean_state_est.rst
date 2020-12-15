@@ -457,13 +457,25 @@ Custom Cost Functions
 
 This section (very much a work in progress...) pertains to the special
 cases of ``cost_gencost_bpv4.F``, ``cost_gencost_seaicev4.F``,
-``cost_gencost_sshv4.F``, ``cost_gencost_sstv4.F``, and
-``cost_gencost_transp.F``. The cost_gencost_transp.F function can be
+``cost_gencost_sshv4.F``, ``cost_gencost_sstv4.F``,
+``cost_gencost_transp.F``, and ``cost_gencost_moc.F``.
+The ``cost_gencost_transp.F`` function can be
 used to compute a transport of volume, heat, or salt through a specified
 section (non quadratic cost function). To this end one sets
 ``gencost_name = ‘transp*’``, where ``*`` is an optional suffix starting
 with ``‘_’``, and set ``gencost_barfile`` to one of ``m_trVol``,
 ``m_trHeat``, and ``m_trSalt``.
+
+The ``cost_gencost_moc.F`` function is similar to transport function, but is intended to
+compute the Meridional Overturning Streamfunction maximum based on the volumetric
+transport integrated from the floor to surface, as in Smith and Heimbach (2019)
+:cite:`smith:19`.
+Therefore, this function is intended to work with ``gencost_barfile``=``m_trVol``,
+and note that the first 3 characters of ``gencost_name`` must be
+``moc``, as depicted in the :numref:`gencost_ecco_name`.
+Users can specify a latitude band to compute the MOC at with appropriately
+defined West ('W') and South ('S') masks as described in 
+:numref:`intgen`.
 
 Note: the functionality in ``cost_gencost_transp.F`` is not regularly tested.
 Users interested in computing volumetric transports through a section
@@ -530,6 +542,9 @@ should note the following about ``m_trHeat`` and ``m_trSalt``:
   +-----------------------+-----------------------+-----------------------+
   | ``transp_trSalt``     | salt transport        | specify masks         |
   |                       |                       | (:numref:`intgen`)    |
+  +-----------------------+-----------------------+-----------------------+
+  | ``moc_trVol``         | Meridional Overturning| specify masks         |
+  |                       | stf. maximum          | (:numref:`intgen`)    |
   +-----------------------+-----------------------+-----------------------+
 
 Key Routines
