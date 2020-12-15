@@ -15,7 +15,10 @@ C     inAdMode  :: enable approximate computation in backward sweep
 C     inAdTrue  :: value of inAdMode flag during backward sweep
 C     inAdFalse :: value of inAdMode flag during forward  sweep
 C     inAdExact :: get an exact adjoint (no approximation)
+C     useApproxAdvectionInAdMode :: use different (but stable) advection in AD
+C                                   only implemented of flux limited DST3 (33)
       LOGICAL inAdMode, inAdTrue, inAdFalse, inAdExact
+      LOGICAL useApproxAdvectionInAdMode
 
 C-    Logical flags for turning off parts of the code in adjoint mode
 C     SEAICEuseFREEDRIFTswitchInAd :: switch on/off Free-Drift in adjoint mode (def=F)
@@ -35,6 +38,7 @@ C       to one file per variable; else write one file per record)
 
       COMMON /AUTODIFF_PARM_L/
      &       inAdMode, inAdTrue, inAdFalse, inAdExact,
+     &       useApproxAdvectionInAdMode,
      &       useKPPinAdMode,    useKPPinFwdMode,
      &       useGMRediInAdMode, useGMRediInFwdMode,
      &       useSEAICEinAdMode, useSEAICEinFwdMode,

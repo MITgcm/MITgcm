@@ -16,6 +16,13 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "AUTODIFF_PARAMS.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
+# include "GAD.h"
+#endif/* ALLOW_GENERIC_ADVDIFF */
+#ifdef ALLOW_SEAICE
+# include "SEAICE_SIZE.h"
+# include "SEAICE_PARAMS.h"
+#endif /* ALLOW_SEAICE */
 
 C     !INPUT PARAMETERS:
       INTEGER myThid
@@ -33,6 +40,7 @@ C     iUnit      :: Work variable for IO unit number
       NAMELIST /AUTODIFF_PARM01/
      &       dumpAdVarExch, mon_AdVarExch,
      &       dumpAdByRec,
+     &       useApproxAdvectionInAdMode,
      &       useKPPinAdMode, useGGL90inAdMode,
      &       useGMRediInAdMode, useSALT_PLUMEinAdMode,
      &       useSEAICEinAdMode, useSmoothCorrel2DinAdMode,
@@ -67,6 +75,7 @@ C--   default : write one file per record
       useGGL90inAdMode   = .TRUE.
       useSALT_PLUMEinAdMode = .TRUE.
       inAdExact          = .TRUE.
+      useApproxAdvectionInAdMode = .FALSE.
       SEAICEapproxLevInAd = 0
       viscFacInAd        = 1. _d 0
       SIregFacInAd       = UNSET_RL
@@ -105,6 +114,13 @@ C--   Flag for approximate adjoint
       ELSE
        inAdTrue  = .TRUE.
        inAdFalse = .FALSE.
+C     reset to recover old behavior, in case that is ever needed
+       useApproxAdvectionInAdMode = .TRUE.
+       WRITE(msgBuf,'(A)') '**WARNING** AUTODIFF_READPARMS: '//
+     &      'resetting useApproxAdvectionInAdMode=.FALSE., '//
+     &      'because inAdExact=.FALSE.'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT, myThid )
       ENDIF
       inAdMode   = .FALSE.
 
@@ -143,6 +159,8 @@ C--   Print out some kee parameters :
      &                    SQUEEZE_RIGHT, myThid )
        CALL WRITE_0D_L( inAdExact, INDEX_NONE,
      &  'inAdExact =', ' /* get an exact adjoint (no approximation) */')
+       CALL WRITE_0D_L( useApproxAdvectionInAdMode, INDEX_NONE,
+     & 'useApproxAdvectionInAdMode =',' /* approximate AD-advection */')
        CALL WRITE_0D_L( useKPPinAdMode, INDEX_NONE,
      &   'useKPPinAdMode =',      ' /* use KPP in adjoint mode */')
        CALL WRITE_0D_L( useGMRediInAdMode, INDEX_NONE,
@@ -197,6 +215,35 @@ C--   Check parameters :
       SEAICEuseFREEDRIFTswitchInAd = .FALSE.
       SEAICEuseDYNAMICSswitchInAd  = .FALSE.
 #endif /* ALLOW_SEAICE */
+
+      IF ( useApproxAdvectionInAdMode ) THEN
+#ifdef ALLOW_GENERIC_ADVDIFF
+C     so far this only works for flux limited DST3 scheme
+       IF ( tempAdvScheme .NE. ENUM_DST3_FLUX_LIMIT .OR.
+     &      saltAdvScheme .NE. ENUM_DST3_FLUX_LIMIT ) THEN
+        WRITE(msgBuf,'(2A,I2)') 'AUTODIFF_READPARMS: ',
+     &       'useApproxAdvectionInAdMode = .TRUE. can only be '//
+     &       'used with advection scheme ', ENUM_DST3_FLUX_LIMIT
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+#ifdef ALLOW_SEAICE
+       IF ( useSEAICE .AND.
+     &      SEAICEadvScheme .NE. ENUM_DST3_FLUX_LIMIT ) THEN
+        WRITE(msgBuf,'(2A,I2)') 'AUTODIFF_READPARMS: ',
+     &       'useApproxAdvectionInAdMode = .TRUE. can only be '//
+     &       'used with SEAICEadvScheme ', ENUM_DST3_FLUX_LIMIT
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+       ENDIF
+#endif /* ALLOW_SEAICE */
+#else
+       WRITE(msgBuf,'(2A)') '**WARNING** AUTODIFF_READPARMS: ',
+     &      'useApproxAdvectionInAdMode = .TRUE. without generic_advdff'
+       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &      SQUEEZE_RIGHT, myThid )
+#endif /* ALLOW_GENERIC_ADVDIFF */
+      ENDIF
 
       IF ( errCount.GE.1 ) THEN
         WRITE(msgBuf,'(A,I3,A)')
