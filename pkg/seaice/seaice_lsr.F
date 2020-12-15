@@ -52,7 +52,6 @@ C     === Global variables ===
 #include "SEAICE.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
-# include "AUTODIFF_PARAMS.h"
 # include "tamc.h"
 #endif
 
@@ -664,11 +663,7 @@ CMLCADJ LOOP = iteration uice, vice = comlev1_lsr
 CML#endif /* ALLOW_AUTODIFF_TAMC */
 
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (SEAICE_LSR_ADJOINT_ITER))
-      IF ( inAdMode ) THEN
-        SOLV_MAX_TMP = SOLV_MAX_FIXED
-      ELSE
-        SOLV_MAX_TMP = linearIterLoc
-      ENDIF
+      SOLV_MAX_TMP = SOLV_MAX_FIXED
 #else
       SOLV_MAX_TMP = linearIterLoc
 #endif
