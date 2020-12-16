@@ -782,7 +782,7 @@ is often quite useful as a "mask" when computing diagnostics using model output.
 As an example, consider horizontal location (10,15) in out setup here, located in our bottom ridge along the sloping notch.
 In our bathymetry file, the vertical level is specified as -2382.3 m.
 This falls between vertical faces located at -2360.1 and -2504.0 [these are grid variable :varlink:`rF`\ (39:40)].
-Thus, this grid cell will be included in the active ocean domain as a thin, yet legal, partial cell: :varlink:`hFacC`\ (10,15,39)=0.1544.
+Thus, this grid cell will be included in the active ocean domain as a thin, yet legal, partial cell: :varlink:`hFacC`\ (10,15,39)=0.154.
 
 .. _reentrant_channel_windx:
 
@@ -1232,7 +1232,7 @@ to parameterize mesoscale eddies. More detailed comments comparing these solutio
   computing them is quite simple: the heat flux (in watts) into a grid cell in the sponge layer is computed as
   :math:`\rho \text{C}_p {\cal V}_\theta * \frac{\theta (i,j,k) - \theta_{rbc} (i,j,k)}{\tau_T} * M_{rbc}`
   where :math:`\text{C}_p` is :varlink:`HeatCapacity_Cp` (3994.0 J kg\ :sup:`-1`\ K\ :sup:`-1` by default), :math:`{\cal V}_\theta` is the grid cell volume
-  (:varlink:`dxG`\ (i,j) * :varlink:`dyG`\ (i,j) * :varlink:`drF`\ (k) * :varlink:`hFacC`\ (i,j,k);
+  (:varlink:`rA`\ (i,j) * :varlink:`drF`\ (k) * :varlink:`hFacC`\ (i,j,k);
   see :numref:`reentrant_channel_bathy_file` for definition of :varlink:`hFacC`),
   :math:`\theta (i,j,k)` is gridpoint potential temperature (:sup:`o`\ C),
   :math:`\theta (i,j,k)_{rbc}` is gridpoint relaxation potential temperature (:sup:`o`\ C,
