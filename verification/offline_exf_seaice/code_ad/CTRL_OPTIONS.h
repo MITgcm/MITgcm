@@ -27,11 +27,12 @@ C   ==================================================================
 C-- Package-specific Options & Macros go here
 
 C allow use of legacy ecco/ctrl codes
-#define ECCO_CTRL_DEPRECATED
+C#define ECCO_CTRL_DEPRECATED
 
 #undef EXCLUDE_CTRL_PACK
 #define  ALLOW_NONDIMENSIONAL_CONTROL_IO
 
+#ifdef ECCO_CTRL_DEPRECATED
 C       >>> Initial values.
 #define ALLOW_THETA0_CONTROL
 
@@ -39,10 +40,12 @@ C       >>> Atmospheric state.
 #define ALLOW_ATEMP_CONTROL
 #define ALLOW_SWDOWN_CONTROL
 
+#else
 C       >>> Generic Control.
-#undef ALLOW_GENARR2D_CONTROL
-#undef ALLOW_GENARR3D_CONTROL
-#undef ALLOW_GENTIM2D_CONTROL
+#define ALLOW_GENARR2D_CONTROL
+#define ALLOW_GENARR3D_CONTROL
+#define ALLOW_GENTIM2D_CONTROL
+#endif
 
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */
