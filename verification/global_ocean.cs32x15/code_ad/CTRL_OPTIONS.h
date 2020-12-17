@@ -27,7 +27,7 @@ C   ==================================================================
 C-- Package-specific Options & Macros go here
 
 C allow use of legacy ecco/ctrl codes
-#define ECCO_CTRL_DEPRECATED
+C#define ECCO_CTRL_DEPRECATED
 #define EXCLUDE_CTRL_PACK
 #undef  ALLOW_NONDIMENSIONAL_CONTROL_IO
 
