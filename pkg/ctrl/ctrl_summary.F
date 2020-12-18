@@ -18,6 +18,7 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 
 #ifdef ALLOW_CAL
 # include "cal.h"
@@ -481,12 +482,14 @@ c allow for switching off correl2d in adjoint
      &                    SQUEEZE_RIGHT , mythid)
 
 #ifdef ALLOW_CAL
-        call cal_TimeInterval( xx_gentim2d_period(iarr),
-     &                         'secs', timeint, mythid )
-        write(msgbuf,'(a,i9.8,i7.6)')
-     &'      period     = ',(timeint(i), i=1,2)
-        call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
+        if ( useCAL ) then
+         call cal_TimeInterval( xx_gentim2d_period(iarr),
+     &                          'secs', timeint, mythid )
+         write(msgbuf,'(a,i9.8,i7.6)')
+     &        '      period     = ',(timeint(i), i=1,2)
+         call print_message( msgbuf, standardmessageunit,
+     &                       SQUEEZE_RIGHT , mythid)
+        endif
 #endif
 
          do jarr=1,maxCtrlProc
@@ -551,4 +554,3 @@ C
 
       return
       end
-
