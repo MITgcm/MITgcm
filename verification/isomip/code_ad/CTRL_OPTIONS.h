@@ -27,11 +27,12 @@ C   ==================================================================
 C-- Package-specific Options & Macros go here
 
 C allow use of legacy ecco/ctrl codes
-#define ECCO_CTRL_DEPRECATED
+C#define ECCO_CTRL_DEPRECATED
 
 #define EXCLUDE_CTRL_PACK
 #undef ALLOW_NONDIMENSIONAL_CONTROL_IO
 
+#ifdef ECCO_CTRL_DEPRECATED
 C       >>> Initial values.
 #define ALLOW_THETA0_CONTROL
 #define ALLOW_SALT0_CONTROL
@@ -67,10 +68,13 @@ C       >>> Other Control.
 C       >>> pkg/shelfice fluxes.
 #define ALLOW_SHIFWFLX_CONTROL
 
+#else
 C       >>> Generic Control.
-#undef ALLOW_GENARR2D_CONTROL
-#undef ALLOW_GENARR3D_CONTROL
-#undef ALLOW_GENTIM2D_CONTROL
+#define ALLOW_GENARR2D_CONTROL
+#define ALLOW_GENARR3D_CONTROL
+#define ALLOW_GENTIM2D_CONTROL
+
+#endif
 
 C  o Rotation of wind/stress controls adjustments
 C    from Eastward/Northward to model grid directions
