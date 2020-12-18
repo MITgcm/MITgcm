@@ -280,6 +280,9 @@ CADJ  INIT tapelev3 = USER
 CADJ STORE hFacC = tapelev_init, key = 1
 CADJ STORE recip_hFacC = tapelev_init, key = 1
 # endif
+# ifdef ALLOW_GENTIM2D_CONTROL
+CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+# endif
 #endif
 
 #ifdef ALLOW_OPENAD
