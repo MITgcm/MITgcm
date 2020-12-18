@@ -184,7 +184,7 @@ C        be defined but ALLOW_BULKFORMULAE needs to be undef
 C-  Other forcing fields
 #define ALLOW_RUNOFF
 #undef  ALLOW_RUNOFTEMP
-#define ALLOW_SALTFLX
+#undef  ALLOW_SALTFLX
 
 #if (defined (ALLOW_BULKFORMULAE) && defined (ATMOSPHERIC_LOADING))
 C Note: To use EXF_CALC_ATMRHO, both ALLOW_BULKFORMULAE
