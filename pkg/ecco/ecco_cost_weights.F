@@ -31,17 +31,22 @@ c     ==================================================================
 
 c     == global variables ==
 
-#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "ecco_cost.h"
+#ifdef ECCO_CTRL_DEPRECATED
+# include "ecco_cost.h"
+# ifdef ALLOW_CTRL
+#  include "ctrl.h"
+# endif
+#else
+# include "ecco.h"
+# include "ecco_local_params.h"
+#endif /* ECCO_CTRL_DEPRECATED */
 #ifdef ALLOW_CTRL
-# include "ctrl.h"
 # include "CTRL_OBCS.h"
-#endif
 #endif
 
 c     == routine arguments ==
@@ -49,8 +54,6 @@ c     == routine arguments ==
       integer  myThid
 
 c     == local variables ==
-
-#if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
 
       integer bi,bj
       integer i,j,k
@@ -107,10 +110,12 @@ c     == end of interface ==
       imin = 1-OLx
       imax = sNx+OLx
 
+#ifdef ECCO_CTRL_DEPRECATED
 c--   Initialize background weights
       whflux0m = whflux0
       wsflux0m = wsflux0
       wtau0m   = wtau0
+#endif /* ECCO_CTRL_DEPRECATED */
 
 c--   Initialize variance (weight) fields.
       do k = 1,nr
@@ -119,6 +124,7 @@ c--   Initialize variance (weight) fields.
          wui(k) = 0. _d 0
          wvi(k) = 0. _d 0
       enddo
+#ifdef ECCO_CTRL_DEPRECATED
       do bj = jtlo,jthi
         do bi = itlo,ithi
           do j = jmin,jmax
@@ -208,6 +214,7 @@ cph)
           enddo
         enddo
       enddo
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
 
@@ -237,6 +244,7 @@ cph)
 
 #endif /* ALLOW_CTRL and ALLOW_OBCS */
 
+#ifdef ECCO_CTRL_DEPRECATED
 c--   Build area weighting matrix used in the cost function
 c--   contributions.
 
@@ -272,6 +280,7 @@ cds     &                            frame(i,j)
         enddo
       enddo
 
+#endif /* ECCO_CTRL_DEPRECATED */
 c--   Read error information and set up weight matrices.
       _BEGIN_MASTER(myThid)
       ilo = ifnblnk(data_errfile)
@@ -287,7 +296,7 @@ c--   Read error information and set up weight matrices.
 
         read(gwUnit,*) ratio
 #if (defined (ALLOW_OBCS_COST_CONTRIBUTION) || defined (ALLOW_OBCS_CONTROL))
-     &       , wbaro
+     &       , dummy
 #endif
         do k = 1,nr
           read(gwUnit,*) wti(k), wsi(k)
@@ -314,6 +323,7 @@ c--   Read error information and set up weight matrices.
       do bj = jtlo,jthi
         do bi = itlo,ithi
 
+#ifdef ECCO_CTRL_DEPRECATED
 c indices are inconsistent with ecco_cost.h declaration
 c          wsfluxmm(bi,bj) = 1.
 c          whfluxmm(bi,bj) = 1.
@@ -337,6 +347,7 @@ c--
               wsalt(k,bi,bj) = 0.0 _d 0
             endif
           enddo
+#endif /* ECCO_CTRL_DEPRECATED */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
           do k = 1,nr
@@ -370,6 +381,7 @@ c--
         enddo
       enddo
 
+#ifdef ECCO_CTRL_DEPRECATED
 #if (defined (ALLOW_SALT0_COST_CONTRIBUTION) || \
       defined (ALLOW_SALT0_CONTROL) || \
       defined (ALLOW_WSALTLEV))
@@ -2129,8 +2141,7 @@ c#endif
       call active_write_xy_loc( 'wbottomdrag', wbottomdrag
      & , 1, 0, myThid, dummy)
 #endif
-
-#endif /* ALLOW_ECCO and ECCO_CTRL_DEPRECATED */
+#endif /* ECCO_CTRL_DEPRECATED */
 
       RETURN
       END

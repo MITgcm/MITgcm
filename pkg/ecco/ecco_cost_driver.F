@@ -96,7 +96,7 @@ c--   Compute bottom pressure cost
      &     1, bpdatfile, bperrfile, mult_bp,
      &     nmonsrec, nmonsrec, bpstartdate, 0. _d 0,
      &     'C', -1. _d 2, 1. _d 2, 0. _d 0,
-     &     anom_preproc, no_preproc_c, no_preproc_i, no_preproc_r, 
+     &     anom_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
      &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
      &     0, bpdatfile, objf_bp, num_bp,
      &     myiter, mytime, mythid )
@@ -122,15 +122,6 @@ c--   Compute cost function contribution of Temperature and Salinity.
       call seaice_cost_driver( myIter, myTime, myThid )
       call timer_stop ('seaice_cost_driver [ECCO SPIN-DOWN]', myThid)
       ENDIF
-#endif
-
-#ifdef ALLOW_OBCS_COST_CONTRIBUTION
-#ifdef ALLOW_DEBUG
-      IF (debugMode) CALL DEBUG_CALL('cost_obcs',myThid)
-#endif
-      call timer_start('cost_obcs          [ECCO SPIN-DOWN]', myThid)
-      call cost_obcs( myIter, myTime, myThid )
-      call timer_stop ('cost_obcs          [ECCO SPIN-DOWN]', myThid)
 #endif
 
 c#ifdef ALLOW_CURMTR_COST_CONTRIBUTION
@@ -203,6 +194,15 @@ c--   Internal Parameter controls cost terms:
       _BARRIER
 
 #endif /* ECCO_CTRL_DEPRECATED */
+
+#ifdef ALLOW_OBCS_COST_CONTRIBUTION
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('cost_obcs',myThid)
+#endif
+      call timer_start('cost_obcs          [ECCO SPIN-DOWN]', myThid)
+      call cost_obcs( myIter, myTime, myThid )
+      call timer_stop ('cost_obcs          [ECCO SPIN-DOWN]', myThid)
+#endif
 
 c--   Compute user defined cost function contributions (elaborate)
       call timer_start('cost_gencost_all    [ECCO SPIN-DOWN]', myThid)
