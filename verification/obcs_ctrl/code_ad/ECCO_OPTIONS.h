@@ -26,12 +26,6 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 
 C-- Package-specific Options & Macros go here
 
-C re-activate deprecated codes (just in case ... but not recommended)
-#define ECCO_CTRL_DEPRECATED
-
-#define ALLOW_THETA0_COST_CONTRIBUTION
-#define ALLOW_THETA_COST_CONTRIBUTION
-
 c       >>> Open boundaries
 c       >>> Make sure that ALLOW_OBCS is defined
 #define ALLOW_OBCSN_COST_CONTRIBUTION
@@ -47,10 +41,19 @@ c       >>> Make sure that ALLOW_OBCS is defined
 CMM
 #undef ALLOW_IESTAU_COST_CONTRIBUTION
 
+C re-activate deprecated codes (just in case ... but not recommended)
+C#define ECCO_CTRL_DEPRECATED
+
+#ifdef ECCO_CTRL_DEPRECATED
+#define ALLOW_THETA0_COST_CONTRIBUTION
+#define ALLOW_THETA_COST_CONTRIBUTION
+
+#else
 C allow for generic cost function and integral terms
-#undef ALLOW_GENCOST_CONTRIBUTION
+#define ALLOW_GENCOST_CONTRIBUTION
 C allow for 3 dimensional generic terms
-#undef ALLOW_GENCOST3D
+#define ALLOW_GENCOST3D
+#endif
 
 C include global mean steric sea level correction
 #undef ALLOW_PSBAR_STERIC

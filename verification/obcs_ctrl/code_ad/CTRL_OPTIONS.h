@@ -30,7 +30,7 @@ C-- Package-specific Options & Macros go here
 #define ALLOW_NONDIMENSIONAL_CONTROL_IO
 
 C allow use of legacy ecco/ctrl codes
-#define ECCO_CTRL_DEPRECATED
+C#define ECCO_CTRL_DEPRECATED
 #ifdef ECCO_CTRL_DEPRECATED
 C       >>> Initial values.
 #define ALLOW_THETA0_CONTROL
