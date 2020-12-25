@@ -170,10 +170,6 @@ c     vddiff (nx,ny,Nrp2,3)- vert. diff. on next row for temperature  (m^2/s)
 c     ghat   (nx,ny,Nr)    - nonlocal transport coefficient           (s/m^2)
 c     hbl    (nx,ny)       - mixing layer depth                           (m)
 c     kmtj   (nx,ny)       - maximum number of wet levels in each column
-c     z0     (nx,ny)       - Roughness length                             (m)
-c     zRef   (nx,ny)       - Reference depth: Hmix * epsilon              (m)
-c     uRef   (nx,ny)       - Reference zonal velocity                   (m/s)
-c     vRef   (nx,ny)       - Reference meridional velocity              (m/s)
 
       integer work1 ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy            )
       _RL worka ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
@@ -201,19 +197,8 @@ cph(
       _RL TTALPHA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
       _RL SSBETA ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1 )
 cph)
-#ifdef KPP_ESTIMATE_UREF
-      _RL z0    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _RL zRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _RL uRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-      _RL vRef  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
-#endif /* KPP_ESTIMATE_UREF */
-
       integer i, j, k, kp1, km1, im1, ip1, jm1, jp1
       integer ikppkey
-
-#ifdef KPP_ESTIMATE_UREF
-      _RL tempvar1, dBdz1, dBdz2, ustarX, ustarY
-#endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -275,11 +260,11 @@ c------------------------------------------------------------------------
      I     ikppkey, bi, bj, myThid )
 
       DO k = 1, Nr
-         DO j = 1-OLy, sNy+OLy
-            DO i = 1-OLx, sNx+OLx
-               ghat(i,j,k) = dbloc(i,j,k)
-            ENDDO
-         ENDDO
+       DO j = 1-OLy, sNy+OLy
+        DO i = 1-OLx, sNx+OLx
+         ghat(i,j,k) = dbloc(i,j,k)
+        ENDDO
+       ENDDO
       ENDDO
 
 #ifdef KPP_SMOOTH_DBLOC
@@ -289,10 +274,10 @@ c     dbloc(k) is buoyancy gradientnote between k and k+1
 c     levels therefore k+1 mask must be used
 
       DO k = 1, Nr-1
-         CALL SMOOTH_HORIZ (
-     I        k+1, bi, bj,
-     U        ghat (1-OLx,1-OLy,k),
-     I        myThid )
+       CALL SMOOTH_HORIZ (
+     I      k+1, bi, bj,
+     U      ghat (1-OLx,1-OLy,k),
+     I      myThid )
       ENDDO
 
 #endif /* KPP_SMOOTH_DBLOC */
@@ -324,31 +309,35 @@ c     horizontally smooth density related quantities with 121 filters
 #endif /* KPP_SMOOTH_DENS */
 
       DO k = 1, Nr
-         km1 = max(1,k-1)
-         DO j = 1-OLy, sNy+OLy
-            DO i = 1-OLx, sNx+OLx
+       km1 = max(1,k-1)
+       DO j = 1-OLy, sNy+OLy
+        DO i = 1-OLx, sNx+OLx
 
 c     zero out dbloc over land points (so that the convective
 c     part of the interior mixing can be diagnosed)
-               dbloc(i,j,k) = dbloc(i,j,k) * maskC(i,j,k,bi,bj)
-     &              * maskC(i,j,km1,bi,bj)
-               ghat(i,j,k)  = ghat(i,j,k)  * maskC(i,j,k,bi,bj)
-     &              * maskC(i,j,km1,bi,bj)
-               Ritop(i,j,k) = Ritop(i,j,k) * maskC(i,j,k,bi,bj)
-     &              * maskC(i,j,km1,bi,bj)
-               if(k.eq.nzmax(i,j,bi,bj)) then
-                  dbloc(i,j,k) = p0
-                  ghat(i,j,k)  = p0
-                  Ritop(i,j,k) = p0
-               endif
+CML   I am not sure if the masking for dbloc and ghat (=smoothed dbloc)
+CML   are correct because they are defined at the bottom of the cell
+CML   rather than the (MITgcm-standard) top of the cell. I think it should be
+CML   maskC(k)*mask(k+1) for these variables.
+         dbloc(i,j,k) = dbloc(i,j,k) * maskC(i,j,k,bi,bj)
+     &        * maskC(i,j,km1,bi,bj)
+         ghat(i,j,k)  = ghat(i,j,k)  * maskC(i,j,k,bi,bj)
+     &        * maskC(i,j,km1,bi,bj)
+         Ritop(i,j,k) = Ritop(i,j,k) * maskC(i,j,k,bi,bj)
+     &        * maskC(i,j,km1,bi,bj)
+         if(k.eq.nzmax(i,j,bi,bj)) then
+          dbloc(i,j,k) = p0
+          ghat(i,j,k)  = p0
+          Ritop(i,j,k) = p0
+         endif
 
 c     numerator of bulk richardson number on grid levels
 c     note: land and ocean bottom values need to be set to zero
 c     so that the subroutine "bldepth" works correctly
-               Ritop(i,j,k) = (zgrid(1)-zgrid(k)) * Ritop(i,j,k)
+         Ritop(i,j,k) = (zgrid(1)-zgrid(k)) * Ritop(i,j,k)
 
-            ENDDO
-         ENDDO
+        ENDDO
+       ENDDO
       ENDDO
 
 cph(
@@ -430,6 +419,9 @@ c------------------------------------------------------------------------
      I     work2, surfaceForcingU, surfaceForcingV,
      I     surfaceForcingT, surfaceForcingS, adjustColdSST_diag,
      I     Qsw,
+#ifdef KPP_ESTIMATE_UREF
+     I     dbloc,
+#endif /* KPP_ESTIMATE_UREF */
 #ifdef ALLOW_SALT_PLUME
      I     temp1, temp2,
 #endif /* ALLOW_SALT_PLUME */
@@ -564,10 +556,10 @@ c-----------------------------------------------------------------------
 c     zero out land values and transfer to global variables
 c-----------------------------------------------------------------------
 
-      DO j = jmin, jmax
-       DO i = imin, imax
-        DO k = 1, Nr
-         km1 = max(1,k-1)
+      DO k = 1, Nr
+       km1 = max(1,k-1)
+       DO j = jmin, jmax
+        DO i = imin, imax
          KPPviscAz(i,j,k,bi,bj) = vddiff(i,j,k-1,1) * maskC(i,j,k,bi,bj)
      &        * maskC(i,j,km1,bi,bj)
          KPPdiffKzS(i,j,k,bi,bj)= vddiff(i,j,k-1,2) * maskC(i,j,k,bi,bj)
@@ -577,12 +569,15 @@ c-----------------------------------------------------------------------
          KPPghat(i,j,k,bi,bj)   = ghat(i,j,k)       * maskC(i,j,k,bi,bj)
      &        * maskC(i,j,km1,bi,bj)
         ENDDO
-        k = 1
+       ENDDO
+      ENDDO
+      k = 1
+      DO j = jmin, jmax
+       DO i = imin, imax
 #ifdef ALLOW_SHELFICE
         if ( useShelfIce ) k = kTopC(i,j,bi,bj)
 #endif /* ALLOW_SHELFICE */
         KPPhbl(i,j,bi,bj) = hbl(i,j) * maskC(i,j,k,bi,bj)
-
        ENDDO
       ENDDO
 
@@ -641,34 +636,34 @@ C     Compute fraction of saltplume (flux) penetrating to
 C     the bottom of the mixing layer.
       IF ( useSALT_PLUME ) THEN
 #ifndef SALT_PLUME_VOLUME
-        DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-              work2(i,j) = SaltPlumeDepth(i,j,bi,bj)
-              worka(i,j) = KPPhbl(i,j,bi,bj)
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         work2(i,j) = SaltPlumeDepth(i,j,bi,bj)
+         worka(i,j) = KPPhbl(i,j,bi,bj)
 #ifdef SALT_PLUME_SPLIT_BASIN
-              lon(i,j) = XC(i,j,bi,bj)
-              lat(i,j) = YC(i,j,bi,bj)
+         lon(i,j) = XC(i,j,bi,bj)
+         lat(i,j) = YC(i,j,bi,bj)
 #endif /* SALT_PLUME_SPLIT_BASIN */
-           ENDDO
         ENDDO
-        CALL SALT_PLUME_FRAC(
-     I       (sNx+2*OLx)*(sNy+2*OLy), minusone, work2,
+       ENDDO
+       CALL SALT_PLUME_FRAC(
+     I      (sNx+2*OLx)*(sNy+2*OLy), minusone, work2,
 #ifdef SALT_PLUME_SPLIT_BASIN
-     I       lon,lat,
+     I      lon,lat,
 #endif /* SALT_PLUME_SPLIT_BASIN */
-     U       worka,
-     I       myTime, myIter, myThid )
-        DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-              KPPplumefrac(i,j,bi,bj) = 1. _d 0 - worka(i,j)
-           ENDDO
+     U      worka,
+     I      myTime, myIter, myThid )
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         KPPplumefrac(i,j,bi,bj) = 1. _d 0 - worka(i,j)
         ENDDO
+       ENDDO
 #else /* SALT_PLUME_VOLUME */
-        DO j=1-OLy,sNy+OLy
-           DO i=1-OLx,sNx+OLx
-              KPPplumefrac(i,j,bi,bj) = 0. _d 0
-           ENDDO
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         KPPplumefrac(i,j,bi,bj) = 0. _d 0
         ENDDO
+       ENDDO
 #endif /* SALT_PLUME_VOLUME */
       ENDIF
 #endif /* ALLOW_SALT_PLUME */
