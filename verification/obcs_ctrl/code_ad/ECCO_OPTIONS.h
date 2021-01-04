@@ -38,8 +38,6 @@ c       >>> Make sure that ALLOW_OBCS is defined
      defined (ALLOW_OBCSE_COST_CONTRIBUTION))
 # define ALLOW_OBCS_COST_CONTRIBUTION
 #endif
-CMM
-#undef ALLOW_IESTAU_COST_CONTRIBUTION
 
 C re-activate deprecated codes (just in case ... but not recommended)
 C#define ECCO_CTRL_DEPRECATED
