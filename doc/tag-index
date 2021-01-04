@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+ - fix two bugs related to writing and reading control variables and
+   corresponding gradients:
+  a) replace too large loop range endrec by diffrec in ctrl_map_ini_gentim2d.F;
+  b) skip writing meta-files in REVERSE_SIMULATION mode (active_file_control.F).
+
 checkpoint67u (2020/12/30)
 o utils/python/MITgcmutils
  - add code to compute horizontal divergence of a vector field, gradient of a
