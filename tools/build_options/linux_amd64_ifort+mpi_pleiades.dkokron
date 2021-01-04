@@ -1,0 +1,68 @@
+#!/bin/bash
+#
+# Used to run the testreport on pleiades with:
+# module load comp-intel/2020.2.254 mpi-hpe/mpt.2.23 hdf4/4.2.12 hdf5/1.8.18_mpt netcdf/4.4.1.1_mpt
+# works on all types of nodes
+
+FC=ifort
+CC=icc
+
+CPP='/lib/cpp -traditional -P'
+#DEFINES='-DALLOW_USE_MPI -DWORDLENGTH=4 -DINTEL_COMMITQQ'
+DEFINES='-DALLOW_USE_MPI -DWORDLENGTH=4 -DINTEL_COMMITQQ -DALLOW_ASYNCIO'
+F90FIXEDFORMAT='-fixed -Tf'
+EXTENDED_SRC_FLAG='-132'
+GET_FC_VERSION="--version"
+OMPFLAG='-qopenmp'
+
+#NOOPTFLAGS='-O1 -fp-model precise'
+NOOPTFLAGS='-O0'
+NOOPTFILES=''
+
+CFLAGS='-O0'
+FFLAGS="$FFLAGS -convert big_endian -assume byterecl"
+
+#- for big setups, compile & link with "-fPIC" or set memory-model to "medium":
+CFLAGS="$CFLAGS -fPIC"
+FFLAGS="$FFLAGS -fPIC"
+#- For really big executable (> 2 GB), uncomment following 2 lines
+FFLAGS="$FFLAGS -mcmodel=medium -shared-intel"
+CFLAGS="$CFLAGS -mcmodel=medium -shared-intel"
+#- might want to use '-r8' for fizhi pkg:
+#FFLAGS="$FFLAGS -r8"
+
+LDADD='-mcmodel=medium -shared-intel'
+
+FFLAGS="$FFLAGS -W0 -WB"
+if test "x$IEEE" = x ; then     #- with optimisation:
+    FOPTIM='-g -O2 -ipo -fp-model precise -align -axCORE-AVX2 -xSSE4.2 -traceback -ftz -diag-disable cpu-dispatch'
+    #FOPTIM='-g -O2 -ipo -fp-model precise -align -xCORE-AVX2 -traceback -ftz -diag-disable cpu-dispatch'
+    #FOPTIM='-g -O2 -ipo -fp-model precise -align -xSSE4.2 -no-prec-div -traceback -ftz -diag-disable cpu-dispatch'
+    #FOPTIM='-g -O2 -ip -fp-model precise -align -xAVX -no-prec-div -traceback -ftz -diag-disable cpu-dispatch'
+    #FOPTIM='-g -O2 -ipo -fp-model precise -align -xAVX -no-prec-div -traceback -ftz -diag-disable cpu-dispatch'
+    #FOPTIM='-g -O2 -ipo -fp-model precise -align -xCORE-AVX2 -no-prec-div -traceback -ftz -diag-disable cpu-dispatch'
+    NOOPTFILES='seaice_growth.F calc_oce_mxlayer.F fizhi_lsm.F fizhi_clockstuff.F ini_parms.F'
+    NOOPTFILES="$NOOPTFILES obcs_init_fixed.F"
+else
+  if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
+    FOPTIM='-O0 -noalign'
+  else                          #- development/check options:
+   #FFLAGS="$FFLAGS -debug all -debug-parameters all -fp-model strict"
+    FOPTIM="-O0 -noalign -g -traceback"
+    NOOPTFLAGS=$FOPTIM
+    NOOPTFILES='adread_adwrite.F mdsio_rw_field.F mdsio_rw_slice.F'
+    FOPTIM="$FOPTIM -warn all -warn nounused"
+    FOPTIM="$FOPTIM -fpe0 -ftz -fp-stack-check -check all -ftrapuv"
+  fi
+fi
+
+F90FLAGS=$FFLAGS
+F90OPTIM=$FOPTIM
+
+LIBS='-L/nasa/hpe/mpt/2.23/lib -lmpi -L/nasa/netcdf/4.4.1.1_mpt/lib -lnetcdf -L/nobackupp8/dkokron/Projects/MITgcm/llc_hires/llc_90/tides_exps/lib -lspice'
+INCLUDES='-I/nasa/hpe/mpt/2.23/include -I/nasa/netcdf/4.4.1.1_mpt/include'
+#INCLUDEDIRS='/nasa/sgi/mpt/2.14r19/include'
+
+#- used for parallel (MPI) DIVA
+ MPIINCLUDEDIR='/nasa/hpe/mpt/2.23/include'
+#MPI_HEADER_FILES='mpif.h mpiof.h'
