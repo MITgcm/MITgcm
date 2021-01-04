@@ -130,7 +130,12 @@ C     !LOCAL VARIABLES:
       _RL viscAh_DMin(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_ZMin(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_DMin(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_DIAGNOSTICS
+      _RL SviscAh_ZLth
       _RL viscAh_ZLth(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#else
+      _RL SviscAh_ZLth
+#endif
       _RL viscAh_DLth(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_ZLth(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_DLth(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -240,7 +245,9 @@ c         viscA4_D(i,j) = viscA4D
 c         viscA4_Z(i,j) = viscA4Z
 
           viscAh_DLth(i,j) = 0. _d 0
+#ifdef ALLOW_DIAGNOSTICS
           viscAh_ZLth(i,j) = 0. _d 0
+#endif
           viscA4_DLth(i,j) = 0. _d 0
           viscA4_ZLth(i,j) = 0. _d 0
           viscAh_DLthD(i,j)= 0. _d 0
@@ -551,7 +558,7 @@ C This is the vector magnitude of grad(div.v) squared
      &                     + (divDy(i-1,j)*divDy(i-1,j)
      &                        + divDy(i,j)*divDy(i,j) )  )
 
-          viscAh_ZLth(i,j)=
+          SviscAh_ZLth=
      &     SQRT(leith2fac*grdVrt+leithD2fac*grdDiv)*L3
           viscA4_ZLth(i,j)=
      &     SQRT(leith4fac*grdVrt+leithD4fac*grdDiv)*L5
@@ -574,7 +581,7 @@ C but this approximation will work on cube (and differs by 4X)
           grdDiv=MAX( grdDiv, ABS(divDy(i,j))   )
           grdDiv=MAX( grdDiv, ABS(divDy(i-1,j)) )
 
-          viscAh_ZLth(i,j)=(leith2fac*grdVrt+(leithD2fac*grdDiv))*L3
+          SviscAh_ZLth=(leith2fac*grdVrt+(leithD2fac*grdDiv))*L3
           viscA4_ZLth(i,j)=(leith4fac*grdVrt+(leithD4fac*grdDiv))*L5
           viscAh_ZLthD(i,j)=(leithD2fac*grdDiv)*L3
           viscA4_ZLthD(i,j)=(leithD4fac*grdDiv)*L5
@@ -582,7 +589,7 @@ C but this approximation will work on cube (and differs by 4X)
           viscAh_ZLthQG(i,j)=leithQG2fac*(grdVrt + grdDiv)*L3
 #endif
          ELSE
-          viscAh_ZLth(i,j)=0. _d 0
+          SviscAh_ZLth=0. _d 0
           viscA4_ZLth(i,j)=0. _d 0
           viscAh_ZLthD(i,j)=0. _d 0
           viscA4_ZLthD(i,j)=0. _d 0
@@ -603,7 +610,7 @@ C but this approximation will work on cube (and differs by 4X)
 
 C  Harmonic on Zeta points
          Alin=viscAhZ+viscAhGrid*L2rdt
-     &         + viscAh_ZLth(i,j)+viscAh_ZSmg(i,j)
+     &         + SviscAh_ZLth+viscAh_ZSmg(i,j)
 #ifdef ALLOW_LEITH_QG
      &         + viscAh_ZLthQG(i,j)
 #endif
@@ -625,6 +632,12 @@ C  BiHarmonic on Zeta points
          viscA4_Z(i,j)=MAX(viscA4_ZMin(i,j),Alin)
          viscA4_ZMax(i,j)=MIN(viscA4GridMax*L4rdt,viscA4Max)
          viscA4_Z(i,j)=MIN(viscA4_ZMax(i,j),viscA4_Z(i,j))
+
+#ifdef ALLOW_DIAGNOSTICS
+        IF (useDiagnostics) THEN
+           viscAh_ZLth(i,j) = SviscAh_ZLth
+        ENDIF
+#endif
         ENDDO
        ENDDO
 
