@@ -91,7 +91,7 @@ C       Next, read the calendar data file.
      &                    SQUEEZE_RIGHT , 1)
 
         CALL OPEN_COPY_DATA_FILE(
-     I                          'data.cal', 'CAL_READPARMS',
+     I                      '/tmp/namelist/data.cal', 'CAL_READPARMS',
      O                          iUnit,
      I                          myThid )
         READ(unit = iUnit, nml = cal_nml)

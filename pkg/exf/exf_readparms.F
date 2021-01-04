@@ -916,7 +916,7 @@ C--   Next, read pkg/exf parameter file.
      &                    SQUEEZE_RIGHT, myThid )
 
       CALL OPEN_COPY_DATA_FILE(
-     I                          'data.exf', 'EXF_READPARMS',
+     I                       '/tmp/namelist/data.exf', 'EXF_READPARMS',
      O                          iUnit,
      I                          myThid )
 

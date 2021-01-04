@@ -360,7 +360,7 @@ C--   Open the parameter file
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
 
-      CALL OPEN_COPY_DATA_FILE( 'data', 'INI_PARMS',
+      CALL OPEN_COPY_DATA_FILE( '/tmp/namelist/data', 'INI_PARMS',
      O                          iUnit, myThid )
 
 C--   Read settings from iUnit (= a copy of model parameter file "data").
