@@ -1,0 +1,141 @@
+name: build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+ forward:
+   runs-on: ubuntu-latest
+
+   strategy:
+     matrix:
+      include:
+        - exp: "offline_exf_seaice"
+          precs: "16 16 16 16 16"
+        - exp: "global_ocean.cs32x15"
+          precs: "16 16 16 16 16"
+        - exp: "tutorial_deep_convection"
+          precs: "16 16"
+        - exp: "aim.5l_cs"
+          precs: "14 16"
+        - exp: "isomip"
+          precs: "16 16 16 16"
+        - exp: "global_ocean.90x40x15"
+          precs: "16 16 16"
+        - exp: "tutorial_plume_on_slope"
+          precs: "16"
+        - exp: "tutorial_advection_in_gyre"
+          precs: "16"
+        - exp: "hs94.cs-32x32x5"
+          precs: "13 16"
+        - exp: "tutorial_global_oce_biogeo"
+          precs: "16"
+        - exp: "tutorial_global_oce_in_p"
+          precs: "16"
+        - exp: "tutorial_cfc_offline"
+          precs: "16"
+
+   continue-on-error: true
+
+   steps:
+   
+     - name: Checkout
+       uses: actions/checkout@v2.2.0
+
+     - name: Set up compilers
+       run: |
+         sudo apt-get update
+         sudo apt-get -qq install gfortran
+     
+     - name: Get a docker image and set it running
+       run: |
+         docker pull mitgcm/testreport-images:ubuntu_18_04_villon
+         docker run  -v `pwd`:/MITgcm --name ubuntu_18_04-testreport -t -d mitgcm/testreport-images:ubuntu_18_04_villon /bin/bash
+         
+     - name: Run a test
+       env: 
+        MITGCM_EXP: ${{ matrix.exp }}
+        MITGCM_PRECS: ${{ matrix.precs }}
+       run: |
+         . tools/ci/runtr.sh
+
+ openad:
+   runs-on: ubuntu-latest
+
+   strategy:
+     matrix:
+      include:
+        - exp: "global_ocean.90x40x15"
+          precs: "16"
+
+   continue-on-error: true
+
+   steps:
+
+     - name: Checkout
+       uses: actions/checkout@v2.2.0
+
+     - name: Set up compilers
+       run: |
+         sudo apt-get update
+         sudo apt-get -qq install gfortran
+
+     - name: Get a docker image and set it running
+       run: |
+         docker pull mitgcm/mitgcm-openad-test:centos-test
+         docker run -i -t -v `pwd`:/MITgcm -d --name openad-testing --ulimit stack=-1:-1 --rm mitgcm/mitgcm-openad-test:centos-test /bin/bash
+
+     - name: Run testreport
+       env:
+        MITGCM_EXP: ${{ matrix.exp }}
+        MITGCM_PRECS: ${{ matrix.precs }}
+        MITGCM_DECMD: "docker exec -i openad-testing bash -lc"
+        MITGCM_TROPT: "-oad -devel -of=../tools/build_options/linux_amd64_gfortran"
+        MITGCM_INPUT_DIR_PAT: '/input_oad.*'
+       run: |
+         . tools/ci/runtr.sh
+
+ doc_html:
+   runs-on: ubuntu-latest
+
+   continue-on-error: true
+
+   steps:
+     - name: Checkout
+       uses: actions/checkout@v2.2.0
+
+     - name: Set up Python
+       uses: actions/setup-python@v2
+       with:
+         python-version: 3.6
+
+     - name: install dependencies
+       run: tools/ci/install_doc_dependencies.sh
+
+     - name: build docs
+       run: |
+         cd doc
+         sphinx-build -Wa -b html -d _build_doctrees . _build/html
+
+ doc_latex:
+   runs-on: ubuntu-latest
+
+   continue-on-error: true
+
+   steps:
+     - name: Checkout
+       uses: actions/checkout@v2.2.0
+
+     - name: Set up Python
+       uses: actions/setup-python@v2
+       with:
+         python-version: 3.6
+
+     - name: install dependencies
+       run: tools/ci/install_doc_dependencies.sh
+
+     - name: build docs
+       run: |
+         cd doc
+         make clean latexpdf LATEXOPTS="-interaction=nonstopmode -halt-on-error"
