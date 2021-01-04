@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67u (2020/12/30)
 o utils/python/MITgcmutils
  - add code to compute horizontal divergence of a vector field, gradient of a
    scalar field, and averages to c-points on an llc grid.
