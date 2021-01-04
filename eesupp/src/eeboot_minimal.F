@@ -220,9 +220,9 @@ C--    Get my process number
 #ifdef SINGLE_DISK_IO
         IF( myProcId .EQ. 0 ) THEN
 #endif
-         WRITE(fNam,'(A,A)') 'STDERR.', myProcessStr(1:iTmp)
+         WRITE(fNam,'(A,A)') '/tmp/STDERR.', myProcessStr(1:iTmp)
          OPEN(errorMessageUnit,FILE=fNam,STATUS='unknown')
-         WRITE(fNam,'(A,A)') 'STDOUT.', myProcessStr(1:iTmp)
+         WRITE(fNam,'(A,A)') '/tmp/STDOUT.', myProcessStr(1:iTmp)
          OPEN(standardMessageUnit,FILE=fNam,STATUS='unknown')
 #ifdef SINGLE_DISK_IO
         ELSE
