@@ -1360,8 +1360,15 @@ reproducible global sums.  As implemented however, this approach will
 increase network traffic and computations in a way that scales
 quadratically with `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_  process count.  Profiling has shown that letting the
 code fall through to a baseline approach that simply uses `MPI_Allreduce() <https://www.open-mpi.org/doc/v3.0/man3/MPI_Allreduce.3.php>`_
-can provide significantly improved performance for certain simulations.
+can provide significantly improved performance for certain simulations [#]_.
 The fall-though approach is activated by ``#undef`` both :varlink:`GLOBAL_SUM_ORDER_TILES` and :varlink:`GLOBAL_SUM_SEND_RECV`.
+
+.. [#] One example is the llc_540 case located at https://github.com/MITgcm-contrib/llc_hires/tree/master/llc_540. This case was run on the Pleiades computer for 20 simulated days using 767 and 2919 MPI ranks.
+   At 767 ranks, the fall-through approach provided a throughput of to 799.0 simulated days per calendar day (dd/d) while the default approach gave 781.0.
+   The profiler showed the speedup was directly attributable to spending less time in MPI_Allreduce. The volume of memory traffic associated with MPI_Allreduce dropped by 3 orders (22.456T -> 32.596G).
+   At 2919 MPI ranks the fall-through approach gave a throughput of 1300 dd/d while the default approach gave 800.0 dd/d. Put another way,
+   this case did not scale at all from 767p to 2819p unless the fall-though approach was utilized. The profiler showed the speedup was directly
+   attributable to spending less time in MPI_Allreduce. The volume of memory traffic associated with MPI_Allreduce dropped by 3 orders (303.70T ->121.08G ).
 
 .. _customize_model:
 
