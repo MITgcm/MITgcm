@@ -1366,7 +1366,7 @@ The fall-though approach is activated by ``#undef`` both :varlink:`GLOBAL_SUM_OR
 .. [#] One example is the llc_540 case located at https://github.com/MITgcm-contrib/llc_hires/tree/master/llc_540. This case was run on the Pleiades computer for 20 simulated days using 767 and 2919 MPI ranks.
    At 767 ranks, the fall-through approach provided a throughput of to 799.0 simulated days per calendar day (dd/d) while the default approach gave 781.0.
    The profiler showed the speedup was directly attributable to spending less time in MPI_Allreduce. The volume of memory traffic associated with MPI_Allreduce dropped by 3 orders (22.456T -> 32.596G).
-   At 2919 MPI ranks the fall-through approach gave a throughput of 1300 dd/d while the default approach gave 800.0 dd/d. Put another way,
+   At 2819 MPI ranks the fall-through approach gave a throughput of 1300 dd/d while the default approach gave 800.0 dd/d. Put another way,
    this case did not scale at all from 767p to 2819p unless the fall-though approach was utilized. The profiler showed the speedup was directly
    attributable to spending less time in MPI_Allreduce. The volume of memory traffic associated with MPI_Allreduce dropped by 3 orders (303.70T ->121.08G ).
 
