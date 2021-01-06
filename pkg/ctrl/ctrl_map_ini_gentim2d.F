@@ -144,17 +144,17 @@ C--   generic 2D control variables
 
 c-- docycle
 
-        replicated_nrec=endrec
+        replicated_nrec=diffrec
         replicated_ntimes=0
         do k2 = 1, maxCtrlProc
          if (xx_gentim2d_preproc(k2,iarr).EQ.'docycle') then
            if (xx_gentim2d_preproc_i(k2,iarr).NE.0) then
-            replicated_nrec=min(endrec,xx_gentim2d_preproc_i(k2,iarr))
+            replicated_nrec=min(diffrec,xx_gentim2d_preproc_i(k2,iarr))
             replicated_ntimes=
-     &       int(float(endrec)/float(replicated_nrec))
-            if (replicated_ntimes*replicated_nrec.LT.endrec)
+     &       int(float(diffrec)/float(replicated_nrec))
+            if (replicated_ntimes*replicated_nrec.LT.diffrec)
      &      replicated_ntimes=replicated_ntimes+1
-            if (replicated_ntimes*replicated_nrec.GT.endrec)
+            if (replicated_ntimes*replicated_nrec.GT.diffrec)
      &      replicated_ntimes=replicated_ntimes-1
            endif
          endif
@@ -227,7 +227,7 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
      &                       doglobalread, ladinit, optimcycle,
      &                       mythid, xx_gentim2d_dummy(iarr) )
 #else
-           CALL READ_REC_XY_RL( fnamegenOut, xx_gen_tmp, krec, 
+           CALL READ_REC_XY_RL( fnamegenOut, xx_gen_tmp, krec,
      &                       1, myThid )
 #endif
            call ecco_add(xx_gen_tmp,1,xx_gen,1,myThid)
@@ -286,7 +286,7 @@ CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 
 c-- scaling and smoothing
 
-        DO irec = 1, endrec
+        DO irec = 1, diffrec
 #ifdef ALLOW_AUTODIFF
 CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
 #endif
@@ -360,4 +360,3 @@ c-- end iarr loop
 
       RETURN
       END
-
