@@ -122,6 +122,8 @@ C     !LOCAL VARIABLES:
       _RL divDy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vrtDx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vrtDy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+#ifdef ALLOW_DIAGNOSTICS
       _RL viscAh_ZMax(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_DMax(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_ZMax(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -138,14 +140,42 @@ C     !LOCAL VARIABLES:
       _RL viscAh_DLthD(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_ZLthD(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_DLthD(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#ifdef ALLOW_LEITH_QG
-      _RL viscAh_ZLthQG(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL viscAh_DLthQG(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif
+
       _RL viscAh_ZSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscAh_DSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_ZSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_DSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef ALLOW_LEITH_QG
+      _RL viscAh_ZLthQG(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscAh_DLthQG(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
+#endif
+      _RL SviscAh_ZMax
+      _RL SviscAh_DMax
+      _RL SviscA4_ZMax
+      _RL SviscA4_DMax
+      _RL SviscAh_ZMin
+      _RL SviscAh_DMin
+      _RL SviscA4_ZMin
+      _RL SviscA4_DMin
+      _RL SviscAh_DLth
+      _RL SviscA4_ZLth
+      _RL SviscA4_DLth
+      _RL SviscAh_ZLthD
+      _RL SviscAh_DLthD
+      _RL SviscAh_ZLth
+      _RL SviscA4_ZLthD
+      _RL SviscA4_DLthD
+
+      _RL SviscAh_ZSmg
+      _RL SviscAh_DSmg
+      _RL SviscA4_ZSmg
+      _RL SviscA4_DSmg
+
+#ifdef ALLOW_LEITH_QG
+      _RL SviscAh_ZLthQG
+      _RL SviscAh_DLthQG
+#endif
       LOGICAL calcLeith, calcSmag, calcLeithQG
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -231,33 +261,37 @@ C        unless `useFullLeith` fails for your setup.
         leithD4fac=0. _d 0
        ENDIF
 
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
+#ifdef ALLOW_DIAGNOSTICS
+       IF (useDiagnostics) THEN
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
 C-    viscosity arrays have been initialised everywhere before calling this S/R
 c         viscAh_D(i,j) = viscAhD
 c         viscAh_Z(i,j) = viscAhZ
 c         viscA4_D(i,j) = viscA4D
 c         viscA4_Z(i,j) = viscA4Z
 
-          viscAh_DLth(i,j) = 0. _d 0
-          viscAh_ZLth(i,j) = 0. _d 0
-          viscA4_DLth(i,j) = 0. _d 0
-          viscA4_ZLth(i,j) = 0. _d 0
-          viscAh_DLthD(i,j)= 0. _d 0
-          viscAh_ZLthD(i,j)= 0. _d 0
-          viscA4_DLthD(i,j)= 0. _d 0
-          viscA4_ZLthD(i,j)= 0. _d 0
-#ifdef ALLOW_LEITH_QG
-          viscAh_DLthQG(i,j) = 0. _d 0
-          viscAh_ZLthQG(i,j) = 0. _d 0
-#endif
+           viscAh_DLth(i,j) = 0. _d 0
+           viscAh_ZLth(i,j) = 0. _d 0
+           viscA4_DLth(i,j) = 0. _d 0
+           viscA4_ZLth(i,j) = 0. _d 0
+           viscAh_DLthD(i,j)= 0. _d 0
+           viscAh_ZLthD(i,j)= 0. _d 0
+           viscA4_DLthD(i,j)= 0. _d 0
+           viscA4_ZLthD(i,j)= 0. _d 0
 
-          viscAh_DSmg(i,j) = 0. _d 0
-          viscAh_ZSmg(i,j) = 0. _d 0
-          viscA4_DSmg(i,j) = 0. _d 0
-          viscA4_ZSmg(i,j) = 0. _d 0
+           viscAh_DSmg(i,j) = 0. _d 0
+           viscAh_ZSmg(i,j) = 0. _d 0
+           viscA4_DSmg(i,j) = 0. _d 0
+           viscA4_ZSmg(i,j) = 0. _d 0
+#ifdef ALLOW_LEITH_QG
+           viscAh_DLthQG(i,j) = 0. _d 0
+           viscAh_ZLthQG(i,j) = 0. _d 0
+#endif
+         ENDDO
         ENDDO
-       ENDDO
+       ENDIF
+#endif
 
 C-    Initialise to zero gradient of vorticity and divergence:
        DO j=1-OLy,sNy+OLy
@@ -425,17 +459,12 @@ C Using it in Leith serves to damp instabilities in w.
      &                     + (divDy(i,j+1)*divDy(i,j+1)
      &                        + divDy(i,j)*divDy(i,j) )  )
 
-          viscAh_DLth(i,j)=
-     &     SQRT(leith2fac*grdVrt+leithD2fac*grdDiv)*L3
-          viscA4_DLth(i,j)=
-     &     SQRT(leith4fac*grdVrt+leithD4fac*grdDiv)*L5
-          viscAh_DLthd(i,j)=
-     &     SQRT(leithD2fac*grdDiv)*L3
-          viscA4_DLthd(i,j)=
-     &     SQRT(leithD4fac*grdDiv)*L5
+          SviscAh_DLth=SQRT(leith2fac*grdVrt+leithD2fac*grdDiv)*L3
+          SviscA4_DLth=SQRT(leith4fac*grdVrt+leithD4fac*grdDiv)*L5
+          SviscAh_DLthD=SQRT(leithD2fac*grdDiv)*L3
+          SviscA4_DLthD=SQRT(leithD4fac*grdDiv)*L5
 #ifdef ALLOW_LEITH_QG
-          viscAh_DLthQG(i,j) =
-     &     SQRT(leithQG2fac*(grdVrt+grdDiv))*L3
+          SviscAh_DLthQG=SQRT(leithQG2fac*(grdVrt+grdDiv))*L3
 #endif
 
          ELSEIF (calcLeith) THEN
@@ -449,42 +478,42 @@ C This approximation is good to the same order as above...
           grdDiv=MAX( grdDiv, ABS(divDy(i,j+1)) )
           grdDiv=MAX( grdDiv, ABS(divDy(i,j))   )
 
-          viscAh_DLth(i,j)=(leith2fac*grdVrt+(leithD2fac*grdDiv))*L3
-          viscA4_DLth(i,j)=(leith4fac*grdVrt+(leithD4fac*grdDiv))*L5
-          viscAh_DLthD(i,j)=((leithD2fac*grdDiv))*L3
-          viscA4_DLthD(i,j)=((leithD4fac*grdDiv))*L5
+          SviscAh_DLth=(leith2fac*grdVrt+(leithD2fac*grdDiv))*L3
+          SviscA4_DLth=(leith4fac*grdVrt+(leithD4fac*grdDiv))*L5
+          SviscAh_DLthD=((leithD2fac*grdDiv))*L3
+          SviscA4_DLthD=((leithD4fac*grdDiv))*L5
 #ifdef ALLOW_LEITH_QG
-          viscAh_DLthQG(i,j)=leithQG2fac*(grdVrt + grdDiv)*L3
+          SviscAh_DLthQG=leithQG2fac*(grdVrt + grdDiv)*L3
 #endif
 
          ELSE
-          viscAh_DLth(i,j)=0. _d 0
-          viscA4_DLth(i,j)=0. _d 0
-          viscAh_DLthD(i,j)=0. _d 0
-          viscA4_DLthD(i,j)=0. _d 0
+          SviscAh_DLth=0. _d 0
+          SviscA4_DLth=0. _d 0
+          SviscAh_DLthD=0. _d 0
+          SviscA4_DLthD=0. _d 0
 #ifdef ALLOW_LEITH_QG
-          viscAh_DLthQG(i,j)=0. _d 0
+          SviscAh_DLthQG=0. _d 0
 #endif
          ENDIF
 
          IF (calcSmag) THEN
-          viscAh_DSmg(i,j)=L2
+          SviscAh_DSmg=L2
      &       *SQRT(tension(i,j)**2
      &       +0.25 _d 0*(strain(i+1, j )**2+strain( i ,j+1)**2
      &                  +strain(i  , j )**2+strain(i+1,j+1)**2))
-          viscA4_DSmg(i,j)=smag4fac*L2*viscAh_DSmg(i,j)
-          viscAh_DSmg(i,j)=smag2fac*viscAh_DSmg(i,j)
+          SviscA4_DSmg=smag4fac*L2*SviscAh_DSmg
+          SviscAh_DSmg=smag2fac*SviscAh_DSmg
          ELSE
-          viscAh_DSmg(i,j)=0. _d 0
-          viscA4_DSmg(i,j)=0. _d 0
+          SviscAh_DSmg=0. _d 0
+          SviscA4_DSmg=0. _d 0
          ENDIF
 #endif /* AUTODIFF_DISABLE_LEITH */
 
 C  Harmonic on Div.u points
          Alin=viscAhD+viscAhGrid*L2rdt
-     &         + viscAh_DLth(i,j)+viscAh_DSmg(i,j)
+     &         + SviscAh_DLth+SviscAh_DSmg
 #ifdef ALLOW_LEITH_QG
-     &         + viscAh_DLthQG(i,j)
+     &         + SviscAh_DLthQG
 #endif
 #ifdef ALLOW_3D_VISCAH
      &         + viscAhDfld(i,j,k,bi,bj)
@@ -492,24 +521,24 @@ C  Harmonic on Div.u points
      &          *viscFacAdj
 #endif
 #endif
-         viscAh_DMin(i,j)=MAX(viscAhGridMin*L2rdt,Uscl)
-         viscAh_D(i,j)=MAX(viscAh_DMin(i,j),Alin)
-         viscAh_DMax(i,j)=MIN(viscAhGridMax*L2rdt,viscAhMax)
-         viscAh_D(i,j)=MIN(viscAh_DMax(i,j),viscAh_D(i,j))
+         SviscAh_DMin=MAX(viscAhGridMin*L2rdt,Uscl)
+         viscAh_D(i,j)=MAX(SviscAh_DMin,Alin)
+         SviscAh_DMax=MIN(viscAhGridMax*L2rdt,viscAhMax)
+         viscAh_D(i,j)=MIN(SviscAh_DMax,viscAh_D(i,j))
 
 C  BiHarmonic on Div.u points
          Alin=viscA4D+viscA4Grid*L4rdt
-     &         + viscA4_DLth(i,j)+viscA4_DSmg(i,j)
+     &         + SviscA4_DLth+SviscA4_DSmg
 #ifdef ALLOW_3D_VISCA4
      &         + viscA4Dfld(i,j,k,bi,bj)
 #ifdef ALLOW_AUTODIFF
      &          *viscFacAdj
 #endif
 #endif
-         viscA4_DMin(i,j)=MAX(viscA4GridMin*L4rdt,U4scl)
-         viscA4_D(i,j)=MAX(viscA4_DMin(i,j),Alin)
-         viscA4_DMax(i,j)=MIN(viscA4GridMax*L4rdt,viscA4Max)
-         viscA4_D(i,j)=MIN(viscA4_DMax(i,j),viscA4_D(i,j))
+         SviscA4_DMin=MAX(viscA4GridMin*L4rdt,U4scl)
+         viscA4_D(i,j)=MAX(SviscA4_DMin,Alin)
+         SviscA4_DMax=MIN(viscA4GridMax*L4rdt,viscA4Max)
+         viscA4_D(i,j)=MIN(SviscA4_DMax,viscA4_D(i,j))
 
 CCCCCCCCCCCCC Vorticity Point CalculationsCCCCCCCCCCCCCCCCCC
 C These are (powers of) length scales
@@ -551,17 +580,12 @@ C This is the vector magnitude of grad(div.v) squared
      &                     + (divDy(i-1,j)*divDy(i-1,j)
      &                        + divDy(i,j)*divDy(i,j) )  )
 
-          viscAh_ZLth(i,j)=
-     &     SQRT(leith2fac*grdVrt+leithD2fac*grdDiv)*L3
-          viscA4_ZLth(i,j)=
-     &     SQRT(leith4fac*grdVrt+leithD4fac*grdDiv)*L5
-          viscAh_ZLthD(i,j)=
-     &     SQRT(leithD2fac*grdDiv)*L3
-          viscA4_ZLthD(i,j)=
-     &     SQRT(leithD4fac*grdDiv)*L5
+          SviscAh_ZLth=SQRT(leith2fac*grdVrt+leithD2fac*grdDiv)*L3
+          SviscA4_ZLth=SQRT(leith4fac*grdVrt+leithD4fac*grdDiv)*L5
+          SviscAh_ZLthD=SQRT(leithD2fac*grdDiv)*L3
+          SviscA4_ZLthD=SQRT(leithD4fac*grdDiv)*L5
 #ifdef ALLOW_LEITH_QG
-          viscAh_ZLthQG(i,j)=
-     &     SQRT(leithQG2fac*(grdVrt + grdDiv))*L3
+          SviscAh_ZLthQG=SQRT(leithQG2fac*(grdVrt + grdDiv))*L3
 #endif
 
          ELSEIF (calcLeith) THEN
@@ -574,57 +598,87 @@ C but this approximation will work on cube (and differs by 4X)
           grdDiv=MAX( grdDiv, ABS(divDy(i,j))   )
           grdDiv=MAX( grdDiv, ABS(divDy(i-1,j)) )
 
-          viscAh_ZLth(i,j)=(leith2fac*grdVrt+(leithD2fac*grdDiv))*L3
-          viscA4_ZLth(i,j)=(leith4fac*grdVrt+(leithD4fac*grdDiv))*L5
-          viscAh_ZLthD(i,j)=(leithD2fac*grdDiv)*L3
-          viscA4_ZLthD(i,j)=(leithD4fac*grdDiv)*L5
+          SviscAh_ZLth=(leith2fac*grdVrt+(leithD2fac*grdDiv))*L3
+          SviscA4_ZLth=(leith4fac*grdVrt+(leithD4fac*grdDiv))*L5
+          SviscAh_ZLthD=(leithD2fac*grdDiv)*L3
+          SviscA4_ZLthD=(leithD4fac*grdDiv)*L5
 #ifdef ALLOW_LEITH_QG
-          viscAh_ZLthQG(i,j)=leithQG2fac*(grdVrt + grdDiv)*L3
+          SviscAh_ZLthQG=leithQG2fac*(grdVrt + grdDiv)*L3
 #endif
          ELSE
-          viscAh_ZLth(i,j)=0. _d 0
-          viscA4_ZLth(i,j)=0. _d 0
-          viscAh_ZLthD(i,j)=0. _d 0
-          viscA4_ZLthD(i,j)=0. _d 0
+          SviscAh_ZLth=0. _d 0
+          SviscA4_ZLth=0. _d 0
+          SviscAh_ZLthD=0. _d 0
+          SviscA4_ZLthD=0. _d 0
 #ifdef ALLOW_LEITH_QG
-          viscAh_ZLthQG(i,j)=0. _d 0
+          SviscAh_ZLthQG=0. _d 0
 #endif
          ENDIF
 
          IF (calcSmag) THEN
-          viscAh_ZSmg(i,j)=L2
+          SviscAh_ZSmg=L2
      &      *SQRT(strain(i,j)**2
      &        +0.25 _d 0*(tension( i , j )**2+tension( i ,j-1)**2
      &                   +tension(i-1, j )**2+tension(i-1,j-1)**2))
-          viscA4_ZSmg(i,j)=smag4fac*L2*viscAh_ZSmg(i,j)
-          viscAh_ZSmg(i,j)=smag2fac*viscAh_ZSmg(i,j)
+          SviscA4_ZSmg=smag4fac*L2*SviscAh_ZSmg
+          SviscAh_ZSmg=smag2fac*SviscAh_ZSmg
          ENDIF
 #endif /* AUTODIFF_DISABLE_LEITH */
 
 C  Harmonic on Zeta points
          Alin=viscAhZ+viscAhGrid*L2rdt
-     &         + viscAh_ZLth(i,j)+viscAh_ZSmg(i,j)
+     &         + SviscAh_ZLth+SviscAh_ZSmg
 #ifdef ALLOW_LEITH_QG
-     &         + viscAh_ZLthQG(i,j)
+     &         + SviscAh_ZLthQG
 #endif
 #ifdef ALLOW_3D_VISCAH
      &         + viscAhZfld(i,j,k,bi,bj)
 #endif
-         viscAh_ZMin(i,j)=MAX(viscAhGridMin*L2rdt,Uscl)
-         viscAh_Z(i,j)=MAX(viscAh_ZMin(i,j),Alin)
-         viscAh_ZMax(i,j)=MIN(viscAhGridMax*L2rdt,viscAhMax)
-         viscAh_Z(i,j)=MIN(viscAh_ZMax(i,j),viscAh_Z(i,j))
+         SviscAh_ZMin=MAX(viscAhGridMin*L2rdt,Uscl)
+         viscAh_Z(i,j)=MAX(SviscAh_ZMin,Alin)
+         SviscAh_ZMax=MIN(viscAhGridMax*L2rdt,viscAhMax)
+         viscAh_Z(i,j)=MIN(SviscAh_ZMax,viscAh_Z(i,j))
 
 C  BiHarmonic on Zeta points
          Alin=viscA4Z+viscA4Grid*L4rdt
-     &         + viscA4_ZLth(i,j)+viscA4_ZSmg(i,j)
+     &         + SviscA4_ZLth+SviscA4_ZSmg
 #ifdef ALLOW_3D_VISCA4
      &         + viscA4Zfld(i,j,k,bi,bj)
 #endif
-         viscA4_ZMin(i,j)=MAX(viscA4GridMin*L4rdt,U4scl)
-         viscA4_Z(i,j)=MAX(viscA4_ZMin(i,j),Alin)
-         viscA4_ZMax(i,j)=MIN(viscA4GridMax*L4rdt,viscA4Max)
-         viscA4_Z(i,j)=MIN(viscA4_ZMax(i,j),viscA4_Z(i,j))
+         SviscA4_ZMin=MAX(viscA4GridMin*L4rdt,U4scl)
+         viscA4_Z(i,j)=MAX(SviscA4_ZMin,Alin)
+         SviscA4_ZMax=MIN(viscA4GridMax*L4rdt,viscA4Max)
+         viscA4_Z(i,j)=MIN(SviscA4_ZMax,viscA4_Z(i,j))
+
+#ifdef ALLOW_DIAGNOSTICS
+         IF (useDiagnostics) THEN
+           viscAh_ZMax(i,j) = SviscAh_ZMax
+           viscAh_DMax(i,j) = SviscAh_DMax
+           viscA4_ZMax(i,j) = SviscA4_ZMax
+           viscA4_DMax(i,j) = SviscA4_DMax
+           viscAh_ZMin(i,j) = SviscAh_ZMin
+           viscAh_DMin(i,j) = SviscAh_DMin
+           viscA4_ZMin(i,j) = SviscA4_ZMin
+           viscA4_DMin(i,j) = SviscA4_DMin
+           viscAh_DLth(i,j) = SviscAh_DLth
+
+           viscA4_DLth(i,j) = SviscA4_DLth
+           viscAh_ZLthD(i,j) = SviscAh_ZLthD
+           viscAh_DLthD(i,j) = SviscAh_DLthD
+           viscAh_ZLth(i,j) = SviscAh_ZLth
+           viscA4_ZLthD(i,j) = SviscA4_ZLthD
+           viscA4_DLthD(i,j) = SviscA4_DLthD
+
+           viscAh_DSmg(i,j) = SviscAh_DSmg
+           viscAh_ZSmg(i,j) = SviscAh_ZSmg
+           viscA4_DSmg(i,j) = SviscA4_DSmg
+           viscA4_ZSmg(i,j) = SviscA4_ZSmg
+#ifdef ALLOW_LEITH_QG
+           viscAh_DLthQG(i,j) = SviscAh_DLthQG
+           viscAh_ZLthQG(i,j) = SviscAh_ZLthQG
+#endif
+         ENDIF
+#endif
         ENDDO
        ENDDO
 
