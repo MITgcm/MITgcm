@@ -16,6 +16,9 @@ C     !INTERFACE:
 #endif
      I   TSURFin,
      O   TSURFout,
+#ifdef SEAICE_USE_GROWTH_ADX
+     O   F_io_net, F_ia_net,
+#endif /* SEAICE_USE_GROWTH_ADX */
      O   F_ia, IcePenetSW,
      O   FWsublim,
      I   bi, bj, myTime, myIter, myThid )
@@ -52,13 +55,16 @@ C     !INPUT PARAMETERS:
 C     UG           :: atmospheric wind speed (m/s)
 C     HICE_ACTUAL  :: actual ice thickness
 C     HSNOW_ACTUAL :: actual snow thickness
-C     TSURF      :: surface temperature of ice/snow in Kelvin
+C     TSURFin    :: surface temperature of ice/snow in Kelvin
 C     bi,bj      :: tile indices
 C     myTime     :: current time in simulation
 C     myIter     :: iteration number in simulation
 C     myThid     :: my Thread Id number
 C     !OUTPUT PARAMETERS:
-C     TSURF      :: updated surface temperature of ice/snow in Kelvin
+C     TSURFout   :: updated surface temperature of ice/snow in Kelvin
+C     F_io_net   :: upward conductive heat flux through seaice+snow
+C     F_ia_net   :: net heat flux divergence at the sea ice/snow surface:
+C                 includes ice conductive fluxes and atmospheric fluxes (W/m^2)
 C     F_ia       :: upward seaice/snow surface heat flux to atmosphere (W/m^2)
 C     IcePenetSW :: short wave heat flux transmitted through ice (+=upward)
 C     FWsublim   :: fresh water (mass) flux due to sublimation (+=up)(kg/m^2/s)
@@ -76,6 +82,8 @@ C----------
 #endif
       _RL TSURFin     (1:sNx,1:sNy)
       _RL TSURFout    (1:sNx,1:sNy)
+      _RL F_io_net    (1:sNx,1:sNy)
+      _RL F_ia_net    (1:sNx,1:sNy)
       _RL F_ia        (1:sNx,1:sNy)
       _RL IcePenetSW  (1:sNx,1:sNy)
       _RL FWsublim    (1:sNx,1:sNy)
@@ -92,8 +100,6 @@ C     kSurface  :: vertical index of surface layer
       INTEGER i, j
       INTEGER kSurface
       INTEGER ITER
-C     tempFrz :: ocean temperature in contact with ice (=seawater freezing point) (K)
-      _RL tempFrz         (1:sNx,1:sNy)
       _RL D1, D1I
       _RL D3(1:sNx,1:sNy)
       _RL TMELT, XKI, XKS, HCUT, recip_HCUT, XIO
@@ -115,6 +121,8 @@ C     Extended temp-range expon. relation Coeff. for Sat. Vapor Press
 C     specific humidity at ice surface variables
       _RL mm_pi,mm_log10pi
 
+C     tempFrz  :: ocean temperature in contact with ice
+C                 (=seawater freezing point) (K)
 C     F_c      :: conductive heat flux through seaice+snow (+=upward)
 C     F_lwu    :: upward long-wave surface heat flux (+=upward)
 C     F_sens   :: sensible surface heat flux         (+=upward)
@@ -122,6 +130,7 @@ C     F_lh     :: latent heat flux (sublimation) (+=upward)
 C     qhice    :: saturation vapor pressure of snow/ice surface
 C     dqh_dTs  :: derivative of qhice w.r.t snow/ice surf. temp
 C     dFia_dTs :: derivative of surf heat flux (F_ia) w.r.t surf. temp
+      _RL tempFrz    (1:sNx,1:sNy)
       _RL F_c        (1:sNx,1:sNy)
       _RL F_lwu      (1:sNx,1:sNy)
       _RL F_sens     (1:sNx,1:sNy)
@@ -144,11 +153,6 @@ C     local copies of global variables
 C     iceOrNot :: this is HICE_ACTUAL.GT.0.
       LOGICAL iceOrNot(1:sNx,1:sNy)
 #ifdef SEAICE_DEBUG
-C     F_io_net :: upward conductive heat flux through seaice+snow
-C     F_ia_net :: net heat flux divergence at the sea ice/snow surface:
-C                 includes ice conductive fluxes and atmospheric fluxes (W/m^2)
-      _RL F_io_net
-      _RL F_ia_net
 #endif /* SEAICE_DEBUG */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -220,6 +224,8 @@ C     Initialize variables
 C     initialise output arrays:
         TSURFout (I,J) = TSURFin(I,J)
         F_ia     (I,J) = 0. _d 0
+        F_ia_net (I,J) = 0. _d 0
+        F_io_net (I,J) = 0. _d 0
         IcePenetSW(I,J)= 0. _d 0
         FWsublim (I,J) = 0. _d 0
 C     HICE_ACTUAL is modified in this routine, but at the same time
@@ -513,6 +519,17 @@ C     The flux between the ice/snow surface and the atmosphere.
           F_ia(I,J) = -lwdownLoc(I,J) -absorbedSW(I,J) + F_lwu(I,J)
      &              +  F_sens(I,J) + F_lh(I,J)
 
+C IGF_SIR-b
+          IF (-F_c(I,J) .LT. ZERO) THEN
+C note that F_c is flipped sign in this rewrite for some reason
+            F_io_net(I,J) = F_c(I,J)
+            F_ia_net(I,J) = ZERO
+          ELSE
+            F_io_net(I,J) = ZERO
+            F_ia_net(I,J) = F_ia(I,J)
+          ENDIF
+C IGF_SIR-e
+
          ELSEIF ( postSolvTempIter.EQ.1 ) THEN
 C     Update fluxes (consistent with the linearized formulation)
           delTsurf  = tsurfLoc(I,J)-tsurfPrev(I,J)
@@ -532,15 +549,6 @@ C     is also positive upward (atmosphere gains freshwater)
          FWsublim(I,J) = F_lh(I,J)/lhSublim
 
 #ifdef SEAICE_DEBUG
-C     Calculate the net ice-ocean and ice-atmosphere fluxes
-         IF (F_c(I,J) .GT. 0.0 _d 0) THEN
-          F_io_net = F_c(I,J)
-          F_ia_net = 0.0 _d 0
-         ELSE
-          F_io_net = 0.0 _d 0
-          F_ia_net = F_ia(I,J)
-         ENDIF                  !/* conductive fluxes up or down */
-
          IF ( (I .EQ. SEAICE_debugPointI) .AND.
      &        (J .EQ. SEAICE_debugPointJ) ) THEN
           print '(A)','----------------------------------------'
@@ -578,7 +586,7 @@ C     Calculate the net ice-ocean and ice-atmosphere fluxes
 #endif /* SEAICE_CAP_SUBLIM */
           print '(A,4(1x,D24.15))',
      &         'ibi F_ia, F_ia_net, F_c    ',
-     &         F_ia(I,J), F_ia_net, F_c(I,J)
+     &         F_ia(I,J), F_ia_net(I,J), F_c(I,J)
           print '(A)','----------------------------------------'
          ENDIF
 #endif /* SEAICE_DEBUG */
