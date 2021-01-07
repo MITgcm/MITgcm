@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/build_options/linux_ia64_ifort_ollie: adjust floating point options
 o pkg/ctrl:
  - fix two bugs related to writing and reading control variables and
    corresponding gradients:
