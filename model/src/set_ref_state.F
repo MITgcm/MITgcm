@@ -388,7 +388,7 @@ c       CALL WRITE_GLVEC_RL( 'PRefLocF',' ',pRefLocF,Nr+1,-1, myThid )
        ENDDO
       ELSE
 C-    Write reference density to binary file :
-        CALL WRITE_GLVEC_RL( 'RhoRef', ' ', rhoRef, Nr, -1, myThid )
+       CALL WRITE_GLVEC_RL( '/tmp/RhoRef', ' ', rhoRef, Nr, -1, myThid )
       ENDIF
       IF ( usingZCoords .AND. rhoRefFile .NE. ' ' ) THEN
 C-    Write Anelastic density factor to binary file :
