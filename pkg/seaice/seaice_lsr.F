@@ -1518,7 +1518,6 @@ C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     i,j  :: Loop counters
       INTEGER i,j
-      INTEGER kSrf
       _RL hFacM
       _RL sig11(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sig12(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
