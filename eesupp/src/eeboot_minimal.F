@@ -54,7 +54,7 @@ C     msgBuf     :: Used to build messages for printing.
 #ifdef USE_PDAF
       CHARACTER*18 fNam
 #else
-      CHARACTER*13 fNam
+      CHARACTER*17 fNam
 #endif /* USE_PDAF */
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 #ifdef ALLOW_USE_MPI
