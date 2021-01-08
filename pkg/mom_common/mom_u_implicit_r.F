@@ -76,13 +76,17 @@ C----------------------------
 
 C--   Initialise
       diagonalNumber = 1
+
+! DSK This initialization is 0.37% of walltime for llc540 on 767 ranks
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
 c        a5d(i,j,k) = 0. _d 0
+#ifndef OPTIMIZATIONS_DSK
          b5d(i,j,k) = 0. _d 0
          c5d(i,j,k) = 1. _d 0
          d5d(i,j,k) = 0. _d 0
+#endif
 c        e5d(i,j,k) = 0. _d 0
         ENDDO
        ENDDO
@@ -110,6 +114,78 @@ c        e5d(i,j,k) = 0. _d 0
 
 C--   set the tri-diagonal matrix to solve the implicit viscosity
        diagonalNumber = 3
+#ifdef OPTIMIZATIONS_DSK
+       k=1
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         b5d(i,j,k) = 0. _d 0
+         c5d(i,j,k) = 1. _d 0
+         d5d(i,j,k) = 0. _d 0
+        ENDDO
+       ENDDO
+       DO j=jMin,jMax
+         DO i=iMin,iMax
+          IF (maskW(i,j,k+1,bi,bj).EQ.oneRS)
+     &     d5d(i,j,k) = -deltaTMom
+     &                  *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
+     &                  *kappaRU(i,j,k+1)*recip_drC(k+1)
+     &                  *deepFac2F(k+1)*rhoFacF(k+1)
+
+           c5d(i,j,k) = 1. _d 0 - ( b5d(i,j,k) + d5d(i,j,k) )
+         ENDDO
+       ENDDO
+
+       DO k=2,Nr-1
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          b5d(i,j,k) = 0. _d 0
+          c5d(i,j,k) = 1. _d 0
+          d5d(i,j,k) = 0. _d 0
+         ENDDO
+        ENDDO
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          IF (maskW(i,j,k-1,bi,bj).EQ.oneRS)
+     &     b5d(i,j,k) = -deltaTMom
+     &                  *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
+     &                  *kappaRU(i,j, k )*recip_drC( k )
+     &                  *deepFac2F( k )*rhoFacF( k )
+
+          IF (maskW(i,j,k+1,bi,bj).EQ.oneRS)
+     &     d5d(i,j,k) = -deltaTMom
+     &                  *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
+     &                  *kappaRU(i,j,k+1)*recip_drC(k+1)
+     &                  *deepFac2F(k+1)*rhoFacF(k+1)
+
+           c5d(i,j,k) = 1. _d 0 - ( b5d(i,j,k) + d5d(i,j,k) )
+         ENDDO
+        ENDDO
+       ENDDO
+
+       k=Nr
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         b5d(i,j,k) = 0. _d 0
+         c5d(i,j,k) = 1. _d 0
+         d5d(i,j,k) = 0. _d 0
+        ENDDO
+       ENDDO
+       DO j=jMin,jMax
+         DO i=iMin,iMax
+          IF (maskW(i,j,k-1,bi,bj).EQ.oneRS)
+     &     b5d(i,j,k) = -deltaTMom
+     &                  *_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
+     &                  *kappaRU(i,j, k )*recip_drC( k )
+     &                  *deepFac2F( k )*rhoFacF( k )
+
+           c5d(i,j,k) = 1. _d 0 - ( b5d(i,j,k) + d5d(i,j,k) )
+         ENDDO
+       ENDDO
+#else
 C-     1rst lower diagonal :
        DO k=2,Nr
         DO j=jMin,jMax
@@ -146,6 +222,7 @@ C-     Main diagonal :
        ENDDO
 
 C--   end if implicitDiffusion
+#endif
       ENDIF
 
       IF ( selectImplicitDrag.GE.1 ) THEN
