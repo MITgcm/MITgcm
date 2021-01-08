@@ -1034,7 +1034,7 @@ C     and consistent with linFSConserveTr and "surfExpan_" monitor.
 #else /* GAD_MULTIDIM_COMPRESSIBLE */
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-#if 1
+#ifdef OPTIMIZATIONS_DSK
           tmpTij = localT3d(i,j,k)
      &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)

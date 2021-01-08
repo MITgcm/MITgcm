@@ -106,7 +106,7 @@ C--   no need to solve anything with only 1 level:
       IF (implicitDiffusion) THEN
 C--   set the tri-diagonal matrix to solve the implicit diffusion problem
        diagonalNumber = 3
-#if 1
+#ifdef OPTIMIZATIONS_DSK
        k=1
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx

@@ -151,24 +151,7 @@ C **********
      &      .OR. equationOfState.EQ.'UNESCO' ) THEN
 C     nonlinear equation of state in pressure coordinates
 
-#if 0
-         CALL PRESSURE_FOR_EOS(
-     I             bi, bj, iMin, iMax, jMin, jMax, kRef,
-     O             locPres,
-     I             myThid )
-
-         CALL FIND_RHOP0(
-     I             iMin, iMax, jMin, jMax,
-     I             tFld, sFld,
-     O             rhoP0,
-     I             myThid )
-
-         CALL FIND_BULKMOD(
-     I             iMin, iMax, jMin, jMax,
-     I             locPres, tFld, sFld,
-     O             bulkMod,
-     I             myThid )
-#else
+#ifdef OPTIMIZATIONS_DSK
       DO j=jMin,jMax
          DO i=iMin,iMax
 !     abbreviations
@@ -258,6 +241,23 @@ C     nonlinear equation of state in pressure coordinates
      &                    (bMfresh + bMsalt + bMpres - p) - rhoConst
          ENDDO
       ENDDO
+#else
+         CALL PRESSURE_FOR_EOS(
+     I             bi, bj, iMin, iMax, jMin, jMax, kRef,
+     O             locPres,
+     I             myThid )
+
+         CALL FIND_RHOP0(
+     I             iMin, iMax, jMin, jMax,
+     I             tFld, sFld,
+     O             rhoP0,
+     I             myThid )
+
+         CALL FIND_BULKMOD(
+     I             iMin, iMax, jMin, jMax,
+     I             locPres, tFld, sFld,
+     O             bulkMod,
+     I             myThid )
 #endif
 
 c#ifdef ALLOW_AUTODIFF_TAMC
