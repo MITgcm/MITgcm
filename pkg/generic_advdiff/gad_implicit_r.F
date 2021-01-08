@@ -102,15 +102,15 @@ C--   no need to solve anything with only 1 level:
       IF (Nr.GT.1) THEN
 
 C--   Initialise
-      DO k=1,Nr
-       DO j=1-OLy,sNy+OLy
-        DO i=1-OLx,sNx+OLx
-         b5d(i,j,k) = 0. _d 0
-         c5d(i,j,k) = 1. _d 0
-         d5d(i,j,k) = 0. _d 0
-        ENDDO
-       ENDDO
-      ENDDO
+!      DO k=1,Nr
+!       DO j=1-OLy,sNy+OLy
+!        DO i=1-OLx,sNx+OLx
+!         b5d(i,j,k) = 0. _d 0
+!         c5d(i,j,k) = 1. _d 0
+!         d5d(i,j,k) = 0. _d 0
+!        ENDDO
+!       ENDDO
+!      ENDDO
       diagonalNumber = 1
 
       IF (implicitDiffusion) THEN
@@ -118,6 +118,13 @@ C--   set the tri-diagonal matrix to solve the implicit diffusion problem
        diagonalNumber = 3
 #if 1
        k=1
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         b5d(i,j,k) = 0. _d 0
+         c5d(i,j,k) = 1. _d 0
+         d5d(i,j,k) = 0. _d 0
+        ENDDO
+       ENDDO
        DO j=jMin,jMax
          DO i=iMin,iMax
            d5d(i,j,k) = -deltaTLev(k)*maskC(i,j,k+1,bi,bj)
@@ -131,6 +138,13 @@ C--   set the tri-diagonal matrix to solve the implicit diffusion problem
        ENDDO
 
        DO k=2,Nr-1
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          b5d(i,j,k) = 0. _d 0
+          c5d(i,j,k) = 1. _d 0
+          d5d(i,j,k) = 0. _d 0
+         ENDDO
+        ENDDO
         DO j=jMin,jMax
          DO i=iMin,iMax
            b5d(i,j,k) = -deltaTLev(k)*maskC(i,j,k-1,bi,bj)
@@ -151,6 +165,13 @@ C--   set the tri-diagonal matrix to solve the implicit diffusion problem
        ENDDO
 
        k=Nr
+       DO j=1-OLy,sNy+OLy
+        DO i=1-OLx,sNx+OLx
+         b5d(i,j,k) = 0. _d 0
+         c5d(i,j,k) = 1. _d 0
+         d5d(i,j,k) = 0. _d 0
+        ENDDO
+       ENDDO
        DO j=jMin,jMax
          DO i=iMin,iMax
            b5d(i,j,k) = -deltaTLev(k)*maskC(i,j,k-1,bi,bj)
@@ -226,18 +247,15 @@ C--   Non-Linear Advection scheme: keep a local copy of tracer field
         ENDIF
        ENDIF
 
+       DO k=Nr,1,-1
 
 C--   Initialise
-       DO k=1,Nr
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           a5d(i,j,k) = 0. _d 0
           e5d(i,j,k) = 0. _d 0
          ENDDO
         ENDDO
-       ENDDO
-
-       DO k=Nr,1,-1
 
 C--    Compute transport
         IF (k.EQ.1) THEN
