@@ -183,6 +183,7 @@ C     just ensure that all memory references are to valid floating
 C     point numbers. This prevents spurious hardware signals due to
 C     uninitialised but inert locations.
 
+! DSK This initialization is 0.29% of walltime for llc540 on 767 ranks
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
@@ -249,6 +250,7 @@ C--     Compute new reciprocal hFac for implicit calculation
 
 C--   Set up 3-D velocity field that we use to advect tracers:
 C-    just do a local copy:
+! DSK This copy is 0.66% of walltime for llc540 on 767 ranks
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx

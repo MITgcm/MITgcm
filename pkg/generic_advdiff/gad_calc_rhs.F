@@ -168,6 +168,7 @@ C--   Set diagnostic suffix for the current tracer
       rAdvFac = rkSign*advFac
       IF (implicitAdvection) rAdvFac = rkSign
 
+! DSK This initialization is 0.28% of walltime for llc540 on 767 ranks
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         fZon(i,j)      = 0. _d 0

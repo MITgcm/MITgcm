@@ -133,6 +133,7 @@ C-     Consistent with Phi'= Integr[ theta'.dPI ] :
       ENDIF
 
 C--   Zonal & Meridional gradient of potential anomaly
+! DSK This initialization is 0.20% of walltime for llc540 on 767 ranks
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         dPhiHydX(i,j)  = 0. _d 0

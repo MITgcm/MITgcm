@@ -52,7 +52,7 @@ CEOP
 
       DO k = 1,Nr+1
        ki = MIN(k,Nr)
-
+! DSK This copy is 0.25% of walltime for llc540 on 767 ranks
        DO j = 1-OLy, sNy+OLy
         DO i = 1-OLx, sNx+OLx
          kappaRU(i,j,k) = viscArNr(ki)

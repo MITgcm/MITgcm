@@ -188,6 +188,7 @@ c       write(*,*) 'offsets = ',(offsets(i),i=1,9)
 #endif /*  ALLOW_MNC  */
 
 C--   Initialise intermediate terms
+! DSK This initialization is 1.28% of walltime for llc540 on 767 ranks
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         vF(i,j)    = 0.
@@ -374,6 +375,7 @@ CADJ &     comlev1_bibj_k, key = imomkey, byte = isbyte
 #endif
 
 C--    Calculate Lateral Viscosities
+! DSK This copy is 0.79% of walltime for llc540 on 767 ranks
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
          viscAh_D(i,j) = viscAhD
