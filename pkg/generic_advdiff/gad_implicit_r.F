@@ -105,11 +105,9 @@ C--   Initialise
       DO k=1,Nr
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-         a5d(i,j,k) = 0. _d 0
          b5d(i,j,k) = 0. _d 0
          c5d(i,j,k) = 1. _d 0
          d5d(i,j,k) = 0. _d 0
-         e5d(i,j,k) = 0. _d 0
         ENDDO
        ENDDO
       ENDDO
@@ -118,6 +116,53 @@ C--   Initialise
       IF (implicitDiffusion) THEN
 C--   set the tri-diagonal matrix to solve the implicit diffusion problem
        diagonalNumber = 3
+#if 1
+       k=1
+       DO j=jMin,jMax
+         DO i=iMin,iMax
+           d5d(i,j,k) = -deltaTLev(k)*maskC(i,j,k+1,bi,bj)
+     &                  *recip_hFac(i,j,k)*recip_drF(k)
+     &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
+     &                  *kappaRX(i,j,k+1)*recip_drC(k+1)
+     &                  *deepFac2F(k+1)*rhoFacF(k+1)
+
+           c5d(i,j,k) = 1.D0 - ( b5d(i,j,k) + d5d(i,j,k) )
+         ENDDO
+       ENDDO
+
+       DO k=2,Nr-1
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+           b5d(i,j,k) = -deltaTLev(k)*maskC(i,j,k-1,bi,bj)
+     &                  *recip_hFac(i,j,k)*recip_drF(k)
+     &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
+     &                  *kappaRX(i,j, k )*recip_drC( k )
+     &                  *deepFac2F( k )*rhoFacF( k )
+
+           d5d(i,j,k) = -deltaTLev(k)*maskC(i,j,k+1,bi,bj)
+     &                  *recip_hFac(i,j,k)*recip_drF(k)
+     &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
+     &                  *kappaRX(i,j,k+1)*recip_drC(k+1)
+     &                  *deepFac2F(k+1)*rhoFacF(k+1)
+
+           c5d(i,j,k) = 1.D0 - ( b5d(i,j,k) + d5d(i,j,k) )
+         ENDDO
+        ENDDO
+       ENDDO
+
+       k=Nr
+       DO j=jMin,jMax
+         DO i=iMin,iMax
+           b5d(i,j,k) = -deltaTLev(k)*maskC(i,j,k-1,bi,bj)
+     &                  *recip_hFac(i,j,k)*recip_drF(k)
+     &                  *recip_deepFac2C(k)*recip_rhoFacC(k)
+     &                  *kappaRX(i,j, k )*recip_drC( k )
+     &                  *deepFac2F( k )*rhoFacF( k )
+
+           c5d(i,j,k) = 1.D0 - ( b5d(i,j,k) + d5d(i,j,k) )
+         ENDDO
+       ENDDO
+#else
 C-     1rst lower diagonal :
        DO k=2,Nr
         DO j=jMin,jMax
@@ -154,6 +199,7 @@ c          c5d(i,j,k) = 1. _d 0 - b5d(i,j,k) - d5d(i,j,k)
        ENDDO
 
 C--   end if implicitDiffusion
+#endif
       ENDIF
 
       IF (implicitAdvection) THEN
@@ -179,6 +225,17 @@ C--   Non-Linear Advection scheme: keep a local copy of tracer field
          ENDDO
         ENDIF
        ENDIF
+
+
+C--   Initialise
+       DO k=1,Nr
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          a5d(i,j,k) = 0. _d 0
+          e5d(i,j,k) = 0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
 
        DO k=Nr,1,-1
 
