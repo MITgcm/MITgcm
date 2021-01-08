@@ -123,7 +123,7 @@ C--   set the tri-diagonal matrix to solve the implicit diffusion problem
      &                  *kappaRX(i,j,k+1)*recip_drC(k+1)
      &                  *deepFac2F(k+1)*rhoFacF(k+1)
 
-           c5d(i,j,k) = 1.D0 - ( b5d(i,j,k) + d5d(i,j,k) )
+           c5d(i,j,k) = 1. _d 0 - ( b5d(i,j,k) + d5d(i,j,k) )
          ENDDO
        ENDDO
 
@@ -149,7 +149,7 @@ C--   set the tri-diagonal matrix to solve the implicit diffusion problem
      &                  *kappaRX(i,j,k+1)*recip_drC(k+1)
      &                  *deepFac2F(k+1)*rhoFacF(k+1)
 
-           c5d(i,j,k) = 1.D0 - ( b5d(i,j,k) + d5d(i,j,k) )
+           c5d(i,j,k) = 1. _d 0 - ( b5d(i,j,k) + d5d(i,j,k) )
          ENDDO
         ENDDO
        ENDDO
@@ -170,7 +170,7 @@ C--   set the tri-diagonal matrix to solve the implicit diffusion problem
      &                  *kappaRX(i,j, k )*recip_drC( k )
      &                  *deepFac2F( k )*rhoFacF( k )
 
-           c5d(i,j,k) = 1.D0 - ( b5d(i,j,k) + d5d(i,j,k) )
+           c5d(i,j,k) = 1. _d 0 - ( b5d(i,j,k) + d5d(i,j,k) )
          ENDDO
        ENDDO
 #else
