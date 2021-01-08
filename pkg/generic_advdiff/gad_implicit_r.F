@@ -101,16 +101,6 @@ CEOP
 C--   no need to solve anything with only 1 level:
       IF (Nr.GT.1) THEN
 
-C--   Initialise
-!      DO k=1,Nr
-!       DO j=1-OLy,sNy+OLy
-!        DO i=1-OLx,sNx+OLx
-!         b5d(i,j,k) = 0. _d 0
-!         c5d(i,j,k) = 1. _d 0
-!         d5d(i,j,k) = 0. _d 0
-!        ENDDO
-!       ENDDO
-!      ENDDO
       diagonalNumber = 1
 
       IF (implicitDiffusion) THEN
