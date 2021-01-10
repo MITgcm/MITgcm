@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -91,7 +92,7 @@ def pcol( x, y, data, projection=None, vmin=None, vmax=None, **kwargs):
         tmp = data - data.min()
         N = tmp/tmp.max()       
         # use this colormap
-        colmap = cm.jet
+        colmap = copy.copy(cm.jet)
         colmap.set_bad('w',1.0)
         mycolmap = colmap(N) #cm.jet(N)
 
