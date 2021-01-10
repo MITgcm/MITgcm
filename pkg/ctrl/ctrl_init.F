@@ -823,7 +823,8 @@ c--
         ncvargrdtmp='c'
 # ifdef ALLOW_SHI2D_CONTROL
 C       Under iceshelf, use maskSHI for these
-        if (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff') then
+        if ((xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff').or.
+     &      (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
             ncvargrdtmp='i'
         endif
 # endif /* ALLOW_SHI2D_CONTROL */

@@ -841,7 +841,8 @@ c----------------------------------------------------------------------
          mskNameForSetUnpack='maskCtrlC'
          nwettmp(1:Nr) = nwetcglobal(1:Nr)
 # ifdef ALLOW_SHI2D_CONTROL
-         if (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff') then
+         if ((xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff').or.
+     &       (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
           mskNameForSetUnpack='maskCtrlI'
           nwettmp(1:Nr) = nwetiglobal(1:Nr)
          endif

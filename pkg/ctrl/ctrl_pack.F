@@ -752,7 +752,8 @@ c          write(cunit) nWetiGlobal(1)
         if (xx_genarr2d_weight(iarr).NE.' ') then
          mskNameForSetPack='maskCtrlC'
 # ifdef ALLOW_SHI2D_CONTROL
-         if (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff') then
+         if ((xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff').or.
+     &       (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
           mskNameForSetPack='maskCtrlI'
          endif
 # endif
