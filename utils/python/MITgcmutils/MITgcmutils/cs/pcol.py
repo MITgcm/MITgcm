@@ -183,7 +183,7 @@ def pcol( x, y, data, projection=None, vmin=None, vmax=None, **kwargs):
     elif mapit == 0:
         ax = fig.axes[-1]
         ax.axis('image')
-        plt.grid('on')
+        plt.grid(True)
 
     return ph
 
