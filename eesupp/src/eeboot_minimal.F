@@ -40,8 +40,6 @@ C                   upper level driver (if there is one).
       INTEGER myComm
 
 C     !FUNCTIONS:
-c     INTEGER  IFNBLNK
-c     EXTERNAL IFNBLNK
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
@@ -220,10 +218,17 @@ C--    Get my process number
 #ifdef SINGLE_DISK_IO
         IF( myProcId .EQ. 0 ) THEN
 #endif
+#ifdef OPTIMIZATIONS_DSK
          WRITE(fNam,'(A,A)') '/tmp/STDERR.', myProcessStr(1:iTmp)
          OPEN(errorMessageUnit,FILE=fNam,STATUS='unknown')
          WRITE(fNam,'(A,A)') '/tmp/STDOUT.', myProcessStr(1:iTmp)
          OPEN(standardMessageUnit,FILE=fNam,STATUS='unknown')
+#else
+         WRITE(fNam,'(A,A)') 'STDERR.', myProcessStr(1:iTmp)
+         OPEN(errorMessageUnit,FILE=fNam,STATUS='unknown')
+         WRITE(fNam,'(A,A)') 'STDOUT.', myProcessStr(1:iTmp)
+         OPEN(standardMessageUnit,FILE=fNam,STATUS='unknown')
+#endif
 #ifdef SINGLE_DISK_IO
         ELSE
          OPEN(errorMessageUnit,FILE='/dev/null',STATUS='unknown')

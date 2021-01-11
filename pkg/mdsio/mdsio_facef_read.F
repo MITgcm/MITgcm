@@ -75,7 +75,11 @@ C     Figure out offset of tile within face
 
       CALL MDSFINDUNIT( dUnit, myThid )
       length_of_rec = MDS_RECLEN( fPrec, (dNx+1), myThid )
+#ifdef OPTIMIZATIONS_DSK
       OPEN( dUnit, file=fName(1:iLen), status='old', action='read',
+#else
+      OPEN( dUnit, file=fName(1:iLen), status='old',
+#endif
      &             access='direct', recl=length_of_rec )
       j = 0
       jBase=(irec-1)*(dNy+1)
@@ -113,7 +117,11 @@ C     Figure out offset of tile within face
 
       CALL MDSFINDUNIT( dUnit, myThid )
       length_of_rec = MDS_RECLEN( fPrec, (sNx+1)*(sNy+1), myThid )
+#ifdef OPTIMIZATIONS_DSK
       OPEN( dUnit, file=fName(1:iLen), status='old',  action='read',
+#else
+      OPEN( dUnit, file=fName(1:iLen), status='old',
+#endif
      &             access='direct', recl=length_of_rec )
       IF ( fPrec.EQ.precFloat32 ) THEN
         READ(dUnit, rec=irec) ioBuf4
@@ -149,7 +157,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       RETURN
       END
-
+#ifdef OPTIMIZATIONS_DSK
 CBOP
 C     !ROUTINE:  MDS_FACEF_READ_RS2
 C     !INTERFACE:
@@ -291,3 +299,4 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       RETURN
       END
+#endif
