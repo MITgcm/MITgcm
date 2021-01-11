@@ -267,7 +267,11 @@ C If global file is visible to process 0, then open it here.
 C Otherwise stop program.
          IF ( globalFile) THEN
           length_of_rec = MDS_RECLEN( filePrec, xSize*ySize, myThid )
+#ifdef OPTIMIZATIONS_DSK
           OPEN( dUnit, file=dataFName, status='old', ACTION='read',
+#else
+          OPEN( dUnit, file=dataFName, status='old',
+#endif
      &         access='direct', recl=length_of_rec )
          ELSE
           WRITE(msgBuf,'(2A)')
@@ -379,7 +383,11 @@ C Only do I/O if I am the master thread
 C If we are reading from a global file then we open it here
         IF (globalFile) THEN
          length_of_rec = MDS_RECLEN( filePrec, sNx, myThid )
+#ifdef OPTIMIZATIONS_DSK
          OPEN( dUnit, file=dataFName, status='old', ACTION='read',
+#else
+         OPEN( dUnit, file=dataFName, status='old',
+#endif
      &        access='direct', recl=length_of_rec )
          fileIsOpen=.TRUE.
         ENDIF
@@ -462,7 +470,11 @@ C (This is a place-holder for the active/passive mechanism
      &                        SQUEEZE_RIGHT, myThid)
             ENDIF
             length_of_rec = MDS_RECLEN( filePrec, sNx*sNy*nNz, myThid )
+#ifdef OPTIMIZATIONS_DSK
             OPEN( dUnit, file=dataFName, status='old', ACTION='read',
+#else
+            OPEN( dUnit, file=dataFName, status='old',
+#endif
      &            access='direct', recl=length_of_rec )
             fileIsOpen=.TRUE.
            ELSE

@@ -916,7 +916,11 @@ C--   Next, read pkg/exf parameter file.
      &                    SQUEEZE_RIGHT, myThid )
 
       CALL OPEN_COPY_DATA_FILE(
+#ifdef OPTIMIZATIONS_DSK
      I                       '/tmp/namelist/data.exf', 'EXF_READPARMS',
+#else
+     I                       'data.exf', 'EXF_READPARMS',
+#endif
      O                          iUnit,
      I                          myThid )
 
