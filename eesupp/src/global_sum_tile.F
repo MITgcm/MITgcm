@@ -72,11 +72,13 @@ C     this barrier is not necessary:
 c     CALL BAR2( myThid )
 
 C--   write local sum into shared-buffer array
+#ifndef GLOBAL_SUM_GIDDYUP
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
          shareBufGSR8(bi,bj) = phiTile(bi,bj)
        ENDDO
       ENDDO
+#endif
 
 C--   Master thread cannot start until everyone is ready:
       CALL BAR2( myThid )
@@ -191,9 +193,17 @@ C--   Sum over all tiles:
          ENDDO
 
       ELSE
-#else /* not ((GLOBAL_SUM_SEND_RECV | GLOBAL_SUM_ORDER_TILES) & ALLOW_USE_MPI) */
+#elif (defined (GLOBAL_SUM_GIDDYUP) && defined (ALLOW_USE_MPI) )
+      IF ( usingMPI ) THEN
+
+C--   Collect data from all procs
+        sumAllP = sum(phiTile)
+        CALL MPI_Allreduce( MPI_IN_PLACE, sumAllP, 1,
+     &           MPI_DOUBLE_PRECISION, MPI_SUM, MPI_COMM_MODEL, mpiRC )
+      ELSE
+#else /* not ((GLOBAL_SUM_SEND_RECV | GLOBAL_SUM_ORDER_TILES | GLOBAL_SUM_GIDDYUP) & ALLOW_USE_MPI) */
       IF ( .TRUE. ) THEN
-#endif /* not ((GLOBAL_SUM_SEND_RECV | GLOBAL_SUM_ORDER_TILES) & ALLOW_USE_MPI) */
+#endif /* not ((GLOBAL_SUM_SEND_RECV | GLOBAL_SUM_ORDER_TILES | GLOBAL_SUM_GIDDYUP) & ALLOW_USE_MPI) */
 
 C--   Sum over all tiles (of the same process) first
         sumMyPr = 0.

@@ -44,6 +44,7 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "EOS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -63,6 +64,10 @@ C     == Local variables ==
       INTEGER i,j
       _RL refTemp, refSalt, sigRef, tP, sP, deltaSig, dRho
       _RL dp0, oneMinusKap, facPres, theta_v
+#ifdef OPTIMIZATIONS_DSK
+      _RL rfresh, rsalt, bMfresh, bMsalt, bMpres
+      _RL t, t2, t3, t4, s, s3o2, p, p2
+#endif
       _RL locPres(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhoP0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL bulkMod(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -148,6 +153,97 @@ C **********
 C     nonlinear equation of state in pressure coordinates
          dp0 = surf_pRef - eosRefP0
 
+#ifdef OPTIMIZATIONS_DSK
+      DO j=jMin,jMax
+         DO i=iMin,iMax
+!     abbreviations
+          t  = tFld(i,j)
+          t2 = t*t
+          t3 = t2*t
+          t4 = t3*t
+
+          s  = sFld(i,j)
+          IF ( s .GT. 0.D0 ) THEN
+            s3o2 = s*SQRT(s)
+          ELSE
+            s    = 0.D0
+            s3o2 = 0.D0
+          ENDIF
+
+          rfresh =
+     &             eosJMDCFw(1)
+     &           + eosJMDCFw(2)*t
+     &           + eosJMDCFw(3)*t2
+     &           + eosJMDCFw(4)*t3
+     &           + eosJMDCFw(5)*t4
+     &           + eosJMDCFw(6)*t4*t
+!     density of sea water at the surface
+          rsalt =
+     &         s*(
+     &             eosJMDCSw(1)
+     &           + eosJMDCSw(2)*t
+     &           + eosJMDCSw(3)*t2
+     &           + eosJMDCSw(4)*t3
+     &           + eosJMDCSw(5)*t4
+     &           )
+     &       + s3o2*(
+     &             eosJMDCSw(6)
+     &           + eosJMDCSw(7)*t
+     &           + eosJMDCSw(8)*t2
+     &           )
+     &           + eosJMDCSw(9)*s*s
+
+          p = pRef4EOS(kRef)*maskC(i,j,kRef,bi,bj)*SItoBar
+          p2 = p*p
+!     secant bulk modulus of fresh water at the surface
+          bMfresh =
+     &             eosJMDCKFw(1)
+     &           + eosJMDCKFw(2)*t
+     &           + eosJMDCKFw(3)*t2
+     &           + eosJMDCKFw(4)*t3
+     &           + eosJMDCKFw(5)*t4
+!     secant bulk modulus of sea water at the surface
+!     secant bulk modulus of sea water at the surface
+          bMsalt =
+     &         s*( eosJMDCKSw(1)
+     &           + eosJMDCKSw(2)*t
+     &           + eosJMDCKSw(3)*t2
+     &           + eosJMDCKSw(4)*t3
+     &           )
+     &    + s3o2*( eosJMDCKSw(5)
+     &           + eosJMDCKSw(6)*t
+     &           + eosJMDCKSw(7)*t2
+     &           )
+!     secant bulk modulus of sea water at pressure p
+          bMpres =
+     &         p*( eosJMDCKP(1)
+     &           + eosJMDCKP(2)*t
+     &           + eosJMDCKP(3)*t2
+     &           + eosJMDCKP(4)*t3
+     &           )
+     &     + p*s*( eosJMDCKP(5)
+     &           + eosJMDCKP(6)*t
+     &           + eosJMDCKP(7)*t2
+     &           )
+     &      + p*s3o2*eosJMDCKP(8)
+     &      + p2*( eosJMDCKP(9)
+     &           + eosJMDCKP(10)*t
+     &           + eosJMDCKP(11)*t2
+     &           )
+     &    + p2*s*( eosJMDCKP(12)
+     &           + eosJMDCKP(13)*t
+     &           + eosJMDCKP(14)*t2
+     &           )
+
+!          rhoLoc(i,j) = (rfresh + rsalt)
+!     &              /(1. _d 0 - (p/(bMfresh + bMsalt + bMpres)))
+!     &              - rhoConst
+
+         rhoLoc(i,j) = (rfresh + rsalt)*(bMfresh + bMsalt + bMpres)/
+     &                    (bMfresh + bMsalt + bMpres - p) - rhoConst
+         ENDDO
+      ENDDO
+#else
          CALL PRESSURE_FOR_EOS(
      I             bi, bj, iMin, iMax, jMin, jMax, kRef, dp0,
      O             locPres,
@@ -164,22 +260,12 @@ C     nonlinear equation of state in pressure coordinates
      I             locPres, tFld, sFld,
      O             bulkMod,
      I             myThid )
+#endif
 
 c#ifdef ALLOW_AUTODIFF_TAMC
 cph can not DO storing here since find_rho is called multiple times;
 cph additional recomp. should be acceptable
 c#endif /* ALLOW_AUTODIFF_TAMC */
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-
-C     density of sea water at pressure p
-            rhoLoc(i,j) = rhoP0(i,j)
-     &              /(1. _d 0 -
-     &              locPres(i,j)*SItoBar/bulkMod(i,j) )
-     &              - rhoConst
-
-          ENDDO
-         ENDDO
 
       ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
          dp0 = surf_pRef - eosRefP0

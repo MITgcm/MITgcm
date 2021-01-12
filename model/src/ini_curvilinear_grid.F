@@ -53,7 +53,7 @@ C     == Local variables ==
 #endif
 #ifndef OLD_GRID_IO
       INTEGER iG, jG, iL, iLen
-#if 1
+#ifdef PLEIADES_LUSTRE_OPT
       INTEGER dUnit, length_of_rec, tN, dNx, dNy, tBx, tBy, tNx, tNY
       INTEGER  MDS_RECLEN
       EXTERNAL MDS_RECLEN
@@ -296,7 +296,7 @@ C-    Tile Id number = Bi + (Bj-1)*(nSx*nPx)  with tile global-indices Bi,Bj
         WRITE(msgBuf,'(A)') '  =>'
 
 #ifdef ALLOW_MDSIO
-#if 1
+#ifdef PLEIADES_LUSTRE_OPT
         tN  = W2_myTileList(bi,bj)
         dNx = exch2_mydnx(tN)
         dNy = exch2_mydny(tN)
@@ -388,7 +388,7 @@ C-    Tile Id number = Bi + (Bj-1)*(nSx*nPx)  with tile global-indices Bi,Bj
         ELSE
          anglesAreSet = .FALSE.
         ENDIF
-#else
+#else /* undef PLEIADES_LUSTRE_OPT */
         CALL MDS_FACEF_READ_RS( fName, fp, 1,  xC, bi, bj, myThid )
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'xC'
@@ -450,7 +450,7 @@ C-    Tile Id number = Bi + (Bj-1)*(nSx*nPx)  with tile global-indices Bi,Bj
         ELSE
          anglesAreSet = .FALSE.
         ENDIF
-#endif
+#endif /* PLEIADES_LUSTRE_OPT */
 #else /* ALLOW_MDSIO */
         WRITE(msgBuf,'(2A)')
      &   'INI_CURVILINEAR_GRID: Needs to compile MDSIO pkg'
@@ -460,7 +460,6 @@ C-    Tile Id number = Bi + (Bj-1)*(nSx*nPx)  with tile global-indices Bi,Bj
 
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT , myThid)
-
        ENDDO
       ENDDO
 

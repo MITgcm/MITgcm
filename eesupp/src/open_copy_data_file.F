@@ -90,8 +90,13 @@ C     multi-node/multi-processor systems
       OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
 #else
 C     After opening regular files here, they are closed with STATUS='DELETE'
+#ifdef PLEIADES_LUSTRE_OPT
       WRITE(scratchFile1,'(A,'//FMT_PROC_ID//')') '/tmp/scratch1.', myProcId
       WRITE(scratchFile2,'(A,'//FMT_PROC_ID//')') '/tmp/scratch2.', myProcId
+#else
+      WRITE(scratchFile1,'(A,'//FMT_PROC_ID//')') 'scratch1.', myProcId
+      WRITE(scratchFile2,'(A,'//FMT_PROC_ID//')') 'scratch2.', myProcId
+#endif
       OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
       OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
 #endif /* USE_FORTRAN_SCRATCH_FILES */
@@ -102,7 +107,11 @@ C     After opening regular files here, they are closed with STATUS='DELETE'
 #endif
 
       OPEN(UNIT=modelDataUnit,FILE=data_file,STATUS='OLD',
+#ifdef PLEIADES_LUSTRE_OPT
      &     ACTION='READ', IOSTAT=errIO)
+#else
+     &     IOSTAT=errIO)
+#endif
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A,A)')
      &  'Unable to open parameter file: ',data_file

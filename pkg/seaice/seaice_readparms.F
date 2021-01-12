@@ -630,7 +630,11 @@ C     Open and read the data.seaice file
      &                    SQUEEZE_RIGHT , myThid)
 
       CALL OPEN_COPY_DATA_FILE(
+#ifdef PLEIADES_LUSTRE_OPT
      I              '/tmp/namelist/data.seaice', 'SEAICE_READPARMS',
+#else
+     I              'data.seaice', 'SEAICE_READPARMS',
+#endif
      O                          iUnit,
      I                          myThid )
 

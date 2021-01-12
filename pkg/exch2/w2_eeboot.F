@@ -83,9 +83,12 @@ C     Set W2-EXCH2 parameters
 
 C     Open message output-file (if needed)
       IF ( W2_printMsg .LT. 0 ) THEN
-        iTmp = MAX(4,1 + INT(LOG10(DFLOAT(nPx*nPy))))
-        WRITE(fmtStr,'(2(A,I1),A)') '(A,I',iTmp,'.',iTmp,',A)'
-        WRITE(fName,fmtStr) '/tmp/w2_tile_topology.',myProcId,'.log'
+        WRITE(fName,'(A,I4.4,A)')
+#ifdef PLEIADES_LUSTRE_OPT
+     &     '/tmp/w2_tile_topology.',myProcId,'.log'
+#else
+     &     'w2_tile_topology.',myProcId,'.log'
+#endif
         iLen = ILNBLNK(fName)
         CALL MDSFINDUNIT( W2_oUnit, myThid )
         OPEN( W2_oUnit, file=fName(1:iLen),

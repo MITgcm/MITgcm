@@ -14,8 +14,11 @@ C !INTERFACE: ==========================================================
      I     rhoSurf, surfForcU, surfForcV,
      I     surfForcT, surfForcS, surfForcTice,
      I     Qsw,
-#ifdef ALLOW_SALT_PLUME
+#ifdef ALLOW_SALT_PLUME /* Should consider accessing SPforcingS and SPforcingT directly */
+#if OPTIMIZATIONS_DSK /* Access saltPlumeFlux directly */
+#else
      I     SPforcS,SPforcT,
+#endif
 #endif /* ALLOW_SALT_PLUME */
      I     ttalpha, ssbeta,
      O     ustar, bo, bosol,
@@ -47,6 +50,9 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#ifdef OPTIMIZATIONS_DSK
+# include "SALT_PLUME.h"
+#endif /* OPTIMIZATIONS_DSK */
 #include "DYNVARS.h"
 #include "KPP_PARAMS.h"
 
@@ -112,8 +118,11 @@ C                            at grid levels for bldepth             (m^2/s^2)
       _RL bo    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bosol ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 #ifdef ALLOW_SALT_PLUME
+#if OPTIMIZATIONS_DSK /* Access saltPlumeFlux directly */
+#else
       _RL SPforcS     (1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr       )
       _RL SPforcT     (1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr       )
+#endif
       _RL boplume     (1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nrp1     )
 #endif /* ALLOW_SALT_PLUME */
       _RL dVsq  ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr            )
@@ -241,7 +250,12 @@ Cnote: on input, if notdef salt_plume_volume, SPforc[S,T](k>1)=!0
             boplume(I,J,k) = 0. _d 0
            ENDDO
            boplume(I,J,1) = - gravity * SSBETA(I,J,1)
+#ifdef OPTIMIZATIONS_DSK
+     &              * saltPlumeFlux(i,j,bi,bj)
+#else
+!     &              * SPforcingS(i,j,1,bi,bj)
      &              * SPforcS(i,j,1)
+#endif
      &              * recip_rhoConst / rhoSurf(I,J)
           ENDDO
          ENDDO

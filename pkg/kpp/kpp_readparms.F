@@ -72,7 +72,11 @@ C     print a (weak) warning if data.kpp is found
      &                    SQUEEZE_RIGHT, myThid )
       errIO = 0
       CALL OPEN_COPY_DATA_FILE(
+#ifdef PLEIADES_LUSTRE_OPT
      I                       '/tmp/namelist/data.kpp', 'KPP_READPARMS',
+#else
+     I                       'data.kpp', 'KPP_READPARMS',
+#endif
      O                          iUnit,
      I                          myThid )
 

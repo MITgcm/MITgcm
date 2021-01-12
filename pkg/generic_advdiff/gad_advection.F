@@ -141,6 +141,7 @@ c     _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afy     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL localTij(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tmpTij
       _RL localT3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #ifdef GAD_MULTIDIM_COMPRESSIBLE
       _RL tmpTrac
@@ -1033,6 +1034,17 @@ C     and consistent with linFSConserveTr and "surfExpan_" monitor.
 #else /* GAD_MULTIDIM_COMPRESSIBLE */
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
+#ifdef OPTIMIZATIONS_DSK
+          tmpTij = localT3d(i,j,k)
+     &      -deltaTLev(k)*recip_rhoFacC(k)
+     &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &       *recip_rA(i,j,bi,bj)*recip_deepFac2C(k)
+     &       *( fVerT(i,j,kDown)-fVerT(i,j,kUp)
+     &         -tracer(i,j,k,bi,bj)*(rTransKp(i,j)-rTrans(i,j))
+     &        )*rkSign*maskInC(i,j,bi,bj)
+          gTracer(i,j,k) =(tmpTij - tracer(i,j,k,bi,bj)) / deltaTLev(k)
+
+#else
           localTij(i,j) = localT3d(i,j,k)
      &      -deltaTLev(k)*recip_rhoFacC(k)
      &       *_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
@@ -1042,6 +1054,7 @@ C     and consistent with linFSConserveTr and "surfExpan_" monitor.
      &        )*rkSign*maskInC(i,j,bi,bj)
           gTracer(i,j,k) =
      &     ( localTij(i,j) - tracer(i,j,k,bi,bj) )/deltaTLev(k)
+#endif
          ENDDO
         ENDDO
 #endif /* GAD_MULTIDIM_COMPRESSIBLE */

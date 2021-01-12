@@ -83,7 +83,11 @@ C--   Default values for SALT_PLUME
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
       CALL OPEN_COPY_DATA_FILE(
+#ifdef PLEIADES_LUSTRE_OPT
      I         '/tmp/namelist/data.salt_plume', 'SALT_PLUME_READPARMS',
+#else
+     I         'data.salt_plume', 'SALT_PLUME_READPARMS',
+#endif
      O                     iUnit,
      I                     myThid )
 

@@ -359,8 +359,11 @@ C--   Open the parameter file
      &     ' INI_PARMS: opening model parameter file "data"'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
-
+#ifdef PLEIADES_LUSTRE_OPT
       CALL OPEN_COPY_DATA_FILE( '/tmp/namelist/data', 'INI_PARMS',
+#else
+      CALL OPEN_COPY_DATA_FILE( 'data', 'INI_PARMS',
+#endif
      O                          iUnit, myThid )
 
 C--   Read settings from iUnit (= a copy of model parameter file "data").

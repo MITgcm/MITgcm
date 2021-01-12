@@ -186,7 +186,7 @@ c-----------------------------------------------------------------------
 c set seafloor values to zero and fill extra "Nrp1" coefficients
 c for blmix
 c-----------------------------------------------------------------------
-
+! DSK This initialization is 0.50% of walltime for llc540 on 767 ranks
       do md = 1, mdiff
        do k=1,Nrp1
          do i = 1,imt
@@ -438,6 +438,7 @@ c     initialize hbl and kbl to bottomed out values
       end do
 
 #ifdef ALLOW_DIAGNOSTICS
+! DSK This initialization is 0.38% of walltime for llc540 on 767 ranks
       do kl = 1, Nr
          do i = 1, imt
             KPPBFSFC(i,kl) = 0. _d 0

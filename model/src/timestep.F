@@ -86,6 +86,7 @@ C--  factors for gradient (X & Y directions) of Hydrostatic Potential
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Initialize local arrays (not really necessary for all but safer)
+! DSK This loop nest is 0.43% of walltime for llc540 on 767 ranks.
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
           guExt(i,j) = 0. _d 0
