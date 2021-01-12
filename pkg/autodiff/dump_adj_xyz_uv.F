@@ -98,13 +98,13 @@ C --- 1. Fill diagnostics
         IF ( dumpAdVarExch.EQ.2 ) THEN
 
           CALL COPY_AD_UV_OUTP(u3DRS,v3DRS,u3DRL,v3DRL,
-                               uCopy,vCopy,Nr,vType,myThid)
-          CALL DIAGNOSTICS_FILL(uCopy,diagName,0,Nr,0,1,1,myThid)
-          CALL DIAGNOSTICS_FILL(vCopy,diagName,0,Nr,0,1,1,myThid)
+     &                         uCopy,vCopy,Nr,vType,myThid)
+          CALL DIAGNOSTICS_FILL(uCopy,uDiagName,0,Nr,0,1,1,myThid)
+          CALL DIAGNOSTICS_FILL(vCopy,vDiagName,0,Nr,0,1,1,myThid)
         ELSE
           IF ( MOD(vType,2).NE.1 ) THEN
-            CALL DIAGNOSTICS_FILL(u3DRL,diagName,0,Nr,0,1,1,myThid)
-            CALL DIAGNOSTICS_FILL(v3DRL,diagName,0,Nr,0,1,1,myThid)
+            CALL DIAGNOSTICS_FILL(u3DRL,uDiagName,0,Nr,0,1,1,myThid)
+            CALL DIAGNOSTICS_FILL(v3DRL,vDiagName,0,Nr,0,1,1,myThid)
           ELSE
             ! How to handle this case?
             !CALL DIAGNOSTICS_FILL(var3DRS,diagName,0,Nr,0,1,1,myThid)
@@ -127,17 +127,17 @@ C--     Set suffix for this set of data files.
 
 C--       Copy first
           CALL COPY_AD_UV_OUTP(u3DRS,v3DRS,u3DRL,v3DRL,
-                               uCopy,vCopy,Nr,vType,myThid)
+     &                         uCopy,vCopy,Nr,vType,myThid)
           IF ( dumpAdByRec ) THEN
-            CALL WRITE_REC_XYZ_RL(dumpName, uCopy, dumpAdRecMn,
+            CALL WRITE_REC_XYZ_RL(uDumpName, uCopy, dumpAdRecMn,
      &                            myIter, myThid)
-            CALL WRITE_REC_XYZ_RL(dumpName, vCopy, dumpAdRecMn,
+            CALL WRITE_REC_XYZ_RL(vDumpName, vCopy, dumpAdRecMn,
      &                            myIter, myThid)
 
           ELSE
-            CALL WRITE_FLD_XYZ_RL(dumpName, suff, uCopy,
+            CALL WRITE_FLD_XYZ_RL(uDumpName, suff, uCopy,
      &                            myIter, myThid)
-            CALL WRITE_FLD_XYZ_RL(dumpName, suff, vCopy,
+            CALL WRITE_FLD_XYZ_RL(vDumpName, suff, vCopy,
      &                            myIter, myThid)
           ENDIF
 
@@ -147,30 +147,30 @@ C--       Write directly
           IF ( MOD(vType,2).NE.1 ) THEN
 
             IF ( dumpAdByRec ) THEN
-              CALL WRITE_REC_XYZ_RL(dumpName, u3DRL, dumpAdRecMn,
+              CALL WRITE_REC_XYZ_RL(uDumpName, u3DRL, dumpAdRecMn,
      &                              myIter, myThid)
-              CALL WRITE_REC_XYZ_RL(dumpName, v3DRL, dumpAdRecMn,
+              CALL WRITE_REC_XYZ_RL(vDumpName, v3DRL, dumpAdRecMn,
      &                              myIter, myThid)
 
             ELSE
-              CALL WRITE_FLD_XYZ_RL(dumpName, suff,u3DRL,
+              CALL WRITE_FLD_XYZ_RL(uDumpName, suff,u3DRL,
      &                              myIter, myThid)
-              CALL WRITE_FLD_XYZ_RL(dumpName, suff,v3DRL,
+              CALL WRITE_FLD_XYZ_RL(vDumpName, suff,v3DRL,
      &                              myIter, myThid)
             ENDIF
 
           ELSE ! is RL
 
             IF ( dumpAdByRec ) THEN
-              CALL WRITE_REC_XYZ_RS(dumpName, u3DRS, dumpAdRecMn,
+              CALL WRITE_REC_XYZ_RS(uDumpName, u3DRS, dumpAdRecMn,
      &                              myIter, myThid)
-              CALL WRITE_REC_XYZ_RS(dumpName, v3DRS, dumpAdRecMn,
+              CALL WRITE_REC_XYZ_RS(uDumpName, v3DRS, dumpAdRecMn,
      &                              myIter, myThid)
 
             ELSE
-              CALL WRITE_FLD_XYZ_RS(dumpName, suff, u3DRS,
+              CALL WRITE_FLD_XYZ_RS(uDumpName, suff, u3DRS,
      &                              myIter, myThid)
-              CALL WRITE_FLD_XYZ_RS(dumpName, suff, v3DRS,
+              CALL WRITE_FLD_XYZ_RS(vDumpName, suff, v3DRS,
      &                              myIter, myThid)
             ENDIF
           ENDIF
