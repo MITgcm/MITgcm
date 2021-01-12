@@ -18,12 +18,12 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE DUMP_ADJ_XY                           |
+C     | SUBROUTINE DUMP_ADJ_XY                                   |
 C     *==========================================================*
-C     Helper subroutine to dump a single variable given the millions
-C     of autodiff options
+C     Helper subroutine to dump a single variable given the
+C     millions of autodiff options
 C     *==========================================================*
-C     | SUBROUTINE DUMP_ADJ_XY                           |
+C     | SUBROUTINE DUMP_ADJ_XY                                   |
 C     *==========================================================*
 C     \ev
 
@@ -97,8 +97,7 @@ C --- 1. Fill diagnostics
           IF ( MOD(vType,2).NE.1 ) THEN
             CALL DIAGNOSTICS_FILL(var2DRL,diagName,0,1,0,1,1,myThid)
           ELSE
-            ! How to handle this case?
-            !CALL DIAGNOSTICS_FILL(var2DRS,diagName,0,1,0,1,1,myThid)
+            CALL DIAGNOSTICS_FILL_RS(var2DRS,diagName,0,1,0,1,1,myThid)
           ENDIF
         ENDIF
       ENDIF
@@ -117,8 +116,7 @@ C--     Set suffix for this set of data files.
         IF ( dumpAdVarExch.EQ.2 ) THEN
 
 C--       Copy first
-          CALL COPY_ADVAR_OUTP(var2DRS,var2DRL,var2Dc,1,
-     &                         vType,myThid)
+          CALL COPY_ADVAR_OUTP(var2DRS,var2DRL,var2Dc,1,vType,myThid)
           IF ( dumpAdByRec ) THEN
             CALL WRITE_REC_XY_RL(dumpName, var2Dc, dumpAdRecMn,
      &                            myIter, myThid)

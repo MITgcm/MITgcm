@@ -19,12 +19,12 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE DUMP_ADJ_XYZ_UV                           |
+C     | SUBROUTINE DUMP_ADJ_XYZ_UV                               |
 C     *==========================================================*
-C     Helper subroutine to dump a single variable given the millions
-C     of autodiff options
+C     Helper subroutine to dump a single variable given the
+C     millions of autodiff options
 C     *==========================================================*
-C     | SUBROUTINE DUMP_ADJ_XYZ_UV                           |
+C     | SUBROUTINE DUMP_ADJ_XYZ_UV                               |
 C     *==========================================================*
 C     \ev
 
@@ -106,8 +106,8 @@ C --- 1. Fill diagnostics
             CALL DIAGNOSTICS_FILL(u3DRL,uDiagName,0,Nr,0,1,1,myThid)
             CALL DIAGNOSTICS_FILL(v3DRL,vDiagName,0,Nr,0,1,1,myThid)
           ELSE
-            ! How to handle this case?
-            !CALL DIAGNOSTICS_FILL(var3DRS,diagName,0,Nr,0,1,1,myThid)
+            CALL DIAGNOSTICS_FILL_RS(u3DRS,uDiagName,0,Nr,0,1,1,myThid)
+            CALL DIAGNOSTICS_FILL_RS(v3DRS,vDiagName,0,Nr,0,1,1,myThid)
           ENDIF
         ENDIF
       ENDIF
