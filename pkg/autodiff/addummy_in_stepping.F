@@ -229,16 +229,16 @@ C-----------------------------------------------------------------------
      &                   11, doDump, myTime, myIter,myThid)
 
 # ifdef SHORTWAVE_HEATING
-        CALL DUMP_ADJ_XY(adQsw, dumRL, 'ADJqsw', 'ADJqsw.',
+        CALL DUMP_ADJ_XY(adQsw, dumRL, 'ADJqsw  ', 'ADJqsw.',
      &                   11, doDump, myTime, myIter,myThid)
 # endif
       ENDIF
 # ifdef ALLOW_SST0_CONTROL
-      CALL DUMP_ADJ_XY(adSST, dumRL, 'ADJsst', 'ADJsst.',
+      CALL DUMP_ADJ_XY(adSST, dumRL, 'ADJsst  ', 'ADJsst.',
      &                 11, doDump, myTime, myIter,myThid)
 # endif
 # ifdef ALLOW_SSS0_CONTROL
-      CALL DUMP_ADJ_XY(adSSS, dumRL, 'ADJsss', 'ADJsss.',
+      CALL DUMP_ADJ_XY(adSSS, dumRL, 'ADJsss  ', 'ADJsss.',
      &                 11, doDump, myTime, myIter,myThid)
 # endif
 
@@ -306,16 +306,16 @@ C-----------------------------------------------------------------------
      &                   11, doDump, myTime, myIter,myThid)
 
 # ifdef SHORTWAVE_HEATING
-        CALL DUMP_ADJ_XY(Qsw%d, dumRL, 'ADJqsw', 'ADJqsw.',
+        CALL DUMP_ADJ_XY(Qsw%d, dumRL, 'ADJqsw  ', 'ADJqsw.',
      &                   11, doDump, myTime, myIter,myThid)
 # endif
       ENDIF
 # ifdef ALLOW_SST0_CONTROL
-      CALL DUMP_ADJ_XY(SST%d, dumRL, 'ADJsst', 'ADJsst.',
+      CALL DUMP_ADJ_XY(SST%d, dumRL, 'ADJsst  ', 'ADJsst.',
      &                 11, doDump, myTime, myIter,myThid)
 # endif
 # ifdef ALLOW_SSS0_CONTROL
-      CALL DUMP_ADJ_XY(SSS%d, dumRL, 'ADJsss', 'ADJsss.',
+      CALL DUMP_ADJ_XY(SSS%d, dumRL, 'ADJsss  ', 'ADJsss.',
      &                 11, doDump, myTime, myIter,myThid)
 # endif
 
