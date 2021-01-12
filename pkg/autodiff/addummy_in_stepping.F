@@ -254,7 +254,7 @@ C-----------------------------------------------------------------------
      &                  Nr, 12, doDump, myTime, myIter,myThid)
 # endif
 # ifdef ALLOW_DIFFKR_CONTROL
-      CALL DUMP_ADJ_XYZ(dumRS, adDiffKr, 'ADJtke90', 'ADJdiffkr.',
+      CALL DUMP_ADJ_XYZ(dumRS, adDiffKr, 'ADJdifkr', 'ADJdiffkr.',
      &                  Nr, 12, doDump, myTime, myIter,myThid)
 # endif
 # ifdef ALLOW_KAPGM_CONTROL
@@ -273,6 +273,9 @@ C-----------------------------------------------------------------------
 # endif
 
 #else
+C-----------------------------------------------------------------------
+C--- Open AD
+C-----------------------------------------------------------------------
 C-----------------------------------------------------------------------
 C--- State variables
 C-----------------------------------------------------------------------
