@@ -839,6 +839,46 @@ C=============== ice thickness categories ============
       CALL DIAGNOSTICS_SETKLEV( diagName, nITD, myThid )
 #endif
 
+#ifdef ALLOW_AUTODIFF
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     Adjoint state variables
+      diagName  = 'ADJarea '
+      diagTitle = 'dJ/darea: Sensitivity to seaice fractional ice-cover'
+      diagUnits = 'dJ/(m^2/m^2)    '
+      diagCode  = 'SM A    M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJheff '
+      diagTitle = 'dJ/dheff: Sensitvity to seaice ice thickness'
+      diagUnits = 'dJ/dm           '
+      diagCode  = 'SM A    M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJhsnow'
+      diagTitle = 'dJ/dhsnow: Sensitivity to seaice snow thickness'
+      diagUnits = 'dJ/dm           '
+      diagCode  = 'SM A    M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+      diagName  = 'ADJuice '
+      diagTitle = 'dJ/duice: sensitivity to zonal ice velocity'
+      diagUnits = 'dJ/(m/s)        '
+      diagCode  = 'UURA    MR      '
+      diagMate  = diagNum + 2
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+
+      diagName  = 'ADJvice '
+      diagTitle = 'dJ/dvice: sensitivity to meridional ice velocity'
+      diagUnits = 'dJ/(m/s)        '
+      diagCode  = 'VVRA    MR      '
+      diagMate  = diagNum
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
+#endif /* ALLOW_AUTODIFF */
 #endif /* ALLOW_DIAGNOSTICS */
 
       RETURN

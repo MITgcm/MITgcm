@@ -3,6 +3,9 @@
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
+#ifdef ALLOW_DIAGNOSTICS
+# include "DIAG_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: seaice_ad_dump
@@ -40,6 +43,10 @@ C     == Global variables ===
 # include "AUTODIFF_PARAMS.h"
 # include "AUTODIFF.h"
 # include "adcommon.h"
+# ifdef ALLOW_DIAGNOSTICS
+#  include "DIAGNOSTICS_SIZE.h"
+#  include "DIAGNOSTICS.h"
+# endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -62,122 +69,89 @@ C     !LOCAL VARIABLES:
 c     == local variables ==
 C     suff   :: Hold suffix part of a filename
 C     msgBuf :: Error message buffer
-      CHARACTER*(10) suff
+c     CHARACTER*(10) suff
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_MNC
       _RL var2Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL var2Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
       _RS dumRS(1)
-      _RL dumRL(1)
+      LOGICAL doExch
+      LOGICAL doDump
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL modelEnd
+#endif
 CEOP
 
-      IF (
-     &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
-     &   ) THEN
+C--- Test for adexch based on dumpAdVarExch flag
+      doExch = DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
+#ifdef ALLOW_DIAGNOSTICS
+      doExch = doExch .OR. useDiag4AdjOutp
+#endif
+      doExch = doExch .AND. ( dumpAdVarExch.EQ.1 )
 
+C--- If necessary, do the exchanges
+      IF ( doExch ) THEN
         CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
+#ifdef ALLOW_OPENAD
+C--   need to all the correct OpenAD EXCH S/R ; left empty for now
+#else /* ALLOW_OPENAD */
 
+# ifdef AUTODIFF_TAMC_COMPATIBILITY
+        CALL ADEXCH_XY_RL( myThid, adarea )
+        CALL ADEXCH_XY_RL( myThid, adheff )
+        CALL ADEXCH_XY_RL( myThid, adhsnow )
+        CALL ADEXCH_UV_XYZ_RL( .TRUE., myThid, aduice,advice )
+# else
+        CALL ADEXCH_XY_RL( adarea, myThid )
+        CALL ADEXCH_XY_RL( adheff, myThid )
+        CALL ADEXCH_XY_RL( adhsnow, myThid )
+        CALL ADEXCH_UV_3D_RL( aduice,advice, .TRUE., 1, myThid )
+# endif /* AUTODIFF_TAMC_COMPATIBILITY */
+#endif /* ALLOW_OPENAD */
+        ENDIF
+
+C-----------------------------------------------------------------------
+C--- Turn diagnostics on/off
+C-----------------------------------------------------------------------
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiag4AdjOutp ) THEN
+
+C --- Grab modelEnd, necessary input for diagnostics routines
+        modelEnd = myTime.EQ.startTime .OR. myIter.EQ.nIter0
+        CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
+      ENDIF
+#endif
+
+C-----------------------------------------------------------------------
+C--- do dump?
+C-----------------------------------------------------------------------
+      doDump = DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
+      IF ( doDump ) THEN
 c increment ad dump record number (used only if dumpAdByRec is true)
         dumpAdRecSi=dumpAdRecSi+1
-c#ifdef ALLOW_DEBUG
-c      IF ( debugMode ) print*,'dumpAdRecSi',dumpAdRecSi
-c#endif
+        CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
+      ENDIF
 
-C--     Set suffix for this set of data files.
-        IF ( rwSuffixType.EQ.0 ) THEN
-          WRITE(suff,'(I10.10)') myIter
-        ELSE
-          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
-        ENDIF
-C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
-C ==>>  is very very very nasty !!!
-c       writeBinaryPrec = writeStatePrec
-C <<==  If you really want to mess-up with this at your own risk,
-C <<==  uncomment the line above
-
-        IF ( dumpAdVarExch.EQ.1 ) THEN
-
-         CALL ADEXCH_XY_RL( adarea, myThid )
-         CALL ADEXCH_XY_RL( adheff, myThid )
-         CALL ADEXCH_XY_RL( adhsnow, myThid )
-         CALL ADEXCH_UV_3D_RL( aduice,advice, .TRUE., 1, myThid )
-
-        ENDIF
-
-        IF (dumpAdVarExch.NE.2 .AND. .NOT.dumpAdByRec) THEN
-
-         CALL WRITE_REC_3D_RL(
-     &        'ADJarea.'//suff, writeBinaryPrec,
-     &        1,  adarea, 1, myIter, myThid )
-         CALL WRITE_REC_3D_RL(
-     &        'ADJheff.'//suff, writeBinaryPrec,
-     &        1,  adheff, 1, myIter, myThid )
-         CALL WRITE_REC_3D_RL(
-     &        'ADJhsnow.'//suff, writeBinaryPrec,
-     &        1,  adhsnow, 1, myIter, myThid )
+C-----------------------------------------------------------------------
+C--- Seaice state variables
+C-----------------------------------------------------------------------
+      CALL DUMP_ADJ_XY( dumRS, adarea, 'ADJarea ', 'ADJarea.',
+     &     12, doDump, dumpAdRecSi, myTime, myIter, myThid )
+      CALL DUMP_ADJ_XY( dumRS, adheff, 'ADJheff ', 'ADJheff.',
+     &     12, doDump, dumpAdRecSi, myTime, myIter, myThid )
+      CALL DUMP_ADJ_XY( dumRS, adhsnow, 'ADJhsnow', 'ADJhsnow.',
+     &     12, doDump, dumpAdRecSi, myTime, myIter, myThid )
 # ifdef SEAICE_ALLOW_DYNAMICS
-cph        IF ( SEAICEuseDynamics ) THEN
-          CALL WRITE_REC_3D_RL(
-     &        'ADJuice.'//suff, writeBinaryPrec,
-     &        1,  aduice, 1, myIter, myThid )
-          CALL WRITE_REC_3D_RL(
-     &         'ADJvice.'//suff, writeBinaryPrec,
-     &         1,  advice, 1, myIter, myThid )
-cph        ENDIF
-# endif
+C     IF (SEAICEuseDYNAMICS) THEN
+      CALL DUMP_ADJ_XY_UV(
+     &     dumRS, aduice, 'ADJuice ', 'ADJuice.',
+     &     dumRS, advice, 'ADJvice ', 'ADJvice.',
+     &     34, doDump, dumpAdRecSi, myTime, myIter, myThid)
+C     ENDIF
+# endif /* SEAICE_ALLOW_DYNAMICS */
 
-        ELSEIF (dumpAdVarExch.NE.2 .AND. .NOT.dumpAdByRec) THEN
-
-         CALL WRITE_REC_3D_RL(
-     &        'ADJarea', writeBinaryPrec,
-     &        1,  adarea, dumpAdRecSi, myIter, myThid )
-         CALL WRITE_REC_3D_RL(
-     &        'ADJheff', writeBinaryPrec,
-     &        1,  adheff, dumpAdRecSi, myIter, myThid )
-         CALL WRITE_REC_3D_RL(
-     &        'ADJhsnow', writeBinaryPrec,
-     &        1,  adhsnow, dumpAdRecSi, myIter, myThid )
-# ifdef SEAICE_ALLOW_DYNAMICS
-cph        IF ( SEAICEuseDynamics ) THEN
-          CALL WRITE_REC_3D_RL(
-     &       'ADJuice', writeBinaryPrec,
-     &       1,  aduice, dumpAdRecSi, myIter, myThid )
-          CALL WRITE_REC_3D_RL(
-     &       'ADJvice', writeBinaryPrec,
-     &       1,  advice, dumpAdRecSi, myIter, myThid )
-cph        ENDIF
-# endif
-        ELSE
-C       case dumpAdVarExch = 2
-         CALL COPY_ADVAR_OUTP( dumRS, adarea, var2Du, 1 , 12, myThid )
-         IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL(  'ADJarea.',
-     &                         suff, var2Du, myIter, myThid )
-         IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL(  'ADJarea',
-     &                         var2Du, dumpAdRecMn, myIter, myThid )
-         CALL COPY_ADVAR_OUTP( dumRS, adheff, var2Du, 1 , 12, myThid )
-         IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL(  'ADJheff.',
-     &                         suff, var2Du, myIter, myThid )
-         IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL(  'ADJheff',
-     &                         var2Du, dumpAdRecMn, myIter, myThid )
-         CALL COPY_ADVAR_OUTP( dumRS, adhsnow, var2Du, 1 , 12, myThid )
-         IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL(  'ADJhsnow.',
-     &                         suff, var2Du, myIter, myThid )
-         IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL(  'ADJhsnow',
-     &                         var2Du, dumpAdRecMn, myIter, myThid )
-
-# ifdef SEAICE_ALLOW_DYNAMICS
-         CALL COPY_AD_UV_OUTP( dumRS, dumRS, aduice, advice,
-     &                        var2Du, var2Dv, 1, 34, myThid )
-         IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJuice.',
-     &                         suff, var2Du, myIter, myThid )
-         IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJuice',
-     &                         var2Du, dumpAdRecMn, myIter, myThid )
-         IF (.NOT.dumpAdByRec) CALL WRITE_FLD_XY_RL( 'ADJvice.',
-     &                         suff, var2Dv, myIter, myThid )
-         IF (  dumpAdByRec   ) CALL WRITE_REC_XY_RL( 'ADJvice',
-     &                         var2Dv, dumpAdRecMn, myIter, myThid )
-# endif
-        ENDIF
-
+      IF ( doDump ) THEN
 #ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
 
