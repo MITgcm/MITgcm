@@ -15,7 +15,7 @@ C     !ROUTINE: DUMP_ADJ_XYZ_UV
 C     !INTERFACE:
       SUBROUTINE DUMP_ADJ_XYZ_UV( u3DRS, u3DRL, uDiagName, uDumpName,
      I      v3DRS, v3DRL, vDiagName, vDumpName,
-     I      vType, doDump, myTime, myIter, myThid )
+     I      vType, doDump, dumpAdRec, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -71,6 +71,7 @@ C     myThid  :: Thread number for this instance of the routine.
       CHARACTER*(*) vDumpName
       INTEGER vType
       LOGICAL doDump
+      INTEGER dumpAdRec
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -129,9 +130,9 @@ C--       Copy first
           CALL COPY_AD_UV_OUTP(u3DRS,v3DRS,u3DRL,v3DRL,
      &                         uCopy,vCopy,Nr,vType,myThid)
           IF ( dumpAdByRec ) THEN
-            CALL WRITE_REC_XYZ_RL(uDumpName, uCopy, dumpAdRecMn,
+            CALL WRITE_REC_XYZ_RL(uDumpName, uCopy, dumpAdRec,
      &                            myIter, myThid)
-            CALL WRITE_REC_XYZ_RL(vDumpName, vCopy, dumpAdRecMn,
+            CALL WRITE_REC_XYZ_RL(vDumpName, vCopy, dumpAdRec,
      &                            myIter, myThid)
 
           ELSE
@@ -147,9 +148,9 @@ C--       Write directly
           IF ( MOD(vType,2).NE.1 ) THEN
 
             IF ( dumpAdByRec ) THEN
-              CALL WRITE_REC_XYZ_RL(uDumpName, u3DRL, dumpAdRecMn,
+              CALL WRITE_REC_XYZ_RL(uDumpName, u3DRL, dumpAdRec,
      &                              myIter, myThid)
-              CALL WRITE_REC_XYZ_RL(vDumpName, v3DRL, dumpAdRecMn,
+              CALL WRITE_REC_XYZ_RL(vDumpName, v3DRL, dumpAdRec,
      &                              myIter, myThid)
 
             ELSE
@@ -162,9 +163,9 @@ C--       Write directly
           ELSE ! is RL
 
             IF ( dumpAdByRec ) THEN
-              CALL WRITE_REC_XYZ_RS(uDumpName, u3DRS, dumpAdRecMn,
+              CALL WRITE_REC_XYZ_RS(uDumpName, u3DRS, dumpAdRec,
      &                              myIter, myThid)
-              CALL WRITE_REC_XYZ_RS(uDumpName, v3DRS, dumpAdRecMn,
+              CALL WRITE_REC_XYZ_RS(uDumpName, v3DRS, dumpAdRec,
      &                              myIter, myThid)
 
             ELSE

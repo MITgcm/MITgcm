@@ -15,7 +15,7 @@ C     !ROUTINE: DUMP_ADJ_XY_UV
 C     !INTERFACE:
       SUBROUTINE DUMP_ADJ_XY_UV( u2DRS, u2DRL, uDiagName, uDumpName,
      I      v2DRS, v2DRL, vDiagName, vDumpName,
-     I      vType, doDump, myTime, myIter, myThid )
+     I      vType, doDump, dumpAdRec, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -71,6 +71,7 @@ C     myThid  :: Thread number for this instance of the routine.
       CHARACTER*(*) vDumpName
       INTEGER vType
       LOGICAL doDump
+      INTEGER dumpAdRec
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -129,9 +130,9 @@ C--       Copy first
           CALL COPY_AD_UV_OUTP(u2DRS,v2DRS,u2DRL,v2DRL,
      &                         uCopy,vCopy,1,vType,myThid)
           IF ( dumpAdByRec ) THEN
-            CALL WRITE_REC_XY_RL(uDumpName, uCopy, dumpAdRecMn,
+            CALL WRITE_REC_XY_RL(uDumpName, uCopy, dumpAdRec,
      &                            myIter, myThid)
-            CALL WRITE_REC_XY_RL(vDumpName, vCopy, dumpAdRecMn,
+            CALL WRITE_REC_XY_RL(vDumpName, vCopy, dumpAdRec,
      &                            myIter, myThid)
 
           ELSE
@@ -147,9 +148,9 @@ C--       Write directly
           IF ( MOD(vType,2).NE.1 ) THEN
 
             IF ( dumpAdByRec ) THEN
-              CALL WRITE_REC_XY_RL(uDumpName, u2DRL, dumpAdRecMn,
+              CALL WRITE_REC_XY_RL(uDumpName, u2DRL, dumpAdRec,
      &                              myIter, myThid)
-              CALL WRITE_REC_XY_RL(vDumpName, v2DRL, dumpAdRecMn,
+              CALL WRITE_REC_XY_RL(vDumpName, v2DRL, dumpAdRec,
      &                              myIter, myThid)
 
             ELSE
@@ -162,9 +163,9 @@ C--       Write directly
           ELSE ! is RL
 
             IF ( dumpAdByRec ) THEN
-              CALL WRITE_REC_XY_RS(uDumpName, u2DRS, dumpAdRecMn,
+              CALL WRITE_REC_XY_RS(uDumpName, u2DRS, dumpAdRec,
      &                              myIter, myThid)
-              CALL WRITE_REC_XY_RS(vDumpName, v2DRS, dumpAdRecMn,
+              CALL WRITE_REC_XY_RS(vDumpName, v2DRS, dumpAdRec,
      &                              myIter, myThid)
 
             ELSE

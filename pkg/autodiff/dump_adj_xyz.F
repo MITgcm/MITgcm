@@ -14,7 +14,7 @@ CBOP
 C     !ROUTINE: DUMP_ADJ_XYZ
 C     !INTERFACE:
       SUBROUTINE DUMP_ADJ_XYZ( var3DRS, var3DRL, diagName, dumpName,
-     I      vType, doDump, myTime, myIter, myThid )
+     I      vType, doDump, dumpAdRec, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -66,6 +66,7 @@ C     myThid  :: Thread number for this instance of the routine.
       CHARACTER*(*) dumpName
       INTEGER vType
       LOGICAL doDump
+      INTEGER dumpAdRec
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
@@ -118,7 +119,7 @@ C--     Set suffix for this set of data files.
 C--       Copy first
           CALL COPY_ADVAR_OUTP(var3DRS,var3DRL,var3Dc,Nr,vType,myThid)
           IF ( dumpAdByRec ) THEN
-            CALL WRITE_REC_XYZ_RL(dumpName, var3Dc, dumpAdRecMn,
+            CALL WRITE_REC_XYZ_RL(dumpName, var3Dc, dumpAdRec,
      &                            myIter, myThid)
 
           ELSE
@@ -132,7 +133,7 @@ C--       Write directly
           IF ( MOD(vType,2).NE.1 ) THEN
 
             IF ( dumpAdByRec ) THEN
-              CALL WRITE_REC_XYZ_RL(dumpName, var3DRL, dumpAdRecMn,
+              CALL WRITE_REC_XYZ_RL(dumpName, var3DRL, dumpAdRec,
      &                              myIter, myThid)
 
             ELSE
@@ -143,7 +144,7 @@ C--       Write directly
           ELSE ! is RL
 
             IF ( dumpAdByRec ) THEN
-              CALL WRITE_REC_XYZ_RS(dumpName, var3DRS, dumpAdRecMn,
+              CALL WRITE_REC_XYZ_RS(dumpName, var3DRS, dumpAdRec,
      &                              myIter, myThid)
 
             ELSE
