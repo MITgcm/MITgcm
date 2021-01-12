@@ -960,7 +960,7 @@ C     Adjoint state variables
 
       diagName  = 'ADJsalt '
       diagTitle = 'dJ/dSalt: Sensitivity to salinity'
-      diagUnits = 'dJ/psu          '
+      diagUnits = DIAGS_MK_UNITS( 'dJ/('//sUnit5c//')', myThid )
       diagCode  = 'SMRA    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -1014,7 +1014,7 @@ C--   surface fluxes:
 
       diagName  = 'ADJsss'
       diagTitle = 'dJ/dSSS: Sensitivity to Sea Surface Salinity'
-      diagUnits = 'dJ/dpsu'
+      diagUnits = DIAGS_MK_UNITS( 'dJ/('//sUnit5c//')', myThid )
       diagCode  = 'SM A    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
