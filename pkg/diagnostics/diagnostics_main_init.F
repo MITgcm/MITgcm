@@ -968,7 +968,7 @@ C     Adjoint state variables
 C--   surface fluxes:
       diagName  = 'ADJtaux '
       diagTitle = 'dJ/dTaux: Senstivity to zonal surface wind stress'
-      diagUnits = 'dJ/[N/m^2]      '
+      diagUnits = 'dJ/(N/m^2)      '
       diagCode  = 'UU A    U1      '
       diagMate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -976,7 +976,7 @@ C--   surface fluxes:
 
       diagName  = 'ADJtauy '
       diagTitle = 'dJ/dTauy: Sensitivity to merid. surface wind stress'
-      diagUnits = 'dJ/[N/m^2]      '
+      diagUnits = 'dJ/(N/m^2)      '
       diagCode  = 'VV A    U1      '
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -985,7 +985,7 @@ C--   surface fluxes:
       diagName  = 'ADJempmr'
       diagTitle = 'dJ/dEmPmR: Sensitivity to net surface Fresh-Water'
      &          //' flux into the ocean'
-      diagUnits = 'dJ/[kg/m^2/s]   '
+      diagUnits = 'dJ/(kg/m^2/s)   '
       diagCode  = 'SM A    U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -993,14 +993,14 @@ C--   surface fluxes:
       diagName  = 'ADJqnet'
       diagTitle = 'dJ/dQnet: Sensitivity to net surface heat flux'
      &          //'into the ocean'
-      diagUnits = 'dJ/[W/m^2]      '
+      diagUnits = 'dJ/(W/m^2)      '
       diagCode  = 'SM A    U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'ADJqsw'
       diagTitle = 'dJ/dQsw: Sensitivitiy to net Short-Wave radiation'
-      diagUnits = 'dJ/[W/m^2]      '
+      diagUnits = 'dJ/(W/m^2)      '
       diagCode  = 'SM A    U1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -1022,14 +1022,14 @@ C--   surface fluxes:
 C Miscellanious
       diagName  = 'ADJbtdrg'
       diagTitle = 'dJ/dCd: Sensitivity to bottom drag coefficient'
-      diagUnits = 'dJ/d[]'
+      diagUnits = 'dJ/d()'
       diagCode  = 'SM A    M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
       diagName  = 'ADJdifkr'
       diagTitle = 'dJ/dKr: Sensitivity to vertical diffusivity'
-      diagUnits = 'dJ/d[m^2/s]]'
+      diagUnits = 'dJ/d(m^2/s))'
       diagCode  = 'SMRA    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -1037,7 +1037,7 @@ C Miscellanious
       diagName  = 'ADJepsix'
       diagTitle = 'dJ/dEddyPsiX: Sensitivity to zonal eddy'
      &           //'streamfunction'
-      diagUnits = 'dJ/[m^2/s]      '
+      diagUnits = 'dJ/(m^2/s)      '
       diagCode  = 'UURA    UR      '
       diagMate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -1046,7 +1046,7 @@ C Miscellanious
       diagName  = 'ADJepsiy'
       diagTitle = 'dJ/dEddyPsiY: Sensitivity to meridional eddy'
      &           //'streamfunction'
-      diagUnits = 'dJ/[m^2/s]      '
+      diagUnits = 'dJ/(m^2/s)      '
       diagCode  = 'VVRA    UR      '
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
