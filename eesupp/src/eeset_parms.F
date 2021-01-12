@@ -155,7 +155,7 @@ C     multi-node/multi-processor systems
 C     this definition will go into CPP_EEMACROS.h, once this method is
 C     properly established
 C     After opening regular files here, they are closed with STATUS='DELETE'
-#ifdef OPTIMIZATIONS_DSK
+#ifdef PLEIADES_LUSTRE_OPT
       WRITE(scratchFile1,'(A,'//FMT_PROC_ID//')') '/tmp/scratch1.', procId
       WRITE(scratchFile2,'(A,'//FMT_PROC_ID//')') '/tmp/scratch2.', procId
 #else
@@ -172,7 +172,7 @@ C     After opening regular files here, they are closed with STATUS='DELETE'
 #endif
 
       OPEN(UNIT=eeDataUnit,FILE='/tmp/namelist/eedata',STATUS='OLD',
-#ifdef OPTIMIZATIONS_DSK
+#ifdef PLEIADES_LUSTRE_OPT
      &     ACTION='read',err=1,IOSTAT=errIO)
 #else
      &     err=1,IOSTAT=errIO)

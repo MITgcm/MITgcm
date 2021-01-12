@@ -916,7 +916,7 @@ C--   Next, read pkg/exf parameter file.
      &                    SQUEEZE_RIGHT, myThid )
 
       CALL OPEN_COPY_DATA_FILE(
-#ifdef OPTIMIZATIONS_DSK
+#ifdef PLEIADES_LUSTRE_OPT
      I                       '/tmp/namelist/data.exf', 'EXF_READPARMS',
 #else
      I                       'data.exf', 'EXF_READPARMS',

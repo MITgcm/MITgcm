@@ -75,7 +75,7 @@ C     Figure out offset of tile within face
 
       CALL MDSFINDUNIT( dUnit, myThid )
       length_of_rec = MDS_RECLEN( fPrec, (dNx+1), myThid )
-#ifdef OPTIMIZATIONS_DSK
+#ifdef PLEIADES_LUSTRE_OPT
       OPEN( dUnit, file=fName(1:iLen), status='old', action='read',
 #else
       OPEN( dUnit, file=fName(1:iLen), status='old',
@@ -117,7 +117,7 @@ C     Figure out offset of tile within face
 
       CALL MDSFINDUNIT( dUnit, myThid )
       length_of_rec = MDS_RECLEN( fPrec, (sNx+1)*(sNy+1), myThid )
-#ifdef OPTIMIZATIONS_DSK
+#ifdef PLEIADES_LUSTRE_OPT
       OPEN( dUnit, file=fName(1:iLen), status='old',  action='read',
 #else
       OPEN( dUnit, file=fName(1:iLen), status='old',
@@ -157,7 +157,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       RETURN
       END
-#ifdef OPTIMIZATIONS_DSK
+#ifdef PLEIADES_LUSTRE_OPT
 CBOP
 C     !ROUTINE:  MDS_FACEF_READ_RS2
 C     !INTERFACE:

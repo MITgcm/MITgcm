@@ -193,7 +193,7 @@ C-    Track diagnostics pkg activation status:
       WRITE(msgBuf,'(2A)')
      &     ' DIAGNOSTICS_READPARMS: opening data.diagnostics'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,SQUEEZE_RIGHT,1)
-#ifdef OPTIMIZATIONS_DSK
+#ifdef PLEIADES_LUSTRE_OPT
       CALL OPEN_COPY_DATA_FILE('/tmp/namelist/data.diagnostics',
 #else
       CALL OPEN_COPY_DATA_FILE('data.diagnostics',

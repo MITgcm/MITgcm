@@ -53,7 +53,7 @@ C     == Local variables ==
 #endif
 #ifndef OLD_GRID_IO
       INTEGER iG, jG, iL, iLen
-#ifdef OPTIMIZATIONS_DSK
+#ifdef PLEIADES_LUSTRE_OPT
       INTEGER dUnit, length_of_rec, tN, dNx, dNy, tBx, tBy, tNx, tNY
       INTEGER  MDS_RECLEN
       EXTERNAL MDS_RECLEN
@@ -290,7 +290,7 @@ C-    Tile Id number = Bi + (Bj-1)*(nSx*nPx)  with tile global-indices Bi,Bj
         WRITE(msgBuf,'(A)') '  =>'
 
 #ifdef ALLOW_MDSIO
-#ifdef OPTIMIZATIONS_DSK
+#ifdef PLEIADES_LUSTRE_OPT
         tN  = W2_myTileList(bi,bj)
         dNx = exch2_mydnx(tN)
         dNy = exch2_mydny(tN)

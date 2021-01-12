@@ -111,7 +111,7 @@ C-    Check for file "data.ech2":
         WRITE(msgBuf,'(A)') 'W2_READPARMS: opening data.exch2'
         CALL PRINT_MESSAGE( msgBuf, stdUnit, SQUEEZE_RIGHT , myThid )
         CALL OPEN_COPY_DATA_FILE(
-#ifdef OPTIMIZATIONS_DSK
+#ifdef PLEIADES_LUSTRE_OPT
      I                      '/tmp/namelist/data.exch2', 'W2_READPARMS',
 #else
      I                      'data.exch2', 'W2_READPARMS',

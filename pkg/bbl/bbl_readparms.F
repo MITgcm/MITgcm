@@ -61,7 +61,7 @@ C-    file names for initial conditions:
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
       CALL OPEN_COPY_DATA_FILE(
-#ifdef OPTIMIZATIONS_DSK
+#ifdef PLEIADES_LUSTRE_OPT
      I                     '/tmp/namelist/data.bbl', 'BBL_READPARMS',
 #else
      I                     'data.bbl', 'BBL_READPARMS',

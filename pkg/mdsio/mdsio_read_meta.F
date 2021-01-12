@@ -190,7 +190,7 @@ C-    Assign a free unit number as the I/O channel for this subroutine
         CALL MDSFINDUNIT( mUnit, myThid )
 
 C-    Open meta-file
-#ifdef OPTIMIZATIONS_DSK
+#ifdef PLEIADES_LUSTRE_OPT
         OPEN( mUnit, FILE=mFileName, STATUS='old', ACTION='read',
 #else
         OPEN( mUnit, FILE=mFileName, STATUS='old',

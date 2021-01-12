@@ -102,7 +102,7 @@ C     data.pkg namelists
      &                    SQUEEZE_RIGHT , myThid )
 
       CALL OPEN_COPY_DATA_FILE(
-#ifdef OPTIMIZATIONS_DSK
+#ifdef PLEIADES_LUSTRE_OPT
      I                       '/tmp/namelist/data.pkg', 'PACKAGES_BOOT',
 #else
      I                       'data.pkg', 'PACKAGES_BOOT',

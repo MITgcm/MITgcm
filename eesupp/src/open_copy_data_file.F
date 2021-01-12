@@ -90,7 +90,7 @@ C     multi-node/multi-processor systems
       OPEN(UNIT=scrUnit2,STATUS='SCRATCH')
 #else
 C     After opening regular files here, they are closed with STATUS='DELETE'
-#ifdef OPTIMIZATIONS_DSK
+#ifdef PLEIADES_LUSTRE_OPT
       WRITE(scratchFile1,'(A,'//FMT_PROC_ID//')') '/tmp/scratch1.', myProcId
       WRITE(scratchFile2,'(A,'//FMT_PROC_ID//')') '/tmp/scratch2.', myProcId
 #else
@@ -107,7 +107,7 @@ C     After opening regular files here, they are closed with STATUS='DELETE'
 #endif
 
       OPEN(UNIT=modelDataUnit,FILE=data_file,STATUS='OLD',
-#ifdef OPTIMIZATIONS_DSK
+#ifdef PLEIADES_LUSTRE_OPT
      &     ACTION='READ', IOSTAT=errIO)
 #else
      &     IOSTAT=errIO)
