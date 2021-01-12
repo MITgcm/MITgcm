@@ -14,7 +14,7 @@ CBOP
 C     !ROUTINE: DUMP_ADJ_XYZ
 C     !INTERFACE:
       SUBROUTINE DUMP_ADJ_XYZ( var3DRS, var3DRL, diagName, dumpName,
-     I      myNr, vType, doDump, myTime, myIter, myThid )
+     I      vType, doDump, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -64,7 +64,6 @@ C     myThid  :: Thread number for this instance of the routine.
       _RL var3DRL(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       CHARACTER*(*) diagName
       CHARACTER*(*) dumpName
-      INTEGER myNr
       INTEGER vType
       LOGICAL doDump
       _RL     myTime
@@ -92,14 +91,14 @@ C --- 1. Fill diagnostics
 
         IF ( dumpAdVarExch.EQ.2 ) THEN
 
-          CALL COPY_ADVAR_OUTP(var3DRS,var3DRL,var3Dc,myNr,vType,myThid)
-          CALL DIAGNOSTICS_FILL(var3Dc,diagName,0,myNr,0,1,1,myThid)
+          CALL COPY_ADVAR_OUTP(var3DRS,var3DRL,var3Dc,Nr,vType,myThid)
+          CALL DIAGNOSTICS_FILL(var3Dc,diagName,0,Nr,0,1,1,myThid)
         ELSE
           IF ( MOD(vType,2).NE.1 ) THEN
-            CALL DIAGNOSTICS_FILL(var3DRL,diagName,0,myNr,0,1,1,myThid)
+            CALL DIAGNOSTICS_FILL(var3DRL,diagName,0,Nr,0,1,1,myThid)
           ELSE
             ! How to handle this case?
-            !CALL DIAGNOSTICS_FILL(var3DRS,diagName,0,myNr,0,1,1,myThid)
+            !CALL DIAGNOSTICS_FILL(var3DRS,diagName,0,Nr,0,1,1,myThid)
           ENDIF
         ENDIF
       ENDIF
@@ -118,7 +117,7 @@ C--     Set suffix for this set of data files.
         IF ( dumpAdVarExch.EQ.2 ) THEN
 
 C--       Copy first
-          CALL COPY_ADVAR_OUTP(var3DRS,var3DRL,var3Dc,myNr,
+          CALL COPY_ADVAR_OUTP(var3DRS,var3DRL,var3Dc,Nr,
      &                         vType,myThid)
           IF ( dumpAdByRec ) THEN
             CALL WRITE_REC_XYZ_RL(dumpName, var3Dc, dumpAdRecMn,

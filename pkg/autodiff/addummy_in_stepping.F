@@ -204,17 +204,17 @@ C-----------------------------------------------------------------------
 C--- State variables
 C-----------------------------------------------------------------------
       CALL DUMP_ADJ_XYZ(dumRS, adTheta, 'ADJtheta', 'ADJtheta.',
-     &                  Nr, 12, doDump, myTime, myIter,myThid)
+     &                  12, doDump, myTime, myIter,myThid)
 
       CALL DUMP_ADJ_XYZ(dumRS, adSalt, 'ADJsalt ', 'ADJsalt.',
-     &                  Nr, 12, doDump, myTime, myIter,myThid)
+     &                  12, doDump, myTime, myIter,myThid)
 
       CALL DUMP_ADJ_XYZ(dumRS, adWvel, 'ADJwvel ', 'ADJwvel.',
-     &                  Nr, 12, doDump, myTime, myIter,myThid)
+     &                  12, doDump, myTime, myIter,myThid)
 
       CALL DUMP_ADJ_XYZ_UV(dumRS, adUvel, 'ADJuvel ', 'ADJuvel.',
      &                     dumRS, adVvel, 'ADJvvel ', 'ADJvvel.',
-     &                     Nr, 34, doDump, myTime, myIter,myThid)
+     &                     34, doDump, myTime, myIter,myThid)
 
 C-----------------------------------------------------------------------
 C--- Surface Forcing
@@ -226,7 +226,7 @@ C-----------------------------------------------------------------------
         CALL DUMP_ADJ_XY(adQnet, dumRL, 'ADJqnet ', 'ADJqnet.',
      &                   11, doDump, myTime, myIter,myThid)
         CALL DUMP_ADJ_XY(adEmPmR, dumRL, 'ADJempmr', 'ADJempr.',
-     &                   myTime, myIter,myThid)
+     &                   11, myTime, myIter,myThid)
 
 # ifdef SHORTWAVE_HEATING
         CALL DUMP_ADJ_XY(adQsw, dumRL, 'ADJqsw', 'ADJqsw.',
@@ -252,19 +252,19 @@ C-----------------------------------------------------------------------
 # endif
 # ifdef ALLOW_GGL90
       CALL DUMP_ADJ_XYZ(dumRS, adGGL90TKE, 'ADJtke90', 'ADJggl90tke.',
-     &                  Nr, 12, doDump, myTime, myIter,myThid)
+     &                  12, doDump, myTime, myIter,myThid)
 # endif
 # ifdef ALLOW_DIFFKR_CONTROL
       CALL DUMP_ADJ_XYZ(dumRS, adDiffKr, 'ADJdifkr', 'ADJdiffkr.',
-     &                  Nr, 12, doDump, myTime, myIter,myThid)
+     &                  12, doDump, myTime, myIter,myThid)
 # endif
 # ifdef ALLOW_KAPGM_CONTROL
       CALL DUMP_ADJ_XYZ(dumRS, adKapGM, 'ADJkapgm', 'ADJkapgm.',
-     &                  Nr, 12, doDump, myTime, myIter,myThid)
+     &                  12, doDump, myTime, myIter,myThid)
 # endif
 # ifdef ALLOW_KAPREDI_CONTROL
       CALL DUMP_ADJ_XYZ(dumRS, adKapRedi, 'ADJkapre', 'ADJkapredi.',
-     &                  Nr, 12, doDump, myTime, myIter,myThid)
+     &                  12, doDump, myTime, myIter,myThid)
 # endif
 
 # ifdef ALLOW_EDDYPSI_CONTROL
@@ -281,17 +281,17 @@ C-----------------------------------------------------------------------
 C--- State variables
 C-----------------------------------------------------------------------
       CALL DUMP_ADJ_XYZ(dumRS, theta%d, 'ADJtheta', 'ADJtheta.',
-     &                  Nr, 12, doDump, myTime, myIter,myThid)
+     &                  12, doDump, myTime, myIter,myThid)
 
       CALL DUMP_ADJ_XYZ(dumRS, salt%d, 'ADJsalt ', 'ADJsalt.',
-     &                  Nr, 12, doDump, myTime, myIter,myThid)
+     &                  12, doDump, myTime, myIter,myThid)
 
       CALL DUMP_ADJ_XYZ(dumRS, wvel%d, 'ADJwvel ', 'ADJwvel.',
-     &                  Nr, 12, doDump, myTime, myIter,myThid)
+     &                  12, doDump, myTime, myIter,myThid)
 
       CALL DUMP_ADJ_XYZ_UV(dumRS, uvel%d, 'ADJuvel ', 'ADJuvel.',
      &                     dumRS, vvel%d, 'ADJvvel ', 'ADJvvel.',
-     &                     Nr, 34, doDump, myTime, myIter,myThid)
+     &                     34, doDump, myTime, myIter,myThid)
 
 C-----------------------------------------------------------------------
 C--- Surface Forcing
@@ -303,7 +303,7 @@ C-----------------------------------------------------------------------
         CALL DUMP_ADJ_XY(Qnet%d, dumRL, 'ADJqnet ', 'ADJqnet.',
      &                   11, doDump, myTime, myIter,myThid)
         CALL DUMP_ADJ_XY(EmPmR%d, dumRL, 'ADJempmr', 'ADJempr.',
-     &                   myTime, myIter,myThid)
+     &                   11, myTime, myIter,myThid)
 
 # ifdef SHORTWAVE_HEATING
         CALL DUMP_ADJ_XY(Qsw%d, dumRL, 'ADJqsw', 'ADJqsw.',
@@ -329,19 +329,19 @@ C-----------------------------------------------------------------------
 # endif
 # ifdef ALLOW_GGL90
       CALL DUMP_ADJ_XYZ(dumRS, GGL90TKE%d, 'ADJtke90', 'ADJggl90tke.',
-     &                  Nr, 12, doDump, myTime, myIter,myThid)
+     &                  12, doDump, myTime, myIter,myThid)
 # endif
 # ifdef ALLOW_DIFFKR_CONTROL
       CALL DUMP_ADJ_XYZ(dumRS, DiffKr%d, 'ADJdifkr', 'ADJdiffkr.',
-     &                  Nr, 12, doDump, myTime, myIter,myThid)
+     &                  12, doDump, myTime, myIter,myThid)
 # endif
 # ifdef ALLOW_KAPGM_CONTROL
       CALL DUMP_ADJ_XYZ(dumRS, KapGM%d, 'ADJkapgm', 'ADJkapgm.',
-     &                  Nr, 12, doDump, myTime, myIter,myThid)
+     &                  12, doDump, myTime, myIter,myThid)
 # endif
 # ifdef ALLOW_KAPREDI_CONTROL
       CALL DUMP_ADJ_XYZ(dumRS, KapRedi%d, 'ADJkapre', 'ADJkapredi.',
-     &                  Nr, 12, doDump, myTime, myIter,myThid)
+     &                  12, doDump, myTime, myIter,myThid)
 # endif
 
 # ifdef ALLOW_EDDYPSI_CONTROL

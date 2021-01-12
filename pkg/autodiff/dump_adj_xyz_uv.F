@@ -15,7 +15,7 @@ C     !ROUTINE: DUMP_ADJ_XYZ_UV
 C     !INTERFACE:
       SUBROUTINE DUMP_ADJ_XYZ_UV( u3DRS, u3DRL, uDiagName, uDumpName,
      I      v3DRS, v3DRL, vDiagName, vDumpName,
-     I      myNr, vType, doDump, myTime, myIter, myThid )
+     I      vType, doDump, myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -69,7 +69,6 @@ C     myThid  :: Thread number for this instance of the routine.
       CHARACTER*(*) vDiagName
       CHARACTER*(*) uDumpName
       CHARACTER*(*) vDumpName
-      INTEGER myNr
       INTEGER vType
       LOGICAL doDump
       _RL     myTime
@@ -99,16 +98,16 @@ C --- 1. Fill diagnostics
         IF ( dumpAdVarExch.EQ.2 ) THEN
 
           CALL COPY_AD_UV_OUTP(u3DRS,v3DRS,u3DRL,v3DRL,
-                               uCopy,vCopy,myNr,vType,myThid)
-          CALL DIAGNOSTICS_FILL(uCopy,diagName,0,myNr,0,1,1,myThid)
-          CALL DIAGNOSTICS_FILL(vCopy,diagName,0,myNr,0,1,1,myThid)
+                               uCopy,vCopy,Nr,vType,myThid)
+          CALL DIAGNOSTICS_FILL(uCopy,diagName,0,Nr,0,1,1,myThid)
+          CALL DIAGNOSTICS_FILL(vCopy,diagName,0,Nr,0,1,1,myThid)
         ELSE
           IF ( MOD(vType,2).NE.1 ) THEN
-            CALL DIAGNOSTICS_FILL(u3DRL,diagName,0,myNr,0,1,1,myThid)
-            CALL DIAGNOSTICS_FILL(v3DRL,diagName,0,myNr,0,1,1,myThid)
+            CALL DIAGNOSTICS_FILL(u3DRL,diagName,0,Nr,0,1,1,myThid)
+            CALL DIAGNOSTICS_FILL(v3DRL,diagName,0,Nr,0,1,1,myThid)
           ELSE
             ! How to handle this case?
-            !CALL DIAGNOSTICS_FILL(var3DRS,diagName,0,myNr,0,1,1,myThid)
+            !CALL DIAGNOSTICS_FILL(var3DRS,diagName,0,Nr,0,1,1,myThid)
           ENDIF
         ENDIF
       ENDIF
@@ -128,7 +127,7 @@ C--     Set suffix for this set of data files.
 
 C--       Copy first
           CALL COPY_AD_UV_OUTP(u3DRS,v3DRS,u3DRL,v3DRL,
-                               uCopy,vCopy,myNr,vType,myThid)
+                               uCopy,vCopy,Nr,vType,myThid)
           IF ( dumpAdByRec ) THEN
             CALL WRITE_REC_XYZ_RL(dumpName, uCopy, dumpAdRecMn,
      &                            myIter, myThid)
