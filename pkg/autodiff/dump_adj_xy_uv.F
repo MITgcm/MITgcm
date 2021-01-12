@@ -136,9 +136,9 @@ C--       Copy first
 
           ELSE
             CALL WRITE_FLD_XY_RL(dumpName, suff, uCopy,
-                                  myIter, myThid)
+     &                            myIter, myThid)
             CALL WRITE_FLD_XY_RL(dumpName, suff, vCopy,
-                                  myIter, myThid)
+     &                            myIter, myThid)
           ENDIF
 
         ELSE ! dumpAdVarExch.eq.2
@@ -154,9 +154,9 @@ C--       Write directly
 
             ELSE
               CALL WRITE_FLD_XY_RL(dumpName, suff,u2DRL,
-                                    myIter, myThid)
+     &                              myIter, myThid)
               CALL WRITE_FLD_XY_RL(dumpName, suff,v2DRL,
-                                    myIter, myThid)
+     &                              myIter, myThid)
             ENDIF
 
           ELSE ! is RL
@@ -171,7 +171,7 @@ C--       Write directly
               CALL WRITE_FLD_XY_RS(dumpName, suff, u2DRS,
                                     myIter, myThid)
               CALL WRITE_FLD_XY_RS(dumpName, suff, v2DRS,
-                                    myIter, myThid)
+     &                              myIter, myThid)
             ENDIF
           ENDIF
 
