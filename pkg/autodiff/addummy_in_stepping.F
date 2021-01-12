@@ -226,7 +226,7 @@ C-----------------------------------------------------------------------
         CALL DUMP_ADJ_XY(adQnet, dumRL, 'ADJqnet ', 'ADJqnet.',
      &                   11, doDump, myTime, myIter,myThid)
         CALL DUMP_ADJ_XY(adEmPmR, dumRL, 'ADJempmr', 'ADJempr.',
-     &                   11, myTime, myIter,myThid)
+     &                   11, doDump, myTime, myIter,myThid)
 
 # ifdef SHORTWAVE_HEATING
         CALL DUMP_ADJ_XY(adQsw, dumRL, 'ADJqsw', 'ADJqsw.',
@@ -303,7 +303,7 @@ C-----------------------------------------------------------------------
         CALL DUMP_ADJ_XY(Qnet%d, dumRL, 'ADJqnet ', 'ADJqnet.',
      &                   11, doDump, myTime, myIter,myThid)
         CALL DUMP_ADJ_XY(EmPmR%d, dumRL, 'ADJempmr', 'ADJempr.',
-     &                   11, myTime, myIter,myThid)
+     &                   11, doDump, myTime, myIter,myThid)
 
 # ifdef SHORTWAVE_HEATING
         CALL DUMP_ADJ_XY(Qsw%d, dumRL, 'ADJqsw', 'ADJqsw.',
