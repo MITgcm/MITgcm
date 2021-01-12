@@ -50,7 +50,7 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef OPTIMIZATIONS_DSK
+#if defined(ALLOW_SALT_PLUME) && defined(OPTIMIZATIONS_DSK) /* Access saltPlumeFlux directly */
 # include "SALT_PLUME.h"
 #endif /* OPTIMIZATIONS_DSK */
 #include "DYNVARS.h"
