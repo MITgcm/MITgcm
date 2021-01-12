@@ -91,6 +91,7 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RS dumRS(1)
       _RL dumRL(1)
       LOGICAL doExch
+      LOGICAL doDump
 #ifdef ALLOW_DIAGNOSTICS
       LOGICAL modelEnd
 #endif
