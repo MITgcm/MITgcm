@@ -332,7 +332,7 @@ C-----------------------------------------------------------------------
      &                  Nr, 12, doDump, myTime, myIter,myThid)
 # endif
 # ifdef ALLOW_DIFFKR_CONTROL
-      CALL DUMP_ADJ_XYZ(dumRS, DiffKr%d, 'ADJtke90', 'ADJdiffkr.',
+      CALL DUMP_ADJ_XYZ(dumRS, DiffKr%d, 'ADJdifkr', 'ADJdiffkr.',
      &                  Nr, 12, doDump, myTime, myIter,myThid)
 # endif
 # ifdef ALLOW_KAPGM_CONTROL
