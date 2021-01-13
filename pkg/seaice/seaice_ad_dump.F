@@ -78,9 +78,6 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RS dumRS(1)
       LOGICAL doExch
       LOGICAL doDump
-#ifdef ALLOW_DIAGNOSTICS
-      LOGICAL modelEnd
-#endif
 CEOP
 
 C--- Test for adexch based on dumpAdVarExch flag
@@ -115,12 +112,11 @@ C-----------------------------------------------------------------------
 C--- Turn diagnostics on/off
 C-----------------------------------------------------------------------
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiag4AdjOutp ) THEN
-
-C --- Grab modelEnd, necessary input for diagnostics routines
-        modelEnd = myTime.EQ.startTime .OR. myIter.EQ.nIter0
-        CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
-      ENDIF
+C     This has already been done in addummy_in_stepping,
+C     from where this is called
+CML      IF ( useDiag4AdjOutp ) THEN
+CML        CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
+CML      ENDIF
 #endif
 
 C-----------------------------------------------------------------------
