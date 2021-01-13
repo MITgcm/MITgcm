@@ -257,7 +257,6 @@ C --- Write the fields out here, in case of stragglers in ptracers or seaice
 C --- Grab modelEnd, necessary input for diagnostics routines
        modelEnd = myTime.EQ.startTime .OR. myIter.EQ.nIter0
        CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-       print *, 'ml-exf_adj', myIter
        CALL DIAGNOSTICS_WRITE_ADJ( modelEnd, myTime, myIter, myThid )
        CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
       ENDIF
