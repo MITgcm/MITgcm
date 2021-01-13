@@ -183,10 +183,11 @@ C-----------------------------------------------------------------------
 C--- Turn diagnostics on/off
 C-----------------------------------------------------------------------
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiag4AdjOutp ) THEN
-
-C --- Grab modelEnd, necessary input for diagnostics routines
-        modelEnd = myTime.EQ.startTime .OR. myIter.EQ.nIter0
+      IF ( useDiag4AdjOutp .AND. .NOT.useSEAICE ) THEN
+C     With seaice, the first routine that fills diagnostics is
+C     exf_adjoint_snapshots_ad.F (with iWhen=3), because it is
+C     called from seaice_model_ad,
+C     which in turn is called from do_oceanic_phys_ad.
         CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
       ENDIF
 #endif
@@ -485,7 +486,11 @@ cph        IF ( useEXF ) CALL EXF_AD_DUMP( myTime, myIter, myThid )
 
 C --- Write the fields out here, in case of stragglers in ptracers or seaice
 #ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiag4AdjOutp ) THEN
+      IF ( useDiag4AdjOutp .AND. .NOT.useEXF ) THEN
+C     If useEXF=.TRUE., this will be done in exf_adjoint_snapshots_ad.F
+C     which in that case is the last instance of filling adjoint diagnostics.
+C --- Grab modelEnd, necessary input for diagnostics routines
+       modelEnd = myTime.EQ.startTime .OR. myIter.EQ.nIter0
        CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
        CALL DIAGNOSTICS_WRITE_ADJ( modelEnd, myTime, myIter, myThid )
        CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
