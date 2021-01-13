@@ -15,7 +15,7 @@ C
 C  Arguments  Description
 C  ----------------------
 C     modelStart :: true if call at start of model run.
-C              :: (this is the adjoint's modelEnd)
+C              :: (this is the adjoint s modelEnd)
 C     myTime   :: Current time of simulation ( s )
 C     myIter   :: Current Iteration Number
 C     myThid   :: my Thread Id number
