@@ -1015,7 +1015,7 @@ C--   surface fluxes:
       diagName  = 'ADJsss'
       diagTitle = 'dJ/dSSS: Sensitivity to Sea Surface Salinity'
       diagUnits = DIAGS_MK_UNITS( 'dJ/('//sUnit5c//')', myThid )
-      diagCode  = 'SM A    MR      '
+      diagCode  = 'SM A    M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 

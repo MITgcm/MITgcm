@@ -866,7 +866,11 @@ C     Adjoint state variables
       diagName  = 'ADJuice '
       diagTitle = 'dJ/duice: sensitivity to zonal ice velocity'
       diagUnits = 'dJ/(m/s)        '
-      diagCode  = 'UURA    MR      '
+#ifdef SEAICE_CGRID
+      diagCode  = 'UU A    M1      '
+#else
+      diagCode  = 'UZ A    M1      '
+#endif
       diagMate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
@@ -874,7 +878,11 @@ C     Adjoint state variables
       diagName  = 'ADJvice '
       diagTitle = 'dJ/dvice: sensitivity to meridional ice velocity'
       diagUnits = 'dJ/(m/s)        '
-      diagCode  = 'VVRA    MR      '
+#ifdef SEAICE_CGRID
+      diagCode  = 'VV A    M1      '
+#else
+      diagCode  = 'VZ A    M1      '
+#endif
       diagMate  = diagNum
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I   diagName, diagCode, diagUnits, diagTitle, diagMate, myThid )
