@@ -85,7 +85,8 @@ plt.xlim(0,100);plt.ylim(-400,0)
 # Alternatively, a global mean area-weighted TRELAX (annual mean) could be computed as follows,
 # using HfacC[0,:,:] i.e. HfacC in the surface layer, as a land-ocean mask, using xarray .where()
 tot_ocean_area= (grid.rA.where(grid.HFacC[0,:,:]!=0)).sum(dim='Y').sum(dim='X') # compute total surface area of ocean points
-# note a np.tile command is NOT necessary to span the grid array across the time axis(!):
+# broadcasting with xarray is more flexible than basic numpy because it matches axis name (not dependent on axis position)
+# grid area is broadcast across the time dimension below
 TRELAX_ave_ann= (surfDiag.TRELAX*grid.rA.where(grid.HFacC[0,:,:]!=0)).sum(dim='Y').sum(dim='X')/tot_ocean_area
 Tann=(TRELAX_ave_ann['T']/31104000-0.5).assign_attrs(units='years') # again creating a new coordinate for annual mean time avg
 TRELAX_ave_ann.assign_coords(T=Tann).plot(color='m',linewidth=4,linestyle='dashed')
@@ -121,7 +122,7 @@ plt.show()
 # figure 4.8 - barotropic streamfunction at t=100 yrs. (w/overlaid labeled contours)
 #
 plt.figure(figsize=(10,8))
-ubt = (dynDiag.UVEL*grid.drF).sum(dim='Z') # again note that a np.tile not needed to broadcast 1-D drF
+ubt = (dynDiag.UVEL*grid.drF).sum(dim='Z') # here is an example where the xarray broadcasting is superior
 psi = (-ubt*grid.dyG).cumsum(dim='Y')/1.e6
 psi.pad(Y=1,constant_values=0)[-1,:-1,:].assign_coords(Y=grid.Yp1.values).plot.contourf(levels=np.linspace(-30, 30, 13), cmap='RdYlBu_r')
 cs=psi.pad(Y=1,constant_values=0)[-1,:-1,:].assign_coords(Y=grid.Yp1.values).plot.contour(levels=np.arange(-35,40,5), colors='k')

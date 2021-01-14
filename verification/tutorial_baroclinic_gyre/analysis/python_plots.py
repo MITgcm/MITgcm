@@ -71,7 +71,9 @@ plt.xlim(0,100);plt.ylim(-400,0)
 # Alternatively, a global mean area-weighted TRELAX (annual mean) could be computed as follows,
 # using HfacC[0,:,:] i.e. HfacC in the surface layer, as a land-ocean mask.
 total_ocn_area= (rA*HFacC[0,:,:]).sum(1).sum(0) # compute total surface area of ocean points
-TRELAX_ave_ann= (TRELAX[:,0,:,:]*np.tile(rA*HFacC[0,:,:],(100,1,1))).sum(2).sum(1)/total_ocn_area
+# numpy is often smart enough to figure out broadcasting, depending on axis position
+# in next line, note a np.tile command is NOT necessary to span the grid array across the time axis:
+TRELAX_ave_ann= (TRELAX[:,0,:,:]*(rA*HFacC[0,:,:])).sum(2).sum(1)/total_ocn_area
 plt.plot(np.linspace(0.5,99.5,100),TRELAX_ave_ann,'m--',linewidth=4)
 plt.subplot(223)
 plt.plot(np.linspace(1/12,100,1200),THETA_lv_ave[:,0,0],'c',linewidth=4,label='$\mathregular{T_{surf}}$');plt.grid('both')
@@ -107,8 +109,10 @@ plt.show()
 # figure 4.8 - barotropic streamfunction at t=100 yrs. (w/overlaid labeled contours)
 #
 plt.figure(figsize=(10,8))
-ubt= (UVEL*np.transpose(np.tile(drF,(100,62,63,1)),(0,3,1,2))).sum(1) # depth-integrated u velocity
-psi= (-ubt*np.tile(dyG,(100,1,1))).cumsum(1)/1.e6  # compute streamfunction in Sv (for each year)
+ubt= np.array(UVEL*drF[:,np.newaxis,np.newaxis]).sum(1) # depth-integrated u velocity
+# above numpy needs a bit of help with broadcasting the drF vector across [time,y,x] axes
+# but below it manages broadcasting across the time axis
+psi= (-ubt*dyG).cumsum(1)/1.e6  # compute streamfunction in Sv (for each year)
 plt.contourf(Xp1,Yp1,np.concatenate((np.zeros((63,1)).T,psi[-1,:,:])),np.arange(-35,40,5),cmap='RdYlBu_r')
 plt.colorbar()
 cs=plt.contour(Xp1,Yp1,np.concatenate((np.zeros((63,1)).T,psi[-1,:,:])),np.arange(-35,40,5),colors='black')
