@@ -2,7 +2,6 @@
 Global ocean circulation
 ------------------------
 
-
 :numref:`large-scale-circ` shows the pattern of ocean
 currents at the surface of a 4° global ocean model run with
 15 vertical levels. Lopped cells are used to represent topography on a
@@ -20,7 +19,7 @@ parameterized in this model.
 
     Pattern of surface ocean currents from a global integration of the model at 4° horizontal resolution and with 15 vertical levels.
 
-:numref:`large-scale-circ2` shows the meridional overturning 
+:numref:`large-scale-circ2` shows the meridional overturning
 circulation of the global ocean in Sverdrups.
 
   .. figure:: figs/moc.*

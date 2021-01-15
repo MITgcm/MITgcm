@@ -1411,13 +1411,29 @@ Building the manual
 -------------------
 
 Once you've made your changes to the manual, you should build it locally to verify that it works as expected.
-To do this you will need a working python installation with the following modules installed (use ``pip install «MODULE»`` in the terminal):
+To do this you will need a working python installation with the following packages installed:
 
  - sphinx
  - sphinxcontrib-bibtex
  - sphinxcontrib-programoutput
  - sphinx_rtd_theme
  - numpy
+
+There are many tools available to create a python environment with these packages on your local machine (e.g., using ``pip install``)
+and if you are comfortable doing so on your own, go ahead. Note that as of this writing (December 2020), sphinxcontrib-bibtex versions
+2.0.0 and higher are not supported (we suggest using version 1.0.0).
+
+However, if you are new to python, or less experienced, we suggest the following steps:
+
+#. Get miniforge from https://github.com/conda-forge/miniforge/#download (for linux, win, or mac). Follow the instructions
+   to run the installer from a terminal window. Make sure to say "yes" when it asks to initialize Miniforge3 --  that way
+   you can use it right away. This is a minimal anaconda with conda-forge already set as default.
+#. Install MITgcm doc requirements:
+
+::
+
+   cd MITgcm
+   conda install --file doc/requirements.txt
 
 Once these modules are installed you can build the html version of the manual by running ``make html`` in the ``doc`` directory.
 

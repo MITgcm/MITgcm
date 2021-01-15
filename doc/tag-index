@@ -1,6 +1,24 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/build_options/linux_ia64_ifort_ollie: adjust floating point options
+o pkg/ctrl:
+ - fix two bugs related to writing and reading control variables and
+   corresponding gradients:
+  a) replace too large loop range endrec by diffrec in ctrl_map_ini_gentim2d.F;
+  b) skip writing meta-files in REVERSE_SIMULATION mode (active_file_control.F).
+
+checkpoint67u (2020/12/30)
+o utils/python/MITgcmutils
+ - add code to compute horizontal divergence of a vector field, gradient of a
+   scalar field, and averages to c-points on an llc grid.
+o pkg/seaice:
+ - fix bug in seaice_lsr, spotted by Martin Vancoppenolle, that lead to solving
+   stationary momentum equations (du/dt -> 0) for SEAICEnonLinIterMax>2 ;
+ - fix minor bug in seaice_bottomdrag_coeffs.F: replace OLy with correct OLx ;
+ - changing ordering of addition (to FORCEX,FORCEY) in seaice_lsr.F results in
+   output differences at machine truncation level: update referece output of
+   several experiments that use LSR solver.
 o pkg/autodiff: fix flow directives for self-adjoint cg2d
  - new self-adjoint cg2d routine cg2d_sad.F mimics AD-code, but neglects
    (purposefully) the proper sensitivity propagation
