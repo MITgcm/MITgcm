@@ -14,7 +14,7 @@ import xarray as xr
 
 # Load grid variables (these are internal MITgcm source code variables; if using standard
 # binary output instead of netcdf, these are dumped to individual files, e.g. 'RC.data' etc.)
-# assumes output in separated tiles pre-concatenated into global files (used script utils/python/MITgcmutils/scripts/gluemncbig)
+# assumes output in separated tiles has been concatenated into global files (used script utils/python/MITgcmutils/scripts/gluemncbig)
 # and moved into the top directory (see MITgcm user manual section 4.2.4.1) 
 
 # Using a spherical polar grid, all X,Y variables are in longitude, latitude coordinates
@@ -76,7 +76,7 @@ plt.figure(figsize=(16,10))
 plt.subplot(221)
 # MITgcm time units (dim='T') is in seconds, so create new coordinate for monthly time averages (mid-month)
 # and convert into years. Note that the MITgcm time array are times at the ENDs of the time-avg periods.   
-Tmon = (dynStDiag['T']/31104000-1/24).assign_attrs(units='years')
+Tmon = (dynStDiag['T']/(86400*360)-1/24).assign_attrs(units='years')
 # and we tell xarray to plot using this new abscissa instead of T in seconds
 # xarray is smart enough to ignore the singleton dimensions for region and depth
 dynStDiag.TRELAX_ave.assign_coords(T=Tmon).plot(color='b',linewidth=4);plt.grid('both') 
@@ -88,7 +88,7 @@ tot_ocean_area= (grid.rA.where(grid.HFacC[0,:,:]!=0)).sum(dim='Y').sum(dim='X') 
 # broadcasting with xarray is more flexible than basic numpy because it matches axis name (not dependent on axis position)
 # grid area is broadcast across the time dimension below
 TRELAX_ave_ann= (surfDiag.TRELAX*grid.rA.where(grid.HFacC[0,:,:]!=0)).sum(dim='Y').sum(dim='X')/tot_ocean_area
-Tann=(TRELAX_ave_ann['T']/31104000-0.5).assign_attrs(units='years') # again creating a new coordinate for annual mean time avg
+Tann=(TRELAX_ave_ann['T']/(86400*360)-0.5).assign_attrs(units='years') # again creating a new coordinate for annual mean time avg
 TRELAX_ave_ann.assign_coords(T=Tann).plot(color='m',linewidth=4,linestyle='dashed')
 plt.subplot(223)
 dynStDiag.THETA_lv_ave.isel(Zmd000015=0).assign_coords(T=Tmon).plot(color='c',label='T_surf',linewidth=4);plt.grid('both')
@@ -131,8 +131,8 @@ plt.xlim(0,60);plt.ylim(15,75)
 plt.title('Barotropic Streamfunction (Sv)');
 plt.show()
 # Note psi is computed and plotted at the grid cell corners and is dimensioned 62x63
-# cumsum is done in y-direction; we have a wall at southern boundary
-# (i.e. no reentrant flow from north), so we need to add a row of zeros to specify psi(j=0).
+# cumsum is done in y-direction; and, we have a row of wall at southern boundary
+# (i.e. no reentrant flow from north).  We need to add a row of zeros to specify psi(j=0).
 # xarray .pad() adds a row at the top and bottom, we just need the bottom row (j=0) padding the computed psi array.
 # Finally, since psi is computed at grid cell corners, we need to re-assign Yp1 coordinate to psi.
 # (xxx.values extracts the numpy-array data from xarray DataArray xxx) 

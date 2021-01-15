@@ -1,4 +1,4 @@
-% read in additional colormaps for plots
+% read in additional colormaps for plots (located in the analysis/ directory)
 matlab_colormaps;
 
 
@@ -6,7 +6,7 @@ matlab_colormaps;
 
 % Load grid variables (these are internal MITgcm source code variables; if using standard
 % binary output instead of netcdf, these are dumped to individual files, e.g. 'RC.data' etc.)
-% assumes output in separated tiles pre-concatenated into global files (used script utils/python/MITgcmutils/scripts/gluemncbig)
+% assumes output in separated tiles has been concatenated into global files (used script utils/python/MITgcmutils/scripts/gluemncbig)
 % and moved into the top directory (see MITgcm user manual section 4.2.4.1)
 
 % Using a spherical polar grid, all X,Y variables are in longitude, latitude coordinates
@@ -42,10 +42,12 @@ matlab_colormaps;
    TRELAX_ave=ncread('dynStDiag.nc','TRELAX_ave');     % (depth, region, time); depth=1 (surface-only), region=1 (global) 
    THETA_lv_ave=ncread('dynStDiag.nc','THETA_lv_ave'); % (depth, region, time); region=1 (global)
    THETA_lv_std=ncread('dynStDiag.nc','THETA_lv_std'); % (depth, region, time); region=1 (global)
+   time_stdiag=ncread('dynStDiag.nc','T')/(86400*360)-1/24; % series of model time for stat-diags output (sec->yrs) mid-month
    
 % load 2-D and 3-D variable diagnostic output, annual mean data
    TRELAX=ncread('surfDiag.nc','TRELAX'); % (x, y, depth, time); depth=1 (surface-only)
-   ETAN=ncread('surfDiag.nc','ETAN'); % (x, y, depth, time); depth=1 (surface-only)
+   ETAN=ncread('surfDiag.nc','ETAN');     % (x, y, depth, time); depth=1 (surface-only)
+   time_surfdiag=ncread('surfDiag.nc','T')/(86400*360)-0.5;  % series of model time for surf diags output (sec->yrs) mid-year
    UVEL=ncread('dynDiag.nc','UVEL');      % (x, y, depth, time); x dim. is 63, includes eastern edge
    VVEL=ncread('dynDiag.nc','UVEL');      % (x, y, depth, time); y dim. is 63, includes northern edge
    THETA=ncread('dynDiag.nc','THETA');    % (x, y, depth, time)
@@ -56,23 +58,22 @@ matlab_colormaps;
 % figure 4.6 - time series of global mean TRELAX and THETA by level
 %
    figure
-%  Plot time axis as the mid-point of the (monthly) time average period.         
-   subplot(2,2,1);plot((1/12:1/12:100)-1/24,squeeze(TRELAX_ave(1,1,:)),'b','LineWidth',[4]); grid on; hold on;
+   subplot(2,2,1);plot(time_stdiag,squeeze(TRELAX_ave(1,1,:)),'b','LineWidth',[4]); grid on; hold on;
          title('Net Heat Flux into Ocean (TRELAX\_ave)','FontSize',18);set(gca,'Fontsize',18)
          xlabel('Time (yrs)');ylabel('W/m^2'); set(gca,'YLim',[-400 0])
 %  Alternatively, a global mean area-weighted TRELAX (annual mean) could be computed as following,
 %  using HfacC(:,:,1) i.e. HfacC in the surface layer, as a land-ocean mask.
          total_ocn_area=sum(sum(rA.*HFacC(:,:,1))); % compute total surface area of ocean points
          TRELAX_ave_ann=squeeze(sum(sum(TRELAX(:,:,1,:).*repmat(rA.*HFacC(:,:,1),[1 1 1 100]))))/total_ocn_area;
-         plot((1:100)-0.5,TRELAX_ave_ann,'m--','LineWidth',[2]); % plot annual averages at mid-year
-   subplot(2,2,3);plot((1/12:1/12:100)-1/24,squeeze(THETA_lv_ave(1,1,:)),'c','LineWidth',[4]); grid on; hold on
-         plot((1/12:1/12:100)-1/24,squeeze(THETA_lv_ave(5,1,:)),'g','LineWidth',[4])
-         plot((1/12:1/12:100)-1/24,squeeze(THETA_lv_ave(15,1,:)),'r','LineWidth',[4])
+         plot(time_surfdiag,TRELAX_ave_ann,'m--','LineWidth',[2]); % plot annual averages at mid-year
+   subplot(2,2,3);plot(time_stdiag,squeeze(THETA_lv_ave(1,1,:)),'c','LineWidth',[4]); grid on; hold on
+         plot(time_stdiag,squeeze(THETA_lv_ave(5,1,:)),'g','LineWidth',[4])
+         plot(time_stdiag,squeeze(THETA_lv_ave(15,1,:)),'r','LineWidth',[4])
          title('Mean Potential Temp. by Level (THETA\_lv\_avg)','FontSize',18)
          xlabel('Time (yrs)');ylabel('^oC');legend('T_{surf}','T_{300m}','T_{abyss}');set(gca,'Fontsize',16)
-   subplot(2,2,4);plot((1/12:1/12:100)-1/24,squeeze(THETA_lv_std(1,:)),'c','LineWidth',[4]); grid on; hold on
-         plot((1/12:1/12:100)-1/24,squeeze(THETA_lv_std(5,:)),'g','LineWidth',[4])
-         plot((1/12:1/12:100)-1/24,squeeze(THETA_lv_std(15,:)),'r','LineWidth',[4])
+   subplot(2,2,4);plot(time_stdiag,squeeze(THETA_lv_std(1,:)),'c','LineWidth',[4]); grid on; hold on
+         plot(time_stdiag,squeeze(THETA_lv_std(5,:)),'g','LineWidth',[4])
+         plot(time_stdiag,squeeze(THETA_lv_std(15,:)),'r','LineWidth',[4])
          title('Std. Dev. Potential Temp. by Level (THETA\_lv\_std)','FontSize',18);set(gca,'Fontsize',16)
          xlabel('Time (yrs)');ylabel('^oC');legend('T_{surf}','T_{300m}','T_{abyss}')
                     
@@ -87,7 +88,9 @@ matlab_colormaps;
    xlabel('Longitude');ylabel('Latitude')
 % Note we have used routine pcolor here with Xp1, Yp1, which are the locations of the lower left corners
 % of grid cells (here, both length 63 as they include the ending right and upper locations of the grid,
-% respectively). Alternative one could plot shading using contourf with 'LineStyle'
+% respectively). We don't pass pcolor the +1 location, but matlab pcolor
+% ignores the last row and column when plotting, conveniently land points.
+% Alternative one could plot shading using contourf with 'LineStyle'
 % set to 'none' with dimensions X and Y, the grid cell center locations.
 % Also note we mask the land values when contouring the free surface height.
 
@@ -101,8 +104,8 @@ matlab_colormaps;
    title('Barotropic Streamfunction (Sv)')
    xlabel('Longitude');ylabel('Latitude')
 % Note psi is computed and plotted at the grid cell corners and is dimensioned 63x62 (ie. missing a row in y)
-% cumsum is done in y-direction; we have a wall at southern boundary
-% (i.e. no reentrant flow from north), so we need to add a row of zeros to specify psi(j=1).   
+% cumsum is done in y-direction;  and, we have a wall at southern boundary
+% (i.e. no reentrant flow from north). We need to add a row of zeros to specify psi(j=1).   
    
 % figure 4.9 - potential temperature at 220m depth (k=4) and xz slice at 28.5N (j=15) at t=100 yrs.
    figure

@@ -8,7 +8,7 @@ import netCDF4 as nc
 
 # Load grid variables (these are internal MITgcm source code variables; if using standard
 # binary output instead of netcdf, these are dumped to individual files, e.g. 'RC.data' etc.)
-# assumes output in separated tiles pre-concatenated into global files (used script utils/python/MITgcmutils/scripts/gluemncbig)
+# assumes output in separated tiles has been concatenated into global files (used script utils/python/MITgcmutils/scripts/gluemncbig)
 # and moved into the top directory (see MITgcm user manual section 4.2.4.1) 
 
 # Using a spherical polar grid, all X,Y variables are in longitude, latitude coordinates
@@ -46,11 +46,13 @@ dynStDiag=nc.Dataset('dynStDiag.nc')
 TRELAX_ave=dynStDiag['TRELAX_ave'][:]     # (time, region, depth); region=0 (global), depth=0 (surface-only)
 THETA_lv_ave=dynStDiag['THETA_lv_ave'][:] # (time, region, depth); region=0 (global)
 THETA_lv_std=dynStDiag['THETA_lv_std'][:] # (time, region, depth); region=0 (global)
-   
+time_stdiag=dynStDiag['T'][:]/(86400*360)-1/24;  # series of model time for stat-diags output (sec->yrs), mid-month
+     
 # load 2-D and 3-D variable diagnostic output, annual mean data
 surfDiag=nc.Dataset('surfDiag.nc')
 TRELAX=surfDiag['TRELAX'][:] # (time, depth, y, x); depth=0 (surface-only)
 ETAN=surfDiag['ETAN'][:]     # (time, depth, y, x); depth=0 (surface-only)
+time_surfdiag=surfDiag['T'][:]/(86400*360)-0.5;  # series of model time for surf diags output (sec->yrs), mid-year
 dynDiag=nc.Dataset('dynDiag.nc')
 UVEL=dynDiag['UVEL'][:]      # (time, depth, y, x); x dim. is 63, includes eastern edge
 VVEL=dynDiag['VVEL'][:]      # (time, depth, y, x); y dim. is 63, includes northern edge
@@ -63,29 +65,28 @@ THETA=dynDiag['THETA'][:]    # (time, depth, y, x)
 #
 plt.figure(figsize=(16,10))
 plt.subplot(221)
-#  Plot time axis as the mid-point of the (monthly) time average period (unit: years).         
-plt.plot(np.linspace(1/12,100,1200)-1/24,TRELAX_ave[:,0,0],'b',linewidth=4);plt.grid('both')
+plt.plot(time_stdiag,TRELAX_ave[:,0,0],'b',linewidth=4);plt.grid('both')
 plt.title('a) Net Heat Flux into Ocean (TRELAX_ave)')
 plt.xlabel('Time (yrs)'); plt.ylabel('$\mathregular{W/m^2}$')
 plt.xlim(0,100);plt.ylim(-400,0)
 # Alternatively, a global mean area-weighted TRELAX (annual mean) could be computed as follows,
 # using HfacC[0,:,:] i.e. HfacC in the surface layer, as a land-ocean mask.
-total_ocn_area= (rA*HFacC[0,:,:]).sum(1).sum(0) # compute total surface area of ocean points
+total_ocn_area= (rA*HFacC[0,:,:]).sum() # compute total surface area of ocean points
 # numpy is often smart enough to figure out broadcasting, depending on axis position
 # in next line, note a np.tile command is NOT necessary to span the grid array across the time axis:
 TRELAX_ave_ann= (TRELAX[:,0,:,:]*(rA*HFacC[0,:,:])).sum(2).sum(1)/total_ocn_area
-plt.plot(np.linspace(0.5,99.5,100),TRELAX_ave_ann,'m--',linewidth=4)
+plt.plot(time_surfdiag,TRELAX_ave_ann,'m--',linewidth=4)
 plt.subplot(223)
-plt.plot(np.linspace(1/12,100,1200),THETA_lv_ave[:,0,0],'c',linewidth=4,label='$\mathregular{T_{surf}}$');plt.grid('both')
-plt.plot(np.linspace(1/12,100,1200),THETA_lv_ave[:,0,4],'g',linewidth=4,label='$\mathregular{T_{300m}}$')
-plt.plot(np.linspace(1/12,100,1200),THETA_lv_ave[:,0,14],'r',linewidth=4,label='$\mathregular{T_{abyss}}$')
+plt.plot(time_stdiag,THETA_lv_ave[:,0,0],'c',linewidth=4,label='$\mathregular{T_{surf}}$');plt.grid('both')
+plt.plot(time_stdiag,THETA_lv_ave[:,0,4],'g',linewidth=4,label='$\mathregular{T_{300m}}$')
+plt.plot(time_stdiag,THETA_lv_ave[:,0,14],'r',linewidth=4,label='$\mathregular{T_{abyss}}$')
 plt.title('b) Mean Potential Temp. by Level (THETA_lv_avg)')
 plt.xlabel('Time (yrs)');plt.ylabel('$\mathregular{^oC}$');
 plt.xlim(0,100);plt.ylim(0,30);plt.legend()
 plt.subplot(224)
-plt.plot(np.linspace(1/12,100,1200),THETA_lv_std[:,0,0],'c',linewidth=4,label='$\mathregular{T_{surf}}$');plt.grid('both')
-plt.plot(np.linspace(1/12,100,1200),THETA_lv_std[:,0,4],'g',linewidth=4,label='$\mathregular{T_{300m}}$')
-plt.plot(np.linspace(1/12,100,1200),THETA_lv_std[:,0,14],'r',linewidth=4,label='$\mathregular{T_{abyss}}$')
+plt.plot(time_stdiag,THETA_lv_std[:,0,0],'c',linewidth=4,label='$\mathregular{T_{surf}}$');plt.grid('both')
+plt.plot(time_stdiag,THETA_lv_std[:,0,4],'g',linewidth=4,label='$\mathregular{T_{300m}}$')
+plt.plot(time_stdiag,THETA_lv_std[:,0,14],'r',linewidth=4,label='$\mathregular{T_{abyss}}$')
 plt.title('c) Std. Dev. Potential Temp. by Level (THETA_lv_std)')
 plt.xlabel('Time (years)');plt.ylabel('$\mathregular{^oC}$');
 plt.xlim(0,100);plt.ylim(0,8);plt.legend()
@@ -102,16 +103,17 @@ plt.xlabel('Longitude');plt.ylabel('Latitude');
 plt.show()
 # Note we have used routine pcolormesh with Xp1, Yp1, which are the locations of the lower left corners
 # of grid cells (here, both length 63 as they include the ending right and upper locations of the grid,
-# respectively). Alternative one could plot shading using contourf with dimensions X and Y,
-# the grid cell center locations.
-# Also note we mask the land values when contouring the free surface height.
+# respectively, whereas TRELAX dimension is 62x62). Alternative one could provide pcolormesh the
+# cell centers X,Y (dimensioned 62x62) with shading option "auto" and it will figure out the
+# Xp1,Yp1 locations. Or, one could plot shading using contourf with dimensions X and Y, the
+# grid cell center locations. Also note we mask the land values when contouring the free surface height.
 
 # figure 4.8 - barotropic streamfunction at t=100 yrs. (w/overlaid labeled contours)
 #
 plt.figure(figsize=(10,8))
 ubt= np.array(UVEL*drF[:,np.newaxis,np.newaxis]).sum(1) # depth-integrated u velocity
-# above numpy needs a bit of help with broadcasting the drF vector across [time,y,x] axes
-# but below it manages broadcasting across the time axis
+# for ubt calculation numpy needs a bit of help with broadcasting the drF vector across [time,y,x] axes
+# but for psi it manages broadcasting across the time axis
 psi= (-ubt*dyG).cumsum(1)/1.e6  # compute streamfunction in Sv (for each year)
 plt.contourf(Xp1,Yp1,np.concatenate((np.zeros((63,1)).T,psi[-1,:,:])),np.arange(-35,40,5),cmap='RdYlBu_r')
 plt.colorbar()
@@ -121,8 +123,8 @@ plt.xlim(0,60);plt.ylim(15,75)
 plt.title('Barotropic Streamfunction (Sv)');plt.xlabel('Longitude');plt.ylabel('Latitude');
 plt.show()
 # Note psi is computed and plotted at the grid cell corners and is dimensioned 62x63
-# cumsum is done in y-direction; we have a wall at southern boundary
-# (i.e. no reentrant flow from north), so we need to add a row of zeros to specify psi(j=0).   
+# cumsum is done in y-direction; and, we have a row of wall at southern boundary
+# (i.e. no reentrant flow from north). We need to add a row of zeros to specify psi(j=0).   
 
 # figure 4.9 - potential temperature at 220m depth (k=3) and xz slice at 28.5N (j=14) at t=100 yrs.
 plt.figure(figsize=(16,6))
