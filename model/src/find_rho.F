@@ -64,7 +64,7 @@ C     == Local variables ==
       INTEGER i,j
       _RL refTemp, refSalt, sigRef, tP, sP, deltaSig, dRho
       _RL dp0, oneMinusKap, facPres, theta_v
-#ifdef OPTIMIZATIONS_DSK
+#ifdef DSK_OPT_RHO2D
       _RL rfresh, rsalt, bMfresh, bMsalt, bMpres
       _RL t, t2, t3, t4, s, s3o2, p, p2
 #endif
@@ -153,7 +153,7 @@ C **********
 C     nonlinear equation of state in pressure coordinates
          dp0 = surf_pRef - eosRefP0
 
-#ifdef OPTIMIZATIONS_DSK
+#ifdef DSK_OPT_RHO2D
       DO j=jMin,jMax
          DO i=iMin,iMax
 !     abbreviations
@@ -193,7 +193,7 @@ C     nonlinear equation of state in pressure coordinates
      &           )
      &           + eosJMDCSw(9)*s*s
 
-          p = pRef4EOS(kRef)*maskC(i,j,kRef,bi,bj)*SItoBar
+          p = (pRef4EOS(kRef)+dp0)*SItoBar ! From pressure_for_eos.F line 95
           p2 = p*p
 !     secant bulk modulus of fresh water at the surface
           bMfresh =
@@ -243,7 +243,7 @@ C     nonlinear equation of state in pressure coordinates
      &                    (bMfresh + bMsalt + bMpres - p) - rhoConst
          ENDDO
       ENDDO
-#else
+#else /* undef DSK_OPT_RHO2D */
          CALL PRESSURE_FOR_EOS(
      I             bi, bj, iMin, iMax, jMin, jMax, kRef, dp0,
      O             locPres,
@@ -260,12 +260,23 @@ C     nonlinear equation of state in pressure coordinates
      I             locPres, tFld, sFld,
      O             bulkMod,
      I             myThid )
-#endif
 
 c#ifdef ALLOW_AUTODIFF_TAMC
 cph can not DO storing here since find_rho is called multiple times;
 cph additional recomp. should be acceptable
 c#endif /* ALLOW_AUTODIFF_TAMC */
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+
+C     density of sea water at pressure p
+            rhoLoc(i,j) = rhoP0(i,j)
+     &              /(1. _d 0 -
+     &              locPres(i,j)*SItoBar/bulkMod(i,j) )
+     &              - rhoConst
+
+          ENDDO
+         ENDDO
+#endif /* DSK_OPT_RHO2D */
 
       ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
          dp0 = surf_pRef - eosRefP0
