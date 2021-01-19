@@ -50,7 +50,7 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef DSK_OPT_KPP
+#if defined(ALLOW_SALT_PLUME) && defined(DSK_OPT_KPP)
 # include "SALT_PLUME.h"
 #endif /* DSK_OPT_KPP */
 #include "DYNVARS.h"
