@@ -18,6 +18,8 @@
 ! Insert declarations of dummy variables for calling adjoint computation 
 ! without side effects, and storing adjoint variable iterates
 
+      real*8 adj_fp_err_change
+
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
 
 #ifdef STREAMICE_ALLOW_FRIC_CONTROL
@@ -536,18 +538,31 @@
 
            IF(adj_iter.eq.1) then
             err_init = err_max_fp
-           ELSEIF (err_max_fp .LE. 
-     &             streamice_nonlin_tol_adjoint*err_init) THEN
-            ADJ_CONVERGED = .true.
+           ELSE
+            IF (err_max_fp .LE.
+     &             streamice_nonlin_tol_adjoint_rl*err_init) THEN
+             ADJ_CONVERGED = .true.
+            ELSEIF (err_max_fp .LE.
+     &             streamice_nonlin_tol_adjoint) THEN
+             ADJ_CONVERGED = .true.
+            ELSEIF (err_max_fp > err_last_change) THEN
+             ADJ_CONVERGED = .true.
+             WRITE(msgBuf,'(A)') 'STOP: ADJOINT FP ERROR INCREASING'
+             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+            ENDIF
 #ifdef ALLOW_PETSC
-           IF (STREAMICE_OAD_petsc_reuse) THEN
-            STREAMICE_need2createmat=.true.
-            STREAMICE_need2destroymat=.true.
-            CALL streamice_petscmatdestroy(mythid)             
-            PETSC_PRECOND_TYPE = PETSC_PRECOND_TMP
-           ENDIF
+            IF (STREAMICE_OAD_petsc_reuse.AND.ADJ_CONVERGED) THEN
+              STREAMICE_need2createmat=.true.
+              STREAMICE_need2destroymat=.true.
+              CALL streamice_petscmatdestroy(mythid)             
+              PETSC_PRECOND_TYPE = PETSC_PRECOND_TMP
+            ENDIF
 #endif
+
            ENDIF
+
+           err_last_change = err_max_fp
 
           endif
 

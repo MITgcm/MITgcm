@@ -28,6 +28,9 @@ C                                    (relative residual, unitless)
 C     streamice_nonlin_tol_fp     :: fixed point nonlinear solver 
 C                                    tolerance(absolute change, m/a)
 C     streamice_nonlin_tol_adjoint:: fixed-point error of adjoint
+C                                    iterative solve (absolute)
+C     streamice_nonlin_tol_adjoint_rl
+C                                 :: fixed-point error of adjoint
 C                                    iterative solver (relative
 C                                    reduction)	
 C  |  streamice_err_norm: the p-norm to find the error of the residual
@@ -69,7 +72,7 @@ C     streamice_forcing_period    :: forcing freq (s)
      & streamice_vel_update, streamice_cg_tol, streamice_nonlin_tol,
      & streamice_nonlin_tol_fp, streamice_err_norm,
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
-     & streamice_nonlin_tol_adjoint,
+     & streamice_nonlin_tol_adjoint, streamice_nonlin_tol_adjoint_rl,
 #endif
      & streamice_CFL_factor, streamice_adjDump,
      & streamice_bg_surf_slope_x, streamice_bg_surf_slope_y,
@@ -95,10 +98,12 @@ C     streamice_forcing_period    :: forcing freq (s)
       _RL streamice_cg_tol, streamice_nonlin_tol
       _RL streamice_nonlin_tol_fp
       _RL streamice_err_norm
+      
 
 
 #if (defined (ALLOW_OPENAD) && defined (ALLOW_STREAMICE_OAD_FP))
       _RL streamice_nonlin_tol_adjoint
+      _RL streamice_nonlin_tol_adjoint_rl
 #endif
       _RL streamice_CFL_factor
       _RL streamice_adjDump
