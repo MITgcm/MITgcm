@@ -80,7 +80,7 @@ C--   Initialise
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
 c        a5d(i,j,k) = 0. _d 0
-#ifndef OPTIMIZATIONS_DSK
+#ifndef DSK_OPT_MOMUV
          b5d(i,j,k) = 0. _d 0
          c5d(i,j,k) = 1. _d 0
          d5d(i,j,k) = 0. _d 0
@@ -112,7 +112,7 @@ c        e5d(i,j,k) = 0. _d 0
 
 C--   set the tri-diagonal matrix to solve the implicit viscosity
        diagonalNumber = 3
-#ifdef OPTIMIZATIONS_DSK
+#ifdef DSK_OPT_MOMUV
        k=1
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
@@ -220,7 +220,7 @@ C-     Main diagonal :
        ENDDO
 
 C--   end if implicitDiffusion
-#endif
+#endif /* DSK_OPT_MOMUV */
       ENDIF
 
       IF ( selectImplicitDrag.GE.1 ) THEN

@@ -63,10 +63,6 @@ C     == Local variables ==
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 #endif
-#ifdef ALLOW_EXCH2
-      CHARACTER*(6) fmtStr
-      INTEGER iTmp
-#endif
 CEOP
 
 C--   Set everything to zero everywhere
@@ -269,9 +265,7 @@ C--   Only do I/O if I am the master thread
 C-    Use face number:
         jG = W2_myTileList(bi,bj)
         iG = exch2_myface(jG)
-        iTmp = MAX(4,1 + INT(LOG10(DFLOAT(W2_maxNbTiles))))
-        WRITE(fmtStr,'(A,I1,A)') '(A,I',iTmp,')'
-        WRITE(tmpBuf,fmtStr) 'tile:',jG
+        WRITE(tmpBuf,'(A,I4)') 'tile:',jG
 #else
 C-    Tile Id number = Bi + (Bj-1)*(nSx*nPx)  with tile global-indices Bi,Bj
         iG = bi+(myXGlobalLo-1)/sNx
@@ -388,7 +382,7 @@ C-    Tile Id number = Bi + (Bj-1)*(nSx*nPx)  with tile global-indices Bi,Bj
         ELSE
          anglesAreSet = .FALSE.
         ENDIF
-#else /* undef PLEIADES_LUSTRE_OPT */
+#else
         CALL MDS_FACEF_READ_RS( fName, fp, 1,  xC, bi, bj, myThid )
         iL = ILNBLNK(msgBuf)
         WRITE(tmpBuf,'(A,1X,A)') msgBuf(1:iL),'xC'
@@ -450,7 +444,7 @@ C-    Tile Id number = Bi + (Bj-1)*(nSx*nPx)  with tile global-indices Bi,Bj
         ELSE
          anglesAreSet = .FALSE.
         ENDIF
-#endif /* PLEIADES_LUSTRE_OPT */
+#endif
 #else /* ALLOW_MDSIO */
         WRITE(msgBuf,'(2A)')
      &   'INI_CURVILINEAR_GRID: Needs to compile MDSIO pkg'

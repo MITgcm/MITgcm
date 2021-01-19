@@ -182,7 +182,7 @@ c     vRef   (nx,ny)       - Reference meridional velocity              (m/s)
       _RL bo    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
       _RL bosol ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy                )
 #ifdef ALLOW_SALT_PLUME
-#if OPTIMIZATIONS_DSK /* Access saltPlumeFlux directly */
+#if DSK_OPT_KPP /* Access saltPlumeFlux directly */
 #else
       _RL temp1   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr          )
       _RL temp2   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr          )
@@ -409,7 +409,7 @@ c     dVsq in the subroutine that does the surface related stuff
 c     (admittedly this is a bit messy)
 c------------------------------------------------------------------------
 
-#ifdef OPTIMIZATIONS_DSK
+#ifdef DSK_OPT_KPP
 !#ifdef ALLOW_SALT_PLUME
 !#ifndef SALT_PLUME_VOLUME
 !      DO k=1,Nr
@@ -437,7 +437,7 @@ c------------------------------------------------------------------------
 !#endif /* SALT_PLUME_VOLUME */
 !#endif /* ALLOW_SALT_PLUME */
 
-#else /* OPTIMIZATIONS_DSK */
+#else /* DSK_OPT_KPP */
 
 #ifdef ALLOW_SALT_PLUME
       DO j=jMin,jMax
@@ -458,17 +458,17 @@ c------------------------------------------------------------------------
        ENDDO
       ENDDO
 #endif /* ALLOW_SALT_PLUME */
-#endif /* OPTIMIZATIONS_DSK */
+#endif /* DSK_OPT_KPP */
 
       CALL KPP_FORCING_SURF(
      I     work2, surfaceForcingU, surfaceForcingV,
      I     surfaceForcingT, surfaceForcingS, adjustColdSST_diag,
      I     Qsw,
 #ifdef ALLOW_SALT_PLUME /* Should consider accessing SPforcingS and SPforcingT directly */
-#if OPTIMIZATIONS_DSK /* Access saltPlumeFlux directly */
+#if DSK_OPT_KPP /* Access saltPlumeFlux directly */
 #else
      I     temp1, temp2,
-#endif /* OPTIMIZATIONS_DSK */
+#endif /* DSK_OPT_KPP */
 #endif /* ALLOW_SALT_PLUME */
      I     ttalpha, ssbeta,
      O     ustar, bo, bosol,
@@ -600,7 +600,7 @@ C     and salt are not passed to kppmix and are thus not available there.
 c-----------------------------------------------------------------------
 c     zero out land values and transfer to global variables
 c-----------------------------------------------------------------------
-#ifdef OPTIMIZATIONS_DSK
+#ifdef DSK_OPT_KPP
       DO k = 1, Nr
        km1 = max(1,k-1)
        DO j = jmin, jmax

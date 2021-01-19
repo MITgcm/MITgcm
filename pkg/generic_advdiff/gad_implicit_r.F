@@ -106,7 +106,7 @@ C--   no need to solve anything with only 1 level:
       IF (implicitDiffusion) THEN
 C--   set the tri-diagonal matrix to solve the implicit diffusion problem
        diagonalNumber = 3
-#ifdef OPTIMIZATIONS_DSK
+#ifdef DSK_OPT_GADR
        k=1
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
@@ -210,7 +210,7 @@ c          c5d(i,j,k) = 1. _d 0 - b5d(i,j,k) - d5d(i,j,k)
        ENDDO
 
 C--   end if implicitDiffusion
-#endif
+#endif /* DSK_OPT_GADR */
       ENDIF
 
       IF (implicitAdvection) THEN
