@@ -906,6 +906,19 @@ where
      ( kLev, time_rec, region_rec, [ave,std,min,max,vol], fld_rec )
      where kLev=1 is depth-average, kLev=2:50 is for depths :varlink:`rC`\ (1:49)
 
+A function to parse statistical diagnostics output is also available in the python package :ref:`MITgcmutils`.
+Executing the python command
+
+:: 
+
+   stdiags_bylev,stdiags_2D,iters = readstats('dynStDiag.0000000000.txt')
+
+will load up the level-by-level statistical diagnostics into ``stdiags_bylev`` (e.g., ``stdiags_bylev['THETA'][:,0,0]``
+is the time series for top level average temperature),
+``stdiags_2D`` given column-integrated or 2-D fields (e.g., ``stdiags_2D['TRELAX'][:,0]`` is the time series for surface heat flux),
+and ``iters`` is iteration number for the time series (e.g. ``iters['TRELAX']`` is a series of iteration numbers for the ``THETA`` diagnostic,
+the user is left to convert into time units). See the  :ref:`MITgcmutils` documention for more information.
+
 On the left side of :numref:`channel_soln_stdiags` we show time series of global surface heat flux.
 In the first decade there is rapid adjustment, with a much slower trend in both mean and standard deviation
 in years 10-30. In the mean there remains a significant heat flux into the ocean in the run without GM (solid),
@@ -1065,7 +1078,6 @@ deep counter-clockwise cell aligned with the coldest temperature contour (i.e., 
       Residual meridional overturning circulation (shaded) as computed in density coordinates and
       converted back into (zonal mean) depth coordinates, averaged over simulation year 30.
       Black lines show zonal mean temperature, contour interval 1 :sup:`o`\C. Left plot is from non-GM run, right using GM.
- 
 
 .. _reentrant_channel_soln_eddy:
 
