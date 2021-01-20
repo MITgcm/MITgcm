@@ -14,9 +14,10 @@ C--   COMMON /AUTODIFF_PARM_L/ Logical valued parameters used by the pkg.
 C     inAdMode  :: enable approximate computation in backward sweep
 C     inAdTrue  :: value of inAdMode flag during backward sweep
 C     inAdFalse :: value of inAdMode flag during forward  sweep
-C     inAdExact :: get an exact adjoint (no approximation)
-C     useApproxAdvectionInAdMode :: use different (but stable) advection in AD
-C                                   only implemented of flux limited DST3 (33)
+C     inAdExact :: get an exact adjoint (no approximation), default = .TRUE.
+C                  if .FALSE. it implies useApproxAdvectionInAdMode = .TRUE.
+C     useApproxAdvectionInAdMode :: use different (but stable) advection in AD;
+C                  only implemented for flux limited DST3 (33); default = .FALSE.
       LOGICAL inAdMode, inAdTrue, inAdFalse, inAdExact
       LOGICAL useApproxAdvectionInAdMode
 

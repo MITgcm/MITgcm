@@ -383,8 +383,8 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
 #ifdef ALLOW_AUTODIFF
          ELSEIF (advectionScheme.EQ.ENUM_DST3 .OR.
      &          (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT
-     &          .AND. useApproxAdvectionInAdMode)
-     &          ) THEN
+     &           .AND. inAdMode .AND. useApproxAdvectionInAdMode)
+     &           ) THEN
 C     This block is to trick the adjoint just as in gad_calc_rhs:
 C     If useApproxAdvectionInAdMode=.TRUE., we want to use DST3
 C     with limiters in forward, but without limiters in reverse.
@@ -583,10 +583,10 @@ C-     Internal exchange for calculations in Y
 cph-exch2#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-#ifndef DISABLE_MULTIDIM_ADVECTION
+# ifndef DISABLE_MULTIDIM_ADVECTION
 CADJ STORE localTij(:,:)  =
 CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
-#endif
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
          IF ( advectionScheme.EQ.ENUM_UPWIND_1RST
@@ -605,11 +605,12 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
      I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
 #ifdef ALLOW_AUTODIFF
-         ELSEIF( advectionScheme.EQ.ENUM_DST3 .OR.
-     &          (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT .AND. inAdMode)
-     &         ) THEN
+         ELSEIF (advectionScheme.EQ.ENUM_DST3 .OR.
+     &          (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT
+     &           .AND. inAdMode .AND. useApproxAdvectionInAdMode)
+     &           ) THEN
 C     This block is to trick the adjoint just as in gad_calc_rhs:
-C     If inAdExact=.FALSE., (implying inAdMode=T) we want to use DST3
+C     If useApproxAdvectionInAdMode=.TRUE., we want to use DST3
 C     with limiters in forward, but without limiters in reverse.
 #else /* ALLOW_AUTODIFF */
          ELSEIF( advectionScheme.EQ.ENUM_DST3 ) THEN

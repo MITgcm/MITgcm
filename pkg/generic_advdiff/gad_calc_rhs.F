@@ -241,7 +241,7 @@ C-    Advective flux in X
 #ifdef ALLOW_AUTODIFF
          ELSEIF ( advectionScheme.EQ.ENUM_DST3 .OR.
      &           (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT
-     &           .AND. useApproxAdvectionInAdMode)
+     &            .AND. inAdMode .AND. useApproxAdvectionInAdMode)
      &          ) THEN
 C     This block is to trick the adjoint:
 C     If useApproxAdvectionInAdMode=.TRUE., we want to use DST3
@@ -382,7 +382,7 @@ C-    Advective flux in Y
 #ifdef ALLOW_AUTODIFF
          ELSEIF ( advectionScheme.EQ.ENUM_DST3 .OR.
      &           (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT
-     &           .AND. useApproxAdvectionInAdMode)
+     &            .AND. inAdMode .AND. useApproxAdvectionInAdMode)
      &          ) THEN
 C     This block is to trick the adjoint:
 C     If useApproxAdvectionInAdMode=.TRUE., we want to use DST3
@@ -514,7 +514,7 @@ C-    Compute vertical advective flux in the interior using TracAB:
 #ifdef ALLOW_AUTODIFF
         ELSEIF ( vertAdvecScheme.EQ.ENUM_DST3 .OR.
      &          (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT
-     &          .AND. useApproxAdvectionInAdMode)
+     &           .AND. inAdMode .AND. useApproxAdvectionInAdMode)
      &          ) THEN
 C     This block is to trick the adjoint:
 C     If useApproxAdvectionInAdMode=.TRUE., we want to use DST3
@@ -558,7 +558,7 @@ C-    Compute vertical advective flux in the interior using TracerN:
 #ifdef ALLOW_AUTODIFF
         ELSEIF ( vertAdvecScheme.EQ.ENUM_DST3 .OR.
      &          (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT
-     &          .AND. useApproxAdvectionInAdMode)
+     &           .AND. inAdMode .AND. useApproxAdvectionInAdMode)
      &          ) THEN
 C     This block is to trick the adjoint:
 C     If useApproxAdvectionInAdMode=.TRUE., we want to use DST3

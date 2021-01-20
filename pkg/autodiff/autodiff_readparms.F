@@ -107,7 +107,14 @@ C     Close the open data file
       CLOSE(iUnit,STATUS='DELETE')
 #endif /* SINGLE_DISK_IO */
 
-C--   Flag for approximate adjoint
+C--   Flag for approximate adjoint. inAdTrue/False are used to set inAdMode in
+C     autodiff_inadmode_set/unset_ad.F. With the less inclusive flag
+C     useApproxAdvectionInAdMode = True, we still need to know if we are in AD-mode
+C     so they need to be set here accordingly and when inAdMode is used it requires
+C     using inAdExact or useApproxAdvectionInAdMode along with it. That means that
+C     inAdMode could be hardwired to True and False in autodiff_inadmode_set/unset_ad.F
+C     and we could get rid of the confusing flags inAdTrue/False, which can be either
+C     True or False.
       IF ( inAdExact ) THEN
        inAdTrue  = .FALSE.
        inAdFalse = .FALSE.
@@ -121,6 +128,10 @@ C     reset to recover old behavior, in case that is ever needed
      &      'because inAdExact=.FALSE.'
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
+      ENDIF
+      IF ( useApproxAdvectionInAdMode ) THEN
+       inAdTrue  = .TRUE.
+       inAdFalse = .FALSE.
       ENDIF
       inAdMode   = .FALSE.
 
