@@ -8,7 +8,8 @@ import netCDF4 as nc
 
 # Load grid variables (these are internal MITgcm source code variables; if using standard
 # binary output instead of netcdf, these are dumped to individual files, e.g. 'RC.data' etc.)
-# assumes output in separated tiles has been concatenated into global files (used script utils/python/MITgcmutils/scripts/gluemncbig)
+# Assumes output in separated tiles has been concatenated into global files
+# (we used script utils/python/MITgcmutils/scripts/gluemncbig)
 # and moved into the top directory (see MITgcm user manual section 4.2.4.1) 
 
 # Using a spherical polar grid, all X,Y variables are in longitude, latitude coordinates
@@ -34,6 +35,9 @@ Y=grid['Y'][:]     # 1-D version of YC data
 Xp1=grid['Xp1'][:] # x-location of gridcell lower left corner (1-D version of XG w/extra end point)
 Yp1=grid['Yp1'][:] # y-location of gridcell lower left corner (1-D version of YG w/extra end point)
 
+# Number of gridcells in x,y, full domain:
+Nx=X.size; Ny=Y.size; # out-of-the-box tutorial setup is configured to be 62x62
+
 
 ###########   load diagnostics   ########### 
 
@@ -46,13 +50,14 @@ dynStDiag=nc.Dataset('dynStDiag.nc')
 TRELAX_ave=dynStDiag['TRELAX_ave'][:]     # (time, region, depth); region=0 (global), depth=0 (surface-only)
 THETA_lv_ave=dynStDiag['THETA_lv_ave'][:] # (time, region, depth); region=0 (global)
 THETA_lv_std=dynStDiag['THETA_lv_std'][:] # (time, region, depth); region=0 (global)
-time_stdiag=dynStDiag['T'][:]/(86400*360)-1/24;  # series of model time for stat-diags output (sec->yrs), mid-month
+time_stdiag=dynStDiag['T'][:]/(86400*360)-1/24; # series of model time for stat-diags output (sec->yrs)
+# note that the output time array contains times at the ENDs of the months, but plot mid-month
      
 # load 2-D and 3-D variable diagnostic output, annual mean data
 surfDiag=nc.Dataset('surfDiag.nc')
 TRELAX=surfDiag['TRELAX'][:] # (time, depth, y, x); depth=0 (surface-only)
 ETAN=surfDiag['ETAN'][:]     # (time, depth, y, x); depth=0 (surface-only)
-time_surfdiag=surfDiag['T'][:]/(86400*360)-0.5;  # series of model time for surf diags output (sec->yrs), mid-year
+time_surfdiag=surfDiag['T'][:]/(86400*360)-0.5; # series of model time for surf diags output (sec->yrs), plot mid-year
 dynDiag=nc.Dataset('dynDiag.nc')
 UVEL=dynDiag['UVEL'][:]      # (time, depth, y, x); x dim. is 63, includes eastern edge
 VVEL=dynDiag['VVEL'][:]      # (time, depth, y, x); y dim. is 63, includes northern edge
@@ -63,12 +68,14 @@ THETA=dynDiag['THETA'][:]    # (time, depth, y, x)
 
 # figure 4.6 - time series of global mean TRELAX and THETA by level
 #
+# plot THETA at MITgcm k levels 1,5,15 (SST, -305 m, -1705 m)
+klev1=0; klev2= 4; klev3=14;
 plt.figure(figsize=(16,10))
 plt.subplot(221)
 plt.plot(time_stdiag,TRELAX_ave[:,0,0],'b',linewidth=4);plt.grid('both')
 plt.title('a) Net Heat Flux into Ocean (TRELAX_ave)')
 plt.xlabel('Time (yrs)'); plt.ylabel('$\mathregular{W/m^2}$')
-plt.xlim(0,100);plt.ylim(-400,0)
+plt.ylim(-400,0)
 # Alternatively, a global mean area-weighted TRELAX (annual mean) could be computed as follows,
 # using HfacC[0,:,:] i.e. HfacC in the surface layer, as a land-ocean mask.
 total_ocn_area= (rA*HFacC[0,:,:]).sum() # compute total surface area of ocean points
@@ -77,19 +84,19 @@ total_ocn_area= (rA*HFacC[0,:,:]).sum() # compute total surface area of ocean po
 TRELAX_ave_ann= (TRELAX[:,0,:,:]*(rA*HFacC[0,:,:])).sum(2).sum(1)/total_ocn_area
 plt.plot(time_surfdiag,TRELAX_ave_ann,'m--',linewidth=4)
 plt.subplot(223)
-plt.plot(time_stdiag,THETA_lv_ave[:,0,0],'c',linewidth=4,label='$\mathregular{T_{surf}}$');plt.grid('both')
-plt.plot(time_stdiag,THETA_lv_ave[:,0,4],'g',linewidth=4,label='$\mathregular{T_{300m}}$')
-plt.plot(time_stdiag,THETA_lv_ave[:,0,14],'r',linewidth=4,label='$\mathregular{T_{abyss}}$')
+plt.plot(time_stdiag,THETA_lv_ave[:,0,klev1],'c',linewidth=4,label='$\mathregular{T_{surf}}$');plt.grid('both')
+plt.plot(time_stdiag,THETA_lv_ave[:,0,klev2],'g',linewidth=4,label='$\mathregular{T_{300m}}$')
+plt.plot(time_stdiag,THETA_lv_ave[:,0,klev3],'r',linewidth=4,label='$\mathregular{T_{abyss}}$')
 plt.title('b) Mean Potential Temp. by Level (THETA_lv_avg)')
 plt.xlabel('Time (yrs)');plt.ylabel('$\mathregular{^oC}$');
-plt.xlim(0,100);plt.ylim(0,30);plt.legend()
+plt.ylim(0,30);plt.legend()
 plt.subplot(224)
-plt.plot(time_stdiag,THETA_lv_std[:,0,0],'c',linewidth=4,label='$\mathregular{T_{surf}}$');plt.grid('both')
-plt.plot(time_stdiag,THETA_lv_std[:,0,4],'g',linewidth=4,label='$\mathregular{T_{300m}}$')
-plt.plot(time_stdiag,THETA_lv_std[:,0,14],'r',linewidth=4,label='$\mathregular{T_{abyss}}$')
+plt.plot(time_stdiag,THETA_lv_std[:,0,klev1],'c',linewidth=4,label='$\mathregular{T_{surf}}$');plt.grid('both')
+plt.plot(time_stdiag,THETA_lv_std[:,0,klev2],'g',linewidth=4,label='$\mathregular{T_{300m}}$')
+plt.plot(time_stdiag,THETA_lv_std[:,0,klev3],'r',linewidth=4,label='$\mathregular{T_{abyss}}$')
 plt.title('c) Std. Dev. Potential Temp. by Level (THETA_lv_std)')
 plt.xlabel('Time (years)');plt.ylabel('$\mathregular{^oC}$');
-plt.xlim(0,100);plt.ylim(0,8);plt.legend()
+plt.ylim(0,8);plt.legend()
 plt.show()
 
 # figure 4.7 - 2-D plot of TRELAX and contours of free surface height (ETAN) at t=100 yrs.
@@ -115,9 +122,9 @@ ubt= np.array(UVEL*drF[:,np.newaxis,np.newaxis]).sum(1) # depth-integrated u vel
 # for ubt calculation numpy needs a bit of help with broadcasting the drF vector across [time,y,x] axes
 # but for psi it manages broadcasting across the time axis
 psi= (-ubt*dyG).cumsum(1)/1.e6  # compute streamfunction in Sv (for each year)
-plt.contourf(Xp1,Yp1,np.concatenate((np.zeros((63,1)).T,psi[-1,:,:])),np.arange(-35,40,5),cmap='RdYlBu_r')
+plt.contourf(Xp1,Yp1,np.concatenate((np.zeros((Ny+1,1)).T,psi[-1,:,:])),np.arange(-35,40,5),cmap='RdYlBu_r')
 plt.colorbar()
-cs=plt.contour(Xp1,Yp1,np.concatenate((np.zeros((63,1)).T,psi[-1,:,:])),np.arange(-35,40,5),colors='black')
+cs=plt.contour(Xp1,Yp1,np.concatenate((np.zeros((Ny+1,1)).T,psi[-1,:,:])),np.arange(-35,40,5),colors='black')
 plt.clabel(cs, fmt = '%.0f')
 plt.xlim(0,60);plt.ylim(15,75)
 plt.title('Barotropic Streamfunction (Sv)');plt.xlabel('Longitude');plt.ylabel('Latitude');
@@ -126,14 +133,16 @@ plt.show()
 # cumsum is done in y-direction; and, we have a row of wall at southern boundary
 # (i.e. no reentrant flow from north). We need to add a row of zeros to specify psi(j=0).   
 
-# figure 4.9 - potential temperature at 220m depth (k=3) and xz slice at 28.5N (j=14) at t=100 yrs.
+# figure 4.9 - potential temperature at 220m depth (MITgcm k=4) and xz slice at 28.5N (MITgcm j=15) at t=100 yrs.
+#
+klev=3; jloc=14;
 plt.figure(figsize=(16,6))
 plt.subplot(121)
 # again we use pcolor for the plan view and provide the corner points XG,YG
-plt.pcolormesh(Xp1,Yp1,THETA[-1,3,:,:],cmap='coolwarm');plt.clim(0,30)
+plt.pcolormesh(Xp1,Yp1,THETA[-1,klev,:,:],cmap='coolwarm');plt.clim(0,30)
 plt.colorbar()
 # but to overlay contours we provide the cell centers and mask out boundary/land cells
-plt.contour(X,Y,np.ma.array(THETA[-1,3,:,:],mask=(HFacC[3,:,:]==0)),np.arange(0,30,2),colors='black')
+plt.contour(X,Y,np.ma.array(THETA[-1,klev,:,:],mask=(HFacC[klev,:,:]==0)),np.arange(0,30,2),colors='black')
 plt.title('a) THETA 220m Depth ($\mathregular{^oC}$)')
 plt.xlim(0,60);plt.ylim(15,75);
 plt.xlabel('Longitude');plt.ylabel('Latitude');
@@ -141,9 +150,9 @@ plt.subplot(122);
 # Here, our limited vertical resolution makes for an ugly pcolor plot, we'll shade using contour instead,
 # providing the centers of the vertical grid cells and cell centers in the x-dimension.
 # Also mask out land cells at the boundary, which results in slight white space at domain edges.
-plt.contourf(X,RC,np.ma.array(THETA[-1,:,14,:],mask=(HFacC[:,14,:]==0)),np.arange(0,30,.2),cmap='coolwarm')
+plt.contourf(X,RC,np.ma.array(THETA[-1,:,jloc,:],mask=(HFacC[:,jloc,:]==0)),np.arange(0,30,.2),cmap='coolwarm')
 plt.colorbar()
-plt.contour(X,RC,np.ma.array(THETA[-1,:,14,:],mask=(HFacC[:,14,:]==0)),np.arange(0,32,2),colors='black')
+plt.contour(X,RC,np.ma.array(THETA[-1,:,jloc,:],mask=(HFacC[:,jloc,:]==0)),np.arange(0,32,2),colors='black')
 plt.title('b) THETA at 28.5N ($\mathregular{^oC}$)');plt.xlim(0,60);plt.ylim(-1800,0)
 plt.xlabel('Longitude');plt.ylabel('Depth (m)');
 plt.show()
@@ -152,7 +161,7 @@ plt.show()
 # is to copy neighboring tracer values to land cells prior to contouring (and don't mask),
 # and augment a row of z=0 data at the ocean surface and a row at the ocean bottom.
 # To instead plot using pcolor, provide location of vertical cell faces RF:
-# RF=grid['RF'][:];plt.pcolormesh(Xp1,RF,THETA[-1,:,14,:],cmap='coolwarm')
+# RF=grid['RF'][:];plt.pcolormesh(Xp1,RF,THETA[-1,:,jloc,:],cmap='coolwarm')
 
 
 # The gluemncbig steps outlined in tutorial section 4.2.4.1 can be avoided by using the python package "MITgcmutils".

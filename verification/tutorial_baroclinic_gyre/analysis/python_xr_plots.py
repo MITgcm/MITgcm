@@ -72,6 +72,8 @@ dynDiag = dynDiag.rename({'Zmd000015':'Z'})
 
 # figure 4.6 - time series of global mean TRELAX and THETA by level
 #
+# plot THETA at MITgcm k levels 1,5,15 (SST, -305 m, -1705 m)
+klev1=0; klev2= 4; klev3=14;
 plt.figure(figsize=(16,10))
 plt.subplot(221)
 # MITgcm time units (dim='T') is in seconds, so create new coordinate for monthly time averages (mid-month)
@@ -81,7 +83,7 @@ Tmon = (dynStDiag['T']/(86400*360)-1/24).assign_attrs(units='years')
 # xarray is smart enough to ignore the singleton dimensions for region and depth
 dynStDiag.TRELAX_ave.assign_coords(T=Tmon).plot(color='b',linewidth=4);plt.grid('both') 
 plt.title('a) Net Heat Flux into Ocean (TRELAX_ave)')
-plt.xlim(0,100);plt.ylim(-400,0)
+plt.ylim(-400,0)
 # Alternatively, a global mean area-weighted TRELAX (annual mean) could be computed as follows,
 # using HfacC[0,:,:] i.e. HfacC in the surface layer, as a land-ocean mask, using xarray .where()
 tot_ocean_area= (grid.rA.where(grid.HFacC[0,:,:]!=0)).sum(dim='Y').sum(dim='X') # compute total surface area of ocean points
@@ -91,17 +93,17 @@ TRELAX_ave_ann= (surfDiag.TRELAX*grid.rA.where(grid.HFacC[0,:,:]!=0)).sum(dim='Y
 Tann=(TRELAX_ave_ann['T']/(86400*360)-0.5).assign_attrs(units='years') # again creating a new coordinate for annual mean time avg
 TRELAX_ave_ann.assign_coords(T=Tann).plot(color='m',linewidth=4,linestyle='dashed')
 plt.subplot(223)
-dynStDiag.THETA_lv_ave.isel(Zmd000015=0).assign_coords(T=Tmon).plot(color='c',label='T_surf',linewidth=4);plt.grid('both')
-dynStDiag.THETA_lv_ave.isel(Zmd000015=4).assign_coords(T=Tmon).plot(color='g',label='T_300m',linewidth=4)
-dynStDiag.THETA_lv_ave.isel(Zmd000015=14).assign_coords(T=Tmon).plot(color='r',label='T_abyss',linewidth=4)
+dynStDiag.THETA_lv_ave.isel(Zmd000015=klev1).assign_coords(T=Tmon).plot(color='c',label='T_surf',linewidth=4);plt.grid('both')
+dynStDiag.THETA_lv_ave.isel(Zmd000015=klev2).assign_coords(T=Tmon).plot(color='g',label='T_300m',linewidth=4)
+dynStDiag.THETA_lv_ave.isel(Zmd000015=klev3).assign_coords(T=Tmon).plot(color='r',label='T_abyss',linewidth=4)
 plt.title('b) Mean Potential Temp. by Level (THETA_lv_avg)')
-plt.xlim(0,100);plt.ylim(0,30);plt.legend()
+plt.ylim(0,30);plt.legend()
 plt.subplot(224)
-dynStDiag.THETA_lv_std.isel(Zmd000015=0).assign_coords(T=Tmon).plot(color='c',label='T_surf',linewidth=4);plt.grid('both')
-dynStDiag.THETA_lv_std.isel(Zmd000015=4).assign_coords(T=Tmon).plot(color='g',label='T_300m',linewidth=4)
-dynStDiag.THETA_lv_std.isel(Zmd000015=14).assign_coords(T=Tmon).plot(color='r',label='T_abyss',linewidth=4)
+dynStDiag.THETA_lv_std.isel(Zmd000015=klev1).assign_coords(T=Tmon).plot(color='c',label='T_surf',linewidth=4);plt.grid('both')
+dynStDiag.THETA_lv_std.isel(Zmd000015=klev2).assign_coords(T=Tmon).plot(color='g',label='T_300m',linewidth=4)
+dynStDiag.THETA_lv_std.isel(Zmd000015=klev3).assign_coords(T=Tmon).plot(color='r',label='T_abyss',linewidth=4)
 plt.title('c) Std. Dev. Potential Temp. by Level (THETA_lv_std)')
-plt.xlim(0,100);plt.ylim(0,8);plt.legend()
+plt.ylim(0,8);plt.legend()
 plt.show()
 
 # figure 4.7 - 2-D plot of TRELAX and contours of free surface height (ETAN) at t=100 yrs.
@@ -137,22 +139,23 @@ plt.show()
 # Finally, since psi is computed at grid cell corners, we need to re-assign Yp1 coordinate to psi.
 # (xxx.values extracts the numpy-array data from xarray DataArray xxx) 
 
-# figure 4.9 - potential temperature at 220m depth (k=3) and xz slice at 28.5N (j=14) at t=100 yrs.
+# figure 4.9 - potential temperature at 220m depth (MITgcm k=4) and xz slice at 28.5N (MITgcm j=15) at t=100 yrs.
 #
+klev=3; jloc=14;
 plt.figure(figsize=(16,6))
 plt.subplot(121)
 # again we do a pcolor plot for this plan view, this time showing THETA(k=3)
-dynDiag.THETA[-1,3,:,:].plot(cmap='coolwarm',vmin=0,vmax=30 )
+dynDiag.THETA[-1,klev,:,:].plot(cmap='coolwarm',vmin=0,vmax=30 )
 # and overlay contours w/masked out boundary/land cells
-dynDiag.THETA[-1,3,:,:].where(grid.HFacC[3,:,:]!=0).plot.contour(levels=np.linspace(0,30,16), colors='k')
+dynDiag.THETA[-1,klev,:,:].where(grid.HFacC[klev,:,:]!=0).plot.contour(levels=np.linspace(0,30,16), colors='k')
 plt.xlim(0,60);plt.ylim(15,75);
 plt.title('THETA at 220 m depth')
 
 plt.subplot(122)
 # Here, our limited vertical resolution makes for an ugly pcolor plot, so we'll shade using contour instead.
 # also masking out land cells at the boundary, which results in slight white space at the domain edges.
-dynDiag.THETA[-1,:,14,:].where(grid.HFacC[:,14,:]!=0).plot.contourf(levels=np.arange(0,30,.2),cmap='coolwarm')
-dynDiag.THETA[-1,:,14,:].where(grid.HFacC[:,14,:]!=0).plot.contour(levels=np.arange(0,30,2),colors='k')
+dynDiag.THETA[-1,:,jloc,:].where(grid.HFacC[:,jloc,:]!=0).plot.contourf(levels=np.arange(0,30,.2),cmap='coolwarm')
+dynDiag.THETA[-1,:,jloc,:].where(grid.HFacC[:,jloc,:]!=0).plot.contour(levels=np.arange(0,30,2),colors='k')
 plt.title('THETA at 28.5 N');plt.xlim(0,60);plt.ylim(-1800,0)
 plt.show()
 # One approach to avoiding the white space at boundaries/top/bottom (this occurs because contour plot
