@@ -87,6 +87,8 @@ c     == end of interface ==
       jmax = sNy
 
 
+CADJ  INIT tapelev_moc   = common, Nr
+
       do kgen=1,NGENCOST
         kg3 = gencost_pointer3d(kgen)
 
@@ -228,14 +230,11 @@ c-- Compute global sum at each level
 c=============== PART 2.2: Get max val ===================
 c-- Find maximum in global cumulative sum
 
-CADJ STORE myTempMax = tapelev_init, key = 1
-CADJ STORE kmax = tapelev_init, key = 1
           myTempMax = tmpCumSumGlo(1)
           kmax = 1
 
           do k = 2, Nr
-CADJ STORE myTempMax = tapelev_init, key = k
-CADJ STORE kmax = tapelev_init, key = k
+CADJ STORE myTempMax = tapelev_moc, key = k
             if( myTempMax < tmpCumSumGlo(k) ) then
               myTempMax = tmpCumSumGlo(k)
               kmax = k
