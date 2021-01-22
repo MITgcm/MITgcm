@@ -96,7 +96,7 @@ C                               (kg/m^2/s)
 C     shelficeForcingT       :: analogue of surfaceForcingT
 C                               units are  r_unit.Kelvin/s (=Kelvin.m/s if r=z)
 C     shelficeForcingS       :: analogue of surfaceForcingS
-C                               units are  r_unit.psu/s (=psu.m/s if r=z)
+C                               units are  r_unit.g/kg/s (=g/kg.m/s if r=z)
 #ifdef ALLOW_DIAGNOSTICS
 C     shelficeDragU          :: Ice-Shelf stress (for diagnostics), Zonal comp.
 C                               Units are N/m^2 ;   > 0 increase top uVel

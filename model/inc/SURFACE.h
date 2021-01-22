@@ -30,7 +30,7 @@ C--   COMMON /SURF_CORREC/ Common block for correction of source/sink of
 C--                        Tracer due to W at the surface with Linear
 C--                        Free Surface
 C     TsurfCor :: Pot.Temp Linear-Free-Surface correction term [K.r_Unit/s]
-C     SsurfCor :: Salinity Linear-Free-Surface correction term [psu.r_Unit/s]
+C     SsurfCor :: Salinity Linear-Free-Surface correction term [g/kg.r_Unit/s]
       COMMON /SURF_CORREC/ TsurfCor, SsurfCor
       _RL TsurfCor
       _RL SsurfCor

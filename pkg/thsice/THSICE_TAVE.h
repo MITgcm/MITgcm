@@ -25,12 +25,12 @@ C     ice_Tice2_Ave  :: cumulated 2nd  level Temp. [oC]
 cC    ice_snowPr_Ave :: cumulated snow precipitation (+=down) [kg/m2/s]
 C     ice_flx2oc_Ave :: cumulated heat flux out of the ocean (+=up) [W/m2]
 C     ice_frw2oc_Ave :: cumulated fresh-water flux out off the ocean (E-P) [m/s]
-C     ice_salFx_Ave  :: cumulated salt flux out of the ocean (+=up) [psu.kg/m2]
+C     ice_salFx_Ave  :: cumulated salt flux out of the ocean (+=up) [g/m2/s]
 C     ice_flxAtm_Ave :: cumulated net heat flux from Atmosphere (+=down) [W/m2]
 C     ice_frwAtm_Ave :: cumulated fresh-water flux from Atmos. (+=up) [kg/m2/s]
 C     ice_albedo_Ave :: cumulated sea-ice albedo [0-1]
 C     ice_tMxL_Ave   :: cumulated ocean mixed-layer Temp. [oC]
-C     ice_sMxL_Ave   :: cumulated ocean mixed-layer salinity [psu]
+C     ice_sMxL_Ave   :: cumulated ocean mixed-layer salinity [g/kg]
 
       _RL ice_timeAve(nSx,nSy)
       _RL ice_fract_Ave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
