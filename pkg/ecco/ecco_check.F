@@ -539,9 +539,10 @@ C Warn the user that this is a less tested objective function
 C TBD: Write a more consistent transport objective function
 C ---
 
-          if (gencost_barfile(k)(1:7).eq.'m_trVol') then
+          if ((gencost_barfile(k)(1:7).eq.'m_trVol').and.
+     &        (gencost_flag(k).eq.-4)) then
            WRITE(msgBuf,'(A)')
-     &  '** WARNING ** ECCO_CHECK: cost_gencost_transp/moc.F not tested'
+     &  '** WARNING ** ECCO_CHECK: cost_gencost_transp.F not tested'
            CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                         SQUEEZE_RIGHT, myThid )
            WRITE(msgBuf,'(A)')
@@ -656,7 +657,8 @@ c-- (upper/lower-case matters) in cost_gencost_customize
      &                         SQUEEZE_RIGHT, myThid )
           endif !barfile
 c-- set using_cost_transp
-          if(using_gencost(k)) icount_transp=icount_transp+1
+          if((using_gencost(k)).and.(gencost_flag(k).eq.-4))
+     &      icount_transp=icount_transp+1
           if(icount_transp.gt.0) using_cost_transp = .TRUE.
 c-- final report to make sure using_cost_transp is set correctly
           WRITE(msgBuf,'(2A,i3,L5)')
