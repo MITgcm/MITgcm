@@ -365,7 +365,7 @@ c
 # ifdef ALLOW_CLIMSSS_RELAXATION
       CALL MNC_CW_ADD_VNAME('adclimsss', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adclimsss',
-     &     'units','[cost]/[ppt]', myThid)
+     &     'units','[cost]/[g/kg]', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adclimsss','long_name',
      &     'adjoint sea surface salinity', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adclimsss',
