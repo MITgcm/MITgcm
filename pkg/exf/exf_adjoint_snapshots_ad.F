@@ -88,19 +88,6 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 C-----------------------------------------------------------------------
-C--- Turn diagnostics on/off
-C-----------------------------------------------------------------------
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiag4AdjOutp .AND. (iWhen.EQ.3 .AND. useSEAICE) ) THEN
-C     With seaice, the first routine that fills diagnostics is this
-C     one with iWhen=3, because it is called from seaice_model_ad,
-C     which in turn is called from do_oceanic_phys_ad.
-C     This is so, until we include ADJetan into this scheme.
-       CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
-      ENDIF
-#endif
-
-C-----------------------------------------------------------------------
 C--- do dump?
 C-----------------------------------------------------------------------
       doDump = DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
@@ -249,17 +236,6 @@ c
 
 #ifdef ALLOW_MONITOR
       CALL ADEXF_MONITOR ( iwhen, myTime, myIter, myThid )
-#endif
-
-C --- Write the fields out here, in case of stragglers in ptracers or seaice
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiag4AdjOutp .AND. iWhen .EQ. 2 ) THEN
-C --- Grab modelEnd, necessary input for diagnostics routines
-       modelEnd = myTime.EQ.startTime .OR. myIter.EQ.nIter0
-       CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-       CALL DIAGNOSTICS_WRITE_ADJ( modelEnd, myTime, myIter, myThid )
-       CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
-      ENDIF
 #endif
 
 #endif /* ALLOW_AUTODIFF_MONITOR */

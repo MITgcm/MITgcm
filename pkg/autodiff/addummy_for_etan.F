@@ -5,6 +5,9 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#ifdef ALLOW_DIAGNOSTICS
+# include "DIAG_OPTIONS.h"
+#endif
 #include "AD_CONFIG.h"
 
 CBOP
@@ -64,6 +67,10 @@ c#include "GRID.h"
 # ifdef ALLOW_MNC
 #  include "MNC_PARAMS.h"
 # endif
+# ifdef ALLOW_DIAGNOSTICS
+#  include "DIAGNOSTICS_SIZE.h"
+#  include "DIAGNOSTICS.h"
+# endif
 #endif /* ALLOW_AUTODIFF_MONITOR */
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -88,61 +95,28 @@ C     !LOCAL VARIABLES:
 c     == local variables ==
 C     suff    :: Hold suffix part of a filename
 C     msgBuf  :: Error message buffer
-      CHARACTER*(10) suff
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-#ifdef ALLOW_OPENAD
-      _RL var2Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
+c     CHARACTER*(10) suff
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RS dumRS(1)
+      LOGICAL doDump
 CEOP
 
-      IF (
-     &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
-     & ) THEN
-
-        CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
+      doDump = DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
+      IF ( doDump ) THEN
 c increment ad dump record number (used only if dumpAdByRec is true)
-        dumpAdRecEt=dumpAdRecEt+1
-c#ifdef ALLOW_DEBUG
-c      IF ( debugMode ) print*,'dumpAdRecEt',dumpAdRecEt
-c#endif
-
-C--     Set suffix for this set of data files.
-        IF ( rwSuffixType.EQ.0 ) THEN
-          WRITE(suff,'(I10.10)') myIter
-        ELSE
-          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
-        ENDIF
-
-C-----------------------------------------------------------------------
+C could be just dumpAdRecEt=dumpAdRecMn+1 ????
+       dumpAdRecEt=dumpAdRecEt+1
+       CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
+      ENDIF
 #ifndef ALLOW_OPENAD
-C-----------------------------------------------------------------------
-
-        IF ( dumpAdByRec ) THEN
-          CALL WRITE_REC_XY_RL ( 'ADJetan',
-     &                           adEtaN, dumpAdRecEt, myIter, myThid)
-        ELSE
-          CALL WRITE_FLD_XY_RL ( 'ADJetan.', suff,
-     &                           adEtaN, myIter, myThid )
-        ENDIF
-
-C-----------------------------------------------------------------------
+      CALL DUMP_ADJ_XY(dumRS, adetan, 'ADJetan ', 'ADJetan.',
+     &                 12, doDump, dumpAdRecEt, myTime, myIter,myThid)
 #else /* ndef ALLOW_OPENAD */
-C-----------------------------------------------------------------------
-
-        IF ( dumpAdByRec ) THEN
-          var2Du = etaN%d
-          CALL WRITE_REC_XY_RL ( 'ADJetan',
-     &                           var2Du, dumpAdRecEt, myIter, myThid)
-        ELSE
-          var2Du = etaN%d
-          CALL WRITE_FLD_XY_RL ( 'ADJetan.', suff,
-     &                           var2Du, myIter, myThid )
-        ENDIF
-
-C-----------------------------------------------------------------------
+      CALL DUMP_ADJ_XY(dumRS, etaN%d, 'ADJetan ', 'ADJetan.',
+     &                 12, doDump, dumpAdRecEt, myTime, myIter,myThid)
 #endif /* ndef ALLOW_OPENAD */
-C-----------------------------------------------------------------------
+
+      IF ( doDump ) THEN
 
 C-- NOW NMC output
 

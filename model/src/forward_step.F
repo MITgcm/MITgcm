@@ -401,7 +401,7 @@ CEOP
 #endif
 
 #ifdef ALLOW_AUTODIFF
-      CALL AUTODIFF_INADMODE_UNSET( myThid )
+      CALL AUTODIFF_INADMODE_UNSET( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_AUTODIFF
@@ -1242,7 +1242,7 @@ C--   Save state for restarts
 #endif /* HAVE_SIGREG */
 
 #ifdef ALLOW_AUTODIFF
-      CALL AUTODIFF_INADMODE_SET( myThid )
+      CALL AUTODIFF_INADMODE_SET( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_SHOWFLOPS
