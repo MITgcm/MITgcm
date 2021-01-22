@@ -45,8 +45,11 @@ c      integer nnzobs, nnzbar
       _RL mybar     (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL dummyRL, gencost_mskTemporal
       _RS dummyRS(1)
-      _RL tmpCumSumTile(nr,nSx,nSy),tmpNumTile(nSx,nSy)
-      _RL tmpCumSumGlo(nr),tmpNumGlo
+      _RL tmpCumSumTile(nr,nSx,nSy)
+      _RL tmpNumTile(nSx,nSy)
+      _RL tmpCumSumGlo(nr)
+      _RL tmpNumGlo
+      _RL tmpTile(nSx,nSy)
       _RL myTempMax
 
       character*(MAX_LEN_FNAM) mybarfile
@@ -153,12 +156,12 @@ c-- Initialize after read
           ENDDO
 
 c-- Temporal mask
-          il = ilnblnk(gencost_errfile(kgen))
+          il = ilnblnk(gencost_mask(kgen))
           write(fname0(1:128),'(2A)')
-     &      gencost_errfile(kgen)(1:il),'T'
+     &      gencost_mask(kgen)(1:il),'T'
           inquire( file=fname0(1:il+1), exist=exst )
 
-          if ( (.NOT.exst).OR.(gencost_errfile(kgen).EQ.' ')
+          if ( (.NOT.exst).OR.(gencost_mask(kgen).EQ.' ')
      &          ) then
 
            write(msgBuf,'(3A)') '**Warning: temporal msk file: ',
@@ -182,7 +185,6 @@ c-- Temporal mask
 
 c=============== PART 2: Cost Computation ===================
 c-- Compute cost only if nonzero temporal mask
-
           if ( gencost_mskTemporal .ne. 0 ) then
 
           if ( myProcId .EQ. 0 ) num_gencost(1,1,kgen)=
@@ -214,9 +216,13 @@ c
 
 c-- Compute global sum at each level
           do k = Nr, 1, -1
+            DO bj = jtlo,jthi
+              DO bi = itlo,ithi
+                tmpTile(bi,bj) = tmpCumSumTile(k,bi,bj)
+              ENDDO
+            ENDDO
             tmpCumSumGlo(k) = 0. _d 0
-            CALL GLOBAL_SUM_TILE_RL(tmpCumSumTile(k,1,1),
-     &          tmpCumSumGlo(k),  myThid )
+            CALL GLOBAL_SUM_TILE_RL(tmpTile, tmpCumSumGlo(k),  myThid )
           enddo
 
 c=============== PART 2.2: Get max val ===================
