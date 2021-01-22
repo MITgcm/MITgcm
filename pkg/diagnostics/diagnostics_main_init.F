@@ -110,7 +110,7 @@ c       tTitle = 'Conservative Temp.   '
         sTitle = ' Absolute Salinity  '
       ELSE
         tUnit4c= 'degC'
-        sUnit5c= 'psu  '
+        sUnit5c= 'g/kg '
 c       tTitle = 'Potential Temperature'
         sTitle = ' Salinity           '
       ENDIF
@@ -960,7 +960,7 @@ C     Adjoint state variables
 
       diagName  = 'ADJsalt '
       diagTitle = 'dJ/dSalt: Sensitivity to salinity'
-      diagUnits = 'dJ/psu          '
+      diagUnits = 'dJ/(g/kg)       '
       diagCode  = 'SMRA    MR      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )

@@ -702,7 +702,7 @@ C--   Diffusive flux:
 
 C     sea ice salinity
       locName = 'seaice salinity'
-      WRITE(diagUnits,'(2A)') 'psu',flxUnits
+      WRITE(diagUnits,'(2A)') 'g/kg',flxUnits
       diagSufx = SEAICE_DIAG_SUFX( GAD_SALT, myThid )
 
 C--   advective flux
