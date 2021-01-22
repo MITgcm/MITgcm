@@ -476,11 +476,11 @@ and note that the first 3 characters of ``gencost_name`` must be
 Users can specify a latitude band to compute the MOC at with appropriately
 defined West ('W') and South ('S') masks as described in 
 :numref:`intgen`.
-See an example in `this data.ecco file <https://github.com/MITgcm/verification_other/blob/master/global_oce_llc90/input_ad.moc/data.ecco>`_ .
+See an example in item 3 in `this data.ecco file <https://github.com/MITgcm/verification_other/blob/master/global_oce_cs32/input_ad.sens/data.ecco>`_ .
 Note this example uses extra EXF flags to compute sensitivities to net heat
 and salt fluxes, while prescribing the atmospheric state.
 See :numref:`tab_phys_pkg_exf_cpp_options` and
-`this EXF_OPTIONS.h file <https://github.com/MITgcm/verification_other/blob/master/global_oce_llc90/code_ad.moc/EXF_OPTIONS.h>`_ .
+`this EXF_OPTIONS.h file <https://github.com/MITgcm/verification_other/blob/master/global_oce_cs32/code_ad.sens/EXF_OPTIONS.h>`_ .
 
 Note: the functionality in ``cost_gencost_transp.F`` is not regularly tested.
 Users interested in computing volumetric transports through a section
