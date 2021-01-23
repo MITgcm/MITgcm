@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="MITgcmutils",
-    version="0.1.1",
+    version="0.1.2",
     author="MITgcm Developers and Contributors",
     author_email="mitgcm-support@mitgcm.org",
     description="Python utilities for MITgcm",
