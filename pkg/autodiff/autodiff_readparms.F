@@ -124,7 +124,7 @@ C     True or False.
 C     reset to recover old behavior, in case that is ever needed
        useApproxAdvectionInAdMode = .TRUE.
        WRITE(msgBuf,'(A)') '**WARNING** AUTODIFF_READPARMS: '//
-     &      'resetting useApproxAdvectionInAdMode=.FALSE., '//
+     &      'resetting useApproxAdvectionInAdMode to .TRUE., '//
      &      'because inAdExact=.FALSE.'
        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                     SQUEEZE_RIGHT, myThid )
