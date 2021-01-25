@@ -36,6 +36,9 @@ C     iUnit      :: Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
       INTEGER errCount
+#ifdef ALLOW_GENERIC_ADVDIFF
+      LOGICAL validAdvScheme
+#endif /* ALLOW_GENERIC_ADVDIFF */
 
       NAMELIST /AUTODIFF_PARM01/
      &       dumpAdVarExch, mon_AdVarExch,
@@ -144,7 +147,7 @@ c     level of approximation in seaice thermodynamics adjoint
      &   SEAICEapproxLevInAd=MAX(SEAICEapproxLevInAd,0)
 #endif
 
-C--   Print out some kee parameters :
+C--   Print out some key parameters :
       WRITE(msgBuf,'(A)') '// ==================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
@@ -216,24 +219,54 @@ C--   Check parameters :
       IF ( useApproxAdvectionInAdMode ) THEN
 #ifdef ALLOW_GENERIC_ADVDIFF
 C     so far this only works for flux limited DST3 scheme
-       IF ( tempAdvScheme .NE. ENUM_DST3_FLUX_LIMIT .OR.
-     &      saltAdvScheme .NE. ENUM_DST3_FLUX_LIMIT ) THEN
-        WRITE(msgBuf,'(2A,I2)') 'AUTODIFF_READPARMS: ',
-     &       'useApproxAdvectionInAdMode = .TRUE. can only be '//
-     &       'used with advection scheme ', ENUM_DST3_FLUX_LIMIT
-        CALL PRINT_ERROR( msgBuf, myThid )
-        errCount = errCount + 1
-       ENDIF
+       validAdvScheme = .FALSE.
+       validAdvScheme = validAdvScheme
+     &      .OR. tempAdvScheme.EQ.ENUM_DST3_FLUX_LIMIT
+     &      .OR. saltAdvScheme.EQ.ENUM_DST3_FLUX_LIMIT
 #ifdef ALLOW_SEAICE
-       IF ( useSEAICE .AND.
-     &      SEAICEadvScheme .NE. ENUM_DST3_FLUX_LIMIT ) THEN
-        WRITE(msgBuf,'(2A,I2)') 'AUTODIFF_READPARMS: ',
-     &       'useApproxAdvectionInAdMode = .TRUE. can only be '//
-     &       'used with SEAICEadvScheme ', ENUM_DST3_FLUX_LIMIT
+       IF ( useSEAICE ) validAdvScheme = validAdvScheme
+     &      .OR. SEAICEadvScheme .EQ.ENUM_DST3_FLUX_LIMIT
+     &      .OR. SEAICEadvSchArea.EQ.ENUM_DST3_FLUX_LIMIT
+     &      .OR. SEAICEadvSchHeff.EQ.ENUM_DST3_FLUX_LIMIT
+     &      .OR. SEAICEadvSchSnow.EQ.ENUM_DST3_FLUX_LIMIT
+     &      .OR. SEAICEadvSchSalt.EQ.ENUM_DST3_FLUX_LIMIT
+#endif /* ALLOW_SEAICE */
+       IF ( .NOT. validAdvScheme ) THEN
+        WRITE(msgBuf,'(3A)') 'AUTODIFF_READPARMS: ',
+     &       'useApproxAdvectionInAdMode = .TRUE. ',
+     &       'only makes sense if at least '
         CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A,I2,A)') 'AUTODIFF_READPARMS: ',
+     &       'one advection scheme is ', ENUM_DST3_FLUX_LIMIT,
+     &       '. Current settings are:'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A,I2)') 'AUTODIFF_READPARMS: ',
+     &       'tempAdvScheme    = ', tempAdvScheme
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A,I2)') 'AUTODIFF_READPARMS: ',
+     &       'saltAdvScheme    = ', saltAdvScheme
+        CALL PRINT_ERROR( msgBuf, myThid )
+#ifdef ALLOW_SEAICE
+        IF ( useSEAICE ) THEN
+         WRITE(msgBuf,'(2A,I2)') 'AUTODIFF_READPARMS: ',
+     &        'SEAICEadvScheme  = ', SEAICEadvScheme
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(2A,I2)') 'AUTODIFF_READPARMS: ',
+     &        'SEAICEadvSchArea = ', SEAICEadvSchArea
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(2A,I2)') 'AUTODIFF_READPARMS: ',
+     &        'SEAICEadvSchHeff = ', SEAICEadvSchHeff
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(2A,I2)') 'AUTODIFF_READPARMS: ',
+     &        'SEAICEadvSchSnow = ', SEAICEadvSchSnow
+         CALL PRINT_ERROR( msgBuf, myThid )
+         WRITE(msgBuf,'(2A,I2)') 'AUTODIFF_READPARMS: ',
+     &        'SEAICEadvSchSalt = ', SEAICEadvSchSalt
+         CALL PRINT_ERROR( msgBuf, myThid )
+        ENDIF
+#endif /* ALLOW_SEAICE */
         errCount = errCount + 1
        ENDIF
-#endif /* ALLOW_SEAICE */
 #else
        WRITE(msgBuf,'(2A)') '**WARNING** AUTODIFF_READPARMS: ',
      &      'useApproxAdvectionInAdMode = .TRUE. without generic_advdff'
