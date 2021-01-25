@@ -81,11 +81,6 @@ options.
     | :code:`USE_EXF_INTERPOLATION`    |  enable on-the-fly bilinear or bicubic                    |
     |                                  |  interpolation of input fields                            |
     +----------------------------------+-----------------------------------------------------------+
-    | :code:`CALC_HFLUX_SENS`          |  in adjoint mode, if :code:`ALLOW_ATM_TEMP` is defined,   |
-    |                                  |  i.e. model is forced with atmospheric state not fluxes,  |
-    | :code:`CALC_SFLUX_SENS`          |  with these flags, can compute sensitivity to heat        |
-    |                                  |  and/or salt flux                                         |
-    +----------------------------------+-----------------------------------------------------------+
     |  *used in conjunction with relaxation to prescribed (climatological) fields*                 |
     +----------------------------------+-----------------------------------------------------------+
     | :code:`ALLOW_CLIMSST_RELAXATION` |  relaxation to 2-D SST climatology                        |

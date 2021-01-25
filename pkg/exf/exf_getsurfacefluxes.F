@@ -121,20 +121,12 @@ c     == end of interface ==
      &       tmpVN(i,j,bi,bj)=tmpVN(i,j,bi,bj)
      &          +xx_gentim2d(i,j,bi,bj,iarr)
 #endif
-cts -------------------------------------------------
-c   For computing sensitivities to hflux/sflux based on
-c   atmospheric state inputs (atemp, precip, etc)
-#if (defined (CALC_HFLUX_SENS) && defined (ALLOW_ATM_TEMP))
            if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_hflux')
      &       hflux(i,j,bi,bj)=hflux(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
-#endif
-#if (defined (CALC_SFLUX_SENS) && defined (ALLOW_ATM_TEMP))
            if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_sflux')
      &       sflux(i,j,bi,bj)=sflux(i,j,bi,bj)+
      &                         xx_gentim2d(i,j,bi,bj,iarr)
-#endif
-cts --------------------------------------------------
            enddo
          ENDDO
         ENDDO

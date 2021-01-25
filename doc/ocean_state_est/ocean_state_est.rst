@@ -827,6 +827,10 @@ to the model grid unless CPP-flag :varlink:`EXCLUDE_CTRL_PACK` is defined in
   |                       | ``xx_gen_precip``     | globally averaged     |
   |                       |                       | precipitation?        |
   +-----------------------+-----------------------+-----------------------+
+  |                       | ``xx_hflux``          | net heat flux         |
+  +-----------------------+-----------------------+-----------------------+
+  |                       | ``xx_sflux``          | net salt (EmPmR) flux |
+  +-----------------------+-----------------------+-----------------------+
 
 .. table:: ``xx_gen????d_preproc`` options implemented as of checkpoint
            65z. Notes: :math:`^a`: If ``noscaling`` is false, the control
@@ -904,6 +908,12 @@ cost function penalty [:math:`\beta_j` in :eq:`Jtotal`;
 does not directly appear in the estimation problem, but only serves to
 push the optimization process in a certain direction in control space;
 this operator is specified by ``gen*Precond`` (:math:`=1` by default).
+
+Note that control parameters exist for each individual near surface atmospheric state
+variable, as well as the net heat and salt (EmPmR) fluxes.
+The user must be mindful of control parameter combinations that make sense
+according to their specific setup, e.g. with the :ref:`<<EXF
+package>><<_ssub_phys_pkg_exf_config>>`.
 
 .. _sec:pkg:smooth:
 
