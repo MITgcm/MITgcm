@@ -75,7 +75,7 @@ C   near surface & bottom for too thin grid-cell
 
 C o Exclude/allow to use isotropic 3-D Smagorinsky viscosity as diffusivity
 C   for tracers (after scaling by constant Prandtl number)
-#undef ALLOW_SMAG_3D_DIFFUSIVITY
+#define ALLOW_SMAG_3D_DIFFUSIVITY
 
 C-- Time-stepping code options:
 
