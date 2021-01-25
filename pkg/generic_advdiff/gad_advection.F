@@ -403,42 +403,42 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
           CALL GAD_DST2U1_ADV_X(    bi,bj,k, advectionScheme, .TRUE.,
      I             deltaTLev(k),uTrans,uFld(1-OLx,1-OLy,k), localTij,
      O             af, myThid )
-        ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+        ELSEIF ( advectionScheme.EQ.ENUM_FLUX_LIMIT ) THEN
           CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
      I             uTrans, uFld(1-OLx,1-OLy,k), maskLocW, localTij,
      O             af, myThid )
 #ifdef ALLOW_AUTODIFF
-        ELSEIF (advectionScheme.EQ.ENUM_DST3 .OR.
-     &         (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT
-     &         .AND. inAdMode .AND. useApproxAdvectionInAdMode)
+        ELSEIF ( advectionScheme.EQ.ENUM_DST3 .OR.
+     &           (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT
+     &           .AND. inAdMode .AND. useApproxAdvectionInAdMode)
      &         ) THEN
 C     This block is to trick the adjoint just as in gad_calc_rhs:
 C     If useApproxAdvectionInAdMode=.TRUE., we want to use DST3
 C     with limiters in forward, but without limiters in reverse.
 #else /* ALLOW_AUTODIFF */
-        ELSEIF (advectionScheme.EQ.ENUM_DST3) THEN
+        ELSEIF ( advectionScheme.EQ.ENUM_DST3 ) THEN
 #endif /* ALLOW_AUTODIFF */
           CALL GAD_DST3_ADV_X(      bi,bj,k, .TRUE., deltaTLev(k),
      I             uTrans, uFld(1-OLx,1-OLy,k), maskLocW, localTij,
      O             af, myThid )
-        ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT) THEN
+        ELSEIF ( advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
           CALL GAD_DST3FL_ADV_X(    bi,bj,k, .TRUE., deltaTLev(k),
      I             uTrans, uFld(1-OLx,1-OLy,k), maskLocW, localTij,
      O             af, myThid )
 #ifndef ALLOW_AUTODIFF
-        ELSEIF (advectionScheme.EQ.ENUM_OS7MP) THEN
+        ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_X(     bi,bj,k, .TRUE., deltaTLev(k),
      I             uTrans, uFld(1-OLx,1-OLy,k), maskLocW, localTij,
      O             af, myThid )
-        ELSEIF (advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
-     &          advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
-     &          advectionScheme.EQ.ENUM_PPM_WENO_LIMIT) THEN
+        ELSEIF ( advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
+     &           advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
+     &           advectionScheme.EQ.ENUM_PPM_WENO_LIMIT ) THEN
           CALL GAD_PPM_ADV_X( advectionScheme, bi, bj, k , .TRUE.,
      I             deltaTLev(k), uFld(1-OLx,1-OLy,k), uTrans, localTij,
      O             af, myThid )
-        ELSEIF (advectionScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
-     &          advectionScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
-     &          advectionScheme.EQ.ENUM_PQM_WENO_LIMIT) THEN
+        ELSEIF ( advectionScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
+     &           advectionScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
+     &           advectionScheme.EQ.ENUM_PQM_WENO_LIMIT ) THEN
           CALL GAD_PQM_ADV_X( advectionScheme, bi, bj, k , .TRUE.,
      I             deltaTLev(k), uFld(1-OLx,1-OLy,k), uTrans, localTij,
      O             af, myThid )
@@ -622,43 +622,43 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, kind=isbyte
           CALL GAD_DST2U1_ADV_Y(    bi,bj,k, advectionScheme, .TRUE.,
      I             deltaTLev(k),vTrans,vFld(1-OLx,1-OLy,k), localTij,
      O             af, myThid )
-        ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+        ELSEIF ( advectionScheme.EQ.ENUM_FLUX_LIMIT ) THEN
           CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
      I             vTrans, vFld(1-OLx,1-OLy,k), maskLocS, localTij,
      O             af, myThid )
 #ifdef ALLOW_AUTODIFF
-        ELSEIF (advectionScheme.EQ.ENUM_DST3 .OR.
-     &         (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT
-     &         .AND. inAdMode .AND. useApproxAdvectionInAdMode)
+        ELSEIF ( advectionScheme.EQ.ENUM_DST3 .OR.
+     &           (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT
+     &           .AND. inAdMode .AND. useApproxAdvectionInAdMode)
      &         ) THEN
 C     This block is to trick the adjoint just as in gad_calc_rhs:
 C     If useApproxAdvectionInAdMode=.TRUE., we want to use DST3
 C     with limiters in forward, but without limiters in reverse.
 #else /* ALLOW_AUTODIFF */
-        ELSEIF (advectionScheme.EQ.ENUM_DST3) THEN
+        ELSEIF ( advectionScheme.EQ.ENUM_DST3 ) THEN
 #endif /* ALLOW_AUTODIFF */
           CALL GAD_DST3_ADV_Y(      bi,bj,k, .TRUE., deltaTLev(k),
      I             vTrans, vFld(1-OLx,1-OLy,k), maskLocS, localTij,
      O             af, myThid )
-        ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT) THEN
+        ELSEIF ( advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
           CALL GAD_DST3FL_ADV_Y(    bi,bj,k, .TRUE., deltaTLev(k),
      I             vTrans, vFld(1-OLx,1-OLy,k), maskLocS, localTij,
      O             af, myThid )
 #ifndef ALLOW_AUTODIFF
-        ELSEIF (advectionScheme.EQ.ENUM_OS7MP) THEN
+        ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_Y(     bi,bj,k, .TRUE., deltaTLev(k),
      I             vTrans, vFld(1-OLx,1-OLy,k), maskLocS, localTij,
      O             af, myThid )
-        ELSEIF (advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
-     &          advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
-     &          advectionScheme.EQ.ENUM_PPM_WENO_LIMIT) THEN
-          CALL GAD_PPM_ADV_Y(advectionScheme, bi, bj, k , .TRUE.,
+        ELSEIF ( advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
+     &           advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
+     &           advectionScheme.EQ.ENUM_PPM_WENO_LIMIT ) THEN
+          CALL GAD_PPM_ADV_Y( advectionScheme, bi, bj, k , .TRUE.,
      I             deltaTLev(k), vFld(1-OLX,1-OLy,k), vTrans, localTij,
      O             af, myThid )
-        ELSEIF (advectionScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
-     &          advectionScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
-     &          advectionScheme.EQ.ENUM_PQM_WENO_LIMIT) THEN
-          CALL GAD_PQM_ADV_Y(advectionScheme, bi, bj, k , .TRUE.,
+        ELSEIF ( advectionScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
+     &           advectionScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
+     &           advectionScheme.EQ.ENUM_PQM_WENO_LIMIT ) THEN
+          CALL GAD_PQM_ADV_Y( advectionScheme, bi, bj, k , .TRUE.,
      I             deltaTLev(k), vFld(1-OLX,1-OLy,k), vTrans, localTij,
      O             af, myThid )
 #endif /* ndef ALLOW_AUTODIFF */
@@ -974,14 +974,14 @@ C-    Compute vertical advective flux in the interior:
            CALL GAD_DST2U1_ADV_R(    bi,bj,k, advectionScheme,
      I              deltaTLev(k),rTrans,wFld(1-OLx,1-OLy,k),localT3d,
      O              fVerT(1-OLx,1-OLy,kUp), myThid )
-         ELSEIF (vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
+         ELSEIF ( vertAdvecScheme.EQ.ENUM_FLUX_LIMIT ) THEN
            CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k, deltaTLev(k),
      I              rTrans, wFld(1-OLx,1-OLy,k), localT3d,
      O              fVerT(1-OLx,1-OLy,kUp), myThid )
 #ifdef ALLOW_AUTODIFF
-         ELSEIF (vertAdvecScheme.EQ.ENUM_DST3 .OR.
-     &          (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT
-     &          .AND. inAdMode .AND. useApproxAdvectionInAdMode)
+         ELSEIF ( vertAdvecScheme.EQ.ENUM_DST3 .OR.
+     &           (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT
+     &           .AND. inAdMode .AND. useApproxAdvectionInAdMode)
      &          ) THEN
 C     This block is to trick the adjoint just as in gad_calc_rhs:
 C     If useApproxAdvectionInAdMode=.TRUE., we want to use DST3
@@ -992,21 +992,21 @@ C     with limiters in forward, but without limiters in reverse.
            CALL GAD_DST3_ADV_R(      bi,bj,k, deltaTLev(k),
      I              rTrans, wFld(1-OLx,1-OLy,k), localT3d,
      O              fVerT(1-OLx,1-OLy,kUp), myThid )
-         ELSEIF (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT) THEN
+         ELSEIF ( vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
            CALL GAD_DST3FL_ADV_R(    bi,bj,k, deltaTLev(k),
      I              rTrans, wFld(1-OLx,1-OLy,k), localT3d,
      O              fVerT(1-OLx,1-OLy,kUp), myThid )
 #ifndef ALLOW_AUTODIFF
-         ELSEIF (vertAdvecScheme.EQ.ENUM_OS7MP) THEN
+         ELSEIF ( vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_R(     bi,bj,k, deltaTLev(k),
      I              rTrans, wFld(1-OLx,1-OLy,k), localT3d,
      O              fVerT(1-OLx,1-OLy,kUp), myThid )
-         ELSEIF (vertAdvecScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
-     &           vertAdvecScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
-     &           vertAdvecScheme.EQ.ENUM_PPM_WENO_LIMIT  .OR.
-     &           vertAdvecScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
-     &           vertAdvecScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
-     &           vertAdvecScheme.EQ.ENUM_PQM_WENO_LIMIT) THEN
+         ELSEIF ( vertAdvecScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
+     &            vertAdvecScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
+     &            vertAdvecScheme.EQ.ENUM_PPM_WENO_LIMIT  .OR.
+     &            vertAdvecScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
+     &            vertAdvecScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
+     &            vertAdvecScheme.EQ.ENUM_PQM_WENO_LIMIT) THEN
 C- copy level from 3d flux data
            DO j = 1-OLy,sNy+OLy
             DO i = 1-OLx,sNx+OLx

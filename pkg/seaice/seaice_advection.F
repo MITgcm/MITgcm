@@ -376,42 +376,42 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
             WRITE(ioUnit,'(A,1P4E14.6)') 'ICE_adv: xFx=', af(i+1,j),
      &        localTij(i,j), uTrans(i+1,j), af(i+1,j)/uTrans(i+1,j)
           ENDIF
-         ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_FLUX_LIMIT ) THEN
           CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
 #ifdef ALLOW_AUTODIFF
-         ELSEIF (advectionScheme.EQ.ENUM_DST3 .OR.
-     &          (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT
-     &           .AND. inAdMode .AND. useApproxAdvectionInAdMode)
+         ELSEIF ( advectionScheme.EQ.ENUM_DST3 .OR.
+     &           (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT
+     &            .AND. inAdMode .AND. useApproxAdvectionInAdMode)
      &           ) THEN
 C     This block is to trick the adjoint just as in gad_calc_rhs:
 C     If useApproxAdvectionInAdMode=.TRUE., we want to use DST3
 C     with limiters in forward, but without limiters in reverse.
 #else /* ALLOW_AUTODIFF */
-         ELSEIF (advectionScheme.EQ.ENUM_DST3) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_DST3 ) THEN
 #endif /* ALLOW_AUTODIFF */
           CALL GAD_DST3_ADV_X(      bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
           CALL GAD_DST3FL_ADV_X(    bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
-         ELSEIF (advectionScheme.EQ.ENUM_OS7MP) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_X(     bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, uTrans, uFld, maskLocW, localTij,
      O         af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
-     &           advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
-     &           advectionScheme.EQ.ENUM_PPM_WENO_LIMIT) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
+     &            advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
+     &            advectionScheme.EQ.ENUM_PPM_WENO_LIMIT ) THEN
           CALL GAD_PPM_ADV_X( advectionScheme, bi, bj, k , .TRUE.,
      I         SEAICE_deltaTtherm, uFld, uTrans, localTij,
      O         af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
-     &           advectionScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
-     &           advectionScheme.EQ.ENUM_PQM_WENO_LIMIT) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
+     &            advectionScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
+     &            advectionScheme.EQ.ENUM_PQM_WENO_LIMIT ) THEN
           CALL GAD_PQM_ADV_X( advectionScheme, bi, bj, k , .TRUE.,
      I         SEAICE_deltaTtherm, uFld, uTrans, localTij,
      O         af, myThid )
@@ -600,14 +600,14 @@ CADJ &     comlev1_bibj_k_gadice_pass, key=passkey, byte=isbyte
             WRITE(ioUnit,'(A,1P4E14.6)') 'ICE_adv: yFx=', af(i,j+1),
      &        localTij(i,j), vTrans(i,j+1), af(i,j+1)/vTrans(i,j+1)
           ENDIF
-         ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_FLUX_LIMIT ) THEN
           CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
 #ifdef ALLOW_AUTODIFF
-         ELSEIF (advectionScheme.EQ.ENUM_DST3 .OR.
-     &          (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT
-     &           .AND. inAdMode .AND. useApproxAdvectionInAdMode)
+         ELSEIF ( advectionScheme.EQ.ENUM_DST3 .OR.
+     &           (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT
+     &            .AND. inAdMode .AND. useApproxAdvectionInAdMode)
      &           ) THEN
 C     This block is to trick the adjoint just as in gad_calc_rhs:
 C     If useApproxAdvectionInAdMode=.TRUE., we want to use DST3
@@ -618,24 +618,24 @@ C     with limiters in forward, but without limiters in reverse.
           CALL GAD_DST3_ADV_Y(      bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
           CALL GAD_DST3FL_ADV_Y(    bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
 #ifndef ALLOW_AUTODIFF_TAMC
-         ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
           CALL GAD_OS7MP_ADV_Y(     bi,bj,k, .TRUE.,
      I         SEAICE_deltaTtherm, vTrans, vFld, maskLocS, localTij,
      O         af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
-     &           advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
-     &           advectionScheme.EQ.ENUM_PPM_WENO_LIMIT) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_PPM_NULL_LIMIT  .OR.
+     &            advectionScheme.EQ.ENUM_PPM_MONO_LIMIT  .OR.
+     &            advectionScheme.EQ.ENUM_PPM_WENO_LIMIT ) THEN
           CALL GAD_PPM_ADV_Y( advectionScheme, bi, bj, k , .TRUE.,
      I         SEAICE_deltaTtherm, vFld, vTrans, localTij,
      O         af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
-     &           advectionScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
-     &           advectionScheme.EQ.ENUM_PQM_WENO_LIMIT) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_PQM_NULL_LIMIT  .OR.
+     &            advectionScheme.EQ.ENUM_PQM_MONO_LIMIT  .OR.
+     &            advectionScheme.EQ.ENUM_PQM_WENO_LIMIT ) THEN
           CALL GAD_PQM_ADV_Y( advectionScheme, bi, bj, k , .TRUE.,
      I         SEAICE_deltaTtherm, vFld, vTrans, localTij,
      O         af, myThid )

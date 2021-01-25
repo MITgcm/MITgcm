@@ -211,7 +211,7 @@ C--   Initialize net flux in X direction
 
 C-    Advective flux in X
       IF (calcAdvection) THEN
-        IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
+        IF ( advectionScheme.EQ.ENUM_CENTERED_2ND ) THEN
            CALL GAD_C2_ADV_X( bi,bj,k, uTrans, locABT, af, myThid )
         ELSEIF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &          .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
@@ -352,7 +352,7 @@ C--   Initialize net flux in Y direction
 
 C-    Advective flux in Y
       IF (calcAdvection) THEN
-        IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
+        IF ( advectionScheme.EQ.ENUM_CENTERED_2ND ) THEN
            CALL GAD_C2_ADV_Y( bi,bj,k, vTrans, locABT, af, myThid )
         ELSEIF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &          .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
@@ -496,18 +496,18 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
 #endif
        IF ( applyAB_onTracer ) THEN
 C-    Compute vertical advective flux in the interior using TracAB:
-        IF (vertAdvecScheme.EQ.ENUM_CENTERED_2ND) THEN
+        IF ( vertAdvecScheme.EQ.ENUM_CENTERED_2ND ) THEN
            CALL GAD_C2_ADV_R( bi,bj,k, rTrans, TracAB, af, myThid )
         ELSEIF ( vertAdvecScheme.EQ.ENUM_UPWIND_1RST
      &          .OR. vertAdvecScheme.EQ.ENUM_DST2 ) THEN
            CALL GAD_DST2U1_ADV_R( bi,bj,k,vertAdvecScheme,deltaTLev(k),
      I              rTrans, wFld, TracAB,
      O              af, myThid )
-        ELSEIF (vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
+        ELSEIF ( vertAdvecScheme.EQ.ENUM_FLUX_LIMIT ) THEN
            CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k, deltaTLev(k),
      I              rTrans, wFld, TracAB,
      O              af, myThid )
-        ELSEIF (vertAdvecScheme.EQ.ENUM_UPWIND_3RD ) THEN
+        ELSEIF ( vertAdvecScheme.EQ.ENUM_UPWIND_3RD ) THEN
            CALL GAD_U3_ADV_R( bi,bj,k, rTrans, TracAB, af, myThid )
         ELSEIF (vertAdvecScheme.EQ.ENUM_CENTERED_4TH) THEN
            CALL GAD_C4_ADV_R( bi,bj,k, rTrans, TracAB, af, myThid )
@@ -540,7 +540,7 @@ C     with limiters in forward, but without limiters in reverse.
         ENDIF
        ELSE
 C-    Compute vertical advective flux in the interior using TracerN:
-        IF (vertAdvecScheme.EQ.ENUM_CENTERED_2ND) THEN
+        IF ( vertAdvecScheme.EQ.ENUM_CENTERED_2ND ) THEN
            CALL GAD_C2_ADV_R( bi,bj,k, rTrans, TracerN, af, myThid )
         ELSEIF ( vertAdvecScheme.EQ.ENUM_UPWIND_1RST
      &          .OR. vertAdvecScheme.EQ.ENUM_DST2 ) THEN
@@ -553,7 +553,7 @@ C-    Compute vertical advective flux in the interior using TracerN:
      O              af, myThid )
         ELSEIF ( vertAdvecScheme.EQ.ENUM_UPWIND_3RD ) THEN
            CALL GAD_U3_ADV_R( bi,bj,k, rTrans, TracerN, af, myThid )
-        ELSEIF ( vertAdvecScheme.EQ.ENUM_CENTERED_4TH) THEN
+        ELSEIF ( vertAdvecScheme.EQ.ENUM_CENTERED_4TH ) THEN
            CALL GAD_C4_ADV_R( bi,bj,k, rTrans, TracerN, af, myThid )
 #ifdef ALLOW_AUTODIFF
         ELSEIF ( vertAdvecScheme.EQ.ENUM_DST3 .OR.
