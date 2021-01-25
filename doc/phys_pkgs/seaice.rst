@@ -220,6 +220,8 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_cStar`            | 20.0                         | sea ice strength constant :math:`C^{\ast}`  (non-dim.)                  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICE_eccen`            | 2.0                          | VP rheology ellipse aspect ratio :math:`e`                              |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_rhoAir`           | 1.3  (or                     | density of air (kg/m\ :sup:`3`)                                         |
   |                                    | :filelink:`pkg/exf` value)   |                                                                         |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -524,7 +526,8 @@ with the constants :math:`P^{\ast}` (run-time parameter
 :math:`\zeta` and :math:`\eta` are functions of ice strain rate
 invariants and ice strength such that the principal components of the
 stress lie on an elliptical yield curve with the ratio of major to
-minor axis :math:`e` equal to :math:`2`; they are given by:
+minor axis :math:`e` (run-time parameter
+:varlink:`SEAICE_eccen`) equal to :math:`2`; they are given by:
 
 .. math::
    \begin{aligned}
