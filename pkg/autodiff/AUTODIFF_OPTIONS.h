@@ -55,6 +55,9 @@ C o use divided adjoint to split adjoint computations
 C o write separate tape files for each ptracer
 #undef AUTODIFF_PTRACERS_SPLIT_FILES
 
+C o allow using viscFacInAd to recompute viscosities in AD
+#define AUTODIFF_ALLOW_VISCFACADJ
+
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */
 #endif /* ALLOW_AUTODIFF */

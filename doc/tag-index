@@ -1,6 +1,13 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff: fix/improve viscFacAdj
+  - fix treatment of viscFacAdj in mom_vecinv.F by removing storage of 2D
+    viscosities if new flag AUTODIFF_ALLOW_VISCFACADJ is defined ;
+  - add a runtime parameter "viscFacInFw" in autodiff_inadmode_unset_ad.F to
+    replace hard-coded one ;
+  - apply viscFacAdj to both viscAh/4_D and _Z ;
+  - test compiling this code in tutorial_global_oce_optim.
 o model/src:
   - move if statement out of i/j-loops in solve_tridiagnoal/pentadiagonal.F:
     *) this reduces TAF recomputation warnings by 4 ;
