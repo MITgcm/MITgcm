@@ -165,7 +165,7 @@ C            x = ( TWO * ksq + TWO *k*sqrt(ksq + 3 _d 0 * ap1 )
 C      &         - (6 _d 0 * ap1) ) * oneNinth + a
            
 C      Replacing tip by an ellipse for tensile stresses
-           IF (x .GT. 0 _d 0 .AND. SEAICE_TD_EllTip ) THEN
+           IF (x .GT. 0 _d 0) THEN
 
             tnsFacTD = a / TWO
             
@@ -286,7 +286,7 @@ C          Eta change for the replacement pressure
            eta(I,J,bi,bj) = eta(I,J,bi,bj) 
      &          * ( ( ONE - SEAICEpressReplFac ) 
      &          + SEAICEpressReplFac * press(I,J,bi,bi) 
-                / ( ( ONE - a ) * press0(I,J,bi,bj) )
+     &          / ( ( ONE - a ) * press0(I,J,bi,bj) ) )
           
           ENDDO !i loop
          ENDDO !j loop
