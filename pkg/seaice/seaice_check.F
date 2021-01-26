@@ -862,7 +862,51 @@ C     end if usePW79thermodynamics
       ENDIF
 #endif
 
+#if !defined(SEAICE_ALLOW_MCE) || !defined(SEAICE_CGRID)
+      IF ( SEAICEuseMCE ) THEN
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseMCE requires that'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'SEAICE_CHECK: SEAICE_ALLOW_MCE and SEAICE_CGRID are defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif
+
+#if !defined(SEAICE_ALLOW_FULLMC) || !defined(SEAICE_CGRID)
+      IF ( SEAICEuseFULLMC ) THEN
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseFULLMC requires that'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &  'SEAICE_CHECK: SEAICE_ALLOW_FULLMC and SEAICE_CGRID are defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif
+
+#if !defined(SEAICE_ALLOW_TEARDROP) || !defined(SEAICE_CGRID)
+      IF (SEAICEuseTD ) THEN
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseTD requires that'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_ALLOW_TEARDROP and '
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_CGRID are defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+      IF ( SEAICEusePL ) THEN
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEusePL requires that'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_ALLOW_TEARDROP and '
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_CGRID are defined'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+#endif
+
 #ifndef SEAICE_CGRID
+
 #ifdef SEAICE_TEST_ICE_STRESS_1
        WRITE(msgBuf,'(A)')
      &  'SEAICE_CHECK: Only relevant for B-grid:'
