@@ -1,6 +1,15 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - move store directives of uice/vice to after calling S/R SEAICE_DYNSOLVER to
+    avoid calling this routine in S/R seaice_model_ad which may trigger
+    potential recomputation problems (e.g., with non-exact AD) ;
+  - move if statement inside S/R SEAICE_BOTTOMDRAG_COEFFS : this enables to
+    remove storage of "CbotC" without triggering recomputations ; compile this
+    code in the AD-experiments of global_ocean.cs32x15 ;
+  - remove unnecessary store directives related to pkg/seaice ;
+  - fix/extend diagnostic "SIenph  " to work with all parameter configurations.
 o pkg/autodiff: fix/improve viscFacAdj
   - fix treatment of viscFacAdj in mom_vecinv.F by removing storage of 2D
     viscosities if new flag AUTODIFF_ALLOW_VISCFACADJ is defined ;
