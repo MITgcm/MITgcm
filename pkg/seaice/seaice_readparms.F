@@ -91,9 +91,9 @@ C     SEAICE_freeze     :: FREEZING TEMP. OF SEA WATER
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
      & SEAICEuseDYNAMICS, SEAICEuseFREEDRIFT, SEAICEuseStrImpCpl,
-     & SEAICEuseFULLMC, SEAICEuseMCE, SEAICEtdMU,
-     & SEAICEuseTEM, SEAICEuseMetricTerms, SEAICEuseTilt, SEAICEuseTD,
-     & useHB87stressCoupling, SEAICEupdateOceanStress, SEAICEusePL,
+     & SEAICEuseFULLMC, SEAICEuseMCE, SEAICEuseTD, SEAICEusePL,
+     & SEAICEuseTEM, SEAICEuseMetricTerms, SEAICEuseTilt,
+     & useHB87stressCoupling, SEAICEupdateOceanStress,
      & usePW79thermodynamics, useMaykutSatVapPoly, SEAICEuseFlooding,
      & SEAICErestoreUnderIce, SEAICE_growMeltByConv,
      & SEAICE_salinityTracer, SEAICE_ageTracer,
@@ -146,7 +146,8 @@ C--   SEAICE parameters
      & SEAICE_drySnowAlb_south, SEAICE_wetSnowAlb_south, HO_south,
      & SEAICE_cBasalStar, SEAICEbasalDragU0, SEAICEbasalDragK1,
      & SEAICEbasalDragK2, SEAICE_wetAlbTemp, SEAICE_waterAlbedo,
-     & SEAICE_strength, SEAICE_cStar, SEAICE_eccen, SEAICE_eccfr,
+     & SEAICE_strength, SEAICE_cStar, SEAICE_eccen,
+     & SEAICE_eccfr, SEAICEtdMU, SEAICEmcMu,
      & SEAICEpressReplFac, SEAICE_tensilFac, SEAICE_tensilDepth,
      & SEAICE_lhFusion, SEAICE_lhEvap, SEAICE_dalton,
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
@@ -171,7 +172,6 @@ C--   SEAICE parameters
      & SEAICEuseEVPstar, SEAICEuseEVPrev,
      & SEAICE_monFreq, SEAICE_dumpFreq, SEAICE_taveFreq,
      & SEAICE_tave_mnc, SEAICE_dump_mnc, SEAICE_mon_mnc,
-     & SEAICEmcMu,
 #ifdef SEAICE_ITD
      & Hlimit_c1, Hlimit_c2, Hlimit_c3, Hlimit,
 #endif
@@ -228,9 +228,7 @@ C--   set default sea ice parameters
       SEAICEheatConsFix  = .FALSE.
       SEAICEuseTEM       = .FALSE.
       SEAICEuseFULLMC    = .FALSE.
-      SEAICEtdMU         = 1. _d 0
       SEAICEuseMCE       = .FALSE.
-      SEAICEmcMu         = 1.0
       SEAICEuseTD        = .FALSE.
       SEAICEusePL        = .FALSE.
       SEAICEuseMetricTerms = .TRUE.
@@ -408,6 +406,8 @@ C
       SEAICE_eccfr       = UNSET_RL
       SEAICE_tensilFac   = 0.     _d 0
       SEAICE_tensilDepth = 0.     _d 0
+      SEAICEtdMU         = 1.     _d 0
+      SEAICEmcMu         = 1.     _d 0
 C     coefficients for flux computations/bulk formulae
       SEAICE_dalton      = 1.75   _d -03
 #ifdef ALLOW_EXF
@@ -676,9 +676,9 @@ C--   Set default values (if not specified in data.seaice namelist)
 
 C--   Default for regularizing Delta to remain backward compatible
       IF ( SEAICE_deltaMin .EQ. UNSET_RL ) SEAICE_deltaMin = SEAICE_EPS
-C--   Default to have a normal flow rule if SEAICE_eccfr is not set
+C--   Default is to have a normal flow rule if SEAICE_eccfr is not set
       IF (SEAICE_eccfr .EQ. UNSET_RL ) SEAICE_eccfr = SEAICE_eccen
-      
+
 C--   If no PDF was prescribed use the default uniform pdf
       tmp = SEAICE_multDim
       DO l = 1, SEAICE_multDim

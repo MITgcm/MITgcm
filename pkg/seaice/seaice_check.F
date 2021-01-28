@@ -851,7 +851,8 @@ C     end if usePW79thermodynamics
       ENDIF
 #endif /* SEAICE_ALLOW_CLIPZETA */
 
-#if !defined(SEAICE_ALLOW_TEM) || !defined(SEAICE_CGRID)
+#ifndef SEAICE_CGRID
+# ifndef SEAICE_ALLOW_TEM
       IF ( SEAICEuseTEM ) THEN
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseTEM requires that'
        CALL PRINT_ERROR( msgBuf, myThid )
@@ -860,9 +861,8 @@ C     end if usePW79thermodynamics
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
-#endif
-
-#if !defined(SEAICE_ALLOW_MCE) || !defined(SEAICE_CGRID)
+# endif
+# ifndef SEAICE_ALLOW_MCE
       IF ( SEAICEuseMCE ) THEN
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseMCE requires that'
        CALL PRINT_ERROR( msgBuf, myThid )
@@ -871,9 +871,8 @@ C     end if usePW79thermodynamics
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
-#endif
-
-#if !defined(SEAICE_ALLOW_FULLMC) || !defined(SEAICE_CGRID)
+# endif
+# ifndef SEAICE_ALLOW_FULLMC
       IF ( SEAICEuseFULLMC ) THEN
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseFULLMC requires that'
        CALL PRINT_ERROR( msgBuf, myThid )
@@ -882,9 +881,8 @@ C     end if usePW79thermodynamics
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
-#endif
-
-#if !defined(SEAICE_ALLOW_TEARDROP) || !defined(SEAICE_CGRID)
+# endif
+# ifndef SEAICE_ALLOW_TEARDROP
       IF (SEAICEuseTD ) THEN
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseTD requires that'
        CALL PRINT_ERROR( msgBuf, myThid )
@@ -903,11 +901,9 @@ C     end if usePW79thermodynamics
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
-#endif
+# endif
 
-#ifndef SEAICE_CGRID
-
-#ifdef SEAICE_TEST_ICE_STRESS_1
+# ifdef SEAICE_TEST_ICE_STRESS_1
        WRITE(msgBuf,'(A)')
      &  'SEAICE_CHECK: Only relevant for B-grid:'
        CALL PRINT_ERROR( msgBuf, myThid )
@@ -918,7 +914,7 @@ C     end if usePW79thermodynamics
      &  'SEAICE_CHECK: SEAICE_BICE_STRESS (defined by default)'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#endif /* SEAICE_TEST_ICE_STRESS_1 */
+# endif /* SEAICE_TEST_ICE_STRESS_1 */
       IF ( SEAICEuseDYNAMICS.AND.useCubedSphereExchange ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK: ',
      &       'B-grid dynamics not working on Cubed-Sphere grid'
