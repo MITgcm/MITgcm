@@ -609,7 +609,6 @@ c-----------------------------------------------------------------------
        ENDDO
       ENDDO
 
-<<<<<<< HEAD
       DO j = jmin, jmax
        DO i = imin, imax
         k = 1
@@ -620,16 +619,10 @@ c-----------------------------------------------------------------------
        ENDDO
       ENDDO
 #else
-      DO j = jmin, jmax
-       DO i = imin, imax
-        DO k = 1, Nr
-         km1 = max(1,k-1)
-=======
       DO k = 1, Nr
        km1 = max(1,k-1)
        DO j = jmin, jmax
         DO i = imin, imax
->>>>>>> upstream/master
          KPPviscAz(i,j,k,bi,bj) = vddiff(i,j,k-1,1) * maskC(i,j,k,bi,bj)
      &        * maskC(i,j,km1,bi,bj)
          KPPdiffKzS(i,j,k,bi,bj)= vddiff(i,j,k-1,2) * maskC(i,j,k,bi,bj)
