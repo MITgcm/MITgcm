@@ -222,6 +222,7 @@ C      Reducing eta with the replacement pressure
            em = e11(i,j,bi,bj)-e22(i,j,bi,bj)
            shearDef = SQRT(em*em + 4. _d 0 * e12Csq(i,j))
            k = ep / (shearDef+SEAICE_deltaMin)
+           ksq = k*k
            a = tnsFac(i,j,bi,bj)
            IF     (ksq .GE.  1. _d 16) THEN
             x =  a
