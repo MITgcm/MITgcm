@@ -53,6 +53,7 @@ C     myThid :: Thread no. that called this routine.
       INTEGER myIter, myThid
 CEOP
 
+#ifndef SEAICE_USE_GROWTH_ADX
 #if (defined ALLOW_EXF) && (defined ALLOW_ATM_TEMP)
 C     !FUNCTIONS:
 #ifdef ALLOW_DIAGNOSTICS
@@ -490,8 +491,8 @@ C for lateral melt parameterization:
          ENDDO
         ENDDO
 #if (defined (ALLOW_MEAN_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SSH_GLOBMEAN_COST_CONTRIBUTION))
-        DO J=1-oLy,sNy+oLy
-         DO I=1-oLx,sNx+oLx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
           frWtrAtm(I,J,bi,bj)        = 0.0 _d 0
          ENDDO
         ENDDO
@@ -832,7 +833,8 @@ CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
 #ifdef SEAICE_CAP_SUBLIM
      I        latentHeatFluxMaxMult(1,1,IT),
 #endif
-     U        ticeInMult(1,1,IT), ticeOutMult(1,1,IT),
+     I        ticeInMult(1,1,IT),
+     O        ticeOutMult(1,1,IT),
      O        a_QbyATMmult_cover(1,1,IT),
      O        a_QSWbyATMmult_cover(1,1,IT),
      O        a_FWbySublimMult(1,1,IT),
@@ -2706,6 +2708,7 @@ C SIatmFW follows the same convention as empmr -- SIatmFW diag does not
 #else  /* ALLOW_EXF and ALLOW_ATM_TEMP */
       STOP 'SEAICE_GROWTH not compiled without EXF and ALLOW_ATM_TEMP'
 #endif /* ALLOW_EXF and ALLOW_ATM_TEMP */
+#endif /* ndef SEAICE_USE_GROWTH_ADX */
 
       RETURN
       END

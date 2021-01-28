@@ -1272,10 +1272,10 @@ C  Harmonic on Div.u points
 #endif
 #ifdef ALLOW_3D_VISCAH
      &         + viscAhDfld(i,j,k,bi,bj)
-#ifdef ALLOW_AUTODIFF
+# ifdef AUTODIFF_ALLOW_VISCFACADJ
      &          *viscFacAdj
-#endif
-#endif
+# endif /* AUTODIFF_ALLOW_VISCFACADJ */
+#endif /* ALLOW_3D_VISCAH */
          viscAh_DMin(i,j)=MAX(viscAhGridMin*L2rdt,Uscl)
          viscAh_D(i,j)=MAX(viscAh_DMin(i,j),Alin)
          viscAh_DMax(i,j)=MIN(viscAhGridMax*L2rdt,viscAhMax)
@@ -1286,10 +1286,10 @@ C  BiHarmonic on Div.u points
      &         + viscA4_DLth(i,j)+viscA4_DSmg(i,j)
 #ifdef ALLOW_3D_VISCA4
      &         + viscA4Dfld(i,j,k,bi,bj)
-#ifdef ALLOW_AUTODIFF
+# ifdef AUTODIFF_ALLOW_VISCFACADJ
      &          *viscFacAdj
-#endif
-#endif
+# endif /* AUTODIFF_ALLOW_VISCFACADJ */
+#endif /* ALLOW_3D_VISCA4 */
          viscA4_DMin(i,j)=MAX(viscA4GridMin*L4rdt,U4scl)
          viscA4_D(i,j)=MAX(viscA4_DMin(i,j),Alin)
          viscA4_DMax(i,j)=MIN(viscA4GridMax*L4rdt,viscA4Max)
@@ -1393,6 +1393,9 @@ C  Harmonic on Zeta points
 #endif
 #ifdef ALLOW_3D_VISCAH
      &         + viscAhZfld(i,j,k,bi,bj)
+# ifdef AUTODIFF_ALLOW_VISCFACADJ
+     &          *viscFacAdj
+# endif /* AUTODIFF_ALLOW_VISCFACADJ */
 #endif
          viscAh_ZMin(i,j)=MAX(viscAhGridMin*L2rdt,Uscl)
          viscAh_Z(i,j)=MAX(viscAh_ZMin(i,j),Alin)
@@ -1404,6 +1407,9 @@ C  BiHarmonic on Zeta points
      &         + viscA4_ZLth(i,j)+viscA4_ZSmg(i,j)
 #ifdef ALLOW_3D_VISCA4
      &         + viscA4Zfld(i,j,k,bi,bj)
+# ifdef AUTODIFF_ALLOW_VISCFACADJ
+     &          *viscFacAdj
+# endif /* AUTODIFF_ALLOW_VISCFACADJ */
 #endif
          viscA4_ZMin(i,j)=MAX(viscA4GridMin*L4rdt,U4scl)
          viscA4_Z(i,j)=MAX(viscA4_ZMin(i,j),Alin)

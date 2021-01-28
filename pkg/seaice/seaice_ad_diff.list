@@ -15,7 +15,6 @@ seaice_init_varia.f
 seaice_model.f
 seaice_read_pickup.f
 seaice_solve4temp.f
-seaice_solve4temp_adx.f
 seaice_tracer_phys.f
 seaice_cost_accumulate_mean.f
 seaice_cost_areasst.f

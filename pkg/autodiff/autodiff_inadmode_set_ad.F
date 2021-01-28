@@ -46,7 +46,8 @@ C     myThid :: my Thread Id number
         SEAICEuseDYNAMICS  = .NOT.SEAICEuseDYNAMICSinFwdMode
       ENDIF
       SEAICEadjMODE=SEAICEapproxLevInAd
-      SINegFac = SIregFacInAd
+C     SIregFacInAd = UNSET_RL by default, so we need to check this here
+      IF ( SIregFacInAd .NE. UNSET_RL ) SINegFac = SIregFacInAd
 #endif /* ALLOW_SEAICE */
       viscFacAdj=viscFacInAd
 

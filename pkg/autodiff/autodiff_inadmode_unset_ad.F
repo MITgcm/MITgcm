@@ -46,9 +46,10 @@ C     myThid :: my Thread Id number
         SEAICEuseDYNAMICS  = SEAICEuseDYNAMICSinFwdMode
       ENDIF
       SEAICEadjMODE=0
-      SINegFac      = SIregFacInFw
+C     SIregFacInFw = UNSET_RL by default, so we need to check this here
+      IF ( SIregFacInFw .NE. UNSET_RL ) SINegFac = SIregFacInFw
 #endif /* ALLOW_SEAICE */
-      viscFacAdj=1. _d 0
+      viscFacAdj=viscFacInFw
 
       IF ( debugLevel.GE.debLevC ) THEN
        WRITE(msgBuf,'(A,L5)')
