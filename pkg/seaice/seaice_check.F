@@ -815,48 +815,48 @@ C     end if usePW79thermodynamics
 
 #ifdef SEAICE_ALLOW_EVP
       IF ( SEAICEuseEVP ) THEN
- #ifdef SEAICE_ALLOW_TEARDROP
+#ifdef SEAICE_ALLOW_TEARDROP
        IF (SEAICEuseTD .OR. SEAICEusePL) THEN
         WRITE(msgBuf,'(A)')
-      &      'SEAICE_CHECK: SEAICEuseEVP = .TRUE. and SEAICEuseTD or '
+     &      'SEAICE_CHECK: SEAICEuseEVP = .TRUE. and SEAICEuseTD or '
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
-      &      'SEAICE_CHECK: SEAICEusePL = .TRUE. but these rheologies'
+     &      'SEAICE_CHECK: SEAICEusePL = .TRUE. but these rheologies'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
-      &      'SEAICE_CHECK: are not implemented for EVP'
+     &      'SEAICE_CHECK: are not implemented for EVP'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
        ENDIF
- #endif
- #ifdef SEAICE_ALLOW_MCE
+#endif
+#ifdef SEAICE_ALLOW_MCE
        IF ( SEAICEuseMCE ) THEN
         WRITE(msgBuf,'(A)')
-      &      'SEAICE_CHECK: SEAICEuseEVP = .TRUE. and'
+     &      'SEAICE_CHECK: SEAICEuseEVP = .TRUE. and'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
-      &      'SEAICE_CHECK: SEAICEuseMCE = .TRUE. but this rheologie'
+     &      'SEAICE_CHECK: SEAICEuseMCE = .TRUE. but this rheologie'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
-      &      'SEAICE_CHECK: is not implemented for EVP'
+     &      'SEAICE_CHECK: is not implemented for EVP'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
        ENDIF
- #endif
- #ifdef SEAICE_ALLOW_FULLMC
+#endif
+#ifdef SEAICE_ALLOW_FULLMC
        IF ( SEAICEuseFULLMC ) THEN
         WRITE(msgBuf,'(A)')
-      &      'SEAICE_CHECK: SEAICEuseEVP = .TRUE. and'
+     &      'SEAICE_CHECK: SEAICEuseEVP = .TRUE. and'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
-      &      'SEAICE_CHECK: SEAICEuseFULLMC = .TRUE. but this rheologie'
+     &      'SEAICE_CHECK: SEAICEuseFULLMC = .TRUE. but this rheologie'
         CALL PRINT_ERROR( msgBuf, myThid )
         WRITE(msgBuf,'(A)')
-      &      'SEAICE_CHECK: is not implemented for EVP'
+     &      'SEAICE_CHECK: is not implemented for EVP'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
        ENDIF
- #ifdef
+#endif
       ENDIF
 #endif
 
