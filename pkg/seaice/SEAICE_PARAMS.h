@@ -35,7 +35,16 @@ C     SEAICEuseJFNK     :: If true, use Jacobi-free Newton-Krylov solver
 C                          instead of LSR (default: false)
 C     SEAICEuseIMEX     :: use IMplicit/EXplicit scheme with JFNK
 C     SEAICEuseTEM      :: to use truncated ellipse method (see Geiger et al.
-C                          1998) set this parameter to true, default is false
+C                          1998) or and coulombic yield curve (Hibler and
+C                          Schulson 2000) set this parameter to true,
+C                          default is false
+C     SEAICEuseFULLMC   :: to use the Mohr-Coulomb yield curve with a shear
+C                          only flow rule (Ip et al 1991), set this parameter to
+C                          true, default is false
+C     SEAICEuseMCE      :: to use the Mohr-Coulomb yield curve with elliptical
+C                          plastic potential (similarly as Hibler and Schulson
+C                          2000 without the elliptical cap) set this parameter
+C                          to true, default is false
 C     SEAICEuseTD       :: to use the teardrop yield curve (Zhang and Rothrock,
 C                          2005) set this parameter to true, default is false
 C     SEAICEusePL       :: to use the parabolic lens yield curve (Zhang and
@@ -476,7 +485,8 @@ C                        (2007)-scheme
 C     SEAICEmaxRaft   :: regularization parameter (default=1)
 C     SEAICEsnowFracRidge :: fraction of snow that remains on ridged
 C     SINegFac        :: SIADV over/undershoot factor in FW/Adjoint
-C     SEAICEmcMu      :: parameter for MC yield curve (slope of trucating line)
+C     SEAICEmcMu      :: parameter for MC yield curve for useMCE, useFULLMC and
+C                        useTEM options, default is one
 C
       _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn, SEAICE_deltaTevp
       _RL SEAICE_LSRrelaxU, SEAICE_LSRrelaxV
