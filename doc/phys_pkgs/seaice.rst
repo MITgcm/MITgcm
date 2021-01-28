@@ -4,7 +4,7 @@ SEAICE Package
 **************
 
 Authors: Martin Losch, Dimitris Menemenlis, An Nguyen, Jean-Michel
-Campin, Patrick Heimbach, Chris Hill and Jinlun Zhang
+Campin, Patrick Heimbach, Chris Hill, Jinlun Zhang, and Damien Ringeisen
 
 .. _ssub_phys_pkg_seaice_intro:
 
@@ -104,7 +104,15 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseJFNK`           |     FALSE                    | use the JFNK-solver                                                     |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICEuseTEM`            |     FALSE                    | use truncated ellipse method                                            |
+  | :varlink:`SEAICEuseTEM`            |     FALSE                    | use truncated ellipse method or Coulombic yield curve                   |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICEuseFMC`            |     FALSE                    | use the Mohr-Coulomb yield curve with shear flow rule                   |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICEuseMCE`            |     FALSE                    | use the Mohr-Coulomb yield curve with elliptical plastic potential      |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICEuseTD`             |     FALSE                    | use the Teardrop yield curve with normal flow rule                      |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICEusePL`             |     FALSE                    | use the Parabolic Lens yield curve with normal flow rule                |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseStrImpCpl`      |     FALSE                    | use strength implicit coupling in LSR/JFNK                              |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -221,6 +229,12 @@ General flags and parameters
   | :varlink:`SEAICE_cStar`            | 20.0                         | sea ice strength constant :math:`C^{\ast}`  (non-dim.)                  |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_eccen`            | 2.0                          | VP rheology ellipse aspect ratio :math:`e`                              |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICE_eccfr`            | :varlin:`SEAICE_eccen` value | sea ice plastic potential ellipse aspect ratio :math:`e_G`              |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICEmcMU`              | 1.00000E+00                  | Slope of the Mohr-Coulomb yield curve                                   |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICEtensilFac`         | 0.00000E+00                  | Tensile factor for the yield curve                                      |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_rhoAir`           | 1.3  (or                     | density of air (kg/m\ :sup:`3`)                                         |
   |                                    | :filelink:`pkg/exf` value)   |                                                                         |
@@ -575,6 +589,105 @@ bounding :math:`\zeta` by a smooth (differentiable) expression:
 where :math:`\Delta_{\min}=10^{-20}\,\text{s}^{-1}` should be chosen to avoid
 divisions by zero.
 
+
+.. _para_phys_pkg_seaice_altVPrheologies_ellnnfr:
+
+Elliptical yield curve with non-normal flow rule
+################################################
+
+|  
+
+Defining the runtime parameter ``SEAICE_eccfr`` with a value different from ``SEAICE_eccen`` allows 
+to use an elliptical yield curve with a non-normal flow rule as described in :cite:`ringeisen20`. 
+In this case the viscosities are function of ``SEAICE_eccen`` abbreviated :math:`e_F`
+and ``SEAICE_eccfr`` abbreviated :math:`e_G`, and are defined as
+
+.. math::
+   \begin{align}
+     \zeta &= \frac{P(1+k_t)}{2\Delta} 
+     \eta = \frac{\zeta}{e_G^2} = \frac{P(1+k_t)}{2e_G^2\Delta} \\
+     \intertext{with the abbreviation}
+     \Delta &= \sqrt{(\dot{\epsilon}_{11}-\dot{\epsilon}_{22})^2
+       +\frac{e_F^2}{e_G^4}((\dot{\epsilon}_{11}
+       -\dot{\epsilon}_{22})^2+4\dot{\epsilon}_{12}^2)}.
+   \end{align}
+
+Note that if :math:`e_G=e_F=e`, then the formulation is same as with the normal flow rule.
+
+.. _para_phys_pkg_seaice_TEM:
+
+Truncated ellipse method (TEM) for elliptical yield curve
+#########################################################
+
+|  
+
+In the so-called truncated ellipse method the shear viscosity :math:`\eta` is capped to suppress any tensile stress:
+
+.. math::
+   :label: eq_etatem
+
+     \eta = \min\left(\frac{\zeta}{e^2},
+     \frac{\frac{P}{2}-\zeta(\dot{\epsilon}_{11}+\dot{\epsilon}_{22})}
+     {\sqrt{\max(\Delta_{\min}^{2},(\dot{\epsilon}_{11}-\dot{\epsilon}_{22})^2
+         +4\dot{\epsilon}_{12}^2})}\right).
+
+To enable this method, set ``#define SEAICE_ALLOW_TEM`` in
+``SEAICE_OPTIONS.h`` and turn it on with ``SEAICEuseTEM`` in ``data.seaice``.
+
+In addition, the yield curve can be truncated with a Mohr-Coulomb slope if ``SEAICEmcMU`` is set to be different than 1.0 in ``data.seaice``. By doing so, a Coulombic yield curve is defined, similarly as the one shown in :cite:`hib2000` and :cite:`ringeisen2019`. 
+
+For this rheology, it is recommended to use a non-zero tensile strength, so set ``SEAICE_tensilFac`` to be greater than zero in ``data.seaice``, e.g. 0.05 or 5%.
+
+.. _para_phys_pkg_seaice_altVPrheologies_MCS:
+
+Mohr-Coulomb yield curve with shear flow rule
+#############################################
+
+|  
+
+If ``SEAICE_ALLOW_FULLMC`` is defined in ``SEAICE_OPTIONS.h`` and ``SEAICEuseFMC = .TRUE.`` is set in ``data.seaice``,  then the Mohr-Coulomb rheology as defined in :cite:`ip1991` is used. The slope of the Mohr-Coulomb yield curve is defined by ``SEAICEmcMU`` in ``data.seaice``.
+
+For this rheology, it is recommended to use a non-zero tensile strength, so set ``SEAICE_tensilFac`` to be greater than zero in ``data.seaice``, e.g. 0.05 or 5%.
+
+**WARNING: This rheology is known to create results of bad qualities. Use with caution!**
+
+.. _para_phys_pkg_seaice_altVPrheologies_MCE:
+
+Mohr-Coulomb yield curve with elliptical plastic potential
+##########################################################
+
+|  
+
+If ``SEAICE_ALLOW_MCE`` is defined in ``SEAICE_OPTIONS.h`` and ``SEAICEuseMCE = .TRUE.`` is set in ``data.seaice``,  then the Mohr-Coulomb rheology is used. This Mohr-Coulomb yield curve use the elliptical plastic potential to define the flow rule. The slope of the Mohr-Coulomb yield curve is defined by ``SEAICEmcMU`` in ``data.seaice``, and the plastic potential ellipse aspect ratio is set by ``SEAICE_eccen`` in ``data.seaice``. 
+
+For this rheology, it is recommended to use a non-zero tensile strength, so set ``SEAICE_tensilFac`` to be greater than zero in ``data.seaice``, e.g. 0.05 or 5%.
+
+.. _para_phys_pkg_seaice_altVPrheologies_TD:
+
+Teardrop yield curve with normal flow rule
+##########################################
+
+|  
+
+If ``SEAICE_ALLOW_TEARDROP`` is defined in ``SEAICE_OPTIONS.h`` and ``SEAICEuseTD = .TRUE.`` is set in ``data.seaice``,  then the Teardrop rheology is used. The size of the yield curve can be varied by changing the tensile strength, using ``SEAICE_tensFac`` in ``data.seaice``. 
+
+This rheology was first described in :cite:`zha2005`.
+
+For this rheology, it is recommended to use a non-zero tensile strength, so set ``SEAICE_tensilFac`` to be greater than zero in ``data.seaice``, e.g. 0.05 or 5%.
+
+.. _para_phys_pkg_seaice_altVPrheologies_PL:
+
+Parabolic lens yield curve with normal flow rule
+################################################
+
+|  
+
+If ``SEAICE_ALLOW_TEARDROP`` is defined in ``SEAICE_OPTIONS.h`` and ``SEAICEusePL = .TRUE.`` is set in ``data.seaice``,  then the Parabolic Lens rheology is used. The size of the yield curve can be varied by changing the tensile strength, using ``SEAICE_tensFac`` in ``data.seaice``.
+
+This rheology was first described in :cite:`zha2005`.
+
+For this rheology, it is recommended to use a non-zero tensile strength, so set ``SEAICE_tensilFac`` to be greater than zero in ``data.seaice``, e.g. 0.05 or 5%.
+
 .. _para_phys_pkg_seaice_LSRJFNK:
 
 LSR and JFNK solver
@@ -896,24 +1009,6 @@ has been obtained with these values (Kimmritz et al. 2016 :cite:`kimmritz16`):
 Note, that probably because of the C-grid staggering of velocities and
 stresses, mEVP may not converge as successfully as in Kimmritz et al. (2015) :cite:`kimmritz15`, see also Kimmritz et al. (2016) :cite:`kimmritz16`,
 and that convergence at very high resolution (order 5 km) has not been studied yet.
-
-.. _para_phys_pkg_seaice_TEM:
-
-Truncated ellipse method (TEM) for yield curve
-----------------------------------------------
-
-In the so-called truncated ellipse method the shear viscosity :math:`\eta` is capped to suppress any tensile stress:
-
-.. math::
-   \eta = \min\left(\frac{\zeta}{e^2},
-   \frac{\frac{P}{2}-\zeta(\dot{\epsilon}_{11}+\dot{\epsilon}_{22})}
-     {\sqrt{\max(\Delta_{\min}^{2},(\dot{\epsilon}_{11}-\dot{\epsilon}_{22})^2
-         +4\dot{\epsilon}_{12}^2})}\right).
-   :label: eq_etatem
-
-To enable this method, set ``#define`` :varlink:`SEAICE_ALLOW_TEM` in
-:filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` and turn
-it on with :varlink:`SEAICEuseTEM` in ``data.seaice``.
 
 .. _para_phys_pkg_seaice_iceoceanstress:
 
