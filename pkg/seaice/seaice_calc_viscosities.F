@@ -73,7 +73,7 @@ C     em            - e11-e22 (abbreviation)
       _RL deltaCreg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL shearDefSq, shearDef
 #ifdef SEAICE_ALLOW_TEARDROP
-      _RL k,ksq,x,a,ap1,etamax_TD,zetamax_TD,cyc,xma
+      _RL k,ksq,x,a,ap1,etamax_TD,zetamax_TD,cyc,xma, etapr
       _RL tnsFacTD, recip_eTD2
 #endif /* SEAICE_ALLOW_TEARDROP */
 #if (defined SEAICE_ALLOW_MCE || defined SEAICE_ALLOW_TEM)
@@ -166,52 +166,27 @@ C     Original formulation of Zhang 2005:
 C            x = ( TWO * ksq + TWO *k*sqrt(ksq + 3. _d 0 * ap1 )
 C      &         - (6. _d 0 * ap1) ) * oneNinth + a
 
-C      Replacing tip by an ellipse for tensile stresses
-           IF (x .GT. 0. _d 0) THEN
-
-            tnsFacTD = a * 0.5 _d 0
-
-            IF (tnsFacTD .GT. 0. _d 0 ) THEN
-             recip_eTD2 = a*a / tnsFacTD
-            ELSE
-             recip_eTD2 = ONE
-            ENDIF
-
-            shearDefSq = em*em + 4. _d 0*e12Csq(i,j)
-            deltaC(i,j,bi,bj) = SQRT(ep*ep + recip_eTD2*shearDefSq)
-            deltaCreg(i,j) = MAX(deltaC(i,j,bi,bj),SEAICE_deltaMin)
-            zeta(i,j,bi,bj) = HALF*( press0(i,j,bi,bj)
-     &          * ( ONE + tnsFacTD ) )/deltaCreg(i,j)
-            zeta(i,j,bi,bj)= MIN(zeta(i,j,bi,bj),ZMAX(i,j,bi,bj))
-            eta(i,j,bi,bj) = recip_eTD2 * zeta(i,j,bi,bj)
-            press(i,j,bi,bj) =
-     &          ( press0(i,j,bi,bj)*( ONE - SEAICEpressReplFac )
-     &          + TWO*zeta(i,j,bi,bj)*deltaC(i,j,bi,bj)
-     &          * SEAICEpressReplFac/( ONE + tnsFacTD )
-     &          ) * ( ONE - tnsFacTD )
-
 C     Teardrop yield curve
-           ELSE
 C     capping x at a is probably better that setting it to a for x>1,
 C     but still not ideal (because non-differentiable)
 C     possible alternative: log(exp(rho*x)+exp(rho*a))/rho, with rho=O(100)
-            x = MIN( x, a )
+           x = MIN( x, a )
 C             x = MAX( x,-1 _d 0 ) ! to be sure
 
-            zeta(i,j,bi,bj) = (x + cyc) * press0(i,j,bi,bj)
+           zeta(i,j,bi,bj) = (x + cyc) * press0(i,j,bi,bj)
      &          / SIGN( MAX( ABS(ep),deltaMinSq ), ep)
 C      Original formulation of Zhang 2005
 C            zeta(i,j,bi,bj) = (x + 0.5 _d 0) * press0(i,j,bi,bj)
 C      &          / SIGN( ABS(ep) + SEAICE_deltaMin, ep)
 C      &                    / SIGN( MAX( ABS(ep),deltaMinSq ), 0.5 _d 0 * ep)
 
-            eta(i,j,bi,bj) = -(x-a) * SQRT(ONE+x) * press0(i,j,bi,bj)
+           eta(i,j,bi,bj) = -(x-a) * SQRT(ONE+x) * press0(i,j,bi,bj)
      &                     / (shearDef + deltaMinSq)
 
 C      Defining the max values for eta and zeta
-            etamax_TD = ZMAX(i,j,bi,bj) * MIN(eta(i,j,bi,bj)
+           etamax_TD = ZMAX(i,j,bi,bj) * MIN(eta(i,j,bi,bj)
      &               /(ABS(zeta(i,j,bi,bj)) + deltaMinSq), ONE)
-            zetamax_TD =ZMAX(i,j,bi,bj) * MIN(zeta(i,j,bi,bj)
+           zetamax_TD =ZMAX(i,j,bi,bj) * MIN(zeta(i,j,bi,bj)
      &               /(ABS(eta(i,j,bi,bj)) + deltaMinSq), ONE )
 
 C      Applying the max values
@@ -235,8 +210,6 @@ C      Reducing eta with the replacement pressure
            eta(i,j,bi,bj) = eta(i,j,bi,bj) * (ONE - SEAICEpressReplFac)
      &         + eta(i,j,bi,bj) * press(i,j,bi,bj) * SEAICEpressReplFac
      &         / (press0(i,j,bi,bj) * TWO  * cyc + deltaMinSq)
-
-           ENDIF ! ellipse for tensile deformation stress
 
           ENDDO ! x loop
          ENDDO ! y loop
@@ -284,13 +257,12 @@ C          Replacement pressure
      &          / SIGN(ABS(xma) + SEAICE_deltaMin, xma ) )
      &          * ( ONE - a )
 
-C          Eta change for the replacement pressure
-           IF (press0(i,j,bi,bj)  .NE.0. _d 0)
-     &          eta(i,j,bi,bj) = eta(i,j,bi,bj)
-     &          * ( ( ONE - SEAICEpressReplFac )
-     &          + SEAICEpressReplFac * press(i,j,bi,bi)
-     &          / ( ( ONE - a ) * press0(i,j,bi,bj) ) )
-
+C     Eta change for the replacement pressure
+           etapr = -(x-a) * (ONE + x) * press(i,j,bi,bj)/(ONE-a)
+     &                     /(shearDef+SEAICE_deltaMin)
+           etapr = MIN( etapr, etamax_TD )
+           eta(i,j,bi,bj) =  SEAICEpressReplFac * etapr
+     &          + eta(i,j,bi,bj) * ( ONE - SEAICEpressReplFac )
           ENDDO !i loop
          ENDDO !j loop
 #endif /* SEAICE_ALLOW_TEARDROP */
