@@ -76,8 +76,8 @@ C--   Open the parameter file
 
 C     Make scratch copies of eedata with and without comments
 #ifdef SINGLE_DISK_IO
-      WRITE(scratchFile1,'(A,A)') '/tmp/scratch1_', data_file
-      WRITE(scratchFile2,'(A,A)') '/tmp/scratch2_', data_file
+      WRITE(scratchFile1,'(A,A)') 'scratch1_', data_file
+      WRITE(scratchFile2,'(A,A)') 'scratch2_', data_file
       IF ( myProcId .EQ. 0 ) THEN
        OPEN(UNIT=scrUnit1, FILE=scratchFile1, STATUS='UNKNOWN')
        OPEN(UNIT=scrUnit2, FILE=scratchFile2, STATUS='UNKNOWN')
