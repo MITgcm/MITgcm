@@ -532,7 +532,7 @@ C         INITIALIZE BOUNDARY CONDS AT NORTH
 #ifdef ALLOW_CTRL
 !      _EXCH_XY_RL(STREAMICE_ctrl_mask, myThid )
       CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlL', STREAMICE_ctrl_mask,
-     &  'XY', Nr, 1, .FALSE., 0, myThid, dummyRS )
+     &  'XY ', Nr, 1, .FALSE., 0, myThid, dummyRS )
 #endif
 
 #ifdef ALLOW_COST
