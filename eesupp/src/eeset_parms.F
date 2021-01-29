@@ -171,10 +171,11 @@ C     After opening regular files here, they are closed with STATUS='DELETE'
       IF( myProcId .EQ. 0 ) THEN
 #endif
 
-      OPEN(UNIT=eeDataUnit,FILE='/tmp/namelist/eedata',STATUS='OLD',
 #ifdef PLEIADES_LUSTRE_OPT
+      OPEN(UNIT=eeDataUnit,FILE='/tmp/namelist/eedata',STATUS='OLD',
      &     ACTION='read',err=1,IOSTAT=errIO)
 #else
+      OPEN(UNIT=eeDataUnit,FILE='eedata',STATUS='OLD',
      &     err=1,IOSTAT=errIO)
 #endif
       IF ( errIO .GE. 0 ) GOTO 2
