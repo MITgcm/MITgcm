@@ -671,7 +671,7 @@ Teardrop yield curve with normal flow rule
 
 If ``SEAICE_ALLOW_TEARDROP`` is defined in ``SEAICE_OPTIONS.h`` and ``SEAICEuseTD = .TRUE.`` is set in ``data.seaice``,  then the Teardrop rheology is used. The size of the yield curve can be varied by changing the tensile strength, using ``SEAICE_tensFac`` in ``data.seaice``. 
 
-This rheology was first described in :cite:`zha2005`.
+This rheology was first described in :cite:`zha2005`, and modified to adress some issues.
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set ``SEAICE_tensilFac`` to be greater than zero in ``data.seaice``, e.g. 0.05 or 5%.
 
@@ -684,7 +684,7 @@ Parabolic lens yield curve with normal flow rule
 
 If ``SEAICE_ALLOW_TEARDROP`` is defined in ``SEAICE_OPTIONS.h`` and ``SEAICEusePL = .TRUE.`` is set in ``data.seaice``,  then the Parabolic Lens rheology is used. The size of the yield curve can be varied by changing the tensile strength, using ``SEAICE_tensFac`` in ``data.seaice``.
 
-This rheology was first described in :cite:`zha2005`.
+This rheology was first described in :cite:`zha2005`, and modified to adress some issues.
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set ``SEAICE_tensilFac`` to be greater than zero in ``data.seaice``, e.g. 0.05 or 5%.
 
