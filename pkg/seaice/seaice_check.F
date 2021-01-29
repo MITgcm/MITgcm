@@ -814,6 +814,22 @@ C     end if usePW79thermodynamics
 #endif
 
 #ifdef SEAICE_ALLOW_EVP
+      IF ( SEAICEuseEVP .AND. (SEAICE_eccfr.NE.SEAICE_eccen) ) THEN
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseEVP = .TRUE., '//
+     &      'so EVP is turned on by setting appropriate'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A,F5.2,A,F5.2,A)')
+     &      'SEAICE_CHECK: runtime parameters, but SEAICE_eccfr(=',
+     &      SEAICE_eccfr , ')/=SEAICE_eccen(=', SEAICE_eccen, ')'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')'SEAICE_CHECK: implies a non-normal flow '//
+     &      'rule for the elliptical yield curve,'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
+     &      'SEAICE_CHECK: which is not implemented for EVP.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
       IF ( SEAICEuseEVP .AND. (
 # ifdef SEAICE_ALLOW_TEARDROP
      &     SEAICEuseTD .OR. SEAICEusePL
