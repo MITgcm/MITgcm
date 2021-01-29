@@ -814,52 +814,29 @@ C     end if usePW79thermodynamics
 #endif
 
 #ifdef SEAICE_ALLOW_EVP
-      IF ( SEAICEuseEVP ) THEN
-#ifdef SEAICE_ALLOW_TEARDROP
-       IF (SEAICEuseTD .OR. SEAICEusePL) THEN
-        WRITE(msgBuf,'(A)')
-     &      'SEAICE_CHECK: SEAICEuseEVP = .TRUE. and SEAICEuseTD or '
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &      'SEAICE_CHECK: SEAICEusePL = .TRUE. but these rheologies'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
+      IF ( SEAICEuseEVP .AND. (
+# ifdef SEAICE_ALLOW_TEARDROP
+     &     SEAICEuseTD .OR. SEAICEusePL
+# endif
+# ifdef SEAICE_ALLOW_MCE
+     &     .OR. SEAICEuseMCE
+# endif
+# ifdef SEAICE_ALLOW_FULLMC
+     &     .OR. SEAICEuseFULLMC
+# endif
+     &     .OR. .FALSE. ) )  THEN
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseFULLMC, '//
+     &     'SEAICEuseTD, SEAICEusePL, or SEAICEuseMCE = .TRUE.,'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: and SEAICEuseEVP = .TRUE., '//
+     &      'but these non-standard rheologies'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(A)')
      &      'SEAICE_CHECK: are not implemented for EVP'
         CALL PRINT_ERROR( msgBuf, myThid )
         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-       ENDIF
-#endif
-#ifdef SEAICE_ALLOW_MCE
-       IF ( SEAICEuseMCE ) THEN
-        WRITE(msgBuf,'(A)')
-     &      'SEAICE_CHECK: SEAICEuseEVP = .TRUE. and'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &      'SEAICE_CHECK: SEAICEuseMCE = .TRUE. but this rheologie'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &      'SEAICE_CHECK: is not implemented for EVP'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-       ENDIF
-#endif
-#ifdef SEAICE_ALLOW_FULLMC
-       IF ( SEAICEuseFULLMC ) THEN
-        WRITE(msgBuf,'(A)')
-     &      'SEAICE_CHECK: SEAICEuseEVP = .TRUE. and'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &      'SEAICE_CHECK: SEAICEuseFULLMC = .TRUE. but this rheologie'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        WRITE(msgBuf,'(A)')
-     &      'SEAICE_CHECK: is not implemented for EVP'
-        CALL PRINT_ERROR( msgBuf, myThid )
-        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-       ENDIF
-#endif
       ENDIF
-#endif
-
+#endif /* SEAICE_ALLOW_EVP */
 
 #ifndef SEAICE_GLOBAL_3DIAG_SOLVER
       IF ( SEAICEuseMultiTileSolver ) THEN
@@ -899,57 +876,63 @@ C     end if usePW79thermodynamics
       ENDIF
 #endif /* SEAICE_ALLOW_CLIPZETA */
 
-#ifndef SEAICE_CGRID
-# ifndef SEAICE_ALLOW_TEM
+#ifndef SEAICE_ALLOW_TEM
       IF ( SEAICEuseTEM ) THEN
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseTEM requires that'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'SEAICE_CHECK: SEAICE_ALLOW_TEM and SEAICE_CGRID are defined'
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseTEM requires '//
+     &      'that SEAICE_ALLOW_TEM is defined.'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
-# endif
-# ifndef SEAICE_ALLOW_MCE
+#endif
+#ifndef SEAICE_ALLOW_MCE
       IF ( SEAICEuseMCE ) THEN
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseMCE requires that'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'SEAICE_CHECK: SEAICE_ALLOW_MCE and SEAICE_CGRID are defined'
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseMCE requires '//
+     &      'that SEAICE_ALLOW_MCE is defined.'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
-# endif
-# ifndef SEAICE_ALLOW_FULLMC
+#endif
+#ifndef SEAICE_ALLOW_FULLMC
       IF ( SEAICEuseFULLMC ) THEN
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseFULLMC requires that'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)')
-     &  'SEAICE_CHECK: SEAICE_ALLOW_FULLMC and SEAICE_CGRID are defined'
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseFULLMC requires '//
+     &      'that SEAICE_ALLOW_FULLMC is defined.'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
-# endif
-# ifndef SEAICE_ALLOW_TEARDROP
+#endif
+#ifndef SEAICE_ALLOW_TEARDROP
       IF (SEAICEuseTD ) THEN
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseTD requires that'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_ALLOW_TEARDROP and '
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_CGRID are defined'
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseTD requires  '//
+     &      'that SEAICE_ALLOW_TEARDROP is defined.'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
       IF ( SEAICEusePL ) THEN
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEusePL requires that'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_ALLOW_TEARDROP and '
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICE_CGRID are defined'
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEusePL requires '//
+     &      'that SEAICE_ALLOW_TEARDROP is defined.'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
+#endif
+
+#ifndef SEAICE_CGRID
+
+      IF ( SEAICEuseTEM
+# ifdef SEAICE_ALLOW_TEARDROP
+     &     .OR. SEAICEuseTD .OR. SEAICEusePL
 # endif
+# ifdef SEAICE_ALLOW_MCE
+     &     .OR. SEAICEuseMCE
+# endif
+# ifdef SEAICE_ALLOW_FULLMC
+     &     .OR. SEAICEuseFULLMC
+# endif
+     &     .OR. FALSE ) THEN
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: non-default rheologies '//
+     &      'require that SEAICE_CGRID is defined.'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
 
 # ifdef SEAICE_TEST_ICE_STRESS_1
        WRITE(msgBuf,'(A)')
@@ -977,20 +960,24 @@ C      STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif /* ndef SEAICE_CGRID */
 
-#if defined(SEAICE_ALLOW_TEARDROP) || defined(SEAICE_ALLOW FULLMC) || \
-      defined(SEAICE_ALLOW_MCE) || defined(SEAICE_ALLOW_TEM)
-      IF ((SEAICEuseMCE .AND. SEAICEuseFULLMC) .OR. (SEAICEuseMCE .AND.
-     & SEAICEuseTD) .OR. (SEAICEuseMCE .AND. SEAICEusePL) .OR.
-     & (SEAICEuseMCE .AND. SEAICEuseTEM) .OR. (SEAICEuseFULLMC .AND.
-     & SEAICEuseTD) .OR. (SEAICEuseFULLMC .AND. SEAICEusePL) .OR.
-     & (SEAICEuseFULLMC .AND. SEAICEuseTEM) .OR. (SEAICEuseTD .AND.
-     & SEAICEusePL) .OR. (SEAICEuseTD .AND. SEAICEuseTEM) .OR.
-     & (SEAICEusePL .AND. SEAICEuseTEM)) THEN
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: More than one rheology flag'
+#if ( defined SEAICE_ALLOW_TEARDROP || defined SEAICE_ALLOW_FULLMC || \
+      defined SEAICE_ALLOW_MCE || defined SEAICE_ALLOW_TEM )
+      IF ( (SEAICEuseMCE    .AND. SEAICEuseFULLMC) .OR.
+     &     (SEAICEuseMCE    .AND. SEAICEuseTD) .OR.
+     &     (SEAICEuseMCE    .AND. SEAICEusePL) .OR.
+     &     (SEAICEuseMCE    .AND. SEAICEuseTEM) .OR.
+     &     (SEAICEuseFULLMC .AND. SEAICEuseTD) .OR.
+     &     (SEAICEuseFULLMC .AND. SEAICEusePL) .OR.
+     &     (SEAICEuseFULLMC .AND. SEAICEuseTEM) .OR.
+     &     (SEAICEuseTD     .AND. SEAICEusePL) .OR.
+     &     (SEAICEuseTD     .AND. SEAICEuseTEM) .OR.
+     &     (SEAICEusePL     .AND. SEAICEuseTEM)
+     &     ) THEN
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: More than one rheology '//
+     &      'flag = .TRUE.,'
        CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: is defined as .TRUE.,'
-       CALL PRINT_ERROR( msgBuf, myThid )
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: only one should be .TRUE.'
+       WRITE(msgBuf,'(A)')
+     &      'SEAICE_CHECK: but only one can be .TRUE. at a time.'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF

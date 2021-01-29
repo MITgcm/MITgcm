@@ -453,7 +453,7 @@ C     SEAICEstressFactor :: factor by which ice affects wind stress (default=1)
 C     LSR_ERROR          :: sets accuracy of LSR solver
 C     DIFF1              :: parameter used in advect.F
 C     SEAICEtdMU         :: slope parameter for the teardrop and parabolic lens
-C			    yield curves
+C                           yield curves
 C     SEAICE_deltaMin    :: small number used to reduce singularities of Delta
 C     SEAICE_area_max    :: usually set to 1. Seeting areaMax below 1 specifies
 C                           the minimun amount of leads (1-areaMax) in the
