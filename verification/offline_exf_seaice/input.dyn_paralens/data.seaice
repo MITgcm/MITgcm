@@ -28,6 +28,7 @@
  SEAICE_monFreq = 1800.,
  SEAICEusePL = .TRUE.,
  SEAICE_tensilFac = 0.05,
+ SEAICEpressReplFac = 0.0,
  &
 
  &SEAICE_PARM03

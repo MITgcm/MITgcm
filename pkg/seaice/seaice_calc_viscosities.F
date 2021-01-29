@@ -222,22 +222,15 @@ C      Reducing eta with the replacement pressure
            em = e11(i,j,bi,bj)-e22(i,j,bi,bj)
            shearDef = SQRT(em*em + 4. _d 0 * e12Csq(i,j))
            k = ep / (shearDef+SEAICE_deltaMin)
-           ksq = k*k
            a = tnsFac(i,j,bi,bj)
-           IF     (ksq .GE.  1. _d 16) THEN
-            x =  a
-           ELSEIF (ksq .LE. -1. _d 16) THEN
-            x = -1. _d 0
-           ELSE
-            x = 0.5 _d 0 * (k - 1. _d 0 + a)
-           ENDIF
+           x = 0.5 _d 0 * (k - 1. _d 0 + a)
            x = MAX( x, -1. _d 0 )
            x = MIN( x, a )
            xma = x + 0.5 _d 0 *(1. _d 0 - a )
-C           compute ZETA
+C          compute ZETA
            zeta(i,j,bi,bj) = xma * press0(i,j,bi,bj)
      &                    / SIGN( ABS(ep) + SEAICE_deltaMin , ep)
-C           compute ETA
+C          compute ETA
            eta(i,j,bi,bj) = -(x-a) * (ONE + x) * press0(i,j,bi,bj)
      &                     / (shearDef+SEAICE_deltaMin)
 

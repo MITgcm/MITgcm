@@ -645,11 +645,13 @@ Mohr-Coulomb yield curve with shear flow rule
 
 |  
 
-If ``SEAICE_ALLOW_FULLMC`` is defined in ``SEAICE_OPTIONS.h`` and ``SEAICEuseFMC = .TRUE.`` is set in ``data.seaice``,  then the Mohr-Coulomb rheology as defined in :cite:`ip1991` is used. The slope of the Mohr-Coulomb yield curve is defined by ``SEAICEmcMU`` in ``data.seaice``.
+If ``SEAICE_ALLOW_FULLMC`` is defined in ``SEAICE_OPTIONS.h`` and ``SEAICEuseFMC = .TRUE.`` is set in ``data.seaice``,  then the Mohr-Coulomb rheology as defined first by (Ip et al, 1991) :cite:`ip1991` is used. The slope of the Mohr-Coulomb yield curve is defined by ``SEAICEmcMU`` in ``data.seaice``.
+
+The formulation, including the tensile strength, is described in https://doi.org/10.26092/elib/380, Chapter 2.
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set ``SEAICE_tensilFac`` to be greater than zero in ``data.seaice``, e.g. 0.05 or 5%.
 
-**WARNING: This rheology is known to create results of bad qualities. Use with caution!**
+**WARNING: This rheology is known to be unstable. Use with caution!**
 
 .. _para_phys_pkg_seaice_altVPrheologies_MCE:
 
@@ -659,6 +661,8 @@ Mohr-Coulomb yield curve with elliptical plastic potential
 |  
 
 If ``SEAICE_ALLOW_MCE`` is defined in ``SEAICE_OPTIONS.h`` and ``SEAICEuseMCE = .TRUE.`` is set in ``data.seaice``,  then the Mohr-Coulomb rheology is used. This Mohr-Coulomb yield curve use the elliptical plastic potential to define the flow rule. The slope of the Mohr-Coulomb yield curve is defined by ``SEAICEmcMU`` in ``data.seaice``, and the plastic potential ellipse aspect ratio is set by ``SEAICE_eccen`` in ``data.seaice``. 
+
+For the formulation, see https://doi.org/10.26092/elib/380, Chapter 2.
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set ``SEAICE_tensilFac`` to be greater than zero in ``data.seaice``, e.g. 0.05 or 5%.
 
@@ -671,7 +675,7 @@ Teardrop yield curve with normal flow rule
 
 If ``SEAICE_ALLOW_TEARDROP`` is defined in ``SEAICE_OPTIONS.h`` and ``SEAICEuseTD = .TRUE.`` is set in ``data.seaice``,  then the Teardrop rheology is used. The size of the yield curve can be varied by changing the tensile strength, using ``SEAICE_tensFac`` in ``data.seaice``. 
 
-This rheology was first described in :cite:`zha2005`, and modified to adress some issues.
+This rheology was first described in :cite:`zha2005`, and modified to adress some issues (See https://doi.org/10.26092/elib/380, Chapter 2)
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set ``SEAICE_tensilFac`` to be greater than zero in ``data.seaice``, e.g. 0.05 or 5%.
 
@@ -684,7 +688,7 @@ Parabolic lens yield curve with normal flow rule
 
 If ``SEAICE_ALLOW_TEARDROP`` is defined in ``SEAICE_OPTIONS.h`` and ``SEAICEusePL = .TRUE.`` is set in ``data.seaice``,  then the Parabolic Lens rheology is used. The size of the yield curve can be varied by changing the tensile strength, using ``SEAICE_tensFac`` in ``data.seaice``.
 
-This rheology was first described in :cite:`zha2005`, and modified to adress some issues.
+This rheology was first described in :cite:`zha2005`, and modified to adress some issues(See https://doi.org/10.26092/elib/380, Chapter 2).
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set ``SEAICE_tensilFac`` to be greater than zero in ``data.seaice``, e.g. 0.05 or 5%.
 
