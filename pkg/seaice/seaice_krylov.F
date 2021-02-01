@@ -203,7 +203,7 @@ C     the Krylov iteration)
      O      DWATN,
      I      0, myTime, myIter, myThid )
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
-       IF (SEAICEbasalDragK2.GT.0. _d 0) CALL SEAICE_BOTTOMDRAG_COEFFS(
+       CALL SEAICE_BOTTOMDRAG_COEFFS(
      I      uIceLin, vIceLin, HEFFM,
 #ifdef SEAICE_ITD
      I      HEFFITD, AREAITD, AREA,

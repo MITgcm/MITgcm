@@ -1,30 +1,52 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/seaice:
+  - move store directives of uice/vice to after calling S/R SEAICE_DYNSOLVER to
+    avoid calling this routine in S/R seaice_model_ad which may trigger
+    potential recomputation problems (e.g., with non-exact AD) ;
+  - move if statement inside S/R SEAICE_BOTTOMDRAG_COEFFS : this enables to
+    remove storage of "CbotC" without triggering recomputations ; compile this
+    code in the AD-experiments of global_ocean.cs32x15 ;
+  - remove unnecessary store directives related to pkg/seaice ;
+  - fix/extend diagnostic "SIenph  " to work with all parameter configurations.
+o pkg/autodiff: fix/improve viscFacAdj
+  - fix treatment of viscFacAdj in mom_vecinv.F by removing storage of 2D
+    viscosities if new flag AUTODIFF_ALLOW_VISCFACADJ is defined ;
+  - add a runtime parameter "viscFacInFw" in autodiff_inadmode_unset_ad.F to
+    replace hard-coded one ;
+  - apply viscFacAdj to both viscAh/4_D and _Z ;
+  - test compiling this code in tutorial_global_oce_optim.
+o model/src:
+  - move if statement out of i/j-loops in solve_tridiagnoal/pentadiagonal.F:
+    *) this reduces TAF recomputation warnings by 4 ;
+    *) potentially easier to optimise/vectorise for some compilers.
+o tools/build_options:
+  - adjust floating point options in: linux_ia64_ifort_ollie:
 o pkg/ctrl:
- - fix two bugs related to writing and reading control variables and
-   corresponding gradients:
-  a) replace too large loop range endrec by diffrec in ctrl_map_ini_gentim2d.F;
-  b) skip writing meta-files in REVERSE_SIMULATION mode (active_file_control.F).
+  - fix two bugs related to writing and reading control variables and
+    corresponding gradients:
+   a) replace too large loop range endrec by diffrec in ctrl_map_ini_gentim2d.F;
+   b) skip writing meta-files in REVERSE_SIMULATION mode (active_file_control.F)
 
 checkpoint67u (2020/12/30)
 o utils/python/MITgcmutils
- - add code to compute horizontal divergence of a vector field, gradient of a
-   scalar field, and averages to c-points on an llc grid.
+  - add code to compute horizontal divergence of a vector field, gradient of a
+    scalar field, and averages to c-points on an llc grid.
 o pkg/seaice:
- - fix bug in seaice_lsr, spotted by Martin Vancoppenolle, that lead to solving
-   stationary momentum equations (du/dt -> 0) for SEAICEnonLinIterMax>2 ;
- - fix minor bug in seaice_bottomdrag_coeffs.F: replace OLy with correct OLx ;
- - changing ordering of addition (to FORCEX,FORCEY) in seaice_lsr.F results in
-   output differences at machine truncation level: update referece output of
-   several experiments that use LSR solver.
+  - fix bug in seaice_lsr, spotted by Martin Vancoppenolle, that lead to solving
+    stationary momentum equations (du/dt -> 0) for SEAICEnonLinIterMax>2 ;
+  - fix minor bug in seaice_bottomdrag_coeffs.F: replace OLy with correct OLx ;
+  - changing ordering of addition (to FORCEX,FORCEY) in seaice_lsr.F results in
+    output differences at machine truncation level: update referece output of
+    several experiments that use LSR solver.
 o pkg/autodiff: fix flow directives for self-adjoint cg2d
- - new self-adjoint cg2d routine cg2d_sad.F mimics AD-code, but neglects
-   (purposefully) the proper sensitivity propagation
- - extra storage of cg2d solver coefficients and preconditioner is required
- - change 2 AD-verification experments (global_ocean.cs32x15 and
-   global_ocean.cs32x15.seaice) to test this code a little better:
-   use full NLFS and nchklev_1 = 2
+  - new self-adjoint cg2d routine cg2d_sad.F mimics AD-code, but neglects
+    (purposefully) the proper sensitivity propagation
+  - extra storage of cg2d solver coefficients and preconditioner is required
+  - change 2 AD-verification experments (global_ocean.cs32x15 and
+    global_ocean.cs32x15.seaice) to test this code a little better:
+    use full NLFS and nchklev_1 = 2
 
 checkpoint67t (2020/11/30)
 o pkg/kpp:
