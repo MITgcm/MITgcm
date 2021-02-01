@@ -467,16 +467,16 @@ with ``‘_’``, and set ``gencost_barfile`` to one of ``m_trVol``,
 ``m_trHeat``, and ``m_trSalt``.
 
 The ``cost_gencost_moc.F`` function is similar to transport function, but is intended to
-compute the Meridional Overturning Streamfunction maximum based on the volumetric
+compute the meridional overturning streamfunction maximum based on the volumetric
 transport integrated from the floor to surface, as in Smith and Heimbach (2019)
 :cite:`smith:19`.
-Therefore, this function is intended to work with ``gencost_barfile``=``m_trVol``,
+Therefore, this function is intended to work with ``gencost_barfile = m_trVol``,
 and note that the first 3 characters of ``gencost_name`` must be
-``moc``, as depicted in the :numref:`gencost_ecco_name`.
-Users can specify a latitude band to compute the MOC at with appropriately
-defined West ('W') and South ('S') masks as described in 
-:numref:`intgen`.
-See an example in item 3 in `this data.ecco file <https://github.com/MITgcm/verification_other/blob/master/global_oce_cs32/input_ad.sens/data.ecco>`_ .
+``moc``, as depicted in :numref:`gencost_ecco_name`.
+Users can specify a latitude band to compute the MOC with appropriately
+defined West ('W') and South ('S') masks as described in :numref:`intgen`.
+As an example see parameter group (3) in
+`this data.ecco file <https://github.com/MITgcm/verification_other/blob/master/global_oce_cs32/input_ad.sens/data.ecco>`_ .
 
 Note: the functionality in ``cost_gencost_transp.F`` is not regularly tested.
 Users interested in computing volumetric transports through a section
@@ -544,8 +544,8 @@ should note the following about ``m_trHeat`` and ``m_trSalt``:
   | ``transp_trSalt``     | salt transport        | specify masks         |
   |                       |                       | (:numref:`intgen`)    |
   +-----------------------+-----------------------+-----------------------+
-  | ``moc_trVol``         | Meridional Overturning| specify masks         |
-  |                       | stf. maximum          | (:numref:`intgen`)    |
+  | ``moc_trVol``         | meridional ovt.       | specify masks         |
+  |                       | streamfn. maximum     | (:numref:`intgen`)    |
   +-----------------------+-----------------------+-----------------------+
 
 Key Routines
@@ -908,7 +908,7 @@ this operator is specified by ``gen*Precond`` (:math:`=1` by default).
 Note that control parameters exist for each individual near surface atmospheric state
 variable, as well as the net heat and salt (EmPmR) fluxes.
 The user must be mindful of control parameter combinations that make sense
-according to their specific setup, e.g. with the :ref:`EXF
+according to their specific setup, e.g., with the :ref:`EXF
 package <ssub_phys_pkg_exf_config>`.
 
 .. _sec:pkg:smooth:
