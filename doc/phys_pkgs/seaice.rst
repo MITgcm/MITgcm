@@ -1640,7 +1640,7 @@ Experiments and tutorials that use seaice
 
 - :filelink:`verification/lab_sea`: Labrador Sea experiment
 - :filelink:`verification/seaice_obcs`, based on :filelink:`lab_sea <verification/lab_sea>`
-- :filelink:`verification/offline_exf_seaice`, idealized topography in a zonally re-entrant channel
+- :filelink:`verification/offline_exf_seaice`, idealized topography in a zonally re-entrant channel, tests solvers and rheologies
 - :filelink:`verification/seaice_itd`, based on :filelink:`offline_exf_seaice <verification/offline_exf_seaice>`, tests ice thickness distribution
 - :filelink:`verification/global_ocean.cs32x15`, global cubed-sphere-experiment with combinations of :filelink:`pkg/seaice` and :filelink:`pkg/thsice`
 - :filelink:`verification/1D_ocean_ice_column`, just thermodynamics
