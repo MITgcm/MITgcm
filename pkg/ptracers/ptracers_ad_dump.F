@@ -64,15 +64,16 @@ C     suff   :: Hold suffix part of a filename
 C     msgBuf :: Error message buffer
       INTEGER ip
       CHARACTER*(10) suff
-      CHARACTER*(MAX_LEN_FNAM) prefix
+      CHARACTER*(MAX_LEN_FNAM) dumpName, diagName
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      LOGICAL doExch
+      LOGICAL doExch, doDump
       _RS dumRS(1)
       _RL var3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 CEOP
 
 C     Handle exchange options
-      doExch = DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
+      doDump = DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
+      doExch = doDump
 #ifdef ALLOW_DIAGNOSTICS
       doExch = doExch.OR.useDiag4AdjOutp
 #endif
@@ -88,63 +89,23 @@ C     Handle exchange options
        ENDIF
       ENDIF
 
-      IF (
-     &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
-     &   ) THEN
-
+      IF (doDump) THEN
         CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
-C--     Set suffix for this set of data files.
-        IF ( rwSuffixType.EQ.0 ) THEN
-          WRITE(suff,'(I10.10)') myIter
-        ELSE
-          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
-        ENDIF
-C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
-C ==>>  is very very very nasty !!!
-c       writeBinaryPrec = writeStatePrec
-C <<==  If you really want to mess-up with this at your own risk,
-C <<==  uncomment the line above
-
-        DO ip = 1, PTRACERS_numInUse
-         WRITE(prefix,'(A10,A2,A1)')
-     &          'ADJptracer', PTRACERS_ioLabel(ip), '.'
-
-         IF (dumpAdVarExch.NE.2) THEN
-          CALL WRITE_FLD_XYZ_RL(
-     &         prefix, suff,
-     &         adptracer(1-OLx,1-OLy,1,1,1,ip), 1, myThid )
-         ELSE
-          CALL COPY_ADVAR_OUTP(dumRS, adptracer(1-OLx,1-OLy,1,1,1,ip),
-     &                        var3D, Nr, 12, myThid)
-          CALL WRITE_FLD_XYZ_RL(prefix, suff, var3D, 1, myThid )
-         ENDIF
-
-        ENDDO
-
-        CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
       ENDIF
 
-#ifdef ALLOW_DIAGNOSTICS
-      IF ( useDiag4AdjOutp ) THEN
-        CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
+      DO ip = 1, PTRACERS_numInUse
+       WRITE(diagName,'(A6,A2)') 'ADJptr', PTRACERS_ioLabel(ip)
+       WRITE(dumpName,'(A10,A2,A1)')
+     &        'ADJptracer', PTRACERS_ioLabel(ip), '.'
 
-        DO ip = 1, PTRACERS_numInUse
-         WRITE(prefix,'(A6,A2)') 'ADJptr', PTRACERS_ioLabel(ip)
-         IF (dumpAdVarExch.NE.2) THEN
-          CALL DIAGNOSTICS_FILL( adptracer(1-OLx,1-OLy,1,1,1,ip),
-     &           prefix, 0, Nr, 0, 1, 1, myThid )
-         ELSE
-          CALL COPY_ADVAR_OUTP(dumRS, adptracer(1-OLx,1-OLy,1,1,1,ip),
-     &                        var3D, Nr, 12, myThid)
-          CALL DIAGNOSTICS_FILL( var3D, prefix, 0, Nr, 0, 1, 1, myThid )
-         ENDIF
-        ENDDO
+        CALL DUMP_ADJ_XYZ(dumRS, adptracer(1-OLx,1-OLy,1,1,1,ip),
+     &                    diagName,dumpName, 12,
+     &                    doDump, dumpAdRecMn, myTime, myIter, myThid)
+      ENDDO
 
+      IF (doDump) THEN
         CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
       ENDIF
-#endif
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
 #endif /* ALLOW_ADJOINT_RUN */
