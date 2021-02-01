@@ -669,7 +669,6 @@ The teardrop rheology was first described in :cite:`zha2005`. Here we implement 
 To use this rheology, set ``#define SEAICE_ALLOW_TEARDROP`` in ``SEAICE_OPTIONS.h`` and :varlink:`SEAICEuseTD` = .TRUE. in ``data.seaice``. The size of the yield curve can be modified by changing the tensile strength, using :varlink:`SEAICE_tensFac` in ``data.seaice``.
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set :varlink:`SEAICE_tensilFac` :math:`>0` in ``data.seaice``, e.g. 0.05 or 5%.
-For this rheology, it is recommended to use a non-zero tensile strength, so set ``SEAICE_tensilFac`` :math:`>0` in ``data.seaice``, e.g. 0.05 or 5%.
 
 .. _para_phys_pkg_seaice_altVPrheologies_PL:
 
