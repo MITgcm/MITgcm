@@ -423,7 +423,7 @@ C-    get record numbers and interpolation factor
      I                       obName,1,fac,first,changed,useYearlyFields,
      I                       siobPeriod, count0, count1, year0, year1,
      I                       myTime, myIter, myThid )
-       CALL EXF_SET_OBCS_XZ( OBvice,OBvice0,OBvice1,OBvicefile,'v', 1,
+       CALL EXF_SET_OBCS_XZ( OBvice,OBvice0,OBvice1,OBvicefile,'v',
      I                       obName,1,fac,first,changed,useYearlyFields,
      I                       siobPeriod, count0, count1, year0, year1,
      I                       myTime, myIter, myThid )
@@ -583,7 +583,7 @@ C-    get record numbers and interpolation factor
       ENDIF
       IF ( exf_debugLev.GE.debLevD ) THEN
          _BEGIN_MASTER( myThid )
-         WRITE(msgBuf,'(4A)') ' OBCS_EXF_READ_XZ: ',
+         WRITE(msgBuf,'(4A)') ' OBCS_EXF_READ_YZ: ',
      &     'processing ', obName, '-OBCS files'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
@@ -663,7 +663,7 @@ C-    get record numbers and interpolation factor
        ENDIF
        IF ( exf_debugLev.GE.debLevD ) THEN
          _BEGIN_MASTER( myThid )
-         WRITE(msgBuf,'(4A)') ' OBCS_EXF_READ_XZ: ',
+         WRITE(msgBuf,'(4A)') ' OBCS_EXF_READ_YZ: ',
      &     'processing SEAICE ', obName, '-OBCS files'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
