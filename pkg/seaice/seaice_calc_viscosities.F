@@ -69,12 +69,12 @@ C     em            - e11-e22 (abbreviation)
       INTEGER i, j, bi, bj
       _RL recip_e2, deltaCsq, deltaMinSq, tmp, ep, em
       _RL recip_efr4, recip_efr2, oneThird, oneNinth
-      _RL e12Csq   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL deltaCreg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL e12Csq     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL deltaCreg  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL recip_shear(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL shearDefSq, shearDef
 #ifdef SEAICE_ALLOW_TEARDROP
       _RL k,ksq,x,a,ap1,etamax_TD,zetamax_TD,cyc,xma, etapr
-      _RL tnsFacTD, recip_eTD2
 #endif /* SEAICE_ALLOW_TEARDROP */
 #if (defined SEAICE_ALLOW_MCE || defined SEAICE_ALLOW_TEM)
       _RL etaMaxFac
@@ -104,8 +104,9 @@ C
 #ifdef ALLOW_AUTODIFF_TAMC
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          deltaCreg(i,j) = SEAICE_deltaMin
-          e12Csq   (i,j) = 0. _d 0
+          deltaCreg  (i,j) = SEAICE_deltaMin
+          e12Csq     (i,j) = 0. _d 0
+          recip_shear(i,j) = 0. _d 0
          ENDDO
         ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -133,6 +134,25 @@ C     (and energy conserving)
           ENDDO
          ENDDO
         ENDIF
+        DO j=1-OLy+1,sNy+OLy-1
+         DO i=1-OLx+1,sNx+OLx-1
+          em = e11(i,j,bi,bj)-e22(i,j,bi,bj)
+          shearDefSq = em*em + 4. _d 0 * e12Csq(i,j)
+#ifdef SEAICE_DELTA_SMOOTHREG
+          recip_shear(i,j) = 1. _d 0 / SQRT( shearDefSq + 1. _d -20 )
+#else
+# ifdef ALLOW_AUTODIFF_TAMC
+C     avoid sqrt of 0
+          shearDef = 0. _d 0
+          IF ( shearDefSq .GT. 0. _d 0 ) shearDef = SQRT(shearDefSq)
+# else
+          shearDef = SQRT(shearDefSq)
+# endif /* ALLOW_AUTODIFF_TAMC */
+          recip_shear(i,j) = 1. _d 0 / MAX( shearDef, 1. _d -20 )
+CML          recip_shear(i,j) = 1. _d 0 / ( shearDef + deltaMinSq )
+#endif /* SEAICE_DELTA_SMOOTHREG */
+         ENDDO
+        ENDDO
 
 C     select between different yield curves; default: elliptical yield curve
         IF ( .FALSE. ) THEN
@@ -146,7 +166,7 @@ C     do nothing (hack to be able add code with different cpp-flag)
            em = e11(i,j,bi,bj)-e22(i,j,bi,bj)
            shearDef = SQRT(em*em + 4. _d 0 * e12Csq(i,j))
 
-           k   = ep / (shearDef+ deltaMinSq)
+           k   = ep * recip_shear(i,j)
            ksq = k * k
            a   = tnsFac(i,j,bi,bj)
 
@@ -182,7 +202,7 @@ C      &        / SIGN( ABS(ep) + SEAICE_deltaMin, ep)
 C      &        / SIGN( MAX( ABS(ep),deltaMinSq ), 0.5 _d 0 * ep)
 
            eta(i,j,bi,bj) = -(x-a) * SQRT(ONE+x) * press0(i,j,bi,bj)
-     &                     / (shearDef + deltaMinSq)
+     &                     * recip_shear(i,j)
 
 C      define the max values for eta and zeta
            etamax_TD = ZMAX(i,j,bi,bj) * MIN(eta(i,j,bi,bj)
@@ -219,10 +239,9 @@ C      reduce eta according to replacement pressure
 
          DO j=1-OLy+1,sNy+OLy-1
           DO i=1-OLx+1,sNx+OLx-1
+
            ep = e11(i,j,bi,bj)+e22(i,j,bi,bj)
-           em = e11(i,j,bi,bj)-e22(i,j,bi,bj)
-           shearDef = SQRT(em*em + 4. _d 0 * e12Csq(i,j))
-           k = ep / (shearDef+SEAICE_deltaMin)
+           k = ep * recip_shear(i,j)
            a = tnsFac(i,j,bi,bj)
            x = 0.5 _d 0 * (k - 1. _d 0 + a)
            x = MAX( x, -1. _d 0 )
@@ -254,7 +273,7 @@ C     replacement pressure
 
 C     change eta according to replacement pressure
            etapr = -(x-a) * (ONE + x) * press(i,j,bi,bj)/(ONE-a)
-     &                     /(shearDef+SEAICE_deltaMin)
+     &                     * recip_shear(i,j)
            etapr = MIN( etapr, etamax_TD )
            eta(i,j,bi,bj) =  SEAICEpressReplFac * etapr
      &          + eta(i,j,bi,bj) * ( ONE - SEAICEpressReplFac )
@@ -267,10 +286,8 @@ C     Full Mohr-Coulomb following IP et al. 1991
          DO j=1-OLy+1,sNy+OLy-1
           DO i=1-OLx+1,sNx+OLx-1
 
-C     compute e1 and e2
+C     compute eI = ep
            ep = e11(i,j,bi,bj)+e22(i,j,bi,bj)
-           em = e11(i,j,bi,bj)-e22(i,j,bi,bj)
-           shearDefSq=em*em+4. _d 0*e12Csq(i,j)
 
 C     compute zeta
            zeta(i,j,bi,bj) = press0(i,j,bi,bj)*(ONE+tnsFac(i,j,bi,bj))
@@ -285,7 +302,7 @@ C     replacement pressure
 C     compute eta  (eMax=ZMAX)
            eta(i,j,bi,bj) = SEAICEmcMU * (0.5 _d 0 * press(i,j,bi,bj)
      &      - zeta(i,j,bi,bj)*ep+press0(i,j,bi,bj)*tnsFac(i,j,bi,bj))
-     &      / (SQRT(shearDefSq + deltaMinSq))
+     &       * recip_shear(i,j)
 
           ENDDO
          ENDDO
@@ -358,15 +375,6 @@ C     MC yield curve with non-normal flow rule (elliptical plastic potential)
 C     or Truncated Ellipse method with Coulombic limbs
           DO j=1-OLy+1,sNy+OLy-1
            DO i=1-OLx+1,sNx+OLx-1
-C     compute e1 and e2
-            ep = e11(i,j,bi,bj)+e22(i,j,bi,bj)
-            em = e11(i,j,bi,bj)-e22(i,j,bi,bj)
-            shearDefSq = em*em + 4. _d 0*e12Csq(i,j)
-#ifdef SEAICE_DELTA_SMOOTHREG
-            shearDef   = SQRT(deltaMinSq + shearDefSq)
-#else
-            shearDef   = SQRT(MAX(deltaMinSq,shearDefSq))
-#endif /* SEAICE_DELTA_SMOOTHREG */
 C     compute eta:
 C     In principle, we need to recompute zeta here, because we need the
 C     unlimited version
@@ -379,14 +387,15 @@ C    &           + press0(i,j,bi,bj)*tnsFac(i,j,bi,bj)) / shearDef
 C     but in this formulation, only ep/deltaCreg(i,j) remains
             eta(i,j,bi,bj) = SEAICEmcMU * HALF * press0(i,j,bi,bj)
      &           * ( 1. _d 0 + tnsFac(i,j,bi,bj) )
-     &           * ( 1. _d 0 - ep/deltaCreg(i,j) ) / shearDef
+     &           * ( 1. _d 0 - ep/deltaCreg(i,j) ) * recip_shear(i,j)
 C     compute etaMaxFac = ZMAX/zetaLoc
-CDR            etaMaxFac = SEAICE_zetaMaxFac * 2. _d 0 * deltaCreg(i,j)
-CDR     &           / ( 1. _d 0 + tnsFac(i,j,bi,bj) )
+            etaMaxFac = SEAICE_zetaMaxFac * 2. _d 0 * deltaCreg(i,j)
+     &           / ( 1. _d 0 + tnsFac(i,j,bi,bj) )
 C     apply maximum
-CDR            eta(i,j,bi,bj) = eta(i,j,bi,bj) * MIN( 1. _d 0, etaMaxFac )
-            eta(i,j,bi,bj)=MIN(eta(i,j,bi,bj),
-     &                         ZMAX(i,j,bi,bj)*recip_efr2)
+            eta(i,j,bi,bj) = eta(i,j,bi,bj) * MIN( 1. _d 0, etaMaxFac )
+C     paranoia
+            eta(i,j,bi,bj) =
+     &           MIN( eta(i,j,bi,bj), ZMAX(i,j,bi,bj)*recip_efr2 )
            ENDDO
           ENDDO
 C     close the coulombic limbs with the ellipse for compression
