@@ -832,15 +832,15 @@ C     end if usePW79thermodynamics
       ENDIF
       IF ( SEAICEuseEVP .AND. (
 # ifdef SEAICE_ALLOW_TEARDROP
-     &     SEAICEuseTD .OR. SEAICEusePL
+     &     SEAICEuseTD .OR. SEAICEusePL .OR.
 # endif
 # ifdef SEAICE_ALLOW_MCE
-     &     .OR. SEAICEuseMCE
+     &     SEAICEuseMCE .OR.
 # endif
 # ifdef SEAICE_ALLOW_FULLMC
-     &     .OR. SEAICEuseFULLMC
+     &     SEAICEuseFULLMC .OR.
 # endif
-     &     .OR. .FALSE. ) )  THEN
+     &     .FALSE. ) )  THEN
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseFULLMC, '//
      &     'SEAICEuseTD, SEAICEusePL, or SEAICEuseMCE = .TRUE.,'
        CALL PRINT_ERROR( msgBuf, myThid )
