@@ -628,7 +628,7 @@ C Avoid derivative of SQRT(0)
           viscAh_ZLthd(i,j)= sqargAhD * L3
           viscA4_ZLthd(i,j)= sqargA4D * L5
 #ifdef ALLOW_LEITH_QG
-          viscAh_DLthQG(i,j)=sqargQG  * L3
+          viscAh_ZLthQG(i,j)=sqargQG  * L3
 #endif
 
          ELSEIF (calcLeith) THEN
