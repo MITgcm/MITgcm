@@ -62,6 +62,7 @@ C !LOCAL VARIABLES: ====================================================
       _RL leithQG2fac
 C     i,j,k    :: Loop counters
       INTEGER i,j,k
+      _RL sqarg
 CEOP
 
 C--   Initialise terms
@@ -238,7 +239,14 @@ C Using it in Leith serves to damp instabilities in w.
      &                     + (divDy(i,j+1)*divDy(i,j+1)
      &                        + divDy(i,j)*divDy(i,j) )  )
 
-              LeithQG_K(i,j,k) = SQRT(leithQG2fac*(grdVrt+grdDiv))*L3
+C avoid derivative of SQRT(0)
+              sqarg = leithQG2fac*(grdVrt+grdDiv)
+              IF (sqarg .GT. 0. _d 0) THEN
+                  sqarg = SQRT(sqarg)
+              ELSE
+                  sqarg = 0. _d 0
+              ENDIF
+              LeithQG_K(i,j,k) = sqarg*L3
 
             ELSE
 C but this approximation will work on cube (and differs by as much as 4X)
