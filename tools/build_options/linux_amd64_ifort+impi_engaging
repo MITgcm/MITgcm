@@ -53,7 +53,7 @@ else
     NOOPTFLAGS=$FOPTIM
     NOOPTFILES='adread_adwrite.F mdsio_rw_field.F mdsio_rw_slice.F'
     FOPTIM="$FOPTIM -warn all -warn nounused"
-    FOPTIM="$FOPTIM -fpe0 -ftz -fp-stack-check gg-check all -ftrapuv"
+    FOPTIM="$FOPTIM -fpe0 -ftz -fp-stack-check -check all -ftrapuv"
   fi
 fi
 
