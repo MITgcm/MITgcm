@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/build_options:
+  - add optfile for engaging similar to linux_amd64_ifort+impi but with -xAVX
 o pkg/seaice:
   - move store directives of uice/vice to after calling S/R SEAICE_DYNSOLVER to
     avoid calling this routine in S/R seaice_model_ad which may trigger
