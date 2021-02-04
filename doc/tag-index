@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67v (2021/02/03)
 o tools/build_options:
   - add optfile for engaging similar to linux_amd64_ifort+impi but with -xAVX
 o pkg/seaice:
