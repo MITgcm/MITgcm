@@ -66,6 +66,8 @@ C       >>> Other Control.
 #undef ALLOW_KAPGM_CONTROL
 #undef ALLOW_KAPREDI_CONTROL
 #undef ALLOW_BOTTOMDRAG_CONTROL
+#undef ALLOW_SHI2D_CONTROL
+#undef ALLOW_SHIFWFLX_CONTROL
 
 C       >>> Backward compatibility option (before checkpoint 65p)
 #undef ALLOW_KAPGM_CONTROL_OLD
