@@ -43,6 +43,7 @@ CEOP
           shiTransCoeffS        (i,j,bi,bj) = 0. _d 0
           shelficeMass          (i,j,bi,bj) = 0. _d 0
           shiCDragFld           (i,j,bi,bj) = 0. _d 0
+          shiDragQuadFld        (i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
@@ -86,6 +87,7 @@ C     control pacakge
          DO j = 1-OLy, sNy+OLy
           DO i = 1-OLx, sNx+OLx
            shiCDragFld(i,j,bi,bj) = shiCDrag
+           shiDragQuadFld(i,j,bi,bj) = SHELFICEDragQuadratic
           ENDDO
          ENDDO
         ENDDO

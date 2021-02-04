@@ -55,7 +55,8 @@ C     == local variables ==
       integer igen_etan,igen_bdrag,igen_geoth
 # ifdef ALLOW_SHI2D_CONTROL
       integer igen_shiCoeffT, igen_shiCoeffS, igen_shiCDrag
-      integer i, j, bi, bj
+      integer i, j, bi, bj, k2
+      logical dragThermoEqualMom
 # endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 #ifdef ALLOW_GENARR3D_CONTROL
@@ -133,8 +134,27 @@ C--   generic 2D control variables
            enddo
       endif
 # else
+      dragThermoEqualMom = .FALSE.
       if (igen_shiCDrag.GT.0)
      &  call ctrl_map_genarr2d(shiCDragFld,igen_shiCDrag,myThid)
+      do k2 = 1, maxCtrlProc
+        ! Set drag coefficient used in momentum equal to thermodynamic,
+        ! u* drag coefficient
+        if (xx_genarr2d_preproc_c(k2,igen_shiCDrag)(1:3).eq.'mom')
+     &    dragThermoEqualMom = .TRUE.
+      enddo
+      if (dragThermoEqualMom) then
+        do bj = myByLo(myThid), myByHi(myThid)
+         do bi = myBxLo(myThid), myBxHi(myThid)
+          do j = 1-OLy,sNy+OLy
+           do i = 1-OLx,sNx+OLx
+            shiDragQuadFld(i,j,bi,bj) = shiCDragFld(i,j,bi,bj)
+            enddo
+           enddo
+          enddo
+         enddo
+       endif
+
 # endif /* SHI_ALLOW_GAMMAFRICT */
 #endif /* ALLOW_SHI2D_CONTROL */
 
@@ -452,7 +472,7 @@ c--   Now, read the control vector.
       doglobalread = .false.
       ladinit      = .false.
 
-      call ctrl_zero(xx_gen, Nr, 0. _d 0, myThid) 
+      call ctrl_zero(xx_gen, Nr, 0. _d 0, myThid)
 
       dosmooth=.false.
       dowc01  = .false.
