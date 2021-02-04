@@ -9,6 +9,7 @@
       SEAICEuseDYNAMICS  =.FALSE.,
       SEAICEadvSalt      =.FALSE.,
       LSR_ERROR          = 1.E-6,
+      SEAICElinearIterMax=   500,
       SEAICE_EPS         = 1.E-8,
       SEAICEadvSnow      = .TRUE.,
       SEAICE_mcPheePiston= 0.0008749999999999999,

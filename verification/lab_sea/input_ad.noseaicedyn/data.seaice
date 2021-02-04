@@ -12,6 +12,7 @@
       SEAICEadvSalt      =.FALSE.,
 #-- above: to reproduce old results
       LSR_ERROR          = 1.E-6,
+      SEAICElinearIterMax=   500,
 ###      SEAICE_deltaTevp   = 60,
       SEAICE_EPS         = 1.E-8,
       SEAICE_multDim     = 7,
