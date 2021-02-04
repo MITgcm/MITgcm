@@ -8,16 +8,21 @@
 #
  OCEAN_drag         = 8.1541e-04,
  SEAICE_no_Slip     = .FALSE.,
+# LSR solver parameter
+ LSR_ERROR          = 1.E-12,
+ SEAICElinearIterMax= 1500,
+ LSR_mixIniGuess    = 1,
+# End of LSR solver parameter
 # JFNK solver parameters
- SEAICEetaZmethod    = 3,
- SEAICEuseJFNK       = .TRUE.,
- SEAICEpreconLinIter = 10,
- SEAICEnonLinIterMax = 200,
- SEAICElinearIterMax = 50,
- SEAICEnonLinTol     = 1.e-09,
- SEAICE_JFNK_lsIter  = 0,
- JFNKres_tFac        = 0.5,
- SEAICE_JFNKalpha    = 1.5,
+# SEAICEetaZmethod    = 3,
+# SEAICEuseJFNK       = .TRUE.,
+# SEAICEpreconLinIter = 10,
+# SEAICEnonLinIterMax = 100,
+# SEAICElinearIterMax = 50,
+# SEAICEnonLinTol     = 1.e-09,
+# SEAICE_JFNK_lsIter  = 0,
+# JFNKres_tFac        = 0.5,
+# SEAICE_JFNKalpha    = 1.5,
 # end of JFNK solver parameters
 #- to use seaice-advection from pkg/seaice, uncomment following 4 lines:
 #SEAICEadvScheme    = 77, # this is the new default
