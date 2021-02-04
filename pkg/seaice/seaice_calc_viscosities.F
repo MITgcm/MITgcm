@@ -143,6 +143,7 @@ C     (and energy conserving)
 #ifdef SEAICE_DELTA_SMOOTHREG
           recip_shear(i,j) = 1. _d 0
      &                / SQRT( shearDefSq + smallNbrSq )
+C         recip_shear(i,j) = 1. _d 0 / ( shearDef + smallNbr )
 #else
 # ifdef ALLOW_AUTODIFF_TAMC
 C     avoid sqrt of 0
@@ -152,7 +153,6 @@ C     avoid sqrt of 0
           shearDef = SQRT(shearDefSq)
 # endif /* ALLOW_AUTODIFF_TAMC */
           recip_shear(i,j) = 1. _d 0 / MAX( ShearDef, smallNbr )
-C           recip_shear(i,j) = 1. _d 0 / ( shearDef + smallNbr )
 #endif /* SEAICE_DELTA_SMOOTHREG */
          ENDDO
         ENDDO
@@ -311,7 +311,7 @@ C     compute zeta
      &                      / (TWO * SQRT(ep*ep+deltaMinSq)
 #else
            zeta(i,j,bi,bj) = press0(i,j,bi,bj)*(ONE+tnsFac(i,j,bi,bj))
-     &                      / (TWO * MAX(ABS(ep)+SEAICE_deltaMin) )
+     &                      / (TWO * MAX(ABS(ep),SEAICE_deltaMin) )
 #endif /* SEAICE_DELTA_SMOOTHREG */
 
 C     replacement pressure
