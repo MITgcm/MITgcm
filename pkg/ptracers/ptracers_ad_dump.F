@@ -36,7 +36,8 @@ C     == Global variables ===
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS_PARAMS.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
-#include "AUTODIFF_PARAMS.h"
+# include "AUTODIFF.h"
+# include "AUTODIFF_PARAMS.h"
 # include "ptracers_adcommon.h"
 #endif
 #ifdef ALLOW_DIAGNOSTICS
