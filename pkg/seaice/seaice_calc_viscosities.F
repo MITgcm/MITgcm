@@ -259,7 +259,7 @@ C     compute zeta
      &                    / SIGN( SQRT(ep*ep + smallNbrSq) , ep)
 #else
            zeta(i,j,bi,bj) = xma * press0(i,j,bi,bj)
-     &                    / SIGN( ABS(ep) + smallNbr , ep)
+     &                    / SIGN( MAX(ABS(ep),smallNbr) , ep)
 #endif /* SEAICE_DELTA_SMOOTHREG */
 C      original formulation of Zhang 2005
 C          zeta(i,j,bi,bj) = (x + 0.5 _d 0) * press0(i,j,bi,bj)
@@ -311,7 +311,7 @@ C     compute zeta
      &                      / (TWO * SQRT(ep*ep+deltaMinSq)
 #else
            zeta(i,j,bi,bj) = press0(i,j,bi,bj)*(ONE+tnsFac(i,j,bi,bj))
-     &                      / (TWO * MAX(ABS(ep)+SEAICE_deltaMin) )
+     &                      / (TWO * MAX(ABS(ep),SEAICE_deltaMin) )
 #endif /* SEAICE_DELTA_SMOOTHREG */
 
 C     replacement pressure
