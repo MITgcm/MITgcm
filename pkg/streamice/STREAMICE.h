@@ -632,7 +632,7 @@ c     &     A_glen,
      &     BDOT_streamice, ADOT_streamice,BDOT_pert,ADOT_pert, ! mass balances in meters per year
      &     streamice_sigma_coord, streamice_delsigma,
      &     H_streamice_prev,
-     &     u_new_si, v_new_si
+     &     u_new_si, v_new_si, streamice_u_tavg, streamice_v_tavg
 
 #ifdef ALLOW_STREAMICE_FLUX_CONTROL
       COMMON /STREAMICE_FLUX_CONTROL/
@@ -793,6 +793,8 @@ C  POSITIVE WHERE MELTING
       _RL v_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL u_new_si (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL STREAMICE_dummy_array (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_u_tavg (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL streamice_v_tavg (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_STREAMICE_TIMEDEP_FORCING
 #ifdef STREAMICE_STRESS_BOUNDARY_CONTROL
