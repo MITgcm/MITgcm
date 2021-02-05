@@ -308,7 +308,7 @@ C     compute eI = ep
 C     compute zeta
 #ifdef SEAICE_DELTA_SMOOTHREG
            zeta(i,j,bi,bj) = press0(i,j,bi,bj)*(ONE+tnsFac(i,j,bi,bj))
-     &                      / (TWO * SQRT(ep*ep+deltaMinSq)
+     &                      / (TWO * SQRT(ep*ep+deltaMinSq) )
 #else
            zeta(i,j,bi,bj) = press0(i,j,bi,bj)*(ONE+tnsFac(i,j,bi,bj))
      &                      / (TWO * MAX(ABS(ep),SEAICE_deltaMin) )
@@ -399,6 +399,7 @@ C     MC yield curve with non-normal flow rule (elliptical plastic potential)
 C     or Truncated Ellipse method with Coulombic limbs
           DO j=1-OLy+1,sNy+OLy-1
            DO i=1-OLx+1,sNx+OLx-1
+            ep = e11(i,j,bi,bj)+e22(i,j,bi,bj)
 C     compute eta:
 C     In principle, we need to recompute zeta here, because we need the
 C     unlimited version
