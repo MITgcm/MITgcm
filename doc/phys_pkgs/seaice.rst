@@ -598,7 +598,7 @@ Besides this commonly used default rheology, a number of a alternative rheologie
 Elliptical yield curve with non-normal flow rule
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Defining the runtime parameter :varlink:`SEAICE_eccfr` with a value different from :varlink:`SEAICE_eccen` allows to use an elliptical yield curve with a non-normal flow rule as described in :cite:`ringeisen2020`. In this case the viscosities are functions of :math:`e_F` (:varlink:`SEAICE_eccen`) and :math:`e_G` (:varlink:`SEAICE_eccfr`):
+Defining the runtime parameter :varlink:`SEAICE_eccfr` with a value different from :varlink:`SEAICE_eccen` allows to use an elliptical yield curve with a non-normal flow rule as described in Ringeisen et al. (2020) :cite:`ringeisen2020`. In this case the viscosities are functions of :math:`e_F` (:varlink:`SEAICE_eccen`) and :math:`e_G` (:varlink:`SEAICE_eccfr`):
 
 .. math::
    \begin{align}
@@ -633,7 +633,7 @@ In the so-called truncated ellipse method the shear viscosity :math:`\eta` is ca
 To enable this method, set ``#define SEAICE_ALLOW_TEM`` in
 ``SEAICE_OPTIONS.h`` and turn it on with :varlink:`SEAICEuseTEM` in ``data.seaice``.
 
-In addition, the yield curve can be truncated with a Mohr-Coulomb slope if :varlink:`SEAICEmcMU` :math:`\ne 1` in ``data.seaice``. By doing so, a Coulombic yield curve is defined, similar to the ones shown in :cite:`hib2000` and :cite:`ringeisen2019`.
+In addition, the yield curve can be truncated with a Mohr-Coulomb slope if :varlink:`SEAICEmcMU` :math:`\ne 1` in ``data.seaice``. By doing so, a Coulombic yield curve is defined, similar to the ones shown in Hibler and Schulson (2000) :cite:`hib2000` and Ringeisen et al. (2019) :cite:`ringeisen2019`.
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set :varlink:`SEAICE_tensilFac` :math:`>0` in ``data.seaice``, e.g. 0.05 or 5%.
 
@@ -642,7 +642,7 @@ For this rheology, it is recommended to use a non-zero tensile strength, so set 
 Mohr-Coulomb yield curve with shear flow rule
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To use the specifc Mohr-Coulomb rheology as defined first by :cite:`ip1991`, set ``#define SEAICE_ALLOW_FULLMC`` in ``SEAICE_OPTIONS.h`` and :varlink:`SEAICEuseFMC` = .TRUE., in ``data.seaice``. The slope of the Mohr-Coulomb yield curve is defined by :varlink:`SEAICEmcMU` in ``data.seaice``.
+To use the specifc Mohr-Coulomb rheology as defined first by Ip et al (1991) :cite:`ip1991`, set ``#define SEAICE_ALLOW_FULLMC`` in ``SEAICE_OPTIONS.h`` and :varlink:`SEAICEuseFMC` = .TRUE., in ``data.seaice``. The slope of the Mohr-Coulomb yield curve is defined by :varlink:`SEAICEmcMU` in ``data.seaice``.
 For details of this rheology, including the tensile strength, see https://doi.org/10.26092/elib/380, Chapter 2.
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set :varlink:`SEAICE_tensilFac` :math:`>0` in ``data.seaice``, e.g. 0.05 or 5%.
@@ -664,7 +664,7 @@ For this rheology, it is recommended to use a non-zero tensile strength, so set 
 Teardrop yield curve with normal flow rule
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The teardrop rheology was first described in :cite:`zha2005`. Here we implement a slightly modified version (See https://doi.org/10.26092/elib/380, Chapter 2).
+The teardrop rheology was first described in Zhang and Rothrock (2005) :cite:`zha2005`. Here we implement a slightly modified version (See https://doi.org/10.26092/elib/380, Chapter 2).
 
 To use this rheology, set ``#define SEAICE_ALLOW_TEARDROP`` in ``SEAICE_OPTIONS.h`` and :varlink:`SEAICEuseTD` = .TRUE. in ``data.seaice``. The size of the yield curve can be modified by changing the tensile strength, using :varlink:`SEAICE_tensFac` in ``data.seaice``.
 
@@ -675,7 +675,7 @@ For this rheology, it is recommended to use a non-zero tensile strength, so set 
 Parabolic lens yield curve with normal flow rule
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The parabolic lens rheology was first described in :cite:`zha2005`. Here we implement a slightly modified version (See https://doi.org/10.26092/elib/380, Chapter 2).
+The parabolic lens rheology was first described in Zhang and Rothrock (2005) :cite:`zha2005`. Here we implement a slightly modified version (See https://doi.org/10.26092/elib/380, Chapter 2).
 
 To use this rheology, set ``#define SEAICE_ALLOW_TEARDROP`` in ``SEAICE_OPTIONS.h`` and :varlink:`SEAICEusePL` = .TRUE. in ``data.seaice``. The size of the yield curve can be modified by changing the tensile strength, using :varlink:`SEAICE_tensFac` in ``data.seaice``.
 
