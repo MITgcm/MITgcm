@@ -202,16 +202,16 @@ c====================================================
      &     jrec, localstartdate, localperiod, fname1,
      &     fname0w, localrec, obsrec, exst, myThid)
         call ecco_zero(localweight,nnzsiv4,zeroRL,myThid)
+        fname0w=gencost_errfile(igen_conc)
 #ifdef SEAICECOST_JPL
-       fname0w=gencost_errfile(igen_conc)
-       call ecco_readwei(fname0w,localweight,localrec,
-     &      nnzsiv4,dosumsq,myThid)
-       call ecco_readwei(gencost_errfile(igen_deconc),
-     &      gencost_weight(1,1,1,1,igen_deconc),localrec,
-     &      nnzsiv4,dosumsq,myThid)
-       call ecco_readwei(gencost_errfile(igen_exconc),
-     &      gencost_weight(1,1,1,1,igen_exconc),localrec,
-     &      nnzsiv4,dosumsq,myThid)
+        call ecco_readwei(fname0w,localweight,localrec,
+     &       nnzsiv4,dosumsq,myThid)
+        call ecco_readwei(gencost_errfile(igen_deconc),
+     &       gencost_weight(1,1,1,1,igen_deconc),localrec,
+     &       nnzsiv4,dosumsq,myThid)
+        call ecco_readwei(gencost_errfile(igen_exconc),
+     &       gencost_weight(1,1,1,1,igen_exconc),localrec,
+     &       nnzsiv4,dosumsq,myThid)
 #else
         if ( (localrec. GT. 0).AND.(obsrec .GT. 0).AND.(exst) ) then
           call ecco_readwei(fname0w,localweight,localrec,
