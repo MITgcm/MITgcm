@@ -73,9 +73,11 @@ c     == local variables ==
 
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
       _RL tmpfldxz (1-olx:snx+olx,nr,nsx,nsy)
+      character*(5) sliceXZ
 #endif
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
       _RL tmpfldyz (1-oly:sny+oly,nr,nsx,nsy)
+      character*(5) sliceYZ
 #endif
       _RL loctmp2d (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL loctmp3d (1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
@@ -710,15 +712,15 @@ ce      --> this index does not exist yet.
 
 #if (defined ALLOW_OBCSN_CONTROL || defined ALLOW_OBCSS_CONTROL)
       elseif ( grdchkvarindex.EQ.11 .OR. grdchkvarindex.EQ.12) then
+         sliceXZ = '     '
          if (grdchkvarindex.EQ.11) then
-         call active_read_xz( fname, tmpfldxz, icvrec,
-     &                        doglobalread, ladinit, 'north',optimcycle,
-     &                        mythid, dummy)
+           sliceXZ='north'
          else
-         call active_read_xz( fname, tmpfldxz, icvrec,
-     &                        doglobalread, ladinit, 'south',optimcycle,
-     &                        mythid, dummy)
+           sliceXZ='south'
          endif
+         call active_read_xz( fname, tmpfldxz, icvrec,
+     &                        doglobalread, ladinit,sliceXZ,optimcycle,
+     &                        mythid, dummy)
          if ( myProcId .EQ. grdchkwhichproc )
      &   xx_comp_ref = tmpfldxz( itilepos,layer,itile,jtile )
          if ( myProcId .EQ. grdchkwhichproc )
@@ -726,21 +728,21 @@ ce      --> this index does not exist yet.
          if ( myProcId .EQ. grdchkwhichproc )
      &   tmpfldxz( itilepos,layer,itile,jtile ) = xx_comp_pert
          call active_write_xz( fname, tmpfldxz, icvrec,
-     &                         optimcycle,
+     &                         sliceXZ, optimcycle,
      &                         mythid, dummy)
 #endif
 
 #if (defined ALLOW_OBCSE_CONTROL || defined ALLOW_OBCSW_CONTROL)
       elseif ( grdchkvarindex.EQ.13 .OR. grdchkvarindex.EQ.14) then
+         sliceYZ = '     '
          if (grdchkvarindex.EQ.14) then
-         call active_read_yz( fname, tmpfldyz, icvrec,
-     &                        doglobalread, ladinit, optimcycle,'east ',
-     &                        mythid, dummy)
+           sliceYZ = 'east '
          else
-         call active_read_yz( fname, tmpfldyz, icvrec,
-     &                        doglobalread, ladinit, optimcycle,'west ',
-     &                        mythid, dummy)
+           sliceYZ = 'west '
          endif
+         call active_read_yz( fname, tmpfldyz, icvrec,
+     &                        doglobalread, ladinit, sliceYZ,optimcycle,
+     &                        mythid, dummy)
          if ( myProcId .EQ. grdchkwhichproc )
      &   xx_comp_ref = tmpfldyz( jtilepos,layer,itile,jtile )
          if ( myProcId .EQ. grdchkwhichproc )
@@ -748,7 +750,7 @@ ce      --> this index does not exist yet.
          if ( myProcId .EQ. grdchkwhichproc )
      &   tmpfldyz( jtilepos,layer,itile,jtile ) = xx_comp_pert
          call active_write_yz( fname, tmpfldyz, icvrec,
-     &                         optimcycle,
+     &                         sliceYZ, optimcycle,
      &                         mythid, dummy)
 #endif
 

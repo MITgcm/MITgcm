@@ -472,7 +472,7 @@ C     Read the active variable from file.
      I                activeVar_file, prec, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      O                active_var, dummyRS,
-     I                iRec, slice, myThid )
+     I                slice, iRec, myThid )
 
         IF ( lAdInit ) THEN
 C     Initialise the corresponding adjoint variable on the
@@ -505,7 +505,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
      I                activeVar_file, prec, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      O                active_data_t, dummyRS,
-     I                iRec, slice, myThid )
+     I                slice, iRec, myThid )
 
 C     Add active_var from appropriate location to data.
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -547,7 +547,7 @@ C     Read the active variable from file.
      I                activeVar_file, prec, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      O                active_var, dummyRS,
-     I                iRec, slice, myThid )
+     I                slice, iRec, myThid )
       ENDIF
 
       RETURN
@@ -651,7 +651,7 @@ C     Read the active variable from file.
      I                activeVar_file, prec, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      O                dummyRL, active_var,
-     I                iRec, slice, myThid )
+     I                slice, iRec, myThid )
 
         IF ( lAdInit ) THEN
 C     Initialise the corresponding adjoint variable on the
@@ -684,7 +684,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
      I                activeVar_file, prec, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      O                dummyRL, active_data_t,
-     I                iRec, slice, myThid )
+     I                slice, iRec, myThid )
 
 C     Add active_var from appropriate location to data.
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -726,7 +726,7 @@ C     Read the active variable from file.
      I                activeVar_file, prec, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      O                dummyRL, active_var,
-     I                iRec, slice, myThid )
+     I                slice, iRec, myThid )
       ENDIF
 
       RETURN
@@ -1056,7 +1056,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
      I                activeVar_file, prec, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      O                active_data_t, dummyRS,
-     I                iRec, slice, myThid )
+     I                slice, iRec, myThid )
 
 C     Add active_var from appropriate location to data.
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -1176,7 +1176,7 @@ C     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
      I                activeVar_file, prec, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      O                dummyRL, active_data_t,
-     I                iRec, slice, myThid )
+     I                slice, iRec, myThid )
 
 C     Add active_var from appropriate location to data.
         DO bj = myByLo(myThid), myByHi(myThid)
