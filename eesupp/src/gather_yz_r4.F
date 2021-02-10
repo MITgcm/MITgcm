@@ -88,7 +88,7 @@ C-          default (face fit into global-IO-array)
 !cdir novector
 #endif
              jG=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
-             IF (myField(j,bi,bj).NE.UNSET_FLOAT4)
+             IF (ABS(myField(j,bi,bj)).GT.0.)
      &        gloBuff(jG) = myField(j,bi,bj)
             ENDDO
            ENDDO
@@ -108,7 +108,7 @@ C-          default (face fit into global-IO-array)
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-             IF (myField(j,bi,bj).NE.UNSET_FLOAT4)
+             IF (ABS(myField(j,bi,bj)).GT.0.)
      &        gloBuff(jG+j) = myField(j,bi,bj)
             ENDDO
            ENDDO
@@ -160,7 +160,7 @@ C-          default (face fit into global-IO-array)
 !cdir novector
 #endif
              jG=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
-             IF (temp(j,bi,bj).NE.UNSET_FLOAT4)
+             IF (ABS(temp(j,bi,bj)).GT.0.)
      &        gloBuff(jG) = temp(j,bi,bj)
             ENDDO
            ENDDO
@@ -180,7 +180,7 @@ C-          default (face fit into global-IO-array)
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-             IF (temp(j,bi,bj).NE.UNSET_FLOAT4)
+             IF (ABS(temp(j,bi,bj)).GT.0.)
      &        gloBuff(jG+j) = temp(j,bi,bj)
             ENDDO
            ENDDO

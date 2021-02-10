@@ -81,7 +81,7 @@ C     safer to reset to zero to avoid unknown values in output file
 #endif
             DO i=1,sNx
              iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
-             IF (myField(i,bi,bj).NE.UNSET_FLOAT4)
+             IF (ABS(myField(i,bi,bj)).GT.0.)
      &        gloBuff(iG) = myField(i,bi,bj)
             ENDDO
            ENDDO
@@ -101,7 +101,7 @@ C     safer to reset to zero to avoid unknown values in output file
 #endif
             iG = iBase+(bi-1)*sNx
             DO i=1,sNx
-             IF (myField(i,bi,bj).NE.UNSET_FLOAT4)
+             IF (ABS(myField(i,bi,bj)).GT.0.)
      &        gloBuff(iG+i) = myField(i,bi,bj)
             ENDDO
            ENDDO
@@ -146,7 +146,7 @@ C--   Process 0 gathers the local arrays into the global buffer.
 #endif
             DO i=1,sNx
              iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
-             IF (temp(i,bi,bj).NE.UNSET_FLOAT4)
+             IF (ABS(temp(i,bi,bj)).GT.0.)
      &        gloBuff(iG) = temp(i,bi,bj)
             ENDDO
            ENDDO
@@ -166,7 +166,7 @@ C--   Process 0 gathers the local arrays into the global buffer.
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-             IF (temp(i,bi,bj).NE.UNSET_FLOAT4)
+             IF (ABS(temp(i,bi,bj)).GT.0.)
      &        gloBuff(iG+i) = temp(i,bi,bj)
             ENDDO
            ENDDO
