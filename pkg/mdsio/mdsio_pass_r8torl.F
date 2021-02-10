@@ -196,7 +196,7 @@ CEOP
              DO k=1,nNz
               kLev = kLo+k-1
               DO i=1-oL,sNx+oL
-                arrFld(i,kLev,bi,bj) = UNSET_RL
+                arrFld(i,kLev,bi,bj) = zeroRL
               ENDDO
              ENDDO
             ENDIF
@@ -216,7 +216,7 @@ CEOP
             ELSE
              DO k=1,nNz
               DO i=1-oL,sNx+oL
-                buffer(i,k,bi,bj) = UNSET_FLOAT8
+                buffer(i,k,bi,bj) = 0. _d 0
               ENDDO
              ENDDO
             ENDIF
@@ -328,7 +328,7 @@ CEOP
              DO k=1,nNz
               kLev = kLo+k-1
               DO j=1-oL,sNy+oL
-                arrFld(j,kLev,bi,bj) = UNSET_RL
+                arrFld(j,kLev,bi,bj) = zeroRL
               ENDDO
              ENDDO
             ENDIF
@@ -348,7 +348,7 @@ CEOP
             ELSE
              DO k=1,nNz
               DO j=1-oL,sNy+oL
-                buffer(j,k,bi,bj) = UNSET_FLOAT8
+                buffer(j,k,bi,bj) = 0. _d 0
               ENDDO
              ENDDO
             ENDIF
