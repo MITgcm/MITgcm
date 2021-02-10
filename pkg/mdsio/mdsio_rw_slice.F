@@ -275,7 +275,7 @@ C Local variables
         CALL MDS_READ_SEC_YZ(
      I                fName, filePrec, .TRUE., arrType, nNz, 1, nNz,
      O                dummyRL, arr,
-     I                irecord, slice, myThid )
+     I                slice, irecord, myThid )
       ENDIF
 
 #else /* ALLOW_AUTODIFF */
