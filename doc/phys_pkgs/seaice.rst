@@ -601,10 +601,10 @@ Elliptical yield curve with non-normal flow rule
 Defining the runtime parameter :varlink:`SEAICE_eccfr` with a value different from :varlink:`SEAICE_eccen` allows to use an elliptical yield curve with a non-normal flow rule as described in Ringeisen et al. (2020) :cite:`ringeisen2020`. In this case the viscosities are functions of :math:`e_F` (:varlink:`SEAICE_eccen`) and :math:`e_G` (:varlink:`SEAICE_eccfr`):
 
 .. math::
-   \begin{align}
+   \begin{aligned}
      \zeta &= \frac{P(1+k_t)}{2\Delta} \\
      \eta &= \frac{\zeta}{e_G^2} = \frac{P(1+k_t)}{2e_G^2\Delta}
-   \end{align}
+   \end{aligned}
 
 with the abbreviation
 
