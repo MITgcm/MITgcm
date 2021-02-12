@@ -65,7 +65,7 @@ NOOPTFILES=''
 CFLAGS='-O0'
 
 #- for setting specific options, check compiler version:
-fcVers=`$FC $GET_FC_VERSION | sed -n '1p' | awk '{print $4}' | sed 's/\..*$//'`
+fcVers=`$CC -dumpversion | head -n 1 | sed 's/^[^0-9]* //;s/\..*$//'`
 if ! [[ $fcVers =~ ^[0-9]+$ ]] ; then
   echo "    un-recognized Compiler-version '$fcVers' ; ignored (-> set to 0)" ; fcVers=0 ;
 else echo "    get Compiler-version: '$fcVers'" ; fi
