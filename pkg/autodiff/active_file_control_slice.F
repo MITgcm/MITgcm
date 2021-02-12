@@ -93,7 +93,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*(80) adfname
       INTEGER bi,bj
       INTEGER i,k
-      INTEGER prec
+      INTEGER prec, jRec
       INTEGER il
       LOGICAL w_globFile
       _RS  dummyRS(1)
@@ -102,6 +102,7 @@ CEOP
 
 C     force 64-bit io
       prec = ctrlprec
+      jRec = -ABS(iRec)
 
       adpref = 'ad'
       il = ILNBLNK( activeVar_file )
@@ -169,7 +170,7 @@ C     Store the result on disk.
      I                activeVar_file, prec, w_globFile, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      I                active_data_t, dummyRS,
-     I                iRec, slice, myOptimIter, myThid )
+     I                jRec, slice, myOptimIter, myThid )
 
 C     Set active_var to zero.
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -271,7 +272,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*(80) adfname
       INTEGER bi,bj
       INTEGER i,k
-      INTEGER prec
+      INTEGER prec, jRec
       INTEGER il
       LOGICAL w_globFile
       _RS  active_data_t(1-OLx:sNx+OLx,myNr,nSx,nSy)
@@ -280,6 +281,7 @@ CEOP
 
 C     force 64-bit io
       prec = ctrlprec
+      jRec = -ABS(iRec)
 
       adpref = 'ad'
       il = ILNBLNK( activeVar_file )
@@ -347,7 +349,7 @@ C     Store the result on disk.
      I                activeVar_file, prec, w_globFile, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      I                dummyRL, active_data_t,
-     I                iRec, slice, myOptimIter, myThid )
+     I                jRec, slice, myOptimIter, myThid )
 
 C     Set active_var to zero.
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -449,7 +451,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*(80) adfname
       INTEGER bi,bj
       INTEGER j,k
-      INTEGER prec
+      INTEGER prec, jRec
       INTEGER il
       LOGICAL w_globFile
       _RS  dummyRS(1)
@@ -458,6 +460,7 @@ CEOP
 
 C     force 64-bit io
       prec = ctrlprec
+      jRec = -ABS(iRec)
 
       adpref = 'ad'
       il = ILNBLNK( activeVar_file )
@@ -525,7 +528,7 @@ C     Store the result on disk.
      I                activeVar_file, prec, w_globFile, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      I                active_data_t, dummyRS,
-     I                iRec, slice, myOptimIter, myThid )
+     I                jRec, slice, myOptimIter, myThid )
 
 C     Set active_var to zero.
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -628,7 +631,7 @@ C     !LOCAL VARIABLES:
       CHARACTER*(80) adfname
       INTEGER bi,bj
       INTEGER j,k
-      INTEGER prec
+      INTEGER prec, jRec
       INTEGER il
       LOGICAL w_globFile
       _RS  active_data_t(1-OLy:sNy+OLy,myNr,nSx,nSy)
@@ -637,6 +640,7 @@ CEOP
 
 C     force 64-bit io
       prec = ctrlprec
+      jRec = -ABS(iRec)
 
       adpref = 'ad'
       il = ILNBLNK( activeVar_file )
@@ -704,7 +708,7 @@ C     Store the result on disk.
      I                activeVar_file, prec, w_globFile, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      I                dummyRL, active_data_t,
-     I                iRec, slice, myOptimIter, myThid )
+     I                jRec, slice, myOptimIter, myThid )
 
 C     Set active_var to zero.
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -793,13 +797,14 @@ C     myThid         :: thread number for this instance
 C     !LOCAL VARIABLES:
       INTEGER  i,k
       INTEGER  bi,bj
-      INTEGER  prec
+      INTEGER  prec, jRec
       _RS  dummyRS(1)
       _RL  active_data_t(1-OLx:sNx+OLx,myNr,nSx,nSy)
 CEOP
 
 C     force 64-bit io
       prec = ctrlprec
+      jRec = -ABS(iRec)
 
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
@@ -835,7 +840,7 @@ C     Add active_var from appropriate location to data.
      I                activeVar_file, prec, globalFile, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      I                active_data_t, dummyRS,
-     I                iRec, slice, myOptimIter, myThid )
+     I                jRec, slice, myOptimIter, myThid )
 
       ENDIF
 
@@ -912,13 +917,14 @@ C     myThid         :: thread number for this instance
 C     !LOCAL VARIABLES:
       INTEGER  i,k
       INTEGER  bi,bj
-      INTEGER  prec
+      INTEGER  prec, jRec
       _RS  active_data_t(1-OLx:sNx+OLx,myNr,nSx,nSy)
       _RL  dummyRL(1)
 CEOP
 
 C     force 64-bit io
       prec = ctrlprec
+      jRec = -ABS(iRec)
 
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
@@ -954,7 +960,7 @@ C     Add active_var from appropriate location to data.
      I                activeVar_file, prec, globalFile, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      I                dummyRL, active_data_t,
-     I                iRec, slice, myOptimIter, myThid )
+     I                jRec, slice, myOptimIter, myThid )
 
       ENDIF
 
@@ -1032,13 +1038,14 @@ C     myThid         :: thread number for this instance
 C     !LOCAL VARIABLES:
       INTEGER  j,k
       INTEGER  bi,bj
-      INTEGER  prec
+      INTEGER  prec, jRec
       _RS  dummyRS(1)
       _RL  active_data_t(1-OLy:sNy+OLy,myNr,nSx,nSy)
 CEOP
 
 C     force 64-bit io
       prec = ctrlprec
+      jRec = -ABS(iRec)
 
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
@@ -1074,7 +1081,7 @@ C     Add active_var from appropriate location to data.
      I                activeVar_file, prec, globalFile, useCurrentDir,
      I                'RL', myNr, 1, myNr,
      I                active_data_t, dummyRS,
-     I                iRec, slice, myOptimIter, myThid )
+     I                jRec, slice, myOptimIter, myThid )
 
       ENDIF
 
@@ -1152,13 +1159,14 @@ C     myThid         :: thread number for this instance
 C     !LOCAL VARIABLES:
       INTEGER  j,k
       INTEGER  bi,bj
-      INTEGER  prec
+      INTEGER  prec, jRec
       _RS  active_data_t(1-OLy:sNy+OLy,myNr,nSx,nSy)
       _RL  dummyRL(1)
 CEOP
 
 C     force 64-bit io
       prec = ctrlprec
+      jRec = -ABS(iRec)
 
 C     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
       IF (theSimulationMode .EQ. FORWARD_SIMULATION) THEN
@@ -1194,7 +1202,7 @@ C     Add active_var from appropriate location to data.
      I                activeVar_file, prec, globalFile, useCurrentDir,
      I                'RS', myNr, 1, myNr,
      I                dummyRL, active_data_t,
-     I                iRec, slice, myOptimIter, myThid )
+     I                jRec, slice, myOptimIter, myThid )
 
       ENDIF
 
