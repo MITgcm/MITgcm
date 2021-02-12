@@ -60,6 +60,10 @@ options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
    :varlink:`SEAICE_ALLOW_EVP`, #define, enable use of EVP rheology solver
    :varlink:`SEAICE_ALLOW_JFNK`, #define, enable use of JFNK rheology solver
    :varlink:`SEAICE_ALLOW_KRYLOV`, #define, enable use of Krylov rheology solver
+   :varlink:`SEAICE_ALLOW_TEM`, #undef, enable use of the truncated ellipse method (TEM) and coulombic yield curve
+   :varlink:`SEAICE_ALLOW_FULLMC`, #undef, enable use of Mohr-Coulomb yield curve with shear flow rule
+   :varlink:`SEAICE_ALLOW_MCE`, #undef, enable use of Mohr-Coulomb yield curve with elliptical plastic potential
+   :varlink:`SEAICE_ALLOW_TD`, #undef, enable use of Teardrop and Parabolic Lens yield curves with normal flow rules
    :varlink:`SEAICE_LSR_ZEBRA`, #undef, use a coloring method for LSR solver
    :varlink:`SEAICE_EXTERNAL_FLUXES`, #define, use :filelink:`pkg/exf`-computed fluxes as starting point
    :varlink:`SEAICE_ZETA_SMOOTHREG`, #define, use differentiable regularization for viscosities
@@ -234,7 +238,7 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEmcMU`              | 1.00000E+00                  | Slope of the Mohr-Coulomb yield curve                                   |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICEtensilFac`         | 0.00000E+00                  | Tensile factor for the yield curve                                      |
+  | :varlink:`SEAICE_tensilFac`        | 0.00000E+00                  | Tensile factor for the yield curve                                      |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_rhoAir`           | 1.3  (or                     | density of air (kg/m\ :sup:`3`)                                         |
   |                                    | :filelink:`pkg/exf` value)   |                                                                         |
@@ -538,6 +542,56 @@ with the constants :math:`P^{\ast}` (run-time parameter
 :varlink:`SEAICE_strength`) and :math:`C^{\ast}` (run-time parameter
 :varlink:`SEAICE_cStar`).
 
+
+Different VP rheologies can be used to model sea ice dynamics. The different rheologies are characterized by different definition of the bulk and shear viscosities :math:`\zeta` and :math:`\eta`. The following table is a summary of choice, more details are given in the following sections. All the rheologies presented here depend on the ice strength parameter :varlink:`SEAICE_strength`.
+
+**Recommandation for use:** The default yield curve has proven stable over the years. The other rheologies have been tested in small idealized experiments but need to be tested further in arctic-wide setups.
+
+.. tabularcolumns:: |\Y{.275}|\Y{.450}|\Y{.275}|
+
+.. table:: Sea Ice Viscous-Plastic Rheologies
+  :class: longtable
+  :name: tab_phys_pkg_seaice_rheologies
+
+  +------------------------------------------------+---------------------------------------+----------------------------------------------------+
+  |   Name                                         | CPP and runtime (RT) flags            | Associated Runtime parameters                      |
+  +================================================+=======================================+====================================================+
+  |   Elliptical yield curve with normal flow rule | - None (default)                      | - :varlink:`SEAICE_eccen`                          |
+  |   (Default rheology)                           |                                       | - :varlink:`SEAICE_tensilFac`                      |
+  +------------------------------------------------+---------------------------------------+----------------------------------------------------+
+  |   Elliptical yield curve with                  | - None                                | - :varlink:`SEAICE_eccen`                          |
+  |   non-normal flow rule                         |                                       | - :varlink:`SEAICE_eccfr`                          |
+  |                                                |                                       | - :varlink:`SEAICE_tensilFac`                      |
+  +------------------------------------------------+---------------------------------------+----------------------------------------------------+
+  |   TEM or Coulombic yield curve                 | - CPP: :varlink:`SEAICE_ALLOW_TEM`    | - :varlink:`SEAICE_eccen`                          |
+  |                                                | - RT : :varlink:`SEAICEuseTEM`        | - :varlink:`SEAICE_eccfr`                          |
+  |                                                |                                       | - :varlink:`SEAICE_tensilFac`                      |
+  |                                                |                                       | - :varlink:`SEAICEmcMU`                            |
+  +------------------------------------------------+---------------------------------------+----------------------------------------------------+
+  |   Mohr-Coulomb yield curve with                | - CPP: :varlink:`SEAICE_ALLOW_FULLMC` | - :varlink:`SEAICE_tensilFac`                      |
+  |   shear flow rule                              | - RT : :varlink:`SEAICEuseFULLMC`     | - :varlink:`SEAICEmcMU`                            |
+  |                                                |                                       |                                                    |
+  |                                                |                                       |                                                    |
+  +------------------------------------------------+---------------------------------------+----------------------------------------------------+
+  |   Mohr-Coulomb yield curve with                | - CPP: :varlink:`SEAICE_ALLOW_MCE`    | - :varlink:`SEAICE_eccen`                          |
+  |   elliptical plastic potential                 | - RT : :varlink:`SEAICEuseMCE`        | - :varlink:`SEAICE_eccfr`                          |
+  |                                                |                                       | - :varlink:`SEAICE_tensilFac`                      |
+  |                                                |                                       | - :varlink:`SEAICEmcMU`                            |
+  +------------------------------------------------+---------------------------------------+----------------------------------------------------+
+  |   Teardrop yield curve with                    | - CPP: :varlink:`SEAICE_ALLOW_TD`     | - :varlink:`SEAICE_tensilFac`                      |
+  |   normal flow rule                             | - RT : :varlink:`SEAICEuseTD`         |                                                    |
+  |                                                |                                       |                                                    |
+  |                                                |                                       |                                                    |
+  +------------------------------------------------+---------------------------------------+----------------------------------------------------+
+  |   Parabolic Lens yield curve with              | - CPP: :varlink:`SEAICE_ALLOW_TD`     | - :varlink:`SEAICE_tensilFac`                      |
+  |   normal flow rule                             | - RT : :varlink:`SEAICEusePL`         |                                                    |
+  |                                                |                                       |                                                    |
+  |                                                |                                       |                                                    |
+  +------------------------------------------------+---------------------------------------+----------------------------------------------------+
+
+
+**Note:** With the exception of the default rheology and the TEM (with :varlink:`SEAICEmcMU`:math:`\mu=1.0`), these rheologies are not implemented in EVP! 
+
 .. _para_phys_pkg_seaice_rheologies_ellipse_nfr:
 
 Elliptical yield curve with normal flow rule
@@ -593,7 +647,7 @@ divisions by zero.
 
 Besides this commonly used default rheology, a number of a alternative rheologies are implemented. Some of these are experiemental and should be used with caution.
 
-.. _para_phys_pkg_seaice_altVPrheologies_ellnnfr:
+.. _para_phys_pkg_seaice_rheologies_ellnnfr:
 
 Elliptical yield curve with non-normal flow rule
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -615,7 +669,7 @@ with the abbreviation
 
 Note that if :math:`e_G=e_F=e`, these formulae reduce to the normal flow rule.
 
-.. _para_phys_pkg_seaice_TEM:
+.. _para_phys_pkg_seaice_rheologies_TEM:
 
 Truncated ellipse method (TEM) for elliptical yield curve
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -637,7 +691,7 @@ In addition, the yield curve can be truncated with a Mohr-Coulomb slope if :varl
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set :varlink:`SEAICE_tensilFac` :math:`>0` in ``data.seaice``, e.g. 0.05 or 5%.
 
-.. _para_phys_pkg_seaice_altVPrheologies_MCS:
+.. _para_phys_pkg_seaice_rheologies_MCS:
 
 Mohr-Coulomb yield curve with shear flow rule
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -649,7 +703,7 @@ For this rheology, it is recommended to use a non-zero tensile strength, so set 
 
 **WARNING: This rheology is known to be unstable. Use with caution!**
 
-.. _para_phys_pkg_seaice_altVPrheologies_MCE:
+.. _para_phys_pkg_seaice_rheologies_MCE:
 
 Mohr-Coulomb yield curve with elliptical plastic potential
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -659,7 +713,7 @@ For details of this rheology, see https://doi.org/10.26092/elib/380, Chapter 2.
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set :varlink:`SEAICE_tensilFac` :math:`>0` in ``data.seaice``, e.g. 0.05 or 5%.
 
-.. _para_phys_pkg_seaice_altVPrheologies_TD:
+.. _para_phys_pkg_seaice_rheologies_TD:
 
 Teardrop yield curve with normal flow rule
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -670,7 +724,7 @@ To use this rheology, set ``#define SEAICE_ALLOW_TEARDROP`` in ``SEAICE_OPTIONS.
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set :varlink:`SEAICE_tensilFac` :math:`>0` in ``data.seaice``, e.g. 0.05 or 5%.
 
-.. _para_phys_pkg_seaice_altVPrheologies_PL:
+.. _para_phys_pkg_seaice_rheologies_PL:
 
 Parabolic lens yield curve with normal flow rule
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
