@@ -543,9 +543,7 @@ with the constants :math:`P^{\ast}` (run-time parameter
 :varlink:`SEAICE_cStar`).
 
 
-Different VP rheologies can be used to model sea ice dynamics. The different rheologies are characterized by different definition of the bulk and shear viscosities :math:`\zeta` and :math:`\eta`. The following table is a summary of choice, more details are given in the following sections. All the rheologies presented here depend on the ice strength parameter :varlink:`SEAICE_strength`.
-
-**Recommandation for use:** The default yield curve has proven stable over the years. The other rheologies have been tested in small idealized experiments but need to be tested further in arctic-wide setups.
+Different VP rheologies can be used to model sea ice dynamics. The different rheologies are characterized by different definitions of the bulk and shear viscosities :math:`\zeta` and :math:`\eta` in Eq. :eq:`eq_vpequation` . The following table is a summary of the choice. More details are given in the following sections. All the rheologies presented here depend on the ice strength parameter :varlink:`SEAICE_strength`.
 
 .. tabularcolumns:: |\Y{.275}|\Y{.450}|\Y{.275}|
 
@@ -590,7 +588,7 @@ Different VP rheologies can be used to model sea ice dynamics. The different rhe
   +------------------------------------------------+---------------------------------------+----------------------------------------------------+
 
 
-**Note:** With the exception of the default rheology and the TEM (with :varlink:`SEAICEmcMU`:math:`\mu=1.0`), these rheologies are not implemented in EVP! 
+**Note:** With the exception of the default rheology and the TEM (with :varlink:`SEAICEmcMU` : :math:`\mu=1.0`), these rheologies are not implemented in EVP!
 
 .. _para_phys_pkg_seaice_rheologies_ellipse_nfr:
 
