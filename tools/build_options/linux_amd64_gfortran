@@ -13,7 +13,6 @@
 # MPI : Tested on engaging, using:
 #       module load gcc                  (Version 4.8.4)
 #       module add mvapich2/gcc/64/2.0b
-#       export MPI_INC_DIR="$MPI_HOME/include"
 # and on baudelaire.csail.mit.edu (FC13), using:
 #       export MPI_GCC_DIR=/srv/software/gcc/gcc-packages/gcc-4.4.5/mpich2/mpich2-1.3
 #       export MPI_INC_DIR=$MPI_GCC_DIR/include
