@@ -1,6 +1,5 @@
 #include "ECCO_OPTIONS.h"
 
-
       subroutine cost_gencost_all( myiter, mytime, mythid )
 
 c     ==================================================================
@@ -21,9 +20,6 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef ALLOW_CAL
-# include "cal.h"
-#endif
 #ifdef ALLOW_ECCO
 # include "ecco.h"
 #endif
@@ -51,7 +47,6 @@ c     == end of interface ==
 
          if ( (using_gencost(k)).AND.( gencost_flag(k).EQ.1 )
      &   .AND.( .NOT.gencost_is1d(k) ) ) then
-
 
 #ifdef ALLOW_DEBUG
          IF ( debugLevel .GE. debLevD ) THEN
@@ -101,4 +96,5 @@ c     == end of interface ==
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
+      return
       end

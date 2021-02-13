@@ -25,9 +25,6 @@ c     == global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef ALLOW_CAL
-# include "cal.h"
-#endif
 #ifdef ALLOW_ECCO
 # include "ecco.h"
 #endif
@@ -86,7 +83,6 @@ c     == end of interface ==
       jmin = 1
       jmax = sNy
 
-
 CADJ  INIT tapelev_moc   = common, Nr
 
       do kgen=1,NGENCOST
@@ -105,7 +101,6 @@ c-- detect the relevant gencost indices
      &    ': ',gencost_barfile(kgen)(1:il)
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                        SQUEEZE_RIGHT, myThid )
-
 
 c=============== PART 0: initilization ===================
 
@@ -130,7 +125,6 @@ c-- Initialize to zero
           ENDDO
 c model mask[W,S]: already included in transp calc in ecco_phys
         nrecloc=gencost_nrec(kgen)
-
 
 c=============== PART 1: main loop ===================
         do irec = 1,nrecloc
@@ -241,7 +235,6 @@ CADJ STORE myTempMax = tapelev_moc, key = k
             endif
           enddo
 
-
           WRITE(msgBuf,'(2A,I3,A,1PE21.14,A,I2)')
      &        'moc cost ',gencost_barfile(kgen)(1:il),
      &        irec,' ', myTempMax, 'kmax: ',kmax
@@ -266,7 +259,6 @@ c============= Done with cost computation =====================
           CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                          SQUEEZE_RIGHT, myThid )
 
-
           endif ! mskTemporal /=0
           enddo ! irec=1->nrecloc
 
@@ -281,4 +273,5 @@ c-- Print out what actually is used as cost function
 
 #endif /* ALLOW_GENCOST_CONTRIBUTION */
 
+      return
       end
