@@ -287,17 +287,6 @@ C Assign a free unit number as the I/O channel for this routine
 C- endif iAmDoingIO
       ENDIF
 
-C Initialize buffers
-C r4seg/r8seg get filled in pass routine
-      DO i = 1, xSize
-       x_buffer_r4(i) = 0.
-       x_buffer_r8(i) = 0. _d 0
-      ENDDO
-      DO i = 1, sNx*nNz*nSx*nSy
-       xz_buffer_r4(i) = 0.
-       xz_buffer_r8(i) = 0. _d 0
-      ENDDO
-
 C If option globalFile is desired but does not work or if
 C globalFile is too slow, then try using single-CPU I/O.
       IF (useSingleCpuIO) THEN
@@ -317,6 +306,12 @@ C Master thread of process 0, only, opens a global file
 
 C Gather array and write it to file, one vertical level at a time
       DO k=kLo,kHi
+C Initialize buffers
+C r4seg/r8seg get filled in pass routine
+       DO i = 1, xSize
+        x_buffer_r4(i) = 0.
+        x_buffer_r8(i) = 0. _d 0
+       ENDDO
        zeroBuff = k.EQ.kLo
 C-     copy from fldRL/RS(level=k) to 2-D "local":
        IF ( filePrec.EQ.precFloat32 ) THEN
@@ -402,6 +397,12 @@ C---  else .NOT.useSingleCpuIO
 C Wait for all thread to finish. This prevents other threads (e.g., master)
 C  to continue to acces 3-D buffer while this thread is filling it.
        CALL BAR2( myThid )
+
+C Initialize buffers
+       DO i = 1, sNx*nNz*nSx*nSy
+        xz_buffer_r4(i) = 0.
+        xz_buffer_r8(i) = 0. _d 0
+       ENDDO
 
 C---    Copy from fldRL/RS to 2-D buffer (multi-threads):
         IF ( filePrec.EQ.precFloat32 ) THEN
@@ -899,17 +900,6 @@ C Assign a free unit number as the I/O channel for this routine
 C- endif iAmDoingIO
       ENDIF
 
-C Initialize buffers
-C r4seg/r8seg get filled in pass routine
-      DO j = 1, ySize
-       y_buffer_r4(j) = 0.
-       y_buffer_r8(j) = 0. _d 0
-      ENDDO
-      DO j = 1, sNy*nNz*nSx*nSy
-       yz_buffer_r4(j) = 0.
-       yz_buffer_r8(j) = 0. _d 0
-      ENDDO
-
 C If option globalFile is desired but does not work or if
 C globalFile is too slow, then try using single-CPU I/O.
       IF (useSingleCpuIO) THEN
@@ -929,6 +919,12 @@ C Master thread of process 0, only, opens a global file
 
 C Gather array and write it to file, one vertical level at a time
       DO k=kLo,kHi
+C Initialize buffers
+C r4seg/r8seg get filled in pass routine
+       DO j = 1, ySize
+        y_buffer_r4(j) = 0.
+        y_buffer_r8(j) = 0. _d 0
+       ENDDO
        zeroBuff = k.EQ.kLo
 C-     copy from fldRL/RS(level=k) to 2-D "local":
        IF ( filePrec.EQ.precFloat32 ) THEN
@@ -1014,6 +1010,12 @@ C---  else .NOT.useSingleCpuIO
 C Wait for all thread to finish. This prevents other threads (e.g., master)
 C  to continue to acces 3-D buffer while this thread is filling it.
        CALL BAR2( myThid )
+
+C Initialize buffers
+       DO j = 1, sNy*nNz*nSx*nSy
+        yz_buffer_r4(j) = 0.
+        yz_buffer_r8(j) = 0. _d 0
+       ENDDO
 
 C---    Copy from fldRL/RS to 2-D buffer (multi-threads):
         IF ( filePrec.EQ.precFloat32 ) THEN
