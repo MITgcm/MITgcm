@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/lab_sea:
+  - change lab_sea.hb87 from testing EVP to testing aEVP with some sensible
+    parameters ; update reference output "output.hb87.txt"
 o pkg/ecco:
   - Addition of meridional streamfunction maximum (MOC) as objective function
      within ecco/gencost code ;
