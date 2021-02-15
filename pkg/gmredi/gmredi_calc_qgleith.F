@@ -239,13 +239,13 @@ C Using it in Leith serves to damp instabilities in w.
      &                     + (divDy(i,j+1)*divDy(i,j+1)
      &                        + divDy(i,j)*divDy(i,j) )  )
 
-C avoid derivative of SQRT(0)
               sqarg = leithQG2fac*(grdVrt+grdDiv)
-              IF (sqarg .GT. 0. _d 0) THEN
-                  sqarg = SQRT(sqarg)
-              ELSE
-                  sqarg = 0. _d 0
-              ENDIF
+#ifndef ALLOW_AUTODIFF
+              sqarg = SQRT(sqarg)
+#else
+C avoid derivative of SQRT(0)
+              IF (sqarg .GT. 0. _d 0) sqarg = SQRT(sqarg)
+#endif
               LeithQG_K(i,j,k) = sqarg*L3
 
             ELSE
