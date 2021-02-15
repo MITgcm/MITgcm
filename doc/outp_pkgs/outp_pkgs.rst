@@ -418,19 +418,22 @@ Currently, the available adjoint state variables are:
    125 |ADJepsiy| 15 |   124 |VVRA    UR|dJ/(m^2/s)      |dJ/dEddyPsiY: Sensitivity to meridional eddystreamfunction
 
 
-Additionally the packages :ref:`sub_phys_pkg_gmredi`,
-:ref:`sub_phys_pkg_ptracers`, :ref:`sub_phys_pkg_exf`, and
-:ref:`sub_phys_pkg_seaice` have the following available adjoint diagnostics
+Additionally the packages :ref:`gmredi <sub_phys_pkg_gmredi>`,
+:ref:`ptracrs <sub_phys_pkg_ptracers>`, :ref:`exf <sub_phys_pkg_exf>`, and
+:ref:`seaice <sub_phys_pkg_seaice>` have the following available adjoint diagnostics
 
 ::
+
    225 |ADJkapgm| 15 |       |SMRA    MR|dJ/d[m^2/s]     |dJ/dKgm: Sensitivity to GM Intensity
    226 |ADJkapre| 15 |       |SMRA    MR|dJ/d[m^2/s]     |dJ/dKredi: Sensitivity to Redi Coefficient
 
 :: 
+
    227 |TRAC01  | 15 |       |SMR     MR|mol C/m         |Dissolved Inorganic Carbon concentration
    241 |ADJptr01| 15 |       |SMRA    MR|dJ/mol C/m      |sensitivity to Dissolved Inorganic Carbon concentration
 
 ::
+
    221 |ADJustrs|  1 |   222 |UU A    U1|dJ/(N/m^2)      |dJ/dustress: Senstivity to zonal surface wind stress
    222 |ADJvstrs|  1 |   221 |VV A    U1|dJ/(N/m^2)      |dJ/dvstrs: Sensitivity to merid. surface wind stress
    223 |ADJhflux|  1 |       |SM A    U1|dJ/(W/m^2)      |dJ/dhflux: Sensitivity to upward heat flux
