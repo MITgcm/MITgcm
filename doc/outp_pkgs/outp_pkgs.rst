@@ -723,8 +723,8 @@ MITgcm kernel available diagnostics list:
   momVort3| 50 |       |SZR     MR|s^-1            |3rd component (vertical) of Vorticity
   Strain  | 50 |       |SZR     MR|s^-1            |Horizontal Strain of Horizontal Velocities
   Tension | 50 |       |SMR     MR|s^-1            |Horizontal Tension of Horizontal Velocities
-  UBotDrag| 50 |   176 |UUR     MR|m/s^2           |U momentum tendency from Bottom Drag
-  VBotDrag| 50 |   175 |VVR     MR|m/s^2           |V momentum tendency from Bottom Drag
+  botTauX |  1 |   176 |UU      U1|N/m^2           |zonal bottom stress, >0 increases uVel
+  botTauY |  1 |   175 |VV      U1|N/m^2           |meridional bottom stress, >0 increases vVel
   USidDrag| 50 |   178 |UUR     MR|m/s^2           |U momentum tendency from Side Drag
   VSidDrag| 50 |   177 |VVR     MR|m/s^2           |V momentum tendency from Side Drag
   Um_Diss | 50 |   180 |UUR     MR|m/s^2           |U momentum tendency from Dissipation
