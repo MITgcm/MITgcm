@@ -57,6 +57,15 @@
    fileName(5) = 'adjDiagSeaice',
 # frequency(5) = 311040000.,
   frequency(5) = 432000.,
+
+  fields(1:13,6) = 'ADJustrs','ADJvstrs','ADJhflux',
+                   'ADJsflux','ADJatemp','ADJpreci',
+                   'ADJroff ','ADJswdn ','ADJlwdn ',
+                   'ADJuwind','ADJvwind','ADJclsst',
+                   'ADJclsss'
+   fileName(6) = 'adjDiagExf',
+# frequency(6) = 311040000.,
+  frequency(6) = 432000.,
  &
 
 #--------------------
