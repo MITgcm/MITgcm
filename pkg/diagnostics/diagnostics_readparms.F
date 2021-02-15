@@ -286,8 +286,12 @@ C     remove trailing "/":
 C-     Only lists with non-empty file name (iLen>0) are considered
        IF ( iLen.GE.1 .AND. nlists.LT.numLists ) THEN
          n = nlists + 1
-         freq(n)    = frequency(l)
-         IF ( timePhase(l).NE. UNSET_RL ) THEN
+         IF (frequency(l) .GE. zeroRL) THEN
+           freq(n) = MAX(frequency(l), deltaTclock)
+         ELSE
+           freq(n) = MIN(frequency(l),-deltaTclock)
+         ENDIF
+         IF ( timePhase(l) .NE. UNSET_RL ) THEN
            phase(n) = timePhase(l)
          ELSEIF ( frequency(l) .LT. 0. ) THEN
            phase(n) = -0.5 _d 0 * frequency(l)
