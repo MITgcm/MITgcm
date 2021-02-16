@@ -90,6 +90,10 @@ C     Write horizontal grid arrays
         CALL WRITE_FLD_XY_RS( 'DYG',' ',dyG,-1,myThid)
         CALL WRITE_FLD_XY_RS( 'DXC',' ',dxC,-1,myThid)
         CALL WRITE_FLD_XY_RS( 'DYC',' ',dyC,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'DXF',' ',dxF,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'DYF',' ',dyF,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'DXV',' ',dxV,-1,myThid)
+        CALL WRITE_FLD_XY_RS( 'DYU',' ',dyU,-1,myThid)
         IF ( usingCurvilinearGrid .OR. rotateGrid ) THEN
           CALL WRITE_FLD_XY_RS( 'AngleCS',' ',angleCosC,-1,myThid)
           CALL WRITE_FLD_XY_RS( 'AngleSN',' ',angleSinC,-1,myThid)
