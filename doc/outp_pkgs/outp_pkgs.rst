@@ -620,13 +620,15 @@ MITgcm kernel available diagnostics list:
   PHIHYDSQ|SMRP    MR|m^4/s^4         |Square of Hyd. Pressure Pot.(p/rho) Anomaly
   PHIBOT  |SM      M1|m^2/s^2         |Bottom Pressure Pot.(p/rho) Anomaly
   PHIBOTSQ|SM P    M1|m^4/s^4         |Square of Bottom Pressure Pot.(p/rho) Anomaly
+  PHI_SURF|SM      M1|m^2/s^2         |Surface Dynamical Pressure Pot.(p/rho)
   PHIHYDcR|SMR     MR|m^2/s^2         |Hydrostatic Pressure Pot.(p/rho) Anomaly @ const r
+  PHI_NH  |SMR     MR|m^2/s^2         |Non-Hydrostatic Pressure Pot.(p/rho)
   MXLDEPTH|SM      M1|m               |Mixed-Layer Depth (>0)
   DRHODR  |SM      LR|kg/m^4          |Stratification: d.Sigma/dr (kg/m3/r_unit)
   CONVADJ |SMR     LR|fraction        |Convective Adjustment Index [0-1]
   oceTAUX |UU      U1|N/m^2           |zonal surface wind stress, >0 increases uVel
   oceTAUY |VV      U1|N/m^2           |meridional surf. wind stress, >0 increases vVel
-  atmPload|SM      U1|Pa              |Atmospheric pressure loading
+  atmPload|SM      U1|Pa              |Atmospheric pressure loading anomaly (vs surf_pRef)
   sIceLoad|SM      U1|kg/m^2          |sea-ice loading (in Mass of ice+snow / area unit)
   oceFWflx|SM      U1|kg/m^2/s        |net surface Fresh-Water flux into the ocean (+=down), >0 decreases salinity
   oceSflux|SM      U1|g/m^2/s         |net surface Salt flux into the ocean (+=down), >0 increases salinity
@@ -641,6 +643,9 @@ MITgcm kernel available diagnostics list:
   SFLUX   |SM      U1|g/m^2/s         |total salt flux (match salt-content variations), >0 increases salt
   RCENTER |SM      MR|m               |Cell-Center Height
   RSURF   |SM      M1|m               |Surface Height
+  hFactorC|SMr     MR|1               |Center cell-thickness fraction [-]
+  hFactorW|SUr     MR|1               |Western-Edge cell-thickness fraction [-]
+  hFactorS|SVr     MR|1               |Southern-Edge cell-thickness fraction [-]
   TOTUTEND|UUR     MR|m/s/day         |Tendency of Zonal Component of Velocity
   TOTVTEND|VVR     MR|m/s/day         |Tendency of Meridional Component of Velocity
   TOTTTEND|SMR     MR|degC/day        |Tendency of Potential Temperature
@@ -649,6 +654,7 @@ MITgcm kernel available diagnostics list:
   <-Name->|<- code ->|<--  Units   -->|<- Tile (max=80c)         
   ---------------------------------------------------------------
   MoistCor|SM      MR|W/m^2           |Heating correction due to moist thermodynamics
+  HeatDiss|SM      MR|W/m^2           |Heating from frictional dissipation
   gT_Forc |SMR     MR|degC/s          |Potential Temp. forcing tendency
   gS_Forc |SMR     MR|psu/s           |Salinity forcing tendency
   AB_gT   |SMR     MR|degC/s          |Potential Temp. tendency from Adams-Bashforth
@@ -657,6 +663,11 @@ MITgcm kernel available diagnostics list:
   gSinAB  |SMR     MR|psu/s           |Salinity tendency going in Adams-Bashforth
   AB_gU   |UUR     MR|m/s^2           |U momentum tendency from Adams-Bashforth
   AB_gV   |VVR     MR|m/s^2           |V momentum tendency from Adams-Bashforth
+  AB_gW   |WM      LR|m/s^2           |W momentum tendency from Adams-Bashforth
+  TAUXEDDY|UU      LR|N/m^2           |Zonal Eddy Stress
+  TAUYEDDY|VV      LR|N/m^2           |Meridional Eddy Stress
+  U_EulerM|UUR     MR|m/s             |Zonal Eulerian-Mean Velocity (m/s)
+  V_EulerM|VVR     MR|m/s             |Meridional Eulerian-Mean Velocity (m/s)
   ADVr_TH |WM      LR|degC.m^3/s      |Vertical   Advective Flux of Pot.Temperature
   ADVx_TH |UU      MR|degC.m^3/s      |Zonal      Advective Flux of Pot.Temperature
   ADVy_TH |VV      MR|degC.m^3/s      |Meridional Advective Flux of Pot.Temperature
@@ -714,6 +725,8 @@ MITgcm kernel available diagnostics list:
   VA4ZLTHD|SZ      MR|m^4/s           |LeithD Biharm Visc Coefficient (m4/s) (Zeta Pt)
   VAHDLTHD|SM      MR|m^2/s           |LeithD Harm Visc Coefficient (m2/s) (Div Pt)
   VA4DLTHD|SM      MR|m^4/s           |LeithD Biharm Visc Coefficient (m4/s) (Div Pt)
+  VAHZLTHQ|SZ      MR|m^2/s           |LeithQG Harm Visc Coefficient (m2/s) (Zeta Pt)
+  VAHDLTHQ|SM      MR|m^2/s           |LeithQG Harm Visc Coefficient (m2/s) (Div Pt)
   VAHZSMAG|SZ      MR|m^2/s           |Smagorinsky Harm Visc Coefficient (m2/s) (Zeta Pt)
   VA4ZSMAG|SZ      MR|m^4/s           |Smagorinsky Biharm Visc Coeff. (m4/s) (Zeta Pt)
   VAHDSMAG|SM      MR|m^2/s           |Smagorinsky Harm Visc Coefficient (m2/s) (Div Pt)
@@ -723,25 +736,43 @@ MITgcm kernel available diagnostics list:
   momVort3|SZR     MR|s^-1            |3rd component (vertical) of Vorticity
   Strain  |SZR     MR|s^-1            |Horizontal Strain of Horizontal Velocities
   Tension |SMR     MR|s^-1            |Horizontal Tension of Horizontal Velocities
-  botTauX |UU      U1|N/m^2           |zonal bottom stress, >0 increases uVel
-  botTauY |VV      U1|N/m^2           |meridional bottom stress, >0 increases vVel
+  Stretch |SM      MR|s^-1            |Vortex stretching from QG Leith dynamic viscosity
   USidDrag|UUR     MR|m/s^2           |U momentum tendency from Side Drag
   VSidDrag|VVR     MR|m/s^2           |V momentum tendency from Side Drag
-  Um_Diss |UUR     MR|m/s^2           |U momentum tendency from Dissipation
-  Vm_Diss |VVR     MR|m/s^2           |V momentum tendency from Dissipation
+  Um_Diss |UUR     MR|m/s^2           |U momentum tendency from Dissipation (Explicit part)
+  Vm_Diss |VVR     MR|m/s^2           |V momentum tendency from Dissipation (Explicit part)
+  Um_ImplD|UUR     MR|m/s^2           |U momentum tendency from Dissipation (Implicit part)
+  Vm_ImplD|VVR     MR|m/s^2           |V momentum tendency from Dissipation (Implicit part)
   Um_Advec|UUR     MR|m/s^2           |U momentum tendency from Advection terms
   Vm_Advec|VVR     MR|m/s^2           |V momentum tendency from Advection terms
   Um_Cori |UUR     MR|m/s^2           |U momentum tendency from Coriolis term
   Vm_Cori |VVR     MR|m/s^2           |V momentum tendency from Coriolis term
-  Um_dPHdx|UUR     MR|m/s^2           |U momentum tendency from Hydrostatic Pressure grad
-  Vm_dPHdy|VVR     MR|m/s^2           |V momentum tendency from Hydrostatic Pressure grad
+  Um_dPhiX|UUR     MR|m/s^2           |U momentum tendency from Pressure/Potential grad
+  Vm_dPhiY|VVR     MR|m/s^2           |V momentum tendency from Pressure/Potential grad
   Um_Ext  |UUR     MR|m/s^2           |U momentum tendency from external forcing
   Vm_Ext  |VVR     MR|m/s^2           |V momentum tendency from external forcing
   Um_AdvZ3|UUR     MR|m/s^2           |U momentum tendency from Vorticity Advection
   Vm_AdvZ3|VVR     MR|m/s^2           |V momentum tendency from Vorticity Advection
   Um_AdvRe|UUR     MR|m/s^2           |U momentum tendency from vertical Advection (Explicit part)
   Vm_AdvRe|VVR     MR|m/s^2           |V momentum tendency from vertical Advection (Explicit part)
+  Wm_Diss |WMr     LR|m/s^2           |W momentum tendency from Dissipation
+  Wm_Advec|WMr     LR|m/s^2           |W momentum tendency from Advection terms
+  WSidDrag|WMr     LR|m/s^2           |Vertical momentum tendency from Side Drag
+  botTauX |UU      U1|N/m^2           |zonal bottom stress, >0 increases uVel
+  botTauY |VV      U1|N/m^2           |meridional bottom stress, >0 increases vVel
+  ADVx_Um |UM      MR|m^4/s^2         |Zonal      Advective Flux of U momentum
+  ADVy_Um |VZ      MR|m^4/s^2         |Meridional Advective Flux of U momentum
+  ADVrE_Um|WU      LR|m^4/s^2         |Vertical   Advective Flux of U momentum (Explicit part)
+  ADVx_Vm |UZ      MR|m^4/s^2         |Zonal      Advective Flux of V momentum
+  ADVy_Vm |VM      MR|m^4/s^2         |Meridional Advective Flux of V momentum
+  ADVrE_Vm|WV      LR|m^4/s^2         |Vertical   Advective Flux of V momentum (Explicit part)
+  VISCx_Um|UM      MR|m^4/s^2         |Zonal      Viscous Flux of U momentum
+  VISCy_Um|VZ      MR|m^4/s^2         |Meridional Viscous Flux of U momentum
+  VISrE_Um|WU      LR|m^4/s^2         |Vertical   Viscous Flux of U momentum (Explicit part)
   VISrI_Um|WU      LR|m^4/s^2         |Vertical   Viscous Flux of U momentum (Implicit part)
+  VISCx_Vm|UZ      MR|m^4/s^2         |Zonal      Viscous Flux of V momentum
+  VISCy_Vm|VM      MR|m^4/s^2         |Meridional Viscous Flux of V momentum
+  VISrE_Vm|WV      LR|m^4/s^2         |Vertical   Viscous Flux of V momentum (Explicit part)
   VISrI_Vm|WV      LR|m^4/s^2         |Vertical   Viscous Flux of V momentum (Implicit part)
 
 
