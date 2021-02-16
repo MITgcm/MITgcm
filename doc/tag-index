@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ecco:
+  - fix type of argument in S/R MDS_READVEC_LOC call inside cost_gencost_moc.F
 o verification/lab_sea:
   - change lab_sea.hb87 from testing EVP to testing aEVP with some sensible
     parameters ; update reference output "output.hb87.txt"
