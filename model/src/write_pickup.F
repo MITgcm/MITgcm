@@ -269,6 +269,17 @@ C-    write Full Pressure for EOS in pressure:
         IF (j.LE.listDim) wrFldList(j) = 'Phi_NHyd'
        ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
+#ifdef ALLOW_SMAG_3D_DIFFUSIVITY
+C-    With synchronous time-stepping, Smag-3D diffusivity is lagging by 1 time-step
+C     (i.e., used before being updated meaning field is from previous time-step calc)
+C     --> needs to be stored in pickup file
+       IF ( smag3D_diffCoeff.GT.zeroRL .AND. .NOT.staggerTimeStep ) THEN
+        j = j + 1
+        CALL WRITE_REC_3D_RL( fn, fp, Nr, smag3D_diffK,
+     &                                            -j, myIter, myThid )
+        IF (j.LE.listDim) wrFldList(j) = 'SmagDiff'
+       ENDIF
+#endif /* ALLOW_SMAG_3D_DIFFUSIVITY */
 #ifdef ALLOW_ADDFLUID
 C-    write mass source/sink of fluid (but not needed if selectAddFluid=-1)
        IF ( selectAddFluid.NE.0 ) THEN
