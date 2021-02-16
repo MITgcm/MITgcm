@@ -76,11 +76,6 @@ jobs:
      - name: Checkout
        uses: actions/checkout@v2.2.0
 
-     - name: Set up compilers
-       run: |
-         sudo apt-get update
-         sudo apt-get -qq install gfortran
-
      - name: Get a docker image and set it running
        run: |
          docker pull mitgcm/mitgcm-openad-test:centos-test
