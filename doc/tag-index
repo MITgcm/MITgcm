@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/build_options:
+  - update standard optfile "linux_amd64_gfortran" to enable to be used with
+    gfortran version 10 (or higher); update comments and clean-up for missing
+    "nf-config".
 o model/src & pkg/generic_advdiff:
   - Implement simple isotropic 3D Smagorinsky diffusivity:
     Smag diffusivity is assumed to be linearly dependent on 3D Smag viscosity
