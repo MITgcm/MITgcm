@@ -76,6 +76,7 @@ c     COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
       INTEGER prec, nRec, nTimRec
       _RL     timeRec(2)
       _RL     tmpLoc
+      _RL     reBaseTime
 #ifdef ALLOW_MDSIO
       LOGICAL glf
 #endif
@@ -123,24 +124,26 @@ C-    end of time-averaging interval:
 C-    begining of time-averaging interval:
 c       timeRec(1) = myTime - freq(listId)
 C     a) find the time of the previous multiple of output freq:
-        timeRec(1) = myTime-deltaTClock*0.5 _d 0
+        reBaseTime = startTime
+C     avoid too large values of timeRec(1)
+        timeRec(1) = myTime-deltaTClock*0.5 _d 0 - reBaseTime
         timeRec(1) = (timeRec(1)-phase(listId))/freq(listId)
         i = INT( timeRec(1) )
         IF ( timeRec(1).LT.0. ) THEN
           tmpLoc = FLOAT(i)
           IF ( timeRec(1).NE.tmpLoc ) i = i - 1
         ENDIF
-        timeRec(1) = phase(listId) + freq(listId)*FLOAT(i)
+        timeRec(1) = phase(listId) + freq(listId)*FLOAT(i) + reBaseTime
 c       if ( listId.eq.2 ) write(0,*) 'f',i,timeRec(1)/deltaTClock
         timeRec(1) = MAX( timeRec(1), startTime )
 
 C     b) round off to nearest multiple of time-step:
-        timeRec(1) = (timeRec(1)-baseTime)/deltaTClock
+        timeRec(1) = (timeRec(1)-reBaseTime)/deltaTClock
         i = NINT( timeRec(1) )
 C     if just half way, NINT will return the next time-step: correct this
         tmpLoc = FLOAT(i) - 0.5 _d 0
         IF ( timeRec(1).EQ.tmpLoc ) i = i - 1
-        timeRec(1) = baseTime + deltaTClock*FLOAT(i)
+        timeRec(1) = reBaseTime + deltaTClock*FLOAT(i)
 c       if ( listId.eq.2 ) write(0,*) i,timeRec(1)/deltaTClock
       ENDIF
 C--   Convert time to iteration number (debug)
