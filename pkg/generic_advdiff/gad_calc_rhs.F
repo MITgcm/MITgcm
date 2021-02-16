@@ -168,7 +168,7 @@ C     flux limiting is replaced by DST3 without flux limiting, but any
 C     combination is possible.
        IF ( advectionSchArg.EQ.ENUM_DST3_FLUX_LIMIT )
      &      advectionScheme = ENUM_DST3
-       IF ( vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT )
+       IF ( vertAdvecSchArg.EQ.ENUM_DST3_FLUX_LIMIT )
      &      vertAdvecScheme = ENUM_DST3
 C     here is room for more advection schemes as this becomes necessary
       ENDIF
