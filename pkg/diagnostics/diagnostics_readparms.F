@@ -286,7 +286,21 @@ C     remove trailing "/":
 C-     Only lists with non-empty file name (iLen>0) are considered
        IF ( iLen.GE.1 .AND. nlists.LT.numLists ) THEN
          n = nlists + 1
-         freq(n)    = frequency(l)
+C-       Set freq to be at least deltaTclock
+         IF (frequency(l).GE. zeroRL) THEN
+           freq(n) = MAX(frequency(l), deltaTclock)
+         ELSE
+           freq(n) = MIN(frequency(l),-deltaTclock)
+         ENDIF
+C-       If frequency changed, warn the user
+         IF (freq(n).NE.frequency(l)) THEN
+           WRITE(msgBuf,'(A,I2,A)')
+     &      'DIAGNOSTICS_READPARMS: frequency(',l,') changed from'
+           CALL PRINT_ERROR( msgBuf , myThid )
+           WRITE(msgBuf,'(F18.6,A,F18.6,A)')
+     &      frequency(l), ' to ',freq(n), ' based on deltaT'
+           CALL PRINT_ERROR( msgBuf , myThid )
+         ENDIF
          IF ( timePhase(l).NE. UNSET_RL ) THEN
            phase(n) = timePhase(l)
          ELSEIF ( frequency(l) .LT. 0. ) THEN
