@@ -84,6 +84,22 @@ C--   Map thSice-variables to HEFF and AREA
        CALL SEAICE_MAP_THSICE( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_THSICE */
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+       diag_SIenph_isOn = DIAGNOSTICS_IS_ON('SIenph  ',myThid)
+       IF ( diag_SIenph_isOn ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            hTmp(i,j,bi,bj)=HEFF(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #ifdef ALLOW_EXF
       IF ( useEXF ) THEN
@@ -115,40 +131,21 @@ C-    Fill-in EXF wind-stess diags, weighted by open-ocean fraction
         ENDDO
        ENDDO
       ENDDO
-CADJ STORE uwind = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE vwind = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE area  = comlev1, key=ikey_dynamics, kind=isbyte
-# ifdef SEAICE_ALLOW_DYNAMICS
-#  ifdef SEAICE_CGRID
 CADJ STORE hsnow = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE seaicemasku = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE seaicemaskv = comlev1, key=ikey_dynamics, kind=isbyte
+# if (defined SEAICE_ALLOW_DYNAMICS) && (defined SEAICE_CGRID)
 CADJ STORE fu    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE fv    = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE uice  = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE vice  = comlev1, key=ikey_dynamics, kind=isbyte
-cphCADJ STORE eta   = comlev1, key=ikey_dynamics, kind=isbyte
-cphCADJ STORE zeta  = comlev1, key=ikey_dynamics, kind=isbyte
-cph(
-CADJ STORE dwatn    = comlev1, key=ikey_dynamics, kind=isbyte
-#ifdef SEAICE_ALLOW_BOTTOMDRAG
-CADJ STORE cbotc    = comlev1, key=ikey_dynamics, kind=isbyte
-#endif /* SEAICE_ALLOW_BOTTOMDRAG */
-cccCADJ STORE press0   = comlev1, key=ikey_dynamics, kind=isbyte
-cccCADJ STORE zmax   = comlev1, key=ikey_dynamics, kind=isbyte
-cccCADJ STORE zmin  = comlev1, key=ikey_dynamics, kind=isbyte
-cph)
-#   ifdef SEAICE_ALLOW_EVP
+#  ifdef SEAICE_ALLOW_EVP
 CADJ STORE seaice_sigma1  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE seaice_sigma2  = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE seaice_sigma12 = comlev1, key=ikey_dynamics, kind=isbyte
-#   endif
-#  endif
-# endif
+#  endif /* SEAICE_ALLOW_EVP */
+# endif /* SEAICE_ALLOW_DYNAMICS) && SEAICE_CGRID */
 # ifdef ALLOW_SITRACER
-CADJ STORE siceload  = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE sitracer  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE siceload = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE sitracer = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -169,17 +166,29 @@ C solve ice momentum equations and calculate ocean surface stress
 C--   Apply ice velocity open boundary conditions
 #ifdef ALLOW_OBCS
 # ifndef DISABLE_SEAICE_OBCS
-       IF ( useOBCS ) CALL OBCS_ADJUST_UVICE( uice, vice, myThid )
+      IF ( useOBCS ) CALL OBCS_ADJUST_UVICE( uice, vice, myThid )
 # endif /* DISABLE_SEAICE_OBCS */
 #endif /* ALLOW_OBCS */
+
+#if (defined ALLOW_AUTODIFF_TAMC) && (defined SEAICE_ALLOW_DYNAMICS) \
+       && (defined SEAICE_CGRID)
+CADJ STORE uice  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vice  = comlev1, key=ikey_dynamics, kind=isbyte
+C     Note: Storing u/vice **after** seaice_dynsolver (and obcs_adjust_uvice)
+C     has the effect that seaice_dynsolver is not called from seaice_model_ad
+C     anymore. This is important because with the numerous tricks to avoid
+C     complicated code in the backward integration (see pkg/autodiff),
+C     the extra call would update the ice velocities with the wrong
+C     set of flag values.
+#endif /* ALLOW_AUTODIFF_TAMC && SEAICE_ALLOW_DYNAMICS && SEAICE_CGRID */
 
 #ifdef ALLOW_THSICE
       IF ( useThSice ) THEN
 #ifndef OLD_THSICE_CALL_SEQUENCE
 #ifdef ALLOW_DEBUG
-        IF (debugMode) CALL DEBUG_CALL( 'THSICE_DO_ADVECT', myThid )
+       IF (debugMode) CALL DEBUG_CALL( 'THSICE_DO_ADVECT', myThid )
 #endif
-        CALL THSICE_DO_ADVECT( 0, 0, myTime, myIter, myThid )
+       CALL THSICE_DO_ADVECT( 0, 0, myTime, myIter, myThid )
 #endif /* OLD_THSICE_CALL_SEQUENCE */
       ELSE
 #endif /* ALLOW_THSICE */
@@ -187,49 +196,43 @@ C--   Only call advection of heff, area, snow, and salt and
 C--   growth for the generic 0-layer thermodynamics of seaice
 C--   if useThSice=.false., otherwise the 3-layer Winton thermodynamics
 C--   (called from DO_OCEANIC_PHYSICS) take care of this
-#ifdef ALLOW_DIAGNOSTICS
-       IF ( useDiagnostics ) THEN
-        diag_SIenph_isOn = DIAGNOSTICS_IS_ON('SIenph  ',myThid)
-        IF ( diag_SIenph_isOn ) THEN
-         DO bj=myByLo(myThid),myByHi(myThid)
-          DO bi=myBxLo(myThid),myBxHi(myThid)
-           DO j=1-OLy,sNy+OLy
-            DO i=1-OLx,sNx+OLx
-             hTmp(i,j,bi,bj)=HEFF(i,j,bi,bj)
-            ENDDO
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDIF
-       ENDIF
-#endif
 C NOW DO ADVECTION and DIFFUSION
-      IF ( SEAICEadvHeff .OR. SEAICEadvArea .OR. SEAICEadvSnow
+       IF ( SEAICEadvHeff .OR. SEAICEadvArea .OR. SEAICEadvSnow
      &        .OR. SEAICEadvSalt ) THEN
 #ifdef ALLOW_DEBUG
-       IF (debugMode) CALL DEBUG_CALL( 'SEAICE_ADVDIFF', myThid )
+        IF (debugMode) CALL DEBUG_CALL( 'SEAICE_ADVDIFF', myThid )
 #endif
 #ifdef SEAICE_CGRID
-       CALL SEAICE_ADVDIFF( uIce, vIce, myTime, myIter, myThid )
+        CALL SEAICE_ADVDIFF( uIce, vIce, myTime, myIter, myThid )
 #else /* SEAICE_CGRID */
-       CALL SEAICE_ADVDIFF( uLoc, vLoc, myTime, myIter, myThid )
+        CALL SEAICE_ADVDIFF( uLoc, vLoc, myTime, myIter, myThid )
 #endif /* SEAICE_CGRID */
-      ENDIF
+       ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE heff  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE area  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE hsnow = comlev1, key=ikey_dynamics, kind=isbyte
+# ifdef SEAICE_VARIABLE_SALINITY
+CADJ STORE hsalt = comlev1, key=ikey_dynamics, kind=isbyte
+# endif
+C     Note: This store has the effect that seaice_advdiff is not called
+C     from seaice_model_ad anymore. Instead, the stored values are used.
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     After advection, the sea ice variables may have unphysical values
 C     e.g., < 0, that are regularized here. Concentration as a special case
 C     may be > 1 in convergent motion and a ridging algorithm redistributes
 C     the ice to limit the concentration to 1.
-      CALL SEAICE_REG_RIDGE( myTime, myIter, myThid )
+       CALL SEAICE_REG_RIDGE( myTime, myIter, myThid )
 
 #ifdef ALLOW_EXF
-      IF ( useEXF .AND. useDiagnostics ) THEN
+       IF ( useEXF .AND. useDiagnostics ) THEN
 C-    Fill-in EXF surface flux diags, weighted by open-ocean fraction
         grpDiag = -2
         IF ( usePW79thermodynamics ) grpDiag = 2
         CALL EXF_WEIGHT_SFX_DIAGS(
      I                  AREA, grpDiag, myTime, myIter, myThid )
-      ENDIF
+       ENDIF
 #endif /* ALLOW_EXF */
 
 #ifdef DISABLE_SEAICE_GROWTH
@@ -339,16 +342,11 @@ c      ENDIF
 #ifdef ALLOW_DIAGNOSTICS
        IF ( useDiagnostics ) THEN
 C     diagnostics for "non-state variables" that are modified by
-C     the seaice model
-# ifdef ALLOW_EXF
-c       CALL DIAGNOSTICS_FILL(UWIND   ,'SIuwind ',0,1 ,0,1,1,myThid)
-c       CALL DIAGNOSTICS_FILL(VWIND   ,'SIvwind ',0,1 ,0,1,1,myThid)
-# endif
-c       CALL DIAGNOSTICS_FILL_RS(FU   ,'SIfu    ',0,1 ,0,1,1,myThid)
-c       CALL DIAGNOSTICS_FILL_RS(FV   ,'SIfv    ',0,1 ,0,1,1,myThid)
+C     the seaice model ...
         CALL DIAGNOSTICS_FILL_RS(EmPmR,'SIempmr ',0,1 ,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL_RS(Qnet ,'SIqnet  ',0,1 ,0,1,1,myThid)
         CALL DIAGNOSTICS_FILL_RS(Qsw  ,'SIqsw   ',0,1 ,0,1,1,myThid)
+C     ... and energy diagnostic
         IF ( diag_SIenph_isOn ) THEN
          recip_deltaTtherm = 1. _d 0 / SEAICE_deltaTtherm
          DO bj=myByLo(myThid),myByHi(myThid)
@@ -380,7 +378,7 @@ CML   CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
 #ifdef ALLOW_EXF
 # ifdef ALLOW_AUTODIFF_TAMC
 #  if (defined (ALLOW_AUTODIFF_MONITOR))
-        CALL EXF_ADJOINT_SNAPSHOTS( 3, myTime, myIter, myThid )
+      CALL EXF_ADJOINT_SNAPSHOTS( 3, myTime, myIter, myThid )
 #  endif
 # endif
 #endif

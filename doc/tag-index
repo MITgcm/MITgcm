@@ -1,6 +1,57 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/build_options:
+  - update standard optfile "linux_amd64_gfortran" to enable to be used with
+    gfortran version 10 (or higher); update comments and clean-up for missing
+    "nf-config".
+o model/src & pkg/generic_advdiff:
+  - Implement simple isotropic 3D Smagorinsky diffusivity:
+    Smag diffusivity is assumed to be linearly dependent on 3D Smag viscosity
+    (just scaled by inverse of a constant Prandtl number); setting involves:
+     a) CPP Option: ALLOW_SMAG_3D_DIFFUSIVITY in CPP_OPTIONS.h (def. #undef)
+     b) switching on 3D Smagorinsky by setting "useSmag3D = .TRUE." in first
+        namelist of main parameter file "data" ; and, in the same namelist,
+     c) setting smag coeff. "smag3D_diffCoeff" for diffusivity (similar to
+     smag coeff. "smag3D_coeff" for viscosity), which results in constant
+     Prandtl number = smag3D_coeff/smag3D_diffCoeff.
+    Note: Since Smag3D_diffK is lagging by 1 time-step, needs to be stored
+    in pickup files (for restart) when using synchronous time-stepping.
+  - code is compiled in experiment tutorial_deep_convection and ready to use
+    except smag3D_diffCoeff setting in input.smag3d/data is commented out.
+  - also add few missing initialisations in "ini_dynvars.F" (just for
+    consistency with coding practice but no practical side effect).
+o pkg/ecco:
+  - fix type of argument in S/R MDS_READVEC_LOC call inside cost_gencost_moc.F
+o verification/lab_sea:
+  - change lab_sea.hb87 from testing EVP to testing aEVP with some sensible
+    parameters ; update reference output "output.hb87.txt"
+o pkg/ecco:
+  - Addition of meridional streamfunction maximum (MOC) as objective function
+     within ecco/gencost code ;
+  - MOC objective function tested in verification_other/global_oce_cs32.sens ;
+  - allows to compute sensitivity to hflux/sflux with prescribed atmospheric
+    state (not fluxes) with new flags CALC_HFLUX_SENS and CALC_SFLUX_SENS.
+
+checkpoint67v (2021/02/03)
+o tools/build_options:
+  - add optfile for engaging similar to linux_amd64_ifort+impi but with -xAVX
+o pkg/seaice:
+  - move store directives of uice/vice to after calling S/R SEAICE_DYNSOLVER to
+    avoid calling this routine in S/R seaice_model_ad which may trigger
+    potential recomputation problems (e.g., with non-exact AD) ;
+  - move if statement inside S/R SEAICE_BOTTOMDRAG_COEFFS : this enables to
+    remove storage of "CbotC" without triggering recomputations ; compile this
+    code in the AD-experiments of global_ocean.cs32x15 ;
+  - remove unnecessary store directives related to pkg/seaice ;
+  - fix/extend diagnostic "SIenph  " to work with all parameter configurations.
+o pkg/autodiff: fix/improve viscFacAdj
+  - fix treatment of viscFacAdj in mom_vecinv.F by removing storage of 2D
+    viscosities if new flag AUTODIFF_ALLOW_VISCFACADJ is defined ;
+  - add a runtime parameter "viscFacInFw" in autodiff_inadmode_unset_ad.F to
+    replace hard-coded one ;
+  - apply viscFacAdj to both viscAh/4_D and _Z ;
+  - test compiling this code in tutorial_global_oce_optim.
 o model/src:
   - move if statement out of i/j-loops in solve_tridiagnoal/pentadiagonal.F:
     *) this reduces TAF recomputation warnings by 4 ;

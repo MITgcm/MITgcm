@@ -1,4 +1,8 @@
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: INI_DYNVARS
@@ -75,12 +79,18 @@ C-      3D arrays
            gtNm1(i,j,k,bi,bj) = 0. _d 0
            gsNm1(i,j,k,bi,bj) = 0. _d 0
 #endif
-           totPhiHyd (i,j,k,bi,bj) = 0. _d 0
-           rhoInSitu (i,j,k,bi,bj) = 0. _d 0
+#if (defined (ALLOW_3D_DIFFKR) || defined (ALLOW_DIFFKR_CONTROL))
+           diffKr(i,j,k,bi,bj)= 0. _d 0
+#endif
+#ifdef ALLOW_SMAG_3D_DIFFUSIVITY
+           smag3D_diffK(i,j,k,bi,bj) = 0. _d 0
+#endif
+           totPhiHyd(i,j,k,bi,bj)    = 0. _d 0
+           rhoInSitu(i,j,k,bi,bj)    = 0. _d 0
            IVDConvCount(i,j,k,bi,bj) = 0. _d 0
 #ifdef ALLOW_SOLVE4_PS_AND_DRAG
-           dU_psFacX (i,j,k,bi,bj) = 0. _d 0
-           dV_psFacY (i,j,k,bi,bj) = 0. _d 0
+           dU_psFacX(i,j,k,bi,bj)    = 0. _d 0
+           dV_psFacY(i,j,k,bi,bj)    = 0. _d 0
 #endif /* ALLOW_SOLVE4_PS_AND_DRAG */
           ENDDO
          ENDDO

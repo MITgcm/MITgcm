@@ -1,4 +1,7 @@
 #include "AUTODIFF_OPTIONS.h"
+#ifdef ALLOW_MOM_COMMON
+# include "MOM_COMMON_OPTIONS.h"
+#endif /* ALLOW_MOM_COMMON */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
@@ -47,8 +50,8 @@ C     iUnit      :: Work variable for IO unit number
      &       useKPPinAdMode, useGGL90inAdMode,
      &       useGMRediInAdMode, useSALT_PLUMEinAdMode,
      &       useSEAICEinAdMode, useSmoothCorrel2DinAdMode,
-     &       inAdExact, SEAICEapproxLevInAd, viscFacInAd,
-     &       SIregFacInAd, SIregFacInFw,
+     &       inAdExact, SEAICEapproxLevInAd,
+     &       viscFacInAd, viscFacInFw, SIregFacInAd, SIregFacInFw,
      &       SEAICEuseFREEDRIFTswitchInAd, SEAICEuseDYNAMICSswitchInAd
 
       IF ( .NOT.useAUTODIFF ) THEN
@@ -80,6 +83,7 @@ C--   default : write one file per record
       inAdExact          = .TRUE.
       useApproxAdvectionInAdMode = .FALSE.
       SEAICEapproxLevInAd = 0
+      viscFacInFw        = 1. _d 0
       viscFacInAd        = 1. _d 0
       SIregFacInAd       = UNSET_RL
       SIregFacInFw       = UNSET_RL
@@ -139,6 +143,9 @@ C     store value of usePKG as it will be set in S/R ADAUTODIFF_INADMODE_SET
       useGGL90inAdMode  = useGGL90inAdMode  .AND. useGGL90
       useSALT_PLUMEinAdMode = useSALT_PLUMEinAdMode .AND. useSALT_PLUME
 
+C     set this parameter to something we want to be able specify in a namelist
+      viscFacAdj = viscFacInFw
+
 #ifdef ALLOW_SEAICE
 c     level of approximation in seaice thermodynamics adjoint
       if (useSEAICEinFwdMode.AND.(.NOT.useSEAICEinAdMode))
@@ -187,6 +194,8 @@ C--   Print out some key parameters :
      &  'dumpAdVarExch =', ' /* control adexch before dumpinp */')
        CALL WRITE_0D_I( mon_AdVarExch, INDEX_NONE,
      &  'mon_AdVarExch =', ' /* control adexch before monitor */')
+       CALL WRITE_0D_RL( viscFacInFw, INDEX_NONE,
+     &  'viscFacInFw =', ' /* viscosity factor for forward model */')
        CALL WRITE_0D_RL( viscFacInAd, INDEX_NONE,
      &  'viscFacInAd =', ' /* viscosity factor for adjoint */')
        CALL WRITE_0D_RL( SIregFacInAd, INDEX_NONE,
@@ -198,6 +207,39 @@ C--   Print out some key parameters :
      &                    SQUEEZE_RIGHT, myThid )
 
 C--   Check parameters :
+      IF ( viscFacInAd .NE. 1. _d 0 .OR. viscFacInFw .NE. 1. _d 0 ) THEN
+#ifndef AUTODIFF_ALLOW_VISCFACADJ
+       WRITE(msgBuf,'(2A)') 'AUTODIFF_READPARMS: ',
+     &'To use viscFacInFw/viscFacInAd, define AUTODIFF_ALLOW_VISCFACADJ'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+#endif /* AUTODIFF_ALLOW_VISCFACADJ */
+#if (!defined ALLOW_3D_VISCAH && !defined ALLOW_3D_VISCA4)
+       WRITE(msgBuf,'(2A)') 'AUTODIFF_READPARMS: ',
+     &      'To use viscFacInFw/viscFacInAd, '//
+     &      'define ALLOW_3D_VISCA4 and/or ALLOW_3D_VISCA4'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
+#endif /* ALLOW_3D_VISCA */
+#ifdef ALLOW_3D_VISCAH
+       IF ( viscAhDfile .EQ. ' ' .AND. viscAhZfile .EQ. ' ' ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** AUTODIFF_READPARMS: ',
+     &       'For viscFacInFw/viscFacInAd to have any effect, '//
+     &       'specify at least one of viscAh[D/Z]file'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
+       ENDIF
+#endif /* ALLOW_3D_VISCAH */
+#ifdef ALLOW_3D_VISCA4
+       IF ( viscA4Dfile .EQ. ' ' .AND. viscA4Zfile .EQ. ' ' ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** AUTODIFF_READPARMS: ',
+     &       'For viscFacInFw/viscFacInAd to have any effect, '//
+     &       'specify at least one of viscA4[D/Z]file'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &       SQUEEZE_RIGHT, myThid )
+       ENDIF
+#endif /* ALLOW_3D_VISCA4 */
+      ENDIF
 #ifdef ALLOW_SEAICE
       IF ( SEAICEuseFREEDRIFTswitchInAd .AND. .NOT.useSEAICE ) THEN
         WRITE(msgBuf,'(2A)') 'AUTODIFF_READPARMS: ',
