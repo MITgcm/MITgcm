@@ -744,7 +744,7 @@ C
      O       DWATN,
      I       iEVPstep, myTime, myIter, myThid )
 #ifdef SEAICE_ALLOW_BOTTOMDRAG
-      IF (SEAICEbasalDragK2.GT.0. _d 0) CALL SEAICE_BOTTOMDRAG_COEFFS(
+        CALL SEAICE_BOTTOMDRAG_COEFFS(
      I       uIce, vIce, HEFFM,
 #ifdef SEAICE_ITD
      I       HEFFITD, AREAITD, AREA,

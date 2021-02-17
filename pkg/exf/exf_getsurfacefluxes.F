@@ -121,6 +121,12 @@ c     == end of interface ==
      &       tmpVN(i,j,bi,bj)=tmpVN(i,j,bi,bj)
      &          +xx_gentim2d(i,j,bi,bj,iarr)
 #endif
+           if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_hflux')
+     &       hflux(i,j,bi,bj)=hflux(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
+           if (xx_gentim2d_file(iarr)(1:8).EQ.'xx_sflux')
+     &       sflux(i,j,bi,bj)=sflux(i,j,bi,bj)+
+     &                         xx_gentim2d(i,j,bi,bj,iarr)
            enddo
          ENDDO
         ENDDO
@@ -132,7 +138,7 @@ c     == end of interface ==
 #if (!defined (ALLOW_ECCO) || defined (ECCO_CTRL_DEPRECATED))
 
 #ifdef ALLOW_HFLUX_CONTROL
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_hflux_file, xx_hfluxstartdate, xx_hfluxperiod,
      &     maskc, hflux, xx_hflux0, xx_hflux1, xx_hflux_dummy,
      &     xx_hflux_remo_intercept, xx_hflux_remo_slope,
@@ -140,7 +146,7 @@ c     == end of interface ==
 #endif
 
 #ifdef ALLOW_SFLUX_CONTROL
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_sflux_file, xx_sfluxstartdate, xx_sfluxperiod,
      &     maskc, sflux, xx_sflux0, xx_sflux1, xx_sflux_dummy,
      &     xx_sflux_remo_intercept, xx_sflux_remo_slope,
@@ -153,7 +159,7 @@ c     == end of interface ==
 #ifndef ALLOW_ROTATE_UV_CONTROLS
 
 #ifdef ALLOW_USTRESS_CONTROL
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_tauu_file, xx_tauustartdate, xx_tauuperiod,
      &     maskw, ustress, xx_tauu0, xx_tauu1, xx_tauu_dummy,
      &     xx_tauu_remo_intercept, xx_tauu_remo_slope,
@@ -161,7 +167,7 @@ c     == end of interface ==
 #endif
 
 #ifdef ALLOW_VSTRESS_CONTROL
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_tauv_file, xx_tauvstartdate, xx_tauvperiod,
      &     masks, vstress, xx_tauv0, xx_tauv1, xx_tauv_dummy,
      &     xx_tauv_remo_intercept, xx_tauv_remo_slope,
@@ -172,13 +178,13 @@ c     == end of interface ==
 
 #if (defined (ALLOW_USTRESS_CONTROL) && defined (ALLOW_VSTRESS_CONTROL))
 
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_tauu_file, xx_tauustartdate, xx_tauuperiod,
      &     maskc, tmpUE, xx_tauu0, xx_tauu1, xx_tauu_dummy,
      &     xx_tauu_remo_intercept, xx_tauu_remo_slope,
      &     wtauu, mytime, myiter, mythid )
 
-      call ctrl_get_gen ( 
+      call ctrl_get_gen (
      &     xx_tauv_file, xx_tauvstartdate, xx_tauvperiod,
      &     maskc, tmpVN, xx_tauv0, xx_tauv1, xx_tauv_dummy,
      &     xx_tauv_remo_intercept, xx_tauv_remo_slope,
@@ -204,7 +210,7 @@ c     == end of interface ==
         CALL EXCH_UV_XY_RL( tmpUX, tmpVY, .TRUE., myThid )
       ELSE
         CALL EXCH_UV_AGRID_3D_RL( tmpUX, tmpVY, .TRUE., 1, myThid)
-      ENDIF  
+      ENDIF
 
         do bj = mybylo(mythid),mybyhi(mythid)
          do bi = mybxlo(mythid),mybxhi(mythid)
