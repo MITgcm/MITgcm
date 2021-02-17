@@ -298,7 +298,7 @@ C-       If frequency changed, warn the user
      &      'DIAGNOSTICS_READPARMS: frequency(',l,') changed from'
            CALL PRINT_ERROR( msgBuf , myThid )
            WRITE(msgBuf,'(F18.6,A,F18.6,A)')
-     &      frequency(l), ' to ',freq(n), ' based on deltaT'
+     &      frequency(l), ' to ',freq(n), ' based on deltaTclock'
            CALL PRINT_ERROR( msgBuf , myThid )
          ENDIF
          IF ( timePhase(l) .NE. UNSET_RL ) THEN
