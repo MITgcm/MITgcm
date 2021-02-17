@@ -29,10 +29,9 @@
   frequency(1) = 86400.,
 
   fields(1:5,2)  = 'SIuice  ','SIvice  ','SIheff  ',
-                   'SIsig1  ','SIsig2  ',
+                   'SI_Fract','SI_Thick',
 #  fileName(2) = 'iceDiag',
-  frequency(2) =  -1800.,
-  timePhase(2) =   1800.,
+  frequency(2) =  86400.,
   missing_value(2) = -999.,
 
   fields(1:5,3)  = 'SIuice  ','SIvice  ','SIheff  ',
