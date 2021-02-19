@@ -1,7 +1,6 @@
 # SEAICE parameters
  &SEAICE_PARM01
  LSR_ERROR             = 1.E-12,
- SEAICElinearIterMax   = 500,
 #SEAICE_deltaTevp = 60.,
  SEAICEuseDynamics = .TRUE.,
  SEAICEuseFREEDRIFT = .FALSE.,
