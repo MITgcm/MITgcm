@@ -74,7 +74,6 @@ c     COMMON /LOCAL_DIAGNOSTICS_OUT/ qtmp1
       CHARACTER*(10) suff
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER prec, nRec, nTimRec
-      INTEGER*8 i8
       _RL     timeRec(2)
       _RL     tmpLoc
 #ifdef ALLOW_MDSIO
@@ -126,22 +125,21 @@ c       timeRec(1) = myTime - freq(listId)
 C     a) find the time of the previous multiple of output freq:
         timeRec(1) = myTime-deltaTClock*0.5 _d 0
         timeRec(1) = (timeRec(1)-phase(listId))/freq(listId)
-        i8 = INT( timeRec(1), 8 )
+        tmpLoc     = DINT( timeRec(1) )
         IF ( timeRec(1).LT.0. ) THEN
-          tmpLoc = FLOAT(i8)
-          IF ( timeRec(1).NE.tmpLoc ) i8 = i8 - 1
+          IF ( timeRec(1).NE.tmpLoc ) tmpLoc = tmpLoc - 1. _d 0
         ENDIF
-        timeRec(1) = phase(listId) + freq(listId)*FLOAT(i8)
+        timeRec(1) = phase(listId) + freq(listId)*tmpLoc
 c       if ( listId.eq.2 ) write(0,*) 'f',i,timeRec(1)/deltaTClock
         timeRec(1) = MAX( timeRec(1), startTime )
 
 C     b) round off to nearest multiple of time-step:
         timeRec(1) = (timeRec(1)-baseTime)/deltaTClock
-        i8 = NINT( timeRec(1), 8 )
+        tmpLoc = DNINT( timeRec(1) )
 C     if just half way, NINT will return the next time-step: correct this
-        tmpLoc = FLOAT(i8) - 0.5 _d 0
-        IF ( timeRec(1).EQ.tmpLoc ) i8 = i8 - 1
-        timeRec(1) = baseTime + deltaTClock*FLOAT(i8)
+        tmpLoc = tmpLoc - 0.5 _d 0
+        IF ( timeRec(1).EQ.tmpLoc ) tmpLoc = tmpLoc - 1. _d 0
+        timeRec(1) = baseTime + deltaTClock*tmpLoc
 c       if ( listId.eq.2 ) write(0,*) i,timeRec(1)/deltaTClock
       ENDIF
 C--   Convert time to iteration number (debug)
