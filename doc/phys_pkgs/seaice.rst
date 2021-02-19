@@ -549,7 +549,7 @@ with the constants :math:`P^{\ast}` (run-time parameter
 
     P=P_{\max} \left( (1 - f_{r}) + f_{r} \frac{\Delta}{\Delta_{reg}}  \right)
 
-with :math:`f_{r} = 1` (:varlink:`SEAICEpressReplFac`). :math:`\Delta_{reg}` is a regularized form of :math:`\Delta = \left[ \left(\dot{\epsilon}_{11}+\dot{\epsilon}_{22}\right)^2 + e^{-2}\left( \left(\dot{\epsilon}_{11}-\dot{\epsilon}_{22} \right)^2 + \dot{\epsilon}_{12}^2 \right) \right]^{\frac{1}{2}}`, for example :math:`\Delta_{reg} = \max(\Delta,\Delta_\min)`.
+with :math:`f_{r} = 1` (:varlink:`SEAICEpressReplFac`). :math:`\Delta_{reg}` is a regularized form of :math:`\Delta = \left[ \left(\dot{\epsilon}_{11}+\dot{\epsilon}_{22}\right)^2 + e^{-2}\left( \left(\dot{\epsilon}_{11}-\dot{\epsilon}_{22} \right)^2 + \dot{\epsilon}_{12}^2 \right) \right]^{\frac{1}{2}}`, for example :math:`\Delta_{reg} = \max(\Delta,\Delta_{\min})`.
 
 Different VP rheologies can be used to model sea ice dynamics. The different rheologies are characterized by different definitions of the bulk and shear viscosities :math:`\zeta` and :math:`\eta` in Eq. :eq:`eq_vpequation` . The following :numref:`tab_phys_pkg_seaice_rheologies` is a summary of the available choices with recommended (sensible) parameter values. More details are given in the following sections. All the rheologies presented here depend on the ice strength :math:`P`, Eq. :eq:`eq_pressrepl`.
 
