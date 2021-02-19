@@ -236,9 +236,11 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_eccfr`            | = :varlink:`SEAICE_eccen`    | sea ice plastic potential ellipse aspect ratio :math:`e_G`              |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICEmcMU`              | 1.00000E+00                  | Slope of the Mohr-Coulomb yield curve                                   |
+  | :varlink:`SEAICEmcMU`              | 1.0                          | Slope of the Mohr-Coulomb yield curve                                   |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICE_tensilFac`        | 0.00000E+00                  | Tensile factor for the yield curve                                      |
+  | :varlink:`SEAICEpressReplFac`      | 1.0                          | use replacement pressure (range: [0 - 1])                               |
+  +------------------------------------+------------------------------+-------------------------------------------------------------------------+
+  | :varlink:`SEAICE_tensilFac`        | 0.0                          | Tensile factor for the yield curve                                      |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICE_rhoAir`           | 1.3  (or                     | density of air (kg/m\ :sup:`3`)                                         |
   |                                    | :filelink:`pkg/exf` value)   |                                                                         |
@@ -540,59 +542,58 @@ depends on both thickness :math:`h` and compactness (concentration)
 
 with the constants :math:`P^{\ast}` (run-time parameter
 :varlink:`SEAICE_strength`) and :math:`C^{\ast}` (run-time parameter
-:varlink:`SEAICE_cStar`).
+:varlink:`SEAICE_cStar`). By default, :math:`P` is the replacement pressure
 
+ .. math::
+    :label: eq_pressrepl
 
-Different VP rheologies can be used to model sea ice dynamics. The different rheologies are characterized by different definitions of the bulk and shear viscosities :math:`\zeta` and :math:`\eta` in Eq. :eq:`eq_vpequation` . The following :numref:`tab_phys_pkg_seaice_rheologies` is a summary of the choice. More details are given in the following sections. All the rheologies presented here depend on the ice strength parameter :varlink:`SEAICE_strength`.
+    P=P_{\max} \left( (1 - f_{r}) + f_{r} \frac{\Delta}{\Delta_{reg}}  \right)
+
+with :math:`f_{r} = 1` (:varlink:`SEAICEpressReplFac`). :math:`\Delta_{reg}` is a regularized form of :math:`\Delta = \left[ \left(\dot{\epsilon}_{11}+\dot{\epsilon}_{22}\right)^2 + e^{-2}\left( \left(\dot{\epsilon}_{11}-\dot{\epsilon}_{22} \right)^2 + \dot{\epsilon}_{12}^2 \right) \right]^{\frac{1}{2}}`, for example :math:`\Delta_{reg} = \max(\Delta,\Delta_\min)`.
+
+Different VP rheologies can be used to model sea ice dynamics. The different rheologies are characterized by different definitions of the bulk and shear viscosities :math:`\zeta` and :math:`\eta` in Eq. :eq:`eq_vpequation` . The following :numref:`tab_phys_pkg_seaice_rheologies` is a summary of the available choices with recommended (sensible) parameter values. More details are given in the following sections. All the rheologies presented here depend on the ice strength :math:`P`, Eq. :eq:`eq_pressrepl`.
 
 .. tabularcolumns:: |\Y{.275}|\Y{.450}|\Y{.275}|
 
-.. table:: Sea Ice Viscous-Plastic Rheologies
+.. table:: Overview over availabe sea ice viscous-plastic rheologies
   :class: longtable
   :name: tab_phys_pkg_seaice_rheologies
 
   +---------------------------------------+---------------------------------------+----------------------------------------------------+
-  |   Name                                | CPP and runtime (RT) flags to use     | Runtime parameters (value)                         |
-  |                                       |                                       |                                                    |
+  |   Name                                | CPP flags                             | runtime flags (recommended value)                  |
   +=======================================+=======================================+====================================================+
   |   :ref:`rheologies_ellnfr`            |  - None (default)                     | - :varlink:`SEAICE_eccen` (2.0)                    |
   |                                       |                                       | - :varlink:`SEAICE_tensilFac`                      |
-  |                                       |                                       |                                                    |
-  |                                       |                                       |                                                    |
   +---------------------------------------+---------------------------------------+----------------------------------------------------+
   |   :ref:`rheologies_ellnnfr`           | - None                                | - :varlink:`SEAICE_eccen` (2.0)                    |
   |                                       |                                       | - :varlink:`SEAICE_eccfr` (< 2.0)                  |
   |                                       |                                       | - :varlink:`SEAICE_tensilFac`                      |
-  |                                       |                                       |                                                    |
   +---------------------------------------+---------------------------------------+----------------------------------------------------+
-  |   :ref:`rheologies_TEM`               | - CPP: :varlink:`SEAICE_ALLOW_TEM`    | - :varlink:`SEAICE_eccen` (= 1.4)                  |
-  |                                       | - RT : :varlink:`SEAICEuseTEM`        | - :varlink:`SEAICE_eccfr` (< 1.4)                  |
+  |   :ref:`rheologies_TEM`               | - :varlink:`SEAICE_ALLOW_TEM`         | - :varlink:`SEAICEuseTEM` (=.TRUE.)                |
+  |                                       |                                       | - :varlink:`SEAICE_eccen` (= 1.4)                  |
+  |                                       |                                       | - :varlink:`SEAICE_eccfr` (< 1.4)                  |
   |                                       |                                       | - :varlink:`SEAICE_tensilFac` (= 0.05)             |
   |                                       |                                       | - :varlink:`SEAICEmcMU` (= 0.6 to 0.8)             |
   +---------------------------------------+---------------------------------------+----------------------------------------------------+
-  |   :ref:`rheologies_MCS`               | - CPP: :varlink:`SEAICE_ALLOW_FULLMC` | - :varlink:`SEAICE_tensilFac` (= 0.05)             |
-  |                                       | - RT : :varlink:`SEAICEuseFULLMC`     | - :varlink:`SEAICEmcMU` (= 0.6 to 0.8)             |
-  |                                       |                                       |                                                    |
-  |                                       |                                       |                                                    |
-  +---------------------------------------+---------------------------------------+----------------------------------------------------+
-  |   :ref:`rheologies_MCE`               | - CPP: :varlink:`SEAICE_ALLOW_MCE`    | - :varlink:`SEAICE_eccen`  (= 1.4)                 |
-  |                                       | - RT : :varlink:`SEAICEuseMCE`        | - :varlink:`SEAICE_eccfr`  (< 1.4)                 |
+  |   :ref:`rheologies_MCS`               | - :varlink:`SEAICE_ALLOW_FULLMC`      | - :varlink:`SEAICEuseFULLMC` (=.TRUE.)             |
   |                                       |                                       | - :varlink:`SEAICE_tensilFac` (= 0.05)             |
   |                                       |                                       | - :varlink:`SEAICEmcMU` (= 0.6 to 0.8)             |
   +---------------------------------------+---------------------------------------+----------------------------------------------------+
-  |   :ref:`rheologies_TD`                | - CPP: :varlink:`SEAICE_ALLOW_TD`     | - :varlink:`SEAICE_tensilFac` (= 0.025)            |
-  |                                       | - RT : :varlink:`SEAICEuseTD`         |                                                    |
-  |                                       |                                       |                                                    |
-  |                                       |                                       |                                                    |
+  |   :ref:`rheologies_MCE`               | - :varlink:`SEAICE_ALLOW_MCE`         | - :varlink:`SEAICEuseMCE` (=.TRUE.)                |
+  |                                       |                                       | - :varlink:`SEAICE_eccen`  (= 1.4)                 |
+  |                                       |                                       | - :varlink:`SEAICE_eccfr`  (< 1.4)                 |
+  |                                       |                                       | - :varlink:`SEAICE_tensilFac` (= 0.05)             |
+  |                                       |                                       | - :varlink:`SEAICEmcMU` (= 0.6 to 0.8)             |
   +---------------------------------------+---------------------------------------+----------------------------------------------------+
-  |   :ref:`rheologies_PL`                | - CPP: :varlink:`SEAICE_ALLOW_TD`     | - :varlink:`SEAICE_tensilFac` (= 0.025)            |
-  |                                       | - RT : :varlink:`SEAICEusePL`         |                                                    |
-  |                                       |                                       |                                                    |
-  |                                       |                                       |                                                    |
+  |   :ref:`rheologies_TD`                | - :varlink:`SEAICE_ALLOW_TD`          | - :varlink:`SEAICEuseTD` (=.TRUE.)                 |
+  |                                       |                                       | - :varlink:`SEAICE_tensilFac` (= 0.025)            |
+  +---------------------------------------+---------------------------------------+----------------------------------------------------+
+  |   :ref:`rheologies_PL`                | - :varlink:`SEAICE_ALLOW_TD`          |  - :varlink:`SEAICEusePL` (=.TRUE.)                |
+  |                                       |                                       |  - :varlink:`SEAICE_tensilFac` (= 0.025)           |
   +---------------------------------------+---------------------------------------+----------------------------------------------------+
 
 
-**Note:** With the exception of the default rheology and the TEM (with :varlink:`SEAICEmcMU` : :math:`\mu=1.0`), these rheologies are not implemented in EVP!
+**Note:** With the exception of the default rheology and the TEM (with :varlink:`SEAICEmcMU` : :math:`\mu=1.0`), these rheologies are not implemented in EVP (:numref:`para_phys_pkg_seaice_EVPdynamics`).
 
 .. _rheologies_ellnfr:
 
