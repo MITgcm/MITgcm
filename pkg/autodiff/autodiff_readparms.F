@@ -310,10 +310,10 @@ C     so far this only works for flux limited DST3 scheme
         errCount = errCount + 1
        ENDIF
 #else
-       WRITE(msgBuf,'(2A)') '**WARNING** AUTODIFF_READPARMS: ',
-     &      'useApproxAdvectionInAdMode = .TRUE. without generic_advdff'
-       CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &      SQUEEZE_RIGHT, myThid )
+       WRITE(msgBuf,'(2A)') 'AUTODIFF_READPARMS: ',
+     &  'useApproxAdvectionInAdMode=.TRUE. without pkg/generic_advdiff'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       errCount = errCount + 1
 #endif /* ALLOW_GENERIC_ADVDIFF */
       ENDIF
 
