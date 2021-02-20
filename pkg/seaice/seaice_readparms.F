@@ -825,7 +825,11 @@ C-    different defaults for different linear solvers
       IF ( SEAICElinearIterMax .EQ. UNSET_I ) THEN
 C     maximum number of LSOR steps in default Picard solver
 C     (=previous default for retired SOLV_MAX_ITERS)
+#ifdef ALLOW_AUTODIFF
+       SEAICElinearIterMax = SOLV_MAX_FIXED
+#else
        SEAICElinearIterMax = 1500
+#endif
 C     the maximum number of Krylov dimensions of 50 is hard coded in
 C     S/R SEAICE_FGMRES, so that more than 50 linear iterations will
 C     restart GMRES
