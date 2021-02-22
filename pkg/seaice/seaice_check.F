@@ -837,11 +837,11 @@ C     end if usePW79thermodynamics
 # ifdef SEAICE_ALLOW_MCE
      &     SEAICEuseMCE .OR.
 # endif
-# ifdef SEAICE_ALLOW_FULLMC
-     &     SEAICEuseFULLMC .OR.
+# ifdef SEAICE_ALLOW_MCS
+     &     SEAICEuseMCS .OR.
 # endif
      &     .FALSE. ) )  THEN
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseFULLMC, '//
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseMCS, '//
      &     'SEAICEuseTD, SEAICEusePL, or SEAICEuseMCE = .TRUE.,'
        CALL PRINT_ERROR( msgBuf, myThid )
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: and SEAICEuseEVP = .TRUE., '//
@@ -908,10 +908,10 @@ C     end if usePW79thermodynamics
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif
-#ifndef SEAICE_ALLOW_FULLMC
-      IF ( SEAICEuseFULLMC ) THEN
-       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseFULLMC requires '//
-     &      'that SEAICE_ALLOW_FULLMC is defined.'
+#ifndef SEAICE_ALLOW_MCS
+      IF ( SEAICEuseMCS ) THEN
+       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: SEAICEuseMCS requires '//
+     &      'that SEAICE_ALLOW_MCS is defined.'
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
@@ -940,8 +940,8 @@ C     end if usePW79thermodynamics
 # ifdef SEAICE_ALLOW_MCE
      &     .OR. SEAICEuseMCE
 # endif
-# ifdef SEAICE_ALLOW_FULLMC
-     &     .OR. SEAICEuseFULLMC
+# ifdef SEAICE_ALLOW_MCS
+     &     .OR. SEAICEuseMCS
 # endif
      &     .OR. FALSE ) THEN
        WRITE(msgBuf,'(A)') 'SEAICE_CHECK: non-default rheologies '//
@@ -976,15 +976,15 @@ C      STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
 #endif /* ndef SEAICE_CGRID */
 
-#if ( defined SEAICE_ALLOW_TEARDROP || defined SEAICE_ALLOW_FULLMC || \
+#if ( defined SEAICE_ALLOW_TEARDROP || defined SEAICE_ALLOW_MCS || \
       defined SEAICE_ALLOW_MCE || defined SEAICE_ALLOW_TEM )
-      IF ( (SEAICEuseMCE    .AND. SEAICEuseFULLMC) .OR.
+      IF ( (SEAICEuseMCE    .AND. SEAICEuseMCS) .OR.
      &     (SEAICEuseMCE    .AND. SEAICEuseTD) .OR.
      &     (SEAICEuseMCE    .AND. SEAICEusePL) .OR.
      &     (SEAICEuseMCE    .AND. SEAICEuseTEM) .OR.
-     &     (SEAICEuseFULLMC .AND. SEAICEuseTD) .OR.
-     &     (SEAICEuseFULLMC .AND. SEAICEusePL) .OR.
-     &     (SEAICEuseFULLMC .AND. SEAICEuseTEM) .OR.
+     &     (SEAICEuseMCS    .AND. SEAICEuseTD) .OR.
+     &     (SEAICEuseMCS    .AND. SEAICEusePL) .OR.
+     &     (SEAICEuseMCS    .AND. SEAICEuseTEM) .OR.
      &     (SEAICEuseTD     .AND. SEAICEusePL) .OR.
      &     (SEAICEuseTD     .AND. SEAICEuseTEM) .OR.
      &     (SEAICEusePL     .AND. SEAICEuseTEM)

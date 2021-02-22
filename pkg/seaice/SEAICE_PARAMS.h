@@ -38,7 +38,7 @@ C     SEAICEuseTEM      :: to use truncated ellipse method (see Geiger et al.
 C                          1998) or and coulombic yield curve (Hibler and
 C                          Schulson 2000) set this parameter to true,
 C                          default is false
-C     SEAICEuseFULLMC   :: to use the Mohr-Coulomb yield curve with a shear
+C     SEAICEuseMCS      :: to use the Mohr-Coulomb yield curve with a shear
 C                          only flow rule (Ip et al 1991), set this parameter to
 C                          true, default is false
 C     SEAICEuseMCE      :: to use the Mohr-Coulomb yield curve with elliptical
@@ -140,7 +140,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseLinRemapITD, SEAICEuseTD, SEAICEusePL,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
-     &     SEAICEuseFULLMC, SEAICEuseMCE,
+     &     SEAICEuseMCS, SEAICEuseMCE,
      &     SEAICE_no_slip, SEAICE_2ndOrderBC,
      &     SEAICE_maskRHS, SEAICEscaleSurfStress,
      &     SEAICE_clipVelocities, SEAICEaddSnowMass,
@@ -170,7 +170,7 @@ C     SEAICE_mon_mnc    :: write monitor to netcdf file
      &     useHibler79IceStrength, SEAICEsimpleRidging,
      &     SEAICEuseLinRemapITD, SEAICEuseTD, SEAICEusePL,
      &     SEAICEuseTEM, SEAICEuseTilt, SEAICEuseMetricTerms,
-     &     SEAICEuseFULLMC, SEAICEuseMCE,
+     &     SEAICEuseMCS, SEAICEuseMCE,
      &     SEAICE_no_slip, SEAICE_2ndOrderBC,
      &     SEAICE_maskRHS, SEAICEscaleSurfStress,
      &     SEAICE_clipVelocities, SEAICEaddSnowMass,
@@ -485,7 +485,7 @@ C                        (2007)-scheme
 C     SEAICEmaxRaft   :: regularization parameter (default=1)
 C     SEAICEsnowFracRidge :: fraction of snow that remains on ridged
 C     SINegFac        :: SIADV over/undershoot factor in FW/Adjoint
-C     SEAICEmcMu      :: parameter for MC yield curve for useMCE, useFULLMC and
+C     SEAICEmcMu      :: parameter for MC yield curve for useMCE, useMCS and
 C                        useTEM options, default is one
 C
       _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn, SEAICE_deltaTevp

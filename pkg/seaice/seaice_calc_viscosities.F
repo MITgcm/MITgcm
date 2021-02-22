@@ -296,8 +296,8 @@ C     change eta according to replacement pressure
           ENDDO !i loop
          ENDDO !j loop
 #endif /* SEAICE_ALLOW_TEARDROP */
-#ifdef SEAICE_ALLOW_FULLMC
-        ELSEIF ( SEAICEuseFULLMC ) THEN
+#ifdef SEAICE_ALLOW_MCS
+        ELSEIF ( SEAICEuseMCS ) THEN
 C     Full Mohr-Coulomb following IP et al. 1991
          DO j=1-OLy+1,sNy+OLy-1
           DO i=1-OLx+1,sNx+OLx-1
@@ -330,7 +330,7 @@ C     maximum for eta (high compressive stresses)
 
           ENDDO
          ENDDO
-#endif /* SEAICE_ALLOW_FULLMC */
+#endif /* SEAICE_ALLOW_MCS */
         ELSE
 C     For all elliptic yield curves, the computation of deltaC and zeta
 C     is identical so we do it first.

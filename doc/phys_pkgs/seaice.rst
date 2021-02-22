@@ -61,7 +61,7 @@ options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
    :varlink:`SEAICE_ALLOW_JFNK`, #define, enable use of JFNK rheology solver
    :varlink:`SEAICE_ALLOW_KRYLOV`, #define, enable use of Krylov rheology solver
    :varlink:`SEAICE_ALLOW_TEM`, #undef, enable use of the truncated ellipse method (TEM) and coulombic yield curve
-   :varlink:`SEAICE_ALLOW_FULLMC`, #undef, enable use of Mohr-Coulomb yield curve with shear flow rule
+   :varlink:`SEAICE_ALLOW_MCS`, #undef, enable use of Mohr-Coulomb yield curve with shear flow rule
    :varlink:`SEAICE_ALLOW_MCE`, #undef, enable use of Mohr-Coulomb yield curve with elliptical plastic potential
    :varlink:`SEAICE_ALLOW_TD`, #undef, enable use of Teardrop and Parabolic Lens yield curves with normal flow rules
    :varlink:`SEAICE_LSR_ZEBRA`, #undef, use a coloring method for LSR solver
@@ -562,7 +562,7 @@ Different VP rheologies can be used to model sea ice dynamics. The different rhe
   +---------------------------------------+---------------------------------------+----------------------------------------------------+
   |   Name                                | CPP flags                             | runtime flags (recommended value)                  |
   +=======================================+=======================================+====================================================+
-  |   :ref:`rheologies_ellnfr`            |  - None (default)                     | - :varlink:`SEAICE_eccen` (2.0)                    |
+  |   :ref:`rheologies_ellnfr`            | - None (default)                      | - :varlink:`SEAICE_eccen` (2.0)                    |
   |                                       |                                       | - :varlink:`SEAICE_tensilFac`                      |
   +---------------------------------------+---------------------------------------+----------------------------------------------------+
   |   :ref:`rheologies_ellnnfr`           | - None                                | - :varlink:`SEAICE_eccen` (2.0)                    |
@@ -575,13 +575,13 @@ Different VP rheologies can be used to model sea ice dynamics. The different rhe
   |                                       |                                       | - :varlink:`SEAICE_tensilFac` (= 0.05)             |
   |                                       |                                       | - :varlink:`SEAICEmcMU` (= 0.6 to 0.8)             |
   +---------------------------------------+---------------------------------------+----------------------------------------------------+
-  |   :ref:`rheologies_MCS`               | - :varlink:`SEAICE_ALLOW_FULLMC`      | - :varlink:`SEAICEuseFULLMC` (=.TRUE.)             |
-  |                                       |                                       | - :varlink:`SEAICE_tensilFac` (= 0.05)             |
-  |                                       |                                       | - :varlink:`SEAICEmcMU` (= 0.6 to 0.8)             |
-  +---------------------------------------+---------------------------------------+----------------------------------------------------+
   |   :ref:`rheologies_MCE`               | - :varlink:`SEAICE_ALLOW_MCE`         | - :varlink:`SEAICEuseMCE` (=.TRUE.)                |
   |                                       |                                       | - :varlink:`SEAICE_eccen`  (= 1.4)                 |
   |                                       |                                       | - :varlink:`SEAICE_eccfr`  (< 1.4)                 |
+  |                                       |                                       | - :varlink:`SEAICE_tensilFac` (= 0.05)             |
+  |                                       |                                       | - :varlink:`SEAICEmcMU` (= 0.6 to 0.8)             |
+  +---------------------------------------+---------------------------------------+----------------------------------------------------+
+  |   :ref:`rheologies_MCS`               | - :varlink:`SEAICE_ALLOW_MCS`         | - :varlink:`SEAICEuseMCS` (=.TRUE.)                |
   |                                       |                                       | - :varlink:`SEAICE_tensilFac` (= 0.05)             |
   |                                       |                                       | - :varlink:`SEAICEmcMU` (= 0.6 to 0.8)             |
   +---------------------------------------+---------------------------------------+----------------------------------------------------+
@@ -694,18 +694,6 @@ In addition, the yield curve can be truncated with a Mohr-Coulomb slope if :varl
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set :varlink:`SEAICE_tensilFac` :math:`>0` in ``data.seaice``, e.g. 0.05 or 5%.
 
-.. _rheologies_MCS:
-
-Mohr-Coulomb yield curve with shear flow rule
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-To use the specifc Mohr-Coulomb rheology as defined first by Ip et al (1991) :cite:`ip1991`, set ``#define SEAICE_ALLOW_FULLMC`` in ``SEAICE_OPTIONS.h`` and :varlink:`SEAICEuseFMC` = .TRUE., in ``data.seaice``. The slope of the Mohr-Coulomb yield curve is defined by :varlink:`SEAICEmcMU` in ``data.seaice``.
-For details of this rheology, including the tensile strength, see https://doi.org/10.26092/elib/380, Chapter 2.
-
-For this rheology, it is recommended to use a non-zero tensile strength, so set :varlink:`SEAICE_tensilFac` :math:`>0` in ``data.seaice``, e.g. 0.05 or 5%.
-
-**WARNING: This rheology is known to be unstable. Use with caution!**
-
 .. _rheologies_MCE:
 
 Mohr-Coulomb yield curve with elliptical plastic potential
@@ -715,6 +703,18 @@ To use a Mohr-Coulomb rheology, set ``#define SEAICE_ALLOW_MCE`` in ``SEAICE_OPT
 For details of this rheology, see https://doi.org/10.26092/elib/380, Chapter 2.
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set :varlink:`SEAICE_tensilFac` :math:`>0` in ``data.seaice``, e.g. 0.05 or 5%.
+
+.. _rheologies_MCS:
+
+Mohr-Coulomb yield curve with shear flow rule
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To use the specifc Mohr-Coulomb rheology as defined first by Ip et al (1991) :cite:`ip1991`, set ``#define SEAICE_ALLOW_MCS`` in ``SEAICE_OPTIONS.h`` and :varlink:`SEAICEuseFMC` = .TRUE., in ``data.seaice``. The slope of the Mohr-Coulomb yield curve is defined by :varlink:`SEAICEmcMU` in ``data.seaice``.
+For details of this rheology, including the tensile strength, see https://doi.org/10.26092/elib/380, Chapter 2.
+
+For this rheology, it is recommended to use a non-zero tensile strength, so set :varlink:`SEAICE_tensilFac` :math:`>0` in ``data.seaice``, e.g. 0.05 or 5%.
+
+**WARNING: This rheology is known to be unstable. Use with caution!**
 
 .. _rheologies_TD:
 
