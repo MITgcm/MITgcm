@@ -110,7 +110,7 @@ General flags and parameters
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseTEM`            |     FALSE                    | use truncated ellipse method or Coulombic yield curve                   |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
-  | :varlink:`SEAICEuseFMC`            |     FALSE                    | use the Mohr-Coulomb yield curve with shear flow rule                   |
+  | :varlink:`SEAICEuseMCS`            |     FALSE                    | use the Mohr-Coulomb yield curve with shear flow rule                   |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
   | :varlink:`SEAICEuseMCE`            |     FALSE                    | use the Mohr-Coulomb yield curve with elliptical plastic potential      |
   +------------------------------------+------------------------------+-------------------------------------------------------------------------+
@@ -709,7 +709,7 @@ For this rheology, it is recommended to use a non-zero tensile strength, so set 
 Mohr-Coulomb yield curve with shear flow rule
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To use the specifc Mohr-Coulomb rheology as defined first by Ip et al (1991) :cite:`ip1991`, set ``#define SEAICE_ALLOW_MCS`` in ``SEAICE_OPTIONS.h`` and :varlink:`SEAICEuseFMC` = .TRUE., in ``data.seaice``. The slope of the Mohr-Coulomb yield curve is defined by :varlink:`SEAICEmcMU` in ``data.seaice``.
+To use the specifc Mohr-Coulomb rheology as defined first by Ip et al (1991) :cite:`ip1991`, set ``#define SEAICE_ALLOW_MCS`` in ``SEAICE_OPTIONS.h`` and :varlink:`SEAICEuseMCS` = .TRUE., in ``data.seaice``. The slope of the Mohr-Coulomb yield curve is defined by :varlink:`SEAICEmcMU` in ``data.seaice``.
 For details of this rheology, including the tensile strength, see https://doi.org/10.26092/elib/380, Chapter 2.
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set :varlink:`SEAICE_tensilFac` :math:`>0` in ``data.seaice``, e.g. 0.05 or 5%.
