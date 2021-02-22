@@ -677,7 +677,7 @@ Note that if :math:`e_G=e_F=e`, these formulae reduce to the normal flow rule.
 Truncated ellipse method (TEM) for elliptical yield curve
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In the so-called truncated ellipse method the shear viscosity :math:`\eta` is capped to suppress any tensile stress:
+In the so-called truncated ellipse method, the shear viscosity :math:`\eta` is capped to suppress any tensile stress:
 
 .. math::
    :label: eq_etatem
@@ -688,9 +688,9 @@ In the so-called truncated ellipse method the shear viscosity :math:`\eta` is ca
          +4\dot{\epsilon}_{12}^2})}\right).
 
 To enable this method, set ``#define SEAICE_ALLOW_TEM`` in
-``SEAICE_OPTIONS.h`` and turn it on with :varlink:`SEAICEuseTEM` in ``data.seaice``.
+``SEAICE_OPTIONS.h`` and turn it on with :varlink:`SEAICEuseTEM =.TRUE.,` in ``data.seaice``. This parameter combination implies :varlink:`SEAICEmcMU` :math:`=1`.
 
-In addition, the yield curve can be truncated with a Mohr-Coulomb slope if :varlink:`SEAICEmcMU` :math:`\ne 1` in ``data.seaice``. By doing so, a Coulombic yield curve is defined, similar to the ones shown in Hibler and Schulson (2000) :cite:`hib2000` and Ringeisen et al. (2019) :cite:`ringeisen2019`.
+Instead of an ellipse that is truncated by constant slope Coulombic limbs, this yield curve can also be seen as a Mohr-Coulomb yield curve with elliptical flow rule that is truncated for high :math:`P` by an ellipse. As a consequence, the Mohr-Coulomb slope :varlink:`SEAICEmcMU` can be set in ``data.seaice`` to values :math:`\ne 1`. This defines a Coulombic yield curve similar to the ones shown in Hibler and Schulson (2000) :cite:`hib2000` and Ringeisen et al. (2019) :cite:`ringeisen2019`.
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set :varlink:`SEAICE_tensilFac` :math:`>0` in ``data.seaice``, e.g. 0.05 or 5%.
 

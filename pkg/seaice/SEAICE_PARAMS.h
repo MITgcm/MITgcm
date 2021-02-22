@@ -34,15 +34,13 @@ C                          solver instead of LSR (default: false)
 C     SEAICEuseJFNK     :: If true, use Jacobi-free Newton-Krylov solver
 C                          instead of LSR (default: false)
 C     SEAICEuseIMEX     :: use IMplicit/EXplicit scheme with JFNK
-C     SEAICEuseTEM      :: to use truncated ellipse method (see Geiger et al.
-C                          1998) or and coulombic yield curve (Hibler and
-C                          Schulson 2000) set this parameter to true,
-C                          default is false
+C     SEAICEuseTEM      :: to use the truncated ellipse method (see Geiger et al.
+C                          1998) set this parameter to true, default is false
 C     SEAICEuseMCS      :: to use the Mohr-Coulomb yield curve with a shear
 C                          only flow rule (Ip et al 1991), set this parameter to
 C                          true, default is false
 C     SEAICEuseMCE      :: to use the Mohr-Coulomb yield curve with elliptical
-C                          plastic potential (similarly as Hibler and Schulson
+C                          plastic potential (similarly to Hibler and Schulson
 C                          2000 without the elliptical cap) set this parameter
 C                          to true, default is false
 C     SEAICEuseTD       :: to use the teardrop yield curve (Zhang and Rothrock,
