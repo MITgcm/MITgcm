@@ -184,7 +184,7 @@ C     READ E and W OB storage and phase speed arrays
 #ifdef ALLOW_OBCS_EAST
       IF ( useOrlanskiEast ) THEN
         WRITE(fn,'(2A)') 'pickup_orlanskiE.',suff
-        CALL READ_REC_YZ_RL(fn,prec,Nr,UE_STORE_1, 1,'east',
+        CALL READ_REC_YZ_RL(fn,prec,Nr,UE_STORE_1, 1,'east ',
      &                      myIter,myThid)
         CALL READ_REC_YZ_RL(fn,prec,Nr,UE_STORE_2, 2,'east ',
      &                      myIter,myThid)
