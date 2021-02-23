@@ -1,6 +1,23 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  - Improve, extend & clean-up switch to a simpler advection-scheme in AD-Mode
+    with new parameter "useApproxAdvectionInAdMode to replace inAdMode:
+    * If useApproxAdvectionInAdMode is True and advection scheme is set to 33
+      use advection scheme 30 in AD-model in seaice_advection, gad_advection
+      and gad_calc_rsh ; model stops when parameters are set inconsistently.
+    * Defaults to False, but is reset to True if inAdExact = False to be
+      backwards compatible.
+  - Important change in the meaning of variable inAdMode: now it is always true
+    after calling S/R AUTODIFF_INADMODE_SET_AD and always false after calling
+    S/R AUTODIFF_INADMODE_UNSET_AD.
+    The non-intuitive flags inAdTrue and inAdFalse, which could be T or F, have
+    been removed from the code.
+  - Remove unnecessary TAF related and inAdMode code from seaice_lsr.F, remove
+    SOLV_MAX_TMP in LSR S/R and adjust SEAICElinearIterMax default accordingly.
+  - Change AD exp. global_ocean.cs32x15.seaice to test this new functionality;
+    gradient checks necessarily are poorer because AD advection is approximated.
 o tools/build_options:
   - update standard optfile "linux_amd64_gfortran" to enable to be used with
     gfortran version 10 (or higher); update comments and clean-up for missing
