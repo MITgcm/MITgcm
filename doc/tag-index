@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o tools/build_options:
+  - improve intel optfile for engaging (linux_amd64_ifort+impi_engaging).
 o pkg/autodiff:
   - Improve, extend & clean-up switch to a simpler advection-scheme in AD-Mode
     with new parameter "useApproxAdvectionInAdMode to replace inAdMode:
