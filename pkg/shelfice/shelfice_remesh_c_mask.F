@@ -146,11 +146,15 @@ C     update cell-centered grid factors and mask: maskC, h0FacC, recip_hFacC
           ENDIF
 
 C-- MERGE CELLS
-          IF ( ks.NE.0 .AND. ks.LT.kLowC (i,j,bi,bj) ) THEN
+          IF ( (ks.NE.0 .OR. shelficeMass(i,j,bi,bj).GT.0.0) 
+     &         .AND. ks.LT.kLowC (i,j,bi,bj) ) THEN
            IF ( hFac_surfC(i,j,bi,bj).LT.SHELFICEmergeThreshold ) THEN
             IF ( (hFac_surfC(i,j,bi,bj)*drF(ks)*recip_drF(ks+1)+1)
      &           .LT.SHELFICEsplitThreshold ) THEN
 
+             IF (ks.eq.0) THEN
+              ks = 1
+             ENDIF
              k1 = ks
              k2 = ks+1
              kSurfC(i,j,bi,bj) = k2
