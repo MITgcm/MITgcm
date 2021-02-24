@@ -40,7 +40,8 @@ c      integer nnzobs, nnzbar
       integer nrecloc, localrec, ioUnit
 
       _RL mybar     (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL dummyRL, gencost_mskTemporal
+      _RL gencost_mskTemporal
+      _RL tmpVar(1), dummyRL
       _RS dummyRS(1)
       _RL tmpCumSumTile(nr,nSx,nSy)
       _RL tmpNumTile(nSx,nSy)
@@ -175,8 +176,9 @@ c-- Temporal mask
      &          SQUEEZE_RIGHT, myThid )
 
            ioUnit = 0
-           call MDS_READVEC_LOC(fname0,cost_iprec,ioUnit,'RL',
-     &          1, gencost_mskTemporal, dummyRS, 0, 0, irec, myThid )
+           CALL MDS_READVEC_LOC( fname0, cost_iprec, ioUnit, 'RL',
+     &                      1, tmpVar, dummyRS, 0, 0, irec, myThid )
+           gencost_mskTemporal = tmpVar(1)
           endif
 
 c=============== PART 2: Cost Computation ===================

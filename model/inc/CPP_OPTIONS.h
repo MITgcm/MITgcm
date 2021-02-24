@@ -73,6 +73,10 @@ C   either from grid-spacing reduction effect or as artificially enhanced mixing
 C   near surface & bottom for too thin grid-cell
 #undef EXCLUDE_PCELL_MIX_CODE
 
+C o Exclude/allow to use isotropic 3-D Smagorinsky viscosity as diffusivity
+C   for tracers (after scaling by constant Prandtl number)
+#undef ALLOW_SMAG_3D_DIFFUSIVITY
+
 C-- Time-stepping code options:
 
 C o Include/exclude combined Surf.Pressure and Drag Implicit solver code
