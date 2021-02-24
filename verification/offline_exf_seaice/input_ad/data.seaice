@@ -26,7 +26,7 @@
  SEAICE_waterDrag   = 5.3508E-03,
  SEAICEuseDYNAMICS  =.FALSE.,
  LSR_ERROR          = 1.E-12,
- SEAICElinearIterMax= 1500,
+ SEAICElinearIterMax= 500,
  LSR_mixIniGuess    = 1,
 # this is default anyway, so we comment it out
 #SEAICEuseFlooding  = .TRUE.,

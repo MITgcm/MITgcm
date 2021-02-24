@@ -389,7 +389,6 @@ CADJ STORE stressdivergencey = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif
 #  ifdef SEAICE_ALLOW_DYNAMICS
 CADJ STORE uice,vice         = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE dwatn             = comlev1, key=ikey_dynamics, kind=isbyte
 #   ifdef SEAICE_ALLOW_EVP
 CADJ STORE seaice_sigma1     = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE seaice_sigma2     = comlev1, key=ikey_dynamics, kind=isbyte
@@ -409,7 +408,7 @@ CADJ STORE recip_hfacc       = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE balance_itcount   = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif /* ANNUAL_BALANCE */
 #  ifdef ALLOW_THSICE
-C-- store thSIce vars before advection (called from SEAICE_MODEL) update them:
+C-- store thSIce vars before advection (called from SEAICE_MODEL) updates them:
 CADJ STORE iceMask,iceHeight = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE snowHeight,hOceMxL= comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE Qice1, Qice2      = comlev1, key=ikey_dynamics, kind=isbyte
