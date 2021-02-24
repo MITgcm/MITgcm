@@ -393,6 +393,16 @@ C-      read Full Pressure for EOS in pressure:
      &                                     nj, fp, Nr, myIter, myThid )
         ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
+#ifdef ALLOW_SMAG_3D_DIFFUSIVITY
+C-    With synchronous time-stepping, Smag-3D diffusivity is lagging by 1 time-step
+C     (i.e., used before being updated meaning field is from previous time-step calc)
+C     --> needs to be read-in from pickup file
+        IF ( smag3D_diffCoeff.GT.zeroRL
+     &       .AND. .NOT.staggerTimeStep ) THEN
+          CALL READ_MFLDS_3D_RL( 'SmagDiff', smag3D_diffK,
+     &                                     nj, fp, Nr, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_SMAG_3D_DIFFUSIVITY */
 #ifdef ALLOW_ADDFLUID
 C-    read mass source/sink of fluid
         IF ( selectAddFluid.GE.1 ) THEN

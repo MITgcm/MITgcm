@@ -1,6 +1,59 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - Output dxF, dyF, dxV, and dyU fields to mdsio grid output files.
+o tools/build_options:
+  - improve intel optfile for engaging (linux_amd64_ifort+impi_engaging).
+o pkg/autodiff:
+  - Improve, extend & clean-up switch to a simpler advection-scheme in AD-Mode
+    with new parameter "useApproxAdvectionInAdMode to replace inAdMode:
+    * If useApproxAdvectionInAdMode is True and advection scheme is set to 33
+      use advection scheme 30 in AD-model in seaice_advection, gad_advection
+      and gad_calc_rsh ; model stops when parameters are set inconsistently.
+    * Defaults to False, but is reset to True if inAdExact = False to be
+      backwards compatible.
+  - Important change in the meaning of variable inAdMode: now it is always true
+    after calling S/R AUTODIFF_INADMODE_SET_AD and always false after calling
+    S/R AUTODIFF_INADMODE_UNSET_AD.
+    The non-intuitive flags inAdTrue and inAdFalse, which could be T or F, have
+    been removed from the code.
+  - Remove unnecessary TAF related and inAdMode code from seaice_lsr.F, remove
+    SOLV_MAX_TMP in LSR S/R and adjust SEAICElinearIterMax default accordingly.
+  - Change AD exp. global_ocean.cs32x15.seaice to test this new functionality;
+    gradient checks necessarily are poorer because AD advection is approximated.
+o tools/build_options:
+  - update standard optfile "linux_amd64_gfortran" to enable to be used with
+    gfortran version 10 (or higher); update comments and clean-up for missing
+    "nf-config".
+o model/src & pkg/generic_advdiff:
+  - Implement simple isotropic 3D Smagorinsky diffusivity:
+    Smag diffusivity is assumed to be linearly dependent on 3D Smag viscosity
+    (just scaled by inverse of a constant Prandtl number); setting involves:
+     a) CPP Option: ALLOW_SMAG_3D_DIFFUSIVITY in CPP_OPTIONS.h (def. #undef)
+     b) switching on 3D Smagorinsky by setting "useSmag3D = .TRUE." in first
+        namelist of main parameter file "data" ; and, in the same namelist,
+     c) setting smag coeff. "smag3D_diffCoeff" for diffusivity (similar to
+     smag coeff. "smag3D_coeff" for viscosity), which results in constant
+     Prandtl number = smag3D_coeff/smag3D_diffCoeff.
+    Note: Since Smag3D_diffK is lagging by 1 time-step, needs to be stored
+    in pickup files (for restart) when using synchronous time-stepping.
+  - code is compiled in experiment tutorial_deep_convection and ready to use
+    except smag3D_diffCoeff setting in input.smag3d/data is commented out.
+  - also add few missing initialisations in "ini_dynvars.F" (just for
+    consistency with coding practice but no practical side effect).
+o pkg/ecco:
+  - fix type of argument in S/R MDS_READVEC_LOC call inside cost_gencost_moc.F
+o verification/lab_sea:
+  - change lab_sea.hb87 from testing EVP to testing aEVP with some sensible
+    parameters ; update reference output "output.hb87.txt"
+o pkg/ecco:
+  - Addition of meridional streamfunction maximum (MOC) as objective function
+     within ecco/gencost code ;
+  - MOC objective function tested in verification_other/global_oce_cs32.sens ;
+  - allows to compute sensitivity to hflux/sflux with prescribed atmospheric
+    state (not fluxes) with new flags CALC_HFLUX_SENS and CALC_SFLUX_SENS.
+
 checkpoint67v (2021/02/03)
 o tools/build_options:
   - add optfile for engaging similar to linux_amd64_ifort+impi but with -xAVX

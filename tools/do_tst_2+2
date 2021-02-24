@@ -166,7 +166,7 @@ RUNOUTP="output.txt"
 if [ $mpi -ge 1 ] ; then
   SCRIPT="$SCRIPT -mpi"
   RUNOUTP="STDOUT.0000"
-  if test "x$COMMAND" = x ; then COMMAND="mpirun -v -np TR_NPROC ./mitgcmuv" ; fi
+  if test "x$COMMAND" = x ; then COMMAND="mpirun -np TR_NPROC ./mitgcmuv" ; fi
 fi
 
 for xx in $LIST
