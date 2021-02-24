@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - Output dxF, dyF, dxV, and dyU fields to mdsio grid output files.
 o tools/build_options:
   - improve intel optfile for engaging (linux_amd64_ifort+impi_engaging).
 o pkg/autodiff:
