@@ -1085,7 +1085,7 @@ c    mixing due to internal waves, and shear and static instability
             diffus(i,ki,3) = diffusKzT(i,kp1)
 #else /* EXCLUDE_KPP_SHEAR_MIX */
 # ifdef ALLOW_AUTODIFF
-            if ( inAdMode ) then
+            if ( inAdMode .AND. .NOT. inAdExact ) then
               diffus(i,ki,1) = viscArNr(1)
               diffus(i,ki,2) = diffusKzS(i,kp1)
               diffus(i,ki,3) = diffusKzT(i,kp1)

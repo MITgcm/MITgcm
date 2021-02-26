@@ -129,6 +129,10 @@ C-    Horizontal viscosity parameters:
       IF ( useSmag3D )
      & CALL WRITE_0D_RL( smag3D_coeff, INDEX_NONE, 'smag3D_coeff =',
      & ' /* Smagorinsky 3-D coefficient (Cs^2) (-) */')
+      IF ( smag3D_diffCoeff.GT.zeroRL )
+     & CALL WRITE_0D_RL( smag3D_diffCoeff, INDEX_NONE,
+     & 'smag3D_diffCoeff =',
+     & ' /* Smagorinsky 3-D diffusion coefficient (-) */')
       CALL WRITE_0D_RL( viscAh, INDEX_NONE, 'viscAh  =  ',
      & ' /* Lateral harmonic viscosity ( m^2/s ) */')
       IF ( viscAhD.NE.viscAh )

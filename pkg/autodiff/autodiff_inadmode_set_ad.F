@@ -27,7 +27,7 @@ C     myThid :: my Thread Id number
       INTEGER myThid
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      inAdMode  = inAdTrue
+      inAdMode  = .TRUE.
 
       useKPP    = useKPPinAdMode
       useGMRedi = useGMRediInAdMode
