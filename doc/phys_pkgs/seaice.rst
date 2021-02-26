@@ -521,7 +521,7 @@ by a nonlinear viscous-plastic (VP) constitutive law:
    \sigma_{ij}=2\eta(\dot{\epsilon}_{ij},P)\dot{\epsilon}_{ij}
    + \left[\zeta(\dot{\epsilon}_{ij},P) -
        \eta(\dot{\epsilon}_{ij},P)\right]\dot{\epsilon}_{kk}\delta_{ij}
-   - \frac{P}{2}\delta_{ij}
+   - \frac{(1-k_t)P}{2}\delta_{ij}
    :label: eq_vpequation
 
 The ice strain rate is given by
@@ -553,6 +553,8 @@ where :math:`f_{r}` is run-time parameter :varlink:`SEAICEpressReplFac` (default
 :math:`\Delta = \left[ \left(\dot{\epsilon}_{11}+\dot{\epsilon}_{22}\right)^2 +
 e^{-2}\left( \left(\dot{\epsilon}_{11}-\dot{\epsilon}_{22} \right)^2 + \dot{\epsilon}_{12}^2 \right) \right]^{\frac{1}{2}}`,
 for example :math:`\Delta_{reg} = \max(\Delta,\Delta_{\min})`.
+
+The tensile strength factor :math:`k_t` (Variable varlink:`SEAICE_tensilFac`) define the ice tensile strength :math:`T = k_t\cdot P_{\max}`, as defined by  König Beatty and Holland (2010) :cite:`konig:10`.
 
 Different VP rheologies can be used to model sea ice dynamics. The different rheologies are characterized by different
 definitions of the bulk and shear viscosities :math:`\zeta` and :math:`\eta` in :eq:`eq_vpequation` .
@@ -613,7 +615,7 @@ to minor axis :math:`e = 2.0` (run-time parameter :varlink:`SEAICE_eccen`); they
 
 .. math::
    \begin{aligned}
-     \zeta =& \min\left(\frac{P_{\max}}{2\max(\Delta,\Delta_{\min})},
+     \zeta =& \min\left(\frac{(1+k_t)P_{\max}}{2\max(\Delta,\Delta_{\min})},
       \zeta_{\max}\right) \\
      \eta =& \frac{\zeta}{e^2} \end{aligned}
 
@@ -647,9 +649,9 @@ bounding :math:`\zeta` by a smooth (differentiable) expression:
 
 .. math::
    \begin{split}
-   \zeta &= \zeta_{\max}\tanh\left(\frac{P}{2\,\min(\Delta,\Delta_{\min})
+   \zeta &= \zeta_{\max}\tanh\left(\frac{(1+k_t)P}{2\,\min(\Delta,\Delta_{\min})
          \,\zeta_{\max}}\right)\\
-   &= \frac{P}{2\Delta^\ast}
+   &= \frac{(1+k_t)P}{2\Delta^\ast}
    \tanh\left(\frac{\Delta^\ast}{\min(\Delta,\Delta_{\min})}\right)
    \end{split}
    :label: eq_zetaregsmooth
@@ -693,7 +695,7 @@ In the so-called truncated ellipse method, the shear viscosity :math:`\eta` is c
 
 .. math::
    \eta = \min\left(\frac{\zeta}{e^2},
-   \frac{\frac{P}{2}-\zeta(\dot{\epsilon}_{11}+\dot{\epsilon}_{22})}
+   \frac{\frac{(1-k_t)\,P}{2}-\zeta(\dot{\epsilon}_{11}+\dot{\epsilon}_{22})+k_tP}
    {\sqrt{\max(\Delta_{\min}^{2},(\dot{\epsilon}_{11}-\dot{\epsilon}_{22})^2
    +4\dot{\epsilon}_{12}^2})}\right).
    :label: eq_etatem
@@ -708,7 +710,7 @@ As a consequence, the Mohr-Coulomb slope :varlink:`SEAICEmcMU` can be set in ``d
 This defines a coulombic yield curve similar to the ones shown in
 Hibler and Schulson (2000) :cite:`hibler:00` and Ringeisen et al. (2019) :cite:`ringeisen:19`.
 
-For this rheology, it is recommended to use a non-zero tensile strength,
+For this rheology, it is recommended to use a non-zero tensile strength :math:`k_t`,
 so set :varlink:`SEAICE_tensilFac` :math:`>0` in ``data.seaice``, e.g., :math:`= 0.05` or 5%.
 
 .. _rheologies_MCE:
