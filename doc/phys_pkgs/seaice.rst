@@ -531,7 +531,8 @@ The ice strain rate is given by
        \frac{\partial{u_{i}}}{\partial{x_{j}}} +
        \frac{\partial{u_{j}}}{\partial{x_{i}}}\right)
 
-The maximum ice pressure :math:`P_{\max}` (variable :varlink:`PRESS0` in the code), a measure of ice strength, depends on both thickness :math:`h` and compactness (concentration) :math:`c`:
+The maximum ice pressure :math:`P_{\max}` (variable :varlink:`PRESS0` in the code), a measure of ice strength,
+depends on both thickness :math:`h` and compactness (concentration) :math:`c`:
 
 .. math::
    :label: eq_icestrength
@@ -552,9 +553,13 @@ where :math:`f_{r}` is run-time parameter :varlink:`SEAICEpressReplFac` (default
 e^{-2}\left( \left(\dot{\epsilon}_{11}-\dot{\epsilon}_{22} \right)^2 + \dot{\epsilon}_{12}^2 \right) \right]^{\frac{1}{2}}`,
 for example :math:`\Delta_{reg} = \max(\Delta,\Delta_{\min})`.
 
-The tensile strength factor :math:`k_t` (Variable :varlink:`SEAICE_tensilFac`) define the ice tensile strength :math:`T = k_t\cdot P_{\max}`, as defined by  König Beatty and Holland (2010) :cite:`konig:10`. :varlink:`SEAICE_tensilFac` is zero by default.
+The tensile strength factor :math:`k_t` (Variable :varlink:`SEAICE_tensilFac`) define the ice tensile strength :math:`T = k_t\cdot P_{\max}`,
+as defined by  König Beatty and Holland (2010) :cite:`konig:10`. :varlink:`SEAICE_tensilFac` is zero by default.
 
-Different VP rheologies can be used to model sea ice dynamics. The different rheologies are characterized by different definitions of the bulk and shear viscosities :math:`\zeta` and :math:`\eta` in :eq:`eq_vpequation`. The following :numref:`tab_phys_pkg_seaice_rheologies` is a summary of the available choices with recommended (sensible) parameter values. All the rheologies presented here depend on the ice strength :math:`P` :eq:`eq_pressrepl`.
+Different VP rheologies can be used to model sea ice dynamics. The different rheologies are characterized by different
+definitions of the bulk and shear viscosities :math:`\zeta` and :math:`\eta` in :eq:`eq_vpequation`.
+The following :numref:`tab_phys_pkg_seaice_rheologies` is a summary of the available choices with recommended (sensible)
+parameter values. All the rheologies presented here depend on the ice strength :math:`P` :eq:`eq_pressrepl`.
 
 .. tabularcolumns:: |\Y{.275}|\Y{.450}|\Y{.275}|
 
@@ -596,7 +601,8 @@ Different VP rheologies can be used to model sea ice dynamics. The different rhe
   +---------------------------------------+---------------------------------------+----------------------------------------------------+
 
 
-**Note:** With the exception of the default rheology and the TEM (with :varlink:`SEAICEmcMU` : :math:`\mu=1.0`), these rheologies are not implemented in EVP (:numref:`para_phys_pkg_seaice_EVPdynamics`).
+**Note:** With the exception of the default rheology and the TEM (with :varlink:`SEAICEmcMU` : :math:`\mu=1.0`),
+these rheologies are not implemented in EVP (:numref:`para_phys_pkg_seaice_EVPdynamics`).
 
 .. _rheologies_ellnfr:
 
@@ -604,7 +610,9 @@ Elliptical yield curve with normal flow rule
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The default rheology in the sea ice module of the MITgcm implements the widely used elliptical yield curve with a normal flow rule :cite:`hibler:79`.
-For this yield curve, the nonlinear bulk and shear viscosities :math:`\zeta` and :math:`\eta` are functions of ice strain rate invariants and ice strength such that the principal components of the stress lie on an elliptical yield curve with the ratio of major to minor axis :math:`e = 2.0` (run-time parameter :varlink:`SEAICE_eccen`); they are given by:
+For this yield curve, the nonlinear bulk and shear viscosities :math:`\zeta` and :math:`\eta` are functions of ice strain rate
+invariants and ice strength such that the principal components of the stress lie on an elliptical yield curve with the ratio of major to
+minor axis :math:`e = 2.0` (run-time parameter :varlink:`SEAICE_eccen`); they are given by:
 
 .. math::
    \begin{aligned}
@@ -649,7 +657,9 @@ Defining the CPP-flag :varlink:`SEAICE_ZETA_SMOOTHREG` in
 where :math:`\Delta_{\min}=10^{-20}\,\text{s}^{-1}` should be chosen to avoid
 divisions by zero.
 
-In this default formulation the yield curve does not allow isotropic tensile stress, that is, sea ice can be "pulled appart" without any effort. Setting the parameter :math:`k_t` (:varlink:`SEAICE_tensilFac`) to a small value larger than zero, extends the yield curve into a region where the divergence of the stress :math:`\sigma_{11}+\sigma_{22} > 0` to allow some tensile stress.
+In this default formulation the yield curve does not allow isotropic tensile stress, that is, sea ice can be "pulled apart" without any effort.
+Setting the parameter :math:`k_t` (:varlink:`SEAICE_tensilFac`) to a small value larger than zero, extends the yield curve into a
+region where the divergence of the stress :math:`\sigma_{11}+\sigma_{22} > 0` to allow some tensile stress.
 
 Besides this commonly used default rheology, a number of a alternative rheologies are implemented.
 Some of these are experiemental and should be used with caution.
@@ -659,7 +669,8 @@ Some of these are experiemental and should be used with caution.
 Elliptical yield curve with non-normal flow rule
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Defining the run-time parameter :varlink:`SEAICE_eccfr` with a value different from :varlink:`SEAICE_eccen` allows one to use an elliptical yield curve with a non-normal flow rule as described in Ringeisen et al. (2020) :cite:`ringeisen:20`.
+Defining the run-time parameter :varlink:`SEAICE_eccfr` with a value different from :varlink:`SEAICE_eccen` allows one to use an elliptical
+yield curve with a non-normal flow rule as described in Ringeisen et al. (2020) :cite:`ringeisen:20`.
 In this case the viscosities are functions of :math:`e_F` (:varlink:`SEAICE_eccen`) and :math:`e_G` (:varlink:`SEAICE_eccfr`):
 
 .. math::
@@ -691,9 +702,13 @@ In the so-called truncated ellipse method, the shear viscosity :math:`\eta` is c
    +4\dot{\epsilon}_{12}^2})}\right).
    :label: eq_etatem
 
-To enable this method, set ``#define`` :varlink:`SEAICE_ALLOW_TEM` in :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` and turn it on with :varlink:`SEAICEuseTEM` ``=.TRUE.`` in ``data.seaice``. This parameter combination implies the default of :varlink:`SEAICEmcMU` :math:`= 1.0`.
+To enable this method, set ``#define`` :varlink:`SEAICE_ALLOW_TEM` in :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` and
+turn it on with :varlink:`SEAICEuseTEM` ``=.TRUE.`` in ``data.seaice``. This parameter combination implies the default of :varlink:`SEAICEmcMU` :math:`= 1.0`.
 
-Instead of an ellipse that is truncated by constant slope coulombic limbs, this yield curve can also be seen as a Mohr-Coulomb yield curve with elliptical flow rule that is truncated for high :math:`P` by an ellipse. As a consequence, the Mohr-Coulomb slope :varlink:`SEAICEmcMU` can be set in ``data.seaice`` to values :math:`\ne 1.0`. This defines a coulombic yield curve similar to the ones shown in Hibler and Schulson (2000) :cite:`hibler:00` and Ringeisen et al. (2019) :cite:`ringeisen:19`.
+Instead of an ellipse that is truncated by constant slope coulombic limbs, this yield curve can also be seen as a Mohr-Coulomb
+yield curve with elliptical flow rule that is truncated for high :math:`P` by an ellipse. As a consequence, the Mohr-Coulomb
+slope :varlink:`SEAICEmcMU` can be set in ``data.seaice`` to values :math:`\ne 1.0`. This defines a coulombic yield curve
+similar to the ones shown in Hibler and Schulson (2000) :cite:`hibler:00` and Ringeisen et al. (2019) :cite:`ringeisen:19`.
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set :varlink:`SEAICE_tensilFac` :math:`=k_{t}>0` in ``data.seaice``, e.g., :math:`= 0.05` or 5%.
 
@@ -714,7 +729,8 @@ For this rheology, it is recommended to use a non-zero tensile strength, so set 
 Mohr-Coulomb yield curve with shear flow rule
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To use the specifc Mohr-Coulomb rheology as defined first by Ip et al. (1991) :cite:`ip:91`, set ``#define`` :varlink:`SEAICE_ALLOW_MCS` in :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` and :varlink:`SEAICEuseMCS` ``= .TRUE.`` in ``data.seaice``.
+To use the specifc Mohr-Coulomb rheology as defined first by Ip et al. (1991) :cite:`ip:91`, set ``#define`` :varlink:`SEAICE_ALLOW_MCS`
+in :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` and :varlink:`SEAICEuseMCS` ``= .TRUE.`` in ``data.seaice``.
 The slope of the Mohr-Coulomb yield curve is defined by :varlink:`SEAICEmcMU` in ``data.seaice``.
 For details of this rheology, including the tensile strength, see https://doi.org/10.26092/elib/380, Chapter 2.
 
@@ -730,7 +746,9 @@ Teardrop yield curve with normal flow rule
 The teardrop rheology was first described in Zhang and Rothrock (2005) :cite:`zha:05`.
 Here we implement a slightly modified version (See https://doi.org/10.26092/elib/380, Chapter 2).
 
-To use this rheology, set ``#define`` :varlink:`SEAICE_ALLOW_TEARDROP` in :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` and :varlink:`SEAICEuseTD` ``= .TRUE.`` in ``data.seaice``. The size of the yield curve can be modified by changing the tensile strength, using :varlink:`SEAICE_tensFac` in ``data.seaice``.
+To use this rheology, set ``#define`` :varlink:`SEAICE_ALLOW_TEARDROP` in :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`
+and :varlink:`SEAICEuseTD` ``= .TRUE.`` in ``data.seaice``. The size of the yield curve can be modified by
+changing the tensile strength, using :varlink:`SEAICE_tensFac` in ``data.seaice``.
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set :varlink:`SEAICE_tensilFac` :math:`>0` in ``data.seaice``, e.g., :math:`= 0.025` or 2.5%.
 
@@ -742,9 +760,12 @@ Parabolic lens yield curve with normal flow rule
 The parabolic lens rheology was first described in Zhang and Rothrock (2005) :cite:`zha:05`.
 Here we implement a slightly modified version (See https://doi.org/10.26092/elib/380, Chapter 2).
 
-To use this rheology, set ``#define`` :varlink:`SEAICE_ALLOW_TEARDROP` in :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h> and :varlink:`SEAICEusePL` ``= .TRUE.`` in ``data.seaice``. The size of the yield curve can be modified by changing the tensile strength, using :varlink:`SEAICE_tensFac` in ``data.seaice``.
+To use this rheology, set ``#define`` :varlink:`SEAICE_ALLOW_TEARDROP` in :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h> and
+:varlink:`SEAICEusePL` ``= .TRUE.`` in ``data.seaice``. The size of the yield curve can be modified
+by changing the tensile strength, using :varlink:`SEAICE_tensFac` in ``data.seaice``.
 
-For this rheology, it is recommended to use a non-zero tensile strength, so set :varlink:`SEAICE_tensilFac` :math:`>0` in ``data.seaice``, e.g., :math:`= 0.025` or 2.5%.
+For this rheology, it is recommended to use a non-zero tensile strength, so set :varlink:`SEAICE_tensilFac`
+:math:`>0` in ``data.seaice``, e.g., :math:`= 0.025` or 2.5%.
 
 .. _para_phys_pkg_seaice_LSRJFNK:
 
