@@ -521,7 +521,7 @@ by a nonlinear viscous-plastic (VP) constitutive law:
    \sigma_{ij}=2\eta(\dot{\epsilon}_{ij},P)\dot{\epsilon}_{ij}
    + \left[\zeta(\dot{\epsilon}_{ij},P) -
        \eta(\dot{\epsilon}_{ij},P)\right]\dot{\epsilon}_{kk}\delta_{ij}
-   - \frac{(1-k_t)P}{2}\delta_{ij}
+   - \frac{P}{2}\delta_{ij}
    :label: eq_vpequation
 
 The ice strain rate is given by
@@ -545,7 +545,7 @@ with the constants :math:`P^{\ast}` (run-time parameter
  .. math::
     :label: eq_pressrepl
 
-    P=P_{\max} \left( (1 - f_{r}) + f_{r} \frac{\Delta}{\Delta_{reg}}  \right)
+    P = (1-k_t)\,P_{\max} \left( (1 - f_{r}) + f_{r} \frac{\Delta}{\Delta_{reg}}  \right)
 
 where :math:`f_{r}` is run-time parameter :varlink:`SEAICEpressReplFac` (default = 1.0), and :math:`\Delta_{reg}` is a regularized form of
 :math:`\Delta = \left[ \left(\dot{\epsilon}_{11}+\dot{\epsilon}_{22}\right)^2 +
@@ -649,7 +649,7 @@ Defining the CPP-flag :varlink:`SEAICE_ZETA_SMOOTHREG` in
 where :math:`\Delta_{\min}=10^{-20}\,\text{s}^{-1}` should be chosen to avoid
 divisions by zero.
 
-In this default formulation the yield curve does not allow isotropic tensile stress, that is, sea ice can be "pulled appart" without any effort. Setting the parameter :math:`k_t` :varlink:`SEAICE_tensilFac` to a small value larger than zero, extends the yield curve into a region where the divergence of the stress :math:`\sigma_{11}+\sigma_{22} > 0` to allow some tensile stress.
+In this default formulation the yield curve does not allow isotropic tensile stress, that is, sea ice can be "pulled appart" without any effort. Setting the parameter :math:`k_t` (:varlink:`SEAICE_tensilFac`) to a small value larger than zero, extends the yield curve into a region where the divergence of the stress :math:`\sigma_{11}+\sigma_{22} > 0` to allow some tensile stress.
 
 Besides this commonly used default rheology, a number of a alternative rheologies are implemented.
 Some of these are experiemental and should be used with caution.
@@ -686,7 +686,7 @@ In the so-called truncated ellipse method, the shear viscosity :math:`\eta` is c
 
 .. math::
    \eta = \min\left(\frac{\zeta}{e^2},
-   \frac{\frac{(1-k_t)\,P_{\max}}{2}-\zeta(\dot{\epsilon}_{11}+\dot{\epsilon}_{22})+k_t\,P_{\max}}
+   \frac{\frac{(1+k_t)\,P_{\max}}{2}-\zeta(\dot{\epsilon}_{11}+\dot{\epsilon}_{22})}
    {\sqrt{\max(\Delta_{\min}^{2},(\dot{\epsilon}_{11}-\dot{\epsilon}_{22})^2
    +4\dot{\epsilon}_{12}^2})}\right).
    :label: eq_etatem
