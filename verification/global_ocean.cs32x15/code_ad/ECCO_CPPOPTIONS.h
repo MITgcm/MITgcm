@@ -16,8 +16,8 @@ C ********************************************************************
 C allow use of legacy ecco/ctrl codes
 #define ECCO_CTRL_DEPRECATED
 
-C let autodiff_init_varia reset variables to 0
-#define ALLOW_AUTODIFF_INIT_OLD
+C let autodiff_init_varia reset variables to 0 to reproduce old bug
+#undef ALLOW_AUTODIFF_INIT_OLD
 
 C o Include/exclude code in order to be able to automatically
 C   differentiate the MITgcmUV by using the Tangent Linear and
