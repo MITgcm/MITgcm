@@ -552,7 +552,7 @@ where :math:`f_{r}` is run-time parameter :varlink:`SEAICEpressReplFac` (default
 e^{-2}\left( \left(\dot{\epsilon}_{11}-\dot{\epsilon}_{22} \right)^2 + \dot{\epsilon}_{12}^2 \right) \right]^{\frac{1}{2}}`,
 for example :math:`\Delta_{reg} = \max(\Delta,\Delta_{\min})`.
 
-The tensile strength factor :math:`k_t` (Variable :varlink:`SEAICE_tensilFac`) define the ice tensile strength :math:`T = k_t\cdot P_{\max}`, as defined by  König Beatty and Holland (2010) :cite:`konig:10`. :varlink:`SEAICE_tensilFac` is zero by default.
+The tensile strength factor :math:`k_t` (run-time parameter :varlink:`SEAICE_tensilFac`) determines the ice tensile strength :math:`T = k_t\cdot P_{\max}`, as defined by König Beatty and Holland (2010) :cite:`konig:10`. :varlink:`SEAICE_tensilFac` is zero by default.
 
 Different VP rheologies can be used to model sea ice dynamics. The different rheologies are characterized by different definitions of the bulk and shear viscosities :math:`\zeta` and :math:`\eta` in :eq:`eq_vpequation`. The following :numref:`tab_phys_pkg_seaice_rheologies` is a summary of the available choices with recommended (sensible) parameter values. All the rheologies presented here depend on the ice strength :math:`P` :eq:`eq_pressrepl`.
 
@@ -742,7 +742,7 @@ Parabolic lens yield curve with normal flow rule
 The parabolic lens rheology was first described in Zhang and Rothrock (2005) :cite:`zha:05`.
 Here we implement a slightly modified version (See https://doi.org/10.26092/elib/380, Chapter 2).
 
-To use this rheology, set ``#define`` :varlink:`SEAICE_ALLOW_TEARDROP` in :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h> and :varlink:`SEAICEusePL` ``= .TRUE.`` in ``data.seaice``. The size of the yield curve can be modified by changing the tensile strength, using :varlink:`SEAICE_tensFac` in ``data.seaice``.
+To use this rheology, set ``#define`` :varlink:`SEAICE_ALLOW_TEARDROP` in :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>` and :varlink:`SEAICEusePL` ``= .TRUE.`` in ``data.seaice``. The size of the yield curve can be modified by changing the tensile strength, using :varlink:`SEAICE_tensFac` in ``data.seaice``.
 
 For this rheology, it is recommended to use a non-zero tensile strength, so set :varlink:`SEAICE_tensilFac` :math:`>0` in ``data.seaice``, e.g., :math:`= 0.025` or 2.5%.
 
