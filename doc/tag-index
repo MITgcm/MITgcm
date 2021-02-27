@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/global_ocean.cs32x15:
+  - fix Adjoint set-up by turning off CPP option "ALLOW_AUTODIFF_INIT_OLD" (that
+    was intended to put back an old bug) and update all 4 ADM and all 4 TLM
+    reference output files.
+o pkg/exf:
+  - replace wrong CPP option EXF_SALTFLX with ALLOW_SALTFLX in exf_monitor.F.
 o model/src:
   - Output dxF, dyF, dxV, and dyU fields to mdsio grid output files.
 o tools/build_options:
