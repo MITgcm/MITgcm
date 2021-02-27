@@ -26,8 +26,8 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 C   ==================================================================
 C-- Package-specific Options & Macros go here
 
-C let autodiff_init_varia reset variables to 0
-#define ALLOW_AUTODIFF_INIT_OLD
+C let autodiff_init_varia reset variables to 0 to reproduce old bug
+#undef ALLOW_AUTODIFF_INIT_OLD
 
 C o Include/exclude code in order to be able to automatically
 C   differentiate the MITgcmUV by using the Tangent Linear and
