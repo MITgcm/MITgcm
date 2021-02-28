@@ -121,7 +121,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       deltaTice = thSIce_deltaT
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
       DO j = 1-OLy, sNy+OLy
        DO i = 1-OLx, sNx+OLx
          flx2oc(i,j) = 0. _d 0
@@ -129,7 +129,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
          fsalt (i,j) = 0. _d 0
        ENDDO
       ENDDO
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_AUTODIFF_TAMC
       act1 = bi - myBxLo(myThid)

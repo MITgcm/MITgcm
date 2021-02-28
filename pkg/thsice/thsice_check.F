@@ -86,13 +86,15 @@ C-    need some form of ATM-surface pkg to provide Air-Ice surf fluxes
        ENDIF
       ENDIF
 
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_AUTODIFF_TAMC
       IF ( nitMaxTsf .GT. MaxTsf ) THEN
         WRITE(msgBuf,'(2A)')
      &   'THSICE_CHECK: Need to set MaxTsf >= nitMaxTsf for TAF'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
+#endif /* ALLOW_AUTODIFF_TAMC */
+#ifdef ALLOW_AUTODIFF
 # ifdef ALLOW_DBUG_THSICE
         WRITE(msgBuf,'(2A)')
      &   'THSICE_CHECK: cannot compile AD-code with ALLOW_DBUG_THSICE'

@@ -35,7 +35,6 @@ C     === Global variables ===
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
-#include "THSICE_TAVE.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
@@ -135,7 +134,7 @@ C-    Initialise
           saltFlux(i,j,bi,bj) = 0. _d 0
 #endif
           frzSeaWat(i,j) = 0. _d 0
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
           iceFrac(i,j) = 0.
 C-   set these arrays everywhere: overlap are not set and not used,
 C     but some arrays are stored and storage includes overlap.
