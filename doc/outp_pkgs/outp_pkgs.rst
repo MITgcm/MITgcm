@@ -404,7 +404,7 @@ Currently, the available adjoint state variables are:
    112 |ADJvvel | 50 |   111 |VVRA    MR|dJ/(m/s)        |dJ/dV: Sensitivity to meridional velocity
    113 |ADJwvel | 50 |       |WM A    LR|dJ/(m/s)        |dJ/dW: Sensitivity to vertical velocity
    114 |ADJtheta| 50 |       |SMRA    MR|dJ/degC         |dJ/dTheta: Sensitivity to potential temperature
-   115 |ADJsalt | 50 |       |SMRA    MR|dJ/psu          |dJ/dSalt: Sensitivity to salinity
+   115 |ADJsalt | 50 |       |SMRA    MR|dJ/(g/kg)       |dJ/dSalt: Sensitivity to salinity
 
 Some notes to the user
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -572,15 +572,15 @@ MITgcm kernel available diagnostics list:
   ETANSQ  |SM P    M1|m^2             |Square of Surface Height Anomaly
   DETADT2 |SM      M1|m^2/s^2         |Square of Surface Height Anomaly Tendency
   THETA   |SMR     MR|degC            |Potential Temperature
-  SALT    |SMR     MR|psu             |Salinity
+  SALT    |SMR     MR|g/kg            |Salinity
   RELHUM  |SMR     MR|percent         |Relative Humidity
-  SALTanom|SMR     MR|psu             |Salt anomaly (=SALT-35; g/kg)
+  SALTanom|SMR     MR|g/kg            |Salt anomaly (=SALT-35; g/kg)
   UVEL    |UUR     MR|m/s             |Zonal Component of Velocity (m/s)
   VVEL    |VVR     MR|m/s             |Meridional Component of Velocity (m/s)
   WVEL    |WM      LR|m/s             |Vertical Component of Velocity (r_units/s)
   THETASQ |SMRP    MR|degC^2          |Square of Potential Temperature
-  SALTSQ  |SMRP    MR|(psu)^2         |Square of Salinity
-  SALTSQan|SMRP    MR|(psu)^2         |Square of Salt anomaly (=(SALT-35)^2 (g^2/kg^2)
+  SALTSQ  |SMRP    MR|(g/kg)^2        |Square of Salinity
+  SALTSQan|SMRP    MR|(g/kg)^2        |Square of Salt anomaly (=(SALT-35)^2 (g^2/kg^2)
   UVELSQ  |UURP    MR|m^2/s^2         |Square of Zonal Comp of Velocity (m^2/s^2)
   VVELSQ  |VVRP    MR|m^2/s^2         |Square of Meridional Comp of Velocity (m^2/s^2)
   WVELSQ  |WM P    LR|m^2/s^2         |Square of Vertical Comp of Velocity
@@ -598,15 +598,15 @@ MITgcm kernel available diagnostics list:
   UTHMASS |UUr     MR|degC.m/s        |Zonal Mass-Weight Transp of Pot Temp
   VTHMASS |VVr     MR|degC.m/s        |Meridional Mass-Weight Transp of Pot Temp
   WTHMASS |WM      LR|degC.m/s        |Vertical Mass-Weight Transp of Pot Temp (K.m/s)
-  USLTMASS|UUr     MR|psu.m/s         |Zonal Mass-Weight Transp of Salinity
-  VSLTMASS|VVr     MR|psu.m/s         |Meridional Mass-Weight Transp of Salinity
-  WSLTMASS|WM      LR|psu.m/s         |Vertical Mass-Weight Transp of Salinity
+  USLTMASS|UUr     MR|g/kg.m/s        |Zonal Mass-Weight Transp of Salinity
+  VSLTMASS|VVr     MR|g/kg.m/s        |Meridional Mass-Weight Transp of Salinity
+  WSLTMASS|WM      LR|g/kg.m/s        |Vertical Mass-Weight Transp of Salinity
   UVELTH  |UUR     MR|degC.m/s        |Zonal Transport of Pot Temp
   VVELTH  |VVR     MR|degC.m/s        |Meridional Transport of Pot Temp
   WVELTH  |WM      LR|degC.m/s        |Vertical Transport of Pot Temp
-  UVELSLT |UUR     MR|psu.m/s         |Zonal Transport of Salinity
-  VVELSLT |VVR     MR|psu.m/s         |Meridional Transport of Salinity
-  WVELSLT |WM      LR|psu.m/s         |Vertical Transport of Salinity
+  UVELSLT |UUR     MR|g/kg.m/s        |Zonal Transport of Salinity
+  VVELSLT |VVR     MR|g/kg.m/s        |Meridional Transport of Salinity
+  WVELSLT |WM      LR|g/kg.m/s        |Vertical Transport of Salinity
   UVELPHI |UUr     MR|m^3/s^3         |Zonal Mass-Weight Transp of Pressure Pot.(p/rho) Anomaly
   VVELPHI |VVr     MR|m^3/s^3         |Merid. Mass-Weight Transp of Pressure Pot.(p/rho) Anomaly
   RHOAnoma|SMR     MR|kg/m^3          |Density Anomaly (=Rho-rhoConst)
@@ -649,18 +649,18 @@ MITgcm kernel available diagnostics list:
   TOTUTEND|UUR     MR|m/s/day         |Tendency of Zonal Component of Velocity
   TOTVTEND|VVR     MR|m/s/day         |Tendency of Meridional Component of Velocity
   TOTTTEND|SMR     MR|degC/day        |Tendency of Potential Temperature
-  TOTSTEND|SMR     MR|psu/day         |Tendency of Salinity
+  TOTSTEND|SMR     MR|g/kg/day        |Tendency of Salinity
   ---------------------------------------------------------------
   <-Name->|<- code ->|<--  Units   -->|<- Tile (max=80c)         
   ---------------------------------------------------------------
   MoistCor|SM      MR|W/m^2           |Heating correction due to moist thermodynamics
   HeatDiss|SM      MR|W/m^2           |Heating from frictional dissipation
   gT_Forc |SMR     MR|degC/s          |Potential Temp. forcing tendency
-  gS_Forc |SMR     MR|psu/s           |Salinity forcing tendency
+  gS_Forc |SMR     MR|g/kg/s          |Salinity forcing tendency
   AB_gT   |SMR     MR|degC/s          |Potential Temp. tendency from Adams-Bashforth
-  AB_gS   |SMR     MR|psu/s           |Salinity tendency from Adams-Bashforth
+  AB_gS   |SMR     MR|g/kg/s          |Salinity tendency from Adams-Bashforth
   gTinAB  |SMR     MR|degC/s          |Potential Temp. tendency going in Adams-Bashforth
-  gSinAB  |SMR     MR|psu/s           |Salinity tendency going in Adams-Bashforth
+  gSinAB  |SMR     MR|g/kg/s          |Salinity tendency going in Adams-Bashforth
   AB_gU   |UUR     MR|m/s^2           |U momentum tendency from Adams-Bashforth
   AB_gV   |VVR     MR|m/s^2           |V momentum tendency from Adams-Bashforth
   AB_gW   |WM      LR|m/s^2           |W momentum tendency from Adams-Bashforth
@@ -685,24 +685,24 @@ MITgcm kernel available diagnostics list:
   SMxz_TH |UM      MR|degC            |Pot.Temp.   2nd Order Moment Sxz
   SMyz_TH |VM      MR|degC            |Pot.Temp.   2nd Order Moment Syz
   SM_v_TH |SM P    MR|(degC)^2        |Pot.Temp.   sub-grid variance
-  ADVr_SLT|WM      LR|psu.m^3/s       |Vertical   Advective Flux of Salinity
-  ADVx_SLT|UU      MR|psu.m^3/s       |Zonal      Advective Flux of Salinity
-  ADVy_SLT|VV      MR|psu.m^3/s       |Meridional Advective Flux of Salinity
-  DFrE_SLT|WM      LR|psu.m^3/s       |Vertical Diffusive Flux of Salinity    (Explicit part)
-  DFxE_SLT|UU      MR|psu.m^3/s       |Zonal      Diffusive Flux of Salinity
-  DFyE_SLT|VV      MR|psu.m^3/s       |Meridional Diffusive Flux of Salinity
-  DFrI_SLT|WM      LR|psu.m^3/s       |Vertical Diffusive Flux of Salinity    (Implicit part)
-  SALTFILL|SM      MR|psu.m^3/s       |Filling of Negative Values of Salinity
-  SM_x_SLT|UM      MR|psu             |Salinity    1rst Order Moment Sx
-  SM_y_SLT|VM      MR|psu             |Salinity    1rst Order Moment Sy
-  SM_z_SLT|SM      MR|psu             |Salinity    1rst Order Moment Sz
-  SMxx_SLT|UM      MR|psu             |Salinity    2nd Order Moment Sxx
-  SMyy_SLT|VM      MR|psu             |Salinity    2nd Order Moment Syy
-  SMzz_SLT|SM      MR|psu             |Salinity    2nd Order Moment Szz
-  SMxy_SLT|SM      MR|psu             |Salinity    2nd Order Moment Sxy
-  SMxz_SLT|UM      MR|psu             |Salinity    2nd Order Moment Sxz
-  SMyz_SLT|VM      MR|psu             |Salinity    2nd Order Moment Syz
-  SM_v_SLT|SM P    MR|(psu)^2         |Salinity    sub-grid variance
+  ADVr_SLT|WM      LR|g/kg.m^3/s      |Vertical   Advective Flux of Salinity
+  ADVx_SLT|UU      MR|g/kg.m^3/s      |Zonal      Advective Flux of Salinity
+  ADVy_SLT|VV      MR|g/kg.m^3/s      |Meridional Advective Flux of Salinity
+  DFrE_SLT|WM      LR|g/kg.m^3/s      |Vertical Diffusive Flux of Salinity    (Explicit part)
+  DFxE_SLT|UU      MR|g/kg.m^3/s      |Zonal      Diffusive Flux of Salinity
+  DFyE_SLT|VV      MR|g/kg.m^3/s      |Meridional Diffusive Flux of Salinity
+  DFrI_SLT|WM      LR|g/kg.m^3/s      |Vertical Diffusive Flux of Salinity    (Implicit part)
+  SALTFILL|SM      MR|g/kg.m^3/s      |Filling of Negative Values of Salinity
+  SM_x_SLT|UM      MR|g/kg            |Salinity    1rst Order Moment Sx
+  SM_y_SLT|VM      MR|g/kg            |Salinity    1rst Order Moment Sy
+  SM_z_SLT|SM      MR|g/kg            |Salinity    1rst Order Moment Sz
+  SMxx_SLT|UM      MR|g/kg            |Salinity    2nd Order Moment Sxx
+  SMyy_SLT|VM      MR|g/kg            |Salinity    2nd Order Moment Syy
+  SMzz_SLT|SM      MR|g/kg            |Salinity    2nd Order Moment Szz
+  SMxy_SLT|SM      MR|g/kg            |Salinity    2nd Order Moment Sxy
+  SMxz_SLT|UM      MR|g/kg            |Salinity    2nd Order Moment Sxz
+  SMyz_SLT|VM      MR|g/kg            |Salinity    2nd Order Moment Syz
+  SM_v_SLT|SM P    MR|(g/kg)^2        |Salinity    sub-grid variance
   VISCAHZ |SZ      MR|m^2/s           |Harmonic Visc Coefficient (m2/s) (Zeta Pt)
   VISCA4Z |SZ      MR|m^4/s           |Biharmonic Visc Coefficient (m4/s) (Zeta Pt)
   VISCAHD |SM      MR|m^2/s           |Harmonic Viscosity Coefficient (m2/s) (Div Pt)
