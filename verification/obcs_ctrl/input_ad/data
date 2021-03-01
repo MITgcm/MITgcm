@@ -27,6 +27,7 @@
  tempAdvScheme=30,
  saltAdvScheme=30,
  writeBinaryPrec=32,
+ useSingleCPUIO=.TRUE.,
  &
 # Elliptic solver parameters
  &PARM02
