@@ -323,6 +323,10 @@ C--   perturb it and write back to file
      &              xxmemo_ref, xxmemo_pert, localEps,
      &              ierr, myThid )
 
+C--   re-initialize hFacC, recip_hFacC, etc. which are  
+C--   time-varying for r* vertical coordinate
+          CALL INI_MASKS_ETC( myThid )
+
 C--   forward run with perturbed control vector
           myTime = startTime
           myIter = nIter0
@@ -361,6 +365,10 @@ C--   perturb it and write back to file
      &                 itilepos, jtilepos,
      &                 xxmemo_ref, xxmemo_pert, localEps,
      &                 ierr, myThid )
+
+C--   re-initialize hFacC, recip_hFacC, etc. which are
+C--   time-varying for r* vertical coordinate
+            CALL INI_MASKS_ETC( myThid )
 
 C--   forward run with perturbed control vector
             myTime = startTime
