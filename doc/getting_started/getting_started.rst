@@ -1496,13 +1496,13 @@ not mentioned below should NOT be changed:
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`GLOBAL_SUM_SEND_RECV`               | #undef  | alternative way of doing global sum without MPI allreduce call                                                       |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`COMPONENT_MODULE`                   | #undef  | control use of communication with other components, i.e., sets component to work with a coupler interface            |
-   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`SINGLE_DISK_IO`                     | #undef  | to write STDOUT, STDERR and scratch files from process 0 only                                                        |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`FAST_BYTESWAP`                      | #undef  | alternative formulation of BYTESWAP, faster than compiler flag -byteswapio on the Altix platform                     |
-   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`USE_FORTRAN_SCRATCH_FILES`          | #undef  | flag to turn on old default of opening scratch files with the STATUS='SCRATCH' option                                |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`COMPONENT_MODULE`                   | #undef  | control use of communication with other components, i.e., sets component to work with a coupler interface            |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`FAST_BYTESWAP`                      | #undef  | alternative formulation of BYTESWAP, faster than compiler flag -byteswapio on the Altix platform                     |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 
 The default setting of ``#define`` :varlink:`GLOBAL_SUM_ORDER_TILES` in
@@ -1517,6 +1517,37 @@ that simply uses `MPI_Allreduce()
 significantly improved performance for certain simulations [#]_.  The
 fall-though approach is activated by ``#undef`` both
 :varlink:`GLOBAL_SUM_ORDER_TILES` and :varlink:`GLOBAL_SUM_SEND_RECV`.
+
+In a default multi-processor configuration, each process opens and reads its
+own set of namelist files and open and writes its own standard output. This can
+be slow or even problematic for very large processor counts. Defining the
+CPP-flag :varlink:`SINGLE_DISK_IO` suppresses this behavior and lets only the
+master process (process 0) read namelist files and write a standard output
+stream. This may seem advantageous, because it reduces the amount of seemingly
+redundant output, but use this option with caution and only when absolutely
+confident that the setup is working since any message (error/warning/print)
+from any processor :math:`\ne 0` will be lost.
+
+The way the namelist files are read requires temporary (scratch) files in the
+initialisation phase. By default, the MITgcm does not use intrinsic Fortran
+scratch files (STATUS='scratch') because they can lead to conflicts in
+multi-processor simulations on some HPC-platforms, when the processors do not
+open scratch files with reserved names. However, the implemented default scheme
+for the scratch files can be slow for large processor counts. If this is a
+problem in a given configuration, defining the CPP-flag
+:varlink:`USE_FORTRAN_SCRATCH_FILES` may help by making the code use the
+intrinsic Fortran scratch files.
+
+The CPP-flag :varlink:`FAST_BYTESWAP` is an example of a very platform specific
+flag that should not be defined under normal circumstances. On some platforms
+defining this flag may speed up I/O compared to the automatic conversion from
+little endian to big endian output, but that needs to be tested for each
+platform individually. Under normal circumstances this flag should be undefined.
+
+The CPP-flag :varlink:`COMPONENT_MODULE` needs to be set to ``#define`` only in
+simulations in which the MITgcm is coupled to further instances of itself, for
+example, in verification experiment `cpl_aim+ocn
+<https://github.com/MITgcm/MITgcm/tree/master/verification/cpl_aim+ocn>`_.
 
 .. [#] One example is the llc_540 case located at
    https://github.com/MITgcm-contrib/llc_hires/tree/master/llc_540. This case
