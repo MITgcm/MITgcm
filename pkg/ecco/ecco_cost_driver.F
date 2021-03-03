@@ -1,4 +1,10 @@
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       subroutine ecco_cost_driver(  myTime, myIter, myThid  )
 
@@ -99,7 +105,7 @@ c--   Compute bottom pressure cost
      &     anom_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
      &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
      &     0, bpdatfile, objf_bp, num_bp,
-     &     myiter, mytime, mythid )
+     &     myIter, myTime, myThid )
       call timer_stop ('cost_bp    [ECCO SPIN-DOWN]', myThid)
       no_preproc(1)=' '
       ENDIF
@@ -220,5 +226,5 @@ c--   Compute user defined cost function contributions (elaborate)
       ENDIF
 #endif
 
-      return
-      end
+      RETURN
+      END
