@@ -234,10 +234,10 @@ cgg   As an ad-hoc solution I have divided by nobcs everywhere.
                         enddo
 #endif
                      else
-                        print*,'ctrl_init: invalid grid location'
+                        print*,'ctrl_init_wet: invalid grid location'
                         print*,'     control variable = ',ncvarindex(i)
                         print*,'     grid location    = ',ncvargrd(i)
-                        stop   ' ... stopped in ctrl_init'
+                        stop   ' ... stopped in ctrl_init_wet'
                      endif
                   enddo
                enddo
@@ -578,11 +578,11 @@ c
 #endif
 
       write(msgbuf,'(a,2x,I10)')
-     &     'ctrl_init: no. of control variables: ', nvartype
+     &     'ctrl_init_wet: no. of control variables: ', nvartype
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a,2x,I10)')
-     &     'ctrl_init: control vector length:    ', nvarlength
+     &     'ctrl_init_wet: control vector length:    ', nvarlength
       call print_message( msgbuf, standardmessageunit,
      &     SQUEEZE_RIGHT , mythid)
 
