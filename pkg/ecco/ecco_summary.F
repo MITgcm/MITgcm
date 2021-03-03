@@ -1,4 +1,10 @@
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       SUBROUTINE ECCO_SUMMARY( mythid )
 

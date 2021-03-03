@@ -67,6 +67,10 @@ C       >>> Backward compatibility option (before checkpoint 65p)
 #undef ALLOW_KAPGM_CONTROL_OLD
 #undef ALLOW_KAPREDI_CONTROL_OLD
 
+C  o  Re-activate deprecated codes in pkg/ecco & pkg/ctrl (but not recommended)
+C     and since pkg/ctrl can be used without pkg/ecco, better to have it here
+#undef ECCO_CTRL_DEPRECATED
+
 C       >>> Generic Control.
 #undef ALLOW_GENARR2D_CONTROL
 #undef ALLOW_GENARR3D_CONTROL
