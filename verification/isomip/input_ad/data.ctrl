@@ -28,5 +28,6 @@
 #
  xx_gentim2d_file(1)       = 'xx_shifwflx',
  xx_gentim2d_weight(1)     = 'ones.prec64',
+ xx_gentim2d_grid(1)       = 'i',
 #
  &

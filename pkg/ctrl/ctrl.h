@@ -118,13 +118,13 @@ C     ctrlUseGen             ::   use generic control approach rather than old c
       integer nwetvglobal     ( nr )
       integer nbuffglobal
 
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_SHELFICE
       common /controlvars_i_shifwflx/
      &     nwetitile, nwetiglobal, filenWetiGlobal
       integer nwetitile     ( nsx,nsy,nr )
       integer nwetiglobal     ( nr )
       integer filenWetiGlobal(nr)
-#endif /* ALLOW_SHIFWFLX_CONTROL */
+#endif /* ALLOW_SHELFICE */
 
       common /controlvars_c/
      &                       ncvargrd
