@@ -325,7 +325,11 @@ C--   perturb it and write back to file
 
 C--   re-initialize hFacC, recip_hFacC, etc. that are  
 C--   time-varying for r* vertical coordinate
+#ifdef ALLOW_OPENAD
+          CALL OpenAD_INI_MASKS_ETC( myThid )
+#else
           CALL INI_MASKS_ETC( myThid )
+#endif
 
 C--   forward run with perturbed control vector
           myTime = startTime
@@ -368,7 +372,11 @@ C--   perturb it and write back to file
 
 C--   re-initialize hFacC, recip_hFacC, etc. that are
 C--   time-varying for r* vertical coordinate
+#ifdef ALLOW_OPENAD
+            CALL OpenAD_INI_MASKS_ETC( myThid )
+#else
             CALL INI_MASKS_ETC( myThid )
+#endif
 
 C--   forward run with perturbed control vector
             myTime = startTime
