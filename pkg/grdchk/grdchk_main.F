@@ -323,20 +323,18 @@ C--   perturb it and write back to file
      &              xxmemo_ref, xxmemo_pert, localEps,
      &              ierr, myThid )
 
-C--   re-initialize hFacC, recip_hFacC, etc. that are  
-C--   time-varying for r* vertical coordinate
-#ifdef ALLOW_OPENAD
-          CALL OpenAD_INI_MASKS_ETC( myThid )
-#else
-          CALL INI_MASKS_ETC( myThid )
-#endif
-
 C--   forward run with perturbed control vector
           myTime = startTime
           myIter = nIter0
+C--   first call INI_MASKS_ETC or, if ALLOW_OPENAD is defined, 
+C--   OpenAD_INI_MASKS_ETC to
+C--   re-initialize hFacC, recip_hFacC, etc. that might be  
+C--   time-varying, e.g. for r* vertical coordinate
 #ifdef ALLOW_OPENAD
+          CALL OpenAD_INI_MASKS_ETC( myThid )
           CALL OpenAD_THE_MAIN_LOOP( myTime, myIter, myThid )
 #else
+          CALL INI_MASKS_ETC( myThid )
           CALL THE_MAIN_LOOP( myTime, myIter, myThid )
 #endif
 
@@ -370,20 +368,18 @@ C--   perturb it and write back to file
      &                 xxmemo_ref, xxmemo_pert, localEps,
      &                 ierr, myThid )
 
-C--   re-initialize hFacC, recip_hFacC, etc. that are
-C--   time-varying for r* vertical coordinate
-#ifdef ALLOW_OPENAD
-            CALL OpenAD_INI_MASKS_ETC( myThid )
-#else
-            CALL INI_MASKS_ETC( myThid )
-#endif
-
 C--   forward run with perturbed control vector
             myTime = startTime
             myIter = nIter0
+C--   first call INI_MASKS_ETC or, if ALLOW_OPENAD is defined, 
+C--   OpenAD_INI_MASKS_ETC to
+C--   re-initialize hFacC, recip_hFacC, etc. that might be  
+C--   time-varying, e.g. for r* vertical coordinate
 #ifdef ALLOW_OPENAD
+            CALL OpenAD_INI_MASKS_ETC( myThid )
             CALL OpenAD_THE_MAIN_LOOP( myTime, myIter, myThid )
 #else
+            CALL INI_MASKS_ETC( myThid )
             CALL THE_MAIN_LOOP( myTime, myIter, myThid )
 #endif
 
