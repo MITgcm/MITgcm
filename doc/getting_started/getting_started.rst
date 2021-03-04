@@ -1040,7 +1040,7 @@ which is made of the following files:
 -  ``T.00000nIter`` - potential temperature (ocean:
    :math:`^{\circ}\mathrm{C}`, atmosphere: :math:`^{\circ}\mathrm{K}`).
 
--  ``S.00000nIter`` - ocean: salinity (psu), atmosphere: water vapor
+-  ``S.00000nIter`` - ocean: salinity (g/kg), atmosphere: water vapor
    (g/kg).
 
 -  ``Eta.00000nIter`` - ocean: surface elevation (m), atmosphere:
@@ -1786,14 +1786,14 @@ available:
 - For a linear approximation, set :varlink:`eosType` to ``LINEAR``),
   and you will need to specify the thermal
   and haline expansion coefficients, represented by the variables
-  :varlink:`tAlpha` (in K\ :sup:`--1`) and :varlink:`sBeta` (in psu\ :sup:`--1`).
+  :varlink:`tAlpha` (in K\ :sup:`--1`) and :varlink:`sBeta` (in (g/kg)\ :sup:`--1`).
   Because the model equations are written in terms of
   perturbations, a reference thermodynamic state needs to be specified.
   This is done through the 1-D arrays :varlink:`tRef` and :varlink:`sRef`. :varlink:`tRef`
   specifies the reference potential temperature profile (in
   :sup:`o`\ C for the ocean and K for the atmosphere)
   starting from the level k=1. Similarly, :varlink:`sRef` specifies the reference
-  salinity profile (in psu or g/kg) for the ocean or the reference specific
+  salinity profile (in g/kg) for the ocean or the reference specific
   humidity profile (in g/kg) for the atmosphere.
 
 - MITgcm offers several approximations to the full (oceanic) non-linear equation
@@ -1849,9 +1849,13 @@ available:
    For these non-linear approximations, neither a reference profile of temperature or
    salinity is required, except for a setup where :varlink:`implicitIntGravWave` is set to ``.TRUE.`` or :varlink:`selectP_inEOS_Zc`\ =1.
 
-Note that salinity can can be expressed in either practical salinity units (psu, i.e., unit-less) or g/kg,
-depending on the choice of equation of state. See Millero (2010) :cite:`millero:10` for a detailed discussion
-of salinity measurements, and why use of the latter is preferred, in the context of the ocean equation of state.
+Note that for simplicity, salinity is expressed as a ratio in g/kg (thus effectively unitless) regardless of the choice of equation of state,
+despite "Practical Salinity" not precisely equal to salinity
+expressed as a dissolved mass fraction.
+If TEOS-10 is selected, the model variable :varlink:`salt` can be interpreted as "Absolute Salinity".
+See Millero (2010) :cite:`millero:10` and Pawlowicz (2013) :cite:`pawlowicz:13`
+for detailed discussion of salinity measurements, and why being expressed
+as g/kg is preferred, in the context of the ocean equation of state.
 
 .. tabularcolumns:: |\Y{.2}|\Y{.1}|\Y{.2}|\Y{.525}|
 
@@ -1871,9 +1875,9 @@ of salinity measurements, and why use of the latter is preferred, in the context
    |                                        |           |                                                  | for ocean, specify instead of :varlink:`tRef` or :varlink:`tRefFile`                                    |
    |                                        |           |                                                  | for vertically constant reference temp. (:sup:`o`\ C )                                                  |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`sRef`                        | PARM01    | 30.0 psu (ocn) or 0.0 (atm)                      | 1D vertical reference salinity profile (psu or g/kg)                                                    |
+   | :varlink:`sRef`                        | PARM01    | 30.0 (g/kg) (ocn) or 0.0 (atm)                   | 1D vertical reference salinity profile (g/kg)                                                           |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`sRefFile`                    | PARM01    | :kbd:`' '`                                       | filename for reference salinity profile (psu or g/kg)                                                   |
+   | :varlink:`sRefFile`                    | PARM01    | :kbd:`' '`                                       | filename for reference salinity profile (g/kg)                                                          |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`selectP_inEOS_Zc`            | PARM01    | depends on :varlink:`eosType`                    | select which pressure to use in EOS for :math:`z`-coor.                                                 |
    |                                        |           |                                                  |                                                                                                         |
@@ -1888,7 +1892,7 @@ of salinity measurements, and why use of the latter is preferred, in the context
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`tAlpha`                      | PARM01    | 2.0E-04                                          | linear EOS thermal expansion coefficient (1/\ :sup:`o`\ C)                                              |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`sBeta`                       | PARM01    | 7.4E-04                                          | linear EOS haline contraction coefficient (1/psu)                                                       |
+   | :varlink:`sBeta`                       | PARM01    | 7.4E-04                                          | linear EOS haline contraction coefficient ((g/kg)\ :sup:`-1`)                                           |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 
 Thermodynamic Constants
@@ -2258,7 +2262,7 @@ In this case, the initial tracer data are uniform in :math:`x` and :math:`y` for
 +========================================+===========+==================================================+=========================================================================================================+
 | :varlink:`hydrogThetaFile`             | PARM05    | :kbd:`' '`                                       | filename for 3D specification of initial potential temperature (:sup:`o`\ C)                            |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-| :varlink:`hydrogSaltFile`              | PARM05    | :kbd:`' '`                                       | filename for 3D specification of initial salinity (psu or g/kg)                                         |
+| :varlink:`hydrogSaltFile`              | PARM05    | :kbd:`' '`                                       | filename for 3D specification of initial salinity (g/kg)                                                |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
 | :varlink:`maskIniTemp`                 | PARM05    | TRUE                                             | apply (center-point) mask to initial hydrographic theta data on/off flag                                |
 +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
@@ -2425,7 +2429,7 @@ time scale coefficient is set through the variable
 :varlink:`tauThetaClimRelax` (in seconds). The same procedure applies for
 salinity with the variable names :varlink:`EmPmRfile`, :varlink:`saltClimFile`,
 and :varlink:`tauSaltClimRelax` for freshwater flux (in m/s) and surface
-salinity (in psu or g/kg) data files and relaxation timescale coefficient
+salinity (in g/kg) data files and relaxation timescale coefficient
 (in seconds), respectively.
 
 .. tabularcolumns:: |\Y{.24}|\Y{.1}|\Y{.15}|\Y{.535}|
@@ -2463,26 +2467,26 @@ salinity (in psu or g/kg) data files and relaxation timescale coefficient
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`saltForcing`                 | PARM01    | TRUE                                             | external forcing of salinity forcing on/off flag                                                        |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`convertFW2Salt`              | PARM01    | 3.5E+01                                          | salinity used to convert freshwater flux to salt flux (-1: use local S) (psu or g/kg)                   |
+   | :varlink:`convertFW2Salt`              | PARM01    | 3.5E+01                                          | salinity used to convert freshwater flux to salt flux (-1: use local S) (g/kg)                          |
    |                                        |           |                                                  | (note default is -1 if :varlink:`useRealFreshWaterFlux`\ = ``.TRUE.``)                                  |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`rhoConstFresh`               | PARM01    | :varlink:`rhoConst`                              | constant reference density for fresh water (rain) (kg/m\ :sup:`3`)                                      |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`EmPmRFile`                   | PARM05    | :kbd:`' '`                                       | filename for 2D specification of net freshwater flux (m/s)                                              |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`saltFluxFile`                | PARM05    | :kbd:`' '`                                       | filename for 2D specification of salt flux (from seaice) (psu.kg/m\ :sup:`2`\/s)                        |
+   | :varlink:`saltFluxFile`                | PARM05    | :kbd:`' '`                                       | filename for 2D specification of salt flux (from seaice) ((g/kg).kg/m\ :sup:`2`\/s)                     |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`tauSaltClimRelax`            | PARM03    | 0.0                                              | salinity (surface) relaxation time scale (s)                                                            |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`lambdaSaltFile`              | PARM05    | :kbd:`' '`                                       | filename for 2D specification of inverse salinity (surface) relaxation time scale (1/s)                 |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`saltClimFile`                | PARM05    | :kbd:`' '`                                       | filename for specification of (surface) salinity relaxation values (psu or g/kg)                        |
+   | :varlink:`saltClimFile`                | PARM05    | :kbd:`' '`                                       | filename for specification of (surface) salinity relaxation values (g/kg)                               |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`balanceSaltClimRelax`        | PARM01    | FALSE                                            | subtract global mean flux due to salt relaxation every time step on/off flag                            |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`balanceEmPmR`                | PARM01    | FALSE                                            | subtract global mean EmPmR every time step on/off flag; requires #define :varlink:`ALLOW_BALANCE_FLUXES`|
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
-   | :varlink:`salt_EvPrRn`                 | PARM01    | 0.0                                              | salinity of rain and evaporated water (psu or g/kg)                                                     |
+   | :varlink:`salt_EvPrRn`                 | PARM01    | 0.0                                              | salinity of rain and evaporated water (g/kg)                                                            |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
    | :varlink:`selectAddFluid`              | PARM01    | 0                                                | add fluid to ocean interior options (-1, 0: off, or 1); requires #define :varlink:`ALLOW_ADDFLUID`      |
    +----------------------------------------+-----------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------+
