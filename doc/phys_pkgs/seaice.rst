@@ -88,7 +88,7 @@ Enabling the package
 --------------------
 
 :filelink:`seaice <pkg/seaice>` package is switched on/off at run-time by
-          setting :varlink:`useSEAICE` ``= .TRUE.`` in ``data.pkg``.
+setting :varlink:`useSEAICE` ``= .TRUE.`` in ``data.pkg``.
 
 General flags and parameters
 ----------------------------
