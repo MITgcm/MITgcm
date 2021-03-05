@@ -2326,11 +2326,11 @@ where :math:`\mathcal{B}_{in}` is the vertically integrated surface buoyancy (in
 with :math:`\alpha\simeq 2.5\times10^{-4}\, \text{K}^{-1}` the thermal
 expansion coefficient (computed by the package otherwise),
 :math:`C_w=4187 \text{ J kg}^{-1}\text{K}^{-1}` the specific heat of seawater,
-:math:`Q_{net}\text{ [W/m}^{-2}]` the net heat surface flux (positive downward,
-warming the ocean), :math:`\beta\text{ [(g/kg)}^{-1}]` the saline contraction
-coefficient, and :math:`S_{net}=S*(E-P)\text{ [(g/kg) m s}^{-1}]` the net
-freshwater surface flux with :math:`S\text{ [g/kg}]` the surface salinity and
-:math:`(E-P)\text{ [m/s]}` the fresh water flux.
+:math:`Q_{net}\text{ (W m}^{-2})` the net heat surface flux (positive downward,
+warming the ocean), :math:`\beta\text{ ((g/kg)}^{-1})` the saline contraction
+coefficient, and :math:`S_{net}=S*(E-P)\text{ ((g/kg) m s}^{-1})` the net
+freshwater surface flux with :math:`S\text{ (g/kg})` the surface salinity and
+:math:`(E-P)\text{ (m s}^{-1})` the fresh water flux.
 
 Introducing the body force in the Ekman layer:
 
