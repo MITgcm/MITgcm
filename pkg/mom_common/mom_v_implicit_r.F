@@ -24,6 +24,9 @@ C     == Global data ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#ifdef ALLOW_USE_MPI
+#include "mpif.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
@@ -46,11 +49,12 @@ C cDrag     :: bottom drag coefficient
 C KE2d      :: horizontal Kinetic Energy
 C diagonalNumber :: number of non-zero diagonals in the matrix
 C errCode   :: > 0 if singular matrix
+C errMpi    :: MPI error code
       INTEGER iMin,iMax,jMin,jMax
       PARAMETER( iMin = 1, iMax = sNx )
       PARAMETER( jMin = 1, jMax = sNy+1 )
       INTEGER i,j,k
-      INTEGER diagonalNumber, errCode
+      INTEGER diagonalNumber, errCode, errMpi
 c     _RL a5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL b5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL c5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -313,7 +317,15 @@ C--   Solve tri-diagonal system :
      O                          errCode,
      I                          bi, bj, myThid )
         IF (errCode.GE.1) THEN
-          STOP 'MOM_IMPLICIT_R: error when solving 3-Diag problem.'
+#ifdef ALLOW_USE_MPI
+          CALL PRINT_MESSAGE( 
+     &     'MOM_IMPLICIT_R: error when solving 3-Diag problem'//
+     &     ' in mom_v_implicit_r.',
+     &        standardMessageUnit,SQUEEZE_RIGHT,0)         
+          CALL MPI_ABORT( MPI_COMM_WORLD, errCode, errMpi )
+#else
+        STOP 'MOM_IMPLICIT_R: error when solving 3-Diag problem.'
+#endif
         ENDIF
       ELSE
         STOP 'MOM_IMPLICIT_R: no solver available.'
