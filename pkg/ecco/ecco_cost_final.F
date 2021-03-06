@@ -38,7 +38,9 @@ c     == global variables ==
 # include "optim.h"
 # include "CTRL_SIZE.h"
 # include "CTRL_GENARR.h"
-# include "CTRL_OBCS.h"
+# ifdef ALLOW_OBCS
+#  include "CTRL_OBCS.h"
+# endif /* ALLOW_OBCS */
 #endif
 #ifdef ALLOW_PROFILES
 # include "PROFILES_SIZE.h"
@@ -109,7 +111,9 @@ c the adjoint, pkg/autodiff most likely require cost though.
 #endif /* ECCO_CTRL_DEPRECATED */
 
       _RL f_gencost(NGENCOST)
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
       _RL f_obcsn, f_obcss, f_obcsw, f_obcse
+#endif
 #ifdef ALLOW_PROFILES
       _RL f_profiles(NFILESPROFMAX,NVARMAX)
       _RL f_profiles_mean(NVARMAX)
@@ -150,7 +154,9 @@ c the adjoint, pkg/autodiff most likely require cost though.
 #endif /* ECCO_CTRL_DEPRECATED */
 
       _RL no_gencost(NGENCOST)
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
       _RL no_obcsn, no_obcss, no_obcsw, no_obcse
+#endif
 #ifdef ALLOW_PROFILES
       _RL no_profiles(NFILESPROFMAX,NVARMAX)
       _RL no_profiles_mean(NVARMAX)
@@ -271,10 +277,12 @@ c     == end of interface ==
       f_ies = 0. _d 0
 #endif /* ECCO_CTRL_DEPRECATED */
 
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
       f_obcsn   = 0. _d 0
       f_obcss   = 0. _d 0
       f_obcsw   = 0. _d 0
       f_obcse   = 0. _d 0
+#endif
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -366,10 +374,6 @@ c     == end of interface ==
       no_scaty = 0. _d 0
       no_scatxm = 0. _d 0
       no_scatym = 0. _d 0
-      no_obcsn   = 0. _d 0
-      no_obcss   = 0. _d 0
-      no_obcsw   = 0. _d 0
-      no_obcse   = 0. _d 0
       no_curmtr  = 0. _d 0
       no_ageos   = 0. _d 0
       no_ini_fin = 0. _d 0
@@ -382,6 +386,12 @@ c     == end of interface ==
       no_ies = 0. _d 0
 #endif /* ECCO_CTRL_DEPRECATED */
 
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
+      no_obcsn   = 0. _d 0
+      no_obcss   = 0. _d 0
+      no_obcsw   = 0. _d 0
+      no_obcse   = 0. _d 0
+#endif
 #ifdef ALLOW_PROFILES
       do num_file=1,NFILESPROFMAX
        do num_var=1,NVARMAX
@@ -491,7 +501,7 @@ c--   Sum up all contributions.
 
 #endif /* ECCO_CTRL_DEPRECATED */
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
           tile_fc(bi,bj) = tile_fc(bi,bj)
      &         + mult_obcsn   * objf_obcsn(bi,bj)
      &         + mult_obcss   * objf_obcss(bi,bj)
@@ -628,7 +638,7 @@ c--   Sum up all contributions.
           f_bottomdrag = f_bottomdrag + objf_bottomdrag(bi,bj)
 #endif /* ECCO_CTRL_DEPRECATED */
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
           f_obcsn  = f_obcsn + objf_obcsn(bi,bj)
           f_obcss  = f_obcss + objf_obcss(bi,bj)
           f_obcsw  = f_obcsw + objf_obcsw(bi,bj)
@@ -744,7 +754,7 @@ c--   Sum up all contributions.
 
 #endif /* ECCO_CTRL_DEPRECATED */
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
           no_obcsn = no_obcsn + num_obcsn(bi,bj)
           no_obcss = no_obcss + num_obcss(bi,bj)
           no_obcse = no_obcse + num_obcse(bi,bj)
@@ -885,7 +895,7 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( f_bottomdrag , myThid )
 #endif /* ECCO_CTRL_DEPRECATED */
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
       _GLOBAL_SUM_RL( f_obcsn , myThid )
       _GLOBAL_SUM_RL( f_obcss , myThid )
       _GLOBAL_SUM_RL( f_obcsw , myThid )
@@ -991,7 +1001,7 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_RL( no_bottomdrag , myThid )
 #endif /* ECCO_CTRL_DEPRECATED */
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
       _GLOBAL_SUM_RL( no_obcsn , myThid )
       _GLOBAL_SUM_RL( no_obcss , myThid )
       _GLOBAL_SUM_RL( no_obcsw , myThid )
@@ -1189,7 +1199,7 @@ c--   Do global summation for each part of the cost function
      &     ' --> f_bottomdrag =', f_bottomdrag
 #endif /* ECCO_CTRL_DEPRECATED */
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
       write(standardmessageunit,'(A,D22.15)')
      &     ' --> f_obcsn   =',f_obcsn
       write(standardmessageunit,'(A,D22.15)')
@@ -1506,7 +1516,7 @@ C     only master thread of master CPU open and write to file
      &       'f_transp =', f_transp, no_transp
 #endif /* ECCO_CTRL_DEPRECATED */
 
-#if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+#if (defined ALLOW_CTRL && defined ALLOW_OBCS)
         write(ifc,'(A,2D22.15)')
      &       'f_obcsn =', f_obcsn, no_obcsn
         write(ifc,'(A,2D22.15)')
