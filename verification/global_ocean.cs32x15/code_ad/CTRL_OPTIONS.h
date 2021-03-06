@@ -26,15 +26,21 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 C   ==================================================================
 C-- Package-specific Options & Macros go here
 
-C allow use of legacy ecco/ctrl codes
-C#define ECCO_CTRL_DEPRECATED
-#define EXCLUDE_CTRL_PACK
-#undef  ALLOW_NONDIMENSIONAL_CONTROL_IO
+C  o  Re-activate deprecated codes in pkg/ecco & pkg/ctrl (but not recommended)
+C     and since pkg/ctrl can be used without pkg/ecco, better to have it here
+C  o  In this experiment we activate both deprecated code and preferred generic
+C     control variable code to be able to switch between them for
+C     experiment global_ocean.cs32x15.thsice with runtime parameter ctrlUseGen
+#define ECCO_CTRL_DEPRECATED
 
-#ifdef ECCO_CTRL_DEPRECATED
+#undef EXCLUDE_CTRL_PACK
+#undef ALLOW_NONDIMENSIONAL_CONTROL_IO
+
 C       >>> Initial values.
 #define ALLOW_THETA0_CONTROL
 #define ALLOW_SALT0_CONTROL
+#undef ALLOW_UVEL0_CONTROL
+#undef ALLOW_VVEL0_CONTROL
 #define ALLOW_TR10_CONTROL
 #define ALLOW_TAUU0_CONTROL
 #define ALLOW_TAUV0_CONTROL
@@ -68,12 +74,10 @@ C       >>> Backward compatibility option (before checkpoint 65p)
 #undef ALLOW_KAPGM_CONTROL_OLD
 #undef ALLOW_KAPREDI_CONTROL_OLD
 
-#else
 C       >>> Generic Control.
 #define ALLOW_GENARR2D_CONTROL
 #define ALLOW_GENARR3D_CONTROL
 #define ALLOW_GENTIM2D_CONTROL
-#endif
 
 C  o Rotation of wind/stress controls adjustments
 C    from Eastward/Northward to model grid directions

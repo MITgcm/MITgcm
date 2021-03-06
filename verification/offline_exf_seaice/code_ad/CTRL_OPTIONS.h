@@ -26,26 +26,82 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 C   ==================================================================
 C-- Package-specific Options & Macros go here
 
-C allow use of legacy ecco/ctrl codes
-C#define ECCO_CTRL_DEPRECATED
+C  o  Re-activate deprecated codes in pkg/ecco & pkg/ctrl (but not recommended)
+C     and since pkg/ctrl can be used without pkg/ecco, better to have it here
+C  o  In this experiment, this option and the corresponding necessary flags
+C     to reproduce this experiment are commented by CTRL
+CTRL#define ECCO_CTRL_DEPRECATED
 
 #undef EXCLUDE_CTRL_PACK
 #define  ALLOW_NONDIMENSIONAL_CONTROL_IO
 
-#ifdef ECCO_CTRL_DEPRECATED
-C       >>> Initial values.
-#define ALLOW_THETA0_CONTROL
+CTRLC       >>> Initial values.
+CTRL#define ALLOW_THETA0_CONTROL
+CTRL#undef ALLOW_SALT0_CONTROL
+CTRL#undef ALLOW_UVEL0_CONTROL
+CTRL#undef ALLOW_VVEL0_CONTROL
+CTRL#undef ALLOW_TR10_CONTROL
+CTRL#undef ALLOW_TAUU0_CONTROL
+CTRL#undef ALLOW_TAUV0_CONTROL
+CTRL#undef ALLOW_SFLUX0_CONTROL
+CTRL#undef ALLOW_HFLUX0_CONTROL
+CTRL#undef ALLOW_SSS0_CONTROL
+CTRL#undef ALLOW_SST0_CONTROL
+CTRL
+CTRLC       >>> Surface fluxes.
+CTRL#undef ALLOW_HFLUX_CONTROL
+CTRL#undef ALLOW_SFLUX_CONTROL
+CTRL#undef ALLOW_USTRESS_CONTROL
+CTRL#undef ALLOW_VSTRESS_CONTROL
+CTRL#undef ALLOW_SWFLUX_CONTROL
+CTRL#undef ALLOW_LWFLUX_CONTROL
+CTRL
+CTRLC       >>> Atmospheric state.
+CTRL#define ALLOW_ATEMP_CONTROL
+CTRL#define ALLOW_SWDOWN_CONTROL
+CTRL#undef ALLOW_AQH_CONTROL
+CTRL#undef ALLOW_UWIND_CONTROL
+CTRL#undef ALLOW_VWIND_CONTROL
+CTRL#undef ALLOW_PRECIP_CONTROL
+CTRL
+CTRLC       >>> Other Control.
+CTRL#undef ALLOW_DIFFKR_CONTROL
+CTRL#undef ALLOW_KAPGM_CONTROL
+CTRL#undef ALLOW_KAPREDI_CONTROL
+CTRL#undef ALLOW_BOTTOMDRAG_CONTROL
+CTRL
+CTRLC       >>> Backward compatibility option (before checkpoint 65p)
+CTRL#undef ALLOW_KAPGM_CONTROL_OLD
+CTRL#undef ALLOW_KAPREDI_CONTROL_OLD
 
-C       >>> Atmospheric state.
-#define ALLOW_ATEMP_CONTROL
-#define ALLOW_SWDOWN_CONTROL
-
-#else
 C       >>> Generic Control.
 #define ALLOW_GENARR2D_CONTROL
 #define ALLOW_GENARR3D_CONTROL
 #define ALLOW_GENTIM2D_CONTROL
-#endif
+
+C  o Rotation of wind/stress controls adjustments
+C    from Eastward/Northward to model grid directions
+#undef ALLOW_ROTATE_UV_CONTROLS
+
+C  o Originally the first two time-reccords of control
+C    variable tau u and tau v were skipped.
+C    The CTRL_SKIP_FIRST_TWO_ATM_REC_ALL option extends this
+C    to the other the time variable atmospheric controls.
+#undef CTRL_SKIP_FIRST_TWO_ATM_REC_ALL
+
+C  o use pkg/smooth correlation operator (incl. smoother) for 2D controls (Weaver, Courtier 01)
+C    This CPP option just sets the default for ctrlSmoothCorrel2D to .TRUE.
+#undef ALLOW_SMOOTH_CORREL2D
+C  o use pkg/smooth correlation operator (incl. smoother) for 3D controls (Weaver, Courtier 01)
+C    This CPP option just sets the default for ctrlSmoothCorrel3D to .TRUE.
+#undef ALLOW_SMOOTH_CORREL3D
+
+C  o apply pkg/ctrl/ctrl_smooth.F to 2D controls (outside of ctrlSmoothCorrel2D)
+#undef ALLOW_CTRL_SMOOTH
+C  o apply pkg/smooth/smooth_diff2d.F to 2D controls (outside of ctrlSmoothCorrel2D)
+#undef ALLOW_SMOOTH_CTRL2D
+C  o apply pkg/smooth/smooth_diff3d.F to 3D controls (outside of ctrlSmoothCorrel3D)
+#undef ALLOW_SMOOTH_CTRL3D
 
 C   ==================================================================
 #endif /* ndef ECCO_CPPOPTIONS_H */

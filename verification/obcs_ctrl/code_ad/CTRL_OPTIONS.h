@@ -26,56 +26,57 @@ C   are specific to this package are assumed to be set in ECCO_CPPOPTIONS.h
 C   ==================================================================
 C-- Package-specific Options & Macros go here
 
+C  o  Re-activate deprecated codes in pkg/ecco & pkg/ctrl (but not recommended)
+C     and since pkg/ctrl can be used without pkg/ecco, better to have it here
+C  o  In this experiment, this option and the corresponding necessary flags
+C     to reproduce this experiment are commented by CTRL
+CTRL#define ECCO_CTRL_DEPRECATED
+
 #undef EXCLUDE_CTRL_PACK
 #define ALLOW_NONDIMENSIONAL_CONTROL_IO
 
-C allow use of legacy ecco/ctrl codes
-C#define ECCO_CTRL_DEPRECATED
-#ifdef ECCO_CTRL_DEPRECATED
-C       >>> Initial values.
-#define ALLOW_THETA0_CONTROL
-#undef ALLOW_SALT0_CONTROL
-#undef ALLOW_UVEL0_CONTROL
-#undef ALLOW_VVEL0_CONTROL
-#undef ALLOW_TR10_CONTROL
-#undef ALLOW_TAUU0_CONTROL
-#undef ALLOW_TAUV0_CONTROL
-#undef ALLOW_SFLUX0_CONTROL
-#undef ALLOW_HFLUX0_CONTROL
-#undef ALLOW_SSS0_CONTROL
-#undef ALLOW_SST0_CONTROL
+CTRLC       >>> Initial values.
+CTRL#define ALLOW_THETA0_CONTROL
+CTRL#undef ALLOW_SALT0_CONTROL
+CTRL#undef ALLOW_UVEL0_CONTROL
+CTRL#undef ALLOW_VVEL0_CONTROL
+CTRL#undef ALLOW_TR10_CONTROL
+CTRL#undef ALLOW_TAUU0_CONTROL
+CTRL#undef ALLOW_TAUV0_CONTROL
+CTRL#undef ALLOW_SFLUX0_CONTROL
+CTRL#undef ALLOW_HFLUX0_CONTROL
+CTRL#undef ALLOW_SSS0_CONTROL
+CTRL#undef ALLOW_SST0_CONTROL
+CTRL
+CTRLC       >>> Surface fluxes.
+CTRL#undef ALLOW_HFLUX_CONTROL
+CTRL#undef ALLOW_SFLUX_CONTROL
+CTRL#undef ALLOW_USTRESS_CONTROL
+CTRL#undef ALLOW_VSTRESS_CONTROL
+CTRL#undef ALLOW_SWFLUX_CONTROL
+CTRL#undef ALLOW_LWFLUX_CONTROL
+CTRL
+CTRLC       >>> Atmospheric state.
+CTRL#undef ALLOW_ATEMP_CONTROL
+CTRL#undef ALLOW_AQH_CONTROL
+CTRL#undef ALLOW_UWIND_CONTROL
+CTRL#undef ALLOW_VWIND_CONTROL
+CTRL#undef ALLOW_PRECIP_CONTROL
+CTRL
+CTRLC       >>> Other Control.
+CTRL#undef ALLOW_DIFFKR_CONTROL
+CTRL#undef ALLOW_KAPGM_CONTROL
+CTRL#undef ALLOW_KAPREDI_CONTROL
+CTRL#undef ALLOW_BOTTOMDRAG_CONTROL
+CTRL
+CTRLC       >>> Backward compatibility option (before checkpoint 65p)
+CTRL#undef ALLOW_KAPGM_CONTROL_OLD
+CTRL#undef ALLOW_KAPREDI_CONTROL_OLD
 
-C       >>> Surface fluxes.
-#undef ALLOW_HFLUX_CONTROL
-#undef ALLOW_SFLUX_CONTROL
-#undef ALLOW_USTRESS_CONTROL
-#undef ALLOW_VSTRESS_CONTROL
-#undef ALLOW_SWFLUX_CONTROL
-#undef ALLOW_LWFLUX_CONTROL
-
-C       >>> Atmospheric state.
-#undef ALLOW_ATEMP_CONTROL
-#undef ALLOW_AQH_CONTROL
-#undef ALLOW_UWIND_CONTROL
-#undef ALLOW_VWIND_CONTROL
-#undef ALLOW_PRECIP_CONTROL
-
-C       >>> Other Control.
-#undef ALLOW_DIFFKR_CONTROL
-#undef ALLOW_KAPGM_CONTROL
-#undef ALLOW_KAPREDI_CONTROL
-#undef ALLOW_BOTTOMDRAG_CONTROL
-
-C       >>> Backward compatibility option (before checkpoint 65p)
-#undef ALLOW_KAPGM_CONTROL_OLD
-#undef ALLOW_KAPREDI_CONTROL_OLD
-
-#else /* ifndef ECCO_CTRL_DEPRECATED */
 C       >>> Generic Control.
-C#define ALLOW_GENARR2D_CONTROL
+#undef ALLOW_GENARR2D_CONTROL
 #define ALLOW_GENARR3D_CONTROL
-C#define ALLOW_GENTIM2D_CONTROL
-#endif /* ECCO_CTRL_DEPRECATED */
+#unde ALLOW_GENTIM2D_CONTROL
 
 C       >>> Open boundaries
 c       >>> Make sure that ALLOW_OBCS is defined

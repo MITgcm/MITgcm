@@ -40,18 +40,13 @@ c       >>> Make sure that ALLOW_OBCS is defined
 #endif
 
 C re-activate deprecated codes (just in case ... but not recommended)
-C#define ECCO_CTRL_DEPRECATED
+C#define ALLOW_THETA0_COST_CONTRIBUTION
+C#define ALLOW_THETA_COST_CONTRIBUTION
 
-#ifdef ECCO_CTRL_DEPRECATED
-#define ALLOW_THETA0_COST_CONTRIBUTION
-#define ALLOW_THETA_COST_CONTRIBUTION
-
-#else
 C allow for generic cost function and integral terms
 #define ALLOW_GENCOST_CONTRIBUTION
 C allow for 3 dimensional generic terms
 #define ALLOW_GENCOST3D
-#endif
 
 C include global mean steric sea level correction
 #undef ALLOW_PSBAR_STERIC
@@ -81,9 +76,6 @@ C generate more text in STDOUT.0000
 
 C allow cost function term for sigmaR
 #undef ALLOW_SIGMAR_COST_CONTRIBUTION
-
-
-
 
 C--  fake options (only used to be printed in S/R ECCO_SUMMARY):
 
