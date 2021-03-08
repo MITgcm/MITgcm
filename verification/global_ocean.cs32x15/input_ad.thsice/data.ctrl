@@ -1,10 +1,53 @@
+# This is a somewhat untypical namelist file for the ctrl package. It is
+# meant to illustrate the difference between the old method of declaring
+# control parameters (active when ctrlUseGen=.FALSE.) and the new method with
+# the generic control variables (active when ctrlUseGen=.TRUE.). This
+# experiment is special because it enables both old and new method at compile
+# time --- something that is possible for most, but not all combinations of
+# control variables --- and therefore it is possible so switch between the
+# two methods by choosing the appropriate runtime parameters. Both methods
+# do the same thing for xx_theta, xx_salt, and xx_diffkr.
 #
+# - CTRL_NML contains general parameter and the names of the control variable
+# file names on disk for the old method. These names are really only the
+# default values and for convenience they are associated with the
+# corresponding CPP fags that need to be set. Setting the CPP flags is really
+# the old (deprecated) way of defining which control parameters are used. The
+# CPP flags of this experiment only define control parameters for the first
+# timestep, so that any startdate/period are not used in this example. The
+# behavior cannot be reproduced with the generic control variables method.
 #
-# *********************
-# ECCO controlvariables
-# *********************
+# - CTRL_NML_GENARR contains the names of the control variable files (and
+# control variables) for the generic control variable method. These names are
+# predefined, but they can be choose at runtime. See the documentations,
+# chapter 10 for details. The control variables are actually turned on by
+# specifying non-zero weights files! The surface forcing control variables
+# are for mean surface values (applied at every time step) and so they are
+# different from the variables xx_tauu, xx_tauv, xx_sfl, and xx_hfl.
+#
+# **********************
+# ECCO control variables
+# **********************
  &CTRL_NML
  ctrlUseGen = .FALSE.,
+# old control variable method, defined through CPP-flags, here they
+# are just comments
+# define ALLOW_THETA0_CONTROL
+ xx_theta_file      = 'xx_theta',
+# define ALLOW_SALT0_CONTROL
+ xx_salt_file       = 'xx_salt',
+# define ALLOW_TR10_CONTROL
+ xx_tr1_file        = 'xx_ptr',
+# define ALLOW_TAUU0_CONTROL
+ xx_tauu_file       = 'xx_tauu',
+# define ALLOW_TAUV0_CONTROL
+ xx_tauv_file       = 'xx_tauv',
+# define ALLOW_SFLUX0_CONTROL
+ xx_sflux_file      = 'xx_sfl',
+# define ALLOW_HFLUX0_CONTROL
+ xx_hflux_file      = 'xx_hfl',
+# define ALLOW_DIFFKR_CONTROL
+ xx_diffkr_file     = 'xx_diffkr',
  &
 #
 # *********************
@@ -23,7 +66,8 @@
 #
  xx_genarr3d_file(2)       = 'xx_salt',
  xx_genarr3d_weight(2)     = 'ones.prec64',
-# not clear why I have to comment this out, but the reference results have no bounds applied
+# not clear why this to be commented out,
+# but the reference results have no bounds applied
 #xx_genarr3d_bounds(1:5,2) = 29.,29.5,40.5,41.,5.,
 #
  xx_genarr3d_file(3)       = 'xx_ptr',
