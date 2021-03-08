@@ -50,7 +50,7 @@ NOOPTFLAGS="-O0"
 #NOOPTFLAGS="-O0 "
 NOOPTFILES=''
 
-FFLAGS="$FFLAGS"
+FFLAGS="$FFLAGS -fconvert=swap"
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8" ???
 
