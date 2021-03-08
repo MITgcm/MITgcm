@@ -318,10 +318,9 @@ C--   Solve tri-diagonal system :
      I                          bi, bj, myThid )
         IF (errCode.GE.1) THEN
 #ifdef ALLOW_USE_MPI
-          CALL PRINT_MESSAGE(
+          CALL PRINT_ERROR(
      &     'MOM_IMPLICIT_R: error when solving 3-Diag problem'//
-     &     ' in mom_u_implicit_r.',
-     &        standardMessageUnit,SQUEEZE_RIGHT,0)         
+     &     ' in mom_u_implicit_r.', myThid )
           CALL MPI_ABORT( MPI_COMM_WORLD, errCode, errMpi )
 #else
           STOP 'MOM_IMPLICIT_R: error when solving 3-Diag problem.'
