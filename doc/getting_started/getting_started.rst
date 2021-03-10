@@ -1280,7 +1280,7 @@ newer users of the MITgcm are encouraged to jump to :numref:`customize_model` wh
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`ALLOW_ADAMSBASHFORTH_3`             | #undef  | include code for Adams-Bashforth 3rd-order                                                                           |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
-   | :varlink:`ALLOW_QHYD_STAGGER_TS`              | #undef  | include code for Quasi-Hydrostatic Stagger Time-step AdamsBashforth code                                             |
+   | :varlink:`ALLOW_QHYD_STAGGER_TS`              | #undef  | include code for quasi-hydrostatic stagger time-step Adams-Bashforth code                                            |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`EXACT_CONSERV`                      | #define | include code for  “exact conservation" of fluid in free-surface formulation                                          |
    |                                               |         | (recompute divergence after pressure solver)                                                                         |
