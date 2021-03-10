@@ -280,6 +280,9 @@ CADJ  INIT tapelev3 = USER
 CADJ STORE hFacC = tapelev_init, key = 1
 CADJ STORE recip_hFacC = tapelev_init, key = 1
 # endif
+# ifdef ALLOW_GENTIM2D_CONTROL
+CADJ STORE xx_gentim2d_dummy = ctrltape, key = 1 , kind = isbyte
+# endif
 #endif
 
 #ifdef ALLOW_OPENAD
@@ -440,7 +443,7 @@ CADJ INIT comlev1        = COMMON,nchklev_1
 CADJ INIT comlev1_bibj   = COMMON,nchklev_1*nSx*nSy*nthreads_chkpt
 CADJ INIT comlev1_bibj_k = COMMON,nchklev_1*nSx*nSy*Nr*nthreads_chkpt
 c--
-#  ifdef ALLOW_CTRL
+#  ifdef ALLOW_GENTIM2D_CONTROL
 CADJ INIT ctrltape       = COMMON,1
 #  endif
 c--
@@ -462,8 +465,6 @@ CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*PTRACERS_num*Nr
 #   endif /* ALLOW_PTRACERS */
 c--
 #   ifndef DISABLE_MULTIDIM_ADVECTION
-CADJ INIT comlev1_bibj_gad = COMMON,
-CADJ &    nchklev_1*nSx*nSy*nthreads_chkpt*maxpass
 CADJ INIT comlev1_bibj_k_gad = COMMON,
 CADJ &    nchklev_1*nSx*nSy*Nr*nthreads_chkpt*maxpass
 CADJ INIT comlev1_bibj_k_gad_pass = COMMON,

@@ -27,7 +27,7 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "cal.h"
-#include "ecco_cost.h"
+#include "ecco.h"
 
 c     == routine arguments ==
 

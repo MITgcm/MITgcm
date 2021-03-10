@@ -1,6 +1,41 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification: replace cpp flag ECCO_CTRL_DEPRECATED in global_ocean.cs32x15,
+  isomip, obcs_ctrl, and offline_exf_seaice verification experiments by the
+  much nicer generic control variables GENARR/GENTIM2D variant. Also replace
+  ECCO_CPPOTIONS.h by CTRL/AUTODIFF/COST/ECCO_OPTIONS.h files. This required a
+  number of changes to the general code to make the generic control variables
+  work in a non-ecco context:
+  - pkg/thsice: add AUTODIFF_OPTIONS.h and COST_OPTIONS.h header files to
+    numerous routines
+  - pkg/seaice: mask tendencies of HEFF/AREA/HSNOW in seaice_growth_adx.F to
+    reproduce cost function values
+  - pkg/shelfice: enable GENARR/GENTIM2D methods
+  - pkg/obcs: move reading control variable out of S/R obcs_prescribe_read into
+    S/R obcs_calc to be independent of parameter values unrelated to the
+    adjoint
+  - pkg/ctrl: make generic control variable work without pkg/cal (works only for
+    time independent control variables), but issue a warning, bonus: make
+    ctrlprec a runtime parameter that defaults to 64
+  - pkg/ctrl: fix flow directives for S/R ctrl_bound_2d/3d and add tangent
+    linear versions of these subroutines
+  - pkg/ecco: reorder CPP flags in ecco_cost_weights.F and remove unused
+    variable 'wbaro', move calling S/R cost_obcs out of ECCO_CTRL_DEPRECATED
+    code block in S/R ecco_cost_driver, reorganise CPP flags in
+    cost_averagesinit.F, include CTRL_OPTIONS.h wherever ECCO_OPTIONS.h is
+    included, because ECCO_CTRL_DEPRECATED is now set in CTRL_OPTIONS.h
+  - model/src/the_main_loop.F: fix tape initialisation, bonus: suppress a
+    benign warning
+  - for each of the verification experiments remove ECCO_CPPOPTIONS.h and
+    replace by CTRL_OPTIONS.h, CTRL_SIZE.h, sometimes COST/ECCO_OPTIONS.h,
+    EXF_OPTIONS.h, adjust data.ctrl, data.grdchk, data.ecco
+  - for global_ocean.cs32x15 compile both variants by keeping
+    ECCO_CTRL_DEPRECATED in CTRL_OPTIONS.h and use runtime parameter ctrlUseGen
+    to switch between methods (in global_ocean.cs32x15.thsice). This involves an
+    extra (benign) recomputation warning in this verification experiment because
+    of an if statement with ctrlUseGen in ctrl_init_variables.F
+
 checkpoint67w (2021/03/06)
 o verification/global_ocean.cs32x15:
   - fix Adjoint set-up by turning off CPP option "ALLOW_AUTODIFF_INIT_OLD" (that

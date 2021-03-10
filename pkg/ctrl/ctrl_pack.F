@@ -86,6 +86,10 @@ c     == local variables ==
       integer ivartype
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
       integer iobcs
+      character*(80) fname_obcsn(3)
+      character*(80) fname_obcss(3)
+      character*(80) fname_obcsw(3)
+      character*(80) fname_obcse(3)
 #endif
 #if (defined ALLOW_GENARR2D_CONTROL) || (defined ALLOW_GENARR3D_CONTROL) || (defined ALLOW_GENTIM2D_CONTROL)
 C-    Provided we set the file name just before calling ctrl_set_pack,

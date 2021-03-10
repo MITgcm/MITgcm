@@ -1,5 +1,6 @@
 #include "THSICE_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
 # ifdef ALLOW_EXF
 #  include "EXF_OPTIONS.h"
 # endif
@@ -29,17 +30,18 @@ C     === Global variables ===
 #include "THSICE_PARAMS.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_VARS.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "THSICE_TAVE.h"
+#ifdef ALLOW_AUTODIFF
 # include "THSICE_COST.h"
 # include "DYNVARS.h"
-# include "tamc.h"
-# include "tamc_keys.h"
 # ifdef ALLOW_EXF
-#  include "EXF_FIELDS.h"
 #  include "EXF_PARAM.h"
 #  include "EXF_CONSTANTS.h"
+#  include "EXF_FIELDS.h"
 # endif /* ALLOW_EXF */
+#endif /* ALLOW_AUTODIFF */
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -127,7 +129,7 @@ CADJ STORE vvel (:,:,1,bi,bj) = comlev1_bibj, key=ticekey, byte=isbyte
          ENDDO
         ENDDO
 
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
         IF ( .NOT.useCheapAML ) THEN
 #endif
          CALL THSICE_GET_OCEAN(
@@ -157,7 +159,9 @@ CADJ STORE sOceMxL(:,:,bi,bj) = comlev1_bibj,
 CADJ &     key=ticekey, byte=isbyte
 CADJ STORE v2ocMxL(:,:,bi,bj) = comlev1_bibj,
 CADJ &     key=ticekey, byte=isbyte
-#else
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifndef ALLOW_AUTODIFF
 C-   end if not useCheapAML
         ENDIF
 #endif
@@ -170,7 +174,7 @@ C Note: will inline this S/R once thSIce in Atmos. set-up is settled
      I                   bi,bj, myTime, myIter, myThid )
 #endif /* OLD_THSICE_CALL_SEQUENCE */
 
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
         IF ( useBulkforce .OR. useCheapAML ) THEN
          CALL THSICE_GET_PRECIP(
      I                  iceMask, tOceMxL,
@@ -196,7 +200,9 @@ CADJ STORE tice1(:,:,bi,bj) = comlev1_bibj,
 CADJ &     key=ticekey, byte=isbyte
 CADJ STORE tice2(:,:,bi,bj) = comlev1_bibj,
 CADJ &     key=ticekey, byte=isbyte
-#else
+#endif
+
+#ifndef ALLOW_AUTODIFF
         IF ( .NOT.( useCheapAML .OR. thSIce_skipThermo ) ) THEN
 #endif
          CALL THSICE_STEP_TEMP(
@@ -224,7 +230,9 @@ CADJ STORE snowAge(:,:,bi,bj) = comlev1_bibj,
 CADJ &     key=ticekey, byte=isbyte
 CADJ STORE sHeating(:,:,bi,bj) = comlev1_bibj,
 CADJ &     key=ticekey, byte=isbyte
-#else
+#endif
+
+#ifndef ALLOW_AUTODIFF
 C-   end if not skipThermo / useCheapAML
         ENDIF
         IF ( .NOT.thSIce_skipThermo ) THEN
@@ -234,7 +242,7 @@ C-   end if not skipThermo / useCheapAML
      I                     prcAtm(1-OLx,1-OLy,bi,bj),
      I                     snowPr, qPrcRn,
      I                     myTime, myIter, myThid )
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifndef ALLOW_AUTODIFF
         ELSE
 C-    Compute sIceLoad (if not previously done)
           DO j=1,sNy
@@ -262,7 +270,7 @@ CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
      I                      iMin, iMax, jMin, jMax,
      I                      prcAtm, myTime, myIter, myThid )
       ENDIF
-#endif
+#endif /* ALLOW_BALANCE_FLUXES */
 
 C     add a small piece of code to check AddFluid implementation:
 c#include "thsice_test_addfluid.h"
@@ -339,7 +347,7 @@ C--  end bi,bj loop
       ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#endif  /*ALLOW_THSICE*/
+#endif /* ALLOW_THSICE */
 
       RETURN
       END
