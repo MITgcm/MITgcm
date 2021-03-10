@@ -69,11 +69,11 @@ C     Can not have both atmos. state and flux field as control
 #ifdef ALLOW_GENTIM2D_CONTROL
       IF ( ctrlUseGen .AND. .NOT.useCAL ) THEN
         WRITE(msgBuf,'(2A)') '** WARNING ** CTRL_CHECK: ',
-     &    'ALLOW_GENTIM2D_CONTROL and ctrlUseGen= T is'
+     &    'ALLOW_GENTIM2D_CONTROL and ctrlUseGen=T is'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(2A)') '** WARNING ** ',
-     &    ' unsafe without calendar package (currently: useCAL= F)'
+     &    ' unsafe without calendar package (currently: useCAL=F)'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       ENDIF
