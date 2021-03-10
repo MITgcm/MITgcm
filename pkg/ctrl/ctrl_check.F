@@ -24,17 +24,17 @@ C     === Global variables ===
 #include "CTRL_GENARR.h"
 
 C     === Routine arguments ===
-C     myThid -  Number of this instance
+C     myThid     :: my Thread Id number
       INTEGER myThid
 
 C     === Local variables ===
-C     msgBuf      - Informational/error message buffer
+C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL solve4Stress
 
 #ifndef ALLOW_OPENAD
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
-      integer iarr
+      INTEGER iarr
 #endif
 #endif
 
@@ -67,13 +67,16 @@ C     Can not have both atmos. state and flux field as control
 #endif
 
 #ifdef ALLOW_GENTIM2D_CONTROL
-      if (ctrlUseGen .AND. .NOT. useCAL) then
-      WRITE(msgBuf,'(2A)') '** WARNING ** CTRL_CHECK : ',
-     &  'ALLOW_GENTIM2D_CONTROL and ctrlUseGen = .TRUE. is '//
-     &  'not safe without calendar package, set useCAL = .TRUE.,'
-      CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                    SQUEEZE_RIGHT, myThid )
-      endif
+      IF ( ctrlUseGen .AND. .NOT.useCAL ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** CTRL_CHECK: ',
+     &    'ALLOW_GENTIM2D_CONTROL and ctrlUseGen= T is'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** ',
+     &    ' unsafe without calendar package (currently: useCAL= F)'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
 #endif
 
 #ifndef ALLOW_OPENAD
