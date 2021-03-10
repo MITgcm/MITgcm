@@ -35,6 +35,8 @@ o verification: replace cpp flag ECCO_CTRL_DEPRECATED in global_ocean.cs32x15,
     to switch between methods (in global_ocean.cs32x15.thsice). This involves an
     extra (benign) recomputation warning in this verification experiment because
     of an if statement with ctrlUseGen in ctrl_init_variables.F
+
+checkpoint67w (2021/03/06)
 o verification/global_ocean.cs32x15:
   - fix Adjoint set-up by turning off CPP option "ALLOW_AUTODIFF_INIT_OLD" (that
     was intended to put back an old bug) and update all 4 ADM and all 4 TLM
