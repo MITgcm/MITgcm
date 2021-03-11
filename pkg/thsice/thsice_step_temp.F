@@ -1,4 +1,7 @@
 #include "THSICE_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: THSICE_STEP_TEMP
@@ -24,7 +27,6 @@ C     === Global variables ===
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
 #include "THSICE_VARS.h"
-#include "THSICE_TAVE.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
@@ -91,7 +93,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ticekey = (act1 + 1) + act2*max1
      &                     + act3*max1*max2
      &                     + act4*max1*max2*max3
-C
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef ALLOW_AUTODIFF
 C Initialize certain arrays
       tmpFlx(1) = 0. _d 0
       tmpFlx(2) = 0. _d 0
@@ -100,7 +104,7 @@ C Initialize certain arrays
           dTsrf(i,j) = 0. _d 0
        ENDDO
       ENDDO
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif /* ALLOW_AUTODIFF */
 
       dBugFlag = debugLevel.GE.debLevC
 C-    Initialise flxAtm,evpAtm

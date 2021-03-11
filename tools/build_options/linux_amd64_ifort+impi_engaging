@@ -3,7 +3,7 @@
 #  Build options for ifort with impi on Linux AMD64 platform
 #
 #  Tested on engaging1 (Centos 7) with ifort 2018-01 and impi 2018-01.
-#  Executable will run on Sandybridge, Haswell, Broadwell and above.
+#  Executable will run on Sandybridge, Haswell, Broadwell, Skylake and above.
 #
 #-------
 
@@ -19,7 +19,6 @@ else
   LINK="$F90C -shared-intel"
 fi
 
-CPP='cpp -traditional -P'
 DEFINES='-DWORDLENGTH=4'
 F90FIXEDFORMAT='-fixed -Tf'
 EXTENDED_SRC_FLAG='-132'
@@ -29,7 +28,25 @@ OMPFLAG='-openmp'
 NOOPTFLAGS='-O0 -g'
 NOOPTFILES=''
 
-PROCF=-xAVX
+if test "x$GENERIC" != x ; then
+    # Combined executable with separate code paths for Sandybridge and
+    # Haswell/Broadwell/Skylake processors.  Will take longer to compile.
+    # We avoid AVX512 as it leads to inconsistencies with other
+    # instruction sets, even with -fp-model consistent.
+    # If only targeting Haswell and higher, better use -xCORE-AVX2 below.
+    # To select this option, set the GENERIC environment veriable when
+    # running genmake2, e.g.,
+    #   export GENERIC=yes
+    #   genmake2 ...
+    PROCF=-axAVX,CORE-AVX2
+else
+    # This will run on Sandybridge or higher
+    PROCF=-xAVX
+    # This will run on Haswell or higher
+    #PROCF=-xCORE-AVX2
+    # This will run on Skylake or higher, but may give different results
+    #PROCF=-xCORE-AVX512
+fi
 
 CFLAGS="-O0 -ip -m64 $PROCF"
 FFLAGS="$FFLAGS -m64 -convert big_endian -assume byterecl"
@@ -43,10 +60,10 @@ FFLAGS="$FFLAGS -m64 -convert big_endian -assume byterecl"
 #FFLAGS="$FFLAGS -r8"
 
 if test "x$IEEE" = x ; then     #- with optimisation:
-    FOPTIM="-O3 -align -ip -fp-model source $PROCF"
+    FOPTIM="-O3 -align -ip -fp-model consistent $PROCF"
 else
   if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
-    FOPTIM="-O0 -fp-model source -noalign $PROCF"
+    FOPTIM="-O0 -fp-model consistent -noalign $PROCF"
   else                          #- development/check options:
    #FFLAGS="$FFLAGS -debug all -debug-parameters all -fp-model strict"
     FOPTIM="-O0 -noalign -g -traceback $PROCF"

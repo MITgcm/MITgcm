@@ -42,7 +42,7 @@ C     i, j, bi, bj :: Loop counters
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
 #endif /* ALLOW_DIAGNOSTICS */
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_CTRL
       INTEGER k
 # ifdef ALLOW_SHIFWFLX_COST_CONTRIBUTION
       _RL dummy
@@ -82,7 +82,7 @@ C-----------------------------------------------------------------------
        ENDDO
       ENDDO
 
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_CTRL
 C     maskSHI is a hack to play along with the general ctrl-package
 C     infrastructure, where only the k=1 layer of a 3D mask is used
 C     for 2D fields. We cannot use maskInC instead, because routines
@@ -109,7 +109,7 @@ C     like ctrl_get_gen and ctrl_set_unpack_xy require 3D masks.
         ENDDO
        ENDDO
       ENDDO
-#endif /* ALLOW_SHIFWFLX_CONTROL */
+#endif /* ALLOW_CTRL */
 
 #ifdef ALLOW_COST
 #if  (defined (ALLOW_SHIFWFLX_COST_CONTRIBUTION) && \
