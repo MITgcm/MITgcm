@@ -275,7 +275,7 @@ c--   initial forcing only
 
 #if (defined (ALLOW_UWIND_CONTROL))
 #ifdef ALLOW_EXF
-      IF ( useAtmWind ) THEN 
+      IF ( useAtmWind ) THEN
 #endif
 c--   Zonal wind speed.
       call ctrl_init_rec ( xx_uwind_file,
@@ -827,7 +827,7 @@ c--
 #endif
      &       xx_genarr2d_file(iarr)(1:MAX_LEN_FNAM),
      &       100+iarr, 200+iarr, 1, 1, 1,
-     &       snx, sny, 1, 'c', 'xy', myThid )
+     &       snx, sny, 1, xx_genarr2d_grid(iarr), 'xy', myThid )
 
        enddo
 #endif /* ALLOW_GENARR2D_CONTROL */
@@ -844,7 +844,7 @@ c--
 #endif
      &       xx_genarr3d_file(iarr)(1:MAX_LEN_FNAM),
      &       200+iarr, 300+iarr, 1, 1, 1,
-     &       snx, sny, nr, 'c', '3d', myThid )
+     &       snx, sny, nr, xx_genarr3d_grid(iarr), '3d', myThid )
        enddo
 #endif /* ALLOW_GENARR3D_CONTROL */
 
@@ -861,11 +861,11 @@ c--
 #endif
 
         call ctrl_init_rec ( xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
-     I       xx_gentim2d_startdate1(iarr), 
-     I       xx_gentim2d_startdate2(iarr), 
-     I       xx_gentim2d_period(iarr), 
+     I       xx_gentim2d_startdate1(iarr),
+     I       xx_gentim2d_startdate2(iarr),
+     I       xx_gentim2d_period(iarr),
      I       1,
-     O       xx_gentim2d_startdate(1,iarr), 
+     O       xx_gentim2d_startdate(1,iarr),
      O       diffrec, startrec, endrec,
      I       myThid )
 C
@@ -900,7 +900,7 @@ C
      &       fnamegen(1:MAX_LEN_FNAM),
      &       300+iarr, 400+iarr,
      &       diffrecFull, startrec, endrecFull,
-     &       snx, sny, 1, 'c', 'xy', myThid )
+     &       snx, sny, 1, xx_gentim2d_grid(iarr), 'xy', myThid )
 C
         ilgen=ilnblnk( xx_gentim2d_file(iarr) )
         write(fnamegen(1:MAX_LEN_FNAM),'(2a)')
@@ -909,13 +909,13 @@ C
      &       fnamegen(1:MAX_LEN_FNAM),
      &       300+iarr, 400+iarr,
      &       diffrecFull, startrec, endrecFull,
-     &       snx, sny, 1, 'c', 'xy', myThid )
+     &       snx, sny, 1, xx_gentim2d_grid(iarr), 'xy', myThid )
 C
         call ctrl_init_ctrlvar (
      &       xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
      &       300+iarr, 400+iarr,
      &       diffrec, startrec, endrec,
-     &       snx, sny, 1, 'c', 'xy', myThid )
+     &       snx, sny, 1, xx_gentim2d_grid(iarr), 'xy', myThid )
 C
 #ifndef ALLOW_OPENAD
        endif

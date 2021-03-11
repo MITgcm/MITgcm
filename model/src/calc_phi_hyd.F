@@ -189,8 +189,10 @@ C    but might be slower (--> keep original masking if not using down_slope pkg)
 
 #ifdef ALLOW_MOM_COMMON
 C--     Quasi-hydrostatic terms are added in as if they modify the buoyancy
-        IF (quasiHydrostatic) THEN
-         CALL MOM_QUASIHYDROSTATIC(bi,bj,k,uVel,vVel,alphaRho,myThid)
+        IF ( quasiHydrostatic ) THEN
+         CALL MOM_QUASIHYDROSTATIC( bi, bj, k, uVel, vVel,
+     U                              alphaRho,
+     I                              myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_MOM_COMMON */
 
@@ -343,8 +345,10 @@ C--     Calculate specific volume anomaly : alpha_prime = 1/rho - alpha_Cst
 
 #ifdef ALLOW_MOM_COMMON
 C--     Quasi-hydrostatic terms are added as if they modify the specific-volume
-        IF (quasiHydrostatic) THEN
-         CALL MOM_QUASIHYDROSTATIC(bi,bj,k,uVel,vVel,alphaRho,myThid)
+        IF ( quasiHydrostatic ) THEN
+         CALL MOM_QUASIHYDROSTATIC( bi, bj, k, uVel, vVel,
+     U                              alphaRho,
+     I                              myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_MOM_COMMON */
 
@@ -449,8 +453,10 @@ C-      horizontally uniform (tRef) reference state
 
 #ifdef ALLOW_MOM_COMMON
 C--     Quasi-hydrostatic terms are added in as if they modify the Pot.Temp
-        IF (quasiHydrostatic) THEN
-         CALL MOM_QUASIHYDROSTATIC(bi,bj,k,uVel,vVel,alphaRho,myThid)
+        IF ( quasiHydrostatic ) THEN
+         CALL MOM_QUASIHYDROSTATIC( bi, bj, k, uVel, vVel,
+     U                              alphaRho,
+     I                              myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_MOM_COMMON */
 

@@ -24,17 +24,17 @@ C     === Global variables ===
 #include "CTRL_GENARR.h"
 
 C     === Routine arguments ===
-C     myThid -  Number of this instance
+C     myThid     :: my Thread Id number
       INTEGER myThid
 
 C     === Local variables ===
-C     msgBuf      - Informational/error message buffer
+C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL solve4Stress
 
 #ifndef ALLOW_OPENAD
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
-      integer iarr
+      INTEGER iarr
 #endif
 #endif
 
@@ -56,13 +56,27 @@ C     Can not have both atmos. state and flux field as control
       endif
 #endif
 
-#if (!defined (ALLOW_GENARR2D_CONTROL) && !defined (ALLOW_GENARR3D_CONTROL) && !defined (ALLOW_GENTIM2D_CONTROL))
+#if ((!defined ALLOW_GENARR2D_CONTROL) && (!defined ALLOW_GENARR3D_CONTROL) \
+      && (!defined ALLOW_GENTIM2D_CONTROL))
       if (ctrlUseGen) then
       WRITE(msgBuf,'(2A)') 'CTRL_CHECK : ',
      &     'Cannot ctrlUseGen unless ALLOW_GEN*_CONTROL is defined '
       CALL PRINT_ERROR( msgBuf, myThid )
       STOP 'ABNORMAL END: S/R CTRL_CHECK'
       endif
+#endif
+
+#ifdef ALLOW_GENTIM2D_CONTROL
+      IF ( ctrlUseGen .AND. .NOT.useCAL ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** CTRL_CHECK: ',
+     &    'ALLOW_GENTIM2D_CONTROL and ctrlUseGen=T is'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** ',
+     &    ' unsafe without calendar package (currently: useCAL=F)'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
 #endif
 
 #ifndef ALLOW_OPENAD
@@ -158,11 +172,11 @@ C-    to use DIFFKR_CONTROL, needs to define ALLOW_3D_DIFFKR in CPP_OPTIONS.h
 
 #if ( defined ALLOW_UWIND_CONTROL || defined ALLOW_VWIND_CONTROL )
 #ifdef ALLOW_EXF
-      IF ( .NOT.useEXF .OR. .NOT.useAtmWind ) THEN 
+      IF ( .NOT.useEXF .OR. .NOT.useAtmWind ) THEN
 #endif
       WRITE(msgBuf,'(3A)') 'CTRL_CHECK : ',
      &     'ALLOW_U / VWIND_CONTROL used without exf & ',
-     &     'useAtmWind will have no effect '      
+     &     'useAtmWind will have no effect '
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &  SQUEEZE_RIGHT, myThid )
 #ifdef ALLOW_EXF
@@ -232,7 +246,7 @@ C     which in turn require a particular set of input fields
         WRITE(msgBuf,'(3A)') '** WARNING ** CTRL_CHECK: ',
      &        'relying on mdsio_gl.F to pack/unpack the control',
      &        'vector is unsafe when useSingleCpuIO is true.'
-        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit, 
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &  SQUEEZE_RIGHT, myThid )
        ENDIF
 # endif
@@ -244,7 +258,7 @@ C     which in turn require a particular set of input fields
      defined (ALLOW_OBCSS_CONTROL) || \
      defined (ALLOW_OBCSW_CONTROL) || \
      defined (ALLOW_OBCSE_CONTROL))
-        WRITE(msgBuf,'(2A)') 
+        WRITE(msgBuf,'(2A)')
      &        'ALLOW_PACKUNPACK_METHOD2 does not work with',
      &        'open boundary controls (see verif/obcs_ctrl).'
          CALL PRINT_ERROR( msgBuf, myThid )
