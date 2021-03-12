@@ -215,7 +215,7 @@ C     Adjoint state variables
       IF ( stressIsOnCgrid ) THEN
        diagCode = 'UU A    U1      '
       ELSE
-       diagCode = 'UM      U1      '
+       diagCode = 'UM A    U1      '
       ENDIF
       diagMate  = diagNum + 2
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
