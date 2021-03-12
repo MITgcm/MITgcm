@@ -185,7 +185,7 @@ C-----------------------------------------------------------------------
       doDump = DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
       IF ( doDump ) THEN
 c increment ad dump record number (used only if dumpAdByRec is true)
-        dumpAdRecMn=dumpAdRecMn+1
+        dumpAdRecMn = dumpAdRecMn + 1
         CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
       ENDIF
 
@@ -240,7 +240,7 @@ C-----------------------------------------------------------------------
 # ifdef ALLOW_BOTTOMDRAG_CONTROL
       CALL DUMP_ADJ_XY(dumRS, adBottomDragFld,
      &                 'ADJbtdrg','ADJbottomdrag.',
-     &                 11, doDump, dumpAdRecMn, myTime, myIter,myThid)
+     &                 12, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
 # ifdef ALLOW_GGL90
       CALL DUMP_ADJ_XYZ(dumRS, adGGL90TKE, 'ADJtke90', 'ADJggl90tke.',
