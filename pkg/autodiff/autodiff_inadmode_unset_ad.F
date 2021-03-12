@@ -35,7 +35,8 @@ C     myThid :: my Thread Id number
       _RL myTime
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-#ifdef ALLOW_DIAGNOSTICS
+#ifdef ALLOW_AUTODIFF_MONITOR
+# ifdef ALLOW_DIAGNOSTICS
       LOGICAL modelEnd
 C --- Write the fields out here
       IF ( useDiag4AdjOutp ) THEN
@@ -45,7 +46,8 @@ C --- Grab modelEnd, necessary input for diagnostics routines
        CALL DIAGNOSTICS_WRITE_ADJ( modelEnd, myTime, myIter, myThid )
        CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
       ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
+# endif /* ALLOW_DIAGNOSTICS */
+#endif /* ALLOW_AUTODIFF_MONITOR */
 
       inAdMode  = .FALSE.
 

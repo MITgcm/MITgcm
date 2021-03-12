@@ -35,11 +35,13 @@ C     myThid :: my Thread Id number
       _RL myTime
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-#ifdef ALLOW_DIAGNOSTICS
+#ifdef ALLOW_AUTODIFF_MONITOR
+# ifdef ALLOW_DIAGNOSTICS
       IF ( useDiag4AdjOutp ) THEN
         CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
       ENDIF
-#endif /* ALLOW_DIAGNOSTICS */
+# endif /* ALLOW_DIAGNOSTICS */
+#endif /* ALLOW_AUTODIFF_MONITOR */
 
       inAdMode  = .TRUE.
 
