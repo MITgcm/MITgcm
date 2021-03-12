@@ -61,12 +61,12 @@ C     == Routine arguments ==
 C     myTime  :: time counter for this thread
 C     myIter  :: iteration counter for this thread
 C     myThid  :: Thread number for this instance of the routine.
-      _RS u3DRS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL u3DRL(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RS v3DRS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL v3DRL(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      CHARACTER*(*) uDiagName
-      CHARACTER*(*) vDiagName
+      _RS u3DRS(*)
+      _RL u3DRL(*)
+      _RS v3DRS(*)
+      _RL v3DRL(*)
+      CHARACTER*(8) uDiagName
+      CHARACTER*(8) vDiagName
       CHARACTER*(*) uDumpName
       CHARACTER*(*) vDumpName
       INTEGER vType

@@ -60,9 +60,9 @@ C     == Routine arguments ==
 C     myTime  :: time counter for this thread
 C     myIter  :: iteration counter for this thread
 C     myThid  :: Thread number for this instance of the routine.
-      _RS var3DRS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL var3DRL(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      CHARACTER*(*) diagName
+      _RS var3DRS(*)
+      _RL var3DRL(*)
+      CHARACTER*(8) diagName
       CHARACTER*(*) dumpName
       INTEGER vType
       LOGICAL doDump
