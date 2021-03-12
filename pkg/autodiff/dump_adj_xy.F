@@ -123,8 +123,8 @@ C --- 2. Fill diagnostics
       IF ( useDiag4AdjOutp .AND. diagName.NE.'- None -' ) THEN
         IF ( dumpAdVarExch.EQ.2 ) THEN
           IF ( .NOT.doDump )
-     &    CALL COPY_ADVAR_OUTP( var2DRS, var2DRL,
-     &                          var2Dc, 1, vType, myThid )
+     &      CALL COPY_ADVAR_OUTP( var2DRS, var2DRL,
+     &                            var2Dc, 1, vType, myThid )
           CALL DIAGNOSTICS_FILL( var2Dc, diagName, 0,1, 0,1,1, myThid )
         ELSE
           IF ( MOD(vType,2).NE.1 ) THEN
