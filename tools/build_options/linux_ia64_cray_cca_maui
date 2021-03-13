@@ -35,7 +35,7 @@ F90C=ftn
 CC=cc
 # requires that all static libraries are available:
 #LINK='ftn -static'
-LINK='ftn -fconvert=swap'
+LINK='ftn -h byteswapio'
 # for adjoint runs the default makedepend often cannot handle enough files
 #MAKEDEPEND=tools_xmakedepend
 
@@ -47,10 +47,10 @@ CPP='cpp -traditional -P'
 
 NOOPTFLAGS="-O0"
 # reduce floating point reordering
-#NOOPTFLAGS="-O0 "
+#NOOPTFLAGS="-O0 -hfp1"
 NOOPTFILES=''
 
-FFLAGS="$FFLAGS -fconvert=swap"
+FFLAGS="$FFLAGS"
 #- might want to use '-r8' for fizhi pkg:
 #FFLAGS="$FFLAGS -r8" ???
 
@@ -58,14 +58,14 @@ if test "x$IEEE" = x ; then     #- with optimisation:
 # this is the default
 #   FOPTIM='-O2'
 # more aggressive (and recommended in some only document)
-    FOPTIM='-O3 '
+    FOPTIM='-O3 -hfp3 -hipa5 -halias=none -Oaggress -hflex_mp=tolerant'
 else
   if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
-    FOPTIM='-O0 '
+    FOPTIM='-O0 -hfp0'
    # -fltconsistency
   else                          #- development/check options:
-    FOPTIM='-O0 '
-    FOPTIM="$FOPTIM -g "
+    FOPTIM='-O0 -hfp0'
+    FOPTIM="$FOPTIM -g -hfp0 -Rbc -rm -hmsgs -hnegmsgs"
   fi
 fi
 

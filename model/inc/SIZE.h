@@ -1,10 +1,3 @@
-  These lines are here to deliberately cause a compile-time error.
-  If you see these lines in your .F files or the compiler shows them
-  as an error then it means you have not placed your configuration
-  files in the appropriate place.
-  You need to place you own copy of SIZE.h in the include
-  path for the model, and comment out these lines.
-
 CBOP
 C    !ROUTINE: SIZE.h
 C    !INTERFACE:
@@ -50,16 +43,16 @@ CEOP
       INTEGER Nr
       PARAMETER (
      &           sNx =  30,
-     &           sNy =  15,
-     &           OLx =   2,
-     &           OLy =   2,
-     &           nSx =   2,
-     &           nSy =   4,
-     &           nPx =   1,
-     &           nPy =   1,
+     &           sNy =  25,
+     &           OLx =   5,
+     &           OLy =   5,
+     &           nSx =   1,
+     &           nSy =   1,
+     &           nPx =   10,
+     &           nPy =   8,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
-     &           Nr  =   4)
+     &           Nr  =  70)
 
 C     MAX_OLX :: Set to the maximum overlap region size of any array
 C     MAX_OLY    that will be exchanged. Controls the sizing of exch

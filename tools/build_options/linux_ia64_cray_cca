@@ -58,7 +58,7 @@ if test "x$IEEE" = x ; then     #- with optimisation:
 # this is the default
 #   FOPTIM='-O2'
 # more aggressive (and recommended in some only document)
-    FOPTIM='-O3 -hfp3'
+    FOPTIM='-O3 -hfp3 -hipa5 -hflex_mp=tolerant '
 else
   if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
     FOPTIM='-O0 -hfp0'

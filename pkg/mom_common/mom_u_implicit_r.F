@@ -317,17 +317,15 @@ C--   Solve tri-diagonal system :
      O                          errCode,
      I                          bi, bj, myThid )
         IF (errCode.GE.1) THEN
-#ifdef ALLOW_USE_MPI
           CALL PRINT_ERROR(
      &     'MOM_IMPLICIT_R: error when solving 3-Diag problem'//
      &     ' in mom_u_implicit_r.', myThid )
-          CALL MPI_ABORT( MPI_COMM_WORLD, errCode, errMpi )
-#else
-          STOP 'MOM_IMPLICIT_R: error when solving 3-Diag problem.'
-#endif
+          CALL ALL_PROC_DIE( myThid )
         ENDIF
       ELSE
-        STOP 'MOM_IMPLICIT_R: no solver available.'
+        CALL PRINT_ERROR(
+     &       'MOM_IMPLICIT_R: no solver available.', myThid )
+        CALL ALL_PROC_DIE( myThid )
       ENDIF
 
 #ifdef ALLOW_SOLVE4_PS_AND_DRAG
