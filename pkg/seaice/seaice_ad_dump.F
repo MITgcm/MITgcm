@@ -8,9 +8,9 @@
 #endif
 
 CBOP
-C     !ROUTINE: seaice_ad_dump
+C     !ROUTINE: SEAICE_AD_DUMP
 C     !INTERFACE:
-      SUBROUTINE seaice_ad_dump( myTime, myIter, myThid )
+      SUBROUTINE SEAICE_AD_DUMP( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -66,7 +66,7 @@ C     !FUNCTIONS:
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
-c     == local variables ==
+C     == local variables ==
 C     suff   :: Hold suffix part of a filename
 C     msgBuf :: Error message buffer
 c     CHARACTER*(10) suff
@@ -80,10 +80,13 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
       LOGICAL doDump
 CEOP
 
+C--- do dump?
+      doDump = DIFFERENT_MULTIPLE( adjDumpFreq, myTime, deltaTClock )
+
 C--- Test for adexch based on dumpAdVarExch flag
-      doExch = DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
+      doExch = doDump
 #ifdef ALLOW_DIAGNOSTICS
-      doExch = doExch .OR. useDiag4AdjOutp
+      doExch = doDump .OR. useDiag4AdjOutp
 #endif
       doExch = doExch .AND. ( dumpAdVarExch.EQ.1 )
 
@@ -122,7 +125,6 @@ CML      ENDIF
 C-----------------------------------------------------------------------
 C--- do dump?
 C-----------------------------------------------------------------------
-      doDump = DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
       IF ( doDump ) THEN
 c increment ad dump record number (used only if dumpAdByRec is true)
         dumpAdRecSi=dumpAdRecSi+1

@@ -5,9 +5,9 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
-#ifdef ALLOW_DIAGNOSTICS
-# include "DIAG_OPTIONS.h"
-#endif
+c#ifdef ALLOW_DIAGNOSTICS
+c# include "DIAG_OPTIONS.h"
+c#endif
 #include "AD_CONFIG.h"
 
 CBOP
@@ -17,7 +17,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE ADDUMMY_FOR_ETAN                           |
+C     | SUBROUTINE ADDUMMY_FOR_ETAN                              |
 C     *==========================================================*
 C     Extract adjoint variable for sea level height
 C     from TAMC/TAF-generated
@@ -36,7 +36,7 @@ C     have to be written at the same time.
 C
 C     Created: Tim Smith, tsmith@ices.utexas.edu, Sept 12 2018
 C     *==========================================================*
-C     | SUBROUTINE ADDUMMY_FOR_ETAN                           |
+C     | SUBROUTINE ADDUMMY_FOR_ETAN                              |
 C     *==========================================================*
 C     \ev
 
@@ -53,13 +53,11 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_OPENAD
-# include "DYNVARS.h"
-# include "FFIELDS.h"
-#endif
-#include "AUTODIFF_PARAMS.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
-c#include "GRID.h"
+# ifdef ALLOW_OPENAD
+#  include "DYNVARS.h"
+# endif
+# include "AUTODIFF_PARAMS.h"
 # include "AUTODIFF.h"
 # ifndef ALLOW_OPENAD
 #  include "adcommon.h"
@@ -67,10 +65,10 @@ c#include "GRID.h"
 # ifdef ALLOW_MNC
 #  include "MNC_PARAMS.h"
 # endif
-# ifdef ALLOW_DIAGNOSTICS
-#  include "DIAGNOSTICS_SIZE.h"
-#  include "DIAGNOSTICS.h"
-# endif
+c# ifdef ALLOW_DIAGNOSTICS
+c#  include "DIAGNOSTICS_SIZE.h"
+c#  include "DIAGNOSTICS.h"
+c# endif
 #endif /* ALLOW_AUTODIFF_MONITOR */
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -80,8 +78,6 @@ C     myIter  :: iteration counter for this thread
 C     myThid  :: Thread number for this instance of the routine.
       _RL myTime
       INTEGER myIter
-C      _RL     myTime
-C      INTEGER myIter
       INTEGER myThid
 
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_ADMTLM))
@@ -92,7 +88,7 @@ C     !FUNCTIONS:
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
-c     == local variables ==
+C     == local variables ==
 C     suff    :: Hold suffix part of a filename
 C     msgBuf  :: Error message buffer
 c     CHARACTER*(10) suff
@@ -102,12 +98,14 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
       doDump = DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
+
       IF ( doDump ) THEN
-c increment ad dump record number (used only if dumpAdByRec is true)
+C increment ad dump record number (used only if dumpAdByRec is true)
 C could be just dumpAdRecEt=dumpAdRecMn+1 ????
-       dumpAdRecEt=dumpAdRecEt+1
+       dumpAdRecEt = dumpAdRecEt + 1
        CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
       ENDIF
+
 #ifndef ALLOW_OPENAD
       CALL DUMP_ADJ_XY(dumRS, adetan, 'ADJetan ', 'ADJetan.',
      &                 12, doDump, dumpAdRecEt, myTime, myIter,myThid)
@@ -119,7 +117,6 @@ C could be just dumpAdRecEt=dumpAdRecMn+1 ????
       IF ( doDump ) THEN
 
 C-- NOW NMC output
-
 #ifndef ALLOW_OPENAD
 #ifdef ALLOW_MNC
         IF ( useMNC .AND. autodiff_mnc ) THEN
