@@ -8,6 +8,9 @@
 #ifdef ALLOW_DIAGNOSTICS
 # include "DIAG_OPTIONS.h"
 #endif
+#ifdef ALLOW_GGL90
+# include "GGL90_OPTIONS.h"
+#endif
 #include "AD_CONFIG.h"
 
 CBOP
@@ -42,13 +45,16 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_OPENAD
-# include "DYNVARS.h"
-# include "FFIELDS.h"
-#endif
-#include "AUTODIFF_PARAMS.h"
 #ifdef ALLOW_AUTODIFF_MONITOR
-c#include "GRID.h"
+# ifdef ALLOW_OPENAD
+C- Note: Since OpenAD uses modules, the ordering of included headers matters
+#  include "DYNVARS.h"
+#  include "FFIELDS.h"
+#  ifdef ALLOW_GGL90
+#   include "GGL90.h"
+#  endif
+# endif /* ALLOW_OPENAD */
+# include "AUTODIFF_PARAMS.h"
 # include "AUTODIFF.h"
 # ifndef ALLOW_OPENAD
 #  include "adcommon.h"
@@ -79,7 +85,7 @@ C     !FUNCTIONS:
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
-c     == local variables ==
+C     == local variables ==
 C     suff    :: Hold suffix part of a filename
 C     msgBuf  :: Error message buffer
 c     CHARACTER*(10) suff
@@ -99,10 +105,13 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 #endif
 CEOP
 
+C--- Do dump?
+      doDump = DIFFERENT_MULTIPLE( adjDumpFreq, myTime, deltaTClock )
+
 C--- Test for adexch based on dumpAdVarExch flag
-      doExch = DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
+      doExch = doDump
 #ifdef ALLOW_DIAGNOSTICS
-      doExch = doExch .OR. useDiag4AdjOutp
+      doExch = doDump .OR. useDiag4AdjOutp
 #endif
       doExch = doExch .AND. ( dumpAdVarExch.EQ.1 )
 
@@ -179,17 +188,19 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
 #endif /* ALLOW_OPENAD */
       ENDIF
 
-C-----------------------------------------------------------------------
-C--- do dump?
-C-----------------------------------------------------------------------
-      doDump = DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
+C=======================================================================
+C--  Dump AD-variable to binary files and fill diagnostics
+C=======================================================================
       IF ( doDump ) THEN
-c increment ad dump record number (used only if dumpAdByRec is true)
+C     Increment ad dump record number (used only if dumpAdByRec is true)
         dumpAdRecMn = dumpAdRecMn + 1
         CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
       ENDIF
 
 #ifndef ALLOW_OPENAD
+C========================
+C--  TAF AD-variables:
+C========================
 C-----------------------------------------------------------------------
 C--- State variables
 C-----------------------------------------------------------------------
@@ -266,10 +277,10 @@ C-----------------------------------------------------------------------
      &     33, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
 
-#else
-C-----------------------------------------------------------------------
-C--- Open AD
-C-----------------------------------------------------------------------
+#else /* ALLOW_OPENAD */
+C========================
+C--  OpenAD AD-variable:
+C========================
 C-----------------------------------------------------------------------
 C--- State variables
 C-----------------------------------------------------------------------
@@ -301,8 +312,9 @@ C-----------------------------------------------------------------------
      &                   11, doDump, dumpAdRecMn, myTime, myIter,myThid)
 
 # ifdef SHORTWAVE_HEATING
-        CALL DUMP_ADJ_XY(Qsw%d, dumRL, 'ADJqsw  ', 'ADJqsw.',
-     &                   11, doDump, dumpAdRecMn, myTime, myIter,myThid)
+C     Commented out since only works when Qsw is active
+c       CALL DUMP_ADJ_XY(Qsw%d, dumRL, 'ADJqsw  ', 'ADJqsw.',
+c    &                   11, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
       ENDIF
 # ifdef ALLOW_SST0_CONTROL
@@ -345,11 +357,11 @@ C-----------------------------------------------------------------------
      &     EddyPsiY%d,dumRL,'ADJepsiy','ADJeddipsiy.',
      &     33, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
-#endif
+#endif /* ALLOW_OPENAD */
 
-C-----------------------------------------------------------------------
-C---Various packages and parameters
-C-----------------------------------------------------------------------
+C=======================================================================
+C--  Dump TAF AD-variable to NetCdF files
+C=======================================================================
       IF ( doDump ) THEN
 #ifndef ALLOW_OPENAD
 #ifdef ALLOW_MNC
@@ -452,14 +464,13 @@ C     endif mnc
 #endif /* ALLOW_MNC */
 #endif /* ALLOW_OPENAD */
 
-#ifdef ALLOW_EXF
-cph        IF ( useEXF ) CALL EXF_AD_DUMP( myTime, myIter, myThid )
-#endif
-
         CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
       ENDIF
 
+C=======================================================================
+C--  Output AD-variable & fill Diagnostics with pkg specific interface
+C=======================================================================
 #ifdef ALLOW_SEAICE
         IF ( useSEAICE )
      &   CALL SEAICE_AD_DUMP( myTime, myIter, myThid )
