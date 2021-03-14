@@ -245,6 +245,10 @@ CEOP
 #ifdef ALLOW_AUTODIFF_TAMC
 c--   Initialize storage for the cost function evaluation.
 CADJ  INIT dummytape = common, 1
+c--
+#  ifdef ALLOW_GENTIM2D_CONTROL
+CADJ INIT ctrltape       = COMMON,1
+#  endif
 c--   Initialize storage for the outermost loop.
 # ifdef ALLOW_AUTODIFF_WHTAPEIO
 CADJ  INIT tapelev_init   = common, 1
@@ -442,10 +446,6 @@ c--
 CADJ INIT comlev1        = COMMON,nchklev_1
 CADJ INIT comlev1_bibj   = COMMON,nchklev_1*nSx*nSy*nthreads_chkpt
 CADJ INIT comlev1_bibj_k = COMMON,nchklev_1*nSx*nSy*Nr*nthreads_chkpt
-c--
-#  ifdef ALLOW_GENTIM2D_CONTROL
-CADJ INIT ctrltape       = COMMON,1
-#  endif
 c--
 #   ifdef ALLOW_KPP
 CADJ INIT comlev1_kpp    = COMMON,nchklev_1*nSx*nSy
