@@ -24,9 +24,6 @@ C     == Global data ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-#ifdef ALLOW_USE_MPI
-#include "mpif.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
@@ -49,12 +46,11 @@ C cDrag     :: bottom drag coefficient
 C KE2d      :: horizontal Kinetic Energy
 C diagonalNumber :: number of non-zero diagonals in the matrix
 C errCode   :: > 0 if singular matrix
-C errMpi    :: MPI error code
       INTEGER iMin,iMax,jMin,jMax
       PARAMETER( iMin = 1, iMax = sNx )
       PARAMETER( jMin = 1, jMax = sNy+1 )
       INTEGER i,j,k
-      INTEGER diagonalNumber, errCode, errMpi
+      INTEGER diagonalNumber, errCode
 c     _RL a5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL b5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL c5d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
