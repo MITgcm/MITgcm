@@ -61,15 +61,12 @@ C     !FUNCTIONS:
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     !LOCAL VARIABLES:
-C     suff   :: Hold suffix part of a filename
 C     msgBuf :: Error message buffer
       INTEGER ip
-      CHARACTER*(10) suff
-      CHARACTER*(MAX_LEN_FNAM) dumpName, diagName
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(8)  diagName
+      CHARACTER*(MAX_LEN_FNAM) dumpName
       LOGICAL doExch, doDump
       _RS dumRS(1)
-      _RL var3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 CEOP
 
 C     Handle exchange options
@@ -95,13 +92,13 @@ C     Handle exchange options
       ENDIF
 
       DO ip = 1, PTRACERS_numInUse
-       WRITE(diagName,'(A6,A2)') 'ADJptr', PTRACERS_ioLabel(ip)
-       WRITE(dumpName,'(A10,A2,A1)')
+        WRITE(diagName,'(A6,A2)') 'ADJptr', PTRACERS_ioLabel(ip)
+        WRITE(dumpName,'(A10,A2,A1)')
      &        'ADJptracer', PTRACERS_ioLabel(ip), '.'
 
-        CALL DUMP_ADJ_XYZ(dumRS, adptracer(1-OLx,1-OLy,1,1,1,ip),
-     &                    diagName,dumpName, 12,
-     &                    doDump, dumpAdRecMn, myTime, myIter, myThid)
+        CALL DUMP_ADJ_XYZ( dumRS, adptracer(1-OLx,1-OLy,1,1,1,ip),
+     &                     diagName, dumpName, 12, doDump,
+     &                     dumpAdRecMn, myTime, myIter, myThid )
       ENDDO
 
       IF (doDump) THEN
