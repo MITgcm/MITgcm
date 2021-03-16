@@ -1,6 +1,16 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff & diagnostics:
+  - Add interface routines to write to binary file and fill diagnostics of
+    single (or pair) of Adjoint variable.
+  - Rewrite addummy_in_stepping.F using set of new interface S/R to make it
+    more compact and easier to add new control variables.
+  - Add all current adjoint variables in addummy_in_stepping, ptracers_ad_dump,
+    seaice_ad_dump & exf_adjoint_snapshots_ad to work with diagnostics package.
+  - turn on Adjoint-variable diagnostics in adjoint verification experiments:
+    *) global_oce_biogeo_bling (with ptracers AD-var diagnostics) and
+    *) global_ocean.cs32x15.seaice (with seaice and exf AD-var diagnostics).
 o model/src + pkg/mom_common:
   Fix AB time-stepping of QuasiHydrostatic with staggerTimeStep.
   - involves new CPP option "ALLOW_QHYD_STAGGER_TS" for storage of previous

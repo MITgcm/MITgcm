@@ -18,39 +18,17 @@
 #  fileFlags(n)     : specific code (8c string) for output file "n"
 #--------------------
  &DIAGNOSTICS_LIST
-# diag_mnc     = .FALSE.,
-#--
-  fields(1:12,1) = 'ETAN    ','ETANSQ  ','DETADT2 ','PHIBOT  ','PHIBOTSQ',
-                   'oceTAUX ','oceTAUY ','TFLUX   ','SFLUX   ','oceFreez',
-                   'TRELAX  ','SRELAX  ',
-   levels(1,1) = 1.,
-   fileName(1) = 'surfDiag',
-  frequency(1) =  432000.,
-
-  fields(1:9,2)  = 'UVEL    ','VVEL    ','WVEL    ','PHIHYD  ',
-                   'VVELMASS','UVELMASS','WVELSQ  ',
-                   'THETA   ','SALT    ',
-# do not specify levels => all levels are selected
-   fileName(2) = 'dynDiag',
-  frequency(2) = 432000.,
-
-# fields(1:6,3) =  'DRHODR  ','RHOAnoma','CONVADJ ',
-#                  'GM_Kwx  ','GM_Kwy  ','GM_Kwz  ',
-#  levels(1,3) = 2., 3., 4., 5., 6., 7., 8., 9., 10., 11., 12., 13.,
-#  fileName(3) = 'oceDiag',
-# frequency(3) = 864000.,
-
-  fields(1:5,3)  = 'ADJuvel ','ADJvvel ','ADJwvel ',
-                   'ADJtheta','ADJsalt ',
-   fileName(3) = 'adjDiag',
-# frequency(3) = 311040000.,
-  frequency(3) = 432000.,
-
-  fields(1:5,4)  = 'ADJetan ','ADJqnet ','ADJempmr',
-                   'ADJtaux ','ADJtauy ',
-   fileName(4) = 'adjDiagSurf',
-# frequency(4) = 311040000.,
-  frequency(4) = 432000.,
+  fileName(1)    = 'blingTracDiag',
+  fields(1:8,1)  = 'TRAC01  ','TRAC02  ','TRAC03  ',
+                   'TRAC04  ','TRAC05  ','TRAC06  ',
+                   'TRAC07  ','TRAC08  ',
+  frequency(1)   = 432000.,
+# ---
+  fileName(2)    = 'adjBlingTracDiag',
+  fields(1:8,2)  = 'ADJptr01','ADJptr02','ADJptr03',
+                   'ADJptr04','ADJptr05','ADJptr06',
+                   'ADJptr07','ADJptr08'
+  frequency(2)   = 432000.,
  &
 
 #--------------------
@@ -71,9 +49,10 @@
 #                (see "available_diagnostics.log" file for the full list of diags)
 #--------------------
  &DIAG_STATIS_PARMS
-# an example just to check the agreement with MONITOR output:
- stat_fields(1:5,1)  = 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
-  stat_fName(1) = 'dynStDiag',
-   stat_freq(1) = -172800.,
-  stat_phase(1) = 0.,
+#- an example just to check the agreement with MONITOR output:
+#stat_fields(1:5,1)  = 'ETAN    ','UVEL    ','VVEL    ','WVEL    ', 'THETA   ',
+# stat_fName(1) = 'dynStDiag',
+#  stat_freq(1) = -864000.,
+# stat_phase(1) = 0.,
  &
+
