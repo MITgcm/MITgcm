@@ -103,11 +103,11 @@ C
             recip_hFacS(i,j,k,bi,bj) = maskS(i,j,k,bi,bj) /
      &        ( _hFacS(i,j,k,bi,bj) + (oneRS - maskS(i,j,k,bi,bj)) )
 #else
-            IF ( maskC(i,j,k,bi,bj).NE.zerosRS )
+            IF ( maskC(i,j,k,bi,bj).NE.zeroRS )
      &        recip_hFacC(i,j,k,bi,bj) = oneRS / _hFacC(i,j,k,bi,bj)
-            IF ( maskW(i,j,k,bi,bj).NE.zerosRS )
+            IF ( maskW(i,j,k,bi,bj).NE.zeroRS )
      &        recip_hFacW(i,j,k,bi,bj) = oneRS / _hFacW(i,j,k,bi,bj)
-            IF ( maskS(i,j,k,bi,bj).NE.zerosRS )
+            IF ( maskS(i,j,k,bi,bj).NE.zeroRS )
      &        recip_hFacS(i,j,k,bi,bj) = oneRS / _hFacS(i,j,k,bi,bj)
 #endif
           ENDDO
