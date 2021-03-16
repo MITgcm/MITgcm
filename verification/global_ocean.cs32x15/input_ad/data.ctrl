@@ -40,10 +40,8 @@
 #
  xx_gentim2d_file(3)       = 'xx_fu',
  xx_gentim2d_weight(3)     = 'ones.prec64',
- xx_gentim2d_grid(3)       = 'w',
 #
  xx_gentim2d_file(4)       = 'xx_fv',
  xx_gentim2d_weight(4)     = 'ones.prec64',
- xx_gentim2d_grid(4)       = 's',
 #
  &

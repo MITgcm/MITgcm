@@ -28,6 +28,10 @@
 #
  xx_gentim2d_file(1)       = 'xx_shifwflx',
  xx_gentim2d_weight(1)     = 'ones.prec64',
- xx_gentim2d_grid(1)       = 'i',
+#
+ xx_genarr2d_file(1)       = 'xx_shicoefft',
+ xx_genarr2d_weight(1)     = 'ones.prec64',
+ xx_genarr2d_preproc_c(1,1)= 'log10ctrl',
+ xx_genarr2d_preproc_r(1,1)= -4.,
 #
  &
