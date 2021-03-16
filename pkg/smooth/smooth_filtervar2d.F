@@ -23,7 +23,7 @@ C     *==========================================================*
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SMOOTH.h"
-#if (defined ALLOW_SHI2D_CONTROL) || (defined ALLOW_SHIFWFLX_CONTROL)
+#ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 #endif
 
@@ -62,7 +62,7 @@ c     filter variance without actually running the model
              smooth2Dmask(i,j,bi,bj) = maskW(i,j,1,bi,bj)
           elseif (smooth2DmaskName(smoothOpNb)(1:5).eq.'maskS') then
              smooth2Dmask(i,j,bi,bj) = maskS(i,j,1,bi,bj)
-#if (defined ALLOW_SHI2D_CONTROL) || (defined ALLOW_SHIFWFLX_CONTROL)
+#ifdef ALLOW_SHELFICE
           elseif (smooth2DmaskName(smoothOpNb)(1:5).eq.'maskI') then
              smooth2Dmask(i,j,bi,bj) = maskSHI(i,j,1,bi,bj)
 #endif

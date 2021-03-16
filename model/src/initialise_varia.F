@@ -88,7 +88,7 @@ C     == Global variables ==
 # include "GRID.h"
 # include "FFIELDS.h"
 # include "CTRL_FIELDS.h"
-# ifdef ALLOW_SHI2D_CONTROL
+# if (defined ALLOW_SHELFICE) && (defined ALLOW_GENARR2D_CONTROL)
 #  include "SHELFICE.h"
 #  include "SHELFICE_OPTIONS.h"
 # endif
@@ -180,7 +180,7 @@ C--   Initialize variable data for packages
 # ifdef NONLIN_FRSURF
 CADJ STORE recip_hFacC = tapelev_init, key = 1
 # endif
-# ifdef ALLOW_SHI2D_CONTROL
+# if (defined ALLOW_SHELFICE) && (defined ALLOW_GENARR2D_CONTROL)
 CADJ STORE shelficeFreshwaterFlux = tapelev_init, key = 1
 CADJ STORE shelficeHeatFlux = tapelev_init, key = 1
 #  ifndef SHI_ALLOW_GAMMAFRICT

@@ -66,7 +66,7 @@ C- Note: Since OpenAD uses modules, the ordering of included headers matters
 #  include "DIAGNOSTICS_SIZE.h"
 #  include "DIAGNOSTICS.h"
 # endif
-# ifdef ALLOW_SHI2D_CONTROL
+# ifdef ALLOW_SHELFICE
 #  include "SHELFICE_OPTIONS.h"
 # endif
 #endif /* ALLOW_AUTODIFF_MONITOR */
@@ -186,7 +186,7 @@ C--   need to all the correct OpenAD EXCH S/R ; left empty for now
 # ifdef ALLOW_BOTTOMDRAG_CONTROL
         CALL ADEXCH_3D_RL( adBottomDragFld, 1 , myThid )
 # endif
-# ifdef ALLOW_SHI2D_CONTROL
+# ifdef ALLOW_SHELFICE
 #  ifndef SHI_ALLOW_GAMMAFRICT
         CALL ADEXCH_XY_RL( adshiTransCoeffT, myThid )
         CALL ADEXCH_XY_RL( adshiTransCoeffS, myThid )
@@ -287,7 +287,7 @@ C-----------------------------------------------------------------------
      &     adEddyPsiY,dumRL,'ADJepsiy','ADJeddipsiy.',
      &     33, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
-# ifdef ALLOW_SHI2D_CONTROL
+# ifdef ALLOW_SHELFICE
 #  ifndef SHI_ALLOW_GAMMAFRICT
       CALL DUMP_ADJ_XY(dumRS, adshiTransCoeffT,
      &                 'ADJshict','ADJshict.',
@@ -382,7 +382,7 @@ C-----------------------------------------------------------------------
      &     EddyPsiY%d,dumRL,'ADJepsiy','ADJeddipsiy.',
      &     33, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
-# ifdef ALLOW_SHI2D_CONTROL
+# ifdef ALLOW_SHELFICE
 #  ifndef SHI_ALLOW_GAMMAFRICT
       CALL DUMP_ADJ_XY(dumRS, shiTransCoeffT%d,
      &                 'ADJshict','ADJshict.',
@@ -497,7 +497,7 @@ C     dumpAdVarExch.NE.2
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adkapredi', adkapredi, myThid)
 #endif
-#ifdef ALLOW_SHI2D_CONTROL
+#ifdef ALLOW_SHIELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adshict', adshiTransCoeffT, myThid)

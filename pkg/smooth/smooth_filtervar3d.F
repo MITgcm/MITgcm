@@ -2,9 +2,6 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE_OPTIONS.h"
-#endif
 
       subroutine smooth_filtervar3D (smoothOpNb,myThid)
 
@@ -22,9 +19,6 @@ C     *==========================================================*
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SMOOTH.h"
-#if (defined ALLOW_SHI2D_CONTROL) || (defined ALLOW_SHIFWFLX_CONTROL)
-# include "SHELFICE.h"
-#endif
 
       integer smoothOpNb, myThid
 
@@ -59,10 +53,6 @@ c allow a different mask other than maskC
               smooth3Dmask(i,j,k,bi,bj) = maskW(i,j,k,bi,bj)
              elseif (smooth3DmaskName(smoothOpNb)(1:5).eq.'maskS') then
               smooth3Dmask(i,j,k,bi,bj) = maskS(i,j,k,bi,bj)
-#if (defined ALLOW_SHI2D_CONTROL) || (defined ALLOW_SHIFWFLX_CONTROL)
-             elseif (smooth3DmaskName(smoothOpNb)(1:5).eq.'maskI') then
-              smooth3Dmask(i,j,k,bi,bj) = maskSHI(i,j,k,bi,bj)
-#endif
              endif
             ENDDO
            ENDDO

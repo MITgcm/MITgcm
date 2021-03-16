@@ -286,7 +286,7 @@ c     ENDIF
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif
 
-# if (defined ALLOW_AUTODIFF) && (defined ALLOW_SHI2D_CONTROL)
+# ifdef ALLOW_AUTODIFF
 #  ifndef SHI_ALLOW_GAMMAFRICT
        diagName  = 'ADJshict'
        diagTitle = 'dJ/dgammaT: Sens. to shelfice heat transfer coeff'

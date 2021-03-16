@@ -37,7 +37,7 @@ C     == global variables ==
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_FIELDS.h"
 #endif
-#ifdef ALLOW_SHI2D_CONTROL
+#ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
 # include "SHELFICE_OPTIONS.h"
 #endif
@@ -53,7 +53,7 @@ C     == local variables ==
 #endif
 #ifdef ALLOW_GENARR2D_CONTROL
       integer igen_etan,igen_bdrag,igen_geoth
-# ifdef ALLOW_SHI2D_CONTROL
+# ifdef ALLOW_SHELFICE
       integer igen_shiCoeffT, igen_shiCoeffS, igen_shiCDrag
       integer i, j, bi, bj, k2
       logical dragThermoEqualMom
@@ -75,7 +75,7 @@ C--   generic 2D control variables
       igen_etan=0
       igen_bdrag=0
       igen_geoth=0
-#ifdef ALLOW_SHI2D_CONTROL
+#ifdef ALLOW_SHELFICE
       igen_shiCoeffT=0
       igen_shiCoeffS=0
       igen_shiCDrag=0
@@ -88,7 +88,7 @@ C--   generic 2D control variables
      &     igen_bdrag=iarr
         if (xx_genarr2d_file(iarr)(1:13).EQ.'xx_geothermal')
      &     igen_geoth=iarr
-#ifdef ALLOW_SHI2D_CONTROL
+#ifdef ALLOW_SHELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT
         if (xx_genarr2d_file(iarr)(1:12).EQ.'xx_shicoefft')
      &     igen_shiCoeffT=iarr
@@ -113,7 +113,7 @@ C--   generic 2D control variables
       if (igen_geoth.GT.0)
      &  call ctrl_map_genarr2d(geothermalFlux,igen_geoth,myThid)
 #endif
-#ifdef ALLOW_SHI2D_CONTROL
+#ifdef ALLOW_SHELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT
       if (igen_shiCoeffT.GT.0)
      &  call ctrl_map_genarr2d(shiTransCoeffT,igen_shiCoeffT,myThid)
@@ -121,17 +121,17 @@ C--   generic 2D control variables
       if (igen_shiCoeffS.GT.0) then
         call ctrl_map_genarr2d(shiTransCoeffS,igen_shiCoeffS,myThid)
       elseif (igen_shiCoeffS.eq.0) then
-          ! shiCoeffS unset, set based on salt/heat ratio here
-          do bj = myByLo(myThid), myByHi(myThid)
-           do bi = myBxLo(myThid), myBxHi(myThid)
-            do j = 1-OLy,sNy+OLy
-             do i = 1-OLx,sNx+OLx
-              shiTransCoeffS(i,j,bi,bj) =
-     &          SHELFICEsaltToHeatRatio*shiTransCoeffT(i,j,bi,bj)
-              enddo
-             enddo
-            enddo
+        ! shiCoeffS unset, set based on salt/heat ratio here
+        do bj = myByLo(myThid), myByHi(myThid)
+         do bi = myBxLo(myThid), myBxHi(myThid)
+          do j = 1-OLy,sNy+OLy
+           do i = 1-OLx,sNx+OLx
+            shiTransCoeffS(i,j,bi,bj) =
+     &        SHELFICEsaltToHeatRatio*shiTransCoeffT(i,j,bi,bj)
            enddo
+          enddo
+         enddo
+        enddo
       endif
 # else
       dragThermoEqualMom = .FALSE.
@@ -144,19 +144,19 @@ C--   generic 2D control variables
      &    dragThermoEqualMom = .TRUE.
       enddo
       if (dragThermoEqualMom) then
-        do bj = myByLo(myThid), myByHi(myThid)
-         do bi = myBxLo(myThid), myBxHi(myThid)
-          do j = 1-OLy,sNy+OLy
-           do i = 1-OLx,sNx+OLx
-            shiDragQuadFld(i,j,bi,bj) = shiCDragFld(i,j,bi,bj)
-            enddo
-           enddo
+       do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
+         do j = 1-OLy,sNy+OLy
+          do i = 1-OLx,sNx+OLx
+           shiDragQuadFld(i,j,bi,bj) = shiCDragFld(i,j,bi,bj)
           enddo
          enddo
-       endif
+        enddo
+       enddo
+      endif
 
 # endif /* SHI_ALLOW_GAMMAFRICT */
-#endif /* ALLOW_SHI2D_CONTROL */
+#endif /* ALLOW_SHELFICE */
 
 #endif /* ALLOW_GENARR2D_CONTROL */
 
@@ -252,9 +252,6 @@ C     == global variables ==
 #include "optim.h"
 #include "CTRL_GENARR.h"
 #include "ctrl_dummy.h"
-#ifdef ALLOW_SHI2D_CONTROL
-# include "SHELFICE.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == routine arguments ==
@@ -293,15 +290,7 @@ c--   Now, read the control vector.
       doglobalread = .false.
       ladinit      = .false.
 
-      DO bj=myByLo(myThid), myByHi(myThid)
-       DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO j = 1-OLy,sNy+OLy
-         DO i = 1-OLx,sNx+OLx
-          xx_gen(i,j,bi,bj)=0. _d 0
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
+      call ctrl_zero(xx_gen, 1, 0. _d 0, myThid)
 
       dosmooth=.false.
       dowc01  = .false.

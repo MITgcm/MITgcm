@@ -39,7 +39,7 @@ C --- Check for legal mask names
      &       (smooth2DmaskName(smoothOpNb)(1:5).ne.'maskS').or.
      &       (smooth2DmaskName(smoothOpNb)(1:5).ne.'maskI') ) then
           WRITE(msgBuf,'(A,A,I2,A,A,A,A)') 'SMOOTH_CHECK: ',
-     &      'Unrecognized option for smooth2DmaskName(', smoothOpNb, 
+     &      'Unrecognized option for smooth2DmaskName(', smoothOpNb,
      &      '): ', smooth2DmaskName(smoothOpNb), ' - must be: ',
      &      'maskC, maskW, maskS, or maskI'
           CALL PRINT_ERROR( msgBuf, myThid )
@@ -59,21 +59,18 @@ C --- only maskC is allowed for smoothing 3D fields... for now I guess.
      &       (smooth3DmaskName(smoothOpNb)(1:5).ne.'maskS').or.
      &       (smooth3DmaskName(smoothOpNb)(1:5).ne.'maskI') ) then
           WRITE(msgBuf,'(A,A,I2,A,A,A,A)') 'SMOOTH_CHECK: ',
-     &      'Unrecognized option for smooth3DmaskName(', smoothOpNb, 
+     &      'Unrecognized option for smooth3DmaskName(', smoothOpNb,
      &      '): ', smooth3DmaskName(smoothOpNb), ' - must be: ',
      &      'maskC, maskW, maskS, or maskI'
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R SMOOTH_CHECK'
         ENDIF
 
+#ifndef ALLOW_SHELFICE
 C --- make sure proper macros are defined for maskI (iceshelf domain)
-#if !(defined ALLOW_SHI2D_CONTROL) || !(defined ALLOW_SHIFWFLX_CONTROL)
-        IF ( (smooth2DmaskName(smoothOpNb)(1:5).eq.'maskI') .or. 
-     &       (smooth3DmaskName(smoothOpNb)(1:5).eq.'maskI') )then
+        IF (smooth2DmaskName(smoothOpNb)(1:5).eq.'maskI') then
           WRITE(msgBuf,'(A,A,I2,A,A,A,A)') 'SMOOTH_CHECK: ',
-     &      'Must compile with option ALLOW_SHI2D_CONTROL or ',
-     &      'ALLOW_SHIFWFLX_CONTROL in SHELFICE_OPTIONS.h ',
-     &      '(and CTRL_OPTIONS.h) to define maskI'
+     &      'Must compile with shelfice package, ALLOW_SHELFICE'
           STOP 'ABNORMAL END: S/R SMOOTH_CHECK'
         ENDIF
 #endif
