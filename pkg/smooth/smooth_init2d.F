@@ -79,22 +79,4 @@ c write diffusion operator to file
       CALL WRITE_REC_3D_RL(fnamegeneric,smoothprec,
      &            1,smooth2D_Kvy,2,1,mythid)
 
-C establish mask for each smoothing operator
-C options are:
-C   maskC/W/S
-C   maskCtrlC/W/S/I
-
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-          smooth2D_Kux(i,j,bi,bj)=smooth2D_Lx(i,j,bi,bj)*
-     & smooth2D_Lx(i,j,bi,bj)/smooth2DtotTime/2
-          smooth2D_Kvy(i,j,bi,bj)=smooth2D_Ly(i,j,bi,bj)*
-     & smooth2D_Ly(i,j,bi,bj)/smooth2DtotTime/2
-          ENDDO
-         ENDDO
-       ENDDO
-      ENDDO
-
       end
