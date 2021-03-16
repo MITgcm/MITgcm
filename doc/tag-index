@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - make sure the 3 recip_hFac{C,W,S} are reset after resetting the 3 hFac
+    in ini_nlfs_vars.F when using Non-Lin FreeSurf with pkg/autodiff compiled
+    (#define ALLOW_AUTODIFF): this fix problems in gradient-check if recip_hFac
+    is used, e.g., in one {PKG}_INIT_VARIA S/R.
 o pkg/autodiff & diagnostics:
   - Add interface routines to write to binary file and fill diagnostics of
     single (or pair) of Adjoint variable.
