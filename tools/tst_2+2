@@ -106,7 +106,7 @@ if test $flag = 'NC' -o $flag = 'All' ; then Multi=1 ; else Multi=0 ; fi
 if test "x$cmdEXE" = x
 then
   if [ $mpi -ge 1 ] ; then
-    cmdEXE="mpirun -machinefile ../../mf -v -np 2 $gcmEXE"
+    cmdEXE="mpirun -machinefile ../../mf -np 2 $gcmEXE"
   else
     cmdEXE=$gcmEXE
   fi

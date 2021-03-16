@@ -52,7 +52,6 @@ C     === Global variables ===
 #include "SEAICE.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
-# include "AUTODIFF_PARAMS.h"
 # include "tamc.h"
 #endif
 
@@ -81,7 +80,6 @@ C     i,j,bi,bj  :: Loop counters
       INTEGER iMin, iMax, jMin, jMax
       INTEGER ICOUNT1, ICOUNT2, linearIterLoc, nonLinIterLoc
       INTEGER kSrf
-      INTEGER SOLV_MAX_TMP
       LOGICAL doIterate4u, doIterate4v
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -245,14 +243,11 @@ C     As a side effect, this avoids TAF recomputation warnings.
         ENDDO
        ENDDO
       ENDDO
-#ifdef ALLOW_AUTODIFF_TAMC
-      DO ipass=1,MPSEUDOTIMESTEPS
-       itmpkey = (ikey_dynamics-1)*MPSEUDOTIMESTEPS + ipass
-#else
+
       DO ipass=1,nonLinIterLoc
-#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
+       itmpkey = (ikey_dynamics-1)*MPSEUDOTIMESTEPS + ipass
 # ifdef SEAICE_ALLOW_FREEDRIFT
 CADJ STORE uice_fd, vice_fd = comlev1_dynsol, kind=isbyte,
 CADJ &     key = itmpkey
@@ -663,20 +658,10 @@ CML#ifdef ALLOW_AUTODIFF_TAMC
 CMLCADJ LOOP = iteration uice, vice = comlev1_lsr
 CML#endif /* ALLOW_AUTODIFF_TAMC */
 
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (SEAICE_LSR_ADJOINT_ITER))
-      IF ( inAdMode ) THEN
-        SOLV_MAX_TMP = SOLV_MAX_FIXED
-      ELSE
-        SOLV_MAX_TMP = linearIterLoc
-      ENDIF
-#else
-      SOLV_MAX_TMP = linearIterLoc
-#endif
+      ICOUNT1 = linearIterLoc
+      ICOUNT2 = linearIterLoc
 
-      ICOUNT1 = SOLV_MAX_TMP
-      ICOUNT2 = SOLV_MAX_TMP
-
-      DO m = 1, SOLV_MAX_TMP
+      DO m = 1, linearIterLoc
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef SEAICE_LSR_ADJOINT_ITER
@@ -736,7 +721,7 @@ C     end bi,bj-loops
           ENDDO
          ENDDO
 
-         iSubIter = SOLV_MAX_TMP*(ipass-1) + m
+         iSubIter = linearIterLoc*(ipass-1) + m
          CALL SOLVE_UV_TRIDIAGO(
      I                 1, OLx, doIterate4u, doIterate4v,
      I                 AU, BU, CU, rhsUx,

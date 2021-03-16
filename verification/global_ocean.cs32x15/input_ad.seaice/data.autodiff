@@ -1,0 +1,9 @@
+# =========================
+# pkg AUTODIFF parameters :
+# =========================
+# useApproxAdvectionInAdMode ::  for advection scheme 33, use advection scheme 30
+#                                in adjoint for stabilization (def=.FALSE.)
+#
+ &AUTODIFF_PARM01
+ useApproxAdvectionInAdMode = .TRUE.,
+ &

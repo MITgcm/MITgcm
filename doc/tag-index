@@ -1,6 +1,122 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff & diagnostics:
+  - Add interface routines to write to binary file and fill diagnostics of
+    single (or pair) of Adjoint variable.
+  - Rewrite addummy_in_stepping.F using set of new interface S/R to make it
+    more compact and easier to add new control variables.
+  - Add all current adjoint variables in addummy_in_stepping, ptracers_ad_dump,
+    seaice_ad_dump & exf_adjoint_snapshots_ad to work with diagnostics package.
+  - turn on Adjoint-variable diagnostics in adjoint verification experiments:
+    *) global_oce_biogeo_bling (with ptracers AD-var diagnostics) and
+    *) global_ocean.cs32x15.seaice (with seaice and exf AD-var diagnostics).
+o model/src + pkg/mom_common:
+  Fix AB time-stepping of QuasiHydrostatic with staggerTimeStep.
+  - involves new CPP option "ALLOW_QHYD_STAGGER_TS" for storage of previous
+    time-step Quasi-Hydro tendency to enable AB extrapolation in time when
+    using staggerTimeStep.
+  - field added to pickup file for restart ; allows to restart (but not perfect
+    restart) if field is missing and pickupStrictlyMatch=F.
+  - switch to staggerTimeStep=T in experiment "global_ocean.90x40x15.dwnslp"
+    that uses QuasiHydrostatic to test this code; update corresponding output
+    (as well as primary test output due to machine truncation).
+o verification:
+  In experiments: global_ocean.cs32x15, isomip, obcs_ctrl and offline_exf_seaice
+    replace CPP flag ECCO_CTRL_DEPRECATED by the much nicer generic control
+    variables GENARR/GENTIM2D variant.
+    Also replace ECCO_CPPOPTIONS.h by CTRL/AUTODIFF/COST/ECCO_OPTIONS.h files.
+  This required a number of changes to the general code to make the generic
+    control variables work in a non-ecco context:
+  - pkg/thsice: add AUTODIFF_OPTIONS.h and COST_OPTIONS.h header files to
+    numerous routines ;
+  - pkg/seaice: mask tendencies of HEFF/AREA/HSNOW in seaice_growth_adx.F to
+    reproduce cost function values ;
+  - pkg/shelfice: enable GENARR/GENTIM2D methods ;
+  - pkg/obcs: move reading control variable out of S/R obcs_prescribe_read into
+    S/R obcs_calc to be independent of parameter values unrelated to the
+    adjoint ;
+  - pkg/ctrl: make generic control variable work without pkg/cal (works only for
+    time independent control variables), but issue a warning, bonus: make
+    ctrlprec a runtime parameter that defaults to 64 ;
+  - pkg/ctrl: fix flow directives for S/R ctrl_bound_2d/3d and add tangent
+    linear versions of these subroutines ;
+  - pkg/ecco: reorder CPP flags in ecco_cost_weights.F and remove unused
+    variable 'wbaro', move calling S/R cost_obcs out of ECCO_CTRL_DEPRECATED
+    code block in S/R ecco_cost_driver, reorganise CPP flags in
+    cost_averagesinit.F, include CTRL_OPTIONS.h wherever ECCO_OPTIONS.h is
+    included, because ECCO_CTRL_DEPRECATED is now set in CTRL_OPTIONS.h ;
+  - model/src/the_main_loop.F: fix tape initialisation, bonus: suppress a
+    benign warning ;
+  - for each of the verification experiments remove ECCO_CPPOPTIONS.h and
+    replace by CTRL_OPTIONS.h, CTRL_SIZE.h, sometimes COST/ECCO_OPTIONS.h,
+    EXF_OPTIONS.h, adjust data.ctrl, data.grdchk, data.ecco ;
+  - for global_ocean.cs32x15 compile both variants by keeping
+    ECCO_CTRL_DEPRECATED in CTRL_OPTIONS.h and use runtime parameter ctrlUseGen
+    to switch between methods (in global_ocean.cs32x15.thsice). This involves an
+    extra (benign) recomputation warning in this verification experiment because
+    of an if statement with ctrlUseGen in ctrl_init_variables.F
+
+checkpoint67w (2021/03/06)
+o verification/global_ocean.cs32x15:
+  - fix Adjoint set-up by turning off CPP option "ALLOW_AUTODIFF_INIT_OLD" (that
+    was intended to put back an old bug) and update all 4 ADM and all 4 TLM
+    reference output files.
+o pkg/exf:
+  - replace wrong CPP option EXF_SALTFLX with ALLOW_SALTFLX in exf_monitor.F.
+o model/src:
+  - Output dxF, dyF, dxV, and dyU fields to mdsio grid output files.
+o tools/build_options:
+  - improve intel optfile for engaging (linux_amd64_ifort+impi_engaging).
+o pkg/autodiff:
+  - Improve, extend & clean-up switch to a simpler advection-scheme in AD-Mode
+    with new parameter "useApproxAdvectionInAdMode to replace inAdMode:
+    * If useApproxAdvectionInAdMode is True and advection scheme is set to 33
+      use advection scheme 30 in AD-model in seaice_advection, gad_advection
+      and gad_calc_rsh ; model stops when parameters are set inconsistently.
+    * Defaults to False, but is reset to True if inAdExact = False to be
+      backwards compatible.
+  - Important change in the meaning of variable inAdMode: now it is always true
+    after calling S/R AUTODIFF_INADMODE_SET_AD and always false after calling
+    S/R AUTODIFF_INADMODE_UNSET_AD.
+    The non-intuitive flags inAdTrue and inAdFalse, which could be T or F, have
+    been removed from the code.
+  - Remove unnecessary TAF related and inAdMode code from seaice_lsr.F, remove
+    SOLV_MAX_TMP in LSR S/R and adjust SEAICElinearIterMax default accordingly.
+  - Change AD exp. global_ocean.cs32x15.seaice to test this new functionality;
+    gradient checks necessarily are poorer because AD advection is approximated.
+o tools/build_options:
+  - update standard optfile "linux_amd64_gfortran" to enable to be used with
+    gfortran version 10 (or higher); update comments and clean-up for missing
+    "nf-config".
+o model/src & pkg/generic_advdiff:
+  - Implement simple isotropic 3D Smagorinsky diffusivity:
+    Smag diffusivity is assumed to be linearly dependent on 3D Smag viscosity
+    (just scaled by inverse of a constant Prandtl number); setting involves:
+     a) CPP Option: ALLOW_SMAG_3D_DIFFUSIVITY in CPP_OPTIONS.h (def. #undef)
+     b) switching on 3D Smagorinsky by setting "useSmag3D = .TRUE." in first
+        namelist of main parameter file "data" ; and, in the same namelist,
+     c) setting smag coeff. "smag3D_diffCoeff" for diffusivity (similar to
+     smag coeff. "smag3D_coeff" for viscosity), which results in constant
+     Prandtl number = smag3D_coeff/smag3D_diffCoeff.
+    Note: Since Smag3D_diffK is lagging by 1 time-step, needs to be stored
+    in pickup files (for restart) when using synchronous time-stepping.
+  - code is compiled in experiment tutorial_deep_convection and ready to use
+    except smag3D_diffCoeff setting in input.smag3d/data is commented out.
+  - also add few missing initialisations in "ini_dynvars.F" (just for
+    consistency with coding practice but no practical side effect).
+o pkg/ecco:
+  - fix type of argument in S/R MDS_READVEC_LOC call inside cost_gencost_moc.F
+o verification/lab_sea:
+  - change lab_sea.hb87 from testing EVP to testing aEVP with some sensible
+    parameters ; update reference output "output.hb87.txt"
+o pkg/ecco:
+  - Addition of meridional streamfunction maximum (MOC) as objective function
+     within ecco/gencost code ;
+  - MOC objective function tested in verification_other/global_oce_cs32.sens ;
+  - allows to compute sensitivity to hflux/sflux with prescribed atmospheric
+    state (not fluxes) with new flags CALC_HFLUX_SENS and CALC_SFLUX_SENS.
+
 checkpoint67v (2021/02/03)
 o tools/build_options:
   - add optfile for engaging similar to linux_amd64_ifort+impi but with -xAVX

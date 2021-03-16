@@ -2,7 +2,12 @@
  &SEAICE_PARM01
 #- seaice dynamics params:
   SEAICE_deltaTdyn   = 3600.,
-  SEAICE_deltaTevp   = 30.,
+# turn on aEVP with some sensible parameters
+  SEAICEaEVPcoeff =0.5,
+  SEAICEnEVPstarSteps =500,
+  SEAICEuseEVPstar = .TRUE.,
+  SEAICEuseEVPrev = .TRUE..
+# end of aEVP parameters
   useHB87stressCoupling = .TRUE.,
   SEAICE_no_slip     = .TRUE.,
 # Depending on vertical resolution this angle should have a value > 0

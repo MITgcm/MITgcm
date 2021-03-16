@@ -21,13 +21,11 @@ C     !USES:
 #include "PARAMS.h"
 #include "RESTART.h"
 #include "DYNVARS.h"
+#include "NH_VARS.h"
 #include "SURFACE.h"
 #include "FFIELDS.h"
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD.h"
-#endif
-#ifdef ALLOW_NONHYDROSTATIC
-# include "NH_VARS.h"
 #endif
 #ifdef ALLOW_MNC
 # include "MNC_PARAMS.h"
@@ -274,6 +272,7 @@ C---    read State 3-D fields for restart
      &                                     nj, fp, Nr, myIter, myThid )
 C---    read 3-D fields for AB-restart
 #ifdef ALLOW_ADAMSBASHFORTH_3
+
          m1 = 1 + MOD(myIter+1,2)
          m2 = 1 + MOD( myIter ,2)
         IF ( momStepping ) THEN
@@ -349,6 +348,22 @@ C--     W velocity:
          ENDIF
         ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
+#ifdef ALLOW_QHYD_STAGGER_TS
+C--     Quasi-Hydrostatic Adams-Bashforth variables:
+        IF ( quasiHydrostatic .AND. staggerTimeStep ) THEN
+         IF ( alph_AB.NE.0. .OR. beta_AB.NE.0. ) THEN
+          CALL READ_MFLDS_3D_RL( 'QH_GwNm1',
+     O                           QHydGwNm(1-OLx,1-OLy,1,1,1,m1),
+     I                                     nj, fp, Nr, myIter, myThid )
+         ENDIF
+         IF ( beta_AB.NE.0. ) THEN
+          CALL READ_MFLDS_3D_RL( 'QH_GwNm2',
+     O                           QHydGwNm(1-OLx,1-OLy,1,1,1,m2),
+     I                                     nj, fp, Nr, myIter, myThid )
+         ENDIF
+        ENDIF
+#endif /* ALLOW_QHYD_STAGGER_TS */
+
 #else /*  ALLOW_ADAMSBASHFORTH_3 */
         IF ( momStepping ) THEN
 C--     U velocity:
@@ -380,6 +395,14 @@ C--     Salinity
      &                                     nj, fp, Nr, myIter, myThid )
         ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
+#ifdef ALLOW_QHYD_STAGGER_TS
+C--     Quasi-Hydrostatic Adams-Bashforth variables:
+        IF ( quasiHydrostatic .AND. staggerTimeStep ) THEN
+          CALL READ_MFLDS_3D_RL( 'QH_GwNm1', QHydGwNm,
+     &                                     nj, fp, Nr, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_QHYD_STAGGER_TS */
+
 #endif /*  ALLOW_ADAMSBASHFORTH_3 */
 
 C-      read Full Pressure for EOS in pressure:
@@ -393,6 +416,16 @@ C-      read Full Pressure for EOS in pressure:
      &                                     nj, fp, Nr, myIter, myThid )
         ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
+#ifdef ALLOW_SMAG_3D_DIFFUSIVITY
+C-    With synchronous time-stepping, Smag-3D diffusivity is lagging by 1 time-step
+C     (i.e., used before being updated meaning field is from previous time-step calc)
+C     --> needs to be read-in from pickup file
+        IF ( smag3D_diffCoeff.GT.zeroRL
+     &       .AND. .NOT.staggerTimeStep ) THEN
+          CALL READ_MFLDS_3D_RL( 'SmagDiff', smag3D_diffK,
+     &                                     nj, fp, Nr, myIter, myThid )
+        ENDIF
+#endif /* ALLOW_SMAG_3D_DIFFUSIVITY */
 #ifdef ALLOW_ADDFLUID
 C-    read mass source/sink of fluid
         IF ( selectAddFluid.GE.1 ) THEN
@@ -551,6 +584,16 @@ C     Fill in edge regions
         CALL EXCH_XY_RL( dPhiNH, myThid )
       ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
+#ifdef ALLOW_QHYD_STAGGER_TS
+      IF ( quasiHydrostatic .AND. staggerTimeStep ) THEN
+#ifdef ALLOW_ADAMSBASHFORTH_3
+        CALL EXCH_3D_RL( QHydGwNm(1-OLx,1-OLy,1,1,1,1), Nr, myThid )
+        CALL EXCH_3D_RL( QHydGwNm(1-OLx,1-OLy,1,1,1,2), Nr, myThid )
+#else /* ALLOW_ADAMSBASHFORTH_3 */
+        CALL EXCH_3D_RL( QHydGwNm, Nr, myThid )
+#endif /* ALLOW_ADAMSBASHFORTH_3 */
+      ENDIF
+#endif /* ALLOW_QHYD_STAGGER_TS */
 
       RETURN
       END

@@ -2,6 +2,9 @@
 #ifdef ALLOW_GENERIC_ADVDIFF
 # include "GAD_OPTIONS.h"
 #endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: THSICE_ADVDIFF

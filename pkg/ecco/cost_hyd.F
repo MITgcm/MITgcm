@@ -1,9 +1,12 @@
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
 #endif
 
-      subroutine cost_hyd( myiter, mytime, mythid )
+      subroutine cost_hyd( myIter, myTime, myThid )
 
 c     ==================================================================
 c     SUBROUTINE cost_hyd
@@ -44,9 +47,9 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer myiter
-      _RL     mytime
-      integer mythid
+      integer myIter
+      _RL     myTime
+      integer myThid
 
 #ifdef ECCO_CTRL_DEPRECATED
 c     == local variables ==
@@ -72,7 +75,7 @@ c     == end of interface ==
 #if (defined (ALLOW_SST_COST_CONTRIBUTION))
       write(msgbuf,'(a)') 'ph-cost call cost_sst'
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
       nnzbar = nnztbar
       nnzobs = 1
       spminloc = -1.8
@@ -85,16 +88,16 @@ c     == end of interface ==
      &     nnzobs, sstdatfile, ssterrfile, mult_sst,
      &     nmonsloc, nmonsloc, sststartdate, localperiod,
      &     'C', spminloc, spmaxloc, spzeroloc,
-     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r, 
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
      &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
      &     0, sstdatfile, objf_sst, num_sst,
-     &     myiter, mytime, mythid )
+     &     myIter, myTime, myThid )
 c
 #elif (defined (ALLOW_DAILYSST_COST_CONTRIBUTION))
 c
       write(msgbuf,'(a)') 'ph-cost call cost_sst'
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
       nnzbar = 1
       nnzobs = 1
       nrecloc = ndaysrec
@@ -111,15 +114,15 @@ c
      &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
      &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
      &     0, sstdatfile, objf_sst, num_sst,
-     &     myiter, mytime, mythid )
-cph      call cost_sst   ( myiter, mytime, mythid )
+     &     myIter, myTime, myThid )
+cph      call cost_sst   ( myIter, myTime, myThid )
 #endif
       ENDIF
 
 #ifdef ALLOW_ARGO_THETA_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_argo_theta'
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
       nnzbar = Nr
       nnzobs = Nr
       spminloc = -1.8
@@ -132,16 +135,16 @@ cph      call cost_sst   ( myiter, mytime, mythid )
      &     nnzobs, argotfile, temperrfile, mult_argot,
      &     nmonsloc, nmonsloc, argotstartdate, localperiod,
      &     'C', spminloc, spmaxloc, spzeroloc,
-     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r, 
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
      &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
      &     0, argotfile, objf_argot, num_argot,
-     &     myiter, mytime, mythid )
+     &     myIter, myTime, myThid )
 #endif
 
 #ifdef ALLOW_CTDT_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_ctdt'
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
       nnzbar = Nr
       nnzobs = Nr
       spminloc = -1.8
@@ -154,16 +157,16 @@ cph      call cost_sst   ( myiter, mytime, mythid )
      &     nnzobs, ctdtfile, temperrfile, mult_ctdt,
      &     nmonsloc, nmonsloc, ctdtstartdate, localperiod,
      &     'C', spminloc, spmaxloc, spzeroloc,
-     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r, 
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
      &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
      &     0, ctdtfile, objf_ctdt, num_ctdt,
-     &     myiter, mytime, mythid )
+     &     myIter, myTime, myThid )
 #endif
 
 #ifdef ALLOW_XBT_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_xbt'
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
       nnzbar = Nr
       nnzobs = Nr
       spminloc = -1.8
@@ -176,17 +179,17 @@ cph      call cost_sst   ( myiter, mytime, mythid )
      &     nnzobs, xbtfile, temperrfile, mult_xbt,
      &     nmonsloc, nmonsloc, xbtstartdate, localperiod,
      &     'C', spminloc, spmaxloc, spzeroloc,
-     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r, 
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
      &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
      &     0, xbtfile, objf_xbt, num_xbt,
-     &     myiter, mytime, mythid )
+     &     myIter, myTime, myThid )
 #endif
 
       IF (using_cost_sst) THEN
 #ifdef ALLOW_TMI_SST_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_tmi'
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
       nnzbar = nnztbar
       nnzobs = 1
       spminloc = -1.8
@@ -202,15 +205,15 @@ cph      call cost_sst   ( myiter, mytime, mythid )
      &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
      &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
      &     0, tmidatfile, objf_tmi, num_tmi,
-     &     myiter, mytime, mythid )
-cph      call cost_tmi( myiter, mytime, mythid )
+     &     myIter, myTime, myThid )
+cph      call cost_tmi( myIter, myTime, myThid )
 #endif
       ENDIF
 
 #ifdef ALLOW_SSS_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_sss'
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
       nnzbar = nnzsbar
       nnzobs = 1
       spminloc = 20.
@@ -226,14 +229,14 @@ cph      call cost_tmi( myiter, mytime, mythid )
      &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
      &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
      &     0, sssdatfile, objf_sss, num_sss,
-     &     myiter, mytime, mythid )
-cph      call cost_sss   ( myiter, mytime, mythid )
+     &     myIter, myTime, myThid )
+cph      call cost_sss   ( myIter, myTime, myThid )
 #endif
 
 #ifdef ALLOW_CTDS_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_ctds'
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
       nnzbar = Nr
       nnzobs = Nr
       spminloc = 20.
@@ -246,16 +249,16 @@ cph      call cost_sss   ( myiter, mytime, mythid )
      &     nnzobs, ctdsfile, salterrfile, mult_ctds,
      &     nmonsloc, nmonsloc, ctdsstartdate, localperiod,
      &     'C', spminloc, spmaxloc, spzeroloc,
-     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r, 
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
      &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
      &     0, ctdsfile, objf_ctds, num_ctds,
-     &     myiter, mytime, mythid )
+     &     myIter, myTime, myThid )
 #endif
 
 #ifdef ALLOW_ARGO_SALT_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_argo_salt'
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
       nnzbar = Nr
       nnzobs = Nr
       spminloc = 20.
@@ -268,17 +271,17 @@ cph      call cost_sss   ( myiter, mytime, mythid )
      &     nnzobs, argosfile, salterrfile, mult_argos,
      &     nmonsloc, nmonsloc, argosstartdate, localperiod,
      &     'C', spminloc, spmaxloc, spzeroloc,
-     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r, 
+     &     no_preproc, no_preproc_c, no_preproc_i, no_preproc_r,
      &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
      &     0, argosfile, objf_argos, num_argos,
-     &     myiter, mytime, mythid )
+     &     myIter, myTime, myThid )
 #endif
 
 #ifdef ALLOW_THETA0_COST_CONTRIBUTION
       if (.NOT.ctrlUseGen) then
       write(msgbuf,'(a)') 'ph-cost call cost_theta0'
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
       call ctrl_cost_gen3d ( xx_theta_file,
      &     xx_theta_dummy, wthetaLev, dodimensionalcost3D,
      &     num_temp0, objf_temp0, maskC, myThid )
@@ -289,7 +292,7 @@ cph      call cost_sss   ( myiter, mytime, mythid )
       if (.NOT.ctrlUseGen) then
       write(msgbuf,'(a)') 'ph-cost call cost_salt0'
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
       call ctrl_cost_gen3d ( xx_salt_file,
      &     xx_salt_dummy, wsaltLev, dodimensionalcost3D,
      &     num_salt0, objf_salt0, maskC, myThid )
@@ -299,7 +302,7 @@ cph      call cost_sss   ( myiter, mytime, mythid )
 #ifdef ALLOW_THETA_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_theta'
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
       nnzbar = Nr
       nnzobs = Nr
       spminloc = -1.8
@@ -315,13 +318,13 @@ cph      call cost_sss   ( myiter, mytime, mythid )
      &     clim_preproc, no_preproc_c, clim_preproc_i, no_preproc_r,
      &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
      &     0, tdatfile, objf_temp, num_temp,
-     &     myiter, mytime, mythid )
+     &     myIter, myTime, myThid )
 #endif
 
 #ifdef ALLOW_SALT_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_salt'
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
       nnzbar = Nr
       nnzobs = Nr
       spminloc = 25.
@@ -337,27 +340,27 @@ cph      call cost_sss   ( myiter, mytime, mythid )
      &     clim_preproc, no_preproc_c, clim_preproc_i, no_preproc_r,
      &     no_posproc, no_posproc_c, no_posproc_i, no_posproc_r,
      &     0, sdatfile, objf_salt, num_salt,
-     &     myiter, mytime, mythid )
+     &     myIter, myTime, myThid )
 #endif
 
 c#ifdef ALLOW_SIGMAR_COST_CONTRIBUTION
 c      write(msgbuf,'(a)') 'ph-cost call cost_sigmar'
 c      call print_message( msgbuf, standardmessageunit,
-c     &     SQUEEZE_RIGHT , mythid)
-c      call cost_sigmar  ( myiter, mytime, mythid )
+c     &     SQUEEZE_RIGHT , myThid)
+c      call cost_sigmar  ( myIter, myTime, myThid )
 c#endif
 
 c#ifdef ALLOW_TRANSPORT_COST_CONTRIBUTION
 c      write(msgbuf,'(a)') 'ph-cost call cost_gen_transport'
 c      call print_message( msgbuf, standardmessageunit,
-c     &     SQUEEZE_RIGHT , mythid)
-c      call cost_gen_transport  ( myiter, mytime, mythid )
+c     &     SQUEEZE_RIGHT , myThid)
+c      call cost_gen_transport  ( myIter, myTime, myThid )
 c#endif
 
 #ifdef ALLOW_ETAN0_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_etan0'
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
       call ctrl_cost_gen2d (
      &     1,1,xx_etan_file,xx_etan_dummy,zeroRL,
      &     wetan, dodimensionalcost2D, num_etan0, objf_etan0,
@@ -371,7 +374,7 @@ c#endif
 #ifdef ALLOW_UVEL0_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_uvel0'
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
       call ctrl_cost_gen3d (
      &     xx_uvel_file,xx_uvel_dummy, wuvel3d, dodimensionalcost3D,
      &     num_uvel0, objf_uvel0, maskW, myThid )
@@ -379,7 +382,7 @@ c#endif
 #ifdef ALLOW_VVEL0_COST_CONTRIBUTION
       write(msgbuf,'(a)') 'ph-cost call cost_vvel0'
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
       call ctrl_cost_gen3d (
      &     xx_vvel_file,xx_vvel_dummy, wvvel3d, dodimensionalcost3D,
      &     num_vvel0, objf_vvel0, maskS, myThid )
@@ -393,7 +396,7 @@ cph and extended using I. Fenty SST, SSS extensions
 
       write(msgbuf,'(a)') 'ph-cost call seaice_cost_areasst'
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
       nnzbar = 1
       nnzobs = 1
       nrecloc = ndaysrec
@@ -408,17 +411,18 @@ cph and extended using I. Fenty SST, SSS extensions
      &     maskC, wsmrarea,
      &     spminloc, spmaxloc, spzeroloc,
      &     objf_smrarea, num_smrarea,
-     &     myiter, mytime, mythid )
+     &     myIter, myTime, myThid )
 
       write(msgbuf,'(a,1P2E18.10)')
      & 'ph-cost seaice_cost_areasst ',
      & objf_smrarea(1,1), num_smrarea(1,1)
       call print_message( msgbuf, standardmessageunit,
-     &     SQUEEZE_RIGHT , mythid)
+     &     SQUEEZE_RIGHT , myThid)
 
 # endif /* ALLOW_SEAICE_COST_AREASST */
 #endif
 
 #endif /* ECCO_CTRL_DEPRECATED */
 
-      end
+      RETURN
+      END

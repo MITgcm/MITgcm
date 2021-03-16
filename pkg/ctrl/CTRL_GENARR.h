@@ -10,19 +10,22 @@ C     ==================================================================
      &     xx_genarr2d_weight,
      &     xx_genarr3d_weight,
      &     xx_genarr2d_preproc, xx_genarr2d_preproc_c,
-     &     xx_genarr3d_preproc, xx_genarr3d_preproc_c
+     &     xx_genarr3d_preproc, xx_genarr3d_preproc_c,
+     &     xx_genarr2d_grid, xx_genarr3d_grid
       CHARACTER*(MAX_LEN_FNAM) xx_genarr2d_file(maxCtrlArr2D)
       CHARACTER*(MAX_LEN_FNAM) xx_genarr3d_file(maxCtrlArr3D)
       CHARACTER*(MAX_LEN_FNAM) xx_genarr2d_weight(maxCtrlArr2D)
       CHARACTER*(MAX_LEN_FNAM) xx_genarr3d_weight(maxCtrlArr3D)
-      CHARACTER*(MAX_LEN_FNAM) 
+      CHARACTER*(MAX_LEN_FNAM)
      &         xx_genarr2d_preproc(maxCtrlProc,maxCtrlArr2D)
-      CHARACTER*(MAX_LEN_FNAM) 
+      CHARACTER*(MAX_LEN_FNAM)
      &         xx_genarr3d_preproc(maxCtrlProc,maxCtrlArr3D)
-      CHARACTER*(MAX_LEN_FNAM) 
+      CHARACTER*(MAX_LEN_FNAM)
      &         xx_genarr2d_preproc_c(maxCtrlProc,maxCtrlArr2D)
-      CHARACTER*(MAX_LEN_FNAM) 
+      CHARACTER*(MAX_LEN_FNAM)
      &         xx_genarr3d_preproc_c(maxCtrlProc,maxCtrlArr3D)
+      CHARACTER*(1) xx_genarr2d_grid(maxCtrlArr2D)
+      CHARACTER*(1) xx_genarr3d_grid(maxCtrlArr3D)
 
       COMMON /CONTROLFILES_RARR/
      &     genarr2dPrecond, genarr3dPrecond,
@@ -41,7 +44,7 @@ C     ==================================================================
       integer xx_genarr3d_preproc_i(maxCtrlProc,maxCtrlArr3D)
 
       COMMON /CONTROLFILES_CTIM/
-     &     xx_gentim2d_file, xx_gentim2d_weight,
+     &     xx_gentim2d_file, xx_gentim2d_weight, xx_gentim2d_grid,
      &     xx_gentim2d_preproc, xx_gentim2d_preproc_c
       CHARACTER*(MAX_LEN_FNAM) xx_gentim2d_file(maxCtrlTim2D)
       CHARACTER*(MAX_LEN_FNAM) xx_gentim2d_weight(maxCtrlTim2D)
@@ -49,6 +52,7 @@ C     ==================================================================
      &         xx_gentim2d_preproc(maxCtrlProc,maxCtrlTim2D)
       CHARACTER*(MAX_LEN_FNAM)
      &         xx_gentim2d_preproc_c(maxCtrlProc,maxCtrlTim2D)
+      CHARACTER*(1) xx_gentim2d_grid(maxCtrlTim2D)
 
       COMMON /CONTROLFILES_ITIM/
      &     xx_gentim2d_startdate1,
@@ -118,9 +122,9 @@ C     ==================================================================
      &                      xx_gentim2d1,
      &                      xx_gentim2d,
      &                      wgentim2d
-      _RL 
+      _RL
      & xx_gentim2d0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,maxCtrlTim2D)
-      _RL 
+      _RL
      & xx_gentim2d1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,maxCtrlTim2D)
       _RL
      & xx_gentim2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy,maxCtrlTim2D)

@@ -81,6 +81,13 @@ C               for mixing of tracers vertically ( units of r^2/s )
       _RL  diffKr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
+#ifdef ALLOW_SMAG_3D_DIFFUSIVITY
+C     smag3D_diffK :: isotropic 3D diffusivity from Smagorisky viscosity
+C                     at grid-cell center (units: m^2/s )
+      COMMON /DYNVARS_DIFFK_SMAG3D/ smag3D_diffK
+      _RL smag3D_diffK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+
 C   The following blocks containing requires anomaly fields of control vars
 C   and related to Options:
 C   ALLOW_KAPGM_CONTROL , ALLOW_KAPREDI_CONTROL and ALLOW_BOTTOMDRAG_CONTROL
