@@ -282,7 +282,7 @@ c     == local variables ==
 
       character*( 80) fnamegeneric
       _RS dummyRS(1)
-      _RL mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RS mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
 c     == external ==
 

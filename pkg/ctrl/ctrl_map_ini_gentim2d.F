@@ -63,7 +63,7 @@ C     == local variables ==
       logical dosmooth
       logical doscaling
       _RL     xx_gen(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL     mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RS     mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RS dummyRS(1)
 #ifdef ALLOW_ECCO
       _RL     xx_gen_tmp(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
