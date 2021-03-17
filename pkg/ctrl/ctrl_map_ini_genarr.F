@@ -115,46 +115,59 @@ C--   generic 2D control variables
 #endif
 #ifdef ALLOW_SHELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT
-      if (igen_shiCoeffT.GT.0)
+      IF (igen_shiCoeffT.GT.0)
      &  call ctrl_map_genarr2d(shiTransCoeffT,igen_shiCoeffT,myThid)
 
-      if (igen_shiCoeffS.GT.0) then
-        call ctrl_map_genarr2d(shiTransCoeffS,igen_shiCoeffS,myThid)
-      elseif (igen_shiCoeffS.eq.0) then
-        ! shiCoeffS unset, set based on salt/heat ratio here
-        do bj = myByLo(myThid), myByHi(myThid)
-         do bi = myBxLo(myThid), myBxHi(myThid)
-          do j = 1-OLy,sNy+OLy
-           do i = 1-OLx,sNx+OLx
-            shiTransCoeffS(i,j,bi,bj) =
-     &        SHELFICEsaltToHeatRatio*shiTransCoeffT(i,j,bi,bj)
-           enddo
-          enddo
-         enddo
-        enddo
-      endif
+      IF (igen_shiCoeffS.GT.0)
+     &  call ctrl_map_genarr2d(shiTransCoeffS,igen_shiCoeffS,myThid)
+
+C--   xx_shiCoeffS not used, but shiCoeffT is adjusted by xx_shicoefft
+      IF ((igen_shiCoeffS.EQ.0).AND.(igen_shiCoeffT.GT.0)) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+           shiTransCoeffS(i,j,bi,bj) =
+     &       SHELFICEsaltToHeatRatio*shiTransCoeffT(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+C--   xx_shiCoeffT not used, but shiCoeffS is adjusted by xx_shicoeffs
+      ELSEIF ((igen_shiCoeffT.EQ.0).AND.(igen_shiCoeffS.GT.0)) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+           shiTransCoeffT(i,j,bi,bj) =
+     &       shiTransCoeffS(i,j,bi,bj)/SHELFICEsaltToHeatRatio
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 # else
       dragThermoEqualMom = .FALSE.
-      if (igen_shiCDrag.GT.0)
+      IF (igen_shiCDrag.GT.0)
      &  call ctrl_map_genarr2d(shiCDragFld,igen_shiCDrag,myThid)
-      do k2 = 1, maxCtrlProc
-        ! Set drag coefficient used in momentum equal to thermodynamic,
-        ! u* drag coefficient
-        if (xx_genarr2d_preproc_c(k2,igen_shiCDrag)(1:3).eq.'mom')
-     &    dragThermoEqualMom = .TRUE.
-      enddo
-      if (dragThermoEqualMom) then
-       do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do j = 1-OLy,sNy+OLy
-          do i = 1-OLx,sNx+OLx
-           shiDragQuadFld(i,j,bi,bj) = shiCDragFld(i,j,bi,bj)
-          enddo
-         enddo
-        enddo
-       enddo
-      endif
+C--     Set drag coefficient used in momentum equal to thermodynamic,
+C--      u* drag coefficient
+      DO k2 = 1, maxCtrlProc
 
+       IF (xx_genarr2d_preproc_c(k2,igen_shiCDrag)(1:3).EQ.'mom')
+     &    dragThermoEqualMom = .TRUE.
+      ENDDO
+      IF (dragThermoEqualMom) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+           shiDragQuadFld(i,j,bi,bj) = shiCDragFld(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 # endif /* SHI_ALLOW_GAMMAFRICT */
 #endif /* ALLOW_SHELFICE */
 
