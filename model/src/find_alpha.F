@@ -357,7 +357,7 @@ C     |==========================================================*
 C     | k       - is the Theta/Salt level
 C     | kRef    - determines pressure reference level
 C     |           (not used in 'LINEAR' mode)
-C     | betaLoc - drho / dS (kg/m^3/(g/kg) = g/m^3)
+C     | betaLoc - drho / dS (kg/m^3/(g/kg))
 C     *==========================================================*
 C     \ev
 

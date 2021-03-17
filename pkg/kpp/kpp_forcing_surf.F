@@ -86,7 +86,7 @@ C     saltPlumeFlux - salt rejected during freezing (downward = positive)
 C     ttalpha - thermal expansion coefficient without 1/rho factor
 C               d(rho{k,k})/d(T(k))                           (kg/m^3/C)
 C     ssbeta  - salt expansion coefficient without 1/rho factor
-C               d(rho{k,k})/d(S(k))                              (g/m^3)
+C               d(rho{k,k})/d(S(k))                    ((kg/m^3)/(g/kg))
 C !OUTPUT PARAMETERS:
 C     ustar  (nx,ny)       - surface friction velocity                  (m/s)
 C     bo     (nx,ny)       - surface turbulent buoyancy forcing     (m^2/s^3)
