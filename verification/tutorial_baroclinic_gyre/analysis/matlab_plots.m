@@ -1,5 +1,7 @@
-% read in additional colormaps for plots (located in the analysis/ directory)
-matlab_colormaps;
+% read in additional colormaps for plots
+% assumes you have done 'addpath ../../../utils/matlab/' from your run directory
+% which is where other matlab functions such as 'rdmds' are located
+bluered_colormaps;
 
 
 %%%%%%%%%%%  load grid data   %%%%%%%%%%%
