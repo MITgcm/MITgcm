@@ -103,7 +103,7 @@ c local arrays
       integer tpsta(4), erssta(4), gfosta(4)
       integer mdtsta(4), mdtend(4)
       _RL tpper, ersper, gfoper
-      _RL mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 c for PART 1: re-reference MDT (mdt) to the inferred SLA reference field
       _RL psmean    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )

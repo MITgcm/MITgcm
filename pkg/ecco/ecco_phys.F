@@ -176,7 +176,7 @@ c-- init
 
 cts ---
 c First: Fill the following SCALAR masks & weights for each (i,j,k,bi,bj) grid cell
-c   tmpvol - 3D cell volume 
+c   tmpvol - 3D cell volume
 c   tmpmsk - mask for the gencost_barfile field (e.g. theta)
 c            Either: expand from 2D mask gencost_mskCsurf across nonzero
 c            entries of gencost_mskVertical (Nr x NGENCOST array)
@@ -217,7 +217,7 @@ c
             endif
 c
 cts ---
-c Now: at each (i,j,k,bi,bj) fill the SCALAR variables 
+c Now: at each (i,j,k,bi,bj) fill the SCALAR variables
 c   tmpfld - from 3D field theta, salt, ptracer
 c            or
 c            from 2D field with eta, shelfice
@@ -293,9 +293,9 @@ cts ---
      &             gencost_mskCsurf(i,j,bi,bj,kgen)
 
             if (gencost_barfile(kgen)(11:16).EQ.'shifwf') then
-              tmpfld=shelficeFreshWaterFlux(i,j,bi,bj) / rhoConstFresh 
+              tmpfld=shelficeFreshWaterFlux(i,j,bi,bj) / rhoConstFresh
             elseif (gencost_barfile(kgen)(11:16).EQ.'shihtf') then
-              tmpfld=shelficeHeatFlux(i,j,bi,bj) 
+              tmpfld=shelficeHeatFlux(i,j,bi,bj)
             endif
             if (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
           endif
@@ -340,8 +340,8 @@ c
      &          +vVel(i,j,k,bi,bj)*tmpmskS
 
             ! Only compute tr[Vol,Heat,Salt] if necessary, use
-            ! gencost_mask[W/S] rather than old msktrVol  
-            elseif ( gencost_barfile(kgen)(1:7).eq.'m_trVol' .or. 
+            ! gencost_mask[W/S] rather than old msktrVol
+            elseif ( gencost_barfile(kgen)(1:7).eq.'m_trVol' .or.
      &               gencost_barfile(kgen)(1:8).eq.'m_trHeat'.or.
      &               gencost_barfile(kgen)(1:8).eq.'m_trSalt'    ) then
 
@@ -379,14 +379,14 @@ c---------
       enddo
 
 cts ---
-c Divide all values in gencost_storefld by 
+c Divide all values in gencost_storefld by
 c   areavolGlob: scalar representing global volume of
-c                quantity of interest. 
+c                quantity of interest.
 c
 c Note: for shelfice, don't take this final average to make
-c       comparable to shelfice_cost_final. 
+c       comparable to shelfice_cost_final.
 cts ---
-      if (gencost_barfile(kgen)(1:9).EQ.'m_boxmean' .and. 
+      if (gencost_barfile(kgen)(1:9).EQ.'m_boxmean' .and.
      &    gencost_barfile(kgen)(11:13).NE.'shi') then
         CALL GLOBAL_SUM_TILE_RL( areavolTile, areavolGlob, myThid )
         CALL ecco_div( gencost_storefld(1-OLx,1-OLy,1,1,kgen),

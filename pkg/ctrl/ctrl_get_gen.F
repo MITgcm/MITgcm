@@ -76,7 +76,7 @@ c     == local variables ==
       logical ladinit
 
       character*(80) fnamegen
-      _RL mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RS mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_SMOOTH_CTRL2D
       _RS dummyRS(1)
@@ -154,8 +154,6 @@ cc#else
         CALL READ_REC_XY_RL( fnamegen, xx_gen1, gencount0, 1, myThid )
 #endif
 cc#endif /* ALLOW_OPENAD */
-
-
 
 #ifdef ECCO_CTRL_DEPRECATED
 #ifdef ALLOW_CTRL_SMOOTH

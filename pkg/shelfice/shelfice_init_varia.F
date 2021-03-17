@@ -76,23 +76,20 @@ C     set coefficients to constant values
          ENDDO
         ENDDO
        ENDIF
-      ELSE
+      ENDIF
 C     Update the spatially varying version of the drag coefficient
-C     Note: this ONLY impacts the definition of u* = shicDrag * u_m^2
-C     it DOES NOT affect the momentum equations
-C     One can further add modifications to this parameter field with the
-C     control pacakge
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j = 1-OLy, sNy+OLy
-          DO i = 1-OLx, sNx+OLx
-           shiCDragFld(i,j,bi,bj) = shiCDrag
-           shiDragQuadFld(i,j,bi,bj) = SHELFICEDragQuadratic
-          ENDDO
+C     shiCDragFld used in shelfice_thermodynamics
+C     shiCDragQuadFld used in shelfice_u/v_drag_coeff
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j = 1-OLy, sNy+OLy
+         DO i = 1-OLx, sNx+OLx
+          shiCDragFld(i,j,bi,bj) = shiCDrag
+          shiDragQuadFld(i,j,bi,bj) = SHELFICEDragQuadratic
          ENDDO
         ENDDO
        ENDDO
-      ENDIF
+      ENDDO
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)

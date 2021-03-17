@@ -253,7 +253,7 @@ c     == local variables ==
       _RL localdifsum   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL localdifnum   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
-      _RL mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       _RL fac
 
@@ -320,8 +320,6 @@ c--   Assign mask
       else
          STOP 'cost_generic: wrong ylocmask'
       endif
-
-
 
 c-- set nrecloop to nrecloc
       nrecloop=nrecloc

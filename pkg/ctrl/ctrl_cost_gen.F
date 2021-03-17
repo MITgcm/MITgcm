@@ -77,7 +77,7 @@ c     == routine arguments ==
       _RL xx_gen_remo_intercept
       _RL xx_gen_remo_slope
 #endif /* ECCO_CTRL_DEPRECATED */
-      _RL xx_gen_mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RS xx_gen_mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       integer myThid
 
 #ifdef ALLOW_CTRL
@@ -441,7 +441,7 @@ c     == routine arguments ==
       logical dodimensionalcost
       _RL num_gen(nsx,nsy)
       _RL objf_gen(nsx,nsy)
-      _RL xx_gen_mask(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RS xx_gen_mask(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       INTEGER myThid
 
 #ifdef ALLOW_CTRL

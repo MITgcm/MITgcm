@@ -6,7 +6,7 @@
 C     *==========================================================*
 C     | SUBROUTINE smooth_hetero2D
 C     | o this routine smoothes a 2D field isotropically (except for
-C     |   the land mask) to a space variable length scale. It mostly 
+C     |   the land mask) to a space variable length scale. It mostly
 C     |   calls smooth_diff2D.F.
 C     *==========================================================*
 
@@ -18,8 +18,8 @@ C     *==========================================================*
 c#include "tamc.h"
 #include "SMOOTH.h"
 
-      _RL mask_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL fld_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS mask_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       character*(MAX_LEN_FNAM) dist_file
       _RL dist_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       integer nbt_in
@@ -68,5 +68,5 @@ c#include "tamc.h"
       call smooth_diff2D(fld_in,mask_in,nbt_in,mythid)
 
       CALL EXCH_XY_RL ( fld_in , myThid )
-       
+
       end

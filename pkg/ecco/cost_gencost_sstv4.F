@@ -62,7 +62,7 @@ c     == local variables ==
       _RL nb_sst (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL msk_sst (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL tmp_sst (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL mask2D (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS mask2D (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL spval
 
       _RL junk,junkweight

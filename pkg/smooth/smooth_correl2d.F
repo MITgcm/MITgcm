@@ -5,7 +5,7 @@
 
 C     *==========================================================*
 C     | SUBROUTINE smooth_correl2D
-C     | o Routine that applies spatial correlation 
+C     | o Routine that applies spatial correlation
 C     |   operator to a 2D control field
 C     *==========================================================*
 
@@ -17,7 +17,7 @@ C     *==========================================================*
 c#include "tamc.h"
 #include "SMOOTH.h"
 
-      _RL mask_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS mask_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL fld_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       integer smoothOpNb
       integer nbt_in
@@ -55,12 +55,12 @@ c division by ~sqrt(area):
       DO bj = jtlo,jthi
        DO bi = itlo,ithi
         DO j = 1,sNy
-         DO i = 1,sNx 
+         DO i = 1,sNx
       fld_in(i,j,bi,bj)=fld_in(i,j,bi,bj)
      & *sqrt(recip_rA(i,j,bi,bj))
          ENDDO
         ENDDO
-       ENDDO 
+       ENDDO
       ENDDO
       CALL EXCH_XY_RL ( fld_in , myThid )
 
@@ -80,5 +80,5 @@ c division by ~sqrt(var(filter)):
         ENDDO
        ENDDO
       CALL EXCH_XY_RL ( fld_in , myThid )
-       
+
       end

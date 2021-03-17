@@ -43,8 +43,8 @@ c     == local variables ==
       integer iarr
       logical dodimensionalcost
       integer k2
-      _RL mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL mask3D(1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
+      _RS mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RS mask3D(1-olx:snx+olx,1-oly:sny+oly,Nr,nsx,nsy)
 #endif
 
 c     == end of interface ==
@@ -75,7 +75,7 @@ c--   Evaluate the individual cost function contributions.
 
 C --- Get appropriate mask for field
       call ctrl_get_mask2D(xx_gentim2d_file(iarr),mask2D,myThid)
-    
+
       call ctrl_cost_gen2d (
      &     startrec, endrec,
      &     xx_gentim2d_file(iarr),xx_gentim2d_dummy(iarr),
@@ -154,5 +154,5 @@ C --- Get appropriate mask for field
 #endif
 
 
-      return 
+      return
       end

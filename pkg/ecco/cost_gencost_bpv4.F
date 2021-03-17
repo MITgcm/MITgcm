@@ -54,7 +54,7 @@ c     == local variables ==
       _RL locbpdat(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL locbpmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL locwbp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       _RL bpdifmean ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL bpdifanom ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
@@ -170,7 +170,6 @@ c--     Compute the mean over all bpdat records.
          do bi = itlo,ithi
            do j = 1,sNy
             do i = 1,sNx
-
               if ( (locbpmask(i,j,bi,bj).NE. 0. _d 0).AND.
      &             (maskc(i,j,1,bi,bj).NE. 0. _d 0) ) then
                 bpdifmean(i,j,bi,bj) = bpdifmean(i,j,bi,bj) +

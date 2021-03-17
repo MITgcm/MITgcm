@@ -454,7 +454,7 @@ C     == local variables ==
       integer ilgen
       logical doglobalread
       logical ladinit
-      _RL mask3D(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RS mask3D(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 CEOP
 
 c--   Now, read the control vector.

@@ -6,7 +6,7 @@
 C     *==========================================================*
 C     | SUBROUTINE smooth_basic2D
 C     | o this routine smoothes a 2D field isotropically (except for
-C     |   the land mask) to a constant length scale. It mostly 
+C     |   the land mask) to a constant length scale. It mostly
 C     |   calls smooth_diff2D.F.
 C     *==========================================================*
 
@@ -18,7 +18,7 @@ C     *==========================================================*
 c#include "tamc.h"
 #include "SMOOTH.h"
 
-      _RL mask_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS mask_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL fld_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dist_in
       integer nbt_in
@@ -65,5 +65,5 @@ c#include "tamc.h"
       call smooth_diff2D(fld_in,mask_in,nbt_in,mythid)
 
       CALL EXCH_XY_RL ( fld_in , myThid )
-       
+
       end
