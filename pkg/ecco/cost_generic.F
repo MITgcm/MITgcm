@@ -373,14 +373,11 @@ c--     Compute masked model-data difference
      &    localdifnum, nnzobs,myThid)
 
 #ifdef ALLOW_SMOOTH
-c--      For 2D smooth routines, use mask2D
-c--      should this be ylocmask?
-C--      for now, use maskC to reproduce old behavior
          do bj = myByLo(myThid), myByHi(myThid)
           do bi = myBxLo(myThid), myBxHi(myThid)
            do j = 1-OLy,sNy+OLy
             do i = 1-OLx,sNx+OLx
-             mask2D(i,j,bi,bj) = maskC(i,j,1,bi,bj)
+             mask2D(i,j,bi,bj) = localmask(i,j,1,bi,bj)
             enddo
            enddo
           enddo
