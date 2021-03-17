@@ -73,7 +73,7 @@ c--   Set default values.
         smooth2Dtype(smoothOpNb)=0
         smooth2Dsize(smoothOpNb)=0
         smooth2Dfilter(smoothOpNb)=0
-        smooth2DmaskName(smoothOpNb)='maskC'
+        smooth2DmaskName(smoothOpNb)(1:5) = 'maskC'
 
         smooth3Dnbt(smoothOpNb)=0
         smooth3D_Lx0(smoothOpNb)=0. _d 0
@@ -84,7 +84,7 @@ c--   Set default values.
         smooth3DtypeZ(smoothOpNb)=0
         smooth3DsizeZ(smoothOpNb)=0
         smooth3Dfilter(smoothOpNb)=0
-        smooth3DmaskName(smoothOpNb)='maskC'
+        smooth3DmaskName(smoothOpNb)(1:5) = 'maskC'
       ENDDO
 
 C--   Read settings from model parameter file "data.smooth".
