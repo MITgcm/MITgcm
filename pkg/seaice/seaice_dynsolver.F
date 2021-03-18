@@ -388,10 +388,7 @@ CADJ STORE stressDivergenceX  = comlev1,
 CADJ &     key=ikey_dynamics, kind=isbyte
 CADJ STORE stressDivergenceY  = comlev1,
 CADJ &     key=ikey_dynamics, kind=isbyte
-CADJ STORE DWATN  = comlev1, key=ikey_dynamics, kind=isbyte
-#ifdef SEAICE_ALLOW_BOTTOMDRAG
-CADJ STORE CbotC  = comlev1, key=ikey_dynamics, kind=isbyte
-#endif /* SEAICE_ALLOW_BOTTOMDRAG */
+CADJ STORE DWATN = comlev1, key=ikey_dynamics, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C Update ocean surface stress

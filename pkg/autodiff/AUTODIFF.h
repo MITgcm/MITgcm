@@ -68,4 +68,3 @@ c ad dump record number (used only if dumpAdByRec is true)
      &       StoreOBCSW
       COMMON /AUTODIFF_STORE_SEAICE/
      &       StoreSEAICE
-

@@ -1,4 +1,7 @@
 #include "THSICE_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 #ifdef ALLOW_EXF
 #include "EXF_OPTIONS.h"
 #endif

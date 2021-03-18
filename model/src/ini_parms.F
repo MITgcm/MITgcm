@@ -192,7 +192,7 @@ C--   Continuous equation parameters
      & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
      & viscA4ReMax, viscAhReMax,
      & cosPower, viscAstrain, viscAtension,
-     & diffKhT, diffK4T, diffKhS, diffK4S,
+     & diffKhT, diffK4T, diffKhS, diffK4S, smag3D_diffCoeff,
      & surf_pRef, tRef, sRef, tRefFile, sRefFile, rhoRefFile,
      & eosType, selectP_inEOS_Zc, integr_GeoPot, selectFindRoSurf,
      & HeatCapacity_Cp, celsius2K, atm_Cp, atm_Rd, atm_Rq, atm_Po,
@@ -481,7 +481,7 @@ C--  horizontal viscosity (acting on Divergence or Vorticity)
       IF ( viscAhZ .EQ. UNSET_RL ) viscAhZ = viscAh
       IF ( viscA4D .EQ. UNSET_RL ) viscA4D = viscA4
       IF ( viscA4Z .EQ. UNSET_RL ) viscA4Z = viscA4
-C--  horizontal viscosity for vertical moments
+C--  horizontal viscosity for vertical momentum
       IF ( viscAhW .EQ. UNSET_RL ) viscAhW = viscAhD
       IF ( viscA4W .EQ. UNSET_RL ) viscA4W = viscA4D
 C--   z,p,r coord input switching.
@@ -519,6 +519,17 @@ C-    set default scheme for quadratic bottom-drag
      &  selectBotDragQuadr = 0
 #endif /* ALLOW_MOM_COMMON */
 
+      IF ( smag3D_diffCoeff.NE.zeroRL .AND. .NOT.useSmag3D ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** INI_PARMS: ',
+     &    'will not use "smag3D_diffCoeff" without useSmag3D'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** INI_PARMS: ',
+     &    '==> reset "smag3D_diffCoeff" to zero'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+       smag3D_diffCoeff = zeroRL
+      ENDIF
       IF ( diffKzT .NE. UNSET_RL ) zCoordInputData  = .TRUE.
       IF ( diffKpT .NE. UNSET_RL ) pCoordInputData  = .TRUE.
       IF ( diffKrT .NE. UNSET_RL ) rCoordInputData  = .TRUE.

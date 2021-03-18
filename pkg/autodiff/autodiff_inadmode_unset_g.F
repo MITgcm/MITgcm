@@ -16,7 +16,6 @@ C     == Routine arguments ==
 C     myThid :: my Thread Id number
       INTEGER myThid
 
-cph   inAdMode = inAdFalse
       inAdMode = .FALSE.
 
       RETURN
