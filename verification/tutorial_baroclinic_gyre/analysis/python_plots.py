@@ -104,11 +104,11 @@ plt.plot(time_surfdiag, TRELAX_ave_ann, 'm--', linewidth=4)
 
 plt.subplot(223)
 plt.plot(time_stdiag, THETA_lv_ave[:,0,klev1], 'c',
-	     linewidth=4, label=r'$T_\mathrm{surf}$')
+         linewidth=4, label=r'$T_\mathrm{surf}$')
 plt.plot(time_stdiag, THETA_lv_ave[:,0,klev2], 'g',
-	     linewidth=4, label=r'$T_\mathrm{300m}$')
+         linewidth=4, label=r'$T_\mathrm{300m}$')
 plt.plot(time_stdiag, THETA_lv_ave[:,0,klev3], 'r',
-	     linewidth=4, label=r'$T_\mathrm{abyss}$')
+         linewidth=4, label=r'$T_\mathrm{abyss}$')
 plt.grid('both')
 plt.title('b) Mean Potential Temp. by Level (THETA_lv_avg)')
 plt.xlabel('Time (yrs)')
@@ -119,11 +119,11 @@ plt.legend()
 
 plt.subplot(224)
 plt.plot(time_stdiag, THETA_lv_std[:,0,klev1], 'c',
-	     linewidth=4, label=r'$T_\mathrm{surf}$')
+         linewidth=4, label=r'$T_\mathrm{surf}$')
 plt.plot(time_stdiag, THETA_lv_std[:,0,klev2], 'g',
-	     linewidth=4, label=r'$T_\mathrm{300m}$')
+         linewidth=4, label=r'$T_\mathrm{300m}$')
 plt.plot(time_stdiag, THETA_lv_std[:,0,klev3], 'r',
-	     linewidth=4, label=r'$T_\mathrm{abyss}}$')
+         linewidth=4, label=r'$T_\mathrm{abyss}}$')
 plt.grid('both')
 plt.title('c) Std. Dev. Potential Temp. by Level (THETA_lv_std)')
 plt.xlabel('Time (years)')
