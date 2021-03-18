@@ -951,6 +951,12 @@ CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE EmPmR,hFacS,hFacW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
+#if ( defined NONLIN_FRSURF || defined ALLOW_SOLVE4_PS_AND_DRAG )
+CADJ STORE aW2d, aS2d, aC2d =
+CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE pC, pS, pW =
+CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
+# endif
 #endif
         CALL TIMER_START('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
         CALL SOLVE_FOR_PRESSURE(myTime, myIter, myThid)
