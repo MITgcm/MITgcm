@@ -68,8 +68,8 @@ TRELAX = surfDiag['TRELAX'][:]  # (time, depth, y, x); depth=0 (surface-only)
 ETAN = surfDiag['ETAN'][:]      # (time, depth, y, x); depth=0 (surface-only)
 time_surfdiag = surfDiag['T'][:]/(86400*360)-0.5 # time of surf diag output (sec->yrs), plot mid-year
 dynDiag = nc.Dataset('dynDiag.nc')
-UVEL = dynDiag['UVEL'][:]       # (time, depth, y, x); x dim is 63, includes eastern edge
-VVEL = dynDiag['VVEL'][:]       # (time, depth, y, x); y dim is 63, includes northern edge
+UVEL = dynDiag['UVEL'][:]       # (time, depth, y, x); x dim is Nx+1, includes eastern edge
+VVEL = dynDiag['VVEL'][:]       # (time, depth, y, x); y dim is Ny+1, includes northern edge
 THETA = dynDiag['THETA'][:]     # (time, depth, y, x)
  
 
@@ -151,7 +151,7 @@ plt.ylabel('Latitude')
 plt.show()
 # Note we have used routine pcolormesh with Xp1, Yp1, which are the
 # locations of the lower left corners of grid cells
-# (here, both length 63 as they include the ending right and upper
+# (here, length Nx+1,Ny+1 as they include the ending right and upper
 # locations of the grid, respectively).
 # Alternative one could plot shading using contourf with dimensions
 # X and Y, the grid cell center locations.
@@ -164,13 +164,14 @@ plt.show()
 ubt = (UVEL*drF[:,np.newaxis,np.newaxis]).sum(1)  # depth-integrated u velocity
 # For ubt calculation numpy needs a bit of help with broadcasting
 # the drF vector across [time,y,x] axes
-psi = np.zeros((100,63,63))
+psi = np.zeros((100,Ny+1,Nx+1))
 psi[:,1:,:] = (-ubt*dyG).cumsum(1)/1E6  # compute streamfn in Sv (for each yr)
 # Note psi is computed and plotted at the grid cell corners and we
-# compute as dimensioned 62x63 (as noted above, UVEL contains an extra
-# data point in x, at the eastern edge). cumsum is done in y-direction.
+# compute as dimensioned (Ny,Nx+1); as noted, UVEL contains an extra
+# data point in x, at the eastern edge. cumsum is done in y-direction.
 # We have a wall at southern boundary (i.e. no reentrant flow from
-# north), ergo psi(j=0) is accomplished by declaring psi shape 63x63. 
+# north), ergo psi(j=0) is accomplished by declaring psi 
+# to be shape (Ny+1,Nx+1). 
 
 plt.figure(figsize=(10,8))
 plt.contourf(Xp1, Yp1, psi[-1], np.arange(-35,40,5), cmap='RdYlBu_r')
