@@ -37,8 +37,9 @@ X = grid['X'][:]      # 1-D version of XC data
 Y = grid['Y'][:]      # 1-D version of YC data
 Xp1 = grid['Xp1'][:]  # x-location of lower left corner
 Yp1 = grid['Yp1'][:]  # y-location of lower left corner
-# Xp1 and Yp1 are effectively 1-D versions of XG,YG with an
-# extra data value at the eastern and northern ends of the domain.
+# Xp1 and Yp1 are effectively 1-D versions of grid variables XG,YG with
+# an extra data value at the eastern and northern ends of the domain.
+# See MITgcm users manual section 2.11 for additional MITgcm grid info
 
 # Number of gridcells in x,y for full domain:
 Nx = X.size
@@ -94,7 +95,8 @@ plt.ylim(-400, 0)
 # Alternatively, a global mean area-weighted TRELAX (annual mean)
 # could be computed as follows, using HfacC[0,:,:], i.e. HfacC in
 # the surface layer, as a land-ocean mask.
-total_ocn_area = (rA*HFacC[0,:,:]).sum()  # compute total surf area of ocean pts
+# First, compute total surface are of ocean points:
+total_ocn_area = (rA*HFacC[0,:,:]).sum()
 # numpy is often smart enough to figure out broadcasting,
 # depending on axis position.
 # In next line, note a np.tile command is NOT necessary to span
@@ -171,7 +173,7 @@ psi[:,1:,:] = (-ubt*dyG).cumsum(1)/1E6  # compute streamfn in Sv (for each yr)
 # data point in x, at the eastern edge. cumsum is done in y-direction.
 # We have a wall at southern boundary (i.e. no reentrant flow from
 # north), ergo psi(j=0) is accomplished by declaring psi 
-# to be shape (Ny+1,Nx+1). 
+# to be shape (100,Ny+1,Nx+1). 
 
 plt.figure(figsize=(10,8))
 plt.contourf(Xp1, Yp1, psi[-1], np.arange(-35,40,5), cmap='RdYlBu_r')
@@ -208,13 +210,13 @@ plt.ylim(15, 75)
 plt.xlabel('Longitude')
 plt.ylabel('Latitude')
 
-plt.subplot(122)
 # Here, our limited vertical resolution makes for an ugly pcolor plot,
 # we'll shade using contour instead, providing the centers of the
 # vertical grid cells and cell centers in the x-dimension.
 # Also mask out land cells at the boundary, which results in slight
 # white space at domain edges.
 theta_masked = np.ma.MaskedArray(THETA[-1,:,jloc,:], HFacC[:,jloc,:]==0)
+plt.subplot(122)
 plt.contourf(X, RC, theta_masked, np.arange(0,30,.2), cmap='coolwarm')
 plt.colorbar()
 plt.contour(X, RC, theta_masked, np.arange(0,32,2), colors='black')
