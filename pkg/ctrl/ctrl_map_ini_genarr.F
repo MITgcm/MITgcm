@@ -2,6 +2,9 @@
 #ifdef ALLOW_GMREDI
 # include "GMREDI_OPTIONS.h"
 #endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: CTRL_MAP_INI_GENARR
@@ -36,6 +39,9 @@ C     == global variables ==
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_FIELDS.h"
+# ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -56,6 +62,10 @@ C     == local variables ==
 #if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
       integer igen_uvel0, igen_vvel0
 #endif
+# ifdef ALLOW_PTRACERS
+      integer igen_ptr1, igen_ptr2, igen_ptr3
+      integer igen_ptr4, igen_ptr5, igen_ptr6
+# endif
 #endif /* ALLOW_GENARR3D_CONTROL */
 CEOP
 
@@ -104,6 +114,14 @@ C--   generic 3D control variables
       igen_uvel0=0
       igen_vvel0=0
 #endif
+# ifdef ALLOW_PTRACERS
+      igen_ptr1=0
+      igen_ptr2=0
+      igen_ptr3=0
+      igen_ptr4=0
+      igen_ptr5=0
+      igen_ptr6=0
+# endif
       DO iarr = 1, maxCtrlArr3D
       if (xx_genarr3d_weight(iarr).NE.' ') then
         if (xx_genarr3d_file(iarr)(1:8).EQ.'xx_theta')
@@ -122,6 +140,20 @@ C--   generic 3D control variables
         if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_vvel')
      &     igen_vvel0=iarr
 #endif
+# ifdef ALLOW_PTRACERS
+        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_ptr1')
+     &     igen_ptr1=iarr
+        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_ptr2')
+     &     igen_ptr2=iarr
+        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_ptr3')
+     &     igen_ptr3=iarr
+        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_ptr4')
+     &     igen_ptr4=iarr
+        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_ptr5')
+     &     igen_ptr5=iarr
+        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_ptr6')
+     &     igen_ptr6=iarr
+# endif
       endif
       ENDDO
 
@@ -141,6 +173,35 @@ C--   generic 3D control variables
       if (igen_diffkr.GT.0)
      &   call ctrl_map_genarr3d(diffkr,igen_diffkr,myThid)
 #endif
+
+#ifdef ALLOW_PTRACERS
+CADJ STORE pTracer=comlev1,key=ikey_dynamics,kind=isbyte
+      if (igen_ptr1.GT.0) then
+        call ctrl_map_genarr3d(pTracer(1-OLx,1-OLy,1,1,1,1),
+     &                          igen_ptr1,myThid)
+      endif
+      if (igen_ptr2.GT.0) then
+        call ctrl_map_genarr3d(pTracer(1-OLx,1-OLy,1,1,1,2),
+     &                          igen_ptr2,myThid)
+      endif
+      if (igen_ptr3.GT.0) then
+        call ctrl_map_genarr3d(pTracer(1-OLx,1-OLy,1,1,1,3),
+     &                          igen_ptr3,myThid)
+      endif
+      if (igen_ptr4.GT.0) then
+        call ctrl_map_genarr3d(pTracer(1-OLx,1-OLy,1,1,1,4),
+     &                          igen_ptr4,myThid)
+      endif
+      if (igen_ptr5.GT.0) then
+        call ctrl_map_genarr3d(pTracer(1-OLx,1-OLy,1,1,1,5),
+     &                          igen_ptr5,myThid)
+      endif
+      if (igen_ptr6.GT.0) then
+        call ctrl_map_genarr3d(pTracer(1-OLx,1-OLy,1,1,1,6),
+     &                          igen_ptr6,myThid)
+      endif
+#endif
+
 #if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
       if (igen_uvel0.GT.0 .and. igen_vvel0.GT.0) then
          call ctrl_map_genarr3d(uvel,igen_uvel0,myThid)
