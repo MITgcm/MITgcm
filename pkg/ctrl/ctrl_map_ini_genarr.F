@@ -46,6 +46,7 @@ C     == global variables ==
 #include "CTRL_GENARR.h"
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
+# include "PTRACERS_PARAMS.h"
 # include "PTRACERS_FIELDS.h"
 # ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -54,6 +55,12 @@ C     == global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myThid
+
+#if (defined (ALLOW_GENARR3D_CONTROL) && defined(ALLOW_PTRACERS))
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+#endif
 
 C     !LOCAL VARIABLES:
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined(ALLOW_GENARR3D_CONTROL))
@@ -69,8 +76,8 @@ C     !LOCAL VARIABLES:
       INTEGER igen_uvel0, igen_vvel0
 # endif
 # ifdef ALLOW_PTRACERS
-      INTEGER igen_ptr1, igen_ptr2, igen_ptr3
-      INTEGER igen_ptr4, igen_ptr5, igen_ptr6
+      INTEGER iPtr, iLen
+      INTEGER igen_ptr(PTRACERS_num)
 # endif
 #endif /* ALLOW_GENARR3D_CONTROL */
 CEOP
@@ -119,12 +126,9 @@ C--   generic 3D control variables
       igen_vvel0=0
 # endif
 # ifdef ALLOW_PTRACERS
-      igen_ptr1 = 0
-      igen_ptr2 = 0
-      igen_ptr3 = 0
-      igen_ptr4 = 0
-      igen_ptr5 = 0
-      igen_ptr6 = 0
+      DO iPtr = 1, PTRACERS_num
+        igen_ptr(iPtr) = 0
+      ENDDO
 # endif /* ALLOW_PTRACERS */
       DO iarr = 1, maxCtrlArr3D
        IF (xx_genarr3d_weight(iarr).NE.' ') THEN
@@ -145,18 +149,15 @@ C--   generic 3D control variables
      &     igen_vvel0=iarr
 # endif
 # ifdef ALLOW_PTRACERS
-        IF ( xx_genarr3d_file(iarr)(1:7).EQ.'xx_ptr1' )
-     &                                     igen_ptr1 = iarr
-        IF ( xx_genarr3d_file(iarr)(1:7).EQ.'xx_ptr2' )
-     &                                     igen_ptr2 = iarr
-        IF ( xx_genarr3d_file(iarr)(1:7).EQ.'xx_ptr3' )
-     &                                     igen_ptr3 = iarr
-        IF ( xx_genarr3d_file(iarr)(1:7).EQ.'xx_ptr4' )
-     &                                     igen_ptr4 = iarr
-        IF ( xx_genarr3d_file(iarr)(1:7).EQ.'xx_ptr5' )
-     &                                     igen_ptr5 = iarr
-        IF ( xx_genarr3d_file(iarr)(1:7).EQ.'xx_ptr6' )
-     &                                     igen_ptr6 = iarr
+        IF ( usePTRACERS ) THEN
+          iLen = ILNBLNK(xx_genarr3d_file(iarr))
+          IF ( iLen.EQ.7 .AND.
+     &         xx_genarr3d_file(iarr)(1:6).EQ.'xx_ptr' ) THEN
+            READ(xx_genarr3d_file(iarr)(7:7),*) iPtr
+            IF ( iPtr.GE.1 .AND. iPtr.LE.PTRACERS_numInUse )
+     &                  igen_ptr(iPtr) = iarr
+          ENDIF
+        ENDIF
 # endif /* ALLOW_PTRACERS */
        ENDIF
       ENDDO
@@ -180,30 +181,13 @@ C--   generic 3D control variables
 
 # ifdef ALLOW_PTRACERS
 CADJ STORE pTracer=comlev1,key=ikey_dynamics,kind=isbyte
-      IF (igen_ptr1.GT.0) THEN
-        CALL CTRL_MAP_GENARR3D( pTracer(1-OLx,1-OLy,1,1,1,1),
-     &                          igen_ptr1, myThid )
-      ENDIF
-      IF (igen_ptr2.GT.0) THEN
-        CALL CTRL_MAP_GENARR3D( pTracer(1-OLx,1-OLy,1,1,1,2),
-     &                          igen_ptr2, myThid )
-      ENDIF
-      IF (igen_ptr3.GT.0) THEN
-        CALL CTRL_MAP_GENARR3D( pTracer(1-OLx,1-OLy,1,1,1,3),
-     &                          igen_ptr3, myThid )
-      ENDIF
-      IF (igen_ptr4.GT.0) THEN
-        CALL CTRL_MAP_GENARR3D( pTracer(1-OLx,1-OLy,1,1,1,4),
-     &                          igen_ptr4, myThid )
-      ENDIF
-      IF (igen_ptr5.GT.0) THEN
-        CALL CTRL_MAP_GENARR3D( pTracer(1-OLx,1-OLy,1,1,1,5),
-     &                          igen_ptr5, myThid )
-      ENDIF
-      IF (igen_ptr6.GT.0) THEN
-        CALL CTRL_MAP_GENARR3D( pTracer(1-OLx,1-OLy,1,1,1,6),
-     &                          igen_ptr6, myThid )
-      ENDIF
+CADJ loop = parallel
+      DO iPtr = 1, PTRACERS_num
+        IF ( igen_ptr(iPtr).GT.0 ) THEN
+          CALL CTRL_MAP_GENARR3D( pTracer(1-OLx,1-OLy,1,1,1,iPtr),
+     &                            igen_ptr(iPtr), myThid )
+        ENDIF
+      ENDDO
 # endif /* ALLOW_PTRACERS */
 
 # if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
