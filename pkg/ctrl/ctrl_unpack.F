@@ -104,6 +104,10 @@ C     This is how GENARR2/3D_CONTROL is implemented (+ provides an example)
       logical lxxadxx
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
+      character*(80) fname_obcsn(3)
+      character*(80) fname_obcss(3)
+      character*(80) fname_obcsw(3)
+      character*(80) fname_obcse(3)
 cgg(  Add OBCS mask names.
 #ifdef ALLOW_OBCSN_CONTROL
       integer        filenWetobcsnGlo(nr,nobcs)
@@ -197,7 +201,7 @@ c     >>> Initialise control vector for optimcycle=0 <<<
           write(cfile(1:128),'(4a,i4.4)')
      &         ctrlname(1:9),'_',yctrlid(1:10),
      &         yctrlposunpack(1:4), optimcycle
-          write(standardMessageUnit,*) 'ph-pack: unpacking ', 
+          write(standardMessageUnit,*) 'ph-pack: unpacking ',
      &         ctrlname(1:9)
       else
 c     >>> Write gradient vector <<<
@@ -206,7 +210,7 @@ c     >>> Write gradient vector <<<
           write(cfile(1:128),'(4a,i4.4)')
      &         costname(1:9),'_',yctrlid(1:10),
      &         yctrlposunpack(1:4), optimcycle
-          write(standardMessageUnit,*) 'ph-pack: unpacking ', 
+          write(standardMessageUnit,*) 'ph-pack: unpacking ',
      &         costname(1:9)
        endif
 

@@ -455,6 +455,16 @@ C--
        CALL PRINT_ERROR( msgBuf, myThid )
        STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
+      IF ( SEAICElinearIterMax .GT. SOLV_MAX_FIXED ) THEN
+       WRITE(msgBuf,'(2A,I10,A,I10)') 'SEAICE_CHECK:',
+     &      'SEAICElinearIterMax = ', SEAICElinearIterMax,
+     &      ' > SOLV_MAX_FIXED = ', SOLV_MAX_FIXED
+       CALL PRINT_ERROR( msgBuf, myThid )
+       WRITE(msgBuf,'(2A,I10,A,I10)') 'SEAICE_CHECK:',
+     &'either increase SOLV_MAX_FIXED or decrease SEAICElinearIterMax'
+       CALL PRINT_ERROR( msgBuf, myThid )
+       STOP 'ABNORMAL END: S/R SEAICE_LSR'
+      ENDIF
       IF ( IMAX_TICE .GT. NMAX_TICE ) THEN
        WRITE(msgBuf,'(2A)') 'SEAICE_CHECK:',
      &  ' need to increase NMAX_TICE in SEAICE_PARAMS.h'

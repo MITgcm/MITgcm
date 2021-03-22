@@ -139,6 +139,12 @@ C     (no serious problems expected if missing, but get a non-perfect restart)
      &      'restart with AddMass == 0'
            CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
           ENDIF
+         ELSEIF ( missFldList(j).EQ.'SmagDiff' ) THEN
+          IF ( .NOT.pickupStrictlyMatch ) THEN
+           WRITE(msgBuf,'(4A)') '** WARNING ** CHECK_PICKUP: ',
+     &      'restart with zero Smag-3D Diffusivity for first time-step'
+           CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+          ENDIF
          ELSEIF ( missFldList(j).EQ.'FricHeat' ) THEN
           IF ( .NOT.pickupStrictlyMatch ) THEN
            WRITE(msgBuf,'(4A)') '** WARNING ** CHECK_PICKUP: ',
@@ -191,6 +197,10 @@ C-    (but get a non-perfect restart)
            nHydStartAB = 0
          ELSEIF ( missFldList(j).EQ.'GwNm2   ' ) THEN
            nHydStartAB = MIN( nHydStartAB, 1 )
+         ELSEIF ( missFldList(j).EQ.'QH_GwNm1' ) THEN
+           qHydStartAB = 0
+         ELSEIF ( missFldList(j).EQ.'QH_GwNm2' ) THEN
+           qHydStartAB = MIN( qHydStartAB, 1 )
 
          ELSE
 C-    not recognized fields:
@@ -224,6 +234,11 @@ C-    not recognized fields:
           WRITE(msgBuf,'(2(A,I10))')
      &     '          with tempStartAB =', tempStartAB,
      &                 ' ; saltStartAB =', saltStartAB
+          CALL PRINT_MESSAGE(msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
+         ENDIF
+         IF ( qHydStartAB.LT.nIter0 ) THEN
+          WRITE(msgBuf,'(2(A,I10))')
+     &     ' Continue with qHydStartAB =', qHydStartAB
           CALL PRINT_MESSAGE(msgBuf, ioUnit, SQUEEZE_RIGHT, myThid )
          ENDIF
         ENDIF

@@ -9,6 +9,9 @@
  nend             = 4,
 #(grdchkvarindex   = 1 fails at freezing point)
 #grdchkvarindex   = 1,
- grdchkvarindex   = 7,
-#grdchkvarindex   = 34,
+# this is xx_atemp
+# grdchkvarindex   = 7,
+# to test this with xx_gentim2d set 301, because xx_atemp is
+# our first control variable (see data.ctrl)
+ grdchkvarindex   = 301,
  &
