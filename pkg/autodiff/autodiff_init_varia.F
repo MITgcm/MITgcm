@@ -49,8 +49,8 @@ C--   Over all tiles
 C-      3D arrays
 #ifdef ALLOW_EP_FLUX
         DO k=1,Nr
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            EfluxY(i,j,k,bi,bj) = 0.
            EfluxP(i,j,k,bi,bj) = 0.
           ENDDO
@@ -58,10 +58,12 @@ C-      3D arrays
         ENDDO
 #endif
 
-#if (defined (ALLOW_AUTODIFF_INIT_OLD) && defined (ECCO_CTRL_DEPRECATED))
 C-      2D arrays
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+#if (defined (ALLOW_AUTODIFF_INIT_OLD) && defined (ECCO_CTRL_DEPRECATED))
+C--   Resetting these 2-D fields is wrong. Keep this piece of code just to
+C     allow to reproduce old bug (by defining above CPP option).
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
 #ifdef EXACT_CONSERV
           dEtaHdt(i,j,bi,bj) = 0. _d 0
           PmEpR(i,j,bi,bj) = 0. _d 0
@@ -72,7 +74,7 @@ cph       hDivFlow(i,j,bi,bj) = 0. _d 0
 #endif
          ENDDO
         ENDDO
-#endif
+#endif /* ALLOW_AUTODIFF_INIT_OLD and ECCO_CTRL_DEPRECATED */
 
        ENDDO
       ENDDO

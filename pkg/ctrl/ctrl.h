@@ -27,13 +27,8 @@ c     ==================================================================
 cph ctrlprec will be set to 32 for ECCO to reduce I/O
 cph but jeopardizes some gradient checks, so should be
 cph set to 64 by default.
-cph Need to put this in namelist at some point!
       integer     ctrlprec
-#ifdef CTRL_SET_PREC_32
-      parameter ( ctrlprec = 32 )
-#else
-      parameter ( ctrlprec = 64 )
-#endif
+      common /controlparams_i/ ctrlprec
 
 #ifdef ALLOW_ADMTLM
       integer admtlmrec
@@ -123,13 +118,13 @@ C     ctrlUseGen             ::   use generic control approach rather than old c
       integer nwetvglobal     ( nr )
       integer nbuffglobal
 
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_SHELFICE
       common /controlvars_i_shifwflx/
      &     nwetitile, nwetiglobal, filenWetiGlobal
       integer nwetitile     ( nsx,nsy,nr )
       integer nwetiglobal     ( nr )
       integer filenWetiGlobal(nr)
-#endif /* ALLOW_SHIFWFLX_CONTROL */
+#endif /* ALLOW_SHELFICE */
 
       common /controlvars_c/
      &                       ncvargrd
@@ -239,7 +234,7 @@ cph     &                      , tmpfld3d
       _RL num_zero_mean (nsx,nsy)
       _RL objf_zero_mean (nsx,nsy)
       _RL objf_zero_smoo (nsx,nsy)
-      common /ctrl_zero_r/ num_zero_mean, 
+      common /ctrl_zero_r/ num_zero_mean,
      & objf_zero_mean, objf_zero_smoo
 #endif
 
@@ -1005,8 +1000,7 @@ cHFLUXM_CONTROL
       character*( 80)   fname_shifwflx(3)
 
 #endif /* ECCO_CTRL_DEPRECATED */
-    
+
 c     ==================================================================
 c     END OF HEADER CONTROLVARS ctrl.h
 c     ==================================================================
-

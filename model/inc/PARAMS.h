@@ -653,7 +653,8 @@ C     viscA4D    :: Biharmonic viscosity coeff. for mixing of momentum laterally
 C                   (act on Divergence part) ( m^4/s )
 C     viscA4Z    :: Biharmonic viscosity coeff. for mixing of momentum laterally
 C                   (act on Vorticity  part) ( m^4/s )
-C     smag3D_coeff :: Isotropic 3-D Smagorinsky coefficient (-)
+C     smag3D_coeff     :: Isotropic 3-D Smagorinsky viscosity coefficient (-)
+C     smag3D_diffCoeff :: Isotropic 3-D Smagorinsky diffusivity coefficient (-)
 C     viscC2leith  :: Leith non-dimensional viscosity factor (grad(vort))
 C     viscC2leithD :: Modified Leith non-dimensional visc. factor (grad(div))
 C     viscC2LeithQG:: QG Leith non-dimensional viscosity factor
@@ -802,7 +803,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
      & deltaT, deltaTMom, dTtracerLev, deltaTFreeSurf, deltaTClock,
      & abEps, alph_AB, beta_AB,
      & f0, beta, fPrime, omega, rotationPeriod,
-     & viscFacAdj, viscAh, viscAhW, smag3D_coeff,
+     & viscFacAdj, viscAh, viscAhW, smag3D_coeff, smag3D_diffCoeff,
      & viscAhMax, viscAhGrid, viscAhGridMax, viscAhGridMin,
      & viscC2leith, viscC2leithD, viscC2LeithQG,
      & viscC2smag, viscC4smag,
@@ -882,7 +883,7 @@ C     psiEuler      :: Euler angle, rotation about new z-axis
       _RL viscAhW
       _RL viscAhD
       _RL viscAhZ
-      _RL smag3D_coeff
+      _RL smag3D_coeff, smag3D_diffCoeff
       _RL viscAhMax
       _RL viscAhReMax
       _RL viscAhGrid, viscAhGridMax, viscAhGridMin

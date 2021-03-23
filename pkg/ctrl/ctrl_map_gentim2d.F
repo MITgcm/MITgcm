@@ -17,14 +17,11 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "FFIELDS.h"
-#include "DYNVARS.h"
 #include "GRID.h"
 #include "CTRL_SIZE.h"
 #include "ctrl.h"
 #include "CTRL_GENARR.h"
 #include "ctrl_dummy.h"
-#include "optim.h"
 #ifdef ALLOW_AUTODIFF
 #include "AUTODIFF_MYFIELDS.h"
 #endif
@@ -41,20 +38,9 @@ C     myThid :: thread number for this instance of the routine.
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-      integer il
+      integer i,j
       integer iarr
 
-      logical equal
-      logical doglobalread
-      logical ladinit
-      character*( 80)   fnamegeneric
-
-      _RL fac
       _RL xx_gentim2d_loc(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       _RL LOCsumTile(nSx,nSy), LOCsumGlob, genprecipGloH
@@ -68,20 +54,20 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_GENTIM2D_CONTROL
 C--   generic - user-defined control vars
-      DO iarr = 1, maxCtrlTim2D
+      do iarr = 1, maxCtrlTim2D
 
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO J = 1-Oly,sNy+Oly
-          DO I = 1-Olx,sNx+Olx
-           xx_gentim2d_loc(I,J,bi,bj) = 0. _d 0
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
+       do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
+         do j = 1-Oly,sNy+Oly
+          do i = 1-Olx,sNx+Olx
+           xx_gentim2d_loc(i,j,bi,bj) = 0. _d 0
+          enddo
+         enddo
+        enddo
+       enddo
 C
-       if (xx_gentim2d_weight(iarr).NE.' ') 
-     & CALL CTRL_GET_GEN (
+       if (xx_gentim2d_weight(iarr).NE.' ')
+     &  CALL CTRL_GET_GEN (
      I      xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
      I      xx_gentim2d_startdate(1,iarr),
      I      xx_gentim2d_period(iarr),
@@ -94,51 +80,51 @@ C
      I      wgentim2d(1-Olx,1-Oly,1,1,iarr),
      I      mytime, myiter, mythid )
 C
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-            do j = 1,sNy
-              do i =  1,sNx
-              if (xx_gentim2d_cumsum(iarr)) then
-                xx_gentim2d(i,j,bi,bj,iarr)=xx_gentim2d(i,j,bi,bj,iarr)
-     &            +xx_gentim2d_loc(i,j,bi,bj)
-              else
-                xx_gentim2d(i,j,bi,bj,iarr)=xx_gentim2d_loc(i,j,bi,bj)
-              endif
-              enddo
-            enddo
+       do bj=myByLo(myThid),myByHi(myThid)
+        do bi=myBxLo(myThid),myBxHi(myThid)
+         do j = 1,sNy
+          do i = 1,sNx
+           if (xx_gentim2d_cumsum(iarr)) then
+            xx_gentim2d(i,j,bi,bj,iarr)=xx_gentim2d(i,j,bi,bj,iarr)
+     &           +xx_gentim2d_loc(i,j,bi,bj)
+           else
+            xx_gentim2d(i,j,bi,bj,iarr)=xx_gentim2d_loc(i,j,bi,bj)
+           endif
+          enddo
+         enddo
         enddo
-      enddo
+       enddo
 C
-      if (xx_gentim2d_glosum(iarr)) then
+       if (xx_gentim2d_glosum(iarr)) then
 
-      LOCsumGlob=0. _d 0
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
+        LOCsumGlob=0. _d 0
+        do bj=myByLo(myThid),myByHi(myThid)
+         do bi=myBxLo(myThid),myBxHi(myThid)
           LOCsumTile(bi,bj)=0. _d 0
-            do j = 1,sNy
-              do i =  1,sNx
-                LOCsumTile(bi,bj)=LOCsumTile(bi,bj)+
-     &            maskC(i,j,1,bi,bj)*rA(i,j,bi,bj)
-     &            *xx_gentim2d(i,j,bi,bj,iarr)
-              enddo
-            enddo
+          do j = 1,sNy
+           do i = 1,sNx
+            LOCsumTile(bi,bj)=LOCsumTile(bi,bj)+
+     &           maskC(i,j,1,bi,bj)*rA(i,j,bi,bj)
+     &           *xx_gentim2d(i,j,bi,bj,iarr)
+           enddo
+          enddo
+         enddo
         enddo
-      enddo
 
-      CALL GLOBAL_SUM_TILE_RL( LOCsumTile, LOCsumGlob, myThid )
+        CALL GLOBAL_SUM_TILE_RL( LOCsumTile, LOCsumGlob, myThid )
 
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO J = 1-Oly,sNy+Oly
-          DO I = 1-Olx,sNx+Olx
-             xx_gentim2d(I,J,bi,bj,iarr) =
-     &            LOCsumGlob/globalArea*maskC(i,j,1,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
+        do bj = myByLo(myThid), myByHi(myThid)
+         do bi = myBxLo(myThid), myBxHi(myThid)
+          do j = 1-Oly,sNy+Oly
+           do i = 1-Olx,sNx+Olx
+            xx_gentim2d(i,j,bi,bj,iarr) =
+     &           LOCsumGlob/globalArea*maskC(i,j,1,bi,bj)
+           enddo
+          enddo
+         enddo
+        enddo
 
-       if (xx_gentim2d_file(iarr).EQ.'xx_gen_precip') then
+        if (xx_gentim2d_file(iarr).EQ.'xx_gen_precip') then
 
          genprecipGloH=LOCsumGlob/globalArea
      &     *rhoConstFresh*recip_rhoConst*deltaTClock
@@ -147,11 +133,11 @@ C
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
 
-       endif !if (xx_gentim2d_file(iarr).EQ.'xx_gen_precip') then
+        endif !if (xx_gentim2d_file(iarr).EQ.'xx_gen_precip') then
 
        endif !if (xx_gentim2d_glosum(iarr)) then
 
-      ENDDO !DO iarr = 1, maxCtrlTim2D
+      enddo !DO iarr = 1, maxCtrlTim2D
 
 #endif /* ALLOW_GENTIM2D_CONTROL */
 
