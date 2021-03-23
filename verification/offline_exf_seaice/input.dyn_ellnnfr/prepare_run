@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 #- from this dir:
-fromDir="../input.dyn_jfnk"
+fromDir="../input.dyn_lsr"
 
 #- in order to save disc space, take files:
 fileList=`(cd ${fromDir} ; ls -1 data* tr_checklist )`
