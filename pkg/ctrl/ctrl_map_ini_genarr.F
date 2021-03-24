@@ -1,10 +1,4 @@
 #include "CTRL_OPTIONS.h"
-#ifdef ALLOW_GMREDI
-# include "GMREDI_OPTIONS.h"
-#endif
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
 C--   File ctrl_map_ini_genarr.F: Generic arrays control vector
 C--    Contents:
@@ -48,9 +42,6 @@ C     == global variables ==
 # include "PTRACERS_SIZE.h"
 # include "PTRACERS_PARAMS.h"
 # include "PTRACERS_FIELDS.h"
-# ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-# endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -174,13 +165,12 @@ C--   generic 3D control variables
       IF (igen_kapredi.GT.0)
      &  CALL CTRL_MAP_GENARR3D( kapRedi, igen_kapredi, myThid )
 # endif
-# ifdef ALLOW_3D_DIFFKR
+# if ( defined ALLOW_DIFFKR_CONTROL && defined ALLOW_3D_DIFFKR )
       IF (igen_diffkr.GT.0)
-     &  CALL CTRL_MAP_GENARR3D( diffkr, igen_diffkr, myThid )
+     &  CALL CTRL_MAP_GENARR3D( diffKr, igen_diffkr, myThid )
 # endif
 
 # ifdef ALLOW_PTRACERS
-CADJ STORE pTracer=comlev1,key=ikey_dynamics,kind=isbyte
 CADJ loop = parallel
       DO iPtr = 1, PTRACERS_num
         IF ( igen_ptr(iPtr).GT.0 ) THEN
