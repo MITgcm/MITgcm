@@ -145,6 +145,18 @@ C     QGLeith code has not been compiled.
       ENDIF
 #endif
 
+#ifndef ALLOW_QHYD_STAGGER_TS
+      IF ( quasiHydrostatic .AND. staggerTimeStep ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &    'Cannot use quasiHydrostatic with staggerTimeStep'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: when compiled ',
+     &  'with "#undef ALLOW_QHYD_STAGGER_TS" in CPP_OPTIONS.h'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        errCount = errCount + 1
+      ENDIF
+#endif
+
 #ifndef ALLOW_ADAMSBASHFORTH_3
       IF ( alph_AB.NE.UNSET_RL .OR. beta_AB.NE.UNSET_RL ) THEN
         WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',

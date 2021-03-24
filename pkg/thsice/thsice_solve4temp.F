@@ -1,5 +1,6 @@
 #include "THSICE_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
 # ifdef ALLOW_EXF
 #  include "EXF_OPTIONS.h"
 # endif
@@ -48,16 +49,18 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "THSICE_PARAMS.h"
+#ifdef ALLOW_AUTODIFF
+# include "THSICE_SIZE.h"
+c#include "THSICE_VARS.h"
+# ifdef ALLOW_EXF
+#  include "EXF_PARAM.h"
+#  include "EXF_CONSTANTS.h"
+#  include "EXF_FIELDS.h"
+# endif
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
-#include "THSICE_SIZE.h"
-c#include "THSICE_VARS.h"
-# ifdef ALLOW_EXF
-#  include "EXF_FIELDS.h"
-#  include "EXF_PARAM.h"
-#  include "EXF_CONSTANTS.h"
-# endif
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -199,10 +202,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|
       ticekey = (act1 + 1) + act2*max1
      &                     + act3*max1*max2
      &                     + act4*max1*max2*max3
+
+CADJ STORE flxsw(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE flxsw(:,:) = comlev1_bibj,key=ticekey,byte=isbyte
+#ifdef ALLOW_AUTODIFF
       DO j = 1-OLy, sNy+OLy
        DO i = 1-OLx, sNx+OLx
         tIc1(i,j) = 0. _d 0
@@ -419,16 +423,17 @@ C ----- begin iteration  -----
       DO k = 1,iterMax
 #ifndef ALLOW_AUTODIFF
        IF ( iterate4Tsf ) THEN
-       iterate4Tsf = .FALSE.
+        iterate4Tsf = .FALSE.
 C
-       IF ( useBlkFlx ) THEN
-#else
-          kkey = (ticekey-1)*MaxTsf + k
+        IF ( useBlkFlx ) THEN
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+         kkey = (ticekey-1)*MaxTsf + k
 CADJ STORE iceflag = comlev1_thsice_s4t, key=kkey, byte=isbyte
 CADJ STORE hSnow1  = comlev1_thsice_s4t, key=kkey, byte=isbyte
 CADJ STORE tsf     = comlev1_thsice_s4t, key=kkey, byte=isbyte
 CADJ STORE dEvdT   = comlev1_thsice_s4t, key=kkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF */
+#endif
 
 C--   Compute top surface flux.
 #ifndef ALLOW_AUTODIFF
@@ -449,7 +454,7 @@ C-    could add this "ifdef" to hide THSICE_GET_BULKF from TAF
      I                            myTime, myIter, myThid )
 C--- end if: IF ( useEXF ) THEN
          ENDIF
-       ELSE
+        ELSE
          DO j = jMin, jMax
           DO i = iMin, iMax
            IF ( iceFlag(i,j).GT.0. _d 0 ) THEN
@@ -459,7 +464,7 @@ C--- end if: IF ( useEXF ) THEN
           ENDDO
          ENDDO
 C--- end if: IF ( useBlkFlx ) THEN
-       ENDIF
+        ENDIF
 #endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -473,57 +478,57 @@ CADJ STORE tsf(:,:)      = comlev1_bibj,key=ticekey,byte=isbyte
 C--   Compute new top layer and surface temperatures.
 C     If Tsfc is computed to be > 0 C, fix Tsfc = 0 and recompute T1
 C     with different coefficients.
-       DO j = jMin, jMax
-        DO i = iMin, iMax
-         IF ( iceFlag(i,j).GT.0. _d 0 ) THEN
-          flxNet = sHeat(i,j) + flxTexSW(i,j)
+        DO j = jMin, jMax
+         DO i = iMin, iMax
+          IF ( iceFlag(i,j).GT.0. _d 0 ) THEN
+           flxNet = sHeat(i,j) + flxTexSW(i,j)
 #ifdef ALLOW_DBUG_THSICE
-          IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,1020)
+           IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,1020)
      &     'ThSI_SOLVE4T: flxNet,dFlxdT,k12,D=',
      &      flxNet, dFlxdT(i,j), k12(i,j), k12(i,j)-dFlxdT(i,j)
 #endif
 
-          a1 = a10(i,j) - k12(i,j)*dFlxdT(i,j) / (k12(i,j)-dFlxdT(i,j))
-          b1 = b10(i,j) - k12(i,j)*(flxNet-dFlxdT(i,j)*Tsf(i,j))
-     &                  /(k12(i,j)-dFlxdT(i,j))
-          c1 = c10(i,j)
-          tIc1(i,j)  = -(b1 + SQRT(b1*b1-4. _d 0*a1*c1))/(2. _d 0*a1)
-          dTsrf1(i,j) = (flxNet + k12(i,j)*(tIc1(i,j)-Tsf(i,j)))
-     &                  /(k12(i,j)-dFlxdT(i,j))
-          Tsf(i,j) = Tsf(i,j) + dTsrf1(i,j)
+           a1 = a10(i,j) - k12(i,j)*dFlxdT(i,j) / (k12(i,j)-dFlxdT(i,j))
+           b1 = b10(i,j) - k12(i,j)*(flxNet-dFlxdT(i,j)*Tsf(i,j))
+     &                   /(k12(i,j)-dFlxdT(i,j))
+           c1 = c10(i,j)
+           tIc1(i,j)  = -(b1 + SQRT(b1*b1-4. _d 0*a1*c1))/(2. _d 0*a1)
+           dTsrf1(i,j) = (flxNet + k12(i,j)*(tIc1(i,j)-Tsf(i,j)))
+     &                   /(k12(i,j)-dFlxdT(i,j))
+           Tsf(i,j) = Tsf(i,j) + dTsrf1(i,j)
 C
-          IF ( Tsf(i,j) .GT. 0. _d 0 ) THEN
+           IF ( Tsf(i,j) .GT. 0. _d 0 ) THEN
 #ifdef ALLOW_DBUG_THSICE
-           IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,1010)
+            IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,1010)
      &     'ThSI_SOLVE4T: k,ts,t1,dTs=',k,Tsf(i,j),tIc1(i,j),dTsrf1(i,j)
 #endif
-           a1 = a10(i,j) + k12(i,j)
+            a1 = a10(i,j) + k12(i,j)
 C      note: b1 = b10 - k12*Tf0
-           b1 = b10(i,j)
-           tIc1(i,j) = (-b1 - SQRT(b1*b1-4. _d 0*a1*c1))/(2. _d 0*a1)
-           Tsf(i,j) = 0. _d 0
+            b1 = b10(i,j)
+            tIc1(i,j) = (-b1 - SQRT(b1*b1-4. _d 0*a1*c1))/(2. _d 0*a1)
+            Tsf(i,j) = 0. _d 0
 #ifndef ALLOW_AUTODIFF
-           IF ( useBlkFlx ) THEN
+            IF ( useBlkFlx ) THEN
 #endif /* ALLOW_AUTODIFF */
-            flxTexSW(i,j) = flx0exSW(i,j)
-            evapT(i,j) = evap00(i,j)
-            dTsrf1(i,j) = 0. _d 0
+             flxTexSW(i,j) = flx0exSW(i,j)
+             evapT(i,j) = evap00(i,j)
+             dTsrf1(i,j) = 0. _d 0
 #ifndef ALLOW_AUTODIFF
-           ELSE
-            flxTexSW(i,j) = flxExSW(i,j,0)
-            dTsrf1(i,j) = 1000.
-            dFlxdT(i,j) = 0.
+            ELSE
+             flxTexSW(i,j) = flxExSW(i,j,0)
+             dTsrf1(i,j) = 1000.
+             dFlxdT(i,j) = 0.
+            ENDIF
+#endif /* ALLOW_AUTODIFF */
            ENDIF
-#endif /* ALLOW_AUTODIFF */
-          ENDIF
 
 C--   Check for convergence.  If no convergence, then repeat.
-          IF (ABS(dTsrf1(i,j)).GE.Terrmax) THEN
-           iceFlag(i,j) = 1. _d 0
-          ELSE
-           iceFlag(i,j) = 0. _d 0
-          ENDIF
-          iterate4Tsf = iterate4Tsf .OR. (iceFlag(i,j).GT.0. _d 0)
+           IF (ABS(dTsrf1(i,j)).GE.Terrmax) THEN
+            iceFlag(i,j) = 1. _d 0
+           ELSE
+            iceFlag(i,j) = 0. _d 0
+           ENDIF
+           iterate4Tsf = iterate4Tsf .OR. (iceFlag(i,j).GT.0. _d 0)
 
 C     Convergence test: Make sure Tsfc has converged, within prescribed error.
 C     (Energy conservation is guaranteed within machine roundoff, even
@@ -531,29 +536,29 @@ C      if Tsfc has not converged.)
 C     If no convergence, then repeat.
 
 #ifdef ALLOW_DBUG_THSICE
-          IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,1010)
+           IF ( dBug(i,j,bi,bj) ) WRITE(stdUnit,1010)
      &    'ThSI_SOLVE4T: k,ts,t1,dTs=', k,Tsf(i,j),tIc1(i,j),dTsrf1(i,j)
-          IF ( useBlkFlx .AND. k.EQ.nitMaxTsf .AND.
-     &     (iceFlag(i,j).GT.0. _d 0) ) THEN
-           WRITE(stdUnit,'(A,4I4,I12,F15.9)')
+           IF ( useBlkFlx .AND. k.EQ.nitMaxTsf .AND.
+     &                     (iceFlag(i,j).GT.0. _d 0) ) THEN
+            WRITE(stdUnit,'(A,4I4,I12,F15.9)')
      &       ' BB: not converge: i,j,it,hi=',i,j,bi,bj,myIter,hIce(i,j)
-           WRITE(stdUnit,*)
+            WRITE(stdUnit,*)
      &        'BB: not converge: Tsf, dTsf=', Tsf(i,j), dTsrf1(i,j)
-           WRITE(stdUnit,*)
+            WRITE(stdUnit,*)
      &        'BB: not converge: flxNet,dFlxT=', flxNet, dFlxdT(i,j)
-           IF ( Tsf(i,j).LT.-70. _d 0 ) THEN
+            IF ( Tsf(i,j).LT.-70. _d 0 ) THEN
              WRITE( msgBuf, '(A,2I4,2I3,I10,F12.3)')
      &        'THSICE_SOLVE4TEMP: Too low Tsf in', i, j, bi, bj,
      &                            myIter, Tsf(i,j)
              CALL PRINT_ERROR( msgBuf , myThid )
              STOP 'ABNORMAL END: S/R THSICE_SOLVE4TEMP'
+            ENDIF
            ENDIF
-          ENDIF
 #endif /* ALLOW_DBUG_THSICE */
 
-         ENDIF
+          ENDIF
+         ENDDO
         ENDDO
-       ENDDO
 #ifndef ALLOW_AUTODIFF
 C--- end if: IF ( iterate4Tsf ) THEN
        ENDIF

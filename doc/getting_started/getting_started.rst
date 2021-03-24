@@ -1468,11 +1468,15 @@ somewhat obscure, so newer users of the MITgcm are encouraged to jump to
    |                                               |         | for partial-cell in vertical viscosity and diffusion, either from grid-spacing reduction effect or as                |
    |                                               |         | artificially enhanced mixing near surface & bottom for too thin grid-cell                                            |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`ALLOW_SMAG_3D_DIFFUSIVITY`          | #undef  | include code for isotropic 3-D Smagorinsky diffusivity for tracers (viscosity scaled by constant Prandtl number)     |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`ALLOW_SOLVE4_PS_AND_DRAG`           | #undef  | include code for combined surface pressure and drag implicit solver                                                  |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`INCLUDE_IMPLVERTADV_CODE`           | #define | include code for implicit vertical advection                                                                         |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`ALLOW_ADAMSBASHFORTH_3`             | #undef  | include code for Adams-Bashforth 3rd-order                                                                           |
+   +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
+   | :varlink:`ALLOW_QHYD_STAGGER_TS`              | #undef  | include code for quasi-hydrostatic stagger time-step Adams-Bashforth code                                            |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
    | :varlink:`EXACT_CONSERV`                      | #define | include code for  “exact conservation" of fluid in free-surface formulation                                          |
    |                                               |         | (recompute divergence after pressure solver)                                                                         |
