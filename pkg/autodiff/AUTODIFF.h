@@ -5,7 +5,7 @@
       INTEGER tapeFileUnit, tapeFileUnitS(4)
       COMMON /AUTODIFF_WHTAPEIO_L/
      &  tapeConcatIO, tapeSingleCpuIO, tapeBufferIO
-      logical tapeConcatIO, tapeSingleCpuIO, tapeBufferIO
+      LOGICAL tapeConcatIO, tapeSingleCpuIO, tapeBufferIO
 #endif
 
 c ad dump record number (used only if dumpAdByRec is true)
