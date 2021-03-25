@@ -1,6 +1,14 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/autodiff:
+  Include TICES of pkg/seaice into StoreSEAICE:
+  - split AUTODIFF.h into two to be able to use nITD in the new AUTODIFF_STORE.h
+  - rearrange and cleanup declarations, add CPP flags ALLOW_SEAICE/OBCS/EXF ;
+  - clean up seaice section of autodiff_store/restore.F to remove unused storage
+    space ;
+  - changes AD results of global_ocean.cs32x15.seaice & seaice_dynmix, lab_sea &
+    lab_sea.noseaicedyn => output_adm updated.
 o model/src:
   - make sure the 3 recip_hFac{C,W,S} are reset after resetting the 3 hFac
     in ini_nlfs_vars.F when using Non-Lin FreeSurf with pkg/autodiff compiled
