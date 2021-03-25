@@ -62,6 +62,7 @@ Ny = grid.Y.size
 # load statistical diagnostic output (set to monthly time-avg output)
 # only one output region is defined: global (the default)
 dynStDiag = xr.open_dataset('dynStDiag.nc')
+dynStDiag = dynStDiag.rename({'Zmd000015':'Z'})
 # includes diagnostics:
 # TRELAX_ave:   (time, region, depth); region=0 (global), depth=0 (surf-only)
 # THETA_lv_ave: (time, region, depth); region=0 (global)
@@ -76,11 +77,13 @@ dynDiag = dynDiag.rename({'Zmd000015':'Z'})
 # UVEL:         (time, depth, y, x); x dim. is Nx+1, includes eastern edge
 # VVEL:         (time, depth, y, x); y dim. is Ny+1, includes northern edge
 # THETA:        (time, depth, y, x)
-# Note the Z dimension here has a different name, we rename to the
+
+# Note the Z dimension above has a different name, we rename to the
 # standard name 'Z' which will make life easier when we do some
 # calculations using the raw data. This is because pkg/diagnostics
 # has an option to allow specific levels of a 3-D variable to be output.
-# If 'levels' are selected, the following additional statement needed:
+# If 'levels' are selected in data.diagnostics, the following
+# additional statement would be needed:
 #   dynDiag['Z'] = grid['Z'][dynDiag.diag_levels.astype(int)-1]
 
 
@@ -89,26 +92,26 @@ dynDiag = dynDiag.rename({'Zmd000015':'Z'})
 # figure 4.6 - time series of global mean TRELAX and THETA by level
 #
 # plot THETA at MITgcm k levels 1,5,15 (SST, -305 m, -1705 m)
-klev1 =  0
-klev2 =  4
-klev3 = 14
+klevs = [0, 4, 14]
 
 # MITgcm time units (dim='T') is in seconds, so create new coordinate
-# for monthly time averages (mid-month) and convert into years.
+# for (dynStDiag) monthly time averages and convert into years.
 # Note that the MITgcm time array values correspond to time at the end
-# of the time-avg periods.   
+# of the time-avg periods, i.e. subtract 1/24 to plot at mid-month.  
 Tmon = (dynStDiag['T']/(86400*360)-1/24).assign_attrs(units='years')
-# and repeat to create mid-year time series for annual mean time output
+# and repeat to create mid-year time series for annual mean time output,
+# subtract 0.5 to plot at mid-year
 Tann = (surfDiag['T']/(86400*360)-0.5).assign_attrs(units='years')
 
 plt.figure(figsize=(16,10))
+# global mean TRELAX
 plt.subplot(221)
 # we tell xarray to plot using this new abscissa Tmon (instead of T)
 # xarray is smart enough to ignore the singleton dimensions
 # for region and depth
 dynStDiag.TRELAX_ave.assign_coords(T=Tmon).plot(color='b',linewidth=4)
 plt.grid('both') 
-plt.xlim(0, 100)
+plt.xlim(0, np.ceil(Tmon[-1]))
 plt.ylim(-400,0)
 # Alternatively, a global mean area-weighted TRELAX (annual mean)
 # could be computed as follows, using HfacC[0,:,:], i.e. HfacC in
@@ -125,35 +128,33 @@ TRELAX_ave_ann.assign_coords(T=Tann).plot(
 plt.title('a) Net Heat Flux into Ocean (TRELAX_ave)')
 
 plt.subplot(223)
-dynStDiag.THETA_lv_ave.isel(Zmd000015=klev1).assign_coords(T=Tmon).plot(
-                 color='c',label='T_surf',linewidth=4)
-dynStDiag.THETA_lv_ave.isel(Zmd000015=klev2).assign_coords(T=Tmon).plot(
-                 color='g',label='T_300m',linewidth=4)
-dynStDiag.THETA_lv_ave.isel(Zmd000015=klev3).assign_coords(T=Tmon).plot(
-                 color='r',label='T_abyss',linewidth=4)
+# mean THETA by level
+# Here is an example of allowing xarray to do even more of the work
+# and labeling for you, given selected levels, using 'hue' parameter
+THETAmon = dynStDiag.THETA_lv_ave.assign_coords(T=Tmon, Z=grid.RC)
+THETAmon.isel(Z=klevs).plot(hue='Z', linewidth=4)
 plt.grid('both')
 plt.title('b) Mean Potential Temp. by Level (THETA_lv_avg)')
-plt.xlim(0, 100)
-plt.ylim(0,30)
-plt.legend()
+plt.xlim(0, np.ceil(Tmon[-1]))
+plt.ylim(0,30);
+# Note a legend (of Z depths) was included automatically.
+# Specifying colors is not so simple however, either change
+# the defaults a priori, e.g. ax.set_prop_cycle(color=['r','g','c'])
+# or after the fact, e.g. lh[0].set_color('r') etc.
 
 plt.subplot(224)
-dynStDiag.THETA_lv_std.isel(Zmd000015=klev1).assign_coords(T=Tmon).plot(
-                 color='c',label='T_surf',linewidth=4)
-dynStDiag.THETA_lv_std.isel(Zmd000015=klev2).assign_coords(T=Tmon).plot(
-                 color='g',label='T_300m',linewidth=4)
-dynStDiag.THETA_lv_std.isel(Zmd000015=klev3).assign_coords(T=Tmon).plot(
-                color='r',label='T_abyss',linewidth=4)
+# standard deviation of THETA by level
+THETAmon = dynStDiag.THETA_lv_std.assign_coords(T=Tmon, Z=grid.RC)
+THETAmon.isel(Z=klevs).plot(hue='Z', linewidth=4)
 plt.grid('both')
 plt.title('c) Std. Dev. Potential Temp. by Level (THETA_lv_std)')
-plt.xlim(0, 100)
+plt.xlim(0, np.ceil(Tmon[-1]))
 plt.ylim(0,8)
-plt.legend()
 plt.show()
 
 # figure 4.7 - 2-D plot of TRELAX and contours of free surface height
-# (ETAN) at t=100 yrs.
-#
+# (ETAN) at simulation end ( endTime = 3110400000. is t=100 yrs).
+##
 eta_masked = surfDiag.ETAN[-1,0,:,:].where(grid.HFacC[0,:,:]!=0)
 plt.figure(figsize=(10,8)) 
 surfDiag.TRELAX[-1,0,:,:].plot(cmap='RdBu_r', vmin=-250, vmax=250)
@@ -175,7 +176,7 @@ plt.show()
 # surfDiag.TRELAX[-1,0,:,:].plot.contourf(
 #          cmap='RdBu_r',levels=np.linspace(-250,250,1000))
 
-# figure 4.8 - barotropic streamfunction at t=100 yrs.
+# figure 4.8 - barotropic streamfunction, plot at simulation end
 # (w/overlaid labeled contours)
 #
 # here is an example where the xarray broadcasting is superior:
@@ -188,7 +189,7 @@ psi = (-ubt*grid.dyG).cumsum('Y').pad(Y=(1,0),constant_values=0.)/1E6
 # north). We need to add a row of zeros to specify psi(j=0).
 # xarray .pad() allows one to add a row at the top and/or bottom,
 # we just need the bottom row (j=0) padding the computed psi array.
-# Thus after padding psi is shape (100,Ny+1,Nx+1) 
+# Thus after padding psi is shape (dynDiag.UVEL['T'].size,Ny+1,Nx+1) 
 # Finally, since psi is computed at grid cell corners,
 # we need to re-assign Yp1 coordinate to psi.
 # (xxx.values extracts the numpy-array data from xarray DataArray xxx)
@@ -205,7 +206,7 @@ plt.ylim(15,75)
 plt.title('Barotropic Streamfunction (Sv)');
 plt.show()
 
-# figure 4.9 - potential temp at depth and xz slice at t=100 yrs.
+# figure 4.9 - potential temp at depth and xz slice at simulation end
 #
 # plot THETA at MITgcm k=4 (220 m depth) and j=15 (28.5N)
 klev =  3
@@ -220,7 +221,7 @@ dynDiag.THETA[-1,klev,:,:].plot(cmap='coolwarm',vmin=0,vmax=30 )
 theta_masked.plot.contour(levels=np.linspace(0,30,16), colors='k')
 plt.xlim(0,60)
 plt.ylim(15,75)
-plt.title('a) THETA at 220 m Depth ($\mathregular{^oC}$)')
+plt.title('a) THETA at %g m Depth ($\mathregular{^oC}$)' %grid.RC[klev])
 
 theta_masked = dynDiag.THETA[-1,:,jloc,:].where(grid.HFacC[:,jloc,:]!=0)
 plt.subplot(122)
@@ -231,7 +232,7 @@ plt.subplot(122)
 # white space at domain edges.
 theta_masked.plot.contourf(levels=np.arange(0,30,.2),cmap='coolwarm')
 theta_masked.plot.contour(levels=np.arange(0,30,2),colors='k')
-plt.title('b) THETA at 28.5N ($\mathregular{^oC}$)')
+plt.title('b) THETA at %gN ($\mathregular{^oC}$)' %grid.YC[jloc,0])
 plt.xlim(0, 60)
 plt.ylim(-1800, 0)
 plt.show()

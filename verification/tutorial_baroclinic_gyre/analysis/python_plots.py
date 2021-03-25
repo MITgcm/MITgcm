@@ -59,15 +59,11 @@ dynStDiag = nc.Dataset('dynStDiag.nc')
 TRELAX_ave = dynStDiag['TRELAX_ave'][:]      # (time, region, depth); region=0 (global), depth=0 (surf-only)
 THETA_lv_ave = dynStDiag['THETA_lv_ave'][:]  # (time, region, depth); region=0 (global)
 THETA_lv_std = dynStDiag['THETA_lv_std'][:]  # (time, region, depth); region=0 (global)
-time_stdiag = dynStDiag['T'][:]/(86400*360)-1/24 # series of model time for stat-diags output (sec->yrs)
-# note that the output time array contains times at month-ends,
-# but we'll plot at mid-month time
   
 # load 2-D and 3-D variable diagnostic output, annual mean data
 surfDiag = nc.Dataset('surfDiag.nc')
 TRELAX = surfDiag['TRELAX'][:]  # (time, depth, y, x); depth=0 (surface-only)
 ETAN = surfDiag['ETAN'][:]      # (time, depth, y, x); depth=0 (surface-only)
-time_surfdiag = surfDiag['T'][:]/(86400*360)-0.5 # time of surf diag output (sec->yrs), plot mid-year
 dynDiag = nc.Dataset('dynDiag.nc')
 UVEL = dynDiag['UVEL'][:]       # (time, depth, y, x); x dim is Nx+1, includes eastern edge
 VVEL = dynDiag['VVEL'][:]       # (time, depth, y, x); y dim is Ny+1, includes northern edge
@@ -79,18 +75,26 @@ THETA = dynDiag['THETA'][:]     # (time, depth, y, x)
 # figure 4.6 - time series of global mean TRELAX and THETA by level
 #
 # plot THETA at MITgcm k levels 1,5,15 (SST, -305 m, -1705 m)
-klev1 =  0
-klev2 =  4
-klev3 = 14
+klevs = [0, 4, 14]
+
+# MITgcm time units (dim='T') is in seconds, so create new time series
+# for (dynStDiag) monthly time averages and convert into years.
+# Note that the MITgcm time array values correspond to time at the end
+# of the time-avg periods, i.e. subtract 1/24 to plot at mid-month.
+Tmon = dynStDiag['T'][:]/(86400*360)-1/24 
+# and repeat to create mid-year time series for annual mean time output,
+# subtract 0.5 to plot at mid-year
+Tann = surfDiag['T'][:]/(86400*360)-0.5
 
 plt.figure(figsize=(16,10))
+# global mean TRELAX
 plt.subplot(221)
-plt.plot(time_stdiag, TRELAX_ave[:,0,0], 'b', linewidth=4)
+plt.plot(Tmon, TRELAX_ave[:,0,0], 'b', linewidth=4)
 plt.grid('both')
 plt.title('a) Net Heat Flux into Ocean (TRELAX_ave)')
 plt.xlabel('Time (yrs)')
 plt.ylabel('$\mathregular{W/m^2}$')
-plt.xlim(0, 100)
+plt.xlim(0, np.ceil(Tmon[-1]))
 plt.ylim(-400, 0)
 # Alternatively, a global mean area-weighted TRELAX (annual mean)
 # could be computed as follows, using HfacC[0,:,:], i.e. HfacC in
@@ -102,41 +106,34 @@ total_ocn_area = (rA*HFacC[0,:,:]).sum()
 # In next line, note a np.tile command is NOT necessary to span
 # the grid array across the time axis:
 TRELAX_ave_ann = (TRELAX[:,0,:,:]*rA*HFacC[0,:,:]).sum((1,2))/total_ocn_area
-plt.plot(time_surfdiag, TRELAX_ave_ann, 'm--', linewidth=4)
+plt.plot(Tann, TRELAX_ave_ann, 'm--', linewidth=4)
 
 plt.subplot(223)
-plt.plot(time_stdiag, THETA_lv_ave[:,0,klev1], 'c',
-         linewidth=4, label=r'$T_\mathrm{surf}$')
-plt.plot(time_stdiag, THETA_lv_ave[:,0,klev2], 'g',
-         linewidth=4, label=r'$T_\mathrm{300m}$')
-plt.plot(time_stdiag, THETA_lv_ave[:,0,klev3], 'r',
-         linewidth=4, label=r'$T_\mathrm{abyss}$')
+plt.plot(Tmon, THETA_lv_ave[:,0,klevs], linewidth=4)
+# To specify colors for specific lines, either change the
+# defaults a priori, e.g. ax.set_prop_cycle(color=['r','g','c'])
+# or after the fact, e.g. lh[0].set_color('r') etc.
 plt.grid('both')
 plt.title('b) Mean Potential Temp. by Level (THETA_lv_avg)')
 plt.xlabel('Time (yrs)')
 plt.ylabel('$\mathregular{^oC}$')
-plt.xlim(0, 100)
+plt.xlim(0, np.ceil(Tmon[-1]))
 plt.ylim(0, 30)
-plt.legend()
+plt.legend(RC[klevs], title='Z (m)')
 
 plt.subplot(224)
-plt.plot(time_stdiag, THETA_lv_std[:,0,klev1], 'c',
-         linewidth=4, label=r'$T_\mathrm{surf}$')
-plt.plot(time_stdiag, THETA_lv_std[:,0,klev2], 'g',
-         linewidth=4, label=r'$T_\mathrm{300m}$')
-plt.plot(time_stdiag, THETA_lv_std[:,0,klev3], 'r',
-         linewidth=4, label=r'$T_\mathrm{abyss}}$')
+plt.plot(Tmon, THETA_lv_std[:,0,klevs], linewidth=4)
 plt.grid('both')
 plt.title('c) Std. Dev. Potential Temp. by Level (THETA_lv_std)')
 plt.xlabel('Time (years)')
 plt.ylabel('$\mathregular{^oC}$')
-plt.xlim(0, 100)
+plt.xlim(0, np.ceil(Tmon[-1]))
 plt.ylim(0, 8)
-plt.legend()
+plt.legend(RC[klevs], title='Z (m)')
 plt.show()
 
 # figure 4.7 - 2-D plot of TRELAX and contours of free surface height
-# (ETAN) at t=100 yrs.
+# (ETAN) at simulation end ( endTime = 3110400000. is t=100 yrs).
 #
 eta_masked = np.ma.MaskedArray(ETAN[-1,0,:,:], HFacC[0,:,:]==0)
 plt.figure(figsize=(10,8)) 
@@ -160,20 +157,20 @@ plt.show()
 # Also note we mask the land values when contouring the free
 # surface height.
 
-# figure 4.8 - barotropic streamfunction at t=100 yrs.
+# figure 4.8 - barotropic streamfunction, plot at simulation end
 # (w/overlaid labeled contours)
 #
 ubt = (UVEL*drF[:,np.newaxis,np.newaxis]).sum(1)  # depth-integrated u velocity
 # For ubt calculation numpy needs a bit of help with broadcasting
 # the drF vector across [time,y,x] axes
-psi = np.zeros((100,Ny+1,Nx+1))
+psi = np.zeros((dynDiag['T'].size,Ny+1,Nx+1))
 psi[:,1:,:] = (-ubt*dyG).cumsum(1)/1E6  # compute streamfn in Sv (for each yr)
 # Note psi is computed and plotted at the grid cell corners and we
 # compute as dimensioned (Ny,Nx+1); as noted, UVEL contains an extra
 # data point in x, at the eastern edge. cumsum is done in y-direction.
 # We have a wall at southern boundary (i.e. no reentrant flow from
 # north), ergo psi(j=0) is accomplished by declaring psi 
-# to be shape (100,Ny+1,Nx+1). 
+# to be shape (dynDiag['T'].size,Ny+1,Nx+1). 
 
 plt.figure(figsize=(10,8))
 plt.contourf(Xp1, Yp1, psi[-1], np.arange(-35,40,5), cmap='RdYlBu_r')
@@ -187,7 +184,7 @@ plt.xlabel('Longitude')
 plt.ylabel('Latitude');
 plt.show()
 
-# figure 4.9 - potential temp at depth and xz slice at t=100 yrs.
+# figure 4.9 - potential temp at depth and xz slice at simulation end
 #
 # plot THETA at MITgcm k=4 (220 m depth) and j=15 (28.5N)
 klev =  3
@@ -204,7 +201,7 @@ plt.colorbar()
 # but to overlay contours we provide the cell centers
 # and mask out boundary/land cells
 plt.contour(X, Y, theta_masked, np.arange(0,30,2), colors='black')
-plt.title('a) THETA 220m Depth ($\mathregular{^oC}$)')
+plt.title('a) THETA at %g m Depth ($\mathregular{^oC}$)' %RC[klev])
 plt.xlim(0, 60)
 plt.ylim(15, 75)
 plt.xlabel('Longitude')
@@ -220,7 +217,7 @@ plt.subplot(122)
 plt.contourf(X, RC, theta_masked, np.arange(0,30,.2), cmap='coolwarm')
 plt.colorbar()
 plt.contour(X, RC, theta_masked, np.arange(0,32,2), colors='black')
-plt.title('b) THETA at 28.5N ($\mathregular{^oC}$)')
+plt.title('b) THETA at %gN ($\mathregular{^oC}$)' %YC[jloc,0])
 plt.xlim(0, 60)
 plt.ylim(-1800, 0)
 plt.xlabel('Longitude')
