@@ -230,9 +230,10 @@ plt.show()
 # (see tutorial Southern Ocean Reentrant Channel for an example)
 # The white space occurs because contour uses data at cell centers, with
 # values masked/undefined beyond the cell centers toward boundaries.
+
 # To instead plot using pcolor, pass location of vertical cell faces RF:
 # RF=grid['RF'][:]
-# plt.pcolormesh(Xp1,RF,THETA[-1,:,14,:],cmap='coolwarm')
+# plt.pcolormesh(Xp1,RF,THETA[-1,:,jloc,:],cmap='coolwarm')
 
 
 # Note, the gluemncbig steps outlined in tutorial section 4.2.4.1 can be

@@ -247,5 +247,6 @@ plt.show()
 # (see tutorial Southern Ocean Reentrant Channel for an example)
 # The white space occurs because contour uses data at cell centers, with
 # values masked/undefined beyond the cell centers toward boundaries.
+
 # To instead plot using pcolor: 
 # theta_masked.assign_coords(Z=grid.RC.values).plot(cmap='coolwarm')
