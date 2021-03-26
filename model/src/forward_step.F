@@ -651,6 +651,11 @@ CADJ STORE phi0surf = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 cph-test)
 
+# ifdef ALLOW_OBCS
+#  include "obcs_ad_check_lev1_dir.h"
+CADJ STORE salt, theta = comlev1, key = ikey_dynamics, kind = isbyte
+# endif /* ALLOW_OBCS */
+
 # ifdef ALLOW_DEPTH_CONTROL
 CADJ STORE hFacC, hFacS, hFacW
 CADJ &     = comlev1, key = ikey_dynamics, kind = isbyte
@@ -774,6 +779,9 @@ CADJ STORE wVel = comlev1, key = ikey_dynamics, kind = isbyte
         CALL TIMER_STOP ('THERMODYNAMICS      [FORWARD_STEP]',myThid)
 C--     if not staggerTimeStep: end
       ENDIF
+#ifdef ALLOW_OBCS
+CADJ STORE salt, theta = comlev1, key = ikey_dynamics, kind = isbyte
+#endif /* ALLOW_OBCS */
 
 #ifdef ALLOW_LONGSTEP
       IF ( usePTRACERS .AND. LS_whenToSample .EQ. 1 ) THEN
@@ -1064,6 +1072,9 @@ CADJ STORE wVel = comlev1, key = ikey_dynamics, kind = isbyte
 
 C--    if staggerTimeStep: end
       ENDIF
+#ifdef ALLOW_OBCS
+CADJ STORE salt, theta = comlev1, key = ikey_dynamics, kind = isbyte
+#endif /* ALLOW_OBCS */
 C---+--------+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
