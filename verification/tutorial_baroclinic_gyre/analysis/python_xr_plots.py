@@ -192,8 +192,12 @@ psi = (-ubt*grid.dyG).cumsum('Y').pad(Y=(1,0),constant_values=0.)/1E6
 # Thus after padding psi is shape (dynDiag.UVEL['T'].size,Ny+1,Nx+1) 
 # Finally, since psi is computed at grid cell corners,
 # we need to re-assign Yp1 coordinate to psi.
-# (xxx.values extracts the numpy-array data from xarray DataArray xxx)
-# this is done in the plot statement below: 
+# As an aside comment, if data manipulation with xarray still seems a
+# bit cumbersome, you are not mistaken... there are tools developed
+# such as xgcm (https://xgcm.readthedocs.io/en/latest/) specifically
+# for this purpose.
+# Note xxx.values extracts the numpy-array data from xarray
+# DataArray xxx; this is done in the plot statement below: 
 
 plt.figure(figsize=(10,8))
 psi.isel(T=-1).assign_coords(Y=grid.Yp1.values).plot.contourf(
@@ -205,10 +209,6 @@ plt.xlim(0,60)
 plt.ylim(15,75)
 plt.title('Barotropic Streamfunction (Sv)');
 plt.show()
-# As an aside comment, if data manipulation with xarray still seems a
-# bit cumbersome, you are not mistaken... there are tools developed
-# such as xgcm (https://xgcm.readthedocs.io/en/latest/) specifically
-# for this purpose.
 
 # figure 4.9 - potential temp at depth and xz slice, at simulation end
 #
