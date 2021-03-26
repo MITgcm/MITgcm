@@ -730,6 +730,15 @@ CADJ STORE KPPdiffKzT         = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 # endif
 
+# ifdef ALLOW_SHELFICE
+C     These store directives avoid an (expensive) extra
+C     "call do_oceanic_phys", from which shelfice_thermodynamics is called
+CADJ STORE shelficeForcingT   = comlev1, key = ikey_dynamics,
+CADJ &     kind=isbyte
+CADJ STORE shelficeForcingS   = comlev1, key = ikey_dynamics,
+CADJ &     kind=isbyte
+# endif /* ALLOW_SHELFICE */
+
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
 CADJ STORE theta,salt = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE etaH = comlev1, key = ikey_dynamics, kind = isbyte
