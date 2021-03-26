@@ -7,7 +7,7 @@ import xarray as xr
 # xarray loads netcdf data and metadata into xarray structure Dataset
 # (containing data in xarray DataArray) which includes information
 # about dimensions, coordinates etc.
-# Xarray simplifies some simple tasks, e.g. it is not necessary to
+# Xarray simplifies some basic tasks, e.g. it is not necessary to
 # provide axes arguments when plotting, but also more complex tasks
 # such as broadcasting data to fill missing dimensions in DataArray
 # arithmetic, for example.
@@ -15,10 +15,10 @@ import xarray as xr
 
 ###########   load grid data   ########### 
 
-# Load grid variables; these are internal MITgcm source code variables.
+# Load grid variables; names correspond with MITgcm source code.
 # (if using standard binary output instead of netcdf, these are dumped
 # to individual files, e.g. 'RC.data' etc.)
-# Assumes that output in multiple tiles was concatenated into
+# Assumes that output in multiple tiles has been concatenated into
 # global files (used script utils/python/MITgcmutils/scripts/gluemncbig)
 # and moved into the top directory;
 # see MITgcm user manual section 4.2.4.1 
@@ -81,7 +81,7 @@ dynDiag = dynDiag.rename({'Zmd000015':'Z'})
 # Note the Z dimension above has a different name, we rename to the
 # standard name 'Z' which will make life easier when we do some
 # calculations using the raw data. This is because pkg/diagnostics
-# has an option to allow specific levels of a 3-D variable to be output.
+# has an option to select specific levels of a 3-D variable to be output.
 # If 'levels' are selected in data.diagnostics, the following
 # additional statement would be needed:
 #   dynDiag['Z'] = grid['Z'][dynDiag.diag_levels.astype(int)-1]
@@ -94,13 +94,13 @@ dynDiag = dynDiag.rename({'Zmd000015':'Z'})
 # plot THETA at MITgcm k levels 1,5,15 (SST, -305 m, -1705 m)
 klevs = [0, 4, 14]
 
-# MITgcm time units (dim='T') is in seconds, so create new coordinate
+# MITgcm time unit (dim='T') is seconds, so create new coordinate
 # for (dynStDiag) monthly time averages and convert into years.
 # Note that the MITgcm time array values correspond to time at the end
 # of the time-avg periods, i.e. subtract 1/24 to plot at mid-month.  
 Tmon = (dynStDiag['T']/(86400*360)-1/24).assign_attrs(units='years')
-# and repeat to create mid-year time series for annual mean time output,
-# subtract 0.5 to plot at mid-year
+# and repeat to create time series for annual mean time output,
+# subtract 0.5 to plot at mid-year.
 Tann = (surfDiag['T']/(86400*360)-0.5).assign_attrs(units='years')
 
 plt.figure(figsize=(16,10))
@@ -116,7 +116,7 @@ plt.ylim(-400,0)
 # Alternatively, a global mean area-weighted TRELAX (annual mean)
 # could be computed as follows, using HfacC[0,:,:], i.e. HfacC in
 # the surface layer, as a land-ocean mask, using xarray .where()
-# First, compute total surface are of ocean points:
+# First, compute total surface area of ocean points:
 tot_ocean_area = (grid.rA.where(grid.HFacC[0,:,:]!=0)).sum(('Y','X'))
 # broadcasting with xarray is more flexible than basic numpy
 # because it matches axis name (not dependent on axis position)
@@ -139,7 +139,7 @@ plt.xlim(0, np.ceil(Tmon[-1]))
 plt.ylim(0,30);
 # Note a legend (of Z depths) was included automatically.
 # Specifying colors is not so simple however, either change
-# the defaults a priori, e.g. ax.set_prop_cycle(color=['r','g','c'])
+# the default a priori, e.g. ax.set_prop_cycle(color=['r','g','c'])
 # or after the fact, e.g. lh[0].set_color('r') etc.
 
 plt.subplot(224)
@@ -164,14 +164,14 @@ eta_masked.plot.contour(levels=np.arange(-.6,.7,.1), colors='k')
 plt.title('Free surface height (contours, CI .1 m) and '
           'TRELAX (shading, $\mathregular{W/m^2}$)')
 plt.show()
-# By default this uses a plotting routine similar to
-# pcolormesh to plot TRELAX
+# By default, this uses a plotting routine similar to
+# pcolormesh to plot TRELAX.
 # Note that xarray uses the coordinates of TRELAX automatically from
 # the netcdf metadata! With axis labels! Even though the plotted TRELAX
 # DataArray has coordinates Y,X (cell centers) it is plotted correctly 
 # (effectively shading cells between Yp1,Xp1 locations, which are the
 # lower left corners of grid cells, i.e. YG,XG). Also note we mask the
-# land values when contouring the free surface height Alternatively,
+# land values when contouring the free surface height. Alternatively,
 # one could make a smoother color plot using contourf: 
 # surfDiag.TRELAX[-1,0,:,:].plot.contourf(
 #          cmap='RdBu_r',levels=np.linspace(-250,250,1000))
@@ -205,8 +205,12 @@ plt.xlim(0,60)
 plt.ylim(15,75)
 plt.title('Barotropic Streamfunction (Sv)');
 plt.show()
+# As an aside comment, if data manipulation with xarray still seems a
+# bit cumbersome, you are not mistaken... there are tools developed
+# such as xgcm (https://xgcm.readthedocs.io/en/latest/) specifically
+# for this purpose.
 
-# figure 4.9 - potential temp at depth and xz slice at simulation end
+# figure 4.9 - potential temp at depth and xz slice, at simulation end
 #
 # plot THETA at MITgcm k=4 (220 m depth) and j=15 (28.5N)
 klev =  3
@@ -223,13 +227,13 @@ plt.xlim(0,60)
 plt.ylim(15,75)
 plt.title('a) THETA at %g m Depth ($\mathregular{^oC}$)' %grid.RC[klev])
 
-theta_masked = dynDiag.THETA[-1,:,jloc,:].where(grid.HFacC[:,jloc,:]!=0)
-plt.subplot(122)
-# Here, our limited vertical resolution makes for an ugly pcolor plot,
-# we'll shade using contour instead, providing the centers of the
-# vertical grid cells and cell centers in the x-dimension.
+# For the xz slice, our limited vertical resolution makes for an ugly
+# pcolor plot, we'll shade using contour instead, providing the centers
+# of the vertical grid cells and cell centers in the x-dimension.
 # Also mask out land cells at the boundary, which results in slight
 # white space at domain edges.
+theta_masked = dynDiag.THETA[-1,:,jloc,:].where(grid.HFacC[:,jloc,:]!=0)
+plt.subplot(122)
 theta_masked.plot.contourf(levels=np.arange(0,30,.2),cmap='coolwarm')
 theta_masked.plot.contour(levels=np.arange(0,30,2),colors='k')
 plt.title('b) THETA at %gN ($\mathregular{^oC}$)' %grid.YC[jloc,0])

@@ -6,10 +6,10 @@ import netCDF4 as nc
 
 ###########   load grid data   ########### 
 
-# Load grid variables; these are internal MITgcm source code variables.
+# Load grid variables; names correspond with MITgcm source code.
 # (if using standard binary output instead of netcdf, these are dumped
 # to individual files, e.g. 'RC.data' etc.)
-# Assumes that output in multiple tiles was concatenated into
+# Assumes that output in multiple tiles has been concatenated into
 # global files (used script utils/python/MITgcmutils/scripts/gluemncbig)
 # and moved into the top directory;
 # see MITgcm user manual section 4.2.4.1 
@@ -77,13 +77,13 @@ THETA = dynDiag['THETA'][:]     # (time, depth, y, x)
 # plot THETA at MITgcm k levels 1,5,15 (SST, -305 m, -1705 m)
 klevs = [0, 4, 14]
 
-# MITgcm time units (dim='T') is in seconds, so create new time series
+# MITgcm time unit (dim='T') is seconds, so create new time series
 # for (dynStDiag) monthly time averages and convert into years.
 # Note that the MITgcm time array values correspond to time at the end
 # of the time-avg periods, i.e. subtract 1/24 to plot at mid-month.
 Tmon = dynStDiag['T'][:]/(86400*360)-1/24 
-# and repeat to create mid-year time series for annual mean time output,
-# subtract 0.5 to plot at mid-year
+# and repeat to create time series for annual mean time output,
+# subtract 0.5 to plot at mid-year.
 Tann = surfDiag['T'][:]/(86400*360)-0.5
 
 plt.figure(figsize=(16,10))
@@ -99,7 +99,7 @@ plt.ylim(-400, 0)
 # Alternatively, a global mean area-weighted TRELAX (annual mean)
 # could be computed as follows, using HfacC[0,:,:], i.e. HfacC in
 # the surface layer, as a land-ocean mask.
-# First, compute total surface are of ocean points:
+# First, compute total surface area of ocean points:
 total_ocn_area = (rA*HFacC[0,:,:]).sum()
 # numpy is often smart enough to figure out broadcasting,
 # depending on axis position.
@@ -111,7 +111,7 @@ plt.plot(Tann, TRELAX_ave_ann, 'm--', linewidth=4)
 plt.subplot(223)
 plt.plot(Tmon, THETA_lv_ave[:,0,klevs], linewidth=4)
 # To specify colors for specific lines, either change the
-# defaults a priori, e.g. ax.set_prop_cycle(color=['r','g','c'])
+# default a priori, e.g. ax.set_prop_cycle(color=['r','g','c'])
 # or after the fact, e.g. lh[0].set_color('r') etc.
 plt.grid('both')
 plt.title('b) Mean Potential Temp. by Level (THETA_lv_avg)')
@@ -184,7 +184,7 @@ plt.xlabel('Longitude')
 plt.ylabel('Latitude');
 plt.show()
 
-# figure 4.9 - potential temp at depth and xz slice at simulation end
+# figure 4.9 - potential temp at depth and xz slice, at simulation end
 #
 # plot THETA at MITgcm k=4 (220 m depth) and j=15 (28.5N)
 klev =  3
@@ -192,9 +192,9 @@ jloc = 14
 
 theta_masked = np.ma.MaskedArray(THETA[-1,klev,:,:], HFacC[klev,:,:]==0)
 plt.figure(figsize=(16,6))
-plt.subplot(121)
+plt.subplot(121)+
 # again we use pcolor for the plan view and provide the
-# corner points XG,YG
+# corner point locations XG,YG thru Xp1,Yp1
 plt.pcolormesh(Xp1, Yp1, THETA[-1,klev,:,:], cmap='coolwarm')
 plt.clim(0, 30)
 plt.colorbar()
@@ -207,9 +207,9 @@ plt.ylim(15, 75)
 plt.xlabel('Longitude')
 plt.ylabel('Latitude')
 
-# Here, our limited vertical resolution makes for an ugly pcolor plot,
-# we'll shade using contour instead, providing the centers of the
-# vertical grid cells and cell centers in the x-dimension.
+# For the xz slice, our limited vertical resolution makes for an ugly
+# pcolor plot, we'll shade using contour instead, providing the centers
+# of the vertical grid cells and cell centers in the x-dimension.
 # Also mask out land cells at the boundary, which results in slight
 # white space at domain edges.
 theta_masked = np.ma.MaskedArray(THETA[-1,:,jloc,:], HFacC[:,jloc,:]==0)
@@ -235,10 +235,10 @@ plt.show()
 # plt.pcolormesh(Xp1,RF,THETA[-1,:,14,:],cmap='coolwarm')
 
 
-# The gluemncbig steps outlined in tutorial section 4.2.4.1 can be
-# avoided by using the python package "MITgcmutils".
-# Load the grid and diagnostic output, in place of above,
-# an be accomplished by reading directly from the mnc output
+# Note, the gluemncbig steps outlined in tutorial section 4.2.4.1 can be
+# avoided by using the python package "MITgcmutils". Loading the grid
+# and diagnostic output, in place of steps at the beginning of this
+# script, can be accomplished by reading directly from the mnc output
 # directories:
 #
 # from MITgcmutils import mnc
@@ -256,9 +256,9 @@ plt.show()
 # ...
 
 # An advantage using mnc_files() is that you aren't required to waste
-# disk space assembling glued files. See MITgcm users guide chapter 11
+# disk space assembling glued files. See MITgcm users manual chapter 11
 # for reference information on MITgcmutils. Note mnc_file() will
 # generally NOT work with wildcard mnc_test_* directories from multiple
 # runs are present unless you pass it the specific directories to read,
-# e.g. from a 4-core mpi run in mnc_test_0009 through mnc_test_0012:
+# e.g. for a 4-core mpi run output in mnc_test_0009 thru mnc_test_0012:
 # dynStDiag=mnc.mnc_files('mnc_test_{0009..0012}/dynStDiag.0000000000.t*.nc')
