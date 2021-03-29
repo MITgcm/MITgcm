@@ -76,6 +76,8 @@ bluered_colormaps;
  
 
 %%%%%%%%%%%   plot diagnostics   %%%%%%%%%%%
+% No sizing of figures is specified below, will render at matlab default
+% to view properly, resize windows appropriately
 
 % figure 4.6 - time series of global mean TRELAX and THETA by level
 %
@@ -97,10 +99,11 @@ bluered_colormaps;
   ylabel('W/m^2')
   set(gca,'YLim',[-400 0])
 % Alternatively, a global mean area-weighted TRELAX (annual mean)
-% could be computed as following, using HfacC(:,:,1), i.e. HfacC in
+% could be computed as follows, using HfacC(:,:,1), i.e. HfacC in
 % the surface layer, as a land-ocean mask.
 % First, compute total surface area of ocean points:
   total_ocn_area = sum(sum(rA.*HFacC(:,:,1)));
+% Broadcasting the arrays across the time axis makes this a bit awkward:  
   TRELAX_ave_ann = squeeze(sum(sum(TRELAX(:,:,1,:).* ...
       repmat(rA.*HFacC(:,:,1),[1 1 1 size(TRELAX,4)]))))/total_ocn_area;
   plot(Tann,TRELAX_ave_ann,'m--','LineWidth',[2])
@@ -146,11 +149,11 @@ bluered_colormaps;
 % (here, length Nx+1,Ny+1 as they include the ending right and upper
 % locations of the grid, respectively). We don't pass pcolor the 
 % +1 location, but matlab pcolor ignores the last row and column
-% when plotting, conveniently land points here.
+% when plotting, here conveniently land points.
 % Alternative one could plot shading using contourf with 'LineStyle'
-% set to 'none' with dimensions X and Y, the grid cell center locations.
-% Also note we mask the land values as NaN when contouring the free
-% surface height.
+% set to 'none' with coordinates  X and Y, the grid cell center
+% locations. Also note we mask the land values as NaN when contouring
+% the free surface height.
 
 % figure 4.8 - barotropic streamfunction, plot at simulation end
 % (w/overlaid labeled contours)
@@ -188,7 +191,7 @@ bluered_colormaps;
   figure
   subplot(121)
 % again we use pcolor for the plan view and provide the
-% corner point locations XG,YG thru Xp1,Yp1
+% corner point locations XG,YG via Xp1,Yp1
   pcolor(Xp1(1:end-1),Yp1(1:end-1),THETA(:,:,klev,end)')
   shading flat
   hold on
