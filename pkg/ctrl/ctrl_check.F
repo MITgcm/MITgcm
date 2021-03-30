@@ -35,6 +35,12 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     myThid     :: my Thread Id number
       INTEGER myThid
 
+#if (defined (ALLOW_GENARR3D_CONTROL) && defined(ALLOW_PTRACERS))
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+#endif
+
 C     !LOCAL VARIABLES:
 C     msgBuf     :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -45,6 +51,9 @@ C     msgBuf     :: Informational/error message buffer
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
       INTEGER iarr
 #endif
+#endif
+#if (defined (ALLOW_GENARR3D_CONTROL) && defined(ALLOW_PTRACERS))
+      INTEGER iLen, iPtr, ascii_1
 #endif
 CEOP
 
@@ -123,6 +132,34 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           errCount = errCount + 1
         ENDIF
       ENDDO
+# ifdef ALLOW_PTRACERS
+C     Check for valid gen-ctrl file name that mactch a ptracer index
+      IF ( usePTRACERS ) THEN
+        DO iarr = 1, maxCtrlArr3D
+          iLen = ILNBLNK(xx_genarr3d_file(iarr))
+          IF ( iLen.EQ.7 .AND.
+     &         xx_genarr3d_file(iarr)(1:6).EQ.'xx_ptr' ) THEN
+            ascii_1 = ICHAR( xx_genarr3d_file(iarr)(7:7) )
+C     character 0 to 9 <-> 48 to 57
+            IF ( ascii_1.GE.49 .AND. ascii_1.LE.57 ) THEN
+              READ(xx_genarr3d_file(iarr)(7:7),*) iPtr
+              WRITE(msgBuf,'(2A,I4,A)') 'CTRL_CHECK: ',
+     &              'pTracer #', iPtr, ' in Gen-CTRL'
+              CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                            SQUEEZE_RIGHT, myThid )
+            ELSE
+              WRITE(msgBuf,'(4A)') 'CTRL_CHECK: ',
+     &          'Gen-CTRL file "', xx_genarr3d_file(iarr)(1:iLen), '"'
+              CALL PRINT_ERROR( msgBuf, myThid )
+              WRITE(msgBuf,'(2A,I3,A)') 'CTRL_CHECK:  <-- ',
+     &             'do not match any pTr number (ascii=', ascii_1, ')'
+              CALL PRINT_ERROR( msgBuf, myThid )
+              errCount = errCount + 1
+            ENDIF
+          ENDIF
+        ENDDO
+      ENDIF
+# endif /* ALLOW_PTRACERS */
 #endif /* ALLOW_GENARR3D_CONTROL */
 
 #ifdef ALLOW_GENTIM2D_CONTROL
