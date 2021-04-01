@@ -13,7 +13,23 @@ h([1 end],:)=0;
 h(:,[1 end])=0;
 fid=fopen('bathy.bin','w',ieee); fwrite(fid,h,accuracy); fclose(fid);
 
+% ocean domain extends from (xo,yo) to (xo+dx*(nx-2),yo+dy*(ny-2))
+% (i.e. the ocean spans nx-2, ny-2 grid cells)
+% out-of-box-config: xo=yo=0, dx=dy=20 km, ocean extent (0,0)-(1200,1200) km
+% model domain includes a land cell surrounding the ocean domain
+% The full model domain cell centers are located at:
+%    XC(:,1)=-10,+10,...,+1210
+%    YC(1,:)=-10,+10,...,+1210
+% and full model domain cell corners are located at:
+%    XG(:,1)=-20,0,...,1200[,1220]
+%    YG(1,:)=-20,0,...,1200[,1220]
+% where the last value in brackets is not included in the MITgcm grid variable
+% but reflects the eastern and northern edge of the model domain respectively
+% see section 2.11.4 of the MITgcm users manual
+
 % Zonal wind-stress, located at u-points
+% here we non-dimensional: xo=yo=0 to 1.0 at eastern and northern ocean boundary
+% for the purpose of applying sinusoidal-shaped wind stress curve
 tauMax=0.1; % wind stress maximum
 x = (-1:nx-2)/(nx-2); % x-coordinate, located at XG points
 y = ((0:ny-1)-0.5)/(ny-2); % y-coordinate, located at YC points
