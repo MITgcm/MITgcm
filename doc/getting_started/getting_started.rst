@@ -2799,8 +2799,8 @@ For historical reasons, MITgcm files use big-endian `byte ordering <https://en.w
      nx=62;    % number of gridpoints in x-direction
      ny=62;    % number of gridpoints in y-direction
 
-     % Flat bottom at z=-Ho
-     h = -Ho*ones(nx, ny);
+     % Flat bottom at z = -Ho
+     h = -Ho * ones(nx, ny);
 
      % Walls (surrounding domain)
      h([1 end], :) = 0;   % set ocean depth to zero at east and west walls
@@ -2831,8 +2831,8 @@ For historical reasons, MITgcm files use big-endian `byte ordering <https://en.w
     nx = 62    # number of gridpoints in x-direction
     ny = 62    # number of gridpoints in y-direction
 
-    # Flat bottom at z=-Ho
-    h = -Ho*np.ones((ny, nx))
+    # Flat bottom at z = -Ho
+    h = -Ho * np.ones((ny, nx))
 
     # Walls (surrounding domain)
     h[:, (0,-1)] = 0   # set ocean depth to zero at east and west walls
