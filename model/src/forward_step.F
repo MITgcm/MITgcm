@@ -754,6 +754,9 @@ CADJ &     kind=isbyte
 # endif /* ALLOW_SHELFICE */
 
 # if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
+#  ifdef ALLOW_PTRACERS
+CADJ STORE pTracer    = comlev1, key = ikey_dynamics, kind = isbyte
+#  endif /* ALLOW_PTRACERS */
 CADJ STORE theta,salt = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE etaH = comlev1, key = ikey_dynamics, kind = isbyte
 #  ifdef ALLOW_CD_CODE
@@ -1060,6 +1063,9 @@ CADJ STORE hFac_surfC       = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE salt,theta = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
+#  ifdef ALLOW_PTRACERS
+CADJ STORE pTracer    = comlev1, key = ikey_dynamics, kind = isbyte
+#  endif /* ALLOW_PTRACERS */
 # endif
 #endif /* NONLIN_FRSURF */
 
@@ -1167,6 +1173,9 @@ CADJ &     kind = isbyte
         CALL GCHEM_FORCING_SEP( myTime,myIter,myThid )
         CALL TIMER_STOP ('GCHEM_FORCING_SEP  [FORWARD_STEP]',myThid)
       ENDIF
+#  ifdef ALLOW_PTRACERS
+CADJ STORE pTracer    = comlev1, key = ikey_dynamics, kind = isbyte
+#  endif /* ALLOW_PTRACERS */
 #endif /* ALLOW_GCHEM */
 
 C--   Do "blocking" sends and receives for tendency "overlap" terms
