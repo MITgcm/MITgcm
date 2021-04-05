@@ -341,6 +341,10 @@ C     == Global variables ==
 # ifdef ALLOW_SALT_PLUME
 #  include "SALT_PLUME.h"
 # endif
+# ifdef ALLOW_DOWN_SLOPE
+#  include "DWNSLP_SIZE.h"
+#  include "DWNSLP_VARS.h"
+# endif
 # ifdef ALLOW_SHELFICE
 #  include "SHELFICE.h"
 #  include "SHELFICE_COST.h"
@@ -732,6 +736,12 @@ CADJ &     kind = isbyte
 CADJ STORE KPPplumefrac       = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 #  endif
+# endif
+
+# ifdef ALLOW_DOWN_SLOPE
+CADJ STORE DWNSLP_deepK       = comlev1, key = ikey_dynamics
+CADJ STORE DWNSLP_Transp      = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
 # endif
 
 # ifdef ALLOW_SHELFICE
