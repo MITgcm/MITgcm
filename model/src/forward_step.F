@@ -728,6 +728,10 @@ CADJ STORE KPPdiffKzS         = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 CADJ STORE KPPdiffKzT         = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
+#  ifdef ALLOW_SALT_PLUME
+CADJ STORE KPPplumefrac       = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+#  endif
 # endif
 
 # ifdef ALLOW_SHELFICE
