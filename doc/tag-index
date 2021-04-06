@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ctrl:
+  - move to pkg/ctrl the local copy of ctrl_map_ini_genarr.F from verification/
+    global_oce_biogeo_bling/code_ad/ with ptracers generic control. Improve for
+    general number of ptracers control.
+  - add missing diagnostics fill for diagnostics 'Um_ImplD' & 'Vm_ImplD' in
+    impldiff.F (otherwise not filled when pkg/autodiff is compiled).
 o pkg/autodiff:
   Include TICES of pkg/seaice into StoreSEAICE:
   - split AUTODIFF.h into two to be able to use nITD in the new AUTODIFF_STORE.h
