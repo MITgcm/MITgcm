@@ -98,10 +98,10 @@ klevs = [0, 4, 14]
 # for (dynStDiag) monthly time averages and convert into years.
 # Note that the MITgcm time array values correspond to time at the end
 # of the time-avg periods, i.e. subtract 1/24 to plot at mid-month.  
-Tmon = (dynStDiag['T']/(86400*360)-1/24).assign_attrs(units='years')
+Tmon = (dynStDiag['T']/(86400*360) - 1/24).assign_attrs(units='years')
 # and repeat to create time series for annual mean time output,
 # subtract 0.5 to plot at mid-year.
-Tann = (surfDiag['T']/(86400*360)-0.5).assign_attrs(units='years')
+Tann = (surfDiag['T']/(86400*360) - 0.5).assign_attrs(units='years')
 
 plt.figure(figsize=(16,10))
 # global mean TRELAX
@@ -109,22 +109,22 @@ plt.subplot(221)
 # we tell xarray to plot using this new abscissa Tmon (instead of T)
 # xarray is smart enough to ignore the singleton dimensions
 # for region and depth
-dynStDiag.TRELAX_ave.assign_coords(T=Tmon).plot(color='b',linewidth=4)
+dynStDiag.TRELAX_ave.assign_coords(T=Tmon).plot(color='b', linewidth=4)
 plt.grid('both') 
 plt.xlim(0, np.ceil(Tmon[-1]))
-plt.ylim(-400,0)
+plt.ylim(-400, 0)
 # Alternatively, a global mean area-weighted TRELAX (annual mean)
 # could be computed as follows, using HfacC[0,:,:], i.e. HfacC in
 # the surface layer, as a land-ocean mask, using xarray .where()
 # First, compute total surface area of ocean points:
-tot_ocean_area = (grid.rA.where(grid.HFacC[0,:,:]!=0)).sum(('Y','X'))
+tot_ocean_area = (grid.rA.where(grid.HFacC[0,:,:]!=0)).sum(('Y', 'X'))
 # broadcasting with xarray is more flexible than basic numpy
 # because it matches axis name (not dependent on axis position)
 # grid area is broadcast across the time dimension below
-TRELAX_ave_ann = (surfDiag.TRELAX*grid.rA.where(grid.HFacC[0,:,:]!=0)
-                 ).sum(('Y','X'))/tot_ocean_area
+TRELAX_ave_ann = (surfDiag.TRELAX * grid.rA.where(grid.HFacC[0,:,:]!=0)
+                 ).sum(('Y', 'X')) / tot_ocean_area
 TRELAX_ave_ann.assign_coords(T=Tann).plot(
-                 color='m',linewidth=4,linestyle='dashed')
+                 color='m', linewidth=4, linestyle='dashed')
 plt.title('a) Net Heat Flux into Ocean (TRELAX_ave)')
 
 plt.subplot(223)
@@ -136,7 +136,7 @@ THETAmon.isel(Z=klevs).plot(hue='Z', linewidth=4)
 plt.grid('both')
 plt.title('b) Mean Potential Temp. by Level (THETA_lv_avg)')
 plt.xlim(0, np.ceil(Tmon[-1]))
-plt.ylim(0,30);
+plt.ylim(0, 30);
 # Note a legend (of Z depths) was included automatically.
 # Specifying colors is not so simple however, either change
 # the default a priori, e.g. ax.set_prop_cycle(color=['r','g','c'])
@@ -149,7 +149,7 @@ THETAmon.isel(Z=klevs).plot(hue='Z', linewidth=4)
 plt.grid('both')
 plt.title('c) Std. Dev. Potential Temp. by Level (THETA_lv_std)')
 plt.xlim(0, np.ceil(Tmon[-1]))
-plt.ylim(0,8)
+plt.ylim(0, 8)
 plt.show()
 
 # figure 4.7 - 2-D plot of TRELAX and contours of free surface height
@@ -158,8 +158,8 @@ plt.show()
 eta_masked = surfDiag.ETAN[-1,0,:,:].where(grid.HFacC[0,:,:]!=0)
 plt.figure(figsize=(10,8)) 
 surfDiag.TRELAX[-1,0,:,:].plot(cmap='RdBu_r', vmin=-250, vmax=250)
-plt.xlim(0,60)
-plt.ylim(15,75)
+plt.xlim(0, 60)
+plt.ylim(15, 75)
 eta_masked.plot.contour(levels=np.arange(-.6,.7,.1), colors='k')
 plt.title('Free surface height (contours, CI .1 m) and '
           'TRELAX (shading, $\mathregular{W/m^2}$)')
@@ -180,8 +180,8 @@ plt.show()
 # (w/overlaid labeled contours)
 #
 # here is an example where the xarray broadcasting is superior:
-ubt = (dynDiag.UVEL*grid.drF).sum('Z') # depth-integrated u velocity
-psi = (-ubt*grid.dyG).cumsum('Y').pad(Y=(1,0),constant_values=0.)/1E6
+ubt = (dynDiag.UVEL * grid.drF).sum('Z') # depth-integrated u velocity
+psi = (-ubt * grid.dyG).cumsum('Y').pad(Y=(1,0),constant_values=0.) / 1E6
 # Note psi is computed and plotted at the grid cell corners which we
 # compute as dimensioned (Ny,Nx+1); as noted, UVEL contains an extra
 # data point in x, at the eastern edge. cumsum is done in y-direction.
@@ -203,10 +203,10 @@ plt.figure(figsize=(10,8))
 psi.isel(T=-1).assign_coords(Y=grid.Yp1.values).plot.contourf(
              levels=np.linspace(-30, 30, 13), cmap='RdYlBu_r')
 cs = psi.isel(T=-1).assign_coords(Y=grid.Yp1.values).plot.contour(
-             levels=np.arange(-35,40,5), colors='k')
+             levels=np.arange(-35, 40, 5), colors='k')
 plt.clabel(cs, fmt = '%.0f')
-plt.xlim(0,60)
-plt.ylim(15,75)
+plt.xlim(0, 60)
+plt.ylim(15, 75)
 plt.title('Barotropic Streamfunction (Sv)');
 plt.show()
 
@@ -220,11 +220,11 @@ theta_masked = dynDiag.THETA[-1,klev,:,:].where(grid.HFacC[klev,:,:]!=0)
 plt.figure(figsize=(16,6))
 plt.subplot(121)
 # again we use pcolor for this plan view, grabs coordinates automatically
-dynDiag.THETA[-1,klev,:,:].plot(cmap='coolwarm',vmin=0,vmax=30 )
+dynDiag.THETA[-1,klev,:,:].plot(cmap='coolwarm', vmin=0, vmax=30 )
 # and overlay contours w/masked out boundary/land cells
-theta_masked.plot.contour(levels=np.linspace(0,30,16), colors='k')
-plt.xlim(0,60)
-plt.ylim(15,75)
+theta_masked.plot.contour(levels=np.linspace(0, 30, 16), colors='k')
+plt.xlim(0, 60)
+plt.ylim(15, 75)
 plt.title('a) THETA at %g m Depth ($\mathregular{^oC}$)' %grid.RC[klev])
 
 # For the xz slice, our limited vertical resolution makes for an ugly
@@ -234,8 +234,8 @@ plt.title('a) THETA at %g m Depth ($\mathregular{^oC}$)' %grid.RC[klev])
 # white space at domain edges.
 theta_masked = dynDiag.THETA[-1,:,jloc,:].where(grid.HFacC[:,jloc,:]!=0)
 plt.subplot(122)
-theta_masked.plot.contourf(levels=np.arange(0,30,.2),cmap='coolwarm')
-theta_masked.plot.contour(levels=np.arange(0,30,2),colors='k')
+theta_masked.plot.contourf(levels=np.arange(0,30,.2), cmap='coolwarm')
+theta_masked.plot.contour(levels=np.arange(0,30,2), colors='k')
 plt.title('b) THETA at %gN ($\mathregular{^oC}$)' %grid.YC[jloc,0])
 plt.xlim(0, 60)
 plt.ylim(-1800, 0)

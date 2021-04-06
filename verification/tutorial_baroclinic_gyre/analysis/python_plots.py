@@ -81,10 +81,10 @@ klevs = [0, 4, 14]
 # for (dynStDiag) monthly time averages and convert into years.
 # Note that the MITgcm time array values correspond to time at the end
 # of the time-avg periods, i.e. subtract 1/24 to plot at mid-month.
-Tmon = dynStDiag['T'][:]/(86400*360)-1/24 
+Tmon = dynStDiag['T'][:]/(86400*360) - 1/24 
 # and repeat to create time series for annual mean time output,
 # subtract 0.5 to plot at mid-year.
-Tann = surfDiag['T'][:]/(86400*360)-0.5
+Tann = surfDiag['T'][:]/(86400*360) - 0.5
 
 plt.figure(figsize=(16,10))
 # global mean TRELAX
@@ -100,12 +100,12 @@ plt.ylim(-400, 0)
 # could be computed as follows, using HfacC[0,:,:], i.e. HfacC in
 # the surface layer, as a land-ocean mask.
 # First, compute total surface area of ocean points:
-total_ocn_area = (rA*HFacC[0,:,:]).sum()
+total_ocn_area = (rA * HFacC[0,:,:]).sum()
 # numpy is often smart enough to figure out broadcasting,
 # depending on axis position.
 # In next line, note a np.tile command is NOT necessary to span
 # the grid array across the time axis:
-TRELAX_ave_ann = (TRELAX[:,0,:,:]*rA*HFacC[0,:,:]).sum((1,2))/total_ocn_area
+TRELAX_ave_ann = (TRELAX[:,0,:,:] * rA * HFacC[0,:,:]).sum((1,2)) / total_ocn_area
 plt.plot(Tann, TRELAX_ave_ann, 'm--', linewidth=4)
 
 plt.subplot(223)
@@ -160,11 +160,11 @@ plt.show()
 # figure 4.8 - barotropic streamfunction, plot at simulation end
 # (w/overlaid labeled contours)
 #
-ubt = (UVEL*drF[:,np.newaxis,np.newaxis]).sum(1)  # depth-integrated u velocity
+ubt = (UVEL * drF[:,np.newaxis,np.newaxis]).sum(1)  # depth-integrated u velocity
 # For ubt calculation numpy needs a bit of help with broadcasting
 # the drF vector across [time,y,x] axes
-psi = np.zeros((dynDiag['T'].size,Ny+1,Nx+1))
-psi[:,1:,:] = (-ubt*dyG).cumsum(1)/1E6  # compute streamfn in Sv (for each yr)
+psi = np.zeros((dynDiag['T'].size, Ny+1, Nx+1))
+psi[:,1:,:] = (-ubt * dyG).cumsum(1) / 1E6  # compute streamfn in Sv (for each yr)
 # Note psi is computed and plotted at the grid cell corners and we
 # compute as dimensioned (Ny,Nx+1); as noted, UVEL contains an extra
 # data point in x, at the eastern edge. cumsum is done in y-direction.
@@ -173,9 +173,9 @@ psi[:,1:,:] = (-ubt*dyG).cumsum(1)/1E6  # compute streamfn in Sv (for each yr)
 # to be shape (dynDiag['T'].size,Ny+1,Nx+1). 
 
 plt.figure(figsize=(10,8))
-plt.contourf(Xp1, Yp1, psi[-1], np.arange(-35,40,5), cmap='RdYlBu_r')
+plt.contourf(Xp1, Yp1, psi[-1], np.arange(-35, 40, 5), cmap='RdYlBu_r')
 plt.colorbar()
-cs = plt.contour(Xp1, Yp1, psi[-1], np.arange(-35,40,5), colors='black')
+cs = plt.contour(Xp1, Yp1, psi[-1], np.arange(-35, 40, 5), colors='black')
 plt.clabel(cs, fmt = '%.0f')
 plt.xlim(0, 60)
 plt.ylim(15, 75)
@@ -190,9 +190,9 @@ plt.show()
 klev =  3
 jloc = 14
 
-theta_masked = np.ma.MaskedArray(THETA[-1,klev,:,:], HFacC[klev,:,:]==0)
+theta_masked = np.ma.MaskedArray(THETA[-1, klev,:,:], HFacC[klev,:,:]==0)
 plt.figure(figsize=(16,6))
-plt.subplot(121)+
+plt.subplot(121)
 # again we use pcolor for the plan view and provide the
 # corner point locations XG,YG thru Xp1,Yp1
 plt.pcolormesh(Xp1, Yp1, THETA[-1,klev,:,:], cmap='coolwarm')
@@ -233,7 +233,7 @@ plt.show()
 
 # To instead plot using pcolor, pass location of vertical cell faces RF:
 # RF=grid['RF'][:]
-# plt.pcolormesh(Xp1,RF,THETA[-1,:,jloc,:],cmap='coolwarm')
+# plt.pcolormesh(Xp1, RF, THETA[-1,:,jloc,:], cmap='coolwarm')
 
 
 # Note, the gluemncbig steps outlined in tutorial section 4.2.4.1 can be
