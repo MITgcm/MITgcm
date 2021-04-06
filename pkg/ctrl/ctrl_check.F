@@ -48,11 +48,11 @@ C     msgBuf     :: Informational/error message buffer
       LOGICAL solve4Stress
 
 #ifndef ALLOW_OPENAD
-#if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
+#if ( defined ALLOW_GENARR2D_CONTROL || defined ALLOW_GENARR3D_CONTROL || defined ALLOW_GENTIM2D_CONTROL )
       INTEGER iarr
 #endif
 #endif
-#if (defined (ALLOW_GENARR3D_CONTROL) && defined(ALLOW_PTRACERS))
+#if ( defined ALLOW_GENARR3D_CONTROL && defined ALLOW_PTRACERS )
       INTEGER iLen, iPtr, ascii_1
 #endif
 CEOP
@@ -79,8 +79,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDIF
 #endif
 
-#if ((!defined ALLOW_GENARR2D_CONTROL) && (!defined ALLOW_GENARR3D_CONTROL) \
-      && (!defined ALLOW_GENTIM2D_CONTROL))
+#if ( (!defined ALLOW_GENARR2D_CONTROL) && (!defined ALLOW_GENARR3D_CONTROL) \
+      && (!defined ALLOW_GENTIM2D_CONTROL) )
       IF (ctrlUseGen) THEN
         WRITE(msgBuf,'(2A)') 'CTRL_CHECK: ',
      &     'Cannot ctrlUseGen unless ALLOW_GEN*_CONTROL is defined '
@@ -117,7 +117,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           errCount = errCount + 1
         ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_GENARR2D_CONTROL */
 
 #ifdef ALLOW_GENARR3D_CONTROL
       DO iarr = 1, maxCtrlArr3D
@@ -175,18 +175,18 @@ C     character 0 to 9 <-> 48 to 57
           errCount = errCount + 1
         ENDIF
       ENDDO
-#endif
+#endif /* ALLOW_GENTIM2D_CONTROL */
 
 #endif /* ndef ALLOW_OPENAD */
 
 #ifdef ALLOW_DIFFKR_CONTROL
 C-    to use DIFFKR_CONTROL, needs to define ALLOW_3D_DIFFKR in CPP_OPTIONS.h
-#ifndef ALLOW_3D_DIFFKR
+# ifndef ALLOW_3D_DIFFKR
       WRITE(msgBuf,'(A)')
      &        'Needs to define ALLOW_3D_DIFFKR to use DIFFKR_CONTROL'
       CALL PRINT_ERROR( msgBuf, myThid )
       errCount = errCount + 1
-#endif
+# endif
 #endif /* ALLOW_DIFFKR_CONTROL */
 
 #if (defined (ALLOW_HFLUX_CONTROL) && defined (ALLOW_ATEMP_CONTROL))
@@ -204,39 +204,39 @@ C-    to use DIFFKR_CONTROL, needs to define ALLOW_3D_DIFFKR in CPP_OPTIONS.h
 #endif
 
 #ifdef  ALLOW_ATEMP_CONTROL
-#ifndef ALLOW_ATM_TEMP
+# ifndef ALLOW_ATM_TEMP
       WRITE(msgBuf,'(A)')
      &     'ALLOW_ATEMP_CONTROL used without ALLOW_ATM_TEMP'
       CALL PRINT_ERROR( msgBuf, myThid )
       errCount = errCount + 1
-#endif
-#endif
+# endif
+#endif /* ALLOW_ATEMP_CONTROL */
 
 #ifdef  ALLOW_AQH_CONTROL
-#ifndef ALLOW_ATM_TEMP
+# ifndef ALLOW_ATM_TEMP
       WRITE(msgBuf,'(A)')
      &     'ALLOW_AQH_CONTROL used without ALLOW_ATM_TEMP'
       CALL PRINT_ERROR( msgBuf, myThid )
       errCount = errCount + 1
-#endif
-#endif
+# endif
+#endif /* ALLOW_AQH_CONTROL */
 
 #if ( defined ALLOW_UWIND_CONTROL || defined ALLOW_VWIND_CONTROL )
-#ifdef ALLOW_EXF
+# ifdef ALLOW_EXF
       IF ( .NOT.useEXF .OR. .NOT.useAtmWind ) THEN
-#endif
+# endif
         WRITE(msgBuf,'(3A)') '** WARNING ** CTRL_CHECK: ',
      &               'ALLOW_U/VWIND_CONTROL used without ',
      &               'exf & useAtmWind will have no effect'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
-#ifdef ALLOW_EXF
+# ifdef ALLOW_EXF
       ENDIF
-#endif
-#endif
+# endif
+#endif /* ALLOW_UWIND_CONTROL or ALLOW_VWIND_CONTROL */
 
 #if ( defined ALLOW_USTRESS_CONTROL || defined ALLOW_VSTRESS_CONTROL )
-#ifdef ALLOW_EXF
+# ifdef ALLOW_EXF
       IF ( useAtmWind ) THEN
         WRITE(msgBuf,'(3A)') '** WARNING ** CTRL_CHECK: ',
      &               'ALLOW_U/VSTRESS_CONTROL used with ',
@@ -244,8 +244,8 @@ C-    to use DIFFKR_CONTROL, needs to define ALLOW_3D_DIFFKR in CPP_OPTIONS.h
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       ENDIF
-#endif
-#endif
+# endif
+#endif /* ALLOW_USTRESS_CONTROL or ALLOW_VSTRESS_CONTROL */
 
 #ifdef ALLOW_SEAICE
 C     pkg/seaice requires a particular set of control parameters
@@ -288,7 +288,7 @@ C     which in turn require a particular set of input fields
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
-# endif
+# endif /* ALLOW_USTRESS_CONTROL or ALLOW_VSTRESS_CONTROL */
 #endif /* ALLOW_SEAICE */
 
 #ifndef ALLOW_PACKUNPACK_METHOD2
@@ -301,22 +301,22 @@ C     which in turn require a particular set of input fields
      &  SQUEEZE_RIGHT, myThid )
       ENDIF
 # endif
-#endif
+#endif /* ndef ALLOW_PACKUNPACK_METHOD2 */
 
 #ifdef ALLOW_PACKUNPACK_METHOD2
-#ifndef EXCLUDE_CTRL_PACK
-#if (defined (ALLOW_OBCSN_CONTROL) || \
-     defined (ALLOW_OBCSS_CONTROL) || \
-     defined (ALLOW_OBCSW_CONTROL) || \
-     defined (ALLOW_OBCSE_CONTROL))
+# ifndef EXCLUDE_CTRL_PACK
+#  if ( defined ALLOW_OBCSN_CONTROL || \
+        defined ALLOW_OBCSS_CONTROL || \
+        defined ALLOW_OBCSW_CONTROL || \
+        defined ALLOW_OBCSE_CONTROL )
       WRITE(msgBuf,'(2A)')
      &        'ALLOW_PACKUNPACK_METHOD2 does not work with',
      &        'open boundary controls (see verif/obcs_ctrl).'
       CALL PRINT_ERROR( msgBuf, myThid )
       errCount = errCount + 1
-#endif
-#endif
-#endif
+#  endif
+# endif /* ndef EXCLUDE_CTRL_PACK */
+#endif /* ALLOW_PACKUNPACK_METHOD2 */
 
       IF ( errCount.GE.1 ) THEN
         WRITE(msgBuf,'(A,I3,A)')
