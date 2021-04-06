@@ -15,8 +15,8 @@ ynorth = yo + (ny-2)*dy   # northern extent of ocean domain
 h = -Ho * np.ones((ny, nx))
 
 # create a border ring of walls around edge of domain
-h[:, (0,-1)] = 0   # set ocean depth to zero at east and west walls
-h[(0,-1), :] = 0   # set ocean depth to zero at south and north walls
+h[:, [0,-1]] = 0   # set ocean depth to zero at east and west walls
+h[[0,-1], :] = 0   # set ocean depth to zero at south and north walls
 # save as single-precision (float32) with big-endian byte ordering
 h.astype('>f4').tofile('bathy.bin')
 

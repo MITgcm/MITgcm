@@ -2835,8 +2835,8 @@ For historical reasons, MITgcm files use big-endian `byte ordering <https://en.w
     h = -Ho * np.ones((ny, nx))
 
     # Walls (surrounding domain)
-    h[:, (0,-1)] = 0   # set ocean depth to zero at east and west walls
-    h[(0,-1), :] = 0   # set ocean depth to zero at south and north walls
+    h[:, [0,-1]] = 0   # set ocean depth to zero at east and west walls
+    h[[0,-1], :] = 0   # set ocean depth to zero at south and north walls
 
     # save as single-precision (NumPy type float32) with big-endian byte ordering
     h.astype('>f4').tofile('bathy.bin')
@@ -2850,7 +2850,7 @@ For historical reasons, MITgcm files use big-endian `byte ordering <https://en.w
 
   ::
 
-    h = np.fromfile('bathy.bin', '>f4').reshape(ny, nx))
+    h = np.fromfile('bathy.bin', '>f4').reshape(ny, nx)
 
   where again the dtype spec instructs Python to read a big-endian
   file of single-precision, floating point values.
