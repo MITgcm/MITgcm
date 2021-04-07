@@ -76,7 +76,7 @@ CTRL#undef ALLOW_KAPREDI_CONTROL_OLD
 C       >>> Generic Control.
 #undef ALLOW_GENARR2D_CONTROL
 #define ALLOW_GENARR3D_CONTROL
-#unde ALLOW_GENTIM2D_CONTROL
+#undef ALLOW_GENTIM2D_CONTROL
 
 C       >>> Open boundaries
 c       >>> Make sure that ALLOW_OBCS is defined
