@@ -272,6 +272,7 @@ c 1 where iceshelf is present over wet grid cell, 0 otherwise
             tmpfld=m_eta(i,j,bi,bj)
             if (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
           endif
+#ifdef ALLOW_SHELFICE
 cts ---
 c Shelfice:
 c   Simply accumulate shelfice FWF or HF into tmpfld here
@@ -299,7 +300,7 @@ cts ---
             endif
             if (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
           endif
-
+#endif /* ALLOW_SHELFICE */
 
 cts ---
 c Fill 2D field
