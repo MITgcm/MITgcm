@@ -298,7 +298,7 @@ c     <            /(2*PI*rSphere*rSphere*22.3) )
           ENDIF
 #endif
 c     Freshwater Flux = Div(atmospheric moisture transport)
-c---  conversion of E-P from kg/(s m^2) -> m/s -> psu/s: 1e-3*35/delZ(1)
+c---  conversion of E-P from kg/(s m^2) -> m/s -> g/kg/s: 1e-3*35/delZ(1)
 #ifdef EBM_VERSION_1BASIN
           EmPmR(i,j,bi,bj) = -1. _d -3*Fw35(no_so)
      &    *(-0.8454 _d 5*S(i,j,bj)**14 + 0.5367 _d 5*S(i,j,bj)**13

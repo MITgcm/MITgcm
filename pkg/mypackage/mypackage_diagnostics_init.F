@@ -97,7 +97,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'MYPadSdt'
         diagTitle = ' Salinity  tendency from package MYPACKAGE'
-        diagUnits = 'psu/s           '
+        diagUnits = 'g/kg/s          '
         diagCode  = 'SMR     MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
