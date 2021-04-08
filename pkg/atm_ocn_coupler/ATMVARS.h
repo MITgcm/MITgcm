@@ -10,7 +10,7 @@ C                       =0 : full ocean grid-point);
 C--   fields send to ATM:
 C     OcMxlD_atm     :: Ocean mixed-layer depths on atmos. grid (m)
 C     SST_atm        :: Sea surface temperature on atmos. grid ( oC).
-C     SSS_atm        :: Sea surface temperature on atmos. grid (psu).
+C     SSS_atm        :: Sea surface salinity on atmos. grid (g/kg).
 C     vSq_atm        :: Sea surface velocity square on atmos. grid (m2/s2)
 C-    optionally sent:
 C     fluxCO2_atm    :: flux of CO2 from ocn->Atm on atmos. grid (mol/m2/s)

@@ -186,17 +186,18 @@ c They provide the fields to be stored.
 
 #  include "tamc.h"
 
-# ifdef ALLOW_GGL90
-#  include "GGL90.h"
-# endif
-# ifdef ALLOW_PROFILES
-#  include "PROFILES_SIZE.h"
-#  include "profiles.h"
-# endif
-# ifdef ALLOW_ECCO
-#  include "ecco_cost.h"
-# endif
-
+#  ifdef ALLOW_GGL90
+#   include "GGL90.h"
+#  endif
+#  ifdef ALLOW_PROFILES
+#   include "PROFILES_SIZE.h"
+#   include "profiles.h"
+#  endif
+#  ifdef ALLOW_ECCO
+#   include "ecco_cost.h"
+#  endif
+C     it is important that this file is included after SEAICE_SIZE.h
+#  include "AUTODIFF_STORE.h"
 # endif /* undef ALLOW_OPENAD */
 
 # ifdef ALLOW_CTRL

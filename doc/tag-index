@@ -1,6 +1,23 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model, pkg & doc:
+  - replace all occurrences of incorrect "psu" and "PSU" by "g/kg" in units and
+    comments ; update the documentation accordingly.
+o pkg/ctrl:
+  - move to pkg/ctrl the local copy of ctrl_map_ini_genarr.F from verification/
+    global_oce_biogeo_bling/code_ad/ with ptracers generic control. Improve for
+    general number of ptracers control.
+  - add missing diagnostics fill for diagnostics 'Um_ImplD' & 'Vm_ImplD' in
+    impldiff.F (otherwise not filled when pkg/autodiff is compiled).
+o pkg/autodiff:
+  Include TICES of pkg/seaice into StoreSEAICE:
+  - split AUTODIFF.h into two to be able to use nITD in the new AUTODIFF_STORE.h
+  - rearrange and cleanup declarations, add CPP flags ALLOW_SEAICE/OBCS/EXF ;
+  - clean up seaice section of autodiff_store/restore.F to remove unused storage
+    space ;
+  - changes AD results of global_ocean.cs32x15.seaice & seaice_dynmix, lab_sea &
+    lab_sea.noseaicedyn => output_adm updated.
 o model/src:
   - make sure the 3 recip_hFac{C,W,S} are reset after resetting the 3 hFac
     in ini_nlfs_vars.F when using Non-Lin FreeSurf with pkg/autodiff compiled

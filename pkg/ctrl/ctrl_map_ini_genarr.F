@@ -1,7 +1,12 @@
 #include "CTRL_OPTIONS.h"
-#ifdef ALLOW_GMREDI
-# include "GMREDI_OPTIONS.h"
-#endif
+
+C--   File ctrl_map_ini_genarr.F: Generic arrays control vector
+C--    Contents:
+C--    o CTRL_MAP_INI_GENARR
+C--    o CTRL_MAP_GENARR2D
+C--    o CTRL_MAP_GENARR3D
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
 C     !ROUTINE: CTRL_MAP_INI_GENARR
@@ -35,6 +40,7 @@ C     == global variables ==
 #include "CTRL_GENARR.h"
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_SIZE.h"
+# include "PTRACERS_PARAMS.h"
 # include "PTRACERS_FIELDS.h"
 #endif
 #ifdef ALLOW_SHELFICE
@@ -43,13 +49,17 @@ C     == global variables ==
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == routine arguments ==
       INTEGER myThid
 
+#if (defined (ALLOW_GENARR3D_CONTROL) && defined(ALLOW_PTRACERS))
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+#endif
+
 C     !LOCAL VARIABLES:
-C     == local variables ==
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined(ALLOW_GENARR3D_CONTROL))
-      integer iarr
+      INTEGER iarr
 #endif
 #ifdef ALLOW_GENARR2D_CONTROL
       integer igen_etan,igen_bdrag,igen_geoth
@@ -60,16 +70,19 @@ C     == local variables ==
 # endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 #ifdef ALLOW_GENARR3D_CONTROL
-      integer igen_theta0, igen_salt0
-      integer igen_kapgm, igen_kapredi, igen_diffkr
-#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
-      integer igen_uvel0, igen_vvel0
-#endif
+      INTEGER igen_theta0, igen_salt0
+      INTEGER igen_kapgm, igen_kapredi, igen_diffkr
+# if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
+      INTEGER igen_uvel0, igen_vvel0
+# endif
+# ifdef ALLOW_PTRACERS
+      INTEGER iPtr, iLen
+      INTEGER igen_ptr(PTRACERS_num)
+# endif
 #endif /* ALLOW_GENARR3D_CONTROL */
 CEOP
 
 #ifdef ALLOW_GENARR2D_CONTROL
-
 C--   generic 2D control variables
 
       igen_etan=0
@@ -81,12 +94,12 @@ C--   generic 2D control variables
       igen_shiCDrag=0
 #endif
       DO iarr = 1, maxCtrlArr2D
-      if (xx_genarr2d_weight(iarr).NE.' ') then
-        if (xx_genarr2d_file(iarr)(1:7).EQ.'xx_etan')
+       IF (xx_genarr2d_weight(iarr).NE.' ') THEN
+        IF (xx_genarr2d_file(iarr)(1:7).EQ.'xx_etan')
      &     igen_etan=iarr
-        if (xx_genarr2d_file(iarr)(1:13).EQ.'xx_bottomdrag')
+        IF (xx_genarr2d_file(iarr)(1:13).EQ.'xx_bottomdrag')
      &     igen_bdrag=iarr
-        if (xx_genarr2d_file(iarr)(1:13).EQ.'xx_geothermal')
+        IF (xx_genarr2d_file(iarr)(1:13).EQ.'xx_geothermal')
      &     igen_geoth=iarr
 #ifdef ALLOW_SHELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT
@@ -102,16 +115,16 @@ C--   generic 2D control variables
       endif
       ENDDO
 
-      if (igen_etan.GT.0) then
-            call ctrl_map_genarr2d(etaN,igen_etan,myThid)
-      endif
+      IF (igen_etan.GT.0) THEN
+        CALL CTRL_MAP_GENARR2D( etaN, igen_etan, myThid )
+      ENDIF
 #ifdef ALLOW_BOTTOMDRAG_CONTROL
-      if (igen_bdrag.GT.0)
-     &  call ctrl_map_genarr2d(bottomDragFld,igen_bdrag,myThid)
+      IF (igen_bdrag.GT.0)
+     &  CALL CTRL_MAP_GENARR2D( bottomDragFld, igen_bdrag, myThid )
 #endif
 #ifdef ALLOW_GEOTHERMAL_FLUX
-      if (igen_geoth.GT.0)
-     &  call ctrl_map_genarr2d(geothermalFlux,igen_geoth,myThid)
+      IF (igen_geoth.GT.0)
+     &  CALL CTRL_MAP_GENARR2D( geothermalFlux, igen_geoth, myThid )
 #endif
 #ifdef ALLOW_SHELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT
@@ -174,7 +187,6 @@ C--      u* drag coefficient
 #endif /* ALLOW_GENARR2D_CONTROL */
 
 #ifdef ALLOW_GENARR3D_CONTROL
-
 C--   generic 3D control variables
 
       igen_theta0=0
@@ -182,62 +194,90 @@ C--   generic 3D control variables
       igen_kapgm=0
       igen_kapredi=0
       igen_diffkr=0
-#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
+# if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
       igen_uvel0=0
       igen_vvel0=0
-#endif
+# endif
+# ifdef ALLOW_PTRACERS
+      DO iPtr = 1, PTRACERS_num
+        igen_ptr(iPtr) = 0
+      ENDDO
+# endif /* ALLOW_PTRACERS */
       DO iarr = 1, maxCtrlArr3D
-      if (xx_genarr3d_weight(iarr).NE.' ') then
-        if (xx_genarr3d_file(iarr)(1:8).EQ.'xx_theta')
+       IF (xx_genarr3d_weight(iarr).NE.' ') THEN
+        IF (xx_genarr3d_file(iarr)(1:8).EQ.'xx_theta')
      &     igen_theta0=iarr
-        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_salt')
+        IF (xx_genarr3d_file(iarr)(1:7).EQ.'xx_salt')
      &     igen_salt0=iarr
-        if (xx_genarr3d_file(iarr)(1:8).EQ.'xx_kapgm')
+        IF (xx_genarr3d_file(iarr)(1:8).EQ.'xx_kapgm')
      &     igen_kapgm=iarr
-        if (xx_genarr3d_file(iarr)(1:10).EQ.'xx_kapredi')
+        IF (xx_genarr3d_file(iarr)(1:10).EQ.'xx_kapredi')
      &     igen_kapredi=iarr
-        if (xx_genarr3d_file(iarr)(1:9).EQ.'xx_diffkr')
+        IF (xx_genarr3d_file(iarr)(1:9).EQ.'xx_diffkr')
      &     igen_diffkr=iarr
-#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
-        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_uvel')
+# if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
+        IF (xx_genarr3d_file(iarr)(1:7).EQ.'xx_uvel')
      &     igen_uvel0=iarr
-        if (xx_genarr3d_file(iarr)(1:7).EQ.'xx_vvel')
+        IF (xx_genarr3d_file(iarr)(1:7).EQ.'xx_vvel')
      &     igen_vvel0=iarr
-#endif
-      endif
+# endif
+# ifdef ALLOW_PTRACERS
+        IF ( usePTRACERS ) THEN
+          iLen = ILNBLNK(xx_genarr3d_file(iarr))
+          IF ( iLen.EQ.7 .AND.
+     &         xx_genarr3d_file(iarr)(1:6).EQ.'xx_ptr' ) THEN
+            READ(xx_genarr3d_file(iarr)(7:7),*) iPtr
+            IF ( iPtr.GE.1 .AND. iPtr.LE.PTRACERS_numInUse )
+     &                  igen_ptr(iPtr) = iarr
+          ENDIF
+        ENDIF
+# endif /* ALLOW_PTRACERS */
+       ENDIF
       ENDDO
 
-      if (igen_theta0.GT.0)
-     &   call ctrl_map_genarr3d(theta,igen_theta0,myThid)
-      if (igen_salt0.GT.0)
-     &   call ctrl_map_genarr3d(salt,igen_salt0,myThid)
-#ifdef ALLOW_KAPGM_CONTROL
-      if (igen_kapgm.GT.0)
-     &   call ctrl_map_genarr3d(kapgm,igen_kapgm,myThid)
-#endif
-#ifdef ALLOW_KAPREDI_CONTROL
-      if (igen_kapredi.GT.0)
-     &   call ctrl_map_genarr3d(kapredi,igen_kapredi,myThid)
-#endif
-#ifdef ALLOW_3D_DIFFKR
-      if (igen_diffkr.GT.0)
-     &   call ctrl_map_genarr3d(diffkr,igen_diffkr,myThid)
-#endif
-#if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
-      if (igen_uvel0.GT.0 .and. igen_vvel0.GT.0) then
-         call ctrl_map_genarr3d(uvel,igen_uvel0,myThid)
-         call ctrl_map_genarr3d(vvel,igen_vvel0,myThid)
-         CALL EXCH_UV_XYZ_RL(uvel,vvel,.TRUE.,myThid)
-      endif
-#endif
+      IF (igen_theta0.GT.0)
+     &  CALL CTRL_MAP_GENARR3D( theta, igen_theta0, myThid )
+      IF (igen_salt0.GT.0)
+     &  CALL CTRL_MAP_GENARR3D( salt, igen_salt0, myThid )
+# ifdef ALLOW_KAPGM_CONTROL
+      IF (igen_kapgm.GT.0)
+     &  CALL CTRL_MAP_GENARR3D( kapGM, igen_kapgm, myThid )
+# endif
+# ifdef ALLOW_KAPREDI_CONTROL
+      IF (igen_kapredi.GT.0)
+     &  CALL CTRL_MAP_GENARR3D( kapRedi, igen_kapredi, myThid )
+# endif
+# if ( defined ALLOW_DIFFKR_CONTROL && defined ALLOW_3D_DIFFKR )
+      IF (igen_diffkr.GT.0)
+     &  CALL CTRL_MAP_GENARR3D( diffKr, igen_diffkr, myThid )
+# endif
+
+# ifdef ALLOW_PTRACERS
+CADJ loop = parallel
+      DO iPtr = 1, PTRACERS_num
+        IF ( igen_ptr(iPtr).GT.0 ) THEN
+          CALL CTRL_MAP_GENARR3D( pTracer(1-OLx,1-OLy,1,1,1,iPtr),
+     &                            igen_ptr(iPtr), myThid )
+        ENDIF
+      ENDDO
+# endif /* ALLOW_PTRACERS */
+
+# if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
+      IF (igen_uvel0.GT.0 .AND. igen_vvel0.GT.0) THEN
+        CALL CTRL_MAP_GENARR3D( uVel, igen_uvel0, myThid )
+        CALL CTRL_MAP_GENARR3D( vVel, igen_vvel0, myThid )
+        CALL EXCH_UV_XYZ_RL( uVel, vVel, .TRUE., myThid )
+      ENDIF
+# endif
 
 #endif /* ALLOW_GENARR3D_CONTROL */
 
       RETURN
       END
 
-C---------------------------
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+CBOP
 C     !ROUTINE: CTRL_MAP_GENARR2D
 C     !INTERFACE:
       SUBROUTINE CTRL_MAP_GENARR2D( fld, iarr, myThid )
@@ -267,12 +307,14 @@ C     == global variables ==
 #include "ctrl_dummy.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == routine arguments ==
-      _RL fld   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL     fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iarr
       INTEGER myThid
 
 #ifdef ALLOW_GENARR2D_CONTROL
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
 C     == local variables ==
@@ -300,8 +342,8 @@ C     == local variables ==
 CEOP
 
 c--   Now, read the control vector.
-      doglobalread = .false.
-      ladinit      = .false.
+      doglobalread = .FALSE.
+      ladinit      = .FALSE.
 
       call ctrl_zero(xx_gen, 1, 0. _d 0, myThid)
 
@@ -337,18 +379,18 @@ c               passed to data.ctrl, (default = 0.0)
       enddo
 
       fnamebase = xx_genarr2d_file(iarr)
-      ilgen=ilnblnk( fnamebase )
-      write(fnamegenIn(1:80),'(2a,i10.10)')
+      ilgen = ILNBLNK( fnamebase )
+      WRITE(fnamegenIn(1:80),'(2A,I10.10)')
      &       fnamebase(1:ilgen),'.',optimcycle
-      write(fnamegenOut(1:80),'(2a,i10.10)')
+      WRITE(fnamegenOut(1:80),'(2A,I10.10)')
      &       fnamebase(1:ilgen),'.effective.',optimcycle
 
       CALL MDS_READ_FIELD(xx_genarr2d_weight(iarr),ctrlprec,.FALSE.,
-     & 'RL',1,1,1,wgenarr2d(1-Olx,1-Oly,1,1,iarr),dummyRS,1,mythid)
+     &     'RL',1,1,1,wgenarr2d(1-OLx,1-OLy,1,1,iarr),dummyRS,1,myThid)
 
 #ifdef ALLOW_AUTODIFF
-      call active_read_xy( fnamegenIn, xx_gen, 1, doglobalread,
-     & ladinit, optimcycle, mythid, xx_genarr2d_dummy(iarr) )
+      CALL ACTIVE_READ_XY( fnamegenIn, xx_gen, 1, doglobalread,
+     &     ladinit, optimcycle, myThid, xx_genarr2d_dummy(iarr) )
 #else
       CALL READ_REC_XY_RL( fnamegenIn, xx_gen, 1, 1, myThid)
 #endif
@@ -399,18 +441,19 @@ c or in case of log10ctrl, fld = 10^(xx_gen)
 c avoid param out of [boundsVec(1) boundsVec(4)]
       CALL CTRL_BOUND_2D(fld,mask2D,xx_genarr2d_bounds(1,iarr),myThid)
 
-      CALL EXCH_XY_RL( fld, mythid )
+      CALL EXCH_XY_RL( fld, myThid )
 
-      CALL MDS_WRITE_FIELD(fnamegenOut,ctrlprec,.FALSE.,.FALSE.,
-     & 'RL',1,1,1,fld,dummyRS,1,optimcycle,mythid)
+      CALL MDS_WRITE_FIELD( fnamegenOut, ctrlprec, .FALSE., .FALSE.,
+     &         'RL', 1, 1, 1, fld, dummyRS, 1, optimcycle, myThid )
 
 #endif /* ALLOW_GENARR2D_CONTROL */
 
       RETURN
       END
 
-C---------------------------
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+CBOP
 C     !ROUTINE: CTRL_MAP_GENARR3D
 C     !INTERFACE:
       SUBROUTINE CTRL_MAP_GENARR3D( fld, iarr, myThid )
@@ -440,12 +483,14 @@ C     == global variables ==
 #include "ctrl_dummy.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == routine arguments ==
-      _RL fld   (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL     fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER iarr
       INTEGER myThid
 
 #ifdef ALLOW_GENARR3D_CONTROL
+C     !FUNCTIONS:
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
 C     == local variables ==
@@ -471,8 +516,8 @@ C     == local variables ==
 CEOP
 
 c--   Now, read the control vector.
-      doglobalread = .false.
-      ladinit      = .false.
+      doglobalread = .FALSE.
+      ladinit      = .FALSE.
 
       call ctrl_zero(xx_gen, Nr, 0. _d 0, myThid)
 
@@ -508,26 +553,26 @@ c               passed to data.ctrl, (default = 0.0)
       enddo
 
       fnamebase = xx_genarr3d_file(iarr)
-      ilgen=ilnblnk( fnamebase )
-      write(fnamegenIn(1:80),'(2a,i10.10)')
+      ilgen = ILNBLNK( fnamebase )
+      WRITE(fnamegenIn(1:80),'(2a,i10.10)')
      &       fnamebase(1:ilgen),'.',optimcycle
-      write(fnamegenOut(1:80),'(2a,i10.10)')
+      WRITE(fnamegenOut(1:80),'(2a,i10.10)')
      &       fnamebase(1:ilgen),'.effective.',optimcycle
 
       CALL MDS_READ_FIELD(xx_genarr3d_weight(iarr),ctrlprec,.FALSE.,
-     & 'RL',nR,1,nR,wgenarr3d(1-Olx,1-Oly,1,1,1,iarr),dummyRS,1,mythid)
+     & 'RL',nR,1,nR,wgenarr3d(1-OLx,1-OLy,1,1,1,iarr),dummyRS,1,myThid)
 
 #ifdef ALLOW_AUTODIFF
-      call active_read_xyz( fnamegenIn, xx_gen, 1, doglobalread,
-     & ladinit, optimcycle, mythid, xx_genarr3d_dummy(iarr) )
+      CALL ACTIVE_READ_XYZ( fnamegenIn, xx_gen, 1, doglobalread,
+     & ladinit, optimcycle, myThid, xx_genarr3d_dummy(iarr) )
 #else
       CALL READ_REC_XYZ_RL( fnamegenIn, xx_gen, 1, 1, myThid)
 #endif
 
 #ifdef ALLOW_SMOOTH
       IF (useSMOOTH) THEN
-       IF (dowc01) call smooth_correl3d(xx_gen,numsmo,mythid)
-       IF (dosmooth) call smooth3d(xx_gen,numsmo,mythid)
+       IF (dowc01) CALL SMOOTH_CORREL3D( xx_gen, numsmo, myThid )
+       IF (dosmooth) CALL SMOOTH3D( xx_gen, numsmo, myThid )
       ENDIF
 #endif
 
@@ -573,12 +618,12 @@ c avoid param out of [boundsVec(1) boundsVec(4)]
 C The tile exchange for xx_uvel and xx_vvel will be
 C  done in CTRL_MAP_INI_GENARR.F when both
 C  xx_uvel and xx_vvel are read in.
-      if (xx_genarr3d_file(iarr)(1:7).NE.'xx_uvel'.AND.
+      IF (xx_genarr3d_file(iarr)(1:7).NE.'xx_uvel'.AND.
      &    xx_genarr3d_file(iarr)(1:7).NE.'xx_vvel')
-     &    CALL EXCH_XYZ_RL( fld, mythid )
+     &    CALL EXCH_XYZ_RL( fld, myThid )
 
-      CALL MDS_WRITE_FIELD(fnamegenOut,ctrlprec,.FALSE.,.FALSE.,
-     & 'RL',nr,1,nr,fld,dummyRS,1,optimcycle,mythid)
+      CALL MDS_WRITE_FIELD( fnamegenOut, ctrlprec, .FALSE., .FALSE.,
+     &         'RL', Nr, 1, Nr, fld, dummyRS, 1, optimcycle, myThid )
 
 #endif /* ALLOW_GENARR3D_CONTROL */
 
