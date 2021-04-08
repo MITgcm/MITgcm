@@ -110,7 +110,7 @@ c       tTitle = 'Conservative Temp.   '
         sTitle = ' Absolute Salinity  '
       ELSE
         tUnit4c= 'degC'
-        sUnit5c= 'psu  '
+        sUnit5c= 'g/kg '
 c       tTitle = 'Potential Temperature'
         sTitle = ' Salinity           '
       ENDIF
