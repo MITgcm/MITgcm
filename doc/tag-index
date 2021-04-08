@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model, pkg & doc:
+  - replace all occurrences of incorrect "psu" and "PSU" by "g/kg" in units and
+    comments ; update the documentation accordingly.
 o pkg/ctrl:
   - move to pkg/ctrl the local copy of ctrl_map_ini_genarr.F from verification/
     global_oce_biogeo_bling/code_ad/ with ptracers generic control. Improve for
