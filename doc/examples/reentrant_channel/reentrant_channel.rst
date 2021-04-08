@@ -865,8 +865,9 @@ In this tutorial we use standard :ref:`native Fortan (binary) output <pkg_mdsio>
 rather than `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_  output (as done in tutorial :ref:`Baroclinic Ocean Gyre <tutorial_baroclinic_gyre>`).
 Important note: when using :filelink:`pkg/mdsio`, the statistical diagnostics output is written in plain text,
 NOT binary format. An advantage is that this permits a simple unix ``cat`` or ``more`` command to display the file to the terminal window
-as integration proceeds, i.e., for a quick check that results look reasonable. The disadvantage however is that some additional parsing
-is required to generate some plots using these data. Making use of MITgcm shell script :filelink:`utils/scripts/extract_StD`,
+as integration proceeds, i.e., for a quick check that results look reasonable. The disadvantage however
+is that some additional parsing is required (when using `MATLAB <https://www.mathworks.com/>`_) 
+to generate some plots using these data. Making use of MITgcm shell script :filelink:`utils/scripts/extract_StD`,
 in a terminal window (in the run directory) type
 
 ::
@@ -906,7 +907,7 @@ where
      ( kLev, time_rec, region_rec, [ave,std,min,max,vol], fld_rec )
      where kLev=1 is depth-average, kLev=2:50 is for depths :varlink:`rC`\ (1:49)
 
-A function to parse statistical diagnostics output is also available in the python package :ref:`MITgcmutils`.
+A function to parse statistical diagnostics MITgcm output is also available in the python package :ref:`MITgcmutils`.
 Executing the python command
 
 :: 
