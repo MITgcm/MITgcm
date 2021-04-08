@@ -497,7 +497,7 @@ C     dumpAdVarExch.NE.2
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adkapredi', adkapredi, myThid)
 #endif
-#ifdef ALLOW_SHIELFICE
+#ifdef ALLOW_SHELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT
           CALL MNC_CW_RL_W('D','adstate',0,0,
      &                     'adshict', adshiTransCoeffT, myThid)
