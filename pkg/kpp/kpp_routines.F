@@ -1644,7 +1644,7 @@ c               g * [ drho{1,k}/rho{1,k} - drho{k,k}/rho{k,k} ]         (m/s^2)
 c      ttalpha= thermal expansion coefficient without 1/rho factor
 c               d(rho) / d(potential temperature)                    (kg/m^3/C)
 c      ssbeta = salt expansion coefficient without 1/rho factor
-c               d(rho) / d(salinity)                               (kg/m^3/PSU)
+c               d(rho) / d(salinity)                          ((kg/m^3)/(g/kg))
 c
 c     see also subroutines find_rho.F find_alpha.F find_beta.F
 c
@@ -1849,7 +1849,7 @@ c
 c      ttalpha= thermal expansion coefficient without 1/rho factor
 c               d(rho) / d(potential temperature)                    (kg/m^3/C)
 c      ssbeta = salt expansion coefficient without 1/rho factor
-c               d(rho) / d(salinity)                               (kg/m^3/PSU)
+c               d(rho) / d(salinity)                          ((kg/m^3)/(g/kg))
 c     output: updated
 c     kappaRT/S :: background diffusivities for temperature and salinity
 c

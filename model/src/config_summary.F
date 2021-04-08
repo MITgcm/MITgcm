@@ -112,7 +112,7 @@ C     i, k   :: Loop counters.
       CALL WRITE_1D_RL( tRef, Nr, INDEX_K, 'tRef =',
      & '   /* Reference temperature profile ( oC or K ) */')
       CALL WRITE_1D_RL( sRef, Nr, INDEX_K, 'sRef =',
-     & '   /* Reference salinity profile ( psu ) */')
+     & '   /* Reference salinity profile ( g/kg ) */')
 C-    Horizontal viscosity parameters:
 #ifdef ALLOW_MOM_COMMON
       CALL WRITE_0D_L( useStrainTensionVisc, INDEX_NONE,
@@ -254,7 +254,7 @@ C-----
         CALL WRITE_0D_RL( tAlpha,  INDEX_NONE,'tAlpha =',
      &  ' /* Linear EOS thermal expansion coefficient ( 1/oC ) */')
         CALL WRITE_0D_RL( sBeta,   INDEX_NONE,'sBeta  =',
-     &  ' /* Linear EOS haline contraction coefficient ( 1/psu ) */')
+     & ' /* Linear EOS haline contraction coefficient ( 1/(g/kg) ) */')
         CALL WRITE_0D_RL( rhoNil,  INDEX_NONE, 'rhoNil    =',
      &  ' /* Reference density for Linear EOS ( kg/m^3 ) */')
       ELSEIF ( eosType .EQ. 'POLY3 ' ) THEN
@@ -393,7 +393,7 @@ C-----
      &  ' /* Temp. of Evap/Prec/R (UNSET=use local T)(oC)*/')
       CALL WRITE_0D_RL( salt_EvPrRn, INDEX_NONE,
      &  'salt_EvPrRn =',
-     &  ' /* Salin. of Evap/Prec/R (UNSET=use local S)(psu)*/')
+     &  ' /* Salin. of Evap/Prec/R (UNSET=use local S)(g/kg)*/')
       CALL WRITE_0D_I( selectAddFluid, INDEX_NONE,
      & 'selectAddFluid =',
      &  ' /* option for mass source/sink of fluid (=0: off) */')
@@ -402,12 +402,12 @@ C-----
      &  ' /* Temp. of addMass array (UNSET=use local T)(oC)*/')
       CALL WRITE_0D_RL( salt_addMass, INDEX_NONE,
      & 'salt_addMass =',
-     &  ' /* Salin. of addMass array (UNSET=use local S)(psu)*/')
+     &  ' /* Salin. of addMass array (UNSET=use local S)(g/kg)*/')
       IF ( .NOT.useRealFreshWaterFlux .OR. selectAddFluid.EQ.-1
      &                                .OR. nonlinFreeSurf.LE.0 ) THEN
       CALL WRITE_0D_RL( convertFW2Salt, INDEX_NONE,
      & 'convertFW2Salt =',
-     & ' /* convert F.W. Flux to Salt Flux (-1=use local S)(psu)*/')
+     & ' /* convert F.W. Flux to Salt Flux (-1=use local S)(g/kg)*/')
       ENDIF
 
       CALL WRITE_0D_L( use3Dsolver, INDEX_NONE,

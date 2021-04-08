@@ -1814,10 +1814,10 @@ the following table:
      ADVySNOW|VV      M1|m.m^2/s         |Meridional Advective Flux of eff snow thickn
      DFxESNOW|UU      M1|m.m^2/s         |Zonal      Diffusive Flux of eff snow thickn
      DFyESNOW|VV      M1|m.m^2/s         |Meridional Diffusive Flux of eff snow thickn
-     ADVxSSLT|UU      M1|psu.m^2/s       |Zonal      Advective Flux of seaice salinity
-     ADVySSLT|VV      M1|psu.m^2/s       |Meridional Advective Flux of seaice salinity
-     DFxESSLT|UU      M1|psu.m^2/s       |Zonal      Diffusive Flux of seaice salinity
-     DFyESSLT|VV      M1|psu.m^2/s       |Meridional Diffusive Flux of seaice salinity
+     ADVxSSLT|UU      M1|(g/kg).m^2/s    |Zonal      Advective Flux of seaice salinity
+     ADVySSLT|VV      M1|(g/kg).m^2/s    |Meridional Advective Flux of seaice salinity
+     DFxESSLT|UU      M1|(g/kg).m^2/s    |Zonal      Diffusive Flux of seaice salinity
+     DFyESSLT|VV      M1|(g/kg).m^2/s    |Meridional Diffusive Flux of seaice salinity
 
 
 Experiments and tutorials that use seaice
