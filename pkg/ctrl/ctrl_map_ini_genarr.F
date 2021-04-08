@@ -62,11 +62,11 @@ C     !LOCAL VARIABLES:
       INTEGER iarr
 #endif
 #ifdef ALLOW_GENARR2D_CONTROL
-      integer igen_etan,igen_bdrag,igen_geoth
+      INTEGER igen_etan,igen_bdrag,igen_geoth
 # ifdef ALLOW_SHELFICE
-      integer igen_shiCoeffT, igen_shiCoeffS, igen_shiCDrag
-      integer i, j, bi, bj, k2
-      logical dragThermoEqualMom
+      INTEGER igen_shiCoeffT, igen_shiCoeffS, igen_shiCDrag
+      INTEGER i, j, bi, bj, k2
+      LOGICAL dragThermoEqualMom
 # endif
 #endif /* ALLOW_GENARR2D_CONTROL */
 #ifdef ALLOW_GENARR3D_CONTROL
@@ -103,16 +103,16 @@ C--   generic 2D control variables
      &     igen_geoth=iarr
 #ifdef ALLOW_SHELFICE
 # ifndef SHI_ALLOW_GAMMAFRICT
-        if (xx_genarr2d_file(iarr)(1:12).EQ.'xx_shicoefft')
+        IF (xx_genarr2d_file(iarr)(1:12).EQ.'xx_shicoefft')
      &     igen_shiCoeffT=iarr
-        if (xx_genarr2d_file(iarr)(1:12).EQ.'xx_shicoeffs')
+        IF (xx_genarr2d_file(iarr)(1:12).EQ.'xx_shicoeffs')
      &     igen_shiCoeffS=iarr
 # else
-        if (xx_genarr2d_file(iarr)(1:11).EQ.'xx_shicdrag')
+        IF (xx_genarr2d_file(iarr)(1:11).EQ.'xx_shicdrag')
      &     igen_shiCDrag=iarr
 # endif
 #endif
-      endif
+       ENDIF
       ENDDO
 
       IF (igen_etan.GT.0) THEN
@@ -317,66 +317,61 @@ C     !FUNCTIONS:
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-C     == local variables ==
-      integer bi,bj
-      integer i,j
-      integer jmin,jmax
-      integer imin,imax
-      integer numsmo, k2
-      logical dowc01
-      logical dosmooth
-      logical doscaling
-      logical dolog10ctrl
+      INTEGER bi,bj
+      INTEGER i,j
+      INTEGER numsmo, k2
+      LOGICAL dowc01
+      LOGICAL dosmooth
+      LOGICAL doscaling
+      LOGICAL dolog10ctrl
       _RL log10initval
       _RL xx_gen  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RS dummyRS(1)
-      character*(80) fnamegenIn
-      character*(80) fnamegenOut
-      character*(80) fnamebase
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-      integer ilgen
-      logical doglobalread
-      logical ladinit
-      _RS mask2d (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      CHARACTER*(80) fnamegenIn
+      CHARACTER*(80) fnamegenOut
+      CHARACTER*(80) fnamebase
+      INTEGER ilgen
+      LOGICAL doglobalread
+      LOGICAL ladinit
+      _RS mask2D (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 CEOP
 
 c--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
 
-      call ctrl_zero(xx_gen, 1, 0. _d 0, myThid)
+      CALL CTRL_ZERO(xx_gen, 1, 0. _d 0, myThid)
 
-      dosmooth=.false.
-      dowc01  = .false.
-      doscaling=.true.
-      dolog10ctrl=.false.
+      dosmooth=.FALSE.
+      dowc01  = .FALSE.
+      doscaling=.TRUE.
+      dolog10ctrl=.FALSE.
       log10initval=0. _d 0
 
-      numsmo=1
-      do k2 = 1, maxCtrlProc
-          if (xx_genarr2d_preproc(k2,iarr).EQ.'WC01') then
-             dowc01=.TRUE.
-             if (xx_genarr2d_preproc_i(k2,iarr).NE.0)
-     &           numsmo=xx_genarr2d_preproc_i(k2,iarr)
-          endif
-          if ((.NOT.dowc01).AND.
-     &        (xx_genarr2d_preproc(k2,iarr).EQ.'smooth')) then
-             dosmooth=.TRUE.
-             if (xx_genarr2d_preproc_i(k2,iarr).NE.0)
-     &           numsmo=xx_genarr2d_preproc_i(k2,iarr)
-          endif
-          if (xx_genarr2d_preproc(k2,iarr).EQ.'noscaling') then
-             doscaling=.FALSE.
-          endif
-          if (xx_genarr2d_preproc_c(k2,iarr).eq.'log10ctrl') then
+      numsmo = 1
+      DO k2 = 1, maxCtrlProc
+        IF ( xx_genarr2d_preproc(k2,iarr).EQ.'WC01' ) THEN
+          dowc01 = .TRUE.
+          IF (xx_genarr2d_preproc_i(k2,iarr).NE.0)
+     &      numsmo = xx_genarr2d_preproc_i(k2,iarr)
+        ENDIF
+        IF ( (.NOT.dowc01).AND.
+     &       (xx_genarr2d_preproc(k2,iarr).EQ.'smooth') ) THEN
+          dosmooth = .TRUE.
+          IF (xx_genarr2d_preproc_i(k2,iarr).NE.0)
+     &      numsmo = xx_genarr2d_preproc_i(k2,iarr)
+        ENDIF
+        IF ( xx_genarr2d_preproc(k2,iarr).EQ.'noscaling' ) THEN
+          doscaling = .FALSE.
+        ENDIF
+        IF (xx_genarr2d_preproc_c(k2,iarr).EQ.'log10ctrl') THEN
 c             fld := log10(xx_gen)
 c               with initial guess for xx_gen set to log10initval
 c               passed to data.ctrl, (default = 0.0)
-              dolog10ctrl=.true.
-              log10initval = xx_genarr2d_preproc_r(k2,iarr)
-          endif
-      enddo
+          dolog10ctrl=.TRUE.
+          log10initval = xx_genarr2d_preproc_r(k2,iarr)
+        ENDIF
+      ENDDO
 
       fnamebase = xx_genarr2d_file(iarr)
       ilgen = ILNBLNK( fnamebase )
@@ -396,15 +391,15 @@ c               passed to data.ctrl, (default = 0.0)
 #endif
 
 C --- Get appropriate mask for ctrl variable
-      call ctrl_get_mask2d(xx_genarr2d_file(iarr), mask2D, myThid)
+      CALL CTRL_GET_MASK2D(xx_genarr2d_file(iarr), mask2D, myThid)
 
 C --- Do any smoothing
 #ifdef ALLOW_SMOOTH
       IF (useSMOOTH) THEN
 CADJ STORE mask2D = tapelev_init, key = 1
-       IF (dowc01) call smooth_correl2d(xx_gen,mask2D,numsmo,mythid)
+       IF (dowc01) CALL SMOOTH_CORREL2D(xx_gen,mask2D,numsmo,mythid)
 CADJ STORE mask2D = tapelev_init, key = 1
-       IF (dosmooth) call smooth2d(xx_gen,mask2D,numsmo,mythid)
+       IF (dosmooth) CALL SMOOTH2D(xx_gen,mask2D,numsmo,mythid)
       ENDIF
 #endif
 
@@ -413,30 +408,30 @@ CADJ STORE mask2D = tapelev_init, key = 1
         DO j = 1,sNy
          DO i = 1,sNx
 c scale param adjustment
-          if ( (mask2D(i,j,bi,bj).NE.0.).AND.
-     &         (wgenarr2d(i,j,bi,bj,iarr).GT.0.) ) then
-            IF (doscaling) then
-             xx_gen(i,j,bi,bj)=xx_gen(i,j,bi,bj)
-     &                /sqrt( wgenarr2d(i,j,bi,bj,iarr) )
-             if (dolog10ctrl) then
-              xx_gen(i,j,bi,bj) = xx_gen(i,j,bi,bj) + log10initval
-              xx_gen(i,j,bi,bj) = 10.0 ** xx_gen(i,j,bi,bj)
-             endif ! log10ctrls
-            ENDIF ! doscaling
-          else
-            xx_gen(i,j,bi,bj)=0.
-          endif
+            IF ( (mask2D(i,j,bi,bj).NE.0.).AND.
+     &           (wgenarr2d(i,j,bi,bj,iarr).GT.0.) ) THEN
+              IF (doscaling) THEN
+                  xx_gen(i,j,bi,bj) = xx_gen(i,j,bi,bj)
+     &                     /SQRT( wgenarr2d(i,j,bi,bj,iarr) )
+                IF (dolog10ctrl) THEN
+                  xx_gen(i,j,bi,bj) = xx_gen(i,j,bi,bj) + log10initval
+                  xx_gen(i,j,bi,bj) = 10.0 ** xx_gen(i,j,bi,bj)
+                ENDIF ! log10ctrls
+              ENDIF ! doscaling
+            ELSE
+              xx_gen(i,j,bi,bj) = 0.
+            ENDIF
 c add to model parameter
 c or in case of log10ctrl, fld = 10^(xx_gen)
-          if ( .not. dolog10ctrl ) then
-           fld(i,j,bi,bj)=fld(i,j,bi,bj)+xx_gen(i,j,bi,bj)
-          else
-           fld(i,j,bi,bj)=xx_gen(i,j,bi,bj)
-          endif
-         enddo
-        enddo
-       enddo
-      enddo
+            IF ( .NOT. dolog10ctrl ) THEN
+              fld(i,j,bi,bj) = fld(i,j,bi,bj)+xx_gen(i,j,bi,bj)
+            ELSE
+              fld(i,j,bi,bj) = xx_gen(i,j,bi,bj)
+            ENDIF
+          ENDDO
+         ENDDO
+       ENDDO
+      ENDDO
 
 c avoid param out of [boundsVec(1) boundsVec(4)]
       CALL CTRL_BOUND_2D(fld,mask2D,xx_genarr2d_bounds(1,iarr),myThid)
@@ -493,25 +488,22 @@ C     !FUNCTIONS:
       EXTERNAL ILNBLNK
 
 C     !LOCAL VARIABLES:
-C     == local variables ==
-      integer bi,bj
-      integer i,j,k
-      integer numsmo,k2
-      logical dowc01
-      logical dosmooth
-      logical doscaling
-      logical dolog10ctrl
+      INTEGER bi,bj
+      INTEGER i,j,k
+      INTEGER numsmo,k2
+      LOGICAL dowc01
+      LOGICAL dosmooth
+      LOGICAL doscaling
+      LOGICAL dolog10ctrl
       _RL log10initval
-      _RL xx_gen  (1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL xx_gen(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS dummyRS(1)
-      character*(80) fnamegenIn
-      character*(80) fnamegenOut
-      character*(80) fnamebase
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
-      integer ilgen
-      logical doglobalread
-      logical ladinit
+      CHARACTER*(80) fnamegenIn
+      CHARACTER*(80) fnamegenOut
+      CHARACTER*(80) fnamebase
+      INTEGER ilgen
+      LOGICAL doglobalread
+      LOGICAL ladinit
       _RS mask3D(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 CEOP
 
@@ -519,38 +511,38 @@ c--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
 
-      call ctrl_zero(xx_gen, Nr, 0. _d 0, myThid)
+      CALL CTRL_ZERO(xx_gen, Nr, 0. _d 0, myThid)
 
-      dosmooth=.false.
-      dowc01  = .false.
-      doscaling=.true.
-      dolog10ctrl=.false.
+      dosmooth=.FALSE.
+      dowc01  = .FALSE.
+      doscaling=.TRUE.
+      dolog10ctrl=.FALSE.
       log10initval=0. _d 0
 
-      numsmo=1
-      do k2 = 1, maxCtrlProc
-          if (xx_genarr3d_preproc(k2,iarr).EQ.'WC01') then
-             dowc01=.TRUE.
-             if (xx_genarr3d_preproc_i(k2,iarr).NE.0)
-     &           numsmo=xx_genarr3d_preproc_i(k2,iarr)
-          endif
-          if ((.NOT.dowc01).AND.
-     &        (xx_genarr3d_preproc(k2,iarr).EQ.'smooth')) then
-             dosmooth=.TRUE.
-             if (xx_genarr3d_preproc_i(k2,iarr).NE.0)
-     &           numsmo=xx_genarr3d_preproc_i(k2,iarr)
-          endif
-          if (xx_genarr3d_preproc(k2,iarr).EQ.'noscaling') then
-             doscaling=.FALSE.
-          endif
-          if (xx_genarr3d_preproc_c(k2,iarr).eq.'log10ctrl') then
+      numsmo = 1
+      DO k2 = 1, maxCtrlProc
+        IF ( xx_genarr3d_preproc(k2,iarr).EQ.'WC01' ) THEN
+          dowc01 = .TRUE.
+          IF (xx_genarr3d_preproc_i(k2,iarr).NE.0)
+     &      numsmo = xx_genarr3d_preproc_i(k2,iarr)
+        ENDIF
+        IF ( (.NOT.dowc01).AND.
+     &       (xx_genarr3d_preproc(k2,iarr).EQ.'smooth') ) THEN
+          dosmooth = .TRUE.
+          IF (xx_genarr3d_preproc_i(k2,iarr).NE.0)
+     &      numsmo = xx_genarr3d_preproc_i(k2,iarr)
+        ENDIF
+        IF (xx_genarr3d_preproc(k2,iarr).EQ.'noscaling') THEN
+          doscaling = .FALSE.
+        ENDIF
+        IF (xx_genarr3d_preproc_c(k2,iarr).EQ.'log10ctrl') THEN
 c             fld := log10(xx_gen)
 c               with initial guess for xx_gen set to log10initval
 c               passed to data.ctrl, (default = 0.0)
-              dolog10ctrl=.true.
-              log10initval = xx_genarr3d_preproc_r(k2,iarr)
-          endif
-      enddo
+          dolog10ctrl=.TRUE.
+          log10initval = xx_genarr3d_preproc_r(k2,iarr)
+        ENDIF
+      ENDDO
 
       fnamebase = xx_genarr3d_file(iarr)
       ilgen = ILNBLNK( fnamebase )
@@ -577,7 +569,7 @@ c               passed to data.ctrl, (default = 0.0)
 #endif
 
 C --- Get appropriate mask
-      call ctrl_get_mask3d(xx_genarr3d_file(iarr), mask3D, myThid)
+      CALL CTRL_GET_MASK3D(xx_genarr3d_file(iarr), mask3D, myThid)
 
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -585,32 +577,32 @@ C --- Get appropriate mask
          DO j = 1,sNy
           DO i = 1,sNx
 c scale param adjustment
-            if ( (mask3D(i,j,k,bi,bj).NE.0.).AND.
-     &           (wgenarr3d(i,j,k,bi,bj,iarr).GT.0.) ) then
-             IF (doscaling) then
+            IF ( (mask3D(i,j,k,bi,bj).NE.0.).AND.
+     &           (wgenarr3d(i,j,k,bi,bj,iarr).GT.0.) ) THEN
+             IF (doscaling) THEN
               xx_gen(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
-     &                 /sqrt( wgenarr3d(i,j,k,bi,bj,iarr) )
-              if (dolog10ctrl) then
+     &                 /SQRT( wgenarr3d(i,j,k,bi,bj,iarr) )
+              IF (dolog10ctrl) THEN
                xx_gen(i,j,k,bi,bj) =
      &              xx_gen(i,j,k,bi,bj) + log10initval
                xx_gen(i,j,k,bi,bj) = 10.0 ** xx_gen(i,j,k,bi,bj)
-              endif ! log10ctrls
+              ENDIF ! log10ctrls
              ENDIF ! doscaling
-            else
+            ELSE
               xx_gen(i,j,k,bi,bj)=0.
-            endif
+            ENDIF
 c add to model parameter
 c or in case of log10ctrl, fld = 10^(xx_gen)
-            if ( .not. dolog10ctrl ) then
+            IF ( .NOT. dolog10ctrl ) THEN
              fld(i,j,k,bi,bj)=fld(i,j,k,bi,bj)+xx_gen(i,j,k,bi,bj)
-            else
+            ELSE
              fld(i,j,k,bi,bj)=xx_gen(i,j,k,bi,bj)
-            endif
-          enddo
-         enddo
-        enddo
-       enddo
-      enddo
+            ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 c avoid param out of [boundsVec(1) boundsVec(4)]
       CALL CTRL_BOUND_3D(fld,mask3D,xx_genarr3d_bounds(1,iarr),myThid)

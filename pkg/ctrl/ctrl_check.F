@@ -339,80 +339,74 @@ C     which in turn require a particular set of input fields
       _END_MASTER(myThid)
 
 #ifdef ALLOW_GENARR2D_CONTROL
-c       Warn user: doscaling must be true to do log10 ctrl
-        do iarr = 1, maxCtrlArr2D
-          do k2 = 1, maxCtrlProc
-            if ( (xx_genarr2d_preproc(k2,iarr).eq.'noscaling') .and.
-     &         (xx_genarr2d_preproc_c(k2,iarr).eq.'log10ctrl') ) then
-              write(msgBuf,'(2A)')
-     &        'CTRL_CHECK: conflicting ',
-     &        'preproc_c & preproc flags '
-              call print_error( msgBuf, myThid )
-              write(msgBuf,'(A,I2,A)')
-     &        'log10ctrl and noscaling set for xx_genarr2d(',iarr,
-     &        '). '
-              call print_error( msgBuf, myThid )
-              STOP 'ABNORMAL END: S/R CTRL_CHECK'
-            endif
-          enddo
-        enddo
+c     Warn user: doscaling must be true to do log10 ctrl
+      DO iarr = 1, maxCtrlArr2D
+        DO k2 = 1, maxCtrlProc
+          IF ( (xx_genarr2d_preproc(k2,iarr).EQ.'noscaling') .AND.
+     &       (xx_genarr2d_preproc_c(k2,iarr).EQ.'log10ctrl') ) THEN
+            WRITE(msgBuf,'(A)')
+     &      'CTRL_CHECK: conflicting preproc_c & preproc flags '
+            CALL PRINT_ERROR( msgBuf, myThid )
+            WRITE(msgBuf,'(A,I2,A)')
+     &      'log10ctrl and noscaling set for xx_genarr2d(',iarr,').'
+            CALL PRINT_ERROR( msgBuf, myThid )
+            STOP 'ABNORMAL END: S/R CTRL_CHECK'
+          ENDIF
+        ENDDO
+      ENDDO
 # ifdef ALLOW_SHELFICE
 #  ifdef SHI_ALLOW_GAMMAFRICT
-C Can't have shiTransCoeffT/S as control variables in gammafrict form
-        do iarr = 1, maxCtrlArr2D
-          if ( (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff')) then
-              write(msgBuf,'(2A,I2,A)')
-     &        'shiTransCoeffT or S set as control variable for ',
-     &        'xx_genarr2d(', iarr,
-     &        '). '
-              call print_error( msgBuf, myThid )
-              write(msgBuf,'(2A)')
-     &        'Cannot use shiTransCoeffT/S when SHI_ALLOW_GAMMAFRICT ',
-     &        'is defined'
-              call print_error( msgBuf, myThid )
-              STOP 'ABNORMAL END: S/R CTRL_CHECK'
-          endif
-        enddo
+C     Cannot have shiTransCoeffT/S as control variables in gammafrict form
+      DO iarr = 1, maxCtrlArr2D
+        IF ( (xx_genarr2d_file(iarr)(1:11).EQ.'xx_shicoeff')) THEN
+          WRITE(msgBuf,'(2A,I2,A)')
+     &    'shiTransCoeffT or S set as control variable for ',
+     &    'xx_genarr2d(', iarr,'). '
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(2A)')
+     &    'Cannot use shiTransCoeffT/S when SHI_ALLOW_GAMMAFRICT ',
+     &    'is defined'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R CTRL_CHECK'
+        ENDIF
+      ENDDO
 #  else
-C Can't have shiCDrag as control variable without gammafrict form
-C this could be changed to control cdrag for momentum equation only,
-C but is probably not what the user wants or expects.
-        do iarr = 1, maxCtrlArr2D
-          if ( (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
-              write(msgBuf,'(2A,I2,A)')
-     &        'shiCDrag set as control variable for ',
-     &        'xx_genarr2d(', iarr,
-     &        '). '
-              call print_error( msgBuf, myThid )
-              write(msgBuf,'(2A)')
-     &        'Cannot use shiCDrag when SHI_ALLOW_GAMMAFRICT ',
-     &        'is NOT defined'
-              call print_error( msgBuf, myThid )
-              STOP 'ABNORMAL END: S/R CTRL_CHECK'
-          endif
-        enddo
+C     Cannot have shiCDrag as control variable without gammafrict form
+C     this could be changed to control cdrag for momentum equation only,
+C     but is probably not what the user wants or expects.
+      DO iarr = 1, maxCtrlArr2D
+        IF ( (xx_genarr2d_file(iarr)(1:11).EQ.'xx_shicdrag')) THEN
+          WRITE(msgBuf,'(2A,I2,A)')
+     &    'shiCDrag set as control variable for ',
+     &    'xx_genarr2d(', iarr,'). '
+          CALL PRINT_ERROR( msgBuf, myThid )
+          WRITE(msgBuf,'(2A)')
+     &    'Cannot use shiCDrag when SHI_ALLOW_GAMMAFRICT ',
+     &    'is NOT defined'
+          CALL PRINT_ERROR( msgBuf, myThid )
+          STOP 'ABNORMAL END: S/R CTRL_CHECK'
+        ENDIF
+      ENDDO
 #  endif /* SHI_ALLOW_GAMMAFRICT */
 # endif /* ALLOW_SHELFICE */
 #endif /* ALLOW_GENARR2D_CONTROL */
 
 #ifdef ALLOW_GENARR3D_CONTROL
-c       Warn user: doscaling must be true to do log10 ctrl
-        do iarr = 1, maxCtrlArr3D
-          do k2 = 1, maxCtrlProc
-            if ( (xx_genarr3d_preproc(k2,iarr).eq.'noscaling') .and.
-     &         (xx_genarr3d_preproc_c(k2,iarr).eq.'log10ctrl') ) then
-              write(msgBuf,'(2A)')
-     &        'CTRL_CHECK: conflicting ',
-     &        'preproc_c & preproc flags '
-              call print_error( msgBuf, myThid )
-              write(msgBuf,'(A,I2,A)')
-     &        'log10ctrl and noscaling set for xx_genarr2d(',iarr,
-     &        '). '
-              call print_error( msgBuf, myThid )
-              STOP 'ABNORMAL END: S/R CTRL_CHECK'
-            endif
-          enddo
-        enddo
+c     Warn user: doscaling must be true to do log10 ctrl
+      DO iarr = 1, maxCtrlArr3D
+        DO k2 = 1, maxCtrlProc
+          IF ( (xx_genarr3d_preproc(k2,iarr).EQ.'noscaling') .AND.
+     &       (xx_genarr3d_preproc_c(k2,iarr).EQ.'log10ctrl') ) THEN
+            WRITE(msgBuf,'(A)')
+     &      'CTRL_CHECK: conflicting preproc_c & preproc flags '
+            CALL PRINT_ERROR( msgBuf, myThid )
+            WRITE(msgBuf,'(A,I2,A)')
+     &      'log10ctrl and noscaling set for xx_genarr2d(',iarr,'). '
+            CALL PRINT_ERROR( msgBuf, myThid )
+            STOP 'ABNORMAL END: S/R CTRL_CHECK'
+          ENDIF
+        ENDDO
+      ENDDO
 #endif
 
       RETURN
