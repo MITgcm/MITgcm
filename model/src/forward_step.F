@@ -590,6 +590,12 @@ C      Read in coupling data that I import.
       ENDIF
 #endif /* ALLOW_EBM */
 
+#ifdef ALLOW_AUTODIFF_TAMC
+C     Store surface forcing fields if required to avoid
+C     calling load_fields_driver in forward_step_ad
+# include "checkpoint_lev1_forcing_directives.h"
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C--     Step forward fields and calculate time tendency terms.
 
 #ifdef ALLOW_DEBUG
@@ -685,6 +691,9 @@ CADJ &     kind = isbyte
         CALL GCHEM_CALC_TENDENCY( myTime, myIter, myThid )
         CALL TIMER_STOP ('GCHEM_CALC_TENDENCY [FORWARD_STEP]',myThid)
       ENDIF
+# ifdef ALLOW_AUTODIFF_TAMC
+#  include "gchem_ad_check_lev1_dir.h"
+# endif
 #endif /* ALLOW_GCHEM */
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -1160,12 +1169,12 @@ C     of ptracers here in GCHEM_FORCING_SEP
 #else
       IF ( useGCHEM ) THEN
 #endif
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE pTracer  = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE theta, salt  = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-#endif
+# ifdef ALLOW_AUTODIFF_TAMC
+#  ifdef ALLOW_PTRACERS
+CADJ STORE pTracer     = comlev1, key = ikey_dynamics, kind = isbyte
+#  endif /* ALLOW_PTRACERS */
+CADJ STORE theta, salt = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('GCHEM_FORCING_SEP',myThid)
 #endif /* ALLOW_DEBUG */
@@ -1173,9 +1182,12 @@ CADJ &     kind = isbyte
         CALL GCHEM_FORCING_SEP( myTime,myIter,myThid )
         CALL TIMER_STOP ('GCHEM_FORCING_SEP  [FORWARD_STEP]',myThid)
       ENDIF
+# ifdef ALLOW_AUTODIFF_TAMC
 #  ifdef ALLOW_PTRACERS
-CADJ STORE pTracer    = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE pTracer     = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE theta, salt = comlev1, key = ikey_dynamics, kind = isbyte
 #  endif /* ALLOW_PTRACERS */
+# endif
 #endif /* ALLOW_GCHEM */
 
 C--   Do "blocking" sends and receives for tendency "overlap" terms
