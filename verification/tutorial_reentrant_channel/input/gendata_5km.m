@@ -1,8 +1,11 @@
 % generate support data files for tutorial Southern Ocean Reentrant Channel
-% hard-coded for 5km resolution, 200x400 horizonal resolution
+% hard-coded for eddying resolution: dx=dy=5 km (Cartesian)
+% to exactly match the bathymetry and forcing in the coarse-res setup
 
-% grid depths generated Using the hyperbolic tangent method of Stewart et al. (2017) DOI: 10.1016/j.ocemod.2017.03.012
-% to design an optimal grid. https://github.com/kialstewart/vertical_grid_for_ocean_models
+% grid depths generated Using the hyperbolic tangent method of 
+% Stewart et al. (2017) DOI: 10.1016/j.ocemod.2017.03.012
+% to design an optimal grid.
+% https://github.com/kialstewart/vertical_grid_for_ocean_models
 
 dr =  [  5.48716549,   6.19462098,   6.99291201,   7.89353689, ...
          8.90937723,  10.05483267,  11.34595414,  12.80056778, ...
@@ -21,45 +24,59 @@ nx = 200;
 ny = 400; 
 nr = length(dr);
 rF = -[0 cumsum(dr)];          % z-coordinates of vertical cell faces
-z = diff(rF)/2 + rF(1:end-1);  % z-coordinates of vertical cell centers
+z = rF(1:end-1) + diff(rF)/2;  % z-coordinates of vertical cell centers
 H = -sum(dr);                  % max depth of vertical grid 
 
-% bathymetry -- flat bottom of depth H with idealized mid-depth ridge
-% note we match the dimensions of the coarse-res setup
-bump_max = 2000.;
-bathy = H.*ones(nx,ny); bump=zeros(nx,ny);
-r1 = bump_max*repmat(sin(0:pi/79:pi),[ny 1])'; % sinusoidal bump running N-S through middle of domain
-r2 = (0:51)/51;                                % create linear ramp for center notch
+% bathymetry -- flat bottom of depth H (m) with idealized mid-depth ridge
+bump_max = 2000;   % peak height of ridge above flat bottom depth
+bathy = H .* ones(nx, ny);
+bump = zeros(nx, ny);
+% sinusoidal bump running N-S through middle of domain
+% this is hard-coded for nx=200, ny=400 resolution
+r1 = bump_max * repmat(sin(0:pi/79:pi),[ny 1])';
+r2 = (0:51)/51;             % create linear ramp for center notch
 bump(56:135,:) = r1;
-bump(56:135,135:186) = bump(56:135,135:186).*fliplr(repmat(r2,[80 1])); % linearly lower bump height toward center notch
-bump(56:135,205:256) = bump(56:135,205:256).*repmat(r2,[80 1]);         % linearly lower bump height toward center notch
-bump(56:135,186:205) = 0.;   % notch; in these latitude bands, contours of f/H are unblocked
+% linearly lower bump height toward center notch
+bump(56:135,135:186) = bump(56:135,135:186) .* fliplr(repmat(r2, [80 1]));
+bump(56:135,205:256) = bump(56:135,205:256) .* repmat(r2, [80 1]);
+bump(56:135,186:205) = 0;   % notch; in these lat bands, contours of f/H are unblocked
 bathy = bathy + bump;
-bathy(:,1:10) = 0;           % wall at southern boundary
-fid=fopen('bathy.5km.bin','w','b');fwrite(fid,bathy,'float32');fclose(fid);
+bathy(:,1:10) = 0;          % wall at southern boundary, matching coarse-res
+fid=fopen('bathy.5km.bin', 'w', 'b');
+fwrite(fid, bathy, 'float32');
+fclose(fid);
 
 % zonal wind stress file
 taux_max = 0.2;
-taux=[zeros(5,1)' taux_max*sin(0:pi/389:pi) zeros(5,1)']; taux = repmat(taux,[nx 1]); % at (XG,YC) points
-fid = fopen('zonal_wind.5km.bin','w','b');fwrite(fid,taux,'float32');fclose(fid);
+taux=[zeros(5, 1)' taux_max * sin(0:pi/389:pi) zeros(5, 1)'];
+taux = repmat(taux, [nx 1]);  % at (XG,YC) points
+fid = fopen('zonal_wind.5km.bin', 'w', 'b');
+fwrite(fid, taux, 'float32');
+fclose(fid);
 
 % 3-D mask for RBCS temperature relaxation
 % mask set to zero in surface layer (where core model SST restoring applied)
 % note we implement "sponge layer" to match coarse-res dimensions
-rbcs_mask = zeros(nx,ny,nr);
+rbcs_mask = zeros(nx, ny, nr);
 rbcs_mask(:,391:end,2:end) = 1.0;
 rbcs_mask(:,381:390,2:end) = 0.25;
-fid=fopen('T_relax_mask.5km.bin','w','b');fwrite(fid,rbcs_mask,'float32');fclose(fid);
+fid=fopen('T_relax_mask.5km.bin', 'w', 'b');
+fwrite(fid, rbcs_mask, 'float32');
+fclose(fid);
 
 % 2-D SST field for relaxation, linear ramp between Tmin and Tmax
-Tmax= 10.0;
-Tmin= -2.0;
-sst_relax = repmat(Tmin+(Tmax-Tmin)*(0.05:.1:39.95)/40,[nx 1]); % at (XC,YC) points
-fid=fopen('SST_relax.5km.bin','w','b');fwrite(fid,sst_relax,'float32');fclose(fid);
+Tmax = 10.0;
+Tmin = -2.0;
+sst_relax = repmat(Tmin + (Tmax-Tmin)*(0.05:.1:39.95)/40, [nx 1]); % at (XC,YC) points
+fid=fopen('SST_relax.5km.bin', 'w', 'b');
+fwrite(fid, sst_relax, 'float32');
+fclose(fid);
 
 % 3-D Temperature field for initial conditions and RBCS northern wall profile
-h=500;              % e-folding scale for temperature decrease with depth
-T_surf = sst_relax; % use 2-D SST relaxation field for surface values
-zscale = permute(repmat((exp(z/h) - exp(H/h))/(1-exp(H/h)),[nx 1 ny]),[ 1 3 2]);
-T_3D = repmat(T_surf-Tmin,[1 1 nr]).*zscale + Tmin;
-fid=fopen('temperature.5km.bin','w','b');fwrite(fid,T_3D,'float32');fclose(fid);
+h = 500;              % e-folding scale for temperature decrease with depth
+T_surf = sst_relax;   % use 2-D SST relaxation field for surface values
+zscale = permute(repmat((exp(z/h) - exp(H/h)) / (1-exp(H/h)), [nx 1 ny]), [ 1 3 2]);
+T_3D = repmat(T_surf - Tmin, [1 1 nr]) .* zscale + Tmin;
+fid=fopen('temperature.5km.bin', 'w', 'b');
+fwrite(fid, T_3D, 'float32');
+fclose(fid);
