@@ -26,6 +26,7 @@ CADJ STORE pload      = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE uwind      = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE vwind      = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE wspeed     = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE sh         = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE hflux      = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE sflux      = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE ustress    = comlev1, key = ikey_dynamics, kind = isbyte
