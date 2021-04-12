@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67x (2021/04/12)
 o pkg/seaice:
   - Addition to the sea ice package of 6 sea ice rheologies with different yield
     curves and flow rules ;
