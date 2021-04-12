@@ -210,9 +210,12 @@ testoutput_run()
 	#  load experiment-specific list from file "tr_checklist" (if it exist)
 	if test -r $1/$2/tr_checklist ; then listChk=`cat $1/$2/tr_checklist` ; fi
 	if test $KIND = 1 ; then kd='g_';
+	  if test -r $1/$2/tr_checklist.tlm ; then listChk=`cat $1/$2/tr_checklist.tlm` ; fi
 	  #  TLM use same input_ad/tr_checklist --> convert
 	  listChk=`echo $listChk | sed 's/\<adm/tlm/g'`
-	elif test $KIND = 2 -o $KIND = 4 ; then kd='ad';
+	elif test $KIND = 2 ; then kd='ad';
+	  if test -r $1/$2/tr_checklist.adm ; then listChk=`cat $1/$2/tr_checklist.adm` ; fi
+	elif test $KIND = 4 ; then kd='ad';
         else kd=''; fi
 	if [ $debug -gt 0 ]; then echo "testoutput_run: listChk='$listChk'" 1>&2 ; fi
 	# remove 1rst var and expand the list: + => min max mean s.d
@@ -308,22 +311,22 @@ testoutput_run()
 	 'Qntmx') testoutput_var $1 "forcing_qnet_max"  "Qnet maximum"  $2 $refoutp ; yy=$? ;;
 	 'Qntav') testoutput_var $1 "forcing_qnet_mean" "Qnet mean"	$2 $refoutp ; yy=$? ;;
 	 'Qntsd') testoutput_var $1 "forcing_qnet_sd"   "Qnet Std.Dev"  $2 $refoutp ; yy=$? ;;
-	 'aSImn') testoutput_var $1 "seaice_area_min"   "SIce Area min"	  $2 $refoutp ; yy=$? ;;
-	 'aSImx') testoutput_var $1 "seaice_area_max"   "SIce Area max"	  $2 $refoutp ; yy=$? ;;
-	 'aSIav') testoutput_var $1 "seaice_area_mean"  "SIce Area mean"  $2 $refoutp ; yy=$? ;;
-	 'aSIsd') testoutput_var $1 "seaice_area_sd"    "SIce Area StDv"  $2 $refoutp ; yy=$? ;;
-	 'hSImn') testoutput_var $1 "seaice_heff_min"   "SIce Heff min"	  $2 $refoutp ; yy=$? ;;
-	 'hSImx') testoutput_var $1 "seaice_heff_max"   "SIce Heff max"	  $2 $refoutp ; yy=$? ;;
-	 'hSIav') testoutput_var $1 "seaice_heff_mean"  "SIce Heff mean"  $2 $refoutp ; yy=$? ;;
-	 'hSIsd') testoutput_var $1 "seaice_heff_sd"    "SIce Heff StDv"  $2 $refoutp ; yy=$? ;;
-	 'uSImn') testoutput_var $1 "seaice_uice_min"   "SIce Uice min"	  $2 $refoutp ; yy=$? ;;
-	 'uSImx') testoutput_var $1 "seaice_uice_max"   "SIce Uice max"	  $2 $refoutp ; yy=$? ;;
-	 'uSIav') testoutput_var $1 "seaice_uice_mean"  "SIce Uice mean"  $2 $refoutp ; yy=$? ;;
-	 'uSIsd') testoutput_var $1 "seaice_uice_sd"    "SIce Uice StDv"  $2 $refoutp ; yy=$? ;;
-	 'vSImn') testoutput_var $1 "seaice_vice_min"   "SIce Vice min"	  $2 $refoutp ; yy=$? ;;
-	 'vSImx') testoutput_var $1 "seaice_vice_max"   "SIce Vice max"	  $2 $refoutp ; yy=$? ;;
-	 'vSIav') testoutput_var $1 "seaice_vice_mean"  "SIce Vice mean"  $2 $refoutp ; yy=$? ;;
-	 'vSIsd') testoutput_var $1 "seaice_vice_sd"    "SIce Vice StDv"  $2 $refoutp ; yy=$? ;;
+	 'aSImn') testoutput_var $1 "seaice_${kd}area_min"  "SIce ${kd}Area min"   $2 $refoutp ; yy=$? ;;
+	 'aSImx') testoutput_var $1 "seaice_${kd}area_max"  "SIce ${kd}Area max"   $2 $refoutp ; yy=$? ;;
+	 'aSIav') testoutput_var $1 "seaice_${kd}area_mean" "SIce ${kd}Area mean"  $2 $refoutp ; yy=$? ;;
+	 'aSIsd') testoutput_var $1 "seaice_${kd}area_sd"   "SIce ${kd}Area StDv"  $2 $refoutp ; yy=$? ;;
+	 'hSImn') testoutput_var $1 "seaice_${kd}heff_min"  "SIce ${kd}Heff min"   $2 $refoutp ; yy=$? ;;
+	 'hSImx') testoutput_var $1 "seaice_${kd}heff_max"  "SIce ${kd}Heff max"   $2 $refoutp ; yy=$? ;;
+	 'hSIav') testoutput_var $1 "seaice_${kd}heff_mean" "SIce ${kd}Heff mean"  $2 $refoutp ; yy=$? ;;
+	 'hSIsd') testoutput_var $1 "seaice_${kd}heff_sd"   "SIce ${kd}Heff StDv"  $2 $refoutp ; yy=$? ;;
+	 'uSImn') testoutput_var $1 "seaice_${kd}uice_min"  "SIce ${kd}Uice min"   $2 $refoutp ; yy=$? ;;
+	 'uSImx') testoutput_var $1 "seaice_${kd}uice_max"  "SIce ${kd}Uice max"   $2 $refoutp ; yy=$? ;;
+	 'uSIav') testoutput_var $1 "seaice_${kd}uice_mean" "SIce ${kd}Uice mean"  $2 $refoutp ; yy=$? ;;
+	 'uSIsd') testoutput_var $1 "seaice_${kd}uice_sd"   "SIce ${kd}Uice StDv"  $2 $refoutp ; yy=$? ;;
+	 'vSImn') testoutput_var $1 "seaice_${kd}vice_min"  "SIce ${kd}Vice min"   $2 $refoutp ; yy=$? ;;
+	 'vSImx') testoutput_var $1 "seaice_${kd}vice_max"  "SIce ${kd}Vice max"   $2 $refoutp ; yy=$? ;;
+	 'vSIav') testoutput_var $1 "seaice_${kd}vice_mean" "SIce ${kd}Vice mean"  $2 $refoutp ; yy=$? ;;
+	 'vSIsd') testoutput_var $1 "seaice_${kd}vice_sd"   "SIce ${kd}Vice StDv"  $2 $refoutp ; yy=$? ;;
 	'AthSiG') testoutput_var $1 "thSI_Ice_Area_G" "thSIc Area Global" $2 $refoutp ; yy=$? ;;
 	'AthSiS') testoutput_var $1 "thSI_Ice_Area_S" "thSIc Area South"  $2 $refoutp ; yy=$? ;;
 	'AthSiN') testoutput_var $1 "thSI_Ice_Area_N" "thSIc Area North"  $2 $refoutp ; yy=$? ;;
@@ -344,10 +347,10 @@ testoutput_run()
             nn=`echo $xx | sed 's/pt//' | sed 's/..$//'`
             ii=`echo $xx | sed 's/^pt[0-9]*//'`
 	    case $ii in
-	    'mn') testoutput_var $1 "trcstat_ptracer0"$nn"_min"  "p0"$nn"_min"  $2 $refoutp ; yy=$? ;;
-	    'mx') testoutput_var $1 "trcstat_ptracer0"$nn"_max"  "p0"$nn"_max"  $2 $refoutp ; yy=$? ;;
-	    'av') testoutput_var $1 "trcstat_ptracer0"$nn"_mean" "p0"$nn"_mean" $2 $refoutp ; yy=$? ;;
-	    'sd') testoutput_var $1 "trcstat_ptracer0"$nn"_sd"   "p0"$nn"_StDv" $2 $refoutp ; yy=$? ;;
+	    'mn') testoutput_var $1 "trcstat_${kd}ptracer0"$nn"_min"  "${kd}pTr0"$nn"_min"  $2 $refoutp ; yy=$? ;;
+	    'mx') testoutput_var $1 "trcstat_${kd}ptracer0"$nn"_max"  "${kd}pTr0"$nn"_max"  $2 $refoutp ; yy=$? ;;
+	    'av') testoutput_var $1 "trcstat_${kd}ptracer0"$nn"_mean" "${kd}pTr0"$nn"_mean" $2 $refoutp ; yy=$? ;;
+	    'sd') testoutput_var $1 "trcstat_${kd}ptracer0"$nn"_sd"   "${kd}pTr0"$nn"_StDv" $2 $refoutp ; yy=$? ;;
 	    esac
           fi
 	  if test $xx = $sVar
