@@ -257,18 +257,12 @@ cts ---
      &          +tmpmsk2*eccoVol_0(i,j,k,bi,bj)
 c
           enddo ! Ends do k=1,nr
-c---------
-#ifndef ALLOW_SHELFICE
-          tmpmsk=maskC(i,j,1,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
-#else
-c see shelfice_init_fixed.F for maskSHI definition
-c 1 where iceshelf is present over wet grid cell, 0 otherwise
-          tmpmsk=maskSHI(i,j,1,bi,bj)*
-     &           gencost_mskCsurf(i,j,bi,bj,kgen)
-#endif
-          tmpfld=0. _d 0
-          tmpmsk2=0. _d 0
+
+          tmpmsk  = 0. _d 0
+          tmpfld  = 0. _d 0
+          tmpmsk2 = 0. _d 0
           if (gencost_barfile(kgen)(1:13).EQ.'m_boxmean_eta') then
+            tmpmsk=maskC(i,j,1,bi,bj)*gencost_mskCsurf(i,j,bi,bj,kgen)
             tmpfld=m_eta(i,j,bi,bj)
             if (tmpmsk.NE.0. _d 0) tmpmsk2=1. _d 0
           endif
