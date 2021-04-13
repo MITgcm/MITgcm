@@ -115,6 +115,16 @@ C     solvers (Lemieux and Tremblay 2009, JGR). No effect on EVP
 # define SEAICE_ZETA_SMOOTHREG
 C     allow the truncated ellipse rheology (runtime flag SEAICEuseTEM)
 # undef SEAICE_ALLOW_TEM
+C     allow the use of the Mohr Coulomb rheology (runtime flag SEAICEuseMCS)
+C     as defined in (Ip 1991) /!\ This is known to give unstable results,
+C     use with caution
+# undef SEAICE_ALLOW_MCS
+C     allow the use of Mohr Coulomb with elliptical plastic potential
+C     (runtime flag SEAICEuseMCE)
+# undef SEAICE_ALLOW_MCE
+C     allow the teardrop and parabolic lens  rheology
+C     (runtime flag SEAICEuseTD and SEAICEusePL)
+# undef SEAICE_ALLOW_TEARDROP
 C     Use LSR vector code; not useful on non-vector machines, because it
 C     slows down convergence considerably, but the extra iterations are
 C     more than made up by the much faster code on vector machines. For
