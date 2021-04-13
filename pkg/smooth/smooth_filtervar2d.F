@@ -1,7 +1,4 @@
 #include "SMOOTH_OPTIONS.h"
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE_OPTIONS.h"
 #endif

@@ -42,7 +42,7 @@ C     *==========================================================*
 
 
 c for now: useless, because level 3 is recomputed anyway
-c but : if level3 was computed during the fwd loop by callung
+c but : if level3 was computed during the fwd loop by calling
 c       mdsmooth_diff3D (assumes that it would be called
 c       directly by the_main_loop) then I would need to pass key_in
 c       as a parameter, with different values for T, S, ...

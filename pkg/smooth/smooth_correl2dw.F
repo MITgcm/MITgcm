@@ -31,7 +31,7 @@ C     *==========================================================*
 # include "ecco_cost.h"
 #endif
 
-      _RS mask_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+      _RS mask_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL fld_in(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       character*(MAX_LEN_FNAM) xx_gen_file
       integer myThid
@@ -114,7 +114,7 @@ C     *==========================================================*
 #endif
 #endif
 
-      if ((mask_in(i,j,1,bi,bj).NE.0.).AND.(tmpW.NE.0.)) then
+      if ((mask_in(i,j,bi,bj).NE.0.).AND.(tmpW.NE.0.)) then
       fld_in(i,j,bi,bj)=fld_in(i,j,bi,bj)/sqrt(tmpW)
       else
       fld_in(i,j,bi,bj)=fld_in(i,j,bi,bj)*0.

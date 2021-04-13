@@ -1,7 +1,4 @@
 #include "SMOOTH_OPTIONS.h"
-#ifdef ALLOW_CTRL
-# include "CTRL_OPTIONS.h"
-#endif
 
       subroutine smooth_filtervar3D (smoothOpNb,myThid)
 

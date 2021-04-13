@@ -71,6 +71,7 @@ C --- make sure proper macros are defined for maskI (iceshelf domain)
         IF (smooth2DmaskName(smoothOpNb)(1:5).eq.'maskI') then
           WRITE(msgBuf,'(A,A,I2,A,A,A,A)') 'SMOOTH_CHECK: ',
      &      'Must compile with shelfice package, ALLOW_SHELFICE'
+          CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R SMOOTH_CHECK'
         ENDIF
 #endif
