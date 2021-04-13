@@ -103,7 +103,6 @@ c local arrays
       integer tpsta(4), erssta(4), gfosta(4)
       integer mdtsta(4), mdtend(4)
       _RL tpper, ersper, gfoper
-      _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 c for PART 1: re-reference MDT (mdt) to the inferred SLA reference field
       _RL psmean    ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
@@ -347,7 +346,7 @@ c--   Read mean field and mask
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              if ( (maskC(i,j,1,bi,bj) .eq. 0.).OR.
+              if ( (maskInC(i,j,bi,bj) .eq. 0.).OR.
 #ifndef ALLOW_SHALLOW_ALTIMETRY
      &             (R_low(i,j,bi,bj).GT.-200.).OR.
 #endif
@@ -442,8 +441,6 @@ c--   Compute mean_slaobs_mdt: sample mean SLA over the time period of mdt.
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-               ! mask2D for smoothing. here to avoid TAF recomp
-               mask2D(i,j,bi,bj) = maskC(i,j,1,bi,bj)
                if ( ( mean_slaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. ).AND.
      &              ( mdtma(i,j,bi,bj) .NE. 0. ) ) then
@@ -468,7 +465,7 @@ c--   smooth mean_slaobs_mdt:
 
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH.AND.(k2_mdt.GT.0) )
-     &  call smooth_hetero2d(mean_slaobs_mdt,mask2D,
+     &  call smooth_hetero2d(mean_slaobs_mdt,maskInC,
      &     gencost_posproc_c(k2_mdt,igen_mdt),
      &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
 #endif
@@ -808,7 +805,7 @@ c--    smooth mean_psMssh_all
 
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH.AND.(k2_mdt.GT.0) )
-     &  call smooth_hetero2d(mean_psMssh_all,mask2D,
+     &  call smooth_hetero2d(mean_psMssh_all,maskInC,
      &     gencost_posproc_c(k2_mdt,igen_mdt),
      &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
 #endif
@@ -827,7 +824,7 @@ c--    smooth mean_psMssh_all
 
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH.AND.(k2_mdt.GT.0) )
-     &  call smooth_hetero2d(mean_slaobs_model,mask2D,
+     &  call smooth_hetero2d(mean_slaobs_model,maskInC,
      &     gencost_posproc_c(k2_mdt,igen_mdt),
      &     gencost_posproc_i(k2_mdt,igen_mdt),myThid)
 #endif
@@ -1100,8 +1097,6 @@ c--   Subtract slaoffset from anom_psMslaobs
           do bi = itlo,ithi
             do j = jmin,jmax
               do i = imin,imax
-               ! mask2D for smoothing. here to avoid TAF recomp
-               mask2D(i,j,bi,bj) = maskC(i,j,1,bi,bj)
                if ( ( anom_psMslaobs_NUM(i,j,bi,bj) .NE. 0. ).AND.
      &              ( maskc(i,j,1,bi,bj) .NE. 0. )
      &            ) then
@@ -1132,7 +1127,7 @@ c ----------------------------------------
 
 #ifdef ALLOW_SMOOTH
       if ( useSMOOTH.AND.(k2_lsc.GT.0) )
-     &  call smooth_hetero2d(anom_psMslaobs,mask2D,
+     &  call smooth_hetero2d(anom_psMslaobs,maskInC,
      &     gencost_posproc_c(k2_lsc,igen_lsc),
      &     gencost_posproc_i(k2_lsc,igen_lsc),myThid)
 #endif
@@ -1140,7 +1135,7 @@ c ----------------------------------------
       if (gencost_outputlevel(igen_lsc).GT.0) then
 #ifdef ALLOW_SMOOTH
         if ( useSMOOTH.AND.(k2_lsc.GT.0) )
-     &  call smooth_hetero2d(anom_slaobs,mask2D,
+     &  call smooth_hetero2d(anom_slaobs,maskInC,
      &     gencost_posproc_c(k2_lsc,igen_lsc),
      &     gencost_posproc_i(k2_lsc,igen_lsc),myThid)
 #endif
