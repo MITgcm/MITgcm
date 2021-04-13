@@ -103,7 +103,7 @@ c--   Update the tile edges.
 # ifdef ALLOW_SST_CONTROL
       CALL CTRL_GET_GEN (
      &     xx_sst_file, xx_sststartdate, xx_sstperiod,
-     &     maskc, climsst, xx_sst0, xx_sst1, xx_sst_dummy,
+     &     climsst, xx_sst0, xx_sst1, xx_sst_dummy,
      &     xx_sst_remo_intercept, xx_sst_remo_slope,
      &     wsst, myTime, myIter, myThid )
 # endif
@@ -131,7 +131,7 @@ c--   Update the tile edges.
 # ifdef ALLOW_SSS_CONTROL
       CALL CTRL_GET_GEN (
      &     xx_sss_file, xx_sssstartdate, xx_sssperiod,
-     &     maskc, climsss, xx_sss0, xx_sss1, xx_sss_dummy,
+     &     climsss, xx_sss0, xx_sss1, xx_sss_dummy,
      &     xx_sss_remo_intercept, xx_sss_remo_slope,
      &     wsss, myTime, myIter, myThid )
 # endif

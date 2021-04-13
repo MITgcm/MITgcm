@@ -140,7 +140,7 @@ c     == end of interface ==
 #ifdef ALLOW_HFLUX_CONTROL
       call ctrl_get_gen (
      &     xx_hflux_file, xx_hfluxstartdate, xx_hfluxperiod,
-     &     maskc, hflux, xx_hflux0, xx_hflux1, xx_hflux_dummy,
+     &     hflux, xx_hflux0, xx_hflux1, xx_hflux_dummy,
      &     xx_hflux_remo_intercept, xx_hflux_remo_slope,
      &     whflux, mytime, myiter, mythid )
 #endif
@@ -148,7 +148,7 @@ c     == end of interface ==
 #ifdef ALLOW_SFLUX_CONTROL
       call ctrl_get_gen (
      &     xx_sflux_file, xx_sfluxstartdate, xx_sfluxperiod,
-     &     maskc, sflux, xx_sflux0, xx_sflux1, xx_sflux_dummy,
+     &     sflux, xx_sflux0, xx_sflux1, xx_sflux_dummy,
      &     xx_sflux_remo_intercept, xx_sflux_remo_slope,
      &     wsflux, mytime, myiter, mythid )
 #endif
@@ -161,7 +161,7 @@ c     == end of interface ==
 #ifdef ALLOW_USTRESS_CONTROL
       call ctrl_get_gen (
      &     xx_tauu_file, xx_tauustartdate, xx_tauuperiod,
-     &     maskw, ustress, xx_tauu0, xx_tauu1, xx_tauu_dummy,
+     &     ustress, xx_tauu0, xx_tauu1, xx_tauu_dummy,
      &     xx_tauu_remo_intercept, xx_tauu_remo_slope,
      &     wtauu, mytime, myiter, mythid )
 #endif
@@ -169,7 +169,7 @@ c     == end of interface ==
 #ifdef ALLOW_VSTRESS_CONTROL
       call ctrl_get_gen (
      &     xx_tauv_file, xx_tauvstartdate, xx_tauvperiod,
-     &     masks, vstress, xx_tauv0, xx_tauv1, xx_tauv_dummy,
+     &     vstress, xx_tauv0, xx_tauv1, xx_tauv_dummy,
      &     xx_tauv_remo_intercept, xx_tauv_remo_slope,
      &     wtauv, mytime, myiter, mythid )
 #endif
@@ -180,13 +180,13 @@ c     == end of interface ==
 
       call ctrl_get_gen (
      &     xx_tauu_file, xx_tauustartdate, xx_tauuperiod,
-     &     maskc, tmpUE, xx_tauu0, xx_tauu1, xx_tauu_dummy,
+     &     tmpUE, xx_tauu0, xx_tauu1, xx_tauu_dummy,
      &     xx_tauu_remo_intercept, xx_tauu_remo_slope,
      &     wtauu, mytime, myiter, mythid )
 
       call ctrl_get_gen (
      &     xx_tauv_file, xx_tauvstartdate, xx_tauvperiod,
-     &     maskc, tmpVN, xx_tauv0, xx_tauv1, xx_tauv_dummy,
+     &     tmpVN, xx_tauv0, xx_tauv1, xx_tauv_dummy,
      &     xx_tauv_remo_intercept, xx_tauv_remo_slope,
      &     wtauv, mytime, myiter, mythid )
 

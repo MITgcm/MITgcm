@@ -498,7 +498,7 @@ C-- Control variables for atmos. state
 #ifdef ALLOW_ATEMP_CONTROL
       CALL CTRL_GET_GEN (
      &     xx_atemp_file, xx_atempstartdate, xx_atempperiod,
-     &     maskc, atemp, xx_atemp0, xx_atemp1, xx_atemp_dummy,
+     &     atemp, xx_atemp0, xx_atemp1, xx_atemp_dummy,
      &     xx_atemp_remo_intercept, xx_atemp_remo_slope,
      &     watemp, myTime, myIter, myThid )
 #endif
@@ -506,7 +506,7 @@ C-- Control variables for atmos. state
 #ifdef ALLOW_AQH_CONTROL
       CALL CTRL_GET_GEN (
      &     xx_aqh_file, xx_aqhstartdate, xx_aqhperiod,
-     &     maskc, aqh, xx_aqh0, xx_aqh1, xx_aqh_dummy,
+     &     aqh, xx_aqh0, xx_aqh1, xx_aqh_dummy,
      &     xx_aqh_remo_intercept, xx_aqh_remo_slope,
      &     waqh, myTime, myIter, myThid )
 #endif
@@ -514,7 +514,7 @@ C-- Control variables for atmos. state
 #ifdef ALLOW_PRECIP_CONTROL
       CALL CTRL_GET_GEN (
      &     xx_precip_file, xx_precipstartdate, xx_precipperiod,
-     &     maskc, precip, xx_precip0, xx_precip1, xx_precip_dummy,
+     &     precip, xx_precip0, xx_precip1, xx_precip_dummy,
      &     xx_precip_remo_intercept, xx_precip_remo_slope,
      &     wprecip, myTime, myIter, myThid )
 #endif
@@ -522,7 +522,7 @@ C-- Control variables for atmos. state
 #ifdef ALLOW_SWDOWN_CONTROL
       CALL CTRL_GET_GEN (
      &     xx_swdown_file, xx_swdownstartdate, xx_swdownperiod,
-     &     maskc, swdown, xx_swdown0, xx_swdown1, xx_swdown_dummy,
+     &     swdown, xx_swdown0, xx_swdown1, xx_swdown_dummy,
      &     xx_swdown_remo_intercept, xx_swdown_remo_slope,
      &     wswdown, myTime, myIter, myThid )
 #endif
@@ -530,7 +530,7 @@ C-- Control variables for atmos. state
 #ifdef ALLOW_LWDOWN_CONTROL
       CALL CTRL_GET_GEN (
      &     xx_lwdown_file, xx_lwdownstartdate, xx_lwdownperiod,
-     &     maskc, lwdown, xx_lwdown0, xx_lwdown1, xx_lwdown_dummy,
+     &     lwdown, xx_lwdown0, xx_lwdown1, xx_lwdown_dummy,
      &     xx_lwdown_remo_intercept, xx_lwdown_remo_slope,
      &     wlwdown, myTime, myIter, myThid )
 #endif
@@ -540,7 +540,7 @@ C-- Control variables for atmos. state
 #ifdef ALLOW_SWFLUX_CONTROL
       CALL CTRL_GET_GEN (
      &     xx_swflux_file, xx_swfluxstartdate, xx_swfluxperiod,
-     &     maskc, swflux, xx_swflux0, xx_swflux1, xx_swflux_dummy,
+     &     swflux, xx_swflux0, xx_swflux1, xx_swflux_dummy,
      &     xx_swflux_remo_intercept, xx_swflux_remo_slope,
      &     wswflux, myTime, myIter, myThid )
 #endif
@@ -548,7 +548,7 @@ C-- Control variables for atmos. state
 #ifdef ALLOW_LWFLUX_CONTROL
       CALL CTRL_GET_GEN (
      &     xx_lwflux_file, xx_lwfluxstartdate, xx_lwfluxperiod,
-     &     maskc, lwflux, xx_lwflux0, xx_lwflux1, xx_lwflux_dummy,
+     &     lwflux, xx_lwflux0, xx_lwflux1, xx_lwflux_dummy,
      &     xx_lwflux_remo_intercept, xx_lwflux_remo_slope,
      &     wswflux, myTime, myIter, myThid )
 #endif
@@ -556,7 +556,7 @@ C-- Control variables for atmos. state
 #ifdef ALLOW_EVAP_CONTROL
       CALL CTRL_GET_GEN (
      &     xx_evap_file, xx_evapstartdate, xx_evapperiod,
-     &     maskc, evap, xx_evap0, xx_evap1, xx_evap_dummy,
+     &     evap, xx_evap0, xx_evap1, xx_evap_dummy,
      &     xx_evap_remo_intercept, xx_evap_remo_slope,
      &     wevap, myTime, myIter, myThid )
 #endif
@@ -565,7 +565,7 @@ C-- Control variables for atmos. state
       CALL CTRL_GET_GEN (
      &     xx_snowprecip_file, xx_snowprecipstartdate,
      &     xx_snowprecipperiod,
-     &     maskc, snowprecip, xx_snowprecip0, xx_snowprecip1,
+     &     snowprecip, xx_snowprecip0, xx_snowprecip1,
      &     xx_snowprecip_dummy,
      &     xx_snowprecip_remo_intercept, xx_snowprecip_remo_slope,
      &     wsnowprecip, myTime, myIter, myThid )
@@ -575,7 +575,7 @@ C-- Control variables for atmos. state
       CALL CTRL_GET_GEN (
      &     xx_apressure_file, xx_apressurestartdate,
      &     xx_apressureperiod,
-     &     maskc, apressure, xx_apressure0, xx_apressure1,
+     &     apressure, xx_apressure0, xx_apressure1,
      &     xx_apressure_dummy,
      &     xx_apressure_remo_intercept, xx_apressure_remo_slope,
      &     wapressure, myTime, myIter, myThid )
@@ -587,7 +587,7 @@ C-- Control variables for atmos. state
 #ifdef ALLOW_UWIND_CONTROL
       CALL CTRL_GET_GEN (
      &     xx_uwind_file, xx_uwindstartdate, xx_uwindperiod,
-     &     maskc, uwind, xx_uwind0, xx_uwind1, xx_uwind_dummy,
+     &     uwind, xx_uwind0, xx_uwind1, xx_uwind_dummy,
      &     xx_uwind_remo_intercept, xx_uwind_remo_slope,
      &     wuwind, myTime, myIter, myThid )
 #endif /* ALLOW_UWIND_CONTROL */
@@ -595,7 +595,7 @@ C-- Control variables for atmos. state
 #ifdef ALLOW_VWIND_CONTROL
       CALL CTRL_GET_GEN (
      &     xx_vwind_file, xx_vwindstartdate, xx_vwindperiod,
-     &     maskc, vwind, xx_vwind0, xx_vwind1, xx_vwind_dummy,
+     &     vwind, xx_vwind0, xx_vwind1, xx_vwind_dummy,
      &     xx_vwind_remo_intercept, xx_vwind_remo_slope,
      &     wvwind, myTime, myIter, myThid )
 #endif /* ALLOW_VWIND_CONTROL */
@@ -605,13 +605,13 @@ C-- Control variables for atmos. state
 #if defined(ALLOW_UWIND_CONTROL) && defined(ALLOW_VWIND_CONTROL)
       CALL CTRL_GET_GEN (
      &     xx_uwind_file, xx_uwindstartdate, xx_uwindperiod,
-     &     maskc, tmpUE, xx_uwind0, xx_uwind1, xx_uwind_dummy,
+     &     tmpUE, xx_uwind0, xx_uwind1, xx_uwind_dummy,
      &     xx_uwind_remo_intercept, xx_uwind_remo_slope,
      &     wuwind, myTime, myIter, myThid )
 
       CALL CTRL_GET_GEN (
      &     xx_vwind_file, xx_vwindstartdate, xx_vwindperiod,
-     &     maskc, tmpVN, xx_vwind0, xx_vwind1, xx_vwind_dummy,
+     &     tmpVN, xx_vwind0, xx_vwind1, xx_vwind_dummy,
      &     xx_vwind_remo_intercept, xx_vwind_remo_slope,
      &     wvwind, myTime, myIter, myThid )
 
@@ -667,7 +667,7 @@ cdm functionality needs to be checked before turning on
 cdm #ifdef ALLOW_RUNOFF_CONTROL
 cdm       CALL CTRL_GET_GEN (
 cdm      &     xx_runoff_file, xx_runoffstartdate, xx_runoffperiod,
-cdm      &     maskc, runoff, xx_runoff0, xx_runoff1, xx_runoff_dummy,
+cdm      &     runoff, xx_runoff0, xx_runoff1, xx_runoff_dummy,
 cdm      &     xx_runoff_remo_intercept, xx_runoff_remo_slope,
 cdm      &     wrunoff, 0., 0., myThid )
 cdm #endif

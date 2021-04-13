@@ -252,7 +252,7 @@ C     none of these fields are defined
       ELSEIF ( useCTRL ) THEN
         CALL CTRL_GET_GEN (
      &     xx_shifwflx_file, xx_shifwflxstartdate, xx_shifwflxperiod,
-     &     maskSHI, xx_shifwflx_loc, xx_shifwflx0, xx_shifwflx1,
+     &     xx_shifwflx_loc, xx_shifwflx0, xx_shifwflx1,
      &     xx_shifwflx_dummy,
      &     xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope,
      &     wshifwflx,
