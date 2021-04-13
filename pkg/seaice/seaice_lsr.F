@@ -873,7 +873,7 @@ C--   Calculate final residual of the linearised system
      O                  residUend, residVend, uTmp, vTmp,
      I                  printResidual, myIter, myThid )
         _BEGIN_MASTER( myThid )
-        WRITE(standardMessageUnit,'(A,1X,I4,1P3E16.8)')
+        WRITE(standardMessageUnit,'(A,1X,I9,1P3E16.8)')
      &    ' SEAICE_LSR: Residual Initial ipass,Uice,Vice=',
      &        ipass, residUini, residVini
 #ifdef SEAICE_ALLOW_FREEDRIFT
@@ -886,10 +886,10 @@ C--   Calculate final residual of the linearised system
      &    ' SEAICE_LSR: Residual Mix-ini Uice,Vice=',
      &        residUmix, residVmix
 #endif /* SEAICE_ALLOW_FREEDRIFT */
-        WRITE(standardMessageUnit,'(A,I4,A,I6,1P2E16.8)')
+        WRITE(standardMessageUnit,'(A,I9,A,I9,1P2E16.8)')
      &    ' SEAICE_LSR (ipass=',ipass,') iters,dU,Resid=',
      &      ICOUNT1, S1, residUend
-        WRITE(standardMessageUnit,'(A,I4,A,I6,1P2E16.8)')
+        WRITE(standardMessageUnit,'(A,I9,A,I9,1P2E16.8)')
      &    ' SEAICE_LSR (ipass=',ipass,') iters,dV,Resid=',
      &      ICOUNT2, S2, residVend
         _END_MASTER( myThid )
