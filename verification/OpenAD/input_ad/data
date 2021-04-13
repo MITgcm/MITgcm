@@ -40,23 +40,12 @@
  nIter0 =     0,
  nTimeSteps = 4,
 # 100 years of integration will yield a reasonable flow field
-# startTime  =          0.,
-# endTime    = 3110400000.,
+# endTime   = 3110400000.,
  deltaTMom = 1200.0,
  tauCD =     321428.,
  deltaTtracer= 43200.0,
  deltaTClock = 43200.0,
-# if you are using a version later than checkpoint45d on the main branch
-# you can uncomment the following line and increase the time step
-# deltaTtracer and deltaTClock to 172800.0 as well to speed up the
-# asynchronous time stepping
-# deltaTfreesurf = 172800.0,
  abEps = 0.1,
- pChkptFreq= 311040000.,
- dumpFreq       = 2592000.,
- adjDumpFreq    = 2592000.,
- monitorFreq    = 2592000.,
- adjMonitorFreq = 2592000.,
 # 2 months restoring timescale for temperature
  tauThetaClimRelax =  5184000.0,
 # 6 months restoring timescale for salinity
@@ -64,6 +53,13 @@
  periodicExternalForcing=.TRUE.,
  externForcingPeriod=2592000.,
  externForcingCycle=31104000.,
+#- output:
+ pChkptFreq = 311040000.,
+ dumpFreq    =  2592000.,
+ adjDumpFreq =  2592000.,
+ monitorSelect = 2,
+ monitorFreq    = 86400.,
+ adjMonitorFreq = 86400.,
  &
 
 # Gridding parameters
