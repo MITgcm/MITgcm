@@ -127,7 +127,7 @@ testoutput_var()
     #  using search strings s1 and text label
 
     if [ $debug -gt 0 ]; then
-	echo testoutput_var: grep "$2" $1/$4/$OUTPUTFILE 1>&2
+	echo testoutput_var: grep "'$2'" $1/$4/$OUTPUTFILE 1>&2
     fi
     if [ -r $1/$4/$OUTPUTFILE ]; then
 	grep "$2" $1/$4/$OUTPUTFILE | sed 's/.*=//' | nl > ${TMP}a.txt
@@ -143,7 +143,7 @@ testoutput_var()
 	return 99
     fi
     if [ $debug -gt 0 ]; then
-	echo testoutput_var: grep "$2" $1/$5 1>&2
+	echo testoutput_var: grep "'$2'" $1/$5 1>&2
     fi
     grep "$2" $1/$5 | sed 's/.*=//' | nl > ${TMP}b.txt
     lncntB=`wc -l ${TMP}b.txt | awk '{print $1}' `
@@ -307,6 +307,10 @@ testoutput_run()
 	   'Vmx') testoutput_var $1 "dynstat_${kd}vvel_max"   "${kd}V maximum"	   $2 $refoutp ; yy=$? ;;
 	   'Vav') testoutput_var $1 "dynstat_${kd}vvel_mean"  "${kd}V mean"	   $2 $refoutp ; yy=$? ;;
 	   'Vsd') testoutput_var $1 "dynstat_${kd}vvel_sd"    "${kd}V Std.Dev"	   $2 $refoutp ; yy=$? ;;
+	 'Etamn') testoutput_var $1 "dynstat_${kd}eta_min"    "${kd}Eta minimum"   $2 $refoutp ; yy=$? ;;
+	 'Etamx') testoutput_var $1 "dynstat_${kd}eta_max"    "${kd}Eta maximum"   $2 $refoutp ; yy=$? ;;
+	 'Etaav') testoutput_var $1 "dynstat_${kd}eta_mean"   "${kd}Eta mean"	   $2 $refoutp ; yy=$? ;;
+	 'Etasd') testoutput_var $1 "dynstat_${kd}eta_sd"     "${kd}Eta Std.Dev"   $2 $refoutp ; yy=$? ;;
 	 'Qntmn') testoutput_var $1 "forcing_qnet_min"  "Qnet minimum"  $2 $refoutp ; yy=$? ;;
 	 'Qntmx') testoutput_var $1 "forcing_qnet_max"  "Qnet maximum"  $2 $refoutp ; yy=$? ;;
 	 'Qntav') testoutput_var $1 "forcing_qnet_mean" "Qnet mean"	$2 $refoutp ; yy=$? ;;
