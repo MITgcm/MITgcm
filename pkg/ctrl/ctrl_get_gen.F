@@ -2,7 +2,7 @@
 
       subroutine ctrl_get_gen(
      I          xx_gen_file, xx_genstartdate, xx_genperiod,
-     I          genmask, genfld, xx_gen0, xx_gen1, xx_gen_dummy,
+     I          genfld, xx_gen0, xx_gen1, xx_gen_dummy,
      I          xx_gen_remo_intercept, xx_gen_remo_slope,
      I          genweight,
      I          mytime, myiter, mythid
@@ -41,7 +41,6 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) xx_gen_file
       integer xx_genstartdate(4)
       _RL     xx_genperiod
-      _RS     genmask(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL     genfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     xx_gen0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     xx_gen1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -159,7 +158,7 @@ cc#endif /* ALLOW_OPENAD */
 #ifdef ALLOW_CTRL_SMOOTH
         if ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file )
-     &     call ctrl_smooth(xx_gen1,genmask,myThid)
+     &     call ctrl_smooth(xx_gen1,mask2D,myThid)
 #endif
 #endif
 
@@ -195,7 +194,7 @@ cc#endif /* ALLOW_OPENAD */
 #ifdef ALLOW_CTRL_SMOOTH
         if ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file )
-     &     call ctrl_smooth(xx_gen1,genmask,myThid)
+     &     call ctrl_smooth(xx_gen1,mask2D,myThid)
 #endif
 #endif
 

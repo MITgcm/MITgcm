@@ -183,7 +183,7 @@ c--   initial Eta.
       boundsVec(5)=0.
       paramSmooth=1
       call ctrl_map_ini_gen2D(xx_etan_file, 'wetan',
-     & xx_etan_dummy, boundsVec, etan, maskc, paramSmooth,
+     & xx_etan_dummy, boundsVec, etan, paramSmooth,
      & mythid )
       _EXCH_XY_RL( etan, mythid)
 #endif
@@ -198,7 +198,7 @@ c--   SST relaxation coefficient.
       paramSmooth=1
       call ctrl_map_ini_gen2D(xx_relaxsst_file, 'wrelaxsst',
      & xx_relaxsst_dummy, boundsVec,
-     & lambdaThetaClimRelax, maskc, paramSmooth, mythid )
+     & lambdaThetaClimRelax, paramSmooth, mythid )
       _EXCH_XY_RS( lambdaThetaClimRelax, mythid)
 #endif
 
@@ -212,7 +212,7 @@ c--   SSS relaxation coefficient.
       paramSmooth=1
       call ctrl_map_ini_gen2D(xx_relaxsss_file, 'wrelaxsss',
      & xx_relaxsss_dummy, boundsVec,
-     & lambdaSaltClimRelax, maskc, paramSmooth, mythid )
+     & lambdaSaltClimRelax, paramSmooth, mythid )
       _EXCH_XY_RS( lambdaSaltClimRelax, mythid)
 #endif
 
@@ -224,7 +224,7 @@ c--   SSS relaxation coefficient.
       boundsVec(5)=0.
       paramSmooth=1
       call ctrl_map_ini_gen2D(xx_bottomdrag_file, 'wbottomdrag',
-     & xx_bottomdrag_dummy, boundsVec, bottomDragFld, maskc,
+     & xx_bottomdrag_dummy, boundsVec, bottomDragFld,
      & paramSmooth, mythid )
       _EXCH_XY_RL( bottomDragFld, mythid)
 #endif
