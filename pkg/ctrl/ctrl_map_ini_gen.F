@@ -219,7 +219,7 @@ c avoid param out of [boundsVec(1) boundsVec(4)]
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       subroutine ctrl_map_ini_gen2D(xxFileCur, wFileCur, xxDummyCur,
-     & boundsVec, paramFld2d, paramSmooth, mythid )
+     & boundsVec, paramFld2d, mask2D, paramSmooth, mythid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_map_ini_gen2D
@@ -260,7 +260,7 @@ c     == routine arguments ==
       integer mythid
       character*(*) wFileCur,xxFileCur
       _RL boundsVec(5),tmpMax,xxDummyCur
-
+      _RS mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL wFld2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL xxFld2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL paramFld2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -281,7 +281,7 @@ c     == local variables ==
 
       character*( 80) fnamegeneric
       _RS dummyRS(1)
-      _RS mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+
 
 c     == external ==
 
@@ -320,8 +320,6 @@ c--   only do interior, and exchange outside
         ENDDO
        ENDDO
       ENDDO
-
-      CALL CTRL_GET_MASK2D( xxFileCur, mask2D, myThid )
 
       CALL MDS_READ_FIELD(wFileCur,ctrlprec,.FALSE.,'RL',
      &                    1,1,1,wFld2d,dummyRS,1,mythid)

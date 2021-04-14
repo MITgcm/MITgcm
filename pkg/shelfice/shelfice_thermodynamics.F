@@ -126,6 +126,9 @@ C     drKp1, recip_drLoc
 #if (defined ALLOW_SHIFWFLX_CONTROL || defined ALLOW_GENTIM2D_CONTROL)
       _RL xx_shifwflx_loc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
+#if (defined ECCO_CTRL_DEPRECATED && defined ALLOW_SHIFWFLX_CONTROL)
+      _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -250,9 +253,10 @@ C     where this value is part of the protocol
 C     unfortunately, we need this CPP flag here, because otherwise
 C     none of these fields are defined
       ELSEIF ( useCTRL ) THEN
+        CALL CTRL_GET_MASK2D( xx_shifwflx_file, mask2D, myThid )
         CALL CTRL_GET_GEN (
      &     xx_shifwflx_file, xx_shifwflxstartdate, xx_shifwflxperiod,
-     &     xx_shifwflx_loc, xx_shifwflx0, xx_shifwflx1,
+     &     mask2D, xx_shifwflx_loc, xx_shifwflx0, xx_shifwflx1,
      &     xx_shifwflx_dummy,
      &     xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope,
      &     wshifwflx,
