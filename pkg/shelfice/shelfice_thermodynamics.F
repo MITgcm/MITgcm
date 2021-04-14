@@ -282,8 +282,8 @@ C--   underneath the ice
         DO J = 1, sNy
          DO I = 1, sNx
           K         = MAX(1,kTopC(I,J,bi,bj))
-          pLoc(I,J) = ABS(R_shelfIce(I,J,bi,bj))
-c         pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*1. _d -4
+c         pLoc(I,J) = ABS(R_shelfIce(I,J,bi,bj))
+          pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*1. _d -4
           tLoc(I,J) = theta(I,J,K,bi,bj)
           sLoc(I,J) = MAX(salt(I,J,K,bi,bj), zeroRL)
           velSq(I,J)= 0.
