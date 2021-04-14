@@ -12,7 +12,7 @@ jobs:
      matrix:
       include:
         - exp: "offline_exf_seaice"
-          precs: "16 16 16 16 16"
+          precs: "16 16 16 16 16 16 16 16 16"
         - exp: "global_ocean.cs32x15"
           precs: "16 16 16 16 16"
         - exp: "tutorial_deep_convection"
@@ -39,17 +39,22 @@ jobs:
    continue-on-error: true
 
    steps:
-   
+
      - name: Checkout
        uses: actions/checkout@v2.2.0
+
+     - name: Set up compilers
+       run: |
+         sudo apt-get update
+         sudo apt-get -qq install gfortran
 
      - name: Get a docker image and set it running
        run: |
          docker pull mitgcm/testreport-images:ubuntu_18_04_villon
          docker run  -v `pwd`:/MITgcm --name ubuntu_18_04-testreport -t -d mitgcm/testreport-images:ubuntu_18_04_villon /bin/bash
-         
+
      - name: Run a test
-       env: 
+       env:
         MITGCM_EXP: ${{ matrix.exp }}
         MITGCM_PRECS: ${{ matrix.precs }}
        run: |

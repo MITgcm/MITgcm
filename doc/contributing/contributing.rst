@@ -1403,9 +1403,13 @@ The backslash removes the space between the unit and the exponent. Similarly, fo
 
 Alternatively, latex ``:math:`` directives (see :ref:`above <symbolic_notation>`) may also be used to display units, using the ``\text{}`` syntax to display non-italic characters.
 
-- Todo: determine how to break up sections into smaller files
+Line length: as recommended in the
+`sphinx style guide <https://documentation-style-guide-sphinx.readthedocs.io/en/latest/style-guide.html#line-length>`_,
+lines of raw rst text should be kept to fewer than 80 characters (this
+restriction does not apply to tables, URLs, etc. where a line break might
+cause difficulty).
 
-- discuss | lines
+- Todo: determine how to break up sections into smaller files
 
 Building the manual
 -------------------

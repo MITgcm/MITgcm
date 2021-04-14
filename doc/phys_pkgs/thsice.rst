@@ -413,9 +413,9 @@ THSICE Diagnostics
     SIfrwAtm|  1 |SM      M1      |kg/m^2/s        |fresh-water flux to the Atmosphere (+=up)
     SIflx2oc|  1 |SM      M1      |W/m^2           |heat flux out of the ocean (+=up)
     SIfrw2oc|  1 |SM      M1      |m/s             |fresh-water flux out of the ocean (+=up)
-    SIsaltFx|  1 |SM      M1      |psu.kg/m^2      |salt flux out of the ocean (+=up)
+    SIsaltFx|  1 |SM      M1      |(g/kg).kg/m^2   |salt flux out of the ocean (+=up)
     SItOcMxL|  1 |SM      M1      |degC            |ocean mixed layer temperature
-    SIsOcMxL|  1 |SM P    M1      |psu             |ocean mixed layer salinity
+    SIsOcMxL|  1 |SM P    M1      |g/kg            |ocean mixed layer salinity
 
 
 References

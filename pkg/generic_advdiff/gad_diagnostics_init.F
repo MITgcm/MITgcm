@@ -186,7 +186,7 @@ C-     add diagnostics of advective & diffusive flux of Salt :
          ENDIF
        ELSE
          locName = 'Salinity    '
-         trUnits = 'psu'
+         trUnits = 'g/kg'
        ENDIF
        diagUnits = DIAGS_MK_UNITS( trUnits//flxUnits, myThid )
        diagSufx = GAD_DIAG_SUFX( GAD_SALINITY, myThid )

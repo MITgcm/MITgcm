@@ -190,7 +190,15 @@ C     Initialize local fields
         totalDepth(i,j)    = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
         rMixingLength(i,j,1) = 0. _d 0
         mxLength_Dn(i,j,1) = GGL90mixingLengthMin
-        SQRTTKE(i,j,1) = SQRT( GGL90TKE(i,j,1,bi,bj) )
+#ifdef ALLOW_AUTODIFF
+        IF (maskC(i,j,1,bi,bj).GT.0) THEN
+#endif
+         SQRTTKE(i,j,1) = SQRT( GGL90TKE(i,j,1,bi,bj) )
+#ifdef ALLOW_AUTODIFF
+        ELSE
+         SQRTTKE(i,j,1) = 0. _d 0
+        ENDIF
+#endif
 #ifdef ALLOW_GGL90_HORIZDIFF
         xA(i,j)  = 0. _d 0
         yA(i,j)  = 0. _d 0
@@ -209,7 +217,15 @@ C     Initialize local fields
       DO k = 2, Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
-         SQRTTKE(i,j,k)=SQRT( GGL90TKE(i,j,k,bi,bj) )
+#ifdef ALLOW_AUTODIFF
+         IF (maskC(i,j,k,bi,bj).GT.0) THEN
+#endif
+          SQRTTKE(i,j,k)=SQRT( GGL90TKE(i,j,k,bi,bj) )
+#ifdef ALLOW_AUTODIFF
+         ELSE
+          SQRTTKE(i,j,k)=0. _d 0
+         ENDIF
+#endif
 
 C     buoyancy frequency
          Nsquare(i,j,k) = gravity*gravitySign*recip_rhoConst

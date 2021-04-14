@@ -43,7 +43,6 @@ c# include "tamc_keys.h"
 c#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine Arguments ==
 C     tracerId   :: tracer Identificator (if > 0) ; = -1 or -2 when
 C                   solving vertical viscosity implicitly for U or V
 C     KappaRk    :: vertical diffusion coefficient
@@ -57,9 +56,8 @@ C     gTracer    :: future tracer field
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
       INTEGER i,j,k
-      _RL deltaTX(Nr)
+      _RL deltaTX(Nr), locUpdate
       _RL locTr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL a(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -75,6 +73,7 @@ C     == Local variables ==
 #endif
       LOGICAL     DIAGNOSTICS_IS_ON
       EXTERNAL    DIAGNOSTICS_IS_ON
+      _RL recip_dT
       _RL df (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif /* ALLOW_DIAGNOSTICS */
 CEOP
@@ -104,26 +103,16 @@ cph)
 
 C--   Initialise
       DO k=1,Nr
-#ifdef TARGET_NEC_SX
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-#else
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-#endif
          locTr(i,j,k) = 0. _d 0
         ENDDO
        ENDDO
       ENDDO
 
 C--   Old aLower
-#ifdef TARGET_NEC_SX
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-#else
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-#endif
          a(i,j,1) = 0. _d 0
        ENDDO
       ENDDO
@@ -161,13 +150,8 @@ C--   Old aUpper
         ENDDO
        ENDDO
       ENDDO
-#ifdef TARGET_NEC_SX
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-#else
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-#endif
          c(i,j,Nr) = 0. _d 0
        ENDDO
       ENDDO
@@ -190,13 +174,8 @@ c         b(i,j,k) = 1. _d 0 - c(i,j,k) - a(i,j,k)
 
 C--   Old and new gam, bet are the same
       DO k=1,Nr
-#ifdef TARGET_NEC_SX
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
-#else
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-#endif
           bet(i,j,k) = 1. _d 0
           gam(i,j,k) = 0. _d 0
         ENDDO
@@ -272,8 +251,8 @@ C--    Backward sweep
 CADJ loop = sequential
        DO k=Nr-1,1,-1
 #ifdef TARGET_NEC_SX
-            DO j=1-OLy,sNy+OLy
-             DO i=1-OLx,sNx+OLx
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
 #else
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -291,12 +270,34 @@ CADJ loop = sequential
         DO j=jMin,jMax
          DO i=iMin,iMax
 #endif
+          locUpdate =  locTr(i,j,k) - gTracer(i,j,k)
           gTracer(i,j,k) = locTr(i,j,k)
+          locTr(i,j,k) = locUpdate
          ENDDO
         ENDDO
        ENDDO
 
 #ifdef ALLOW_DIAGNOSTICS
+C--   Diagnostics of momentum dissipation/viscous tendency, implicit part:
+      IF ( useDiagnostics .AND.
+     &     ( tracerId.EQ. -1 .OR. tracerId.EQ. -2 ) ) THEN
+        IF ( tracerId.EQ. -1 ) diagName = 'Um_ImplD'
+        IF ( tracerId.EQ. -2 ) diagName = 'Vm_ImplD'
+        IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
+          recip_dT = 0. _d 0
+          IF ( deltaTMom.GT.zeroRL ) recip_dT = oneRL / deltaTMom
+          DO k=1,Nr
+           DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              locTr(i,j,k) = locTr(i,j,k)*recip_dT
+            ENDDO
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL( locTr,diagName, 0,Nr,2,bi,bj, myThid )
+        ENDIF
+      ENDIF
+
+C--   Diagnostics of vertical diffusion flux (or vertical viscous flux):
       IF ( useDiagnostics .AND.tracerId.NE.0 ) THEN
         IF ( tracerId.GE. 1 ) THEN
 C--   Set diagnostic suffix for the current tracer

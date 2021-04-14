@@ -1,75 +1,94 @@
+# This is a somewhat untypical namelist file for the ctrl package. It is
+# meant to illustrate the difference between the old method of declaring
+# control parameters (active when ctrlUseGen=.FALSE.) and the new method with
+# the generic control variables (active when ctrlUseGen=.TRUE.). This
+# experiment is special because it enables both old and new method at compile
+# time --- something that is possible for most, but not all combinations of
+# control variables --- and therefore it is possible so switch between the
+# two methods by choosing the appropriate runtime parameters. Both methods
+# do the same thing for xx_theta, xx_salt, and xx_diffkr.
 #
+# - CTRL_NML contains general parameter and the names of the control variable
+# file names on disk for the old method. These names are really only the
+# default values and for convenience they are associated with the
+# corresponding CPP fags that need to be set. Setting the CPP flags is really
+# the old (deprecated) way of defining which control parameters are used. The
+# CPP flags of this experiment only define control parameters for the first
+# timestep, so that any startdate/period are not used in this example. The
+# behavior cannot be reproduced with the generic control variables method.
 #
-# *********************
-# ECCO controlvariables
-# *********************
+# - CTRL_NML_GENARR contains the names of the control variable files (and
+# control variables) for the generic control variable method. These names are
+# predefined, but they can be choose at runtime. See the documentations,
+# chapter 10 for details. The control variables are actually turned on by
+# specifying non-zero weights files! The surface forcing control variables
+# are for mean surface values (applied at every time step) and so they are
+# different from the variables xx_tauu, xx_tauv, xx_sfl, and xx_hfl.
+#
+# **********************
+# ECCO control variables
+# **********************
  &CTRL_NML
- xx_theta_file      ='xx_theta',
- xx_salt_file       ='xx_salt',
-#
- xx_hfluxstartdate1 = 19790101,
- xx_hfluxstartdate2 = 000000,
- xx_hfluxperiod     = 864000.0,
- xx_hflux_file      = 'xx_hfl',
-#
- xx_sfluxstartdate1 = 19790101,
- xx_sfluxstartdate2 = 000000,
- xx_sfluxperiod     = 864000.0,
+ ctrlUseGen = .FALSE.,
+# old control variable method, defined through CPP-flags, here they
+# are just comments
+# define ALLOW_THETA0_CONTROL
+ xx_theta_file      = 'xx_theta',
+# define ALLOW_SALT0_CONTROL
+ xx_salt_file       = 'xx_salt',
+# define ALLOW_TR10_CONTROL
+ xx_tr1_file        = 'xx_ptr',
+# define ALLOW_TAUU0_CONTROL
+ xx_tauu_file       = 'xx_tauu',
+# define ALLOW_TAUV0_CONTROL
+ xx_tauv_file       = 'xx_tauv',
+# define ALLOW_SFLUX0_CONTROL
  xx_sflux_file      = 'xx_sfl',
-#
- xx_tauustartdate1 = 19790101,
- xx_tauustartdate2 = 000000,
- xx_tauuperiod     = 864000.0,
- xx_tauu_file      = 'xx_tauu',
-#
- xx_tauvstartdate1 = 19790101,
- xx_tauvstartdate2 = 000000,
- xx_tauvperiod     = 864000.0,
- xx_tauv_file      = 'xx_tauv',
-#
- xx_atempstartdate1 = 19790101,
- xx_atempstartdate2 = 000000,
- xx_atempperiod     = 864000.0,
- xx_atemp_file      = 'xx_atemp',
-#
- xx_aqhstartdate1 = 19790101,
- xx_aqhstartdate2 = 000000,
- xx_aqhperiod     = 864000.0,
- xx_aqh_file      = 'xx_aqh',
-#
- xx_precipstartdate1 = 19790101,
- xx_precipstartdate2 = 000000,
- xx_precipperiod     = 864000.0,
- xx_precip_file      = 'xx_precip',
-#
- xx_swdownstartdate1 = 19790101,
- xx_swdownstartdate2 = 000000,
- xx_swdownperiod     = 864000.0,
- xx_swdown_file      = 'xx_swdown',
-#
- xx_uwindstartdate1 = 19790101,
- xx_uwindstartdate2 = 000000,
- xx_uwindperiod     = 864000.0,
- xx_uwind_file      = 'xx_uwind',
-#
- xx_vwindstartdate1 = 19790101,
- xx_vwindstartdate2 = 000000,
- xx_vwindperiod     = 864000.0,
- xx_vwind_file      = 'xx_vwind',
-#
- xx_sststartdate1 = 19790101,
- xx_sststartdate2 = 000000,
- xx_sstperiod     = 864000.0,
- xx_sst_file      = 'xx_sst',
-#
- xx_sssstartdate1 = 19790101,
- xx_sssstartdate2 = 000000,
- xx_sssperiod     = 864000.0,
- xx_sss_file      = 'xx_sss',
+# define ALLOW_HFLUX0_CONTROL
+ xx_hflux_file      = 'xx_hfl',
+# define ALLOW_DIFFKR_CONTROL
+ xx_diffkr_file     = 'xx_diffkr',
  &
 #
 # *********************
 # names for ctrl_pack/unpack
 # *********************
  &CTRL_PACKNAMES
+ &
+#
+# *********************
+# names for CTRL_GENARR, CTRL_GENTIM
+# *********************
+ &CTRL_NML_GENARR
+ xx_genarr3d_file(1)       = 'xx_theta',
+ xx_genarr3d_weight(1)     = 'ones_64b.bin',
+ xx_genarr3d_bounds(1:5,1) = -2.,-1.9,39.,40.,5.,
+#
+ xx_genarr3d_file(2)       = 'xx_salt',
+ xx_genarr3d_weight(2)     = 'ones_64b.bin',
+# not clear why this to be commented out,
+# but the reference results have no bounds applied
+#xx_genarr3d_bounds(1:5,2) = 29.,29.5,40.5,41.,5.,
+#
+ xx_genarr3d_file(3)       = 'xx_ptr',
+ xx_genarr3d_weight(3)     = 'ones_64b.bin',
+#
+ xx_genarr3d_file(4)       = 'xx_diffkr',
+ xx_genarr3d_weight(4)     = 'ones_64b.bin',
+ xx_genarr3d_bounds(1:5,4) = 1.E-6,2.E-6,4.E-4,5.E-4,0.,
+#
+ xx_gentim2d_file(1)       = 'xx_qnet',
+ xx_gentim2d_weight(1)     = 'ones_64b.bin',
+#
+ xx_gentim2d_file(2)       = 'xx_empmr',
+ xx_gentim2d_weight(2)     = 'ones_64b.bin',
+#
+ xx_gentim2d_file(3)       = 'xx_fu',
+ xx_gentim2d_weight(3)     = 'ones_64b.bin',
+ xx_gentim2d_grid(3)       = 'w',
+#
+ xx_gentim2d_file(4)       = 'xx_fv',
+ xx_gentim2d_weight(4)     = 'ones_64b.bin',
+ xx_gentim2d_grid(4)       = 's',
+#
  &
