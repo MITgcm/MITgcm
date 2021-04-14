@@ -13,7 +13,7 @@ c     Apply horizontal smoothing to global _RL 2-D array
 
 c     input/output
 c     fld    : 2-D array to be smoothed
-      _RL fld ( 1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy )
+      _RL fld ( 1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy )
       _RS mask( 1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy )
       INTEGER myThid
 

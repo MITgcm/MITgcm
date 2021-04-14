@@ -37,7 +37,7 @@ C     *==========================================================*
       _RL smoothTmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL smoothTmpVar (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL smoothTmpMean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS smooth2Dmask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS smooth2Dmask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -266,4 +266,3 @@ c write smooth2Dnorm to file:
       ENDIF
 
       END
-

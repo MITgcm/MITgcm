@@ -79,7 +79,6 @@ c     == local variables ==
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_SMOOTH_CTRL2D
       _RS dummyRS(1)
-
 #endif
 #endif
 #ifndef ECCO_CTRL_DEPRECATED
