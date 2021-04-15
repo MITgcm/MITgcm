@@ -266,10 +266,10 @@ grid-attribute information. The :varlink:`gdiag` array is described in :numref:`
 
 
 
-As an example, consider a diagnostic whose associated :varlink:`gdiag` parameter is
-equal to “UURMR”. From :varlink:`gdiag` we can determine that this diagnostic is a
-U-vector component located at the C-grid U-point, model mid-level (M)
-with Nr levels (last R).
+As an example, consider a diagnostic whose associated :varlink:`gdiag`
+parameter is equal to ``UUR     MR``. From :varlink:`gdiag` we can determine
+that this diagnostic is a U-vector component located at the C-grid U-point,
+model mid-level (M) with Nr levels (last R).
 
 In this way, each diagnostic in the model has its attributes (i.e., vector
 or scalar, C-grid location, etc.) defined internally. The output
@@ -828,6 +828,10 @@ MITgcm kernel available diagnostics list:
   VISCy_Vm|VM      MR|m^4/s^2         |Meridional Viscous Flux of V momentum
   VISrE_Vm|WV      LR|m^4/s^2         |Vertical   Viscous Flux of V momentum (Explicit part)
   VISrI_Vm|WV      LR|m^4/s^2         |Vertical   Viscous Flux of V momentum (Implicit part)
+
+The meaning of the “code” column is explained in
+:numref:`diagnostic_parsing_array`. The last character, in particular,
+determines the number of vertical levels each diagnostic has.
 
 
 MITgcm packages: available diagnostics lists
