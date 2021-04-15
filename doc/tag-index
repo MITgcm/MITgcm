@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/testreport
+  - add ad-monitor of 3-D state variables to testreport summary output
 o pkg/ggl90:
   - avoid division by zero in adjoint of S/R GGL90_CALC (sqrt related)
 
