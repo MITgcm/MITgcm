@@ -480,7 +480,7 @@ CADJ &       (sNx+2*OLx)*nSx*(sNy+2*OLy)*nSy*Nr*nthreads_chkpt
 #   endif /* AUTODIFF_DISABLE_LEITH */
 #   endif /* ALLOW_MOM_COMMON */
 c--
-#   if (defined (ALLOW_EXF) && defined (ALLOW_BULKFORMULAE))
+#   if (defined ALLOW_EXF && defined ALLOW_BULKFORMULAE)
 CADJ INIT comlev1_exf_1
 CADJ &     = COMMON,nchklev_1*sNx*nSx*sNy*nSy*nthreads_chkpt
 CADJ INIT comlev1_exf_2
@@ -526,8 +526,10 @@ CADJ INIT comlev1_thsice_3 = COMMON,
 CADJ &    nchklev_1*sNx*nSx*sNy*nSy*MaxTsf*nthreads_chkpt
 CADJ INIT comlev1_thsice_4 = COMMON,
 CADJ &    nchklev_1*nSx*nSy*maxpass*nthreads_chkpt
+#   if (defined ALLOW_EXF && defined ALLOW_BULKFORMULAE)
 CADJ INIT comlev1_thsice_5 = COMMON,
 CADJ &    nchklev_1*sNx*nSx*sNy*nSy*MaxTsf*(niter_bulk+1)*nthreads_chkpt
+#   endif
 CADJ INIT comlev1_thsice_s4t = COMMON,
 CADJ &    nchklev_1*nSx*nSy*maxtsf*nthreads_chkpt
 #   endif /* ALLOW_THSICE */
