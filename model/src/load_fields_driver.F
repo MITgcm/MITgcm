@@ -56,6 +56,7 @@ C     == Global variables ==
 # ifdef ALLOW_CTRL
 #  include "CTRL_SIZE.h"
 #  include "ctrl.h"
+#  include "CTRL_GENARR.h"
 #  include "ctrl_dummy.h"
 # endif
 # ifdef ALLOW_COST
@@ -122,6 +123,11 @@ C--   Initialise forcing arrays that may receive multiple contributions
 C--   Map generic time varying controls to xx_gentim2d
 #ifdef ALLOW_CTRL
       if (useCTRL) CALL CTRL_MAP_GENTIM2D( myTime, myIter, myThid )
+# if (defined ALLOW_AUTODIFF_TAMC && defined ALLOW_GENTIM2D_CONTROL)
+C     This store-directive avoids storing xx_gentim2d0/1 and subsequently
+C     calling this routine in the AD-sweep.
+CADJ STORE xx_gentim2d = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
 #endif
 
 #ifdef ALLOW_BULK_FORCE
