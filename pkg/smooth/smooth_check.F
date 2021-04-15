@@ -34,10 +34,11 @@ c     == end of interface ==
 
 C --- Check for legal mask names
       DO smoothOpNb=1,smoothOpNbMax
-        IF ( (smooth2DmaskName(smoothOpNb)(1:5).ne.'maskC').or.
-     &       (smooth2DmaskName(smoothOpNb)(1:5).ne.'maskW').or.
-     &       (smooth2DmaskName(smoothOpNb)(1:5).ne.'maskS').or.
-     &       (smooth2DmaskName(smoothOpNb)(1:5).ne.'maskI') ) then
+        IF ( .NOT.(
+             ((smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskC').OR.
+     &        (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskW').OR.
+     &        (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskS').OR.
+     &        (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskI')))) then
           WRITE(msgBuf,'(A,A,I2,A,A,A,A)') 'SMOOTH_CHECK: ',
      &      'Unrecognized option for smooth2DmaskName(', smoothOpNb,
      &      '): ', smooth2DmaskName(smoothOpNb), ' - must be: ',
@@ -46,22 +47,14 @@ C --- Check for legal mask names
           STOP 'ABNORMAL END: S/R SMOOTH_CHECK'
         ENDIF
 
-C --- only maskC is allowed for smoothing 3D fields... for now I guess.
-        IF ( (smooth3DmaskName(smoothOpNb)(1:5).ne.'maskC') ) then
-          WRITE(msgBuf,'(A,A,I2,A,A,A,A)') 'SMOOTH_CHECK: ',
-     &      'Only maskC implemented for 3D smoothing'
-          CALL PRINT_ERROR( msgBuf, myThid )
-          STOP 'ABNORMAL END: S/R SMOOTH_CHECK'
-        ENDIF
-
-        IF ( (smooth3DmaskName(smoothOpNb)(1:5).ne.'maskC').or.
-     &       (smooth3DmaskName(smoothOpNb)(1:5).ne.'maskW').or.
-     &       (smooth3DmaskName(smoothOpNb)(1:5).ne.'maskS').or.
-     &       (smooth3DmaskName(smoothOpNb)(1:5).ne.'maskI') ) then
+        IF ( .NOT.(
+     &       (smooth3DmaskName(smoothOpNb)(1:5).EQ.'maskC').OR.
+     &       (smooth3DmaskName(smoothOpNb)(1:5).EQ.'maskW').OR.
+     &       (smooth3DmaskName(smoothOpNb)(1:5).EQ.'maskS'))) THEN
           WRITE(msgBuf,'(A,A,I2,A,A,A,A)') 'SMOOTH_CHECK: ',
      &      'Unrecognized option for smooth3DmaskName(', smoothOpNb,
      &      '): ', smooth3DmaskName(smoothOpNb), ' - must be: ',
-     &      'maskC, maskW, maskS, or maskI'
+     &      'maskC, maskW, or maskS'
           CALL PRINT_ERROR( msgBuf, myThid )
           STOP 'ABNORMAL END: S/R SMOOTH_CHECK'
         ENDIF

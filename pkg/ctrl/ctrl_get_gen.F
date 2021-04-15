@@ -2,7 +2,7 @@
 
       subroutine ctrl_get_gen(
      I          xx_gen_file, xx_genstartdate, xx_genperiod,
-     I          genfld, xx_gen0, xx_gen1, xx_gen_dummy,
+     I          mask2D, genfld, xx_gen0, xx_gen1, xx_gen_dummy,
      I          xx_gen_remo_intercept, xx_gen_remo_slope,
      I          genweight,
      I          mytime, myiter, mythid
@@ -41,6 +41,7 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) xx_gen_file
       integer xx_genstartdate(4)
       _RL     xx_genperiod
+      _RS     mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     genfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     xx_gen0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     xx_gen1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -75,7 +76,6 @@ c     == local variables ==
       logical ladinit
 
       character*(80) fnamegen
-      _RS mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_SMOOTH_CTRL2D
       _RS dummyRS(1)
@@ -110,9 +110,6 @@ c     == end of interface ==
 c--   Now, read the control vector.
       doglobalread = .false.
       ladinit      = .false.
-
-C --- Get the appropriate mask for this field
-      call ctrl_get_mask2d( xx_gen_file, mask2D, myThid)
 
       if ( (optimcycle .ge. 0).AND.(.NOT.ctrlUseGen) ) then
         ilgen=ilnblnk( xx_gen_file )
