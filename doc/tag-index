@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90:
+  - avoid division by zero in adjoint of S/R GGL90_CALC (sqrt related)
+
+checkpoint67x (2021/04/12)
 o pkg/seaice:
   - Addition to the sea ice package of 6 sea ice rheologies with different yield
     curves and flow rules ;
