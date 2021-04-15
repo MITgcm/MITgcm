@@ -43,17 +43,18 @@ C     == local variables ==
 
 CEOP
 
-C --- Set to maskC by default
-      call ctrl_cprsrs(maskC, Nr, mask3D, Nr, myThid)
-
 C --- Initial velocity
 #if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
       if (xx_filename(1:7).EQ.'xx_uvel') then
         call ctrl_cprsrs(maskW,Nr,mask3D,Nr,myThid)
       else if (xx_filename(1:7).EQ.'xx_vvel') then
         call ctrl_cprsrs(maskS,Nr,mask3D,Nr,myThid)
-      endif
+#else
+      if (.TRUE.) then
 #endif
+C --- Set to maskC by default
+        call ctrl_cprsrs(maskC, Nr, mask3D, Nr, myThid)
+      endif
 
       RETURN
       END
