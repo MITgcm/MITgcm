@@ -67,10 +67,10 @@ C--   generic - user-defined control vars
         enddo
        enddo
 C
-       if (xx_gentim2d_weight(iarr).NE.' ')
-     &  CALL CTRL_GET_MASK2D( xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
+       if (xx_gentim2d_weight(iarr).NE.' ') then
+        CALL CTRL_GET_MASK2D( xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
      &      mask2D, myThid )
-     &  CALL CTRL_GET_GEN (
+        CALL CTRL_GET_GEN (
      I      xx_gentim2d_file(iarr)(1:MAX_LEN_FNAM),
      I      xx_gentim2d_startdate(1,iarr),
      I      xx_gentim2d_period(iarr),
@@ -82,6 +82,7 @@ C
      I      zeroRL, zeroRL,
      I      wgentim2d(1-Olx,1-Oly,1,1,iarr),
      I      mytime, myiter, mythid )
+       endif
 C
        do bj=myByLo(myThid),myByHi(myThid)
         do bi=myBxLo(myThid),myBxHi(myThid)
