@@ -39,22 +39,23 @@ C     == routine arguments ==
 
 C     !LOCAL VARIABLES:
 C     == local variables ==
-      integer i, j, bi, bj
+      INTEGER i, j, bi, bj
 
 CEOP
 
 C --- Initial velocity
 #if (defined (ALLOW_UVEL0_CONTROL) && defined (ALLOW_VVEL0_CONTROL))
-      if (xx_filename(1:7).EQ.'xx_uvel') then
-        call ctrl_cprsrs(maskW,Nr,mask3D,Nr,myThid)
-      else if (xx_filename(1:7).EQ.'xx_vvel') then
-        call ctrl_cprsrs(maskS,Nr,mask3D,Nr,myThid)
+      IF (xx_filename(1:7).EQ.'xx_uvel') THEN
+        CALL CTRL_CPRSRS(maskW,Nr,mask3D,Nr,myThid)
+      ELSEIF (xx_filename(1:7).EQ.'xx_vvel') THEN
+        CALL CTRL_CPRSRS(maskS,Nr,mask3D,Nr,myThid)
+      ELSE
 #else
-      if (.TRUE.) then
+      IF (.TRUE.) THEN
 #endif
 C --- Set to maskC by default
-        call ctrl_cprsrs(maskC, Nr, mask3D, Nr, myThid)
-      endif
+        CALL CTRL_CPRSRS(maskC, Nr, mask3D, Nr, myThid)
+      ENDIF
 
       RETURN
       END
@@ -104,47 +105,52 @@ C     == routine arguments ==
 C     !LOCAL VARIABLES:
 C     == local variables ==
       _RS mask3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      integer i, j, bi, bj
-
+      INTEGER i, j, bi, bj
+      LOGICAL iAmDone
 CEOP
 
-C --- Set to maskC by default
-      call ctrl_cprsrs(maskC, Nr, mask3D, Nr, myThid)
+      iAmDone = .FALSE.
 
 C --- Shelfice
 #ifdef ALLOW_SHELFICE
-      if ((xx_filename(1:11).EQ.'xx_shicoeff').or.
-     &    (xx_filename(1:11).EQ.'xx_shicdrag').or.
-     &    (xx_filename(1:11).EQ.'xx_shifwflx')) then
-        call ctrl_cprsrs(maskSHI,Nr,mask3D,Nr,myThid)
-      endif
+      IF ((xx_filename(1:11).EQ.'xx_shicoeff').OR.
+     &    (xx_filename(1:11).EQ.'xx_shicdrag').OR.
+     &    (xx_filename(1:11).EQ.'xx_shifwflx')) THEN
+        CALL CTRL_CPRSRS(maskSHI,Nr,mask3D,Nr,myThid)
+        iAmDone = .TRUE.
+      ENDIF
 #endif
 
 C --- Wind stress. Wind speed always uses maskC
 #ifndef ALLOW_ROTATE_UV_CONTROLS
 # ifdef ALLOW_EXF
-       if (stressIsOnCgrid) then
+      IF (stressIsOnCgrid) THEN
 # endif
-        if (xx_filename(1:7).EQ.'xx_tauu') then
-          call ctrl_cprsrs(maskW,Nr,mask3D,Nr,myThid)
-        else if (xx_filename(1:7).EQ.'xx_tauv') then
-          call ctrl_cprsrs(maskS,Nr,mask3D,Nr,myThid)
-        endif
+        IF (xx_filename(1:7).EQ.'xx_tauu') THEN
+          CALL CTRL_CPRSRS(maskW,Nr,mask3D,Nr,myThid)
+          iAmDone = .TRUE.
+        ELSEIF (xx_filename(1:7).EQ.'xx_tauv') THEN
+          CALL CTRL_CPRSRS(maskS,Nr,mask3D,Nr,myThid)
+          iAmDone = .TRUE.
+        ENDIF
 # ifdef ALLOW_EXF
-       endif
+      ENDIF
 # endif
 #endif
 
+C --- Set to maskC by default, if not set
+      IF (.NOT.iAmDone) CALL CTRL_CPRSRS(maskC, Nr, mask3D, Nr, myThid)
+
 C --- Set 2D mask for output
-      do bj = myByLo(myThid), myByHi(myThid)
-       do bi = myBxLo(myThid), myBxHi(myThid)
-        do j = 1-OLy,sNy+OLy
-         do i = 1-OLx,sNx+OLx
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
           mask2D(i,j,bi,bj) = mask3D(i,j,1,bi,bj)
-         enddo
-        enddo
-       enddo
-      enddo
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
       RETURN
       END
