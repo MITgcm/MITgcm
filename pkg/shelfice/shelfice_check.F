@@ -193,6 +193,7 @@ C-    Check that CPP option is "defined" when corresponding run-time parameter i
        CALL PRINT_ERROR( msgBuf, myThid )
        errCount = errCount + 1
       ENDIF
+#endif /* SHI_ALLOW_GAMMAFRICT */
 
 #ifndef ALLOW_SHELFICE_REMESHING
       IF ( SHELFICEremeshFrequency.GT.zeroRL ) THEN
