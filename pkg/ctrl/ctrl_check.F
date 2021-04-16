@@ -50,10 +50,8 @@ C     msgBuf     :: Informational/error message buffer
       INTEGER errCount
       LOGICAL solve4Stress
 
-#ifndef ALLOW_OPENAD
 #if ( defined ALLOW_GENARR2D_CONTROL || defined ALLOW_GENARR3D_CONTROL || defined ALLOW_GENTIM2D_CONTROL )
       INTEGER iarr, k2
-#endif
 #endif
 #if ( defined ALLOW_GENARR3D_CONTROL && defined ALLOW_PTRACERS )
       INTEGER iLen, iPtr, ascii_1
