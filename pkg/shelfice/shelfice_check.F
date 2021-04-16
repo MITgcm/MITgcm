@@ -194,11 +194,6 @@ C-    Check that CPP option is "defined" when corresponding run-time parameter i
        errCount = errCount + 1
       ENDIF
 
-C     Check for correct user diangostics
-# if (defined ALLOW_AUTODIFF) && (defined ALLOW_DIAGNOSTICS)
-# endif
-#endif /* SHI_ALLOW_GAMMAFRICT */
-
 #ifndef ALLOW_SHELFICE_REMESHING
       IF ( SHELFICEremeshFrequency.GT.zeroRL ) THEN
        WRITE(msgBuf,'(A,A,A)')
@@ -259,8 +254,6 @@ C        d.Eta/dt below Ice-Shelf.
         errCount = errCount + 1
        ENDIF
       ENDIF
-
-C     Make sure
 
 C     SHELFICE may not work with many other packages,
 C     e.g. vertical mixing schemes, in particular KPP will not work properly,
