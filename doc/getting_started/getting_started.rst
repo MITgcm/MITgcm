@@ -173,7 +173,7 @@ about git (continue reading...)
 
 3. **Fully embracing the power of git!**
 
-Git offers many tools to help organize and track changes in your work. 
+Git offers many tools to help organize and track changes in your work.
 For example, one might keep separate projects on different branches,
 and update the code separately (using ``git pull``) on these separate branches.
 You can even make changes to code in the MIT repo tree; when git then
@@ -366,7 +366,7 @@ This section describes details and capabilities of
 :filelink:`tools` directory. :filelink:`genmake2 <tools/genmake2>` is a shell
 script written to work in
 `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_ (and with all
-“sh”–compatible shells including 
+“sh”–compatible shells including
 `Bourne <https://en.wikipedia.org/wiki/Bourne_shell>`_ shells).
 Like many unix tools, there is a help option that is invoked
 thru ``genmake2 -h``. :filelink:`genmake2 <tools/genmake2>` parses
@@ -771,7 +771,7 @@ optfiles must be written. To create a new optfile, it is generally
 best to start with one of the defaults and modify it to suit your needs.
 Like
 :filelink:`genmake2 <tools/genmake2>`, the optfiles are all written in `bash <https://en.wikipedia.org/wiki/Bash_(Unix_shell)>`_
-(or using a simple 
+(or using a simple
 `sh–compatible <https://en.wikipedia.org/wiki/Bourne_shell>`_ syntax).
 While nearly all
 `environment variables <https://en.wikipedia.org/wiki/Environment_variable>`_
@@ -1200,7 +1200,7 @@ which is made of the following files:
    pressure i.e., downward).
 
 -  ``T.00000nIter`` - potential temperature (ocean:
-   :math:`^{\circ}\mathrm{C}`, atmosphere: :math:`^{\circ}\mathrm{K}`).
+   :math:`^{\circ}\mathrm{C}`, atmosphere: :math:`\mathrm{K}`).
 
 -  ``S.00000nIter`` - ocean: salinity (g/kg), atmosphere: water vapor
    (g/kg).
@@ -1243,7 +1243,7 @@ NetCDF output files
 append `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ files.
 Unlike the :filelink:`pkg/mdsio` output, the :filelink:`pkg/mnc`–generated
 output is usually placed within a subdirectory with a name such as
-``mnc_output_`` (by default, 
+``mnc_output_`` (by default,
 `netCDF <http://www.unidata.ucar.edu/software/netcdf>`_ tries to append,
 rather than overwrite, existing files,
 so a unique output directory is helpful for each separate run).
