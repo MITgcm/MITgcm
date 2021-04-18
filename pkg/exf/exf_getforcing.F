@@ -156,14 +156,6 @@ CADJ STORE climsst1    = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
       CALL EXF_GETCLIM( myTime, myIter, myThid )
 
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifdef ALLOW_ATM_TEMP
-CADJ STORE precip0     = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE precip1     = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE snowprecip0 = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE snowprecip1 = comlev1, key=ikey_dynamics, kind=isbyte
-# endif
-#endif
 C     Get the surface forcing fields.
       CALL EXF_GETFFIELDS( myTime, myIter, myThid )
       IF ( .NOT.useAtmWind ) THEN
@@ -173,47 +165,42 @@ C     Get the surface forcing fields.
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE hflux    = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE sflux    = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE ustress  = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE vstress  = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE wspeed   = comlev1, key=ikey_dynamics, kind=isbyte
+C     store fields after reading them so we we do not need
+C     to save their 0/1 levels to complev1
 # ifdef ALLOW_ATM_TEMP
-CADJ STORE aqh      = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE atemp    = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE precip   = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE lwflux   = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE swflux   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE aqh        = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE atemp      = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE precip     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE lwflux     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE swflux     = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE snowprecip = comlev1, key=ikey_dynamics, kind=isbyte
 #  ifdef ALLOW_READ_TURBFLUXES
-CADJ STORE hs   = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE hl   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE hs         = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE hl         = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif /* ALLOW_READ_TURBFLUXES */
 #  ifdef EXF_READ_EVAP
-CADJ STORE evap     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE evap       = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif /* EXF_READ_EVAP */
 #  ifdef ALLOW_DOWNWARD_RADIATION
-CADJ STORE swdown   = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE lwdown   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE swdown     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE lwdown     = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif
 # else /* ALLOW_ATM_TEMP undef */
 #  ifdef SHORTWAVE_HEATING
-CADJ STORE swflux   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE swflux     = comlev1, key=ikey_dynamics, kind=isbyte
 #  endif
 # endif /* ALLOW_ATM_TEMP */
-CADJ STORE uwind    = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE vwind    = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef ATMOSPHERIC_LOADING
-CADJ STORE apressure    = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE apressure  = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 # ifdef ALLOW_RUNOFF
-CADJ STORE runoff       = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE runoff     = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 # ifdef ALLOW_SALTFLX
-CADJ STORE saltflx      = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE saltflx    = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 # ifdef EXF_SEAICE_FRACTION
-CADJ STORE areamask     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE areamask   = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
