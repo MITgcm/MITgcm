@@ -217,6 +217,13 @@ C     Set radiative fluxes
       CALL EXF_RADIATION( myTime, myIter, myThid )
 #endif
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ustress      = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vstress      = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE uwind        = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vwind        = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE wspeed       = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
 C     Set wind fields
       CALL EXF_WIND( myTime, myIter, myThid )
 
