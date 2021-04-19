@@ -51,6 +51,9 @@ C o use divided adjoint to split adjoint computations
 #undef ALLOW_PACKUNPACK_METHOD2
 #undef AUTODIFF_USE_OLDSTORE_3D
 #undef AUTODIFF_USE_OLDSTORE_2D
+#undef AUTODIFF_USE_OLDSTORE_EXF
+#undef AUTODIFF_USE_OLDSTORE_SEAICE
+#undef AUTODIFF_USE_OLDSTORE_OBCS
 
 C o write separate tape files for each ptracer
 #undef AUTODIFF_PTRACERS_SPLIT_FILES
