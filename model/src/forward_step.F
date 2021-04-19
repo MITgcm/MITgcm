@@ -1199,6 +1199,13 @@ C--   Do "blocking" sends and receives for field "overlap" terms
       CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
       CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
       CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_PTRACERS
+CADJ STORE pTracer     = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
+CADJ STORE theta, salt = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE uvel,  vvel = comlev1, key = ikey_dynamics, kind = isbyte
+#endif
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
