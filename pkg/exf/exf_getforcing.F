@@ -144,16 +144,6 @@ C     == end of interface ==
 CEOP
 
 C     Get values of climatological fields.
-#ifdef ALLOW_AUTODIFF_TAMC
-# ifdef ALLOW_CLIMSSS_RELAXATION
-CADJ STORE climsss0    = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE climsss1    = comlev1, key=ikey_dynamics, kind=isbyte
-# endif
-# ifdef ALLOW_CLIMSST_RELAXATION
-CADJ STORE climsst0    = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE climsst1    = comlev1, key=ikey_dynamics, kind=isbyte
-# endif
-#endif
       CALL EXF_GETCLIM( myTime, myIter, myThid )
 
 C     Get the surface forcing fields.
