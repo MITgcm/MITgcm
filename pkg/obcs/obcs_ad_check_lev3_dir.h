@@ -1,7 +1,24 @@
 #ifdef ALLOW_OBCS
 #
 # ifdef ALLOW_OBCS_NORTH
+#  ifndef AUTODIFF_USE_OLDSTORE_OBCS
 CADJ STORE StoreOBCSN     = tapelev3, key = ilev_3
+#  else
+CADJ STORE OBNu           = tapelev3, key = ilev_3
+CADJ STORE OBNv           = tapelev3, key = ilev_3
+CADJ STORE OBNt           = tapelev3, key = ilev_3
+CADJ STORE OBNs           = tapelev3, key = ilev_3
+#   ifdef ALLOW_OBCS_PRESCRIBE
+CADJ STORE OBNu0, OBNu1   = tapelev3, key = ilev_3
+CADJ STORE OBNv0, OBNv1   = tapelev3, key = ilev_3
+CADJ STORE OBNt0, OBNt1   = tapelev3, key = ilev_3
+CADJ STORE OBNs0, OBNs1   = tapelev3, key = ilev_3
+#   endif
+#   ifdef ALLOW_OBCSN_CONTROL
+CADJ STORE xx_obcsn0      = tapelev3, key = ilev_3
+CADJ STORE xx_obcsn1      = tapelev3, key = ilev_3
+#   endif
+#  endif /* AUTODIFF_USE_OLDSTORE_OBCS */
 # ifdef ALLOW_OBCS_STEVENS
 CADJ STORE OBNtStevens    = tapelev3, key = ilev_3
 CADJ STORE OBNsStevens    = tapelev3, key = ilev_3
@@ -10,7 +27,24 @@ CADJ STORE OBNvStevens    = tapelev3, key = ilev_3
 # endif /* ALLOW_OBCS_NORTH */
 #
 # ifdef ALLOW_OBCS_SOUTH
+#  ifndef AUTODIFF_USE_OLDSTORE_OBCS
 CADJ STORE StoreOBCSS     = tapelev3, key = ilev_3
+#  else
+CADJ STORE OBSu           = tapelev3, key = ilev_3
+CADJ STORE OBSv           = tapelev3, key = ilev_3
+CADJ STORE OBSt           = tapelev3, key = ilev_3
+CADJ STORE OBSs           = tapelev3, key = ilev_3
+#   ifdef ALLOW_OBCS_PRESCRIBE
+CADJ STORE OBSu0, OBSu1   = tapelev3, key = ilev_3
+CADJ STORE OBSv0, OBSv1   = tapelev3, key = ilev_3
+CADJ STORE OBSt0, OBSt1   = tapelev3, key = ilev_3
+CADJ STORE OBSs0, OBSs1   = tapelev3, key = ilev_3
+#   endif
+#   ifdef ALLOW_OBCSS_CONTROL
+CADJ STORE xx_obcss0      = tapelev3, key = ilev_3
+CADJ STORE xx_obcss1      = tapelev3, key = ilev_3
+#   endif
+#  endif /* AUTODIFF_USE_OLDSTORE_OBCS */
 # ifdef ALLOW_OBCS_STEVENS
 CADJ STORE OBStStevens    = tapelev3, key = ilev_3
 CADJ STORE OBSsStevens    = tapelev3, key = ilev_3
@@ -19,7 +53,24 @@ CADJ STORE OBSvStevens    = tapelev3, key = ilev_3
 # endif /* ALLOW_OBCS_SOUTH */
 #
 # ifdef ALLOW_OBCS_EAST
+#  ifndef AUTODIFF_USE_OLDSTORE_OBCS
 CADJ STORE StoreOBCSE     = tapelev3, key = ilev_3
+#  else
+CADJ STORE OBEu           = tapelev3, key = ilev_3
+CADJ STORE OBEv           = tapelev3, key = ilev_3
+CADJ STORE OBEt           = tapelev3, key = ilev_3
+CADJ STORE OBEs           = tapelev3, key = ilev_3
+#   ifdef ALLOW_OBCS_PRESCRIBE
+CADJ STORE OBEu0, OBEu1   = tapelev3, key = ilev_3
+CADJ STORE OBEv0, OBEv1   = tapelev3, key = ilev_3
+CADJ STORE OBEt0, OBEt1   = tapelev3, key = ilev_3
+CADJ STORE OBEs0, OBEs1   = tapelev3, key = ilev_3
+#   endif
+#   ifdef ALLOW_OBCSE_CONTROL
+CADJ STORE xx_obcse0      = tapelev3, key = ilev_3
+CADJ STORE xx_obcse1      = tapelev3, key = ilev_3
+#   endif
+#  endif /* AUTODIFF_USE_OLDSTORE_OBCS */
 # ifdef ALLOW_OBCS_STEVENS
 CADJ STORE OBEtStevens    = tapelev3, key = ilev_3
 CADJ STORE OBEsStevens    = tapelev3, key = ilev_3
@@ -28,7 +79,24 @@ CADJ STORE OBEuStevens    = tapelev3, key = ilev_3
 # endif /* ALLOW_OBCS_EAST */
 #
 # ifdef ALLOW_OBCS_WEST
+#  ifndef AUTODIFF_USE_OLDSTORE_OBCS
 CADJ STORE StoreOBCSW     = tapelev3, key = ilev_3
+#  else
+CADJ STORE OBWu           = tapelev3, key = ilev_3
+CADJ STORE OBWv           = tapelev3, key = ilev_3
+CADJ STORE OBWt           = tapelev3, key = ilev_3
+CADJ STORE OBWs           = tapelev3, key = ilev_3
+#   ifdef ALLOW_OBCS_PRESCRIBE
+CADJ STORE OBWu0, OBWu1   = tapelev3, key = ilev_3
+CADJ STORE OBWv0, OBWv1   = tapelev3, key = ilev_3
+CADJ STORE OBWt0, OBWt1   = tapelev3, key = ilev_3
+CADJ STORE OBWs0, OBWs1   = tapelev3, key = ilev_3
+#   endif
+#   ifdef ALLOW_OBCSW_CONTROL
+CADJ STORE xx_obcsw0      = tapelev3, key = ilev_3
+CADJ STORE xx_obcsw1      = tapelev3, key = ilev_3
+#   endif
+#  endif /* AUTODIFF_USE_OLDSTORE_OBCS */
 # ifdef ALLOW_OBCS_STEVENS
 CADJ STORE OBWtStevens    = tapelev3, key = ilev_3
 CADJ STORE OBWsStevens    = tapelev3, key = ilev_3

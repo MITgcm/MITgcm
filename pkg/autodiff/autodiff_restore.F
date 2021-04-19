@@ -161,7 +161,7 @@ C-      3D arrays
        ENDDO
       ENDDO
 
-#ifdef ALLOW_EXF
+#if ( defined ALLOW_EXF && !defined AUTODIFF_USE_OLDSTORE_EXF )
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -305,7 +305,7 @@ C-      2D arrays
       ENDDO
 #endif /* ALLOW_EXF */
 
-#ifdef ALLOW_OBCS
+#if ( defined ALLOW_OBCS && !defined AUTODIFF_USE_OLDSTORE_OBCS )
 # ifdef ALLOW_OBCS_NORTH
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -455,7 +455,7 @@ C-      2D arrays
 # endif /* ALLOW_OBCS_WEST */
 #endif /* ALLOW_OBCS */
 
-#ifdef ALLOW_SEAICE
+#if ( defined ALLOW_SEAICE && !defined AUTODIFF_USE_OLDSTORE_SEAICE )
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
