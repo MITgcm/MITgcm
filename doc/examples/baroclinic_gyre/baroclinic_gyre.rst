@@ -862,7 +862,7 @@ From the output run (top) directory, type:
     % ./gluemncbig -o phiHydLow.nc mnc_test_*/phiHydLow*.t*.nc
     % ln -s mnc_test_0001/dynStDiag.0000000000.t001.nc dynStDiag.nc
 
-For help using this utility, type ``gluemncbig --help``; note a python installation must for available for this script to work.
+For help using this utility, type ``gluemncbig --help`` (note, this utility requires python).
 The files ``grid.nc``, ``state.nc``, etc. are concatenated from the separate ``t001``, ``t002``, ``t003``, ``t004`` files
 into global grid files of horizontal dimension 62\ :math:`\times`\ 62. ``gluemncbig`` is a fairly intelligent script, and by inserting the wildcards
 in the path/filename specification, it will grab the most recent run (in case you have started up runs multiple times in this directory,
@@ -1031,7 +1031,7 @@ Also note it is no longer necessary to redirect standard output
 to a file such as ``output.txt``; rather, separate ``STDOUT.xxxx`` and ``STDERR.xxxx``
 files are created by each process, where ``xxxx`` is the process number (starting from ``0000``).
 Other than some additional `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_-related information,
-the standard output content is identical to that from the single-process run.
+the standard output content is similar to that from the single-process run.
 
 .. _baroc_openmp:
 
