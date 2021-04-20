@@ -2,7 +2,7 @@
 
       subroutine ctrl_get_gen(
      I          xx_gen_file, xx_genstartdate, xx_genperiod,
-     I          mask2D, genfld, xx_gen0, xx_gen1, xx_gen_dummy,
+     I          genmask, genfld, xx_gen0, xx_gen1, xx_gen_dummy,
      I          xx_gen_remo_intercept, xx_gen_remo_slope,
      I          genweight,
      I          mytime, myiter, mythid
@@ -41,7 +41,7 @@ c     == routine arguments ==
       character*(MAX_LEN_FNAM) xx_gen_file
       integer xx_genstartdate(4)
       _RL     xx_genperiod
-      _RS     mask2D(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RS     genmask(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     genfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     xx_gen0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     xx_gen1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -154,13 +154,13 @@ cc#endif /* ALLOW_OPENAD */
 #ifdef ALLOW_CTRL_SMOOTH
         if ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file )
-     &     call ctrl_smooth(xx_gen1,mask2D,myThid)
+     &     call ctrl_smooth(xx_gen1,genmask,myThid)
 #endif
 #endif
 
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_SMOOTH_CTRL2D
-        if (useSMOOTH) call smooth2D(xx_gen1,mask2D,1,mythid)
+        if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
         write(fnamegeneric(1:80),'(2a,i10.10)')
      &    xx_gen_file(1:ilgen),'.smooth.',optimcycle
         CALL MDS_WRITE_FIELD(fnamegeneric,ctrlprec,.FALSE.,.FALSE.,
@@ -190,13 +190,13 @@ cc#endif /* ALLOW_OPENAD */
 #ifdef ALLOW_CTRL_SMOOTH
         if ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file )
-     &     call ctrl_smooth(xx_gen1,mask2D,myThid)
+     &     call ctrl_smooth(xx_gen1,genmask,myThid)
 #endif
 #endif
 
 #ifdef ALLOW_SMOOTH
 #ifdef ALLOW_SMOOTH_CTRL2D
-        if (useSMOOTH) call smooth2D(xx_gen1,mask2D,1,mythid)
+        if (useSMOOTH) call smooth2D(xx_gen1,genmask,1,mythid)
         write(fnamegeneric(1:80),'(2a,i10.10)')
      &     xx_gen_file(1:ilgen),'.smooth.',optimcycle
         CALL MDS_WRITE_FIELD(fnamegeneric,ctrlprec,.FALSE.,.FALSE.,
@@ -247,31 +247,6 @@ cph since the above is ECCO specific, we undo it here:
 cph      doCtrlUpdate = .TRUE.
       if ( doCtrlUpdate ) then
 cph)
-CMLCML(
-CMLCML   hack until if find something better for the masks
-CML      if ( xx_gen_file(1:11) .eq. 'xx_shifwflx' ) then
-CML      do bj = jtlo,jthi
-CML        do bi = itlo,ithi
-CMLc--       Calculate mask for tracer cells (0 => land, 1 => water).
-CML          do j = 1,sny
-CML            do i = 1,snx
-CML              genfld(i,j,bi,bj) = genfld (i,j,bi,bj)
-CML     &              + gensign*genfac            *xx_gen0(i,j,bi,bj)
-CML     &              + gensign*(1. _d 0 - genfac)*xx_gen1(i,j,bi,bj)
-CML              if ( ksurfc(i,j,bi,bj) .ne. nr+1 ) then
-CML               genfld(i,j,bi,bj) =
-CML     &             ( genfld (i,j,bi,bj) -
-CML     &             ( xx_gen_remo_intercept +
-CML     &               xx_gen_remo_slope*(mytime-starttime) ) )
-CML              else
-CML               genfld(i,j,bi,bj) = 0. _d 0
-CML              endif
-CML            enddo
-CML          enddo
-CML        enddo
-CML      enddo
-CML      else
-CMLCML)
       do bj = jtlo,jthi
         do bi = itlo,ithi
 c--       Calculate mask for tracer cells (0 => land, 1 => water).
@@ -281,16 +256,13 @@ c--       Calculate mask for tracer cells (0 => land, 1 => water).
      &              + gensign*genfac            *xx_gen0(i,j,bi,bj)
      &              + gensign*(1. _d 0 - genfac)*xx_gen1(i,j,bi,bj)
               genfld(i,j,bi,bj) =
-     &             mask2D(i,j,bi,bj)*( genfld (i,j,bi,bj) -
+     &             genmask(i,j,bi,bj)*( genfld (i,j,bi,bj) -
      &             ( xx_gen_remo_intercept +
      &               xx_gen_remo_slope*(mytime-starttime) ) )
             enddo
           enddo
         enddo
       enddo
-CMLCML)
-CML      endif
-CMLCML)
 cph(
       endif
 cph)
