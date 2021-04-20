@@ -1,6 +1,26 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o verification/testreport
+  - add ad-monitor of 3-D state variables to testreport summary output
+o pkg/ggl90:
+  - avoid division by zero in adjoint of S/R GGL90_CALC (sqrt related)
+
+checkpoint67x (2021/04/12)
+o pkg/seaice:
+  - Addition to the sea ice package of 6 sea ice rheologies with different yield
+    curves and flow rules ;
+  - Add 4 new verification tests in offline_exf_seaice using new rheologies ;
+  - Update documentation with description of new rheologies and how to use them.
+o model, pkg & doc:
+  - replace all occurrences of incorrect "psu" and "PSU" by "g/kg" in units and
+    comments ; update the documentation accordingly.
+o pkg/ctrl:
+  - move to pkg/ctrl the local copy of ctrl_map_ini_genarr.F from verification/
+    global_oce_biogeo_bling/code_ad/ with ptracers generic control. Improve for
+    general number of ptracers control.
+  - add missing diagnostics fill for diagnostics 'Um_ImplD' & 'Vm_ImplD' in
+    impldiff.F (otherwise not filled when pkg/autodiff is compiled).
 o pkg/autodiff:
   Include TICES of pkg/seaice into StoreSEAICE:
   - split AUTODIFF.h into two to be able to use nITD in the new AUTODIFF_STORE.h

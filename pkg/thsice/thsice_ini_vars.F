@@ -138,7 +138,7 @@ C--     Read initial conditions:
         ENDIF
         IF ( thSIceEnthp_InitFile .EQ. ' ' ) THEN
 C-    enthalpy of new ice in J/kg, taken from thsice_extend.F with Tf beeing
-C     the freezing Temp of seawater computed from a fixed salinity (31.5 psu)
+C     the freezing Temp of seawater computed from a fixed salinity (31.5 g/kg)
 C     Tf = -mu_Tf*salinity = -1.70 deg C;  Qice1 ~ 3.2e5;  Qice2 ~ 3.4e5
          Tf = -1.70 _d 0
          DO bj = myByLo(myThid), myByHi(myThid)

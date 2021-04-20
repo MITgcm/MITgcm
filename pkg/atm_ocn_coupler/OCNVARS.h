@@ -10,7 +10,7 @@ C                       =0 : full ocean grid-point);
 C--   fields received from OCN:
 C     OcMxlD_ocn     ::- Ocean mixed-layer depths on ocean grid (m)
 C     SST_ocn        :: Sea surface temperature on ocean grid ( oC).
-C     SSS_ocn        :: Sea surface temperature on ocean grid (psu).
+C     SSS_ocn        :: Sea surface salinity on ocean grid (g/kg).
 C     vSq_ocn        :: Sea surface velocity square on ocean grid (m2/s2)
 C-    optionally received:
 C     fluxCO2_ocn    :: flux of CO2 from ocn->Atm on ocean grid (mol/m2/s)

@@ -43,22 +43,13 @@ C   icFlxAtm :: Atmospheric surf. heat flux over sea-ice [W/m2] (+=down)
 C               (over sea-ice only / weighted by ice-fraction)
 C   icFrwAtm :: fresh-water flux (E-P) from the atmosphere [kg/m2/s] (+=up)
 C               ( ice Evap only / ice E-P / ice - ocean weighted E-P )
-C   oceQnet  :: net heat flux  to the ocean         (+=down) [W/m2]
-C   oceQsw   :: net short-wave that enter the ocean (+=down) [W/m2]
-C   oceFWfx  :: net fresh water flux to the ocean   (+=down) [kg/m2]
-C   oceSflx  :: net salt flux to the ocean      (+=down) [psu.kg/m2]
 C   adjustFrW :: global adjustment to surface fresh-water flux [kg/m2/s]
       COMMON / THSICE_FLUX /
-c    &       oceQsw, oceQnet, oceFWfx, oceSflx,
      &       sHeating, flxCndBt,
      &       siceAlb, icAlbNIR,
      &       icFlxSW, icFlxAtm, icFrwAtm,
      &       adjustFrW
 
-c     _RL oceQnet(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-c     _RL oceQsw (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-c     _RL oceFWfx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-c     _RL oceSflx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL sHeating(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL flxCndBt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL siceAlb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -70,7 +61,7 @@ c     _RL oceSflx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C-- COMMON /THSICE_DYN_R/  variables used with sea-ice advection/diffusion
 C   oceFWfx   :: fresh water flux to the ocean  [kg/m^2/s]
-C   oceSflx   :: salt flux to the ocean         [psu.kg/m^2/s] (~g/m^2/s)
+C   oceSflx   :: salt flux to the ocean         [g/m^2/s]
 C   oceQnet   :: heat flux to the ocean         [W/m^2]
 C---
 C    Note :: when ice volume is too small to be kept, ice & snow is melt
@@ -88,7 +79,7 @@ C---
 C-- COMMON / THSICE_OCEMXLAYER / oceanic mixed layer state
 C   hOceMxL :: thickness   of the ocean mixed layer [m]
 C   tOceMxL :: temperature in the ocean mixed layer [oC]
-C   sOceMxL :: salinity    in the ocean mixed layer [psu]
+C   sOceMxL :: salinity    in the ocean mixed layer [g/kg]
 C   v2ocMxL :: velocity (square) in the mixed layer [m2/s2]
       COMMON / THSICE_OCEMXLAYER /
      &       hOceMxL, tOceMxL, sOceMxL, v2ocMxL

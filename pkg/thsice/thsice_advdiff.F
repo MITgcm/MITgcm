@@ -28,7 +28,7 @@ C !USES: ===============================================================
 
 C     === Global variables ===
 C   oceFWfx   :: fresh water flux to the ocean  [kg/m^2/s]
-C   oceSflx   :: salt flux to the ocean         [psu.kg/m^2/s] (~g/m^2/s)
+C   oceSflx   :: salt flux to the ocean         [g/m^2/s]
 C   oceQnet   :: heat flux to the ocean         [W/m^2]
 
 #include "SIZE.h"
