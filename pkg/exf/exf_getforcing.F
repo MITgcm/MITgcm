@@ -157,8 +157,14 @@ C     Get the surface forcing fields.
 #ifdef ALLOW_AUTODIFF_TAMC
 C     Store fields after reading them so that we do not need to save
 C     their 0/1 levels to complev1. Not all fields are required here (in
-C     most cases only aqh, atemp, precip, snowprecip, runoff), but have
-C     directives for all potential candidates here.
+C     most cases only u/vwind or u/vstress, aqh, atemp, precip,
+C     snowprecip, runoff), but we have directives for all potential
+C     candidates here.
+CADJ STORE ustress      = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vstress      = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE uwind        = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE vwind        = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE wspeed       = comlev1, key=ikey_dynamics, kind=isbyte
 # ifdef ALLOW_ATM_TEMP
 CADJ STORE aqh        = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE atemp      = comlev1, key=ikey_dynamics, kind=isbyte
@@ -207,13 +213,6 @@ C     Set radiative fluxes
       CALL EXF_RADIATION( myTime, myIter, myThid )
 #endif
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE ustress      = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE vstress      = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE uwind        = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE vwind        = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE wspeed       = comlev1, key=ikey_dynamics, kind=isbyte
-#endif
 C     Set wind fields
       CALL EXF_WIND( myTime, myIter, myThid )
 
