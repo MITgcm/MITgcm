@@ -434,7 +434,7 @@ masks should consists of +1, -1, and 0 values and an integrated
 horizontal transport (or overturn) will be computed accordingly.
 
 .. table:: Implemented ``gencost_barfile`` options (as of checkpoint
-           65z) that can be used via ``cost_gencost_boxmean.F``
+           67x) that can be used via ``cost_gencost_boxmean.F``
            (:numref:`intgen`).
   :name: genint_ecco_barfile
 
@@ -446,6 +446,11 @@ horizontal transport (or overturn) will be computed accordingly.
   | ``m_boxmean_salt``  | mean of salt over box            | specify box      |
   +---------------------+----------------------------------+------------------+
   | ``m_boxmean_eta``   | mean of SSH over box             | specify box      |
+  +---------------------+----------------------------------+------------------+
+  | ``m_boxmean_shifwf``| total shelfice freshwater flux   | specify box      |
+  |                     | over box                         |                  |
+  +---------------------+----------------------------------+------------------+
+  | ``m_boxmean_shihf`` | total shelfice heat flux over box| specify box      |
   +---------------------+----------------------------------+------------------+
   | ``m_horflux_vol``   | volume transport through section | specify transect |
   +---------------------+----------------------------------+------------------+
@@ -758,7 +763,7 @@ to the model grid unless CPP-flag :varlink:`EXCLUDE_CTRL_PACK` is defined in
   |                       |                       | still 2D)                      |
   +-----------------------+-----------------------+--------------------------------+
 
-.. table:: Generic control prefixes implemented as of checkpoint 65z.
+.. table:: Generic control prefixes implemented as of checkpoint 67x.
   :name: gencost_ctrl_files
 
   +-----------------------+-----------------------+-----------------------+
@@ -773,6 +778,20 @@ to the model grid unless CPP-flag :varlink:`EXCLUDE_CTRL_PACK` is defined in
   |                       | ``xx_bottomdrag``     | bottom drag           |
   +-----------------------+-----------------------+-----------------------+
   |                       | ``xx_geothermal``     | geothermal heat flux  |
+  +-----------------------+-----------------------+-----------------------+
+  |                       | ``xx_shicoefft``      | shelfice thermal      |
+  |                       |                       | transfer coefficient  |
+  |                       |                       | (see                  |
+  |                       |                       | :numref:`shi_ctrl`)   |
+  +-----------------------+-----------------------+-----------------------+
+  |                       | ``xx_shicoeffs``      | shelfice salinity     |
+  |                       |                       | transfer coefficient  |
+  |                       |                       | (see                  |
+  |                       |                       | :numref:`shi_ctrl`)   |
+  +-----------------------+-----------------------+-----------------------+
+  |                       | ``xx_shicdrag``       | shelfice drag         |
+  |                       |                       | coefficient (see      |
+  |                       |                       | :numref:`shi_ctrl`)   |
   +-----------------------+-----------------------+-----------------------+
   | 3D, time-invariant    | ``genarr3d``          |                       |
   | controls              |                       |                       |
@@ -827,9 +846,11 @@ to the model grid unless CPP-flag :varlink:`EXCLUDE_CTRL_PACK` is defined in
   +-----------------------+-----------------------+-----------------------+
   |                       | ``xx_sflux``          | net salt (EmPmR) flux |
   +-----------------------+-----------------------+-----------------------+
+  |                       | ``xx_shifwflx``       | shelfice meltrate     |
+  +-----------------------+-----------------------+-----------------------+
 
 .. table:: ``xx_gen????d_preproc`` options implemented as of checkpoint
-           65z. Notes: :math:`^a`: If ``noscaling`` is false, the control
+           67x. Notes: :math:`^a`: If ``noscaling`` is false, the control
            adjustment is scaled by one on the square root of the weight before
            being added to the base control variable; if ``noscaling`` is true, the
            control is multiplied by the weight in the cost function itself.
@@ -856,8 +877,8 @@ to the model grid unless CPP-flag :varlink:`EXCLUDE_CTRL_PACK` is defined in
   | ``variaweight``       | Use time-varying      | —                     |
   |                       | weight                |                       |
   +-----------------------+-----------------------+-----------------------+
-  | ``noscaling``\ :math: | Do not scale with     | —                     |
-  | `^{a}`                | ``xx_gen*_weight``    |                       |
+  | ``noscaling``         | Do not scale with     | —                     |
+  | :math:`^{a}`          | ``xx_gen*_weight``    |                       |
   +-----------------------+-----------------------+-----------------------+
   | ``documul``           | Sets                  | —                     |
   |                       | ``xx_gentim2d_cumsum``|                       |
@@ -866,6 +887,21 @@ to the model grid unless CPP-flag :varlink:`EXCLUDE_CTRL_PACK` is defined in
   | ``doglomean``         | Sets                  | —                     |
   |                       | ``xx_gentim2d_glosum``|                       |
   |                       |                       |                       |
+  +-----------------------+-----------------------+-----------------------+
+
+
+.. table:: ``xx_gen????d_preproc_c`` options implemented as of checkpoint
+           67x.
+  :name: gencost_ctrl_preproc_c
+
+  +-----------------------+-----------------------+-----------------------+
+  | name                  | description           | arguments             |
+  +=======================+=======================+=======================+
+  |``log10ctrl``          | Control adjustments to| —                     |
+  |                       | base 10 logarithm of  |                       |
+  |                       | 2D or 3D array        |                       |
+  |                       | (not available for    |                       |
+  |                       | ``xx_gentim2d``).     |                       |
   +-----------------------+-----------------------+-----------------------+
 
 The control problem is non-dimensional by default, as reflected in the
@@ -910,6 +946,38 @@ variable, as well as the net heat and salt (EmPmR) fluxes.
 The user must be mindful of control parameter combinations that make sense
 according to their specific setup, e.g., with the :ref:`EXF
 package <ssub_phys_pkg_exf_config>`.
+
+.. _shi_ctrl:
+
+Shelfice Control Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The available iceshelf control parameters depend on the form of transfer
+coefficient used in the simulation.
+
+The adjustments ``xx_shicoefft`` and ``xx_shicoeffs`` are available with the
+velocity **independent** form of transfer coefficients is used, by setting
+``#undef`` :varlink:`SHI_ALLOW_GAMMAFRICT` in :varlink:`SHELFICE_OPTIONS.h` at compile time
+(see :numref:`tab_phys_pkg_shelfice_compileparms`)
+and :varlink:`SHELFICEuseGammaFrict` ``=.FALSE.`` in ``data.shelfice`` (see
+:numref:`tab_phys_pkg_shelfice_runtimeparms`).
+These parameters provide
+adjustments to :math:`\gamma_T` and/or :math:`\gamma_S` directly.
+If only one of either is used, the value of the other is set based on the
+control adjustments used together with
+:varlink:`SHELFICEsaltToHeatRatio`, which can be set in ``data.shelfice``.
+See :ref:`tab_phys_pkg_shelfice_runtimeparms` for the default.
+
+The adjustment ``xx_shicdrag`` is available in the velocity **dependent** form
+of the ice-ocean transfer coefficients, which is specified by
+``#define`` :varlink:`SHI_ALLOW_GAMMAFRICT` and :varlink:`SHELFICEuseGammaFrict` ``=.TRUE.``
+at compile time and run time respectively.
+This parameter provides adjustments to the drag coefficient at the ice ocean boundary, but
+by default only adjusts the drag coefficient used to compute the thermal and freshwater fluxes,
+neglecting the momentum contributions.
+To allow the contribution directly to momentum fluxes, specify
+``xx_genarr2d_preproc_c(*,iarr) = 'mom'`` in ``data.ctrl.``.
+
 
 .. _sec:pkg:smooth:
 
