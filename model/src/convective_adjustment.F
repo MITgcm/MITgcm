@@ -120,26 +120,18 @@ C-          <=> usingPCoords:
           deltaK  =  0
          ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte,
-CADJ &     kind = isbyte
-CADJ STORE salt (:,:,:,bi,bj)  = comlev1_bibj, key=ikey, byte=isbyte,
-CADJ &     kind = isbyte
-CADJ STORE convectcount(:,:,:) = comlev1_bibj, key=ikey, byte=isbyte,
-CADJ &     kind = isbyte
-#endif
-
 C--       Loop over all *interior* layers
           DO K=kTop,kBottom,kDir
 
 #ifdef ALLOW_AUTODIFF_TAMC
             kkey = (ikey-1)*Nr + k
-CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_bibj_k,key=kkey,byte=isbyte,
-CADJ &     kind = isbyte
-CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k,key=kkey,byte=isbyte,
-CADJ &     kind = isbyte
-CADJ STORE convectcount(:,:,k-1) = comlev1_bibj_k,key=kkey,byte=isbyte,
-CADJ &     kind = isbyte
+C     It is important that the two k-levels of these fields are stored
+C     in one statement because otherwise taf will only store one, which
+C     is wrong (i.e. was wrong in previous versions).
+CADJ STORE theta(:,:,k-1,bi,bj), theta(:,:,k,bi,bj) =
+CADJ &     comlev1_bibj_k, key = kkey, kind = isbyte
+CADJ STORE salt(:,:,k-1,bi,bj), salt(:,:,k,bi,bj) =
+CADJ &     comlev1_bibj_k, key = kkey, kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C-          Density of K-1 layer (above W(K)) reference to K-1 T-level
             CALL FIND_RHO_2D(
@@ -150,12 +142,6 @@ C-          Density of K-1 layer (above W(K)) reference to K-1 T-level
      I           K-1, bi, bj, myThid )
 
 C-          Density of K layer (below W(K)) reference to K-1 T-level.
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
-CADJ &     kind = isbyte
-CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte,
-CADJ &     kind = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
             CALL FIND_RHO_2D(
      I           iMin, iMax, jMin, jMax, K+deltaK,
      I           theta(1-OLx,1-OLy,K,bi,bj),
@@ -164,10 +150,8 @@ CADJ &     kind = isbyte
      I           K, bi, bj, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE rhoKm1(:,:)  = comlev1_bibj_k, key = kkey, byte = isbyte,
-CADJ &     kind = isbyte
-CADJ STORE rhoK  (:,:)  = comlev1_bibj_k, key = kkey, byte = isbyte,
-CADJ &     kind = isbyte
+CADJ STORE rhoKm1 = comlev1_bibj_k, key = kkey, kind = isbyte
+CADJ STORE rhoK   = comlev1_bibj_k, key = kkey, kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C-          Check static stability with layer below and mix as needed.
 c           CALL CONVECT(
