@@ -955,28 +955,27 @@ Shelfice Control Parameters
 The available iceshelf control parameters depend on the form of transfer
 coefficient used in the simulation.
 
-The adjustments ``xx_shicoefft`` and ``xx_shicoeffs`` are available with the
+The adjustments ``xx_shicoefft`` and ``xx_shicoeffs`` are available when the
 velocity **independent** form of transfer coefficients is used, by setting
-``#undef`` :varlink:`SHI_ALLOW_GAMMAFRICT` in :varlink:`SHELFICE_OPTIONS.h` at compile time
-(see :numref:`tab_phys_pkg_shelfice_compileparms`)
-and :varlink:`SHELFICEuseGammaFrict` ``=.FALSE.`` in ``data.shelfice`` (see
-:numref:`tab_phys_pkg_shelfice_runtimeparms`).
-These parameters provide
-adjustments to :math:`\gamma_T` and/or :math:`\gamma_S` directly.
-If only one of either is used, the value of the other is set based on the
-control adjustments used together with
-:varlink:`SHELFICEsaltToHeatRatio`, which can be set in ``data.shelfice``.
-See :ref:`tab_phys_pkg_shelfice_runtimeparms` for the default.
+``#undef`` :varlink:`SHI_ALLOW_GAMMAFRICT` in :varlink:`SHELFICE_OPTIONS.h` at
+compile time (see :numref:`tab_phys_pkg_shelfice_compileparms`) and
+:varlink:`SHELFICEuseGammaFrict` ``=.FALSE.`` in ``data.shelfice`` (see
+:numref:`tab_phys_pkg_shelfice_runtimeparms`).  These parameters provide
+adjustments to :math:`\gamma_T` and/or :math:`\gamma_S` directly.  If only one
+of either is used, the value of the other is set based on the control
+adjustments used together with :varlink:`SHELFICEsaltToHeatRatio`, which can be
+set in ``data.shelfice``.  See :ref:`tab_phys_pkg_shelfice_runtimeparms` for
+the default.
 
 The adjustment ``xx_shicdrag`` is available in the velocity **dependent** form
-of the ice-ocean transfer coefficients, which is specified by
-``#define`` :varlink:`SHI_ALLOW_GAMMAFRICT` and :varlink:`SHELFICEuseGammaFrict` ``=.TRUE.``
-at compile time and run time respectively.
-This parameter provides adjustments to the drag coefficient at the ice ocean boundary, but
-by default only adjusts the drag coefficient used to compute the thermal and freshwater fluxes,
-neglecting the momentum contributions.
-To allow the contribution directly to momentum fluxes, specify
-``xx_genarr2d_preproc_c(*,iarr) = 'mom'`` in ``data.ctrl.``.
+of the ice-ocean transfer coefficients, which is specified by ``#define``
+:varlink:`SHI_ALLOW_GAMMAFRICT` and :varlink:`SHELFICEuseGammaFrict`
+``=.TRUE.`` at compile time and run time respectively.  This parameter provides
+adjustments to the drag coefficient at the ice ocean boundary, but by default
+only adjusts the drag coefficient used to compute the thermal and freshwater
+fluxes, neglecting the momentum contributions.  To allow the contribution
+directly to momentum fluxes, specify ``xx_genarr2d_preproc_c(*,iarr) = 'mom'``
+in ``data.ctrl.``.
 
 
 .. _sec:pkg:smooth:
