@@ -136,9 +136,9 @@ CADJ SUBROUTINE autodiff_store COMMON DYNVARS_R_2     DEPEND = 1
 CADJ SUBROUTINE autodiff_store COMMON EXACT_ETA_LOCAL  INPUT = 2,3
 CADJ SUBROUTINE autodiff_store COMMON EXACT_ETA_LOCAL DEPEND = 2,3
 CADJ SUBROUTINE autodiff_store COMMON TDFIELDS
-CADJ &           INPUT = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+CADJ &           INPUT = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
 CADJ SUBROUTINE autodiff_store COMMON TDFIELDS
-CADJ &          DEPEND = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+CADJ &          DEPEND = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
 C Fields for StoreEXF1
 CADJ SUBROUTINE autodiff_store COMMON exfl_hflux_r      INPUT = 1,2
 CADJ SUBROUTINE autodiff_store COMMON exfl_hflux_r     DEPEND = 1,2
@@ -152,8 +152,8 @@ CADJ SUBROUTINE autodiff_store COMMON exfl_wspeed_r     INPUT = 1,2
 CADJ SUBROUTINE autodiff_store COMMON exfl_wspeed_r    DEPEND = 1,2
 CADJ SUBROUTINE autodiff_store COMMON exfl_swflux_r     INPUT = 1,2
 CADJ SUBROUTINE autodiff_store COMMON exfl_swflux_r    DEPEND = 1,2
-CADJ SUBROUTINE autodiff_store COMMON exfl_runoff_r     INPUT = 2,3
-CADJ SUBROUTINE autodiff_store COMMON exfl_runoff_r    DEPEND = 2,3
+CADJ SUBROUTINE autodiff_store COMMON exfl_runoff_r     INPUT = 1,2,3
+CADJ SUBROUTINE autodiff_store COMMON exfl_runoff_r    DEPEND = 1,2,3
 CADJ SUBROUTINE autodiff_store COMMON exf_apressure_r   INPUT = 2,3
 CADJ SUBROUTINE autodiff_store COMMON exf_apressure_r  DEPEND = 2,3
 CADJ SUBROUTINE autodiff_store COMMON FFIELDS_sIceLoad  INPUT = 1
@@ -220,8 +220,6 @@ CADJ SUBROUTINE autodiff_store
 CADJ &          COMMON SEAICE_DYNVARS_1  INPUT = 1,2,3,4,5
 CADJ SUBROUTINE autodiff_store
 CADJ &          COMMON SEAICE_DYNVARS_1 DEPEND = 1,2,3,4,5
-CADJ SUBROUTINE autodiff_store COMMON exfl_runoff_r      INPUT = 1
-CADJ SUBROUTINE autodiff_store COMMON exfl_runoff_r     DEPEND = 1
 CADJ SUBROUTINE autodiff_store COMMON SEAICE_DYNVARS_3   INPUT = 1,3
 CADJ SUBROUTINE autodiff_store COMMON SEAICE_DYNVARS_3  DEPEND = 1,3
 CADJ SUBROUTINE autodiff_store COMMON SEAICE_DYNVARS_4   INPUT = 1
@@ -282,9 +280,9 @@ CADJ SUBROUTINE autodiff_restore COMMON DYNVARS_DIAG    DEPEND = 2
 CADJ SUBROUTINE autodiff_restore COMMON EXACT_ETA_LOCAL OUTPUT = 2,3
 CADJ SUBROUTINE autodiff_restore COMMON EXACT_ETA_LOCAL DEPEND = 2,3
 CADJ SUBROUTINE autodiff_restore COMMON TDFIELDS
-CADJ &          OUTPUT = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+CADJ &          OUTPUT = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
 CADJ SUBROUTINE autodiff_restore COMMON TDFIELDS
-CADJ &          DEPEND = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+CADJ &          DEPEND = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
 
 C Fields for StoreEXF1
 CADJ SUBROUTINE autodiff_restore COMMON exfl_hflux_r     OUTPUT = 1,2
