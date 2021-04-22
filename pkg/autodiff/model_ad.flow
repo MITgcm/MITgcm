@@ -158,10 +158,10 @@ CADJ SUBROUTINE autodiff_store COMMON exf_apressure_r   INPUT = 2,3
 CADJ SUBROUTINE autodiff_store COMMON exf_apressure_r  DEPEND = 2,3
 CADJ SUBROUTINE autodiff_store COMMON FFIELDS_sIceLoad  INPUT = 1
 CADJ SUBROUTINE autodiff_store COMMON FFIELDS_sIceLoad DEPEND = 1
-CADJ SUBROUTINE autodiff_store COMMON exf_clim_sst_r    INPUT = 2,3
-CADJ SUBROUTINE autodiff_store COMMON exf_clim_sst_r   DEPEND = 2,3
 CADJ SUBROUTINE autodiff_store COMMON exf_clim_sss_r    INPUT = 2,3
 CADJ SUBROUTINE autodiff_store COMMON exf_clim_sss_r   DEPEND = 2,3
+CADJ SUBROUTINE autodiff_store COMMON exf_clim_sst_r    INPUT = 2,3
+CADJ SUBROUTINE autodiff_store COMMON exf_clim_sst_r   DEPEND = 2,3
 CADJ SUBROUTINE autodiff_store COMMON exf_saltflx_r     INPUT = 2,3
 CADJ SUBROUTINE autodiff_store COMMON exf_saltflx_r    DEPEND = 2,3
 C These are the fields for StoreEXF2
@@ -181,14 +181,16 @@ CADJ SUBROUTINE autodiff_store COMMON exfl_evap_r        INPUT = 1,2
 CADJ SUBROUTINE autodiff_store COMMON exfl_evap_r       DEPEND = 1,2
 CADJ SUBROUTINE autodiff_store COMMON exf_atm_temp_r     INPUT = 6
 CADJ SUBROUTINE autodiff_store COMMON exf_atm_temp_r    DEPEND = 6
-CADJ SUBROUTINE autodiff_store COMMON exf_rad_down_r   INPUT = 3,4,5,6
-CADJ SUBROUTINE autodiff_store COMMON exf_rad_down_r  DEPEND = 3,4,5,6
+CADJ SUBROUTINE autodiff_store
+CADJ &          COMMON exf_rad_down_r   INPUT = 3,4,5,6
+CADJ SUBROUTINE autodiff_store
+CADJ &          COMMON exf_rad_down_r  DEPEND = 3,4,5,6
 CADJ SUBROUTINE autodiff_store COMMON exfl_uwind_r       INPUT = 1,2
 CADJ SUBROUTINE autodiff_store COMMON exfl_uwind_r      DEPEND = 1,2
 CADJ SUBROUTINE autodiff_store COMMON exfl_vwind_r       INPUT = 1,2
 CADJ SUBROUTINE autodiff_store COMMON exfl_vwind_r      DEPEND = 1,2
 C These are the fields for StoreCTRLS1
-C (do we really need to maintaine this deprecated code?)
+C (do we really need to maintain this deprecated code?)
 CADJ SUBROUTINE autodiff_store COMMON controlaux_uwind_r   INPUT = 1,2
 CADJ SUBROUTINE autodiff_store COMMON controlaux_uwind_r  DEPEND = 1,2
 CADJ SUBROUTINE autodiff_store COMMON controlaux_vwind_r   INPUT = 1,2
@@ -261,6 +263,7 @@ CADJ &          OUTPUT = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
 CADJ SUBROUTINE autodiff_restore COMMON TDFIELDS
 CADJ &          DEPEND = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
 
+C These are the fields for StoreEXF1
 CADJ SUBROUTINE autodiff_restore COMMON exfl_hflux_r     OUTPUT = 1,2
 CADJ SUBROUTINE autodiff_restore COMMON exfl_hflux_r     DEPEND = 1,2
 CADJ SUBROUTINE autodiff_restore COMMON exfl_sflux_r     OUTPUT = 1,2
@@ -279,57 +282,60 @@ CADJ SUBROUTINE autodiff_restore COMMON exf_apressure_r  OUTPUT = 2,3
 CADJ SUBROUTINE autodiff_restore COMMON exf_apressure_r  DEPEND = 2,3
 CADJ SUBROUTINE autodiff_restore COMMON FFIELDS_sIceLoad OUTPUT = 1
 CADJ SUBROUTINE autodiff_restore COMMON FFIELDS_sIceLoad DEPEND = 1
-CADJ SUBROUTINE autodiff_restore COMMON exf_clim_sst_r   OUTPUT = 2,3
-CADJ SUBROUTINE autodiff_restore COMMON exf_clim_sst_r   DEPEND = 2,3
 CADJ SUBROUTINE autodiff_restore COMMON exf_clim_sss_r   OUTPUT = 2,3
 CADJ SUBROUTINE autodiff_restore COMMON exf_clim_sss_r   DEPEND = 2,3
+CADJ SUBROUTINE autodiff_restore COMMON exf_clim_sst_r   OUTPUT = 2,3
+CADJ SUBROUTINE autodiff_restore COMMON exf_clim_sst_r   DEPEND = 2,3
 CADJ SUBROUTINE autodiff_restore COMMON exf_saltflx_r    OUTPUT = 2,3
 CADJ SUBROUTINE autodiff_restore COMMON exf_saltflx_r    DEPEND = 2,3
-
-CADJ SUBROUTINE autodiff_store COMMON exfl_aqh_r        OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store COMMON exfl_aqh_r        DEPEND = 1,2
-CADJ SUBROUTINE autodiff_store COMMON exfl_atemp_r      OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store COMMON exfl_atemp_r      DEPEND = 1,2
-CADJ SUBROUTINE autodiff_store COMMON exfl_precip_r     OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store COMMON exfl_precip_r     DEPEND = 1,2
-CADJ SUBROUTINE autodiff_store COMMON exfl_lwflux_r     OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store COMMON exfl_lwflux_r     DEPEND = 1,2
-CADJ SUBROUTINE autodiff_store COMMON exfl_snowprecip_r OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store COMMON exfl_snowprecip_r DEPEND = 1,2
-CADJ SUBROUTINE autodiff_store COMMON exfl_turb_r   OUTPUT = 1,2,3,4
-CADJ SUBROUTINE autodiff_store COMMON exfl_turb_r   DEPEND = 1,2,3,4
-CADJ SUBROUTINE autodiff_store COMMON exfl_evap_r       OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store COMMON exfl_evap_r       DEPEND = 1,2
-CADJ SUBROUTINE autodiff_store COMMON exf_atm_temp_r    OUTPUT = 6
-CADJ SUBROUTINE autodiff_store COMMON exf_atm_temp_r    DEPEND = 6
-CADJ SUBROUTINE autodiff_store COMMON exf_rad_down_r  OUTPUT = 3,4,5,6
-CADJ SUBROUTINE autodiff_store COMMON exf_rad_down_r  DEPEND = 3,4,5,6
-CADJ SUBROUTINE autodiff_store COMMON exfl_uwind_r      OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store COMMON exfl_uwind_r      DEPEND = 1,2
-CADJ SUBROUTINE autodiff_store COMMON exfl_vwind_r      OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store COMMON exfl_vwind_r      DEPEND = 1,2
-
-CADJ SUBROUTINE autodiff_store COMMON controlaux_uwind_r  OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store COMMON controlaux_uwind_r  DEPEND = 1,2
-CADJ SUBROUTINE autodiff_store COMMON controlaux_vwind_r  OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store COMMON controlaux_vwind_r  DEPEND = 1,2
-CADJ SUBROUTINE autodiff_store COMMON controlaux_atemp_r  OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store COMMON controlaux_atemp_r  DEPEND = 1,2
-CADJ SUBROUTINE autodiff_store COMMON controlaux_aqh_r    OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store COMMON controlaux_aqh_r    DEPEND = 1,2
-CADJ SUBROUTINE autodiff_store COMMON controlaux_precip_r OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store COMMON controlaux_precip_r DEPEND = 1,2
-CADJ SUBROUTINE autodiff_store
+C These are the fields for StoreEXF2
+CADJ SUBROUTINE autodiff_restore COMMON exfl_aqh_r        OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON exfl_aqh_r        DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON exfl_atemp_r      OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON exfl_atemp_r      DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON exfl_precip_r     OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON exfl_precip_r     DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON exfl_lwflux_r     OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON exfl_lwflux_r     DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON exfl_snowprecip_r OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON exfl_snowprecip_r DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON exfl_turb_r   OUTPUT = 1,2,3,4
+CADJ SUBROUTINE autodiff_restore COMMON exfl_turb_r   DEPEND = 1,2,3,4
+CADJ SUBROUTINE autodiff_restore COMMON exfl_evap_r       OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON exfl_evap_r       DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON exf_atm_temp_r    OUTPUT = 6
+CADJ SUBROUTINE autodiff_restore COMMON exf_atm_temp_r    DEPEND = 6
+CADJ SUBROUTINE autodiff_restore
+CADJ &          COMMON exf_rad_down_r  OUTPUT = 3,4,5,6
+CADJ SUBROUTINE autodiff_restore
+CADJ &          COMMON exf_rad_down_r  DEPEND = 3,4,5,6
+CADJ SUBROUTINE autodiff_restore COMMON exfl_uwind_r      OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON exfl_uwind_r      DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON exfl_vwind_r      OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON exfl_vwind_r      DEPEND = 1,2
+C These are the fields for StoreCTRLS1
+C (do we really need to maintain this deprecated code?)
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_uwind_r  OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_uwind_r  DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_vwind_r  OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_vwind_r  DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_atemp_r  OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_atemp_r  DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_aqh_r    OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_aqh_r    DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_precip_r OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_precip_r DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore
 CADJ &          COMMON controlaux_snowprecip_r OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store
+CADJ SUBROUTINE autodiff_restore
 CADJ &          COMMON controlaux_snowprecip_r DEPEND = 1,2
-CADJ SUBROUTINE autodiff_store COMMON controlaux_swflux_r OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store COMMON controlaux_swflux_r DEPEND = 1,2
-CADJ SUBROUTINE autodiff_store COMMON controlaux_swdown_r OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store COMMON controlaux_swdown_r DEPEND = 1,2
-CADJ SUBROUTINE autodiff_store COMMON controlaux_lwdown_r OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store COMMON controlaux_lwdown_r DEPEND = 1,2
-CADJ SUBROUTINE autodiff_store
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_swflux_r OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_swflux_r DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_swdown_r OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_swdown_r DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_lwdown_r OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_lwdown_r DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore
 CADJ &          COMMON controlaux_apressure_r OUTPUT = 1,2
-CADJ SUBROUTINE autodiff_store
+CADJ SUBROUTINE autodiff_restore
 CADJ &          COMMON controlaux_apressure_r DEPEND = 1,2
