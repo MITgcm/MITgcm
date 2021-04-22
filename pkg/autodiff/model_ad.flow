@@ -139,7 +139,7 @@ CADJ SUBROUTINE autodiff_store COMMON TDFIELDS
 CADJ &           INPUT = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
 CADJ SUBROUTINE autodiff_store COMMON TDFIELDS
 CADJ &          DEPEND = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
-C These are the fields for StoreEXF1
+C Fields for StoreEXF1
 CADJ SUBROUTINE autodiff_store COMMON exfl_hflux_r      INPUT = 1,2
 CADJ SUBROUTINE autodiff_store COMMON exfl_hflux_r     DEPEND = 1,2
 CADJ SUBROUTINE autodiff_store COMMON exfl_sflux_r      INPUT = 1,2
@@ -164,7 +164,7 @@ CADJ SUBROUTINE autodiff_store COMMON exf_clim_sst_r    INPUT = 2,3
 CADJ SUBROUTINE autodiff_store COMMON exf_clim_sst_r   DEPEND = 2,3
 CADJ SUBROUTINE autodiff_store COMMON exf_saltflx_r     INPUT = 2,3
 CADJ SUBROUTINE autodiff_store COMMON exf_saltflx_r    DEPEND = 2,3
-C These are the fields for StoreEXF2
+C Fields for StoreEXF2
 CADJ SUBROUTINE autodiff_store COMMON exfl_aqh_r         INPUT = 1,2
 CADJ SUBROUTINE autodiff_store COMMON exfl_aqh_r        DEPEND = 1,2
 CADJ SUBROUTINE autodiff_store COMMON exfl_atemp_r       INPUT = 1,2
@@ -189,7 +189,7 @@ CADJ SUBROUTINE autodiff_store COMMON exfl_uwind_r       INPUT = 1,2
 CADJ SUBROUTINE autodiff_store COMMON exfl_uwind_r      DEPEND = 1,2
 CADJ SUBROUTINE autodiff_store COMMON exfl_vwind_r       INPUT = 1,2
 CADJ SUBROUTINE autodiff_store COMMON exfl_vwind_r      DEPEND = 1,2
-C These are the fields for StoreCTRLS1
+C Fields for StoreCTRLS1
 C (do we really need to maintain this deprecated code?)
 CADJ SUBROUTINE autodiff_store COMMON controlaux_uwind_r   INPUT = 1,2
 CADJ SUBROUTINE autodiff_store COMMON controlaux_uwind_r  DEPEND = 1,2
@@ -215,6 +215,29 @@ CADJ SUBROUTINE autodiff_store
 CADJ &          COMMON controlaux_apressure_r  INPUT = 1,2
 CADJ SUBROUTINE autodiff_store
 CADJ &          COMMON controlaux_apressure_r DEPEND = 1,2
+C Fields for StoreSEAICE
+CADJ SUBROUTINE autodiff_store
+CADJ &          COMMON SEAICE_DYNVARS_1  INPUT = 1,2,3,4,5
+CADJ SUBROUTINE autodiff_store
+CADJ &          COMMON SEAICE_DYNVARS_1 DEPEND = 1,2,3,4,5
+CADJ SUBROUTINE autodiff_store COMMON exfl_runoff_r      INPUT = 1
+CADJ SUBROUTINE autodiff_store COMMON exfl_runoff_r     DEPEND = 1
+CADJ SUBROUTINE autodiff_store COMMON SEAICE_DYNVARS_3   INPUT = 1,3
+CADJ SUBROUTINE autodiff_store COMMON SEAICE_DYNVARS_3  DEPEND = 1,3
+CADJ SUBROUTINE autodiff_store COMMON SEAICE_DYNVARS_4   INPUT = 1
+CADJ SUBROUTINE autodiff_store COMMON SEAICE_DYNVARS_4  DEPEND = 1
+CADJ SUBROUTINE autodiff_store COMMON SEAICE_BOTTOMDRAG  INPUT = 1
+CADJ SUBROUTINE autodiff_store COMMON SEAICE_BOTTOMDRAG DEPEND = 1
+CADJ SUBROUTINE autodiff_store COMMON SEAICE_STRESSDIV   INPUT = 1,2
+CADJ SUBROUTINE autodiff_store COMMON SEAICE_STRESSDIV  DEPEND = 1,2
+CADJ SUBROUTINE autodiff_store
+CADJ &          COMMON SEAICE_EVP_FIELDS  INPUT = 1,2,3
+CADJ SUBROUTINE autodiff_store
+CADJ &          COMMON SEAICE_EVP_FIELDS DEPEND = 1,2,3
+CADJ SUBROUTINE autodiff_store COMMON SEAICE_SALINITY_R  INPUT = 1
+CADJ SUBROUTINE autodiff_store COMMON SEAICE_SALINITY_R DEPEND = 1
+CADJ SUBROUTINE autodiff_store COMMON MULTICATEGORY      INPUT = 1
+CADJ SUBROUTINE autodiff_store COMMON MULTICATEGORY     DEPEND = 1
 
 C----------------------------------------
 C subroutine  autodiff_restore
@@ -263,7 +286,7 @@ CADJ &          OUTPUT = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
 CADJ SUBROUTINE autodiff_restore COMMON TDFIELDS
 CADJ &          DEPEND = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
 
-C These are the fields for StoreEXF1
+C Fields for StoreEXF1
 CADJ SUBROUTINE autodiff_restore COMMON exfl_hflux_r     OUTPUT = 1,2
 CADJ SUBROUTINE autodiff_restore COMMON exfl_hflux_r     DEPEND = 1,2
 CADJ SUBROUTINE autodiff_restore COMMON exfl_sflux_r     OUTPUT = 1,2
@@ -288,7 +311,7 @@ CADJ SUBROUTINE autodiff_restore COMMON exf_clim_sst_r   OUTPUT = 2,3
 CADJ SUBROUTINE autodiff_restore COMMON exf_clim_sst_r   DEPEND = 2,3
 CADJ SUBROUTINE autodiff_restore COMMON exf_saltflx_r    OUTPUT = 2,3
 CADJ SUBROUTINE autodiff_restore COMMON exf_saltflx_r    DEPEND = 2,3
-C These are the fields for StoreEXF2
+C Fields for StoreEXF2
 CADJ SUBROUTINE autodiff_restore COMMON exfl_aqh_r        OUTPUT = 1,2
 CADJ SUBROUTINE autodiff_restore COMMON exfl_aqh_r        DEPEND = 1,2
 CADJ SUBROUTINE autodiff_restore COMMON exfl_atemp_r      OUTPUT = 1,2
@@ -313,7 +336,7 @@ CADJ SUBROUTINE autodiff_restore COMMON exfl_uwind_r      OUTPUT = 1,2
 CADJ SUBROUTINE autodiff_restore COMMON exfl_uwind_r      DEPEND = 1,2
 CADJ SUBROUTINE autodiff_restore COMMON exfl_vwind_r      OUTPUT = 1,2
 CADJ SUBROUTINE autodiff_restore COMMON exfl_vwind_r      DEPEND = 1,2
-C These are the fields for StoreCTRLS1
+C Fields for StoreCTRLS1
 C (do we really need to maintain this deprecated code?)
 CADJ SUBROUTINE autodiff_restore COMMON controlaux_uwind_r  OUTPUT = 1,2
 CADJ SUBROUTINE autodiff_restore COMMON controlaux_uwind_r  DEPEND = 1,2
@@ -339,3 +362,26 @@ CADJ SUBROUTINE autodiff_restore
 CADJ &          COMMON controlaux_apressure_r OUTPUT = 1,2
 CADJ SUBROUTINE autodiff_restore
 CADJ &          COMMON controlaux_apressure_r DEPEND = 1,2
+C Fields for StoreSEAICE
+CADJ SUBROUTINE autodiff_restore
+CADJ &          COMMON SEAICE_DYNVARS_1 OUTPUT = 1,2,3,4,5
+CADJ SUBROUTINE autodiff_restore
+CADJ &          COMMON SEAICE_DYNVARS_1 DEPEND = 1,2,3,4,5
+CADJ SUBROUTINE autodiff_restore COMMON exfl_runoff_r     OUTPUT = 1
+CADJ SUBROUTINE autodiff_restore COMMON exfl_runoff_r     DEPEND = 1
+CADJ SUBROUTINE autodiff_restore COMMON SEAICE_DYNVARS_3  OUTPUT = 1,3
+CADJ SUBROUTINE autodiff_restore COMMON SEAICE_DYNVARS_3  DEPEND = 1,3
+CADJ SUBROUTINE autodiff_restore COMMON SEAICE_DYNVARS_4  OUTPUT = 1
+CADJ SUBROUTINE autodiff_restore COMMON SEAICE_DYNVARS_4  DEPEND = 1
+CADJ SUBROUTINE autodiff_restore COMMON SEAICE_BOTTOMDRAG OUTPUT = 1
+CADJ SUBROUTINE autodiff_restore COMMON SEAICE_BOTTOMDRAG DEPEND = 1
+CADJ SUBROUTINE autodiff_restore COMMON SEAICE_STRESSDIV  OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON SEAICE_STRESSDIV  DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore
+CADJ &          COMMON SEAICE_EVP_FIELDS OUTPUT = 1,2,3
+CADJ SUBROUTINE autodiff_restore
+CADJ &          COMMON SEAICE_EVP_FIELDS DEPEND = 1,2,3
+CADJ SUBROUTINE autodiff_restore COMMON SEAICE_SALINITY_R OUTPUT = 1
+CADJ SUBROUTINE autodiff_restore COMMON SEAICE_SALINITY_R DEPEND = 1
+CADJ SUBROUTINE autodiff_restore COMMON MULTICATEGORY     OUTPUT = 1
+CADJ SUBROUTINE autodiff_restore COMMON MULTICATEGORY     DEPEND = 1
