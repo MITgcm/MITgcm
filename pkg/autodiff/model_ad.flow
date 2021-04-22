@@ -215,6 +215,39 @@ CADJ SUBROUTINE autodiff_store
 CADJ &          COMMON controlaux_apressure_r  INPUT = 1,2
 CADJ SUBROUTINE autodiff_store
 CADJ &          COMMON controlaux_apressure_r DEPEND = 1,2
+C Fields for OBCS
+CADJ SUBROUTINE autodiff_store COMMON obcs_fields_n  INPUT = 1,2,3,4
+CADJ SUBROUTINE autodiff_store COMMON obcs_fields_n DEPEND = 1,2,3,4
+CADJ SUBROUTINE autodiff_store COMMON obcs_fields_s  INPUT = 1,2,3,4
+CADJ SUBROUTINE autodiff_store COMMON obcs_fields_s DEPEND = 1,2,3,4
+CADJ SUBROUTINE autodiff_store COMMON obcs_fields_w  INPUT = 1,2,3,4
+CADJ SUBROUTINE autodiff_store COMMON obcs_fields_w DEPEND = 1,2,3,4
+CADJ SUBROUTINE autodiff_store COMMON obcs_fields_e  INPUT = 1,2,3,4
+CADJ SUBROUTINE autodiff_store COMMON obcs_fields_e DEPEND = 1,2,3,4
+CADJ SUBROUTINE autodiff_store
+CADJ &          COMMON obcs_fields_aux_n   INPUT = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE autodiff_store
+CADJ &          COMMON obcs_fields_aux_n  DEPEND = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE autodiff_store
+CADJ &          COMMON obcs_fields_aux_s   INPUT = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE autodiff_store
+CADJ &          COMMON obcs_fields_aux_s  DEPEND = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE autodiff_store
+CADJ &          COMMON obcs_fields_aux_w   INPUT = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE autodiff_store
+CADJ &          COMMON obcs_fields_aux_w  DEPEND = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE autodiff_store
+CADJ &          COMMON obcs_fields_aux_e   INPUT = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE autodiff_store
+CADJ &          COMMON obcs_fields_aux_e  DEPEND = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE autodiff_store COMMON controlaux_obcsn_r  INPUT = 1,2
+CADJ SUBROUTINE autodiff_store COMMON controlaux_obcsn_r DEPEND = 1,2
+CADJ SUBROUTINE autodiff_store COMMON controlaux_obcss_r  INPUT = 1,2
+CADJ SUBROUTINE autodiff_store COMMON controlaux_obcss_r DEPEND = 1,2
+CADJ SUBROUTINE autodiff_store COMMON controlaux_obcsw_r  INPUT = 1,2
+CADJ SUBROUTINE autodiff_store COMMON controlaux_obcsw_r DEPEND = 1,2
+CADJ SUBROUTINE autodiff_store COMMON controlaux_obcse_r  INPUT = 1,2
+CADJ SUBROUTINE autodiff_store COMMON controlaux_obcse_r DEPEND = 1,2
 C Fields for StoreSEAICE
 CADJ SUBROUTINE autodiff_store
 CADJ &          COMMON SEAICE_DYNVARS_1  INPUT = 1,2,3,4,5
@@ -360,6 +393,39 @@ CADJ SUBROUTINE autodiff_restore
 CADJ &          COMMON controlaux_apressure_r OUTPUT = 1,2
 CADJ SUBROUTINE autodiff_restore
 CADJ &          COMMON controlaux_apressure_r DEPEND = 1,2
+C Fields for OBCS
+CADJ SUBROUTINE autodiff_restore COMMON obcs_fields_n OUTPUT = 1,2,3,4
+CADJ SUBROUTINE autodiff_restore COMMON obcs_fields_n DEPEND = 1,2,3,4
+CADJ SUBROUTINE autodiff_restore COMMON obcs_fields_s OUTPUT = 1,2,3,4
+CADJ SUBROUTINE autodiff_restore COMMON obcs_fields_s DEPEND = 1,2,3,4
+CADJ SUBROUTINE autodiff_restore COMMON obcs_fields_w OUTPUT = 1,2,3,4
+CADJ SUBROUTINE autodiff_restore COMMON obcs_fields_w DEPEND = 1,2,3,4
+CADJ SUBROUTINE autodiff_restore COMMON obcs_fields_e OUTPUT = 1,2,3,4
+CADJ SUBROUTINE autodiff_restore COMMON obcs_fields_e DEPEND = 1,2,3,4
+CADJ SUBROUTINE autodiff_restore
+CADJ &          COMMON obcs_fields_aux_n  OUTPUT = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE autodiff_restore
+CADJ &          COMMON obcs_fields_aux_n  DEPEND = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE autodiff_restore
+CADJ &          COMMON obcs_fields_aux_s  OUTPUT = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE autodiff_restore
+CADJ &          COMMON obcs_fields_aux_s  DEPEND = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE autodiff_restore
+CADJ &          COMMON obcs_fields_aux_w  OUTPUT = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE autodiff_restore
+CADJ &          COMMON obcs_fields_aux_w  DEPEND = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE autodiff_restore
+CADJ &          COMMON obcs_fields_aux_e  OUTPUT = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE autodiff_restore
+CADJ &          COMMON obcs_fields_aux_e  DEPEND = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_obcsn_r OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_obcsn_r DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_obcss_r OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_obcss_r DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_obcsw_r OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_obcsw_r DEPEND = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_obcse_r OUTPUT = 1,2
+CADJ SUBROUTINE autodiff_restore COMMON controlaux_obcse_r DEPEND = 1,2
 C Fields for StoreSEAICE
 CADJ SUBROUTINE autodiff_restore
 CADJ &          COMMON SEAICE_DYNVARS_1 OUTPUT = 1,2,3,4,5
