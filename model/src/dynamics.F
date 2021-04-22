@@ -659,6 +659,11 @@ C--   Step forward W field in N-H algorithm
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CAV(
+#ifdef INCLUDE_SOUNDSPEED_CALC_CODE
+        CALL DIAGS_SOUND_SPEED( myThid )
+#endif
+CAV)
 
 C-    end of bi,bj loops
        ENDDO

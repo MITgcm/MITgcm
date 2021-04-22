@@ -54,7 +54,7 @@ C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
 
 C o Include/exclude sound speed calculation code
-#undef INCLUDE_SOUNDSPEED_CALC_CODE
+#define INCLUDE_SOUNDSPEED_CALC_CODE
 
 C-- Vertical mixing code options:
 
