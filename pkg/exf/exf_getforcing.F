@@ -156,7 +156,7 @@ C     Get the surface forcing fields.
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C     Store fields after reading them so that we do not need to save
-C     their 0/1 levels to complev1. Not all fields are required here (in
+C     their 0/1 levels to comlev1. Not all fields are required here (in
 C     most cases only u/vwind or u/vstress, aqh, atemp, precip,
 C     snowprecip, runoff), but we have directives for all potential
 C     candidates here.
