@@ -892,13 +892,13 @@ to the model grid unless CPP-flag :varlink:`EXCLUDE_CTRL_PACK` is defined in
 
 .. table:: ``xx_gen????d_preproc_c`` options implemented as of checkpoint
            67x.
-  :name: gencost_ctrl_preproc_c
+  :name: genarr_preproc_c
 
   +-----------------------+-----------------------+-----------------------+
   | name                  | description           | arguments             |
   +=======================+=======================+=======================+
-  |``log10ctrl``          | Control adjustments to| —                     |
-  |                       | base 10 logarithm of  |                       |
+  |``log10ctrl``          | Control adjustments to| See                   |
+  |                       | base 10 logarithm of  | :numref:`log_ctrl`    |
   |                       | 2D or 3D array        |                       |
   |                       | (not available for    |                       |
   |                       | ``xx_gentim2d``).     |                       |
@@ -976,6 +976,39 @@ only adjusts the drag coefficient used to compute the thermal and freshwater
 fluxes, neglecting the momentum contributions.  To allow the contribution
 directly to momentum fluxes, specify ``xx_genarr2d_preproc_c(*,iarr) = 'mom'``
 in ``data.ctrl.``.
+
+.. _log_ctrl:
+
+Logarithmic Control Parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As indicated in :numref:`genarr_preproc_c`, the base-10 logarithm of a
+control field can be adjusted by specifying the character option
+``genarr*d_preproc_c(k2,iarr) = 'log10ctrl'``, with ``k2,iarr`` as appropriate,
+and ``*d`` denoting that ``2d`` or ``3d`` are available.
+As a concrete example, if the control parameter is updating ``fld2d``,
+then the field will be set as follows:
+
+.. code-block:: fortran
+
+	fld2d(i,j,bi,bj) = 10**( log10InitVal + xx_genarr2d(i,j,bi,bj,iarr) )
+
+where ``log10InitVal`` is a scalar with a default value of 0, but can be changed
+by setting ``gencost_preproc_r(k2,iarr)``. This is useful in the case where
+``doInitXX=.TRUE.``.
+Concretely, if we had an initial guess for ``fld2d = 10^-4`` then one could set
+the following in ``data.ctrl``:
+
+::
+
+	xx_genarr2d_file(1) = 'xx_fld2d'
+	xx_genarr2d_weight(1) = 'nonzero_weights.data'
+	xx_genarr2d_preproc_c(1,1) = 'log10ctrl'
+	xx_genarr2d_preproc_r(1,1) = -4. ,
+
+Note that the ``log10ctrl`` option can only be used when a weight file
+is provided, and finally that this log-option cannot be used with
+``xx_gen*_preproc(k2,iarr) = 'noscaling',``.
 
 
 .. _sec:pkg:smooth:
