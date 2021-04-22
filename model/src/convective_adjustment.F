@@ -128,9 +128,9 @@ C--       Loop over all *interior* layers
 C     It is important that the two k-levels of these fields are stored
 C     in one statement because otherwise taf will only store one, which
 C     is wrong (i.e. was wrong in previous versions).
-CADJ STORE theta(:,:,k-1,bi,bj), theta(:,:,k,bi,bj) =
+CADJ STORE theta(:,:,k-kDir,bi,bj), theta(:,:,k,bi,bj) =
 CADJ &     comlev1_bibj_k, key = kkey, kind = isbyte
-CADJ STORE salt(:,:,k-1,bi,bj), salt(:,:,k,bi,bj) =
+CADJ STORE salt(:,:,k-kDir,bi,bj), salt(:,:,k,bi,bj) =
 CADJ &     comlev1_bibj_k, key = kkey, kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C-          Density of K-1 layer (above W(K)) reference to K-1 T-level
@@ -148,16 +148,10 @@ C-          Density of K layer (below W(K)) reference to K-1 T-level.
      I           salt (1-OLx,1-OLy,K,bi,bj),
      O           rhoK,
      I           K, bi, bj, myThid )
-
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE rhoKm1 = comlev1_bibj_k, key = kkey, kind = isbyte
 CADJ STORE rhoK   = comlev1_bibj_k, key = kkey, kind = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-C-          Check static stability with layer below and mix as needed.
-c           CALL CONVECT(
-c    I           bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,rhoK,
-c    U           ConvectCount,
-c    I           myTime,myIter,myThid)
 
 C-          Pre-calculate mixing weights for interface K
             CALL CONVECTIVE_WEIGHTS(
