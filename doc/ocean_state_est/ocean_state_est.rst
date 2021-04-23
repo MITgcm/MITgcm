@@ -727,7 +727,8 @@ to the model grid unless CPP-flag :varlink:`EXCLUDE_CTRL_PACK` is defined in
   |                       |                       | )                              |
   +-----------------------+-----------------------+--------------------------------+
   | ``xx_gen*_preproc_c`` | character(*)          | Preprocessor                   |
-  |                       |                       | character arguments            |
+  |                       |                       | character arguments (see       |
+  |                       |                       | :numref:`genarr_preproc_c`)    |
   +-----------------------+-----------------------+--------------------------------+
   | ``xx_gen*_preproc_i`` | integer(*)            | Preprocessor integer           |
   |                       |                       | arguments                      |
