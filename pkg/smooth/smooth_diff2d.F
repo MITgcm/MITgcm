@@ -68,7 +68,6 @@ c       in order not to overwrite the same tape
       CALL EXCH_XY_RL ( fld_in , myThid )
       CALL EXCH_XY_RL ( gt_in , myThid )
       CALL EXCH_XY_RL ( gtm1_in , myThid )
-      CALL EXCH_XY_RL ( smooth2Dmask , myThid )
 
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
