@@ -298,9 +298,9 @@ CADJ SUBROUTINE autodiff_restore COMMON AUTODIFF_STORE_OBCSE DEPEND = 1
 CADJ SUBROUTINE autodiff_restore COMMON AUTODIFF_STORE_OBCSW  INPUT = 1
 CADJ SUBROUTINE autodiff_restore COMMON AUTODIFF_STORE_OBCSW DEPEND = 1
 CADJ SUBROUTINE autodiff_restore
-CADJ &          COMMON AUTODIFF_RESTORE_SEAICE  INPUT = 1
+CADJ &          COMMON AUTODIFF_STORE_SEAICE  INPUT = 1
 CADJ SUBROUTINE autodiff_restore
-CADJ &          COMMON AUTODIFF_RESTORE_SEAICE DEPEND = 1
+CADJ &          COMMON AUTODIFF_STORE_SEAICE DEPEND = 1
 
 CADJ SUBROUTINE autodiff_restore
 CADJ &          COMMON DYNVARS_R OUTPUT = 1,2,3,4,5,6,9,10,11,12
@@ -330,8 +330,8 @@ CADJ SUBROUTINE autodiff_restore COMMON exfl_wspeed_r    OUTPUT = 1,2
 CADJ SUBROUTINE autodiff_restore COMMON exfl_wspeed_r    DEPEND = 1,2
 CADJ SUBROUTINE autodiff_restore COMMON exfl_swflux_r    OUTPUT = 1,2
 CADJ SUBROUTINE autodiff_restore COMMON exfl_swflux_r    DEPEND = 1,2
-CADJ SUBROUTINE autodiff_restore COMMON exfl_runoff_r    OUTPUT = 2,3
-CADJ SUBROUTINE autodiff_restore COMMON exfl_runoff_r    DEPEND = 2,3
+CADJ SUBROUTINE autodiff_restore COMMON exfl_runoff_r    OUTPUT = 1,2,3
+CADJ SUBROUTINE autodiff_restore COMMON exfl_runoff_r    DEPEND = 1,2,3
 CADJ SUBROUTINE autodiff_restore COMMON exf_apressure_r  OUTPUT = 2,3
 CADJ SUBROUTINE autodiff_restore COMMON exf_apressure_r  DEPEND = 2,3
 CADJ SUBROUTINE autodiff_restore COMMON FFIELDS_sIceLoad OUTPUT = 1
