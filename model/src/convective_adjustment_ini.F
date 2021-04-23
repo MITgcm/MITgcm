@@ -28,9 +28,6 @@ C     == Global data ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#ifdef ALLOW_TIMEAVE
-#include "TIMEAVE_STATV.h"
-#endif
 #ifdef ALLOW_AUTODIFF
 #include "tamc.h"
 #include "tamc_keys.h"
