@@ -830,9 +830,9 @@ MITgcm kernel available diagnostics list:
   VISrI_Vm|WV      LR|m^4/s^2         |Vertical   Viscous Flux of V momentum (Implicit part)
 
 The meaning of the “code” column is explained in
-:numref:`diagnostic_parsing_array`. The last character, in particular,
-determines the number of vertical levels each diagnostic has.
-
+:numref:`diagnostic_parsing_array`. The last character of the code, in particular,
+determines the number of vertical levels in the diagnostic (of the commonly used codes,
+"1" represents a 2-D diagnostic, "R" and "L" are multi-level diagnostics).
 
 MITgcm packages: available diagnostics lists
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
