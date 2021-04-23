@@ -35,10 +35,10 @@ c     == end of interface ==
 C --- Check for legal mask names
       DO smoothOpNb=1,smoothOpNbMax
         IF ( .NOT.(
-             ((smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskC').OR.
-     &        (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskW').OR.
-     &        (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskS').OR.
-     &        (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskI')))) then
+     &       (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskC').OR.
+     &       (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskW').OR.
+     &       (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskS').OR.
+     &       (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskI'))) THEN
           WRITE(msgBuf,'(A,A,I2,A,A,A,A)') 'SMOOTH_CHECK: ',
      &      'Unrecognized option for smooth2DmaskName(', smoothOpNb,
      &      '): ', smooth2DmaskName(smoothOpNb), ' - must be: ',
@@ -61,7 +61,7 @@ C --- Check for legal mask names
 
 #ifndef ALLOW_SHELFICE
 C --- make sure proper macros are defined for maskI (iceshelf domain)
-        IF (smooth2DmaskName(smoothOpNb)(1:5).eq.'maskI') then
+        IF (smooth2DmaskName(smoothOpNb)(1:5).EQ.'maskI') THEN
           WRITE(msgBuf,'(A,A,I2,A,A,A,A)') 'SMOOTH_CHECK: ',
      &      'Must compile with shelfice package, ALLOW_SHELFICE'
           CALL PRINT_ERROR( msgBuf, myThid )

@@ -1,6 +1,6 @@
 #include "SMOOTH_OPTIONS.h"
 
-      subroutine smooth_filtervar3D (smoothOpNb,myThid)
+      SUBROUTINE SMOOTH_FILTERVAR3D ( smoothOpNb, myThid )
 
 C     *==========================================================*
 C     | SUBROUTINE smooth_filtervar3D
@@ -17,51 +17,54 @@ C     *==========================================================*
 #include "GRID.h"
 #include "SMOOTH.h"
 
-      integer smoothOpNb, myThid
+c     == global variables ==
+      INTEGER smoothOpNb, myThid
 
-      Real*8   port_rand, port_rand_norm
+c     == external functions ==
+      REAL*8   port_rand, port_rand_norm
       EXTERNAL PORT_RAND, PORT_RAND_NORM
 
-      integer i,j,k, bi, bj, ii, jj, kk
-      integer itlo,ithi, jtlo,jthi
-      integer diLoc, djLoc,  dkLoc
-      integer nbRand, nbt_in
+c     == local variables ==
+      INTEGER i,j,k, bi, bj, ii, jj, kk
+      INTEGER itlo,ithi, jtlo,jthi
+      INTEGER diLoc, djLoc,  dkLoc
+      INTEGER nbRand, nbt_in
       character*( 80) fnamegeneric
       _RL smoothTmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL smoothTmpMean(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL smoothTmpVar (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS smooth3Dmask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+c     == end of interface ==
 
       jtlo = mybylo(myThid)
       jthi = mybyhi(myThid)
       itlo = mybxlo(myThid)
       ithi = mybxhi(myThid)
 
-c allow a different mask other than maskC
-
-        DO bj = jtlo,jthi
-         DO bi = itlo,ithi
-          DO k = 1,Nr
-           DO j = 1,sNy
-            DO i = 1,sNx
-             if (smooth3DmaskName(smoothOpNb)(1:5).eq.'maskC') then
-              smooth3Dmask(i,j,k,bi,bj) = maskC(i,j,k,bi,bj)
-             elseif (smooth3DmaskName(smoothOpNb)(1:5).eq.'maskW') then
-              smooth3Dmask(i,j,k,bi,bj) = maskW(i,j,k,bi,bj)
-             elseif (smooth3DmaskName(smoothOpNb)(1:5).eq.'maskS') then
-              smooth3Dmask(i,j,k,bi,bj) = maskS(i,j,k,bi,bj)
-             endif
-            ENDDO
-           ENDDO
+c--   allow a mask other than maskC
+      DO bj = jtlo,jthi
+       DO bi = itlo,ithi
+        DO k = 1,Nr
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+           IF (smooth3DmaskName(smoothOpNb)(1:5).EQ.'maskC') THEN
+            smooth3Dmask(i,j,k,bi,bj) = maskC(i,j,k,bi,bj)
+           ELSEIF (smooth3DmaskName(smoothOpNb)(1:5).EQ.'maskW') THEN
+            smooth3Dmask(i,j,k,bi,bj) = maskW(i,j,k,bi,bj)
+           ELSEIF (smooth3DmaskName(smoothOpNb)(1:5).EQ.'maskS') THEN
+            smooth3Dmask(i,j,k,bi,bj) = maskS(i,j,k,bi,bj)
+           ENDIF
           ENDDO
          ENDDO
         ENDDO
+       ENDDO
+      ENDDO
 
 c if smooth3Dfilter(smoothOpNb)=0: the filter variance field
 c has been computed earlier and is already in the run directory
 c so this routine does not do anything
 
-      IF (smooth3Dfilter(smoothOpNb).NE.0) then
+      IF (smooth3Dfilter(smoothOpNb).NE.0) THEN
 
       nbt_in=smooth3Dnbt(smoothOpNb)/2
 
