@@ -27,6 +27,11 @@ C     myThid - Instance number for this innvocation of CALC_MOM_RHS
 C     == Local variables ==
       INTEGER i,j
 
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        hDiv(i,j)=0. _d 0
+       ENDDO
+      ENDDO
       IF (hDivScheme.EQ.1) THEN
        DO j=1-OLy,sNy+OLy-1
         DO i=1-OLx,sNx+OLx-1
