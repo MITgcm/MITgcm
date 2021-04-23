@@ -77,6 +77,9 @@ CADJ STORE climustr   = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE climvstr   = comlev1, key = ikey_dynamics, kind = isbyte
 #  endif
 # endif /* ALLOW_EXF */
+#ifdef ALLOW_GEOTHERMAL_FLUX
+CADJ STORE geothermalFlux = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
 # ifdef ALLOW_BLING
 CADJ STORE wind       = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE atmosP     = comlev1, key = ikey_dynamics, kind = isbyte

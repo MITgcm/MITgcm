@@ -747,6 +747,18 @@ CADJ &     kind = isbyte
 #  endif
 # endif
 
+# ifdef ALLOW_GGL90
+CADJ STORE GGL90diffKr        = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+# endif
+
+# ifdef ALLOW_SALT_PLUME
+CADJ STORE SaltPlumeDepth     = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+CADJ STORE saltPlumeFlux      = comlev1, key = ikey_dynamics,
+CADJ &     kind = isbyte
+# endif
+
 # ifdef ALLOW_DOWN_SLOPE
 CADJ STORE DWNSLP_deepK       = comlev1, key = ikey_dynamics
 CADJ STORE DWNSLP_Transp      = comlev1, key = ikey_dynamics,
@@ -1185,8 +1197,8 @@ CADJ STORE theta, salt = comlev1, key = ikey_dynamics, kind = isbyte
 # ifdef ALLOW_AUTODIFF_TAMC
 #  ifdef ALLOW_PTRACERS
 CADJ STORE pTracer     = comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE theta, salt = comlev1, key = ikey_dynamics, kind = isbyte
 #  endif /* ALLOW_PTRACERS */
+CADJ STORE theta, salt = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif /* ALLOW_GCHEM */
 
@@ -1200,11 +1212,15 @@ C--   Do "blocking" sends and receives for field "overlap" terms
       CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
       CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
+C     These store directives avoid extra subrotuine calls, for example,
+C     thermodynamics, tracers_correction_step, and
+C     do_fields_blocking_exchages
 # ifdef ALLOW_PTRACERS
 CADJ STORE pTracer     = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 CADJ STORE theta, salt = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE uvel,  vvel = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE totPhiHyd   = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
