@@ -10,11 +10,15 @@ C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R DIAGS_SOUND_SPEED
 C     | o Diagnose speed of sound in seawater 
+C     | o from the algorithm by Del Grasso (1974).
+C     | o This is NOT the sound-speed that can be derived from  
+C     | o the equation of state (EOS). It is independent of 
+C     | o the model setup specific EOS.
 C     | 
 C     | reference:
 C     | V. A. Del Grosso, "New equation for the speed of sound in  
 C     | natural waters (with comparisons to other equations),"
-C     | J. Acoust. Soc. Am. 56, 1084–1091 (1974). 
+C     | J. Acoust. Soc. Am. 56, 1084-1091 (1974). 
 C     *==========================================================*
 C     \ev
 
@@ -120,29 +124,28 @@ CEOP
               do i =  imin,imax
                 if (hFacC(i,j,k,bi,bj).gt.0.0) then
 C pr units: meters
-                  pr = rhoConst*(
-     &                   totPhiHyd(i,j,k,bi,bj)
-     &                  -rC(k)*gravity )*0.0001
+                  pr = rhoConst*( totPhiHyd(i,j,k,bi,bj)
+     &                  -rC(k)*gravity )*SItodBar
                   tmp = SW_TEMP(SALT(i,j,k,bi,bj),
-     &            THETA(i,j,k,bi,bj),pr,0. _d 0)
+     &                   THETA(i,j,k,bi,bj),pr,0. _d 0)
 C convert pressure to kg/cm^2 for compliance with aog_vsdg script
                   pr = pr/gravity
                   sal = SALT(i,j,k,bi,bj)
                   vt = (5.01109398873-(0.0550946843172
-     &            - 0.000221535969240*tmp)*tmp)*tmp
-                  vs=(1.32952290781 + 0.000128955756844*sal)*sal
-                  vp=(0.156059257041 + (0.0000244998688441
-     &             - 0.00000000883392332513*pr)*pr)*pr
-                  vstp=-0.0127562783426*tmp*sal
-     &             + 0.00635191613389*tmp*pr
-     &             + 0.0000000265484716608*tmp*tmp*pr*pr
-     &             - 0.00000159349479045*tmp*pr*pr
-     &             + 0.000000000522116437235*tmp*pr*pr*pr
-     &             - 0.000000438031096213*tmp*tmp*tmp*pr
-     &             - 0.00000000161674495909*sal*sal*pr*pr
-     &             + 0.0000968403156410*tmp*tmp*sal
-     &             + 0.00000485639620015*tmp*sal*sal*pr
-     &             - 0.000340597039004*tmp*sal*pr
+     &                   - 0.000221535969240*tmp)*tmp)*tmp
+                  vs = (1.32952290781 + 0.000128955756844*sal)*sal
+                  vp = (0.156059257041 + (0.0000244998688441
+     &                   - 0.00000000883392332513*pr)*pr)*pr
+                  vstp = -0.0127562783426*tmp*sal
+     &                   + 0.00635191613389*tmp*pr
+     &                   + 0.0000000265484716608*tmp*tmp*pr*pr
+     &                   - 0.00000159349479045*tmp*pr*pr
+     &                   + 0.000000000522116437235*tmp*pr*pr*pr
+     &                   - 0.000000438031096213*tmp*tmp*tmp*pr
+     &                   - 0.00000000161674495909*sal*sal*pr*pr
+     &                   + 0.0000968403156410*tmp*tmp*sal
+     &                   + 0.00000485639620015*tmp*sal*sal*pr
+     &                   - 0.000340597039004*tmp*sal*pr
                   csound(i,j,k,bi,bj) = c0+vt+vs+vp+vstp
                 endif
               enddo

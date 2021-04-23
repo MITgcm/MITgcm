@@ -659,11 +659,6 @@ C--   Step forward W field in N-H algorithm
 #endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CAV(
-#ifdef INCLUDE_SOUNDSPEED_CALC_CODE
-        CALL DIAGS_SOUND_SPEED( myThid )
-#endif
-CAV)
 
 C-    end of bi,bj loops
        ENDDO
@@ -682,6 +677,10 @@ C     has to be removed by something like the following subroutine:
 C      CALL REMOVE_MEAN_RL( 1, phiHydLow, maskInC, maskInC, rA, drF,
 C     &                     'phiHydLow', myTime, myThid )
 Cml)
+
+#ifdef INCLUDE_SOUNDSPEED_CALC_CODE
+        CALL DIAGS_SOUND_SPEED( myThid )
+#endif
 
 #ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
