@@ -88,7 +88,7 @@ C--   Compute the upwind fraction:
          Rj =(tFld(i,j,k)  -tFld(i,j,km1))
          Rjm=(tFld(i,j,km1)-tFld(i,j,km2))*maskC(i,j,km2,bi,bj)
 
-         IF ( Rj.NE.0. _d 0) THEN
+         IF (ABS(Rj) > 1.E-20) THEN
           IF (rTrans(i,j).LT.0. _d 0) THEN
             Cr=Rjm/Rj
           ELSE

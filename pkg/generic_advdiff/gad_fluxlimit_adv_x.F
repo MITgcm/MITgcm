@@ -77,7 +77,7 @@ CEOP
         Rj =(tracer( i ,j)-tracer(i-1,j))*maskLocW( i ,j)
         Rjm=(tracer(i-1,j)-tracer(i-2,j))*maskLocW(i-1,j)
 
-        IF (Rj.NE.0.) THEN
+        IF (ABS(Rj) > 1.E-20) THEN
          IF (uTrans(i,j).GT.0) THEN
            Cr=Rjm/Rj
          ELSE

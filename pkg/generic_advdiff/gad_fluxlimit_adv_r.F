@@ -87,7 +87,7 @@ CEOP
          Rjm=(tracer(i,j,km1)-tracer(i,j,kM2))
      &        *maskC(i,j,km2,bi,bj)
 
-         IF (Rj.NE.0.) THEN
+         IF (ABS(Rj) > 1.E-20) THEN
           IF (rTrans(i,j).LT.0.) THEN
             Cr=Rjm/Rj
           ELSE
