@@ -69,7 +69,7 @@ C     i,j,bi,bj,ksrf :: loop indices
       _RL    uSpd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     u_0
 
-         u_0 = 0.0001 _d 0
+         u_0 = 0.0005 _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C     initialize fields
