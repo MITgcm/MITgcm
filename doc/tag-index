@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice:
+  - change expression of pLoc in shelfice_thermodynamics.F to be simply the
+    weight of the ice-shelf (= shelficeMass * gravity) replacing inaccurate
+    estimate from "R_shelfIce". Add TAF directive storage of  prognostic
+    variable "shelficeMass" in all 4 checkpointing levels. Update all reference
+    output of experiments that use pkg/shelfice (isomip & shelfice_2d_remesh)
 o verification/testreport
   - add ad-monitor of 3-D state variables to testreport summary output
 o pkg/ggl90:
