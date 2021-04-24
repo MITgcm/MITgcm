@@ -231,7 +231,7 @@ c              - Generetic routine for an individual 2D control term
 c                (to be called from ctrl_map_ini in a loop e.g.)
 c
 c     ==================================================================
-c     SUBROUTINE ctrl_map_ini_gen3D
+c     SUBROUTINE ctrl_map_ini_gen2D
 c     ==================================================================
 
       implicit none
