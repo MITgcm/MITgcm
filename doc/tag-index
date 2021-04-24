@@ -1,6 +1,10 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o model/src:
+  - fix a bug in convective_adjustment.F AD code by adjusting store directives
+    for theta and salt ; update experiment isomip reference AD output.
+  - a little bit of cleanup: remove unnecessary store directives and options.
 o pkg/shelfice:
   - change expression of pLoc in shelfice_thermodynamics.F to be simply the
     weight of the ice-shelf (= shelficeMass * gravity) replacing inaccurate
