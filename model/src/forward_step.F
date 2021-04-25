@@ -826,9 +826,9 @@ CADJ STORE wVel = comlev1, key = ikey_dynamics, kind = isbyte
         CALL TIMER_STOP ('THERMODYNAMICS      [FORWARD_STEP]',myThid)
 C--     if not staggerTimeStep: end
       ENDIF
-#ifdef ALLOW_OBCS
+#if (defined ALLOW_AUTODIFF_TAMC) && (defined ALLOW_OBCS)
 CADJ STORE salt, theta = comlev1, key = ikey_dynamics, kind = isbyte
-#endif /* ALLOW_OBCS */
+#endif /* ALLOW_AUTODIFF_TAMC && ALLOW_OBCS */
 
 #ifdef ALLOW_LONGSTEP
       IF ( usePTRACERS .AND. LS_whenToSample .EQ. 1 ) THEN
