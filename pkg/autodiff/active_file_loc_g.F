@@ -361,7 +361,7 @@ CEOP
       CALL ACTIVE_READ_YZ_RL(
      &                 fname, g_active_var, doglobalread,
      &                 useCurrentDir, lAdInit, iRec, myNr,
-     &                 TANGENT_SIMULATION, myOptimIter, myThid )
+     &                 TANGENT_SIMULATION, slice, myOptimIter, myThid )
 
       RETURN
       END

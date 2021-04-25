@@ -599,7 +599,7 @@ c#endif
 c#ifdef REAL4_IS_SLOW
 c     call active_write_xyz( 'maskCtrlI', maskSHI, 1, 0, mythid, dummy)
 c#else
-      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlI', maskSHI, 'XY', Nr,
+      CALL ACTIVE_WRITE_GEN_RS( 'maskCtrlI', maskSHI, 'XY ', Nr,
      I                          1, .FALSE., 0, mythid, dummyRS )
 c#endif
 #endif
