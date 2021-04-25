@@ -404,14 +404,14 @@ Currently, the available adjoint state variables are:
    111 |ADJvvel | 15 |   110 |VVRA    MR|dJ/(m/s)        |dJ/dV: Sensitivity to meridional velocity
    112 |ADJwvel | 15 |       |WM A    LR|dJ/(m/s)        |dJ/dW: Sensitivity to vertical velocity
    113 |ADJtheta| 15 |       |SMRA    MR|dJ/degC         |dJ/dTheta: Sensitivity to potential temperature
-   114 |ADJsalt | 15 |       |SMRA    MR|dJ/(psu)        |dJ/dSalt: Sensitivity to salinity
+   114 |ADJsalt | 15 |       |SMRA    MR|dJ/(g/kg)       |dJ/dSalt: Sensitivity to salinity
    115 |ADJtaux |  1 |   116 |UU A    U1|dJ/(N/m^2)      |dJ/dTaux: Senstivity to zonal surface wind stress
    116 |ADJtauy |  1 |   115 |VV A    U1|dJ/(N/m^2)      |dJ/dTauy: Sensitivity to merid. surface wind stress
    117 |ADJempmr|  1 |       |SM A    U1|dJ/(kg/m^2/s)   |dJ/dEmPmR: Sensitivity to net surface Fresh-Water flux into the ocean
    118 |ADJqnet |  1 |       |SM A    U1|dJ/(W/m^2)      |dJ/dQnet: Sensitivity to net surface heat fluxinto the ocean
    119 |ADJqsw  |  1 |       |SM A    U1|dJ/(W/m^2)      |dJ/dQsw: Sensitivitiy to net Short-Wave radiation
    120 |ADJsst  |  1 |       |SM A    M1|dJ/K            |dJ/dSST: Sensitivity to Sea Surface Temperature
-   121 |ADJsss  |  1 |       |SM A    M1|dJ/(psu)        |dJ/dSSS: Sensitivity to Sea Surface Salinity
+   121 |ADJsss  |  1 |       |SM A    M1|dJ/(g/kg)       |dJ/dSSS: Sensitivity to Sea Surface Salinity
    122 |ADJbtdrg|  1 |       |SM A    M1|dJ/d()          |dJ/dCd: Sensitivity to bottom drag coefficient
    123 |ADJdifkr| 15 |       |SMRA    MR|dJ/d(m^2/s))    |dJ/dKr: Sensitivity to vertical diffusivity
    124 |ADJepsix| 15 |   125 |UURA    UR|dJ/(m^2/s)      |dJ/dEddyPsiX: Sensitivity to zonal eddystreamfunction
