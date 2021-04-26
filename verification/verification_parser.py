@@ -50,7 +50,7 @@ def verification_parser(filename, threshold, input_dir_pat):
 
             # split test_results into a list with values for each number. 
             # this uses spaces and the < > characters to separate the numbers.
-            test_results = re.split('[ ><]',test_results)
+            test_results = re.split('[ ><]+',test_results)
             # Check the Genmake, depend, make, and run checks
 
             for status in test_results[:4]:
@@ -58,7 +58,7 @@ def verification_parser(filename, threshold, input_dir_pat):
 
             # Ignore the build status varaibles that were just checked, as
             # well as "pass" or "fail" and test name at the end of the line
-            test_results = test_results[4:-3]
+            test_results = test_results[4:-2]
 
             # convert to floats
             dp_similarity = []
@@ -69,7 +69,11 @@ def verification_parser(filename, threshold, input_dir_pat):
                     pass
 
 
-            if len(dp_similarity) >= 17:
+            if len(dp_similarity) == 3:
+                # adjoint test.
+                # Remove forward gradient as it may have few matching digits.
+                del dp_similarity[2]
+            elif len(dp_similarity) >= 17:
                 # this means that the test wasn't an offline advection test.
                 # Remove the means of u and v since they are constrained 
                 # to ~0 by domain geometry and can cause the test to fail 
