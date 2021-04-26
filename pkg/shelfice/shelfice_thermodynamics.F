@@ -282,6 +282,7 @@ C     as ice-shelf mass appears or vanishes in any surface grid-cell.
         ENDDO
       ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE kTopC        = comlev1, key=ikey_dynamics
 CADJ STORE shelficeMass = comlev1, key=ikey_dynamics, byte=isbyte
 #endif
 
