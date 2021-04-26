@@ -45,10 +45,8 @@ C     === Global variables ===
 # endif
 #endif /* ALLOW_CTRL */
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifdef SHI_ALLOW_GAMMAFRICT
-#  include "tamc.h"
-#  include "tamc_keys.h"
-# endif /* SHI_ALLOW_GAMMAFRICT */
+# include "tamc.h"
+# include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -283,9 +281,9 @@ C     as ice-shelf mass appears or vanishes in any surface grid-cell.
          ENDDO
         ENDDO
       ENDIF
-c #ifdef ALLOW_AUTODIFF_TAMC
-c CADJ STORE shelficeMass = comlev1, key=ikey_dynamics, byte=isbyte
-c #endif
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE shelficeMass = comlev1, key=ikey_dynamics, byte=isbyte
+#endif
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
