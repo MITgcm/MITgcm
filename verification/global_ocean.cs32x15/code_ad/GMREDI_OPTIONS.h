@@ -10,7 +10,7 @@ C Use this file for selecting options within the GM/Redi package
 C     Package-specific Options & Macros go here
 
 C Designed to simplify the Ajoint code:
-#define GMREDI_WITH_STABLE_ADJOINT
+C #define GMREDI_WITH_STABLE_ADJOINT
 C -- exclude the clipping/tapering part of the code that is not used
 #define GM_EXCLUDE_CLIPPING
 #define GM_EXCLUDE_FM07_TAP
