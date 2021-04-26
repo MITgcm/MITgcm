@@ -28,9 +28,6 @@ C     == Global data ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#ifdef ALLOW_TIMEAVE
-#include "TIMEAVE_STATV.h"
-#endif
 #ifdef ALLOW_AUTODIFF
 #include "tamc.h"
 #include "tamc_keys.h"
@@ -41,7 +38,7 @@ C     == Routine arguments ==
 C     bi,bj  :: tile indices
 C     myTime :: Current time in simulation
 C     myIter :: Current iteration in simulation
-C     myThid :: Thread number of this instance of S/R CONVECT
+C     myThid :: My Thread Id number
       INTEGER bi,bj
       _RL     myTime
       INTEGER myIter
@@ -57,10 +54,10 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     iMin,iMax,jMin,jMax :: computation domain
 C     i,j,k        :: Loop counters
-C     rhoKm1, rhoK :: Density at adjacent levels (ref. to same level)
-C     ConvectCount :: Convection freq. counter
+C     rhoKm1, rhoK :: Density at adjacent levels (common ref. level)
+C     ConvectCount :: Convection mixing freq. counter.
       INTEGER iMin,iMax,jMin,jMax
-      INTEGER i, j, K, kTop, kBottom, kDir, deltaK
+      INTEGER i, j, k, kTop, kBottom, kDir, deltaK
       _RL rhoKm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhoK  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ConvectCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -85,7 +82,7 @@ C--   Initialise counters
         deltaK  = 0
 
 C-      Initialisation of Convection Counter
-        DO K=1,Nr
+        DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            ConvectCount(i,j,k) = 0.
@@ -120,86 +117,66 @@ C-          <=> usingPCoords:
           deltaK  =  0
          ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,:,bi,bj)  = tapelev_ini_bibj,
-CADJ &     key=ikey, byte=isbyte
-CADJ STORE salt (:,:,:,bi,bj)  = tapelev_ini_bibj,
-CADJ &     key=ikey, byte=isbyte
-CADJ STORE convectcount(:,:,:) = tapelev_ini_bibj,
-CADJ &     key=ikey, byte=isbyte
-#endif
-
 C--       Loop over all *interior* layers
-          DO K=kTop,kBottom,kDir
+          DO k=kTop,kBottom,kDir
 
 #ifdef ALLOW_AUTODIFF_TAMC
             kkey = (ikey-1)*Nr + k
-CADJ STORE theta(:,:,k-1,bi,bj) = tapelev_ini_bibj_k,
-CADJ &     key=kkey, byte=isbyte
-CADJ STORE salt (:,:,k-1,bi,bj) = tapelev_ini_bibj_k,
-CADJ &     key=kkey, byte=isbyte
-CADJ STORE convectcount(:,:,k-1) = tapelev_ini_bibj_k,
-CADJ &     key=kkey, byte=isbyte
+C     It is important that the two k-levels of these fields are stored
+C     in one statement because otherwise taf will only store one, which
+C     is wrong (i.e. was wrong in previous versions).
+CADJ STORE theta(:,:,k-1,bi,bj), theta(:,:,k,bi,bj) =
+CADJ &     tapelev_ini_bibj_k, key=kkey, kind=isbyte
+CADJ STORE salt(:,:,k-1,bi,bj), salt(:,:,k,bi,bj) =
+CADJ &     tapelev_ini_bibj_k, key=kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-C-          Density of K-1 layer (above W(K)) reference to K-1 T-level
+C-          Density of k-1 layer (above W(k)) reference to k-1 T-level
             CALL FIND_RHO_2D(
-     I           iMin, iMax, jMin, jMax, K+deltaK,
-     I           theta(1-OLx,1-OLy,K-1,bi,bj),
-     I           salt (1-OLx,1-OLy,K-1,bi,bj),
+     I           iMin, iMax, jMin, jMax, k+deltaK,
+     I           theta(1-OLx,1-OLy,k-1,bi,bj),
+     I           salt (1-OLx,1-OLy,k-1,bi,bj),
      O           rhoKm1,
-     I           K-1, bi, bj, myThid )
+     I           k-1, bi, bj, myThid )
 
-C-          Density of K layer (below W(K)) reference to K-1 T-level.
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,k,bi,bj) = tapelev_ini_bibj_k,
-CADJ &     key = kkey, byte = isbyte
-CADJ STORE salt (:,:,k,bi,bj) = tapelev_ini_bibj_k,
-CADJ &     key = kkey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
+C-          Density of k layer (below W(k)) reference to k-1 T-level.
             CALL FIND_RHO_2D(
-     I           iMin, iMax, jMin, jMax, K+deltaK,
-     I           theta(1-OLx,1-OLy,K,bi,bj),
-     I           salt (1-OLx,1-OLy,K,bi,bj),
+     I           iMin, iMax, jMin, jMax, k+deltaK,
+     I           theta(1-OLx,1-OLy,k,bi,bj),
+     I           salt (1-OLx,1-OLy,k,bi,bj),
      O           rhoK,
-     I           K, bi, bj, myThid )
-
+     I           k, bi, bj, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE rhoKm1(:,:)  = tapelev_ini_bibj_k, key=kkey, byte=isbyte
-CADJ STORE rhoK  (:,:)  = tapelev_ini_bibj_k, key=kkey, byte=isbyte
+CADJ STORE rhoKm1 = tapelev_ini_bibj_k, key=kkey, kind=isbyte
+CADJ STORE rhoK   = tapelev_ini_bibj_k, key=kkey, kind=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-C-          Check static stability with layer below and mix as needed.
-c           CALL CONVECT(
-c    I           bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,rhoK,
-c    U           ConvectCount,
-c    I           myTime,myIter,myThid)
 
-C-          Pre-calculate mixing weights for interface K
+C-          Pre-calculate mixing weights for interface k
             CALL CONVECTIVE_WEIGHTS(
-     I           bi,bj,K,rhoKm1,rhoK,
+     I           bi,bj,k,rhoKm1,rhoK,
      O           weightA,weightB,ConvectCount,
      I           myThid)
 
-C-          Convectively mix heat across interface K
+C-          Convectively mix heat across interface k
             CALL CONVECTIVELY_MIXTRACER(
      I                              bi,bj,k,weightA,weightB,
      U                              theta,
      I                              myThid)
 
-C-          Convectively mix salt across interface K
+C-          Convectively mix salt across interface k
             CALL CONVECTIVELY_MIXTRACER(
      I                              bi,bj,k,weightA,weightB,
      U                              salt,
      I                              myThid)
 
 #ifdef ALLOW_PTRACERS
-C-          Convectively mix passive tracers across interface K
+C-          Convectively mix passive tracers across interface k
             IF ( usePTRACERS ) THEN
               CALL PTRACERS_CONVECT(
      I                              bi,bj,k,weightA,weightB,myThid)
             ENDIF
 #endif /* ALLOW_PTRACERS */
 
-C--       End DO K=1,Nr
+C--       End DO k=1,Nr
           ENDDO
 
 C--   End IF (DIFFERENT_MULTIPLE)
