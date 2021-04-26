@@ -1048,8 +1048,8 @@ C       (+ update "etaN" & "etaH", exact volume conservation):
         CALL TIMER_STOP ('INTEGR_CONTINUITY   [FORWARD_STEP]',myThid)
       ENDIF
 #ifdef ALLOW_AUTODIFF_TAMC
-C--   This simple store directive makes an (expensive) extra
-C     "call solve_for_pressure" go away
+C--   This simple store directive avoids an (expensive) extra
+C     "call solve_for_pressure" in forward_step_ad
 CADJ STORE wVel = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
@@ -1111,7 +1111,10 @@ C--   State-variables diagnostics
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE wVel = comlev1, key = ikey_dynamics, kind = isbyte
+C     these store directives prevent calling do_stagger_fields_exchanges
+C     again in the AD-part of forward_step_ad
+CADJ STORE salt, theta = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE wVel        = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('THERMODYNAMICS',myThid)
@@ -1122,9 +1125,11 @@ CADJ STORE wVel = comlev1, key = ikey_dynamics, kind = isbyte
 
 C--    if staggerTimeStep: end
       ENDIF
-#ifdef ALLOW_OBCS
+#ifdef ALLOW_AUTODIFF_TAMC
+C     this may not be necessary, but it does not do any harm (i.e. it is
+C     ignored by TAF if not needed)
 CADJ STORE salt, theta = comlev1, key = ikey_dynamics, kind = isbyte
-#endif /* ALLOW_OBCS */
+#endif /* ALLOW_AUTODIFF_TAMC */
 C---+--------+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -1182,10 +1187,10 @@ C     of ptracers here in GCHEM_FORCING_SEP
       IF ( useGCHEM ) THEN
 #endif
 # ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta, salt = comlev1, key = ikey_dynamics, kind = isbyte
 #  ifdef ALLOW_PTRACERS
 CADJ STORE pTracer     = comlev1, key = ikey_dynamics, kind = isbyte
 #  endif /* ALLOW_PTRACERS */
-CADJ STORE theta, salt = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('GCHEM_FORCING_SEP',myThid)
@@ -1194,12 +1199,6 @@ CADJ STORE theta, salt = comlev1, key = ikey_dynamics, kind = isbyte
         CALL GCHEM_FORCING_SEP( myTime,myIter,myThid )
         CALL TIMER_STOP ('GCHEM_FORCING_SEP  [FORWARD_STEP]',myThid)
       ENDIF
-# ifdef ALLOW_AUTODIFF_TAMC
-#  ifdef ALLOW_PTRACERS
-CADJ STORE pTracer     = comlev1, key = ikey_dynamics, kind = isbyte
-#  endif /* ALLOW_PTRACERS */
-CADJ STORE theta, salt = comlev1, key = ikey_dynamics, kind = isbyte
-# endif
 #endif /* ALLOW_GCHEM */
 
 C--   Do "blocking" sends and receives for tendency "overlap" terms
@@ -1213,14 +1212,14 @@ C--   Do "blocking" sends and receives for field "overlap" terms
       CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
 C     These store directives avoid extra subrotuine calls, for example,
-C     thermodynamics, tracers_correction_step, and
+C     thermodynamics, tracers_correction_step, gchem_forcing_sep, and
 C     do_fields_blocking_exchages
-# ifdef ALLOW_PTRACERS
-CADJ STORE pTracer     = comlev1, key = ikey_dynamics, kind = isbyte
-# endif
 CADJ STORE theta, salt = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE uvel,  vvel = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE totPhiHyd   = comlev1, key = ikey_dynamics, kind = isbyte
+# ifdef ALLOW_PTRACERS
+CADJ STORE pTracer     = comlev1, key = ikey_dynamics, kind = isbyte
+# endif
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
