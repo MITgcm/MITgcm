@@ -85,11 +85,10 @@ c--   == end of interface ==
       IF ( debugMode ) CALL DEBUG_ENTER('AUTODIFF_RESTORE',myThid)
 #endif
 
+#ifndef AUTODIFF_USE_OLDSTORE_2D
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-
-#ifndef AUTODIFF_USE_OLDSTORE_2D
 C-      2D arrays
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
@@ -123,9 +122,14 @@ C-      2D arrays
 #endif
          ENDDO
         ENDDO
+       ENDDO
+      ENDDO
 #endif /* AUTODIFF_USE_OLDSTORE_2D */
 
 #ifndef AUTODIFF_USE_OLDSTORE_3D
+C--   Over all tiles
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
 C-      3D arrays
         DO K=1,Nr
          DO J=1-OLy,sNy+OLy
@@ -156,10 +160,9 @@ C-      3D arrays
           ENDDO
          ENDDO
         ENDDO
-#endif /* AUTODIFF_USE_OLDSTORE_3D */
-
        ENDDO
       ENDDO
+#endif /* AUTODIFF_USE_OLDSTORE_3D */
 
 #if ( defined ALLOW_EXF && !defined AUTODIFF_USE_OLDSTORE_EXF )
 C--   Over all tiles
