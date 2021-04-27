@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom_common:
+  - initialise again hdiv in mom_calc_hdiv.F (in case it got dropped by TAF in
+    calling S/R).
 o model/src:
   - fix a bug in convective_adjustment.F AD code by adjusting store directives
     for theta and salt ; update experiment isomip reference AD output.
