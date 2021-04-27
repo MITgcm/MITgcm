@@ -28,7 +28,7 @@ C     == Local variables ==
       INTEGER i,j
 
 #ifdef ALLOW_AUTODIFF
-C     Initialise (again) hDiv (in case it got drop out in calling S/R):
+C     Initialise (again) hDiv (in case it got dropped in calling S/R):
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         hDiv(i,j)=0. _d 0
