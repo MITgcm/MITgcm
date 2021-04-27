@@ -60,7 +60,7 @@ C-    net Fresh Water flux into the ocean (+=down), [kg/m2/s]
        CALL DIAGNOSTICS_SCALE_FILL_RS( EmPmR,tmpFac,1,
      &                             'oceFWflx',0, 1,0,1,1,myThid )
 
-C-    net Salt flux into the ocean (+=down), [psu.kg/m2/s ~ g/m2/s]
+C-    net Salt flux into the ocean (+=down), [g/m2/s]
        tmpFac = -1. _d 0
        CALL DIAGNOSTICS_SCALE_FILL_RS( saltFlux,tmpFac,1,
      &                             'oceSflux',0, 1,0,1,1,myThid )

@@ -52,7 +52,7 @@ C     saltIce   ::   salinity of ice [g/kg]
 C     S_winton  ::   Winton salinity of ice [g/kg]
 C .. melting
 C     Tf0kel    ::   Freezing temp of fresh water in Kelvin = 273.15
-C     mu_Tf     ::   linear dependance of melting temperature on Salinity [oC/psu]
+C     mu_Tf     ::   linear dependence of melting temperature on salinity [oC/(g/kg)]
 C                     Tf(sea-water) = -mu_Tf * S
 C     Tmlt1     ::   Winton melting temperature: Tmlt1 = -mu_Tf * S_winton
 C     Terrmax   ::   Temperature convergence criteria [oC]
@@ -186,7 +186,7 @@ C     ocean_deltaT    :: ocean mixed-layer time-step [s]
 C     tauRelax_MxL    :: Relaxation time scale for MixLayer T [s]
 C     tauRelax_MxL_salt :: Relaxation time scale for MixLayer S [s]
 C     hMxL_default    :: default value for ocean MixLayer thickness [m]
-C     sMxL_default    :: default value for salinity in MixLayer [psu]
+C     sMxL_default    :: default value for salinity in MixLayer [g/kg]
 C     vMxL_default    :: default value for ocean current velocity in MxL [m/s]
 C     thSIce_diffK    :: thickness (horizontal) diffusivity [m^2/s]
 C     stressReduction :: reduction factor for wind-stress under sea-ice [0-1]

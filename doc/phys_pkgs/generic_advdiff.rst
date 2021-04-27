@@ -85,13 +85,13 @@ GAD Diagnostics
     DIFx_TH | 15 |UU   090MR      |degC.m^3/s      |Zonal      Diffusive Flux of Pot.Temperature
     DIFy_TH | 15 |VV   089MR      |degC.m^3/s      |Meridional Diffusive Flux of Pot.Temperature
     DFrI_TH | 15 |WM      LR      |degC.m^3/s      |Vertical Diffusive Flux of Pot.Temperature (Implicit part)
-    ADVr_SLT| 15 |WM      LR      |psu.m^3/s       |Vertical   Advective Flux of Salinity
-    ADVx_SLT| 15 |UU   094MR      |psu.m^3/s       |Zonal      Advective Flux of Salinity
-    ADVy_SLT| 15 |VV   093MR      |psu.m^3/s       |Meridional Advective Flux of Salinity
-    DFrE_SLT| 15 |WM      LR      |psu.m^3/s       |Vertical Diffusive Flux of Salinity    (Explicit part)
-    DIFx_SLT| 15 |UU   097MR      |psu.m^3/s       |Zonal      Diffusive Flux of Salinity
-    DIFy_SLT| 15 |VV   096MR      |psu.m^3/s       |Meridional Diffusive Flux of Salinity
-    DFrI_SLT| 15 |WM      LR      |psu.m^3/s       |Vertical Diffusive Flux of Salinity    (Implicit part)
+    ADVr_SLT| 15 |WM      LR      |(g/kg).m^3/s    |Vertical   Advective Flux of Salinity
+    ADVx_SLT| 15 |UU   094MR      |(g/kg).m^3/s    |Zonal      Advective Flux of Salinity
+    ADVy_SLT| 15 |VV   093MR      |(g/kg).m^3/s    |Meridional Advective Flux of Salinity
+    DFrE_SLT| 15 |WM      LR      |(g/kg).m^3/s    |Vertical Diffusive Flux of Salinity    (Explicit part)
+    DIFx_SLT| 15 |UU   097MR      |(g/kg).m^3/s    |Zonal      Diffusive Flux of Salinity
+    DIFy_SLT| 15 |VV   096MR      |(g/kg).m^3/s    |Meridional Diffusive Flux of Salinity
+    DFrI_SLT| 15 |WM      LR      |(g/kg).m^3/s    |Vertical Diffusive Flux of Salinity    (Implicit part)
 
 Experiments and tutorials that use GAD
 ++++++++++++++++++++++++++++++++++++++

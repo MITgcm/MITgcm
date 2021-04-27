@@ -175,7 +175,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'SIsaltFx'
         diagTitle = 'salt flux out of the ocean (+=up)'
-        diagUnits = 'psu.kg/m^2/s    '
+        diagUnits = 'g/m^2/s         '
         diagCode  = 'SM      M1      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -189,7 +189,7 @@ c     IF ( useDiagnotics ) THEN
 
         diagName  = 'SIsOcMxL'
         diagTitle = 'ocean mixed layer salinity'
-        diagUnits = 'psu             '
+        diagUnits = 'g/kg            '
         diagCode  = 'SM P    M1      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I            diagName, diagCode, diagUnits, diagTitle, 0, myThid )

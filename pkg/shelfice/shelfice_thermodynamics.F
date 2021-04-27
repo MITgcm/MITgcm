@@ -30,6 +30,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "EOS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
@@ -282,8 +283,12 @@ C--   underneath the ice
         DO J = 1, sNy
          DO I = 1, sNx
           K         = MAX(1,kTopC(I,J,bi,bj))
-          pLoc(I,J) = ABS(R_shelfIce(I,J,bi,bj))
-c         pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*1. _d -4
+C-    original (inaccurate) pLoc expression below:
+C     assumes rhoConst*gravity*SItodBar=1 + missing both "shelficeLoadAnomaly"
+C      static contribution and etaN dynamical contribution:
+c         pLoc(I,J) = ABS(R_shelfIce(I,J,bi,bj))
+C-    new and accurate pLoc expression (just the weight of the ice):
+          pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*SItodBar
           tLoc(I,J) = theta(I,J,K,bi,bj)
           sLoc(I,J) = MAX(salt(I,J,K,bi,bj), zeroRL)
           velSq(I,J)= 0.

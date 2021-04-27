@@ -42,31 +42,31 @@
 
 # Time stepping parameters
  &PARM03
- nIter0=0,
+ nIter0= 0,
  nTimeSteps = 4,
- deltaTmom  = 900.,
- tauCD =     321428.,
- deltaTtracer= 900.,
- deltaTClock = 900.,
+ deltaT =   900.,
+ tauCD = 321428.,
  abEps = 0.1,
  pChkptFreq = 216000.,
  chkptFreq  = 216000.,
  dumpFreq   = 216000.,
 # taveFreq   = 216000.,
+ monitorSelect= 2,
  monitorFreq= 86400.,
  tauThetaClimRelax = 5184000.,
  tauSaltClimRelax  = 7776000.,
  periodicExternalForcing=.TRUE.,
  externForcingPeriod=2592000.,
  externForcingCycle=31104000.,
- monitorFreq= 1.,
+ monitorFreq= 3600.,
+ adjMonitorFreq= 1.,
  &
 
 # Gridding parameters
  &PARM04
  usingSphericalPolarGrid=.TRUE.,
- delZ=  50., 70.,  100., 140., 190., 
-       240., 290., 340., 390., 440., 
+ delZ=  50., 70.,  100., 140., 190.,
+       240., 290., 340., 390., 440.,
        490., 540., 590., 640., 690.,
  ygOrigin=-90.,
  delX=128*2.8125,

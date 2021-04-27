@@ -403,8 +403,7 @@ C     Define variables from FFIELDS.h
      &     'Net upward freshwater flux', myThid)
 
       CALL MNC_CW_ADD_VNAME('saltFlux', 'Cen_xy_Hn__-__t', 3,4, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('saltFlux','units',
-     &     'psu.kg/m^2/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('saltFlux','units','g/m^2/s', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('saltFlux','description',
      &     'Net upward salt flux', myThid)
 
@@ -414,7 +413,7 @@ C     Define variables from FFIELDS.h
      &     ' Sea surface temperature for relaxation', myThid)
 
       CALL MNC_CW_ADD_VNAME('SSS', 'Cen_xy_Hn__-__t', 3,4, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('SSS','units','psu', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('SSS','units','g/kg', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('SSS','description',
      &     'Sea surface salinity for relaxation', myThid)
 

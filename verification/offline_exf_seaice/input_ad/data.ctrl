@@ -19,11 +19,11 @@
 # *********************
  &CTRL_NML_GENARR
  xx_gentim2d_file(1)       = 'xx_atemp',
- xx_gentim2d_weight(1)     = 'ones.prec32',
+ xx_gentim2d_weight(1)     = 'ones_32b.bin',
 #
  xx_gentim2d_file(2)       = 'xx_swdown',
- xx_gentim2d_weight(2)     = 'ones.prec32',
+ xx_gentim2d_weight(2)     = 'ones_32b.bin',
 #
  xx_genarr3d_file(1)       = 'xx_theta',
- xx_genarr3d_weight(1)     = 'ones.prec32',
+ xx_genarr3d_weight(1)     = 'ones_32b.bin',
  &
