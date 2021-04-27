@@ -605,6 +605,10 @@ CADJ STORE SlopeY(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
          ENDDO
         ENDDO
 
+c move the assignemnt of SlopeSqr to its own do-loop 
+c block from the do-loop block above to reduce TAF 
+c recomputations. The assignment of taperFct is also 
+c moved to keep the original order of operations. 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
           SlopeSqr(i,j) = SlopeX(i,j)*SlopeX(i,j)
