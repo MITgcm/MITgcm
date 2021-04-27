@@ -1,6 +1,21 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom_common:
+  - initialise again hdiv in mom_calc_hdiv.F (in case it got dropped by TAF in
+    calling S/R).
+o model/src:
+  - fix a bug in convective_adjustment.F AD code by adjusting store directives
+    for theta and salt ; update experiment isomip reference AD output.
+  - a little bit of cleanup: remove unnecessary store directives and options.
+o pkg/shelfice:
+  - change expression of pLoc in shelfice_thermodynamics.F to be simply the
+    weight of the ice-shelf (= shelficeMass * gravity) replacing inaccurate
+    estimate from "R_shelfIce". Add TAF directive storage of  prognostic
+    variable "shelficeMass" in all 4 checkpointing levels. Update all reference
+    output of experiments that use pkg/shelfice (isomip & shelfice_2d_remesh)
+o verification/testreport
+  - add ad-monitor of 3-D state variables to testreport summary output
 o pkg/ggl90:
   - avoid division by zero in adjoint of S/R GGL90_CALC (sqrt related)
 
