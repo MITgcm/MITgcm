@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/diagnostics:
+  - use Integer*8 conversion in diagnostics_out.F to get time-record to write
+    in meta file (avoid integer overflow with large time & small diag-freq).
 o pkg/mom_common:
   - initialise again hdiv in mom_calc_hdiv.F (in case it got dropped by TAF in
     calling S/R).
