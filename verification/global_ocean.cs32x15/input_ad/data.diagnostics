@@ -45,6 +45,12 @@
    fileName(3) = 'adjDiag',
 # frequency(3) = 311040000.,
   frequency(3) = 432000.,
+
+  fields(1:5,4)  = 'ADJetan ','ADJqnet ','ADJempmr',
+                   'ADJtaux ','ADJtauy ',
+   fileName(4) = 'adjDiagSurf',
+# frequency(4) = 311040000.,
+  frequency(4) = 432000.,
  &
 
 #--------------------
@@ -71,4 +77,3 @@
    stat_freq(1) = -172800.,
   stat_phase(1) = 0.,
  &
-

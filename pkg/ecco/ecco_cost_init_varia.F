@@ -1,5 +1,8 @@
 #include "ECCO_OPTIONS.h"
 #include "AD_CONFIG.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
       subroutine ecco_cost_init_varia( mythid )
 
@@ -360,6 +363,5 @@ c--   Initialise the "global" parts of the cost function.
 
       _BARRIER
 
-      return
-      end
-
+      RETURN
+      END

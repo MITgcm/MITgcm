@@ -1005,13 +1005,13 @@ C       Update the area, heff, and hsnow
         DO J=1,sNy
          DO I=1,sNx
           HEFF(I,J,bi,bj)  = HEFFpreTH(I,J) +
-     &         SEAICE_deltaTtherm * S_h(I,J)
+     &         SEAICE_deltaTtherm * S_h(I,J) * HEFFM(I,J,bi,bj)
 
           AREA(I,J,bi,bj)  = AREApreTH(I,J) +
-     &         SEAICE_deltaTtherm * S_a(I,J)
+     &         SEAICE_deltaTtherm * S_a(I,J) * HEFFM(I,J,bi,bj)
 
           HSNOW(I,J,bi,bj) = HSNWpreTH(I,J) +
-     &         SEAICE_deltaTtherm * S_hsnow(I,J)
+     &         SEAICE_deltaTtherm * S_hsnow(I,J) * HEFFM(I,J,bi,bj)
          ENDDO
         ENDDO
 

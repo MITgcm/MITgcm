@@ -248,7 +248,7 @@ C       ta  = total alkalinity (eq/m^3)
 C       pt  = inorganic phosphate (mol/^3)
 C       sit = inorganic silicate (mol/^3)
 C       t   = temperature (degrees C)
-C       s   = salinity (PSU)
+C       s   = salinity (g/kg)
       _RL  t, s, z_po4tot, z_siltot, z_alktot
       _RL  z_pco2, z_dictot, pHlocal
       _RL  z_co3

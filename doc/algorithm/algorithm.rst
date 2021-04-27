@@ -1890,12 +1890,12 @@ consistent with the vertical advection of shear:
 
 .. math::
    G_u^{\zeta_2 w} = \frac{1}{ {\cal A}_w \Delta r_f h_w } \overline{
-   \overline{ {\cal A}_c w }^i ( \delta_k u - \epsilon_{nh} \delta_j w ) }^k
+   \overline{ {\cal A}_c w }^i ( \delta_k u - \epsilon_{nh} \delta_i w ) }^k
    :label: gu_zeta2w
 
 .. math::
    G_v^{\zeta_1 w} = \frac{1}{ {\cal A}_s \Delta r_f h_s } \overline{
-   \overline{ {\cal A}_c w }^i ( \delta_k u - \epsilon_{nh} \delta_j w ) }^k
+   \overline{ {\cal A}_c w }^j ( \delta_k v - \epsilon_{nh} \delta_j w ) }^k
    :label: gv_zeta1w
 
 .. admonition:: S/R  :filelink:`MOM_VI_U_VERTSHEAR <pkg/mom_vecinv/mom_vi_u_vertshear.F>`, :filelink:`MOM_VI_V_VERTSHEAR <pkg/mom_vecinv/mom_vi_v_vertshear.F>`

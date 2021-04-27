@@ -96,7 +96,7 @@ C                               (kg/m^2/s)
 C     shelficeForcingT       :: analogue of surfaceForcingT
 C                               units are  r_unit.Kelvin/s (=Kelvin.m/s if r=z)
 C     shelficeForcingS       :: analogue of surfaceForcingS
-C                               units are  r_unit.psu/s (=psu.m/s if r=z)
+C                               units are  r_unit.g/kg/s (=g/kg.m/s if r=z)
 #ifdef ALLOW_DIAGNOSTICS
 C     shelficeDragU          :: Ice-Shelf stress (for diagnostics), Zonal comp.
 C                               Units are N/m^2 ;   > 0 increase top uVel
@@ -165,10 +165,10 @@ CEOP
       _RS
      &   shelfIceMassDynTendency(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_CTRL
       COMMON /SHELFICE_MASKS_CTRL/ maskSHI
       _RS maskSHI  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif /* ALLOW_SHIFWFLX_CONTROL */
+#endif /* ALLOW_CTRL */
 
 #ifdef ALLOW_DIAGNOSTICS
       COMMON /SHELFICE_DIAG_DRAG/ shelficeDragU, shelficeDragV

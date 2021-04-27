@@ -517,7 +517,8 @@ value is set to 0 (i.e., “land”).   As discussed in :numref:`sec_baro_num_co
 (i.e., periodic in both :math:`x`- and :math:`y`-directions), so boundary walls
 are necessary to set up our enclosed box domain.
 The matlab program :filelink:`verification/tutorial_barotropic_gyre/input/gendata.m`
-was used to generate this bathymetry file. By default, this file is assumed to
+was used to generate this bathymetry file (alternatively, see python equivalent
+:filelink:`gendata.py <verification/tutorial_barotropic_gyre/input/gendata.py>`). By default, this file is assumed to
 contain 32-bit (single precision) binary numbers.
 See :numref:`sec_mitgcm_inp_file_format` for additional information on MITgcm input data file format specifications.
 
@@ -532,9 +533,11 @@ The units are Nm\ :sup:`--2`. Although :math:`\tau_{x}` is only a function of :m
 this file must still define a complete 2-D map in order
 to be compatible with the standard code for loading forcing fields
 in MITgcm. The matlab program :filelink:`verification/tutorial_barotropic_gyre/input/gendata.m`
-was used to generate this wind stress file. To run the barotropic jet variation of this tutorial example (see :numref:`baro_jet_solution`),
-you will in fact need to run this
-matlab program to generate the file ``input/windx_siny.bin``.
+was used to generate this wind stress file (alternatively, see python equivalent
+:filelink:`gendata.py <verification/tutorial_barotropic_gyre/input/gendata.py>`). 
+To run the barotropic jet variation of this tutorial example (see :numref:`baro_jet_solution`),
+you will in fact need to run one of these
+programs to generate the file ``input/windx_siny.bin``.
 
 .. _baro_gyre_build_run:
 
@@ -703,21 +706,31 @@ binary data in ``Eta.0000077760.001.001.data`` is as simple as:
 ::
 
    addpath ../../../utils/matlab/
-   XC=rdmds('XC'); YC=rdmds('YC');
-   Eta=rdmds('Eta',77760);
-   contourf(XC/1000,YC/1000,Eta,[-.04:.01:.04]); colorbar;
-   colormap((flipud(hot))); set(gca,'XLim',[0 1200]); set(gca,'YLim',[0 1200])
+   XC=rdmds('XC');
+   YC=rdmds('YC');
+   Eta=rdmds('Eta', 77760);
+   contourf(XC/1000, YC/1000, Eta, [-.04:.01:.04])
+   colorbar
+   colormap((flipud(hot)))
+   set(gca, 'XLim', [0 1200])
+   set(gca, 'YLim', [0 1200])
 
-or using python (you will need to install the MITgcmutils package, see :numref:`sec_python`):
+or using python (you will need to install the MITgcmutils package, see :numref:`MITgcmutils`):
 
 ::
 
    from MITgcmutils import mds
+   import numpy as np
    import matplotlib.pyplot as plt
-   XC = mds.rdmds('XC'); YC = mds.rdmds('YC')
+   XC = mds.rdmds('XC')
+   YC = mds.rdmds('YC')
    Eta = mds.rdmds('Eta', 77760)
-   plt.contourf(XC, YC, Eta, np.linspace(-0.02, 0.05,8), cmap='hot_r')
-   plt.colorbar(); plt.show()
+   plt.contourf(XC/1000, YC/1000, Eta, np.linspace(-0.02, 0.05,8), cmap='hot_r')
+   plt.colorbar()
+   plt.show()
+
+(for a more involved example with detailed explanations how to read in model output, 
+perform calculations using these data, and make plots, see tutorial :ref:`Baroclinic Ocean Gyre <baroclinic_gyre_solution>`)
 
 Let’s simplify the example by considering the linear problem where we neglect the advection of momentum terms.
 In other words, replace :math:`\frac{Du}{Dt}` and :math:`\frac{Dv}{Dt}` with

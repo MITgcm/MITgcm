@@ -82,7 +82,7 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
         diagSufx  = GAD_DIAG_SUFX( GAD_TEMPERATURE, myThid )
 #endif
         diagName  = 'DSLP'//diagSufx
-        diagTitle = ' Pot.Temp. tendency from Down-Slope package'
+        diagTitle = 'Pot.Temp. tendency from Down-Slope package'
         diagUnits = 'K/s             '
         diagCode  = 'SMR     MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
@@ -92,8 +92,8 @@ c    I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
         diagSufx  = GAD_DIAG_SUFX( GAD_SALINITY, myThid )
 #endif
         diagName  = 'DSLP'//diagSufx
-        diagTitle = ' Salinity  tendency from Down-Slope package'
-        diagUnits = 'psu/s           '
+        diagTitle = 'Salinity  tendency from Down-Slope package'
+        diagUnits = 'g/kg/s          '
         diagCode  = 'SMR     MR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )

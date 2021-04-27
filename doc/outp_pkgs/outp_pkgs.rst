@@ -263,7 +263,7 @@ grid-attribute information. The :varlink:`gdiag` array is described in :numref:`
    +-----------+-----------------------+-----------------------------------------------------+
    |           | :math:`\rightarrow` X | free levels option (need to be set explicitly)      |
    +-----------+-----------------------+-----------------------------------------------------+
-  
+
 
 
 As an example, consider a diagnostic whose associated :varlink:`gdiag` parameter is
@@ -392,19 +392,69 @@ Adjoint variables
 ~~~~~~~~~~~~~~~~~
 
 The diagnostics package can also be used to print adjoint state variables. Using the diagnostics package
-as opposed to using the standard 'adjoint dump' options allows one to take advantage of all the 
-averaging and post processing routines available to other diagnostics variables. 
+as opposed to using the standard 'adjoint dump' options allows one to take advantage of all the
+averaging and post processing routines available to other diagnostics variables.
 
 Currently, the available adjoint state variables are:
 
 ::
 
-   110 |ADJetan |  1 |       |SM A    M1|dJ/m            |dJ/dEtaN: Sensitivity to sea surface height anomaly
-   111 |ADJuvel | 50 |   112 |UURA    MR|dJ/(m/s)        |dJ/dU: Sensitivity to zonal velocity
-   112 |ADJvvel | 50 |   111 |VVRA    MR|dJ/(m/s)        |dJ/dV: Sensitivity to meridional velocity
-   113 |ADJwvel | 50 |       |WM A    LR|dJ/(m/s)        |dJ/dW: Sensitivity to vertical velocity
-   114 |ADJtheta| 50 |       |SMRA    MR|dJ/degC         |dJ/dTheta: Sensitivity to potential temperature
-   115 |ADJsalt | 50 |       |SMRA    MR|dJ/psu          |dJ/dSalt: Sensitivity to salinity
+   109 |ADJetan |  1 |       |SM A    M1|dJ/m            |dJ/dEtaN: Sensitivity to sea surface height anomaly
+   110 |ADJuvel | 15 |   111 |UURA    MR|dJ/(m/s)        |dJ/dU: Sensitivity to zonal velocity
+   111 |ADJvvel | 15 |   110 |VVRA    MR|dJ/(m/s)        |dJ/dV: Sensitivity to meridional velocity
+   112 |ADJwvel | 15 |       |WM A    LR|dJ/(m/s)        |dJ/dW: Sensitivity to vertical velocity
+   113 |ADJtheta| 15 |       |SMRA    MR|dJ/degC         |dJ/dTheta: Sensitivity to potential temperature
+   114 |ADJsalt | 15 |       |SMRA    MR|dJ/(psu)        |dJ/dSalt: Sensitivity to salinity
+   115 |ADJtaux |  1 |   116 |UU A    U1|dJ/(N/m^2)      |dJ/dTaux: Senstivity to zonal surface wind stress
+   116 |ADJtauy |  1 |   115 |VV A    U1|dJ/(N/m^2)      |dJ/dTauy: Sensitivity to merid. surface wind stress
+   117 |ADJempmr|  1 |       |SM A    U1|dJ/(kg/m^2/s)   |dJ/dEmPmR: Sensitivity to net surface Fresh-Water flux into the ocean
+   118 |ADJqnet |  1 |       |SM A    U1|dJ/(W/m^2)      |dJ/dQnet: Sensitivity to net surface heat fluxinto the ocean
+   119 |ADJqsw  |  1 |       |SM A    U1|dJ/(W/m^2)      |dJ/dQsw: Sensitivitiy to net Short-Wave radiation
+   120 |ADJsst  |  1 |       |SM A    M1|dJ/K            |dJ/dSST: Sensitivity to Sea Surface Temperature
+   121 |ADJsss  |  1 |       |SM A    M1|dJ/(psu)        |dJ/dSSS: Sensitivity to Sea Surface Salinity
+   122 |ADJbtdrg|  1 |       |SM A    M1|dJ/d()          |dJ/dCd: Sensitivity to bottom drag coefficient
+   123 |ADJdifkr| 15 |       |SMRA    MR|dJ/d(m^2/s))    |dJ/dKr: Sensitivity to vertical diffusivity
+   124 |ADJepsix| 15 |   125 |UURA    UR|dJ/(m^2/s)      |dJ/dEddyPsiX: Sensitivity to zonal eddystreamfunction
+   125 |ADJepsiy| 15 |   124 |VVRA    UR|dJ/(m^2/s)      |dJ/dEddyPsiY: Sensitivity to meridional eddystreamfunction
+
+
+Additionally the packages :ref:`gmredi <sub_phys_pkg_gmredi>`,
+:ref:`ptracrs <sub_phys_pkg_ptracers>`, :ref:`exf <sub_phys_pkg_exf>`, and
+:ref:`seaice <sub_phys_pkg_seaice>` have the following available adjoint diagnostics
+
+::
+
+   225 |ADJkapgm| 15 |       |SMRA    MR|dJ/d[m^2/s]     |dJ/dKgm: Sensitivity to GM Intensity
+   226 |ADJkapre| 15 |       |SMRA    MR|dJ/d[m^2/s]     |dJ/dKredi: Sensitivity to Redi Coefficient
+
+:: 
+
+   227 |TRAC01  | 15 |       |SMR     MR|mol C/m         |Dissolved Inorganic Carbon concentration
+   241 |ADJptr01| 15 |       |SMRA    MR|dJ/mol C/m      |sensitivity to Dissolved Inorganic Carbon concentration
+
+::
+
+   221 |ADJustrs|  1 |   222 |UU A    U1|dJ/(N/m^2)      |dJ/dustress: Senstivity to zonal surface wind stress
+   222 |ADJvstrs|  1 |   221 |VV A    U1|dJ/(N/m^2)      |dJ/dvstrs: Sensitivity to merid. surface wind stress
+   223 |ADJhflux|  1 |       |SM A    U1|dJ/(W/m^2)      |dJ/dhflux: Sensitivity to upward heat flux
+   224 |ADJsflux|  1 |       |SM A    U1|dJ/(m/s)        |dJ/dhflux: Sensitivity to upward fresh water flux
+   225 |ADJatemp|  1 |       |SM A    U1|dJ/K            |dJ/datemp: Sensitivity to atmos. surface temperature
+   226 |ADJpreci|  1 |       |SM A    U1|dJ/(m/s)        |dJ/daqh: Sensitivity to precipitation
+   227 |ADJroff |  1 |       |SM A    U1|dJ/(m/s)        |dJ/daqh: Sensitivity to river runoff
+   228 |ADJswdn |  1 |       |SM A    U1|dJ/(W/m^2)      |dJ/dswdown: Sensitivity to downward SW radiation
+   229 |ADJlwdn |  1 |       |SM A    U1|dJ/(W/m^2)      |dJ/dlwdown: Sensitivity to downward LW radiation
+   230 |ADJuwind|  1 |       |UM A    U1|dJ/d(m/s)       |dJ/duwind: Senstivity to zonal 10-m wind speed
+   231 |ADJvwind|  1 |       |VM A    U1|dJ/d(m/s)       |dJ/dvwind: Senstivity to meridional 10-m wind speed
+   232 |ADJclsst|  1 |       |SM A    U1|dJ/K            |dJ/dclimsst: Sensitivity to restoring SST
+   233 |ADJclsss|  1 |       |SM A    U1|dJ/(g/kg)       |dJ/dclimsss: Sensitivity to restoring SSS
+
+::
+
+   332 |ADJarea |  1 |       |SM A    M1|dJ/(m^2/m^2)    |dJ/darea: Sensitivity to seaice fractional ice-cover
+   333 |ADJheff |  1 |       |SM A    M1|dJ/dm           |dJ/dheff: Sensitvity to seaice ice thickness
+   334 |ADJhsnow|  1 |       |SM A    M1|dJ/dm           |dJ/dhsnow: Sensitivity to seaice snow thickness
+   335 |ADJuice |  1 |   336 |UU A    M1|dJ/(m/s)        |dJ/duice: sensitivity to zonal ice velocity
+   336 |ADJvice |  1 |   335 |VV A    M1|dJ/(m/s)        |dJ/dvice: sensitivity to meridional ice velocity
 
 Some notes to the user
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -413,36 +463,40 @@ Some notes to the user
 
 2. This feature does not work with the divided adjoint.
 
-3. `adEtaN` is broken in :filelink:`addummy_in_stepping.F <pkg/autodiff/addummy_in_stepping.F>`
-   so the output through diagnostics is zeros just as with the standard 'adjoint dump' method.
+3. The sensitivity to sea surface height `ADJetan` is technically one time step
+   ahead of other adjoint diagnostics printed at the same time step number. To be
+   concrete, if `ADJetan` is written via the diagnostics package at every
+   iteration, `n`, then each field will technically correspond to the written
+   iteration number, `n+1`. This is simply due to a techincality about when this
+   variable is printed in relation to the adjoint pressure solve.
 
-4. The diagStats options are not available for these variables.   
+4. The diagStats options are not available for these variables.
 
 5. Adjoint variables are recognized by checking the 10 character variable `diagCode`.
-   To add a new adjoint variable, set the 4th position of `diagCode` to A 
+   To add a new adjoint variable, set the 4th position of `diagCode` to A
    (notice this is the case for the list of available adjoint variables).
 
 
 Using pkg/diagnostics for adjoint variables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-1. Make sure the following flag is defined in either 
-   :filelink:`AUTODIFF_OPTIONS.h <pkg/autodiff/AUTODIFF_OPTIONS.h>` 
+1. Make sure the following flag is defined in either
+   :filelink:`AUTODIFF_OPTIONS.h <pkg/autodiff/AUTODIFF_OPTIONS.h>`
    or `ECCO_CPPOPTIONS.h` if that is being used.
 
-:: 
+::
 
     #define ALLOW_AUTODIFF_MONITOR
 
-2. Be sure to increase `numlists` and `numDiags` appropriately in 
+2. Be sure to increase `numlists` and `numDiags` appropriately in
    :filelink:`DIAGNOSTICS_SIZE.h <pkg/diagnostics/DIAGNOSTICS_SIZE.h>`.
    Safe values are e.g. 10-20 and 500-1000 respectively.
 
-3. Specify desired variables in ``data.diagnostics``  
-   as any other variable, as in the following example or as in this 
+3. Specify desired variables in ``data.diagnostics``
+   as any other variable, as in the following example or as in this
    :filelink:`data.diagnostics <verification/global_ocean.cs32x15/input_ad/data.diagnostics>`.
    Note however, adjoint and forward diagnostic variables cannot
-   be in the same list. That is, a single `fields(:,:)` list 
+   be in the same list. That is, a single `fields(:,:)` list
    cannot contain both adjoint and forward variables.
 
 ::
@@ -462,7 +516,7 @@ Using pkg/diagnostics for adjoint variables
     #---
     &
 
-Note: the diagnostics package automatically provides a phase shift of :math:`frequency/2`, 
+Note: the diagnostics package automatically provides a phase shift of :math:`frequency/2`,
 so specify `timePhase = 0` to match output from `adjDumpFreq`.
 
 
@@ -476,7 +530,7 @@ This is accomplished by adding one of the “User Diagnostic” field names
 (see :ref:`available diagnostics <diagnostics_list>`):``UDIAG1`` through ``UDIAG10``,
 for multi-level fields, or ``SDIAG1`` through
 ``SDIAG10`` for single level fields) to the ``data.diagnostics`` namelist in one
-of the output streams. 
+of the output streams.
 The second step is to add a call to
 :filelink:`diagnostics_fill.F <pkg/diagnostics/diagnostics_fill.F>` from the
 subroutine in which the quantity desired for diagnostic output is
@@ -544,7 +598,7 @@ MITgcm kernel available diagnostics list:
 ::
 
   ----------------------------------------------------------------------------
-  <-Name->|Levs|  mate |<- code ->|<--  Units   -->|<- Tile (max=80c)         
+  <-Name->|Levs|  mate |<- code ->|<--  Units   -->|<- Tile (max=80c)
   -------------------------------------------------------------------------------------
   SDIAG1  |  1 |       |SM      L1|user-defined    |User-Defined   Surface   Diagnostic  #1
   SDIAG2  |  1 |       |SM      L1|user-defined    |User-Defined   Surface   Diagnostic  #2
@@ -646,7 +700,7 @@ MITgcm kernel available diagnostics list:
   TOTTTEND| 50 |       |SMR     MR|degC/day        |Tendency of Potential Temperature
   TOTSTEND| 50 |       |SMR     MR|psu/day         |Tendency of Salinity
   ----------------------------------------------------------------------------
-  <-Name->|Levs|  mate |<- code ->|<--  Units   -->|<- Tile (max=80c)         
+  <-Name->|Levs|  mate |<- code ->|<--  Units   -->|<- Tile (max=80c)
   ----------------------------------------------------------------------------
   MoistCor| 50 |       |SM      MR|W/m^2           |Heating correction due to moist thermodynamics
   gT_Forc | 50 |       |SMR     MR|degC/s          |Potential Temp. forcing tendency
@@ -1375,7 +1429,7 @@ Please be aware of the following:
    has practical file size limits on the order
    of 2–4GB (the maximium memory addressable with 32bit pointers or
    pointer differences) due to a lack of operating system, compiler,
-   and/or library support. The latest revisions of 
+   and/or library support. The latest revisions of
    `NetCDF <http://www.unidata.ucar.edu/software/netcdf/>`_ v3.x have
    large file support and, on some operating systems, file sizes are
    only limited by available disk space.
@@ -1460,11 +1514,11 @@ as defined in :filelink:`DYNVARS.h <model/inc/DYNVARS.h>`.
 
 The grid type is a character string that encodes the presence and types
 associated with the four possible dimensions. The character string
-follows the format: 
+follows the format:
 
 ::
 
-          «H0»_«H1»_«H2»__«V»__«T» 
+          «H0»_«H1»_«H2»__«V»__«T»
 
 (note the double underscore
 between «H2» and «V», and «V» and  «T») where the terms
@@ -1837,7 +1891,7 @@ several `MATLAB <https://www.mathworks.com/>`_  scripts (``.m``
 files). The principle script is :filelink:`rdmds.m <utils/matlab/rdmds.m>`, used for reading
 the multi-part model output files into `MATLAB <https://www.mathworks.com/>`_ . Place the scripts in
 your `MATLAB <https://www.mathworks.com/>`_  path or change the path appropriately,
-then at the `MATLAB <https://www.mathworks.com/>`_ 
+then at the `MATLAB <https://www.mathworks.com/>`_
 prompt type:
 
 ::
@@ -1870,7 +1924,7 @@ gmt:
     a suite of matlab tools is being written to more gracefully handle
     the model files. This suite is called “gmt” which refers to
     “generalized model topology” pre-/post-processing. Currently, this
-    directory contains a `MATLAB <https://www.mathworks.com/>`_ script 
+    directory contains a `MATLAB <https://www.mathworks.com/>`_ script
     :filelink:`gmt/rdnctiles.m <utils/matlab/gmt/rdnctiles.m>` that
     is able to read `netCDF <http://www.unidata.ucar.edu/software/netcdf/>`_ files for any domain.
     Additional scripts are being created that will work with these
@@ -1910,12 +1964,12 @@ defined by:
 
 .. math::
    \begin{aligned}
-     \omega &= \nabla \times {\bf U} = \left( \begin{array}{c} 
+     \omega &= \nabla \times {\bf U} = \left( \begin{array}{c}
          \omega_x\\
          \omega_y\\
          \zeta
      \end{array}\right)
-        \simeq &\left( \begin{array}{c} 
+        \simeq &\left( \begin{array}{c}
          -\frac{\partial v}{\partial z}\\
          -\frac{\partial u}{\partial z}\\
          \frac{\partial v}{\partial x} - \frac{\partial u}{\partial y}
@@ -1929,8 +1983,8 @@ The package then computes the potential vorticity as:
 .. math::
    \begin{aligned}
    Q &= -\frac{1}{\rho} \omega\cdot\nabla\sigma_\theta\\
-    &= -\frac{1}{\rho}\left(\omega_x \frac{\partial \sigma_\theta}{\partial x} + 
-   \omega_y \frac{\partial \sigma_\theta}{\partial y} + 
+    &= -\frac{1}{\rho}\left(\omega_x \frac{\partial \sigma_\theta}{\partial x} +
+   \omega_y \frac{\partial \sigma_\theta}{\partial y} +
    \left(f+\zeta\right) \frac{\partial \sigma_\theta}{\partial z}\right)\end{aligned}
    :label: pv_eq2
 
@@ -1942,7 +1996,7 @@ The package is also able to compute the simpler planetary vorticity as:
 
 .. math::
    \begin{aligned}
-   Q_{spl} &=& -\frac{f}{\rho}\frac{\sigma_\theta}{\partial z}\end{aligned} 
+   Q_{spl} &=& -\frac{f}{\rho}\frac{\sigma_\theta}{\partial z}\end{aligned}
    :label: pv_eq3
 
 Surface vertical potential vorticity fluxes
@@ -2038,7 +2092,7 @@ where appears the lateral heat flux induced by Ekman currents:
 .. math::
 
    \begin{aligned}
-     Q_{Ek} &=& -\frac{C_w}{\alpha\rho f}\vec{k}\times\tau\cdot\nabla\sigma 
+     Q_{Ek} &=& -\frac{C_w}{\alpha\rho f}\vec{k}\times\tau\cdot\nabla\sigma
      \nonumber \\
      &=& \frac{C_w}{\alpha}\delta_e\vec{u_{Ek}}\cdot\nabla\sigma\end{aligned}
 
@@ -2258,7 +2312,7 @@ package) and of hydrostatic and geostrophic balances, we can write:
 .. math::
    \begin{aligned}
      \vec{u_g} &=& \frac{1}{\rho f} \vec{k}\times\nabla p \\
-     \frac{\partial p_m}{\partial z} &=& -\sigma_m g \\ 
+     \frac{\partial p_m}{\partial z} &=& -\sigma_m g \\
      \frac{\partial \sigma_m}{\partial t} + \vec{u}_m\cdot\nabla\sigma_m &=& -\frac{\rho_0}{g}B \end{aligned}
    :label: pv_eq7
 
@@ -2304,7 +2358,7 @@ Note that since:
 .. math::
    \begin{aligned}
      \frac{\partial B_g}{\partial z} &=& \frac{\partial}{\partial z}\left(-\frac{g}{\rho_0}\vec{u_g}\cdot\nabla\sigma_m\right)
-     = -\frac{g}{\rho_0}\frac{\partial \vec{u_g}}{\partial z}\cdot\nabla\sigma_m 
+     = -\frac{g}{\rho_0}\frac{\partial \vec{u_g}}{\partial z}\cdot\nabla\sigma_m
      = 0\end{aligned}
 
 :math:`B_g` must be uniform throughout the depth of the mixed layer and
@@ -2325,12 +2379,13 @@ where :math:`\mathcal{B}_{in}` is the vertically integrated surface buoyancy (in
 
 with :math:`\alpha\simeq 2.5\times10^{-4}\, \text{K}^{-1}` the thermal
 expansion coefficient (computed by the package otherwise),
-:math:`C_w=4187 \text{ J kg}^{-1}\text{K}^{-1}` the specific heat of seawater,
-:math:`Q_{net}\text{ [W/m}^{-2}]` the net heat surface flux (positive downward,
-warming the ocean), :math:`\beta\text{ [psu}^{-1}]` the saline contraction
-coefficient, and :math:`S_{net}=S*(E-P)\text{ [psu m s}^{-1}]` the net
-freshwater surface flux with :math:`S\text{ [psu}]` the surface salinity and
-:math:`(E-P)\text{ [m/s]}` the fresh water flux.
+:math:`C_w=4187 \text{ J kg}^{-1}\text{K}^{-1}` the specific heat of
+seawater, :math:`Q_{net}\text{ (W m$^{-2}$)}` the net heat surface
+flux (positive downward, warming the ocean), :math:`\beta\text{
+((g/kg)$^{-1}$)}` the saline contraction coefficient, and
+:math:`S_{net}=S*(E-P)\text{ ((g/kg) m s$^{-1}$)}` the net freshwater
+surface flux with :math:`S\text{ (g/kg)}` the surface salinity and
+:math:`(E-P)\text{ (m s$^{-1}$)}` the fresh water flux.
 
 Introducing the body force in the Ekman layer:
 
@@ -2342,7 +2397,7 @@ the vertical component of :eq:`pv_eq6` is:
 
 .. math::
    \begin{aligned}
-     \vec{N_Q}_z &= -\frac{\rho_0}{g}(B_g+B_{Ek})\omega_z 
+     \vec{N_Q}_z &= -\frac{\rho_0}{g}(B_g+B_{Ek})\omega_z
      + \frac{1}{\rho}
      \left( \frac{\partial \tau}{\partial z}\times\nabla\sigma_\theta \right)\cdot\vec{k} \\
      &= -\frac{\rho_0}{g}B_g\omega_z
@@ -2374,9 +2429,9 @@ integrated “wind-driven buoyancy forcing”:
    \begin{aligned}
      B_g &= \frac{1}{h}\left( \mathcal{B}_{in} - \int_{-h}^0B_{Ek}dz \right)  \\
      &= \frac{1}{h}\frac{g}{\rho_0}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)
-     - \frac{1}{h}\int_{-h}^0 
+     - \frac{1}{h}\int_{-h}^0
      \frac{g}{\rho_0}\frac{1}{\rho f}\vec{k}\times \frac{\partial \tau}{\partial z} \cdot\nabla\sigma_m dz \\
-     &= \frac{1}{h}\frac{g}{\rho_0}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)  
+     &= \frac{1}{h}\frac{g}{\rho_0}\left( \frac{\alpha Q_{net}}{C_w} - \rho_0 \beta S_{net}\right)
      - \frac{g}{\rho_0}\frac{1}{\rho f \delta_e}\vec{k}\times\tau\cdot\nabla\sigma_m\end{aligned}
 
 Finally, from :eq:`pv_eq6`, the vertical surface flux of PV may
@@ -2394,4 +2449,3 @@ pkg/flt – Simulation of float / parcel displacements
 ====================================================
 
 .. include:: flt.rst
-
