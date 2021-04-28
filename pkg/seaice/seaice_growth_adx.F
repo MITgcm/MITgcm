@@ -867,19 +867,21 @@ C          ENDIF
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-C     These stores are also needed to avoid calling seaice_solve4temp
-C     in AD-mode.
+C     The first two store directives are also needed to avoid calling
+C     seaice_solve4temp in AD-mode.
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CADJ STORE NetExistingIceGrowthRate      = comlev1_bibj,
+CADJ &     key = iicekey, byte = isbyte
+CADJ STORE IceGrowthRateMixedLayer       = comlev1_bibj,
+CADJ &     key = iicekey, byte = isbyte
+# ifdef SEAICE_GROWTH_ADX_STORE_MORE
 CADJ STORE SnowMeltRateFromSurface       = comlev1_bibj,
 CADJ &     key = iicekey, byte = isbyte
 CADJ STORE IceGrowthRateUnderExistingIce = comlev1_bibj,
 CADJ &     key = iicekey, byte = isbyte
 CADJ STORE IceGrowthRateFromSurface      = comlev1_bibj,
 CADJ &     key = iicekey, byte = isbyte
-CADJ STORE NetExistingIceGrowthRate      = comlev1_bibj,
-CADJ &     key = iicekey, byte = isbyte
-CADJ STORE IceGrowthRateMixedLayer       = comlev1_bibj,
-CADJ &     key = iicekey, byte = isbyte
+# endif
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AUTODIFF_TAMC */
 
