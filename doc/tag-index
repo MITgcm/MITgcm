@@ -1,6 +1,8 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/gmredi:
+  - fix/remove 2 TAF recomputations in GMREDI_WITH_STABLE_ADJOINT code.
 o pkg/generic_advdiff:
   - improve "slope" calculation in DST2 Flux-Limiter advection scheme to avoid
     potential over-flow arithmetic in division by small slope (issue #459),
