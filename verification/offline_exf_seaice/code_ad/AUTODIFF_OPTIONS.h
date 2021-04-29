@@ -49,7 +49,7 @@ C o use divided adjoint to split adjoint computations
 #undef ALLOW_PACKUNPACK_METHOD2
 C o This flag is incredibly useful as it reduces the number of
 C   tape-files on the disc. Maybe it should even be the default.
-#define ALLOW_AUTODIFF_WHTAPEIO
+#undef ALLOW_AUTODIFF_WHTAPEIO
 C o use MDSFINDUINTS instead of AUTODIFF_MDSFINDUNITS to find unique and
 C   valid file units, only used when ALLOW_AUTODIFF_WHTAPEIO is defined
 #define AUTODIFF_USE_MDSFINDUNITS

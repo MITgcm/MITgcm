@@ -49,13 +49,13 @@ c#undef AUTODIFF_4_LEVEL_CHECKPOINT
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
 
+#define ALLOW_PACKUNPACK_METHOD2
 C o This flag is incredibly useful as it reduces the number of
 C   tape-files on the disc. Maybe it should even be the default.
 #define ALLOW_AUTODIFF_WHTAPEIO
-C o This flag is incredibly useful as it reduces the number of
-C   tape-files on the disc. Maybe it should even be the default.
+C o use MDSFINDUINTS instead of AUTODIFF_MDSFINDUNITS to find unique and
+C   valid file units, only used when ALLOW_AUTODIFF_WHTAPEIO is defined
 #define AUTODIFF_USE_MDSFINDUNITS
-#define ALLOW_PACKUNPACK_METHOD2
 C o This is a set of flags that, if defined at the same time, will get
 C   rid of the autodiff_store/restore scheme. That is why we define a
 C   "macro" flag to set them all at the same time, but they can also be
@@ -69,12 +69,16 @@ C   addummy_in_stepping.F
 # define AUTODIFF_USE_OLDSTORE_3D
 # define AUTODIFF_USE_OLDSTORE_2D
 # define AUTODIFF_USE_OLDSTORE_EXF
-# define AUTODIFF_USE_OLDSTORE_SEAICE
+C     this is necessary as long as tices is not stored by TAF in checkpoint level 2 and 3
+# undef AUTODIFF_USE_OLDSTORE_SEAICE
 # define AUTODIFF_USE_OLDSTORE_OBCS
 #endif
 
 C o write separate tape files for each ptracer
 #undef AUTODIFF_PTRACERS_SPLIT_FILES
+
+C o allow using viscFacInAd to recompute viscosities in AD
+#undef AUTODIFF_ALLOW_VISCFACADJ
 
 C o There are rare cases when s/r adexch_uv_xy_rs and adexch_xy_rs are
 C   needed in addummy_in_stepping.  There are rare cases when these
