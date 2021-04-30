@@ -381,25 +381,43 @@ C-    only use "WHTAPEIO" when type and length match
 
 cc      if (n2d*length2d.EQ.length) then
         DO i2d=1,n2d
-          if (tapeFileUnit.EQ.0) THEN
+          IF (tapeFileUnit.EQ.0) THEN
             jrec=irec
-          else
+          ELSE
             tapeFileCounter=tapeFileCounter+1
             jrec=tapeFileCounter+tapeMaxCounter*(irec-1)
-            if (tapeFileCounter.GT.tapeMaxCounter) then
-               write(msgBuf,'(A,2I5)')
-     &              'ADWRITE: tapeFileCounter > tapeMaxCounter ',
-     &              tapeFileCounter, tapeMaxCounter
-               CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                             SQUEEZE_RIGHT, myThid )
-               write(msgBuf,'(2A)') 'for file ', fname(1:lenLoc)
-               CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
-     &                             SQUEEZE_RIGHT, myThid )
-               STOP 'in S/R ADWRITE'
-            endif
-          endif
+            IF (tapeFileCounter.GT.tapeMaxCounter) THEN
+              WRITE(msgBuf,'(A,I5,A,I5,3A)')
+     &            'ADWRITE: tapeFileCounter > tapeMaxCounter ( = ',
+     &            tapeFileCounter, ' > ', tapeMaxCounter,
+     &            ') for file ', fname(1:lenLoc), '.'
+              CALL PRINT_ERROR( msgBuf , myThid )
+C     Here, we cannot determine how many tapeFiles we need, so we print
+C     this rather unspecific instruction.
+              WRITE(msgBuf,'(3A)') 'ADWRITE: Increase nWh ',
+     &             'in MDSIO_BUFF_WH.h until it works. ',
+     &             'Use debugLevel >= 3, a large value for nWh, '
+              CALL PRINT_ERROR( msgBuf , myThid )
+              WRITE(msgBuf,'(3A)')
+     &             'ADWRITE: and grep output ',
+     &             'for the largest ''tapeFileCounter'' to ',
+     &             'determine the required nWh = tapeMaxCounter.'
+              CALL PRINT_ERROR( msgBuf , myThid )
+              STOP 'in S/R ADWRITE'
+            ENDIF
+#ifdef ALLOW_DEBUG
+            IF ( debugLevel.GE.debLevC ) THEN
+C     Print tapeFileCounter so that we can at least diagnose when
+C     tapeMaxCounter=nWh is too large.
+              WRITE(msgBuf,'(A,I5)') 'ADWRITE: tapeFileCounter = ',
+     &            tapeFileCounter
+              CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+            ENDIF
+#endif
+          ENDIF
           j2d=(i2d-1)*length2d+1
-          call mds_write_whalos(fname,lenLoc,filePrec,tapeFileUnit,
+          CALL MDS_WRITE_WHALOS(fname,lenLoc,filePrec,tapeFileUnit,
      &      1,var(j2d),jrec,tapeSingleCpuIO,tapeBufferIO,myThid)
         ENDDO
 cc      else
