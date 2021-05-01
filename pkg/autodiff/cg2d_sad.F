@@ -4,7 +4,7 @@ CBOP
 C     !ROUTINE: CG2D_SAD
 C     !INTERFACE:
       SUBROUTINE CG2D_SAD(
-     U                    cg2d_b_ad, cg2d_x_ad,
+     U                    cg2d_b_ad, cg2d_x, cg2d_x_ad,
      U                    numIters, nIterMin,
      I                    myThid )
 C     !DESCRIPTION: \bv
@@ -29,11 +29,14 @@ C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "CG2D.h"
+#include "AUTODIFF_PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     cg2d_b    :: The source term or "right hand side" (output: normalised RHS)
-C     cg2d_x    :: The solution (input: first guess)
+C     cg2d_b_ad :: Adjoint of source term
+C     cg2d_x_ad :: Adjoint of the solution
+C     cg2d_x    :: The solution (only input)
 C     firstResidual :: the initial residual before any iterations
 C     minResidualSq :: the lowest residual reached (squared)
 C     lastResidual  :: the actual residual reached
@@ -44,6 +47,7 @@ C                  Out: iteration number corresponding to lowest residual
 C     myThid    :: Thread on which I am working.
       _RL  cg2d_b_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cg2d_x_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  cg2d_x   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 c     _RL  firstResidual, minResidualSq, lastResidual
       INTEGER numIters
       INTEGER nIterMin
@@ -61,6 +65,8 @@ C     consistent with what is found in S/R update_cg2d_ad
       _RL pC_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       COMMON /CG2D_I_R_AD/
      &     aW2d_ad, aS2d_ad, aC2d_ad, pW_ad, pS_ad, pC_ad
+
+      _RL cg2dTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* NONLIN_FRSURF */
 
 C     !LOCAL VARIABLES:
@@ -69,6 +75,9 @@ C     bi,bj  :: tile indices
 C     i,j    :: Loop counters
       INTEGER i,j,bi,bj
       _RL  firstResidual, minResidualSq, lastResidual
+#ifdef NONLIN_FRSURF
+      _RL  recip_cg2dNorm
+#endif
 CEOP
 
 C--   mark output of cg2d as being called from here
@@ -78,6 +87,27 @@ C--   mark output of cg2d as being called from here
      &      ' Calling cg2d from S/R CG2D_SAD'
        _END_MASTER( myThid )
       ENDIF
+
+#ifdef NONLIN_FRSURF
+      recip_cg2dNorm = 1.0 _d 0
+      IF ( cg2dNorm .NE. 0. _d 0 ) THEN
+       recip_cg2dNorm = 1./cg2dNorm
+      ENDIF
+
+      IF ( cg2dFullAdjoint ) THEN
+C     Save input cg2d_b_ad, not sure if this is necessary.
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           cg2dTmp(i,j,bi,bj) = cg2d_b_ad(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* NONLIN_FRSURF */
+
 #ifdef ALLOW_SRCG
       IF ( useSRCGSolver ) THEN
 C--   Call the single reduce CG solver
@@ -98,28 +128,71 @@ C--   Call the default CG solver
      I      myThid )
       ENDIF
 
-C     Initialise AD fields to zero. They will not have any effect on
-C     the solution, because we fake the AD code of cg2d.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-#ifdef NONLIN_FRSURF
-          aW2d_ad  (i,j,bi,bj) = 0. _d 0
-          aS2d_ad  (i,j,bi,bj) = 0. _d 0
-          aC2d_ad  (i,j,bi,bj) = 0. _d 0
-          pW_ad    (i,j,bi,bj) = 0. _d 0
-          pS_ad    (i,j,bi,bj) = 0. _d 0
-          pC_ad    (i,j,bi,bj) = 0. _d 0
-#endif /* NONLIN_FRSURF */
-C     Here, cg2d_x_ad is also reset to zero, because we assume that the
-C     solution of the self-adjoint solver does not depend in the intial
-C     conditions so that no sensitivities should be passed back to the caller.
+C     cg2d_x_ad is reset to zero, because we assume that the solution of
+C     the self-adjoint solver does not depend in the intial conditions
+C     so that no sensitivities should be passed back to the caller.
           cg2d_x_ad(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
       ENDDO
+
+#ifdef NONLIN_FRSURF
+      IF ( cg2dFullAdjoint ) THEN
+C     Compute derivative of coefficient matrix.
+       _EXCH_XY_RL( cg2d_b_ad, myThid )
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=2-OLy,sNy+OLy-1
+          DO i=2-OLx,sNx+OLx-1
+           aC2d_ad(i,j,bi,bj)   = aC2d_ad(i,j,bi,bj)
+     &          - cg2d_b_ad(i,j,bi,bj) * cg2d_x(i,j,bi,bj)
+     &          * recip_cg2dNorm
+           aW2d_ad(i,  j,bi,bj) =  aW2d_ad(i,j,bi,bj)
+     &          - cg2d_b_ad(i,j,bi,bj) * cg2d_x(i-1,j,bi,bj)
+     &          * recip_cg2dNorm
+           aW2d_ad(i+1,j,bi,bj) =  aW2d_ad(i+1,j,bi,bj)
+     &          - cg2d_b_ad(i,j,bi,bj) * cg2d_x(i+1,j,bi,bj)
+     &          * recip_cg2dNorm
+           aS2d_ad(i,j,  bi,bj) = aS2d_ad(i,j,bi,bj)
+     &          - cg2d_b_ad(i,j,bi,bj) * cg2d_x(i,j-1,bi,bj)
+     &          * recip_cg2dNorm
+           aS2d_ad(i,j+1,bi,bj) = aS2d_ad(i,j+1,bi,bj)
+     &          - cg2d_b_ad(i,j,bi,bj) * cg2d_x(i,j+1,bi,bj)
+     &          * recip_cg2dNorm
+           pW_ad  (i,j,bi,bj) = 0. _d 0
+           pS_ad  (i,j,bi,bj) = 0. _d 0
+           pC_ad  (i,j,bi,bj) = 0. _d 0
+CML why do we need this? Isnt that counting things twice?
+           cg2d_b_ad(i,j,bi,bj) = cg2d_b_ad(i,j,bi,bj)
+     &          + cg2dTmp(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ELSE
+C     Initialise AD fields to zero. They will not have any effect on
+C     the solution, because we fake the AD code of cg2d.
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+          aW2d_ad(i,j,bi,bj) = 0. _d 0
+          aS2d_ad(i,j,bi,bj) = 0. _d 0
+          aC2d_ad(i,j,bi,bj) = 0. _d 0
+          pW_ad  (i,j,bi,bj) = 0. _d 0
+          pS_ad  (i,j,bi,bj) = 0. _d 0
+          pC_ad  (i,j,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* NONLIN_FRSURF */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       RETURN
