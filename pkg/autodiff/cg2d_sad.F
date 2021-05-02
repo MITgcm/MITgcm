@@ -1,10 +1,16 @@
 #include "AUTODIFF_OPTIONS.h"
 
+C--   File cg2d_sad.F: Code for hand written adjoint of cg2d
+C--    Contents
+C--   CG2D_SAD        - computes the adjoint of cg2d
+C--   CG2D_STORE      - saves input field to or restores from a common block
+C--   CG2D_STORE_AD   - empty AD-version of CG2D_STORE
+
 CBOP
 C     !ROUTINE: CG2D_SAD
 C     !INTERFACE:
       SUBROUTINE CG2D_SAD(
-     U                    cg2d_b_ad, cg2d_x, cg2d_x_ad,
+     U                    cg2d_b_ad, cg2d_x_ad,
      U                    numIters, nIterMin,
      I                    myThid )
 C     !DESCRIPTION: \bv
@@ -36,7 +42,6 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     cg2d_b_ad :: Adjoint of source term
 C     cg2d_x_ad :: Adjoint of the solution
-C     cg2d_x    :: The solution (only input)
 C     firstResidual :: the initial residual before any iterations
 C     minResidualSq :: the lowest residual reached (squared)
 C     lastResidual  :: the actual residual reached
@@ -47,7 +52,6 @@ C                  Out: iteration number corresponding to lowest residual
 C     myThid    :: Thread on which I am working.
       _RL  cg2d_b_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cg2d_x_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  cg2d_x   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 c     _RL  firstResidual, minResidualSq, lastResidual
       INTEGER numIters
       INTEGER nIterMin
@@ -66,6 +70,9 @@ C     consistent with what is found in S/R update_cg2d_ad
       COMMON /CG2D_I_R_AD/
      &     aW2d_ad, aS2d_ad, aC2d_ad, pW_ad, pS_ad, pC_ad
 
+C     cg2d_x    :: The solution (only input)
+C     cg2dTmp   :: Temporary storage for cg2d_b_ad
+      _RL cg2d_x (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL cg2dTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* NONLIN_FRSURF */
 
@@ -143,11 +150,15 @@ C     so that no sensitivities should be passed back to the caller.
 
 #ifdef NONLIN_FRSURF
       IF ( cg2dFullAdjoint ) THEN
+       CALL CG2D_STORE( cg2d_x, .FALSE., myThid )
 C     Compute derivative of coefficient matrix.
        _EXCH_XY_RL( cg2d_b_ad, myThid )
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=2-OLy,sNy+OLy-1
+          i = 10
+          print *, 'ml-ad: ',bi,bj,j,
+     &         cg2d_b_ad(i,j,bi,bj), cg2d_x(i,j,bi,bj), recip_cg2dNorm
           DO i=2-OLx,sNx+OLx-1
            aC2d_ad(i,j,bi,bj)   = aC2d_ad(i,j,bi,bj)
      &          - cg2d_b_ad(i,j,bi,bj) * cg2d_x(i,j,bi,bj)
@@ -193,6 +204,131 @@ C     the solution, because we fake the AD code of cg2d.
        ENDDO
       ENDIF
 #endif /* NONLIN_FRSURF */
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+      RETURN
+      END
+
+C--------1---------2---------3---------4---------5---------6---------7--
+
+CBOP
+C     !ROUTINE: CG2D_STORE
+C     !INTERFACE:
+      SUBROUTINE CG2D_STORE(
+     U                      cg2d_x,
+     I                      doStore,
+     I                      myThid )
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE CG2D_STORE
+C     | o Hand written tape routine
+C     *==========================================================*
+C     | This routine is called from solve_for_pressure to
+C     | to force TAF to store cg2d_x
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     === Global data ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "AUTODIFF_PARAMS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     === Routine arguments ===
+C     cg2d_x    :: The solution to be stored and restored
+C     doStore   :: Store or restore based on the logical
+C     myThid    :: Thread on which I am working.
+      _RL  cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      LOGICAL doStore
+      INTEGER myThid
+
+#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef NONLIN_FRSURF
+      _RL cg2d_tape(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,nchklev_1)
+      COMMON /CG2D_TAPE_RL/ cg2d_tape
+
+C     !LOCAL VARIABLES:
+C     === Local variables ===
+C     bi,bj  :: tile indices
+C     i,j    :: Loop counters
+      INTEGER i,j,bi,bj
+CEOP
+
+C--   mark output of cg2d as being called from here
+      IF ( debugLevel .GE. debLevZero ) THEN
+       _BEGIN_MASTER( myThid )
+       WRITE(standardmessageunit,'(A,L)')
+     &      ' Calling CG2D_STORE with doStore = ', doStore
+       WRITE(standardmessageunit,'(A,I4)')
+     &      ' Calling CG2D_STORE with ikey_dynamics = ', ikey_dynamics
+       _END_MASTER( myThid )
+      ENDIF
+
+      IF ( doStore ) THEN
+C     Save input cg2d_x to local common block
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           cg2d_tape(i,j,bi,bj,ikey_dynamics) = cg2d_x(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ELSE
+C     Restore output cg2d_x from local common block
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           cg2d_x(i,j,bi,bj) = cg2d_tape(i,j,bi,bj,ikey_dynamics)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* NONLIN_FRSURF */
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+      RETURN
+      END
+
+C--------1---------2---------3---------4---------5---------6---------7--
+
+CBOP
+C     !ROUTINE: CG2D_STORE_AD
+C     !INTERFACE:
+      SUBROUTINE CG2D_STORE_AD(
+     U                      cg2d_x_ad,
+     I                      doStore,
+     I                      myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE CG2D_STORE
+C     | o Fake AD routine for CG2D_STORE, does not do anything
+C     |   and should never be called
+C     *==========================================================*
+C     \ev
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     === Routine arguments ===
+C     cg2d_x    :: The solution to be stored and restored
+C     doStore   :: Store or restore based on the logical
+C     myThid    :: Thread on which I am working.
+      _RL  cg2d_x_ad(1)
+      LOGICAL doStore
+      INTEGER myThid
+CEOP
+#ifdef ALLOW_AUTODIFF_TAMC
+C     Do nothing
+      STOP 'S/R CG2D_STORE_AD should never be called'
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       RETURN
