@@ -157,8 +157,6 @@ C     Compute derivative of coefficient matrix.
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=2-OLy,sNy+OLy-1
           i = 10
-          print *, 'ml-ad: ',bi,bj,j,
-     &         cg2d_b_ad(i,j,bi,bj), cg2d_x(i,j,bi,bj), recip_cg2dNorm
           DO i=2-OLx,sNx+OLx-1
            aC2d_ad(i,j,bi,bj)   = aC2d_ad(i,j,bi,bj)
      &          - cg2d_b_ad(i,j,bi,bj) * cg2d_x(i,j,bi,bj)
