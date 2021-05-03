@@ -13,7 +13,9 @@ CBOP
 C     !ROUTINE: CG2D_SAD
 C     !INTERFACE:
       SUBROUTINE CG2D_SAD(
-     U                    cg2d_b_ad, cg2d_x_ad,
+     U                    cg2d_b_ad,
+     I                    cg2d_x,
+     U                    cg2d_x_ad,
      U                    numIters, nIterMin,
      I                    myThid )
 C     !DESCRIPTION: \bv
@@ -29,6 +31,11 @@ C     | directives in cg2d.flow and fake it here.
 C     | This routine calls cg2d with reversed order of argumgent
 C     | cg2d_x_ad and cg2d_b_ad, and sets dependendcies to zero
 C     | that a non-self-adjoint cg2d would have produced.
+C     | In addition, when runtime parameter cg2dFullAdjoint = T,
+C     | add compute sensitivities to matrix coefficients, where
+C     | possible. This makes is the full adjoint of cg2d, only
+C     | if cg2d is completely converged. Otherwise it is a very
+C     | good approximation.
 C     *==========================================================*
 C     \ev
 
@@ -38,13 +45,18 @@ C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "CG2D.h"
-#include "AUTODIFF_PARAMS.h"
+#if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
+# include "CG2D.h"
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "AUTODIFF_PARAMS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     cg2d_b_ad :: Adjoint of source term
+C     cg2d_b_ad :: Adjoint of source term (on input = 0)
 C     cg2d_x_ad :: Adjoint of the solution
+C     cg2d_x    :: First guess of cg2d ( gravity * etaN, only input )
 C     firstResidual :: the initial residual before any iterations
 C     minResidualSq :: the lowest residual reached (squared)
 C     lastResidual  :: the actual residual reached
@@ -55,6 +67,7 @@ C                  Out: iteration number corresponding to lowest residual
 C     myThid    :: Thread on which I am working.
       _RL  cg2d_b_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cg2d_x_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg2d_x    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 c     _RL  firstResidual, minResidualSq, lastResidual
       INTEGER numIters
       INTEGER nIterMin
@@ -72,11 +85,6 @@ C     consistent with what is found in S/R update_cg2d_ad
       _RL pC_ad  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       COMMON /CG2D_I_R_AD/
      &     aW2d_ad, aS2d_ad, aC2d_ad, pW_ad, pS_ad, pC_ad
-
-C     cg2d_x    :: The solution (only input)
-C     cg2dTmp   :: Temporary storage for cg2d_b_ad
-      _RL cg2d_x (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL cg2dTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* NONLIN_FRSURF or ALLOW_DEPTH_CONTROL */
 
 C     !LOCAL VARIABLES:
@@ -88,6 +96,7 @@ C     i,j    :: Loop counters
 #if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
       _RL  recip_cg2dNorm
 #endif
+C     CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 C--   mark output of cg2d as being called from here
@@ -97,26 +106,6 @@ C--   mark output of cg2d as being called from here
      &      ' Calling cg2d from S/R CG2D_SAD'
        _END_MASTER( myThid )
       ENDIF
-
-#if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
-      recip_cg2dNorm = 1.0 _d 0
-      IF ( cg2dNorm .NE. 0. _d 0 ) THEN
-       recip_cg2dNorm = 1./cg2dNorm
-      ENDIF
-
-      IF ( cg2dFullAdjoint ) THEN
-C     Save input cg2d_b_ad, not sure if this is necessary.
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           cg2dTmp(i,j,bi,bj) = cg2d_b_ad(i,j,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDIF
-#endif /* NONLIN_FRSURF or ALLOW_DEPTH_CONTROL */
 
 #ifdef ALLOW_SRCG
       IF ( useSRCGSolver ) THEN
@@ -138,9 +127,52 @@ C--   Call the default CG solver
      I      myThid )
       ENDIF
 
+C     cg2d_x_ad is reset to zero, because we assume that the solution of
+C     the self-adjoint solver does not depend in the intial conditions
+C     so that no sensitivities should be passed back to the caller.
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          cg2d_x_ad(i,j,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+C--   dump CG2D output
+C     Since there is no clean way in importing myTime into this routine,
+C     we just have this here commented out, in case it is needed.
+C      IF ( .TRUE. !DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock)
+C     &   ) THEN
+C       IF ( debugLevel .GE. debLevA ) THEN
+C        _BEGIN_MASTER( myThid )
+C        WRITE(msgBuf,'(A30,1PE23.14)')
+C     &       'CG2D_SAD: cg2d_init_res =',firstResidual
+C        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+C        WRITE(msgBuf,'(A37,2I8)')
+C     &       'CG2D_SAD: cg2d_iters(min,last) =', nIterMin, numIters
+C        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+C        IF ( minResidualSq.GE.0. ) THEN
+C         minResidualSq = SQRT(minResidualSq)
+C         WRITE(msgBuf,'(A30,1PE23.14)')
+C     &        'CG2D_SAD: cg2d_min_res  =',minResidualSq
+C         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+C        ENDIF
+C        WRITE(msgBuf,'(A30,1PE23.14)')
+C     &       'CG2D_SAD: cg2d_last_res =',lastResidual
+C        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+C        _END_MASTER( myThid )
+C       ENDIF
+C      ENDIF
+
 #if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
+      recip_cg2dNorm = 1.0 _d 0
+      IF ( cg2dNorm .NE. 0. _d 0 ) THEN
+       recip_cg2dNorm = 1./cg2dNorm
+      ENDIF
+
       IF ( cg2dFullAdjoint ) THEN
-       CALL CG2D_STORE( cg2d_x, .FALSE., myThid )
 C     Compute derivative of coefficient matrix.
        _EXCH_XY_RL( cg2d_b_ad, myThid )
        DO bj=myByLo(myThid),myByHi(myThid)
@@ -165,17 +197,14 @@ C     Compute derivative of coefficient matrix.
 C     The sensitivities of preconditioner are something like
 C          pC_ad = pC_ad + cg2d_z_ad * cg2d_r
 C     and similar (cg2d_z = preconditioner * cg2d_r). That is, when the
-C     solver has converged, cg2d_r -> 0 and pC_ad -> 0,unless cg2d_z_ad
+C     solver has converged, cg2d_r -> 0 and pC_ad -> 0, unless cg2d_z_ad
 C     is large, which would mean an instability. Therefore we set the
-C     preconditioner adjoint to zero. This also reflect the fact, that
+C     preconditioner adjoint to zero. This also reflects the fact, that
 C     in an ideal world, the preconditioner does not have any effect on
 C     the solution, but only on the rate of convergence.
-           pW_ad  (i,j,bi,bj) = 0. _d 0
-           pS_ad  (i,j,bi,bj) = 0. _d 0
-           pC_ad  (i,j,bi,bj) = 0. _d 0
-CML why do we need this? Isnt that counting things twice?
-           cg2d_b_ad(i,j,bi,bj) = cg2d_b_ad(i,j,bi,bj)
-     &          + cg2dTmp(i,j,bi,bj)
+           pW_ad(i,j,bi,bj) = 0. _d 0
+           pS_ad(i,j,bi,bj) = 0. _d 0
+           pC_ad(i,j,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
@@ -199,144 +228,6 @@ C     the solution, because we fake the AD code of cg2d.
        ENDDO
       ENDIF
 #endif /* NONLIN_FRSURF or ALLOW_DEPTH_CONTROL */
-
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-C     cg2d_x_ad is reset to zero, because we assume that the solution of
-C     the self-adjoint solver does not depend in the intial conditions
-C     so that no sensitivities should be passed back to the caller.
-          cg2d_x_ad(i,j,bi,bj) = 0. _d 0
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-      RETURN
-      END
-
-C--------1---------2---------3---------4---------5---------6---------7--
-
-CBOP
-C     !ROUTINE: CG2D_STORE
-C     !INTERFACE:
-      SUBROUTINE CG2D_STORE(
-     U                      cg2d_x,
-     I                      doStore,
-     I                      myThid )
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE CG2D_STORE
-C     | o Hand written tape routine
-C     *==========================================================*
-C     | This routine is called from solve_for_pressure to
-C     | to force TAF to store cg2d_x
-C     *==========================================================*
-C     \ev
-
-C     !USES:
-      IMPLICIT NONE
-C     === Global data ===
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "AUTODIFF_PARAMS.h"
-#ifdef ALLOW_AUTODIFF_TAMC
-# include "tamc.h"
-#endif
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
-C     cg2d_x    :: The solution to be stored and restored
-C     doStore   :: Store or restore based on the logical
-C     myThid    :: Thread on which I am working.
-      _RL  cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      LOGICAL doStore
-      INTEGER myThid
-
-#ifdef ALLOW_AUTODIFF_TAMC
-#if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
-      _RL cg2d_tape(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,nchklev_1)
-      COMMON /CG2D_TAPE_RL/ cg2d_tape
-
-C     !LOCAL VARIABLES:
-C     === Local variables ===
-C     bi,bj  :: tile indices
-C     i,j    :: Loop counters
-      INTEGER i,j,bi,bj
-CEOP
-
-C--   mark output of cg2d as being called from here
-      IF ( debugLevel .GE. debLevZero ) THEN
-       _BEGIN_MASTER( myThid )
-       WRITE(standardmessageunit,'(A,L)')
-     &      ' Calling CG2D_STORE with doStore = ', doStore
-       WRITE(standardmessageunit,'(A,I4)')
-     &      ' Calling CG2D_STORE with ikey_dynamics = ', ikey_dynamics
-       _END_MASTER( myThid )
-      ENDIF
-
-      IF ( doStore ) THEN
-C     Save input cg2d_x to local common block
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           cg2d_tape(i,j,bi,bj,ikey_dynamics) = cg2d_x(i,j,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ELSE
-C     Restore output cg2d_x from local common block
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-OLy,sNy+OLy
-          DO i=1-OLx,sNx+OLx
-           cg2d_x(i,j,bi,bj) = cg2d_tape(i,j,bi,bj,ikey_dynamics)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDIF
-#endif /* NONLIN_FRSURF or ALLOW_DEPTH_CONTROL */
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-      RETURN
-      END
-
-C--------1---------2---------3---------4---------5---------6---------7--
-
-CBOP
-C     !ROUTINE: CG2D_STORE_AD
-C     !INTERFACE:
-      SUBROUTINE CG2D_STORE_AD(
-     U                      cg2d_x_ad,
-     I                      doStore,
-     I                      myThid )
-
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE CG2D_STORE
-C     | o Fake AD routine for CG2D_STORE, does not do anything
-C     |   and should never be called
-C     *==========================================================*
-C     \ev
-
-C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
-C     cg2d_x    :: The solution to be stored and restored
-C     doStore   :: Store or restore based on the logical
-C     myThid    :: Thread on which I am working.
-      _RL  cg2d_x_ad(1)
-      LOGICAL doStore
-      INTEGER myThid
-CEOP
-#ifdef ALLOW_AUTODIFF_TAMC
-C     Do nothing
-      STOP 'S/R CG2D_STORE_AD should never be called'
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       RETURN
