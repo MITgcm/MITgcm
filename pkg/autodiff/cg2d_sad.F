@@ -173,6 +173,14 @@ C     Compute derivative of coefficient matrix.
            aS2d_ad(i,j+1,bi,bj) = aS2d_ad(i,j+1,bi,bj)
      &          - cg2d_b_ad(i,j,bi,bj) * cg2d_x(i,j+1,bi,bj)
      &          * recip_cg2dNorm
+C     The sensitivities of preconditioner are something like
+C          pC_ad = pC_ad + cg2d_z_ad * cg2d_r
+C     and similar (cg2d_z = preconditioner * cg2d_r). That is, when the
+C     solver has converged, cg2d_r -> 0 and pC_ad -> 0,unless cg2d_z_ad
+C     is large, which would mean an instability. Therefore we set the
+C     preconditioner adjoint to zero. This also reflect the fact, that
+C     in an ideal world, the preconditioner does not have any effect on
+C     the solution, but only on the rate of convergence.
            pW_ad  (i,j,bi,bj) = 0. _d 0
            pS_ad  (i,j,bi,bj) = 0. _d 0
            pC_ad  (i,j,bi,bj) = 0. _d 0
