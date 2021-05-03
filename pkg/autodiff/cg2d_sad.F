@@ -1,4 +1,7 @@
 #include "AUTODIFF_OPTIONS.h"
+#ifdef "ALLOW_CTRL"
+# include "CTRL_OPTIONS.h"
+#endif
 
 C--   File cg2d_sad.F: Code for hand written adjoint of cg2d
 C--    Contents
@@ -58,7 +61,7 @@ c     _RL  firstResidual, minResidualSq, lastResidual
       INTEGER myThid
 
 #ifdef ALLOW_AUTODIFF_TAMC
-#ifdef NONLIN_FRSURF
+#if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
 C     directly imported from TAF-generated code, make sure that they are
 C     consistent with what is found in S/R update_cg2d_ad
       _RL aW2d_ad(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -74,7 +77,7 @@ C     cg2d_x    :: The solution (only input)
 C     cg2dTmp   :: Temporary storage for cg2d_b_ad
       _RL cg2d_x (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL cg2dTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif /* NONLIN_FRSURF */
+#endif /* NONLIN_FRSURF or ALLOW_DEPTH_CONTROL */
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
@@ -82,7 +85,7 @@ C     bi,bj  :: tile indices
 C     i,j    :: Loop counters
       INTEGER i,j,bi,bj
       _RL  firstResidual, minResidualSq, lastResidual
-#ifdef NONLIN_FRSURF
+#if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
       _RL  recip_cg2dNorm
 #endif
 CEOP
@@ -95,7 +98,7 @@ C--   mark output of cg2d as being called from here
        _END_MASTER( myThid )
       ENDIF
 
-#ifdef NONLIN_FRSURF
+#if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
       recip_cg2dNorm = 1.0 _d 0
       IF ( cg2dNorm .NE. 0. _d 0 ) THEN
        recip_cg2dNorm = 1./cg2dNorm
@@ -113,7 +116,7 @@ C     Save input cg2d_b_ad, not sure if this is necessary.
         ENDDO
        ENDDO
       ENDIF
-#endif /* NONLIN_FRSURF */
+#endif /* NONLIN_FRSURF or ALLOW_DEPTH_CONTROL */
 
 #ifdef ALLOW_SRCG
       IF ( useSRCGSolver ) THEN
@@ -135,20 +138,7 @@ C--   Call the default CG solver
      I      myThid )
       ENDIF
 
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-C     cg2d_x_ad is reset to zero, because we assume that the solution of
-C     the self-adjoint solver does not depend in the intial conditions
-C     so that no sensitivities should be passed back to the caller.
-          cg2d_x_ad(i,j,bi,bj) = 0. _d 0
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-
-#ifdef NONLIN_FRSURF
+#if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
       IF ( cg2dFullAdjoint ) THEN
        CALL CG2D_STORE( cg2d_x, .FALSE., myThid )
 C     Compute derivative of coefficient matrix.
@@ -156,7 +146,6 @@ C     Compute derivative of coefficient matrix.
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=2-OLy,sNy+OLy-1
-          i = 10
           DO i=2-OLx,sNx+OLx-1
            aC2d_ad(i,j,bi,bj)   = aC2d_ad(i,j,bi,bj)
      &          - cg2d_b_ad(i,j,bi,bj) * cg2d_x(i,j,bi,bj)
@@ -209,7 +198,20 @@ C     the solution, because we fake the AD code of cg2d.
         ENDDO
        ENDDO
       ENDIF
-#endif /* NONLIN_FRSURF */
+#endif /* NONLIN_FRSURF or ALLOW_DEPTH_CONTROL */
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+C     cg2d_x_ad is reset to zero, because we assume that the solution of
+C     the self-adjoint solver does not depend in the intial conditions
+C     so that no sensitivities should be passed back to the caller.
+          cg2d_x_ad(i,j,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       RETURN
@@ -255,7 +257,7 @@ C     myThid    :: Thread on which I am working.
       INTEGER myThid
 
 #ifdef ALLOW_AUTODIFF_TAMC
-#ifdef NONLIN_FRSURF
+#if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
       _RL cg2d_tape(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,nchklev_1)
       COMMON /CG2D_TAPE_RL/ cg2d_tape
 
@@ -299,7 +301,7 @@ C     Restore output cg2d_x from local common block
         ENDDO
        ENDDO
       ENDIF
-#endif /* NONLIN_FRSURF */
+#endif /* NONLIN_FRSURF or ALLOW_DEPTH_CONTROL */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       RETURN

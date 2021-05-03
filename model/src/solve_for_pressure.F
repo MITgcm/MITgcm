@@ -312,9 +312,11 @@ C--   Call the default CG solver
       _EXCH_XY_RL( cg2d_x, myThid )
 c     CALL TIMER_STOP ('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
 #ifdef ALLOW_AUTODIFF
+# ifndef ALLOW_CG2D_NSA
       IF ( cg2dFullAdjoint .AND. .NOT. inAdMode ) THEN
        CALL CG2D_STORE( cg2d_x, .TRUE., myThid )
       ENDIF
+# endif
 #endif
 
 #ifdef ALLOW_DEBUG

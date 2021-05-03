@@ -364,7 +364,8 @@ C     == Global variables ==
 # ifdef ALLOW_OFFLINE
 #  include "OFFLINE.h"
 # endif
-# if (defined ALLOW_CG2D_NSA) || (defined NONLIN_FRSURF)
+# if (defined ALLOW_CG2D_NSA || defined NONLIN_FRSURF || \
+      defined ALLOW_DEPTH_CONTROL)
 #  include "CG2D.h"
 # endif
 #endif /* ALLOW_AUTODIFF */
@@ -903,7 +904,8 @@ CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif /* NONLIN_FRSURF */
 
-#if ( defined NONLIN_FRSURF || defined ALLOW_SOLVE4_PS_AND_DRAG )
+#if ( defined NONLIN_FRSURF || defined ALLOW_SOLVE4_PS_AND_DRAG || \
+      defined ALLOW_DEPTH_CONTROL )
 C-    update CG2D matrix (and preconditioner)
       IF ( momStepping .AND.
      &     ( nonlinFreeSurf.GT.2 .OR. selectImplicitDrag.EQ.2 ) ) THEN

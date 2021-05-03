@@ -24,6 +24,12 @@ CADJ STORE gtNm1, gsNm1 = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE guNm1, gvNm1 = comlev1, key = ikey_dynamics, kind = isbyte
 #endif
 
+#if (defined ALLOW_CG2D_NSA || defined NONLIN_FRSURF || \
+      defined ALLOW_DEPTH_CONTROL)
+CADJ STORE aW2d,aS2d,aC2d= comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE pW, pS, pC    = comlev1, key = ikey_dynamics, kind = isbyte
+#endif
+
 #ifdef NONLIN_FRSURF
 
 CADJ STORE hFac_surfC    = comlev1, key = ikey_dynamics, kind = isbyte
@@ -32,9 +38,6 @@ CADJ STORE hFac_surfS    = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE hfac_surfNm1C = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE hfac_surfNm1W = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE hfac_surfNm1S = comlev1, key = ikey_dynamics, kind = isbyte
-
-CADJ STORE aW2d,aS2d,aC2d= comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE pW, pS, pC    = comlev1, key = ikey_dynamics, kind = isbyte
 
 CADJ STORE theta, salt   = comlev1, key = ikey_dynamics,kind = isbyte
 CADJ STORE uVel, vVel    = comlev1, key = ikey_dynamics,kind = isbyte
