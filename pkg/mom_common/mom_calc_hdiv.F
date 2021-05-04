@@ -17,7 +17,7 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 C     == Routine arguments ==
-C     myThid - Instance number for this innvocation of CALC_MOM_RHS
+C     myThid  :: my Thread Id number
       INTEGER bi,bj,k,hDivScheme
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -27,6 +27,14 @@ C     myThid - Instance number for this innvocation of CALC_MOM_RHS
 C     == Local variables ==
       INTEGER i,j
 
+#ifdef ALLOW_AUTODIFF
+C     Initialise (again) hDiv (in case it got dropped in calling S/R):
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        hDiv(i,j)=0. _d 0
+       ENDDO
+      ENDDO
+#endif
       IF (hDivScheme.EQ.1) THEN
        DO j=1-OLy,sNy+OLy-1
         DO i=1-OLx,sNx+OLx-1
