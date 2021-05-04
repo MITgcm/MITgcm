@@ -282,8 +282,8 @@ YC.
            (:numref:`costgen`). An extension starting with ‘\_’ can be
            appended at the end of the variable name to distinguish between separate
            cost function terms. Note: the ‘m_eta’ formula depends on the
-           ``ATMOSPHERIC_LOADING`` and ``ALLOW_PSBAR_STERIC`` compile time options
-           and ‘useRealFreshWaterFlux’ run time parameter.
+           ``ATMOSPHERIC_LOADING`` and ``ALLOW_PSBAR_STERIC`` compile-time options
+           and ‘useRealFreshWaterFlux’ run-time parameter.
   :name: gencost_ecco_barfile
 
   +-----------------------+-----------------------+-----------------------+
@@ -847,7 +847,7 @@ to the model grid unless CPP-flag :varlink:`EXCLUDE_CTRL_PACK` is defined in
   +-----------------------+-----------------------+-----------------------+
   |                       | ``xx_sflux``          | net salt (EmPmR) flux |
   +-----------------------+-----------------------+-----------------------+
-  |                       | ``xx_shifwflx``       | shelfice meltrate     |
+  |                       | ``xx_shifwflx``       | shelfice melt rate    |
   +-----------------------+-----------------------+-----------------------+
 
 .. table:: ``xx_gen????d_preproc`` options implemented as of checkpoint
@@ -958,7 +958,8 @@ coefficient used in the simulation.
 
 The adjustments ``xx_shicoefft`` and ``xx_shicoeffs`` are available when the
 velocity **independent** form of transfer coefficients is used, by setting
-``#undef`` :varlink:`SHI_ALLOW_GAMMAFRICT` in :varlink:`SHELFICE_OPTIONS.h` at
+``#undef`` :varlink:`SHI_ALLOW_GAMMAFRICT`
+in :filelink:`SHELFICE_OPTIONS.h <pkg/shelfice/SHELFICE_OPTIONS.h>` at
 compile time (see :numref:`tab_phys_pkg_shelfice_compileparms`) and
 :varlink:`SHELFICEuseGammaFrict` ``=.FALSE.`` in ``data.shelfice`` (see
 :numref:`tab_phys_pkg_shelfice_runtimeparms`).  These parameters provide
@@ -976,7 +977,7 @@ adjustments to the drag coefficient at the ice ocean boundary, but by default
 only adjusts the drag coefficient used to compute the thermal and freshwater
 fluxes, neglecting the momentum contributions.  To allow the contribution
 directly to momentum fluxes, specify ``xx_genarr2d_preproc_c(*,iarr) = 'mom'``
-in ``data.ctrl.``.
+in ``data.ctrl``.
 
 .. _log_ctrl:
 
@@ -985,8 +986,8 @@ Logarithmic Control Parameters
 
 As indicated in :numref:`genarr_preproc_c`, the base-10 logarithm of a
 control field can be adjusted by specifying the character option
-``genarr*d_preproc_c(k2,iarr) = 'log10ctrl'``, with ``k2,iarr`` as appropriate,
-and ``*d`` denoting that ``2d`` or ``3d`` are available.
+``genarr*d_preproc_c(k2,iarr) = 'log10ctrl'``, with ``k2`` and ``iarr``
+as appropriate, and ``*d`` denoting that ``2d`` or ``3d`` are available.
 As a concrete example, if the control parameter is updating ``fld2d``,
 then the field will be set as follows:
 
