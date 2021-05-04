@@ -274,7 +274,7 @@ CML      ENDIF
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
         WRITE(msgBuf,'(2A)') '** WARNING ** SHELFICE_CHECK: ',
-     &   ' that might occurs with SHELFICEMassStepping'
+     &   ' that might occur with SHELFICEMassStepping'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                      SQUEEZE_RIGHT, myThid )
       ENDIF
