@@ -679,7 +679,7 @@ C     &                     'phiHydLow', myTime, myThid )
 Cml)
 
 #ifdef INCLUDE_SOUNDSPEED_CALC_CODE
-        CALL DIAGS_SOUND_SPEED( myThid )
+      CALL DIAGS_SOUND_SPEED( myThid )
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
