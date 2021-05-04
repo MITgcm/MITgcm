@@ -1,5 +1,5 @@
 #include "AUTODIFF_OPTIONS.h"
-#ifdef "ALLOW_CTRL"
+#ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
 
@@ -96,7 +96,7 @@ C     i,j    :: Loop counters
 #if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
       _RL  recip_cg2dNorm
 #endif
-C     CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 C--   mark output of cg2d as being called from here
@@ -127,6 +127,9 @@ C--   Call the default CG solver
      I      myThid )
       ENDIF
 
+CML      CALL ADEXCH_XY_RL( cg2d_b_ad, myThid )
+CML       _EXCH_XY_RL( cg2d_b_ad, myThid )
+
 C     cg2d_x_ad is reset to zero, because we assume that the solution of
 C     the self-adjoint solver does not depend in the intial conditions
 C     so that no sensitivities should be passed back to the caller.
@@ -142,29 +145,26 @@ C     so that no sensitivities should be passed back to the caller.
 
 C--   dump CG2D output
 C     Since there is no clean way in importing myTime into this routine,
-C     we just have this here commented out, in case it is needed.
-C      IF ( .TRUE. !DIFFERENT_MULTIPLE(monitorFreq,myTime,deltaTClock)
-C     &   ) THEN
-C       IF ( debugLevel .GE. debLevA ) THEN
-C        _BEGIN_MASTER( myThid )
-C        WRITE(msgBuf,'(A30,1PE23.14)')
-C     &       'CG2D_SAD: cg2d_init_res =',firstResidual
-C        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-C        WRITE(msgBuf,'(A37,2I8)')
-C     &       'CG2D_SAD: cg2d_iters(min,last) =', nIterMin, numIters
-C        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-C        IF ( minResidualSq.GE.0. ) THEN
-C         minResidualSq = SQRT(minResidualSq)
-C         WRITE(msgBuf,'(A30,1PE23.14)')
-C     &        'CG2D_SAD: cg2d_min_res  =',minResidualSq
-C         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-C        ENDIF
-C        WRITE(msgBuf,'(A30,1PE23.14)')
-C     &       'CG2D_SAD: cg2d_last_res =',lastResidual
-C        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-C        _END_MASTER( myThid )
-C       ENDIF
-C      ENDIF
+C     we just call it every timestep but only for a higher debugLevel
+      IF ( debugLevel .GE. debLevC ) THEN
+       _BEGIN_MASTER( myThid )
+       WRITE(msgBuf,'(A30,1PE23.14)')
+     &       'CG2D_SAD cg2d_init_res =',firstResidual
+       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+       WRITE(msgBuf,'(A37,2I8)')
+     &       'CG2D_SAD: cg2d_iters(min,last) =', nIterMin, numIters
+       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+       IF ( minResidualSq.GE.0. ) THEN
+        minResidualSq = SQRT(minResidualSq)
+        WRITE(msgBuf,'(A30,1PE23.14)')
+     &        'CG2D_SAD: cg2d_min_res  =',minResidualSq
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+       ENDIF
+       WRITE(msgBuf,'(A30,1PE23.14)')
+     &       'CG2D_SAD: cg2d_last_res =',lastResidual
+       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+       _END_MASTER( myThid )
+      ENDIF
 
 #if ( defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL )
       recip_cg2dNorm = 1.0 _d 0
@@ -174,11 +174,10 @@ C      ENDIF
 
       IF ( cg2dFullAdjoint ) THEN
 C     Compute derivative of coefficient matrix.
-       _EXCH_XY_RL( cg2d_b_ad, myThid )
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=2-OLy,sNy+OLy-1
-          DO i=2-OLx,sNx+OLx-1
+         DO j=1,sNy
+          DO i=1,sNx
            aC2d_ad(i,j,bi,bj)   = aC2d_ad(i,j,bi,bj)
      &          - cg2d_b_ad(i,j,bi,bj) * cg2d_x(i,j,bi,bj)
      &          * recip_cg2dNorm
