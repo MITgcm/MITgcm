@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice:
+  - Update kTopC when using SHELFICEMassStepping if ice-shelf retreat completely
+    from one column or advance to cover new grid-cell ; add 4 levels TAF storage
+    of kTopC (to prevent major recomputations).
+  - Also prevent ice-shelf mass to become negative.
 o pkg/mom_common & gmredi:
   - Adjust Smag and Leith code for use in Adjoint:
     a) protect against derivative of SQRT(0) in mom_calc_visc.F and
