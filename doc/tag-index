@@ -1,6 +1,11 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/mom_common & gmredi:
+  - Adjust Smag and Leith code for use in Adjoint:
+    a) protect against derivative of SQRT(0) in mom_calc_visc.F and
+       gmredi_calc_qgleith.F ;
+    b) add GM-Redi QG Leith routines to ad_diff lists.
 o pkg/gmredi:
   - fix/remove 2 TAF recomputations in GMREDI_WITH_STABLE_ADJOINT code.
 o pkg/generic_advdiff:
