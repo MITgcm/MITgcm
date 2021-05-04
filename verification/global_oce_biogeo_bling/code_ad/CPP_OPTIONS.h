@@ -25,6 +25,9 @@ C o Include/exclude Geothermal Heat Flux at the bottom of the ocean
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
 
+C o Include/exclude sound speed calculation code
+#define INCLUDE_SOUNDSPEED_CALC_CODE
+
 C o Include/exclude call to S/R CONVECT
 #define INCLUDE_CONVECT_CALL
 

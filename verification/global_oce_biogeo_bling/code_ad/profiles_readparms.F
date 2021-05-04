@@ -158,6 +158,7 @@ C----- local version addition: start
             prof_names(num_file,14)='prof_PH'
             prof_names(num_file,15)='prof_CHL'
             prof_names(num_file,16)='prof_POC'
+            prof_names(num_file,17)='prof_CS'
 
             prof_itracer(num_file,1)=1
             prof_itracer(num_file,2)=1
@@ -175,6 +176,7 @@ C----- local version addition: start
             prof_itracer(num_file,14)=1
             prof_itracer(num_file,15)=1
             prof_itracer(num_file,16)=1
+            prof_itracer(num_file,17)=1
 C----- local version addition: end
             prof_namesmod(num_file,1)='theta'
             prof_namesmod(num_file,2)='salt'
@@ -193,6 +195,7 @@ C----- local version addition: start
             prof_namesmod(num_file,14)='PH'
             prof_namesmod(num_file,15)='CHL'
             prof_namesmod(num_file,16)='POC'
+            prof_namesmod(num_file,17)='CS'
 C----- local version addition: end
 #ifdef ALLOW_PROFILES_CLIMMASK
             prof_namesclim(num_file,1)='prof_Tclim'

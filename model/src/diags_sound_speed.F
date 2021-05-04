@@ -60,6 +60,7 @@ C     == Global variables ==
 #include "GRID.h"
 #include "SURFACE.h"
 #include "DYNVARS.h"
+#include "EOS.h"
 #ifdef ALLOW_OBSFIT
 # include "OBSFIT_SIZE.h"
 # include "obsfit.h"
@@ -81,7 +82,6 @@ C     == Local variables ==
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-      _RL iestau(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL c0,pr,sal,vt,tmp,vs,vp,vstp
       _RL SW_TEMP
 
@@ -98,7 +98,7 @@ CEOP
       imin = 1
       imax = snx
 
-      c0=1402.392
+      c0 = 1402.392
       pr = 0.0
       sal = 0.0
       vt = 0.0
@@ -131,11 +131,11 @@ C pr units: meters
 C convert pressure to kg/cm^2 for compliance with aog_vsdg script
                   pr = pr/gravity
                   sal = SALT(i,j,k,bi,bj)
-                  vt = (5.01109398873-(0.0550946843172
-     &                   - 0.000221535969240*tmp)*tmp)*tmp
-                  vs = (1.32952290781 + 0.000128955756844*sal)*sal
-                  vp = (0.156059257041 + (0.0000244998688441
-     &                   - 0.00000000883392332513*pr)*pr)*pr
+                  vt = 5.01109398873*tmp-0.0550946843172*tmp*tmp
+     &                   - 0.000221535969240*tmp*tmp*tmp
+                  vs = 1.32952290781*sal + 0.000128955756844*sal*sal
+                  vp = 0.156059257041*pr + 0.0000244998688441*pr*pr
+     &                   - 0.00000000883392332513*pr*pr*pr
                   vstp = -0.0127562783426*tmp*sal
      &                   + 0.00635191613389*tmp*pr
      &                   + 0.0000000265484716608*tmp*tmp*pr*pr
@@ -163,9 +163,4 @@ C convert pressure to kg/cm^2 for compliance with aog_vsdg script
 
       RETURN
       END
-
-
-
-
-
 

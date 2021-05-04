@@ -3,9 +3,11 @@
 # ******************
  &PROFILES_NML
 # profilesDir = 'PROF',
- profilesfiles(1) = 'sample_prof',
-# has T, S, and pH constraints. 
+ profilesfiles(1) = 'sample_profCS',
+# has csound constraint.
+# has T, S, and pH constraints, no weight. 
  mult_profiles(1,1)   = 0.0,
  mult_profiles(1,2)   = 0.0,
- mult_profiles(1,14)   = 1.0,
+ mult_profiles(1,14)   = 0.0,
+ mult_profiles(1,17)   = 1.0,
  &
