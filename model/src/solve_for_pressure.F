@@ -32,9 +32,6 @@ C     == Global variables
 #ifdef ALLOW_CD_CODE
 #include "CD_CODE_VARS.h"
 #endif
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_PARAMS.h"
-#endif
 
 C     === Functions ====
       LOGICAL  DIFFERENT_MULTIPLE
