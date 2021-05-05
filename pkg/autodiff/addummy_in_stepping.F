@@ -274,8 +274,29 @@ C-----------------------------------------------------------------------
       CALL DUMP_ADJ_XYZ_UV(
      &     adEddyPsiX,dumRL,'ADJepsix','ADJeddipsix.',
      &     adEddyPsiY,dumRL,'ADJepsiy','ADJeddipsiy.',
-     &     33, doDump, dumpAdRecMn, myTime, myIter,myThid)
+     &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
 # endif
+
+#ifdef ALLOW_DEPTH_CONTROL
+CML(  Does not make sense at this point
+CML        CALL WRITE_FLD_XY_RL ( 'ADJxx_r_low.',suff,
+CML     &       adxx_r_low, myIter, myThid)
+CML)
+      CALL DUMP_ADJ_XYZ(
+     &     adhfacc,dumRL,'ADJhFacC','ADJhFacC.',
+     &     12, doDump, dumpAdRecMn, myTime, myIter, myThid)
+      CALL DUMP_ADJ_XYZ_UV(
+     &     adhfacw,dumRL,'ADJhFacW','ADJhFacW.',
+     &     adhfacs,dumRL,'ADJhFacS','ADJhFacS.',
+     &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
+      CALL DUMP_ADJ_XYZ(
+     &     adrecip_hfacc,dumRL,'ADJrhFcC','ADJrecip_hFacC.',
+     &     12, doDump, dumpAdRecMn, myTime, myIter, myThid)
+      CALL DUMP_ADJ_XYZ_UV(
+     &     adrecip_hfacw,dumRL,'ADJrhFcW','ADJrecip_hFacW.',
+     &     adrecip_hfacs,dumRL,'ADJrhFcS','ADJrecip_hFacS.',
+     &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
+#endif /* ALLOW_DEPTH_CONTROL */
 
 #else /* ALLOW_OPENAD */
 C========================
@@ -357,6 +378,26 @@ C-----------------------------------------------------------------------
      &     EddyPsiY%d,dumRL,'ADJepsiy','ADJeddipsiy.',
      &     33, doDump, dumpAdRecMn, myTime, myIter,myThid)
 # endif
+#ifdef ALLOW_DEPTH_CONTROL
+CML(  Does not make sense at this point
+CML        CALL WRITE_FLD_XY_RL ( 'ADJxx_r_low.',suff,
+CML     &       adxx_r_low, myIter, myThid)
+CML)
+      CALL DUMP_ADJ_XYZ(
+     &     hFacC%d,dumRL,'ADJhFacC','ADJhFacC.',
+     &     12, doDump, dumpAdRecMn, myTime, myIter, myThid)
+      CALL DUMP_ADJ_XYZ_UV(
+     &     hFacW%d,dumRL,'ADJhFacW','ADJhFacW.',
+     &     hFacS%d,dumRL,'ADJhFacS','ADJhFacS.',
+     &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
+      CALL DUMP_ADJ_XYZ(
+     &     recip_hFacC%d,dumRL,'ADJrhFcC','ADJrecip_hFacC.',
+     &     12, doDump, dumpAdRecMn, myTime, myIter, myThid)
+      CALL DUMP_ADJ_XYZ_UV(
+     &     recip_hFacW%d,dumRL,'ADJrhFcW','ADJrecip_hFacW.',
+     &     recip_hFacS%d,dumRL,'ADJrhFcS','ADJrecip_hFacS.',
+     &     33, doDump, dumpAdRecMn, myTime, myIter, myThid)
+#endif /* ALLOW_DEPTH_CONTROL */
 #endif /* ALLOW_OPENAD */
 
 C=======================================================================
