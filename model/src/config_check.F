@@ -450,7 +450,7 @@ C     o Need to use S/R APPLY_FORCING_U,V to get Tidal forcing
 #endif
 
 #ifndef ALLOW_CG2D_NSA
-      IF (useSRCGSolver) THEN
+      IF (useNSACGSolver) THEN
         WRITE(msgBuf,'(A,A)')
      &  'CONFIG_CHECK: useNSACGSolver = .TRUE., but CG2D_NSA ',
      &  'code is not compiled.'
