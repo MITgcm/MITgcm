@@ -694,6 +694,8 @@ C---
      &'   /* Freq. for updating cg2d preconditioner */')
       CALL WRITE_0D_L( useSRCGSolver, INDEX_NONE,
      & 'useSRCGSolver =', '  /* use single reduction CG solver(s) */')
+      CALL WRITE_0D_L( useNSACGSolver, INDEX_NONE,
+     & 'useNSACGSolver =', '  /* use not-self-adjoint CG solver */')
       CALL WRITE_0D_I( printResidualFreq, INDEX_NONE,
      & 'printResidualFreq =', ' /* Freq. for printing CG residual */')
 

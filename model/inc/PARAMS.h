@@ -343,6 +343,9 @@ C     maskIniSalt    :: apply mask to initial salinity
 C     checkIniTemp   :: check for points with identically zero initial Pot.Temp.
 C     checkIniSalt   :: check for points with identically zero initial salinity
 C- Pressure solver related parameters (PARM02)
+C     useNSACGSolver :: Set to true to use "not self-adjoint" conjugate
+C                       gradient solver that stores the iteration history
+C                       for an iterative adjoint as accuate as possible
 C     useSRCGSolver  :: Set to true to use conjugate gradient
 C                       solver with single reduction (only one call of
 C                       s/r mpi_allreduce), default is false
@@ -429,7 +432,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
      & tempAdvection, tempVertDiff4, tempIsActiveTr, tempForcing,
      & saltAdvection, saltVertDiff4, saltIsActiveTr, saltForcing,
      & maskIniTemp, maskIniSalt, checkIniTemp, checkIniSalt,
-     & useSRCGSolver,
+     & useNSACGSolver, useSRCGSolver,
      & rigidLid, implicitFreeSurface,
      & uniformLin_PhiSurf, uniformFreeSurfLev,
      & exactConserv, linFSConserveTr, useRealFreshWaterFlux,
@@ -510,6 +513,7 @@ C                        & Last iteration, in addition multiple of dumpFreq iter
       LOGICAL maskIniSalt
       LOGICAL checkIniTemp
       LOGICAL checkIniSalt
+      LOGICAL useNSACGSolver
       LOGICAL useSRCGSolver
       LOGICAL rigidLid
       LOGICAL implicitFreeSurface

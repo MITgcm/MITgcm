@@ -290,6 +290,7 @@ C--   Elliptic solver parameters
       cg3dMaxIters       = 150
       cg3dTargetResidual = 1. _d -7
       cg3dChkResFreq     = 1
+      useNSACGSolver     = .FALSE.
       useSRCGSolver      = .FALSE.
 
 C--   Time stepping parameters
