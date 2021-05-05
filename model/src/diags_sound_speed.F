@@ -84,21 +84,21 @@ C pressure in dbar (for SW_TEMP)
             sal  = SALT(i,j,k,bi,bj)
 C convert pressure to kg/cm^2 for Del Grasso algorithm
             pres = pres/gravity
-            ct   = (5.01109398873 - (0.550946843172 _d -1
-     &               - 0.221535969240 _d -3 *temp)*temp)*temp
-            cs   = (1.32952290781 + 0.128955756844 _d -3 *sal)*sal
-            cp   = (0.156059257041 + (0.244998688441 _d -4
-     &               - 0.883392332513 _d -8 *pres)*pres)*pres
-            cstp =   - 0.127562783426 _d -1 *temp*sal
-     &               + 0.635191613389 _d -2 *temp*pres
-     &               + 0.265484716608 _d -7 *temp*temp*pres*pres
-     &               - 0.159349479045 _d -5 *temp*pres*pres
-     &               + 0.522116437235 _d -9 *temp*pres*pres*pres
-     &               - 0.438031096213 _d -6 *temp*temp*temp*pres
-     &               - 0.161674495909 _d -8 *sal*sal*pres*pres
-     &               + 0.968403156410 _d -4 *temp*temp*sal
-     &               + 0.485639620015 _d -5 *temp*sal*sal*pres
-     &               - 0.340597039004 _d -3 *temp*sal*pres
+            ct   = ( 5.01109398873 - ( 0.550946843172 _d -1
+     &             - 0.221535969240 _d -3 * temp ) * temp ) * temp
+            cs   = ( 1.32952290781 + 0.128955756844 _d -3 * sal ) * sal
+            cp   = ( 0.156059257041 + ( 0.244998688441 _d -4
+     &               - 0.883392332513 _d -8 * pres ) * pres ) * pres
+            cstp = ( - 0.127562783426 _d -1
+     &               + 0.968403156410 _d -4 *temp ) * temp * sal
+     &           + ((  0.635191613389 _d -2
+     &               +(0.265484716608 _d -7 *temp
+     &               - 0.159349479045 _d -5
+     &               + 0.522116437235 _d -9 *pres ) * pres
+     &               - 0.438031096213 _d -6 * temp * temp
+     &               +(0.485639620015 _d -5 * sal
+     &               - 0.340597039004 _d -3 ) *sal ) * temp
+     &               - 0.161674495909 _d -8 * sal * sal * pres ) * pres
             csound(i,j,k,bi,bj) = c0+ct+cs+cp+cstp
            ENDIF
           ENDDO
