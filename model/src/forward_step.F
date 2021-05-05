@@ -897,7 +897,7 @@ CADJ STORE hFacC, hFacS, hFacW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW  =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
-#  ifdef ALLOW_CG2D_NSA
+#  if ( defined ALLOW_CG2D_NSA || ALLOW_DEPTH_CONTROL )
 CADJ STORE aW2d, aS2d, aC2d =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE pC, pS, pW =
