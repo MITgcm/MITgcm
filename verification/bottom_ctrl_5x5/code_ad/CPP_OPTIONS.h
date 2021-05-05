@@ -19,7 +19,7 @@ C-- Forcing code options:
 
 C o Shortwave heating as extra term in external_forcing.F
 C Note: this should be a run-time option
-#define SHORTWAVE_HEATING
+#undef SHORTWAVE_HEATING
 
 C o Include/exclude Geothermal Heat Flux at the bottom of the ocean
 #undef ALLOW_GEOTHERMAL_FLUX
@@ -73,6 +73,10 @@ C   either from grid-spacing reduction effect or as artificially enhanced mixing
 C   near surface & bottom for too thin grid-cell
 #define EXCLUDE_PCELL_MIX_CODE
 
+C o Exclude/allow to use isotropic 3-D Smagorinsky viscosity as diffusivity
+C   for tracers (after scaling by constant Prandtl number)
+#undef ALLOW_SMAG_3D_DIFFUSIVITY
+
 C-- Time-stepping code options:
 
 C o Include/exclude combined Surf.Pressure and Drag Implicit solver code
@@ -83,6 +87,9 @@ C o Include/exclude Implicit vertical advection code
 
 C o Include/exclude AdamsBashforth-3rd-Order code
 #undef ALLOW_ADAMSBASHFORTH_3
+
+C o Include/exclude Quasi-Hydrostatic Stagger Time-step AdamsBashforth code
+#undef ALLOW_QHYD_STAGGER_TS
 
 C-- Model formulation options:
 
@@ -118,10 +125,45 @@ C   The following one suitable for AD but does not vectorize
 
 C-- Retired code options:
 
+C o ALLOW isotropic scaling of harmonic and bi-harmonic terms when
+C   using an locally isotropic spherical grid with (dlambda) x (dphi*cos(phi))
+C *only for use on a lat-lon grid*
+C   Setting this flag here affects both momentum and tracer equation unless
+C   it is set/unset again in other header fields (e.g., GAD_OPTIONS.h).
+C   The definition of the flag is commented to avoid interference with
+C   such other header files.
+C   The preferred method is specifying a value for viscAhGrid or viscA4Grid
+C   in data which is then automatically scaled by the grid size;
+C   the old method of specifying viscAh/viscA4 and this flag is provided
+C   for completeness only (and for use with the adjoint).
+C#define ISOTROPIC_COS_SCALING
+
+C o This flag selects the form of COSINE(lat) scaling of bi-harmonic term.
+C *only for use on a lat-lon grid*
+C   Has no effect if ISOTROPIC_COS_SCALING is undefined.
+C   Has no effect on vector invariant momentum equations.
+C   Setting this flag here affects both momentum and tracer equation unless
+C   it is set/unset again in other header fields (e.g., GAD_OPTIONS.h).
+C   The definition of the flag is commented to avoid interference with
+C   such other header files.
+C#define COSINEMETH_III
+
+C o Use "OLD" UV discretisation near boundaries (*not* recommended)
+C   Note - only works with pkg/mom_fluxform and "no_slip_sides=.FALSE."
+C          because the old code did not have no-slip BCs
+#undef OLD_ADV_BCS
+
 C o Use LONG.bin, LATG.bin, etc., initialization for ini_curviliear_grid.F
 C   Default is to use "new" grid files (OLD_GRID_IO undef) but OLD_GRID_IO
 C   is still useful with, e.g., single-domain curvilinear configurations.
 #undef OLD_GRID_IO
+
+C o Use thsice+seaice (old) call sequence: ice-Dyn,ice-Advect,ice-Thermo(thsice)
+C              as opposed to new sequence: ice-Thermo(thsice),ice-Dyn,ice-Advect
+#undef OLD_THSICE_CALL_SEQUENCE
+
+C o Use old EXTERNAL_FORCING_U,V,T,S subroutines (for backward compatibility)
+#undef USE_OLD_EXTERNAL_FORCING
 
 C-- Other option files:
 
@@ -134,8 +176,8 @@ C   each of the above pkg get its own options from its specific option file.
 C   Although this method, inherited from ECCO setup, has been traditionally
 C   used for all adjoint built, work is in progress to allow to use the
 C   standard method also for adjoint built.
-#ifdef PACKAGES_CONFIG_H
-C# include "ECCO_CPPOPTIONS.h"
-#endif
+c#ifdef PACKAGES_CONFIG_H
+c# include "ECCO_CPPOPTIONS.h"
+c#endif
 
 #endif /* CPP_OPTIONS_H */
