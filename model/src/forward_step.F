@@ -1100,7 +1100,7 @@ C--   Do "blocking" sends and receives for field "overlap" terms
       CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
       CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
 #ifdef ALLOW_AUTODIFF_TAMC
-C     These store directives avoid extra subrotuine calls, for example,
+C     These store directives avoid extra subroutine calls, for example,
 C     thermodynamics, tracers_correction_step, gchem_forcing_sep, and
 C     do_fields_blocking_exchages
 CADJ STORE theta, salt = comlev1, key = ikey_dynamics, kind = isbyte
