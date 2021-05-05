@@ -48,21 +48,22 @@ C     cg2d_s ::   *same*
       COMMON /CG2D_I_WK_R/
      & cg2d_q, cg2d_r, cg2d_s
       _RL  cg2d_q(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-#ifdef ALLOW_CG2D_NSA
-      _RL  cg2d_r(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  cg2d_s(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#else  /* ALLOW_CG2D_NSA */
       _RL  cg2d_r(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
       _RL  cg2d_s(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-#endif /* ALLOW_CG2D_NSA */
 
 #ifdef ALLOW_CG2D_NSA
 C--   COMMON /CG2D_I_WK_R2/  extra work array common block
 C     cg2d_z :: Intermediate matrix-vector product term
 C            :: reduces the number of recomputation in adjoint mode
 C            :: this field is superfluous if your cg2d is self-adjoint.
-      COMMON /CG2D_I_WK_R2/ cg2d_z
+      COMMON /CG2D_I_WK_R2/ cg2d_z, cg2d_rf, cg2d_sf
       _RL  cg2d_z(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+C     These fields are exchanged in cg2d_nsa, and there are no
+C     AD-exchanges for fields with the smaller array boundaries of
+C     cg2d_r and ct2d_s. This is the only reason to declare them here as
+C     full fields.
+      _RL  cg2d_rf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  cg2d_sf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif /* ALLOW_CG2D_NSA */
 
 #ifdef ALLOW_SRCG
@@ -72,7 +73,7 @@ C     cg2d_v :: z times the operator
 C     cg2d_q :: Intermediate matrix-vector product term
 C     cg2d_r ::   *same*
 C     cg2d_s ::   *same*
-C     sumPhi :: needed to call global_vec_sum_r8 when mutli-threaded 
+C     sumPhi :: needed to call global_vec_sum_r8 when mutli-threaded
       COMMON /CG2D_I_WK_R3/
      & cg2d_y,cg2d_v,sumPhi
       _RL  cg2d_y(1-1:sNx+1,1-1:sNy+1,nSx,nSy)

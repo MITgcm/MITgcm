@@ -277,34 +277,33 @@ C--   Call the not-self-adjoint version of cg2d
      U           numIters, nIterMin,
      I           myThid )
 #else /* not DISCONNECTED_TILES = default */
+      IF ( .FALSE. ) THEN
 #ifdef ALLOW_CG2D_NSA
 C--   Call the not-self-adjoint version of cg2d
-      CALL CG2D_NSA(
+      ELSEIF ( useNSACGSolver ) THEN
+       CALL CG2D_NSA(
      U           cg2d_b, cg2d_x,
      O           firstResidual, minResidualSq, lastResidual,
      U           numIters, nIterMin,
      I           myThid )
-#else /* not ALLOW_CG2D_NSA = default */
+#endif
 #ifdef ALLOW_SRCG
-      IF ( useSRCGSolver ) THEN
+      ELSEIF ( useSRCGSolver ) THEN
 C--   Call the single reduce CG solver
        CALL CG2D_SR(
      U           cg2d_b, cg2d_x,
      O           firstResidual, minResidualSq, lastResidual,
      U           numIters, nIterMin,
      I           myThid )
-      ELSE
-#else
-      IF (.TRUE.) THEN
-C--   Call the default CG solver
 #endif /* ALLOW_SRCG */
+      ELSE
+C--   Call the default CG solver
        CALL CG2D(
      U           cg2d_b, cg2d_x,
      O           firstResidual, minResidualSq, lastResidual,
      U           numIters, nIterMin,
      I           myThid )
       ENDIF
-#endif /* ALLOW_CG2D_NSA */
 #endif /* DISCONNECTED_TILES */
       _EXCH_XY_RL( cg2d_x, myThid )
 c     CALL TIMER_STOP ('CG2D   [SOLVE_FOR_PRESSURE]',myThid)
