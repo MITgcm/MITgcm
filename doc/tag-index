@@ -1,6 +1,7 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67y (2021/05/05)
 o pkg/shelfice:
   - Update kTopC when using SHELFICEMassStepping if ice-shelf retreat completely
     from one column or advance to cover new grid-cell ; add 4 levels TAF storage
