@@ -225,7 +225,7 @@ c     CALL EXCH_S3D_RL( cg2d_r, 1, myThid )
         _BEGIN_MASTER( myThid )
         printResidual = printResidualFreq.GE.1
         WRITE(standardmessageunit,'(A,1P2E22.14)')
-     &  ' cg2d: Sum(rhs),rhsMax = ', sumRHS,rhsMax
+     &  ' cg2d_nsa: Sum(rhs),rhsMax = ', sumRHS,rhsMax
         _END_MASTER( myThid )
       ENDIF
 
@@ -352,7 +352,7 @@ CADJ STORE cg2d_r = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
        IF ( printResidual ) THEN
         IF ( MOD( it2d-1, printResidualFreq ).EQ.0 ) THEN
          WRITE(msgBuf,'(A,I6,A,1PE21.14)')
-     &    ' cg2d: iter=', it2d, ' ; resid.= ', SQRT(err_sq)
+     &    ' cg2d_nsa: iter=', it2d, ' ; resid.= ', SQRT(err_sq)
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                       SQUEEZE_RIGHT, myThid )
         ENDIF
