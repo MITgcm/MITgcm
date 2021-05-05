@@ -35,15 +35,15 @@ CEOP
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j = 1-OLy, sNy+OLy
          DO i = 1-OLx, sNx+OLx
-          shelficeForcingT      (i,j,bi,bj) = 0. _d 0
-          shelficeForcingS      (i,j,bi,bj) = 0. _d 0
-          shelficeHeatFlux      (i,j,bi,bj) = 0. _d 0
-          shelficeFreshWaterFlux(i,j,bi,bj) = 0. _d 0
-          shiTransCoeffT        (i,j,bi,bj) = 0. _d 0
-          shiTransCoeffS        (i,j,bi,bj) = 0. _d 0
-          shelficeMass          (i,j,bi,bj) = 0. _d 0
-          shiCDragFld           (i,j,bi,bj) = 0. _d 0
-          shiDragQuadFld        (i,j,bi,bj) = 0. _d 0
+           shelficeForcingT      (i,j,bi,bj) = 0. _d 0
+           shelficeForcingS      (i,j,bi,bj) = 0. _d 0
+           shelficeHeatFlux      (i,j,bi,bj) = 0. _d 0
+           shelficeFreshWaterFlux(i,j,bi,bj) = 0. _d 0
+           shiTransCoeffT        (i,j,bi,bj) = 0. _d 0
+           shiTransCoeffS        (i,j,bi,bj) = 0. _d 0
+           shelficeMass          (i,j,bi,bj) = 0. _d 0
+           shiCDragFld           (i,j,bi,bj) = 0. _d 0
+           shiDragQuadFld        (i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
@@ -95,7 +95,7 @@ C     shiCDragQuadFld used in shelfice_u/v_drag_coeff
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j = 1-OLy, sNy+OLy
          DO i = 1-OLx, sNx+OLx
-          shelficeMass(i,j,bi,bj) = shelficeMassInit(i,j,bi,bj)
+           shelficeMass(i,j,bi,bj) = shelficeMassInit(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -105,6 +105,24 @@ C     shiCDragQuadFld used in shelfice_u/v_drag_coeff
      &     ( nIter0.NE.0 .OR. startTime.NE.baseTime
      &                   .OR. pickupSuff.NE.' ') ) THEN
         CALL SHELFICE_READ_PICKUP( 1, nIter0, myThid )
+c     ENDIF
+
+c     IF ( SHELFICEMassStepping ) THEN
+C     set/update "kTopC" to agree with changing ice-shelf mass
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j = 1-OLy, sNy+OLy
+           DO i = 1-OLx, sNx+OLx
+             IF ( kSurfC(i,j,bi,bj).LE.Nr .AND.
+     &            shelficeMass(i,j,bi,bj).GT.zeroRL ) THEN
+               kTopC(i,j,bi,bj) = kSurfC(i,j,bi,bj)
+             ELSE
+               kTopC(i,j,bi,bj) = 0
+             ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
       ENDIF
 
 #ifdef ALLOW_COST
@@ -121,9 +139,9 @@ C     shiCDragQuadFld used in shelfice_u/v_drag_coeff
 c--
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        objf_shelfice(bi,bj) = 0. _d 0
-        objf_shifwflx(bi,bj) = 0. _d 0
-        num_shifwflx(bi,bj)  = 0. _d 0
+         objf_shelfice(bi,bj) = 0. _d 0
+         objf_shifwflx(bi,bj) = 0. _d 0
+         num_shifwflx(bi,bj)  = 0. _d 0
        ENDDO
       ENDDO
 #endif /* ALLOW_COST */

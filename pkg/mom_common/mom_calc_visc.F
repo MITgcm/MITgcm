@@ -147,6 +147,7 @@ C     !LOCAL VARIABLES:
       _RL viscA4_ZSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL viscA4_DSmg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       LOGICAL calcLeith, calcSmag, calcLeithQG
+      _RL sqargAh, sqargA4, sqargAhD, sqargA4D, sqargQG, sqargSmag
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act1 = bi - myBxLo(myThid)
@@ -425,17 +426,38 @@ C Using it in Leith serves to damp instabilities in w.
      &                     + (divDy(i,j+1)*divDy(i,j+1)
      &                        + divDy(i,j)*divDy(i,j) )  )
 
-          viscAh_DLth(i,j)=
-     &     SQRT(leith2fac*grdVrt+leithD2fac*grdDiv)*L3
-          viscA4_DLth(i,j)=
-     &     SQRT(leith4fac*grdVrt+leithD4fac*grdDiv)*L5
-          viscAh_DLthd(i,j)=
-     &     SQRT(leithD2fac*grdDiv)*L3
-          viscA4_DLthd(i,j)=
-     &     SQRT(leithD4fac*grdDiv)*L5
+          sqargAh  = leith2fac*grdVrt+leithD2fac*grdDiv
+          sqargA4  = leith4fac*grdVrt+leithD4fac*grdDiv
+          sqargAhD = leithD2fac*grdDiv
+          sqargA4D = leithD4fac*grdDiv
 #ifdef ALLOW_LEITH_QG
-          viscAh_DLthQG(i,j) =
-     &     SQRT(leithQG2fac*(grdVrt+grdDiv))*L3
+          sqargQG  = leithQG2fac*(grdVrt+grdDiv)
+#endif
+
+#ifdef ALLOW_AUTODIFF
+C Avoid derivative of SQRT(0)
+          IF (sqargAh .GT.0. _d 0) sqargAh = SQRT(sqargAh)
+          IF (sqargA4 .GT.0. _d 0) sqargA4 = SQRT(sqargA4)
+          IF (sqargAhD .GT.0. _d 0) sqargAhD = SQRT(sqargAhD)
+          IF (sqargA4D .GT.0. _d 0) sqargA4D = SQRT(sqargA4D)
+# ifdef ALLOW_LEITH_QG
+          IF (sqargQG .GT.0. _d 0) sqargQG = SQRT(sqargQG)
+# endif
+#else /* ALLOW_AUTODIFF */
+          sqargAh = SQRT(sqargAh)
+          sqargA4 = SQRT(sqargA4)
+          sqargAhD = SQRT(sqargAhD)
+          sqargA4D = SQRT(sqargA4D)
+# ifdef ALLOW_LEITH_QG
+          sqargQG = SQRT(sqargQG)
+# endif
+#endif /* ALLOW_AUTODIFF */
+          viscAh_DLth(i,j) = sqargAh  * L3
+          viscA4_DLth(i,j) = sqargA4  * L5
+          viscAh_DLthd(i,j)= sqargAhD * L3
+          viscA4_DLthd(i,j)= sqargA4D * L5
+#ifdef ALLOW_LEITH_QG
+          viscAh_DLthQG(i,j)=sqargQG  * L3
 #endif
 
          ELSEIF (calcLeith) THEN
@@ -468,10 +490,16 @@ C This approximation is good to the same order as above...
          ENDIF
 
          IF (calcSmag) THEN
-          viscAh_DSmg(i,j)=L2
-     &       *SQRT(tension(i,j)**2
+          sqargSmag = tension(i,j)**2
      &       +0.25 _d 0*(strain(i+1, j )**2+strain( i ,j+1)**2
-     &                  +strain(i  , j )**2+strain(i+1,j+1)**2))
+     &                  +strain(i  , j )**2+strain(i+1,j+1)**2)
+#ifdef ALLOW_AUTODIFF
+C Avoid derivative of SQRT(0)
+          IF (sqargSmag.GT.0. _d 0) sqargSmag = SQRT(sqargSmag)
+#else
+          sqargSmag = SQRT(sqargSmag)
+#endif
+          viscAh_DSmg(i,j)=L2*sqargSmag
           viscA4_DSmg(i,j)=smag4fac*L2*viscAh_DSmg(i,j)
           viscAh_DSmg(i,j)=smag2fac*viscAh_DSmg(i,j)
          ELSE
@@ -551,17 +579,37 @@ C This is the vector magnitude of grad(div.v) squared
      &                     + (divDy(i-1,j)*divDy(i-1,j)
      &                        + divDy(i,j)*divDy(i,j) )  )
 
-          viscAh_ZLth(i,j)=
-     &     SQRT(leith2fac*grdVrt+leithD2fac*grdDiv)*L3
-          viscA4_ZLth(i,j)=
-     &     SQRT(leith4fac*grdVrt+leithD4fac*grdDiv)*L5
-          viscAh_ZLthD(i,j)=
-     &     SQRT(leithD2fac*grdDiv)*L3
-          viscA4_ZLthD(i,j)=
-     &     SQRT(leithD4fac*grdDiv)*L5
+          sqargAh  = leith2fac*grdVrt+leithD2fac*grdDiv
+          sqargA4  = leith4fac*grdVrt+leithD4fac*grdDiv
+          sqargAhD = leithD2fac*grdDiv
+          sqargA4D = leithD4fac*grdDiv
 #ifdef ALLOW_LEITH_QG
-          viscAh_ZLthQG(i,j)=
-     &     SQRT(leithQG2fac*(grdVrt + grdDiv))*L3
+          sqargQG  = leithQG2fac*(grdVrt+grdDiv)
+#endif
+#ifdef ALLOW_AUTODIFF
+C Avoid derivative of SQRT(0)
+          IF (sqargAh .GT.0. _d 0) sqargAh = SQRT(sqargAh)
+          IF (sqargA4 .GT.0. _d 0) sqargA4 = SQRT(sqargA4)
+          IF (sqargAhD .GT.0. _d 0) sqargAhD = SQRT(sqargAhD)
+          IF (sqargA4D .GT.0. _d 0) sqargA4D = SQRT(sqargA4D)
+# ifdef ALLOW_LEITH_QG
+          IF (sqargQG .GT.0. _d 0) sqargQG = SQRT(sqargQG)
+# endif
+#else /* ALLOW_AUTODIFF */
+          sqargAh = SQRT(sqargAh)
+          sqargA4 = SQRT(sqargA4)
+          sqargAhD = SQRT(sqargAhD)
+          sqargA4D = SQRT(sqargA4D)
+# ifdef ALLOW_LEITH_QG
+          sqargQG = SQRT(sqargQG)
+# endif
+#endif /* ALLOW_AUTODIFF */
+          viscAh_ZLth(i,j) = sqargAh  * L3
+          viscA4_ZLth(i,j) = sqargA4  * L5
+          viscAh_ZLthd(i,j)= sqargAhD * L3
+          viscA4_ZLthd(i,j)= sqargA4D * L5
+#ifdef ALLOW_LEITH_QG
+          viscAh_ZLthQG(i,j)=sqargQG  * L3
 #endif
 
          ELSEIF (calcLeith) THEN
@@ -592,10 +640,16 @@ C but this approximation will work on cube (and differs by 4X)
          ENDIF
 
          IF (calcSmag) THEN
-          viscAh_ZSmg(i,j)=L2
-     &      *SQRT(strain(i,j)**2
+          sqargSmag = strain(i,j)**2
      &        +0.25 _d 0*(tension( i , j )**2+tension( i ,j-1)**2
-     &                   +tension(i-1, j )**2+tension(i-1,j-1)**2))
+     &                   +tension(i-1, j )**2+tension(i-1,j-1)**2)
+#ifdef ALLOW_AUTODIFF
+C Avoid derivative of SQRT(0)
+          IF (sqargSmag.GT.0. _d 0) sqargSmag = SQRT(sqargSmag)
+#else
+          sqargSmag = SQRT(sqargSmag)
+#endif
+          viscAh_ZSmg(i,j)=L2*sqargSmag
           viscA4_ZSmg(i,j)=smag4fac*L2*viscAh_ZSmg(i,j)
           viscAh_ZSmg(i,j)=smag2fac*viscAh_ZSmg(i,j)
          ENDIF

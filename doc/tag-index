@@ -1,6 +1,49 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/shelfice:
+  - Update kTopC when using SHELFICEMassStepping if ice-shelf retreat completely
+    from one column or advance to cover new grid-cell ; add 4 levels TAF storage
+    of kTopC (to prevent major recomputations).
+  - Also prevent ice-shelf mass to become negative.
+o pkg/mom_common & gmredi:
+  - Adjust Smag and Leith code for use in Adjoint:
+    a) protect against derivative of SQRT(0) in mom_calc_visc.F and
+       gmredi_calc_qgleith.F ;
+    b) add GM-Redi QG Leith routines to ad_diff lists.
+o pkg/gmredi:
+  - fix/remove 2 TAF recomputations in GMREDI_WITH_STABLE_ADJOINT code.
+o pkg/generic_advdiff:
+  - improve "slope" calculation in DST2 Flux-Limiter advection scheme to avoid
+    potential over-flow arithmetic in division by small slope (issue #459),
+    similar to what has been done in gad_dst3fl_*.F routines.
+o pkg/diagnostics:
+  - use Integer*8 conversion in diagnostics_out.F to get time-record to write
+    in meta file (avoid integer overflow with large time & small diag-freq).
+o pkg/mom_common:
+  - initialise again hdiv in mom_calc_hdiv.F (in case it got dropped by TAF in
+    calling S/R).
+o model/src:
+  - fix a bug in convective_adjustment.F AD code by adjusting store directives
+    for theta and salt ; update experiment isomip reference AD output.
+  - a little bit of cleanup: remove unnecessary store directives and options.
+o pkg/shelfice:
+  - change expression of pLoc in shelfice_thermodynamics.F to be simply the
+    weight of the ice-shelf (= shelficeMass * gravity) replacing inaccurate
+    estimate from "R_shelfIce". Add TAF directive storage of  prognostic
+    variable "shelficeMass" in all 4 checkpointing levels. Update all reference
+    output of experiments that use pkg/shelfice (isomip & shelfice_2d_remesh)
+o verification/testreport
+  - add ad-monitor of 3-D state variables to testreport summary output
+o pkg/ggl90:
+  - avoid division by zero in adjoint of S/R GGL90_CALC (sqrt related)
+
+checkpoint67x (2021/04/12)
+o pkg/seaice:
+  - Addition to the sea ice package of 6 sea ice rheologies with different yield
+    curves and flow rules ;
+  - Add 4 new verification tests in offline_exf_seaice using new rheologies ;
+  - Update documentation with description of new rheologies and how to use them.
 o model, pkg & doc:
   - replace all occurrences of incorrect "psu" and "PSU" by "g/kg" in units and
     comments ; update the documentation accordingly.

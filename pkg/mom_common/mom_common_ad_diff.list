@@ -18,3 +18,5 @@ mom_v_coriolis_nh.f
 mom_v_metric_nh.f
 mom_v_rviscflux.f
 mom_v_sidedrag.f
+mom_visc_qgl_limit.f
+mom_visc_qgl_stretch.f
