@@ -45,10 +45,8 @@ C     === Global variables ===
 # endif
 #endif /* ALLOW_CTRL */
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifdef SHI_ALLOW_GAMMAFRICT
-#  include "tamc.h"
-#  include "tamc_keys.h"
-# endif /* SHI_ALLOW_GAMMAFRICT */
+# include "tamc.h"
+# include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -261,6 +259,33 @@ C     none of these fields are defined
 #endif /* ECCO_CTRL_DEPRECATED and ALLOW_SHIFWFLX_CONTROL */
       ENDIF
 #endif /* ALLOW_CTRL */
+
+C--   Deal with ice-shelf edge advance or retreat when allowing ice-shelf
+C     mass to change. Since current ice-shelf representation is missing
+C     a fractional ice-shelf cover representation, this turns into making
+C     or removing a "thin ice-shelf" grid-cell. Here we update "kTopC"
+C     as ice-shelf mass appears or vanishes in any surface grid-cell.
+      IF ( SHELFICEMassStepping ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j = 1-OLy,sNy+OLy
+           DO i = 1-OLx,sNx+OLx
+             IF ( kSurfC(i,j,bi,bj).LE.Nr .AND.
+     &            shelficeMass(i,j,bi,bj).GT.zeroRL ) THEN
+               kTopC(i,j,bi,bj) = kSurfC(i,j,bi,bj)
+             ELSE
+               kTopC(i,j,bi,bj) = 0
+             ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE kTopC        = comlev1, key=ikey_dynamics
+CADJ STORE shelficeMass = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
+
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
@@ -278,6 +303,7 @@ C     none of these fields are defined
      &                    + act4*max1*max2*max3
 # endif /* SHI_ALLOW_GAMMAFRICT */
 #endif /* ALLOW_AUTODIFF_TAMC */
+
 C--   make local copies of temperature, salinity and depth (pressure in deci-bar)
 C--   underneath the ice
         DO J = 1, sNy
