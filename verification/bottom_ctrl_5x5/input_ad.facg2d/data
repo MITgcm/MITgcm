@@ -40,7 +40,7 @@
  cg2dMaxIters=100,
 #cg2dTargetResidual=1.E-13,
  cg2dTargetResWunit=1.E-18,
- useNSACGSolver = .TRUE.,
+ useNSACGSolver = .FALSE.,
  &
 # Time stepping parameters
  &PARM03
