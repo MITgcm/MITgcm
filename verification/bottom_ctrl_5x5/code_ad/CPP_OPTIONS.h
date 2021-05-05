@@ -135,7 +135,7 @@ C   Although this method, inherited from ECCO setup, has been traditionally
 C   used for all adjoint built, work is in progress to allow to use the
 C   standard method also for adjoint built.
 #ifdef PACKAGES_CONFIG_H
-# include "ECCO_CPPOPTIONS.h"
+C# include "ECCO_CPPOPTIONS.h"
 #endif
 
 #endif /* CPP_OPTIONS_H */

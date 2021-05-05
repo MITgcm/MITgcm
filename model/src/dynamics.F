@@ -3,6 +3,9 @@
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 #ifdef ALLOW_MOM_COMMON
 # include "MOM_COMMON_OPTIONS.h"
 #endif
