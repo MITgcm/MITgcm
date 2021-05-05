@@ -726,12 +726,14 @@ CADJ STORE KPPdiffKzT         = comlev1, key = ikey_dynamics,
 CADJ &     kind = isbyte
 # endif
 
-# if (defined NONLIN_FRSURF) || (defined ALLOW_DEPTH_CONTROL)
+# if (defined NONLIN_FRSURF || defined ALLOW_DEPTH_CONTROL)
 CADJ STORE theta,salt = comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE etaH = comlev1, key = ikey_dynamics, kind = isbyte
 #  ifdef ALLOW_CD_CODE
 CADJ STORE etaNm1 = comlev1, key = ikey_dynamics, kind = isbyte
 #  endif
+# endif
+# ifdef NONLIN_FRSURF
 #  ifndef DISABLE_RSTAR_CODE
 CADJ STORE rStarExpC = comlev1, key = ikey_dynamics, kind = isbyte
 #  endif
