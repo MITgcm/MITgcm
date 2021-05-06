@@ -233,7 +233,7 @@ c     == local variables ==
       integer bi,bj
       integer itlo,ithi
       integer jtlo,jthi
-      integer i,j
+      integer i,j,k
       integer irec, jrec
       integer il, k2
       integer localrec, obsrec
@@ -310,16 +310,56 @@ CEOP
           endif
       enddo
 
-c--   Assign mask
-      if ( ylocmask .EQ. 'C' .OR. ylocmask .EQ. 'c' ) then
-        call ecco_cprsrl(maskC,nr,localmask,nr,myThid)
-      elseif ( ylocmask .EQ. 'S' .OR. ylocmask .EQ. 's' ) then
-        call ecco_cprsrl(maskS,nr,localmask,nr,myThid)
-      elseif ( ylocmask .EQ. 'W' .OR. ylocmask .EQ. 'w' ) then
-        call ecco_cprsrl(maskW,nr,localmask,nr,myThid)
-      else
+C--   Assign mask, write explicitly to include overlaps and
+C     avoid exchange later (e.g. in smooth routine), note that
+C     the routine ecco_cprsrl does not copy overlaps
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+
+        IF ( ylocmask .EQ. 'C' .OR. ylocmask .EQ. 'c' ) THEN
+         DO k = 1, Nr
+          DO j = 1-OLy,sNy+OLy
+           DO i = 1-OLx,sNx+OLx
+            localmask(i,j,k,bi,bj) = maskC(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+
+        ELSEIF ( ylocmask .EQ. 'S' .OR. ylocmask .EQ. 's' ) THEN
+
+         DO k = 1, Nr
+          DO j = 1-OLy,sNy+OLy
+           DO i = 1-OLx,sNx+OLx
+            localmask(i,j,k,bi,bj) = maskS(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+
+        ELSEIF ( ylocmask .EQ. 'W' .OR. ylocmask .EQ. 'w' ) THEN
+
+         DO k = 1, Nr
+          DO j = 1-OLy,sNy+OLy
+           DO i = 1-OLx,sNx+OLx
+            localmask(i,j,k,bi,bj) = maskW(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+
+        ELSE
          STOP 'cost_generic: wrong ylocmask'
-      endif
+        ENDIF
+
+#ifdef ALLOW_SMOOTH
+C       Set 2D Mask for 2D smooth routine
+        DO j = 1-OLy,sNy+OLy
+         DO i = 1-OLx,sNx+OLx
+          mask2D(i,j,bi,bj) = localmask(i,j,1,bi,bj)
+         ENDDO
+        ENDDO
+#endif
+C-- end bi/bj loop for setting masks
+       ENDDO
+      ENDDO
 
 c-- set nrecloop to nrecloc
       nrecloop=nrecloc
@@ -372,24 +412,11 @@ c--     Compute masked model-data difference
      &    call ecco_addmask(localdif,difmask, nnzobs,localdifsum,
      &    localdifnum, nnzobs,myThid)
 
-#ifdef ALLOW_SMOOTH
-         do bj = myByLo(myThid), myByHi(myThid)
-          do bi = myBxLo(myThid), myBxHi(myThid)
-           do j = 1-OLy,sNy+OLy
-            do i = 1-OLx,sNx+OLx
-             mask2D(i,j,bi,bj) = localmask(i,j,1,bi,bj)
-            enddo
-           enddo
-          enddo
-         enddo
-#endif
-
         if (addVariaCost) then
 
 #ifdef ALLOW_SMOOTH
         if ( useSMOOTH.AND.dosmooth.AND.
      &     (nnzbar.EQ.1).AND.(nnzobs.EQ.1) ) then
-CADJ STORE mask2D = tapelev_init, key = 1
         call smooth_hetero2d(localdif,mask2D,
      &     posproc_c(k2smooth),posproc_i(k2smooth),myThid)
         endif
