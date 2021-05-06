@@ -673,9 +673,6 @@ CADJ &     kind = isbyte
         CALL GCHEM_CALC_TENDENCY( myTime, myIter, myThid )
         CALL TIMER_STOP ('GCHEM_CALC_TENDENCY [FORWARD_STEP]',myThid)
       ENDIF
-# ifdef ALLOW_AUTODIFF_TAMC
-#  include "gchem_ad_check_lev1_dir.h"
-# endif
 #endif /* ALLOW_GCHEM */
 
 #ifdef ALLOW_LONGSTEP
