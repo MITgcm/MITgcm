@@ -11,7 +11,7 @@ C============================================================
       INTEGER NFILESPROFMAX
       PARAMETER ( NFILESPROFMAX=20 )
       INTEGER NVARMAX
-      PARAMETER ( NVARMAX=17 )
+      PARAMETER ( NVARMAX=16 )
       INTEGER NLEVELMAX
       PARAMETER ( NLEVELMAX=110 )
       INTEGER NUM_INTERP_POINTS

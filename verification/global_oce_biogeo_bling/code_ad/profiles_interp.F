@@ -103,10 +103,6 @@ c horizontal interpolation:
         elseif (var_cur.EQ.'POC') then
                tab_coeffs1(q)=POC(i_cur(q),j_cur(q),k,bi,bj)
 #endif
-#ifdef INCLUDE_SOUNDSPEED_CALC_CODE
-        elseif (var_cur.EQ.'CS') then
-               tab_coeffs1(q)=csound(i_cur(q),j_cur(q),k,bi,bj)
-#endif
 #ifdef ALLOW_ECCO
         elseif (var_cur.EQ.'eta') then
                tab_coeffs1(q)=m_eta(i_cur(q),j_cur(q),bi,bj)
