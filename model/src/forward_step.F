@@ -594,7 +594,7 @@ C      Read in coupling data that I import.
 C******************************************************
 C     Store surface forcing fields if required to avoid
 C     calling load_fields_driver in forward_step_ad
-# include "checkpoint_lev1_forcing_directives.h"
+# include "check_lev1_dir_forcing.h"
 C******************************************************
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -654,7 +654,7 @@ C     computed in do_oceanics_phys. Storing them here avoids calling
 C     do_oceanic_phys again in forward_step_ad, which should improve
 C     performance because expensive parts of the model are not
 C     recomputed (e.g. seaice).
-# include "checkpoint_lev1_oceanicphys_directives.h"
+# include "check_lev1_dir_ocephys.h"
 C***********************************************************************
 #endif /* ALLOW_AUTODIFF_TAMC */
 
