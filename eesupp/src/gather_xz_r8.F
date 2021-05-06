@@ -47,7 +47,6 @@ C !LOCAL VARIABLES:
       INTEGER iG
       INTEGER iBase
 #ifdef ALLOW_EXCH2
-      INTEGER iGjLoc
       INTEGER tN
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_USE_MPI
@@ -75,12 +74,11 @@ C     safer to reset to zero to avoid unknown values in output file
           DO bj=1,nSy
            DO bi=1,nSx
             tN = W2_myTileList(bi,bj)
-            iGjLoc = 0
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
             DO i=1,sNx
-             iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
+             iG=exch2_txXStackLo(tN)+i-1
              IF (ABS(myField(i,bi,bj)).GT.0. _d 0)
      &        gloBuff(iG) = myField(i,bi,bj)
             ENDDO
@@ -140,12 +138,11 @@ C--   Process 0 gathers the local arrays into the global buffer.
           DO bj=1,nSy
            DO bi=1,nSx
             tN = W2_procTileList(bi,bj,np)
-            iGjLoc = 0
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
             DO i=1,sNx
-             iG=exch2_txGlobalo(tN)+iGjLoc*(i-1)
+             iG=exch2_txXStackLo(tN)+ i-1
              IF (ABS(temp(i,bi,bj)).GT.0. _d 0)
      &        gloBuff(iG) = temp(i,bi,bj)
             ENDDO

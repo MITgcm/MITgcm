@@ -88,10 +88,6 @@ C Global variables / common blocks
 # include "W2_EXCH2_TOPOLOGY.h"
 # include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
-#include "EEBUFF_SCPU.h"
-#ifdef ALLOW_FIZHI
-# include "fizhi_SIZE.h"
-#endif /* ALLOW_FIZHI */
 #include "MDSIO_BUFF_3D.h"
 
 C !INPUT PARAMETERS:
@@ -481,19 +477,9 @@ C Loop over all tiles
 #ifdef ALLOW_EXCH2
           IF ( useExch2ioLayOut ) THEN
             tN = W2_myTileList(bi,bj)
-c           tNx = exch2_tNx(tN)
-c           tNy = exch2_tNy(tN)
-c           global_nTx = exch2_global_Nx/tNx
-            tBx = exch2_txGlobalo(tN) - 1
-            IF   ( exch2_mydNx(tN) .GT. xSize ) THEN
-C-          face x-size larger than glob-size : fold it
-              iGjLoc = 0
-              jGjLoc = exch2_mydNx(tN) / xSize
-            ELSE
-C-          default (face fit into global-IO-array)
-              iGjLoc = 0
-              jGjLoc = 1
-            ENDIF
+            tBx = exch2_txXStackLo(tN) - 1
+            tNx = exch2_tNx(tN)
+            global_nTx = exch2_xStack_Nx/tNx
           ENDIF
 #endif /* ALLOW_EXCH2 */
 
@@ -503,8 +489,8 @@ C--- Case of 1 Global file:
            DO k=kLo,kHi
             irec = 1 + tBx/tNx
      &           +( k-kLo + (irecord-1)*nNz )*global_nTx
-            i1 = bBij + 1 + (k-kLo)*sNx
-            i2 = bBij +           k*sNx
+            i1 = bBij + 1 + (k-kLo)*tNx
+            i2 = bBij +           k*tNx
             IF ( filePrec.EQ.precFloat32 ) THEN
              WRITE(dUnit,rec=irec) (xz_buffer_r4(i),i=i1,i2)
             ELSE
@@ -701,10 +687,6 @@ C Global variables / common blocks
 # include "W2_EXCH2_TOPOLOGY.h"
 # include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
-#include "EEBUFF_SCPU.h"
-#ifdef ALLOW_FIZHI
-# include "fizhi_SIZE.h"
-#endif /* ALLOW_FIZHI */
 #include "MDSIO_BUFF_3D.h"
 
 C !INPUT PARAMETERS:
@@ -1094,19 +1076,9 @@ C Loop over all tiles
 #ifdef ALLOW_EXCH2
           IF ( useExch2ioLayOut ) THEN
             tN = W2_myTileList(bi,bj)
-c           tNx = exch2_tNx(tN)
-c           tNy = exch2_tNy(tN)
-c           global_nTx = exch2_global_Nx/tNx
-            tBy = exch2_tyGlobalo(tN) - 1
-            IF   ( exch2_mydNy(tN) .GT. ySize ) THEN
-C-          face x-size larger than glob-size : fold it
-              iGjLoc = exch2_mydNx(tN)
-              jGjLoc = 0
-            ELSE
-C-          default (face fit into global-IO-array)
-              iGjLoc = 0
-              jGjLoc = 1
-            ENDIF
+            tBy = exch2_tyYStackLo(tN) - 1
+            tNy = exch2_tNy(tN)
+            global_nTy = exch2_yStack_Ny/tNy
           ENDIF
 #endif /* ALLOW_EXCH2 */
 
@@ -1116,8 +1088,8 @@ C--- Case of 1 Global file:
            DO k=kLo,kHi
             irec = 1 + tBy/tNy
      &           +( k-kLo + (irecord-1)*nNz )*global_nTy
-            i1 = bBij + 1 + (k-kLo)*sNy
-            i2 = bBij +           k*sNy
+            i1 = bBij + 1 + (k-kLo)*tNy
+            i2 = bBij +           k*tNy
             IF ( filePrec.EQ.precFloat32 ) THEN
              WRITE(dUnit,rec=irec) (yz_buffer_r4(i),i=i1,i2)
             ELSE

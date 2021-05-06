@@ -47,7 +47,6 @@ C !LOCAL VARIABLES:
       INTEGER jG
       INTEGER jBase
 #ifdef ALLOW_EXCH2
-      INTEGER jGjLoc
       INTEGER tN
 #endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_USE_MPI
@@ -75,19 +74,11 @@ C     safer to reset to zero to avoid unknown values in output file
           DO bj=1,nSy
            DO bi=1,nSx
             tN = W2_myTileList(bi,bj)
-            IF  ( exch2_tNy(tN) .GT. ySize ) THEN
-C-          tile y-size larger than glob-size : make a long line
-             jGjLoc = 0
-            ELSE
-C-          default (face fit into global-IO-array)
-             jGjLoc = 1
-            ENDIF
-
             DO j=1,sNy
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-             jG=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
+             jG=exch2_tyYStackLo(tN)+j-1
              IF (ABS(myField(j,bi,bj)).GT.0. _d 0)
      &        gloBuff(jG) = myField(j,bi,bj)
             ENDDO
@@ -147,19 +138,11 @@ C--   Process 0 gathers the local arrays into the global buffer.
           DO bj=1,nSy
            DO bi=1,nSx
             tN = W2_procTileList(bi,bj,np)
-            IF  ( exch2_tNy(tN) .GT. ySize ) THEN
-C-          tile y-size larger than glob-size : make a long line
-             jGjLoc = 0
-            ELSE
-C-          default (face fit into global-IO-array)
-             jGjLoc = 1
-            ENDIF
-
             DO j=1,sNy
 #ifdef TARGET_NEC_SX
 !cdir novector
 #endif
-             jG=exch2_tyGlobalo(tN)+jGjLoc*(j-1)
+             jG=exch2_tyYStackLo(tN)+j-1
              IF (ABS(temp(j,bi,bj)).GT.0. _d 0)
      &        gloBuff(jG) = temp(j,bi,bj)
             ENDDO
