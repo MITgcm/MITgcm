@@ -658,13 +658,13 @@ C     recomputed (e.g. seaice).
 C***********************************************************************
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifdef ALLOW_GCHEM
+#ifdef GCHEM_ADD2TR_TENDENCY
+#ifndef ALLOW_AUTODIFF
       IF ( useGCHEM ) THEN
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE pTracer  = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
-CADJ STORE theta, salt = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
+CADJ STORE pTracer     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE theta, salt = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
 #ifdef ALLOW_DEBUG
         IF (debugMode) CALL DEBUG_CALL('GCHEM_CALC_TENDENCY',myThid)
@@ -672,8 +672,13 @@ CADJ &     kind = isbyte
         CALL TIMER_START('GCHEM_CALC_TENDENCY [FORWARD_STEP]',myThid)
         CALL GCHEM_CALC_TENDENCY( myTime, myIter, myThid )
         CALL TIMER_STOP ('GCHEM_CALC_TENDENCY [FORWARD_STEP]',myThid)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gchemTendency = comlev1, key=ikey_dynamics, kind=isbyte
+#endif
+#ifndef ALLOW_AUTODIFF
       ENDIF
-#endif /* ALLOW_GCHEM */
+#endif
+#endif /* GCHEM_ADD2TR_TENDENCY */
 
 #ifdef ALLOW_LONGSTEP
       IF ( usePTRACERS .AND. LS_whenToSample .EQ. 0 ) THEN
