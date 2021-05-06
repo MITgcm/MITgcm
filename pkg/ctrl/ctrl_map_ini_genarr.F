@@ -245,7 +245,7 @@ C     !LOCAL VARIABLES:
       _RS dummyRS(1)
       CHARACTER*(80) fnamegenIn
       CHARACTER*(80) fnamegenOut
-      CHARACTER*(80) fnamebase
+      CHARACTER*(MAX_LEN_FNAM) fnamebase
       INTEGER ilgen
       LOGICAL doglobalread
       LOGICAL ladinit
@@ -398,7 +398,7 @@ C     !LOCAL VARIABLES:
       _RS dummyRS(1)
       CHARACTER*(80) fnamegenIn
       CHARACTER*(80) fnamegenOut
-      CHARACTER*(80) fnamebase
+      CHARACTER*(MAX_LEN_FNAM) fnamebase
       INTEGER ilgen
       LOGICAL doglobalread
       LOGICAL ladinit

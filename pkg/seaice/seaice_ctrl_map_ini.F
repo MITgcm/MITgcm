@@ -59,7 +59,7 @@ c     == local variables ==
       character*( 80)   fnamegeneric
 
       _RL     fac
-      _RL tmptest
+      _RL     tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
 c     == external ==
       integer  ilnblnk

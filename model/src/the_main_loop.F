@@ -237,6 +237,15 @@ C     == Local variables ==
 #ifdef STORE_LOADEDREC_TEST
       INTEGER bi,bj
 #endif /* STORE_LOADEDREC_TEST */
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER ilev_1
+      INTEGER ilev_2
+      INTEGER ilev_3
+      INTEGER ilev_4
+      INTEGER max_lev2
+      INTEGER max_lev3
+      INTEGER max_lev4
+#endif
 CEOP
 
 #ifdef ALLOW_DEBUG

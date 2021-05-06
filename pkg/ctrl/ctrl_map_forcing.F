@@ -67,6 +67,7 @@ C     == Local variables ==
       integer il
       logical doglobalread
       logical ladinit
+      _RL     tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       character*( 80)   fnametauu
       character*( 80)   fnametauv

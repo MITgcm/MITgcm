@@ -39,25 +39,10 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-      integer bi,bj
-      integer i,j,k
-      integer ntmp
-      integer ivarindex
       integer iUnit
-      integer iobcs
-      integer il
-      integer errio
-      integer startrec
-      integer endrec
-      integer difftime(4)
-      _RL     diffsecs
-      _RL     dummy
 
-      character*(80)   ymaskobcs
-      character*(max_len_prec) record
       character*(max_len_mbuf) msgbuf
 
-      integer nwetc3d
 #if (defined (ALLOW_GENARR2D_CONTROL) || defined (ALLOW_GENARR3D_CONTROL) || defined (ALLOW_GENTIM2D_CONTROL))
       integer iarr,jarr
 #endif
