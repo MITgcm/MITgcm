@@ -81,10 +81,8 @@ C     == end of interface ==
      O         obcs_file0,
      I         myTime, myIter, myThid )
 
-            _BARRIER
             CALL READ_REC_XZ_RL( obcs_file0, exf_iprec_obcs, nNz,
      &                        obcs_xz_1, count0, slice, myIter, myThid )
-            _BARRIER
          ENDIF
 
          IF ( first .OR. changed ) THEN
@@ -96,10 +94,8 @@ C     == end of interface ==
      O         obcs_file1,
      I         myTime, myIter, myThid )
 
-            _BARRIER
             CALL READ_REC_XZ_RL( obcs_file1, exf_iprec_obcs, nNz,
      &                        obcs_xz_1, count1, slice, myIter, myThid )
-            _BARRIER
          ENDIF
 
          DO bj = myByLo(myThid),myByHi(myThid)
@@ -192,10 +188,8 @@ C     == end of interface ==
      O         obcs_file0,
      I         myTime, myIter, myThid )
 
-            _BARRIER
             CALL READ_REC_YZ_RL( obcs_file0, exf_iprec_obcs, nNz,
      &                       obcs_yz_1, count0, slice, myIter, myThid )
-            _BARRIER
          ENDIF
 
          IF ( first .OR. changed ) THEN
@@ -207,10 +201,8 @@ C     == end of interface ==
      O         obcs_file1,
      I         myTime, myIter, myThid )
 
-            _BARRIER
             CALL READ_REC_YZ_RL( obcs_file1, exf_iprec_obcs, nNz,
      &                       obcs_yz_1, count1, slice, myIter, myThid )
-            _BARRIER
          ENDIF
 
          DO bj = myByLo(myThid),myByHi(myThid)
@@ -291,6 +283,8 @@ C     == end of interface ==
 
       STOP 'S/R EXF_SET_OBCS_X no longer maintained'
 
+      slice = 'noset'
+
       IF ( obcs_file .NE. ' ' ) THEN
 
          IF ( first ) THEN
@@ -302,7 +296,7 @@ C     == end of interface ==
      I         myTime, myIter, myThid )
 
             CALL READ_REC_XZ_RL( obcs_file0, exf_iprec_obcs, 1,
-     &                           obcs_x_1, count0, myIter, myThid )
+     &                        obcs_x_1, count0, slice, myIter, myThid )
          ENDIF
 
          IF (( first ) .OR. ( changed )) THEN
@@ -315,7 +309,7 @@ C     == end of interface ==
      I         myTime, myIter, myThid )
 
             CALL READ_REC_XZ_RL( obcs_file1, exf_iprec_obcs, 1,
-     &                           obcs_x_1, count1, myIter, myThid )
+     &                        obcs_x_1, count1, slice, myIter, myThid )
          ENDIF
 
          DO bj = myByLo(myThid),myByHi(myThid)
@@ -386,11 +380,14 @@ C     == routine arguments ==
 C     == local variables ==
 
       CHARACTER*(128) obcs_file0, obcs_file1
+      CHARACTER*(5) slice
       INTEGER bi, bj, j
 
 C     == end of interface ==
 
       STOP 'S/R EXF_SET_OBCS_X no longer maintained'
+
+      slice = 'noset'
 
       IF ( obcs_file .NE. ' ' ) THEN
 
@@ -403,7 +400,7 @@ C     == end of interface ==
      I         myTime, myIter, myThid )
 
             CALL READ_REC_YZ_RL( obcs_file0, exf_iprec_obcs, 1,
-     &                           obcs_y_1, count0, myIter, myThid )
+     &                       obcs_y_1, count0, slice, myIter, myThid )
          ENDIF
 
          IF (( first ) .OR. ( changed )) THEN
@@ -416,7 +413,7 @@ C     == end of interface ==
      I         myTime, myIter, myThid )
 
             CALL READ_REC_YZ_RL( obcs_file1, exf_iprec_obcs, 1,
-     &                           obcs_y_1, count1, myIter, myThid )
+     &                       obcs_y_1, count1, slice, myIter, myThid )
          ENDIF
 
          DO bj = myByLo(myThid),myByHi(myThid)

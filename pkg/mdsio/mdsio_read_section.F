@@ -132,7 +132,7 @@ C Set dimensions:
       useExch2ioLayOut = .FALSE.
 #ifdef ALLOW_EXCH2
       IF ( W2_useE2ioLayOut ) THEN
-        xSize = exch2_global_Nx
+        xSize = exch2_xStack_Nx
         ySize = 1
         useExch2ioLayOut = .TRUE.
       ENDIF
@@ -277,18 +277,6 @@ C If negative check for global file with MDS name (ie. fName.data)
 
 C- endif iAmDoingIO
       ENDIF
-
-C Initialize buffers
-C r4seg/r8seg get filled in pass routine
-      DO i = 1, xSize
-       x_buffer_r4(i) = 0.
-       x_buffer_r8(i) = 0. _d 0
-      ENDDO
-      DO i = 1, sNx*nNz*nSx*nSy
-       xz_buffer_r4(i) = 0.
-       xz_buffer_r8(i) = 0. _d 0
-      ENDDO
-
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -459,7 +447,7 @@ C If we are writing to a tiled MDS file then we open each one here
      &                  SQUEEZE_RIGHT, myThid)
             ENDIF
             length_of_rec = MDS_RECLEN( filePrec, sNx*nNz, myThid )
-            OPEN( dUnit, file=dataFName, status=_OLD_STATUS,
+            OPEN( dUnit, file=dataFName, status='old',
      &            access='direct', recl=length_of_rec )
             fileIsOpen=.TRUE.
            ELSE
@@ -695,7 +683,7 @@ C Set dimensions:
 #ifdef ALLOW_EXCH2
       IF ( W2_useE2ioLayOut ) THEN
         xSize = 1
-        ySize = exch2_global_Ny
+        ySize = exch2_yStack_Ny
         useExch2ioLayOut = .TRUE.
       ENDIF
 #endif /* ALLOW_EXCH2 */
@@ -836,32 +824,21 @@ C If negative check for global file with MDS name (ie. fName.data)
           ENDIF
         ENDIF
 
-
 C- endif iAmDoingIO
       ENDIF
 
-C Initialize buffers
-C r4seg/r8seg get filled in pass routine
-      DO j = 1, ySize
-       y_buffer_r4(j) = 0.
-       y_buffer_r8(j) = 0. _d 0
-      ENDDO
-      DO j = 1, sNy*nNz*nSx*nSy
-       yz_buffer_r4(j) = 0.
-       yz_buffer_r8(j) = 0. _d 0
-      ENDDO
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
       IF (useSingleCpuIO) THEN
 
 C Master thread of process 0, only, opens a global file
        IF ( iAmDoingIO ) THEN
+
 C If global file is visible to process 0, then open it here.
 C Otherwise stop program.
          IF ( globalFile) THEN
+
           length_of_rec = MDS_RECLEN( filePrec, ySize, myThid )
-          OPEN( dUnit, file=dataFName, status=_OLD_STATUS,
+          OPEN( dUnit, file=dataFName, status='old',
      &         access='direct', recl=length_of_rec )
          ELSE
           WRITE(msgBuf,'(2A)')
@@ -1020,7 +997,7 @@ C If we are writing to a tiled MDS file then we open each one here
      &                  SQUEEZE_RIGHT, myThid)
             ENDIF
             length_of_rec = MDS_RECLEN( filePrec, sNy*nNz, myThid )
-            OPEN( dUnit, file=dataFName, status=_OLD_STATUS,
+            OPEN( dUnit, file=dataFName, status='old',
      &            access='direct', recl=length_of_rec )
             fileIsOpen=.TRUE.
            ELSE
