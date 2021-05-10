@@ -268,6 +268,17 @@ CML         CALL PRINT_ERROR( msgBuf , 1)
 CML         errCount = errCount + 1
 CML      ENDIF
 
+      IF ( SHELFICEMassStepping .AND. useSEAICE ) THEN
+        WRITE(msgBuf,'(2A)') '** WARNING ** SHELFICE_CHECK: ',
+     &   'pkg/seaice IGNORES Ice-Shelf retreat/advance'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+        WRITE(msgBuf,'(2A)') '** WARNING ** SHELFICE_CHECK: ',
+     &   ' that might occur with SHELFICEMassStepping'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                      SQUEEZE_RIGHT, myThid )
+      ENDIF
+
       IF ( errCount.GE.1 ) THEN
         WRITE(msgBuf,'(A,I3,A)')
      &       'SHELFICE_CHECK: detected', errCount,' fatal error(s)'

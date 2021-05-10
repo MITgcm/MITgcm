@@ -9,3 +9,4 @@ gmredi_slope_limit.f
 gmredi_slope_psi.f
 gmredi_xtransport.f
 gmredi_ytransport.f
+gmredi_calc_qgleith.f
