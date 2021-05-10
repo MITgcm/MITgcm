@@ -610,27 +610,25 @@ C--     Step forward fields and calculate time tendency terms.
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_KPP
-CADJ STORE uVel, vVel = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
+CADJ STORE uVel, vVel = comlev1, key = ikey_dynamics, kind = isbyte
 # endif /* ALLOW_KPP */
 # ifdef EXACT_CONSERV
-CADJ STORE EmPmR              = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE PmEpR              = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE EmPmR      = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE PmEpR      = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 # ifdef ALLOW_OBCS
-CADJ STORE salt               = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE totphihyd          = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE salt       = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE totphihyd  = comlev1, key = ikey_dynamics, kind = isbyte
 #  ifdef ALLOW_OBCS_STEVENS
-CADJ STORE gsNm1              = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE gtNm1              = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE gsNm1      = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE gtNm1      = comlev1, key = ikey_dynamics, kind = isbyte
 #  endif
 # endif /* ALLOW_OBCS */
 # ifdef ALLOW_PTRACERS
-CADJ STORE pTracer               = comlev1, key = ikey_dynamics,
-CADJ &     kind = isbyte
+CADJ STORE pTracer    = comlev1, key = ikey_dynamics, kind = isbyte
 # endif /* ALLOW_PTRACERS */
 # ifdef ALLOW_DEPTH_CONTROL
-CADJ STORE hFacC = comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE hFacC      = comlev1, key = ikey_dynamics, kind = isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -841,17 +839,11 @@ CADJ STORE hFacC, hFacS, hFacW =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
 CADJ STORE recip_hFacC, recip_hFacS, recip_hFacW  =
 CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
-#  if ( defined ALLOW_CG2D_NSA || ALLOW_DEPTH_CONTROL )
-CADJ STORE aW2d, aS2d, aC2d =
-CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
-CADJ STORE pC, pS, pW =
-CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
-#  endif
 # endif
 #endif /* NONLIN_FRSURF */
 
 #if ( defined NONLIN_FRSURF || defined ALLOW_SOLVE4_PS_AND_DRAG || \
-      defined ALLOW_DEPTH_CONTROL )
+      defined ALLOW_CG2D_NSA || defined ALLOW_DEPTH_CONTROL )
 C-    update CG2D matrix (and preconditioner)
       IF ( momStepping .AND.
      &     ( nonlinFreeSurf.GT.2 .OR. selectImplicitDrag.EQ.2 ) ) THEN
@@ -859,6 +851,12 @@ C-    update CG2D matrix (and preconditioner)
         CALL UPDATE_CG2D( myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_CG2D         [FORWARD_STEP]',myThid)
       ENDIF
+# ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE aW2d, aS2d, aC2d =
+CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
+CADJ STORE pC, pS, pW =
+CADJ &     comlev1, key = ikey_dynamics, kind = isbyte
+# endif
 #endif /* NONLIN_FRSURF or ALLOW_SOLVE4_PS_AND_DRAG */
 
 C--   Apply Filters to u*,v* before SOLVE_FOR_PRESSURE
