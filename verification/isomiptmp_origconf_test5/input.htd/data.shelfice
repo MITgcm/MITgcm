@@ -1,0 +1,17 @@
+# ===================================
+# | Parameters for SHELFICE package |
+# ===================================
+ &SHELFICE_PARM01
+ SHELFICEconserve = .TRUE.,
+#SHELFICEboundaryLayer = .TRUE.,
+ SHELFICEtopoFile='icetopo.exp1',
+#SHELFICEloadAnomalyFile = 'phi0surf.exp1.jmd95z',
+ SHELFICEmassFile='iceShelf_Mass.bin',
+ SHELFICEadvDiffHeatFlux = .TRUE.,
+#no_slip_shelfice = .FALSE.,   <- the default is: =no_slip_bottom (=F here), free-slip BC
+ SHELFICEuseGammaFrict = .TRUE.,
+ SHELFICEselectDragQuadr=1,
+#SHELFICE_oldCalcUStar=.TRUE., <- the default is: =F
+#----
+ SHELFICEwriteState = .TRUE.,
+ &

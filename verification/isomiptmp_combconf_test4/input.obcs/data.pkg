@@ -1,0 +1,7 @@
+# Packages
+ &PACKAGES
+ useShelfIce=.TRUE.,
+ useOBCS=.TRUE.,
+ useDiagnostics=.TRUE.,
+#useMNC=.TRUE.,
+ &

@@ -1,0 +1,90 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ Tref = 30*-1.9,
+ Sref = 30*34.4,
+ viscAz=1.E-3,
+ viscAh=1000.,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ diffKhT=100.0,
+ diffKzT=5.E-5,
+ diffKhS=100.0,
+ diffKzS=5.E-5,
+ ivdc_kappa=1.,
+ implicitDiffusion=.TRUE.,
+ implicitViscosity=.TRUE.,
+ bottomDragQuadratic=2.5E-3,
+#selectBotDragQuadr=2,
+#useCDScheme = .TRUE.,
+ useJamartWetPoints=.TRUE.,
+#--
+ eosType='JMD95Z',
+ HeatCapacity_Cp = 3974.,
+ rhoConst=1030.,
+ gravity=9.81,
+ convertFW2Salt = 33.4,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+#select_rStar=2,
+ nonlinFreeSurf=4,
+ hFacInf=0.02,
+ hFacSup=2.0,
+#useRealFreshWaterFlux=.TRUE.,
+ hFacMin=0.05,
+#--
+ readBinaryPrec=64,
+#writeBinaryPrec=64,
+#globalFiles=.TRUE.,
+#debugLevel=3,
+ plotLevel =0,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-13,
+ cg3dMaxIters=400,
+ cg3dTargetResidual=1.E-13,
+ &
+
+# Time stepping parameters
+ &PARM03
+ nIter0 = 8640,
+ nTimeSteps=20,
+ deltaT=1800.,
+ abEps=0.1,
+ momDissip_In_AB=.FALSE.,
+#cAdjFreq = -1.,
+#tauCD = 400000.,
+ pChkptFreq= 0.,
+ chkptFreq=  0.,
+ dumpFreq=   0.,
+ monitorSelect=2,
+ monitorFreq=1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingSphericalPolarGrid=.TRUE.,
+ ygOrigin = -80.0,
+ delX=50*0.3,
+ delY=100*0.1,
+ delZ=30*30.0,
+#-
+ pCellMix_select= 20,
+ pCellMix_delR  = 20.,
+# interViscAr_pCell = .TRUE.,
+# interDiffKr_pCell = .TRUE.,
+ pCellMix_viscAr = 30*4.e-4,
+ pCellMix_diffKr = 30*2.e-4,
+# current default: diffKzT=5.E-5, viscAz=1.E-3,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile='bathy.box',
+ &
