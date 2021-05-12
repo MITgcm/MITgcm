@@ -145,6 +145,16 @@ C Assume nothing
       pIL = ILNBLNK( mdsioLocalDir )
       nNz = 1 + kHi - kLo
 
+C Initialize buffers
+      DO i=1, xSize
+        x_buffer_r4(i) = 0.
+        x_buffer_r8(i) = 0. _d 0
+      ENDDO
+      DO i=1, sNx*Nr*nSx*nSy
+        xz_buffer_r4(i) = 0.
+        xz_buffer_r8(i) = 0. _d 0
+      ENDDO
+
 C Only do I/O if I am the master thread (and mpi process 0 IF useSingleCpuIO):
       iAmDoingIO = MASTER_CPU_IO(myThid)
 
@@ -694,6 +704,16 @@ C Assume nothing
       IL  = ILNBLNK( fName )
       pIL = ILNBLNK( mdsioLocalDir )
       nNz = 1 + kHi - kLo
+
+C Initialize buffers
+      DO j=1, ySize
+        y_buffer_r4(j) = 0.
+        y_buffer_r8(j) = 0. _d 0
+      ENDDO
+      DO j=1, sNy*Nr*nSx*nSy
+        yz_buffer_r4(j) = 0.
+        yz_buffer_r8(j) = 0. _d 0
+      ENDDO
 
 C Only do I/O if I am the master thread (and mpi process 0 IF useSingleCpuIO):
       iAmDoingIO = MASTER_CPU_IO(myThid)

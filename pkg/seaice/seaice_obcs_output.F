@@ -56,7 +56,6 @@ C--   Write OB aray to binary files (mainly for debugging => use "diagFreq")
      &     DIFFERENT_MULTIPLE(diagFreq,myTime,deltaTClock)
      &   ) THEN
 
-       _BARRIER
         prec = writeBinaryPrec
 c       IF ( rwSuffixType.EQ.0 ) THEN
           WRITE(suff,'(I10.10)') myIter
@@ -101,8 +100,6 @@ C     Write Sea-Ice OB arrays
         CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWuice,5,'west ',myIter,myThid)
         CALL WRITE_REC_YZ_RL(fn,prec, 1,OBWvice,6,'west ',myIter,myThid)
 # endif
-
-       _BARRIER
 
       ENDIF
 
