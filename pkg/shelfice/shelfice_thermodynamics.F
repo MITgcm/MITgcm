@@ -90,6 +90,7 @@ C     drKp1, recip_drLoc
       _RL uLoc(1:sNx+1,1:sNy+1)
       _RL vLoc(1:sNx+1,1:sNy+1)
       _RL velSq(1:sNx,1:sNy)
+      _RL tTMP, sTMP, uTMP, vTMP, vSqTmp
       _RL thetaFreeze, saltFreeze, recip_Cp
       _RL freshWaterFlux
 #ifdef ALLOW_ISOMIP_TD
@@ -376,6 +377,14 @@ C--   average over boundary layer width
           DO I = 1, sNx
            K   = kTopC(I,J,bi,bj)
            IF ( K .NE. 0 .AND. K .LT. Nr ) THEN
+C           This local variable assignment/reassignment is simply to
+C           avoid TAF recomputations... Oh the games we play...
+            tTMP   = tLoc (I,J)
+            sTMP   = sLoc (I,J)
+            uTMP   = uLoc (I,J)
+            vTMP   = vLoc (I,J)
+            vSqTMP = velSq(I,J)
+
             Kp1 = MIN(Nr,K+1)
 C--   overlap into lower cell
             drKp1 = drF(K)*( 1. _d 0 - _hFacC(I,J,K,bi,bj) )
@@ -384,23 +393,29 @@ C--   lower cell may not be as thick as required
             drKp1 = MAX( drKp1, 0. _d 0 )
             recip_drLoc = 1. _d 0 /
      &           ( drF(K)*_hFacC(I,J,K,bi,bj) + drKp1 )
-            tLoc(I,J) = ( tLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
+            tTMP = ( tTMP * drF(K)*_hFacC(I,J,K,bi,bj)
      &           + theta(I,J,Kp1,bi,bj) *drKp1 )
      &           * recip_drLoc
-            sLoc(I,J) = ( sLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
+            sTMP = ( sTMP * drF(K)*_hFacC(I,J,K,bi,bj)
      &           + MAX(salt(I,J,Kp1,bi,bj), zeroRL) * drKp1 )
      &           * recip_drLoc
-            uLoc(I,J) = ( uLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
+            uTMP = ( uTMP * drF(K)*_hFacC(I,J,K,bi,bj)
      &           + drKp1 * recip_hFacC(I,J,Kp1,bi,bj) * halfRL *
      &           ( uVel(I,  J,Kp1,bi,bj) * _hFacW(I,  J,Kp1,bi,bj)
      &           + uVel(I+1,J,Kp1,bi,bj) * _hFacW(I+1,J,Kp1,bi,bj) )
      &           ) * recip_drLoc
-            vLoc(I,J) = ( vLoc(I,J) * drF(K)*_hFacC(I,J,K,bi,bj)
+            vTMP = ( vTMP * drF(K)*_hFacC(I,J,K,bi,bj)
      &           + drKp1 * recip_hFacC(I,J,Kp1,bi,bj) * halfRL *
      &           ( vVel(I,J,  Kp1,bi,bj) * _hFacS(I,J,  Kp1,bi,bj)
      &           + vVel(I,J+1,Kp1,bi,bj) * _hFacS(I,J+1,Kp1,bi,bj) )
      &           ) * recip_drLoc
-            velSq(I,J) = uLoc(I,J)*uLoc(I,J)+vLoc(I,J)*vLoc(I,J)
+            vSqTMP = uTMP*uTMP + vTMP*vTMP
+
+            tLoc (I,J) = tTMP
+            sLoc (I,J) = sTMP
+            uLoc (I,J) = uTMP
+            vLoc (I,J) = vTMP
+            velSq(I,J) = vSqTMP
            ENDIF
           ENDDO
          ENDDO
