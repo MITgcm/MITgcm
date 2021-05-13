@@ -1,6 +1,29 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o store directives (model/src, pkg/exf, ...):
+  - By adding many store directives for variables after they have been computed
+    the corresponding s/r load_fields_driver, oceanic_phys, solve_for_pressure
+    no longer need to be called in the AD-routine forward_step_ad.
+    A as a consequence the forward part of forward_step is not recomputed,
+    and there are far fewer store statements in the AD-code.
+  - Most of the new store directives and many of the old ones are collected in
+    two new files "check_lev1_dir_forcing.h" and "check_lev1_dir_ocephys.h" to
+    avoid clutter in forward_step.F
+  - More store directives in pkg/exf allow it to store the forcing fields
+    instead of the level0/1 (e.g. aqh instead of aqh0 and aqh1), thereby
+    reducing the number of stored exf-forcing variables by about two. This is
+    also necessary to avoid calling load_fields_driver from forward_step_ad.
+  - Additional small tweaks of store directives in forward_step.F have the
+    effect that the recomputations are kept to a minimum in all of the AD
+    verification experiments (and in verification_other/global_oce_[llc/cs32])
+    and calling potentially expensive forward routines are not called (e.g.
+    do_stagger_fields_exchange, which involves unnecessary exchanges).
+  - Remove storage of gchemTendency in all checkpoint levels.
+  - Results unaffected except if using real*4 storage (isbyte=4, e.g., in
+    offline_exf_seaice, small changes in AD-monitor).
+
+checkpoint67y (2021/05/05)
 o pkg/shelfice:
   - Update kTopC when using SHELFICEMassStepping if ice-shelf retreat completely
     from one column or advance to cover new grid-cell ; add 4 levels TAF storage
