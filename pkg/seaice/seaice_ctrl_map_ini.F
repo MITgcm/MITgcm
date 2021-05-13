@@ -59,7 +59,9 @@ c     == local variables ==
       character*( 80)   fnamegeneric
 
       _RL     fac
+# ifndef ALLOW_OPENAD
       _RL     tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+# endif
 
 c     == external ==
       integer  ilnblnk

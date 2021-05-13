@@ -76,8 +76,10 @@ c     == local variables ==
 
       logical doglobalread
       logical ladinit
+# ifndef ALLOW_OPENAD
       _RL     tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL     tmpfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+# endif
 
       character*( 80) fnamegeneric
       character*(MAX_LEN_FNAM) suff

@@ -102,8 +102,9 @@ c     == local variables ==
 #ifdef ECCO_CTRL_DEPRECATED
       _RL xx_mean(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif /* ECCO_CTRL_DEPRECATED */
+# ifndef ALLOW_OPENAD
       _RL tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-
+# endif
       logical doglobalread
       logical ladinit
 
@@ -465,8 +466,9 @@ c     == local variables ==
 
       logical doglobalread
       logical ladinit
+# ifndef ALLOW_OPENAD
       _RL     tmpfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-
+# endif
       character*(80) fnamefld
 
 c     == external functions ==
