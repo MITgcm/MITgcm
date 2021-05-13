@@ -72,6 +72,7 @@ options see :filelink:`SEAICE_OPTIONS.h <pkg/seaice/SEAICE_OPTIONS.h>`.
    :varlink:`SEAICE_ALLOW_BOTTOMDRAG`, #undef, enable grounding parameterization for improved fastice in shallow seas
    :varlink:`SEAICE_ITD`, #undef, run with dynamical sea Ice Thickness Distribution (ITD)
    :varlink:`SEAICE_VARIABLE_SALINITY`, #undef, enable sea ice with variable salinity
+   :varlink:`SEAICE_CAP_ICELOAD`, #undef, enable to limit seaice load (:varlink:`siceLoad`) on the sea surface
    :varlink:`ALLOW_SITRACER`, #undef, enable sea ice tracer package
    :varlink:`SEAICE_BICE_STRESS`, #undef, B-grid only for backward compatiblity: turn on ice-stress on ocean
    :varlink:`EXPLICIT_SSH_SLOPE`, #undef, B-grid only for backward compatiblity: use ETAN for tilt computations rather than geostrophic velocities
@@ -1829,3 +1830,23 @@ Experiments and tutorials that use seaice
 - :filelink:`verification/seaice_itd`, based on :filelink:`offline_exf_seaice <verification/offline_exf_seaice>`, tests ice thickness distribution
 - :filelink:`verification/global_ocean.cs32x15`, global cubed-sphere-experiment with combinations of :filelink:`pkg/seaice` and :filelink:`pkg/thsice`
 - :filelink:`verification/1D_ocean_ice_column`, just thermodynamics
+
+Known issues and work-arounds
+=============================
+
+- A common problem in sea ice models is (local) perpetually increasing sea ice (plus snow) height; this is
+  problematic due to the mass of the sea ice placing a load on the sea surface, which if too large,
+  can cause the model to crash while attempting to solve for free surface height (regardless of
+  whether a linearized or fully non-linear free surface formulation is employed). This problem
+  can occur because of dynamical ice growth (i.e., convergence of ice) or simply too much thermodynamic
+  ice growth and/or net precipitation with insufficient summer melting. If the problem is
+  dynamical in nature (e.g., caused by ridging in a deep inlet), the first step to try is to turn
+  off the replacement pressure method (:varlink:`SEAICEpressReplFac` = 0;
+  see :numref:`para_phys_pkg_seaice_VPrheology`); turning this off provides resistance
+  against additional growth due to further ridging. If this does not solve the problem,
+  a somewhat more radical yet effective approach is simply to cap the sea ice load on the free
+  surface by defining the CPP option :varlink:`SEAICE_CAP_ICELOAD`. This option effectively limits
+  the sea ice load (variable :varlink:`sIceLoad`) to a mass of 1/5 of the the top grid cell depth.
+  If desired, this limit can be changed in routine :filelink:`seaice_growth.F <pkg/seaice/seaice_growth.F>`
+  where variable :varlink:`heffTooHeavy` is assigned.
+
