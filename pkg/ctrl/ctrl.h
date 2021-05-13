@@ -354,8 +354,8 @@ C     used. Eventually these fields should be removed.
 c     ph      common /controlvars_r/
 cph     &                        tmpfld2d
 cph     &                      , tmpfld3d
-     _RL tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-     _RL tmpfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL tmpfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 #endif /* ALLOW_OPENAD */
 
 c     Auxiliary storage arrays for the control variables:
