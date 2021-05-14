@@ -43,9 +43,7 @@ C     == Local arguments ==
       CHARACTER*( 80)   fnamegen2d
       _RL     fac
 #ifdef ALLOW_GEN2D_CONTROL
-# ifndef ALLOW_OPENAD
       _RL     tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-# endif
 #endif
 c     == external ==
       INTEGER  ILNBLNK

@@ -62,13 +62,11 @@ C     == local variables ==
       character*( 80)   fnamegeneric
       character*(MAX_LEN_MBUF) msgBuf
       _RL     fac
-#ifndef ALLOW_OPENAD
-# ifdef ALLOW_GENARR2D_CONTROL
+#ifdef ALLOW_GENARR2D_CONTROL
       _RL     tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-# endif
-# ifdef ALLOW_GENARR3D_CONTROL
+#endif
+#ifdef ALLOW_GENARR3D_CONTROL
       _RL     tmpfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-# endif
 #endif
 CEOP
 

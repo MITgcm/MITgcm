@@ -348,15 +348,7 @@ C
      &                maxCtrlArr3D)
 # endif
 
-C     This is a left over because OpenAD tests do not pass, when these
-C     fields are declared locally in the few files where they are
-C     used. Eventually these fields should be removed.
-c     ph      common /controlvars_r/
-cph     &                        tmpfld2d
-cph     &                      , tmpfld3d
-      _RL tmpfld2d(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-      _RL tmpfld3d(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-#endif /* ALLOW_OPENAD */
+#endif
 
 c     Auxiliary storage arrays for the control variables:
 c     ===================================================
