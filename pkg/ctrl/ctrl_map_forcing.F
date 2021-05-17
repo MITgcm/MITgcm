@@ -104,6 +104,16 @@ CEOP
       doglobalread = .false.
       ladinit      = .false.
 
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = 1-oly,sny+oly
+            do i = 1-olx,snx+olx
+              tmpfld2d(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
+
       IF ( myIter .EQ. nIter0 ) THEN
 
 #ifdef ALLOW_TAUU0_CONTROL

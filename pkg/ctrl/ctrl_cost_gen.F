@@ -134,6 +134,16 @@ c--   Read state record from global file.
 c     Number of records to be used.
       nrec = endrec-startrec+1
 
+      do bj = jtlo,jthi
+       do bi = itlo,ithi
+        do j = 1-oly,sny+oly
+         do i = 1-olx,snx+olx
+          tmpfld2d(i,j,bi,bj) = 0. _d 0
+         enddo
+        enddo
+       enddo
+      enddo
+
       if (optimcycle .ge. 0) then
         ilfld=ilnblnk( xx_gen_file )
         write(fnamefld(1:80),'(2a,i10.10)')
@@ -488,6 +498,18 @@ CEOP
 c--   Read state record from global file.
       doglobalread = .false.
       ladinit      = .false.
+
+      do bj = jtlo,jthi
+       do bi = itlo,ithi
+        do k = 1,nr
+         do j = 1-oly,sny+oly
+          do i = 1-olx,snx+olx
+           tmpfld3d(i,j,k,bi,bj) = 0. _d 0
+          enddo
+         enddo
+        enddo
+       enddo
+      enddo
 
       if (optimcycle .ge. 0) then
         ilfld = ilnblnk( xx_gen_file )
