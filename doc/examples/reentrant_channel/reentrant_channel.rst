@@ -849,6 +849,9 @@ Model Solution
 See :filelink:`verification/tutorial_reentrant_channel/analysis/matlab_plots.m` for `MATLAB <https://www.mathworks.com/>`_
 analysis code to compute and plot :numref:`channel_zm_temp_ml` through :numref:`channel_MOC_eddy_layers`.
 
+A Jupyter notebook can be found `here <../../jupyter/reentrant.ipynb>`_.
+
+
 .. _reentrant_channel_solution:
 
 Coarse Resolution Solution
