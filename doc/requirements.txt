@@ -2,3 +2,6 @@ sphinx>2
 sphinxcontrib-bibtex<2
 sphinxcontrib-programoutput
 numpy
+nbsphinx
+ipykernel
+ipython
