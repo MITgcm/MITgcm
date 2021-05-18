@@ -1669,6 +1669,31 @@ clear (Ungermann et al. 2007 :cite:`ungermann:17`).  Ergo, the default is to
 use :eq:`eq_icestrength`; set :varlink:`useHibler79IceStrength` ``=.FALSE.`` in
 ``data.seaice`` to change this behavior.
 
+Known issues and work-arounds
+=============================
+
+- An often encountered problem in long simulations with sea ice models is
+  (local) perpetually increasing sea ice (plus snow) height; this is
+  problematic when using a non-linear free surface and
+  :varlink:`useRealFreshWaterFlux` ``=.TRUE.``, because the mass of the sea ice
+  places a load on the sea surface, which if too large, can cause the surface
+  cells of the model to become too thin so that the model eventually stops with
+  an error message. Usually this problem occurs because of dynamical ice growth
+  (i.e., convergence and ridging of ice) or simply too much net precipitation
+  with insufficient summer surface melting. If the problem is dynamical in
+  nature (e.g., caused by ridging in a deep inlet), the first step to try is to
+  turn off the replacement pressure method (:varlink:`SEAICEpressReplFac` = 0;
+  in :numref:`para_phys_pkg_seaice_VPrheology`); turning this off provides
+  resistance against additional growth due to further ridging, because the ice
+  pressure :math:`P` is no longer reduced as :math:`\Delta\rightarrow 0` in
+  nearly motionless thick ice :eq:`eq_pressrepl`. If this does not solve the
+  problem, a somewhat more radical yet effective approach is simply to cap the
+  sea ice load on the free surface by defining the CPP option
+  :varlink:`SEAICE_CAP_ICELOAD`. This option effectively limits the sea ice
+  load (variable :varlink:`sIceLoad`) to a mass of 1/5 of the the top grid cell
+  depth.  If desired, this limit can be changed in routine
+  :filelink:`seaice_growth.F <pkg/seaice/seaice_growth.F>` where variable
+  :varlink:`heffTooHeavy` is assigned.
 .. _ssub_phys_pkg_seaice_subroutines:
 
 Key subroutines
@@ -1830,29 +1855,3 @@ Experiments and tutorials that use seaice
 - :filelink:`verification/seaice_itd`, based on :filelink:`offline_exf_seaice <verification/offline_exf_seaice>`, tests ice thickness distribution
 - :filelink:`verification/global_ocean.cs32x15`, global cubed-sphere-experiment with combinations of :filelink:`pkg/seaice` and :filelink:`pkg/thsice`
 - :filelink:`verification/1D_ocean_ice_column`, just thermodynamics
-
-Known issues and work-arounds
-=============================
-
-- An often encountered problem in long simulations with sea ice models is
-  (local) perpetually increasing sea ice (plus snow) height; this is
-  problematic when using a non-linear free surface and
-  :varlink:`useRealFreshWaterFlux` ``=.TRUE.``, because the mass of the sea ice
-  places a load on the sea surface, which if too large, can cause the surface
-  cells of the model to become too thin so that the model eventually stops with
-  an error message. Usually this problem occurs because of dynamical ice growth
-  (i.e., convergence and ridging of ice) or simply too much net precipitation
-  with insufficient summer surface melting. If the problem is dynamical in
-  nature (e.g., caused by ridging in a deep inlet), the first step to try is to
-  turn off the replacement pressure method (:varlink:`SEAICEpressReplFac` = 0;
-  in :numref:`para_phys_pkg_seaice_VPrheology`); turning this off provides
-  resistance against additional growth due to further ridging, because the ice
-  pressure :math:`P` is no longer reduced as :math:`\Delta\rightarrow 0` in
-  nearly motionless thick ice :eq:`eq_pressrepl`. If this does not solve the
-  problem, a somewhat more radical yet effective approach is simply to cap the
-  sea ice load on the free surface by defining the CPP option
-  :varlink:`SEAICE_CAP_ICELOAD`. This option effectively limits the sea ice
-  load (variable :varlink:`sIceLoad`) to a mass of 1/5 of the the top grid cell
-  depth.  If desired, this limit can be changed in routine
-  :filelink:`seaice_growth.F <pkg/seaice/seaice_growth.F>` where variable
-  :varlink:`heffTooHeavy` is assigned.
