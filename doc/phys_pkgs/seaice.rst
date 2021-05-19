@@ -1694,6 +1694,7 @@ Known issues and work-arounds
   depth.  If desired, this limit can be changed in routine
   :filelink:`seaice_growth.F <pkg/seaice/seaice_growth.F>` where variable
   :varlink:`heffTooHeavy` is assigned.
+  
 .. _ssub_phys_pkg_seaice_subroutines:
 
 Key subroutines
