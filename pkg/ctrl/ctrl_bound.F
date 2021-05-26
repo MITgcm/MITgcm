@@ -29,8 +29,8 @@ C     !USES:
 #include "EEPARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-      _RL fieldCur (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
-      _RS maskFld3d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL fieldCur (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS maskFld3d(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL boundsVec(5)
       INTEGER myThid
 
@@ -89,8 +89,8 @@ C     !USES:
 #include "EEPARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-      _RL fieldCur(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
-      _RS mask2D  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RL fieldCur(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS mask2D  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL boundsVec(5)
       INTEGER myThid
 
