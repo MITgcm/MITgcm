@@ -1530,10 +1530,13 @@ must be set in files ``${PKG}_OPTIONS.h``.
 Preprocessor Execution Environment Options
 ------------------------------------------
 
-The file :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>` in the directory
-:filelink:`eesupp/inc/` contains a number of CPP flags related to the execution environment where the model will run. Many of these flags were intended for very specific platform
-environments, and not meant to be changed for more general environments. Below we describe the user-editable CPP flags,
-i.e., other flags in :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>` not mentioned below should NOT be changed:
+The file :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>` in the
+directory :filelink:`eesupp/inc/` contains a number of CPP flags related to the
+execution environment where the model will run. Many of these flags were
+intended for very specific platform environments, and not meant to be changed
+for more general environments. Below we describe the user-editable CPP flags,
+i.e., other flags in :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>`
+not mentioned below should NOT be changed:
 
 .. tabularcolumns:: |\Y{.475}|\Y{.1}|\Y{.45}|
 
@@ -1557,14 +1560,18 @@ i.e., other flags in :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>` no
    | :varlink:`FAST_BYTESWAP`                      | #undef  | alternative formulation of BYTESWAP, faster than compiler flag -byteswapio on the Altix platform                     |
    +-----------------------------------------------+---------+----------------------------------------------------------------------------------------------------------------------+
 
-The default setting of ``#define``  :varlink:`GLOBAL_SUM_ORDER_TILES`
-in :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>` provides a way to achieve numerically
-reproducible global sums.  As implemented however, this approach will
-increase network traffic and computations in a way that scales
-quadratically with `MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_  process count.  Profiling has shown that letting the
-code fall through to a baseline approach that simply uses `MPI_Allreduce() <https://www.open-mpi.org/doc/v3.0/man3/MPI_Allreduce.3.php>`_
+The default setting of ``#define`` :varlink:`GLOBAL_SUM_ORDER_TILES` in
+:filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>` provides a way to
+achieve numerically reproducible global sums.  As implemented however, this
+approach will increase network traffic and computations in a way that scales
+quadratically with
+`MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface>`_  process
+count.  Profiling has shown that letting the code fall through to a baseline
+approach that simply uses
+`MPI_Allreduce() <https://www.open-mpi.org/doc/v3.0/man3/MPI_Allreduce.3.php>`_
 can provide significantly improved performance for certain simulations [#]_.
-The fall-though approach is activated by ``#undef`` both :varlink:`GLOBAL_SUM_ORDER_TILES` and :varlink:`GLOBAL_SUM_SEND_RECV`.
+The fall-though approach is activated by ``#undef`` both
+:varlink:`GLOBAL_SUM_ORDER_TILES` and :varlink:`GLOBAL_SUM_SEND_RECV`.
 
 In a default multi-processor configuration, each process opens and reads its
 own set of namelist files and open and writes its own standard output. This can
@@ -1597,12 +1604,20 @@ simulations in which the MITgcm is coupled to further instances of itself, for
 example, in verification experiment `cpl_aim+ocn
 <https://github.com/MITgcm/MITgcm/tree/master/verification/cpl_aim+ocn>`_.
 
-.. [#] One example is the llc_540 case located at https://github.com/MITgcm-contrib/llc_hires/tree/master/llc_540. This case was run on the Pleiades computer for 20 simulated days using 767 and 2919 MPI ranks.
-   At 767 ranks, the fall-through approach provided a throughput of to 799.0 simulated days per calendar day (dd/d) while the default approach gave 781.0.
-   The profiler showed the speedup was directly attributable to spending less time in MPI_Allreduce. The volume of memory traffic associated with MPI_Allreduce dropped by 3 orders (22.456T -> 32.596G).
-   At 2819 MPI ranks the fall-through approach gave a throughput of 1300 dd/d while the default approach gave 800.0 dd/d. Put another way,
-   this case did not scale at all from 767p to 2819p unless the fall-though approach was utilized. The profiler showed the speedup was directly
-   attributable to spending less time in MPI_Allreduce. The volume of memory traffic associated with MPI_Allreduce dropped by 3 orders (303.70T ->121.08G ).
+.. [#] One example is the llc_540 case located at
+   https://github.com/MITgcm-contrib/llc_hires/tree/master/llc_540. This case
+   was run on the Pleiades computer for 20 simulated days using 767 and 2919
+   MPI ranks.  At 767 ranks, the fall-through approach provided a throughput of
+   to 799.0 simulated days per calendar day (dd/d) while the default approach
+   gave 781.0.  The profiler showed the speedup was directly attributable to
+   spending less time in MPI_Allreduce. The volume of memory traffic associated
+   with MPI_Allreduce dropped by 3 orders (22.456T -> 32.596G).  At 2819 MPI
+   ranks the fall-through approach gave a throughput of 1300 dd/d while the
+   default approach gave 800.0 dd/d. Put another way, this case did not scale
+   at all from 767p to 2819p unless the fall-though approach was utilized. The
+   profiler showed the speedup was directly attributable to spending less time
+   in MPI_Allreduce. The volume of memory traffic associated with MPI_Allreduce
+   dropped by 3 orders (303.70T ->121.08G ).
 
 .. _customize_model:
 
