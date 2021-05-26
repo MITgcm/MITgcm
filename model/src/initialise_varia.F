@@ -6,6 +6,9 @@
 #ifdef ALLOW_CTRL
 # include "CTRL_OPTIONS.h"
 #endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: INITIALISE_VARIA
@@ -90,7 +93,6 @@ C     == Global variables ==
 # include "CTRL_FIELDS.h"
 # if (defined ALLOW_SHELFICE) && (defined ALLOW_GENARR2D_CONTROL)
 #  include "SHELFICE.h"
-#  include "SHELFICE_OPTIONS.h"
 # endif
 #endif
 
