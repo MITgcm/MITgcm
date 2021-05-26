@@ -50,7 +50,6 @@ C     == Global variables ===
 
 #ifdef ALLOW_AUTODIFF
 # include "tamc.h"
-# include "tamc_keys.h"
 # include "EOS.h"
 # ifdef ALLOW_KPP
 #  include "KPP.h"
@@ -101,6 +100,11 @@ C     i, j, k        :: loop indices
       _RL wrTime
       _RL trAdvCFL(3,nSx,nSy)
 # endif /* ALLOW_MONITOR */
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ikey, itdkey
+#endif
 CEOP
 
 #ifdef ALLOW_DEBUG

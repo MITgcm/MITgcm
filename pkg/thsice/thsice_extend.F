@@ -112,6 +112,11 @@ C     qicAv     :: mean enthalpy of ice (layer 1 & 2) [J/m^3]
       _RL qicAv
       INTEGER  i,j     ! loop indices
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ticekey
+#endif
 C-    define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
 

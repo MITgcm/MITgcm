@@ -240,8 +240,12 @@ C     == Local variables ==
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER ilev_1
       INTEGER ilev_2
+# ifndef AUTODIFF_2_LEVEL_CHECKPOINT
       INTEGER ilev_3
+#  endif
+# ifdef AUTODIFF_4_LEVEL_CHECKPOINT
       INTEGER ilev_4
+# endif
       INTEGER max_lev2
       INTEGER max_lev3
       INTEGER max_lev4

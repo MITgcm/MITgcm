@@ -61,7 +61,6 @@ C     == Global variables ==
 #endif
 #ifdef ALLOW_AUTODIFF
 # include "tamc.h"
-# include "tamc_keys.h"
 # include "MOM_FLUXFORM.h"
 #endif
 
@@ -108,6 +107,8 @@ C  fMer                 :: meridional fluxes
 C  fVrUp,fVrDw          :: vertical viscous fluxes at interface k & k+1
       INTEGER i,j
 #ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act0, act1, act2, act3, act4
+      INTEGER max0, max1, max2, max3
       INTEGER imomkey
 #endif
       _RL vF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)

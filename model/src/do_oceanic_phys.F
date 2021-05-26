@@ -148,7 +148,6 @@ C     == Global variables ===
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_MYFIELDS.h"
 # include "tamc.h"
-# include "tamc_keys.h"
 # include "FFIELDS.h"
 # include "SURFACE.h"
 # include "EOS.h"
@@ -225,6 +224,11 @@ C     i,j,k         :: loop indices
 #ifdef ALLOW_AUTODIFF
       _RL thetaRef
 #endif /* ALLOW_AUTODIFF */
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER kkey, itdkey
+#endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC

@@ -111,7 +111,9 @@ C     temporary variables available for the various computations
       _RL tmpscal0, tmpscal1, tmpscal2, tmpscal3
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER ilockey
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER iicekey
 #endif
 
 C==   local arrays ==

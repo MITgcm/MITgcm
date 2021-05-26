@@ -117,7 +117,6 @@ C !USES: ===============================================================
 #endif /* ALLOW_SHELFICE */
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       EXTERNAL DIFFERENT_MULTIPLE
@@ -199,6 +198,10 @@ cph(
 cph)
       integer i, j, k, kp1, km1, im1, ip1, jm1, jp1
       integer ikppkey
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+#endif
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC

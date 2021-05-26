@@ -37,7 +37,6 @@ C     === Global variables ===
 #include "THSICE_VARS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
       INTEGER siLo, siHi, sjLo, sjHi
@@ -103,6 +102,11 @@ C     snowFac   :: snowing refreshing-age factor [units of 1/snowPr]
       INTEGER i,j
       LOGICAL dBugFlag
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ticekey
+#endif
 C-    define grid-point location where to print debugging values
 #include "THSICE_DEBUG.h"
 

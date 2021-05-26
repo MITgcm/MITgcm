@@ -50,7 +50,6 @@ C     == Global variables ==
 #include "PARAMS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
-#include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     == Routine arguments ==
@@ -115,6 +114,11 @@ C     == Local variables ==
       _RL dTransLay, rLambMin, DoverLamb
       _RL taperFctLoc, taperFctHat
       _RL minTransLay
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ikey
+#endif
 
 C-   need to put this one in GM namelist :
       _RL GM_bigSlope
@@ -601,8 +605,8 @@ CADJ STORE SlopeY(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
          ENDDO
         ENDDO
 
-C move the assignemnt of SlopeSqr to its own do-loop block from the do-loop 
-C block above to reduce TAF recomputations. The assignment of taperFct is 
+C move the assignemnt of SlopeSqr to its own do-loop block from the do-loop
+C block above to reduce TAF recomputations. The assignment of taperFct is
 C also moved to keep the original order of operations.
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
