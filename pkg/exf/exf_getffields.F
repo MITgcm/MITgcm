@@ -5,6 +5,9 @@
 #ifdef ALLOW_ECCO
 # include "ECCO_OPTIONS.h"
 #endif
+#ifdef ALLOW_AUTODIFF
+# include "AUTODIFF_OPTIONS.h"
+#endif
 
       SUBROUTINE EXF_GETFFIELDS( myTime, myIter, myThid )
 
@@ -47,6 +50,9 @@ C     == global variables ==
 #endif
 #if (defined (ALLOW_ECCO) && defined (ECCO_CTRL_DEPRECATED))
 #  include "ecco_cost.h"
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
 #endif
 
 C     == routine arguments ==
@@ -318,6 +324,12 @@ C-    Snow.
 #endif
      I     myTime, myIter, myThid )
 C     Take care of case where total precip is not defined
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_ATM_TEMP
+CADJ STORE precip      = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE snowprecip  = comlev1, key=ikey_dynamics, kind=isbyte
+# endif
+#endif
       IF ( snowPrecipFile .NE. ' ' ) THEN
        DO bj = myByLo(myThid),myByHi(myThid)
         DO bi = myBxLo(myThid),myBxHi(myThid)

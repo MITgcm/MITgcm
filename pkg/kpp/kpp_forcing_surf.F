@@ -63,7 +63,7 @@ C     myThid - Current thread id
 C     rhoSurf- density of surface layer                            (kg/m^3)
 C     surfForcU     units are  r_unit.m/s^2 (=m^2/s^2 if r=z)
 C     surfForcV     units are  r_unit.m/s^2 (=m^2/s^-2 if r=z)
-C     surfForcS     units are  r_unit.psu/s (=psu.m/s if r=z)
+C     surfForcS     units are  r_unit.g/kg/s (=g/kg.m/s if r=z)
 C            - EmPmR * S_surf plus salinity relaxation*drF(1)
 C     surfForcT     units are  r_unit.Kelvin/s (=Kelvin.m/s if r=z)
 C            - Qnet (+Qsw) plus temp. relaxation*drF(1)
@@ -86,7 +86,7 @@ C     saltPlumeFlux - salt rejected during freezing (downward = positive)
 C     ttalpha - thermal expansion coefficient without 1/rho factor
 C               d(rho{k,k})/d(T(k))                           (kg/m^3/C)
 C     ssbeta  - salt expansion coefficient without 1/rho factor
-C               d(rho{k,k})/d(S(k))                         (kg/m^3/PSU)
+C               d(rho{k,k})/d(S(k))                    ((kg/m^3)/(g/kg))
 C !OUTPUT PARAMETERS:
 C     ustar  (nx,ny)       - surface friction velocity                  (m/s)
 C     bo     (nx,ny)       - surface turbulent buoyancy forcing     (m^2/s^3)

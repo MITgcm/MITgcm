@@ -30,21 +30,23 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "EOS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "SHELFICE.h"
 #include "SHELFICE_COST.h"
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_CTRL
 # include "CTRL_SIZE.h"
 # include "ctrl.h"
 # include "ctrl_dummy.h"
-#endif /* ALLOW_AUTODIFF */
+# ifdef ALLOW_GENTIM2D_CONTROL
+#  include "CTRL_GENARR.h"
+# endif
+#endif /* ALLOW_CTRL */
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifdef SHI_ALLOW_GAMMAFRICT
-#  include "tamc.h"
-#  include "tamc_keys.h"
-# endif /* SHI_ALLOW_GAMMAFRICT */
+# include "tamc.h"
+# include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -117,7 +119,10 @@ C     drKp1, recip_drLoc
       EXTERNAL SW_TEMP
 #endif
 
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_GENTIM2D_CONTROL
+      INTEGER iarr
+#endif
+#if (defined ALLOW_SHIFWFLX_CONTROL || defined ALLOW_GENTIM2D_CONTROL)
       _RL xx_shifwflx_loc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 CEOP
@@ -216,30 +221,71 @@ C     where this value is part of the protocol
 #if (defined SHI_ALLOW_GAMMAFRICT && defined ALLOW_DIAGNOSTICS)
           uStarDiag             (I,J,bi,bj) = 0. _d 0
 #endif /* SHI_ALLOW_GAMMAFRICT and ALLOW_DIAGNOSTICS */
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#ifdef ALLOW_SHIFWFLX_CONTROL
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J = 1-OLy,sNy+OLy
-         DO I = 1-OLx,sNx+OLx
-          xx_shifwflx_loc(I,J,bi,bj) = 0. _d 0
+#if (defined ALLOW_SHIFWFLX_CONTROL || defined ALLOW_GENTIM2D_CONTROL)
+          xx_shifwflx_loc       (I,J,bi,bj) = 0. _d 0
+#endif /* ALLOW_SHIFWFLX_CONTROL or ALLOW_GENTIM2D_CONTROL */
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 #ifdef ALLOW_CTRL
-      IF (useCTRL) CALL CTRL_GET_GEN (
+      IF ( useCTRL .AND. ctrlUseGen ) THEN
+#ifdef ALLOW_GENTIM2D_CONTROL
+       DO iarr = 1, maxCtrlTim2D
+        IF (xx_gentim2d_file(iarr)(1:11).EQ.'xx_shifwflx') THEN
+         DO bj = myByLo(myThid),myByHi(myThid)
+          DO bi = myBxLo(myThid),myBxHi(myThid)
+           DO J = 1,sNy
+            DO I = 1,sNx
+             xx_shifwflx_loc(I,J,bi,bj)=xx_gentim2d(I,J,bi,bj,iarr)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
+       ENDDO
+#endif /* ALLOW_GENTIM2D_CONTROL */
+#if (defined ECCO_CTRL_DEPRECATED && defined ALLOW_SHIFWFLX_CONTROL)
+C     unfortunately, we need this CPP flag here, because otherwise
+C     none of these fields are defined
+      ELSEIF ( useCTRL ) THEN
+        CALL CTRL_GET_GEN (
      &     xx_shifwflx_file, xx_shifwflxstartdate, xx_shifwflxperiod,
      &     maskSHI, xx_shifwflx_loc, xx_shifwflx0, xx_shifwflx1,
      &     xx_shifwflx_dummy,
      &     xx_shifwflx_remo_intercept, xx_shifwflx_remo_slope,
      &     wshifwflx,
      &     myTime, myIter, myThid )
+#endif /* ECCO_CTRL_DEPRECATED and ALLOW_SHIFWFLX_CONTROL */
+      ENDIF
+#endif /* ALLOW_CTRL */
+
+C--   Deal with ice-shelf edge advance or retreat when allowing ice-shelf
+C     mass to change. Since current ice-shelf representation is missing
+C     a fractional ice-shelf cover representation, this turns into making
+C     or removing a "thin ice-shelf" grid-cell. Here we update "kTopC"
+C     as ice-shelf mass appears or vanishes in any surface grid-cell.
+      IF ( SHELFICEMassStepping ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j = 1-OLy,sNy+OLy
+           DO i = 1-OLx,sNx+OLx
+             IF ( kSurfC(i,j,bi,bj).LE.Nr .AND.
+     &            shelficeMass(i,j,bi,bj).GT.zeroRL ) THEN
+               kTopC(i,j,bi,bj) = kSurfC(i,j,bi,bj)
+             ELSE
+               kTopC(i,j,bi,bj) = 0
+             ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE kTopC        = comlev1, key=ikey_dynamics
+CADJ STORE shelficeMass = comlev1, key=ikey_dynamics, kind=isbyte
 #endif
-#endif /* ALLOW_SHIFWFLX_CONTROL */
+
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
@@ -257,13 +303,18 @@ C     where this value is part of the protocol
      &                    + act4*max1*max2*max3
 # endif /* SHI_ALLOW_GAMMAFRICT */
 #endif /* ALLOW_AUTODIFF_TAMC */
+
 C--   make local copies of temperature, salinity and depth (pressure in deci-bar)
 C--   underneath the ice
         DO J = 1, sNy
          DO I = 1, sNx
           K         = MAX(1,kTopC(I,J,bi,bj))
-          pLoc(I,J) = ABS(R_shelfIce(I,J,bi,bj))
-c         pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*1. _d -4
+C-    original (inaccurate) pLoc expression below:
+C     assumes rhoConst*gravity*SItodBar=1 + missing both "shelficeLoadAnomaly"
+C      static contribution and etaN dynamical contribution:
+c         pLoc(I,J) = ABS(R_shelfIce(I,J,bi,bj))
+C-    new and accurate pLoc expression (just the weight of the ice):
+          pLoc(I,J) = shelficeMass(I,J,bi,bj)*gravity*SItodBar
           tLoc(I,J) = theta(I,J,K,bi,bj)
           sLoc(I,J) = MAX(salt(I,J,K,bi,bj), zeroRL)
           velSq(I,J)= 0.
@@ -483,7 +534,7 @@ C--   Calculate the upward heat and  fresh water fluxes
      &           * shiTransCoeffT(i,j,bi,bj)
      &           * ( tLoc(I,J) - thetaFreeze )
      &           * HeatCapacity_Cp*rUnit2mass
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#if (defined ALLOW_SHIFWFLX_CONTROL || defined ALLOW_GENTIM2D_CONTROL)
      &           - xx_shifwflx_loc(I,J,bi,bj)*SHELFICElatentHeat
 #endif /*  ALLOW_SHIFWFLX_CONTROL */
 C     upward heat flux into the shelf-ice implies basal melting,
@@ -605,7 +656,7 @@ cph     &           * ( saltFreeze - sLoc(I,J) ) / saltFreeze
             freshWaterFlux = rUnit2mass
      &           * shiTransCoeffS(i,j,bi,bj)
      &           * ( 1. _d 0 - sLoc(I,J) / saltFreeze )
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#if (defined ALLOW_SHIFWFLX_CONTROL || defined ALLOW_GENTIM2D_CONTROL)
      &           + xx_shifwflx_loc(I,J,bi,bj)
 #endif /*  ALLOW_SHIFWFLX_CONTROL */
 C--   Calculate the upward heat and fresh water fluxes;

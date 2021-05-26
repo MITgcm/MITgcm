@@ -3,7 +3,7 @@
 # include "CTRL_OPTIONS.h"
 #endif
 
-      SUBROUTINE ADAUTODIFF_INADMODE_SET( myThid )
+      SUBROUTINE ADAUTODIFF_INADMODE_SET( myTime, myIter, myThid )
 C     *==========================================================*
 C     | SUBROUTINE ADAUTODIFF_INADMODE_SET
 C     *==========================================================*
@@ -21,13 +21,29 @@ C     == Global variables ===
 #ifdef ALLOW_CTRL
 #include "ctrl.h"
 #endif
+#ifdef ALLOW_AUTODIFF_MONITOR
+# ifdef ALLOW_DIAGNOSTICS
+#  include "DIAGNOSTICS_SIZE.h"
+#  include "DIAGNOSTICS.h"
+# endif
+#endif /* ALLOW_AUTODIFF_MONITOR */
 
 C     == Routine arguments ==
 C     myThid :: my Thread Id number
       INTEGER myThid
+      INTEGER myIter
+      _RL myTime
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      inAdMode  = inAdTrue
+#ifdef ALLOW_AUTODIFF_MONITOR
+# ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiag4AdjOutp ) THEN
+        CALL DIAGNOSTICS_SWITCH_ONOFF( myTime, myIter, myThid )
+      ENDIF
+# endif /* ALLOW_DIAGNOSTICS */
+#endif /* ALLOW_AUTODIFF_MONITOR */
+
+      inAdMode  = .TRUE.
 
       useKPP    = useKPPinAdMode
       useGMRedi = useGMRediInAdMode

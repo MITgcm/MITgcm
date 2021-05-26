@@ -31,7 +31,7 @@ C-    Salt plume depth (>0), [m]
        CALL DIAGNOSTICS_FILL( SaltPlumeDepth,
      &                             'oceSPDep',0, 1,0,1,1,myThid )
 
-C-    net Salt plume flux into the ocean during freezing (+=down), [psu.kg/m2/s ~ g/m2/s]
+C-    net Salt plume flux into the ocean during freezing (+=down), [g/m2/s]
        CALL DIAGNOSTICS_FILL( saltPlumeFlux,
      &                             'oceSPflx',0, 1,0,1,1,myThid )
 #ifdef SALT_PLUME_VOLUME

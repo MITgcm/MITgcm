@@ -44,8 +44,6 @@ C  leithQG_K    :: Horizontal LeithQG viscosity, to add to GM coefficient
 #ifdef ALLOW_MOM_COMMON
 
 C !LOCAL VARIABLES: ====================================================
-      _RL deepFac3
-      _RL L3
       _RS hFacZ   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS r_hFacZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -60,23 +58,21 @@ C !LOCAL VARIABLES: ====================================================
       _RL vrtDy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL grdVrt, grdDiv
       _RL leithQG2fac
+      _RL deepFac3, L3, sqarg
 C     i,j,k    :: Loop counters
       INTEGER i,j,k
 CEOP
 
 C--   Initialise terms
 
-        IF (useFullLeith) THEN
-C       Uses correct calculation for gradients, but might not work on cube sphere
-          leithQG2fac = (viscC2LeithQG/pi)**6
-        ELSE
-C       Uses approximate gradients, but works on cube sphere. No reason to use this
-C        unless `useFullLeith` fails for your setup.
-          leithQG2fac = (viscC2LeithQG/pi)**3
-        ENDIF
-
-       grdVrt = 0. _d 0
-       grdDiv = 0. _d 0
+      IF (useFullLeith) THEN
+C     Uses correct calculation for gradients, but might not work on cube sphere
+        leithQG2fac = (viscC2LeithQG/pi)**6
+      ELSE
+C     Uses approximate gradients, but works on cube sphere. No reason to use this
+C      unless `useFullLeith` fails for your setup.
+        leithQG2fac = (viscC2LeithQG/pi)**3
+      ENDIF
 
       DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
@@ -177,7 +173,7 @@ C        gradient in x direction:
      &                  *maskInS(i,j,bi,bj)
 #endif
 C        Average d/dx of stretching onto V-points to match vrtDX
-     &                  + halfRL*halfRL*
+     &                 + halfRL*halfRL*
      &                    ((stretching(i+1,j)-stretching(i,j))
      &                      *recip_dxC(i+1,j,bi,bj)*recip_deepFacC(k)
      &                    + (stretching(i,j)-stretching(i-1,j))
@@ -186,9 +182,9 @@ C        Average d/dx of stretching onto V-points to match vrtDX
      &                      *recip_dxC(i,j-1,bi,bj)*recip_deepFacC(k)
      &                    + (stretching(i,j-1)-stretching(i-1,j-1))
      &                      *recip_dxC(i-1,j-1,bi,bj)*recip_deepFacC(k)
-     &                  )*maskS(i,j,k,bi,bj)
+     &                    )*maskS(i,j,k,bi,bj)
 #ifdef ALLOW_OBCS
-     &                    *maskInS(i,j,bi,bj)
+     &                     *maskInS(i,j,bi,bj)
 #endif
           ENDDO
         ENDDO
@@ -202,7 +198,7 @@ C-       gradient in y direction:
      &                  *maskInW(i,j,bi,bj)
 #endif
 C        Average d/dy of stretching onto U-points to match vrtDy
-     &                  + halfRL*halfRL*
+     &                 + halfRL*halfRL*
      &                    ((stretching(i,j+1)-stretching(i,j))
      &                      *recip_dyC(i,j+1,bi,bj)*recip_deepFacC(k)
      &                    + (stretching(i,j)-stretching(i,j-1))
@@ -211,9 +207,9 @@ C        Average d/dy of stretching onto U-points to match vrtDy
      &                      *recip_dyC(i-1,j+1,bi,bj)*recip_deepFacC(k)
      &                    + (stretching(i-1,j)-stretching(i-1,j-1))
      &                      *recip_dyC(i-1,j,bi,bj)*recip_deepFacC(k)
-     &                  )*maskW(i,j,k,bi,bj)
+     &                    )*maskW(i,j,k,bi,bj)
 #ifdef ALLOW_OBCS
-     &                      *maskInW(i,j,bi,bj)
+     &                     *maskInW(i,j,bi,bj)
 #endif
           ENDDO
         ENDDO
@@ -238,7 +234,14 @@ C Using it in Leith serves to damp instabilities in w.
      &                     + (divDy(i,j+1)*divDy(i,j+1)
      &                        + divDy(i,j)*divDy(i,j) )  )
 
-              LeithQG_K(i,j,k) = SQRT(leithQG2fac*(grdVrt+grdDiv))*L3
+              sqarg = leithQG2fac*(grdVrt+grdDiv)
+#ifdef ALLOW_AUTODIFF
+C avoid derivative of SQRT(0)
+              IF (sqarg .GT. 0. _d 0) sqarg = SQRT(sqarg)
+#else
+              sqarg = SQRT(sqarg)
+#endif
+              LeithQG_K(i,j,k) = sqarg*L3
 
             ELSE
 C but this approximation will work on cube (and differs by as much as 4X)
