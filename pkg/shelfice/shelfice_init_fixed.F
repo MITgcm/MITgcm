@@ -273,7 +273,7 @@ c     ENDIF
 
        diagName  = 'SHICDrag'
        diagTitle = 'Shelfice drag coefficient for u* parameterization'
-       diagUnits = '1             '
+       diagUnits = '1               '
        diagCode  = 'SM      L1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
@@ -307,7 +307,7 @@ c     ENDIF
 #  else
        diagName  = 'ADJshicd'
        diagTitle = 'dJ/dcDrag: Sensitivity to shelfice u* drag coeff'
-       diagUnits = 'dJ/1          '
+       diagUnits = 'dJ/1            '
        diagCode  = 'SM A    M1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
