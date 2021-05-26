@@ -281,6 +281,7 @@ C--   Atmospheric physical parameters (e.g.: EOS)
 
 C--   Elliptic solver parameters
       cg2dMaxIters       = 150
+      cg2dMinItersNSA    = 0
       cg2dTargetResidual = 1. _d -7
       cg2dTargetResWunit = -1.
       cg2dChkResFreq     = 1

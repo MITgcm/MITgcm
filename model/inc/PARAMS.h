@@ -144,6 +144,9 @@ C     the_run_name    :: string identifying the name of the model "run"
 C--   COMMON /PARM_I/ Integer valued parameters used by the model.
 C     cg2dMaxIters        :: Maximum number of iterations in the
 C                            two-dimensional con. grad solver.
+C     cg2dMinItersNSA     :: Minimum number of iterations in the
+C                            not-self-adjoint version (cg2d_nsa.F) of the
+C                            two-dimensional con. grad solver (default = 0).
 C     cg2dChkResFreq      :: Frequency with which to check residual
 C                            in con. grad solver.
 C     cg2dPreCondFreq     :: Frequency for updating cg2d preconditioner
@@ -217,7 +220,7 @@ C                            and statistics ; higher -> more writing
 C-    plotLevel           :: controls printing of field maps ; higher -> more flds
 
       COMMON /PARM_I/
-     &        cg2dMaxIters, cg2dChkResFreq,
+     &        cg2dMaxIters, cg2dMinItersNSA, cg2dChkResFreq,
      &        cg2dPreCondFreq, cg2dUseMinResSol,
      &        cg3dMaxIters, cg3dChkResFreq,
      &        printResidualFreq,
@@ -235,6 +238,7 @@ C-    plotLevel           :: controls printing of field maps ; higher -> more fl
      &        readBinaryPrec, writeBinaryPrec, writeStatePrec,
      &        rwSuffixType, monitorSelect, debugLevel, plotLevel
       INTEGER cg2dMaxIters
+      INTEGER cg2dMinItersNSA
       INTEGER cg2dChkResFreq
       INTEGER cg2dPreCondFreq
       INTEGER cg2dUseMinResSol

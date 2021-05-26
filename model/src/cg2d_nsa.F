@@ -245,7 +245,8 @@ CML      it2d = it2d+1
        icg2dkey = (ikey-1)*numItersMax + it2d
 CADJ STORE err_sq = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-      IF ( err_sq .GE. cg2dTolerance_sq ) THEN
+       IF ( it2d .LE. cg2dMinItersNSA .OR.
+     &      err_sq .GE. cg2dTolerance_sq ) THEN
 
 C--    Solve preconditioning equation and update
 C--    conjugate direction vector "s".
@@ -281,7 +282,8 @@ CML       cgBeta   = eta_qrN/eta_qrNM1
 Cml    store normalisation factor for the next interation (in case there is one).
 CML    store the inverse of the normalization factor for higher precision
 CML       eta_qrNM1 = eta_qrN
-       recip_eta_qrNM1 = 1. _d 0/eta_qrN
+       recip_eta_qrNM1 = 0. _d 0
+       IF ( eta_qrN .NE. 0. _d 0 ) recip_eta_qrNM1 = 1. _d 0/eta_qrN
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -324,7 +326,8 @@ CADJ STORE cg2d_sf = comlev1_cg2d_iter, key = icg2dkey, byte = isbyte
         ENDDO
        ENDDO
        CALL GLOBAL_SUM_TILE_RL( alphaTile, alphaSum, myThid )
-       alpha = eta_qrN/alphaSum
+       alpha = 0. _d 0
+       IF ( alphaSum .NE. 0 _d 0 ) alpha = eta_qrN/alphaSum
 
 C==    Update simultaneously solution and residual vectors (and Iter number)
 C      Now compute "interior" points.
