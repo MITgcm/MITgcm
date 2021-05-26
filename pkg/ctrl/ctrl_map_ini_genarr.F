@@ -342,7 +342,7 @@ c--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
 
-      CALL CTRL_ZERO(xx_gen, 1, zeroRL, myThid)
+      CALL CTRL_ASSIGN(xx_gen, 1, zeroRL, myThid)
 
       dosmooth=.FALSE.
       dowc01  = .FALSE.
@@ -511,7 +511,7 @@ c--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
 
-      CALL CTRL_ZERO(xx_gen, Nr, zeroRL, myThid)
+      CALL CTRL_ASSIGN(xx_gen, Nr, zeroRL, myThid)
 
       dosmooth=.FALSE.
       dowc01  = .FALSE.

@@ -4,18 +4,18 @@ C--  File ctrl_toolbox.F: Routines to handle basic operations common in pkg/ctrl
 C--  Note: basically same as ecco_toolbox routines, but copied here for package
 C--  independence (pkg/ecco doesn't work with openad)
 C--   Contents
-C--   o CTRL_ZERO
+C--   o CTRL_ASSIGN
 C--   o CTRL_CPRLRL
 C--   o CTRL_CPRSRL
 C--   o CTRL_CPRSRS
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: CTRL_ZERO
+C     !ROUTINE: CTRL_ASSIGN
 C     !INTERFACE:
-      SUBROUTINE CTRL_ZERO( fld, nnzloc, zeroloc, myThid )
+      SUBROUTINE CTRL_ASSIGN( fld, nnzloc, fill_value, myThid )
 C     !DESCRIPTION: \bv
-C     fill a field with zeroloc
+C     fill a field with fill_value
 C     \ev
 
 C     !USES:
@@ -27,7 +27,7 @@ C     == global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
       INTEGER nnzloc
       _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
-      _RL zeroloc
+      _RL fill_value
       INTEGER myThid
 
 #ifdef ALLOW_CTRL
@@ -41,7 +41,7 @@ CEOP
         DO k = 1,nnzloc
          DO j = 1-OLy,sNy+OLy
           DO i = 1-OLx,sNx+OLx
-            fld(i,j,k,bi,bj) = zeroloc
+            fld(i,j,k,bi,bj) = fill_value
           ENDDO
          ENDDO
         ENDDO
