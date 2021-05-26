@@ -1,70 +1,52 @@
 #include "CTRL_OPTIONS.h"
 
-C--  File ctrl_toolbox.F: Routines to handle basic operations common in ecco.
+C--  File ctrl_toolbox.F: Routines to handle basic operations common in pkg/ctrl
 C--  Note: basically same as ecco_toolbox routines, but copied here for package
 C--  independence (pkg/ecco doesn't work with openad)
 C--   Contents
-C--   o ctrl_zero
-C--   o ctrl_cprlrl
-C--   o ctrl_cprsrl
-C--   o ctrl_cprsrs
+C--   o CTRL_ZERO
+C--   o CTRL_CPRLRL
+C--   o CTRL_CPRSRL
+C--   o CTRL_CPRSRS
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ctrl_zero
+C     !ROUTINE: CTRL_ZERO
 C     !INTERFACE:
-      subroutine ctrl_zero( fld, nnzloc, zeroloc, myThid )
+      SUBROUTINE CTRL_ZERO( fld, nnzloc, zeroloc, myThid )
 C     !DESCRIPTION: \bv
 C     fill a field with zeroloc
 C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-c     == routine arguments ==
-
-      INTEGER myThid
+C     !INPUT/OUTPUT PARAMETERS:
       INTEGER nnzloc
-      _RL zeroloc
       _RL fld   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nnzloc,nSx,nSy)
+      _RL zeroloc
+      INTEGER myThid
 
 #ifdef ALLOW_CTRL
-
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-
+C     !LOCAL VARIABLES:
+      INTEGER bi,bj
+      INTEGER i,j,k
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1-OLy
-      jmax = sNy+OLy
-      imin = 1-OLx
-      imax = sNx+OLx
-
-      do bj = jtlo,jthi
-       do bi = itlo,ithi
-        do k = 1,nnzloc
-         do j = jmin,jmax
-          do i = imin,imax
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nnzloc
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
             fld(i,j,k,bi,bj) = zeroloc
-          enddo
-         enddo
-        enddo
-       enddo
-      enddo
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_CTRL */
 
@@ -73,12 +55,11 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ctrl_cprlrl
+C     !ROUTINE: CTRL_CPRLRL
 C     !INTERFACE:
-      subroutine ctrl_cprlrl(
+      SUBROUTINE CTRL_CPRLRL(
      I                   fldIn, nzIn, fldOut, nzOut,
-     I                   myThid
-     &                   )
+     I                   myThid )
 
 C     !DESCRIPTION: \bv
 C     copy a field (RL) to another array (RL)
@@ -86,52 +67,33 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+      INTEGER nzIn, nzOut
+      _RL fldIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
       INTEGER myThid
-      INTEGER nzOut, nzIn
-
-      _RL fldIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
-      _RL fldOut   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
 
 #ifdef ALLOW_CTRL
-
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-
+C     !LOCAL VARIABLES:
+      INTEGER bi,bj
+      INTEGER i,j,k
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1-OLy
-      jmax = sNy+OLy
-      imin = 1-OLx
-      imax = sNx+OLx
-
-      do bj = jtlo,jthi
-       do bi = itlo,ithi
-        do k = 1,nzOut
-         do j = jmin,jmax
-          do i = imin,imax
-           fldOut(i,j,k,bi,bj) = fldIn(i,j,k,bi,bj)
-          enddo
-         enddo
-        enddo
-       enddo
-      enddo
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nzOut
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+            fldOut(i,j,k,bi,bj) = fldIn(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_CTRL */
 
@@ -140,12 +102,11 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ctrl_cprsrl
+C     !ROUTINE: CTRL_CPRSRL
 C     !INTERFACE:
-      subroutine ctrl_cprsrl(
+      SUBROUTINE CTRL_CPRSRL(
      I                   fldIn, nzIn, fldOut, nzOut,
-     I                   myThid
-     &                   )
+     I                   myThid )
 
 C     !DESCRIPTION: \bv
 C     copy a field to another array, switching from _RS to _RL
@@ -153,52 +114,33 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-c     == routine arguments ==
-
+C     !INPUT/OUTPUT PARAMETERS:
+      INTEGER nzIn, nzOut
+      _RS fldIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
+      _RL fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
       INTEGER myThid
-      INTEGER nzOut, nzIn
-
-      _RS fldIn   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
-      _RL fldOut   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
 
 #ifdef ALLOW_CTRL
-
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-
+C     !LOCAL VARIABLES:
+      INTEGER bi,bj
+      INTEGER i,j,k
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1-OLy
-      jmax = sNy+OLy
-      imin = 1-OLx
-      imax = sNx+OLx
-
-      do bj = jtlo,jthi
-       do bi = itlo,ithi
-        do k = 1,nzOut
-         do j = jmin,jmax
-          do i = imin,imax
-           fldOut(i,j,k,bi,bj) = fldIn(i,j,k,bi,bj)
-          enddo
-         enddo
-        enddo
-       enddo
-      enddo
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nzOut
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+            fldOut(i,j,k,bi,bj) = fldIn(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_CTRL */
 
@@ -207,68 +149,47 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: ctrl_cprsrs
+C     !ROUTINE: CTRL_CPRSRS
 C     !INTERFACE:
-      subroutine ctrl_cprsrs(
+      SUBROUTINE CTRL_CPRSRS(
      I                   fldIn, nzIn, fldOut, nzOut,
-     I                   myThid
-     &                   )
+     I                   myThid )
 
 C     !DESCRIPTION: \bv
-C     copy a field to another array, switching from _RS to _RS
+C     copy a field (RS) to another array (RS)
 C     \ev
 
 C     !USES:
       IMPLICIT NONE
-
 C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-c     == routine arguments ==
-
-      INTEGER myThid
-      INTEGER nzOut, nzIn
-
+C     !INPUT/OUTPUT PARAMETERS:
+      INTEGER nzIn, nzOut
       _RS fldIn (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzIn,nSx,nSy)
       _RS fldOut(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nzOut,nSx,nSy)
+      INTEGER myThid
 
 #ifdef ALLOW_CTRL
-
-c     == local variables ==
-
-      integer bi,bj
-      integer i,j,k
-      integer itlo,ithi
-      integer jtlo,jthi
-      integer jmin,jmax
-      integer imin,imax
-
+C     !LOCAL VARIABLES:
+      INTEGER bi,bj
+      INTEGER i,j,k
 CEOP
 
-      jtlo = myByLo(myThid)
-      jthi = myByHi(myThid)
-      itlo = myBxLo(myThid)
-      ithi = myBxHi(myThid)
-      jmin = 1-OLy
-      jmax = sNy+OLy
-      imin = 1-OLx
-      imax = sNx+OLx
-
-      do bj = jtlo,jthi
-       do bi = itlo,ithi
-        do k = 1,nzOut
-         do j = jmin,jmax
-          do i = imin,imax
-           fldOut(i,j,k,bi,bj) = fldIn(i,j,k,bi,bj)
-          enddo
-         enddo
-        enddo
-       enddo
-      enddo
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k = 1,nzOut
+         DO j = 1-OLy,sNy+OLy
+          DO i = 1-OLx,sNx+OLx
+            fldOut(i,j,k,bi,bj) = fldIn(i,j,k,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_CTRL */
 
       RETURN
       END
-
