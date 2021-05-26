@@ -72,7 +72,9 @@ c     myThid - thread number for this instance of the routine.
 c     == local variables ==
 
       INTEGER bi, bj, i, j
+#if (defined (ALLOW_CTRL) && defined (ECCO_CTRL_DEPRECATED))
       _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 
 c     == end of interface ==
 

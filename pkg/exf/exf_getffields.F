@@ -62,7 +62,9 @@ C     == routine arguments ==
 
 C     == local variables ==
       INTEGER i, j, bi, bj
+#ifdef ALLOW_CTRL
       _RS mask2D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 #ifdef ALLOW_ROTATE_UV_CONTROLS
       _RL     tmpUE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL     tmpVN(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

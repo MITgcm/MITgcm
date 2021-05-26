@@ -57,7 +57,7 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer bi,bj
-      integer i,j,k
+      integer i,j
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
