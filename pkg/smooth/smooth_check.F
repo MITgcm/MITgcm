@@ -1,36 +1,33 @@
 #include "SMOOTH_OPTIONS.h"
-#include "CTRL_OPTIONS.h"
 
-      subroutine smooth_check( myThid )
-
+CBOP
+C     !ROUTINE: SMOOTH_CHECK
+C     !INTERFACE:
+      SUBROUTINE SMOOTH_CHECK( myThid )
+C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE smooth_check
-C     | o Routine that checks for inconsistencies in the smooth package
+C     | S/R SMOOTH_CHECK
+C     | o Checks for inconsistencies in the smooth package
 C     *==========================================================*
+C     \ev
 
-      implicit none
-
-c     == global variables ==
-
+C     !USES:
+      IMPLICIT NONE
+C     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
-#include "GRID.h"
 #include "PARAMS.h"
-
+#include "GRID.h"
 #include "SMOOTH.h"
 
-c     == routine arguments ==
+C     !INPUT/OUTPUT PARAMETERS:
+      INTEGER myThid
 
-      integer myThid
-
-c     == local variables ==
-C     msgBuf      - Informational/error message buffer
-C     iUnit       - Work variable for IO unit number
+C     !LOCAL VARIABLES:
+C     msgBuf      :: Informational/error message buffer
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      integer smoothOpNb
-
-c     == end of interface ==
-
+      INTEGER smoothOpNb
+CEOP
 
 C --- Check for legal mask names
       DO smoothOpNb=1,smoothOpNbMax
