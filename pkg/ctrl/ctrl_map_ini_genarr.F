@@ -1,4 +1,7 @@
 #include "CTRL_OPTIONS.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 
 C--   File ctrl_map_ini_genarr.F: Generic arrays control vector
 C--    Contents:
@@ -45,7 +48,6 @@ C     == global variables ==
 #endif
 #ifdef ALLOW_SHELFICE
 # include "SHELFICE.h"
-# include "SHELFICE_OPTIONS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -325,7 +327,7 @@ C     !LOCAL VARIABLES:
       LOGICAL doscaling
       LOGICAL dolog10ctrl
       _RL log10initval
-      _RL xx_gen  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL xx_gen  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dummyRS(1)
       CHARACTER*(80) fnamegenIn
       CHARACTER*(80) fnamegenOut
@@ -333,14 +335,14 @@ C     !LOCAL VARIABLES:
       INTEGER ilgen
       LOGICAL doglobalread
       LOGICAL ladinit
-      _RS mask2D (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RS mask2D (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CEOP
 
 c--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
 
-      CALL CTRL_ZERO(xx_gen, 1, 0. _d 0, myThid)
+      CALL CTRL_ZERO(xx_gen, 1, zeroRL, myThid)
 
       dosmooth=.FALSE.
       dowc01  = .FALSE.
@@ -396,8 +398,8 @@ C --- Get appropriate mask for ctrl variable
 C --- Do any smoothing
 #ifdef ALLOW_SMOOTH
       IF (useSMOOTH) THEN
-       IF (dowc01) CALL SMOOTH_CORREL2D(xx_gen,mask2D,numsmo,mythid)
-       IF (dosmooth) CALL SMOOTH2D(xx_gen,mask2D,numsmo,mythid)
+       IF (dowc01) CALL SMOOTH_CORREL2D(xx_gen,mask2D,numsmo,myThid)
+       IF (dosmooth) CALL SMOOTH2D(xx_gen,mask2D,numsmo,myThid)
       ENDIF
 #endif
 
@@ -502,14 +504,14 @@ C     !LOCAL VARIABLES:
       INTEGER ilgen
       LOGICAL doglobalread
       LOGICAL ladinit
-      _RS mask3D(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RS mask3D(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nr,nSx,nSy)
 CEOP
 
 c--   Now, read the control vector.
       doglobalread = .FALSE.
       ladinit      = .FALSE.
 
-      CALL CTRL_ZERO(xx_gen, Nr, 0. _d 0, myThid)
+      CALL CTRL_ZERO(xx_gen, Nr, zeroRL, myThid)
 
       dosmooth=.FALSE.
       dowc01  = .FALSE.

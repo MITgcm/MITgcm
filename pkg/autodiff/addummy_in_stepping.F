@@ -11,6 +11,9 @@
 #ifdef ALLOW_GGL90
 # include "GGL90_OPTIONS.h"
 #endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 #include "AD_CONFIG.h"
 
 CBOP
@@ -65,9 +68,6 @@ C- Note: Since OpenAD uses modules, the ordering of included headers matters
 # ifdef ALLOW_DIAGNOSTICS
 #  include "DIAGNOSTICS_SIZE.h"
 #  include "DIAGNOSTICS.h"
-# endif
-# ifdef ALLOW_SHELFICE
-#  include "SHELFICE_OPTIONS.h"
 # endif
 #endif /* ALLOW_AUTODIFF_MONITOR */
 

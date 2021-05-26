@@ -2,6 +2,9 @@
 #ifdef ALLOW_EXF
 # include "EXF_OPTIONS.h"
 #endif
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 #include "AD_CONFIG.h"
 
 CBOP
@@ -30,9 +33,6 @@ C     === Global variables ===
 #endif
 #include "CTRL_SIZE.h"
 #include "CTRL_GENARR.h"
-#ifdef ALLOW_SHELFICE
-# include "SHELFICE_OPTIONS.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid     :: my Thread Id number
