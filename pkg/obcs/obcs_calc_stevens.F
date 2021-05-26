@@ -79,7 +79,6 @@ C     === Global variables ===
 #endif /* ALLOW_PTRACERS */
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
-#include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:

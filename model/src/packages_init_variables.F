@@ -117,7 +117,6 @@ C     === Global variables ===
 #ifdef ALLOW_AUTODIFF
 # include "DYNVARS.h"
 # include "tamc.h"
-# include "tamc_keys.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
