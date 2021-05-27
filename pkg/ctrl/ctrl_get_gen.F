@@ -37,7 +37,9 @@ c     == global variables ==
 
 c     == routine arguments ==
 
+#ifdef ALLOW_SMOOTH
       character*(80) fnamegeneric
+#endif
       character*(MAX_LEN_FNAM) xx_gen_file
       integer xx_genstartdate(4)
       _RL     xx_genperiod
