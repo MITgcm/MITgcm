@@ -42,6 +42,8 @@ CEOP
            shiTransCoeffT        (i,j,bi,bj) = 0. _d 0
            shiTransCoeffS        (i,j,bi,bj) = 0. _d 0
            shelficeMass          (i,j,bi,bj) = 0. _d 0
+           shiCDragFld           (i,j,bi,bj) = 0. _d 0
+           shiDragQuadFld        (i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
@@ -55,7 +57,7 @@ CEOP
          DO bi = myBxLo(myThid), myBxHi(myThid)
           DO j = 1-OLy, sNy+OLy
            DO i = 1-OLx, sNx+OLx
-            shiTransCoeffS(i,j,bi,bj) = 5.05 _d -3 *
+            shiTransCoeffS(i,j,bi,bj) = SHELFICEsaltToHeatRatio *
      &                                  shiTransCoeffT(i,j,bi,bj)
            ENDDO
           ENDDO
@@ -75,6 +77,19 @@ C     set coefficients to constant values
         ENDDO
        ENDIF
       ENDIF
+C     Update the spatially varying version of the drag coefficient
+C     shiCDragFld used in shelfice_thermodynamics
+C     shiCDragQuadFld used in shelfice_u/v_drag_coeff
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j = 1-OLy, sNy+OLy
+         DO i = 1-OLx, sNx+OLx
+          shiCDragFld(i,j,bi,bj) = shiCDrag
+          shiDragQuadFld(i,j,bi,bj) = SHELFICEDragQuadratic
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)

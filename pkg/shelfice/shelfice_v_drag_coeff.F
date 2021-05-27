@@ -138,7 +138,7 @@ C-    average grid-cell-center KE to get velocity norm @ U.pt
           ENDIF
           IF ( vSq.GT.zeroRL ) THEN
            cDrag(i,j) = cDrag(i,j)
-     &                + SHELFICEDragQuadratic*SQRT(vSq)*dragFac
+     &                + shiDragQuadFld(i,j,bi,bj)*SQRT(vSq)*dragFac
           ENDIF
          ENDDO
         ENDDO
@@ -157,7 +157,7 @@ C-    calculate locally velocity norm @ U.pt (local U & 4 V averaged)
           ENDIF
           IF ( vSq.GT.zeroRL ) THEN
            cDrag(i,j) = cDrag(i,j)
-     &                + SHELFICEDragQuadratic*SQRT(vSq)*dragFac
+     &                + shiDragQuadFld(i,j,bi,bj)*SQRT(vSq)*dragFac
           ENDIF
         ENDDO
        ENDDO
@@ -182,7 +182,7 @@ C-    same as above but using wet-point method to average 4 V
           ENDIF
           IF ( vSq.GT.zeroRL ) THEN
            cDrag(i,j) = cDrag(i,j)
-     &                + SHELFICEDragQuadratic*SQRT(vSq)*dragFac
+     &                + shiDragQuadFld(i,j,bi,bj)*SQRT(vSq)*dragFac
           ENDIF
         ENDDO
        ENDDO
