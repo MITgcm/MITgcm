@@ -106,7 +106,7 @@ c--   control variable on the current tile.
                enddo
             enddo
          enddo
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_SHELFICE
       else if ( ncvargrd(grdchkvarindex) .eq. 'i' ) then
          do bj = jtlo,jthi
             do bi = itlo,ithi
@@ -115,7 +115,7 @@ c--   control variable on the current tile.
                enddo
             enddo
          enddo
-#endif /* ALLOW_SHIFWFLX_CONTROL */
+#endif /* ALLOW_SHELFICE */
       else if ( ncvargrd(grdchkvarindex) .eq. 'm' ) then
          do bj = jtlo,jthi
             do bi = itlo,ithi

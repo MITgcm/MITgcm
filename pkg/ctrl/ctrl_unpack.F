@@ -139,9 +139,11 @@ cHFLUXM_CONTROL
 #endif /* ECCO_CTRL_DEPRECATED */
 
       integer cunit
+      integer nwettmp(Nr)
 
       character*(128) cfile
       character*( 80) weighttype
+      character*( 9) mskNameForSetUnpack
 
       logical lxxadxx
 
@@ -284,7 +286,7 @@ c--       Header information.
 #ifdef ALLOW_CTRL_WETV
           read(cunit) (filenWetvGlobal(k),   k=1,nr)
 #endif
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_SHELFICE
           read(cunit) (filenWetiGlobal(k),   k=1,nr)
 c         read(cunit) filenWetiGlobal(1)
 #endif
@@ -338,14 +340,14 @@ c
                 STOP
              endif
           end do
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_SHELFICE
           do k=1,1
            if ( filenWetiGlobal(k) .NE. nWetiGlobal(k) ) then
             print *, 'WARNING: wrong nWetiGlobal for k = ', k
             STOP
            endif
           enddo
-#endif /* ALLOW_SHIFWFLX_CONTROL */
+#endif /* ALLOW_SHELFICE */
 
 #if (defined (ALLOW_CTRL) && defined (ALLOW_OBCS))
 cgg(   Lets also check the OBCS mask info in the header.
@@ -878,6 +880,15 @@ c----------------------------------------------------------------------
 #ifdef ALLOW_GENARR2D_CONTROL
        do iarr = 1, maxCtrlArr2D
         if (xx_genarr2d_weight(iarr).NE.' ') then
+         mskNameForSetUnpack='maskCtrlC'
+         nwettmp(1:Nr) = nwetcglobal(1:Nr)
+# ifdef ALLOW_SHELFICE
+         if ((xx_genarr2d_file(iarr)(1:11).eq.'xx_shicoeff').or.
+     &       (xx_genarr2d_file(iarr)(1:11).eq.'xx_shicdrag')) then
+          mskNameForSetUnpack='maskCtrlI'
+          nwettmp(1:Nr) = nwetiglobal(1:Nr)
+         endif
+# endif
           call ctrl_set_fname( xx_genarr2d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 100+iarr
@@ -885,9 +896,9 @@ cc          write(weighttype(1:80),'(80a)') ' '
 cc          write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_unpack_xy(
      &         lxxadxx, cunit, ivartype, genarr2dPrecond(iarr),
-     &         fname_local(ictrlgrad), "maskCtrlC",
+     &         fname_local(ictrlgrad), mskNameForSetUnpack,
      &         xx_genarr2d_weight(iarr),
-     &         nwetcglobal, mythid)
+     &         nwettmp, mythid)
         endif
        enddo
 #endif
@@ -911,6 +922,14 @@ cc          write(weighttype(1:80),'(a)') "wunit"
 #ifdef ALLOW_GENTIM2D_CONTROL
        do iarr = 1, maxCtrlTim2D
         if (xx_gentim2d_weight(iarr).NE.' ') then
+         mskNameForSetUnpack='maskCtrlC'
+         nwettmp(1:Nr) = nwetcglobal(1:Nr)
+# ifdef ALLOW_SHELFICE
+         if (xx_gentim2d_file(iarr)(1:11).eq.'xx_shifwflx') then
+            mskNameForSetUnpack='maskCtrlI'
+            nwettmp(1:Nr) = nwetiglobal(1:Nr)
+         endif
+# endif
           call ctrl_set_fname( xx_gentim2d_file(iarr),
      O                         fname_local, mythid )
           ivartype    = 300+iarr
@@ -918,9 +937,9 @@ cc          write(weighttype(1:80),'(a)') "wunit"
           write(weighttype(1:80),'(a)') "wunit"
           call ctrl_set_unpack_xy(
      &         lxxadxx, cunit, ivartype, gentim2dPrecond(iarr),
-     &         fname_local(ictrlgrad), "maskCtrlC",
+     &         fname_local(ictrlgrad), mskNameForSetUnpack,
      &         xx_gentim2d_weight(iarr),
-     &         nwetcglobal, mythid)
+     &         nwettmp, mythid)
         endif
        enddo
 #endif
