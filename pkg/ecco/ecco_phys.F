@@ -1,4 +1,7 @@
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_SHELFICE
+# include "SHELFICE_OPTIONS.h"
+#endif
 
       subroutine ecco_phys( mythid )
 
@@ -28,7 +31,6 @@ c     == global variables ==
 # include "PTRACERS_FIELDS.h"
 #endif
 #if (defined ALLOW_GENCOST_CONTRIBUTION) && (defined ALLOW_SHELFICE)
-# include "SHELFICE_OPTIONS.h"
 # include "SHELFICE.h"
 #endif
 
