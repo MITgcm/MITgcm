@@ -62,6 +62,11 @@ C                    without topography)
       _RS      SMOOTHMIN_RS
       EXTERNAL SMOOTHMIN_RS
 # endif /* USE_SMOOTH_MIN */
+# ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ikey, kkey
+# endif
 #else /* ALLOW_DEPTH_CONTROL */
       _RS     hFacZOpen
       INTEGER hZoption
@@ -73,11 +78,6 @@ C                    without topography)
 # endif /* ALLOW_EXCH2 */
       PARAMETER ( hZoption = 0 )
 #endif /* ALLOW_DEPTH_CONTROL */
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-      INTEGER ikey, kkey
-#endif
 CEOP
 
 C--   Calculate open water fraction at vorticity points
