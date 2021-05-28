@@ -1534,9 +1534,7 @@ The file :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>` in the
 directory :filelink:`eesupp/inc/` contains a number of CPP flags related to the
 execution environment where the model will run. Many of these flags were
 intended for very specific platform environments, and not meant to be changed
-for more general environments. Below we describe the user-editable CPP flags,
-i.e., other flags in :filelink:`CPP_EEOPTIONS.h <eesupp/inc/CPP_EEOPTIONS.h>`
-not mentioned below should NOT be changed:
+for more general environments. Below we describe the subset of user-editable CPP flags:
 
 .. tabularcolumns:: |\Y{.475}|\Y{.1}|\Y{.45}|
 
@@ -1570,8 +1568,8 @@ count.  Profiling has shown that letting the code fall through to a baseline
 approach that simply uses
 `MPI_Allreduce() <https://www.open-mpi.org/doc/v3.0/man3/MPI_Allreduce.3.php>`_
 can provide significantly improved performance for certain simulations [#]_.
-The fall-though approach is activated by ``#undef`` both
-:varlink:`GLOBAL_SUM_ORDER_TILES` and :varlink:`GLOBAL_SUM_SEND_RECV`.
+The fall-though approach is activated by ``#undef``
+:varlink:`GLOBAL_SUM_ORDER_TILES`.
 
 In a default multi-processor configuration, each process opens and reads its
 own set of namelist files and open and writes its own standard output. This can
@@ -1599,9 +1597,11 @@ defining this flag may speed up I/O compared to the automatic conversion from
 little endian to big endian output, but that needs to be tested for each
 platform individually. Under normal circumstances this flag should be undefined.
 
-The CPP-flag :varlink:`COMPONENT_MODULE` needs to be set to ``#define`` only in
-simulations in which the MITgcm is coupled to further instances of itself, for
-example, in verification experiment `cpl_aim+ocn
+The CPP-flag :varlink:`COMPONENT_MODULE` needs to be set to ``#define`` only for
+builds in which the MITgcm executable (for either an oceanic or atmospheric
+simulation) is configured to communicate with a coupler.
+This coupler can be a specially configured build of MITgcm itself;
+see, for example, verification experiment `cpl_aim+ocn
 <https://github.com/MITgcm/MITgcm/tree/master/verification/cpl_aim+ocn>`_.
 
 .. [#] One example is the llc_540 case located at
