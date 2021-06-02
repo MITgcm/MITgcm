@@ -464,12 +464,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Check parameter consistency :
 
       IF ( ( OLx.LT.2 .OR. OLy.LT.2 ) .AND. momStepping ) THEN
-C-    Current algorithm (solve_for_pressure, RHS) prevent to use
-C     momAdvection or viscAh > 0 with OLx,y=1 ; should still allow to
-C     use OLx,y=1 when momAdvection=F and viscAh=0 but some loop range
+C-    Current algorithm (solve_for_pressure, RHS) prevents to use
+C     momAdvection or viscAh > 0 with OLx,y=1 ; it should still allow us
+C     to use OLx,y=1 when momAdvection=F and viscAh=0 but some loop range
 C     in few momentum S/R are not carefully set to support this.
         WRITE(msgBuf,'(A,A)') 'CONFIG_CHECK: Cannot use momStepping',
-     &   ' with overlap (OLx,OLy) smaller than 2'
+     &  ' with overlap (OLx,OLy) smaller than 2'
         CALL PRINT_ERROR( msgBuf, myThid )
         errCount = errCount + 1
       ENDIF
