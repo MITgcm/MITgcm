@@ -3,6 +3,9 @@
 #ifdef ALLOW_AUTODIFF
 # include "AUTODIFF_OPTIONS.h"
 #endif
+#ifdef ALLOW_DIAGNOSTICS
+# include "DIAG_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: adexf_adjoint_snapshots
@@ -41,6 +44,10 @@ C     == Global variables ===
 # include "AUTODIFF_PARAMS.h"
 # include "AUTODIFF.h"
 # include "adcommon.h"
+# ifdef ALLOW_DIAGNOSTICS
+#  include "DIAGNOSTICS_SIZE.h"
+#  include "DIAGNOSTICS.h"
+# endif
 #endif
 #endif
 
@@ -65,170 +72,103 @@ C     !LOCAL VARIABLES:
 c     == local variables ==
 C     suff   :: Hold suffix part of a filename
 C     msgBuf :: Error message buffer
-      CHARACTER*(10) suff
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
+c     CHARACTER*(10) suff
+c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+#ifdef ALLOW_MNC
+      _RL var2Du(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL var2Dv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+      _RS dumRS(1)
+      _RL dumRL(1)
       INTEGER dumpAdRecEx
+      LOGICAL doDump
+#ifdef ALLOW_DIAGNOSTICS
+      LOGICAL modelEnd
+#endif
 CEOP
 
-      CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
-
-      IF (
-     &  DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
-     & ) THEN
-
-C--     Set suffix for this set of data files.
-        IF ( rwSuffixType.EQ.0 ) THEN
-          WRITE(suff,'(I10.10)') myIter
-        ELSE
-          CALL RW_GET_SUFFIX( suff, myTime, myIter, myThid )
-        ENDIF
-C ==>> Resetting run-time parameter writeBinaryPrec in the middle of a run
-C ==>>  is very very very nasty !!!
-c       writeBinaryPrec = writeStatePrec
-C <<==  If you really want to mess-up with this at your own risk,
-C <<==  uncomment the line above
-
-c determine ad dump record number (used only if dumpAdByRec is true)
-        IF (useSeaice.AND.(iWhen.EQ.3)) THEN
-          dumpAdRecEx=dumpAdRecMn+1
-        ELSE
-          dumpAdRecEx=dumpAdRecMn
-        ENDIF
+C-----------------------------------------------------------------------
+C--- do dump?
+C-----------------------------------------------------------------------
+      doDump = DIFFERENT_MULTIPLE(adjDumpFreq,myTime,deltaTClock)
+      IF ( doDump ) THEN
+c     determine ad dump record number (used only if dumpAdByRec is true)
+       IF (useSeaice.AND.(iWhen.EQ.3)) THEN
+        dumpAdRecEx=dumpAdRecMn+1
+       ELSE
+        dumpAdRecEx=dumpAdRecMn
+       ENDIF
 c#ifdef ALLOW_DEBUG
 c      IF ( debugMode ) print*,'dumpAdRecEx',dumpAdRecEx
 c#endif
+       CALL TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
+      ENDIF
 
-        IF (.NOT.dumpAdByRec) THEN
+      IF ( iwhen .EQ.1 ) THEN
 
-        IF ( iwhen .EQ.1 ) THEN
+       CALL DUMP_ADJ_XY_UV(
+     &      dumRS, adustress, 'ADJustrs', 'ADJustress.',
+     &      dumRS, advstress, 'ADJvstrs', 'ADJvstress.',
+     &     34, doDump, dumpAdRecEx, myTime, myIter, myThid)
+       CALL DUMP_ADJ_XY( dumRS, adhflux, 'ADJhflux', 'ADJhflux.',
+     &      12, doDump, dumpAdRecEx, myTime, myIter, myThid )
+       CALL DUMP_ADJ_XY( dumRS, adsflux, 'ADJsflux', 'ADJsflux.',
+     &      12, doDump, dumpAdRecEx, myTime, myIter, myThid )
 
-        CALL WRITE_FLD_XY_RL ( 'ADJustress.',
-     &       suff, adustress, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'ADJvstress.',
-     &       suff, advstress, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'ADJhflux.',
-     &       suff, adhflux, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'ADJsflux.',
-     &       suff, adsflux, myIter, myThid)
-
-        ELSEIF ( iwhen .EQ.2 ) THEN
+      ELSEIF ( iwhen .EQ.2 ) THEN
 
 # ifdef ALLOW_ATM_TEMP
-        CALL WRITE_FLD_XY_RL ( 'ADJatemp.',
-     &       suff, adatemp, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'ADJaqh.',
-     &       suff, adaqh, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'ADJprecip.',
-     &       suff, adprecip, myIter, myThid)
+       CALL DUMP_ADJ_XY( dumRS, adatemp, 'ADJatemp', 'ADJatemp.',
+     &      12, doDump, dumpAdRecEx, myTime, myIter, myThid )
+       CALL DUMP_ADJ_XY( dumRS, adaqh,   'ADJaqh  ', 'ADJaqh.',
+     &      12, doDump, dumpAdRecEx, myTime, myIter, myThid )
+       CALL DUMP_ADJ_XY( dumRS, adprecip, 'ADJpreci', 'ADJprecip.',
+     &      12, doDump, dumpAdRecEx, myTime, myIter, myThid )
 # endif
 # ifdef ALLOW_RUNOFF
-        CALL WRITE_FLD_XY_RL ( 'ADJrunoff.',
-     &       suff, adrunoff, myIter, myThid)
+       CALL DUMP_ADJ_XY( dumRS, adrunoff, 'ADJroff ', 'ADJrunoff.',
+     &      12, doDump, dumpAdRecEx, myTime, myIter, myThid )
 # endif
 # ifdef ALLOW_ATM_WIND
-      IF ( useAtmWind ) THEN
-        CALL WRITE_FLD_XY_RL ( 'ADJuwind.',
-     &       suff, aduwind, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'ADJvwind.',
-     &       suff, advwind, myIter, myThid)
-      ENDIF
+       IF ( useAtmWind ) THEN
+        CALL DUMP_ADJ_XY( dumRS, aduwind, 'ADJuwind', 'ADJuwind.',
+     &       12, doDump, dumpAdRecEx, myTime, myIter, myThid )
+        CALL DUMP_ADJ_XY( dumRS, advwind, 'ADJvwind', 'ADJvwind.',
+     &       12, doDump, dumpAdRecEx, myTime, myIter, myThid )
+       ENDIF
 # endif
 # ifdef ALLOW_DOWNWARD_RADIATION
-        CALL WRITE_FLD_XY_RL ( 'ADJswdown.',
-     &       suff, adswdown, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'ADJlwdown.',
-     &       suff, adlwdown, myIter, myThid)
+       CALL DUMP_ADJ_XY( dumRS, adswdown, 'ADJswdn ', 'ADJswdown.',
+     &      12, doDump, dumpAdRecEx, myTime, myIter, myThid )
+       CALL DUMP_ADJ_XY( dumRS, adlwdown, 'ADJlwdn ', 'ADJlwdown.',
+     &      12, doDump, dumpAdRecEx, myTime, myIter, myThid )
 # endif
 # ifdef ALLOW_CLIMSST_RELAXATION
-        CALL WRITE_FLD_XY_RL ( 'ADJclimsst.',
-     &       suff, adclimsst, myIter, myThid)
+       CALL DUMP_ADJ_XY( dumRS, adclimsst, 'ADJclsst', 'ADJclimsst.',
+     &      12, doDump, dumpAdRecEx, myTime, myIter, myThid )
 # endif
 # ifdef ALLOW_CLIMSSS_RELAXATION
-        CALL WRITE_FLD_XY_RL ( 'ADJclimsss.',
-     &       suff, adclimsss, myIter, myThid)
+       CALL DUMP_ADJ_XY( dumRS, adclimsss, 'ADJclsst', 'ADJclimsss.',
+     &      12, doDump, dumpAdRecEx, myTime, myIter, myThid )
 # endif
 
-        ELSEIF ( iwhen .EQ.3 ) THEN
+      ELSEIF ( iwhen .EQ.3 ) THEN
 
-        CALL WRITE_FLD_XY_RS ( 'ADJtaux.',suff, adfu, myIter, myThid)
-        CALL WRITE_FLD_XY_RS ( 'ADJtauy.',suff, adfv, myIter, myThid)
-        CALL WRITE_FLD_XY_RS ( 'ADJqnet.',suff, adqnet, myIter, myThid)
-        CALL WRITE_FLD_XY_RS ( 'ADJempr.',suff, adempmr, myIter, myThid)
-#ifdef SHORTWAVE_HEATING
-        CALL WRITE_FLD_XY_RS ( 'ADJqsw.',suff, adqsw, myIter, myThid)
-#endif
-
-        ENDIF
-
-        ELSEIF ( dumpAdRecEx .GT. 0 ) THEN
-
-        IF ( iwhen .EQ.1 ) THEN
-
-        CALL WRITE_REC_XY_RL ( 'ADJustress',
-     &       adustress, dumpAdRecEx, myIter, myThid)
-        CALL WRITE_REC_XY_RL ( 'ADJvstress',
-     &       advstress, dumpAdRecEx, myIter, myThid)
-        CALL WRITE_REC_XY_RL ( 'ADJhflux',
-     &       adhflux, dumpAdRecEx, myIter, myThid)
-        CALL WRITE_REC_XY_RL ( 'ADJsflux',
-     &       adsflux, dumpAdRecEx, myIter, myThid)
-
-        ELSEIF ( iwhen .EQ.2 ) THEN
-
-# ifdef ALLOW_ATM_TEMP
-        CALL WRITE_REC_XY_RL ( 'ADJatemp',
-     &       adatemp, dumpAdRecEx, myIter, myThid)
-        CALL WRITE_REC_XY_RL ( 'ADJaqh',
-     &       adaqh, dumpAdRecEx, myIter, myThid)
-        CALL WRITE_REC_XY_RL ( 'ADJprecip',
-     &       adprecip, dumpAdRecEx, myIter, myThid)
+       CALL DUMP_ADJ_XY_UV(
+     &      adFu, dumRL, 'ADJtaux ', 'ADJtaux.',
+     &      adFv, dumRL, 'ADJtauy ', 'ADJtauy.',
+     &      33, doDump, dumpAdRecEx, myTime, myIter,myThid)
+       CALL DUMP_ADJ_XY(adQnet, dumRL, 'ADJqnet ', 'ADJqnet.',
+     &      11, doDump, dumpAdRecEx, myTime, myIter,myThid)
+       CALL DUMP_ADJ_XY(adEmPmR, dumRL, 'ADJempmr', 'ADJempr.',
+     &      11, doDump, dumpAdRecEx, myTime, myIter,myThid)
+# ifdef SHORTWAVE_HEATING
+       CALL DUMP_ADJ_XY(adQsw, dumRL, 'ADJqsw  ', 'ADJqsw.',
+     &      11, doDump, dumpAdRecEx, myTime, myIter,myThid)
 # endif
-# ifdef ALLOW_RUNOFF
-        CALL WRITE_REC_XY_RL ( 'ADJrunoff',
-     &       adrunoff, dumpAdRecEx, myIter, myThid)
-# endif
-# ifdef ALLOW_ATM_WIND
-      IF ( useAtmWind ) THEN
-        CALL WRITE_REC_XY_RL ( 'ADJuwind',
-     &       aduwind, dumpAdRecEx, myIter, myThid)
-        CALL WRITE_REC_XY_RL ( 'ADJvwind',
-     &       advwind, dumpAdRecEx, myIter, myThid)
+
       ENDIF
-# endif
-# ifdef ALLOW_DOWNWARD_RADIATION
-        CALL WRITE_REC_XY_RL ( 'ADJswdown',
-     &       adswdown, dumpAdRecEx, myIter, myThid)
-        CALL WRITE_REC_XY_RL ( 'ADJlwdown',
-     &       adlwdown, dumpAdRecEx, myIter, myThid)
-# endif
-# ifdef ALLOW_CLIMSST_RELAXATION
-        CALL WRITE_REC_XY_RL ( 'ADJclimsst',
-     &       adclimsst, dumpAdRecEx, myIter, myThid)
-# endif
-# ifdef ALLOW_CLIMSSS_RELAXATION
-        CALL WRITE_REC_XY_RL ( 'ADJclimsss',
-     &       adclimsss, dumpAdRecEx, myIter, myThid)
-# endif
-
-        ELSEIF ( iwhen .EQ.3 ) THEN
-
-        CALL WRITE_REC_XY_RS ( 'ADJtaux',
-     &       adfu, dumpAdRecEx, myIter, myThid)
-        CALL WRITE_REC_XY_RS ( 'ADJtauy',
-     &       adfv, dumpAdRecEx, myIter, myThid)
-        CALL WRITE_REC_XY_RS ( 'ADJqnet',
-     &       adqnet, dumpAdRecEx, myIter, myThid)
-        CALL WRITE_REC_XY_RS ( 'ADJempr',
-     &       adempmr, dumpAdRecEx, myIter, myThid)
-#ifdef SHORTWAVE_HEATING
-        CALL WRITE_REC_XY_RS ( 'ADJqsw',
-     &       adqsw, dumpAdRecEx, myIter, myThid)
-#endif
-
-        ENDIF
-
-        ENDIF
-
+      IF ( doDump ) THEN
 #ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
 
@@ -290,13 +230,13 @@ c
         ENDIF
 #endif /* ALLOW_MNC */
 
+        CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
+
       ENDIF
 
 #ifdef ALLOW_MONITOR
       CALL ADEXF_MONITOR ( iwhen, myTime, myIter, myThid )
 #endif
-
-      CALL TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
 #endif /* ALLOW_ADJOINT_RUN */

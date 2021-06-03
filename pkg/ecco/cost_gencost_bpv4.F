@@ -284,13 +284,13 @@ c--    Smooth field of anomalies
 
 #ifdef ALLOW_SMOOTH
         if ( useSMOOTH )
-     &   call smooth_basic2D(bpdifanom,maskc,300000. _d 0,3000,myThid)
+     &   call smooth_basic2D(bpdifanom,maskInC,300000. _d 0,3000,myThid)
 #endif
 
         if (gencost_outputlevel(kgen).GT.0) then
 #ifdef ALLOW_SMOOTH
          if ( useSMOOTH )
-     &   call smooth_basic2D(bpdatanom,maskc,300000. _d 0,3000,myThid)
+     &   call smooth_basic2D(bpdatanom,maskInC,300000. _d 0,3000,myThid)
 #endif
 
          write(fname4test(1:80),'(1a)') 'bpdifanom_smooth'

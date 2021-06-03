@@ -73,6 +73,10 @@ C   either from grid-spacing reduction effect or as artificially enhanced mixing
 C   near surface & bottom for too thin grid-cell
 #undef EXCLUDE_PCELL_MIX_CODE
 
+C o Exclude/allow to use isotropic 3-D Smagorinsky viscosity as diffusivity
+C   for tracers (after scaling by constant Prandtl number)
+#undef ALLOW_SMAG_3D_DIFFUSIVITY
+
 C-- Time-stepping code options:
 
 C o Include/exclude combined Surf.Pressure and Drag Implicit solver code
@@ -83,6 +87,9 @@ C o Include/exclude Implicit vertical advection code
 
 C o Include/exclude AdamsBashforth-3rd-Order code
 #undef ALLOW_ADAMSBASHFORTH_3
+
+C o Include/exclude Quasi-Hydrostatic Stagger Time-step AdamsBashforth code
+#undef ALLOW_QHYD_STAGGER_TS
 
 C-- Model formulation options:
 

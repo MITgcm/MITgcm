@@ -2,9 +2,6 @@
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
-#ifdef ALLOW_AUTODIFF
-# include "AUTODIFF_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: SEAICE_BOTTOMDRAG_COEFFS
@@ -52,17 +49,17 @@ C     iStep     :: current sub-time step iterate
 C     myTime    :: Simulation time
 C     myIter    :: Simulation timestep number
 C     myThid    :: my Thread Id. number
-      _RL uIceLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL vIceLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL uIceLoc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL vIceLoc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL HEFFMLoc  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef SEAICE_ITD
       _RL HEFFITDLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
       _RL AREAITDLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nITD,nSx,nSy)
 #else
-      _RL HEFFLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL HEFFLoc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
-      _RL AREALoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL CbotLoc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL AREALoc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL CbotLoc   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER iStep
       _RL     myTime
       INTEGER myIter
@@ -80,6 +77,8 @@ C     i,j,bi,bj,ksrf :: loop indices
       _RL     tmp, hActual, hCrit, recip_k1, u0sq, fac, rFac
 CEOP
 
+      IF (SEAICEbasalDragK2.GT.0. _d 0) THEN
+C     avoid this computation for a non-zero coefficient
       kSrf=1
 C     some abbreviations
       u0sq     = SEAICEbasalDragU0*SEAICEbasalDragU0
@@ -94,13 +93,13 @@ C     fac scales the soft maximum for more accuracy
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          CbotLoc(I,J,bi,bj) = 0. _d 0
-          tmpFld(I,J)      = 0. _d 0
+          CbotLoc(i,j,bi,bj) = 0. _d 0
+          tmpFld (i,j)       = 0. _d 0
          ENDDO
         ENDDO
         DO j=1-OLy,sNy+OLy-1
          DO i=1-OLx,sNx+OLx-1
-          IF ( AREALoc(I,J,bi,bj) .GT. 0.01 _d 0 ) THEN
+          IF ( AREALoc(i,j,bi,bj) .GT. 0.01 _d 0 ) THEN
 #ifdef OBCS_UVICE_OLD
            tmp = 0.25 _d 0*(
      &          (   uIceLoc(i  ,j,bi,bj)+uIceLoc(i+1,j,bi,bj)
@@ -110,11 +109,11 @@ C     fac scales the soft maximum for more accuracy
 #else /* OBCS_UVICE_OLD */
            tmp = 0.25 _d 0*(
      &          ( uIceLoc(i  ,j,bi,bj)*maskInW( i ,j,bi,bj)
-     &          + uIceLoc(i+1,J,bi,bj)*maskInW(i+1,j,bi,bj) )**2
-     &        + ( vIceLoc(i,j  ,bi,bj)*maskInS(i, j ,bi,bj)
+     &          + uIceLoc(i+1,j,bi,bj)*maskInW(i+1,j,bi,bj) )**2
+     &        + ( vIceLoc(i,j  ,bi,bj)*maskInS(i,j  ,bi,bj)
      &          + vIceLoc(i,j+1,bi,bj)*maskInS(i,j+1,bi,bj) )**2 )
 #endif /* OBCS_UVICE_OLD */
-           tmpFld(I,J) = SEAICEbasalDragK2 / SQRT(tmp + u0sq)
+           tmpFld(i,j) = SEAICEbasalDragK2 / SQRT(tmp + u0sq)
           ENDIF
          ENDDO
         ENDDO
@@ -123,18 +122,18 @@ C     fac scales the soft maximum for more accuracy
 #endif /* SEAICE_ITD */
          DO j=1-OLy,sNy+OLy-1
           DO i=1-OLx,sNx+OLx-1
-           IF ( AREALoc(I,J,bi,bj) .GT. 0.01 _d 0 ) THEN
+           IF ( AREALoc(i,j,bi,bj) .GT. 0.01 _d 0 ) THEN
 CML           hActual = HEFFLoc(i,j,bi,bj)
 CML     &          /SQRT( AREAITDLoc(i,j,bi,bj)**2 + area_reg_sq )
 CML           hActual = SQRT(hActual * hActual + hice_reg_sq)
-CML           hCrit   = ABS(R_low(I,J,bi,bj)) * recip_k1
+CML           hCrit   = ABS(R_low(i,j,bi,bj)) * recip_k1
 #ifdef SEAICE_ITD
-            hActual = HEFFITDLoc(I,J,k,bi,bj)
+            hActual = HEFFITDLoc(i,j,k,bi,bj)
 C     here we do not need recip_k1, because we resolve the very thick ice
-            hCrit   = ABS(R_low(I,J,bi,bj))*AREAITDLoc(I,J,k,bi,bj)
+            hCrit   = ABS(R_low(i,j,bi,bj))*AREAITDLoc(i,j,k,bi,bj)
 #else
-            hActual = HEFFLoc(I,J,bi,bj)
-            hCrit   = ABS(R_low(I,J,bi,bj))*AREALoc(I,J,bi,bj)*recip_k1
+            hActual = HEFFLoc(i,j,bi,bj)
+            hCrit   = ABS(R_low(i,j,bi,bj))*AREALoc(i,j,bi,bj)*recip_k1
 #endif /* SEAICE_ITD */
 C     we want to have some soft maximum for better differentiability:
 C     max(a,b;k) = ln(exp(k*a)+exp(k*b))/k
@@ -142,14 +141,14 @@ C     In our case, b=0, so exp(k*b) = 1.
 C     max(a,0;k) = ln(exp(k*a)+1)/k
 C     If k*a gets too large, EXP will overflow, but for the anticipated
 C     values of hActual < 100m, and k=10, this should be very unlikely
-CML             CbotLoc(I,J,bi,bj) =
-CML     &            tmpFld(I,J) * MAX( hActual - hCrit, 0. _d 0)
-            CbotLoc(I,J,bi,bj) = CbotLoc(I,J,bi,bj)
-     &           + tmpFld(I,J)
+CML             CbotLoc(i,j,bi,bj) =
+CML     &            tmpFld(i,j) * MAX( hActual - hCrit, 0. _d 0)
+            CbotLoc(i,j,bi,bj) = CbotLoc(i,j,bi,bj)
+     &           + tmpFld(i,j)
      &           * LOG(EXP( fac*(hActual - hCrit) ) + 1. _d 0)*rFac
      &           * EXP( - SEAICE_cBasalStar
-     &                  *(SEAICE_area_max - AREALoc(I,J,bi,bj)) )
-     &           * HEFFMLoc(I,J,bi,bj)
+     &                  *(SEAICE_area_max - AREALoc(i,j,bi,bj)) )
+     &           * HEFFMLoc(i,j,bi,bj)
            ENDIF
           ENDDO
          ENDDO
@@ -158,7 +157,8 @@ CML     &            tmpFld(I,J) * MAX( hActual - hCrit, 0. _d 0)
 #endif /* SEAICE_ITD */
        ENDDO
       ENDDO
-
+C     endif SEAICEbasalDragK2.GT.0.
+      ENDIF
 #endif /* SEAICE_ALLOW_BOTTOMDRAG */
 
       RETURN

@@ -173,7 +173,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
         diagName  = 'KPPg'//diagSufx
         diagTitle = 'KPP non-local Flux of Salinity'
-        diagUnits = 'psu.m^3/s       '
+        diagUnits = 'g/kg.m^3/s      '
         diagCode  = 'WM      LR      '
         CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )

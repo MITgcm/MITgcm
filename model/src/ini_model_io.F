@@ -118,10 +118,12 @@ C             not correspond to what is actually needed.
       saltStartAB = nIter0
       mom_StartAB = nIter0
       nHydStartAB = nIter0
+      qHydStartAB = nIter0
       IF ( startFromPickupAB2 ) tempStartAB = MIN( nIter0 , 1 )
       saltStartAB = tempStartAB
       mom_StartAB = tempStartAB
       nHydStartAB = tempStartAB
+      qHydStartAB = tempStartAB
       dPhiNHstatus= 0
 
 C-    Initialise Alternating pickup-suffix

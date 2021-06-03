@@ -10,7 +10,7 @@ C !INTERFACE: ==========================================================
      I           uTrans, vTrans, rTrans, rTransKp1,
      I           diffKh, diffK4, KappaR, diffKr4, TracerN, TracAB,
      I           deltaTLev, trIdentity,
-     I           advectionScheme, vertAdvecScheme,
+     I           advectionSchArg, vertAdvecSchArg,
      I           calcAdvection, implicitAdvection, applyAB_onTracer,
      I           trUseDiffKr4, trUseGMRedi, trUseKPP, trUseSmolHack,
      O           fZon, fMer,
@@ -71,8 +71,8 @@ C                     if applying AB on tracer field rather than on tendency gTr
 C TracAB           :: current tracer field (@ time-step n if applying AB on gTr
 C                     or extrapolated fwd in time to n+1/2 if applying AB on Tr)
 C trIdentity       :: tracer identifier (required for KPP,GM)
-C advectionScheme  :: advection scheme to use (Horizontal plane)
-C vertAdvecScheme  :: advection scheme to use (Vertical direction)
+C advectionSchArg  :: advection scheme to use (Horizontal plane)
+C vertAdvecSchArg  :: advection scheme to use (Vertical direction)
 C calcAdvection    :: =False if Advec computed with multiDim scheme
 C implicitAdvection:: =True if vertical Advec computed implicitly
 C applyAB_onTracer :: apply Adams-Bashforth on Tracer (rather than on gTr)
@@ -102,7 +102,7 @@ C myThid           :: thread number
       _RL TracAB (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL deltaTLev(Nr)
       INTEGER trIdentity
-      INTEGER advectionScheme, vertAdvecScheme
+      INTEGER advectionSchArg, vertAdvecSchArg
       LOGICAL calcAdvection
       LOGICAL implicitAdvection, applyAB_onTracer
       LOGICAL trUseDiffKr4, trUseGMRedi, trUseKPP, trUseSmolHack
@@ -127,12 +127,15 @@ C !FUNCTIONS:       ====================================================
 
 C !LOCAL VARIABLES: ====================================================
 C i,j              :: loop indices
+C advectionScheme  :: local copy of routine argument advectionSchArg
+C vertAdvecScheme  :: local copy of routine argument vertAdvecSchArg
 C df4              :: used for storing del^2 T for bi-harmonic term
 C af               :: advective flux
 C df               :: diffusive flux
 C localT           :: local copy of tracer field
 C locABT           :: local copy of (AB-extrapolated) tracer field
       INTEGER i,j
+      INTEGER advectionScheme, vertAdvecScheme
       _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL df4   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -150,11 +153,26 @@ C locABT           :: local copy of (AB-extrapolated) tracer field
 #endif
 CEOP
 
+C     make local copies to be tampered with if necessary
+      advectionScheme = advectionSchArg
+      vertAdvecScheme = vertAdvecSchArg
 #ifdef ALLOW_AUTODIFF
 C--   only the kUp part of fverT is set in this subroutine
 C--   the kDown is still required
       fVerT(1,1,kDown) = fVerT(1,1,kDown)
-#endif
+C
+      IF ( inAdMode .AND. useApproxAdvectionInAdMode ) THEN
+C     In AD-mode, we change non-linear, potentially unstable AD advection
+C     schemes to linear schemes with more stability. So far only DST3 with
+C     flux limiting is replaced by DST3 without flux limiting, but any
+C     combination is possible.
+       IF ( advectionSchArg.EQ.ENUM_DST3_FLUX_LIMIT )
+     &      advectionScheme = ENUM_DST3
+       IF ( vertAdvecSchArg.EQ.ENUM_DST3_FLUX_LIMIT )
+     &      vertAdvecScheme = ENUM_DST3
+C     here is room for more advection schemes as this becomes necessary
+      ENDIF
+#endif /* ALLOW_AUTODIFF */
 
 #ifdef ALLOW_DIAGNOSTICS
 C--   Set diagnostic suffix for the current tracer
@@ -211,7 +229,7 @@ C--   Initialize net flux in X direction
 
 C-    Advective flux in X
       IF (calcAdvection) THEN
-        IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
+        IF ( advectionScheme.EQ.ENUM_CENTERED_2ND ) THEN
            CALL GAD_C2_ADV_X( bi,bj,k, uTrans, locABT, af, myThid )
         ELSEIF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &          .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
@@ -228,35 +246,26 @@ C-    Advective flux in X
 #endif /* ALLOW_OBCS */
           ENDDO
          ENDDO
-         IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+         IF ( advectionScheme.EQ.ENUM_FLUX_LIMIT ) THEN
            CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
      I              uTrans, uFld, maskLocW, locABT,
      O              af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_UPWIND_3RD ) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_UPWIND_3RD ) THEN
            CALL GAD_U3_ADV_X( bi,bj,k, uTrans, maskLocW, locABT,
      O              af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_CENTERED_4TH ) THEN
            CALL GAD_C4_ADV_X( bi,bj,k, uTrans, maskLocW, locABT,
      O              af, myThid )
-#ifdef ALLOW_AUTODIFF
-         ELSEIF( advectionScheme.EQ.ENUM_DST3 .OR.
-     &          (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT .AND. inAdMode)
-     &         ) THEN
-cph This block is to trick the adjoint:
-cph If inAdExact=.FALSE., we want to use DST3
-cph with limiters in forward, but without limiters in reverse.
-#else /* ALLOW_AUTODIFF */
-         ELSEIF( advectionScheme.EQ.ENUM_DST3 ) THEN
-#endif /* ALLOW_AUTODIFF */
+         ELSEIF ( advectionScheme.EQ.ENUM_DST3 ) THEN
            CALL GAD_DST3_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
      I              uTrans, uFld, maskLocW, locABT,
      O              af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
            CALL GAD_DST3FL_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
      I              uTrans, uFld, maskLocW, locABT,
      O              af, myThid )
 #ifndef ALLOW_AUTODIFF
-         ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_X( bi,bj,k, .TRUE., deltaTLev(k),
      I              uTrans, uFld, maskLocW, locABT,
      O              af, myThid )
@@ -351,7 +360,7 @@ C--   Initialize net flux in Y direction
 
 C-    Advective flux in Y
       IF (calcAdvection) THEN
-        IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
+        IF ( advectionScheme.EQ.ENUM_CENTERED_2ND ) THEN
            CALL GAD_C2_ADV_Y( bi,bj,k, vTrans, locABT, af, myThid )
         ELSEIF ( advectionScheme.EQ.ENUM_UPWIND_1RST
      &          .OR. advectionScheme.EQ.ENUM_DST2 ) THEN
@@ -368,35 +377,26 @@ C-    Advective flux in Y
 #endif /* ALLOW_OBCS */
           ENDDO
          ENDDO
-         IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+         IF ( advectionScheme.EQ.ENUM_FLUX_LIMIT ) THEN
            CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
      I              vTrans, vFld, maskLocS, locABT,
      O              af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_UPWIND_3RD ) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_UPWIND_3RD ) THEN
            CALL GAD_U3_ADV_Y( bi,bj,k, vTrans, maskLocS, locABT,
      O              af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_CENTERED_4TH ) THEN
            CALL GAD_C4_ADV_Y( bi,bj,k, vTrans, maskLocS, locABT,
      O              af, myThid )
-#ifdef ALLOW_AUTODIFF
-         ELSEIF( advectionScheme.EQ.ENUM_DST3 .OR.
-     &          (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT .AND. inAdMode)
-     &         ) THEN
-cph This block is to trick the adjoint:
-cph If inAdExact=.FALSE., we want to use DST3
-cph with limiters in forward, but without limiters in reverse.
-#else /* ALLOW_AUTODIFF */
-         ELSEIF( advectionScheme.EQ.ENUM_DST3 ) THEN
-#endif /* ALLOW_AUTODIFF */
+         ELSEIF ( advectionScheme.EQ.ENUM_DST3 ) THEN
            CALL GAD_DST3_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
      I              vTrans, vFld, maskLocS, locABT,
      O              af, myThid )
-         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
            CALL GAD_DST3FL_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
      I              vTrans, vFld, maskLocS, locABT,
      O              af, myThid )
 #ifndef ALLOW_AUTODIFF
-         ELSEIF (advectionScheme.EQ.ENUM_OS7MP ) THEN
+         ELSEIF ( advectionScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_Y( bi,bj,k, .TRUE., deltaTLev(k),
      I              vTrans, vFld, maskLocS, locABT,
      O              af, myThid )
@@ -494,40 +494,31 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
 #endif
        IF ( applyAB_onTracer ) THEN
 C-    Compute vertical advective flux in the interior using TracAB:
-        IF (vertAdvecScheme.EQ.ENUM_CENTERED_2ND) THEN
+        IF ( vertAdvecScheme.EQ.ENUM_CENTERED_2ND ) THEN
            CALL GAD_C2_ADV_R( bi,bj,k, rTrans, TracAB, af, myThid )
         ELSEIF ( vertAdvecScheme.EQ.ENUM_UPWIND_1RST
      &          .OR. vertAdvecScheme.EQ.ENUM_DST2 ) THEN
            CALL GAD_DST2U1_ADV_R( bi,bj,k,vertAdvecScheme,deltaTLev(k),
      I              rTrans, wFld, TracAB,
      O              af, myThid )
-        ELSEIF (vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
+        ELSEIF ( vertAdvecScheme.EQ.ENUM_FLUX_LIMIT ) THEN
            CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k, deltaTLev(k),
      I              rTrans, wFld, TracAB,
      O              af, myThid )
-        ELSEIF (vertAdvecScheme.EQ.ENUM_UPWIND_3RD ) THEN
+        ELSEIF ( vertAdvecScheme.EQ.ENUM_UPWIND_3RD ) THEN
            CALL GAD_U3_ADV_R( bi,bj,k, rTrans, TracAB, af, myThid )
         ELSEIF (vertAdvecScheme.EQ.ENUM_CENTERED_4TH) THEN
            CALL GAD_C4_ADV_R( bi,bj,k, rTrans, TracAB, af, myThid )
-#ifdef ALLOW_AUTODIFF
-        ELSEIF( vertAdvecScheme.EQ.ENUM_DST3 .OR.
-     &         (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT .AND. inAdMode)
-     &        ) THEN
-cph This block is to trick the adjoint:
-cph If inAdExact=.FALSE., we want to use DST3
-cph with limiters in forward, but without limiters in reverse.
-#else /* ALLOW_AUTODIFF */
-        ELSEIF( vertAdvecScheme.EQ.ENUM_DST3 ) THEN
-#endif /* ALLOW_AUTODIFF */
+        ELSEIF ( vertAdvecScheme.EQ.ENUM_DST3 ) THEN
            CALL GAD_DST3_ADV_R( bi,bj,k, deltaTLev(k),
      I              rTrans, wFld, TracAB,
      O              af, myThid )
-        ELSEIF (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+        ELSEIF ( vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
            CALL GAD_DST3FL_ADV_R( bi,bj,k, deltaTLev(k),
      I              rTrans, wFld, TracAB,
      O              af, myThid )
 #ifndef ALLOW_AUTODIFF
-        ELSEIF (vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
+        ELSEIF ( vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_R( bi,bj,k, deltaTLev(k),
      I              rTrans, wFld, TracAB,
      O              af, myThid )
@@ -537,40 +528,31 @@ cph with limiters in forward, but without limiters in reverse.
         ENDIF
        ELSE
 C-    Compute vertical advective flux in the interior using TracerN:
-        IF (vertAdvecScheme.EQ.ENUM_CENTERED_2ND) THEN
+        IF ( vertAdvecScheme.EQ.ENUM_CENTERED_2ND ) THEN
            CALL GAD_C2_ADV_R( bi,bj,k, rTrans, TracerN, af, myThid )
         ELSEIF ( vertAdvecScheme.EQ.ENUM_UPWIND_1RST
      &          .OR. vertAdvecScheme.EQ.ENUM_DST2 ) THEN
            CALL GAD_DST2U1_ADV_R( bi,bj,k,vertAdvecScheme,deltaTLev(k),
      I              rTrans, wFld, TracerN,
      O              af, myThid )
-        ELSEIF (vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
+        ELSEIF ( vertAdvecScheme.EQ.ENUM_FLUX_LIMIT ) THEN
            CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k, deltaTLev(k),
      I              rTrans, wFld, TracerN,
      O              af, myThid )
-        ELSEIF (vertAdvecScheme.EQ.ENUM_UPWIND_3RD ) THEN
+        ELSEIF ( vertAdvecScheme.EQ.ENUM_UPWIND_3RD ) THEN
            CALL GAD_U3_ADV_R( bi,bj,k, rTrans, TracerN, af, myThid )
-        ELSEIF (vertAdvecScheme.EQ.ENUM_CENTERED_4TH) THEN
+        ELSEIF ( vertAdvecScheme.EQ.ENUM_CENTERED_4TH ) THEN
            CALL GAD_C4_ADV_R( bi,bj,k, rTrans, TracerN, af, myThid )
-#ifdef ALLOW_AUTODIFF
-        ELSEIF( vertAdvecScheme.EQ.ENUM_DST3 .OR.
-     &         (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT .AND. inAdMode)
-     &        ) THEN
-cph This block is to trick the adjoint:
-cph If inAdExact=.FALSE., we want to use DST3
-cph with limiters in forward, but without limiters in reverse.
-#else /* ALLOW_AUTODIFF */
         ELSEIF( vertAdvecScheme.EQ.ENUM_DST3 ) THEN
-#endif /* ALLOW_AUTODIFF */
            CALL GAD_DST3_ADV_R( bi,bj,k, deltaTLev(k),
      I              rTrans, wFld, TracerN,
      O              af, myThid )
-        ELSEIF (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+        ELSEIF ( vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
            CALL GAD_DST3FL_ADV_R( bi,bj,k, deltaTLev(k),
      I              rTrans, wFld, TracerN,
      O              af, myThid )
 #ifndef ALLOW_AUTODIFF
-        ELSEIF (vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
+        ELSEIF ( vertAdvecScheme.EQ.ENUM_OS7MP ) THEN
            CALL GAD_OS7MP_ADV_R( bi,bj,k, deltaTLev(k),
      I              rTrans, wFld, TracerN,
      O              af, myThid )

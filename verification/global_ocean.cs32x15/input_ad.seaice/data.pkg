@@ -5,7 +5,7 @@
  useCAL    = .TRUE.,
  useTHSICE = .FALSE.,
  useSEAICE = .TRUE.,
-#useDiagnostics=.TRUE.,
+ useDiagnostics=.TRUE.,
 #useMNC=.TRUE.,
  useGrdchk=.TRUE.,
  &

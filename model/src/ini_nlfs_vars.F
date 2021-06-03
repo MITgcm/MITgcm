@@ -107,6 +107,7 @@ C-- Initialise arrays (NLFS using hybrid sigma-coordinate):
           ENDDO
          ENDDO
 
+# ifdef ALLOW_AUTODIFF
 C--  to make TAF happy: reset hFac to h0Fac (copied from hFac in ini_linear_phisurf)
          DO k=1,Nr
           DO j=1-OLy,sNy+OLy
@@ -117,6 +118,28 @@ C--  to make TAF happy: reset hFac to h0Fac (copied from hFac in ini_linear_phis
            ENDDO
           ENDDO
          ENDDO
+         DO k=1,Nr
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+#  ifdef USE_MASK_AND_NO_IF
+            recip_hFacC(i,j,k,bi,bj) = maskC(i,j,k,bi,bj) /
+     &        ( _hFacC(i,j,k,bi,bj) + (oneRS - maskC(i,j,k,bi,bj)) )
+            recip_hFacW(i,j,k,bi,bj) = maskW(i,j,k,bi,bj) /
+     &        ( _hFacW(i,j,k,bi,bj) + (oneRS - maskW(i,j,k,bi,bj)) )
+            recip_hFacS(i,j,k,bi,bj) = maskS(i,j,k,bi,bj) /
+     &        ( _hFacS(i,j,k,bi,bj) + (oneRS - maskS(i,j,k,bi,bj)) )
+#  else
+            IF ( maskC(i,j,k,bi,bj).NE.zeroRS )
+     &        recip_hFacC(i,j,k,bi,bj) = oneRS / _hFacC(i,j,k,bi,bj)
+            IF ( maskW(i,j,k,bi,bj).NE.zeroRS )
+     &        recip_hFacW(i,j,k,bi,bj) = oneRS / _hFacW(i,j,k,bi,bj)
+            IF ( maskS(i,j,k,bi,bj).NE.zeroRS )
+     &        recip_hFacS(i,j,k,bi,bj) = oneRS / _hFacS(i,j,k,bi,bj)
+#  endif
+           ENDDO
+          ENDDO
+         ENDDO
+# endif /* ALLOW_AUTODIFF */
 #endif /* NONLIN_FRSURF */
 
 C-    end 1rst bi,bj loop.

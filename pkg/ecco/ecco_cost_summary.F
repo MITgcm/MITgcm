@@ -1,4 +1,7 @@
 #include "ECCO_OPTIONS.h"
+#ifdef ALLOW_CTRL
+# include "CTRL_OPTIONS.h"
+#endif
 
 
       subroutine ecco_cost_summary( mythid )
@@ -317,6 +320,5 @@ c     == end of interface ==
 
 #endif /* ALLOW_ECCO and ECCO_CTRL_DEPRECATED */
 
-      return
-      end
-
+      RETURN
+      END

@@ -1,7 +1,6 @@
 #include "ECCO_OPTIONS.h"
-#include "AD_CONFIG.h"
 
-      subroutine ecco_init_varia( mythid )
+      subroutine ecco_init_varia( myThid )
 
 c     ==================================================================
 c     SUBROUTINE ecco_init_varia
@@ -21,14 +20,14 @@ c     == global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 
-#include "ecco_cost.h"
+#include "ecco.h"
 #ifdef ALLOW_COST
 # include "cost.h"
 #endif
 
 c     == routine arguments ==
 
-      integer mythid
+      integer myThid
 
 c     == local variables ==
 
@@ -52,6 +51,5 @@ c     == end of interface ==
 
       _BARRIER
 
-      return
-      end
-
+      RETURN
+      END

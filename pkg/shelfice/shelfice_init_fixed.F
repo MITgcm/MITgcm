@@ -42,7 +42,7 @@ C     i, j, bi, bj :: Loop counters
       CHARACTER*16  diagUnits
       CHARACTER*(80) diagTitle
 #endif /* ALLOW_DIAGNOSTICS */
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_CTRL
       INTEGER k
 # ifdef ALLOW_SHIFWFLX_COST_CONTRIBUTION
       _RL dummy
@@ -82,7 +82,7 @@ C-----------------------------------------------------------------------
        ENDDO
       ENDDO
 
-#ifdef ALLOW_SHIFWFLX_CONTROL
+#ifdef ALLOW_CTRL
 C     maskSHI is a hack to play along with the general ctrl-package
 C     infrastructure, where only the k=1 layer of a 3D mask is used
 C     for 2D fields. We cannot use maskInC instead, because routines
@@ -100,7 +100,7 @@ C     like ctrl_get_gen and ctrl_set_unpack_xy require 3D masks.
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            IF ( Ro_surf(i,j,bi,bj).LT.rF(1)
-     &          .AND. hFacC(i,j,k,bi,bj).NE.zeroRS ) THEN
+     &          .AND. maskC(i,j,k,bi,bj).NE.zeroRS ) THEN
             maskSHI(i,j,k,bi,bj) = 1. _d 0
             maskSHI(i,j,1,bi,bj) = 1. _d 0
            ENDIF
@@ -109,7 +109,7 @@ C     like ctrl_get_gen and ctrl_set_unpack_xy require 3D masks.
         ENDDO
        ENDDO
       ENDDO
-#endif /* ALLOW_SHIFWFLX_CONTROL */
+#endif /* ALLOW_CTRL */
 
 #ifdef ALLOW_COST
 #if  (defined (ALLOW_SHIFWFLX_COST_CONTRIBUTION) && \
@@ -256,6 +256,14 @@ c     ENDIF
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
+       diagName  = 'SHI_mass'
+       diagTitle = 'dynamic ice shelf mass for surface load anomaly'
+       diagUnits = 'kg/m^2          '
+       diagCode  = 'SM      L1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#ifdef SHI_ALLOW_GAMMAFRICT
        diagName  = 'SHIuStar'
        diagTitle = 'Friction velocity at bottom of ice shelf'
        diagUnits = 'm/s             '
@@ -263,12 +271,13 @@ c     ENDIF
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 
-       diagName  = 'SHI_mass'
-       diagTitle = 'dynamic ice shelf mass for surface load anomaly'
-       diagUnits = 'kg/m^2          '
+       diagName  = 'SHICDrag'
+       diagTitle = 'Shelfice drag coefficient for u* parameterization'
+       diagUnits = '1               '
        diagCode  = 'SM      L1      '
        CALL DIAGNOSTICS_ADDTOLIST( diagNum,
-     I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#endif
 
 #ifdef ALLOW_SHELFICE_REMESHING
        diagName  = 'SHIRshel'
@@ -279,6 +288,31 @@ c     ENDIF
      I      diagName, diagCode, diagUnits, diagTitle, 0, myThid )
 #endif
 
+# ifdef ALLOW_AUTODIFF
+#  ifndef SHI_ALLOW_GAMMAFRICT
+       diagName  = 'ADJshict'
+       diagTitle = 'dJ/dgammaT: Sens. to shelfice heat transfer coeff'
+       diagUnits = 'dJ/(m/s)        '
+       diagCode  = 'SM A    M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+       diagName  = 'ADJshics'
+       diagTitle = 'dJ/dgammaS: Sens. to shelfice salt transfer coeff'
+       diagUnits = 'dJ/(m/s)        '
+       diagCode  = 'SM A    M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+
+#  else
+       diagName  = 'ADJshicd'
+       diagTitle = 'dJ/dcDrag: Sensitivity to shelfice u* drag coeff'
+       diagUnits = 'dJ/1            '
+       diagCode  = 'SM A    M1      '
+       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+#  endif
+# endif
       ENDIF
 #endif /* ALLOW_DIAGNOSTICS */
 #endif /* ALLOW_SHELFICE */

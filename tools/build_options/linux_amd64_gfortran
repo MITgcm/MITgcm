@@ -2,35 +2,22 @@
 
 # Build options for gfortran compiler (GNU) on Linux AMD64 platform
 #
-#  Tested with gcc-gfortran v4.1.x as shipped with Fedora Core 6,7,8
-#         with gcc-gfortran v4.3.x as shipped with Fedora Core 9,10
+#  Tested with gcc-gfortran v4.1.x  as shipped with Fedora Core 6,7,8
+#        up to gcc-gfortran v10.2.1 as shipped with Fedora Core 33
 #
-# OpenMP : Tested on dickens with gcc-gfortran v4.3.2 as shipped with FC 10
-#              on baudelaire with gcc-gfortran v4.4.5 as shipped with FC 13
-#              on danton     with gcc-gfortran v4.5.1 as shipped with FC 14
-#                            with gcc-gfortran v4.7.x as shipped with FC 17
-#                            with gcc-gfortran v4.8.1 as shipped with FC 19
-#              on acesgrid   with gcc-gfortran v4.6.0 as shipped with FC 15
+# OpenMP : Tested with gcc-gfortran v4.3.2  with FC 10         (on dickens)
+#                 with gcc-gfortran v4.4.5  with FC 13         (on baudelaire)
+#                 with gcc-gfortran v7.5.0  with Ubuntu 18 LTS (on villon)
+#                up to gcc-gfortran v10.2.1 with FC 33	       (on batsi)
 #
-# MPI : Tested on acesgrid (Fedora Core 15), using:
-#       module load gcc     (Version 4.6.0)
-#   and with mpich1:
-#       module load mvapich
-#   or  with mpich2:
-#       module load mvapich2
-#   or  with openmpi:
-#       module load openmpi
+# MPI : Tested on engaging, using:
+#       module load gcc                  (Version 4.8.4)
+#       module add mvapich2/gcc/64/2.0b
 # and on baudelaire.csail.mit.edu (FC13), using:
 #       export MPI_GCC_DIR=/srv/software/gcc/gcc-packages/gcc-4.4.5/mpich2/mpich2-1.3
 #       export MPI_INC_DIR=$MPI_GCC_DIR/include
 #       export PATH=$MPI_GCC_DIR/bin:$PATH
-#
-# and on IRIDIS at Southampton
-# http://www.southampton.ac.uk/isolutions/computing/hpc/iridis/
-#    with
-#       module load openmpi/1.4.3/gcc-4.3.3
-#    and
-#       export MPI_INC_DIR=$MPIROOT/include
+# and with openmpi, on several platforms (e.g, with Ubuntu)
 
 #-------
 # run with OpenMP: needs to set environment var. OMP_NUM_THREADS
@@ -63,6 +50,16 @@ NOOPTFLAGS='-O0'
 NOOPTFILES=''
 
 CFLAGS='-O0'
+
+#- for setting specific options, check compiler version:
+fcVers=`$CC -dumpversion | head -n 1 | sed 's/^[^0-9]* //;s/\..*$//'`
+if ! [[ $fcVers =~ ^[0-9]+$ ]] ; then
+  echo "    un-recognized Compiler-version '$fcVers' ; ignored (-> set to 0)" ; fcVers=0 ;
+else echo "    get Compiler-version: '$fcVers'" ; fi
+
+if [ $fcVers -ge 10 ] ; then
+  FFLAGS="$FFLAGS -fallow-argument-mismatch"
+fi
 #- Requires gfortran from 2006 onwards for -fconvert=big-endian
 FFLAGS="$FFLAGS -fconvert=big-endian -fimplicit-none"
 #- for big setups, compile & link with "-fPIC" or set memory-model to "medium":
@@ -89,6 +86,9 @@ else
    #FFLAGS="$FFLAGS -Waliasing -Wampersand -Wsurprising -Wline-truncation"
    #- or simply:
     FFLAGS="$FFLAGS -Wall"
+    if [ $fcVers -ge 10 ] ; then
+      FFLAGS="$FFLAGS -Wno-unused-dummy-argument"
+    fi
    #- to get plenty of warnings: -Wall -Wextra (older form: -Wall -W) or:
    #FFLAGS="$FFLAGS -Wconversion -Wimplicit-interface -Wunused-labels"
   if test "x$DEVEL" = x ; then  #- no optimisation + IEEE :
@@ -128,7 +128,7 @@ elif [ "x$NETCDF_INCDIR" != x -a "x$NETCDF_LIBDIR" != x ]; then
     INCLUDES="-I${NETCDF_INCDIR}"
     LIBDIR="${NETCDF_LIBDIR}"
     LIBS="-L${NETCDF_LIBDIR}"
-elif [[ -n $( nf-config --includedir ) && ($? == 0) ]] ; then
+elif [[ -n $( nf-config --includedir 2> /dev/null ) && ($? == 0) ]] ; then
     # NETCDF env variables are not set, trying nf-config instead
     INCLUDEDIR=$( nf-config --includedir )
     INCLUDES="-I$INCLUDEDIR"
