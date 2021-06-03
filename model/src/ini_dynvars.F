@@ -92,6 +92,9 @@ C-      3D arrays
            dU_psFacX(i,j,k,bi,bj)    = 0. _d 0
            dV_psFacY(i,j,k,bi,bj)    = 0. _d 0
 #endif /* ALLOW_SOLVE4_PS_AND_DRAG */
+#ifdef INCLUDE_SOUNDSPEED_CALC_CODE
+           cSound(i,j,k,bi,bj)       = 0. _d 0
+#endif /* INCLUDE_SOUNDSPEED_CALC_CODE */
           ENDDO
          ENDDO
         ENDDO

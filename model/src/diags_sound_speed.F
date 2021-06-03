@@ -64,7 +64,7 @@ CEOP
         DO k=1,Nr
          DO j=1,sNy
           DO i=1,sNx
-           csound(i,j,k,bi,bj) = 0.0 _d 0
+           cSound(i,j,k,bi,bj) = 0.0 _d 0
           ENDDO
          ENDDO
         ENDDO
@@ -99,7 +99,7 @@ C convert pressure to kg/cm^2 for Del Grasso algorithm
      &               +(0.485639620015 _d -5 * sal
      &               - 0.340597039004 _d -3 ) *sal ) * temp
      &               - 0.161674495909 _d -8 * sal * sal * pres ) * pres
-            csound(i,j,k,bi,bj) = c0+ct+cs+cp+cstp
+            cSound(i,j,k,bi,bj) = c0+ct+cs+cp+cstp
            ENDIF
           ENDDO
          ENDDO
@@ -107,7 +107,7 @@ C convert pressure to kg/cm^2 for Del Grasso algorithm
        ENDDO
       ENDDO
       IF ( useDiagnostics ) THEN
-       CALL DIAGNOSTICS_FILL(csound,'CSound  ',0,Nr,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(cSound,'CSound  ',0,Nr,0,1,1,myThid)
       ENDIF
 
 #endif /* INCLUDE_SOUNDSPEED_CALC_CODE */

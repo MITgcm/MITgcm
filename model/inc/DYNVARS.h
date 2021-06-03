@@ -114,19 +114,15 @@ C     hMixLayer    :: Mixed layer depth [m]
 C                     (for diagnostic + used GMRedi "fm07")
 C     IVDConvCount :: Impl.Vert.Diffusion convection counter:
 C                     = 0 (not convecting) or 1 (convecting)
-C     csound       :: Speed of sound in seawater 
-C                     following Del Grosso (1974)
       COMMON /DYNVARS_DIAG/
      &                phiHydLow, totPhiHyd,
      &                rhoInSitu,
-     &                hMixLayer, IVDConvCount,
-     &                csound
+     &                hMixLayer, IVDConvCount
       _RL  phiHydLow(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  totPhiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  rhoInSitu(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  hMixLayer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  IVDConvCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  csound(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 #if (defined (ALLOW_SIGMAR_COST_CONTRIBUTION) || defined (ALLOW_LEITH_QG))
 C     Leith QG dynamic viscosity scheme requires buoyancy frequency.
@@ -150,3 +146,11 @@ C                     pressure gradient in Y (no Units)
       _RL  dU_psFacX(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  dV_psFacY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* ALLOW_SOLVE4_PS_AND_DRAG */
+
+#ifdef INCLUDE_SOUNDSPEED_CALC_CODE
+C     cSound       :: Speed of sound in seawater (m/s)
+C                     following Del Grosso (1974)
+      COMMON /DYNVARS_cSound/ cSound
+      _RL  cSound(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif /* INCLUDE_SOUNDSPEED_CALC_CODE */
+
