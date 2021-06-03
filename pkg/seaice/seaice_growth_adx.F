@@ -9,6 +9,8 @@
 # include "AUTODIFF_OPTIONS.h"
 #endif
 
+#undef SEAICE_GROWTH_ADX_STORE_MORE
+
 CBOP
 C     !ROUTINE: SEAICE_GROWTH_ADX
 C     !INTERFACE:
@@ -343,16 +345,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                       + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_AUTODIFF_TAMC
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CADJ STORE area (:,:,bi,bj) = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE heff (:,:,bi,bj) = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE hsnow(:,:,bi,bj) = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE qnet (:,:,bi,bj) = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE qsw  (:,:,bi,bj) = comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE tices(:,:,:,bi,bj)=comlev1_bibj, key = iicekey, byte = isbyte
-#endif
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif
 
 C array initializations
 C =====================
