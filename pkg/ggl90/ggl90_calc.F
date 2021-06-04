@@ -278,7 +278,7 @@ C--   Impose upper and lower bound for mixing length
 C--   Impose minimum mixing length to avoid division by zero
       IF ( mxlMaxFlag .EQ. 0 ) THEN
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
        k=1
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -301,7 +301,7 @@ C--   Impose minimum mixing length to avoid division by zero
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
      &                                   GGL90mixingLengthMin)
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
          ENDDO
         ENDDO
        ENDDO
@@ -316,7 +316,7 @@ C--   Impose minimum mixing length to avoid division by zero
 
       ELSEIF ( mxlMaxFlag .EQ. 1 ) THEN
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
        k=1
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -340,7 +340,7 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
      &                                   GGL90mixingLengthMin)
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
          ENDDO
         ENDDO
        ENDDO
@@ -355,7 +355,7 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
 
       ELSEIF ( mxlMaxFlag .EQ. 2 ) THEN
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
        k=1
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -391,7 +391,7 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MAX(GGL90mixingLength(i,j,k),
      &                                   GGL90mixingLengthMin)
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
          ENDDO
         ENDDO
        ENDDO
@@ -406,7 +406,7 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
 
       ELSEIF ( mxlMaxFlag .EQ. 3 ) THEN
 
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
        k=1
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -443,7 +443,7 @@ c         MaxLength=MAX(MaxLength,20. _d 0)
          DO i=iMin,iMax
           GGL90mixingLength(i,j,k) = MIN(GGL90mixingLength(i,j,k),
      &                                  mxLength_Dn(i,j,k))
-#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF
          ENDDO
         ENDDO
        ENDDO
