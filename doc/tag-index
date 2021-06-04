@@ -1,6 +1,9 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/ggl90: 
+  - add 3 store directives for gg90tke in ggl90_calc.F and break some loops
+    in two to help TAF without extra storage requirements.
 o pkg/seaice:
   - adjust store directives in seaice_growth_adx.F:
     *) add store directives to avoid calling seaice_solve4temp in AD-mode
