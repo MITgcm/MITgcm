@@ -88,6 +88,9 @@ C Global variables / common blocks
 # include "W2_EXCH2_TOPOLOGY.h"
 # include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
+#ifdef ALLOW_FIZHI
+# include "fizhi_SIZE.h"
+#endif /* ALLOW_FIZHI */
 #include "MDSIO_BUFF_3D.h"
 
 C !INPUT PARAMETERS:
@@ -125,7 +128,7 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       INTEGER xSize, ySize
       INTEGER irecord
       INTEGER iG,jG,bi,bj
-      INTEGER i1,i2,i,j,k,nNz
+      INTEGER i1,i2,i,k,nNz
       INTEGER irec,dUnit,IL,pIL
       INTEGER dimList(3,2), nDims, map2gl(2)
       INTEGER length_of_rec
@@ -687,6 +690,9 @@ C Global variables / common blocks
 # include "W2_EXCH2_TOPOLOGY.h"
 # include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
+#ifdef ALLOW_FIZHI
+# include "fizhi_SIZE.h"
+#endif /* ALLOW_FIZHI */
 #include "MDSIO_BUFF_3D.h"
 
 C !INPUT PARAMETERS:

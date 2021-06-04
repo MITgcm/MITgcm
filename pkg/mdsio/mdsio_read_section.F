@@ -23,7 +23,7 @@ C !INTERFACE:
 C !DESCRIPTION:
 C Arguments:
 C
-C fName     (string)  :: base name for file to write
+C fName     (string)  :: base name for file to read
 C filePrec  (integer) :: number of bits per word in file (32 or 64)
 C useCurrentDir(logic):: always write to the current directory (even if
 C                        "mdsioLocalDir" is set)
@@ -77,6 +77,9 @@ C Global variables / common blocks
 # include "W2_EXCH2_TOPOLOGY.h"
 # include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
+#ifdef ALLOW_FIZHI
+# include "fizhi_SIZE.h"
+#endif /* ALLOW_FIZHI */
 #include "MDSIO_BUFF_3D.h"
 
 C !INPUT PARAMETERS:
@@ -110,7 +113,7 @@ C     bBij  :: base shift in Buffer index for tile bi,bj
       LOGICAL useExch2ioLayOut
       INTEGER xSize, ySize
       INTEGER iG,jG,bi,bj
-      INTEGER i1,i2,i,j,k,nNz
+      INTEGER i1,i2,i,k,nNz
       INTEGER irec,dUnit,IL,pIL
       INTEGER length_of_rec
       INTEGER bBij
@@ -284,7 +287,6 @@ C If negative check for global file with MDS name (ie. fName.data)
           ENDIF
         ENDIF
 
-
 C- endif iAmDoingIO
       ENDIF
 
@@ -334,7 +336,6 @@ C master thread of process 0, only ,read from file
           ENDIF
 C-      end if iAmDoingIO
         ENDIF
-
 
 C wait for all thread to finish. this prevents other threads to continue
 C  to access shared buffer while master thread is loading data into
@@ -394,7 +395,6 @@ C Close data-file
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  else .NOT.useSingleCpuIO
       ELSE
-
 
 C Only do I/O if I am the master thread
        IF ( iAmDoingIO ) THEN
@@ -583,7 +583,7 @@ C !INTERFACE:
 C !DESCRIPTION:
 C Arguments:
 C
-C fName     (string)  :: base name for file to write
+C fName     (string)  :: base name for file to read
 C filePrec  (integer) :: number of bits per word in file (32 or 64)
 C useCurrentDir(logic):: always write to the current directory (even if
 C                        "mdsioLocalDir" is set)
@@ -637,6 +637,9 @@ C Global variables / common blocks
 # include "W2_EXCH2_TOPOLOGY.h"
 # include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
+#ifdef ALLOW_FIZHI
+# include "fizhi_SIZE.h"
+#endif /* ALLOW_FIZHI */
 #include "MDSIO_BUFF_3D.h"
 
 C !INPUT PARAMETERS:
@@ -895,7 +898,6 @@ C master thread of process 0, only ,read from file
 C-      end if iAmDoingIO
         ENDIF
 
-
 C wait for all thread to finish. this prevents other threads to continue
 C  to access shared buffer while master thread is loading data into
         CALL BAR2( myThid )
@@ -954,7 +956,6 @@ C Close data-file
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---  else .NOT.useSingleCpuIO
       ELSE
-
 
 C Only do I/O if I am the master thread
        IF ( iAmDoingIO ) THEN
